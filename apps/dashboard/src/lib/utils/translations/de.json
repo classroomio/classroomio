@@ -79,7 +79,7 @@
         "complete": "Vollständig :)"
       },
       "error": {
-        "file_size": "Die Dateigröße darf 500 KB nicht überschreiten",
+        "file_size": "Die Dateigröße darf 2MB nicht überschreiten",
         "try_again": "Versuchen Sie es erneut",
         "label": "Bild hochladen",
         "fetch_error": "Fehler beim Abrufen von Bildern von Unsplash"
@@ -327,11 +327,14 @@
           "bird": "Frühbucherangebot. Kaufen Sie so schnell wie möglich"
         },
         "upload_widget": {
-          "title": "Banner-Widget",
           "width": "Am besten funktionieren Bilder, die breiter als 1500 Pixel sind.",
           "size": "Die maximale Größe pro Datei beträgt 500 KB.",
           "submit": "Einreichen",
-          "no_images": "Keine Bilder verfügbar."
+          "no_images": "Keine Bilder verfügbar.",
+          "drag_n_drop": "Drag & fallen Sie hier Ihr Bild",
+          "or": "Oder",
+          "click_to_upload": "Klicken Sie hier, um hochzuladen",
+          "title": "Laden Sie Widget hoch"
         },
         "editor": {
           "save": "Speichern",

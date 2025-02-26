@@ -1,6 +1,7 @@
 <script lang="ts">
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { cn } from '$lib/utils/functions/cn';
+  import { t } from '$lib/utils/functions/translations';
   import Close from 'carbon-icons-svelte/lib/Close.svelte';
   import CloudUpload from 'carbon-icons-svelte/lib/CloudUpload.svelte';
   import { createEventDispatcher } from 'svelte';
@@ -92,8 +93,6 @@
   }
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
   class={cn(
     'relative flex h-64 w-96 cursor-pointer items-center justify-center overflow-hidden rounded-md border-2 border-dashed border-gray-400 text-gray-500 transition-all',
@@ -105,6 +104,9 @@
   on:dragover|preventDefault
   on:drop={handleDrop}
   on:click={triggerFileInput}
+  on:keydown={(e) => e.key === 'Enter' && triggerFileInput(e)}
+  role="button"
+  tabindex="0"
 >
   {#if loading}
     <div class="absolute inset-0 flex items-center justify-center bg-white/70">
@@ -115,10 +117,9 @@
   {/if}
 
   {#if image}
-    <!-- svelte-ignore a11y-img-redundant-alt -->
     <img
       src={image}
-      alt="Uploaded image"
+      alt="Uploaded avatar"
       class="absolute left-0 top-0 h-full w-full object-cover transition-opacity duration-300 hover:opacity-20"
     />
     <IconButton
@@ -135,10 +136,10 @@
 
   <div class="flex flex-col items-center justify-center transition-opacity duration-300">
     <CloudUpload />
-    <p>Drag & Drop your image here</p>
-    <p>Or</p>
+    <p>{$t('course.navItem.landing_page.upload_widget.drag_n_drop')}</p>
+    <p>{$t('course.navItem.landing_page.upload_widget.or')}</p>
     <span class="rounded-md border bg-slate-500 p-2 text-white hover:bg-slate-700">
-      Click to upload
+      {$t('course.navItem.landing_page.upload_widget.click_to_upload')}
     </span>
   </div>
 

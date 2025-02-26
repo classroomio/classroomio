@@ -79,7 +79,7 @@
         "complete": "Complet :)"
       },
       "error": {
-        "file_size": "La taille du fichier ne doit pas dépasser 500 Ko",
+        "file_size": "La taille du fichier ne doit pas dépasser 2MB",
         "try_again": "Essayer à nouveau",
         "label": "Télécharger une image",
         "fetch_error": "Erreur lors de la récupération des images depuis Unsplash"
@@ -327,11 +327,14 @@
           "bird": "Offre pour inscription anticipée. Achetez dès que possible"
         },
         "upload_widget": {
-          "title": "Widget de bannière",
           "width": "Les images plus larges que 1 500 pixels fonctionnent mieux.",
           "size": "La taille maximale par fichier est de 500 Ko.",
           "submit": "Soumettre",
-          "no_images": "Aucune image disponible."
+          "no_images": "Aucune image disponible.",
+          "drag_n_drop": "Faites glisser et déposez votre image ici",
+          "or": "Ou",
+          "click_to_upload": "Cliquez pour télécharger",
+          "title": "Télécharger le widget"
         },
         "editor": {
           "save": "Sauvegarder",

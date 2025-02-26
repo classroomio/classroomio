@@ -109,6 +109,7 @@
               on:change={uploadImage}
               on:clear={handleClear}
               on:error={handleError}
+              className="h-48 w-48 text-center p-4"
             />
           </div>
         </TabContent>

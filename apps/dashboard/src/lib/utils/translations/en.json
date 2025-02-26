@@ -1048,11 +1048,14 @@
         },
 
         "upload_widget": {
-          "title": "Banner Widget",
+          "title": "Upload Widget",
           "width": "Images wider than 1500 pixels work best.",
           "size": "The maximum size per file is 500kb.",
           "submit": "Submit",
-          "no_images": "No images available."
+          "no_images": "No images available.",
+          "drag_n_drop": "Drag & Drop your image here",
+          "or": "Or",
+          "click_to_upload": "Click to upload"
         },
 
         "pricing_section": {
