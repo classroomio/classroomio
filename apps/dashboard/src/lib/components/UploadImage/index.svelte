@@ -17,28 +17,6 @@
   export let flexDirection = 'flex-col';
   export let isUploading = false;
 
-  let fileinput: HTMLInputElement;
-
-  // const onFileSelected = (e: Event<HTMLInputElement>) => {
-  //   const image = e.target.files[0];
-  //   const maxFileSize = maxFileSizeInMb * 1024 * 1024;
-  //   if (image.size > maxFileSize) {
-  //     errorMessage = `${$t('settings.profile.profile_picture.validation_error')} ${
-  //       maxFileSize / (1024 * 1024)
-  //     } MB`;
-  //     return;
-  //   }
-  //   let reader = new FileReader();
-  //   reader.readAsDataURL(image);
-  //   reader.onload = (e) => {
-  //     avatar = image;
-  //     // @ts-ignore
-  //     src = e.target?.result || undefined;
-  //     errorMessage = null; // Clear error message on successful load
-  //   };
-  // };
-
-  // new method
   const onFileSelected = (e: Event | any) => {
     const image = e.detail.image;
 
@@ -47,6 +25,7 @@
     }
     $handleOpenWidget.open = false;
   };
+
   const clearAvatar = () => {
     src = undefined;
     avatar = undefined;
@@ -104,14 +83,6 @@
       <p class="text-sm text-red-500">{errorMessage}</p>
     {/if}
   </div>
-
-  <!-- <input
-    style="display:none"
-    type="file"
-    accept=".jpg, .jpeg, .png, .webp"
-    on:change={(e) => onFileSelected(e)}
-    bind:this={fileinput}
-  /> -->
 
   <Modal
     onClose={() => ($handleOpenWidget.open = false)}
