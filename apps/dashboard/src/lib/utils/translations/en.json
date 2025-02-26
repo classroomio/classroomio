@@ -1357,7 +1357,7 @@
 
     "landing_page_settings": {
       "error": {
-        "file_size": "File Size must not be greater than 500kb",
+        "file_size": "File Size must not be greater than 2MB",
         "try_again": "Try Again",
         "label": "Upload Image",
         "fetch_error": "Error fetching images from Unsplash"

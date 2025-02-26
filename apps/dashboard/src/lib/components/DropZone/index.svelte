@@ -9,6 +9,7 @@
   export let image: any | null = null;
   export let loading = false;
   export let className = '';
+  export let resetButton = '';
 
   let fileInput: HTMLInputElement;
   let isDragging = false;
@@ -34,17 +35,20 @@
     }
   }
 
-  function handleFileSelect(event) {
+  async function handleFileSelect(event) {
     const file = event.target.files[0];
+    console.log('Selected file:', file);
     const sizeInkb = file?.size! / 1024;
-    if (sizeInkb > 500) {
+    if (sizeInkb > 2000) {
       snackbar.error('snackbar.landing_page_settings.error.file_size');
-      dispatch('error', { error: 'snackbar.landing_page_settings.error.file_size' });
+      dispatch('error', { error: 'snackbar.landing_page_settings.error.try_again' }); // still unsure if this is neccessary
       return;
     }
 
     if (file && file.type.startsWith('image/')) {
-      loadImage(file);
+      await loadImage(file);
+    } else {
+      console.error('Not a valid file');
     }
     // Reset the input value to allow selecting the same file again
     event.target.value = null;
@@ -92,7 +96,7 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
   class={cn(
-    'relative flex h-64 w-96 cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-gray-400 text-gray-500 transition-all',
+    'relative flex h-64 w-96 cursor-pointer items-center justify-center overflow-hidden rounded-md border-2 border-dashed border-gray-400 text-gray-500 transition-all',
     isDragging ? 'border-blue-500 bg-blue-50' : 'hover:border-gray-600',
     className
   )}
@@ -118,7 +122,10 @@
       class="absolute left-0 top-0 h-full w-full object-cover transition-opacity duration-300 hover:opacity-20"
     />
     <IconButton
-      buttonClassName="absolute right-2 top-2 rounded-full bg-white p-1 text-gray-700 shadow-md hover:bg-gray-200"
+      buttonClassName={cn(
+        'absolute right-2 top-2 rounded-full bg-white p-1 text-gray-700 shadow-md hover:bg-gray-200',
+        resetButton
+      )}
       onClick={clearImage}
       stopPropagation={true}
     >

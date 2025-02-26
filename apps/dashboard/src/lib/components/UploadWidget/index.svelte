@@ -102,7 +102,7 @@
       <slot:fragment slot="content">
         <TabContent value={tabs[1].value} index={currentTab}>
           <!-- Your Upload content here -->
-          <div class="mx-auto w-full">
+          <div class="mx-auto flex w-full items-center justify-center">
             <DropZone
               bind:loading={isUploading}
               bind:image={imageURL}
