@@ -49,7 +49,7 @@
       return;
     }
     const filename = `uploadwidget/${Date.now()}` + image.name;
-    console.log('filename', filename, image);
+
     const { data } = await supabase.storage.from('avatars').upload(filename, image, {
       cacheControl: '3600',
       upsert: false
@@ -58,7 +58,6 @@
     if (data) {
       const { data: response } = await supabase.storage.from('avatars').getPublicUrl(filename);
       imageURL = response.publicUrl;
-      console.log('url', imageURL);
       dispatch('change');
     }
     isUploading = false;
