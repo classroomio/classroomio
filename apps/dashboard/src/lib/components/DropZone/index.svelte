@@ -38,18 +38,17 @@
 
   async function handleFileSelect(event) {
     const file = event.target.files[0];
-    console.log('Selected file:', file);
     const sizeInkb = file?.size! / 1024;
     if (sizeInkb > 2000) {
       snackbar.error('snackbar.landing_page_settings.error.file_size');
-      dispatch('error', { error: 'snackbar.landing_page_settings.error.try_again' }); // still unsure if this is neccessary
+      dispatch('error', { error: 'snackbar.landing_page_settings.error.try_again' });
       return;
     }
 
     if (file && file.type.startsWith('image/')) {
       await loadImage(file);
     } else {
-      console.error('Not a valid file');
+      snackbar.error('course.navItem.landing_page.upload_widget.invalid_file');
     }
     // Reset the input value to allow selecting the same file again
     event.target.value = null;

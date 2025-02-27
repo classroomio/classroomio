@@ -34,8 +34,6 @@
     alt_description: string;
   }[] = [];
 
-  // let label = $t('snackbar.landing_page_settings.error.label');
-
   const onChange = (tabValue: string | number) => () => (currentTab = `${tabValue}`);
 
   async function handleImageClick(img: string) {

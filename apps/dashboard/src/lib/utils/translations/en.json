@@ -1055,7 +1055,8 @@
           "no_images": "No images available.",
           "drag_n_drop": "Drag & Drop your image here",
           "or": "Or",
-          "click_to_upload": "Click to upload"
+          "click_to_upload": "Click to upload",
+          "invalid_file": "Not a valid file"
         },
 
         "pricing_section": {
