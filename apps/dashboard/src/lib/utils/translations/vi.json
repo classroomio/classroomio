@@ -334,7 +334,8 @@
           "drag_n_drop": "Kéo và thả hình ảnh của bạn ở đây",
           "or": "Hoặc",
           "click_to_upload": "Bấm để tải lên",
-          "title": "Tải lên tiện ích"
+          "title": "Tải lên tiện ích",
+          "invalid_file": "Không phải là một tệp hợp lệ"
         },
         "editor": {
           "save": "Cứu",

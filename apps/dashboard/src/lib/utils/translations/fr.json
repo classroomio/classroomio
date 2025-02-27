@@ -334,7 +334,8 @@
           "drag_n_drop": "Faites glisser et déposez votre image ici",
           "or": "Ou",
           "click_to_upload": "Cliquez pour télécharger",
-          "title": "Télécharger le widget"
+          "title": "Télécharger le widget",
+          "invalid_file": "Pas un fichier valide"
         },
         "editor": {
           "save": "Sauvegarder",
