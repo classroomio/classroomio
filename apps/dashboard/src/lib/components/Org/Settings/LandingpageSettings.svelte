@@ -1,25 +1,33 @@
 <script lang="ts">
-  import { Grid, Row, Column, RadioButtonGroup, RadioButton } from 'carbon-components-svelte';
-  import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import Save from 'carbon-icons-svelte/lib/Save.svelte';
+  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import SectionTitle from '../SectionTitle.svelte';
-  import { Toggle } from 'carbon-components-svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import { currentOrg } from '$lib/utils/store/org';
-  import { getSupabase } from '$lib/utils/functions/supabase';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { landingPageSettings } from './store';
-  import type { OrgLandingPageJson } from './store';
+  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
-  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+  import { getSupabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
+  import { currentOrg } from '$lib/utils/store/org';
+  import {
+    Column,
+    Grid,
+    RadioButton,
+    RadioButtonGroup,
+    Row,
+    Toggle
+  } from 'carbon-components-svelte';
+  import Save from 'carbon-icons-svelte/lib/Save.svelte';
+  import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
+  import SectionTitle from '../SectionTitle.svelte';
+  import type { OrgLandingPageJson } from './store';
+  import { landingPageSettings } from './store';
 
   let isSaving = false;
   let creatingNewQuestion = false;
+  let hasUnsavedChanges = false;
   let widgetKey = '';
   const banner = [
     { value: 'video', label: `${$t('settings.landing_page.actions.banner_type.video')}` },
@@ -97,6 +105,7 @@
     } else {
       $currentOrg.landingpage = $landingPageSettings;
       snackbar.success('snackbar.success_update');
+      hasUnsavedChanges = false;
     }
 
     isSaving = false;
@@ -122,11 +131,16 @@
   $: setDefault($currentOrg?.landingpage as unknown as OrgLandingPageJson);
 </script>
 
-<Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5 relative">
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+<UnsavedChanges {hasUnsavedChanges} />
+<Grid class="border-c relative mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}>
       <SectionTitle>{$t('settings.landing_page.heading')}</SectionTitle>
-      <Toggle bind:toggled={$landingPageSettings.header.show} size="sm">
+      <Toggle
+        bind:toggled={$landingPageSettings.header.show}
+        size="sm"
+        on:change={() => (hasUnsavedChanges = true)}
+      >
         <span slot="labelA" style="color: gray">{$t('settings.landing_page.hide_section')}</span>
         <span slot="labelB" style="color: gray">{$t('settings.landing_page.show_section')}</span>
       </Toggle>
@@ -136,6 +150,7 @@
         label={$t('settings.landing_page.title')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.header.title}
+        onChange={() => (hasUnsavedChanges = true)}
         className="w-full mb-5"
       />
       <TextField
@@ -143,6 +158,7 @@
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.highlight')}
         className="w-full mb-5"
         bind:value={$landingPageSettings.header.titleHighlight}
+        onChange={() => (hasUnsavedChanges = true)}
       />
 
       <TextArea
@@ -151,6 +167,7 @@
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_subtitle')}
         className="w-full mb-5"
         bind:value={$landingPageSettings.header.subtitle}
+        onChange={() => (hasUnsavedChanges = true)}
         isAIEnabled={true}
       />
 
@@ -160,14 +177,20 @@
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.label')}
         className="w-full mt-3 mb-5"
         bind:value={$landingPageSettings.header.action.label}
+        onChange={() => (hasUnsavedChanges = true)}
       />
-      <div class="gap-2 mb-5">
+      <div class="mb-5 gap-2">
         <TextField
           label={$t('settings.landing_page.actions.link')}
           placeholder={$t('course.navItem.lessons.exercises.all_exercises.link')}
           bind:value={$landingPageSettings.header.action.link}
+          onChange={() => (hasUnsavedChanges = true)}
         />
-        <Toggle bind:toggled={$landingPageSettings.header.action.redirect} size="sm">
+        <Toggle
+          bind:toggled={$landingPageSettings.header.action.redirect}
+          size="sm"
+          on:change={() => (hasUnsavedChanges = true)}
+        >
           <span slot="labelA" style="color: gray"
             >{$t('settings.landing_page.actions.no_redirect')}</span
           >
@@ -181,18 +204,20 @@
       <RadioButtonGroup
         legendText={$t('settings.landing_page.actions.banner_type.heading')}
         bind:selected={$landingPageSettings.header.banner.type}
-        class="mt-10 mb-5"
+        on:change={() => (hasUnsavedChanges = true)}
+        class="mb-5 mt-10"
       >
         {#each banner as item}
           <RadioButton value={item.value} labelText={item.label} />
         {/each}
       </RadioButtonGroup>
       {#if $landingPageSettings.header.banner.type === 'video'}
-        <div class="gap-2 mt-3 mb-5">
+        <div class="mb-5 mt-3 gap-2">
           <TextField
             label={$t('settings.landing_page.actions.link')}
             placeholder={$t('course.navItem.lessons.exercises.all_exercises.video')}
             bind:value={$landingPageSettings.header.banner.video}
+            onChange={() => (hasUnsavedChanges = true)}
           />
         </div>
       {:else}
@@ -207,11 +232,15 @@
         <img
           alt="bannerImage"
           src={$landingPageSettings.header.banner.image}
-          class="mt-2 rounded-md w-full"
+          class="mt-2 w-full rounded-md"
         />
       {/if}
 
-      <Toggle bind:toggled={$landingPageSettings.header.banner.show} size="sm">
+      <Toggle
+        bind:toggled={$landingPageSettings.header.banner.show}
+        size="sm"
+        on:change={() => (hasUnsavedChanges = true)}
+      >
         <span slot="labelA" style="color: gray"
           >{$t('settings.landing_page.actions.hide_banner')}</span
         >
@@ -226,7 +255,7 @@
       <!-- background -->
 
       <div class="mt-4">
-        <p class="font-bold mb-4">{$t('settings.landing_page.background.title')}</p>
+        <p class="mb-4 font-bold">{$t('settings.landing_page.background.title')}</p>
         <PrimaryButton
           variant={VARIANTS.OUTLINED}
           label={$t('settings.landing_page.about.select_image')}
@@ -238,7 +267,7 @@
           <img
             alt="backgroundImage"
             src={$landingPageSettings.header.background.image}
-            class="mt-2 rounded-md w-full"
+            class="mt-2 w-full rounded-md"
           />
         {/if}
 
@@ -258,10 +287,15 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.about.heading')}</SectionTitle>
-      <Toggle bind:toggled={$landingPageSettings.aboutUs.show} size="sm">
+
+      <Toggle
+        bind:toggled={$landingPageSettings.aboutUs.show}
+        on:change={() => (hasUnsavedChanges = true)}
+        size="sm"
+      >
         <span slot="labelA" style="color: gray">{$t('settings.landing_page.hide_section')}</span>
         <span slot="labelB" style="color: gray">{$t('settings.landing_page.show_section')}</span>
       </Toggle></Column
@@ -271,6 +305,7 @@
         label={$t('settings.landing_page.about.title')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.aboutUs.title}
+        onChange={() => (hasUnsavedChanges = true)}
         className="mb-5"
       />
 
@@ -280,6 +315,7 @@
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.content')}
         className="mb-5"
         bind:value={$landingPageSettings.aboutUs.content}
+        onChange={() => (hasUnsavedChanges = true)}
         isAIEnabled={true}
       />
 
@@ -295,7 +331,7 @@
           <img
             alt="About us"
             src={$landingPageSettings.aboutUs.imageUrl}
-            class="mt-2 rounded-md w-full"
+            class="mt-2 w-full rounded-md"
           />
         {/if}
         {#if $handleOpenWidget.open && widgetKey === 'about-us'}
@@ -305,10 +341,14 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.courses.heading')}</SectionTitle>
-      <Toggle bind:toggled={$landingPageSettings.courses.show} size="sm">
+      <Toggle
+        bind:toggled={$landingPageSettings.courses.show}
+        size="sm"
+        on:change={() => (hasUnsavedChanges = true)}
+      >
         <span slot="labelA" style="color: gray"
           >{$t('settings.landing_page.courses.hide_section')}</span
         >
@@ -322,26 +362,33 @@
         label={$t('settings.landing_page.courses.title')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.courses.title}
+        onChange={() => (hasUnsavedChanges = true)}
       />
       <TextField
         label={$t('settings.landing_page.courses.title_highlight')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.highlight')}
         bind:value={$landingPageSettings.courses.titleHighlight}
+        onChange={() => (hasUnsavedChanges = true)}
       />
       <TextArea
         label={$t('settings.landing_page.courses.subtitle')}
         labelClassName="font-light"
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_subtitle')}
         bind:value={$landingPageSettings.courses.subtitle}
+        onChange={() => (hasUnsavedChanges = true)}
         isAIEnabled={true}
       />
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.faq.heading')}</SectionTitle>
-      <Toggle bind:toggled={$landingPageSettings.faq.show} size="sm">
+      <Toggle
+        bind:toggled={$landingPageSettings.faq.show}
+        size="sm"
+        on:change={() => (hasUnsavedChanges = true)}
+      >
         <span slot="labelA" style="color: gray">{$t('settings.landing_page.faq.hide_section')}</span
         >
         <span slot="labelB" style="color: gray">{$t('settings.landing_page.faq.show_section')}</span
@@ -353,6 +400,7 @@
         label={$t('settings.landing_page.faq.title')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.faq.title}
+        onChange={() => (hasUnsavedChanges = true)}
         className="mb-5"
       />
       {#each $landingPageSettings.faq.questions as item (item.id)}
@@ -363,6 +411,7 @@
               'course.navItem.lessons.exercises.all_exercises.write_your_question_here'
             )}
             bind:value={item.title}
+            onChange={() => (hasUnsavedChanges = true)}
             className="mb-5"
           />
           <TextArea
@@ -373,6 +422,7 @@
             )}
             bind:value={item.content}
             className="mb-5"
+            onChange={() => (hasUnsavedChanges = true)}
             isAIEnabled={true}
           />
           <IconButton onClick={() => deleteFaq(item.id)}>
@@ -387,6 +437,7 @@
             'course.navItem.lessons.exercises.all_exercises.write_your_question_here'
           )}
           bind:value={newQuestion.title}
+          onChange={() => (hasUnsavedChanges = true)}
           className="mb-5"
         />
         <TextArea
@@ -394,6 +445,7 @@
           labelClassName="font-light"
           placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_answer_here')}
           bind:value={newQuestion.content}
+          onChange={() => (hasUnsavedChanges = true)}
           className="mb-5"
           isAIEnabled={true}
         />
@@ -419,10 +471,14 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.contact_us.heading')}</SectionTitle>
-      <Toggle bind:toggled={$landingPageSettings.contact.show} size="sm">
+      <Toggle
+        bind:toggled={$landingPageSettings.contact.show}
+        size="sm"
+        on:change={() => (hasUnsavedChanges = true)}
+      >
         <span slot="labelA" style="color: gray"
           >{$t('settings.landing_page.contact_us.hide_section')}</span
         >
@@ -436,6 +492,7 @@
         label={$t('settings.landing_page.contact_us.title')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.contact.title}
+        onChange={() => (hasUnsavedChanges = true)}
         className="mb-5"
       />
       <TextField
@@ -444,6 +501,7 @@
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.highlight')}
         className="mb-5"
         bind:value={$landingPageSettings.contact.titleHighlight}
+        onChange={() => (hasUnsavedChanges = true)}
       />
       <TextArea
         label={$t('settings.landing_page.contact_us.subtitle')}
@@ -451,6 +509,7 @@
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_subtitle')}
         className="mt-3 mb-5"
         bind:value={$landingPageSettings.contact.subtitle}
+        onChange={() => (hasUnsavedChanges = true)}
         isAIEnabled={true}
       />
       <TextField
@@ -458,20 +517,26 @@
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.number')}
         className="mt-3 mb-5"
         bind:value={$landingPageSettings.contact.phone}
+        onChange={() => (hasUnsavedChanges = true)}
       />
       <TextField
         label={$t('settings.landing_page.contact_us.email')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.email')}
         className="mt-3 mb-5"
         bind:value={$landingPageSettings.contact.email}
+        onChange={() => (hasUnsavedChanges = true)}
       />
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.mailing_list.heading')}</SectionTitle>
-      <Toggle bind:toggled={$landingPageSettings.mailinglist.show} size="sm">
+      <Toggle
+        bind:toggled={$landingPageSettings.mailinglist.show}
+        size="sm"
+        on:change={() => (hasUnsavedChanges = true)}
+      >
         <span slot="labelA" style="color: gray"
           >{$t('settings.landing_page.mailing_list.hide_section')}</span
         >
@@ -485,6 +550,7 @@
         label={$t('settings.landing_page.mailing_list.title')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.mailinglist.title}
+        onChange={() => (hasUnsavedChanges = true)}
         className="mb-5"
       />
       <TextArea
@@ -493,6 +559,7 @@
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_subtitle')}
         className="mb-5"
         bind:value={$landingPageSettings.mailinglist.subtitle}
+        onChange={() => (hasUnsavedChanges = true)}
         isAIEnabled={true}
       />
 
@@ -501,14 +568,19 @@
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.label')}
         className="mb-5"
         bind:value={$landingPageSettings.mailinglist.buttonLabel}
+        onChange={() => (hasUnsavedChanges = true)}
       />
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7">
+  <Row class="flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.footer.heading')}</SectionTitle>
-      <Toggle bind:toggled={$landingPageSettings.footer.show} size="sm">
+      <Toggle
+        bind:toggled={$landingPageSettings.footer.show}
+        size="sm"
+        on:change={() => (hasUnsavedChanges = true)}
+      >
         <span slot="labelA" style="color: gray"
           >{$t('settings.landing_page.footer.hide_section')}</span
         >
@@ -522,6 +594,7 @@
         label={$t('settings.landing_page.footer.facebook')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.facebook')}
         bind:value={$landingPageSettings.footer.facebook}
+        onChange={() => (hasUnsavedChanges = true)}
         className="mb-5"
       />
       <!-- <TextField
@@ -535,16 +608,18 @@
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.twitter')}
         className="mb-5"
         bind:value={$landingPageSettings.footer.twitter}
+        onChange={() => (hasUnsavedChanges = true)}
       />
       <TextField
         label={$t('settings.landing_page.footer.linkedin')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.linkedin')}
         className="mb-5"
         bind:value={$landingPageSettings.footer.linkedin}
+        onChange={() => (hasUnsavedChanges = true)}
       />
     </Column>
   </Row>
-  <div class="sticky desktop float-right bottom-12 mr-2 z-[120]">
+  <div class="desktop sticky bottom-12 z-[120] float-right mr-2">
     <PrimaryButton
       label={$t('settings.landing_page.save_changes')}
       isLoading={isSaving}
@@ -555,12 +630,12 @@
 </Grid>
 
 <div
-  class="absolute
- mobile right-6 bottom-8 z-[120]"
+  class="mobile
+ absolute bottom-8 right-6 z-[120]"
 >
   <span>
     <IconButton onClick={handleSave} disabled={isSaving}>
-      <Save size={40} class=" bg-blue-700 p-1 rounded-full" />
+      <Save size={40} class=" rounded-full bg-blue-700 p-1" />
     </IconButton>
   </span>
 </div>
