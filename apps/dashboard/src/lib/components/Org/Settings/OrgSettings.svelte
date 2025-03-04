@@ -173,6 +173,7 @@
         src={$currentOrg.avatar_url}
         shape="rounded-md"
         widthHeight="w-24 h-24"
+        on:change={() => (hasUnsavedChanges = true)}
       />
       <PrimaryButton
         label={$t('settings.organization.organization_profile.update_organization')}

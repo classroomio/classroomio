@@ -249,7 +249,10 @@
         >
       </Toggle>
       {#if $handleOpenWidget.open && widgetKey === 'banner'}
-        <UploadWidget bind:imageURL={$landingPageSettings.header.banner.image} />
+        <UploadWidget
+          bind:imageURL={$landingPageSettings.header.banner.image}
+          on:change={() => (hasUnsavedChanges = true)}
+        />
       {/if}
 
       <!-- background -->
@@ -281,7 +284,10 @@
         </Toggle>
 
         {#if $handleOpenWidget.open && widgetKey === 'background'}
-          <UploadWidget bind:imageURL={$landingPageSettings.header.background.image} />
+          <UploadWidget
+            bind:imageURL={$landingPageSettings.header.background.image}
+            on:change={() => (hasUnsavedChanges = true)}
+          />
         {/if}
       </div>
     </Column>
