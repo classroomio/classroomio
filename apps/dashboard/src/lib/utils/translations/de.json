@@ -1516,5 +1516,10 @@
     "assignment_completion_description": "Prozentsatz der abgeschlossenen Aufgaben",
     "average_grade": "Durchschnittsnote",
     "average_grade_description": "Durchschnittsnote aller abgeschlossenen Aufgaben"
+  },
+  "common": {
+    "unsaved_changes": {
+      "message": "Sie haben nicht gerettete Änderungen. Bist du sicher, dass du gehen willst?"
+    }
   }
 }

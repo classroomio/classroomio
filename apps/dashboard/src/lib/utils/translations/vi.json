@@ -1516,5 +1516,10 @@
     "assignment_completion_description": "Tỷ lệ bài tập đã hoàn thành",
     "average_grade": "Điểm trung bình",
     "average_grade_description": "Điểm trung bình của tất cả các bài tập đã hoàn thành"
+  },
+  "common": {
+    "unsaved_changes": {
+      "message": "Bạn có những thay đổi chưa được lưu. Bạn có chắc bạn muốn rời đi?"
+    }
   }
 }

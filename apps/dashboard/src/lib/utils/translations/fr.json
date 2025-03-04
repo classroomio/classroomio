@@ -1516,5 +1516,10 @@
     "assignment_completion_description": "Pourcentage de missions terminées",
     "average_grade": "Note moyenne",
     "average_grade_description": "Note moyenne de tous les devoirs terminés"
+  },
+  "common": {
+    "unsaved_changes": {
+      "message": "Vous avez des changements non sauvés. Êtes-vous sûr de vouloir partir?"
+    }
   }
 }
