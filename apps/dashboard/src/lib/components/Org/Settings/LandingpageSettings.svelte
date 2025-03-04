@@ -127,11 +127,10 @@
       };
     }
   }
-
   $: setDefault($currentOrg?.landingpage as unknown as OrgLandingPageJson);
 </script>
 
-<UnsavedChanges {hasUnsavedChanges} />
+<UnsavedChanges bind:hasUnsavedChanges />
 <Grid class="border-c relative mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}>

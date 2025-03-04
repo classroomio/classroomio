@@ -85,7 +85,7 @@
   $: locale = !locale ? $profile.locale : locale;
 </script>
 
-<UnsavedChanges {hasUnsavedChanges} />
+<UnsavedChanges bind:hasUnsavedChanges />
 <Grid class="border-c mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
   <Row class="border-bottom-c flex flex-col items-center py-7 lg:flex-row lg:items-start ">
     <Column sm={4} md={8} lg={4} class="mt-2 md:mt-0">
