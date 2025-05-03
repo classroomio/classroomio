@@ -223,7 +223,7 @@ importers:
         version: 5.0.0(svelte@5.0.0)(vite@6.0.0)
       autoprefixer:
         specifier: ^10.4.20
-        version: 10.4.20(postcss@8.4.32)
+        version: 10.4.20(postcss@8.5.3)
       bits-ui:
         specifier: ^0.21.16
         version: 0.21.16(svelte@5.0.0)
@@ -653,7 +653,7 @@ importers:
         version: 22.9.0
       autoprefixer:
         specifier: ^10.4.20
-        version: 10.4.20(postcss@8.4.32)
+        version: 10.4.20(postcss@8.5.3)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -6684,7 +6684,7 @@ packages:
     peerDependencies:
       '@sveltejs/kit': ^2.0.0
     dependencies:
-      '@sveltejs/kit': 2.9.0(@sveltejs/vite-plugin-svelte@4.0.0)(svelte@5.0.0)(vite@5.4.4)
+      '@sveltejs/kit': 2.9.0(@sveltejs/vite-plugin-svelte@3.0.0)(svelte@4.1.2)(vite@5.4.4)
       import-meta-resolve: 4.1.0
     dev: true
 
@@ -7864,6 +7864,22 @@ packages:
       normalize-range: 0.1.2
       picocolors: 1.1.1
       postcss: 8.4.32
+      postcss-value-parser: 4.2.0
+    dev: true
+
+  /autoprefixer@10.4.20(postcss@8.5.3):
+    resolution: {integrity: sha512-XY25y5xSv/wEoqzDyXXME4AFfkZI0P23z6Fs3YgymDnKJkCGOnkL0iTxCa85UTqaSgfcqyf3UA6+c7wUvx/16g==}
+    engines: {node: ^10 || ^12 || >=14}
+    hasBin: true
+    peerDependencies:
+      postcss: ^8.1.0
+    dependencies:
+      browserslist: 4.24.5
+      caniuse-lite: 1.0.30001716
+      fraction.js: 4.3.7
+      normalize-range: 0.1.2
+      picocolors: 1.1.1
+      postcss: 8.5.3
       postcss-value-parser: 4.2.0
     dev: true
 
