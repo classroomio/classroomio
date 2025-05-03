@@ -1,5 +1,5 @@
 import { getServerSupabase } from '$lib/utils/functions/supabase.server';
-import { OrganisationAnalytics } from '$lib/utils/types/analytics';
+import type { OrganisationAnalytics } from '$lib/utils/types/analytics';
 import { json } from '@sveltejs/kit';
 
 const supabase = getServerSupabase();

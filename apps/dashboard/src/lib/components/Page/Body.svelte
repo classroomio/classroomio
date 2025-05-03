@@ -7,13 +7,22 @@
   export let isPageNavHidden = false;
 
   $: padding = isPageNavHidden ? `pb-20 px-4` : padding;
+
+  function handleKeydown(event) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      onClick();
+    }
+  }
 </script>
 
 <div
+  role="button"
+  tabindex="0"
   class="overflow-y-auto {isPageNavHidden
     ? 'h-[calc(100vh-65px)] lg:h-[calc(100vh-127px)]'
     : 'h-[calc(100vh-127px)]'} mx-auto mt-4 {width} {className} relative {padding}"
   on:click={onClick}
+  on:keydown={handleKeydown}
 >
   {#if $$slots.header}
     <div

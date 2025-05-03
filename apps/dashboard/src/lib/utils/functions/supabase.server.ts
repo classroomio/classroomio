@@ -1,6 +1,6 @@
 import { env } from '$env/dynamic/private';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { config } from '$lib/config';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 export let supabase: SupabaseClient;
 

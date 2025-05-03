@@ -1,3 +1,4 @@
+
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/private';
 import { IS_SELFHOSTED } from '$env/static/private';
@@ -12,6 +13,8 @@ if (!supabase) {
   getSupabase();
 }
 
+export const ssr = IS_SELFHOSTED === 'true' ? false : true;
+
 interface LoadOutput {
   orgSiteName: string;
   isOrgSite: boolean;
@@ -21,7 +24,7 @@ interface LoadOutput {
   serverLang: string;
 }
 
-const APP_SUBDOMAINS = env.PRIVATE_APP_SUBDOMAINS.split(',');
+const APP_SUBDOMAINS = env.PRIVATE_APP_SUBDOMAINS?.split(',');
 
 export const load = async ({ url, cookies, request }): Promise<LoadOutput> => {
   const response: LoadOutput = {
@@ -106,7 +109,7 @@ export const load = async ({ url, cookies, request }): Promise<LoadOutput> => {
     if (!response.org && !isDev) {
       throw redirect(307, 'https://app.classroomio.com/404?type=org');
     } else if (!response.org && _orgSiteName) {
-      cookies.delete('_orgSiteName');
+      cookies.delete('_orgSiteName', { path: '/' });
     }
   } else if (subdomain === 'play' || debugPlay === 'true') {
     response.skipAuth = true;
@@ -170,10 +173,10 @@ function getBaseMetaTags(url: URL) {
 
 function getSubdomain(url: URL) {
   const host = url.host.replace('www.', '');
-  const parts = host.split('.');
+  const parts = host?.split('.');
 
-  if (host.endsWith(env.PRIVATE_APP_HOST)) {
-    return parts.length >= 3 ? parts[0] : null;
+  if (host?.endsWith(env.PRIVATE_APP_HOST)) {
+    return parts?.length >= 3 ? parts[0] : null;
   }
 
   return null;

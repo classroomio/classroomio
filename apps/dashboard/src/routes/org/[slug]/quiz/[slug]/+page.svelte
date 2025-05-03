@@ -1,40 +1,65 @@
-<script>
-  import { onMount } from 'svelte';
+<script lang="ts">
   import { goto } from '$app/navigation';
-  import cloneDeep from 'lodash/cloneDeep';
-  import isBoolean from 'lodash/isBoolean';
   import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
   import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
   import WarningFilledIcon from 'carbon-icons-svelte/lib/WarningFilled.svelte';
+  import cloneDeep from 'lodash/cloneDeep';
+  import isBoolean from 'lodash/isBoolean';
+  import { onMount } from 'svelte';
 
-  import { Select, SelectItem } from 'carbon-components-svelte';
-  import { currentOrgPath, deleteModal } from '$lib/utils/store/org';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { themeImages, allOptions, booleanOptions, allThemes } from '$lib/utils/constants/quiz';
-  import { quizStore, quizesStore } from '$lib/utils/store/org';
   import DeleteModal from '$lib/components/Org/Quiz/DeleteModal.svelte';
   import Preview from '$lib/components/Org/Quiz/Play/Preview.svelte';
   import QuizQuestion from '$lib/components/Org/Quiz/QuizQuestion.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import { allOptions, allThemes, booleanOptions, themeImages } from '$lib/utils/constants/quiz';
   import { supabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
+  import { currentOrgPath, deleteModal, quizStore, quizesStore } from '$lib/utils/store/org';
+  import { Select, SelectItem } from 'carbon-components-svelte';
+
+  interface QuizOption {
+    id: number;
+    label: string;
+    isCorrect: boolean;
+  }
+
+  interface QuizQuestion {
+    id: number;
+    label: string;
+    type: string;
+    options: QuizOption[];
+  }
 
   export let data;
   const { quizId } = data;
 
   // Questionnaire State
-  let currentQuestion = $quizStore.questions[0] || {
+  let currentQuestion: QuizQuestion = $quizStore.questions[0] || {
+    id: 0,
+    label: '',
+    type: 'multichoice',
     options: []
   };
 
   // Behavioural State
   let openPreview = false;
   let type = 'multichoice';
-  let errors = [];
-  let currentError = {};
+  let errors: Array<{
+    isLabelEmpty: boolean;
+    hasOneAnswer: boolean;
+    id: number;
+    options: Array<{ id: number; error: boolean }>;
+  }> = [];
+  let currentError: {
+    isLabelEmpty?: boolean;
+    hasOneAnswer?: boolean;
+    id?: number;
+    options?: Array<{ id: number; error: boolean }>;
+  } = {};
   let isFocused = false;
-  let selectEl = null;
+  let selectEl: Select | null = null;
 
   function activeClass(q, cq) {
     if (q.id === cq.id) {
@@ -44,60 +69,80 @@
   }
 
   function addQuestion() {
-    $quizStore.questions = [
-      ...$quizStore.questions,
-      {
-        id: new Date().getTime(),
-        label: '',
-        type: 'multichoice',
-        options: []
-      }
-    ];
+    const newQuestion: QuizQuestion = {
+      id: new Date().getTime(),
+      label: '',
+      type: 'multichoice',
+      options: []
+    };
+    $quizStore.questions = [...$quizStore.questions, newQuestion];
     type = 'multichoice';
   }
+
   function addOption() {
     const cOptIds = currentQuestion.options.map((o) => o.id);
-    const nextOption = cloneDeep(allOptions).find((o) => !cOptIds.includes(o.id));
+    const nextOption = cloneDeep(allOptions).find((o) => !cOptIds.includes(Number(o.id)));
 
     if (!nextOption) return;
 
-    currentQuestion.options = [...currentQuestion.options, nextOption];
+    currentQuestion.options = [
+      ...currentQuestion.options,
+      {
+        id: Number(nextOption.id),
+        label: nextOption.label,
+        isCorrect: nextOption.isCorrect
+      }
+    ];
   }
+
   function deleteOption() {
     const opt = cloneDeep(currentQuestion.options);
     opt.pop();
     currentQuestion.options = opt;
   }
-  function handleQuestionTypeChange(type) {
+
+  function handleQuestionTypeChange(type: string) {
     const opt =
       type === 'multichoice'
-        ? cloneDeep(allOptions).filter((o, i) => i < 2)
-        : cloneDeep(booleanOptions);
+        ? cloneDeep(allOptions)
+            .filter((o, i) => i < 2)
+            .map((o) => ({
+              id: Number(o.id),
+              label: o.label,
+              isCorrect: o.isCorrect
+            }))
+        : cloneDeep(booleanOptions).map((o) => ({
+            id: Number(o.id),
+            label: o.label,
+            isCorrect: o.isCorrect
+          }));
 
     currentQuestion.type = type;
     currentQuestion.options = opt;
-    // $quizStore.questions = $quizStore.questions.map((q) =>
-    //   q.id === currentQuestion.id ? cloneDeep(currentQuestion) : q
-    // );
   }
 
   function deleteQuestion() {
     // Only leave one question
     if ($quizStore.questions.length === 1) return;
     $quizStore.questions = $quizStore.questions.filter((q) => q.id !== currentQuestion.id);
-
     currentQuestion = $quizStore.questions[0];
   }
 
   function previewQuiz() {
     openPreview = !openPreview;
   }
+
   function validateQuiz() {
-    const _errors = [];
+    const _errors: Array<{
+      isLabelEmpty: boolean;
+      hasOneAnswer: boolean;
+      id: number;
+      options: Array<{ id: number; error: boolean }>;
+    }> = [];
 
     $quizStore.questions.forEach((q) => {
       const labelError = !!((q.label?.length || 0) < 3);
-      const options = [];
+      const options: Array<{ id: number; error: boolean }> = [];
       let hasOneAnswer = false;
 
       q.options.forEach((o) => {
@@ -124,11 +169,10 @@
     });
 
     errors = _errors;
-
     currentError = errors.find((e) => e.id === currentQuestion.id) || {};
-
     return errors;
   }
+
   async function saveQuiz() {
     const _errors = validateQuiz();
     if (Array.isArray(_errors) && _errors.length && qHasError(null, _errors)) {
@@ -161,6 +205,7 @@
       );
     });
   }
+
   function optionHasError(eId, _errs) {
     if (Array.isArray(_errs) && _errs.length) {
       return _errs.some((e) => e.id === eId && e.error);
@@ -190,12 +235,12 @@
   <Preview exitPreview={previewQuiz} />
 {/if}
 
-<section class="w-screen h-full flex justify-between">
+<section class="flex h-full w-screen justify-between">
   <!-- Questions list -->
-  <aside class="root w-1/5 p-4 bg-gray-100 dark:bg-neutral-800 h-full">
-    <div class="h-full flex flex-col">
+  <aside class="root h-full w-1/5 bg-gray-100 p-4 dark:bg-neutral-800">
+    <div class="flex h-full flex-col">
       <a
-        class="text-gray-500 dark:text-white text-md flex items-center"
+        class="text-md flex items-center text-gray-500 dark:text-white"
         href={`${$currentOrgPath}/quiz`}
       >
         <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" /> Back to Quizzes
@@ -206,13 +251,19 @@
       <div class="mb-3">
         {#each $quizStore.questions as question, i}
           <button
-            class="w-full rounded p-3 mb-3 font-bold text-left text-gray-500 dark:text-white flex justify-between {activeClass(
+            class="mb-3 flex w-full justify-between rounded p-3 text-left font-bold text-gray-500 dark:text-white {activeClass(
               question,
               currentQuestion
             )}"
             on:click={() => {
               currentQuestion = question;
               type = question.type;
+            }}
+            on:keydown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                currentQuestion = question;
+                type = question.type;
+              }
             }}
           >
             Question {i + 1}
@@ -224,20 +275,20 @@
         {/each}
       </div>
 
-      <div class="w-full flex justify-end">
+      <div class="flex w-full justify-end">
         <PrimaryButton label="Add Question" variant={VARIANTS.CONTAINED} onClick={addQuestion} />
       </div>
     </div>
   </aside>
 
-  <div class="container w-3/6 h-full">
+  <div class="container h-full w-3/6">
     <div
-      class="p-5 h-full"
+      class="h-full p-5"
       style="background: url({themeImages[$quizStore.theme]
         ?.editor}) no-repeat center center fixed; -webkit-background-size: cover;-moz-background-size: cover;-o-background-size: cover;background-size: cover;"
     >
       <div class="content m-auto">
-        <h1 class="text-white font-bold my-5">{$quizStore.title}</h1>
+        <h1 class="my-5 font-bold text-white">{$quizStore.title}</h1>
 
         <QuizQuestion {currentQuestion} {optionHasError} {currentError} />
 
@@ -248,7 +299,7 @@
         {/if}
 
         {#if currentQuestion.type !== 'boolean'}
-          <div class="w-full flex justify-center mb-4">
+          <div class="mb-4 flex w-full justify-center">
             {#if currentQuestion.options.length < allOptions.length}
               <PrimaryButton
                 label={$t('components.quiz.add_more')}
@@ -271,7 +322,7 @@
   </div>
 
   <!-- Quiz Settings -->
-  <aside class="settings w-1/5 p-4 bg-gray-100 dark:bg-neutral-800 h-full">
+  <aside class="settings h-full w-1/5 bg-gray-100 p-4 dark:bg-neutral-800">
     <div class="py-5">
       <h5>Quiz settings</h5>
       <PrimaryButton
@@ -305,7 +356,7 @@
           labelText="Question type"
           bind:this={selectEl}
           bind:selected={type}
-          class="flex items-center mb-3"
+          class="mb-3 flex items-center"
           on:focus={() => (isFocused = true)}
           on:blur={() => (isFocused = false)}
           on:change={() => {
@@ -329,7 +380,7 @@
         <Select
           labelText="Time limit"
           bind:selected={$quizStore.timelimit}
-          class="flex items-center mb-3"
+          class="mb-3 flex items-center"
         >
           <SelectItem value="10 seconds" text="10s" />
           <SelectItem value="20 seconds" text="20s" />
@@ -346,22 +397,29 @@
 
         {#each allThemes as _theme}
           <div
-            class="theme rounded-md w-full border cursor-pointer mb-5 relative {$quizStore.theme ===
+            class="theme relative mb-5 w-full cursor-pointer rounded-md border {$quizStore.theme ===
               _theme.id && 'border-primary-700'}"
           >
             {#if $quizStore.theme === _theme.id}
               <CheckmarkFilledIcon
                 size={24}
-                class="carbon-icon absolute top-4 right-4"
+                class="carbon-icon absolute right-4 top-4"
                 style="fill:white;"
               />
             {/if}
             <div
-              class="w-full rounded-md h-full border flex flex-col-reverse"
+              role="button"
+              tabindex="0"
+              class="flex h-full w-full flex-col-reverse rounded-md border"
               style="background: url({themeImages[_theme.id]?.card});"
               on:click={() => ($quizStore.theme = _theme.id)}
+              on:keydown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  $quizStore.theme = _theme.id;
+                }
+              }}
             >
-              <p class="ml-3 mb-3 text-white">{_theme.label}</p>
+              <p class="mb-3 ml-3 text-white">{_theme.label}</p>
             </div>
           </div>
         {/each}
