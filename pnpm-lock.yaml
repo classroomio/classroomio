@@ -65,7 +65,7 @@ importers:
         version: 7.110.1
       '@supabase/supabase-js':
         specifier: ^2.32.0
-        version: 2.32.0
+        version: 2.32.0(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@6.0.5)
       '@types/nodemailer':
         specifier: ^6.4.11
         version: 6.4.11
@@ -289,10 +289,10 @@ importers:
         version: 7.61.0
       '@sentry/vite-plugin':
         specifier: ^2.6.2
-        version: 2.6.2
+        version: 2.6.2(encoding@0.1.13)
       '@supabase/supabase-js':
         specifier: ^2.31.0
-        version: 2.32.0
+        version: 2.32.0(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@6.0.5)
       '@sveltejs/adapter-auto':
         specifier: ^2.1.0
         version: 2.1.0(@sveltejs/kit@1.29.0)
@@ -301,7 +301,7 @@ importers:
         version: 1.3.1(@sveltejs/kit@1.29.0)
       '@sveltejs/adapter-vercel':
         specifier: ^3.0.3
-        version: 3.0.3(@sveltejs/kit@1.29.0)
+        version: 3.0.3(@sveltejs/kit@1.29.0)(encoding@0.1.13)
       '@sveltekit-i18n/base':
         specifier: ^1.3.7
         version: 1.3.7(svelte@4.1.2)
@@ -323,6 +323,9 @@ importers:
       body-parser:
         specifier: ^1.20.2
         version: 1.20.2
+      bufferutil:
+        specifier: ^4.0.9
+        version: 4.0.9
       canvas-confetti:
         specifier: ^1.6.0
         version: 1.6.0
@@ -350,6 +353,9 @@ importers:
       dayjs:
         specifier: ^1.11.10
         version: 1.11.10
+      encoding:
+        specifier: ^0.1.13
+        version: 0.1.13
       hotkeys-js:
         specifier: ^3.11.2
         version: 3.11.2
@@ -413,6 +419,9 @@ importers:
       unsplash-js:
         specifier: ^7.0.18
         version: 7.0.18
+      utf-8-validate:
+        specifier: ^6.0.5
+        version: 6.0.5
       wait-on:
         specifier: ^7.0.1
         version: 7.0.1
@@ -4706,14 +4715,14 @@ packages:
     engines: {node: '>=18'}
     dev: false
 
-  /@mapbox/node-pre-gyp@1.0.11:
+  /@mapbox/node-pre-gyp@1.0.11(encoding@0.1.13):
     resolution: {integrity: sha512-Yhlar6v9WQgUp/He7BdgzOz8lqMQ8sU+jkCq7Wx8Myc5YFJLbEe7lgui/V7G1qB1DJykHSGwreceSaD60Y0PUQ==}
     hasBin: true
     dependencies:
       detect-libc: 2.0.4
       https-proxy-agent: 5.0.1
       make-dir: 3.1.0
-      node-fetch: 2.7.0
+      node-fetch: 2.7.0(encoding@0.1.13)
       nopt: 5.0.0
       npmlog: 5.0.1
       rimraf: 3.0.2
@@ -5420,11 +5429,11 @@ packages:
       tslib: 2.6.1
     dev: false
 
-  /@sentry/bundler-plugin-core@2.6.2:
+  /@sentry/bundler-plugin-core@2.6.2(encoding@0.1.13):
     resolution: {integrity: sha512-j2BOd8kl2NzexQaeNNc4uqteudK1lNngGP99zjTEj1BV/I5vOOR7PnrmQLXkLJOp5paGKKfelY9RHSVnvFf+Dw==}
     engines: {node: '>= 14'}
     dependencies:
-      '@sentry/cli': 2.43.1
+      '@sentry/cli': 2.43.1(encoding@0.1.13)
       '@sentry/node': 7.110.1
       '@sentry/utils': 7.120.3
       dotenv: 16.3.1
@@ -5508,14 +5517,14 @@ packages:
     dev: false
     optional: true
 
-  /@sentry/cli@2.43.1:
+  /@sentry/cli@2.43.1(encoding@0.1.13):
     resolution: {integrity: sha512-5jg8cy4LlPnmgI6FkxClDRB5hFWzmlq7VZqj5o6Zdm5KRywzCn2s18GXyC1LPf6MFHw3AZ/K2h5pUZmJdWUBFQ==}
     engines: {node: '>= 10'}
     hasBin: true
     requiresBuild: true
     dependencies:
       https-proxy-agent: 5.0.1
-      node-fetch: 2.7.0
+      node-fetch: 2.7.0(encoding@0.1.13)
       progress: 2.0.3
       proxy-from-env: 1.1.0
       which: 2.0.2
@@ -5626,11 +5635,11 @@ packages:
       tslib: 2.6.1
     dev: false
 
-  /@sentry/vite-plugin@2.6.2:
+  /@sentry/vite-plugin@2.6.2(encoding@0.1.13):
     resolution: {integrity: sha512-r1jB854XZ+LFtel/gv2NX5gzeBXGajssXlDMmXM3yP9Ao7yZk7RqFMkqYfL+tMeIk2d7waAI8W8vMCbrg5CQFw==}
     engines: {node: '>= 14'}
     dependencies:
-      '@sentry/bundler-plugin-core': 2.6.2
+      '@sentry/bundler-plugin-core': 2.6.2(encoding@0.1.13)
       unplugin: 1.0.1
     transitivePeerDependencies:
       - encoding
@@ -6637,13 +6646,13 @@ packages:
       '@supabase/node-fetch': 2.6.15
     dev: false
 
-  /@supabase/realtime-js@2.11.7:
+  /@supabase/realtime-js@2.11.7(bufferutil@4.0.9)(utf-8-validate@6.0.5):
     resolution: {integrity: sha512-EYNW/IS7DzW/HoTtRWTjSnR2qLcwAIzpCP2ifNEGOs8aKhKgzz+PpXaiiBPo/3kE7EsEtFJf/3Y5gWugQI5KNw==}
     dependencies:
       '@supabase/node-fetch': 2.6.15
       '@types/phoenix': 1.6.6
       '@types/ws': 8.18.1
-      ws: 8.18.2
+      ws: 8.18.2(bufferutil@4.0.9)(utf-8-validate@6.0.5)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -6655,15 +6664,15 @@ packages:
       '@supabase/node-fetch': 2.6.15
     dev: false
 
-  /@supabase/supabase-js@2.32.0:
+  /@supabase/supabase-js@2.32.0(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@6.0.5):
     resolution: {integrity: sha512-1ShFhuOI5Du7604nlCelBsRD61daXk2O0qwjumoz35bqrYThnSPPtpJqZOHw6Mg6o7mLjIInYLh/DBlh8UvzRg==}
     dependencies:
       '@supabase/functions-js': 2.4.4
       '@supabase/gotrue-js': 2.69.1
       '@supabase/postgrest-js': 1.19.4
-      '@supabase/realtime-js': 2.11.7
+      '@supabase/realtime-js': 2.11.7(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       '@supabase/storage-js': 2.7.2
-      cross-fetch: 3.2.0
+      cross-fetch: 3.2.0(encoding@0.1.13)
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -6700,13 +6709,13 @@ packages:
       rollup: 3.29.5
     dev: false
 
-  /@sveltejs/adapter-vercel@3.0.3(@sveltejs/kit@1.29.0):
+  /@sveltejs/adapter-vercel@3.0.3(@sveltejs/kit@1.29.0)(encoding@0.1.13):
     resolution: {integrity: sha512-0FQMjR6klW4627ewdclSr0lUe/DqiiyOaRTfgb5cXgNbVMsZMOA2fQ77TYQnJdvMfSEWe6y8uznV48XqKh9+vA==}
     peerDependencies:
       '@sveltejs/kit': ^1.5.0
     dependencies:
       '@sveltejs/kit': 1.29.0(svelte@4.1.2)(vite@4.4.8)
-      '@vercel/nft': 0.23.1
+      '@vercel/nft': 0.23.1(encoding@0.1.13)
       esbuild: 0.18.20
     transitivePeerDependencies:
       - encoding
@@ -7420,12 +7429,12 @@ packages:
   /@ungap/structured-clone@1.3.0:
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
 
-  /@vercel/nft@0.23.1:
+  /@vercel/nft@0.23.1(encoding@0.1.13):
     resolution: {integrity: sha512-NE0xSmGWVhgHF1OIoir71XAd0W0C1UE3nzFyhpFiMr3rVhetww7NvM1kc41trBsPG37Bh+dE5FYCTMzM/gBu0w==}
     engines: {node: '>=14'}
     hasBin: true
     dependencies:
-      '@mapbox/node-pre-gyp': 1.0.11
+      '@mapbox/node-pre-gyp': 1.0.11(encoding@0.1.13)
       '@rollup/pluginutils': 4.2.1
       acorn: 8.14.1
       async-sema: 3.1.1
@@ -8181,6 +8190,13 @@ packages:
       base64-js: 1.5.1
       ieee754: 1.2.1
     dev: false
+
+  /bufferutil@4.0.9:
+    resolution: {integrity: sha512-WDtdLmJvAuNNPzByAYpRo2rF1Mmradw6gvWsQKf63476DDXmomT9zUiGypLcG4ibIM67vhAj8jJRdbmEws2Aqw==}
+    engines: {node: '>=6.14.2'}
+    requiresBuild: true
+    dependencies:
+      node-gyp-build: 4.8.4
 
   /bull@4.11.3:
     resolution: {integrity: sha512-DhS0XtiAuejkAY08iGOdDK35eex/yGNoezlWqGJTu9FqWFF/oBjUhpsusE9SXiI4culyDbOoFs+l3ar0VXhFqQ==}
@@ -8957,10 +8973,10 @@ packages:
       luxon: 3.6.1
     dev: false
 
-  /cross-fetch@3.2.0:
+  /cross-fetch@3.2.0(encoding@0.1.13):
     resolution: {integrity: sha512-Q+xVJLoGOeIMXZmbUK4HYk+69cQH6LudR0Vu/pRm2YlU/hDV9CiS0gKUMaWY5f2NeUH9C1nV3bsTlCo0FsTV1Q==}
     dependencies:
-      node-fetch: 2.7.0
+      node-fetch: 2.7.0(encoding@0.1.13)
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -9712,6 +9728,12 @@ packages:
   /encodeurl@1.0.2:
     resolution: {integrity: sha512-TPJXq8JqFaVYm2CWmPvnP2Iyo4ZSM7/QKcSmuMLDObfpH5fi7RUGmd/rTDf+rut/saiDiQEeVTNgAmJEdAOx0w==}
     engines: {node: '>= 0.8'}
+    dev: false
+
+  /encoding@0.1.13:
+    resolution: {integrity: sha512-ETBauow1T35Y/WZMkio9jiM0Z5xjHHmJ4XmjZOq1l/dXz3lr2sRn87nJy20RupqSh1F2m3HHPSp8ShIPQJrJ3A==}
+    dependencies:
+      iconv-lite: 0.6.3
     dev: false
 
   /entities@4.5.0:
@@ -12127,7 +12149,7 @@ packages:
       whatwg-encoding: 3.1.1
       whatwg-mimetype: 4.0.0
       whatwg-url: 14.2.0
-      ws: 8.18.2
+      ws: 8.18.2(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       xml-name-validator: 5.0.0
     transitivePeerDependencies:
       - bufferutil
@@ -13290,7 +13312,7 @@ packages:
       stoppable: 1.1.0
       undici: 5.29.0
       workerd: 1.20241230.0
-      ws: 8.18.2
+      ws: 8.18.2(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       youch: 3.3.4
       zod: 3.24.3
     transitivePeerDependencies:
@@ -13676,7 +13698,7 @@ packages:
     deprecated: Use your platform's native DOMException instead
     dev: true
 
-  /node-fetch@2.7.0:
+  /node-fetch@2.7.0(encoding@0.1.13):
     resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
     engines: {node: 4.x || >=6.0.0}
     peerDependencies:
@@ -13685,6 +13707,7 @@ packages:
       encoding:
         optional: true
     dependencies:
+      encoding: 0.1.13
       whatwg-url: 5.0.0
     dev: false
 
@@ -13713,7 +13736,6 @@ packages:
   /node-gyp-build@4.8.4:
     resolution: {integrity: sha512-LA4ZjwlnUblHVgq0oBF3Jl/6h/Nvs5fzBLwdEF4nuxnFdsfajde4WfxtJr3CaiH+F6ewcIB/q4jQ4UzPyid+CQ==}
     hasBin: true
-    dev: false
 
   /node-int64@0.4.0:
     resolution: {integrity: sha512-O5lz91xSOeoXP6DulyHfllpq+Eg00MWitZIbtPfoSEvqIHdl5gfcY6hYzDWnj0qD5tz52PI08u9qUvSVeUBeHw==}
@@ -16957,6 +16979,13 @@ packages:
       react: 18.2.0
     dev: false
 
+  /utf-8-validate@6.0.5:
+    resolution: {integrity: sha512-EYZR+OpIXp9Y1eG1iueg8KRsY8TuT8VNgnanZ0uA3STqhHQTLwbl+WX76/9X5OY12yQubymBpaBSmMPkSTQcKA==}
+    engines: {node: '>=6.14.2'}
+    requiresBuild: true
+    dependencies:
+      node-gyp-build: 4.8.4
+
   /util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
@@ -17607,7 +17636,7 @@ packages:
       signal-exit: 4.1.0
     dev: true
 
-  /ws@8.18.2:
+  /ws@8.18.2(bufferutil@4.0.9)(utf-8-validate@6.0.5):
     resolution: {integrity: sha512-DMricUmwGZUVr++AEAe2uiVM7UoO9MAVZMDu05UQOaUII0lp+zOzLLU4Xqh/JvTqklB1T4uELaaPBKyjE1r4fQ==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
@@ -17618,6 +17647,9 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
+    dependencies:
+      bufferutil: 4.0.9
+      utf-8-validate: 6.0.5
 
   /xml-name-validator@5.0.0:
     resolution: {integrity: sha512-EvGK8EJ3DhaHfbRlETOWAS5pO9MZITeauHKJyb8wyajUfQUenkIg2MvLDTZ4T/TgIcm3HU0TFBgWWboAZ30UHg==}
@@ -17745,7 +17777,7 @@ packages:
   /zeptomail@6.0.0:
     resolution: {integrity: sha512-RO7xOBGVGthxMK4IsOVWdkNUAxn1VGFer8Awo+t7KMaO/8xMgQtSGqFcjr48SeYbzDuw6U1FKfpRmeyXt7edOA==}
     dependencies:
-      node-fetch: 2.7.0
+      node-fetch: 2.7.0(encoding@0.1.13)
     transitivePeerDependencies:
       - encoding
     dev: false
