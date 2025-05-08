@@ -658,7 +658,9 @@
                 "single": "Einzelne Antwort",
                 "multiple": "Mehrere Antworten",
                 "paragraph": "Absatz"
-              }
+              },
+              "hint": "Hinweis",
+              "explanation": "Erläuterung"
             },
             "delete_confirmation": {
               "title": "Frage löschen",

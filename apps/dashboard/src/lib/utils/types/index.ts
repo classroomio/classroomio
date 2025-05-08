@@ -370,6 +370,8 @@ export interface Question {
   order?: number;
   question_type?: Question_type;
   exercise?: Exercise;
+  hint?: string;
+  explanation?: string;
 }
 
 export interface Submission {
