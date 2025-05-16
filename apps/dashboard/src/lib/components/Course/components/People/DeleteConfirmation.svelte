@@ -24,9 +24,9 @@
   modalHeading={$t('course.navItem.people.delete_confirmation.title')}
 >
   <div>
-    <h1 class="mt-0 text-lg dark:text-white">
+    <p class="mt-0 text-base dark:text-white">
       {$t('course.navItem.people.delete_confirmation.sure')} <strong>{email}</strong>?
-    </h1>
+    </p>
 
     <div class="mt-5 flex items-center justify-between">
       <PrimaryButton
