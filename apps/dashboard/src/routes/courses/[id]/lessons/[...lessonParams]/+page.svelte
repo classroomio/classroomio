@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { env } from '$env/dynamic/public';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
+  import { CourseContainer } from '$lib/components/Course';
   import {
     checkExercisesComplete,
     fetchLesson,
@@ -32,7 +32,7 @@
   import { PageBody, PageNav } from '$lib/components/Page';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/components/RoleBasedSecurity';
   import { snackbar } from '$lib/components/Snackbar/store';
   import MODES from '$lib/utils/constants/mode';
   import { LANGUAGES } from '$lib/utils/constants/translation';

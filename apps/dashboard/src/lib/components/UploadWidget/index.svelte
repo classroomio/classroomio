@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { onMount, createEventDispatcher } from 'svelte';
+  import Modal from '$lib/components/Modal/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import TabContent from '$lib/components/TabContent/index.svelte';
   import Tabs from '$lib/components/Tabs/index.svelte';
   import { getSupabase } from '$lib/utils/functions/supabase';
-  import TabContent from '$lib/components/TabContent/index.svelte';
-  import { snackbar } from '../Snackbar/store';
-  import Modal from '$lib/components/Modal/index.svelte';
-  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
-  import { queryUnsplash } from './utils';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import { createEventDispatcher, onMount } from 'svelte';
+  import { handleOpenWidget } from '.';
+  import { snackbar } from '../Snackbar/store';
+  import { queryUnsplash } from './utils';
 
   export let imageURL = '';
 

@@ -204,6 +204,28 @@ export async function getCourseBySiteName(siteName: string) {
   return data;
 }
 
+export async function getPathwayBySiteName(siteName: string) {
+  const { data, error } = await supabase
+    .from('pathway')
+    .select(
+      `
+      *,
+      group!inner(
+        organization!inner(id, name, siteName, avatar_url)
+      )
+    `
+    )
+    .eq('group.organization.siteName', siteName)
+    .eq('status', 'ACTIVE')
+    .eq('is_published', true);
+
+  if (error) {
+    return [];
+  }
+
+  return data;
+}
+
 const CURRENT_ORG_QUERY = `
   id,
   name,

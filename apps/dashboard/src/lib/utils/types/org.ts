@@ -9,6 +9,9 @@ export interface OrgCustomization {
     newsfeed: boolean;
     grading: boolean;
   };
+  pathway: {
+    newsfeed: boolean;
+  };
   apps: {
     poll: boolean;
     comments: boolean;

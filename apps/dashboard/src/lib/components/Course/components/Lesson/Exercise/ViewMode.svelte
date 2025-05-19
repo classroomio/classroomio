@@ -1,33 +1,33 @@
 <script lang="ts">
-  import { fly } from 'svelte/transition';
-  import { group, course } from '$lib/components/Course/store';
-  import { questionnaire } from '../store/exercise';
-  import { questionnaireMetaData } from '../store/answers';
-  import Preview from './Preview.svelte';
-  import RadioQuestion from '$lib/components/Question/RadioQuestion/index.svelte';
-  import CheckboxQuestion from '$lib/components/Question/CheckboxQuestion/index.svelte';
-  import TextareaQuestion from '$lib/components/Question/TextareaQuestion/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { browser } from '$app/environment';
   import Box from '$lib/components/Box/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import Progress from '$lib/components/Progress/index.svelte';
-  import { removeDuplicate } from '$lib/utils/functions/removeDuplicate';
-  import { QUESTION_TYPE } from '$lib/components/Question/constants';
-  import { STATUS } from './constants';
-  import { getPropsForQuestion, filterOutDeleted, wasCorrectAnswerSelected } from './functions';
   import { formatAnswers, getGroupMemberId } from '$lib/components/Course/function';
+  import { course, group } from '$lib/components/Course/store';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import Progress from '$lib/components/Progress/index.svelte';
+  import CheckboxQuestion from '$lib/components/Question/CheckboxQuestion/index.svelte';
+  import { QUESTION_TYPE } from '$lib/components/Question/constants';
+  import RadioQuestion from '$lib/components/Question/RadioQuestion/index.svelte';
+  import TextareaQuestion from '$lib/components/Question/TextareaQuestion/index.svelte';
+  import { RoleBasedSecurity } from '$lib/components/RoleBasedSecurity';
+  import { removeDuplicate } from '$lib/utils/functions/removeDuplicate';
+  import { t } from '$lib/utils/functions/translations';
   import { submitExercise } from '$lib/utils/services/courses';
-  import { fetchSubmission } from '$lib/utils/services/submissions';
-  import { profile } from '$lib/utils/store/user';
-  import { currentOrg } from '$lib/utils/store/org';
   import {
     NOTIFICATION_NAME,
     triggerSendEmail
   } from '$lib/utils/services/notification/notification';
-  import { lesson } from '../store/lessons';
-  import { browser } from '$app/environment';
+  import { fetchSubmission } from '$lib/utils/services/submissions';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
   import { COURSE_TYPE } from '$lib/utils/types';
-  import { t } from '$lib/utils/functions/translations';
+  import { fly } from 'svelte/transition';
+  import { questionnaireMetaData } from '../store/answers';
+  import { questionnaire } from '../store/exercise';
+  import { lesson } from '../store/lessons';
+  import { STATUS } from './constants';
+  import { filterOutDeleted, getPropsForQuestion, wasCorrectAnswerSelected } from './functions';
+  import Preview from './Preview.svelte';
 
   export let preview: boolean = false;
   export let exerciseId = '';

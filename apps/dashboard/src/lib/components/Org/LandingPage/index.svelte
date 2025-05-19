@@ -1,14 +1,13 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import Box from '$lib/components/Box/index.svelte';
-  import Card from '$lib/components/Courses/components/Card/index.svelte';
-  import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
+  import { CourseCard, CourseCardLoader } from '$lib/components/Courses/components/Card';
   import { courseMetaDeta, courses } from '$lib/components/Courses/store';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
   import Navigation from '$lib/components/Navigation/index.svelte';
+  import PathwayCardLoader from '$lib/components/Org/Pathway/PathwayCardLoader.svelte';
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
+  import { pathways } from '$lib/components/Pathway/store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
@@ -16,7 +15,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { validateEmail } from '$lib/utils/functions/validateEmail';
   import { orgLandingpageValidation } from '$lib/utils/functions/validator';
-  import { getCourseBySiteName } from '$lib/utils/services/org';
+  import { getCourseBySiteName, getPathwayBySiteName } from '$lib/utils/services/org';
   import type { CurrentOrg } from '$lib/utils/types/org';
   import { Accordion, AccordionItem, Column, Grid, Row } from 'carbon-components-svelte';
   import Email from 'carbon-icons-svelte/lib/Email.svelte';
@@ -28,6 +27,8 @@
   import Rocket from 'carbon-icons-svelte/lib/Rocket.svelte';
   import get from 'lodash/get';
   import { fade } from 'svelte/transition';
+  import PathwayCard from './../Pathway/PathwayCard.svelte';
+  import EmptyState from './EmptyState.svelte';
   import PageLoader from './PageLoader.svelte';
 
   export let orgSiteName = '';
@@ -102,6 +103,7 @@
       message: ''
     };
   }
+
   function isYouTubeLink(link: string) {
     const youtubeRegex =
       /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
@@ -112,12 +114,18 @@
   $: loadData(orgSiteName);
 
   async function loadData(siteName) {
+    console.log('loadData', siteName);
     if (!siteName) return;
 
     try {
       $courseMetaDeta.isLoading = true;
-      const coursesResult = await getCourseBySiteName(siteName);
+      const [coursesResult, pathwayResult] = await Promise.all([
+        getCourseBySiteName(siteName),
+        getPathwayBySiteName(siteName)
+      ]);
+
       courses.set(coursesResult);
+      pathways.set(pathwayResult);
       $courseMetaDeta.isLoading = false;
     } catch (error) {
       console.log('error', error);
@@ -206,9 +214,7 @@
                 <p class=" text-primary-600 text-2xl font-semibold capitalize">
                   {org.name}
                 </p>
-                <h1
-                  class="my-4 text-center text-4xl font-bold md:text-start md:text-5xl lg:text-6xl"
-                >
+                <h1 class="my-4 text-center text-4xl font-bold md:text-start md:text-4xl">
                   {$landingPageSettings.header.title} <br /><span class="text-primary-600"
                     >{$landingPageSettings.header.titleHighlight}</span
                   >
@@ -258,7 +264,7 @@
           <div class="relative z-20 flex h-full w-full items-center justify-center md:flex-row">
             <div class="mx-auto flex w-11/12 max-w-[600px] flex-col items-center py-10">
               <p class=" text-primary-600 text-2xl font-semibold capitalize">{org.name}</p>
-              <h1 class="my-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl">
+              <h1 class="my-4 text-center text-4xl font-bold md:text-4xl">
                 {$landingPageSettings.header.title} <br /><span class="text-primary-600"
                   >{$landingPageSettings.header.titleHighlight}</span
                 >
@@ -286,8 +292,8 @@
       <section id="aboutus" class="m-h-[400px] mx-auto my-10 w-full max-w-6xl">
         <div class="mx-4 flex flex-col items-center justify-evenly lg:flex-row">
           <div class="mb-5 mr-5 max-w-[600px] lg:mb-0 lg:w-2/5">
-            <h2 class="text-4xl md:text-5xl lg:text-6xl">{$landingPageSettings.aboutUs.title}</h2>
-            <p class="mb-2">
+            <h2 class="text-4xl md:text-4xl">{$landingPageSettings.aboutUs.title}</h2>
+            <p class="mb-2 text-sm text-gray-500">
               {$landingPageSettings.aboutUs.content}
             </p>
           </div>
@@ -296,19 +302,18 @@
             <img
               src={$landingPageSettings.aboutUs.imageUrl}
               alt="Our Story"
-              class=" max-h-[450px] rounded-2xl"
+              class="max-h-[450px] max-w-[450px] rounded-2xl"
             />
           </div>
         </div>
       </section>
     {/if}
 
-    <!-- Courses Section -->
     {#if $landingPageSettings.courses.show}
       <section id="courses" transition:fade class="mx-auto my-10 w-full max-w-6xl">
         <div class="w-full">
-          <div class="mx-auto w-11/12 max-w-[500px] py-10">
-            <h1 class="my-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl">
+          <div class="mx-auto py-10">
+            <h1 class="my-4 text-center text-4xl font-bold md:text-4xl">
               {$landingPageSettings.courses.title}
               <span class="text-primary-600">{$landingPageSettings.courses.titleHighlight}</span>
             </h1>
@@ -319,14 +324,14 @@
         </div>
         {#if $courseMetaDeta.isLoading}
           <div class="cards-container mx-2 my-4">
-            <CardLoader />
-            <CardLoader />
-            <CardLoader />
+            <CourseCardLoader />
+            <CourseCardLoader />
+            <CourseCardLoader />
           </div>
         {:else if $courses.length > 0}
           <div class="cards-container mx-2 my-4">
             {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
-              <Card
+              <CourseCard
                 id={courseData.id}
                 slug={courseData.slug}
                 bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
@@ -347,18 +352,68 @@
             {/each}
           </div>
         {:else}
-          <Box>
-            <CoursesEmptyIcon />
-            <h3 class="my-5 text-2xl dark:text-white">
-              {$t('course.navItem.landing_page.no_course_published')}
-            </h3>
-            <p class="w-1/3 text-center dark:text-white">
-              {$t('course.navItem.landing_page.coming_your_way')}
-            </p>
-          </Box>
+          <EmptyState
+            title={$t('course.navItem.landing_page.title')}
+            subtitle={$t('course.navItem.landing_page.subtitle')}
+          />
         {/if}
 
         {#if $courses.length > 3}
+          <div class="mt-3 flex w-full justify-center">
+            <PrimaryButton
+              variant={VARIANTS.OUTLINED}
+              onClick={() => (viewAll = !viewAll)}
+              label={viewAll
+                ? $t('course.navItem.landing_page.view_less')
+                : $t('course.navItem.landing_page.view_all')}
+              className="px-10 py-5 w-fit"
+            />
+          </div>
+        {/if}
+      </section>
+    {/if}
+
+    {#if $landingPageSettings.pathways.show}
+      <section id="courses" transition:fade class="mx-auto my-10 w-full max-w-6xl">
+        <div class="w-full">
+          <div class="mx-auto py-10">
+            <h1 class="my-4 text-center text-4xl font-bold md:text-4xl">
+              {$landingPageSettings.pathways.title}
+              <span class="text-primary-600">{$landingPageSettings.pathways.titleHighlight}</span>
+            </h1>
+            <p class="text-md text-center">
+              {$landingPageSettings.pathways.subtitle}
+            </p>
+          </div>
+        </div>
+        {#if $courseMetaDeta.isLoading}
+          <div class="mx-2 my-4 flex flex-wrap gap-4">
+            <PathwayCardLoader />
+            <PathwayCardLoader />
+          </div>
+        {:else if $pathways.length > 0}
+          <div class="cards-container mx-2 my-4">
+            {#each $pathways.slice(0, viewAll ? $pathways.length : 3) as pathwayData}
+              <PathwayCard
+                id={pathwayData.id}
+                title={pathwayData.title}
+                slug={pathwayData.slug}
+                description={pathwayData.description}
+                bannerImage={pathwayData.logo}
+                isPublished={pathwayData.is_published}
+                totalCourse={pathwayData.total_course}
+                isOnLandingPage={true}
+              />
+            {/each}
+          </div>
+        {:else}
+          <EmptyState
+            title={$t('course.navItem.landing_page.pathway_title')}
+            subtitle={$t('course.navItem.landing_page.pathway_subtitle')}
+          />
+        {/if}
+
+        {#if $pathways.length > 3}
           <div class="mt-3 flex w-full justify-center">
             <PrimaryButton
               variant={VARIANTS.OUTLINED}
@@ -377,14 +432,14 @@
     {#if $landingPageSettings.faq.show}
       <section id="faq" transition:fade class="mx-auto my-10 w-full max-w-[700px]">
         <div class="py-10">
-          <h1 class="my-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl">
+          <h1 class="my-4 text-center text-4xl font-bold md:text-4xl">
             {$landingPageSettings.faq.title}
           </h1>
         </div>
         <div class="mx-2">
           <Accordion size="xl">
             {#each $landingPageSettings.faq.questions as faq}
-              <AccordionItem title={faq.title} class="text-3xl">
+              <AccordionItem title={faq.title}>
                 <p class="text-lg">
                   {faq.content}
                 </p>
@@ -400,7 +455,7 @@
       <section id="contact" transition:fade class="bg-primary-50 my-10 w-full">
         <div class="mx-auto w-full max-w-6xl">
           <div class="mx-auto w-11/12 max-w-[500px] py-10">
-            <h1 class="my-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl">
+            <h1 class="my-4 text-center text-4xl font-bold md:text-4xl">
               {$landingPageSettings.contact.title}
               <span class="text-primary-600">{$landingPageSettings.contact.titleHighlight}</span>
             </h1>

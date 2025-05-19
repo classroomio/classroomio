@@ -1,5 +1,5 @@
-import { writable } from 'svelte/store';
 import type { Writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 
 export interface OrgLandingPageJson {
   header: {
@@ -30,6 +30,12 @@ export interface OrgLandingPageJson {
     show: boolean;
   };
   courses: {
+    title: string;
+    titleHighlight: string;
+    subtitle: string;
+    show: boolean;
+  };
+  pathways: {
     title: string;
     titleHighlight: string;
     subtitle: string;
@@ -102,7 +108,13 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
   courses: {
     title: 'Explore our',
     titleHighlight: 'Courses',
-    subtitle: 'Find courses you will love from best teachers all over the world🌎.',
+    subtitle: 'Explore our most latest courses from amazing educators.',
+    show: true
+  },
+  pathways: {
+    title: 'Available',
+    titleHighlight: 'Pathways',
+    subtitle: 'Expand your knowledge and skills with our dedicated learning pathways.',
     show: true
   },
   faq: {

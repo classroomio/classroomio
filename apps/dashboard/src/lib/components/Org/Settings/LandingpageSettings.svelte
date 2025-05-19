@@ -1,22 +1,28 @@
 <script lang="ts">
-  import { Grid, Row, Column, RadioButtonGroup, RadioButton } from 'carbon-components-svelte';
-  import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import Save from 'carbon-icons-svelte/lib/Save.svelte';
+  import { handleOpenWidget } from '$lib/components/UploadWidget';
+  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import SectionTitle from '../SectionTitle.svelte';
-  import { Toggle } from 'carbon-components-svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import { currentOrg } from '$lib/utils/store/org';
-  import { getSupabase } from '$lib/utils/functions/supabase';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { landingPageSettings } from './store';
-  import type { OrgLandingPageJson } from './store';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
-  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+  import { getSupabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
+  import { currentOrg } from '$lib/utils/store/org';
+  import {
+    Column,
+    Grid,
+    RadioButton,
+    RadioButtonGroup,
+    Row,
+    Toggle
+  } from 'carbon-components-svelte';
+  import Save from 'carbon-icons-svelte/lib/Save.svelte';
+  import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
+  import SectionTitle from '../SectionTitle.svelte';
+  import type { OrgLandingPageJson } from './store';
+  import { landingPageSettings } from './store';
 
   let isSaving = false;
   let creatingNewQuestion = false;
@@ -122,8 +128,8 @@
   $: setDefault($currentOrg?.landingpage as unknown as OrgLandingPageJson);
 </script>
 
-<Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5 relative">
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+<Grid class="border-c relative mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}>
       <SectionTitle>{$t('settings.landing_page.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.header.show} size="sm">
@@ -161,7 +167,7 @@
         className="w-full mt-3 mb-5"
         bind:value={$landingPageSettings.header.action.label}
       />
-      <div class="gap-2 mb-5">
+      <div class="mb-5 gap-2">
         <TextField
           label={$t('settings.landing_page.actions.link')}
           placeholder={$t('course.navItem.lessons.exercises.all_exercises.link')}
@@ -181,14 +187,14 @@
       <RadioButtonGroup
         legendText={$t('settings.landing_page.actions.banner_type.heading')}
         bind:selected={$landingPageSettings.header.banner.type}
-        class="mt-10 mb-5"
+        class="mb-5 mt-10"
       >
         {#each banner as item}
           <RadioButton value={item.value} labelText={item.label} />
         {/each}
       </RadioButtonGroup>
       {#if $landingPageSettings.header.banner.type === 'video'}
-        <div class="gap-2 mt-3 mb-5">
+        <div class="mb-5 mt-3 gap-2">
           <TextField
             label={$t('settings.landing_page.actions.link')}
             placeholder={$t('course.navItem.lessons.exercises.all_exercises.video')}
@@ -207,7 +213,7 @@
         <img
           alt="bannerImage"
           src={$landingPageSettings.header.banner.image}
-          class="mt-2 rounded-md w-full"
+          class="mt-2 w-full rounded-md"
         />
       {/if}
 
@@ -226,7 +232,7 @@
       <!-- background -->
 
       <div class="mt-4">
-        <p class="font-bold mb-4">{$t('settings.landing_page.background.title')}</p>
+        <p class="mb-4 font-bold">{$t('settings.landing_page.background.title')}</p>
         <PrimaryButton
           variant={VARIANTS.OUTLINED}
           label={$t('settings.landing_page.about.select_image')}
@@ -238,7 +244,7 @@
           <img
             alt="backgroundImage"
             src={$landingPageSettings.header.background.image}
-            class="mt-2 rounded-md w-full"
+            class="mt-2 w-full rounded-md"
           />
         {/if}
 
@@ -258,7 +264,7 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.about.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.aboutUs.show} size="sm">
@@ -295,7 +301,7 @@
           <img
             alt="About us"
             src={$landingPageSettings.aboutUs.imageUrl}
-            class="mt-2 rounded-md w-full"
+            class="mt-2 w-full rounded-md"
           />
         {/if}
         {#if $handleOpenWidget.open && widgetKey === 'about-us'}
@@ -305,7 +311,7 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.courses.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.courses.show} size="sm">
@@ -338,7 +344,7 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.faq.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.faq.show} size="sm">
@@ -419,7 +425,7 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.contact_us.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.contact.show} size="sm">
@@ -468,7 +474,7 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.mailing_list.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.mailinglist.show} size="sm">
@@ -505,7 +511,7 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7">
+  <Row class="flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.footer.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.footer.show} size="sm">
@@ -544,7 +550,7 @@
       />
     </Column>
   </Row>
-  <div class="sticky desktop float-right bottom-12 mr-2 z-[120]">
+  <div class="desktop sticky bottom-12 z-[120] float-right mr-2">
     <PrimaryButton
       label={$t('settings.landing_page.save_changes')}
       isLoading={isSaving}
@@ -554,13 +560,10 @@
   </div>
 </Grid>
 
-<div
-  class="absolute
- mobile right-6 bottom-8 z-[120]"
->
+<div class="mobile absolute bottom-8 right-6 z-[120]">
   <span>
     <IconButton onClick={handleSave} disabled={isSaving}>
-      <Save size={40} class=" bg-blue-700 p-1 rounded-full" />
+      <Save size={32} class="rounded-full bg-blue-700 p-1" />
     </IconButton>
   </span>
 </div>

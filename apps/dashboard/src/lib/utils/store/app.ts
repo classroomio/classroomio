@@ -11,3 +11,9 @@ export const globalStore = writable<{
   orgSiteName: '',
   isStudent: undefined
 });
+
+export const orgNavStore = writable<{
+  pathwayId: string;
+}>({
+  pathwayId: ''
+});
