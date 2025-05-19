@@ -160,7 +160,7 @@
             transition:fade={{ duration: 300 }}
           >
             <div class="flex w-2/3 items-center gap-4">
-              <Notebook size={24} class="text-black" />
+              <svelte:component this={Notebook} size={24} class="text-black" />
               <div>
                 <div class="mb-2">
                   <a

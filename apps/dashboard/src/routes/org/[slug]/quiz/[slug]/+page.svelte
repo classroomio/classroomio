@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
   import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
   import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
@@ -19,21 +19,47 @@
   import { currentOrgPath, deleteModal, quizStore, quizesStore } from '$lib/utils/store/org';
   import { Select, SelectItem } from 'carbon-components-svelte';
 
+  interface QuizOption {
+    id: number;
+    label: string;
+    isCorrect: boolean;
+  }
+
+  interface QuizQuestion {
+    id: number;
+    label: string;
+    type: string;
+    options: QuizOption[];
+  }
+
   export let data;
   const { quizId } = data;
 
   // Questionnaire State
-  let currentQuestion = $quizStore.questions[0] || {
+  let currentQuestion: QuizQuestion = $quizStore.questions[0] || {
+    id: 0,
+    label: '',
+    type: 'multichoice',
     options: []
   };
 
   // Behavioural State
   let openPreview = false;
   let type = 'multichoice';
-  let errors = [];
-  let currentError = {};
+  let errors: Array<{
+    isLabelEmpty: boolean;
+    hasOneAnswer: boolean;
+    id: number;
+    options: Array<{ id: number; error: boolean }>;
+  }> = [];
+  let currentError: {
+    isLabelEmpty?: boolean;
+    hasOneAnswer?: boolean;
+    id?: number;
+    options?: Array<{ id: number; error: boolean }>;
+  } = {};
   let isFocused = false;
-  let selectEl = null;
+  let selectEl: Select | null = null;
 
   function activeClass(q, cq) {
     if (q.id === cq.id) {
@@ -43,60 +69,80 @@
   }
 
   function addQuestion() {
-    $quizStore.questions = [
-      ...$quizStore.questions,
-      {
-        id: new Date().getTime(),
-        label: '',
-        type: 'multichoice',
-        options: []
-      }
-    ];
+    const newQuestion: QuizQuestion = {
+      id: new Date().getTime(),
+      label: '',
+      type: 'multichoice',
+      options: []
+    };
+    $quizStore.questions = [...$quizStore.questions, newQuestion];
     type = 'multichoice';
   }
+
   function addOption() {
     const cOptIds = currentQuestion.options.map((o) => o.id);
-    const nextOption = cloneDeep(allOptions).find((o) => !cOptIds.includes(o.id));
+    const nextOption = cloneDeep(allOptions).find((o) => !cOptIds.includes(Number(o.id)));
 
     if (!nextOption) return;
 
-    currentQuestion.options = [...currentQuestion.options, nextOption];
+    currentQuestion.options = [
+      ...currentQuestion.options,
+      {
+        id: Number(nextOption.id),
+        label: nextOption.label,
+        isCorrect: nextOption.isCorrect
+      }
+    ];
   }
+
   function deleteOption() {
     const opt = cloneDeep(currentQuestion.options);
     opt.pop();
     currentQuestion.options = opt;
   }
-  function handleQuestionTypeChange(type) {
+
+  function handleQuestionTypeChange(type: string) {
     const opt =
       type === 'multichoice'
-        ? cloneDeep(allOptions).filter((o, i) => i < 2)
-        : cloneDeep(booleanOptions);
+        ? cloneDeep(allOptions)
+            .filter((o, i) => i < 2)
+            .map((o) => ({
+              id: Number(o.id),
+              label: o.label,
+              isCorrect: o.isCorrect
+            }))
+        : cloneDeep(booleanOptions).map((o) => ({
+            id: Number(o.id),
+            label: o.label,
+            isCorrect: o.isCorrect
+          }));
 
     currentQuestion.type = type;
     currentQuestion.options = opt;
-    // $quizStore.questions = $quizStore.questions.map((q) =>
-    //   q.id === currentQuestion.id ? cloneDeep(currentQuestion) : q
-    // );
   }
 
   function deleteQuestion() {
     // Only leave one question
     if ($quizStore.questions.length === 1) return;
     $quizStore.questions = $quizStore.questions.filter((q) => q.id !== currentQuestion.id);
-
     currentQuestion = $quizStore.questions[0];
   }
 
   function previewQuiz() {
     openPreview = !openPreview;
   }
+
   function validateQuiz() {
-    const _errors = [];
+    const _errors: Array<{
+      isLabelEmpty: boolean;
+      hasOneAnswer: boolean;
+      id: number;
+      options: Array<{ id: number; error: boolean }>;
+    }> = [];
 
     $quizStore.questions.forEach((q) => {
       const labelError = !!((q.label?.length || 0) < 3);
-      const options = [];
+      const options: Array<{ id: number; error: boolean }> = [];
       let hasOneAnswer = false;
 
       q.options.forEach((o) => {
@@ -123,11 +169,10 @@
     });
 
     errors = _errors;
-
     currentError = errors.find((e) => e.id === currentQuestion.id) || {};
-
     return errors;
   }
+
   async function saveQuiz() {
     const _errors = validateQuiz();
     if (Array.isArray(_errors) && _errors.length && qHasError(null, _errors)) {
@@ -160,6 +205,7 @@
       );
     });
   }
+
   function optionHasError(eId, _errs) {
     if (Array.isArray(_errs) && _errs.length) {
       return _errs.some((e) => e.id === eId && e.error);
@@ -212,6 +258,12 @@
             on:click={() => {
               currentQuestion = question;
               type = question.type;
+            }}
+            on:keydown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                currentQuestion = question;
+                type = question.type;
+              }
             }}
           >
             Question {i + 1}
@@ -356,9 +408,16 @@
               />
             {/if}
             <div
+              role="button"
+              tabindex="0"
               class="flex h-full w-full flex-col-reverse rounded-md border"
               style="background: url({themeImages[_theme.id]?.card});"
               on:click={() => ($quizStore.theme = _theme.id)}
+              on:keydown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  $quizStore.theme = _theme.id;
+                }
+              }}
             >
               <p class="mb-3 ml-3 text-white">{_theme.label}</p>
             </div>

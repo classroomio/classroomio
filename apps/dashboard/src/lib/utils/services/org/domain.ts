@@ -1,11 +1,11 @@
 // Code from https://github.com/vercel/platforms/blob/1ed55b13bcae97b037c69ec40b4c32df21c2412c/lib/domains.ts
 
-import {
-  DomainResponse,
+import { env } from '$env/dynamic/private';
+import type {
   DomainConfigResponse,
+  DomainResponse,
   DomainVerificationResponse
 } from '$lib/utils/types/org';
-import { env } from '$env/dynamic/private';
 
 export const addDomainToVercel = async (domain: string) => {
   return await fetch(

@@ -1,15 +1,16 @@
-import { get } from 'svelte/store';
+import type { Course, Lesson, Profile } from '$lib/utils/types';
+
 import type { PostgrestError } from '@supabase/supabase-js';
-import { supabase } from '$lib/utils/functions/supabase';
 // @ts-ignore
-import { addGroupMember } from './index';
-// @ts-ignore
-import { profile } from '$lib/utils/store/user';
-import type { Course, Exercise, Lesson, Profile } from '$lib/utils/types';
+import { QUESTION_TYPE } from '$lib/components/Question/constants';
 // @ts-ignore
 import { ROLE } from '$lib/utils/constants/roles';
 // @ts-ignore
-import { QUESTION_TYPE } from '$lib/components/Question/constants';
+import { addGroupMember } from './index';
+import { get } from 'svelte/store';
+// @ts-ignore
+import { profile } from '$lib/utils/store/user';
+import { supabase } from '$lib/utils/functions/supabase';
 
 type GetCourseResponse = {
   data: Course;
@@ -199,7 +200,7 @@ export async function cloneCourse(courseId: string, newTitle: string): Promise<C
 
   /**
    * 1. Copy course table
-   * 2. Copy lessons table
+   * 2. Copy lessons table (NOTE: Copy sections table here)
    * 3. Copy exercises table
    * 4. Copy questions table
    * 5. Copy options table

@@ -1,5 +1,5 @@
 import { config } from '$lib/config';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 export let supabase: SupabaseClient;
 

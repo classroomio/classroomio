@@ -1,6 +1,6 @@
 import { getServerSupabase } from '$lib/utils/functions/supabase.server';
 import { fetchCourses, fetchProfileCourseProgress } from '$lib/utils/services/courses';
-import {
+import type {
   UserAnalytics,
   UserCourseAnalytics,
   UserExerciseStatsQuery,

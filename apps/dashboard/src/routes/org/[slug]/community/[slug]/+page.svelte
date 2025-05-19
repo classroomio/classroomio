@@ -528,7 +528,7 @@
 
       <hr />
 
-      <div>
+      <div class="mt-4">
         {#if !editorInstance}
           <TextEditor
             bind:value={comment}
@@ -537,7 +537,7 @@
           />
         {/if}
 
-        <div class="mr-2 flex justify-end">
+        <div class="mt-2 flex justify-end">
           <PrimaryButton label={$t('community.ask.comment')} onClick={submitComment} />
         </div>
       </div>

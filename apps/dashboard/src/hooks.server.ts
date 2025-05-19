@@ -30,8 +30,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   const accessToken = event.request.headers.get('Authorization')!;
 
-  console.log('pathname', pathname);
-  await validateUser(accessToken);
+  const user = await validateUser(accessToken);
+
+  response.headers.set('user_id', `${user.id}`);
 
   return response;
 };

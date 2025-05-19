@@ -1,13 +1,15 @@
 <script lang="ts">
-  import ChevronDown from 'carbon-icons-svelte/lib/ChevronDown.svelte';
-  import TextAlignJustify from 'carbon-icons-svelte/lib/TextAlignJustify.svelte';
-  import CloseLarge from 'carbon-icons-svelte/lib/CloseLarge.svelte';
-  import { fly } from 'svelte/transition';
-  import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
-  import CourseIcon from '$lib/Icons/CourseIcon.svelte';
-  import MapCenter from 'carbon-icons-svelte/lib/MapCenter.svelte';
   import { page } from '$app/stores';
+  import CourseIcon from '$lib/Icons/CourseIcon.svelte';
+  import ChevronDown from 'carbon-icons-svelte/lib/ChevronDown.svelte';
+  import CloseLarge from 'carbon-icons-svelte/lib/CloseLarge.svelte';
+  import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
+  import MapCenter from 'carbon-icons-svelte/lib/MapCenter.svelte';
+  import TextAlignJustify from 'carbon-icons-svelte/lib/TextAlignJustify.svelte';
+  import { onMount } from 'svelte';
+  import { fly } from 'svelte/transition';
 
+  let stars = 0;
   let showDrawer = false;
   let showSolutions = false;
   let activeLink = '';
@@ -51,6 +53,20 @@
   $: activeLink = $page.url.pathname;
   $: activeHash = $page.url.hash;
   $: isSolutionsActive = solutions.some((s) => activeHash.includes(s.key));
+
+  async function setStars() {
+    try {
+      const response = await fetch('https://api.github.com/repos/classroomio/classroomio');
+      const data = await response.json();
+      stars = data?.stargazers_count || 0;
+    } catch (error) {
+      console.error('Error fetching GitHub stars:', error);
+    }
+  }
+
+  onMount(() => {
+    setStars();
+  });
 </script>
 
 <div
@@ -78,7 +94,7 @@
           on:mouseenter={() => (showSolutions = true)}
           on:mouseleave={closeSolutions}
           class="flex items-center hover:bg-gray-100 {showSolutions &&
-            'bg-gray-100'} px-4 py-2 rounded-md"
+            'bg-gray-100'} px-4 py-2 rounded-md transition-all duration-200"
           on:click={() => (showSolutions = !showSolutions)}
           class:active={isSolutionsActive}
         >
@@ -93,7 +109,7 @@
           >
             {#each solutions as solution}
               <a
-                class="flex justify-between items-center w-full rounded-lg hover:bg-gray-100 hover:cursor-pointer p-2"
+                class="flex justify-between items-center w-full rounded-lg hover:bg-gray-100 hover:cursor-pointer p-2 transition-colors duration-200"
                 href="/{solution.key}"
                 on:click={() => (showSolutions = false)}
               >
@@ -123,7 +139,9 @@
         class="text-gray-800 font-semibold text-sm cursor-pointer"
         class:active={activeLink.startsWith('/tools')}
       >
-        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Free Tools</li>
+        <li class="hover:bg-gray-100 px-4 py-2 rounded-md transition-all duration-200">
+          Free Tools
+        </li>
       </a>
 
       <a
@@ -131,37 +149,52 @@
         class="text-gray-800 font-semibold text-sm cursor-pointer"
         class:active={activeLink.startsWith('/blog')}
       >
-        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Blog</li>
+        <li class="hover:bg-gray-100 px-4 py-2 rounded-md transition-all duration-200">Blog</li>
       </a>
       <a
         href="/pricing"
         class="text-gray-800 font-semibold text-sm cursor-pointer"
         class:active={activeLink.startsWith('/pricing')}
       >
-        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Pricing</li>
+        <li class="hover:bg-gray-100 px-4 py-2 rounded-md transition-all duration-200">Pricing</li>
       </a>
     </ul>
   </nav>
 
-  <div class="justify-between items-center flex-row hidden md:hidden lg:flex">
-    <a href="/discord" target="_blank">
+  <div class="justify-between items-center flex-row hidden md:hidden lg:flex gap-3">
+    <a
+      href="/discord"
+      target="_blank"
+      class="flex items-center hover:opacity-80 transition-opacity duration-200"
+    >
       <img
         loading="lazy"
         alt="discord logo"
         src="/discord-blue.png"
-        class="w-8 h-6 mr-4 cursor-pointer"
+        class="w-6 h-5 cursor-pointer"
       />
     </a>
-    <a href="/github" target="_blank">
-      <img
-        loading="lazy"
-        alt="github logo"
-        src="/github-mark.png"
-        class="w-6 h-6 mr-4 cursor-pointer"
-      />
-    </a>
+    <div class="flex items-center">
+      <a
+        href="/github"
+        target="_blank"
+        class="flex items-center gap-1.5 p-2 rounded-md transition-all duration-200 ease-in-out hover:bg-gray-100 group"
+      >
+        <img
+          loading="lazy"
+          alt="github logo"
+          src="/github-mark.png"
+          class="w-5 h-5 cursor-pointer transition-transform duration-200 group-hover:scale-110"
+        />
+        <span
+          class="text-sm text-gray-600 font-medium leading-none transition-colors duration-200 group-hover:text-black"
+        >
+          {stars}
+        </span>
+      </a>
+    </div>
     <a
-      class="font-medium text-sm after:content-['→'] after:ml-2"
+      class="font-medium text-sm after:content-['→'] after:ml-2 hover:opacity-80 transition-opacity duration-200"
       href="https://app.classroomio.com"
     >
       Dashboard
@@ -200,7 +233,7 @@
         <ul class="flex items-center flex-col lg:flex-row justify-between w-full">
           <li class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer w-full">
             <button
-              class="w-full flex items-center justify-between hover:bg-gray-100 py-3 px-4 rounded-lg"
+              class="w-full flex items-center justify-between hover:bg-gray-100 py-3 px-4 rounded-lg transition-all duration-200"
               on:click={handleShowDrawer}
               class:active={isSolutionsActive}
             >
@@ -216,7 +249,7 @@
                     }}
                   >
                     <p
-                      class="font-normal text-xs text-gray-700 hover:bg-gray-100 rounded-lg py-2.5 pl-5"
+                      class="font-normal text-xs text-gray-700 hover:bg-gray-100 rounded-lg py-2.5 pl-5 transition-colors duration-200"
                     >
                       {solution.title}
                     </p>
@@ -225,27 +258,15 @@
               </div>
             {/if}
           </li>
-          <!-- Free Tools -->
           <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
+            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full transition-all duration-200"
             on:click={handleShowSolutions}
             href="/tools"
           >
             <li>Free Tools</li>
           </a>
-          <!-- <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
-            on:click={() => {
-              handleShowSolutions();
-            }}
-            class:active={activeLink.startsWith('/docs')}
-            href="/docs"
-            target="_blank"
-          >
-            <li>Docs</li>
-          </a> -->
           <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
+            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full transition-all duration-200"
             on:click={() => {
               handleShowSolutions();
             }}
@@ -254,9 +275,8 @@
           >
             <li>Blog</li>
           </a>
-          <!-- Pricing -->
           <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
+            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full transition-all duration-200"
             on:click={() => {
               handleShowSolutions();
             }}
@@ -266,7 +286,7 @@
             <li>Pricing</li>
           </a>
           <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
+            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full transition-all duration-200"
             on:click={() => {
               handleShowSolutions();
             }}
@@ -281,31 +301,35 @@
         <a
           href="/discord"
           target="_blank"
-          class="flex items-center rounded-md after:ml-2 w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg"
+          class="flex items-center rounded-md w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg transition-all duration-200"
         >
           <img
             loading="lazy"
             alt="discord logo"
             src="/discord-blue.png"
-            class="w-8 h-6 mr-2 cursor-pointer"
+            class="w-6 h-5 mr-2 cursor-pointer"
           />
           <span>Discord</span>
         </a>
         <a
           href="/github"
           target="_blank"
-          class="flex items-center rounded-md after:ml-2 w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg"
+          class="flex items-center rounded-md w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg group transition-all duration-200"
         >
           <img
             loading="lazy"
             alt="github logo"
             src="/github-mark.png"
-            class="w-6 h-6 mr-3 cursor-pointer"
+            class="w-5 h-5 cursor-pointer transition-transform duration-200 group-hover:scale-110"
           />
-          <span>Github</span>
+          <span class="ml-3 transition-colors duration-200 group-hover:text-black">Github</span>
+          <span
+            class="text-sm text-gray-600 font-medium ml-1 transition-colors duration-200 group-hover:text-black"
+            >({stars})</span
+          >
         </a>
         <a
-          class="font-semibold after:content-['→'] rounded-md after:ml-2 w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg"
+          class="font-semibold after:content-['→'] rounded-md after:ml-2 w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg transition-all duration-200"
           href="https://app.classroomio.com"
         >
           Dashboard

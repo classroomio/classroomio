@@ -8,11 +8,6 @@
 
   export let onDelete = () => {};
   export let onCancel = () => {};
-
-  async function handleDelete() {
-    onDelete();
-    $deleteConfirmation.open = false;
-  }
 </script>
 
 <Modal
@@ -22,9 +17,9 @@
   modalHeading={$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.title')}
 >
   <div>
-    <h1 class="dark:text-white text-lg">
+    <p class="mt-0 text-base dark:text-white">
       {$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.sure')}
-    </h1>
+    </p>
 
     <div class="mt-5 flex items-center justify-between">
       <PrimaryButton
