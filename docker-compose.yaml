@@ -9,8 +9,22 @@ version: '3.8'
 services:
   backend:
     build:
-      dockerfile: Dockerfile
       context: ./apps/backend
+      dockerfile: Dockerfile
+      args:
+        - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
+        - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
+        - CLOUDFLARE_BUCKET_DOMAIN=${CLOUDFLARE_BUCKET_DOMAIN}
+        - CLOUDFLARE_ACCESS_KEY=${CLOUDFLARE_ACCESS_KEY}
+        - CLOUDFLARE_SECRET_ACCESS_KEY=${CLOUDFLARE_SECRET_ACCESS_KEY}
+        - CLOUDFLARE_ACCOUNT_ID=${CLOUDFLARE_ACCOUNT_ID}
+        - CLOUDFLARE_BUCKET_ID=${CLOUDFLARE_BUCKET_ID}
+        - SMTP_HOST=${SMTP_HOST}
+        - SMTP_USER=${SMTP_USER}
+        - SMTP_PASSWORD=${SMTP_PASSWORD}
+        - SMTP_PORT=${SMTP_PORT}
+    ports:
+      - '3002:3002'
     volumes:
       - /app/node_modules
       - ./apps/backend:/app
@@ -33,8 +47,8 @@ services:
 
   dashboard:
     build:
+      context: .
       dockerfile: ./apps/dashboard/Dockerfile
-      context: ./
       args:
         - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
         - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
@@ -45,6 +59,8 @@ services:
         - OPENAI_API_KEY=${OPENAI_API_KEY}
         - PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL}
         - PUBLIC_IP_REGISTRY_KEY=${PUBLIC_IP_REGISTRY_KEY}
+    ports:
+      - '3000:3000'
     volumes:
       - .:/app
       - /app/node_modules

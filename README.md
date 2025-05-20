@@ -136,7 +136,7 @@ To get the environmental variables for supabase continue to step(5)
    - Go to the project directory in your terminal and start Supabase
 
      ```bash
-       pnpm supabase start
+       pnpm supabase:start
      ```
 
    - You should get a result like this
@@ -154,7 +154,7 @@ To get the environmental variables for supabase continue to step(5)
      service_role key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
      ```
 
-   - Add Supabase environment variables into `app/dashboard` folder, which should be taken from the result of `pnpm supabase start`
+   - Add Supabase environment variables into `app/dashboard` folder, which should be taken from the result of `pnpm supabase:start`
 
      ```env
        PUBLIC_SUPABASE_URL=<API URL>
@@ -162,7 +162,7 @@ To get the environmental variables for supabase continue to step(5)
        PRIVATE_SUPABASE_SERVICE_ROLE=<service_role key>
      ```
 
-   - To view the Supabase studio, open the Studio URL from the result of `pnpm supabase start`
+   - To view the Supabase studio, open the Studio URL from the result of `pnpm supabase:start`
 
 7. Run all projects (in development mode)
 
