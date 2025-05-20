@@ -18,9 +18,6 @@
   ],
   "deno.importMap": "./supabase/functions/import_map.json",
   "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.organizeImports": "explicit"
-  },
   "[svelte]": {
     "editor.defaultFormatter": "svelte.svelte-vscode"
   }
