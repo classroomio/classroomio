@@ -9,14 +9,14 @@ export default ({ mode }) => {
     css: {
       preprocessorOptions: {
         scss: {
-          silenceDeprecations: ['legacy-js-api'],
-        },
-      },
+          silenceDeprecations: ['legacy-js-api']
+        }
+      }
     },
     plugins: [sveltekit()],
     server: getServer(process.env),
     build: {
-      sourcemap: true
+      sourcemap: false
     },
     optimizeDeps: {
       entries: ['src/routes/**/+*.{js,ts,svelte}']
