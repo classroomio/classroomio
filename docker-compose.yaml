@@ -9,8 +9,8 @@ version: '3.8'
 services:
   backend:
     build:
-      context: ./apps/backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./apps/backend/Dockerfile
       args:
         - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
         - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
