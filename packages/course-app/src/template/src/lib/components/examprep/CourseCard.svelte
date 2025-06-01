@@ -9,7 +9,7 @@
 >
   <div class="flex h-full w-full flex-col justify-between gap-4 rounded-lg">
     <div class="flex-1 space-y-2">
-      <p class="text-examprep line-clamp-2 font-serif text-xl font-semibold uppercase">{title}</p>
+      <p class="text-examprep line-clamp-2 text-xl font-semibold uppercase">{title}</p>
       <p class="font-inter line-clamp-4 text-gray-600">
         {description}
       </p>

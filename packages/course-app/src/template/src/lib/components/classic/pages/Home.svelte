@@ -31,13 +31,13 @@
       <section class="flex h-full items-start justify-center px-6 pb-20 md:px-14">
         <section class="flex flex-col-reverse items-center gap-10 md:flex-row md:justify-between">
           <div class="flex h-full w-full flex-col gap-4 pt-4">
-            <p class="w-full text-4xl font-bold xl:w-[90%] xl:text-6xl">
-              {content.settings.title}
-              <span class="text-[#CE02CE]">
+            <p class="w-full max-w-[600px] text-4xl font-bold lg:text-5xl">
+              <span>{content.settings.title}</span><br />
+              <span class=" italic text-[#CE02CE]">
                 {content.settings.titleHighlight}
               </span>
             </p>
-            <p class="w-full text-[#878787] lg:w-[70%] xl:text-lg">
+            <p class="w-full max-w-[600px] text-[#878787] xl:text-lg">
               {content.settings.subtitle}
             </p>
             <PrimaryButton
@@ -58,6 +58,8 @@
           </div>
         </section>
       </section>
+
+      <hr class="border-classic-border mb-10 mt-5" />
     {/if}
   {/if}
 

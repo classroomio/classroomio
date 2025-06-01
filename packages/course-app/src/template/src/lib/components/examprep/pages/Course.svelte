@@ -66,12 +66,10 @@
 
 <main class="overflow-x-hidden">
   {#if section.header?.show}
-    <section class="flex h-[50vh] items-center justify-center py-20">
+    <section class="flex h-[50vh] items-center justify-center bg-slate-100 py-20">
       <section class="flex flex-col items-start gap-10 p-4 text-center md:items-center">
         <div class="w-full space-y-6">
-          <p
-            class="mx-auto w-full font-serif text-3xl font-medium text-gray-800 md:w-[60%] md:text-4xl"
-          >
+          <p class="mx-auto w-full text-3xl font-medium text-gray-800 md:w-[60%] md:text-4xl">
             {section.header.settings.title}
           </p>
 
@@ -86,7 +84,7 @@
     <div class="border-b bg-white px-2 py-10 md:px-10 lg:px-20">
       <div class="mb-4 flex flex-col items-start justify-between md:flex-row md:items-center">
         <span class="mb-4 space-y-2 px-4 text-start lg:mb-0">
-          <p class="mb-4 font-serif text-2xl md:text-3xl">{section.courses.settings.title}</p>
+          <p class="mb-4 text-2xl md:text-3xl">{section.courses.settings.title}</p>
           <p class="w-full text-sm font-medium text-gray-500 md:w-[80%]">
             {section.courses.settings.subtitle}
           </p>

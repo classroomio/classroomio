@@ -30,7 +30,7 @@
         class="flex max-h-full items-center justify-center px-5 py-5 md:h-[60vh] md:px-14 md:py-14"
       >
         <section class="mx-auto flex max-w-6xl items-center justify-between gap-4">
-          <div class="w-full max-w-[50%] space-y-6 text-white">
+          <div class="w-full space-y-6 p-5 text-white lg:max-w-[50%]">
             <div class="w-fit rounded-sm bg-white px-3 py-1 md:border">
               <p class="text-minimal text-center text-sm font-bold uppercase">
                 {content.settings?.title}

@@ -1,6 +1,27 @@
-import { fontFamily } from 'tailwindcss/defaultTheme';
+import 'dotenv/config';
+
 import type { Config } from 'tailwindcss';
+import { fontFamily } from 'tailwindcss/defaultTheme';
 import tailwindcssAnimate from 'tailwindcss-animate';
+
+const getFont = (): string => {
+  switch (process.env.VITE_TEMPLATE) {
+    case 'posthog':
+      return 'Matter, sans-serif';
+    case 'classic':
+      return 'Inter, sans-serif';
+    case 'minimal':
+      return 'Inter, sans-serif';
+    case 'examprep':
+      return 'Playfair Display, serif';
+    case 'webflow':
+      return 'Lato, sans-serif';
+    case 'bootcamp':
+      return 'Roboto Slab, serif';
+    default:
+      return 'Cal Sans, sans-serif';
+  }
+};
 
 const config: Config = {
   darkMode: ['class'],
@@ -118,6 +139,9 @@ const config: Config = {
         'accordion-up': 'accordion-up 0.2s ease-out',
         'caret-blink': 'caret-blink 1.25s ease-out infinite'
       }
+    },
+    fontFamily: {
+      app: getFont()
     }
   },
   plugins: [tailwindcssAnimate]

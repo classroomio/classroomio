@@ -1,7 +1,6 @@
-import chalk from 'chalk';
+import { CopyFolderParams } from './types';
 import fs from 'fs';
 import path from 'path';
-import { CopyFolderParams } from './types';
 
 export async function copyFolderSync({
   from,

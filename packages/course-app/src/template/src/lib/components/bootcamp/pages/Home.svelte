@@ -26,11 +26,11 @@
       <section class="flex min-h-full items-center justify-center bg-black/90 px-10 py-10 md:px-14">
         <div class="mx-auto flex max-w-6xl flex-col items-center gap-10 text-center">
           <div class="w-full space-y-6 text-white">
-            <p class="font-slab mx-auto w-full text-3xl font-normal md:w-[60%] md:text-4xl">
+            <p class="mx-auto w-full text-3xl font-normal md:w-[60%] md:text-4xl">
               {content.settings.title}
             </p>
 
-            <p class="font-roboto mx-auto w-full font-normal md:w-[70%] md:text-lg">
+            <p class="mx-auto w-full font-normal md:w-[70%] md:text-lg">
               {content.settings.subtitle}
             </p>
           </div>
@@ -61,15 +61,15 @@
         class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 md:flex-row md:items-start"
       >
         <div class="mb-5 w-full md:mr-5 md:w-[60%] lg:mb-0 lg:w-[50%]">
-          <p class="font-slab mb-8 w-full text-2xl font-normal md:w-[90%] md:text-3xl lg:text-4xl">
+          <p class="mb-8 w-full text-2xl font-normal md:w-[90%] md:text-3xl lg:text-4xl">
             {aboutSection.settings.title}
           </p>
           <div class="space-y-3">
             {#each aboutSection.settings.benefits.list as items}
               <div class="max-w-[579px] rounded-md border border-gray-100 bg-gray-50 p-8">
-                <p class="font-slab mb-2 line-clamp-2 w-[90%] text-xl md:text-2xl">{items.title}</p>
+                <p class="mb-2 line-clamp-2 w-[90%] text-xl md:text-2xl">{items.title}</p>
                 <p
-                  class="font-roboto mb-4 line-clamp-5 w-[90%] text-sm text-gray-600 lg:line-clamp-4 lg:text-base"
+                  class="mb-4 line-clamp-5 w-[90%] text-sm text-gray-600 lg:line-clamp-4 lg:text-base"
                 >
                   {items.subtitle}
                 </p>
@@ -94,7 +94,7 @@
     <section id="course" class="h-full bg-white p-4 lg:p-20">
       <div class="mx-4 mb-4">
         <span class="mb-4 space-y-2 lg:mb-0">
-          <p class="font-slab text-2xl lg:text-3xl">{coursesSection.settings.title}</p>
+          <p class="text-2xl lg:text-3xl">{coursesSection.settings.title}</p>
           <p class="w-[80%] text-gray-600">{coursesSection.settings.subtitle}</p>
         </span>
       </div>
@@ -113,7 +113,7 @@
           <div class="my-5 flex w-full items-center justify-center">
             <PrimaryButton
               label="VIEW MORE"
-              class="font-roboto bg-bootcamp rounded-none text-lg"
+              class="bg-bootcamp rounded-none text-lg"
               onClick={() => (viewAll = !viewAll)}
             />
           </div>
@@ -149,7 +149,7 @@
   {#if ctaSection?.show}
     <section class="bg-bootcamp flex flex-col items-center justify-between px-6 py-20 lg:px-10">
       <div class="flex w-full items-center justify-center">
-        <p class="font-slab w-full text-center text-4xl font-bold capitalize text-white lg:w-[70%]">
+        <p class="w-full text-center text-4xl font-bold capitalize text-white lg:w-[70%]">
           {ctaSection.settings.title}
         </p>
       </div>

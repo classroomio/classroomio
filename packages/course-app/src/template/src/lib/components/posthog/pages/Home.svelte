@@ -30,7 +30,7 @@
     {@const content = getPageSection($homePage, SECTION.HERO)}
     {#if content?.show}
       <section
-        class="font-matter flex min-h-full items-center justify-center overflow-hidden px-10 py-14 md:px-14"
+        class="flex min-h-full items-center justify-center overflow-hidden px-10 pt-24 md:px-14"
       >
         <section
           class="flex flex-col-reverse items-center justify-center gap-5 text-center md:flex-col"
@@ -51,18 +51,18 @@
             />
           </div>
 
-          <div class="relative flex w-full rounded-lg md:w-[800px] md:max-w-[80vw] lg:max-w-[80%]">
+          <div class="relative flex w-full rounded-lg md:max-w-[80vw] lg:max-w-[80%]">
             <span class="absolute -top-14 left-3 h-2 w-2 rounded-full bg-red-500"></span>
             <span class="absolute -left-10 top-10 h-2 w-2 rounded-full bg-white"></span>
             <span class="absolute -right-3 -top-10 h-2 w-2 rounded-full bg-yellow-500"></span>
             <span class="absolute -right-10 top-14 h-2 w-2 rounded-full bg-blue-800"></span>
 
-            <div class="flex h-full w-full items-center justify-center">
-              <img alt="Hero Banner" src={analytics} class="w-full rounded-lg object-cover" />
-            </div>
+            <img alt="Hero Banner" src={analytics} class="w-full rounded-lg object-cover" />
           </div>
         </section>
       </section>
+
+      <hr class="border-posthog-border mb-10 mt-5" />
     {/if}
   {/if}
 
@@ -101,6 +101,7 @@
         </div>
       {/if}
     </section>
+    <hr class="border-posthog-border mb-10" />
   {/if}
 
   <!-- about -->
@@ -130,6 +131,7 @@
         </section>
       </div>
     </section>
+    <hr class="border-posthog-border mb-10" />
   {/if}
 
   <!-- faq -->
@@ -142,6 +144,7 @@
         {/each}
       </div>
     </div>
+    <hr class="border-posthog-border my-10" />
   {/if}
 
   <!-- cta -->

@@ -140,7 +140,7 @@
   <!-- Courses -->
   {#if coursesSection?.show}
     <section id="course" class="h-full bg-white px-4 py-20 md:px-20">
-      <h1 class="text-center font-serif text-3xl">{coursesSection.settings.title}</h1>
+      <h1 class="text-center text-3xl">{coursesSection.settings.title}</h1>
       <p class="font-inter mx-auto mb-8 w-full text-center font-medium md:w-[50%]">
         {coursesSection.settings.subtitle}
       </p>
@@ -175,7 +175,7 @@
   <!-- About -->
   {#if aboutSection?.show}
     <section id="course" class="h-full bg-white px-4 pb-20 pt-4 md:px-10">
-      <h1 class="mx-auto w-full text-center font-serif text-3xl text-gray-800 md:w-[50%]">
+      <h1 class="mx-auto w-full text-center text-3xl text-gray-800 md:w-[50%]">
         {aboutSection.settings.title}
       </h1>
       <p class="text-inter mx-auto mb-8 w-[60%] text-center font-medium text-gray-500">
@@ -189,7 +189,7 @@
           >
             <span class="flex items-center gap-2">
               <CheckmarkFilled size={24} class="fill-blue-800" />
-              <p class="font-serif text-xl">{item.title}</p>
+              <p class="text-xl">{item.title}</p>
             </span>
             <p class="font-inter text-base text-gray-400">{item.subtitle}</p>
           </div>
@@ -204,7 +204,7 @@
   <!-- faq -->
   {#if faqSection?.show}
     <section class="h-full space-y-5 bg-slate-100 px-4 pb-20 pt-8">
-      <h1 class="text-center font-serif text-3xl text-gray-700">{faqSection.settings.title}</h1>
+      <h1 class="text-center text-3xl text-gray-700">{faqSection.settings.title}</h1>
       <section class="mx-auto w-full space-y-10 p-4 md:w-[80%]">
         {#each faqSection.settings.questions as faq}
           <Accordion title={faq.title} content={faq.content} />
@@ -219,9 +219,7 @@
       class="flex flex-col items-center justify-between space-y-4 bg-blue-800 px-6 py-20 lg:px-10"
     >
       <div class="flex w-full items-center justify-center">
-        <p
-          class="w-full text-center font-serif text-4xl font-bold capitalize text-white lg:w-[70%]"
-        >
+        <p class="w-full text-center text-4xl font-bold capitalize text-white lg:w-[70%]">
           {ctaSection.settings.title}
         </p>
       </div>

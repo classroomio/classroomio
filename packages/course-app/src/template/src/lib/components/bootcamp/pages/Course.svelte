@@ -74,7 +74,7 @@
             {section.header.settings.title}
           </p>
 
-          <p class="font-roboto mx-auto w-full font-normal md:w-[70%]">
+          <p class="mx-auto w-full font-normal md:w-[70%]">
             {section.header.settings.subtitle}
           </p>
         </div>
@@ -95,10 +95,10 @@
     <div class="bg-white px-2 py-10 md:px-8">
       <div class="mb-4 flex flex-col items-center justify-between md:flex-row">
         <span class="mx-auto mb-4 space-y-2 text-center lg:mb-0">
-          <p class="font-slab mx-auto w-full text-2xl md:w-[60%] lg:text-3xl">
+          <p class="mx-auto w-full text-2xl md:w-[60%] lg:text-3xl">
             {section.courses.settings.title}
           </p>
-          <p class="font-roboto text-xs text-gray-400 lg:text-sm">
+          <p class="text-xs text-gray-400 lg:text-sm">
             {section.courses.settings.subtitle}
           </p>
         </span>
@@ -107,7 +107,7 @@
         {#if $courses.length > 0}
           <div class="w-full items-start gap-6 lg:ml-[5%] lg:flex">
             <div class="hidden w-fit lg:block">
-              <p class="font-slab mb-2 font-medium">Filter by</p>
+              <p class="mb-2 font-medium">Filter by</p>
               <div class="flex w-fit flex-col space-y-2">
                 {#each filter as item}
                   <label
@@ -144,7 +144,7 @@
             <div class="my-5 flex w-full items-center justify-center">
               <PrimaryButton
                 label="VIEW MORE"
-                class="font-roboto rounded-none  text-lg"
+                class="rounded-none  text-lg"
                 onClick={() => (viewAll = !viewAll)}
               />
             </div>
