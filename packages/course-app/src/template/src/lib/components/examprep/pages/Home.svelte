@@ -151,6 +151,7 @@
             <CourseCard
               slug={courseData.slug}
               title={courseData.title}
+              banner={courseData.banner}
               description={courseData.description}
             />
           {/each}
