@@ -186,12 +186,7 @@
           <li
             class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
           >
-            <a
-              href="https://app.enzuzo.com/policies/tos/958fc978-5477-11ee-a03b-7b111830c594"
-              target="_blank"
-            >
-              Terms of use
-            </a>
+            <a href="/terms" target="_blank"> Terms of use </a>
           </li>
         </ul>
       </div>

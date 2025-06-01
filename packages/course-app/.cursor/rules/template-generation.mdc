@@ -1,0 +1,319 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Template Generation Guidelines
+
+## Svelte Version Requirement
+**All Svelte components must use Svelte 5 syntax and features.**
+- Use `<script>` with the new Svelte 5 reactive declarations and state management.
+- Use the new `$state`, `$props`, and `$derived` where appropriate.
+- Avoid legacy Svelte 3/4 patterns (e.g., `export let ...` for props, use `$props` instead).
+- Prefer the new Svelte 5 block syntax and component patterns.
+
+## TypeScript Typing Requirement
+**All page-level Svelte components (e.g., Courses.svelte, Home.svelte) must explicitly type their props and data using TypeScript interfaces.**
+- Define a `Props` interface for the component's props.
+- Use the correct types for `data`, e.g.:
+
+```ts
+interface Props {
+  data: {
+    page: Page;
+    sharedPage: Page;
+    courses: Course[];
+  };
+}
+
+const { data }: Props = $props();
+```
+- This ensures type safety and consistency across all templates.
+
+## Overview
+This document provides comprehensive guidelines for generating new templates into Courseapp. Follow these guidelines to ensure consistency and maintainability across all templates.
+
+## Tech Stack
+- **Framework**: SvelteKit
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Build Tool**: Vite
+- **Package Manager**: pnpm
+
+## Required Dependencies
+```json
+{
+  "dependencies": {
+    "svelte": "^5.0.0",
+    "sveltekit": "^2.5.27",
+    "typescript": "^5.5.0",
+    "tailwindcss": "^3.4.9",
+    "vite": "^5.4.4",
+    "carbon-icons-svelte": "^12.13.0",
+    "tailwind-variants": "^0.2.1",
+    "tailwind-merge": "^2.5.4",
+    "clsx": "^2.1.1",
+    "tailwindcss-animate": "^1.0.7"
+  }
+}
+```
+
+## File Structure
+```
+template/
+├── index.ts                 # Main template entry point
+├── package.json            # Dependencies and scripts
+├── tsconfig.json          # TypeScript configuration
+├── svelte.config.js       # SvelteKit configuration
+├── vite.config.ts         # Vite configuration
+├── tailwind.config.ts     # Tailwind CSS configuration
+├── postcss.config.js      # PostCSS configuration
+├── components.json        # Component configuration
+└── src/
+    └── lib/
+        ├── components/
+        │   └── [template_name]/
+        │       ├── index.ts
+        │       ├── Navigation.svelte
+        │       ├── Footer.svelte
+        │       ├── PrimaryButton.svelte
+        │       └── pages/
+        │           ├── Home.svelte
+        │           └── Courses.svelte
+        └── utils/
+            ├── types/
+            │   └── template.ts
+            ├── helpers/
+            └── constants/
+```
+
+## Component Requirements
+
+### 1. Navigation Component
+```svelte
+<script>
+  // Svelte 5: use $props for props, $state for state
+  const { menuItems = [] } = $props();
+</script>
+```
+
+Features:
+- Responsive design
+- Mobile menu support
+- Active state indication
+- Logo display
+- Menu items with links
+
+### 2. Footer Component
+```typescript
+interface FooterProps {
+  socialLinks: Array<{
+    platform: string;
+    url: string;
+  }>;
+  copyright: string;
+}
+```
+
+Features:
+- Social media links
+- Navigation links
+- Copyright information
+- ClassroomIO attribution
+- Responsive layout
+
+### 3. PrimaryButton Component
+```svelte
+<script>
+  // Svelte 5: use $props for props
+  const { label = 'Button', href, variant = 'filled', className = '' } = $props();
+</script>
+```
+
+Features:
+- Multiple variants
+- Responsive design
+- Hover states
+- Loading state
+- Icon support
+
+### 4. Home Page Component
+Required sections:
+- Hero section
+- Features section
+- Testimonials section
+- CTA section
+
+Features:
+- Responsive layout
+- Dynamic content loading
+- Section visibility control
+- Image optimization
+- SEO optimization
+
+### 5. Courses Page Component
+Required sections:
+- Header section
+- Course grid
+- Filters
+
+Features:
+- Course cards
+- Filtering functionality
+- Responsive grid layout
+- Empty state handling
+- Loading states
+
+## Styling Guidelines
+
+### Color System
+```typescript
+const colors = {
+  primary: 'hsl(var(--primary) / <alpha-value>)',
+  secondary: 'hsl(var(--secondary) / <alpha-value>)',
+  background: 'hsl(var(--background) / <alpha-value>)',
+  foreground: 'hsl(var(--foreground) / <alpha-value>)',
+  accent: 'hsl(var(--accent) / <alpha-value>)',
+  muted: 'hsl(var(--muted) / <alpha-value>)'
+};
+```
+
+### Typography
+```typescript
+const fonts = {
+  sans: ['Inter', 'system-ui', 'sans-serif'],
+  roboto: ['Roboto', 'system-ui', 'sans-serif'],
+  matter: ['Matter', 'system-ui', 'sans-serif'],
+  slab: ['Roboto Slab', 'serif']
+};
+```
+
+### Breakpoints
+```typescript
+const breakpoints = {
+  sm: '640px',
+  md: '768px',
+  lg: '1024px',
+  xl: '1280px',
+  '2xl': '1536px'
+};
+```
+
+## Type Definitions
+
+### Template Components
+```typescript
+import type { Component } from 'svelte';
+
+export type TemplateComponents = {
+  navigation: Component;
+  footer: Component;
+  button: Component;
+  coursespage: Component;
+  homepage: Component;
+};
+```
+
+## Testing Requirements
+
+### Unit Tests
+- Component rendering
+- Props validation
+- Event handling
+- State management
+
+### E2E Tests
+- Navigation flow
+- Course listing
+- Responsive design
+- User interactions
+
+## Build Configuration
+
+### Development
+```bash
+pnpm dev
+```
+
+### Production
+```bash
+pnpm build
+```
+
+### Testing
+```bash
+pnpm test
+pnpm test:e2e
+```
+
+## Documentation Requirements
+
+### README.md
+- Installation instructions
+- Usage examples
+- Customization guide
+- Component documentation
+- Theming guide
+
+### Component Documentation
+- Props interface
+- Usage examples
+- Styling guidelines
+- Accessibility considerations
+
+## Best Practices
+
+1. **Code Organization**
+   - Follow the established file structure
+   - Use consistent naming conventions
+   - Implement proper TypeScript types
+   - Maintain component isolation
+
+2. **Styling**
+   - Use Tailwind CSS utility classes
+   - Implement responsive design
+   - Follow the color system
+   - Maintain consistent spacing
+
+3. **Performance**
+   - Optimize images
+   - Implement lazy loading
+   - Minimize bundle size
+   - Use proper caching strategies
+
+4. **Accessibility**
+   - Use semantic HTML
+   - Implement ARIA labels
+   - Ensure keyboard navigation
+   - Maintain color contrast
+
+5. **Testing**
+   - Write unit tests
+   - Implement E2E tests
+   - Test responsive design
+   - Verify accessibility
+
+## Template Registration
+
+```typescript
+// index.ts
+import type { Component } from 'svelte';
+import type { TemplateComponents } from '$lib/utils/types/template';
+
+import CoursesPage from './pages/Courses.svelte';
+import HomePage from './pages/Home.svelte';
+import Navigation from './Navigation.svelte';
+import Footer from './Footer.svelte';
+import Button from './PrimaryButton.svelte';
+
+export const components: TemplateComponents = {
+  navigation: Navigation as unknown as Component,
+  footer: Footer as unknown as Component,
+  button: Button as unknown as Component,
+  coursespage: CoursesPage as unknown as Component,
+  homepage: HomePage as unknown as Component
+};
+```
+
+## Conclusion
+Follow these guidelines to create consistent, maintainable, and high-quality templates for the ClassroomIO platform. Ensure all components meet the requirements and follow the established patterns for optimal integration and user experience.

@@ -25,6 +25,7 @@
   const seo: Section | undefined = $derived(getPageSection(data.sharedPage, 'seo'));
 
   onMount(() => {
+    console.log(data);
     homePage.set(data.page);
     sharedPage.set(data.sharedPage);
     courses.set(data.courses);
