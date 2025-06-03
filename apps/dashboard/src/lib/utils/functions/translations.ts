@@ -1,18 +1,10 @@
-import { writable } from 'svelte/store';
-import i18n, { type Config } from 'sveltekit-i18n';
 import { LOCALE } from '$lib/utils/types';
+import i18n from '@sveltekit-i18n/base';
+import parser from '@sveltekit-i18n/parser-icu';
+import { writable } from 'svelte/store';
 
-interface Params {
-  dateValue: number;
-  value: number;
-  download: number;
-  award: number;
-  val: Date;
-}
-
-const config: Config<Partial<Params>> = {
-  initLocale: 'en',
-  // parser: parser(),
+export const config = {
+  parser: parser(),
   loaders: [
     {
       locale: 'en',
@@ -71,17 +63,14 @@ loading.subscribe(async ($loading) => {
   }
 });
 
-export async function handleLocaleChange(newLocale) {
+export function handleLocaleChange(newLocale: string) {
   if (!newLocale) {
     return;
   }
 
   locale.set(newLocale);
 
-  await fetch('/api/i18n', {
-    body: JSON.stringify({ locale: newLocale }),
-    method: 'POST'
-  });
+  selectedLocale.set(newLocale);
 }
 
 export function lessonFallbackNote(

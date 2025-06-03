@@ -43,7 +43,8 @@
     },
     "lessons": {
       "error": {
-        "try_later": "Quelque chose ne va pas – Veuillez réessayer plus tard"
+        "try_later": "Quelque chose ne va pas – Veuillez réessayer plus tard",
+        "exercise_not_complete": "Terminez tous les exercices pour les marquer comme terminés"
       },
       "success": {
         "complete_marked": "Marqué comme terminé",
@@ -159,7 +160,8 @@
     "generic": {
       "success_delete": "Supprimé avec succès",
       "try_again": "Erreur - Veuillez réessayer plus tard"
-    }
+    },
+    "success_delete": "Supprimé avec succès"
   },
   "exercises": {
     "heading": "Des exercices",
@@ -479,7 +481,9 @@
           "invite_sent": "Invitation envoyée",
           "you": "Toi",
           "remove": "Retirer"
-        }
+        },
+        "view": "Voir",
+        "delete_profile": "Supprimer le profil"
       },
       "marks": {
         "title": "Des marques",
@@ -571,7 +575,11 @@
         "comments": {
           "title": "commentaires",
           "you": "Toi",
-          "placeholder": "Dire quelque chose"
+          "placeholder": "Dire quelque chose",
+          "text_area_title": "Laisser un commentaire",
+          "comment_btn": "Commentaire",
+          "load_more_btn": "Charger plus",
+          "cancel_btn": "Annuler"
         },
         "exercises": {
           "heading": "Tous les exercices",
@@ -902,16 +910,6 @@
     "create_course": "Créer un cours",
     "view_site": "Voir le site",
     "visit_site": "Visitez le site Web",
-    "hero_content": "Merci pour ce que vous faites ❤️. Vous changez des vies, une classe à la fois et grâce à vous, le monde est meilleur. 😊",
-    "hero_button": "Continuez à construire 🚀",
-    "your_schedule": "Votre emploi du temps",
-    "today": "Aujourd'hui",
-    "yesterday": "Hier",
-    "tomorrow": "Demain",
-    "no_schedule": "Pas de cours ce jour",
-    "join_call": "Rejoindre l'appel",
-    "click_to_join": "Cliquez pour rejoindre l'appel",
-    "no_call_link": "Aucun lien d'appel n'a été ajouté pour cette leçon. Demandez à votre entraîneur",
     "current_lesson": "En cours d'apprentissage",
     "your_progress": "Votre progression",
     "continue": "Continuer",
@@ -920,7 +918,23 @@
     "lms_dashboard_hero": "Aujourd'hui est un autre jour pour vous rapprocher de vos objectifs d'apprentissage. N'abandonnez pas, plus vous apprenez, mieux vous vous améliorez.",
     "dont": "N'abandonne pas",
     "lessons_completed": "Leçons terminées",
-    "No_courses_started": "Aucun cours n'a commencé"
+    "no_courses_started": "Aucun cours n'a commencé",
+    "revenue": "Revenu",
+    "revenue_description": "Revenus approximatifs provenant de la vente de cours",
+    "no_of_courses": "Nombre de cours",
+    "no_courses_description": "Cours créés au sein de cette organisation",
+    "total_students": "Nombre total d'étudiants",
+    "total_students_description": "Basé sur les inscriptions des étudiants",
+    "top_courses": "Meilleurs cours",
+    "students": "étudiants",
+    "completion": "achèvement",
+    "create_first_course": "Créez votre premier cours",
+    "create_first_course_description": "Commencez à créer des cours pour suivre la progression des cours",
+    "recent_enrollments": "Inscriptions récentes",
+    "publish_first_course": "Publiez votre premier cours",
+    "publish_first_course_description": "Pour suivre les inscriptions, publier un cours et inviter des étudiants",
+    "publish_course": "Publier un cours",
+    "student": "étudiant"
   },
   "schedule": {
     "title": "Votre emploi du temps",
@@ -949,7 +963,8 @@
         "refresh": "Rafraîchir",
         "remove": "Retirer",
         "custom_favicon": "Icône de favori personnalisée",
-        "custom_code": "Code personnalisé"
+        "custom_code": "Code personnalisé",
+        "custom_domain_not_classroomio": "Le domaine ne peut pas contenir « classroomio »"
       },
       "customize-lms": {
         "title": "Personnaliser le LMS",
@@ -1132,8 +1147,9 @@
       "sub_title": "Détails de la facturation",
       "manage": "Gérez votre facturation",
       "active": "Vous n'avez aucune facturation active",
-      "lemonsqueezy": "Nous utilisons Lemonsqueezy pour vous aider à gérer votre facturation",
-      "open_billing": "Facturation ouverte"
+      "open_billing": "Facturation ouverte",
+      "provider": "Nous utilisons Polar pour vous aider à gérer votre facturation",
+      "error": "Une erreur s'est produite lors de l'ouverture de la facturation"
     },
     "integrations": {
       "heading": "Télégramme",
@@ -1291,7 +1307,29 @@
     "email": "Votre email",
     "password": "Votre mot de passe",
     "forgot": "Mot de passe oublié?",
-    "login": "Se connecter"
+    "login": "Se connecter",
+    "login_with": "ou connectez-vous avec",
+    "signup_with": "ou inscrivez-vous avec",
+    "already_have_account": "Vous avez déjà un compte ?",
+    "not_registered_yet": "Pas encore inscrit ?",
+    "signup": "S'inscrire",
+    "signup_with_google": "Inscrivez-vous avec Google",
+    "login_with_google": "Connectez-vous avec Google",
+    "create_to_join": "Créez un compte gratuit pour vous inscrire",
+    "login_to_join": "Connectez-vous pour rejoindre",
+    "validation": {
+      "unable_to_create_profile": "Impossible de créer un profil",
+      "user_cannot_be_created": "L'utilisateur ne peut pas être créé"
+    },
+    "fields": {
+      "email": "Votre e-mail",
+      "full_name": "Nom et prénom",
+      "password": "Votre mot de passe",
+      "confirm_password": "Confirmez le mot de passe",
+      "password_helper_message": "Le mot de passe doit comporter plus de 6 caractères",
+      "create_account": "Créer un compte"
+    },
+    "create_account": "Créer un compte"
   },
   "welcome_modal": {
     "we_at": "Nous à",
@@ -1454,5 +1492,29 @@
     "content": "Es-tu sûr?",
     "no": "Non",
     "yes": "Oui"
+  },
+  "analytics": {
+    "courses": "Cours",
+    "progress": "Progrès",
+    "progress_description": "{value, number} sur {total, number} terminé",
+    "incomplete": "Incomplet",
+    "completed": "Complété",
+    "complete": "complet",
+    "last_seen": "Vu pour la dernière fois",
+    "a_while_ago": "il y a quelque temps",
+    "exercises": "Exercices",
+    "graded": "Noté",
+    "not_graded": "Non noté",
+    "enrolled_courses": "Cours inscrits",
+    "enrolled_courses_description": "Tous les cours inscrits",
+    "overall_course_progress": "Progression globale du cours",
+    "overall_course_progress_description": "Pourcentage de leçons terminées",
+    "total_average_grade": "Note moyenne totale",
+    "total_average_grade_description": "Basé sur les notes des exercices dans tous les cours",
+    "overall_course_progress_user_description": "Basé sur l'achèvement de la leçon",
+    "assignment_completion": "Achèvement de la mission",
+    "assignment_completion_description": "Pourcentage de missions terminées",
+    "average_grade": "Note moyenne",
+    "average_grade_description": "Note moyenne de tous les devoirs terminés"
   }
 }

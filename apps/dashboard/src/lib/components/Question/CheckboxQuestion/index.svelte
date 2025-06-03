@@ -1,13 +1,13 @@
 <script lang="ts">
   import CodeSnippet from '$lib/components/CodeSnippet/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import Checkbox from '$lib/components/Form/Checkbox.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import Grade from '$lib/components/Question/Grade.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import ReasonBox from '../ReasonBox.svelte';
   import QuestionTitle from '../QuestionTitle.svelte';
+  import ReasonBox from '../ReasonBox.svelte';
 
   export let title = '';
   export let index = 1;
@@ -102,7 +102,7 @@
   <div class="ml-4">
     {#each options as option}
       <button
-        class="cursor-pointer text-left my-2 border-2 border-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-neutral-800 w-full {getValidationClassName(
+        class="my-2 w-full cursor-pointer rounded-md border-2 border-gray-300 text-left hover:bg-gray-200 dark:hover:bg-neutral-800 {getValidationClassName(
           option
         )}"
         type="button"
@@ -123,7 +123,7 @@
   {/if}
 
   {#if !isPreview}
-    <div class="mt-3 flex items-center justify-between w-full">
+    <div class="mt-3 flex w-full items-center justify-between">
       <PrimaryButton
         onClick={handlePrevious}
         label={$t('course.navItem.lessons.exercises.all_exercises.previous')}

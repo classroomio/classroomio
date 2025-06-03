@@ -5,7 +5,7 @@
 
 <div class="border-t-[1px] px-[2%] lg:px-[14%]">
   <div class="flex flex-col items-center justify-between py-[10%] pl-5 lg:flex-row lg:pl-0">
-    <div class="w-full lg:w-2/4">
+    <div class="w-full min-w-[200px] lg:w-3/12">
       <img
         width="32"
         height="32"
@@ -40,12 +40,12 @@
         </a>
         <a href="https://twitter.com/classroomio" target="_blank" aria-label="Twitter Link">
           <img
-            width="10"
-            height="10"
+            width="20"
+            height="20"
             loading="lazy"
-            src="/twitter_logo.png"
+            src="/twitter.svg"
             alt=""
-            class="w-3 scale-90 cursor-pointer transition-all hover:scale-110 hover:fill-gray-500 lg:scale-150"
+            class="scale-90 cursor-pointer transition-all hover:scale-110 hover:fill-gray-500 lg:scale-150"
           />
         </a>
         <a href="https://www.youtube.com/@ClassroomIO" target="_blank" aria-label="Youtube Link">
@@ -58,9 +58,9 @@
     </div>
 
     <nav
-      class="mt-16 flex w-full flex-col items-start justify-between gap-3 space-y-6 lg:mt-0 lg:w-2/4 lg:flex-row lg:space-y-0"
+      class="mt-16 flex w-full min-w-[400px] flex-col items-start justify-end gap-12 space-y-6 lg:mt-0 lg:w-3/4 lg:flex-row lg:space-y-0"
     >
-      <div>
+      <div class="max-w-[120px]">
         <p class="lg:text-base mb-3 text-base font-semibold leading-6 text-gray-900 lg:mb-10">
           Product
         </p>
@@ -93,11 +93,39 @@
         </ul>
       </div>
 
-      <div>
+      <div class="max-w-[120px]">
+        <p class="lg:text-base mb-3 text-base font-semibold leading-6 text-gray-900 lg:mb-10">
+          Solutions
+        </p>
+        <ul class="space-y-2 lg:space-y-4">
+          <li
+            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
+          >
+            <a href="/employee-training">Employee Training</a>
+          </li>
+          <li
+            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
+          >
+            <a href="/bootcamps">Bootcamps</a>
+          </li>
+          <li
+            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
+          >
+            <a href="/customer-education">Customer Education</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="max-w-[120px]">
         <p class="lg:text-base mb-3 text-base font-semibold leading-6 text-gray-900 lg:mb-10">
           Resources
         </p>
         <ul class="space-y-2 lg:space-y-4">
+          <li
+            class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
+          >
+            <a href="/contact">Contact us</a>
+          </li>
           <li
             class="lg:text-base text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900"
           >
@@ -123,7 +151,7 @@
         </ul>
       </div>
 
-      <div>
+      <div class="max-w-[120px]">
         <p class="lg:text-base mb-3 text-base font-semibold leading-6 text-gray-900 lg:mb-10">
           Company
         </p>

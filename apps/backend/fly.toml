@@ -7,7 +7,7 @@ app = "classroomio-server"
 primary_region = "lhr"
 
 [build]
-  dockerfile = "Dockerfile.prod"
+  dockerfile = "Dockerfile"
 
 [http_service]
   internal_port = 3002

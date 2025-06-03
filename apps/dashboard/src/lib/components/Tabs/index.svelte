@@ -5,28 +5,28 @@
   export let tabs: {
     icon?: any;
     label: string;
-    value: string;
+    value: string | number;
     badgeValue?: number;
   }[] = [];
   export let currentTab: string | number;
   export let onChange = (v: string | number) => () => {};
 </script>
 
-<div class="w-full flex flex-col">
-  <div class="flex items-center border-b w-full overflow-x-auto mb-2">
+<div class="flex w-full flex-col">
+  <div class="mb-2 flex w-full items-center overflow-x-auto border-b">
     {#each tabs as tab}
       {#if !tab.icon && !tab.badgeValue}
         <button
           class="relative {currentTab === tab.value
             ? 'text-primary-700'
-            : 'dark:bg-gray-500 dark:text-white'} dark:bg-transparent font-semibold focus:outline-none w-fit mr-4 text-center py-3 px-2"
+            : 'dark:bg-gray-500 dark:text-white'} mr-4 w-fit px-2 py-3 text-center font-semibold focus:outline-none dark:bg-transparent"
           on:click={onChange(tab.value)}
         >
-          <div class="flex items-center justify-center w-full text-center">
+          <div class="flex w-full items-center justify-center text-center">
             {$t(tab.label)}
           </div>
           <span
-            class="absolute bottom-0 left-0 h-[2px] bg-primary-700 transition-all ease-in-out duration-500 {currentTab ===
+            class="bg-primary-700 absolute bottom-0 left-0 h-[2px] transition-all duration-500 ease-in-out {currentTab ===
             tab.value
               ? 'w-full'
               : 'w-0'}"
@@ -36,10 +36,10 @@
         <button
           class="relative {currentTab === tab.value
             ? 'text-primary-700'
-            : 'dark:bg-gray-500 dark:text-white'} dark:bg-transparent font-semibold focus:outline-none w-24 text-left py-3 mr-8 px-2"
+            : 'dark:bg-gray-500 dark:text-white'} mr-8 w-24 px-2 py-3 text-left font-semibold focus:outline-none dark:bg-transparent"
           on:click={onChange(tab.value)}
         >
-          <div class="grid grid-cols-5 md:grid-cols-4 gap-5 md:gap-3 items-center">
+          <div class="grid grid-cols-5 items-center gap-5 md:grid-cols-4 md:gap-3">
             {#if tab.icon}
               <svelte:component this={tab.icon} />
             {/if}
@@ -54,7 +54,7 @@
             {/if}
           </div>
           <span
-            class="absolute bottom-0 left-0 h-[2px] bg-primary-700 transition-all ease-in-out duration-500 {currentTab ===
+            class="bg-primary-700 absolute bottom-0 left-0 h-[2px] transition-all duration-500 ease-in-out {currentTab ===
             tab.value
               ? 'w-full'
               : 'w-0'}"

@@ -36,6 +36,18 @@
       desc: 'This feature gives you the ability to group courses into folder which we are calling - Pathways. Students can complete a series of courses before getting a certificate'
     },
     {
+      title: 'Course Batches',
+      desc: 'A course can be taken in batches, meaning that you can create different cohorts of students within one course. The benefit of this is that you can teach a course multiple times to different groups of students. This is useful mainly for bootcamps and teaching organizations.'
+    },
+    {
+      title: 'Tags',
+      desc: 'With tags you can group your courses into categories. This is useful for organizing your courses and making them easier to find.'
+    },
+    {
+      title: 'API',
+      desc: 'We are working on our public API which allows you to perform CRUD operations against your classroomio organization.'
+    },
+    {
       title: 'Embedable Course',
       desc: 'You can embed selected course form ClassroomIO on any website of your choice'
     },

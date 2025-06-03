@@ -1,21 +1,22 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import AuthUI from '$lib/components/AuthUI/index.svelte';
+  import type { Profile } from '$lib/components/Course/components/People/types';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
+  import { logout } from '$lib/utils/functions/logout';
   import { getSupabase } from '$lib/utils/functions/supabase';
+  import { setTheme } from '$lib/utils/functions/theme';
+  import { t } from '$lib/utils/functions/translations';
   import {
     authValidation,
     getConfirmPasswordError,
     getDisableSubmit
   } from '$lib/utils/functions/validator';
-  import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
-  import AuthUI from '$lib/components/AuthUI/index.svelte';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import { setTheme } from '$lib/utils/functions/theme';
   import type { CurrentOrg } from '$lib/utils/types/org';
   import { onMount } from 'svelte';
-  import type { Profile } from '$lib/components/Course/components/People/types';
-  import { logout } from '$lib/utils/functions/logout';
 
   export let data;
 
@@ -61,7 +62,7 @@
         if (error) throw error;
 
         if (!signupData.user) {
-          throw 'User cannot be created ';
+          throw $t('login.validation.user_cannot_be_created');
         }
 
         // Insert profile
@@ -86,7 +87,7 @@
       }
 
       if (!profile?.id) {
-        throw 'Unable to create profile';
+        throw $t('login.validation.unable_to_create_profile');
       }
 
       const res = await supabase.auth.signInWithPassword({
@@ -142,9 +143,6 @@
   $: disableSubmit = getDisableSubmit(fields);
 
   $: console.log('data', data.invite);
-
-  $: console.log('org', $currentOrg);
-  $: console.log('path', $currentOrgPath);
 </script>
 
 <svelte:head>
@@ -153,15 +151,15 @@
 
 <AuthUI {supabase} isLogin={false} {handleSubmit} isLoading={loading} showLogo={true} bind:formRef>
   <div class="mt-4 w-full">
-    <p class="dark:text-white text-lg font-semibold mb-6">
+    <p class="mb-6 text-lg font-semibold dark:text-white">
       {#if data.invite.profile}
-        Log in to join
+        {$t('login.login_to_join')}
       {:else}
-        Create a free account to join
+        {$t('login.create_to_join')}
       {/if}
     </p>
     <TextField
-      label="Your Email"
+      label={$t('login.fields.email')}
       value={data.invite.email}
       type="email"
       placeholder="you@domain.com"
@@ -171,7 +169,7 @@
     />
     {#if !data.invite.profile}
       <TextField
-        label="Full Name"
+        label={$t('login.fields.full_name')}
         bind:value={fields.name}
         type="text"
         autoFocus={true}
@@ -184,7 +182,7 @@
       />
     {/if}
     <TextField
-      label="Your Password"
+      label={$t('login.fields.password')}
       bind:value={fields.password}
       type="password"
       placeholder="************"
@@ -192,12 +190,12 @@
       inputClassName="w-full"
       isDisabled={loading}
       errorMessage={errors.password}
-      helperMessage="Password must be more than 6 characters"
+      helperMessage={$t('login.fields.password_helper_message')}
       isRequired
     />
     {#if !data.invite.profile}
       <TextField
-        label="Confirm Password"
+        label={$t('login.fields.confirm_password')}
         bind:value={fields.confirmPassword}
         type="password"
         placeholder="************"
@@ -213,7 +211,7 @@
     {/if}
   </div>
 
-  <div class="my-4 w-full flex justify-end items-center">
+  <div class="my-4 flex w-full items-center justify-end">
     <PrimaryButton
       label="Accept Invite"
       type="submit"

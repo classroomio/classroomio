@@ -1,24 +1,24 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { onMount } from 'svelte';
-  import Box from '$lib/components/Box/index.svelte';
-  import { Breadcrumb, BreadcrumbItem } from 'carbon-components-svelte';
-  import { Moon } from 'svelte-loading-spinners';
   import Backdrop from '$lib/components/Backdrop/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import PageBody from '$lib/components/PageBody/index.svelte';
-  import Exercise from '../Exercise/index.svelte';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { createExercise, createExerciseFromTemplate } from '$lib/utils/services/courses';
-  import { QUESTION_TYPES } from '$lib/components/Question/constants';
-  import { lesson } from '../store/lessons';
-  import { questionnaire, isQuestionnaireFetching } from '../store/exercise';
+  import Box from '$lib/components/Box/index.svelte';
   import NewExerciseModal from '$lib/components/Course/components/Lesson/Exercises/NewExerciseModal.svelte';
-  import type { ExerciseTemplate } from '$lib/utils/types';
+  import { PageBody } from '$lib/components/Page';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { QUESTION_TYPES } from '$lib/components/Question/constants';
+  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import { formatDate } from '$lib/utils/functions/routes/dashboard';
+  import { supabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
+  import { createExercise, createExerciseFromTemplate } from '$lib/utils/services/courses';
   import { globalStore } from '$lib/utils/store/app';
+  import type { ExerciseTemplate } from '$lib/utils/types';
+  import { Breadcrumb, BreadcrumbItem } from 'carbon-components-svelte';
+  import { onMount } from 'svelte';
+  import { Moon } from 'svelte-loading-spinners';
+  import Exercise from '../Exercise/index.svelte';
+  import { isQuestionnaireFetching, questionnaire } from '../store/exercise';
+  import { lesson } from '../store/lessons';
 
   export let path = '';
   export let exerciseId = '';

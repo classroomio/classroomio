@@ -1,7 +1,7 @@
+import { t } from '$lib/utils/functions/translations';
 import isNumber from 'lodash/isNumber';
 import z from 'zod';
 import { validateEmail } from './validateEmail';
-import { t } from '$lib/utils/functions/translations';
 
 const getOrgNameValidation = () =>
   z
@@ -85,12 +85,12 @@ const forgotValidationSchema = z.object({
 
 const authValidationSchema = z.object({
   email: z.string().email({
-    message: `${t.get('validations.auth.email.invalid_email')}`,
-    invalid_type_error: `${t.get('validations.invalid_type_error')}`
+    message: 'validations.auth.email.invalid_email',
+    invalid_type_error: 'validations.invalid_type_error'
   }),
   password: z.string().min(6, {
-    message: `${t.get('validations.auth.password.min_char')}`,
-    invalid_type_error: `${t.get('validations.invalid_type_error')}`
+    message: 'validations.auth.password.min_char',
+    invalid_type_error: 'validations.invalid_type_error'
   })
 });
 

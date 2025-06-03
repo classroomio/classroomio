@@ -1,3 +1,8 @@
 ```
-deno task start
+npm install
+npm run dev
+```
+
+```
+npm run deploy
 ```

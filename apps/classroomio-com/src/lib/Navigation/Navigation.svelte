@@ -1,52 +1,72 @@
 <script lang="ts">
-  import ChevronDown from 'carbon-icons-svelte/lib/ChevronDown.svelte';
-  import TextAlignJustify from 'carbon-icons-svelte/lib/TextAlignJustify.svelte';
-  import CloseLarge from 'carbon-icons-svelte/lib/CloseLarge.svelte';
-  import { fly } from 'svelte/transition';
-  import MachineLearningModel from 'carbon-icons-svelte/lib/MachineLearningModel.svelte';
-  import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
-  import CourseIcon from '$lib/Icons/CourseIcon.svelte';
-  import MapCenter from 'carbon-icons-svelte/lib/MapCenter.svelte';
   import { page } from '$app/stores';
+  import CourseIcon from '$lib/Icons/CourseIcon.svelte';
+  import ChevronDown from 'carbon-icons-svelte/lib/ChevronDown.svelte';
+  import CloseLarge from 'carbon-icons-svelte/lib/CloseLarge.svelte';
+  import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
+  import MapCenter from 'carbon-icons-svelte/lib/MapCenter.svelte';
+  import TextAlignJustify from 'carbon-icons-svelte/lib/TextAlignJustify.svelte';
+  import { onMount } from 'svelte';
+  import { fly } from 'svelte/transition';
 
-  let showsubNav = false;
-  let showNav = false;
+  let stars = 0;
+  let showDrawer = false;
+  let showSolutions = false;
   let activeLink = '';
+  let closeTimeout: NodeJS.Timeout;
 
-  function handleShow() {
-    showsubNav = !showsubNav;
+  function closeSolutions() {
+    closeTimeout = setTimeout(() => {
+      showSolutions = false;
+    }, 100);
+  }
+  function resetCloseTimeout() {
+    clearTimeout(closeTimeout);
   }
 
-  function handleShowNav() {
-    showNav = !showNav;
+  function handleShowDrawer() {
+    showDrawer = !showDrawer;
   }
 
-  const superpowers = [
+  function handleShowSolutions() {
+    showSolutions = !showSolutions;
+  }
+
+  const solutions = [
     {
-      key: 'coursemanagement',
-      title: 'Course Management',
-      subtitle: 'Simple course management tools'
+      key: 'employee-training',
+      title: 'Employee Training',
+      subtitle: 'Keep your team in sync.'
     },
     {
-      key: 'ai',
-      title: 'AI Support',
-      subtitle: 'Double your productivity with AI'
+      key: 'bootcamps',
+      title: 'Bootcamps',
+      subtitle: 'Drive student satisfaction.'
     },
     {
-      key: 'customization',
-      title: 'Dashboard Customization',
-      subtitle: 'Customize your classroom to your needs'
-    },
-    {
-      key: 'collaboration',
-      title: 'Community',
-      subtitle: 'Seamlessly collaborate with your students'
+      key: 'customer-education',
+      title: 'Customer Education',
+      subtitle: 'Teach customers your product.'
     }
   ];
 
   $: activeLink = $page.url.pathname;
   $: activeHash = $page.url.hash;
-  $: isSuperpowersActive = superpowers.some((sp) => activeHash.includes(sp.key));
+  $: isSolutionsActive = solutions.some((s) => activeHash.includes(s.key));
+
+  async function setStars() {
+    try {
+      const response = await fetch('https://api.github.com/repos/classroomio/classroomio');
+      const data = await response.json();
+      stars = data?.stargazers_count || 0;
+    } catch (error) {
+      console.error('Error fetching GitHub stars:', error);
+    }
+  }
+
+  onMount(() => {
+    setStars();
+  });
 </script>
 
 <div
@@ -67,47 +87,51 @@
   </a>
 
   <nav class="w-[50%] hidden md:hidden lg:block">
-    <ul class="flex items-center justify-between w-full gap-2">
+    <ul class="flex justify-center items-center w-full gap-5">
       <li class="text-gray-800 font-semibold text-sm cursor-pointer relative">
         <button
-          class="flex items-center hover:bg-gray-100 px-4 py-2 rounded-md"
-          on:click={() => (showNav = !showNav)}
-          class:active={isSuperpowersActive}
+          on:focus={() => (showSolutions = true)}
+          on:mouseenter={() => (showSolutions = true)}
+          on:mouseleave={closeSolutions}
+          class="flex items-center hover:bg-gray-100 {showSolutions &&
+            'bg-gray-100'} px-4 py-2 rounded-md transition-all duration-200"
+          on:click={() => (showSolutions = !showSolutions)}
+          class:active={isSolutionsActive}
         >
-          Our Superpowers <ChevronDown class="ml-2" />
+          <span class="mr-2">Solutions</span>
+          <ChevronDown size={16} />
         </button>
-        {#if showNav}
-          <div
-            class="absolute w-[24rem] top-10 -left-10 border px-5 py-5 rounded-[30px] shadow-slate-700 z-[3001] bg-white"
+        {#if showSolutions}
+          <button
+            class="absolute w-[20rem] top-10 -left-10 border rounded-lg px-2 py-4 shadow-slate-700 z-[3001] bg-white flex flex-col gap-3"
+            on:mouseenter={resetCloseTimeout}
+            on:mouseleave={() => (showSolutions = false)}
           >
-            {#each superpowers as superpower}
+            {#each solutions as solution}
               <a
-                class="flex justify-between items-center w-full rounded-lg hover:bg-gray-100 p-5 mb-4"
-                href="/#{superpower.key}"
-                on:click={() => {
-                  showNav = !showNav;
-                }}
+                class="flex justify-between items-center w-full rounded-lg hover:bg-gray-100 hover:cursor-pointer p-2 transition-colors duration-200"
+                href="/{solution.key}"
+                on:click={() => (showSolutions = false)}
               >
-                {#if superpower.key === 'coursemanagement'}
+                {#if solution.key === 'employee-training'}
                   <CourseIcon />
-                {:else if superpower.key === 'customization'}
+                {:else if solution.key === 'bootcamps'}
                   <MapCenter size={24} />
-                {:else if superpower.key === 'collaboration'}
+                {:else if solution.key === 'customer-education'}
                   <ForumIcon size={24} />
-                {:else if superpower.key === 'ai'}
-                  <MachineLearningModel size={24} />
                 {/if}
-                <div class="w-[86%] text-start">
+
+                <div class="w-[84%] text-start">
                   <h3 class="font-semibold text-sm text-gray-700">
-                    {superpower.title}
+                    {solution.title}
                   </h3>
                   <p class="font-normal text-sm text-gray-600">
-                    {superpower.subtitle}
+                    {solution.subtitle}
                   </p>
                 </div>
               </a>
             {/each}
-          </div>
+          </button>
         {/if}
       </li>
       <a
@@ -115,53 +139,62 @@
         class="text-gray-800 font-semibold text-sm cursor-pointer"
         class:active={activeLink.startsWith('/tools')}
       >
-        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Free Tools</li>
+        <li class="hover:bg-gray-100 px-4 py-2 rounded-md transition-all duration-200">
+          Free Tools
+        </li>
       </a>
-      <!-- <a
-        href="/docs"
-        target="_blank"
-        class="text-gray-800 font-semibold text-sm cursor-pointer"
-        class:active={activeLink.startsWith('/docs')}
-      >
-        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Docs</li>
-      </a> -->
 
       <a
         href="/blog"
         class="text-gray-800 font-semibold text-sm cursor-pointer"
         class:active={activeLink.startsWith('/blog')}
       >
-        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Blog</li>
+        <li class="hover:bg-gray-100 px-4 py-2 rounded-md transition-all duration-200">Blog</li>
       </a>
       <a
         href="/pricing"
         class="text-gray-800 font-semibold text-sm cursor-pointer"
         class:active={activeLink.startsWith('/pricing')}
       >
-        <li class="hover:bg-gray-100 px-4 py-2 rounded-md">Pricing</li>
+        <li class="hover:bg-gray-100 px-4 py-2 rounded-md transition-all duration-200">Pricing</li>
       </a>
     </ul>
   </nav>
 
-  <div class="justify-between items-center flex-row hidden md:hidden lg:flex">
-    <a href="/discord" target="_blank">
+  <div class="justify-between items-center flex-row hidden md:hidden lg:flex gap-3">
+    <a
+      href="/discord"
+      target="_blank"
+      class="flex items-center hover:opacity-80 transition-opacity duration-200"
+    >
       <img
         loading="lazy"
         alt="discord logo"
         src="/discord-blue.png"
-        class="w-8 h-6 mr-4 cursor-pointer"
+        class="w-6 h-5 cursor-pointer"
       />
     </a>
-    <a href="/github" target="_blank">
-      <img
-        loading="lazy"
-        alt="github logo"
-        src="/github-mark.png"
-        class="w-6 h-6 mr-4 cursor-pointer"
-      />
-    </a>
+    <div class="flex items-center">
+      <a
+        href="/github"
+        target="_blank"
+        class="flex items-center gap-1.5 p-2 rounded-md transition-all duration-200 ease-in-out hover:bg-gray-100 group"
+      >
+        <img
+          loading="lazy"
+          alt="github logo"
+          src="/github-mark.png"
+          class="w-5 h-5 cursor-pointer transition-transform duration-200 group-hover:scale-110"
+        />
+        <span
+          class="text-sm text-gray-600 font-medium leading-none transition-colors duration-200 group-hover:text-black"
+        >
+          {stars}
+        </span>
+      </a>
+    </div>
     <a
-      class="font-medium text-sm after:content-['→'] after:ml-2"
+      class="font-medium text-sm after:content-['→'] after:ml-2 hover:opacity-80 transition-opacity duration-200"
       href="https://app.classroomio.com"
     >
       Dashboard
@@ -172,10 +205,12 @@
     type="button"
     aria-label="Hamburger Menu"
     class="block md:block lg:hidden"
-    on:click={handleShowNav}><TextAlignJustify size={24} /></button
+    on:click={handleShowSolutions}
   >
+    <TextAlignJustify size={24} />
+  </button>
 
-  {#if showNav}
+  {#if showSolutions}
     <div
       in:fly={{ x: 20, duration: 700 }}
       out:fly={{ x: 20, duration: 400 }}
@@ -190,71 +225,60 @@
           alt="classroomio logo"
           class="w-[15%]"
         />
-        <button on:click={handleShowNav}><CloseLarge size={24} class="mr-5" /></button>
+        <button class="mr-5" on:click={handleShowSolutions}>
+          <CloseLarge size={24} />
+        </button>
       </div>
       <nav>
         <ul class="flex items-center flex-col lg:flex-row justify-between w-full">
           <li class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer w-full">
             <button
-              class="w-full flex items-center justify-between hover:bg-gray-100 py-3 px-4 rounded-lg"
-              on:click={handleShow}
-              class:active={isSuperpowersActive}
+              class="w-full flex items-center justify-between hover:bg-gray-100 py-3 px-4 rounded-lg transition-all duration-200"
+              on:click={handleShowDrawer}
+              class:active={isSolutionsActive}
             >
               Our Superpowers <ChevronDown />
             </button>
-            {#if showsubNav}
+            {#if showDrawer}
               <div in:fly={{ y: -20, duration: 700 }} out:fly={{ y: 20, duration: 400 }}>
-                {#each superpowers as superpower}
+                {#each solutions as solution}
                   <a
-                    href="/#{superpower.key}"
+                    href="/{solution.key}"
                     on:click={() => {
-                      handleShowNav();
+                      handleShowSolutions();
                     }}
                   >
                     <p
-                      class="font-normal text-xs text-gray-700 hover:bg-gray-100 rounded-lg py-2.5 pl-5"
+                      class="font-normal text-xs text-gray-700 hover:bg-gray-100 rounded-lg py-2.5 pl-5 transition-colors duration-200"
                     >
-                      {superpower.title}
+                      {solution.title}
                     </p>
                   </a>
                 {/each}
               </div>
             {/if}
           </li>
-          <!-- Free Tools -->
           <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
-            on:click={handleShowNav}
+            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full transition-all duration-200"
+            on:click={handleShowSolutions}
             href="/tools"
           >
             <li>Free Tools</li>
           </a>
-          <!-- <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
-            on:click={() => {
-              handleShowNav();
-            }}
-            class:active={activeLink.startsWith('/docs')}
-            href="/docs"
-            target="_blank"
-          >
-            <li>Docs</li>
-          </a> -->
           <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
+            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full transition-all duration-200"
             on:click={() => {
-              handleShowNav();
+              handleShowSolutions();
             }}
             class:active={activeLink.startsWith('/blog')}
             href="/blog"
           >
             <li>Blog</li>
           </a>
-          <!-- Pricing -->
           <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full"
+            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full transition-all duration-200"
             on:click={() => {
-              handleShowNav();
+              handleShowSolutions();
             }}
             href="/pricing"
             class:active={activeLink.startsWith('/pricing')}
@@ -262,9 +286,9 @@
             <li>Pricing</li>
           </a>
           <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full"
+            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full transition-all duration-200"
             on:click={() => {
-              handleShowNav();
+              handleShowSolutions();
             }}
             class:active={activeHash.includes('morefeatures')}
             href="/#morefeatures"
@@ -277,31 +301,35 @@
         <a
           href="/discord"
           target="_blank"
-          class="flex items-center rounded-md after:ml-2 w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg"
+          class="flex items-center rounded-md w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg transition-all duration-200"
         >
           <img
             loading="lazy"
             alt="discord logo"
             src="/discord-blue.png"
-            class="w-8 h-6 mr-2 cursor-pointer"
+            class="w-6 h-5 mr-2 cursor-pointer"
           />
           <span>Discord</span>
         </a>
         <a
           href="/github"
           target="_blank"
-          class="flex items-center rounded-md after:ml-2 w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg"
+          class="flex items-center rounded-md w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg group transition-all duration-200"
         >
           <img
             loading="lazy"
             alt="github logo"
             src="/github-mark.png"
-            class="w-6 h-6 mr-3 cursor-pointer"
+            class="w-5 h-5 cursor-pointer transition-transform duration-200 group-hover:scale-110"
           />
-          <span>Github</span>
+          <span class="ml-3 transition-colors duration-200 group-hover:text-black">Github</span>
+          <span
+            class="text-sm text-gray-600 font-medium ml-1 transition-colors duration-200 group-hover:text-black"
+            >({stars})</span
+          >
         </a>
         <a
-          class="font-semibold after:content-['→'] rounded-md after:ml-2 w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg"
+          class="font-semibold after:content-['→'] rounded-md after:ml-2 w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg transition-all duration-200"
           href="https://app.classroomio.com"
         >
           Dashboard

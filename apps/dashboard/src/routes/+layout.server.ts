@@ -1,17 +1,19 @@
-import type { MetaTagsProps } from 'svelte-meta-tags';
-import { dev, browser } from '$app/environment';
-import { redirect } from '@sveltejs/kit';
-import { blockedSubdomain } from '$lib/utils/constants/app';
-import { getCurrentOrg } from '$lib/utils/services/org';
-import { getSupabase, supabase } from '$lib/utils/functions/supabase';
-import { loadTranslations } from '$lib/utils/functions/translations';
-import type { CurrentOrg } from '$lib/utils/types/org';
-import { IS_SELFHOSTED } from '$env/static/private';
+
+import { dev } from '$app/environment';
 import { env } from '$env/dynamic/private';
+import { IS_SELFHOSTED } from '$env/static/private';
+import { blockedSubdomain } from '$lib/utils/constants/app';
+import { getSupabase, supabase } from '$lib/utils/functions/supabase';
+import { getCurrentOrg } from '$lib/utils/services/org';
+import type { CurrentOrg } from '$lib/utils/types/org';
+import { redirect } from '@sveltejs/kit';
+import type { MetaTagsProps } from 'svelte-meta-tags';
 
 if (!supabase) {
   getSupabase();
 }
+
+export const ssr = IS_SELFHOSTED === 'true' ? false : true;
 
 interface LoadOutput {
   orgSiteName: string;
@@ -19,15 +21,19 @@ interface LoadOutput {
   skipAuth: boolean;
   org: CurrentOrg | null;
   baseMetaTags: MetaTagsProps;
+  serverLang: string;
 }
 
-export const load = async ({ url, cookies }): Promise<LoadOutput> => {
+const APP_SUBDOMAINS = env.PRIVATE_APP_SUBDOMAINS?.split(',');
+
+export const load = async ({ url, cookies, request }): Promise<LoadOutput> => {
   const response: LoadOutput = {
     orgSiteName: '',
     isOrgSite: false,
     skipAuth: false,
     org: null,
-    baseMetaTags: getBaseMetaTags(url)
+    baseMetaTags: getBaseMetaTags(url),
+    serverLang: request.headers?.get('accept-language') || ''
   };
 
   console.log('IS_SELFHOSTED', IS_SELFHOSTED);
@@ -73,7 +79,7 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
 
   const isDev = dev || isLocalHost;
 
-  if (!url.host.includes('.classroomio.com') && !isLocalHost) {
+  if (isURLCustomDomain(url)) {
     // Custom domain
     response.org = (await getCurrentOrg(url.host, true, true)) || null;
 
@@ -87,7 +93,14 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     response.orgSiteName = response.org?.siteName || '';
     return response;
   } else if (!blockedSubdomain.includes(subdomain)) {
+    if (APP_SUBDOMAINS.includes(subdomain)) {
+      // This is an app domain specified in the .env file
+      return response;
+    }
+
     const answer = !!subdomain;
+
+    console.log('subdomain', subdomain);
 
     response.isOrgSite = debugMode || answer;
     response.orgSiteName = debugMode ? _orgSiteName : subdomain;
@@ -96,22 +109,29 @@ export const load = async ({ url, cookies }): Promise<LoadOutput> => {
     if (!response.org && !isDev) {
       throw redirect(307, 'https://app.classroomio.com/404?type=org');
     } else if (!response.org && _orgSiteName) {
-      cookies.delete('_orgSiteName');
+      cookies.delete('_orgSiteName', { path: '/' });
     }
   } else if (subdomain === 'play' || debugPlay === 'true') {
     response.skipAuth = true;
-  } else if (!env.PRIVATE_APP_SUBDOMAINS.split(',').includes(subdomain) && !isDev) {
+  } else if (!APP_SUBDOMAINS.includes(subdomain) && !isDev) {
     // This case is for anything in our blockedSubdomains
     throw redirect(307, 'https://app.classroomio.com');
   }
 
-  // Load translations
-  const { pathname } = url;
-  const initLocale = getInitialLocale();
-  await loadTranslations(initLocale, pathname);
-
   return response;
 };
+
+function isURLCustomDomain(url: URL) {
+  if (url.host.includes('localhost')) {
+    return false;
+  }
+
+  const notCustomDomainHosts = [env.PRIVATE_APP_HOST || '', 'classroomio.com', 'vercel.app'].filter(
+    Boolean
+  );
+
+  return !notCustomDomainHosts.some((host) => url.host.endsWith(host));
+}
 
 function getBaseMetaTags(url: URL) {
   return Object.freeze({
@@ -151,25 +171,12 @@ function getBaseMetaTags(url: URL) {
   });
 }
 
-// Define getInitialLocale function
-function getInitialLocale(): string {
-  if (browser) {
-    try {
-      return window.navigator.language.split('-')[0];
-    } catch (e) {
-      return 'en';
-    }
-  }
-
-  return 'en';
-}
-
 function getSubdomain(url: URL) {
   const host = url.host.replace('www.', '');
-  const parts = host.split('.');
+  const parts = host?.split('.');
 
-  if (host.endsWith(env.PRIVATE_APP_HOST)) {
-    return parts.length >= 3 ? parts[0] : null;
+  if (host?.endsWith(env.PRIVATE_APP_HOST)) {
+    return parts?.length >= 3 ? parts[0] : null;
   }
 
   return null;

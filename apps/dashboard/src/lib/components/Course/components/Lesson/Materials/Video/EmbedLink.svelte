@@ -1,11 +1,11 @@
 <script>
-  import { CopyButton, Tag } from 'carbon-components-svelte';
-  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { isLessonDirty, lesson } from '$lib/components/Course/components/Lesson/store/lessons';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import { lesson, isLessonDirty } from '$lib/components/Course/components/Lesson/store/lessons';
+  import IconButton from '$lib/components/IconButton/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import { CopyButton, Tag } from 'carbon-components-svelte';
+  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
 
   let genericLinks = '';
   let error = '';
@@ -37,9 +37,20 @@
   }
 
   function isValidLink(link = '') {
-    const linkRegex = /^(https?:\/\/)?(www\.)?([a-zA-Z]+\.com\/)([a-zA-Z0-9_-]+)/;
+    // Basic URL validation
+    if (!link) return false;
 
-    return linkRegex.test(link.trim());
+    try {
+      const url = new URL(link.trim());
+      return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch {
+      // If URL construction fails, try prepending https://
+      try {
+        return !!new URL(`https://${link.trim()}`);
+      } catch {
+        return false;
+      }
+    }
   }
 
   function removeVideo(index = 0) {
@@ -47,7 +58,7 @@
   }
 </script>
 
-<div class="w-full flex items-{error ? 'center' : 'end'} justify-between gap-5">
+<div class="flex w-full items-{error ? 'center' : 'end'} justify-between gap-5">
   <TextField
     label={$t('course.navItem.lessons.materials.tabs.video.embed_link')}
     bind:value={genericLinks}

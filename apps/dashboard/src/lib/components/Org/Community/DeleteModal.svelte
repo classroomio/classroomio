@@ -1,7 +1,7 @@
 <script>
   import Modal from '$lib/components/Modal/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { t } from '$lib/utils/functions/translations';
 
   export let onDelete = () => {};
@@ -20,10 +20,10 @@
     : $t('community.delete.comment')}"
 >
   <div>
-    <h1 class="dark:text-white text-lg">
+    <p class="mt-0 text-base dark:text-white">
       {$t('community.delete.sure')}
       {isQuestion ? $t('community.delete.question') : $t('community.delete.comment')}?
-    </h1>
+    </p>
 
     <div class="mt-5 flex items-center justify-between">
       <PrimaryButton

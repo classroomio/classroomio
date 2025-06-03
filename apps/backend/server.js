@@ -4,8 +4,8 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const sentry = require('@sentry/node');
-const { ProfilingIntegration } = require('@sentry/profiling-node');
+// const sentry = require('@sentry/node');
+// const { ProfilingIntegration } = require('@sentry/profiling-node');
 
 const uploadVideo = require('./src/routes/uploadVideo');
 const generateUploadUrl = require('./src/routes/generateUploadUrl');
@@ -16,12 +16,12 @@ const downloadCourse = require('./src/routes/downloadCourse');
 const katex = require('./src/routes/katex');
 const sendEmail = require('./src/routes/sendEmail');
 
-sentry.init({
-  dsn: process.env.SENTRY_DNS || '',
-  integrations: [new ProfilingIntegration()],
-  tracesSampleRate: 1.0,
-  profilesSampleRate: 1.0
-});
+// sentry.init({
+//   dsn: process.env.SENTRY_DNS || '',
+//   integrations: [new ProfilingIntegration()],
+//   tracesSampleRate: 1.0,
+//   profilesSampleRate: 1.0
+// });
 
 // Express server
 const app = express();
@@ -40,8 +40,8 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // Integrate Sentry middleware
-app.use(sentry.Handlers.requestHandler());
-app.use(sentry.Handlers.errorHandler());
+// app.use(sentry.Handlers.requestHandler());
+// app.use(sentry.Handlers.errorHandler());
 
 // Register routes
 app.use('/downloadCertificate', downloadCertificate);
@@ -72,7 +72,7 @@ app.use((error, req, res, next) => {
   console.error('Exception error caught:', error);
 
   // Capture and send the error to Sentry
-  sentry.captureException(error);
+  // sentry.captureException(error);
 
   // Respond with a 500 Internal Server Error
   res.status(500).json({ error: 'Internal Server Error' });

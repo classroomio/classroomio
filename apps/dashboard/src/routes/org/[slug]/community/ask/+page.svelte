@@ -1,25 +1,26 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { courses } from '$lib/components/Courses/store';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import generateSlug from '$lib/utils/functions/generateSlug';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { t } from '$lib/utils/functions/translations';
+  import { askCommunityValidation } from '$lib/utils/functions/validator';
+  import { fetchCourses } from '$lib/utils/services/courses';
+  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
+  import type { Course } from '$lib/utils/types';
   import { Dropdown } from 'carbon-components-svelte';
   import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
-  import { currentOrgPath, currentOrg } from '$lib/utils/store/org';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { askCommunityValidation } from '$lib/utils/functions/validator';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import generateSlug from '$lib/utils/functions/generateSlug';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import { profile } from '$lib/utils/store/user';
-  import { fetchCourses } from '$lib/utils/services/courses';
-  import { t } from '$lib/utils/functions/translations';
-  import { courses } from '$lib/components/Courses/store';
-  import type { Course } from '$lib/utils/types';
 
   let errors: {
     title?: string;
     courseId?: string;
+    body?: string;
   } = {};
   let fields = {
     title: '',
@@ -85,17 +86,17 @@
   <title>Ask the Community - ClassroomIO</title>
 </svelte:head>
 
-<section class="w-full md:max-w-3xl md:mx-auto">
+<section class="w-full md:mx-auto md:max-w-3xl">
   <div class="p-5">
     <a
-      class="text-gray-500 dark:text-white text-md flex items-center"
+      class="text-md flex items-center text-gray-500 dark:text-white"
       href={`${$currentOrgPath}/community`}
     >
       <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" />
       {$t('community.ask.go_back')}
     </a>
-    <div class="flex items-center gap-12 justify-between">
-      <h1 class="dark:text-white text-2xl md:text-3xl font-bold">{$t('community.ask.ask_the')}</h1>
+    <div class="flex items-center justify-between gap-12">
+      <h1 class="text-2xl font-bold dark:text-white md:text-3xl">{$t('community.ask.ask_the')}</h1>
       <PrimaryButton
         label={$t('community.ask.publish')}
         variant={VARIANTS.CONTAINED_DARK}
@@ -104,7 +105,7 @@
     </div>
   </div>
 
-  <div class="mb-3 p-2 flex gap-x-5 justify-between">
+  <div class="mb-3 flex justify-between gap-x-5 p-2">
     <TextField
       bind:value={fields.title}
       placeholder={$t('community.ask.title')}
@@ -112,7 +113,7 @@
       className="w-[75%]"
     />
     <Dropdown
-      class="w-[25%] h-full"
+      class="h-full w-[25%]"
       size="xl"
       label={$t('community.ask.select_course')}
       invalid={!!errors.courseId}
@@ -127,5 +128,9 @@
       placeholder={$t('community.ask.ask_community')}
       onChange={(html) => (fields.body = html)}
     />
+
+    {#if errors.body}
+      <p class="mt-2 text-sm text-red-500">{errors.body}</p>
+    {/if}
   </div>
 </section>

@@ -1,5 +1,5 @@
-import { Callout } from 'nextra/components';
 import Image from 'next/image';
+import { Callout } from 'nextra/components';
 import SelfhostClassroomIO from './images/selfhost-classroomio.webp';
 
 # Self-hosting ClassroomIO.com
@@ -119,6 +119,50 @@ PRIVATE_APP_SUBDOMAINS=""
 
 ## Using Docker
 
-We do have a [docker-compose file](https://github.com/rotimi-best/classroomio/blob/main/docker-compose.yaml) to deploy both the backend and dashboard however it still requires some more debugging and we are still trying to figure out how we can also get supabase to be included in the docker compose file.
+We provide a docker-compose configuration to deploy both the backend and dashboard services. Here's how to use it:
 
-If you'd like to help with this, please do open a PR on Github 👍🏽
+1. Clone the repository:
+
+```bash
+git clone https://github.com/rotimi-best/classroomio.git
+cd classroomio
+```
+
+2. Create a `.env` file with your environment variables (see Environment Variables section above)
+
+3. Start the services:
+
+```bash
+docker compose up --build
+```
+
+The services will be available at:
+
+- Dashboard: http://localhost:3000
+- Backend: http://localhost:3002
+
+### Service Configuration
+
+The docker-compose file sets up two services:
+
+#### Backend Service
+
+- Runs on port 3002
+- Uses Node.js slim image
+- Mounts the backend code directory
+- Requires environment variables for:
+  - Supabase configuration
+  - Cloudflare R2 for video uploads
+  - SMTP for email notifications
+
+#### Dashboard Service
+
+- Runs on port 3000
+- Uses Node.js Alpine image
+- Uses pnpm for package management
+- Requires environment variables for:
+  - Supabase configuration
+  - Application settings
+  - Optional API keys (OpenAI, Unsplash)
+
+Note: We're currently working on including Supabase in the docker-compose file. If you'd like to help with this, please open a PR on GitHub! 👍

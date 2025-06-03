@@ -1,0 +1,30 @@
+[
+  {
+    "name": "cal",
+    "description": "Cal template"
+  },
+  {
+    "name": "classic",
+    "description": "Classic template"
+  },
+  {
+    "name": "examprep",
+    "description": "Exam prep template"
+  },
+  {
+    "name": "minimal",
+    "description": "Minimal template"
+  },
+  {
+    "name": "posthog",
+    "description": "PostHog clone"
+  },
+  {
+    "name": "webflow",
+    "description": "Webflow template"
+  },
+  {
+    "name": "bootcamp",
+    "description": "Bootcamp template"
+  }
+]

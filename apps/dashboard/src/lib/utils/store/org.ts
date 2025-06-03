@@ -1,12 +1,12 @@
-import { writable, derived } from 'svelte/store';
-import { dev, browser } from '$app/environment';
+import { browser, dev } from '$app/environment';
 import { env } from '$env/dynamic/public';
-import { STEPS } from '../constants/quiz';
-import type { Writable } from 'svelte/store';
-import type { CurrentOrg, OrgTeamMember, OrgAudience } from '../types/org';
 import { ROLE } from '$lib/utils/constants/roles';
 import type { UserLessonDataType } from '$lib/utils/types';
 import { PLAN } from 'shared/src/plans/constants';
+import type { Writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
+import { STEPS } from '../constants/quiz';
+import type { CurrentOrg, OrgAudience, OrgTeamMember } from '../types/org';
 
 export const defaultCurrentOrgState: CurrentOrg = {
   id: '',
@@ -86,9 +86,31 @@ export const deleteModal = writable({
   isQuestion: false
 });
 
-export const quizesStore = writable([]);
+interface QuizOption {
+  id: number;
+  label: string;
+  isCorrect: boolean;
+}
 
-export const quizStore = writable({
+interface QuizQuestion {
+  id: number;
+  label: string;
+  type: string;
+  options: QuizOption[];
+}
+
+interface QuizStore {
+  uuid: string;
+  title: string;
+  questions: QuizQuestion[];
+  timelimit: string;
+  theme: string;
+  pin: string;
+}
+
+export const quizesStore = writable<QuizStore[]>([]);
+
+export const quizStore = writable<QuizStore>({
   uuid: '',
   title: '',
   questions: [],
