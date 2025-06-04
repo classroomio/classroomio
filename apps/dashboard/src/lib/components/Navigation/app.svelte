@@ -1,23 +1,25 @@
-<script>
-  import { goto } from '$app/navigation';
+<script lang="ts">
   import { browser } from '$app/environment';
-  import NotificationIcon from 'carbon-icons-svelte/lib/Notification.svelte';
-  import Moon from 'carbon-icons-svelte/lib/Moon.svelte';
-  import Sun from 'carbon-icons-svelte/lib/Sun.svelte';
-  import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
-  import Close from 'carbon-icons-svelte/lib/Close.svelte';
-  import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
-
+  import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
+  import { course } from '$lib/components/Course/store';
   import IconButton from '$lib/components/IconButton/index.svelte';
+  import { pathway } from '$lib/components/Pathway/store';
+  import { AppUtils, toggleBodyByMode } from '$lib/utils/functions/app';
+  import { t } from '$lib/utils/functions/translations';
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrgPath } from '$lib/utils/store/org';
-  import { toggleBodyByMode } from '$lib/utils/functions/app';
+  import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
+  import Close from 'carbon-icons-svelte/lib/Close.svelte';
+  import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
+  import Moon from 'carbon-icons-svelte/lib/Moon.svelte';
+  import NotificationIcon from 'carbon-icons-svelte/lib/Notification.svelte';
+  import Sun from 'carbon-icons-svelte/lib/Sun.svelte';
   import { sideBar } from '../Org/store';
-  import { t } from '$lib/utils/functions/translations';
 
-  export let title = '';
   export let navClass = '';
-  export let isCoursePage = false;
+
+  const appUtils = new AppUtils();
 
   const toggleSidebar = () => {
     $sideBar.hidden = !$sideBar.hidden;
@@ -33,15 +35,38 @@
     }
   }
 
+  function getTitle(path: string, courseTitle: string, pathwayTitle: string) {
+    if (appUtils.isCoursesPage(path)) {
+      return courseTitle;
+    }
+
+    if (appUtils.isPathwaysPage(path)) {
+      return pathwayTitle;
+    }
+
+    return 'ClassroomIO';
+  }
+
+  $: path = $page.url.pathname?.replace('/', '');
+  $: console.log({
+    page: $page
+  });
+
+  $: title = getTitle(path, $course.title, $pathway.title);
+  $: isCoursePage = appUtils.isCoursePage(path);
+  $: isPathwayPage = appUtils.isPathwaysPage(path);
+
   $: coursesPath = $globalStore.isOrgSite
     ? '/lms/mylearning'
-    : isCoursePage
-      ? `${$currentOrgPath}/courses`
-      : $currentOrgPath;
+    : isPathwayPage
+      ? `${$currentOrgPath}/pathways`
+      : isCoursePage
+        ? `${$currentOrgPath}/courses`
+        : $currentOrgPath;
 </script>
 
 <nav
-  class="{navClass} flex w-full p-1 md:px-6 bg-primary-700 transition delay-150 duration-300 ease-in-out h-[48px]"
+  class="{navClass} bg-primary-700 flex h-[48px] w-full p-1 transition delay-150 duration-300 ease-in-out md:px-6"
 >
   <ul class="flex w-full items-center">
     <div class="flex items-center text-white">
@@ -59,7 +84,7 @@
         </IconButton>
       </li>
 
-      {#if isCoursePage}
+      {#if isCoursePage || isPathwayPage}
         <li class="hidden md:block">
           <IconButton
             onClick={() => {
@@ -79,18 +104,20 @@
         href={coursesPath}
         title="{$t('navigation.goto')} {isCoursePage
           ? $t('navigation.courses')
-          : $t('navigation.classroomio_home')}"
+          : isPathwayPage
+            ? $t('navigation.pathways')
+            : $t('navigation.classroomio_home')}"
         id="logo"
-        class="text-lg line-clamp-1"
+        class="line-clamp-1 text-lg"
       >
-        {isCoursePage ? title : 'ClassroomIO'}
+        {title}
       </a>
     </div>
 
     <span class="flex-grow" />
 
     <li>
-      <NotificationIcon size={20} class="text-white mr-2" />
+      <NotificationIcon size={20} class="mr-2 text-white" />
     </li>
     <li>
       <IconButton size="small" onClick={toggleDarkMode}>

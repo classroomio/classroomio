@@ -1,9 +1,9 @@
-import { writable } from 'svelte/store';
-import type { Writable } from 'svelte/store';
-import { lessons, lessonSections } from './components/Lesson/store/lessons';
 import { ROLE } from '$lib/utils/constants/roles';
-import type { Course, GroupPerson, Lesson, LessonSection } from '$lib/utils/types';
+import type { Course, GroupPerson, GroupStore, Lesson, LessonSection } from '$lib/utils/types';
 import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
+import type { Writable } from 'svelte/store';
+import { writable } from 'svelte/store';
+import { lessons, lessonSections } from './components/Lesson/store/lessons';
 
 export const defaultCourse: Course = {
   id: '',
@@ -48,7 +48,8 @@ export const defaultCourse: Course = {
     grading: false,
     lessonDownload: true,
     allowNewStudent: false
-  }
+  },
+  tags: []
 };
 
 export const course: Writable<Course> = writable({ ...defaultCourse });
@@ -69,15 +70,6 @@ export const mockGroupMember = {
   }
 };
 
-type GroupStore = {
-  id: string;
-  tutors: GroupPerson[];
-  students: GroupPerson[];
-  people: GroupPerson[];
-  members?: GroupPerson[];
-  memberId?: string;
-};
-
 export const group = writable<GroupStore>({
   id: '',
   tutors: [],
@@ -94,7 +86,7 @@ export async function setCourse(data: Course, setLesson = true) {
       tutors: [],
       students: [],
       people: []
-    }) as GroupStore;
+    }) as unknown as GroupStore;
 
     if (Array.isArray(groupData.members)) {
       for (const member of groupData.members) {
@@ -104,7 +96,7 @@ export async function setCourse(data: Course, setLesson = true) {
           groupData.tutors.push({
             ...member.profile,
             memberId: member.id
-          });
+          } as GroupPerson);
         }
       }
 
@@ -160,6 +152,16 @@ export async function setCourse(data: Course, setLesson = true) {
   if (!data.certificate_theme) {
     data.certificate_theme = 'professional';
   }
+
+  // restructure the tags data coming in
+  if (data.tags) {
+    data.tags = data.tags.map(tag => ({
+      id: tag.id,
+      course_tag_id: tag.tag_id,
+      name: tag.tags.name,
+    }));
+  }
+
   course.set(data);
 }
 

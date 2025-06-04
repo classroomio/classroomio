@@ -1,8 +1,8 @@
 <script lang="ts">
   import Chip from '$lib/components/Chip/index.svelte';
-  import RoleBaseSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import { Add } from 'carbon-icons-svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
+  import { RoleBasedSecurity } from '$lib/components/RoleBasedSecurity';
+  import { Add } from 'carbon-icons-svelte';
   import type { TabsType } from '../types';
 
   export let onCreate: () => void;
@@ -15,8 +15,8 @@
   <div>
     {#each tabs as tab}
       <button
-        class="mr-3 pb-2 border-t-0 border-l-0 border-r-0 {selectedTab === tab.value
-          ? 'border-b-4 border-primary-600 focus:border-primary-600'
+        class="mr-3 border-l-0 border-r-0 border-t-0 pb-2 {selectedTab === tab.value
+          ? 'border-primary-600 focus:border-primary-600 border-b-4'
           : 'border-b-0'}"
         on:click={() => (selectedTab = tab.value)}
       >
@@ -26,9 +26,9 @@
     {/each}
   </div>
 
-  <RoleBaseSecurity allowedRoles={[1, 2]}>
+  <RoleBasedSecurity allowedRoles={[1, 2]}>
     <IconButton onClick={onCreate} contained={true} size="large">
       <Add size={16} />
     </IconButton>
-  </RoleBaseSecurity>
+  </RoleBasedSecurity>
 </div>

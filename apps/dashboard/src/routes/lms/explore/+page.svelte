@@ -60,9 +60,9 @@
         (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       );
     } else if (_selectedId === '1') {
-      filteredExploreCourses = filteredExploreCourses.sort(
-        (a, b) => b.total_lessons - a.total_lessons
-      );
+      filteredExploreCourses = filteredExploreCourses.filter((course) => course.isPathway);
+    } else if (_selectedId === '2') {
+      filteredExploreCourses = filteredExploreCourses.filter((course) => course.isPathway == false);
     }
   }
 
@@ -98,12 +98,13 @@
           class=" bg-gray-100 dark:bg-neutral-800"
         />
         <Dropdown
-          class="h-full"
+          class="h-full min-w-[150px]"
           size="xl"
           bind:selectedId
           items={[
-            { id: '0', text: $t('courses.course_filter.date_created') },
-            { id: '1', text: $t('courses.course_filter.lessons') }
+            { id: '0', text: $t('org_navigation.all_courses') },
+            { id: '1', text: $t('org_navigation.pathway') },
+            { id: '2', text: $t('org_navigation.courses') }
           ]}
         />
 

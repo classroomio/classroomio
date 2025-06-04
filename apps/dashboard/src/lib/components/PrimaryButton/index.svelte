@@ -3,6 +3,7 @@
   import { VARIANTS, VARIANTS_CLASS } from './constants';
 
   export let label = '';
+  export let width = 'w-fit sm:w-auto';
   export let className = '';
   export let onClick = (e?: Event) => {};
   export let name = '';
@@ -19,9 +20,7 @@
       : `cursor-pointer ${!disableScale && 'hover:scale-95'}`;
   $: cname = `flex items-center h-auto ${loadingClass} ${
     VARIANTS_CLASS[isLoading ? VARIANTS.OUTLINED : variant]
-  } ${
-    !disablePadding && 'px-5 py-[0.2rem]'
-  } rounded-md min-h-[36px] w-fit justify-center sm:w-auto ${
+  } ${!disablePadding && 'px-5 py-[0.2rem]'} rounded-md min-h-[36px] ${width} justify-center ${
     variant !== VARIANTS.TEXT && 'hover:shadow-xl'
   } transition-all delay-150 duration-300 ease-in-out`;
 </script>

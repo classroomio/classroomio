@@ -34,6 +34,15 @@ export interface GroupPerson {
   fullname?: string;
 }
 
+export interface GroupStore {
+  id: string;
+  tutors: GroupPerson[];
+  students: GroupPerson[];
+  people: GroupPerson[];
+  members?: GroupPerson[];
+  memberId?: string;
+}
+
 export interface CustomQuestionType {
   id: number;
   label: any;
@@ -104,6 +113,38 @@ interface CourseMetadata {
   lessonTabsOrder?: Array<Tabs>;
   grading?: boolean;
   lessonDownload?: boolean;
+  allowNewStudent?: boolean;
+}
+
+export interface PathwayMetadata {
+  header: {
+    title: string;
+    description: string;
+    duration: string;
+    cost: number;
+    buttonLabel: string;
+    videoUrl?: '';
+  };
+  about: string;
+  objectives: string;
+  reviews?: Array<Review>;
+  goals: string;
+  requirements: string;
+  description: string;
+  videoUrl: string;
+  instructor?: {
+    name: string;
+    role: string;
+    coursesNo: number;
+    description: string;
+    imgUrl: string;
+  };
+  showDiscount?: boolean;
+  reward?: {
+    show: boolean;
+    description: string;
+  };
+  discount: number;
   allowNewStudent: boolean;
   sectionDisplay?: Record<string, boolean>;
 }
@@ -207,11 +248,69 @@ export enum COURSE_VERSION {
   V1 = 'V1', // with only lesson
   V2 = 'V2' // lessons are grouped into sections
 }
-export interface Course {
-  title?: any; // type unknown;
+export interface Course extends LMSCourse {
+  attendance: {
+    id: number;
+    is_present: boolean;
+    lesson_id: string;
+    student_id: string;
+  }[];
+  certificate_theme?: string;
+  cost: number;
+  created_at: string;
+  currency?: string;
   description: string; // type unknown;
+  group?: Group;
+  group_id?: string /* foreign key to group.id */;
+  id: string /* primary key */;
+  is_certificate_downloadable?: boolean;
+  is_published?: boolean;
+  is_template?: boolean;
+  lesson_section?: LessonSection[];
+  lessons?: Lesson[];
+  logo?: string;
+  metadata: CourseMetadata;
+  organization?: Organization;
+  organization_id?: string /* foreign key to organization.id */;
+  overview?: any; // type unknown;
+  polls: { status: string }[];
+  progress_rate?: number;
+  slug?: string;
+  status: string;
+  tags: CourseTag[];
+  title: any;
+  total_lessons?: number;
+  total_students?: number;
   type: COURSE_TYPE;
+  updated_at: string;
   version: COURSE_VERSION;
+}
+
+export interface PathwayCourse {
+  id: string;
+  course: {
+    id: string;
+    title: string;
+    logo: string;
+    description: string;
+    type: COURSE_TYPE;
+    banner_image: string;
+    is_published: boolean;
+    created_at: string;
+    lesson: { is_complete: string }[];
+    group_id: { groupmember: { id: string }[] };
+  };
+  course_id: string;
+  pathway_id: string;
+  order?: number;
+  is_unlocked?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface Pathway {
+  title: string;
+  description: string; // type unknown;
   overview?: any; // type unknown;
   id?: string /* primary key */;
   created_at: string;
@@ -221,7 +320,7 @@ export interface Course {
   organization_id?: string /* foreign key to organization.id */;
   logo?: string;
   slug?: any; // type unknown;
-  metadata: CourseMetadata;
+  landingpage: PathwayMetadata;
   cost: number;
   currency?: string;
   group?: Group;
@@ -229,20 +328,39 @@ export interface Course {
   is_certificate_downloadable?: boolean;
   certificate_theme?: string;
   status: string;
-  is_published?: boolean;
+  is_published: boolean;
+  total_course?: number;
+  total_students?: number;
+  lms_certificate: boolean;
+  courses_certificate: string;
+  progress_rate?: number;
+  prerequisite: string;
+  pathway_course: PathwayCourse[];
+}
+
+export type LMSCourse = {
+  id: string;
+  logo?: string;
+  title: string;
+  total_course?: number;
+  isPathway?: boolean;
+  description?: string;
   progress_rate?: number;
   total_lessons?: number;
+  currency?: string;
+  total_count?: number;
+  slug?: string;
+  type: COURSE_TYPE;
   total_students?: number;
-  attendance: {
-    student_id: string;
-    lesson_id: string;
-    is_present: boolean;
-    id: number;
+  is_published?: boolean;
+  pathway_course?: {
+    course: {
+      lesson: {
+        is_complete: boolean;
+      }[];
+    };
   }[];
-  lesson_section?: LessonSection[];
-  lessons?: Lesson[];
-  polls: { status: string }[];
-}
+};
 
 export interface Groupmember {
   id: string /* primary key */;
@@ -418,11 +536,22 @@ export interface Review {
   name: string;
   avatar_url: string;
   rating: number;
-  created_at: number;
+  created_at: number | string;
   description: string;
 }
 
 export interface Tabs {
   id: number;
   name: string;
+}
+export interface CourseTag {
+  id: string;
+  name: string;
+  description: string;
+  courseCount?: number;
+  course_tag_id: string;
+
+  // these two types are because of the structure of the fetch query for the courseContainer
+  tags: any;
+  tag_id: any;
 }
