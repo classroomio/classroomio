@@ -21,6 +21,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.388.0",
     "@aws-sdk/lib-storage": "^3.535.0",
+    "@aws-sdk/s3-request-presigner": "^3.675.0",
     "@sentry/node": "^7.110.1",
     "@sentry/profiling-node": "^7.110.1",
     "@supabase/supabase-js": "^2.32.0",
