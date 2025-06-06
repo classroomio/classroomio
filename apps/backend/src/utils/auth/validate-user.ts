@@ -1,13 +1,13 @@
-const { getSupabase } = require('../supabase');
+import { User } from '@supabase/supabase-js';
+import { getSupabase } from '../supabase.js';
 
 const supabase = getSupabase();
 
-const validateUser = async (accessToken) => {
-  let user;
+export async function validateUser(accessToken: string): Promise<User> {
+  let user: User | null = null;
 
   try {
     const { data } = await supabase.auth.getUser(accessToken);
-
     user = data.user;
   } catch (error) {
     console.error(error);
@@ -18,8 +18,4 @@ const validateUser = async (accessToken) => {
   }
 
   return user;
-};
-
-module.exports = {
-  validateUser
-};
+}

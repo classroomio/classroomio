@@ -1,8 +1,7 @@
-// const { getPdfBuffer } = require('./puppeteer');
-const { marked } = require('marked');
-// const puppeteer = require('puppeteer');
+import type { TCourseDownloadContent } from '$src/types/course';
+import { marked } from 'marked';
 
-function getHtmlTemplate(body) {
+function getHtmlTemplate(body: string): string {
   return `
   <!DOCTYPE html>
   <html lang="en">
@@ -71,22 +70,20 @@ function getHtmlTemplate(body) {
   `;
 }
 
+type TLessonBody = TCourseDownloadContent['lessons'][0];
+
 function getLessonBody(
-  { lessonTitle, lessonNumber, lessonNote, slideUrl, video },
-  orgName,
-  orgTheme
-) {
+  { lessonTitle, lessonNumber, lessonNote, slideUrl, video }: TLessonBody,
+  orgName: string,
+  orgTheme: string
+): string {
   const noteHtml = marked.parse(lessonNote);
   const showExtraResources = slideUrl || (video && video.length > 0);
   return `
   <div
-  class="bg-[${
-    orgTheme ? orgTheme : '#0030FF'
-  }] w-full h-40 flex flex-col items-center justify-center gap-2 rounded-lg m-0">
+  class="bg-[${orgTheme ? orgTheme : '#0030FF'}] w-full h-40 flex flex-col items-center justify-center gap-2 rounded-lg m-0">
   <h3
-    class="my-0 rounded-full w-10 text-center mx-auto py-1 text-[${
-      orgTheme ? orgTheme : '#0030FF'
-    }] bg-white text-md font-bold tracking-tighter">
+    class="my-0 rounded-full w-10 text-center mx-auto py-1 text-[${orgTheme ? orgTheme : '#0030FF'}] bg-white text-md font-bold tracking-tighter">
     ${lessonNumber}
   </h3>
   <h1 class="text-white m-0">${lessonTitle}</h1>
@@ -140,83 +137,34 @@ function getLessonBody(
   `;
 }
 
-function getCourseBody({ courseTitle, orgName, orgTheme, lessons }) {
+function getCourseBody({
+  courseTitle,
+  orgName,
+  orgTheme,
+  lessons
+}: TCourseDownloadContent): string {
   return `
-    <header class="flex justify-center items-center flex-col border-[${
-      orgTheme ? orgTheme : '#0030FF'
-    }] border-[40px] mx-3 h-[100vh] m-0">
+    <header class="flex justify-center items-center flex-col border-[${orgTheme ? orgTheme : '#0030FF'}] border-[40px] mx-3 h-[100vh] m-0">
       <h1 class="font-bold text-8xl text-black m-0 mx-96">${courseTitle}</h1>
       <h4 class="text-md text-2xl font-light text-black mt-5 ">${orgName}</h4>
     </header>
     <div class="root mx-auto mt-5 prose break-after-page">
-      ${lessons.map((lesson) => getLessonBody(lesson, orgName, orgTheme))}
+      ${lessons.map((lesson) => getLessonBody(lesson, orgName, orgTheme)).join('')}
     </div>
   `;
 }
 
-async function generateSinglePdfFromHtml(htmlContent, courseTitle, orgTheme) {
+async function generateSinglePdfFromHtml(
+  htmlContent: string,
+  courseTitle: string,
+  orgTheme: string
+): Promise<Buffer> {
   throw 'Download disabled';
-  // const args = [
-  //   '--disable-web-security',
-  //   '--no-sandbox',
-  //   '--disable-setuid-sandbox',
-  // ];
-  // const browser = await puppeteer.launch({
-  //   headless: 'new',
-  //   args,
-  // });
-  // const page = await browser.newPage();
-
-  // await page.setContent(htmlContent);
-
-  // const pdfOptions = {
-  //   format: 'A4',
-  //   printBackground: true,
-  //   displayHeaderFooter: true,
-  //   headerTemplate:
-  //     "<div><div class='pageNumber'></div> <div>/</div><div class='totalPages'></div></div>",
-  //   footerTemplate: `
-  //       <div class="footer" style="position: relative; display: flex; text-align: right; margin-right: 5%; font-size: 8px; width: 297mm; padding-top: 30px;">
-  //         <div style="position: absolute; right: 50%; bottom: 3%;"><span class="pageNumber"></span>/<span class="totalPages"></span></div>
-  //         <div style="position: absolute; right: 0; bottom: 3%;">${courseTitle} | Powered by <a href="https://app.classroomio.com" style="text-decoration: underline;">ClassroomIO</a></div>
-  //       </div>
-  //     `,
-  //   margin: {
-  //     top: '0.3cm',
-  //     bottom: '0.5cm',
-  //   },
-  // };
-
-  // const numPages = await page.evaluate(() => {
-  //   const content = document.body; // Change this to the specific element containing content
-  //   const style = window.getComputedStyle(content);
-  //   const contentHeight = parseInt(style.height, 10);
-  //   const pageHeight = 900; // Set this to an appropriate value based on your PDF format
-
-  //   return Math.ceil(contentHeight / pageHeight);
-  // });
-
-  // const pagesPdfBuffer = [];
-
-  // for (let currentPage = 1; currentPage <= numPages; currentPage++) {
-  //   await page.evaluate(() => {});
-
-  //   const pdfBuffer = await page.pdf(pdfOptions);
-  //   pagesPdfBuffer.push(pdfBuffer);
-  // }
-
-  // await browser.close();
-  // return Buffer.concat(pagesPdfBuffer);
 }
 
-async function generateCoursePdf(params) {
-  // Generate the course boddy
+export async function generateCoursePdf(params: TCourseDownloadContent): Promise<Buffer> {
   const body = getCourseBody(params);
   const html = getHtmlTemplate(body);
   console.log(html);
-  return await generateSinglePdfFromHtml(html, params.courseTitle);
+  return await generateSinglePdfFromHtml(html, params.courseTitle, params.orgTheme);
 }
-
-module.exports = {
-  generateCoursePdf
-};
