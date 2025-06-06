@@ -462,3 +462,11 @@ INSERT INTO "storage"."buckets" ("id", "name", "owner", "created_at", "updated_a
 SELECT PG_GET_SERIAL_SEQUENCE('organizationmember', 'id');
 -- In my case i got "public.organizationmember_id_seq"
 SELECT setval('public.organizationmember_id_seq', COALESCE((SELECT MAX(id)+1 FROM organizationmember), 1), false);
+
+--
+-- Data for Name: organization_plan; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO "public"."organization_plan" ("id", "org_id", "plan_name", "is_active", "deactivated_at", "payload", "triggered_by", "activated_at", "updated_at", "provider", "subscription_id") VALUES
+	(1, '1a1dcddd-1abc-4f72-b644-0bd18191a289', 'ENTERPRISE', true, NULL, NULL, 12, '2023-11-22 09:29:04.533114+00', '2023-11-22 09:29:04.533114+00', 'lmz', NULL);
+

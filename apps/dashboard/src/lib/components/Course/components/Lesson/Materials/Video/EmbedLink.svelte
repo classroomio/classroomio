@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+  import type { LessonVideoType } from '$lib/utils/types';
   import { isLessonDirty, lesson } from '$lib/components/Course/components/Lesson/store/lessons';
   import TextField from '$lib/components/Form/TextField.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
@@ -26,7 +27,7 @@
       $lesson.materials.videos = [
         ...existingLinks,
         ...validLinks.map((link = '') => ({
-          type: 'generic',
+          type: 'generic' as LessonVideoType,
           link,
           metadata: {}
         }))

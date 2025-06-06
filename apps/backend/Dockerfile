@@ -16,6 +16,9 @@ ARG SMTP_PORT
 RUN mkdir /app
 WORKDIR /app
 
+# Install pnpm
+RUN npm install -g pnpm
+
 # Install chrome stable from sources, then remove it. Why? The
 # npm install of `puppeteer` brings its own bundle chromium build,
 # and puppeteer releases are only guaranteed to work with that version.
@@ -42,7 +45,7 @@ WORKDIR /app
 #   wget https://github.com/samuelngs/apple-emoji-linux/releases/download/ios-15.4/AppleColorEmoji.ttf -O ~/.fonts/AppleColorEmoji.ttf
 
 COPY ./package.json /app
-RUN npm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 COPY . /app
 
 # Set environment variables from build args

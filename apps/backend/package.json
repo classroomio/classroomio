@@ -37,6 +37,7 @@
     "katex": "^0.16.10",
     "marked": "^7.0.3",
     "multer": "^1.4.3",
+    "nanoid": "^5.1.5",
     "nodemailer": "^6.9.5",
     "nodemon": "^3.0.1",
     "zeptomail": "^6.0.0",

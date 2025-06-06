@@ -1,17 +1,10 @@
-const multer = require('multer');
+const nanoid = require('nanoid');
 
-// const storage = multer.memoryStorage();
-// const upload = multer({ storage: storage });
+function getExtension(filename) {
+  const ext = path.extname(filename || '').split('.');
+  return ext[ext.length - 1];
+}
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, `${new Date().getTime()}-${file.originalname}`); //Appending extension
-  },
-});
-
-var upload = multer({ storage: storage });
-
-module.exports = upload;
+exports.generateFileKey = (fileName) => {
+  return `${nanoid()}.${getExtension(fileName)}`;
+};

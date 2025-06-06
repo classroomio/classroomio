@@ -1,24 +1,24 @@
 <script lang="ts">
-  import axios from 'axios';
   import { env } from '$env/dynamic/public';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import axios from 'axios';
   import {
     lesson,
     deleteLessonVideo,
     uploadCourseVideoStore
   } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { onMount, onDestroy } from 'svelte';
+  import { type ComponentProps } from 'svelte';
   import { ProgressBar } from 'carbon-components-svelte';
-  import { supabase } from '$lib/utils/functions/supabase';
   import { isFreePlan } from '$lib/utils/store/org';
   import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
+  import { apiClient } from '$lib/utils/services/api';
+  import { t } from '$lib/utils/functions/translations';
 
   let value = 0;
   let max = 100;
-  let status = 'active';
+  let status: ComponentProps<ProgressBar>['status'] = 'active';
   let fileSize;
   let isDisabled = false;
-  import { t } from '$lib/utils/functions/translations';
 
   export let lessonId = '';
 
@@ -29,8 +29,6 @@
   let uploadedFileUrl = '';
   let fileName = '';
   let isLoading = false;
-  let prevProgress = 0;
-  let uploadChannel;
 
   function isVideoAdded(link) {
     return $lesson.materials?.videos?.find((v) => v.link === link);
@@ -45,7 +43,7 @@
     fileSize = videoFile?.size / (1024 * 1024);
 
     try {
-      const presignedResponse = await axios.post(`${env.PUBLIC_SERVER_URL}/generateUploadUrl`, {
+      const presignedResponse = await apiClient.post('/generateUploadUrl', {
         fileName: videoFile.name,
         fileType: videoFile.type
       });
@@ -59,18 +57,7 @@
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
         onUploadProgress: (progressEvent) => {
-          value = Math.round((progressEvent.loaded * 100) / progressEvent?.total / 2);
-
-          const channel = supabase.channel('upload-progress');
-          channel.subscribe((status) => {
-            if (status === 'SUBSCRIBED') {
-              channel.send({
-                type: 'broadcast',
-                event: lessonId,
-                payload: progressEvent
-              });
-            }
-          });
+          value = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1) / 2);
         }
       });
 
@@ -80,7 +67,21 @@
         fileName: presignedResponse.data.fileName,
         status: uploadResponse.status
       };
-      console.log('Upload res', uploadResponse);
+
+      if (formRes.url && !isVideoAdded(formRes.url)) {
+        $lesson.materials.videos = [
+          ...$lesson.materials.videos,
+          {
+            type: 'upload',
+            link: formRes.url,
+            videoTitle: fileName,
+            videoKey: formRes?.fileKey,
+            metadata: formRes?.metadata || {}
+          }
+        ];
+      }
+
+      console.log('Upload res', uploadResponse, 'formRes', formRes);
       isLoading = false;
       isLoaded = false;
     } catch (err: any) {
@@ -94,24 +95,6 @@
     isLoaded = true;
   }
 
-  async function isDoneUploading(response) {
-    uploadedFileUrl = response?.status == 200 && response?.url;
-    fileName = response?.fileName;
-
-    if (uploadedFileUrl && !isVideoAdded(uploadedFileUrl)) {
-      $lesson.materials.videos = [
-        ...$lesson.materials.videos,
-        {
-          type: 'muse',
-          link: uploadedFileUrl,
-          videoTitle: fileName,
-          videoKey: response?.fileKey,
-          metadata: response?.metadata || {}
-        }
-      ];
-    }
-  }
-
   function tryAgain() {
     formRes = null;
     isLoaded = false;
@@ -119,28 +102,12 @@
     value = 0;
   }
 
-  onMount(async () => {
-    uploadChannel = supabase
-      .channel('upload-progress')
-      .on('broadcast', { event: lessonId }, (payload) => {
-        console.log('The progress of the upload', payload);
-        value = value + payload?.payload - prevProgress;
-        prevProgress = payload.payload;
-      })
-      .subscribe();
-  });
-
-  onDestroy(() => {
-    supabase.removeChannel(uploadChannel);
-  });
-
   $: helperText = value + '%  of ' + Math.round(fileSize) + 'MB';
   $: if (value === max) {
     helperText = 'Done';
     status = 'finished';
   }
 
-  $: isDoneUploading(formRes);
   $: isDisabled = isLoading || !env.PUBLIC_SERVER_URL || $isFreePlan;
 </script>
 
@@ -152,7 +119,7 @@
   <button
     type="button"
     on:click={() => (fileInput && !isLoading ? fileInput.click() : null)}
-    class="h-full w-full {isDisabled && 'hover:cursor-not-allowed opacity-50'}"
+    class="h-full w-full {isDisabled && 'opacity-50 hover:cursor-not-allowed'}"
     disabled={isDisabled}
   >
     <form
@@ -160,7 +127,7 @@
       on:submit|preventDefault={onUpload}
     >
       {#if isLoading}
-        <div class="flex flex-col gap-5 max-w-[500px] w-[60%] justify-center">
+        <div class="flex w-[60%] max-w-[500px] flex-col justify-center gap-5">
           <p class="mt-5 text-center">
             {$t('course.navItem.lessons.materials.tabs.video.add_video.uploading')}
           </p>

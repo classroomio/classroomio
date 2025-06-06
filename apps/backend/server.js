@@ -4,24 +4,13 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-// const sentry = require('@sentry/node');
-// const { ProfilingIntegration } = require('@sentry/profiling-node');
 
-const uploadVideo = require('./src/routes/uploadVideo');
-const generateUploadUrl = require('./src/routes/generateUploadUrl');
-const getVideoDownloadUrls = require('./src/routes/getVideoDownloadUrls');
-const downloadCertificate = require('./src/routes/downloadCertificate');
-const downloadLesson = require('./src/routes/downloadLesson');
-const downloadCourse = require('./src/routes/downloadCourse');
-const katex = require('./src/routes/katex');
-const sendEmail = require('./src/routes/sendEmail');
-
-// sentry.init({
-//   dsn: process.env.SENTRY_DNS || '',
-//   integrations: [new ProfilingIntegration()],
-//   tracesSampleRate: 1.0,
-//   profilesSampleRate: 1.0
-// });
+const uploadRouter = require('./src/routes/upload');
+const downloadCertificateRouter = require('./src/routes/downloadCertificate');
+const downloadLessonRouter = require('./src/routes/downloadLesson');
+const downloadCourseRouter = require('./src/routes/downloadCourse');
+const katexRouter = require('./src/routes/katex');
+const sendEmailRouter = require('./src/routes/sendEmail');
 
 // Express server
 const app = express();
@@ -39,19 +28,13 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
-// Integrate Sentry middleware
-// app.use(sentry.Handlers.requestHandler());
-// app.use(sentry.Handlers.errorHandler());
-
 // Register routes
-app.use('/downloadCertificate', downloadCertificate);
-app.use('/downloadLesson', downloadLesson);
-app.use('/downloadCourse', downloadCourse);
-app.use('/generateUploadUrl', generateUploadUrl);
-app.use('/getVideoDownloadUrls', getVideoDownloadUrls);
-app.use('/uploadVideo', uploadVideo);
-app.use('/katex', katex);
-app.use('/sendEmail', sendEmail);
+app.use('/downloadCertificate', downloadCertificateRouter);
+app.use('/downloadLesson', downloadLessonRouter);
+app.use('/downloadCourse', downloadCourseRouter);
+app.use('/upload', uploadRouter);
+app.use('/katex', katexRouter);
+app.use('/sendEmail', sendEmailRouter);
 
 app.get('/', (req, res) => {
   res.send('Welcome to ClassroomIO');

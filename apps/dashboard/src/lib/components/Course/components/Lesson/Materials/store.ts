@@ -1,6 +1,5 @@
+import { apiClient } from '$lib/utils/services/api';
 import { writable } from 'svelte/store';
-import { env } from '$env/dynamic/public';
-import axios from 'axios';
 
 export const signedVideoUrls = writable({});
 
@@ -12,7 +11,7 @@ export async function retrieveVideos(videoFiles) {
   if (!videoFileNames || videoFileNames.length === 0) return;
 
   try {
-    const response = await axios.post(`${env.PUBLIC_SERVER_URL}/getVideoDownloadUrls`, {
+    const response = await apiClient.post('/getVideoDownloadUrls', {
       fileNames: videoFileNames
     });
 
