@@ -45,7 +45,7 @@ RUN npm install -g pnpm
 #   wget https://github.com/samuelngs/apple-emoji-linux/releases/download/ios-15.4/AppleColorEmoji.ttf -O ~/.fonts/AppleColorEmoji.ttf
 
 COPY ./package.json /app
-RUN pnpm install --frozen-lockfile
+RUN pnpm install
 COPY . /app
 
 # Set environment variables from build args
@@ -63,6 +63,8 @@ ENV NODE_ENV=production \
     SMTP_PORT=$SMTP_PORT \
     PORT=3002
 
+RUN pnpm build
+
 EXPOSE 3002
 
-CMD ["node", "server.js"]
+CMD ["pnpm", "start"]

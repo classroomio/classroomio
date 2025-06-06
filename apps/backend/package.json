@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "0.0.1",
-  "description": "Hono Server for long processing",
+  "description": "ClassroomIO Backend for long processes",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rotimi-best/classroomio.git"
+    "url": "git+https://github.com/classroomio/classroomio.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/rotimi-best/classroomio/issues"
+    "url": "https://github.com/classroomio/classroomio/issues"
   },
-  "homepage": "https://github.com/rotimi-best/classroomio#readme",
+  "homepage": "https://github.com/classroomio/classroomio#readme",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.388.0",
     "@aws-sdk/lib-storage": "^3.535.0",
