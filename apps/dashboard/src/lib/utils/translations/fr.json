@@ -1139,7 +1139,9 @@
     "settings": "Paramètres",
     "early_adopter": "Devenez un adopteur précoce",
     "unlock": "Débloquez des fonctionnalités illimitées et investissez dans notre avenir",
-    "upgrade": "Mettre à jour maintenant"
+    "upgrade": "Mettre à jour maintenant",
+    "Analytics": "Analytique",
+    "analytics": "Analytique"
   },
   "settings": {
     "heading": "Paramètres",
