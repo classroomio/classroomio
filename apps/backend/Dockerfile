@@ -63,6 +63,8 @@ ENV NODE_ENV=production \
     SMTP_PORT=$SMTP_PORT \
     PORT=3002
 
+RUN pnpm build
+
 EXPOSE 3002
 
-CMD ["node", "server.js"]
+CMD ["pnpm", "start"]

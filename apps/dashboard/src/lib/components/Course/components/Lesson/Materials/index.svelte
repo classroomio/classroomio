@@ -44,6 +44,7 @@
   import * as CONSTANTS from './constants';
   import { orderedTabs } from './constants';
   import Loader from './Loader.svelte';
+  import { signedVideoUrls, retrieveVideos } from './store';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -59,9 +60,7 @@
   let timeoutId: NodeJS.Timeout;
   let tabs = CONSTANTS.tabs;
   let currentTab = tabs[0].value;
-  let errors: {
-    video: string;
-  };
+  let errors: Record<string, string> = {};
   let editorWindowRef: Window;
   let aiButtonRef: HTMLDivElement;
   let openPopover = false;
@@ -298,6 +297,12 @@
 
   $: updateNoteByCompletion($completion);
 
+  $: {
+    if ($lesson.materials.videos.length > 0) {
+      retrieveVideos($lesson.materials.videos);
+    }
+  }
+
   $: initPlyr(player, $lesson.materials.videos);
 
   $: lessonTitle = $lesson.title;
@@ -469,7 +474,10 @@
                       </div>
                     {:else}
                       <video bind:this={player} class="plyr-video-trigger" playsinline controls>
-                        <source src={video.link} type="video/mp4" />
+                        <source
+                          src={$signedVideoUrls[video.videoKey] || video.link}
+                          type="video/mp4"
+                        />
                         <track kind="captions" />
                       </video>
                     {/if}

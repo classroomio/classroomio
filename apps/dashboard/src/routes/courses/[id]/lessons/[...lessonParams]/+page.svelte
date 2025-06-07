@@ -45,6 +45,7 @@
   import Download from 'carbon-icons-svelte/lib/Download.svelte';
   import OverflowMenuVertical from 'carbon-icons-svelte/lib/OverflowMenuVertical.svelte';
   import ResultOld from 'carbon-icons-svelte/lib/ResultOld.svelte';
+  import { apiClient } from '$lib/utils/services/api';
 
   export let data;
 
@@ -163,13 +164,9 @@
       const lessonNumber = getLessonOrder(currentLesson.id);
       const slideUrl = $lesson.materials.slide_url || '';
 
-      const response = await fetch(env.PUBLIC_SERVER_URL + '/downloadLesson', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
+      const response = await apiClient.post(
+        '/downloadLesson',
+        {
           title: currentLesson.title,
           number: lessonNumber,
           orgName: $currentOrg.name,
@@ -177,16 +174,13 @@
           slideUrl: slideUrl,
           video: lessonVideo,
           courseTitle: $course.title
-        })
-      });
+        },
+        {
+          responseType: 'blob'
+        }
+      );
 
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
-      const data = await response.blob();
-      console.log(data);
-      const file = new Blob([data], { type: 'application/pdf' });
+      const file = new Blob([response.data], { type: 'application/pdf' });
       const fileURL = URL.createObjectURL(file);
 
       let a = document.createElement('a');

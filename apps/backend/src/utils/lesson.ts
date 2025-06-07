@@ -1,8 +1,7 @@
-// const { getPdfBuffer } = require('./puppeteer');
-const { marked } = require('marked');
-// const puppeteer = require('puppeteer');
+import type { TLessonDownloadContent } from '$src/types/course/lesson';
+import { marked } from 'marked';
 
-function getHtmlTemplate(body) {
+function getHtmlTemplate(body: string): string {
   return `
   <!DOCTYPE html>
   <html lang="en">
@@ -75,7 +74,15 @@ function getHtmlTemplate(body) {
   `;
 }
 
-function getLessonBody({ title, number, orgName, note, slideUrl, video, courseTitle }) {
+function getLessonBody({
+  title,
+  number,
+  orgName,
+  note,
+  slideUrl,
+  video,
+  courseTitle
+}: TLessonDownloadContent): string {
   const noteHtml = marked.parse(note);
   const showExtraResources = slideUrl || (video && video.length > 0);
   return `
@@ -139,83 +146,16 @@ function getLessonBody({ title, number, orgName, note, slideUrl, video, courseTi
   `;
 }
 
-async function generateSinglePdfFromHtml(htmlContent, courseTitle) {
-  // const args = [
-  //   '--disable-web-security',
-  //   '--no-sandbox',
-  //   '--disable-setuid-sandbox',
-  // ];
-  // const browser = await puppeteer.launch({
-  //   headless: 'new',
-  //   args,
-  // });
-  // const page = await browser.newPage();
-
-  // await page.setContent(htmlContent);
-
-  // const pdfOptions = {
-  //   format: 'A4',
-  //   printBackground: true,
-  //   displayHeaderFooter: true,
-  //   headerTemplate:
-  //     "<div><div class='pageNumber'></div> <div>/</div><div class='totalPages'></div></div>",
-  //   footerTemplate: `<div class="footer" style="text-align: right; margin-right: 5%; font-size: 8px; width: 297mm; padding-top: 30px;">
-  //     ${courseTitle} | Powered by <a href="https://app.classroomio.com" style="color: blue; text-decoration: underline;">ClassroomIO</a>
-  //     </div>`,
-  //   margin: {
-  //     top: '0.4cm',
-  //     bottom: '1cm',
-  //   },
-  // };
-
-  // const numPages = await page.evaluate(() => {
-  //   const content = document.body; // Change this to the specific element containing content
-  //   const style = window.getComputedStyle(content);
-  //   const contentHeight = parseInt(style.height, 10);
-  //   const pageHeight = 900; // Set this to an appropriate value based on your PDF format
-
-  //   return Math.ceil(contentHeight / pageHeight);
-  // });
-
-  // const pagesPdfBuffer = [];
-
-  // for (let currentPage = 1; currentPage <= numPages; currentPage++) {
-  //   await page.evaluate(() => {});
-
-  //   const pdfBuffer = await page.pdf(pdfOptions);
-  //   pagesPdfBuffer.push(pdfBuffer);
-  // }
-
-  // await browser.close();
-  // return Buffer.concat(pagesPdfBuffer);
-
+async function generateSinglePdfFromHtml(
+  htmlContent: string,
+  courseTitle: string
+): Promise<Buffer> {
   throw 'Download disabled';
 }
 
-async function generateLessonPdf(params) {
-  // Generate the lesson boddy
+export async function generateLessonPdf(params: TLessonDownloadContent): Promise<Buffer> {
   const body = getLessonBody(params);
   const html = getHtmlTemplate(body);
   console.log(html);
   return await generateSinglePdfFromHtml(html, params.courseTitle);
-  // return await getPdfBuffer(html, {
-  //   path: 'test.pdf',
-  //   width: '1000px',
-  //   height: undefined,
-  //   printBackground: true,
-  //   format: 'A4',
-  //   displayHeaderFooter: true,
-  //   headerTemplate:
-  //     "<div><div class='pageNumber'></div> <div>/</div><div class='totalPages'></div></div>",
-  //   footerTemplate:
-  //     '<div style="text-align: right;width: 297mm;font-size: 8px;"><span style="margin-right: 1cm"><span class="pageNumber"></span> of <span class="totalPages"></span></span></div>',
-  //   margin: {
-  //     top: '1cm',
-  //     bottom: '1cm',
-  //   },
-  // });
 }
-
-module.exports = {
-  generateLessonPdf
-};
