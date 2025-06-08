@@ -19,7 +19,17 @@ const app = new Hono();
 app.use('*', logger());
 app.use('*', prettyJSON());
 app.use('*', secureHeaders());
-app.use('*', cors());
+app.use(
+  '*',
+  cors({
+    origin: '*',
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization'],
+    exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
+    maxAge: 600,
+    credentials: true
+  })
+);
 
 app.use(
   rateLimiter({

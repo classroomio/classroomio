@@ -14,41 +14,35 @@
   import { apiClient } from '$lib/utils/services/api';
   import { t } from '$lib/utils/functions/translations';
 
+  export let lessonId = '';
+
   let value = 0;
   let max = 100;
   let status: ComponentProps<ProgressBar>['status'] = 'active';
   let fileSize;
   let isDisabled = false;
 
-  export let lessonId = '';
-
   let formRes;
   let isLoaded = false;
   let fileInput;
   let submit;
-  let uploadedFileUrl = '';
   let fileName = '';
-  let isLoading = false;
-
-  function isVideoAdded(link) {
-    return $lesson.materials?.videos?.find((v) => v.link === link);
-  }
 
   async function onUpload() {
-    isLoading = true;
     if (!fileInput) return;
 
-    const videoFile = fileInput.files[0];
+    $uploadCourseVideoStore.isUploading = true;
 
+    const videoFile = fileInput.files[0];
     fileSize = videoFile?.size / (1024 * 1024);
 
     try {
-      const presignedResponse = await apiClient.post('/generateUploadUrl', {
+      const uploadPresignResponse = await apiClient.post('/course/presign/upload', {
         fileName: videoFile.name,
         fileType: videoFile.type
       });
 
-      const presignedUrl = presignedResponse.data.url;
+      const presignedUrl = uploadPresignResponse.data.url;
 
       const uploadResponse = await axios.put(presignedUrl, videoFile, {
         headers: {
@@ -61,28 +55,42 @@
         }
       });
 
+      const downloadPresignedResponse = await apiClient.post('/course/presign/download', {
+        keys: [uploadPresignResponse.data.fileKey]
+      });
+
+      if (!downloadPresignedResponse.data.success) {
+        formRes = {
+          type: 'INTERNAL_ERROR',
+          status: 500,
+          message: downloadPresignedResponse.data.message
+        };
+
+        return;
+      }
+
+      const fileKey = uploadPresignResponse.data.fileKey;
+      const presignedUrls = downloadPresignedResponse.data.urls;
+
       formRes = {
-        url: presignedResponse.data.fileUrl,
-        fileKey: presignedResponse.data.fileKey,
-        fileName: presignedResponse.data.fileName,
+        url: presignedUrls[fileKey],
+        fileKey: uploadPresignResponse.data.fileKey,
         status: uploadResponse.status
       };
 
-      if (formRes.url && !isVideoAdded(formRes.url)) {
-        $lesson.materials.videos = [
-          ...$lesson.materials.videos,
-          {
-            type: 'upload',
-            link: formRes.url,
-            videoTitle: fileName,
-            videoKey: formRes?.fileKey,
-            metadata: formRes?.metadata || {}
-          }
-        ];
-      }
+      console.log('formRes', formRes);
+
+      $lesson.materials.videos = [
+        ...$lesson.materials.videos,
+        {
+          type: 'upload',
+          link: formRes.url,
+          key: formRes?.fileKey
+        }
+      ];
 
       console.log('Upload res', uploadResponse, 'formRes', formRes);
-      isLoading = false;
+      $uploadCourseVideoStore.isUploading = false;
       isLoaded = false;
     } catch (err: any) {
       console.error('Error uploading video', err, '\n\n', err.response);
@@ -98,7 +106,7 @@
   function tryAgain() {
     formRes = null;
     isLoaded = false;
-    isLoading = false;
+    $uploadCourseVideoStore.isUploading = false;
     value = 0;
   }
 
@@ -108,7 +116,7 @@
     status = 'finished';
   }
 
-  $: isDisabled = isLoading || !env.PUBLIC_SERVER_URL || $isFreePlan;
+  $: isDisabled = $uploadCourseVideoStore.isUploading || !env.PUBLIC_SERVER_URL || $isFreePlan;
 </script>
 
 <UpgradeBanner className="mb-3" onClick={() => ($uploadCourseVideoStore.isModalOpen = false)}>
@@ -118,7 +126,7 @@
 {#if !isLoaded}
   <button
     type="button"
-    on:click={() => (fileInput && !isLoading ? fileInput.click() : null)}
+    on:click={() => (fileInput && !$uploadCourseVideoStore.isUploading ? fileInput.click() : null)}
     class="h-full w-full {isDisabled && 'opacity-50 hover:cursor-not-allowed'}"
     disabled={isDisabled}
   >
@@ -126,7 +134,7 @@
       class="border-primary-300 flex h-full w-full flex-col items-center justify-center rounded-xl border border-dashed"
       on:submit|preventDefault={onUpload}
     >
-      {#if isLoading}
+      {#if $uploadCourseVideoStore.isUploading}
         <div class="flex w-[60%] max-w-[500px] flex-col justify-center gap-5">
           <p class="mt-5 text-center">
             {$t('course.navItem.lessons.materials.tabs.video.add_video.uploading')}
@@ -199,9 +207,7 @@
         <span class="flex items-center gap-2">
           <div class="overflow-hidden rounded-sm">
             <video class="w-[200px]">
-              <source src={uploadedFileUrl} type="video/mp4" />
-              <!-- <source src="/path/to/video.webm" type="video/webm" /> -->
-              <!-- Captions are optional -->
+              <source src={formRes.url} type="video/mp4" />
               <track kind="captions" />
             </video>
           </div>

@@ -1,8 +1,8 @@
-import sendEmail from '$mail/sendEmail';
 import { json } from '@sveltejs/kit';
+import sendEmail from '$mail/sendEmail';
 
 // API to send invite to teacher
-export async function POST({ request }) {
+export async function POST({ fetch, request }) {
   const body = await request.json();
   const { org, email } = body;
 
@@ -40,7 +40,7 @@ export async function POST({ request }) {
     `
     }
   ];
-  await sendEmail(emailData);
+  await sendEmail(fetch)(emailData);
 
   return json({
     success: true,

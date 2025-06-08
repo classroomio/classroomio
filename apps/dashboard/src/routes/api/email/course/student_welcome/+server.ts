@@ -1,8 +1,8 @@
-import sendEmail from '$mail/sendEmail';
 import { json } from '@sveltejs/kit';
+import sendEmail from '$mail/sendEmail';
 
 // Sends email to student when they successfully join a course
-export async function POST({ request }) {
+export async function POST({ fetch, request }) {
   const { to, orgName, courseName } = await request.json();
   console.log('/POST api/email/course/student_welcome', to, orgName);
 
@@ -25,7 +25,7 @@ export async function POST({ request }) {
     `
     }
   ];
-  await sendEmail(emailData);
+  await sendEmail(fetch)(emailData);
 
   return json({
     success: true,

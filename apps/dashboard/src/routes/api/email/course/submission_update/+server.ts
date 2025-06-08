@@ -1,7 +1,7 @@
-import sendEmail from '$mail/sendEmail';
 import { json } from '@sveltejs/kit';
+import sendEmail from '$mail/sendEmail';
 
-export async function POST({ request }) {
+export async function POST({ fetch, request }) {
   const { to, content, orgName } = await request.json();
 
   if (!to || !content || !orgName) {
@@ -17,7 +17,7 @@ export async function POST({ request }) {
     }
   ];
 
-  await sendEmail(emailData);
+  await sendEmail(fetch)(emailData);
 
   return json({
     success: true,

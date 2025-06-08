@@ -295,8 +295,7 @@ export interface LessonPage {
     videos: Array<{
       type: LessonVideoType;
       link: string;
-      videoTitle?: string;
-      videoKey?: string;
+      key?: string;
       metadata?: {
         svid?: string;
       };

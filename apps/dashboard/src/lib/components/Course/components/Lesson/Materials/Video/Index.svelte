@@ -1,6 +1,6 @@
 <script>
   import YoutubeVideo from './YoutubeVideo.svelte';
-  import LocalVideo from './LocalVideo.svelte';
+  import UploadVideo from './UploadVideo.svelte';
   import EmbedLink from './EmbedLink.svelte';
   import * as CONSTANTS from './constants';
   import { t } from '$lib/utils/functions/translations';
@@ -9,25 +9,25 @@
 
   export let lessonId = '';
 
-  let tabs = CONSTANTS.videoTabs;
+  const tabs = CONSTANTS.videoTabs;
   let currentTab = tabs[0].value;
 
   const onChange = (tab) => () => (currentTab = tab);
 </script>
 
-<section class="w-full h-full flex flex-col md:flex-row items-start gap-3">
-  <div class="flex flex-row md:flex-col gap-2 items-center">
-    <p class="text-sm font-normal text-start text-[#4F4B4B] dark:text-[#b0a9a9] mb-3 w-full">
+<section class="flex h-full w-full flex-col items-start gap-3 md:flex-row">
+  <div class="flex flex-row items-center gap-2 md:flex-col">
+    <p class="mb-3 w-full text-start text-sm font-normal text-[#4F4B4B] dark:text-[#b0a9a9]">
       {$t('course.navItem.lessons.materials.tabs.video.add_video.add_by')}
     </p>
     {#each tabs as item (item.value)}
       <button
         on:click={onChange(item.value)}
-        class={`w-full px-4 py-3 my-1 border ${
+        class={`my-1 w-full border px-4 py-3 ${
           currentTab === item.value
             ? 'border border-[#0233BD] bg-[#F5F8FE] dark:text-black'
             : 'border border-gray-200 dark:border-neutral-600'
-        } rounded-md cursor-pointer flex flex-row items-center justify-start gap-2 whitespace-nowrap`}
+        } flex cursor-pointer flex-row items-center justify-start gap-2 whitespace-nowrap rounded-md`}
       >
         {#if $isFreePlan && item.value === 3}
           <FlashFilled size={20} class="text-blue-700" />
@@ -42,13 +42,13 @@
       </button>
     {/each}
   </div>
-  <main class="w-full h-full">
+  <main class="h-full w-full">
     {#if currentTab === 1}
       <YoutubeVideo />
     {:else if currentTab === 2}
       <EmbedLink />
     {:else}
-      <LocalVideo {lessonId} />
+      <UploadVideo {lessonId} />
     {/if}
   </main>
 </section>

@@ -44,7 +44,6 @@
   import * as CONSTANTS from './constants';
   import { orderedTabs } from './constants';
   import Loader from './Loader.svelte';
-  import { signedVideoUrls, retrieveVideos } from './store';
 
   export let mode = MODES.view;
   export let prevMode = '';
@@ -267,7 +266,10 @@
   }
 
   const onClose = () => {
+    if ($uploadCourseVideoStore.isUploading) return;
+
     $uploadCourseVideoStore.isModalOpen = false;
+    autoSave($lesson.materials, $lessonByTranslation[lessonId], $isLoading, lessonId);
   };
 
   function getComponentOrder(tabs = CONSTANTS.tabs) {
@@ -296,12 +298,6 @@
   $: addBadgeValueToTab($lesson.materials);
 
   $: updateNoteByCompletion($completion);
-
-  $: {
-    if ($lesson.materials.videos.length > 0) {
-      retrieveVideos($lesson.materials.videos);
-    }
-  }
 
   $: initPlyr(player, $lesson.materials.videos);
 
@@ -474,10 +470,7 @@
                       </div>
                     {:else}
                       <video bind:this={player} class="plyr-video-trigger" playsinline controls>
-                        <source
-                          src={$signedVideoUrls[video.videoKey] || video.link}
-                          type="video/mp4"
-                        />
+                        <source src={video.link} type="video/mp4" />
                         <track kind="captions" />
                       </video>
                     {/if}

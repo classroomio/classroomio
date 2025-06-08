@@ -4,7 +4,7 @@ import sendEmail from '$mail/sendEmail';
 
 // const supabase = getSupabase();
 
-export async function POST({ request }) {
+export async function POST({ fetch, request }) {
   const { to, courseName, teacherEmail, studentFullname, orgName } = await request.json();
   // const accessToken = request.headers.get('Authorization') || '';
   console.log(
@@ -48,7 +48,7 @@ export async function POST({ request }) {
     }
   ];
 
-  await sendEmail(emailData);
+  await sendEmail(fetch)(emailData);
 
   return json({
     success: true,

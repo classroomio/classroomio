@@ -2,7 +2,6 @@
   import { onMount } from 'svelte';
   import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
   import { lesson } from '../../store/lessons';
-  import { signedVideoUrls } from '../store';
 
   let errors: Record<string, string> = {};
   let videoElements: (HTMLVideoElement | null)[] = [];
@@ -18,24 +17,6 @@
     if (typeof window !== 'undefined') {
       (window as any).players = players;
     }
-  }
-
-  function updateVideoSources() {
-    videoElements.forEach((videoElement, index) => {
-      if (videoElement && $lesson.materials.videos[index]) {
-        const video = $lesson.materials.videos[index];
-        const signedUrl = $signedVideoUrls[video.videoKey];
-        if (signedUrl && videoElement.src !== signedUrl) {
-          videoElement.src = signedUrl;
-          videoElement.load();
-        }
-      }
-    });
-    initPlyr();
-  }
-
-  $: if ($signedVideoUrls) {
-    updateVideoSources();
   }
 
   $: {
@@ -54,7 +35,7 @@
 {#if $lesson.materials.videos.length}
   <div class="w-full">
     {#each $lesson.materials.videos as video, index}
-      <div class="w-full overflow-hidden mb-5">
+      <div class="mb-5 w-full overflow-hidden">
         {#key video.link}
           <div class="mb-5">
             {#if video.type === 'youtube'}
@@ -91,11 +72,11 @@
             {:else}
               <video
                 bind:this={videoElements[index]}
-                class="plyr-video-trigger"
+                class="plyr-video-trigger h-full w-full"
                 playsinline
                 controls
               >
-                <source src={$signedVideoUrls[video.videoKey] || video.link} type="video/mp4" />
+                <source src={video.link} type="video/mp4" />
                 <track kind="captions" />
               </video>
             {/if}

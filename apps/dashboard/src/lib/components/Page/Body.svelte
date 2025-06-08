@@ -16,7 +16,6 @@
 </script>
 
 <div
-  role="button"
   tabindex="0"
   class="overflow-y-auto {isPageNavHidden
     ? 'h-[calc(100vh-65px)] lg:h-[calc(100vh-127px)]'

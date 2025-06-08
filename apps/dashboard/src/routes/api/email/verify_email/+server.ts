@@ -1,7 +1,7 @@
-import sendEmail from '$mail/sendEmail';
 import { json } from '@sveltejs/kit';
+import sendEmail from '$mail/sendEmail';
 
-export async function POST({ request }) {
+export async function POST({ fetch, request }) {
   const { to, profileId, orgSiteName, fullname } = await request.json();
   console.log('/POST api/email/verify_email', to, profileId);
 
@@ -36,7 +36,7 @@ export async function POST({ request }) {
     }
   ];
 
-  await sendEmail(emailData);
+  await sendEmail(fetch)(emailData);
 
   return json({
     success: true,

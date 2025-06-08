@@ -27,14 +27,13 @@ export const ZCoursePresignUrlUpload = z.object({
     errorMap: () => ({
       message: `Invalid content type. Allowed types: ${ALLOWED_CONTENT_TYPES.join(', ')}`
     })
-  }),
-  fileSize: z.number().max(MAX_FILE_SIZE, 'File is too large. Maximum size is 500MB')
+  })
 });
 
 export type TCoursePresignUrlUpload = z.infer<typeof ZCoursePresignUrlUpload>;
 
 export const ZCourseDownloadPresignedUrl = z.object({
-  fileNames: z.array(z.string()).min(1, 'File names array is required')
+  keys: z.array(z.string()).min(1, 'File names array is required')
 });
 
 export type TCourseDownloadPresignedUrl = z.infer<typeof ZCourseDownloadPresignedUrl>;

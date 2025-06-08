@@ -25,7 +25,7 @@
     isLoading = true;
     try {
       const response = await apiClient.post(
-        '/downloadCertificate',
+        '/course/download/certificate',
         {
           theme: `${$course.certificate_theme}`,
           studentName: `${$profile.fullname}`,

@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { env } from '$env/dynamic/public';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import {
     checkExercisesComplete,
@@ -30,8 +29,6 @@
   import IconButton from '$lib/components/IconButton/index.svelte';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import { PageBody, PageNav } from '$lib/components/Page';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
   import MODES from '$lib/utils/constants/mode';
@@ -42,7 +39,6 @@
   import { COURSE_VERSION, type Lesson, type LessonCompletion } from '$lib/utils/types';
   import { Dropdown } from 'carbon-components-svelte';
   import { ChevronLeft, ChevronRight, Edit, Save } from 'carbon-icons-svelte';
-  import Download from 'carbon-icons-svelte/lib/Download.svelte';
   import OverflowMenuVertical from 'carbon-icons-svelte/lib/OverflowMenuVertical.svelte';
   import ResultOld from 'carbon-icons-svelte/lib/ResultOld.svelte';
   import { apiClient } from '$lib/utils/services/api';
@@ -165,7 +161,7 @@
       const slideUrl = $lesson.materials.slide_url || '';
 
       const response = await apiClient.post(
-        '/downloadLesson',
+        '/course/lesson/download/pdf',
         {
           title: currentLesson.title,
           number: lessonNumber,
@@ -380,17 +376,6 @@
                   <Edit size={24} />
                 {/if}
               </IconButton>
-
-              {#if $course.metadata.lessonDownload && !!env.PUBLIC_SERVER_URL}
-                <PrimaryButton
-                  className="mr-"
-                  variant={VARIANTS.OUTLINED}
-                  onClick={downloadLesson}
-                  {isLoading}
-                >
-                  <Download size={16} />
-                </PrimaryButton>
-              {/if}
             </div>
 
             <Dropdown items={LANGUAGES} bind:selectedId={$lesson.locale} class="h-full" />
