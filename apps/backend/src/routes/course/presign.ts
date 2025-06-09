@@ -18,7 +18,6 @@ presignRouter.post('/upload', authMiddleware, async (c) => {
   const { fileName, fileType } = result;
   const fileKey = generateFileKey(fileName);
 
-  console.log('CLOUDFLARE.R2.BUCKET', CLOUDFLARE.R2.BUCKET);
   try {
     const command = new PutObjectCommand({
       Bucket: CLOUDFLARE.R2.BUCKET,

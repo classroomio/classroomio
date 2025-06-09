@@ -18,8 +18,6 @@ export const authMiddleware = async (c: Context, next: Next) => {
 
     // Extract the token from "Bearer <token>"
     const token = authHeader.split(' ')[1];
-    console.log('token', token);
-    console.log('authHeader', authHeader);
 
     if (!token) {
       return c.json(
