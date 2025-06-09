@@ -12,7 +12,6 @@ const sendEmail = (sFetch: typeof fetch) => {
     }[]
   ) => {
     try {
-      console.log('url', `${env.PUBLIC_SERVER_URL}/mail/send`, emailDataArray);
       const response = await sFetch(`${env.PUBLIC_SERVER_URL}/mail/send`, {
         method: 'POST',
         headers: {
