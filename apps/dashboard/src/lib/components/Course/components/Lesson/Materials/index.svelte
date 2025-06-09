@@ -59,9 +59,7 @@
   let timeoutId: NodeJS.Timeout;
   let tabs = CONSTANTS.tabs;
   let currentTab = tabs[0].value;
-  let errors: {
-    video: string;
-  };
+  let errors: Record<string, string> = {};
   let editorWindowRef: Window;
   let aiButtonRef: HTMLDivElement;
   let openPopover = false;
@@ -268,7 +266,10 @@
   }
 
   const onClose = () => {
+    if ($uploadCourseVideoStore.isUploading) return;
+
     $uploadCourseVideoStore.isModalOpen = false;
+    autoSave($lesson.materials, $lessonByTranslation[lessonId], $isLoading, lessonId);
   };
 
   function getComponentOrder(tabs = CONSTANTS.tabs) {

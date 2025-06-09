@@ -279,10 +279,7 @@ export interface Group_attendance {
   groupmember?: Groupmember;
 }
 
-export enum VideoType {
-  youtube,
-  muse
-}
+export type LessonVideoType = 'youtube' | 'generic' | 'upload';
 
 export interface LessonPage {
   id?: string | null;
@@ -296,8 +293,9 @@ export interface LessonPage {
     note: string;
     slide_url: string;
     videos: Array<{
-      type: string;
+      type: LessonVideoType;
       link: string;
+      key?: string;
       metadata?: {
         svid?: string;
       };

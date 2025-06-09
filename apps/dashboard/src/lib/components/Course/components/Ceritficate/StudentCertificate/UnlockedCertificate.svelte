@@ -13,6 +13,7 @@
   import { fetchProfileCourseProgress } from '$lib/utils/services/courses';
   import type { ProfileCourseProgress } from '$lib/utils/types';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import { apiClient } from '$lib/utils/services/api';
 
   let isLoading = false;
   let isCourseComplete = false;
@@ -23,24 +24,22 @@
 
     isLoading = true;
     try {
-      const response = await fetch(env.PUBLIC_SERVER_URL + '/downloadCertificate', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
+      const response = await apiClient.post(
+        '/course/download/certificate',
+        {
           theme: `${$course.certificate_theme}`,
           studentName: `${$profile.fullname}`,
           courseName: `${$course.title}`,
           courseDescription: `${$course.description}`,
           orgLogoUrl: `${$currentOrg.avatar_url}`,
           orgName: `${$currentOrg.name}`
-        })
-      });
-      const data = await response.blob();
-      console.log(data);
-      const file = new Blob([data], { type: 'application/pdf' });
+        },
+        {
+          responseType: 'blob'
+        }
+      );
+
+      const file = new Blob([response.data], { type: 'application/pdf' });
       const fileURL = URL.createObjectURL(file);
 
       let a = document.createElement('a');
@@ -85,12 +84,12 @@
 </script>
 
 <Box>
-  <div class="flex flex-col items-center justify-center w-max h-full gap-5">
+  <div class="flex h-full w-max flex-col items-center justify-center gap-5">
     <img src="/images/student-certificate-preview.png" alt="Certificate" class="max-w-[218px]" />
-    <p class="text-xl font-normal text-center">
+    <p class="text-center text-xl font-normal">
       {$t(title)}
     </p>
-    <p class="text-sm font-normal text-center max-w-md">
+    <p class="max-w-md text-center text-sm font-normal">
       {$t(subtitle)}
     </p>
     <PrimaryButton

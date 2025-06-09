@@ -12,6 +12,7 @@ ARG SMTP_HOST
 ARG SMTP_USER
 ARG SMTP_PASSWORD
 ARG SMTP_PORT
+ARG SMTP_SENDER
 
 RUN mkdir /app
 WORKDIR /app
@@ -63,6 +64,8 @@ ENV NODE_ENV=production \
     SMTP_PORT=$SMTP_PORT \
     PORT=3002
 
+RUN pnpm build
+
 EXPOSE 3002
 
-CMD ["node", "server.js"]
+CMD ["pnpm", "start"]

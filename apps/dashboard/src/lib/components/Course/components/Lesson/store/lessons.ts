@@ -1,19 +1,21 @@
-import { writable } from 'svelte/store';
-import type { Writable, Updater } from 'svelte/store';
+import type { Course, Lesson, LessonComment, LessonPage, LessonSection } from '$lib/utils/types';
+import type { Updater, Writable } from 'svelte/store';
 import {
   createLesson,
-  updateLesson,
-  deleteLesson,
   createLessonSection,
-  updateLessonSection,
-  deleteLessonSection
+  deleteLesson,
+  deleteLessonSection,
+  updateLesson,
+  updateLessonSection
 } from '$lib/utils/services/courses';
-import type { Lesson, Course, LessonPage, LessonComment, LessonSection } from '$lib/utils/types';
+
 import { LOCALE } from '$lib/utils/types';
-import { snackbar } from '$lib/components/Snackbar/store';
 import { lessonValidation } from '$lib/utils/functions/validator';
+import { snackbar } from '$lib/components/Snackbar/store';
+import { writable } from 'svelte/store';
 
 export const uploadCourseVideoStore = writable({
+  isUploading: false,
   isModalOpen: false
 });
 
