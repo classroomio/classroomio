@@ -4,6 +4,7 @@ import { nodemailerTransporter, zohoClient } from '$src/utils/email';
 import { Hono } from 'hono';
 import type { TSendEmailValidation } from '$src/types/mail';
 import type { Transporter } from 'nodemailer';
+import { env } from '$src/config/env';
 
 export const mailRouter = new Hono();
 
@@ -33,7 +34,7 @@ export async function sendWithNodemailer(
 
   try {
     const result = await transporter.sendMail({
-      from: from || '"Best from ClassroomIO" <notify@classroomio.com>',
+      from: from || env.SMTP_SENDER,
       to,
       subject,
       replyTo,
