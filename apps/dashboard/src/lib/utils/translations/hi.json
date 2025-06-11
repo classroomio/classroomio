@@ -1516,5 +1516,10 @@
     "assignment_completion_description": "पूर्ण किये गये कार्यों का प्रतिशत",
     "average_grade": "औसत क्षेणी",
     "average_grade_description": "सभी पूर्ण किए गए असाइनमेंट का औसत ग्रेड"
+  },
+  "common": {
+    "unsaved_changes": {
+      "message": "आपके पास अनसुना परिवर्तन हैं। क्या आपकी वाकई छोड़ने की इच्छा है?"
+    }
   }
 }
