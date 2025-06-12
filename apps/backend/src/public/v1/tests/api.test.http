@@ -1,0 +1,75 @@
+### Variables
+@baseUrl = http://localhost:3003/api/v1
+@apiKey = your_api_key_here
+
+### Get Organization Profile
+GET {{baseUrl}}/organizations
+X-API-Key: {{apiKey}}
+
+### List Courses (with pagination and sorting)
+GET {{baseUrl}}/courses?page=1&limit=10&sort_by=created_at&sort_order=desc
+X-API-Key: {{apiKey}}
+
+### Get Single Course
+GET {{baseUrl}}/courses/course_id_here
+X-API-Key: {{apiKey}}
+
+### Update Course
+PATCH {{baseUrl}}/courses/course_id_here
+X-API-Key: {{apiKey}}
+Content-Type: application/json
+
+{
+  "title": "Updated Course Title",
+  "description": "Updated course description"
+}
+
+### List Course Lessons (with pagination and sorting)
+GET {{baseUrl}}/courses/course_id_here/lessons?page=1&limit=10&sort_by=order&sort_order=asc
+X-API-Key: {{apiKey}}
+
+### Create New Lesson
+POST {{baseUrl}}/courses/course_id_here/lessons
+X-API-Key: {{apiKey}}
+Content-Type: application/json
+
+{
+  "title": "New Lesson",
+  "content": "Lesson content here",
+  "video_url": "https://example.com/video.mp4",
+  "duration": 3600,
+  "section_id": "section_id_here",
+  "order": 1
+}
+
+### Get Single Lesson
+GET {{baseUrl}}/lessons/lesson_id_here
+X-API-Key: {{apiKey}}
+
+### Update Lesson
+PATCH {{baseUrl}}/lessons/lesson_id_here
+X-API-Key: {{apiKey}}
+Content-Type: application/json
+
+{
+  "title": "Updated Lesson Title",
+  "content": "Updated lesson content"
+}
+
+### Toggle Lesson Lock
+PATCH {{baseUrl}}/lessons/lesson_id_here/lock
+X-API-Key: {{apiKey}}
+Content-Type: application/json
+
+{
+  "locked": true
+}
+
+### Enroll User in Course
+POST {{baseUrl}}/courses/course_id_here/enrollments
+X-API-Key: {{apiKey}}
+Content-Type: application/json
+
+{
+  "userId": "user_id_here"
+} 

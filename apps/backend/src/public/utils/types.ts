@@ -10,9 +10,15 @@ interface Organization {
   interface Course {
     id: string;
     organization_id: string;
-    name: string;
+    title: string;
+    slug: string;
+    banner_image?: string;
+    logo?: string;
+    cost?: number;
+    status:'ACTIVE'| 'DELETED';
+    type:'SELF_PACED' | 'LIVE_CLASS'
     description?: string;
-    published: boolean;
+    is_published: boolean;
     students_count: number;
     lessons_count: number;
     created_at: string;
@@ -26,7 +32,6 @@ interface Organization {
     content?: string;
     video_url?: string;
     duration?: number;
-    order_index: number;
     is_locked: boolean;
     published: boolean;
     created_at: string;

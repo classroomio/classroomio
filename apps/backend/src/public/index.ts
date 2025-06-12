@@ -36,14 +36,12 @@ app.use(
     windowMs: 15 * 60 * 1000, // 15 minutes
     limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
     standardHeaders: 'draft-6', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
-    keyGenerator: (c) => c.req.header('Authorization')?.split(' ')[1] ?? 'unknown' // Method to generate custom identifiers for clients.
+    keyGenerator: (c) => c.req.raw.headers.get('x-forwarded-for') ?? 'unknown' // Use IP address for rate limiting
   })
 );
 
 // Routes Versions
 app.route('/api/v1', v1Router);
-
-
 
 // Error handling
 app.onError((err, c) => {
