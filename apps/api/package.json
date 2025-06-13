@@ -5,7 +5,11 @@
     "deploy": "wrangler deploy --minify"
   },
   "dependencies": {
-    "hono": "^4.6.16"
+    "@supabase/supabase-js": "^2.50.0",
+    "dotenv": "^16.5.0",
+    "hono": "^4.6.16",
+    "install": "^0.13.0",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250109.0",
