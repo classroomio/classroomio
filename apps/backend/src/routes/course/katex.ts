@@ -5,25 +5,18 @@ import { z } from 'zod';
 
 export const katexRouter = new Hono();
 
-const katexSchema = z.object({
-  latex: z.string().min(1),
-  displayMode: z.boolean().optional()
-});
-
-katexRouter.post('/', async (c: Context) => {
+katexRouter.get('/', async (c: Context) => {
   try {
-    const data = await c.req.json();
-    const validatedData = katexSchema.parse(data);
+    const original = c.req.raw.url;
 
-    const html = katex.renderToString(validatedData.latex, {
-      displayMode: validatedData.displayMode ?? false,
+    const latexString = original.split('?')[1].replaceAll('&plus;', '+').replaceAll('&space;', '');
+
+    const html = katex.renderToString(latexString, {
+      output: 'mathml',
       throwOnError: false
     });
 
-    return c.json({
-      success: true,
-      html
-    });
+    return c.html(html);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return c.json(
