@@ -27,21 +27,6 @@ app.post(
   })
 );
 
-// can give student access to a course
-app.post(
-  '/course/access',
-  getJsonBody<{ courseId: string; profileId: string }>(async (body, c) => {
-    const { data, error } = await supabase.rpc('give_course_access', {
-      course_id_arg: body.courseId,
-      profile_id_arg: body.profileId
-    });
-    if (error) {
-      return c.json({ error: error.message }, 500);
-    }
-    return c.json({ data }, 200);
-  })
-);
-
 // publish a course
 app.patch(
   '/course/publish',
