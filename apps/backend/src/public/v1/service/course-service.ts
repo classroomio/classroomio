@@ -10,6 +10,12 @@ import { TPaginationQuery, calculateOffset } from '$src/public/utils/pagination'
 
 const supabase = getSupabase();
 
+// TODO: for reference
+// The relationship between a course and an organization is the group_id: course.group_id = group.organization_id
+// The relationship between a lesson and an organization is the course_id: lesson.course_id = course.id And course.group_id = group.organization_id
+
+// TODO LATER: So before returning a course or lesson we need to check for this things first
+
 const ALLOWED_COURSE_SORT_FIELDS = ['created_at', 'title', 'updated_at', 'cost'];
 const ALLOWED_LESSON_SORT_FIELDS = ['created_at', 'title', 'order', 'updated_at'];
 
@@ -29,7 +35,7 @@ export async function getProfileIdFromOrg(organizationId: string): Promise<strin
     return null;
   }
 }
-
+// I am thinking as a fallback we might have to use the standard supabase query
 // Method 1: Using RPC
 export async function getCoursesRPC(
   organizationId: string,
@@ -251,7 +257,7 @@ export async function grantCourseAccess(
       .from('course')
       .select('id, is_published, group_id')
       .eq('id', courseId)
-      .eq('organization_id', organizationId)
+      // .eq('organization.id', organizationId)
       .single();
 
     if (courseError || !course || !course.is_published) {
@@ -316,7 +322,7 @@ export async function getLessons(
         order,
         created_at,
         updated_at,
-        note:lesson_language!left(
+        note:lesson_language!inner(
           id,
           content,
           locale,
@@ -327,6 +333,7 @@ export async function getLessons(
         { count: 'exact' }
       )
       .eq('course_id', courseId);
+    // .eq('organization.id', organizationId);
 
     // Apply sorting if valid sort field is provided
     if (pagination.sort_by && ALLOWED_LESSON_SORT_FIELDS.includes(pagination.sort_by)) {
@@ -376,7 +383,7 @@ export async function getLesson(lessonId: string, organizationId: string): Promi
         order,
         created_at,
         updated_at,
-        note:lesson_language!left(
+        note:lesson_language!inner(
           id,
           content,
           locale,
@@ -386,7 +393,7 @@ export async function getLesson(lessonId: string, organizationId: string): Promi
       `
       )
       .eq('id', lessonId)
-      // .eq('course.organization_id', organizationId)
+      // .eq('organization.id', organizationId)
       .single();
 
     if (error || !data) return null;
@@ -401,7 +408,6 @@ export async function getLesson(lessonId: string, organizationId: string): Promi
 }
 
 export async function updateLesson(
-  // courseId: string,
   lessonId: string,
   organizationId: string,
   updates: TLessonUpdate
@@ -417,14 +423,8 @@ export async function updateLesson(
         updated_at: new Date().toISOString()
       })
       .eq('id', lessonId)
-      // .eq('course_id', courseId)
-      .eq('course.organization_id', organizationId)
-      .select(
-        `
-              *,
-              course!inner(organization_id)
-      `
-      )
+      // .eq('organization.id', organizationId)
+      .select('*')
       .single();
 
     if (error) throw error;
@@ -436,7 +436,6 @@ export async function updateLesson(
 }
 
 export async function toggleLessonLock(
-  // courseId: string,
   lessonId: string,
   organizationId: string,
   isLocked: boolean
@@ -447,42 +446,5 @@ export async function toggleLessonLock(
   } catch (error) {
     console.error('Error toggling lesson lock:', error);
     return false;
-  }
-}
-
-export async function createLesson(
-  courseId: string,
-  organizationId: string,
-  lessonData: TLessonCreate
-): Promise<Lesson | null> {
-  try {
-    // First verify the course belongs to the organization
-    const { data: course, error: courseError } = await supabase
-      .from('course')
-      .select('id')
-      .eq('id', courseId)
-      .eq('organization_id', organizationId)
-      .single();
-
-    if (courseError || !course) {
-      return null;
-    }
-
-    const { data, error } = await supabase
-      .from('lesson')
-      .insert({
-        ...lessonData,
-        course_id: courseId,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data as unknown as Lesson;
-  } catch (error) {
-    console.error('Error creating lesson:', error);
-    throw error;
   }
 }

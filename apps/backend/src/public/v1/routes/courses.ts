@@ -5,10 +5,9 @@ import {
   getCourses,
   updateCourse,
   grantCourseAccess,
-  getLessons,
-  createLesson
+  getLessons
 } from '../service/course-service';
-import { ZCourseUpdate, ZLessonCreate } from '$src/public/utils/validations';
+import { ZCourseUpdate } from '$src/public/utils/validations';
 import { getPaginationFromQuery, calculatePagination } from '$src/public/utils/pagination';
 
 const coursesRouter = new Hono();
@@ -232,7 +231,6 @@ coursesRouter.get('/:courseId/lessons', validateUUIDs(['courseId']), async (c: C
     const { courseId } = c.req.valid('param' as unknown as never) as { courseId: string };
     const organization = c.get('organization');
     const pagination = getPaginationFromQuery(c.req.query());
-
     const { data: lessons, total } = await getLessons(courseId, organization.id, pagination);
     const paginationMeta = calculatePagination(pagination, total);
 
@@ -251,67 +249,6 @@ coursesRouter.get('/:courseId/lessons', validateUUIDs(['courseId']), async (c: C
       {
         success: false,
         error: 'Failed to fetch lessons',
-        meta: {
-          version: 'v1',
-          timestamp: new Date().toISOString()
-        }
-      },
-      500
-    );
-  }
-});
-
-coursesRouter.post('/:courseId/lessons', validateUUIDs(['courseId']), async (c: Context) => {
-  try {
-    const { courseId } = c.req.valid('param' as unknown as never) as { courseId: string };
-    const organization = c.get('organization');
-    const lessonData = await c.req.json();
-
-    // Validate lesson data
-    const validatedData = ZLessonCreate.parse(lessonData);
-
-    const lesson = await createLesson(courseId, organization.id, validatedData);
-    if (!lesson) {
-      return c.json(
-        {
-          success: false,
-          error: 'Failed to create lesson',
-          meta: {
-            version: 'v1',
-            timestamp: new Date().toISOString()
-          }
-        },
-        400
-      );
-    }
-
-    return c.json({
-      success: true,
-      data: lesson,
-      meta: {
-        version: 'v1',
-        timestamp: new Date().toISOString()
-      }
-    });
-  } catch (error) {
-    if (error instanceof Error) {
-      return c.json(
-        {
-          success: false,
-          error: error.message,
-          meta: {
-            version: 'v1',
-            timestamp: new Date().toISOString()
-          }
-        },
-        400
-      );
-    }
-    console.error('Error in POST /courses/:courseId/lessons:', error);
-    return c.json(
-      {
-        success: false,
-        error: 'Failed to create lesson',
         meta: {
           version: 'v1',
           timestamp: new Date().toISOString()

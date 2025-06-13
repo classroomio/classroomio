@@ -3,6 +3,7 @@ import { getSupabase } from '$src/utils/supabase';
 import { ZOrganizationUpdate } from '$src/public/utils/validations';
 import { z } from 'zod';
 import { updateOrganization, getOrganization } from '$src/public/v1/service/org-services';
+
 const organizationsRouter = new Hono();
 
 // Get organization profile
@@ -64,10 +65,8 @@ organizationsRouter.patch('/', async (c: Context) => {
     const organization = c.get('organization');
     const updates = await c.req.json();
 
-    // Validate and sanitize updates with Zod schema
     const validatedUpdates = ZOrganizationUpdate.parse(updates);
 
-    // Only proceed if there are valid updates
     if (Object.keys(validatedUpdates).length === 0) {
       return c.json(
         {

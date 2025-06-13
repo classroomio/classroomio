@@ -31,11 +31,10 @@ export async function updateOrganization(
     const { data, error } = await supabase
       .from('organization')
       .update({
-        ...validatedUpdates,
-        updated_at: new Date().toISOString()
+        ...validatedUpdates
       })
       .eq('id', organizationId)
-      .select()
+      .select('*')
       .single();
 
     if (error) {

@@ -5,13 +5,16 @@ import { ZLessonUpdate } from '$src/public/utils/validations';
 
 const lessonsRouter = new Hono();
 
+// TODO: For all lessons, figure out a way to verify that the lesson belongs to a course in the organization
+// On a first look, I think we can solve it by using the course_id in the lesson table,but i am trying to prevent a courseId in the params
+// need to think about it
+// the OrganizationId is already in the context and thus we can use that to verify the lesson belongs to a course in the organization
+
 // Get a specific lesson
 lessonsRouter.get('/:lessonId', validateUUIDs(['lessonId']), async (c: Context) => {
   try {
     const { lessonId } = c.req.valid('param' as unknown as never) as { lessonId: string };
     const organization = c.get('organization');
-
-    // Note: The service layer will verify the lesson belongs to a course in the organization
     const lesson = await getLesson(lessonId, organization.id);
     if (!lesson) {
       return c.json(
@@ -55,10 +58,8 @@ lessonsRouter.get('/:lessonId', validateUUIDs(['lessonId']), async (c: Context) 
 lessonsRouter.patch('/:lessonId', validateUUIDs(['lessonId']), async (c: Context) => {
   try {
     const { lessonId } = c.req.valid('param' as unknown as never) as { lessonId: string };
-    const organization = c.get('organization');
     const updates = await c.req.json();
-
-    // Validate updates with Zod schema
+    const organization = c.get('organization');
     const validatedUpdates = ZLessonUpdate.parse(updates);
 
     const lesson = await updateLesson(lessonId, organization.id, validatedUpdates);
@@ -117,9 +118,8 @@ lessonsRouter.patch('/:lessonId', validateUUIDs(['lessonId']), async (c: Context
 lessonsRouter.patch('/:lessonId/lock', validateUUIDs(['lessonId']), async (c: Context) => {
   try {
     const { lessonId } = c.req.valid('param' as unknown as never) as { lessonId: string };
-    const organization = c.get('organization');
     const { locked } = await c.req.json();
-
+    const organization = c.get('organization');
     if (typeof locked !== 'boolean') {
       return c.json(
         {
