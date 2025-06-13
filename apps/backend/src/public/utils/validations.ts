@@ -1,37 +1,57 @@
 import { z } from 'zod';
 
-// Course type enum
+// Simple but robust sanitization utility
+const sanitize = (input: unknown): string => {
+  if (typeof input !== 'string') return '';
+  return input
+    .trim()
+    .replace(/[<>]/g, '') // Remove < and > to prevent HTML injection
+    .replace(/['";]/g, '') // Remove quotes and semicolons to prevent SQL injection
+    .slice(0, 1000); // Reasonable length limit
+};
+
+// Course and Lesson Types
 export const ZCourseType = z.enum(['SELF_PACED', 'LIVE_CLASS']);
 export const ZCourseStatus = z.enum(['ACTIVE', 'DELETED']);
 
-// Base course schema
+// Base string fields with validation and sanitization
+const baseString = z.string().min(1).transform(sanitize);
+const optionalString = z.string().transform(sanitize).optional();
+const baseUrl = z.string().url().transform(sanitize);
+const optionalUrl = baseUrl.optional();
+
+// Organization schemas
+export const ZOrganizationUpdate = z.object({
+  name: baseString,
+  avatar_url: optionalUrl
+});
+
+// Course schemas
 export const ZCourseBase = z.object({
-  title: z.string().min(1, 'Title is required'),
-  description: z.string().optional(),
-  slug: z.string().min(1, 'Slug is required'),
-  logo: z.string().url().optional(),
-  banner_image: z.string().url().optional(),
+  title: baseString,
+  description: optionalString,
+  slug: baseString,
+  logo: optionalUrl,
+  banner_image: optionalUrl,
   cost: z.number().min(0).optional(),
-  currency: z.string().optional(),
+  currency: optionalString,
   is_published: z.boolean(),
   type: ZCourseType,
   status: ZCourseStatus
 });
 
-// Course update schema
 export const ZCourseUpdate = ZCourseBase.partial();
 
-// Course access schema
 export const ZCourseAccess = z.object({
   user_id: z.string().uuid('Invalid user ID'),
   access_type: z.enum(['grant', 'revoke'])
 });
 
-// Lesson base schema
+// Lesson schemas
 export const ZLessonBase = z.object({
-  title: z.string().min(1, 'Title is required'),
-  content: z.string().optional(),
-  video_url: z.string().url().optional(),
+  title: baseString,
+  content: optionalString,
+  video_url: optionalUrl,
   duration: z.number().min(0).optional(),
   is_locked: z.boolean(),
   published: z.boolean(),
@@ -39,7 +59,6 @@ export const ZLessonBase = z.object({
   order: z.number().min(0).optional()
 });
 
-// Lesson create schema
 export const ZLessonCreate = ZLessonBase.omit({
   is_locked: true,
   published: true
@@ -48,10 +67,10 @@ export const ZLessonCreate = ZLessonBase.omit({
   published: z.boolean().default(false)
 });
 
-// Lesson update schema
 export const ZLessonUpdate = ZLessonBase.partial();
 
-// Response types
+// Types
+export type TOrganizationUpdate = z.infer<typeof ZOrganizationUpdate>;
 export type TCourseBase = z.infer<typeof ZCourseBase>;
 export type TCourseUpdate = z.infer<typeof ZCourseUpdate>;
 export type TCourseAccess = z.infer<typeof ZCourseAccess>;

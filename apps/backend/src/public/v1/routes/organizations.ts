@@ -1,5 +1,7 @@
 import { Context, Hono } from 'hono';
 import { getSupabase } from '$src/utils/supabase';
+import { ZOrganizationUpdate } from '$src/public/utils/validations';
+import { z } from 'zod';
 
 const organizationsRouter = new Hono();
 const supabase = getSupabase();
@@ -66,19 +68,11 @@ organizationsRouter.patch('/', async (c: Context) => {
     const organization = c.get('organization');
     const updates = await c.req.json();
 
-    // Only allow updating certain fields
-    const allowedUpdates = ['name', 'avatar_url'];
-    const filteredUpdates = Object.keys(updates)
-      .filter((key) => allowedUpdates.includes(key))
-      .reduce(
-        (obj, key) => {
-          obj[key] = updates[key];
-          return obj;
-        },
-        {} as Record<string, any>
-      );
+    // Validate and sanitize updates with Zod schema
+    const validatedUpdates = ZOrganizationUpdate.parse(updates);
 
-    if (Object.keys(filteredUpdates).length === 0) {
+    // Only proceed if there are valid updates
+    if (Object.keys(validatedUpdates).length === 0) {
       return c.json(
         {
           success: false,
@@ -95,7 +89,7 @@ organizationsRouter.patch('/', async (c: Context) => {
     const { data, error } = await supabase
       .from('organizations')
       .update({
-        ...filteredUpdates,
+        ...validatedUpdates,
         updated_at: new Date().toISOString()
       })
       .eq('id', organization.id)
@@ -131,6 +125,19 @@ organizationsRouter.patch('/', async (c: Context) => {
       }
     });
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return c.json(
+        {
+          success: false,
+          error: error.errors,
+          meta: {
+            version: 'v1',
+            timestamp: new Date().toISOString()
+          }
+        },
+        400
+      );
+    }
     console.error('Error in PATCH /organizations:', error);
     return c.json(
       {

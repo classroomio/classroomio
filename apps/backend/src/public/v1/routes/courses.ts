@@ -6,8 +6,7 @@ import {
   updateCourse,
   grantCourseAccess,
   getLessons,
-  createLesson,
-  getLesson
+  createLesson
 } from '../service/course-service';
 import { ZCourseUpdate, ZLessonCreate } from '$src/public/utils/validations';
 import { getPaginationFromQuery, calculatePagination } from '$src/public/utils/pagination';

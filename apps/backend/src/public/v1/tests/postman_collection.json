@@ -24,6 +24,33 @@
               "path": ["organizations"]
             }
           }
+        },
+        {
+          "name": "Update Organization Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Organization Name\",\n  \"avatar_url\": \"https://example.com/avatar.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/organizations",
+              "host": ["{{baseUrl}}"],
+              "path": ["organizations"]
+            }
+          }
         }
       ]
     },
@@ -81,6 +108,60 @@
               "raw": "{{baseUrl}}/courses/{{courseId}}",
               "host": ["{{baseUrl}}"],
               "path": ["courses", "{{courseId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Course",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Course Title\",\n  \"description\": \"Updated course description\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", "{{courseId}}"]
+            }
+          }
+        },
+        {
+          "name": "Enroll User in Course",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseId}}/enrollments",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", "{{courseId}}", "enrollments"]
             }
           }
         }
@@ -143,12 +224,84 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"New Lesson\",\n  \"content\": \"Lesson content here\",\n  \"order\": 1\n}"
+              "raw": "{\n  \"title\": \"New Lesson\",\n  \"content\": \"Lesson content here\",\n  \"video_url\": \"https://example.com/video.mp4\",\n  \"duration\": 3600,\n  \"section_id\": \"{{sectionId}}\",\n  \"order\": 1\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/courses/{{courseId}}/lessons",
               "host": ["{{baseUrl}}"],
               "path": ["courses", "{{courseId}}", "lessons"]
+            }
+          }
+        },
+        {
+          "name": "Get Lesson",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/lessons/{{lessonId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["lessons", "{{lessonId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Lesson",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Lesson Title\",\n  \"content\": \"Updated lesson content\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/lessons/{{lessonId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["lessons", "{{lessonId}}"]
+            }
+          }
+        },
+        {
+          "name": "Toggle Lesson Lock",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"locked\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/lessons/{{lessonId}}/lock",
+              "host": ["{{baseUrl}}"],
+              "path": ["lessons", "{{lessonId}}", "lock"]
             }
           }
         }
