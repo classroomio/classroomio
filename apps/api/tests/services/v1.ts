@@ -12,7 +12,7 @@ app.get('/', (c) => {
 
 // app.use('*', authMiddleware);
 
-// get all courses in an organization
+// --- get all courses in an organization
 app.post(
   '/courses',
   getJsonBody<{ orgId: string; profileId: string }>(async (body, c) => {
@@ -27,7 +27,7 @@ app.post(
   })
 );
 
-// publish a course
+// --- publish a course
 app.patch(
   '/course/publish',
   getJsonBody<{ courseId: string }>(async (body, c) => {
@@ -43,7 +43,7 @@ app.patch(
   })
 );
 
-// unpublish a course
+// --- unpublish a course
 app.patch(
   '/course/unpublish',
   getJsonBody<{ courseId: string }>(async (body, c) => {
@@ -59,16 +59,7 @@ app.patch(
   })
 );
 
-export function generateSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-');
-}
-
-// update course
+// --- update course
 app.patch(
   '/courses/:courseId',
   getJsonBody<{
@@ -103,7 +94,7 @@ app.patch(
   })
 );
 
-// get lesson info by id
+// --- get lesson info by id
 app.post(
   '/lesson',
   getJsonBody<{ lessonId: string }>(async (body, c) => {
@@ -119,7 +110,7 @@ app.post(
   })
 );
 
-// lock a lesson for a course
+// --- lock a lesson for a course
 app.patch(
   '/lesson/lock',
   getJsonBody<{ lessonId: string }>(async (body, c) => {
@@ -135,7 +126,7 @@ app.patch(
   })
 );
 
-// unlock a lesson for a course
+// --- unlock a lesson for a course
 app.patch(
   '/lesson/unlock',
   getJsonBody<{ lessonId: string }>(async (body, c) => {
@@ -151,7 +142,7 @@ app.patch(
   })
 );
 
-// update lesson content
+// --- update lesson content
 app.patch(
   '/lessons/:lessonId',
   getJsonBody<{
