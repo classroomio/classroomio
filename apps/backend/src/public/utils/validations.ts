@@ -50,21 +50,20 @@ export const ZCourseAccess = z.object({
 // Lesson schemas
 export const ZLessonBase = z.object({
   title: baseString,
-  content: optionalString,
+  note: optionalString,
   video_url: optionalUrl,
-  duration: z.number().min(0).optional(),
-  is_locked: z.boolean(),
-  published: z.boolean(),
+  is_unlocked: z.boolean(),
+  public: z.boolean(),
   section_id: z.string().uuid('Invalid section ID').optional(),
   order: z.number().min(0).optional()
 });
 
 export const ZLessonCreate = ZLessonBase.omit({
-  is_locked: true,
-  published: true
+  is_unlocked: true,
+  public: true
 }).extend({
   is_locked: z.boolean().default(true),
-  published: z.boolean().default(false)
+  public: z.boolean().default(false)
 });
 
 export const ZLessonUpdate = ZLessonBase.partial();

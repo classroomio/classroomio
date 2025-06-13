@@ -441,7 +441,7 @@ export async function toggleLessonLock(
   isLocked: boolean
 ): Promise<boolean> {
   try {
-    const lesson = await updateLesson(lessonId, organizationId, { is_locked: isLocked });
+    const lesson = await updateLesson(lessonId, organizationId, { is_unlocked: isLocked });
     return !!lesson;
   } catch (error) {
     console.error('Error toggling lesson lock:', error);

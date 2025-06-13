@@ -224,7 +224,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"New Lesson\",\n  \"content\": \"Lesson content here\",\n  \"video_url\": \"https://example.com/video.mp4\",\n  \"duration\": 3600,\n  \"section_id\": \"{{sectionId}}\",\n  \"order\": 1\n}"
+              "raw": "{\n  \"title\": \"New Lesson\",\n  \"note\": \"Lesson content here\",\n  \"video_url\": \"https://example.com/video.mp4\",\n  \"duration\": 3600,\n  \"section_id\": \"{{sectionId}}\",\n  \"order\": 1\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/courses/{{courseId}}/lessons",
@@ -269,7 +269,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"Updated Lesson Title\",\n  \"content\": \"Updated lesson content\"\n}"
+              "raw": "{\n  \"title\": \"Updated Lesson Title\",\n  \"note\": \"Updated lesson content\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/lessons/{{lessonId}}",

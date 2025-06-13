@@ -31,11 +31,10 @@ interface Lesson {
   id: string;
   course_id: string;
   title: string;
-  content?: string;
+  note?: string;
   video_url?: string;
-  duration?: number;
-  is_locked: boolean;
-  published: boolean;
+  is_unlocked: boolean;
+  public: boolean;
   created_at: string;
   updated_at: string;
 }
