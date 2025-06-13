@@ -11,7 +11,10 @@
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint . --ext .ts",
-    "format": "prettier --write \"src/**/*.ts\""
+    "format": "prettier --write \"src/**/*.ts\"",
+    "dev:public": "tsx watch src/public/index.ts",
+    "build:public": "tsup src/public/index.ts --format cjs,esm --dts",
+    "start:public": "node dist/public/index.js"
   },
   "repository": {
     "type": "git",
