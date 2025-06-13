@@ -1,16 +1,19 @@
 import { Hono } from 'hono';
+// import { jwt } from 'hono/jwt';
 import { getServerSupabase } from '../../utils/superbase.server';
-import { authMiddleware } from '../controllers/authMiddleware';
-import { getJsonBody } from '../utils/bodyParser';
+import { getJsonBody } from '../../utils/bodyParser';
 
 const app = new Hono();
 const supabase = getServerSupabase();
+const jwtSecret = 'djkasnc';
 
 app.get('/', (c) => {
+  console.log(jwtSecret);
   return c.json({ data: 'Hello Hono!' }, 200);
 });
 
-// app.use('*', authMiddleware);
+// --- protects all routes but since login isn't being implemented, it's commented out
+// app.use('*', jwt({ secret: jwtSecret }));
 
 // --- get all courses in an organization
 app.post(
@@ -59,7 +62,7 @@ app.patch(
   })
 );
 
-// --- update course
+// --- update a course
 app.patch(
   '/courses/:courseId',
   getJsonBody<{
@@ -94,7 +97,7 @@ app.patch(
   })
 );
 
-// --- get lesson info by id
+// --- get lesson by id
 app.post(
   '/lesson',
   getJsonBody<{ lessonId: string }>(async (body, c) => {
@@ -110,7 +113,7 @@ app.post(
   })
 );
 
-// --- lock a lesson for a course
+// --- lock a lesson
 app.patch(
   '/lesson/lock',
   getJsonBody<{ lessonId: string }>(async (body, c) => {
@@ -126,7 +129,7 @@ app.patch(
   })
 );
 
-// --- unlock a lesson for a course
+// --- unlock a lesson
 app.patch(
   '/lesson/unlock',
   getJsonBody<{ lessonId: string }>(async (body, c) => {
