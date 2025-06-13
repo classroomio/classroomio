@@ -178,7 +178,16 @@ That's it! You can now test all endpoints directly from Postman. The collection 
 
 1. The current setup with RLS disabled is for development only
 2. In production:
-   - RLS will be enabled
+   - RLS will be enabled with policies to ensure data isolation between organizations
+   - Example RLS policy for the `organization` table:
+     ```sql
+     -- This policy ensures organizations can only access their own data
+     CREATE POLICY "Organization can only access their own data"
+     ON organization
+     FOR ALL
+     USING (api_key = current_setting('request.headers')::json->>'x-api-key');
+     ```
+   - Similar policies will be implemented for all tables to maintain data security
    - API keys will be properly secured
    - Additional security measures will be implemented
 3. Never commit API keys or sensitive credentials to version control
