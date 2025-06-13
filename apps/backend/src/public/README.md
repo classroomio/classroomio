@@ -145,7 +145,7 @@ Common HTTP Status Codes:
 2. Install dependencies:
 
    ```bash
-   npm install
+   pnpm install
    ```
 
 3. Set up environment variables:
@@ -158,7 +158,7 @@ Common HTTP Status Codes:
 
 4. Start the development server:
    ```bash
-   npm run api:dev
+   pnpm run api:dev
    ```
 
 ## Testing
