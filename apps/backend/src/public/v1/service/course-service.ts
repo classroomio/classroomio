@@ -137,7 +137,7 @@ export async function getCourses(
 export async function getCourse(courseId: string, organizationId: string): Promise<Course | null> {
   try {
     const { data, error } = await supabase
-      .from('courses')
+      .from('course')
       .select(
         `
         id,
@@ -220,7 +220,7 @@ export async function updateCourse(
     const validatedUpdates = ZCourseUpdate.parse(updates);
 
     const { data, error } = await supabase
-      .from('courses')
+      .from('course')
       .update({
         ...validatedUpdates,
         updated_at: new Date().toISOString()
@@ -248,7 +248,7 @@ export async function grantCourseAccess(
   try {
     // Verify course belongs to organization and is published
     const { data: course, error: courseError } = await supabase
-      .from('courses')
+      .from('course')
       .select('id, is_published, group_id')
       .eq('id', courseId)
       .eq('organization_id', organizationId)
@@ -296,19 +296,16 @@ export async function getLessons(
   pagination: TPaginationQuery
 ): Promise<{ data: Lesson[]; total: number }> {
   try {
-    // Calculate the range based on pagination
     const offset = calculateOffset(pagination.page, pagination.limit);
 
-    // Build the query
     let query = supabase
-      .from('lessons')
+      .from('lesson')
       .select(
         `
         id,
         course_id,
         section_id,
         title,
-        note,
         videos,
         slide_url,
         public,
@@ -319,15 +316,13 @@ export async function getLessons(
         order,
         created_at,
         updated_at,
-        totalExercises:exercise(count),
-        lesson_completion(
+        note:lesson_language!left(
           id,
-          profile_id,
-          is_complete,
-          created_at,
-          updated_at
+          content,
+          locale,
+          lesson_id
         ),
-        courses!inner(group_id)
+        course!inner(group_id)
       `,
         { count: 'exact' }
       )
@@ -346,7 +341,11 @@ export async function getLessons(
 
     const { data, error, count } = await query;
 
-    if (error || !data) return { data: [], total: 0 };
+    if (error || !data) {
+      console.error('Error fetching lessons:', error);
+      return { data: [], total: 0 };
+    }
+
     return {
       data: data as unknown as Lesson[],
       total: count || 0
@@ -357,21 +356,16 @@ export async function getLessons(
   }
 }
 
-export async function getLesson(
-  // courseId: string,
-  lessonId: string,
-  organizationId: string
-): Promise<Lesson | null> {
+export async function getLesson(lessonId: string, organizationId: string): Promise<Lesson | null> {
   try {
     const { data, error } = await supabase
-      .from('lessons')
+      .from('lesson')
       .select(
         `
         id,
         course_id,
         section_id,
         title,
-        note,
         videos,
         slide_url,
         public,
@@ -382,24 +376,24 @@ export async function getLesson(
         order,
         created_at,
         updated_at,
-        totalExercises:exercise(count),
-        lesson_completion(
+        note:lesson_language!left(
           id,
-          profile_id,
-          is_complete,
-          created_at,
-          updated_at
+          content,
+          locale,
+          lesson_id
         ),
-              courses!inner(organization_id)
+        course!inner(group_id)
       `
       )
       .eq('id', lessonId)
-      // .eq('course_id', courseId)
-      .eq('courses.organization_id', organizationId)
+      // .eq('course.organization_id', organizationId)
       .single();
 
     if (error || !data) return null;
-    return data as unknown as Lesson;
+
+    return {
+      data
+    } as unknown as Lesson;
   } catch (error) {
     console.error('Error fetching lesson:', error);
     return null;
@@ -417,18 +411,18 @@ export async function updateLesson(
     const validatedUpdates = ZLessonUpdate.parse(updates);
 
     const { data, error } = await supabase
-      .from('lessons')
+      .from('lesson')
       .update({
         ...validatedUpdates,
         updated_at: new Date().toISOString()
       })
       .eq('id', lessonId)
       // .eq('course_id', courseId)
-      .eq('courses.organization_id', organizationId)
+      .eq('course.organization_id', organizationId)
       .select(
         `
               *,
-              courses!inner(organization_id)
+              course!inner(organization_id)
       `
       )
       .single();
@@ -464,7 +458,7 @@ export async function createLesson(
   try {
     // First verify the course belongs to the organization
     const { data: course, error: courseError } = await supabase
-      .from('courses')
+      .from('course')
       .select('id')
       .eq('id', courseId)
       .eq('organization_id', organizationId)
@@ -475,7 +469,7 @@ export async function createLesson(
     }
 
     const { data, error } = await supabase
-      .from('lessons')
+      .from('lesson')
       .insert({
         ...lessonData,
         course_id: courseId,

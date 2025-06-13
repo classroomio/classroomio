@@ -2,9 +2,8 @@ import { Context, Hono } from 'hono';
 import { getSupabase } from '$src/utils/supabase';
 import { ZOrganizationUpdate } from '$src/public/utils/validations';
 import { z } from 'zod';
-
+import { updateOrganization, getOrganization } from '$src/public/v1/service/org-services';
 const organizationsRouter = new Hono();
-const supabase = getSupabase();
 
 // Get organization profile
 organizationsRouter.get('/', async (c: Context) => {
@@ -12,13 +11,9 @@ organizationsRouter.get('/', async (c: Context) => {
     const organization = c.get('organization');
 
     // Get organization details
-    const { data, error } = await supabase
-      .from('organization')
-      .select('id, name, siteName, avatar_url, created_at')
-      .eq('id', organization.id)
-      .single();
+    const organizationDetails = await getOrganization(organization.id);
 
-    if (error || !data) {
+    if (!organizationDetails) {
       return c.json(
         {
           success: false,
@@ -35,11 +30,12 @@ organizationsRouter.get('/', async (c: Context) => {
     return c.json({
       success: true,
       data: {
-        id: data.id,
-        name: data.name,
-        siteName: data.siteName,
-        avatar_url: data.avatar_url,
-        created_at: data.created_at
+        id: organizationDetails.id,
+        name: organizationDetails.name,
+        siteName: organizationDetails.siteName,
+        avatar_url: organizationDetails.avatar_url,
+        landingpage: organizationDetails.landingpage,
+        created_at: organizationDetails.created_at
       },
       meta: {
         version: 'v1',
@@ -86,17 +82,8 @@ organizationsRouter.patch('/', async (c: Context) => {
       );
     }
 
-    const { data, error } = await supabase
-      .from('organizations')
-      .update({
-        ...validatedUpdates,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', organization.id)
-      .select()
-      .single();
-
-    if (error) {
+    const updatedOrganization = await updateOrganization(organization.id, validatedUpdates);
+    if (!updatedOrganization) {
       return c.json(
         {
           success: false,
@@ -113,11 +100,13 @@ organizationsRouter.patch('/', async (c: Context) => {
     return c.json({
       success: true,
       data: {
-        id: data.id,
-        name: data.name,
-        slug: data.slug,
-        avatar_url: data.avatar_url,
-        updated_at: data.updated_at
+        id: updatedOrganization.id,
+        name: updatedOrganization.name,
+        siteName: updatedOrganization.siteName,
+        avatar_url: updatedOrganization.avatar_url,
+        landingpage: updatedOrganization.landingpage,
+        created_at: updatedOrganization.created_at,
+        updated_at: updatedOrganization.updated_at
       },
       meta: {
         version: 'v1',
