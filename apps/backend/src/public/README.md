@@ -182,7 +182,3 @@ That's it! You can now test all endpoints directly from Postman. The collection 
    - API keys will be properly secured
    - Additional security measures will be implemented
 3. Never commit API keys or sensitive credentials to version control
-
-## Support
-
-For development support or to report issues, please contact the development team.
