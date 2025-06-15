@@ -2,8 +2,13 @@ import { Context, Hono } from 'hono';
 import { ZCertificateDownload, ZLessonDownloadContent } from '$src/types/course/lesson';
 
 import { generateLessonPdf } from '$src/utils/lesson';
+import { getJsonBody } from '$src/utils/bodyParser';
+import { getSupabase } from '$src/utils/supabase';
+import { authMiddleware } from '$src/middlewares/auth';
+import { responseHandler } from '$src/utils/responseHandler';
 
 export const lessonRouter = new Hono();
+const supabase = getSupabase();
 
 lessonRouter.post('/download/pdf', async (c: Context) => {
   try {
@@ -33,3 +38,136 @@ lessonRouter.post('/download/pdf', async (c: Context) => {
     );
   }
 });
+
+// --- get lesson by id
+lessonRouter.post(
+  '/',
+  authMiddleware,
+  getJsonBody<{ lessonId: string }>(async (body, _query, c) => {
+    const { data, error } = await supabase
+      .from('lesson')
+      .select('*')
+      .eq('id', body.lessonId)
+      .single();
+    if (error || !data) {
+      return responseHandler(c, {
+        error: {
+          message: error?.message,
+          details: error
+        },
+        status: 410,
+        isError: true
+      });
+    } else {
+      return responseHandler(c, {
+        data,
+        status: 200,
+        isError: false
+      });
+    }
+  })
+);
+
+// --- lock a lesson
+lessonRouter.patch(
+  '/lock',
+  authMiddleware,
+  getJsonBody<{ lessonId: string }>(async (body, _query, c) => {
+    const { error: updateError } = await supabase
+      .from('lesson')
+      .update({ is_unlocked: false })
+      .eq('id', body.lessonId);
+
+    if (updateError) {
+      return responseHandler(c, updateError);
+    } else {
+      return responseHandler(c, {
+        message: 'Lesson successfully locked',
+        status: 200,
+        isError: false
+      });
+    }
+  })
+);
+
+// --- unlock a lesson
+lessonRouter.patch(
+  '/unlock',
+  authMiddleware,
+  getJsonBody<{ lessonId: string }>(async (body, _query, c) => {
+    const { error: updateError } = await supabase
+      .from('lesson')
+      .update({ is_unlocked: true })
+      .eq('id', body.lessonId);
+
+    if (updateError) {
+      return responseHandler(c, updateError);
+    } else {
+      return responseHandler(c, {
+        message: 'Lesson successfully unlocked',
+        status: 200,
+        isError: false
+      });
+    }
+  })
+);
+
+// --- update lesson content
+lessonRouter.patch(
+  ':lessonId',
+  authMiddleware,
+  getJsonBody<{
+    video_url?: string;
+    slide_url?: string;
+    title?: string;
+    videos?: any;
+    content?: string;
+    locale?: string;
+  }>(async (body, query, c) => {
+    const lessonId = await query.lessonId;
+    const { video_url, slide_url, title, videos, content, locale = 'en' } = body;
+
+    if (!lessonId) {
+      return responseHandler(c, {
+        error: { message: 'Lesson ID is required' },
+        status: 400
+      });
+    }
+
+    const updateLessonContent = await supabase
+      .from('lesson')
+      .update({
+        video_url,
+        slide_url,
+        title,
+        videos
+      })
+      .eq('id', lessonId);
+
+    const updateLessonNote = await supabase
+      .from('lesson_language')
+      .update({
+        content,
+        locale
+      })
+      .eq('lesson_id', lessonId);
+
+    const [contentResult, noteResult] = await Promise.all([updateLessonContent, updateLessonNote]);
+
+    if (contentResult.error || noteResult.error) {
+      return responseHandler(c, {
+        error: {
+          message: contentResult.error?.message || noteResult.error?.message,
+          details: contentResult.error || noteResult.error
+        },
+        status: 500
+      });
+    }
+
+    return responseHandler(c, {
+      message: 'Lesson successfully updated',
+      status: 200,
+      isError: false
+    });
+  })
+);
