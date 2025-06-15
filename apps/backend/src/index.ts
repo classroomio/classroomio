@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { courseRouter } from '$src/routes/course/course';
+import { courseRouter, coursesRouter } from '$src/routes/course/course';
 import { env } from '$src/config/env';
 import { logger } from 'hono/logger';
 import { mailRouter } from '$src/routes/mail';
@@ -43,8 +43,9 @@ app.use(
 // Routes
 app.get('/', (c) => c.json({ message: 'Welcome to ClassroomIO' }));
 
-app.route('/course', courseRouter);
-app.route('/mail', mailRouter);
+app.route('/v1/courses', coursesRouter);
+app.route('/v1/course', courseRouter);
+app.route('/v1/mail', mailRouter);
 
 // Error handling
 app.onError((err, c) => {

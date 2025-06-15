@@ -7,8 +7,13 @@ import { katexRouter } from '$src/routes/course/katex';
 import { lessonRouter } from '$src/routes/course/lesson';
 import { presignRouter } from '$src/routes/course/presign';
 import { z } from 'zod';
+import { getJsonBody } from '$src/utils/bodyParser';
+import { getSupabase } from '$src/utils/supabase';
+import { authMiddleware } from '$src/middlewares/auth';
 
 export const courseRouter = new Hono();
+export const coursesRouter = new Hono();
+const supabase = getSupabase();
 
 courseRouter.route('/katex', katexRouter);
 courseRouter.route('/lesson', lessonRouter);
@@ -89,3 +94,103 @@ courseRouter.post('/download/content', async (c: Context) => {
     );
   }
 });
+
+// --- get all courses, to follow the naming convention, this has to be plural
+coursesRouter.post(
+  '/',
+  authMiddleware,
+  getJsonBody<{ orgId: string; profileId: string }>(async (body, query, c) => {
+    const { data, error } = await supabase.rpc('get_courses', {
+      org_id_arg: body.orgId,
+      profile_id_arg: body.profileId
+    });
+
+    if (error || !data) {
+      return c.json({ success: false, error: error?.message, details: error }, 500);
+    }
+
+    const number = parseInt(query.number || '10', 10);
+    const order = query.order === 'desc' ? 'desc' : 'asc';
+
+    let filtered = [...data].sort((a, b) => {
+      if (order === 'asc') {
+        return a.title.localeCompare(b.title);
+      } else {
+        return b.title.localeCompare(a.title);
+      }
+    });
+
+    filtered = filtered.slice(0, number);
+
+    return c.json({ success: true, data: filtered }, 200);
+  })
+);
+
+// --- publish a course
+courseRouter.patch(
+  '/publish',
+  authMiddleware,
+  getJsonBody<{ courseId: string }>(async (body, _query, c) => {
+    const { error: updateError } = await supabase
+      .from('course')
+      .update({ is_published: true })
+      .eq('id', body.courseId);
+
+    if (updateError) {
+      return c.json({ success: false, error: updateError.message, details: updateError }, 500);
+    } else {
+      return c.json({ success: true, message: 'Course successfully published' }, 200);
+    }
+  })
+);
+
+// --- unpublish a course
+courseRouter.patch(
+  '/unpublish',
+  authMiddleware,
+  getJsonBody<{ courseId: string }>(async (body, _query, c) => {
+    const { error: updateError } = await supabase
+      .from('course')
+      .update({ is_published: false })
+      .eq('id', body.courseId);
+
+    if (updateError) {
+      return c.json({ success: false, error: updateError.message, details: updateError }, 500);
+    } else {
+      return c.json({ success: true, message: 'Course successfully unpublished' }, 200);
+    }
+  })
+);
+
+// --- update a course
+courseRouter.patch(
+  '/:courseId',
+  authMiddleware,
+  getJsonBody<{
+    title?: string;
+    description?: string;
+    overview?: string;
+    logo?: string;
+    cost?: number;
+    currency?: string;
+    banner_image?: string;
+    certificate_theme?: string;
+    status?: string;
+    type?: string;
+    is_template?: boolean;
+    is_certificate_downloadable?: boolean;
+  }>(async (body, query, c) => {
+    const courseId = await query.courseId;
+    if (!courseId) {
+      return c.json({ error: 'Course ID is required' }, 400);
+    }
+
+    const { error: updateError } = await supabase.from('course').update(body).eq('id', courseId);
+
+    if (updateError) {
+      return c.json({ success: false, error: updateError.message, details: updateError }, 500);
+    } else {
+      return c.json({ success: true, message: 'Course successfully updated' }, 200);
+    }
+  })
+);
