@@ -5,6 +5,7 @@ import { generateLessonPdf } from '$src/utils/lesson';
 import { getJsonBody } from '$src/utils/bodyParser';
 import { getSupabase } from '$src/utils/supabase';
 import { authMiddleware } from '$src/middlewares/auth';
+import { responseHandler } from '$src/utils/responseHandler';
 
 export const lessonRouter = new Hono();
 const supabase = getSupabase();
@@ -49,9 +50,20 @@ lessonRouter.post(
       .eq('id', body.lessonId)
       .single();
     if (error || !data) {
-      return c.json({ success: false, error: error.message, details: error }, 500);
+      return responseHandler(c, {
+        error: {
+          message: error?.message,
+          details: error
+        },
+        status: 410,
+        isError: true
+      });
     } else {
-      return c.json({ success: true, data }, 200);
+      return responseHandler(c, {
+        data,
+        status: 200,
+        isError: false
+      });
     }
   })
 );
@@ -67,9 +79,14 @@ lessonRouter.patch(
       .eq('id', body.lessonId);
 
     if (updateError) {
-      return c.json({ success: false, error: updateError.message, details: updateError }, 500);
+      return responseHandler(c, updateError);
+    } else {
+      return responseHandler(c, {
+        message: 'Lesson successfully locked',
+        status: 200,
+        isError: false
+      });
     }
-    return c.json({ success: true, message: 'Lesson successfully locked' }, 200);
   })
 );
 
@@ -84,9 +101,14 @@ lessonRouter.patch(
       .eq('id', body.lessonId);
 
     if (updateError) {
-      return c.json({ success: false, error: updateError.message, details: updateError }, 500);
+      return responseHandler(c, updateError);
+    } else {
+      return responseHandler(c, {
+        message: 'Lesson successfully unlocked',
+        status: 200,
+        isError: false
+      });
     }
-    return c.json({ success: true, message: 'Lesson successfully unlocked' }, 200);
   })
 );
 
@@ -106,7 +128,10 @@ lessonRouter.patch(
     const { video_url, slide_url, title, videos, content, locale = 'en' } = body;
 
     if (!lessonId) {
-      return c.json({ error: 'Lesson ID is required' }, 400);
+      return responseHandler(c, {
+        error: { message: 'Lesson ID is required' },
+        status: 400
+      });
     }
 
     const updateLessonContent = await supabase
@@ -130,11 +155,19 @@ lessonRouter.patch(
     const [contentResult, noteResult] = await Promise.all([updateLessonContent, updateLessonNote]);
 
     if (contentResult.error || noteResult.error) {
-      return c.json(
-        { success: false, error: contentResult.error?.message || noteResult.error?.message },
-        500
-      );
+      return responseHandler(c, {
+        error: {
+          message: contentResult.error?.message || noteResult.error?.message,
+          details: contentResult.error || noteResult.error
+        },
+        status: 500
+      });
     }
-    return c.json({ success: true, message: 'Lesson successfully updated' }, 200);
+
+    return responseHandler(c, {
+      message: 'Lesson successfully updated',
+      status: 200,
+      isError: false
+    });
   })
 );

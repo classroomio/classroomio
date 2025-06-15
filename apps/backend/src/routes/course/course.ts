@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { getJsonBody } from '$src/utils/bodyParser';
 import { getSupabase } from '$src/utils/supabase';
 import { authMiddleware } from '$src/middlewares/auth';
+import { responseHandler } from '$src/utils/responseHandler';
 
 export const courseRouter = new Hono();
 export const coursesRouter = new Hono();
@@ -106,7 +107,7 @@ coursesRouter.post(
     });
 
     if (error || !data) {
-      return c.json({ success: false, error: error?.message, details: error }, 500);
+      return responseHandler(c, error);
     }
 
     const number = parseInt(query.number || '10', 10);
@@ -122,7 +123,11 @@ coursesRouter.post(
 
     filtered = filtered.slice(0, number);
 
-    return c.json({ success: true, data: filtered }, 200);
+    return responseHandler(c, {
+      data: filtered,
+      status: 200,
+      isError: false
+    });
   })
 );
 
@@ -137,9 +142,13 @@ courseRouter.patch(
       .eq('id', body.courseId);
 
     if (updateError) {
-      return c.json({ success: false, error: updateError.message, details: updateError }, 500);
+      return responseHandler(c, updateError);
     } else {
-      return c.json({ success: true, message: 'Course successfully published' }, 200);
+      return responseHandler(c, {
+        message: 'Course successfully published',
+        status: 200,
+        isError: false
+      });
     }
   })
 );
@@ -155,9 +164,13 @@ courseRouter.patch(
       .eq('id', body.courseId);
 
     if (updateError) {
-      return c.json({ success: false, error: updateError.message, details: updateError }, 500);
+      return responseHandler(c, updateError);
     } else {
-      return c.json({ success: true, message: 'Course successfully unpublished' }, 200);
+      return responseHandler(c, {
+        message: 'Course successfully unpublished',
+        status: 200,
+        isError: false
+      });
     }
   })
 );
@@ -188,9 +201,13 @@ courseRouter.patch(
     const { error: updateError } = await supabase.from('course').update(body).eq('id', courseId);
 
     if (updateError) {
-      return c.json({ success: false, error: updateError.message, details: updateError }, 500);
+      return responseHandler(c, updateError);
     } else {
-      return c.json({ success: true, message: 'Course successfully updated' }, 200);
+      return responseHandler(c, {
+        message: 'Course successfully updated',
+        status: 200,
+        isError: false
+      });
     }
   })
 );
