@@ -93,7 +93,6 @@
 </svelte:head>
 
 <WelcomeModal />
-
 <div class="w-full max-w-5xl px-5 py-10 md:mx-auto">
   <div class="mb-5 flex items-center justify-between">
     <h1 class="mb-3 text-2xl font-bold dark:text-white md:text-3xl">
