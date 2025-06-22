@@ -22,6 +22,8 @@ export const QUESTION_TYPES = [
 export const QUESTION_TEMPLATE = {
   id: 1,
   title: '',
+  hint: '',
+  explanation: '',
   type: QUESTION_TYPE.RADIO,
   answers: [],
   options: [
