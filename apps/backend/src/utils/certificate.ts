@@ -1,5 +1,5 @@
 import type { TCertificateDownload } from '$src/types/course/lesson';
-import { getPdfBuffer } from '$src/utils/puppeteer';
+import { getCloudflarePdfBuffer } from './cloudflare';
 
 export interface CertificateData {
   theme: string;
@@ -17,81 +17,19 @@ export interface CertificateGenerationResult {
   error?: string;
 }
 
-export const generateCertificate = async (data: TCertificateDownload): Promise<Buffer> => {
-  const html = generateCertificateHtml(data);
-  return getPdfBuffer(html);
+export const generateCertificate = async (data: TCertificateDownload) => {
+  const { html, styles } = generateCertificateHtml(data);
+  return getCloudflarePdfBuffer(html, styles);
 };
 
-function generateCertificateHtml(data: TCertificateDownload): string {
+function generateCertificateHtml(data: TCertificateDownload): { html: string; styles: string } {
   const { studentName, courseName, courseDescription, orgLogoUrl, orgName, facilitator } = data;
 
-  return `
-    <!DOCTYPE html>
+  const html = `
     <html>
       <head>
         <meta charset="utf-8">
         <title>Certificate of Completion</title>
-        <style>
-          body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-          }
-          .certificate {
-            width: 1123px;
-            height: 794px;
-            margin: 0 auto;
-            background-color: white;
-            position: relative;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-          }
-          .header {
-            text-align: center;
-            padding: 20px;
-          }
-          .logo {
-            max-width: 200px;
-            margin-bottom: 20px;
-          }
-          .title {
-            font-size: 36px;
-            color: #333;
-            margin-bottom: 10px;
-          }
-          .content {
-            text-align: center;
-            padding: 40px;
-          }
-          .student-name {
-            font-size: 48px;
-            color: #2c3e50;
-            margin-bottom: 20px;
-          }
-          .course-name {
-            font-size: 24px;
-            color: #34495e;
-            margin-bottom: 10px;
-          }
-          .description {
-            font-size: 18px;
-            color: #7f8c8d;
-            margin-bottom: 30px;
-          }
-          .footer {
-            position: absolute;
-            bottom: 40px;
-            width: 100%;
-            text-align: center;
-          }
-          .signature {
-            margin-top: 20px;
-          }
-          .date {
-            margin-top: 10px;
-            color: #95a5a6;
-          }
-        </style>
       </head>
       <body>
         <div class="certificate">
@@ -115,4 +53,72 @@ function generateCertificateHtml(data: TCertificateDownload): string {
       </body>
     </html>
   `;
+
+  const styles = `
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+    .certificate {
+      width: 1123px;
+      height: 794px;
+      margin: 0 auto;
+      background-color: white;
+      position: relative;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .header {
+      text-align: center;
+      padding: 20px;
+    }
+    .logo {
+      max-width: 200px;
+      margin-bottom: 20px;
+    }
+    .title {
+      font-size: 36px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .content {
+      text-align: center;
+      padding: 40px;
+    }
+    .student-name {
+      font-size: 48px;
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+    .course-name {
+      font-size: 24px;
+      color: #34495e;
+      margin-bottom: 10px;
+    }
+    .description {
+      font-size: 18px;
+      color: #7f8c8d;
+      margin-bottom: 30px;
+    }
+    .footer {
+      position: absolute;
+      bottom: 40px;
+      width: 100%;
+      text-align: center;
+    }
+    .signature {
+      margin-top: 20px;
+    }
+    .date {
+      margin-top: 10px;
+      color: #95a5a6;
+    }
+  `;
+  const pdf = {
+    html: html,
+    styles: styles
+  };
+
+  return pdf;
 }
