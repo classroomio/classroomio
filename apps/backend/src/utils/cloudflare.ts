@@ -1,16 +1,15 @@
-const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
-const apiKey = process.env.CLOUDFLARE_ACCESS_KEY;
+import { CLOUDFLARE } from '$src/constants';
 
 export const getCloudflarePdfBuffer = async (html: string, styles?: string) => {
   console.log('Generating PDF with Cloudflare API...');
   try {
     const pdfResponse = await fetch(
-      `https://api.cloudflare.com/client/v4/accounts/${accountId}/browser-rendering/pdf`,
+      `https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE.CONFIGS.ACCOUNT_ID}/browser-rendering/pdf`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`
+          Authorization: `Bearer ${CLOUDFLARE.CONFIGS.ACCESS_KEY}`
         },
         body: JSON.stringify({
           html: html,
