@@ -17,7 +17,7 @@ export interface CertificateGenerationResult {
   error?: string;
 }
 
-export const generateCertificate = async (data: TCertificateDownload) => {
+export const generateCertificate = async (data: TCertificateDownload):Promise<Buffer> => {
   const { html, styles } = generateCertificateHtml(data);
   return getCloudflarePdfBuffer(html, styles);
 };
