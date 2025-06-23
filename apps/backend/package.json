@@ -38,7 +38,6 @@
     "marked": "^7.0.3",
     "nanoid": "^5.1.5",
     "nodemailer": "^6.9.5",
-    "puppeteer": "^24.10.0",
     "zeptomail": "^6.0.0",
     "zod": "^3.21.4"
   },
@@ -46,7 +45,6 @@
     "@types/katex": "^0.16.7",
     "@types/node": "^20.11.19",
     "@types/nodemailer": "^6.4.17",
-    "@types/puppeteer": "^7.0.4",
     "@typescript-eslint/eslint-plugin": "^7.0.1",
     "@typescript-eslint/parser": "^7.0.1",
     "@vitest/coverage-v8": "^1.2.2",
