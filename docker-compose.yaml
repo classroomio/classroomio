@@ -9,8 +9,8 @@ version: '3.8'
 services:
   backend:
     build:
-      context: .
-      dockerfile: ./apps/backend/Dockerfile
+      context: ./apps/backend
+      dockerfile: Dockerfile
       args:
         - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
         - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
@@ -26,8 +26,9 @@ services:
     ports:
       - '3002:3002'
     volumes:
-      - /app/node_modules
-      - ./apps/backend:/app
+      - ./apps/backend/src:/app/src
+      - ./apps/backend/package.json:/app/package.json
+      - ./apps/backend/tsconfig.json:/app/tsconfig.json
     environment:
       - NODE_ENV=production
       # Supabase - Database
