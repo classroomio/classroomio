@@ -112,7 +112,7 @@
   },
   "type": "module",
   "engines": {
-    "node": "^18.17.0"
+    "node": "^18.18.0"
   },
   "browser": {
     "crypto": false

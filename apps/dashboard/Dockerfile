@@ -1,5 +1,5 @@
 # ----------- Build Stage -----------
-FROM node:18.17.0-alpine AS builder
+FROM node:18.18.0-alpine AS builder
 
 # Add build arguments
 ARG PUBLIC_SUPABASE_URL
@@ -48,7 +48,7 @@ RUN pnpm install
 RUN NODE_OPTIONS=--max-old-space-size=4096 pnpm build
 
 # ----------- Production Stage -----------
-FROM node:18.17.0-alpine AS runner
+FROM node:18.18.0-alpine AS runner
 
 WORKDIR /app
 
