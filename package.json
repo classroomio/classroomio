@@ -12,6 +12,7 @@
     "supabase:start": "pnpx supabase@1.51.0 start",
     "supabase:login": "pnpx supabase@1.51.0 login",
     "supabase:status": "pnpx supabase@1.51.0 status",
+    "supabase": "pnpx supabase@1.51.0",
     "dashboard:build": "cd apps/dashboard && pnpm i && IS_SELFHOSTED=true NODE_OPTIONS='--max-old-space-size=20384' DEPLOYMENT_PROVIDER=docker pnpm build",
     "dashboard:start": "cd apps/dashboard && node build"
   },
