@@ -9,6 +9,7 @@ import type { UserLessonDataType } from '$lib/utils/types';
 import type { Writable } from 'svelte/store';
 import { env } from '$env/dynamic/public';
 
+// Trigger build
 export const defaultCurrentOrgState: CurrentOrg = {
   id: '',
   name: '',
