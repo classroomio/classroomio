@@ -16,13 +16,63 @@ export default ({ mode }) => {
     plugins: [sveltekit()],
     server: getServer(process.env),
     build: {
-      sourcemap: false
+      sourcemap: false,
+      minify: 'esbuild',
+      target: 'esnext',
+      chunkSizeWarningLimit: 2000,
+      // Performance optimizations
+      reportCompressedSize: false,
+      rollupOptions: {
+        output: {
+          manualChunks: (id) => {
+            // Simple chunking without circular dependency issues
+            if (id.includes('node_modules')) {
+              if (id.includes('d3')) return 'vendor-d3';
+              if (id.includes('carbon')) return 'vendor-carbon';
+              if (id.includes('@supabase')) return 'vendor-supabase';
+              if (id.includes('lodash') || id.includes('axios') || id.includes('zod'))
+                return 'vendor-utils';
+              return 'vendor';
+            }
+          }
+        }
+      }
     },
     optimizeDeps: {
-      entries: ['src/routes/**/+*.{js,ts,svelte}']
+      entries: ['src/routes/**/+*.{js,ts,svelte}'],
+      // Reduced list - only the heaviest packages
+      include: [
+        '@supabase/supabase-js',
+        'd3',
+        'carbon-components-svelte',
+        'carbon-icons-svelte',
+        'lodash',
+        'axios',
+        'zod',
+        'posthog-js',
+        'stripe',
+        'dayjs',
+        'clsx',
+        'tailwind-merge'
+      ],
+      exclude: [
+        'body-parser',
+        'cookie-parser',
+        'bufferutil',
+        'utf-8-validate',
+        'encoding',
+        'sirv',
+        'wait-on'
+      ],
+      // Force pre-bundling
+      force: true
     },
     resolve: {
-      mainFields: ['browser']
+      mainFields: ['browser', 'module', 'main']
+    },
+    esbuild: {
+      target: 'esnext',
+      treeShaking: true
     }
   });
 };
@@ -38,19 +88,3 @@ function getServer(params: any) {
     };
   }
 }
-
-// function getSentryConfig(params: any) {
-//   const { VITE_SENTRY_AUTH_TOKEN, VITE_SENTRY_ORG_NAME, VITE_SENTRY_PROJECT_NAME } = params || {};
-//   if (VITE_SENTRY_AUTH_TOKEN) {
-//     return {
-//       url: 'https://sentry.io',
-//       authToken: VITE_SENTRY_AUTH_TOKEN,
-//       org: VITE_SENTRY_ORG_NAME,
-//       project: VITE_SENTRY_PROJECT_NAME,
-//       options: {
-//         telemetry: false,
-//       }
-//     };
-//   }
-//   return {};
-// }

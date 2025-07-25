@@ -2,7 +2,6 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import Box from '$lib/components/Box/index.svelte';
-  import NewFeedModal from '$lib/components/Course/components/NewsFeed/NewFeedModal.svelte';
   import NewsFeedCard from '$lib/components/Course/components/NewsFeed/NewsFeedCard.svelte';
   import NewsFeedLoader from '$lib/components/Course/components/NewsFeed/NewsFeedLoader.svelte';
   import { isNewFeedModal, newsFeed } from '$lib/components/Course/components/NewsFeed/store';
@@ -12,6 +11,8 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import { onMount } from 'svelte';
+  import { SkeletonPlaceholder } from 'carbon-components-svelte';
   import { supabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
   import {
@@ -48,6 +49,17 @@
 
   let query = new URLSearchParams($page.url.search);
   let feedId = query.get('feedId') || '';
+
+  let NewFeedModal;
+  let isNewFeedModalLoading = true;
+
+  onMount(async () => {
+    if (typeof window !== 'undefined') {
+      const module = await import('$lib/components/Course/components/NewsFeed/NewFeedModal.svelte');
+      NewFeedModal = module.default;
+      isNewFeedModalLoading = false;
+    }
+  });
 
   const onEdit = (id: string, content: string) => {
     handleEditFeed(id, content);
@@ -259,16 +271,13 @@
 
     <PageBody width="max-w-4xl px-3">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <NewFeedModal
-          courseId={data.courseId}
-          {author}
-          bind:edit
-          bind:editFeed
-          onSave={(newFeed) => {
-            $newsFeed = [newFeed, ...$newsFeed];
-          }}
-          {onEdit}
-        />
+        {#if isNewFeedModalLoading && $isNewFeedModal}
+          <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <SkeletonPlaceholder style="width: 600px; height: 400px;" />
+          </div>
+        {:else if NewFeedModal}
+          <svelte:component this={NewFeedModal} />
+        {/if}
       </RoleBasedSecurity>
       {#if isLoading}
         <div>

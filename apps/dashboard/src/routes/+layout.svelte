@@ -13,7 +13,6 @@
   import { PageRestricted } from '$lib/components/Page';
   import PageLoadProgressBar from '$lib/components/Progress/PageLoadProgressBar.svelte';
   import Snackbar from '$lib/components/Snackbar/index.svelte';
-  import UpgradeModal from '$lib/components/Upgrade/Modal.svelte';
   import { isCoursesPage, isLMSPage, isOrgPage, toggleBodyByMode } from '$lib/utils/functions/app';
   import { getProfile, setupAnalytics } from '$lib/utils/functions/appSetup';
   import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
@@ -29,6 +28,8 @@
   import merge from 'lodash/merge';
   import { onMount } from 'svelte';
   import { MetaTags } from 'svelte-meta-tags';
+  import { goto } from '$app/navigation';
+  import { SkeletonPlaceholder } from 'carbon-components-svelte';
 
   import '../app.postcss';
 
@@ -38,6 +39,17 @@
   let path = $page.url?.pathname?.replace('/', '');
   let queryParam = $page.url?.search;
   let carbonTheme: CarbonTheme = 'white';
+
+  let UpgradeModal;
+  let isUpgradeModalLoading = true;
+
+  onMount(async () => {
+    if (typeof window !== 'undefined') {
+      const module = await import('$lib/components/Upgrade/Modal.svelte');
+      UpgradeModal = module.default;
+      isUpgradeModalLoading = false;
+    }
+  });
 
   function handleResize() {
     isMobile.update(() => window.innerWidth <= 760);
@@ -124,7 +136,13 @@
 
 <Theme bind:theme={carbonTheme} />
 
-<UpgradeModal />
+{#if isUpgradeModalLoading}
+  <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <SkeletonPlaceholder style="width: 600px; height: 400px;" />
+  </div>
+{:else if UpgradeModal}
+  <svelte:component this={UpgradeModal} />
+{/if}
 
 <Snackbar />
 

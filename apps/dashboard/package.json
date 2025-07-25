@@ -6,6 +6,10 @@
   "scripts": {
     "dev": "vite dev --port 5173",
     "build": "vite build",
+    "build:fast": "vite build --mode production --force",
+    "build:memory": "node --max-old-space-size=4096 ./node_modules/vite/bin/vite.js build --mode production",
+    "build:memory-fast": "node --max-old-space-size=8192 --optimize-for-size ./node_modules/vite/bin/vite.js build --mode production",
+    "build:clean": "rm -rf .svelte-kit dist node_modules/.vite && pnpm run build:memory",
     "preview": "vite preview",
     "lint": "eslint ./src",
     "clean": "rm -rf node_modules",

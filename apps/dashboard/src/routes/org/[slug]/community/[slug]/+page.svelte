@@ -9,11 +9,11 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
   import Vote from '$lib/components/Vote/index.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { supabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
+  import { onMount } from 'svelte';
   import {
     askCommunityValidation,
     commentInCommunityValidation
@@ -27,6 +27,17 @@
   import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import pluralize from 'pluralize';
+
+  let TextEditor;
+  let isEditorLoading = true;
+
+  onMount(async () => {
+    if (typeof window !== 'undefined') {
+      const module = await import('$lib/components/TextEditor/index.svelte');
+      TextEditor = module.default;
+      isEditorLoading = false;
+    }
+  });
 
   export let data;
   const { slug } = data;
@@ -469,11 +480,16 @@
         </header>
         {#if isEditMode && editorInstance}
           <div class="my-2">
-            <TextEditor
-              bind:value={editContent.body}
-              placeholder={$t('community.ask.give')}
-              onChange={(html) => (editContent.body = html)}
-            />
+            {#if isEditorLoading}
+              <SkeletonPlaceholder style="width: 100%; height: 300px;" />
+            {:else if TextEditor}
+              <svelte:component
+                this={TextEditor}
+                bind:value={editContent.body}
+                placeholder={$t('community.ask.give')}
+                onChange={(html) => (editContent.body = html)}
+              />
+            {/if}
           </div>
         {:else}
           <section class="prose prose-sm sm:prose p-2">
@@ -530,11 +546,16 @@
 
       <div class="mt-4">
         {#if !editorInstance}
-          <TextEditor
-            bind:value={comment}
-            placeholder={$t('community.ask.give')}
-            onChange={(html) => (comment = html)}
-          />
+          {#if isEditorLoading}
+            <SkeletonPlaceholder style="width: 100%; height: 300px;" />
+          {:else if TextEditor}
+            <svelte:component
+              this={TextEditor}
+              bind:value={comment}
+              placeholder={$t('community.ask.give')}
+              onChange={(html) => (comment = html)}
+            />
+          {/if}
         {/if}
 
         <div class="mt-2 flex justify-end">

@@ -1,19 +1,31 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
-  import { Dropdown } from 'carbon-components-svelte';
+  import { Dropdown, SkeletonPlaceholder } from 'carbon-components-svelte';
   import { currentOrg } from '$lib/utils/store/org';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { askCommunityValidation } from '$lib/utils/functions/validator';
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
   import generateSlug from '$lib/utils/functions/generateSlug';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import { courses } from '$lib/components/Courses/store';
   import type { Course } from '$lib/utils/types';
+  import { onMount } from 'svelte';
+  import { fetchCourses } from '$lib/utils/services/courses';
+
+  let TextEditor;
+  let isEditorLoading = true;
+
+  onMount(async () => {
+    if (typeof window !== 'undefined') {
+      const module = await import('$lib/components/TextEditor/index.svelte');
+      TextEditor = module.default;
+      isEditorLoading = false;
+    }
+  });
 
   let errors: {
     title?: string;
@@ -81,19 +93,19 @@
   <title>Ask the Community - ClassroomIO</title>
 </svelte:head>
 
-<section class="w-full max-w-3xl mx-auto">
+<section class="mx-auto w-full max-w-3xl">
   <div class="p-5">
-    <a class="text-gray-500 dark:text-white text-md flex items-center" href={`/lms/community`}>
+    <a class="text-md flex items-center text-gray-500 dark:text-white" href={`/lms/community`}>
       <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" />
       {$t('community.ask.go_back')}
     </a>
     <div class="flex items-center justify-between">
-      <h1 class="dark:text-white text-3xl font-bold">{$t('community.ask.ask_the')}</h1>
+      <h1 class="text-3xl font-bold dark:text-white">{$t('community.ask.ask_the')}</h1>
       <PrimaryButton label={$t('community.ask.publish')} onClick={handleSave} />
     </div>
   </div>
 
-  <div class="mb-3 p-2 flex gap-x-5 justify-between">
+  <div class="mb-3 flex justify-between gap-x-5 p-2">
     <TextField
       bind:value={fields.title}
       placeholder={$t('community.ask.title')}
@@ -101,7 +113,7 @@
       className="w-[75%]"
     />
     <Dropdown
-      class="w-[25%] h-full"
+      class="h-full w-[25%]"
       size="xl"
       label={$t('community.ask.select_course')}
       invalid={!!errors.courseId}
@@ -111,9 +123,14 @@
     />
   </div>
 
-  <TextEditor
-    bind:value={fields.body}
-    placeholder={$t('community.ask.ask_community')}
-    onChange={(html) => (fields.body = html)}
-  />
+  {#if isEditorLoading}
+    <SkeletonPlaceholder style="width: 100%; height: 300px;" />
+  {:else if TextEditor}
+    <svelte:component
+      this={TextEditor}
+      bind:value={fields.body}
+      placeholder={$t('community.ask.ask_community')}
+      onChange={(html) => (fields.body = html)}
+    />
+  {/if}
 </section>

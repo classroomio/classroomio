@@ -6,7 +6,6 @@
   import DeleteLessonConfirmation from '$lib/components/Course/components/Lesson/DeleteLessonConfirmation.svelte';
   import LessonList from '$lib/components/Course/components/Lesson/LessonList.svelte';
   import LessonSectionList from '$lib/components/Course/components/Lesson/LessonSectionList.svelte';
-  import NewLessonModal from '$lib/components/Course/components/Lesson/NewLessonModal.svelte';
   import { handleAddLessonWidget } from '$lib/components/Course/components/Lesson/store';
   import {
     handleDelete,
@@ -23,6 +22,8 @@
   import { profile } from '$lib/utils/store/user';
   import type { Lesson } from '$lib/utils/types';
   import { COURSE_VERSION } from '$lib/utils/types';
+  import { onMount } from 'svelte';
+  import { SkeletonPlaceholder } from 'carbon-components-svelte';
 
   export let data;
 
@@ -34,6 +35,17 @@
   let isFetching: boolean = false;
   let reorder = false;
   let activateSections = false;
+
+  let NewLessonModal;
+  let isNewLessonModalLoading = true;
+
+  onMount(async () => {
+    if (typeof window !== 'undefined') {
+      const module = await import('$lib/components/Course/components/Lesson/NewLessonModal.svelte');
+      NewLessonModal = module.default;
+      isNewLessonModalLoading = false;
+    }
+  });
 
   function addLesson() {
     $handleAddLessonWidget.open = true;
@@ -83,7 +95,13 @@
     $course.version === COURSE_VERSION.V1 ? $lessons.length : $lessonSections.length;
 </script>
 
-<NewLessonModal />
+{#if isNewLessonModalLoading && $handleAddLessonWidget.open}
+  <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <SkeletonPlaceholder style="width: 500px; height: 300px;" />
+  </div>
+{:else if NewLessonModal}
+  <svelte:component this={NewLessonModal} />
+{/if}
 
 <ActivateSectionsModal bind:open={activateSections} />
 

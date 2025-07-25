@@ -20,13 +20,24 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import TextField from '$lib/components/Form/TextField.svelte';
   import DeleteModal from '$lib/components/Org/Community/DeleteModal.svelte';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { browser } from '$app/environment';
   import { fetchCourses } from '$lib/utils/services/courses';
   import { t } from '$lib/utils/functions/translations';
   import { courses } from '$lib/components/Courses/store';
   import type { Course } from '$lib/utils/types';
+  import { onMount } from 'svelte';
+
+  let TextEditor;
+  let isEditorLoading = true;
+
+  onMount(async () => {
+    if (typeof window !== 'undefined') {
+      const module = await import('$lib/components/TextEditor/index.svelte');
+      TextEditor = module.default;
+      isEditorLoading = false;
+    }
+  });
 
   export let data;
   const { slug } = data;
@@ -383,20 +394,20 @@
   }}
   onDelete={() => handleDelete(false)}
 />
-<section class="max-w-3xl mx-auto md:mx-10 lg:mb-20">
+<section class="mx-auto max-w-3xl md:mx-10 lg:mb-20">
   {#if !question}
-    <div class="py-10 px-5 mb-3">
+    <div class="mb-3 px-5 py-10">
       <SkeletonText style="width: 25%;" />
       <SkeletonText style="width: 100%; margin-bottom: 2rem" />
       <SkeletonPlaceholder style="width: 100%; height: 20rem;" />
     </div>
   {:else}
-    <div class="py-10 px-5">
-      <a class="text-gray-500 dark:text-white text-md flex items-center" href={`/lms/community`}>
+    <div class="px-5 py-10">
+      <a class="text-md flex items-center text-gray-500 dark:text-white" href={`/lms/community`}>
         <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" />
         {$t('community.ask.go_back')}
       </a>
-      <div class="my-5 flex justify-between items-center">
+      <div class="my-5 flex items-center justify-between">
         {#if isEditMode}
           <TextField
             bind:value={editContent.title}
@@ -404,7 +415,7 @@
             errorMessage={errors.title}
           />
           <Dropdown
-            class="w-[25%] h-full"
+            class="h-full w-[25%]"
             size="xl"
             label="Select Course"
             items={fetchedCourses.map((course) => ({ id: course.id, text: course.title }))}
@@ -439,17 +450,17 @@
           {/if}
         {/if}
       </div>
-      <div class="my-1 px-1 rounded-lg border border-1 border-gray">
-        <header class="flex items-center justify-between leading-none p-2">
-          <div class="flex items-center no-underline hover:underline text-black">
+      <div class="border-1 border-gray my-1 rounded-lg border px-1">
+        <header class="flex items-center justify-between p-2 leading-none">
+          <div class="flex items-center text-black no-underline hover:underline">
             <Avatar
               src={question.author.avatar}
               name={question.author.name}
               width="w-7"
               height="h-7"
             />
-            <p class="dark:text-white ml-2 text-sm">{question.author.name}</p>
-            <p class="dark:text-white ml-2 text-sm text-gray-500">
+            <p class="ml-2 text-sm dark:text-white">{question.author.name}</p>
+            <p class="ml-2 text-sm text-gray-500 dark:text-white">
               {question.createdAt}
             </p>
           </div>
@@ -467,11 +478,16 @@
         </header>
         {#if isEditMode && editorInstance}
           <div class="my-2">
-            <TextEditor
-              bind:value={editContent.body}
-              placeholder="Give an answer"
-              onChange={(html) => (editContent.body = html)}
-            />
+            {#if isEditorLoading}
+              <SkeletonPlaceholder style="width: 100%; height: 300px;" />
+            {:else if TextEditor}
+              <svelte:component
+                this={TextEditor}
+                bind:value={editContent.body}
+                placeholder="Give an answer"
+                onChange={(html) => (editContent.body = html)}
+              />
+            {/if}
           </div>
         {:else}
           <section class="prose prose-sm sm:prose p-2">
@@ -485,18 +501,18 @@
       </div>
 
       {#each question.comments as comment}
-        <div class="my-5 px-1 flex items-start">
+        <div class="my-5 flex items-start px-1">
           <Vote
             value={comment.votes}
             upVote={() => upvoteQuestion('comment', comment.id)}
             disabled={voted.comment[comment.id]}
           />
-          <div class="w-full rounded-lg border border-1 border-gray">
-            <header class="flex items-center justify-between leading-none p-2">
+          <div class="border-1 border-gray w-full rounded-lg border">
+            <header class="flex items-center justify-between p-2 leading-none">
               <div class="flex items-center text-black">
                 <Avatar src={comment.avatar} name={comment.name} width="w-7" height="h-7" />
-                <p class="dark:text-white ml-2 text-sm">{comment.name}</p>
-                <p class="dark:text-white ml-2 text-sm text-gray-500">
+                <p class="ml-2 text-sm dark:text-white">{comment.name}</p>
+                <p class="ml-2 text-sm text-gray-500 dark:text-white">
                   {comment.createdAt}
                 </p>
               </div>
@@ -528,14 +544,19 @@
 
       <div>
         {#if !editorInstance}
-          <TextEditor
-            bind:value={comment}
-            placeholder="Give an answer"
-            onChange={(html) => (comment = html)}
-          />
+          {#if isEditorLoading}
+            <SkeletonPlaceholder style="width: 100%; height: 300px;" />
+          {:else if TextEditor}
+            <svelte:component
+              this={TextEditor}
+              bind:value={comment}
+              placeholder="Give an answer"
+              onChange={(html) => (comment = html)}
+            />
+          {/if}
         {/if}
 
-        <div class="flex justify-end mr-2">
+        <div class="mr-2 flex justify-end">
           <PrimaryButton label="Comment" onClick={submitComment} />
         </div>
       </div>

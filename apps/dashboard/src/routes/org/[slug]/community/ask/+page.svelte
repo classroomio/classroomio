@@ -5,7 +5,6 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
   import generateSlug from '$lib/utils/functions/generateSlug';
   import { supabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
@@ -14,8 +13,20 @@
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import type { Course } from '$lib/utils/types';
-  import { Dropdown } from 'carbon-components-svelte';
+  import { Dropdown, SkeletonPlaceholder } from 'carbon-components-svelte';
   import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
+  import { onMount } from 'svelte';
+
+  let TextEditor;
+  let isEditorLoading = true;
+
+  onMount(async () => {
+    if (typeof window !== 'undefined') {
+      const module = await import('$lib/components/TextEditor/index.svelte');
+      TextEditor = module.default;
+      isEditorLoading = false;
+    }
+  });
 
   let errors: {
     title?: string;
@@ -96,7 +107,7 @@
       {$t('community.ask.go_back')}
     </a>
     <div class="flex items-center justify-between gap-12">
-      <h1 class="text-2xl font-bold dark:text-white md:text-3xl">{$t('community.ask.ask_the')}</h1>
+      <h1 class="text-2xl font-bold md:text-3xl dark:text-white">{$t('community.ask.ask_the')}</h1>
       <PrimaryButton
         label={$t('community.ask.publish')}
         variant={VARIANTS.CONTAINED_DARK}
@@ -123,11 +134,16 @@
     />
   </div>
   <div class="px-2">
-    <TextEditor
-      bind:value={fields.body}
-      placeholder={$t('community.ask.ask_community')}
-      onChange={(html) => (fields.body = html)}
-    />
+    {#if isEditorLoading}
+      <SkeletonPlaceholder style="width: 100%; height: 300px;" />
+    {:else if TextEditor}
+      <svelte:component
+        this={TextEditor}
+        bind:value={fields.body}
+        placeholder={$t('community.ask.ask_community')}
+        onChange={(html) => (fields.body = html)}
+      />
+    {/if}
 
     {#if errors.body}
       <p class="mt-2 text-sm text-red-500">{errors.body}</p>
