@@ -26,9 +26,10 @@ services:
     ports:
       - '3002:3002'
     volumes:
-      - ./apps/backend/src:/app/src
-      - ./apps/backend/package.json:/app/package.json
-      - ./apps/backend/tsconfig.json:/app/tsconfig.json
+      # Node modules (optional - for faster development)
+      - ./apps/backend/node_modules:/app/node_modules
+      # Build output directory (if you want to access built files)
+      - ./apps/backend/dist:/app/dist
     environment:
       - NODE_ENV=production
       # Supabase - Database
