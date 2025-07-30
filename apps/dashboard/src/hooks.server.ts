@@ -3,6 +3,7 @@ import { validateUser } from '$lib/utils/services/middlewares';
 
 const PUBLIC_ROUTES = [
   '/api/completion',
+  '/api/verify',
   'student_prove_payment',
   'teacher_student_buycourse',
   '/api/polar',
