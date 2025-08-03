@@ -10,6 +10,7 @@ import {
 } from '$lib/utils/services/courses';
 
 import { LOCALE } from '$lib/utils/types';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 import { lessonValidation } from '$lib/utils/functions/validator';
 import { snackbar } from '$lib/components/Snackbar/store';
 import { writable } from 'svelte/store';
@@ -22,6 +23,8 @@ export const uploadCourseVideoStore = writable({
 export const lessons: Writable<Lesson[]> = writable([]);
 
 export const lessonSections: Writable<LessonSection[]> = writable([]);
+
+export const lessonCommentsChannel: Writable<RealtimeChannel> = writable();
 
 export const lesson = writable<LessonPage>({
   id: null,

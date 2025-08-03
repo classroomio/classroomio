@@ -16,7 +16,9 @@
     $lesson.locale
   );
   $: hasAtLeastOneTranslation = Object.values($lessonByTranslation[lessonId] || {}).some(
-    (c) => !!c.length
+    (content) => {
+      return content && !!content.length;
+    }
   );
 </script>
 
@@ -29,8 +31,8 @@
     </svelte:fragment>
   </HtmlRender>
 {:else if hasAtLeastOneTranslation}
-  <div class="flex items-center justify-center flex-col text-center">
-    <h3 class="text-lg font-normal italic dark:text-white py-2">
+  <div class="flex flex-col items-center justify-center text-center">
+    <h3 class="py-2 text-lg font-normal italic dark:text-white">
       {$t('course.navItem.lessons.materials.no_translation')}
     </h3>
   </div>
