@@ -1,3 +1,4 @@
+# Docker files
 Dockerfile
 .dockerignore
 .git
@@ -10,9 +11,59 @@ README.md
 .graphqlrc
 .editorconfig
 .vscode
-node_modules
-build
-package
-**/.env
 
-.pnpm-store
+# Exclude ALL node_modules directories completely
+**/node_modules/
+node_modules/
+apps/*/node_modules/
+packages/*/node_modules/
+
+# Exclude build artifacts
+build/
+dist/
+.next/
+.svelte-kit/
+.vercel/
+
+# Exclude other apps to reduce context size
+apps/classroomio-com/
+apps/course-app/
+apps/api/
+cypress/
+docs/
+todo/
+
+# Exclude test files
+**/*.test.*
+**/*.spec.*
+**/__tests__/
+**/test/
+**/tests/
+
+# Exclude development files
+**/.eslintrc*
+**/.prettierrc*
+**/jest.config.*
+**/cypress/
+**/coverage/
+
+# Exclude documentation
+**/docs/
+**/*.md
+
+# Exclude logs
+*.log
+*.tmp
+*.cache
+
+# Exclude pnpm store
+.pnpm-store/*
+
+# Exclude environment files
+.env*
+
+# Turbo cache
+.turbo/
+
+# IDE files
+.idea/

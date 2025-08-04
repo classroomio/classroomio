@@ -5,6 +5,9 @@ import { defineConfig, loadEnv } from 'vite';
 export default ({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
+  // Check if we're on a memory-constrained environment
+  const isMemoryConstrained = process.env.NODE_OPTIONS?.includes('--max-old-space-size=1536');
+
   return defineConfig({
     css: {
       preprocessorOptions: {
@@ -20,40 +23,27 @@ export default ({ mode }) => {
       minify: 'esbuild',
       target: 'esnext',
       chunkSizeWarningLimit: 2000,
-      // Performance optimizations
+      // Performance optimizations for EC2
       reportCompressedSize: false,
+      // Reduce memory usage during build
+      emptyOutDir: true,
       rollupOptions: {
+        // Disable manual chunking to avoid transformation issues
         output: {
-          manualChunks: (id) => {
-            // Simple chunking without circular dependency issues
-            if (id.includes('node_modules')) {
-              if (id.includes('d3')) return 'vendor-d3';
-              if (id.includes('carbon')) return 'vendor-carbon';
-              if (id.includes('@supabase')) return 'vendor-supabase';
-              if (id.includes('lodash') || id.includes('axios') || id.includes('zod'))
-                return 'vendor-utils';
-              return 'vendor';
-            }
-          }
+          manualChunks: undefined
         }
       }
     },
     optimizeDeps: {
       entries: ['src/routes/**/+*.{js,ts,svelte}'],
-      // Reduced list - only the heaviest packages
+      // Minimal list to avoid transformation issues
       include: [
         '@supabase/supabase-js',
-        'd3',
         'carbon-components-svelte',
         'carbon-icons-svelte',
         'lodash',
         'axios',
-        'zod',
-        'posthog-js',
-        'stripe',
-        'dayjs',
-        'clsx',
-        'tailwind-merge'
+        'zod'
       ],
       exclude: [
         'body-parser',
@@ -62,17 +52,36 @@ export default ({ mode }) => {
         'utf-8-validate',
         'encoding',
         'sirv',
-        'wait-on'
+        'wait-on',
+        // Exclude heavy packages that cause transformation issues
+        'd3',
+        'd3-cloud',
+        'd3-sankey',
+        'html-to-image',
+        'jspdf',
+        'jspdf-autotable',
+        'canvas-confetti',
+        'papaparse',
+        'qrcode',
+        'posthog-js',
+        'stripe',
+        'openai-edge',
+        'ai',
+        'unsplash-js'
       ],
-      // Force pre-bundling
-      force: true
+      // Disable pre-bundling to avoid transformation issues
+      force: false
     },
     resolve: {
       mainFields: ['browser', 'module', 'main']
     },
     esbuild: {
       target: 'esnext',
-      treeShaking: true
+      treeShaking: true,
+      // Optimize for memory usage
+      minifyIdentifiers: true,
+      minifySyntax: true,
+      minifyWhitespace: true
     }
   });
 };

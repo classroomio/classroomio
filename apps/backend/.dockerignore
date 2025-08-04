@@ -1,2 +1,44 @@
+# Node modules and logs
 node_modules
 npm-debug.log
+*.log
+
+# Build artifacts
+dist/
+build/
+
+# Test files
+**/*.test.*
+**/*.spec.*
+**/__tests__/
+**/test/
+**/tests/
+
+# Development files
+**/.eslintrc*
+**/.prettierrc*
+**/jest.config.*
+**/cypress/
+**/coverage/
+
+# Documentation
+**/docs/
+**/*.md
+
+# Environment files
+.env*
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Turbo cache
+.turbo/
+
+# Git
+.git/
+.gitignore

@@ -1,0 +1,70 @@
+# ClassroomIO Production
+# Project: Self-hosted Backend and Dashboard
+# Description: Optimized production docker-compose file for self-hosting.
+# Author: rotimi-best
+# Date: 2024-09-18
+
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ../../apps/backend # ✅ Correct - backend is standalone
+      dockerfile: Dockerfile
+      target: production
+      cache_from:
+        - chifez4u/backend:production
+        - chifez4u/backend-deps:18.18.0
+      args:
+        - BUILDKIT_INLINE_CACHE=1
+        - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
+        - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
+        - CLOUDFLARE_BUCKET_DOMAIN=${CLOUDFLARE_BUCKET_DOMAIN}
+        - CLOUDFLARE_ACCESS_KEY=${CLOUDFLARE_ACCESS_KEY}
+        - CLOUDFLARE_SECRET_ACCESS_KEY=${CLOUDFLARE_SECRET_ACCESS_KEY}
+        - CLOUDFLARE_ACCOUNT_ID=${CLOUDFLARE_ACCOUNT_ID}
+        - CLOUDFLARE_BUCKET_ID=${CLOUDFLARE_BUCKET_ID}
+        - SMTP_HOST=${SMTP_HOST}
+        - SMTP_USER=${SMTP_USER}
+        - SMTP_PASSWORD=${SMTP_PASSWORD}
+        - SMTP_PORT=${SMTP_PORT}
+    ports:
+      - '3002:3002'
+    env_file:
+      - ../../apps/backend/.env
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+
+  dashboard:
+    build:
+      context: ../../ # Use consistent root context
+      dockerfile: apps/dashboard/Dockerfile
+      target: production
+      cache_from:
+        - chifez4u/dashboard:production
+        - chifez4u/dashboard-deps:18.18.0
+      args:
+        - BUILDKIT_INLINE_CACHE=1
+        - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
+        - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
+        - PRIVATE_SUPABASE_SERVICE_ROLE=${PRIVATE_SUPABASE_SERVICE_ROLE}
+        - PRIVATE_APP_HOST=${PRIVATE_APP_HOST}
+        - PRIVATE_APP_SUBDOMAINS=${PRIVATE_APP_SUBDOMAINS}
+        - UNSPLASH_API_KEY=${UNSPLASH_API_KEY}
+        - OPENAI_API_KEY=${OPENAI_API_KEY}
+        - PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL}
+        - PUBLIC_IP_REGISTRY_KEY=${PUBLIC_IP_REGISTRY_KEY}
+    ports:
+      - '3000:3000'
+    env_file:
+      - ../../apps/dashboard/.env
+    environment:
+      - IS_SELFHOSTED=true
+      - DEPLOYMENT_PROVIDER=docker
+      - NODE_ENV=production
+    depends_on:
+      - backend # Simple dependency without health check condition
+    restart: unless-stopped
+# Remove node_modules volumes - they're anti-pattern for production
+# Production images should be self-contained

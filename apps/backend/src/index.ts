@@ -57,7 +57,7 @@ const port = env.PORT ? parseInt(env.PORT) : 3002;
 
 function startServer() {
   console.log('Starting server...');
-
+  console.log('this is a change');
   serve({ fetch: app.fetch, port });
 
   showRoutes(app, { colorize: true });
