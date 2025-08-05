@@ -1,13 +1,13 @@
+import { getSupabase, supabase } from '$lib/utils/functions/supabase';
 
+import type { CurrentOrg } from '$lib/utils/types/org';
+import { IS_SELFHOSTED } from '$env/static/private';
+import type { MetaTagsProps } from 'svelte-meta-tags';
+import { blockedSubdomain } from '$lib/utils/constants/app';
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/private';
-import { IS_SELFHOSTED } from '$env/static/private';
-import { blockedSubdomain } from '$lib/utils/constants/app';
-import { getSupabase, supabase } from '$lib/utils/functions/supabase';
 import { getCurrentOrg } from '$lib/utils/services/org';
-import type { CurrentOrg } from '$lib/utils/types/org';
 import { redirect } from '@sveltejs/kit';
-import type { MetaTagsProps } from 'svelte-meta-tags';
 
 if (!supabase) {
   getSupabase();
@@ -57,6 +57,7 @@ export const load = async ({ url, cookies, request }): Promise<LoadOutput> => {
       response.orgSiteName = subdomain;
     }
 
+    // Never go beyond this for selfhosted instances
     return response;
   }
 
