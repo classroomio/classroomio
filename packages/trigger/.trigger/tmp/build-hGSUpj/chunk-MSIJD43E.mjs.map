@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/trigger/task/schedule-tasks/index.ts"],
+  "sourcesContent": ["import { dailyCleanupTask } from './daily-cleanup';\r\n\r\nexport default { dailyCleanupTask };\r\n"],
+  "mappings": ";;;;;;;;AAAA;AAEA,IAAO,yBAAQ,EAAE,iBAAiB;",
+  "names": []
+}

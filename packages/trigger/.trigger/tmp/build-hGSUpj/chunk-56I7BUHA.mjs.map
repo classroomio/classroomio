@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/trigger/task/index.ts"],
+  "sourcesContent": ["export { default as emailTask } from './email-tasks/index';\r\nexport { default as scheduleTask } from './schedule-tasks/index';\r\n"],
+  "mappings": ";;;;;AAAA;",
+  "names": []
+}

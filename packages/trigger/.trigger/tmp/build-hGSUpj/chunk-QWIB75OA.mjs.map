@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/trigger/task/email-tasks/index.ts"],
+  "sourcesContent": ["import { welcomeEmailTask } from './welcome-email';\r\n\r\nexport default { welcomeEmailTask };\r\n"],
+  "mappings": ";;;;;;;;AAAA;AAEA,IAAO,sBAAQ,EAAE,iBAAiB;",
+  "names": []
+}

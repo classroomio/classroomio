@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../../src/trigger/utils/types.ts"],
+  "sourcesContent": ["export type WelcomeEmailPayload = {\r\n  userId: string;\r\n  email: string;\r\n  name: string;\r\n};\r\n"],
+  "mappings": ";;;;;AAAA;",
+  "names": []
+}

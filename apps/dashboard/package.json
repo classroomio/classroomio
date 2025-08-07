@@ -58,6 +58,7 @@
     "posthog-js": "^1.180.1",
     "shared": "workspace:*",
     "sirv": "^2.0.3",
+    "trigger": "workspace:*",
     "stripe": "^14.22.0",
     "svelte-awesome-color-picker": "^3.1.4",
     "svelte-email": "^0.0.4",

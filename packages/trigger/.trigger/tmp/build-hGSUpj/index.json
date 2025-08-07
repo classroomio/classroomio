@@ -1,0 +1,41 @@
+{
+  "configPath": "C:\\Users\\c\\Desktop\\classroom.io\\packages\\trigger\\.trigger\\tmp\\build-hGSUpj\\Desktop\\classroom.io\\packages\\trigger\\trigger.config.mjs",
+  "tasks": [
+    {
+      "id": "daily-cleanup",
+      "retry": {
+        "maxAttempts": 3,
+        "factor": 2,
+        "minTimeoutInMs": 1000,
+        "maxTimeoutInMs": 10000,
+        "randomize": true
+      },
+      "triggerSource": "schedule",
+      "schedule": {
+        "cron": "0 2 * * *",
+        "timezone": "UTC"
+      },
+      "maxDuration": 3600,
+      "filePath": "src/trigger/task/schedule-tasks/daily-cleanup.ts",
+      "exportName": "dailyCleanupTask",
+      "entryPoint": "C:\\Users\\c\\Desktop\\classroom.io\\packages\\trigger\\.trigger\\tmp\\build-hGSUpj\\Desktop\\classroom.io\\packages\\trigger\\src\\trigger\\task\\schedule-tasks\\daily-cleanup.mjs"
+    },
+    {
+      "id": "welcome-email",
+      "retry": {
+        "maxAttempts": 3,
+        "factor": 2,
+        "minTimeoutInMs": 1000,
+        "maxTimeoutInMs": 10000,
+        "randomize": true
+      },
+      "maxDuration": 300,
+      "filePath": "src/trigger/task/email-tasks/welcome-email.ts",
+      "exportName": "welcomeEmailTask",
+      "entryPoint": "C:\\Users\\c\\Desktop\\classroom.io\\packages\\trigger\\.trigger\\tmp\\build-hGSUpj\\Desktop\\classroom.io\\packages\\trigger\\src\\trigger\\task\\email-tasks\\welcome-email.mjs"
+    }
+  ],
+  "workerEntryPoint": "C:\\Users\\c\\Desktop\\classroom.io\\packages\\trigger\\.trigger\\tmp\\build-hGSUpj\\AppData\\Local\\pnpm-cache\\dlx\\ga5awpyclyrkw73h3csn2awp5u\\1987f4c96f8-3eac\\node_modules\\.pnpm\\trigger.dev@3.3.17\\node_modules\\trigger.dev\\dist\\esm\\entryPoints\\dev-run-worker.mjs",
+  "runtime": "node",
+  "customConditions": []
+}

@@ -14,6 +14,7 @@
     getDisableSubmit
   } from '$lib/utils/functions/validator';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
+  import { TriggerService } from '$lib/utils/services/trigger';
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
@@ -87,6 +88,19 @@
       // Setting profile
       console.log('setting profile', profileRes.data[0]);
       profile.set(profileRes.data[0]);
+
+      // Send welcome email
+      try {
+        await TriggerService.triggerWelcomeEmail({
+          userId: authUser.id,
+          email: authUser.email!,
+          name: regexUsernameMatch[1]
+        });
+        console.log('Welcome email triggered successfully');
+      } catch (error) {
+        console.error('Failed to trigger welcome email:', error);
+        // Don't fail the signup process if welcome email fails
+      }
 
       capturePosthogEvent('user_signed_up', {
         distinct_id: $profile.id || '',

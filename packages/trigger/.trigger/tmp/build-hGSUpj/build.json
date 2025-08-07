@@ -1,0 +1,128 @@
+{
+  "contentHash": "6cd09320c92b7f1614534ce382da9ed8",
+  "runtime": "node",
+  "cliPackageVersion": "3.3.17",
+  "packageVersion": "3.3.17",
+  "environment": "dev",
+  "target": "dev",
+  "files": [
+    {
+      "entry": "src/trigger/task/schedule-tasks/index.ts",
+      "out": "C:\\Users\\c\\Desktop\\classroom.io\\packages\\trigger\\.trigger\\tmp\\build-hGSUpj\\Desktop\\classroom.io\\packages\\trigger\\src\\trigger\\task\\schedule-tasks\\index.mjs"
+    },
+    {
+      "entry": "src/trigger/utils/cleanup.ts",
+      "out": "C:\\Users\\c\\Desktop\\classroom.io\\packages\\trigger\\.trigger\\tmp\\build-hGSUpj\\Desktop\\classroom.io\\packages\\trigger\\src\\trigger\\utils\\cleanup.mjs"
+    },
+    {
+      "entry": "src/trigger/utils/email.ts",
+      "out": "C:\\Users\\c\\Desktop\\classroom.io\\packages\\trigger\\.trigger\\tmp\\build-hGSUpj\\Desktop\\classroom.io\\packages\\trigger\\src\\trigger\\utils\\email.mjs"
+    },
+    {
+      "entry": "src/trigger/utils/index.ts",
+      "out": "C:\\Users\\c\\Desktop\\classroom.io\\packages\\trigger\\.trigger\\tmp\\build-hGSUpj\\Desktop\\classroom.io\\packages\\trigger\\src\\trigger\\utils\\index.mjs"
+    },
+    {
+      "entry": "src/trigger/utils/types.ts",
+      "out": "C:\\Users\\c\\Desktop\\classroom.io\\packages\\trigger\\.trigger\\tmp\\build-hGSUpj\\Desktop\\classroom.io\\packages\\trigger\\src\\trigger\\utils\\types.mjs"
+    },
+    {
+      "entry": "src/trigger/index.ts",
+      "out": "C:\\Users\\c\\Desktop\\classroom.io\\packages\\trigger\\.trigger\\tmp\\build-hGSUpj\\Desktop\\classroom.io\\packages\\trigger\\src\\trigger\\index.mjs"
+    },
+    {
+      "entry": "src/trigger/task/email-tasks/index.ts",
+      "out": "C:\\Users\\c\\Desktop\\classroom.io\\packages\\trigger\\.trigger\\tmp\\build-hGSUpj\\Desktop\\classroom.io\\packages\\trigger\\src\\trigger\\task\\email-tasks\\index.mjs"
+    },
+    {
+      "entry": "src/trigger/task/email-tasks/welcome-email.ts",
+      "out": "C:\\Users\\c\\Desktop\\classroom.io\\packages\\trigger\\.trigger\\tmp\\build-hGSUpj\\Desktop\\classroom.io\\packages\\trigger\\src\\trigger\\task\\email-tasks\\welcome-email.mjs"
+    },
+    {
+      "entry": "src/trigger/task/index.ts",
+      "out": "C:\\Users\\c\\Desktop\\classroom.io\\packages\\trigger\\.trigger\\tmp\\build-hGSUpj\\Desktop\\classroom.io\\packages\\trigger\\src\\trigger\\task\\index.mjs"
+    },
+    {
+      "entry": "src/trigger/task/schedule-tasks/daily-cleanup.ts",
+      "out": "C:\\Users\\c\\Desktop\\classroom.io\\packages\\trigger\\.trigger\\tmp\\build-hGSUpj\\Desktop\\classroom.io\\packages\\trigger\\src\\trigger\\task\\schedule-tasks\\daily-cleanup.mjs"
+    }
+  ],
+  "sources": {
+    "src/trigger/task/schedule-tasks/index.ts": {
+      "contents": "eJzLzC3ILypRqFZISczMqXTOSU3MKy0ISSzOVqhVSCvKz1VQ19MHS+kmQ+TUrXm5eLlSK8DaUlLTEktzsGsHqgMAFQ8gUQ==",
+      "contentHash": "5c19e8c5cbdf2152516a330433262226"
+    },
+    "src/trigger/utils/cleanup.ts": {
+      "contents": "eJxLrSjILypRSCyuzEtWSCvNSy7JzM9TSM5JTcwrLfDPSfHJTy/W0FSo5uVSUChKLSktylOoVkjOL80rsVIwNFCoteblquXl4uVKxWdOSGpugVtmTirlJrlWFGQWpaYEpxYXA0WJMA8AT6xJ7Q==",
+      "contentHash": "cf2917ba34233bbe5f2fa84daa1ce39c"
+    },
+    "src/trigger/utils/email.ts": {
+      "contents": "eJx1kE1LxDAQhu8L+x9mQdgtLAvqrbp78+BN9OC12XaskSRTJilaSv67mX6IW/QQMrzz8cy8+NUQByjJ+QAeXfVglTZwBOU7V8JuvQJAkXLwgbWr96L49vyBZbjQzlR1s7BeZTk8MVnt8b4Hi96rGh+rOQ/xBMcT9NInaDJ4MFTvipe0geQHJASCq34II3zq8D5zkzpFEZSrBnTS5ItFdidTGUPLDi7Y2+ub2y3ElJeHvy9vGBvF+IqmJIsLD5yyOG+e/ew9EYqpJ/GlLsrS1DI0RoU3YrspJt6CKF4/o9WuQl7wWo+cp8O67G+TRnPSgDA6JPWH0aZ/rl/e/g0pPaVT",
+      "contentHash": "af4d9172f79cead526f2836facf57298"
+    },
+    "src/trigger/utils/index.ts": {
+      "contents": "eJxtjc0KwjAQhO+FvsPeeinmATzXk6Co4Dk0oyzkjyQFS/HdtaHaIB5ndvb7hKDu4V1IlEaPWFdYE010he6dQWck66MctZOKnnQLzlCzEfml2dZVXYkvB/OWhsSaExfEiSKsyqSWfICXASW+zfcTDFuFkKtClam/ql5D2sH/lS23g1Z7d4/tJ19g/I411ubN4gB1RozsbCycy2C2vgD5wWaB",
+      "contentHash": "f33735339f87f55a89e8b7dea5388ee0"
+    },
+    "src/trigger/utils/types.ts": {
+      "contents": "eJxLrSjILypRKKksSFUIT81Jzs9Ndc1NzMwJSKzMyU9MUbBVqOblUlAoLU4t8kyxUiguKcrMS7cGCaWClKGI5CXmpiIJ1AIxACQKHp8=",
+      "contentHash": "a42628a27c4c5b730223b1e014c69df0"
+    },
+    "src/trigger/index.ts": {
+      "contents": "eJw9jDEKwzAQBHuB/rCdIYToAalTpssHDvssH5YtoTtDTMjfE2FwOczOhoAnyQp+l1xNMeYKmxhWJUauKNTPFNm7Y4APeCFJL9L5Cu0nHrbEjfDFWPOC7hbsj93dO+9CwOPobC+soHXAZpLEhPX8vJxlc9rSH1/hMl0=",
+      "contentHash": "41dd54a91f5911ebb41e9f7541f6f5f5"
+    },
+    "src/trigger/task/email-tasks/index.ts": {
+      "contents": "eJzLzC3ILypRqFYoT81Jzs9Ndc1NzMwJSSzOVqhVSCvKz1VQ19OHSummguTUrXm5eLlSK8DaUlLTEktzsGsHqgMAFGUgPA==",
+      "contentHash": "bdda9ca2c9e68f638370c138cfe6b74c"
+    },
+    "src/trigger/task/email-tasks/welcome-email.ts": {
+      "contents": "eJyVVNtO20AQfY+Uf5g82ZZMzKW8OKIqAqpGKipqUPu8sidhhb3r7oWQQv69s7u240AqtRJS8OzMmTNnz2yWAWuazCi+WqHKDNOPOsOa8SpbY1XIGo/819To8YjXjVQGXqCSLjsFlw5bWCpZQ/SpBZmW+JTp8jF7Ootmg6KfAe/Gwd2xTSVZ2ddOpxn9WcMrnZlNg3qvslHYMIVDgBQ0itL/exDEk3Yg4xE+e5hCCm1gPcC4d+wv/BDxy3gEwMscor2xo9TFa/Z8bRUzXIoczo6PU8gyOIeaC2tQuwyFRm1y8Cg+/9IYrBujKT9tg1zc8xqlNXNxS/GTYwLq898ddWdLVhipcjhtvxUTpaz5b8zBKIsuuE3dmHRkiR7TG1FA3ASB80OqpyRpYZ5hm8DFx45zkOcFrEY1pxQMKgtWIwl8AS3gLLQCar7pSsHJsTDYwEkOP1jFS2YQuGis6RL4EuKJh4TXV5g41GRXTmgPSq5B4BpulJIqjm651lysSNhflissYcmxKkmbACKVZxYlsw5j2xHbsTnN4S44p62iGQ2KnlQY2R9dhROak60ZN4ccF3vSs/dtznJYkBcD0D62Qm0rQ76AGrVmK5zTjWjaE5ps2zfrnRzvBAny776jlgoYCdIqaCpmllLVkyh9U3S1P+Qhxh9y+CpXoG1REK3uNCz1lH7ivlvQTTtp2uylrapNlA4vr7XM38kPhg+KTPtIf31DnrRNVolhi7Z58Py/IQ+yHP9Lugbnr2vyZpxMjZwvvi38TcRJT6J10xYKZooHiNGZMXnv8/McvtAeViSQy3grIQYPfyYVyLl0Y+6Gu6cH2oflvxT0iHlLiHY8rEnSTTuc1bDi8UCmjx9UO+yez5+5Cb/jUQiRv8LDRjIXD0xwXbf6+FdnPPIwfwAJwtQV",
+      "contentHash": "f7746651e3612da32d09dcef2bf7d5aa"
+    },
+    "src/trigger/task/index.ts": {
+      "contents": "eJxLrSjILypRqFZISU1LLM0pUUgsVkjNTczMCUkszlaoVUgrys9VUNfTB4vplgAFi/Uz81JSK9SteblSsWguTs5ITSnNSUXTDxNGNwIAff8szQ==",
+      "contentHash": "d2799038e2c73e4b81bc2920b06f5a1b"
+    },
+    "src/trigger/task/schedule-tasks/daily-cleanup.ts": {
+      "contents": "eJx9U8tu2zAQvBvwP+xNcqFKRXKzkaJBkp5aBEj6AwS5lolQosCHYyPQv4ekRL3sBhZsaTk7szMr86qRysAHCFmWqDLQ9IDMCtTQwl7JCpJfRnF/ljM8Fpq9FcfbZLde8dhJBZLaNk+nhitkr6g1l7XOYv1ZsD+yHJ//YdX85lOBPC/cZQ0XuuhBXmC9wlOQoI7OACNcnB96DqLf4G6cNTeukH6sVwCcbSEJ2O+RK/N1qmTtTn7ADXzznySDooBHDwRiXPX+r5cEUNbhiD7XFNKGnIUkLPMuzQnaDdz9hCADfWA5r/cyTV4NUYbXZTdltJpsdh0ngFHn2AheOBgB24AUzFPpeNaZdZXe6gtqK4wzS94JN4tQ01FgzmrQb4c40b2Pek7uS1+yDyv6Lz92ywbdb3su0Fe/1Fi8LjOlWbSP00SdQNUINMjc/oY8Q4d+wUoe0a1/GV5Opa1NNqJDJgP8Io4LfHQ5tFwz2HXFpnbqR6Gxqp7Oqy2ljmPr3guLEyU6ZXTHk5bO5KW7bAoJzq5YmoGines+RmQ7mNl1dy1QYugBUlRKqs04Xb+wUF5ubO+elusKwG3P4/5s8BQI88rNQ0q8GqI5KPnedcZx/I/7CrBPCJx10A==",
+      "contentHash": "2637dbfc589cfca55ec423c8f191076a"
+    },
+    "trigger.config.ts": {
+      "contents": "eJxlUktv2zAMvgfIf+DNLZDGWQPs4F46rJcA22m9DMMwKBbtMJYlQ6LcYEX+e+lnXfRk+nvwEylR3TjP8AoaC7L43dmCSrhC4V0NySN7Kkv0W41tGnSVtvvkYb2iyTTSFfFseYc65XqFl14r7VU0/CHm5nW9Ami8O2POGSRd9Y+QK6PCybeFOnNF6hyKZNMJfbRMNYrQOo0DZlz5A1s0Ako5YGkKzyeEWl0gd3UTGSFg7qwOoIBVqICkMsa9oAZ2Xd8tHApgMfW0AICXHFEcfBKxjl4xObsBGfSFjIGj9GTXNKi3Y+RvFyFXFlyL3pPGweksCEZWU0s6KtMHTJZfiHBibkKWpstFa5eHVA4RUpnhbgrvTPL/NP5msP+62w2LQXFjyKDfJwBadTSoD/YJ20zuKOJmIMZLmIV9w2/MWDcs9v1mhsk+y6pd5IP9KcyX3Rg1ej6R72yhcnY+g/sZ8cpqV9N/HM4ywNfuc53uC+AYyejxYD0gY1wYbZBRJePPAofFs7u57VAqIAay5YJY6P/O9ZCnyXcdk+Dzae2JaK638l7fAFjm7tg=",
+      "contentHash": "acf12fe5bd3a6a9ec6a599d5861e0595"
+    },
+    "tsconfig.json": {
+      "contents": "eJx1kcFqwzAMhu+BvEPwMZSm9LjrukNh3WA9jjI8W1tNHcvIMssoffdFSddAxq7f99uSf5/LoqqUwTY6D/Qc2WFI6q46C+8NZt446oFaNtYlVourIMTJ3GiLNnsQ+LB/gm6Ks6ZP4FGsV+vV7MQLJPRZhkskoIVbQHuPX/vvwEdgZzbwobPnbRuRWBZlyvAbhbQbbtsGBsI4s+nk4qN7vz+COc0VkzM8gxaM16SvS/1jdvrPGMxkYOKCL4NULhifrdTzqhKZpq6bWi2EW+iW/XMOYw66KSddvI0lJckOn3Aoi0tZ/ABdnX5j",
+      "contentHash": "fc89b10362cfa2bc366fddff640b1155"
+    },
+    "package.json": {
+      "contents": "eJyVUstOwzAQvPcrrBwRchoqhNRTpXLpiQPcEEgm3hYTJ7a8TmlV9d/x2m0aCurjluzO7MzueDNgLGtEDdmYZd6pxQJcdkvFJThUpqF6wYd8mKoSsHTK+l3nJTG4hCXzAitkc+PYVAtEZ0w9e0qsWqgIlwp9jq7Md0q5aiSs+BcmmF9bwBM4yX0PScDayFZDqiVjxN+E31D4aJWWcS8sI4R1K46DYerYxtZM6hXzh0UmWnhAzwjyh2W1WZ8nRlSgbqOxCtbfxkly9vpr3n68aL2pRbzpXpBuSRPe4oQA+DSOdNOqWpXQYLzA7Hm6T8ZCuFJTKujdYNLzl6OsiPI+4iNePBwtVykfm3ch7KLrYWmauVpQJ+xQoRUljG8Ou4Wxj+eFuySOpSnwGFts3sd31s2GlTWuHyjvPsOPqqlLPJ6fflcHqZPo+LoifLuzx/OUw6WqhL5Sukf5T7/1Sl+uH9FXGuhzeg4ohMF28AMfajXZ",
+      "contentHash": "d58b083f2abdf9369480c0acb7603816"
+    }
+  },
+  "externals": [
+    {
+      "name": "import-in-the-middle",
+      "version": "1.11.0"
+    }
+  ],
+  "config": {
+    "project": "proj_ietklashrvfajtkiajsf",
+    "dirs": [
+      "src/trigger"
+    ]
+  },
+  "outputPath": "C:\\Users\\c\\Desktop\\classroom.io\\packages\\trigger\\.trigger\\tmp\\build-hGSUpj",
+  "runWorkerEntryPoint": "C:\\Users\\c\\Desktop\\classroom.io\\packages\\trigger\\.trigger\\tmp\\build-hGSUpj\\AppData\\Local\\pnpm-cache\\dlx\\ga5awpyclyrkw73h3csn2awp5u\\1987f4c96f8-3eac\\node_modules\\.pnpm\\trigger.dev@3.3.17\\node_modules\\trigger.dev\\dist\\esm\\entryPoints\\dev-run-worker.mjs",
+  "indexWorkerEntryPoint": "C:\\Users\\c\\Desktop\\classroom.io\\packages\\trigger\\.trigger\\tmp\\build-hGSUpj\\AppData\\Local\\pnpm-cache\\dlx\\ga5awpyclyrkw73h3csn2awp5u\\1987f4c96f8-3eac\\node_modules\\.pnpm\\trigger.dev@3.3.17\\node_modules\\trigger.dev\\dist\\esm\\entryPoints\\dev-index-worker.mjs",
+  "configPath": "C:\\Users\\c\\Desktop\\classroom.io\\packages\\trigger\\.trigger\\tmp\\build-hGSUpj\\Desktop\\classroom.io\\packages\\trigger\\trigger.config.mjs",
+  "customConditions": [],
+  "deploy": {
+    "env": {}
+  },
+  "build": {},
+  "otelImportHook": {
+    "include": []
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/trigger/utils/email.ts"],
+  "sourcesContent": ["export const sendEmail = async (\r\n  email: string,\r\n  subject: string,\r\n  body: string\r\n): Promise<{ messageId: string }> => {\r\n  console.log(`Sending email to ${email} with subject ${subject} and body ${body}`);\r\n  return { messageId: '123' };\r\n};\r\nexport const prepareWelcomeEmail = async (name: string) => {\r\n  return `Welcome ${name} to our platform!`;\r\n};\r\n\r\nexport const sendReminderEmail = async (user: any) => {\r\n  console.log(`email sent to ${user.email}`);\r\n  return { message: '123' };\r\n};\r\n"],
+  "mappings": ";;;;;AAAA;AAAO,IAAM,YAAY,OACvB,OACA,SACA,SACmC;AACnC,UAAQ,IAAI,oBAAoB,KAAK,iBAAiB,OAAO,aAAa,IAAI,EAAE;AAChF,SAAO,EAAE,WAAW,MAAM;AAC5B;AACO,IAAM,sBAAsB,OAAO,SAAiB;AACzD,SAAO,WAAW,IAAI;AACxB;AAEO,IAAM,oBAAoB,OAAO,SAAc;AACpD,UAAQ,IAAI,iBAAiB,KAAK,KAAK,EAAE;AACzC,SAAO,EAAE,SAAS,MAAM;AAC1B;",
+  "names": []
+}

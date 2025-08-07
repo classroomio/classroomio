@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/trigger/utils/index.ts"],
+  "sourcesContent": ["// Export types\r\nexport type { WelcomeEmailPayload } from './types';\r\n\r\n// Export email utilities\r\nexport { sendEmail, prepareWelcomeEmail, sendReminderEmail } from './email';\r\n\r\n// Export cleanup utilities\r\nexport { cleanupOldLogs, cleanupTempFiles, cleanupExpiredSessions } from './cleanup';\r\n"],
+  "mappings": ";;;;;AAAA;",
+  "names": []
+}

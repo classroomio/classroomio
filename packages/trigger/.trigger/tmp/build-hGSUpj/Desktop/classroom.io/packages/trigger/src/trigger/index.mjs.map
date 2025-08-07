@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../../src/trigger/index.ts"],
+  "sourcesContent": ["// Main exports for the trigger package\r\nexport { emailTask, scheduleTask } from './task';\r\n\r\n// Export types and utilities\r\nexport * from './utils';\r\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;",
+  "names": []
+}

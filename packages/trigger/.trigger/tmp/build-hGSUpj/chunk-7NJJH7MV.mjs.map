@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/trigger/utils/cleanup.ts"],
+  "sourcesContent": ["export async function cleanupOldLogs() {\r\n  return { count: 10 };\r\n}\r\n\r\nexport async function cleanupTempFiles() {\r\n  return { count: 10 };\r\n}\r\n\r\nexport async function cleanupExpiredSessions() {\r\n  return { count: 10 };\r\n}\r\n"],
+  "mappings": ";;;;;AAAA;AAAA,eAAsB,iBAAiB;AACrC,SAAO,EAAE,OAAO,GAAG;AACrB;AAEA,eAAsB,mBAAmB;AACvC,SAAO,EAAE,OAAO,GAAG;AACrB;AAEA,eAAsB,yBAAyB;AAC7C,SAAO,EAAE,OAAO,GAAG;AACrB;",
+  "names": []
+}

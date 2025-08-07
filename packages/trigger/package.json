@@ -1,0 +1,43 @@
+{
+  "name": "trigger",
+  "version": "1.0.0",
+  "description": "Trigger.dev tasks for ClassroomIO",
+  "main": "dist/src/trigger/index.js",
+  "types": "dist/src/trigger/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "trigger:dev": "pnpm dlx trigger.dev@latest dev",
+    "trigger:deploy": "pnpm dlx trigger.dev@latest deploy"
+  },
+  "keywords": [
+    "trigger",
+    "automation",
+    "tasks"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@trigger.dev/sdk": "^3.3.17",
+    "triggerkit": "^2.0.1",
+    "tsconfig": "workspace:*"
+  },
+  "devDependencies": {
+    "@trigger.dev/build": "^3.3.17",
+    "typescript": "^5.0.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/src/trigger/index.js",
+      "types": "./dist/src/trigger/index.d.ts"
+    },
+    "./tasks": {
+      "import": "./dist/src/trigger/task/index.js",
+      "types": "./dist/src/trigger/task/index.d.ts"
+    },
+    "./utils": {
+      "import": "./dist/src/trigger/utils/index.js",
+      "types": "./dist/src/trigger/utils/index.d.ts"
+    }
+  }
+}
