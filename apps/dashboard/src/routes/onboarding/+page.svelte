@@ -49,14 +49,15 @@
   let selectedId = 'en';
 
   let dropdownItems = [
-    { id: 'en', text: 'English' },
-    { id: 'hi', text: 'Hindi' },
-    { id: 'fr', text: 'French' },
-    { id: 'pt', text: 'Portuguese' },
     { id: 'de', text: 'German' },
-    { id: 'vi', text: 'Vietnamese' },
+    { id: 'en', text: 'English' },
+    { id: 'es', text: 'Spanish' },
+    { id: 'fr', text: 'French' },
+    { id: 'hi', text: 'Hindi' },
+    { id: 'pl', text: 'Polish' },
+    { id: 'pt', text: 'Portuguese' },
     { id: 'ru', text: 'Russian' },
-    { id: 'es', text: 'Spanish' }
+    { id: 'vi', text: 'Vietnamese' }
   ];
 
   const educatorGoals: Goal[] = [
@@ -237,28 +238,28 @@
 </script>
 
 {#if $profile.id}
-  <div class="w-full min-h-screen flex justify-center">
-    <div class="flex justify-center items-center flex-col w-9/12 max-w-md">
+  <div class="flex min-h-screen w-full justify-center">
+    <div class="flex w-9/12 max-w-md flex-col items-center justify-center">
       <!-- Header With Logo -->
       <div class="flex flex-col items-center">
-        <div class="flex items-center w-full justify-center mb-4">
+        <div class="mb-4 flex w-full items-center justify-center">
           <img src="/logo-192.png" alt="ClassroomIO logo" height="50" width="50" data-atf="1" />
-          <h4 class="dark:text-white text-xl">ClassroomIO</h4>
+          <h4 class="text-xl dark:text-white">ClassroomIO</h4>
         </div>
 
         <!-- Loggedin Email -->
         <div
-          class="w-64 flex items-center justify-center mb-6 py-6 bg-gray-100 dark:bg-neutral-800 rounded-2xl border border-gray-300"
+          class="mb-6 flex w-64 items-center justify-center rounded-2xl border border-gray-300 bg-gray-100 py-6 dark:bg-neutral-800"
         >
           <UserProfileIcon />
-          <p class="dark:text-white text-sm ml-2">{$profile.email}</p>
+          <p class="ml-2 text-sm dark:text-white">{$profile.email}</p>
         </div>
       </div>
 
-      <div class="form-container overflow-y-auto w-full px-2">
+      <div class="form-container w-full overflow-y-auto px-2">
         {#if step === 1}
           <!-- Name/Organization Question -->
-          <div id="role-question" class="flex items-start flex-col mb-6">
+          <div id="role-question" class="mb-6 flex flex-col items-start">
             <!-- Full name -->
             <TextField
               label={$t('onboarding.fullname')}
@@ -304,17 +305,17 @@
           </div>
         {:else}
           <!-- Goal/Source Question -->
-          <div id="goal-question" class="flex items-center flex-col mb-6">
+          <div id="goal-question" class="mb-6 flex flex-col items-center">
             <div class="w-10/12">
               <!-- Goal Question -->
-              <div class="w-full flex items-start flex-col justify-between mb-10">
-                <label for="text-field" class="dark:text-white m-0 text-lg font-normal mb-3">
+              <div class="mb-10 flex w-full flex-col items-start justify-between">
+                <label for="text-field" class="m-0 mb-3 text-lg font-normal dark:text-white">
                   {$t('onboarding.what_brings')}
                 </label>
 
                 <!-- Loop through Goals -->
                 {#each educatorGoals as goal}
-                  <label class="dark:text-white w-full inline-flex items-center mb-1 font-light">
+                  <label class="mb-1 inline-flex w-full items-center font-light dark:text-white">
                     <input
                       type="radio"
                       bind:group={fields.goal}
@@ -334,14 +335,14 @@
               </div>
 
               <!-- Source Question -->
-              <div class="w-full flex items-start flex-col justify-between">
-                <label for="text-field" class="dark:text-white m-0 text-lg font-normal mb-3">
+              <div class="flex w-full flex-col items-start justify-between">
+                <label for="text-field" class="m-0 mb-3 text-lg font-normal dark:text-white">
                   {$t('onboarding.how')}
                 </label>
 
                 <!-- Loop through Goals -->
                 {#each sources as source}
-                  <label class="dark:text-white w-full inline-flex items-center mb-1 font-light">
+                  <label class="mb-1 inline-flex w-full items-center font-light dark:text-white">
                     <input
                       type="radio"
                       bind:group={fields.source}
@@ -376,10 +377,10 @@
       </div>
 
       <!-- Footer -->
-      <div class="flex justify-between items-center mt-8 w-full">
-        <div class="w-24 h-2 bg-gray-300 relative">
+      <div class="mt-8 flex w-full items-center justify-between">
+        <div class="relative h-2 w-24 bg-gray-300">
           <span
-            class="progress absolute top-0 left-0 bg-primary-700 h-full"
+            class="progress bg-primary-700 absolute left-0 top-0 h-full"
             style="width: {progress}%;"
           />
         </div>
