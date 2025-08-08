@@ -79,10 +79,13 @@
           quickly.
         </p>
       </div>
-      <button
+      <a
+        href="/signup"
+        target="_blank"
         class="py-5 px-6 bg-[#1D4ED8] border-transparent outline-transparent rounded-lg text-white text-lg font-semibold"
-        >Get Started for Free 🚀</button
       >
+        Get Started for Free 🚀
+      </a>
     </div>
   </PageHeader>
 
