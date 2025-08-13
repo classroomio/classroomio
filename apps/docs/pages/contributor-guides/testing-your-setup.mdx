@@ -1,0 +1,310 @@
+import { Callout, Steps } from 'nextra/components';
+
+# Testing Your ClassroomIO Self-Hosting Setup
+
+This guide will help you verify that your ClassroomIO self-hosting setup is working correctly after completing the [Supabase Cloud Setup](/contributor-guides/supabase-cloud).
+
+## What We'll Test
+
+By the end of this guide, you'll verify:
+
+- Supabase database connection and schema
+- Backend API functionality
+- Dashboard frontend functionality
+- Email functionality
+- File upload capabilities
+- User authentication flow
+
+## Pre-Testing Checklist
+
+Before running tests, ensure you have:
+
+- Completed [Supabase Cloud Setup](/contributor-guides/supabase-cloud)
+- Deployed backend and dashboard (Railway, Docker, or manual)
+- All environment variables configured correctly
+- SMTP settings working in Supabase
+- Access to your deployed services
+
+## Testing Your Setup
+
+### 1. Supabase Database Verification
+
+#### Check Database Tables
+
+1. **Access Supabase Dashboard**: Go to your project dashboard
+2. **Navigate to Table Editor**: Click "Table Editor" in the left sidebar
+3. **Verify Required Tables Exist**:
+   ```sql
+   -- Core tables that must exist
+   profiles
+   courses
+   lessons
+   assignments
+   grades
+   organizations
+   user_organizations
+   ```
+
+#### Test Database Connection
+
+1. **Go to SQL Editor**: Click "SQL Editor" in Supabase
+2. **Run Test Query**:
+   ```sql
+   SELECT
+     table_name,
+     table_type
+   FROM information_schema.tables
+   WHERE table_schema = 'public'
+   ORDER BY table_name;
+   ```
+3. **Expected Result**: Should show all ClassroomIO tables
+
+#### Verify Row Level Security (RLS)
+
+1. **Check RLS Policies**: Go to "Authentication" → "Policies"
+2. **Verify Policies Exist**: Should see policies for main tables
+3. **Test RLS**: RLS should be enabled on sensitive tables
+
+### 2. Backend API Testing
+
+#### Health Check Endpoint
+
+```bash
+# Test basic connectivity
+curl https://your-backend-url.railway.app/health
+
+# Expected response
+{
+  "status": "ok",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "version": "1.0.0"
+}
+```
+
+#### Supabase Connection Test
+
+```bash
+# Test if backend can connect to Supabase
+curl https://your-backend-url.railway.app/api/test/supabase
+
+# Expected response
+{
+  "status": "connected",
+  "tables": ["profiles", "courses", "lessons", ...]
+}
+```
+
+#### SMTP Test
+
+```bash
+# Test email functionality (if endpoint exists)
+curl -X POST https://your-backend-url.railway.app/api/test/smtp \
+  -H "Content-Type: application/json" \
+  -d '{"to": "test@example.com", "subject": "Test", "body": "Test email"}'
+```
+
+### 3. Dashboard Frontend Testing
+
+#### Basic Page Load
+
+1. **Access Dashboard**: Navigate to your dashboard URL
+2. **Check Console**: Open browser DevTools → Console
+3. **Verify No Errors**: Should see minimal console errors
+4. **Check Network**: Network tab should show successful requests
+
+#### Supabase Client Connection
+
+1. **Open Console**: In browser DevTools
+2. **Test Connection**:
+   ```javascript
+   // This should work without errors
+   console.log('Supabase URL:', window.supabase?.supabaseUrl);
+   console.log('Supabase Key:', window.supabase?.supabaseKey);
+   ```
+
+#### Authentication Flow Test
+
+1. **Navigate to Signup**: Go to `/signup` page
+2. **Fill Form**: Use test email (e.g., `test@example.com`)
+3. **Submit**: Click signup button
+4. **Check Response**: Should see success message or redirect
+5. **Verify Email**: Check if verification email was sent
+
+### 4. End-to-End User Flow Testing
+
+#### Complete User Journey
+
+1. **User Registration**:
+
+   - Navigate to signup page
+   - Fill registration form
+   - Verify email sent
+   - Complete email verification
+
+2. **User Login**:
+
+   - Navigate to login page
+   - Enter credentials
+   - Verify successful login
+   - Check redirect to dashboard
+
+3. **Organization Setup**:
+
+   - Complete organization profile
+   - Set organization name and details
+   - Verify settings saved
+
+4. **Course Creation**:
+
+   - Create a test course
+   - Add course details
+   - Verify course appears in dashboard
+
+5. **Content Management**:
+   - Add a lesson to the course
+   - Upload a file (if file upload configured)
+   - Verify content displays correctly
+
+## Common Test Failures & Solutions
+
+### Database Connection Issues
+
+**Error**: "Failed to connect to Supabase"
+**Solutions**:
+
+- Verify `PUBLIC_SUPABASE_URL` is correct
+- Check Supabase project is active
+- Ensure IP allowlist includes your server
+- Verify API keys are correct
+
+**Error**: "Table does not exist"
+**Solutions**:
+
+- Run `supabase db push` again
+- Check migration status in Supabase
+- Verify you're in the correct project
+
+### Authentication Issues
+
+**Error**: "Invalid JWT" or "Unauthorized"
+**Solutions**:
+
+- Verify Supabase keys are correct
+- Check JWT expiry settings
+- Ensure RLS policies are configured
+- Verify site URL in Supabase auth settings
+
+**Error**: "Email confirmation required"
+**Solutions**:
+
+- Check SMTP configuration in Supabase
+- Verify email confirmations are disabled
+- Test SMTP connection in Supabase dashboard
+
+### API Connection Issues
+
+**Error**: "Cannot connect to backend"
+**Solutions**:
+
+- Verify `PUBLIC_SERVER_URL` is correct
+- Check backend service is running
+- Test backend health endpoint
+- Verify CORS settings
+
+**Error**: "CORS policy violation"
+**Solutions**:
+
+- Check backend CORS configuration
+- Verify allowed origins include your domain
+- Test with different browsers
+
+## Testing Checklist
+
+Use this checklist to track your testing progress:
+
+### Supabase Setup
+
+- Database tables exist
+- RLS policies configured
+- Authentication settings correct
+- SMTP working
+- API keys valid
+
+### Backend API
+
+- Health endpoint responds
+- Supabase connection working
+- SMTP functionality working
+- CORS configured correctly
+- Environment variables loaded
+
+### Dashboard Frontend
+
+- Pages load without errors
+- Supabase client connected
+- Authentication flow works
+- No console errors
+- Network requests successful
+
+### User Functionality
+
+- User registration works
+- Email verification sent
+- Login successful
+- Dashboard accessible
+- Basic features functional
+
+## Debugging Tools
+
+### Browser DevTools
+
+- **Console**: Check for JavaScript errors
+- **Network**: Monitor API requests
+- **Application**: Check localStorage and cookies
+- **Sources**: Debug JavaScript code
+
+### Supabase Dashboard
+
+- **Logs**: Check for authentication errors
+- **API**: Test queries directly
+- **Auth**: Monitor user signups/logins
+- **Database**: Verify data integrity
+
+### Backend Logs
+
+- **Railway**: Check service logs
+- **Docker**: `docker compose logs -f`
+- **Manual**: Check PM2 or system logs
+
+## Getting Help
+
+If tests fail and you need assistance:
+
+1. **Check Logs**: Review all service logs for errors
+2. **Verify Configuration**: Double-check environment variables
+3. **Community Support**: Join our [Discord](https://dub.sh/ciodiscord)
+4. **GitHub Issues**: Open an [issue](https://github.com/rotimi-best/classroomio/issues)
+5. **Documentation**: Review [Supabase docs](https://supabase.com/docs)
+
+## Success Criteria
+
+Your setup is working correctly when:
+
+- All tests pass without errors
+- Users can register and login
+- Dashboard loads and functions
+- Backend API responds correctly
+- Emails are sent successfully
+- Database operations work
+- File uploads function (if configured)
+
+---
+
+<Callout type="info" emoji="💡">
+  **Pro Tip**: Run these tests in a staging environment first before deploying to production.
+</Callout>
+
+<Callout type="warning" emoji="⚠️">
+  **Remember**: If any test fails, fix the issue before proceeding. A working setup is essential for
+  a good user experience.
+</Callout>

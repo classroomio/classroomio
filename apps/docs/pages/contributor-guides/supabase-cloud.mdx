@@ -7,138 +7,163 @@ import MatchEnvVariables from './images/match-env.webp';
 import NewProject from './images/new-project.webp';
 import SmtpSettings from './images/smtp-settings.webp';
 
-# Supabase Cloud Setup
+# Supabase Cloud Setup for ClassroomIO
 
-In this guide, you will learn how to setup a supabase cloud project and link it to your local environment.
+This comprehensive guide will walk you through setting up Supabase Cloud as your database for self-hosting ClassroomIO. This setup is **required** before you can deploy ClassroomIO on Railway or Docker.
 
-## Who is this guide for?
+<Callout type="info">
+  <strong>When to use this guide</strong>
+  <br />- Use this for <strong>production deployments</strong> (Railway, Docker, or manual). You'll
+  need your Project URL, anon key, and service role key. Schema setup is handled during app setup,
+  not in this guide.
+  <br />- You can also use this for [**local development backed by Supabase
+  Cloud**](/contributor-guides/supabase-local-dev#cloud-backed-local-development-using-supabase-cloud-as-db)
+  <br />- For fully local development (no Supabase Cloud), follow our [**Supabase Local
+  Development**](/contributor-guides/supabase-local-dev) guide.
+</Callout>
 
-1. You don't want to setup supabase on your local machine
-2. You can't run docker on your computer
-3. You are experiencing performance issues using supabase locally
-4. You want to selfhost our frontend app but use supabase cloud.
+## What You'll Accomplish
 
-If your requirement matches any of the above, then this guide is for you.
+By the end of this guide, you'll have:
 
-## Video Walkthrough
+- A Supabase Cloud project created
+- Authentication settings updated (Site URL)
+- Required environment variables copied for deployment
 
-<div className="nx-w-full nx-flex nx-items-center nx-justify-center">
-  <iframe
-    width="560"
-    height="315"
-    src="https://www.youtube.com/embed/dAZAZ0oiky0?si=1h-KtppNqJ3U4BTe"
-    title="YouTube video player"
-    frameborder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    className="nx-my-4 nx-rounded-md"
-    allowfullscreen
-  ></iframe>
-</div>
+## Prerequisites
 
-## Step by Step guide
+Before starting, ensure you have:
+
+- A Supabase account ([sign up here](https://supabase.com))
+
+## Step-by-Step Setup
 
 <Steps>
 
-### Create a Supabase project
+### 1. Create a New Supabase Project
 
-For this step you need to have signed up for supabase and create an account, just visit [supabase.com](https://supabase.com).
-
-Once you have an account just click on the _New Project_ on your dashboard. After that you should see a similar screen to the below, fill in the fields.
+1. **Sign in to Supabase**: Go to [supabase.com](https://supabase.com) and sign in to your account
+2. **Create New Project**: Click "New Project" on your dashboard
+3. **Fill Project Details**:
+   - **Name**: `classroomio-selfhost` (or your preferred name)
+   - **Database Password**: Create a strong password and **save it securely** - you won't be able to retrieve it later
+   - **Region**: Choose the region closest to your deployment location
+   - **Pricing Plan**: Start with the free tier (you can upgrade later)
 
 <Image src={NewProject} alt="New project in supabase" quality="100" />
 
-<Callout>
-  Make sure you save your database password somewhere, else you won't be able to get it back
-  anywhere in the dashboard for security reasons.
+<Callout type="warning" emoji="⚠️">
+  **IMPORTANT**: Save your database password immediately! Supabase cannot recover it for security
+  reasons.
 </Callout>
 
-### Login to Supabase via the CLI
+### 2. Get Your Project Credentials
 
-Open your terminal and go to the root of the project. Run the following:
+1. **Navigate to Settings**: In your project dashboard, click the gear icon (⚙️) in the left sidebar
+2. **Go to API Section**: Click "API" in the settings menu
+3. **Copy Required Values**:
+   - **Project URL**: Copy the `Project URL`
+   - **Anon Public Key**: Copy the `anon public` key
+   - **Service Role Key**: Copy the `service_role` key (keep this secret!)
 
-```bash copy
-pnpm supabase:login
-```
+<Image src={MatchEnvVariables} alt="Source of supabase environment variables" quality="100" />
 
-Follow the instruction in your terminal to generate your access token. Paste the token in the console and hit **Enter**
+### 3. Configure Authentication Settings
 
-### Push migrations to your Supabase project
-
-- Go to the supabase dashboard, go to your project, click on the settings icon on the left side bar
-
-<Image src={DBUrl} alt="DB URL in the supabase dashboard" quality="100" />
-
-- Copy the URL in the image above for your `db url`
-- Paste it somewhere
-- In the url, replace `[YOUR PASSWORD]` with your db password (which you saved in section 1).
-- Then run in your terminal:
-
-```bash copy
-pnpx supabase@1.51.1 db push --db-url "URL HERE"
-```
-
-<Callout>
-  Make sure you preserve the double quotes before and after the url. Only replace `URL HERE` with
-  your `db url` that contains your password
-</Callout>
-
-#### Result
-
-<Image src={DBPushResult} alt="Result of supabase db push" quality="100" />
-
-### Configure Auth in your Supabase project
-
-Here we will update our email configurations, to prevent supabase from sending confirmation emails on signup. This is because we don't use Supabase for email verification, we handle that internally due to the quality of the email.
+1. **Go to Authentication**: In the left sidebar, click "Authentication"
+2. **Click Settings**: Click the "Settings" tab
+3. **Update Site URL**: Change the Site URL to your deployment domain (e.g., `https://yourdomain.com`)
+4. **Disable Email Confirmations**: Set "Enable email confirmations" to **OFF** (ClassroomIO handles this internally)
+5. **Save Changes**: Click "Save" to apply your changes
 
 <Image src={AuthSettings} alt="Authentication configuration" quality="100" />
 
-### Configure SMTP
+### 4. Supabase Email (Optional)
 
-Supabase [now requires adding custom SMTP](https://github.com/orgs/supabase/discussions/29370) to your supabase project in order to avoid abuse of their system. Without adding a custom SMTP, your signup requests to your supabase project will fail. To avoid this, you should go to the [STMP section](https://supabase.com/dashboard/project/_/settings/auth) of your supabase settings.
+Supabase can send auth emails using its built-in email service (not recommended for production). Custom
+SMTP is only needed if you want Supabase itself to send emails. Our app sends emails via its own
+backend service, so configuring Supabase SMTP is optional.
 
-Make sure to toggle **Enable Custom SMTP** and fill in the following fields:
-
-- Sender email
-- Sender name
-- SMTP host
-- SMTP port
-- SMTP username
-- SMTP password
+1. **Go to Authentication → Email**
+2. (Optional) Configure a custom SMTP provider for Supabase emails
+3. Save changes
 
 <Image src={SmtpSettings} alt="SMTP Settings" quality="100" />
 
 <Callout type="info" emoji="ℹ️">
-  Learn more about setting up SMTP [here](https://supabase.com/docs/guides/auth/auth-smtp)
+  Our application sends emails through the backend (SMTP or Zoho). Supabase SMTP settings affect
+  only emails sent by Supabase itself. Learn more: https://supabase.com/docs/guides/auth/auth-smtp
 </Callout>
 
-### Add configurations to your environment variables
+### 5. Prepare Environment Variables
 
-Now with all these set up you need to get update the .env file in `apps/dashboard`. You need to update the following environment variables:
+Copy these values for your deployment:
 
-```bash copy
-PUBLIC_SUPABASE_URL=
-PUBLIC_SUPABASE_ANON_KEY=
-PRIVATE_SUPABASE_SERVICE_ROLE=
+```bash
+# Supabase Configuration
+PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=your_anon_public_key_here
+PRIVATE_SUPABASE_SERVICE_ROLE=your_service_role_key_here
 ```
 
-To get the correct environment variables, follow the instructions in this image
-
-<Image src={MatchEnvVariables} alt="Source of supabase environment variables" quality="100" />
-
-### Tada - That's all
-
-Now you can run:
-
-```bash copy
-pnpm dev --filter=dashboard
-```
-
-- Open the url in your browser
-- Click on Sign up
-- And that's it ...
-
-<Callout type="info" emoji="ℹ️">
-  Visit the [Sign up guide](/quickstart/signup) to learn how to signup
+<Callout type="warning" emoji="🔒">
+  **Security**: Keep these credentials secure and never commit them to version control.
 </Callout>
 
+## Setup Complete!
+
+Congratulations! Your Supabase Cloud project is now fully configured for ClassroomIO.
+
+## Next Steps
+
+Now that you have Supabase configured, you can proceed to:
+
+1. **[Deploy on Railway](/quickstart/self-hosting#deploy-on-railway)** - Quick deployment using our template
+2. **[Use Docker](/quickstart/self-hosting#using-docker)** - Self-host with Docker containers
+3. **[Manual Deployment](/quickstart/self-hosting#manual-deployment)** - Deploy to your own servers
+
+## Troubleshooting
+
+### Common Issues
+
+**"Invalid JWT" Error**
+
+- Verify your environment variables are correct
+- Check that your Supabase URL doesn't have trailing slashes
+
+**"SMTP Authentication Failed"** (Supabase emails)
+
+- Check optional Supabase SMTP settings under Authentication → Email
+
+**"Database Connection Failed"**
+
+- Ensure your Supabase project is active
+- Verify your project reference in the URL
+
+**"Schema Push Failed"**
+
+- Make sure you're using Supabase CLI version 1.51.0
+- Check that you're logged in and linked to the correct project
+
+### Getting Help
+
+If you encounter issues:
+
+1. Check the [Supabase documentation](https://supabase.com/docs)
+2. Join our [Discord community](https://dub.sh/ciodiscord)
+3. Open an [issue on GitHub](https://github.com/rotimi-best/classroomio/issues)
+
+## Additional Resources
+
+- [Supabase Documentation](https://supabase.com/docs)
+- [Supabase SMTP Guide](https://supabase.com/docs/guides/auth/auth-smtp)
+- [ClassroomIO GitHub Repository](https://github.com/rotimi-best/classroomio)
+- [ClassroomIO Discord](https://dub.sh/ciodiscord)
+
+---
+
+<Callout type="info" emoji="💡">
+  **Pro Tip**: Consider setting up a staging environment with a separate Supabase project for
+  testing before deploying to production.
+</Callout>
 </Steps>

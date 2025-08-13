@@ -1,0 +1,358 @@
+import { Callout, Steps } from 'nextra/components';
+
+# Environment Variables Reference
+
+This guide provides a complete reference for all environment variables needed to self-host ClassroomIO. Use this as a quick reference when configuring your deployment.
+
+## Quick Setup Checklist
+
+**Before you start, ensure you have:**
+
+- Completed [Supabase Cloud Setup](/contributor-guides/supabase-cloud)
+- SMTP credentials ready
+- Optional: Cloudflare R2 for video uploads
+- Optional: API keys for additional features
+
+---
+
+## Supabase Configuration
+
+**Required for all deployment methods**
+
+```bash
+# Supabase Project URL
+PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+
+# Public API Key (anon)
+PUBLIC_SUPABASE_ANON_KEY=your_anon_public_key_here
+
+# Service Role Key (private - keep secret!)
+PRIVATE_SUPABASE_SERVICE_ROLE=your_service_role_key_here
+```
+
+**Where to find these:**
+
+1. Go to Supabase Dashboard → Settings → API
+2. Copy the exact values (no extra spaces)
+3. Ensure URL doesn't have trailing slashes
+
+---
+
+## SMTP Configuration
+
+**Required for email functionality**
+
+```bash
+# SMTP Server Details
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_email@gmail.com
+SMTP_PASSWORD=your_app_password
+SMTP_SENDER=your_email@gmail.com
+```
+
+**Popular SMTP Providers:**
+
+| Provider     | Host                    | Port           | Notes                          |
+| ------------ | ----------------------- | -------------- | ------------------------------ |
+| **Gmail**    | `smtp.gmail.com`        | `587`          | Requires app-specific password |
+| **SendGrid** | `smtp.sendgrid.net`     | `587`          | Free tier available            |
+| **Mailgun**  | `smtp.mailgun.org`      | `587`          | Developer-friendly             |
+| **Outlook**  | `smtp-mail.outlook.com` | `587`          | Office 365 accounts            |
+| **Custom**   | Your SMTP server        | `587` or `465` | Your own server                |
+
+---
+
+## Railway Deployment Variables
+
+### cio-backend Service
+
+```bash
+# Required - Supabase
+PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=your_anon_public_key
+
+# Required - SMTP
+SMTP_HOST=your_smtp_host
+SMTP_PORT=587
+SMTP_USER=your_smtp_username
+SMTP_SENDER=your_sender_email
+SMTP_PASSWORD=your_smtp_password
+
+# Optional - Cloudflare R2 (Video Uploads)
+CLOUDFLARE_BUCKET_ID=your_bucket_id
+CLOUDFLARE_ACCESS_KEY=your_access_key
+CLOUDFLARE_ACCOUNT_ID=your_account_id
+CLOUDFLARE_BUCKET_DOMAIN=your_bucket_domain
+CLOUDFLARE_SECRET_ACCESS_KEY=your_secret_key
+
+# Optional - Monitoring
+SENTRY_DNS=your_sentry_dsn
+```
+
+### cio-dashboard Service
+
+```bash
+# Required - Supabase
+PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=your_anon_public_key
+PRIVATE_SUPABASE_SERVICE_ROLE=your_service_role_key
+
+# Required - Backend Connection
+PUBLIC_SERVER_URL=https://your-backend-service.railway.app
+
+# Optional - AI Features
+OPENAI_API_KEY=your_openai_key
+
+# Optional - Additional Features
+UNSPLASH_API_KEY=your_unsplash_key
+PUBLIC_IP_REGISTRY_KEY=your_ip_registry_key
+PRIVATE_APP_HOST=your_domain
+PRIVATE_APP_SUBDOMAINS=www,app,api
+```
+
+---
+
+## Docker Deployment Variables
+
+### Backend (.env.backend)
+
+```bash
+# Supabase Configuration
+PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=your_anon_public_key
+
+# SMTP Configuration
+SMTP_HOST=your_smtp_host
+SMTP_PORT=587
+SMTP_USER=your_smtp_username
+SMTP_PASSWORD=your_smtp_password
+SMTP_SENDER=your_sender_email
+
+# Optional - Cloudflare R2
+CLOUDFLARE_BUCKET_ID=your_bucket_id
+CLOUDFLARE_ACCESS_KEY=your_access_key
+CLOUDFLARE_ACCOUNT_ID=your_account_id
+CLOUDFLARE_BUCKET_DOMAIN=your_bucket_domain
+CLOUDFLARE_SECRET_ACCESS_KEY=your_secret_key
+
+# Optional - Monitoring
+SENTRY_DNS=your_sentry_dsn
+
+# Server Configuration
+PORT=3002
+NODE_ENV=production
+```
+
+### Dashboard (.env.dashboard)
+
+```bash
+# Supabase Configuration
+PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=your_anon_public_key
+PRIVATE_SUPABASE_SERVICE_ROLE=your_service_role_key
+
+# Backend Connection
+PUBLIC_SERVER_URL=http://localhost:3002
+
+# Optional - AI Features
+OPENAI_API_KEY=your_openai_key
+
+# Optional - Additional Features
+UNSPLASH_API_KEY=your_unsplash_key
+PUBLIC_IP_REGISTRY_KEY=your_ip_registry_key
+PRIVATE_APP_HOST=localhost
+PRIVATE_APP_SUBDOMAINS=localhost
+
+# Build Configuration
+NODE_ENV=production
+```
+
+---
+
+## Manual Deployment Variables
+
+### Backend Environment
+
+```bash
+# Supabase Configuration
+PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=your_anon_public_key
+
+# SMTP Configuration
+SMTP_HOST=your_smtp_host
+SMTP_PORT=587
+SMTP_USER=your_smtp_username
+SMTP_PASSWORD=your_smtp_password
+SMTP_SENDER=your_sender_email
+
+# Optional - Cloudflare R2
+CLOUDFLARE_BUCKET_ID=your_bucket_id
+CLOUDFLARE_ACCESS_KEY=your_access_key
+CLOUDFLARE_ACCOUNT_ID=your_account_id
+CLOUDFLARE_BUCKET_DOMAIN=your_bucket_domain
+CLOUDFLARE_SECRET_ACCESS_KEY=your_secret_key
+
+# Server Configuration
+PORT=3002
+NODE_ENV=production
+HOST=0.0.0.0
+```
+
+### Dashboard Environment
+
+```bash
+# Supabase Configuration
+PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=your_anon_public_key
+PRIVATE_SUPABASE_SERVICE_ROLE=your_service_role_key
+
+# Backend Connection
+PUBLIC_SERVER_URL=http://localhost:3002
+
+# Optional - AI Features
+OPENAI_API_KEY=your_openai_key
+
+# Optional - Additional Features
+UNSPLASH_API_KEY=your_unsplash_key
+PUBLIC_IP_REGISTRY_KEY=your_ip_registry_key
+PRIVATE_APP_HOST=your_domain
+PRIVATE_APP_SUBDOMAINS=www,app,api
+
+# Build Configuration
+NODE_ENV=production
+```
+
+---
+
+## Security Best Practices
+
+### 1. Environment File Security
+
+```bash
+# Set proper permissions
+chmod 600 .env*
+
+# Never commit to version control
+echo ".env*" >> .gitignore
+
+# Use different files for different environments
+.env.production
+.env.staging
+.env.local
+```
+
+### 2. API Key Management
+
+- **Never hardcode** API keys in your code
+- **Rotate keys** regularly
+- **Use least privilege** - only grant necessary permissions
+- **Monitor usage** for unusual activity
+
+### 3. Supabase Security
+
+- **Keep service role key secret** - never expose in frontend
+- **Use RLS policies** to secure your data
+- **Monitor auth logs** for suspicious activity
+- **Regularly review** user permissions
+
+---
+
+## Testing Your Configuration
+
+### 1. Validate Environment Variables
+
+```bash
+# Check if variables are loaded
+echo "Supabase URL: $PUBLIC_SUPABASE_URL"
+echo "SMTP Host: $SMTP_HOST"
+
+# Test in your application
+console.log('Environment check:', {
+  supabase: !!process.env.PUBLIC_SUPABASE_URL,
+  smtp: !!process.env.SMTP_HOST
+});
+```
+
+### 2. Test Supabase Connection
+
+```bash
+# Test connection
+curl "https://$PUBLIC_SUPABASE_URL/rest/v1/" \
+  -H "apikey: $PUBLIC_SUPABASE_ANON_KEY" \
+  -H "Authorization: Bearer $PUBLIC_SUPABASE_ANON_KEY"
+```
+
+### 3. Test SMTP Configuration
+
+```bash
+# Test SMTP in Supabase dashboard
+# Go to Authentication → Settings → SMTP
+# Click "Test SMTP" button
+```
+
+---
+
+## Common Configuration Mistakes
+
+### 1. Supabase URL Issues
+
+```bash
+# Wrong - trailing slash
+PUBLIC_SUPABASE_URL=https://project.supabase.co/
+
+# Correct - no trailing slash
+PUBLIC_SUPABASE_URL=https://project.supabase.co
+```
+
+### 2. Environment Variable Names
+
+```bash
+# Wrong - missing PUBLIC_ prefix
+SUPABASE_URL=https://project.supabase.co
+
+# Correct - with PUBLIC_ prefix
+PUBLIC_SUPABASE_URL=https://project.supabase.co
+```
+
+### 3. SMTP Configuration
+
+```bash
+# Wrong - wrong port for Gmail
+SMTP_PORT=465
+
+# Correct - use 587 for Gmail
+SMTP_PORT=587
+```
+
+### 4. Backend URL Configuration
+
+```bash
+# Wrong - wrong protocol
+PUBLIC_SERVER_URL=http://backend.railway.app
+
+# Correct - use HTTPS for production
+PUBLIC_SERVER_URL=https://backend.railway.app
+```
+
+---
+
+## Additional Resources
+
+- **[Supabase Cloud Setup](/contributor-guides/supabase-cloud)** - Complete setup guide
+- **[Testing Your Setup](/contributor-guides/testing-your-setup)** - Verify configuration
+- **[Troubleshooting](/contributor-guides/troubleshooting-self-hosting)** - Fix common issues
+- **[Supabase Documentation](https://supabase.com/docs)** - Official Supabase docs
+- **[ClassroomIO GitHub](https://github.com/rotimi-best/classroomio)** - Source code
+
+---
+
+<Callout type="info" emoji="💡">
+  **Pro Tip**: Create a `.env.example` file with dummy values to share with your team, keeping the
+  real `.env` file private.
+</Callout>
+
+<Callout type="warning" emoji="⚠️">
+  **Security**: Never commit real environment variables to version control. Use `.gitignore` to
+  exclude `.env*` files.
+</Callout>

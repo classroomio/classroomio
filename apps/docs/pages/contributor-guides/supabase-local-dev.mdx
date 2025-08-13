@@ -1,0 +1,178 @@
+import { Callout, Steps } from 'nextra/components';
+
+# Supabase Local Development (CLI + Docker)
+
+This guide helps you run Supabase locally using the Supabase CLI and Docker for a fully local development setup (no Supabase Cloud required).
+
+<Callout type="info">
+  Two development modes:
+  <br />- <strong>Cloud‑backed local dev</strong>: First complete
+  <a href="/contributor-guides/supabase-cloud">Supabase Cloud Setup</a> to create your project and
+  get keys. Then follow the <strong>Cloud‑backed local development</strong> section below to link
+  the project and <code>db push</code> the schema. Finally, point your app envs to the Cloud
+  URL/keys.
+  <br />- <strong>Fully local (CLI + Docker)</strong>: No Supabase Cloud needed. Run
+  <code>supabase start</code> to bring up local services and apply migrations locally. Link/push to
+  a remote Cloud project only if/when you decide to sync changes upstream.
+</Callout>
+
+## Video walkthrough
+
+<iframe
+  width="560"
+  height="315"
+  src="https://www.youtube.com/embed/dAZAZ0oiky0?si=1h-KtppNqJ3U4BTe"
+  title="YouTube video player"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  className="nx-my-4 nx-rounded-md"
+  allowfullscreen
+></iframe>
+
+## Prerequisites
+
+- Docker Desktop installed and running
+- Supabase CLI installed (`npm i -g @supabase/cli`)
+- Node.js 18+
+
+## Step-by-step
+
+<Steps>
+
+### 1. Initialize Supabase
+
+```bash
+git clone https://github.com/rotimi-best/classroomio.git
+cd classroomio
+pnpm install
+supabase init
+```
+
+### 2. Start Local Stack
+
+```bash
+supabase start
+```
+
+This starts local Postgres, Auth, and Studio via Docker, applies migrations/seeds in the `supabase/` directory, and generates local connection settings.
+
+<Callout type="info">
+  Find local credentials with <code>supabase status --local</code> or in the generated{' '}
+  <code>.env</code> files under <code>supabase/</code>.
+</Callout>
+
+### 3. Apply Migrations/Seeds (optional)
+
+Migrations in `supabase/migrations` are applied automatically on start. To push new changes:
+
+```bash
+# After editing SQL under supabase/
+supabase db push
+```
+
+### 4. Configure ClassroomIO Apps for Local Supabase
+
+Update your environment files to point to the local services.
+
+For `apps/backend`:
+
+```bash
+cp apps/backend/.env.example apps/backend/.env
+# Edit values
+PUBLIC_SUPABASE_URL=http://localhost:54321
+PUBLIC_SUPABASE_ANON_KEY=your_local_anon_key
+# SMTP can be skipped locally if not testing email
+```
+
+For `apps/dashboard`:
+
+```bash
+cp apps/dashboard/.env.example apps/dashboard/.env
+# Edit values
+PUBLIC_SUPABASE_URL=http://localhost:54321
+PUBLIC_SUPABASE_ANON_KEY=your_local_anon_key
+PRIVATE_SUPABASE_SERVICE_ROLE=your_local_service_role_key
+```
+
+### 5. Run the apps
+
+You can run each app individually using workspace filters, or run all dev services.
+
+```bash
+# From repository root
+
+# Start dashboard only
+pnpm --filter dashboard dev
+
+# Start backend only
+pnpm --filter backend dev
+
+# Or start all dev services
+pnpm dev
+```
+
+### 6. Stop/Reset the local stack
+
+```bash
+supabase stop
+# optional: supabase db reset
+```
+
+</Steps>
+
+## Cloud-backed local development (using Supabase Cloud as DB)
+
+If you prefer using a Supabase Cloud project while developing locally:
+
+1. Ensure you have completed the <a href="/contributor-guides/supabase-cloud">Supabase Cloud Setup</a>
+2. Link your local repo to the remote project:
+
+```bash
+pnpm supabase:login    # one-time
+pnpm supabase          # optional: prints help
+
+# Link to your remote Supabase project
+pnpm supabase link --project-ref YOUR_PROJECT_REF
+```
+
+3. Apply your local migrations to the remote database when needed:
+
+```bash
+pnpm supabase db push
+```
+
+4. If you made changes directly on the remote (e.g., via SQL Editor), generate a migration file to commit locally:
+
+```bash
+# Creates a new SQL migration in supabase/migrations based on diff with linked remote
+pnpm supabase db diff -f descriptive_name
+```
+
+## Migrations workflow (local Docker → remote Cloud)
+
+When running Supabase locally via Docker and you want to migrate those schema changes to your remote Cloud project:
+
+1. Make and test schema changes locally (with `supabase start` running)
+2. Generate a migration from local state:
+
+```bash
+pnpm supabase db diff -f descriptive_name
+```
+
+3. Link your remote project if not already linked:
+
+```bash
+pnpm supabase link --project-ref YOUR_PROJECT_REF
+```
+
+4. Push the generated migrations to the remote Cloud project:
+
+```bash
+pnpm supabase db push
+```
+
+## Notes
+
+- Local Auth email flows may require SMTP; otherwise use magic links disabled or test tokens.
+- Ensure ports used by Supabase (e.g., 54321/54322) are free.
+- When switching between Cloud and Local, update app envs accordingly.
