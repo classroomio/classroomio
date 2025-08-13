@@ -1,14 +1,15 @@
 import { LOCALE } from '../types';
 
 export const LANGUAGE = {
-  [LOCALE.EN]: 'English',
-  [LOCALE.HI]: 'Hindi',
-  [LOCALE.FR]: 'French',
-  [LOCALE.PT]: 'Portuguese',
   [LOCALE.DE]: 'German',
-  [LOCALE.VI]: 'Vietnamese',
+  [LOCALE.EN]: 'English',
+  [LOCALE.ES]: 'Spanish',
+  [LOCALE.FR]: 'French',
+  [LOCALE.HI]: 'Hindi',
+  [LOCALE.PL]: 'Polish',
+  [LOCALE.PT]: 'Portuguese',
   [LOCALE.RU]: 'Russian',
-  [LOCALE.ES]: 'Spanish'
+  [LOCALE.VI]: 'Vietnamese'
 };
 
 export const LANGUAGES = Object.keys(LANGUAGE).map((lang) => ({

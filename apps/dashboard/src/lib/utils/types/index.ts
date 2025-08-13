@@ -5,6 +5,7 @@ export enum LOCALE {
   EN = 'en',
   HI = 'hi',
   FR = 'fr',
+  PL = 'pl',
   PT = 'pt',
   DE = 'de',
   VI = 'vi',
