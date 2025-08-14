@@ -18,21 +18,23 @@ This guide helps you run Supabase locally using the Supabase CLI and Docker for 
 
 ## Video walkthrough
 
-<iframe
-  width="560"
-  height="315"
-  src="https://www.youtube.com/embed/dAZAZ0oiky0?si=1h-KtppNqJ3U4BTe"
-  title="YouTube video player"
-  frameborder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-  className="nx-my-4 nx-rounded-md"
-  allowfullscreen
-></iframe>
+<div className="nx-w-full nx-flex nx-items-center nx-justify-center">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/dAZAZ0oiky0?si=1h-KtppNqJ3U4BTe"
+    title="YouTube video player"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    className="nx-my-4 nx-rounded-md"
+    allowfullscreen
+  ></iframe>
+</div>
 
 ## Prerequisites
 
 - Docker Desktop installed and running
-- Supabase CLI installed (`npm i -g @supabase/cli`)
+- Supabase CLI installed
 - Node.js 18+
 
 ## Step-by-step
@@ -45,13 +47,13 @@ This guide helps you run Supabase locally using the Supabase CLI and Docker for 
 git clone https://github.com/rotimi-best/classroomio.git
 cd classroomio
 pnpm install
-supabase init
+pnpm supabase init
 ```
 
 ### 2. Start Local Stack
 
 ```bash
-supabase start
+pnpm supabase start
 ```
 
 This starts local Postgres, Auth, and Studio via Docker, applies migrations/seeds in the `supabase/` directory, and generates local connection settings.
@@ -67,7 +69,7 @@ Migrations in `supabase/migrations` are applied automatically on start. To push 
 
 ```bash
 # After editing SQL under supabase/
-supabase db push
+pnpm supabase db push
 ```
 
 ### 4. Configure ClassroomIO Apps for Local Supabase
@@ -114,8 +116,8 @@ pnpm dev
 ### 6. Stop/Reset the local stack
 
 ```bash
-supabase stop
-# optional: supabase db reset
+pnpm supabase stop
+# optional: pnpm supabase db reset
 ```
 
 </Steps>
