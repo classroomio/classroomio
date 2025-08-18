@@ -75,4 +75,7 @@
       disabled={true}
     />
   {/if}
+  {#if currentQuestion?.explanation}
+    <p class="text-left font-medium text-sm px-5">Explanation: {currentQuestion?.explanation}</p>
+  {/if}
 {/each}
