@@ -1,4 +1,7 @@
+import Image from 'next/image';
 import { Callout, Steps } from 'nextra/components';
+import SupabaseStart from './images/start-result.webp';
+import DBPush from './images/db-push-result.webp';
 
 # Supabase Local Development (CLI + Docker)
 
@@ -58,6 +61,8 @@ pnpm supabase start
 
 This starts local Postgres, Auth, and Studio via Docker, applies migrations/seeds in the `supabase/` directory, and generates local connection settings.
 
+<Image src={SupabaseStart} alt="Supabase start result" quality="100" />
+
 <Callout type="info">
   Find local credentials with <code>supabase status --local</code> or in the generated{' '}
   <code>.env</code> files under <code>supabase/</code>.
@@ -71,6 +76,8 @@ Migrations in `supabase/migrations` are applied automatically on start. To push 
 # After editing SQL under supabase/
 pnpm supabase db push
 ```
+
+<Image src={DBPush} alt="DB push result" quality="100" />
 
 ### 4. Configure ClassroomIO Apps for Local Supabase
 
