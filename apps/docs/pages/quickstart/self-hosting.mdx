@@ -4,167 +4,446 @@ import SelfhostClassroomIO from './images/selfhost-classroomio.webp';
 
 # Self-hosting ClassroomIO.com
 
-This guide will help you quickly selfhost ClassroomIO
+This comprehensive guide will help you self-host ClassroomIO with step-by-step instructions for deployment on Railway, Docker, or your own servers.
 
 <Image src={SelfhostClassroomIO} alt="Selfhost ClassroomIO" quality="100" />
 
-ClassroomIO is made up of the following applications
+## Overview
 
-- [apps/backend](https://github.com/rotimi-best/classroomio/tree/main/apps/backend) - an Express server
-- [apps/dashboard](https://github.com/rotimi-best/classroomio/tree/main/apps/dashboard) - the admin dashboard + LMS
-- [supabase](https://github.com/rotimi-best/classroomio/tree/main/supabase) - the database + REST API.
+### Architecture
 
-The quickest and easiest way to deploy both the backend and dashboard is by using our [Railway Template](https://railway.app/template/dl9RG7?referralCode=8OyIj5). However there are a couple of things that you'd need first before heading over to the template, which are:
+ClassroomIO consists of three main components:
 
-1. SMTP values - For sending emails on the backend
-2. Supabase - For the database used on the dashboard
-3. Cloudflare R2 (optional) - Video uploads on the backend
+- [apps/backend](https://github.com/rotimi-best/classroomio/tree/main/apps/backend) - Hono API server
+- [apps/dashboard](https://github.com/rotimi-best/classroomio/tree/main/apps/dashboard) - SvelteKit admin dashboard + LMS
+- [Supabase](https://github.com/rotimi-best/classroomio/tree/main/supabase) - PostgreSQL database + REST API
 
-## SMTP Setup
+### Prerequisites
 
-Both for the supabase and backend setup, you'd need a custom SMTP for email sending. Most importantly you need these values:
+**Before proceeding with any deployment method, you MUST complete these steps:**
+
+### 1. Supabase Cloud Setup (Required)
+
+You need a fully configured Supabase Cloud project as your database. This is **mandatory** for all deployment methods.
+
+**[Complete the Supabase Cloud Setup Guide →](/contributor-guides/supabase-cloud)**
+
+After completing this guide, you'll have:
+
+- Supabase project with all required tables
+- Authentication configured
+- SMTP email settings
+- Environment variables ready
+
+### 2. SMTP Configuration (Required)
+
+Both Supabase and the backend need SMTP credentials for email functionality:
 
 ```bash
-SMTP_HOST=
-SMTP_PORT=
-SMTP_USER=
-SMTP_PASSWORD=
-SMTP_SENDER=
+SMTP_HOST=your_smtp_host
+SMTP_PORT=587
+SMTP_USER=your_smtp_username
+SMTP_PASSWORD=your_smtp_password
+SMTP_SENDER=your_sender_email
 ```
-
-Make sure you have them handy because you'd need them while we go through this selfhosting guide.
 
 <Callout type="info" emoji="ℹ️">
   Learn more about setting up a custom SMTP server
   [here](https://supabase.com/docs/guides/auth/auth-smtp)
 </Callout>
 
-## Supabase
+**Popular SMTP Providers:**
 
-There are 2 options to go about setting up Supabase, you could [selfhost supabase](https://supabase.com/docs/guides/self-hosting) on your own servers or you could use their cloud version. We recommend you use the cloud version because it has a very generous free tier and you get to deploy it very quickly.
+- **Gmail**: Use app-specific passwords
+- **SendGrid**: Free tier available
+- **Mailgun**: Developer-friendly
+- **Your own SMTP server**
 
-We have a standalone guide to help you setup your Supabase Cloud and you can find it [here](https://classroomio.com/docs/contributor-guides/supabase-cloud)
+### 3. Cloudflare R2 (Optional)
 
-After you go through that guide you will need the following environment variables, please also store them somewhere:
+For video uploads in the course builder. Not required for basic functionality.
 
 ```bash
-PUBLIC_SUPABASE_URL=
-PUBLIC_SUPABASE_ANON_KEY=
-PRIVATE_SUPABASE_SERVICE_ROLE=
+# Optional - Cloudflare R2 for video uploads
+CLOUDFLARE_ACCOUNT_ID=your_account_id
+CLOUDFLARE_ACCESS_KEY=your_access_key
+CLOUDFLARE_SECRET_ACCESS_KEY=your_secret_key
+# Optional: override bucket domain; derived from ACCOUNT_ID when omitted
+CLOUDFLARE_BUCKET_DOMAIN=your_bucket_domain
 ```
 
-## Cloudflare R2
-
-We use Cloudflare R2 for video uploading within the course builder. It is not required though and you can do without it in the app if you don't need video upload.
-
-<Callout type="info" emoji="⏳">
-  This section is a work in progress.
+<Callout type="info" emoji="ℹ️">
+  The backend uses the bucket name "videos" by default.
 </Callout>
+
+---
+
+## Development
+
+### Choose Your Path
+
+Decide how you want to run ClassroomIO:
+
+- Local development with Supabase Cloud → Complete [Supabase Cloud Setup](/contributor-guides/supabase-cloud), then run apps locally
+- Local development with Supabase Local (CLI + Docker) → Follow [Supabase Local Development](/contributor-guides/supabase-local-dev)
+- Production deployment → Complete [Supabase Cloud Setup](/contributor-guides/supabase-cloud) first, then choose Railway, Docker, or Manual
+
+## Deployment
+
+Choose your preferred deployment method:
+
+### Option 1: Railway (Recommended for Beginners)
+
+**Fastest deployment with our pre-configured template**
+
+[Go to Railway Deployment →](#deploy-on-railway)
+
+### Option 2: Docker
+
+**Self-host with Docker containers on your own infrastructure**
+
+[Go to Docker Deployment →](#using-docker)
+
+### Option 3: Manual Deployment
+
+**Deploy to your own servers with full control**
+
+[Go to Manual Deployment →](#manual-deployment)
+
+---
 
 ## Deploy on Railway
 
-Now you have everything you need and you are ready to deploy the backend and dashboard.
+**Prerequisites**: Complete [Supabase Cloud Setup](/contributor-guides/supabase-cloud) first!
 
-Go ahead and click this button to get started.
+Railway provides the fastest and easiest way to deploy ClassroomIO with our pre-configured template.
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/dl9RG7?referralCode=8OyIj5)
+### Quick Start
 
-### Environment Variables.
+1. **Click the Deploy Button**:
+   [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/dl9RG7?referralCode=8OyIj5)
 
-#### cio-backend
+2. **Follow the Setup Wizard**:
+   - Connect your GitHub account
+   - Select the ClassroomIO repository
+   - Configure environment variables (see below)
+
+### Environment Variables Configuration
+
+#### cio-backend Service
 
 ```bash
-# Required
-SMTP_HOST=""
-SMTP_PORT=""
-SMTP_USER=""
-SMTP_SENDER=""
-SMTP_PASSWORD=""
-PUBLIC_SUPABASE_URL=""
-PUBLIC_SUPABASE_ANON_KEY=""
+# Required - Supabase Configuration
+PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=your_anon_public_key
 
-# Optional
-CLOUDFLARE_BUCKET_ID=""
-CLOUDFLARE_ACCESS_KEY=""
-CLOUDFLARE_ACCOUNT_ID=""
-CLOUDFLARE_BUCKET_DOMAIN=""
-CLOUDFLARE_SECRET_ACCESS_KEY=""
-SENTRY_DNS=""
+# Required - SMTP Configuration
+SMTP_HOST=your_smtp_host
+SMTP_PORT=587
+SMTP_USER=your_smtp_username
+SMTP_SENDER=your_sender_email
+SMTP_PASSWORD=your_smtp_password
+
+# Optional - Cloudflare R2 for Video Uploads
+CLOUDFLARE_ACCOUNT_ID=your_account_id
+CLOUDFLARE_ACCESS_KEY=your_access_key
+CLOUDFLARE_SECRET_ACCESS_KEY=your_secret_key
+CLOUDFLARE_BUCKET_DOMAIN=your_bucket_domain
+
+# Optional - Monitoring
+SENTRY_DNS=your_sentry_dsn
 ```
 
 <Callout type="info" emoji="ℹ️">
-  Learn more about the environment variables
-  [here](https://github.com/rotimi-best/classroomio/blob/main/apps/backend/.env.example)
+  Backend service: Values here are read by the Hono API and must match your Supabase project and
+  SMTP provider. Ensure URL has no trailing slash and credentials are correct.
 </Callout>
 
-#### cio-dashboard
+#### cio-dashboard Service
 
 ```bash
-# Required
-PUBLIC_SUPABASE_URL=""
-PUBLIC_SUPABASE_ANON_KEY=""
-PRIVATE_SUPABASE_SERVICE_ROLE=""
-PUBLIC_SERVER_URL=""
+# Required - Supabase Configuration
+PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=your_anon_public_key
+PRIVATE_SUPABASE_SERVICE_ROLE=your_service_role_key
 
-# Optional
-OPENAI_API_KEY=""
-PUBLIC_IP_REGISTRY_KEY=""
-UNSPLASH_API_KEY=""
-PRIVATE_APP_HOST=""
-PRIVATE_APP_SUBDOMAINS=""
+# Required - Backend Connection
+PUBLIC_SERVER_URL=https://your-backend-service.railway.app
+
+# Optional - AI Features
+OPENAI_API_KEY=your_openai_key
+
+# Optional - Additional Features
+UNSPLASH_API_KEY=your_unsplash_key
+PUBLIC_IP_REGISTRY_KEY=your_ip_registry_key
 ```
 
 <Callout type="info" emoji="ℹ️">
-  Learn more about the environment variables
-  [here](https://github.com/rotimi-best/classroomio/blob/main/apps/dashboard/.env.example)
+  Dashboard service: Includes the service role for server-side usage and points to your backend via
+  PUBLIC_SERVER_URL. Get Supabase values from your
+  <a href="/contributor-guides/supabase-cloud">Supabase Cloud setup</a>. See full examples in the
+  backend and dashboard <code>.env.example</code> files.
 </Callout>
+
+### Railway Deployment Steps
+
+1. **Deploy Backend First**:
+
+   - Wait for backend service to be healthy
+   - Note the generated URL (e.g., `https://cio-backend-production.up.railway.app`)
+
+2. **Update Dashboard Environment**:
+
+   - Set `PUBLIC_SERVER_URL` to your backend URL
+   - Redeploy dashboard service
+
+3. **Verify Deployment**:
+   - Backend: Check health endpoint
+   - Dashboard: Test login/signup functionality
+
+---
 
 ## Using Docker
 
-We provide a docker-compose configuration to deploy both the backend and dashboard services. Here's how to use it:
+**Prerequisites**: Complete [Supabase Cloud Setup](/contributor-guides/supabase-cloud) first!
 
-1. Clone the repository:
+Deploy ClassroomIO using Docker containers on your own infrastructure.
+
+### Quick Start
+
+1. **Clone the Repository**:
 
 ```bash
 git clone https://github.com/rotimi-best/classroomio.git
 cd classroomio
 ```
 
-2. Create a `.env` file with your environment variables (see Environment Variables section above)
-
-3. Start the services:
+2. **Create Environment File**:
 
 ```bash
-docker compose up --build
+   cp apps/backend/.env.example .env.backend
+   cp apps/dashboard/.env.example .env.dashboard
 ```
 
-The services will be available at:
+3. **Configure Environment Variables**:
+   Edit both `.env.backend` and `.env.dashboard` with your Supabase and SMTP credentials.
 
-- Dashboard: http://localhost:3000
-- Backend: http://localhost:3002
+4. **Start Services**:
+   ```bash
+   docker compose up --build -d
+   ```
 
 ### Service Configuration
 
 The docker-compose file sets up two services:
 
-#### Backend Service
+#### Backend Service (cio-backend)
 
-- Runs on port 3002
-- Uses Node.js slim image
-- Mounts the backend code directory
-- Requires environment variables for:
-  - Supabase configuration
-  - Cloudflare R2 for video uploads
-  - SMTP for email notifications
+- **Port**: 3002
+- **Image**: Node.js 18-alpine
+- **Features**: API endpoints, file uploads, email notifications
+- **Dependencies**: Supabase, SMTP, Cloudflare R2 (optional)
 
-#### Dashboard Service
+#### Dashboard Service (cio-dashboard)
 
-- Runs on port 3000
-- Uses Node.js Alpine image
-- Uses pnpm for package management
-- Requires environment variables for:
-  - Supabase configuration
-  - Application settings
-  - Optional API keys (OpenAI, Unsplash)
+- **Port**: 3000
+- **Image**: Node.js 18-alpine
+- **Features**: Web interface, course management, user dashboard
+- **Dependencies**: Supabase, backend connection
 
-Note: We're currently working on including Supabase in the docker-compose file. If you'd like to help with this, please open a PR on GitHub! 👍
+### Docker Commands
+
+```bash
+# Start services
+docker compose up -d
+
+# View logs
+docker compose logs -f
+
+# Stop services
+docker compose down
+
+# Rebuild and restart
+docker compose up --build -d
+
+# View running containers
+docker compose ps
+```
+
+### Access Your Application
+
+- **Dashboard**: http://localhost:3000
+- **Backend API**: http://localhost:3002
+
+---
+
+## Manual Deployment (Work in Progress)
+
+**Prerequisites**: Complete [Supabase Cloud Setup](/contributor-guides/supabase-cloud) first!
+
+Deploy ClassroomIO to your own servers with full control over the infrastructure.
+
+<Callout type="warning" emoji="⚠️">
+  This section is a work in progress. Steps below are a starting point and may change. Prefer
+  Railway or Docker unless you are comfortable managing Node processes, reverse proxies, and env
+  management manually.
+</Callout>
+
+### Server Requirements
+
+- **OS**: Linux (Ubuntu 20.04+ recommended) or any systemd-capable distro
+- **CPU**: 2 vCPU recommended
+- **RAM**: Minimum 2GB (4GB+ recommended for smoother builds)
+- **Storage**: 20GB+ SSD available space
+- **Node.js**: v18.18.0+ (matches engines); verify with `node -v`
+- **pnpm**: v8+ (root `packageManager` uses pnpm@8)
+- **Nginx**: Reverse proxy (optional but recommended)
+
+### Backend Deployment
+
+1. **Clone and Setup**:
+
+   ```bash
+   git clone https://github.com/rotimi-best/classroomio.git
+   cd classroomio/apps/backend
+   pnpm install
+   ```
+
+2. **Configure Environment**:
+
+   ```bash
+   cp .env.example .env
+   # Edit .env with your credentials
+   ```
+
+3. **Build and Start**:
+   ```bash
+   pnpm run build
+   node dist/index.js
+   ```
+
+### Dashboard Deployment
+
+1. **Setup Dashboard**:
+
+   ```bash
+   cd ../dashboard
+   pnpm install
+   ```
+
+2. **Configure Environment**:
+
+   ```bash
+   cp .env.example .env
+   # Edit .env with your credentials
+   ```
+
+3. **Build and Start**:
+   ```bash
+   pnpm run build
+   node build
+   ```
+
+### Nginx Configuration (Optional)
+
+```nginx
+server {
+    listen 80;
+    server_name yourdomain.com;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    location /api {
+        proxy_pass http://localhost:3002;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+---
+
+## Post-Deployment Setup
+
+### 1. Create Admin Account
+
+1. **Access Dashboard**: Navigate to your deployed dashboard
+2. **Sign Up**: Create your first account (this becomes the admin)
+3. **Verify Email**: Check your email for verification
+4. **Login**: Access your admin dashboard
+
+### 2. Configure Organization
+
+1. **Organization Setup**: Complete your organization profile
+2. **Domain Configuration**: Set your custom domain if applicable
+3. **SMTP Verification**: Test email functionality
+
+### 3. Test Core Features
+
+- User registration and authentication
+- Course creation and management
+- File uploads and storage
+- Email notifications
+- Student dashboard access
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+**"Supabase Connection Failed"**
+
+- Verify environment variables are correct
+- Check Supabase project is active
+- Ensure IP allowlist includes your server
+
+**"SMTP Authentication Failed"**
+
+- Verify SMTP credentials
+- Check port and security settings
+- Test SMTP configuration in Supabase
+
+**"Dashboard Can't Connect to Backend"**
+
+- Verify `PUBLIC_SERVER_URL` is correct
+- Check backend service is running
+- Test backend health endpoint
+
+**"Database Schema Errors"**
+
+- Ensure Supabase schema is deployed
+- Check migration status
+- Verify table permissions
+
+### Getting Help
+
+1. **Check Logs**: Review service logs for error details
+2. **Verify Configuration**: Double-check all environment variables
+3. **Community Support**: Join our [Discord](https://dub.sh/ciodiscord)
+4. **GitHub Issues**: Open an [issue](https://github.com/rotimi-best/classroomio/issues)
+
+---
+
+## Additional Resources
+
+- **[Supabase Cloud Setup](/contributor-guides/supabase-cloud)** - Required first step
+- **[ClassroomIO GitHub](https://github.com/rotimi-best/classroomio)** - Source code
+- **[Railway Documentation](https://docs.railway.app)** - Deployment platform
+- **[Docker Documentation](https://docs.docker.com)** - Container platform
+- **[Discord Community](https://dub.sh/ciodiscord)** - Get help and connect
+
+---
+
+<Callout type="info" emoji="💡">
+  **Pro Tip**: Start with Railway for quick testing, then migrate to Docker or manual deployment for
+  production use.
+</Callout>

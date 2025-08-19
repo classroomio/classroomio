@@ -3,6 +3,10 @@
   "devs": "Developers Guide",
   "gitpod": "Gitpod setup",
   "supabase-cloud": "Supabase Cloud Setup",
+  "supabase-local-dev": "Supabase Local Development",
+  "testing-your-setup": "Testing Your Setup",
+  "troubleshooting-self-hosting": "Troubleshooting",
+  "environment-variables-reference": "Environment Variables",
   "design": "Designers Guide",
   "student-dashboard": "Student Dashboard",
   "cloudflare-setup": "Cloudflare Setup"
