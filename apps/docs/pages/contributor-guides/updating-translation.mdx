@@ -1,0 +1,233 @@
+# Updating Translations with Crowdin
+
+This guide explains how to set up and use Crowdin for managing translations in ClassroomIO.
+
+## What is Crowdin?
+
+Crowdin is a cloud-based localization management platform that helps teams translate and localize their software. It provides:
+
+- Collaborative translation environment
+- Translation memory for consistency
+- Quality assurance tools
+- Integration with development workflows
+
+## Prerequisites
+
+- Node.js and pnpm installed
+- Access to ClassroomIO Crowdin project
+- Crowdin Personal Access Token
+
+## Setup
+
+### 1. Install Crowdin CLI
+
+```bash
+# Install globally using pnpm
+pnpm add -g @crowdin/cli
+
+# Or using npm
+npm install -g @crowdin/cli
+```
+
+### 2. Get Your Crowdin Credentials
+
+1. Log in to [Crowdin](https://crowdin.com)
+2. Navigate to your profile settings
+3. Generate a Personal Access Token
+4. Note your Project ID from the project settings
+
+### 3. Set Environment Variables
+
+Add these to your shell profile (`.bashrc`, `.zshrc`, etc.):
+
+```bash
+export CROWDIN_PROJECT_ID="your-project-id"
+export CROWDIN_PERSONAL_TOKEN="your-personal-access-token"
+```
+
+Or create a `.env` file in the dashboard directory:
+
+```bash
+# In apps/dashboard/.env
+CROWDIN_PROJECT_ID=your-project-id
+CROWDIN_PERSONAL_TOKEN=your-personal-access-token
+```
+
+### 4. Configuration File
+
+The `crowdin.yml` file in `apps/dashboard/` is already configured to:
+
+- Upload English source files
+- Download translations for all supported languages
+- Maintain file structure
+
+## Usage
+
+### Uploading Source Files
+
+When you add new translation keys to English files:
+
+```bash
+# Navigate to dashboard directory
+cd apps/dashboard
+
+# Upload source files to Crowdin
+crowdin upload sources
+```
+
+### Downloading Translations
+
+After translators complete their work:
+
+```bash
+# Download all translations
+crowdin download
+
+# Download specific language
+crowdin download -l es
+```
+
+### Common Commands
+
+```bash
+# List all files in the project
+crowdin file list
+
+# Check translation progress
+crowdin status
+
+# Upload and download in one command
+crowdin upload sources && crowdin download
+```
+
+## Translation File Structure
+
+ClassroomIO uses the following translation structure:
+
+```
+apps/dashboard/src/lib/utils/translations/
+├── en.json     # English (source)
+├── es.json     # Spanish
+├── fr.json     # French
+├── de.json     # German
+├── hi.json     # Hindi
+├── pl.json     # Polish
+├── pt.json     # Portuguese
+├── ru.json     # Russian
+└── vi.json     # Vietnamese
+```
+
+## Workflow for Contributors
+
+### Adding New Translation Keys
+
+1. Add the English text to `en.json`:
+
+   ```json
+   {
+     "course": {
+       "new_feature": "This is a new feature"
+     }
+   }
+   ```
+
+2. Upload to Crowdin:
+
+   ```bash
+   cd apps/dashboard
+   crowdin upload sources
+   ```
+
+3. Notify translators in the project
+
+### Using Translations in Code
+
+```typescript
+import { t } from '$lib/utils/functions/translations';
+
+// In Svelte components
+$t('course.new_feature');
+```
+
+### Updating Existing Translations
+
+1. Modify the English source in `en.json`
+2. Upload sources: `crowdin upload sources`
+3. Existing translations will be marked for review
+
+## Best Practices
+
+### For Developers
+
+- Always add new keys to English first
+- Use descriptive key names: `course.assignment.create_button`
+- Avoid hardcoded strings in components
+- Upload sources regularly
+
+### For Translators
+
+- Use the Crowdin web interface for best experience
+- Maintain consistency with existing translations
+- Ask questions using Crowdin's comment system
+- Review context provided for each string
+
+### Key Naming Conventions
+
+```json
+{
+  "page": {
+    "section": {
+      "element": "Translation text"
+    }
+  }
+}
+```
+
+Example:
+
+```json
+{
+  "dashboard": {
+    "course": {
+      "create_button": "Create Course",
+      "edit_title": "Edit Course Title"
+    }
+  }
+}
+```
+
+## Troubleshooting
+
+### Environment Variables Not Working
+
+If you get "project_id must be numeric" error:
+
+1. Ensure environment variables are set:
+
+   ```bash
+   echo $CROWDIN_PROJECT_ID
+   echo $CROWDIN_PERSONAL_TOKEN
+   ```
+
+2. Don't use `sudo` with crowdin commands
+3. Restart your terminal after setting environment variables
+
+### File Not Found Errors
+
+- Check that the file paths in `crowdin.yml` match your actual file structure
+- Ensure the translation files exist before uploading
+
+### Permission Errors
+
+- Run crowdin commands without `sudo`
+- Check file permissions in the translations directory
+
+## Getting Help
+
+- Check [Crowdin CLI documentation](https://crowdin.github.io/crowdin-cli/)
+- Ask in the ClassroomIO Discord
+- Create an issue in the GitHub repository
+
+## Contributing Translations
+
+Want to help translate ClassroomIO? Contact the maintainers for access to the Crowdin project. We welcome contributions in all
