@@ -1,0 +1,164 @@
+# Internationalization (i18n)
+
+ClassroomIO supports multiple languages through our internationalization (i18n) system. This makes our application accessible to users worldwide. As a contributor, you play a key role in making new features available in all supported languages.
+
+## Prerequisites
+
+Before working with translations, you'll need to set up the Google Translate API:
+
+1. **Get a RapidAPI Key**:
+
+   - Sign up at [RapidAPI](https://rapidapi.com)
+   - Subscribe to the [Google Translate API](https://rapidapi.com/googlecloud/api/google-translate1)
+   - Copy your API key from the dashboard
+
+2. **Add to Environment Variables**:
+   ```bash
+   # Add to your .env file or shell profile
+   export RAPID_API_KEY=your-rapidapi-key-here
+   ```
+
+This key is required to run the translation script that automatically translates new keys across all language files.
+
+## Adding Translations for New Features
+
+When implementing new features, follow these guidelines:
+
+### Add English Source Strings
+
+- Place all user-facing text in `apps/dashboard/src/lib/utils/translations/en.json`
+- Organize strings according to the existing structure
+- Use descriptive, hierarchical keys that identify the feature and context
+- Example: `"course.assignment.createSuccess": "Assignment created successfully"`
+
+### Follow i18n Formatting Standards
+
+- **Variables**: `{variableName}`
+- **Pluralization**: `{count, plural, =0 {items} one {item} other {items}}`
+- **Avoid string concatenation** to ensure proper translation
+
+### Quality Checklist
+
+- All visible UI text is externalized (not hardcoded)
+- Strings are organized in logical sections
+- Context is clear for translators
+- The feature works properly with the default language
+
+## Translation File Structure
+
+ClassroomIO uses the following translation structure:
+
+```
+apps/dashboard/src/lib/utils/translations/
+├── en.json     # English (source)
+├── es.json     # Spanish
+├── fr.json     # French
+├── de.json     # German
+├── hi.json     # Hindi
+├── pl.json     # Polish
+├── pt.json     # Portuguese
+├── ru.json     # Russian
+└── vi.json     # Vietnamese
+```
+
+## Using Translations in Code
+
+```typescript
+import { t } from '$lib/utils/functions/translations';
+
+// In Svelte components
+$t('course.assignment.createSuccess');
+$t('dashboard.welcome');
+```
+
+## Updating Translation Files
+
+### Adding New Translations
+
+1. **Update the English source file**:
+
+   ```bash
+   # Edit apps/dashboard/src/lib/utils/translations/en.json
+   ```
+
+2. **Add your translation key following the existing format**:
+
+   ```json
+   {
+     "course": {
+       "assignment": {
+         "createSuccess": "Assignment created successfully"
+       }
+     }
+   }
+   ```
+
+3. **Run the translation script**:
+   ```bash
+   cd apps/dashboard
+   pnpm run script:translate
+   ```
+
+This automatically translates the new keys across all language files.
+
+### Adding a New Language
+
+1. **Create the translation file**:
+
+   ```bash
+   cd apps/dashboard/src/lib/utils/translations
+   touch your-language-code.json  # e.g., ja.json
+   ```
+
+2. **Update the translation script**:
+
+   ```javascript
+   // Edit apps/dashboard/scripts/translate.cjs
+   // Add your language to the languageFiles object
+   ```
+
+3. **Run the translation script**:
+   ```bash
+   cd apps/dashboard
+   pnpm run script:translate
+   ```
+
+## Key Naming Conventions
+
+```json
+{
+  "page": {
+    "section": {
+      "element": "Translation text"
+    }
+  }
+}
+```
+
+**Example**:
+
+```json
+{
+  "dashboard": {
+    "course": {
+      "createButton": "Create Course",
+      "editTitle": "Edit Course Title"
+    }
+  }
+}
+```
+
+## Best Practices
+
+### For Developers
+
+- Only add new keys to English then run the translation script to update every other translation file
+- Use descriptive key names: `course.assignment.createButton`
+- Avoid hardcoded strings in components
+- Test with different languages to ensure UI compatibility
+
+### Translation Guidelines
+
+- **Keep the structure**: Maintain the same nested JSON structure as `en.json`
+- **Preserve variables**: Don't translate content inside `{variable}`
+  ntribute, see
