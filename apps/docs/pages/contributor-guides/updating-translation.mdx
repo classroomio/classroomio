@@ -196,6 +196,42 @@ Example:
 }
 ```
 
+## Contributing Translations
+
+Want to help translate ClassroomIO into your language? Here's how you can contribute:
+
+### Adding a New Language
+
+1. **Create the translation file**
+
+2. **Copy the English structure**
+
+3. **Go to /apps/dashboard/scripts/translate.cjs**
+
+4. **Add the file to the languageFiles object alongside it's path following the existing format**
+
+5. **Open your terminal and cd into the /dashboard dir**
+
+6. **Run this command and watch it translate every single translation file in /dashboard/src/lib/utils/translations**:
+
+```
+  pnpm run script:translate
+```
+
+### Updating translation file
+
+1. **Go to /dashboard/src/lib/utils/translations/en.json (this is the file you need to update)**
+
+2. **Add the object key and value, follow the existing format**
+
+3. **Open your terminal and cd into the /dashboard dir**
+
+4. **Run this command and watch it translate every single translation file in /dashboard/src/lib/utils/translations**:
+
+```
+  pnpm run script:translate
+```
+
 ## Troubleshooting
 
 ### Environment Variables Not Working
