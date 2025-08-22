@@ -64,32 +64,10 @@ Before running tests, ensure you have:
 
 ### 2. Backend API Testing
 
-#### Health Check Endpoint
+#### Server is running
 
-```bash
-# Test basic connectivity
-curl https://your-backend-url.railway.app/health
-
-# Expected response
-{
-  "status": "ok",
-  "timestamp": "2024-01-01T00:00:00.000Z",
-  "version": "1.0.0"
-}
-```
-
-#### Supabase Connection Test
-
-```bash
-# Test if backend can connect to Supabase
-curl https://your-backend-url.railway.app/api/test/supabase
-
-# Expected response
-{
-  "status": "connected",
-  "tables": ["profiles", "courses", "lessons", ...]
-}
-```
+1. Start backend server and server is listening
+2. check to make sure all api routes are available and listed on the terminal
 
 #### SMTP Test
 
@@ -229,7 +207,6 @@ Use this checklist to track your testing progress:
 
 ### Backend API
 
-- Health endpoint responds
 - Supabase connection working
 - SMTP functionality working
 - CORS configured correctly
@@ -287,9 +264,8 @@ If tests fail and you need assistance:
 
 Your setup is working correctly when:
 
-- All tests pass without errors
 - Users can register and login
-- Dashboard loads and functions
+- Dashboard loads
 - Backend API responds correctly
 - Emails are sent successfully
 - Database operations work

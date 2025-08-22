@@ -8,14 +8,13 @@ This guide provides solutions to common problems encountered when self-hosting C
 
 ### Setup Won't Work - Common Root Causes
 
-**Problem**: "Nothing works, I'm getting errors everywhere"
 **Most Likely Causes**:
 
 1. **Incomplete Supabase Setup**: You skipped the [Supabase Cloud Setup](/contributor-guides/supabase-cloud)
 2. **Wrong Environment Variables**: Missing or incorrect Supabase credentials
 3. **SMTP Not Configured**: Email functionality will fail without proper SMTP
 
-**Solution**:
+**Possible fix**:
 
 - Complete the [Supabase Cloud Setup](/contributor-guides/supabase-cloud) first
 - Verify all environment variables are correct
@@ -25,13 +24,11 @@ This guide provides solutions to common problems encountered when self-hosting C
 
 ### "Invalid JWT" or "Unauthorized" Errors
 
-**Symptoms**:
-
 - Users can't login
 - API calls fail with 401 errors
 - Dashboard shows authentication errors
 
-**Causes & Solutions**:
+**Possible fix**:
 
 #### 1. Incorrect Supabase Keys
 
@@ -42,15 +39,11 @@ PUBLIC_SUPABASE_ANON_KEY=your_anon_public_key
 PRIVATE_SUPABASE_SERVICE_ROLE=your_service_role_key
 ```
 
-**Fix**:
-
 - Go to Supabase Dashboard → Settings → API
 - Copy the exact values (no extra spaces)
 - Ensure URL doesn't have trailing slashes
 
 #### 2. Wrong Site URL in Supabase
-
-**Fix**:
 
 - Go to Supabase Dashboard → Authentication → Settings
 - Update Site URL to match your deployment domain
@@ -58,25 +51,19 @@ PRIVATE_SUPABASE_SERVICE_ROLE=your_service_role_key
 
 #### 3. JWT Expiry Issues
 
-**Fix**:
-
 - Check JWT expiry settings in Supabase
 - Default is usually 1 hour - increase if needed
 - Verify timezone settings on your server
 
 ### "Email Confirmation Required" Errors
 
-**Symptoms**:
-
 - Users can't complete signup
 - Stuck on email verification step
 - No emails being sent
 
-**Causes & Solutions**:
+**Possible fix**:
 
 #### 1. SMTP Not Configured in Supabase
-
-**Fix**:
 
 - Go to Supabase Dashboard → Authentication → Settings → SMTP
 - Enable "Custom SMTP"
@@ -85,15 +72,11 @@ PRIVATE_SUPABASE_SERVICE_ROLE=your_service_role_key
 
 #### 2. Email Confirmations Still Enabled
 
-**Fix**:
-
 - Go to Supabase Dashboard → Authentication → Settings
 - Disable "Enable email confirmations"
 - Save changes
 
 #### 3. SMTP Credentials Wrong
-
-**Fix**:
 
 - Verify SMTP host, port, username, password
 - Check if your provider requires app-specific passwords
@@ -103,17 +86,13 @@ PRIVATE_SUPABASE_SERVICE_ROLE=your_service_role_key
 
 ### "Table Does Not Exist" Errors
 
-**Symptoms**:
-
 - Database operations fail
 - "relation does not exist" errors
 - Missing tables in Supabase
 
-**Causes & Solutions**:
+**Possible fix**:
 
 #### 1. Schema Not Deployed
-
-**Fix**:
 
 ```bash
 # In your project directory
@@ -123,8 +102,6 @@ supabase db push
 ```
 
 #### 2. Wrong Project Linked
-
-**Fix**:
 
 ```bash
 # Check current project
@@ -136,21 +113,17 @@ supabase link --project-ref CORRECT_PROJECT_REF
 
 #### 3. Migration Failed
 
-**Fix**:
-
 - Check Supabase Dashboard → Database → Migrations
 - Look for failed migrations
-- Run `supabase db reset` (⚠️ **WARNING**: This deletes all data)
+- Run `supabase db reset` (**WARNING**: This deletes all data)
 
 ### "Row Level Security Policy" Errors
-
-**Symptoms**:
 
 - Users can't access their own data
 - "new row violates row-level security policy" errors
 - Permission denied errors
 
-**Fix**:
+**Possible fix**:
 
 - Go to Supabase Dashboard → Authentication → Policies
 - Verify RLS policies exist for main tables
@@ -160,17 +133,13 @@ supabase link --project-ref CORRECT_PROJECT_REF
 
 ### "Cannot Connect to Backend" Errors
 
-**Symptoms**:
-
 - Dashboard can't reach backend API
 - Network errors in browser console
 - Backend health checks fail
 
-**Causes & Solutions**:
+**Possible fix**:
 
 #### 1. Wrong Backend URL
-
-**Fix**:
 
 ```bash
 # In dashboard environment
@@ -203,17 +172,13 @@ PUBLIC_SERVER_URL=https://your-backend-url.railway.app
 
 ### "Supabase Connection Failed" Errors
 
-**Symptoms**:
-
 - Backend can't connect to Supabase
 - Database operations timeout
 - Connection refused errors
 
-**Causes & Solutions**:
+**Possible fix**:
 
 #### 1. Supabase Project Inactive
-
-**Fix**:
 
 - Check Supabase Dashboard
 - Ensure project is not paused
@@ -221,15 +186,11 @@ PUBLIC_SERVER_URL=https://your-backend-url.railway.app
 
 #### 2. IP Restrictions
 
-**Fix**:
-
 - Check if IP allowlist is enabled
 - Add your server IP to allowlist
 - Or disable IP restrictions temporarily
 
 #### 3. Rate Limiting
-
-**Fix**:
 
 - Check Supabase usage limits
 - Upgrade plan if needed
@@ -239,17 +200,13 @@ PUBLIC_SERVER_URL=https://your-backend-url.railway.app
 
 ### "SMTP Authentication Failed" Errors
 
-**Symptoms**:
-
 - Email sending fails
 - SMTP connection errors
 - No emails received
 
-**Causes & Solutions**:
+**Possible fix**:
 
 #### 1. Wrong SMTP Credentials
-
-**Fix**:
 
 ```bash
 # Verify these in your environment
@@ -262,15 +219,11 @@ SMTP_SENDER=your_email@gmail.com
 
 #### 2. Gmail App-Specific Password
 
-**Fix**:
-
 - Enable 2FA on Google account
 - Generate app-specific password
 - Use that password instead of regular password
 
 #### 3. SMTP Provider Issues
-
-**Fix**:
 
 - Check provider status page
 - Verify account is active
@@ -278,13 +231,11 @@ SMTP_SENDER=your_email@gmail.com
 
 ### "Email Not Sent" Issues
 
-**Symptoms**:
-
 - No error messages but emails not received
 - Emails in spam folder
 - Delivery delays
 
-**Fix**:
+**Possible fix**:
 
 - Check spam/junk folders
 - Verify sender email is correct
@@ -301,7 +252,7 @@ SMTP_SENDER=your_email@gmail.com
 - Port conflicts
 - Environment variable errors
 
-**Causes & Solutions**:
+**Possible fix**:
 
 #### 1. Port Conflicts
 
@@ -317,8 +268,6 @@ netstat -tulpn | grep :3002
 
 #### 2. Environment File Issues
 
-**Fix**:
-
 ```bash
 # Ensure environment files exist
 ls -la .env*
@@ -328,8 +277,6 @@ chmod 600 .env*
 ```
 
 #### 3. Docker Compose Issues
-
-**Fix**:
 
 ```bash
 # Clean up and restart
@@ -342,13 +289,11 @@ docker compose logs -f
 
 ### "Build Failed" Errors
 
-**Symptoms**:
-
 - Docker build process fails
 - Package installation errors
 - Build timeout
 
-**Fix**:
+**Possible fix**:
 
 - Check Docker has enough resources (RAM/CPU)
 - Clear Docker cache: `docker system prune -a`
@@ -359,17 +304,13 @@ docker compose logs -f
 
 ### "Deployment Failed" Errors
 
-**Symptoms**:
-
 - Railway deployment won't complete
 - Build errors
 - Service won't start
 
-**Causes & Solutions**:
+**Possible fix**:
 
 #### 1. Environment Variable Issues
-
-**Fix**:
 
 - Verify all required variables are set
 - Check for typos in variable names
@@ -377,15 +318,11 @@ docker compose logs -f
 
 #### 2. Build Errors
 
-**Fix**:
-
 - Check Railway build logs
 - Verify Node.js version compatibility
 - Check package.json scripts
 
 #### 3. Service Dependencies
-
-**Fix**:
 
 - Deploy backend first
 - Wait for backend to be healthy
@@ -394,13 +331,11 @@ docker compose logs -f
 
 ### "Service Unhealthy" Errors
 
-**Symptoms**:
-
 - Railway shows service as unhealthy
 - Health checks fail
 - Service won't respond
 
-**Fix**:
+**Possible fix**:
 
 - Check service logs in Railway
 - Verify health endpoint exists

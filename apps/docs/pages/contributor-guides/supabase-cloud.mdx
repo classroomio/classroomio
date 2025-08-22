@@ -32,9 +32,7 @@ By the end of this guide, you'll have:
 
 ## Prerequisites
 
-Before starting, ensure you have:
-
-- A Supabase account ([sign up here](https://supabase.com))
+Before starting any of this steps, ensure you have a Supabase account ([sign up here](https://supabase.com))
 
 ## Step-by-Step Setup
 
@@ -52,7 +50,7 @@ Before starting, ensure you have:
 
 <Image src={NewProject} alt="New project in supabase" quality="100" />
 
-<Callout type="warning" emoji="⚠️">
+<Callout type="warning">
   **IMPORTANT**: Save your database password immediately! Supabase cannot recover it for security
   reasons.
 </Callout>
@@ -90,7 +88,7 @@ backend service, so configuring Supabase SMTP is optional.
 
 <Image src={SmtpSettings} alt="SMTP Settings" quality="100" />
 
-<Callout type="info" emoji="ℹ️">
+<Callout type="info">
   Our application sends emails through the backend (SMTP or Zoho). Supabase SMTP settings affect
   only emails sent by Supabase itself. Learn more: https://supabase.com/docs/guides/auth/auth-smtp
 </Callout>
@@ -106,7 +104,7 @@ PUBLIC_SUPABASE_ANON_KEY=your_anon_public_key_here
 PRIVATE_SUPABASE_SERVICE_ROLE=your_service_role_key_here
 ```
 
-<Callout type="warning" emoji="🔒">
+<Callout type="warning">
   **Security**: Keep these credentials secure and never commit them to version control.
 </Callout>
 

@@ -10,9 +10,11 @@ This comprehensive guide will help you self-host ClassroomIO with step-by-step i
 
 ## Overview
 
+In this page, you will be guided on how to configure supabase cloud, self host ClassroomIO, where to access environmental variables and how to deploy your application using our railway template, docker or your own custom servers
+
 ### Architecture
 
-ClassroomIO consists of three main components:
+ClassroomIO follows a well structured monorepo file architecture but major components needed for development and deployment are:
 
 - [apps/backend](https://github.com/rotimi-best/classroomio/tree/main/apps/backend) - Hono API server
 - [apps/dashboard](https://github.com/rotimi-best/classroomio/tree/main/apps/dashboard) - SvelteKit admin dashboard + LMS
@@ -20,7 +22,7 @@ ClassroomIO consists of three main components:
 
 ### Prerequisites
 
-**Before proceeding with any deployment method, you MUST complete these steps:**
+The following steps must be completed before deployment can be done
 
 ### 1. Supabase Cloud Setup (Required)
 
@@ -47,21 +49,21 @@ SMTP_PASSWORD=your_smtp_password
 SMTP_SENDER=your_sender_email
 ```
 
-<Callout type="info" emoji="ℹ️">
+<Callout type="info">
   Learn more about setting up a custom SMTP server
   [here](https://supabase.com/docs/guides/auth/auth-smtp)
 </Callout>
 
 **Popular SMTP Providers:**
 
-- **Gmail**: Use app-specific passwords
+- **Gmail**(recommended): Use app-specific passwords
 - **SendGrid**: Free tier available
 - **Mailgun**: Developer-friendly
 - **Your own SMTP server**
 
 ### 3. Cloudflare R2 (Optional)
 
-For video uploads in the course builder. Not required for basic functionality.
+All our videos and image assets are managed and uploaded on cloudfare for secure and fast retrieval in the courses. This variables are not required for the basic functionality but are recommended for a full experience.
 
 ```bash
 # Optional - Cloudflare R2 for video uploads
@@ -72,9 +74,7 @@ CLOUDFLARE_SECRET_ACCESS_KEY=your_secret_key
 CLOUDFLARE_BUCKET_DOMAIN=your_bucket_domain
 ```
 
-<Callout type="info" emoji="ℹ️">
-  The backend uses the bucket name "videos" by default.
-</Callout>
+<Callout type="info">The backend uses the bucket name "videos" by default.</Callout>
 
 ---
 
@@ -90,9 +90,9 @@ Decide how you want to run ClassroomIO:
 
 ## Deployment
 
-Choose your preferred deployment method:
+This steps will guide you on how to deploy ClassroomIO, using your preferred deployment method:
 
-### Option 1: Railway (Recommended for Beginners)
+### Option 1: Railway (Recommended)
 
 **Fastest deployment with our pre-configured template**
 
@@ -167,6 +167,7 @@ PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 PUBLIC_SUPABASE_ANON_KEY=your_anon_public_key
 PRIVATE_SUPABASE_SERVICE_ROLE=your_service_role_key
 
+
 # Required - Backend Connection
 PUBLIC_SERVER_URL=https://your-backend-service.railway.app
 
@@ -176,6 +177,7 @@ OPENAI_API_KEY=your_openai_key
 # Optional - Additional Features
 UNSPLASH_API_KEY=your_unsplash_key
 PUBLIC_IP_REGISTRY_KEY=your_ip_registry_key
+PRIVATE_APP_SUBDOMAINS=your_subdomains
 ```
 
 <Callout type="info" emoji="ℹ️">
@@ -209,6 +211,8 @@ PUBLIC_IP_REGISTRY_KEY=your_ip_registry_key
 
 Deploy ClassroomIO using Docker containers on your own infrastructure.
 
+To enable deployment using docker, we provide a `bash docker-compose.yaml` configuration file to deploy the dashboard and backend services.
+
 ### Quick Start
 
 1. **Clone the Repository**:
@@ -219,14 +223,15 @@ cd classroomio
 ```
 
 2. **Create Environment File**:
+   You can manually create an .env file or use the command below to quickly create both .env files needed.
 
 ```bash
-   cp apps/backend/.env.example .env.backend
-   cp apps/dashboard/.env.example .env.dashboard
+   cp apps/backend/.env.example .env
+   cp apps/dashboard/.env.example .env
 ```
 
 3. **Configure Environment Variables**:
-   Edit both `.env.backend` and `.env.dashboard` with your Supabase and SMTP credentials.
+   Edit both `.env` files in the dashboard and backend with your Supabase, SMTP credentials and other optional variables.
 
 4. **Start Services**:
    ```bash
@@ -253,8 +258,10 @@ The docker-compose file sets up two services:
 
 ### Docker Commands
 
+If you are not really familiar with docker, here are some quick docker commands for you.
+
 ```bash
-# Start services
+# Start services in detached mode
 docker compose up -d
 
 # View logs
@@ -263,7 +270,7 @@ docker compose logs -f
 # Stop services
 docker compose down
 
-# Rebuild and restart
+# Rebuild and restart in detached mode
 docker compose up --build -d
 
 # View running containers
@@ -283,10 +290,10 @@ docker compose ps
 
 Deploy ClassroomIO to your own servers with full control over the infrastructure.
 
-<Callout type="warning" emoji="⚠️">
-  This section is a work in progress. Steps below are a starting point and may change. Prefer
-  Railway or Docker unless you are comfortable managing Node processes, reverse proxies, and env
-  management manually.
+<Callout type="warning">
+  This section is a work in progress. Steps below are a starting point and may not be accurate for
+  your use case. refer Railway or Docker unless you are comfortable managing Node processes, reverse
+  proxies, and env management manually.
 </Callout>
 
 ### Server Requirements
@@ -305,7 +312,7 @@ Deploy ClassroomIO to your own servers with full control over the infrastructure
 
    ```bash
    git clone https://github.com/rotimi-best/classroomio.git
-   cd classroomio/apps/backend
+   cd ./apps/backend
    pnpm install
    ```
 
@@ -327,7 +334,7 @@ Deploy ClassroomIO to your own servers with full control over the infrastructure
 1. **Setup Dashboard**:
 
    ```bash
-   cd ../dashboard
+   cd ./apps/dashboard
    pnpm install
    ```
 
@@ -376,7 +383,7 @@ server {
 ### 1. Create Admin Account
 
 1. **Access Dashboard**: Navigate to your deployed dashboard
-2. **Sign Up**: Create your first account (this becomes the admin)
+2. **Sign Up**: Create your account (this becomes the admin)
 3. **Verify Email**: Check your email for verification
 4. **Login**: Access your admin dashboard
 
@@ -389,7 +396,7 @@ server {
 ### 3. Test Core Features
 
 - User registration and authentication
-- Course creation and management
+- Course and lesson creation
 - File uploads and storage
 - Email notifications
 - Student dashboard access
@@ -416,7 +423,6 @@ server {
 
 - Verify `PUBLIC_SERVER_URL` is correct
 - Check backend service is running
-- Test backend health endpoint
 
 **"Database Schema Errors"**
 
