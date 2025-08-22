@@ -284,11 +284,11 @@ docker compose ps
 
 ---
 
-## Manual Deployment (Work in Progress)
+## Manual Deployment
 
 **Prerequisites**: Complete [Supabase Cloud Setup](/contributor-guides/supabase-cloud) first!
 
-Deploy ClassroomIO to your own servers with full control over the infrastructure.
+Deploy ClassroomIO to your own servers with full control over the infrastructure. This approach is ideal for production deployments on VPS services, cloud platforms, or dedicated servers.
 
 <Callout type="warning">
   This section is a work in progress. Steps below are a starting point and may not be accurate for
@@ -306,74 +306,344 @@ Deploy ClassroomIO to your own servers with full control over the infrastructure
 - **pnpm**: v8+ (root `packageManager` uses pnpm@8)
 - **Nginx**: Reverse proxy (optional but recommended)
 
-### Backend Deployment
+### Deployment Options
 
-1. **Clone and Setup**:
+Choose your preferred deployment method:
 
-   ```bash
-   git clone https://github.com/rotimi-best/classroomio.git
-   cd ./apps/backend
-   pnpm install
-   ```
+#### Option 1: VPS Services (DigitalOcean, Linode, Vultr)
 
-2. **Configure Environment**:
+- **Pros**: Full control, predictable pricing, good performance
+- **Cons**: Manual setup, requires server management knowledge
+- **Best for**: Developers comfortable with Linux administration
 
-   ```bash
-   cp .env.example .env
-   # Edit .env with your credentials
-   ```
+#### Option 2: Cloud Platforms (AWS, Google Cloud, Azure)
 
-3. **Build and Start**:
-   ```bash
-   pnpm run build
-   node dist/index.js
-   ```
+- **Pros**: Scalable, managed services, enterprise features
+- **Cons**: Complex pricing, vendor lock-in, learning curve
+- **Best for**: Production deployments, enterprise use cases
 
-### Dashboard Deployment
+#### Option 3: Dedicated Servers (OVH, Hetzner, Contabo)
 
-1. **Setup Dashboard**:
+- **Pros**: Maximum performance, full control, no virtualization overhead
+- **Cons**: Higher cost, manual maintenance, hardware management
+- **Best for**: High-traffic applications, compliance requirements
 
-   ```bash
-   cd ./apps/dashboard
-   pnpm install
-   ```
+### VPS Deployment (DigitalOcean, Linode, Vultr)
 
-2. **Configure Environment**:
+#### 1. Server Setup
 
-   ```bash
-   cp .env.example .env
-   # Edit .env with your credentials
-   ```
+Install all necessary software and tools to run ClassroomIO on your server.
 
-3. **Build and Start**:
-   ```bash
-   pnpm run build
-   node build
-   ```
+```bash
+# Update system packages
+sudo apt update && sudo apt upgrade -y
 
-### Nginx Configuration (Optional)
+# Install Node.js 18.x
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Install pnpm globally
+sudo npm install -g pnpm
+
+# Install Nginx
+sudo apt install nginx -y
+
+# Install PM2 globally
+sudo npm install -g pm2
+
+# Install Git
+sudo apt install git -y
+```
+
+#### 2. Application Deployment
+
+Clone ClassroomIO and prepare both backend and dashboard for production.
+
+```bash
+# Clone the repository
+git clone https://github.com/rotimi-best/classroomio.git
+cd classroomio
+
+# Setup backend
+cd apps/backend
+cp .env.example .env
+# Edit .env with your credentials
+pnpm install
+pnpm run build
+
+# Setup dashboard
+cd ../dashboard
+cp .env.example .env
+# Edit .env with your credentials
+pnpm install
+pnpm run build
+```
+
+#### 3. Process Management with PM2
+
+Configure PM2 to keep your applications running continuously and auto-restart on errors.
+
+```bash
+# Start backend service
+cd apps/backend
+pm2 start dist/index.js --name "cio-backend"
+
+# Start dashboard service
+cd ../dashboard
+pm2 start build --name "cio-dashboard"
+
+# Save PM2 configuration
+pm2 save
+pm2 startup
+
+# Check service status
+pm2 status
+pm2 logs
+```
+
+#### 4. Nginx Configuration (optional)
+
+Set up Nginx as reverse proxy to handle web traffic and route requests to correct services.
+
+```bash
+# Create Nginx configuration
+sudo nano /etc/nginx/sites-available/classroomio
+```
 
 ```nginx
 server {
     listen 80;
-    server_name yourdomain.com;
+    server_name yourdomain.com www.yourdomain.com;
 
+    # Dashboard (Frontend)
     location / {
         proxy_pass http://localhost:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
         proxy_cache_bypass $http_upgrade;
     }
 
+    # Backend API
     location /api {
         proxy_pass http://localhost:3002;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
     }
+
 }
+```
+
+```bash
+# Enable the site
+sudo ln -s /etc/nginx/sites-available/classroomio /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+#### 5. SSL Certificate with Let's Encrypt
+
+Secure your website with HTTPS using free SSL certificates from Let's Encrypt.
+
+```bash
+# Install Certbot
+sudo apt install certbot python3-certbot-nginx -y
+
+# Obtain SSL certificate
+sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+
+# Auto-renewal setup
+sudo crontab -e
+# Add this line: 0 12 * * * /usr/bin/certbot renew --quiet
+```
+
+### Cloud Platform Deployment (AWS, Google Cloud, Azure)
+
+#### AWS EC2 Deployment
+
+Deploy on Amazon's cloud infrastructure with additional AWS-specific services.
+
+```bash
+# Connect to your EC2 instance
+ssh -i your-key.pem ubuntu@your-ec2-ip
+
+# Follow VPS deployment steps above
+# Additional AWS-specific considerations:
+
+# Security Groups: Open ports 80, 443, 22
+# Elastic IP: Assign static IP for your domain
+# Load Balancer: Use ALB for high availability
+# Auto Scaling: Configure for traffic spikes
+```
+
+#### Google Cloud Platform
+
+Use Google's cloud infrastructure with strong integration and competitive pricing.
+
+```bash
+# Connect to your Compute Engine instance
+gcloud compute ssh your-instance-name --zone=your-zone
+
+# Follow VPS deployment steps above
+# Additional GCP-specific considerations:
+
+# Firewall rules: Allow HTTP/HTTPS traffic
+# Load balancer: Use Cloud Load Balancing
+# Managed instance groups: For auto-scaling
+```
+
+#### Azure Virtual Machines
+
+Deploy on Microsoft's cloud platform with enterprise integration features.
+
+```bash
+# Connect to your Azure VM
+ssh azureuser@your-vm-ip
+
+# Follow VPS deployment steps above
+# Additional Azure-specific considerations:
+
+# Network Security Groups: Configure inbound rules
+# Application Gateway: For load balancing
+# Virtual Machine Scale Sets: For auto-scaling
+```
+
+### Production Considerations
+
+#### 1. Environment Variables
+
+Set up production-specific configuration for your applications. You'll need to create environment files with production settings and your actual credentials.
+
+```bash
+# Production environment file
+# apps/backend/.env
+NODE_ENV=production
+PORT=3002
+# Add your Supabase, SMTP, and other credentials
+
+# apps/dashboard/.env
+NODE_ENV=production
+PORT=3000
+# Add your Supabase, backend URL, and other credentials
+```
+
+#### 2. Monitoring and Logging
+
+Set up tools to monitor your application's health and performance in real-time. This helps you detect and diagnose issues quickly when they occur.
+
+```bash
+# PM2 monitoring
+pm2 monit
+
+# Log rotation
+pm2 install pm2-logrotate
+
+# Health checks
+curl http://localhost:3002/health
+curl http://localhost:3000
+```
+
+#### 3. Backup Strategy
+
+Create a plan to protect your application and data from loss. Regular backups ensure you can recover quickly from hardware failures or other disasters.
+
+```bash
+# Database backups (Supabase handles this)
+# Application backups
+tar -czf classroomio-backup-$(date +%Y%m%d).tar.gz classroomio/
+
+# Environment files backup
+cp apps/backend/.env apps/backend/.env.backup
+cp apps/dashboard/.env apps/dashboard/.env.backup
+```
+
+#### 4. Performance Optimization
+
+Implement techniques to make your application faster and more efficient under load. These optimizations help handle multiple users simultaneously without slowing down.
+
+```bash
+# Enable PM2 clustering
+pm2 start dist/index.js --name "cio-backend" -i max
+pm2 start build --name "cio-dashboard" -i max
+
+# Nginx caching
+# Add to Nginx config for static assets
+location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+}
+```
+
+### Deployment Verification
+
+Test that everything is working correctly after deployment. These checks confirm your application is accessible, healthy, and properly configured before users start using it.
+
+```bash
+# Check services are running
+pm2 status
+pm2 logs --lines 50
+
+# Test endpoints
+curl -I http://localhost:3000
+curl -I http://localhost:3002/health
+
+# Check Nginx status
+sudo systemctl status nginx
+sudo nginx -t
+
+# Verify SSL certificate
+sudo certbot certificates
+```
+
+### Troubleshooting Commands
+
+Use these tools to diagnose and fix common problems in production. When things go wrong, these commands help you quickly identify the issue and get your application running again.
+
+```bash
+# View PM2 logs
+pm2 logs cio-backend
+pm2 logs cio-dashboard
+
+# Restart services
+pm2 restart cio-backend
+pm2 restart cio-dashboard
+
+# Check Nginx logs
+sudo tail -f /var/log/nginx/access.log
+sudo tail -f /var/log/nginx/error.log
+
+# Check system resources
+htop
+df -h
+free -h
+```
+
+### Maintenance and Updates
+
+Establish a routine to keep your application secure, up-to-date, and running smoothly. Regular maintenance ensures your app stays secure, performs well, and benefits from new features and bug fixes.
+
+```bash
+# Update application
+cd classroomio
+git pull origin main
+cd apps/backend && pnpm install && pnpm run build
+cd ../dashboard && pnpm install && pnpm run build
+
+# Restart services
+pm2 restart all
+
+# Update system packages
+sudo apt update && sudo apt upgrade -y
+
+# Renew SSL certificate
+sudo certbot renew
 ```
 
 ---
