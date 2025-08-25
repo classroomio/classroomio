@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { Callout } from 'nextra/components';
+import { Callout, codeode } from 'nextra/components';
 import SelfhostClassroomIO from './images/selfhost-classroomio.webp';
 
 # Self-hosting ClassroomIO.com
@@ -91,6 +91,31 @@ Decide how you want to run ClassroomIO:
 ## Deployment
 
 This steps will guide you on how to deploy ClassroomIO, using your preferred deployment method:
+
+<Callout type="info" emoji="ℹ️">
+  Supabase schema is not created automatically during deployment. Apply the schema to your Supabase
+  project before or during deployment. 
+  
+  Possible approaches: 
+  
+  - Supabase CLI (recommended before deploy):
+  
+  Open your local development environment and run this command.
+   <code>
+   ```bash 
+      supabase login 
+      supabase link --project-ref YOUR_PROJECT_REF 
+      supabase db push 
+   ```
+   </code>
+
+- Supabase Studio: Open SQL Editor and run the SQL from <code>`supabase/migrations/ `</code>
+  in order
+
+- CI/CD: Add a step that runs.
+  <code>```supabase db push ```</code>
+
+</Callout>
 
 ### Option 1: Railway (Recommended)
 
