@@ -24,7 +24,7 @@ interface LoadOutput {
   serverLang: string;
 }
 
-const APP_SUBDOMAINS = env.PRIVATE_APP_SUBDOMAINS?.split(',');
+const APP_SUBDOMAINS = env.PRIVATE_APP_SUBDOMAINS?.split(',') || [];
 
 export const load = async ({ url, cookies, request }): Promise<LoadOutput> => {
   const response: LoadOutput = {
