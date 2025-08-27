@@ -193,6 +193,7 @@
           orgName={org.name}
           disableSignup={true}
           isOrgSite={true}
+          customLinks={$landingPageSettings.customLinks}
         />
 
         <div class="absolute top-0 z-10 h-[100vh] w-full bg-white opacity-80 md:h-[90vh]" />

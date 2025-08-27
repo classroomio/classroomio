@@ -20,6 +20,7 @@
 
   let isSaving = false;
   let creatingNewQuestion = false;
+  let creatingNewCustomLink = false;
   let widgetKey = '';
   const banner = [
     { value: 'video', label: `${$t('settings.landing_page.actions.banner_type.video')}` },
@@ -31,6 +32,15 @@
     title: '',
     content: ''
   };
+
+  let newCustomLink = {
+    label: '',
+    url: '',
+    openInNewTab: false
+  };
+
+  let backgroundShow = false;
+  let backgroundImage = '';
 
   function widgetControl(key: string) {
     widgetKey = key;
@@ -69,6 +79,40 @@
     $landingPageSettings.faq.questions = filteredFaq;
   }
 
+  function createNewCustomLink() {
+    newCustomLink = {
+      label: '',
+      url: '',
+      openInNewTab: false
+    };
+    creatingNewCustomLink = true;
+  }
+
+  function saveNewCustomLink() {
+    if (newCustomLink.label !== '' && newCustomLink.url !== '') {
+      $landingPageSettings.customLinks.links = [
+        ...$landingPageSettings.customLinks.links,
+        {
+          id: new Date().getTime(),
+          label: newCustomLink.label,
+          url: newCustomLink.url,
+          openInNewTab: newCustomLink.openInNewTab
+        }
+      ];
+      creatingNewCustomLink = false;
+    }
+  }
+
+  function cancelNewCustomLink() {
+    creatingNewCustomLink = false;
+  }
+
+  function deleteCustomLink(id: number) {
+    let customLinks = $landingPageSettings.customLinks.links;
+    const filteredCustomLinks = customLinks.filter((link) => link.id !== id);
+    $landingPageSettings.customLinks.links = filteredCustomLinks;
+  }
+
   const checkPrefix = (inputValue: string) => {
     if (!inputValue) return;
 
@@ -95,7 +139,7 @@
       const message = error?.message || 'snackbar.lms.error.try_again';
       snackbar.error(`snackbar.lms.error.update ${message}`);
     } else {
-      $currentOrg.landingpage = $landingPageSettings;
+      $currentOrg.landingpage = $landingPageSettings as any;
       snackbar.success('snackbar.success_update');
     }
 
@@ -115,15 +159,25 @@
 
       $landingPageSettings = {
         ...landingpage
-      };
+      } as OrgLandingPageJson;
     }
   }
 
   $: setDefault($currentOrg?.landingpage as unknown as OrgLandingPageJson);
+  // $: if ($landingPageSettings.header.background) {
+  //   backgroundShow = $landingPageSettings.header.background.show;
+  //   backgroundImage = $landingPageSettings.header.background.image;
+  // }
+  $: if (backgroundShow !== undefined && $landingPageSettings.header.background) {
+    $landingPageSettings.header.background.show = backgroundShow;
+  }
+  $: if (backgroundImage !== undefined && $landingPageSettings.header.background) {
+    $landingPageSettings.header.background.image = backgroundImage;
+  }
 </script>
 
-<Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5 relative">
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+<Grid class="border-c relative mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}>
       <SectionTitle>{$t('settings.landing_page.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.header.show} size="sm">
@@ -161,7 +215,7 @@
         className="w-full mt-3 mb-5"
         bind:value={$landingPageSettings.header.action.label}
       />
-      <div class="gap-2 mb-5">
+      <div class="mb-5 gap-2">
         <TextField
           label={$t('settings.landing_page.actions.link')}
           placeholder={$t('course.navItem.lessons.exercises.all_exercises.link')}
@@ -181,14 +235,14 @@
       <RadioButtonGroup
         legendText={$t('settings.landing_page.actions.banner_type.heading')}
         bind:selected={$landingPageSettings.header.banner.type}
-        class="mt-10 mb-5"
+        class="mb-5 mt-10"
       >
         {#each banner as item}
           <RadioButton value={item.value} labelText={item.label} />
         {/each}
       </RadioButtonGroup>
       {#if $landingPageSettings.header.banner.type === 'video'}
-        <div class="gap-2 mt-3 mb-5">
+        <div class="mb-5 mt-3 gap-2">
           <TextField
             label={$t('settings.landing_page.actions.link')}
             placeholder={$t('course.navItem.lessons.exercises.all_exercises.video')}
@@ -207,7 +261,7 @@
         <img
           alt="bannerImage"
           src={$landingPageSettings.header.banner.image}
-          class="mt-2 rounded-md w-full"
+          class="mt-2 w-full rounded-md"
         />
       {/if}
 
@@ -226,7 +280,7 @@
       <!-- background -->
 
       <div class="mt-4">
-        <p class="font-bold mb-4">{$t('settings.landing_page.background.title')}</p>
+        <p class="mb-4 font-bold">{$t('settings.landing_page.background.title')}</p>
         <PrimaryButton
           variant={VARIANTS.OUTLINED}
           label={$t('settings.landing_page.about.select_image')}
@@ -238,11 +292,11 @@
           <img
             alt="backgroundImage"
             src={$landingPageSettings.header.background.image}
-            class="mt-2 rounded-md w-full"
+            class="mt-2 w-full rounded-md"
           />
         {/if}
 
-        <Toggle bind:toggled={$landingPageSettings.header.background.show} size="sm">
+        <Toggle bind:toggled={backgroundShow} size="sm">
           <span slot="labelA" style="color: gray"
             >{$t('settings.landing_page.background.hide_background')}</span
           >
@@ -252,13 +306,13 @@
         </Toggle>
 
         {#if $handleOpenWidget.open && widgetKey === 'background'}
-          <UploadWidget bind:imageURL={$landingPageSettings.header.background.image} />
+          <UploadWidget bind:imageURL={backgroundImage} />
         {/if}
       </div>
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.about.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.aboutUs.show} size="sm">
@@ -295,7 +349,7 @@
           <img
             alt="About us"
             src={$landingPageSettings.aboutUs.imageUrl}
-            class="mt-2 rounded-md w-full"
+            class="mt-2 w-full rounded-md"
           />
         {/if}
         {#if $handleOpenWidget.open && widgetKey === 'about-us'}
@@ -305,7 +359,7 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.courses.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.courses.show} size="sm">
@@ -338,7 +392,7 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.faq.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.faq.show} size="sm">
@@ -419,7 +473,7 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.contact_us.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.contact.show} size="sm">
@@ -468,7 +522,7 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.mailing_list.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.mailinglist.show} size="sm">
@@ -505,7 +559,96 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
+    <Column sm={4} md={4} lg={4}
+      ><SectionTitle>Custom Navigation Links</SectionTitle>
+      <Toggle bind:toggled={$landingPageSettings.customLinks.show} size="sm">
+        <span slot="labelA" style="color: gray">Hide Custom Links</span>
+        <span slot="labelB" style="color: gray">Show Custom Links</span>
+      </Toggle>
+    </Column>
+    <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
+      <p class="mb-4 text-sm text-gray-600">
+        Add custom navigation links that will appear in the header navigation bar.
+      </p>
+
+      {#each $landingPageSettings.customLinks.links as link (link.id)}
+        <div class="mb-4 rounded-lg border border-gray-200 p-4">
+          <div class="mb-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <TextField
+              label="Link Label"
+              placeholder="e.g., About Us"
+              bind:value={link.label}
+              className="mb-3"
+            />
+            <TextField
+              label="URL"
+              placeholder="e.g., #about-us or https://example.com"
+              bind:value={link.url}
+              className="mb-3"
+            />
+          </div>
+          <div class="flex items-center justify-between">
+            <label class="flex items-center">
+              <input type="checkbox" bind:checked={link.openInNewTab} class="mr-2" />
+              <span class="text-sm">Open in new tab</span>
+            </label>
+            <IconButton onClick={() => deleteCustomLink(link.id)}>
+              <TrashCan size={20} class="fill-red-700" />
+            </IconButton>
+          </div>
+        </div>
+      {/each}
+
+      {#if creatingNewCustomLink}
+        <div class="mb-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
+          <div class="mb-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <TextField
+              label="Link Label"
+              placeholder="e.g., About Us"
+              bind:value={newCustomLink.label}
+              className="mb-3"
+            />
+            <TextField
+              label="URL"
+              placeholder="e.g., #about-us or https://example.com"
+              bind:value={newCustomLink.url}
+              className="mb-3"
+            />
+          </div>
+          <div class="flex items-center justify-between">
+            <label class="flex items-center">
+              <input type="checkbox" bind:checked={newCustomLink.openInNewTab} class="mr-2" />
+              <span class="text-sm">Open in new tab</span>
+            </label>
+            <div class="flex gap-2">
+              <PrimaryButton
+                variant={VARIANTS.OUTLINED}
+                label="Save"
+                onClick={saveNewCustomLink}
+                className="text-sm px-3 py-1"
+              />
+              <PrimaryButton
+                variant={VARIANTS.OUTLINED}
+                label="Cancel"
+                onClick={cancelNewCustomLink}
+                className="text-sm px-3 py-1"
+              />
+            </div>
+          </div>
+        </div>
+      {:else}
+        <PrimaryButton
+          variant={VARIANTS.OUTLINED}
+          label="Add New Link"
+          onClick={createNewCustomLink}
+          className="mt-2"
+        />
+      {/if}
+    </Column>
+  </Row>
+
+  <Row class="flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.footer.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.footer.show} size="sm">
@@ -544,7 +687,7 @@
       />
     </Column>
   </Row>
-  <div class="sticky desktop float-right bottom-12 mr-2 z-[120]">
+  <div class="desktop sticky bottom-12 z-[120] float-right mr-2">
     <PrimaryButton
       label={$t('settings.landing_page.save_changes')}
       isLoading={isSaving}
@@ -555,12 +698,12 @@
 </Grid>
 
 <div
-  class="absolute
- mobile right-6 bottom-8 z-[120]"
+  class="mobile
+ absolute bottom-8 right-6 z-[120]"
 >
   <span>
     <IconButton onClick={handleSave} disabled={isSaving}>
-      <Save size={40} class=" bg-blue-700 p-1 rounded-full" />
+      <Save size={32} class=" rounded-full bg-blue-700 p-1" />
     </IconButton>
   </span>
 </div>
