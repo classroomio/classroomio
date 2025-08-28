@@ -1239,6 +1239,20 @@
         "title": "Image d'arrière-plan",
         "show_background": "Afficher l'arrière-plan",
         "hide_background": "Masquer l'arrière-plan"
+      },
+      "custom_links": {
+        "heading": "Liens personnalisés",
+        "hide_links": "Masquer les liens",
+        "show_links": "Montrer des liens",
+        "description": "Ajoutez des liens de navigation personnalisés qui apparaîtront dans la barre de navigation d'en-tête.",
+        "label": "Étiquette",
+        "url": "URL",
+        "label_placeholder": "par exemple, à propos de nous",
+        "url_placeholder": "par exemple, # à peu près ou https://example.com",
+        "new_tab": "Ouvert dans un nouvel onglet",
+        "save": "Sauvegarder",
+        "cancel": "Annuler",
+        "add": "Ajouter un nouveau lien"
       }
     },
     "organization": {

@@ -1239,6 +1239,20 @@
         "title": "पृष्ठभूमि छवि",
         "show_background": "पृष्ठभूमि दिखाएँ",
         "hide_background": "पृष्ठभूमि छिपाएँ"
+      },
+      "custom_links": {
+        "heading": "कस्टम लिंक",
+        "hide_links": "लिंक छिपाएं",
+        "show_links": "लिंक दिखाएं",
+        "description": "हेडर नेविगेशन बार में दिखाई देने वाले कस्टम नेविगेशन लिंक जोड़ें।",
+        "label": "लेबल",
+        "url": "यूआरएल",
+        "label_placeholder": "जैसे, हमारे बारे में",
+        "url_placeholder": "उदा।, #के बारे में या https://example.com",
+        "new_tab": "वेब टेब में खोलें",
+        "save": "बचाना",
+        "cancel": "रद्द करना",
+        "add": "नया लिंक जोड़ें"
       }
     },
     "organization": {

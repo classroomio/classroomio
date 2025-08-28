@@ -1343,6 +1343,20 @@
         "title": "Obraz tła",
         "show_background": "Pokaż tło",
         "hide_background": "Ukryj tło"
+      },
+      "custom_links": {
+        "heading": "Niestandardowe linki",
+        "hide_links": "Ukryj linki",
+        "show_links": "Pokaż linki",
+        "description": "Dodaj niestandardowe linki nawigacyjne, które pojawią się na pasku nawigacji nagłówka.",
+        "label": "Etykieta",
+        "url": "URL",
+        "label_placeholder": "np. O nas",
+        "url_placeholder": "np. #About-US lub https://example.com",
+        "new_tab": "Otwórz w nowej zakładce",
+        "save": "Ratować",
+        "cancel": "Anulować",
+        "add": "Dodaj nowy link"
       }
     },
     "organization": {

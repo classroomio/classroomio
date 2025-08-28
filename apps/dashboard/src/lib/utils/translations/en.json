@@ -226,6 +226,21 @@
         "twitter": "Twitter",
         "linkedin": "LinkedIn"
       },
+
+      "custom_links": {
+        "heading": "Custom Links",
+        "hide_links": "Hide Links",
+        "show_links": "Show Links",
+        "description": "Add custom navigation links that will appear in the header navigation bar.",
+        "label": "Label",
+        "url": "URL",
+        "label_placeholder": "e.g., About Us",
+        "url_placeholder": "e.g., #about-us or https://example.com",
+        "new_tab": "Open in new tab",
+        "save": "Save",
+        "cancel": "Cancel",
+        "add": "Add New Link"
+      },
       "save_changes": "Save Changes"
     },
     "integrations": {
