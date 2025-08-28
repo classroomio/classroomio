@@ -160,7 +160,7 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
       {
         id: 1,
         label: 'About Us',
-        url: '#about-us',
+        url: '#aboutus',
         openInNewTab: false
       },
       {

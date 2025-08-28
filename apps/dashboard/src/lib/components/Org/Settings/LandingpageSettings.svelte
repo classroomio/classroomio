@@ -561,29 +561,33 @@
 
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
-      ><SectionTitle>Custom Navigation Links</SectionTitle>
+      ><SectionTitle>{$t('settings.landing_page.custom_links.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.customLinks.show} size="sm">
-        <span slot="labelA" style="color: gray">Hide Custom Links</span>
-        <span slot="labelB" style="color: gray">Show Custom Links</span>
+        <span slot="labelA" style="color: gray"
+          >{$t('settings.landing_page.custom_links.hide_links')}</span
+        >
+        <span slot="labelB" style="color: gray"
+          >{$t('settings.landing_page.custom_links.show_links')}</span
+        >
       </Toggle>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <p class="mb-4 text-sm text-gray-600">
-        Add custom navigation links that will appear in the header navigation bar.
+        {$t('settings.landing_page.custom_links.description')}
       </p>
 
       {#each $landingPageSettings.customLinks.links as link (link.id)}
         <div class="mb-4 rounded-lg border border-gray-200 p-4">
           <div class="mb-3 grid grid-cols-1 gap-4 md:grid-cols-2">
             <TextField
-              label="Link Label"
-              placeholder="e.g., About Us"
+              label={$t('settings.landing_page.custom_links.label')}
+              placeholder={$t('settings.landing_page.custom_links.label_placeholder')}
               bind:value={link.label}
               className="mb-3"
             />
             <TextField
-              label="URL"
-              placeholder="e.g., #about-us or https://example.com"
+              label={$t('settings.landing_page.custom_links.url')}
+              placeholder={$t('settings.landing_page.custom_links.url_placeholder')}
               bind:value={link.url}
               className="mb-3"
             />
@@ -591,7 +595,7 @@
           <div class="flex items-center justify-between">
             <label class="flex items-center">
               <input type="checkbox" bind:checked={link.openInNewTab} class="mr-2" />
-              <span class="text-sm">Open in new tab</span>
+              <span class="text-sm">{$t('settings.landing_page.custom_links.new_tab')}</span>
             </label>
             <IconButton onClick={() => deleteCustomLink(link.id)}>
               <TrashCan size={20} class="fill-red-700" />
@@ -604,14 +608,14 @@
         <div class="mb-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
           <div class="mb-3 grid grid-cols-1 gap-4 md:grid-cols-2">
             <TextField
-              label="Link Label"
-              placeholder="e.g., About Us"
+              label={$t('settings.landing_page.custom_links.label')}
+              placeholder={$t('settings.landing_page.custom_links.label_placeholder')}
               bind:value={newCustomLink.label}
               className="mb-3"
             />
             <TextField
-              label="URL"
-              placeholder="e.g., #about-us or https://example.com"
+              label={$t('settings.landing_page.custom_links.url')}
+              placeholder={$t('settings.landing_page.custom_links.url_placeholder')}
               bind:value={newCustomLink.url}
               className="mb-3"
             />
@@ -619,18 +623,18 @@
           <div class="flex items-center justify-between">
             <label class="flex items-center">
               <input type="checkbox" bind:checked={newCustomLink.openInNewTab} class="mr-2" />
-              <span class="text-sm">Open in new tab</span>
+              <span class="text-sm">{$t('settings.landing_page.custom_links.new_tab')}</span>
             </label>
             <div class="flex gap-2">
               <PrimaryButton
                 variant={VARIANTS.OUTLINED}
-                label="Save"
+                label={$t('settings.landing_page.custom_links.save')}
                 onClick={saveNewCustomLink}
                 className="text-sm px-3 py-1"
               />
               <PrimaryButton
                 variant={VARIANTS.OUTLINED}
-                label="Cancel"
+                label={$t('settings.landing_page.custom_links.cancel')}
                 onClick={cancelNewCustomLink}
                 className="text-sm px-3 py-1"
               />
@@ -640,7 +644,7 @@
       {:else}
         <PrimaryButton
           variant={VARIANTS.OUTLINED}
-          label="Add New Link"
+          label={$t('settings.landing_page.custom_links.add')}
           onClick={createNewCustomLink}
           className="mt-2"
         />

@@ -90,7 +90,6 @@
     padding: 0;
   }
 
-  /* clearfix */
   ul::after {
     content: '';
     display: block;

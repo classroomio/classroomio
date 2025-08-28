@@ -1239,6 +1239,20 @@
         "title": "Hình nền",
         "show_background": "Hiển thị nền",
         "hide_background": "Ẩn nền"
+      },
+      "custom_links": {
+        "heading": "Liên kết tùy chỉnh",
+        "hide_links": "Ẩn liên kết",
+        "show_links": "Hiển thị liên kết",
+        "description": "Thêm các liên kết điều hướng tùy chỉnh sẽ xuất hiện trong thanh điều hướng tiêu đề.",
+        "label": "Nhãn",
+        "url": "URL",
+        "label_placeholder": "ví dụ: về chúng tôi",
+        "url_placeholder": "ví dụ: #abing-us hoặc https://example.com",
+        "new_tab": "Mở trong tab mới",
+        "save": "Cứu",
+        "cancel": "Hủy bỏ",
+        "add": "Thêm liên kết mới"
       }
     },
     "organization": {
