@@ -1,0 +1,396 @@
+import { Callout, Steps } from 'nextra/components';
+
+# Troubleshooting ClassroomIO Self-Hosting
+
+Welcome! If you’re running into issues while self-hosting ClassroomIO, this guide is here to help.  
+We’ll walk through the most common problems, their causes, and proven fixes.
+
+> 💡 **Tip**: Most issues come down to **incomplete setup** or **wrong environment variables**. Double-check those first.
+
+## Critical Issues
+
+### Setup Won’t Work
+
+**Symptoms:**
+
+- Setup process fails or application won’t start
+
+**Common Causes & Fixes:**
+
+1. **Incomplete Supabase Setup**
+
+   - Make sure you’ve completed the [Supabase Cloud Setup](/contributor-guides/supabase-cloud).
+
+2. **Wrong Environment Variables**
+
+   - Double-check that all Supabase credentials are in your `.env` file and free of typos.
+
+3. **SMTP Not Configured**
+   - Without SMTP, email features won’t work. Configure SMTP in Supabase or in your environment.
+
+**Next Step**: Test your configuration with our [Testing Guide](/contributor-guides/testing-your-setup).
+
+---
+
+## Authentication Issues
+
+### “Invalid JWT” or “Unauthorized” Errors
+
+**Symptoms:**
+
+- Users can’t log in
+- API calls return `401 Unauthorized`
+- Dashboard shows authentication errors
+
+**Causes & Fixes:**
+
+1. **Incorrect Supabase Keys**
+
+```bash
+   # Verify these environment variables
+PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=your_anon_public_key
+PRIVATE_SUPABASE_SERVICE_ROLE=your_service_role_key
+```
+
+- Go to **Supabase Dashboard → Settings → API**
+- Copy exact values (no spaces, no trailing slashes)
+
+<Callout type="warning" emoji="🚨">
+  This is the #1 cause of "Invalid JWT" errors.
+</Callout>
+
+2. **Wrong Site URL in Supabase**
+
+   - Supabase Dashboard → Authentication → Settings
+   - Set **Site URL** to your deployment domain, e.g.:
+
+     - `https://yourdomain.com`
+     - `https://your-app.railway.app`
+
+3. **JWT Expiry Issues**
+
+   - Supabase default expiry is 1 hour
+   - Increase if tokens expire too quickly
+   - Ensure server timezone is correct
+
+---
+
+### “Email Confirmation Required” Errors
+
+**Symptoms:**
+
+- Users stuck on signup
+- Email confirmation never arrives
+
+**Causes & Fixes:**
+
+1. **SMTP Not Configured**
+
+   - Supabase Dashboard → Authentication → Settings → SMTP
+   - Enable “Custom SMTP” and test connection
+
+2. **Email Confirmations Still Enabled**
+
+   - If you don’t want confirmations:
+
+     - Supabase Dashboard → Authentication → Settings
+     - Disable **Enable email confirmations**
+
+3. **Wrong SMTP Credentials**
+
+   - Verify SMTP host, port, username, and password
+   - Some providers (like Gmail) require app-specific passwords
+
+---
+
+## Database Issues
+
+### “Table Does Not Exist” Errors
+
+**Symptoms:**
+
+- Supabase returns `relation does not exist`
+- Database queries fail
+
+**Causes & Fixes:**
+
+1. **Schema Not Deployed**
+
+```bash
+   # Log in and push migrations
+supabase login
+supabase link --project-ref YOUR_PROJECT_REF
+supabase db push
+```
+
+2. **Wrong Project Linked**
+
+```bash
+   supabase status             # Check current project
+supabase link --project-ref CORRECT_PROJECT_REF
+```
+
+3. **Migration Failed**
+
+   - Supabase Dashboard → Database → Migrations
+   - Look for failed migrations
+   - Run `supabase db reset` (**⚠️ WARNING: deletes all data**)
+
+---
+
+### “Row Level Security Policy” Errors
+
+**Symptoms:**
+
+- Users can’t access their own data
+- Error: `new row violates row-level security policy`
+
+**Fix:**
+
+- Supabase Dashboard → Authentication → Policies
+- Verify RLS policies exist for required tables
+- Confirm policies are configured correctly
+
+---
+
+## Connection Issues
+
+### “Cannot Connect to Backend” Errors
+
+**Symptoms:**
+
+- Dashboard can’t reach backend
+- Network errors in browser console
+
+**Causes & Fixes:**
+
+1. **Wrong Backend URL**
+
+```bash
+   # Example .env setting
+PUBLIC_SERVER_URL=https://your-backend-url.railway.app
+```
+
+- Ensure backend is running and URL works in browser
+
+2. **CORS Issues**
+
+   - If you see “CORS policy violation” in console:
+
+     - Update backend CORS configuration
+     - Add your frontend domain to allowed origins
+
+3. **Backend Service Down**
+
+   - Check Railway/Docker logs
+   - Restart service if needed
+
+---
+
+### “Supabase Connection Failed” Errors
+
+**Causes & Fixes:**
+
+1. **Supabase Project Inactive**
+
+   - Ensure project isn’t paused in Supabase
+
+- Verify billing status
+
+2. **IP Restrictions**
+
+   - If IP allowlist is enabled, add your server IP
+   - Or disable temporarily
+
+3. **Rate Limiting**
+
+- Check Supabase usage limits
+- Upgrade plan if needed
+
+---
+
+## Email Issues
+
+### “SMTP Authentication Failed”
+
+**Symptoms:**
+
+- Emails not sent
+- SMTP connection fails
+
+**Fixes:**
+
+1. Verify environment variables:
+
+```bash
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_email@gmail.com
+SMTP_PASSWORD=your_app_password
+SMTP_SENDER=your_email@gmail.com
+```
+
+2. If using Gmail:
+
+   - Enable 2FA
+   - Generate an **App Password**
+
+3. Check provider status page & SMTP logs
+
+---
+
+### “Email Not Sent”
+
+- Check spam/junk folders
+- Verify sender email matches your domain
+- Test with a different email provider
+- Check Supabase SMTP logs
+
+---
+
+## Docker Issues
+
+### “Container Won’t Start”
+
+**Symptoms:**
+
+- Containers fail to start
+- Port conflicts or env errors
+
+**Fixes:**
+
+1. **Port Conflicts**
+
+```bash
+netstat -tulpn | grep :3000
+netstat -tulpn | grep :3002
+```
+
+Stop the conflicting service or change ports
+
+2. **Environment File Issues**
+
+```bash
+ls -la .env*
+chmod 600 .env*
+```
+
+3. **Docker Compose**
+
+```bash
+docker compose down
+docker compose up --build -d
+docker compose logs -f
+```
+
+---
+
+### “Build Failed”
+
+- Ensure Docker has enough RAM/CPU
+- Clear cache: `docker system prune -a`
+- Verify internet connection
+- Check `Dockerfile` syntax
+
+---
+
+## Railway Issues
+
+### “Deployment Failed”
+
+**Fixes:**
+
+1. **Environment Variables**
+
+   - Verify all are set correctly
+   - No extra quotes or spaces
+
+2. **Build Errors**
+
+- Check Railway build logs
+  - Ensure Node.js version matches project
+
+3. **Service Dependencies**
+
+- Deploy backend first
+- Update dashboard with backend URL
+- Redeploy dashboard
+
+---
+
+### “Service Unhealthy”
+
+- Review service logs
+- Ensure health endpoint exists
+- Restart service
+
+---
+
+## General Debugging
+
+1. **Check Logs**
+
+```bash
+   docker compose logs -f     # Docker
+   pm2 logs                   # Manual
+   journalctl -u service      # Systemd
+```
+
+2. **Verify Environment Variables**
+
+```bash
+echo $PUBLIC_SUPABASE_URL
+echo $PUBLIC_SUPABASE_ANON_KEY
+```
+
+3. **Test Components Individually**
+
+   - Supabase
+   - SMTP
+   - Backend health endpoint
+
+4. **Use Browser DevTools**
+
+   - Check Console + Network tabs
+
+---
+
+## Getting Help
+
+If you’re still stuck:
+
+1. **Collect Information**
+
+   - Error logs
+   - Env configuration (without secrets)
+   - Steps to reproduce
+
+2. **Check Resources**
+
+   - [Supabase Docs](https://supabase.com/docs)
+   - [Railway Docs](https://docs.railway.app)
+
+- [ClassroomIO GitHub Issues](https://github.com/rotimi-best/classroomio/issues)
+
+3. **Community**
+
+   - [Discord](https://dub.sh/ciodiscord)
+
+- [GitHub Discussions](https://github.com/rotimi-best/classroomio/discussions)
+
+4. **Open a GitHub Issue**
+
+   - Include error logs, repro steps, environment details
+
+---
+
+<Callout type="info" emoji="💡">
+  Most errors can be fixed by verifying environment variables and ensuring Supabase setup is
+  complete.
+</Callout>
+
+<Callout type="warning" emoji="⚠️">
+  Always complete the [Supabase Cloud Setup](/contributor-guides/supabase-cloud) **before**
+  troubleshooting.
+</Callout>

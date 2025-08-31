@@ -1,0 +1,189 @@
+import { Callout, code } from 'nextra/components';
+
+# Organization Landing Page - Developer Guide
+
+The Organization Landing Page is a fully responsive and customizable landing page feature that allows organizations to create their own branded landing page within the ClassroomIO platform. This feature provides a free and fully customizable landing page that organizations can use to showcase their courses, about information, contact details, and more.
+
+## Overview
+
+The organization landing page is a dynamic, customizable page that includes:
+
+- **Header Section**: Hero section with title, subtitle, call-to-action, and optional banner (video/image)
+- **About Us Section**: Organization story with image
+- **Courses Section**: Display of published courses
+- **FAQ Section**: Frequently asked questions
+- **Contact Section**: Contact form and contact details
+- **Mailing List Section**: Email subscription form
+- **Footer Section**: Social media links
+- **Custom Navigation Links**: Custom navigation menu items
+
+## Accessing the Organization Landing Page
+
+### In Development
+
+To access an organization's landing page during development:
+
+1. **Open a new browser tab** (preferably in incognito mode)
+2. **Add the query parameter** `org=orgname` to the URL
+3. **Example**: `http://localhost:5173?org=your-org-name`
+
+<Callout type='info'>
+update your env variable to the following
+```bash
+ # comment out the PRIVATE_APP_SUBDOMAIN
+ # set the IS_SELFHOSTED to nothing or false
+
+IS_SELFHOSTED=
+
+````
+</Callout>
+
+```bash
+# Example URLs
+http://localhost:5173?org=academy
+http://localhost:5173?org=tech-school
+http://localhost:5173?org=learning-center
+````
+
+### In Production
+
+In production, organizations can access their landing page through:
+
+- **Subdomain**: `https://orgname.classroomio.com`
+- **Custom Domain**: If configured, `https://orgname.com`
+
+## Setting Up the Landing Page
+
+### Accessing Settings
+
+1. Log into your ClassroomIO dashboard
+2. Navigate to **Organization Settings**
+3. Go to **Landing Page** section
+4. Configure each section as needed
+
+### Available Configuration Sections
+
+#### 1. Header Section
+
+- **Title**: Main heading text
+- **Title Highlight**: Highlighted portion of the title
+- **Subtitle**: Descriptive text below the title
+- **Action Button**: Call-to-action button with label and link
+- **Banner**: Optional video or image banner
+- **Background**: Optional background image for the header
+
+#### 2. About Us Section
+
+- **Title**: Section heading
+- **Content**: Organization story and description
+- **Image**: Organization image
+- **Show/Hide Toggle**: Control section visibility
+
+#### 3. Courses Section
+
+- **Title**: Section heading
+- **Title Highlight**: Highlighted portion
+- **Subtitle**: Description of courses
+- **Show/Hide Toggle**: Control section visibility
+
+#### 4. FAQ Section
+
+- **Title**: Section heading
+- **Questions**: Add/edit/delete FAQ items
+- **Show/Hide Toggle**: Control section visibility
+
+#### 5. Contact Section
+
+- **Title**: Section heading
+- **Title Highlight**: Highlighted portion
+- **Subtitle**: Contact section description
+- **Address**: Physical address
+- **Phone**: Contact phone number
+- **Email**: Contact email address
+- **Contact Form**: Built-in contact form
+- **Show/Hide Toggle**: Control section visibility
+
+#### 6. Mailing List Section
+
+- **Title**: Section heading
+- **Subtitle**: Description of the mailing list
+- **Button Label**: Subscribe button text
+- **Show/Hide Toggle**: Control section visibility
+
+#### 7. Footer Section
+
+- **Social Media Links**: Facebook, Twitter, LinkedIn
+- **Show/Hide Toggle**: Control section visibility
+
+#### 8. Custom Navigation Links
+
+- **Show/Hide Toggle**: Enable/disable custom navigation
+- **Add Links**: Create custom navigation items with:
+  - **Label**: Link text
+  - **URL**: Link destination
+  - **Open in New Tab**: Checkbox for external links
+
+## Technical Implementation
+
+### Key Files
+
+- **Landing Page Component**: `apps/dashboard/src/lib/components/Org/LandingPage/index.svelte`
+- **Settings Component**: `apps/dashboard/src/lib/components/Org/Settings/LandingpageSettings.svelte`
+- **Settings Store**: `apps/dashboard/src/lib/components/Org/Settings/store.ts`
+- **Navigation Component**: `apps/dashboard/src/lib/components/Navigation/index.svelte`
+- **Default JSON**: `apps/dashboard/src/lib/utils/constants/orgLandingPageJson.json`
+
+### Data Structure
+
+The landing page configuration is stored as JSON in the organization's database with the following structure:
+
+```typescript
+interface OrgLandingPageJson {
+  header: {
+    title: string;
+    titleHighlight: string;
+    subtitle: string;
+    action: { label: string; link: string; redirect: boolean };
+    banner: { video: string; image: string; type: string; show: boolean };
+    background?: { image: string; show: boolean };
+    show: boolean;
+  };
+  aboutUs: { title: string; content: string; imageUrl: string; show: boolean };
+  courses: { title: string; titleHighlight: string; subtitle: string; show: boolean };
+  faq: {
+    title: string;
+    questions: Array<{ id: number; title: string; content: string }>;
+    show: boolean;
+  };
+  contact: {
+    title: string;
+    titleHighlight: string;
+    subtitle: string;
+    address: string;
+    phone: string;
+    email: string;
+    show: boolean;
+  };
+  mailinglist: { title: string; subtitle: string; buttonLabel: string; show: boolean };
+  footer: { facebook: string; instagram: string; twitter: string; linkedin: string; show: boolean };
+  customLinks: {
+    show: boolean;
+    links: Array<{ id: number; label: string; url: string; openInNewTab: boolean }>;
+  };
+}
+```
+
+### Development Workflow
+
+1. **Access the landing page** using the `org` query parameter
+2. **Configure settings** in the organization dashboard
+3. **Save changes** to update the landing page
+4. **Test responsiveness** on different screen sizes
+5. **Preview changes** in real-time
+
+## Pro tips
+
+1. **Use High-Quality Images**: Optimize images for web use
+2. **Write Clear Content**: Use concise, engaging copy
+3. **Test Mobile Experience**: Ensure the page works well on all devices
+4. **Regular Updates**: Keep content fresh and relevant
