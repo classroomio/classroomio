@@ -62,7 +62,7 @@ To get a local copy up and running, please follow these simple steps.
 
 Here is what you need to be able to run ClassroomIO.com
 
-- [Node.js](https://nodejs.org/) (Version: >=18.x)
+- [Node.js](https://nodejs.org/) (Version: >=22.x)
 - [Supabase CLI](https://github.com/supabase/cli)
 - [Docker](https://docs.docker.com/engine/install/)
 - [NPM](https://www.npmjs.com/)
