@@ -27,7 +27,7 @@
   },
   "type": "module",
   "engines": {
-    "node": "^22.12.0"
+    "node": "^20.19.4"
   },
   "dependencies": {
     "html-to-image": "^1.11.11",
