@@ -68,7 +68,7 @@ services:
       - /app/node_modules
       - /app/apps/dashboard/node_modules
     environment:
-      - IS_SELFHOSTED=true
+      - PUBLIC_IS_SELFHOSTED=true
       - DEPLOYMENT_PROVIDER=docker
       # Supabase - Database
       - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}

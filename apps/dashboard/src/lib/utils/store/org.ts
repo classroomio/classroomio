@@ -7,7 +7,7 @@ import { ROLE } from '$lib/utils/constants/roles';
 import { STEPS } from '../constants/quiz';
 import type { UserLessonDataType } from '$lib/utils/types';
 import type { Writable } from 'svelte/store';
-import { env } from '$env/dynamic/public';
+import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 
 // Trigger build
 export const defaultCurrentOrgState: CurrentOrg = {
@@ -70,7 +70,7 @@ export const currentOrgDomain = derived(currentOrg, ($currentOrg) => {
 });
 
 export const isFreePlan = derived(currentOrg, ($currentOrg) => {
-  if (!$currentOrg.id || env.IS_SELFHOSTED === 'true') return false;
+  if (!$currentOrg.id || PUBLIC_IS_SELFHOSTED === 'true') return false;
 
   const plan = getActivePlan($currentOrg);
 

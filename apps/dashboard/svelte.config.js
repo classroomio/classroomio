@@ -7,7 +7,7 @@ import path from 'path';
 import 'dotenv/config';
 
 const useNodeAdapter =
-  process.env.IS_SELFHOSTED === 'true' && process.env.DEPLOYMENT_PROVIDER === 'docker';
+  process.env.PUBLIC_IS_SELFHOSTED === 'true' && process.env.DEPLOYMENT_PROVIDER === 'docker';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {

@@ -30,7 +30,7 @@ RUN pnpm install
 COPY apps/dashboard ./apps/dashboard
 
 # Set env vars for SvelteKit to use Node adapter
-ENV IS_SELFHOSTED=true \
+ENV PUBLIC_IS_SELFHOSTED=true \
     DEPLOYMENT_PROVIDER=docker \
     PUBLIC_SUPABASE_URL=$PUBLIC_SUPABASE_URL \
     PUBLIC_SUPABASE_ANON_KEY=$PUBLIC_SUPABASE_ANON_KEY \
@@ -67,7 +67,7 @@ EXPOSE 3000
 
 # Set environment variables for production
 ENV NODE_ENV=production \
-    IS_SELFHOSTED=true \
+    PUBLIC_IS_SELFHOSTED=true \
     DEPLOYMENT_PROVIDER=docker \
     PUBLIC_SUPABASE_URL=$PUBLIC_SUPABASE_URL \
     PUBLIC_SUPABASE_ANON_KEY=$PUBLIC_SUPABASE_ANON_KEY \

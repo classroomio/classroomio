@@ -1,6 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalEnv": ["IS_SELFHOSTED", "DEPLOYMENT_PROVIDER"],
+  "globalEnv": ["PUBLIC_IS_SELFHOSTED", "DEPLOYMENT_PROVIDER"],
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
