@@ -14,7 +14,6 @@
     "dashboard:start": "cd apps/dashboard && node build"
   },
   "license": "MIT",
-  "packageManager": "pnpm@9.0.0",
   "dependencies": {
     "turbo": "^1.10.16"
   },
