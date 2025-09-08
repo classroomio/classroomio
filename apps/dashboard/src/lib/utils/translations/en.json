@@ -665,6 +665,9 @@
                 "invalid_youtube": "Invalid YouTube link(s)",
                 "invalid_link": "Invalid link(s)"
               }
+            },
+            "document": {
+              "title": "Document"
             }
           },
           "button_done": "Done"

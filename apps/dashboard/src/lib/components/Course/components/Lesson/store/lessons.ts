@@ -20,6 +20,11 @@ export const uploadCourseVideoStore = writable({
   isModalOpen: false
 });
 
+export const uploadCourseDocumentStore = writable({
+  isUploading: false,
+  isModalOpen: false
+});
+
 export const lessons: Writable<Lesson[]> = writable([]);
 
 export const lessonSections: Writable<LessonSection[]> = writable([]);
@@ -37,7 +42,8 @@ export const lesson = writable<LessonPage>({
   materials: {
     note: '',
     slide_url: '',
-    videos: []
+    videos: [],
+    documents: []
   },
   exercises: [],
   lesson_completion: []
@@ -189,6 +195,16 @@ export const deleteLessonVideo = (index: any) => {
     materials: {
       ...currentLesson.materials,
       videos: currentLesson.materials.videos.filter((video, i) => i !== index)
+    }
+  }));
+};
+
+export const deleteLessonDocument = (index: any) => {
+  lesson.update((currentLesson) => ({
+    ...currentLesson,
+    materials: {
+      ...currentLesson.materials,
+      documents: currentLesson.materials.documents.filter((document, i) => i !== index)
     }
   }));
 };

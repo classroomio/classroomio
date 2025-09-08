@@ -213,7 +213,8 @@
       materials: {
         videos: lessonData.videos,
         note: lessonData.note,
-        slide_url: lessonData.slide_url
+        slide_url: lessonData.slide_url,
+        documents: lessonData.documents || null
       },
       lesson_completion,
       exercises: [],
@@ -359,7 +360,7 @@
             <div
               class={`flex-row ${
                 $apps.dropdown && $apps.open
-                  ? 'absolute right-14 top-[85px] z-40 rounded-md bg-gray-100 p-3 dark:bg-neutral-800 lg:relative lg:right-0 lg:top-0 lg:p-0'
+                  ? 'absolute right-14 top-[85px] z-40 rounded-md bg-gray-100 p-3 lg:relative lg:right-0 lg:top-0 lg:p-0 dark:bg-neutral-800'
                   : 'hidden'
               } items-center lg:flex`}
             >

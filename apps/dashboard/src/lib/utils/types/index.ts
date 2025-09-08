@@ -281,6 +281,7 @@ export interface Group_attendance {
 }
 
 export type LessonVideoType = 'youtube' | 'generic' | 'upload';
+export type LessonDocumentType = any;
 
 export interface LessonPage {
   id?: string | null;
@@ -300,6 +301,13 @@ export interface LessonPage {
       metadata?: {
         svid?: string;
       };
+    }>;
+    documents: Array<{
+      type: LessonDocumentType;
+      name: string;
+      link: string;
+      size?: number;
+      key?: string;
     }>;
   };
   exercises: [];

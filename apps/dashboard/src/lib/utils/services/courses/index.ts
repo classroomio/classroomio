@@ -265,6 +265,7 @@ export async function getMarks(courseId) {
 }
 
 export async function fetchLesson(lessonId: Lesson['id']) {
+  // TODO: add documents to the query
   const { data, error } = await supabase
     .from('lesson')
     .select(
@@ -273,6 +274,7 @@ export async function fetchLesson(lessonId: Lesson['id']) {
       note,
       videos,
       slide_url,
+      documents,
       call_url,
       totalExercises:exercise(count),
       totalComments:lesson_comment(count),
