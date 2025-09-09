@@ -17,7 +17,8 @@ import { writable } from 'svelte/store';
 
 export const uploadCourseVideoStore = writable({
   isUploading: false,
-  isModalOpen: false
+  isModalOpen: false,
+  isCancelled: false
 });
 
 export const uploadCourseDocumentStore = writable({
@@ -25,7 +26,8 @@ export const uploadCourseDocumentStore = writable({
   isModalOpen: false,
   uploadProgress: 0,
   uploadedDocument: null as any,
-  error: null as string | null
+  error: null as string | null,
+  isCancelled: false
 });
 
 export const lessons: Writable<Lesson[]> = writable([]);
@@ -207,7 +209,7 @@ export const deleteLessonDocument = (index: any) => {
     ...currentLesson,
     materials: {
       ...currentLesson.materials,
-      documents: currentLesson.materials.documents.filter((document, i) => i !== index)
+      documents: (currentLesson.materials.documents || []).filter((document, i) => i !== index)
     }
   }));
 };
@@ -218,6 +220,24 @@ export function resetDocumentUploadStore() {
     isModalOpen: false,
     uploadProgress: 0,
     uploadedDocument: null,
-    error: null
+    error: null,
+    isCancelled: false
   });
+}
+
+export function cancelDocumentUpload() {
+  uploadCourseDocumentStore.update((store) => ({
+    ...store,
+    isCancelled: true,
+    isUploading: false,
+    error: 'Upload cancelled by user'
+  }));
+}
+
+export function cancelVideoUpload() {
+  uploadCourseVideoStore.update((store) => ({
+    ...store,
+    isCancelled: true,
+    isUploading: false
+  }));
 }

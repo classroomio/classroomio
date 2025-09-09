@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { uploadCourseDocumentStore, resetDocumentUploadStore } from '../../store/lessons';
+  import {
+    uploadCourseDocumentStore,
+    resetDocumentUploadStore,
+    cancelDocumentUpload
+  } from '../../store/lessons';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -16,6 +20,7 @@
   let fileInput: HTMLInputElement;
   let selectedFile: File | null = null;
   let dragOver = false;
+  let abortController: AbortController | null = null;
 
   const ALLOWED_TYPES = [
     'application/pdf',
@@ -97,9 +102,13 @@
   async function uploadDocument() {
     if (!selectedFile) return;
 
+    // Create new AbortController for this upload
+    abortController = new AbortController();
+
     $uploadCourseDocumentStore.isUploading = true;
     $uploadCourseDocumentStore.uploadProgress = 0;
     $uploadCourseDocumentStore.error = null;
+    $uploadCourseDocumentStore.isCancelled = false;
 
     try {
       // Get presigned URL for upload
@@ -107,6 +116,11 @@
         fileName: selectedFile.name,
         fileType: selectedFile.type
       });
+
+      // Check if upload was cancelled
+      if ($uploadCourseDocumentStore.isCancelled) {
+        throw new Error('Upload cancelled');
+      }
 
       const presignedUrl = uploadPresignResponse.data.url;
 
@@ -117,11 +131,22 @@
         },
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
+        signal: abortController.signal,
         onUploadProgress: (progressEvent) => {
+          // Check if upload was cancelled during progress
+          if ($uploadCourseDocumentStore.isCancelled) {
+            abortController?.abort();
+            return;
+          }
           const progress = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1));
           $uploadCourseDocumentStore.uploadProgress = progress;
         }
       });
+
+      // Check if upload was cancelled
+      if ($uploadCourseDocumentStore.isCancelled) {
+        throw new Error('Upload cancelled');
+      }
 
       // Get download URL for the uploaded file
       const downloadPresignedResponse = await apiClient.post('/course/presign/download', {
@@ -144,7 +169,13 @@
         size: selectedFile.size
       };
 
-      // Add to lesson materials
+      // Add to lesson materials - ensure materials and documents are properly initialized
+      if (!$lesson.materials) {
+        $lesson.materials = { note: '', slide_url: '', videos: [], documents: [] };
+      }
+      if (!$lesson.materials.documents) {
+        $lesson.materials.documents = [];
+      }
       $lesson.materials.documents = [...$lesson.materials.documents, document];
 
       // Update store
@@ -161,10 +192,19 @@
       }, 1500);
     } catch (error) {
       console.error('Upload error:', error);
-      $uploadCourseDocumentStore.error = error instanceof Error ? error.message : 'Upload failed';
-      snackbar.error($t('course.navItem.lessons.materials.tabs.document.upload_error'));
+
+      if ($uploadCourseDocumentStore.isCancelled) {
+        $uploadCourseDocumentStore.error = $t(
+          'course.navItem.lessons.materials.tabs.document.upload_cancelled'
+        );
+        snackbar.info($t('course.navItem.lessons.materials.tabs.document.upload_cancelled'));
+      } else {
+        $uploadCourseDocumentStore.error = error instanceof Error ? error.message : 'Upload failed';
+        snackbar.error($t('course.navItem.lessons.materials.tabs.document.upload_error'));
+      }
     } finally {
       $uploadCourseDocumentStore.isUploading = false;
+      abortController = null;
     }
   }
 
@@ -172,6 +212,15 @@
     selectedFile = null;
     if (fileInput) fileInput.value = '';
     $uploadCourseDocumentStore.error = null;
+  }
+
+  function cancelUpload() {
+    if (abortController) {
+      abortController.abort();
+    }
+    cancelDocumentUpload();
+    selectedFile = null;
+    if (fileInput) fileInput.value = '';
   }
 
   function getFileIcon(type: string) {
@@ -257,6 +306,13 @@
           class="h-2 rounded-full bg-blue-600 transition-all duration-300"
           style="width: {$uploadCourseDocumentStore.uploadProgress}%"
         ></div>
+      </div>
+      <div class="mt-3 flex justify-center">
+        <PrimaryButton
+          label={$t('course.navItem.lessons.materials.tabs.document.cancel_upload')}
+          variant={VARIANTS.OUTLINED}
+          onClick={cancelUpload}
+        />
       </div>
     </div>
   {/if}
