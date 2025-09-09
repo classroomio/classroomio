@@ -302,12 +302,6 @@
     return componentNames;
   }
 
-  $: {
-    console.log('tabs', tabs);
-    console.log('componentsToRender', componentsToRender);
-    console.log('currentTab', currentTab);
-    console.log('lesson.materials', $lesson.materials);
-  }
   $: autoSave($lesson.materials, $lessonByTranslation[lessonId], $isLoading, lessonId);
 
   $: onLessonIdChange(lessonId);

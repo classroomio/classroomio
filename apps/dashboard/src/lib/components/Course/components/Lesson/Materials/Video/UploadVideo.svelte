@@ -78,8 +78,6 @@
         status: uploadResponse.status
       };
 
-      console.log('formRes', formRes);
-
       $lesson.materials.videos = [
         ...$lesson.materials.videos,
         {
@@ -89,14 +87,12 @@
         }
       ];
 
-      console.log('Upload res', uploadResponse, 'formRes', formRes);
       $uploadCourseVideoStore.isUploading = false;
       isLoaded = false;
     } catch (err: any) {
       console.error('Error uploading video', err, '\n\n', err.response);
       if (err.response) {
         formRes = err.response.data;
-        console.log('formRes', formRes);
       }
     }
 
