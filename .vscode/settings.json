@@ -20,5 +20,6 @@
   "editor.formatOnSave": true,
   "[svelte]": {
     "editor.defaultFormatter": "svelte.svelte-vscode"
-  }
+  },
+  "vitest.disableWorkspaceWarning": true
 }

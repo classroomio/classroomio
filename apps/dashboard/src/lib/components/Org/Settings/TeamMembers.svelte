@@ -134,13 +134,13 @@
   $: fetchTeam($currentOrg.id);
 </script>
 
-<Grid class="border rounded border-gray-200 dark:border-neutral-600 w-full mt-5 relative">
-  <Row class="py-7 border-bottom-c">
+<Grid class="relative mt-5 w-full rounded border border-gray-200 dark:border-neutral-600">
+  <Row class="border-bottom-c py-7">
     <Column sm={2} md={2} lg={4} class="text-lg"
       ><SectionTitle>{$t('course.navItem.people.teams.add')}</SectionTitle></Column
     >
     <Column sm={2} md={6} lg={8}>
-      <p class="text-md text-gray-500 dark:text-white mb-5">
+      <p class="text-md mb-5 text-gray-500 dark:text-white">
         {$t('course.navItem.people.teams.add_team')}
       </p>
 
@@ -174,7 +174,7 @@
     </Column>
   </Row>
 
-  <Row class="py-7 border-bottom-c">
+  <Row class="border-bottom-c py-7">
     <Column sm={2} md={2} lg={4} class="text-lg"
       ><SectionTitle>{$t('course.navItem.people.teams.members')}</SectionTitle></Column
     >
@@ -183,9 +183,9 @@
         <Moon />
       {:else}
         {#each $orgTeam as teamMember}
-          <div class="flex justify-between items-center mb-5">
+          <div class="mb-5 flex items-center justify-between">
             <div class="flex">
-              <p class="text-sm text-gray-500 dark:text-white mr-3">
+              <p class="mr-3 text-sm text-gray-500 dark:text-white">
                 {teamMember.email}
               </p>
               <TextChip value={$t(teamMember.role)} className="text-xs mr-3" size="sm" />
