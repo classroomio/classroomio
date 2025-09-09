@@ -4,28 +4,21 @@
     deleteLessonDocument
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { uploadCourseDocumentStore } from '$lib/components/Course/components/Lesson/store/lessons';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { t } from '$lib/utils/functions/translations';
   import MODES from '$lib/utils/constants/mode';
   import IconButton from '$lib/components/IconButton/index.svelte';
-  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
-  import DocumentIcon from 'carbon-icons-svelte/lib/Document.svelte';
-  import PdfIcon from 'carbon-icons-svelte/lib/Pdf.svelte';
-  import EyeIcon from 'carbon-icons-svelte/lib/View.svelte';
   import CloseIcon from 'carbon-icons-svelte/lib/Close.svelte';
   import ChevronLeftIcon from 'carbon-icons-svelte/lib/ChevronLeft.svelte';
   import ChevronRightIcon from 'carbon-icons-svelte/lib/ChevronRight.svelte';
   import ZoomInIcon from 'carbon-icons-svelte/lib/ZoomIn.svelte';
   import ZoomOutIcon from 'carbon-icons-svelte/lib/ZoomOut.svelte';
-  import isEmpty from 'lodash/isEmpty';
   import { onMount, onDestroy } from 'svelte';
+  import DocumentList from '../Document/DocumentList.svelte';
 
   export let mode = MODES.view;
 
   // Use real documents from store
   $: displayDocuments = $lesson?.materials?.documents || [];
-  let downloadingDocuments = new Set();
+  let downloadingDocuments = new Set<string>();
   let viewingPDF: any = null;
   let pdfViewerOpen = false;
   let pdfCanvas: HTMLCanvasElement;
@@ -71,15 +64,6 @@
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  }
-
-  function getFileIcon(type: string) {
-    switch (type) {
-      case 'pdf':
-        return PdfIcon;
-      default:
-        return DocumentIcon;
-    }
   }
 
   async function downloadDocument(doc: any) {
@@ -242,6 +226,10 @@
     debouncedRender();
   }
 
+  function handleViewPDF(event: CustomEvent) {
+    viewPDF(event.detail);
+  }
+
   function closePDFViewer() {
     // Cancel any ongoing render task
     if (currentRenderTask) {
@@ -302,129 +290,17 @@
   }
 </script>
 
-<div class="w-full">
-  {#if mode === MODES.edit}
-    <div class="mb-4">
-      <PrimaryButton
-        label={$t('course.navItem.lessons.materials.tabs.document.add_document')}
-        onClick={openDocumentUploadModal}
-        className="mb-4"
-      />
-    </div>
-
-    {#if !isEmpty(displayDocuments)}
-      <div class="space-y-4">
-        {#each displayDocuments as document, index}
-          <div class="rounded-lg border border-gray-200 p-4">
-            <div class="flex items-start space-x-3">
-              <svelte:component
-                this={getFileIcon(document.type)}
-                size={24}
-                class="mt-1 text-blue-600"
-              />
-              <div class="flex-1">
-                <h4 class="mb-2 font-medium text-gray-900">{document.name}</h4>
-                <div class="mb-3 flex items-center space-x-4 text-sm text-gray-600">
-                  <span
-                    >{$t('course.navItem.lessons.materials.tabs.document.type')}: {document.type.toUpperCase()}</span
-                  >
-                  {#if document.size}
-                    <span
-                      >{$t('course.navItem.lessons.materials.tabs.document.size')}: {formatFileSize(
-                        document.size
-                      )}</span
-                    >
-                  {/if}
-                </div>
-                <div class="flex gap-3">
-                  {#if document.type === 'pdf'}
-                    <button
-                      on:click={() => viewPDF(document)}
-                      class="text-sm text-blue-600 underline hover:text-blue-800"
-                    >
-                      <EyeIcon size={16} class="mr-1 inline" />
-                      View PDF
-                    </button>
-                  {:else}
-                    <a
-                      href={document.link}
-                      target="_blank"
-                      class="text-sm text-blue-600 underline hover:text-blue-800"
-                    >
-                      {$t('course.navItem.lessons.materials.tabs.document.view_document')}
-                    </a>
-                  {/if}
-                  <button
-                    on:click={() => downloadDocument(document)}
-                    disabled={downloadingDocuments.has(document.name)}
-                    class="cursor-pointer text-sm text-green-600 underline hover:text-green-800 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {downloadingDocuments.has(document.name)
-                      ? $t('course.navItem.lessons.materials.tabs.document.downloading')
-                      : $t('course.navItem.lessons.materials.tabs.document.download')}
-                  </button>
-                  <button
-                    on:click={() => deleteDocument(index)}
-                    class="text-sm text-red-600 underline hover:text-red-800"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        {/each}
-      </div>
-    {/if}
-  {:else if !isEmpty(displayDocuments)}
-    <div class="space-y-4">
-      {#each displayDocuments as document}
-        <div class="rounded-lg border border-gray-200 p-4">
-          <div class="flex items-start space-x-3">
-            <svelte:component
-              this={getFileIcon(document.type)}
-              size={24}
-              class="mt-1 text-blue-600"
-            />
-            <div class="flex-1">
-              <h4 class="mb-2 font-medium text-gray-900">{document.name}</h4>
-              <div class="mb-3 flex items-center space-x-4 text-sm text-gray-600">
-                <span
-                  >{$t('course.navItem.lessons.materials.tabs.document.type')}: {document.type.toUpperCase()}</span
-                >
-                {#if document.size}
-                  <span
-                    >{$t('course.navItem.lessons.materials.tabs.document.size')}: {formatFileSize(
-                      document.size
-                    )}</span
-                  >
-                {/if}
-              </div>
-              <div class="flex gap-3">
-                {#if document.type === 'pdf'}
-                  <button
-                    on:click={() => viewPDF(document)}
-                    class="text-sm text-blue-600 underline hover:text-blue-800"
-                  >
-                    <EyeIcon size={16} class="mr-1 inline" />
-                    View PDF
-                  </button>
-                {:else}
-                  <a
-                    href={document.link}
-                    target="_blank"
-                    class="text-sm text-blue-600 underline hover:text-blue-800"
-                  >
-                    {$t('course.navItem.lessons.materials.tabs.document.view_document')}
-                  </a>
-                {/if}
-              </div>
-            </div>
-          </div>
-        </div>
-      {/each}
-    </div>
-  {/if}
+<div class="my-2 w-full">
+  <DocumentList
+    {mode}
+    {displayDocuments}
+    {downloadingDocuments}
+    {formatFileSize}
+    {openDocumentUploadModal}
+    {deleteDocument}
+    {downloadDocument}
+    on:viewPDF={handleViewPDF}
+  />
 </div>
 
 <!-- PDF Viewer Modal -->
