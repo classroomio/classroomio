@@ -172,9 +172,9 @@
       } else if (tab.value === 2 && !!slide_url) {
         badgeValue = 1;
       } else if (tab.value === 3 && !isEmpty(videos)) {
-        badgeValue = 1;
+        badgeValue = videos.length;
       } else if (tab.value === 4 && !isEmpty(documents)) {
-        badgeValue = 1;
+        badgeValue = documents.length;
       }
       tab.badgeValue = badgeValue;
       return tab;
@@ -281,6 +281,8 @@
     if ($uploadCourseDocumentStore.isUploading) return;
 
     $uploadCourseDocumentStore.isModalOpen = false;
+    // Clear any error messages when modal closes
+    $uploadCourseDocumentStore.error = null;
     autoSave($lesson.materials, $lessonByTranslation[lessonId], $isLoading, lessonId);
   };
 

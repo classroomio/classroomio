@@ -12,6 +12,7 @@ import { authMiddleware } from '$src/middlewares/auth';
 import { generateFileKey } from '$src/utils/upload';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { s3Client } from '$src/utils/s3';
+import { BUCKET_NAME } from '$src/constants/upload';
 
 export const presignRouter = new Hono();
 
@@ -24,7 +25,7 @@ presignRouter.post('/upload', authMiddleware, async (c) => {
 
   try {
     const command = new PutObjectCommand({
-      Bucket: CLOUDFLARE.R2.BUCKET,
+      Bucket: BUCKET_NAME.VIDEOS,
       Key: fileKey,
       ContentType: fileType
     }) as GetSignedUrlParameters[1];
@@ -73,7 +74,7 @@ presignRouter.post('/document/upload', authMiddleware, async (c) => {
 
   try {
     const command = new PutObjectCommand({
-      Bucket: CLOUDFLARE.R2.BUCKET,
+      Bucket: BUCKET_NAME.VIDEOS,
       Key: fileKey,
       ContentType: fileType
     }) as GetSignedUrlParameters[1];
@@ -125,7 +126,7 @@ presignRouter.post('/download', authMiddleware, async (c) => {
     await Promise.all(
       keys.map(async (key) => {
         const command = new GetObjectCommand({
-          Bucket: CLOUDFLARE.R2.BUCKET,
+          Bucket: BUCKET_NAME.VIDEOS,
           Key: key
         }) as GetSignedUrlParameters[1];
 
@@ -149,6 +150,48 @@ presignRouter.post('/download', authMiddleware, async (c) => {
         success: false,
         type: 'INTERNAL_ERROR',
         message: 'Error Retrieving Video'
+      },
+      500
+    );
+  }
+});
+
+presignRouter.post('/download/document', authMiddleware, async (c) => {
+  const body = await c.req.json();
+  const result = ZCourseDownloadPresignedUrl.parse(body);
+
+  const { keys } = result;
+
+  try {
+    const signedUrls: Record<string, string> = {};
+
+    await Promise.all(
+      keys.map(async (key) => {
+        const command = new GetObjectCommand({
+          Bucket: BUCKET_NAME.VIDEOS,
+          Key: key
+        }) as GetSignedUrlParameters[1];
+
+        const presignedUrl = await getSignedUrl(s3Client as GetSignedUrlParameters[0], command, {
+          expiresIn: CLOUDFLARE.R2.DOWNLOAD_EXPIRATION_TIME
+        });
+
+        signedUrls[key] = presignedUrl;
+      })
+    );
+
+    return c.json({
+      success: true,
+      urls: signedUrls,
+      message: 'Document URLs retrieved successfully'
+    });
+  } catch (error) {
+    console.error('Error Retrieving Document:', error);
+    return c.json(
+      {
+        success: false,
+        type: 'INTERNAL_ERROR',
+        message: 'Error Retrieving Document'
       },
       500
     );

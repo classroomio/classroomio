@@ -45,14 +45,14 @@
     }
   }
 
-  async function downloadDocument(document: any) {
+  async function downloadDocument(doc: any) {
     // Add to downloading set
-    downloadingDocuments.add(document.name);
+    downloadingDocuments.add(doc.name);
     downloadingDocuments = downloadingDocuments; // Trigger reactivity
 
     try {
       // Fetch the file from the presigned URL
-      const response = await fetch(document.link);
+      const response = await fetch(doc.link);
       if (!response.ok) {
         throw new Error('Failed to fetch document');
       }
@@ -66,7 +66,7 @@
       // Create a temporary anchor element and trigger download
       const a = document.createElement('a');
       a.href = url;
-      a.download = document.name;
+      a.download = doc.name;
       document.body.appendChild(a);
       a.click();
 
@@ -76,10 +76,10 @@
     } catch (error) {
       console.error('Error downloading document:', error);
       // Fallback to opening in new tab
-      window.open(document.link, '_blank');
+      window.open(doc.link, '_blank');
     } finally {
       // Remove from downloading set
-      downloadingDocuments.delete(document.name);
+      downloadingDocuments.delete(doc.name);
       downloadingDocuments = downloadingDocuments; // Trigger reactivity
     }
   }

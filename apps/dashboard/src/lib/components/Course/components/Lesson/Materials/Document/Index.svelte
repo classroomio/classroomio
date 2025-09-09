@@ -14,6 +14,7 @@
   import { lesson } from '../../store/lessons';
   import { apiClient } from '$lib/utils/services/api';
   import axios from 'axios';
+  import { onDestroy } from 'svelte';
 
   export let lessonId = '';
 
@@ -21,6 +22,7 @@
   let selectedFile: File | null = null;
   let dragOver = false;
   let abortController: AbortController | null = null;
+  let errorTimeout: NodeJS.Timeout | null = null;
 
   const ALLOWED_TYPES = [
     'application/pdf',
@@ -149,7 +151,7 @@
       }
 
       // Get download URL for the uploaded file
-      const downloadPresignedResponse = await apiClient.post('/course/presign/download', {
+      const downloadPresignedResponse = await apiClient.post('/course/presign/download/document', {
         keys: [uploadPresignResponse.data.fileKey]
       });
 
@@ -231,6 +233,19 @@
         return DocumentIcon;
     }
   }
+
+  // Auto-clear error after 5 seconds
+  $: if ($uploadCourseDocumentStore.error) {
+    if (errorTimeout) clearTimeout(errorTimeout);
+    errorTimeout = setTimeout(() => {
+      $uploadCourseDocumentStore.error = null;
+    }, 5000);
+  }
+
+  // Clear error timeout when component is destroyed
+  onDestroy(() => {
+    if (errorTimeout) clearTimeout(errorTimeout);
+  });
 </script>
 
 <div class="p-6">
@@ -279,11 +294,13 @@
         on:change={handleFileSelect}
         class="hidden"
       />
-      <PrimaryButton
-        label={$t('course.navItem.lessons.materials.tabs.document.choose_file')}
-        variant={VARIANTS.OUTLINED}
-        onClick={() => fileInput?.click()}
-      />
+      <div class="flex justify-center">
+        <PrimaryButton
+          label={$t('course.navItem.lessons.materials.tabs.document.choose_file')}
+          variant={VARIANTS.OUTLINED}
+          onClick={() => fileInput?.click()}
+        />
+      </div>
     {/if}
   </div>
 
