@@ -342,7 +342,7 @@
   onClose={onDocumentClose}
   bind:open={$uploadCourseDocumentStore.isModalOpen}
   width="w-4/5 w-[90%] h-[80%] md:h-[566px]"
-  modalHeading="Upload Document"
+  modalHeading={$t('course.navItem.lessons.materials.tabs.document.upload_title')}
 >
   <DocumentUploader {lessonId} />
 </Modal>

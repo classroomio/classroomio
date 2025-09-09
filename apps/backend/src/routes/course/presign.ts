@@ -1,5 +1,9 @@
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
-import { ZCourseDownloadPresignedUrl, ZCoursePresignUrlUpload } from '$src/types/course';
+import {
+  ZCourseDownloadPresignedUrl,
+  ZCoursePresignUrlUpload,
+  ZCourseDocumentPresignUrlUpload
+} from '$src/types/course';
 
 import { CLOUDFLARE } from '$src/constants';
 import type { GetSignedUrlParameters } from '$src/utils/s3';
@@ -54,6 +58,55 @@ presignRouter.post('/upload', authMiddleware, async (c) => {
         success: false,
         type: 'INTERNAL_ERROR',
         message: 'Error generating pre-signed URL'
+      },
+      500
+    );
+  }
+});
+
+presignRouter.post('/document/upload', authMiddleware, async (c) => {
+  const body = await c.req.json();
+  const result = ZCourseDocumentPresignUrlUpload.parse(body);
+
+  const { fileName, fileType } = result;
+  const fileKey = generateFileKey(fileName);
+
+  try {
+    const command = new PutObjectCommand({
+      Bucket: CLOUDFLARE.R2.BUCKET,
+      Key: fileKey,
+      ContentType: fileType
+    }) as GetSignedUrlParameters[1];
+
+    const presignedUrl = await getSignedUrl(s3Client as GetSignedUrlParameters[0], command, {
+      expiresIn: CLOUDFLARE.R2.PRESIGN_EXPIRATION_TIME
+    });
+
+    return c.json({
+      success: true,
+      url: presignedUrl,
+      fileKey,
+      message: 'Document pre-signed URL generated successfully'
+    });
+  } catch (error) {
+    console.error('Error generating document pre-signed URL:', error);
+
+    if (error instanceof Error && error.name === 'SignatureDoesNotMatch') {
+      return c.json(
+        {
+          success: false,
+          type: 'SIGNATURE_ERROR',
+          message: 'Invalid signature for the request'
+        },
+        403
+      );
+    }
+
+    return c.json(
+      {
+        success: false,
+        type: 'INTERNAL_ERROR',
+        message: 'Error generating document pre-signed URL'
       },
       500
     );

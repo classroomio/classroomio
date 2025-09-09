@@ -753,6 +753,31 @@
                 "note": "Gerar nota de aula",
                 "activities": "Gerar atividades de aula"
               }
+            },
+            "document": {
+              "title": "Documento",
+              "add_document": "Adicione documento",
+              "no_document": "Nenhum documento enviado ainda",
+              "view_document": "Exibir documento",
+              "download": "Download",
+              "upload_document": "Documento de upload",
+              "upload_title": "Documento de upload",
+              "upload_description": "Faça o upload de arquivos PDF, DOCX ou DOC. Tamanho máximo: 5 MB",
+              "drag_drop": "Arraste e solte seu documento aqui",
+              "or": "ou",
+              "choose_file": "Escolha o arquivo",
+              "cancel": "Cancelar",
+              "uploading": "Enviando ...",
+              "upload_success": "Documento enviado com sucesso!",
+              "upload_error": "Falha ao fazer upload do documento",
+              "file_type_error": "Tipo de arquivo não suportado. Faça o upload de arquivos PDF, DOCX ou DOC.",
+              "file_size_error": "Tamanho do arquivo muito grande. O tamanho máximo é {size}.",
+              "type": "Tipo",
+              "size": "Tamanho",
+              "upload_error_title": "Erro de upload",
+              "upload_error_message": "Formato de arquivo ou upload não suportado",
+              "upload_error_try_again": "Tente novamente com um arquivo de documento válido",
+              "try_again": "Tente novamente"
             }
           }
         },

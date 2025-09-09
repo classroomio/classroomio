@@ -753,6 +753,31 @@
                 "note": "Tạo ghi chú bài học",
                 "activities": "Tạo hoạt động bài học"
               }
+            },
+            "document": {
+              "title": "Tài liệu",
+              "add_document": "Thêm tài liệu",
+              "no_document": "Chưa có tài liệu nào được tải lên",
+              "view_document": "Xem tài liệu",
+              "download": "Tải xuống",
+              "upload_document": "Tải lên tài liệu",
+              "upload_title": "Tải lên tài liệu",
+              "upload_description": "Tải lên các tệp PDF, DOCX hoặc DOC. Kích thước tối đa: 5MB",
+              "drag_drop": "Kéo và thả tài liệu của bạn tại đây",
+              "or": "hoặc",
+              "choose_file": "Chọn Tệp",
+              "cancel": "Hủy bỏ",
+              "uploading": "Tải lên ...",
+              "upload_success": "Tài liệu được tải lên thành công!",
+              "upload_error": "Không tải lên tài liệu",
+              "file_type_error": "Loại tệp không được hỗ trợ. Vui lòng tải lên các tệp PDF, DOCX hoặc DOC.",
+              "file_size_error": "Kích thước tập tin quá lớn. Kích thước tối đa là {kích thước}.",
+              "type": "Kiểu",
+              "size": "Kích cỡ",
+              "upload_error_title": "Lỗi tải lên",
+              "upload_error_message": "Định dạng tệp không được hỗ trợ hoặc tải lên không thành công",
+              "upload_error_try_again": "Vui lòng thử lại với một tệp tài liệu hợp lệ",
+              "try_again": "Hãy thử lại"
             }
           }
         },

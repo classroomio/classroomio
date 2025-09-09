@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { uploadCourseDocumentStore, resetDocumentUploadStore } from './store';
-  import { supabase } from '$lib/utils/functions/supabase';
+  import { uploadCourseDocumentStore, resetDocumentUploadStore } from '../../store/lessons';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -9,6 +8,8 @@
   import PdfIcon from 'carbon-icons-svelte/lib/Pdf.svelte';
   import CloseIcon from 'carbon-icons-svelte/lib/Close.svelte';
   import { lesson } from '../../store/lessons';
+  import { apiClient } from '$lib/utils/services/api';
+  import axios from 'axios';
 
   export let lessonId = '';
 
@@ -24,7 +25,6 @@
 
   const ALLOWED_EXTENSIONS = ['.pdf', '.docx', '.doc'];
   const MAX_DOCUMENT_SIZE = 5 * 1024 * 1024; // 5MB
-  const BUCKET_NAME = 'documents';
 
   function getFileType(file: File): 'pdf' | 'docx' | 'doc' {
     if (file.type === 'application/pdf') return 'pdf';
@@ -44,11 +44,13 @@
 
   function validateFile(file: File): string | null {
     if (!ALLOWED_TYPES.includes(file.type)) {
-      return `File type not supported. Please upload PDF, DOCX, or DOC files.`;
+      return $t('course.navItem.lessons.materials.tabs.document.file_type_error');
     }
 
     if (file.size > MAX_DOCUMENT_SIZE) {
-      return `File size too large. Maximum size is ${formatFileSize(MAX_DOCUMENT_SIZE)}.`;
+      return $t('course.navItem.lessons.materials.tabs.document.file_size_error', {
+        size: formatFileSize(MAX_DOCUMENT_SIZE)
+      });
     }
 
     return null;
@@ -100,36 +102,45 @@
     $uploadCourseDocumentStore.error = null;
 
     try {
-      // Generate unique filename with timestamp
-      const timestamp = Date.now();
-      const fileExtension = selectedFile.name.split('.').pop();
-      const fileName = `${timestamp}-${selectedFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+      // Get presigned URL for upload
+      const uploadPresignResponse = await apiClient.post('/course/presign/document/upload', {
+        fileName: selectedFile.name,
+        fileType: selectedFile.type
+      });
 
-      // Upload to Supabase storage
-      const { data, error } = await supabase.storage
-        .from(BUCKET_NAME)
-        .upload(fileName, selectedFile, {
-          cacheControl: '3600',
-          upsert: false
-        });
+      const presignedUrl = uploadPresignResponse.data.url;
 
-      if (error) {
-        throw new Error(error.message);
+      // Upload file to Cloudflare R2 using presigned URL
+      const uploadResponse = await axios.put(presignedUrl, selectedFile, {
+        headers: {
+          'Content-Type': selectedFile.type
+        },
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+        onUploadProgress: (progressEvent) => {
+          const progress = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1));
+          $uploadCourseDocumentStore.uploadProgress = progress;
+        }
+      });
+
+      // Get download URL for the uploaded file
+      const downloadPresignedResponse = await apiClient.post('/course/presign/download', {
+        keys: [uploadPresignResponse.data.fileKey]
+      });
+
+      if (!downloadPresignedResponse.data.success) {
+        throw new Error(downloadPresignedResponse.data.message);
       }
 
-      // Get public URL
-      const { data: urlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(fileName);
-
-      if (!urlData?.publicUrl) {
-        throw new Error('Failed to get document URL');
-      }
+      const fileKey = uploadPresignResponse.data.fileKey;
+      const presignedUrls = downloadPresignedResponse.data.urls;
 
       // Create document object
       const document = {
         type: getFileType(selectedFile),
         name: selectedFile.name,
-        link: urlData.publicUrl,
-        key: fileName,
+        link: presignedUrls[fileKey],
+        key: fileKey,
         size: selectedFile.size
       };
 
@@ -140,7 +151,7 @@
       $uploadCourseDocumentStore.uploadedDocument = document;
       $uploadCourseDocumentStore.uploadProgress = 100;
 
-      snackbar.success('Document uploaded successfully!');
+      snackbar.success($t('course.navItem.lessons.materials.tabs.document.upload_success'));
 
       // Reset after a short delay
       setTimeout(() => {
@@ -151,7 +162,7 @@
     } catch (error) {
       console.error('Upload error:', error);
       $uploadCourseDocumentStore.error = error instanceof Error ? error.message : 'Upload failed';
-      snackbar.error('Failed to upload document');
+      snackbar.error($t('course.navItem.lessons.materials.tabs.document.upload_error'));
     } finally {
       $uploadCourseDocumentStore.isUploading = false;
     }
@@ -175,8 +186,12 @@
 
 <div class="p-6">
   <div class="mb-6">
-    <h3 class="mb-2 text-lg font-semibold">Upload Document</h3>
-    <p class="mb-4 text-sm text-gray-600">Upload PDF, DOCX, or DOC files. Maximum size: 5MB</p>
+    <h3 class="mb-2 text-lg font-semibold">
+      {$t('course.navItem.lessons.materials.tabs.document.upload_title')}
+    </h3>
+    <p class="mb-4 text-sm text-gray-600">
+      {$t('course.navItem.lessons.materials.tabs.document.upload_description')}
+    </p>
   </div>
 
   <!-- File Upload Area -->
@@ -202,8 +217,12 @@
       </div>
     {:else}
       <DocumentIcon size={32} class="mx-auto mb-4 text-gray-400" />
-      <p class="mb-2 text-gray-600">Drag and drop your document here</p>
-      <p class="mb-4 text-sm text-gray-500">or</p>
+      <p class="mb-2 text-gray-600">
+        {$t('course.navItem.lessons.materials.tabs.document.drag_drop')}
+      </p>
+      <p class="mb-4 text-sm text-gray-500">
+        {$t('course.navItem.lessons.materials.tabs.document.or')}
+      </p>
       <input
         bind:this={fileInput}
         type="file"
@@ -212,7 +231,7 @@
         class="hidden"
       />
       <PrimaryButton
-        label="Choose File"
+        label={$t('course.navItem.lessons.materials.tabs.document.choose_file')}
         variant={VARIANTS.OUTLINED}
         onClick={() => fileInput?.click()}
       />
@@ -230,7 +249,7 @@
   {#if $uploadCourseDocumentStore.isUploading}
     <div class="mt-4">
       <div class="mb-1 flex justify-between text-sm text-gray-600">
-        <span>Uploading...</span>
+        <span>{$t('course.navItem.lessons.materials.tabs.document.uploading')}</span>
         <span>{$uploadCourseDocumentStore.uploadProgress}%</span>
       </div>
       <div class="h-2 w-full rounded-full bg-gray-200">
@@ -245,9 +264,13 @@
   <!-- Upload Button -->
   {#if selectedFile && !$uploadCourseDocumentStore.isUploading}
     <div class="mt-6 flex justify-end space-x-3">
-      <PrimaryButton label="Cancel" variant={VARIANTS.OUTLINED} onClick={removeSelectedFile} />
       <PrimaryButton
-        label="Upload Document"
+        label={$t('course.navItem.lessons.materials.tabs.document.cancel')}
+        variant={VARIANTS.OUTLINED}
+        onClick={removeSelectedFile}
+      />
+      <PrimaryButton
+        label={$t('course.navItem.lessons.materials.tabs.document.upload_document')}
         onClick={uploadDocument}
         isLoading={$uploadCourseDocumentStore.isUploading}
       />
@@ -258,7 +281,7 @@
   {#if $uploadCourseDocumentStore.uploadedDocument}
     <div class="mt-4 rounded-md border border-green-200 bg-green-50 p-3">
       <p class="text-sm text-green-600">
-        Document "{$uploadCourseDocumentStore.uploadedDocument.name}" uploaded successfully!
+        {$t('course.navItem.lessons.materials.tabs.document.upload_success')}
       </p>
     </div>
   {/if}

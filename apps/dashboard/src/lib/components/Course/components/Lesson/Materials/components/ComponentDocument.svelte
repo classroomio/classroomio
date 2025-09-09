@@ -16,6 +16,9 @@
 
   export let mode = MODES.view;
 
+  // Use real documents from store
+  $: displayDocuments = $lesson?.materials?.documents || [];
+
   function openDocumentUploadModal() {
     $uploadCourseDocumentStore.isModalOpen = true;
   }
@@ -45,12 +48,16 @@
 <div class="w-full">
   {#if mode === MODES.edit}
     <div class="mb-4">
-      <PrimaryButton label="Add Document" onClick={openDocumentUploadModal} className="mb-4" />
+      <PrimaryButton
+        label={$t('course.navItem.lessons.materials.tabs.document.add_document')}
+        onClick={openDocumentUploadModal}
+        className="mb-4"
+      />
     </div>
 
-    {#if !isEmpty($lesson.materials.documents)}
+    {#if !isEmpty(displayDocuments)}
       <div class="space-y-4">
-        {#each $lesson.materials.documents as document, index}
+        {#each displayDocuments as document, index}
           <div class="rounded-lg border border-gray-200 p-4">
             <div class="flex items-start space-x-3">
               <svelte:component
@@ -66,9 +73,15 @@
                   </IconButton>
                 </div>
                 <div class="flex items-center space-x-4 text-sm text-gray-600">
-                  <span>Type: {document.type.toUpperCase()}</span>
+                  <span
+                    >{$t('course.navItem.lessons.materials.tabs.document.type')}: {document.type.toUpperCase()}</span
+                  >
                   {#if document.size}
-                    <span>Size: {formatFileSize(document.size)}</span>
+                    <span
+                      >{$t('course.navItem.lessons.materials.tabs.document.size')}: {formatFileSize(
+                        document.size
+                      )}</span
+                    >
                   {/if}
                 </div>
               </div>
@@ -77,9 +90,9 @@
         {/each}
       </div>
     {/if}
-  {:else if !isEmpty($lesson.materials.documents)}
+  {:else if !isEmpty(displayDocuments)}
     <div class="space-y-4">
-      {#each $lesson.materials.documents as document}
+      {#each displayDocuments as document}
         <div class="rounded-lg border border-gray-200 p-4">
           <div class="flex items-start space-x-3">
             <svelte:component
@@ -90,9 +103,15 @@
             <div class="flex-1">
               <h4 class="mb-2 font-medium text-gray-900">{document.name}</h4>
               <div class="mb-3 flex items-center space-x-4 text-sm text-gray-600">
-                <span>Type: {document.type.toUpperCase()}</span>
+                <span
+                  >{$t('course.navItem.lessons.materials.tabs.document.type')}: {document.type.toUpperCase()}</span
+                >
                 {#if document.size}
-                  <span>Size: {formatFileSize(document.size)}</span>
+                  <span
+                    >{$t('course.navItem.lessons.materials.tabs.document.size')}: {formatFileSize(
+                      document.size
+                    )}</span
+                  >
                 {/if}
               </div>
               <div class="flex gap-3">
@@ -101,25 +120,20 @@
                   target="_blank"
                   class="text-sm text-blue-600 underline hover:text-blue-800"
                 >
-                  View Document
+                  {$t('course.navItem.lessons.materials.tabs.document.view_document')}
                 </a>
                 <a
                   href={document.link}
                   download={document.name}
                   class="text-sm text-green-600 underline hover:text-green-800"
                 >
-                  Download
+                  {$t('course.navItem.lessons.materials.tabs.document.download')}
                 </a>
               </div>
             </div>
           </div>
         </div>
       {/each}
-    </div>
-  {:else}
-    <div class="py-8 text-center">
-      <DocumentIcon size={32} class="mx-auto mb-4 text-gray-400" />
-      <p class="text-gray-500">No documents uploaded yet</p>
     </div>
   {/if}
 </div>

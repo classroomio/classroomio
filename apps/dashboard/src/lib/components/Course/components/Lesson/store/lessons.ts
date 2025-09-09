@@ -22,7 +22,10 @@ export const uploadCourseVideoStore = writable({
 
 export const uploadCourseDocumentStore = writable({
   isUploading: false,
-  isModalOpen: false
+  isModalOpen: false,
+  uploadProgress: 0,
+  uploadedDocument: null as any,
+  error: null as string | null
 });
 
 export const lessons: Writable<Lesson[]> = writable([]);
@@ -208,3 +211,13 @@ export const deleteLessonDocument = (index: any) => {
     }
   }));
 };
+
+export function resetDocumentUploadStore() {
+  uploadCourseDocumentStore.set({
+    isUploading: false,
+    isModalOpen: false,
+    uploadProgress: 0,
+    uploadedDocument: null,
+    error: null
+  });
+}

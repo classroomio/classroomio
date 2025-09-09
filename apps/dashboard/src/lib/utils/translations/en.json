@@ -667,7 +667,29 @@
               }
             },
             "document": {
-              "title": "Document"
+              "title": "Document",
+              "add_document": "Add Document",
+              "no_document": "No documents uploaded yet",
+              "view_document": "View Document",
+              "download": "Download",
+              "upload_document": "Upload Document",
+              "upload_title": "Upload Document",
+              "upload_description": "Upload PDF, DOCX, or DOC files. Maximum size: 5MB",
+              "drag_drop": "Drag and drop your document here",
+              "or": "or",
+              "choose_file": "Choose File",
+              "cancel": "Cancel",
+              "uploading": "Uploading...",
+              "upload_success": "Document uploaded successfully!",
+              "upload_error": "Failed to upload document",
+              "file_type_error": "File type not supported. Please upload PDF, DOCX, or DOC files.",
+              "file_size_error": "File size too large. Maximum size is {size}.",
+              "type": "Type",
+              "size": "Size",
+              "upload_error_title": "Upload Error",
+              "upload_error_message": "Unsupported file format or upload failed",
+              "upload_error_try_again": "Please try again with a valid document file",
+              "try_again": "Try Again"
             }
           },
           "button_done": "Done"
