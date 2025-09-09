@@ -3,11 +3,11 @@ import { browser, dev } from '$app/environment';
 import { derived, writable } from 'svelte/store';
 
 import { PLAN } from 'shared/src/plans/constants';
+import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { ROLE } from '$lib/utils/constants/roles';
 import { STEPS } from '../constants/quiz';
 import type { UserLessonDataType } from '$lib/utils/types';
 import type { Writable } from 'svelte/store';
-import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 
 // Trigger build
 export const defaultCurrentOrgState: CurrentOrg = {
@@ -33,7 +33,11 @@ export const orgs = writable<CurrentOrg[]>([]);
 export const currentOrg: Writable<CurrentOrg> = writable(defaultCurrentOrgState);
 export const orgAudience = writable<OrgAudience[]>([]);
 export const orgTeam = writable<OrgTeamMember[]>([]);
-export const isOrgAdmin = derived(currentOrg, ($currentOrg) => $currentOrg.role_id === ROLE.ADMIN);
+export const isOrgAdmin = derived(currentOrg, ($currentOrg) => {
+  if ($currentOrg.role_id === 0) return null;
+
+  return $currentOrg.role_id === ROLE.ADMIN;
+});
 
 const getActivePlan = (org: CurrentOrg) => {
   return org.organization_plan.find((p) => p.is_active);
