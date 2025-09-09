@@ -737,7 +737,9 @@
                 "upgrade": "Atualize seu plano para enviar vídeos",
                 "uploading": "Enviando...",
                 "invalid_youtube": "Links inválidos do YouTube",
-                "invalid_link": "Links inválidos"
+                "invalid_link": "Links inválidos",
+                "cancel_upload": "Cancelar upload",
+                "upload_cancelled": "Upload cancelado pelo usuário"
               }
             },
             "slide": {
@@ -777,7 +779,10 @@
               "upload_error_title": "Erro de upload",
               "upload_error_message": "Formato de arquivo ou upload não suportado",
               "upload_error_try_again": "Tente novamente com um arquivo de documento válido",
-              "try_again": "Tente novamente"
+              "try_again": "Tente novamente",
+              "cancel_upload": "Cancelar upload",
+              "upload_cancelled": "Upload cancelado pelo usuário",
+              "downloading": "Download ..."
             }
           }
         },

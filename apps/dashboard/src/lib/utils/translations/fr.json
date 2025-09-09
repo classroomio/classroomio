@@ -737,7 +737,9 @@
                 "upgrade": "Mettez à niveau votre forfait pour télécharger des vidéos",
                 "uploading": "Téléchargement...",
                 "invalid_youtube": "Lien(s) YouTube invalide(s)",
-                "invalid_link": "Lien(s) invalide(s)"
+                "invalid_link": "Lien(s) invalide(s)",
+                "cancel_upload": "Annuler le téléchargement",
+                "upload_cancelled": "Télécharger annulé par l'utilisateur"
               }
             },
             "slide": {
@@ -777,7 +779,10 @@
               "upload_error_title": "Télécharger une erreur",
               "upload_error_message": "Le format de fichier non pris en charge ou le téléchargement a échoué",
               "upload_error_try_again": "Veuillez réessayer avec un fichier de document valide",
-              "try_again": "Essayer à nouveau"
+              "try_again": "Essayer à nouveau",
+              "cancel_upload": "Annuler le téléchargement",
+              "upload_cancelled": "Télécharger annulé par l'utilisateur",
+              "downloading": "Téléchargement..."
             }
           }
         },

@@ -737,7 +737,9 @@
                 "upgrade": "Nâng cấp kế hoạch tải video lên của bạn",
                 "uploading": "Đang tải lên...",
                 "invalid_youtube": "(Các) liên kết YouTube không hợp lệ",
-                "invalid_link": "(Các) liên kết không hợp lệ"
+                "invalid_link": "(Các) liên kết không hợp lệ",
+                "cancel_upload": "Hủy tải lên",
+                "upload_cancelled": "Tải lên bị hủy bởi người dùng"
               }
             },
             "slide": {
@@ -777,7 +779,10 @@
               "upload_error_title": "Lỗi tải lên",
               "upload_error_message": "Định dạng tệp không được hỗ trợ hoặc tải lên không thành công",
               "upload_error_try_again": "Vui lòng thử lại với một tệp tài liệu hợp lệ",
-              "try_again": "Hãy thử lại"
+              "try_again": "Hãy thử lại",
+              "cancel_upload": "Hủy tải lên",
+              "upload_cancelled": "Tải lên bị hủy bởi người dùng",
+              "downloading": "Tải xuống ..."
             }
           }
         },

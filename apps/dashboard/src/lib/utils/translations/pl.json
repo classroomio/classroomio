@@ -889,7 +889,9 @@
                 "upgrade": "Uaktualnij swój plan przesłania vidoes",
                 "uploading": "Przesyłanie ...",
                 "invalid_youtube": "Nieprawidłowe linki do YouTube",
-                "invalid_link": "Nieprawidłowe linki (y)"
+                "invalid_link": "Nieprawidłowe linki (y)",
+                "cancel_upload": "Anuluj przesłanie",
+                "upload_cancelled": "Prześlij anulowany przez użytkownika"
               }
             },
             "slide": {
@@ -929,7 +931,10 @@
               "upload_error_title": "Prześlij błąd",
               "upload_error_message": "Nieprzepustowy format pliku lub przesyłanie nie powiodło się",
               "upload_error_try_again": "Spróbuj ponownie z prawidłowym plikiem dokumentu",
-              "try_again": "Spróbuj ponownie"
+              "try_again": "Spróbuj ponownie",
+              "cancel_upload": "Anuluj przesłanie",
+              "upload_cancelled": "Prześlij anulowany przez użytkownika",
+              "downloading": "Ściąganie..."
             }
           }
         },

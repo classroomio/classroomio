@@ -694,7 +694,8 @@
               "try_again": "Try Again",
 
               "cancel_upload": "Cancel Upload",
-              "upload_cancelled": "Upload cancelled by user"
+              "upload_cancelled": "Upload cancelled by user",
+              "downloading": "Downloading..."
             }
           },
           "button_done": "Done"

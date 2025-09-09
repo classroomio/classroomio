@@ -737,7 +737,9 @@
                 "upgrade": "Actualiza tu plan para subir videos",
                 "uploading": "Subiendo...",
                 "invalid_youtube": "Enlace(s) de YouTube no válido(s)",
-                "invalid_link": "Enlace(s) no válido(s)"
+                "invalid_link": "Enlace(s) no válido(s)",
+                "cancel_upload": "Cancelar la carga",
+                "upload_cancelled": "Carga cancelada por el usuario"
               }
             },
             "slide": {
@@ -777,7 +779,10 @@
               "upload_error_title": "Error de carga",
               "upload_error_message": "Falló el formato de archivo o la carga no compatible",
               "upload_error_try_again": "Vuelva a intentarlo con un archivo de documento válido",
-              "try_again": "Intentar otra vez"
+              "try_again": "Intentar otra vez",
+              "cancel_upload": "Cancelar la carga",
+              "upload_cancelled": "Carga cancelada por el usuario",
+              "downloading": "Descarga ..."
             }
           }
         },

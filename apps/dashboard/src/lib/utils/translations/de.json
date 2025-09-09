@@ -737,7 +737,9 @@
                 "upgrade": "Aktualisieren Sie Ihren Plan, um Videos hochzuladen",
                 "uploading": "Hochladen...",
                 "invalid_youtube": "Ungültige YouTube-Link(s)",
-                "invalid_link": "Ungültige Links"
+                "invalid_link": "Ungültige Links",
+                "cancel_upload": "Upload abbrechen",
+                "upload_cancelled": "Vom Benutzer abgebrochen hochladen"
               }
             },
             "slide": {
@@ -777,7 +779,10 @@
               "upload_error_title": "Fehler hochladen",
               "upload_error_message": "Nicht unterstütztes Dateiformat oder Upload ist fehlgeschlagen",
               "upload_error_try_again": "Bitte versuchen Sie es erneut mit einer gültigen Dokumentdatei",
-              "try_again": "Versuchen Sie es erneut"
+              "try_again": "Versuchen Sie es erneut",
+              "cancel_upload": "Upload abbrechen",
+              "upload_cancelled": "Vom Benutzer abgebrochen hochladen",
+              "downloading": "Herunterladen ..."
             }
           }
         },

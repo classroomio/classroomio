@@ -18,6 +18,7 @@
 
   // Use real documents from store
   $: displayDocuments = $lesson?.materials?.documents || [];
+  let downloadingDocuments = new Set();
 
   function openDocumentUploadModal() {
     $uploadCourseDocumentStore.isModalOpen = true;
@@ -41,6 +42,45 @@
         return PdfIcon;
       default:
         return DocumentIcon;
+    }
+  }
+
+  async function downloadDocument(document: any) {
+    // Add to downloading set
+    downloadingDocuments.add(document.name);
+    downloadingDocuments = downloadingDocuments; // Trigger reactivity
+
+    try {
+      // Fetch the file from the presigned URL
+      const response = await fetch(document.link);
+      if (!response.ok) {
+        throw new Error('Failed to fetch document');
+      }
+
+      // Get the blob data
+      const blob = await response.blob();
+
+      // Create a temporary URL for the blob
+      const url = window.URL.createObjectURL(blob);
+
+      // Create a temporary anchor element and trigger download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = document.name;
+      document.body.appendChild(a);
+      a.click();
+
+      // Clean up
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading document:', error);
+      // Fallback to opening in new tab
+      window.open(document.link, '_blank');
+    } finally {
+      // Remove from downloading set
+      downloadingDocuments.delete(document.name);
+      downloadingDocuments = downloadingDocuments; // Trigger reactivity
     }
   }
 </script>
@@ -122,13 +162,15 @@
                 >
                   {$t('course.navItem.lessons.materials.tabs.document.view_document')}
                 </a>
-                <a
-                  href={document.link}
-                  download={document.name}
-                  class="text-sm text-green-600 underline hover:text-green-800"
+                <button
+                  on:click={() => downloadDocument(document)}
+                  disabled={downloadingDocuments.has(document.name)}
+                  class="cursor-pointer text-sm text-green-600 underline hover:text-green-800 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {$t('course.navItem.lessons.materials.tabs.document.download')}
-                </a>
+                  {downloadingDocuments.has(document.name)
+                    ? $t('course.navItem.lessons.materials.tabs.document.downloading')
+                    : $t('course.navItem.lessons.materials.tabs.document.download')}
+                </button>
               </div>
             </div>
           </div>
