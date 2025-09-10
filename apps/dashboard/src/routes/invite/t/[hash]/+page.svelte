@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import AuthUI from '$lib/components/AuthUI/index.svelte';
   import type { Profile } from '$lib/components/Course/components/People/types';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -9,6 +10,7 @@
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { setTheme } from '$lib/utils/functions/theme';
   import { t } from '$lib/utils/functions/translations';
+  import { profile } from '$lib/utils/store/user';
   import {
     authValidation,
     getConfirmPasswordError,
@@ -17,6 +19,7 @@
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import type { CurrentOrg } from '$lib/utils/types/org';
   import { onMount } from 'svelte';
+  import { snackbar } from '$lib/components/Snackbar/store.js';
 
   export let data;
 
@@ -132,7 +135,12 @@
   }
 
   onMount(async () => {
-    await logout(false);
+    const redirectTo = $page.url.pathname;
+
+    const url = new URL($page.url.pathname);
+    url.searchParams.set('redirect', redirectTo);
+    console.log('url', url.toString());
+    goto(url.toString());
 
     setTheme(data.invite.currentOrg?.theme || '');
 
@@ -142,7 +150,17 @@
   $: errors.confirmPassword = getConfirmPasswordError(fields);
   $: disableSubmit = getDisableSubmit(fields);
 
-  $: console.log('data', data.invite);
+  $: autoLogout($profile?.email);
+  function autoLogout(email?: string) {
+    console.log('email', email);
+    console.log('data.invite.email', data.invite.email);
+    if (!email) return;
+
+    if (email !== data.invite.email) {
+      console.log('logout');
+      logout(false);
+    }
+  }
 </script>
 
 <svelte:head>
