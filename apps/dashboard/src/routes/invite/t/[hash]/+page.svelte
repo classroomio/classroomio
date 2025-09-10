@@ -135,13 +135,6 @@
   }
 
   onMount(async () => {
-    const redirectTo = $page.url.pathname;
-
-    const url = new URL($page.url.pathname);
-    url.searchParams.set('redirect', redirectTo);
-    console.log('url', url.toString());
-    goto(url.toString());
-
     setTheme(data.invite.currentOrg?.theme || '');
 
     setCurOrg(data.invite.currentOrg as CurrentOrg);
@@ -167,7 +160,15 @@
   <title>Join ClassroomIO</title>
 </svelte:head>
 
-<AuthUI {supabase} isLogin={false} {handleSubmit} isLoading={loading} showLogo={true} bind:formRef>
+<AuthUI
+  {supabase}
+  redirectPathname={$page.url.pathname}
+  isLogin={false}
+  {handleSubmit}
+  isLoading={loading}
+  showLogo={true}
+  bind:formRef
+>
   <div class="mt-4 w-full">
     <p class="mb-6 text-lg font-semibold dark:text-white">
       {#if data.invite.profile}
