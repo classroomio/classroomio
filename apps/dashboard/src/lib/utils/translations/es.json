@@ -1276,6 +1276,20 @@
         "title": "Imagen de fondo",
         "show_background": "Mostrar fondo",
         "hide_background": "Ocultar fondo"
+      },
+      "custom_links": {
+        "heading": "Enlaces personalizados",
+        "hide_links": "Ocultar enlaces",
+        "show_links": "Mostrar enlaces",
+        "description": "Agregue enlaces de navegación personalizados que aparecerán en la barra de navegación del encabezado.",
+        "label": "Etiqueta",
+        "url": "Url",
+        "label_placeholder": "por ejemplo, sobre nosotros",
+        "url_placeholder": "por ejemplo, #About-US o https://example.com",
+        "new_tab": "Abrir en una nueva pestaña",
+        "save": "Ahorrar",
+        "cancel": "Cancelar",
+        "add": "Agregar nuevo enlace"
       }
     },
     "organization": {

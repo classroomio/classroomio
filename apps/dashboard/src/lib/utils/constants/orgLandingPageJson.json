@@ -60,6 +60,35 @@
     "buttonLabel": "Subscribe",
     "show": true
   },
+  "customLinks": {
+    "show": true,
+    "links": [
+      {
+        "id": 1,
+        "label": "About Us",
+        "url": "#about-us",
+        "openInNewTab": false
+      },
+      {
+        "id": 2,
+        "label": "Courses",
+        "url": "#courses",
+        "openInNewTab": false
+      },
+      {
+        "id": 3,
+        "label": "FAQ",
+        "url": "#faq",
+        "openInNewTab": false
+      },
+      {
+        "id": 4,
+        "label": "Contact Us",
+        "url": "#contact",
+        "openInNewTab": false
+      }
+    ]
+  },
   "footer": {
     "facebook": "#",
     "instagram": "#",
