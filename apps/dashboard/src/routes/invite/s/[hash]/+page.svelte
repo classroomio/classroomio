@@ -112,10 +112,6 @@
     });
   }
 
-  $: console.log('data', data);
-  $: console.log('currentOrg', $currentOrg);
-  $: console.log('profile', $profile);
-
   function setCurOrg(cOrg: CurrentOrg) {
     if (!cOrg) return;
     currentOrg.set(cOrg);
@@ -136,7 +132,7 @@
   {supabase}
   isLogin={false}
   {handleSubmit}
-  isLoading={loading}
+  isLoading={loading || !$profile.id}
   showOnlyContent={true}
   showLogo={true}
   bind:formRef
@@ -151,7 +147,7 @@
       label="Join Course"
       type="submit"
       isDisabled={disableSubmit || loading}
-      isLoading={loading}
+      isLoading={loading || !$profile.id}
     />
   </div>
 </AuthUI>

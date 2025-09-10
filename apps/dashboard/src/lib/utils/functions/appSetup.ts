@@ -112,7 +112,6 @@ export async function getProfile({
 
     // Profile created, go to onboarding or lms
     if (!error && newProfileData) {
-      console.log('newProfileData', newProfileData);
       user.update((_user) => ({
         ..._user,
         fetchingUser: false,
@@ -128,7 +127,6 @@ export async function getProfile({
       handleLocaleChange(newProfileData[0].locale);
 
       if (isOrgSite) {
-        console.log('isOrgSite', isOrgSite);
         const { data, error } = await supabase
           .from('organizationmember')
           .insert({
@@ -137,8 +135,6 @@ export async function getProfile({
             role_id: 3
           })
           .select();
-        console.log('data', data);
-        console.log('error', error);
         if (error) {
           console.error('Error adding user to organisation', error);
         } else {
@@ -152,10 +148,8 @@ export async function getProfile({
         }
 
         if (params.get('redirect')) {
-          console.log('redirect', params.get('redirect'));
           goto(params.get('redirect') || '');
-        } else {
-          console.log('redirect', '/lms');
+        } else if (shouldRedirectOnAuth(path)) {
           goto('/lms');
         }
         return;
