@@ -11,7 +11,7 @@
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { setTheme } from '$lib/utils/functions/theme';
   import { t } from '$lib/utils/functions/translations';
-  import { profile } from '$lib/utils/store/user';
+  import { profile, user } from '$lib/utils/store/user';
   import {
     authValidation,
     getConfirmPasswordError,
@@ -176,6 +176,8 @@
       shouldLogout = true;
     }
   }
+
+  $: isLoading = loading || $user.fetchingUser;
 </script>
 
 <svelte:head>
@@ -187,7 +189,7 @@
   redirectPathname={$page.url.pathname}
   isLogin={false}
   {handleSubmit}
-  isLoading={loading}
+  {isLoading}
   showLogo={true}
   bind:formRef
 >
@@ -276,8 +278,8 @@
         label="Accept Invite"
         type="submit"
         className="sm:w-full w-full"
-        isDisabled={disableSubmit || loading}
-        isLoading={loading}
+        isDisabled={disableSubmit}
+        {isLoading}
       />
     {/if}
   </div>

@@ -18,8 +18,6 @@
   export let hideGoogleAuth = false;
   export let redirectPathname = '';
 
-  $: console.log('redirectPathname', redirectPathname);
-
   async function signInWithGoogle() {
     if (isLoading) {
       return;
