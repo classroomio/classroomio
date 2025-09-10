@@ -178,6 +178,8 @@
   }
 
   $: isLoading = loading || $user.fetchingUser;
+  $: console.log('$profile', $profile);
+  $: console.log('data.invite.profile', data.invite.profile);
 </script>
 
 <svelte:head>
