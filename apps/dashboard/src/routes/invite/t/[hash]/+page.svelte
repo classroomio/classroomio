@@ -57,7 +57,7 @@
 
     formRef?.reset();
 
-    return goto($currentOrgPath);
+    window.location.href = $currentOrgPath;
   }
 
   async function signUserIn(profileId: string, email: string) {
@@ -222,7 +222,7 @@
           placeholder="e.g Joke Silva"
           className="mb-6"
           inputClassName="w-full"
-          isDisabled={loading}
+          isDisabled={isLoading}
           errorMessage={errors.name}
           isRequired
         />
@@ -234,7 +234,7 @@
         placeholder="************"
         className="mb-6"
         inputClassName="w-full"
-        isDisabled={loading}
+        isDisabled={isLoading}
         errorMessage={errors.password}
         helperMessage={$t('login.fields.password_helper_message')}
         isRequired
@@ -247,7 +247,7 @@
           placeholder="************"
           className="mb-6"
           inputClassName="w-full"
-          isDisabled={loading}
+          isDisabled={isLoading}
           errorMessage={errors.confirmPassword}
           isRequired
         />
