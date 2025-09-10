@@ -179,7 +179,7 @@
 
   $: isLoading = loading || $user.fetchingUser;
   $: console.log('$profile', $profile);
-  $: console.log('data.invite.profile', data.invite.profile);
+  $: console.log('data.invite', data.invite);
 </script>
 
 <svelte:head>
@@ -212,21 +212,21 @@
       inputClassName="w-full"
       isDisabled={true}
     />
-    {#if !data.invite.profile}
-      <TextField
-        label={$t('login.fields.full_name')}
-        bind:value={fields.name}
-        type="text"
-        autoFocus={true}
-        placeholder="e.g Joke Silva"
-        className="mb-6"
-        inputClassName="w-full"
-        isDisabled={loading}
-        errorMessage={errors.name}
-        isRequired
-      />
-    {/if}
     {#if $profile?.email !== data.invite.email}
+      {#if !data.invite.profile}
+        <TextField
+          label={$t('login.fields.full_name')}
+          bind:value={fields.name}
+          type="text"
+          autoFocus={true}
+          placeholder="e.g Joke Silva"
+          className="mb-6"
+          inputClassName="w-full"
+          isDisabled={loading}
+          errorMessage={errors.name}
+          isRequired
+        />
+      {/if}
       <TextField
         label={$t('login.fields.password')}
         bind:value={fields.password}
@@ -239,19 +239,19 @@
         helperMessage={$t('login.fields.password_helper_message')}
         isRequired
       />
-    {/if}
-    {#if !data.invite.profile}
-      <TextField
-        label={$t('login.fields.confirm_password')}
-        bind:value={fields.confirmPassword}
-        type="password"
-        placeholder="************"
-        className="mb-6"
-        inputClassName="w-full"
-        isDisabled={loading}
-        errorMessage={errors.confirmPassword}
-        isRequired
-      />
+      {#if !data.invite.profile}
+        <TextField
+          label={$t('login.fields.confirm_password')}
+          bind:value={fields.confirmPassword}
+          type="password"
+          placeholder="************"
+          className="mb-6"
+          inputClassName="w-full"
+          isDisabled={loading}
+          errorMessage={errors.confirmPassword}
+          isRequired
+        />
+      {/if}
     {/if}
     {#if submitError}
       <p class="text-sm text-red-500">{submitError}</p>
