@@ -5,6 +5,7 @@
   import type { Profile } from '$lib/components/Course/components/People/types';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
   import { logout } from '$lib/utils/functions/logout';
   import { getSupabase } from '$lib/utils/functions/supabase';
@@ -26,6 +27,8 @@
   let supabase = getSupabase();
   let fields = Object.assign({}, SIGNUP_FIELDS);
   let loading = false;
+  let isLoggingOut = false;
+  let shouldLogout = false;
 
   let errors: {
     name?: string;
@@ -38,10 +41,50 @@
   let disableSubmit = false;
   let formRef: HTMLFormElement;
 
+  async function joinOrg(profileId: string, email: string) {
+    if (!profileId || !email || !data.invite.currentOrg?.id) return;
+
+    // Update member response
+    const updateMemberRes = await supabase
+      .from('organizationmember')
+      .update({
+        verified: true,
+        profile_id: profileId
+      })
+      .match({ email: email, organization_id: data.invite.currentOrg?.id });
+
+    console.log('Update member response', updateMemberRes);
+
+    formRef?.reset();
+
+    return goto($currentOrgPath);
+  }
+
+  async function signUserIn(profileId: string, email: string) {
+    if (!profileId || !email) {
+      throw $t('login.validation.unable_to_create_profile');
+    }
+
+    const res = await supabase.auth.signInWithPassword({
+      email,
+      password: fields.password
+    });
+
+    if (res.error) {
+      throw res.error;
+    }
+  }
+
   async function handleSubmit() {
+    if ($profile && $profile.id) {
+      loading = true;
+      await joinOrg($profile.id, $profile.email);
+      return;
+    }
+
     const validationRes = authValidation({
       ...fields,
-      email: 'test@gmail.com' // validation for this ema
+      email: data.invite.email // validation for this ema
     });
     console.log('validationRes', validationRes);
 
@@ -93,29 +136,9 @@
         throw $t('login.validation.unable_to_create_profile');
       }
 
-      const res = await supabase.auth.signInWithPassword({
-        email: profile.email,
-        password: fields.password
-      });
+      await signUserIn(profile.id, profile.email);
 
-      if (res.error) {
-        throw res.error;
-      }
-
-      // Update member response
-      const updateMemberRes = await supabase
-        .from('organizationmember')
-        .update({
-          verified: true,
-          profile_id: profile.id
-        })
-        .match({ email: profile.email, organization_id: data.invite.currentOrg?.id });
-
-      console.log('Update member response', updateMemberRes);
-
-      formRef?.reset();
-
-      return goto($currentOrgPath);
+      await joinOrg(profile.id, profile.email);
     } catch (error) {
       if (error instanceof Error) {
         submitError = error.message;
@@ -145,13 +168,12 @@
 
   $: autoLogout($profile?.email);
   function autoLogout(email?: string) {
-    console.log('email', email);
-    console.log('data.invite.email', data.invite.email);
     if (!email) return;
 
     if (email !== data.invite.email) {
       console.log('logout');
-      logout(false);
+      snackbar.error('You are logged in with a different email');
+      shouldLogout = true;
     }
   }
 </script>
@@ -169,7 +191,7 @@
   showLogo={true}
   bind:formRef
 >
-  <div class="mt-4 w-full">
+  <div class="mt-4 w-full {shouldLogout ? 'hidden' : ''}">
     <p class="mb-6 text-lg font-semibold dark:text-white">
       {#if data.invite.profile}
         {$t('login.login_to_join')}
@@ -200,18 +222,20 @@
         isRequired
       />
     {/if}
-    <TextField
-      label={$t('login.fields.password')}
-      bind:value={fields.password}
-      type="password"
-      placeholder="************"
-      className="mb-6"
-      inputClassName="w-full"
-      isDisabled={loading}
-      errorMessage={errors.password}
-      helperMessage={$t('login.fields.password_helper_message')}
-      isRequired
-    />
+    {#if $profile?.email !== data.invite.email}
+      <TextField
+        label={$t('login.fields.password')}
+        bind:value={fields.password}
+        type="password"
+        placeholder="************"
+        className="mb-6"
+        inputClassName="w-full"
+        isDisabled={loading}
+        errorMessage={errors.password}
+        helperMessage={$t('login.fields.password_helper_message')}
+        isRequired
+      />
+    {/if}
     {#if !data.invite.profile}
       <TextField
         label={$t('login.fields.confirm_password')}
@@ -231,12 +255,30 @@
   </div>
 
   <div class="my-4 flex w-full items-center justify-end">
-    <PrimaryButton
-      label="Accept Invite"
-      type="submit"
-      className="sm:w-full w-full"
-      isDisabled={disableSubmit || loading}
-      isLoading={loading}
-    />
+    {#if shouldLogout}
+      <PrimaryButton
+        label="Logout"
+        type="button"
+        className="sm:w-full w-full"
+        isLoading={isLoggingOut}
+        variant={VARIANTS.CONTAINED_DANGER}
+        onClick={async () => {
+          isLoggingOut = true;
+
+          await logout(false);
+
+          isLoggingOut = false;
+          shouldLogout = false;
+        }}
+      />
+    {:else}
+      <PrimaryButton
+        label="Accept Invite"
+        type="submit"
+        className="sm:w-full w-full"
+        isDisabled={disableSubmit || loading}
+        isLoading={loading}
+      />
+    {/if}
   </div>
 </AuthUI>
