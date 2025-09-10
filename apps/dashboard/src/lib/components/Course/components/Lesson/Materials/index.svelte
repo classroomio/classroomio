@@ -1,6 +1,7 @@
 <script lang="ts">
   import Box from '$lib/components/Box/index.svelte';
   import VideoUploader from '$lib/components/Course/components/Lesson/Materials/Video/Index.svelte';
+  import DocumentUploader from '$lib/components/Course/components/Lesson/Materials/Document/Index.svelte';
   import {
     deleteLessonVideo,
     handleUpdateLessonMaterials,
@@ -8,7 +9,8 @@
     lesson,
     lessonByTranslation,
     lessons,
-    uploadCourseVideoStore
+    uploadCourseVideoStore,
+    uploadCourseDocumentStore
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { course } from '$lib/components/Course/store';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -41,10 +43,10 @@
   import ComponentNote from './components/ComponentNote.svelte';
   import ComponentSlide from './components/ComponentSlide.svelte';
   import ComponentVideo from './components/ComponentVideo.svelte';
+  import ComponentDocument from './components/ComponentDocument.svelte';
   import * as CONSTANTS from './constants';
   import { orderedTabs } from './constants';
   import Loader from './Loader.svelte';
-
   export let mode = MODES.view;
   export let prevMode = '';
   export let lessonId = '';
@@ -142,12 +144,13 @@
     materials: LessonPage['materials'],
     translation: Record<LOCALE, string>
   ) {
-    const { slide_url, videos, note } = materials;
+    const { slide_url, videos, note, documents } = materials;
 
     return (
       isHtmlValueEmpty(note) &&
       !slide_url &&
       isEmpty(videos) &&
+      isEmpty(documents) &&
       Object.values(translation || {}).every((t) => isHtmlValueEmpty(t))
     );
   }
@@ -158,18 +161,20 @@
     }
   }
 
-  function addBadgeValueToTab(materials: LessonPage['materials']) {
-    const { slide_url, videos, note } = materials;
+  function addBadgeValueToTab(materials: LessonPage['materials'], localeContent: string) {
+    const { slide_url, videos, note, documents } = materials;
 
     tabs = tabs.map((tab) => {
       let badgeValue = 0;
 
-      if (tab.value === 1 && !isHtmlValueEmpty(note)) {
+      if (tab.value === 1 && (!isHtmlValueEmpty(note) || !isHtmlValueEmpty(localeContent))) {
         badgeValue = 1;
       } else if (tab.value === 2 && !!slide_url) {
         badgeValue = 1;
       } else if (tab.value === 3 && !isEmpty(videos)) {
-        badgeValue = 1;
+        badgeValue = videos.length;
+      } else if (tab.value === 4 && !isEmpty(documents)) {
+        badgeValue = documents.length;
       }
       tab.badgeValue = badgeValue;
       return tab;
@@ -272,11 +277,21 @@
     autoSave($lesson.materials, $lessonByTranslation[lessonId], $isLoading, lessonId);
   };
 
+  const onDocumentClose = () => {
+    if ($uploadCourseDocumentStore.isUploading) return;
+
+    $uploadCourseDocumentStore.isModalOpen = false;
+    // Clear any error messages when modal closes
+    $uploadCourseDocumentStore.error = null;
+    autoSave($lesson.materials, $lessonByTranslation[lessonId], $isLoading, lessonId);
+  };
+
   function getComponentOrder(tabs = CONSTANTS.tabs) {
     const componentMap = {
       '1': ComponentNote,
       '2': ComponentSlide,
-      '3': ComponentVideo
+      '3': ComponentVideo,
+      '4': ComponentDocument
     };
 
     const componentNames = tabs
@@ -295,7 +310,7 @@
 
   $: handleSave(prevMode);
 
-  $: addBadgeValueToTab($lesson.materials);
+  $: addBadgeValueToTab($lesson.materials, $lessonByTranslation[lessonId]?.[$lesson.locale] || '');
 
   $: updateNoteByCompletion($completion);
 
@@ -317,6 +332,15 @@
   modalHeading={$t('course.navItem.lessons.materials.tabs.video.add_video.title')}
 >
   <VideoUploader {lessonId} />
+</Modal>
+
+<Modal
+  onClose={onDocumentClose}
+  bind:open={$uploadCourseDocumentStore.isModalOpen}
+  width="w-4/5 w-[90%] h-[80%] md:h-[566px]"
+  modalHeading={$t('course.navItem.lessons.materials.tabs.document.upload_title')}
+>
+  <DocumentUploader {lessonId} />
 </Modal>
 
 <HtmlRender className="m-auto text-center">
@@ -481,11 +505,17 @@
           </div>
         {/if}
       </TabContent>
+      <TabContent
+        value={getValue('course.navItem.lessons.materials.tabs.document.title')}
+        index={currentTab}
+      >
+        <ComponentDocument {mode} />
+      </TabContent>
     </slot:fragment>
   </Tabs>
 {:else if !isMaterialsEmpty($lesson.materials, $lessonByTranslation[lessonId])}
   {#key lessonId}
-    <div class="mb-20 w-full" in:fade={{ delay: 500 }} out:fade>
+    <div class="mb-20 flex w-full flex-col gap-6" in:fade={{ delay: 500 }} out:fade>
       {#each componentsToRender as Component}
         <svelte:component this={Component} {lessonId} />
       {/each}

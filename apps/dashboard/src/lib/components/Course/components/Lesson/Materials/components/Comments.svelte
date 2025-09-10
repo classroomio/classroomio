@@ -266,7 +266,7 @@
 
 <DeleteModal bind:open={openDeleteModal} onDelete={handleDeleteComment} />
 
-<div class="mx-auto mt-10 max-w-[65ch]">
+<div class="mx-auto w-full max-w-[65ch]">
   <!-- <hr class="my-5" /> -->
   <div class="mb-5">
     <p class="text-xl font-bold capitalize">

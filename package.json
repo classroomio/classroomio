@@ -9,7 +9,6 @@
     "format": "prettier . --write",
     "release": "standard-version",
     "ci": "cypress run",
-    "supabase": "pnpx supabase",
     "dashboard:build": "cd apps/dashboard && pnpm i && PUBLIC_IS_SELFHOSTED=true NODE_OPTIONS='--max-old-space-size=20384' DEPLOYMENT_PROVIDER=docker pnpm build",
     "dashboard:start": "cd apps/dashboard && node build"
   },

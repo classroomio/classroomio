@@ -737,7 +737,9 @@
                 "upgrade": "Aktualisieren Sie Ihren Plan, um Videos hochzuladen",
                 "uploading": "Hochladen...",
                 "invalid_youtube": "Ungültige YouTube-Link(s)",
-                "invalid_link": "Ungültige Links"
+                "invalid_link": "Ungültige Links",
+                "cancel_upload": "Upload abbrechen",
+                "upload_cancelled": "Vom Benutzer abgebrochen hochladen"
               }
             },
             "slide": {
@@ -753,6 +755,41 @@
                 "note": "Unterrichtsnotiz erstellen",
                 "activities": "Unterrichtsaktivitäten erstellen"
               }
+            },
+            "document": {
+              "title": "Dokumentieren",
+              "add_document": "Dokument hinzufügen",
+              "no_document": "Noch keine Dokumente hochgeladen",
+              "view_document": "Dokument anzeigen",
+              "download": "Herunterladen",
+              "upload_document": "Dokument hochladen",
+              "upload_title": "Dokument hochladen",
+              "upload_description": "Laden Sie PDF-, DOCX- oder DOC -Dateien hoch. Maximale Größe: 5 MB",
+              "drag_drop": "Ziehen Sie Ihr Dokument hier und lassen Sie sie fallen",
+              "or": "oder",
+              "choose_file": "Datei wählen",
+              "cancel": "Stornieren",
+              "uploading": "Hochladen ...",
+              "upload_success": "Dokument erfolgreich hochgeladen!",
+              "upload_error": "Dokument nicht hochladen",
+              "file_type_error": "Dateityp nicht unterstützt. Bitte laden Sie PDF-, DOCX- oder DOC -Dateien hoch.",
+              "file_size_error": "Dateigröße zu groß. Die maximale Größe ist {Größe}.",
+              "type": "Typ",
+              "size": "Größe",
+              "upload_error_title": "Fehler hochladen",
+              "upload_error_message": "Nicht unterstütztes Dateiformat oder Upload ist fehlgeschlagen",
+              "upload_error_try_again": "Bitte versuchen Sie es erneut mit einer gültigen Dokumentdatei",
+              "try_again": "Versuchen Sie es erneut",
+              "cancel_upload": "Upload abbrechen",
+              "upload_cancelled": "Vom Benutzer abgebrochen hochladen",
+              "downloading": "Herunterladen ...",
+              "view_pdf": "PDF anzeigen",
+              "delete": "Löschen",
+              "page_of": "Seite {page} von {total}",
+              "loading_pdf": "PDF laden ...",
+              "failed_to_load_pdf": "Das PDF -Dokument konnte nicht geladen werden",
+              "failed_to_render_pdf": "Die PDF -Seite versäumte es, PDF -Seite zu rendern",
+              "use_arrow_keys": "Verwenden Sie Pfeiltasten, um zu navigieren, +/-, um zu zoomen, oder klicken Sie auf die obigen Steuerelemente. Mit der rechten Maustaste ist deaktiviert."
             }
           }
         },

@@ -5,11 +5,13 @@
   import {
     lesson,
     deleteLessonVideo,
-    uploadCourseVideoStore
+    uploadCourseVideoStore,
+    cancelVideoUpload
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { type ComponentProps } from 'svelte';
   import { ProgressBar } from 'carbon-components-svelte';
   import { isFreePlan } from '$lib/utils/store/org';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
   import { apiClient } from '$lib/utils/services/api';
   import { t } from '$lib/utils/functions/translations';
@@ -27,11 +29,16 @@
   let fileInput;
   let submit;
   let fileName = '';
+  let abortController: AbortController | null = null;
 
   async function onUpload() {
     if (!fileInput) return;
 
+    // Create new AbortController for this upload
+    abortController = new AbortController();
+
     $uploadCourseVideoStore.isUploading = true;
+    $uploadCourseVideoStore.isCancelled = false;
 
     const videoFile = fileInput.files[0];
     fileSize = videoFile?.size / (1024 * 1024);
@@ -50,7 +57,13 @@
         },
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
+        signal: abortController.signal,
         onUploadProgress: (progressEvent) => {
+          // Check if upload was cancelled during progress
+          if ($uploadCourseVideoStore.isCancelled) {
+            abortController?.abort();
+            return;
+          }
           value = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1) / 2);
         }
       });
@@ -78,8 +91,6 @@
         status: uploadResponse.status
       };
 
-      console.log('formRes', formRes);
-
       $lesson.materials.videos = [
         ...$lesson.materials.videos,
         {
@@ -89,15 +100,28 @@
         }
       ];
 
-      console.log('Upload res', uploadResponse, 'formRes', formRes);
       $uploadCourseVideoStore.isUploading = false;
       isLoaded = false;
     } catch (err: any) {
       console.error('Error uploading video', err, '\n\n', err.response);
-      if (err.response) {
+
+      if ($uploadCourseVideoStore.isCancelled) {
+        formRes = {
+          type: 'CANCELLED',
+          status: 0,
+          message: $t('course.navItem.lessons.materials.tabs.video.add_video.upload_cancelled')
+        };
+      } else if (err.response) {
         formRes = err.response.data;
-        console.log('formRes', formRes);
+      } else {
+        formRes = {
+          type: 'INTERNAL_ERROR',
+          status: 500,
+          message: 'An error occurred while uploading the video'
+        };
       }
+    } finally {
+      abortController = null;
     }
 
     isLoaded = true;
@@ -107,6 +131,16 @@
     formRes = null;
     isLoaded = false;
     $uploadCourseVideoStore.isUploading = false;
+    value = 0;
+  }
+
+  function cancelUpload() {
+    if (abortController) {
+      abortController.abort();
+    }
+    cancelVideoUpload();
+    formRes = null;
+    isLoaded = false;
     value = 0;
   }
 
@@ -141,6 +175,13 @@
           </p>
           <ProgressBar class="w-full" {value} {max} {status} />
           <p class="text-sm">{helperText}</p>
+          <div class="mt-3">
+            <PrimaryButton
+              label={$t('course.navItem.lessons.materials.tabs.video.add_video.cancel_upload')}
+              variant={VARIANTS.OUTLINED}
+              onClick={cancelUpload}
+            />
+          </div>
         </div>
       {:else}
         <img src="/upload-video.svg" alt="upload" />

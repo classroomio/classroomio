@@ -737,7 +737,9 @@
                 "upgrade": "Nâng cấp kế hoạch tải video lên của bạn",
                 "uploading": "Đang tải lên...",
                 "invalid_youtube": "(Các) liên kết YouTube không hợp lệ",
-                "invalid_link": "(Các) liên kết không hợp lệ"
+                "invalid_link": "(Các) liên kết không hợp lệ",
+                "cancel_upload": "Hủy tải lên",
+                "upload_cancelled": "Tải lên bị hủy bởi người dùng"
               }
             },
             "slide": {
@@ -753,6 +755,41 @@
                 "note": "Tạo ghi chú bài học",
                 "activities": "Tạo hoạt động bài học"
               }
+            },
+            "document": {
+              "title": "Tài liệu",
+              "add_document": "Thêm tài liệu",
+              "no_document": "Chưa có tài liệu nào được tải lên",
+              "view_document": "Xem tài liệu",
+              "download": "Tải xuống",
+              "upload_document": "Tải lên tài liệu",
+              "upload_title": "Tải lên tài liệu",
+              "upload_description": "Tải lên các tệp PDF, DOCX hoặc DOC. Kích thước tối đa: 5MB",
+              "drag_drop": "Kéo và thả tài liệu của bạn tại đây",
+              "or": "hoặc",
+              "choose_file": "Chọn Tệp",
+              "cancel": "Hủy bỏ",
+              "uploading": "Tải lên ...",
+              "upload_success": "Tài liệu được tải lên thành công!",
+              "upload_error": "Không tải lên tài liệu",
+              "file_type_error": "Loại tệp không được hỗ trợ. Vui lòng tải lên các tệp PDF, DOCX hoặc DOC.",
+              "file_size_error": "Kích thước tập tin quá lớn. Kích thước tối đa là {kích thước}.",
+              "type": "Kiểu",
+              "size": "Kích cỡ",
+              "upload_error_title": "Lỗi tải lên",
+              "upload_error_message": "Định dạng tệp không được hỗ trợ hoặc tải lên không thành công",
+              "upload_error_try_again": "Vui lòng thử lại với một tệp tài liệu hợp lệ",
+              "try_again": "Hãy thử lại",
+              "cancel_upload": "Hủy tải lên",
+              "upload_cancelled": "Tải lên bị hủy bởi người dùng",
+              "downloading": "Tải xuống ...",
+              "view_pdf": "Xem PDF",
+              "delete": "Xóa bỏ",
+              "page_of": "Trang {page} của {total}",
+              "loading_pdf": "Tải PDF ...",
+              "failed_to_load_pdf": "Không tải tài liệu PDF",
+              "failed_to_render_pdf": "Không thể hiển thị trang PDF",
+              "use_arrow_keys": "Sử dụng các phím mũi tên để điều hướng, +/- đến phóng to hoặc nhấp vào các điều khiển ở trên. Nhấp chuột phải bị vô hiệu hóa."
             }
           }
         },

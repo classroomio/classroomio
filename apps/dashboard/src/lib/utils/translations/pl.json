@@ -889,7 +889,9 @@
                 "upgrade": "Uaktualnij swój plan przesłania vidoes",
                 "uploading": "Przesyłanie ...",
                 "invalid_youtube": "Nieprawidłowe linki do YouTube",
-                "invalid_link": "Nieprawidłowe linki (y)"
+                "invalid_link": "Nieprawidłowe linki (y)",
+                "cancel_upload": "Anuluj przesłanie",
+                "upload_cancelled": "Prześlij anulowany przez użytkownika"
               }
             },
             "slide": {
@@ -905,6 +907,41 @@
                 "note": "Wygeneruj notatkę lekcji",
                 "activities": "Generować zajęcia lekcji"
               }
+            },
+            "document": {
+              "title": "Dokument",
+              "add_document": "Dodaj dokument",
+              "no_document": "Brak przesłanych dokumentów",
+              "view_document": "Wyświetl dokument",
+              "download": "Pobierać",
+              "upload_document": "Prześlij dokument",
+              "upload_title": "Prześlij dokument",
+              "upload_description": "Prześlij pliki PDF, DOCX lub DOC. Maksymalny rozmiar: 5 MB",
+              "drag_drop": "Przeciągnij i upuść swój dokument tutaj",
+              "or": "Lub",
+              "choose_file": "Wybierz plik",
+              "cancel": "Anulować",
+              "uploading": "Przesyłanie ...",
+              "upload_success": "Dokument przesłany pomyślnie!",
+              "upload_error": "Nie udało się przesłać dokumentu",
+              "file_type_error": "Typ pliku nie jest obsługiwany. Prześlij pliki PDF, DOCX lub DOC.",
+              "file_size_error": "Rozmiar pliku za duży. Maksymalny rozmiar to {rozmiar}.",
+              "type": "Typ",
+              "size": "Rozmiar",
+              "upload_error_title": "Prześlij błąd",
+              "upload_error_message": "Nieprzepustowy format pliku lub przesyłanie nie powiodło się",
+              "upload_error_try_again": "Spróbuj ponownie z prawidłowym plikiem dokumentu",
+              "try_again": "Spróbuj ponownie",
+              "cancel_upload": "Anuluj przesłanie",
+              "upload_cancelled": "Prześlij anulowany przez użytkownika",
+              "downloading": "Ściąganie...",
+              "view_pdf": "Zobacz PDF",
+              "delete": "Usuwać",
+              "page_of": "Strona {page} z {total}",
+              "loading_pdf": "Ładowanie PDF ...",
+              "failed_to_load_pdf": "Nie udało się załadować dokumentu PDF",
+              "failed_to_render_pdf": "Nie udało się renderować strony PDF",
+              "use_arrow_keys": "Użyj klawiszy strzałek do nawigacji, +/-, aby powiększyć lub kliknąć powyższe elementy sterujące. Kliknięcie prawym przyciskiem myszy jest wyłączone."
             }
           }
         },

@@ -737,7 +737,9 @@
                 "upgrade": "Mettez à niveau votre forfait pour télécharger des vidéos",
                 "uploading": "Téléchargement...",
                 "invalid_youtube": "Lien(s) YouTube invalide(s)",
-                "invalid_link": "Lien(s) invalide(s)"
+                "invalid_link": "Lien(s) invalide(s)",
+                "cancel_upload": "Annuler le téléchargement",
+                "upload_cancelled": "Télécharger annulé par l'utilisateur"
               }
             },
             "slide": {
@@ -753,6 +755,41 @@
                 "note": "Générer une note de cours",
                 "activities": "Générer des activités de cours"
               }
+            },
+            "document": {
+              "title": "Document",
+              "add_document": "Ajouter un document",
+              "no_document": "Aucun document encore téléchargé",
+              "view_document": "Afficher le document",
+              "download": "Télécharger",
+              "upload_document": "Télécharger le document",
+              "upload_title": "Télécharger le document",
+              "upload_description": "Téléchargez les fichiers PDF, DOCX ou DOC. Taille maximale: 5 Mo",
+              "drag_drop": "Faites glisser et déposez votre document ici",
+              "or": "ou",
+              "choose_file": "Choisir le fichier",
+              "cancel": "Annuler",
+              "uploading": "Téléchargement ...",
+              "upload_success": "Document téléchargé avec succès!",
+              "upload_error": "Échec de la téléchargement du document",
+              "file_type_error": "Type de fichier non pris en charge. Veuillez télécharger des fichiers PDF, DOCX ou DOC.",
+              "file_size_error": "Taille de fichier trop grande. La taille maximale est {taille}.",
+              "type": "Taper",
+              "size": "Taille",
+              "upload_error_title": "Télécharger une erreur",
+              "upload_error_message": "Le format de fichier non pris en charge ou le téléchargement a échoué",
+              "upload_error_try_again": "Veuillez réessayer avec un fichier de document valide",
+              "try_again": "Essayer à nouveau",
+              "cancel_upload": "Annuler le téléchargement",
+              "upload_cancelled": "Télécharger annulé par l'utilisateur",
+              "downloading": "Téléchargement...",
+              "view_pdf": "Afficher le PDF",
+              "delete": "Supprimer",
+              "page_of": "Page {page} de {total}",
+              "loading_pdf": "Chargement du PDF ...",
+              "failed_to_load_pdf": "Échec du chargement du document PDF",
+              "failed_to_render_pdf": "Échec de la page PDF",
+              "use_arrow_keys": "Utilisez des touches flèches pour naviguer, +/- pour zoomer ou cliquez sur les commandes ci-dessus. Le clic droit est désactivé."
             }
           }
         },
