@@ -1,11 +1,12 @@
-import { getServerSupabase } from '$lib/utils/functions/supabase.server';
-import { fetchCourses, fetchProfileCourseProgress } from '$lib/utils/services/courses';
 import type {
   UserAnalytics,
   UserCourseAnalytics,
   UserExerciseStatsQuery,
   UserExercisesStats
 } from '$lib/utils/types/analytics';
+import { fetchCourses, fetchProfileCourseProgress } from '$lib/utils/services/courses';
+
+import { getServerSupabase } from '$lib/utils/functions/supabase.server';
 import { json } from '@sveltejs/kit';
 
 const supabase = getServerSupabase();
@@ -124,7 +125,7 @@ async function getAudienceData(userId: string, orgId: string): Promise<UserAnaly
   const overallAverageGrade = Math.round(allGrades / audienceAnalytics.courses.length);
 
   audienceAnalytics.overallCourseProgress = overallCourseProgress;
-  audienceAnalytics.overallAverageGrade = overallAverageGrade;
+  audienceAnalytics.overallAverageGrade = overallAverageGrade || 0;
 
   return audienceAnalytics;
 }

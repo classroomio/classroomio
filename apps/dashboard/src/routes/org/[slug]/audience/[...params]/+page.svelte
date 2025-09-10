@@ -110,7 +110,7 @@
         </div>
       </Grid>
 
-      <div class="mt-5 rounded-md border p-3 dark:border-neutral-600 md:p-5">
+      <div class="mt-5 rounded-md border p-3 md:p-5 dark:border-neutral-600">
         <h3 class="text-2xl font-bold">
           {$t('analytics.courses')}
         </h3>
@@ -164,7 +164,11 @@
             >
               <div class="flex items-center justify-between gap-4">
                 <div class="flex w-4/5 items-center gap-4">
-                  <img src={course.logo} alt={course.title} class="h-20 w-24 rounded-md" />
+                  <img
+                    src={course.logo || '/images/classroomio-course-img-template.jpg'}
+                    alt={course.title}
+                    class="h-20 w-24 rounded-md"
+                  />
                   <div class="mb-4 gap-4">
                     <a href={`/courses/${course.id}`}>
                       <p class="text-lg font-semibold text-gray-600">
