@@ -161,13 +161,13 @@
     }
   }
 
-  function addBadgeValueToTab(materials: LessonPage['materials']) {
+  function addBadgeValueToTab(materials: LessonPage['materials'], localeContent: string) {
     const { slide_url, videos, note, documents } = materials;
 
     tabs = tabs.map((tab) => {
       let badgeValue = 0;
 
-      if (tab.value === 1 && !isHtmlValueEmpty(note)) {
+      if (tab.value === 1 && (!isHtmlValueEmpty(note) || !isHtmlValueEmpty(localeContent))) {
         badgeValue = 1;
       } else if (tab.value === 2 && !!slide_url) {
         badgeValue = 1;
@@ -310,7 +310,7 @@
 
   $: handleSave(prevMode);
 
-  $: addBadgeValueToTab($lesson.materials);
+  $: addBadgeValueToTab($lesson.materials, $lessonByTranslation[lessonId]?.[$lesson.locale] || '');
 
   $: updateNoteByCompletion($completion);
 
@@ -515,7 +515,7 @@
   </Tabs>
 {:else if !isMaterialsEmpty($lesson.materials, $lessonByTranslation[lessonId])}
   {#key lessonId}
-    <div class="mb-20 w-full" in:fade={{ delay: 500 }} out:fade>
+    <div class="mb-20 flex w-full flex-col gap-6" in:fade={{ delay: 500 }} out:fade>
       {#each componentsToRender as Component}
         <svelte:component this={Component} {lessonId} />
       {/each}

@@ -934,7 +934,14 @@
               "try_again": "Spróbuj ponownie",
               "cancel_upload": "Anuluj przesłanie",
               "upload_cancelled": "Prześlij anulowany przez użytkownika",
-              "downloading": "Ściąganie..."
+              "downloading": "Ściąganie...",
+              "view_pdf": "Zobacz PDF",
+              "delete": "Usuwać",
+              "page_of": "Strona {page} z {total}",
+              "loading_pdf": "Ładowanie PDF ...",
+              "failed_to_load_pdf": "Nie udało się załadować dokumentu PDF",
+              "failed_to_render_pdf": "Nie udało się renderować strony PDF",
+              "use_arrow_keys": "Użyj klawiszy strzałek do nawigacji, +/-, aby powiększyć lub kliknąć powyższe elementy sterujące. Kliknięcie prawym przyciskiem myszy jest wyłączone."
             }
           }
         },

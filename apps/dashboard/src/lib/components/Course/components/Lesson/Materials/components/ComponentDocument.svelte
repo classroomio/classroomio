@@ -11,8 +11,9 @@
   import ChevronRightIcon from 'carbon-icons-svelte/lib/ChevronRight.svelte';
   import ZoomInIcon from 'carbon-icons-svelte/lib/ZoomIn.svelte';
   import ZoomOutIcon from 'carbon-icons-svelte/lib/ZoomOut.svelte';
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount } from 'svelte';
   import DocumentList from '../Document/DocumentList.svelte';
+  import { t } from '$lib/utils/functions/translations';
 
   export let mode = MODES.view;
 
@@ -154,7 +155,7 @@
       await renderPage();
     } catch (err) {
       console.error('Error loading PDF:', err);
-      error = 'Failed to load PDF document';
+      error = 'course.navItem.lessons.materials.tabs.document.failed_to_load_pdf';
       isLoading = false;
     }
   }
@@ -197,7 +198,7 @@
       currentRenderTask = null;
     } catch (err) {
       console.error('Error rendering page:', err);
-      error = 'Failed to render PDF page';
+      error = 'course.navItem.lessons.materials.tabs.document.failed_to_render_pdf';
       currentRenderTask = null;
     }
   }
@@ -290,7 +291,7 @@
   }
 </script>
 
-<div class="my-2 w-full">
+<div class="mx-auto w-full max-w-lg">
   <DocumentList
     {mode}
     {displayDocuments}
@@ -305,16 +306,21 @@
 
 <!-- PDF Viewer Modal -->
 {#if pdfViewerOpen}
-  <div class="fixed inset-0 z-50 flex flex-col bg-white">
+  <div class="fixed inset-0 z-50 flex flex-col bg-white dark:bg-neutral-800">
     <!-- Header -->
-    <div class="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3">
+    <div
+      class="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 dark:bg-neutral-800"
+    >
       <div class="flex items-center space-x-4">
-        <h2 class="max-w-md truncate text-lg font-semibold text-gray-900">
+        <h2 class="max-w-md truncate text-lg font-semibold text-gray-900 dark:text-gray-300">
           {viewingPDF?.name}
         </h2>
         {#if !isLoading && !error}
           <span class="text-sm text-gray-500">
-            Page {pageNum} of {pageCount}
+            {$t('course.navItem.lessons.materials.tabs.document.page_of', {
+              page: pageNum,
+              total: pageCount
+            })}
           </span>
         {/if}
       </div>
@@ -382,7 +388,9 @@
             <div
               class="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"
             ></div>
-            <p class="text-gray-600">Loading PDF...</p>
+            <p class="text-gray-600">
+              {$t('course.navItem.lessons.materials.tabs.document.loading_pdf')}
+            </p>
           </div>
         </div>
       {:else if error}
@@ -398,12 +406,12 @@
                 />
               </svg>
             </div>
-            <p class="mb-2 text-red-600">{error}</p>
+            <p class="mb-2 text-red-600">{$t(error)}</p>
             <button
               on:click={() => viewPDF(viewingPDF)}
               class="text-blue-600 underline hover:text-blue-800"
             >
-              Try Again
+              {$t('course.navItem.lessons.materials.tabs.document.try_again')}
             </button>
           </div>
         </div>
@@ -423,8 +431,7 @@
     {#if !isLoading && !error}
       <div class="border-t border-gray-200 bg-gray-50 px-4 py-2">
         <p class="text-center text-xs text-gray-500">
-          Use arrow keys to navigate, +/- to zoom, or click the controls above. Right-click is
-          disabled.
+          {$t('course.navItem.lessons.materials.tabs.document.use_arrow_keys')}
         </p>
       </div>
     {/if}

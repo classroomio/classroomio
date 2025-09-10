@@ -1,5 +1,6 @@
 <script lang="ts">
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { t } from '$lib/utils/functions/translations';
   import MODES from '$lib/utils/constants/mode';
   import DocumentIcon from 'carbon-icons-svelte/lib/Document.svelte';
@@ -45,24 +46,26 @@
     <div class="space-y-4">
       {#each displayDocuments as document, index}
         <div class="rounded-lg border border-gray-200 p-4">
-          <div class="flex items-start space-x-3">
+          <div class="flex items-center space-x-3">
             <svelte:component
               this={getFileIcon(document.type)}
-              size={24}
-              class="mt-1 text-blue-600"
+              size={32}
+              class="text-primary-600 w-[10%]"
             />
             <div class="flex-1">
-              <h4 class="mb-2 font-medium text-gray-900">{document.name}</h4>
-              <div class="mb-3 flex items-center space-x-4 text-sm text-gray-600">
-                <span
-                  >{$t('course.navItem.lessons.materials.tabs.document.type')}: {document.type.toUpperCase()}</span
-                >
+              <h4 class="mb-2 font-medium text-gray-900 dark:text-gray-300">{document.name}</h4>
+              <div
+                class="mb-3 flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400"
+              >
+                <span>
+                  {$t('course.navItem.lessons.materials.tabs.document.type')}: {document.type.toUpperCase()}
+                </span>
                 {#if document.size}
-                  <span
-                    >{$t('course.navItem.lessons.materials.tabs.document.size')}: {formatFileSize(
+                  <span>
+                    {$t('course.navItem.lessons.materials.tabs.document.size')}: {formatFileSize(
                       document.size
-                    )}</span
-                  >
+                    )}
+                  </span>
                 {/if}
               </div>
               <div class="flex gap-3">
@@ -72,7 +75,7 @@
                     class="text-sm text-blue-600 underline hover:text-blue-800"
                   >
                     <EyeIcon size={16} class="mr-1 inline" />
-                    View PDF
+                    {$t('course.navItem.lessons.materials.tabs.document.view_pdf')}
                   </button>
                 {:else}
                   <a
@@ -96,7 +99,7 @@
                   on:click={() => deleteDocument(index)}
                   class="text-sm text-red-600 underline hover:text-red-800"
                 >
-                  Delete
+                  {$t('course.navItem.lessons.materials.tabs.document.delete')}
                 </button>
               </div>
             </div>
@@ -108,16 +111,16 @@
 {:else if !isEmpty(displayDocuments)}
   <div class="space-y-4">
     {#each displayDocuments as document}
-      <div class="rounded-lg border border-gray-200 p-4">
-        <div class="flex items-start space-x-3">
+      <div class="rounded-md border border-gray-200 p-4 dark:border-neutral-600">
+        <div class="flex items-center space-x-3">
           <svelte:component
             this={getFileIcon(document.type)}
-            size={24}
-            class="mt-1 text-blue-600"
+            size={32}
+            class="text-primary-600 w-[10%]"
           />
           <div class="flex-1">
-            <h4 class="mb-2 font-medium text-gray-900">{document.name}</h4>
-            <div class="mb-3 flex items-center space-x-4 text-sm text-gray-600">
+            <h4 class="mb-2 font-medium text-gray-900 dark:text-gray-300">{document.name}</h4>
+            <div class="mb-3 flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
               <span
                 >{$t('course.navItem.lessons.materials.tabs.document.type')}: {document.type.toUpperCase()}</span
               >
@@ -131,13 +134,13 @@
             </div>
             <div class="flex gap-3">
               {#if document.type === 'pdf'}
-                <button
-                  on:click={() => handleViewPDF(document)}
-                  class="text-sm text-blue-600 underline hover:text-blue-800"
+                <PrimaryButton
+                  variant={VARIANTS.CONTAINED_DARK}
+                  onClick={() => handleViewPDF(document)}
                 >
                   <EyeIcon size={16} class="mr-1 inline" />
-                  View PDF
-                </button>
+                  {$t('course.navItem.lessons.materials.tabs.document.view_pdf')}
+                </PrimaryButton>
               {:else}
                 <a
                   href={document.link}

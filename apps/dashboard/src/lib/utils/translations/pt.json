@@ -782,7 +782,14 @@
               "try_again": "Tente novamente",
               "cancel_upload": "Cancelar upload",
               "upload_cancelled": "Upload cancelado pelo usuário",
-              "downloading": "Download ..."
+              "downloading": "Download ...",
+              "view_pdf": "Veja PDF",
+              "delete": "Excluir",
+              "page_of": "Página {page} de {total}",
+              "loading_pdf": "Carregando PDF ...",
+              "failed_to_load_pdf": "Falha ao carregar o documento PDF",
+              "failed_to_render_pdf": "Falhou em renderizar a página em PDF",
+              "use_arrow_keys": "Use as teclas de seta para navegar, +/- zoom ou clique nos controles acima. Clique com o botão direito do mouse está desativado."
             }
           }
         },

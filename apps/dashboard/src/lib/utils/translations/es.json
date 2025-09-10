@@ -782,7 +782,14 @@
               "try_again": "Intentar otra vez",
               "cancel_upload": "Cancelar la carga",
               "upload_cancelled": "Carga cancelada por el usuario",
-              "downloading": "Descarga ..."
+              "downloading": "Descarga ...",
+              "view_pdf": "Ver PDF",
+              "delete": "Borrar",
+              "page_of": "Página {page} de {total}",
+              "loading_pdf": "Cargando PDF ...",
+              "failed_to_load_pdf": "No se pudo cargar el documento PDF",
+              "failed_to_render_pdf": "No se pudo renderizar la página de PDF",
+              "use_arrow_keys": "Use las teclas de flecha para navegar, +/- para hacer zoom o hacer clic en los controles anteriores. El clic derecho está deshabilitado."
             }
           }
         },

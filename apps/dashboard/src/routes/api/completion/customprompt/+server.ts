@@ -1,6 +1,7 @@
-import { env } from '$env/dynamic/private';
-import { OpenAIStream, StreamingTextResponse } from 'ai';
 import { Configuration, OpenAIApi } from 'openai-edge';
+import { OpenAIStream, StreamingTextResponse } from 'ai';
+
+import { env } from '$env/dynamic/private';
 
 // Create an OpenAI API client (that's edge friendly!)
 const openAIConfig = new Configuration({
@@ -25,7 +26,7 @@ export async function POST({ request }) {
       },
       {
         role: 'user',
-        content: `${prompt}. DONT ADD ANY CSS STYLE TO THE HTML FORMATTING AND DON'T USE CODE HTML TAG`
+        content: `${prompt}. DONT ADD ANY CSS STYLE TO THE HTML FORMATTING AND DON'T USE CODE HTML TAG. ALSO DON'T INLUDE THREE BACKTICKS AND html`
       }
     ],
     stream: true

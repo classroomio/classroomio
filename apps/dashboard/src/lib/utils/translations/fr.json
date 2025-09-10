@@ -782,7 +782,14 @@
               "try_again": "Essayer à nouveau",
               "cancel_upload": "Annuler le téléchargement",
               "upload_cancelled": "Télécharger annulé par l'utilisateur",
-              "downloading": "Téléchargement..."
+              "downloading": "Téléchargement...",
+              "view_pdf": "Afficher le PDF",
+              "delete": "Supprimer",
+              "page_of": "Page {page} de {total}",
+              "loading_pdf": "Chargement du PDF ...",
+              "failed_to_load_pdf": "Échec du chargement du document PDF",
+              "failed_to_render_pdf": "Échec de la page PDF",
+              "use_arrow_keys": "Utilisez des touches flèches pour naviguer, +/- pour zoomer ou cliquez sur les commandes ci-dessus. Le clic droit est désactivé."
             }
           }
         },

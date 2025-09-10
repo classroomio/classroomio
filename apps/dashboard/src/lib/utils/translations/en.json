@@ -695,7 +695,14 @@
 
               "cancel_upload": "Cancel Upload",
               "upload_cancelled": "Upload cancelled by user",
-              "downloading": "Downloading..."
+              "downloading": "Downloading...",
+              "view_pdf": "View PDF",
+              "delete": "Delete",
+              "page_of": "Page {page} of {total}",
+              "loading_pdf": "Loading PDF...",
+              "failed_to_load_pdf": "Failed to load PDF document",
+              "failed_to_render_pdf": "Failed to render PDF page",
+              "use_arrow_keys": "Use arrow keys to navigate, +/- to zoom, or click the controls above. Right-click is disabled."
             }
           },
           "button_done": "Done"

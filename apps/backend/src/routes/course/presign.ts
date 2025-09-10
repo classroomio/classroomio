@@ -1,10 +1,11 @@
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import {
+  ZCourseDocumentPresignUrlUpload,
   ZCourseDownloadPresignedUrl,
-  ZCoursePresignUrlUpload,
-  ZCourseDocumentPresignUrlUpload
+  ZCoursePresignUrlUpload
 } from '$src/types/course';
 
+import { BUCKET_NAME } from '$src/constants/upload';
 import { CLOUDFLARE } from '$src/constants';
 import type { GetSignedUrlParameters } from '$src/utils/s3';
 import { Hono } from 'hono';
@@ -12,7 +13,6 @@ import { authMiddleware } from '$src/middlewares/auth';
 import { generateFileKey } from '$src/utils/upload';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { s3Client } from '$src/utils/s3';
-import { BUCKET_NAME } from '$src/constants/upload';
 
 export const presignRouter = new Hono();
 
@@ -74,7 +74,7 @@ presignRouter.post('/document/upload', authMiddleware, async (c) => {
 
   try {
     const command = new PutObjectCommand({
-      Bucket: BUCKET_NAME.VIDEOS,
+      Bucket: BUCKET_NAME.DOCUMENTS,
       Key: fileKey,
       ContentType: fileType
     }) as GetSignedUrlParameters[1];
@@ -168,7 +168,7 @@ presignRouter.post('/download/document', authMiddleware, async (c) => {
     await Promise.all(
       keys.map(async (key) => {
         const command = new GetObjectCommand({
-          Bucket: BUCKET_NAME.VIDEOS,
+          Bucket: BUCKET_NAME.DOCUMENTS,
           Key: key
         }) as GetSignedUrlParameters[1];
 
