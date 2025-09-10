@@ -1,20 +1,21 @@
-import { dev } from '$app/environment';
-import { goto } from '$app/navigation';
-import { page } from '$app/stores';
-import { ROLE } from '$lib/utils/constants/roles';
-import { ROUTE } from '$lib/utils/constants/routes';
-import isPublicRoute from '$lib/utils/functions/routes/isPublicRoute';
-import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
-import { supabase } from '$lib/utils/functions/supabase';
-import { setTheme } from '$lib/utils/functions/theme';
-import { handleLocaleChange } from '$lib/utils/functions/translations';
-import { getOrganizations } from '$lib/utils/services/org';
+import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
 import { identifyPosthogUser, initPosthog } from '$lib/utils/services/posthog';
 import { initSentry, setSentryUser } from '$lib/utils/services/sentry';
-import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
 import { profile, user } from '$lib/utils/store/user';
-import isEmpty from 'lodash/isEmpty';
+
+import { ROLE } from '$lib/utils/constants/roles';
+import { ROUTE } from '$lib/utils/constants/routes';
+import { dev } from '$app/environment';
 import { get } from 'svelte/store';
+import { getOrganizations } from '$lib/utils/services/org';
+import { goto } from '$app/navigation';
+import { handleLocaleChange } from '$lib/utils/functions/translations';
+import isEmpty from 'lodash/isEmpty';
+import isPublicRoute from '$lib/utils/functions/routes/isPublicRoute';
+import { page } from '$app/stores';
+import { setTheme } from '$lib/utils/functions/theme';
+import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
+import { supabase } from '$lib/utils/functions/supabase';
 
 export function setupAnalytics() {
   // Set up sentry
@@ -86,11 +87,7 @@ export async function getProfile({
     data: profileData,
     error,
     status
-  } = await supabase
-    .from('profile')
-    .select(`*`)
-    .eq('id', authUser?.id)
-    .single();
+  } = await supabase.from('profile').select(`*`).eq('id', authUser?.id).single();
   console.log('Get profile', profileData);
 
   if (error && !profileData && status === 406 && authUser) {
@@ -115,6 +112,7 @@ export async function getProfile({
 
     // Profile created, go to onboarding or lms
     if (!error && newProfileData) {
+      console.log('newProfileData', newProfileData);
       user.update((_user) => ({
         ..._user,
         fetchingUser: false,
@@ -130,6 +128,7 @@ export async function getProfile({
       handleLocaleChange(newProfileData[0].locale);
 
       if (isOrgSite) {
+        console.log('isOrgSite', isOrgSite);
         const { data, error } = await supabase
           .from('organizationmember')
           .insert({
@@ -138,6 +137,8 @@ export async function getProfile({
             role_id: 3
           })
           .select();
+        console.log('data', data);
+        console.log('error', error);
         if (error) {
           console.error('Error adding user to organisation', error);
         } else {
@@ -151,8 +152,10 @@ export async function getProfile({
         }
 
         if (params.get('redirect')) {
+          console.log('redirect', params.get('redirect'));
           goto(params.get('redirect') || '');
         } else {
+          console.log('redirect', '/lms');
           goto('/lms');
         }
         return;
