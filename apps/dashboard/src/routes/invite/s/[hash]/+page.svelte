@@ -72,7 +72,6 @@
       }) || [];
 
     addGroupMember(member).then((addedMember) => {
-      loading = false;
       if (addedMember.error) {
         console.error('Error adding student to group', courseData.group_id, addedMember.error);
         snackbar.error('snackbar.invite.failed_join');
