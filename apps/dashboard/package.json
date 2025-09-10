@@ -112,7 +112,7 @@
   },
   "type": "module",
   "engines": {
-    "node": "^20.19.4"
+    "node": "^20.19.3"
   },
   "browser": {
     "crypto": false
