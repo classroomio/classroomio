@@ -3,7 +3,10 @@
     lesson,
     deleteLessonDocument
   } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { uploadCourseDocumentStore } from '$lib/components/Course/components/Lesson/store/lessons';
+  import {
+    uploadCourseDocumentStore,
+    presignedDocUrls
+  } from '$lib/components/Course/components/Lesson/store/lessons';
   import MODES from '$lib/utils/constants/mode';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import CloseIcon from 'carbon-icons-svelte/lib/Close.svelte';
@@ -14,11 +17,12 @@
   import { onMount } from 'svelte';
   import DocumentList from '../Document/DocumentList.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import { apiClient } from '$lib/utils/services/api';
+  import type { LessonDocument } from '$lib/utils/types';
+  import { snackbar } from '$lib/components/Snackbar/store';
 
   export let mode = MODES.view;
 
-  // Use real documents from store
-  $: displayDocuments = $lesson?.materials?.documents || [];
   let downloadingDocuments = new Set<string>();
   let viewingPDF: any = null;
   let pdfViewerOpen = false;
@@ -67,12 +71,47 @@
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
-  async function downloadDocument(doc: any) {
+  async function getPresignedDocs(docs: LessonDocument[]) {
+    if (!docs.length) return {};
+    if (docs.every((d) => $presignedDocUrls[d.key || ''])) return;
+
+    isLoading = true;
+
+    try {
+      const { data } = await apiClient.post('/course/presign/download/document', {
+        keys: docs.map((d) => d.key)
+      });
+
+      if (!data.success) {
+        throw new Error(data.message);
+      }
+
+      for (const key in data.urls) {
+        presignedDocUrls.update((urls) => ({
+          ...urls,
+          [key]: data.urls[key]
+        }));
+      }
+    } catch (error) {
+      isLoading = false;
+      console.error('Error getting presigned docs:', error);
+      snackbar.error('Error getting presigned docs');
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  async function downloadDocument(doc: LessonDocument) {
     downloadingDocuments.add(doc.name);
     downloadingDocuments = downloadingDocuments;
 
+    if (!doc.key) {
+      snackbar.error('Document not loaded correctly');
+      return;
+    }
+
     try {
-      const response = await fetch(doc.link);
+      const response = await fetch($presignedDocUrls[doc.key]);
       if (!response.ok) {
         throw new Error('Failed to fetch document');
       }
@@ -104,7 +143,7 @@
     }, 150); // 150ms debounce
   }
 
-  async function viewPDF(document: any) {
+  async function viewPDF(document: LessonDocument) {
     // Wait for PDF.js to be fully loaded
     if (!pdfjsLib) {
       // Show loading state while waiting for PDF.js
@@ -136,7 +175,12 @@
     error = null;
 
     try {
-      const response = await fetch(document.link);
+      if (!document.key) {
+        snackbar.error('Document not loaded correctly');
+        return;
+      }
+
+      const response = await fetch($presignedDocUrls[document.key]);
 
       if (!response.ok) {
         throw new Error('Failed to fetch PDF');
@@ -227,7 +271,7 @@
     debouncedRender();
   }
 
-  function handleViewPDF(event: CustomEvent) {
+  function handleViewPDF(event: CustomEvent<LessonDocument>) {
     viewPDF(event.detail);
   }
 
@@ -289,10 +333,15 @@
   function handleDragStart(event: DragEvent) {
     event.preventDefault();
   }
+
+  $: displayDocuments = $lesson?.materials?.documents || [];
+
+  $: getPresignedDocs(displayDocuments);
 </script>
 
 <div class="mx-auto w-full max-w-lg">
   <DocumentList
+    {isLoading}
     {mode}
     {displayDocuments}
     {downloadingDocuments}

@@ -30,6 +30,8 @@ export const uploadCourseDocumentStore = writable({
   isCancelled: false
 });
 
+export const presignedDocUrls = writable<Record<string, string>>({});
+
 export const lessons: Writable<Lesson[]> = writable([]);
 
 export const lessonSections: Writable<LessonSection[]> = writable([]);

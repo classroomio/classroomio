@@ -8,16 +8,18 @@
   import EyeIcon from 'carbon-icons-svelte/lib/View.svelte';
   import isEmpty from 'lodash/isEmpty';
   import { createEventDispatcher } from 'svelte';
+  import type { LessonDocument } from '$lib/utils/types';
 
   const dispatch = createEventDispatcher();
 
   export let mode = MODES.view;
-  export let displayDocuments: any[] = [];
+  export let displayDocuments: LessonDocument[] = [];
   export let downloadingDocuments: Set<string>;
   export let formatFileSize: (bytes: number) => string;
   export let openDocumentUploadModal: () => void;
   export let deleteDocument: (index: number) => void;
-  export let downloadDocument: (doc: any) => Promise<void>;
+  export let downloadDocument: (doc: LessonDocument) => Promise<void>;
+  export let isLoading = false;
 
   function getFileIcon(type: string) {
     switch (type) {
@@ -28,7 +30,7 @@
     }
   }
 
-  function handleViewPDF(document: any) {
+  function handleViewPDF(document: LessonDocument) {
     dispatch('viewPDF', document);
   }
 </script>
@@ -137,15 +139,17 @@
                 <PrimaryButton
                   variant={VARIANTS.CONTAINED_DARK}
                   onClick={() => handleViewPDF(document)}
+                  {isLoading}
                 >
                   <EyeIcon size={16} class="mr-1 inline" />
                   {$t('course.navItem.lessons.materials.tabs.document.view_pdf')}
                 </PrimaryButton>
               {:else}
                 <a
-                  href={document.link}
-                  target="_blank"
-                  class="text-sm text-blue-600 underline hover:text-blue-800"
+                  href={isLoading ? '#' : document.link}
+                  target={isLoading ? null : '_blank'}
+                  aria-disabled={isLoading}
+                  class="text-sm text-blue-600 underline hover:text-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {$t('course.navItem.lessons.materials.tabs.document.view_document')}
                 </a>
