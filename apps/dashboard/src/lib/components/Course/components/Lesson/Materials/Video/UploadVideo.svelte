@@ -44,16 +44,13 @@
     fileSize = videoFile?.size / (1024 * 1024);
 
     try {
-      const uploadPresignResponse = await apiClient.post('/course/presign/upload', {
-        fileName: videoFile.name,
-        fileType: videoFile.type
-      });
+      // Use new HLS upload endpoint that processes video during upload
+      const formData = new FormData();
+      formData.append('video', videoFile);
 
-      const presignedUrl = uploadPresignResponse.data.url;
-
-      const uploadResponse = await axios.put(presignedUrl, videoFile, {
+      const uploadResponse = await apiClient.post('/course/presign/upload/hls', formData, {
         headers: {
-          'Content-Type': videoFile.type
+          'Content-Type': 'multipart/form-data'
         },
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
@@ -64,39 +61,51 @@
             abortController?.abort();
             return;
           }
-          value = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1) / 2);
+          // Only show upload progress up to 90%, leave 10% for processing
+          value = Math.round((progressEvent.loaded * 90) / (progressEvent.total || 1));
         }
       });
 
-      const downloadPresignedResponse = await apiClient.post('/course/presign/download', {
-        keys: [uploadPresignResponse.data.fileKey]
-      });
+      // Show processing progress (90-100%)
+      value = 90;
+      status = 'active';
 
-      if (!downloadPresignedResponse.data.success) {
+      if (!uploadResponse.data.success) {
         formRes = {
-          type: 'INTERNAL_ERROR',
+          type: 'PROCESSING_ERROR',
           status: 500,
-          message: downloadPresignedResponse.data.message
+          message: uploadResponse.data.message
         };
-
         return;
       }
 
-      const fileKey = uploadPresignResponse.data.fileKey;
-      const presignedUrls = downloadPresignedResponse.data.urls;
+      // Complete the progress bar
+      value = 100;
+      status = 'finished';
+
+      // Generate fallback URL for compatibility
+      const downloadPresignedResponse = await apiClient.post('/course/presign/download', {
+        keys: [uploadResponse.data.fileKey]
+      });
+
+      const fallbackUrl = downloadPresignedResponse.data.success
+        ? downloadPresignedResponse.data.urls[uploadResponse.data.fileKey]
+        : null;
 
       formRes = {
-        url: presignedUrls[fileKey],
-        fileKey: uploadPresignResponse.data.fileKey,
-        status: uploadResponse.status
+        url: fallbackUrl, // Fallback URL for non-HLS browsers
+        fileKey: uploadResponse.data.fileKey,
+        status: 200,
+        metadata: uploadResponse.data.metadata
       };
 
       $lesson.materials.videos = [
         ...$lesson.materials.videos,
         {
           type: 'upload',
-          link: formRes.url,
-          key: formRes?.fileKey
+          link: formRes.url, // Fallback URL
+          key: formRes?.fileKey, // Used for HLS streaming
+          metadata: formRes.metadata // Store video metadata (duration, segmentCount, etc.)
         }
       ];
 
@@ -148,6 +157,8 @@
   $: if (value === max) {
     helperText = 'Done';
     status = 'finished';
+  } else if (value >= 90 && value < 100) {
+    helperText = 'Processing video...';
   }
 
   $: isDisabled = $uploadCourseVideoStore.isUploading || !env.PUBLIC_SERVER_URL || $isFreePlan;
