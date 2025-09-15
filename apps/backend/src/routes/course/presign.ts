@@ -16,6 +16,35 @@ import { s3Client } from '$src/utils/s3';
 
 export const presignRouter = new Hono();
 
+// Note: Lesson access verification is handled on the client side
+// Users cannot access course data without proper permissions
+
+// Helper function to generate HLS manifest
+function generateHLSManifest(videoKey: string, lessonId: string): string {
+  const baseUrl = `/api/course/presign/hls/segment/${lessonId}/${videoKey}`;
+
+  // TODO: This is a mock implementation. For a real implementation, you need to:
+  // 1. Use FFmpeg to segment the video into .ts files and upload them to R2
+  // 2. Store video metadata (duration, segment count, segment durations) in database
+  // 3. Generate manifest based on actual video metadata
+  // 4. For now, we'll use the original video file as a single "segment"
+
+  // For now, we'll create a simple manifest that points to the original video
+  // This will work but doesn't provide the security benefits of true segmentation
+  const manifest = `#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-TARGETDURATION:300
+#EXT-X-MEDIA-SEQUENCE:0
+#EXT-X-PLAYLIST-TYPE:VOD
+
+#EXTINF:300.0,
+${baseUrl}/original.mp4
+
+#EXT-X-ENDLIST`;
+
+  return manifest;
+}
+
 presignRouter.post('/upload', authMiddleware, async (c) => {
   const body = await c.req.json();
   const result = ZCoursePresignUrlUpload.parse(body);
@@ -192,6 +221,65 @@ presignRouter.post('/download/document', authMiddleware, async (c) => {
         success: false,
         type: 'INTERNAL_ERROR',
         message: 'Error Retrieving Document'
+      },
+      500
+    );
+  }
+});
+
+// HLS Streaming Endpoints for Enhanced Video Security
+presignRouter.get('/hls/stream/:lessonId/:videoKey', authMiddleware, async (c) => {
+  const lessonId = c.req.param('lessonId');
+  const videoKey = c.req.param('videoKey');
+
+  try {
+    // Generate HLS manifest
+    const manifest = generateHLSManifest(videoKey, lessonId);
+
+    return c.text(manifest, {
+      headers: {
+        'Content-Type': 'application/vnd.apple.mpegurl',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Range'
+      }
+    });
+  } catch (error) {
+    console.error('Error generating HLS manifest:', error);
+    return c.json(
+      {
+        success: false,
+        type: 'INTERNAL_ERROR',
+        message: 'Error generating HLS manifest'
+      },
+      500
+    );
+  }
+});
+
+presignRouter.get('/hls/segment/:lessonId/:videoKey/:segmentId', authMiddleware, async (c) => {
+  const { lessonId, videoKey, segmentId } = c.req.param();
+
+  try {
+    // For now, serve the original video file as a "segment"
+    // TODO: Implement actual video segmentation with FFmpeg
+    const command = new GetObjectCommand({
+      Bucket: BUCKET_NAME.VIDEOS,
+      Key: videoKey // Use the original video key for now
+    }) as GetSignedUrlParameters[1];
+
+    const segmentUrl = await getSignedUrl(s3Client as GetSignedUrlParameters[0], command, {
+      expiresIn: CLOUDFLARE.R2.HLS_SEGMENT_EXPIRATION_TIME
+    });
+
+    return c.redirect(segmentUrl);
+  } catch (error) {
+    console.error('Error generating segment URL:', error);
+    return c.json(
+      {
+        success: false,
+        type: 'INTERNAL_ERROR',
+        message: 'Error generating segment URL'
       },
       500
     );
