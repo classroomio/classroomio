@@ -23,7 +23,6 @@
     if (backUrl) {
       goto(backUrl);
     } else {
-      // Default fallback to course people page
       goto(`/courses/${data.courseId}/people`);
     }
   };

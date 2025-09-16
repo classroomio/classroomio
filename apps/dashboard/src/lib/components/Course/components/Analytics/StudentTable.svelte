@@ -1,6 +1,6 @@
 <script lang="ts">
   import Avatar from '$lib/components/Avatar/index.svelte';
-  import { Tag } from 'carbon-components-svelte';
+  import { Tag, Pagination } from 'carbon-components-svelte';
   import type { StudentOverview } from '$lib/utils/types/analytics';
   import EmptyState from './EmptyState.svelte';
   import { User } from 'carbon-icons-svelte';
@@ -9,10 +9,31 @@
 
   export let students: StudentOverview[] = [];
 
+  // Pagination state
+  let currentPage = 1;
+  const pageSize = 15;
+
+  // Computed values
+  $: totalPages = Math.ceil(students.length / pageSize);
+  $: startIndex = (currentPage - 1) * pageSize;
+  $: endIndex = startIndex + pageSize;
+  $: paginatedStudents = students.slice(startIndex, endIndex);
+  $: startItem = startIndex + 1;
+  $: endItem = Math.min(endIndex, students.length);
+
   const GotoFullProfile = (student: StudentOverview) => {
     if (!student) return;
     goto(`/courses/${$course.id}/people/${student.id}?back=/courses/${$course.id}/analytics`);
   };
+
+  function handlePageChange(event: CustomEvent) {
+    currentPage = event.detail.page;
+  }
+
+  // Reset to first page when students array changes
+  $: if (students.length > 0 && currentPage > totalPages) {
+    currentPage = 1;
+  }
 </script>
 
 {#if students.length === 0}
@@ -62,7 +83,7 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
-          {#each students as student}
+          {#each paginatedStudents as student}
             <tr class="group h-[100px] border-b hover:bg-gray-50 dark:hover:bg-gray-700">
               <!-- Fixed Name Column -->
               <td
@@ -137,4 +158,21 @@
       </table>
     </div>
   </div>
+
+  <!-- Pagination Controls -->
+  {#if students.length > pageSize}
+    <div
+      class="mt-4 flex items-center justify-between border-t border-gray-200 px-4 py-3 dark:border-gray-600"
+    >
+      <div class="text-sm text-gray-700 dark:text-gray-300">
+        Showing {startItem} to {endItem} of {students.length} students
+      </div>
+      <Pagination
+        page={currentPage}
+        totalItems={students.length}
+        {pageSize}
+        on:change={handlePageChange}
+      />
+    </div>
+  {/if}
 {/if}
