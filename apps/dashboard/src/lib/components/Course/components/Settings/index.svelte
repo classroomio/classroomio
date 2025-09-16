@@ -199,7 +199,7 @@
   $: courseLink = `${$currentOrgDomain}/course/${$course.slug}`;
 </script>
 
-<UnsavedChanges {hasUnsavedChanges} />
+<UnsavedChanges bind:hasUnsavedChanges />
 
 <DeleteModal onDelete={handleDeleteCourse} bind:open={openDeleteModal} />
 

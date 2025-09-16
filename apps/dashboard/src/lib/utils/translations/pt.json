@@ -1553,5 +1553,10 @@
     "assignment_completion_description": "Porcentagem de tarefas concluídas",
     "average_grade": "Nota Média",
     "average_grade_description": "Nota média de todas as tarefas concluídas"
+  },
+  "common": {
+    "unsaved_changes": {
+      "message": "Você tem mudanças não salvas. Tem certeza de que deseja sair?"
+    }
   }
 }

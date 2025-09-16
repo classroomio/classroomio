@@ -1600,5 +1600,11 @@
       "not_valid": "Not valid email"
     },
     "invalid_type_error": "Must not be empty"
+  },
+
+  "common": {
+    "unsaved_changes": {
+      "message": "You have unsaved changes. Are you sure you want to leave?"
+    }
   }
 }

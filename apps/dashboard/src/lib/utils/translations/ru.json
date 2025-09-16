@@ -1553,5 +1553,10 @@
     "assignment_completion_description": "Процент выполненных заданий",
     "average_grade": "Средняя оценка",
     "average_grade_description": "Средняя оценка за все выполненные задания"
+  },
+  "common": {
+    "unsaved_changes": {
+      "message": "У вас есть неспасенные изменения. Вы уверены, что хотите уйти?"
+    }
   }
 }
