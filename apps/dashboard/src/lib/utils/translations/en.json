@@ -535,6 +535,7 @@
       "nav_submissions": "Submissions",
       "nav_marks": "Marks",
       "nav_people": "People",
+      "nav_analytics": "Analytics",
       "nav_certificates": "Certificates",
       "nav_landing_page": "Landing Page",
       "nav_settings": "Settings"
@@ -1145,6 +1146,10 @@
         },
         "instructor": "Instructor",
         "courses": "courses"
+      },
+
+      "analytics": {
+        "title": "Analytics"
       },
 
       "settings": {
