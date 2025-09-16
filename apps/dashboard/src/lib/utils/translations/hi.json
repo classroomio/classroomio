@@ -861,6 +861,9 @@
           "cancel": "रद्द करना",
           "post": "डाक"
         }
+      },
+      "analytics": {
+        "title": "एनालिटिक्स"
       }
     },
     "navItems": {
@@ -872,7 +875,8 @@
       "nav_certificates": "प्रमाण पत्र",
       "nav_landing_page": "लैंडिंग पृष्ठ",
       "nav_settings": "समायोजन",
-      "nav_content": "सामग्री"
+      "nav_content": "सामग्री",
+      "nav_analytics": "एनालिटिक्स"
     },
     "not_permitted": {
       "header": "अनुमति नहीं",
@@ -1552,7 +1556,23 @@
     "assignment_completion": "असाइनमेंट पूरा करना",
     "assignment_completion_description": "पूर्ण किये गये कार्यों का प्रतिशत",
     "average_grade": "औसत क्षेणी",
-    "average_grade_description": "सभी पूर्ण किए गए असाइनमेंट का औसत ग्रेड"
+    "average_grade_description": "सभी पूर्ण किए गए असाइनमेंट का औसत ग्रेड",
+    "students": "छात्र",
+    "lessons": "पाठ",
+    "tutors": "ट्यूटर्स",
+    "avg_grade": "AVG ग्रेड",
+    "completion_rate": "पूर्णता दर",
+    "student_progress_overview": "छात्र प्रगति अवलोकन",
+    "student_name": "छात्र नाम",
+    "lessons_completed": "सबक पूरा हुआ",
+    "exercises_submitted": "प्रस्तुत अभ्यास",
+    "actions": "कार्रवाई",
+    "view_details": "विवरण देखें",
+    "no_students_found": "कोई छात्र नहीं मिला",
+    "no_students_description": "इस पाठ्यक्रम में अभी तक कोई छात्र नामांकित नहीं हैं। पाठ्यक्रम में शामिल होने के बाद छात्र यहां दिखाई देंगे।",
+    "showing_students": "{TOTAL} {TOTAL} छात्रों के {अंत} को दिखा रहा है",
+    "no_analytics_data": "कोई एनालिटिक्स डेटा नहीं",
+    "no_analytics_description": "इस पाठ्यक्रम के लिए एनालिटिक्स डेटा लोड करने में असमर्थ। यदि समस्या बनी रहती है, तो कृपया बाद में पुनः प्रयास करें या समर्थन से संपर्क करें।"
   },
   "common": {
     "unsaved_changes": {

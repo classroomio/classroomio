@@ -861,6 +861,9 @@
           "cancel": "Annuler",
           "post": "Poste"
         }
+      },
+      "analytics": {
+        "title": "Analytique"
       }
     },
     "navItems": {
@@ -872,7 +875,8 @@
       "nav_certificates": "Certificats",
       "nav_landing_page": "Page de destination",
       "nav_settings": "Paramètres",
-      "nav_content": "Contenu"
+      "nav_content": "Contenu",
+      "nav_analytics": "Analytique"
     },
     "not_permitted": {
       "header": "Aucune autorisation",
@@ -1552,7 +1556,23 @@
     "assignment_completion": "Achèvement de la mission",
     "assignment_completion_description": "Pourcentage de missions terminées",
     "average_grade": "Note moyenne",
-    "average_grade_description": "Note moyenne de tous les devoirs terminés"
+    "average_grade_description": "Note moyenne de tous les devoirs terminés",
+    "students": "Étudiants",
+    "lessons": "Leçons",
+    "tutors": "tuteurs",
+    "avg_grade": "Grade AVG",
+    "completion_rate": "Taux d'achèvement",
+    "student_progress_overview": "Aperçu des progrès des étudiants",
+    "student_name": "Nom de l'étudiant",
+    "lessons_completed": "Leçons terminées",
+    "exercises_submitted": "Exercices soumis",
+    "actions": "Actes",
+    "view_details": "Afficher les détails",
+    "no_students_found": "Aucun étudiant trouvé",
+    "no_students_description": "Il n'y a pas encore d'étudiants inscrits à ce cours. Les étudiants apparaîtront ici une fois qu'ils auront participé au cours.",
+    "showing_students": "Affichage {démarrer} à {fin} des étudiants {totaux}",
+    "no_analytics_data": "Aucune donnée d'analyse",
+    "no_analytics_description": "Impossible de charger des données d'analyse pour ce cours. Veuillez réessayer plus tard ou contacter le support si le problème persiste."
   },
   "common": {
     "unsaved_changes": {

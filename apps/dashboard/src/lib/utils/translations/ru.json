@@ -861,6 +861,9 @@
           "cancel": "Отмена",
           "post": "Почта"
         }
+      },
+      "analytics": {
+        "title": "Аналитика"
       }
     },
     "navItems": {
@@ -872,7 +875,8 @@
       "nav_certificates": "Сертификаты",
       "nav_landing_page": "Целевая страница",
       "nav_settings": "Настройки",
-      "nav_content": "Содержание"
+      "nav_content": "Содержание",
+      "nav_analytics": "Аналитика"
     },
     "not_permitted": {
       "header": "Нет разрешения",
@@ -1552,7 +1556,23 @@
     "assignment_completion": "Выполнение задания",
     "assignment_completion_description": "Процент выполненных заданий",
     "average_grade": "Средняя оценка",
-    "average_grade_description": "Средняя оценка за все выполненные задания"
+    "average_grade_description": "Средняя оценка за все выполненные задания",
+    "students": "Студенты",
+    "lessons": "Уроки",
+    "tutors": "репетиторы",
+    "avg_grade": "AVG Grade",
+    "completion_rate": "Коэффициент завершения",
+    "student_progress_overview": "Студенческий прогресс обзор",
+    "student_name": "Студенческое имя",
+    "lessons_completed": "Уроки завершены",
+    "exercises_submitted": "Упражнения представлены",
+    "actions": "Действия",
+    "view_details": "Просмотреть детали",
+    "no_students_found": "Никаких студентов не нашли",
+    "no_students_description": "В этом курсе еще нет студентов. Студенты появятся здесь, как только они присоединятся к курсу.",
+    "showing_students": "Показ {start} to {end} {otto} Студенты",
+    "no_analytics_data": "Нет аналитических данных",
+    "no_analytics_description": "Невозможно загрузить данные аналитики для этого курса. Пожалуйста, попробуйте еще раз или свяжитесь с поддержкой, если проблема сохранится."
   },
   "common": {
     "unsaved_changes": {

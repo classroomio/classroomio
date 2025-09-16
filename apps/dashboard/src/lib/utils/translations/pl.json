@@ -331,7 +331,23 @@
     "assignment_completion": "Zakończenie przypisania",
     "assignment_completion_description": "Procent wypełnionych zadań",
     "average_grade": "Średnia ocena",
-    "average_grade_description": "Średnia ocena wszystkich zakończonych zadań"
+    "average_grade_description": "Średnia ocena wszystkich zakończonych zadań",
+    "students": "Studenci",
+    "lessons": "Lekcje",
+    "tutors": "Tutorzy",
+    "avg_grade": "Klasa AVG",
+    "completion_rate": "Wskaźnik zakończenia",
+    "student_progress_overview": "Przegląd postępu uczniów",
+    "student_name": "Nazwa ucznia",
+    "lessons_completed": "Ukończone lekcje",
+    "exercises_submitted": "Przedstawione ćwiczenia",
+    "actions": "Działania",
+    "view_details": "Zobacz szczegóły",
+    "no_students_found": "Nie znaleziono uczniów",
+    "no_students_description": "Na ten kurs nie zapisano jeszcze studentów. Studenci pojawią się tutaj, gdy dołączą do kursu.",
+    "showing_students": "Pokazuje {start} do {end} studentów {total}",
+    "no_analytics_data": "Brak danych analitycznych",
+    "no_analytics_description": "Nie można załadować danych analitycznych dla tego kursu. Spróbuj ponownie później lub skontaktuj się z wsparciem, jeśli problem będzie się utrzymywał."
   },
   "audience": {
     "title": "Publiczność",
@@ -1000,6 +1016,9 @@
           "cancel": "Anulować",
           "post": "Post"
         }
+      },
+      "analytics": {
+        "title": "Analityka"
       }
     },
     "navItems": {
@@ -1011,7 +1030,8 @@
       "nav_people": "Ludzie",
       "nav_certificates": "Certyfikaty",
       "nav_landing_page": "Strona docelowa",
-      "nav_settings": "Ustawienia"
+      "nav_settings": "Ustawienia",
+      "nav_analytics": "Analityka"
     }
   },
   "courses": {
@@ -1523,5 +1543,10 @@
     "resend_in": "Ponownie weryfikacja w",
     "seconds": "towary drugiej jakości",
     "snackbar_error": "Błąd podczas wysyłania kodu"
+  },
+  "common": {
+    "unsaved_changes": {
+      "message": "Masz niezbawione zmiany. Czy na pewno chcesz odejść?"
+    }
   }
 }

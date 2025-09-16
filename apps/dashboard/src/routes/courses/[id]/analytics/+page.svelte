@@ -74,36 +74,36 @@
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
               <!-- Students Card -->
               <AnalyticsCard
-                title="Students"
+                title={$t('analytics.students')}
                 value={courseAnalytics?.totalStudents || 0}
-                subtitle="{courseAnalytics?.totalTutors || 0} tutors"
+                subtitle="{$t('analytics.tutors')}: {courseAnalytics?.totalTutors || 0}"
                 icon={StudentsIcon}
                 iconColor="blue"
               />
 
               <!-- Lessons Card -->
               <AnalyticsCard
-                title="Lessons"
+                title={$t('analytics.lessons')}
                 value={courseAnalytics?.totalLessons || 0}
-                subtitle="{courseAnalytics?.totalExercises || 0} exercises"
+                subtitle="{$t('analytics.exercises')}: {courseAnalytics?.totalExercises || 0}"
                 icon={LessonsIcon}
                 iconColor="green"
               />
 
               <!-- Progress Card -->
               <AnalyticsCard
-                title="Progress"
+                title={$t('analytics.progress')}
                 value="{courseAnalytics?.lessonCompletionRate || 0}%"
-                subtitle="Avg grade: {courseAnalytics?.averageGrade || 0}%"
+                subtitle="{$t('analytics.avg_grade')}: {courseAnalytics?.averageGrade || 0}%"
                 icon={ProgressIcon}
                 iconColor="purple"
               />
 
               <!-- Exercise Completion Card -->
               <AnalyticsCard
-                title="Exercises"
+                title={$t('analytics.exercises')}
                 value="{courseAnalytics?.exerciseCompletionRate || 0}%"
-                subtitle="Completion rate"
+                subtitle={$t('analytics.completion_rate')}
                 icon={ExercisesIcon}
                 iconColor="orange"
               />
@@ -121,7 +121,7 @@
           >
             <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
               <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                Student Progress Overview
+                {$t('analytics.student_progress_overview')}
               </h3>
             </div>
             <div class="p-6">
@@ -132,8 +132,8 @@
       </div>
     {:else}
       <EmptyState
-        title="No Analytics Data"
-        description="Unable to load analytics data for this course. Please try again later or contact support if the issue persists."
+        title={$t('analytics.no_analytics_data')}
+        description={$t('analytics.no_analytics_description')}
         icon={ChartBar}
         className="h-screen"
       />

@@ -6,6 +6,7 @@
   import { User } from 'carbon-icons-svelte';
   import { course } from '../../store';
   import { goto } from '$app/navigation';
+  import { t } from '$lib/utils/functions/translations';
 
   export let students: StudentOverview[] = [];
 
@@ -38,8 +39,8 @@
 
 {#if students.length === 0}
   <EmptyState
-    title="No Students Found"
-    description="There are no students enrolled in this course yet. Students will appear here once they join the course."
+    title={$t('analytics.no_students_found')}
+    description={$t('analytics.no_students_description')}
     icon={User}
   />
 {:else}
@@ -53,32 +54,32 @@
             <th
               class="sticky left-0 z-20 min-w-[200px] whitespace-nowrap bg-white px-4 py-3 text-left text-sm font-medium text-gray-500 dark:bg-gray-800 dark:text-gray-300"
             >
-              Student Name
+              {$t('analytics.student_name')}
             </th>
             <th
               class="min-w-[150px] whitespace-nowrap px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-300"
             >
-              Lessons Completed
+              {$t('analytics.lessons_completed')}
             </th>
             <th
               class="min-w-[140px] whitespace-nowrap px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-300"
             >
-              Exercises Submitted
+              {$t('analytics.exercises_submitted')}
             </th>
             <th
               class="min-w-[120px] whitespace-nowrap px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-300"
             >
-              Average Grade
+              {$t('analytics.average_grade')}
             </th>
             <th
               class="min-w-[120px] whitespace-nowrap px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-300"
             >
-              Last Seen
+              {$t('analytics.last_seen')}
             </th>
             <th
               class="min-w-[120px] whitespace-nowrap px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-300"
             >
-              Actions
+              {$t('analytics.actions')}
             </th>
           </tr>
         </thead>
@@ -149,7 +150,7 @@
                   class="whitespace-nowrap rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
                   on:click={() => GotoFullProfile(student)}
                 >
-                  View Details
+                  {$t('analytics.view_details')}
                 </button>
               </td>
             </tr>
@@ -165,7 +166,11 @@
       class="mt-4 flex items-center justify-between border-t border-gray-200 px-4 py-3 dark:border-gray-600"
     >
       <div class="text-sm text-gray-700 dark:text-gray-300">
-        Showing {startItem} to {endItem} of {students.length} students
+        {$t('analytics.showing_students', {
+          start: startItem,
+          end: endItem,
+          total: students.length
+        })}
       </div>
       <Pagination
         page={currentPage}
