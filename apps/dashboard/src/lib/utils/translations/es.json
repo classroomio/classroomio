@@ -658,7 +658,9 @@
                 "single": "respuesta única",
                 "multiple": "Múltiples respuestas",
                 "paragraph": "Párrafo"
-              }
+              },
+              "hint": "Pista",
+              "explanation": "Explicación"
             },
             "delete_confirmation": {
               "title": "Eliminar pregunta",

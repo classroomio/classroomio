@@ -658,7 +658,9 @@
                 "single": "Одиночный ответ",
                 "multiple": "Несколько ответов",
                 "paragraph": "Параграф"
-              }
+              },
+              "hint": "Намекать",
+              "explanation": "Объяснение"
             },
             "delete_confirmation": {
               "title": "Удалить вопрос",

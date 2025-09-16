@@ -658,7 +658,9 @@
                 "single": "Câu trả lời duy nhất",
                 "multiple": "Nhiều câu trả lời",
                 "paragraph": "Đoạn văn"
-              }
+              },
+              "hint": "Gợi ý",
+              "explanation": "Giải thích"
             },
             "delete_confirmation": {
               "title": "Xóa câu hỏi",

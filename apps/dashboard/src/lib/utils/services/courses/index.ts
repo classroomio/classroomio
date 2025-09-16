@@ -425,7 +425,7 @@ export async function upsertExercise(questionnaire: any, exerciseId: Exercise['i
       .update({
         title,
         description,
-        due_by
+        due_by, 
       })
       .match({ id: exerciseId });
   }
@@ -433,7 +433,7 @@ export async function upsertExercise(questionnaire: any, exerciseId: Exercise['i
   const updatedQuestions = [];
 
   for (const question of questions) {
-    const { title, id, name, question_type, options, deleted_at, order, points, is_dirty } =
+    const { title, id, name, question_type, options, deleted_at, order, points, is_dirty, hint, explanation } =
       question;
 
     // "DELETE" /delete/:questionId - Don't delete if answer already given
@@ -460,7 +460,9 @@ export async function upsertExercise(questionnaire: any, exerciseId: Exercise['i
       name: isNew(id) ? undefined : name,
       title,
       points,
+      hint,
       order,
+      explanation,
       question_type_id: question_type.id,
       exercise_id: exerciseId
     };
@@ -478,7 +480,7 @@ export async function upsertExercise(questionnaire: any, exerciseId: Exercise['i
     }
 
     if (questionSupabaseRes) {
-      const { question_type_id, id, name, order } = questionSupabaseRes;
+      const { question_type_id, id, name, order, hint } = questionSupabaseRes;
 
       // Delete cause this is not a field in the table
       delete newQuestion.question_type_id;
@@ -487,7 +489,9 @@ export async function upsertExercise(questionnaire: any, exerciseId: Exercise['i
       newQuestion.question_type = { id: question_type_id, label: question_type.label || '' };
       newQuestion.id = id;
       newQuestion.name = name;
+      newQuestion.hint = hint;
       newQuestion.order = order;
+      newQuestion.explanation = explanation;
       // @ts-ignore
       newQuestion.options = [];
 
