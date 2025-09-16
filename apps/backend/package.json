@@ -11,7 +11,7 @@
     "dev:tsc": "tsc -p tsconfig.json --watch",
     "deploy": "wrangler deploy",
     "start": "node dist/index.js",
-    "test": "vitest",
+    "test": "vitest NODE_ENV=test",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"src/**/*.ts\""
