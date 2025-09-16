@@ -44,7 +44,7 @@
   />
 {:else}
   <!-- Responsive Table -->
-  <div class="relative h-[600px] overflow-hidden">
+  <div class="relative h-[300px] overflow-hidden">
     <div class="h-full overflow-auto">
       <table class="w-full min-w-[800px]">
         <!-- Fixed Header -->
