@@ -1553,5 +1553,10 @@
     "assignment_completion_description": "Porcentaje de tareas completadas",
     "average_grade": "Calificación promedio",
     "average_grade_description": "Calificación promedio de todas las tareas completadas"
+  },
+  "common": {
+    "unsaved_changes": {
+      "message": "Tienes cambios no salvos. ¿Estás seguro de que quieres irte?"
+    }
   }
 }

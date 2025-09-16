@@ -61,7 +61,7 @@
       });
       snackbar.success('snackbar.course_settings.success.saved');
     } catch (error) {
-      if (error.message) {
+      if (error instanceof Error) {
         errors.description = error.message;
       } else {
         errors.description = $t('course.navItem.certificates.unexpected_error');
@@ -87,13 +87,13 @@
 
 <UpgradeBanner>{$t('upgrade.certificate')}</UpgradeBanner>
 
-<main class="md:-ml-3 md:-mr-3 px-2 mt-2">
-  <div class="flex-1 flex flex-col lg:flex-row justify-between gap-3 w-full mb-3 h-4/5">
-    <section class="w-full lg:w-2/5 h-full">
+<main class="mt-2 px-2 md:-ml-3 md:-mr-3">
+  <div class="mb-3 flex h-4/5 w-full flex-1 flex-col justify-between gap-3 lg:flex-row">
+    <section class="h-full w-full lg:w-2/5">
       <strong class="my-2 text-base font-semibold text-black dark:text-gray-100"
         >{$t('course.navItem.certificates.certificate_settings')}</strong
       >
-      <p class="text-xs font-normal my-4 dark:text-gray-100">
+      <p class="my-4 text-xs font-normal dark:text-gray-100">
         {$t('course.navItem.certificates.theme')}
       </p>
       <RadioButtonGroup
@@ -103,23 +103,23 @@
       >
         <div class="flex flex-wrap justify-between gap-y-5">
           {#each themes as theme}
-            <div class="flex mr-3">
+            <div class="mr-3 flex">
               <RadioButton value={theme} />
               <img
                 src={`/images/certificate_theme_${theme}.png`}
                 alt="themes"
-                class="w-[110px] h-[82px]"
+                class="h-[82px] w-[110px]"
               />
             </div>
           {/each}
         </div>
       </RadioButtonGroup>
       <div>
-        <p class="text-xs font-normal text-black my-2 dark:text-gray-100">
+        <p class="my-2 text-xs font-normal text-black dark:text-gray-100">
           {$t('course.navItem.certificates.logo')}
         </p>
         <div>
-          <p class="text-base mt-1 dark:text-gray-100">
+          <p class="mt-1 text-base dark:text-gray-100">
             {$t('course.navItem.certificates.to_update')}
             <strong class="font-semibold">{$t('course.navItem.certificates.settings')}</strong>
             {$t('course.navItem.certificates.and_upload')}
@@ -133,7 +133,7 @@
           />
         </div>
         <span class="my-4">
-          <p class="dark:text-gray-100 text-xs font-normal mt-4 mb-2">
+          <p class="mb-2 mt-4 text-xs font-normal dark:text-gray-100">
             {$t('course.navItem.certificates.description')}
           </p>
           <TextArea
@@ -160,9 +160,9 @@
       </div>
     </section>
     <section
-      class="bg-gray-100 dark:bg-neutral-800 flex justify-center items-center rounded-md w-full lg:w-3/5"
+      class="flex w-full items-center justify-center rounded-md bg-gray-100 lg:w-3/5 dark:bg-neutral-800"
     >
-      <div class="certificate-container flex justify-center items-center">
+      <div class="certificate-container flex items-center justify-center">
         {#if $course.certificate_theme === 'professional'}
           <Professional studentName={studentNamePlaceholder} />
         {:else if $course.certificate_theme === 'plain'}
