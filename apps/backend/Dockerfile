@@ -73,6 +73,6 @@ EXPOSE 80
 
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:80/health || exit 1
+    CMD curl -f http://localhost:80 || exit 1
 
 CMD ["pnpm", "start"]
