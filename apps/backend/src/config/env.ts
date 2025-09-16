@@ -7,6 +7,7 @@ const envSchema = z.object({
   CLOUDFLARE_ACCESS_KEY: z.string().optional(),
   CLOUDFLARE_SECRET_ACCESS_KEY: z.string().optional(),
   CLOUDFLARE_ACCOUNT_ID: z.string().optional(),
+  CLOUDFLARE_RENDERING_API_KEY: z.string().optional(),
   PUBLIC_SUPABASE_URL: z.string(),
   PUBLIC_SUPABASE_ANON_KEY: z.string(),
   ZOHO_TOKEN: z.string().optional(),

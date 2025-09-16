@@ -3,9 +3,7 @@ import { Context, Hono } from 'hono';
 import katex from 'katex';
 import { z } from 'zod';
 
-export const katexRouter = new Hono();
-
-katexRouter.get('/', async (c: Context) => {
+export const katexRouter = new Hono().get('/', async (c: Context) => {
   try {
     const original = c.req.raw.url;
 
@@ -23,7 +21,7 @@ katexRouter.get('/', async (c: Context) => {
         {
           success: false,
           error: 'Validation error',
-          details: error.errors
+          details: error.message
         },
         400
       );

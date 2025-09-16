@@ -13,7 +13,7 @@
   import { isFreePlan } from '$lib/utils/store/org';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
-  import { apiClient } from '$lib/utils/services/api';
+  import { rpc } from '$lib/utils/services/api';
   import { t } from '$lib/utils/functions/translations';
 
   export let lessonId = '';
@@ -44,12 +44,17 @@
     fileSize = videoFile?.size / (1024 * 1024);
 
     try {
-      const uploadPresignResponse = await apiClient.post('/course/presign/upload', {
+      const uploadPresignResponse = await rpc.course.presign.upload.$post({
         fileName: videoFile.name,
         fileType: videoFile.type
       });
+      const uploadPresignResult = await uploadPresignResponse.json();
 
-      const presignedUrl = uploadPresignResponse.data.url;
+      if (!uploadPresignResult.success) {
+        throw new Error(uploadPresignResult.message);
+      }
+
+      const presignedUrl = uploadPresignResponse.url;
 
       const uploadResponse = await axios.put(presignedUrl, videoFile, {
         headers: {
@@ -59,35 +64,30 @@
         maxBodyLength: Infinity,
         signal: abortController.signal,
         onUploadProgress: (progressEvent) => {
-          // Check if upload was cancelled during progress
           if ($uploadCourseVideoStore.isCancelled) {
             abortController?.abort();
             return;
           }
+
           value = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1) / 2);
         }
       });
 
-      const downloadPresignedResponse = await apiClient.post('/course/presign/download', {
-        keys: [uploadPresignResponse.data.fileKey]
+      const downloadPresignedResponse = await rpc.course.presign.download.$post({
+        keys: [uploadPresignResult.fileKey]
       });
+      const downloadPresignedResult = await downloadPresignedResponse.json();
 
-      if (!downloadPresignedResponse.data.success) {
-        formRes = {
-          type: 'INTERNAL_ERROR',
-          status: 500,
-          message: downloadPresignedResponse.data.message
-        };
-
-        return;
+      if (!downloadPresignedResult.success) {
+        throw new Error(downloadPresignedResult.message);
       }
 
-      const fileKey = uploadPresignResponse.data.fileKey;
-      const presignedUrls = downloadPresignedResponse.data.urls;
+      const fileKey = uploadPresignResult.fileKey;
+      const presignedUrls = downloadPresignedResult.urls;
 
       formRes = {
         url: presignedUrls[fileKey],
-        fileKey: uploadPresignResponse.data.fileKey,
+        fileKey: uploadPresignResult.fileKey,
         status: uploadResponse.status
       };
 
@@ -114,10 +114,14 @@
       } else if (err.response) {
         formRes = err.response.data;
       } else {
+        let message = 'An error occurred while uploading the video';
+        if (err instanceof Error) {
+          message = err.message;
+        }
         formRes = {
           type: 'INTERNAL_ERROR',
           status: 500,
-          message: 'An error occurred while uploading the video'
+          message
         };
       }
     } finally {

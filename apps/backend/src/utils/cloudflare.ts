@@ -9,7 +9,7 @@ export const getCloudflarePdfBuffer = async (html: string, styles?: string) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${CLOUDFLARE.CONFIGS.ACCESS_KEY}`
+          Authorization: `Bearer ${CLOUDFLARE.CONFIGS.RENDERING_API_KEY}`
         },
         body: JSON.stringify({
           html: html,
@@ -19,7 +19,8 @@ export const getCloudflarePdfBuffer = async (html: string, styles?: string) => {
     );
 
     console.log('PDF response status:', pdfResponse.status);
-    return pdfResponse;
+    const arrayBuffer = await pdfResponse.arrayBuffer();
+    return Buffer.from(arrayBuffer);
   } catch (error) {
     console.error('Error generating PDF:', error);
     throw new Error(error instanceof Error ? error.message : 'Failed to generate PDF');

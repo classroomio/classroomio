@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@carbon/charts-svelte": "^1.13.6",
+    "@cio/backend": "workspace:*",
     "@lemonsqueezy/lemonsqueezy.js": "^2.2.0",
     "@polar-sh/sveltekit": "^0.2.1",
     "@supabase/supabase-js": "^2.31.0",
@@ -51,6 +52,7 @@
     "js-yaml": "^4.1.0",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.2",
+    "ky": "^1.10.0",
     "lodash": "^4.17.21",
     "openai-edge": "^1.2.2",
     "papaparse": "^5.4.1",

@@ -1,4 +1,5 @@
 import type { TCourseDownloadContent } from '$src/types/course';
+import { getCloudflarePdfBuffer } from '$src/utils/cloudflare';
 import { marked } from 'marked';
 
 function getHtmlTemplate(body: string): string {
@@ -159,7 +160,7 @@ async function generateSinglePdfFromHtml(
   courseTitle: string,
   orgTheme: string
 ): Promise<Buffer> {
-  throw 'Download disabled';
+  return await getCloudflarePdfBuffer(htmlContent);
 }
 
 export async function generateCoursePdf(params: TCourseDownloadContent): Promise<Buffer> {

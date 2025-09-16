@@ -2,9 +2,11 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./",
+    "declaration": true,
+    "declarationMap": true,
     "esModuleInterop": true,
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "outDir": "./dist",
     "paths": {
       "$src": ["./src"],

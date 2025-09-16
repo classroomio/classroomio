@@ -1,16 +1,15 @@
-import { Context, Hono } from 'hono';
 import { sendWithNodemailer, sendWithZoho } from '$src/services/mail';
 
+import { Hono } from 'hono';
 import { ZSendEmailValidation } from '$src/types/mail';
 import { env } from '$src/config/env';
-import { z } from 'zod';
+import { zValidator } from '@hono/zod-validator';
 
-export const mailRouter = new Hono();
-
-mailRouter.post('/send', async (c: Context) => {
-  try {
-    const data = await c.req.json();
-    const validatedData = ZSendEmailValidation.parse(data);
+export const mailRouter = new Hono().post(
+  '/send',
+  zValidator('json', ZSendEmailValidation),
+  async (c) => {
+    const validatedData = c.req.valid('json');
 
     const results = await Promise.all(
       validatedData.map(async (emailData) => {
@@ -45,26 +44,5 @@ mailRouter.post('/send', async (c: Context) => {
     }
 
     return c.json({ success: true, details: results });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return c.json(
-        {
-          success: false,
-          error: 'Validation error',
-          details: error.errors
-        },
-        400
-      );
-    }
-
-    console.error('Error sending emails:', error);
-    return c.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
-        details: error
-      },
-      500
-    );
   }
-});
+);

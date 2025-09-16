@@ -1,14 +1,13 @@
-import { Context, Hono } from 'hono';
-import { ZCertificateDownload, ZLessonDownloadContent } from '$src/types/course/lesson';
-
+import { Hono } from 'hono';
+import { ZLessonDownloadContent } from '$src/types/course/lesson';
 import { generateLessonPdf } from '$src/utils/lesson';
+import { zValidator } from '@hono/zod-validator';
 
-export const lessonRouter = new Hono();
-
-lessonRouter.post('/download/pdf', async (c: Context) => {
-  try {
-    const data = await c.req.json();
-    const validatedData = ZLessonDownloadContent.parse(data);
+export const lessonRouter = new Hono().post(
+  '/download/pdf',
+  zValidator('json', ZLessonDownloadContent),
+  async (c) => {
+    const validatedData = c.req.valid('json');
 
     const pdfBuffer = await generateLessonPdf(validatedData);
 
@@ -21,15 +20,5 @@ lessonRouter.post('/download/pdf', async (c: Context) => {
         }
       })
     );
-  } catch (error) {
-    console.error('Error generating lesson PDF:', error);
-    return c.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
-        details: error
-      },
-      400
-    );
   }
-});
+);

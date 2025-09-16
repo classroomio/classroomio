@@ -1,24 +1,16 @@
-import { Context, Hono } from 'hono';
 import { ZCertificateDownload, ZCourseDownloadContent } from '$src/types/course';
 
+import { Hono } from 'hono';
 import { generateCertificate } from '$src/utils/certificate';
 import { generateCoursePdf } from '$src/utils/course';
 import { katexRouter } from '$src/routes/course/katex';
 import { lessonRouter } from '$src/routes/course/lesson';
 import { presignRouter } from '$src/routes/course/presign';
-import { z } from 'zod';
+import { zValidator } from '@hono/zod-validator';
 
-export const courseRouter = new Hono();
-
-courseRouter.route('/katex', katexRouter);
-courseRouter.route('/lesson', lessonRouter);
-courseRouter.route('/presign', presignRouter);
-
-courseRouter.post('/download/certificate', async (c: Context) => {
-  try {
-    const data = await c.req.json();
-
-    const validatedData = ZCertificateDownload.parse(data);
+export const courseRouter = new Hono()
+  .post('/download/certificate', zValidator('json', ZCertificateDownload), async (c) => {
+    const validatedData = c.req.valid('json');
 
     const result = await generateCertificate(validatedData);
 
@@ -36,34 +28,9 @@ courseRouter.post('/download/certificate', async (c: Context) => {
         }
       })
     );
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return c.json(
-        {
-          success: false,
-          error: 'Validation error',
-          details: error.errors
-        },
-        400
-      );
-    }
-
-    console.error('Error generating certificate:', error);
-    return c.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
-        details: error
-      },
-      500
-    );
-  }
-});
-
-courseRouter.post('/download/content', async (c: Context) => {
-  try {
-    const data = await c.req.json();
-    const validatedData = ZCourseDownloadContent.parse(data);
+  })
+  .post('/download/content', zValidator('json', ZCourseDownloadContent), async (c) => {
+    const validatedData = c.req.valid('json');
 
     const pdfBuffer = await generateCoursePdf(validatedData);
 
@@ -77,15 +44,7 @@ courseRouter.post('/download/content', async (c: Context) => {
         }
       })
     );
-  } catch (error) {
-    console.error('Error generating course PDF:', error);
-    return c.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred',
-        details: error
-      },
-      400
-    );
-  }
-});
+  })
+  .route('/katex', katexRouter)
+  .route('/lesson', lessonRouter)
+  .route('/presign', presignRouter);

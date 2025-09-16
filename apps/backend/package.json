@@ -1,12 +1,14 @@
 {
-  "name": "backend",
+  "name": "@cio/backend",
   "version": "0.0.1",
   "description": "ClassroomIO Backend for long processes",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
     "build": "tsc && tsc-alias",
-    "dev": "tsx watch src/index.ts",
+    "dev": "pnpm --filter @cio/backend --parallel \"/^dev:.*/\"",
+    "dev:server": "tsx watch src/index.ts",
+    "dev:tsc": "tsc -p tsconfig.json --watch",
     "start": "node dist/index.js",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
@@ -23,23 +25,34 @@
     "url": "https://github.com/classroomio/classroomio/issues"
   },
   "homepage": "https://github.com/classroomio/classroomio#readme",
+  "exports": {
+    "./rpc-types": {
+      "types": "./dist/rpc-types.d.ts",
+      "default": "./dist/rpc-types.js"
+    }
+  },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.388.0",
     "@aws-sdk/s3-request-presigner": "^3.675.0",
     "@hono/node-server": "^1.8.2",
+    "@hono/standard-validator": "^0.1.5",
+    "@hono/zod-validator": "^0.7.2",
+    "@scalar/hono-api-reference": "^0.9.18",
     "@sentry/node": "^7.110.1",
     "@sentry/profiling-node": "^7.110.1",
     "@supabase/supabase-js": "^2.32.0",
     "axios": "^1.4.0",
     "dotenv": "^16.3.1",
-    "hono": "^4.0.5",
+    "hono": "^4.9.7",
+    "hono-openapi": "^1.0.8",
     "hono-rate-limiter": "^0.4.2",
     "katex": "^0.16.10",
     "marked": "^7.0.3",
     "nanoid": "^5.1.5",
     "nodemailer": "^6.9.5",
     "zeptomail": "^6.0.0",
-    "zod": "^3.21.4"
+    "zod": "^4.1.8",
+    "zod-openapi": "^5.4.1"
   },
   "devDependencies": {
     "@types/katex": "^0.16.7",

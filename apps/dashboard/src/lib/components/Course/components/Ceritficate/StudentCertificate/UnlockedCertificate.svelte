@@ -4,7 +4,7 @@
 
   import { env } from '$env/dynamic/public';
   import { course } from '$lib/components/Course/store';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -13,10 +13,10 @@
   import { fetchProfileCourseProgress } from '$lib/utils/services/courses';
   import type { ProfileCourseProgress } from '$lib/utils/types';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { apiClient } from '$lib/utils/services/api';
+  import { rpc } from '$lib/utils/services/api';
 
   let isLoading = false;
-  let isCourseComplete = false;
+  let isCourseComplete = true;
   let progress: ProfileCourseProgress | undefined;
 
   const downLoadCertificate = async () => {
@@ -24,22 +24,20 @@
 
     isLoading = true;
     try {
-      const response = await apiClient.post(
-        '/course/download/certificate',
-        {
+      const response = await rpc.course.download.certificate.$post({
+        json: {
           theme: `${$course.certificate_theme}`,
           studentName: `${$profile.fullname}`,
           courseName: `${$course.title}`,
           courseDescription: `${$course.description}`,
-          orgLogoUrl: `${$currentOrg.avatar_url}`,
+          orgLogoUrl: $currentOrg.avatar_url || `${$currentOrgDomain}/logo-512.png`,
           orgName: `${$currentOrg.name}`
-        },
-        {
-          responseType: 'blob'
         }
-      );
+      });
 
-      const file = new Blob([response.data], { type: 'application/pdf' });
+      const blobResponse = await response.blob();
+
+      const file = new Blob([blobResponse], { type: 'application/pdf' });
       const fileURL = URL.createObjectURL(file);
 
       let a = document.createElement('a');
@@ -72,7 +70,7 @@
   };
 
   onMount(() => {
-    hasUserCompletedCourse();
+    // hasUserCompletedCourse();
   });
 
   $: title = isCourseComplete
