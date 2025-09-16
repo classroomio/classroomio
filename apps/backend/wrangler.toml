@@ -1,4 +1,4 @@
 name = "test1-cio-api"
-main = "src/index.ts"
+main = "dist/index.js"
 compatibility_date = "2024-01-01"
 compatibility_flags = ["nodejs_compat"]

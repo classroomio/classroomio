@@ -17,8 +17,11 @@ ARG SMTP_SENDER
 RUN mkdir /app
 WORKDIR /app
 
-# Install pnpm
-RUN npm install -g pnpm
+# Install pnpm and healthcheck tools
+RUN npm install -g pnpm && \
+    apt-get update && \
+    apt-get install -y curl wget && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install chrome stable from sources, then remove it. Why? The
 # npm install of `puppeteer` brings its own bundle chromium build,
@@ -67,5 +70,9 @@ ENV NODE_ENV=production \
 RUN pnpm build
 
 EXPOSE 3002
+
+# Add healthcheck
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:3002/health || exit 1
 
 CMD ["pnpm", "start"]
