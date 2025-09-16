@@ -1,7 +1,6 @@
 import 'dotenv/config';
 
 import { Hono } from 'hono';
-import { Scalar } from '@scalar/hono-api-reference';
 import { configureOpenAPI } from '$src/utils/openapi';
 import { cors } from 'hono/cors';
 import { courseRouter } from '$src/routes/course/course';
@@ -39,9 +38,9 @@ export const app = new Hono()
       keyGenerator: (c) => c.req.header('Authorization')?.split(' ')[1] ?? 'unknown' // Method to generate custom identifiers for clients.
     })
   )
+
   // Routes
   .get('/', (c) => c.json({ message: 'Welcome to ClassroomIO' }))
-
   .route('/course', courseRouter)
   .route('/mail', mailRouter)
 
