@@ -9,6 +9,7 @@
     "dev": "pnpm --filter @cio/backend --parallel \"/^dev:.*/\"",
     "dev:server": "tsx watch src/index.ts",
     "dev:tsc": "tsc -p tsconfig.json --watch",
+    "deploy": "wrangler deploy",
     "start": "node dist/index.js",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
@@ -67,7 +68,8 @@
     "tsc-alias": "^1.8.16",
     "tsx": "^4.7.1",
     "typescript": "^5.5.2",
-    "vitest": "^1.2.2"
+    "vitest": "^1.2.2",
+    "wrangler": "4.21.x"
   },
   "_moduleAliases": {
     "$src": "src"
