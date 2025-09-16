@@ -2,13 +2,7 @@ name: Upload OpenAPI Spec to R2
 
 on:
   push:
-    branches: [main, backend-v2]
-    paths:
-      - 'apps/backend/src/**'
-      - 'apps/backend/scripts/**'
-      - 'apps/backend/package.json'
-  pull_request:
-    branches: [main, backend-v2]
+    branches: [main]
     paths:
       - 'apps/backend/src/**'
       - 'apps/backend/scripts/**'
