@@ -65,14 +65,14 @@ ENV NODE_ENV=production \
     SMTP_USER=$SMTP_USER \
     SMTP_PASSWORD=$SMTP_PASSWORD \
     SMTP_PORT=$SMTP_PORT \
-    PORT=80
+    PORT=3002
 
 RUN pnpm build
 
-EXPOSE 80
+EXPOSE 3002
 
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:80 || exit 1
+    CMD curl -f http://localhost:3002 || exit 1
 
 CMD ["pnpm", "start"]
