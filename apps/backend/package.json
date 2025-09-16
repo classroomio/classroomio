@@ -14,7 +14,8 @@
     "test": "vitest NODE_ENV=test",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint . --ext .ts",
-    "format": "prettier --write \"src/**/*.ts\""
+    "format": "prettier --write \"src/**/*.ts\"",
+    "upload:openapi": "tsx scripts/upload-openapi-spec.ts"
   },
   "repository": {
     "type": "git",

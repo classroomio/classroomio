@@ -1,19 +1,9 @@
 import { Hono } from 'hono';
 import { Scalar } from '@scalar/hono-api-reference';
-import { openAPIRouteHandler } from 'hono-openapi';
+import { env } from '$src/config/env';
 
 export function configureOpenAPI(app: Hono) {
-  app.get('/docs', Scalar({ url: '/openapi', theme: 'none' }));
-  app.get(
-    '/openapi',
-    openAPIRouteHandler(app, {
-      documentation: {
-        info: {
-          title: 'ClassroomIO API',
-          version: '1.0.0',
-          description: 'Manage your organization on classroomio via the API'
-        }
-      }
-    })
-  );
+  if (env.OPENAPI_URL) {
+    app.get('/docs', Scalar({ url: env.OPENAPI_URL, theme: 'none' }));
+  }
 }
