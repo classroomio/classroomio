@@ -199,9 +199,12 @@ async function getStudentOverview(courseId: string, member: any): Promise<Studen
     const progressPercentage =
       totalLessons > 0 ? Math.round((lessonsCompleted / totalLessons) * 100) : 0;
 
-    // For now, we'll set average grade to 0 since we need exercise stats to calculate it properly
-    // This would require fetching exercise submissions like the analytics/user API does
-    const averageGrade = 0;
+    // Calculate average grade using the same logic as the people page
+    const totalEarnedPoints =
+      userExercisesStats?.reduce((sum, exercise) => sum + exercise.score, 0) || 0;
+    const totalPoints =
+      userExercisesStats?.reduce((sum, exercise) => sum + exercise.totalPoints, 0) || 0;
+    const averageGrade = totalPoints > 0 ? Math.round((totalEarnedPoints / totalPoints) * 100) : 0;
 
     return {
       id: member.profile_id,
@@ -251,22 +254,28 @@ async function fetchUserExercisesStats(
       return;
     }
 
-    const userExercisesStats = courseData[0].lesson.flatMap((lesson) =>
-      lesson.exercise.map((exercise) => {
-        const totalPoints = exercise.question.reduce((sum, q) => sum + (q.points || 0), 0);
-        const userSubmission = exercise.submission[0];
+    if (!courseData || courseData.length === 0) {
+      console.error('No course data found');
+      return;
+    }
 
-        return {
-          id: exercise.id,
-          lessonId: exercise.lesson_id,
-          lessonTitle: lesson.title,
-          title: exercise.title,
-          status: userSubmission?.status_id,
-          score: userSubmission?.total || 0,
-          totalPoints,
-          isCompleted: !!userSubmission
-        };
-      })
+    const userExercisesStats = courseData[0].lesson.flatMap(
+      (lesson) =>
+        lesson.exercise?.map((exercise) => {
+          const totalPoints = exercise.question?.reduce((sum, q) => sum + (q.points || 0), 0) || 0;
+          const userSubmission = exercise.submission?.[0];
+
+          return {
+            id: exercise.id,
+            lessonId: exercise.lesson_id,
+            lessonTitle: lesson.title,
+            title: exercise.title,
+            status: userSubmission?.status_id,
+            score: userSubmission?.total || 0,
+            totalPoints,
+            isCompleted: !!userSubmission
+          };
+        }) || []
     );
 
     return userExercisesStats;

@@ -2,15 +2,12 @@
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
   import type { CourseAnalytics } from '$lib/utils/types/analytics';
-  import type { BarChartOptions } from '@carbon/charts-svelte';
-  import { ScaleTypes, Alignments } from '@carbon/charts-svelte';
+  import { ScaleTypes } from '@carbon/charts-svelte';
   import '@carbon/charts-svelte/styles.css';
 
   export let courseAnalytics: CourseAnalytics | null = null;
 
   let BarChartSimple: any;
-  let progressChartOptions: BarChartOptions;
-  let gradeChartOptions: BarChartOptions;
 
   // Transform data for progress distribution chart
   $: progressChartData = courseAnalytics?.students

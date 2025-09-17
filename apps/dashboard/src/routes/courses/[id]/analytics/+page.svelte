@@ -3,11 +3,9 @@
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import { PageBody, PageNav } from '$lib/components/Page';
   import { t } from '$lib/utils/functions/translations';
-  import { group } from '$lib/components/Course/store';
-  import { course } from '$lib/components/Course/store';
   import { getAccessToken } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import type { CourseAnalytics, StudentOverview } from '$lib/utils/types/analytics';
+  import type { CourseAnalytics } from '$lib/utils/types/analytics';
   import { fade } from 'svelte/transition';
   import StudentTable from '$lib/components/Course/components/Analytics/StudentTable.svelte';
   import AnalyticsGraph from '$lib/components/Course/components/Analytics/AnalyticsGraph.svelte';
