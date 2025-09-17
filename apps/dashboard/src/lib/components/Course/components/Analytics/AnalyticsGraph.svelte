@@ -118,7 +118,7 @@
   <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
     <!-- Progress Distribution Chart -->
     <div
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800"
     >
       <h3 class="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
         Student Progress Distribution
@@ -138,7 +138,7 @@
 
     <!-- Grade Distribution Chart -->
     <div
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800"
     >
       <h3 class="mb-6 text-lg font-semibold text-gray-900 dark:text-white">Grade Distribution</h3>
       {#if courseAnalytics?.students && courseAnalytics.students.length > 0}
@@ -154,7 +154,7 @@
   <!-- Loading state -->
   <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
     <div
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800"
     >
       <h3 class="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
         Student Progress Distribution
@@ -164,7 +164,7 @@
       </div>
     </div>
     <div
-      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+      class="rounded-lg border border-gray-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800"
     >
       <h3 class="mb-6 text-lg font-semibold text-gray-900 dark:text-white">Grade Distribution</h3>
       <div class="flex h-[300px] items-center justify-center">

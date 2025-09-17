@@ -49,10 +49,10 @@
     <div class="h-full overflow-auto">
       <table class="w-full min-w-[800px]">
         <!-- Fixed Header -->
-        <thead class="sticky top-0 z-10 bg-white dark:bg-gray-800">
-          <tr class="border-b border-gray-200 dark:border-gray-600">
+        <thead class="sticky top-0 z-10 bg-white dark:bg-neutral-800">
+          <tr class="border-b border-gray-200 dark:border-neutral-600">
             <th
-              class="sticky left-0 z-20 min-w-[200px] whitespace-nowrap bg-white px-4 py-3 text-left text-sm font-medium text-gray-500 dark:bg-gray-800 dark:text-gray-300"
+              class="sticky left-0 top-0 z-20 min-w-[200px] whitespace-nowrap bg-white px-4 py-3 text-left text-sm font-medium text-gray-500 dark:bg-neutral-800 dark:text-gray-300"
             >
               {$t('analytics.student_name')}
             </th>
@@ -88,7 +88,7 @@
             <tr class="group h-[100px] border-b hover:bg-gray-50 dark:hover:bg-gray-700">
               <!-- Fixed Name Column -->
               <td
-                class="sticky left-0 z-10 min-w-[200px] whitespace-nowrap bg-white px-4 py-3 transition-colors group-hover:bg-gray-50 dark:bg-gray-800 dark:group-hover:bg-gray-700"
+                class="sticky left-0 z-10 min-w-[200px] whitespace-nowrap bg-white px-4 py-3 transition-colors group-hover:bg-gray-50 dark:bg-neutral-800 dark:group-hover:bg-gray-700"
               >
                 <div class="flex items-center gap-3">
                   <Avatar
@@ -114,7 +114,7 @@
                     {student.lessonsCompleted}/{student.totalLessons}
                   </span>
                   <div class="w-20 flex-shrink-0">
-                    <div class="h-2 rounded-full bg-gray-200 dark:bg-gray-700">
+                    <div class="h-2 rounded-full bg-gray-200 dark:bg-neutral-700">
                       <div
                         class="h-2 rounded-full bg-blue-500"
                         style="width: {student.progressPercentage}%"
@@ -163,7 +163,7 @@
   <!-- Pagination Controls -->
   {#if students.length > pageSize}
     <div
-      class="mt-4 flex items-center justify-between border-t border-gray-200 px-4 py-3 dark:border-gray-600"
+      class="mt-4 flex items-center justify-between border-t border-gray-200 px-4 py-3 dark:border-neutral-600"
     >
       <div class="text-sm text-gray-700 dark:text-gray-300">
         {$t('analytics.showing_students', {

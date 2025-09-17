@@ -1,8 +1,9 @@
-import { getServerSupabase } from '$lib/utils/functions/supabase.server';
 import type { CourseAnalytics, StudentOverview } from '$lib/utils/types/analytics';
-import { json } from '@sveltejs/kit';
-import { fetchProfileCourseProgress } from '$lib/utils/services/courses';
+
 import type { UserExercisesStats } from '$lib/utils/types/analytics';
+import { fetchProfileCourseProgress } from '$lib/utils/services/courses';
+import { getServerSupabase } from '$lib/utils/functions/supabase.server';
+import { json } from '@sveltejs/kit';
 
 const supabase = getServerSupabase();
 
@@ -91,10 +92,7 @@ async function getCourseAnalytics(courseId: string): Promise<CourseAnalytics> {
   const studentAnalytics = await Promise.all(
     members
       .filter((member) => member.role_id === 3)
-      .map(async (member) => {
-        const studentOverview = await getStudentOverview(courseId, member);
-        return studentOverview;
-      })
+      .map((member) => getStudentOverview(courseId, member))
   );
 
   analytics.students = studentAnalytics.filter(
@@ -134,12 +132,11 @@ async function getLastLogin(userId: string): Promise<string | undefined> {
       .select('logged_in_at')
       .eq('user_id', userId)
       .order('logged_in_at', { ascending: false })
-      .limit(1)
-      .single();
+      .limit(1);
 
     if (error) throw error;
 
-    return data?.logged_in_at;
+    return data?.[0]?.logged_in_at;
   } catch (error) {
     console.error('Error fetching last login:', error);
     return undefined;
@@ -255,7 +252,6 @@ async function fetchUserExercisesStats(
     }
 
     if (!courseData || courseData.length === 0) {
-      console.error('No course data found');
       return;
     }
 

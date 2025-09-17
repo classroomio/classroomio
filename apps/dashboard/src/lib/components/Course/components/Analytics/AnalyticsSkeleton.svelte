@@ -2,14 +2,14 @@
   import { SkeletonPlaceholder } from 'carbon-components-svelte';
 </script>
 
-<div class="min-h-screen bg-white dark:bg-gray-900">
+<div class="min-h-screen">
   <div class="px-4 py-8">
     <!-- Course Overview Cards Skeleton -->
     <div class="mb-12">
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {#each Array(4) as _}
           <div
-            class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+            class="rounded-lg border border-gray-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800"
           >
             <div class="flex items-center space-x-4">
               <SkeletonPlaceholder style="width: 48px; height: 48px;" />
@@ -27,7 +27,7 @@
     <!-- Charts Section Skeleton -->
     <div class="mb-12">
       <div
-        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+        class="rounded-lg border border-gray-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800"
       >
         <SkeletonPlaceholder style="width: 200px; height: 24px; margin-bottom: 24px;" />
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -38,8 +38,10 @@
     </div>
 
     <!-- Students Table Skeleton -->
-    <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
-      <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
+    <div
+      class="rounded-lg border border-gray-200 bg-white dark:border-neutral-700 dark:bg-neutral-800"
+    >
+      <div class="border-b border-gray-200 px-6 py-4 dark:border-neutral-700">
         <SkeletonPlaceholder style="width: 200px; height: 24px;" />
       </div>
       <div class="p-6">

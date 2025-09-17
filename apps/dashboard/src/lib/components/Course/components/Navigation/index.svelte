@@ -159,6 +159,16 @@
         }
       },
       {
+        id: NAV_IDS.ANALYTICS,
+        label: $t('course.navItems.nav_analytics'),
+        to: getNavItemRoute($course.id, 'analytics'),
+        isPaidFeature: false,
+        hideSortIcon: true,
+        show() {
+          return !isStudent;
+        }
+      },
+      {
         id: NAV_IDS.LESSONS,
         label: $t('course.navItems.nav_content'),
         to: getLessonsRoute($course.id),
@@ -238,16 +248,6 @@
         id: NAV_IDS.PEOPLE,
         label: $t('course.navItems.nav_people'),
         to: getNavItemRoute($course.id, 'people'),
-        isPaidFeature: false,
-        hideSortIcon: true,
-        show() {
-          return !isStudent;
-        }
-      },
-      {
-        id: NAV_IDS.ANALYTICS,
-        label: $t('course.navItems.nav_analytics'),
-        to: getNavItemRoute($course.id, 'analytics'),
         isPaidFeature: false,
         hideSortIcon: true,
         show() {

@@ -17,7 +17,7 @@
 </script>
 
 <div
-  class="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800 {className}"
+  class="rounded-lg border border-gray-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800 {className}"
 >
   <div class="flex items-center space-x-4">
     <div class="flex h-12 w-12 items-center justify-center rounded-lg {colorClasses[iconColor]}">
@@ -29,7 +29,7 @@
         {value}
       </p>
       {#if subtitle}
-        <p class="text-xs text-gray-500 dark:text-gray-500">
+        <p class="text-xs capitalize text-gray-500 dark:text-gray-500">
           {subtitle}
         </p>
       {/if}
