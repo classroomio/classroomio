@@ -1,9 +1,5 @@
 <script lang="ts">
-  import {
-    uploadCourseDocumentStore,
-    resetDocumentUploadStore,
-    cancelDocumentUpload
-  } from '../../store/lessons';
+  import { lessonDocUpload, resetDocumentUploadStore } from '../../store/lessons';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -11,18 +7,19 @@
   import DocumentIcon from 'carbon-icons-svelte/lib/Document.svelte';
   import PdfIcon from 'carbon-icons-svelte/lib/Pdf.svelte';
   import CloseIcon from 'carbon-icons-svelte/lib/Close.svelte';
-  import { lesson } from '../../store/lessons';
-  import { apiClient } from '$lib/utils/services/api';
-  import axios from 'axios';
+  import { DocumentUploader } from '$lib/utils/services/courses/presign';
   import { onDestroy } from 'svelte';
+  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
+  import { isFreePlan } from '$lib/utils/store/org';
+  import { lesson } from '../../store/lessons';
 
   export let lessonId = '';
 
   let fileInput: HTMLInputElement;
   let selectedFile: File | null = null;
   let dragOver = false;
-  let abortController: AbortController | null = null;
   let errorTimeout: NodeJS.Timeout | null = null;
+  let isDisabled = false;
 
   const ALLOWED_TYPES = [
     'application/pdf',
@@ -30,8 +27,9 @@
     'application/msword'
   ];
 
-  const ALLOWED_EXTENSIONS = ['.pdf', '.docx', '.doc'];
   const MAX_DOCUMENT_SIZE = 5 * 1024 * 1024; // 5MB
+
+  const documentUploader = new DocumentUploader();
 
   function getFileType(file: File): 'pdf' | 'docx' | 'doc' {
     if (file.type === 'application/pdf') return 'pdf';
@@ -79,10 +77,12 @@
     }
 
     selectedFile = file;
-    $uploadCourseDocumentStore.error = null;
+    $lessonDocUpload.error = null;
   }
 
   function handleDrop(event: DragEvent) {
+    if (isDisabled) return;
+
     event.preventDefault();
     dragOver = false;
 
@@ -93,76 +93,32 @@
   }
 
   function handleDragOver(event: DragEvent) {
+    if (isDisabled) return;
+
     event.preventDefault();
     dragOver = true;
   }
 
   function handleDragLeave() {
+    if (isDisabled) return;
+
     dragOver = false;
   }
 
   async function uploadDocument() {
     if (!selectedFile) return;
-
-    // Create new AbortController for this upload
-    abortController = new AbortController();
-
-    $uploadCourseDocumentStore.isUploading = true;
-    $uploadCourseDocumentStore.uploadProgress = 0;
-    $uploadCourseDocumentStore.error = null;
-    $uploadCourseDocumentStore.isCancelled = false;
+    $lessonDocUpload.isUploading = true;
 
     try {
-      // Get presigned URL for upload
-      const uploadPresignResponse = await apiClient.post('/course/presign/document/upload', {
-        fileName: selectedFile.name,
-        fileType: selectedFile.type
+      const { url: presignedUrl, fileKey } = await documentUploader.getPresignedUrl(selectedFile);
+
+      await documentUploader.uploadFile({
+        url: presignedUrl,
+        file: selectedFile
       });
 
-      // Check if upload was cancelled
-      if ($uploadCourseDocumentStore.isCancelled) {
-        throw new Error('Upload cancelled');
-      }
+      const { urls: presignedUrls } = await documentUploader.getDownloadPresignedUrl([fileKey]);
 
-      const presignedUrl = uploadPresignResponse.data.url;
-
-      // Upload file to Cloudflare R2 using presigned URL
-      const uploadResponse = await axios.put(presignedUrl, selectedFile, {
-        headers: {
-          'Content-Type': selectedFile.type
-        },
-        maxContentLength: Infinity,
-        maxBodyLength: Infinity,
-        signal: abortController.signal,
-        onUploadProgress: (progressEvent) => {
-          // Check if upload was cancelled during progress
-          if ($uploadCourseDocumentStore.isCancelled) {
-            abortController?.abort();
-            return;
-          }
-          const progress = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1));
-          $uploadCourseDocumentStore.uploadProgress = progress;
-        }
-      });
-
-      // Check if upload was cancelled
-      if ($uploadCourseDocumentStore.isCancelled) {
-        throw new Error('Upload cancelled');
-      }
-
-      // Get download URL for the uploaded file
-      const downloadPresignedResponse = await apiClient.post('/course/presign/download/document', {
-        keys: [uploadPresignResponse.data.fileKey]
-      });
-
-      if (!downloadPresignedResponse.data.success) {
-        throw new Error(downloadPresignedResponse.data.message);
-      }
-
-      const fileKey = uploadPresignResponse.data.fileKey;
-      const presignedUrls = downloadPresignedResponse.data.urls;
-
-      // Create document object
       const document = {
         type: getFileType(selectedFile),
         name: selectedFile.name,
@@ -171,18 +127,18 @@
         size: selectedFile.size
       };
 
-      // Add to lesson materials - ensure materials and documents are properly initialized
-      if (!$lesson.materials) {
-        $lesson.materials = { note: '', slide_url: '', videos: [], documents: [] };
-      }
-      if (!$lesson.materials.documents) {
-        $lesson.materials.documents = [];
-      }
-      $lesson.materials.documents = [...$lesson.materials.documents, document];
-
-      // Update store
-      $uploadCourseDocumentStore.uploadedDocument = document;
-      $uploadCourseDocumentStore.uploadProgress = 100;
+      lesson.update((state) => ({
+        ...state,
+        materials: {
+          ...(state.materials || {}),
+          documents: [...(state.materials.documents || []), document]
+        }
+      }));
+      lessonDocUpload.update((state) => ({
+        ...state,
+        uploadedDocument: document,
+        uploadProgress: 100
+      }));
 
       snackbar.success($t('course.navItem.lessons.materials.tabs.document.upload_success'));
 
@@ -195,32 +151,29 @@
     } catch (error) {
       console.error('Upload error:', error);
 
-      if ($uploadCourseDocumentStore.isCancelled) {
-        $uploadCourseDocumentStore.error = $t(
+      if ($lessonDocUpload.isCancelled) {
+        $lessonDocUpload.error = $t(
           'course.navItem.lessons.materials.tabs.document.upload_cancelled'
         );
         snackbar.info($t('course.navItem.lessons.materials.tabs.document.upload_cancelled'));
       } else {
-        $uploadCourseDocumentStore.error = error instanceof Error ? error.message : 'Upload failed';
+        $lessonDocUpload.error = error instanceof Error ? error.message : 'Upload failed';
         snackbar.error($t('course.navItem.lessons.materials.tabs.document.upload_error'));
       }
     } finally {
-      $uploadCourseDocumentStore.isUploading = false;
-      abortController = null;
+      $lessonDocUpload.isUploading = false;
     }
   }
 
   function removeSelectedFile() {
     selectedFile = null;
     if (fileInput) fileInput.value = '';
-    $uploadCourseDocumentStore.error = null;
+    $lessonDocUpload.error = null;
   }
 
   function cancelUpload() {
-    if (abortController) {
-      abortController.abort();
-    }
-    cancelDocumentUpload();
+    documentUploader.cancelUpload();
+
     selectedFile = null;
     if (fileInput) fileInput.value = '';
   }
@@ -235,10 +188,10 @@
   }
 
   // Auto-clear error after 5 seconds
-  $: if ($uploadCourseDocumentStore.error) {
+  $: if ($lessonDocUpload.error) {
     if (errorTimeout) clearTimeout(errorTimeout);
     errorTimeout = setTimeout(() => {
-      $uploadCourseDocumentStore.error = null;
+      $lessonDocUpload.error = null;
     }, 5000);
   }
 
@@ -246,7 +199,13 @@
   onDestroy(() => {
     if (errorTimeout) clearTimeout(errorTimeout);
   });
+
+  $: isDisabled = $lessonDocUpload.isUploading || $isFreePlan;
 </script>
+
+<UpgradeBanner className="mb-3" onClick={() => ($lessonDocUpload.isModalOpen = false)}>
+  {$t('course.navItem.lessons.materials.tabs.document.upgrade')}
+</UpgradeBanner>
 
 <div class="p-6">
   <div class="mb-6">
@@ -261,7 +220,8 @@
   <!-- File Upload Area -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div
-    class="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center transition-colors {dragOver
+    class="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center transition-colors {isDisabled &&
+      'opacity-50 hover:cursor-not-allowed'} {dragOver
       ? 'border-blue-500 bg-blue-50'
       : 'hover:border-gray-400'}"
     on:drop={handleDrop}
@@ -289,6 +249,7 @@
       </p>
       <input
         bind:this={fileInput}
+        disabled={isDisabled}
         type="file"
         accept=".pdf,.docx,.doc"
         on:change={handleFileSelect}
@@ -298,6 +259,7 @@
         <PrimaryButton
           label={$t('course.navItem.lessons.materials.tabs.document.choose_file')}
           variant={VARIANTS.OUTLINED}
+          {isDisabled}
           onClick={() => fileInput?.click()}
         />
       </div>
@@ -305,23 +267,23 @@
   </div>
 
   <!-- Error Message -->
-  {#if $uploadCourseDocumentStore.error}
+  {#if $lessonDocUpload.error}
     <div class="mt-4 rounded-md border border-red-200 bg-red-50 p-3">
-      <p class="text-sm text-red-600">{$uploadCourseDocumentStore.error}</p>
+      <p class="text-sm text-red-600">{$lessonDocUpload.error}</p>
     </div>
   {/if}
 
   <!-- Upload Progress -->
-  {#if $uploadCourseDocumentStore.isUploading}
+  {#if $lessonDocUpload.isUploading}
     <div class="mt-4">
       <div class="mb-1 flex justify-between text-sm text-gray-600">
         <span>{$t('course.navItem.lessons.materials.tabs.document.uploading')}</span>
-        <span>{$uploadCourseDocumentStore.uploadProgress}%</span>
+        <span>{$lessonDocUpload.uploadProgress}%</span>
       </div>
       <div class="h-2 w-full rounded-full bg-gray-200">
         <div
           class="h-2 rounded-full bg-blue-600 transition-all duration-300"
-          style="width: {$uploadCourseDocumentStore.uploadProgress}%"
+          style="width: {$lessonDocUpload.uploadProgress}%"
         ></div>
       </div>
       <div class="mt-3 flex justify-center">
@@ -335,7 +297,7 @@
   {/if}
 
   <!-- Upload Button -->
-  {#if selectedFile && !$uploadCourseDocumentStore.isUploading}
+  {#if selectedFile && !$lessonDocUpload.isUploading}
     <div class="mt-6 flex justify-end space-x-3">
       <PrimaryButton
         label={$t('course.navItem.lessons.materials.tabs.document.cancel')}
@@ -345,13 +307,13 @@
       <PrimaryButton
         label={$t('course.navItem.lessons.materials.tabs.document.upload_document')}
         onClick={uploadDocument}
-        isLoading={$uploadCourseDocumentStore.isUploading}
+        isLoading={$lessonDocUpload.isUploading}
       />
     </div>
   {/if}
 
   <!-- Success Message -->
-  {#if $uploadCourseDocumentStore.uploadedDocument}
+  {#if $lessonDocUpload.uploadedDocument}
     <div class="mt-4 rounded-md border border-green-200 bg-green-50 p-3">
       <p class="text-sm text-green-600">
         {$t('course.navItem.lessons.materials.tabs.document.upload_success')}

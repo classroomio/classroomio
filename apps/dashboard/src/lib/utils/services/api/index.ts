@@ -1,4 +1,4 @@
-import { ApiClientConfig, ApiError, RequestConfig } from './types';
+import { type ApiClientConfig, ApiError, type RequestConfig } from './types';
 
 import { DEFAULT_CONFIG } from './constants';
 import { delay } from './utils';
@@ -184,7 +184,7 @@ class ApiClient {
 export const apiClient = new ApiClient();
 
 // RPC client using the new fetch wrapper
-export const rpc = hcWithType(env.PUBLIC_SERVER_URL, {
+export const classroomio = hcWithType(env.PUBLIC_SERVER_URL, {
   fetch: async (input: RequestInfo | URL, requestInit?: RequestInit) => {
     return apiClient.request(input, requestInit);
   }
@@ -208,3 +208,5 @@ export {
   safeRequestRaw,
   type Result
 } from './utils';
+
+export type { InferResponseType, InferRequestType } from '@cio/backend/rpc-types';

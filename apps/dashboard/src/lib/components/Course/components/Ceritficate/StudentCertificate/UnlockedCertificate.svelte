@@ -13,10 +13,10 @@
   import { fetchProfileCourseProgress } from '$lib/utils/services/courses';
   import type { ProfileCourseProgress } from '$lib/utils/types';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { rpc } from '$lib/utils/services/api';
+  import { classroomio } from '$lib/utils/services/api';
 
   let isLoading = false;
-  let isCourseComplete = true;
+  let isCourseComplete = false;
   let progress: ProfileCourseProgress | undefined;
 
   const downLoadCertificate = async () => {
@@ -24,7 +24,7 @@
 
     isLoading = true;
     try {
-      const response = await rpc.course.download.certificate.$post({
+      const response = await classroomio.course.download.certificate.$post({
         json: {
           theme: `${$course.certificate_theme}`,
           studentName: `${$profile.fullname}`,
@@ -70,7 +70,7 @@
   };
 
   onMount(() => {
-    // hasUserCompletedCourse();
+    hasUserCompletedCourse();
   });
 
   $: title = isCourseComplete

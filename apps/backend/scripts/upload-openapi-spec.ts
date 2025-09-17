@@ -55,13 +55,13 @@ class OpenAPISpecGenerator {
             version: '1.0.0',
             description: 'Manage your organization on classroomio via the API',
             contact: {
-              name: 'ClassroomIO Support',
+              name: 'ClassroomIO',
               url: 'https://classroomio.com'
             }
           },
           servers: [
             {
-              url: 'https://api.classroomio.com',
+              url: 'https://api.classroomio.dev',
               description: 'Production server'
             },
             {

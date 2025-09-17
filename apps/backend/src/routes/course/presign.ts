@@ -42,7 +42,7 @@ const PresignDownloadResponse = {
 
 export const presignRouter = new Hono()
   .post(
-    '/upload',
+    '/video/upload',
     authMiddleware,
     describeRoute({
       description: 'Generate a pre-signed URL for video upload',
@@ -138,7 +138,7 @@ export const presignRouter = new Hono()
     }
   )
   .post(
-    '/download',
+    '/video/download',
     authMiddleware,
     describeRoute({
       description: 'Generate pre-signed URLs for video download',
@@ -168,20 +168,24 @@ export const presignRouter = new Hono()
 
       const signedUrls: Record<string, string> = {};
 
-      await Promise.all(
-        keys.map(async (key) => {
-          const command = new GetObjectCommand({
-            Bucket: BUCKET_NAME.VIDEOS,
-            Key: key
-          }) as GetSignedUrlParameters[1];
+      const urlPromises = keys.map(async (key) => {
+        const command = new GetObjectCommand({
+          Bucket: BUCKET_NAME.VIDEOS,
+          Key: key
+        }) as GetSignedUrlParameters[1];
 
-          const presignedUrl = await getSignedUrl(s3Client as GetSignedUrlParameters[0], command, {
-            expiresIn: CLOUDFLARE.R2.DOWNLOAD_EXPIRATION_TIME
-          });
+        const presignedUrl = await getSignedUrl(s3Client as GetSignedUrlParameters[0], command, {
+          expiresIn: CLOUDFLARE.R2.DOWNLOAD_EXPIRATION_TIME
+        });
 
-          signedUrls[key] = presignedUrl;
-        })
-      );
+        return { key, presignedUrl };
+      });
+
+      const results = await Promise.all(urlPromises);
+
+      results.forEach(({ key, presignedUrl }) => {
+        signedUrls[key] = presignedUrl;
+      });
 
       return c.json({
         success: true,
@@ -191,7 +195,7 @@ export const presignRouter = new Hono()
     }
   )
   .post(
-    '/download/document',
+    '/document/download',
     authMiddleware,
     describeRoute({
       description: 'Generate pre-signed URLs for document download',
@@ -221,20 +225,24 @@ export const presignRouter = new Hono()
 
       const signedUrls: Record<string, string> = {};
 
-      await Promise.all(
-        keys.map(async (key) => {
-          const command = new GetObjectCommand({
-            Bucket: BUCKET_NAME.DOCUMENTS,
-            Key: key
-          }) as GetSignedUrlParameters[1];
+      const urlPromises = keys.map(async (key) => {
+        const command = new GetObjectCommand({
+          Bucket: BUCKET_NAME.DOCUMENTS,
+          Key: key
+        }) as GetSignedUrlParameters[1];
 
-          const presignedUrl = await getSignedUrl(s3Client as GetSignedUrlParameters[0], command, {
-            expiresIn: CLOUDFLARE.R2.DOWNLOAD_EXPIRATION_TIME
-          });
+        const presignedUrl = await getSignedUrl(s3Client as GetSignedUrlParameters[0], command, {
+          expiresIn: CLOUDFLARE.R2.DOWNLOAD_EXPIRATION_TIME
+        });
 
-          signedUrls[key] = presignedUrl;
-        })
-      );
+        return { key, presignedUrl };
+      });
+
+      const results = await Promise.all(urlPromises);
+
+      results.forEach(({ key, presignedUrl }) => {
+        signedUrls[key] = presignedUrl;
+      });
 
       return c.json({
         success: true,

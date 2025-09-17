@@ -1,4 +1,4 @@
-import { env } from '$env/dynamic/public';
+import { classroomio } from '$lib/utils/services/api';
 
 const sendEmail = (sFetch: typeof fetch) => {
   return async (
@@ -12,13 +12,10 @@ const sendEmail = (sFetch: typeof fetch) => {
     }[]
   ) => {
     try {
-      const response = await sFetch(`${env.PUBLIC_SERVER_URL}/mail/send`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(emailDataArray)
-      });
+      const response = await classroomio.mail.send.$post(
+        { json: emailDataArray },
+        { fetch: sFetch }
+      );
 
       if (!response.ok) {
         console.log('Failed to send emails');

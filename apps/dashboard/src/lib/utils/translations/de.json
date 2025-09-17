@@ -789,7 +789,8 @@
               "loading_pdf": "PDF laden ...",
               "failed_to_load_pdf": "Das PDF -Dokument konnte nicht geladen werden",
               "failed_to_render_pdf": "Die PDF -Seite versäumte es, PDF -Seite zu rendern",
-              "use_arrow_keys": "Verwenden Sie Pfeiltasten, um zu navigieren, +/-, um zu zoomen, oder klicken Sie auf die obigen Steuerelemente. Mit der rechten Maustaste ist deaktiviert."
+              "use_arrow_keys": "Verwenden Sie Pfeiltasten, um zu navigieren, +/-, um zu zoomen, oder klicken Sie auf die obigen Steuerelemente. Mit der rechten Maustaste ist deaktiviert.",
+              "upgrade": "Aktualisieren Sie Ihren Plan, um Dokumente hochzuladen"
             }
           }
         },
@@ -1405,7 +1406,8 @@
   },
   "generic": {
     "locked": "Gesperrt",
-    "unlocked": "Entsperrt"
+    "unlocked": "Entsperrt",
+    "loading": "Laden"
   },
   "specialization": {
     "course_tag": "Spezialisierung"

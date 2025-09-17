@@ -3,10 +3,7 @@
     lesson,
     deleteLessonDocument
   } from '$lib/components/Course/components/Lesson/store/lessons';
-  import {
-    uploadCourseDocumentStore,
-    presignedDocUrls
-  } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { lessonDocUpload } from '$lib/components/Course/components/Lesson/store/lessons';
   import MODES from '$lib/utils/constants/mode';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import CloseIcon from 'carbon-icons-svelte/lib/Close.svelte';
@@ -17,7 +14,6 @@
   import { onMount } from 'svelte';
   import DocumentList from '../Document/DocumentList.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import { apiClient } from '$lib/utils/services/api';
   import type { LessonDocument } from '$lib/utils/types';
   import { snackbar } from '$lib/components/Snackbar/store';
 
@@ -56,7 +52,7 @@
   });
 
   function openDocumentUploadModal() {
-    $uploadCourseDocumentStore.isModalOpen = true;
+    $lessonDocUpload.isModalOpen = true;
   }
 
   function deleteDocument(index: number) {
@@ -71,36 +67,6 @@
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
-  async function getPresignedDocs(docs: LessonDocument[]) {
-    if (!docs.length) return {};
-    if (docs.every((d) => $presignedDocUrls[d.key || ''])) return;
-
-    isLoading = true;
-
-    try {
-      const { data } = await apiClient.post('/course/presign/download/document', {
-        keys: docs.map((d) => d.key)
-      });
-
-      if (!data.success) {
-        throw new Error(data.message);
-      }
-
-      for (const key in data.urls) {
-        presignedDocUrls.update((urls) => ({
-          ...urls,
-          [key]: data.urls[key]
-        }));
-      }
-    } catch (error) {
-      isLoading = false;
-      console.error('Error getting presigned docs:', error);
-      snackbar.error('Error getting presigned docs');
-    } finally {
-      isLoading = false;
-    }
-  }
-
   async function downloadDocument(doc: LessonDocument) {
     downloadingDocuments.add(doc.name);
     downloadingDocuments = downloadingDocuments;
@@ -111,7 +77,7 @@
     }
 
     try {
-      const response = await fetch($presignedDocUrls[doc.key]);
+      const response = await fetch(doc.link);
       if (!response.ok) {
         throw new Error('Failed to fetch document');
       }
@@ -142,6 +108,19 @@
       renderTimeout = null;
     }, 150); // 150ms debounce
   }
+  // Wait for PDF.js to load
+  const checkPDFJS = () => {
+    return new Promise((resolve) => {
+      const check = () => {
+        if (pdfjsLib) {
+          resolve(true);
+        } else {
+          setTimeout(check, 100);
+        }
+      };
+      check();
+    });
+  };
 
   async function viewPDF(document: LessonDocument) {
     // Wait for PDF.js to be fully loaded
@@ -151,20 +130,6 @@
       pdfViewerOpen = true;
       isLoading = true;
       error = 'Loading PDF viewer...';
-
-      // Wait for PDF.js to load
-      const checkPDFJS = () => {
-        return new Promise((resolve) => {
-          const check = () => {
-            if (pdfjsLib) {
-              resolve(true);
-            } else {
-              setTimeout(check, 100);
-            }
-          };
-          check();
-        });
-      };
 
       await checkPDFJS();
     }
@@ -180,7 +145,7 @@
         return;
       }
 
-      const response = await fetch($presignedDocUrls[document.key]);
+      const response = await fetch(document.link);
 
       if (!response.ok) {
         throw new Error('Failed to fetch PDF');
@@ -335,23 +300,19 @@
   }
 
   $: displayDocuments = $lesson?.materials?.documents || [];
-
-  $: getPresignedDocs(displayDocuments);
 </script>
 
-<div class="mx-auto w-full max-w-lg">
-  <DocumentList
-    {isLoading}
-    {mode}
-    {displayDocuments}
-    {downloadingDocuments}
-    {formatFileSize}
-    {openDocumentUploadModal}
-    {deleteDocument}
-    {downloadDocument}
-    on:viewPDF={handleViewPDF}
-  />
-</div>
+<DocumentList
+  {isLoading}
+  {mode}
+  {displayDocuments}
+  {downloadingDocuments}
+  {formatFileSize}
+  {openDocumentUploadModal}
+  {deleteDocument}
+  {downloadDocument}
+  on:viewPDF={handleViewPDF}
+/>
 
 <!-- PDF Viewer Modal -->
 {#if pdfViewerOpen}

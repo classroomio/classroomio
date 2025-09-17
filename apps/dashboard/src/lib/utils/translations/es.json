@@ -789,7 +789,8 @@
               "loading_pdf": "Cargando PDF ...",
               "failed_to_load_pdf": "No se pudo cargar el documento PDF",
               "failed_to_render_pdf": "No se pudo renderizar la página de PDF",
-              "use_arrow_keys": "Use las teclas de flecha para navegar, +/- para hacer zoom o hacer clic en los controles anteriores. El clic derecho está deshabilitado."
+              "use_arrow_keys": "Use las teclas de flecha para navegar, +/- para hacer zoom o hacer clic en los controles anteriores. El clic derecho está deshabilitado.",
+              "upgrade": "Actualice su plan para cargar documentos"
             }
           }
         },
@@ -1405,7 +1406,8 @@
   },
   "generic": {
     "locked": "bloqueado",
-    "unlocked": "desbloqueado"
+    "unlocked": "desbloqueado",
+    "loading": "Cargando"
   },
   "specialization": {
     "course_tag": "Especialización"

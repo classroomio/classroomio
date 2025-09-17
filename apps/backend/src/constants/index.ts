@@ -22,6 +22,6 @@ export const CLOUDFLARE = {
       ? `https://${CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`
       : CLOUDFLARE_BUCKET_DOMAIN!,
     PRESIGN_EXPIRATION_TIME: 60 * 60, // 1 hour
-    DOWNLOAD_EXPIRATION_TIME: 60 * 60 * 3 // 3 hours
+    DOWNLOAD_EXPIRATION_TIME: 60 * 60 // 1 hour
   }
 } as const;

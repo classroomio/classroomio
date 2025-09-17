@@ -1,4 +1,4 @@
-import { ApiClientConfig } from './types';
+import type { ApiClientConfig } from './types';
 import { env } from '$env/dynamic/public';
 
 // Default configuration

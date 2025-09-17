@@ -3,7 +3,7 @@
 ## Basic Usage
 
 ```typescript
-import { apiClient, safeRequest, rpc } from '$lib/utils/services/api';
+import { apiClient, safeRequest, classroomio } from '$lib/utils/services/api';
 
 // GET request
 const result = await safeRequest(async () => {
@@ -64,11 +64,11 @@ const result = await safeRequest(async () => {
 ## RPC Usage
 
 ```typescript
-import { rpc } from '$lib/utils/services/api';
+import { classroomio } from '$lib/utils/services/api';
 
 // Use with Hono RPC
-const data = await rpc.users.$get();
-const user = await rpc.users.$post({ json: { name: 'John' } });
+const data = await classroomio.users.$get();
+const user = await classroomio.users.$post({ json: { name: 'John' } });
 ```
 
 ## Error Codes
