@@ -4,7 +4,7 @@ import { DEFAULT_CONFIG } from './constants';
 import { delay } from './utils';
 import { env } from '$env/dynamic/public';
 import { getAccessToken } from '$lib/utils/functions/supabase';
-import { hcWithType } from '@cio/backend/rpc-types';
+import { hcWithType } from '@cio/api/rpc-types';
 
 class ApiClient {
   private config: Required<ApiClientConfig>;
@@ -209,4 +209,4 @@ export {
   type Result
 } from './utils';
 
-export type { InferResponseType, InferRequestType } from '@cio/backend/rpc-types';
+export type { InferResponseType, InferRequestType } from '@cio/api/rpc-types';

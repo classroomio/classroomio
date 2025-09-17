@@ -4,9 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'apps/backend/src/**'
-      - 'apps/backend/scripts/**'
-      - 'apps/backend/package.json'
+      - 'apps/api/src/**'
+      - 'apps/api/scripts/**'
+      - 'apps/api/package.json'
   workflow_dispatch:
 
 env:
@@ -51,7 +51,7 @@ jobs:
       - name: Upload to Cloudflare R2
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         run: |
-          cd apps/backend
+          cd apps/api
           pnpm run upload:openapi
         env:
           CLOUDFLARE_ACCESS_KEY: ${{ secrets.CLOUDFLARE_ACCESS_KEY }}

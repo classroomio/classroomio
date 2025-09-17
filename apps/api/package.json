@@ -1,12 +1,12 @@
 {
-  "name": "@cio/backend",
+  "name": "@cio/api",
   "version": "0.0.1",
   "description": "ClassroomIO Backend for long processes",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
     "build": "tsc && tsc-alias",
-    "dev": "pnpm --filter @cio/backend --parallel \"/^dev:.*/\"",
+    "dev": "pnpm --filter @cio/api --parallel \"/^dev:.*/\"",
     "dev:server": "tsx watch src/index.ts",
     "dev:tsc": "tsc -p tsconfig.json --watch",
     "deploy": "wrangler deploy",
