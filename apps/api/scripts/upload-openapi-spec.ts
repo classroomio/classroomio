@@ -62,11 +62,11 @@ class OpenAPISpecGenerator {
           servers: [
             {
               url: 'https://api.classroomio.dev',
-              description: 'Production server'
+              description: 'Production environment'
             },
             {
               url: 'http://localhost:3002',
-              description: 'Development server'
+              description: 'Development environment'
             }
           ]
         }
@@ -126,7 +126,7 @@ class OpenAPISpecGenerator {
     try {
       const spec = await this.generateSpec();
 
-      await this.saveLocalSpec(spec);
+      // await this.saveLocalSpec(spec);
 
       if (this.s3Client) {
         const uploadKey = `openapi/openapi-${new Date().toISOString().split('T')[0]}.json`;
