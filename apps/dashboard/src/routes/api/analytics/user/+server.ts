@@ -6,6 +6,7 @@ import type {
 } from '$lib/utils/types/analytics';
 import { fetchCourses, fetchProfileCourseProgress } from '$lib/utils/services/courses';
 
+import { calcPercentageWithRounding } from '$lib/utils/functions/number';
 import { getServerSupabase } from '$lib/utils/functions/supabase.server';
 import { json } from '@sveltejs/kit';
 
@@ -40,10 +41,6 @@ export async function POST({ setHeaders, request }) {
 
 function sumArrObject<T>(arr: T[], key: keyof T) {
   return arr.reduce((sum, item) => sum + ((item[key] as number) || 0), 0);
-}
-
-function roundNumber(a: number, b: number) {
-  return Math.round(a / b) * 100 || 0;
 }
 
 async function getLastLogin(userId: string): Promise<string | undefined> {
@@ -103,14 +100,14 @@ async function getAudienceData(userId: string, orgId: string): Promise<UserAnaly
     const totalEarnedPoints = sumArrObject(exercisesStats, 'score');
     const totalPoints = sumArrObject(exercisesStats, 'totalPoints');
 
-    const averageGrade = roundNumber(totalEarnedPoints, totalPoints);
+    const averageGrade = calcPercentageWithRounding(totalEarnedPoints, totalPoints);
     const lessonsCompleted = courseProgress?.lessons_completed || 0;
     const lessonsCount = courseProgress?.lessons_count || 0;
 
     audienceAnalytics.courses.push({
       ...course,
       ...courseProgress,
-      progress_percentage: roundNumber(lessonsCompleted, lessonsCount),
+      progress_percentage: calcPercentageWithRounding(lessonsCompleted, lessonsCount),
       average_grade: averageGrade
     });
   }
@@ -123,10 +120,13 @@ async function getAudienceData(userId: string, orgId: string): Promise<UserAnaly
     (acc, course) => acc + course.lessons_completed,
     0
   );
-  const overallCourseProgress = roundNumber(completedLessons, totalLessons);
+  const overallCourseProgress = calcPercentageWithRounding(completedLessons, totalLessons);
 
   const allGrades = sumArrObject(audienceAnalytics.courses, 'average_grade');
-  const overallAverageGrade = roundNumber(allGrades, audienceAnalytics.courses.length);
+  const overallAverageGrade = calcPercentageWithRounding(
+    allGrades,
+    audienceAnalytics.courses.length
+  );
 
   audienceAnalytics.overallCourseProgress = overallCourseProgress;
   audienceAnalytics.overallAverageGrade = overallAverageGrade || 0;
@@ -168,30 +168,32 @@ async function getStudentAnalyticsData(
   userCourseAnalytics.user.lastSeen = await getLastLogin(userId);
 
   // fetch marks, lessons, and exercise progress
-  const [userExercisesStats, lessonCompletions, exerciseResponse] = await Promise.all([
+  const [userExercisesStats, lessons, exerciseResponse] = await Promise.all([
     fetchUserExercisesStats(courseId, userId),
-    fetchLessonCompletion(courseId, userId),
+    fetchLessonsWithCompletion(courseId, userId),
     fetchProfileCourseProgress(courseId, userId)
   ]);
 
-  if (!userExercisesStats || !lessonCompletions || !exerciseResponse.data) {
+  if (!userExercisesStats || !lessons || !exerciseResponse.data) {
     throw new Error('Failed to fetch course analytics data');
   }
 
   const totalEarnedPoints = sumArrObject(userExercisesStats, 'score');
   const totalPoints = sumArrObject(userExercisesStats, 'totalPoints');
 
-  userCourseAnalytics.averageGrade = roundNumber(totalEarnedPoints, totalPoints);
+  userCourseAnalytics.averageGrade = calcPercentageWithRounding(totalEarnedPoints, totalPoints);
   userCourseAnalytics.userExercisesStats = userExercisesStats;
 
-  const completedLessons = lessonCompletions.filter((lesson) => lesson.completed);
+  const completedLessons = lessons.filter((lesson) => lesson.completed);
 
   userCourseAnalytics.totalExercises = exerciseResponse.data[0].exercises_count;
   userCourseAnalytics.completedExercises = exerciseResponse.data[0].exercises_completed;
 
-  userCourseAnalytics.progressPercentage = roundNumber(
+  console.log('completedLessons.length', completedLessons.length);
+  console.log('lessons.length', lessons.length);
+  userCourseAnalytics.progressPercentage = calcPercentageWithRounding(
     completedLessons.length,
-    lessonCompletions.length
+    lessons.length
   );
 
   return userCourseAnalytics;
@@ -250,7 +252,7 @@ async function fetchUserExercisesStats(
   }
 }
 
-async function fetchLessonCompletion(courseId, userId) {
+async function fetchLessonsWithCompletion(courseId, userId) {
   try {
     const { data: lessons, error: lessonsError } = await supabase
       .from('lesson')

@@ -1,6 +1,7 @@
 import type { CourseAnalytics, StudentOverview } from '$lib/utils/types/analytics';
 
 import type { UserExercisesStats } from '$lib/utils/types/analytics';
+import { calcPercentageWithRounding } from '$lib/utils/functions/number.js';
 import { fetchProfileCourseProgress } from '$lib/utils/services/courses';
 import { getServerSupabase } from '$lib/utils/functions/supabase.server';
 import { json } from '@sveltejs/kit';
@@ -193,15 +194,14 @@ async function getStudentOverview(courseId: string, member: any): Promise<Studen
     // Calculate progress percentage
     const lessonsCompleted = courseProgress.lessons_completed || 0;
     const totalLessons = courseProgress.lessons_count || 0;
-    const progressPercentage =
-      totalLessons > 0 ? Math.round((lessonsCompleted / totalLessons) * 100) : 0;
+    const progressPercentage = calcPercentageWithRounding(lessonsCompleted, totalLessons);
 
     // Calculate average grade using the same logic as the people page
     const totalEarnedPoints =
       userExercisesStats?.reduce((sum, exercise) => sum + exercise.score, 0) || 0;
     const totalPoints =
       userExercisesStats?.reduce((sum, exercise) => sum + exercise.totalPoints, 0) || 0;
-    const averageGrade = totalPoints > 0 ? Math.round((totalEarnedPoints / totalPoints) * 100) : 0;
+    const averageGrade = calcPercentageWithRounding(totalEarnedPoints, totalPoints);
 
     return {
       id: member.profile_id,
