@@ -29,3 +29,6 @@ where
 END;
 $function$
 ;
+
+ALTER TABLE public.lesson_completion
+ADD CONSTRAINT unique_lesson_profile UNIQUE (lesson_id, profile_id);
