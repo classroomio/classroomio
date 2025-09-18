@@ -535,6 +535,7 @@
       "nav_submissions": "Submissions",
       "nav_marks": "Marks",
       "nav_people": "People",
+      "nav_analytics": "Analytics",
       "nav_certificates": "Certificates",
       "nav_landing_page": "Landing Page",
       "nav_settings": "Settings"
@@ -1147,6 +1148,10 @@
         "courses": "courses"
       },
 
+      "analytics": {
+        "title": "Analytics"
+      },
+
       "settings": {
         "heading": "Settings",
         "cover_image": "Cover Image",
@@ -1257,8 +1262,24 @@
     "overall_course_progress_user_description": "Based on lesson completion",
     "assignment_completion": "Assignment Completion",
     "assignment_completion_description": "Percentage of completed assignments",
+    "average_grade_description": "Average grade of all completed assignments",
+    "students": "Students",
+    "lessons": "Lessons",
+    "tutors": "tutors",
+    "avg_grade": "Avg grade",
+    "completion_rate": "Completion rate",
+    "student_progress_overview": "Student Progress Overview",
+    "student_name": "Student Name",
+    "lessons_completed": "Lessons Completed",
+    "exercises_submitted": "Exercises Submitted",
     "average_grade": "Average Grade",
-    "average_grade_description": "Average grade of all completed assignments"
+    "actions": "Actions",
+    "view_details": "View Details",
+    "no_students_found": "No Students Found",
+    "no_students_description": "There are no students enrolled in this course yet. Students will appear here once they join the course.",
+    "showing_students": "Showing {start} to {end} of {total} students",
+    "no_analytics_data": "No Analytics Data",
+    "no_analytics_description": "Unable to load analytics data for this course. Please try again later or contact support if the issue persists."
   },
 
   "upgrade": {

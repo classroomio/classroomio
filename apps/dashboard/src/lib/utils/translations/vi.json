@@ -861,6 +861,9 @@
           "cancel": "Hủy bỏ",
           "post": "Bưu kiện"
         }
+      },
+      "analytics": {
+        "title": "Phân tích"
       }
     },
     "navItems": {
@@ -872,7 +875,8 @@
       "nav_certificates": "Chứng chỉ",
       "nav_landing_page": "Trang đích",
       "nav_settings": "Cài đặt",
-      "nav_content": "Nội dung"
+      "nav_content": "Nội dung",
+      "nav_analytics": "Phân tích"
     },
     "not_permitted": {
       "header": "Không cho phép",
@@ -1552,7 +1556,23 @@
     "assignment_completion": "Hoàn thành bài tập",
     "assignment_completion_description": "Tỷ lệ bài tập đã hoàn thành",
     "average_grade": "Điểm trung bình",
-    "average_grade_description": "Điểm trung bình của tất cả các bài tập đã hoàn thành"
+    "average_grade_description": "Điểm trung bình của tất cả các bài tập đã hoàn thành",
+    "students": "Sinh viên",
+    "lessons": "Bài học",
+    "tutors": "gia sư",
+    "avg_grade": "Lớp AVG",
+    "completion_rate": "Tỷ lệ hoàn thành",
+    "student_progress_overview": "Tổng quan về tiến trình học sinh",
+    "student_name": "Tên sinh viên",
+    "lessons_completed": "Bài học hoàn thành",
+    "exercises_submitted": "Bài tập được gửi",
+    "actions": "Hành động",
+    "view_details": "Xem chi tiết",
+    "no_students_found": "Không có học sinh tìm thấy",
+    "no_students_description": "Không có sinh viên đăng ký vào khóa học này. Học sinh sẽ xuất hiện ở đây khi họ tham gia khóa học.",
+    "showing_students": "Hiển thị {start} đến {end} của {Total} sinh viên",
+    "no_analytics_data": "Không có dữ liệu phân tích",
+    "no_analytics_description": "Không thể tải dữ liệu phân tích cho khóa học này. Vui lòng thử lại sau hoặc liên hệ với hỗ trợ nếu vấn đề vẫn còn."
   },
   "common": {
     "unsaved_changes": {

@@ -9,6 +9,7 @@
   import IbmWatsonKnowledgeCatalog from 'carbon-icons-svelte/lib/IbmWatsonKnowledgeCatalog.svelte';
   import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
   import Bullhorn from 'carbon-icons-svelte/lib/Bullhorn.svelte';
+  import Analytics from 'carbon-icons-svelte/lib/Analytics.svelte';
   import { NAV_IDS } from './constants';
 
   export let name = '';
@@ -28,6 +29,8 @@
   <Result size={20} class="carbon-icon mr-2" />
 {:else if name === NAV_IDS.PEOPLE}
   <Group size={20} class="carbon-icon mr-2" />
+{:else if name === NAV_IDS.ANALYTICS}
+  <Analytics size={20} class="carbon-icon mr-2" />
 {:else if name === NAV_IDS.LANDING_PAGE}
   <ApplicationWeb size={20} class="carbon-icon mr-2" />
 {:else if name === NAV_IDS.CERTIFICATES}

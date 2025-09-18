@@ -861,6 +861,9 @@
           "cancel": "Cancelar",
           "post": "Correo"
         }
+      },
+      "analytics": {
+        "title": "Analítica"
       }
     },
     "navItems": {
@@ -872,7 +875,8 @@
       "nav_certificates": "Certificados",
       "nav_landing_page": "Página de destino",
       "nav_settings": "Ajustes",
-      "nav_content": "Contenido"
+      "nav_content": "Contenido",
+      "nav_analytics": "Analítica"
     },
     "not_permitted": {
       "header": "Sin autorización",
@@ -1552,7 +1556,23 @@
     "assignment_completion": "Finalización de la tarea",
     "assignment_completion_description": "Porcentaje de tareas completadas",
     "average_grade": "Calificación promedio",
-    "average_grade_description": "Calificación promedio de todas las tareas completadas"
+    "average_grade_description": "Calificación promedio de todas las tareas completadas",
+    "students": "Estudiantes",
+    "lessons": "Lecciones",
+    "tutors": "tutores",
+    "avg_grade": "AVG Grado",
+    "completion_rate": "Tasa de finalización",
+    "student_progress_overview": "Descripción general del progreso del estudiante",
+    "student_name": "Nombre de estudiante",
+    "lessons_completed": "Lecciones completadas",
+    "exercises_submitted": "Ejercicios presentados",
+    "actions": "Comportamiento",
+    "view_details": "Ver detalles",
+    "no_students_found": "No se encontraron estudiantes",
+    "no_students_description": "Todavía no hay estudiantes matriculados en este curso. Los estudiantes aparecerán aquí una vez que se unan al curso.",
+    "showing_students": "Mostrando {inicio} a {final} de {Total} Estudiantes",
+    "no_analytics_data": "Sin datos de análisis",
+    "no_analytics_description": "No se puede cargar datos de análisis para este curso. Vuelva a intentarlo más tarde o comuníquese con el soporte si el problema persiste."
   },
   "common": {
     "unsaved_changes": {
