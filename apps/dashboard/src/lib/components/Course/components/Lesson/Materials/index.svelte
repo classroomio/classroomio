@@ -1,7 +1,7 @@
 <script lang="ts">
   import Box from '$lib/components/Box/index.svelte';
-  import VideoUploader from '$lib/components/Course/components/Lesson/Materials/Video/Index.svelte';
-  import DocumentUploader from '$lib/components/Course/components/Lesson/Materials/Document/Index.svelte';
+  import AddVideoToLesson from '$lib/components/Course/components/Lesson/Materials/Video/AddVideoToLesson.svelte';
+  import AddDocumentToLesson from '$lib/components/Course/components/Lesson/Materials/Document/AddDocumentToLesson.svelte';
   import {
     deleteLessonVideo,
     handleUpdateLessonMaterials,
@@ -9,8 +9,8 @@
     lesson,
     lessonByTranslation,
     lessons,
-    uploadCourseVideoStore,
-    uploadCourseDocumentStore
+    lessonVideoUpload,
+    lessonDocUpload
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { course } from '$lib/components/Course/store';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -47,6 +47,7 @@
   import * as CONSTANTS from './constants';
   import { orderedTabs } from './constants';
   import Loader from './Loader.svelte';
+
   export let mode = MODES.view;
   export let prevMode = '';
   export let lessonId = '';
@@ -57,7 +58,6 @@
   let localeExists: Record<string, boolean> = {};
   let lessonTitle = '';
   let prevContent = '';
-  let initAutoSave = false;
   let timeoutId: NodeJS.Timeout;
   let tabs = CONSTANTS.tabs;
   let currentTab = tabs[0].value;
@@ -182,7 +182,7 @@
   }
 
   const openAddVideoModal = () => {
-    $uploadCourseVideoStore.isModalOpen = true;
+    $lessonVideoUpload.isModalOpen = true;
   };
 
   const { input, handleSubmit, completion, isLoading } = useCompletion({
@@ -244,11 +244,6 @@
 
     if (timeoutId) clearTimeout(timeoutId);
 
-    if (!initAutoSave) {
-      initAutoSave = true;
-      return;
-    }
-
     isSaving = true;
     timeoutId = setTimeout(async () => {
       const { error } = await saveLesson(updatedMaterials);
@@ -262,7 +257,6 @@
   }
 
   async function onLessonIdChange(_lid: string) {
-    initAutoSave = false;
     isSaving = false;
 
     tabs = orderedTabs(tabs, $course.metadata?.lessonTabsOrder);
@@ -271,18 +265,18 @@
   }
 
   const onClose = () => {
-    if ($uploadCourseVideoStore.isUploading) return;
+    if ($lessonVideoUpload.isUploading) return;
 
-    $uploadCourseVideoStore.isModalOpen = false;
+    $lessonVideoUpload.isModalOpen = false;
     autoSave($lesson.materials, $lessonByTranslation[lessonId], $isLoading, lessonId);
   };
 
   const onDocumentClose = () => {
-    if ($uploadCourseDocumentStore.isUploading) return;
+    if ($lessonDocUpload.isUploading) return;
 
-    $uploadCourseDocumentStore.isModalOpen = false;
+    $lessonDocUpload.isModalOpen = false;
     // Clear any error messages when modal closes
-    $uploadCourseDocumentStore.error = null;
+    $lessonDocUpload.error = null;
     autoSave($lesson.materials, $lessonByTranslation[lessonId], $isLoading, lessonId);
   };
 
@@ -327,20 +321,20 @@
 
 <Modal
   {onClose}
-  bind:open={$uploadCourseVideoStore.isModalOpen}
+  bind:open={$lessonVideoUpload.isModalOpen}
   width="w-4/5 w-[90%] h-[80%] md:h-[566px]"
   modalHeading={$t('course.navItem.lessons.materials.tabs.video.add_video.title')}
 >
-  <VideoUploader {lessonId} />
+  <AddVideoToLesson {lessonId} />
 </Modal>
 
 <Modal
   onClose={onDocumentClose}
-  bind:open={$uploadCourseDocumentStore.isModalOpen}
+  bind:open={$lessonDocUpload.isModalOpen}
   width="w-4/5 w-[90%] h-[80%] md:h-[566px]"
   modalHeading={$t('course.navItem.lessons.materials.tabs.document.upload_title')}
 >
-  <DocumentUploader {lessonId} />
+  <AddDocumentToLesson {lessonId} />
 </Modal>
 
 <HtmlRender className="m-auto text-center">
@@ -493,7 +487,13 @@
                         />
                       </div>
                     {:else}
-                      <video bind:this={player} class="plyr-video-trigger" playsinline controls>
+                      <video
+                        bind:this={player}
+                        class="plyr-video-trigger"
+                        style="max-height: 569px;"
+                        playsinline
+                        controls
+                      >
                         <source src={video.link} type="video/mp4" />
                         <track kind="captions" />
                       </video>

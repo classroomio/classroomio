@@ -789,7 +789,8 @@
               "loading_pdf": "Tải PDF ...",
               "failed_to_load_pdf": "Không tải tài liệu PDF",
               "failed_to_render_pdf": "Không thể hiển thị trang PDF",
-              "use_arrow_keys": "Sử dụng các phím mũi tên để điều hướng, +/- đến phóng to hoặc nhấp vào các điều khiển ở trên. Nhấp chuột phải bị vô hiệu hóa."
+              "use_arrow_keys": "Sử dụng các phím mũi tên để điều hướng, +/- đến phóng to hoặc nhấp vào các điều khiển ở trên. Nhấp chuột phải bị vô hiệu hóa.",
+              "upgrade": "Nâng cấp kế hoạch của bạn để tải lên tài liệu"
             }
           }
         },
@@ -1409,7 +1410,8 @@
   },
   "generic": {
     "locked": "Đã khóa",
-    "unlocked": "Đã mở khóa"
+    "unlocked": "Đã mở khóa",
+    "loading": "Đang tải"
   },
   "specialization": {
     "course_tag": "Chuyên môn"

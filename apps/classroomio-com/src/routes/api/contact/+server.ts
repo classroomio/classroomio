@@ -47,7 +47,7 @@ export async function POST({ request }) {
       }
     );
   } catch (error) {
-    console.log('errors from backend', error);
+    console.log('errors from api', error);
 
     return new Response(
       JSON.stringify({

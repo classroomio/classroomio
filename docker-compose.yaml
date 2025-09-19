@@ -1,15 +1,15 @@
 # ClassroomIO
-# Project: Self-hosted Backend and Dashboard
-# Description: This docker-compose file sets up the backend and dashboard services for self-hosting.
+# Project: Self-hosted API and Dashboard
+# Description: This docker-compose file sets up the api and dashboard services for self-hosting.
 # Author: rotimi-best
 # Date: 2024-09-18
 
 version: '3.8'
 
 services:
-  backend:
+  api:
     build:
-      context: ./apps/backend
+      context: ./apps/api
       dockerfile: Dockerfile
       args:
         - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
@@ -27,9 +27,9 @@ services:
       - '3002:3002'
     volumes:
       # Node modules (optional - for faster development)
-      - ./apps/backend/node_modules:/app/node_modules
+      - ./apps/api/node_modules:/app/node_modules
       # Build output directory (if you want to access built files)
-      - ./apps/backend/dist:/app/dist
+      - ./apps/api/dist:/app/dist
     environment:
       - NODE_ENV=production
       # Supabase - Database
@@ -78,7 +78,7 @@ services:
       - PRIVATE_APP_SUBDOMAINS=${PRIVATE_APP_SUBDOMAINS} # app (if you are using app.yourdomain.com for the dashboard)
       - UNSPLASH_API_KEY=${UNSPLASH_API_KEY}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL} # this is the url to the backend service
+      - PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL} # this is the url to the api service
       - PUBLIC_IP_REGISTRY_KEY=${PUBLIC_IP_REGISTRY_KEY}
     depends_on:
-      - backend
+      - api

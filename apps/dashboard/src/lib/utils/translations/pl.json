@@ -99,7 +99,8 @@
   },
   "generic": {
     "locked": "Zamknięty",
-    "unlocked": "Odblokowany"
+    "unlocked": "Odblokowany",
+    "loading": "Załadunek"
   },
   "content": {
     "heading": "Internacjonalizacja w SvelTekit",
@@ -957,7 +958,8 @@
               "loading_pdf": "Ładowanie PDF ...",
               "failed_to_load_pdf": "Nie udało się załadować dokumentu PDF",
               "failed_to_render_pdf": "Nie udało się renderować strony PDF",
-              "use_arrow_keys": "Użyj klawiszy strzałek do nawigacji, +/-, aby powiększyć lub kliknąć powyższe elementy sterujące. Kliknięcie prawym przyciskiem myszy jest wyłączone."
+              "use_arrow_keys": "Użyj klawiszy strzałek do nawigacji, +/-, aby powiększyć lub kliknąć powyższe elementy sterujące. Kliknięcie prawym przyciskiem myszy jest wyłączone.",
+              "upgrade": "Uaktualnij swój plan przesyłania dokumentów"
             }
           }
         },

@@ -693,6 +693,7 @@
               "upload_error_message": "Unsupported file format or upload failed",
               "upload_error_try_again": "Please try again with a valid document file",
               "try_again": "Try Again",
+              "upgrade": "Upgrade your plan to upload documents",
 
               "cancel_upload": "Cancel Upload",
               "upload_cancelled": "Upload cancelled by user",
@@ -1521,7 +1522,8 @@
 
   "generic": {
     "locked": "Locked",
-    "unlocked": "Unlocked"
+    "unlocked": "Unlocked",
+    "loading": "Loading"
   },
 
   "validations": {

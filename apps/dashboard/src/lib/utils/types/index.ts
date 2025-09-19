@@ -295,7 +295,7 @@ export type LessonDocument = {
   name: string;
   link: string;
   size?: number;
-  key?: string;
+  key: string;
 };
 
 export interface LessonPage {
