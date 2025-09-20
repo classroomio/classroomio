@@ -61,7 +61,7 @@ class OpenAPISpecGenerator {
           },
           servers: [
             {
-              url: 'https://api.classroomio.dev',
+              url: 'https://api.classroomio.com',
               description: 'Production environment'
             },
             {
