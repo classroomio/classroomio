@@ -1,5 +1,7 @@
 import { env } from '$src/config/env';
 
+export * from './rate-limiter';
+
 const {
   CLOUDFLARE_BUCKET_DOMAIN,
   CLOUDFLARE_ACCESS_KEY,

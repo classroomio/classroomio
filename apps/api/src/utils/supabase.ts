@@ -4,7 +4,7 @@ import { env } from '$src/config/env';
 
 const { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } = env;
 
-let supabase: SupabaseClient | null = null;
+export let supabase: SupabaseClient | null = null;
 
 interface SupabaseConfig {
   supabaseConfig: {

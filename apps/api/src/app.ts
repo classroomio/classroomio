@@ -6,7 +6,7 @@ import { courseRouter } from '$src/routes/course/course';
 import { logger } from 'hono/logger';
 import { mailRouter } from '$src/routes/mail';
 import { prettyJSON } from 'hono/pretty-json';
-import { rateLimiter } from 'hono-rate-limiter';
+import { rateLimiterMiddleware } from '$src/middlewares/rate-limiter';
 import { secureHeaders } from 'hono/secure-headers';
 
 // Create Hono app with chaining for RPC support
@@ -26,14 +26,7 @@ export const app = new Hono()
       credentials: true
     })
   )
-  .use(
-    rateLimiter({
-      windowMs: 15 * 60 * 1000, // 15 minutes
-      limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
-      standardHeaders: 'draft-6', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
-      keyGenerator: (c) => c.req.header('Authorization')?.split(' ')[1] ?? 'unknown' // Method to generate custom identifiers for clients.
-    })
-  )
+  .use('*', rateLimiterMiddleware)
 
   // Routes
   .get('/', (c) =>
