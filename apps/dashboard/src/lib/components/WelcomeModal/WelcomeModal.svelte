@@ -18,6 +18,7 @@
       to: $profile.email,
       name: $profile.fullname
     });
+
     goto($currentOrgPath + '/courses?create=true');
   };
 </script>
