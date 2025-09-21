@@ -789,7 +789,8 @@
               "loading_pdf": "Chargement du PDF ...",
               "failed_to_load_pdf": "Échec du chargement du document PDF",
               "failed_to_render_pdf": "Échec de la page PDF",
-              "use_arrow_keys": "Utilisez des touches flèches pour naviguer, +/- pour zoomer ou cliquez sur les commandes ci-dessus. Le clic droit est désactivé."
+              "use_arrow_keys": "Utilisez des touches flèches pour naviguer, +/- pour zoomer ou cliquez sur les commandes ci-dessus. Le clic droit est désactivé.",
+              "upgrade": "Mettez à niveau votre plan pour télécharger des documents"
             }
           }
         },
@@ -1409,7 +1410,8 @@
   },
   "generic": {
     "locked": "Fermé à clé",
-    "unlocked": "Débloqué"
+    "unlocked": "Débloqué",
+    "loading": "Chargement"
   },
   "specialization": {
     "course_tag": "Spécialisation"

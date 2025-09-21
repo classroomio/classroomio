@@ -1,9 +1,22 @@
-import { Hono } from 'hono'
+import 'dotenv/config';
 
-const app = new Hono()
+import { app } from '$src/app';
+import { configureOpenAPI } from '$src/utils/openapi';
+import { env } from '$src/config/env';
+import { serve } from '@hono/node-server';
+import { showRoutes } from 'hono/dev';
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
+// Start server
+const port = env.PORT ? parseInt(env.PORT) : 3002;
 
-export default app
+function startServer() {
+  console.log('Starting server...');
+
+  serve({ fetch: app.fetch, port });
+
+  showRoutes(app, { colorize: true });
+}
+
+configureOpenAPI(app);
+
+startServer();

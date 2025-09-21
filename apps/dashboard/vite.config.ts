@@ -1,6 +1,8 @@
-import { sveltekit } from '@sveltejs/kit/vite';
-import fs from 'fs';
 import { defineConfig, loadEnv } from 'vite';
+
+import fs from 'fs';
+import path from 'path';
+import { sveltekit } from '@sveltejs/kit/vite';
 
 export default ({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
@@ -19,10 +21,14 @@ export default ({ mode }) => {
       sourcemap: false
     },
     optimizeDeps: {
-      entries: ['src/routes/**/+*.{js,ts,svelte}']
+      entries: ['src/routes/**/+*.{js,ts,svelte}'],
+      include: ['@cio/api/rpc-types']
     },
     resolve: {
-      mainFields: ['browser']
+      mainFields: ['browser'],
+      alias: {
+        '@cio/api': path.resolve(__dirname, '../api/dist')
+      }
     }
   });
 };

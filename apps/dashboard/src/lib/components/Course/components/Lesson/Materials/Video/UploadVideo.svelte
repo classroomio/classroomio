@@ -1,26 +1,21 @@
 <script lang="ts">
   import { env } from '$env/dynamic/public';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import axios from 'axios';
   import {
     lesson,
-    deleteLessonVideo,
-    uploadCourseVideoStore,
+    lessonVideoUpload,
     cancelVideoUpload
   } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { type ComponentProps } from 'svelte';
   import { ProgressBar } from 'carbon-components-svelte';
   import { isFreePlan } from '$lib/utils/store/org';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
-  import { apiClient } from '$lib/utils/services/api';
   import { t } from '$lib/utils/functions/translations';
+
+  import { VideoUploader } from '$lib/utils/services/courses/presign';
 
   export let lessonId = '';
 
-  let value = 0;
-  let max = 100;
-  let status: ComponentProps<ProgressBar>['status'] = 'active';
   let fileSize;
   let isDisabled = false;
 
@@ -29,66 +24,32 @@
   let fileInput;
   let submit;
   let fileName = '';
-  let abortController: AbortController | null = null;
+
+  const videoUploader = new VideoUploader();
 
   async function onUpload() {
     if (!fileInput) return;
 
-    // Create new AbortController for this upload
-    abortController = new AbortController();
-
-    $uploadCourseVideoStore.isUploading = true;
-    $uploadCourseVideoStore.isCancelled = false;
+    videoUploader.initUpload();
 
     const videoFile = fileInput.files[0];
     fileSize = videoFile?.size / (1024 * 1024);
+    fileName = videoFile?.name;
 
     try {
-      const uploadPresignResponse = await apiClient.post('/course/presign/upload', {
-        fileName: videoFile.name,
-        fileType: videoFile.type
+      const { url: presignedUrl, fileKey } = await videoUploader.getPresignedUrl(videoFile);
+
+      await videoUploader.uploadFile({
+        url: presignedUrl,
+        file: videoFile
       });
 
-      const presignedUrl = uploadPresignResponse.data.url;
-
-      const uploadResponse = await axios.put(presignedUrl, videoFile, {
-        headers: {
-          'Content-Type': videoFile.type
-        },
-        maxContentLength: Infinity,
-        maxBodyLength: Infinity,
-        signal: abortController.signal,
-        onUploadProgress: (progressEvent) => {
-          // Check if upload was cancelled during progress
-          if ($uploadCourseVideoStore.isCancelled) {
-            abortController?.abort();
-            return;
-          }
-          value = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1) / 2);
-        }
-      });
-
-      const downloadPresignedResponse = await apiClient.post('/course/presign/download', {
-        keys: [uploadPresignResponse.data.fileKey]
-      });
-
-      if (!downloadPresignedResponse.data.success) {
-        formRes = {
-          type: 'INTERNAL_ERROR',
-          status: 500,
-          message: downloadPresignedResponse.data.message
-        };
-
-        return;
-      }
-
-      const fileKey = uploadPresignResponse.data.fileKey;
-      const presignedUrls = downloadPresignedResponse.data.urls;
+      const { urls: presignedUrls } = await videoUploader.getDownloadPresignedUrl([fileKey]);
 
       formRes = {
         url: presignedUrls[fileKey],
-        fileKey: uploadPresignResponse.data.fileKey,
-        status: uploadResponse.status
+        fileKey: fileKey,
+        status: 200
       };
 
       $lesson.materials.videos = [
@@ -100,12 +61,11 @@
         }
       ];
 
-      $uploadCourseVideoStore.isUploading = false;
       isLoaded = false;
     } catch (err: any) {
       console.error('Error uploading video', err, '\n\n', err.response);
 
-      if ($uploadCourseVideoStore.isCancelled) {
+      if ($lessonVideoUpload.isCancelled) {
         formRes = {
           type: 'CANCELLED',
           status: 0,
@@ -114,53 +74,54 @@
       } else if (err.response) {
         formRes = err.response.data;
       } else {
+        let message = 'An error occurred while uploading the video';
+        if (err instanceof Error) {
+          message = err.message;
+        }
         formRes = {
           type: 'INTERNAL_ERROR',
           status: 500,
-          message: 'An error occurred while uploading the video'
+          message
         };
       }
     } finally {
-      abortController = null;
+      videoUploader.abortController = null;
     }
 
     isLoaded = true;
+    $lessonVideoUpload.isUploading = false;
   }
 
   function tryAgain() {
     formRes = null;
     isLoaded = false;
-    $uploadCourseVideoStore.isUploading = false;
-    value = 0;
+    $lessonVideoUpload.isUploading = false;
+    $lessonVideoUpload.uploadProgress = 0;
   }
 
   function cancelUpload() {
-    if (abortController) {
-      abortController.abort();
-    }
+    videoUploader.abortController?.abort();
+
     cancelVideoUpload();
+
     formRes = null;
     isLoaded = false;
-    value = 0;
+    $lessonVideoUpload.uploadProgress = 0;
   }
 
-  $: helperText = value + '%  of ' + Math.round(fileSize) + 'MB';
-  $: if (value === max) {
-    helperText = 'Done';
-    status = 'finished';
-  }
+  $: helperText = $lessonVideoUpload.uploadProgress + '%  of ' + Math.round(fileSize) + 'MB';
 
-  $: isDisabled = $uploadCourseVideoStore.isUploading || !env.PUBLIC_SERVER_URL || $isFreePlan;
+  $: isDisabled = $lessonVideoUpload.isUploading || !env.PUBLIC_SERVER_URL || $isFreePlan;
 </script>
 
-<UpgradeBanner className="mb-3" onClick={() => ($uploadCourseVideoStore.isModalOpen = false)}>
+<UpgradeBanner className="mb-3" onClick={() => ($lessonVideoUpload.isModalOpen = false)}>
   {$t('course.navItem.lessons.materials.tabs.video.add_video.upgrade')}
 </UpgradeBanner>
 
 {#if !isLoaded}
   <button
     type="button"
-    on:click={() => (fileInput && !$uploadCourseVideoStore.isUploading ? fileInput.click() : null)}
+    on:click={() => (fileInput && !$lessonVideoUpload.isUploading ? fileInput.click() : null)}
     class="h-full w-full {isDisabled && 'opacity-50 hover:cursor-not-allowed'}"
     disabled={isDisabled}
   >
@@ -168,12 +129,17 @@
       class="border-primary-300 flex h-full w-full flex-col items-center justify-center rounded-xl border border-dashed"
       on:submit|preventDefault={onUpload}
     >
-      {#if $uploadCourseVideoStore.isUploading}
+      {#if $lessonVideoUpload.isUploading}
         <div class="flex w-[60%] max-w-[500px] flex-col justify-center gap-5">
           <p class="mt-5 text-center">
             {$t('course.navItem.lessons.materials.tabs.video.add_video.uploading')}
           </p>
-          <ProgressBar class="w-full" {value} {max} {status} />
+          <ProgressBar
+            class="w-full"
+            value={$lessonVideoUpload.uploadProgress}
+            max={100}
+            status={$lessonVideoUpload.uploadProgress === 100 ? 'finished' : 'active'}
+          />
           <p class="text-sm">{helperText}</p>
           <div class="mt-3">
             <PrimaryButton
@@ -242,25 +208,19 @@
     />
   </div>
 {:else}
-  <div class="flex h-full w-full flex-col items-start justify-between">
-    <div class="h-auto w-full rounded-md border px-8 py-3">
-      <div class="flex items-center justify-between">
-        <span class="flex items-center gap-2">
-          <div class="overflow-hidden rounded-sm">
-            <video class="w-[200px]">
-              <source src={formRes.url} type="video/mp4" />
-              <track kind="captions" />
-            </video>
-          </div>
-          <p>{fileInput?.files?.[0]?.name || fileName}</p>
-        </span>
-        <button on:click={deleteLessonVideo}>
-          <img src="/delete-video.svg" alt="deletevideo" class="dark:invert" />
-        </button>
+  <div class=" w-full rounded-md border px-8 py-3">
+    <div class="flex flex-col items-center gap-8">
+      <div class="flex flex-col items-center gap-2">
+        <video class="border-primary-300 w-[200px] rounded-md border">
+          <source src={formRes.url} type="video/mp4" />
+          <track kind="captions" />
+          <p>{$t('generic.loading')}</p>
+        </video>
+        <p>{fileInput?.files?.[0]?.name || fileName}</p>
       </div>
       <PrimaryButton
         label={$t('course.navItem.lessons.materials.button_done')}
-        onClick={() => ($uploadCourseVideoStore.isModalOpen = false)}
+        onClick={() => ($lessonVideoUpload.isModalOpen = false)}
       />
     </div>
   </div>

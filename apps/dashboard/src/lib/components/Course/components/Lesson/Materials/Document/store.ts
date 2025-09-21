@@ -11,22 +11,25 @@ export interface DocumentUploadState {
     size: number;
   } | null;
   error: string | null;
+  isCancelled: boolean;
 }
 
-export const uploadCourseDocumentStore = writable<DocumentUploadState>({
+export const lessonDocUpload = writable<DocumentUploadState>({
   isUploading: false,
   isModalOpen: false,
   uploadProgress: 0,
   uploadedDocument: null,
-  error: null
+  error: null,
+  isCancelled: false
 });
 
 export function resetDocumentUploadStore() {
-  uploadCourseDocumentStore.set({
+  lessonDocUpload.set({
     isUploading: false,
     isModalOpen: false,
     uploadProgress: 0,
     uploadedDocument: null,
-    error: null
+    error: null,
+    isCancelled: false
   });
 }
