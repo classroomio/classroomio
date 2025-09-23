@@ -7,10 +7,7 @@
   import { createNewFeed } from '$lib/utils/services/newsfeed';
   import { snackbar } from '$lib/components/Snackbar/store';
   import type { Feed, Author } from '$lib/utils/types/feed';
-  import {
-    NOTIFICATION_NAME,
-    triggerSendEmail
-  } from '$lib/utils/services/notification/notification';
+  import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification';
   import { t } from '$lib/utils/functions/translations';
   import { createNewsfeedValidation } from '$lib/utils/functions/validator';
   import { getTextFromHTML } from '$lib/utils/functions/toHtml';
@@ -109,7 +106,7 @@
     ? $t('course.navItem.news_feed.heading_button.edit_post')
     : $t('course.navItem.news_feed.heading_button.make_a_post')}
 >
-  <section class="flex flex-col rounded-xl pb-3 h-full w-2/">
+  <section class="w-2/ flex h-full flex-col rounded-xl pb-3">
     <TextEditor
       value={newPost}
       onChange={(text) => {

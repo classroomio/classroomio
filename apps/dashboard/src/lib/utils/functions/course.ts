@@ -14,7 +14,7 @@ export const getStudentInviteLink = (_course: Course, orgSiteName: string, origi
     )
   );
 
-  return `${origin}/invite/s/${hash}`;
+  return `${origin}/invite/s/course/${hash}`;
 };
 
 const tagsToReplace: { [k: string]: string } = {

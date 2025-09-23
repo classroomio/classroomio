@@ -14,6 +14,7 @@ mailRouter.post('/send', async (c: Context) => {
 
     const results = await Promise.all(
       validatedData.map(async (emailData) => {
+        console.log('emailData', emailData);
         try {
           const res = env.ZOHO_TOKEN
             ? await sendWithZoho(emailData)

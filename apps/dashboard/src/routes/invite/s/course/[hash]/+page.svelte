@@ -10,10 +10,7 @@
   import type { CurrentOrg } from '$lib/utils/types/org.js';
   import { ROLE } from '$lib/utils/constants/roles';
   import { profile } from '$lib/utils/store/user';
-  import {
-    triggerSendEmail,
-    NOTIFICATION_NAME
-  } from '$lib/utils/services/notification/notification';
+  import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification';
   import { snackbar } from '$lib/components/Snackbar/store.js';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { page } from '$app/stores';
@@ -72,6 +69,7 @@
       }) || [];
 
     addGroupMember(member).then((addedMember) => {
+      loading = false;
       if (addedMember.error) {
         console.error('Error adding student to group', courseData.group_id, addedMember.error);
         snackbar.error('snackbar.invite.failed_join');
@@ -131,7 +129,7 @@
   {supabase}
   isLogin={false}
   {handleSubmit}
-  isLoading={loading || !$profile.id}
+  isLoading={loading}
   showOnlyContent={true}
   showLogo={true}
   bind:formRef
@@ -146,7 +144,7 @@
       label="Join Course"
       type="submit"
       isDisabled={disableSubmit || loading}
-      isLoading={loading || !$profile.id}
+      isLoading={loading}
     />
   </div>
 </AuthUI>

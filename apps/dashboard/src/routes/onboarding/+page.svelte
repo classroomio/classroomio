@@ -12,10 +12,7 @@
   import { blockedSubdomain } from '$lib/utils/constants/app';
   import { getOrganizations } from '$lib/utils/services/org';
   import { generateSitename } from '$lib/utils/functions/org';
-  import {
-    triggerSendEmail,
-    NOTIFICATION_NAME
-  } from '$lib/utils/services/notification/notification';
+  import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification';
   import { handleLocaleChange, t } from '$lib/utils/functions/translations';
   import { LOCALE } from '$lib/utils/types';
 

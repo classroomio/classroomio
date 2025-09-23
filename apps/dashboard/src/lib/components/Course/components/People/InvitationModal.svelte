@@ -1,29 +1,23 @@
 <script lang="ts">
-  import copy from 'copy-to-clipboard';
-  import { Popover } from 'carbon-components-svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import QRCode from 'qrcode';
-  import { toPng } from 'html-to-image';
 
-  import Modal from '$lib/components/Modal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { ROLE } from '$lib/utils/constants/roles';
-  import { addGroupMember, fetchGroup } from '$lib/utils/services/courses';
-  import { course, setCourse } from '$lib/components/Course/store';
+  import { addGroupMember } from '$lib/utils/services/courses';
   import { MultiSelect, Loading } from 'carbon-components-svelte';
-  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
+  import { currentOrg } from '$lib/utils/store/org';
   import { getOrgTeam } from '$lib/utils/services/org';
   import type { OrgTeamMember } from '$lib/utils/types/org';
-  import { qrInviteNodeStore } from './store';
-  import { getStudentInviteLink } from '$lib/utils/functions/course';
-  import ShareQrImage from './ShareQRImage.svelte';
-  import {
-    triggerSendEmail,
-    NOTIFICATION_NAME
-  } from '$lib/utils/services/notification/notification';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification';
   import { t } from '$lib/utils/functions/translations';
+  import { ProductInviteService } from '$lib/utils/services/products/invite';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import Modal from '$lib/components/Modal/index.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import type { Course } from '$lib/utils/types';
+  import { course } from '../../store';
 
   interface Tutor {
     id: number;
@@ -37,9 +31,11 @@
   let selectedIds: Array<number> = [];
   let selectedTutors: Tutor[] = [];
   let isLoadingTutors = false;
-  let copied = false;
-  let qrImage = '';
-  let isLoadingQRDownload = false;
+  let emails = '';
+  let emailsError = '';
+  let isSaving = false;
+
+  let group: Course['group'];
 
   function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
@@ -47,55 +43,110 @@
   const formatSelected = (i: Array<number>): Tutor[] =>
     i.length === 0 ? [] : i.map((id) => tutors.find((tutor) => tutor.id === id)).filter(notEmpty);
 
-  function onSubmit() {
+  async function inviteStudents(emailsArr: string[]) {
+    const productInviteService = new ProductInviteService(supabase);
+
+    const inviteResponse = await productInviteService.sendInvite(
+      emailsArr.map((email) => ({
+        email,
+        items: [
+          {
+            productName: $course?.title || 'Course',
+            type: 'course',
+            groupId: group?.id || ''
+          }
+        ]
+      })),
+      $currentOrg
+    );
+
+    if (!inviteResponse) {
+      return;
+    }
+    const { groupmembers } = inviteResponse;
+
+    course.update((tp) => {
+      if (!tp) return tp;
+
+      const _group = { ...(tp.group || {}) };
+
+      groupmembers.forEach((member) => {
+        if (_group.members) {
+          _group.members.push({
+            id: member.id,
+            role_id: member.role_id,
+            email: member.email,
+            group_id: _group.id ?? ''
+          });
+        }
+      });
+
+      return {
+        ...tp,
+        group: {
+          ..._group,
+          id: _group.id ?? '',
+          name: _group.name ?? ''
+        }
+      } as Course;
+    });
+
+    snackbar.success('Invites sent successfully');
+
+    emails = '';
+  }
+
+  async function onSubmit() {
+    isSaving = true;
+
+    if (emails) {
+      inviteStudents(emails.split(',').map((email) => email.trim()));
+    }
+
     if (!selectedTutors.length) {
       goto($page.url.pathname);
+
+      isSaving = false;
+
       return;
     }
 
     let membersStack: { profile_id?: string; group_id?: string; role_id: number }[] = [];
-    console.log(`$course`, $course);
 
     for (const tutor of selectedTutors) {
       membersStack.push({
         profile_id: tutor.profileId,
-        group_id: $course.group?.id,
+        group_id: group?.id,
         role_id: ROLE.TUTOR
       });
 
-      triggerSendEmail(NOTIFICATION_NAME.WELCOME_TEACHER_TO_COURSE, {
+      triggerSendEmail(NOTIFICATION_NAME.WELCOME_TEACHER_TO_TESTPACK, {
         to: tutor.email,
         name: tutor.text,
         orgName: $currentOrg.name,
         orgSiteName: $currentOrg.siteName,
-        courseName: $course.title
+        testpackName: $course?.title
       });
     }
 
-    addGroupMember(membersStack).then(async (membersAdded) => {
-      if (!$course?.group?.id) return;
+    await addGroupMember(membersStack);
 
-      const group = await fetchGroup($course?.group?.id);
+    goto($page.url.pathname);
 
-      setCourse(
-        {
-          ...$course,
-          group: group.data
-        },
-        false
-      );
+    isSaving = false;
+  }
 
-      goto($page.url.pathname);
-    });
+  function getExistingTutors(group: Course['group']) {
+    return group?.members?.filter((member) => member.role_id === ROLE.TUTOR);
   }
 
   function getTutors(team: OrgTeamMember[]) {
-    const existingTutors = $course.group?.tutors || [];
+    const existingTutors = getExistingTutors(group);
     return team
       .filter((teamMember) => teamMember.verified)
       .filter((teamMember) => {
         // filter out teamMembers that have already been added
-        return !existingTutors.some((t) => t.id === teamMember.profileId);
+        return !(existingTutors ?? []).some((t) => t.profile_id === teamMember.profileId);
       })
       .map((teamMember) => ({
         id: teamMember.id,
@@ -121,56 +172,8 @@
     isLoadingTutors = false;
   }
 
-  function copyLink() {
-    if (!$currentOrgDomain) {
-      snackbar.error('snackbar.people.error.missing_data');
-      console.error('snackbar.people.error.no');
-      return;
-    }
-
-    const link = getStudentInviteLink($course, $currentOrg.siteName, $currentOrgDomain);
-    copy(link);
-    copied = true;
-    setTimeout(() => {
-      copied = false;
-    }, 1000);
-  }
-
   function closeModal() {
     goto($page.url.pathname);
-  }
-
-  function handleQRDownload() {
-    if (!$qrInviteNodeStore) {
-			console.error('Node is not defined');
-			return;
-		}
-
-		isLoadingQRDownload = true;
-		setTimeout(() => {
-			toPng($qrInviteNodeStore)
-				.then((dataUrl) => {
-					const link = document.createElement('a');
-					link.download = `${$course.slug}-qr-code.png`;
-					link.href = dataUrl;
-					link.click();
-				})
-				.catch((error) => {
-					isLoadingQRDownload = false;
-					console.error('Oops, something went wrong!', error);
-				})
-				.finally(() => {
-					isLoadingQRDownload = false;
-				});
-		}, 300);
-  }
-
-  async function generateQR(text) {
-    try {
-      qrImage = await QRCode.toDataURL(text);
-    } catch (err) {
-      console.error(err);
-    }
   }
 
   $: {
@@ -179,8 +182,10 @@
     addPeopleParm = query.get('add');
   }
 
-  $: setTutors($currentOrg.id);
-  $: generateQR(getStudentInviteLink($course, $currentOrg.siteName, $currentOrgDomain));
+  $: if ($course) {
+    group = $course.group;
+    setTutors($currentOrg.id);
+  }
 </script>
 
 <Modal
@@ -192,7 +197,9 @@
 >
   <form on:submit|preventDefault={onSubmit}>
     <div class="mb-8">
-      <p class="text-base mb-1 font-semibold">{$t('course.navItem.people.invite_modal.invite')}</p>
+      <p class="mb-1 text-base font-semibold">
+        {$t('course.navItem.people.invite_modal.invite')}
+      </p>
       <MultiSelect
         disabled={isLoadingTutors}
         label={$t('course.navItem.people.invite_modal.select')}
@@ -208,7 +215,7 @@
           {$t('course.navItem.people.invite_modal.to_add')}
           <a
             href={`/org/${$currentOrg.siteName}/settings/teams`}
-            class="underline text-primary-600"
+            class="text-primary-600 underline"
           >
             {$t('course.navItem.people.invite_modal.go_to')}
           </a>
@@ -216,58 +223,24 @@
       {/if}
     </div>
 
-    <div class="mb-8 w-full flex justify-between items-center">
-      <div class="w-3/5">
-        <p class="text-base mb-1 font-semibold">
-          {$t('course.navItem.people.invite_modal.invite_students')}
-        </p>
-        <p class=" text-sm">{$t('course.navItem.people.invite_modal.via_link')}</p>
-      </div>
+    <div class="mb-8 w-full">
+      <p class="mb-1 text-base font-semibold">Invite Students</p>
 
-      <div class="relative">
-        <button
-          type="button"
-          on:click={copyLink}
-          class="underline text-primary-800 font-bold cursor-pointer capitalize"
-        >
-          {$t('course.navItem.people.invite_modal.copy_link')}
-        </button>
-
-        <Popover caret open={copied} align="left">
-          <div style="padding: 5px">{$t('course.navItem.people.invite_modal.success')}</div>
-        </Popover>
-      </div>
+      <TextField
+        label="Email addresses"
+        className="w-full my-4"
+        placeholder="john@example.com,jane@example.com"
+        bind:value={emails}
+        errorMessage={emailsError}
+      />
     </div>
 
-    <div
-      class="flex gap-5 flex-col-reverse md:flex-row justify-between items-center md:items-stretch p-4 w-full border rounded-md"
-    >
-      <div class="flex flex-col gap-3 items-center md:items-start justify-between">
-        <span class="font-medium text-sm">
-          {$t('course.navItem.people.invite_modal.via_qr')}
-        </span>
-
-        <PrimaryButton
-          isLoading={isLoadingQRDownload}
-          onClick={handleQRDownload}
-          label={$t('course.navItem.people.invite_modal.download_qr')}
-          className="font-medium"
-        />
-      </div>
-
-      <div class="w-full md:w-28 border-4 p-1 border-[#f7f7f7]">
-        <img src={qrImage} alt="link qrcode" class="w-full h-full" />
-      </div>
-    </div>
-
-    <div class="absolute left-[-1000px] w-[40rem]">
-      <ShareQrImage {qrImage} course={$course} currentOrg={$currentOrg} />
-    </div>
-
-    <div class="mt-5 flex items-center flex-row-reverse">
+    <div class="mt-5 flex flex-row-reverse items-center">
       <PrimaryButton
         className="px-6 py-3"
         label={$t('course.navItem.people.invite_modal.finish')}
+        isLoading={isSaving}
+        isDisabled={isSaving}
         type="submit"
       />
     </div>

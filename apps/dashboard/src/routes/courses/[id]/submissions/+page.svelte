@@ -13,10 +13,7 @@
   import formatDate from '$lib/utils/functions/formatDate';
   import isSubmissionEarly from '$lib/utils/functions/isSubmissionEarly';
   import { t } from '$lib/utils/functions/translations';
-  import {
-    NOTIFICATION_NAME,
-    triggerSendEmail
-  } from '$lib/utils/services/notification/notification';
+  import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/index.js';
   import {
     deleteSubmission,
     fetchSubmissions,

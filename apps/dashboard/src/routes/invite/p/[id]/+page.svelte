@@ -1,34 +1,28 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
   import AuthUI from '$lib/components/AuthUI/index.svelte';
   import type { Profile } from '$lib/components/Course/components/People/types';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
   import { logout } from '$lib/utils/functions/logout';
-  import { getSupabase } from '$lib/utils/functions/supabase';
+  import { getSupabase, getAccessToken } from '$lib/utils/functions/supabase';
   import { setTheme } from '$lib/utils/functions/theme';
   import { t } from '$lib/utils/functions/translations';
-  import { profile, user } from '$lib/utils/store/user';
   import {
     authValidation,
     getConfirmPasswordError,
     getDisableSubmit
   } from '$lib/utils/functions/validator';
-  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
+  import { currentOrg } from '$lib/utils/store/org';
   import type { CurrentOrg } from '$lib/utils/types/org';
   import { onMount } from 'svelte';
-  import { snackbar } from '$lib/components/Snackbar/store.js';
 
   export let data;
 
   let supabase = getSupabase();
   let fields = Object.assign({}, SIGNUP_FIELDS);
   let loading = false;
-  let isLoggingOut = false;
-  let shouldLogout = false;
 
   let errors: {
     name?: string;
@@ -55,9 +49,9 @@
 
     try {
       loading = true;
-      let profile: Profile | null = data.invite.profile;
+      let profile: Profile | null = data.profile;
 
-      if (!data.invite.profile) {
+      if (!data.profile) {
         // Signup
         const { data: signupData, error } = await supabase.auth.signUp({
           email: data.invite.email,
@@ -105,20 +99,30 @@
         throw res.error;
       }
 
-      // Update member response
-      const updateMemberRes = await supabase
-        .from('organizationmember')
-        .update({
-          verified: true,
-          profile_id: profile.id
-        })
-        .match({ email: profile.email, organization_id: data.invite.currentOrg?.id });
+      const accessToken = await getAccessToken();
 
-      console.log('Update member response', updateMemberRes);
+      const inviteReq = await fetch('/invite/p/' + data.invite.id, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({
+          profileId: profile.id
+        })
+      });
+
+      const inviteRes = await inviteReq.json();
+
+      console.log('inviteRes', inviteRes);
+
+      if (!inviteRes.success) {
+        throw new Error('Unable to accept invite');
+      }
 
       formRef?.reset();
 
-      return goto($currentOrgPath);
+      return goto('/lms');
     } catch (error) {
       if (error instanceof Error) {
         submitError = error.message;
@@ -138,63 +142,47 @@
   }
 
   onMount(async () => {
-    setTheme(data.invite.currentOrg?.theme || '');
+    await logout(false);
 
-    setCurOrg(data.invite.currentOrg as CurrentOrg);
+    setTheme(data.org?.theme || '');
+
+    setCurOrg(data.org as CurrentOrg);
   });
 
   $: errors.confirmPassword = getConfirmPasswordError(fields);
   $: disableSubmit = getDisableSubmit(fields);
 
-  $: autoLogout($profile?.email);
-
-  function autoLogout(email?: string) {
-    if (!email) return;
-
-    if (email !== data.invite.email) {
-      console.log('logout');
-      snackbar.error('You are logged in with a different email');
-      shouldLogout = true;
-    }
-  }
-
-  $: isLoading = loading || $user.fetchingUser;
-  $: console.log('$profile', $profile);
-  $: console.log('data.invite', data.invite);
+  $: console.log('data', data.invite);
 </script>
 
 <svelte:head>
-  <title>Join ClassroomIO</title>
+  <title>Access your products on BellCurve</title>
 </svelte:head>
 
-<AuthUI
-  {supabase}
-  redirectPathname={$page.url.pathname}
-  isLogin={false}
-  {handleSubmit}
-  {isLoading}
-  showLogo={true}
-  bind:formRef
->
-  <div class="mt-4 w-full {shouldLogout ? 'hidden' : ''}">
-    <p class="mb-6 text-lg font-semibold dark:text-white">
-      {#if data.invite.profile}
-        {$t('login.login_to_join')}
-      {:else}
-        {$t('login.create_to_join')}
-      {/if}
-    </p>
-    <TextField
-      label={$t('login.fields.email')}
-      value={data.invite.email}
-      type="email"
-      placeholder="you@domain.com"
-      className="mb-6"
-      inputClassName="w-full"
-      isDisabled={true}
-    />
-    {#if $profile?.email !== data.invite.email}
-      {#if !data.invite.profile}
+<AuthUI {supabase} isLogin={false} {handleSubmit} isLoading={loading} showLogo={true} bind:formRef>
+  <div class="mt-4 w-full">
+    {#if data.invite.accepted_at}
+      <p class="mb-6 text-lg font-semibold dark:text-white">
+        You have already accepted this invite
+      </p>
+    {:else}
+      <p class="mb-6 text-lg font-semibold dark:text-white">
+        {#if data.profile}
+          Login to access your products
+        {:else}
+          Create an account to access your products
+        {/if}
+      </p>
+      <TextField
+        label={$t('login.fields.email')}
+        value={data.invite.email}
+        type="email"
+        placeholder="you@domain.com"
+        className="mb-6"
+        inputClassName="w-full"
+        isDisabled={true}
+      />
+      {#if !data.profile}
         <TextField
           label={$t('login.fields.full_name')}
           bind:value={fields.name}
@@ -203,7 +191,7 @@
           placeholder="e.g Joke Silva"
           className="mb-6"
           inputClassName="w-full"
-          isDisabled={isLoading}
+          isDisabled={loading}
           errorMessage={errors.name}
           isRequired
         />
@@ -215,12 +203,12 @@
         placeholder="************"
         className="mb-6"
         inputClassName="w-full"
-        isDisabled={isLoading}
+        isDisabled={loading}
         errorMessage={errors.password}
         helperMessage={$t('login.fields.password_helper_message')}
         isRequired
       />
-      {#if !data.invite.profile}
+      {#if !data.profile}
         <TextField
           label={$t('login.fields.confirm_password')}
           bind:value={fields.confirmPassword}
@@ -228,41 +216,33 @@
           placeholder="************"
           className="mb-6"
           inputClassName="w-full"
-          isDisabled={isLoading}
+          isDisabled={loading}
           errorMessage={errors.confirmPassword}
           isRequired
         />
       {/if}
-    {/if}
-    {#if submitError}
-      <p class="text-sm text-red-500">{submitError}</p>
+      {#if submitError}
+        <p class="text-sm text-red-500">{submitError}</p>
+      {/if}
     {/if}
   </div>
 
   <div class="my-4 flex w-full items-center justify-end">
-    {#if shouldLogout}
+    {#if data.invite.accepted_at}
       <PrimaryButton
-        label="Logout"
-        type="button"
+        label="Go to LMS"
+        onClick={() => goto('/login')}
         className="sm:w-full w-full"
-        isLoading={isLoggingOut}
-        variant={VARIANTS.CONTAINED_DANGER}
-        onClick={async () => {
-          isLoggingOut = true;
-
-          await logout(false);
-
-          isLoggingOut = false;
-          shouldLogout = false;
-        }}
+        isDisabled={disableSubmit || loading}
+        isLoading={loading}
       />
     {:else}
       <PrimaryButton
-        label="Accept Invite"
+        label="Access products"
         type="submit"
         className="sm:w-full w-full"
-        isDisabled={disableSubmit}
-        {isLoading}
+        isDisabled={disableSubmit || loading}
+        isLoading={loading}
       />
     {/if}
   </div>

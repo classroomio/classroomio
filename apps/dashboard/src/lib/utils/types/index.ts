@@ -130,6 +130,11 @@ export interface LessonComment {
 export interface Organization {
   id: string /* primary key */;
   name: any; // type unknown;
+  siteName: string;
+  avatar_url?: string;
+  settings: any;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface OrganizationPlan {
@@ -435,3 +440,22 @@ export interface Tabs {
   id: number;
   name: string;
 }
+
+export interface ProductInvite {
+  created_at: string;
+  email: string;
+  id: string;
+  items: ProductInviteItem[];
+  expires_at: string;
+  organization_id: string;
+  accepted_at: string;
+
+  // join fields
+  organization?: Pick<Organization, 'id' | 'name' | 'siteName'>;
+}
+
+export type ProductInviteItem = {
+  group_id: string;
+  type: 'course' | 'testpack' | 'question_bank';
+  product_name: string;
+};

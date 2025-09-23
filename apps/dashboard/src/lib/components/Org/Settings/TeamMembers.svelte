@@ -14,10 +14,7 @@
   import { profile } from '$lib/utils/store/user';
   import { supabase } from '$lib/utils/functions/supabase';
   import SectionTitle from '../SectionTitle.svelte';
-  import {
-    triggerSendEmail,
-    NOTIFICATION_NAME
-  } from '$lib/utils/services/notification/notification';
+  import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification';
   import { isFreePlan } from '$lib/utils/store/org';
   import type { OrgTeamMember } from '$lib/utils/types/org';
   import { t } from '$lib/utils/functions/translations';

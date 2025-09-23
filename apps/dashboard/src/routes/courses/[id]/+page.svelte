@@ -23,10 +23,7 @@
     handleEditFeed,
     toggleFeedIsPinned
   } from '$lib/utils/services/newsfeed';
-  import {
-    NOTIFICATION_NAME,
-    triggerSendEmail
-  } from '$lib/utils/services/notification/notification';
+  import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/index.js';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import type { Feed } from '$lib/utils/types/feed';

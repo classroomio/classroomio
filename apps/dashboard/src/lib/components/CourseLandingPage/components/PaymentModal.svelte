@@ -5,10 +5,7 @@
   import { coursePaymentValidation } from '$lib/utils/functions/validator';
   import { Link } from 'carbon-components-svelte';
   import { currentOrg } from '$lib/utils/store/org';
-  import {
-    triggerSendEmail,
-    NOTIFICATION_NAME
-  } from '$lib/utils/services/notification/notification';
+  import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification';
 
   export let open = false;
   export let paymentLink = '';
@@ -94,7 +91,7 @@
         errorMessage={errors.email}
       />
 
-      <div class="mt-5 flex items-center flex-row-reverse">
+      <div class="mt-5 flex flex-row-reverse items-center">
         <PrimaryButton
           className="px-6 py-3"
           label={paymentLink ? 'Next' : 'Finish'}
@@ -107,7 +104,7 @@
       You will now be taken to a payment page, once you've paid send a proof of payment to the
       course admin
     </p>
-    <div class="mt-5 flex items-center flex-row-reverse">
+    <div class="mt-5 flex flex-row-reverse items-center">
       <Link href={paymentLink} target="_blank" on:click={onClickPaymentLink}>Go to payment</Link>
     </div>
   {/if}

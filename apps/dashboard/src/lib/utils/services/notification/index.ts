@@ -11,7 +11,11 @@ export const NOTIFICATION_NAME = {
   TEACHER_STUDENT_JOINED: 'TEACHER STUDENT JOINED',
   SUBMISSION_UPDATE: 'SUBMISSION UPDATE',
   EXERCISE_SUBMISSION_UPDATE: 'EXERCISE SUBMISSION UPDATE',
-  NEWSFEED: 'NEWSFEED'
+  NEWSFEED: 'NEWSFEED',
+  INVITE_STUDENTS_TO_ORG: 'INVITE STUDENTS TO ORG',
+  INVITE_STUDENT_TO_PRODUCT: 'INVITE STUDENT TO PRODUCT',
+  WELCOME_TEACHER_TO_TESTPACK: 'WELCOME TEACHER TO TESTPACK',
+  INVITE_STUDENT_TO_PRODUCT_COMPLETE: 'INVITE STUDENT TO PRODUCT COMPLETE'
 };
 
 const NAME_TO_PATH = {
@@ -26,11 +30,23 @@ const NAME_TO_PATH = {
   [NOTIFICATION_NAME.TEACHER_STUDENT_JOINED]: '/api/email/course/teacher_student_joined',
   [NOTIFICATION_NAME.SUBMISSION_UPDATE]: '/api/email/course/submission_update',
   [NOTIFICATION_NAME.EXERCISE_SUBMISSION_UPDATE]: '/api/email/course/exercise_submission_update',
-  [NOTIFICATION_NAME.NEWSFEED]: '/api/email/course/newsfeed'
+  [NOTIFICATION_NAME.NEWSFEED]: '/api/email/course/newsfeed',
+  [NOTIFICATION_NAME.INVITE_STUDENTS_TO_ORG]: '/api/email/invite/org',
+  [NOTIFICATION_NAME.INVITE_STUDENT_TO_PRODUCT]: '/api/email/invite/product',
+  [NOTIFICATION_NAME.WELCOME_TEACHER_TO_TESTPACK]: '/api/email/testpack/teacher_welcome',
+  [NOTIFICATION_NAME.INVITE_STUDENT_TO_PRODUCT_COMPLETE]: '/api/email/invite/product/complete'
 };
 
-export const triggerSendEmail = async (name: string, body: { [k: string]: unknown }) => {
+export const triggerSendEmail = async (
+  name: string,
+  body: { [k: string]: unknown },
+  params?: {
+    fetch?: typeof window.fetch;
+    headers?: Record<string, string>;
+  }
+) => {
   try {
+    console.log('params', params);
     const accessToken = await getAccessToken();
     const path = NAME_TO_PATH[name];
 
@@ -38,16 +54,17 @@ export const triggerSendEmail = async (name: string, body: { [k: string]: unknow
       console.error('Could not trigger send');
       return;
     }
-    const response = await fetch(path, {
+    const response = await (params?.fetch || fetch)(path, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: accessToken
+        Authorization: accessToken,
+        ...(params?.headers || {})
       },
       body: JSON.stringify(body)
     });
-    if (!response.ok) {
-      console.log(response);
+
+    if (![200, 303].includes(response.status)) {
       throw new Error(await response.text());
     }
   } catch (error) {
