@@ -658,7 +658,9 @@
                 "single": "एकल उत्तर",
                 "multiple": "एकाधिक उत्तर",
                 "paragraph": "अनुच्छेद"
-              }
+              },
+              "hint": "संकेत देना",
+              "explanation": "स्पष्टीकरण"
             },
             "delete_confirmation": {
               "title": "प्रश्न हटाएँ",

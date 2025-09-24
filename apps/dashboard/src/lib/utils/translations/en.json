@@ -795,6 +795,8 @@
               "deleting": "Deleting...",
               "error": "You have some errors",
               "question": "Question",
+              "hint": "Hint",
+              "explanation": "Explanation",
               "write": "Write your code",
               "option": "Add option",
               "question_types": {
