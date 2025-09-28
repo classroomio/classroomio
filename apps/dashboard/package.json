@@ -1,5 +1,5 @@
 {
-  "name": "dashboard",
+  "name": "@cio/dashboard",
   "description": "classroomio",
   "version": "0.0.1",
   "main": "main.js",
@@ -10,8 +10,6 @@
     "lint": "eslint ./src",
     "clean": "rm -rf node_modules",
     "format": "prettier . --write .",
-    "export": "vite build --entry \"/ /404 login signup forgot onboarding courses org lms course\"",
-    "postexport": "mv __sapper__/export/404/index.html __sapper__/export/404.html",
     "start": "node build",
     "prepare": "svelte-kit sync",
     "test": "jest",
