@@ -1,7 +1,7 @@
 {
-  "name": "docs",
+  "name": "@cio/docs",
   "version": "0.0.1",
-  "description": "Nextra docs template",
+  "description": "ClassroomIO Documentation",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

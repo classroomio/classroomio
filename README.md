@@ -1,5 +1,5 @@
 <a href="https://classroomio.com/">
-  <img alt="ClassroomIO is a no-code tool that allows you build and scale your online bootcamp with ease." src="https://raw.githubusercontent.com/rotimi-best/classroomio/main/apps/classroomio-com/static/classroomio-opengraph-image.png" />
+  <img alt="ClassroomIO is a no-code tool that allows you build and scale your online bootcamp with ease." src="https://raw.githubusercontent.com/classroomio/classroomio/main/apps/classroomio-com/static/classroomio-opengraph-image.png" />
   <h1 align="center">ClassroomIO.com</h1>
   <p align="center">
     The Open Source Learning Management System for Companies
@@ -8,11 +8,11 @@
   </p>
 </a>
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/629e2bb8994345729513c4d69ccbe3d5)](https://app.codacy.com/gh/rotimi-best/classroomio?utm_source=github.com&utm_medium=referral&utm_content=rotimi-best/classroomio&utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/629e2bb8994345729513c4d69ccbe3d5)](https://app.codacy.com/gh/classroomio/classroomio?utm_source=github.com&utm_medium=referral&utm_content=classroomio/classroomio&utm_campaign=Badge_Grade)
 
 ## ✨ About ClassroomIO.com
 
-<img alt="ClassroomIO Courses page" src="https://raw.githubusercontent.com/rotimi-best/classroomio/main/apps/classroomio-com/static/classroomio-courses.png" />
+<img alt="ClassroomIO Courses page" src="https://raw.githubusercontent.com/classroomio/classroomio/main/apps/classroomio-com/static/classroomio-courses.png" />
 
 Streamline training for everyone with ClassroomIO.com. Our all-in-one platform empowers bootcamps, educators, and businesses to manage training programs easily. With our platform, anyone can run multiple classes and cohorts all from one UI. The application is mobile-first, which means that students can access your lesson materials from any device.
 
@@ -84,14 +84,14 @@ This repo is a mono repo that consists of 3 projects:
 
 2. This will open a fully configured workspace in your browser with all the necessary dependencies already installed.
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/rotimi-best/classroomio)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/classroomio/classroomio)
 
 ### Local Setup
 
 1. Fork the repo, then clone it using the following command (remember to replace the url with the url from your forked repo)
 
    ```bash
-   git clone https://github.com/rotimi-best/classroomio.git
+   git clone https://github.com/classroomio/classroomio.git
    ```
 
 2. Go to project folder
@@ -118,25 +118,26 @@ This repo is a mono repo that consists of 3 projects:
 
 4. Set up your `.env` file
 
-   - Go to `apps/classroomio-com`, `apps/dashboard` and `apps/api`.
+   - Go to `apps/dashboard` and `apps/api`.
    - Duplicate the `.env.example` file and rename it to `.env`
    - Populate your .env files with the neccessary variables
 
 To get the environmental variables for supabase continue to step(5)
 
-5. Install all dependencies
+1. Install all dependencies
 
    ```bash
    pnpm i
    ```
 
-6. Setup Supabase.
+2. Setup Supabase.
 
    - Install and Start [docker](https://docs.docker.com/engine/install/)
+   - Install [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started) on your computer
    - Go to the project directory in your terminal and start Supabase
 
      ```bash
-       pnpm supabase:start
+       supabase start
      ```
 
    - You should get a result like this
@@ -154,7 +155,7 @@ To get the environmental variables for supabase continue to step(5)
      service_role key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
      ```
 
-   - Add Supabase environment variables into `app/dashboard` folder, which should be taken from the result of `pnpm supabase:start`
+   - Add Supabase environment variables into `app/dashboard` folder, which should be taken from the result of `supabase start`
 
      ```env
        PUBLIC_SUPABASE_URL=<API URL>
@@ -162,31 +163,31 @@ To get the environmental variables for supabase continue to step(5)
        PRIVATE_SUPABASE_SERVICE_ROLE=<service_role key>
      ```
 
-   - To view the Supabase studio, open the Studio URL from the result of `pnpm supabase:start`
+   - To view the Supabase studio, open the Studio URL from the result of `supabase start`
 
-7. Run all projects (in development mode)
+3. Run all projects (in development mode)
 
    ```bash
    pnpm dev
    ```
 
-8. All projects should start running
+4. All projects should start running
 
    - `classroomio-com`: [http://localhost:5174](http://localhost:5174)
    - `api`: [http://localhost:3002](http://localhost:3002)
    - `dashboard`: [http://localhost:5173](http://localhost:5173)
    - `docs`: [http://localhost:3000](http://localhost:3000)
 
-9. Running a specific project
+5. Running a specific project
 
-   - **classroomio-com**: `pnpm dev --filter=classroomio-com`
-   - **api**: `pnpm dev --filter=api`
-   - **dashboard**: `pnpm dev --filter=dashboard`
-   - **docs**: `pnpm dev --filter=docs`
+   - **classroomio-com**: `pnpm dev --filter=@cio/classroomio-com`
+   - **api**: `pnpm dev --filter=@cio/api`
+   - **dashboard**: `pnpm dev --filter=@cio/dashboard`
+   - **docs**: `pnpm dev --filter=@cio/docs`
 
-10. Login into `dashboard`
+6.  Login into `dashboard`
 
-    - Visit [http://localhost:5174/login](http://localhost:5173/login)
+    - Visit [http://localhost:5173/login](http://localhost:5173/login)
     - Enter email: `admin@test.com`
     - Enter password: `123456`
      
