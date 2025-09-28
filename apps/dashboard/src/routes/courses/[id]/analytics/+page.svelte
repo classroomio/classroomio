@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
+  import { CourseContainer } from '$lib/components/Course';
   import { PageBody, PageNav } from '$lib/components/Page';
   import { t } from '$lib/utils/functions/translations';
   import { getAccessToken } from '$lib/utils/functions/supabase';

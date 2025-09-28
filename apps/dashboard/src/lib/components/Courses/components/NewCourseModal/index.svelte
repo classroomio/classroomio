@@ -206,6 +206,7 @@
           bind:value={$createCourseModal.title}
           placeholder={$t('courses.new_course_modal.course_name_placeholder')}
           className="w-full "
+          labelClassName="text-sm font-normal"
           isRequired={true}
           errorMessage={errors.title}
           autoComplete={false}
@@ -218,6 +219,7 @@
         rows={4}
         placeholder={$t('courses.new_course_modal.short_description_placeholder')}
         className="mb-4"
+        labelClassName="text-sm font-normal"
         isRequired={true}
         errorMessage={errors.description}
         isAIEnabled={true}

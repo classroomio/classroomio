@@ -5,7 +5,7 @@
   import { PageBody } from '$lib/components/Page';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/components/RoleBasedSecurity';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { upsertExercise } from '$lib/utils/services/courses';

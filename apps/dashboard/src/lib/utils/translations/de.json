@@ -277,7 +277,8 @@
         "type": "Kurstyp",
         "course_type_desc": "Aktualisieren Sie den Kurstyp für ein persönlicheres Erlebnis",
         "live_class": "Live-Klasse",
-        "self_paced": "Eigenständig"
+        "self_paced": "Eigenständig",
+        "pathway": "Weg"
       },
       "landing_page": {
         "start_course": "Kurs starten",
@@ -345,7 +346,9 @@
             "no": "NEIN",
             "yes": "Ja",
             "percent": "Rabattprozentsatz",
-            "gift": "Über Geschenk"
+            "gift": "Über Geschenk",
+            "gift_placeholder": "Geschenk nach Fertigstellung",
+            "cart": "in den Warenkorb legen"
           },
           "instructor_form": {
             "upload": "Lehrerlogo",
@@ -394,7 +397,9 @@
             "reviews": "Rezensionen",
             "instructor": "Lehrer",
             "pricing": "Preisgestaltung",
-            "certificate": "Zertifikat"
+            "certificate": "Zertifikat",
+            "about": "Um",
+            "objectives": "Ziele"
           },
           "display_section": "Anzeigebereich",
           "certificate_form": {
@@ -404,7 +409,11 @@
         "course_content": "Kursinhalte",
         "modules": "module",
         "lessons": "Unterricht",
-        "exercises": "Übungen"
+        "exercises": "Übungen",
+        "title": "Noch keine Kurse",
+        "subtitle": "Sieht so aus, als wären noch keine Kurse hinzugefügt worden. Bitte schauen Sie sich die letzteren an",
+        "pathway_title": "Noch keine Kurse",
+        "pathway_subtitle": "Sieht so aus, als wären noch keine Kurse hinzugefügt worden. Bitte schauen Sie sich die letzteren an"
       },
       "certificates": {
         "title": "Zertifikate",
@@ -480,7 +489,9 @@
           "members": "Mitglieder",
           "invite_sent": "Einladung gesendet",
           "you": "Du",
-          "remove": "Entfernen"
+          "remove": "Entfernen",
+          "join_course": "Schließen Sie sich Kurs an",
+          "join_pathway": "Treten Sie den Pfad bei"
         },
         "view": "Sicht",
         "delete_profile": "Profil löschen"
@@ -1115,7 +1126,8 @@
     "redirecting": "Umleiten",
     "loading_state": "Bitte warten Sie, um zur nächsten Seite zu gelangen.",
     "org_loading_state": "Wir bringen Sie zu Ihrer Organisation...",
-    "add_organization": "+ Organisation hinzufügen"
+    "add_organization": "+ Organisation hinzufügen",
+    "pathways": "Wege"
   },
   "add_org": {
     "create_org": "Organisation erstellen",
@@ -1186,7 +1198,10 @@
     "settings": "Einstellungen",
     "early_adopter": "Werden Sie ein Early Adopter",
     "unlock": "Schalten Sie unbegrenzte Funktionen frei und investieren Sie in unsere Zukunft",
-    "upgrade": "Jetzt upgraden"
+    "upgrade": "Jetzt upgraden",
+    "all_courses": "Alle",
+    "pathway": "Wege",
+    "tags": "Tags"
   },
   "settings": {
     "heading": "Einstellungen",
@@ -1584,6 +1599,248 @@
   "common": {
     "unsaved_changes": {
       "message": "Sie haben nicht gerettete Änderungen. Bist du sicher, dass du gehen willst?"
+    }
+  },
+  "lms_pathway": {
+    "pathway": "WEG",
+    "continue": "Sehen Sie den Weg fort",
+    "course": "Kurse",
+    "locked": "Verschlossen",
+    "goto_pathway": "Gehen Sie zum Weg",
+    "completed": "Vollendet",
+    "of": "von"
+  },
+  "search": {
+    "no_course": "Kein Kurs gefunden",
+    "no_pathway": "Kein Weg gefunden"
+  },
+  "pathway": {
+    "heading": "Wege",
+    "heading_button": "Weg erstellen",
+    "search_placeholder": "Weg finden",
+    "empty_title": "Es wurde noch kein Weg erstellt",
+    "empty_description": "Fügen Sie eine Gruppe verwandter Kurse hinzu, um Studenten auf einen Weg zur Exzellenz in Ihren Feldern zu setzen",
+    "components": {
+      "not_permitted": {
+        "header": "Keine Erlaubnis",
+        "body": "Leider haben Sie keinen Zugriff auf diesen Weg.",
+        "button": "Nach Hause gehen"
+      },
+      "dragAndDrop": {
+        "title": "Kurse arrangieren",
+        "header": "Ordnen",
+        "label": "Kursbestellung bestätigen"
+      },
+      "addCourseModal": {
+        "modal_heading": "Kurs zum Pfad hinzufügen",
+        "add": "Hinzufügen",
+        "course": "Kurs",
+        "courses": "Kurse",
+        "path": "zu Weg",
+        "delete": "Bestätigen Sie löschen"
+      },
+      "sideBar": {
+        "news": "Newsfeed",
+        "courses": "Kurse",
+        "people": "Menschen",
+        "certificates": "Zertifikate",
+        "landing": "Zielseite",
+        "settings": "Einstellungen"
+      },
+      "courseCard": {
+        "lessons": "Unterricht",
+        "students": "Studenten"
+      }
+    },
+    "pages": {
+      "landingPage": {
+        "reviews": {
+          "students": "Sehen Sie, was die Schüler über diese Sammlung sagen",
+          "readMore": "Mehr lesen",
+          "readLess": "Lesen Sie weniger"
+        },
+        "courseList": {
+          "header": "Kuratierte Kursliste-",
+          "subheader": "Unsere kuratierte Kursliste enthält wichtige Themen wie Benutzerforschung, Wireframing, Prototyping, Usability-Test, Interaktionsdesign und Branchenstandard-Tools. Schalten Sie noch heute Ihr UX -Potenzial frei!",
+          "courses": "Kurse",
+          "lessons": "Unterricht",
+          "estimated": "geschätzt",
+          "hours": "Std.",
+          "view": "Details anzeigen"
+        },
+        "subHeader": {
+          "button": "Melden Sie sich jetzt an"
+        },
+        "certificate": {
+          "earn": "Ein Zertifikat verdienen",
+          "evidence": "Holen Sie sich einen Beweis für die Fähigkeiten und teilen Sie Ihr fessionales Netzwerk mit"
+        },
+        "main": {
+          "description": "Pathway -Beschreibung",
+          "objectives": "Pfadziele",
+          "pricing_win": "Vervollständigen Sie alle erfolgreichen Lektionen und haben Sie die Chance, ein iPad zu gewinnen. Wir meinen es, wenn wir es sagen!",
+          "start": "Beginnen Sie jetzt"
+        },
+        "banner": {
+          "courses": "Kurse",
+          "courses_text": "Sorgfältig kuratierte Kurse, um Ihre Ziele zu erreichen",
+          "certificate": "Zertifikat erhalten",
+          "share": "Verdienen Sie eine Zertifizierung und teilen Sie dies mit Ihrem Netzwerk",
+          "rating": "Erfahrener und hoch bewerteter Kurslehrer"
+        },
+        "header": {
+          "tag": "WEG",
+          "button": "Melden Sie sich jetzt an"
+        },
+        "constants": {
+          "about": "UM",
+          "objectives": "Ziele",
+          "courses": "Kurse",
+          "review": "REZENSION",
+          "instructor": "Ausbilder (en)",
+          "faq": "FAQ"
+        }
+      },
+      "settings": {
+        "page_title": "Einstellungen",
+        "title_error": "Bitte fügen Sie einen Pathway -Titel hinzu",
+        "description_error": "Bitte fügen Sie eine Wegbeschreibung hinzu",
+        "cover_image": "Titelbild",
+        "optional": "Dieses optionale Bild wird auf Ihrer Begrüßungsseite angezeigt. Wenn Sie eine einschließen, sollte es mindestens 280 x 200 betragen",
+        "replace": "Ersetzen",
+        "delete": "Löschen",
+        "details": "Wegdetails",
+        "title": "Pathway -Titel",
+        "title_placeholder": "Schreiben Sie den Kursentitel hier",
+        "description": "Pathway -Beschreibung",
+        "description_placeholder": "Schreiben Sie die Kursbeschreibung hier",
+        "link": "Pathway -Link",
+        "students": "Die Schüler müssen den Kurs gemäß der empfohlenen Bestellung belegen?",
+        "yes": "Wenn ja, muss der Schüler einen Kurs nach Bestellung belegen, falls nein, der Schüler kann von jedem Kurs ihrer Wahl beginnen",
+        "option_one": "Ja",
+        "option_two": "NEIN",
+        "publish": "Veröffentlichen Sie den Weg",
+        "allow": "Ermöglichen",
+        "enabled": "Ermöglicht",
+        "disabled": "Deaktiviert",
+        "certificate": "Zertifikat",
+        "issue": "Zertifikat auf LMS ausgeben",
+        "issue_two": "Ausgeben des Zertifikats oder des gesamten Kurs in Pathway",
+        "option_three": "Nein, nur für Pfad",
+        "delete_path": "Pfad löschen",
+        "delete_text": "Pfad als Ganzes löschen",
+        "save": "Änderungen speichern",
+        "placeholder": "Eine kleine Beschreibung über den Weg",
+        "pathway_description": "Pathway -Beschreibung"
+      },
+      "lms_certificate": {
+        "courses_completed": "Kurse abgeschlossen",
+        "achieve": "Beinhaltet Kurse, die Sie abgeschlossen haben, um diesen Weg zu erreichen",
+        "share": "Aktienzertifikat",
+        "locked": {
+          "title": "Noch nicht verfügbare Zertifikate",
+          "subtitle": "Das Zertifikat ist verfügbar, da Sie den Weg nicht beendet haben oder Ihr Ausbilder es nicht genehmigt hat. Bitte wenden Sie sich an Ihren Ausbilder"
+        },
+        "unlocked": {
+          "title": "Glückwunsch! 🎉 Ihr Zertifikat ist fertig",
+          "subtitle": "Sie haben diesen Weg abgeschlossen und Ihr Engagement ist offensichtlich. Laden Sie das Zertifikat herunter und teilen Sie dies in Ihrem Netzwerk als Beweis Ihrer neu erworbenen Fähigkeiten"
+        }
+      },
+      "course": {
+        "title": "Kurse",
+        "add_course": "Kurs hinzufügen",
+        "add_remove": "Kurs entfernen",
+        "order": "Kurse bestellen",
+        "publish": "Veröffentlichen Sie den Weg",
+        "search": "Finden Sie den Pfadkurs",
+        "option_one": "Veröffentlicht",
+        "option_two": "Unveröffentlicht",
+        "body_title": "Titel",
+        "description": "Beschreibung",
+        "students": "Studenten",
+        "lessons": "Unterricht",
+        "empty_state_header": "Noch keine Kurse",
+        "empty_state_text": "Sie haben diesen Weg keinen Kurs hinzugefügt",
+        "empty_state_label": "Fügen Sie diesen Weg Kurs hinzu"
+      }
+    },
+    "new_pathway_modal": {
+      "heading": "Neuen Weg erstellen",
+      "pathway_name": "Weg",
+      "pathway_name_placeholder": "Werden Sie professioneller UX -Designer",
+      "short_description": "Kurzbeschreibung",
+      "short_description_placeholder": "Ein Sepcialisierungskurs, mit dem Sie als UX -Designer gestartet werden können",
+      "success": "Pathway erfolgreich erstellt",
+      "error": "Fehler beim Erstellen von Pfad",
+      "button": "Weg erstellen"
+    },
+    "pathway_card": {
+      "courses": "Kurse",
+      "course": "Kurs",
+      "error_message": "Es ist ein Fehler aufgetreten.",
+      "students": "Studenten",
+      "student": "Student",
+      "published": "Veröffentlicht",
+      "unpublished": "Unveröffentlicht",
+      "continue_pathway": "Setzen Sie den Weg fort",
+      "learn_more": "Erfahren Sie mehr",
+      "list_view": {
+        "title": "Titel",
+        "description": "Beschreibung",
+        "courses": "Kurse",
+        "students": "Studenten",
+        "published": "Veröffentlicht"
+      },
+      "context_menu": {
+        "clone": "Klon",
+        "share": "Aktie",
+        "invite": "Einladen",
+        "delete": "Löschen"
+      }
+    },
+    "pathway_filter": {
+      "date_created": "Datum erstellt",
+      "published": "Veröffentlicht",
+      "courses": "Kurse"
+    }
+  },
+  "tags": {
+    "tags": "Tags",
+    "create_tag": "Tag erstellen",
+    "find_tag": "Finden Sie Tag",
+    "description": "Beschreibung",
+    "course_count": "Kursanzahl",
+    "action": "Aktion",
+    "courses": "Kurse",
+    "course": "Kurs",
+    "edit_tag": "Tag bearbeiten",
+    "delete": "Löschen",
+    "no_tags_yet": "Noch keine Tags",
+    "add_a_group": "Fügen Sie eine Gruppe verwandter Kurse hinzu, um Studenten auf einen Weg zur Exzellenz in Ihren Feldern zu setzen",
+    "add_tags": "Fügen Sie Tags hinzu",
+    "attach": "Befestigen oder entfernen Sie einen Kurs von Tags",
+    "add_a_tag": "Fügen Sie ein Tag hinzu",
+    "errors": {
+      "remove_tag": "Das Tag nicht entfernen. Bitte versuchen Sie es erneut.",
+      "add_tag": "Fehlgeschlagene Tag hinzuzufügen. Bitte versuchen Sie es erneut.",
+      "fetch_tags": "Fehler beim Abrufen von Tags. Bitte versuchen Sie es erneut."
+    },
+    "add_tag_modal": {
+      "heading": "Tag Kurs",
+      "placeholder": "Suche nach einem Tag",
+      "header": "Alle Tags"
+    },
+    "tag_modal": {
+      "edit_tag": "Tag bearbeiten",
+      "delete_tag": "Tag löschen",
+      "create_tag": "Tag erstellen",
+      "tag_name": "Tagname",
+      "description": "Beschreibung",
+      "delete_modal": "Sind Sie sicher, dass Sie dieses Tag löschen möchten?",
+      "no": "NEIN",
+      "cancel": "Stornieren",
+      "yes": "Ja",
+      "save": "Speichern"
     }
   }
 }

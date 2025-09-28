@@ -9,6 +9,7 @@
   import { isMobile } from '$lib/utils/store/useMobile';
   import { goto } from '$app/navigation';
   import { t } from '$lib/utils/functions/translations';
+  import { globalStore } from '$lib/utils/store/app';
 
   export let id = '';
   export let title = '';
@@ -17,6 +18,10 @@
   export let isPublished = false;
   export let totalLessons = 0;
   export let totalStudents = 0;
+  export let isExplore = false;
+  export let isLMS = false;
+  export let isLearningPath = false;
+  export let slug = '';
 
   function handleCloneCourse(e) {
     e.stopPropagation();
@@ -41,16 +46,28 @@
     // TODO: Delete course functionality
     alert('WIP: Delete course');
   }
+
+  function getCourseUrl() {
+    if (isLMS && isLearningPath) {
+      return goto(isExplore ? `/pathway/${slug}` : `/pathways/${id}`);
+    }
+
+    return goto(
+      isExplore ? `/course/${slug}` : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`
+    );
+  }
 </script>
 
-<StructuredListRow label for="row-{id}" on:click={() => goto(`/courses/${id}`)}>
+<StructuredListRow label for="row-{id}" on:click={getCourseUrl}>
   <StructuredListCell><p class="font-semibold">{title}</p></StructuredListCell>
   <StructuredListCell>
     <p class="line-clamp-2">{description}</p>
   </StructuredListCell>
   {#if !$isMobile}
     <StructuredListCell>{type}</StructuredListCell>
-    <StructuredListCell>{totalLessons}</StructuredListCell>
+    {#if !$globalStore.isOrgSite}
+      <StructuredListCell>{totalLessons}</StructuredListCell>
+    {/if}
     <StructuredListCell>{totalStudents}</StructuredListCell>
     <StructuredListCell>
       <Tag class="break-normal" type={isPublished ? 'green' : 'cool-gray'}>

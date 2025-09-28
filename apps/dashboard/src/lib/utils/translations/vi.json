@@ -277,7 +277,8 @@
         "type": "Loại khóa học",
         "course_type_desc": "Cập nhật loại khóa học để có trải nghiệm cá nhân hóa hơn",
         "live_class": "Lớp học trực tiếp",
-        "self_paced": "Tự nhịp độ"
+        "self_paced": "Tự nhịp độ",
+        "pathway": "Con đường"
       },
       "landing_page": {
         "start_course": "Bắt đầu khóa học",
@@ -345,7 +346,9 @@
             "no": "KHÔNG",
             "yes": "Đúng",
             "percent": "Phần trăm chiết khấu",
-            "gift": "Về quà tặng"
+            "gift": "Về quà tặng",
+            "gift_placeholder": "Quà tặng khi hoàn thành",
+            "cart": "Thêm vào giỏ hàng"
           },
           "instructor_form": {
             "upload": "Logo giảng viên",
@@ -394,7 +397,9 @@
             "reviews": "Đánh giá",
             "instructor": "Người hướng dẫn",
             "pricing": "Định giá",
-            "certificate": "Giấy chứng nhận"
+            "certificate": "Giấy chứng nhận",
+            "about": "Về",
+            "objectives": "Mục tiêu"
           },
           "display_section": "Phần hiển thị",
           "certificate_form": {
@@ -404,7 +409,11 @@
         "course_content": "Nội dung khóa học",
         "modules": "mô-đun",
         "lessons": "bài học",
-        "exercises": "bài tập"
+        "exercises": "bài tập",
+        "title": "Chưa có khóa học nào",
+        "subtitle": "Có vẻ như các khóa học chưa được thêm vào. Vui lòng kiểm tra lại sau",
+        "pathway_title": "Chưa có khóa học nào",
+        "pathway_subtitle": "Có vẻ như các khóa học chưa được thêm vào. Vui lòng kiểm tra lại sau"
       },
       "certificates": {
         "title": "Chứng chỉ",
@@ -480,7 +489,9 @@
           "members": "Các thành viên",
           "invite_sent": "Lời mời đã gửi",
           "you": "Bạn",
-          "remove": "Di dời"
+          "remove": "Di dời",
+          "join_course": "Tham gia khóa học",
+          "join_pathway": "Tham gia Pathway"
         },
         "view": "Xem",
         "delete_profile": "Xóa hồ sơ"
@@ -1115,7 +1126,8 @@
     "redirecting": "Chuyển hướng",
     "loading_state": "Đang đưa bạn đến trang tiếp theo, vui lòng đợi.",
     "org_loading_state": "Đưa bạn đến tổ chức của bạn...",
-    "add_organization": "+ Thêm tổ chức"
+    "add_organization": "+ Thêm tổ chức",
+    "pathways": "Con đường"
   },
   "add_org": {
     "create_org": "Tạo tổ chức",
@@ -1186,7 +1198,10 @@
     "settings": "Cài đặt",
     "early_adopter": "Trở thành người áp dụng sớm",
     "unlock": "Mở khóa các tính năng không giới hạn và đầu tư vào tương lai của chúng tôi",
-    "upgrade": "Nâng cấp ngay bây giờ"
+    "upgrade": "Nâng cấp ngay bây giờ",
+    "all_courses": "Tất cả",
+    "pathway": "Con đường",
+    "tags": "Tags"
   },
   "settings": {
     "heading": "Cài đặt",
@@ -1584,6 +1599,248 @@
   "common": {
     "unsaved_changes": {
       "message": "Bạn có những thay đổi chưa được lưu. Bạn có chắc bạn muốn rời đi?"
+    }
+  },
+  "lms_pathway": {
+    "pathway": "Con đường",
+    "continue": "Tiếp tục đường dẫn",
+    "course": "Khóa học",
+    "locked": "Khóa",
+    "goto_pathway": "Đi đến Pathway",
+    "completed": "Hoàn thành",
+    "of": "của"
+  },
+  "search": {
+    "no_course": "Không tìm thấy khóa học",
+    "no_pathway": "Không tìm thấy con đường nào"
+  },
+  "pathway": {
+    "heading": "Con đường",
+    "heading_button": "Tạo con đường",
+    "search_placeholder": "Tìm con đường",
+    "empty_title": "Chưa có con đường nào được tạo ra",
+    "empty_description": "Thêm một nhóm các khóa học liên quan để đặt sinh viên trên con đường xuất sắc trong lĩnh vực của bạn",
+    "components": {
+      "not_permitted": {
+        "header": "Không có sự cho phép",
+        "body": "Thật không may, bạn không có quyền truy cập vào con đường này.",
+        "button": "Về nhà"
+      },
+      "dragAndDrop": {
+        "title": "Sắp xếp các khóa học",
+        "header": "Sắp xếp khóa học trong chuỗi sinh viên phải đưa họ bắt đầu với đầu tiên ở đầu",
+        "label": "Xác nhận thứ tự khóa học"
+      },
+      "addCourseModal": {
+        "modal_heading": "Thêm khóa học vào Pathway",
+        "add": "Thêm vào",
+        "course": "Khóa học",
+        "courses": "Khóa học",
+        "path": "đến con đường",
+        "delete": "Xác nhận xóa"
+      },
+      "sideBar": {
+        "news": "TIN TỨC",
+        "courses": "Khóa học",
+        "people": "Mọi người",
+        "certificates": "Giấy chứng nhận",
+        "landing": "Trang đích",
+        "settings": "Cài đặt"
+      },
+      "courseCard": {
+        "lessons": "bài học",
+        "students": "sinh viên"
+      }
+    },
+    "pages": {
+      "landingPage": {
+        "reviews": {
+          "students": "Xem những gì học sinh đang nói về bộ sưu tập này",
+          "readMore": "Đọc thêm",
+          "readLess": "Đọc ít hơn"
+        },
+        "courseList": {
+          "header": "Danh sách khóa học được quản lý-",
+          "subheader": "Danh sách khóa học được quản lý của chúng tôi có các chủ đề thiết yếu như nghiên cứu người dùng, khung dây, tạo mẫu, kiểm tra khả năng sử dụng, thiết kế tương tác và các công cụ tiêu chuẩn ngành. Mở khóa tiềm năng UX của bạn ngay hôm nay!",
+          "courses": "khóa học",
+          "lessons": "bài học",
+          "estimated": "ước lượng",
+          "hours": "giờ",
+          "view": "Xem chi tiết"
+        },
+        "subHeader": {
+          "button": "Ghi danh bây giờ bắt đầu"
+        },
+        "certificate": {
+          "earn": "Kiếm một chứng chỉ",
+          "evidence": "Nhận bằng chứng về bằng chứng cho các kỹ năng và chia sẻ với mạng lưới chuyên nghiệp của bạn"
+        },
+        "main": {
+          "description": "Mô tả con đường",
+          "objectives": "Mục tiêu con đường",
+          "pricing_win": "Hoàn thành tất cả các bài học thành công và có cơ hội giành được iPad. Chúng tôi có nghĩa là nó khi chúng tôi nói điều đó!",
+          "start": "Bắt đầu ngay bây giờ"
+        },
+        "banner": {
+          "courses": "Khóa học",
+          "courses_text": "Các khóa học được quản lý cẩn thận để đạt được mục tiêu của bạn",
+          "certificate": "Nhận chứng chỉ",
+          "share": "Kiếm chứng chỉ và chia sẻ với mạng của bạn",
+          "rating": "Người hướng dẫn khóa học có kinh nghiệm và được đánh giá cao"
+        },
+        "header": {
+          "tag": "Con đường",
+          "button": "Đăng ký ngay bây giờ"
+        },
+        "constants": {
+          "about": "VỀ",
+          "objectives": "Mục tiêu",
+          "courses": "Khóa học",
+          "review": "ÔN TẬP",
+          "instructor": "Người hướng dẫn",
+          "faq": "Câu hỏi thường gặp"
+        }
+      },
+      "settings": {
+        "page_title": "Cài đặt",
+        "title_error": "Vui lòng thêm một tiêu đề đường dẫn",
+        "description_error": "Vui lòng thêm một mô tả đường dẫn",
+        "cover_image": "Ảnh bìa",
+        "optional": "Hình ảnh tùy chọn này sẽ hiển thị trên trang chào mừng của bạn. Nếu bạn bao gồm một, nó sẽ là ít nhất 280 x 200",
+        "replace": "Thay thế",
+        "delete": "Xóa bỏ",
+        "details": "Chi tiết con đường",
+        "title": "Tiêu đề con đường",
+        "title_placeholder": "Viết tiêu đề khóa học ở đây",
+        "description": "Mô tả con đường",
+        "description_placeholder": "Viết mô tả khóa học ở đây",
+        "link": "Liên kết Pathway",
+        "students": "Học sinh phải thực hiện tất nhiên theo đơn đặt hàng được đề xuất?",
+        "yes": "Nếu có, học sinh phải thực hiện theo đơn đặt hàng, nếu không, học sinh có thể bắt đầu từ bất kỳ khóa học nào mà họ lựa chọn",
+        "option_one": "Đúng",
+        "option_two": "KHÔNG",
+        "publish": "Xuất bản con đường",
+        "allow": "Cho phép các học sinh mới tải xuống các khóa học trong Pathway",
+        "enabled": "Đã bật",
+        "disabled": "Tàn tật",
+        "certificate": "Giấy chứng nhận",
+        "issue": "Giấy chứng nhận về LMS",
+        "issue_two": "Giấy chứng nhận hoặc tất cả các khóa học trong Pathway",
+        "option_three": "Không, chỉ cho con đường",
+        "delete_path": "Xóa con đường",
+        "delete_text": "Xóa con đường nói chung",
+        "save": "Lưu các thay đổi",
+        "placeholder": "Một mô tả nhỏ về con đường",
+        "pathway_description": "Mô tả con đường"
+      },
+      "lms_certificate": {
+        "courses_completed": "Các khóa học đã hoàn thành",
+        "achieve": "Bao gồm các khóa học bạn đã hoàn thành để đạt được con đường này",
+        "share": "Chia sẻ chứng chỉ",
+        "locked": {
+          "title": "Chứng chỉ chưa có sẵn",
+          "subtitle": "Giấy chứng nhận có sẵn vì bạn chưa hoàn thành con đường hoặc người hướng dẫn của bạn chưa được chấp thuận. Vui lòng liên hệ với người hướng dẫn của bạn"
+        },
+        "unlocked": {
+          "title": "Xin chúc mừng! 🎉 Giấy chứng nhận của bạn đã sẵn sàng",
+          "subtitle": "Bạn đã hoàn thành con đường này, và sự cống hiến của bạn là rõ ràng. Tải xuống chứng chỉ và chia sẻ với mạng của bạn như một chứng minh về kỹ năng mới có được của bạn"
+        }
+      },
+      "course": {
+        "title": "Khóa học",
+        "add_course": "Thêm khóa học",
+        "add_remove": "Xóa khóa học",
+        "order": "Đặt hàng các khóa học",
+        "publish": "Xuất bản con đường",
+        "search": "Tìm khóa học Pathway",
+        "option_one": "Xuất bản",
+        "option_two": "Chưa được công bố",
+        "body_title": "Tiêu đề",
+        "description": "Sự miêu tả",
+        "students": "Sinh viên",
+        "lessons": "Bài học",
+        "empty_state_header": "Chưa có khóa học nào",
+        "empty_state_text": "Bạn chưa thêm bất kỳ khóa học nào vào con đường này",
+        "empty_state_label": "Thêm khóa học vào con đường này"
+      }
+    },
+    "new_pathway_modal": {
+      "heading": "Tạo con đường mới",
+      "pathway_name": "Con đường",
+      "pathway_name_placeholder": "Trở thành một nhà thiết kế UX chuyên nghiệp",
+      "short_description": "Mô tả ngắn",
+      "short_description_placeholder": "Một khóa học Sepcialization giúp bạn bắt đầu với tư cách là một nhà thiết kế UX",
+      "success": "Con đường tạo ra thành công",
+      "error": "Lỗi tạo đường dẫn",
+      "button": "Tạo con đường"
+    },
+    "pathway_card": {
+      "courses": "khóa học",
+      "course": "khóa học",
+      "error_message": "Một lỗi đã xảy ra.",
+      "students": "sinh viên",
+      "student": "học sinh",
+      "published": "Xuất bản",
+      "unpublished": "Chưa được công bố",
+      "continue_pathway": "Tiếp tục con đường",
+      "learn_more": "Tìm hiểu thêm",
+      "list_view": {
+        "title": "Tiêu đề",
+        "description": "Sự miêu tả",
+        "courses": "Khóa học",
+        "students": "Sinh viên",
+        "published": "Xuất bản"
+      },
+      "context_menu": {
+        "clone": "Dòng vô tính",
+        "share": "Chia sẻ",
+        "invite": "Mời",
+        "delete": "Xóa bỏ"
+      }
+    },
+    "pathway_filter": {
+      "date_created": "Ngày được tạo ra",
+      "published": "Xuất bản",
+      "courses": "Khóa học"
+    }
+  },
+  "tags": {
+    "tags": "Tags",
+    "create_tag": "Tạo thẻ",
+    "find_tag": "Tìm thẻ",
+    "description": "Sự miêu tả",
+    "course_count": "Đếm khóa học",
+    "action": "Hoạt động",
+    "courses": "Khóa học",
+    "course": "Khóa học",
+    "edit_tag": "Chỉnh sửa thẻ",
+    "delete": "Xóa bỏ",
+    "no_tags_yet": "Chưa có thẻ",
+    "add_a_group": "Thêm một nhóm các khóa học liên quan để đặt sinh viên trên con đường xuất sắc trong lĩnh vực của bạn",
+    "add_tags": "Thêm thẻ",
+    "attach": "Đính kèm hoặc xóa một khóa học khỏi thẻ",
+    "add_a_tag": "Thêm một thẻ",
+    "errors": {
+      "remove_tag": "Không thể xóa thẻ. Hãy thử lại.",
+      "add_tag": "Không thể thêm thẻ. Hãy thử lại.",
+      "fetch_tags": "Không thể tìm nạp thẻ. Hãy thử lại."
+    },
+    "add_tag_modal": {
+      "heading": "Tag Course",
+      "placeholder": "Tìm kiếm một thẻ",
+      "header": "Tất cả các thẻ"
+    },
+    "tag_modal": {
+      "edit_tag": "Chỉnh sửa thẻ",
+      "delete_tag": "Xóa thẻ",
+      "create_tag": "Tạo thẻ",
+      "tag_name": "Tên thẻ",
+      "description": "Sự miêu tả",
+      "delete_modal": "Bạn có chắc bạn muốn xóa thẻ này không?",
+      "no": "KHÔNG",
+      "cancel": "Hủy bỏ",
+      "yes": "Đúng",
+      "save": "Cứu"
     }
   }
 }

@@ -433,7 +433,8 @@
         "self_paced": "Samo krążył",
         "delete": "Usuń kurs",
         "delete_text": "Usuń ten kurs, tego działania nie można cofnąć",
-        "save": "Zapisz zmiany"
+        "save": "Zapisz zmiany",
+        "pathway": "Ścieżka"
       },
       "landing_page": {
         "course_content": "Treść kursu",
@@ -506,7 +507,9 @@
             "no": "NIE",
             "yes": "Tak",
             "percent": "Procent rabatowy",
-            "gift": "O prezencie"
+            "gift": "O prezencie",
+            "gift_placeholder": "Prezent po zakończeniu",
+            "cart": "Dodaj do koszyka"
           },
           "instructor_form": {
             "upload": "Logo instruktora",
@@ -558,9 +561,15 @@
             "reviews": "Recenzje",
             "instructor": "Instruktor",
             "pricing": "Wycena",
-            "certificate": "Certyfikat"
+            "certificate": "Certyfikat",
+            "about": "O",
+            "objectives": "Cele"
           }
-        }
+        },
+        "title": "Nie ma jeszcze kursów",
+        "subtitle": "Wygląda na to, że kursy nie zostały jeszcze dodane. Uprzejmie sprawdź z powrotem ostatni",
+        "pathway_title": "Nie ma jeszcze kursów",
+        "pathway_subtitle": "Wygląda na to, że kursy nie zostały jeszcze dodane. Uprzejmie sprawdź z powrotem ostatni"
       },
       "certificates": {
         "title": "Certyfikaty",
@@ -611,7 +620,9 @@
           "members": "Członkowie",
           "invite_sent": "Zaproś wysłane",
           "you": "Ty",
-          "remove": "Usunąć"
+          "remove": "Usunąć",
+          "join_course": "Dołącz do kursu",
+          "join_pathway": "Połącz ścieżkę"
         },
         "roles": {
           "admin": "Admin",
@@ -669,7 +680,12 @@
           "questions_tried": "Przydzielił ten wynik z powodu całkowitej próby:",
           "delete_prompt": "Usuwać",
           "delete_error": "Nie udało się usunąć zgłoszenia",
-          "delete_success": "Pomyślnie usunięte zgłoszenie"
+          "delete_success": "Pomyślnie usunięte zgłoszenie",
+          "allocated": "Przydzielił ten wynik, ponieważ",
+          "total_try": "całkowitej próby:",
+          "options_correct": "Wybrano prawidłowe opcje",
+          "out_of": "z",
+          "options_wrong": "a liczba niewłaściwych wyborów była"
         },
         "submission_status": {
           "submitted": "Złożony",
@@ -1231,7 +1247,8 @@
     "redirecting": "Przekierowanie",
     "loading_state": "Przenosząc Cię na następną stronę, poczekaj.",
     "org_loading_state": "Zabieranie Cię do organizacji ...",
-    "add_organization": "+ Dodaj organizację"
+    "add_organization": "+ Dodaj organizację",
+    "pathways": "Ścieżki"
   },
   "add_org": {
     "create_org": "Utwórz organizację",
@@ -1302,7 +1319,10 @@
     "settings": "Ustawienia",
     "early_adopter": "Zostań wczesnym adoptarzem",
     "unlock": "Odblokuj nieograniczone funkcje i zainwestuj w naszą przyszłość",
-    "upgrade": "Uaktualnij teraz"
+    "upgrade": "Uaktualnij teraz",
+    "all_courses": "Wszystko",
+    "pathway": "Ścieżki",
+    "tags": "Tagi"
   },
   "settings": {
     "heading": "Ustawienia",
@@ -1549,6 +1569,248 @@
   "common": {
     "unsaved_changes": {
       "message": "Masz niezbawione zmiany. Czy na pewno chcesz odejść?"
+    }
+  },
+  "lms_pathway": {
+    "pathway": "ŚCIEŻKA",
+    "continue": "Kontynuuj ścieżkę",
+    "course": "Kursy",
+    "locked": "Zamknięty",
+    "goto_pathway": "Idź na ścieżkę",
+    "completed": "Zakończony",
+    "of": "z"
+  },
+  "search": {
+    "no_course": "Nie znaleziono kursu",
+    "no_pathway": "Nie znaleziono ścieżki"
+  },
+  "pathway": {
+    "heading": "Ścieżki",
+    "heading_button": "Utwórz ścieżkę",
+    "search_placeholder": "Znajdź ścieżkę",
+    "empty_title": "Żadna ścieżka nie została jeszcze stworzona",
+    "empty_description": "Dodaj grupę powiązanych kursów, aby ustawci na ścieżkę doskonałości na swoich dziedzinach",
+    "components": {
+      "not_permitted": {
+        "header": "Brak pozwolenia",
+        "body": "Niestety nie masz dostępu do tej ścieżki.",
+        "button": "Idź do domu"
+      },
+      "dragAndDrop": {
+        "title": "Zorganizuj kursy",
+        "header": "Umów kurs w sekwencji, musi zacząć od pierwszego u góry",
+        "label": "Potwierdź kolejność kursu"
+      },
+      "addCourseModal": {
+        "modal_heading": "Dodaj kurs do ścieżki",
+        "add": "Dodać",
+        "course": "Kurs",
+        "courses": "Kursy",
+        "path": "na ścieżkę",
+        "delete": "Potwierdź Usuń"
+      },
+      "sideBar": {
+        "news": "Karm wiadomości",
+        "courses": "Kursy",
+        "people": "Ludzie",
+        "certificates": "Certyfikaty",
+        "landing": "Strona docelowa",
+        "settings": "Ustawienia"
+      },
+      "courseCard": {
+        "lessons": "lekcje",
+        "students": "studenci"
+      }
+    },
+    "pages": {
+      "landingPage": {
+        "reviews": {
+          "students": "Zobacz, co mówią uczniowie o tej kolekcji",
+          "readMore": "Przeczytaj więcej",
+          "readLess": "Czytaj mniej"
+        },
+        "courseList": {
+          "header": "Wyszczególna lista kursów-",
+          "subheader": "Nasza wyselekcjonowana lista kursów zawiera niezbędne tematy, takie jak badania użytkowników, szkielet, prototypowanie, testy użyteczności, projektowanie interakcji i narzędzia standardowe. Odblokuj swój potencjał UX już dziś!",
+          "courses": "kursy",
+          "lessons": "lekcje",
+          "estimated": "szacowany",
+          "hours": "godziny",
+          "view": "Zobacz szczegóły"
+        },
+        "subHeader": {
+          "button": "Zapisz teraz start"
+        },
+        "certificate": {
+          "earn": "Zdobądź certyfikat",
+          "evidence": "Zdobądź dowód dowodu na umiejętności i podziel się ze swoją siecią Fessional"
+        },
+        "main": {
+          "description": "Opis ścieżki",
+          "objectives": "Cele ścieżki",
+          "pricing_win": "Ukończ wszystkie lekcje odnoszące sukcesy i mają szansę wygrać iPada. Mamy to na myśli, kiedy to mówimy!",
+          "start": "Zacznij teraz"
+        },
+        "banner": {
+          "courses": "Kursy",
+          "courses_text": "Starannie wyselekcjonowane kursy w celu osiągnięcia twoich celów",
+          "certificate": "Zdobądź certyfikat",
+          "share": "Zdobądź certyfikat i udostępnij swoją sieć",
+          "rating": "Doświadczony i wysoko oceniany instruktor kursu"
+        },
+        "header": {
+          "tag": "ŚCIEŻKA",
+          "button": "Zapisz teraz"
+        },
+        "constants": {
+          "about": "O",
+          "objectives": "Cele",
+          "courses": "Kursy",
+          "review": "RECENZJA",
+          "instructor": "Instruktor (y)",
+          "faq": "FAQ"
+        }
+      },
+      "settings": {
+        "page_title": "Ustawienia",
+        "title_error": "Dodaj tytuł ścieżki",
+        "description_error": "Dodaj opis ścieżki",
+        "cover_image": "Obraz okładki",
+        "optional": "Ten opcjonalny obraz pojawi się na Twojej stronie powitalnej. Jeśli go dołączysz, powinno wynosić co najmniej 280 x 200",
+        "replace": "Zastępować",
+        "delete": "Usuwać",
+        "details": "Szczegóły ścieżki",
+        "title": "Tytuł ścieżki",
+        "title_placeholder": "Napisz tytuł kursu tutaj",
+        "description": "Opis ścieżki",
+        "description_placeholder": "Napisz opis kursu tutaj",
+        "link": "Link ścieżki",
+        "students": "Studenci muszą brać udział w zalecanym zamówieniu?",
+        "yes": "Jeśli tak, uczeń musi wziąć kurs zgodnie z zamówieniem, jeśli nie, uczeń może zacząć od dowolnego wybranego przez siebie kursu",
+        "option_one": "Tak",
+        "option_two": "NIE",
+        "publish": "Publikuj ścieżkę",
+        "allow": "Zezwalaj na nowe kursy pobierania studentów na ścieżce",
+        "enabled": "Włączony",
+        "disabled": "Wyłączony",
+        "certificate": "Certyfikat",
+        "issue": "Certyfikat wydania na LMS",
+        "issue_two": "Certyfikat wydania lub cały kurs na ścieżce",
+        "option_three": "Nie, tylko dla ścieżki",
+        "delete_path": "Usuń ścieżkę",
+        "delete_text": "Usuń ścieżkę jako całość",
+        "save": "Zapisz zmiany",
+        "placeholder": "mały opis na temat ścieżki",
+        "pathway_description": "Opis ścieżki"
+      },
+      "lms_certificate": {
+        "courses_completed": "Ukończone kursy",
+        "achieve": "obejmuje kursy, które ukończyłeś, aby osiągnąć tę ścieżkę",
+        "share": "Udostępnij certyfikat",
+        "locked": {
+          "title": "Certyfikaty jeszcze nie są dostępne",
+          "subtitle": "Certyfikat jest dostępny, ponieważ nie zakończyłeś ścieżki lub instruktor go nie zatwierdził. Skontaktuj się z instruktorem"
+        },
+        "unlocked": {
+          "title": "Gratulacje! 🎉 Twój certyfikat jest gotowy",
+          "subtitle": "Ukończyłeś tę ścieżkę, a twoje poświęcenie jest oczywiste. Pobierz certyfikat i udostępnij swoją sieć jako udowodnienie nowo nabytych umiejętności"
+        }
+      },
+      "course": {
+        "title": "Kursy",
+        "add_course": "Dodaj kurs",
+        "add_remove": "Usuń kurs",
+        "order": "Zamów kursy",
+        "publish": "Publikuj ścieżkę",
+        "search": "Znajdź kurs ścieżki",
+        "option_one": "Opublikowany",
+        "option_two": "Niepublikowane",
+        "body_title": "Tytuł",
+        "description": "Opis",
+        "students": "Studenci",
+        "lessons": "Lekcje",
+        "empty_state_header": "Nie ma jeszcze kursów",
+        "empty_state_text": "Nie dodałeś żadnego kursu do tej ścieżki",
+        "empty_state_label": "Dodaj kurs do tej ścieżki"
+      }
+    },
+    "new_pathway_modal": {
+      "heading": "Utwórz nową ścieżkę",
+      "pathway_name": "Ścieżka",
+      "pathway_name_placeholder": "Zostań profesjonalnym projektantem UX",
+      "short_description": "Krótki opis",
+      "short_description_placeholder": "Kurs sepcializacji, który zaczynasz jako projektant UX",
+      "success": "Ścieżka stworzona pomyślnie",
+      "error": "Błąd tworzenia ścieżki",
+      "button": "Utwórz ścieżkę"
+    },
+    "pathway_card": {
+      "courses": "kursy",
+      "course": "kurs",
+      "error_message": "Wystąpił błąd.",
+      "students": "studenci",
+      "student": "student",
+      "published": "Opublikowany",
+      "unpublished": "Niepublikowane",
+      "continue_pathway": "Kontynuuj ścieżkę",
+      "learn_more": "Dowiedz się więcej",
+      "list_view": {
+        "title": "Tytuł",
+        "description": "Opis",
+        "courses": "Kursy",
+        "students": "Studenci",
+        "published": "Opublikowany"
+      },
+      "context_menu": {
+        "clone": "Klon",
+        "share": "Udział",
+        "invite": "Zapraszać",
+        "delete": "Usuwać"
+      }
+    },
+    "pathway_filter": {
+      "date_created": "Utworzona data",
+      "published": "Opublikowany",
+      "courses": "Kursy"
+    }
+  },
+  "tags": {
+    "tags": "Tagi",
+    "create_tag": "Utwórz tag",
+    "find_tag": "Znajdź tag",
+    "description": "Opis",
+    "course_count": "Liczba kursów",
+    "action": "Działanie",
+    "courses": "Kursy",
+    "course": "Kurs",
+    "edit_tag": "Edytuj tag",
+    "delete": "Usuwać",
+    "no_tags_yet": "Nie ma jeszcze tagów",
+    "add_a_group": "Dodaj grupę powiązanych kursów, aby ustawci na ścieżkę doskonałości na swoich dziedzinach",
+    "add_tags": "Dodaj tagi",
+    "attach": "Załącz lub usuń kurs z tagów",
+    "add_a_tag": "Dodaj tag",
+    "errors": {
+      "remove_tag": "Nie udało się usunąć znacznika. Spróbuj ponownie.",
+      "add_tag": "Nie udało się dodać tagu. Spróbuj ponownie.",
+      "fetch_tags": "Nie udało się pobrać znaczników. Spróbuj ponownie."
+    },
+    "add_tag_modal": {
+      "heading": "Tag",
+      "placeholder": "Wyszukaj tag",
+      "header": "Wszystkie tagi"
+    },
+    "tag_modal": {
+      "edit_tag": "Edytuj tag",
+      "delete_tag": "Usuń tag",
+      "create_tag": "Utwórz tag",
+      "tag_name": "Nazwa tagu",
+      "description": "Opis",
+      "delete_modal": "Czy na pewno chcesz usunąć ten tag?",
+      "no": "NIE",
+      "cancel": "Anulować",
+      "yes": "Tak",
+      "save": "Ratować"
     }
   }
 }

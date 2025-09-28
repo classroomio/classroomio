@@ -1,5 +1,5 @@
-import type { Handle } from '@sveltejs/kit';
 import { validateUser } from '$lib/utils/services/middlewares';
+import type { Handle } from '@sveltejs/kit';
 
 const PUBLIC_ROUTES = [
   '/api/completion',

@@ -1,11 +1,11 @@
 <script>
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { user } from '$lib/utils/store/user';
-  import { isCoursePage } from '$lib/utils/functions/app';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { AppUtils } from '$lib/utils/functions/app';
   import { t } from '$lib/utils/functions/translations';
+  import { user } from '$lib/utils/store/user';
 
   export let disableSignup = false;
   export let logo;
@@ -15,7 +15,11 @@
 
   let navClass = '';
 
-  const redirect = isCoursePage($page.url.pathname) ? `?redirect=${$page.url.pathname}` : '';
+  const appUtils = new AppUtils();
+
+  const redirect = appUtils.isCoursePage($page.url.pathname)
+    ? `?redirect=${$page.url.pathname}`
+    : '';
 
   $: navClass = '';
 </script>

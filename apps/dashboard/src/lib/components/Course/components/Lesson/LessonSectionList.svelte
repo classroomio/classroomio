@@ -1,30 +1,30 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { flip } from 'svelte/animate';
-  import { dndzone } from 'svelte-dnd-action';
-  import { Add, ScreenMap } from 'carbon-icons-svelte';
-  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { t } from '$lib/utils/functions/translations';
-  import { globalStore } from '$lib/utils/store/app';
-  import { course } from '$lib/components/Course/store';
+  import DeleteLessonConfirmation from '$lib/components/Course/components/Lesson/DeleteLessonConfirmation.svelte';
   import { handleAddLessonWidget } from '$lib/components/Course/components/Lesson/store';
-  import { snackbar } from '$lib/components/Snackbar/store';
   import {
-    lessonSections,
     handleDelete,
+    handleDeleteSection,
     handleSaveLesson,
     handleSaveLessonSection,
-    handleDeleteSection
+    lessonSections
   } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { course } from '$lib/components/Course/store';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { RoleBasedSecurity } from '$lib/components/RoleBasedSecurity';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { t } from '$lib/utils/functions/translations';
   import { updateLesson, updateLessonSection } from '$lib/utils/services/courses';
+  import { globalStore } from '$lib/utils/store/app';
   import type { Lesson } from '$lib/utils/types';
-  import DeleteLessonConfirmation from '$lib/components/Course/components/Lesson/DeleteLessonConfirmation.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
+  import { Add, ScreenMap } from 'carbon-icons-svelte';
+  import { dndzone } from 'svelte-dnd-action';
+  import { flip } from 'svelte/animate';
 
   type CrudParam = {
     sectionId?: string;
@@ -193,10 +193,10 @@
 >
   {#each $lessonSections as section (section.id)}
     <div
-      class="mb-3 m-auto max-w-xl border-2 border-gray-200 dark:border-neutral-600 dark:bg-neutral-800 rounded-md"
+      class="m-auto mb-3 max-w-xl rounded-md border-2 border-gray-200 dark:border-neutral-600 dark:bg-neutral-800"
     >
       <div
-        class="mb-2 px-3 py-1 min-h-[50px] border-b bg-gray-50 dark:bg-neutral-700 rounded-tl-md rounded-tr-md flex justify-between items-center"
+        class="mb-2 flex min-h-[50px] items-center justify-between rounded-tl-md rounded-tr-md border-b bg-gray-50 px-3 py-1 dark:bg-neutral-700"
       >
         {#if lessonEditing === section.id}
           <TextField className="w-4/6" bind:value={section.title} errorMessage={errors?.title} />
@@ -261,13 +261,13 @@
       >
         {#each section.lessons as lesson (lesson.id)}
           <div
-            class="border max-w-xl border-gray-200 px-3 py-1 min-h-[50px] rounded-md mb-2 flex items-center justify-between"
+            class="mb-2 flex min-h-[50px] max-w-xl items-center justify-between rounded-md border border-gray-200 px-3 py-1"
             animate:flip={{ duration: flipDurationMs }}
           >
             {#if lessonEditing === lesson.id}
               <TextField className="w-4/6" bind:value={lesson.title} errorMessage={errors?.title} />
             {:else}
-              <div class="w-4/5 flex items-center gap-2">
+              <div class="flex w-4/5 items-center gap-2">
                 <TextChip
                   value={getLessonOrder(section.lessons, lesson.id)}
                   size="sm"
@@ -288,7 +288,7 @@
                     {lesson.title}
                   </a>
 
-                  <div class="mt-1 mb-3 flex items-center lg:mb-0">
+                  <div class="mb-3 mt-1 flex items-center lg:mb-0">
                     <ScreenMap size={16} class="carbon-icon dark:text-white" />
                     <p class="ml-2 text-xs text-gray-500 dark:text-white">
                       {lesson?.totalExercises ? lesson?.totalExercises?.map((c) => c.count) : 0}

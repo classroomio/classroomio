@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+  import { handleOpenWidget } from '$lib/components/UploadWidget';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
@@ -131,6 +131,7 @@
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
+
 <Grid class="border-c relative mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}>
@@ -640,7 +641,7 @@
 >
   <span>
     <IconButton onClick={handleSave} disabled={isSaving}>
-      <Save size={40} class=" rounded-full bg-blue-700 p-1" />
+      <Save size={32} class=" rounded-full bg-blue-700 p-1" />
     </IconButton>
   </span>
 </div>
