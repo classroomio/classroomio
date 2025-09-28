@@ -2,46 +2,46 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
-  import { PUBLIC_SERVER_URL } from '$env/static/public';
-  import { fetchLesson, updateLessonCompletion } from '$lib/utils/services/courses';
-  import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
-  import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import ListChecked from 'carbon-icons-svelte/lib/ListChecked.svelte';
+  import {
+    checkExercisesComplete,
+    fetchLesson,
+    updateLessonCompletion
+  } from '$lib/utils/services/courses';
   import { globalStore } from '$lib/utils/store/app';
+  import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
+  import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
+  import ListChecked from 'carbon-icons-svelte/lib/ListChecked.svelte';
 
-  import SendAlt from 'carbon-icons-svelte/lib/SendAlt.svelte';
-  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { Dropdown, Loading } from 'carbon-components-svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import PageNav from '$lib/components/PageNav/index.svelte';
-  import PageBody from '$lib/components/PageBody/index.svelte';
-  import Materials from '$lib/components/Course/components/Lesson/Materials/index.svelte';
-  import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
-  import LanguageLessonVersionHistory from '$lib/components/Course/components/Lesson/LanguageLessonVersionHistory.svelte';
-  import MODES from '$lib/utils/constants/mode';
-  import { course } from '$lib/components/Course/store';
-  import Download from 'carbon-icons-svelte/lib/Download.svelte';
-  import ResultOld from 'carbon-icons-svelte/lib/ResultOld.svelte';
-  import OverflowMenuVertical from 'carbon-icons-svelte/lib/OverflowMenuVertical.svelte';
+  import { browser } from '$app/environment';
   import { apps } from '$lib/components/Apps/store';
-  import APPS_CONSTANTS from '$lib/components/Apps/constants';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
+  import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
+  import LessonVersionHistory from '$lib/components/Course/components/Lesson/LessonVersionHistory.svelte';
+  import Materials from '$lib/components/Course/components/Lesson/Materials/index.svelte';
   import {
     lesson,
+    lessonByTranslation,
     lessons,
-    lessonByTranslation
+    lessonSections
   } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { browser } from '$app/environment';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { getGroupMemberId } from '$lib/components/Course/function';
+  import { course, group } from '$lib/components/Course/store';
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
+  import { PageBody, PageNav } from '$lib/components/Page';
+  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import type { LessonCompletion } from '$lib/utils/types';
-  import { profile } from '$lib/utils/store/user';
-  import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
-  import { t } from '$lib/utils/functions/translations';
+  import MODES from '$lib/utils/constants/mode';
   import { LANGUAGES } from '$lib/utils/constants/translation';
+  import { t } from '$lib/utils/functions/translations';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
+  import { COURSE_VERSION, type Lesson, type LessonCompletion } from '$lib/utils/types';
+  import { Dropdown } from 'carbon-components-svelte';
   import { ChevronLeft, ChevronRight, Edit, Save } from 'carbon-icons-svelte';
+  import OverflowMenuVertical from 'carbon-icons-svelte/lib/OverflowMenuVertical.svelte';
+  import ResultOld from 'carbon-icons-svelte/lib/ResultOld.svelte';
+  import { classroomio } from '$lib/utils/services/api';
 
   export let data;
 
@@ -67,7 +67,7 @@
   async function fetchReqData(lessonId = '', isMaterialsTabActive: boolean) {
     const timeout = setTimeout(() => {
       $lesson.isFetching = true;
-    }, 1000);
+    }, 500);
     let lessonData;
     if (isMaterialsTabActive) {
       const lesson = await fetchLesson(lessonId);
@@ -78,13 +78,29 @@
 
     console.log({ lessonData });
 
-    const totalExercises = lessonData?.totalExercises?.[0] && lessonData.totalExercises[0].count;
-    const totalComments = lessonData?.totalComments?.[0] && lessonData.totalComments[0].count;
-    setLesson(lessonData, totalExercises || 0, totalComments || 0);
+    const totalExercises = lessonData?.totalExercises?.[0]?.count || 0;
+    const totalComments = lessonData?.totalComments?.[0]?.count || 0;
+    setLesson(lessonData, totalExercises, totalComments);
     $lesson.isFetching = false;
   }
 
   async function markLessonComplete(lessonId: string) {
+    const groupMemberId = getGroupMemberId($group.people, $profile.id);
+    const { data: areExercisesComplete, error } = await checkExercisesComplete(
+      lessonId,
+      groupMemberId
+    );
+
+    if (error) {
+      snackbar.error('snackbar.lessons.error.try_later');
+      return;
+    }
+
+    if (!areExercisesComplete) {
+      snackbar.error('snackbar.lessons.error.exercise_not_complete');
+      return;
+    }
+
     isMarkingComplete = true;
 
     let newCompletion: LessonCompletion = {
@@ -144,13 +160,8 @@
       const lessonNumber = getLessonOrder(currentLesson.id);
       const slideUrl = $lesson.materials.slide_url || '';
 
-      const response = await fetch(PUBLIC_SERVER_URL + '/downloadLesson', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
+      const response = await classroomio.course.lesson.download.pdf.$post({
+        json: {
           title: currentLesson.title,
           number: lessonNumber,
           orgName: $currentOrg.name,
@@ -158,16 +169,11 @@
           slideUrl: slideUrl,
           video: lessonVideo,
           courseTitle: $course.title
-        })
+        }
       });
+      const blob = await response.blob();
 
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
-      const data = await response.blob();
-      console.log(data);
-      const file = new Blob([data], { type: 'application/pdf' });
+      const file = new Blob([blob], { type: 'application/pdf' });
       const fileURL = URL.createObjectURL(file);
 
       let a = document.createElement('a');
@@ -198,12 +204,14 @@
     lesson.update((l) => ({
       ...l,
       id: data.lessonId,
+      title: lessonData.title,
       totalExercises,
       totalComments: totalComments,
       materials: {
         videos: lessonData.videos,
         note: lessonData.note,
-        slide_url: lessonData.slide_url
+        slide_url: lessonData.slide_url,
+        documents: lessonData.documents || null
       },
       lesson_completion,
       exercises: [],
@@ -248,20 +256,36 @@
     $apps.open = true;
   }
 
-  const isNextOrPrevDisabled = (lessonId: string, isPrev: boolean) => {
-    const index = $lessons.findIndex((lesson) => lesson.id === lessonId);
+  const getLessons = () => {
+    if ($course.version === COURSE_VERSION.V1) {
+      return $lessons;
+    } else {
+      const _lessons: Lesson[] = [];
 
-    return isPrev ? !$lessons[index - 1] : !$lessons[index + 1];
+      $lessonSections.forEach((section) => {
+        _lessons.push(...section.lessons);
+      });
+
+      return _lessons;
+    }
+  };
+
+  const isNextOrPrevDisabled = (lessonId: string, isPrev: boolean) => {
+    const _lessons = getLessons();
+    const index = _lessons.findIndex((lesson) => lesson.id === lessonId);
+
+    return isPrev ? !_lessons[index - 1] : !_lessons[index + 1];
   };
 
   const goToNextOrPrevLesson = (lessonId: string, isPrev: boolean) => {
+    const _lessons = getLessons();
     const isDisabled = isNextOrPrevDisabled(lessonId, isPrev);
 
     // Always use early return
     if (isDisabled) return;
 
-    const index = $lessons.findIndex((lesson) => lesson.id === lessonId);
-    const nextOrPrevLesson = isPrev ? $lessons[index - 1] : $lessons[index + 1];
+    const index = _lessons.findIndex((lesson) => lesson.id === lessonId);
+    const nextOrPrevLesson = isPrev ? _lessons[index - 1] : _lessons[index + 1];
 
     const isLocked = $globalStore.isStudent && !nextOrPrevLesson.is_unlocked;
 
@@ -282,7 +306,7 @@
 
   $: path = $page.url?.pathname?.replace(/\/exercises[\/ 0-9 a-z -]*/, '');
 
-  $: if (data.courseId && browser) {
+  $: if (data.courseId && $profile.id && browser) {
     mode = MODES.view;
     fetchReqData(data.lessonId, data.isMaterialsTabActive);
   }
@@ -333,9 +357,9 @@
             <div
               class={`flex-row ${
                 $apps.dropdown && $apps.open
-                  ? 'absolute lg:relative top-[85px] lg:top-0 right-14 lg:right-0 z-40 rounded-md bg-gray-100 dark:bg-neutral-800 p-3 lg:p-0'
+                  ? 'absolute right-14 top-[85px] z-40 rounded-md bg-gray-100 p-3 lg:relative lg:right-0 lg:top-0 lg:p-0 dark:bg-neutral-800'
                   : 'hidden'
-              } lg:flex items-center`}
+              } items-center lg:flex`}
             >
               <IconButton
                 onClick={() => {
@@ -350,17 +374,6 @@
                   <Edit size={24} />
                 {/if}
               </IconButton>
-
-              {#if $course.metadata.lessonDownload && !!PUBLIC_SERVER_URL}
-                <PrimaryButton
-                  className="mr-"
-                  variant={VARIANTS.OUTLINED}
-                  onClick={downloadLesson}
-                  {isLoading}
-                >
-                  <Download size={16} />
-                </PrimaryButton>
-              {/if}
             </div>
 
             <Dropdown items={LANGUAGES} bind:selectedId={$lesson.locale} class="h-full" />
@@ -375,10 +388,6 @@
   {:else if !!data.lessonId}
     <PageBody
       bind:isPageNavHidden={$globalStore.isStudent}
-      onClick={() => {
-        $apps.open = false;
-        $apps.dropdown = false;
-      }}
       width="lg:w-full xl:w-11/12"
       className="overflow-x-hidden"
     >
@@ -395,14 +404,14 @@
   {/if}
 
   <!-- Bottom Lesson Widget -->
-  <div class="absolute w-full bottom-5 flex items-center justify-center">
+  <div class="absolute bottom-5 flex w-full items-center justify-center">
     <div
-      class="flex items-center gap-2 w-fit rounded-full shadow-xl bg-gray-100 dark:bg-neutral-700 px-5 py-1"
+      class="flex w-fit items-center gap-2 rounded-full bg-gray-100 px-5 py-1 shadow-xl dark:bg-neutral-700"
     >
       <button
         disabled={isPrevDisabled}
-        class={`px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center ${
-          isPrevDisabled && 'opacity-25 cursor-not-allowed'
+        class={`my-2 flex items-center border border-b-0 border-l-0 border-t-0 border-gray-300 px-2 pr-4 ${
+          isPrevDisabled && 'cursor-not-allowed opacity-25'
         }`}
         on:click={() => goToNextOrPrevLesson(data.lessonId, true)}
       >
@@ -412,7 +421,7 @@
       </button>
       {#if data.isMaterialsTabActive}
         <button
-          class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center"
+          class="my-2 flex items-center border border-b-0 border-l-0 border-t-0 border-gray-300 px-2 pr-4"
           on:click={() => goto(`${path}/exercises`)}
         >
           <ListChecked size={24} class="carbon-icon" />
@@ -420,22 +429,14 @@
         </button>
       {:else}
         <button
-          class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center"
+          class="my-2 flex items-center border border-b-0 border-l-0 border-t-0 border-gray-300 px-2 pr-4"
           on:click={() => goto(path)}
         >
           <CourseIcon />
         </button>
       {/if}
       <button
-        class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center disabled:opacity-10 disabled:cursor-not-allowed"
-        on:click={() => handleAppClick(APPS_CONSTANTS.APPS.COMMENTS)}
-        disabled={$globalStore.isStudent && !$currentOrg.customization.apps.comments}
-      >
-        <SendAlt size={24} class="carbon-icon" />
-        <span class="ml-1">{$lesson.totalComments}</span>
-      </button>
-      <button
-        class="px-2 my-2 pr-4 border-t-0 border-b-0 border-l-0 border border-gray-300 flex items-center"
+        class="my-2 flex items-center border border-b-0 border-l-0 border-t-0 border-gray-300 px-2 pr-4"
         on:click={() => markLessonComplete(data.lessonId)}
         disabled={isMarkingComplete}
       >
@@ -447,7 +448,7 @@
       </button>
       <button
         disabled={isNextDisabled}
-        class={`px-2 my-2 flex items-center ${isNextDisabled && 'opacity-25 cursor-not-allowed'}`}
+        class={`my-2 flex items-center px-2 ${isNextDisabled && 'cursor-not-allowed opacity-25'}`}
         on:click={() => goToNextOrPrevLesson(data.lessonId, false)}
       >
         <span class="hidden md:block">{$t('course.navItem.lessons.next')}</span>
@@ -458,7 +459,7 @@
 
   <!-- Version Control Preview -->
   {#if isVersionDrawerOpen && window.innerWidth >= 1024}
-    <LanguageLessonVersionHistory
+    <LessonVersionHistory
       open={isVersionDrawerOpen}
       on:close={() => (isVersionDrawerOpen = false)}
       on:restore={refetchDataAfterVersionRestore}

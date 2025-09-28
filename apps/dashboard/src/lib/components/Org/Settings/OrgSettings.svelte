@@ -1,20 +1,26 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { Grid, Row, Column } from 'carbon-components-svelte';
+  import { Column, Grid, Row } from 'carbon-components-svelte';
   import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import { supabase } from '$lib/utils/functions/supabase';
+  import debounce from 'lodash/debounce';
+  import ColorPicker from 'svelte-awesome-color-picker';
+
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import SectionTitle from '../SectionTitle.svelte';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { injectCustomTheme, setCustomTheme, setTheme } from '$lib/utils/functions/theme';
   import { t } from '$lib/utils/functions/translations';
-  import { isFreePlan } from '$lib/utils/store/org';
   import { updateOrgNameValidation } from '$lib/utils/functions/validator';
+  import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
+
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
+  import UploadImage from '$lib/components/UploadImage/index.svelte';
+  import SectionTitle from '../SectionTitle.svelte';
 
   let avatar;
+  let hasUnsavedChanges = false;
 
   type Error = {
     orgName: string;
@@ -23,8 +29,9 @@
   let errors: Error = {
     orgName: ''
   };
-
   let loading = false;
+  let hex = '';
+
   const themes = {
     rose: 'theme-rose',
     green: 'theme-green',
@@ -32,6 +39,19 @@
     violet: 'theme-violet',
     default: ''
   };
+
+  const saveTheme = debounce(async (theme) => {
+    const { error, data } = await supabase
+      .from('organization')
+      .update({ theme })
+      .match({ id: $currentOrg.id });
+
+    console.log('Debounced update theme', data);
+
+    if (error) {
+      snackbar.error('Failed to update theme: ' + error.message);
+    }
+  }, 700);
 
   function handleChangeTheme(t = '') {
     return async () => {
@@ -42,13 +62,23 @@
         .concat(!!t ? ' ' : '', t);
       $currentOrg.theme = t;
 
-      const res = await supabase
-        .from('organization')
-        .update({ theme: t })
-        .match({ id: $currentOrg.id });
+      hex = '';
 
-      console.log('Update theme', res);
+      setTheme(t);
+
+      saveTheme(t);
     };
+  }
+
+  async function handleCustomTheme() {
+    if (!hex) return;
+
+    injectCustomTheme(hex);
+    setCustomTheme('theme-custom');
+
+    $currentOrg.theme = hex;
+
+    saveTheme(hex);
   }
 
   async function handleUpdate() {
@@ -62,8 +92,8 @@
     try {
       loading = true;
 
-      const updates = {
-        name: $currentOrg.name,
+      const updates: Record<string, string> = {
+        name: $currentOrg.name
       };
 
       if (avatar) {
@@ -94,10 +124,10 @@
       }));
 
       snackbar.success('snackbar.course_settings.success.update_successful');
-
+      hasUnsavedChanges = false;
       if (error) throw error;
     } catch (error) {
-      let message = error.message;
+      let message = error as string;
       if (message.includes('profile_username_key')) {
         message = $t('snackbar.lms.error.username_exists');
       }
@@ -109,21 +139,32 @@
     }
   }
 
-  function gotoSetting(pathname) {
+  function gotoSettings(pathname) {
     goto(`${$currentOrgPath}/settings${pathname}`);
   }
+
+  function setHex(theme?: string) {
+    if (!theme || hex || theme.includes('theme-')) return;
+    hex = theme;
+  }
+
+  $: setHex($currentOrg.theme);
+  $: isCustomTheme = hex && !hex.includes('theme-');
 </script>
 
-<Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5">
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
-    <Column sm={4} md={4} lg={4}
-      ><SectionTitle>{$t('settings.organization.organization_profile.heading')}</SectionTitle
-      ></Column
-    >
-    <Column sm={8} md={8} lg={8} class="mt-2 lg:mt-0 flex flex-col items-center lg:items-start">
+<UnsavedChanges bind:hasUnsavedChanges />
+<Grid class="border-c mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
+    <Column sm={4} md={4} lg={4}>
+      <SectionTitle>
+        {$t('settings.organization.organization_profile.heading')}
+      </SectionTitle>
+    </Column>
+    <Column sm={8} md={8} lg={8} class="mt-2 flex flex-col items-center lg:mt-0 lg:items-start">
       <TextField
         label={$t('settings.organization.organization_profile.organization_name')}
         bind:value={$currentOrg.name}
+        onChange={() => (hasUnsavedChanges = true)}
         className="w-full lg:w-60 mb-5"
         errorMessage={errors.orgName}
       />
@@ -132,6 +173,7 @@
         src={$currentOrg.avatar_url}
         shape="rounded-md"
         widthHeight="w-24 h-24"
+        on:change={() => (hasUnsavedChanges = true)}
       />
       <PrimaryButton
         label={$t('settings.organization.organization_profile.update_organization')}
@@ -142,7 +184,7 @@
       />
     </Column>
   </Row>
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c relative flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.organization.organization_profile.theme.heading')}</SectionTitle
       ></Column
@@ -152,55 +194,81 @@
         {$t('settings.organization.organization_profile.theme.sub_heading')}
       </h4>
 
-      <div class="flex gap-2">
+      <div class="flex items-center gap-5">
         <button
           class="rounded-full border-2 {$currentOrg.theme === themes.default &&
-            'border-[#1d4ee2]'} mr-3 flex items-center justify-center"
+            'border-[#1d4ee2]'} flex h-fit items-center justify-center"
           on:click={handleChangeTheme(themes.default)}
         >
-          <div class="w-3 h-3 md:w-6 md:h-6 bg-[#1d4ee2] rounded-full m-1" />
+          <div class="m-1 h-6 w-6 rounded-full bg-[#1d4ee2] md:h-6 md:w-6" />
         </button>
 
         <button
           class="rounded-full border-2 {$currentOrg.theme === themes.rose &&
-            'border-[#be1241]'} mr-3 flex items-center justify-center"
+            'border-[#be1241]'} flex h-fit items-center justify-center"
           on:click={handleChangeTheme(themes.rose)}
         >
-          <div class="w-3 h-3 md:w-6 md:h-6 bg-[#be1241] rounded-full m-1" />
+          <div class="m-1 h-6 w-6 rounded-full bg-[#be1241] md:h-6 md:w-6" />
         </button>
 
         <button
           class="rounded-full border-2 {$currentOrg.theme === themes.green &&
-            'border-[#0c891b]'} mr-3 flex items-center justify-center"
+            'border-[#0c891b]'} flex h-fit items-center justify-center"
           on:click={handleChangeTheme(themes.green)}
         >
-          <div class="w-3 h-3 md:w-6 md:h-6 bg-[#0c891b] rounded-full m-1" />
+          <div class="m-1 h-6 w-6 rounded-full bg-[#0c891b] md:h-6 md:w-6" />
         </button>
 
         <button
           class="rounded-full border-2 {$currentOrg.theme === themes.orange &&
-            'border-[#cc4902]'} mr-3 flex items-center justify-center"
+            'border-[#cc4902]'} flex h-fit items-center justify-center"
           on:click={handleChangeTheme(themes.orange)}
         >
-          <div class="w-3 h-3 md:w-6 md:h-6 bg-[#cc4902] rounded-full m-1" />
+          <div class="m-1 h-6 w-6 rounded-full bg-[#cc4902] md:h-6 md:w-6" />
         </button>
 
         <button
           class="rounded-full border-2 {$currentOrg.theme === themes.violet &&
-            'border-[#cf00ce]'} mr-3 flex items-center justify-center"
+            'border-[#cf00ce]'} flex h-fit items-center justify-center"
           on:click={handleChangeTheme(themes.violet)}
         >
-          <div class="w-3 h-3 md:w-6 md:h-6 bg-[#cf00ce] rounded-full m-1" />
+          <div class="m-1 h-6 w-6 rounded-full bg-[#cf00ce] md:h-6 md:w-6" />
         </button>
+
+        <div
+          class="h-auto w-fit border-2 {isCustomTheme
+            ? 'border-primary-700'
+            : 'dark:border-neutral-700'} group relative rounded-full"
+        >
+          <!-- plus icon positioned over the color picker -->
+          <div
+            class="pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-200"
+          >
+            <svg
+              class="h-6 w-6 text-{isCustomTheme
+                ? 'white'
+                : 'black'} z-10 opacity-100 dark:text-white"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+            </svg>
+          </div>
+          <ColorPicker position="responsive" label="" bind:hex on:input={handleCustomTheme} />
+        </div>
       </div>
     </Column>
   </Row>
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
-    <Column sm={4} md={4} lg={4}
-      ><SectionTitle
-        >{$t('settings.organization.organization_profile.customize_lms.heading')}</SectionTitle
-      ></Column
-    >
+
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
+    <Column sm={4} md={4} lg={4}>
+      <SectionTitle>
+        {$t('settings.organization.organization_profile.customize_lms.heading')}
+      </SectionTitle>
+    </Column>
     <Column sm={8} md={8} lg={8}>
       <h4 class="dark:text-white lg:mt-0">
         {$t('settings.organization.organization_profile.customize_lms.sub_heading')}
@@ -211,13 +279,13 @@
       <PrimaryButton
         className="my-7 py-5 px-10 flex items-center gap-2 justify-center"
         variant={VARIANTS.OUTLINED}
-        onClick={() => gotoSetting('/customize-lms')}
+        onClick={() => gotoSettings('/customize-lms')}
       >
         {$t('settings.organization.organization_profile.customize_lms.button')}
       </PrimaryButton>
     </Column>
   </Row>
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle
         >{$t('settings.organization.organization_profile.custom_domain.heading')}</SectionTitle
@@ -231,14 +299,18 @@
         {$t('settings.organization.organization_profile.custom_domain.body')}
       </p>
       <PrimaryButton
-        label={$t('settings.organization.organization_profile.custom_domain.button')}
-        className="my-7 py-5 px-10"
+        className="my-7 py-5 px-10 flex items-center gap-2 justify-center"
         variant={VARIANTS.OUTLINED}
-        onClick={() => gotoSetting('/domains')}
-      />
+        onClick={() => gotoSettings('/domains')}
+      >
+        {#if $isFreePlan}
+          <FlashFilled size={16} class="text-blue-700" />
+        {/if}
+        {$t('settings.organization.organization_profile.custom_domain.button')}
+      </PrimaryButton>
     </Column>
   </Row>
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.organization.organization_profile.team.heading')}</SectionTitle
       ></Column
@@ -253,7 +325,7 @@
       <PrimaryButton
         className="my-7 py-5 px-10 flex items-center gap-2 justify-center"
         variant={VARIANTS.OUTLINED}
-        onClick={() => gotoSetting('/teams')}
+        onClick={() => gotoSettings('/teams')}
       >
         {#if $isFreePlan}
           <FlashFilled size={16} class="text-blue-700" />
@@ -263,3 +335,17 @@
     </Column>
   </Row>
 </Grid>
+
+<style>
+  :global(.dark) {
+    --cp-text-color: #fff;
+    --cp-border-color: white;
+    --cp-text-color: white;
+    --cp-input-color: #555;
+    --cp-button-hover-color: #777;
+  }
+
+  :global(.dark .alpha) {
+    background: #333 !important;
+  }
+</style>

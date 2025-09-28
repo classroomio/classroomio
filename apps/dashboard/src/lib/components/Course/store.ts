@@ -1,9 +1,9 @@
 import { writable } from 'svelte/store';
 import type { Writable } from 'svelte/store';
-import { lessons } from './components/Lesson/store/lessons';
+import { lessons, lessonSections } from './components/Lesson/store/lessons';
 import { ROLE } from '$lib/utils/constants/roles';
-import type { Course, GroupPerson } from '$lib/utils/types';
-import { COURSE_TYPE } from '$lib/utils/types';
+import type { Course, GroupPerson, Lesson, LessonSection } from '$lib/utils/types';
+import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
 
 export const defaultCourse: Course = {
   id: '',
@@ -20,6 +20,7 @@ export const defaultCourse: Course = {
   updated_at: new Date().toDateString(),
   attendance: [],
   polls: [],
+  version: COURSE_VERSION.V2,
   metadata: {
     requirements: '',
     description: '',
@@ -42,7 +43,8 @@ export const defaultCourse: Course = {
     lessonTabsOrder: [
       { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
       { id: 2, name: 'course.navItem.lessons.materials.tabs.slide.title' },
-      { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' }
+      { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' },
+      { id: 4, name: 'course.navItem.lessons.materials.tabs.document.title' }
     ],
     grading: false,
     lessonDownload: true,
@@ -116,17 +118,22 @@ export async function setCourse(data: Course, setLesson = true) {
   }
 
   if (setLesson) {
-    const orderedLessons = (data.lessons || [])
-      .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-    // .map((lesson) => ({
-    //   ...lesson,
-    //   profile: lesson.profile && tutorsById[lesson.profile.id],
-    // }));
+    const orderedLessons = sortLesson(data.lessons);
     lessons.set(orderedLessons);
+
+    if (data.lesson_section) {
+      const sections = data.lesson_section?.map((section) => {
+        const lessons = (data.lessons || []).filter((lesson) => lesson.section_id === section.id);
+        section.lessons = sortLesson(lessons);
+        return section;
+      });
+
+      lessonSections.set(sortLessonSection(sections));
+    }
   }
 
   delete data.lessons;
+  delete data?.lesson_section;
 
   if (data.metadata && !Object.values(data.metadata)) {
     data.metadata = {
@@ -150,9 +157,44 @@ export async function setCourse(data: Course, setLesson = true) {
       allowNewStudent: false
     };
   }
+  // Ensure lessonTabsOrder includes all tabs (backward compatibility)
+  if (data.metadata && data.metadata.lessonTabsOrder) {
+    const existingTabIds = data.metadata.lessonTabsOrder.map((tab) => tab.id);
+    const allTabs = [
+      { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
+      { id: 2, name: 'course.navItem.lessons.materials.tabs.slide.title' },
+      { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' },
+      { id: 4, name: 'course.navItem.lessons.materials.tabs.document.title' }
+    ];
+
+    let hasChanges = false;
+    // Add missing tabs to existing lessonTabsOrder
+    allTabs.forEach((tab) => {
+      if (!existingTabIds.includes(tab.id) && data.metadata.lessonTabsOrder) {
+        data.metadata.lessonTabsOrder.push(tab);
+        hasChanges = true;
+      }
+    });
+
+    if (hasChanges) {
+      // Document tab has been added to lessonTabsOrder
+    }
+  }
 
   if (!data.certificate_theme) {
     data.certificate_theme = 'professional';
   }
   course.set(data);
+}
+
+function sortLesson(lessons: Lesson[] = []) {
+  return lessons
+    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+}
+
+function sortLessonSection(sections: LessonSection[] = []) {
+  return sections
+    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 }

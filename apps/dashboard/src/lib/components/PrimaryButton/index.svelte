@@ -1,11 +1,10 @@
 <script lang="ts">
-  // import { Moon } from 'svelte-loading-spinners';
-  import { VARIANTS, VARIANTS_CLASS } from './constants';
   import { Loading } from 'carbon-components-svelte';
+  import { VARIANTS, VARIANTS_CLASS } from './constants';
 
   export let label = '';
   export let className = '';
-  export let onClick = () => {};
+  export let onClick = (e?: Event) => {};
   export let name = '';
   export let type: 'button' | 'submit' | 'reset' | null | undefined = 'button';
   export let variant = VARIANTS.CONTAINED;
@@ -13,18 +12,22 @@
   export let isDisabled = false;
   export let isLoading = false;
   export let disableScale = false;
+
+  $: loadingClass =
+    isLoading || isDisabled
+      ? 'cursor-not-allowed opacity-25'
+      : `cursor-pointer ${!disableScale && 'hover:scale-95'}`;
+  $: cname = `flex items-center h-auto ${loadingClass} ${
+    VARIANTS_CLASS[isLoading ? VARIANTS.OUTLINED : variant]
+  } ${
+    !disablePadding && 'px-5 py-[0.2rem]'
+  } rounded-md min-h-[36px] w-fit justify-center sm:w-auto ${
+    variant !== VARIANTS.TEXT && 'hover:shadow-xl'
+  } transition-all delay-150 duration-300 ease-in-out`;
 </script>
 
 <button
-  class="{isLoading || isDisabled
-    ? 'opacity-25 cursor-not-allowed'
-    : `cursor-pointer ${
-        !disableScale && 'hover:scale-95'
-      }`} flex items-center h-auto {VARIANTS_CLASS[
-    isLoading ? VARIANTS.OUTLINED : variant
-  ]} {!disablePadding &&
-    'py-[0.5rem] px-6'} rounded-md {className} w-fit min-h-[36px] justify-center sm:w-auto {variant !==
-    VARIANTS.TEXT && 'hover:shadow-xl'} transition-all delay-150 duration-300 ease-in-out"
+  class={`${cname} ${className}`}
   on:click={onClick}
   {name}
   {type}
@@ -32,7 +35,6 @@
 >
   {#if isLoading}
     <Loading withOverlay={false} small class="mr-2" />
-    <!-- <Moon size="20" color="#1d4ed8" unit="px" duration="1s" /> -->
   {/if}
   {#if !!label}
     {label}

@@ -1,32 +1,30 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
-  import type { OrganizationPlan } from '$lib/utils/types';
-  import { supabase } from '$lib/utils/functions/supabase';
   import { goto } from '$app/navigation';
-  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { page } from '$app/stores';
-  import Checkmark from 'carbon-icons-svelte/lib/Checkmark.svelte';
-  import PLANS from 'shared/src/plans/data.json';
-  import { profile } from '$lib/utils/store/user';
-  import { subscribeToProduct } from '$lib/utils/services/lemonsqueezy/subscribe';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { Loading } from 'carbon-components-svelte';
-  import Modal from '$lib/components/Modal/index.svelte';
-  import StepDoneIcon from '$lib/components/Icons/StepDoneIcon.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import type { RealtimeChannel, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
   import Confetti from '$lib/components/Confetti/index.svelte';
   import { toggleConfetti } from '$lib/components/Confetti/store';
+
+  import StepDoneIcon from '$lib/components/Icons/StepDoneIcon.svelte';
+  import Modal from '$lib/components/Modal/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import { t } from '$lib/utils/functions/translations';
+  import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
+  import { Loading } from 'carbon-components-svelte';
+  import Checkmark from 'carbon-icons-svelte/lib/Checkmark.svelte';
+  import PLANS from 'shared/src/plans/data.json';
 
   const disabledClass = 'bg-gray-300 text-gray-400 hover:cursor-not-allowed';
 
+  const planNames = Object.keys(PLANS);
+
   let isLoadingPlan: string | null = null;
-  let orgPlanChannel: RealtimeChannel;
   let open = false;
   let upgraded = false;
   let isYearlyPlan = false;
+  let isConfirming = false;
 
   async function handleClick(plan, planName: string) {
     if (plan.CTA.IS_DISABLED || !$profile.id) {
@@ -41,20 +39,24 @@
     isLoadingPlan = planName;
 
     try {
-      const { checkoutURL } = await subscribeToProduct({
-        productId: isYearlyPlan ? plan.CTA.PRODUCT_ID_YEARLY : plan.CTA.PRODUCT_ID,
-        email: $profile.email,
-        name: $profile.fullname,
-        triggeredBy: $currentOrg.memberId,
-        orgId: $currentOrg.id
-      });
+      const checkoutURL = new URL('/api/polar/subscribe', $page.url);
 
-      if (!checkoutURL) {
-        snackbar.error('snackbar.upgrade.generate_fail');
-        return;
-      }
+      checkoutURL.searchParams.set(
+        'productId',
+        isYearlyPlan ? plan.CTA.PRODUCT_ID_YEARLY : plan.CTA.PRODUCT_ID
+      );
+      checkoutURL.searchParams.set('customerEmail', $profile.email);
+      checkoutURL.searchParams.set('customerName', $profile.fullname);
+      checkoutURL.searchParams.set(
+        'metadata',
+        JSON.stringify({
+          triggeredBy: $currentOrg.memberId,
+          orgId: $currentOrg.id,
+          orgSlug: $currentOrg.siteName
+        })
+      );
 
-      window.open(checkoutURL, '_blank');
+      window.location.href = checkoutURL.toString();
     } catch (error) {
       console.error('Error subscribing', error);
 
@@ -64,27 +66,18 @@
     isLoadingPlan = null;
   }
 
-  async function handleInsert(payload: RealtimePostgresChangesPayload<OrganizationPlan>) {
-    const newPlan = payload.new as OrganizationPlan;
+  function onUpgrade() {
+    upgraded = true;
+    toggleConfetti();
 
-    console.log('A new plan was inserted');
-    // If plan was successfully generated
-    if (newPlan.org_id === $currentOrg.id && newPlan.is_active) {
-      upgraded = true;
+    setTimeout(() => {
       toggleConfetti();
-
-      setTimeout(() => {
-        toggleConfetti();
-      }, 1000);
-    }
+    }, 1000);
   }
 
   function onClose() {
-    if (upgraded) {
-      window.location.href = $currentOrgPath;
-    } else {
-      goto($page.url.pathname);
-    }
+    const path = upgraded ? $currentOrgPath : $page.url.pathname;
+    goto(path);
   }
 
   function onLearnMore() {
@@ -94,28 +87,18 @@
     isYearlyPlan = !isYearlyPlan;
   }
 
-  onMount(() => {
-    orgPlanChannel = supabase
-      .channel('any')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'organization_plan' },
-        handleInsert
-      )
-      .subscribe();
-  });
-
-  onDestroy(() => {
-    if (orgPlanChannel) {
-      supabase.removeChannel(orgPlanChannel);
-    }
-  });
-
   $: {
     const query = new URLSearchParams($page.url.search);
     open = (query.get('upgrade') || '') === 'true';
+    isConfirming = (query.get('confirmation') || '') === 'true';
   }
-  $: planNames = Object.keys(PLANS);
+
+  $: handleUpgradeSuccess(Boolean($currentOrg.id && !$isFreePlan && open));
+  function handleUpgradeSuccess(upgradeSuccessful: boolean) {
+    if (upgradeSuccessful) {
+      onUpgrade();
+    }
+  }
 </script>
 
 {#if upgraded}
@@ -126,12 +109,12 @@
   {onClose}
   {open}
   width="w-4/5"
-  maxWidth={upgraded ? 'max-w-[600px]' : undefined}
+  maxWidth={upgraded || isConfirming ? 'max-w-[600px]' : undefined}
   modalHeading={$t('pricing.modal.heading')}
   containerClass="pt-4"
 >
   {#if upgraded}
-    <div class="flex flex-col items-center justify-center mb-4 w-full relative">
+    <div class="relative mb-4 flex w-full flex-col items-center justify-center">
       <StepDoneIcon />
       <h4 class="text-2xl">{$t('pricing.modal.thanks')}</h4>
       <p class="mb-4 text-center">
@@ -150,6 +133,10 @@
         />
       </div>
     </div>
+  {:else if isConfirming}
+    <div class="relative mb-4 flex w-full flex-col items-center justify-center">
+      <Loading withOverlay={false} />
+    </div>
   {:else}
     <div class="flex flex-col items-center justify-center">
       <div class="relative mb-2 flex items-center rounded-[30px] border-[2px] p-[2px] lg:scale-100">
@@ -157,21 +144,23 @@
           style="background-color: {isYearlyPlan ? 'initial' : '#1D4EE2'}; color: {isYearlyPlan
             ? '#5e636b'
             : '#fff'}"
-          class="rounded-[30px] bg-blue-700 px-3 py-1 text-xs text-white lg:px-4 lg:py-2"
-          on:click={toggleIsYearlyPlan}>{$t('pricing.modal.monthly')}</button
+          class="rounded-[30px] bg-blue-700 px-3 py-1 text-xs text-white transition-all duration-500 ease-in-out lg:px-4 lg:py-2"
+          on:click={toggleIsYearlyPlan}
         >
+          {$t('pricing.modal.monthly')}
+        </button>
         <button
           style="background-color: {isYearlyPlan ? '#1D4EE2' : ''}; color: {isYearlyPlan
             ? '#fff'
             : '#5e636b'}"
-          class="relative rounded-[30px] px-3 py-1 text-xs text-white lg:px-4 lg:py-2"
+          class="relative rounded-[30px] px-3 py-1 text-xs text-white transition-all duration-500 ease-in-out lg:px-4 lg:py-2"
           on:click={toggleIsYearlyPlan}
         >
           {$t('pricing.modal.annually')}
           <div
-            class="absolute right-[-40%] -top-4 scale-[90%] rounded-full bg-[#006600] px-1.5 py-1 text-[0.7rem] text-white"
+            class="absolute -top-4 right-[-40%] scale-[90%] rounded-full bg-[#006600] px-1.5 py-1 text-[0.7rem] text-white"
           >
-            Save 2 months
+            {$t('pricing.modal.save')}
           </div>
         </button>
       </div>
@@ -211,7 +200,7 @@
                 ? 'bg-white text-slate-900 hover:bg-indigo-50'
                 : PLANS[planName].CTA.IS_DISABLED
                   ? disabledClass
-                  : 'bg-primary-900 hover:bg-primary-700 text-white'} py-3 text-center font-medium hover:no-underline lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold flex items-center justify-center"
+                  : 'bg-primary-900 hover:bg-primary-700 text-white'} flex items-center justify-center py-3 text-center font-medium hover:no-underline lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
               on:click={() => {
                 if (isLoadingPlan === planName) return;
 

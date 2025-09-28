@@ -1,11 +1,11 @@
-import { get } from 'svelte/store';
-
 import { goto } from '$app/navigation';
-import { supabase } from '$lib/utils/functions/supabase';
-import { orgs, currentOrg, orgAudience, orgTeam } from '$lib/utils/store/org';
 import { ROLE, ROLE_LABEL } from '$lib/utils/constants/roles';
-import type { CurrentOrg, OrgTeamMember } from '$lib/utils/types/org';
+import { supabase } from '$lib/utils/functions/supabase';
+import { currentOrg, orgAudience, orgs, orgTeam } from '$lib/utils/store/org';
 import type { OrganizationPlan } from '$lib/utils/types';
+import type { CurrentOrg, OrgTeamMember } from '$lib/utils/types/org';
+import type { PostgrestError } from '@supabase/supabase-js';
+import { get } from 'svelte/store';
 
 export async function getOrgTeam(orgId: string) {
   const { data, error } = await supabase
@@ -73,18 +73,13 @@ export async function getOrganizations(userId: string, isOrgSite?: boolean, orgS
       role_id,
       created_at,
       organization!organizationmember_organization_id_fkey (
-        id,
-        name,
-        siteName,
-        avatar_url,
-        landingpage,
-        customization,
-        theme,
-        created_at,
+        *,
         organization_plan(
           plan_name,
           is_active,
-          subscriptionId:lmz_data->id
+          provider,
+          subscriptionId:payload->id,
+          customerId:payload->customerId
         )
       )
     `
@@ -106,17 +101,10 @@ export async function getOrganizations(userId: string, isOrgSite?: boolean, orgS
   if (Array.isArray(data) && data.length) {
     data.forEach((orgMember) => {
       orgsArray.push({
-        id: orgMember?.organization?.id,
-        name: orgMember?.organization?.name,
-        shortName: orgMember?.organization?.name?.substring(0, 2)?.toUpperCase() || '',
-        siteName: orgMember?.organization?.siteName,
-        theme: orgMember?.organization?.theme,
-        avatar_url: orgMember?.organization?.avatar_url,
+        ...(orgMember?.organization || {}),
         memberId: orgMember?.id,
-        role_id: orgMember?.role_id,
-        landingpage: orgMember?.organization?.landingpage,
-        customization: orgMember?.organization?.customization,
-        organization_plan: orgMember?.organization?.organization_plan
+        role_id: parseInt(orgMember?.role_id),
+        shortName: orgMember?.organization?.name?.substring(0, 2)?.toUpperCase() || ''
       });
     });
 
@@ -178,8 +166,6 @@ export async function getOrgAudience(orgId: string) {
     .eq('groupmember.group.organization_id', orgId)
     .eq('groupmember.role_id', ROLE.STUDENT);
 
-  console.log('data', data);
-
   const audience = (data || []).map((profile) => ({
     id: profile.id,
     name: profile.fullname,
@@ -218,28 +204,42 @@ export async function getCourseBySiteName(siteName: string) {
   return data;
 }
 
-export async function getCurrentOrg(siteName: string, justGet = false) {
-  const { data, error } = await supabase
-    .from('organization')
-    .select(
-      `
-      id,
-      name,
-      siteName,
-      avatar_url,
-      landingpage,
-      customization,
-      theme,
-      organization_plan(
-        plan_name,
-        is_active
-      )
-    `
-    )
-    .eq('siteName', siteName)
-    .returns<CurrentOrg[]>();
-  console.log('data =', data);
-  console.log('error =', error);
+const CURRENT_ORG_QUERY = `
+  id,
+  name,
+  siteName,
+  avatar_url,
+  landingpage,
+  is_restricted,
+  customization,
+  theme,
+  favicon,
+  customDomain,
+  isCustomDomainVerified,
+  customCode,
+  organization_plan(
+    plan_name,
+    is_active
+  )
+`;
+export async function getCurrentOrg(siteName: string, justGet = false, isCustomDomain = false) {
+  let response: { data: CurrentOrg[] | null; error: PostgrestError | null } | null = null;
+
+  if (isCustomDomain) {
+    response = await supabase
+      .from('organization')
+      .select(CURRENT_ORG_QUERY)
+      .eq('customDomain', siteName)
+      .filter('isCustomDomainVerified', 'eq', true)
+      .returns<CurrentOrg[]>();
+  } else {
+    response = await supabase
+      .from('organization')
+      .select(CURRENT_ORG_QUERY)
+      .eq('siteName', siteName)
+      .returns<CurrentOrg[]>();
+  }
+  const { data, error } = response;
 
   const isDataEmpty = !data?.[0];
 
@@ -257,11 +257,27 @@ export async function getCurrentOrg(siteName: string, justGet = false) {
   }
 }
 
+export async function updateOrgPlan(params: {
+  supabase: typeof supabase;
+  subscriptionId: string;
+  data: OrganizationPlan['payload'];
+}) {
+  return await params.supabase
+    .from('organization_plan')
+    .update({
+      payload: params.data
+    })
+    .match({
+      subscription_id: params.subscriptionId
+    });
+}
+
 export async function createOrgPlan(params: {
-  orgId: string;
-  planName: string;
-  triggeredBy: number;
-  data: OrganizationPlan['lmz_data'];
+  orgId: OrganizationPlan['org_id'];
+  planName: OrganizationPlan['plan_name'];
+  subscriptionId: OrganizationPlan['subscription_id'];
+  triggeredBy: OrganizationPlan['triggered_by'];
+  data: OrganizationPlan['payload'];
   supabase: typeof supabase;
 }) {
   return await params.supabase.from('organization_plan').insert({
@@ -270,19 +286,24 @@ export async function createOrgPlan(params: {
     triggered_by: params.triggeredBy,
     plan_name: params.planName,
     is_active: true,
-    lmz_data: params.data
+    payload: params.data,
+    subscription_id: params.subscriptionId,
+    provider: 'polar'
   });
 }
 
-export async function cancelOrgPlan(params: { orgId: string; planName: string }) {
+export async function cancelOrgPlan(params: {
+  subscriptionId: string;
+  data: OrganizationPlan['payload'];
+}) {
   return await supabase
     .from('organization_plan')
     .update({
       is_active: false,
-      deactivated_at: new Date().toDateString()
+      deactivated_at: new Date().toDateString(),
+      payload: params.data
     })
     .match({
-      plan_name: params.planName,
-      org_id: params.orgId
+      subscription_id: params.subscriptionId
     });
 }

@@ -17,13 +17,14 @@ const SCRIPT_WAIT_TIME = 2000;
 
 // Define file paths for each language
 const languageFiles = {
-  hi: path.resolve(__dirname, '../src/lib/utils/translations/hi.json'),
-  fr: path.resolve(__dirname, '../src/lib/utils/translations/fr.json'),
-  pt: path.resolve(__dirname, '../src/lib/utils/translations/pt.json'),
   de: path.resolve(__dirname, '../src/lib/utils/translations/de.json'),
-  vi: path.resolve(__dirname, '../src/lib/utils/translations/vi.json'),
+  es: path.resolve(__dirname, '../src/lib/utils/translations/es.json'),
+  fr: path.resolve(__dirname, '../src/lib/utils/translations/fr.json'),
+  hi: path.resolve(__dirname, '../src/lib/utils/translations/hi.json'),
+  pl: path.resolve(__dirname, '../src/lib/utils/translations/pl.json'),
+  pt: path.resolve(__dirname, '../src/lib/utils/translations/pt.json'),
   ru: path.resolve(__dirname, '../src/lib/utils/translations/ru.json'),
-  es: path.resolve(__dirname, '../src/lib/utils/translations/es.json')
+  vi: path.resolve(__dirname, '../src/lib/utils/translations/vi.json')
 };
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

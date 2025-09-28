@@ -1,29 +1,32 @@
 {
-	"name": "classroomio",
-	"version": "0.1.1",
-	"scripts": {
-		"build": "turbo run build",
-		"dev": "turbo run dev",
-		"prepare": "turbo run prepare",
-		"lint": "turbo run lint",
-		"clean": "turbo clean && rm -rf node_modules",
-		"format": "prettier . --write",
-		"release": "standard-version",
-		"ci": "cypress run"
-	},
-	"license": "MIT",
-	"packageManager": "pnpm@8.0.0",
-	"devDependencies": {
-		"concurrently": "^8.2.2",
-		"cypress": "^13.8.0",
-		"eslint": "^8.54.0",
-		"prettier": "^3.1.0",
-		"prettier-plugin-svelte": "^3.1.2",
-		"prettier-plugin-tailwindcss": "^0.5.7",
-		"standard-version": "^9.5.0",
-		"supabase": "^1.151.1",
-		"tsconfig": "workspace:*",
-		"turbo": "^1.10.16",
-		"typescript": "^5.1.6"
-	}
+  "name": "classroomio",
+  "version": "0.1.1",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo prepare --concurrency 13 && turbo run dev",
+    "lint": "turbo run lint",
+    "clean": "turbo clean && rm -rf node_modules",
+    "format": "prettier . --write",
+    "release": "standard-version",
+    "ci": "cypress run",
+    "dashboard:build": "cd apps/dashboard && pnpm i && PUBLIC_IS_SELFHOSTED=true NODE_OPTIONS='--max-old-space-size=20384' DEPLOYMENT_PROVIDER=docker pnpm build",
+    "dashboard:start": "cd apps/dashboard && node build"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "turbo": "^1.10.16"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "eslint": "^8.54.0",
+    "prettier": "^3.1.0",
+    "prettier-plugin-svelte": "^3.1.2",
+    "prettier-plugin-tailwindcss": "^0.5.7",
+    "standard-version": "^9.5.0",
+    "tsconfig": "workspace:*",
+    "typescript": "^5.1.6"
+  },
+  "engines": {
+    "node": "^20.19.3"
+  }
 }

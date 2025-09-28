@@ -1,8 +1,7 @@
 <script>
-  import Chip from '$lib/Chip/Chip.svelte';
-  import { formatDate } from '$lib/utils/formatDate';
   import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
   import PageHeader from '$lib/PageHeader/PageHeader.svelte';
+  import BlogListItem from '$lib/Blog/BlogListItem.svelte';
 
   export let data;
 </script>
@@ -27,39 +26,14 @@
     <ul class="flex flex-col items-start justify-start gap-2 w-[90%] md:w-[50%]">
       {#each data.posts as post}
         <li class="py-10 w-full border-b border-gray-200">
-          <div class="flex md:flex-row flex-col md:items-center gap-2">
-            <!-- Date -->
-            <p class="text-sm text-slate-500">{formatDate(post.date)}</p>
-
-            <!-- Tags  -->
-            <div class="flex flex-col">
-              <div class="flex flex-wrap gap-2">
-                {#each post.tags as tag}
-                  <Chip label={tag} />
-                {/each}
-              </div>
-            </div>
-          </div>
-          <a href={`/blog/${post.slug}`} class="group">
-            <p class="font-bold text-lg py-2 group-hover:text-slate-500">{post.title}</p>
-
-            <p class="text-slate-500 py-4">{post.description}</p>
-          </a>
-
-          <div class="flex items-center justify-start gap-4 my-2">
-            <img loading="lazy" src={post.avatar} alt="avatar" class="w-10 h-10 rounded-full" />
-            <span>
-              <p class="font-semibold">{post.author}</p>
-              <p class="text-slate-500">{post.role}</p>
-            </span>
-          </div>
+          <BlogListItem {post} />
         </li>
       {/each}
     </ul>
   </div>
 
   <PageSignupCTA
-    header="Ready To Launch Your First Training?"
+    header="Ready To Scale Your Training Efforts?"
     subText="It's free to sign up and start getting value out of the product."
     btnLabel="Sign me up"
     link="/signup"

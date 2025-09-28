@@ -1,9 +1,8 @@
 <script>
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
-  import PageNav from '$lib/components/PageNav/index.svelte';
-  import PageBody from '$lib/components/PageBody/index.svelte';
   import Settings from '$lib/components/Course/components/Settings/index.svelte';
-  import { t } from '../../../../lib/utils/functions/translations';
+  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
+  import { PageBody, PageNav } from '$lib/components/Page';
+  import { t } from '$lib/utils/functions/translations';
 
   export let data;
 </script>

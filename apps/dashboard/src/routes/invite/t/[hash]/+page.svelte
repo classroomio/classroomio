@@ -1,27 +1,34 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
+  import AuthUI from '$lib/components/AuthUI/index.svelte';
+  import type { Profile } from '$lib/components/Course/components/People/types';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
+  import { logout } from '$lib/utils/functions/logout';
   import { getSupabase } from '$lib/utils/functions/supabase';
+  import { setTheme } from '$lib/utils/functions/theme';
+  import { t } from '$lib/utils/functions/translations';
+  import { profile, user } from '$lib/utils/store/user';
   import {
     authValidation,
     getConfirmPasswordError,
     getDisableSubmit
   } from '$lib/utils/functions/validator';
-  import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
-  import AuthUI from '$lib/components/AuthUI/index.svelte';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import { setTheme } from '$lib/utils/functions/theme';
   import type { CurrentOrg } from '$lib/utils/types/org';
   import { onMount } from 'svelte';
-  import type { Profile } from '$lib/components/Course/components/People/types';
-  import { logout } from '$lib/utils/functions/logout';
+  import { snackbar } from '$lib/components/Snackbar/store.js';
 
   export let data;
 
   let supabase = getSupabase();
   let fields = Object.assign({}, SIGNUP_FIELDS);
   let loading = false;
+  let isLoggingOut = false;
+  let shouldLogout = false;
 
   let errors: {
     name?: string;
@@ -34,10 +41,50 @@
   let disableSubmit = false;
   let formRef: HTMLFormElement;
 
+  async function joinOrg(profileId: string, email: string) {
+    if (!profileId || !email || !data.invite.currentOrg?.id) return;
+
+    // Update member response
+    const updateMemberRes = await supabase
+      .from('organizationmember')
+      .update({
+        verified: true,
+        profile_id: profileId
+      })
+      .match({ email: email, organization_id: data.invite.currentOrg?.id });
+
+    console.log('Update member response', updateMemberRes);
+
+    formRef?.reset();
+
+    window.location.href = $currentOrgPath;
+  }
+
+  async function signUserIn(profileId: string, email: string) {
+    if (!profileId || !email) {
+      throw $t('login.validation.unable_to_create_profile');
+    }
+
+    const res = await supabase.auth.signInWithPassword({
+      email,
+      password: fields.password
+    });
+
+    if (res.error) {
+      throw res.error;
+    }
+  }
+
   async function handleSubmit() {
+    if ($profile && $profile.id) {
+      loading = true;
+      await joinOrg($profile.id, $profile.email);
+      return;
+    }
+
     const validationRes = authValidation({
       ...fields,
-      email: 'test@gmail.com' // validation for this ema
+      email: data.invite.email // validation for this ema
     });
     console.log('validationRes', validationRes);
 
@@ -48,12 +95,12 @@
 
     try {
       loading = true;
-      let profile: Profile | null = data.profile;
+      let profile: Profile | null = data.invite.profile;
 
-      if (!data.profile) {
+      if (!data.invite.profile) {
         // Signup
         const { data: signupData, error } = await supabase.auth.signUp({
-          email: data.email,
+          email: data.invite.email,
           password: fields.password
         });
 
@@ -61,7 +108,7 @@
         if (error) throw error;
 
         if (!signupData.user) {
-          throw 'User cannot be created ';
+          throw $t('login.validation.user_cannot_be_created');
         }
 
         // Insert profile
@@ -72,7 +119,7 @@
             id: userId,
             username: fields.name.toLowerCase().replace(' ', '-') + new Date().getTime(),
             fullname: fields.name,
-            email: data.email
+            email: data.invite.email
           })
           .select();
 
@@ -86,31 +133,12 @@
       }
 
       if (!profile?.id) {
-        throw 'Unable to create profile';
+        throw $t('login.validation.unable_to_create_profile');
       }
 
-      // Update member response
-      const updateMemberRes = await supabase
-        .from('organizationmember')
-        .update({
-          verified: true,
-          profile_id: profile.id
-        })
-        .match({ email: data.email, organization_id: data.currentOrg?.id });
+      await signUserIn(profile.id, profile.email);
 
-      console.log('Update member response', updateMemberRes);
-
-      const res = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: fields.password
-      });
-
-      if (res.error) {
-        throw res.error;
-      }
-
-      formRef?.reset();
-      return goto($currentOrgPath);
+      await joinOrg(profile.id, profile.email);
     } catch (error) {
       if (error instanceof Error) {
         submitError = error.message;
@@ -124,95 +152,137 @@
 
   function setCurOrg(cOrg: CurrentOrg) {
     if (!cOrg) return;
+
+    console.log(cOrg);
     currentOrg.set(cOrg);
   }
 
-  onMount(() => {
-    setTheme(data.currentOrg?.theme || '');
+  onMount(async () => {
+    setTheme(data.invite.currentOrg?.theme || '');
 
-    logout(false);
+    setCurOrg(data.invite.currentOrg as CurrentOrg);
   });
 
   $: errors.confirmPassword = getConfirmPasswordError(fields);
   $: disableSubmit = getDisableSubmit(fields);
 
-  $: setCurOrg(data.currentOrg as CurrentOrg);
-  $: console.log('data.profile', data.profile);
+  $: autoLogout($profile?.email);
+  function autoLogout(email?: string) {
+    if (!email) return;
+
+    if (email !== data.invite.email) {
+      console.log('logout');
+      snackbar.error('You are logged in with a different email');
+      shouldLogout = true;
+    }
+  }
+
+  $: isLoading = loading || $user.fetchingUser;
+  $: console.log('$profile', $profile);
+  $: console.log('data.invite', data.invite);
 </script>
 
 <svelte:head>
   <title>Join ClassroomIO</title>
 </svelte:head>
 
-<AuthUI {supabase} isLogin={false} {handleSubmit} isLoading={loading} showLogo={true} bind:formRef>
-  <div class="mt-4 w-full">
-    <p class="dark:text-white text-lg font-semibold mb-6">
-      {#if data.profile}
-        Log in to join
+<AuthUI
+  {supabase}
+  redirectPathname={$page.url.pathname}
+  isLogin={false}
+  {handleSubmit}
+  {isLoading}
+  showLogo={true}
+  bind:formRef
+>
+  <div class="mt-4 w-full {shouldLogout ? 'hidden' : ''}">
+    <p class="mb-6 text-lg font-semibold dark:text-white">
+      {#if data.invite.profile}
+        {$t('login.login_to_join')}
       {:else}
-        Create a free account to join
+        {$t('login.create_to_join')}
       {/if}
     </p>
     <TextField
-      label="Your Email"
-      value={data.email}
+      label={$t('login.fields.email')}
+      value={data.invite.email}
       type="email"
       placeholder="you@domain.com"
       className="mb-6"
       inputClassName="w-full"
       isDisabled={true}
     />
-    {#if !data.profile}
+    {#if $profile?.email !== data.invite.email}
+      {#if !data.invite.profile}
+        <TextField
+          label={$t('login.fields.full_name')}
+          bind:value={fields.name}
+          type="text"
+          autoFocus={true}
+          placeholder="e.g Joke Silva"
+          className="mb-6"
+          inputClassName="w-full"
+          isDisabled={isLoading}
+          errorMessage={errors.name}
+          isRequired
+        />
+      {/if}
       <TextField
-        label="Full Name"
-        bind:value={fields.name}
-        type="text"
-        autoFocus={true}
-        placeholder="e.g Joke Silva"
-        className="mb-6"
-        inputClassName="w-full"
-        isDisabled={loading}
-        errorMessage={errors.name}
-        isRequired
-      />
-    {/if}
-    <TextField
-      label="Your Password"
-      bind:value={fields.password}
-      type="password"
-      placeholder="************"
-      className="mb-6"
-      inputClassName="w-full"
-      isDisabled={loading}
-      errorMessage={errors.password}
-      helperMessage="Password must be more than 6 characters"
-      isRequired
-    />
-    {#if !data.profile}
-      <TextField
-        label="Confirm Password"
-        bind:value={fields.confirmPassword}
+        label={$t('login.fields.password')}
+        bind:value={fields.password}
         type="password"
         placeholder="************"
         className="mb-6"
         inputClassName="w-full"
-        isDisabled={loading}
-        errorMessage={errors.confirmPassword}
+        isDisabled={isLoading}
+        errorMessage={errors.password}
+        helperMessage={$t('login.fields.password_helper_message')}
         isRequired
       />
+      {#if !data.invite.profile}
+        <TextField
+          label={$t('login.fields.confirm_password')}
+          bind:value={fields.confirmPassword}
+          type="password"
+          placeholder="************"
+          className="mb-6"
+          inputClassName="w-full"
+          isDisabled={isLoading}
+          errorMessage={errors.confirmPassword}
+          isRequired
+        />
+      {/if}
     {/if}
     {#if submitError}
       <p class="text-sm text-red-500">{submitError}</p>
     {/if}
   </div>
 
-  <div class="my-4 w-full flex justify-end items-center">
-    <PrimaryButton
-      label="Accept Invite"
-      type="submit"
-      className="sm:w-full w-full"
-      isDisabled={disableSubmit || loading}
-      isLoading={loading}
-    />
+  <div class="my-4 flex w-full items-center justify-end">
+    {#if shouldLogout}
+      <PrimaryButton
+        label="Logout"
+        type="button"
+        className="sm:w-full w-full"
+        isLoading={isLoggingOut}
+        variant={VARIANTS.CONTAINED_DANGER}
+        onClick={async () => {
+          isLoggingOut = true;
+
+          await logout(false);
+
+          isLoggingOut = false;
+          shouldLogout = false;
+        }}
+      />
+    {:else}
+      <PrimaryButton
+        label="Accept Invite"
+        type="submit"
+        className="sm:w-full w-full"
+        isDisabled={disableSubmit}
+        {isLoading}
+      />
+    {/if}
   </div>
 </AuthUI>

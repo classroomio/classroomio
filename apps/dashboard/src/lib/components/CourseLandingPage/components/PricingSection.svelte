@@ -6,11 +6,13 @@
   import { getStudentInviteLink } from '$lib/utils/functions/course';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
+  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import PaymentModal from './PaymentModal.svelte';
   import type { Course } from '$lib/utils/types';
   import { ROLE } from '$lib/utils/constants/roles';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { t } from '$lib/utils/functions/translations';
+  import { calcCourseDiscount } from '$lib/utils/functions/course';
 
   export let className = '';
   export let editMode = false;
@@ -23,13 +25,6 @@
   let discount = 0;
   let formatter: Intl.NumberFormat | undefined;
   let isFree = false;
-
-  function calcDisc(percent: number, cost: number, showDiscount: boolean) {
-    if (!percent || !showDiscount) return cost;
-    const discountAmount = (percent / 100) * cost;
-    const discountedPrice = cost - discountAmount;
-    return Math.round(discountedPrice);
-  }
 
   function handleJoinCourse() {
     if (editMode) return;
@@ -64,7 +59,11 @@
   $: setFormatter(courseData.currency);
 
   $: discount = get(courseData, 'metadata.discount', 0);
-  $: calculatedCost = calcDisc(discount, courseData.cost || 0, !!courseData.metadata.showDiscount);
+  $: calculatedCost = calcCourseDiscount(
+    discount,
+    courseData.cost || 0,
+    !!courseData.metadata.showDiscount
+  );
   $: isFree = isCourseFree(calculatedCost);
   $: startCoursePayment && handleJoinCourse();
 </script>
@@ -79,42 +78,42 @@
 <!-- Pricing Details -->
 {#if mobile}
   <div
-    class="sticky w-full flex items-center justify-center transition duration-300 h-fit bottom-0 lg:hidden bg-gray-50 dark:bg-neutral-800"
+    class="sticky bottom-0 flex h-fit w-full items-center justify-center bg-gray-50 transition duration-300 lg:hidden dark:bg-neutral-800"
   >
     <aside
       class="price-container sticky lg:hidden {editMode
         ? 'lg:bottom-2'
-        : 'lg:top-10'} lg:shadow-2xl lg:rounded-lg m-h-fit bg-gray-50 dark:bg-neutral-800 z-0 {className}"
+        : 'lg:top-10'} m-h-fit z-0 bg-gray-50 lg:rounded-lg lg:shadow-2xl dark:bg-neutral-800 {className}"
     >
       <div class="flex items-center justify-center gap-3 px-3 py-3">
         <!-- Pricing -->
         <div class=" text-center">
           {#if courseData?.metadata?.allowNewStudent}
-            <p class="dark:text-white font-medium text-sm flex items-center gap-1">
+            <p class="flex items-center gap-1 text-sm font-medium dark:text-white">
               {formatter?.format(calculatedCost) || calculatedCost}
               {#if isFree}
-                <span class="text-xs"
-                  >({$t('course.navItem.landing_page.pricing_section.free')})</span
-                >
+                <span class="text-xs">
+                  ({$t('course.navItem.landing_page.pricing_section.free')})
+                </span>
               {/if}
             </p>
             {#if courseData?.metadata?.showDiscount}
-              <p class="dark:text-white font-light text-sm text-gray-500">
+              <p class="text-sm font-light text-gray-500 dark:text-white">
                 {discount}% {$t('course.navItem.landing_page.pricing_section.discount')}.
-                <span class="line-through"
-                  >{formatter?.format(courseData?.cost || 0) || courseData.cost}</span
-                >
+                <span class="line-through">
+                  {formatter?.format(courseData?.cost || 0) || courseData.cost}
+                </span>
               </p>
             {/if}
           {:else}
-            <p class="dark:text-white text-lg">
+            <p class="text-lg dark:text-white">
               {$t('course.navItem.landing_page.pricing_section.not_accepting')}
             </p>
           {/if}
         </div>
 
         <!-- Call To Action Buttons -->
-        <div class="flex flex-col w-full h-full items-center">
+        <div class="flex h-full w-full flex-col items-center">
           <PrimaryButton
             label={isFree
               ? $t('course.navItem.landing_page.pricing_section.enroll')
@@ -131,36 +130,37 @@
   <aside
     class="price-container lg:sticky {editMode
       ? 'lg:top-0'
-      : 'lg:top-10'} lg:shadow-2xl lg:rounded-lg m-h-fit dark:bg-neutral-800 {className}"
+      : 'lg:top-10'} m-h-fit lg:rounded-lg lg:shadow-2xl dark:bg-neutral-800 {className}"
   >
     <div class="p-2 lg:p-10">
       <!-- Pricing -->
       <div class="mb-6">
         {#if courseData?.metadata?.allowNewStudent}
-          <p class="dark:text-white font-medium text-lg">
+          <p class="text-lg font-medium dark:text-white">
             {formatter?.format(calculatedCost) || calculatedCost}
             {#if isFree}
-              <span class="text-sm">({$t('course.navItem.landing_page.pricing_section.free')})</span
-              >
+              <span class="text-sm">
+                ({$t('course.navItem.landing_page.pricing_section.free')})
+              </span>
             {/if}
           </p>
           {#if courseData?.metadata?.showDiscount}
-            <p class="dark:text-white font-light text-sm text-gray-500">
+            <p class="text-sm font-light text-gray-500 dark:text-white">
               {discount}% {$t('course.navItem.landing_page.pricing_section.discount')}.
-              <span class="line-through"
-                >{formatter?.format(courseData?.cost || 0) || courseData.cost}</span
-              >
+              <span class="line-through">
+                {formatter?.format(courseData?.cost || 0) || courseData.cost}
+              </span>
             </p>
           {/if}
         {:else}
-          <p class="dark:text-white text-lg">
+          <p class="text-lg dark:text-white">
             {$t('course.navItem.landing_page.pricing_section.not_accepting')}
           </p>
         {/if}
       </div>
 
       <!-- Call To Action Buttons -->
-      <div class="flex flex-col w-full items-center">
+      <div class="flex w-full flex-col items-center">
         <PrimaryButton
           label={isFree
             ? $t('course.navItem.landing_page.pricing_section.enroll')
@@ -170,7 +170,7 @@
           isDisabled={!courseData.metadata.allowNewStudent}
         />
         {#if courseData?.metadata?.showDiscount && courseData.metadata.allowNewStudent}
-          <p class="dark:text-white font-light text-sm text-gray-500">
+          <p class="text-sm font-light text-gray-500 dark:text-white">
             {$t('course.navItem.landing_page.pricing_section.bird')}
           </p>
         {/if}
@@ -179,8 +179,8 @@
 
     <!-- Gift Container -->
     {#if courseData?.metadata?.reward?.show}
-      <div class="p-10 flex items-center flex-col border-t border-b border-gray-300">
-        {@html get(courseData, 'metadata.reward.description', '')}
+      <div class="flex flex-col items-center border-b border-t border-gray-300 p-10">
+        <HtmlRender content={get(courseData, 'metadata.reward.description', '')} />
       </div>
     {/if}
   </aside>

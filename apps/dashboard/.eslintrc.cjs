@@ -1,3 +1,6 @@
 module.exports = {
-  extends: ['custom/svelte']
+  extends: ['custom/svelte'],
+  rules: {
+    '@typescript-eslint/ban-ts-comment': 'off'
+  }
 };

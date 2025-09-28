@@ -30,7 +30,9 @@
   let comment = '';
   let areCommentsExpanded = false;
   let isDeleteFeedModal = false;
-  let errors = {};
+  let errors: {
+    newComment: string;
+  };
 
   let reactions = {
     smile: '😀',
@@ -58,7 +60,7 @@
 
   const handleAddNewComment = (event) => {
     if (event.key === 'Enter' || event.type === 'click') {
-      errors = addNewsfeedCommentValidation(comment);
+      errors = addNewsfeedCommentValidation(comment) as typeof errors;
       if (Object.keys(errors).length) {
         return;
       }
@@ -230,8 +232,8 @@
         <Send size={24} />
       </button>
     </div>
-    {#if errors.newComment}
-      <p class="text-sm text-red-500">{errors.newComment}</p>
+    {#if errors?.newComment}
+      <p class="text-sm text-red-500">{errors?.newComment}</p>
     {/if}
   </section>
   <DeleteFeedConfirmation bind:openDeleteModal={isDeleteFeedModal} deleteFeed={handleDeleteFeed} />

@@ -2,9 +2,9 @@
   import { onMount } from 'svelte';
   import Download from 'carbon-icons-svelte/lib/Download.svelte';
 
-  import { PUBLIC_SERVER_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import { course } from '$lib/components/Course/store';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -13,6 +13,7 @@
   import { fetchProfileCourseProgress } from '$lib/utils/services/courses';
   import type { ProfileCourseProgress } from '$lib/utils/types';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import { classroomio } from '$lib/utils/services/api';
 
   let isLoading = false;
   let isCourseComplete = false;
@@ -23,24 +24,20 @@
 
     isLoading = true;
     try {
-      const response = await fetch(PUBLIC_SERVER_URL + '/downloadCertificate', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
+      const response = await classroomio.course.download.certificate.$post({
+        json: {
           theme: `${$course.certificate_theme}`,
           studentName: `${$profile.fullname}`,
           courseName: `${$course.title}`,
           courseDescription: `${$course.description}`,
-          orgLogoUrl: `${$currentOrg.avatar_url}`,
+          orgLogoUrl: $currentOrg.avatar_url || `${$currentOrgDomain}/logo-512.png`,
           orgName: `${$currentOrg.name}`
-        })
+        }
       });
-      const data = await response.blob();
-      console.log(data);
-      const file = new Blob([data], { type: 'application/pdf' });
+
+      const blobResponse = await response.blob();
+
+      const file = new Blob([blobResponse], { type: 'application/pdf' });
       const fileURL = URL.createObjectURL(file);
 
       let a = document.createElement('a');
@@ -85,19 +82,19 @@
 </script>
 
 <Box>
-  <div class="flex flex-col items-center justify-center w-max h-full gap-5">
+  <div class="flex h-full w-max flex-col items-center justify-center gap-5">
     <img src="/images/student-certificate-preview.png" alt="Certificate" class="max-w-[218px]" />
-    <p class="text-xl font-normal text-center">
+    <p class="text-center text-xl font-normal">
       {$t(title)}
     </p>
-    <p class="text-sm font-normal text-center max-w-md">
+    <p class="max-w-md text-center text-sm font-normal">
       {$t(subtitle)}
     </p>
     <PrimaryButton
       className="flex items-center gap-2"
       onClick={downLoadCertificate}
       variant={VARIANTS.CONTAINED_DARK}
-      isDisabled={!PUBLIC_SERVER_URL || !isCourseComplete}
+      isDisabled={!env.PUBLIC_SERVER_URL || !isCourseComplete}
       {isLoading}
     >
       <Download size={16} />

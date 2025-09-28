@@ -1,6 +1,6 @@
 <script>
-  import PageNav from '$lib/components/PageNav/index.svelte';
   import CloseButton from '$lib/components/Buttons/Close/index.svelte';
+  import { PageNav } from '$lib/components/Page';
 
   export let handleClose;
 </script>

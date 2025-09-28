@@ -1,5 +1,5 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { config } from '$lib/config';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 export let supabase: SupabaseClient;
 
@@ -21,4 +21,9 @@ export const isSupabaseTokenInLocalStorage = () => {
   }
 
   return false;
+};
+
+export const getAccessToken = async () => {
+  const { data } = await getSupabase().auth.getSession();
+  return data.session?.access_token || '';
 };

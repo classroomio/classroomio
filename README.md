@@ -2,7 +2,7 @@
   <img alt="ClassroomIO is a no-code tool that allows you build and scale your online bootcamp with ease." src="https://raw.githubusercontent.com/rotimi-best/classroomio/main/apps/classroomio-com/static/classroomio-opengraph-image.png" />
   <h1 align="center">ClassroomIO.com</h1>
   <p align="center">
-    Launch Your Online Bootcamp In Minutes
+    The Open Source Learning Management System for Companies
     <br />
     <a href="https://classroomio.com">Website</a>  |  <a href="https://dub.sh/ciodiscord">Join Discord community</a>
   </p>
@@ -26,9 +26,8 @@ At ClassroomIO, our mission is to provide students with the best possible learni
 2. **👨‍👩‍👦 Multi-Teacher Management:** You can invite other teachers into your organization and assign them individual courses.
 3. **🤖 AI Integration:** We've got OpenAI integration for quick course creation where you can generate course content, lesson outlines, and even generate assignments right from your lesson notes.
 4. **💬 Forum:** Students can ask questions in your dedicated community and get answers from either you or other students.
-5. **🏆 Kahoot-Like Quiz:** You can create live quizzes to create more engagement in your classrooms.
-6. **💻 Dedicated Student Dashboard:** Once you create an account, you get a dedicated dashboard where your students can access all their courses, assignments, and more.
-7. **🔒 Fully open source:** You can self-host the entire stack on your servers.
+5. **💻 Dedicated Student Dashboard:** Once you create an account, you get a dedicated dashboard where your students can access all their courses, assignments, and more.
+6. **🔒 Fully open source:** You can self-host the entire stack on your servers.
 
 ### Roadmap Features
 
@@ -63,7 +62,7 @@ To get a local copy up and running, please follow these simple steps.
 
 Here is what you need to be able to run ClassroomIO.com
 
-- [Node.js](https://nodejs.org/) (Version: >=18.x)
+- [Node.js](https://nodejs.org/) (Version: >=22.x)
 - [Supabase CLI](https://github.com/supabase/cli)
 - [Docker](https://docs.docker.com/engine/install/)
 - [NPM](https://www.npmjs.com/)
@@ -73,7 +72,7 @@ Here is what you need to be able to run ClassroomIO.com
 This repo is a mono repo that consists of 3 projects:
 
 1. `classroomio-com`: The landing page of ClassroomIO hosted [here](https://classroomio.com)
-2. `backend`: The backend service that handles PDF, video processing, Emailing and Notifications.
+2. `api`: The api service that handles PDF, video processing, Emailing and Notifications.
 3. `dashboard`: The web application that runs the learning management system hosted [here](https://app.classroomio.com).
 4. `docs`: Official documentation of ClassroomIO hosted [here](https://classroomio.com/docs)
 
@@ -119,7 +118,7 @@ This repo is a mono repo that consists of 3 projects:
 
 4. Set up your `.env` file
 
-   - Go to `apps/classroomio-com`, `apps/dashboard` and `apps/backend`.
+   - Go to `apps/classroomio-com`, `apps/dashboard` and `apps/api`.
    - Duplicate the `.env.example` file and rename it to `.env`
    - Populate your .env files with the neccessary variables
 
@@ -137,7 +136,7 @@ To get the environmental variables for supabase continue to step(5)
    - Go to the project directory in your terminal and start Supabase
 
      ```bash
-       pnpm supabase start
+       pnpm supabase:start
      ```
 
    - You should get a result like this
@@ -155,7 +154,7 @@ To get the environmental variables for supabase continue to step(5)
      service_role key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
      ```
 
-   - Add Supabase environment variables into `app/dashboard` folder, which should be taken from the result of `pnpm supabase start`
+   - Add Supabase environment variables into `app/dashboard` folder, which should be taken from the result of `pnpm supabase:start`
 
      ```env
        PUBLIC_SUPABASE_URL=<API URL>
@@ -163,7 +162,7 @@ To get the environmental variables for supabase continue to step(5)
        PRIVATE_SUPABASE_SERVICE_ROLE=<service_role key>
      ```
 
-   - To view the Supabase studio, open the Studio URL from the result of `pnpm supabase start`
+   - To view the Supabase studio, open the Studio URL from the result of `pnpm supabase:start`
 
 7. Run all projects (in development mode)
 
@@ -173,21 +172,21 @@ To get the environmental variables for supabase continue to step(5)
 
 8. All projects should start running
 
-   - `classroomio-com`: [http://localhost:5173](http://localhost:5173)
-   - `backend`: [http://localhost:3002](http://localhost:3002)
-   - `dashboard`: [http://localhost:5174](http://localhost:5174)
+   - `classroomio-com`: [http://localhost:5174](http://localhost:5174)
+   - `api`: [http://localhost:3002](http://localhost:3002)
+   - `dashboard`: [http://localhost:5173](http://localhost:5173)
    - `docs`: [http://localhost:3000](http://localhost:3000)
 
 9. Running a specific project
 
    - **classroomio-com**: `pnpm dev --filter=classroomio-com`
-   - **backend**: `pnpm dev --filter=backend`
+   - **api**: `pnpm dev --filter=api`
    - **dashboard**: `pnpm dev --filter=dashboard`
    - **docs**: `pnpm dev --filter=docs`
 
 10. Login into `dashboard`
 
-    - Visit [http://localhost:5173/login](http://localhost:5173/login)
+    - Visit [http://localhost:5174/login](http://localhost:5173/login)
     - Enter email: `admin@test.com`
     - Enter password: `123456`
      

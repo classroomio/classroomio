@@ -5,6 +5,7 @@ export enum LOCALE {
   EN = 'en',
   HI = 'hi',
   FR = 'fr',
+  PL = 'pl',
   PT = 'pt',
   DE = 'de',
   VI = 'vi',
@@ -97,11 +98,15 @@ interface CourseMetadata {
     description: string;
     imgUrl: string;
   };
+  certificate?: {
+    templateUrl: string;
+  };
   reviews?: Array<Review>;
   lessonTabsOrder?: Array<Tabs>;
   grading?: boolean;
   lessonDownload?: boolean;
   allowNewStudent: boolean;
+  sectionDisplay?: Record<string, boolean>;
 }
 
 export interface LessonCommentInsertPayload {
@@ -113,10 +118,12 @@ export interface LessonCommentInsertPayload {
   comment: string;
 }
 export interface LessonComment {
+  id: number;
   name: string;
   avatar: string;
   comment: string;
   commentAt: string | Date;
+  groupmember_id: string;
 }
 
 // Generated from https://supabase-schema.vercel.app/
@@ -130,10 +137,13 @@ export interface OrganizationPlan {
   activated_at: string;
   deactivated_at: string;
   org_id: string;
+  subscription_id: string;
+  triggered_by: number;
   plan_name: string;
   is_active: boolean;
   updated_at: string;
-  lmz_data: unknown;
+  payload: unknown;
+  provider: string;
 }
 
 export interface Profile {
@@ -194,10 +204,15 @@ export enum COURSE_TYPE {
   SELF_PACED = 'SELF_PACED',
   LIVE_CLASS = 'LIVE_CLASS'
 }
+export enum COURSE_VERSION {
+  V1 = 'V1', // with only lesson
+  V2 = 'V2' // lessons are grouped into sections
+}
 export interface Course {
   title?: any; // type unknown;
   description: string; // type unknown;
   type: COURSE_TYPE;
+  version: COURSE_VERSION;
   overview?: any; // type unknown;
   id?: string /* primary key */;
   created_at: string;
@@ -225,6 +240,7 @@ export interface Course {
     is_present: boolean;
     id: number;
   }[];
+  lesson_section?: LessonSection[];
   lessons?: Lesson[];
   polls: { status: string }[];
 }
@@ -264,13 +280,27 @@ export interface Group_attendance {
   groupmember?: Groupmember;
 }
 
-export enum VideoType {
-  youtube,
-  muse
-}
+export type LessonVideoType = 'youtube' | 'generic' | 'upload';
+export type LessonDocumentType = any;
+export type LessonVideo = {
+  type: LessonVideoType;
+  link: string;
+  key?: string;
+  metadata?: {
+    svid?: string;
+  };
+};
+export type LessonDocument = {
+  type: LessonDocumentType;
+  name: string;
+  link: string;
+  size?: number;
+  key: string;
+};
 
 export interface LessonPage {
   id?: string | null;
+  title: '';
   totalExercises: number;
   totalComments: number;
   locale: LOCALE;
@@ -279,13 +309,8 @@ export interface LessonPage {
   materials: {
     note: string;
     slide_url: string;
-    videos: Array<{
-      type: string;
-      link: string;
-      metadata?: {
-        svid?: string;
-      };
-    }>;
+    videos: LessonVideo[];
+    documents: LessonDocument[];
   };
   exercises: [];
   lesson_completion: LessonCompletion[];
@@ -305,6 +330,7 @@ export interface Lesson {
   videos?: []; // type unknown;
   slide_url?: any; // type unknown;
   course_id: string /* foreign key to course.id */;
+  section_id?: string /* foreign key to course.id */;
   id: string /* primary key */;
   created_at: string;
   updated_at?: string;
@@ -318,6 +344,16 @@ export interface Lesson {
   course?: Course;
   profile?: Profile;
   lesson_completion: LessonCompletion[];
+  totalExercises?: { count: number }[];
+}
+
+export interface LessonSection {
+  id: string;
+  title: string;
+  order: number;
+  course_id: string /* foreign key to course.id */;
+  lessons: Lesson[];
+  created_at: string;
 }
 
 export interface Exercise {
@@ -395,7 +431,7 @@ export interface Review {
   description: string;
 }
 
-interface Tabs {
+export interface Tabs {
   id: number;
   name: string;
 }

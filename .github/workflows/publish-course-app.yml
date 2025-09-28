@@ -1,0 +1,27 @@
+name: Publish @classroomio/course-app to NPM
+
+on: workflow_dispatch
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.19.3
+          registry-url: 'https://registry.npmjs.org'
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Install, Build & Publish
+        working-directory: packages/course-app
+        run: |
+          pnpm i
+          pnpm build
+          pnpm publish --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

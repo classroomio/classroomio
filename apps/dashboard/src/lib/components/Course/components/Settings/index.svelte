@@ -1,40 +1,41 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { env } from '$env/dynamic/public';
   import {
     CodeSnippet,
-    Grid,
-    Row,
     Column,
-    Toggle,
+    Grid,
+    RadioButton,
     RadioButtonGroup,
-    RadioButton
+    Row,
+    Toggle
   } from 'carbon-components-svelte';
-  import { Restart } from 'carbon-icons-svelte';
-  import { PUBLIC_SERVER_URL } from '$env/static/public';
+  import { ArrowUpRight, Restart } from 'carbon-icons-svelte';
 
-  import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
   import DragAndDrop from './DragAndDrop.svelte';
 
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { settings } from './store';
   import { course } from '$lib/components/Course/store';
-  import type { Course } from '$lib/utils/types';
-  import { updateCourse, deleteCourse } from '$lib/utils/services/courses';
-  import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
-  import { isObject } from '$lib/utils/functions/isObject';
-  import { lessons } from '../Lesson/store/lessons';
-  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
-  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
+  import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
+  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import generateSlug from '$lib/utils/functions/generateSlug';
+  import { isObject } from '$lib/utils/functions/isObject';
   import { t } from '$lib/utils/functions/translations';
+  import { deleteCourse, updateCourse } from '$lib/utils/services/courses';
+  import { currentOrg, currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
+  import type { Course } from '$lib/utils/types';
   import { COURSE_TYPE } from '$lib/utils/types';
+  import { lessons } from '../Lesson/store/lessons';
+  import { settings } from './store';
 
   let isSaving = false;
   let isLoading = false;
@@ -42,8 +43,10 @@
   let errors: {
     title: string | undefined;
     description: string | undefined;
-  } = { title: undefined, description: undefined };
+  };
   let avatar: string | undefined;
+  let hasUnsavedChanges = false;
+  let openDeleteModal = false;
 
   function widgetControl() {
     $handleOpenWidget.open = !$handleOpenWidget.open;
@@ -60,6 +63,7 @@
 
   const downloadCourse = async () => {
     isLoading = true;
+
     try {
       const lessonsList = $lessons.map((lesson) => ({
         lessonTitle: lesson.title,
@@ -68,7 +72,8 @@
         slideUrl: lesson.slide_url || '',
         video: lesson.videos || ''
       }));
-      const response = await fetch(PUBLIC_SERVER_URL + '/downloadCourse', {
+
+      const response = await fetch(env.PUBLIC_SERVER_URL + '/downloadCourse', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -85,6 +90,7 @@
       if (!response.ok) {
         throw new Error(await response.text());
       }
+
       const data = await response.blob();
       const file = new Blob([data], { type: 'application/pdf' });
       const fileURL = URL.createObjectURL(file);
@@ -100,23 +106,26 @@
     } catch (error) {
       snackbar.error('snackbar.course_settings.error.not_right');
     }
+
     isLoading = false;
   };
 
   const deleteBannerImage = () => {
-    $course.logo = '';
+    $settings.logo = '';
+    hasUnsavedChanges = true;
   };
 
   async function handleDeleteCourse() {
     isDeleting = true;
+
     try {
       await deleteCourse($course.id);
-      isDeleting = false;
       goto($currentOrgPath + '/courses');
     } catch (error) {
       snackbar.error('snackbar.course_settings.error.went_wrong');
-      isDeleting = false;
     }
+
+    isDeleting = false;
   }
 
   const handleSave = async () => {
@@ -124,52 +133,40 @@
       errors.title = $t('snackbar.course_settings.error.title');
       return;
     }
+
     if (!$settings.course_description) {
       errors.description = $t('snackbar.course_settings.error.description');
       return;
     }
+
     isSaving = true;
+
     try {
-      const {
-        course_title,
-        course_description,
-        type,
-        logo,
-        tabs,
-        grading,
-        allow_new_students,
-        lesson_download,
-        is_published
-      } = $settings;
-      await updateCourse($course.id, avatar, {
-        title: course_title,
-        description: course_description,
-        type: type,
-        logo: logo,
-        is_published,
+      const updatedCourse = {
+        title: $settings.course_title,
+        description: $settings.course_description,
+        type: $settings.type,
+        logo: $settings.logo,
+        is_published: $settings.is_published,
         metadata: {
           ...(isObject($course.metadata) ? $course.metadata : {}),
-          lessonTabsOrder: tabs,
-          grading: grading,
-          lessonDownload: lesson_download,
-          allowNewStudent: allow_new_students
+          lessonTabsOrder: $settings.tabs,
+          grading: $settings.grading,
+          lessonDownload: $settings.lesson_download,
+          allowNewStudent: $settings.allow_new_students
         },
         slug: $course.slug
-      });
-
-      $course.title = course_title;
-      $course.description = course_description;
-      $course.type = type;
-      $course.logo = logo;
-      $course.is_published = is_published;
-      $course.metadata = {
-        ...(isObject($course.metadata) ? $course.metadata : {}),
-        lessonTabsOrder: tabs,
-        grading: grading,
-        lessonDownload: lesson_download,
-        allowNewStudent: allow_new_students
       };
+      await updateCourse($course.id, avatar, updatedCourse);
+
+      $course = {
+        ...$course,
+        ...updatedCourse
+      };
+
       snackbar.success('snackbar.course_settings.success.saved');
+
+      hasUnsavedChanges = false;
     } catch (error) {
       snackbar.error();
     }
@@ -177,31 +174,37 @@
     isSaving = false;
   };
 
-  function setDefault(course: Course) {
-    if (course && Object.keys(course).length && $settings.course_title !== course.title) {
-      $settings = {
-        course_title: course.title,
-        type: course.type,
-        course_description: course.description,
-        logo: course.logo || '',
-        tabs: course.metadata.lessonTabsOrder || $settings.tabs,
-        grading: !!course.metadata.grading,
-        lesson_download: !!course.metadata.lessonDownload,
-        is_published: !!course.is_published,
-        allow_new_students: course.metadata.allowNewStudent
-      };
-    }
-  }
-
   const generateNewCourseLink = () => {
     $course.slug = generateSlug($course.title);
+    hasUnsavedChanges = true;
   };
 
+  async function setDefault(course: Course) {
+    if (!course || !Object.keys(course).length) return;
+
+    settings.set({
+      course_title: course.title,
+      type: course.type,
+      course_description: course.description,
+      logo: course.logo || '',
+      tabs: course.metadata.lessonTabsOrder || $settings.tabs,
+      grading: !!course.metadata.grading,
+      lesson_download: !!course.metadata.lessonDownload,
+      is_published: !!course.is_published,
+      allow_new_students: course.metadata.allowNewStudent
+    });
+  }
   $: setDefault($course);
+
+  $: courseLink = `${$currentOrgDomain}/course/${$course.slug}`;
 </script>
 
+<UnsavedChanges bind:hasUnsavedChanges />
+
+<DeleteModal onDelete={handleDeleteCourse} bind:open={openDeleteModal} />
+
 <Grid class="border-c rounded border-gray-200 dark:border-neutral-600">
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.cover_image')}</SectionTitle>
       <p>
@@ -209,35 +212,40 @@
       </p>
       <span class="flex items-center justify-start">
         <PrimaryButton
-          variant={VARIANTS.OUTLINED}
+          variant={VARIANTS.CONTAINED_DARK}
           label={$t('course.navItem.settings.replace')}
           className="mr-2"
           onClick={widgetControl}
         />
         <PrimaryButton
-          variant={VARIANTS.CONTAINED_DANGER}
-          label={$t('course.navItem.settings.del')}
+          variant={VARIANTS.OUTLINED}
+          label={$t('ai.reset')}
           onClick={deleteBannerImage}
         />
       </span>
       {#if $handleOpenWidget.open}
-        <UploadWidget bind:imageURL={$settings.logo} />
+        <UploadWidget
+          bind:imageURL={$settings.logo}
+          on:change={() => {
+            hasUnsavedChanges = true;
+          }}
+        />
       {/if}
     </Column>
 
     <Column sm={8} md={8} lg={6}>
-      <div class="w-fit relative z-[20]">
+      <div class="relative z-[20] w-fit">
         <img
           style="min-width:280px; min-height:200px"
           alt="About us"
           src={$settings.logo ? $settings.logo : '/images/classroomio-course-img-template.jpg'}
-          class="mt-2 md:mt-0 w-[280px] h-[200px] rounded-md relative"
+          class="relative mt-2 h-[200px] w-[280px] rounded-md md:mt-0"
         />
       </div>
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row id="share" class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.course_details')}</SectionTitle>
     </Column>
@@ -247,25 +255,37 @@
         label={$t('course.navItem.settings.course_title')}
         placeholder="Write the course title here"
         className="w-full mb-5"
+        isRequired
         bind:value={$settings.course_title}
-        errorMessage={errors.title}
+        errorMessage={errors?.title}
+        onInputChange={() => {
+          hasUnsavedChanges = true;
+        }}
       />
       <TextArea
         label={$t('course.navItem.settings.course_description')}
         placeholder={$t('course.navItem.settings.placeholder')}
         className="w-full mb-5"
+        isRequired
         bind:value={$settings.course_description}
-        errorMessage={errors.description}
+        errorMessage={errors?.description}
+        onChange={() => {
+          hasUnsavedChanges = true;
+        }}
       />
-      <div class="">
-        <p class="text-md flex items-center gap-2 mb-2">
+      <div id="share">
+        <p class="text-md mb-2 flex items-center gap-2">
           {$t('course.navItem.settings.link')}
           <IconButton contained={true} size="small" onClick={generateNewCourseLink}>
             <Restart size={16} />
           </IconButton>
+          <span class="grow" />
+          <IconButton contained={true} size="small" onClick={() => goto(courseLink)}>
+            <ArrowUpRight size={16} />
+          </IconButton>
         </p>
         {#if $course.slug}
-          <CodeSnippet wrapText type="multi" code={`${$currentOrgDomain}/course/${$course.slug}`} />
+          <CodeSnippet wrapText type="multi" code={courseLink} />
         {:else}
           <CodeSnippet code="Setup landing page to get course link" />
         {/if}
@@ -285,16 +305,20 @@
     </Column>
   </Row> -->
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.order')}</SectionTitle>
       <p>{$t('course.navItem.settings.drag')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
-      <DragAndDrop />
+      <DragAndDrop
+        on:change={() => {
+          hasUnsavedChanges = true;
+        }}
+      />
     </Column>
   </Row>
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.lesson_download')}</SectionTitle>
       <p>{$t('course.navItem.settings.available')}</p>
@@ -303,14 +327,20 @@
       {#if $isFreePlan}
         <UpgradeBanner>{$t('upgrade.download_lessons')}</UpgradeBanner>
       {:else}
-        <Toggle size="sm" bind:toggled={$settings.lesson_download}>
+        <Toggle
+          size="sm"
+          bind:toggled={$settings.lesson_download}
+          on:toggle={() => {
+            hasUnsavedChanges = true;
+          }}
+        >
           <span slot="labelA" style="color: gray">{$t('course.navItem.settings.disabled')}</span>
           <span slot="labelB" style="color: gray">{$t('course.navItem.settings.enabled')}</span>
         </Toggle>
       {/if}
     </Column>
   </Row>
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.course_download')}</SectionTitle>
       <p>{$t('course.navItem.settings.course_avail')}</p>
@@ -323,20 +353,26 @@
           variant={VARIANTS.OUTLINED}
           label={$t('course.navItem.settings.download')}
           onClick={downloadCourse}
-          isDisabled={isLoading || !PUBLIC_SERVER_URL}
+          isDisabled={isLoading || !env.PUBLIC_SERVER_URL}
           {isLoading}
         />
       {/if}
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.type')}</SectionTitle>
       <p>{$t('course.navItem.settings.course_type_desc')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
-      <RadioButtonGroup hideLegend bind:selected={$settings.type}>
+      <RadioButtonGroup
+        hideLegend
+        bind:selected={$settings.type}
+        on:change={() => {
+          hasUnsavedChanges = true;
+        }}
+      >
         <RadioButton
           labelText={$t('course.navItem.settings.live_class')}
           value={COURSE_TYPE.LIVE_CLASS}
@@ -349,13 +385,19 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.allow')}</SectionTitle>
       <p>{$t('course.navItem.settings.access')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
-      <Toggle size="sm" bind:toggled={$settings.allow_new_students}>
+      <Toggle
+        size="sm"
+        bind:toggled={$settings.allow_new_students}
+        on:click={() => {
+          hasUnsavedChanges = true;
+        }}
+      >
         <span slot="labelA" style="color: gray">{$t('course.navItem.settings.disabled')}</span>
         <span slot="labelB" style="color: gray">{$t('course.navItem.settings.enabled')}</span>
       </Toggle>
@@ -363,7 +405,7 @@
   </Row>
 
   <!-- Publish Course -->
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.publish')}</SectionTitle>
       <p>{$t('course.navItem.settings.determines')}</p>
@@ -372,9 +414,11 @@
       <Toggle
         size="sm"
         bind:toggled={$settings.is_published}
+        on:click={() => {
+          hasUnsavedChanges = true;
+        }}
         on:toggle={(e) => {
           $settings.allow_new_students = e.detail.toggled;
-
           if (!$course.slug) {
             generateNewCourseLink();
           }
@@ -386,7 +430,7 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row id="delete" class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.delete')}</SectionTitle>
       <p>{$t('course.navItem.settings.delete_text')}</p>
@@ -395,13 +439,13 @@
       <PrimaryButton
         variant={VARIANTS.CONTAINED_DANGER}
         label={$t('course.navItem.settings.delete')}
-        onClick={handleDeleteCourse}
+        onClick={() => (openDeleteModal = true)}
         isLoading={isDeleting}
         isDisabled={isDeleting}
       />
     </Column>
   </Row>
-  <Row class="p-5 w-full flex items-center justify-end">
+  <Row class="flex w-full items-center justify-end p-5">
     <PrimaryButton
       label={$t('course.navItem.settings.save')}
       isLoading={isSaving}

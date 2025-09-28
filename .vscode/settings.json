@@ -1,5 +1,25 @@
 {
   "deno.enable": false,
   "deno.lint": false,
-  "deno.unstable": false
+  "deno.unstable": [
+    "bare-node-builtins",
+    "byonm",
+    "sloppy-imports",
+    "unsafe-proto",
+    "webgpu",
+    "broadcast-channel",
+    "worker-options",
+    "cron",
+    "kv",
+    "ffi",
+    "fs",
+    "http",
+    "net"
+  ],
+  "deno.importMap": "./supabase/functions/import_map.json",
+  "editor.formatOnSave": true,
+  "[svelte]": {
+    "editor.defaultFormatter": "svelte.svelte-vscode"
+  },
+  "vitest.disableWorkspaceWarning": true
 }

@@ -1,6 +1,6 @@
-import { writable } from 'svelte/store';
-import type { User } from '@supabase/supabase-js';
 import { LOCALE } from '../types';
+import type { User } from '@supabase/supabase-js';
+import { writable } from 'svelte/store';
 
 interface UserStore {
   openAuthModal: boolean;
@@ -29,7 +29,7 @@ interface ProfileStore {
 
 export const defaultUserState: UserStore = {
   openAuthModal: false,
-  fetchingUser: false,
+  fetchingUser: true,
   isLoggedIn: false,
   currentSession: undefined,
   expiresAt: 0
@@ -38,8 +38,8 @@ export const defaultUserState: UserStore = {
 export const defaultProfileState: ProfileStore = {
   id: undefined,
   fullname: '',
-  avatar_url: 'https://pbs.twimg.com/profile_images/1416443682157473795/dGtFbtht_normal.jpg',
-  username: 'Elon',
+  avatar_url: '',
+  username: '',
   user_id: '',
   email: '',
   role: '',

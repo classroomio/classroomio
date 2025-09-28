@@ -1,4 +1,4 @@
-export function formatYoutubeVideo(url: string, errors: { video: string }) {
+export function formatYoutubeVideo(url: string, errors: Record<string, string>) {
   console.log(`url`, url);
   const prefix = 'https://www.youtube.com/embed';
 

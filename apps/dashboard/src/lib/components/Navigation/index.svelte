@@ -21,22 +21,24 @@
 </script>
 
 <nav
-  class="{navClass} {backgroundColor} sticky top-0 z-50 flex w-full px-2 py-1 border-t-0 border-r-0 border-b border-l-0 border-gray-300"
+  class="{navClass} {backgroundColor} sticky top-0 z-50 flex w-full border-b border-l-0 border-r-0 border-t-0 border-gray-300 px-2 py-1"
 >
   <ul class="flex w-full items-center">
     <div class="logo">
       <a
         href="/"
         title={`${$t('navigation.goto')} ${orgName || 'ClassroomIO'} ${$t('navigation.home')}`}
-        id="logo"
         data-hveid="8"
       >
         <img
           src={logo || '/logo-192.png'}
           alt={`${orgName || 'ClassroomIO'} logo`}
-          class="rounded w-9 inline-block mx-auto"
+          class="mx-auto inline-block w-9 rounded"
           data-atf="1"
         />
+        {#if orgName}
+          <span class="line-clamp-1 hidden text-sm font-medium md:block">{orgName}</span>
+        {/if}
       </a>
     </div>
 
@@ -137,8 +139,8 @@
     padding: 0 1.5em;
     font-weight: 700;
     display: flex;
+    gap: 0.5rem;
     align-items: center;
-    flex-direction: column;
   }
 
   @media only screen and (max-width: 1002px) {

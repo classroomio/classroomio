@@ -1,30 +1,11 @@
 <script lang="ts">
+  import { ChevronLeft } from 'carbon-icons-svelte';
   import Chip from '$lib/Chip/Chip.svelte';
   import { formatDate } from '$lib/utils/formatDate';
-  import { ChevronLeft } from 'carbon-icons-svelte';
+  import BlogListItem from '$lib/Blog/BlogListItem.svelte';
 
   export let data;
 </script>
-
-<!-- SEO -->
-<svelte:head>
-  <title>{data.meta.title} | ClassroomIO Blog</title>
-  <meta property="og:type" content="article" />
-  <meta property="og:title" content={data.meta.title} />
-
-  <meta property="og:type" content="website" />
-  <meta property="og:image:type" content="image/png" />
-  <meta property="og:image:width" content="1920" />
-  <meta property="og:image:height" content="1080" />
-  <meta property="og:image:secure_url" itemprop="image" content={data.meta.imageUrl} />
-
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta property="twitter:domain" content="classroomio.com" />
-  <meta property="twitter:url" content="https://www.classroomio.com/blog/" />
-  <meta name="twitter:title" content={data.meta.title} />
-  <meta name="twitter:description" content={data.meta.description} />
-  <meta name="twitter:image" content={data.meta.imageUrl} />
-</svelte:head>
 
 <div class=" mt-[10%] md:mt-16">
   {#if data}
@@ -32,7 +13,7 @@
       <!-- Title -->
       <hgroup class="flex flex-col items-center justify-center text-center w-full">
         <p class="text-sm text-gray-500">{formatDate(data.meta.date)}</p>
-        <p class="font-bold text-3xl py-2 text-center md:w-[60%]">{data.meta.title}</p>
+        <p class="font-bold text-3xl py-2 text-center md:w-[60%]">{@html data.meta.title}</p>
       </hgroup>
       <main class="mx-auto max-w-screen-md px-4 lg:px-8">
         <div class="flex items-center justify-start gap-4 my-2 border-y border-gray-200 py-4">
@@ -44,7 +25,7 @@
         </div>
 
         <!-- Post -->
-        <div class="prose pt-2 pb-4 border-b border-gray-200">
+        <div class="prose pt-2 pb-4 border-b-2 border-gray-200">
           <svelte:component this={data.content} />
           <!-- Tags -->
           <div class="flex gap-2 py-4">
@@ -53,6 +34,19 @@
             {/each}
           </div>
         </div>
+
+        {#if data.relatedPosts.length > 0}
+          <section class="mt-5">
+            <p class="text-xl font-semibold">Related Posts</p>
+            <ul class="flex items-start justify-start gap-3 overflow-x-scroll">
+              {#each data.relatedPosts as post}
+                <li class="py-10 min-w-[80%] sm:w-80 sm:min-w-0">
+                  <BlogListItem {post} isRecommended />
+                </li>
+              {/each}
+            </ul>
+          </section>
+        {/if}
 
         <a
           href="/blog"
@@ -70,7 +64,17 @@
     margin-inline: auto;
   }
 
-  h1 {
-    text-transform: capitalize;
+  :global(.prose a) {
+    text-decoration: underline;
+    font-weight: bold;
+  }
+
+  :global(.prose .gallery img) {
+    max-height: 300px;
+    border-radius: 0.375rem;
+  }
+
+  :global(.prose .gallery) {
+    overflow-x: scroll;
   }
 </style>

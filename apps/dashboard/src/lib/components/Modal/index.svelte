@@ -39,7 +39,7 @@
       role="presentation"
     >
       <div
-        class="flex items-center justify-between border border-l-0 border-r-0 border-t-0 border-gray-100 dark:border-neutral-600 p-4 px-5 {headerClass}"
+        class="{headerClass} flex items-center justify-between border border-l-0 border-r-0 border-t-0 border-gray-100 dark:border-neutral-600 p-4 px-5"
       >
         <p class="text-md m-0 font-medium dark:text-white {labelClass}">
           {modalHeading}

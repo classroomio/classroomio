@@ -1,47 +1,51 @@
 <script lang="ts">
-  import isEmpty from 'lodash/isEmpty';
-  import { fade } from 'svelte/transition';
-  import { useCompletion } from 'ai/svelte';
-  import MODES from '$lib/utils/constants/mode.js';
-  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
-  import Modal from '$lib/components/Modal/index.svelte';
-  import { Popover } from 'carbon-components-svelte';
-  import AlignBoxTopLeftIcon from 'carbon-icons-svelte/lib/AlignBoxTopLeft.svelte';
-  import ListIcon from 'carbon-icons-svelte/lib/List.svelte';
-  import IbmWatsonKnowledgeStudioIcon from 'carbon-icons-svelte/lib/IbmWatsonKnowledgeStudio.svelte';
-  import MagicWandFilled from 'carbon-icons-svelte/lib/MagicWandFilled.svelte';
-  import Tabs from '$lib/components/Tabs/index.svelte';
-  import TabContent from '$lib/components/TabContent/index.svelte';
   import Box from '$lib/components/Box/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import AddVideoToLesson from '$lib/components/Course/components/Lesson/Materials/Video/AddVideoToLesson.svelte';
+  import AddDocumentToLesson from '$lib/components/Course/components/Lesson/Materials/Document/AddDocumentToLesson.svelte';
   import {
-    lesson,
-    lessons,
-    lessonByTranslation,
+    deleteLessonVideo,
     handleUpdateLessonMaterials,
     isLessonDirty,
-    uploadCourseVideoStore,
-    deleteLessonVideo
+    lesson,
+    lessonByTranslation,
+    lessons,
+    lessonVideoUpload,
+    lessonDocUpload
   } from '$lib/components/Course/components/Lesson/store/lessons';
-  import VideoUploader from '$lib/components/Course/components/Lesson/Materials/Video/Index.svelte';
   import { course } from '$lib/components/Course/store';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import Modal from '$lib/components/Modal/index.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import TabContent from '$lib/components/TabContent/index.svelte';
+  import Tabs from '$lib/components/Tabs/index.svelte';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import * as CONSTANTS from './constants';
-  import { orderedTabs } from './constants';
+  import MODES from '$lib/utils/constants/mode';
+  import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
+  import { lessonFallbackNote, t } from '$lib/utils/functions/translations';
+  import { currentOrg } from '$lib/utils/store/org';
+  import type { LessonPage, LOCALE } from '$lib/utils/types';
+  import { useCompletion } from 'ai/svelte';
+  import { Popover } from 'carbon-components-svelte';
+  import AlignBoxTopLeftIcon from 'carbon-icons-svelte/lib/AlignBoxTopLeft.svelte';
+  import IbmWatsonKnowledgeStudioIcon from 'carbon-icons-svelte/lib/IbmWatsonKnowledgeStudio.svelte';
+  import ListIcon from 'carbon-icons-svelte/lib/List.svelte';
+  import MagicWandFilled from 'carbon-icons-svelte/lib/MagicWandFilled.svelte';
+  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
+  import isEmpty from 'lodash/isEmpty';
+  import { fade } from 'svelte/transition';
+  import Comments from './components/Comments.svelte';
   import ComponentNote from './components/ComponentNote.svelte';
   import ComponentSlide from './components/ComponentSlide.svelte';
   import ComponentVideo from './components/ComponentVideo.svelte';
-  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import type { LessonPage } from '$lib/utils/types';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
-  import { t, lessonFallbackNote } from '$lib/utils/functions/translations';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import type { LOCALE } from '$lib/utils/types';
+  import ComponentDocument from './components/ComponentDocument.svelte';
+  import * as CONSTANTS from './constants';
+  import { orderedTabs } from './constants';
   import Loader from './Loader.svelte';
 
   export let mode = MODES.view;
@@ -54,13 +58,10 @@
   let localeExists: Record<string, boolean> = {};
   let lessonTitle = '';
   let prevContent = '';
-  let initAutoSave = false;
   let timeoutId: NodeJS.Timeout;
   let tabs = CONSTANTS.tabs;
   let currentTab = tabs[0].value;
-  let errors: {
-    video: string;
-  };
+  let errors: Record<string, string> = {};
   let editorWindowRef: Window;
   let aiButtonRef: HTMLDivElement;
   let openPopover = false;
@@ -143,12 +144,13 @@
     materials: LessonPage['materials'],
     translation: Record<LOCALE, string>
   ) {
-    const { slide_url, videos, note } = materials;
+    const { slide_url, videos, note, documents } = materials;
 
     return (
       isHtmlValueEmpty(note) &&
       !slide_url &&
       isEmpty(videos) &&
+      isEmpty(documents) &&
       Object.values(translation || {}).every((t) => isHtmlValueEmpty(t))
     );
   }
@@ -159,18 +161,20 @@
     }
   }
 
-  function addBadgeValueToTab(materials: LessonPage['materials']) {
-    const { slide_url, videos, note } = materials;
+  function addBadgeValueToTab(materials: LessonPage['materials'], localeContent: string) {
+    const { slide_url, videos, note, documents } = materials;
 
     tabs = tabs.map((tab) => {
       let badgeValue = 0;
 
-      if (tab.value === 1 && !isHtmlValueEmpty(note)) {
+      if (tab.value === 1 && (!isHtmlValueEmpty(note) || !isHtmlValueEmpty(localeContent))) {
         badgeValue = 1;
       } else if (tab.value === 2 && !!slide_url) {
         badgeValue = 1;
       } else if (tab.value === 3 && !isEmpty(videos)) {
-        badgeValue = 1;
+        badgeValue = videos.length;
+      } else if (tab.value === 4 && !isEmpty(documents)) {
+        badgeValue = documents.length;
       }
       tab.badgeValue = badgeValue;
       return tab;
@@ -178,7 +182,7 @@
   }
 
   const openAddVideoModal = () => {
-    $uploadCourseVideoStore.isModalOpen = true;
+    $lessonVideoUpload.isModalOpen = true;
   };
 
   const { input, handleSubmit, completion, isLoading } = useCompletion({
@@ -240,11 +244,6 @@
 
     if (timeoutId) clearTimeout(timeoutId);
 
-    if (!initAutoSave) {
-      initAutoSave = true;
-      return;
-    }
-
     isSaving = true;
     timeoutId = setTimeout(async () => {
       const { error } = await saveLesson(updatedMaterials);
@@ -258,7 +257,6 @@
   }
 
   async function onLessonIdChange(_lid: string) {
-    initAutoSave = false;
     isSaving = false;
 
     tabs = orderedTabs(tabs, $course.metadata?.lessonTabsOrder);
@@ -267,19 +265,31 @@
   }
 
   const onClose = () => {
-    $uploadCourseVideoStore.isModalOpen = false;
+    if ($lessonVideoUpload.isUploading) return;
+
+    $lessonVideoUpload.isModalOpen = false;
+    autoSave($lesson.materials, $lessonByTranslation[lessonId], $isLoading, lessonId);
+  };
+
+  const onDocumentClose = () => {
+    if ($lessonDocUpload.isUploading) return;
+
+    $lessonDocUpload.isModalOpen = false;
+    // Clear any error messages when modal closes
+    $lessonDocUpload.error = null;
+    autoSave($lesson.materials, $lessonByTranslation[lessonId], $isLoading, lessonId);
   };
 
   function getComponentOrder(tabs = CONSTANTS.tabs) {
     const componentMap = {
       '1': ComponentNote,
       '2': ComponentSlide,
-      '3': ComponentVideo
+      '3': ComponentVideo,
+      '4': ComponentDocument
     };
 
     const componentNames = tabs
       .map((tab) => {
-        // @ts-ignore
         const component = componentMap[tab.value];
         return component || null;
       })
@@ -294,13 +304,13 @@
 
   $: handleSave(prevMode);
 
-  $: addBadgeValueToTab($lesson.materials);
+  $: addBadgeValueToTab($lesson.materials, $lessonByTranslation[lessonId]?.[$lesson.locale] || '');
 
   $: updateNoteByCompletion($completion);
 
   $: initPlyr(player, $lesson.materials.videos);
 
-  $: lessonTitle = $lessons.find((les) => les.id === $lesson.id)?.title || '';
+  $: lessonTitle = $lesson.title;
 
   $: editorValue = lessonFallbackNote(
     $lesson.materials.note,
@@ -311,16 +321,25 @@
 
 <Modal
   {onClose}
-  bind:open={$uploadCourseVideoStore.isModalOpen}
+  bind:open={$lessonVideoUpload.isModalOpen}
   width="w-4/5 w-[90%] h-[80%] md:h-[566px]"
   modalHeading={$t('course.navItem.lessons.materials.tabs.video.add_video.title')}
 >
-  <VideoUploader {lessonId} />
+  <AddVideoToLesson {lessonId} />
+</Modal>
+
+<Modal
+  onClose={onDocumentClose}
+  bind:open={$lessonDocUpload.isModalOpen}
+  width="w-4/5 w-[90%] h-[80%] md:h-[566px]"
+  modalHeading={$t('course.navItem.lessons.materials.tabs.document.upload_title')}
+>
+  <AddDocumentToLesson {lessonId} />
 </Modal>
 
 <HtmlRender className="m-auto text-center">
   <svelte:fragment slot="content">
-    <h1 class="text-2xl md:text-4xl mt-0 capitalize">
+    <h1 class="mt-0 text-2xl capitalize md:text-4xl">
       {lessonTitle}
     </h1>
   </svelte:fragment>
@@ -335,7 +354,7 @@
         value={getValue('course.navItem.lessons.materials.tabs.note.title')}
         index={currentTab}
       >
-        <div class="flex gap-1 justify-end">
+        <div class="flex justify-end gap-1">
           <div bind:this={aiButtonRef} class="flex flex-row-reverse">
             <PrimaryButton
               className="flex items-center relative"
@@ -376,7 +395,7 @@
           </div>
         </div>
 
-        <div class="h-[60vh] mt-5">
+        <div class="mt-5 h-[60vh]">
           <TextEditor
             id={lessonId}
             bind:editorWindowRef
@@ -418,7 +437,7 @@
           className="mb-2"
         />
         {#if $lesson.materials.videos.length}
-          <div class="flex flex-col items-start w-full h-full">
+          <div class="flex h-full w-full flex-col items-start">
             {#each $lesson.materials.videos as video, index}
               {#if mode === MODES.edit}
                 <div class="ml-auto">
@@ -431,7 +450,7 @@
                   </IconButton>
                 </div>
               {/if}
-              <div class="w-full h-full flex flex-col gap-2 overflow-hidden">
+              <div class="flex h-full w-full flex-col gap-2 overflow-hidden">
                 {#key video.link}
                   <div class="mb-5">
                     {#if video.type === 'youtube'}
@@ -468,7 +487,13 @@
                         />
                       </div>
                     {:else}
-                      <video bind:this={player} class="plyr-video-trigger" playsinline controls>
+                      <video
+                        bind:this={player}
+                        class="plyr-video-trigger"
+                        style="max-height: 569px;"
+                        playsinline
+                        controls
+                      >
                         <source src={video.link} type="video/mp4" />
                         <track kind="captions" />
                       </video>
@@ -480,25 +505,36 @@
           </div>
         {/if}
       </TabContent>
+      <TabContent
+        value={getValue('course.navItem.lessons.materials.tabs.document.title')}
+        index={currentTab}
+      >
+        <ComponentDocument {mode} />
+      </TabContent>
     </slot:fragment>
   </Tabs>
 {:else if !isMaterialsEmpty($lesson.materials, $lessonByTranslation[lessonId])}
   {#key lessonId}
-    <div class="w-full mb-20" in:fade={{ delay: 500 }} out:fade>
+    <div class="mb-20 flex w-full flex-col gap-6" in:fade={{ delay: 500 }} out:fade>
       {#each componentsToRender as Component}
         <svelte:component this={Component} {lessonId} />
       {/each}
+
+      {#if $currentOrg.customization.apps.comments}
+        <hr class="my-5" />
+        <Comments {lessonId} />
+      {/if}
     </div>
   {/key}
 {:else}
   <Box className="text-center">
     <img src="/no-video.svg" alt="Video not found" />
-    <h3 class="text-xl font-normal dark:text-white py-2">
+    <h3 class="py-2 text-xl font-normal dark:text-white">
       {$t('course.navItem.lessons.materials.body_heading')}
     </h3>
 
     {#if !isStudent}
-      <p class="text-sm text-center font-normal py-2">
+      <p class="py-2 text-center text-sm font-normal">
         {$t('course.navItem.lessons.materials.body_content')}
         <strong>{$t('course.navItem.lessons.materials.get_started')}</strong>
         {$t('course.navItem.lessons.materials.button')}.

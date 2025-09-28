@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Qwitcher+Grypen&family=Roboto:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Certificate</title>
+    <style>
+      .student-name {
+        font-family: 'Qwitcher Grypen', cursive;
+      }
+
+      body {
+        position: relative;
+      }
+    </style>
+  </head>
+
+  <body>
+    <img
+      src="http://localhost:3002/blue-lined-background.png"
+      alt=""
+      class="absolute top-0 left-0 w-full h-[100vh] z-10"
+    />
+    <div class="absolute z-20 left-[5%] top-16 w-[90%]">
+      <header class="w-full flex justify-center items-center pt-10 gap-3 text-3xl font-bold">
+        <img src="${orgLogoUrl}" alt="" />
+        <h1>${orgName}</h1>
+      </header>
+
+      <div class="pl-10 text-lg font-bold mt-[10%]">
+        <h2>This certificate is awarded to</h2>
+        <h1 class="text-3xl text-blue-800">${studentName}</h1>
+      </div>
+
+      <div class="pl-10 text-lg font-bold mt-10 w-[70%]">
+        <h1>has succesfully completed training on</h1>
+        <h2 class="text-4xl leading-[2.5rem]">${courseName}</h2>
+      </div>
+
+      <div class="flex border justify-between w-[70%] mx-auto text-center items-end my-14">
+        <div>
+          <p class="font-bold">${dateIssued}</p>
+          <h1 class="border-t border-black h-2/4 font-bold">Date Issued</h1>
+        </div>
+
+        <div class="w-[20%]">
+          <h1 class="h-2/4 border-b border-black"></h1>
+          <p class="font-bold">Signature</p>
+        </div>
+      </div>
+
+      <footer class="text-sm pl-10 w-[90%] pb-10">${courseDescription}</footer>
+    </div>
+    <!-- plain blueProfessionalBadgePattern -->
+    <!-- <img
+      src="http://localhost:3002/blue-professional-badge-background.png"
+      alt=""
+      class="absolute top-0 left-0 w-full z-10"
+    />
+    <div class="absolute w-full pl-20 top-10 z-20">
+      <header class="w-full flex justify-start items-center pt-10 gap-3 text-3xl font-bold">
+        <svg
+          width="34"
+          height="27"
+          viewBox="0 0 24 17"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M19.2076 9.08656C21.5733 9.08656 23.4911 7.16873 23.4911 4.80302C23.4911 2.43731 21.5733 0.519531 19.2076 0.519531C16.8419 0.519531 14.9241 2.43731 14.9241 4.80302C14.9241 7.16873 16.8419 9.08656 19.2076 9.08656Z"
+            fill="#0542CC"
+          />
+          <path
+            d="M23.5385 10.7793V16.9927H14.1243V14.7333C14.1243 12.568 15.8659 10.7793 18.0783 10.7793H23.5385Z"
+            fill="#0542CC"
+          />
+          <path
+            d="M12.5701 0.519531V16.9945H9.03974C6.78031 16.9945 4.70918 16.0531 3.20289 14.5939C1.69661 13.0876 0.802246 11.0165 0.802246 8.75703C0.802246 4.1911 4.47382 0.519531 9.03974 0.519531H12.5701Z"
+            fill="#0542CC"
+          />
+        </svg>
+        <h1 class="text-[#282828]">Classroom<span class="text-[#0233BD]">IO</span></h1>
+      </header>
+
+      <div class="text-lg font-bold mt-[9%]">
+        <h2>This certificate is awarded to</h2>
+        <h1 class="text-3xl text-blue-800">Usman Elebute Ayomide</h1>
+      </div>
+
+      <div class="text-lg font-bold mt-10 w-[70%]">
+        <h1>has succesfully completed training on</h1>
+        <h2 class="text-5xl mt-3 leading-[3.5rem]">
+          Building fullstack Applications with superbase & Svelte
+        </h2>
+      </div>
+
+      <div class="flex justify-between w-[70%] text-center my-[10%]">
+        <div>
+          <h1 class="h-2/4">DATE ISSUED:</h1>
+          <p class="border-b-2 border-black font-bold">02,May 2024</p>
+        </div>
+
+        <div>
+          <h1 class="h-2/4">FACILITATOR:</h1>
+          <p class="font-bold">ROTIMI BEST</p>
+        </div>
+
+        <div class="w-[20%]">
+          <h1 class="h-2/4 border-b-2 border-black"></h1>
+          <p class="font-bold">Signature</p>
+        </div>
+      </div>
+
+      <footer class="text-sm w-[90%] pb-10">
+        Building full-stack apps with Superbase & Svelte merges robust backend services from
+        Superbase with Svelte's sleek frontend framework. Leveraging PostgreSQL and Svelte's
+        reactivity, developers create efficient, feature-rich web apps. This stack streamlines
+        development, offering scalability and performance for modern applications with minimal
+        overhead.
+      </footer>
+    </div> -->
+
+    <!-- plain purpleProfessionalBadgePattern -->
+    <!-- <img
+      src="http://localhost:3002/purple-professional-badge-background.png"
+      alt=""
+      class="absolute top-0 left-0 w-full z-10"
+    />
+    <div class="absolute w-full pl-20 top-10 z-20">
+      <header class="w-full flex justify-start items-center pt-10 gap-3 text-3xl font-bold">
+        <svg
+          width="34"
+          height="27"
+          viewBox="0 0 24 17"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M19.2076 9.08656C21.5733 9.08656 23.4911 7.16873 23.4911 4.80302C23.4911 2.43731 21.5733 0.519531 19.2076 0.519531C16.8419 0.519531 14.9241 2.43731 14.9241 4.80302C14.9241 7.16873 16.8419 9.08656 19.2076 9.08656Z"
+            fill="#0542CC"
+          />
+          <path
+            d="M23.5385 10.7793V16.9927H14.1243V14.7333C14.1243 12.568 15.8659 10.7793 18.0783 10.7793H23.5385Z"
+            fill="#0542CC"
+          />
+          <path
+            d="M12.5701 0.519531V16.9945H9.03974C6.78031 16.9945 4.70918 16.0531 3.20289 14.5939C1.69661 13.0876 0.802246 11.0165 0.802246 8.75703C0.802246 4.1911 4.47382 0.519531 9.03974 0.519531H12.5701Z"
+            fill="#0542CC"
+          />
+        </svg>
+        <h1 class="text-[#282828]">Classroom<span class="text-[#0233BD]">IO</span></h1>
+      </header>
+
+      <div class="text-lg font-bold mt-[9%]">
+        <h2>This certificate is awarded to</h2>
+        <h1 class="text-3xl text-fuchsia-800">Usman Elebute Ayomide</h1>
+      </div>
+
+      <div class="text-lg font-bold mt-10 w-[70%]">
+        <h1>has succesfully completed training on</h1>
+        <h2 class="text-5xl mt-3 leading-[3.5rem]">
+          Building fullstack Applications with superbase & Svelte
+        </h2>
+      </div>
+
+      <div class="flex justify-between w-[70%] text-center my-[10%]">
+        <div>
+          <h1 class="h-2/4">DATE ISSUED:</h1>
+          <p class="border-b-2 border-black font-bold">02,May 2024</p>
+        </div>
+
+        <div>
+          <h1 class="h-2/4">FACILITATOR:</h1>
+          <p class="font-bold">ROTIMI BEST</p>
+        </div>
+
+        <div class="w-[20%]">
+          <h1 class="h-2/4 border-b-2 border-black"></h1>
+          <p class="font-bold">Signature</p>
+        </div>
+      </div>
+
+      <footer class="text-sm w-[90%] pb-10">
+        Building full-stack apps with Superbase & Svelte merges robust backend services from
+        Superbase with Svelte's sleek frontend framework. Leveraging PostgreSQL and Svelte's
+        reactivity, developers create efficient, feature-rich web apps. This stack streamlines
+        development, offering scalability and performance for modern applications with minimal
+        overhead.
+      </footer>
+    </div> -->
+
+    <!------------------------------------------------------- new secton ---------------------------------------------------- -->
+
+    <!-- PurpleProfessionalBadge certificate -->
+
+    <!-- <img
+      src="http://localhost:3002/purple-lined-background.png"
+      alt=""
+      class="absolute -top-1 left-0 w-full z-10"
+    />
+    <div class="absolute z-20 left-[10%] top-16 w-[90%]">
+      <header class="w-full flex justify-center items-center pt-10 gap-3 text-3xl font-bold">
+        <svg
+          width="34"
+          height="27"
+          viewBox="0 0 24 17"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M19.2076 9.08656C21.5733 9.08656 23.4911 7.16873 23.4911 4.80302C23.4911 2.43731 21.5733 0.519531 19.2076 0.519531C16.8419 0.519531 14.9241 2.43731 14.9241 4.80302C14.9241 7.16873 16.8419 9.08656 19.2076 9.08656Z"
+            fill="#0542CC"
+          />
+          <path
+            d="M23.5385 10.7793V16.9927H14.1243V14.7333C14.1243 12.568 15.8659 10.7793 18.0783 10.7793H23.5385Z"
+            fill="#0542CC"
+          />
+          <path
+            d="M12.5701 0.519531V16.9945H9.03974C6.78031 16.9945 4.70918 16.0531 3.20289 14.5939C1.69661 13.0876 0.802246 11.0165 0.802246 8.75703C0.802246 4.1911 4.47382 0.519531 9.03974 0.519531H12.5701Z"
+            fill="#0542CC"
+          />
+        </svg>
+        <h1 class="text-[#282828]">Classroom<span class="text-[#0233BD]">IO</span></h1>
+      </header>
+
+      <div class="pl-10 text-lg font-bold mt-[10%]">
+        <h2>This certificate is awarded to</h2>
+        <h1 class="text-3xl text-[#95449A]">Usman Elebute Ayomide</h1>
+      </div>
+
+      <div class="pl-10 text-lg font-bold mt-10 w-[70%]">
+        <h1>has succesfully completed training on</h1>
+        <h2 class="text-4xl leading-[2.5rem]">
+          Building fullstack Applications with superbase & Svelte
+        </h2>
+      </div>
+
+      <div class="pl-10 flex justify-between w-[70%] text-center my-[10%]">
+        <div>
+          <h1 class="h-2/4">DATE ISSUED:</h1>
+          <p class="border-b-2 border-black font-bold">02,May 2024</p>
+        </div>
+
+        <div>
+          <h1 class="h-2/4">FACILITATOR:</h1>
+          <p class="font-bold">ROTIMI BEST</p>
+        </div>
+
+        <div class="w-[20%]">
+          <h1 class="h-2/4 border-b-2 border-black"></h1>
+          <p class="font-bold">Signature</p>
+        </div>
+      </div>
+
+      <footer class="text-sm pl-10 w-[90%] pb-10">
+        Building full-stack apps with Superbase & Svelte merges robust backend services from
+        Superbase with Svelte's sleek frontend framework. Leveraging PostgreSQL and Svelte's
+        reactivity, developers create efficient, feature-rich web apps. This stack streamlines
+        development, offering scalability and performance for modern applications with minimal
+        overhead.
+      </footer>
+    </div> -->
+
+    <!-- BlueProfessionalBadge certificate -->
+
+    <!-- <img
+      src="http://localhost:3002/blue-lined-background.png"
+      alt=""
+      class="absolute -top-1 left-0 w-full z-10"
+    />
+    <div class="absolute z-20 left-[10%] top-16 w-[90%]">
+      <header class="w-full flex justify-center items-center pt-10 gap-3 text-3xl font-bold">
+        <img src="${orgLogoUrl}" alt="" />
+        <h1>${orgName}</h1>
+      </header>
+
+      <div class="pl-10 text-lg font-bold mt-[10%]">
+        <h2>This certificate is awarded to</h2>
+        <h1 class="text-3xl">${studentName}</h1>
+      </div>
+
+      <div class="pl-10 text-lg font-bold mt-10 w-[70%]">
+        <h1>has succesfully completed training on</h1>
+        <h2 class="text-4xl leading-[2.5rem]">${courseName}</h2>
+      </div>
+
+      <div class="pl-10 flex justify-between w-[70%] text-center my-[10%]">
+        <div>
+          <h1 class="h-2/4">DATE ISSUED:</h1>
+          <p class="border-b-2 border-black font-bold">02,May 2024</p>
+        </div>
+
+        <div>
+          <h1 class="h-2/4">FACILITATOR:</h1>
+          <p class="font-bold">ROTIMI BEST</p>
+        </div>
+
+        <div class="w-[20%]">
+          <h1 class="h-2/4 border-b-2 border-black"></h1>
+          <p class="font-bold">Signature</p>
+        </div>
+      </div>
+
+      <footer class="text-sm pl-10 w-[90%] pb-10">${courseDescription}</footer>
+    </div> -->
+
+    <!-- --------------------- old certificates ------------------------- -->
+    <!-- <div
+      class="flex items-center justify-center border border-dashed border-blue-400 h-full w-full"
+    >
+      <div class="h-full flex border-l-8 border-blue-800">
+        <div class="h-full w-full px-5 py-10">
+          <p class="text-2xl font-normal my-2 mb-10 uppercase text-gray-500">
+            Certificate<br />
+            of completion
+          </p>
+          <div class="border-b border-gray-500 mb-4">
+            <p class="text-xl text-black font-normal">This is to certify that</p>
+            <p class="student-name text-center text-9xl">Rotimi Best</p>
+          </div>
+          <div class="mb-2">
+            <p class="text-xl text-black font-normal">
+              has successfully completed introductory courses in
+            </p>
+            <div>
+              <p
+                class="bg-transparent font-semibold text-blue-800 text-center uppercase my-10 text-3xl"
+              >
+                Figma for Beginners
+              </p>
+            </div>
+          </div>
+          <p class="text-xl font-light mb-4 text-justify">
+            Netlify Functions can stream data to clients as it becomes available, rather than
+            returning a buffered payload at the end of the computation. This lets developers and
+            frameworks create faster experiences by using streaming and partial hydration to get
+            content and interactions in front of people as quickly as possible. For an extended
+            example that demonstrates a more likely response streaming use case, consider this
+            function
+          </p>
+          <div class="flex justify-between w-[70%] mx-auto text-center my-14">
+            <div>
+              <h1 class="h-2/4">DATE ISSUED:</h1>
+              <p class="border-b border-black font-bold">02,May 2024</p>
+            </div>
+
+            <div>
+              <h1 class="h-2/4">FACILITATOR:</h1>
+              <p class="font-bold">ROTIMI BEST</p>
+            </div>
+
+            <div class="w-[20%]">
+              <h1 class="h-2/4 border-b border-black"></h1>
+              <p class="font-bold">Signature</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 mt-14">
+            <img
+              src="https://koxqonvbkeakwvmdegcf.supabase.co/storage/v1/object/public/avatars/user/Coding%20Dojo1684164720355.webp"
+              alt="logo"
+              class="w-24 h-24 rounded-md"
+            />
+            <p class="font-semibold capitalize text-5xl">Coding Dojo</p>
+          </div>
+        </div>
+      </div>
+    </div> -->
+    <!-- <div
+      class="flex flex-col items-center justify-center border-4 border-pink-700 py-3 w-full h-full"
+    >
+      <div class="flex items-center gap-1 my-2 mb-10">
+        <img
+          src="https://koxqonvbkeakwvmdegcf.supabase.co/storage/v1/object/public/avatars/user/Coding%20Dojo1684164720355.webp"
+          alt="logo"
+          class="w-24 h-24 rounded-md"
+        />
+        <p class="font-semibold capitalize text-5xl">Coding Dojo</p>
+      </div>
+      <div class="w-full px-5 py-3">
+        <p
+          class="text-xl text-center font-normal my-2 uppercase tracking-widest text-gray-500 w-full"
+        >
+          Certificate of completion
+        </p>
+        <div class="border-b border-gray-500 mb-4">
+          <p class="text-xl text-black font-normal">This is to certify that</p>
+          <p class="student-name text-center text-8xl">Rotimi Best</p>
+        </div>
+        <div class="mb-2">
+          <p class="text-xl text-black font-normal">has successfully completed a courses in</p>
+          <div class="my-10">
+            <p class="bg-transparent font-semibold text-pink-700 text-center uppercase text-3xl">
+              Figma for Beginners
+            </p>
+          </div>
+        </div>
+        <p class="text-xl text-center text-gray-500 font-light">
+          Netlify Functions can stream data to clients as it becomes available, rather than
+          returning a buffered payload at the end of the computation. This lets developers and
+          frameworks create faster experiences by using streaming and partial hydration to get
+          content and interactions in front of people as quickly as possible. For an extended
+          example that demonstrates a more likely response streaming use case, consider this
+          function
+        </p>
+
+        <div class="flex justify-between w-[70%] mx-auto text-center my-14">
+          <div>
+            <h1 class="h-2/4">DATE ISSUED:</h1>
+            <p class="border-b border-black font-bold">02,May 2024</p>
+          </div>
+
+          <div>
+            <h1 class="h-2/4">FACILITATOR:</h1>
+            <p class="font-bold">ROTIMI BEST</p>
+          </div>
+
+          <div class="w-[20%]">
+            <h1 class="h-2/4 border-b border-black"></h1>
+            <p class="font-bold">Signature</p>
+          </div>
+      </div>
+    </div> -->
+  </body>
+</html>

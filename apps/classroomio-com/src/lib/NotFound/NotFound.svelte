@@ -32,7 +32,7 @@
       class="text-base rounded-md bg-black transition-all delay-100 hover:shadow-xl hover:scale-95 px-6 py-4 font-semibold text-white lg:px-7 lg:py-3 lg:text-lg"
       on:click={handleClick}
     >
-      Go to Home
+      Go Home
     </button>
   </div>
 </div>

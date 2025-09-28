@@ -1,12 +1,15 @@
-import { writable, derived } from 'svelte/store';
-import { dev, browser } from '$app/environment';
-import { STEPS } from '../constants/quiz';
-import type { Writable } from 'svelte/store';
-import type { CurrentOrg, OrgTeamMember, OrgAudience } from '../types/org';
-import { ROLE } from '$lib/utils/constants/roles';
-import type { UserLessonDataType } from '$lib/utils/types';
-import { PLAN } from 'shared/src/plans/constants';
+import type { CurrentOrg, OrgAudience, OrgTeamMember } from '../types/org';
+import { browser, dev } from '$app/environment';
+import { derived, writable } from 'svelte/store';
 
+import { PLAN } from 'shared/src/plans/constants';
+import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
+import { ROLE } from '$lib/utils/constants/roles';
+import { STEPS } from '../constants/quiz';
+import type { UserLessonDataType } from '$lib/utils/types';
+import type { Writable } from 'svelte/store';
+
+// Trigger build
 export const defaultCurrentOrgState: CurrentOrg = {
   id: '',
   name: '',
@@ -22,35 +25,62 @@ export const defaultCurrentOrgState: CurrentOrg = {
     dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' }
   },
   theme: '',
-  organization_plan: []
+  organization_plan: [],
+  is_restricted: false
 };
 
 export const orgs = writable<CurrentOrg[]>([]);
 export const currentOrg: Writable<CurrentOrg> = writable(defaultCurrentOrgState);
 export const orgAudience = writable<OrgAudience[]>([]);
 export const orgTeam = writable<OrgTeamMember[]>([]);
-export const isOrgAdmin = derived(currentOrg, ($currentOrg) => $currentOrg.role_id === ROLE.ADMIN);
+export const isOrgAdmin = derived(currentOrg, ($currentOrg) => {
+  if ($currentOrg.role_id === 0) return null;
 
-export const currentOrgPlan = derived(currentOrg, ($currentOrg) =>
-  $currentOrg.organization_plan.find((p) => p.is_active)
-);
+  return $currentOrg.role_id === ROLE.ADMIN;
+});
+
+const getActivePlan = (org: CurrentOrg) => {
+  return org.organization_plan.find((p) => p.is_active);
+};
+
+export const currentOrgPlan = derived(currentOrg, ($currentOrg) => getActivePlan($currentOrg));
+
 export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
   $currentOrg.siteName ? `/org/${$currentOrg.siteName}` : ''
 );
+
 export const currentOrgDomain = derived(currentOrg, ($currentOrg) => {
   const browserOrigin = dev && browser && window.location.origin;
+
+  // Get the root domain from window.location
+  let rootDomain = '';
+  if (browser && typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    const parts = host.split('.');
+    if (parts.length >= 2) {
+      rootDomain = parts.slice(-2).join('.');
+    } else {
+      rootDomain = host;
+    }
+  }
+
   return browserOrigin
     ? browserOrigin
-    : $currentOrg.siteName
-      ? `https://${$currentOrg.siteName}.classroomio.com`
-      : '';
+    : $currentOrg.customDomain && $currentOrg.isCustomDomainVerified
+      ? `https://${$currentOrg.customDomain}`
+      : $currentOrg.siteName
+        ? `https://${$currentOrg.siteName}.${rootDomain}`
+        : '';
 });
 
-// Utility org store
-export const isFreePlan = derived(
-  currentOrgPlan,
-  ($plan) => !$plan || $plan.plan_name === PLAN.BASIC
-);
+export const isFreePlan = derived(currentOrg, ($currentOrg) => {
+  if (!$currentOrg.id || PUBLIC_IS_SELFHOSTED === 'true') return false;
+
+  const plan = getActivePlan($currentOrg);
+
+  return !plan || plan.plan_name === PLAN.BASIC;
+});
+
 export const currentOrgMaxAudience = derived(currentOrgPlan, ($plan) =>
   !$plan
     ? 20
@@ -75,9 +105,31 @@ export const deleteModal = writable({
   isQuestion: false
 });
 
-export const quizesStore = writable([]);
+interface QuizOption {
+  id: number;
+  label: string;
+  isCorrect: boolean;
+}
 
-export const quizStore = writable({
+interface QuizQuestion {
+  id: number;
+  label: string;
+  type: string;
+  options: QuizOption[];
+}
+
+interface QuizStore {
+  uuid: string;
+  title: string;
+  questions: QuizQuestion[];
+  timelimit: string;
+  theme: string;
+  pin: string;
+}
+
+export const quizesStore = writable<QuizStore[]>([]);
+
+export const quizStore = writable<QuizStore>({
   uuid: '',
   title: '',
   questions: [],

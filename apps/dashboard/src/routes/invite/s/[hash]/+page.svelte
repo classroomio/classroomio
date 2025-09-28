@@ -72,10 +72,12 @@
       }) || [];
 
     addGroupMember(member).then((addedMember) => {
-      loading = false;
       if (addedMember.error) {
         console.error('Error adding student to group', courseData.group_id, addedMember.error);
         snackbar.error('snackbar.invite.failed_join');
+
+        // Full page load to lms if error joining, probably user already joined
+        window.location.href = '/lms';
         return;
       }
 
@@ -92,13 +94,17 @@
         courseName: data.name
       });
 
-      // Send notification to teacher(s) that a student has joined the course.
-      triggerSendEmail(NOTIFICATION_NAME.TEACHER_STUDENT_JOINED, {
-        to: teachers[0],
-        courseName: data.name,
-        studentName: $profile.fullname,
-        studentEmail: $profile.email
-      });
+      // Send notification to all teacher(s) that a student has joined the course.
+      Promise.all(
+        teachers.map((email) =>
+          triggerSendEmail(NOTIFICATION_NAME.TEACHER_STUDENT_JOINED, {
+            to: email,
+            courseName: data.name,
+            studentName: $profile.fullname,
+            studentEmail: $profile.email
+          })
+        )
+      );
 
       // go to lms
       return goto('/lms');
@@ -125,22 +131,22 @@
   {supabase}
   isLogin={false}
   {handleSubmit}
-  isLoading={loading}
+  isLoading={loading || !$profile.id}
   showOnlyContent={true}
   showLogo={true}
   bind:formRef
 >
   <div class="mt-0 w-full">
-    <h3 class="dark:text-white text-lg font-medium mt-0 mb-4 text-center">{data.name}</h3>
-    <p class="dark:text-white text-sm font-light text-center">{data.description}</p>
+    <h3 class="mb-4 mt-0 text-center text-lg font-medium dark:text-white">{data.name}</h3>
+    <p class="text-center text-sm font-light dark:text-white">{data.description}</p>
   </div>
 
-  <div class="my-4 w-full flex justify-center items-center">
+  <div class="my-4 flex w-full items-center justify-center">
     <PrimaryButton
       label="Join Course"
       type="submit"
       isDisabled={disableSubmit || loading}
-      isLoading={loading}
+      isLoading={loading || !$profile.id}
     />
   </div>
 </AuthUI>

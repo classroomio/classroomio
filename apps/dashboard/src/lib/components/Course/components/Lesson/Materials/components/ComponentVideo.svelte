@@ -1,29 +1,41 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
   import { lesson } from '../../store/lessons';
 
-  let errors = {};
-  let player = null;
+  let errors: Record<string, string> = {};
+  let videoElements: (HTMLVideoElement | null)[] = [];
 
-  function initPlyr(_player: any, _video: string | undefined) {
-    if (!_player) return;
-
-    const players = Array.from(document.querySelectorAll('.plyr-video-trigger')).map((p) => {
-      // @ts-ignore
-      return new Plyr(p);
-    });
-
-    // @ts-ignore
-    window.players = players;
+  function initPlyr() {
+    if (typeof (window as any).Plyr === 'undefined') {
+      console.warn('Plyr is not defined. Make sure it is properly imported.');
+      return;
+    }
+    const players = Array.from(document.querySelectorAll('.plyr-video-trigger')).map(
+      (p) => new (window as any).Plyr(p as HTMLElement)
+    );
+    if (typeof window !== 'undefined') {
+      (window as any).players = players;
+    }
   }
 
-  $: initPlyr(player, $lesson.materials.videos);
+  $: {
+    videoElements = videoElements.slice(0, $lesson.materials.videos.length);
+    videoElements = [
+      ...videoElements,
+      ...Array($lesson.materials.videos.length - videoElements.length).fill(null)
+    ];
+  }
+
+  onMount(() => {
+    initPlyr();
+  });
 </script>
 
 {#if $lesson.materials.videos.length}
   <div class="w-full">
-    {#each $lesson.materials.videos as video}
-      <div class="w-full overflow-hidden mb-5">
+    {#each $lesson.materials.videos as video, index}
+      <div class="mb-5 w-full overflow-hidden">
         {#key video.link}
           <div class="mb-5">
             {#if video.type === 'youtube'}
@@ -58,7 +70,13 @@
                 />
               </div>
             {:else}
-              <video bind:this={player} class="plyr-video-trigger" playsinline controls>
+              <video
+                bind:this={videoElements[index]}
+                class="plyr-video-trigger iframe h-full w-full"
+                playsinline
+                controls
+                style="aspect-ratio: 16/9;"
+              >
                 <source src={video.link} type="video/mp4" />
                 <track kind="captions" />
               </video>

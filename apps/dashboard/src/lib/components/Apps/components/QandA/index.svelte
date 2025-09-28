@@ -1,9 +1,9 @@
 <script>
-  import CheckmarkOutline from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
-  import PageNav from '$lib/components/PageNav/index.svelte';
   import CloseButton from '$lib/components/Buttons/Close/index.svelte';
-  import Vote from '$lib/components/Vote/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
+  import { PageNav } from '$lib/components/Page';
+  import Vote from '$lib/components/Vote/index.svelte';
+  import CheckmarkOutline from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
 
   export let handleClose;
   let bodyRef;
@@ -95,10 +95,10 @@
 
 <div bind:this={bodyRef} class="body">
   {#each questions as question}
-    <div class="flex items-start ml-2 mb-2 mt-2">
+    <div class="mb-2 ml-2 mt-2 flex items-start">
       <Vote bind:value={question.vote} />
       <div class="ml-2 flex-grow">
-        <p class="dark:text-white text-sm font-bold">{question.name}</p>
+        <p class="text-sm font-bold dark:text-white">{question.name}</p>
         <article class="prose prose-sm sm:prose">
           {question.question}
         </article>

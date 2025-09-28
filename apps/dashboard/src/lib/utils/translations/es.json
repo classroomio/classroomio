@@ -43,7 +43,8 @@
     },
     "lessons": {
       "error": {
-        "try_later": "Algo no está bien. Inténtelo más tarde."
+        "try_later": "Algo no está bien. Inténtelo más tarde.",
+        "exercise_not_complete": "Completa todos los ejercicios para marcarlos como completos."
       },
       "success": {
         "complete_marked": "Marcado como completo",
@@ -159,7 +160,8 @@
     "generic": {
       "success_delete": "Borrado exitosamente",
       "try_again": "Error: inténtelo de nuevo más tarde"
-    }
+    },
+    "success_delete": "Eliminado exitosamente"
   },
   "exercises": {
     "heading": "Ejercicios",
@@ -194,7 +196,8 @@
     "team_members": "Miembros del equipo",
     "back": "Volver a configuración",
     "download_lessons": "Actualice para descargar lecciones",
-    "download_course": "Actualizar para descargar el curso"
+    "download_course": "Actualizar para descargar el curso",
+    "domain": "Actualice su plan para agregar dominios personalizados"
   },
   "audience": {
     "title": "Audiencia",
@@ -390,9 +393,18 @@
             "goals": "Objetivos",
             "reviews": "Reseñas",
             "instructor": "Instructor",
-            "pricing": "Precios"
+            "pricing": "Precios",
+            "certificate": "Certificado"
+          },
+          "display_section": "Sección de visualización",
+          "certificate_form": {
+            "upload_template": "Plantilla de certificado"
           }
-        }
+        },
+        "course_content": "Contenido del curso",
+        "modules": "módulos",
+        "lessons": "lecciones",
+        "exercises": "ceremonias"
       },
       "certificates": {
         "title": "Certificados",
@@ -469,13 +481,19 @@
           "invite_sent": "Invitar enviado",
           "you": "Tú",
           "remove": "Eliminar"
-        }
+        },
+        "view": "Vista",
+        "delete_profile": "Eliminar perfil"
       },
       "marks": {
         "title": "Marcas",
         "student": "Alumno",
         "total": "Total",
-        "no_student": "No se agregó ningún estudiante"
+        "no_student": "No se agregó ningún estudiante",
+        "export": {
+          "csv": "Exportar como CSV",
+          "pdf": "Exportar como PDF"
+        }
       },
       "submissions": {
         "title": "Ejercicios enviados",
@@ -501,7 +519,11 @@
           "total_try": "de intentos totales:",
           "options_correct": "se seleccionaron las opciones correctas",
           "out_of": "fuera de",
-          "options_wrong": "y el número de selecciones incorrectas fue"
+          "options_wrong": "y el número de selecciones incorrectas fue",
+          "questions_tried": "Se asignó esta puntuación debido al total de intentos:",
+          "delete_prompt": "Borrar",
+          "delete_error": "No se pudo eliminar el envío",
+          "delete_success": "Envío eliminado correctamente"
         }
       },
       "attendance": {
@@ -558,7 +580,11 @@
         "comments": {
           "title": "Comentarios",
           "you": "Tú",
-          "placeholder": "Di algo"
+          "placeholder": "Di algo",
+          "text_area_title": "Deja un comentario",
+          "comment_btn": "Comentario",
+          "load_more_btn": "Cargar más",
+          "cancel_btn": "Cancelar"
         },
         "exercises": {
           "heading": "Todos los ejercicios",
@@ -716,7 +742,9 @@
                 "upgrade": "Actualiza tu plan para subir videos",
                 "uploading": "Subiendo...",
                 "invalid_youtube": "Enlace(s) de YouTube no válido(s)",
-                "invalid_link": "Enlace(s) no válido(s)"
+                "invalid_link": "Enlace(s) no válido(s)",
+                "cancel_upload": "Cancelar la carga",
+                "upload_cancelled": "Carga cancelada por el usuario"
               }
             },
             "slide": {
@@ -732,18 +760,48 @@
                 "note": "Generar nota de lección",
                 "activities": "Generar actividades lectivas"
               }
+            },
+            "document": {
+              "title": "Documento",
+              "add_document": "Agregar documento",
+              "no_document": "No hay documentos cargados todavía",
+              "view_document": "Ver documento",
+              "download": "Descargar",
+              "upload_document": "Cargar documento",
+              "upload_title": "Cargar documento",
+              "upload_description": "Sube archivos PDF, DOCX o DOC. Tamaño máximo: 5 MB",
+              "drag_drop": "Arrastre y suelte su documento aquí",
+              "or": "o",
+              "choose_file": "Elija archivo",
+              "cancel": "Cancelar",
+              "uploading": "Subiendo ...",
+              "upload_success": "¡Documento cargado con éxito!",
+              "upload_error": "No se pudo subir al documento",
+              "file_type_error": "Tipo de archivo no compatible. Sube archivos PDF, DOCX o DOC.",
+              "file_size_error": "Tamaño de archivo demasiado grande. El tamaño máximo es {tamaño}.",
+              "type": "Tipo",
+              "size": "Tamaño",
+              "upload_error_title": "Error de carga",
+              "upload_error_message": "Falló el formato de archivo o la carga no compatible",
+              "upload_error_try_again": "Vuelva a intentarlo con un archivo de documento válido",
+              "try_again": "Intentar otra vez",
+              "cancel_upload": "Cancelar la carga",
+              "upload_cancelled": "Carga cancelada por el usuario",
+              "downloading": "Descarga ...",
+              "view_pdf": "Ver PDF",
+              "delete": "Borrar",
+              "page_of": "Página {page} de {total}",
+              "loading_pdf": "Cargando PDF ...",
+              "failed_to_load_pdf": "No se pudo cargar el documento PDF",
+              "failed_to_render_pdf": "No se pudo renderizar la página de PDF",
+              "use_arrow_keys": "Use las teclas de flecha para navegar, +/- para hacer zoom o hacer clic en los controles anteriores. El clic derecho está deshabilitado.",
+              "upgrade": "Actualice su plan para cargar documentos"
             }
           }
         },
         "lesson_nav": {
           "materials": "Materiales",
           "exercises": "Ejercicios"
-        },
-        "delete_lesson": {
-          "modal_heading": "Borrar",
-          "content": "Estas seguro que quieres borrarlo:",
-          "no": "No",
-          "yes": "Sí"
         },
         "add_lesson": {
           "button_title": "Agregar",
@@ -757,7 +815,10 @@
           "lock": "Cerrar",
           "unlock": "desbloquear",
           "start_reorder": "Reordenar",
-          "end_reorder": "Finalizar reorden"
+          "end_reorder": "Finalizar reorden",
+          "modal_heading_section": "Agregar nueva sección",
+          "lesson_section_title": "Título de la sección",
+          "cancel": "Cancelar"
         },
         "disabled": "La característica está deshabilitada",
         "next": "Próximo",
@@ -770,7 +831,16 @@
         },
         "drag": "arrastra una tarjeta para reordenar",
         "no_lesson": "Aún no hay lecciones",
-        "share_your_knowledge": "Comparta sus conocimientos con el mundo creando lecciones interesantes. Comience haciendo clic en el botón Agregar."
+        "share_your_knowledge": "Comparta sus conocimientos con el mundo creando lecciones interesantes. Comience haciendo clic en el botón Agregar.",
+        "heading_v2": "Contenido",
+        "section_prompt": {
+          "cta": "Habilitar secciones",
+          "header": "Habilitar secciones",
+          "title": "Lanzamos secciones del curso",
+          "description": "Ahora puede agrupar lecciones en secciones para organizar su contenido y facilitar el aprendizaje de sus alumnos.",
+          "activate": "Activar",
+          "cancel": "Cancelar"
+        }
       },
       "news_feed": {
         "heading": "Noticias",
@@ -797,18 +867,22 @@
           "cancel": "Cancelar",
           "post": "Correo"
         }
+      },
+      "analytics": {
+        "title": "Analítica"
       }
     },
     "navItems": {
       "nav_news_feed": "Noticias",
-      "nav_lessons": "Lecciones",
       "nav_attendance": "Asistencia",
       "nav_submissions": "Envíos",
       "nav_marks": "Marcas",
       "nav_people": "Gente",
       "nav_certificates": "Certificados",
       "nav_landing_page": "Página de destino",
-      "nav_settings": "Ajustes"
+      "nav_settings": "Ajustes",
+      "nav_content": "Contenido",
+      "nav_analytics": "Analítica"
     },
     "not_permitted": {
       "header": "Sin autorización",
@@ -883,16 +957,6 @@
     "create_course": "Crear curso",
     "view_site": "Ver sitio",
     "visit_site": "Visita el sitio web",
-    "hero_content": "Gracias por lo que haces ❤️. Estás cambiando vidas aula a aula y gracias a ti, el mundo es un lugar mejor. 😊",
-    "hero_button": "Sigue construyendo 🚀",
-    "your_schedule": "Tu agenda",
-    "today": "Hoy",
-    "yesterday": "Ayer",
-    "tomorrow": "Mañana",
-    "no_schedule": "No hay lección en este día",
-    "join_call": "Unirse a la llamada",
-    "click_to_join": "Haga clic para unirse a la llamada",
-    "no_call_link": "No se agregó ningún enlace de llamada para esta lección. Pregúntale a tu entrenador",
     "current_lesson": "Actualmente aprendiendo",
     "your_progress": "Su progreso",
     "continue": "Continuar",
@@ -901,7 +965,23 @@
     "lms_dashboard_hero": "Hoy es otro día para acercarte a tus objetivos de aprendizaje. No te rindas, cuanto más aprendas, mejor serás.",
     "dont": "no te rindas",
     "lessons_completed": "Lecciones completadas",
-    "No_courses_started": "No se iniciaron cursos"
+    "no_courses_started": "No se iniciaron cursos",
+    "revenue": "Ganancia",
+    "revenue_description": "Ingresos aproximados obtenidos de las ventas de cursos",
+    "no_of_courses": "Número de cursos",
+    "no_courses_description": "Cursos creados dentro de esta organización.",
+    "total_students": "Estudiantes totales",
+    "total_students_description": "Basado en la matrícula de estudiantes",
+    "top_courses": "Cursos principales",
+    "students": "estudiantes",
+    "completion": "terminación",
+    "create_first_course": "Crea tu primer curso",
+    "create_first_course_description": "Comience a crear cursos para realizar un seguimiento del progreso del curso",
+    "recent_enrollments": "Inscripciones recientes",
+    "publish_first_course": "Publica tu primer curso",
+    "publish_first_course_description": "Para realizar un seguimiento de las inscripciones, publicar un curso e invitar a estudiantes",
+    "publish_course": "Publicar curso",
+    "student": "alumno"
   },
   "schedule": {
     "title": "Tu agenda",
@@ -914,12 +994,24 @@
     "settings": {
       "domains": {
         "add": "Agregar",
-        "work_together": "Agregue sus compañeros de equipo o colaboradores a su organización. Empezar a trabajar juntos",
         "url": "URL",
         "update": "Actualizar dominio",
         "custom": "Dominio personalizado",
         "domain": "Añade tu propio nombre de dominio",
-        "title": "Dominio personalizado"
+        "title": "Dominio personalizado",
+        "save": "Ahorrar",
+        "your_domain": "Tu dominio",
+        "custom_domain_error": "No puede agregar un dominio de nivel superior como dominio personalizado. En su lugar, utilice un subdominio como 'cursos.[susitio web].com' o 'www.[susitio web].com'.",
+        "custom_domain_success": "Dominio personalizado agregado exitosamente",
+        "dns_description": "Establezca el siguiente registro en su proveedor de DNS para continuar:",
+        "dns_type": "Tipo",
+        "dns_value": "Valor",
+        "dns_name": "Nombre",
+        "refresh": "Refrescar",
+        "remove": "Eliminar",
+        "custom_favicon": "favicon personalizado",
+        "custom_code": "código personalizado",
+        "custom_domain_not_classroomio": "El dominio no puede contener 'classroomio'"
       },
       "customize-lms": {
         "title": "Personalizar LMS",
@@ -1075,7 +1167,8 @@
       "learn": "Aprende más",
       "month": "mes",
       "monthly": "Mensual",
-      "annually": "Anualmente"
+      "annually": "Anualmente",
+      "save": "Ahorra 2 meses"
     },
     "plan_names": {
       "free": "Gratis",
@@ -1101,8 +1194,9 @@
       "sub_title": "Detalles de facturación",
       "manage": "Gestiona tu facturación",
       "active": "No tienes ninguna facturación activa",
-      "lemonsqueezy": "Usamos Lemonsqueezy para ayudarlo a administrar su facturación",
-      "open_billing": "Facturación abierta"
+      "open_billing": "Facturación abierta",
+      "provider": "Usamos Polar para ayudarte a gestionar tu facturación",
+      "error": "Se produjo un error al abrir la facturación."
     },
     "integrations": {
       "heading": "Telegrama",
@@ -1187,6 +1281,11 @@
           "video": "Video",
           "image": "Imagen"
         }
+      },
+      "background": {
+        "title": "Imagen de fondo",
+        "show_background": "Mostrar fondo",
+        "hide_background": "Ocultar fondo"
       }
     },
     "organization": {
@@ -1197,9 +1296,9 @@
         "update_organization": "Actualizar organización",
         "team": {
           "heading": "Equipo",
-          "sub_heading": "Configura tu sitio web",
           "body": "Agregue compañeros de equipo a su organización para que ambos puedan colaborar en proyectos.",
-          "button": "Gestionar equipo"
+          "button": "Gestionar equipo",
+          "sub_heading": "Configura tu equipo"
         },
         "custom_domain": {
           "heading": "Dominio personalizado",
@@ -1209,7 +1308,9 @@
         },
         "theme": {
           "heading": "Tema",
-          "sub_heading": "Establece el color de tu marca"
+          "sub_heading": "Establece el color de tu marca",
+          "custom_theme": "Tema personalizado",
+          "add_theme": "Agregar tema"
         },
         "customize_lms": {
           "heading": "Personalizar LMS",
@@ -1230,7 +1331,10 @@
       },
       "profile_picture": {
         "heading": "Foto de perfil",
-        "upload_image": "Cargar imagen"
+        "upload_image": "Cargar imagen",
+        "file_size": "Tamaño máximo de archivo:",
+        "accepted": "Aceptado:",
+        "validation_error": "El tamaño del archivo excede el límite máximo:"
       }
     },
     "tabs": {
@@ -1250,7 +1354,29 @@
     "email": "Tu correo electrónico",
     "password": "Tu contraseña",
     "forgot": "¿Has olvidado tu contraseña?",
-    "login": "Acceso"
+    "login": "Acceso",
+    "login_with": "o inicia sesión con",
+    "signup_with": "o regístrate con",
+    "already_have_account": "¿Ya tienes una cuenta?",
+    "not_registered_yet": "¿Aún no estás registrado?",
+    "signup": "Inscribirse",
+    "signup_with_google": "Regístrate con Google",
+    "login_with_google": "Iniciar sesión con Google",
+    "create_to_join": "Crea una cuenta gratuita para unirte",
+    "login_to_join": "Inicia sesión para unirte",
+    "validation": {
+      "unable_to_create_profile": "No se puede crear el perfil",
+      "user_cannot_be_created": "No se puede crear usuario"
+    },
+    "fields": {
+      "email": "Tu correo electrónico",
+      "full_name": "Nombre completo",
+      "password": "Tu contraseña",
+      "confirm_password": "confirmar Contraseña",
+      "password_helper_message": "La contraseña debe tener más de 6 caracteres.",
+      "create_account": "Crear una cuenta"
+    },
+    "create_account": "Crear una cuenta"
   },
   "welcome_modal": {
     "we_at": "nosotros en",
@@ -1273,7 +1399,9 @@
     "what_brings": "¿Qué te trae a",
     "how": "¿Cómo se enteró de nosotros?",
     "back": "Atrás",
-    "continue": "Continuar"
+    "continue": "Continuar",
+    "employees": "Capacitar a mis empleados",
+    "customers": "Crear cursos para mis clientes"
   },
   "verify_email_modal": {
     "heading": "Verifica tu correo electrónico",
@@ -1287,10 +1415,22 @@
   },
   "generic": {
     "locked": "bloqueado",
-    "unlocked": "desbloqueado"
+    "unlocked": "desbloqueado",
+    "loading": "Cargando"
   },
   "specialization": {
     "course_tag": "Especialización"
+  },
+  "profileMenu": {
+    "profile": "PERFIL",
+    "current_org": "ORGANIZACIÓN ACTUAL",
+    "free_tools": "HERRAMIENTAS GRATUITAS",
+    "progress": "Informe de progreso",
+    "timer": "Temporizador de actividad",
+    "tic_tac": "dedo del pie tres en raya",
+    "see_more": "Ver más",
+    "whats_new": "Qué hay de nuevo",
+    "launch_week": "Semana de lanzamiento"
   },
   "validations": {
     "invalid_type_error": "No debe estar vacío",
@@ -1394,5 +1534,56 @@
     "empty_heading": "No hay curso disponible",
     "empty_description": "Actualmente no hay ningún curso publicado disponible",
     "heading": "Explora nuestros cursos"
+  },
+  "delete_modal": {
+    "label": "Borrar",
+    "content": "¿Está seguro?",
+    "no": "No",
+    "yes": "Sí"
+  },
+  "analytics": {
+    "courses": "Cursos",
+    "progress": "Progreso",
+    "progress_description": "{valor, número} de {total, número} completo",
+    "incomplete": "Incompleto",
+    "completed": "Terminado",
+    "complete": "completo",
+    "last_seen": "visto por última vez",
+    "a_while_ago": "hace un tiempo",
+    "exercises": "Ceremonias",
+    "graded": "Calificado",
+    "not_graded": "No calificado",
+    "enrolled_courses": "Cursos inscritos",
+    "enrolled_courses_description": "Todos los cursos inscritos",
+    "overall_course_progress": "Progreso general del curso",
+    "overall_course_progress_description": "Porcentaje de lecciones completadas",
+    "total_average_grade": "Calificación promedio total",
+    "total_average_grade_description": "Basado en calificaciones de ejercicios en todo el curso.",
+    "overall_course_progress_user_description": "Basado en la finalización de la lección",
+    "assignment_completion": "Finalización de la tarea",
+    "assignment_completion_description": "Porcentaje de tareas completadas",
+    "average_grade": "Calificación promedio",
+    "average_grade_description": "Calificación promedio de todas las tareas completadas",
+    "students": "Estudiantes",
+    "lessons": "Lecciones",
+    "tutors": "tutores",
+    "avg_grade": "AVG Grado",
+    "completion_rate": "Tasa de finalización",
+    "student_progress_overview": "Descripción general del progreso del estudiante",
+    "student_name": "Nombre de estudiante",
+    "lessons_completed": "Lecciones completadas",
+    "exercises_submitted": "Ejercicios presentados",
+    "actions": "Comportamiento",
+    "view_details": "Ver detalles",
+    "no_students_found": "No se encontraron estudiantes",
+    "no_students_description": "Todavía no hay estudiantes matriculados en este curso. Los estudiantes aparecerán aquí una vez que se unan al curso.",
+    "showing_students": "Mostrando {inicio} a {final} de {Total} Estudiantes",
+    "no_analytics_data": "Sin datos de análisis",
+    "no_analytics_description": "No se puede cargar datos de análisis para este curso. Vuelva a intentarlo más tarde o comuníquese con el soporte si el problema persiste."
+  },
+  "common": {
+    "unsaved_changes": {
+      "message": "Tienes cambios no salvos. ¿Estás seguro de que quieres irte?"
+    }
   }
 }

@@ -1,31 +1,30 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
+  import Box from '$lib/components/Box/index.svelte';
+  import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { getLectureNo } from '$lib/components/Course/function.js';
+  import { course, group } from '$lib/components/Course/store';
+  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
+  import { PageBody, PageNav } from '$lib/components/Page';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { ROLE } from '$lib/utils/constants/roles';
+  import { t } from '$lib/utils/functions/translations';
+  import { takeAttendance } from '$lib/utils/services/attendance';
+  import { globalStore } from '$lib/utils/store/app';
+  import { attendance } from '$lib/utils/store/attendance';
+  import { profile } from '$lib/utils/store/user';
+  import type { GroupPerson, Lesson } from '$lib/utils/types/index';
   import {
-    Search,
     Checkbox,
+    Pagination,
+    Search,
     StructuredList,
     StructuredListBody,
     StructuredListCell,
     StructuredListHead,
-    StructuredListRow,
-    Pagination
+    StructuredListRow
   } from 'carbon-components-svelte';
   import AudioConsoleIcon from 'carbon-icons-svelte/lib/AudioConsole.svelte';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
-  import PageNav from '$lib/components/PageNav/index.svelte';
-  import PageBody from '$lib/components/PageBody/index.svelte';
-  import Box from '$lib/components/Box/index.svelte';
-  import { course, group } from '$lib/components/Course/store';
-  import { getLectureNo } from '$lib/components/Course/function';
-  import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { ROLE } from '$lib/utils/constants/roles';
-  import { takeAttendance } from '$lib/utils/services/attendance';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { attendance } from '$lib/utils/store/attendance';
-  import { profile } from '$lib/utils/store/user';
-  import type { GroupPerson, Lesson } from '$lib/utils/types/index';
-  import { browser } from '$app/environment';
-  import { globalStore } from '$lib/utils/store/app';
-  import { t } from '$lib/utils/functions/translations';
 
   export let data;
 
@@ -117,7 +116,7 @@
   function searchStudents(query: string, _students: GroupPerson[]) {
     const lowercaseQuery = query.toLowerCase();
     return _students.filter((student) =>
-      student.profile.fullname.toLowerCase().includes(lowercaseQuery)
+      student.profile?.fullname?.toLowerCase()?.includes(lowercaseQuery)
     );
   }
 
@@ -140,12 +139,12 @@
 <CourseContainer bind:courseId={data.courseId}>
   <PageNav title={$t('course.navItem.attendance.title')} />
   <PageBody width="w-full max-w-6xl md:w-11/12">
-    <section class="flex items-center mx-2 lg:mx-9 my-5">
+    <section class="mx-2 my-5 flex items-center lg:mx-9">
       <div
-        class="flex flex-col lg:flex-row items-start gap-2 lg:items-center justify-between w-full"
+        class="flex w-full flex-col items-start justify-between gap-2 lg:flex-row lg:items-center"
       >
         <div class="flex">
-          <p class="flex items-center mr-5">
+          <p class="mr-5 flex items-center">
             <Checkbox checked disabled />
             {$t('course.navItem.attendance.present')}
           </p>
@@ -164,8 +163,8 @@
       </div>
     </section>
 
-    <section class="my-5 mx-2 lg:mx-9">
-      <StructuredList class="m-0 relative">
+    <section class="mx-2 my-5 lg:mx-9">
+      <StructuredList class="relative m-0">
         <!-- Moved the lesson headers outside the students loop -->
         <StructuredListHead class="bg-primary-100">
           <StructuredListRow head class="mx-7">
@@ -186,8 +185,8 @@
           <StructuredListBody>
             <StructuredListRow>
               <StructuredListCell>
-                <div class="w-1/4 flex items-center">
-                  <p class="dark:text-white font-semibold">
+                <div class="flex w-1/4 items-center">
+                  <p class="font-semibold dark:text-white">
                     {student.profile.fullname}
                   </p>
                 </div>
@@ -213,7 +212,7 @@
       {#if students.length === 0}
         <Box className="h-[300px] w-full">
           <AudioConsoleIcon size={32} class="carbon-icon w-80" />
-          <h3 class="text-3xl text-gray-500 dark:text-white text-center">
+          <h3 class="text-center text-3xl text-gray-500 dark:text-white">
             {$t('course.navItem.attendance.no_student')}
           </h3>
         </Box>

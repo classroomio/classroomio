@@ -1,24 +1,21 @@
 <script lang="ts">
+  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { globalStore } from '$lib/utils/store/app';
+  import ChartPie from 'carbon-icons-svelte/lib/ChartPie.svelte';
+  import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
-  import SendAlt from 'carbon-icons-svelte/lib/SendAlt.svelte';
-  import ChartPie from 'carbon-icons-svelte/lib/ChartPie.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
   import { apps } from './store';
-  import { globalStore } from '$lib/utils/store/app';
 
+  import { browser } from '$app/environment';
   import Chip from '$lib/components/Chip/index.svelte';
-  import QandA from './components/QandA/index.svelte';
-  import Comments from './components/Comments/index.svelte';
+  import { course } from '$lib/components/Course/store';
+  import { t } from '$lib/utils/functions/translations';
+  import { currentOrg } from '$lib/utils/store/org';
   import Notes from './components/Notes/index.svelte';
   import Poll from './components/Poll/index.svelte';
+  import QandA from './components/QandA/index.svelte';
   import APPS_CONSTANTS from './constants';
-  import { browser } from '$app/environment';
-  import { course } from '$lib/components/Course/store';
-  import { lesson } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { currentOrg } from '$lib/utils/store/org';
-  import { t } from '$lib/utils/functions/translations';
 
   let appBarRef: HTMLDivElement;
   let appContentRef: HTMLDivElement;
@@ -70,36 +67,13 @@
   bind:this={appBarRef}
 >
   <div class="apps">
-    <div class="lg:hidden mb-2">
+    <div class="mb-2 lg:hidden">
       <IconButton
         buttonClassName="lg:hidden"
         toolTipProps={{ title: 'Settings', hotkeys: [] }}
         onClick={handleAppClick}
       >
         <Settings size={24} class="carbon-icon dark:text-white lg:hidden" />
-      </IconButton>
-    </div>
-
-    <div class="mb-2 relative {getAppClass(APPS_CONSTANTS.APPS.COMMENTS, $apps.selectedApp)}">
-      <IconButton
-        toolTipProps={{
-          title: `${
-            $globalStore.isOrgSite && !$currentOrg.customization.apps.comments
-              ? $t('course.navItem.lessons.disabled')
-              : $t('course.navItem.lessons.comments.title')
-          }`,
-          hotkeys: ['Ctrl/Command', '1']
-        }}
-        value={APPS_CONSTANTS.APPS.COMMENTS}
-        onClick={handleAppClick}
-        buttonClassName="relative"
-        disabled={$globalStore.isOrgSite && !$currentOrg.customization.apps.comments}
-      >
-        <Chip
-          value={$lesson.totalComments}
-          className="absolute -top-1 right-0 bg-gray-100 text-gray-600 dark:bg-neutral-700 dark:text-white"
-        />
-        <SendAlt size={24} class="carbon-icon dark:text-white" />
       </IconButton>
     </div>
 
@@ -149,15 +123,13 @@
 
   {#if !!$apps.selectedApp}
     <div
-      class="app max-w-[350px] transition ease-in-out delay-150 duration-100"
+      class="app max-w-[350px] transition delay-150 duration-100 ease-in-out"
       bind:this={appContentRef}
     >
       {#key $apps.selectedApp}
         <div class="h-full w-full" transition:fade={{ duration: 200 }}>
           {#if $apps.selectedApp === APPS_CONSTANTS.APPS.QANDA}
             <QandA {handleClose} />
-          {:else if $apps.selectedApp === APPS_CONSTANTS.APPS.COMMENTS}
-            <Comments {handleClose} />
           {:else if $apps.selectedApp === APPS_CONSTANTS.APPS.POLL}
             <Poll {handleClose} />
           {:else if $apps.selectedApp === APPS_CONSTANTS.APPS.NOTES}
