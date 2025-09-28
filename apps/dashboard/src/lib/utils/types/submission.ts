@@ -1,4 +1,4 @@
-import { Profile } from '.';
+import { Option, Profile } from '.';
 
 export interface SubmissionItem {
   id: string;
@@ -37,6 +37,7 @@ export interface SubmissionIdData {
     order: number;
     points: number;
     question_type_id: number;
+    options: Option[];
   }[];
   questionAnswers: {
     open_answer: string;
