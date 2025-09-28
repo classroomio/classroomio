@@ -20,7 +20,7 @@
 
   <!-- Card Content -->
   <div
-    class={`font-roboto bubble-card relative h-[150px] max-h-[200px] flex-1 rounded-lg border border-gray-300 bg-white p-4 shadow-lg ${
+    class={`bubble-card relative h-[150px] max-h-[200px] flex-1 rounded-lg border border-gray-300 bg-white p-4 shadow-lg ${
       index % 2 === 0 ? 'left-pointer md:ml-4' : 'right-pointer md:mr-4'
     }`}
   >

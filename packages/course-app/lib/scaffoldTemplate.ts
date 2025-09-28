@@ -1,10 +1,10 @@
 import chalk from 'chalk';
-import ora from 'ora';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import { copyCoursesFolder } from '../utils/copyCoursesFolder';
 import { copyFolderSync } from '../utils/copyFolder';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+import ora from 'ora';
+import path from 'path';
 
 // Define the interface for function parameters
 interface ScaffoldTemplateParams {
@@ -20,11 +20,9 @@ const __dirname = path.dirname(__filename);
 const packageRoot = path.join(__dirname, '..');
 const spinner = ora();
 
-async function rewriteComponentsFile(filePath: string, template: string): Promise<void> {
-  const newContent = `export { components } from './${template}';`;
-
+async function rewriteComponentsFile(filePath: string, content: string): Promise<void> {
   try {
-    fs.writeFileSync(filePath, newContent);
+    fs.writeFileSync(filePath, content);
   } catch (error) {
     console.error(`Error writing to file: ${error}`);
   }
@@ -80,7 +78,11 @@ export async function scaffoldTemplate({
 
   // Update root import of components to reflect only selected template
   const componentsIndex = path.join(projectPath, 'src', 'lib', 'components', 'index.ts');
-  await rewriteComponentsFile(componentsIndex, template);
+  await rewriteComponentsFile(
+    componentsIndex,
+    `export { components, utils } from './${template}';`
+  );
+  await rewriteComponentsFile(path.join(projectPath, '.env'), `VITE_TEMPLATE=${template}`);
 
   // If the user wants demo courses, copy the courses folder
   spinner.text = chalk.yellow('Setting up courses folder...');

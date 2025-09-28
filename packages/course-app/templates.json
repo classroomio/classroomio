@@ -8,6 +8,10 @@
     "description": "Classic template"
   },
   {
+    "name": "examprep",
+    "description": "Exam prep template"
+  },
+  {
     "name": "minimal",
     "description": "Minimal template"
   },

@@ -11,7 +11,8 @@ export const settings = writable({
   tabs: [
     { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
     { id: 2, name: 'course.navItem.lessons.materials.tabs.slide.title' },
-    { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' }
+    { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' },
+    { id: 4, name: 'course.navItem.lessons.materials.tabs.document.title' }
   ],
   lesson_download: false,
   is_published: false

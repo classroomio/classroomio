@@ -1,15 +1,19 @@
 <script>
   import PrimaryButton from './PrimaryButton.svelte';
 
-  let { slug, title, description, className = '', buttonClass = '' } = $props();
+  let { slug, title, banner, description, className = '', buttonClass = '' } = $props();
 </script>
 
 <div
-  class="border-examprep w-full rounded-lg border-2 p-4 shadow-[-12px_12px_0px_#0233BD] md:h-[300px] md:w-[350px] {className}"
+  class="border-examprep w-full rounded-lg border-2 p-4 shadow-[-12px_12px_0px_#0233BD] md:w-[350px] {className}"
 >
   <div class="flex h-full w-full flex-col justify-between gap-4 rounded-lg">
+    <div class="h-[150px]">
+      <img src={banner} alt="Course Banner" class="h-full w-full object-cover" />
+    </div>
+
     <div class="flex-1 space-y-2">
-      <p class="text-examprep line-clamp-2 font-serif text-xl font-semibold uppercase">{title}</p>
+      <p class="text-examprep line-clamp-2 text-xl font-semibold uppercase">{title}</p>
       <p class="font-inter line-clamp-4 text-gray-600">
         {description}
       </p>

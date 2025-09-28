@@ -1,5 +1,5 @@
 {
-  "name": "classroomio-com",
+  "name": "@cio/classroomio-com",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -27,7 +27,7 @@
   },
   "type": "module",
   "engines": {
-    "node": "^18.17.0"
+    "node": "^20.19.3"
   },
   "dependencies": {
     "html-to-image": "^1.11.11",

@@ -10,8 +10,8 @@
   import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
   import TableOfContents from 'carbon-icons-svelte/lib/TableOfContents.svelte';
   import Workspace from 'carbon-icons-svelte/lib/Workspace.svelte';
-
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
+  import Analytics from 'carbon-icons-svelte/lib/Analytics.svelte';
   import { NAV_IDS } from './constants';
 
   export let id = '';
@@ -31,6 +31,8 @@
   <Result size={20} class="carbon-icon mr-2" />
 {:else if id === NAV_IDS.PEOPLE}
   <Group size={20} class="carbon-icon mr-2" />
+{:else if id === NAV_IDS.ANALYTICS}
+  <Analytics size={20} class="carbon-icon mr-2" />
 {:else if id === NAV_IDS.LANDING_PAGE}
   <ApplicationWeb size={20} class="carbon-icon mr-2" />
 {:else if id === NAV_IDS.CERTIFICATES}

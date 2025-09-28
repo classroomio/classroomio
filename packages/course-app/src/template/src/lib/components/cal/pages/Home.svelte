@@ -46,7 +46,7 @@
   {@const content = getPageSection($homePage, SECTION.HERO)}
   {#if content?.show}
     <section
-      class="font-matter flex h-full items-start justify-center bg-[#F4F4F4] px-5 py-10 md:items-center lg:px-20 lg:py-20"
+      class="flex h-full items-start justify-center bg-[#F4F4F4] px-5 py-10 md:items-center lg:px-20 lg:py-20"
     >
       <section
         class="flex flex-col-reverse items-center justify-center lg:flex-row lg:justify-between"

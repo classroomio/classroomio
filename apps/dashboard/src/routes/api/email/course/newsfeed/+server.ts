@@ -1,11 +1,16 @@
-import { getServerSupabase } from '$lib/utils/functions/supabase.server';
 import { getFeedForNotification } from '$lib/utils/services/newsfeed/index';
-import sendEmail from '$mail/sendEmail';
+import { getServerSupabase } from '$lib/utils/functions/supabase.server';
 import { json } from '@sveltejs/kit';
+import sendEmail from '$mail/sendEmail';
 
 const supabase = getServerSupabase();
 
-const sendEmailNotification = async (feedId: string, authorId: string, comment?: string) => {
+const sendEmailNotification = async (
+  sFetch: typeof fetch,
+  feedId: string,
+  authorId: string,
+  comment?: string
+) => {
   const feed = await getFeedForNotification({
     supabase,
     feedId,
@@ -34,7 +39,7 @@ const sendEmailNotification = async (feedId: string, authorId: string, comment?:
       }
     ];
 
-    await sendEmail(emailData);
+    await sendEmail(sFetch)(emailData);
 
     // dont continue
     return;
@@ -62,10 +67,10 @@ const sendEmailNotification = async (feedId: string, authorId: string, comment?:
   console.log('Sending emails to all students', feed.courseMembers.length);
 
   // This is the email sending function with a loop
-  await sendEmail(emailsData);
+  await sendEmail(sFetch)(emailsData);
 };
 
-export async function POST({ request }) {
+export async function POST({ fetch, request }) {
   const { authorId, feedId, comment } = await request.json();
   console.log('/POST api/email/course/newsfeed');
 
@@ -73,7 +78,7 @@ export async function POST({ request }) {
     return json({ success: false, message: 'Missing required fields' }, { status: 400 });
   }
 
-  await sendEmailNotification(feedId, authorId, comment);
+  await sendEmailNotification(fetch, feedId, authorId, comment);
   // TODO: Support sending to other platforms like telegram and discord
   // sendDiscordNotification(); sendTelegramNotification();
 

@@ -27,8 +27,10 @@ You'll be prompted to:
 
 ## Available Templates
 
+- `bootcamp` - Bootcamp template
 - `cal` - Cal.com inspired design
 - `classic` - Traditional course layout
+- `examprep` - Exam prep template
 - `minimal` - Clean, minimalist design
 - `posthog` - PostHog-style interface
 - `webflow` - Webflow-inspired template

@@ -52,13 +52,14 @@
   $: onCourseIdChange(courseId);
 
   $: {
+    console.log('isOrgAdmin', $isOrgAdmin);
     const user = $group.people.find((person) => person.profile_id === $profile.id);
     if (user) {
       $globalStore.isStudent = user.role_id === 3;
 
       filterPollsByStatus($globalStore.isStudent);
-    } else if (!$isOrgAdmin && $profile.id && $group.people.length) {
-      // Current User doesn't have permission to view
+    } else if ($isOrgAdmin === false && $profile.id && $group.people.length) {
+      // Current User doesn't h ave permission to view
       isPermitted = false;
     }
   }

@@ -1,8 +1,3 @@
-import { QUESTION_TYPE } from '$lib/components/Question/constants';
-import { STATUS } from '$lib/utils/constants/course';
-import { isUUID } from '$lib/utils/functions/isUUID';
-import { supabase } from '$lib/utils/functions/supabase';
-import { isOrgAdmin } from '$lib/utils/store/org';
 import type {
   Course,
   Exercise,
@@ -15,12 +10,19 @@ import type {
   ProfileCourseProgress
 } from '$lib/utils/types';
 import type { PostgrestError, PostgrestSingleResponse } from '@supabase/supabase-js';
+
+import { GenericUploader } from './presign';
+import { QUESTION_TYPE } from '$lib/components/Question/constants';
+import { STATUS } from '$lib/utils/constants/course';
 import { get } from 'svelte/store';
+import { isOrgAdmin } from '$lib/utils/store/org';
+import { isUUID } from '$lib/utils/functions/isUUID';
+import { supabase } from '$lib/utils/functions/supabase';
 
 export async function fetchCourses(profileId, orgId) {
   if (!orgId || !profileId) return;
 
-  const match = {};
+  const match: { member_profile_id?: string } = {};
   // Filter by profile_id if role isn't admin within organization
   if (!get(isOrgAdmin)) {
     match.member_profile_id = profileId;
@@ -51,12 +53,10 @@ export async function fetchProfileCourseProgress(
   data: ProfileCourseProgress[] | null;
   error: PostgrestError | null;
 }> {
-  const { data, error } = await supabase
-    .rpc('get_course_progress', {
-      course_id_arg: courseId,
-      profile_id_arg: profileId
-    })
-    .returns<ProfileCourseProgress[]>();
+  const { data, error } = await supabase.rpc('get_course_progress', {
+    course_id_arg: courseId,
+    profile_id_arg: profileId
+  });
 
   return { data, error };
 }
@@ -289,8 +289,9 @@ export async function getMarks(courseId) {
   return { marks };
 }
 
-export function fetchLesson(lessonId: Lesson['id']) {
-  return supabase
+export async function fetchLesson(lessonId: Lesson['id']) {
+  // TODO: add documents to the query
+  const { data, error } = await supabase
     .from('lesson')
     .select(
       `id,
@@ -298,6 +299,7 @@ export function fetchLesson(lessonId: Lesson['id']) {
       note,
       videos,
       slide_url,
+      documents,
       call_url,
       totalExercises:exercise(count),
       totalComments:lesson_comment(count),
@@ -307,6 +309,36 @@ export function fetchLesson(lessonId: Lesson['id']) {
     )
     .eq('id', lessonId)
     .single();
+
+  if (data) {
+    const videoKeys =
+      data.videos?.filter((video) => video.type === 'upload')?.map((video) => video.key) || [];
+
+    const docKeys = data.documents?.map((doc) => doc.key) || [];
+
+    try {
+      // Get presigned URLs for videos and documents
+      const genericUploader = new GenericUploader('generic');
+
+      const urls = await genericUploader.getAllDownloadPresignedUrl(videoKeys, docKeys);
+
+      data.videos = data.videos.map((video) => {
+        if (urls.videos[video.key]) {
+          video.link = urls.videos[video.key];
+        }
+        return video;
+      });
+
+      data.documents = data.documents.map((doc) => {
+        doc.link = urls.documents[doc.key];
+        return doc;
+      });
+    } catch (error) {
+      console.error('Error retrieving presigned assets (videos and documents):', error);
+    }
+  }
+
+  return { data, error };
 }
 
 export function fetchLesssonLanguageHistory(lessonId: string, locale: string, endRange: number) {

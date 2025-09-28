@@ -95,15 +95,14 @@
         <BlurIn
           class="pointer-events-none flex max-w-2xl flex-col items-center whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300/80 bg-clip-text text-center text-2xl font-semibold leading-none tracking-tighter text-transparent md:mb-4 md:block md:text-4xl lg:text-6xl"
         >
-          Create an <span class="font-mono italic text-blue-700">Academy</span>
-          <span>Site for your SAAS in</span>
+          Create a <span class="font-mono italic text-blue-700">Course</span>
+          <span>Site for your Product in</span>
           <span class="ml-1 font-mono italic text-blue-700">MINUTES</span>
         </BlurIn>
 
         <BlurFade delay={0.25}>
           <p class="text-md max-w-[500px] text-center">
-            With our prebuilt templates, you can setup a fully functional customer educational
-            website for your product & idea in minutes.<br />
+            With our prebuilt templates, you can setup a fully functional course website for your product & idea in minutes.<br />
             <span>
               Similar to the likes of
 

@@ -93,6 +93,29 @@
     }
   }
 
+  const getMultipleAnswersGrade = (options, answer, points) => {
+    const correctOptions = options
+      .filter((option) => option.is_correct)
+      .map((option) => option.value);
+
+    const correctSelections = answer.answers.filter((answer) =>
+      correctOptions.includes(answer)
+    ).length;
+
+    const incorrectSelections = answer.answers.length - correctSelections;
+
+    const pointsEarned = (correctSelections / correctOptions.length) * points;
+    const deduction = (incorrectSelections * points) / correctOptions.length;
+    const finalPoints = Math.max(pointsEarned - deduction, 0);
+
+    return {
+      finalPoints,
+      correctOptions,
+      correctSelections,
+      incorrectSelections
+    };
+  };
+
   async function handleDeleteSubmission() {
     isDeleting = true;
     await deleteSubmission(data.id, status.id);
@@ -118,18 +141,37 @@
         }
 
         data?.questions.forEach((question) => {
-          const { id, points, question_type_id } = question;
-
-          if (question_type_id !== QUESTION_TYPE.TEXTAREA) {
+          const { id, points, question_type_id, options } = question;
+          if (question_type_id == QUESTION_TYPE.RADIO) {
             const answer = data.questionAnswers.find((q) => q.question_id === id);
+
             const answerPoints = answer?.answers?.length ?? 0;
+
             reasons = {
               ...reasons,
-              [id]: `${$t(
-                'course.navItem.submissions.grading_modal.questions_tried'
+              [id]: `${$t('course.navItem.submissions.grading_modal.allocated')} ${$t(
+                'course.navItem.submissions.grading_modal.total_try'
               )} ${answerPoints} `
             };
             data.questionAnswerByPoint[id] = `${Math.ceil(points / answerPoints)}`;
+          } else if (question_type_id == QUESTION_TYPE.CHECKBOX) {
+            const answer = data.questionAnswers.find((q) => q.question_id === id);
+
+            const { finalPoints, correctOptions, correctSelections, incorrectSelections } =
+              getMultipleAnswersGrade(options, answer, points);
+
+            reasons = {
+              ...reasons,
+              [id]: `${$t(
+                'course.navItem.submissions.grading_modal.allocated'
+              )} ${correctSelections} ${$t('course.navItem.submissions.grading_modal.out_of')} ${
+                correctOptions.length
+              } ${$t('course.navItem.submissions.grading_modal.options_correct')} ${$t(
+                'course.navItem.submissions.grading_modal.options_wrong'
+              )} ${incorrectSelections} `
+            };
+
+            data.questionAnswerByPoint[id] = `${finalPoints}`;
           } else if (aiResponses.length) {
             const graded = aiResponses.find((res) => res.id === id);
 
@@ -182,10 +224,10 @@
   headerClass="py-2"
   labelClass="text-base font-semibold"
 >
-  <div class="w-full h-full mt-2">
+  <div class="mt-2 h-full w-full">
     {#if openDeletePrompt}
-      <div class="w-96 mx-auto p-3 border border-gray-300 rounded-md">
-        <h1 class="dark:text-white text-lg">
+      <div class="mx-auto w-96 rounded-md border border-gray-300 p-3">
+        <h1 class="text-lg dark:text-white">
           {$t('delete_modal.content')}
         </h1>
 
@@ -223,19 +265,19 @@
       />
     {/if}
   </div>
-  <div class="ml-4 mt-2 w-2/5 sticky top-0">
-    <div class="border border-gray-300 rounded-md">
+  <div class="sticky top-0 ml-4 mt-2 w-2/5">
+    <div class="rounded-md border border-gray-300">
       <div
-        class="flex gap-1 justify-between items-center border-b border-t-0 border-l-0 border-r-0 border-gray-300 p-3"
+        class="flex items-center justify-between gap-1 border-b border-l-0 border-r-0 border-t-0 border-gray-300 p-3"
       >
-        <p class="dark:text-white font-bold text-base">
+        <p class="text-base font-bold dark:text-white">
           {$t('course.navItem.submissions.grading_modal.details')}
           {#if data.isEarly}
-            <span class="ml-2 text-sm badge rounded-sm px-2 bg-green-500 text-white">
+            <span class="badge ml-2 rounded-sm bg-green-500 px-2 text-sm text-white">
               {$t('course.navItem.submissions.grading_modal.early')}</span
             >
           {:else}
-            <span class="ml-2 badge text-sm rounded-sm px-2 bg-red-500 text-white">
+            <span class="badge ml-2 rounded-sm bg-red-500 px-2 text-sm text-white">
               {$t('course.navItem.submissions.grading_modal.late')}
             </span>
           {/if}
@@ -253,13 +295,13 @@
         </OverflowMenu>
       </div>
 
-      <div class="flex items-center space-x-4 text-sm px-3 py-2">
-        <p class="dark:text-white text-sm text-gray-500 font-semibold">
+      <div class="flex items-center space-x-4 px-3 py-2 text-sm">
+        <p class="text-sm font-semibold text-gray-500 dark:text-white">
           {$t('course.navItem.submissions.grading_modal.total_grade')}:
         </p>
 
         <Tag
-          class="dark:text-white font-semibold text-black bg-gray-100 dark:bg-neutral-700 rounded-md w-fit"
+          class="w-fit rounded-md bg-gray-100 font-semibold text-black dark:bg-neutral-700 dark:text-white"
         >
           {total}/{maxPoints}
         </Tag>
@@ -271,20 +313,20 @@
           <p class="dark:text-white">Grading</p>
         </div>
       </div> -->
-      <div class="flex items-center space-x-4 text-sm px-3 py-2">
-        <p class="dark:text-white text-sm text-gray-500 font-semibold">
+      <div class="flex items-center space-x-4 px-3 py-2 text-sm">
+        <p class="text-sm font-semibold text-gray-500 dark:text-white">
           {$t('course.navItem.submissions.grading_modal.student')}:
         </p>
         {#if data.student}
           <div
-            class="flex flex-row justify-center items-center bg-gray-100 dark:bg-neutral-700 rounded-md p-[6px]"
+            class="flex flex-row items-center justify-center rounded-md bg-gray-100 p-[6px] dark:bg-neutral-700"
           >
             <img
               alt="Student avatar"
-              class="flex rounded-full h-5 w-5"
+              class="flex h-5 w-5 rounded-full"
               src={data.student.avatar_url}
             />
-            <p class="dark:text-white font-semibold ml-2 text-sm line-clamp-1">
+            <p class="ml-2 line-clamp-1 text-sm font-semibold dark:text-white">
               {data.student.fullname}
             </p>
           </div>
@@ -298,8 +340,8 @@
         >
       </div> -->
 
-      <div class="flex flex-col items-start text-sm px-3 py-2">
-        <p class="dark:text-white text-gray-500 font-semibold">
+      <div class="flex flex-col items-start px-3 py-2 text-sm">
+        <p class="font-semibold text-gray-500 dark:text-white">
           {$t('course.navItem.submissions.grading_modal.status')}:
         </p>
         <Dropdown
@@ -310,8 +352,8 @@
         />
       </div>
 
-      <div class="flex flex-col items-start text-sm px-3 py-2">
-        <p class="dark:text-white text-gray-500 font-semibold">
+      <div class="flex flex-col items-start px-3 py-2 text-sm">
+        <p class="font-semibold text-gray-500 dark:text-white">
           {$t('course.navItem.submissions.grading_modal.add_comment')}:
         </p>
         <TextArea
@@ -322,14 +364,14 @@
         />
       </div>
 
-      <div class="flex flex-col w-full space-y-3 px-3 py-2">
+      <div class="flex w-full flex-col space-y-3 px-3 py-2">
         <PrimaryButton
           onClick={gradeWithAI}
           variant={VARIANTS.OUTLINED}
           className="space-x-3 py-3 px-8 w-full "
         >
           <img src="/ai.svg" alt="ai" />
-          <p class="font-semibold text-sm">
+          <p class="text-sm font-semibold">
             {$t('course.navItem.submissions.grading_modal.grade_with_ai')}
           </p>
         </PrimaryButton>

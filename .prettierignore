@@ -1,0 +1,7 @@
+.svelte-kit
+build
+.github
+.turbo
+_template
+supabase
+static

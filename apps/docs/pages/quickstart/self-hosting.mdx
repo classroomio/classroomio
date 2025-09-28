@@ -1,5 +1,5 @@
-import { Callout } from 'nextra/components';
 import Image from 'next/image';
+import { Callout } from 'nextra/components';
 import SelfhostClassroomIO from './images/selfhost-classroomio.webp';
 
 # Self-hosting ClassroomIO.com
@@ -10,25 +10,26 @@ This guide will help you quickly selfhost ClassroomIO
 
 ClassroomIO is made up of the following applications
 
-- [apps/backend](https://github.com/rotimi-best/classroomio/tree/main/apps/backend) - an Express server
+- [apps/api](https://github.com/rotimi-best/classroomio/tree/main/apps/api) - an Express server
 - [apps/dashboard](https://github.com/rotimi-best/classroomio/tree/main/apps/dashboard) - the admin dashboard + LMS
 - [supabase](https://github.com/rotimi-best/classroomio/tree/main/supabase) - the database + REST API.
 
-The quickest and easiest way to deploy both the backend and dashboard is by using our [Railway Template](https://railway.app/template/dl9RG7?referralCode=8OyIj5). However there are a couple of things that you'd need first before heading over to the template, which are:
+The quickest and easiest way to deploy both the api and dashboard is by using our [Railway Template](https://railway.app/template/dl9RG7?referralCode=8OyIj5). However there are a couple of things that you'd need first before heading over to the template, which are:
 
-1. SMTP values - For sending emails on the backend
+1. SMTP values - For sending emails on the api
 2. Supabase - For the database used on the dashboard
-3. Cloudflare R2 (optional) - Video uploads on the backend
+3. Cloudflare R2 (optional) - Video uploads on the api
 
 ## SMTP Setup
 
-Both for the supabase and backend setup, you'd need a custom SMTP for email sending. Most importantly you need these values:
+Both for the supabase and api setup, you'd need a custom SMTP for email sending. Most importantly you need these values:
 
 ```bash
 SMTP_HOST=
 SMTP_PORT=
 SMTP_USER=
 SMTP_PASSWORD=
+SMTP_SENDER=
 ```
 
 Make sure you have them handy because you'd need them while we go through this selfhosting guide.
@@ -62,7 +63,7 @@ We use Cloudflare R2 for video uploading within the course builder. It is not re
 
 ## Deploy on Railway
 
-Now you have everything you need and you are ready to deploy the backend and dashboard.
+Now you have everything you need and you are ready to deploy the api and dashboard.
 
 Go ahead and click this button to get started.
 
@@ -70,13 +71,14 @@ Go ahead and click this button to get started.
 
 ### Environment Variables.
 
-#### cio-backend
+#### cio-api
 
 ```bash
 # Required
 SMTP_HOST=""
 SMTP_PORT=""
 SMTP_USER=""
+SMTP_SENDER=""
 SMTP_PASSWORD=""
 PUBLIC_SUPABASE_URL=""
 PUBLIC_SUPABASE_ANON_KEY=""
@@ -92,7 +94,7 @@ SENTRY_DNS=""
 
 <Callout type="info" emoji="ℹ️">
   Learn more about the environment variables
-  [here](https://github.com/rotimi-best/classroomio/blob/main/apps/backend/.env.example)
+  [here](https://github.com/rotimi-best/classroomio/blob/main/apps/api/.env.example)
 </Callout>
 
 #### cio-dashboard
@@ -119,6 +121,50 @@ PRIVATE_APP_SUBDOMAINS=""
 
 ## Using Docker
 
-We do have a [docker-compose file](https://github.com/rotimi-best/classroomio/blob/main/docker-compose.yaml) to deploy both the backend and dashboard however it still requires some more debugging and we are still trying to figure out how we can also get supabase to be included in the docker compose file.
+We provide a docker-compose configuration to deploy both the api and dashboard services. Here's how to use it:
 
-If you'd like to help with this, please do open a PR on Github 👍🏽
+1. Clone the repository:
+
+```bash
+git clone https://github.com/rotimi-best/classroomio.git
+cd classroomio
+```
+
+2. Create a `.env` file with your environment variables (see Environment Variables section above)
+
+3. Start the services:
+
+```bash
+docker compose up --build
+```
+
+The services will be available at:
+
+- Dashboard: http://localhost:3000
+- Backend: http://localhost:3002
+
+### Service Configuration
+
+The docker-compose file sets up two services:
+
+#### Backend Service
+
+- Runs on port 3002
+- Uses Node.js slim image
+- Mounts the api code directory
+- Requires environment variables for:
+  - Supabase configuration
+  - Cloudflare R2 for video uploads
+  - SMTP for email notifications
+
+#### Dashboard Service
+
+- Runs on port 3000
+- Uses Node.js Alpine image
+- Uses pnpm for package management
+- Requires environment variables for:
+  - Supabase configuration
+  - Application settings
+  - Optional API keys (OpenAI, Unsplash)
+
+Note: We're currently working on including Supabase in the docker-compose file. If you'd like to help with this, please open a PR on GitHub! 👍

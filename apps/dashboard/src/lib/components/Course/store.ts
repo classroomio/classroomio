@@ -43,7 +43,8 @@ export const defaultCourse: Course = {
     lessonTabsOrder: [
       { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
       { id: 2, name: 'course.navItem.lessons.materials.tabs.slide.title' },
-      { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' }
+      { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' },
+      { id: 4, name: 'course.navItem.lessons.materials.tabs.document.title' }
     ],
     grading: false,
     lessonDownload: true,
@@ -147,6 +148,29 @@ export async function setCourse(data: Course, setLesson = true) {
       },
       allowNewStudent: false
     };
+  }
+  // Ensure lessonTabsOrder includes all tabs (backward compatibility)
+  if (data.metadata && data.metadata.lessonTabsOrder) {
+    const existingTabIds = data.metadata.lessonTabsOrder.map((tab) => tab.id);
+    const allTabs = [
+      { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
+      { id: 2, name: 'course.navItem.lessons.materials.tabs.slide.title' },
+      { id: 3, name: 'course.navItem.lessons.materials.tabs.video.title' },
+      { id: 4, name: 'course.navItem.lessons.materials.tabs.document.title' }
+    ];
+
+    let hasChanges = false;
+    // Add missing tabs to existing lessonTabsOrder
+    allTabs.forEach((tab) => {
+      if (!existingTabIds.includes(tab.id) && data.metadata.lessonTabsOrder) {
+        data.metadata.lessonTabsOrder.push(tab);
+        hasChanges = true;
+      }
+    });
+
+    if (hasChanges) {
+      // Document tab has been added to lessonTabsOrder
+    }
   }
 
   if (!data.certificate_theme) {

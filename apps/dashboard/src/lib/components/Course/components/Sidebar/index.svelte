@@ -176,6 +176,16 @@
         isExpanded: isStudent ? true : $page.url.pathname.includes('/lessons')
       },
       {
+        id: NAV_IDS.ANALYTICS,
+        label: $t('course.navItems.nav_analytics'),
+        to: getNavItemRoute($course.id, 'analytics'),
+        isPaidFeature: false,
+        hideSortIcon: true,
+        show() {
+          return !isStudent;
+        }
+      },
+      {
         id: NAV_IDS.ATTENDANCE,
         label: $t('course.navItems.nav_attendance'),
         to: getNavItemRoute($course.id, 'attendance'),

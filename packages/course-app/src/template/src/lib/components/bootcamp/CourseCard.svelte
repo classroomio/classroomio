@@ -18,7 +18,7 @@
 <div class="h-fit min-w-[250px] max-w-[350px] space-y-4 md:w-[300px] md:min-w-[300px]">
   <div class="space-y-4 rounded-sm border border-gray-100 p-4 {className} w-full bg-gray-50">
     <div class="flex items-center justify-between">
-      <p class="font-slab line-clamp-2 w-full text-lg font-normal capitalize">{title}</p>
+      <p class="line-clamp-2 w-full text-lg font-normal capitalize">{title}</p>
     </div>
 
     <div class="overflow-hidden rounded-sm">

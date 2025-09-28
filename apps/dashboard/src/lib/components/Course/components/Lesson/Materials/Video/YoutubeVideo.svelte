@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { CopyButton, Tag } from 'carbon-components-svelte';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
@@ -6,6 +6,7 @@
   import { lesson, isLessonDirty } from '$lib/components/Course/components/Lesson/store/lessons';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import type { LessonVideoType } from '$lib/utils/types';
 
   let youtubeLinks = '';
   let error = '';
@@ -26,7 +27,7 @@
       $lesson.materials.videos = [
         ...existingLinks,
         ...validLinks.map((link = '') => ({
-          type: 'youtube',
+          type: 'youtube' as LessonVideoType,
           link,
           metadata: {}
         }))
@@ -48,7 +49,7 @@
   }
 </script>
 
-<div class="w-full flex items-{error ? 'center' : 'end'} justify-between gap-5">
+<div class="flex w-full items-{error ? 'center' : 'end'} justify-between gap-5">
   <TextField
     label={$t('course.navItem.lessons.materials.tabs.video.add_video.youtube_link')}
     bind:value={youtubeLinks}

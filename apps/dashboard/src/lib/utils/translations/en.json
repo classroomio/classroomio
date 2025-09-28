@@ -775,6 +775,7 @@
       "nav_submissions": "Submissions",
       "nav_marks": "Marks",
       "nav_people": "People",
+      "nav_analytics": "Analytics",
       "nav_certificates": "Certificates",
       "nav_landing_page": "Landing Page",
       "nav_settings": "Settings"
@@ -903,8 +904,47 @@
                 "upgrade": "Upgrade your plan to upload vidoes",
                 "uploading": "Uploading...",
                 "invalid_youtube": "Invalid YouTube link(s)",
-                "invalid_link": "Invalid link(s)"
+                "invalid_link": "Invalid link(s)",
+                "cancel_upload": "Cancel Upload",
+                "upload_cancelled": "Upload cancelled by user"
               }
+            },
+            "document": {
+              "title": "Docs",
+              "add_document": "Add Document",
+              "no_document": "No documents uploaded yet",
+              "view_document": "View Document",
+              "download": "Download",
+              "upload_document": "Upload Document",
+              "upload_title": "Upload Document",
+              "upload_description": "Upload PDF, DOCX, or DOC files. Maximum size: 5MB",
+              "drag_drop": "Drag and drop your document here",
+              "or": "or",
+              "choose_file": "Choose File",
+              "cancel": "Cancel",
+              "uploading": "Uploading...",
+              "upload_success": "Document uploaded successfully!",
+              "upload_error": "Failed to upload document",
+              "file_type_error": "File type not supported. Please upload PDF, DOCX, or DOC files.",
+              "file_size_error": "File size too large. Maximum size is {size}.",
+              "type": "Type",
+              "size": "Size",
+              "upload_error_title": "Upload Error",
+              "upload_error_message": "Unsupported file format or upload failed",
+              "upload_error_try_again": "Please try again with a valid document file",
+              "try_again": "Try Again",
+              "upgrade": "Upgrade your plan to upload documents",
+
+              "cancel_upload": "Cancel Upload",
+              "upload_cancelled": "Upload cancelled by user",
+              "downloading": "Downloading...",
+              "view_pdf": "View PDF",
+              "delete": "Delete",
+              "page_of": "Page {page} of {total}",
+              "loading_pdf": "Loading PDF...",
+              "failed_to_load_pdf": "Failed to load PDF document",
+              "failed_to_render_pdf": "Failed to render PDF page",
+              "use_arrow_keys": "Use arrow keys to navigate, +/- to zoom, or click the controls above. Right-click is disabled."
             }
           },
           "button_done": "Done"
@@ -1112,6 +1152,11 @@
           "submit_grades": "Submit Grades",
           "accept_grade": "Accept",
           "reject_grade": "Reject",
+          "allocated": "Allocated this score because",
+          "total_try": "of total tries:",
+          "options_correct": "correct options were selected",
+          "out_of": "out of",
+          "options_wrong": "and the number of wrong selections were",
           "questions_tried": "Allocated this score because of total tries:",
           "delete_prompt": "Delete",
           "delete_error": "Failed to delete submission",
@@ -1357,6 +1402,10 @@
         "courses": "courses"
       },
 
+      "analytics": {
+        "title": "Analytics"
+      },
+
       "settings": {
         "heading": "Settings",
         "cover_image": "Cover Image",
@@ -1468,8 +1517,24 @@
     "overall_course_progress_user_description": "Based on lesson completion",
     "assignment_completion": "Assignment Completion",
     "assignment_completion_description": "Percentage of completed assignments",
+    "average_grade_description": "Average grade of all completed assignments",
+    "students": "Students",
+    "lessons": "Lessons",
+    "tutors": "tutors",
+    "avg_grade": "Avg grade",
+    "completion_rate": "Completion rate",
+    "student_progress_overview": "Student Progress Overview",
+    "student_name": "Student Name",
+    "lessons_completed": "Lessons Completed",
+    "exercises_submitted": "Exercises Submitted",
     "average_grade": "Average Grade",
-    "average_grade_description": "Average grade of all completed assignments"
+    "actions": "Actions",
+    "view_details": "View Details",
+    "no_students_found": "No Students Found",
+    "no_students_description": "There are no students enrolled in this course yet. Students will appear here once they join the course.",
+    "showing_students": "Showing {start} to {end} of {total} students",
+    "no_analytics_data": "No Analytics Data",
+    "no_analytics_description": "Unable to load analytics data for this course. Please try again later or contact support if the issue persists."
   },
 
   "upgrade": {
@@ -1721,7 +1786,8 @@
 
   "generic": {
     "locked": "Locked",
-    "unlocked": "Unlocked"
+    "unlocked": "Unlocked",
+    "loading": "Loading"
   },
 
   "validations": {
@@ -1821,5 +1887,11 @@
       "not_valid": "Not valid email"
     },
     "invalid_type_error": "Must not be empty"
+  },
+
+  "common": {
+    "unsaved_changes": {
+      "message": "You have unsaved changes. Are you sure you want to leave?"
+    }
   }
 }

@@ -1,25 +1,42 @@
-import { writable } from 'svelte/store';
-import type { Writable, Updater } from 'svelte/store';
+import type { Course, Lesson, LessonComment, LessonPage, LessonSection } from '$lib/utils/types';
+import type { Updater, Writable } from 'svelte/store';
 import {
   createLesson,
-  updateLesson,
-  deleteLesson,
   createLessonSection,
-  updateLessonSection,
-  deleteLessonSection
+  deleteLesson,
+  deleteLessonSection,
+  updateLesson,
+  updateLessonSection
 } from '$lib/utils/services/courses';
-import type { Lesson, Course, LessonPage, LessonComment, LessonSection } from '$lib/utils/types';
-import { LOCALE } from '$lib/utils/types';
-import { snackbar } from '$lib/components/Snackbar/store';
-import { lessonValidation } from '$lib/utils/functions/validator';
 
-export const uploadCourseVideoStore = writable({
-  isModalOpen: false
+import { LOCALE } from '$lib/utils/types';
+import type { RealtimeChannel } from '@supabase/supabase-js';
+import { lessonValidation } from '$lib/utils/functions/validator';
+import { snackbar } from '$lib/components/Snackbar/store';
+import { writable } from 'svelte/store';
+
+export const lessonVideoUpload = writable({
+  error: null as string | null,
+  isCancelled: false,
+  isModalOpen: false,
+  isUploading: false,
+  uploadProgress: 0
+});
+
+export const lessonDocUpload = writable({
+  error: null as string | null,
+  isCancelled: false,
+  isModalOpen: false,
+  isUploading: false,
+  uploadedDocument: null as any,
+  uploadProgress: 0
 });
 
 export const lessons: Writable<Lesson[]> = writable([]);
 
 export const lessonSections: Writable<LessonSection[]> = writable([]);
+
+export const lessonCommentsChannel: Writable<RealtimeChannel> = writable();
 
 export const lesson = writable<LessonPage>({
   id: null,
@@ -32,7 +49,8 @@ export const lesson = writable<LessonPage>({
   materials: {
     note: '',
     slide_url: '',
-    videos: []
+    videos: [],
+    documents: []
   },
   exercises: [],
   lesson_completion: []
@@ -187,3 +205,41 @@ export const deleteLessonVideo = (index: any) => {
     }
   }));
 };
+
+export const deleteLessonDocument = (index: any) => {
+  lesson.update((currentLesson) => ({
+    ...currentLesson,
+    materials: {
+      ...currentLesson.materials,
+      documents: (currentLesson.materials.documents || []).filter((document, i) => i !== index)
+    }
+  }));
+};
+
+export function resetDocumentUploadStore() {
+  lessonDocUpload.set({
+    isUploading: false,
+    isModalOpen: false,
+    uploadProgress: 0,
+    uploadedDocument: null,
+    error: null,
+    isCancelled: false
+  });
+}
+
+export function cancelDocumentUpload() {
+  lessonDocUpload.update((store) => ({
+    ...store,
+    isCancelled: true,
+    isUploading: false,
+    error: 'Upload cancelled by user'
+  }));
+}
+
+export function cancelVideoUpload() {
+  lessonVideoUpload.update((store) => ({
+    ...store,
+    isCancelled: true,
+    isUploading: false
+  }));
+}

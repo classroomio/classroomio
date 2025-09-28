@@ -1,10 +1,10 @@
-import { components as CalComponents } from './cal';
-import { components as PosthogComponents } from './posthog';
-import { components as ClassicComponents } from './classic';
-import { components as MinimalComponents } from './minimal';
-import { components as ExamprepComponents } from './examprep';
-import { components as WebflowComponents } from './webflow';
-import { components as BootcampComponents } from './bootcamp';
+import { components as BootcampComponents, utils as BootcampUtils } from './bootcamp';
+import { components as CalComponents, utils as CalUtils } from './cal';
+import { components as ClassicComponents, utils as ClassicUtils } from './classic';
+import { components as ExamprepComponents, utils as ExamprepUtils } from './examprep';
+import { components as MinimalComponents, utils as MinimalUtils } from './minimal';
+import { components as PosthogComponents, utils as PosthogUtils } from './posthog';
+import { components as WebflowComponents, utils as WebflowUtils } from './webflow';
 
 function getComponents() {
   switch (import.meta.env.VITE_TEMPLATE) {
@@ -25,6 +25,25 @@ function getComponents() {
   }
 }
 
-export const components = {
-  ...getComponents()
-};
+export const components = getComponents();
+
+function getUtils() {
+  switch (import.meta.env.VITE_TEMPLATE) {
+    case 'posthog':
+      return PosthogUtils;
+    case 'classic':
+      return ClassicUtils;
+    case 'minimal':
+      return MinimalUtils;
+    case 'examprep':
+      return ExamprepUtils;
+    case 'webflow':
+      return WebflowUtils;
+    case 'bootcamp':
+      return BootcampUtils;
+    default:
+      return CalUtils;
+  }
+}
+
+export const utils = getUtils();

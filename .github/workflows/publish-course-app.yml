@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 18.17.0
+          node-version: 20.19.3
           registry-url: 'https://registry.npmjs.org'
 
       - uses: pnpm/action-setup@v4

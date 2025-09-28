@@ -1,13 +1,15 @@
-import { browser, dev } from '$app/environment';
-import { env } from '$env/dynamic/public';
-import { ROLE } from '$lib/utils/constants/roles';
-import type { UserLessonDataType } from '$lib/utils/types';
-import { PLAN } from 'shared/src/plans/constants';
-import type { Writable } from 'svelte/store';
-import { derived, writable } from 'svelte/store';
-import { STEPS } from '../constants/quiz';
 import type { CurrentOrg, OrgAudience, OrgTeamMember } from '../types/org';
+import { browser, dev } from '$app/environment';
+import { derived, writable } from 'svelte/store';
 
+import { PLAN } from 'shared/src/plans/constants';
+import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
+import { ROLE } from '$lib/utils/constants/roles';
+import { STEPS } from '../constants/quiz';
+import type { UserLessonDataType } from '$lib/utils/types';
+import type { Writable } from 'svelte/store';
+
+// Trigger build
 export const defaultCurrentOrgState: CurrentOrg = {
   id: '',
   name: '',
@@ -31,7 +33,11 @@ export const orgs = writable<CurrentOrg[]>([]);
 export const currentOrg: Writable<CurrentOrg> = writable(defaultCurrentOrgState);
 export const orgAudience = writable<OrgAudience[]>([]);
 export const orgTeam = writable<OrgTeamMember[]>([]);
-export const isOrgAdmin = derived(currentOrg, ($currentOrg) => $currentOrg.role_id === ROLE.ADMIN);
+export const isOrgAdmin = derived(currentOrg, ($currentOrg) => {
+  if ($currentOrg.role_id === 0) return null;
+
+  return $currentOrg.role_id === ROLE.ADMIN;
+});
 
 const getActivePlan = (org: CurrentOrg) => {
   return org.organization_plan.find((p) => p.is_active);
@@ -45,17 +51,30 @@ export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
 
 export const currentOrgDomain = derived(currentOrg, ($currentOrg) => {
   const browserOrigin = dev && browser && window.location.origin;
+
+  // Get the root domain from window.location
+  let rootDomain = '';
+  if (browser && typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    const parts = host.split('.');
+    if (parts.length >= 2) {
+      rootDomain = parts.slice(-2).join('.');
+    } else {
+      rootDomain = host;
+    }
+  }
+
   return browserOrigin
     ? browserOrigin
     : $currentOrg.customDomain && $currentOrg.isCustomDomainVerified
       ? `https://${$currentOrg.customDomain}`
       : $currentOrg.siteName
-        ? `https://${$currentOrg.siteName}.classroomio.com`
+        ? `https://${$currentOrg.siteName}.${rootDomain}`
         : '';
 });
 
 export const isFreePlan = derived(currentOrg, ($currentOrg) => {
-  if (!$currentOrg.id || env.IS_SELFHOSTED === 'true') return false;
+  if (!$currentOrg.id || PUBLIC_IS_SELFHOSTED === 'true') return false;
 
   const plan = getActivePlan($currentOrg);
 

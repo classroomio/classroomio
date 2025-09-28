@@ -32,7 +32,6 @@
       <a
         href="/"
         title={`${$t('navigation.goto')} ${orgName || 'ClassroomIO'} ${$t('navigation.home')}`}
-        id="logo"
         data-hveid="8"
       >
         <img
@@ -41,6 +40,9 @@
           class="mx-auto inline-block w-9 rounded"
           data-atf="1"
         />
+        {#if orgName}
+          <span class="line-clamp-1 hidden text-sm font-medium md:block">{orgName}</span>
+        {/if}
       </a>
     </div>
 
@@ -141,8 +143,8 @@
     padding: 0 1.5em;
     font-weight: 700;
     display: flex;
+    gap: 0.5rem;
     align-items: center;
-    flex-direction: column;
   }
 
   @media only screen and (max-width: 1002px) {

@@ -5,6 +5,7 @@ export enum LOCALE {
   EN = 'en',
   HI = 'hi',
   FR = 'fr',
+  PL = 'pl',
   PT = 'pt',
   DE = 'de',
   VI = 'vi',
@@ -397,10 +398,23 @@ export interface Group_attendance {
   groupmember?: Groupmember;
 }
 
-export enum VideoType {
-  youtube,
-  muse
-}
+export type LessonVideoType = 'youtube' | 'generic' | 'upload';
+export type LessonDocumentType = any;
+export type LessonVideo = {
+  type: LessonVideoType;
+  link: string;
+  key?: string;
+  metadata?: {
+    svid?: string;
+  };
+};
+export type LessonDocument = {
+  type: LessonDocumentType;
+  name: string;
+  link: string;
+  size?: number;
+  key: string;
+};
 
 export interface LessonPage {
   id?: string | null;
@@ -413,13 +427,8 @@ export interface LessonPage {
   materials: {
     note: string;
     slide_url: string;
-    videos: Array<{
-      type: string;
-      link: string;
-      metadata?: {
-        svid?: string;
-      };
-    }>;
+    videos: LessonVideo[];
+    documents: LessonDocument[];
   };
   exercises: [];
   lesson_completion: LessonCompletion[];

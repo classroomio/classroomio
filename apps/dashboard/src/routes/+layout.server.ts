@@ -1,19 +1,19 @@
+import { getSupabase, supabase } from '$lib/utils/functions/supabase';
 
+import type { CurrentOrg } from '$lib/utils/types/org';
+import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
+import type { MetaTagsProps } from 'svelte-meta-tags';
+import { blockedSubdomain } from '$lib/utils/constants/app';
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/private';
-import { IS_SELFHOSTED } from '$env/static/private';
-import { blockedSubdomain } from '$lib/utils/constants/app';
-import { getSupabase, supabase } from '$lib/utils/functions/supabase';
 import { getCurrentOrg } from '$lib/utils/services/org';
-import type { CurrentOrg } from '$lib/utils/types/org';
 import { redirect } from '@sveltejs/kit';
-import type { MetaTagsProps } from 'svelte-meta-tags';
 
 if (!supabase) {
   getSupabase();
 }
 
-export const ssr = IS_SELFHOSTED === 'true' ? false : true;
+export const ssr = PUBLIC_IS_SELFHOSTED === 'true' ? false : true;
 
 interface LoadOutput {
   orgSiteName: string;
@@ -24,7 +24,7 @@ interface LoadOutput {
   serverLang: string;
 }
 
-const APP_SUBDOMAINS = env.PRIVATE_APP_SUBDOMAINS?.split(',');
+const APP_SUBDOMAINS = env.PRIVATE_APP_SUBDOMAINS?.split(',') || [];
 
 export const load = async ({ url, cookies, request }): Promise<LoadOutput> => {
   const response: LoadOutput = {
@@ -36,10 +36,10 @@ export const load = async ({ url, cookies, request }): Promise<LoadOutput> => {
     serverLang: request.headers?.get('accept-language') || ''
   };
 
-  console.log('IS_SELFHOSTED', IS_SELFHOSTED);
+  console.log('PUBLIC_IS_SELFHOSTED', PUBLIC_IS_SELFHOSTED);
 
   // Selfhosted usecase would be here
-  if (IS_SELFHOSTED === 'true') {
+  if (PUBLIC_IS_SELFHOSTED === 'true') {
     const subdomain = getSubdomain(url);
     console.log('subdomain', subdomain);
 
@@ -57,6 +57,7 @@ export const load = async ({ url, cookies, request }): Promise<LoadOutput> => {
       response.orgSiteName = subdomain;
     }
 
+    // Never go beyond this for selfhosted instances
     return response;
   }
 
@@ -86,7 +87,8 @@ export const load = async ({ url, cookies, request }): Promise<LoadOutput> => {
     console.log('custom domain response.org', response.org);
 
     if (!response.org) {
-      throw redirect(307, 'https://app.classroomio.com/404?type=org');
+      console.error('Custom domain org not found, loading dashboard');
+      return response;
     }
 
     response.isOrgSite = true;

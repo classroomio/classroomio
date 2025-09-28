@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { env } from '$env/dynamic/public';
   import { CourseContainer } from '$lib/components/Course';
   import {
     checkExercisesComplete,
@@ -30,8 +29,6 @@
   import IconButton from '$lib/components/IconButton/index.svelte';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import { PageBody, PageNav } from '$lib/components/Page';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { RoleBasedSecurity } from '$lib/components/RoleBasedSecurity';
   import { snackbar } from '$lib/components/Snackbar/store';
   import MODES from '$lib/utils/constants/mode';
@@ -42,9 +39,9 @@
   import { COURSE_VERSION, type Lesson, type LessonCompletion } from '$lib/utils/types';
   import { Dropdown } from 'carbon-components-svelte';
   import { ChevronLeft, ChevronRight, Edit, Save } from 'carbon-icons-svelte';
-  import Download from 'carbon-icons-svelte/lib/Download.svelte';
   import OverflowMenuVertical from 'carbon-icons-svelte/lib/OverflowMenuVertical.svelte';
   import ResultOld from 'carbon-icons-svelte/lib/ResultOld.svelte';
+  import { classroomio } from '$lib/utils/services/api';
 
   export let data;
 
@@ -163,13 +160,8 @@
       const lessonNumber = getLessonOrder(currentLesson.id);
       const slideUrl = $lesson.materials.slide_url || '';
 
-      const response = await fetch(env.PUBLIC_SERVER_URL + '/downloadLesson', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
+      const response = await classroomio.course.lesson.download.pdf.$post({
+        json: {
           title: currentLesson.title,
           number: lessonNumber,
           orgName: $currentOrg.name,
@@ -177,16 +169,11 @@
           slideUrl: slideUrl,
           video: lessonVideo,
           courseTitle: $course.title
-        })
+        }
       });
+      const blob = await response.blob();
 
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
-      const data = await response.blob();
-      console.log(data);
-      const file = new Blob([data], { type: 'application/pdf' });
+      const file = new Blob([blob], { type: 'application/pdf' });
       const fileURL = URL.createObjectURL(file);
 
       let a = document.createElement('a');
@@ -223,7 +210,8 @@
       materials: {
         videos: lessonData.videos,
         note: lessonData.note,
-        slide_url: lessonData.slide_url
+        slide_url: lessonData.slide_url,
+        documents: lessonData.documents || null
       },
       lesson_completion,
       exercises: [],
@@ -369,7 +357,7 @@
             <div
               class={`flex-row ${
                 $apps.dropdown && $apps.open
-                  ? 'absolute right-14 top-[85px] z-40 rounded-md bg-gray-100 p-3 dark:bg-neutral-800 lg:relative lg:right-0 lg:top-0 lg:p-0'
+                  ? 'absolute right-14 top-[85px] z-40 rounded-md bg-gray-100 p-3 lg:relative lg:right-0 lg:top-0 lg:p-0 dark:bg-neutral-800'
                   : 'hidden'
               } items-center lg:flex`}
             >
@@ -386,17 +374,6 @@
                   <Edit size={24} />
                 {/if}
               </IconButton>
-
-              {#if $course.metadata.lessonDownload && !!env.PUBLIC_SERVER_URL}
-                <PrimaryButton
-                  className="mr-"
-                  variant={VARIANTS.OUTLINED}
-                  onClick={downloadLesson}
-                  {isLoading}
-                >
-                  <Download size={16} />
-                </PrimaryButton>
-              {/if}
             </div>
 
             <Dropdown items={LANGUAGES} bind:selectedId={$lesson.locale} class="h-full" />

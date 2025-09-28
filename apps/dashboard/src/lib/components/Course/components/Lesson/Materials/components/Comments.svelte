@@ -1,6 +1,9 @@
 <script lang="ts">
   import Avatar from '$lib/components/Avatar/index.svelte';
-  import { lesson } from '$lib/components/Course/components/Lesson/store/lessons';
+  import {
+    lesson,
+    lessonCommentsChannel
+  } from '$lib/components/Course/components/Lesson/store/lessons';
   import { group } from '$lib/components/Course/store';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
@@ -26,7 +29,6 @@
   export let lessonId = '';
 
   let comment = '';
-  let lessonCommentChannel: RealtimeChannel;
   let comments: LessonComment[] = [];
   let groupmember: GroupPerson | undefined;
   let isSaving: boolean = false;
@@ -243,24 +245,28 @@
   onMount(async () => {
     fetchComments($group.people);
 
-    lessonCommentChannel = supabase
-      .channel('any')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'lesson_comment' },
-        handleInsert
-      )
-      .subscribe();
+    if (!$lessonCommentsChannel) {
+      lessonCommentsChannel.set(
+        supabase
+          .channel('any')
+          .on(
+            'postgres_changes',
+            { event: 'INSERT', schema: 'public', table: 'lesson_comment' },
+            handleInsert
+          )
+          .subscribe()
+      );
+    }
   });
 
   onDestroy(() => {
-    supabase.removeChannel(lessonCommentChannel);
+    supabase.removeChannel($lessonCommentsChannel);
   });
 </script>
 
 <DeleteModal bind:open={openDeleteModal} onDelete={handleDeleteComment} />
 
-<div class="mx-auto mt-10 max-w-[65ch]">
+<div class="mx-auto w-full max-w-[65ch]">
   <!-- <hr class="my-5" /> -->
   <div class="mb-5">
     <p class="text-xl font-bold capitalize">

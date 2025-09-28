@@ -9,11 +9,10 @@
     "format": "prettier . --write",
     "release": "standard-version",
     "ci": "cypress run",
-    "dashboard:build": "cd apps/dashboard && pnpm i && IS_SELFHOSTED=true NODE_OPTIONS='--max-old-space-size=20384' DEPLOYMENT_PROVIDER=docker pnpm build",
+    "dashboard:build": "cd apps/dashboard && pnpm i && PUBLIC_IS_SELFHOSTED=true NODE_OPTIONS='--max-old-space-size=20384' DEPLOYMENT_PROVIDER=docker pnpm build",
     "dashboard:start": "cd apps/dashboard && node build"
   },
   "license": "MIT",
-  "packageManager": "pnpm@8.0.0",
   "dependencies": {
     "turbo": "^1.10.16"
   },
@@ -24,11 +23,10 @@
     "prettier-plugin-svelte": "^3.1.2",
     "prettier-plugin-tailwindcss": "^0.5.7",
     "standard-version": "^9.5.0",
-    "supabase": "^1.151.1",
     "tsconfig": "workspace:*",
     "typescript": "^5.1.6"
   },
   "engines": {
-    "node": "^18.17.0"
+    "node": "^20.19.3"
   }
 }

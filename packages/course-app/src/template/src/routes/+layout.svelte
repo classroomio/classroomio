@@ -4,7 +4,7 @@
   import { homePage, sharedPage } from '$lib/utils/stores/pages';
   import { courses } from '$lib/utils/stores/course';
   import { getPageSection } from '$lib/utils/helpers/page';
-  import { components } from '$lib/components';
+  import { components, utils } from '$lib/components';
   import Transition from '$lib/components/ui/_custom/Transition.svelte';
   import type { Page, Section } from '$lib/utils/types/page';
   import type { Course } from '$lib/utils/types/course';
@@ -34,10 +34,14 @@
 <svelte:head>
   <title>{seo?.settings.title}</title>
   <meta name="description" content={seo?.settings.description} />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+  <link rel="stylesheet" href={utils.fontLink} />
 </svelte:head>
 
 {#if $homePage.id}
-  <main>
+  <main class="font-{import.meta.env.VITE_TEMPLATE}">
     <Transition>
       {#if !$page.url.pathname.includes('course/')}
         <components.navigation />

@@ -89,7 +89,7 @@
       return;
     }
 
-    if (sanitizedDomain.includes('classroomio')) {
+    if (sanitizedDomain.includes('classroomio.com')) {
       errors.customDomain = $t('components.settings.domains.custom_domain_not_classroomio');
       return;
     }

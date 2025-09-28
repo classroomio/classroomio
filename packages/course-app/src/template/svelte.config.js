@@ -1,10 +1,11 @@
-import { mdsvex, escapeSvelte } from 'mdsvex';
+import { escapeSvelte, mdsvex } from 'mdsvex';
+
+import adapter from '@sveltejs/adapter-auto';
+import { createHighlighter } from 'shiki';
+import rehypeSlug from 'rehype-slug';
 import rehypeUnwrapImages from 'rehype-unwrap-images';
 import remarkToc from 'remark-toc';
-import rehypeSlug from 'rehype-slug';
-import adapter from '@sveltejs/adapter-auto';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-import { createHighlighter } from 'shiki';
 
 /** @type {import('mdsvex').MdsvexOptions} */
 const mdsvexOptions = {
@@ -26,7 +27,12 @@ const mdsvexOptions = {
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-  preprocess: [vitePreprocess(), mdsvex(mdsvexOptions)],
+  preprocess: [
+    vitePreprocess({
+      script: true
+    }),
+    mdsvex(mdsvexOptions)
+  ],
 
   kit: {
     // adapter-auto only supports some environments, see https://svelte.dev/docs/kit/adapter-auto for a list.

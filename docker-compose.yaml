@@ -1,19 +1,35 @@
 # ClassroomIO
-# Project: Self-hosted Backend and Dashboard
-# Description: This docker-compose file sets up the backend and dashboard services for self-hosting.
+# Project: Self-hosted API and Dashboard
+# Description: This docker-compose file sets up the api and dashboard services for self-hosting.
 # Author: rotimi-best
 # Date: 2024-09-18
 
 version: '3.8'
 
 services:
-  backend:
+  api:
     build:
+      context: ./apps/api
       dockerfile: Dockerfile
-      context: ./apps/backend
+      args:
+        - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
+        - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
+        - CLOUDFLARE_BUCKET_DOMAIN=${CLOUDFLARE_BUCKET_DOMAIN}
+        - CLOUDFLARE_ACCESS_KEY=${CLOUDFLARE_ACCESS_KEY}
+        - CLOUDFLARE_SECRET_ACCESS_KEY=${CLOUDFLARE_SECRET_ACCESS_KEY}
+        - CLOUDFLARE_ACCOUNT_ID=${CLOUDFLARE_ACCOUNT_ID}
+        - CLOUDFLARE_BUCKET_ID=${CLOUDFLARE_BUCKET_ID}
+        - SMTP_HOST=${SMTP_HOST}
+        - SMTP_USER=${SMTP_USER}
+        - SMTP_PASSWORD=${SMTP_PASSWORD}
+        - SMTP_PORT=${SMTP_PORT}
+    ports:
+      - '3002:3002'
     volumes:
-      - /app/node_modules
-      - ./apps/backend:/app
+      # Node modules (optional - for faster development)
+      - ./apps/api/node_modules:/app/node_modules
+      # Build output directory (if you want to access built files)
+      - ./apps/api/dist:/app/dist
     environment:
       - NODE_ENV=production
       # Supabase - Database
@@ -24,17 +40,17 @@ services:
       - CLOUDFLARE_ACCESS_KEY=${CLOUDFLARE_ACCESS_KEY}
       - CLOUDFLARE_SECRET_ACCESS_KEY=${CLOUDFLARE_SECRET_ACCESS_KEY}
       - CLOUDFLARE_ACCOUNT_ID=${CLOUDFLARE_ACCOUNT_ID}
-      - CLOUDFLARE_BUCKET_ID=${CLOUDFLARE_BUCKET_ID}
       # SMTP - Emails
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_USER=${SMTP_USER}
       - SMTP_PASSWORD=${SMTP_PASSWORD}
       - SMTP_PORT=${SMTP_PORT}
+      - SMTP_SENDER=${SMTP_SENDER}
 
   dashboard:
     build:
+      context: .
       dockerfile: ./apps/dashboard/Dockerfile
-      context: ./
       args:
         - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
         - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
@@ -45,12 +61,14 @@ services:
         - OPENAI_API_KEY=${OPENAI_API_KEY}
         - PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL}
         - PUBLIC_IP_REGISTRY_KEY=${PUBLIC_IP_REGISTRY_KEY}
+    ports:
+      - '3000:3000'
     volumes:
       - .:/app
       - /app/node_modules
       - /app/apps/dashboard/node_modules
     environment:
-      - IS_SELFHOSTED=true
+      - PUBLIC_IS_SELFHOSTED=true
       - DEPLOYMENT_PROVIDER=docker
       # Supabase - Database
       - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
@@ -60,7 +78,7 @@ services:
       - PRIVATE_APP_SUBDOMAINS=${PRIVATE_APP_SUBDOMAINS} # app (if you are using app.yourdomain.com for the dashboard)
       - UNSPLASH_API_KEY=${UNSPLASH_API_KEY}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL} # this is the url to the backend service
+      - PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL} # this is the url to the api service
       - PUBLIC_IP_REGISTRY_KEY=${PUBLIC_IP_REGISTRY_KEY}
     depends_on:
-      - backend
+      - api

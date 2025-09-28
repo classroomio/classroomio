@@ -294,6 +294,8 @@
         "reviews": "Reseñas",
         "see_all": "Ver todo",
         "header_video": "Vídeo de encabezado",
+        "no_course_published": "Ningún curso publicado",
+        "coming_your_way": "¡Tenemos excelentes cursos en camino, estad atentos!",
         "view_less": "Ver menos",
         "view_all": "Ver todo",
         "thank_you": "Gracias por dejar un mensaje, nos comunicaremos con usted en breve",
@@ -397,7 +399,7 @@
             "pricing": "Precios",
             "certificate": "Certificado",
             "about": "Acerca de",
-            "objectives": "OBJETIVOS"
+            "objectives": "Objetivos"
           },
           "display_section": "Sección de visualización",
           "certificate_form": {
@@ -408,10 +410,10 @@
         "modules": "módulos",
         "lessons": "lecciones",
         "exercises": "ceremonias",
-        "title": "Aún no hay cursos",
-        "subtitle": "Parece que los cursos aún no se han agregado. Por favor vuelva a consultar más tarde",
-        "pathway_title": "Aún no hay cursos",
-        "pathway_subtitle": "Parece que los cursos aún no se han agregado. Por favor vuelva a consultar más tarde"
+        "title": "Todavía no hay cursos",
+        "subtitle": "Parece que los cursos aún no se han agregado. Por favor, revise el último",
+        "pathway_title": "Todavía no hay cursos",
+        "pathway_subtitle": "Parece que los cursos aún no se han agregado. Por favor, revise el último"
       },
       "certificates": {
         "title": "Certificados",
@@ -488,8 +490,8 @@
           "invite_sent": "Invitar enviado",
           "you": "Tú",
           "remove": "Eliminar",
-          "join_course": "Unirse al curso",
-          "join_pathway": "Únase al camino"
+          "join_course": "Unir curso",
+          "join_pathway": "Vía de unir"
         },
         "view": "Vista",
         "delete_profile": "Eliminar perfil"
@@ -524,6 +526,11 @@
           "accept_grade": "Aceptar",
           "reject_grade": "Rechazar",
           "add_comment_placeholder": "Deja un comentario",
+          "allocated": "Asignó esta puntuación porque",
+          "total_try": "de intentos totales:",
+          "options_correct": "se seleccionaron las opciones correctas",
+          "out_of": "fuera de",
+          "options_wrong": "y el número de selecciones incorrectas fue",
           "questions_tried": "Se asignó esta puntuación debido al total de intentos:",
           "delete_prompt": "Borrar",
           "delete_error": "No se pudo eliminar el envío",
@@ -746,7 +753,9 @@
                 "upgrade": "Actualiza tu plan para subir videos",
                 "uploading": "Subiendo...",
                 "invalid_youtube": "Enlace(s) de YouTube no válido(s)",
-                "invalid_link": "Enlace(s) no válido(s)"
+                "invalid_link": "Enlace(s) no válido(s)",
+                "cancel_upload": "Cancelar la carga",
+                "upload_cancelled": "Carga cancelada por el usuario"
               }
             },
             "slide": {
@@ -762,6 +771,42 @@
                 "note": "Generar nota de lección",
                 "activities": "Generar actividades lectivas"
               }
+            },
+            "document": {
+              "title": "Documento",
+              "add_document": "Agregar documento",
+              "no_document": "No hay documentos cargados todavía",
+              "view_document": "Ver documento",
+              "download": "Descargar",
+              "upload_document": "Cargar documento",
+              "upload_title": "Cargar documento",
+              "upload_description": "Sube archivos PDF, DOCX o DOC. Tamaño máximo: 5 MB",
+              "drag_drop": "Arrastre y suelte su documento aquí",
+              "or": "o",
+              "choose_file": "Elija archivo",
+              "cancel": "Cancelar",
+              "uploading": "Subiendo ...",
+              "upload_success": "¡Documento cargado con éxito!",
+              "upload_error": "No se pudo subir al documento",
+              "file_type_error": "Tipo de archivo no compatible. Sube archivos PDF, DOCX o DOC.",
+              "file_size_error": "Tamaño de archivo demasiado grande. El tamaño máximo es {tamaño}.",
+              "type": "Tipo",
+              "size": "Tamaño",
+              "upload_error_title": "Error de carga",
+              "upload_error_message": "Falló el formato de archivo o la carga no compatible",
+              "upload_error_try_again": "Vuelva a intentarlo con un archivo de documento válido",
+              "try_again": "Intentar otra vez",
+              "cancel_upload": "Cancelar la carga",
+              "upload_cancelled": "Carga cancelada por el usuario",
+              "downloading": "Descarga ...",
+              "view_pdf": "Ver PDF",
+              "delete": "Borrar",
+              "page_of": "Página {page} de {total}",
+              "loading_pdf": "Cargando PDF ...",
+              "failed_to_load_pdf": "No se pudo cargar el documento PDF",
+              "failed_to_render_pdf": "No se pudo renderizar la página de PDF",
+              "use_arrow_keys": "Use las teclas de flecha para navegar, +/- para hacer zoom o hacer clic en los controles anteriores. El clic derecho está deshabilitado.",
+              "upgrade": "Actualice su plan para cargar documentos"
             }
           }
         },
@@ -833,6 +878,9 @@
           "cancel": "Cancelar",
           "post": "Correo"
         }
+      },
+      "analytics": {
+        "title": "Analítica"
       }
     },
     "navItems": {
@@ -844,7 +892,8 @@
       "nav_certificates": "Certificados",
       "nav_landing_page": "Página de destino",
       "nav_settings": "Ajustes",
-      "nav_content": "Contenido"
+      "nav_content": "Contenido",
+      "nav_analytics": "Analítica"
     },
     "not_permitted": {
       "header": "Sin autorización",
@@ -1150,8 +1199,9 @@
     "early_adopter": "Conviértase en uno de los primeros en adoptar",
     "unlock": "Desbloquee funciones ilimitadas e invierta en nuestro futuro",
     "upgrade": "Actualizar ahora",
-    "all_courses": "Todos los cursos",
-    "pathway": "Caminos"
+    "all_courses": "Todo",
+    "pathway": "Caminos",
+    "tags": "Etiquetas"
   },
   "settings": {
     "heading": "Ajustes",
@@ -1380,7 +1430,8 @@
   },
   "generic": {
     "locked": "bloqueado",
-    "unlocked": "desbloqueado"
+    "unlocked": "desbloqueado",
+    "loading": "Cargando"
   },
   "specialization": {
     "course_tag": "Especialización"
@@ -1499,209 +1550,6 @@
     "empty_description": "Actualmente no hay ningún curso publicado disponible",
     "heading": "Explora nuestros cursos"
   },
-  "pathway": {
-    "heading": "Caminos",
-    "heading_button": "Crear camino",
-    "search_placeholder": "encontrar camino",
-    "empty_title": "Aún no se ha creado ningún camino",
-    "empty_description": "Agregue un grupo de cursos relacionados para encaminar a los estudiantes hacia la excelencia en sus campos",
-    "new_pathway_modal": {
-      "heading": "Crear nuevo camino",
-      "pathway_name": "Ruta",
-      "pathway_name_placeholder": "Conviértete en un diseñador UX profesional",
-      "short_description": "Breve descripción",
-      "short_description_placeholder": "Un curso de especialización que te inicia como diseñador de ux",
-      "button": "Crear camino",
-      "success": "Camino creado exitosamente",
-      "error": "Error al crear la ruta"
-    },
-    "pathway_card": {
-      "courses": "cursos",
-      "error_message": "Ocurrió un error.",
-      "students": "estudiantes",
-      "published": "Publicado",
-      "unpublished": "Inédito",
-      "continue_pathway": "Continuar camino",
-      "learn_more": "Aprende más",
-      "list_view": {
-        "title": "Título",
-        "description": "Descripción",
-        "courses": "Cursos",
-        "students": "Estudiantes",
-        "published": "Publicado"
-      },
-      "context_menu": {
-        "clone": "Clon",
-        "share": "Compartir",
-        "invite": "Invitar",
-        "delete": "Borrar"
-      },
-      "course": "curso",
-      "student": "alumno"
-    },
-    "pathway_filter": {
-      "date_created": "fecha de creacion",
-      "published": "Publicado",
-      "courses": "Cursos"
-    },
-    "components": {
-      "sideBar": {
-        "news": "Noticias",
-        "courses": "Cursos",
-        "people": "Gente",
-        "certificates": "Certificados",
-        "landing": "Página de destino",
-        "settings": "Ajustes"
-      },
-      "courseCard": {
-        "lessons": "lecciones",
-        "students": "estudiantes"
-      },
-      "addCourseModal": {
-        "add": "Agregar",
-        "course": "Curso",
-        "courses": "Cursos",
-        "delete": "Confirmar eliminación",
-        "modal_heading": "Agregar curso a la ruta",
-        "path": "al camino"
-      },
-      "not_permitted": {
-        "header": "Sin permiso",
-        "body": "Lamentablemente no tienes acceso a esta vía.",
-        "button": "Ir a casa"
-      },
-      "dragAndDrop": {
-        "title": "Organizar cursos",
-        "header": "Organice el curso en la secuencia que el estudiante debe tomar, comience primero en la parte superior",
-        "label": "Confirmar orden del curso"
-      }
-    },
-    "pages": {
-      "settings": {
-        "option_one": "Sí",
-        "option_two": "No",
-        "enabled": "Activado",
-        "disabled": "Desactivado",
-        "certificate": "Certificado",
-        "issue": "Emitir certificado en LMS",
-        "option_three": "No, solo para ruta",
-        "save": "Guardar cambios",
-        "placeholder": "una pequeña descripción sobre el camino",
-        "pathway_description": "Descripción de la ruta",
-        "page_title": "Ajustes",
-        "title_error": "Por favor agregue un título de ruta",
-        "description_error": "Por favor agregue una descripción de la ruta",
-        "cover_image": "Imagen de portada",
-        "optional": "Esta imagen opcional aparecerá en su página de bienvenida. Si incluyes uno, debe tener al menos 280 x 200",
-        "replace": "Reemplazar",
-        "delete": "Borrar",
-        "details": "Detalles del camino",
-        "title": "Título de la ruta",
-        "title_placeholder": "Escribe aquí el título del curso.",
-        "description": "Descripción de la ruta",
-        "description_placeholder": "Escribe aquí la descripción del curso.",
-        "link": "Enlace de ruta",
-        "students": "¿Los estudiantes deben tomar el curso según el orden recomendado?",
-        "yes": "En caso afirmativo, el estudiante debe tomar los cursos según el orden; en caso negativo, el estudiante puede comenzar desde cualquier curso de su elección.",
-        "publish": "Publicar ruta",
-        "allow": "Permitir que los nuevos estudiantes descarguen cursos en el camino",
-        "issue_two": "Emitir certificado o todo el curso en el camino",
-        "delete_path": "Eliminar ruta",
-        "delete_text": "Eliminar la ruta en su totalidad"
-      },
-      "course": {
-        "title": "Cursos",
-        "add_course": "Un curso",
-        "add_remove": "Agregar/eliminar curso",
-        "order": "Ordenar cursos",
-        "option_one": "Publicado",
-        "option_two": "Inédito",
-        "body_title": "Título",
-        "description": "Descripción",
-        "students": "Estudiantes",
-        "lessons": "Lecciones",
-        "search": "Buscar curso Pathway",
-        "empty_state_header": "Aún no hay cursos",
-        "publish": "Publicar ruta",
-        "empty_state_text": "No has añadido ningún curso a este itinerario",
-        "empty_state_label": "Añadir curso a este itinerario"
-      },
-      "lms_certificate": {
-        "share": "Certificado de acciones",
-        "locked": {
-          "title": "Certificados aún no disponibles",
-          "subtitle": "El certificado está disponible porque no has terminado el camino o tu instructor no lo ha aprobado. Por favor contacta a tu instructor"
-        },
-        "unlocked": {
-          "title": "¡Felicitaciones! 🎉 tu certificado está listo",
-          "subtitle": "Has completado este camino y tu dedicación es evidente. Descargue el certificado y compártalo con su red como prueba de su habilidad recién adquirida"
-        },
-        "courses_completed": "Cursos completados",
-        "achieve": "incluye cursos que ha completado para lograr este camino"
-      },
-      "landingPage": {
-        "reviews": {
-          "students": "Vea lo que dicen los estudiantes sobre esta colección.",
-          "readMore": "Leer más",
-          "readLess": "Leer menos"
-        },
-        "courseList": {
-          "header": "Lista de cursos seleccionados",
-          "subheader": "Nuestra lista de cursos seleccionados presenta temas esenciales como investigación de usuarios, wireframing, creación de prototipos, pruebas de usabilidad, diseño de interacción y herramientas estándar de la industria. ¡Desbloquea tu potencial de UX hoy!",
-          "courses": "cursos",
-          "lessons": "lecciones",
-          "estimated": "estimado",
-          "hours": "horas",
-          "view": "Ver detalles"
-        },
-        "subHeader": {
-          "button": "Inscríbase ahora-comienza"
-        },
-        "certificate": {
-          "earn": "Gana un certificado",
-          "evidence": "Obtenga una evidencia de prueba de habilidades y compártala con su red profesional"
-        },
-        "main": {
-          "pricing_win": "Complete todas las lecciones con éxito y tenga la oportunidad de ganar un ipad. ¡Lo decimos en serio cuando lo decimos!",
-          "start": "Empezar ahora",
-          "description": "Descripción de la ruta",
-          "objectives": "Objetivos del camino"
-        },
-        "banner": {
-          "courses": "Cursos",
-          "courses_text": "Cursos cuidadosamente seleccionados para lograr tus objetivos.",
-          "certificate": "Obtener certificado",
-          "share": "Obtenga una certificación y compártala con su red",
-          "rating": "Instructor de curso experimentado y altamente calificado."
-        },
-        "header": {
-          "button": "Inscríbete ahora",
-          "tag": "CAMINO"
-        },
-        "constants": {
-          "about": "ACERCA DE",
-          "objectives": "OBJETIVOS",
-          "courses": "CURSOS",
-          "review": "REVISAR",
-          "instructor": "INSTRUCTOR(ES)",
-          "faq": "Preguntas frecuentes"
-        }
-      }
-    }
-  },
-  "search": {
-    "no_pathway": "No se encontró ningún camino",
-    "no_course": "No se encontró ningún curso"
-  },
-  "lms_pathway": {
-    "pathway": "CAMINO",
-    "continue": "Continuar camino",
-    "course": "Cursos",
-    "locked": "bloqueado",
-    "goto_pathway": "Ir al camino",
-    "completed": "Terminado",
-    "of": "de"
-  },
   "delete_modal": {
     "label": "Borrar",
     "content": "¿Está seguro?",
@@ -1730,27 +1578,252 @@
     "assignment_completion": "Finalización de la tarea",
     "assignment_completion_description": "Porcentaje de tareas completadas",
     "average_grade": "Calificación promedio",
-    "average_grade_description": "Calificación promedio de todas las tareas completadas"
+    "average_grade_description": "Calificación promedio de todas las tareas completadas",
+    "students": "Estudiantes",
+    "lessons": "Lecciones",
+    "tutors": "tutores",
+    "avg_grade": "AVG Grado",
+    "completion_rate": "Tasa de finalización",
+    "student_progress_overview": "Descripción general del progreso del estudiante",
+    "student_name": "Nombre de estudiante",
+    "lessons_completed": "Lecciones completadas",
+    "exercises_submitted": "Ejercicios presentados",
+    "actions": "Comportamiento",
+    "view_details": "Ver detalles",
+    "no_students_found": "No se encontraron estudiantes",
+    "no_students_description": "Todavía no hay estudiantes matriculados en este curso. Los estudiantes aparecerán aquí una vez que se unan al curso.",
+    "showing_students": "Mostrando {inicio} a {final} de {Total} Estudiantes",
+    "no_analytics_data": "Sin datos de análisis",
+    "no_analytics_description": "No se puede cargar datos de análisis para este curso. Vuelva a intentarlo más tarde o comuníquese con el soporte si el problema persiste."
+  },
+  "common": {
+    "unsaved_changes": {
+      "message": "Tienes cambios no salvos. ¿Estás seguro de que quieres irte?"
+    }
+  },
+  "lms_pathway": {
+    "pathway": "CAMINO",
+    "continue": "Continuar el camino",
+    "course": "Cursos",
+    "locked": "Encerrado",
+    "goto_pathway": "Ir al camino",
+    "completed": "Terminado",
+    "of": "de"
+  },
+  "search": {
+    "no_course": "No se encuentra el curso",
+    "no_pathway": "No se encontró vía"
+  },
+  "pathway": {
+    "heading": "Caminos",
+    "heading_button": "Crear camino",
+    "search_placeholder": "Encontrar camino",
+    "empty_title": "No se ha creado ninguna ruta todavía",
+    "empty_description": "Agregue un grupo de cursos relacionados para establecer a los estudiantes en un camino hacia la excelencia en sus campos",
+    "components": {
+      "not_permitted": {
+        "header": "Sin permiso",
+        "body": "Lamentablemente no tienes acceso a esta vía.",
+        "button": "Ir a casa"
+      },
+      "dragAndDrop": {
+        "title": "Organizar cursos",
+        "header": "Organizar el curso en la secuencia El estudiante debe llevarlos comenzar primero en la parte superior",
+        "label": "Confirmar el pedido del curso"
+      },
+      "addCourseModal": {
+        "modal_heading": "Agregar curso a la ruta",
+        "add": "Agregar",
+        "course": "Curso",
+        "courses": "Cursos",
+        "path": "al camino",
+        "delete": "Confirmar eliminar"
+      },
+      "sideBar": {
+        "news": "Periódico",
+        "courses": "Cursos",
+        "people": "Gente",
+        "certificates": "Certificados",
+        "landing": "Página de destino",
+        "settings": "Ajustes"
+      },
+      "courseCard": {
+        "lessons": "lecciones",
+        "students": "estudiantes"
+      }
+    },
+    "pages": {
+      "landingPage": {
+        "reviews": {
+          "students": "Vea lo que dicen los estudiantes sobre esta colección",
+          "readMore": "Leer más",
+          "readLess": "Leer menos"
+        },
+        "courseList": {
+          "header": "Lista de cursos curados-",
+          "subheader": "Nuestra lista curada de cursos presenta temas esenciales como investigación de usuarios, alambre, creación de prototipos, pruebas de usabilidad, diseño de interacción y herramientas estándar de la industria. ¡Desbloquee su potencial UX hoy!",
+          "courses": "cursos",
+          "lessons": "lecciones",
+          "estimated": "estimado",
+          "hours": "horas",
+          "view": "Ver detalles"
+        },
+        "subHeader": {
+          "button": "Inscribir ahora las inicio"
+        },
+        "certificate": {
+          "earn": "Obtener un certificado",
+          "evidence": "Obtenga una evidencia de pruebas de habilidades y comparta con su red fessional"
+        },
+        "main": {
+          "description": "Descripción del camino",
+          "objectives": "Objetivos de la vía",
+          "pricing_win": "Complete todas las lecciones exitosas y tenga la oportunidad de ganar un iPad. ¡Lo decimos cuando lo decimos!",
+          "start": "Empezar ahora"
+        },
+        "banner": {
+          "courses": "Cursos",
+          "courses_text": "Cursos cuidadosamente curados para lograr sus objetivos",
+          "certificate": "Obtener certificado",
+          "share": "Gane una certificación y comparta con su red",
+          "rating": "Instructor de curso experimentado y altamente calificado"
+        },
+        "header": {
+          "tag": "CAMINO",
+          "button": "Inscribirse ahora"
+        },
+        "constants": {
+          "about": "ACERCA DE",
+          "objectives": "Objetivos",
+          "courses": "Cursos",
+          "review": "REVISAR",
+          "instructor": "Instructor (s)",
+          "faq": "Preguntas frecuentes"
+        }
+      },
+      "settings": {
+        "page_title": "Ajustes",
+        "title_error": "Agregue un título de ruta",
+        "description_error": "Por favor agregue una descripción de camino",
+        "cover_image": "Imagen de portada",
+        "optional": "Esta imagen opcional aparecerá en su página de bienvenida. Si incluye uno, debe ser al menos 280 x 200",
+        "replace": "Reemplazar",
+        "delete": "Borrar",
+        "details": "Detalles del camino",
+        "title": "Título de camino",
+        "title_placeholder": "Escribe el título del curso aquí",
+        "description": "Descripción del camino",
+        "description_placeholder": "Escribe la descripción del curso aquí",
+        "link": "Enlace de ruta",
+        "students": "¿Los estudiantes deben tomar el rumbo de acuerdo con el pedido recomendado?",
+        "yes": "En caso afirmativo, el estudiante debe tomar el curso de acuerdo con el pedido, si no, el estudiante puede comenzar desde cualquier curso de su elección",
+        "option_one": "Sí",
+        "option_two": "No",
+        "publish": "Publicar camino",
+        "allow": "Permitir cursos de descarga de nuevos estudiantes en Pathway",
+        "enabled": "Activado",
+        "disabled": "Desactivado",
+        "certificate": "Certificado",
+        "issue": "Certificado de emisión en LMS",
+        "issue_two": "Certificado de emisión o todo el curso en la ruta",
+        "option_three": "No, solo para el camino",
+        "delete_path": "Eliminar el camino",
+        "delete_text": "Eliminar el camino en su conjunto",
+        "save": "Guardar cambios",
+        "placeholder": "una pequeña descripción sobre el camino",
+        "pathway_description": "Descripción del camino"
+      },
+      "lms_certificate": {
+        "courses_completed": "Cursos completados",
+        "achieve": "Incluye cursos que ha completado para lograr esta vía",
+        "share": "Compartir certificado",
+        "locked": {
+          "title": "Certificados aún no están disponibles",
+          "subtitle": "El certificado está disponible porque no ha terminado la vía o su instructor no lo ha aprobado. Póngase en contacto con su instructor"
+        },
+        "unlocked": {
+          "title": "¡Felicitaciones! 🎉 Su certificado está listo",
+          "subtitle": "Ha completado esta vía y su dedicación es evidente. Descargue el certificado y comparta con su red como una prueba de su habilidad recién adquirida"
+        }
+      },
+      "course": {
+        "title": "Cursos",
+        "add_course": "Agregar curso",
+        "add_remove": "Eliminar el rumbo",
+        "order": "Ordenar cursos",
+        "publish": "Publicar camino",
+        "search": "Encuentra el curso de la ruta",
+        "option_one": "Publicado",
+        "option_two": "Inédito",
+        "body_title": "Título",
+        "description": "Descripción",
+        "students": "Estudiantes",
+        "lessons": "Lecciones",
+        "empty_state_header": "Todavía no hay cursos",
+        "empty_state_text": "No ha agregado ningún curso a esta vía",
+        "empty_state_label": "Agregar curso a esta vía"
+      }
+    },
+    "new_pathway_modal": {
+      "heading": "Crea un nuevo camino",
+      "pathway_name": "Camino",
+      "pathway_name_placeholder": "Conviértete en un diseñador profesional de UX",
+      "short_description": "Descripción corta",
+      "short_description_placeholder": "Un curso de sepcialización que te hace comenzar como diseñador de UX",
+      "success": "Camino creado con éxito",
+      "error": "Error de creación de ruta",
+      "button": "Crear camino"
+    },
+    "pathway_card": {
+      "courses": "cursos",
+      "course": "curso",
+      "error_message": "Ocurrió un error.",
+      "students": "estudiantes",
+      "student": "alumno",
+      "published": "Publicado",
+      "unpublished": "Inédito",
+      "continue_pathway": "Continuar el camino",
+      "learn_more": "Obtenga más información",
+      "list_view": {
+        "title": "Título",
+        "description": "Descripción",
+        "courses": "Cursos",
+        "students": "Estudiantes",
+        "published": "Publicado"
+      },
+      "context_menu": {
+        "clone": "Clon",
+        "share": "Compartir",
+        "invite": "Invitar",
+        "delete": "Borrar"
+      }
+    },
+    "pathway_filter": {
+      "date_created": "Fecha creada",
+      "published": "Publicado",
+      "courses": "Cursos"
+    }
   },
   "tags": {
     "tags": "Etiquetas",
-    "find_tag": "Buscar etiqueta",
+    "create_tag": "Crear etiqueta",
+    "find_tag": "Encontrar etiqueta",
     "description": "Descripción",
     "course_count": "Recuento de cursos",
     "action": "Acción",
     "courses": "Cursos",
     "course": "Curso",
-    "edit_tag": "Editar etiqueta",
+    "edit_tag": "Etiqueta de edición",
     "delete": "Borrar",
-    "no_tags_yet": "Aún no hay etiquetas",
-    "add_a_group": "Agregue un grupo de cursos relacionados para encaminar a los estudiantes hacia la excelencia en sus campos",
+    "no_tags_yet": "Todavía no hay etiquetas",
+    "add_a_group": "Agregue un grupo de cursos relacionados para establecer a los estudiantes en un camino hacia la excelencia en sus campos",
     "add_tags": "Agregar etiquetas",
     "attach": "Adjuntar o eliminar un curso de las etiquetas",
     "add_a_tag": "Agregar una etiqueta",
     "errors": {
-      "remove_tag": "No se pudo eliminar la etiqueta. Por favor inténtalo de nuevo.",
-      "add_tag": "No se pudo agregar la etiqueta. Por favor inténtalo de nuevo.",
-      "fetch_tags": "No se pudieron recuperar las etiquetas. Por favor inténtalo de nuevo."
+      "remove_tag": "No se pudo eliminar la etiqueta. Por favor intente de nuevo.",
+      "add_tag": "No se pudo agregar la etiqueta. Por favor intente de nuevo.",
+      "fetch_tags": "No se pudo obtener etiquetas. Por favor intente de nuevo."
     },
     "add_tag_modal": {
       "heading": "Curso de etiqueta",
@@ -1758,12 +1831,12 @@
       "header": "Todas las etiquetas"
     },
     "tag_modal": {
-      "edit_tag": "Editar etiqueta",
-      "delete_tag": "Eliminar etiqueta",
+      "edit_tag": "Etiqueta de edición",
+      "delete_tag": "Etiqueta de eliminación",
       "create_tag": "Crear etiqueta",
-      "tag_name": "Nombre de etiqueta",
+      "tag_name": "Nombre de la etiqueta",
       "description": "Descripción",
-      "delete_modal": "¿Estás seguro de que deseas eliminar esta etiqueta?",
+      "delete_modal": "¿Estás seguro de que quieres eliminar esta etiqueta?",
       "no": "No",
       "cancel": "Cancelar",
       "yes": "Sí",

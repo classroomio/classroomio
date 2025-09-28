@@ -1,9 +1,8 @@
 import Image from 'next/image';
-import { Steps } from 'nextra/components';
-import { Callout } from 'nextra/components';
-import DBUrl from './images/db-url.webp';
-import DBPushResult from './images/db-push-result.webp';
+import { Callout, Steps } from 'nextra/components';
 import AuthSettings from './images/auth-settings.webp';
+import DBPushResult from './images/db-push-result.webp';
+import DBUrl from './images/db-url.webp';
 import MatchEnvVariables from './images/match-env.webp';
 import NewProject from './images/new-project.webp';
 import SmtpSettings from './images/smtp-settings.webp';
@@ -58,7 +57,7 @@ Once you have an account just click on the _New Project_ on your dashboard. Afte
 Open your terminal and go to the root of the project. Run the following:
 
 ```bash copy
-pnpm supabase login
+pnpm supabase:login
 ```
 
 Follow the instruction in your terminal to generate your access token. Paste the token in the console and hit **Enter**
@@ -75,7 +74,7 @@ Follow the instruction in your terminal to generate your access token. Paste the
 - Then run in your terminal:
 
 ```bash copy
-pnpm supabase db push --db-url "URL HERE"
+pnpx supabase@1.51.1 db push --db-url "URL HERE"
 ```
 
 <Callout>
