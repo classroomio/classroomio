@@ -213,54 +213,6 @@ class ProductInviteService {
     return true;
   }
 
-  async getOrgRoleId(roleId: number, orgId: string) {
-    let appName;
-    switch (roleId) {
-      case 1:
-        appName = ORG_ROLE.ADMIN;
-        break;
-      case 2:
-        appName = ORG_ROLE.TUTOR;
-        break;
-      case 3:
-        appName = ORG_ROLE.STUDENT;
-        break;
-      default:
-        // Handle unsupported roleId
-        console.warn(`Unsupported roleId provided: ${roleId}`);
-        // You might want to throw an error here depending on your application's needs
-        throw new Error(`Unsupported roleId: ${roleId}. Must be 1, 2, or 3.`);
-    }
-
-    const { data, error } = await this._supabase
-      .from('organization_role')
-      .select('id')
-      .eq('organization_id', orgId)
-      .eq('app_name', appName)
-      .single();
-
-    if (error) {
-      if (error.code === 'PGRST116') {
-        // Specific Supabase error for 'no rows found for single()'
-        console.warn(
-          `No organization_role found for organization_id: ${orgId} and app_name: ${appName}`
-        );
-        return null;
-      }
-      // General query error
-      console.error('Error fetching org_role_id:', error);
-      throw new Error(`Failed to fetch org_role_id: ${error.message}`);
-    }
-
-    // If data is null (meaning no matching role), return null
-    if (!data) {
-      return null;
-    }
-
-    // Return the found org_role_id
-    return data.id;
-  }
-
   async getGroupmembers(groupIds: string[], includedRoles: number[]) {
     const {
       data,

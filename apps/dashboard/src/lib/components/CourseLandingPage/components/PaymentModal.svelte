@@ -54,7 +54,7 @@
 
   function onClickPaymentLink() {
     // Send email to student to send proof of payment to teacher
-    triggerSendEmail(NOTIFICATION_NAME.STUDENT_PROOVE_COURSE_PAYMENT, {
+    triggerSendEmail(NOTIFICATION_NAME.STUDENT_PROVE_COURSE_PAYMENT, {
       to: fields.email,
       courseName,
       teacherEmail,

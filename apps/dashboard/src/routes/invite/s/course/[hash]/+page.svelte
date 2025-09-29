@@ -129,7 +129,7 @@
   {supabase}
   isLogin={false}
   {handleSubmit}
-  isLoading={loading}
+  isLoading={loading || !$profile.id}
   showOnlyContent={true}
   showLogo={true}
   bind:formRef

@@ -1,5 +1,4 @@
 import type { Orders, Course, Organization, OrderItems } from '$lib/utils/types';
-import type { TestPack } from '$lib/components/TestPack/utils/types';
 import { supabase } from '$lib/utils/functions/supabase.server';
 import Stripe from 'stripe';
 
@@ -115,13 +114,6 @@ async function getOrderBySessionId(sessionId: string): Promise<TransformedOrder 
             title: row.course_title,
             group_id: row.course_group_id
           }
-        : null,
-      testpack: row.testpack_id
-        ? {
-            id: row.testpack_id,
-            shsat_id: row.testpack_shsat_id,
-            group_id: row.testpack_group_id
-          }
         : null
     };
 
@@ -136,7 +128,6 @@ type OrderWebhookViewItem = {
   order_id: OrderItems['order_id'];
   type: OrderItems['type'];
   course: Pick<Course, 'id' | 'title' | 'group_id'> | null;
-  testpack: Pick<TestPack['cio'], 'id' | 'shsat_id' | 'group_id'> | null;
 };
 
 type OrderWebhookView = Orders & {

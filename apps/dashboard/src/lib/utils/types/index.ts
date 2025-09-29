@@ -456,6 +456,29 @@ export interface ProductInvite {
 
 export type ProductInviteItem = {
   group_id: string;
-  type: 'course' | 'testpack' | 'question_bank';
+  type: 'course';
   product_name: string;
+};
+
+export type Orders = {
+  id: string;
+  profile_id?: string;
+  email: string;
+  stripe_checkout_session_id: string;
+  stripe_payment_intent_id: string;
+  status: 'pending' | 'completed';
+  total_amount: number;
+  currency: 'USD';
+  valid_until: string;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type OrderItems = {
+  id?: string;
+  order_id?: Orders['id'];
+  group_id: Group['id'];
+  quantity?: number;
+  price_at_purchase: number;
+  type: 'course';
 };

@@ -41,10 +41,50 @@
   let disableSubmit = false;
   let formRef: HTMLFormElement;
 
+  async function joinOrg(profileId: string, email: string) {
+    if (!profileId || !email || !data.invite.currentOrg?.id) return;
+
+    // Update member response
+    const updateMemberRes = await supabase
+      .from('organizationmember')
+      .update({
+        verified: true,
+        profile_id: profileId
+      })
+      .match({ email: email, organization_id: data.invite.currentOrg?.id });
+
+    console.log('Update member response', updateMemberRes);
+
+    formRef?.reset();
+
+    window.location.href = $currentOrgPath;
+  }
+
+  async function signUserIn(profileId: string, email: string) {
+    if (!profileId || !email) {
+      throw $t('login.validation.unable_to_create_profile');
+    }
+
+    const res = await supabase.auth.signInWithPassword({
+      email,
+      password: fields.password
+    });
+
+    if (res.error) {
+      throw res.error;
+    }
+  }
+
   async function handleSubmit() {
+    if ($profile && $profile.id) {
+      loading = true;
+      await joinOrg($profile.id, $profile.email);
+      return;
+    }
+
     const validationRes = authValidation({
       ...fields,
-      email: 'test@gmail.com' // validation for this ema
+      email: data.invite.email // validation for this ema
     });
     console.log('validationRes', validationRes);
 
@@ -96,29 +136,9 @@
         throw $t('login.validation.unable_to_create_profile');
       }
 
-      const res = await supabase.auth.signInWithPassword({
-        email: profile.email,
-        password: fields.password
-      });
+      await signUserIn(profile.id, profile.email);
 
-      if (res.error) {
-        throw res.error;
-      }
-
-      // Update member response
-      const updateMemberRes = await supabase
-        .from('organizationmember')
-        .update({
-          verified: true,
-          profile_id: profile.id
-        })
-        .match({ email: profile.email, organization_id: data.invite.currentOrg?.id });
-
-      console.log('Update member response', updateMemberRes);
-
-      formRef?.reset();
-
-      return goto($currentOrgPath);
+      await joinOrg(profile.id, profile.email);
     } catch (error) {
       if (error instanceof Error) {
         submitError = error.message;
@@ -147,7 +167,6 @@
   $: disableSubmit = getDisableSubmit(fields);
 
   $: autoLogout($profile?.email);
-
   function autoLogout(email?: string) {
     if (!email) return;
 

@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { getCurrentOrg } from '$lib/utils/services/org';
 import { supabase } from '$lib/utils/functions/supabase.server';
-import { ProductInviteService } from '$lib/utils/services/products/invite.js';
+import { ProductInviteService } from '$lib/utils/services/products/invite';
 import { getProfile } from '$lib/utils/functions/user';
 
 export const load = async ({ params = { id: '' } }) => {

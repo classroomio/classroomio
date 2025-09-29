@@ -120,12 +120,12 @@
         role_id: ROLE.TUTOR
       });
 
-      triggerSendEmail(NOTIFICATION_NAME.WELCOME_TEACHER_TO_TESTPACK, {
+      triggerSendEmail(NOTIFICATION_NAME.WELCOME_TEACHER_TO_COURSE, {
         to: tutor.email,
         name: tutor.text,
         orgName: $currentOrg.name,
         orgSiteName: $currentOrg.siteName,
-        testpackName: $course?.title
+        courseName: $course?.title
       });
     }
 
