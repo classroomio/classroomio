@@ -15,22 +15,22 @@ import { lessonValidation } from '$lib/utils/functions/validator';
 import { snackbar } from '$lib/components/Snackbar/store';
 import { writable } from 'svelte/store';
 
-export const uploadCourseVideoStore = writable({
-  isUploading: false,
-  isModalOpen: false,
-  isCancelled: false
-});
-
-export const uploadCourseDocumentStore = writable({
-  isUploading: false,
-  isModalOpen: false,
-  uploadProgress: 0,
-  uploadedDocument: null as any,
+export const lessonVideoUpload = writable({
   error: null as string | null,
-  isCancelled: false
+  isCancelled: false,
+  isModalOpen: false,
+  isUploading: false,
+  uploadProgress: 0
 });
 
-export const presignedDocUrls = writable<Record<string, string>>({});
+export const lessonDocUpload = writable({
+  error: null as string | null,
+  isCancelled: false,
+  isModalOpen: false,
+  isUploading: false,
+  uploadedDocument: null as any,
+  uploadProgress: 0
+});
 
 export const lessons: Writable<Lesson[]> = writable([]);
 
@@ -217,7 +217,7 @@ export const deleteLessonDocument = (index: any) => {
 };
 
 export function resetDocumentUploadStore() {
-  uploadCourseDocumentStore.set({
+  lessonDocUpload.set({
     isUploading: false,
     isModalOpen: false,
     uploadProgress: 0,
@@ -228,7 +228,7 @@ export function resetDocumentUploadStore() {
 }
 
 export function cancelDocumentUpload() {
-  uploadCourseDocumentStore.update((store) => ({
+  lessonDocUpload.update((store) => ({
     ...store,
     isCancelled: true,
     isUploading: false,
@@ -237,7 +237,7 @@ export function cancelDocumentUpload() {
 }
 
 export function cancelVideoUpload() {
-  uploadCourseVideoStore.update((store) => ({
+  lessonVideoUpload.update((store) => ({
     ...store,
     isCancelled: true,
     isUploading: false

@@ -515,6 +515,11 @@
           "accept_grade": "Aceitar",
           "reject_grade": "Rejeitar",
           "add_comment_placeholder": "Deixe um comentário",
+          "allocated": "Alocou esta pontuação porque",
+          "total_try": "do total de tentativas:",
+          "options_correct": "opções corretas foram selecionadas",
+          "out_of": "fora de",
+          "options_wrong": "e o número de seleções erradas foi",
           "questions_tried": "Alocada esta pontuação por causa do total de tentativas:",
           "delete_prompt": "Excluir",
           "delete_error": "Falha ao excluir o envio",
@@ -789,7 +794,8 @@
               "loading_pdf": "Carregando PDF ...",
               "failed_to_load_pdf": "Falha ao carregar o documento PDF",
               "failed_to_render_pdf": "Falhou em renderizar a página em PDF",
-              "use_arrow_keys": "Use as teclas de seta para navegar, +/- zoom ou clique nos controles acima. Clique com o botão direito do mouse está desativado."
+              "use_arrow_keys": "Use as teclas de seta para navegar, +/- zoom ou clique nos controles acima. Clique com o botão direito do mouse está desativado.",
+              "upgrade": "Atualize seu plano para fazer upload de documentos"
             }
           }
         },
@@ -1409,7 +1415,8 @@
   },
   "generic": {
     "locked": "Bloqueado",
-    "unlocked": "Desbloqueado"
+    "unlocked": "Desbloqueado",
+    "loading": "Carregando"
   },
   "specialization": {
     "course_tag": "Especialização"

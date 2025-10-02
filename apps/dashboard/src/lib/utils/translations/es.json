@@ -515,6 +515,11 @@
           "accept_grade": "Aceptar",
           "reject_grade": "Rechazar",
           "add_comment_placeholder": "Deja un comentario",
+          "allocated": "Asignó esta puntuación porque",
+          "total_try": "de intentos totales:",
+          "options_correct": "se seleccionaron las opciones correctas",
+          "out_of": "fuera de",
+          "options_wrong": "y el número de selecciones incorrectas fue",
           "questions_tried": "Se asignó esta puntuación debido al total de intentos:",
           "delete_prompt": "Borrar",
           "delete_error": "No se pudo eliminar el envío",
@@ -789,7 +794,8 @@
               "loading_pdf": "Cargando PDF ...",
               "failed_to_load_pdf": "No se pudo cargar el documento PDF",
               "failed_to_render_pdf": "No se pudo renderizar la página de PDF",
-              "use_arrow_keys": "Use las teclas de flecha para navegar, +/- para hacer zoom o hacer clic en los controles anteriores. El clic derecho está deshabilitado."
+              "use_arrow_keys": "Use las teclas de flecha para navegar, +/- para hacer zoom o hacer clic en los controles anteriores. El clic derecho está deshabilitado.",
+              "upgrade": "Actualice su plan para cargar documentos"
             }
           }
         },
@@ -1409,7 +1415,8 @@
   },
   "generic": {
     "locked": "bloqueado",
-    "unlocked": "desbloqueado"
+    "unlocked": "desbloqueado",
+    "loading": "Cargando"
   },
   "specialization": {
     "course_tag": "Especialización"
