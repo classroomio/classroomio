@@ -1,6 +1,5 @@
 import 'dotenv/config';
 
-// import adapterAuto from '@sveltejs/adapter-auto';
 import adapterNode from '@sveltejs/adapter-node';
 import adapterVercel from '@sveltejs/adapter-vercel';
 import path from 'path';
