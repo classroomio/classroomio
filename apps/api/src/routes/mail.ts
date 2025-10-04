@@ -13,6 +13,7 @@ export const mailRouter = new Hono().post(
 
     const results = await Promise.all(
       validatedData.map(async (emailData) => {
+        console.log('emailData', emailData);
         try {
           const res = env.ZOHO_TOKEN
             ? await sendWithZoho(emailData)

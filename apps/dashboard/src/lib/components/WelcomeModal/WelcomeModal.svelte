@@ -3,10 +3,7 @@
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { currentOrgPath } from '$lib/utils/store/org';
-  import {
-    triggerSendEmail,
-    NOTIFICATION_NAME
-  } from '$lib/utils/services/notification/notification';
+  import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification';
   import { profile } from '$lib/utils/store/user';
 
   let query = new URLSearchParams($page.url.search);
