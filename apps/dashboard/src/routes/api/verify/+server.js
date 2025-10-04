@@ -22,8 +22,8 @@ export const GET = async ({ url }) => {
 
   if (error) {
     console.log('profile not found', error);
-    throw redirect(307, '/404');
+    redirect(307, '/404');
   }
 
-  throw redirect(307, `/org/${orgSiteName}?welcomePopup=true`);
+  redirect(307, `/org/${orgSiteName}?welcomePopup=true`);
 };

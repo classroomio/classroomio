@@ -2,7 +2,6 @@
   import { onMount } from 'svelte';
   import Download from 'carbon-icons-svelte/lib/Download.svelte';
 
-  import { env } from '$env/dynamic/public';
   import { course } from '$lib/components/Course/store';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
@@ -94,7 +93,7 @@
       className="flex items-center gap-2"
       onClick={downLoadCertificate}
       variant={VARIANTS.CONTAINED_DARK}
-      isDisabled={!env.PUBLIC_SERVER_URL || !isCourseComplete}
+      isDisabled={!isCourseComplete}
       {isLoading}
     >
       <Download size={16} />

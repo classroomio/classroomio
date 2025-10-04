@@ -1,6 +1,5 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { env } from '$env/dynamic/public';
   import {
     CodeSnippet,
     Column,
@@ -43,6 +42,9 @@
   let errors: {
     title: string | undefined;
     description: string | undefined;
+  } = {
+    title: undefined,
+    description: undefined
   };
   let avatar: string | undefined;
   let hasUnsavedChanges = false;
@@ -62,6 +64,9 @@
   }
 
   const downloadCourse = async () => {
+    alert('Coming soon');
+    return;
+
     isLoading = true;
 
     try {
@@ -73,7 +78,7 @@
         video: lesson.videos || ''
       }));
 
-      const response = await fetch(env.PUBLIC_SERVER_URL + '/downloadCourse', {
+      const response = await fetch('/downloadCourse', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -353,7 +358,7 @@
           variant={VARIANTS.OUTLINED}
           label={$t('course.navItem.settings.download')}
           onClick={downloadCourse}
-          isDisabled={isLoading || !env.PUBLIC_SERVER_URL}
+          isDisabled={isLoading}
           {isLoading}
         />
       {/if}

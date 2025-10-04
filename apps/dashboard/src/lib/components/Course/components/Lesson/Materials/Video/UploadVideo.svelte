@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { env } from '$env/dynamic/public';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import {
     lesson,
@@ -111,7 +110,7 @@
 
   $: helperText = $lessonVideoUpload.uploadProgress + '%  of ' + Math.round(fileSize) + 'MB';
 
-  $: isDisabled = $lessonVideoUpload.isUploading || !env.PUBLIC_SERVER_URL || $isFreePlan;
+  $: isDisabled = $lessonVideoUpload.isUploading || $isFreePlan;
 </script>
 
 <UpgradeBanner className="mb-3" onClick={() => ($lessonVideoUpload.isModalOpen = false)}>

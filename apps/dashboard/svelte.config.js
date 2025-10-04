@@ -3,7 +3,7 @@ import 'dotenv/config';
 import adapterNode from '@sveltejs/adapter-node';
 import adapterVercel from '@sveltejs/adapter-vercel';
 import path from 'path';
-import { vitePreprocess } from '@sveltejs/kit/vite';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 const useNodeAdapter = process.env.PUBLIC_IS_SELFHOSTED === 'true';
 
