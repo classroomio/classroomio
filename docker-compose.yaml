@@ -4,7 +4,7 @@
 # Author: rotimi-best
 # Date: 2024-09-18
 
-version: '3.8'
+version: "3.8"
 
 services:
   api:
@@ -24,7 +24,7 @@ services:
         - SMTP_PASSWORD=${SMTP_PASSWORD}
         - SMTP_PORT=${SMTP_PORT}
     ports:
-      - '3002:3002'
+      - "3002:3002"
     volumes:
       # Node modules (optional - for faster development)
       - ./apps/api/node_modules:/app/node_modules
@@ -62,14 +62,13 @@ services:
         - PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL}
         - PUBLIC_IP_REGISTRY_KEY=${PUBLIC_IP_REGISTRY_KEY}
     ports:
-      - '3000:3000'
+      - "3000:3000"
     volumes:
       - .:/app
       - /app/node_modules
       - /app/apps/dashboard/node_modules
     environment:
       - PUBLIC_IS_SELFHOSTED=true
-      - DEPLOYMENT_PROVIDER=docker
       # Supabase - Database
       - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
       - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}

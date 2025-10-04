@@ -1,6 +1,6 @@
 {
   "$schema": "https://turborepo.org/schema.json",
-  "globalEnv": ["PUBLIC_IS_SELFHOSTED", "DEPLOYMENT_PROVIDER"],
+  "globalEnv": ["PUBLIC_IS_SELFHOSTED"],
   "pipeline": {
     "@cio/dashboard#build": {
       "dependsOn": ["@cio/api#build"]

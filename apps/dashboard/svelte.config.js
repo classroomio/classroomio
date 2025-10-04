@@ -1,13 +1,12 @@
-import { vitePreprocess } from '@sveltejs/kit/vite';
+import 'dotenv/config';
+
 // import adapterAuto from '@sveltejs/adapter-auto';
 import adapterNode from '@sveltejs/adapter-node';
 import adapterVercel from '@sveltejs/adapter-vercel';
 import path from 'path';
+import { vitePreprocess } from '@sveltejs/kit/vite';
 
-import 'dotenv/config';
-
-const useNodeAdapter =
-  process.env.PUBLIC_IS_SELFHOSTED === 'true' && process.env.DEPLOYMENT_PROVIDER === 'docker';
+const useNodeAdapter = process.env.PUBLIC_IS_SELFHOSTED === 'true';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
