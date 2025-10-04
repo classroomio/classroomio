@@ -52,12 +52,16 @@ Once you have an account just click on the _New Project_ on your dashboard. Afte
   anywhere in the dashboard for security reasons.
 </Callout>
 
+### Setup Supabase CLI
+
+Follow the instructions [here](https://supabase.com/docs/guides/local-development/cli/getting-started) to setup the Supabase CLI on your computer.
+
 ### Login to Supabase via the CLI
 
 Open your terminal and go to the root of the project. Run the following:
 
 ```bash copy
-pnpm supabase:login
+supabase login
 ```
 
 Follow the instruction in your terminal to generate your access token. Paste the token in the console and hit **Enter**
@@ -74,7 +78,7 @@ Follow the instruction in your terminal to generate your access token. Paste the
 - Then run in your terminal:
 
 ```bash copy
-pnpx supabase@1.51.1 db push --db-url "URL HERE"
+supabase db push --db-url "URL HERE"
 ```
 
 <Callout>
