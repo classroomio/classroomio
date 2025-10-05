@@ -4,7 +4,7 @@
 
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { ROLE } from '$lib/utils/constants/roles';
-  import { addGroupMember } from '$lib/utils/services/courses';
+  import { addGroupMember, fetchGroup } from '$lib/utils/services/courses';
   import { MultiSelect, Loading } from 'carbon-components-svelte';
   import { currentOrg } from '$lib/utils/store/org';
   import { getOrgTeam } from '$lib/utils/services/org';
@@ -17,7 +17,7 @@
   import Modal from '$lib/components/Modal/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import type { Course } from '$lib/utils/types';
-  import { course } from '../../store';
+  import { course, setCourse } from '../../store';
 
   interface Tutor {
     id: number;
@@ -129,11 +129,21 @@
       });
     }
 
-    await addGroupMember(membersStack);
+    addGroupMember(membersStack).then(async (membersAdded) => {
+      if (!$course?.group?.id) return;
 
-    goto($page.url.pathname);
+      const group = await fetchGroup($course?.group?.id);
 
-    isSaving = false;
+      setCourse(
+        {
+          ...$course,
+          group: group.data
+        },
+        false
+      );
+
+      goto($page.url.pathname);
+    });
   }
 
   function getExistingTutors(group: Course['group']) {
@@ -224,10 +234,12 @@
     </div>
 
     <div class="mb-8 w-full">
-      <p class="mb-1 text-base font-semibold">Invite Students</p>
+      <p class="mb-1 text-base font-semibold">
+        {$t('course.navItem.people.invite_modal.invite_students')}
+      </p>
 
       <TextField
-        label="Email addresses"
+        label={$t('course.navItem.people.invite_modal.email_addresses')}
         className="w-full my-4"
         placeholder="john@example.com,jane@example.com"
         bind:value={emails}

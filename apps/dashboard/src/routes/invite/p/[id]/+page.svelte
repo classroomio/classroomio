@@ -151,26 +151,24 @@
 
   $: errors.confirmPassword = getConfirmPasswordError(fields);
   $: disableSubmit = getDisableSubmit(fields);
-
-  $: console.log('data', data.invite);
 </script>
 
 <svelte:head>
-  <title>Access your products on BellCurve</title>
+  <title>{$t('product_invite.title')}</title>
 </svelte:head>
 
 <AuthUI {supabase} isLogin={false} {handleSubmit} isLoading={loading} showLogo={true} bind:formRef>
   <div class="mt-4 w-full">
     {#if data.invite.accepted_at}
       <p class="mb-6 text-lg font-semibold dark:text-white">
-        You have already accepted this invite
+        {$t('product_invite.accepted')}
       </p>
     {:else}
       <p class="mb-6 text-lg font-semibold dark:text-white">
         {#if data.profile}
-          Login to access your products
+          {$t('product_invite.login')}
         {:else}
-          Create an account to access your products
+          {$t('product_invite.create_account')}
         {/if}
       </p>
       <TextField
@@ -230,7 +228,7 @@
   <div class="my-4 flex w-full items-center justify-end">
     {#if data.invite.accepted_at}
       <PrimaryButton
-        label="Go to LMS"
+        label={$t('product_invite.lms')}
         onClick={() => goto('/login')}
         className="sm:w-full w-full"
         isDisabled={disableSubmit || loading}
@@ -238,7 +236,7 @@
       />
     {:else}
       <PrimaryButton
-        label="Access products"
+        label={$t('product_invite.access')}
         type="submit"
         className="sm:w-full w-full"
         isDisabled={disableSubmit || loading}

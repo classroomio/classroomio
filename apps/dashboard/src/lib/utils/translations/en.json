@@ -17,6 +17,15 @@
     "yes": "Yes"
   },
 
+  "product_invite": {
+    "title": "Access your products on ClassroomIO",
+    "accepted": "You have already accepted this invite",
+    "login": "Login to access your products",
+    "create_account": "Create an account to access your products",
+    "lms": "Go to LMS",
+    "access": "Access products"
+  },
+
   "onboarding": {
     "sell": "Sell courses online",
     "teach": "Teach my current students online",
@@ -960,7 +969,8 @@
           "qr_downloading_snackbar": "QR code generated successfully, please wait while it downloads",
           "copy_link": "Copy link",
           "success": "Copied Successfully",
-          "finish": "Finish"
+          "finish": "Finish",
+          "email_addresses": "Email addresses"
         },
         "delete_confirmation": {
           "title": "Delete",

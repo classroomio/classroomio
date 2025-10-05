@@ -144,7 +144,7 @@
       label="Join Course"
       type="submit"
       isDisabled={disableSubmit || loading}
-      isLoading={loading}
+      isLoading={loading || !$profile.id}
     />
   </div>
 </AuthUI>
