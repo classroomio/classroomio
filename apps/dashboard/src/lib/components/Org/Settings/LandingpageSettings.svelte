@@ -39,9 +39,6 @@
     openInNewTab: false
   };
 
-  let backgroundShow = false;
-  let backgroundImage = '';
-
   function widgetControl(key: string) {
     widgetKey = key;
     $handleOpenWidget.open = true;
@@ -164,16 +161,6 @@
   }
 
   $: setDefault($currentOrg?.landingpage as unknown as OrgLandingPageJson);
-  // $: if ($landingPageSettings.header.background) {
-  //   backgroundShow = $landingPageSettings.header.background.show;
-  //   backgroundImage = $landingPageSettings.header.background.image;
-  // }
-  $: if (backgroundShow !== undefined && $landingPageSettings.header.background) {
-    $landingPageSettings.header.background.show = backgroundShow;
-  }
-  $: if (backgroundImage !== undefined && $landingPageSettings.header.background) {
-    $landingPageSettings.header.background.image = backgroundImage;
-  }
 </script>
 
 <Grid class="border-c relative mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
@@ -296,7 +283,7 @@
           />
         {/if}
 
-        <Toggle bind:toggled={backgroundShow} size="sm">
+        <Toggle bind:toggled={$landingPageSettings.header.background.show} size="sm">
           <span slot="labelA" style="color: gray"
             >{$t('settings.landing_page.background.hide_background')}</span
           >
@@ -306,7 +293,7 @@
         </Toggle>
 
         {#if $handleOpenWidget.open && widgetKey === 'background'}
-          <UploadWidget bind:imageURL={backgroundImage} />
+          <UploadWidget bind:imageURL={$landingPageSettings.header.background.image} />
         {/if}
       </div>
     </Column>

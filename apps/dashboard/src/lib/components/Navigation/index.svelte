@@ -1,28 +1,25 @@
-<!-- Navigation.svelte -->
 <script lang="ts">
   import { page } from '$app/stores';
   import { user } from '$lib/utils/store/user';
   import { isCoursePage } from '$lib/utils/functions/app';
   import { t } from '$lib/utils/functions/translations';
-  import type { TNavigationProps } from './types';
+  import type { TCustomLinks } from './types';
 
   import Logo from './Logo.svelte';
   import CustomLinks from './CustomLinks.svelte';
   import AuthButtons from './AuthButtons.svelte';
   import MobileMenu from './MobileMenu.svelte';
 
-  // Props with defaults matching original component
   export let disableSignup = false;
   export let logo: string | undefined = undefined;
   export let orgName: string | undefined = undefined;
   export let isOrgSite = false;
   export let backgroundColor = 'bg-white dark:bg-black';
-  export let customLinks: TNavigationProps['customLinks'] = null;
+  export let customLinks: TCustomLinks | undefined = undefined;
 
   let navClass = '';
   let mobileMenuOpen = false;
 
-  // Computed values
   $: redirect = isCoursePage($page.url.pathname) ? `?redirect=${$page.url.pathname}` : '';
   $: showLinks =
     customLinks && customLinks.show && customLinks.links && customLinks.links.length > 0;
@@ -38,7 +35,6 @@
   <ul class="flex w-full items-center">
     <Logo {logo} {orgName} />
 
-    <!-- main page -->
     <span class="flex-grow" />
 
     <!-- Mobile Menu Button - Only show when custom links exist -->
@@ -59,7 +55,6 @@
       </button>
     {/if}
 
-    <!-- Custom Links - Desktop (Right side) -->
     {#if customLinks && showLinks}
       <CustomLinks {customLinks} />
     {/if}
@@ -78,7 +73,6 @@
     {/if}
   </ul>
 
-  <!-- Mobile Menu -->
   {#if showLinks}
     <MobileMenu bind:mobileMenuOpen {customLinks} {disableSignup} {redirect} />
   {/if}

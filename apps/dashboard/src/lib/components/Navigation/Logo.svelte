@@ -1,4 +1,3 @@
-<!-- Logo.svelte -->
 <script lang="ts">
   import { t } from '$lib/utils/functions/translations';
 

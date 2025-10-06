@@ -1,4 +1,3 @@
-// types.ts
 export type CustomLink = {
   id: number;
   label: string;
@@ -17,5 +16,5 @@ export type TNavigationProps = {
   orgName?: string;
   isOrgSite?: boolean;
   backgroundColor?: string;
-  customLinks?: CustomLinks | null;
+  customLinks?: TCustomLinks | null;
 };

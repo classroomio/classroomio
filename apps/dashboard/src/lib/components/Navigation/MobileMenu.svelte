@@ -1,13 +1,12 @@
-<!-- MobileMenu.svelte -->
 <script lang="ts">
   import { page } from '$app/stores';
   import { user } from '$lib/utils/store/user';
-  import { type TCustomLinks } from './types.ts';
+  import { type TCustomLinks } from './types';
   import CustomLinks from './CustomLinks.svelte';
   import AuthButtons from './AuthButtons.svelte';
 
   export let mobileMenuOpen = false;
-  export let customLinks: TCustomLinks = null;
+  export let customLinks: TCustomLinks | undefined = undefined;
   export let disableSignup = false;
   export let redirect = '';
 

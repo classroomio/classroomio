@@ -17,7 +17,7 @@ export interface OrgLandingPageJson {
       type: string;
       show: boolean;
     };
-    background?: {
+    background: {
       image: string;
       show: boolean;
     };

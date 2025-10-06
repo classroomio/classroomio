@@ -1,4 +1,3 @@
-<!-- AuthButtons.svelte -->
 <script lang="ts">
   import { goto } from '$app/navigation';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
