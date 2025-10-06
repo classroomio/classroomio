@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import AudienceIcon from '$lib/components/Icons/AudienceIcon.svelte';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
@@ -28,7 +28,7 @@
     isActive: boolean;
   }
 
-  let menuItems: menuItems[] = [];
+  let menuItems: menuItems[] = $state([]);
 
   function isActive(pagePath: string, itemPath: string) {
     const pageLinkItems = pagePath.split('/');
@@ -48,38 +48,40 @@
     goto(window.location.pathname + '?upgrade=true');
   };
 
-  $: menuItems = [
-    {
-      path: '',
-      label: $t('org_navigation.dashboard'),
-      isActive: isActive($page.url.pathname, `${$currentOrgPath}`),
-      show: true
-    },
-    {
-      path: '/courses',
-      label: $t('org_navigation.courses'),
-      isActive: $page.url.pathname.includes(`${$currentOrgPath}/courses`),
-      show: true
-    },
-    {
-      path: '/community',
-      label: $t('org_navigation.community'),
-      isActive: $page.url.pathname.includes(`${$currentOrgPath}/community`),
-      show: true
-    },
-    {
-      path: '/audience',
-      label: $t('org_navigation.audience'),
-      isActive: $page.url.pathname.includes(`${$currentOrgPath}/audience`),
-      show: true
-    },
-    {
-      path: '/setup',
-      label: $t('org_navigation.setup'),
-      isActive: $page.url.pathname.includes(`${$currentOrgPath}/setup`),
-      show: $isOrgAdmin
-    }
-  ];
+  $effect(() => {
+    menuItems = [
+      {
+        path: '',
+        label: $t('org_navigation.dashboard'),
+        isActive: isActive(page.url.pathname, `${$currentOrgPath}`),
+        show: true
+      },
+      {
+        path: '/courses',
+        label: $t('org_navigation.courses'),
+        isActive: page.url.pathname.includes(`${$currentOrgPath}/courses`),
+        show: true
+      },
+      {
+        path: '/community',
+        label: $t('org_navigation.community'),
+        isActive: page.url.pathname.includes(`${$currentOrgPath}/community`),
+        show: true
+      },
+      {
+        path: '/audience',
+        label: $t('org_navigation.audience'),
+        isActive: page.url.pathname.includes(`${$currentOrgPath}/audience`),
+        show: true
+      },
+      {
+        path: '/setup',
+        label: $t('org_navigation.setup'),
+        isActive: page.url.pathname.includes(`${$currentOrgPath}/setup`),
+        show: $isOrgAdmin
+      }
+    ];
+  });
 </script>
 
 <div bind:this={$profileMenu.ref} class="static md:relative">
@@ -100,7 +102,7 @@
               <a
                 href="{$currentOrgPath}{menuItem.path}"
                 class="text-black no-underline"
-                on:click={toggleSidebar}
+                onclick={toggleSidebar}
               >
                 <li
                   class="mb-1 flex items-center gap-2.5 px-2.5 py-2 {NavClasses.item} {menuItem.isActive
@@ -129,7 +131,7 @@
           {/each}
         </ul>
       </div>
-      <span class="flex-grow" />
+      <span class="flex-grow"></span>
 
       {#if $isFreePlan}
         <div
@@ -149,7 +151,7 @@
       {/if}
 
       <ul class="my-5 px-4 pb-5">
-        <a href={$currentOrgPath} class="text-black no-underline" on:click={toggleSidebar}>
+        <a href={$currentOrgPath} class="text-black no-underline" onclick={toggleSidebar}>
           <li class="mb-2 flex items-center rounded px-2.5 py-1.5">
             <HelpIcon size={20} class="carbon-icon dark:text-white" />
             <p class="ml-2.5 text-sm font-medium dark:text-white">{$t('org_navigation.help')}</p>
@@ -158,13 +160,13 @@
 
         <button
           class="w-full"
-          on:click={() => {
+          onclick={() => {
             $profileMenu.open = !$profileMenu.open;
             $sideBar.hidden = true;
           }}
         >
           <div
-            class="mb-2 flex cursor-pointer items-center justify-between gap-2.5 px-2.5 py-2 text-black no-underline {NavClasses.item} {$page.url.pathname.includes(
+            class="mb-2 flex cursor-pointer items-center justify-between gap-2.5 px-2.5 py-2 text-black no-underline {NavClasses.item} {page.url.pathname.includes(
               'settings'
             )
               ? NavClasses.active

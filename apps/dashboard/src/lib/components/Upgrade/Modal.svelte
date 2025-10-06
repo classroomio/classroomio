@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import Confetti from '$lib/components/Confetti/index.svelte';
   import { toggleConfetti } from '$lib/components/Confetti/store';
 
@@ -20,11 +20,11 @@
 
   const planNames = Object.keys(PLANS);
 
-  let isLoadingPlan: string | null = null;
-  let open = false;
-  let upgraded = false;
-  let isYearlyPlan = false;
-  let isConfirming = false;
+  let isLoadingPlan: string | null = $state(null);
+  let open = $state(false);
+  let upgraded = $state(false);
+  let isYearlyPlan = $state(false);
+  let isConfirming = $state(false);
 
   async function handleClick(plan, planName: string) {
     if (plan.CTA.IS_DISABLED || !$profile.id) {
@@ -39,7 +39,7 @@
     isLoadingPlan = planName;
 
     try {
-      const checkoutURL = new URL('/api/polar/subscribe', $page.url);
+      const checkoutURL = new URL('/api/polar/subscribe', page.url);
 
       checkoutURL.searchParams.set(
         'productId',
@@ -76,7 +76,7 @@
   }
 
   function onClose() {
-    const path = upgraded ? $currentOrgPath : $page.url.pathname;
+    const path = upgraded ? $currentOrgPath : page.url.pathname;
     goto(path);
   }
 
@@ -87,18 +87,19 @@
     isYearlyPlan = !isYearlyPlan;
   }
 
-  $: {
-    const query = new URLSearchParams($page.url.search);
-    open = (query.get('upgrade') || '') === 'true';
-    isConfirming = (query.get('confirmation') || '') === 'true';
-  }
-
-  $: handleUpgradeSuccess(Boolean($currentOrg.id && !$isFreePlan && open));
   function handleUpgradeSuccess(upgradeSuccessful: boolean) {
     if (upgradeSuccessful) {
       onUpgrade();
     }
   }
+  $effect(() => {
+    const query = new URLSearchParams(page.url.search);
+    open = (query.get('upgrade') || '') === 'true';
+    isConfirming = (query.get('confirmation') || '') === 'true';
+  });
+  $effect(() => {
+    handleUpgradeSuccess(Boolean($currentOrg.id && !$isFreePlan && open));
+  });
 </script>
 
 {#if upgraded}
@@ -145,7 +146,7 @@
             ? '#5e636b'
             : '#fff'}"
           class="rounded-[30px] bg-blue-700 px-3 py-1 text-xs text-white transition-all duration-500 ease-in-out lg:px-4 lg:py-2"
-          on:click={toggleIsYearlyPlan}
+          onclick={toggleIsYearlyPlan}
         >
           {$t('pricing.modal.monthly')}
         </button>
@@ -154,7 +155,7 @@
             ? '#fff'
             : '#5e636b'}"
           class="relative rounded-[30px] px-3 py-1 text-xs text-white transition-all duration-500 ease-in-out lg:px-4 lg:py-2"
-          on:click={toggleIsYearlyPlan}
+          onclick={toggleIsYearlyPlan}
         >
           {$t('pricing.modal.annually')}
           <div
@@ -173,7 +174,7 @@
             <p
               class="mb-2 text-lg font-semibold leading-8 {planName === 'EARLY_ADOPTER'
                 ? 'text-white'
-                : 'text-gray-900'} dark:text-white lg:text-xl"
+                : 'text-gray-900'} lg:text-xl dark:text-white"
             >
               {PLANS[planName].NAME}
             </p>
@@ -189,7 +190,7 @@
             <p
               class=" mt-4 text-sm font-light leading-6 {planName === 'EARLY_ADOPTER'
                 ? 'text-white'
-                : 'text-black'} dark:text-gray-300 lg:leading-6"
+                : 'text-black'} lg:leading-6 dark:text-gray-300"
             >
               {PLANS[planName].DESCRIPTION}
             </p>
@@ -201,7 +202,7 @@
                 : PLANS[planName].CTA.IS_DISABLED
                   ? disabledClass
                   : 'bg-primary-900 hover:bg-primary-700 text-white'} flex items-center justify-center py-3 text-center font-medium hover:no-underline lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
-              on:click={() => {
+              onclick={() => {
                 if (isLoadingPlan === planName) return;
 
                 handleClick(PLANS[planName], planName);

@@ -29,5 +29,10 @@
   },
   "engines": {
     "node": "^20.19.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

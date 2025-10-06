@@ -35,17 +35,17 @@
   }
 
   const maxSteps = 2;
-  let fields: OnboardingField = {
+  let fields: OnboardingField = $state({
     fullname: '',
     orgName: '',
     siteName: '',
     locale: LOCALE.EN
-  };
-  let errors: OnboardingField = {};
-  let progress = 50;
-  let step = 1;
-  let loading = false;
-  let isSiteNameTouched = false;
+  });
+  let errors: OnboardingField = $state({});
+  let progress = $state(50);
+  let step = $state(1);
+  let loading = $state(false);
+  let isSiteNameTouched = $state(false);
   let selectedId = 'en';
 
   let dropdownItems = [
@@ -232,9 +232,15 @@
     loading = false;
   };
 
-  $: progress = Math.round((step / maxSteps) * 100);
-  $: fields.siteName = generateSitename(fields.siteName || '');
-  $: setOrgSiteName(fields.orgName, isSiteNameTouched);
+  $effect(() => {
+    progress = Math.round((step / maxSteps) * 100);
+  });
+  $effect(() => {
+    fields.siteName = generateSitename(fields.siteName || '');
+  });
+  $effect(() => {
+    setOrgSiteName(fields.orgName, isSiteNameTouched);
+  });
 </script>
 
 {#if $profile.id}
@@ -382,7 +388,7 @@
           <span
             class="progress bg-primary-700 absolute left-0 top-0 h-full"
             style="width: {progress}%;"
-          />
+          ></span>
         </div>
 
         <div class="flex">

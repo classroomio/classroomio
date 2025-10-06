@@ -3,31 +3,57 @@
   import IconButton from '$lib/components/IconButton/index.svelte';
   import PasswordEye from '../Icons/PasswordEye.svelte';
 
-  export let label = '';
-  export let placeholder = '';
-  export let value: string | number | null = null;
-  export let name = '';
-  export let onKeyDown = (e) => {};
-  export let className = '';
-  export let inputClassName = '';
-  export let labelClassName = 'font-light';
-  export let bgColor = 'bg-gray-100 focus:bg-primary-50 dark:bg-neutral-700 dark:text-white';
-  export let type = 'text';
-  export let isPassword = false;
-  export let autoFocus = false;
-  export let isRequired = false;
-  export let isDisabled = false;
-  export let min: string | number | null | undefined = undefined;
-  export let max: string | number | null | undefined = undefined;
-  export let errorMessage = '';
-  export let helperMessage = '';
-  export let autoComplete = true;
-  export let onChange = () => {}; // This is to know if element is 'dirty'
-  export let onInputChange = () => {};
+  interface Props {
+    label?: string;
+    placeholder?: string;
+    value?: string | number | null;
+    name?: string;
+    onKeyDown?: any;
+    className?: string;
+    inputClassName?: string;
+    labelClassName?: string;
+    bgColor?: string;
+    type?: string;
+    isPassword?: boolean;
+    autoFocus?: boolean;
+    isRequired?: boolean;
+    isDisabled?: boolean;
+    min?: string | number | null | undefined;
+    max?: string | number | null | undefined;
+    errorMessage?: string;
+    helperMessage?: string;
+    autoComplete?: boolean;
+    onChange?: any; // This is to know if element is 'dirty'
+    onInputChange?: any;
+  }
 
-  let ref: HTMLInputElement | undefined = undefined;
+  let {
+    label = '',
+    placeholder = '',
+    value = $bindable(),
+    name = '',
+    onKeyDown = (_e) => {},
+    className = '',
+    inputClassName = '',
+    labelClassName = 'font-light',
+    bgColor = 'bg-gray-100 focus:bg-primary-50 dark:bg-neutral-700 dark:text-white',
+    type = $bindable('text'),
+    isPassword = $bindable(false),
+    autoFocus = false,
+    isRequired = false,
+    isDisabled = false,
+    min = undefined,
+    max = undefined,
+    errorMessage = '',
+    helperMessage = '',
+    autoComplete = true,
+    onChange = () => {},
+    onInputChange = () => {}
+  }: Props = $props();
+
+  let ref: HTMLInputElement | undefined = $state(undefined);
   let fieldNode: HTMLInputElement | undefined = undefined;
-  let focusClass = '';
+  let focusClass = $state('');
 
   function typeAction(node: HTMLInputElement | undefined) {
     if (!node) return;
@@ -57,37 +83,37 @@
   });
 </script>
 
-<label class="block relative {className}">
+<label class="relative block {className}">
   {#if label}
-    <p for="text-field" class="text-sm dark:text-white text-left m-0 {labelClassName}">
+    <label for="text-field" class="m-0 text-left text-sm dark:text-white {labelClassName}">
       {label}
 
       {#if isRequired}
         <span class="text-red-700">*</span>
       {/if}
-    </p>
+    </label>
   {/if}
   <input
     use:typeAction
-    class="form-input border-l-0 border-r-0 border-t-0 border-b-2 border-gray-200 dark:border-neutral-600 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 focus:border-b-2 {inputClassName} {focusClass} {isDisabled &&
-      'hover:cursor-not-allowed opacity-50'} dark:text-black p-3 mt-1 block w-full {bgColor} {errorMessage
+    class="form-input rounded-t-md border-b-2 border-l-0 border-r-0 border-t-0 border-gray-200 focus:border-b-2 focus:border-l-0 focus:border-r-0 focus:border-t-0 dark:border-neutral-600 {inputClassName} {focusClass} {isDisabled &&
+      'opacity-50 hover:cursor-not-allowed'} mt-1 block w-full p-3 dark:text-black {bgColor} {errorMessage
       ? 'border-red-600'
       : ''}"
-    on:keydown={onKeyDown}
-    on:change={onInputChange}
+    onkeydown={onKeyDown}
+    onchange={onInputChange}
     {placeholder}
     bind:value
     bind:this={ref}
     required={isRequired}
     disabled={isDisabled}
     autocomplete={autoComplete ? 'on' : 'off'}
-    on:blur={(e) => {
+    onblur={(e) => {
       if (focusClass.includes('border-primary-600')) {
         focusClass = focusClass.replace('border-primary-600', '');
       }
       onChange(e);
     }}
-    on:focus={() => (focusClass += ' border-primary-600')}
+    onfocus={() => (focusClass += ' border-primary-600')}
     {name}
     {min}
     {max}
@@ -102,7 +128,7 @@
   {#if errorMessage}
     <p class="text-sm text-red-500">{errorMessage}</p>
   {:else if helperMessage}
-    <p class="dark:text-white text-sm opacity-70">
+    <p class="text-sm opacity-70 dark:text-white">
       {helperMessage}
     </p>
   {/if}

@@ -6,14 +6,18 @@
   import Alarm from 'carbon-icons-svelte/lib/Alarm.svelte';
   import Email from 'carbon-icons-svelte/lib/Email.svelte';
 
-  export let user: UserAnalytics['user'];
+  interface Props {
+    user: UserAnalytics['user'];
+  }
+
+  let { user }: Props = $props();
 </script>
 
 <div class="rounded-md border p-5 dark:border-neutral-600">
   <div class="flex w-full flex-col items-center justify-start gap-4 text-start md:flex-row">
     <Avatar src={user.avatarUrl} name={user.fullName} width="w-16" height="h-16" />
     <div class="flex flex-col space-y-2">
-      <p class="text-center text-2xl font-bold dark:text-white md:text-left">
+      <p class="text-center text-2xl font-bold md:text-left dark:text-white">
         {user.fullName}
       </p>
 

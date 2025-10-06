@@ -17,30 +17,50 @@
   import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
   import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
 
-  export let bannerImage: string | undefined;
-  export let id = '';
-  export let slug = '';
-  export let title = '';
-  export let description = '';
-  export let isPublished = false;
-  export let totalLessons = 0;
-  export let totalStudents = 0;
-  export let currency = 'USD';
-  export let isOnLandingPage = false;
-  export let isLMS = false;
-  export let isExplore = false;
-  export let progressRate = 45;
-  export let type: COURSE_TYPE;
-  export let pricingData: {
-    cost: number;
+  interface Props {
+    bannerImage: string | undefined;
+    id?: string;
+    slug?: string;
+    title?: string;
+    description?: string;
+    isPublished?: boolean;
+    totalLessons?: number;
+    totalStudents?: number;
     currency?: string;
-    showDiscount?: boolean;
-    discount?: number;
-  } = {
-    cost: 0
-  };
+    isOnLandingPage?: boolean;
+    isLMS?: boolean;
+    isExplore?: boolean;
+    progressRate?: number;
+    type: COURSE_TYPE;
+    pricingData?: {
+      cost: number;
+      currency?: string;
+      showDiscount?: boolean;
+      discount?: number;
+    };
+  }
 
-  $: formatter = getCurrencyFormatter(currency);
+  let {
+    bannerImage,
+    id = '',
+    slug = '',
+    title = '',
+    description = '',
+    isPublished = false,
+    totalLessons = 0,
+    totalStudents = 0,
+    currency = 'USD',
+    isOnLandingPage = false,
+    isLMS = false,
+    isExplore = false,
+    progressRate = 45,
+    type,
+    pricingData = {
+      cost: 0
+    }
+  }: Props = $props();
+
+  let formatter = $derived(getCurrencyFormatter(currency));
 
   function handleCloneCourse() {
     // TODO: Clone course functionality
@@ -87,25 +107,24 @@
     }
   };
 
-  $: cost = calcCourseDiscount(
-    pricingData.discount,
-    pricingData.cost ?? 0,
-    !!pricingData.showDiscount
+  let cost = $derived(
+    calcCourseDiscount(pricingData.discount, pricingData.cost ?? 0, !!pricingData.showDiscount)
   );
 
-  $: courseUrl =
+  let courseUrl = $derived(
     isOnLandingPage || isExplore
       ? `/course/${slug}`
-      : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`;
+      : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`
+  );
 </script>
 
 <div
   role="button"
   tabindex="0"
-  on:click={(e) => {
+  onclick={(e) => {
     goto(courseUrl);
   }}
-  on:keydown={(e) => {
+  onkeydown={(e) => {
     if (e.key === 'Enter') {
       goto(courseUrl);
     }
@@ -145,17 +164,19 @@
         alt="Course Logo"
         class="relative h-[200px] w-full rounded dark:border dark:border-neutral-600"
       >
-        <svelte:fragment slot="loading">
+        {#snippet loading()}
           <SkeletonPlaceholder style="width: 100%; height: 200px;" />
-        </svelte:fragment>
-        <svelte:fragment slot="error">{$t('courses.course_card.error_message')}</svelte:fragment>
+        {/snippet}
+        {#snippet error()}
+          {$t('courses.course_card.error_message')}
+        {/snippet}
       </ImageLoader>
       {#if type}
         {@const tag = COURSE_TAG[type]}
         <span
           class="bg-primary-50 absolute bottom-2 left-2 z-10 flex items-center gap-1 rounded-sm p-1 font-mono text-xs capitalize"
         >
-          <svelte:component this={tag.icon} size={16} class={tag.iconStyle} />
+          <tag.icon size={16} class={tag.iconStyle} />
           {tag.label}
         </span>
       {/if}
@@ -196,8 +217,8 @@
               <div class=" relative h-1 w-[50px] bg-[#EAEAEA]">
                 <div
                   style="width:{progressRate}%"
-                  class={`bg-primary-700 absolute left-0 top-0 h-full`}
-                />
+                  class="bg-primary-700 absolute left-0 top-0 h-full"
+                ></div>
               </div>
               <p class="text-xs text-[#656565] dark:text-white">{progressRate}%</p>
             </div>

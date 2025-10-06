@@ -1,14 +1,14 @@
 import { env } from '$env/dynamic/public';
 
-var win, output, textarea;
+let win, output, textarea;
 
 // Follow this guide to get source code: https://editor.codecogs.com/docs/3-Tiny_MCE_v6.php
 export const addMathPlugin = (tinymce: any) => {
   tinymce.PluginManager.add('eqneditor', function (editor, url) {
     // Load necessary javascript for editor from CodeCogs
-    var sl = new tinymce.dom.ScriptLoader();
+    const sl = new tinymce.dom.ScriptLoader();
     sl.add('https://assets.cdn.clsrio.com/eqneditor.api.min.js');
-    var loaded = sl.loadQueue();
+    const loaded = sl.loadQueue();
 
     // Load custom CSS
     tinymce.DOM.loadCSS('https://assets.cdn.clsrio.com/eqneditor_1.css');
@@ -44,7 +44,7 @@ export const addMathPlugin = (tinymce: any) => {
     );
 
     function showDialog(inp = '') {
-      var http = 'https:' == document.location.protocol ? 'https://' : 'http://';
+      const http = 'https:' == document.location.protocol ? 'https://' : 'http://';
 
       win = editor.windowManager.open({
         title: 'Equation Editor',
@@ -124,8 +124,8 @@ export const addMathPlugin = (tinymce: any) => {
           .addHistoryMenu(new EqEditor.History('history'));
         EqEditor.Toolbar.link('toolbar').addTextArea(textarea);
 
-        var nodes = document.getElementById('history')?.childNodes || [];
-        for (var i = 0; i < nodes.length; i++) {
+        const nodes = document.getElementById('history')?.childNodes || [];
+        for (let i = 0; i < nodes.length; i++) {
           nodes[i].style.padding = 'revert';
         }
 
@@ -146,7 +146,7 @@ export const addMathPlugin = (tinymce: any) => {
 
     editor.on('dblclick', function (e) {
       if (e.target.nodeName.toLowerCase() == 'img') {
-        var sName = e.target.src.match(/(gif|svg)\.image\?(.*)/);
+        const sName = e.target.src.match(/(gif|svg)\.image\?(.*)/);
         if (sName != null) showDialog(sName[2]);
       }
     });

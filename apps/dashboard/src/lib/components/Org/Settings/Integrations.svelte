@@ -11,7 +11,7 @@
   import ArrowUpRightIcon from '$lib/components/Icons/ArrowTopRight.svelte';
   import { t } from '$lib/utils/functions/translations';
 
-  let chatId: number | null;
+  let chatId: number | null = $state();
 
   async function addChatId() {
     if (!chatId || `${chatId}`.length < 5) return;
@@ -49,16 +49,16 @@
   }
 </script>
 
-<Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5">
-  <Row class="flex lg:flex-row flex-col justify-center lg:justify-start py-7 border-bottom-c">
+<Grid class="border-c mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
+  <Row class="border-bottom-c flex flex-col justify-center py-7 lg:flex-row lg:justify-start">
     <Column sm={4} md={4} lg={4} class="flex items-center justify-center">
-      <img src="/telegram-svg.svg" alt="" class="w-10 mr-2" />
+      <img src="/telegram-svg.svg" alt="" class="mr-2 w-10" />
       <SectionTitle>{$t('settings.integrations.heading')}</SectionTitle></Column
     >
 
-    <Column sm={8} md={8} lg={8} class="mt-2 lg:mt-0 flex flex-col items-center lg:items-start">
+    <Column sm={8} md={8} lg={8} class="mt-2 flex flex-col items-center lg:mt-0 lg:items-start">
       {#if $profile.telegram_chat_id !== null}
-        <div class="flex flex-col items-center w-full">
+        <div class="flex w-full flex-col items-center">
           <div class="flex items-center">
             <CheckmarkFilled size={32} class="mr-2" style="fill: green;" />
             <SectionTitle>{$t('settings.integrations.success_message')}</SectionTitle>
@@ -69,7 +69,7 @@
         </div>
       {:else}
         <div>
-          <h3 class="font-normal text-lg">
+          <h3 class="text-lg font-normal">
             {$t('settings.integrations.sub_heading')}
           </h3>
           <h4 class="font-normal">{$t('settings.integrations.step_authenticate')}</h4>

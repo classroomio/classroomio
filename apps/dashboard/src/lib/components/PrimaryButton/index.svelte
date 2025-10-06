@@ -2,33 +2,53 @@
   import { Loading } from 'carbon-components-svelte';
   import { VARIANTS, VARIANTS_CLASS } from './constants';
 
-  export let label = '';
-  export let className = '';
-  export let onClick = (e?: Event) => {};
-  export let name = '';
-  export let type: 'button' | 'submit' | 'reset' | null | undefined = 'button';
-  export let variant = VARIANTS.CONTAINED;
-  export let disablePadding = false;
-  export let isDisabled = false;
-  export let isLoading = false;
-  export let disableScale = false;
+  interface Props {
+    label?: string;
+    className?: string;
+    onClick?: any;
+    name?: string;
+    type?: 'button' | 'submit' | 'reset' | null | undefined;
+    variant?: any;
+    disablePadding?: boolean;
+    isDisabled?: boolean;
+    isLoading?: boolean;
+    disableScale?: boolean;
+    children?: import('svelte').Snippet;
+  }
 
-  $: loadingClass =
+  let {
+    label = '',
+    className = '',
+    onClick = (e?: Event) => {},
+    name = '',
+    type = 'button',
+    variant = VARIANTS.CONTAINED,
+    disablePadding = false,
+    isDisabled = false,
+    isLoading = false,
+    disableScale = false,
+    children
+  }: Props = $props();
+
+  let loadingClass = $derived(
     isLoading || isDisabled
       ? 'cursor-not-allowed opacity-25'
-      : `cursor-pointer ${!disableScale && 'hover:scale-95'}`;
-  $: cname = `flex items-center h-auto ${loadingClass} ${
-    VARIANTS_CLASS[isLoading ? VARIANTS.OUTLINED : variant]
-  } ${
-    !disablePadding && 'px-5 py-[0.2rem]'
-  } rounded-md min-h-[36px] w-fit justify-center sm:w-auto ${
-    variant !== VARIANTS.TEXT && 'hover:shadow-xl'
-  } transition-all delay-150 duration-300 ease-in-out`;
+      : `cursor-pointer ${!disableScale && 'hover:scale-95'}`
+  );
+  let cname = $derived(
+    `flex items-center h-auto ${loadingClass} ${
+      VARIANTS_CLASS[isLoading ? VARIANTS.OUTLINED : variant]
+    } ${
+      !disablePadding && 'px-5 py-[0.2rem]'
+    } rounded-md min-h-[36px] w-fit justify-center sm:w-auto ${
+      variant !== VARIANTS.TEXT && 'hover:shadow-xl'
+    } transition-all delay-150 duration-300 ease-in-out`
+  );
 </script>
 
 <button
   class={`${cname} ${className}`}
-  on:click={onClick}
+  onclick={onClick}
   {name}
   {type}
   disabled={isLoading || isDisabled}
@@ -39,6 +59,6 @@
   {#if !!label}
     {label}
   {:else}
-    <slot />
+    {@render children?.()}
   {/if}
 </button>

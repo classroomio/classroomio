@@ -8,8 +8,8 @@
   import { CopyButton, Tag } from 'carbon-components-svelte';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
 
-  let genericLinks = '';
-  let error = '';
+  let genericLinks = $state('');
+  let error = $state('');
 
   function getVideoUrls(urls = '') {
     return (urls || '').split(',').filter((url) => !!url.trim());

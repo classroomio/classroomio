@@ -7,9 +7,13 @@
   import { course } from '../../store';
   import { snackbar } from '$lib/components/Snackbar/store';
 
-  export let open = false;
+  interface Props {
+    open?: boolean;
+  }
 
-  let isActivating = false;
+  let { open = $bindable(false) }: Props = $props();
+
+  let isActivating = $state(false);
 
   const activate = async () => {
     isActivating = true;
@@ -37,12 +41,12 @@
   maxWidth="max-w-xl"
   modalHeading={$t(`course.navItem.lessons.section_prompt.header`)}
 >
-  <div class="flex flex-col w-full items-center">
+  <div class="flex w-full flex-col items-center">
     <div class="mb-8">
       <h3 class="text-center text-2xl">
         {$t('course.navItem.lessons.section_prompt.title')}
       </h3>
-      <p class="text-center max-w-md">
+      <p class="max-w-md text-center">
         {$t('course.navItem.lessons.section_prompt.description')}
       </p>
     </div>

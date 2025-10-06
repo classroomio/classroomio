@@ -12,14 +12,27 @@
 
   const dispatch = createEventDispatcher();
 
-  export let mode = MODES.view;
-  export let displayDocuments: LessonDocument[] = [];
-  export let downloadingDocuments: Set<string>;
-  export let formatFileSize: (bytes: number) => string;
-  export let openDocumentUploadModal: () => void;
-  export let deleteDocument: (index: number) => void;
-  export let downloadDocument: (doc: LessonDocument) => Promise<void>;
-  export let isLoading = false;
+  interface Props {
+    mode?: any;
+    displayDocuments?: LessonDocument[];
+    downloadingDocuments: Set<string>;
+    formatFileSize: (bytes: number) => string;
+    openDocumentUploadModal: () => void;
+    deleteDocument: (index: number) => void;
+    downloadDocument: (doc: LessonDocument) => Promise<void>;
+    isLoading?: boolean;
+  }
+
+  let {
+    mode = MODES.view,
+    displayDocuments = [],
+    downloadingDocuments,
+    formatFileSize,
+    openDocumentUploadModal,
+    deleteDocument,
+    downloadDocument,
+    isLoading = false
+  }: Props = $props();
 
   function getFileIcon(type: string) {
     switch (type) {
@@ -47,13 +60,10 @@
   {#if !isEmpty(displayDocuments)}
     <div class="space-y-4">
       {#each displayDocuments as document, index}
+        {@const SvelteComponent = getFileIcon(document.type)}
         <div class="rounded-lg border border-gray-200 p-4">
           <div class="flex items-center space-x-3">
-            <svelte:component
-              this={getFileIcon(document.type)}
-              size={32}
-              class="text-primary-600 w-[10%]"
-            />
+            <SvelteComponent size={32} class="text-primary-600 w-[10%]" />
             <div class="flex-1">
               <h4 class="mb-2 font-medium text-gray-900 dark:text-gray-300">{document.name}</h4>
               <div
@@ -73,7 +83,7 @@
               <div class="flex gap-3">
                 {#if document.type === 'pdf'}
                   <button
-                    on:click={() => handleViewPDF(document)}
+                    onclick={() => handleViewPDF(document)}
                     class="text-sm text-blue-600 underline hover:text-blue-800"
                   >
                     <EyeIcon size={16} class="mr-1 inline" />
@@ -89,7 +99,7 @@
                   </a>
                 {/if}
                 <button
-                  on:click={() => downloadDocument(document)}
+                  onclick={() => downloadDocument(document)}
                   disabled={downloadingDocuments.has(document.name)}
                   class="cursor-pointer text-sm text-green-600 underline hover:text-green-800 disabled:cursor-not-allowed disabled:opacity-50"
                 >
@@ -98,7 +108,7 @@
                     : $t('course.navItem.lessons.materials.tabs.document.download')}
                 </button>
                 <button
-                  on:click={() => deleteDocument(index)}
+                  onclick={() => deleteDocument(index)}
                   class="text-sm text-red-600 underline hover:text-red-800"
                 >
                   {$t('course.navItem.lessons.materials.tabs.document.delete')}
@@ -113,13 +123,10 @@
 {:else if !isEmpty(displayDocuments)}
   <div class="space-y-4">
     {#each displayDocuments as document}
+      {@const SvelteComponent_1 = getFileIcon(document.type)}
       <div class="rounded-md border border-gray-200 p-4 dark:border-neutral-600">
         <div class="flex items-center space-x-3">
-          <svelte:component
-            this={getFileIcon(document.type)}
-            size={32}
-            class="text-primary-600 w-[10%]"
-          />
+          <SvelteComponent_1 size={32} class="text-primary-600 w-[10%]" />
           <div class="flex-1">
             <h4 class="mb-2 font-medium text-gray-900 dark:text-gray-300">{document.name}</h4>
             <div class="mb-3 flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">

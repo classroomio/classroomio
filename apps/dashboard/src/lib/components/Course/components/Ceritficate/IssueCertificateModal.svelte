@@ -1,4 +1,6 @@
 <script>
+  import { preventDefault } from 'svelte/legacy';
+
   import { Toggle } from 'carbon-components-svelte';
   import Modal from '$lib/components/Modal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -30,19 +32,23 @@
         size="sm"
         class="mb-4"
       >
-        <span slot="labelA" style="color: #161616">Automatic</span>
-        <span slot="labelB" style="color: green">Automatic</span>
+        {#snippet labelA()}
+          <span style="color: #161616">Automatic</span>
+        {/snippet}
+        {#snippet labelB()}
+          <span style="color: green">Automatic</span>
+        {/snippet}
       </Toggle>
-      <p class="text-sm font-medium my-4">
-        If you set this as automatic, certificates will be issued after the
-        learner completes the course.
+      <p class="my-4 text-sm font-medium">
+        If you set this as automatic, certificates will be issued after the learner completes the
+        course.
       </p>
     </div>
-    <p class="text-xs font-normal text-gray-500 my-4">
+    <p class="my-4 text-xs font-normal text-gray-500">
       or send a personalised/ custom certificate below:
     </p>
-    <form on:submit|preventDefault={issueCertificate}>
-      <div class="flex flex-col md:flex-row gap-2 w-full">
+    <form onsubmit={preventDefault(issueCertificate)}>
+      <div class="flex w-full flex-col gap-2 md:flex-row">
         <TextField
           label="Email address of the student"
           className="w-full my-4"

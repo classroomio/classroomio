@@ -14,13 +14,17 @@
   import AddCommentIcon from 'carbon-icons-svelte/lib/AddComment.svelte';
   import CommunityLoader from './Loader.svelte';
 
-  export let isLMS = false;
+  interface Props {
+    isLMS?: boolean;
+  }
 
-  let isLoading = false;
-  let discussions = [];
-  let searchValue = '';
-  let allCourses: any[] = [];
-  let selectedId = '';
+  let { isLMS = false }: Props = $props();
+
+  let isLoading = $state(false);
+  let discussions = $state([]);
+  let searchValue = $state('');
+  let allCourses: any[] = $state([]);
+  let selectedId = $state('');
 
   async function fetchCommunityQuestions(orgId?: string, profileId?: string) {
     if (!orgId || !profileId) return;
@@ -80,11 +84,15 @@
       })) || [];
   }
 
-  $: fetchCommunityQuestions($currentOrg.id, $profile.id);
-  $: filteredDiscussions = discussions.filter(
-    (discussion) =>
-      discussion.title.toLowerCase().includes(searchValue.toLowerCase()) &&
-      (!selectedId || discussion.courseId === selectedId)
+  $effect(() => {
+    fetchCommunityQuestions($currentOrg.id, $profile.id);
+  });
+  let filteredDiscussions = $derived(
+    discussions.filter(
+      (discussion) =>
+        discussion.title.toLowerCase().includes(searchValue.toLowerCase()) &&
+        (!selectedId || discussion.courseId === selectedId)
+    )
   );
 </script>
 
@@ -107,7 +115,7 @@
   />
 </div>
 <div
-  class="border-c m-auto my-4 flex flex-wrap items-center justify-center rounded bg-gray-100 dark:bg-neutral-800 lg:justify-start"
+  class="border-c m-auto my-4 flex flex-wrap items-center justify-center rounded bg-gray-100 lg:justify-start dark:bg-neutral-800"
 >
   {#if isLoading}
     <CommunityLoader />
@@ -136,7 +144,7 @@
             </span>
           </a>
         </div>
-        <div class="flex-grow" />
+        <div class="flex-grow"></div>
         <div class="flex items-center">
           <AddCommentIcon size={20} />
           <span class="ml-1">{discussion.comments}</span>

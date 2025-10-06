@@ -1,7 +1,9 @@
 <script lang="ts">
+  import { preventDefault } from 'svelte/legacy';
+
   import copy from 'copy-to-clipboard';
   import { Popover } from 'carbon-components-svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import QRCode from 'qrcode';
   import { toPng } from 'html-to-image';
@@ -32,14 +34,14 @@
     profileId?: string;
   }
 
-  let addPeopleParm;
-  let tutors: Tutor[] = [];
-  let selectedIds: Array<number> = [];
-  let selectedTutors: Tutor[] = [];
-  let isLoadingTutors = false;
-  let copied = false;
-  let qrImage = '';
-  let isLoadingQRDownload = false;
+  let addPeopleParm = $state();
+  let tutors: Tutor[] = $state([]);
+  let selectedIds: Array<number> = $state([]);
+  let selectedTutors: Tutor[] = $state([]);
+  let isLoadingTutors = $state(false);
+  let copied = $state(false);
+  let qrImage = $state('');
+  let isLoadingQRDownload = $state(false);
 
   function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
@@ -49,7 +51,7 @@
 
   function onSubmit() {
     if (!selectedTutors.length) {
-      goto($page.url.pathname);
+      goto(page.url.pathname);
       return;
     }
 
@@ -85,7 +87,7 @@
         false
       );
 
-      goto($page.url.pathname);
+      goto(page.url.pathname);
     });
   }
 
@@ -137,32 +139,32 @@
   }
 
   function closeModal() {
-    goto($page.url.pathname);
+    goto(page.url.pathname);
   }
 
   function handleQRDownload() {
     if (!$qrInviteNodeStore) {
-			console.error('Node is not defined');
-			return;
-		}
+      console.error('Node is not defined');
+      return;
+    }
 
-		isLoadingQRDownload = true;
-		setTimeout(() => {
-			toPng($qrInviteNodeStore)
-				.then((dataUrl) => {
-					const link = document.createElement('a');
-					link.download = `${$course.slug}-qr-code.png`;
-					link.href = dataUrl;
-					link.click();
-				})
-				.catch((error) => {
-					isLoadingQRDownload = false;
-					console.error('Oops, something went wrong!', error);
-				})
-				.finally(() => {
-					isLoadingQRDownload = false;
-				});
-		}, 300);
+    isLoadingQRDownload = true;
+    setTimeout(() => {
+      toPng($qrInviteNodeStore)
+        .then((dataUrl) => {
+          const link = document.createElement('a');
+          link.download = `${$course.slug}-qr-code.png`;
+          link.href = dataUrl;
+          link.click();
+        })
+        .catch((error) => {
+          isLoadingQRDownload = false;
+          console.error('Oops, something went wrong!', error);
+        })
+        .finally(() => {
+          isLoadingQRDownload = false;
+        });
+    }, 300);
   }
 
   async function generateQR(text) {
@@ -173,14 +175,18 @@
     }
   }
 
-  $: {
+  $effect(() => {
     selectedTutors = formatSelected(selectedIds);
-    const query = new URLSearchParams($page.url.search);
+    const query = new URLSearchParams(page.url.search);
     addPeopleParm = query.get('add');
-  }
+  });
 
-  $: setTutors($currentOrg.id);
-  $: generateQR(getStudentInviteLink($course, $currentOrg.siteName, $currentOrgDomain));
+  $effect(() => {
+    setTutors($currentOrg.id);
+  });
+  $effect(() => {
+    generateQR(getStudentInviteLink($course, $currentOrg.siteName, $currentOrgDomain));
+  });
 </script>
 
 <Modal
@@ -190,9 +196,9 @@
   maxWidth="max-w-lg"
   modalHeading={$t('course.navItem.people.invite_modal.title')}
 >
-  <form on:submit|preventDefault={onSubmit}>
+  <form onsubmit={preventDefault(onSubmit)}>
     <div class="mb-8">
-      <p class="text-base mb-1 font-semibold">{$t('course.navItem.people.invite_modal.invite')}</p>
+      <p class="mb-1 text-base font-semibold">{$t('course.navItem.people.invite_modal.invite')}</p>
       <MultiSelect
         disabled={isLoadingTutors}
         label={$t('course.navItem.people.invite_modal.select')}
@@ -208,7 +214,7 @@
           {$t('course.navItem.people.invite_modal.to_add')}
           <a
             href={`/org/${$currentOrg.siteName}/settings/teams`}
-            class="underline text-primary-600"
+            class="text-primary-600 underline"
           >
             {$t('course.navItem.people.invite_modal.go_to')}
           </a>
@@ -216,9 +222,9 @@
       {/if}
     </div>
 
-    <div class="mb-8 w-full flex justify-between items-center">
+    <div class="mb-8 flex w-full items-center justify-between">
       <div class="w-3/5">
-        <p class="text-base mb-1 font-semibold">
+        <p class="mb-1 text-base font-semibold">
           {$t('course.navItem.people.invite_modal.invite_students')}
         </p>
         <p class=" text-sm">{$t('course.navItem.people.invite_modal.via_link')}</p>
@@ -227,8 +233,8 @@
       <div class="relative">
         <button
           type="button"
-          on:click={copyLink}
-          class="underline text-primary-800 font-bold cursor-pointer capitalize"
+          onclick={copyLink}
+          class="text-primary-800 cursor-pointer font-bold capitalize underline"
         >
           {$t('course.navItem.people.invite_modal.copy_link')}
         </button>
@@ -240,10 +246,10 @@
     </div>
 
     <div
-      class="flex gap-5 flex-col-reverse md:flex-row justify-between items-center md:items-stretch p-4 w-full border rounded-md"
+      class="flex w-full flex-col-reverse items-center justify-between gap-5 rounded-md border p-4 md:flex-row md:items-stretch"
     >
-      <div class="flex flex-col gap-3 items-center md:items-start justify-between">
-        <span class="font-medium text-sm">
+      <div class="flex flex-col items-center justify-between gap-3 md:items-start">
+        <span class="text-sm font-medium">
           {$t('course.navItem.people.invite_modal.via_qr')}
         </span>
 
@@ -255,8 +261,8 @@
         />
       </div>
 
-      <div class="w-full md:w-28 border-4 p-1 border-[#f7f7f7]">
-        <img src={qrImage} alt="link qrcode" class="w-full h-full" />
+      <div class="w-full border-4 border-[#f7f7f7] p-1 md:w-28">
+        <img src={qrImage} alt="link qrcode" class="h-full w-full" />
       </div>
     </div>
 
@@ -264,7 +270,7 @@
       <ShareQrImage {qrImage} course={$course} currentOrg={$currentOrg} />
     </div>
 
-    <div class="mt-5 flex items-center flex-row-reverse">
+    <div class="mt-5 flex flex-row-reverse items-center">
       <PrimaryButton
         className="px-6 py-3"
         label={$t('course.navItem.people.invite_modal.finish')}

@@ -1,6 +1,6 @@
 <script lang="ts">
   import IssueCertificateModal from '$lib/components/Course/components/Ceritficate/IssueCertificateModal.svelte';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
+  import { CourseContainer } from '$lib/components/CourseContainer';
   import { PageBody, PageNav } from '$lib/components/Page';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   // import DeleteConfirmation from '$lib/components/Course/components/People/DeleteConfirmation.svelte';
@@ -12,23 +12,25 @@
   import StudentCertificate from '$lib/components/Course/components/Ceritficate/StudentCertificate/Index.svelte';
   import { t } from '$lib/utils/functions/translations';
 
-  export let data;
+  let { data = $bindable() } = $props();
 </script>
 
 <IssueCertificateModal />
 
-<CourseContainer bind:courseId={data.courseId}>
+<CourseContainer courseId={data.courseId}>
   <PageNav title={$t('course.navItem.certificates.title')} disableSticky={true}>
-    <slot:fragment slot="widget">
-      <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <!-- Hide Functionality For V1 -->
-        <!-- <PrimaryButton
-          className="mr-2 rounded-md text-sm font-medium"
-          label="Issue Cert"
-          onClick={() => ($issueCertificateModal.open = true)}
-        /> -->
-      </RoleBasedSecurity>
-    </slot:fragment>
+    {#snippet widget()}
+      <slot:fragment>
+        <RoleBasedSecurity allowedRoles={[1, 2]}>
+          <!-- Hide Functionality For V1 -->
+          <!-- <PrimaryButton
+            className="mr-2 rounded-md text-sm font-medium"
+            label="Issue Cert"
+            onClick={() => ($issueCertificateModal.open = true)}
+          /> -->
+        </RoleBasedSecurity>
+      </slot:fragment>
+    {/snippet}
   </PageNav>
 
   <PageBody className="w-full mx-0" padding="px-3 pb-10">

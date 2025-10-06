@@ -25,20 +25,23 @@
     triggerSendEmail
   } from '$lib/utils/services/notification/notification';
   import { lesson } from '../store/lessons';
-  import { browser } from '$app/environment';
   import { COURSE_TYPE } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
 
-  export let preview: boolean = false;
-  export let exerciseId = '';
-  export let isFetchingExercise = false;
+  interface Props {
+    preview?: boolean;
+    exerciseId?: string;
+    isFetchingExercise?: boolean;
+  }
 
-  let currentQuestion = {};
-  let renderProps = {};
+  let { preview = false, exerciseId = '', isFetchingExercise = false }: Props = $props();
+
+  let currentQuestion = $state({});
+  let renderProps = $state({});
   let submission;
   let hasSubmission = false;
-  let isLoadingAutoSavedData = false;
-  let alreadyCheckedAutoSavedData = false;
+  let isLoadingAutoSavedData = $state(false);
+  let alreadyCheckedAutoSavedData = $state(false);
   let submissionResponse;
 
   function handleStart() {
@@ -161,7 +164,7 @@
 
   function getTotalPossibleGrade(questions) {
     return questions.reduce((acc, question) => {
-      acc += parseFloat(question.points, 10);
+      acc += parseFloat(question.points);
       return acc;
     }, 0);
   }
@@ -222,32 +225,40 @@
     alreadyCheckedAutoSavedData = true;
   }
 
-  $: browser && !alreadyCheckedAutoSavedData && getAutoSavedData();
+  $effect(() => {
+    if (!alreadyCheckedAutoSavedData) {
+      getAutoSavedData();
+    }
+  });
 
   // Reactive code
-  $: if (alreadyCheckedAutoSavedData && $questionnaire.questions.length > 0) {
-    currentQuestion = $questionnaire.questions[$questionnaireMetaData.currentQuestionIndex - 1];
-    if ($questionnaireMetaData.currentQuestionIndex > 0 && !currentQuestion) {
-      $questionnaireMetaData.isFinished = true;
-    }
+  $effect(() => {
+    if (alreadyCheckedAutoSavedData && $questionnaire.questions.length > 0) {
+      currentQuestion = $questionnaire.questions[$questionnaireMetaData.currentQuestionIndex - 1];
+      if ($questionnaireMetaData.currentQuestionIndex > 0 && !currentQuestion) {
+        $questionnaireMetaData.isFinished = true;
+      }
 
-    if (currentQuestion) {
-      renderProps = getPropsForQuestion(
-        $questionnaire.questions,
-        currentQuestion,
-        $questionnaireMetaData,
-        $questionnaireMetaData.currentQuestionIndex,
-        onSubmit,
-        onPrevious,
-        preview
+      if (currentQuestion) {
+        renderProps = getPropsForQuestion(
+          $questionnaire.questions,
+          currentQuestion,
+          $questionnaireMetaData,
+          $questionnaireMetaData.currentQuestionIndex,
+          onSubmit,
+          onPrevious,
+          preview
+        );
+      }
+      $questionnaireMetaData.progressValue = getProgressValue(
+        $questionnaireMetaData.currentQuestionIndex
       );
     }
-    $questionnaireMetaData.progressValue = getProgressValue(
-      $questionnaireMetaData.currentQuestionIndex
-    );
-  }
+  });
 
-  $: !isFetchingExercise && checkForSubmission($group.people, $profile.id, $course.id);
+  $effect(() => {
+    !isFetchingExercise && checkForSubmission($group.people, $profile.id, $course.id);
+  });
 </script>
 
 {#if !preview && $questionnaire.questions.length && !$questionnaireMetaData.isFinished}

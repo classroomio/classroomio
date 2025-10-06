@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { preventDefault } from 'svelte/legacy';
+
   import { goto } from '$app/navigation';
   import Box from '$lib/components/Box/index.svelte';
   import Card from '$lib/components/Courses/components/Card/index.svelte';
@@ -30,23 +32,27 @@
   import { fade } from 'svelte/transition';
   import PageLoader from './PageLoader.svelte';
 
-  export let orgSiteName = '';
-  export let org: CurrentOrg | null;
+  interface Props {
+    orgSiteName?: string;
+    org: CurrentOrg | null;
+  }
 
-  let email: string | undefined;
-  let isAdding = false;
-  let success = false;
-  let successContactSaved = false;
-  let viewAll = false;
-  let isContactSubmiting = false;
-  let player;
-  let contact = {
+  let { orgSiteName = '', org }: Props = $props();
+
+  let email: string | undefined = $state('');
+  let isAdding = $state(false);
+  let success = $state(false);
+  let successContactSaved = $state(false);
+  let viewAll = $state(false);
+  let isContactSubmiting = $state(false);
+  let player = $state();
+  let contact = $state({
     name: '',
     email: '',
     phone: '',
     message: ''
-  };
-  let contactError: Record<string, string> = {};
+  });
+  let contactError: Record<string, string> = $state({});
 
   const supabase = getSupabase();
 
@@ -109,8 +115,6 @@
     return youtubeRegex.test(link.trim());
   }
 
-  $: loadData(orgSiteName);
-
   async function loadData(siteName) {
     if (!siteName) return;
 
@@ -161,8 +165,15 @@
     }
   }
 
-  $: initPlyr(player, $landingPageSettings.header?.banner?.video);
-  $: setDefault(org?.landingpage);
+  $effect(() => {
+    loadData(orgSiteName);
+  });
+  $effect(() => {
+    initPlyr(player, $landingPageSettings.header?.banner?.video);
+  });
+  $effect(() => {
+    setDefault(org?.landingpage);
+  });
 </script>
 
 <svelte:head>
@@ -195,7 +206,7 @@
           isOrgSite={true}
         />
 
-        <div class="absolute top-0 z-10 h-[100vh] w-full bg-white opacity-80 md:h-[90vh]" />
+        <div class="absolute top-0 z-10 h-[100vh] w-full bg-white opacity-80 md:h-[90vh]"></div>
         {#if $landingPageSettings.header.banner.show}
           <div class="flex items-center justify-center py-2 md:h-full">
             <div
@@ -236,7 +247,7 @@
                       allowfullscreen
                       allowtransparency
                       allow="autoplay"
-                    />
+                    ></iframe>
                   </div>
                 {:else}
                   <!-- <video class="w-full rounded-xl" controls loop autoplay>
@@ -438,7 +449,7 @@
                   {$t('course.navItem.landing_page.thank_you')}
                 </div>
               {:else}
-                <form on:submit|preventDefault={handleContactSubmit}>
+                <form onsubmit={preventDefault(handleContactSubmit)}>
                   <div class="flex w-full flex-col justify-between md:flex-row">
                     <div class="mr-5 w-full md:w-2/4">
                       <TextField
@@ -505,7 +516,7 @@
               {$landingPageSettings.mailinglist.subtitle}
             </p>
           </div>
-          <form on:submit|preventDefault={handleSubmit} class="my-4 w-full md:w-fit">
+          <form onsubmit={preventDefault(handleSubmit)} class="my-4 w-full md:w-fit">
             <div class="flex flex-col items-center sm:flex-row">
               {#if success}
                 <p class="text-white">{$t('course.navItem.landing_page.successful_sub')}</p>
@@ -558,7 +569,7 @@
             </a>
           </div>
 
-          <span class="flex-grow" />
+          <span class="flex-grow"></span>
 
           <div class="mt-5 flex gap-2 sm:mt-0">
             {#if $landingPageSettings.footer.facebook}

@@ -13,9 +13,9 @@
   import type { Course } from '$lib/utils/types';
 
   let hasFetched = false;
-  let progressPercentage = 0;
-  let totalLessons = 0;
-  let totalCompleted = 0;
+  let progressPercentage = $state(0);
+  let totalLessons = $state(0);
+  let totalCompleted = $state(0);
 
   async function getCourses(userId: string | undefined, orgId: string) {
     if (hasFetched || !userId || !orgId) {
@@ -43,8 +43,12 @@
     progressPercentage = Math.round((totalCompleted / totalLessons) * 100) || 0;
   }
 
-  $: getCourses($profile.id, $currentOrg.id);
-  $: calcTotalProgress($courses);
+  $effect(() => {
+    getCourses($profile.id, $currentOrg.id);
+  });
+  $effect(() => {
+    calcTotalProgress($courses);
+  });
 </script>
 
 <svelte:head>
@@ -54,7 +58,7 @@
 <section class="mx-auto max-w-6xl gap-5">
   <div class="m-5">
     <div class="mb-10 flex items-center justify-between">
-      <h1 class="text-2xl font-bold dark:text-white md:text-3xl">
+      <h1 class="text-2xl font-bold md:text-3xl dark:text-white">
         {$t(getGreeting())}
         {$profile.fullname}!
       </h1>
@@ -94,7 +98,7 @@
           {$t('dashboard.your_progress')}
         </p>
         <div
-          class="flex h-fit items-center justify-center gap-2 rounded border border-[#EAEAEA] p-3 dark:bg-neutral-800 lg:h-[40vh] lg:overflow-y-auto"
+          class="flex h-fit items-center justify-center gap-2 rounded border border-[#EAEAEA] p-3 lg:h-[40vh] lg:overflow-y-auto dark:bg-neutral-800"
         >
           <div
             class="flex h-full w-full flex-col items-center justify-between gap-5 sm:flex-row lg:items-center lg:justify-around xl:flex-col xl:items-start"
@@ -118,7 +122,7 @@
               {/if}
             </span>
             <h1
-              class="my-0 whitespace-nowrap text-5xl font-bold text-[#262626] dark:text-white lg:text-6xl"
+              class="my-0 whitespace-nowrap text-5xl font-bold text-[#262626] lg:text-6xl dark:text-white"
             >
               {progressPercentage} %
             </h1>

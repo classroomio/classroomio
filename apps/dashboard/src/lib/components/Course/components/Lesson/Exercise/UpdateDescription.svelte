@@ -6,7 +6,11 @@
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import { t } from '$lib/utils/functions/translations';
 
-  export let preview: boolean;
+  interface Props {
+    preview: boolean;
+  }
+
+  let { preview }: Props = $props();
 
   function getTotalPossibleGrade(questions: { points: string }[]) {
     return questions.reduce((acc, question) => {
@@ -52,29 +56,29 @@
     {:else if preview}
       <h2 class="my-1">{$questionnaire.title}</h2>
       <div class="flex items-center">
-        <p class="dark:text-white mx-2">
+        <p class="mx-2 dark:text-white">
           <strong>{$questionnaire.questions.length}</strong>
           {$t('course.navItem.lessons.exercises.all_exercises.view_mode.questions')}
         </p>
         |
-        <p class="dark:text-white mx-2">
+        <p class="mx-2 dark:text-white">
           <strong>{getTotalPossibleGrade($questionnaire.questions)}</strong>
           {$t('course.navItem.lessons.exercises.all_exercises.view_mode.points')}.
         </p>
         |
-        <p class="dark:text-white mx-2">
+        <p class="mx-2 dark:text-white">
           {$t('course.navItem.lessons.exercises.all_exercises.view_mode.all')}
         </p>
         {#if $questionnaire.due_by}
           |
-          <p class="dark:text-white mx-2">
+          <p class="mx-2 dark:text-white">
             <strong>{$t('course.navItem.lessons.exercises.all_exercises.view_mode.due')}:</strong>
             {new Date($questionnaire.due_by).toLocaleString()}
           </p>
         {/if}
       </div>
 
-      <article class="mt-3 preview prose prose-sm sm:prose p-2">
+      <article class="preview prose prose-sm sm:prose mt-3 p-2">
         {@html $questionnaire.description ||
           $t('course.navItem.lessons.exercises.all_exercises.description.no')}
       </article>

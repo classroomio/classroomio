@@ -1,5 +1,4 @@
 <script>
-  import { onMount } from 'svelte';
   import Box from '$lib/components/Box/index.svelte';
   import QuizLoader from './Loader.svelte';
   import QuizCard from './QuizCard.svelte';
@@ -9,7 +8,7 @@
   import { currentOrg, quizesStore } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
 
-  let isLoading = false;
+  let isLoading = $state(false);
 
   async function fetchQuizes(id) {
     if (!id) return;
@@ -30,10 +29,12 @@
     isLoading = false;
   }
 
-  $: fetchQuizes($currentOrg.id);
+  $effect(() => {
+    fetchQuizes($currentOrg.id);
+  });
 </script>
 
-<div class="flex items-center justify-center lg:justify-start flex-wrap my-4 m-auto">
+<div class="m-auto my-4 flex flex-wrap items-center justify-center lg:justify-start">
   {#if isLoading}
     <QuizLoader />
     <QuizLoader />

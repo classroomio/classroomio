@@ -1,19 +1,25 @@
 <script lang="ts">
-  export let title: string;
-  export let value: string | number;
-  export let subtitle: string = '';
-  export let icon: any;
-  export let iconColor: string = 'blue';
-  export let className: string = '';
+  interface Props {
+    title: string;
+    value: string | number;
+    subtitle?: string;
+    icon: any;
+    iconColor?: string;
+    className?: string;
+  }
 
-  $: colorClasses = {
+  let { title, value, subtitle = '', icon, iconColor = 'blue', className = '' }: Props = $props();
+
+  let colorClasses = $derived({
     blue: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
     green: 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400',
     purple: 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
     orange: 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400',
     red: 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400',
     yellow: 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400'
-  };
+  });
+
+  const SvelteComponent = $derived(icon);
 </script>
 
 <div
@@ -21,7 +27,7 @@
 >
   <div class="flex items-center space-x-4">
     <div class="flex h-12 w-12 items-center justify-center rounded-lg {colorClasses[iconColor]}">
-      <svelte:component this={icon} className={colorClasses[iconColor]} />
+      <SvelteComponent className={colorClasses[iconColor]} />
     </div>
     <div>
       <p class="text-sm font-medium text-gray-600 dark:text-gray-400">{title}</p>

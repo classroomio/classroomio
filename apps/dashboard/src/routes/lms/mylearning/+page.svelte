@@ -42,11 +42,13 @@
     hasFetched = true;
   }
 
-  $: if (browser && $profile.id && $currentOrg.id) {
-    getCourses($profile.id, $currentOrg.id);
-  }
+  $effect(() => {
+    if (browser && $profile.id && $currentOrg.id) {
+      getCourses($profile.id, $currentOrg.id);
+    }
+  });
 
-  $: tabs = [
+  let tabs = $derived([
     {
       label: `${$t('my_learning.progress')} (${$coursesInProgress.length})`,
       value: '1'
@@ -55,33 +57,35 @@
       label: `${$t('my_learning.complete')} (${$coursesComplete.length})`,
       value: '2'
     }
-  ];
-  $: currentTab = tabs[0].value;
+  ]);
+  let currentTab = $derived(tabs[0].value);
 </script>
 
-<section class="max-w-6xl mx-auto">
+<section class="mx-auto max-w-6xl">
   <div class="m-2 md:m-5">
-    <div role="searchbox" class=" bg-gray-100 w-full md:w-[60%] lg:w-[30%]">
+    <div role="searchbox" class=" w-full bg-gray-100 md:w-[60%] lg:w-[30%]">
       <Search placeholder={$t('my_learning.search')} class="dark:text-black" />
     </div>
-    <h1 class="text-3xl font-semibold my-4">{$t('my_learning.heading')}</h1>
+    <h1 class="my-4 text-3xl font-semibold">{$t('my_learning.heading')}</h1>
     <Tabs {tabs} {currentTab} {onChange}>
-      <slot:fragment slot="content">
-        <TabContent value={tabs[0].value} index={currentTab}>
-          <Courses
-            courses={$coursesInProgress}
-            emptyTitle={$t('my_learning.not_in_progress')}
-            emptyDescription={$t('my_learning.any_progress')}
-          />
-        </TabContent>
-        <TabContent value={tabs[1].value} index={currentTab}>
-          <Courses
-            courses={$coursesComplete}
-            emptyTitle={$t('my_learning.not_completed')}
-            emptyDescription={$t('my_learning.any_course')}
-          />
-        </TabContent>
-      </slot:fragment>
+      {#snippet content()}
+        <slot:fragment>
+          <TabContent value={tabs[0].value} index={currentTab}>
+            <Courses
+              courses={$coursesInProgress}
+              emptyTitle={$t('my_learning.not_in_progress')}
+              emptyDescription={$t('my_learning.any_progress')}
+            />
+          </TabContent>
+          <TabContent value={tabs[1].value} index={currentTab}>
+            <Courses
+              courses={$coursesComplete}
+              emptyTitle={$t('my_learning.not_completed')}
+              emptyDescription={$t('my_learning.any_course')}
+            />
+          </TabContent>
+        </slot:fragment>
+      {/snippet}
     </Tabs>
   </div>
 </section>

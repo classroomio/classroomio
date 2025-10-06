@@ -8,8 +8,8 @@
   import { t } from '$lib/utils/functions/translations';
   import type { LessonVideoType } from '$lib/utils/types';
 
-  let youtubeLinks = '';
-  let error = '';
+  let youtubeLinks = $state('');
+  let error = $state('');
 
   function getVideoUrls(urls = '') {
     return (urls || '').split(',').filter((url) => !!url.trim());

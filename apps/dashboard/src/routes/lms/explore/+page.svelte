@@ -15,11 +15,11 @@
   import Grid from 'carbon-icons-svelte/lib/Grid.svelte';
   import List from 'carbon-icons-svelte/lib/List.svelte';
 
-  let searchValue = '';
-  let selectedId: string;
-  let filteredExploreCourses: Course[];
+  let searchValue = $state('');
+  let selectedId: string = $state();
+  let filteredExploreCourses: Course[] = $state();
   let hasFetched = false;
-  let exploreCourseList: Course[] = [];
+  let exploreCourseList: Course[] = $state([]);
 
   async function getCourses(userId: string | null, orgId: string) {
     if (hasFetched || !userId || !orgId) {
@@ -79,16 +79,20 @@
     }
   });
 
-  $: filterCourses(searchValue, selectedId, exploreCourseList);
+  $effect(() => {
+    filterCourses(searchValue, selectedId, exploreCourseList);
+  });
 
-  $: if (browser && $profile.id && $currentOrg.id) {
-    getCourses($profile.id, $currentOrg.id);
-  }
+  $effect(() => {
+    if (browser && $profile.id && $currentOrg.id) {
+      getCourses($profile.id, $currentOrg.id);
+    }
+  });
 </script>
 
-<section class="w-full md:max-w-6xl md:mx-auto">
-  <div class="py-2 md:py-10 px-2 md:px-5">
-    <h1 class="dark:text-white text-3xl font-bold">{$t('explore.heading')}</h1>
+<section class="w-full md:mx-auto md:max-w-6xl">
+  <div class="px-2 py-2 md:px-5 md:py-10">
+    <h1 class="text-3xl font-bold dark:text-white">{$t('explore.heading')}</h1>
     <div class="flex flex-row-reverse">
       <div class="filter-container flex items-end justify-start">
         <Search

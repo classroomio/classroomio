@@ -22,12 +22,12 @@
   import type { OrgTeamMember } from '$lib/utils/types/org';
   import { t } from '$lib/utils/functions/translations';
 
-  let emailsStr = '';
-  let errorMessage = '';
-  let role = ROLE.TUTOR;
-  let isFetching = false;
-  let isLoading = false;
-  let isRemoving: number | null = null;
+  let emailsStr = $state('');
+  let errorMessage = $state('');
+  let role = $state(ROLE.TUTOR);
+  let isFetching = $state(false);
+  let isLoading = $state(false);
+  let isRemoving: number | null = $state(null);
 
   async function onSendInvite() {
     const { hasError, error: _error, emails } = validateEmailInString(emailsStr);
@@ -131,7 +131,9 @@
     return members.some((member) => member.profileId === profileId && member.isAdmin);
   };
 
-  $: fetchTeam($currentOrg.id);
+  $effect(() => {
+    fetchTeam($currentOrg.id);
+  });
 </script>
 
 <Grid class="relative mt-5 w-full rounded border border-gray-200 dark:border-neutral-600">

@@ -1,10 +1,9 @@
-<script>
+<script lang="ts">
   import { t } from '$lib/utils/functions/translations';
 
-  export let value;
-  export let placeholder = ``;
+  let { value = $bindable(), placeholder = ``, preview } = $props();
   const activeClassName = 'border-b-2 border-primary-700';
-  let isWriteMode = true;
+  let isWriteMode = $state(true);
 
   const handleTabClick = (tab) => (event) => {
     isWriteMode = tab === 1;
@@ -14,14 +13,14 @@
 <div class="root">
   <div class="flex justify-center">
     <button
-      on:click={handleTabClick(1)}
-      class="focus:outline-none p-2 {isWriteMode && `${activeClassName}`}"
+      onclick={handleTabClick(1)}
+      class="p-2 focus:outline-none {isWriteMode && `${activeClassName}`}"
     >
       {$t('markdown_editor.write')}
     </button>
     <button
-      on:click={handleTabClick(2)}
-      class="focus:outline-none p-2 {!isWriteMode && `${activeClassName}`}"
+      onclick={handleTabClick(2)}
+      class="p-2 focus:outline-none {!isWriteMode && `${activeClassName}`}"
     >
       {$t('markdown_editor.preview')}
     </button>
@@ -29,14 +28,11 @@
 
   <div class="m-2 mb-0 p-0">
     {#if isWriteMode}
-      <textarea
-        bind:value
-        {placeholder}
-        class="border border-gray rounded-md p-2 dark:bg-gray-500"
-      />
+      <textarea bind:value {placeholder} class="border-gray rounded-md border p-2 dark:bg-gray-500"
+      ></textarea>
     {:else}
-      <article class="m-auto preview prose prose-sm sm:prose p-2">
-        <slot name="preview" />
+      <article class="preview prose prose-sm sm:prose m-auto p-2">
+        {@render preview?.()}
       </article>
     {/if}
   </div>

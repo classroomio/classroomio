@@ -2,19 +2,19 @@
   import { fade } from 'svelte/transition';
   import get from 'lodash/get';
   import pluralize from 'pluralize';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { onMount, onDestroy } from 'svelte';
   import PlayFilled from 'carbon-icons-svelte/lib/PlayFilled.svelte';
   import { ImageLoader, InlineLoading } from 'carbon-components-svelte';
 
   import { getLectureNo } from '../Course/function';
   import { currentOrg } from '$lib/utils/store/org';
-  import { course } from '$lib/components/Course/store';
+  import { course, sortLesson } from '$lib/components/Course/store';
   import { t } from '$lib/utils/functions/translations';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { handleOpenWidget, reviewsModalStore } from './store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { COURSE_VERSION, type Course, type Lesson, type Review } from '$lib/utils/types';
+  import { COURSE_VERSION, type Course } from '$lib/utils/types';
 
   import Chip from '../Chip/index.svelte';
   import Modal from '../Modal/index.svelte';
@@ -31,33 +31,44 @@
   import { getExerciseCount, getLessonSections, getTotalLessons, filterNavItems } from './utils';
   import { NAV_ITEM_KEY, NAV_ITEMS } from './constants';
 
-  export let editMode = false;
-  export let courseData: Course;
-  const ratingsImg = [
-    '/images/rating-1.svg',
-    '/images/rating-2.svg',
-    '/images/rating-3.svg',
-    '/images/rating-4.svg',
-    '/images/rating-5.svg'
-  ];
+  interface Props {
+    editMode?: boolean;
+    courseData: Course;
+  }
 
-  let lessons: Array<Lesson> = [];
-  let reviews: Review[] = [];
-  let player: any;
-  let averageRating = 0;
-  let totalRatings = 0;
-  let startCoursePayment = false;
-  let isVisible = false;
+  let { editMode = false, courseData = $bindable() }: Props = $props();
+
+  const reviews = $derived(get(courseData, 'metadata.reviews') || []);
+  const video = $derived(get(courseData, 'metadata.videoUrl'));
+
+  const lessons = $derived.by(() => {
+    const _lessons = get(courseData, 'lessons', []);
+    return sortLesson([..._lessons]);
+  });
+  const totalRatings = $derived(
+    reviews?.reduce((acc = 0, review) => acc + (review?.rating || 0), 0)
+  );
+  const averageRating = $derived(totalRatings / reviews?.length);
+  const expandDescription = $derived(Array(reviews?.length ?? 0).fill(false));
+
+  const allowNewStudent = $derived(get(courseData, 'metadata.allowNewStudent'));
+  const bannerImage = $derived(get(courseData, 'logo'));
+  const instructor = $derived(get(courseData, 'metadata.instructor') || {});
+  const certificate: Course['metadata']['certificate'] = $derived(
+    get(courseData, 'metadata.certificate', {
+      templateUrl: '/images/certificate-template.svg'
+    })
+  );
+
+  const navItems = $derived(filterNavItems(courseData, reviews));
+  const navItemKeys = $derived(navItems.map((item) => item.key));
+
+  let player: any = $state();
+  let startCoursePayment = $state(false);
+  let isVisible = $state(false);
   let observer: { destroy: () => void };
-  let certificate: Course['metadata']['certificate'] = {
-    templateUrl: '/images/certificate-template.svg'
-  };
 
-  let expandDescription = Array(reviews.length).fill(false);
-
-  let activeNav = NAV_ITEMS[0].key;
-  let instructor = {};
-  let video: string | undefined;
+  let activeNav = $state(NAV_ITEMS[0].key);
 
   const lessonSections = getLessonSections(courseData);
   const totalLessons = getTotalLessons(lessonSections);
@@ -81,6 +92,7 @@
 
   onMount(() => {
     window.onhashchange = locationHashChanged;
+
     const targetNode = document.querySelector('.target-component');
     observer = observeIntersection(targetNode, (inView: boolean) => {
       isVisible = inView;
@@ -91,25 +103,9 @@
     observer?.destroy();
   });
 
-  $: initPlyr(player, video);
-
-  $: video = get(courseData, 'metadata.videoUrl');
-  $: allowNewStudent = get(courseData, 'metadata.allowNewStudent');
-  $: bannerImage = get(courseData, 'logo');
-  $: lessons = get(courseData, 'lessons', [])
-    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-  $: instructor = get(courseData, 'metadata.instructor') || {};
-  $: certificate = get(courseData, 'metadata.certificate', certificate);
-
-  $: navItems = filterNavItems(courseData, reviews);
-  $: navItemKeys = navItems.map((item) => item.key);
-
-  $: {
-    reviews = get(courseData, 'metadata.reviews') || [];
-    totalRatings = reviews?.reduce((acc = 0, review) => acc + (review?.rating || 0), 0);
-    averageRating = totalRatings / reviews?.length;
-  }
+  $effect(() => {
+    initPlyr(player, video);
+  });
 </script>
 
 {#if !editMode}
@@ -154,7 +150,7 @@
             id="player"
             data-plyr-provider="youtube"
             data-plyr-embed-id={getEmbedId(video)}
-          />
+          ></div>
         </div>
         <!-- <div class="container">
           <div
@@ -212,7 +208,7 @@
         >
           {#each navItems as navItem}
             <a
-              href="{$page.url.pathname}{navItem.key}"
+              href="{page.url.pathname}{navItem.key}"
               class="{navItem.key === activeNav &&
                 'active text-primary-700'} z-0 mr-6 rounded-lg px-2 font-normal text-slate-700 hover:bg-gray-200 dark:text-white dark:hover:text-slate-900"
             >
@@ -234,7 +230,7 @@
             </h3>
 
             <ul class="list font-light">
-              <HtmlRender content={get(courseData, 'metadata.requirements', '')} />
+              <HtmlRender>{@html get(courseData, 'metadata.requirements', '')}</HtmlRender>
             </ul>
           </section>
         {/if}
@@ -250,19 +246,18 @@
               {$t('course.navItem.landing_page.description')}
             </h3>
 
-            <HtmlRender
-              className="dark:text-white text-sm font-light"
-              content={get(courseData, 'metadata.description', '')}
-            />
+            <HtmlRender className="dark:text-white text-sm font-light">
+              {@html get(courseData, 'metadata.description', '')}
+            </HtmlRender>
           </section>
         {/if}
 
         <!-- Sections - Goal -->
         {#if navItemKeys.includes(NAV_ITEM_KEY.GOALS)}
           <section id="goals" transition:fade={{ delay: 250, duration: 300 }} class="mt-8 pb-10">
-            <h3 class="text-2xl font-bold mt-0 mb-3">{$t('course.navItem.landing_page.learn')}</h3>
+            <h3 class="mb-3 mt-0 text-2xl font-bold">{$t('course.navItem.landing_page.learn')}</h3>
             <ul class="list font-light">
-              <HtmlRender content={get(courseData, 'metadata.goals', '')} />
+              <HtmlRender>{@html get(courseData, 'metadata.goals', '')}</HtmlRender>
             </ul>
           </section>
         {/if}
@@ -272,10 +267,10 @@
           <section
             id="certificate"
             transition:fade={{ delay: 250, duration: 300 }}
-            class="border-b border-gray-300 mt-8 pb-10"
+            class="mt-8 border-b border-gray-300 pb-10"
           >
-            <h3 class="text-2xl font-bold mt-0">{$t('course.navItem.landing_page.certificate')}</h3>
-            <p class="dark:text-white text-sm font-light mb-3">
+            <h3 class="mt-0 text-2xl font-bold">{$t('course.navItem.landing_page.certificate')}</h3>
+            <p class="mb-3 text-sm font-light dark:text-white">
               {$t('course.navItem.landing_page.certificate_text')}
             </p>
 
@@ -294,24 +289,24 @@
 
         <!-- Sections - Lessons -->
         {#if courseData.version === COURSE_VERSION.V1}
-          <section id="lessons" class="border-b border-gray-300 mt-8 pb-10">
-            <div class="flex items-center justify-between w-full mb-3">
-              <h3 class="text-2xl font-bold mt-0 mb-3">
+          <section id="lessons" class="mt-8 border-b border-gray-300 pb-10">
+            <div class="mb-3 flex w-full items-center justify-between">
+              <h3 class="mb-3 mt-0 text-2xl font-bold">
                 {$t('course.navItem.landing_page.content')}
               </h3>
-              <p class="dark:text-white text-sm font-light">
+              <p class="text-sm font-light dark:text-white">
                 {pluralize('lesson', lessons.length, true)}
               </p>
             </div>
 
             <div class="flex flex-wrap">
               {#each lessons as lesson, index}
-                <div class="px-2 py-1 m-2 border rounded">
+                <div class="m-2 rounded border px-2 py-1">
                   <Chip
                     value={getLectureNo(index + 1, '0')}
                     className="bg-primary-100 text-primary-700 inline "
                   />
-                  <p class="ml-2 text-xs font-light dark:text-white inline">
+                  <p class="ml-2 inline text-xs font-light dark:text-white">
                     {lesson.title}
                   </p>
                 </div>
@@ -343,7 +338,7 @@
         <!-- Sections - Reviews -->
         {#if navItemKeys.includes(NAV_ITEM_KEY.REVIEWS)}
           <section id="reviews" transition:fade={{ delay: 250, duration: 300 }}>
-            <h2 class="my-16 mr-0 mb-6 ml-0 font-semibold">
+            <h2 class="my-16 mb-6 ml-0 mr-0 font-semibold">
               {$t('course.navItem.landing_page.reviews')}
             </h2>
             <div class="flex flex-wrap">
@@ -362,7 +357,11 @@
                       <!-- ratings -->
                       <div class="flex flex-row items-center">
                         {#if review.rating}
-                          <img src={ratingsImg[review.rating - 1]} class="mr-4 mt-1 w-24" alt="" />
+                          <img
+                            src="/images/rating-{review.rating}.svg"
+                            class="mr-4 mt-1 w-24"
+                            alt=""
+                          />
                         {/if}
                       </div>
                       <div
@@ -376,13 +375,13 @@
                       {#if !expandDescription[id] && review.description.split(' ').length > 9}
                         <button
                           class="text-primary-700 mt-2 font-normal underline"
-                          on:click={() => toggleDescription(id)}>See More</button
+                          onclick={() => toggleDescription(id)}>See More</button
                         >
                       {/if}
                       {#if expandDescription[id]}
                         <button
                           class="text-primary-700 mt-2 font-normal underline"
-                          on:click={() => toggleDescription(id)}>See Less</button
+                          onclick={() => toggleDescription(id)}>See Less</button
                         >
                       {/if}
                     </div>
@@ -413,7 +412,7 @@
                     {averageRating}
                     {$t('course.navItem.landing_page.reviews_modal.rating')}
                   </h2>
-                  <h2 class="text-lg font-semibold mt-2">
+                  <h2 class="mt-2 text-lg font-semibold">
                     {reviews.length}
                     {$t('course.navItem.landing_page.reviews_modal.ratings')}
                   </h2>
@@ -457,10 +456,10 @@
 
         <!-- Sections - Instructor -->
         <section id="instructor" class="mt-8 pb-10">
-          <h3 class="text-2xl font-bold mt-0 mb-3">
+          <h3 class="mb-3 mt-0 text-2xl font-bold">
             {$t('course.navItem.landing_page.instructor')}
           </h3>
-          <div class="flex items-center mb-4">
+          <div class="mb-4 flex items-center">
             <img
               alt="Author Avatar"
               class="mr-3 block h-20 w-20 rounded-full"

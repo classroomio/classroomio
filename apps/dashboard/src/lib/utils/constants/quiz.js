@@ -1,5 +1,3 @@
-import cloneDeep from 'lodash/cloneDeep';
-
 export const themeImages = {
   standard: {
     card: 'https://pgrest.classroomio.com/storage/v1/object/public/avatars/quizes/standard-quiz-card.svg',

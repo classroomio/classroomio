@@ -1,11 +1,20 @@
-<script>
+<script lang="ts">
   import CloseIcon from 'carbon-icons-svelte/lib/Close.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
 
-  export let onClick = () => {};
-  export let contained = false;
-  export let color = 'text-primary-700 bg-primary-200 dark:bg-neutral-500';
-  export let size = 'small';
+  interface Props {
+    onClick?: any;
+    contained?: boolean;
+    color?: string;
+    size?: string;
+  }
+
+  let {
+    onClick = () => {},
+    contained = false,
+    color = 'text-primary-700 bg-primary-200 dark:bg-neutral-500',
+    size = 'small'
+  }: Props = $props();
 </script>
 
 <IconButton {onClick} {color} {contained} {size}>

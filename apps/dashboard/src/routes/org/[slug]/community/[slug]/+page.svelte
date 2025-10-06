@@ -28,7 +28,7 @@
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import pluralize from 'pluralize';
 
-  export let data;
+  let { data } = $props();
   const { slug } = data;
 
   interface Comment {
@@ -56,11 +56,11 @@
     courseId: string;
   }
 
-  let question: Question;
-  let comment = '';
+  let question: Question = $state();
+  let comment = $state('');
   let errors: {
     title?: string;
-  } = {};
+  } = $state({});
   let isValidAnswer = false; // V2 allow admin mark an answer as accepted
   let resetInput = 1;
   let voted: {
@@ -68,26 +68,26 @@
     comment: {
       [key: string]: boolean;
     };
-  } = { question: false, comment: {} };
-  let isEditMode = false;
-  let deleteComment = {
+  } = $state({ question: false, comment: {} });
+  let isEditMode = $state(false);
+  let deleteComment = $state({
     shouldDelete: false,
     commentId: '',
     isDeleting: false
-  };
-  let deleteQuestion = {
+  });
+  let deleteQuestion = $state({
     shouldDelete: false,
     questionId: '',
     isDeleting: false
-  };
-  let editContent = {
+  });
+  let editContent = $state({
     title: '',
     body: '',
     courseId: ''
-  };
+  });
 
-  let editorInstance = false;
-  let fetchedCourses: Course[] = [];
+  let editorInstance = $state(false);
+  let fetchedCourses: Course[] = $state([]);
 
   function mapResToQuestion(data): Question {
     return {
@@ -157,7 +157,7 @@
 
     if (error) {
       console.error('[ORG] Error loading community', error);
-      return goto(`${currentOrgPath}`);
+      return goto(`${$currentOrgPath}`);
     }
 
     question = mapResToQuestion(data);
@@ -350,12 +350,14 @@
     deleteQuestion.isDeleting = false;
   }
 
-  $: browser && fetchCommunityQuestion(slug);
-  $: {
+  $effect(() => {
+    browser && fetchCommunityQuestion(slug);
+  });
+  $effect(() => {
     if ($profile.id && $currentOrg.id) {
       getCourses($profile.id, $currentOrg.id);
     }
-  }
+  });
 </script>
 
 <svelte:head>

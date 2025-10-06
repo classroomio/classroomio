@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import SaveIcon from 'carbon-icons-svelte/lib/Save.svelte';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import { Toggle } from 'carbon-components-svelte';
@@ -9,13 +9,15 @@
   import { uploadAvatar } from '$lib/utils/services/courses';
   import { t } from '$lib/utils/functions/translations';
 
-  export let courseId;
-  export let reviews = [];
-  export let review = {};
-  export let errors = {};
-  export let onExpand = () => {};
+  let {
+    courseId,
+    reviews = $bindable([]),
+    review = $bindable({}),
+    errors = {},
+    onExpand = () => {}
+  } = $props();
 
-  let avatar;
+  let avatar = $state<string | undefined>();
 
   // function to delete review
   function deleteReviewData() {
@@ -28,11 +30,15 @@
     review.avatar_url = await uploadAvatar(courseId, _avatar);
   }
 
-  $: onAvatarChange(avatar);
-  $: review.rating = parseInt(review.rating);
+  $effect(() => {
+    onAvatarChange(avatar);
+  });
+  $effect(() => {
+    review.rating = parseInt(review.rating);
+  });
 </script>
 
-<div class="flex items-center flex-col w-full">
+<div class="flex w-full flex-col items-center">
   <UploadImage
     bind:avatar
     src={review.avatar_url}
@@ -53,7 +59,7 @@
   <!-- Description -->
   <TextArea
     label={$t('course.navItem.landing_page.editor.reviews_form.description')}
-    rows="4"
+    rows={4}
     className="mt-2 w-full"
     labelClassName="font-normal"
     placeholder=""
@@ -64,7 +70,7 @@
     aiAlignPopover="top-right"
   />
 
-  <div class="flex justify-between w-full items-center mt-2">
+  <div class="mt-2 flex w-full items-center justify-between">
     <!-- Rating -->
     <TextField
       className="mt-2 w-20"
@@ -87,7 +93,7 @@
     </div>
   </div>
 
-  <div class="mt-8 flex justify-between items-center w-full">
+  <div class="mt-8 flex w-full items-center justify-between">
     <IconButton contained={true} value="delete" onClick={deleteReviewData} size="large">
       <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
     </IconButton>

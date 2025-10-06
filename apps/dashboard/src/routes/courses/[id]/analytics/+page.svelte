@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
+  import { CourseContainer } from '$lib/components/CourseContainer';
   import { PageBody, PageNav } from '$lib/components/Page';
   import { t } from '$lib/utils/functions/translations';
   import { getAccessToken } from '$lib/utils/functions/supabase';
@@ -18,10 +18,10 @@
   import ExercisesIcon from '$lib/components/Course/components/Analytics/icons/ExercisesIcon.svelte';
   import EmptyState from '$lib/components/Course/components/Analytics/EmptyState.svelte';
 
-  export let data;
+  let { data = $bindable() } = $props();
 
-  let courseAnalytics: CourseAnalytics | null = null;
-  let isLoading = true;
+  let courseAnalytics: CourseAnalytics | null = $state(null);
+  let isLoading = $state(true);
 
   async function fetchCourseAnalytics() {
     try {
@@ -58,7 +58,7 @@
   });
 </script>
 
-<CourseContainer bind:courseId={data.courseId}>
+<CourseContainer courseId={data.courseId}>
   <PageNav title={$t('course.navItem.analytics.title')} />
   <PageBody width="w-full max-w-6xl md:w-11/12">
     {#if isLoading}

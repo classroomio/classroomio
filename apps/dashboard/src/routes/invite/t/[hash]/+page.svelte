@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import AuthUI from '$lib/components/AuthUI/index.svelte';
   import type { Profile } from '$lib/components/Course/components/People/types';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -22,24 +21,24 @@
   import { onMount } from 'svelte';
   import { snackbar } from '$lib/components/Snackbar/store.js';
 
-  export let data;
+  let { data } = $props();
 
   let supabase = getSupabase();
-  let fields = Object.assign({}, SIGNUP_FIELDS);
-  let loading = false;
-  let isLoggingOut = false;
-  let shouldLogout = false;
+  let fields = $state(Object.assign({}, SIGNUP_FIELDS));
+  let loading = $state(false);
+  let isLoggingOut = $state(false);
+  let shouldLogout = $state(false);
 
   let errors: {
     name?: string;
     email?: string;
     password?: string;
     confirmPassword?: string;
-  } = {};
+  } = $state({});
 
-  let submitError: string;
-  let disableSubmit = false;
-  let formRef: HTMLFormElement;
+  let submitError: string = $state();
+  let disableSubmit = $state(false);
+  let formRef: HTMLFormElement = $state();
 
   async function joinOrg(profileId: string, email: string) {
     if (!profileId || !email || !data.invite.currentOrg?.id) return;
@@ -163,10 +162,6 @@
     setCurOrg(data.invite.currentOrg as CurrentOrg);
   });
 
-  $: errors.confirmPassword = getConfirmPasswordError(fields);
-  $: disableSubmit = getDisableSubmit(fields);
-
-  $: autoLogout($profile?.email);
   function autoLogout(email?: string) {
     if (!email) return;
 
@@ -177,9 +172,22 @@
     }
   }
 
-  $: isLoading = loading || $user.fetchingUser;
-  $: console.log('$profile', $profile);
-  $: console.log('data.invite', data.invite);
+  $effect(() => {
+    errors.confirmPassword = getConfirmPasswordError(fields);
+  });
+  $effect(() => {
+    disableSubmit = getDisableSubmit(fields);
+  });
+  $effect(() => {
+    autoLogout($profile?.email);
+  });
+  let isLoading = $derived(loading || $user.fetchingUser);
+  $effect(() => {
+    console.log('$profile', $profile);
+  });
+  $effect(() => {
+    console.log('data.invite', data.invite);
+  });
 </script>
 
 <svelte:head>
@@ -188,7 +196,7 @@
 
 <AuthUI
   {supabase}
-  redirectPathname={$page.url.pathname}
+  redirectPathname={page.url.pathname}
   isLogin={false}
   {handleSubmit}
   {isLoading}

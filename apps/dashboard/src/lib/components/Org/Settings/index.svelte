@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { Tabs, Tab, TabContent } from 'carbon-components-svelte';
   import Profile from './Profile.svelte';
   import LandingpageSettings from './LandingpageSettings.svelte';
@@ -20,11 +20,11 @@
     disabled: boolean;
   }
 
-  let selected = 0;
-  let query = new URLSearchParams($page.url.search);
-  let tabKey = query.get('tab') || '';
+  let selected = $state(0);
+  let query = $state(new URLSearchParams(page.url.search));
+  let tabKey = $state(query.get('tab') || '');
 
-  let tabs: TabItem[] = [];
+  let tabs: TabItem[] = $state([]);
 
   function getSelectedByTab(_tabs: TabItem[], tabKey = '') {
     const tab = _tabs.find((t) => t.tabKey === tabKey);
@@ -39,51 +39,53 @@
     }
   }
 
-  $: if (browser) {
-    query = new URLSearchParams($page.url.search);
-    tabKey = query.get('tab') || '';
-    selected = getSelectedByTab(tabs, tabKey);
-  }
+  $effect(() => {
+    if (browser) {
+      query = new URLSearchParams(page.url.search);
+      tabKey = query.get('tab') || '';
+      selected = getSelectedByTab(tabs, tabKey);
+    }
+  });
 
-  $: {
+  $effect(() => {
     tabs = [
       {
         key: 0,
         label: $t('settings.tabs.profile_tab'),
         tabKey: '',
-        href: $page.url.pathname,
+        href: page.url.pathname,
         disabled: false
       },
       {
         key: 1,
         label: $t('settings.tabs.organization_tab'),
         tabKey: 'org',
-        href: `${$page.url.pathname}?tab=org`,
+        href: `${page.url.pathname}?tab=org`,
         disabled: !$isOrgAdmin
       },
       {
         key: 2,
         label: $t('settings.tabs.landing_page_tab'),
         tabKey: 'landingpage',
-        href: `${$page.url.pathname}?tab=landingpage`,
+        href: `${page.url.pathname}?tab=landingpage`,
         disabled: !$isOrgAdmin
       },
       {
         key: 3,
         label: $t('settings.tabs.billing_tab'),
         tabKey: 'billing',
-        href: `${$page.url.pathname}?tab=billing`,
+        href: `${page.url.pathname}?tab=billing`,
         disabled: !$isOrgAdmin
       },
       {
         key: 4,
         label: $t('settings.tabs.integrations_tab'),
         tabKey: 'integrations',
-        href: `${$page.url.pathname}?tab=integrations`,
+        href: `${page.url.pathname}?tab=integrations`,
         disabled: false
       }
     ];
-  }
+  });
 </script>
 
 <Tabs autoWidth bind:selected on:change={onTabChange}>
@@ -91,13 +93,13 @@
     <Tab label={tab.label} href={tab.href} disabled={tab.disabled} />
   {/each}
   <!-- <Tab label="Account" /> -->
-  <svelte:fragment slot="content">
+  {#snippet content()}
     <TabContent class="w-full p-0">
       <Profile />
     </TabContent>
     <!-- <TabContent>
-      <Account />
-    </TabContent> -->
+        <Account />
+      </TabContent> -->
     <TabContent class="w-full p-0">
       <OrgSettings />
     </TabContent>
@@ -110,5 +112,5 @@
     <TabContent class="w-full p-0">
       <Integrations />
     </TabContent>
-  </svelte:fragment>
+  {/snippet}
 </Tabs>

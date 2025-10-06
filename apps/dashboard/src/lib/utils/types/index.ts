@@ -300,7 +300,7 @@ export type LessonDocument = {
 
 export interface LessonPage {
   id?: string | null;
-  title: '';
+  title: string;
   totalExercises: number;
   totalComments: number;
   locale: LOCALE;
@@ -312,7 +312,7 @@ export interface LessonPage {
     videos: LessonVideo[];
     documents: LessonDocument[];
   };
-  exercises: [];
+  exercises: Exercise[];
   lesson_completion: LessonCompletion[];
 }
 
@@ -328,6 +328,7 @@ export interface LessonCompletion {
 export interface Lesson {
   note?: any; // type unknown;
   videos?: []; // type unknown;
+  documents?: []; // type unknown;
   slide_url?: any; // type unknown;
   course_id: string /* foreign key to course.id */;
   section_id?: string /* foreign key to course.id */;

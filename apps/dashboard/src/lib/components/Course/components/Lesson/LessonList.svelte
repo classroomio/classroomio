@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { dndzone } from 'svelte-dnd-action';
   import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -19,12 +19,21 @@
 
   const flipDurationMs = 300;
 
-  export let reorder = false;
-  export let lessonEditing: string | undefined;
-  export let lessonToDelete: Lesson | undefined;
-  export let openDeleteModal = false;
+  interface Props {
+    reorder?: boolean;
+    lessonEditing: string | undefined;
+    lessonToDelete: Lesson | undefined;
+    openDeleteModal?: boolean;
+  }
 
-  let errors: Record<string, string> = {};
+  let {
+    reorder = false,
+    lessonEditing = $bindable(),
+    lessonToDelete = $bindable(),
+    openDeleteModal = $bindable(false)
+  }: Props = $props();
+
+  let errors: Record<string, string> = $state({});
 
   async function saveLesson(lesson: Lesson, courseId: Course['id']) {
     const validationRes = await handleSaveLesson(lesson, courseId);
@@ -81,12 +90,12 @@
       'border-style': 'dashed'
     }
   }}
-  on:consider={handleDndConsider}
-  on:finalize={handleDndFinalize}
+  onconsider={handleDndConsider}
+  onfinalize={handleDndFinalize}
 >
   {#each $lessons as lesson (lesson.id)}
     <div
-      class={`relative m-auto mb-4 flex max-w-xl items-center rounded-md border-2 border-gray-200 dark:border-neutral-600 p-5 dark:bg-neutral-800`}
+      class="relative m-auto mb-4 flex max-w-xl items-center rounded-md border-2 border-gray-200 p-5 dark:border-neutral-600 dark:bg-neutral-800"
     >
       <!-- Number Chip -->
       <div class="mr-5">
@@ -112,7 +121,7 @@
           <h3 class="m-0 flex items-center text-lg dark:text-white">
             <a
               href={$globalStore.isStudent && !lesson.is_unlocked
-                ? $page.url.pathname
+                ? page.url.pathname
                 : `/courses/${$course.id}/lessons/${lesson.id}`}
               class="font-medium text-black no-underline hover:underline dark:text-white {$globalStore.isStudent &&
               !lesson.is_unlocked

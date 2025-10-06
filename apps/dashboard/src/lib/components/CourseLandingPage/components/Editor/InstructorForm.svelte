@@ -1,8 +1,5 @@
 <script lang="ts">
-  import cloneDeep from 'lodash/cloneDeep';
-  import set from 'lodash/set';
   import get from 'lodash/get';
-  import isEmpty from 'lodash/isEmpty';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
@@ -10,25 +7,20 @@
   import type { Course } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
 
-  export let course: Course;
-
-  let name: string | undefined;
-  let role: string | undefined;
-  let imgUrl: string | undefined;
-  let description: string | undefined;
-  let courseNo: string | undefined;
-  let avatar: string | undefined;
-  let hasBeenSet = false;
-  let isUploading = false;
-
-  function setter(value: any, setterKey: string) {
-    if (!value) return;
-
-    const _course = cloneDeep(course);
-    set(_course, setterKey, value);
-
-    course = _course;
+  interface Props {
+    course: Course;
+    setter: (value: any, key: string) => void;
   }
+
+  let { course = $bindable(), setter }: Props = $props();
+
+  let name = $state(get(course, 'metadata.instructor.name'));
+  let role = $state(get(course, 'metadata.instructor.role'));
+  let imgUrl = $state(get(course, 'metadata.instructor.imgUrl'));
+  let description = $state(get(course, 'metadata.instructor.description'));
+  let courseNo = $state(get(course, 'metadata.instructor.courseNo'));
+  let avatar: string | undefined = $state();
+  let isUploading = $state(false);
 
   async function onAvatarChange(_avatar: string | undefined) {
     if (!_avatar || !course.id) return;
@@ -41,33 +33,32 @@
     isUploading = false;
   }
 
-  function setDefaults(course: Course) {
-    if (isEmpty(course) || hasBeenSet) return;
+  $effect(() => {
+    setter(name, 'metadata.instructor.name');
+  });
+  $effect(() => {
+    setter(role, 'metadata.instructor.role');
+  });
+  $effect(() => {
+    setter(imgUrl, 'metadata.instructor.imgUrl');
+  });
+  $effect(() => {
+    setter(description, 'metadata.instructor.description');
+  });
+  $effect(() => {
+    setter(courseNo, 'metadata.instructor.courseNo');
+  });
 
-    hasBeenSet = true;
-    name = get(course, 'metadata.instructor.name');
-    role = get(course, 'metadata.instructor.role');
-    imgUrl = get(course, 'metadata.instructor.imgUrl');
-    description = get(course, 'metadata.instructor.description');
-    courseNo = get(course, 'metadata.instructor.courseNo');
-  }
-
-  $: setter(name, 'metadata.instructor.name');
-  $: setter(role, 'metadata.instructor.role');
-  $: setter(imgUrl, 'metadata.instructor.imgUrl');
-  $: setter(description, 'metadata.instructor.description');
-  $: setter(courseNo, 'metadata.instructor.courseNo');
-
-  $: onAvatarChange(avatar);
-
-  $: setDefaults(course);
+  $effect(() => {
+    onAvatarChange(avatar);
+  });
 </script>
 
 <div class="mt-5 w-full">
   <label for="upload" class="font-bold">
     {$t('course.navItem.landing_page.editor.instructor_form.upload')}
   </label>
-  <div class="w-full flex justify-center">
+  <div class="flex w-full justify-center">
     <UploadImage bind:avatar src={imgUrl} bind:isUploading />
   </div>
 </div>

@@ -1,8 +1,5 @@
 <script lang="ts">
-  import cloneDeep from 'lodash/cloneDeep';
-  import set from 'lodash/set';
   import get from 'lodash/get';
-  import isEmpty from 'lodash/isEmpty';
   import { Toggle, Select, SelectItem } from 'carbon-components-svelte';
 
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -11,46 +8,34 @@
   import type { Course } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
 
-  export let course: Course;
-
-  let discount = 0;
-  let paymentLink = '';
-  let showDiscount: boolean | undefined = undefined;
-  let giftToggled: boolean | undefined = undefined;
-
-  let hasBeenSet = false;
-
-  function setDefaults(course: Course) {
-    console.log('\n\nsetDefaults course', course);
-    if (isEmpty(course) || hasBeenSet) return;
-    hasBeenSet = true;
-
-    paymentLink = get(course, 'metadata.paymentLink', '');
-    discount = get(course, 'metadata.discount', 0);
-    showDiscount = get(course, 'metadata.showDiscount', false);
-    giftToggled = get(course, 'metadata.reward.show', false);
+  interface Props {
+    course: Course;
+    setter: (value: any, key: string) => void;
   }
 
-  function setter(value: string | number | boolean | undefined, setterKey: string) {
-    if (typeof value !== 'boolean' && !value) return;
+  let { course = $bindable(), setter }: Props = $props();
 
-    const _course = cloneDeep(course);
-    set(_course, setterKey, value);
-    course = _course;
-  }
+  let discount = $derived(get(course, 'metadata.discount', 0));
+  let paymentLink = $derived(get(course, 'metadata.paymentLink', ''));
+  let showDiscount = $derived(get(course, 'metadata.showDiscount', false));
+  let giftToggled = $derived(get(course, 'metadata.reward.show', false));
 
   function handleChange(html: string) {
-    const _course = cloneDeep(course);
-    set(_course, 'metadata.reward.description', html);
-    course = _course;
+    setter(html, 'metadata.reward.description');
   }
 
-  $: setter(showDiscount, 'metadata.showDiscount');
-  $: setter(paymentLink, 'metadata.paymentLink');
-  $: setter(discount, 'metadata.discount');
-  $: setter(giftToggled, 'metadata.reward.show');
-
-  $: setDefaults(course);
+  $effect(() => {
+    setter(showDiscount, 'metadata.showDiscount');
+  });
+  $effect(() => {
+    setter(paymentLink, 'metadata.paymentLink');
+  });
+  $effect(() => {
+    setter(discount, 'metadata.discount');
+  });
+  $effect(() => {
+    setter(giftToggled, 'metadata.reward.show');
+  });
 </script>
 
 {#if typeof course !== 'undefined'}
@@ -111,7 +96,7 @@
   </div>
 
   {#if giftToggled}
-    <p class="dark:text-white font-bold mt-5">
+    <p class="mt-5 font-bold dark:text-white">
       {$t('course.navItem.landing_page.editor.pricing_form.gift')}
     </p>
 

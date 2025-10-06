@@ -1,5 +1,5 @@
-<script>
-  import { page as pageStore } from '$app/stores';
+<script lang="ts">
+  import { page as pageStore } from '$app/state';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg, orgAudience } from '$lib/utils/store/org';
@@ -13,16 +13,20 @@
     ToolbarSearch
   } from 'carbon-components-svelte';
 
-  export let isLoading = false;
+  interface Props {
+    isLoading?: boolean;
+  }
+
+  let { isLoading = false }: Props = $props();
 
   const headers = [
     { key: 'name', value: $t('audience.name') },
     { key: 'email', value: $t('audience.email') },
     { key: 'date_joined', value: $t('audience.date_joined') }
   ];
-  let pageSize = 5;
-  let page = 1;
-  let filteredRowIds = [];
+  let pageSize = $state(5);
+  let page = $state(1);
+  let filteredRowIds = $state([]);
   let searchValue = '';
 </script>
 
@@ -42,7 +46,7 @@
       {#if cell.key === 'name'}
         <Link
           class="flex items-center gap-2"
-          href={`${$pageStore.url.href}/${row.id}/${$currentOrg.id}`}
+          href={`${pageStore.url.href}/${row.id}/${$currentOrg.id}`}
         >
           <Avatar src={row.avatar_url} width="w-5" height="h-5" />
           {cell.value}

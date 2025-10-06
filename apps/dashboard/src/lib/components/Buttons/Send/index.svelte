@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
   import SendFilled from 'carbon-icons-svelte/lib/SendFilled.svelte';
   import IconButton from '$lib/components/IconButton/index.svelte';
 
-  export let onClick;
+  let { onClick } = $props();
 </script>
 
 <IconButton {onClick}>

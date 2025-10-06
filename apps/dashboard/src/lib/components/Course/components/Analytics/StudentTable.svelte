@@ -8,19 +8,23 @@
   import { goto } from '$app/navigation';
   import { t } from '$lib/utils/functions/translations';
 
-  export let students: StudentOverview[] = [];
+  interface Props {
+    students?: StudentOverview[];
+  }
+
+  let { students = [] }: Props = $props();
 
   // Pagination state
-  let currentPage = 1;
+  let currentPage = $state(1);
   const pageSize = 15;
 
   // Computed values
-  $: totalPages = Math.ceil(students.length / pageSize);
-  $: startIndex = (currentPage - 1) * pageSize;
-  $: endIndex = startIndex + pageSize;
-  $: paginatedStudents = students.slice(startIndex, endIndex);
-  $: startItem = startIndex + 1;
-  $: endItem = Math.min(endIndex, students.length);
+  let totalPages = $derived(Math.ceil(students.length / pageSize));
+  let startIndex = $derived((currentPage - 1) * pageSize);
+  let endIndex = $derived(startIndex + pageSize);
+  let paginatedStudents = $derived(students.slice(startIndex, endIndex));
+  let startItem = $derived(startIndex + 1);
+  let endItem = $derived(Math.min(endIndex, students.length));
 
   const GotoFullProfile = (student: StudentOverview) => {
     if (!student) return;
@@ -32,9 +36,11 @@
   }
 
   // Reset to first page when students array changes
-  $: if (students.length > 0 && currentPage > totalPages) {
-    currentPage = 1;
-  }
+  $effect(() => {
+    if (students.length > 0 && currentPage > totalPages) {
+      currentPage = 1;
+    }
+  });
 </script>
 
 {#if students.length === 0}
@@ -148,7 +154,7 @@
               <td class="min-w-[120px] whitespace-nowrap px-4 py-3">
                 <button
                   class="whitespace-nowrap rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-                  on:click={() => GotoFullProfile(student)}
+                  onclick={() => GotoFullProfile(student)}
                 >
                   {$t('analytics.view_details')}
                 </button>

@@ -19,7 +19,7 @@
     type: number;
   }
 
-  let items: Array<Question> = [];
+  let items: Array<Question> = $state([]);
 
   function handleDndConsider(e) {
     items = e.detail.items;
@@ -44,11 +44,13 @@
     $questionnaireOrder.open = false;
   }
 
-  $: items = filterOutDeleted($questionnaire.questions).map((q) => ({
-    id: q.id,
-    name: q.title,
-    type: q.question_type.id
-  }));
+  $effect(() => {
+    items = filterOutDeleted($questionnaire.questions).map((q) => ({
+      id: q.id,
+      name: q.title,
+      type: q.question_type.id
+    }));
+  });
 </script>
 
 <Modal
@@ -66,14 +68,14 @@
         'border-style': 'dashed'
       }
     }}
-    on:consider={handleDndConsider}
-    on:finalize={handleDndFinalize}
+    onconsider={handleDndConsider}
+    onfinalize={handleDndFinalize}
     class="w-full"
   >
     {#each items as item (item.id)}
       <div
         animate:flip={{ duration: flipDurationMs }}
-        class="flex items-center rounded-md p-4 border border-primary-600"
+        class="border-primary-600 flex items-center rounded-md border p-4"
       >
         {#if item.type === 1}
           <RadioButtonCheckedIcon size={16} class="carbon-icon active" />

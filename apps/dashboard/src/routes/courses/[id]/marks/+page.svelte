@@ -5,7 +5,7 @@
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
   import { getLectureNo } from '$lib/components/Course/function.js';
   import { course, group } from '$lib/components/Course/store';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
+  import { CourseContainer } from '$lib/components/CourseContainer';
   import { PageBody, PageNav } from '$lib/components/Page';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -25,14 +25,14 @@
   import autoTable from 'jspdf-autotable';
   import Papa from 'papaparse';
 
-  export let data;
+  let { data } = $props();
 
   let borderBottomGrey = 'border-r-0 border-t-0 border-b border-l-0 border-gray-300';
   let borderleftGrey = 'border-r-0 border-t-0 border-b-0 border-l border-gray-300';
-  let students: GroupPerson[] = [];
-  let lessonMapping = {}; // { lessonId: { exerciseId: exerciseTitle, ... }, ... }
-  let studentMarksByExerciseId = {}; // { groupMemberId: { exerciseId: `total_gotten/points`, ... }, ... }
-  let isDownloading = false;
+  let students: GroupPerson[] = $state([]);
+  let lessonMapping = $state({}); // { lessonId: { exerciseId: exerciseTitle, ... }, ... }
+  let studentMarksByExerciseId = $state({}); // { groupMemberId: { exerciseId: `total_gotten/points`, ... }, ... }
+  let isDownloading = $state(false);
 
   function calculateStudentTotal(studentExerciseData) {
     if (!studentExerciseData) return 0;
@@ -204,14 +204,18 @@
     }
   }
 
-  $: students = $globalStore.isStudent
-    ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
-    : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
+  $effect(() => {
+    students = $globalStore.isStudent
+      ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
+      : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
+  });
 
-  $: browser && $course.id && firstRender($course.id);
+  $effect(() => {
+    browser && $course.id && firstRender($course.id);
+  });
 </script>
 
-<CourseContainer bind:courseId={data.courseId}>
+<CourseContainer courseId={data.courseId}>
   <RoleBasedSecurity
     allowedRoles={getPageRoles($currentOrg)}
     onDenied={() => {
@@ -219,22 +223,36 @@
     }}
   >
     <PageNav title={$t('course.navItem.marks.title')}>
-      <slot:fragment slot="widget">
-        <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <OverflowMenu flipped style="border-radius: 50px" class="bg-gray-100 dark:bg-neutral-800">
-            <div slot="menu" style="">
-              {#if isDownloading}
-                <Loading withOverlay={false} small />
-              {:else}
-                <Download />
-              {/if}
-            </div>
+      {#snippet widget()}
+        <slot:fragment>
+          <RoleBasedSecurity allowedRoles={[1, 2]}>
+            <OverflowMenu
+              flipped
+              style="border-radius: 50px"
+              class="bg-gray-100 dark:bg-neutral-800"
+            >
+              {#snippet menu()}
+                <div style="">
+                  {#if isDownloading}
+                    <Loading withOverlay={false} small />
+                  {:else}
+                    <Download />
+                  {/if}
+                </div>
+              {/snippet}
 
-            <OverflowMenuItem text={$t('course.navItem.marks.export.csv')} on:click={downloadCSV} />
-            <OverflowMenuItem text={$t('course.navItem.marks.export.pdf')} on:click={downloadPDF} />
-          </OverflowMenu>
-        </RoleBasedSecurity>
-      </slot:fragment>
+              <OverflowMenuItem
+                text={$t('course.navItem.marks.export.csv')}
+                on:click={downloadCSV}
+              />
+              <OverflowMenuItem
+                text={$t('course.navItem.marks.export.pdf')}
+                on:click={downloadPDF}
+              />
+            </OverflowMenu>
+          </RoleBasedSecurity>
+        </slot:fragment>
+      {/snippet}
     </PageNav>
 
     <PageBody width="w-full max-w-6xl md:w-11/12">

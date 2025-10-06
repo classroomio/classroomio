@@ -17,18 +17,18 @@
   import type { LessonDocument } from '$lib/utils/types';
   import { snackbar } from '$lib/components/Snackbar/store';
 
-  export let mode = MODES.view;
+  let { mode = MODES.view } = $props();
 
-  let downloadingDocuments = new Set<string>();
-  let viewingPDF: any = null;
-  let pdfViewerOpen = false;
-  let pdfCanvas: HTMLCanvasElement;
+  let downloadingDocuments = $state(new Set<string>());
+  let viewingPDF: any = $state(null);
+  let pdfViewerOpen = $state(false);
+  let pdfCanvas: HTMLCanvasElement = $state();
   let pdfDoc: any = null;
-  let pageNum = 1;
-  let pageCount = 0;
-  let scale = 1.0;
-  let isLoading = false;
-  let error: string | null = null;
+  let pageNum = $state(1);
+  let pageCount = $state(0);
+  let scale = $state(1.0);
+  let isLoading = $state(false);
+  let error: string | null = $state(null);
   let pdfjsLib: any = null;
   let renderTimeout: any = null;
   let currentRenderTask: any = null;
@@ -299,7 +299,7 @@
     event.preventDefault();
   }
 
-  $: displayDocuments = $lesson?.materials?.documents || [];
+  let displayDocuments = $derived($lesson?.materials?.documents || []);
 </script>
 
 <DocumentList
@@ -418,7 +418,7 @@
             </div>
             <p class="mb-2 text-red-600">{$t(error)}</p>
             <button
-              on:click={() => viewPDF(viewingPDF)}
+              onclick={() => viewPDF(viewingPDF)}
               class="text-blue-600 underline hover:text-blue-800"
             >
               {$t('course.navItem.lessons.materials.tabs.document.try_again')}
@@ -429,8 +429,8 @@
         <div class="flex justify-center">
           <canvas
             bind:this={pdfCanvas}
-            on:contextmenu={handleContextMenu}
-            on:dragstart={handleDragStart}
+            oncontextmenu={handleContextMenu}
+            ondragstart={handleDragStart}
             class="shadow-lg"
           ></canvas>
         </div>

@@ -1,9 +1,14 @@
-<script>
-  export let options = [];
-  export let classNames = 'relative';
-  export let isIcon = false;
+<script lang="ts">
+  interface Props {
+    options?: any;
+    classNames?: string;
+    isIcon?: boolean;
+    children?: import('svelte').Snippet;
+  }
 
-  let open = false;
+  let { options = [], classNames = 'relative', isIcon = false, children }: Props = $props();
+
+  let open = $state(false);
 
   const notIconClass =
     'border rounded-lg border-grey p-3 focus:outline-none focus:border-gray-400 focus:bg-gray-200';
@@ -30,25 +35,25 @@
 <div class="{classNames} z-10 {!options.length && 'hidden'}">
   <button
     class="flex flex-row items-center {!isIcon && notIconClass}"
-    on:click={(e) => {
+    onclick={(e) => {
       e.preventDefault();
       e.stopImmediatePropagation();
       open = !open;
     }}
-    on:blur={onBlur}
+    onblur={onBlur}
   >
-    <slot />
+    {@render children?.()}
   </button>
 
   {#if open}
     <div
-      class="dropdown whitespace-nowrap bg-white dark:bg-black border border-grey rounded-lg mt-2 py-3 absolute"
+      class="dropdown border-grey absolute mt-2 whitespace-nowrap rounded-lg border bg-white py-3 dark:bg-black"
     >
       {#each options as option, index}
         <button
-          class="block px-4 py-3 text-left hover:bg-primary-100 {!isOptionLast(index) &&
+          class="hover:bg-primary-100 block px-4 py-3 text-left {!isOptionLast(index) &&
             'border-b'} w-full dark:text-white dark:hover:text-black"
-          on:click={onClick(option)}
+          onclick={onClick(option)}
         >
           {option.label}
         </button>
@@ -59,7 +64,9 @@
 
 <style>
   .dropdown {
-    box-shadow: 0px 5px 5px -3px rgb(0 0 0 / 20%), 0px 8px 10px 1px rgb(0 0 0 / 14%),
+    box-shadow:
+      0px 5px 5px -3px rgb(0 0 0 / 20%),
+      0px 8px 10px 1px rgb(0 0 0 / 14%),
       0px 3px 14px 2px rgb(0 0 0 / 12%);
     right: 0px;
     top: 20px;

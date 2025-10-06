@@ -68,7 +68,7 @@ loading.subscribe(async ($loading) => {
   }
 });
 
-export function handleLocaleChange(newLocale: string) {
+export function handleLocaleChange(newLocale: LOCALE) {
   if (!newLocale) {
     return;
   }

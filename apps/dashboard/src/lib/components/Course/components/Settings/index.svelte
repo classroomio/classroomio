@@ -36,19 +36,19 @@
   import { lessons } from '../Lesson/store/lessons';
   import { settings } from './store';
 
-  let isSaving = false;
-  let isLoading = false;
-  let isDeleting = false;
+  let isSaving = $state(false);
+  let isLoading = $state(false);
+  let isDeleting = $state(false);
   let errors: {
     title: string | undefined;
     description: string | undefined;
-  } = {
+  } = $state({
     title: undefined,
     description: undefined
-  };
+  });
   let avatar: string | undefined;
-  let hasUnsavedChanges = false;
-  let openDeleteModal = false;
+  let hasUnsavedChanges = $state(false);
+  let openDeleteModal = $state(false);
 
   function widgetControl() {
     $handleOpenWidget.open = !$handleOpenWidget.open;
@@ -199,9 +199,11 @@
       allow_new_students: course.metadata.allowNewStudent
     });
   }
-  $: setDefault($course);
+  $effect(() => {
+    setDefault($course);
+  });
 
-  $: courseLink = `${$currentOrgDomain}/course/${$course.slug}`;
+  let courseLink = $derived(`${$currentOrgDomain}/course/${$course.slug}`);
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
@@ -284,7 +286,7 @@
           <IconButton contained={true} size="small" onClick={generateNewCourseLink}>
             <Restart size={16} />
           </IconButton>
-          <span class="grow" />
+          <span class="grow"></span>
           <IconButton contained={true} size="small" onClick={() => goto(courseLink)}>
             <ArrowUpRight size={16} />
           </IconButton>
@@ -339,8 +341,12 @@
             hasUnsavedChanges = true;
           }}
         >
-          <span slot="labelA" style="color: gray">{$t('course.navItem.settings.disabled')}</span>
-          <span slot="labelB" style="color: gray">{$t('course.navItem.settings.enabled')}</span>
+          {#snippet labelA()}
+            <span style="color: gray">{$t('course.navItem.settings.disabled')}</span>
+          {/snippet}
+          {#snippet labelB()}
+            <span style="color: gray">{$t('course.navItem.settings.enabled')}</span>
+          {/snippet}
         </Toggle>
       {/if}
     </Column>
@@ -403,8 +409,12 @@
           hasUnsavedChanges = true;
         }}
       >
-        <span slot="labelA" style="color: gray">{$t('course.navItem.settings.disabled')}</span>
-        <span slot="labelB" style="color: gray">{$t('course.navItem.settings.enabled')}</span>
+        {#snippet labelA()}
+          <span style="color: gray">{$t('course.navItem.settings.disabled')}</span>
+        {/snippet}
+        {#snippet labelB()}
+          <span style="color: gray">{$t('course.navItem.settings.enabled')}</span>
+        {/snippet}
       </Toggle>
     </Column>
   </Row>
@@ -429,8 +439,12 @@
           }
         }}
       >
-        <span slot="labelA" style="color: gray">{$t('course.navItem.settings.unpublished')}</span>
-        <span slot="labelB" style="color: gray">{$t('course.navItem.settings.published')}</span>
+        {#snippet labelA()}
+          <span style="color: gray">{$t('course.navItem.settings.unpublished')}</span>
+        {/snippet}
+        {#snippet labelB()}
+          <span style="color: gray">{$t('course.navItem.settings.published')}</span>
+        {/snippet}
       </Toggle>
     </Column>
   </Row>

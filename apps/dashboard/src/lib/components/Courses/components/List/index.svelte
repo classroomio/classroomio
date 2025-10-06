@@ -10,13 +10,25 @@
   import { goto } from '$app/navigation';
   import { t } from '$lib/utils/functions/translations';
 
-  export let id = '';
-  export let title = '';
-  export let type = '';
-  export let description = '';
-  export let isPublished = false;
-  export let totalLessons = 0;
-  export let totalStudents = 0;
+  interface Props {
+    id?: string;
+    title?: string;
+    type?: string;
+    description?: string;
+    isPublished?: boolean;
+    totalLessons?: number;
+    totalStudents?: number;
+  }
+
+  let {
+    id = '',
+    title = '',
+    type = '',
+    description = '',
+    isPublished = false,
+    totalLessons = 0,
+    totalStudents = 0
+  }: Props = $props();
 
   function handleCloneCourse(e) {
     e.stopPropagation();

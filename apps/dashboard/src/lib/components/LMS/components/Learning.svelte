@@ -11,25 +11,25 @@
     goto(`/courses/${id}/lessons?next=true`);
   };
 
-  $: last3Courses = $courses.length > 0 ? $courses.slice(0, 3) : [];
+  let last3Courses = $derived($courses.length > 0 ? $courses.slice(0, 3) : []);
 </script>
 
 <section class="h-full">
-  <p class="text-base font-semibold text-[#040F2D] pb-3 dark:text-white">
+  <p class="pb-3 text-base font-semibold text-[#040F2D] dark:text-white">
     {$t('dashboard.current_lesson')}
   </p>
   <div
-    class="flex items-center flex-col border border-[#EAEAEA] dark:bg-neutral-800 gap-2 rounded w-full lg:h-[40vh] p-3"
+    class="flex w-full flex-col items-center gap-2 rounded border border-[#EAEAEA] p-3 lg:h-[40vh] dark:bg-neutral-800"
   >
     {#if last3Courses.length > 0}
-      <div class="w-full h-full flex flex-col justify-start overflow-y-auto">
+      <div class="flex h-full w-full flex-col justify-start overflow-y-auto">
         {#each last3Courses as course}
           <div class="p-5">
-            <span class="flex flex-col lg:flex-row gap-3 items-start pb-5">
+            <span class="flex flex-col items-start gap-3 pb-5 lg:flex-row">
               <img
                 src={course.logo || '/images/classroomio-course-img-template.jpg'}
                 alt="course"
-                class="hidden lg:block lg:w-[60px] lg:h-[60px]"
+                class="hidden lg:block lg:h-[60px] lg:w-[60px]"
               />
               <div class="w-full">
                 <p class="text-base font-semibold dark:text-white">{course.title}</p>
@@ -44,13 +44,13 @@
                 onClick={() => gotoCourse(course.id)}
               />
             </span>
-            <div class="relative bg-[#EAEAEA] w-full h-1">
+            <div class="relative h-1 w-full bg-[#EAEAEA]">
               <div
                 style="width: {Math.round(
                   ((course?.progress_rate ?? 0) / (course?.total_lessons ?? 0)) * 100
                 ) || 0}%"
-                class={`absolute top-0 left-0 bg-primary-700 h-full`}
-              />
+                class="bg-primary-700 absolute left-0 top-0 h-full"
+              ></div>
             </div>
           </div>
         {/each}

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { preventDefault } from 'svelte/legacy';
+
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import {
     lesson,
@@ -13,16 +15,20 @@
 
   import { VideoUploader } from '$lib/utils/services/courses/presign';
 
-  export let lessonId = '';
+  interface Props {
+    lessonId?: string;
+  }
 
-  let fileSize;
-  let isDisabled = false;
+  let { lessonId = '' }: Props = $props();
 
-  let formRes;
-  let isLoaded = false;
-  let fileInput;
-  let submit;
-  let fileName = '';
+  let fileSize = $state();
+  let isDisabled = $state(false);
+
+  let formRes = $state();
+  let isLoaded = $state(false);
+  let fileInput = $state();
+  let submit = $state();
+  let fileName = $state('');
 
   const videoUploader = new VideoUploader();
 
@@ -108,9 +114,13 @@
     $lessonVideoUpload.uploadProgress = 0;
   }
 
-  $: helperText = $lessonVideoUpload.uploadProgress + '%  of ' + Math.round(fileSize) + 'MB';
+  let helperText = $derived(
+    $lessonVideoUpload.uploadProgress + '%  of ' + Math.round(fileSize) + 'MB'
+  );
 
-  $: isDisabled = $lessonVideoUpload.isUploading || $isFreePlan;
+  $effect(() => {
+    isDisabled = $lessonVideoUpload.isUploading || $isFreePlan;
+  });
 </script>
 
 <UpgradeBanner className="mb-3" onClick={() => ($lessonVideoUpload.isModalOpen = false)}>
@@ -120,13 +130,13 @@
 {#if !isLoaded}
   <button
     type="button"
-    on:click={() => (fileInput && !$lessonVideoUpload.isUploading ? fileInput.click() : null)}
+    onclick={() => (fileInput && !$lessonVideoUpload.isUploading ? fileInput.click() : null)}
     class="h-full w-full {isDisabled && 'opacity-50 hover:cursor-not-allowed'}"
     disabled={isDisabled}
   >
     <form
       class="border-primary-300 flex h-full w-full flex-col items-center justify-center rounded-xl border border-dashed"
-      on:submit|preventDefault={onUpload}
+      onsubmit={preventDefault(onUpload)}
     >
       {#if $lessonVideoUpload.isUploading}
         <div class="flex w-[60%] max-w-[500px] flex-col justify-center gap-5">
@@ -165,7 +175,7 @@
         type="file"
         accept="video/*"
         name="videoFile"
-        on:change={() => submit.click()}
+        onchange={() => submit.click()}
         bind:this={fileInput}
       />
       <input type="text" name="lessonId" value={lessonId} style="display: none;" />

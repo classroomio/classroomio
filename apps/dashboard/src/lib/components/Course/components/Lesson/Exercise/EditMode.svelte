@@ -1,4 +1,7 @@
-<script>
+<script lang="ts">
+  import { createBubbler, preventDefault } from 'svelte/legacy';
+
+  const bubble = createBubbler();
   import {
     questionnaire,
     deleteConfirmation,
@@ -37,14 +40,18 @@
 
   const initialQuestionsLength = $questionnaire.questions.length;
 
-  export let shouldDeleteExercise = false;
-  export let exerciseId;
-  export let goBack = () => {};
+  interface Props {
+    shouldDeleteExercise?: boolean;
+    exerciseId: any;
+    goBack?: any;
+  }
 
-  let errors = {};
-  let questionIdToDelete = null;
-  let questions = [];
-  let isDeleting = false;
+  let { shouldDeleteExercise = $bindable(false), exerciseId, goBack = () => {} }: Props = $props();
+
+  let errors = $state({});
+  let questionIdToDelete = $state(null);
+  let questions = $state([]);
+  let isDeleting = $state(false);
 
   function shouldScrollToLast(questionId, questions) {
     const [lastQuestion] = questions.slice(-1);
@@ -81,8 +88,12 @@
     goBack();
   }
 
-  $: errors = $questionnaireValidation;
-  $: questions = filterOutDeleted($questionnaire.questions);
+  $effect(() => {
+    errors = $questionnaireValidation;
+  });
+  $effect(() => {
+    questions = filterOutDeleted($questionnaire.questions);
+  });
 </script>
 
 <DeleteConfirmationModal
@@ -98,8 +109,8 @@
   width="w-2/4"
   modalHeading={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.delete_modal')}
 >
-  <form on:submit|preventDefault>
-    <h1 class="dark:text-white text-xl">
+  <form onsubmit={preventDefault(bubble('submit'))}>
+    <h1 class="text-xl dark:text-white">
       {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.sure')}
     </h1>
 
@@ -124,15 +135,15 @@
   </form>
 </Modal>
 
-<div class="w-full mb-20">
+<div class="mb-20 w-full">
   {#if Object.values(errors).length}
-    <div class="w-full flex justify-center mb-4">
+    <div class="mb-4 flex w-full justify-center">
       <ErrorMessage
         message={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.error')}
       />
     </div>
   {/if}
-  <div class="questions pt-6 px-6">
+  <div class="questions px-6 pt-6">
     {#each questions as question (question.id)}
       <!-- {#key question.id} -->
       <QuestionContainer
@@ -144,7 +155,7 @@
           question.is_dirty = true;
         }}
       >
-        <div class="flex justify-between items-center">
+        <div class="flex items-center justify-between">
           <div class="mr-5 w-3/5">
             <TextField
               placeholder={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.question')}
@@ -173,7 +184,7 @@
         </div>
 
         {#if typeof question.code === 'string'}
-          <div class="flex justify-between items-center my-3 w-3/5">
+          <div class="my-3 flex w-3/5 items-center justify-between">
             <TextArea
               bind:value={question.code}
               rows={2}
@@ -185,7 +196,7 @@
           </div>
         {/if}
 
-        <div class="flex flex-col mt-2">
+        <div class="mt-2 flex flex-col">
           {#if QUESTION_TYPE.RADIO === question.question_type.id}
             {#each filterOutDeleted(question.options) as option}
               <RadioItem
@@ -194,25 +205,27 @@
                 bind:label={option.label}
                 onChange={addDynamicValue(question.id, option.id)}
               >
-                <div slot="iconbutton" class="flex items-center">
-                  <IconButton
-                    value={option.id}
-                    onClick={handleRemoveOption(question.id, option.id)}
-                  >
-                    <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
-                  </IconButton>
-                  <IconButton
-                    value={option.id}
-                    onClick={handleAnswerSelect(question.id, option.id)}
-                    buttonClassName={option.is_correct && 'success'}
-                  >
-                    {#if option.is_correct}
-                      <CheckmarkFilledIcon size={24} class="carbon-icon dark:text-white" />
-                    {:else}
-                      <CheckmarkOutlineIcon size={24} class="carbon-icon dark:text-white" />
-                    {/if}
-                  </IconButton>
-                </div>
+                {#snippet iconbutton()}
+                  <div class="flex items-center">
+                    <IconButton
+                      value={option.id}
+                      onClick={handleRemoveOption(question.id, option.id)}
+                    >
+                      <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
+                    </IconButton>
+                    <IconButton
+                      value={option.id}
+                      onClick={handleAnswerSelect(question.id, option.id)}
+                      buttonClassName={option.is_correct && 'success'}
+                    >
+                      {#if option.is_correct}
+                        <CheckmarkFilledIcon size={24} class="carbon-icon dark:text-white" />
+                      {:else}
+                        <CheckmarkOutlineIcon size={24} class="carbon-icon dark:text-white" />
+                      {/if}
+                    </IconButton>
+                  </div>
+                {/snippet}
               </RadioItem>
             {/each}
           {/if}
@@ -225,25 +238,27 @@
                 bind:label={option.label}
                 onChange={addDynamicValue(question.id, option.id)}
               >
-                <div slot="iconbutton" class="flex items-center">
-                  <IconButton
-                    value={option.id}
-                    onClick={handleRemoveOption(question.id, option.id)}
-                  >
-                    <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
-                  </IconButton>
-                  <IconButton
-                    value={option.id}
-                    onClick={handleAnswerSelect(question.id, option.id)}
-                    buttonClassName={option.is_correct && 'success'}
-                  >
-                    {#if option.is_correct}
-                      <CheckmarkFilledIcon size={24} class="carbon-icon dark:text-white" />
-                    {:else}
-                      <CheckmarkOutlineIcon size={24} class="carbon-icon dark:text-white" />
-                    {/if}
-                  </IconButton>
-                </div>
+                {#snippet iconbutton()}
+                  <div class="flex items-center">
+                    <IconButton
+                      value={option.id}
+                      onClick={handleRemoveOption(question.id, option.id)}
+                    >
+                      <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
+                    </IconButton>
+                    <IconButton
+                      value={option.id}
+                      onClick={handleAnswerSelect(question.id, option.id)}
+                      buttonClassName={option.is_correct && 'success'}
+                    >
+                      {#if option.is_correct}
+                        <CheckmarkFilledIcon size={24} class="carbon-icon dark:text-white" />
+                      {:else}
+                        <CheckmarkOutlineIcon size={24} class="carbon-icon dark:text-white" />
+                      {/if}
+                    </IconButton>
+                  </div>
+                {/snippet}
               </Checkbox>
             {/each}
           {/if}
@@ -258,7 +273,7 @@
         </div>
 
         {#if QUESTION_TYPE.TEXTAREA !== question.question_type.id}
-          <div class="flex items-center mt-3">
+          <div class="mt-3 flex items-center">
             <PrimaryButton
               disablePadding={true}
               className="p-2"
@@ -266,7 +281,7 @@
               onClick={handleAddOption(question.id)}
             >
               <AddFilledIcon size={24} class="carbon-icon dark:text-white" />
-              <p class="dark:text-white ml-2">
+              <p class="ml-2 dark:text-white">
                 {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.option')}
               </p>
             </PrimaryButton>

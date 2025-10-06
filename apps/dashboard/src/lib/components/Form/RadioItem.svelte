@@ -1,17 +1,32 @@
-<script>
+<script lang="ts">
   import TextField from '$lib/components/Form/TextField.svelte';
-  export let label = '';
-  export let value = '';
-  export let checked = false;
-  export let name = '';
-  export let isEditable = false;
-  export let disabled = false;
-  export let className = '';
-  export let onChange = () => {}; // This is to know if element is 'dirty'
+  interface Props {
+    label?: string;
+    value?: string;
+    checked?: boolean;
+    name?: string;
+    isEditable?: boolean;
+    disabled?: boolean;
+    className?: string;
+    onChange?: any; // This is to know if element is 'dirty'
+    iconbutton?: import('svelte').Snippet;
+  }
+
+  let {
+    label = $bindable(''),
+    value = '',
+    checked = false,
+    name = '',
+    isEditable = false,
+    disabled = false,
+    className = '',
+    onChange = () => {},
+    iconbutton
+  }: Props = $props();
 </script>
 
 <label
-  class="{className} inline-flex items-center w-full {disabled
+  class="{className} inline-flex w-full items-center {disabled
     ? 'cursor-not-allowed'
     : 'cursor-pointer'}"
 >
@@ -34,8 +49,8 @@
       />
     </div>
   {:else}
-    <span class="dark:text-white ml-2">{label}</span>
+    <span class="ml-2 dark:text-white">{label}</span>
   {/if}
 
-  <slot name="iconbutton" />
+  {@render iconbutton?.()}
 </label>

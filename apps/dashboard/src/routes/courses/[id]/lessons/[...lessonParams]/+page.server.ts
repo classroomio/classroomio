@@ -1,4 +1,4 @@
-export const load = ({ params = { id: '' } }) => {
+export const load = ({ params }) => {
   const { id: courseId, lessonParams = '' } = params;
   const splitparams = lessonParams.split('/');
 

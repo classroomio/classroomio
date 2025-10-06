@@ -1,13 +1,13 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import Box from '$lib/components/Box/index.svelte';
   import NewFeedModal from '$lib/components/Course/components/NewsFeed/NewFeedModal.svelte';
   import NewsFeedCard from '$lib/components/Course/components/NewsFeed/NewsFeedCard.svelte';
   import NewsFeedLoader from '$lib/components/Course/components/NewsFeed/NewsFeedLoader.svelte';
   import { isNewFeedModal, newsFeed } from '$lib/components/Course/components/NewsFeed/store';
   import { group } from '$lib/components/Course/store';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
+  import { CourseContainer } from '$lib/components/CourseContainer';
   import { PageBody, PageNav } from '$lib/components/Page';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
@@ -32,22 +32,28 @@
   import type { Feed } from '$lib/utils/types/feed';
   import type { CurrentOrg } from '$lib/utils/types/org';
   import PinFilled from 'carbon-icons-svelte/lib/PinFilled.svelte';
+  import { onMount } from 'svelte';
 
-  export let data;
+  let { data = $bindable() } = $props();
 
   let createdComment;
-  let edit = false;
-  let isLoading = false;
-  let editFeed: Feed;
-  let author = {
-    id: '',
-    username: '',
-    fullname: '',
-    avatar_url: ''
-  };
+  let edit = $state(false);
+  let isLoading = $state(false);
+  let editFeed: Feed | null = $state(null);
 
-  let query = new URLSearchParams($page.url.search);
+  let query = new URLSearchParams(page.url.search);
   let feedId = query.get('feedId') || '';
+
+  const author = $derived.by(() => {
+    const groupMember = $group.people.find((person) => person.profile_id === $profile.id);
+
+    return {
+      id: groupMember?.id || '',
+      username: $profile.username || '',
+      fullname: $profile.fullname || '',
+      avatar_url: $profile.avatar_url || ''
+    };
+  });
 
   const onEdit = (id: string, content: string) => {
     handleEditFeed(id, content);
@@ -199,10 +205,12 @@
         snackbar.error('snackbar.course.error.news_feed_fail');
       }
       if (data) {
-        $newsFeed = data.map((feedItem) => ({
-          ...feedItem,
-          isPinned: feedItem.is_pinned
-        }));
+        $newsFeed = data
+          .map((feedItem) => ({
+            ...feedItem,
+            isPinned: feedItem.is_pinned
+          }))
+          .sort((a, b) => Number(b.isPinned) - Number(a.isPinned));
       }
     } catch (error) {
       snackbar.error('snackbar.course.error.feed_fetch_error');
@@ -210,17 +218,6 @@
       isLoading = false;
     }
   };
-
-  function setAuthor(groups, profileId) {
-    const currentGroupMember = groups.people.find((person) => person.profile_id === profileId);
-
-    author = {
-      id: currentGroupMember?.id || '',
-      username: $profile.username || '',
-      fullname: $profile.fullname || '',
-      avatar_url: $profile.avatar_url || ''
-    };
-  }
 
   function getPageRoles(org: CurrentOrg) {
     const roles: number[] = [1, 2];
@@ -232,13 +229,12 @@
     return roles;
   }
 
-  $: initNewsFeed(data.courseId);
-
-  $: setAuthor($group, $profile.id);
-  $: $newsFeed = $newsFeed.sort((a, b) => Number(b.isPinned) - Number(a.isPinned));
+  onMount(() => {
+    initNewsFeed(data.courseId);
+  });
 </script>
 
-<CourseContainer bind:courseId={data.courseId}>
+<CourseContainer courseId={data.courseId}>
   <RoleBasedSecurity
     allowedRoles={getPageRoles($currentOrg)}
     onDenied={() => {
@@ -246,15 +242,17 @@
     }}
   >
     <PageNav title={$t('course.navItem.news_feed.heading')} disableSticky={true}>
-      <slot:fragment slot="widget">
-        <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <PrimaryButton
-            className="mr-2"
-            label={$t('course.navItem.news_feed.heading_button.title')}
-            onClick={() => ($isNewFeedModal.open = true)}
-          />
-        </RoleBasedSecurity>
-      </slot:fragment>
+      {#snippet widget()}
+        <slot:fragment>
+          <RoleBasedSecurity allowedRoles={[1, 2]}>
+            <PrimaryButton
+              className="mr-2"
+              label={$t('course.navItem.news_feed.heading_button.title')}
+              onClick={() => ($isNewFeedModal.open = true)}
+            />
+          </RoleBasedSecurity>
+        </slot:fragment>
+      {/snippet}
     </PageNav>
 
     <PageBody width="max-w-4xl px-3">

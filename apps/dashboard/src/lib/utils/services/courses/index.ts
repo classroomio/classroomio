@@ -237,7 +237,7 @@ export async function deleteCourse(courseId: Course['id']) {
   return await supabase.from('course').update({ status: 'DELETED' }).match({ id: courseId });
 }
 
-export function addGroupMember(member: any) {
+export function addGroupMember(member) {
   return supabase.from('groupmember').insert(member).select();
 }
 
@@ -245,7 +245,7 @@ export function addDefaultNewsFeed(feed) {
   return supabase.from('course_newsfeed').insert(feed);
 }
 
-export function updatedGroupMember(update: any, match: any) {
+export function updatedGroupMember(update, match) {
   return supabase.from('groupmember').update(update).match(match);
 }
 
@@ -324,8 +324,12 @@ export function fetchLesssonLanguageHistory(lessonId: string, locale: string, en
     .order('timestamp', { ascending: false });
 }
 
-export function createLesson(lesson: any) {
-  return supabase.from('lesson').insert(lesson).select();
+export async function createLesson(
+  lesson: Partial<Lesson>
+): Promise<{ data: Lesson[] | null; error: PostgrestError | null }> {
+  const { data, error } = await supabase.from('lesson').insert(lesson).select();
+
+  return { data, error };
 }
 export function createLessonSection(section: any) {
   return supabase.from('lesson_section').insert(section).select();
@@ -546,7 +550,7 @@ interface LooseObject {
 }
 
 export async function submitExercise(
-  answers: Array<string>,
+  answers: Record<string, string>,
   questions: Array<{ name: string; id: string }>,
   exerciseId: Exercise['id'],
   courseId: Course['id'],

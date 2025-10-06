@@ -16,10 +16,19 @@
   } from 'carbon-components-svelte';
   import { t } from '$lib/utils/functions/translations';
 
-  export let courses: Course[] = [];
-  export let emptyTitle = $t('courses.course_card.empty_title');
-  export let emptyDescription = $t('courses.course_card.empty_description');
-  export let isExplore = false;
+  interface Props {
+    courses?: Course[];
+    emptyTitle?: any;
+    emptyDescription?: any;
+    isExplore?: boolean;
+  }
+
+  let {
+    courses = [],
+    emptyTitle = $t('courses.course_card.empty_title'),
+    emptyDescription = $t('courses.course_card.empty_description'),
+    isExplore = false
+  }: Props = $props();
 
   function calcProgressRate(progressRate?: number, totalLessons?: number): number {
     if (!progressRate || !totalLessons) {
@@ -61,7 +70,7 @@
           <StructuredListCell head>
             {$t('courses.course_card.list_view.published')}
           </StructuredListCell>
-          <StructuredListCell head>{''}</StructuredListCell>
+          <StructuredListCell head></StructuredListCell>
         </StructuredListRow>
       </StructuredListHead>
       <StructuredListBody>

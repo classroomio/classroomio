@@ -7,7 +7,7 @@
   import { Column, Grid, Row } from 'carbon-components-svelte';
   import SectionTitle from '../SectionTitle.svelte';
 
-  let isRedirecting = false;
+  let isRedirecting = $state(false);
 
   async function onOpenBilling() {
     console.log({
@@ -49,7 +49,7 @@
       ><SectionTitle>{$t('settings.billing.sub_title')}</SectionTitle></Column
     >
     <Column sm={8} md={8} lg={8}>
-      <h4 class="dark:text-white lg:mt-0">{$t('settings.billing.manage')}</h4>
+      <h4 class="lg:mt-0 dark:text-white">{$t('settings.billing.manage')}</h4>
       {#if $isFreePlan}
         {$t('settings.billing.active')}
       {:else}

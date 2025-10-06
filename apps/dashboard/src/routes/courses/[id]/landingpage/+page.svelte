@@ -4,15 +4,16 @@
   import { course } from '$lib/components/Course/store';
   import type { Course, Lesson, LessonSection } from '$lib/utils/types';
   import { lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { CourseContainer } from '$lib/components/CourseContainer';
 
   import CourseLandingPage from '$lib/components/CourseLandingPage/index.svelte';
   import Editor from '$lib/components/CourseLandingPage/components/Editor/index.svelte';
 
-  export let data;
+  let { data } = $props();
 
   const { courseId } = data;
 
-  let courseData: Course = $course;
+  let courseData: Course = $state($course);
 
   function setCourseData(course: Course, lessons: Lesson[], lesson_section: LessonSection[]) {
     courseData = { ...course, lessons, lesson_section };
@@ -22,20 +23,30 @@
     $course = _courseData;
   }
 
-  $: setCourseData($course, $lessons, $lessonSections);
-  $: dev && console.log('courseData changed', courseData);
+  $effect(() => {
+    console.log('$course', $course);
+  });
+
+  $effect(() => {
+    setCourseData($course, $lessons, $lessonSections);
+  });
+  $effect(() => {
+    dev && console.log('courseData changed', courseData);
+  });
 </script>
 
-<div
-  class="absolute flex inset-0 z-50 bg-white"
-  in:fly={{ y: 500, duration: 500 }}
-  out:fly={{ y: 500, duration: 500 }}
->
-  <Editor {courseId} bind:course={courseData} {syncCourseStore} />
-  <div class="rightBar">
-    <CourseLandingPage bind:courseData editMode={true} />
+<CourseContainer {courseId} renderOnlyChildren={true}>
+  <div
+    class="absolute inset-0 z-50 flex bg-white"
+    in:fly={{ y: 500, duration: 500 }}
+    out:fly={{ y: 500, duration: 500 }}
+  >
+    <Editor {courseId} bind:course={courseData} {syncCourseStore} />
+    <div class="rightBar">
+      <CourseLandingPage bind:courseData editMode={true} />
+    </div>
   </div>
-</div>
+</CourseContainer>
 
 <style>
   .rightBar {

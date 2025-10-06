@@ -14,8 +14,8 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import { classroomio } from '$lib/utils/services/api';
 
-  let isLoading = false;
-  let isCourseComplete = false;
+  let isLoading = $state(false);
+  let isCourseComplete = $state(false);
   let progress: ProfileCourseProgress | undefined;
 
   const downLoadCertificate = async () => {
@@ -72,12 +72,16 @@
     hasUserCompletedCourse();
   });
 
-  $: title = isCourseComplete
-    ? 'course.navItem.certificates.unlocked_certificate'
-    : 'course.navItem.certificates.complete_to_download_title';
-  $: subtitle = isCourseComplete
-    ? 'course.navItem.certificates.unlocked_certificate_subtitle'
-    : 'course.navItem.certificates.complete_to_download_subtitle';
+  let title = $derived(
+    isCourseComplete
+      ? 'course.navItem.certificates.unlocked_certificate'
+      : 'course.navItem.certificates.complete_to_download_title'
+  );
+  let subtitle = $derived(
+    isCourseComplete
+      ? 'course.navItem.certificates.unlocked_certificate_subtitle'
+      : 'course.navItem.certificates.complete_to_download_subtitle'
+  );
 </script>
 
 <Box>

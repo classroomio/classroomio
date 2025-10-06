@@ -13,13 +13,17 @@
   import { isFreePlan } from '$lib/utils/store/org';
   import { lesson } from '../../store/lessons';
 
-  export let lessonId = '';
+  interface Props {
+    lessonId?: string;
+  }
 
-  let fileInput: HTMLInputElement;
-  let selectedFile: File | null = null;
-  let dragOver = false;
-  let errorTimeout: NodeJS.Timeout | null = null;
-  let isDisabled = false;
+  let { lessonId = '' }: Props = $props();
+
+  let fileInput: HTMLInputElement = $state();
+  let selectedFile: File | null = $state(null);
+  let dragOver = $state(false);
+  let errorTimeout: NodeJS.Timeout | null = $state(null);
+  let isDisabled = $state(false);
 
   const ALLOWED_TYPES = [
     'application/pdf',
@@ -188,19 +192,23 @@
   }
 
   // Auto-clear error after 5 seconds
-  $: if ($lessonDocUpload.error) {
-    if (errorTimeout) clearTimeout(errorTimeout);
-    errorTimeout = setTimeout(() => {
-      $lessonDocUpload.error = null;
-    }, 5000);
-  }
+  $effect(() => {
+    if ($lessonDocUpload.error) {
+      if (errorTimeout) clearTimeout(errorTimeout);
+      errorTimeout = setTimeout(() => {
+        $lessonDocUpload.error = null;
+      }, 5000);
+    }
+  });
 
   // Clear error timeout when component is destroyed
   onDestroy(() => {
     if (errorTimeout) clearTimeout(errorTimeout);
   });
 
-  $: isDisabled = $lessonDocUpload.isUploading || $isFreePlan;
+  $effect(() => {
+    isDisabled = $lessonDocUpload.isUploading || $isFreePlan;
+  });
 </script>
 
 <UpgradeBanner className="mb-3" onClick={() => ($lessonDocUpload.isModalOpen = false)}>
@@ -218,24 +226,25 @@
   </div>
 
   <!-- File Upload Area -->
-  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     class="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center transition-colors {isDisabled &&
       'opacity-50 hover:cursor-not-allowed'} {dragOver
       ? 'border-blue-500 bg-blue-50'
       : 'hover:border-gray-400'}"
-    on:drop={handleDrop}
-    on:dragover={handleDragOver}
-    on:dragleave={handleDragLeave}
+    ondrop={handleDrop}
+    ondragover={handleDragOver}
+    ondragleave={handleDragLeave}
   >
     {#if selectedFile}
+      {@const SvelteComponent = getFileIcon(selectedFile.type)}
       <div class="mb-4 flex items-center justify-center space-x-3">
-        <svelte:component this={getFileIcon(selectedFile.type)} size={32} class="text-blue-600" />
+        <SvelteComponent size={32} class="text-blue-600" />
         <div class="text-left">
           <p class="font-medium text-gray-900">{selectedFile.name}</p>
           <p class="text-sm text-gray-500">{formatFileSize(selectedFile.size)}</p>
         </div>
-        <button on:click={removeSelectedFile} class="rounded-full p-1 hover:bg-gray-200">
+        <button onclick={removeSelectedFile} class="rounded-full p-1 hover:bg-gray-200">
           <CloseIcon size={20} class="text-gray-500" />
         </button>
       </div>
@@ -252,7 +261,7 @@
         disabled={isDisabled}
         type="file"
         accept=".pdf,.docx,.doc"
-        on:change={handleFileSelect}
+        onchange={handleFileSelect}
         class="hidden"
       />
       <div class="flex justify-center">

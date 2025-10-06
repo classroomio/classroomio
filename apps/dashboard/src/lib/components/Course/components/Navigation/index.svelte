@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { browser } from '$app/environment';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
@@ -20,8 +20,12 @@
   import { COURSE_TYPE, COURSE_VERSION, type Lesson } from '$lib/utils/types';
   import { NAV_IDS } from './constants';
 
-  export let path: string;
-  export let isStudent: boolean = false;
+  interface Props {
+    path: string;
+    isStudent?: boolean;
+  }
+
+  let { path, isStudent = false }: Props = $props();
 
   interface Section {
     id: string;
@@ -42,12 +46,12 @@
     show?: () => boolean;
   }
 
-  let resize = false;
+  let resize = $state(false);
   let isDragging = false;
   let startX: number;
   let initialWidth: number;
-  let sidebarRef: HTMLElement;
-  let menuContentRef: HTMLUListElement;
+  let sidebarRef: HTMLElement = $state();
+  let menuContentRef: HTMLUListElement = $state();
 
   const toggleSidebar = (defaultValue?: boolean) => {
     $sideBar.hidden = defaultValue ?? !$sideBar.hidden;
@@ -61,7 +65,7 @@
     };
   }
 
-  let navItems: NavItem[] = [];
+  let navItems: NavItem[] = $state([]);
 
   function handleCursor(event: MouseEvent) {
     if (!resize && sidebarRef) {
@@ -146,7 +150,7 @@
     }
   });
 
-  $: {
+  $effect(() => {
     navItems = [
       {
         id: NAV_IDS.NEWS_FEED,
@@ -170,7 +174,7 @@
           label: section.title,
           isExpanded: true
         })),
-        isExpanded: isStudent ? true : $page.url.pathname.includes('/lessons')
+        isExpanded: isStudent ? true : page.url.pathname.includes('/lessons')
       },
       {
         id: NAV_IDS.ANALYTICS,
@@ -265,7 +269,7 @@
         }
       }
     ];
-  }
+  });
 </script>
 
 <aside
@@ -296,7 +300,7 @@
             name={navItem.id}
             label={navItem.label}
             handleClick={handleMainGroupClick(navItem.to)}
-            isGroupActive={(path || $page.url.pathname) === navItem.to}
+            isGroupActive={(path || page.url.pathname) === navItem.to}
             total={navItem.isLesson ? ($lessons || []).length : 0}
             isLoading={!$course.id}
             isLesson={navItem.isLesson}
@@ -312,15 +316,15 @@
                     ? 'cursor-not-allowed'
                     : ''}"
                   href={isStudent && !item.is_unlocked
-                    ? $page.url.pathname
+                    ? page.url.pathname
                     : getLessonsRoute($course.id, item.id)}
-                  on:click={toggleSidebarOnMobile}
+                  onclick={toggleSidebarOnMobile}
                   aria-disabled={!item.is_unlocked}
                   title={item.title}
                 >
                   <div
                     class="flex items-center px-4 py-2 {NavClasses.item} {(
-                      path || $page.url.pathname
+                      path || page.url.pathname
                     ).includes(item.id) && NavClasses.active}"
                   >
                     <TextChip
@@ -330,7 +334,7 @@
                       shape="rounded-full"
                     />
                     <span class="line-clamp-2 w-[85%] text-ellipsis">{item.title}</span>
-                    <span class="grow" />
+                    <span class="grow"></span>
                     {#if !item.is_unlocked}
                       <span class="text-md ml-2" title="This lesson is locked.">
                         <LockedIcon class="carbon-icon dark:text-white" />
@@ -363,19 +367,19 @@
                         ? 'cursor-not-allowed'
                         : ''}"
                       href={isStudent && !item.is_unlocked
-                        ? $page.url.pathname
+                        ? page.url.pathname
                         : getLessonsRoute($course.id, item.id)}
-                      on:click={toggleSidebarOnMobile}
+                      onclick={toggleSidebarOnMobile}
                       aria-disabled={!item.is_unlocked}
                       title={item.title}
                     >
                       <div
                         class="flex items-center px-4 py-2 {NavClasses.item} {(
-                          path || $page.url.pathname
+                          path || page.url.pathname
                         ).includes(item.id) && NavClasses.active}"
                       >
                         <span class="line-clamp-2 w-[85%] text-ellipsis">{item.title}</span>
-                        <span class="grow" />
+                        <span class="grow"></span>
                         {#if !item.is_unlocked}
                           <span class="text-md ml-2" title="This lesson is locked.">
                             <LockedIcon class="carbon-icon dark:text-white" />

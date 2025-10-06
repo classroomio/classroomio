@@ -1,10 +1,9 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
   import Box from '$lib/components/Box/index.svelte';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
   import { getLectureNo } from '$lib/components/Course/function.js';
   import { course, group } from '$lib/components/Course/store';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
+  import { CourseContainer } from '$lib/components/CourseContainer';
   import { PageBody, PageNav } from '$lib/components/Page';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { ROLE } from '$lib/utils/constants/roles';
@@ -26,7 +25,7 @@
   } from 'carbon-components-svelte';
   import AudioConsoleIcon from 'carbon-icons-svelte/lib/AudioConsole.svelte';
 
-  export let data;
+  let { data = $bindable() } = $props();
 
   interface CourseData {
     attendance: {
@@ -37,8 +36,8 @@
     }[];
   }
 
-  let students: GroupPerson[] = [];
-  let searchValue = '';
+  let students: GroupPerson[] = $state([]);
+  let searchValue = $state('');
 
   function setAttendance(courseData: CourseData) {
     for (const attendanceItem of courseData.attendance) {
@@ -129,14 +128,18 @@
     }
   }
 
-  $: students = $globalStore.isStudent
-    ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
-    : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
+  $effect(() => {
+    students = $globalStore.isStudent
+      ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
+      : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
+  });
 
-  $: browser && $course.id && firstRender($course.id);
+  $effect(() => {
+    $course.id && firstRender($course.id);
+  });
 </script>
 
-<CourseContainer bind:courseId={data.courseId}>
+<CourseContainer courseId={data.courseId}>
   <PageNav title={$t('course.navItem.attendance.title')} />
   <PageBody width="w-full max-w-6xl md:w-11/12">
     <section class="mx-2 my-5 flex items-center lg:mx-9">
@@ -171,7 +174,7 @@
             <StructuredListCell head class="text-primary-600 py-3"
               >{$t('course.navItem.attendance.student')}</StructuredListCell
             >
-            {#each $lessons as lesson, index}
+            {#each $lessons as _lesson, index}
               <StructuredListCell head class="text-primary-600 py-3"
                 >{$t('course.navItem.attendance.lesson')} 0{getLectureNo(
                   index + 1

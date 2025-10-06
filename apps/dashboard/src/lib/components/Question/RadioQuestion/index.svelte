@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { preventDefault } from 'svelte/legacy';
+
   import CodeSnippet from '$lib/components/CodeSnippet/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -9,32 +11,58 @@
   import ReasonBox from '../ReasonBox.svelte';
   import QuestionTitle from '../QuestionTitle.svelte';
 
-  export let title = '';
-  export let index = 1;
-  export let code = '';
-  export let name = '';
-  export let options: { value: string; label: string; is_correct: boolean }[] = [];
-  export let onSubmit = (a: string, b: string[]) => {};
-  export let onPrevious = () => {};
-  export let defaultValue = '';
-  export let disablePreviousButton = false;
-  export let disabled = false;
-  export let isPreview = false;
-  export let nextButtonProps = {
-    isDisabled: false,
-    isActive: false
-  };
-  export let isLast = false;
-  export let grade: number;
-  export let gradeMax = 0;
-  export let disableGrading = false;
-  export let disableOptContainerMargin = false;
-  export let isGradeWithAI = false;
-  export let reason;
-  export let isLoading = false;
-  export let hideGrading = false;
+  interface Props {
+    title?: string;
+    index?: number;
+    code?: string;
+    name?: string;
+    options?: { value: string; label: string; is_correct: boolean }[];
+    onSubmit?: any;
+    onPrevious?: any;
+    defaultValue?: string;
+    disablePreviousButton?: boolean;
+    disabled?: boolean;
+    isPreview?: boolean;
+    nextButtonProps?: any;
+    isLast?: boolean;
+    grade: number;
+    gradeMax?: number;
+    disableGrading?: boolean;
+    disableOptContainerMargin?: boolean;
+    isGradeWithAI?: boolean;
+    reason: any;
+    isLoading?: boolean;
+    hideGrading?: boolean;
+  }
 
-  let gradeWithAI = false;
+  let {
+    title = '',
+    index = 1,
+    code = '',
+    name = '',
+    options = [],
+    onSubmit = (a: string, b: string[]) => {},
+    onPrevious = () => {},
+    defaultValue = '',
+    disablePreviousButton = false,
+    disabled = false,
+    isPreview = false,
+    nextButtonProps = {
+      isDisabled: false,
+      isActive: false
+    },
+    isLast = false,
+    grade = $bindable(),
+    gradeMax = 0,
+    disableGrading = false,
+    disableOptContainerMargin = false,
+    isGradeWithAI = false,
+    reason,
+    isLoading = false,
+    hideGrading = false
+  }: Props = $props();
+
+  let gradeWithAI = $state(false);
 
   function getRadioVal(form, name): string {
     let val;
@@ -81,15 +109,15 @@
     grade = 0;
   }
 
-  $: gradeWithAI = isGradeWithAI;
+  $effect(() => {
+    gradeWithAI = isGradeWithAI;
+  });
 </script>
 
-<form on:submit|preventDefault={handleFormSubmit}>
+<form onsubmit={preventDefault(handleFormSubmit)}>
   <div class="flex items-center justify-between">
     <HtmlRender className="mt-4 {typeof grade === 'number' && 'w-4/5'}" disableMaxWidth>
-      <svelte:fragment slot="content">
-        <QuestionTitle {index} {title} />
-      </svelte:fragment>
+      <QuestionTitle {index} {title} />
     </HtmlRender>
     {#if !hideGrading}
       <Grade {gradeMax} bind:grade {disableGrading} />
@@ -103,7 +131,7 @@
   <div class={disableOptContainerMargin ? '' : 'ml-4'}>
     {#each options as option}
       <button
-        class="cursor-pointer text-left my-2 border-2 border-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-neutral-800 w-full {getValidationClassName(
+        class="my-2 w-full cursor-pointer rounded-md border-2 border-gray-300 text-left hover:bg-gray-200 dark:hover:bg-neutral-800 {getValidationClassName(
           option
         )}"
         type="button"
@@ -124,7 +152,7 @@
   {/if}
 
   {#if !isPreview}
-    <div class="mt-3 flex items-center justify-between w-full">
+    <div class="mt-3 flex w-full items-center justify-between">
       <PrimaryButton
         onClick={handlePrevious}
         label={$t('course.navItem.lessons.exercises.all_exercises.previous')}

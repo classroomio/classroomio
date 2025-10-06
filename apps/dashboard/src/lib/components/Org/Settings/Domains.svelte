@@ -27,23 +27,23 @@
   import type { CurrentOrg } from '$lib/utils/types/org';
   import SectionTitle from '../SectionTitle.svelte';
 
-  let siteName = '';
-  let customDomain = '';
-  let customCode = '';
-  let favicon = '';
-  let isDomainValid = false;
-  let isLoading = false;
-  let isCustomDomainLoading = false;
-  let isRefreshing = false;
+  let siteName = $state('');
+  let customDomain = $state('');
+  let customCode = $state('');
+  let favicon = $state('');
+  let isDomainValid = $state(false);
+  let isLoading = $state(false);
+  let isCustomDomainLoading = $state(false);
+  let isRefreshing = $state(false);
 
   type Error = {
     siteName: string;
     customDomain: string;
   };
-  let errors: Error = {
+  let errors: Error = $state({
     siteName: '',
     customDomain: ''
-  };
+  });
 
   async function handleSaveSiteName() {
     errors = updateOrgSiteNameValidation(siteName) as Error;
@@ -204,10 +204,16 @@
     return details.subdomain;
   }
 
-  $: setDefaults($currentOrg);
-  $: resetErrors(siteName, customDomain);
+  $effect(() => {
+    setDefaults($currentOrg);
+  });
+  $effect(() => {
+    resetErrors(siteName, customDomain);
+  });
 
-  $: isDomainValid = isValidDomain(sanitizeDomain(customDomain), { subdomain: true });
+  $effect(() => {
+    isDomainValid = isValidDomain(sanitizeDomain(customDomain), { subdomain: true });
+  });
 </script>
 
 <Grid class="mt-5 w-full rounded border border-gray-200 dark:border-neutral-600">

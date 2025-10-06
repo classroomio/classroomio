@@ -30,14 +30,14 @@
       'border-style': 'dashed'
     }
   }}
-  on:consider={handleDndConsider}
-  on:finalize={handleDndFinalize}
-  class="w-fit flex gap-1 md:gap-3 p-1"
+  onconsider={handleDndConsider}
+  onfinalize={handleDndFinalize}
+  class="flex w-fit gap-1 p-1 md:gap-3"
 >
   {#each $settings.tabs as item (item.id)}
     <div
       animate:flip={{ duration: flipDurationMs }}
-      class="flex items-center justify-start text-center text-xs md:text-base gap-1 md:gap-2 dark:text-white bg-slate-100 dark:bg-slate-700 p-2 rounded-md"
+      class="flex items-center justify-start gap-1 rounded-md bg-slate-100 p-2 text-center text-xs md:gap-2 md:text-base dark:bg-slate-700 dark:text-white"
     >
       <Draggable size={16} />
       {$t(item.name)}

@@ -32,34 +32,36 @@
     options: QuizOption[];
   }
 
-  export let data;
+  let { data } = $props();
   const { quizId } = data;
 
   // Questionnaire State
-  let currentQuestion: QuizQuestion = $quizStore.questions[0] || {
-    id: 0,
-    label: '',
-    type: 'multichoice',
-    options: []
-  };
+  let currentQuestion: QuizQuestion = $state(
+    $quizStore.questions[0] || {
+      id: 0,
+      label: '',
+      type: 'multichoice',
+      options: []
+    }
+  );
 
   // Behavioural State
-  let openPreview = false;
-  let type = 'multichoice';
+  let openPreview = $state(false);
+  let type = $state('multichoice');
   let errors: Array<{
     isLabelEmpty: boolean;
     hasOneAnswer: boolean;
     id: number;
     options: Array<{ id: number; error: boolean }>;
-  }> = [];
+  }> = $state([]);
   let currentError: {
     isLabelEmpty?: boolean;
     hasOneAnswer?: boolean;
     id?: number;
     options?: Array<{ id: number; error: boolean }>;
-  } = {};
-  let isFocused = false;
-  let selectEl: Select | null = null;
+  } = $state({});
+  let isFocused = $state(false);
+  let selectEl: Select | null = $state(null);
 
   function activeClass(q, cq) {
     if (q.id === cq.id) {
@@ -255,11 +257,11 @@
               question,
               currentQuestion
             )}"
-            on:click={() => {
+            onclick={() => {
               currentQuestion = question;
               type = question.type;
             }}
-            on:keydown={(e) => {
+            onkeydown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 currentQuestion = question;
                 type = question.type;
@@ -412,8 +414,8 @@
               tabindex="0"
               class="flex h-full w-full flex-col-reverse rounded-md border"
               style="background: url({themeImages[_theme.id]?.card});"
-              on:click={() => ($quizStore.theme = _theme.id)}
-              on:keydown={(e) => {
+              onclick={() => ($quizStore.theme = _theme.id)}
+              onkeydown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   $quizStore.theme = _theme.id;
                 }

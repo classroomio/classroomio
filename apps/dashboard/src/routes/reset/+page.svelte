@@ -12,13 +12,13 @@
   import AuthUI from '$lib/components/AuthUI/index.svelte';
 
   let supabase = getSupabase();
-  let fields = Object.assign({}, RESET_FIELDS);
-  let loading = false;
+  let fields = $state(Object.assign({}, RESET_FIELDS));
+  let loading = $state(false);
   let success = false;
-  let errors = {};
-  let submitError;
-  let disableSubmit = false;
-  let formRef;
+  let errors = $state({});
+  let submitError = $state();
+  let disableSubmit = $state(false);
+  let formRef = $state();
 
   async function handleSubmit(e) {
     errors = resetValidation(fields);
@@ -46,8 +46,12 @@
     }
   }
 
-  $: errors.confirmPassword = getConfirmPasswordError(fields);
-  $: disableSubmit = getDisableSubmit(fields);
+  $effect(() => {
+    errors.confirmPassword = getConfirmPasswordError(fields);
+  });
+  $effect(() => {
+    disableSubmit = getDisableSubmit(fields);
+  });
 </script>
 
 <svelte:head>
@@ -64,8 +68,8 @@
   bind:formRef
 >
   <div class="mt-4 w-full">
-    <h3 class="dark:text-white text-xl font-semibold my-3">New Password</h3>
-    <p class="dark:text-white text-sm mb-6">Enter your new password details</p>
+    <h3 class="my-3 text-xl font-semibold dark:text-white">New Password</h3>
+    <p class="mb-6 text-sm dark:text-white">Enter your new password details</p>
     <TextField
       label="Your Password"
       bind:value={fields.password}
@@ -94,7 +98,7 @@
     {/if}
   </div>
 
-  <div class="my-4 w-full flex justify-end items-center">
+  <div class="my-4 flex w-full items-center justify-end">
     <PrimaryButton
       label="Reset Password"
       type="submit"

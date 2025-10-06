@@ -16,23 +16,40 @@
   import { onMount } from 'svelte';
   import { addNewsfeedCommentValidation } from '$lib/utils/functions/validator';
 
-  export let feed: Feed;
-  export let editFeed: Feed;
-  export let author: Author;
-  export let edit = false;
-  export let deleteFeed = (arg: string) => {};
-  export let deleteComment = (arg: string) => {};
-  export let addNewComment = (arg1: string, arg2: string, arg3: string) => {};
-  export let addNewReaction = (arg1: string, arg2: string, arg3: string) => {};
-  export let onPin = (feedId: Feed['id'], isPinned: Feed['isPinned']) => {};
-  export let isActive = false;
+  interface Props {
+    feed: Feed;
+    editFeed: Feed | null;
+    author: Author;
+    edit?: boolean;
+    deleteFeed?: any;
+    deleteComment?: any;
+    addNewComment?: any;
+    addNewReaction?: any;
+    onPin?: any;
+    isActive?: boolean;
+  }
 
-  let comment = '';
-  let areCommentsExpanded = false;
-  let isDeleteFeedModal = false;
+  let {
+    feed,
+    editFeed = $bindable(),
+    author,
+    edit = $bindable(false),
+    deleteFeed = (_arg: string) => {},
+    deleteComment = (_arg: string) => {},
+    addNewComment = (_arg1: string, _arg2: string, _arg3: string) => {},
+    addNewReaction = (_arg1: string, _arg2: string, _arg3: string) => {},
+    onPin = (_feedId: Feed['id'], _isPinned: Feed['isPinned']) => {},
+    isActive = false
+  }: Props = $props();
+
+  let comment = $state('');
+  let areCommentsExpanded = $state(false);
+  let isDeleteFeedModal = $state(false);
   let errors: {
     newComment: string;
-  };
+  } = $state({
+    newComment: ''
+  });
 
   let reactions = {
     smile: '😀',
@@ -101,18 +118,18 @@
 <div
   id={feed.id}
   class="flex flex-col gap-5 {isActive
-    ? 'border-2 border-primary-700'
-    : 'border border-gray-200 dark:border-neutral-600'} rounded-md mb-7 max-w-3xl"
+    ? 'border-primary-700 border-2'
+    : 'border border-gray-200 dark:border-neutral-600'} mb-7 max-w-3xl rounded-md"
 >
   <section>
     <div class="p-3 pb-0">
-      <div class="flex justify-between mb-2">
+      <div class="mb-2 flex justify-between">
         <span class="flex items-center gap-3">
-          <div class="w-9 h-9">
+          <div class="h-9 w-9">
             <img
               src={feed.author?.profile?.avatar_url}
               alt="users banner"
-              class="w-full h-full rounded-full object-cover"
+              class="h-full w-full rounded-full object-cover"
             />
           </div>
           <span>
@@ -133,11 +150,9 @@
       </div>
       {#if !isHtmlValueEmpty(feed.content)}
         <HtmlRender className="text-sm font-medium w-[80%] mb-4">
-          <svelte:fragment slot="content">
-            <div>
-              {@html feed.content}
-            </div>
-          </svelte:fragment>
+          <div>
+            {@html feed.content}
+          </div>
         </HtmlRender>
       {/if}
     </div>
@@ -147,10 +162,10 @@
         {#each Object.keys(feed.reaction) as reactionType}
           {#if reactions[reactionType]}
             <button
-              on:click={() => handleAddNewReaction(reactionType)}
+              onclick={() => handleAddNewReaction(reactionType)}
               class={`flex items-center transition ${
                 feed.reaction[reactionType].length >= 1 &&
-                `${getClassIfSelectedByAuthor(reactionType)} dark:text-black border rounded-full`
+                `${getClassIfSelectedByAuthor(reactionType)} rounded-full border dark:text-black`
               }`}
             >
               <div class="text-[15px]">{reactions[reactionType]}</div>
@@ -164,14 +179,14 @@
     </div>
   </section>
 
-  <section class="border-t border-gray-200 dark:border-neutral-600 p-3">
+  <section class="border-t border-gray-200 p-3 dark:border-neutral-600">
     {#if feed.comment.length > 0}
       <button
-        on:click={expandComment}
-        class="flex flex-row items-center gap-1 -mx-2 px-2 rounded-md"
+        onclick={expandComment}
+        class="-mx-2 flex flex-row items-center gap-1 rounded-md px-2"
       >
         <UserMultiple size={16} />
-        <p class="text-sm py-2">
+        <p class="py-2 text-sm">
           {pluralize('comment', feed.comment.length, true)}
         </p>
       </button>
@@ -179,13 +194,13 @@
     <div>
       {#each feed.comment as comment, index}
         {#if comment.content && (areCommentsExpanded || index === feed.comment.length - 1)}
-          <div class="group flex justify-between items-center py-2">
+          <div class="group flex items-center justify-between py-2">
             <span class="flex items-center gap-3">
-              <div class="w-9 h-9">
+              <div class="h-9 w-9">
                 <img
                   src={comment.author?.profile?.avatar_url}
                   alt="users banner"
-                  class="w-full h-full rounded-full object-cover"
+                  class="h-full w-full rounded-full object-cover"
                 />
               </div>
               <span>
@@ -211,24 +226,24 @@
       {/each}
     </div>
     <div class="flex items-center justify-between gap-2">
-      <div class="w-7 h-7">
+      <div class="h-7 w-7">
         <img
           src={author.avatar_url}
           alt="users banner"
-          class="w-full h-full rounded-full object-cover"
+          class="h-full w-full rounded-full object-cover"
         />
       </div>
       <div class="flex-1">
         <input
           type="text"
           bind:value={comment}
-          on:keydown={handleAddNewComment}
+          onkeydown={handleAddNewComment}
           placeholder="Add class comment"
-          class="w-full bg-transparent border border-gray-200 dark:border-neutral-600 rounded-3xl"
+          class="w-full rounded-3xl border border-gray-200 bg-transparent dark:border-neutral-600"
           required
         />
       </div>
-      <button on:click={handleAddNewComment}>
+      <button onclick={handleAddNewComment}>
         <Send size={24} />
       </button>
     </div>

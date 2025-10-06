@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import ComingSoon from '$lib/components/ComingSoon/index.svelte';
@@ -30,10 +30,10 @@
   } from 'carbon-components-svelte';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
 
-  let people: Array<GroupPerson> = [];
-  let member: { id?: string; email?: string; profile?: { email: string } } = {};
-  let filterBy: ProfileRole = ROLES[0];
-  let searchValue = '';
+  let people: Array<GroupPerson> = $state([]);
+  let member: { id?: string; email?: string; profile?: { email: string } } = $state({});
+  let filterBy: ProfileRole = $state(ROLES[0]);
+  let searchValue = $state('');
 
   function filterPeople(_query, people) {
     const query = _query.toLowerCase();
@@ -80,10 +80,12 @@
   }
 
   function gotoPerson(person) {
-    goto(`${$page.url.href}/${person.profile_id}`);
+    goto(`${page.url.href}/${person.profile_id}`);
   }
 
-  $: sortAndFilterPeople($group.people, filterBy);
+  $effect(() => {
+    sortAndFilterPeople($group.people, filterBy);
+  });
 </script>
 
 <InvitationModal />
@@ -117,7 +119,7 @@
       </select> -->
     </div>
     <RoleBasedSecurity allowedRoles={[1, 2]}>
-      <p class="hidden w-20 text-lg dark:text-white lg:block" />
+      <p class="hidden w-20 text-lg lg:block dark:text-white"></p>
     </RoleBasedSecurity>
   </div>
 
@@ -136,7 +138,7 @@
           >{$t('course.navItem.people.action')}</StructuredListCell
         >
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <p class="hidden w-20 text-lg dark:text-white lg:block" />
+          <p class="hidden w-20 text-lg lg:block dark:text-white"></p>
         </RoleBasedSecurity>
       </StructuredListRow>
     </StructuredListHead>

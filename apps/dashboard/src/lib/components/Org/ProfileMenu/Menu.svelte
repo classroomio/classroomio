@@ -52,7 +52,7 @@
     <a
       href={`${!$globalStore.isOrgSite ? $currentOrgPath : '/lms'}/settings`}
       class="flex items-center justify-between hover:no-underline"
-      on:click={closeMenu}
+      onclick={closeMenu}
     >
       <span class="flex max-w-[70%] items-center gap-2">
         <img src={$profile.avatar_url} alt="profile" class="h-8 w-8 rounded-full" />
@@ -72,7 +72,7 @@
       <a
         href={`${$currentOrgPath}/settings?tab=org`}
         class="flex items-center justify-between hover:no-underline"
-        on:click={closeMenu}
+        onclick={closeMenu}
       >
         <span class="flex max-w-[70%] items-center gap-2">
           {#if $currentOrg.avatar_url && $currentOrg.name}
@@ -110,7 +110,7 @@
       href="https://classroomio.com/tools/progress"
       target="_blank"
       class="flex items-center gap-2"
-      on:click={closeMenu}
+      onclick={closeMenu}
     >
       <img src="/progress.svg" alt="progress" class="h-6 w-6 rounded-full" />
       <p class="text-sm font-semibold">{$t('profileMenu.progress')}</p>
@@ -119,7 +119,7 @@
       href="https://classroomio.com/tools/activity-stopwatch"
       target="_blank"
       class=" flex items-center gap-2"
-      on:click={closeMenu}
+      onclick={closeMenu}
     >
       <img src="/timer.svg" alt="timer" class="h-6 w-6 rounded-full" />
       <p class="text-sm font-semibold">{$t('profileMenu.timer')}</p>
@@ -128,14 +128,14 @@
       href="https://classroomio.com/tools/tic-tac-toe"
       target="_blank"
       class=" flex items-center gap-2"
-      on:click={closeMenu}
+      onclick={closeMenu}
     >
       <img src="/tictac.svg" alt="tic_tac_toe" class="h-6 w-6 rounded-full" />
       <p class="text-sm font-semibold">{$t('profileMenu.tic_tac')}</p>
     </a>
     <a
       href="https://classroomio.com/tools"
-      on:click={closeMenu}
+      onclick={closeMenu}
       target="_blank"
       class="ml-auto flex w-fit items-center justify-end"
     >
@@ -150,7 +150,7 @@
       <a
         href="https://classroomio.com/roadmap"
         target="_blank"
-        on:click={closeMenu}
+        onclick={closeMenu}
         class="flex items-center gap-2 hover:no-underline"
       >
         <NewTab />
@@ -159,7 +159,7 @@
       <a
         href="https://classroomio.com/blog/launch-week"
         target="_blank"
-        on:click={closeMenu}
+        onclick={closeMenu}
         class="flex items-center gap-2 hover:no-underline"
       >
         <Rocket />
@@ -168,7 +168,7 @@
     </div>
   {/if}
 
-  <button on:click={logout} class="w-full space-y-4 pt-3">
+  <button onclick={logout} class="w-full space-y-4 pt-3">
     <span class="flex items-center gap-2">
       <Logout />
       <p class="text-sm font-semibold">{$t('settings.profile.logout')}</p>

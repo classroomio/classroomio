@@ -5,53 +5,63 @@
   import { ScaleTypes } from '@carbon/charts-svelte';
   import '@carbon/charts-svelte/styles.css';
 
-  export let courseAnalytics: CourseAnalytics | null = null;
+  interface Props {
+    courseAnalytics?: CourseAnalytics | null;
+  }
 
-  let BarChartSimple: any;
+  let { courseAnalytics = null }: Props = $props();
+
+  let BarChartSimple: any = $state();
 
   // Transform data for progress distribution chart
-  $: progressChartData = courseAnalytics?.students
-    ? [
-        {
-          group: '80%+ Progress',
-          value: courseAnalytics.students.filter((s) => s.progressPercentage >= 80).length
-        },
-        {
-          group: '60-79% Progress',
-          value: courseAnalytics.students.filter(
-            (s) => s.progressPercentage >= 60 && s.progressPercentage < 80
-          ).length
-        },
-        {
-          group: 'Below 60% Progress',
-          value: courseAnalytics.students.filter((s) => s.progressPercentage < 60).length
-        }
-      ]
-    : [];
+  let progressChartData = $derived(
+    courseAnalytics?.students
+      ? [
+          {
+            group: '80%+ Progress',
+            value: courseAnalytics.students.filter((s) => s.progressPercentage >= 80).length
+          },
+          {
+            group: '60-79% Progress',
+            value: courseAnalytics.students.filter(
+              (s) => s.progressPercentage >= 60 && s.progressPercentage < 80
+            ).length
+          },
+          {
+            group: 'Below 60% Progress',
+            value: courseAnalytics.students.filter((s) => s.progressPercentage < 60).length
+          }
+        ]
+      : []
+  );
 
   // Transform data for grade distribution chart
-  $: gradeChartData = courseAnalytics?.students
-    ? [
-        {
-          group: '90%+ Grade',
-          value: courseAnalytics.students.filter((s) => s.averageGrade >= 90).length
-        },
-        {
-          group: '80-89% Grade',
-          value: courseAnalytics.students.filter((s) => s.averageGrade >= 80 && s.averageGrade < 90)
-            .length
-        },
-        {
-          group: '70-79% Grade',
-          value: courseAnalytics.students.filter((s) => s.averageGrade >= 70 && s.averageGrade < 80)
-            .length
-        },
-        {
-          group: 'Below 70% Grade',
-          value: courseAnalytics.students.filter((s) => s.averageGrade < 70).length
-        }
-      ]
-    : [];
+  let gradeChartData = $derived(
+    courseAnalytics?.students
+      ? [
+          {
+            group: '90%+ Grade',
+            value: courseAnalytics.students.filter((s) => s.averageGrade >= 90).length
+          },
+          {
+            group: '80-89% Grade',
+            value: courseAnalytics.students.filter(
+              (s) => s.averageGrade >= 80 && s.averageGrade < 90
+            ).length
+          },
+          {
+            group: '70-79% Grade',
+            value: courseAnalytics.students.filter(
+              (s) => s.averageGrade >= 70 && s.averageGrade < 80
+            ).length
+          },
+          {
+            group: 'Below 70% Grade',
+            value: courseAnalytics.students.filter((s) => s.averageGrade < 70).length
+          }
+        ]
+      : []
+  );
 
   onMount(async () => {
     if (browser) {
@@ -61,7 +71,7 @@
   });
 
   // Chart options for progress distribution
-  $: progressChartOptions = {
+  let progressChartOptions = $derived({
     axes: {
       left: {
         mapsTo: 'value',
@@ -84,10 +94,10 @@
         'Below 60% Progress': '#ef4444' // red
       }
     }
-  };
+  });
 
   // Chart options for grade distribution
-  $: gradeChartOptions = {
+  let gradeChartOptions = $derived({
     axes: {
       left: {
         mapsTo: 'value',
@@ -111,7 +121,7 @@
         'Below 70% Grade': '#ef4444' // red
       }
     }
-  };
+  });
 </script>
 
 {#if browser && BarChartSimple}
@@ -124,11 +134,7 @@
         Student Progress Distribution
       </h3>
       {#if courseAnalytics?.students && courseAnalytics.students.length > 0}
-        <svelte:component
-          this={BarChartSimple}
-          data={progressChartData}
-          options={progressChartOptions}
-        />
+        <BarChartSimple data={progressChartData} options={progressChartOptions} />
       {:else}
         <div class="flex h-[300px] items-center justify-center text-gray-500 dark:text-gray-400">
           No progress data available
@@ -142,7 +148,7 @@
     >
       <h3 class="mb-6 text-lg font-semibold text-gray-900 dark:text-white">Grade Distribution</h3>
       {#if courseAnalytics?.students && courseAnalytics.students.length > 0}
-        <svelte:component this={BarChartSimple} data={gradeChartData} options={gradeChartOptions} />
+        <BarChartSimple data={gradeChartData} options={gradeChartOptions} />
       {:else}
         <div class="flex h-[300px] items-center justify-center text-gray-500 dark:text-gray-400">
           No grade data available

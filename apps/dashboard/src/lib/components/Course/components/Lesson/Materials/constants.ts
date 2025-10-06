@@ -8,7 +8,7 @@ interface MaterialTab {
   badgeValue?: number;
 }
 
-export let tabs: MaterialTab[] = [
+export const tabs: MaterialTab[] = [
   {
     label: 'course.navItem.lessons.materials.tabs.note.title',
     icon: Notebook,

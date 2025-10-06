@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import Box from '$lib/components/Box/index.svelte';
   import ActivateSectionsModal from '$lib/components/Course/components/Lesson/ActivateSectionsModal.svelte';
   import DeleteLessonConfirmation from '$lib/components/Course/components/Lesson/DeleteLessonConfirmation.svelte';
@@ -14,7 +14,7 @@
     lessonSections
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { course } from '$lib/components/Course/store';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
+  import { CourseContainer } from '$lib/components/CourseContainer';
   import { PageBody, PageNav } from '$lib/components/Page';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -24,16 +24,20 @@
   import type { Lesson } from '$lib/utils/types';
   import { COURSE_VERSION } from '$lib/utils/types';
 
-  export let data;
+  let { data } = $props();
 
-  const query = new URLSearchParams($page.url.search);
+  const query = new URLSearchParams(page.url.search);
+
+  const lessonsLength = $derived(
+    $course.version === COURSE_VERSION.V1 ? $lessons.length : $lessonSections.length
+  );
 
   let lessonEditing: string | undefined;
-  let lessonToDelete: Lesson | undefined;
-  let openDeleteModal: boolean = false;
-  let isFetching: boolean = false;
-  let reorder = false;
-  let activateSections = false;
+  let lessonToDelete: Lesson | undefined = $state();
+  let openDeleteModal: boolean = $state(false);
+  let isFetching: boolean = $state(false);
+  let reorder = $state(false);
+  let activateSections = $state(false);
 
   function addLesson() {
     $handleAddLessonWidget.open = true;
@@ -77,10 +81,10 @@
     }
   }
 
-  $: shouldGoToNextLesson = query.get('next') === 'true';
-  $: !isFetching && shouldGoToNextLesson && onNextQuery($lessons);
-  $: lessonsLength =
-    $course.version === COURSE_VERSION.V1 ? $lessons.length : $lessonSections.length;
+  let shouldGoToNextLesson = $derived(query.get('next') === 'true');
+  $effect(() => {
+    !isFetching && shouldGoToNextLesson && onNextQuery($lessons);
+  });
 </script>
 
 <NewLessonModal />
@@ -92,33 +96,40 @@
   deleteLesson={() => handleDelete(lessonToDelete?.id)}
 />
 
-<CourseContainer bind:isFetching bind:courseId={data.courseId}>
+<CourseContainer
+  onFetchingChange={(fetching) => {
+    isFetching = fetching;
+  }}
+  courseId={data.courseId}
+>
   <PageNav title={$t('course.navItem.lessons.heading_v2')}>
-    <div slot="widget" class="flex w-full justify-end gap-2">
-      <RoleBasedSecurity allowedRoles={[1, 2]}>
-        {#if $course.version === COURSE_VERSION.V1}
+    {#snippet widget()}
+      <div class="flex w-full justify-end gap-2">
+        <RoleBasedSecurity allowedRoles={[1, 2]}>
+          {#if $course.version === COURSE_VERSION.V1}
+            <PrimaryButton
+              label={$t(`course.navItem.lessons.section_prompt.cta`)}
+              variant={VARIANTS.OUTLINED}
+              onClick={() => (activateSections = !activateSections)}
+              isDisabled={!!lessonEditing}
+            />
+          {/if}
           <PrimaryButton
-            label={$t(`course.navItem.lessons.section_prompt.cta`)}
+            label={$t(
+              `course.navItem.lessons.add_lesson.${reorder ? 'end_reorder' : 'start_reorder'}`
+            )}
             variant={VARIANTS.OUTLINED}
-            onClick={() => (activateSections = !activateSections)}
+            onClick={() => (reorder = !reorder)}
             isDisabled={!!lessonEditing}
           />
-        {/if}
-        <PrimaryButton
-          label={$t(
-            `course.navItem.lessons.add_lesson.${reorder ? 'end_reorder' : 'start_reorder'}`
-          )}
-          variant={VARIANTS.OUTLINED}
-          onClick={() => (reorder = !reorder)}
-          isDisabled={!!lessonEditing}
-        />
-        <PrimaryButton
-          label={$t('course.navItem.lessons.add_lesson.button_title')}
-          onClick={addLesson}
-          isDisabled={!!lessonEditing}
-        />
-      </RoleBasedSecurity>
-    </div>
+          <PrimaryButton
+            label={$t('course.navItem.lessons.add_lesson.button_title')}
+            onClick={addLesson}
+            isDisabled={!!lessonEditing}
+          />
+        </RoleBasedSecurity>
+      </div>
+    {/snippet}
   </PageNav>
 
   <PageBody width="max-w-6xl" padding="p-0">

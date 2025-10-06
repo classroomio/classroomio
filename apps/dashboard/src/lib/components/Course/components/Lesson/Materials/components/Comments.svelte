@@ -17,7 +17,6 @@
   import type { GroupPerson, LessonComment, LessonCommentInsertPayload } from '$lib/utils/types';
   import type {
     PostgrestSingleResponse,
-    RealtimeChannel,
     RealtimePostgresChangesPayload
   } from '@supabase/supabase-js';
   import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
@@ -26,16 +25,20 @@
   const supabase = getSupabase();
   const PAGE_SIZE = 20;
 
-  export let lessonId = '';
+  interface Props {
+    lessonId?: string;
+  }
 
-  let comment = '';
-  let comments: LessonComment[] = [];
-  let groupmember: GroupPerson | undefined;
-  let isSaving: boolean = false;
-  let isFetching = false;
-  let openDeleteModal = false;
-  let deleteCommentId: number | null = null;
-  let editCommentId: number | null = null;
+  let { lessonId = '' }: Props = $props();
+
+  let comment = $state('');
+  let comments: LessonComment[] = $state([]);
+  let groupmember: GroupPerson | undefined = $state();
+  let isSaving: boolean = $state(false);
+  let isFetching = $state(false);
+  let openDeleteModal = $state(false);
+  let deleteCommentId: number | null = $state(null);
+  let editCommentId: number | null = $state(null);
 
   interface FetchComments {
     id: number;
@@ -176,11 +179,11 @@
     pagination.count = comments.length;
   }
 
-  let pagination = {
+  let pagination = $state({
     hasMore: true,
     count: 0,
     page: 0
-  };
+  });
 
   async function fetchComments(people: GroupPerson[]) {
     if (!pagination.hasMore) return;

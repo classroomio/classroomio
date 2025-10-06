@@ -1,14 +1,25 @@
-<script>
-  import { onMount } from 'svelte';
+<script lang="ts">
+  interface Props {
+    label?: string;
+    value: any;
+    options?: any;
+    labelKey?: string;
+    isRequired?: boolean;
+    className?: string;
+    selectClassName?: string;
+    onChange?: any; // This is to know if element is 'dirty'
+  }
 
-  export let label = '';
-  export let value;
-  export let options = [];
-  export let labelKey = 'label';
-  export let isRequired = false;
-  export let className = '';
-  export let selectClassName = '';
-  export let onChange = () => {}; // This is to know if element is 'dirty'
+  let {
+    label = '',
+    value = $bindable(),
+    options = [],
+    labelKey = 'label',
+    isRequired = false,
+    className = '',
+    selectClassName = '',
+    onChange = () => {}
+  }: Props = $props();
 
   // onMount(() => {
   //   value = options[0];
@@ -17,14 +28,14 @@
 
 <label class="block {className}">
   {#if label}
-    <span class="text-gray-700 dark:text-white mr-2">{label}</span>
+    <span class="mr-2 text-gray-700 dark:text-white">{label}</span>
   {/if}
   <select
     bind:value
-    class="form-select block w-auto mt-1 dark:bg-neutral-700 dark:text-white {selectClassName}"
+    class="form-select mt-1 block w-auto dark:bg-neutral-700 dark:text-white {selectClassName}"
     required={isRequired}
-    on:blur={() => {}}
-    on:change={onChange}
+    onblur={() => {}}
+    onchange={onChange}
     class:customColor={!!selectClassName}
   >
     {#each options as option}

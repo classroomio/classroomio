@@ -28,7 +28,7 @@
   import { courses } from '$lib/components/Courses/store';
   import type { Course } from '$lib/utils/types';
 
-  export let data;
+  let { data } = $props();
   const { slug } = data;
 
   interface Comment {
@@ -56,12 +56,12 @@
     courseId: string;
   }
 
-  let question: Question;
-  let comment = '';
+  let question: Question = $state();
+  let comment = $state('');
   let errors: {
     title?: string;
     courseId?: string;
-  } = {};
+  } = $state({});
   let isValidAnswer = false; // V2 allow admin mark an answer as accepted
   let resetInput = 1;
   let voted: {
@@ -69,26 +69,26 @@
     comment: {
       [key: string]: boolean;
     };
-  } = { question: false, comment: {} };
-  let isEditMode = false;
-  let deleteComment = {
+  } = $state({ question: false, comment: {} });
+  let isEditMode = $state(false);
+  let deleteComment = $state({
     shouldDelete: false,
     commentId: '',
     isDeleting: false
-  };
-  let deleteQuestion = {
+  });
+  let deleteQuestion = $state({
     shouldDelete: false,
     questionId: '',
     isDeleting: false
-  };
-  let editContent = {
+  });
+  let editContent = $state({
     title: '',
     body: '',
     courseId: ''
-  };
+  });
 
-  let editorInstance = false;
-  let fetchedCourses: Course[] = [];
+  let editorInstance = $state(false);
+  let fetchedCourses: Course[] = $state([]);
 
   function mapResToQuestion(data): Question {
     return {
@@ -351,12 +351,14 @@
     deleteQuestion.isDeleting = false;
   }
 
-  $: browser && fetchCommunityQuestion(slug);
-  $: {
+  $effect(() => {
+    browser && fetchCommunityQuestion(slug);
+  });
+  $effect(() => {
     if ($profile.id && $currentOrg.id) {
       getCourses($profile.id, $currentOrg.id);
     }
-  }
+  });
 </script>
 
 <svelte:head>
@@ -383,20 +385,20 @@
   }}
   onDelete={() => handleDelete(false)}
 />
-<section class="max-w-3xl mx-auto md:mx-10 lg:mb-20">
+<section class="mx-auto max-w-3xl md:mx-10 lg:mb-20">
   {#if !question}
-    <div class="py-10 px-5 mb-3">
+    <div class="mb-3 px-5 py-10">
       <SkeletonText style="width: 25%;" />
       <SkeletonText style="width: 100%; margin-bottom: 2rem" />
       <SkeletonPlaceholder style="width: 100%; height: 20rem;" />
     </div>
   {:else}
-    <div class="py-10 px-5">
-      <a class="text-gray-500 dark:text-white text-md flex items-center" href={`/lms/community`}>
+    <div class="px-5 py-10">
+      <a class="text-md flex items-center text-gray-500 dark:text-white" href="/lms/community">
         <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" />
         {$t('community.ask.go_back')}
       </a>
-      <div class="my-5 flex justify-between items-center">
+      <div class="my-5 flex items-center justify-between">
         {#if isEditMode}
           <TextField
             bind:value={editContent.title}
@@ -404,7 +406,7 @@
             errorMessage={errors.title}
           />
           <Dropdown
-            class="w-[25%] h-full"
+            class="h-full w-[25%]"
             size="xl"
             label="Select Course"
             items={fetchedCourses.map((course) => ({ id: course.id, text: course.title }))}
@@ -439,17 +441,17 @@
           {/if}
         {/if}
       </div>
-      <div class="my-1 px-1 rounded-lg border border-1 border-gray">
-        <header class="flex items-center justify-between leading-none p-2">
-          <div class="flex items-center no-underline hover:underline text-black">
+      <div class="border-1 border-gray my-1 rounded-lg border px-1">
+        <header class="flex items-center justify-between p-2 leading-none">
+          <div class="flex items-center text-black no-underline hover:underline">
             <Avatar
               src={question.author.avatar}
               name={question.author.name}
               width="w-7"
               height="h-7"
             />
-            <p class="dark:text-white ml-2 text-sm">{question.author.name}</p>
-            <p class="dark:text-white ml-2 text-sm text-gray-500">
+            <p class="ml-2 text-sm dark:text-white">{question.author.name}</p>
+            <p class="ml-2 text-sm text-gray-500 dark:text-white">
               {question.createdAt}
             </p>
           </div>
@@ -485,18 +487,18 @@
       </div>
 
       {#each question.comments as comment}
-        <div class="my-5 px-1 flex items-start">
+        <div class="my-5 flex items-start px-1">
           <Vote
             value={comment.votes}
             upVote={() => upvoteQuestion('comment', comment.id)}
             disabled={voted.comment[comment.id]}
           />
-          <div class="w-full rounded-lg border border-1 border-gray">
-            <header class="flex items-center justify-between leading-none p-2">
+          <div class="border-1 border-gray w-full rounded-lg border">
+            <header class="flex items-center justify-between p-2 leading-none">
               <div class="flex items-center text-black">
                 <Avatar src={comment.avatar} name={comment.name} width="w-7" height="h-7" />
-                <p class="dark:text-white ml-2 text-sm">{comment.name}</p>
-                <p class="dark:text-white ml-2 text-sm text-gray-500">
+                <p class="ml-2 text-sm dark:text-white">{comment.name}</p>
+                <p class="ml-2 text-sm text-gray-500 dark:text-white">
                   {comment.createdAt}
                 </p>
               </div>
@@ -535,7 +537,7 @@
           />
         {/if}
 
-        <div class="flex justify-end mr-2">
+        <div class="mr-2 flex justify-end">
           <PrimaryButton label="Comment" onClick={submitComment} />
         </div>
       </div>

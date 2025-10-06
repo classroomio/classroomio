@@ -1,6 +1,10 @@
 <script lang="ts">
-  export let index: number;
-  export let title: string;
+  interface Props {
+    index: number;
+    title: string;
+  }
+
+  let { index, title }: Props = $props();
 </script>
 
 <span class="flex gap-2">

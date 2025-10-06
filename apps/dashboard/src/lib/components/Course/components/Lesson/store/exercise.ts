@@ -1,7 +1,9 @@
-import { writable } from 'svelte/store';
 import { QUESTION_TEMPLATE, QUESTION_TYPE } from '$lib/components/Question/constants';
-import { questionnaireMetaData } from './answers';
+
+import type { Writable } from 'svelte/store';
 import { isUUID } from '$lib/utils/functions/isUUID';
+import { questionnaireMetaData } from './answers';
+import { writable } from 'svelte/store';
 
 export const isQuestionnaireFetching = writable(false);
 export const deleteConfirmation = writable({ open: false });
@@ -10,7 +12,16 @@ export const questionnaireOrder = writable({ open: false });
 // {'question-id': { option: '', title: '', ... }}
 export const questionnaireValidation = writable({});
 
-export const questionnaire = writable({
+export const questionnaire: Writable<{
+  title?: string;
+  due_by?: string;
+  is_due_by_dirty?: boolean;
+  is_title_dirty?: boolean;
+  description?: string;
+  is_description_dirty?: boolean;
+  questions: Array<any>;
+  totalSubmissions: number;
+}> = writable({
   title: '',
   due_by: '',
   is_due_by_dirty: false,

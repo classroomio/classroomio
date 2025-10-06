@@ -6,7 +6,7 @@
   import { orgAudience, currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
 
-  let isLoading = false;
+  let isLoading = $state(false);
 
   async function fetchInitData(orgId) {
     if (!orgId) return;
@@ -16,17 +16,19 @@
     isLoading = false;
   }
 
-  $: fetchInitData($currentOrg.id);
+  $effect(() => {
+    fetchInitData($currentOrg.id);
+  });
 </script>
 
-<div class="flex items-center justify-center lg:justify-start flex-wrap my-4 m-auto">
+<div class="m-auto my-4 flex flex-wrap items-center justify-center lg:justify-start">
   {#if $orgAudience.length || isLoading}
     <AudienceList {isLoading} />
   {:else}
     <Box>
       <AudienceEmptyIcon />
-      <h3 class="dark:text-white text-2xl text-center my-5">{$t('audience.no_audience')}!</h3>
-      <p class="dark:text-white w-1/3 text-center">
+      <h3 class="my-5 text-center text-2xl dark:text-white">{$t('audience.no_audience')}!</h3>
+      <p class="w-1/3 text-center dark:text-white">
         {$t('audience.manage')}.
       </p>
     </Box>

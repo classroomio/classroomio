@@ -21,14 +21,14 @@
     title?: string;
     courseId?: string;
     body?: string;
-  } = {};
-  let fields = {
+  } = $state({});
+  let fields = $state({
     title: '',
     body: '',
     courseId: ''
-  };
+  });
 
-  let fetchedCourses: Course[] = [];
+  let fetchedCourses: Course[] = $state([]);
 
   async function getCourses(userId: string | null, orgId: string) {
     if ($courses.length) {
@@ -75,11 +75,11 @@
     }
   }
 
-  $: {
+  $effect(() => {
     if ($profile.id && $currentOrg.id) {
       getCourses($profile.id, $currentOrg.id);
     }
-  }
+  });
 </script>
 
 <svelte:head>
@@ -96,7 +96,7 @@
       {$t('community.ask.go_back')}
     </a>
     <div class="flex items-center justify-between gap-12">
-      <h1 class="text-2xl font-bold dark:text-white md:text-3xl">{$t('community.ask.ask_the')}</h1>
+      <h1 class="text-2xl font-bold md:text-3xl dark:text-white">{$t('community.ask.ask_the')}</h1>
       <PrimaryButton
         label={$t('community.ask.publish')}
         variant={VARIANTS.CONTAINED_DARK}

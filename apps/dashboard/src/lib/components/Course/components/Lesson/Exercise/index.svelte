@@ -13,15 +13,15 @@
   import {
     Breadcrumb,
     BreadcrumbItem,
-    ContentSwitcher,
+    // ContentSwitcher,
     OverflowMenu,
-    OverflowMenuItem,
-    Switch
+    OverflowMenuItem
+    // Switch
   } from 'carbon-components-svelte';
   import AddAltIcon from 'carbon-icons-svelte/lib/AddAlt.svelte';
   import ViewIcon from 'carbon-icons-svelte/lib/View.svelte';
   import ViewFilledIcon from 'carbon-icons-svelte/lib/ViewFilled.svelte';
-  import { onDestroy, onMount } from 'svelte';
+  import { onDestroy, onMount, untrack } from 'svelte';
   import {
     handleAddQuestion,
     questionnaire,
@@ -34,15 +34,24 @@
   import UpdateDescription from './UpdateDescription.svelte';
   import ViewMode from './ViewMode.svelte';
 
-  export let exerciseId = '';
-  export let path = '';
-  export let goBack = () => {};
-  export let isFetching = false;
+  interface Props {
+    exerciseId?: string;
+    path?: string;
+    goBack?: any;
+    isFetching?: boolean;
+  }
 
-  let preview: boolean = false;
-  let shouldDeleteExercise = false;
-  let isSaving = false;
-  let selectedIndex = 0;
+  let {
+    exerciseId = $bindable(''),
+    path = '',
+    goBack = () => {},
+    isFetching = false
+  }: Props = $props();
+
+  let preview: boolean = $state(false);
+  let shouldDeleteExercise = $state(false);
+  let isSaving = $state(false);
+  let selectedIndex = $state(0);
 
   async function handleSave() {
     if ($globalStore.isStudent) return;
@@ -51,9 +60,11 @@
     if (Object.values(errors).length > 0) {
       return;
     }
+
     isSaving = true;
 
     reset();
+
     try {
       const updatedQuestions = await upsertExercise($questionnaire, exerciseId);
 
@@ -79,9 +90,10 @@
     reset();
   });
 
-  $: onSelectedIndexChange(selectedIndex);
   function onSelectedIndexChange(index: number) {
-    goto($page.url.pathname + '?tabIndex=' + index);
+    untrack(() => {
+      goto($page.url.pathname + '?tabIndex=' + index);
+    });
   }
 
   onMount(() => {
@@ -91,10 +103,15 @@
     }
   });
 
-  $: $questionnaire?.questions?.length < 1 && handleAddQuestion();
+  $effect(() => {
+    onSelectedIndexChange(selectedIndex);
+  });
+  $effect(() => {
+    $questionnaire?.questions?.length < 1 && handleAddQuestion();
+  });
 </script>
 
-<PageBody bind:isPageNavHidden={$globalStore.isStudent} padding="px-4 overflow-x-hidden">
+<PageBody isPageNavHidden={$globalStore.isStudent} padding="px-4 overflow-x-hidden">
   <div class="sticky top-0 z-10 mb-3 bg-gray-100 p-2 dark:bg-neutral-800">
     <Breadcrumb noTrailingSlash>
       <BreadcrumbItem href={path}>
@@ -106,7 +123,7 @@
     </Breadcrumb>
 
     <RoleBasedSecurity allowedRoles={[1, 2]}>
-      <ContentSwitcher bind:selectedIndex class="mb-2">
+      <!-- <ContentSwitcher bind:selectedIndex class="mb-2">
         <Switch
           text="{$t('course.navItem.lessons.exercises.all_exercises.questions')} ({$questionnaire
             .questions.length})"
@@ -116,7 +133,7 @@
             'course.navItem.lessons.exercises.all_exercises.submissions'
           )} ({$questionnaire.totalSubmissions})"
         />
-      </ContentSwitcher>
+      </ContentSwitcher> -->
 
       {#if selectedIndex === 0}
         <div class="right-0 flex w-full items-center justify-end">

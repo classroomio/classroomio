@@ -4,8 +4,12 @@
   import { t } from '$lib/utils/functions/translations';
   import Modal from './index.svelte';
 
-  export let open = false;
-  export let onDelete = () => {};
+  interface Props {
+    open?: boolean;
+    onDelete?: any;
+  }
+
+  let { open = $bindable(false), onDelete = () => {} }: Props = $props();
 
   function handleDelete() {
     onDelete();

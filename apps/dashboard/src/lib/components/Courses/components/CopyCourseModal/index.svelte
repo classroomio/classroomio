@@ -1,4 +1,6 @@
 <script>
+  import { preventDefault } from 'svelte/legacy';
+
   import { goto } from '$app/navigation';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
@@ -38,7 +40,7 @@
   width="w-96"
   modalHeading="Create a Course"
 >
-  <form on:submit|preventDefault={createCourse}>
+  <form onsubmit={preventDefault(createCourse)}>
     <TextField
       label="Course name"
       bind:value={$copyCourseModal.title}
@@ -49,7 +51,7 @@
       autoComplete={false}
     />
 
-    <div class="mt-5 flex items-center flex-row-reverse">
+    <div class="mt-5 flex flex-row-reverse items-center">
       <PrimaryButton
         className="px-6 py-3"
         label="Create"

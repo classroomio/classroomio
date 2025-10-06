@@ -1,23 +1,35 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { user } from '$lib/utils/store/user';
   import { isCoursePage } from '$lib/utils/functions/app';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { t } from '$lib/utils/functions/translations';
 
-  export let disableSignup = false;
-  export let logo;
-  export let orgName;
-  export let isOrgSite = false;
-  export let backgroundColor = 'bg-white dark:bg-black';
+  interface Props {
+    disableSignup?: boolean;
+    logo: any;
+    orgName: any;
+    isOrgSite?: boolean;
+    backgroundColor?: string;
+  }
 
-  let navClass = '';
+  let {
+    disableSignup = false,
+    logo,
+    orgName,
+    isOrgSite = false,
+    backgroundColor = 'bg-white dark:bg-black'
+  }: Props = $props();
 
-  const redirect = isCoursePage($page.url.pathname) ? `?redirect=${$page.url.pathname}` : '';
+  let navClass = $state('');
 
-  $: navClass = '';
+  const redirect = isCoursePage(page.url.pathname) ? `?redirect=${page.url.pathname}` : '';
+
+  $effect(() => {
+    navClass = '';
+  });
 </script>
 
 <nav
@@ -60,13 +72,13 @@
       </li>
     {/if}
 
-    <span class="flex-grow" />
+    <span class="flex-grow"></span>
 
     {#if $user.isLoggedIn}
       {#if isOrgSite}
         <li><a class="block" href="/lms"> {$t('navigation.goto_lms')} </a></li>
       {/if}
-    {:else if !$page.url.pathname?.includes('/404')}
+    {:else if !page.url.pathname?.includes('/404')}
       <li>
         <div class="flex">
           <PrimaryButton

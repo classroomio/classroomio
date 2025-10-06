@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import TextField from '$lib/components/Form/TextField.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -13,14 +13,16 @@
   import { Column, Grid, Row } from 'carbon-components-svelte';
   import SectionTitle from '../SectionTitle.svelte';
   import LanguagePicker from './LanguagePicker.svelte';
+  import type { ProfileStore } from '$lib/utils/store/user';
+  import { LOCALE } from '$lib/utils/types';
 
-  let avatar = '';
-  let loading = false;
-  let hasLangChanged = false;
-  let locale = '';
-  let hasUnsavedChanges = false;
+  let avatar = $state<string | undefined>();
+  let loading = $state(false);
+  let hasLangChanged = $state(false);
+  let locale = $state<LOCALE | undefined>();
+  let hasUnsavedChanges = $state(false);
 
-  let errors = {};
+  let errors = $state<Record<string, string>>({});
 
   async function handleUpdate() {
     errors = updateProfileValidation($profile);
@@ -33,7 +35,7 @@
       console.log({ hasLangChanged });
       loading = true;
 
-      const updates = {
+      const updates: Partial<ProfileStore> = {
         fullname: $profile.fullname,
         username: $profile.username,
         email: $profile.email,
@@ -65,14 +67,16 @@
       }));
       snackbar.success('snackbar.course_settings.success.update_successful');
 
-      if (hasLangChanged) {
+      if (hasLangChanged && locale) {
         handleLocaleChange(locale);
       }
+
       hasUnsavedChanges = false;
       if (error) throw error;
     } catch (error) {
-      let message = error.message;
-      if (message.includes('profile_username_key')) {
+      let message = error instanceof Error ? error.message : error?.toString();
+
+      if (message?.includes('profile_username_key')) {
         message = $t('snackbar.lms.error.username_exists');
       }
       snackbar.error(`${$t('snackbar.lms.error.update')} ${message}`);
@@ -82,7 +86,9 @@
     }
   }
 
-  $: locale = !locale ? $profile.locale : locale;
+  $effect(() => {
+    locale = !locale ? $profile.locale : locale;
+  });
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
@@ -96,7 +102,7 @@
         bind:avatar
         src={$profile.avatar_url}
         widthHeight="w-16 h-16 lg:w-24 lg:h-24"
-        on:change={() => (hasUnsavedChanges = true)}
+        change={() => (hasUnsavedChanges = true)}
       />
     </Column>
   </Row>
@@ -127,7 +133,7 @@
         onChange={() => (hasUnsavedChanges = true)}
       />
       <LanguagePicker
-        onChange={() => (hasUnsavedChanges = true)}
+        change={() => (hasUnsavedChanges = true)}
         bind:hasLangChanged
         bind:value={locale}
         className="w-full lg:w-60 mb-4"

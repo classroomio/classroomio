@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import AuthUI from '$lib/components/AuthUI/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -19,19 +19,19 @@
   import { profile } from '$lib/utils/store/user';
 
   let supabase = getSupabase();
-  let fields = Object.assign({}, SIGNUP_FIELDS);
-  let loading = false;
+  let fields = $state(Object.assign({}, SIGNUP_FIELDS));
+  let loading = $state(false);
   let success = false;
   let errors: {
     email?: string;
     password?: string;
     confirmPassword?: string;
-  } = {};
-  let submitError: string;
-  let disableSubmit = false;
-  let formRef: HTMLFormElement;
+  } = $state({});
+  let submitError: string = $state();
+  let disableSubmit = $state(false);
+  let formRef: HTMLFormElement = $state();
 
-  let query = new URLSearchParams($page.url.search);
+  let query = new URLSearchParams(page.url.search);
   let redirect = query.get('redirect');
 
   async function handleSubmit() {
@@ -119,8 +119,12 @@
     }
   }
 
-  $: errors.confirmPassword = getConfirmPasswordError(fields);
-  $: disableSubmit = getDisableSubmit(fields);
+  $effect(() => {
+    errors.confirmPassword = getConfirmPasswordError(fields);
+  });
+  $effect(() => {
+    disableSubmit = getDisableSubmit(fields);
+  });
 </script>
 
 <svelte:head>

@@ -37,7 +37,7 @@
       className: 'text-green-700 bg-green-200'
     }
   ];
-  let sections: Section[] = cloneDeep(defaultSections);
+  let sections: Section[] = $state(cloneDeep(defaultSections));
   interface Section {
     id: number;
     title: string;
@@ -116,51 +116,53 @@
     console.log('sections', sections);
   }
 
-  $: if (browser && $profile.id && $currentOrg.id) {
-    fetchData($profile.id, $currentOrg.id);
-  }
+  $effect(() => {
+    if (browser && $profile.id && $currentOrg.id) {
+      fetchData($profile.id, $currentOrg.id);
+    }
+  });
 </script>
 
-<section class="w-full max-w-6xl mx-auto">
+<section class="mx-auto w-full max-w-6xl">
   <div class="p-5">
-    <div class="flex items-center justify-between mb-10">
-      <h1 class="dark:text-white text-3xl font-bold">{$t('exercises.heading')}</h1>
+    <div class="mb-10 flex items-center justify-between">
+      <h1 class="text-3xl font-bold dark:text-white">{$t('exercises.heading')}</h1>
     </div>
 
     <div>
-      <div class="flex items-center w-full">
+      <div class="flex w-full items-center">
         {#each sections as { title, items, className, id }}
           <div
-            class="min-w-[355px] max-w-[355px] h-[70vh] rounded-md bg-gray-100 dark:bg-black border border-gray-50 dark:border-neutral-700 p-3 mr-3 overflow-hidden"
+            class="mr-3 h-[70vh] min-w-[355px] max-w-[355px] overflow-hidden rounded-md border border-gray-50 bg-gray-100 p-3 dark:border-neutral-700 dark:bg-black"
           >
-            <div class="flex items-center mb-2 gap-2">
-              <p class="dark:text-white ml-2 font-bold">{title}</p>
+            <div class="mb-2 flex items-center gap-2">
+              <p class="ml-2 font-bold dark:text-white">{title}</p>
               <Chip value={items.length} {className} />
             </div>
-            <div class="pr-2 h-full overflow-y-auto pb-3">
+            <div class="h-full overflow-y-auto pb-3 pr-2">
               {#each items as item}
-                <div class=" w-full my-2 mx-0 rounded-md bg-white dark:bg-neutral-800 py-3 px-3">
+                <div class=" mx-0 my-2 w-full rounded-md bg-white px-3 py-3 dark:bg-neutral-800">
                   <a
-                    class="flex w-full items-center cursor-pointer text-primary-600 mb-2"
+                    class="text-primary-600 mb-2 flex w-full cursor-pointer items-center"
                     href={item.courseURL}
                   >
                     <p class="text-xs">{item.courseTitle}</p>
                   </a>
-                  <a class="text-black dark:text-white text-md font-bold" href={item.exerciseURL}>
+                  <a class="text-md font-bold text-black dark:text-white" href={item.exerciseURL}>
                     {#if id === 3}
                       ({item.grade}) -
                     {/if}
                     {item.exerciseTitle}
                   </a>
                   <a
-                    class="flex items-center no-underline hover:underline text-black my-2 w-fit"
+                    class="my-2 flex w-fit items-center text-black no-underline hover:underline"
                     href={item.lessonURL}
                   >
-                    <p class="dark:text-white text-grey text-sm">
+                    <p class="text-grey text-sm dark:text-white">
                       {$t('exercises.lesson')} <span class="italic">{item.lessonTitle}</span>
                     </p>
                   </a>
-                  <p class="dark:text-white text-gray-500 text-xs">
+                  <p class="text-xs text-gray-500 dark:text-white">
                     {item.submissionUpdatedAt}
                   </p>
                 </div>

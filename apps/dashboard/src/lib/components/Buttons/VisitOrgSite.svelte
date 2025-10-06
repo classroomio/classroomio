@@ -7,10 +7,14 @@
   import { t } from '$lib/utils/functions/translations';
   import { user } from '$lib/utils/store/user';
 
-  export let className = '';
-  export let isLMS = false;
+  interface Props {
+    className?: string;
+    isLMS?: boolean;
+  }
 
-  $: href = isLMS && $user.isLoggedIn ? `${$currentOrgDomain}/home` : $currentOrgDomain;
+  let { className = '', isLMS = false }: Props = $props();
+
+  let href = $derived(isLMS && $user.isLoggedIn ? `${$currentOrgDomain}/home` : $currentOrgDomain);
 </script>
 
 <a {href} target="_blank" class="{className} ml-2 hover:no-underline">

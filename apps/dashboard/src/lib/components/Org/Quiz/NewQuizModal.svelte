@@ -1,4 +1,6 @@
 <script>
+  import { preventDefault } from 'svelte/legacy';
+
   import { goto } from '$app/navigation';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
@@ -9,11 +11,11 @@
   import { createQuizValidation } from '$lib/utils/functions/validator';
   import { t } from '$lib/utils/functions/translations';
 
-  let open = false;
-  let errors = {
+  let open = $state(false);
+  let errors = $state({
     title: ''
-  };
-  let isLoading = false;
+  });
+  let isLoading = $state(false);
 
   function handleClose() {
     $createQuizModal.id = null;
@@ -94,7 +96,9 @@
     }
   }
 
-  $: open = $createQuizModal.openEdit || $createQuizModal.open;
+  $effect(() => {
+    open = $createQuizModal.openEdit || $createQuizModal.open;
+  });
 </script>
 
 <svelte:head>
@@ -109,7 +113,7 @@
     ? $t('components.quiz.update')
     : $t('components.quiz.create')} {$t('components.quiz.a_quiz')}"
 >
-  <form on:submit|preventDefault={createQuiz}>
+  <form onsubmit={preventDefault(createQuiz)}>
     <TextField
       label={$t('components.quiz.quiz_title')}
       bind:value={$createQuizModal.title}

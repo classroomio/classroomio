@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { browser } from '$app/environment';
   import NotificationIcon from 'carbon-icons-svelte/lib/Notification.svelte';
   import MoonIcon from 'carbon-icons-svelte/lib/Moon.svelte';
@@ -15,7 +15,11 @@
   import { toggleBodyByMode } from '$lib/utils/functions/app';
   import { t } from '$lib/utils/functions/translations';
 
-  export let navClass = '';
+  interface Props {
+    navClass?: string;
+  }
+
+  let { navClass = '' }: Props = $props();
 
   const toggleSidebar = () => {
     $sideBar.hidden = !$sideBar.hidden;
@@ -35,7 +39,7 @@
   }
 </script>
 
-<nav class="{navClass} flex w-full p-2 md:px-6 bg-primary-700 h-[48px]">
+<nav class="{navClass} bg-primary-700 flex h-[48px] w-full p-2 md:px-6">
   <ul class="flex w-full items-center">
     <li class="md:hidden">
       <IconButton onClick={toggleSidebar}>
@@ -48,10 +52,10 @@
     </li>
     <div class="">
       <a
-        href={$page.url.pathname}
+        href={page.url.pathname}
         title={$t('navigation.goto_home')}
         id="logo"
-        class="text-lg flex items-center"
+        class="flex items-center text-lg"
       >
         {#if $currentOrg.avatar_url}
           <Avatar
@@ -74,10 +78,10 @@
       </a>
     </div>
 
-    <span class="flex-grow" />
+    <span class="flex-grow"></span>
 
     <li>
-      <NotificationIcon size={20} class="text-white mr-2" />
+      <NotificationIcon size={20} class="mr-2 text-white" />
     </li>
     <li>
       <IconButton size="small" onClick={toggleDarkMode}>
@@ -88,7 +92,7 @@
         {/if}
       </IconButton>
     </li>
-    <li />
+    <li></li>
   </ul>
 </nav>
 

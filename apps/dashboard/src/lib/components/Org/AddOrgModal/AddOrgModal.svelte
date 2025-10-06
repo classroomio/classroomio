@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { preventDefault } from 'svelte/legacy';
+
   import Modal from '$lib/components/Modal/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -17,14 +19,14 @@
     orgName: string;
     siteName: string;
   };
-  let loading = false;
-  let orgName = '';
-  let siteName = '';
+  let loading = $state(false);
+  let orgName = $state('');
+  let siteName = $state('');
 
-  let errors: Error = {
+  let errors: Error = $state({
     orgName: '',
     siteName: ''
-  };
+  });
 
   function resetForm() {
     orgName = '';
@@ -102,7 +104,9 @@
     }
   }
 
-  $: siteName = generateSitename(orgName);
+  $effect(() => {
+    siteName = generateSitename(orgName);
+  });
 </script>
 
 <Modal
@@ -111,7 +115,7 @@
   width="w-96"
   modalHeading={$t('add_org.create_org')}
 >
-  <form on:submit|preventDefault={createNewOrg} class="px-2">
+  <form onsubmit={preventDefault(createNewOrg)} class="px-2">
     <TextField
       label={$t('add_org.name')}
       bind:value={orgName}
@@ -136,7 +140,7 @@
       isRequired={true}
     />
 
-    <div class="mt-5 flex items-center flex-row-reverse">
+    <div class="mt-5 flex flex-row-reverse items-center">
       <PrimaryButton
         className="px-6 py-3"
         label={$t('add_org.create')}

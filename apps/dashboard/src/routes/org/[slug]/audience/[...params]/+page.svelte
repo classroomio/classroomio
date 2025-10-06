@@ -14,11 +14,11 @@
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
 
-  export let data;
+  let { data } = $props();
 
-  let userAnalytics: UserAnalytics;
+  let userAnalytics: UserAnalytics = $state();
 
-  let courseFilter = 'all';
+  let courseFilter = $state('all');
   function toggleCourseFilter(filter: 'completed' | 'incomplete') {
     if (courseFilter === filter) {
       courseFilter = 'all';
@@ -50,7 +50,7 @@
     fetchUserAnalytics();
   });
 
-  $: userMetrics = [
+  let userMetrics = $derived([
     {
       icon: Notebook,
       title: $t('analytics.enrolled_courses'),
@@ -70,21 +70,25 @@
       description: $t('analytics.total_average_grade_description'),
       percentage: userAnalytics?.overallAverageGrade
     }
-  ];
+  ]);
 
-  $: completedCourses = userAnalytics?.courses?.filter(
-    (course) => course.lessons_count === course.lessons_completed
-  )?.length;
-  $: incompleteCourses = userAnalytics?.courses?.filter(
-    (course) => course.lessons_count !== course.lessons_completed
-  )?.length;
+  let completedCourses = $derived(
+    userAnalytics?.courses?.filter((course) => course.lessons_count === course.lessons_completed)
+      ?.length
+  );
+  let incompleteCourses = $derived(
+    userAnalytics?.courses?.filter((course) => course.lessons_count !== course.lessons_completed)
+      ?.length
+  );
 
-  $: filteredCourses = userAnalytics?.courses?.filter((course) => {
-    if (courseFilter === 'all') {
-      return true;
-    }
-    return (course.lessons_count === course.lessons_completed) === (courseFilter === 'completed');
-  });
+  let filteredCourses = $derived(
+    userAnalytics?.courses?.filter((course) => {
+      if (courseFilter === 'all') {
+        return true;
+      }
+      return (course.lessons_count === course.lessons_completed) === (courseFilter === 'completed');
+    })
+  );
 </script>
 
 {#if userAnalytics}

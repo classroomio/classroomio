@@ -18,13 +18,13 @@
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { page } from '$app/stores';
 
-  export let data;
+  let { data } = $props();
 
   let supabase = getSupabase();
-  let loading = false;
+  let loading = $state(false);
 
   let disableSubmit = false;
-  let formRef: HTMLFormElement;
+  let formRef: HTMLFormElement = $state();
 
   async function handleSubmit() {
     loading = true;
@@ -120,7 +120,9 @@
     setTheme(data.currentOrg?.theme || '');
   });
 
-  $: setCurOrg(data.currentOrg as CurrentOrg);
+  $effect(() => {
+    setCurOrg(data.currentOrg as CurrentOrg);
+  });
 </script>
 
 <svelte:head>

@@ -4,8 +4,12 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { t } from '$lib/utils/functions/translations';
 
-  export let openDeleteModal = false;
-  export let deleteLesson = () => {};
+  interface Props {
+    openDeleteModal?: boolean;
+    deleteLesson?: any;
+  }
+
+  let { openDeleteModal = $bindable(false), deleteLesson = () => {} }: Props = $props();
 
   async function handleDelete() {
     deleteLesson();
@@ -21,7 +25,7 @@
   modalHeading={$t('delete_modal.label')}
 >
   <div>
-    <h1 class="dark:text-white text-lg">
+    <h1 class="text-lg dark:text-white">
       {$t('delete_modal.content')}?
     </h1>
 

@@ -25,20 +25,20 @@
   import type { OrgLandingPageJson } from './store';
   import { landingPageSettings } from './store';
 
-  let isSaving = false;
-  let creatingNewQuestion = false;
-  let hasUnsavedChanges = false;
-  let widgetKey = '';
+  let isSaving = $state(false);
+  let creatingNewQuestion = $state(false);
+  let hasUnsavedChanges = $state(false);
+  let widgetKey = $state('');
   const banner = [
     { value: 'video', label: `${$t('settings.landing_page.actions.banner_type.video')}` },
     { value: 'image', label: `${$t('settings.landing_page.actions.banner_type.image')}` }
   ];
   const supabase = getSupabase();
 
-  let newQuestion = {
+  let newQuestion = $state({
     title: '',
     content: ''
-  };
+  });
 
   function widgetControl(key: string) {
     widgetKey = key;
@@ -127,7 +127,9 @@
       };
     }
   }
-  $: setDefault($currentOrg?.landingpage as unknown as OrgLandingPageJson);
+  $effect(() => {
+    setDefault($currentOrg?.landingpage as unknown as OrgLandingPageJson);
+  });
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
@@ -140,8 +142,12 @@
         size="sm"
         on:change={() => (hasUnsavedChanges = true)}
       >
-        <span slot="labelA" style="color: gray">{$t('settings.landing_page.hide_section')}</span>
-        <span slot="labelB" style="color: gray">{$t('settings.landing_page.show_section')}</span>
+        {#snippet labelA()}
+          <span style="color: gray">{$t('settings.landing_page.hide_section')}</span>
+        {/snippet}
+        {#snippet labelB()}
+          <span style="color: gray">{$t('settings.landing_page.show_section')}</span>
+        {/snippet}
       </Toggle>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
@@ -190,16 +196,16 @@
           size="sm"
           on:change={() => (hasUnsavedChanges = true)}
         >
-          <span slot="labelA" style="color: gray"
-            >{$t('settings.landing_page.actions.no_redirect')}</span
-          >
-          <span slot="labelB" style="color: gray"
-            >{$t('settings.landing_page.actions.redirect')}</span
-          >
+          {#snippet labelA()}
+            <span style="color: gray">{$t('settings.landing_page.actions.no_redirect')}</span>
+          {/snippet}
+          {#snippet labelB()}
+            <span style="color: gray">{$t('settings.landing_page.actions.redirect')}</span>
+          {/snippet}
         </Toggle>
       </div>
 
-      <div />
+      <div></div>
       <RadioButtonGroup
         legendText={$t('settings.landing_page.actions.banner_type.heading')}
         bind:selected={$landingPageSettings.header.banner.type}
@@ -240,12 +246,12 @@
         size="sm"
         on:change={() => (hasUnsavedChanges = true)}
       >
-        <span slot="labelA" style="color: gray"
-          >{$t('settings.landing_page.actions.hide_banner')}</span
-        >
-        <span slot="labelB" style="color: gray"
-          >{$t('settings.landing_page.actions.show_banner')}</span
-        >
+        {#snippet labelA()}
+          <span style="color: gray">{$t('settings.landing_page.actions.hide_banner')}</span>
+        {/snippet}
+        {#snippet labelB()}
+          <span style="color: gray">{$t('settings.landing_page.actions.show_banner')}</span>
+        {/snippet}
       </Toggle>
       {#if $handleOpenWidget.open && widgetKey === 'banner'}
         <UploadWidget
@@ -274,12 +280,14 @@
         {/if}
 
         <Toggle bind:toggled={$landingPageSettings.header.background.show} size="sm">
-          <span slot="labelA" style="color: gray"
-            >{$t('settings.landing_page.background.hide_background')}</span
-          >
-          <span slot="labelB" style="color: gray"
-            >{$t('settings.landing_page.background.show_background')}</span
-          >
+          {#snippet labelA()}
+            <span style="color: gray">{$t('settings.landing_page.background.hide_background')}</span
+            >
+          {/snippet}
+          {#snippet labelB()}
+            <span style="color: gray">{$t('settings.landing_page.background.show_background')}</span
+            >
+          {/snippet}
         </Toggle>
 
         {#if $handleOpenWidget.open && widgetKey === 'background'}
@@ -301,8 +309,12 @@
         on:change={() => (hasUnsavedChanges = true)}
         size="sm"
       >
-        <span slot="labelA" style="color: gray">{$t('settings.landing_page.hide_section')}</span>
-        <span slot="labelB" style="color: gray">{$t('settings.landing_page.show_section')}</span>
+        {#snippet labelA()}
+          <span style="color: gray">{$t('settings.landing_page.hide_section')}</span>
+        {/snippet}
+        {#snippet labelB()}
+          <span style="color: gray">{$t('settings.landing_page.show_section')}</span>
+        {/snippet}
       </Toggle></Column
     >
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
@@ -354,12 +366,12 @@
         size="sm"
         on:change={() => (hasUnsavedChanges = true)}
       >
-        <span slot="labelA" style="color: gray"
-          >{$t('settings.landing_page.courses.hide_section')}</span
-        >
-        <span slot="labelB" style="color: gray"
-          >{$t('settings.landing_page.courses.show_section')}</span
-        >
+        {#snippet labelA()}
+          <span style="color: gray">{$t('settings.landing_page.courses.hide_section')}</span>
+        {/snippet}
+        {#snippet labelB()}
+          <span style="color: gray">{$t('settings.landing_page.courses.show_section')}</span>
+        {/snippet}
       </Toggle>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
@@ -394,10 +406,12 @@
         size="sm"
         on:change={() => (hasUnsavedChanges = true)}
       >
-        <span slot="labelA" style="color: gray">{$t('settings.landing_page.faq.hide_section')}</span
-        >
-        <span slot="labelB" style="color: gray">{$t('settings.landing_page.faq.show_section')}</span
-        >
+        {#snippet labelA()}
+          <span style="color: gray">{$t('settings.landing_page.faq.hide_section')}</span>
+        {/snippet}
+        {#snippet labelB()}
+          <span style="color: gray">{$t('settings.landing_page.faq.show_section')}</span>
+        {/snippet}
       </Toggle>
     </Column>
     <Column sm={8} md={8} lg={8}>
@@ -484,12 +498,12 @@
         size="sm"
         on:change={() => (hasUnsavedChanges = true)}
       >
-        <span slot="labelA" style="color: gray"
-          >{$t('settings.landing_page.contact_us.hide_section')}</span
-        >
-        <span slot="labelB" style="color: gray"
-          >{$t('settings.landing_page.contact_us.show_section')}</span
-        >
+        {#snippet labelA()}
+          <span style="color: gray">{$t('settings.landing_page.contact_us.hide_section')}</span>
+        {/snippet}
+        {#snippet labelB()}
+          <span style="color: gray">{$t('settings.landing_page.contact_us.show_section')}</span>
+        {/snippet}
       </Toggle>
     </Column>
     <Column sm={8} md={8} lg={8}>
@@ -542,12 +556,12 @@
         size="sm"
         on:change={() => (hasUnsavedChanges = true)}
       >
-        <span slot="labelA" style="color: gray"
-          >{$t('settings.landing_page.mailing_list.hide_section')}</span
-        >
-        <span slot="labelB" style="color: gray"
-          >{$t('settings.landing_page.mailing_list.show_section')}</span
-        >
+        {#snippet labelA()}
+          <span style="color: gray">{$t('settings.landing_page.mailing_list.hide_section')}</span>
+        {/snippet}
+        {#snippet labelB()}
+          <span style="color: gray">{$t('settings.landing_page.mailing_list.show_section')}</span>
+        {/snippet}
       </Toggle>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
@@ -586,12 +600,12 @@
         size="sm"
         on:change={() => (hasUnsavedChanges = true)}
       >
-        <span slot="labelA" style="color: gray"
-          >{$t('settings.landing_page.footer.hide_section')}</span
-        >
-        <span slot="labelB" style="color: gray"
-          >{$t('settings.landing_page.footer.show_section')}</span
-        >
+        {#snippet labelA()}
+          <span style="color: gray">{$t('settings.landing_page.footer.hide_section')}</span>
+        {/snippet}
+        {#snippet labelB()}
+          <span style="color: gray">{$t('settings.landing_page.footer.show_section')}</span>
+        {/snippet}
       </Toggle>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">

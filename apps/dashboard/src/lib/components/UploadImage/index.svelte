@@ -2,23 +2,44 @@
   import { t } from '$lib/utils/functions/translations';
   import { Loading } from 'carbon-components-svelte';
   import Camera from 'carbon-icons-svelte/lib/Camera.svelte';
-  import { createEventDispatcher } from 'svelte';
 
-  export let avatar: string | undefined;
-  export let src: string | undefined;
-  export let widthHeight = '';
-  export let shape = 'rounded-full';
-  export let errorMessage: string | null = null;
-  export let isDisabled = false;
-  export let maxFileSizeInMb: number = 2; // Default max file size 2MB
-  export let flexDirection = 'flex-col';
-  export let isUploading = false;
+  interface Props {
+    avatar: string | undefined;
+    src: string | undefined;
+    widthHeight?: string;
+    shape?: string;
+    errorMessage?: string | null;
+    isDisabled?: boolean;
+    maxFileSizeInMb?: number; // Default max file size 2MB
+    flexDirection?: string;
+    isUploading?: boolean;
+    change?: () => void;
+  }
 
-  let fileinput: HTMLInputElement;
-  const dispatch = createEventDispatcher();
+  let {
+    avatar = $bindable(),
+    src = $bindable(),
+    widthHeight = '',
+    shape = 'rounded-full',
+    errorMessage = $bindable(null),
+    isDisabled = false,
+    maxFileSizeInMb = 2,
+    flexDirection = 'flex-col',
+    isUploading = $bindable(false),
+    change
+  }: Props = $props();
 
-  const onFileSelected = (e: Event<HTMLInputElement>) => {
-    const image = e.target.files[0];
+  let fileinput: HTMLInputElement | undefined = $state();
+
+  const onFileSelected = (
+    e: Event & {
+      currentTarget: EventTarget & HTMLInputElement;
+    }
+  ) => {
+    const image = e.currentTarget?.files?.[0];
+
+    if (!image) return;
+
     const maxFileSize = maxFileSizeInMb * 1024 * 1024;
     if (image.size > maxFileSize) {
       errorMessage = `${$t('settings.profile.profile_picture.validation_error')} ${
@@ -26,13 +47,15 @@
       } MB`;
       return;
     }
+
     let reader = new FileReader();
     reader.readAsDataURL(image);
     reader.onload = (e) => {
-      avatar = image;
-      dispatch('change');
-      // @ts-ignore
-      src = e.target?.result || undefined;
+      avatar = image.toString();
+
+      change?.();
+
+      src = e.target?.result?.toString() || undefined;
       errorMessage = null; // Clear error message on successful load
     };
   };
@@ -62,9 +85,9 @@
       isUploading
         ? 'cursor-not-allowed opacity-50'
         : 'cursor-pointer'}"
-      on:click={() => {
+      onclick={() => {
         if (!isDisabled || isUploading) {
-          fileinput.click();
+          fileinput?.click();
         }
       }}
       disabled={isDisabled || isUploading}
@@ -90,7 +113,7 @@
     style="display:none"
     type="file"
     accept=".jpg, .jpeg, .png, .webp"
-    on:change={(e) => onFileSelected(e)}
+    onchange={(e) => onFileSelected(e)}
     bind:this={fileinput}
   />
 </section>

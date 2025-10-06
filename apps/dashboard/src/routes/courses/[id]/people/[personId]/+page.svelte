@@ -12,9 +12,9 @@
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
 
-  export let data;
+  let { data } = $props();
 
-  let userCourseAnalytics: UserCourseAnalytics;
+  let userCourseAnalytics: UserCourseAnalytics = $state();
 
   function getPercentage(a: number, b: number): number {
     if (b === 0) {
@@ -23,7 +23,7 @@
     return Math.round((a / b) * 100);
   }
 
-  let exerciseFilter: 'all' | 'completed' | 'incomplete' = 'all';
+  let exerciseFilter: 'all' | 'completed' | 'incomplete' = $state('all');
   function toggleExerciseFilter(filter: 'completed' | 'incomplete') {
     if (exerciseFilter === filter) {
       exerciseFilter = 'all';
@@ -55,7 +55,7 @@
     fetchUserCourseAnalytics();
   });
 
-  $: learningActivities = [
+  let learningActivities = $derived([
     {
       description: $t('analytics.overall_course_progress_user_description'),
       icon: Notebook,
@@ -77,20 +77,22 @@
       percentage: userCourseAnalytics?.averageGrade,
       title: $t('analytics.average_grade')
     }
-  ];
+  ]);
 
-  $: filteredExercises = userCourseAnalytics?.userExercisesStats?.filter((exercise) => {
-    if (exerciseFilter === 'all') {
-      return true;
-    }
-    return exercise.isCompleted === (exerciseFilter === 'completed');
-  });
-  $: completedExercises = userCourseAnalytics?.userExercisesStats?.filter(
-    (exercise) => exercise.isCompleted
-  )?.length;
-  $: incompleteExercises = userCourseAnalytics?.userExercisesStats?.filter(
-    (exercise) => !exercise.isCompleted
-  )?.length;
+  let filteredExercises = $derived(
+    userCourseAnalytics?.userExercisesStats?.filter((exercise) => {
+      if (exerciseFilter === 'all') {
+        return true;
+      }
+      return exercise.isCompleted === (exerciseFilter === 'completed');
+    })
+  );
+  let completedExercises = $derived(
+    userCourseAnalytics?.userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length
+  );
+  let incompleteExercises = $derived(
+    userCourseAnalytics?.userExercisesStats?.filter((exercise) => !exercise.isCompleted)?.length
+  );
 </script>
 
 {#if userCourseAnalytics}
@@ -160,7 +162,7 @@
             transition:fade={{ duration: 300 }}
           >
             <div class="flex w-2/3 items-center gap-4">
-              <svelte:component this={Notebook} size={24} class="text-black" />
+              <Notebook size={24} class="text-black" />
               <div>
                 <div class="mb-2">
                   <a

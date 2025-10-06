@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { preventDefault } from 'svelte/legacy';
+
   import TextField from '$lib/components/Form/TextField.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -10,27 +12,36 @@
     NOTIFICATION_NAME
   } from '$lib/utils/services/notification/notification';
 
-  export let open = false;
-  export let paymentLink = '';
-  export let teacherEmail = '';
-  export let courseName = '';
+  interface Props {
+    open?: boolean;
+    paymentLink?: string;
+    teacherEmail?: string;
+    courseName?: string;
+  }
 
-  let fields = {
+  let {
+    open = $bindable(false),
+    paymentLink = '',
+    teacherEmail = '',
+    courseName = ''
+  }: Props = $props();
+
+  let fields = $state({
     fullname: '',
     email: ''
-  };
+  });
 
-  let errors = {
+  let errors = $state({
     fullname: '',
     email: ''
-  };
+  });
 
   const STEPS = {
     STEP_1: 'ENTER_DETAILS',
     STEP_2: 'GO_TO_PAYMENT'
   };
 
-  let step = STEPS.STEP_1;
+  let step = $state(STEPS.STEP_1);
 
   function onSubmit() {
     errors = coursePaymentValidation(fields);
@@ -73,7 +84,7 @@
 
 <Modal onClose={() => (open = false)} bind:open width="w-96" modalHeading="Process course payment">
   {#if step === STEPS.STEP_1}
-    <form on:submit|preventDefault={onSubmit}>
+    <form onsubmit={preventDefault(onSubmit)}>
       <TextField
         label="Your Fullname"
         bind:value={fields.fullname}
@@ -94,7 +105,7 @@
         errorMessage={errors.email}
       />
 
-      <div class="mt-5 flex items-center flex-row-reverse">
+      <div class="mt-5 flex flex-row-reverse items-center">
         <PrimaryButton
           className="px-6 py-3"
           label={paymentLink ? 'Next' : 'Finish'}
@@ -107,7 +118,7 @@
       You will now be taken to a payment page, once you've paid send a proof of payment to the
       course admin
     </p>
-    <div class="mt-5 flex items-center flex-row-reverse">
+    <div class="mt-5 flex flex-row-reverse items-center">
       <Link href={paymentLink} target="_blank" on:click={onClickPaymentLink}>Go to payment</Link>
     </div>
   {/if}

@@ -1,5 +1,9 @@
-<script>
-  export let isClosed = true;
+<script lang="ts">
+  interface Props {
+    isClosed?: boolean;
+  }
+
+  let { isClosed = true }: Props = $props();
 </script>
 
 {#if isClosed}

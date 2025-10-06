@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import TableOfContents from 'carbon-icons-svelte/lib/TableOfContents.svelte'; // overview
   import Result from 'carbon-icons-svelte/lib/Result.svelte';
   import Workspace from 'carbon-icons-svelte/lib/Workspace.svelte';
@@ -12,7 +12,11 @@
   import Analytics from 'carbon-icons-svelte/lib/Analytics.svelte';
   import { NAV_IDS } from './constants';
 
-  export let name = '';
+  interface Props {
+    name?: string;
+  }
+
+  let { name = '' }: Props = $props();
 </script>
 
 {#if name === NAV_IDS.SECTION}

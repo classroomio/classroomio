@@ -1,4 +1,11 @@
-import type { Course, Lesson, LessonComment, LessonPage, LessonSection } from '$lib/utils/types';
+import type {
+  Course,
+  Lesson,
+  LessonComment,
+  LessonCompletion,
+  LessonPage,
+  LessonSection
+} from '$lib/utils/types';
 import type { Updater, Writable } from 'svelte/store';
 import {
   createLesson,
@@ -28,7 +35,7 @@ export const lessonDocUpload = writable({
   isCancelled: false,
   isModalOpen: false,
   isUploading: false,
-  uploadedDocument: null as any,
+  uploadedDocument: null,
   uploadProgress: 0
 });
 
@@ -64,20 +71,74 @@ export const lessonComments = writable<LessonComment[]>([]);
 
 export const isLessonDirty = writable(false);
 
+export function setLesson({
+  id,
+  lessonData,
+  locale,
+  totalExercises,
+  totalComments
+}: {
+  id: string;
+  lessonData: Lesson & { lesson_language: { locale: LOCALE; content: string }[] };
+  locale: LOCALE;
+  totalExercises: number;
+  totalComments: number;
+}) {
+  if (!lessonData) return;
+
+  let lesson_completion: LessonCompletion[] = [];
+
+  if (Array.isArray(lessonData.lesson_completion)) {
+    lesson_completion = [...lessonData.lesson_completion];
+  }
+
+  lesson.update((l) => ({
+    ...l,
+    id: id,
+    title: lessonData.title,
+    totalExercises,
+    totalComments: totalComments,
+    materials: {
+      videos: lessonData.videos || [],
+      note: lessonData.note,
+      slide_url: lessonData.slide_url,
+      documents: lessonData.documents || []
+    },
+    lesson_completion,
+    exercises: [],
+    locale: locale
+  }));
+
+  if (Array.isArray(lessonData.lesson_language)) {
+    lessonByTranslation.update((lessLocales) => {
+      return {
+        ...lessLocales,
+        [id]: lessonData.lesson_language.reduce(
+          (acc, cur) => {
+            acc[cur.locale] = cur.content;
+            return acc;
+          },
+          {} as Record<LOCALE, string>
+        )
+      };
+    });
+  }
+}
+
 export function handleAddLesson() {
-  lessons.update(((_lessons) => {
-    return [
-      ..._lessons,
-      {
-        id: null,
-        title: 'Untitled lesson',
-        // profile: undefined,
-        call_url: undefined,
-        lesson_at: new Date(),
-        is_unlocked: false
-      }
-    ];
-  }) as Updater<any>);
+  lessons.update((_lessons) => {
+    const newLesson = {
+      id: '',
+      title: 'Untitled lesson',
+      lesson_at: new Date().toDateString(),
+      is_unlocked: false,
+      course_id: '',
+      created_at: new Date().toDateString(),
+      lesson_completion: []
+    } as Lesson;
+
+    return [..._lessons, newLesson];
+  });
 }
 
 export async function handleDelete(lessonId: Lesson['id'] | undefined) {
@@ -143,7 +204,7 @@ export async function handleSaveLesson(lesson: Lesson, courseId: Course['id']) {
     section_id: lesson.section_id
   };
 
-  let newLessonData: any[] | null = null;
+  let newLessonData: Lesson | null | undefined = null;
 
   if (lesson.id) {
     // No need to get the result of update cause we have all in local state
@@ -151,7 +212,7 @@ export async function handleSaveLesson(lesson: Lesson, courseId: Course['id']) {
   } else {
     const { data } = await createLesson(newLesson);
 
-    newLessonData = data;
+    newLessonData = data?.[0];
   }
   return newLessonData;
 }

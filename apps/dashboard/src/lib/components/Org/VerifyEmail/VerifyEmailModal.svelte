@@ -13,12 +13,12 @@
   const WAIT_SEC = 120;
   const WAIT_TIME = WAIT_SEC * 1000;
 
-  let open = false;
-  let loading = false;
-  let isSent = false;
+  let open = $state(false);
+  let loading = $state(false);
+  let isSent = $state(false);
 
   let interval;
-  let countDown = WAIT_SEC;
+  let countDown = $state(WAIT_SEC);
 
   const sendVerificationCode = async () => {
     if (isSent) return;
@@ -51,8 +51,12 @@
     }, WAIT_TIME);
   };
 
-  $: open = Boolean(!$profile.is_email_verified && !!$profile.id && !!$currentOrg.id);
-  $: open && sendVerificationCode();
+  $effect(() => {
+    open = Boolean(!$profile.is_email_verified && !!$profile.id && !!$currentOrg.id);
+  });
+  $effect(() => {
+    open && sendVerificationCode();
+  });
 </script>
 
 <Modal {open} isCloseable={false} width="w-4/5" maxWidth="w-[500px]" containerClass="p-4">

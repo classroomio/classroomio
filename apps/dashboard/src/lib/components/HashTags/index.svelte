@@ -1,5 +1,5 @@
-<script>
-  export let tags = [];
+<script lang="ts">
+  let { tags = [] } = $props();
 </script>
 
 <div class="break-all">

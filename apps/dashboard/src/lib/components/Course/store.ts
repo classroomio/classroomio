@@ -1,9 +1,10 @@
-import { writable } from 'svelte/store';
-import type { Writable } from 'svelte/store';
-import { lessons, lessonSections } from './components/Lesson/store/lessons';
-import { ROLE } from '$lib/utils/constants/roles';
-import type { Course, GroupPerson, Lesson, LessonSection } from '$lib/utils/types';
 import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
+import type { Course, GroupPerson, Lesson, LessonSection } from '$lib/utils/types';
+import { get, writable, type Writable } from 'svelte/store';
+import { lessonSections, lessons } from './components/Lesson/store/lessons';
+
+import { ROLE } from '$lib/utils/constants/roles';
+import { fetchCourse } from '$lib/utils/services/courses';
 
 export const defaultCourse: Course = {
   id: '',
@@ -54,6 +55,39 @@ export const defaultCourse: Course = {
 
 export const course: Writable<Course> = writable({ ...defaultCourse });
 
+class CourseStore {
+  prevId = writable('');
+  isLoading = writable(false);
+
+  async fetch(id: string) {
+    console.log('----------------FETCHING COURSE----------------');
+    console.log('1. fetching course', id);
+    if (get(this.prevId) === id) {
+      console.log('2. course already fetched');
+      return;
+    }
+
+    console.log('3. fetching course', id);
+
+    this.isLoading.update(() => true);
+    this.prevId.set(id);
+
+    course.set(defaultCourse);
+    lessons.set([]);
+
+    const { data } = await fetchCourse(id);
+    if (data) {
+      console.log('4. setting course');
+      setCourse(data);
+    }
+    console.log('5. setting isLoading to false');
+
+    this.isLoading.update(() => false);
+    console.log('--------------FETCHING COURSE COMPLETED------------------');
+  }
+}
+export const courseStore = new CourseStore();
+
 export const mockGroupMember = {
   id: '434534534535',
   group_id: '434534534535',
@@ -71,7 +105,7 @@ export const mockGroupMember = {
 };
 
 type GroupStore = {
-  id: string;
+  id?: string;
   tutors: GroupPerson[];
   students: GroupPerson[];
   people: GroupPerson[];
@@ -88,14 +122,14 @@ export const group = writable<GroupStore>({
 
 export async function setCourse(data: Course, setLesson = true) {
   if (!data || !(Object.values(data) && Object.values(data).length)) return;
-  // const tutorsById = {};
 
   if (data.group) {
-    const groupData = Object.assign(data.group, {
+    const groupData: GroupStore = {
+      id: data.group.id,
       tutors: [],
       students: [],
       people: []
-    }) as GroupStore;
+    };
 
     if (Array.isArray(groupData.members)) {
       for (const member of groupData.members) {
@@ -103,7 +137,7 @@ export async function setCourse(data: Course, setLesson = true) {
           groupData.students.push(member);
         } else if (member.profile) {
           groupData.tutors.push({
-            ...member.profile,
+            ...member,
             memberId: member.id
           });
         }
@@ -120,6 +154,8 @@ export async function setCourse(data: Course, setLesson = true) {
   if (setLesson) {
     const orderedLessons = sortLesson(data.lessons);
     lessons.set(orderedLessons);
+
+    console.log('orderedLessons', orderedLessons);
 
     if (data.lesson_section) {
       const sections = data.lesson_section?.map((section) => {
@@ -184,16 +220,18 @@ export async function setCourse(data: Course, setLesson = true) {
   if (!data.certificate_theme) {
     data.certificate_theme = 'professional';
   }
+
+  console.log('lessons', get(lessons));
   course.set(data);
 }
 
-function sortLesson(lessons: Lesson[] = []) {
+export function sortLesson(lessons: Lesson[] = []) {
   return lessons
     .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 }
 
-function sortLessonSection(sections: LessonSection[] = []) {
+export function sortLessonSection(sections: LessonSection[] = []) {
   return sections
     .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));

@@ -30,11 +30,11 @@
     'blueBadgePattern'
   ];
 
-  let isSaving = false;
-  let errors = {
+  let isSaving = $state(false);
+  let errors = $state({
     description: ''
-  };
-  let helperText = '';
+  });
+  let helperText = $state('');
 
   const saveCertificate = async () => {
     isSaving = true;
@@ -71,9 +71,11 @@
     }
   };
 
-  $: helperText = `${$course.description?.length || 0}/200 ${$t(
-    'course.navItem.certificates.characters'
-  )}`;
+  $effect(() => {
+    helperText = `${$course.description?.length || 0}/200 ${$t(
+      'course.navItem.certificates.characters'
+    )}`;
+  });
 </script>
 
 <svelte:head>
@@ -152,10 +154,14 @@
           size="sm"
           disabled={$isFreePlan}
         >
-          <span slot="labelA" style={$globalStore.isDark ? 'color: white' : 'color: #161616'}
-            >{$t('generic.locked')}</span
-          >
-          <span slot="labelB" style="color: green">{$t('generic.unlocked')}</span>
+          {#snippet labelA()}
+            <span style={$globalStore.isDark ? 'color: white' : 'color: #161616'}
+              >{$t('generic.locked')}</span
+            >
+          {/snippet}
+          {#snippet labelB()}
+            <span style="color: green">{$t('generic.unlocked')}</span>
+          {/snippet}
         </Toggle>
       </div>
     </section>

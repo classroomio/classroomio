@@ -1,25 +1,43 @@
 <script lang="ts">
   import ToolTip from '../ToolTip/index.svelte';
 
-  export let onClick = (v: string) => {};
-  export let stopPropagation = false;
-  export let disabled = false;
-  export let selected = false;
-  export let buttonClassName = '';
-  export let contained = false;
-  export let value = '';
-  export let type: 'button' | 'submit' | 'reset' | null | undefined = 'button';
-  export let size: 'small' | 'large' = 'large';
-  export let color = '';
-  export let toolTipProps: {
-    title: string;
-    hotkeys: string[];
-    direction?: string;
-  } = {
-    title: '',
-    hotkeys: [],
-    direction: ''
-  };
+  interface Props {
+    onClick?: any;
+    stopPropagation?: boolean;
+    disabled?: boolean;
+    selected?: boolean;
+    buttonClassName?: string;
+    contained?: boolean;
+    value?: string;
+    type?: 'button' | 'submit' | 'reset' | null | undefined;
+    size?: 'small' | 'large';
+    color?: string;
+    toolTipProps?: {
+      title: string;
+      hotkeys: string[];
+      direction?: string;
+    };
+    children?: import('svelte').Snippet;
+  }
+
+  let {
+    onClick = (v: string) => {},
+    stopPropagation = false,
+    disabled = false,
+    selected = false,
+    buttonClassName = '',
+    contained = false,
+    value = '',
+    type = 'button',
+    size = 'large',
+    color = '',
+    toolTipProps = {
+      title: '',
+      hotkeys: [],
+      direction: ''
+    },
+    children
+  }: Props = $props();
 
   function handleClick(e: Event) {
     if (stopPropagation) {
@@ -39,9 +57,9 @@
       'contained dark:bg-neutral-700'} {buttonClassName}"
     {disabled}
     {type}
-    on:click={handleClick}
+    onclick={handleClick}
   >
-    <slot />
+    {@render children?.()}
   </button>
 </ToolTip>
 
