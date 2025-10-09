@@ -9,12 +9,11 @@
     "format": "prettier . --write",
     "release": "standard-version",
     "ci": "cypress run",
-    "supabase": "pnpx supabase",
-    "dashboard:build": "cd apps/dashboard && pnpm i && IS_SELFHOSTED=true NODE_OPTIONS='--max-old-space-size=20384' DEPLOYMENT_PROVIDER=docker pnpm build",
-    "dashboard:start": "cd apps/dashboard && node build"
+    "dashboard:build": "cd apps/dashboard && pnpm i && PUBLIC_IS_SELFHOSTED=true NODE_OPTIONS='--max-old-space-size=20384' pnpm build",
+    "dashboard:start": "cd apps/dashboard && node build",
+    "supabase:push": "pnpx supabase link --project-ref $PROJECT_ID && pnpx supabase db push --include-all"
   },
   "license": "MIT",
-  "packageManager": "pnpm@8.0.0",
   "dependencies": {
     "turbo": "^1.10.16"
   },
@@ -29,6 +28,6 @@
     "typescript": "^5.1.6"
   },
   "engines": {
-    "node": "^18.18.0"
+    "node": "^20.19.3"
   }
 }

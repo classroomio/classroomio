@@ -1,5 +1,5 @@
 import type { Tabs } from '$lib/utils/types';
-import { Notebook, PresentationFile, Video } from 'carbon-icons-svelte';
+import { Notebook, PresentationFile, Video, Document } from 'carbon-icons-svelte';
 
 interface MaterialTab {
   label: string;
@@ -25,6 +25,12 @@ export let tabs: MaterialTab[] = [
     label: 'course.navItem.lessons.materials.tabs.video.title',
     icon: Video,
     value: 3,
+    badgeValue: 0
+  },
+  {
+    label: 'course.navItem.lessons.materials.tabs.document.title',
+    icon: Document,
+    value: 4,
     badgeValue: 0
   }
 ];

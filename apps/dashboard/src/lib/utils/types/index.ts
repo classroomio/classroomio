@@ -281,6 +281,22 @@ export interface Group_attendance {
 }
 
 export type LessonVideoType = 'youtube' | 'generic' | 'upload';
+export type LessonDocumentType = any;
+export type LessonVideo = {
+  type: LessonVideoType;
+  link: string;
+  key?: string;
+  metadata?: {
+    svid?: string;
+  };
+};
+export type LessonDocument = {
+  type: LessonDocumentType;
+  name: string;
+  link: string;
+  size?: number;
+  key: string;
+};
 
 export interface LessonPage {
   id?: string | null;
@@ -293,14 +309,8 @@ export interface LessonPage {
   materials: {
     note: string;
     slide_url: string;
-    videos: Array<{
-      type: LessonVideoType;
-      link: string;
-      key?: string;
-      metadata?: {
-        svid?: string;
-      };
-    }>;
+    videos: LessonVideo[];
+    documents: LessonDocument[];
   };
   exercises: [];
   lesson_completion: LessonCompletion[];

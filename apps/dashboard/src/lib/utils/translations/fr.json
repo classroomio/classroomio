@@ -515,6 +515,11 @@
           "accept_grade": "Accepter",
           "reject_grade": "Rejeter",
           "add_comment_placeholder": "laissez un commentaire",
+          "allocated": "J'ai attribué ce score parce que",
+          "total_try": "du total d'essais :",
+          "options_correct": "les bonnes options ont été sélectionnées",
+          "out_of": "hors de",
+          "options_wrong": "et le nombre de mauvaises sélections était",
           "questions_tried": "Attribué ce score en raison du nombre total d'essais :",
           "delete_prompt": "Supprimer",
           "delete_error": "Échec de la suppression de la soumission",
@@ -737,7 +742,9 @@
                 "upgrade": "Mettez à niveau votre forfait pour télécharger des vidéos",
                 "uploading": "Téléchargement...",
                 "invalid_youtube": "Lien(s) YouTube invalide(s)",
-                "invalid_link": "Lien(s) invalide(s)"
+                "invalid_link": "Lien(s) invalide(s)",
+                "cancel_upload": "Annuler le téléchargement",
+                "upload_cancelled": "Télécharger annulé par l'utilisateur"
               }
             },
             "slide": {
@@ -753,6 +760,42 @@
                 "note": "Générer une note de cours",
                 "activities": "Générer des activités de cours"
               }
+            },
+            "document": {
+              "title": "Document",
+              "add_document": "Ajouter un document",
+              "no_document": "Aucun document encore téléchargé",
+              "view_document": "Afficher le document",
+              "download": "Télécharger",
+              "upload_document": "Télécharger le document",
+              "upload_title": "Télécharger le document",
+              "upload_description": "Téléchargez les fichiers PDF, DOCX ou DOC. Taille maximale: 5 Mo",
+              "drag_drop": "Faites glisser et déposez votre document ici",
+              "or": "ou",
+              "choose_file": "Choisir le fichier",
+              "cancel": "Annuler",
+              "uploading": "Téléchargement ...",
+              "upload_success": "Document téléchargé avec succès!",
+              "upload_error": "Échec de la téléchargement du document",
+              "file_type_error": "Type de fichier non pris en charge. Veuillez télécharger des fichiers PDF, DOCX ou DOC.",
+              "file_size_error": "Taille de fichier trop grande. La taille maximale est {taille}.",
+              "type": "Taper",
+              "size": "Taille",
+              "upload_error_title": "Télécharger une erreur",
+              "upload_error_message": "Le format de fichier non pris en charge ou le téléchargement a échoué",
+              "upload_error_try_again": "Veuillez réessayer avec un fichier de document valide",
+              "try_again": "Essayer à nouveau",
+              "cancel_upload": "Annuler le téléchargement",
+              "upload_cancelled": "Télécharger annulé par l'utilisateur",
+              "downloading": "Téléchargement...",
+              "view_pdf": "Afficher le PDF",
+              "delete": "Supprimer",
+              "page_of": "Page {page} de {total}",
+              "loading_pdf": "Chargement du PDF ...",
+              "failed_to_load_pdf": "Échec du chargement du document PDF",
+              "failed_to_render_pdf": "Échec de la page PDF",
+              "use_arrow_keys": "Utilisez des touches flèches pour naviguer, +/- pour zoomer ou cliquez sur les commandes ci-dessus. Le clic droit est désactivé.",
+              "upgrade": "Mettez à niveau votre plan pour télécharger des documents"
             }
           }
         },
@@ -824,6 +867,9 @@
           "cancel": "Annuler",
           "post": "Poste"
         }
+      },
+      "analytics": {
+        "title": "Analytique"
       }
     },
     "navItems": {
@@ -835,7 +881,8 @@
       "nav_certificates": "Certificats",
       "nav_landing_page": "Page de destination",
       "nav_settings": "Paramètres",
-      "nav_content": "Contenu"
+      "nav_content": "Contenu",
+      "nav_analytics": "Analytique"
     },
     "not_permitted": {
       "header": "Aucune autorisation",
@@ -1382,7 +1429,8 @@
   },
   "generic": {
     "locked": "Fermé à clé",
-    "unlocked": "Débloqué"
+    "unlocked": "Débloqué",
+    "loading": "Chargement"
   },
   "specialization": {
     "course_tag": "Spécialisation"
@@ -1529,6 +1577,27 @@
     "assignment_completion": "Achèvement de la mission",
     "assignment_completion_description": "Pourcentage de missions terminées",
     "average_grade": "Note moyenne",
-    "average_grade_description": "Note moyenne de tous les devoirs terminés"
+    "average_grade_description": "Note moyenne de tous les devoirs terminés",
+    "students": "Étudiants",
+    "lessons": "Leçons",
+    "tutors": "tuteurs",
+    "avg_grade": "Grade AVG",
+    "completion_rate": "Taux d'achèvement",
+    "student_progress_overview": "Aperçu des progrès des étudiants",
+    "student_name": "Nom de l'étudiant",
+    "lessons_completed": "Leçons terminées",
+    "exercises_submitted": "Exercices soumis",
+    "actions": "Actes",
+    "view_details": "Afficher les détails",
+    "no_students_found": "Aucun étudiant trouvé",
+    "no_students_description": "Il n'y a pas encore d'étudiants inscrits à ce cours. Les étudiants apparaîtront ici une fois qu'ils auront participé au cours.",
+    "showing_students": "Affichage {démarrer} à {fin} des étudiants {totaux}",
+    "no_analytics_data": "Aucune donnée d'analyse",
+    "no_analytics_description": "Impossible de charger des données d'analyse pour ce cours. Veuillez réessayer plus tard ou contacter le support si le problème persiste."
+  },
+  "common": {
+    "unsaved_changes": {
+      "message": "Vous avez des changements non sauvés. Êtes-vous sûr de vouloir partir?"
+    }
   }
 }

@@ -96,6 +96,7 @@
     padding: 0 1.5em;
     font-weight: 700;
     display: flex;
+    gap: 0.5rem;
     align-items: center;
     flex-direction: column;
   }

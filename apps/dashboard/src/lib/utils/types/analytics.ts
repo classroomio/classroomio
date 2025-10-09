@@ -1,3 +1,64 @@
+export interface CourseAnalytics {
+  totalTutors: number;
+  totalStudents: number;
+  totalLessons: number;
+  totalExercises: number;
+  lessonCompletionRate: number;
+  exerciseCompletionRate: number;
+  averageGrade: number;
+  students: StudentOverview[];
+}
+
+export interface StudentOverview {
+  id: string;
+  profile: {
+    fullname: string;
+    email: string;
+    avatar_url: string;
+  };
+  lessonsCompleted: number;
+  totalLessons: number;
+  exercisesSubmitted: number;
+  totalExercises: number;
+  averageGrade: number;
+  lastSeen: string;
+  progressPercentage: number;
+}
+
+export interface StudentDetailModal {
+  student: {
+    profile: {
+      id: string;
+      fullname: string;
+      email: string;
+      avatar_url: string;
+    };
+    overallStats: {
+      totalCourses: number;
+      totalLessonsCompleted: number;
+      totalExercisesSubmitted: number;
+      overallAverageGrade: number;
+      lastSeen: string;
+    };
+    courses: StudentCourseAnalytics[];
+  };
+}
+
+export interface StudentCourseAnalytics {
+  courseId: string;
+  courseTitle: string;
+  courseLogo: string;
+  role: 'student' | 'tutor' | 'admin';
+  lessonsCompleted: number;
+  totalLessons: number;
+  exercisesSubmitted: number;
+  totalExercises: number;
+  averageGrade: number;
+  progressPercentage: number;
+  lastActivity: string;
+  enrollmentDate: string;
+}
+
 interface User {
   id: string;
   fullName: string;

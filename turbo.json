@@ -1,10 +1,13 @@
 {
-  "$schema": "https://turbo.build/schema.json",
-  "globalEnv": ["IS_SELFHOSTED", "DEPLOYMENT_PROVIDER"],
+  "$schema": "https://turborepo.org/schema.json",
+  "globalEnv": ["PUBLIC_IS_SELFHOSTED"],
   "pipeline": {
+    "@cio/dashboard#build": {
+      "dependsOn": ["@cio/api#build"]
+    },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", ".svelte-kit/**", ".vercel/**"]
+      "outputs": [".next/**", "!.next/cache/**", ".svelte-kit/**", ".vercel/**", "dist/**"]
     },
     "lint": {
       "dependsOn": ["^build"]

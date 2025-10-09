@@ -11,9 +11,20 @@
 
   export let data;
 
+  // Get back URL from query parameters
+  $: backUrl = $page.url.searchParams.get('back');
+
   const handleClick = () => {
     const url = $page.url.href + '?add=true';
     goto(url);
+  };
+
+  const handleBackNavigation = () => {
+    if (backUrl) {
+      goto(backUrl);
+    } else {
+      goto(`/courses/${data.courseId}/people`);
+    }
   };
 </script>
 
@@ -22,12 +33,7 @@
     <slot:fragment slot="image">
       {#if data.personId}
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <IconButton
-            size="large"
-            onClick={() => {
-              goto(`/courses/${data.courseId}/people`);
-            }}
-          >
+          <IconButton size="large" onClick={handleBackNavigation}>
             <ArrowLeft size={16} class="carbon-icon dark:text-white " />
           </IconButton>
         </RoleBasedSecurity>

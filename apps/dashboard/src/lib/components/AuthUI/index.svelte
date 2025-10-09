@@ -16,6 +16,7 @@
   export let showLogo = false;
   export let formRef;
   export let hideGoogleAuth = false;
+  export let redirectPathname = '';
 
   async function signInWithGoogle() {
     if (isLoading) {
@@ -27,7 +28,8 @@
     // const redirectTo = `https://app.classroomio.com?forwardTo=${
     //   window.location.origin + params.get('redirect')
     // }`;
-    const redirectTo = `${window.location.origin + params.get('redirect')}`;
+    const pathname = redirectPathname || params.get('redirect');
+    const redirectTo = `${window.location.origin + pathname}`;
 
     console.log({ redirectTo });
 

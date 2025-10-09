@@ -515,6 +515,11 @@
           "accept_grade": "Aceitar",
           "reject_grade": "Rejeitar",
           "add_comment_placeholder": "Deixe um comentário",
+          "allocated": "Alocou esta pontuação porque",
+          "total_try": "do total de tentativas:",
+          "options_correct": "opções corretas foram selecionadas",
+          "out_of": "fora de",
+          "options_wrong": "e o número de seleções erradas foi",
           "questions_tried": "Alocada esta pontuação por causa do total de tentativas:",
           "delete_prompt": "Excluir",
           "delete_error": "Falha ao excluir o envio",
@@ -737,7 +742,9 @@
                 "upgrade": "Atualize seu plano para enviar vídeos",
                 "uploading": "Enviando...",
                 "invalid_youtube": "Links inválidos do YouTube",
-                "invalid_link": "Links inválidos"
+                "invalid_link": "Links inválidos",
+                "cancel_upload": "Cancelar upload",
+                "upload_cancelled": "Upload cancelado pelo usuário"
               }
             },
             "slide": {
@@ -753,6 +760,42 @@
                 "note": "Gerar nota de aula",
                 "activities": "Gerar atividades de aula"
               }
+            },
+            "document": {
+              "title": "Documento",
+              "add_document": "Adicione documento",
+              "no_document": "Nenhum documento enviado ainda",
+              "view_document": "Exibir documento",
+              "download": "Download",
+              "upload_document": "Documento de upload",
+              "upload_title": "Documento de upload",
+              "upload_description": "Faça o upload de arquivos PDF, DOCX ou DOC. Tamanho máximo: 5 MB",
+              "drag_drop": "Arraste e solte seu documento aqui",
+              "or": "ou",
+              "choose_file": "Escolha o arquivo",
+              "cancel": "Cancelar",
+              "uploading": "Enviando ...",
+              "upload_success": "Documento enviado com sucesso!",
+              "upload_error": "Falha ao fazer upload do documento",
+              "file_type_error": "Tipo de arquivo não suportado. Faça o upload de arquivos PDF, DOCX ou DOC.",
+              "file_size_error": "Tamanho do arquivo muito grande. O tamanho máximo é {size}.",
+              "type": "Tipo",
+              "size": "Tamanho",
+              "upload_error_title": "Erro de upload",
+              "upload_error_message": "Formato de arquivo ou upload não suportado",
+              "upload_error_try_again": "Tente novamente com um arquivo de documento válido",
+              "try_again": "Tente novamente",
+              "cancel_upload": "Cancelar upload",
+              "upload_cancelled": "Upload cancelado pelo usuário",
+              "downloading": "Download ...",
+              "view_pdf": "Veja PDF",
+              "delete": "Excluir",
+              "page_of": "Página {page} de {total}",
+              "loading_pdf": "Carregando PDF ...",
+              "failed_to_load_pdf": "Falha ao carregar o documento PDF",
+              "failed_to_render_pdf": "Falhou em renderizar a página em PDF",
+              "use_arrow_keys": "Use as teclas de seta para navegar, +/- zoom ou clique nos controles acima. Clique com o botão direito do mouse está desativado.",
+              "upgrade": "Atualize seu plano para fazer upload de documentos"
             }
           }
         },
@@ -824,6 +867,9 @@
           "cancel": "Cancelar",
           "post": "Publicar"
         }
+      },
+      "analytics": {
+        "title": "Análise"
       }
     },
     "navItems": {
@@ -835,7 +881,8 @@
       "nav_certificates": "Certificados",
       "nav_landing_page": "Página inicial",
       "nav_settings": "Configurações",
-      "nav_content": "Contente"
+      "nav_content": "Contente",
+      "nav_analytics": "Análise"
     },
     "not_permitted": {
       "header": "Sem permissão",
@@ -1382,7 +1429,8 @@
   },
   "generic": {
     "locked": "Bloqueado",
-    "unlocked": "Desbloqueado"
+    "unlocked": "Desbloqueado",
+    "loading": "Carregando"
   },
   "specialization": {
     "course_tag": "Especialização"
@@ -1529,6 +1577,27 @@
     "assignment_completion": "Conclusão da tarefa",
     "assignment_completion_description": "Porcentagem de tarefas concluídas",
     "average_grade": "Nota Média",
-    "average_grade_description": "Nota média de todas as tarefas concluídas"
+    "average_grade_description": "Nota média de todas as tarefas concluídas",
+    "students": "Alunos",
+    "lessons": "Lições",
+    "tutors": "tutores",
+    "avg_grade": "Grau AVG",
+    "completion_rate": "Taxa de conclusão",
+    "student_progress_overview": "Visão geral do progresso do aluno",
+    "student_name": "Nome do aluno",
+    "lessons_completed": "Lições concluídas",
+    "exercises_submitted": "Exercícios enviados",
+    "actions": "Ações",
+    "view_details": "Ver detalhes",
+    "no_students_found": "Nenhum aluno encontrado",
+    "no_students_description": "Ainda não há alunos matriculados neste curso. Os alunos aparecerão aqui quando ingressarem no curso.",
+    "showing_students": "Mostrando {start} para {end} de {total} alunos",
+    "no_analytics_data": "Sem dados de análise",
+    "no_analytics_description": "Não é possível carregar dados de análise para este curso. Tente novamente mais tarde ou entre em contato com o suporte se o problema persistir."
+  },
+  "common": {
+    "unsaved_changes": {
+      "message": "Você tem mudanças não salvas. Tem certeza de que deseja sair?"
+    }
   }
 }

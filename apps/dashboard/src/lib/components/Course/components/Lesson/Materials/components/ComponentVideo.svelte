@@ -72,9 +72,10 @@
             {:else}
               <video
                 bind:this={videoElements[index]}
-                class="plyr-video-trigger h-full w-full"
+                class="plyr-video-trigger iframe h-full w-full"
                 playsinline
                 controls
+                style="aspect-ratio: 16/9;"
               >
                 <source src={video.link} type="video/mp4" />
                 <track kind="captions" />

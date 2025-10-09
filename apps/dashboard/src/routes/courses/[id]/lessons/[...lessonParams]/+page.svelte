@@ -41,7 +41,7 @@
   import { ChevronLeft, ChevronRight, Edit, Save } from 'carbon-icons-svelte';
   import OverflowMenuVertical from 'carbon-icons-svelte/lib/OverflowMenuVertical.svelte';
   import ResultOld from 'carbon-icons-svelte/lib/ResultOld.svelte';
-  import { apiClient } from '$lib/utils/services/api';
+  import { classroomio } from '$lib/utils/services/api';
 
   export let data;
 
@@ -160,9 +160,8 @@
       const lessonNumber = getLessonOrder(currentLesson.id);
       const slideUrl = $lesson.materials.slide_url || '';
 
-      const response = await apiClient.post(
-        '/course/lesson/download/pdf',
-        {
+      const response = await classroomio.course.lesson.download.pdf.$post({
+        json: {
           title: currentLesson.title,
           number: lessonNumber,
           orgName: $currentOrg.name,
@@ -170,13 +169,11 @@
           slideUrl: slideUrl,
           video: lessonVideo,
           courseTitle: $course.title
-        },
-        {
-          responseType: 'blob'
         }
-      );
+      });
+      const blob = await response.blob();
 
-      const file = new Blob([response.data], { type: 'application/pdf' });
+      const file = new Blob([blob], { type: 'application/pdf' });
       const fileURL = URL.createObjectURL(file);
 
       let a = document.createElement('a');
@@ -213,7 +210,8 @@
       materials: {
         videos: lessonData.videos,
         note: lessonData.note,
-        slide_url: lessonData.slide_url
+        slide_url: lessonData.slide_url,
+        documents: lessonData.documents || null
       },
       lesson_completion,
       exercises: [],
@@ -359,7 +357,7 @@
             <div
               class={`flex-row ${
                 $apps.dropdown && $apps.open
-                  ? 'absolute right-14 top-[85px] z-40 rounded-md bg-gray-100 p-3 dark:bg-neutral-800 lg:relative lg:right-0 lg:top-0 lg:p-0'
+                  ? 'absolute right-14 top-[85px] z-40 rounded-md bg-gray-100 p-3 lg:relative lg:right-0 lg:top-0 lg:p-0 dark:bg-neutral-800'
                   : 'hidden'
               } items-center lg:flex`}
             >

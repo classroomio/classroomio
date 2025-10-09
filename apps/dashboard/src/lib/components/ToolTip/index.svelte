@@ -10,10 +10,10 @@
       class="tooltiptext z-20 {direction === 'right'
         ? 'right'
         : direction === 'top'
-        ? 'top'
-        : direction === 'bottom'
-        ? 'bottom'
-        : 'left'}"
+          ? 'top'
+          : direction === 'bottom'
+            ? 'bottom'
+            : 'left'}"
     >
       {title}
       {#if Array.isArray(hotkeys) && hotkeys.length}
@@ -33,39 +33,50 @@
     position: relative;
     display: inline-block;
   }
-  .right {
-    left: 100%;
-    right: unset !important;
-  }
-  .bottom {
-    bottom: -75% !important;
-    left: -80%;
+  .top {
+    bottom: 100%;
+    left: 50%;
     right: unset !important;
     top: unset !important;
+    transform: translateX(-50%);
+    margin-bottom: 5px;
+  }
+  .right {
+    left: 100%;
+    top: 50%;
+    right: unset !important;
+    bottom: unset !important;
+    transform: translateY(-50%);
+    margin-left: 5px;
+  }
+  .bottom {
+    top: 100%;
+    left: 50%;
+    right: unset !important;
+    bottom: unset !important;
+    transform: translateX(-50%);
+    margin-top: 5px;
+  }
+  .left {
+    right: 100%;
+    top: 50%;
+    left: unset !important;
+    bottom: unset !important;
+    transform: translateY(-50%);
+    margin-right: 5px;
   }
   .tooltip .tooltiptext {
     color: #fff;
-    padding: 8px;
-    font-size: 0.625rem;
+    padding: 10px 8px;
+    font-size: 12px;
     font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
-    font-weight: 500;
-    line-height: 1.4em;
-    border-radius: 8px;
+    line-height: 1.2em;
     background-color: #000;
     visibility: hidden;
     text-align: center;
-    font-weight: bold;
     white-space: nowrap;
-    font-size: 13px;
-
-    /* Position the tooltip */
     position: absolute;
     z-index: 2;
-    /* top: 100%;
-    left: 0; */
-    top: 20%;
-    right: 100%;
-    margin-left: 5px;
   }
 
   .tooltip:hover .tooltiptext {

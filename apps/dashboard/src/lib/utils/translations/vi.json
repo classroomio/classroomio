@@ -515,6 +515,11 @@
           "accept_grade": "Chấp nhận",
           "reject_grade": "Từ chối",
           "add_comment_placeholder": "Để lại một bình luận",
+          "allocated": "Phân bổ số điểm này bởi vì",
+          "total_try": "trong tổng số lần thử:",
+          "options_correct": "các phương án đúng đã được chọn",
+          "out_of": "ra khỏi",
+          "options_wrong": "và số lựa chọn sai là",
           "questions_tried": "Phân bổ số điểm này dựa trên tổng số lần thử:",
           "delete_prompt": "Xóa bỏ",
           "delete_error": "Không thể xóa bài nộp",
@@ -737,7 +742,9 @@
                 "upgrade": "Nâng cấp kế hoạch tải video lên của bạn",
                 "uploading": "Đang tải lên...",
                 "invalid_youtube": "(Các) liên kết YouTube không hợp lệ",
-                "invalid_link": "(Các) liên kết không hợp lệ"
+                "invalid_link": "(Các) liên kết không hợp lệ",
+                "cancel_upload": "Hủy tải lên",
+                "upload_cancelled": "Tải lên bị hủy bởi người dùng"
               }
             },
             "slide": {
@@ -753,6 +760,42 @@
                 "note": "Tạo ghi chú bài học",
                 "activities": "Tạo hoạt động bài học"
               }
+            },
+            "document": {
+              "title": "Tài liệu",
+              "add_document": "Thêm tài liệu",
+              "no_document": "Chưa có tài liệu nào được tải lên",
+              "view_document": "Xem tài liệu",
+              "download": "Tải xuống",
+              "upload_document": "Tải lên tài liệu",
+              "upload_title": "Tải lên tài liệu",
+              "upload_description": "Tải lên các tệp PDF, DOCX hoặc DOC. Kích thước tối đa: 5MB",
+              "drag_drop": "Kéo và thả tài liệu của bạn tại đây",
+              "or": "hoặc",
+              "choose_file": "Chọn Tệp",
+              "cancel": "Hủy bỏ",
+              "uploading": "Tải lên ...",
+              "upload_success": "Tài liệu được tải lên thành công!",
+              "upload_error": "Không tải lên tài liệu",
+              "file_type_error": "Loại tệp không được hỗ trợ. Vui lòng tải lên các tệp PDF, DOCX hoặc DOC.",
+              "file_size_error": "Kích thước tập tin quá lớn. Kích thước tối đa là {kích thước}.",
+              "type": "Kiểu",
+              "size": "Kích cỡ",
+              "upload_error_title": "Lỗi tải lên",
+              "upload_error_message": "Định dạng tệp không được hỗ trợ hoặc tải lên không thành công",
+              "upload_error_try_again": "Vui lòng thử lại với một tệp tài liệu hợp lệ",
+              "try_again": "Hãy thử lại",
+              "cancel_upload": "Hủy tải lên",
+              "upload_cancelled": "Tải lên bị hủy bởi người dùng",
+              "downloading": "Tải xuống ...",
+              "view_pdf": "Xem PDF",
+              "delete": "Xóa bỏ",
+              "page_of": "Trang {page} của {total}",
+              "loading_pdf": "Tải PDF ...",
+              "failed_to_load_pdf": "Không tải tài liệu PDF",
+              "failed_to_render_pdf": "Không thể hiển thị trang PDF",
+              "use_arrow_keys": "Sử dụng các phím mũi tên để điều hướng, +/- đến phóng to hoặc nhấp vào các điều khiển ở trên. Nhấp chuột phải bị vô hiệu hóa.",
+              "upgrade": "Nâng cấp kế hoạch của bạn để tải lên tài liệu"
             }
           }
         },
@@ -824,6 +867,9 @@
           "cancel": "Hủy bỏ",
           "post": "Bưu kiện"
         }
+      },
+      "analytics": {
+        "title": "Phân tích"
       }
     },
     "navItems": {
@@ -835,7 +881,8 @@
       "nav_certificates": "Chứng chỉ",
       "nav_landing_page": "Trang đích",
       "nav_settings": "Cài đặt",
-      "nav_content": "Nội dung"
+      "nav_content": "Nội dung",
+      "nav_analytics": "Phân tích"
     },
     "not_permitted": {
       "header": "Không cho phép",
@@ -1382,7 +1429,8 @@
   },
   "generic": {
     "locked": "Đã khóa",
-    "unlocked": "Đã mở khóa"
+    "unlocked": "Đã mở khóa",
+    "loading": "Đang tải"
   },
   "specialization": {
     "course_tag": "Chuyên môn"
@@ -1529,6 +1577,27 @@
     "assignment_completion": "Hoàn thành bài tập",
     "assignment_completion_description": "Tỷ lệ bài tập đã hoàn thành",
     "average_grade": "Điểm trung bình",
-    "average_grade_description": "Điểm trung bình của tất cả các bài tập đã hoàn thành"
+    "average_grade_description": "Điểm trung bình của tất cả các bài tập đã hoàn thành",
+    "students": "Sinh viên",
+    "lessons": "Bài học",
+    "tutors": "gia sư",
+    "avg_grade": "Lớp AVG",
+    "completion_rate": "Tỷ lệ hoàn thành",
+    "student_progress_overview": "Tổng quan về tiến trình học sinh",
+    "student_name": "Tên sinh viên",
+    "lessons_completed": "Bài học hoàn thành",
+    "exercises_submitted": "Bài tập được gửi",
+    "actions": "Hành động",
+    "view_details": "Xem chi tiết",
+    "no_students_found": "Không có học sinh tìm thấy",
+    "no_students_description": "Không có sinh viên đăng ký vào khóa học này. Học sinh sẽ xuất hiện ở đây khi họ tham gia khóa học.",
+    "showing_students": "Hiển thị {start} đến {end} của {Total} sinh viên",
+    "no_analytics_data": "Không có dữ liệu phân tích",
+    "no_analytics_description": "Không thể tải dữ liệu phân tích cho khóa học này. Vui lòng thử lại sau hoặc liên hệ với hỗ trợ nếu vấn đề vẫn còn."
+  },
+  "common": {
+    "unsaved_changes": {
+      "message": "Bạn có những thay đổi chưa được lưu. Bạn có chắc bạn muốn rời đi?"
+    }
   }
 }

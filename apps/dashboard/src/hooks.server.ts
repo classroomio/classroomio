@@ -3,11 +3,11 @@ import { validateUser } from '$lib/utils/services/middlewares';
 
 const PUBLIC_ROUTES = [
   '/api/completion',
-  '/api/verify',
   'student_prove_payment',
   'teacher_student_buycourse',
   '/api/polar',
-  '/api/lmz'
+  '/api/lmz',
+  '/api/verify'
 ];
 
 function isPublicRoute(pathname: string) {
@@ -31,9 +31,22 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   const accessToken = event.request.headers.get('Authorization')!;
 
-  const user = await validateUser(accessToken);
+  try {
+    const user = await validateUser(accessToken);
 
-  response.headers.set('user_id', `${user.id}`);
+    response.headers.set('user_id', `${user.id}`);
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === 'Unauthenticated user') {
+        return new Response(
+          JSON.stringify({ code: 'unauthenticated', message: 'Unauthenticated user' }),
+          {
+            status: 401
+          }
+        );
+      }
+    }
+  }
 
   return response;
 };

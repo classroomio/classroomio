@@ -173,6 +173,16 @@
         isExpanded: isStudent ? true : $page.url.pathname.includes('/lessons')
       },
       {
+        id: NAV_IDS.ANALYTICS,
+        label: $t('course.navItems.nav_analytics'),
+        to: getNavItemRoute($course.id, 'analytics'),
+        isPaidFeature: false,
+        hideSortIcon: true,
+        show() {
+          return !isStudent;
+        }
+      },
+      {
         id: NAV_IDS.ATTENDANCE,
         label: $t('course.navItems.nav_attendance'),
         to: getNavItemRoute($course.id, 'attendance'),
@@ -262,14 +272,14 @@
   class={`
   ${
     $sideBar.hidden
-      ? '-translate-x-[100%] absolute z-[40]'
-      : 'translate-x-0 absolute md:relative z-[40]'
+      ? 'absolute z-[40] -translate-x-[100%]'
+      : 'absolute z-[40] translate-x-0 md:relative'
   }
-    transition w-[90vw] md:w-[300px] lg:w-[350px] bg-gray-100 dark:bg-black h-[calc(100vh-48px)] 
+    h-[calc(100vh-48px)] w-[90vw] bg-gray-100 transition md:w-[300px] lg:w-[350px] dark:bg-black 
   
   ${
     resize ? 'border-r-8 border-r-blue-500' : 'dark:border-r-neutral-600'
-  } overflow-y-auto border border-l-0 border-t-0 border-b-0 border-r-1`}
+  } border-r-1 overflow-y-auto border border-b-0 border-l-0 border-t-0`}
   style={$sideBar.hidden === true ? 'width:0' : 'width:300px'}
   bind:this={sidebarRef}
 >
@@ -297,7 +307,7 @@
             {#if $course.version === COURSE_VERSION.V1}
               {#each $lessons as item, index}
                 <a
-                  class="pl-7 w-[95%] text-[0.80rem] mb-2 text-black dark:text-white {isStudent &&
+                  class="mb-2 w-[95%] pl-7 text-[0.80rem] text-black dark:text-white {isStudent &&
                   !item.is_unlocked
                     ? 'cursor-not-allowed'
                     : ''}"
@@ -309,7 +319,7 @@
                   title={item.title}
                 >
                   <div
-                    class="flex items-center py-2 px-4 {NavClasses.item} {(
+                    class="flex items-center px-4 py-2 {NavClasses.item} {(
                       path || $page.url.pathname
                     ).includes(item.id) && NavClasses.active}"
                   >
@@ -319,7 +329,7 @@
                       size="sm"
                       shape="rounded-full"
                     />
-                    <span class="w-[85%] text-ellipsis line-clamp-2">{item.title}</span>
+                    <span class="line-clamp-2 w-[85%] text-ellipsis">{item.title}</span>
                     <span class="grow" />
                     {#if !item.is_unlocked}
                       <span class="text-md ml-2" title="This lesson is locked.">
@@ -348,7 +358,7 @@
                 >
                   {#each section.lessons as item}
                     <a
-                      class="pl-7 w-[95%] text-[0.80rem] mb-2 text-black dark:text-white {isStudent &&
+                      class="mb-2 w-[95%] pl-7 text-[0.80rem] text-black dark:text-white {isStudent &&
                       !item.is_unlocked
                         ? 'cursor-not-allowed'
                         : ''}"
@@ -360,11 +370,11 @@
                       title={item.title}
                     >
                       <div
-                        class="flex items-center py-2 px-4 {NavClasses.item} {(
+                        class="flex items-center px-4 py-2 {NavClasses.item} {(
                           path || $page.url.pathname
                         ).includes(item.id) && NavClasses.active}"
                       >
-                        <span class="w-[85%] text-ellipsis line-clamp-2">{item.title}</span>
+                        <span class="line-clamp-2 w-[85%] text-ellipsis">{item.title}</span>
                         <span class="grow" />
                         {#if !item.is_unlocked}
                           <span class="text-md ml-2" title="This lesson is locked.">

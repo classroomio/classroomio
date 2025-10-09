@@ -515,6 +515,11 @@
           "accept_grade": "Akzeptieren",
           "reject_grade": "Ablehnen",
           "add_comment_placeholder": "Hinterlasse einen Kommentar",
+          "allocated": "Diese Punktzahl wurde vergeben, weil",
+          "total_try": "der Gesamtversuche:",
+          "options_correct": "Es wurden die richtigen Optionen ausgewählt",
+          "out_of": "aus",
+          "options_wrong": "und die Anzahl der falschen Auswahlen war",
           "questions_tried": "Diese Punktzahl wurde aufgrund der Gesamtzahl der Versuche vergeben:",
           "delete_prompt": "Löschen",
           "delete_error": "Die Übermittlung konnte nicht gelöscht werden",
@@ -737,7 +742,9 @@
                 "upgrade": "Aktualisieren Sie Ihren Plan, um Videos hochzuladen",
                 "uploading": "Hochladen...",
                 "invalid_youtube": "Ungültige YouTube-Link(s)",
-                "invalid_link": "Ungültige Links"
+                "invalid_link": "Ungültige Links",
+                "cancel_upload": "Upload abbrechen",
+                "upload_cancelled": "Vom Benutzer abgebrochen hochladen"
               }
             },
             "slide": {
@@ -753,6 +760,42 @@
                 "note": "Unterrichtsnotiz erstellen",
                 "activities": "Unterrichtsaktivitäten erstellen"
               }
+            },
+            "document": {
+              "title": "Dokumentieren",
+              "add_document": "Dokument hinzufügen",
+              "no_document": "Noch keine Dokumente hochgeladen",
+              "view_document": "Dokument anzeigen",
+              "download": "Herunterladen",
+              "upload_document": "Dokument hochladen",
+              "upload_title": "Dokument hochladen",
+              "upload_description": "Laden Sie PDF-, DOCX- oder DOC -Dateien hoch. Maximale Größe: 5 MB",
+              "drag_drop": "Ziehen Sie Ihr Dokument hier und lassen Sie sie fallen",
+              "or": "oder",
+              "choose_file": "Datei wählen",
+              "cancel": "Stornieren",
+              "uploading": "Hochladen ...",
+              "upload_success": "Dokument erfolgreich hochgeladen!",
+              "upload_error": "Dokument nicht hochladen",
+              "file_type_error": "Dateityp nicht unterstützt. Bitte laden Sie PDF-, DOCX- oder DOC -Dateien hoch.",
+              "file_size_error": "Dateigröße zu groß. Die maximale Größe ist {Größe}.",
+              "type": "Typ",
+              "size": "Größe",
+              "upload_error_title": "Fehler hochladen",
+              "upload_error_message": "Nicht unterstütztes Dateiformat oder Upload ist fehlgeschlagen",
+              "upload_error_try_again": "Bitte versuchen Sie es erneut mit einer gültigen Dokumentdatei",
+              "try_again": "Versuchen Sie es erneut",
+              "cancel_upload": "Upload abbrechen",
+              "upload_cancelled": "Vom Benutzer abgebrochen hochladen",
+              "downloading": "Herunterladen ...",
+              "view_pdf": "PDF anzeigen",
+              "delete": "Löschen",
+              "page_of": "Seite {page} von {total}",
+              "loading_pdf": "PDF laden ...",
+              "failed_to_load_pdf": "Das PDF -Dokument konnte nicht geladen werden",
+              "failed_to_render_pdf": "Die PDF -Seite versäumte es, PDF -Seite zu rendern",
+              "use_arrow_keys": "Verwenden Sie Pfeiltasten, um zu navigieren, +/-, um zu zoomen, oder klicken Sie auf die obigen Steuerelemente. Mit der rechten Maustaste ist deaktiviert.",
+              "upgrade": "Aktualisieren Sie Ihren Plan, um Dokumente hochzuladen"
             }
           }
         },
@@ -824,6 +867,9 @@
           "cancel": "Stornieren",
           "post": "Post"
         }
+      },
+      "analytics": {
+        "title": "Analyse"
       }
     },
     "navItems": {
@@ -835,7 +881,8 @@
       "nav_certificates": "Zertifikate",
       "nav_landing_page": "Landingpage",
       "nav_settings": "Einstellungen",
-      "nav_content": "Inhalt"
+      "nav_content": "Inhalt",
+      "nav_analytics": "Analyse"
     },
     "not_permitted": {
       "header": "Keine Erlaubnis",
@@ -1382,7 +1429,8 @@
   },
   "generic": {
     "locked": "Gesperrt",
-    "unlocked": "Entsperrt"
+    "unlocked": "Entsperrt",
+    "loading": "Laden"
   },
   "specialization": {
     "course_tag": "Spezialisierung"
@@ -1529,6 +1577,27 @@
     "assignment_completion": "Abschluss der Aufgabe",
     "assignment_completion_description": "Prozentsatz der abgeschlossenen Aufgaben",
     "average_grade": "Durchschnittsnote",
-    "average_grade_description": "Durchschnittsnote aller abgeschlossenen Aufgaben"
+    "average_grade_description": "Durchschnittsnote aller abgeschlossenen Aufgaben",
+    "students": "Studenten",
+    "lessons": "Unterricht",
+    "tutors": "Tutoren",
+    "avg_grade": "AVG -Note",
+    "completion_rate": "Abschlussrate",
+    "student_progress_overview": "Übersicht über den Fortschritt der Schüler",
+    "student_name": "Schülername",
+    "lessons_completed": "Lektionen abgeschlossen",
+    "exercises_submitted": "Übungen eingereicht",
+    "actions": "Aktionen",
+    "view_details": "Details anzeigen",
+    "no_students_found": "Keine Schüler gefunden",
+    "no_students_description": "In diesem Kurs sind noch keine Studenten eingeschrieben. Die Schüler werden hier erscheinen, sobald sie sich dem Kurs anschließen.",
+    "showing_students": "Zeigen {Start} bis {End} von {Total} -Studenten",
+    "no_analytics_data": "Keine Analysedaten",
+    "no_analytics_description": "Analysedaten für diesen Kurs können nicht geladen werden. Bitte versuchen Sie es später erneut oder wenden Sie sich an Support, wenn das Problem bestehen bleibt."
+  },
+  "common": {
+    "unsaved_changes": {
+      "message": "Sie haben nicht gerettete Änderungen. Bist du sicher, dass du gehen willst?"
+    }
   }
 }

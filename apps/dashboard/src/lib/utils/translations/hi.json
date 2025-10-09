@@ -515,6 +515,11 @@
           "accept_grade": "स्वीकार करना",
           "reject_grade": "अस्वीकार करना",
           "add_comment_placeholder": "एक टिप्पणी छोड़ें",
+          "allocated": "यह अंक इसलिए आवंटित किया गया क्योंकि",
+          "total_try": "कुल प्रयासों में से:",
+          "options_correct": "सही विकल्प का चयन किया गया",
+          "out_of": "से बाहर",
+          "options_wrong": "और गलत चयनों की संख्या थी",
           "questions_tried": "कुल प्रयासों के कारण यह स्कोर आवंटित किया गया:",
           "delete_prompt": "मिटाना",
           "delete_error": "सबमिशन हटाने में विफल",
@@ -737,7 +742,9 @@
                 "upgrade": "वीडियो अपलोड करने की अपनी योजना को अपग्रेड करें",
                 "uploading": "अपलोड हो रहा है...",
                 "invalid_youtube": "अमान्य यूट्यूब लिंक",
-                "invalid_link": "अमान्य लिंक"
+                "invalid_link": "अमान्य लिंक",
+                "cancel_upload": "अपलोड रद्द करें",
+                "upload_cancelled": "उपयोगकर्ता द्वारा रद्द किए गए अपलोड"
               }
             },
             "slide": {
@@ -753,6 +760,42 @@
                 "note": "पाठ नोट जनरेट करें",
                 "activities": "पाठ गतिविधियाँ उत्पन्न करें"
               }
+            },
+            "document": {
+              "title": "दस्तावेज़",
+              "add_document": "दस्तावेज़ जोड़ें",
+              "no_document": "कोई दस्तावेज अभी तक अपलोड नहीं किया गया है",
+              "view_document": "दस्तावेज़ देखें",
+              "download": "डाउनलोड करना",
+              "upload_document": "अपलोड दस्तावेज़",
+              "upload_title": "अपलोड दस्तावेज़",
+              "upload_description": "PDF, DOCX, या DOC फ़ाइलों को अपलोड करें। अधिकतम आकार: 5 एमबी",
+              "drag_drop": "अपने दस्तावेज़ को यहां खींचें और ड्रॉप करें",
+              "or": "या",
+              "choose_file": "फाइलें चुनें",
+              "cancel": "रद्द करना",
+              "uploading": "अपलोड करना ...",
+              "upload_success": "दस्तावेज़ सफलतापूर्वक अपलोड किया गया!",
+              "upload_error": "दस्तावेज़ अपलोड करने में विफल",
+              "file_type_error": "फ़ाइल प्रकार समर्थित नहीं है। कृपया PDF, DOCX, या DOC फ़ाइलें अपलोड करें।",
+              "file_size_error": "फ़ाइल का आकार बहुत बड़ा है। अधिकतम आकार {आकार} है।",
+              "type": "प्रकार",
+              "size": "आकार",
+              "upload_error_title": "अपलोड त्रुटि",
+              "upload_error_message": "असमर्थित फ़ाइल प्रारूप या अपलोड विफल",
+              "upload_error_try_again": "कृपया एक मान्य दस्तावेज़ फ़ाइल के साथ पुनः प्रयास करें",
+              "try_again": "पुनः प्रयास करें",
+              "cancel_upload": "अपलोड रद्द करें",
+              "upload_cancelled": "उपयोगकर्ता द्वारा रद्द किए गए अपलोड",
+              "downloading": "डाउनलोड करना ...",
+              "view_pdf": "पीडीएफ देखें",
+              "delete": "मिटाना",
+              "page_of": "पृष्ठ {page} {total} का",
+              "loading_pdf": "लोडिंग पीडीएफ ...",
+              "failed_to_load_pdf": "पीडीएफ दस्तावेज़ लोड करने में विफल",
+              "failed_to_render_pdf": "पीडीएफ पेज को प्रस्तुत करने में विफल",
+              "use_arrow_keys": "ज़ूम करने के लिए नेविगेट करने के लिए तीर कुंजियों का उपयोग करें, या ऊपर दिए गए नियंत्रणों पर क्लिक करें। राइट-क्लिक अक्षम है।",
+              "upgrade": "दस्तावेज़ अपलोड करने के लिए अपनी योजना को अपग्रेड करें"
             }
           }
         },
@@ -824,6 +867,9 @@
           "cancel": "रद्द करना",
           "post": "डाक"
         }
+      },
+      "analytics": {
+        "title": "एनालिटिक्स"
       }
     },
     "navItems": {
@@ -835,7 +881,8 @@
       "nav_certificates": "प्रमाण पत्र",
       "nav_landing_page": "लैंडिंग पृष्ठ",
       "nav_settings": "समायोजन",
-      "nav_content": "सामग्री"
+      "nav_content": "सामग्री",
+      "nav_analytics": "एनालिटिक्स"
     },
     "not_permitted": {
       "header": "अनुमति नहीं",
@@ -1382,7 +1429,8 @@
   },
   "generic": {
     "locked": "बंद",
-    "unlocked": "अनलॉक किया"
+    "unlocked": "अनलॉक किया",
+    "loading": "लोड करना"
   },
   "specialization": {
     "course_tag": "विशेषज्ञता"
@@ -1529,6 +1577,27 @@
     "assignment_completion": "असाइनमेंट पूरा करना",
     "assignment_completion_description": "पूर्ण किये गये कार्यों का प्रतिशत",
     "average_grade": "औसत क्षेणी",
-    "average_grade_description": "सभी पूर्ण किए गए असाइनमेंट का औसत ग्रेड"
+    "average_grade_description": "सभी पूर्ण किए गए असाइनमेंट का औसत ग्रेड",
+    "students": "छात्र",
+    "lessons": "पाठ",
+    "tutors": "ट्यूटर्स",
+    "avg_grade": "AVG ग्रेड",
+    "completion_rate": "पूर्णता दर",
+    "student_progress_overview": "छात्र प्रगति अवलोकन",
+    "student_name": "छात्र नाम",
+    "lessons_completed": "सबक पूरा हुआ",
+    "exercises_submitted": "प्रस्तुत अभ्यास",
+    "actions": "कार्रवाई",
+    "view_details": "विवरण देखें",
+    "no_students_found": "कोई छात्र नहीं मिला",
+    "no_students_description": "इस पाठ्यक्रम में अभी तक कोई छात्र नामांकित नहीं हैं। पाठ्यक्रम में शामिल होने के बाद छात्र यहां दिखाई देंगे।",
+    "showing_students": "{TOTAL} {TOTAL} छात्रों के {अंत} को दिखा रहा है",
+    "no_analytics_data": "कोई एनालिटिक्स डेटा नहीं",
+    "no_analytics_description": "इस पाठ्यक्रम के लिए एनालिटिक्स डेटा लोड करने में असमर्थ। यदि समस्या बनी रहती है, तो कृपया बाद में पुनः प्रयास करें या समर्थन से संपर्क करें।"
+  },
+  "common": {
+    "unsaved_changes": {
+      "message": "आपके पास अनसुना परिवर्तन हैं। क्या आपकी वाकई छोड़ने की इच्छा है?"
+    }
   }
 }

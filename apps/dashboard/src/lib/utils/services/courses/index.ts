@@ -11,9 +11,9 @@ import type {
 } from '$lib/utils/types';
 import type { PostgrestError, PostgrestSingleResponse } from '@supabase/supabase-js';
 
+import { GenericUploader } from './presign';
 import { QUESTION_TYPE } from '$lib/components/Question/constants';
 import { STATUS } from '$lib/utils/constants/course';
-import { apiClient } from '$lib/utils/services/api';
 import { get } from 'svelte/store';
 import { isOrgAdmin } from '$lib/utils/store/org';
 import { isUUID } from '$lib/utils/functions/isUUID';
@@ -53,12 +53,10 @@ export async function fetchProfileCourseProgress(
   data: ProfileCourseProgress[] | null;
   error: PostgrestError | null;
 }> {
-  const { data, error } = await supabase
-    .rpc('get_course_progress', {
-      course_id_arg: courseId,
-      profile_id_arg: profileId
-    })
-    .returns<ProfileCourseProgress[]>();
+  const { data, error } = await supabase.rpc('get_course_progress', {
+    course_id_arg: courseId,
+    profile_id_arg: profileId
+  });
 
   return { data, error };
 }
@@ -265,6 +263,7 @@ export async function getMarks(courseId) {
 }
 
 export async function fetchLesson(lessonId: Lesson['id']) {
+  // TODO: add documents to the query
   const { data, error } = await supabase
     .from('lesson')
     .select(
@@ -273,6 +272,7 @@ export async function fetchLesson(lessonId: Lesson['id']) {
       note,
       videos,
       slide_url,
+      documents,
       call_url,
       totalExercises:exercise(count),
       totalComments:lesson_comment(count),
@@ -284,23 +284,30 @@ export async function fetchLesson(lessonId: Lesson['id']) {
     .single();
 
   if (data) {
-    const keys = data.videos.filter((video) => video.type === 'upload').map((video) => video.key);
+    const videoKeys =
+      data.videos?.filter((video) => video.type === 'upload')?.map((video) => video.key) || [];
 
-    if (!keys.length) {
-      return { data, error };
-    }
+    const docKeys = data.documents?.map((doc) => doc.key) || [];
 
     try {
-      const response = await apiClient.post('/course/presign/download', { keys });
+      // Get presigned URLs for videos and documents
+      const genericUploader = new GenericUploader('generic');
+
+      const urls = await genericUploader.getAllDownloadPresignedUrl(videoKeys, docKeys);
 
       data.videos = data.videos.map((video) => {
-        if (video.type === 'upload') {
-          video.link = response.data.urls[video.key];
+        if (urls.videos[video.key]) {
+          video.link = urls.videos[video.key];
         }
         return video;
       });
+
+      data.documents = data.documents.map((doc) => {
+        doc.link = urls.documents[doc.key];
+        return doc;
+      });
     } catch (error) {
-      console.error('Error retrieving videos:', error);
+      console.error('Error retrieving presigned assets (videos and documents):', error);
     }
   }
 
