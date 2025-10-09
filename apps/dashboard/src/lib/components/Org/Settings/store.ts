@@ -17,7 +17,7 @@ export interface OrgLandingPageJson {
       type: string;
       show: boolean;
     };
-    background?: {
+    background: {
       image: string;
       show: boolean;
     };
@@ -58,6 +58,15 @@ export interface OrgLandingPageJson {
     subtitle: string;
     buttonLabel: string;
     show: boolean;
+  };
+  customLinks: {
+    show: boolean;
+    links: Array<{
+      id: number;
+      label: string;
+      url: string;
+      openInNewTab: boolean;
+    }>;
   };
   footer: {
     facebook: string;
@@ -144,6 +153,35 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
       'We are constantly releasing new courses and sharing them with our email list. Subscribe to get notified once we release a new course',
     buttonLabel: 'Subscribe',
     show: true
+  },
+  customLinks: {
+    show: true,
+    links: [
+      {
+        id: 1,
+        label: 'About Us',
+        url: '#aboutus',
+        openInNewTab: false
+      },
+      {
+        id: 2,
+        label: 'Courses',
+        url: '#courses',
+        openInNewTab: false
+      },
+      {
+        id: 3,
+        label: 'FAQ',
+        url: '#faq',
+        openInNewTab: false
+      },
+      {
+        id: 4,
+        label: 'Contact Us',
+        url: '#contact',
+        openInNewTab: false
+      }
+    ]
   },
   footer: {
     facebook: '#',

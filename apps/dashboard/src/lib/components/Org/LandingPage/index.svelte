@@ -177,6 +177,13 @@
   <PageLoader />
 {:else}
   <main>
+    <Navigation
+      logo={org.avatar_url}
+      orgName={org.name}
+      disableSignup={true}
+      isOrgSite={true}
+      customLinks={$landingPageSettings.customLinks}
+    />
     <!-- Header Section -->
     {#if $landingPageSettings.header.show}
       <header
@@ -188,13 +195,6 @@
         }`}
         style="background-image: {getBgImage($landingPageSettings)}"
       >
-        <Navigation
-          logo={org.avatar_url}
-          orgName={org.name}
-          disableSignup={true}
-          isOrgSite={true}
-        />
-
         <div class="absolute top-0 z-10 h-[100vh] w-full bg-white opacity-80 md:h-[90vh]" />
         {#if $landingPageSettings.header.banner.show}
           <div class="flex items-center justify-center py-2 md:h-full">
