@@ -18,5 +18,8 @@
       class="mx-auto inline-block w-9 rounded"
       data-atf="1"
     />
+    {#if orgName}
+      <span class="line-clamp-1 hidden text-sm font-medium md:block">{orgName}</span>
+    {/if}
   </a>
 </div>
