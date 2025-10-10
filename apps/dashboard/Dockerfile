@@ -48,13 +48,24 @@ FROM node:20.19.3-alpine AS runner
 
 WORKDIR /app
 
+# Don't run production as root
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 cio-user
+USER cio-user
+
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # Copy the entire dashboard app (including build output)
-COPY --from=builder ./cio/apps/dashboard ./apps/dashboard
-COPY --from=builder ./cio/node_modules ./node_modules
-COPY --from=builder ./cio/package.json ./package.json
+COPY --from=builder --chown=cio-user:nodejs ./cio/apps/dashboard ./apps/dashboard
+COPY --from=builder --chown=cio-user:nodejs ./cio/node_modules ./node_modules
+COPY --from=builder --chown=cio-user:nodejs ./cio/package.json ./package.json
+
+ECHO "LS LA DASHBOARD"
+RUN ls -la apps/dashboard
+
+ECHO "LS LA BUILD"
+RUN ls -la apps/dashboard/build
 
 # Expose the port (default for SvelteKit Node adapter)
 EXPOSE 3082
