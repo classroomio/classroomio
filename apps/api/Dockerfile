@@ -66,4 +66,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 
 RUN ls -la
 
-CMD ["pnpm", "api:start"]
+CMD ["node", "apps/api/dist/index.js"]
