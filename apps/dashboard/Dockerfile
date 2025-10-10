@@ -13,6 +13,8 @@ ARG PUBLIC_SERVER_URL
 ARG PUBLIC_IP_REGISTRY_KEY
 
 WORKDIR /cio
+# Install pnpm globally so it's available in the final container
+RUN npm install -g pnpm
 
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
@@ -67,9 +69,5 @@ ENV NODE_ENV=production \
     PUBLIC_SERVER_URL=$PUBLIC_SERVER_URL \
     PUBLIC_IP_REGISTRY_KEY=$PUBLIC_IP_REGISTRY_KEY
 
-WORKDIR /app/apps/dashboard
-
-RUN ls -la
-
 # Start the app
-CMD ["node", "build"]
+CMD ["pnpm", "dashboard:start"]
