@@ -25,6 +25,8 @@ COPY . .
 # Install all dependencies (monorepo context)
 RUN pnpm install
 
+RUN ls -la
+
 # Set env vars for SvelteKit to use Node adapter
 ENV PUBLIC_IS_SELFHOSTED=true \
     PUBLIC_SUPABASE_URL=$PUBLIC_SUPABASE_URL \
@@ -35,7 +37,8 @@ ENV PUBLIC_IS_SELFHOSTED=true \
     UNSPLASH_API_KEY=$UNSPLASH_API_KEY \
     OPENAI_API_KEY=$OPENAI_API_KEY \
     PUBLIC_SERVER_URL=$PUBLIC_SERVER_URL \
-    PUBLIC_IP_REGISTRY_KEY=$PUBLIC_IP_REGISTRY_KEY
+    PUBLIC_IP_REGISTRY_KEY=$PUBLIC_IP_REGISTRY_KEY \
+    PORT=3082
 
 # Build the dashboard app
 RUN NODE_OPTIONS="--max-old-space-size=3072" pnpm build --filter @cio/dashboard
@@ -54,7 +57,7 @@ COPY --from=builder ./cio/node_modules ./node_modules
 COPY --from=builder ./cio/package.json ./package.json
 
 # Expose the port (default for SvelteKit Node adapter)
-EXPOSE 3000
+EXPOSE 3082
 
 # Set environment variables for production
 ENV NODE_ENV=production \
@@ -70,4 +73,4 @@ ENV NODE_ENV=production \
     PUBLIC_IP_REGISTRY_KEY=$PUBLIC_IP_REGISTRY_KEY
 
 # Start the app
-CMD ["pnpm", "dashboard:start"]
+CMD ["node", "apps/dashboard/build"]
