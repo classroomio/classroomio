@@ -26,10 +26,10 @@ services:
         - REDIS_URL=${REDIS_URL}
     ports:
       - "3002:3002"
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/apps/api/node_modules
+    # volumes:
+    #   - .:/app
+    #   - /app/node_modules
+    #   - /app/apps/api/node_modules
     environment:
       - NODE_ENV=production
       # Supabase - Database
@@ -63,10 +63,10 @@ services:
         - PUBLIC_IP_REGISTRY_KEY=${PUBLIC_IP_REGISTRY_KEY}
     ports:
       - "3000:3000"
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/apps/dashboard/node_modules
+    # volumes:
+    #   - .:/app
+    #   - /app/node_modules
+    #   - /app/apps/dashboard/node_modules
     environment:
       - PUBLIC_IS_SELFHOSTED=true
       # Supabase - Database
