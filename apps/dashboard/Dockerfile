@@ -67,5 +67,7 @@ ENV NODE_ENV=production \
     PUBLIC_SERVER_URL=$PUBLIC_SERVER_URL \
     PUBLIC_IP_REGISTRY_KEY=$PUBLIC_IP_REGISTRY_KEY
 
+RUN ls -la /app/apps/dashboard
+
 # Start the app
-CMD ["pnpm", "dashboard:start"]
+CMD pnpm start --filter @cio/dashboard
