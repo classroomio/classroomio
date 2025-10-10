@@ -16,16 +16,14 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To filter elements in an array', is_correct: false },
           {
-            label:
-              'To create a new array with the results of calling a provided function on every element',
+            label: 'To create a new array with the results of calling a provided function on every element',
             is_correct: true
           },
           { label: 'To remove elements from an array', is_correct: false }
         ]
       },
       {
-        title:
-          'Which of the following array methods is used to filter elements based on a condition?',
+        title: 'Which of the following array methods is used to filter elements based on a condition?',
         name: 'q2',
         points: 1,
         order: 1,
@@ -86,8 +84,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Write an example of using the "reduce" method to find the sum of an array of numbers.',
+        title: 'Write an example of using the "reduce" method to find the sum of an array of numbers.',
         name: 'q7',
         points: 1,
         order: 6,

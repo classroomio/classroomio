@@ -19,7 +19,7 @@
   let avatar = $state<string | undefined>();
   let loading = $state(false);
   let hasLangChanged = $state(false);
-  let locale = $state<LOCALE | undefined>();
+  let locale = $derived<LOCALE | undefined>($profile.locale);
   let hasUnsavedChanges = $state(false);
 
   let errors = $state<Record<string, string>>({});
@@ -85,10 +85,6 @@
       loading = false;
     }
   }
-
-  $effect(() => {
-    locale = !locale ? $profile.locale : locale;
-  });
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />

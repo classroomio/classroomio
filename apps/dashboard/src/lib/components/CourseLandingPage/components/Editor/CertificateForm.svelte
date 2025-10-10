@@ -16,9 +16,7 @@
   let { course = $bindable(), setter }: Props = $props();
 
   let avatar: string | undefined = $state();
-  let templateUrl = $derived(
-    get(course, 'metadata.certificate.templateUrl', '/images/certificate-template.svg')
-  );
+  let templateUrl = $derived(get(course, 'metadata.certificate.templateUrl', '/images/certificate-template.svg'));
   let isUploading = $state(false);
 
   let show = $derived(get(course, `metadata.sectionDisplay.${NAV_ITEM_KEY.CERTIFICATE}`) ?? true);

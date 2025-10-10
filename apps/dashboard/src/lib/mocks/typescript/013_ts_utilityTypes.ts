@@ -20,8 +20,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which TypeScript utility type is used to create a new type that is a subset of an existing type?',
+        title: 'Which TypeScript utility type is used to create a new type that is a subset of an existing type?',
         name: 'q2',
         points: 2,
         order: 2,
@@ -46,8 +45,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which TypeScript utility type allows you to pick specific properties from an object type?',
+        title: 'Which TypeScript utility type allows you to pick specific properties from an object type?',
         name: 'q4',
         points: 2,
         order: 4,
@@ -95,8 +93,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which TypeScript utility type is used to create a new type that is the opposite of the specified type?',
+        title: 'Which TypeScript utility type is used to create a new type that is the opposite of the specified type?',
         name: 'q8',
         points: 2,
         order: 8,

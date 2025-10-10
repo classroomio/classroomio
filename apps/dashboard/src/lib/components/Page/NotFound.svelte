@@ -31,12 +31,7 @@
     <p class=" mb-5 text-center text-lg text-gray-700 dark:text-white">
       The page you are looking for doesn't exist or has been moved. Please go back to the homepage.
     </p>
-    <PrimaryButton
-      variant={VARIANTS.CONTAINED_DARK}
-      label="Go Home"
-      className="text-lg"
-      onClick={handleClick}
-    />
+    <PrimaryButton variant={VARIANTS.CONTAINED_DARK} label="Go Home" className="text-lg" onClick={handleClick} />
   </div>
 </div>
 

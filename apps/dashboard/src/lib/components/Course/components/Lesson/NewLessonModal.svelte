@@ -114,9 +114,7 @@
   maxWidth="max-w-2xl"
   containerClass="overflow-hidden"
   modalHeading={$t(
-    `course.navItem.lessons.add_lesson.${
-      $handleAddLessonWidget.isSection ? 'modal_heading_section' : 'modal_heading'
-    }`
+    `course.navItem.lessons.add_lesson.${$handleAddLessonWidget.isSection ? 'modal_heading_section' : 'modal_heading'}`
   )}
 >
   <form

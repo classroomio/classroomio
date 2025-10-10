@@ -29,12 +29,9 @@
     widget
   }: Props = $props();
 
-  let dynamicRootClass = $state('');
   let enterEditTitleMode = $state(false);
 
-  $effect(() => {
-    dynamicRootClass = Array.isArray(navItems) && navItems.length > 4 ? 'bring-down' : '';
-  });
+  const dynamicRootClass = $derived(Array.isArray(navItems) && navItems.length > 4 ? 'bring-down' : '');
 </script>
 
 <div
@@ -52,9 +49,7 @@
       {#if isTitleEditable}
         {#if !enterEditTitleMode}
           <button class="w-full" onclick={() => (enterEditTitleMode = true)}>
-            <h4
-              class="editable-title overflow-ellipsis rounded-md px-3 hover:bg-gray-100 dark:bg-black"
-            >
+            <h4 class="editable-title overflow-ellipsis rounded-md px-3 hover:bg-gray-100 dark:bg-black">
               {title}
             </h4>
           </button>
@@ -74,11 +69,7 @@
       {:else}
         <div class="flex w-full items-center" {title}>
           {@render image?.()}
-          <h4
-            class="{image
-              ? 'ml-2'
-              : ''} truncate whitespace-nowrap text-lg font-semibold dark:text-white"
-          >
+          <h4 class="{image ? 'ml-2' : ''} truncate whitespace-nowrap text-lg font-semibold dark:text-white">
             {title}
           </h4>
         </div>

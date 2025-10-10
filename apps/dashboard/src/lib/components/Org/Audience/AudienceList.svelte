@@ -44,10 +44,7 @@
     </svelte:fragment>
     <svelte:fragment slot="cell" let:row let:cell>
       {#if cell.key === 'name'}
-        <Link
-          class="flex items-center gap-2"
-          href={`${pageStore.url.href}/${row.id}/${$currentOrg.id}`}
-        >
+        <Link class="flex items-center gap-2" href={`${pageStore.url.href}/${row.id}/${$currentOrg.id}`}>
           <Avatar src={row.avatar_url} width="w-5" height="h-5" />
           {cell.value}
         </Link>

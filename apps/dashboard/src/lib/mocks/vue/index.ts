@@ -34,14 +34,12 @@ export const VUEJS_TEMPLATES = {
   [VUEJS_IDS.VUE_FORMS]: async () => (await import('./010_vue_forms')).default,
   [VUEJS_IDS.VUE_VMODEL]: async () => (await import('./011_vue_vModel')).default,
   [VUEJS_IDS.VUE_CSSBINDING]: async () => (await import('./012_vue_cssBinding')).default,
-  [VUEJS_IDS.VUE_COMPUTEDPROPERTIES]: async () =>
-    (await import('./013_vue_computedProperties')).default,
+  [VUEJS_IDS.VUE_COMPUTEDPROPERTIES]: async () => (await import('./013_vue_computedProperties')).default,
   [VUEJS_IDS.VUE_WATCHERS]: async () => (await import('./014_vue_watchers')).default,
   [VUEJS_IDS.VUE_TEMPLATES]: async () => (await import('./015_vue_templates')).default,
   [VUEJS_IDS.VUE_COMPONENTS]: async () => (await import('./016_vue_components')).default,
   [VUEJS_IDS.VUE_PROPS]: async () => (await import('./017_vue_props')).default,
   [VUEJS_IDS.VUE_VFORCOMP]: async () => (await import('./018_vue_vForComp')).default,
   [VUEJS_IDS.VUE_EMIT]: async () => (await import('./019_vue_emit')).default,
-  [VUEJS_IDS.VUE_FALLTHROUGHATTRIBUTE]: async () =>
-    (await import('./020_vue_fallThroughAttribute')).default
+  [VUEJS_IDS.VUE_FALLTHROUGHATTRIBUTE]: async () => (await import('./020_vue_fallThroughAttribute')).default
 };

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { Grid, Row, Column, Select, SelectItem } from 'carbon-components-svelte';
   import { Moon } from 'svelte-loading-spinners';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -14,10 +15,7 @@
   import { profile } from '$lib/utils/store/user';
   import { supabase } from '$lib/utils/functions/supabase';
   import SectionTitle from '../SectionTitle.svelte';
-  import {
-    triggerSendEmail,
-    NOTIFICATION_NAME
-  } from '$lib/utils/services/notification/notification';
+  import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
   import { isFreePlan } from '$lib/utils/store/org';
   import type { OrgTeamMember } from '$lib/utils/types/org';
   import { t } from '$lib/utils/functions/translations';
@@ -42,9 +40,7 @@
     emails.forEach(async (email: string, index: number) => {
       if (apiError) return;
 
-      const doesEmailExist = $orgTeam.some(
-        (teamMember) => teamMember.email.toLowerCase() === email.toLowerCase()
-      );
+      const doesEmailExist = $orgTeam.some((teamMember) => teamMember.email.toLowerCase() === email.toLowerCase());
 
       if (doesEmailExist) {
         snackbar.error('snackbar.team_members.user_exists');
@@ -119,12 +115,15 @@
     isRemoving = null;
   }
 
-  const fetchTeam = async (id: string) => {
+  const fetchTeam = (id: string) => {
     if (!id) return;
 
-    isFetching = true;
-    await getOrgTeam(id);
-    isFetching = false;
+    untrack(async () => {
+      isFetching = true;
+      await getOrgTeam(id);
+      isFetching = false;
+      isFetching = false;
+    });
   };
 
   const isTeamMemberAdmin = (members: OrgTeamMember[], profileId: string | undefined) => {

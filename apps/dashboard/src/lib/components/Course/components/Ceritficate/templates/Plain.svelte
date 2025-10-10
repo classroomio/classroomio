@@ -12,15 +12,9 @@
   const logo = '/logo-512.png';
 </script>
 
-<div
-  class="certificate-bg flex w-full flex-col items-center justify-center {borderwidth} {bordercolor} py-3"
->
+<div class="certificate-bg flex w-full flex-col items-center justify-center {borderwidth} {bordercolor} py-3">
   <div class="my-2 flex items-center gap-1">
-    <img
-      src={$currentOrg.avatar_url ? $currentOrg.avatar_url : logo}
-      alt="logo"
-      class=" h-10 w-10 rounded-md"
-    />
+    <img src={$currentOrg.avatar_url ? $currentOrg.avatar_url : logo} alt="logo" class=" h-10 w-10 rounded-md" />
     <p class="font-semibold capitalize dark:text-black">{$currentOrg.name}</p>
   </div>
   <div class="w-full px-5 py-3">

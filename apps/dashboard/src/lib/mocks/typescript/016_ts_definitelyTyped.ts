@@ -50,8 +50,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which TypeScript compiler option is used to automatically download type definitions for a library?',
+        title: 'Which TypeScript compiler option is used to automatically download type definitions for a library?',
         name: 'q4',
         points: 2,
         order: 4,
@@ -75,8 +74,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'In a Definitely Typed type definition file, what does the "declare" keyword indicate?',
+        title: 'In a Definitely Typed type definition file, what does the "declare" keyword indicate?',
         name: 'q6',
         points: 2,
         order: 6,
@@ -87,13 +85,11 @@ const template: ExerciseTemplate = {
             is_correct: false
           },
           {
-            label:
-              'That the type definition is for external code and not part of the current project',
+            label: 'That the type definition is for external code and not part of the current project',
             is_correct: true
           },
           {
-            label:
-              'That the type definition is for internal code and should not be used externally',
+            label: 'That the type definition is for internal code and should not be used externally',
             is_correct: false
           }
         ]
@@ -126,8 +122,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What should you do if there is no available Definitely Typed type definition for a library?',
+        title: 'What should you do if there is no available Definitely Typed type definition for a library?',
         name: 'q9',
         points: 2,
         order: 9,
@@ -139,16 +134,14 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'How can you contribute to Definitely Typed by providing type definitions for a library?',
+        title: 'How can you contribute to Definitely Typed by providing type definitions for a library?',
         name: 'q10',
         points: 2,
         order: 10,
         question_type: QuestionTypes[0], // RADIO
         options: [
           {
-            label:
-              'Submit a pull request to the Definitely Typed repository with your type definitions',
+            label: 'Submit a pull request to the Definitely Typed repository with your type definitions',
             is_correct: true
           },
           { label: 'Send an email to the Definitely Typed maintainers', is_correct: false },

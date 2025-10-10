@@ -39,10 +39,7 @@
 </script>
 
 {#if typeof course !== 'undefined'}
-  <Select
-    labelText={$t('course.navItem.landing_page.editor.pricing_form.currency')}
-    bind:selected={course.currency}
-  >
+  <Select labelText={$t('course.navItem.landing_page.editor.pricing_form.currency')} bind:selected={course.currency}>
     <SelectItem value="NGN" />
     <SelectItem value="USD" />
   </Select>
@@ -67,10 +64,7 @@
 
   <div class="mt-5">
     <!-- <label for="text-field" class="m-0 font-bold mb-2">Discount</label> -->
-    <Toggle
-      labelText={$t('course.navItem.landing_page.editor.pricing_form.discount')}
-      bind:toggled={showDiscount}
-    >
+    <Toggle labelText={$t('course.navItem.landing_page.editor.pricing_form.discount')} bind:toggled={showDiscount}>
       <span slot="labelA">{$t('course.navItem.landing_page.editor.pricing_form.no')}</span>
       <span slot="labelB">{$t('course.navItem.landing_page.editor.pricing_form.yes')}</span>
     </Toggle>

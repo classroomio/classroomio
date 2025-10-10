@@ -210,8 +210,8 @@
       </div>
       {#each sections as section, index}
         <button
-          class="flex w-full items-center justify-between border border-l-0 px-2 py-3 {index + 1 <
-            sections.length && 'border-b-0'} border-gray-300"
+          class="flex w-full items-center justify-between border border-l-0 px-2 py-3 {index + 1 < sections.length &&
+            'border-b-0'} border-gray-300"
           onclick={handleSectionSelect(section.key)}
         >
           <p class="mr-2 dark:text-white">

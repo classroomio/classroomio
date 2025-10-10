@@ -24,7 +24,7 @@
     children
   }: Props = $props();
 
-  let ref = $state();
+  let ref: HTMLDivElement | undefined = $state();
 
   $effect(() => {
     if (ref && scrollToQuestion) {
@@ -51,9 +51,7 @@
   </div>
 
   {#if typeof points !== 'undefined'}
-    <div
-      class="border-gray flex items-center justify-between border-b-0 border-l-0 border-r-0 border-t-2 p-2"
-    >
+    <div class="border-gray flex items-center justify-between border-b-0 border-l-0 border-r-0 border-t-2 p-2">
       <div class="flex w-40 items-center">
         <p class="mr-2 text-sm dark:text-white">
           {$t('course.navItem.lessons.exercises.new_exercise_modal.points')}:

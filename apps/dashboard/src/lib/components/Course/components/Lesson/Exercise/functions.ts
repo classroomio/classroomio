@@ -29,9 +29,7 @@ export function wasCorrectAnswerSelected(currentQuestion, answers, isFinished?: 
       .every((option) => formattedAnswers?.includes(option.value));
   } else if (currentQuestion.question_type.id === QUESTION_TYPE.RADIO) {
     // At least one correct answer should be selected
-    isCorrect = formattedAnswers?.some((answer) =>
-      isAnswerCorrect(currentQuestion.options, answer)
-    );
+    isCorrect = formattedAnswers?.some((answer) => isAnswerCorrect(currentQuestion.options, answer));
   }
 
   if (isCorrect && !isFinished) {

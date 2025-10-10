@@ -38,9 +38,7 @@
     renderOnlyChildren = false
   }: Props = $props();
 
-  const user: GroupPerson | undefined = $derived(
-    $group.people.find((person) => person.profile_id === $profile.id)
-  );
+  const user: GroupPerson | undefined = $derived($group.people.find((person) => person.profile_id === $profile.id));
 
   const canCheck = $derived($profile.id && $group.id);
 

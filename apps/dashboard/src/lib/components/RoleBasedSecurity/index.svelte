@@ -1,7 +1,6 @@
 <script lang="ts">
   import { profile } from '$lib/utils/store/user';
   import { group } from '../Course/store';
-  import type { GroupPerson } from '$lib/utils/types';
   import { isOrgAdmin } from '$lib/utils/store/org';
 
   interface Props {
@@ -14,28 +13,26 @@
 
   let { allowedRoles = [], onDenied = () => {}, onlyStudent = false, children }: Props = $props();
 
-  let userRole: number = $state(0);
-  let show = $state(false);
+  const userRole: number = $derived.by(() => {
+    const user = $group.people.find((person) => person.profile_id === $profile.id);
+    return user ? user.role_id : 0;
+  });
+
+  const show = $derived.by(() => {
+    if (onlyStudent) {
+      return isAllowed(userRole);
+    } else {
+      return isAllowed(userRole) || !!$isOrgAdmin;
+    }
+  });
 
   function isAllowed(userRole) {
     return allowedRoles.includes(userRole);
   }
 
   $effect(() => {
-    const user: GroupPerson = $group.people.find((person) => person.profile_id === $profile.id)!;
-
-    userRole = user ? user.role_id : userRole;
-
     if (!$isOrgAdmin && $group.people.length && !isAllowed(userRole)) {
       onDenied();
-    }
-  });
-
-  $effect(() => {
-    if (onlyStudent) {
-      show = isAllowed(userRole);
-    } else {
-      show = isAllowed(userRole) || $isOrgAdmin;
     }
   });
 </script>

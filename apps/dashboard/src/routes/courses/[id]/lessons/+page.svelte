@@ -8,11 +8,7 @@
   import LessonSectionList from '$lib/components/Course/components/Lesson/LessonSectionList.svelte';
   import NewLessonModal from '$lib/components/Course/components/Lesson/NewLessonModal.svelte';
   import { handleAddLessonWidget } from '$lib/components/Course/components/Lesson/store';
-  import {
-    handleDelete,
-    lessons,
-    lessonSections
-  } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { handleDelete, lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
   import { course } from '$lib/components/Course/store';
   import { CourseContainer } from '$lib/components/CourseContainer';
   import { PageBody, PageNav } from '$lib/components/Page';
@@ -28,9 +24,7 @@
 
   const query = new URLSearchParams(page.url.search);
 
-  const lessonsLength = $derived(
-    $course.version === COURSE_VERSION.V1 ? $lessons.length : $lessonSections.length
-  );
+  const lessonsLength = $derived($course.version === COURSE_VERSION.V1 ? $lessons.length : $lessonSections.length);
 
   let lessonEditing: string | undefined;
   let lessonToDelete: Lesson | undefined = $state();
@@ -91,10 +85,7 @@
 
 <ActivateSectionsModal bind:open={activateSections} />
 
-<DeleteLessonConfirmation
-  bind:openDeleteModal
-  deleteLesson={() => handleDelete(lessonToDelete?.id)}
-/>
+<DeleteLessonConfirmation bind:openDeleteModal deleteLesson={() => handleDelete(lessonToDelete?.id)} />
 
 <CourseContainer
   onFetchingChange={(fetching) => {
@@ -115,9 +106,7 @@
             />
           {/if}
           <PrimaryButton
-            label={$t(
-              `course.navItem.lessons.add_lesson.${reorder ? 'end_reorder' : 'start_reorder'}`
-            )}
+            label={$t(`course.navItem.lessons.add_lesson.${reorder ? 'end_reorder' : 'start_reorder'}`)}
             variant={VARIANTS.OUTLINED}
             onClick={() => (reorder = !reorder)}
             isDisabled={!!lessonEditing}

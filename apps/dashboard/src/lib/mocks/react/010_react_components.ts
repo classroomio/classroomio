@@ -56,8 +56,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Select all valid ways to pass data from a parent component to a child component in React.',
+        title: 'Select all valid ways to pass data from a parent component to a child component in React.',
         name: 'q5',
         points: 1,
         order: 4,
@@ -86,8 +85,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'What is the significance of the "key" prop in React when rendering lists of elements?',
+        title: 'What is the significance of the "key" prop in React when rendering lists of elements?',
         name: 'q8',
         points: 1,
         order: 7,
@@ -95,8 +93,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'List some advantages of using functional components in React over class components.',
+        title: 'List some advantages of using functional components in React over class components.',
         name: 'q9',
         points: 1,
         order: 8,

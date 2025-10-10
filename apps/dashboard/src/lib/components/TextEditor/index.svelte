@@ -2,6 +2,7 @@
   import Editor from './TinymceSvelte/index.svelte';
   import { globalStore } from '$lib/utils/store/app';
   import { addMathPlugin } from '$lib/utils/functions/tinymce/plugins';
+  import { untrack } from 'svelte';
 
   interface Props {
     id?: string;
@@ -92,10 +93,12 @@
       conf.skin = 'oxide';
     }
 
-    unmount = true;
-    setTimeout(() => {
-      unmount = false;
-    }, 200);
+    untrack(() => {
+      unmount = true;
+      setTimeout(() => {
+        unmount = false;
+      }, 200);
+    });
   }
 
   $effect(() => {

@@ -1,15 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import {
-    CodeSnippet,
-    Column,
-    Grid,
-    RadioButton,
-    RadioButtonGroup,
-    Row,
-    Toggle
-  } from 'carbon-components-svelte';
+  import { CodeSnippet, Column, Grid, RadioButton, RadioButtonGroup, Row, Toggle } from 'carbon-components-svelte';
   import { ArrowUpRight, Restart } from 'carbon-icons-svelte';
+  import { untrack } from 'svelte';
 
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -187,18 +180,21 @@
   async function setDefault(course: Course) {
     if (!course || !Object.keys(course).length) return;
 
-    settings.set({
-      course_title: course.title,
-      type: course.type,
-      course_description: course.description,
-      logo: course.logo || '',
-      tabs: course.metadata.lessonTabsOrder || $settings.tabs,
-      grading: !!course.metadata.grading,
-      lesson_download: !!course.metadata.lessonDownload,
-      is_published: !!course.is_published,
-      allow_new_students: course.metadata.allowNewStudent
+    untrack(() => {
+      settings.set({
+        course_title: course.title,
+        type: course.type,
+        course_description: course.description,
+        logo: course.logo || '',
+        tabs: course.metadata.lessonTabsOrder || $settings.tabs,
+        grading: !!course.metadata.grading,
+        lesson_download: !!course.metadata.lessonDownload,
+        is_published: !!course.is_published,
+        allow_new_students: course.metadata.allowNewStudent
+      });
     });
   }
+
   $effect(() => {
     setDefault($course);
   });
@@ -224,16 +220,12 @@
           className="mr-2"
           onClick={widgetControl}
         />
-        <PrimaryButton
-          variant={VARIANTS.OUTLINED}
-          label={$t('ai.reset')}
-          onClick={deleteBannerImage}
-        />
+        <PrimaryButton variant={VARIANTS.OUTLINED} label={$t('ai.reset')} onClick={deleteBannerImage} />
       </span>
       {#if $handleOpenWidget.open}
         <UploadWidget
           bind:imageURL={$settings.logo}
-          on:change={() => {
+          onchange={() => {
             hasUnsavedChanges = true;
           }}
         />
@@ -341,12 +333,8 @@
             hasUnsavedChanges = true;
           }}
         >
-          {#snippet labelA()}
-            <span style="color: gray">{$t('course.navItem.settings.disabled')}</span>
-          {/snippet}
-          {#snippet labelB()}
-            <span style="color: gray">{$t('course.navItem.settings.enabled')}</span>
-          {/snippet}
+          <span slot="labelA" style="color: gray">{$t('course.navItem.settings.disabled')}</span>
+          <span slot="labelB" style="color: gray">{$t('course.navItem.settings.enabled')}</span>
         </Toggle>
       {/if}
     </Column>
@@ -384,14 +372,8 @@
           hasUnsavedChanges = true;
         }}
       >
-        <RadioButton
-          labelText={$t('course.navItem.settings.live_class')}
-          value={COURSE_TYPE.LIVE_CLASS}
-        />
-        <RadioButton
-          labelText={$t('course.navItem.settings.self_paced')}
-          value={COURSE_TYPE.SELF_PACED}
-        />
+        <RadioButton labelText={$t('course.navItem.settings.live_class')} value={COURSE_TYPE.LIVE_CLASS} />
+        <RadioButton labelText={$t('course.navItem.settings.self_paced')} value={COURSE_TYPE.SELF_PACED} />
       </RadioButtonGroup>
     </Column>
   </Row>
@@ -409,12 +391,8 @@
           hasUnsavedChanges = true;
         }}
       >
-        {#snippet labelA()}
-          <span style="color: gray">{$t('course.navItem.settings.disabled')}</span>
-        {/snippet}
-        {#snippet labelB()}
-          <span style="color: gray">{$t('course.navItem.settings.enabled')}</span>
-        {/snippet}
+        <span slot="labelA" style="color: gray">{$t('course.navItem.settings.disabled')}</span>
+        <span slot="labelB" style="color: gray">{$t('course.navItem.settings.enabled')}</span>
       </Toggle>
     </Column>
   </Row>
@@ -439,12 +417,8 @@
           }
         }}
       >
-        {#snippet labelA()}
-          <span style="color: gray">{$t('course.navItem.settings.unpublished')}</span>
-        {/snippet}
-        {#snippet labelB()}
-          <span style="color: gray">{$t('course.navItem.settings.published')}</span>
-        {/snippet}
+        <span slot="labelA" style="color: gray">{$t('course.navItem.settings.unpublished')}</span>
+        <span slot="labelB" style="color: gray">{$t('course.navItem.settings.published')}</span>
       </Toggle>
     </Column>
   </Row>

@@ -130,9 +130,7 @@
 
       if (order !== prevSectionsOrder[section.id]) {
         $lessonSections[index].order = order;
-        updateLessonSection({ order }, section.id).then((update) =>
-          console.log(`updated section order`, update)
-        );
+        updateLessonSection({ order }, section.id).then((update) => console.log(`updated section order`, update));
       }
     });
   }
@@ -160,9 +158,7 @@
           order,
           section_id: $lessonSections[colIdx].id
         };
-        updateLesson(lessonUpdate, lesson.id).then((update) =>
-          console.log(`updated lesson order`, update)
-        );
+        updateLesson(lessonUpdate, lesson.id).then((update) => console.log(`updated lesson order`, update));
       }
     });
   }
@@ -196,9 +192,7 @@
   onfinalize={handleDndFinalizeColumns}
 >
   {#each $lessonSections as section (section.id)}
-    <div
-      class="m-auto mb-3 max-w-xl rounded-md border-2 border-gray-200 dark:border-neutral-600 dark:bg-neutral-800"
-    >
+    <div class="m-auto mb-3 max-w-xl rounded-md border-2 border-gray-200 dark:border-neutral-600 dark:bg-neutral-800">
       <div
         class="mb-2 flex min-h-[50px] items-center justify-between rounded-tl-md rounded-tr-md border-b bg-gray-50 px-3 py-1 dark:bg-neutral-700"
       >
@@ -224,12 +218,7 @@
                 onClick={() => onSave({ sectionId: section.id })}
               />
             {:else}
-              <IconButton
-                contained
-                size="small"
-                onClick={() => handleAddLesson(section.id)}
-                disabled={!!lessonEditing}
-              >
+              <IconButton contained size="small" onClick={() => handleAddLesson(section.id)} disabled={!!lessonEditing}>
                 <Add size={20} />
               </IconButton>
               <OverflowMenu size="xl" flipped>
@@ -283,8 +272,7 @@
                     href={$globalStore.isStudent && !lesson.is_unlocked
                       ? page.url.pathname
                       : `/courses/${$course.id}/lessons/${lesson.id}`}
-                    class=" text-black dark:text-white {$globalStore.isStudent &&
-                    !lesson.is_unlocked
+                    class=" text-black dark:text-white {$globalStore.isStudent && !lesson.is_unlocked
                       ? 'cursor-not-allowed'
                       : ''}"
                     data-sveltekit-preload-data="off"

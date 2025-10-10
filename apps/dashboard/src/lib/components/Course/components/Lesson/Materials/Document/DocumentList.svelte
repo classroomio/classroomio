@@ -66,17 +66,13 @@
             <SvelteComponent size={32} class="text-primary-600 w-[10%]" />
             <div class="flex-1">
               <h4 class="mb-2 font-medium text-gray-900 dark:text-gray-300">{document.name}</h4>
-              <div
-                class="mb-3 flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400"
-              >
+              <div class="mb-3 flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
                 <span>
                   {$t('course.navItem.lessons.materials.tabs.document.type')}: {document.type.toUpperCase()}
                 </span>
                 {#if document.size}
                   <span>
-                    {$t('course.navItem.lessons.materials.tabs.document.size')}: {formatFileSize(
-                      document.size
-                    )}
+                    {$t('course.navItem.lessons.materials.tabs.document.size')}: {formatFileSize(document.size)}
                   </span>
                 {/if}
               </div>
@@ -90,11 +86,7 @@
                     {$t('course.navItem.lessons.materials.tabs.document.view_pdf')}
                   </button>
                 {:else}
-                  <a
-                    href={document.link}
-                    target="_blank"
-                    class="text-sm text-blue-600 underline hover:text-blue-800"
-                  >
+                  <a href={document.link} target="_blank" class="text-sm text-blue-600 underline hover:text-blue-800">
                     {$t('course.navItem.lessons.materials.tabs.document.view_document')}
                   </a>
                 {/if}
@@ -107,10 +99,7 @@
                     ? $t('course.navItem.lessons.materials.tabs.document.downloading')
                     : $t('course.navItem.lessons.materials.tabs.document.download')}
                 </button>
-                <button
-                  onclick={() => deleteDocument(index)}
-                  class="text-sm text-red-600 underline hover:text-red-800"
-                >
+                <button onclick={() => deleteDocument(index)} class="text-sm text-red-600 underline hover:text-red-800">
                   {$t('course.navItem.lessons.materials.tabs.document.delete')}
                 </button>
               </div>
@@ -130,24 +119,15 @@
           <div class="flex-1">
             <h4 class="mb-2 font-medium text-gray-900 dark:text-gray-300">{document.name}</h4>
             <div class="mb-3 flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
-              <span
-                >{$t('course.navItem.lessons.materials.tabs.document.type')}: {document.type.toUpperCase()}</span
-              >
+              <span>{$t('course.navItem.lessons.materials.tabs.document.type')}: {document.type.toUpperCase()}</span>
               {#if document.size}
-                <span
-                  >{$t('course.navItem.lessons.materials.tabs.document.size')}: {formatFileSize(
-                    document.size
-                  )}</span
+                <span>{$t('course.navItem.lessons.materials.tabs.document.size')}: {formatFileSize(document.size)}</span
                 >
               {/if}
             </div>
             <div class="flex gap-3">
               {#if document.type === 'pdf'}
-                <PrimaryButton
-                  variant={VARIANTS.CONTAINED_DARK}
-                  onClick={() => handleViewPDF(document)}
-                  {isLoading}
-                >
+                <PrimaryButton variant={VARIANTS.CONTAINED_DARK} onClick={() => handleViewPDF(document)} {isLoading}>
                   <EyeIcon size={16} class="mr-1 inline" />
                   {$t('course.navItem.lessons.materials.tabs.document.view_pdf')}
                 </PrimaryButton>

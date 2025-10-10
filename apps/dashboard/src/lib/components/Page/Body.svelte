@@ -32,9 +32,7 @@
   tabindex="0"
   class="overflow-y-auto {isPageNavHidden
     ? 'h-[calc(100vh-65px)] lg:h-[calc(100vh-127px)]'
-    : 'h-[calc(100vh-127px)]'} mx-auto mt-4 {width} {className} relative {isPageNavHidden
-    ? 'px-4 pb-20'
-    : padding}"
+    : 'h-[calc(100vh-127px)]'} mx-auto mt-4 {width} {className} relative {isPageNavHidden ? 'px-4 pb-20' : padding}"
   onclick={onClick}
   onkeydown={handleKeydown}
 >

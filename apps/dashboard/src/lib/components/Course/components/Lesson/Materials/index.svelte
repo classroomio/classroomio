@@ -154,10 +154,7 @@
     return lessonRes;
   }
 
-  function isMaterialsEmpty(
-    materials: LessonPage['materials'],
-    translation: Record<LOCALE, string>
-  ) {
+  function isMaterialsEmpty(materials: LessonPage['materials'], translation: Record<LOCALE, string>) {
     const { slide_url, videos, note, documents } = materials;
 
     return (
@@ -261,16 +258,18 @@
 
     if (timeoutId) clearTimeout(timeoutId);
 
-    isSaving = true;
-    timeoutId = setTimeout(async () => {
-      const { error } = await saveLesson(updatedMaterials);
+    untrack(() => {
+      isSaving = true;
+      timeoutId = setTimeout(async () => {
+        const { error } = await saveLesson(updatedMaterials);
 
-      if (error) {
-        console.error('error saving lesson', error);
-        snackbar.error('snackbar.materials.apology');
-      }
-      isSaving = false;
-    }, 1000);
+        if (error) {
+          console.error('error saving lesson', error);
+          snackbar.error('snackbar.materials.apology');
+        }
+        isSaving = false;
+      }, 1000);
+    });
   }
 
   async function onLessonIdChange(_lid: string) {
@@ -365,7 +364,7 @@
   width="w-4/5 w-[90%] h-[80%] md:h-[566px]"
   modalHeading={$t('course.navItem.lessons.materials.tabs.document.upload_title')}
 >
-  <AddDocumentToLesson {lessonId} />
+  <AddDocumentToLesson />
 </Modal>
 
 <HtmlRender className="m-auto text-center">
@@ -380,10 +379,7 @@
   <Tabs {tabs} {currentTab} {onChange}>
     {#snippet content()}
       <slot:fragment>
-        <TabContent
-          value={getValue('course.navItem.lessons.materials.tabs.note.title')}
-          index={currentTab}
-        >
+        <TabContent value={getValue('course.navItem.lessons.materials.tabs.note.title')} index={currentTab}>
           <div class="flex justify-end gap-1">
             <!-- Update this when ai-sdk is updated -->
             <div bind:this={aiButtonRef} class="hidden flex-row-reverse">
@@ -447,10 +443,7 @@
           </div>
         </TabContent>
 
-        <TabContent
-          value={getValue('course.navItem.lessons.materials.tabs.slide.title')}
-          index={currentTab}
-        >
+        <TabContent value={getValue('course.navItem.lessons.materials.tabs.slide.title')} index={currentTab}>
           {#if mode === MODES.edit}
             <TextField
               label={$t('course.navItem.lessons.materials.tabs.slide.slide_link')}
@@ -460,10 +453,7 @@
             />
           {/if}
         </TabContent>
-        <TabContent
-          value={getValue('course.navItem.lessons.materials.tabs.video.title')}
-          index={currentTab}
-        >
+        <TabContent value={getValue('course.navItem.lessons.materials.tabs.video.title')} index={currentTab}>
           <PrimaryButton
             label={$t('course.navItem.lessons.materials.tabs.video.button')}
             onClick={openAddVideoModal}
@@ -474,11 +464,7 @@
               {#each $lesson.materials.videos as video, index}
                 {#if mode === MODES.edit}
                   <div class="ml-auto">
-                    <IconButton
-                      value="delete-video"
-                      contained={true}
-                      onClick={() => deleteLessonVideo(index)}
-                    >
+                    <IconButton value="delete-video" contained={true} onClick={() => deleteLessonVideo(index)}>
                       <TrashCanIcon size={20} class="carbon-icon dark:text-white" />
                     </IconButton>
                   </div>
@@ -538,10 +524,7 @@
             </div>
           {/if}
         </TabContent>
-        <TabContent
-          value={getValue('course.navItem.lessons.materials.tabs.document.title')}
-          index={currentTab}
-        >
+        <TabContent value={getValue('course.navItem.lessons.materials.tabs.document.title')} index={currentTab}>
           <ComponentDocument {mode} />
         </TabContent>
       </slot:fragment>

@@ -52,18 +52,13 @@
       <EmailSentIcon />
       <h3 class="my-3 text-xl font-semibold dark:text-white">Email Sent!</h3>
       <p class="text-md mb-6 text-center dark:text-white">
-        We have sent a confirmation email to <span class="text-primary-700">{fields.email}</span>.
-        Kindly check your inbox to reset password or spam to reset your password.
+        We have sent a confirmation email to <span class="text-primary-700">{fields.email}</span>. Kindly check your
+        inbox to reset password or spam to reset your password.
       </p>
     </div>
 
     <div class="my-4 flex w-full flex-col items-center justify-end">
-      <PrimaryButton
-        label="Okay"
-        type="button"
-        className="sm:w-full w-full mb-4"
-        onClick={() => goto(ROUTE.LOGIN)}
-      />
+      <PrimaryButton label="Okay" type="button" className="sm:w-full w-full mb-4" onClick={() => goto(ROUTE.LOGIN)} />
     </div>
   {:else}
     <div class="mt-4 w-full">

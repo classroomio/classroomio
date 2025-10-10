@@ -26,11 +26,7 @@
           <Add size={24} />
         </PrimaryButton>
       {:else}
-        <PrimaryButton
-          label={$t('community.ask_button')}
-          variant={VARIANTS.CONTAINED_DARK}
-          onClick={askCommunity}
-        />
+        <PrimaryButton label={$t('community.ask_button')} variant={VARIANTS.CONTAINED_DARK} onClick={askCommunity} />
       {/if}
     </div>
     <Community />

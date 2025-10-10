@@ -1,11 +1,4 @@
-import type {
-  Course,
-  Lesson,
-  LessonComment,
-  LessonCompletion,
-  LessonPage,
-  LessonSection
-} from '$lib/utils/types';
+import type { Course, Lesson, LessonComment, LessonCompletion, LessonPage, LessonSection } from '$lib/utils/types';
 import type { Updater, Writable } from 'svelte/store';
 import {
   createLesson,
@@ -216,10 +209,7 @@ export async function handleSaveLesson(lesson: Lesson, courseId: Course['id']) {
   }
   return newLessonData;
 }
-export async function handleSaveLessonSection(
-  section: Partial<LessonSection>,
-  courseId: Course['id']
-) {
+export async function handleSaveLessonSection(section: Partial<LessonSection>, courseId: Course['id']) {
   const result = lessonValidation(section);
 
   if (Object.keys(result).length) {

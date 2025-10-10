@@ -8,8 +8,7 @@ const template: ExerciseTemplate = {
   questionnaire: {
     questions: [
       {
-        title:
-          'How do you add an item to an array in state without mutating the original array in React?',
+        title: 'How do you add an item to an array in state without mutating the original array in React?',
         name: 'addItemToArray',
         points: 1,
         order: 0,
@@ -38,8 +37,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'How can you remove an item from an array in state without mutating the original array in React?',
+        title: 'How can you remove an item from an array in state without mutating the original array in React?',
         name: 'removeItemFromArray',
         points: 1,
         order: 2,
@@ -112,8 +110,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the recommended approach for updating an array in state when reordering items?',
+        title: 'What is the recommended approach for updating an array in state when reordering items?',
         name: 'reorderingArrayItems',
         points: 1,
         order: 6,

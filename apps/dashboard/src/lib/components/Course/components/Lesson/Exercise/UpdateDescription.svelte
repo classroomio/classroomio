@@ -79,8 +79,7 @@
       </div>
 
       <article class="preview prose prose-sm sm:prose mt-3 p-2">
-        {@html $questionnaire.description ||
-          $t('course.navItem.lessons.exercises.all_exercises.description.no')}
+        {@html $questionnaire.description || $t('course.navItem.lessons.exercises.all_exercises.description.no')}
       </article>
     {/if}
   </QuestionContainer>

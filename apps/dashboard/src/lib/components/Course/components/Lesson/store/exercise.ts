@@ -61,9 +61,7 @@ export function validateQuestionnaire(questions) {
       }
     }
 
-    const hasAnswer = question.options
-      .filter((o) => !o.deleted_at)
-      .some((option) => option.is_correct);
+    const hasAnswer = question.options.filter((o) => !o.deleted_at).some((option) => option.is_correct);
 
     if (!hasAnswer) {
       qErrors.option = 'Please mark an option as the correct answer';

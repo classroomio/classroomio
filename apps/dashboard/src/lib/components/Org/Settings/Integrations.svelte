@@ -34,10 +34,7 @@
   }
 
   async function deleteChatId() {
-    const { error } = await supabase
-      .from('profile')
-      .update({ telegram_chat_id: null })
-      .match({ id: $profile.id });
+    const { error } = await supabase.from('profile').update({ telegram_chat_id: null }).match({ id: $profile.id });
 
     if (error) {
       snackbar.error('snackbar.course_settings.error.failed_deletion');
@@ -88,9 +85,7 @@
             type="number"
             isRequired
           />
-          <PrimaryButton onClick={addChatId}
-            >{$t('settings.integrations.connect_button')}</PrimaryButton
-          >
+          <PrimaryButton onClick={addChatId}>{$t('settings.integrations.connect_button')}</PrimaryButton>
         </div>
       {/if}
     </Column>

@@ -16,10 +16,7 @@
         {$t('course.navItem.landing_page.find')}🌎.
       </p>
 
-      <Search
-        placeholder={$t('course.navItem.landing_page.find_course')}
-        bind:value={searchValue}
-      />
+      <Search placeholder={$t('course.navItem.landing_page.find_course')} bind:value={searchValue} />
     </div>
   </div>
 </section>

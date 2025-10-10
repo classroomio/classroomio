@@ -28,6 +28,7 @@
 
   const GotoFullProfile = (student: StudentOverview) => {
     if (!student) return;
+
     goto(`/courses/${$course.id}/people/${student.id}?back=/courses/${$course.id}/analytics`);
   };
 
@@ -97,12 +98,7 @@
                 class="sticky left-0 z-10 min-w-[200px] whitespace-nowrap bg-white px-4 py-3 transition-colors group-hover:bg-gray-50 dark:bg-neutral-800 dark:group-hover:bg-gray-700"
               >
                 <div class="flex items-center gap-3">
-                  <Avatar
-                    src={student.profile.avatar_url}
-                    name={student.profile.fullname}
-                    width="w-8"
-                    height="h-8"
-                  />
+                  <Avatar src={student.profile.avatar_url} name={student.profile.fullname} width="w-8" height="h-8" />
                   <div class="min-w-0 flex-1">
                     <p class="truncate font-medium text-gray-900 dark:text-white">
                       {student.profile.fullname}
@@ -121,10 +117,7 @@
                   </span>
                   <div class="w-20 flex-shrink-0">
                     <div class="h-2 rounded-full bg-gray-200 dark:bg-neutral-700">
-                      <div
-                        class="h-2 rounded-full bg-blue-500"
-                        style="width: {student.progressPercentage}%"
-                      ></div>
+                      <div class="h-2 rounded-full bg-blue-500" style="width: {student.progressPercentage}%"></div>
                     </div>
                   </div>
                 </div>
@@ -136,11 +129,7 @@
               </td>
               <td class="min-w-[120px] whitespace-nowrap px-4 py-3">
                 <Tag
-                  type={student.averageGrade >= 80
-                    ? 'green'
-                    : student.averageGrade >= 60
-                      ? 'blue'
-                      : 'red'}
+                  type={student.averageGrade >= 80 ? 'green' : student.averageGrade >= 60 ? 'blue' : 'red'}
                   size="sm"
                 >
                   {student.averageGrade}%
@@ -168,9 +157,7 @@
 
   <!-- Pagination Controls -->
   {#if students.length > pageSize}
-    <div
-      class="mt-4 flex items-center justify-between border-t border-gray-200 px-4 py-3 dark:border-neutral-600"
-    >
+    <div class="mt-4 flex items-center justify-between border-t border-gray-200 px-4 py-3 dark:border-neutral-600">
       <div class="text-sm text-gray-700 dark:text-gray-300">
         {$t('analytics.showing_students', {
           start: startItem,
@@ -178,12 +165,7 @@
           total: students.length
         })}
       </div>
-      <Pagination
-        page={currentPage}
-        totalItems={students.length}
-        {pageSize}
-        on:change={handlePageChange}
-      />
+      <Pagination page={currentPage} totalItems={students.length} {pageSize} on:change={handlePageChange} />
     </div>
   {/if}
 {/if}

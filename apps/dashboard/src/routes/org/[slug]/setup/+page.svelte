@@ -12,7 +12,8 @@
 
   let { data } = $props();
   let setupList = $state(data.setup || []);
-  let completed = $state(0);
+
+  const completed = $derived(setupList.filter((list) => list.is_completed).length);
 
   const StepsEnum = {
     UPDATE_PROFILE: 'profile',
@@ -79,10 +80,6 @@
       return item;
     });
   });
-
-  $effect(() => {
-    completed = setupList.filter((list) => list.is_completed).length;
-  });
 </script>
 
 <section class="mx-auto w-full md:max-w-4xl">
@@ -103,11 +100,7 @@
         >
           <div class={`flex-1 space-y-1 ${list.is_completed ? 'opacity-50' : ''}  lg:max-w-[50%]`}>
             <div class="flex items-center gap-3">
-              <Chip
-                value={i + 1}
-                className={`text-[10px] font-semibold !py-1 `}
-                shape="rounded-full"
-              />
+              <Chip value={i + 1} className={`text-[10px] font-semibold !py-1 `} shape="rounded-full" />
               <p class="text-lg font-medium">{$t(list.title)}</p>
             </div>
             <p class="text-sm">

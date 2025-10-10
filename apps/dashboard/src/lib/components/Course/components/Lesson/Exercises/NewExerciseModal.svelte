@@ -45,17 +45,13 @@
   const options = [
     {
       title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.from_scratch'),
-      subtitle: $t(
-        'course.navItem.lessons.exercises.new_exercise_modal.options.from_scratch_subtitle'
-      ),
+      subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.from_scratch_subtitle'),
       type: Type.SCRATCH,
       isDisabled: false
     },
     {
       title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_template'),
-      subtitle: $t(
-        'course.navItem.lessons.exercises.new_exercise_modal.options.use_template_subtitle'
-      ),
+      subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_template_subtitle'),
       type: Type.TEMPLATE,
       isDisabled: false
     }
@@ -155,22 +151,17 @@
       <div class="my-8 flex justify-between gap-2">
         {#each options as option}
           <button
-            class="h-[240px] w-[261px] rounded-md border-2 p-5 dark:bg-neutral-700 {option.type ===
-            type
+            class="h-[240px] w-[261px] rounded-md border-2 p-5 dark:bg-neutral-700 {option.type === type
               ? 'border-primary-400'
               : `border-gray-200 dark:border-neutral-600 ${
                   !option.isDisabled && 'hover:scale-95'
-                }`} flex flex-col {option.isDisabled &&
-              'cursor-not-allowed opacity-60'} transition-all ease-in-out"
+                }`} flex flex-col {option.isDisabled && 'cursor-not-allowed opacity-60'} transition-all ease-in-out"
             type="button"
             onclick={!option.isDisabled ? () => (type = option.type) : undefined}
           >
             <div class="flex h-[70%] w-full flex-row-reverse">
               {#if option.type === type}
-                <CheckmarkFilledIcon
-                  size={16}
-                  class="carbon-icon text-primary-600 dark:text-primary-200"
-                />
+                <CheckmarkFilledIcon size={16} class="carbon-icon text-primary-600 dark:text-primary-200" />
               {:else if !option.isDisabled}
                 <CheckmarkOutlineIcon size={16} class="carbon-icon" />
               {/if}
@@ -207,9 +198,7 @@
           <TextField
             bind:value={title}
             autoFocus={true}
-            placeholder={$t(
-              'course.navItem.lessons.exercises.new_exercise_modal.title_placeholder'
-            )}
+            placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.title_placeholder')}
             className="my-4"
           />
 
@@ -294,9 +283,7 @@
               isLoading={isTemplateFinishedLoading}
               onClick={async () => {
                 isTemplateFinishedLoading = true;
-                const template = allTemplates?.[selectedTag]?.find(
-                  (t) => t.id === selectedTemplateId
-                );
+                const template = allTemplates?.[selectedTag]?.find((t) => t.id === selectedTemplateId);
 
                 if (!template) return;
 

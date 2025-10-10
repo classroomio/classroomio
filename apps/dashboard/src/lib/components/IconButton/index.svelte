@@ -47,11 +47,7 @@
   }
 </script>
 
-<ToolTip
-  title={toolTipProps.title}
-  hotkeys={disabled ? [] : toolTipProps.hotkeys}
-  direction={toolTipProps.direction}
->
+<ToolTip title={toolTipProps.title} hotkeys={disabled ? [] : toolTipProps.hotkeys} direction={toolTipProps.direction}>
   <button
     class="root {color} {selected && 'active'} {disabled && 'disabled'} {size} {contained &&
       'contained dark:bg-neutral-700'} {buttonClassName}"

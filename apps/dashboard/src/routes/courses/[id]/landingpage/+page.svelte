@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { dev } from '$app/environment';
   import { fly } from 'svelte/transition';
   import { course } from '$lib/components/Course/store';
-  import type { Course, Lesson, LessonSection } from '$lib/utils/types';
+  import type { Course } from '$lib/utils/types';
   import { lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
   import { CourseContainer } from '$lib/components/CourseContainer';
 
@@ -13,26 +12,15 @@
 
   const { courseId } = data;
 
-  let courseData: Course = $state($course);
-
-  function setCourseData(course: Course, lessons: Lesson[], lesson_section: LessonSection[]) {
-    courseData = { ...course, lessons, lesson_section };
-  }
+  let courseData: Course = $derived({
+    ...$course,
+    $lessons,
+    $lessonSections
+  });
 
   function syncCourseStore(_courseData: Course) {
     $course = _courseData;
   }
-
-  $effect(() => {
-    console.log('$course', $course);
-  });
-
-  $effect(() => {
-    setCourseData($course, $lessons, $lessonSections);
-  });
-  $effect(() => {
-    dev && console.log('courseData changed', courseData);
-  });
 </script>
 
 <CourseContainer {courseId} renderOnlyChildren={true}>

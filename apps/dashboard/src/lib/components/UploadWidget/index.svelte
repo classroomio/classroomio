@@ -1,7 +1,7 @@
 <script lang="ts">
   import { preventDefault } from 'svelte/legacy';
 
-  import { onMount, createEventDispatcher } from 'svelte';
+  import { onMount } from 'svelte';
   import Tabs from '$lib/components/Tabs/index.svelte';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import TabContent from '$lib/components/TabContent/index.svelte';
@@ -14,12 +14,13 @@
 
   interface Props {
     imageURL?: string;
+    onchange?: (_v: string) => void;
   }
 
-  let { imageURL = $bindable('') }: Props = $props();
+  let { imageURL = $bindable(''), onchange }: Props = $props();
 
   const supabase = getSupabase();
-  const dispatch = createEventDispatcher();
+
   const tabs = [
     { label: 'Unsplash', value: 'unsplash' },
     { label: 'Upload', value: 'upload' }
@@ -39,16 +40,17 @@
     };
     alt_description: string;
   }[] = $state([]);
-  let fileInput: HTMLInputElement = $state();
+  let fileInput: HTMLInputElement | undefined = $state();
 
   let label = $state($t('snackbar.landing_page_settings.error.label'));
 
   const onChange = (tabValue: string | number) => () => (currentTab = `${tabValue}`);
 
   async function handleImageClick(img: string) {
-    dispatch('change');
-    imageURL = img;
     $handleOpenWidget.open = false;
+
+    onchange?.(img);
+    imageURL = img;
   }
 
   const onFileSelected = () => {
@@ -62,7 +64,7 @@
     if (file) {
       let reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = (e) => {
+      reader.onload = () => {
         uploadImage(file);
       };
     }
@@ -82,7 +84,8 @@
     if (data) {
       const { data: response } = await supabase.storage.from('avatars').getPublicUrl(filename);
       imageURL = response.publicUrl;
-      dispatch('change');
+
+      onchange?.(response.publicUrl);
     }
     isUploading = false;
 
@@ -91,7 +94,7 @@
   };
 
   function handleUpload() {
-    fileInput.click();
+    fileInput?.click();
   }
 
   async function handleSubmit() {
@@ -152,16 +155,12 @@
                   id=""
                   class="ml-2 w-[85%] rounded-lg dark:text-black"
                 />
-                <button
-                  type="submit"
-                  class="rounded-lg border-[1px] border-gray-500 bg-white px-3 py-1 text-black"
+                <button type="submit" class="rounded-lg border-[1px] border-gray-500 bg-white px-3 py-1 text-black"
                   >{$t('course.navItem.landing_page.upload_widget.submit')}</button
                 >
               </form>
               {#if unsplashImages && unsplashImages.length > 0}
-                <div
-                  class="hide-scrollbar flex max-h-[300px] flex-row flex-wrap items-center gap-2 px-[10px]"
-                >
+                <div class="hide-scrollbar flex max-h-[300px] flex-row flex-wrap items-center gap-2 px-[10px]">
                   {#each unsplashImages as unsplashImages (unsplashImages.id)}
                     <div>
                       <div class="relative h-[130px] w-[195px] overflow-hidden">

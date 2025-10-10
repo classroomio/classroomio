@@ -52,12 +52,7 @@
     />
 
     <div class="mt-5 flex flex-row-reverse items-center">
-      <PrimaryButton
-        className="px-6 py-3"
-        label="Create"
-        type="submit"
-        isLoading={$copyCourseModal.isSaving}
-      />
+      <PrimaryButton className="px-6 py-3" label="Create" type="submit" isLoading={$copyCourseModal.isSaving} />
     </div>
   </form>
 </Modal>

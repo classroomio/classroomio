@@ -42,16 +42,10 @@ async function fetchCourseData(courseId: string): Promise<GetCourseResponse> {
   return { data, error };
 }
 
-async function cloneGroupAndBasicCourse(
-  course: Course,
-  newTitle: string
-): Promise<{ newCourse: Course }> {
+async function cloneGroupAndBasicCourse(course: Course, newTitle: string): Promise<{ newCourse: Course }> {
   const { description } = course;
 
-  const { data: newGroup } = await supabase
-    .from('group')
-    .insert({ name: newTitle, description })
-    .select();
+  const { data: newGroup } = await supabase.from('group').insert({ name: newTitle, description }).select();
 
   console.log(`newGroup`, newGroup);
   if (!Array.isArray(newGroup)) {

@@ -29,8 +29,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which MongoDB driver is commonly used to connect to MongoDB from a Node.js application?',
+        title: 'Which MongoDB driver is commonly used to connect to MongoDB from a Node.js application?',
         name: 'question2',
         points: 2,
         order: 1,
@@ -117,8 +116,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'Which method is used to find documents in a MongoDB collection with specific criteria?',
+        title: 'Which method is used to find documents in a MongoDB collection with specific criteria?',
         name: 'question7',
         points: 2,
         order: 6,

@@ -2,11 +2,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import { CourseContainer } from '$lib/components/CourseContainer';
-  import {
-    checkExercisesComplete,
-    fetchLesson,
-    updateLessonCompletion
-  } from '$lib/utils/services/courses';
+  import { checkExercisesComplete, fetchLesson, updateLessonCompletion } from '$lib/utils/services/courses';
   import { globalStore } from '$lib/utils/store/app';
   import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
   import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
@@ -17,12 +13,7 @@
   import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
   import LessonVersionHistory from '$lib/components/Course/components/Lesson/LessonVersionHistory.svelte';
   import Materials from '$lib/components/Course/components/Lesson/Materials/index.svelte';
-  import {
-    lesson,
-    setLesson,
-    lessons,
-    lessonSections
-  } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { lesson, setLesson, lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
   import { getGroupMemberId } from '$lib/components/Course/function';
   import { course, group } from '$lib/components/Course/store';
   import IconButton from '$lib/components/IconButton/index.svelte';
@@ -85,10 +76,7 @@
 
   async function markLessonComplete(lessonId: string) {
     const groupMemberId = getGroupMemberId($group.people, $profile.id);
-    const { data: areExercisesComplete, error } = await checkExercisesComplete(
-      lessonId,
-      groupMemberId
-    );
+    const { data: areExercisesComplete, error } = await checkExercisesComplete(lessonId, groupMemberId);
 
     if (error) {
       snackbar.error('snackbar.lessons.error.try_later');
@@ -269,11 +257,7 @@
   {#if !data.isMaterialsTabActive}
     <Exercises lessonId={data.lessonId} exerciseId={data.exerciseId} path={`${path}/exercises`} />
   {:else if !!data.lessonId}
-    <PageBody
-      isPageNavHidden={$globalStore.isStudent}
-      width="lg:w-full xl:w-11/12"
-      className="overflow-x-hidden"
-    >
+    <PageBody isPageNavHidden={$globalStore.isStudent} width="lg:w-full xl:w-11/12" className="overflow-x-hidden">
       <!-- Shows Lesson Note / Slides / Video -->
       <Materials
         lessonId={data.lessonId}
@@ -288,9 +272,7 @@
 
   <!-- Bottom Lesson Widget -->
   <div class="absolute bottom-5 flex w-full items-center justify-center">
-    <div
-      class="flex w-fit items-center gap-2 rounded-full bg-gray-100 px-5 py-1 shadow-xl dark:bg-neutral-700"
-    >
+    <div class="flex w-fit items-center gap-2 rounded-full bg-gray-100 px-5 py-1 shadow-xl dark:bg-neutral-700">
       <button
         disabled={isPrevDisabled}
         class={`my-2 flex items-center border border-b-0 border-l-0 border-t-0 border-gray-300 px-2 pr-4 ${

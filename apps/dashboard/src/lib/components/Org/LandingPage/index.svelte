@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { preventDefault } from 'svelte/legacy';
 
   import { goto } from '$app/navigation';
@@ -109,23 +110,24 @@
     };
   }
   function isYouTubeLink(link: string) {
-    const youtubeRegex =
-      /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
 
     return youtubeRegex.test(link.trim());
   }
 
-  async function loadData(siteName) {
+  function loadData(siteName) {
     if (!siteName) return;
 
-    try {
-      $courseMetaDeta.isLoading = true;
-      const coursesResult = await getCourseBySiteName(siteName);
-      courses.set(coursesResult);
-      $courseMetaDeta.isLoading = false;
-    } catch (error) {
-      console.log('error', error);
-    }
+    untrack(async () => {
+      try {
+        $courseMetaDeta.isLoading = true;
+        const coursesResult = await getCourseBySiteName(siteName);
+        courses.set(coursesResult);
+        $courseMetaDeta.isLoading = false;
+      } catch (error) {
+        console.log('error', error);
+      }
+    });
   }
 
   function initPlyr(_player: any, _video: string | undefined) {
@@ -144,9 +146,11 @@
         landingpage.header.banner = $landingPageSettings.header.banner;
       }
 
-      $landingPageSettings = {
-        ...landingpage
-      };
+      untrack(() => {
+        $landingPageSettings = {
+          ...landingpage
+        };
+      });
     }
   }
 
@@ -193,18 +197,11 @@
       <header
         id="header"
         class={`relative mb-10 h-[100vh] w-full md:h-[90vh] ${
-          $landingPageSettings.header.background?.show
-            ? 'bg-cover bg-center'
-            : 'border-b border-gray-300'
+          $landingPageSettings.header.background?.show ? 'bg-cover bg-center' : 'border-b border-gray-300'
         }`}
         style="background-image: {getBgImage($landingPageSettings)}"
       >
-        <Navigation
-          logo={org.avatar_url}
-          orgName={org.name}
-          disableSignup={true}
-          isOrgSite={true}
-        />
+        <Navigation logo={org.avatar_url} orgName={org.name} disableSignup={true} isOrgSite={true} />
 
         <div class="absolute top-0 z-10 h-[100vh] w-full bg-white opacity-80 md:h-[90vh]"></div>
         {#if $landingPageSettings.header.banner.show}
@@ -217,9 +214,7 @@
                 <p class=" text-primary-600 text-2xl font-semibold capitalize">
                   {org.name}
                 </p>
-                <h1
-                  class="my-4 text-center text-4xl font-bold md:text-start md:text-5xl lg:text-6xl"
-                >
+                <h1 class="my-4 text-center text-4xl font-bold md:text-start md:text-5xl lg:text-6xl">
                   {$landingPageSettings.header.title} <br /><span class="text-primary-600"
                     >{$landingPageSettings.header.titleHighlight}</span
                   >
@@ -232,8 +227,7 @@
                   label={$landingPageSettings.header.action.label}
                   className="mt-2 md:mt-5 px-10 w-fit"
                   onClick={() => {
-                    $landingPageSettings.header.action.redirect &&
-                      goto($landingPageSettings.header.action.link);
+                    $landingPageSettings.header.action.redirect && goto($landingPageSettings.header.action.link);
                   }}
                 />
               </div>
@@ -256,11 +250,7 @@
                       Captions are optional
                       <track kind="captions" />
                     </video> -->
-                  <img
-                    class="rounded-md"
-                    src={$landingPageSettings.header?.banner?.image}
-                    alt="landing page banner"
-                  />
+                  <img class="rounded-md" src={$landingPageSettings.header?.banner?.image} alt="landing page banner" />
                 {/if}
               </div>
             </div>
@@ -282,8 +272,7 @@
                 label={$landingPageSettings.header.action.label}
                 className="mt-5 px-10 w-fit"
                 onClick={() => {
-                  $landingPageSettings.header.action.redirect &&
-                    goto($landingPageSettings.header.action.link);
+                  $landingPageSettings.header.action.redirect && goto($landingPageSettings.header.action.link);
                 }}
               />
             </div>
@@ -304,11 +293,7 @@
           </div>
 
           <div class="image">
-            <img
-              src={$landingPageSettings.aboutUs.imageUrl}
-              alt="Our Story"
-              class=" max-h-[450px] rounded-2xl"
-            />
+            <img src={$landingPageSettings.aboutUs.imageUrl} alt="Our Story" class=" max-h-[450px] rounded-2xl" />
           </div>
         </div>
       </section>
@@ -374,9 +359,7 @@
             <PrimaryButton
               variant={VARIANTS.OUTLINED}
               onClick={() => (viewAll = !viewAll)}
-              label={viewAll
-                ? $t('course.navItem.landing_page.view_less')
-                : $t('course.navItem.landing_page.view_all')}
+              label={viewAll ? $t('course.navItem.landing_page.view_less') : $t('course.navItem.landing_page.view_all')}
               className="px-10 py-5 w-fit"
             />
           </div>
@@ -486,11 +469,7 @@
                     </div>
                   </div>
 
-                  <PrimaryButton
-                    className="w-full mx-auto mt-5 md:mt-0"
-                    type="submit"
-                    isLoading={isContactSubmiting}
-                  >
+                  <PrimaryButton className="w-full mx-auto mt-5 md:mt-0" type="submit" isLoading={isContactSubmiting}>
                     <span class="text-md mr-2">{$t('course.navItem.landing_page.submit')}</span>
                     <Rocket size={24} />
                   </PrimaryButton>
@@ -505,9 +484,7 @@
     <!-- Waitlist Section -->
     {#if $landingPageSettings.mailinglist.show}
       <section id="waitlist" transition:fade class="mx-auto my-10 w-[95%] max-w-6xl">
-        <div
-          class="bg-primary-700 flex flex-col rounded-lg px-4 py-14 md:px-10 lg:flex-row lg:items-center"
-        >
+        <div class="bg-primary-700 flex flex-col rounded-lg px-4 py-14 md:px-10 lg:flex-row lg:items-center">
           <div class="w-full md:mr-4 md:w-[65%]">
             <h1 class="mb-5 mt-0 text-4xl font-bold text-white">
               {$landingPageSettings.mailinglist.title}
@@ -552,13 +529,7 @@
       >
         <ul class="flex w-11/12 flex-col items-center sm:flex-row">
           <div class="logo">
-            <a
-              href="/"
-              title={`Go to ${org.name} Home`}
-              id="logo"
-              data-hveid="8"
-              class="flex items-center"
-            >
+            <a href="/" title={`Go to ${org.name} Home`} id="logo" data-hveid="8" class="flex items-center">
               <img
                 src={org.avatar_url || '/logo-192.png'}
                 alt={`${org.name} logo`}

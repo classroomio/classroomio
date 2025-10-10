@@ -1,9 +1,6 @@
 <script lang="ts">
   import Avatar from '$lib/components/Avatar/index.svelte';
-  import {
-    lesson,
-    lessonCommentsChannel
-  } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { lesson, lessonCommentsChannel } from '$lib/components/Course/components/Lesson/store/lessons';
   import { group } from '$lib/components/Course/store';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
@@ -15,10 +12,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';
   import type { GroupPerson, LessonComment, LessonCommentInsertPayload } from '$lib/utils/types';
-  import type {
-    PostgrestSingleResponse,
-    RealtimePostgresChangesPayload
-  } from '@supabase/supabase-js';
+  import type { PostgrestSingleResponse, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
   import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
   import { onDestroy, onMount } from 'svelte';
 
@@ -89,9 +83,7 @@
           return;
         }
 
-        comments = comments.map((comment) =>
-          comment.id === 0 ? { ...comment, id: data.id } : comment
-        );
+        comments = comments.map((comment) => (comment.id === 0 ? { ...comment, id: data.id } : comment));
         isSaving = false;
         comment = '';
       });
@@ -252,11 +244,7 @@
       lessonCommentsChannel.set(
         supabase
           .channel('any')
-          .on(
-            'postgres_changes',
-            { event: 'INSERT', schema: 'public', table: 'lesson_comment' },
-            handleInsert
-          )
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'lesson_comment' }, handleInsert)
           .subscribe()
       );
     }
@@ -278,13 +266,7 @@
   </div>
   <div>
     <div class="flex h-full items-start gap-3">
-      <Avatar
-        src={$profile.avatar_url}
-        name={$profile.fullname}
-        width="w-8"
-        height="h-8"
-        className="mt-2"
-      />
+      <Avatar src={$profile.avatar_url} name={$profile.fullname} width="w-8" height="h-8" className="mt-2" />
       <div class="h-full w-full">
         <TextArea
           label={$t('course.navItem.lessons.comments.text_area_title')}

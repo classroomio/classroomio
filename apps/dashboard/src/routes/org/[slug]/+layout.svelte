@@ -10,13 +10,13 @@
 
   let { data, children } = $props();
 
-  let ref = null;
+  function redirect(siteName: string) {
+    const newUrl = page.url.pathname.replace('*', siteName);
+    goto(newUrl + page.url.search);
+  }
 
   $effect(() => {
-    if ($currentOrg.id && data.orgName === '*') {
-      const newUrl = page.url.pathname.replace('*', $currentOrg.siteName);
-      goto(newUrl + page.url.search);
-    }
+    data.orgName === '*' && redirect($currentOrg.siteName);
   });
 </script>
 

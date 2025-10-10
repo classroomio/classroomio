@@ -14,11 +14,7 @@
   </p>
 
   <PrimaryButton label="Go Home" onClick={() => goto('https://www.classroomio.com')} />
-  <PrimaryButton
-    label="Help"
-    variant={VARIANTS.LINK}
-    onClick={() => goto('https://help.classroomio.com/')}
-  />
+  <PrimaryButton label="Help" variant={VARIANTS.LINK} onClick={() => goto('https://help.classroomio.com/')} />
 </div>
 
 <style>

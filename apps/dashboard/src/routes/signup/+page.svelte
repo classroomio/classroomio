@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import AuthUI from '$lib/components/AuthUI/index.svelte';
@@ -8,11 +9,7 @@
   import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
-  import {
-    authValidation,
-    getConfirmPasswordError,
-    getDisableSubmit
-  } from '$lib/utils/functions/validator';
+  import { authValidation, getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
@@ -27,12 +24,13 @@
     password?: string;
     confirmPassword?: string;
   } = $state({});
-  let submitError: string = $state();
-  let disableSubmit = $state(false);
-  let formRef: HTMLFormElement = $state();
+  let submitError: string = $state('');
+  let formRef: HTMLFormElement | undefined = $state();
 
   let query = new URLSearchParams(page.url.search);
   let redirect = query.get('redirect');
+
+  const disableSubmit = $derived(getDisableSubmit(fields));
 
   async function handleSubmit() {
     const validationRes = authValidation(fields);
@@ -119,11 +117,14 @@
     }
   }
 
+  function setConfirmPasswordError(fields: typeof SIGNUP_FIELDS) {
+    untrack(() => {
+      errors.confirmPassword = getConfirmPasswordError(fields);
+    });
+  }
+
   $effect(() => {
-    errors.confirmPassword = getConfirmPasswordError(fields);
-  });
-  $effect(() => {
-    disableSubmit = getDisableSubmit(fields);
+    setConfirmPasswordError(fields);
   });
 </script>
 

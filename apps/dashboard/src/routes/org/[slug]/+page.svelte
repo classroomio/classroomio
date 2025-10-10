@@ -27,16 +27,17 @@
   import { isMobile } from '$lib/utils/store/useMobile';
   import { Grid, Link, SkeletonPlaceholder } from 'carbon-components-svelte';
 
-  // export let data;
-
-  let dashAnalytics: OrganisationAnalytics = $state();
+  let dashAnalytics: OrganisationAnalytics | undefined = $state();
+  let hasFetched = $state(false);
 
   function createCourse() {
     goto(`${$currentOrgPath}/courses?create=true`);
   }
 
   async function fetchDashAnalytics(orgId: string) {
-    if (!orgId) return;
+    if (!orgId || hasFetched) return;
+
+    hasFetched = true;
 
     const accessToken = await getAccessToken();
 
@@ -125,10 +126,7 @@
       <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {#each cards as card}
           {#if !dashAnalytics}
-            <SkeletonPlaceholder
-              style="width: 100%; min-width: 300px; height: 10rem;"
-              class="rounded-md"
-            />
+            <SkeletonPlaceholder style="width: 100%; min-width: 300px; height: 10rem;" class="rounded-md" />
           {:else}
             <ActivityCard activity={card} />
           {/if}
@@ -138,9 +136,7 @@
   </div>
 
   <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-    <div
-      class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 md:p-5 dark:border-neutral-600"
-    >
+    <div class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 md:p-5 dark:border-neutral-600">
       <h3 class="mt-0 text-2xl font-bold">
         {$t('dashboard.top_courses')}
       </h3>
@@ -185,20 +181,14 @@
                   {$t('dashboard.create_first_course_description')}
                 </p>
               </div>
-              <PrimaryButton
-                variant={VARIANTS.OUTLINED}
-                onClick={createCourse}
-                label={$t('dashboard.create_course')}
-              />
+              <PrimaryButton variant={VARIANTS.OUTLINED} onClick={createCourse} label={$t('dashboard.create_course')} />
             </div>
           {/each}
         {/if}
       </div>
     </div>
 
-    <div
-      class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 md:p-5 dark:border-neutral-600"
-    >
+    <div class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 md:p-5 dark:border-neutral-600">
       <h3 class="mt-0 text-2xl font-bold">
         {$t('dashboard.recent_enrollments')}
       </h3>
@@ -212,12 +202,7 @@
           {#each dashAnalytics.enrollments as enrollment}
             <div class="flex items-center justify-between gap-2">
               <div class="flex items-center gap-2">
-                <Avatar
-                  src={enrollment.avatarUrl}
-                  name={enrollment.name}
-                  width="w-6"
-                  height="h-6"
-                />
+                <Avatar src={enrollment.avatarUrl} name={enrollment.name} width="w-6" height="h-6" />
 
                 <div class="min-h-[45px] space-y-1">
                   <p class="text-sm font-medium capitalize leading-none">{enrollment.name}</p>

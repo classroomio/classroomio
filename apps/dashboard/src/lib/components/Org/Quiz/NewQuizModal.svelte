@@ -109,9 +109,9 @@
   onClose={handleClose}
   bind:open
   width="w-4/5 md:w-2/5"
-  modalHeading="{$createQuizModal.openEdit
-    ? $t('components.quiz.update')
-    : $t('components.quiz.create')} {$t('components.quiz.a_quiz')}"
+  modalHeading="{$createQuizModal.openEdit ? $t('components.quiz.update') : $t('components.quiz.create')} {$t(
+    'components.quiz.a_quiz'
+  )}"
 >
   <form onsubmit={preventDefault(createQuiz)}>
     <TextField
@@ -128,9 +128,7 @@
     <div class="mt-5 flex items-center justify-end">
       <PrimaryButton
         className="px-6 py-3"
-        label={$createQuizModal.openEdit
-          ? $t('components.quiz.save')
-          : $t('components.quiz.continue')}
+        label={$createQuizModal.openEdit ? $t('components.quiz.save') : $t('components.quiz.continue')}
         type="submit"
         isDisabled={isLoading}
         {isLoading}

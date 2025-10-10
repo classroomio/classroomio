@@ -162,8 +162,7 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[2],
         options: [
           {
-            label:
-              'To specify the relationship between the current document and the linked document',
+            label: 'To specify the relationship between the current document and the linked document',
             is_correct: true
           },
           {

@@ -30,7 +30,8 @@
     orgName: ''
   });
   let loading = $state(false);
-  let hex = $state('');
+
+  let hex = $derived(setHex($currentOrg.theme));
 
   const themes = {
     rose: 'theme-rose',
@@ -40,11 +41,13 @@
     default: ''
   };
 
+  function setHex(theme?: string) {
+    if (!theme || hex || theme.includes('theme-')) hex;
+    return theme;
+  }
+
   const saveTheme = debounce(async (theme) => {
-    const { error, data } = await supabase
-      .from('organization')
-      .update({ theme })
-      .match({ id: $currentOrg.id });
+    const { error, data } = await supabase.from('organization').update({ theme }).match({ id: $currentOrg.id });
 
     console.log('Debounced update theme', data);
 
@@ -113,10 +116,7 @@
         avatar = undefined;
       }
 
-      let { error } = await supabase
-        .from('organization')
-        .update(updates)
-        .match({ id: $currentOrg.id });
+      let { error } = await supabase.from('organization').update(updates).match({ id: $currentOrg.id });
 
       currentOrg.update((_currentOrg) => ({
         ..._currentOrg,
@@ -143,14 +143,6 @@
     goto(`${$currentOrgPath}/settings${pathname}`);
   }
 
-  function setHex(theme?: string) {
-    if (!theme || hex || theme.includes('theme-')) return;
-    hex = theme;
-  }
-
-  $effect(() => {
-    setHex($currentOrg.theme);
-  });
   let isCustomTheme = $derived(hex && !hex.includes('theme-'));
 </script>
 
@@ -189,8 +181,7 @@
   </Row>
   <Row class="border-bottom-c relative flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
-      ><SectionTitle>{$t('settings.organization.organization_profile.theme.heading')}</SectionTitle
-      ></Column
+      ><SectionTitle>{$t('settings.organization.organization_profile.theme.heading')}</SectionTitle></Column
     >
     <Column sm={8} md={8} lg={8}>
       <h4 class="lg:mt-0 dark:text-white">
@@ -253,9 +244,7 @@
             class="pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-200"
           >
             <svg
-              class="h-6 w-6 text-{isCustomTheme
-                ? 'white'
-                : 'black'} z-10 opacity-100 dark:text-white"
+              class="h-6 w-6 text-{isCustomTheme ? 'white' : 'black'} z-10 opacity-100 dark:text-white"
               fill="none"
               stroke="currentColor"
               stroke-width="2"
@@ -295,9 +284,7 @@
   </Row>
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
-      ><SectionTitle
-        >{$t('settings.organization.organization_profile.custom_domain.heading')}</SectionTitle
-      ></Column
+      ><SectionTitle>{$t('settings.organization.organization_profile.custom_domain.heading')}</SectionTitle></Column
     >
     <Column sm={8} md={8} lg={8}>
       <h4 class="lg:mt-0 dark:text-white">
@@ -320,8 +307,7 @@
   </Row>
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
-      ><SectionTitle>{$t('settings.organization.organization_profile.team.heading')}</SectionTitle
-      ></Column
+      ><SectionTitle>{$t('settings.organization.organization_profile.team.heading')}</SectionTitle></Column
     >
     <Column sm={8} md={8} lg={8}>
       <h4 class="lg:mt-0 dark:text-white">

@@ -124,9 +124,7 @@
             })}
           </p>
         </div>
-        <Progress
-          value={getPercentage(completedExercises, userCourseAnalytics?.userExercisesStats?.length)}
-        />
+        <Progress value={getPercentage(completedExercises, userCourseAnalytics?.userExercisesStats?.length)} />
         <div class="flex items-center justify-between">
           <Tag
             interactive
@@ -191,13 +189,7 @@
               </div>
             </div>
 
-            <Tag
-              class={`${
-                exercise.isCompleted
-                  ? 'bg-green-200 text-green-700'
-                  : 'bg-yellow-200 text-yellow-700'
-              }`}
-            >
+            <Tag class={`${exercise.isCompleted ? 'bg-green-200 text-green-700' : 'bg-yellow-200 text-yellow-700'}`}>
               {exercise.isCompleted ? $t('analytics.completed') : $t('analytics.incomplete')}
             </Tag>
           </div>

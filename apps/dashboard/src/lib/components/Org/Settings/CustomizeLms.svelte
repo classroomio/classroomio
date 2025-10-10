@@ -52,24 +52,24 @@
       <div>
         <p>{$t('components.settings.customize_lms.dashboard.community')}</p>
         <Toggle size="sm" class="mb-3" bind:toggled={$currentOrg.customization.dashboard.community}>
-          {#snippet labelA()}
-            <span style="color: gray">{$t('components.settings.customize_lms.disabled')}</span>
-          {/snippet}
-          {#snippet labelB()}
-            <span style="color: gray">{$t('components.settings.customize_lms.enabled')}</span>
-          {/snippet}
+          <span slot="labelA" style="color: gray">
+            {$t('components.settings.customize_lms.disabled')}
+          </span>
+          <span slot="labelB" style="color: gray">
+            {$t('components.settings.customize_lms.enabled')}
+          </span>
         </Toggle>
       </div>
 
       <div>
         <p>{$t('components.settings.customize_lms.dashboard.exercises')}</p>
         <Toggle size="sm" class="mb-3" bind:toggled={$currentOrg.customization.dashboard.exercise}>
-          {#snippet labelA()}
-            <span style="color: gray">{$t('components.settings.customize_lms.disabled')}</span>
-          {/snippet}
-          {#snippet labelB()}
-            <span style="color: gray">{$t('components.settings.customize_lms.enabled')}</span>
-          {/snippet}
+          <span slot="labelA" style="color: gray">
+            {$t('components.settings.customize_lms.disabled')}
+          </span>
+          <span slot="labelB" style="color: gray">
+            {$t('components.settings.customize_lms.enabled')}
+          </span>
         </Toggle>
       </div>
 
@@ -82,11 +82,7 @@
           onClick={() => widgetControl('banner-image')}
         />
         {#if $currentOrg.customization.dashboard.bannerImage}
-          <img
-            alt="Banner"
-            src={$currentOrg.customization.dashboard.bannerImage}
-            class="mt-2 w-full rounded-md"
-          />
+          <img alt="Banner" src={$currentOrg.customization.dashboard.bannerImage} class="mt-2 w-full rounded-md" />
         {/if}
         {#if $handleOpenWidget.open && widgetKey === 'banner-image'}
           <UploadWidget bind:imageURL={$currentOrg.customization.dashboard.bannerImage} />
@@ -113,24 +109,20 @@
       <div>
         <p>{$t('components.settings.customize_lms.course.newsfeed')}</p>
         <Toggle size="sm" class="mb-3" bind:toggled={$currentOrg.customization.course.newsfeed}>
-          {#snippet labelA()}
-            <span style="color: gray">{$t('components.settings.customize_lms.disabled')}</span>
-          {/snippet}
-          {#snippet labelB()}
-            <span style="color: gray">{$t('components.settings.customize_lms.enabled')}</span>
-          {/snippet}
+          <span slot="labelA" style="color: gray">
+            {$t('components.settings.customize_lms.disabled')}
+          </span>
+          <span slot="labelB" style="color: gray">
+            {$t('components.settings.customize_lms.enabled')}
+          </span>
         </Toggle>
       </div>
 
       <div>
         <p>{$t('components.settings.customize_lms.course.grading')}</p>
         <Toggle size="sm" class="mb-3" bind:toggled={$currentOrg.customization.course.grading}>
-          {#snippet labelA()}
-            <span style="color: gray">{$t('components.settings.customize_lms.disabled')}</span>
-          {/snippet}
-          {#snippet labelB()}
-            <span style="color: gray">{$t('components.settings.customize_lms.enabled')}</span>
-          {/snippet}
+          <span slot="labelA" style="color: gray">{$t('components.settings.customize_lms.disabled')}</span>
+          <span slot="labelB" style="color: gray">{$t('components.settings.customize_lms.enabled')}</span>
         </Toggle>
       </div>
     </Column>
@@ -144,23 +136,15 @@
       <div>
         <p>{$t('components.settings.customize_lms.apps.poll')}</p>
         <Toggle size="sm" class="mb-3" bind:toggled={$currentOrg.customization.apps.poll}>
-          {#snippet labelA()}
-            <span style="color: gray">{$t('components.settings.customize_lms.disabled')}</span>
-          {/snippet}
-          {#snippet labelB()}
-            <span style="color: gray">{$t('components.settings.customize_lms.enabled')}</span>
-          {/snippet}
+          <span slot="labelA" style="color: gray">{$t('components.settings.customize_lms.disabled')}</span>
+          <span slot="labelB" style="color: gray">{$t('components.settings.customize_lms.enabled')}</span>
         </Toggle>
       </div>
       <div>
         <p>{$t('components.settings.customize_lms.apps.live_comment')}</p>
         <Toggle size="sm" class="mb-3" bind:toggled={$currentOrg.customization.apps.comments}>
-          {#snippet labelA()}
-            <span style="color: gray">{$t('components.settings.customize_lms.disabled')}</span>
-          {/snippet}
-          {#snippet labelB()}
-            <span style="color: gray">{$t('components.settings.customize_lms.enabled')}</span>
-          {/snippet}
+          <span slot="labelA" style="color: gray">{$t('components.settings.customize_lms.disabled')}</span>
+          <span slot="labelB" style="color: gray">{$t('components.settings.customize_lms.enabled')}</span>
         </Toggle>
       </div>
     </Column>

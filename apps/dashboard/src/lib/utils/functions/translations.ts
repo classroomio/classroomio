@@ -54,8 +54,7 @@ export const config = {
   ]
 };
 
-export const { t, loading, locales, locale, initialized, translations, loadTranslations } =
-  new i18n(config);
+export const { t, loading, locales, locale, initialized, translations, loadTranslations } = new i18n(config);
 
 export const selectedLocale = writable<string>('en');
 
@@ -78,11 +77,7 @@ export function handleLocaleChange(newLocale: LOCALE) {
   selectedLocale.set(newLocale);
 }
 
-export function lessonFallbackNote(
-  note: string,
-  translation: Record<LOCALE, string>,
-  locale: LOCALE
-) {
+export function lessonFallbackNote(note: string, translation: Record<LOCALE, string>, locale: LOCALE) {
   if (!translation) {
     return note;
   }

@@ -1,6 +1,6 @@
 <script lang="ts">
   interface Props {
-    index: number;
+    index: number | string;
     title: string;
   }
 

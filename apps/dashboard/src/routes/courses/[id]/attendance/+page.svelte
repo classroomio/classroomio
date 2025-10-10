@@ -36,7 +36,13 @@
     }[];
   }
 
-  let students: GroupPerson[] = $state([]);
+  let hasFetched = $state(false);
+
+  const students: GroupPerson[] = $derived(
+    $globalStore.isStudent
+      ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
+      : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT)
+  );
   let searchValue = $state('');
 
   function setAttendance(courseData: CourseData) {
@@ -114,28 +120,22 @@
   // function for the searchbar
   function searchStudents(query: string, _students: GroupPerson[]) {
     const lowercaseQuery = query.toLowerCase();
-    return _students.filter((student) =>
-      student.profile?.fullname?.toLowerCase()?.includes(lowercaseQuery)
-    );
+    return _students.filter((student) => student.profile?.fullname?.toLowerCase()?.includes(lowercaseQuery));
   }
 
-  async function firstRender(courseId: string) {
-    if (courseId) {
-      if (!Object.keys($attendance).length) {
-        setAttendance($course);
-      }
-      return;
+  async function firstRender(courseId?: string) {
+    if (!courseId || hasFetched) return;
+
+    hasFetched = true;
+
+    if (!Object.keys($attendance).length) {
+      setAttendance($course);
     }
+    return;
   }
 
   $effect(() => {
-    students = $globalStore.isStudent
-      ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
-      : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
-  });
-
-  $effect(() => {
-    $course.id && firstRender($course.id);
+    firstRender($course.id);
   });
 </script>
 
@@ -143,9 +143,7 @@
   <PageNav title={$t('course.navItem.attendance.title')} />
   <PageBody width="w-full max-w-6xl md:w-11/12">
     <section class="mx-2 my-5 flex items-center lg:mx-9">
-      <div
-        class="flex w-full flex-col items-start justify-between gap-2 lg:flex-row lg:items-center"
-      >
+      <div class="flex w-full flex-col items-start justify-between gap-2 lg:flex-row lg:items-center">
         <div class="flex">
           <p class="mr-5 flex items-center">
             <Checkbox checked disabled />
@@ -176,9 +174,7 @@
             >
             {#each $lessons as _lesson, index}
               <StructuredListCell head class="text-primary-600 py-3"
-                >{$t('course.navItem.attendance.lesson')} 0{getLectureNo(
-                  index + 1
-                )}</StructuredListCell
+                >{$t('course.navItem.attendance.lesson')} 0{getLectureNo(index + 1)}</StructuredListCell
               >
             {/each}
           </StructuredListRow>

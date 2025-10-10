@@ -61,10 +61,7 @@ export async function fetchProfileCourseProgress(
   return { data, error };
 }
 
-export async function checkExercisesComplete(
-  lessonId: Lesson['id'],
-  groupMemberId: Groupmember['id']
-) {
+export async function checkExercisesComplete(lessonId: Lesson['id'], groupMemberId: Groupmember['id']) {
   const { data, error } = await supabase.rpc('check_if_student_completed_exercises', {
     lesson_id_arg: lessonId,
     groupmember_id_arg: groupMemberId
@@ -206,11 +203,7 @@ export async function uploadAvatar(courseId: string, avatar: string) {
   return logo;
 }
 
-export async function updateCourse(
-  courseId: Course['id'],
-  avatar: string | undefined,
-  course: Partial<Course>
-) {
+export async function updateCourse(courseId: Course['id'], avatar: string | undefined, course: Partial<Course>) {
   if (avatar && courseId) {
     const filename = `course/${courseId + Date.now()}.webp`;
 
@@ -284,8 +277,7 @@ export async function fetchLesson(lessonId: Lesson['id']) {
     .single();
 
   if (data) {
-    const videoKeys =
-      data.videos?.filter((video) => video.type === 'upload')?.map((video) => video.key) || [];
+    const videoKeys = data.videos?.filter((video) => video.type === 'upload')?.map((video) => video.key) || [];
 
     const docKeys = data.documents?.map((doc) => doc.key) || [];
 
@@ -418,15 +410,8 @@ export async function createExerciseFromTemplate(
 }
 
 export async function upsertExercise(questionnaire: any, exerciseId: Exercise['id']) {
-  const {
-    questions,
-    title,
-    description,
-    due_by,
-    is_title_dirty,
-    is_description_dirty,
-    is_due_by_dirty
-  } = questionnaire;
+  const { questions, title, description, due_by, is_title_dirty, is_description_dirty, is_due_by_dirty } =
+    questionnaire;
 
   if (is_description_dirty || is_title_dirty || is_due_by_dirty) {
     await supabase
@@ -442,8 +427,7 @@ export async function upsertExercise(questionnaire: any, exerciseId: Exercise['i
   const updatedQuestions = [];
 
   for (const question of questions) {
-    const { title, id, name, question_type, options, deleted_at, order, points, is_dirty } =
-      question;
+    const { title, id, name, question_type, options, deleted_at, order, points, is_dirty } = question;
 
     // "DELETE" /delete/:questionId - Don't delete if answer already given
     if (deleted_at) {
@@ -560,10 +544,7 @@ export async function submitExercise(
     return;
   }
 
-  const questionsByName = questions.reduce(
-    (acc, q) => ({ ...acc, [q.name]: q.id }),
-    {}
-  ) as LooseObject;
+  const questionsByName = questions.reduce((acc, q) => ({ ...acc, [q.name]: q.id }), {}) as LooseObject;
   const questionAnswers = [];
 
   const { data: submission } = await supabase

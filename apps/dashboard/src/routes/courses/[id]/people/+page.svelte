@@ -30,10 +30,11 @@
   } from 'carbon-components-svelte';
   import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
 
-  let people: Array<GroupPerson> = $state([]);
   let member: { id?: string; email?: string; profile?: { email: string } } = $state({});
   let filterBy: ProfileRole = $state(ROLES[0]);
   let searchValue = $state('');
+
+  const people: Array<GroupPerson> = $derived(sortAndFilterPeople($group.people, filterBy));
 
   function filterPeople(_query, people) {
     const query = _query.toLowerCase();
@@ -52,16 +53,13 @@
   }
 
   function sortAndFilterPeople(_people: Array<GroupPerson>, filterBy: ProfileRole) {
-    people = (_people || [])
+    return (_people || [])
       .filter((person) => {
         if (filterBy.value === 'all') return true;
 
         return person.role_id === filterBy.value;
       })
-      .sort(
-        (a: GroupPerson, b: GroupPerson) =>
-          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-      )
+      .sort((a: GroupPerson, b: GroupPerson) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
       .sort((a: GroupPerson, b: GroupPerson) => a.role_id - b.role_id);
   }
 
@@ -82,23 +80,14 @@
   function gotoPerson(person) {
     goto(`${page.url.href}/${person.profile_id}`);
   }
-
-  $effect(() => {
-    sortAndFilterPeople($group.people, filterBy);
-  });
 </script>
 
 <InvitationModal />
 
-<DeleteConfirmation
-  email={member.email || (member.profile && member.profile.email)}
-  {deletePerson}
-/>
+<DeleteConfirmation email={member.email || (member.profile && member.profile.email)} {deletePerson} />
 
 <section class="mx-2 my-5 md:mx-9">
-  <div
-    class="flex-end mb-7 flex flex-col items-start justify-end gap-2 md:flex-row md:items-center"
-  >
+  <div class="flex-end mb-7 flex flex-col items-start justify-end gap-2 md:flex-row md:items-center">
     <div class="max-w-[320px]">
       <Search
         class="w-full border-0 bg-zinc-100 dark:text-slate-950"
@@ -124,9 +113,7 @@
   </div>
 
   <StructuredList class="m-0">
-    <StructuredListHead
-      class="bg-slate-100 dark:border-2 dark:border-neutral-800 dark:bg-neutral-800"
-    >
+    <StructuredListHead class="bg-slate-100 dark:border-2 dark:border-neutral-800 dark:bg-neutral-800">
       <StructuredListRow head class="mx-7">
         <StructuredListCell head class="text-primary-700 py-3 dark:text-white"
           >{$t('course.navItem.people.name')}</StructuredListCell
@@ -183,18 +170,12 @@
                   className="bg-primary-200 text-black font-semibold text-xs mr-3"
                   shape="rounded-full"
                 />
-                <a
-                  href="mailto:{person.email}"
-                  class="text-md text-primary-600 mr-2 dark:text-white"
-                >
+                <a href="mailto:{person.email}" class="text-md text-primary-600 mr-2 dark:text-white">
                   {person.email}
                 </a>
                 <div class="flex items-center justify-between">
                   <RoleBasedSecurity allowedRoles={[1, 2]}>
-                    <CopyButton
-                      text={getEmail(person)}
-                      feedback={$t('course.navItem.people.feedback')}
-                    />
+                    <CopyButton text={getEmail(person)} feedback={$t('course.navItem.people.feedback')} />
                   </RoleBasedSecurity>
 
                   <TextChip

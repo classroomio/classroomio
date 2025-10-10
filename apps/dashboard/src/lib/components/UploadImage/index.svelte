@@ -42,9 +42,7 @@
 
     const maxFileSize = maxFileSizeInMb * 1024 * 1024;
     if (image.size > maxFileSize) {
-      errorMessage = `${$t('settings.profile.profile_picture.validation_error')} ${
-        maxFileSize / (1024 * 1024)
-      } MB`;
+      errorMessage = `${$t('settings.profile.profile_picture.validation_error')} ${maxFileSize / (1024 * 1024)} MB`;
       return;
     }
 
@@ -81,8 +79,7 @@
 
   <div class="flex flex-col items-center">
     <button
-      class="width-fit text-primary-700 flex flex-col items-center text-sm {isDisabled ||
-      isUploading
+      class="width-fit text-primary-700 flex flex-col items-center text-sm {isDisabled || isUploading
         ? 'cursor-not-allowed opacity-50'
         : 'cursor-pointer'}"
       onclick={() => {

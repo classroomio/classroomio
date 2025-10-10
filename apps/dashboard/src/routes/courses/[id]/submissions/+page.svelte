@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import Chip from '$lib/components/Chip/index.svelte';
@@ -13,10 +12,7 @@
   import formatDate from '$lib/utils/functions/formatDate';
   import isSubmissionEarly from '$lib/utils/functions/isSubmissionEarly';
   import { t } from '$lib/utils/functions/translations';
-  import {
-    NOTIFICATION_NAME,
-    triggerSendEmail
-  } from '$lib/utils/services/notification/notification';
+  import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/notification';
   import {
     deleteSubmission,
     fetchSubmissions,
@@ -24,11 +20,7 @@
     updateSubmission
   } from '$lib/utils/services/submissions';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
-  import type {
-    SubmissionIdData,
-    SubmissionItem,
-    SubmissionSection
-  } from '$lib/utils/types/submission';
+  import type { SubmissionIdData, SubmissionItem, SubmissionSection } from '$lib/utils/types/submission';
   import { SkeletonPlaceholder } from 'carbon-components-svelte';
   import { dndzone } from 'svelte-dnd-action';
   import { flip } from 'svelte/animate';
@@ -42,11 +34,15 @@
   let totalMark = 0;
   let maxMark = 0;
   let submissionIdData: { [key: number]: SubmissionIdData } = $state({});
-  let submissionId: string = $state('');
-  let openExercise = $state(false);
   let isGradeWithAI = $state(false);
   let fetching = $state(false);
   let isSaving = $state(false);
+  let hasFetched = $state(false);
+
+  const submissionId = $derived(new URLSearchParams(page.url.search).get('submissionId') ?? '');
+  let openExercise = $derived.by(() => {
+    return !!submissionId && !!submissionIdData[submissionId];
+  });
 
   const submissionStatus: { [key: number]: string } = {
     1: $t('course.navItem.submissions.submission_status.submitted'),
@@ -238,11 +234,7 @@
     handleModalClose();
   }
 
-  async function handleSave(submission: {
-    questionAnswerByPoint: any;
-    questionAnswers: any;
-    feedback: any;
-  }) {
+  async function handleSave(submission: { questionAnswerByPoint: any; questionAnswers: any; feedback: any }) {
     isSaving = true;
     const { questionAnswerByPoint, questionAnswers, feedback } = submission;
 
@@ -279,7 +271,11 @@
     isSaving = false;
   }
 
-  async function firstRender(courseId: string) {
+  async function firstRender(courseId?: string) {
+    if (!courseId || hasFetched) return;
+
+    hasFetched = true;
+
     fetching = true;
     const { data: submissions } = await fetchSubmissions(courseId);
     const sectionById: { [key: number]: SubmissionSection[] } = {};
@@ -345,16 +341,12 @@
       value: Array.isArray(sectionById[index + 1]) ? sectionById[index + 1].length : 0,
       items: Array.isArray(sectionById[index + 1]) ? sectionById[index + 1] : []
     }));
+
     fetching = false;
   }
 
   $effect(() => {
-    browser && $course.id && firstRender($course.id);
-  });
-  $effect(() => {
-    const query = new URLSearchParams(page.url.search);
-    submissionId = query.get('submissionId') ?? '';
-    openExercise = !!submissionId && submissionIdData[submissionId];
+    firstRender($course.id);
   });
 </script>
 
@@ -410,25 +402,18 @@
                       class="mb-2 flex w-full cursor-pointer items-center text-black"
                       href={`${page.url.pathname}?submissionId=${item.id}`}
                     >
-                      <img
-                        alt="Student avatar"
-                        class="block h-6 w-6 rounded-full"
-                        src={item.student.avatar_url}
-                      />
+                      <img alt="Student avatar" class="block h-6 w-6 rounded-full" src={item.student.avatar_url} />
                       <p class="ml-2 text-sm dark:text-white">
                         {item.student.username}
                       </p>
                     </a>
-                    <a
-                      class="text-primary-700 text-md font-bold"
-                      href="{page.url.pathname}?submissionId={item.id}"
-                    >
+                    <a class="text-primary-700 text-md font-bold" href="{page.url.pathname}?submissionId={item.id}">
                       {item.exercise.title}
                     </a>
                     <a
                       class="my-2 flex items-center text-black no-underline hover:underline"
-                      href="{page.url?.pathname?.replace('submissions', 'lessons')}/{item.lesson
-                        .id}/exercises/{item.exercise.id}"
+                      href="{page.url?.pathname?.replace('submissions', 'lessons')}/{item.lesson.id}/exercises/{item
+                        .exercise.id}"
                     >
                       <p class="text-grey text-sm dark:text-white">
                         #{item.lesson.title}

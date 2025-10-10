@@ -8,10 +8,7 @@
   let { disableCenteredContent = false, className = '', children }: Props = $props();
 </script>
 
-<div
-  class="root {!className.includes('opacity') && 'opacity-100'} {!disableCenteredContent &&
-    'center'} {className}"
->
+<div class="root {!className.includes('opacity') && 'opacity-100'} {!disableCenteredContent && 'center'} {className}">
   {@render children?.()}
 </div>
 

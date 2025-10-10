@@ -1,6 +1,6 @@
 <script lang="ts">
   import { preventDefault } from 'svelte/legacy';
-
+  import { untrack } from 'svelte';
   import copy from 'copy-to-clipboard';
   import { Popover } from 'carbon-components-svelte';
   import { page } from '$app/state';
@@ -20,10 +20,7 @@
   import { qrInviteNodeStore } from './store';
   import { getStudentInviteLink } from '$lib/utils/functions/course';
   import ShareQrImage from './ShareQRImage.svelte';
-  import {
-    triggerSendEmail,
-    NOTIFICATION_NAME
-  } from '$lib/utils/services/notification/notification';
+  import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { t } from '$lib/utils/functions/translations';
 
@@ -34,7 +31,6 @@
     profileId?: string;
   }
 
-  let addPeopleParm = $state();
   let tutors: Tutor[] = $state([]);
   let selectedIds: Array<number> = $state([]);
   let selectedTutors: Tutor[] = $state([]);
@@ -43,11 +39,7 @@
   let qrImage = $state('');
   let isLoadingQRDownload = $state(false);
 
-  function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
-    return value !== null && value !== undefined;
-  }
-  const formatSelected = (i: Array<number>): Tutor[] =>
-    i.length === 0 ? [] : i.map((id) => tutors.find((tutor) => tutor.id === id)).filter(notEmpty);
+  const addPeopleParm = $derived(new URLSearchParams(page.url.search).get('add'));
 
   function onSubmit() {
     if (!selectedTutors.length) {
@@ -74,7 +66,7 @@
       });
     }
 
-    addGroupMember(membersStack).then(async (membersAdded) => {
+    addGroupMember(membersStack).then(async () => {
       if (!$course?.group?.id) return;
 
       const group = await fetchGroup($course?.group?.id);
@@ -107,20 +99,23 @@
       }));
   }
 
-  async function setTutors(orgId: string | undefined) {
+  function setTutors(orgId: string | undefined) {
     if (!orgId) return;
 
-    isLoadingTutors = true;
-    const { team, error } = await getOrgTeam(orgId);
-    if (error) {
-      console.error('Error fetching teams', error);
+    untrack(async () => {
+      isLoadingTutors = true;
+
+      const { team, error } = await getOrgTeam(orgId);
+      if (error) {
+        console.error('Error fetching teams', error);
+        isLoadingTutors = false;
+        return;
+      }
+
+      tutors = getTutors(team);
+
       isLoadingTutors = false;
-      return;
-    }
-
-    tutors = getTutors(team);
-
-    isLoadingTutors = false;
+    });
   }
 
   function copyLink() {
@@ -169,21 +164,19 @@
 
   async function generateQR(text) {
     try {
-      qrImage = await QRCode.toDataURL(text);
+      const image = await QRCode.toDataURL(text);
+      untrack(() => {
+        qrImage = image;
+      });
     } catch (err) {
       console.error(err);
     }
   }
 
   $effect(() => {
-    selectedTutors = formatSelected(selectedIds);
-    const query = new URLSearchParams(page.url.search);
-    addPeopleParm = query.get('add');
-  });
-
-  $effect(() => {
     setTutors($currentOrg.id);
   });
+
   $effect(() => {
     generateQR(getStudentInviteLink($course, $currentOrg.siteName, $currentOrgDomain));
   });
@@ -212,10 +205,7 @@
       {:else}
         <span>
           {$t('course.navItem.people.invite_modal.to_add')}
-          <a
-            href={`/org/${$currentOrg.siteName}/settings/teams`}
-            class="text-primary-600 underline"
-          >
+          <a href={`/org/${$currentOrg.siteName}/settings/teams`} class="text-primary-600 underline">
             {$t('course.navItem.people.invite_modal.go_to')}
           </a>
         </span>
@@ -231,11 +221,7 @@
       </div>
 
       <div class="relative">
-        <button
-          type="button"
-          onclick={copyLink}
-          class="text-primary-800 cursor-pointer font-bold capitalize underline"
-        >
+        <button type="button" onclick={copyLink} class="text-primary-800 cursor-pointer font-bold capitalize underline">
           {$t('course.navItem.people.invite_modal.copy_link')}
         </button>
 
@@ -271,11 +257,7 @@
     </div>
 
     <div class="mt-5 flex flex-row-reverse items-center">
-      <PrimaryButton
-        className="px-6 py-3"
-        label={$t('course.navItem.people.invite_modal.finish')}
-        type="submit"
-      />
+      <PrimaryButton className="px-6 py-3" label={$t('course.navItem.people.invite_modal.finish')} type="submit" />
     </div>
   </form>
 </Modal>

@@ -45,9 +45,7 @@
     const _lessons = get(courseData, 'lessons', []);
     return sortLesson([..._lessons]);
   });
-  const totalRatings = $derived(
-    reviews?.reduce((acc = 0, review) => acc + (review?.rating || 0), 0)
-  );
+  const totalRatings = $derived(reviews?.reduce((acc = 0, review) => acc + (review?.rating || 0), 0));
   const averageRating = $derived(totalRatings / reviews?.length);
   const expandDescription = $derived(Array(reviews?.length ?? 0).fill(false));
 
@@ -145,12 +143,7 @@
       <!-- Banner Image getEmbedId(videoUrl) -->
       {#if video}
         <div class="banner-image flex w-full md:w-2/3">
-          <div
-            bind:this={player}
-            id="player"
-            data-plyr-provider="youtube"
-            data-plyr-embed-id={getEmbedId(video)}
-          ></div>
+          <div bind:this={player} id="player" data-plyr-provider="youtube" data-plyr-embed-id={getEmbedId(video)}></div>
         </div>
         <!-- <div class="container">
           <div
@@ -302,10 +295,7 @@
             <div class="flex flex-wrap">
               {#each lessons as lesson, index}
                 <div class="m-2 rounded border px-2 py-1">
-                  <Chip
-                    value={getLectureNo(index + 1, '0')}
-                    className="bg-primary-100 text-primary-700 inline "
-                  />
+                  <Chip value={getLectureNo(index + 1, '0')} className="bg-primary-100 text-primary-700 inline " />
                   <p class="ml-2 inline text-xs font-light dark:text-white">
                     {lesson.title}
                   </p>
@@ -357,17 +347,10 @@
                       <!-- ratings -->
                       <div class="flex flex-row items-center">
                         {#if review.rating}
-                          <img
-                            src="/images/rating-{review.rating}.svg"
-                            class="mr-4 mt-1 w-24"
-                            alt=""
-                          />
+                          <img src="/images/rating-{review.rating}.svg" class="mr-4 mt-1 w-24" alt="" />
                         {/if}
                       </div>
-                      <div
-                        class="read-more-content mb-2"
-                        style="max-height: {expandDescription[id] ? 'none' : '50px'}"
-                      >
+                      <div class="read-more-content mb-2" style="max-height: {expandDescription[id] ? 'none' : '50px'}">
                         <p class="my-2 text-sm leading-5 text-gray-600">
                           {review.description}
                         </p>
@@ -489,21 +472,10 @@
       </div>
 
       <!-- Pricing Details -->
-      <PricingSection
-        {courseData}
-        {editMode}
-        bind:startCoursePayment
-        className="target-component"
-      />
+      <PricingSection {courseData} {editMode} bind:startCoursePayment className="target-component" />
     </div>
     {#if !isVisible}
-      <PricingSection
-        {courseData}
-        {editMode}
-        bind:startCoursePayment
-        mobile={true}
-        className="w-full"
-      />
+      <PricingSection {courseData} {editMode} bind:startCoursePayment mobile={true} className="w-full" />
     {/if}
   </div>
 </div>

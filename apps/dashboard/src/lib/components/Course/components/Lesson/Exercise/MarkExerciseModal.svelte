@@ -12,6 +12,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
   import type { SubmissionIdData } from '$lib/utils/types/submission';
+  import { untrack } from 'svelte';
 
   interface Props {
     open?: boolean;
@@ -31,12 +32,7 @@
     isGradeWithAI = $bindable(false),
     data = $bindable(),
     deleteSubmission = async (_id: string, _statusId: number) => {},
-    updateStatus = (_arg: {
-      submissionId: string;
-      prevStatusId: number;
-      nextStatusId: number;
-      total: number;
-    }) => {},
+    updateStatus = (_arg: { submissionId: string; prevStatusId: number; nextStatusId: number; total: number }) => {},
     isSaving = false
   }: Props = $props();
 
@@ -59,11 +55,12 @@
   let selectedId = $state(status.id);
   let reasons = $state({});
   let isLoading = $state(false);
-  let total = $state(0);
-  let maxPoints = $state(0);
   let openMenu = $state(false);
   let openDeletePrompt = $state(false);
   let isDeleting = $state(false);
+
+  const total = calculateTotal(data.questionAnswerByPoint);
+  const maxPoints = $derived(getMaxPoints(data.questions));
 
   function getMaxPoints(questions) {
     return (questions || []).reduce((acc, question) => acc + question.points, 0);
@@ -93,17 +90,19 @@
   }
 
   function setStatus(data: SubmissionIdData) {
-    const statusBySelectedId = SELECTABLE_STATUS.find((status) => status.id === data.statusId);
+    untrack(() => {
+      const statusBySelectedId = SELECTABLE_STATUS.find((status) => status.id === data.statusId);
 
-    if (!statusBySelectedId) {
-      return;
-    }
+      if (!statusBySelectedId) {
+        return;
+      }
 
-    status = statusBySelectedId;
+      status = statusBySelectedId;
 
-    if (data.statusId !== selectedId) {
-      selectedId = data.statusId;
-    }
+      if (data.statusId !== selectedId) {
+        selectedId = data.statusId;
+      }
+    });
   }
 
   // const getMultipleAnswersGrade = (options, answer, points) => {
@@ -223,12 +222,6 @@
   }
 
   $effect(() => {
-    total = calculateTotal(data.questionAnswerByPoint);
-  });
-  $effect(() => {
-    maxPoints = getMaxPoints(data.questions);
-  });
-  $effect(() => {
     setStatus(data);
   });
 </script>
@@ -268,9 +261,7 @@
       </div>
     {:else}
       <Preview
-        questions={Array.isArray(data.questions)
-          ? data.questions.sort((a, b) => a.order - b.order)
-          : []}
+        questions={Array.isArray(data.questions) ? data.questions.sort((a, b) => a.order - b.order) : []}
         questionnaireMetaData={{
           answers: data.answers || {},
           isFinished: true
@@ -318,9 +309,7 @@
           {$t('course.navItem.submissions.grading_modal.total_grade')}:
         </p>
 
-        <Tag
-          class="w-fit rounded-md bg-gray-100 font-semibold text-black dark:bg-neutral-700 dark:text-white"
-        >
+        <Tag class="w-fit rounded-md bg-gray-100 font-semibold text-black dark:bg-neutral-700 dark:text-white">
           {total}/{maxPoints}
         </Tag>
       </div>
@@ -336,14 +325,8 @@
           {$t('course.navItem.submissions.grading_modal.student')}:
         </p>
         {#if data.student}
-          <div
-            class="flex flex-row items-center justify-center rounded-md bg-gray-100 p-[6px] dark:bg-neutral-700"
-          >
-            <img
-              alt="Student avatar"
-              class="flex h-5 w-5 rounded-full"
-              src={data.student.avatar_url}
-            />
+          <div class="flex flex-row items-center justify-center rounded-md bg-gray-100 p-[6px] dark:bg-neutral-700">
+            <img alt="Student avatar" class="flex h-5 w-5 rounded-full" src={data.student.avatar_url} />
             <p class="ml-2 line-clamp-1 text-sm font-semibold dark:text-white">
               {data.student.fullname}
             </p>
@@ -362,12 +345,7 @@
         <p class="font-semibold text-gray-500 dark:text-white">
           {$t('course.navItem.submissions.grading_modal.status')}:
         </p>
-        <Dropdown
-          bind:selectedId
-          items={SELECTABLE_STATUS}
-          class="w-full"
-          on:select={handleStatusChange}
-        />
+        <Dropdown bind:selectedId items={SELECTABLE_STATUS} class="w-full" on:select={handleStatusChange} />
       </div>
 
       <div class="flex flex-col items-start px-3 py-2 text-sm">
@@ -383,11 +361,7 @@
       </div>
 
       <div class="flex w-full flex-col space-y-3 px-3 py-2">
-        <PrimaryButton
-          onClick={gradeWithAI}
-          variant={VARIANTS.OUTLINED}
-          className="space-x-3 py-3 px-8 w-full "
-        >
+        <PrimaryButton onClick={gradeWithAI} variant={VARIANTS.OUTLINED} className="space-x-3 py-3 px-8 w-full ">
           <img src="/ai.svg" alt="ai" />
           <p class="text-sm font-semibold">
             {$t('course.navItem.submissions.grading_modal.grade_with_ai')}

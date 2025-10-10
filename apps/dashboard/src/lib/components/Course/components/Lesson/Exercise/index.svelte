@@ -41,12 +41,7 @@
     isFetching?: boolean;
   }
 
-  let {
-    exerciseId = $bindable(''),
-    path = '',
-    goBack = () => {},
-    isFetching = false
-  }: Props = $props();
+  let { exerciseId = $bindable(''), path = '', goBack = () => {}, isFetching = false }: Props = $props();
 
   let preview: boolean = $state(false);
   let shouldDeleteExercise = $state(false);

@@ -32,21 +32,14 @@
         size="sm"
         class="mb-4"
       >
-        {#snippet labelA()}
-          <span style="color: #161616">Automatic</span>
-        {/snippet}
-        {#snippet labelB()}
-          <span style="color: green">Automatic</span>
-        {/snippet}
+        <span slot="labelA" style="color: #161616">Automatic</span>
+        <span slot="labelB" style="color: green">Automatic</span>
       </Toggle>
       <p class="my-4 text-sm font-medium">
-        If you set this as automatic, certificates will be issued after the learner completes the
-        course.
+        If you set this as automatic, certificates will be issued after the learner completes the course.
       </p>
     </div>
-    <p class="my-4 text-xs font-normal text-gray-500">
-      or send a personalised/ custom certificate below:
-    </p>
+    <p class="my-4 text-xs font-normal text-gray-500">or send a personalised/ custom certificate below:</p>
     <form onsubmit={preventDefault(issueCertificate)}>
       <div class="flex w-full flex-col gap-2 md:flex-row">
         <TextField
@@ -71,18 +64,13 @@
         label="Add a personalized message"
         labelClassName="text-xs font-normal"
         bind:value={$issueCertificateModal.message}
-        rows="2"
-        maxRows="3"
+        rows={2}
         placeholder="your message here"
         className="mb-4"
       />
 
       <div class="mt-5 flex w-full items-end justify-end">
-        <PrimaryButton
-          className="px-6 py-3 rounded-md text-sm font-medium"
-          label="Issue certificate"
-          type="submit"
-        />
+        <PrimaryButton className="px-6 py-3 rounded-md text-sm font-medium" label="Issue certificate" type="submit" />
       </div>
     </form>
   </main>

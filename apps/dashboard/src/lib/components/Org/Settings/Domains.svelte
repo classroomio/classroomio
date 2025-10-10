@@ -5,6 +5,7 @@
   import Restart from 'carbon-icons-svelte/lib/Restart.svelte';
   import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
   import isValidDomain from 'is-valid-domain';
+  import { untrack } from 'svelte';
   import { parse } from 'tldts';
 
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
@@ -24,17 +25,17 @@
   import { t } from '$lib/utils/functions/translations';
   import { updateOrgSiteNameValidation } from '$lib/utils/functions/validator';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
-  import type { CurrentOrg } from '$lib/utils/types/org';
   import SectionTitle from '../SectionTitle.svelte';
 
-  let siteName = $state('');
+  let siteName = $derived($currentOrg.siteName);
   let customDomain = $state('');
   let customCode = $state('');
   let favicon = $state('');
-  let isDomainValid = $state(false);
   let isLoading = $state(false);
   let isCustomDomainLoading = $state(false);
   let isRefreshing = $state(false);
+
+  const isDomainValid = $derived(isValidDomain(sanitizeDomain(customDomain), { subdomain: true }));
 
   type Error = {
     siteName: string;
@@ -59,10 +60,7 @@
     }
     isLoading = true;
 
-    const { data: org, error } = await supabase
-      .from('organization')
-      .update({ siteName })
-      .match({ id: $currentOrg.id });
+    const { data: org, error } = await supabase.from('organization').update({ siteName }).match({ id: $currentOrg.id });
 
     console.log('Updating organisation', org);
     if (error) {
@@ -171,10 +169,7 @@
       if (data.verified && !$currentOrg.isCustomDomainVerified) {
         $currentOrg.isCustomDomainVerified = true;
 
-        await supabase
-          .from('organization')
-          .update({ isCustomDomainVerified: true })
-          .match({ id: $currentOrg.id });
+        await supabase.from('organization').update({ isCustomDomainVerified: true }).match({ id: $currentOrg.id });
       }
     } catch (error) {
       console.log('Error: refreshing domain', error);
@@ -185,18 +180,14 @@
   }
 
   function resetErrors(_siteName: string, _customDomain: string) {
-    if (errors.siteName) {
-      errors.siteName = '';
-    }
-    if (errors.customDomain) {
-      errors.customDomain = '';
-    }
-  }
-
-  function setDefaults(org: CurrentOrg) {
-    if (!siteName) {
-      siteName = org.siteName;
-    }
+    untrack(() => {
+      if (errors.siteName) {
+        errors.siteName = '';
+      }
+      if (errors.customDomain) {
+        errors.customDomain = '';
+      }
+    });
   }
 
   function getSubdomain() {
@@ -205,14 +196,7 @@
   }
 
   $effect(() => {
-    setDefaults($currentOrg);
-  });
-  $effect(() => {
     resetErrors(siteName, customDomain);
-  });
-
-  $effect(() => {
-    isDomainValid = isValidDomain(sanitizeDomain(customDomain), { subdomain: true });
   });
 </script>
 
@@ -269,33 +253,19 @@
               <p class="text-md flex items-center gap-2 font-medium">
                 {$currentOrg.customDomain}
 
-                <IconButton
-                  contained={true}
-                  size="small"
-                  onClick={() => goto(`https://${$currentOrg.customDomain}`)}
-                >
+                <IconButton contained={true} size="small" onClick={() => goto(`https://${$currentOrg.customDomain}`)}>
                   <ArrowUpRight size={16} />
                 </IconButton>
               </p>
 
               <div
-                class="mt-1 h-2 w-2 rounded-full bg-{$currentOrg.isCustomDomainVerified
-                  ? 'green'
-                  : 'yellow'}-400"
+                class="mt-1 h-2 w-2 rounded-full bg-{$currentOrg.isCustomDomainVerified ? 'green' : 'yellow'}-400"
               ></div>
             </div>
             {#if $currentOrg.isCustomDomainVerified}
-              <TextChip
-                value="Verified"
-                className="bg-green-500 text-white text-xs px-3"
-                size="sm"
-              />
+              <TextChip value="Verified" className="bg-green-500 text-white text-xs px-3" size="sm" />
             {:else}
-              <TextChip
-                value="Pending verification"
-                className="bg-yellow-500 text-white text-xs px-3"
-                size="sm"
-              />
+              <TextChip value="Pending verification" className="bg-yellow-500 text-white text-xs px-3" size="sm" />
             {/if}
           </div>
 

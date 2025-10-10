@@ -50,8 +50,127 @@
   let isDragging = false;
   let startX: number;
   let initialWidth: number;
-  let sidebarRef: HTMLElement = $state();
-  let menuContentRef: HTMLUListElement = $state();
+  let sidebarRef: HTMLElement | undefined = $state();
+  let menuContentRef: HTMLUListElement | undefined = $state();
+
+  const navItems: NavItem[] = $derived([
+    {
+      id: NAV_IDS.NEWS_FEED,
+      label: $t('course.navItems.nav_news_feed'),
+      to: getNavItemRoute($course.id),
+      hideSortIcon: true,
+      isPaidFeature: false,
+      show() {
+        return isStudent ? $currentOrg.customization.course.newsfeed : true;
+      }
+    },
+    {
+      id: NAV_IDS.LESSONS,
+      label: $t('course.navItems.nav_content'),
+      to: getLessonsRoute($course.id),
+      hideSortIcon: false,
+      isPaidFeature: false,
+      isLesson: true,
+      sections: $lessonSections.map((section) => ({
+        ...section,
+        label: section.title,
+        isExpanded: true
+      })),
+      isExpanded: isStudent ? true : page.url.pathname.includes('/lessons')
+    },
+    {
+      id: NAV_IDS.ANALYTICS,
+      label: $t('course.navItems.nav_analytics'),
+      to: getNavItemRoute($course.id, 'analytics'),
+      isPaidFeature: false,
+      hideSortIcon: true,
+      show() {
+        return !isStudent;
+      }
+    },
+    {
+      id: NAV_IDS.ATTENDANCE,
+      label: $t('course.navItems.nav_attendance'),
+      to: getNavItemRoute($course.id, 'attendance'),
+      isPaidFeature: false,
+      hideSortIcon: true,
+      show() {
+        if ($course.type !== COURSE_TYPE.LIVE_CLASS) return false;
+
+        return true;
+      }
+    },
+    {
+      id: NAV_IDS.SUBMISSIONS,
+      label: $t('course.navItems.nav_submissions'),
+      to: getNavItemRoute($course.id, 'submissions'),
+      hideSortIcon: true,
+      isPaidFeature: false,
+      show() {
+        if (isStudent) return false;
+
+        return true;
+      }
+    },
+    {
+      id: NAV_IDS.MARKS,
+      label: $t('course.navItems.nav_marks'),
+      to: getNavItemRoute($course.id, 'marks'),
+      isPaidFeature: false,
+      hideSortIcon: true,
+      show() {
+        if ($course.type == COURSE_TYPE.LIVE_CLASS) {
+          return isStudent ? $currentOrg.customization.course.grading : true;
+        }
+
+        return false;
+      }
+    },
+    {
+      id: NAV_IDS.CERTIFICATES,
+      label: $t('course.navItems.nav_certificates'),
+      to: getNavItemRoute($course.id, 'certificates'),
+      hideSortIcon: true,
+      isPaidFeature: true,
+      show() {
+        // Dont show students if org on free plan
+        if (isStudent && $isFreePlan) {
+          return false;
+        }
+        return true;
+      }
+    },
+    {
+      id: NAV_IDS.LANDING_PAGE,
+      label: $t('course.navItems.nav_landing_page'),
+      to: getNavItemRoute($course.id, 'landingpage'),
+      hideSortIcon: true,
+      isPaidFeature: false,
+      show() {
+        return !isStudent;
+      }
+    },
+    {
+      id: NAV_IDS.PEOPLE,
+      label: $t('course.navItems.nav_people'),
+      to: getNavItemRoute($course.id, 'people'),
+      isPaidFeature: false,
+      hideSortIcon: true,
+      show() {
+        return !isStudent;
+      }
+    },
+    {
+      id: NAV_IDS.SETTINGS,
+      label: $t('course.navItems.nav_settings'),
+      to: getNavItemRoute($course.id, 'settings'),
+      hideSortIcon: true,
+      isPaidFeature: false,
+      show() {
+        return !isStudent;
+      }
+    }
+  ]);
 
   const toggleSidebar = (defaultValue?: boolean) => {
     $sideBar.hidden = defaultValue ?? !$sideBar.hidden;
@@ -64,8 +183,6 @@
       toggleSidebarOnMobile();
     };
   }
-
-  let navItems: NavItem[] = $state([]);
 
   function handleCursor(event: MouseEvent) {
     if (!resize && sidebarRef) {
@@ -87,11 +204,7 @@
       const isNearRightBorder = sidebarRef.getBoundingClientRect().right - event.clientX < 8;
       const isNearLeftBorder = event.clientX - sidebarRef.getBoundingClientRect().left < 8;
 
-      if (
-        (isNearRightBorder || isNearLeftBorder) &&
-        event.clientX >= 0 &&
-        event.clientX <= window.innerWidth
-      ) {
+      if ((isNearRightBorder || isNearLeftBorder) && event.clientX >= 0 && event.clientX <= window.innerWidth) {
         isDragging = true;
         resize = true;
         startX = event.clientX;
@@ -107,7 +220,7 @@
 
   function dragSidebar(event: MouseEvent) {
     if (!(window.innerWidth >= 1024)) return;
-    if (!isDragging) return;
+    if (!isDragging || !sidebarRef || !menuContentRef) return;
 
     const deltaX = event.clientX - startX;
     let newWidth = initialWidth + deltaX;
@@ -129,156 +242,32 @@
   }
 
   onMount(() => {
-    if (!$isMobile) {
-      sidebarRef.addEventListener('mousedown', startDragging);
-      document.addEventListener('mousemove', dragSidebar);
-      document.addEventListener('mouseup', stopDragging);
-      document.addEventListener('mousemove', handleCursor);
-      toggleSidebar(false);
-    }
+    if ($isMobile || !sidebarRef) return;
+
+    sidebarRef.addEventListener('mousedown', startDragging);
+    document.addEventListener('mousemove', dragSidebar);
+    document.addEventListener('mouseup', stopDragging);
+    document.addEventListener('mousemove', handleCursor);
+    toggleSidebar(false);
   });
 
   onDestroy(() => {
     if (!browser) {
       return;
     }
-    if (!$isMobile) {
-      sidebarRef.removeEventListener('mousedown', startDragging);
-      document.removeEventListener('mousemove', dragSidebar);
-      document.removeEventListener('mouseup', stopDragging);
-      document.removeEventListener('mousemove', handleCursor);
-    }
-  });
 
-  $effect(() => {
-    navItems = [
-      {
-        id: NAV_IDS.NEWS_FEED,
-        label: $t('course.navItems.nav_news_feed'),
-        to: getNavItemRoute($course.id),
-        hideSortIcon: true,
-        isPaidFeature: false,
-        show() {
-          return isStudent ? $currentOrg.customization.course.newsfeed : true;
-        }
-      },
-      {
-        id: NAV_IDS.LESSONS,
-        label: $t('course.navItems.nav_content'),
-        to: getLessonsRoute($course.id),
-        hideSortIcon: false,
-        isPaidFeature: false,
-        isLesson: true,
-        sections: $lessonSections.map((section) => ({
-          ...section,
-          label: section.title,
-          isExpanded: true
-        })),
-        isExpanded: isStudent ? true : page.url.pathname.includes('/lessons')
-      },
-      {
-        id: NAV_IDS.ANALYTICS,
-        label: $t('course.navItems.nav_analytics'),
-        to: getNavItemRoute($course.id, 'analytics'),
-        isPaidFeature: false,
-        hideSortIcon: true,
-        show() {
-          return !isStudent;
-        }
-      },
-      {
-        id: NAV_IDS.ATTENDANCE,
-        label: $t('course.navItems.nav_attendance'),
-        to: getNavItemRoute($course.id, 'attendance'),
-        isPaidFeature: false,
-        hideSortIcon: true,
-        show() {
-          if ($course.type !== COURSE_TYPE.LIVE_CLASS) return false;
+    if ($isMobile || !sidebarRef) return;
 
-          return true;
-        }
-      },
-      {
-        id: NAV_IDS.SUBMISSIONS,
-        label: $t('course.navItems.nav_submissions'),
-        to: getNavItemRoute($course.id, 'submissions'),
-        hideSortIcon: true,
-        isPaidFeature: false,
-        show() {
-          if (isStudent) return false;
-
-          return true;
-        }
-      },
-      {
-        id: NAV_IDS.MARKS,
-        label: $t('course.navItems.nav_marks'),
-        to: getNavItemRoute($course.id, 'marks'),
-        isPaidFeature: false,
-        hideSortIcon: true,
-        show() {
-          if ($course.type == COURSE_TYPE.LIVE_CLASS) {
-            return isStudent ? $currentOrg.customization.course.grading : true;
-          }
-
-          return false;
-        }
-      },
-      {
-        id: NAV_IDS.CERTIFICATES,
-        label: $t('course.navItems.nav_certificates'),
-        to: getNavItemRoute($course.id, 'certificates'),
-        hideSortIcon: true,
-        isPaidFeature: true,
-        show() {
-          // Dont show students if org on free plan
-          if (isStudent && $isFreePlan) {
-            return false;
-          }
-          return true;
-        }
-      },
-      {
-        id: NAV_IDS.LANDING_PAGE,
-        label: $t('course.navItems.nav_landing_page'),
-        to: getNavItemRoute($course.id, 'landingpage'),
-        hideSortIcon: true,
-        isPaidFeature: false,
-        show() {
-          return !isStudent;
-        }
-      },
-      {
-        id: NAV_IDS.PEOPLE,
-        label: $t('course.navItems.nav_people'),
-        to: getNavItemRoute($course.id, 'people'),
-        isPaidFeature: false,
-        hideSortIcon: true,
-        show() {
-          return !isStudent;
-        }
-      },
-      {
-        id: NAV_IDS.SETTINGS,
-        label: $t('course.navItems.nav_settings'),
-        to: getNavItemRoute($course.id, 'settings'),
-        hideSortIcon: true,
-        isPaidFeature: false,
-        show() {
-          return !isStudent;
-        }
-      }
-    ];
+    sidebarRef.removeEventListener('mousedown', startDragging);
+    document.removeEventListener('mousemove', dragSidebar);
+    document.removeEventListener('mouseup', stopDragging);
+    document.removeEventListener('mousemove', handleCursor);
   });
 </script>
 
 <aside
   class={`
-  ${
-    $sideBar.hidden
-      ? 'absolute z-[40] -translate-x-[100%]'
-      : 'absolute z-[40] translate-x-0 md:relative'
-  }
+  ${$sideBar.hidden ? 'absolute z-[40] -translate-x-[100%]' : 'absolute z-[40] translate-x-0 md:relative'}
     h-[calc(100vh-48px)] w-[90vw] bg-gray-100 transition md:w-[300px] lg:w-[350px] dark:bg-black 
   
   ${
@@ -288,11 +277,7 @@
   bind:this={sidebarRef}
 >
   <div class="flex flex-col">
-    <ul
-      class="sidebar-content my-5"
-      bind:this={menuContentRef}
-      style={$sideBar.hidden === true ? '' : 'display:block'}
-    >
+    <ul class="sidebar-content my-5" bind:this={menuContentRef} style={$sideBar.hidden === true ? '' : 'display:block'}>
       {#each navItems as navItem}
         {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show())}
           <NavExpandable
@@ -311,21 +296,18 @@
             {#if $course.version === COURSE_VERSION.V1}
               {#each $lessons as item, index}
                 <a
-                  class="mb-2 w-[95%] pl-7 text-[0.80rem] text-black dark:text-white {isStudent &&
-                  !item.is_unlocked
+                  class="mb-2 w-[95%] pl-7 text-[0.80rem] text-black dark:text-white {isStudent && !item.is_unlocked
                     ? 'cursor-not-allowed'
                     : ''}"
-                  href={isStudent && !item.is_unlocked
-                    ? page.url.pathname
-                    : getLessonsRoute($course.id, item.id)}
+                  href={isStudent && !item.is_unlocked ? page.url.pathname : getLessonsRoute($course.id, item.id)}
                   onclick={toggleSidebarOnMobile}
                   aria-disabled={!item.is_unlocked}
                   title={item.title}
                 >
                   <div
-                    class="flex items-center px-4 py-2 {NavClasses.item} {(
-                      path || page.url.pathname
-                    ).includes(item.id) && NavClasses.active}"
+                    class="flex items-center px-4 py-2 {NavClasses.item} {(path || page.url.pathname).includes(
+                      item.id
+                    ) && NavClasses.active}"
                   >
                     <TextChip
                       value={getLectureNo(index + 1)}
@@ -362,21 +344,18 @@
                 >
                   {#each section.lessons as item}
                     <a
-                      class="mb-2 w-[95%] pl-7 text-[0.80rem] text-black dark:text-white {isStudent &&
-                      !item.is_unlocked
+                      class="mb-2 w-[95%] pl-7 text-[0.80rem] text-black dark:text-white {isStudent && !item.is_unlocked
                         ? 'cursor-not-allowed'
                         : ''}"
-                      href={isStudent && !item.is_unlocked
-                        ? page.url.pathname
-                        : getLessonsRoute($course.id, item.id)}
+                      href={isStudent && !item.is_unlocked ? page.url.pathname : getLessonsRoute($course.id, item.id)}
                       onclick={toggleSidebarOnMobile}
                       aria-disabled={!item.is_unlocked}
                       title={item.title}
                     >
                       <div
-                        class="flex items-center px-4 py-2 {NavClasses.item} {(
-                          path || page.url.pathname
-                        ).includes(item.id) && NavClasses.active}"
+                        class="flex items-center px-4 py-2 {NavClasses.item} {(path || page.url.pathname).includes(
+                          item.id
+                        ) && NavClasses.active}"
                       >
                         <span class="line-clamp-2 w-[85%] text-ellipsis">{item.title}</span>
                         <span class="grow"></span>

@@ -33,9 +33,9 @@
   let { data, children } = $props();
 
   let supabase = getSupabase();
-  let path = $state($page.url?.pathname?.replace('/', ''));
+  let path = $derived($page.url?.pathname?.replace('/', ''));
   let queryParam = $page.url?.search;
-  let carbonTheme: CarbonTheme = $state('white');
+  let carbonTheme: CarbonTheme = $derived($globalStore.isDark ? 'g100' : 'white');
 
   function handleResize() {
     isMobile.update(() => window.innerWidth <= 760);
@@ -111,12 +111,6 @@
     };
   });
 
-  $effect(() => {
-    path = $page.url?.pathname?.replace('/', '');
-  });
-  $effect(() => {
-    carbonTheme = $globalStore.isDark ? 'g100' : 'white';
-  });
   let metaTags = $derived(merge(data.baseMetaTags, $page.data.pageMetaTags));
 </script>
 
@@ -174,11 +168,7 @@
     --main-primary-color: rgba(29, 78, 216, 1);
     --border-color: #eaecef;
     --app-background-color: #fafbfc;
-    --app-background: radial-gradient(
-      circle at 10% 20%,
-      rgb(239, 246, 249) 0%,
-      rgb(206, 239, 253) 90%
-    );
+    --app-background: radial-gradient(circle at 10% 20%, rgb(239, 246, 249) 0%, rgb(206, 239, 253) 90%);
     --dark-app-background: radial-gradient(circle at 10% 20%, rgb(0 0 0) 0%, rgb(27 60 74) 90%);
   }
 

@@ -36,10 +36,7 @@
         {#if $isFreePlan && item.value === 3}
           <FlashFilled size={20} class="text-blue-700" />
         {:else}
-          <item.icon
-            size={20}
-            color={`${currentTab === item.value ? 'dark:invert-0' : 'dark:invert'}`}
-          />
+          <item.icon size={20} color={`${currentTab === item.value ? 'dark:invert-0' : 'dark:invert'}`} />
         {/if}
         <p>{$t(item.title)}</p>
       </button>

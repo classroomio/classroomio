@@ -115,8 +115,7 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO
         options: [
           {
-            label:
-              'Generate a new SSH key pair and update your Git hosting service with the new public key',
+            label: 'Generate a new SSH key pair and update your Git hosting service with the new public key',
             is_correct: true
           },
           {
@@ -166,8 +165,7 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO
         options: [
           {
-            label:
-              'By using the "ssh -T" command to test authentication with your Git hosting service',
+            label: 'By using the "ssh -T" command to test authentication with your Git hosting service',
             is_correct: true
           },
           {

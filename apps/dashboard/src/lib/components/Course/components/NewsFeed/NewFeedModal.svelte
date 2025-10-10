@@ -7,10 +7,7 @@
   import { createNewFeed } from '$lib/utils/services/newsfeed';
   import { snackbar } from '$lib/components/Snackbar/store';
   import type { Feed, Author } from '$lib/utils/types/feed';
-  import {
-    NOTIFICATION_NAME,
-    triggerSendEmail
-  } from '$lib/utils/services/notification/notification';
+  import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/notification';
   import { t } from '$lib/utils/functions/translations';
   import { createNewsfeedValidation } from '$lib/utils/functions/validator';
   import { getTextFromHTML } from '$lib/utils/functions/toHtml';
@@ -143,11 +140,7 @@
           variant={VARIANTS.OUTLINED}
           onClick={resetEditor}
         />
-        <PrimaryButton
-          {isLoading}
-          label={$t('course.navItem.news_feed.heading_button.post')}
-          onClick={onPost}
-        />
+        <PrimaryButton {isLoading} label={$t('course.navItem.news_feed.heading_button.post')} onClick={onPost} />
       </div>
     </div>
   </section>

@@ -76,12 +76,7 @@
         {#snippet footer()}
           <div class="flex flex-col justify-center">
             {#if currentQuestion}
-              <PrimaryButton
-                label="Exit Preview"
-                variant={VARIANTS.TEXT}
-                onClick={exitPreview}
-                className="w-fit"
-              />
+              <PrimaryButton label="Exit Preview" variant={VARIANTS.TEXT} onClick={exitPreview} className="w-fit" />
 
               <div class="flex items-center justify-center">
                 <IconButton onClick={handlePrev} size="small">

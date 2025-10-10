@@ -26,11 +26,7 @@
   }: Props = $props();
 </script>
 
-<label
-  class="{className} inline-flex w-full items-center {disabled
-    ? 'cursor-not-allowed'
-    : 'cursor-pointer'}"
->
+<label class="{className} inline-flex w-full items-center {disabled ? 'cursor-not-allowed' : 'cursor-pointer'}">
   <input
     type="checkbox"
     class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 focus:ring-offset-0"
@@ -41,13 +37,7 @@
   />
   {#if isEditable}
     <div class="w-2/4">
-      <TextField
-        bind:value={label}
-        placeholder="Your option"
-        className="ml-1"
-        type="text"
-        {onChange}
-      />
+      <TextField bind:value={label} placeholder="Your option" className="ml-1" type="text" {onChange} />
     </div>
   {:else}
     <span class="ml-2 dark:text-white">{label}</span>

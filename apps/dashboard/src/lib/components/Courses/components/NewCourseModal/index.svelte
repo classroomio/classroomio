@@ -157,22 +157,17 @@
       <div class="my-8 flex flex-col items-center justify-evenly gap-4 md:flex-row">
         {#each options as option}
           <button
-            class="w-11/12 rounded-md border-2 p-5 md:h-[240px] md:w-[261px] dark:bg-neutral-700 {option.type ===
-            type
+            class="w-11/12 rounded-md border-2 p-5 md:h-[240px] md:w-[261px] dark:bg-neutral-700 {option.type === type
               ? 'border-primary-400'
               : `border-gray-200 dark:border-neutral-600 ${
                   !option.isDisabled && 'hover:scale-95'
-                }`} flex flex-col {option.isDisabled &&
-              'cursor-not-allowed opacity-60'} transition-all ease-in-out"
+                }`} flex flex-col {option.isDisabled && 'cursor-not-allowed opacity-60'} transition-all ease-in-out"
             type="button"
             onclick={!option.isDisabled ? () => (type = option.type) : undefined}
           >
             <div class="flex h-[70%] w-full flex-row-reverse">
               {#if option.type === type}
-                <CheckmarkFilledIcon
-                  size={16}
-                  class="carbon-icon text-primary-600 dark:text-primary-200"
-                />
+                <CheckmarkFilledIcon size={16} class="carbon-icon text-primary-600 dark:text-primary-200" />
               {:else if !option.isDisabled}
                 <CheckmarkOutlineIcon size={16} class="carbon-icon" />
               {/if}

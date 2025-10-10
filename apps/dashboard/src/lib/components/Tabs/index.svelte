@@ -14,12 +14,7 @@
     content?: import('svelte').Snippet;
   }
 
-  let {
-    tabs = [],
-    currentTab,
-    onChange = (v: string | number) => () => {},
-    content
-  }: Props = $props();
+  let { tabs = [], currentTab, onChange = (v: string | number) => () => {}, content }: Props = $props();
 </script>
 
 <div class="flex w-full flex-col">

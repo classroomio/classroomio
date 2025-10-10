@@ -181,10 +181,7 @@
       if (displayThresholdMs > 0) {
         // Schedule a display of the progress bar in `displayThresholdMs` milliseconds.
         // This is to avoid flickering/flashing when the navigation is fast.
-        progressBarStartTimeout = setTimeout(
-          () => !noNavigationProgress && start(),
-          displayThresholdMs
-        );
+        progressBarStartTimeout = setTimeout(() => !noNavigationProgress && start(), displayThresholdMs);
       } else start();
 
       nav.complete.catch().finally(() => {

@@ -28,11 +28,15 @@
     courseId: ''
   });
 
+  let hasFetched = $state(false);
   let fetchedCourses: Course[] = $state([]);
 
   async function getCourses(userId: string | null, orgId: string) {
+    if (hasFetched) return;
+
     if ($courses.length) {
       fetchedCourses = [...$courses];
+      hasFetched = true;
       return;
     }
 
@@ -40,6 +44,7 @@
     if (!coursesResults) return;
 
     fetchedCourses = coursesResults.allCourses;
+    hasFetched = true;
   }
 
   async function handleSave() {
@@ -88,20 +93,13 @@
 
 <section class="w-full md:mx-auto md:max-w-3xl">
   <div class="p-5">
-    <a
-      class="text-md flex items-center text-gray-500 dark:text-white"
-      href={`${$currentOrgPath}/community`}
-    >
+    <a class="text-md flex items-center text-gray-500 dark:text-white" href={`${$currentOrgPath}/community`}>
       <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" />
       {$t('community.ask.go_back')}
     </a>
     <div class="flex items-center justify-between gap-12">
       <h1 class="text-2xl font-bold md:text-3xl dark:text-white">{$t('community.ask.ask_the')}</h1>
-      <PrimaryButton
-        label={$t('community.ask.publish')}
-        variant={VARIANTS.CONTAINED_DARK}
-        onClick={handleSave}
-      />
+      <PrimaryButton label={$t('community.ask.publish')} variant={VARIANTS.CONTAINED_DARK} onClick={handleSave} />
     </div>
   </div>
 

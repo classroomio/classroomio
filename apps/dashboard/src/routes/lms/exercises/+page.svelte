@@ -2,7 +2,6 @@
   import cloneDeep from 'lodash/cloneDeep';
   import Chip from '$lib/components/Chip/index.svelte';
   import { profile } from '$lib/utils/store/user';
-  import { browser } from '$app/environment';
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { fetchLMSExercises } from '$lib/utils/services/lms/exercises';
@@ -38,6 +37,8 @@
     }
   ];
   let sections: Section[] = $state(cloneDeep(defaultSections));
+  let hasFetched = $state(false);
+
   interface Section {
     id: number;
     title: string;
@@ -75,10 +76,7 @@
       const lessonURL = `${courseURL}/lessons/${lesson.id}`;
       const exerciseURL = `${lessonURL}/exercises/${id}`;
 
-      const grade = `${submissionItem.total}/${questions.reduce(
-        (acc, cur) => (acc += cur.points),
-        0
-      )}`;
+      const grade = `${submissionItem.total}/${questions.reduce((acc, cur) => (acc += cur.points), 0)}`;
 
       const item: ExerciseItem = {
         exerciseId: id,
@@ -100,7 +98,14 @@
     return _sections;
   }
 
-  async function fetchData(profileId: string, orgId: string) {
+  async function fetchData(profileId?: string, orgId?: string) {
+    if (hasFetched || !profileId || !orgId) {
+      return;
+    }
+
+    hasFetched = true;
+
+    // Don't rerun this function if any state is updated in this function.
     const { exercises, error } = await fetchLMSExercises(profileId, orgId);
     console.log('exercises', exercises);
     console.log('error', error);
@@ -117,9 +122,7 @@
   }
 
   $effect(() => {
-    if (browser && $profile.id && $currentOrg.id) {
-      fetchData($profile.id, $currentOrg.id);
-    }
+    fetchData($profile.id, $currentOrg.id);
   });
 </script>
 
@@ -142,10 +145,7 @@
             <div class="h-full overflow-y-auto pb-3 pr-2">
               {#each items as item}
                 <div class=" mx-0 my-2 w-full rounded-md bg-white px-3 py-3 dark:bg-neutral-800">
-                  <a
-                    class="text-primary-600 mb-2 flex w-full cursor-pointer items-center"
-                    href={item.courseURL}
-                  >
+                  <a class="text-primary-600 mb-2 flex w-full cursor-pointer items-center" href={item.courseURL}>
                     <p class="text-xs">{item.courseTitle}</p>
                   </a>
                   <a class="text-md font-bold text-black dark:text-white" href={item.exerciseURL}>
@@ -154,10 +154,7 @@
                     {/if}
                     {item.exerciseTitle}
                   </a>
-                  <a
-                    class="my-2 flex w-fit items-center text-black no-underline hover:underline"
-                    href={item.lessonURL}
-                  >
+                  <a class="my-2 flex w-fit items-center text-black no-underline hover:underline" href={item.lessonURL}>
                     <p class="text-grey text-sm dark:text-white">
                       {$t('exercises.lesson')} <span class="italic">{item.lessonTitle}</span>
                     </p>

@@ -9,10 +9,7 @@
   import ScreenMap from 'carbon-icons-svelte/lib/ScreenMap.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import {
-    lessons,
-    handleSaveLesson
-  } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { lessons, handleSaveLesson } from '$lib/components/Course/components/Lesson/store/lessons';
   import { updateLesson } from '$lib/utils/services/courses';
   import type { Course, Lesson } from '$lib/utils/types';
   import Box from '$lib/components/Box/index.svelte';
@@ -61,9 +58,7 @@
 
       if (order !== prevLessonsByOrder[item.id]) {
         $lessons[index].order = order;
-        updateLesson({ order }, item.id).then((update) =>
-          console.log(`updated lesson order`, update)
-        );
+        updateLesson({ order }, item.id).then((update) => console.log(`updated lesson order`, update));
       }
     });
   }
@@ -111,12 +106,7 @@
       <div class="w-4/5">
         <!-- Lesson Title -->
         {#if lessonEditing === lesson.id}
-          <TextField
-            bind:value={lesson.title}
-            autoFocus={true}
-            className="max-w-lg"
-            errorMessage={errors?.title}
-          />
+          <TextField bind:value={lesson.title} autoFocus={true} className="max-w-lg" errorMessage={errors?.title} />
         {:else}
           <h3 class="m-0 flex items-center text-lg dark:text-white">
             <a
@@ -133,9 +123,7 @@
           </h3>
         {/if}
 
-        <div
-          class="mt-2 flex w-4/5 flex-col items-start justify-between lg:flex-row lg:items-center"
-        >
+        <div class="mt-2 flex w-4/5 flex-col items-start justify-between lg:flex-row lg:items-center">
           <!-- Lesson Length -->
           <div class="mb-3 flex items-center lg:mb-0">
             <ScreenMap size={20} class="carbon-icon dark:text-white" />

@@ -2,11 +2,7 @@
   import { preventDefault } from 'svelte/legacy';
 
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import {
-    lesson,
-    lessonVideoUpload,
-    cancelVideoUpload
-  } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { lesson, lessonVideoUpload, cancelVideoUpload } from '$lib/components/Course/components/Lesson/store/lessons';
   import { ProgressBar } from 'carbon-components-svelte';
   import { isFreePlan } from '$lib/utils/store/org';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -21,14 +17,21 @@
 
   let { lessonId = '' }: Props = $props();
 
-  let fileSize = $state();
-  let isDisabled = $state(false);
+  let fileSize: number | undefined = $state();
 
-  let formRes = $state();
+  let formRes: {
+    url?: string;
+    fileKey?: string;
+    status?: number;
+    type?: string;
+    message?: string;
+  } | null = $state(null);
   let isLoaded = $state(false);
-  let fileInput = $state();
-  let submit = $state();
+  let fileInput: HTMLInputElement | null = $state(null);
+  let submit: HTMLInputElement | null = $state(null);
   let fileName = $state('');
+
+  const isDisabled = $derived($lessonVideoUpload.isUploading || $isFreePlan);
 
   const videoUploader = new VideoUploader();
 
@@ -37,7 +40,9 @@
 
     videoUploader.initUpload();
 
-    const videoFile = fileInput.files[0];
+    const videoFile = fileInput.files?.[0];
+    if (!videoFile) return;
+
     fileSize = videoFile?.size / (1024 * 1024);
     fileName = videoFile?.name;
 
@@ -61,7 +66,7 @@
         ...$lesson.materials.videos,
         {
           type: 'upload',
-          link: formRes.url,
+          link: formRes.url!,
           key: formRes?.fileKey
         }
       ];
@@ -114,13 +119,7 @@
     $lessonVideoUpload.uploadProgress = 0;
   }
 
-  let helperText = $derived(
-    $lessonVideoUpload.uploadProgress + '%  of ' + Math.round(fileSize) + 'MB'
-  );
-
-  $effect(() => {
-    isDisabled = $lessonVideoUpload.isUploading || $isFreePlan;
-  });
+  let helperText = $derived($lessonVideoUpload.uploadProgress + '%  of ' + Math.round(fileSize || 0) + 'MB');
 </script>
 
 <UpgradeBanner className="mb-3" onClick={() => ($lessonVideoUpload.isModalOpen = false)}>
@@ -175,7 +174,7 @@
         type="file"
         accept="video/*"
         name="videoFile"
-        onchange={() => submit.click()}
+        onchange={() => submit?.click()}
         bind:this={fileInput}
       />
       <input type="text" name="lessonId" value={lessonId} style="display: none;" />
@@ -194,10 +193,7 @@
         {$t('course.navItem.lessons.materials.tabs.video.add_video.maximum_size')}
       </p>
     </span>
-    <PrimaryButton
-      label={$t('course.navItem.lessons.materials.tabs.video.add_video.button')}
-      onClick={tryAgain}
-    />
+    <PrimaryButton label={$t('course.navItem.lessons.materials.tabs.video.add_video.button')} onClick={tryAgain} />
   </div>
 {:else if formRes?.status !== 200}
   <div class="flex h-full w-full flex-col items-center justify-center rounded-xl">
@@ -211,10 +207,7 @@
         {$t('course.navItem.lessons.materials.tabs.video.add_video.format')}
       </p>
     </span>
-    <PrimaryButton
-      label={$t('course.navItem.lessons.materials.tabs.video.add_video.try_again')}
-      onClick={tryAgain}
-    />
+    <PrimaryButton label={$t('course.navItem.lessons.materials.tabs.video.add_video.try_again')} onClick={tryAgain} />
   </div>
 {:else}
   <div class=" w-full rounded-md border px-8 py-3">

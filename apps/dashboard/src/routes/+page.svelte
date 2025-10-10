@@ -19,8 +19,7 @@
   const areas = [
     {
       title: 'Access',
-      description:
-        'Quickly find any material you need to get your job done. ClassroomIO offers the All-in-on-platform'
+      description: 'Quickly find any material you need to get your job done. ClassroomIO offers the All-in-on-platform'
     },
     {
       title: 'Analytics',
@@ -71,9 +70,7 @@
     <h3 class="text-center text-4xl dark:text-white">
       Classroom<span class="text-primary-700">IO</span>
     </h3>
-    <p class="text-center text-lg dark:text-white">
-      The operating system for classroooms of the future 🚀🚀🚀.
-    </p>
+    <p class="text-center text-lg dark:text-white">The operating system for classroooms of the future 🚀🚀🚀.</p>
   </div>
 
   <form onsubmit={preventDefault(handleSubmit)} class="my-4 hidden">

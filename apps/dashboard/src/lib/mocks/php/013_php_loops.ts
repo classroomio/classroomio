@@ -58,8 +58,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which looping construct is best suited for executing code as long as a condition is true?',
+        title: 'Which looping construct is best suited for executing code as long as a condition is true?',
         name: 'question3',
         points: 2,
         order: 2,
@@ -184,8 +183,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which loop construct is best suited for iterating over the elements of an associative array in PHP?',
+        title: 'Which loop construct is best suited for iterating over the elements of an associative array in PHP?',
         name: 'question8',
         points: 2,
         order: 7,

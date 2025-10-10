@@ -12,8 +12,9 @@
   import ReasonBox from '../ReasonBox.svelte';
 
   interface Props {
+    key: string;
     title?: string;
-    index?: number;
+    index?: number | string;
     code: any;
     name?: string;
     options?: { value: string; label: string }[];
@@ -25,11 +26,11 @@
     disabled?: boolean;
     isPreview?: boolean;
     nextButtonProps?: any;
-    grade: number | undefined;
+    grade?: number;
     gradeMax?: number;
     disableGrading?: boolean;
     isGradeWithAI?: boolean;
-    reason: any;
+    reason?: string;
     isLoading?: boolean;
     hideGrading?: boolean;
   }
@@ -40,7 +41,7 @@
     code,
     name = '',
     options = [],
-    onSubmit = (a: string, b: string[]) => {},
+    onSubmit = (_a: string, _b: string[]) => {},
     onPrevious = () => {},
     defaultValue = [],
     disablePreviousButton = false,
@@ -60,7 +61,7 @@
     hideGrading = false
   }: Props = $props();
 
-  let gradeWithAI = $state(false);
+  let gradeWithAI = $derived(isGradeWithAI);
 
   function getVal(form, name) {
     let values: string[] = [];
@@ -106,10 +107,6 @@
     gradeWithAI = false;
     grade = 0;
   }
-
-  $effect(() => {
-    gradeWithAI = isGradeWithAI;
-  });
 </script>
 
 <form onsubmit={preventDefault(handleFormSubmit)}>

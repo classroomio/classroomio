@@ -88,11 +88,7 @@
           </a>
         </div>
       {/if}
-      <form
-        bind:this={formRef}
-        onsubmit={preventDefault(handleSubmit)}
-        class="flex w-10/12 flex-col items-center"
-      >
+      <form bind:this={formRef} onsubmit={preventDefault(handleSubmit)} class="flex w-10/12 flex-col items-center">
         {@render children?.()}
       </form>
       {#if !showOnlyContent && !hideGoogleAuth}
@@ -116,14 +112,10 @@
       <div class="border-grey w-full border-t p-6 text-center">
         {#if isLogin}
           {$t('login.not_registered_yet')}
-          <a class="text-primary-700 hover:underline" href="/signup{page.url.search}"
-            >{$t('login.signup')}</a
-          >
+          <a class="text-primary-700 hover:underline" href="/signup{page.url.search}">{$t('login.signup')}</a>
         {:else}
           {$t('login.already_have_account')}
-          <a class="text-primary-700 hover:underline" href="/login{page.url.search}"
-            >{$t('login.login')}</a
-          >
+          <a class="text-primary-700 hover:underline" href="/login{page.url.search}">{$t('login.login')}</a>
         {/if}
       </div>
     {/if}

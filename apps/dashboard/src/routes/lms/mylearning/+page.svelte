@@ -6,13 +6,8 @@
   import { fetchCourses } from '$lib/utils/services/courses';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
-  import {
-    courses,
-    courseMetaDeta,
-    coursesComplete,
-    coursesInProgress
-  } from '$lib/components/Courses/store';
-  import { browser } from '$app/environment';
+  import { courses, courseMetaDeta, coursesComplete, coursesInProgress } from '$lib/components/Courses/store';
+  import { untrack } from 'svelte';
   import { t } from '$lib/utils/functions/translations';
 
   let hasFetched = false;
@@ -21,31 +16,33 @@
     return () => (currentTab = tab);
   }
 
-  async function getCourses(userId: string | null, orgId: string) {
+  function getCourses(userId?: string, orgId?: string) {
     if (hasFetched || !userId || !orgId) {
       return;
     }
-    hasFetched = true;
 
-    // only show is loading when fetching for the first time
-    if (!$courses.length) {
-      $courseMetaDeta.isLoading = true;
-    }
+    // don't rerun this function if any state is updated in this function.
+    untrack(async () => {
+      hasFetched = true;
 
-    const coursesResult = await fetchCourses(userId, orgId);
-    console.log(`get courses result`, coursesResult);
+      // only show is loading when fetching for the first time
+      if (!$courses.length) {
+        $courseMetaDeta.isLoading = true;
+      }
 
-    $courseMetaDeta.isLoading = false;
-    if (!coursesResult) return;
+      const coursesResult = await fetchCourses(userId, orgId);
+      console.log(`get courses result`, coursesResult);
 
-    courses.set(coursesResult.allCourses);
-    hasFetched = true;
+      $courseMetaDeta.isLoading = false;
+      if (!coursesResult) return;
+
+      courses.set(coursesResult.allCourses);
+      hasFetched = true;
+    });
   }
 
   $effect(() => {
-    if (browser && $profile.id && $currentOrg.id) {
-      getCourses($profile.id, $currentOrg.id);
-    }
+    getCourses($profile.id, $currentOrg.id);
   });
 
   let tabs = $derived([

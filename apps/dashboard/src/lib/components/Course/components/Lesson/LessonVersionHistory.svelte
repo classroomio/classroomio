@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import { createEventDispatcher } from 'svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
@@ -28,8 +28,6 @@
   }
 
   let { open = false }: Props = $props();
-  let lessonTitle: string = $state('');
-  let lessonId: string = $state('');
   let lessonHistory: LessonHistory[] = $state([]);
   let content = '';
   let selectedVersion: LessonHistory = {
@@ -45,6 +43,9 @@
   let isMoreHistoryLoading = $state(false);
 
   let mounted = false;
+
+  const lessonId = $derived($lesson.id || '');
+  const lessonTitle = $derived($lessons.find((les) => les.id === lessonId)?.title || '');
 
   const dispatch = createEventDispatcher();
 
@@ -79,36 +80,33 @@
 
   function removeDuplicate(history: LessonHistory[]) {
     return history.filter(
-      (obj1, i, arr) =>
-        arr.findIndex((obj2) => getMinutes(obj2.timestamp) === getMinutes(obj1.timestamp)) === i
+      (obj1, i, arr) => arr.findIndex((obj2) => getMinutes(obj2.timestamp) === getMinutes(obj1.timestamp)) === i
     );
   }
 
-  async function fetchLessonHistory(lessonId: string, locale: string, endRange: number) {
-    try {
-      isMoreHistoryLoading = true;
-      const { data, error } = await fetchLesssonLanguageHistory(lessonId, locale, endRange);
+  function fetchLessonHistory(lessonId: string, locale: string, endRange: number) {
+    untrack(async () => {
+      try {
+        isMoreHistoryLoading = true;
+        const { data, error } = await fetchLesssonLanguageHistory(lessonId, locale, endRange);
 
-      if (!data) {
-        throw error;
+        if (!data) {
+          throw error;
+        }
+
+        // Filter out duplicates based on timestamp
+        const existingTimestamps = new Set(lessonHistory.map((item) => new Date(item.timestamp).getMinutes()));
+        const newEntries = data.filter((item) => !existingTimestamps.has(new Date(item.timestamp).getMinutes()));
+        lessonHistory = removeDuplicate([...lessonHistory, ...newEntries]);
+
+        updateContentVersion(lessonHistory[0], 0);
+      } catch (error) {
+        console.error(error);
+        snackbar.error('Failed to fetch history');
+      } finally {
+        isMoreHistoryLoading = false;
       }
-
-      // Filter out duplicates based on timestamp
-      const existingTimestamps = new Set(
-        lessonHistory.map((item) => new Date(item.timestamp).getMinutes())
-      );
-      const newEntries = data.filter(
-        (item) => !existingTimestamps.has(new Date(item.timestamp).getMinutes())
-      );
-      lessonHistory = removeDuplicate([...lessonHistory, ...newEntries]);
-
-      updateContentVersion(lessonHistory[0], 0);
-    } catch (error) {
-      console.error(error);
-      snackbar.error('Failed to fetch history');
-    } finally {
-      isMoreHistoryLoading = false;
-    }
+    });
   }
 
   onMount(() => {
@@ -162,12 +160,6 @@
     versionsToFetch += 10;
   }
 
-  $effect(() => {
-    lessonTitle = $lessons.find((les) => les.id === $lesson.id)?.title || '';
-  });
-  $effect(() => {
-    lessonId = $lesson.id || '';
-  });
   $effect(() => {
     scrollLock(open);
   });
@@ -228,9 +220,7 @@
         >
           <CaretRight class="mt-1"></CaretRight>
           <div>
-            <span class="inline-block text-base font-medium"
-              >{formatTimestamp(version.timestamp)}</span
-            >
+            <span class="inline-block text-base font-medium">{formatTimestamp(version.timestamp)}</span>
             {#if index == 0}
               <span class="block text-start text-xs italic"
                 >{$t('course.navItem.lessons.version_history.current_version')}</span

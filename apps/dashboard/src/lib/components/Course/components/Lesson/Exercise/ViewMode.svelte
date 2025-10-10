@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { fly } from 'svelte/transition';
   import { group, course } from '$lib/components/Course/store';
   import { questionnaire } from '../store/exercise';
@@ -20,10 +21,7 @@
   import { fetchSubmission } from '$lib/utils/services/submissions';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
-  import {
-    NOTIFICATION_NAME,
-    triggerSendEmail
-  } from '$lib/utils/services/notification/notification';
+  import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/notification';
   import { lesson } from '../store/lessons';
   import { COURSE_TYPE } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
@@ -36,8 +34,6 @@
 
   let { preview = false, exerciseId = '', isFetchingExercise = false }: Props = $props();
 
-  let currentQuestion = $state({});
-  let renderProps = $state({});
   let submission;
   let hasSubmission = false;
   let isLoadingAutoSavedData = $state(false);
@@ -88,8 +84,7 @@
     const { questions } = $questionnaire;
     const prevAnswer = answers[id] || [];
 
-    const formattedAnswer =
-      typeof value === 'string' ? value : removeDuplicate([...prevAnswer, ...(value || [])]);
+    const formattedAnswer = typeof value === 'string' ? value : removeDuplicate([...prevAnswer, ...(value || [])]);
 
     $questionnaireMetaData.answers = {
       ...answers,
@@ -101,26 +96,18 @@
 
     const isFinished = !questions[$questionnaireMetaData.currentQuestionIndex];
     console.log(`isFinished`, isFinished);
-    console.log(
-      `$questionnaireMetaData.currentQuestionIndex`,
-      $questionnaireMetaData.currentQuestionIndex
-    );
+    console.log(`$questionnaireMetaData.currentQuestionIndex`, $questionnaireMetaData.currentQuestionIndex);
 
     if (isCorrect) {
       setTimeout(async () => {
         $questionnaireMetaData.currentQuestionIndex += 1;
-        localStorage.setItem(
-          `autosave-exercise-${exerciseId}`,
-          JSON.stringify($questionnaireMetaData)
-        );
+        localStorage.setItem(`autosave-exercise-${exerciseId}`, JSON.stringify($questionnaireMetaData));
 
         // If last question send to server
         if (isFinished) {
           localStorage.removeItem(`autosave-exercise-${exerciseId}`);
           $questionnaireMetaData.status = 1;
-          $questionnaireMetaData.totalPossibleGrade = getTotalPossibleGrade(
-            $questionnaire.questions
-          );
+          $questionnaireMetaData.totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
           $questionnaireMetaData.grades = {};
 
           $questionnaireMetaData.comment = '';
@@ -176,13 +163,14 @@
 
     if (hasSubmission) return;
 
+    hasSubmission = true;
+
     const args = {
       exerciseId,
       courseId,
       submittedBy: getGroupMemberId(people, profileId)
     };
     const { data } = await fetchSubmission(args);
-    hasSubmission = true;
 
     if (Array.isArray(data) && data.length) {
       submission = data[0];
@@ -211,9 +199,7 @@
   function getAutoSavedData() {
     isLoadingAutoSavedData = true;
 
-    const stringifiedQuestionnaireMetaData = localStorage.getItem(
-      `autosave-exercise-${exerciseId}`
-    );
+    const stringifiedQuestionnaireMetaData = localStorage.getItem(`autosave-exercise-${exerciseId}`);
 
     if (stringifiedQuestionnaireMetaData) {
       const autoSavedData = JSON.parse(stringifiedQuestionnaireMetaData);
@@ -231,29 +217,32 @@
     }
   });
 
-  // Reactive code
-  $effect(() => {
-    if (alreadyCheckedAutoSavedData && $questionnaire.questions.length > 0) {
-      currentQuestion = $questionnaire.questions[$questionnaireMetaData.currentQuestionIndex - 1];
-      if ($questionnaireMetaData.currentQuestionIndex > 0 && !currentQuestion) {
-        $questionnaireMetaData.isFinished = true;
-      }
+  const progressValue = $derived(getProgressValue($questionnaireMetaData.currentQuestionIndex));
+  const currentQuestion = $derived($questionnaire.questions[$questionnaireMetaData.currentQuestionIndex - 1]);
+  const isExerciseLoaded = $derived(alreadyCheckedAutoSavedData && $questionnaire.questions.length > 0);
+  const isFinished = $derived(isExerciseLoaded && $questionnaireMetaData.currentQuestionIndex > 0 && !currentQuestion);
+  const renderProps = $derived(
+    getPropsForQuestion(
+      $questionnaire.questions,
+      currentQuestion,
+      $questionnaireMetaData,
+      $questionnaireMetaData.currentQuestionIndex,
+      onSubmit,
+      onPrevious,
+      preview
+    )
+  );
 
-      if (currentQuestion) {
-        renderProps = getPropsForQuestion(
-          $questionnaire.questions,
-          currentQuestion,
-          $questionnaireMetaData,
-          $questionnaireMetaData.currentQuestionIndex,
-          onSubmit,
-          onPrevious,
-          preview
-        );
-      }
-      $questionnaireMetaData.progressValue = getProgressValue(
-        $questionnaireMetaData.currentQuestionIndex
-      );
-    }
+  $effect(() => {
+    untrack(() => {
+      $questionnaireMetaData.isFinished = isFinished;
+    });
+  });
+
+  $effect(() => {
+    untrack(() => {
+      $questionnaireMetaData.progressValue = progressValue;
+    });
   });
 
   $effect(() => {
@@ -267,10 +256,7 @@
 
 {#if preview}
   <RoleBasedSecurity allowedRoles={[1, 2]}>
-    <Preview
-      questions={filterOutDeleted($questionnaire.questions)}
-      questionnaireMetaData={$questionnaireMetaData}
-    />
+    <Preview questions={filterOutDeleted($questionnaire.questions)} questionnaireMetaData={$questionnaireMetaData} />
   </RoleBasedSecurity>
 {:else if !$questionnaire.questions.length}
   <Box>
@@ -310,12 +296,7 @@
         {@html $questionnaire.description || 'No desription'}
       </article>
 
-      <PrimaryButton
-        onClick={handleStart}
-        label="Start"
-        className="my-5 float-right"
-        type="button"
-      />
+      <PrimaryButton onClick={handleStart} label="Start" className="my-5 float-right" type="button" />
     </div>
   </RoleBasedSecurity>
 {:else if $questionnaireMetaData.isFinished}

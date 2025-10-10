@@ -1,26 +1,27 @@
-<script>
+<script lang="ts">
+  import { untrack } from 'svelte';
   import { goto } from '$app/navigation';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { getSupabase } from '$lib/utils/functions/supabase';
-  import {
-    resetValidation,
-    getConfirmPasswordError,
-    getDisableSubmit
-  } from '$lib/utils/functions/validator';
+  import { resetValidation, getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';
   import { RESET_FIELDS } from '$lib/utils/constants/authentication';
   import AuthUI from '$lib/components/AuthUI/index.svelte';
 
   let supabase = getSupabase();
   let fields = $state(Object.assign({}, RESET_FIELDS));
   let loading = $state(false);
-  let success = false;
-  let errors = $state({});
+  let errors: {
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+  } = $state({});
   let submitError = $state();
-  let disableSubmit = $state(false);
-  let formRef = $state();
+  let formRef: HTMLFormElement | undefined = $state();
 
-  async function handleSubmit(e) {
+  const disableSubmit = $derived(getDisableSubmit(fields));
+
+  async function handleSubmit() {
     errors = resetValidation(fields);
     console.log('errors', errors);
 
@@ -40,17 +41,20 @@
 
       return goto('/login');
     } catch (error) {
-      submitError = error.error_description || error.message;
+      submitError = error instanceof Error ? error.message : String(error);
     } finally {
       loading = false;
     }
   }
 
+  function setConfirmPasswordError(fields) {
+    untrack(() => {
+      errors.confirmPassword = getConfirmPasswordError(fields);
+    });
+  }
+
   $effect(() => {
-    errors.confirmPassword = getConfirmPasswordError(fields);
-  });
-  $effect(() => {
-    disableSubmit = getDisableSubmit(fields);
+    setConfirmPasswordError(fields);
   });
 </script>
 

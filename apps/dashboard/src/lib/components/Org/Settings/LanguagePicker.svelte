@@ -11,12 +11,7 @@
     change?: () => void;
   }
 
-  let {
-    className = '',
-    value = $bindable(LOCALE.EN),
-    hasLangChanged = $bindable(false),
-    change
-  }: Props = $props();
+  let { className = '', value = $bindable(LOCALE.EN), hasLangChanged = $bindable(false), change }: Props = $props();
 
   const dropdownItems = [{ id: '', text: 'Pick a Language' }, ...LANGUAGES];
 

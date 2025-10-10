@@ -31,28 +31,20 @@
 <CourseContainer courseId={data.courseId}>
   <PageNav title={$t('course.navItem.people.title')} disableSticky={true}>
     {#snippet image()}
-      <slot:fragment>
-        {#if data.personId}
-          <RoleBasedSecurity allowedRoles={[1, 2]}>
-            <IconButton size="large" onClick={handleBackNavigation}>
-              <ArrowLeft size={16} class="carbon-icon dark:text-white " />
-            </IconButton>
-          </RoleBasedSecurity>
-        {/if}
-      </slot:fragment>
+      {#if data.personId}
+        <RoleBasedSecurity allowedRoles={[1, 2]}>
+          <IconButton size="large" onClick={handleBackNavigation}>
+            <ArrowLeft size={16} class="carbon-icon dark:text-white " />
+          </IconButton>
+        </RoleBasedSecurity>
+      {/if}
     {/snippet}
     {#snippet widget()}
-      <slot:fragment>
-        {#if !data.personId}
-          <RoleBasedSecurity allowedRoles={[1, 2]}>
-            <PrimaryButton
-              className="mr-2"
-              label={$t('course.navItem.people.add')}
-              onClick={handleClick}
-            />
-          </RoleBasedSecurity>
-        {/if}
-      </slot:fragment>
+      {#if !data.personId}
+        <RoleBasedSecurity allowedRoles={[1, 2]}>
+          <PrimaryButton className="mr-2" label={$t('course.navItem.people.add')} onClick={handleClick} />
+        </RoleBasedSecurity>
+      {/if}
     {/snippet}
   </PageNav>
   <PageBody width="w-full max-w-6xl md:w-11/12">

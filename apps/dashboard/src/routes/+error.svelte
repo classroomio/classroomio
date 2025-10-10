@@ -20,13 +20,10 @@
   class="error-container m-auto flex h-full flex-col-reverse items-center justify-center py-10 md:flex-col-reverse lg:flex-row dark:bg-black"
 >
   <div class="p-2 md:w-full lg:w-2/4">
-    <h2 class="w-full text-lg font-medium lg:text-3xl lg:font-normal">
-      Something unexpected occured.
-    </h2>
+    <h2 class="w-full text-lg font-medium lg:text-3xl lg:font-normal">Something unexpected occured.</h2>
     <p class="my-6 w-full text-base font-normal text-gray-600 dark:text-white">
-      Don't worry, your learning is safe. It isn't your fault, it is ours. We have gotten the error
-      notification and will push a fix ASAP. In the meantime, take a short break and come back a bit
-      later.
+      Don't worry, your learning is safe. It isn't your fault, it is ours. We have gotten the error notification and
+      will push a fix ASAP. In the meantime, take a short break and come back a bit later.
     </p>
     <a
       class="bg-primary-700 hover:bg-primary-900 mt-3 rounded-xl px-9 py-3 text-white transition-all hover:no-underline"

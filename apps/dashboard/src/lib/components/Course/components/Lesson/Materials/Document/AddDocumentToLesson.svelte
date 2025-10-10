@@ -8,22 +8,16 @@
   import PdfIcon from 'carbon-icons-svelte/lib/Pdf.svelte';
   import CloseIcon from 'carbon-icons-svelte/lib/Close.svelte';
   import { DocumentUploader } from '$lib/utils/services/courses/presign';
-  import { onDestroy } from 'svelte';
+  import { onDestroy, untrack } from 'svelte';
   import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
   import { isFreePlan } from '$lib/utils/store/org';
   import { lesson } from '../../store/lessons';
 
-  interface Props {
-    lessonId?: string;
-  }
-
-  let { lessonId = '' }: Props = $props();
-
-  let fileInput: HTMLInputElement = $state();
+  let fileInput: HTMLInputElement | undefined = $state();
   let selectedFile: File | null = $state(null);
   let dragOver = $state(false);
   let errorTimeout: NodeJS.Timeout | null = $state(null);
-  let isDisabled = $state(false);
+  let isDisabled = $derived($lessonDocUpload.isUploading || $isFreePlan);
 
   const ALLOWED_TYPES = [
     'application/pdf',
@@ -37,8 +31,7 @@
 
   function getFileType(file: File): 'pdf' | 'docx' | 'doc' {
     if (file.type === 'application/pdf') return 'pdf';
-    if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-      return 'docx';
+    if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') return 'docx';
     if (file.type === 'application/msword') return 'doc';
     return 'pdf'; // fallback
   }
@@ -156,9 +149,7 @@
       console.error('Upload error:', error);
 
       if ($lessonDocUpload.isCancelled) {
-        $lessonDocUpload.error = $t(
-          'course.navItem.lessons.materials.tabs.document.upload_cancelled'
-        );
+        $lessonDocUpload.error = $t('course.navItem.lessons.materials.tabs.document.upload_cancelled');
         snackbar.info($t('course.navItem.lessons.materials.tabs.document.upload_cancelled'));
       } else {
         $lessonDocUpload.error = error instanceof Error ? error.message : 'Upload failed';
@@ -191,23 +182,28 @@
     }
   }
 
+  function autoClearError(error: string | null) {
+    if (!error) {
+      return;
+    }
+
+    if (errorTimeout) clearTimeout(errorTimeout);
+
+    errorTimeout = setTimeout(() => {
+      untrack(() => {
+        $lessonDocUpload.error = null;
+      });
+    }, 5000);
+  }
+
   // Auto-clear error after 5 seconds
   $effect(() => {
-    if ($lessonDocUpload.error) {
-      if (errorTimeout) clearTimeout(errorTimeout);
-      errorTimeout = setTimeout(() => {
-        $lessonDocUpload.error = null;
-      }, 5000);
-    }
+    autoClearError($lessonDocUpload.error);
   });
 
   // Clear error timeout when component is destroyed
   onDestroy(() => {
     if (errorTimeout) clearTimeout(errorTimeout);
-  });
-
-  $effect(() => {
-    isDisabled = $lessonDocUpload.isUploading || $isFreePlan;
   });
 </script>
 
@@ -229,9 +225,7 @@
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     class="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center transition-colors {isDisabled &&
-      'opacity-50 hover:cursor-not-allowed'} {dragOver
-      ? 'border-blue-500 bg-blue-50'
-      : 'hover:border-gray-400'}"
+      'opacity-50 hover:cursor-not-allowed'} {dragOver ? 'border-blue-500 bg-blue-50' : 'hover:border-gray-400'}"
     ondrop={handleDrop}
     ondragover={handleDragOver}
     ondragleave={handleDragLeave}

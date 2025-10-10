@@ -11,14 +11,10 @@
   import { setTheme } from '$lib/utils/functions/theme';
   import { t } from '$lib/utils/functions/translations';
   import { profile, user } from '$lib/utils/store/user';
-  import {
-    authValidation,
-    getConfirmPasswordError,
-    getDisableSubmit
-  } from '$lib/utils/functions/validator';
+  import { authValidation, getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import type { CurrentOrg } from '$lib/utils/types/org';
-  import { onMount } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import { snackbar } from '$lib/components/Snackbar/store.js';
 
   let { data } = $props();
@@ -33,12 +29,13 @@
     name?: string;
     email?: string;
     password?: string;
-    confirmPassword?: string;
   } = $state({});
 
-  let submitError: string = $state();
-  let disableSubmit = $state(false);
-  let formRef: HTMLFormElement = $state();
+  let submitError: string = $state('');
+  let formRef: HTMLFormElement | undefined = $state();
+
+  const confirmPasswordError = $derived(getConfirmPasswordError(fields));
+  const disableSubmit = $derived(getDisableSubmit(fields));
 
   async function joinOrg(profileId: string, email: string) {
     if (!profileId || !email || !data.invite.currentOrg?.id) return;
@@ -162,31 +159,19 @@
     setCurOrg(data.invite.currentOrg as CurrentOrg);
   });
 
-  function autoLogout(email?: string) {
+  const isLoading = $derived(loading || $user.fetchingUser);
+
+  $effect(() => {
+    const email = $profile?.email;
     if (!email) return;
 
     if (email !== data.invite.email) {
       console.log('logout');
       snackbar.error('You are logged in with a different email');
-      shouldLogout = true;
+      untrack(() => {
+        shouldLogout = true;
+      });
     }
-  }
-
-  $effect(() => {
-    errors.confirmPassword = getConfirmPasswordError(fields);
-  });
-  $effect(() => {
-    disableSubmit = getDisableSubmit(fields);
-  });
-  $effect(() => {
-    autoLogout($profile?.email);
-  });
-  let isLoading = $derived(loading || $user.fetchingUser);
-  $effect(() => {
-    console.log('$profile', $profile);
-  });
-  $effect(() => {
-    console.log('data.invite', data.invite);
   });
 </script>
 
@@ -256,7 +241,7 @@
           className="mb-6"
           inputClassName="w-full"
           isDisabled={isLoading}
-          errorMessage={errors.confirmPassword}
+          errorMessage={confirmPasswordError}
           isRequired
         />
       {/if}

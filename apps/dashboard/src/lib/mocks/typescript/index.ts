@@ -33,6 +33,5 @@ export const TYPESCRIPT_TEMPLATES = {
   [TYPESCRIPT_IDS.TS_UTILITYTYPES]: async () => (await import('./013_ts_utilityTypes')).default,
   [TYPESCRIPT_IDS.TS_KEYOF]: async () => (await import('./014_ts_keyOf')).default,
   [TYPESCRIPT_IDS.TS_NULL]: async () => (await import('./015_ts_null')).default,
-  [TYPESCRIPT_IDS.TS_DEFINITELYTYPED]: async () =>
-    (await import('./016_ts_definitelyTyped')).default
+  [TYPESCRIPT_IDS.TS_DEFINITELYTYPED]: async () => (await import('./016_ts_definitelyTyped')).default
 };

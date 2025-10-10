@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { fetchSubmission } from '$lib/utils/services/submissions';
   import Summary from './Summary.svelte';
   import Individual from './Individual.svelte';
@@ -27,19 +28,21 @@
 
   const onChange = (tabValue: string) => () => (currentTab = tabValue);
 
-  async function fetchSubmissions(id: string | undefined) {
-    if (!id) return;
-    isLoading = true;
+  function fetchSubmissions(id: string | undefined) {
+    untrack(async () => {
+      if (!id) return;
+      isLoading = true;
 
-    const { data } = await fetchSubmission({
-      exerciseId: id
+      const { data } = await fetchSubmission({
+        exerciseId: id
+      });
+
+      if (!data) return;
+
+      submissions.set(data);
+
+      isLoading = false;
     });
-
-    if (!data) return;
-
-    submissions.set(data);
-
-    isLoading = false;
   }
 
   $effect(() => {

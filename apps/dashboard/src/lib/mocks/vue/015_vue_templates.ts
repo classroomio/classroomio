@@ -79,8 +79,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'In Vue.js templates, how do you conditionally render an element based on a data property?',
+        title: 'In Vue.js templates, how do you conditionally render an element based on a data property?',
         name: 'q5',
         points: 3,
         order: 4,

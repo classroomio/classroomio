@@ -32,8 +32,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which of the following statements is true about the "break" statement in a while loop?',
+        title: 'Which of the following statements is true about the "break" statement in a while loop?',
         name: 'question3',
         points: 2,
         order: 2,

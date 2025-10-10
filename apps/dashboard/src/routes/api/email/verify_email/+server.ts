@@ -15,9 +15,7 @@ export async function POST({ fetch, request }) {
     orgSiteName
   });
 
-  const verificationLink = `${origin}/api/verify?data=${encodeURIComponent(
-    btoa(verificationData)
-  )}`;
+  const verificationLink = `${origin}/api/verify?data=${encodeURIComponent(btoa(verificationData))}`;
 
   const emailData = [
     {

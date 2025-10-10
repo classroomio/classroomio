@@ -1,11 +1,7 @@
 // Code from https://github.com/vercel/platforms/blob/1ed55b13bcae97b037c69ec40b4c32df21c2412c/lib/domains.ts
 
 import { env } from '$env/dynamic/private';
-import type {
-  DomainConfigResponse,
-  DomainResponse,
-  DomainVerificationResponse
-} from '$lib/utils/types/org';
+import type { DomainConfigResponse, DomainResponse, DomainVerificationResponse } from '$lib/utils/types/org';
 
 export const addDomainToVercel = async (domain: string) => {
   return await fetch(
@@ -45,9 +41,7 @@ export const removeDomainFromVercelProject = async (domain: string) => {
 
 export const removeDomainFromVercelTeam = async (domain: string) => {
   return await fetch(
-    `https://api.vercel.com/v6/domains/${domain}${
-      env.TEAM_ID_VERCEL ? `?teamId=${env.TEAM_ID_VERCEL}` : ''
-    }`,
+    `https://api.vercel.com/v6/domains/${domain}${env.TEAM_ID_VERCEL ? `?teamId=${env.TEAM_ID_VERCEL}` : ''}`,
     {
       headers: {
         Authorization: `Bearer ${env.AUTH_BEARER_TOKEN}`
@@ -78,9 +72,7 @@ export const getDomainResponse = async (
 
 export const getConfigResponse = async (domain: string): Promise<DomainConfigResponse> => {
   return await fetch(
-    `https://api.vercel.com/v6/domains/${domain}/config${
-      env.TEAM_ID_VERCEL ? `?teamId=${env.TEAM_ID_VERCEL}` : ''
-    }`,
+    `https://api.vercel.com/v6/domains/${domain}/config${env.TEAM_ID_VERCEL ? `?teamId=${env.TEAM_ID_VERCEL}` : ''}`,
     {
       method: 'GET',
       headers: {

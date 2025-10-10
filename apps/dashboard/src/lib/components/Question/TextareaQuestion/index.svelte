@@ -12,8 +12,9 @@
   import QuestionTitle from '../QuestionTitle.svelte';
 
   interface Props {
+    key: string;
     title?: string;
-    index?: number;
+    index?: number | string;
     code?: string;
     name?: string;
     onSubmit?: any;
@@ -23,11 +24,11 @@
     isLast?: boolean;
     isPreview?: boolean;
     disabled?: boolean;
-    grade: number | undefined;
+    grade?: number;
     gradeMax?: number;
     disableGrading?: boolean;
     isGradeWithAI?: boolean;
-    reason: any;
+    reason?: string;
     isLoading?: boolean;
     hideGrading?: boolean;
   }
@@ -37,7 +38,7 @@
     index = 1,
     code = '',
     name = '',
-    onSubmit = (a: string, b: string) => {},
+    onSubmit = (_a: string, _b: string) => {},
     onPrevious = () => {},
     defaultValue = $bindable(''),
     disablePreviousButton = false,
@@ -53,9 +54,9 @@
     hideGrading = false
   }: Props = $props();
 
-  let gradeWithAI = $state(false);
+  let gradeWithAI = $derived(isGradeWithAI);
 
-  function handleFormSubmit(event) {
+  function handleFormSubmit() {
     if (isPreview) return;
 
     onSubmit(name, defaultValue);
@@ -74,10 +75,6 @@
     gradeWithAI = false;
     grade = 0;
   }
-
-  $effect(() => {
-    gradeWithAI = isGradeWithAI;
-  });
 </script>
 
 <form onsubmit={preventDefault(handleFormSubmit)}>
@@ -97,9 +94,7 @@
   <div class="ml-4">
     {#if disabled}
       <div class="mb-3 rounded-md bg-gray-200 px-5 py-3 dark:bg-gray-500">
-        {defaultValue === ''
-          ? $t('course.navItem.lessons.exercises.all_exercises.no_answer')
-          : defaultValue}
+        {defaultValue === '' ? $t('course.navItem.lessons.exercises.all_exercises.no_answer') : defaultValue}
       </div>
       {#if gradeWithAI}
         <ReasonBox {reason} {isLoading} {acceptGrade} {rejectGrade} />

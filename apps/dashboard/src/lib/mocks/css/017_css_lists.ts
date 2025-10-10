@@ -107,8 +107,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What CSS property is used to control the space between the marker and the content of a list item?',
+        title: 'What CSS property is used to control the space between the marker and the content of a list item?',
         name: 'q9',
         points: 1,
         order: 8,

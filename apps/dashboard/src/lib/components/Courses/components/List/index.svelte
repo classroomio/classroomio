@@ -1,11 +1,5 @@
 <script lang="ts">
-  import {
-    StructuredListRow,
-    StructuredListCell,
-    Tag,
-    OverflowMenuItem,
-    OverflowMenu
-  } from 'carbon-components-svelte';
+  import { StructuredListRow, StructuredListCell, Tag, OverflowMenuItem, OverflowMenu } from 'carbon-components-svelte';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { goto } from '$app/navigation';
   import { t } from '$lib/utils/functions/translations';
@@ -82,23 +76,10 @@
         e.stopPropagation();
       }}
     >
-      <OverflowMenuItem
-        text={$t('courses.course_card.context_menu.clone')}
-        on:click={handleCloneCourse}
-      />
-      <OverflowMenuItem
-        text={$t('courses.course_card.context_menu.share')}
-        on:click={handleShareCourse}
-      />
-      <OverflowMenuItem
-        text={$t('courses.course_card.context_menu.invite')}
-        on:click={handleInvite}
-      />
-      <OverflowMenuItem
-        danger
-        text={$t('courses.course_card.context_menu.delete')}
-        on:click={handleDeleteCourse}
-      />
+      <OverflowMenuItem text={$t('courses.course_card.context_menu.clone')} on:click={handleCloneCourse} />
+      <OverflowMenuItem text={$t('courses.course_card.context_menu.share')} on:click={handleShareCourse} />
+      <OverflowMenuItem text={$t('courses.course_card.context_menu.invite')} on:click={handleInvite} />
+      <OverflowMenuItem danger text={$t('courses.course_card.context_menu.delete')} on:click={handleDeleteCourse} />
     </OverflowMenu>
   </StructuredListCell>
 </StructuredListRow>

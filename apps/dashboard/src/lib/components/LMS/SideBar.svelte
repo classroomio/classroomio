@@ -32,10 +32,8 @@
     return pagePath.includes(itemPath);
   }
 
-  let sideLinks: SideLinks[] = $state([]);
-
-  $effect(() => {
-    sideLinks = [
+  const sideLinks: SideLinks[] = $derived.by(() =>
+    [
       {
         name: $t('lms_navigation.home'),
         icon: HomeIcon,
@@ -67,8 +65,8 @@
         icon: Explore,
         link: '/lms/explore'
       }
-    ].filter((link) => (link.show ? link.show() : true));
-  });
+    ].filter((link) => (link.show ? link.show() : true))
+  );
 
   const toggleSidebar = () => {
     $sideBar.hidden = !$sideBar.hidden;
@@ -86,18 +84,10 @@
     <div class="flex h-full flex-col">
       <div class="border-b border-gray-200 px-4 pt-5 dark:border-neutral-600">
         <div class="flex w-full flex-col items-center">
-          <Avatar
-            src={$profile.avatar_url}
-            name={$profile.fullname}
-            shape="rounded-full"
-            width="w-20"
-            height="h-20"
-          />
+          <Avatar src={$profile.avatar_url} name={$profile.fullname} shape="rounded-full" width="w-20" height="h-20" />
 
           <div class="mt-5 flex w-full justify-center">
-            <p
-              class="max-w-[80%] truncate whitespace-nowrap text-center text-lg font-bold dark:text-white"
-            >
+            <p class="max-w-[80%] truncate whitespace-nowrap text-center text-lg font-bold dark:text-white">
               {$profile.fullname}
             </p>
           </div>
@@ -107,10 +97,7 @@
           {#each sideLinks as item}
             <a href={item.link} class="text-black" onclick={toggleSidebar}>
               <li
-                class="mb-2 flex items-center px-4 py-3 {NavClasses.item} {isActive(
-                  page.url.pathname,
-                  `${item.link}`
-                )
+                class="mb-2 flex items-center px-4 py-3 {NavClasses.item} {isActive(page.url.pathname, `${item.link}`)
                   ? NavClasses.active
                   : 'dark:text-white'}"
               >
@@ -140,12 +127,7 @@
             class="mb-2 flex w-full cursor-pointer items-center justify-between px-2.5 py-1.5 text-black no-underline {NavClasses.item}"
           >
             <div class="flex items-center justify-start space-x-1 text-start">
-              <Avatar
-                src={$profile.avatar_url}
-                name={$profile.username}
-                width="w-[1.2rem]"
-                height="h-[1.2rem]"
-              />
+              <Avatar src={$profile.avatar_url} name={$profile.username} width="w-[1.2rem]" height="h-[1.2rem]" />
               <p class="max-w-full truncate text-sm font-medium dark:text-white">
                 {$profile.fullname}
               </p>

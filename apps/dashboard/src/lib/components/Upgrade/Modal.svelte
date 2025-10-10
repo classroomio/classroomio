@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import Confetti from '$lib/components/Confetti/index.svelte';
@@ -21,10 +22,12 @@
   const planNames = Object.keys(PLANS);
 
   let isLoadingPlan: string | null = $state(null);
-  let open = $state(false);
   let upgraded = $state(false);
   let isYearlyPlan = $state(false);
-  let isConfirming = $state(false);
+
+  const query = $derived(new URLSearchParams(page.url.search));
+  let open = $derived((query.get('upgrade') || '') === 'true');
+  let isConfirming = $derived((query.get('confirmation') || '') === 'true');
 
   async function handleClick(plan, planName: string) {
     if (plan.CTA.IS_DISABLED || !$profile.id) {
@@ -41,10 +44,7 @@
     try {
       const checkoutURL = new URL('/api/polar/subscribe', page.url);
 
-      checkoutURL.searchParams.set(
-        'productId',
-        isYearlyPlan ? plan.CTA.PRODUCT_ID_YEARLY : plan.CTA.PRODUCT_ID
-      );
+      checkoutURL.searchParams.set('productId', isYearlyPlan ? plan.CTA.PRODUCT_ID_YEARLY : plan.CTA.PRODUCT_ID);
       checkoutURL.searchParams.set('customerEmail', $profile.email);
       checkoutURL.searchParams.set('customerName', $profile.fullname);
       checkoutURL.searchParams.set(
@@ -67,7 +67,9 @@
   }
 
   function onUpgrade() {
-    upgraded = true;
+    untrack(() => {
+      upgraded = true;
+    });
     toggleConfetti();
 
     setTimeout(() => {
@@ -92,11 +94,7 @@
       onUpgrade();
     }
   }
-  $effect(() => {
-    const query = new URLSearchParams(page.url.search);
-    open = (query.get('upgrade') || '') === 'true';
-    isConfirming = (query.get('confirmation') || '') === 'true';
-  });
+
   $effect(() => {
     handleUpgradeSuccess(Boolean($currentOrg.id && !$isFreePlan && open));
   });
@@ -122,16 +120,8 @@
         {$t('pricing.modal.plan')}
       </p>
       <div class="flex items-center gap-4">
-        <PrimaryButton
-          label={$t('pricing.modal.close')}
-          variant={VARIANTS.OUTLINED}
-          onClick={onClose}
-        />
-        <PrimaryButton
-          label={$t('pricing.modal.learn')}
-          variant={VARIANTS.CONTAINED_DARK}
-          onClick={onLearnMore}
-        />
+        <PrimaryButton label={$t('pricing.modal.close')} variant={VARIANTS.OUTLINED} onClick={onClose} />
+        <PrimaryButton label={$t('pricing.modal.learn')} variant={VARIANTS.CONTAINED_DARK} onClick={onLearnMore} />
       </div>
     </div>
   {:else if isConfirming}
@@ -142,18 +132,14 @@
     <div class="flex flex-col items-center justify-center">
       <div class="relative mb-2 flex items-center rounded-[30px] border-[2px] p-[2px] lg:scale-100">
         <button
-          style="background-color: {isYearlyPlan ? 'initial' : '#1D4EE2'}; color: {isYearlyPlan
-            ? '#5e636b'
-            : '#fff'}"
+          style="background-color: {isYearlyPlan ? 'initial' : '#1D4EE2'}; color: {isYearlyPlan ? '#5e636b' : '#fff'}"
           class="rounded-[30px] bg-blue-700 px-3 py-1 text-xs text-white transition-all duration-500 ease-in-out lg:px-4 lg:py-2"
           onclick={toggleIsYearlyPlan}
         >
           {$t('pricing.modal.monthly')}
         </button>
         <button
-          style="background-color: {isYearlyPlan ? '#1D4EE2' : ''}; color: {isYearlyPlan
-            ? '#fff'
-            : '#5e636b'}"
+          style="background-color: {isYearlyPlan ? '#1D4EE2' : ''}; color: {isYearlyPlan ? '#fff' : '#5e636b'}"
           class="relative rounded-[30px] px-3 py-1 text-xs text-white transition-all duration-500 ease-in-out lg:px-4 lg:py-2"
           onclick={toggleIsYearlyPlan}
         >
@@ -179,8 +165,7 @@
               {PLANS[planName].NAME}
             </p>
             <p
-              class="text-baseline flex items-baseline gap-x-1 font-medium {planName ===
-              'EARLY_ADOPTER'
+              class="text-baseline flex items-baseline gap-x-1 font-medium {planName === 'EARLY_ADOPTER'
                 ? 'text-white'
                 : 'text-black'} dark:text-gray-300"
             >
@@ -196,8 +181,8 @@
             </p>
 
             <button
-              class="text-md mt-4 block w-full rounded-md {isLoadingPlan === planName &&
-                disabledClass} {planName === 'EARLY_ADOPTER'
+              class="text-md mt-4 block w-full rounded-md {isLoadingPlan === planName && disabledClass} {planName ===
+              'EARLY_ADOPTER'
                 ? 'bg-white text-slate-900 hover:bg-indigo-50'
                 : PLANS[planName].CTA.IS_DISABLED
                   ? disabledClass

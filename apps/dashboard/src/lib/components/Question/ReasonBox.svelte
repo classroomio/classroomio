@@ -11,12 +11,7 @@
     acceptGrade?: any;
   }
 
-  let {
-    reason = '',
-    isLoading = false,
-    rejectGrade = () => {},
-    acceptGrade = () => {}
-  }: Props = $props();
+  let { reason = '', isLoading = false, rejectGrade = () => {}, acceptGrade = () => {} }: Props = $props();
 </script>
 
 <div class="rounded-md border">

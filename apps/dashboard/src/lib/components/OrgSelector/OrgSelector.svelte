@@ -50,19 +50,9 @@
       }}
     >
       {#if $currentOrg.avatar_url && $currentOrg.name}
-        <Avatar
-          src={$currentOrg.avatar_url}
-          name={$currentOrg.name}
-          shape="rounded-md"
-          width="w-7"
-          height="h-7"
-        />
+        <Avatar src={$currentOrg.avatar_url} name={$currentOrg.name} shape="rounded-md" width="w-7" height="h-7" />
       {:else if $currentOrg.shortName}
-        <TextChip
-          size="sm"
-          value={$currentOrg.shortName}
-          className="bg-primary-200 dark:text-black font-medium"
-        />
+        <TextChip size="sm" value={$currentOrg.shortName} className="bg-primary-200 dark:text-black font-medium" />
       {/if}
       <div class="flex w-full max-w-[219px] cursor-pointer items-center justify-between">
         <div class="flex flex-col items-start">
@@ -95,12 +85,7 @@
         />
       {/each}
 
-      <OrgSelectorItem
-        disabled={true}
-        size=""
-        text={$t('navigation.add_organization')}
-        onClick={handleAddOrg}
-      />
+      <OrgSelectorItem disabled={true} size="" text={$t('navigation.add_organization')} onClick={handleAddOrg} />
     </Popover>
   {/if}
 </div>

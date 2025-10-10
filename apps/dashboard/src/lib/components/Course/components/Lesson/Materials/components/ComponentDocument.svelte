@@ -1,8 +1,5 @@
 <script lang="ts">
-  import {
-    lesson,
-    deleteLessonDocument
-  } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { lesson, deleteLessonDocument } from '$lib/components/Course/components/Lesson/store/lessons';
   import { lessonDocUpload } from '$lib/components/Course/components/Lesson/store/lessons';
   import MODES from '$lib/utils/constants/mode';
   import IconButton from '$lib/components/IconButton/index.svelte';
@@ -318,9 +315,7 @@
 {#if pdfViewerOpen}
   <div class="fixed inset-0 z-50 flex flex-col bg-white dark:bg-neutral-800">
     <!-- Header -->
-    <div
-      class="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 dark:bg-neutral-800"
-    >
+    <div class="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 dark:bg-neutral-800">
       <div class="flex items-center space-x-4">
         <h2 class="max-w-md truncate text-lg font-semibold text-gray-900 dark:text-gray-300">
           {viewingPDF?.name}
@@ -381,10 +376,7 @@
         {/if}
 
         <!-- Close Button -->
-        <IconButton
-          onClick={closePDFViewer}
-          toolTipProps={{ title: 'Close (Esc)', hotkeys: ['Esc'] }}
-        >
+        <IconButton onClick={closePDFViewer} toolTipProps={{ title: 'Close (Esc)', hotkeys: ['Esc'] }}>
           <CloseIcon size={20} class="carbon-icon" />
         </IconButton>
       </div>
@@ -417,10 +409,7 @@
               </svg>
             </div>
             <p class="mb-2 text-red-600">{$t(error)}</p>
-            <button
-              onclick={() => viewPDF(viewingPDF)}
-              class="text-blue-600 underline hover:text-blue-800"
-            >
+            <button onclick={() => viewPDF(viewingPDF)} class="text-blue-600 underline hover:text-blue-800">
               {$t('course.navItem.lessons.materials.tabs.document.try_again')}
             </button>
           </div>

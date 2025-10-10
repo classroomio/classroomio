@@ -5,15 +5,18 @@
   import { getOrgAudience } from '$lib/utils/services/org';
   import { orgAudience, currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
+  import { untrack } from 'svelte';
 
   let isLoading = $state(false);
 
-  async function fetchInitData(orgId) {
+  function fetchInitData(orgId) {
     if (!orgId) return;
 
-    isLoading = true;
-    await getOrgAudience(orgId);
-    isLoading = false;
+    untrack(async () => {
+      isLoading = true;
+      await getOrgAudience(orgId);
+      isLoading = false;
+    });
   }
 
   $effect(() => {

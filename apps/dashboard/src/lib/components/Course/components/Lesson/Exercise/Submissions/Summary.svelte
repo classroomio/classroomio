@@ -1,15 +1,10 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import { browser } from '$app/environment';
   import type { ExerciseSubmissions } from '$lib/utils/types';
   import { questionnaire } from '../../store/exercise';
   import { replaceHTMLTag } from '$lib/utils/functions/course';
-  import type {
-    BarChartOptions,
-    PieChartOptions,
-    PieChart,
-    BarChartSimple
-  } from '@carbon/charts-svelte';
+  import type { BarChartOptions, PieChartOptions, PieChart, BarChartSimple } from '@carbon/charts-svelte';
   import { getChartOptions } from './functions';
   import { submissions } from './store';
   import '@carbon/charts-svelte/styles.css';
@@ -36,8 +31,8 @@
   let transformedQuestions: TranformedQuestion[] = $state([]);
   let barChart: typeof BarChartSimple | undefined = $state();
   let pieChart: typeof PieChart | undefined = $state();
-  let pieOptions: PieChartOptions | undefined = $state();
-  let barOptions: BarChartOptions | undefined = $state();
+  let pieOptions: PieChartOptions | undefined = $derived(getChartOptions(isLoading).pieOptions);
+  let barOptions: BarChartOptions | undefined = $derived(getChartOptions(isLoading).barOptions);
 
   function getAnswerToQuestionOfStudent(
     questionId: number,
@@ -103,11 +98,7 @@
             };
 
             $submissions.forEach((studentSubmission) => {
-              const studentAnswer = getAnswerToQuestionOfStudent(
-                question.id,
-                false,
-                studentSubmission
-              );
+              const studentAnswer = getAnswerToQuestionOfStudent(question.id, false, studentSubmission);
 
               if (studentAnswer.includes(value)) {
                 chartData.value += 1;
@@ -121,7 +112,9 @@
       }
     );
 
-    transformedQuestions = [..._transformedQuestions];
+    untrack(() => {
+      transformedQuestions = [..._transformedQuestions];
+    });
 
     console.log({ transformedQuestions });
   };
@@ -136,14 +129,6 @@
     if ($submissions?.length) {
       getTransformedData($submissions);
     }
-  });
-
-  $effect(() => {
-    let chartOptions = getChartOptions(isLoading);
-    barOptions = chartOptions.barOptions;
-    pieOptions = chartOptions.pieOptions;
-
-    console.log({ chartOptions });
   });
 </script>
 

@@ -16,10 +16,7 @@
 
   let studentSelected = $state(0);
 
-  const isSelected = (
-    student: ExerciseSubmissions,
-    option: { question_id: number; value: string[] }
-  ) => {
+  const isSelected = (student: ExerciseSubmissions, option: { question_id: number; value: string[] }) => {
     if ($submissions) {
       let submittedAnswer = student?.answers;
       let filteredAnswer = submittedAnswer.filter(
@@ -46,9 +43,7 @@
   };
   const getOpenAnswer = (student: ExerciseSubmissions, q: never) => {
     let submittedAnswer = student?.answers;
-    let filteredAnswer = submittedAnswer.filter(
-      (ans: { question_id: number }) => ans.question_id === q.id
-    );
+    let filteredAnswer = submittedAnswer.filter((ans: { question_id: number }) => ans.question_id === q.id);
     if (filteredAnswer.some((ans: { open_answer: string }) => ans.open_answer == '')) {
       return $t('course.navItem.lessons.exercises.all_exercises.analytics.individual.no');
     } else {
@@ -69,9 +64,7 @@
           }`}
         >
           <img
-            src={student.submitted_by.profile.avatar_url
-              ? student.submitted_by.profile.avatar_url
-              : defaultImg}
+            src={student.submitted_by.profile.avatar_url ? student.submitted_by.profile.avatar_url : defaultImg}
             alt="student"
             class="m-1 max-h-10 w-10 rounded-full bg-white"
           />

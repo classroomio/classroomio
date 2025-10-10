@@ -41,31 +41,21 @@
     const review = reviews.find((r) => r.id === id);
     const reviewSchema = z.object({
       name: z.string().min(5, {
-        message: `${$t(
-          'course.navItem.landing_page.editor.reviews_form.validations.name.min_char'
-        )}`
+        message: `${$t('course.navItem.landing_page.editor.reviews_form.validations.name.min_char')}`
       }),
       avatar_url: z.string().min(6, {
-        message: `${$t(
-          'course.navItem.landing_page.editor.reviews_form.validations.avatar_url.message'
-        )}`
+        message: `${$t('course.navItem.landing_page.editor.reviews_form.validations.avatar_url.message')}`
       }),
       rating: z
         .number()
         .min(1, {
-          message: `${$t(
-            'course.navItem.landing_page.editor.reviews_form.validations.rating.message'
-          )}`
+          message: `${$t('course.navItem.landing_page.editor.reviews_form.validations.rating.message')}`
         })
         .max(5, {
-          message: `${$t(
-            'course.navItem.landing_page.editor.reviews_form.validations.rating.message'
-          )}`
+          message: `${$t('course.navItem.landing_page.editor.reviews_form.validations.rating.message')}`
         }),
       description: z.string().min(10, {
-        message: `${$t(
-          'course.navItem.landing_page.editor.reviews_form.validations.description.min_char'
-        )}`
+        message: `${$t('course.navItem.landing_page.editor.reviews_form.validations.description.min_char')}`
       })
     });
 
@@ -111,24 +101,14 @@
             <Avatar src={review.avatar_url} name={review.name} className="mt-1" />
             <p class="text-sm">{review.name}</p>
 
-            <IconButton
-              value="expand"
-              onClick={() => onExpand(review.id)}
-              size={$isMobile ? 'large' : 'small'}
-            >
+            <IconButton value="expand" onClick={() => onExpand(review.id)} size={$isMobile ? 'large' : 'small'}>
               <ChevronDownIcon size={16} class="carbon-icon dark:text-white" />
             </IconButton>
           </div>
         {/if}
         <!-- the body -->
         {#if review.id === reviewToExpand}
-          <ReviewFormEditor
-            bind:reviews
-            bind:review={reviews[index]}
-            {errors}
-            courseId={course.id}
-            {onExpand}
-          />
+          <ReviewFormEditor bind:reviews bind:review={reviews[index]} {errors} courseId={course.id} {onExpand} />
         {/if}
       </div>
     {/each}

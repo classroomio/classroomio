@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { goto } from '$app/navigation';
   import Box from '$lib/components/Box/index.svelte';
   import { courses } from '$lib/components/Courses/store';
@@ -26,24 +27,26 @@
   let allCourses: any[] = $state([]);
   let selectedId = $state('');
 
-  async function fetchCommunityQuestions(orgId?: string, profileId?: string) {
+  function fetchCommunityQuestions(orgId?: string, profileId?: string) {
     if (!orgId || !profileId) return;
-    isLoading = true;
 
-    if ($courses.length) {
-      allCourses = [...$courses];
-    } else {
-      const courseResult = (await fetchCourses(profileId, orgId)) || { allCourses: [] };
-      allCourses = courseResult.allCourses;
-    }
+    untrack(async () => {
+      isLoading = true;
 
-    const courseIds = allCourses.map((course) => course.id);
-    const courseIdsFilter = `(${courseIds.join(',')})`;
+      if ($courses.length) {
+        allCourses = [...$courses];
+      } else {
+        const courseResult = (await fetchCourses(profileId, orgId)) || { allCourses: [] };
+        allCourses = courseResult.allCourses;
+      }
 
-    const { data, error } = await supabase
-      .from('community_question')
-      .select(
-        `
+      const courseIds = allCourses.map((course) => course.id);
+      const courseIdsFilter = `(${courseIds.join(',')})`;
+
+      const { data, error } = await supabase
+        .from('community_question')
+        .select(
+          `
         organization_id,
         course_id,
         title,
@@ -58,35 +61,37 @@
           title
         )
       `
-      )
-      .filter('course_id', 'in', courseIdsFilter)
-      .order('created_at', { ascending: false });
-    console.log('data', data);
-    console.log('error', error);
+        )
+        .filter('course_id', 'in', courseIdsFilter)
+        .order('created_at', { ascending: false });
+      console.log('data', data);
+      console.log('error', error);
 
-    isLoading = false;
+      isLoading = false;
 
-    if (error) {
-      console.error('Error loading community', error);
-      return goto(isLMS ? '/lms' : $currentOrgPath);
-    }
+      if (error) {
+        console.error('Error loading community', error);
+        return goto(isLMS ? '/lms' : $currentOrgPath);
+      }
 
-    discussions =
-      data?.map((discussion) => ({
-        title: discussion.title,
-        courseId: discussion.course_id,
-        courseTitle: discussion.course?.title,
-        slug: discussion.slug,
-        author: discussion?.author?.fullname,
-        comments: discussion.comments?.[0]?.count || 0,
-        votes: discussion.votes,
-        createdAt: calDateDiff(discussion.created_at)
-      })) || [];
+      discussions =
+        data?.map((discussion) => ({
+          title: discussion.title,
+          courseId: discussion.course_id,
+          courseTitle: discussion.course?.title,
+          slug: discussion.slug,
+          author: discussion?.author?.fullname,
+          comments: discussion.comments?.[0]?.count || 0,
+          votes: discussion.votes,
+          createdAt: calDateDiff(discussion.created_at)
+        })) || [];
+    });
   }
 
   $effect(() => {
     fetchCommunityQuestions($currentOrg.id, $profile.id);
   });
+
   let filteredDiscussions = $derived(
     discussions.filter(
       (discussion) =>
@@ -128,10 +133,7 @@
         <Vote value={discussion.votes} />
         <div class="flex flex-col gap-y-0.5 text-sm">
           <h4 class="mt-0">
-            <a
-              class="text-black dark:text-white"
-              href="{isLMS ? '/lms' : $currentOrgPath}/community/{discussion.slug}"
-            >
+            <a class="text-black dark:text-white" href="{isLMS ? '/lms' : $currentOrgPath}/community/{discussion.slug}">
               {discussion.title}
             </a>
           </h4>

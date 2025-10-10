@@ -9,13 +9,7 @@
   import { uploadAvatar } from '$lib/utils/services/courses';
   import { t } from '$lib/utils/functions/translations';
 
-  let {
-    courseId,
-    reviews = $bindable([]),
-    review = $bindable({}),
-    errors = {},
-    onExpand = () => {}
-  } = $props();
+  let { courseId, reviews = $bindable([]), review = $bindable({}), errors = {}, onExpand = () => {} } = $props();
 
   let avatar = $state<string | undefined>();
 
@@ -33,18 +27,10 @@
   $effect(() => {
     onAvatarChange(avatar);
   });
-  $effect(() => {
-    review.rating = parseInt(review.rating);
-  });
 </script>
 
 <div class="flex w-full flex-col items-center">
-  <UploadImage
-    bind:avatar
-    src={review.avatar_url}
-    widthHeight="w-20 h-20"
-    errorMessage={errors.avatar_url}
-  />
+  <UploadImage bind:avatar src={review.avatar_url} widthHeight="w-20 h-20" errorMessage={errors.avatar_url} />
 
   <TextField
     className="mt-2 w-full"
@@ -80,6 +66,9 @@
       min={1}
       max={5}
       bind:value={review.rating}
+      onInputChange={(e) => {
+        review.rating = parseInt(e.target.value);
+      }}
       errorMessage={errors.rating}
     />
 

@@ -6,13 +6,7 @@
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import { t } from '$lib/utils/functions/translations';
   import { COURSE_TYPE } from '$lib/utils/types';
-  import {
-    ImageLoader,
-    OverflowMenu,
-    OverflowMenuItem,
-    SkeletonPlaceholder,
-    Tag
-  } from 'carbon-components-svelte';
+  import { ImageLoader, OverflowMenu, OverflowMenuItem, SkeletonPlaceholder, Tag } from 'carbon-components-svelte';
   import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
   import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
   import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
@@ -107,14 +101,10 @@
     }
   };
 
-  let cost = $derived(
-    calcCourseDiscount(pricingData.discount, pricingData.cost ?? 0, !!pricingData.showDiscount)
-  );
+  let cost = $derived(calcCourseDiscount(pricingData.discount, pricingData.cost ?? 0, !!pricingData.showDiscount));
 
   let courseUrl = $derived(
-    isOnLandingPage || isExplore
-      ? `/course/${slug}`
-      : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`
+    isOnLandingPage || isExplore ? `/course/${slug}` : `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`
   );
 </script>
 
@@ -139,23 +129,10 @@
           size="sm"
           on:click={(e) => e.stopPropagation()}
         >
-          <OverflowMenuItem
-            text={$t('courses.course_card.context_menu.clone')}
-            on:click={handleCloneCourse}
-          />
-          <OverflowMenuItem
-            text={$t('courses.course_card.context_menu.share')}
-            on:click={handleShareCourse}
-          />
-          <OverflowMenuItem
-            text={$t('courses.course_card.context_menu.invite')}
-            on:click={handleInvite}
-          />
-          <OverflowMenuItem
-            danger
-            text={$t('courses.course_card.context_menu.delete')}
-            on:click={handleDeleteCourse}
-          />
+          <OverflowMenuItem text={$t('courses.course_card.context_menu.clone')} on:click={handleCloneCourse} />
+          <OverflowMenuItem text={$t('courses.course_card.context_menu.share')} on:click={handleShareCourse} />
+          <OverflowMenuItem text={$t('courses.course_card.context_menu.invite')} on:click={handleInvite} />
+          <OverflowMenuItem danger text={$t('courses.course_card.context_menu.delete')} on:click={handleDeleteCourse} />
         </OverflowMenu>
       {/if}
 
@@ -215,10 +192,7 @@
           {#if !isExplore}
             <div class="flex items-center gap-2">
               <div class=" relative h-1 w-[50px] bg-[#EAEAEA]">
-                <div
-                  style="width:{progressRate}%"
-                  class="bg-primary-700 absolute left-0 top-0 h-full"
-                ></div>
+                <div style="width:{progressRate}%" class="bg-primary-700 absolute left-0 top-0 h-full"></div>
               </div>
               <p class="text-xs text-[#656565] dark:text-white">{progressRate}%</p>
             </div>
@@ -237,9 +211,7 @@
 
     {#if isLMS}
       <PrimaryButton
-        label={isExplore
-          ? $t('courses.course_card.learn_more')
-          : $t('courses.course_card.continue_course')}
+        label={isExplore ? $t('courses.course_card.learn_more') : $t('courses.course_card.continue_course')}
         variant={VARIANTS.OUTLINED}
         className="rounded-none"
       />

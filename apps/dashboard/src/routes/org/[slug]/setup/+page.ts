@@ -53,9 +53,7 @@ async function getGenericData(orgSlug: string): Promise<{
   };
 }
 
-async function getIsLessonCreated(
-  orgSlug: string
-): Promise<{ isLessonCreated: boolean; lessonData: any }> {
+async function getIsLessonCreated(orgSlug: string): Promise<{ isLessonCreated: boolean; lessonData: any }> {
   const { data } = await supabase
     .from('lesson')
     .select(
@@ -104,9 +102,7 @@ async function getIsExerciseCreated(orgSlug: string): Promise<boolean> {
 }
 
 export const load = async ({ params = { slug: '' } }) => {
-  const { isCourseCreated, isCoursePublished, orgHasAvatarUrl, courseData } = await getGenericData(
-    params.slug
-  );
+  const { isCourseCreated, isCoursePublished, orgHasAvatarUrl, courseData } = await getGenericData(params.slug);
   const { isLessonCreated, lessonData } = await getIsLessonCreated(params.slug);
   const isExerciseCreated = await getIsExerciseCreated(params.slug);
 

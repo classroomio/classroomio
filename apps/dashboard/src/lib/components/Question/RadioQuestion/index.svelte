@@ -12,8 +12,9 @@
   import QuestionTitle from '../QuestionTitle.svelte';
 
   interface Props {
+    key: string;
     title?: string;
-    index?: number;
+    index?: number | string;
     code?: string;
     name?: string;
     options?: { value: string; label: string; is_correct: boolean }[];
@@ -25,12 +26,12 @@
     isPreview?: boolean;
     nextButtonProps?: any;
     isLast?: boolean;
-    grade: number;
+    grade?: number;
     gradeMax?: number;
     disableGrading?: boolean;
     disableOptContainerMargin?: boolean;
     isGradeWithAI?: boolean;
-    reason: any;
+    reason?: string;
     isLoading?: boolean;
     hideGrading?: boolean;
   }
@@ -41,7 +42,7 @@
     code = '',
     name = '',
     options = [],
-    onSubmit = (a: string, b: string[]) => {},
+    onSubmit = (_a: string, _b: string[]) => {},
     onPrevious = () => {},
     defaultValue = '',
     disablePreviousButton = false,
@@ -62,7 +63,7 @@
     hideGrading = false
   }: Props = $props();
 
-  let gradeWithAI = $state(false);
+  let gradeWithAI = $derived(isGradeWithAI);
 
   function getRadioVal(form, name): string {
     let val;
@@ -108,10 +109,6 @@
     gradeWithAI = false;
     grade = 0;
   }
-
-  $effect(() => {
-    gradeWithAI = isGradeWithAI;
-  });
 </script>
 
 <form onsubmit={preventDefault(handleFormSubmit)}>

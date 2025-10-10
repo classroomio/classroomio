@@ -12,24 +12,17 @@
 
 <div class="root">
   <div class="flex justify-center">
-    <button
-      onclick={handleTabClick(1)}
-      class="p-2 focus:outline-none {isWriteMode && `${activeClassName}`}"
-    >
+    <button onclick={handleTabClick(1)} class="p-2 focus:outline-none {isWriteMode && `${activeClassName}`}">
       {$t('markdown_editor.write')}
     </button>
-    <button
-      onclick={handleTabClick(2)}
-      class="p-2 focus:outline-none {!isWriteMode && `${activeClassName}`}"
-    >
+    <button onclick={handleTabClick(2)} class="p-2 focus:outline-none {!isWriteMode && `${activeClassName}`}">
       {$t('markdown_editor.preview')}
     </button>
   </div>
 
   <div class="m-2 mb-0 p-0">
     {#if isWriteMode}
-      <textarea bind:value {placeholder} class="border-gray rounded-md border p-2 dark:bg-gray-500"
-      ></textarea>
+      <textarea bind:value {placeholder} class="border-gray rounded-md border p-2 dark:bg-gray-500"></textarea>
     {:else}
       <article class="preview prose prose-sm sm:prose m-auto p-2">
         {@render preview?.()}

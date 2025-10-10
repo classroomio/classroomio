@@ -19,8 +19,7 @@ const getSiteNameValidation = () =>
       message: `${t.get('validations.site_name.hyphen_rule')}`
     });
 
-const getNewsfeedValidation = () =>
-  z.string().min(5, { message: `${t.get('validations.news_feed.min_char')}` });
+const getNewsfeedValidation = () => z.string().min(5, { message: `${t.get('validations.news_feed.min_char')}` });
 
 const lessonSchema = z.object({
   title: z.string().nonempty({ message: `${t.get('validations.lesson_schema.empty_title')}` }),
@@ -103,9 +102,7 @@ const resetValidationSchema = z.object({
 
 const onboardingValidationSchema = {
   stepOne: z.object({
-    fullname: z
-      .string()
-      .min(5, { message: `${t.get('validations.onboarding.step_one.full_name.min_char')}` }),
+    fullname: z.string().min(5, { message: `${t.get('validations.onboarding.step_one.full_name.min_char')}` }),
     orgName: getOrgNameValidation(),
     siteName: getSiteNameValidation()
   }),
@@ -222,8 +219,7 @@ export const orgLandingpageValidation = (fields = {}) => {
 };
 
 export const onboardingValidation = (fields = {}, step) => {
-  const schema =
-    step === 1 ? onboardingValidationSchema.stepOne : onboardingValidationSchema.stepTwo;
+  const schema = step === 1 ? onboardingValidationSchema.stepOne : onboardingValidationSchema.stepTwo;
   const { error } = schema.safeParse(fields);
 
   return processErrors(error);

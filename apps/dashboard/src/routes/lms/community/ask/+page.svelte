@@ -14,6 +14,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { courses } from '$lib/components/Courses/store';
   import type { Course } from '$lib/utils/types';
+  import { fetchCourses } from '$lib/utils/services/courses';
 
   let errors: {
     title?: string;
@@ -26,8 +27,14 @@
   });
 
   let fetchedCourses: Course[] = $state([]);
+  let hasFetched = $state(false);
 
-  async function getCourses(userId: string | null, orgId: string) {
+  async function getCourses(userId?: string, orgId?: string) {
+    if (!userId || !orgId || hasFetched) {
+      return;
+    }
+
+    hasFetched = true;
     if ($courses.length) {
       fetchedCourses = [...$courses];
       return;
@@ -71,9 +78,7 @@
   }
 
   $effect(() => {
-    if ($profile.id && $currentOrg.id) {
-      getCourses($profile.id, $currentOrg.id);
-    }
+    getCourses($profile.id, $currentOrg.id);
   });
 </script>
 

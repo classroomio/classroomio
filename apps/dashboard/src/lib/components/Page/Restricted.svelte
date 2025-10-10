@@ -16,12 +16,7 @@
     <p class=" mb-5 text-center text-lg text-gray-700 dark:text-white">
       This organization is restricted. In the mean time, you can checkout our features.
     </p>
-    <PrimaryButton
-      variant={VARIANTS.CONTAINED_DARK}
-      label="Go Home"
-      className="text-lg"
-      onClick={handleClick}
-    />
+    <PrimaryButton variant={VARIANTS.CONTAINED_DARK} label="Go Home" className="text-lg" onClick={handleClick} />
   </div>
 </div>
 

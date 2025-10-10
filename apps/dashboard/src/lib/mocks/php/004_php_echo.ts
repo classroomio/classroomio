@@ -65,8 +65,7 @@ const template: ExerciseTemplate = {
             is_correct: false
           },
           {
-            label:
-              '"echo" can output multiple values at once, while "print" can output only one value at a time.',
+            label: '"echo" can output multiple values at once, while "print" can output only one value at a time.',
             is_correct: true
           },
           {

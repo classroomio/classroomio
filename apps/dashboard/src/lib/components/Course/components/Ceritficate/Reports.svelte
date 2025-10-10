@@ -17,9 +17,7 @@
 
 <section class="-ml-4 -mr-4 mb-10 flex flex-wrap items-start gap-2">
   {#each CertificateReportData as data (data.id)}
-    <div
-      class="box mb-5 flex flex-col justify-center rounded border border-gray-200 px-2 dark:border-neutral-600"
-    >
+    <div class="box mb-5 flex flex-col justify-center rounded border border-gray-200 px-2 dark:border-neutral-600">
       <p class="text-xs font-normal">{data.title}</p>
       <bold class="text-2xl font-medium">{data.value}</bold>
     </div>
@@ -29,11 +27,7 @@
 <section>
   <div class="flex flex-row items-center justify-between">
     <p class="w-full text-base font-semibold">Certificate issued</p>
-    <Search
-      placeholder="search students"
-      bind:value={searchValue}
-      searchClass="border-b border-transparent"
-    />
+    <Search placeholder="search students" bind:value={searchValue} searchClass="border-b border-transparent" />
   </div>
 </section>
 
@@ -42,9 +36,7 @@
     <StructuredListHead class="bg-primary-50 py-0">
       <StructuredListRow head class="py-0">
         <StructuredListCell head class="py-0">
-          <div
-            class="flex-3 text-primary-600 flex w-full flex-row items-center justify-start text-sm font-medium"
-          >
+          <div class="flex-3 text-primary-600 flex w-full flex-row items-center justify-start text-sm font-medium">
             <Checkbox bind:checked />
             <p class="text-primary-900 w-full text-start text-sm font-medium">Name of student</p>
           </div>
@@ -61,9 +53,7 @@
       {#each students as item (item.id)}
         <StructuredListRow label for="row-{item}">
           <StructuredListCell>
-            <div
-              class="flex-3 flex w-full flex-row items-center justify-start pt-4 text-sm font-medium"
-            >
+            <div class="flex-3 flex w-full flex-row items-center justify-start pt-4 text-sm font-medium">
               <Checkbox />
               <p class="w-full text-start text-sm font-normal">{item.name}</p>
             </div>

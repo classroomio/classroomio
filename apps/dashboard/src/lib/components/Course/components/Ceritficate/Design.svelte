@@ -34,7 +34,10 @@
   let errors = $state({
     description: ''
   });
-  let helperText = $state('');
+
+  const helperText = $derived(
+    `${$course.description?.length || 0}/200 ${$t('course.navItem.certificates.characters')}`
+  );
 
   const saveCertificate = async () => {
     isSaving = true;
@@ -47,8 +50,7 @@
       });
 
       if (result && Object.keys(result).length > 0) {
-        errors.description =
-          $t(result.description) || $t('course.navItem.certificates.description_error');
+        errors.description = $t(result.description) || $t('course.navItem.certificates.description_error');
         throw new Error(errors.description);
       }
 
@@ -70,17 +72,11 @@
       isSaving = false;
     }
   };
-
-  $effect(() => {
-    helperText = `${$course.description?.length || 0}/200 ${$t(
-      'course.navItem.certificates.characters'
-    )}`;
-  });
 </script>
 
 <svelte:head>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="true" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
   <link
     href="https://fonts.googleapis.com/css2?family=Qwitcher+Grypen&family=Roboto:wght@300;400;700&display=swap"
     rel="stylesheet"
@@ -98,20 +94,12 @@
       <p class="my-4 text-xs font-normal dark:text-gray-100">
         {$t('course.navItem.certificates.theme')}
       </p>
-      <RadioButtonGroup
-        bind:selected={$course.certificate_theme}
-        class="mb-10"
-        disabled={$isFreePlan}
-      >
+      <RadioButtonGroup bind:selected={$course.certificate_theme} class="mb-10" disabled={$isFreePlan}>
         <div class="flex flex-wrap justify-between gap-y-5">
           {#each themes as theme}
             <div class="mr-3 flex">
               <RadioButton value={theme} />
-              <img
-                src={`/images/certificate_theme_${theme}.png`}
-                alt="themes"
-                class="h-[82px] w-[110px]"
-              />
+              <img src={`/images/certificate_theme_${theme}.png`} alt="themes" class="h-[82px] w-[110px]" />
             </div>
           {/each}
         </div>
@@ -154,20 +142,14 @@
           size="sm"
           disabled={$isFreePlan}
         >
-          {#snippet labelA()}
-            <span style={$globalStore.isDark ? 'color: white' : 'color: #161616'}
-              >{$t('generic.locked')}</span
-            >
-          {/snippet}
-          {#snippet labelB()}
-            <span style="color: green">{$t('generic.unlocked')}</span>
-          {/snippet}
+          <span slot="labelA" style={$globalStore.isDark ? 'color: white' : 'color: #161616'}
+            >{$t('generic.locked')}</span
+          >
+          <span slot="labelB" style="color: green">{$t('generic.unlocked')}</span>
         </Toggle>
       </div>
     </section>
-    <section
-      class="flex w-full items-center justify-center rounded-md bg-gray-100 lg:w-3/5 dark:bg-neutral-800"
-    >
+    <section class="flex w-full items-center justify-center rounded-md bg-gray-100 lg:w-3/5 dark:bg-neutral-800">
       <div class="certificate-container flex items-center justify-center">
         {#if $course.certificate_theme === 'professional'}
           <Professional studentName={studentNamePlaceholder} />

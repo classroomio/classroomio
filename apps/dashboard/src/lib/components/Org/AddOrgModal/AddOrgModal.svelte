@@ -21,7 +21,7 @@
   };
   let loading = $state(false);
   let orgName = $state('');
-  let siteName = $state('');
+  let siteName = $derived(generateSitename(orgName));
 
   let errors: Error = $state({
     orgName: '',
@@ -103,10 +103,6 @@
       resetForm();
     }
   }
-
-  $effect(() => {
-    siteName = generateSitename(orgName);
-  });
 </script>
 
 <Modal
@@ -141,12 +137,7 @@
     />
 
     <div class="mt-5 flex flex-row-reverse items-center">
-      <PrimaryButton
-        className="px-6 py-3"
-        label={$t('add_org.create')}
-        type="submit"
-        isLoading={loading}
-      />
+      <PrimaryButton className="px-6 py-3" label={$t('add_org.create')} type="submit" isLoading={loading} />
     </div>
   </form>
 </Modal>

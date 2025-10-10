@@ -25,28 +25,11 @@
   }: Props = $props();
 </script>
 
-<label
-  class="{className} inline-flex w-full items-center {disabled
-    ? 'cursor-not-allowed'
-    : 'cursor-pointer'}"
->
-  <input
-    class="form-radio"
-    type="radio"
-    {checked}
-    {name}
-    {value}
-    disabled={disabled || isEditable}
-  />
+<label class="{className} inline-flex w-full items-center {disabled ? 'cursor-not-allowed' : 'cursor-pointer'}">
+  <input class="form-radio" type="radio" {checked} {name} {value} disabled={disabled || isEditable} />
   {#if isEditable}
     <div class="w-2/4">
-      <TextField
-        bind:value={label}
-        placeholder="Your option"
-        className="ml-1"
-        type="text"
-        {onChange}
-      />
+      <TextField bind:value={label} placeholder="Your option" className="ml-1" type="text" {onChange} />
     </div>
   {:else}
     <span class="ml-2 dark:text-white">{label}</span>

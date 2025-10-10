@@ -7,10 +7,7 @@
   import { coursePaymentValidation } from '$lib/utils/functions/validator';
   import { Link } from 'carbon-components-svelte';
   import { currentOrg } from '$lib/utils/store/org';
-  import {
-    triggerSendEmail,
-    NOTIFICATION_NAME
-  } from '$lib/utils/services/notification/notification';
+  import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
 
   interface Props {
     open?: boolean;
@@ -19,12 +16,7 @@
     courseName?: string;
   }
 
-  let {
-    open = $bindable(false),
-    paymentLink = '',
-    teacherEmail = '',
-    courseName = ''
-  }: Props = $props();
+  let { open = $bindable(false), paymentLink = '', teacherEmail = '', courseName = '' }: Props = $props();
 
   let fields = $state({
     fullname: '',
@@ -106,18 +98,11 @@
       />
 
       <div class="mt-5 flex flex-row-reverse items-center">
-        <PrimaryButton
-          className="px-6 py-3"
-          label={paymentLink ? 'Next' : 'Finish'}
-          type="submit"
-        />
+        <PrimaryButton className="px-6 py-3" label={paymentLink ? 'Next' : 'Finish'} type="submit" />
       </div>
     </form>
   {:else if step === STEPS.STEP_2}
-    <p>
-      You will now be taken to a payment page, once you've paid send a proof of payment to the
-      course admin
-    </p>
+    <p>You will now be taken to a payment page, once you've paid send a proof of payment to the course admin</p>
     <div class="mt-5 flex flex-row-reverse items-center">
       <Link href={paymentLink} target="_blank" on:click={onClickPaymentLink}>Go to payment</Link>
     </div>

@@ -139,10 +139,7 @@
         </span>
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           <OverflowMenu flipped>
-            <OverflowMenuItem
-              text={feed.isPinned ? 'Unpin' : 'Pin'}
-              on:click={() => onPin(feed.id, feed.isPinned)}
-            />
+            <OverflowMenuItem text={feed.isPinned ? 'Unpin' : 'Pin'} on:click={() => onPin(feed.id, feed.isPinned)} />
             <OverflowMenuItem text="Edit" on:click={openEditFeed} />
             <OverflowMenuItem danger text="Delete" on:click={() => (isDeleteFeedModal = true)} />
           </OverflowMenu>
@@ -181,10 +178,7 @@
 
   <section class="border-t border-gray-200 p-3 dark:border-neutral-600">
     {#if feed.comment.length > 0}
-      <button
-        onclick={expandComment}
-        class="-mx-2 flex flex-row items-center gap-1 rounded-md px-2"
-      >
+      <button onclick={expandComment} class="-mx-2 flex flex-row items-center gap-1 rounded-md px-2">
         <UserMultiple size={16} />
         <p class="py-2 text-sm">
           {pluralize('comment', feed.comment.length, true)}
@@ -214,11 +208,7 @@
 
             {#if comment.author?.profile?.id === $profile.id || $isOrgAdmin}
               <OverflowMenu flipped class="hidden group-hover:flex">
-                <OverflowMenuItem
-                  danger
-                  text="Delete"
-                  on:click={() => handleDeleteComment(comment.id)}
-                />
+                <OverflowMenuItem danger text="Delete" on:click={() => handleDeleteComment(comment.id)} />
               </OverflowMenu>
             {/if}
           </div>
@@ -227,11 +217,7 @@
     </div>
     <div class="flex items-center justify-between gap-2">
       <div class="h-7 w-7">
-        <img
-          src={author.avatar_url}
-          alt="users banner"
-          class="h-full w-full rounded-full object-cover"
-        />
+        <img src={author.avatar_url} alt="users banner" class="h-full w-full rounded-full object-cover" />
       </div>
       <div class="flex-1">
         <input

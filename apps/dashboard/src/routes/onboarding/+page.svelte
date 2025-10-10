@@ -12,12 +12,10 @@
   import { blockedSubdomain } from '$lib/utils/constants/app';
   import { getOrganizations } from '$lib/utils/services/org';
   import { generateSitename } from '$lib/utils/functions/org';
-  import {
-    triggerSendEmail,
-    NOTIFICATION_NAME
-  } from '$lib/utils/services/notification/notification';
+  import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
   import { handleLocaleChange, t } from '$lib/utils/functions/translations';
   import { LOCALE } from '$lib/utils/types';
+  import { untrack } from 'svelte';
 
   interface OnboardingField {
     fullname?: string;
@@ -42,7 +40,6 @@
     locale: LOCALE.EN
   });
   let errors: OnboardingField = $state({});
-  let progress = $state(50);
   let step = $state(1);
   let loading = $state(false);
   let isSiteNameTouched = $state(false);
@@ -59,6 +56,8 @@
     { id: 'ru', text: 'Russian' },
     { id: 'vi', text: 'Vietnamese' }
   ];
+
+  const progress = $derived(Math.round((step / maxSteps) * 100));
 
   const educatorGoals: Goal[] = [
     {
@@ -113,15 +112,6 @@
     const response = await fetch(`https://api.ipregistry.co/?key=${env.PUBLIC_IP_REGISTRY_KEY}`);
     const payload = await response.json();
     fields.metadata = payload;
-  }
-
-  function setOrgSiteName(orgName: string | undefined, isTouched: boolean) {
-    if (!orgName || isTouched) return;
-
-    fields.siteName = orgName
-      ?.toLowerCase()
-      ?.replace(/\s+/g, '-')
-      ?.replace(/[^a-zA-Z0-9-]/g, '');
   }
 
   const handleSubmit = async () => {
@@ -232,12 +222,27 @@
     loading = false;
   };
 
+  function updateSiteName(sname?: string) {
+    if (!sname) return;
+
+    untrack(() => {
+      fields.siteName = generateSitename(sname);
+    });
+  }
   $effect(() => {
-    progress = Math.round((step / maxSteps) * 100);
+    updateSiteName(fields.siteName);
   });
-  $effect(() => {
-    fields.siteName = generateSitename(fields.siteName || '');
-  });
+
+  function setOrgSiteName(orgName: string | undefined, isTouched: boolean) {
+    if (!orgName || isTouched) return;
+
+    untrack(() => {
+      fields.siteName = orgName
+        ?.toLowerCase()
+        ?.replace(/\s+/g, '-')
+        ?.replace(/[^a-zA-Z0-9-]/g, '');
+    });
+  }
   $effect(() => {
     setOrgSiteName(fields.orgName, isSiteNameTouched);
   });
@@ -322,13 +327,7 @@
                 <!-- Loop through Goals -->
                 {#each educatorGoals as goal}
                   <label class="mb-1 inline-flex w-full items-center font-light dark:text-white">
-                    <input
-                      type="radio"
-                      bind:group={fields.goal}
-                      name="goal"
-                      value={goal.value}
-                      class="mr-2"
-                    />
+                    <input type="radio" bind:group={fields.goal} name="goal" value={goal.value} class="mr-2" />
                     {goal.label}
                   </label>
                 {/each}
@@ -349,13 +348,7 @@
                 <!-- Loop through Goals -->
                 {#each sources as source}
                   <label class="mb-1 inline-flex w-full items-center font-light dark:text-white">
-                    <input
-                      type="radio"
-                      bind:group={fields.source}
-                      name="source"
-                      value={source.value}
-                      class="mr-2"
-                    />
+                    <input type="radio" bind:group={fields.source} name="source" value={source.value} class="mr-2" />
                     {source.label}
                   </label>
                 {/each}
@@ -370,12 +363,7 @@
               <!-- Language Picker -->
               <div class="mt-10">
                 <span>{$t('content.toggle_label')}: </span>
-                <Dropdown
-                  items={dropdownItems}
-                  {selectedId}
-                  on:select={handleSelect}
-                  class="w-full"
-                />
+                <Dropdown items={dropdownItems} {selectedId} on:select={handleSelect} class="w-full" />
               </div>
             </div>
           </div>
@@ -385,10 +373,7 @@
       <!-- Footer -->
       <div class="mt-8 flex w-full items-center justify-between">
         <div class="relative h-2 w-24 bg-gray-300">
-          <span
-            class="progress bg-primary-700 absolute left-0 top-0 h-full"
-            style="width: {progress}%;"
-          ></span>
+          <span class="progress bg-primary-700 absolute left-0 top-0 h-full" style="width: {progress}%;"></span>
         </div>
 
         <div class="flex">

@@ -13,11 +13,7 @@
 </script>
 
 <div class="relative w-full dark:text-black">
-  <img
-    src="/images/blue-badge-pattern-background.svg"
-    alt=""
-    class="absolute z-0 h-full w-full object-cover"
-  />
+  <img src="/images/blue-badge-pattern-background.svg" alt="" class="absolute z-0 h-full w-full object-cover" />
   <div class="relative z-20 m-2 flex h-full justify-between bg-white md:h-[17rem]">
     <div class="w-[70%] pl-3">
       <header class="absolute flex w-full items-center justify-center gap-1 text-sm font-bold">
@@ -54,11 +50,7 @@
     </div>
 
     <div class="flex items-center justify-center overflow-hidden">
-      <img
-        src="/images/blue-badge-pattern-badge.svg"
-        alt="A badge"
-        class="w-[8rem] max-w-none md:w-[10rem]"
-      />
+      <img src="/images/blue-badge-pattern-badge.svg" alt="A badge" class="w-[8rem] max-w-none md:w-[10rem]" />
     </div>
   </div>
 </div>

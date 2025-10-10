@@ -38,8 +38,7 @@
   }
 
   function isValidYouTubeLink(link = '') {
-    const youtubeRegex =
-      /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
 
     return youtubeRegex.test(link.trim());
   }
@@ -68,8 +67,7 @@
 <p class="mt-4 pl-2 text-sm">
   {$t('course.navItem.lessons.materials.tabs.video.add_video.videos_added')}:
   <strong>
-    {$lesson?.materials?.videos.filter((v) => v.type === 'youtube' && isValidYouTubeLink(v.link))
-      .length || 0}
+    {$lesson?.materials?.videos.filter((v) => v.type === 'youtube' && isValidYouTubeLink(v.link)).length || 0}
   </strong>
 </p>
 <div class="">

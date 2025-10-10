@@ -125,8 +125,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'How can you extract query parameters from a URL in Node.js using the "querystring" module?',
+        title: 'How can you extract query parameters from a URL in Node.js using the "querystring" module?',
         name: 'question7',
         points: 1,
         order: 6,

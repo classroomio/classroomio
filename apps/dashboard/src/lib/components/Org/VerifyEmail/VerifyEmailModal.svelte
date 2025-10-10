@@ -3,26 +3,23 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { t } from '$lib/utils/functions/translations';
-  import {
-    NOTIFICATION_NAME,
-    triggerSendEmail
-  } from '$lib/utils/services/notification/notification';
+  import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/notification';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
 
   const WAIT_SEC = 120;
   const WAIT_TIME = WAIT_SEC * 1000;
 
-  let open = $state(false);
   let loading = $state(false);
   let isSent = $state(false);
+  let autoTriggered = $state(false);
 
   let interval;
   let countDown = $state(WAIT_SEC);
 
-  const sendVerificationCode = async () => {
-    if (isSent) return;
+  const open = $derived(Boolean(!$profile.is_email_verified && !!$profile.id && !!$currentOrg.id));
 
+  const sendVerificationCode = async () => {
     loading = true;
 
     try {
@@ -52,10 +49,11 @@
   };
 
   $effect(() => {
-    open = Boolean(!$profile.is_email_verified && !!$profile.id && !!$currentOrg.id);
-  });
-  $effect(() => {
-    open && sendVerificationCode();
+    if (!open || isSent || loading || autoTriggered) return;
+
+    // Only send verification code on load once
+    autoTriggered = true;
+    sendVerificationCode();
   });
 </script>
 
@@ -70,11 +68,7 @@
     </p>
 
     <div class="flex flex-col items-center">
-      <PrimaryButton
-        isDisabled={loading || isSent}
-        className="font-normal"
-        onClick={sendVerificationCode}
-      >
+      <PrimaryButton isDisabled={loading || isSent} className="font-normal" onClick={sendVerificationCode}>
         {#if loading}
           {$t('verify_email_modal.loading')}
         {:else}

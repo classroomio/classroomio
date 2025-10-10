@@ -30,12 +30,7 @@
           </span>
         {/if}
       </div>
-      <PrimaryButton
-        label={$t('audience.export')}
-        onClick={exportAudience}
-        isDisabled={isLoading}
-        {isLoading}
-      />
+      <PrimaryButton label={$t('audience.export')} onClick={exportAudience} isDisabled={isLoading} {isLoading} />
     </div>
 
     {#if $orgAudience.length >= $currentOrgMaxAudience}

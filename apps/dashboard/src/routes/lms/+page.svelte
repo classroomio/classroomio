@@ -10,44 +10,38 @@
   import { fetchCourses } from '$lib/utils/services/courses';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
-  import type { Course } from '$lib/utils/types';
+  import { untrack } from 'svelte';
 
   let hasFetched = false;
-  let progressPercentage = $state(0);
-  let totalLessons = $state(0);
-  let totalCompleted = $state(0);
 
-  async function getCourses(userId: string | undefined, orgId: string) {
+  let totalCompleted = $derived($courses.reduce((acc, cur) => acc + (cur.progress_rate || 0), 0));
+  let totalLessons = $derived($courses.reduce((acc, cur) => acc + (cur.total_lessons || 0), 0));
+  let progressPercentage = $derived(Math.round((totalCompleted / totalLessons) * 100) || 0);
+
+  function getCourses(userId?: string, orgId?: string) {
     if (hasFetched || !userId || !orgId) {
       return;
     }
-    // only show is loading when fetching for the first time
-    if (!$courses.length) {
-      $courseMetaDeta.isLoading = true;
-    }
 
-    const coursesResult = await fetchCourses(userId, orgId);
-    console.log(`coursesResult`, coursesResult);
+    untrack(async () => {
+      // only show is loading when fetching for the first time
+      if (!$courses.length) {
+        $courseMetaDeta.isLoading = true;
+      }
 
-    $courseMetaDeta.isLoading = false;
-    if (!coursesResult) return;
+      const coursesResult = await fetchCourses(userId, orgId);
+      console.log(`coursesResult`, coursesResult);
 
-    courses.set(coursesResult.allCourses);
-    hasFetched = true;
-  }
+      $courseMetaDeta.isLoading = false;
+      if (!coursesResult) return;
 
-  function calcTotalProgress(courses: Course[]) {
-    totalCompleted = courses.reduce((acc, cur) => acc + (cur.progress_rate || 0), 0);
-    totalLessons = courses.reduce((acc, cur) => acc + (cur.total_lessons || 0), 0);
-
-    progressPercentage = Math.round((totalCompleted / totalLessons) * 100) || 0;
+      courses.set(coursesResult.allCourses);
+      hasFetched = true;
+    });
   }
 
   $effect(() => {
     getCourses($profile.id, $currentOrg.id);
-  });
-  $effect(() => {
-    calcTotalProgress($courses);
   });
 </script>
 
@@ -121,9 +115,7 @@
                 </p>
               {/if}
             </span>
-            <h1
-              class="my-0 whitespace-nowrap text-5xl font-bold text-[#262626] lg:text-6xl dark:text-white"
-            >
+            <h1 class="my-0 whitespace-nowrap text-5xl font-bold text-[#262626] lg:text-6xl dark:text-white">
               {progressPercentage} %
             </h1>
           </div>

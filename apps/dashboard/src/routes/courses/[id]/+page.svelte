@@ -23,10 +23,7 @@
     handleEditFeed,
     toggleFeedIsPinned
   } from '$lib/utils/services/newsfeed';
-  import {
-    NOTIFICATION_NAME,
-    triggerSendEmail
-  } from '$lib/utils/services/notification/notification';
+  import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/notification';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import type { Feed } from '$lib/utils/types/feed';
@@ -87,9 +84,7 @@
     let reactedAuthorIds: string[] = reactedFeed.reaction[reactionType];
 
     if (reactedAuthorIds.includes(authorId)) {
-      reactedAuthorIds = reactedAuthorIds.filter(
-        (reactionAuthorId) => reactionAuthorId !== authorId
-      );
+      reactedAuthorIds = reactedAuthorIds.filter((reactionAuthorId) => reactionAuthorId !== authorId);
     } else {
       reactedAuthorIds = [...reactedAuthorIds, authorId];
     }
@@ -243,15 +238,13 @@
   >
     <PageNav title={$t('course.navItem.news_feed.heading')} disableSticky={true}>
       {#snippet widget()}
-        <slot:fragment>
-          <RoleBasedSecurity allowedRoles={[1, 2]}>
-            <PrimaryButton
-              className="mr-2"
-              label={$t('course.navItem.news_feed.heading_button.title')}
-              onClick={() => ($isNewFeedModal.open = true)}
-            />
-          </RoleBasedSecurity>
-        </slot:fragment>
+        <RoleBasedSecurity allowedRoles={[1, 2]}>
+          <PrimaryButton
+            className="mr-2"
+            label={$t('course.navItem.news_feed.heading_button.title')}
+            onClick={() => ($isNewFeedModal.open = true)}
+          />
+        </RoleBasedSecurity>
       {/snippet}
     </PageNav>
 

@@ -4,8 +4,7 @@ import type { ExerciseTemplate } from '$lib/utils/types';
 
 const template: ExerciseTemplate = {
   title: 'Git Remote Pull Request Quiz',
-  description:
-    'Test your knowledge of sending pull requests with Git remote with practical questions.',
+  description: 'Test your knowledge of sending pull requests with Git remote with practical questions.',
   questionnaire: {
     questions: [
       {
@@ -37,8 +36,7 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO
         options: [
           {
-            label:
-              'By pushing your changes to a branch and creating a pull request on the repository platform',
+            label: 'By pushing your changes to a branch and creating a pull request on the repository platform',
             is_correct: true
           },
           {

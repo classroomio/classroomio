@@ -2,9 +2,7 @@
   import { SkeletonPlaceholder, SkeletonText } from 'carbon-components-svelte';
 </script>
 
-<div
-  class="root relative mb-4 mr-4 w-72 rounded-md border bg-gray-100 transition ease-in-out dark:bg-black"
->
+<div class="root relative mb-4 mr-4 w-72 rounded-md border bg-gray-100 transition ease-in-out dark:bg-black">
   <SkeletonPlaceholder style="width: 100%; height: 10rem;" />
   <div class="p-3 pb-0">
     <!-- Title -->

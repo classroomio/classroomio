@@ -1,13 +1,7 @@
 <script>
   import { globalStore } from '$lib/utils/store/app';
   import { user, profile, defaultProfileState, defaultUserState } from '$lib/utils/store/user';
-  import {
-    currentOrg,
-    orgs,
-    defaultCurrentOrgState,
-    currentOrgDomain,
-    currentOrgPath
-  } from '$lib/utils/store/org';
+  import { currentOrg, orgs, defaultCurrentOrgState, currentOrgDomain, currentOrgPath } from '$lib/utils/store/org';
   import { ChevronDown, Settings } from 'carbon-icons-svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
@@ -76,19 +70,9 @@
       >
         <span class="flex max-w-[70%] items-center gap-2">
           {#if $currentOrg.avatar_url && $currentOrg.name}
-            <Avatar
-              src={$currentOrg.avatar_url}
-              name={$currentOrg.name}
-              shape="rounded-md"
-              width="w-7"
-              height="h-7"
-            />
+            <Avatar src={$currentOrg.avatar_url} name={$currentOrg.name} shape="rounded-md" width="w-7" height="h-7" />
           {:else if $currentOrg.shortName}
-            <TextChip
-              size="sm"
-              value={$currentOrg.shortName}
-              className="bg-primary-200 dark:text-black font-medium"
-            />
+            <TextChip size="sm" value={$currentOrg.shortName} className="bg-primary-200 dark:text-black font-medium" />
           {/if}
           <div>
             <p class="w-[80%] truncate text-sm font-semibold">{$currentOrg.name}</p>

@@ -66,9 +66,7 @@
     });
 
     if (_selectedId === '0') {
-      return filteredCourses.sort(
-        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-      );
+      return filteredCourses.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
     } else if (_selectedId === '1') {
       return filteredCourses.sort((a, b) => (b.is_published ? 0 : 1) - (a.is_published ? 0 : 1));
     } else if (_selectedId === '2') {

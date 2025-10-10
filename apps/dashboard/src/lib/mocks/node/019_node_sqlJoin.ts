@@ -19,8 +19,7 @@ const template: ExerciseTemplate = {
             is_correct: false
           },
           {
-            label:
-              'To combine rows from two or more tables based on a related column between them.',
+            label: 'To combine rows from two or more tables based on a related column between them.',
             is_correct: true
           },
           {
@@ -88,8 +87,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'Which JOIN type returns all rows from both tables with NULL records where there is no match?',
+        title: 'Which JOIN type returns all rows from both tables with NULL records where there is no match?',
         name: 'question5',
         points: 2,
         order: 4,
@@ -135,8 +133,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which JOIN type returns all rows from the left table and the matching rows from the right table?',
+        title: 'Which JOIN type returns all rows from the left table and the matching rows from the right table?',
         name: 'question7',
         points: 2,
         order: 6,

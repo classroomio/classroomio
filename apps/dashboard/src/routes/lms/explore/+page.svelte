@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import { Search, Dropdown } from 'carbon-components-svelte';
   import { profile } from '$lib/utils/store/user';
   import { fetchExploreCourses } from '$lib/utils/services/courses';
@@ -8,7 +8,6 @@
   import { courseMetaDeta } from '$lib/components/Courses/store';
   import { currentOrg } from '$lib/utils/store/org';
   import type { Course } from '$lib/utils/types';
-  import { browser } from '$app/environment';
   import { t } from '$lib/utils/functions/translations';
 
   import IconButton from '$lib/components/IconButton/index.svelte';
@@ -16,38 +15,38 @@
   import List from 'carbon-icons-svelte/lib/List.svelte';
 
   let searchValue = $state('');
-  let selectedId: string = $state();
-  let filteredExploreCourses: Course[] = $state();
+  let selectedId: string | undefined = $state();
   let hasFetched = false;
   let exploreCourseList: Course[] = $state([]);
 
-  async function getCourses(userId: string | null, orgId: string) {
+  const filteredExploreCourses: Course[] = $derived(filterCourses(searchValue, selectedId || '', exploreCourseList));
+
+  function getCourses(userId?: string, orgId?: string) {
     if (hasFetched || !userId || !orgId) {
       return;
     }
 
-    $courseMetaDeta.isLoading = true;
+    // don't rerun this function if any state is updated in this function.
+    untrack(async () => {
+      $courseMetaDeta.isLoading = true;
 
-    const coursesResult = await fetchExploreCourses(userId, orgId);
+      const coursesResult = await fetchExploreCourses(userId, orgId);
 
-    $courseMetaDeta.isLoading = false;
+      $courseMetaDeta.isLoading = false;
 
-    if (!coursesResult) return;
+      if (!coursesResult) return;
 
-    exploreCourseList = coursesResult.allCourses;
-    hasFetched = true;
+      exploreCourseList = coursesResult.allCourses;
+      hasFetched = true;
+    });
   }
 
-  function filterCourses(searchValue: string, _selectedId: string, courses: Course[]) {
-    if (browser) {
-      if (!selectedId) {
-        selectedId = localStorage.getItem('classroomio_filter_course_key') || '0';
-      } else {
-        localStorage.setItem('classroomio_filter_course_key', _selectedId);
-      }
+  function filterCourses(searchValue: string, _selectedId: string | null, courses: Course[]) {
+    if (_selectedId) {
+      localStorage.setItem('classroomio_filter_course_key', _selectedId);
     }
 
-    filteredExploreCourses = courses.filter((course) => {
+    const coursesFiltered = courses.filter((course) => {
       if (!searchValue || course.title.toLowerCase().includes(searchValue.toLowerCase())) {
         return true;
       }
@@ -56,14 +55,12 @@
     });
 
     if (_selectedId === '0') {
-      filteredExploreCourses = filteredExploreCourses.sort(
-        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-      );
+      return coursesFiltered.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
     } else if (_selectedId === '1') {
-      filteredExploreCourses = filteredExploreCourses.sort(
-        (a, b) => b.total_lessons - a.total_lessons
-      );
+      return coursesFiltered.sort((a, b) => (b.total_lessons ?? 0) - (a.total_lessons ?? 0));
     }
+
+    return coursesFiltered;
   }
 
   const setViewPreference = (preference: 'grid' | 'list') => {
@@ -77,16 +74,12 @@
     if (courseView) {
       $courseMetaDeta.view = courseView;
     }
+
+    selectedId = localStorage.getItem('classroomio_filter_course_key') || '0';
   });
 
   $effect(() => {
-    filterCourses(searchValue, selectedId, exploreCourseList);
-  });
-
-  $effect(() => {
-    if (browser && $profile.id && $currentOrg.id) {
-      getCourses($profile.id, $currentOrg.id);
-    }
+    getCourses($profile.id, $currentOrg.id);
   });
 </script>
 
@@ -123,7 +116,7 @@
       </div>
     </div>
     <Courses
-      bind:courses={filteredExploreCourses}
+      courses={filteredExploreCourses}
       emptyTitle={$t('explore.empty_heading')}
       emptyDescription={$t('explore.empty_description')}
       isExplore={true}

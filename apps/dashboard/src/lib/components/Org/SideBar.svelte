@@ -21,14 +21,12 @@
   import { profile } from '$lib/utils/store/user';
   import { profileMenu, sideBar } from './store';
 
-  interface menuItems {
+  interface MenuItems {
     label: string;
     path: string;
     show: boolean;
     isActive: boolean;
   }
-
-  let menuItems: menuItems[] = $state([]);
 
   function isActive(pagePath: string, itemPath: string) {
     const pageLinkItems = pagePath.split('/');
@@ -48,40 +46,38 @@
     goto(window.location.pathname + '?upgrade=true');
   };
 
-  $effect(() => {
-    menuItems = [
-      {
-        path: '',
-        label: $t('org_navigation.dashboard'),
-        isActive: isActive(page.url.pathname, `${$currentOrgPath}`),
-        show: true
-      },
-      {
-        path: '/courses',
-        label: $t('org_navigation.courses'),
-        isActive: page.url.pathname.includes(`${$currentOrgPath}/courses`),
-        show: true
-      },
-      {
-        path: '/community',
-        label: $t('org_navigation.community'),
-        isActive: page.url.pathname.includes(`${$currentOrgPath}/community`),
-        show: true
-      },
-      {
-        path: '/audience',
-        label: $t('org_navigation.audience'),
-        isActive: page.url.pathname.includes(`${$currentOrgPath}/audience`),
-        show: true
-      },
-      {
-        path: '/setup',
-        label: $t('org_navigation.setup'),
-        isActive: page.url.pathname.includes(`${$currentOrgPath}/setup`),
-        show: $isOrgAdmin
-      }
-    ];
-  });
+  const menuItems: MenuItems[] = $derived.by(() => [
+    {
+      path: '',
+      label: $t('org_navigation.dashboard'),
+      isActive: isActive(page.url.pathname, `${$currentOrgPath}`),
+      show: true
+    },
+    {
+      path: '/courses',
+      label: $t('org_navigation.courses'),
+      isActive: page.url.pathname.includes(`${$currentOrgPath}/courses`),
+      show: true
+    },
+    {
+      path: '/community',
+      label: $t('org_navigation.community'),
+      isActive: page.url.pathname.includes(`${$currentOrgPath}/community`),
+      show: true
+    },
+    {
+      path: '/audience',
+      label: $t('org_navigation.audience'),
+      isActive: page.url.pathname.includes(`${$currentOrgPath}/audience`),
+      show: true
+    },
+    {
+      path: '/setup',
+      label: $t('org_navigation.setup'),
+      isActive: page.url.pathname.includes(`${$currentOrgPath}/setup`),
+      show: !!$isOrgAdmin
+    }
+  ]);
 </script>
 
 <div bind:this={$profileMenu.ref} class="static md:relative">
@@ -99,11 +95,7 @@
         <ul class="my-2 mt-4 px-4">
           {#each menuItems as menuItem}
             {#if menuItem.show}
-              <a
-                href="{$currentOrgPath}{menuItem.path}"
-                class="text-black no-underline"
-                onclick={toggleSidebar}
-              >
+              <a href="{$currentOrgPath}{menuItem.path}" class="text-black no-underline" onclick={toggleSidebar}>
                 <li
                   class="mb-1 flex items-center gap-2.5 px-2.5 py-2 {NavClasses.item} {menuItem.isActive
                     ? NavClasses.active
@@ -142,11 +134,7 @@
             <p class="text-base font-semibold">{$t('org_navigation.early_adopter')}</p>
             <p class="text-xs">{$t('org_navigation.unlock')}</p>
           </span>
-          <PrimaryButton
-            label={$t('org_navigation.upgrade')}
-            onClick={openModal}
-            className="font-normal"
-          />
+          <PrimaryButton label={$t('org_navigation.upgrade')} onClick={openModal} className="font-normal" />
         </div>
       {/if}
 
@@ -173,12 +161,7 @@
               : 'dark:text-white'}"
           >
             <div class="flex w-full items-center justify-start space-x-1 text-start">
-              <Avatar
-                src={$profile.avatar_url}
-                name={$profile.username}
-                width="w-[1.2rem]"
-                height="h-[1.2rem]"
-              />
+              <Avatar src={$profile.avatar_url} name={$profile.username} width="w-[1.2rem]" height="h-[1.2rem]" />
               <p class="max-w-full truncate text-sm font-medium dark:text-white">
                 {$profile.fullname}
               </p>

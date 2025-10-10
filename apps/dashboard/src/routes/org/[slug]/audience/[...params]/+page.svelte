@@ -73,12 +73,10 @@
   ]);
 
   let completedCourses = $derived(
-    userAnalytics?.courses?.filter((course) => course.lessons_count === course.lessons_completed)
-      ?.length
+    userAnalytics?.courses?.filter((course) => course.lessons_count === course.lessons_completed)?.length
   );
   let incompleteCourses = $derived(
-    userAnalytics?.courses?.filter((course) => course.lessons_count !== course.lessons_completed)
-      ?.length
+    userAnalytics?.courses?.filter((course) => course.lessons_count !== course.lessons_completed)?.length
   );
 
   let filteredCourses = $derived(
@@ -94,10 +92,7 @@
 {#if userAnalytics}
   <section class="w-full md:mx-auto md:max-w-5xl">
     <div class="p-5">
-      <a
-        class="text-md flex items-center text-gray-500 dark:text-white"
-        href={`${$currentOrgPath}/audience`}
-      >
+      <a class="text-md flex items-center text-gray-500 dark:text-white" href={`${$currentOrgPath}/audience`}>
         <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" />
         {$t('community.ask.go_back')}
       </a>

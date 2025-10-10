@@ -26,10 +26,6 @@
   let navClass = $state('');
 
   const redirect = isCoursePage(page.url.pathname) ? `?redirect=${page.url.pathname}` : '';
-
-  $effect(() => {
-    navClass = '';
-  });
 </script>
 
 <nav

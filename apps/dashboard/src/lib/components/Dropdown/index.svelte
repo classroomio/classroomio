@@ -10,8 +10,7 @@
 
   let open = $state(false);
 
-  const notIconClass =
-    'border rounded-lg border-grey p-3 focus:outline-none focus:border-gray-400 focus:bg-gray-200';
+  const notIconClass = 'border rounded-lg border-grey p-3 focus:outline-none focus:border-gray-400 focus:bg-gray-200';
 
   function isOptionLast(index) {
     return index === options.length - 1;
@@ -46,9 +45,7 @@
   </button>
 
   {#if open}
-    <div
-      class="dropdown border-grey absolute mt-2 whitespace-nowrap rounded-lg border bg-white py-3 dark:bg-black"
-    >
+    <div class="dropdown border-grey absolute mt-2 whitespace-nowrap rounded-lg border bg-white py-3 dark:bg-black">
       {#each options as option, index}
         <button
           class="hover:bg-primary-100 block px-4 py-3 text-left {!isOptionLast(index) &&

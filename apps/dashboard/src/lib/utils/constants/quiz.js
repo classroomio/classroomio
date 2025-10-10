@@ -1,14 +1,12 @@
 export const themeImages = {
   standard: {
     card: 'https://pgrest.classroomio.com/storage/v1/object/public/avatars/quizes/standard-quiz-card.svg',
-    editor:
-      'https://pgrest.classroomio.com/storage/v1/object/public/avatars/quizes/standard-quiz-editor.svg',
+    editor: 'https://pgrest.classroomio.com/storage/v1/object/public/avatars/quizes/standard-quiz-editor.svg',
     play: 'https://pgrest.classroomio.com/storage/v1/object/public/avatars/quizes/standard-quiz-play.svg'
   },
   mainland: {
     card: 'https://pgrest.classroomio.com/storage/v1/object/public/avatars/quizes/mainstream-quiz-card.svg',
-    editor:
-      'https://pgrest.classroomio.com/storage/v1/object/public/avatars/quizes/mainstream-quiz-editor.svg',
+    editor: 'https://pgrest.classroomio.com/storage/v1/object/public/avatars/quizes/mainstream-quiz-editor.svg',
     play: 'https://pgrest.classroomio.com/storage/v1/object/public/avatars/quizes/mainstream-quiz-play.svg'
   }
 };

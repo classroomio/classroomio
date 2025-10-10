@@ -14,9 +14,7 @@
     </div>
   </div>
   <!-- hero -->
-  <div
-    class="my-8 flex w-full flex-row flex-wrap items-start justify-center gap-5 overflow-hidden rounded-md"
-  >
+  <div class="my-8 flex w-full flex-row flex-wrap items-start justify-center gap-5 overflow-hidden rounded-md">
     <SkeletonPlaceholder style="width:100%; height:20rem" />
   </div>
   <!-- cards -->

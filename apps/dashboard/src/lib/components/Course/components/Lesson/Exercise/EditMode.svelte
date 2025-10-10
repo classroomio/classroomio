@@ -48,10 +48,11 @@
 
   let { shouldDeleteExercise = $bindable(false), exerciseId, goBack = () => {} }: Props = $props();
 
-  let errors = $state({});
   let questionIdToDelete = $state(null);
-  let questions = $state([]);
   let isDeleting = $state(false);
+  let errors = $derived($questionnaireValidation);
+
+  const questions = $derived(filterOutDeleted($questionnaire.questions));
 
   function shouldScrollToLast(questionId, questions) {
     const [lastQuestion] = questions.slice(-1);
@@ -79,6 +80,7 @@
   async function handleDelete() {
     console.log('delete');
     isDeleting = true;
+
     await deleteExercise(questions, exerciseId);
 
     lesson.update((_lesson) => ({
@@ -87,19 +89,9 @@
     }));
     goBack();
   }
-
-  $effect(() => {
-    errors = $questionnaireValidation;
-  });
-  $effect(() => {
-    questions = filterOutDeleted($questionnaire.questions);
-  });
 </script>
 
-<DeleteConfirmationModal
-  onCancel={() => (questionIdToDelete = null)}
-  onDelete={onFinalDeleteClicked}
-/>
+<DeleteConfirmationModal onCancel={() => (questionIdToDelete = null)} onDelete={onFinalDeleteClicked} />
 
 <OrderModal />
 
@@ -138,9 +130,7 @@
 <div class="mb-20 w-full">
   {#if Object.values(errors).length}
     <div class="mb-4 flex w-full justify-center">
-      <ErrorMessage
-        message={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.error')}
-      />
+      <ErrorMessage message={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.error')} />
     </div>
   {/if}
   <div class="questions px-6 pt-6">
@@ -172,7 +162,8 @@
             class="w-[50px]"
             bind:selected={question.question_type.id}
             on:change={(e) => {
-              const id = parseInt(e.target?.value);
+              const id = parseInt((e.target as HTMLSelectElement)?.value);
+
               question.question_type = QUESTION_TYPES.find((q) => q.id === id);
               question.is_dirty = true;
             }}
@@ -207,10 +198,7 @@
               >
                 {#snippet iconbutton()}
                   <div class="flex items-center">
-                    <IconButton
-                      value={option.id}
-                      onClick={handleRemoveOption(question.id, option.id)}
-                    >
+                    <IconButton value={option.id} onClick={handleRemoveOption(question.id, option.id)}>
                       <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
                     </IconButton>
                     <IconButton
@@ -240,10 +228,7 @@
               >
                 {#snippet iconbutton()}
                   <div class="flex items-center">
-                    <IconButton
-                      value={option.id}
-                      onClick={handleRemoveOption(question.id, option.id)}
-                    >
+                    <IconButton value={option.id} onClick={handleRemoveOption(question.id, option.id)}>
                       <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
                     </IconButton>
                     <IconButton

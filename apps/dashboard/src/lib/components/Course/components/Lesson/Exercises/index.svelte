@@ -78,16 +78,17 @@
     };
   }
 
-  async function getExercises() {
-    if (!lessonId) return;
-    isFetching = true;
-    const exercisesData = await supabase
-      .from('exercise')
-      .select(`id, title, created_at`)
-      .match({ lesson_id: lessonId });
+  function getExercises(lId: string | undefined) {
+    if (!lId) return;
 
-    $lesson.exercises = exercisesData.data as ExerciseType[];
-    isFetching = false;
+    untrack(async () => {
+      isFetching = true;
+
+      const exercisesData = await supabase.from('exercise').select(`id, title, created_at`).match({ lesson_id: lId });
+
+      $lesson.exercises = exercisesData.data as ExerciseType[];
+      isFetching = false;
+    });
   }
 
   async function getExercise(exerciseId: string | undefined) {
@@ -121,9 +122,7 @@
       if (data && Array.isArray(data.questions)) {
         // Need to set the question type inorder for the select in the questionnaire builder to match
         data.questions.forEach((question) => {
-          question.question_type = QUESTION_TYPES.find(
-            (type) => type.id === question.question_type.id
-          );
+          question.question_type = QUESTION_TYPES.find((type) => type.id === question.question_type.id);
           return question;
         });
         data.questions = data.questions.sort((a, b) => a.order - b.order);
@@ -150,7 +149,7 @@
   }
 
   onMount(() => {
-    getExercises();
+    getExercises(lessonId);
   });
 
   $effect(() => {
@@ -179,9 +178,7 @@
     {#snippet header()}
       <slot:fragment>
         <Breadcrumb class="my-2">
-          <BreadcrumbItem href={path}
-            >{$t('course.navItem.lessons.exercises.heading')}</BreadcrumbItem
-          >
+          <BreadcrumbItem href={path}>{$t('course.navItem.lessons.exercises.heading')}</BreadcrumbItem>
         </Breadcrumb>
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           <PrimaryButton
@@ -195,10 +192,7 @@
 
     <div class="mt-5 flex flex-wrap">
       {#each $lesson.exercises as exercise}
-        <a
-          class="mb-4 mr-4 w-52 rounded-lg bg-gray-100 px-4 py-7 dark:bg-neutral-800"
-          href="{path}/{exercise.id}"
-        >
+        <a class="mb-4 mr-4 w-52 rounded-lg bg-gray-100 px-4 py-7 dark:bg-neutral-800" href="{path}/{exercise.id}">
           <h3 class="text-xl dark:text-white">{exercise.title}</h3>
           <p class="mt-4 text-sm dark:text-white">{formatDate(exercise.created_at)}</p>
         </a>

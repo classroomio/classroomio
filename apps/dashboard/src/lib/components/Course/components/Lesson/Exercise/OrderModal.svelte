@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { dndzone } from 'svelte-dnd-action';
   import CheckboxCheckedFilledIcon from 'carbon-icons-svelte/lib/CheckboxCheckedFilled.svelte';
   import RadioButtonCheckedIcon from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
@@ -20,6 +21,16 @@
   }
 
   let items: Array<Question> = $state([]);
+
+  function setItemsFromQuestions(questions: typeof $questionnaire.questions) {
+    untrack(() => {
+      items = filterOutDeleted(questions).map((q) => ({
+        id: q.id,
+        name: q.title,
+        type: q.question_type.id
+      }));
+    });
+  }
 
   function handleDndConsider(e) {
     items = e.detail.items;
@@ -45,11 +56,7 @@
   }
 
   $effect(() => {
-    items = filterOutDeleted($questionnaire.questions).map((q) => ({
-      id: q.id,
-      name: q.title,
-      type: q.question_type.id
-    }));
+    setItemsFromQuestions($questionnaire.questions);
   });
 </script>
 

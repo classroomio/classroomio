@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
+  import { untrack } from 'svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { courses } from '$lib/components/Courses/store';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -14,10 +14,7 @@
   import { calDateDiff } from '$lib/utils/functions/date';
   import { supabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
-  import {
-    askCommunityValidation,
-    commentInCommunityValidation
-  } from '$lib/utils/functions/validator';
+  import { askCommunityValidation, commentInCommunityValidation } from '$lib/utils/functions/validator';
   import { fetchCourses } from '$lib/utils/services/courses';
   import { currentOrg, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
@@ -56,7 +53,7 @@
     courseId: string;
   }
 
-  let question: Question = $state();
+  let question: Question | undefined = $state();
   let comment = $state('');
   let errors: {
     title?: string;
@@ -115,14 +112,22 @@
     };
   }
 
-  async function getCourses(userId: string | null, orgId: string) {
-    if ($courses.length) {
-      fetchedCourses = [...$courses];
-      return;
-    }
+  let hasFetched = $state(false);
+  function getCourses(userId: string | null, orgId: string) {
+    if (hasFetched) return;
 
-    const coursesResults = await fetchCourses(userId, orgId);
-    fetchedCourses = coursesResults?.allCourses || [];
+    untrack(async () => {
+      if ($courses.length) {
+        fetchedCourses = [...$courses];
+        hasFetched = true;
+        return;
+      }
+
+      const coursesResults = await fetchCourses(userId, orgId);
+      fetchedCourses = coursesResults?.allCourses || [];
+
+      hasFetched = true;
+    });
   }
 
   async function fetchCommunityQuestion(slug: string) {
@@ -160,15 +165,17 @@
       return goto(`${$currentOrgPath}`);
     }
 
-    question = mapResToQuestion(data);
-    question.totalComments = question.comments.length;
+    untrack(() => {
+      question = mapResToQuestion(data);
+      question.totalComments = question.comments.length;
+    });
   }
 
   async function submitComment() {
     errors = commentInCommunityValidation({ comment });
     console.log('submitComment errors', errors);
 
-    if (Object.keys(errors).length) {
+    if (Object.keys(errors).length || !question) {
       return;
     }
 
@@ -213,6 +220,8 @@
   }
 
   async function upvoteQuestion(type: string, commentId?: string) {
+    if (!question) return;
+
     const isQuestion = type === 'question';
 
     if (isQuestion && voted.question) return;
@@ -248,6 +257,8 @@
   }
 
   async function handleQuestionEdit() {
+    if (!question) return;
+
     if (isEditMode) {
       errors = askCommunityValidation(editContent);
       console.log('handleQuestionEdit errors', errors);
@@ -295,13 +306,12 @@
   }
 
   async function handleDelete(isQuestion: boolean) {
+    if (!question) return;
+
     if (!isQuestion) {
       deleteComment.isDeleting = true;
 
-      const { error } = await supabase
-        .from('community_answer')
-        .delete()
-        .match({ id: deleteComment.commentId });
+      const { error } = await supabase.from('community_answer').delete().match({ id: deleteComment.commentId });
 
       deleteComment.isDeleting = false;
 
@@ -351,7 +361,7 @@
   }
 
   $effect(() => {
-    browser && fetchCommunityQuestion(slug);
+    fetchCommunityQuestion(slug);
   });
   $effect(() => {
     if ($profile.id && $currentOrg.id) {
@@ -366,7 +376,7 @@
 
 <DeleteModal
   bind:open={deleteQuestion.shouldDelete}
-  bind:isDeleting={deleteQuestion.isDeleting}
+  isDeleting={deleteQuestion.isDeleting}
   onCancel={() => {
     deleteQuestion.shouldDelete = false;
     deleteQuestion.questionId = '';
@@ -393,20 +403,13 @@
     </div>
   {:else}
     <div class="px-5 py-10">
-      <a
-        class="text-md flex items-center text-gray-500 dark:text-white"
-        href={`${$currentOrgPath}/community`}
-      >
+      <a class="text-md flex items-center text-gray-500 dark:text-white" href={`${$currentOrgPath}/community`}>
         <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" />
         {$t('community.ask.go_back')}
       </a>
       <div class="my-5 flex items-center justify-between">
         {#if isEditMode}
-          <TextField
-            bind:value={editContent.title}
-            className="w-full mr-2"
-            errorMessage={errors.title}
-          />
+          <TextField bind:value={editContent.title} className="w-full mr-2" errorMessage={errors.title} />
           <Dropdown
             class="h-full w-[25%]"
             size="xl"
@@ -416,11 +419,7 @@
           />
         {:else}
           <div class="flex items-center">
-            <Vote
-              value={question.votes}
-              upVote={() => upvoteQuestion('question')}
-              disabled={voted.question}
-            />
+            <Vote value={question.votes} upVote={() => upvoteQuestion('question')} disabled={voted.question} />
             <h2 class="text-3xl">{question.title}</h2>
           </div>
         {/if}
@@ -446,12 +445,7 @@
       <div class="border-1 border-gray my-1 rounded-lg border px-1">
         <header class="flex items-center justify-between p-2 leading-none">
           <div class="flex items-center text-black no-underline hover:underline">
-            <Avatar
-              src={question.author.avatar}
-              name={question.author.name}
-              width="w-7"
-              height="h-7"
-            />
+            <Avatar src={question.author.avatar} name={question.author.name} width="w-7" height="h-7" />
             <p class="ml-2 text-sm dark:text-white">{question.author.name}</p>
             <p class="ml-2 text-sm text-gray-500 dark:text-white">
               {question.createdAt}
@@ -461,6 +455,8 @@
             <IconButton
               value="delete-question"
               onClick={() => {
+                if (!question) return;
+
                 deleteQuestion.shouldDelete = true;
                 deleteQuestion.questionId = question.id;
               }}

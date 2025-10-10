@@ -83,8 +83,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'Explain the concept of JSX transformations and how it relates to browser compatibility.',
+        title: 'Explain the concept of JSX transformations and how it relates to browser compatibility.',
         name: 'q7',
         points: 1,
         order: 6,

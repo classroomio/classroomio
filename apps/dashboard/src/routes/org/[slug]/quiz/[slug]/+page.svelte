@@ -202,9 +202,7 @@
 
   function qHasError(qId, _errs) {
     return _errs.some((qe) => {
-      return (
-        (qId ? qe.id === qId : true) && (qe.isLabelEmpty || !qe.hasOneAnswer || !!qe.options.length)
-      );
+      return (qId ? qe.id === qId : true) && (qe.isLabelEmpty || !qe.hasOneAnswer || !!qe.options.length);
     });
   }
 
@@ -241,10 +239,7 @@
   <!-- Questions list -->
   <aside class="root h-full w-1/5 bg-gray-100 p-4 dark:bg-neutral-800">
     <div class="flex h-full flex-col">
-      <a
-        class="text-md flex items-center text-gray-500 dark:text-white"
-        href={`${$currentOrgPath}/quiz`}
-      >
+      <a class="text-md flex items-center text-gray-500 dark:text-white" href={`${$currentOrgPath}/quiz`}>
         <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" /> Back to Quizzes
       </a>
 
@@ -327,18 +322,8 @@
   <aside class="settings h-full w-1/5 bg-gray-100 p-4 dark:bg-neutral-800">
     <div class="py-5">
       <h5>Quiz settings</h5>
-      <PrimaryButton
-        label="Save Changes"
-        variant={VARIANTS.CONTAINED}
-        onClick={saveQuiz}
-        className="my-3"
-      />
-      <PrimaryButton
-        label="Preview Quiz"
-        variant={VARIANTS.OUTLINED}
-        onClick={previewQuiz}
-        className="my-3"
-      />
+      <PrimaryButton label="Save Changes" variant={VARIANTS.CONTAINED} onClick={saveQuiz} className="my-3" />
+      <PrimaryButton label="Preview Quiz" variant={VARIANTS.OUTLINED} onClick={previewQuiz} className="my-3" />
       <PrimaryButton
         label="Delete question"
         variant={VARIANTS.TEXT}
@@ -379,11 +364,7 @@
         </Select>
 
         <!--  -->
-        <Select
-          labelText="Time limit"
-          bind:selected={$quizStore.timelimit}
-          class="mb-3 flex items-center"
-        >
+        <Select labelText="Time limit" bind:selected={$quizStore.timelimit} class="mb-3 flex items-center">
           <SelectItem value="10 seconds" text="10s" />
           <SelectItem value="20 seconds" text="20s" />
           <SelectItem value="30 seconds" text="30s" />
@@ -399,15 +380,11 @@
 
         {#each allThemes as _theme}
           <div
-            class="theme relative mb-5 w-full cursor-pointer rounded-md border {$quizStore.theme ===
-              _theme.id && 'border-primary-700'}"
+            class="theme relative mb-5 w-full cursor-pointer rounded-md border {$quizStore.theme === _theme.id &&
+              'border-primary-700'}"
           >
             {#if $quizStore.theme === _theme.id}
-              <CheckmarkFilledIcon
-                size={24}
-                class="carbon-icon absolute right-4 top-4"
-                style="fill:white;"
-              />
+              <CheckmarkFilledIcon size={24} class="carbon-icon absolute right-4 top-4" style="fill:white;" />
             {/if}
             <div
               role="button"

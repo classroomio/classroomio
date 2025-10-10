@@ -1,10 +1,7 @@
 <script lang="ts">
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
-  import {
-    lesson,
-    lessonByTranslation
-  } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { lesson, lessonByTranslation } from '$lib/components/Course/components/Lesson/store/lessons';
   import { t } from '$lib/utils/functions/translations';
   import { lessonFallbackNote } from '$lib/utils/functions/translations';
 
@@ -14,9 +11,7 @@
 
   let { lessonId }: Props = $props();
 
-  let content = $derived(
-    lessonFallbackNote($lesson.materials.note, $lessonByTranslation[lessonId], $lesson.locale)
-  );
+  let content = $derived(lessonFallbackNote($lesson.materials.note, $lessonByTranslation[lessonId], $lesson.locale));
   let hasAtLeastOneTranslation = $derived(
     Object.values($lessonByTranslation[lessonId] || {}).some((content) => {
       return content && !!content.length;

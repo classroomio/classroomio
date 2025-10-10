@@ -35,9 +35,7 @@
   onClose={closeModal}
   bind:open={$deleteModal.open}
   width="w-2/5"
-  modalHeading={$deleteModal.isQuestion
-    ? $t('components.quiz.question_delete')
-    : $t('components.quiz.quiz_delete')}
+  modalHeading={$deleteModal.isQuestion ? $t('components.quiz.question_delete') : $t('components.quiz.quiz_delete')}
   size="sm"
 >
   <div class="my-10 flex w-full flex-col items-center">

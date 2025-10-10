@@ -79,9 +79,7 @@ async function getCourseAnalytics(courseId: string): Promise<CourseAnalytics> {
 
   // Count tutors and students
   const members = (courseData.group as any)?.members || [];
-  analytics.totalTutors = members.filter(
-    (member) => member.role_id === 1 || member.role_id === 2
-  ).length;
+  analytics.totalTutors = members.filter((member) => member.role_id === 1 || member.role_id === 2).length;
   analytics.totalStudents = members.filter((member) => member.role_id === 3).length;
 
   // Count lessons and exercises
@@ -91,35 +89,27 @@ async function getCourseAnalytics(courseId: string): Promise<CourseAnalytics> {
 
   // Get student analytics
   const studentAnalytics = await Promise.all(
-    members
-      .filter((member) => member.role_id === 3)
-      .map((member) => getStudentOverview(courseId, member))
+    members.filter((member) => member.role_id === 3).map((member) => getStudentOverview(courseId, member))
   );
 
-  analytics.students = studentAnalytics.filter(
-    (student): student is StudentOverview => student !== null
-  );
+  analytics.students = studentAnalytics.filter((student): student is StudentOverview => student !== null);
 
   // Calculate aggregated metrics
   if (analytics.students.length > 0) {
     analytics.lessonCompletionRate = Math.round(
-      analytics.students.reduce((sum, student) => sum + student.progressPercentage, 0) /
-        analytics.students.length
+      analytics.students.reduce((sum, student) => sum + student.progressPercentage, 0) / analytics.students.length
     );
 
     analytics.exerciseCompletionRate = Math.round(
       analytics.students.reduce((sum, student) => {
         const completionRate =
-          student.totalExercises > 0
-            ? (student.exercisesSubmitted / student.totalExercises) * 100
-            : 0;
+          student.totalExercises > 0 ? (student.exercisesSubmitted / student.totalExercises) * 100 : 0;
         return sum + completionRate;
       }, 0) / analytics.students.length
     );
 
     analytics.averageGrade = Math.round(
-      analytics.students.reduce((sum, student) => sum + student.averageGrade, 0) /
-        analytics.students.length
+      analytics.students.reduce((sum, student) => sum + student.averageGrade, 0) / analytics.students.length
     );
   }
 
@@ -167,8 +157,7 @@ async function getStudentOverview(courseId: string, member: any): Promise<Studen
     const userExercisesStats = await fetchUserExercisesStats(courseId, member.profile_id);
 
     // Calculate exercise completion using the same logic as people page
-    const completedExercises =
-      userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length || 0;
+    const completedExercises = userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length || 0;
     const totalExercises = userExercisesStats?.length || 0;
 
     // Get last login using the same approach as analytics/user API
@@ -197,10 +186,8 @@ async function getStudentOverview(courseId: string, member: any): Promise<Studen
     const progressPercentage = calcPercentageWithRounding(lessonsCompleted, totalLessons);
 
     // Calculate average grade using the same logic as the people page
-    const totalEarnedPoints =
-      userExercisesStats?.reduce((sum, exercise) => sum + exercise.score, 0) || 0;
-    const totalPoints =
-      userExercisesStats?.reduce((sum, exercise) => sum + exercise.totalPoints, 0) || 0;
+    const totalEarnedPoints = userExercisesStats?.reduce((sum, exercise) => sum + exercise.score, 0) || 0;
+    const totalPoints = userExercisesStats?.reduce((sum, exercise) => sum + exercise.totalPoints, 0) || 0;
     const averageGrade = calcPercentageWithRounding(totalEarnedPoints, totalPoints);
 
     return {
@@ -224,10 +211,7 @@ async function getStudentOverview(courseId: string, member: any): Promise<Studen
   }
 }
 
-async function fetchUserExercisesStats(
-  courseId: string,
-  userId: string
-): Promise<UserExercisesStats[] | undefined> {
+async function fetchUserExercisesStats(courseId: string, userId: string): Promise<UserExercisesStats[] | undefined> {
   try {
     const { data: courseData, error: queryError } = await supabase
       .from('course')

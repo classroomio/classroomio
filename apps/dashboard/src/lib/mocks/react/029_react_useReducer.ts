@@ -32,8 +32,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the main benefit of using useReducer over useState for managing complex state logic?',
+        title: 'What is the main benefit of using useReducer over useState for managing complex state logic?',
         name: 'q3',
         points: 1,
         order: 2,
@@ -117,8 +116,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the second argument passed to the useReducer function, and what is its purpose?',
+        title: 'What is the second argument passed to the useReducer function, and what is its purpose?',
         name: 'q10',
         points: 1,
         order: 9,
