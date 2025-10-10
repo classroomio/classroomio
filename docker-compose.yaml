@@ -23,6 +23,7 @@ services:
         - SMTP_USER=${SMTP_USER}
         - SMTP_PASSWORD=${SMTP_PASSWORD}
         - SMTP_PORT=${SMTP_PORT}
+        - REDIS_URL=${REDIS_URL}
     ports:
       - "3002:3002"
     volumes:
