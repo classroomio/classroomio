@@ -19,8 +19,9 @@ ARG REDIS_URL
 RUN mkdir /app
 WORKDIR /app
 
-# Install pnpm and healthcheck tools
+# Install pnpm, turbo and healthcheck tools
 RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN npm install -g turbo
 
 COPY package.json ./
 COPY pnpm-lock.yaml ./

@@ -48,8 +48,9 @@ FROM node:20.19.3-alpine AS runner
 
 WORKDIR /app
 
-# Install pnpm before switching to non-root user
+# Install pnpm and turbo before switching to non-root user
 RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN npm install -g turbo
 
 # Don't run production as root
 RUN addgroup --system --gid 1001 nodejs
