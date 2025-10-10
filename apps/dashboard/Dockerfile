@@ -84,4 +84,4 @@ ENV NODE_ENV=production \
     PUBLIC_IP_REGISTRY_KEY=$PUBLIC_IP_REGISTRY_KEY
 
 # Start the app
-CMD ["node", "apps/dashboard/build"]
+CMD ["pnpm", "dashboard:start"]
