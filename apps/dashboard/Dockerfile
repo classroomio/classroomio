@@ -68,6 +68,5 @@ ENV NODE_ENV=production \
     PUBLIC_IP_REGISTRY_KEY=$PUBLIC_IP_REGISTRY_KEY
 
 RUN ls -la /app/apps/dashboard
-
 # Start the app
-CMD ["pnpm" "start" "--filter" "@cio/dashboard"]
+CMD ["node", "apps/dashboard/build"]
