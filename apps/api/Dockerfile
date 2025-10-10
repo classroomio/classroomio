@@ -22,10 +22,18 @@ WORKDIR /app
 # Install pnpm and healthcheck tools
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Copy everything (filtered by .dockerignore)
-COPY . .
+COPY package.json ./
+COPY pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml ./
+COPY turbo.json ./
+
+# Copy the api package.json
+COPY apps/api/package.json ./apps/api/package.json
 
 RUN pnpm install
+
+# Copy app source
+COPY . .
 
 # Set environment variables from build args
 ENV NODE_ENV=production \
