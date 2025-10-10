@@ -36,7 +36,7 @@ ENV PUBLIC_IS_SELFHOSTED=true \
     PUBLIC_IP_REGISTRY_KEY=$PUBLIC_IP_REGISTRY_KEY
 
 # Build the dashboard app
-RUN NODE_OPTIONS="--max-old-space-size=4096" pnpm build --filter @cio/dashboard
+RUN NODE_OPTIONS="--max-old-space-size=3072" pnpm build --filter @cio/dashboard
 
 # ----------- Production Stage -----------
 FROM node:20.19.3-alpine AS runner
@@ -67,6 +67,9 @@ ENV NODE_ENV=production \
     PUBLIC_SERVER_URL=$PUBLIC_SERVER_URL \
     PUBLIC_IP_REGISTRY_KEY=$PUBLIC_IP_REGISTRY_KEY
 
-RUN ls -la /app/apps/dashboard
+WORKDIR /app/apps/dashboard
+
+RUN ls -la
+
 # Start the app
-CMD ["node", "apps/dashboard/build"]
+CMD ["node", "build"]
