@@ -55,4 +55,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 
 RUN ls -la /app/apps/api
 
-CMD pnpm start --filter @cio/api
+CMD ["pnpm" "start" "--filter" "@cio/api"]

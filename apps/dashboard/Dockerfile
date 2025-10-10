@@ -70,4 +70,4 @@ ENV NODE_ENV=production \
 RUN ls -la /app/apps/dashboard
 
 # Start the app
-CMD pnpm start --filter @cio/dashboard
+CMD ["pnpm" "start" "--filter" "@cio/dashboard"]
