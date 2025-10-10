@@ -11,8 +11,7 @@
     },
     "start": {
       "cache": false,
-      "persistent": true,
-      "dependsOn": ["^start"]
+      "persistent": true
     },
     "lint": {
       "dependsOn": ["^build"]

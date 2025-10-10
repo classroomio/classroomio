@@ -21,7 +21,7 @@ WORKDIR /app
 
 # Install pnpm, turbo and healthcheck tools
 RUN corepack enable && corepack prepare pnpm@latest --activate
-RUN npm install -g turbo
+RUN npm install -g turbo@1.10.16
 
 COPY package.json ./
 COPY pnpm-lock.yaml ./
