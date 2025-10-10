@@ -9,8 +9,8 @@ version: "3.8"
 services:
   api:
     build:
-      context: ./apps/api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./apps/api/Dockerfile
       args:
         - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
         - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
@@ -26,10 +26,9 @@ services:
     ports:
       - "3002:3002"
     volumes:
-      # Node modules (optional - for faster development)
-      - ./apps/api/node_modules:/app/node_modules
-      # Build output directory (if you want to access built files)
-      - ./apps/api/dist:/app/dist
+      - .:/app
+      - /app/node_modules
+      - /app/apps/api/node_modules
     environment:
       - NODE_ENV=production
       # Supabase - Database

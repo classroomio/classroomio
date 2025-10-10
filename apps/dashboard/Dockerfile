@@ -1,5 +1,5 @@
 # ----------- Build Stage -----------
-FROM node:18.18.0-alpine AS builder
+FROM node:20.19.3-alpine AS builder
 
 # Add build arguments
 ARG PUBLIC_SUPABASE_URL
@@ -18,10 +18,16 @@ WORKDIR /cio
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # Copy monorepo files
-COPY pnpm-lock.yaml package.json pnpm-workspace.yaml ./
+COPY pnpm-lock.yaml package.json pnpm-workspace.yaml turbo.json ./
 COPY apps/dashboard/package.json apps/dashboard/
+COPY apps/api/package.json apps/api/
 COPY packages/tsconfig ./packages/tsconfig
 COPY packages/shared ./packages/shared
+
+# Copy API source code (needed for dashboard dependencies)
+COPY apps/api/src ./apps/api/src
+COPY apps/api/tsconfig.json ./apps/api/
+COPY apps/api/vitest.config.ts ./apps/api/
 
 # Install all dependencies (monorepo context)
 RUN pnpm install
@@ -42,10 +48,10 @@ ENV PUBLIC_IS_SELFHOSTED=true \
     PUBLIC_IP_REGISTRY_KEY=$PUBLIC_IP_REGISTRY_KEY
 
 # Build the dashboard app
-RUN pnpm build --filter @cio/dashboard
+RUN NODE_OPTIONS="--max-old-space-size=4096" pnpm build --filter @cio/dashboard
 
 # ----------- Production Stage -----------
-FROM node:18.18.0-alpine AS runner
+FROM node:20.19.3-alpine AS runner
 
 WORKDIR /app
 
