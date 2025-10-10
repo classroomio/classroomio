@@ -3,6 +3,7 @@
   "version": "0.1.1",
   "scripts": {
     "build": "turbo run build",
+    "start": "turbo run start",
     "dev": "turbo prepare --concurrency 13 && turbo run dev",
     "lint": "turbo run lint",
     "clean": "turbo clean && rm -rf node_modules",
