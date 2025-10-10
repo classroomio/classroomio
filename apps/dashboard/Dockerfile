@@ -46,12 +46,10 @@ WORKDIR /app
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Copy only production node_modules for dashboard
+# Copy the entire dashboard app (including build output)
+COPY --from=builder ./cio/apps/dashboard ./apps/dashboard
 COPY --from=builder ./cio/node_modules ./node_modules
 COPY --from=builder ./cio/package.json ./package.json
-COPY --from=builder ./cio/apps/dashboard/node_modules ./apps/dashboard/node_modules
-COPY --from=builder ./cio/apps/dashboard/package.json ./apps/dashboard/package.json
-COPY --from=builder ./cio/apps/dashboard/build ./apps/dashboard/build
 
 # Expose the port (default for SvelteKit Node adapter)
 EXPOSE 3000
