@@ -48,13 +48,13 @@ FROM node:20.19.3-alpine AS runner
 
 WORKDIR /app
 
+# Install pnpm before switching to non-root user
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
 # Don't run production as root
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 cio-user
 USER cio-user
-
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # Copy the entire dashboard app (including build output)
 COPY --from=builder --chown=cio-user:nodejs ./cio/apps/dashboard ./apps/dashboard
