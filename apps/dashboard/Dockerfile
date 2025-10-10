@@ -17,23 +17,11 @@ WORKDIR /cio
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Copy monorepo files
-COPY pnpm-lock.yaml package.json pnpm-workspace.yaml turbo.json ./
-COPY apps/dashboard/package.json apps/dashboard/
-COPY apps/api/package.json apps/api/
-COPY packages/tsconfig ./packages/tsconfig
-COPY packages/shared ./packages/shared
-
-# Copy API source code (needed for dashboard dependencies)
-COPY apps/api/src ./apps/api/src
-COPY apps/api/tsconfig.json ./apps/api/
-COPY apps/api/vitest.config.ts ./apps/api/
+# Copy everything (filtered by .dockerignore)
+COPY . .
 
 # Install all dependencies (monorepo context)
 RUN pnpm install
-
-# Copy the rest of the dashboard app
-COPY apps/dashboard ./apps/dashboard
 
 # Set env vars for SvelteKit to use Node adapter
 ENV PUBLIC_IS_SELFHOSTED=true \

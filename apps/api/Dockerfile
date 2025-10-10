@@ -22,15 +22,8 @@ WORKDIR /app
 # Install pnpm and healthcheck tools
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-COPY pnpm-lock.yaml package.json pnpm-workspace.yaml turbo.json ./
-COPY apps/api/package.json apps/api/
-COPY packages/tsconfig ./packages/tsconfig
-COPY packages/shared ./packages/shared
-
-# Copy the api app source code (excluding node_modules)
-COPY apps/api/src ./apps/api/src
-COPY apps/api/static ./apps/api/static
-COPY apps/api/tsconfig.json ./apps/api/
+# Copy everything (filtered by .dockerignore)
+COPY . .
 
 RUN pnpm install
 
