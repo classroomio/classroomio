@@ -61,10 +61,10 @@ COPY --from=builder --chown=cio-user:nodejs ./cio/apps/dashboard ./apps/dashboar
 COPY --from=builder --chown=cio-user:nodejs ./cio/node_modules ./node_modules
 COPY --from=builder --chown=cio-user:nodejs ./cio/package.json ./package.json
 
-ECHO "LS LA DASHBOARD"
+RUN echo "LS LA DASHBOARD"
 RUN ls -la apps/dashboard
 
-ECHO "LS LA BUILD"
+RUN echo "LS LA BUILD"
 RUN ls -la apps/dashboard/build
 
 # Expose the port (default for SvelteKit Node adapter)
