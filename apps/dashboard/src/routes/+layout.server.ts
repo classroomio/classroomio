@@ -1,7 +1,6 @@
 import { getSupabase, supabase } from '$lib/utils/functions/supabase';
 
 import type { CurrentOrg } from '$lib/utils/types/org';
-import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import type { MetaTagsProps } from 'svelte-meta-tags';
 import { blockedSubdomain } from '$lib/utils/constants/app';
 import { dev } from '$app/environment';
@@ -13,7 +12,7 @@ if (!supabase) {
   getSupabase();
 }
 
-export const ssr = PUBLIC_IS_SELFHOSTED === 'true' ? false : true;
+export const ssr = env.PUBLIC_IS_SELFHOSTED === 'true' ? false : true;
 
 interface LoadOutput {
   orgSiteName: string;
@@ -36,10 +35,10 @@ export const load = async ({ url, cookies, request }): Promise<LoadOutput> => {
     serverLang: request.headers?.get('accept-language') || ''
   };
 
-  console.log('PUBLIC_IS_SELFHOSTED', PUBLIC_IS_SELFHOSTED);
+  console.log('PUBLIC_IS_SELFHOSTED', env.PUBLIC_IS_SELFHOSTED);
 
   // Selfhosted usecase would be here
-  if (PUBLIC_IS_SELFHOSTED === 'true') {
+  if (env.PUBLIC_IS_SELFHOSTED === 'true') {
     const subdomain = getSubdomain(url);
     console.log('subdomain', subdomain);
 
