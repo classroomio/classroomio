@@ -48,8 +48,6 @@ jobs:
         with:
           images: ${{ env.DOCKERHUB_USERNAME }}/${{ matrix.image }}
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
             type=semver,pattern={{version}}
             type=raw,value=latest,enable={{is_default_branch}}
 
