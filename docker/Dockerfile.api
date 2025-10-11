@@ -26,6 +26,9 @@ RUN pnpm build --filter @cio/api
 
 EXPOSE 3081
 
+ENV PORT=3081 \
+    NODE_ENV=production
+
 RUN ls -la
 
 CMD ["pnpm", "api:start"]
