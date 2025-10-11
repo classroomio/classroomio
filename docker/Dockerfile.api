@@ -24,11 +24,7 @@ COPY . .
 
 RUN pnpm build --filter @cio/api
 
-EXPOSE 3002
-
-# Add healthcheck
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:3002 || exit 1
+EXPOSE 3081
 
 RUN ls -la
 

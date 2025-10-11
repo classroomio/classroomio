@@ -110,7 +110,7 @@ services:
     image: classroomio/api:latest
     # Remove the 'build' section
     ports:
-      - "3002:3002"
+      - "3081:3081"
     environment:
       # ... your environment variables
 

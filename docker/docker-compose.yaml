@@ -10,7 +10,7 @@ services:
   api:
     image: classroomio/api:0.1.8
     ports:
-      - "3002:3002"
+      - "3081:3081"
     environment:
       - NODE_ENV=production
       # Supabase - Database

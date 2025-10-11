@@ -53,7 +53,7 @@ docker pull classroomio/dashboard:latest
 ## Run Published Images
 ```bash
 # API
-docker run -d -p 3002:3002 \
+docker run -d -p 3081:3081 \
   -e PUBLIC_SUPABASE_ANON_KEY=your_key \
   -e PUBLIC_SUPABASE_URL=your_url \
   classroomio/api:latest

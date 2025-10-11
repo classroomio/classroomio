@@ -118,7 +118,7 @@ docker-compose up -d
 ### Port conflicts
 ```bash
 # Check if ports are in use
-lsof -i :3002  # API
+lsof -i :3081  # API
 lsof -i :3082  # Dashboard
 
 # Change ports in docker-compose.yaml if needed
