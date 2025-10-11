@@ -53,8 +53,9 @@ COPY --from=builder --chown=cio-user:nodejs ./cio/pnpm-workspace.yaml ./pnpm-wor
 EXPOSE 3082
 
 # Set environment variables for production
-ENV NODE_ENV=production \
+ENV PORT=3082 \
+    NODE_ENV=production \
     PUBLIC_IS_SELFHOSTED=true
 
 # Start the app
-CMD ["PORT=3082", "pnpm", "dashboard:start"]
+CMD ["pnpm", "dashboard:start"]
