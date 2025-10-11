@@ -10,7 +10,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: ./Dockerfile.api
+      dockerfile: ./docker/Dockerfile.api
       args:
         - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
         - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}

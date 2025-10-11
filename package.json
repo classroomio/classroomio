@@ -10,7 +10,6 @@
     "format": "prettier . --write",
     "release": "standard-version",
     "ci": "cypress run",
-    "dashboard:build": "cd apps/dashboard && pnpm i && PUBLIC_IS_SELFHOSTED=true NODE_OPTIONS='--max-old-space-size=20384' pnpm build",
     "dashboard:start": "PORT=3082 pnpm start --filter @cio/dashboard",
     "api:start": "PORT=3002 pnpm start --filter @cio/api",
     "supabase:push": "pnpx supabase link --project-ref $PROJECT_ID && pnpx supabase db push --include-all"
