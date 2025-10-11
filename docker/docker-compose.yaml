@@ -8,28 +8,9 @@ version: "3.8"
 
 services:
   api:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile.api
-      args:
-        - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
-        - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
-        - CLOUDFLARE_BUCKET_DOMAIN=${CLOUDFLARE_BUCKET_DOMAIN}
-        - CLOUDFLARE_ACCESS_KEY=${CLOUDFLARE_ACCESS_KEY}
-        - CLOUDFLARE_SECRET_ACCESS_KEY=${CLOUDFLARE_SECRET_ACCESS_KEY}
-        - CLOUDFLARE_ACCOUNT_ID=${CLOUDFLARE_ACCOUNT_ID}
-        - CLOUDFLARE_BUCKET_ID=${CLOUDFLARE_BUCKET_ID}
-        - SMTP_HOST=${SMTP_HOST}
-        - SMTP_USER=${SMTP_USER}
-        - SMTP_PASSWORD=${SMTP_PASSWORD}
-        - SMTP_PORT=${SMTP_PORT}
-        - REDIS_URL=${REDIS_URL}
+    image: classroomio/api:latest
     ports:
       - "3002:3002"
-    # volumes:
-    #   - .:/app
-    #   - /app/node_modules
-    #   - /app/apps/api/node_modules
     environment:
       - NODE_ENV=production
       # Supabase - Database
@@ -49,25 +30,9 @@ services:
       - REDIS_URL=${REDIS_URL}
 
   dashboard:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile.dashboard
-      args:
-        - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
-        - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
-        - PRIVATE_SUPABASE_SERVICE_ROLE=${PRIVATE_SUPABASE_SERVICE_ROLE}
-        - PRIVATE_APP_HOST=${PRIVATE_APP_HOST}
-        - PRIVATE_APP_SUBDOMAINS=${PRIVATE_APP_SUBDOMAINS}
-        - UNSPLASH_API_KEY=${UNSPLASH_API_KEY}
-        - OPENAI_API_KEY=${OPENAI_API_KEY}
-        - PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL}
-        - PUBLIC_IP_REGISTRY_KEY=${PUBLIC_IP_REGISTRY_KEY}
+    image: classroomio/dashboard:latest
     ports:
       - "3082:3082"
-    # volumes:
-    #   - .:/app
-    #   - /app/node_modules
-    #   - /app/apps/dashboard/node_modules
     environment:
       - PUBLIC_IS_SELFHOSTED=true
       # Supabase - Database
