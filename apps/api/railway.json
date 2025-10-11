@@ -1,6 +1,14 @@
 {
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
+    "nixpacksPlan": {
+      "phases": {
+        "install": {
+          "dependsOn": ["setup"],
+          "cmds": ["pnpm install"]
+        }
+      }
+    },
     "builder": "NIXPACKS",
     "buildCommand": "pnpm build"
   },
