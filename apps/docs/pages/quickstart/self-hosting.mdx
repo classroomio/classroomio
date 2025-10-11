@@ -140,8 +140,8 @@ docker compose up --build
 
 The services will be available at:
 
-- Dashboard: http://localhost:3000
-- Backend: http://localhost:3002
+- Dashboard: http://localhost:3082
+- Backend: http://localhost:3081
 
 ### Service Configuration
 
@@ -149,7 +149,7 @@ The docker-compose file sets up two services:
 
 #### Backend Service
 
-- Runs on port 3002
+- Runs on port 3081
 - Uses Node.js slim image
 - Mounts the api code directory
 - Requires environment variables for:
@@ -159,7 +159,7 @@ The docker-compose file sets up two services:
 
 #### Dashboard Service
 
-- Runs on port 3000
+- Runs on port 3082
 - Uses Node.js Alpine image
 - Uses pnpm for package management
 - Requires environment variables for:

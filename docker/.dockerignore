@@ -1,0 +1,4 @@
+# This .dockerignore is a symlink reference
+# The actual .dockerignore is in the root directory
+# Docker will use the root .dockerignore when building from the docker/ directory
+
