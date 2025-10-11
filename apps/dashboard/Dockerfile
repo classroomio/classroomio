@@ -61,6 +61,7 @@ USER cio-user
 COPY --from=builder --chown=cio-user:nodejs ./cio/apps/dashboard ./apps/dashboard
 COPY --from=builder --chown=cio-user:nodejs ./cio/node_modules ./node_modules
 COPY --from=builder --chown=cio-user:nodejs ./cio/package.json ./package.json
+COPY --from=builder --chown=cio-user:nodejs ./cio/turbo.json ./turbo.json
 
 RUN echo "LS LA DASHBOARD"
 RUN ls -la apps/dashboard
