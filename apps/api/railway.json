@@ -5,7 +5,7 @@
       "phases": {
         "install": {
           "dependsOn": ["setup"],
-          "cmds": ["pnpm install"]
+          "cmds": ["npm i pnpm --global", "pnpm install"]
         }
       }
     },
