@@ -8,7 +8,7 @@ version: "3.8"
 
 services:
   api:
-    image: classroomio/api:latest
+    image: classroomio/api:0.1.10
     ports:
       - "3081:3081"
     environment:
@@ -31,7 +31,7 @@ services:
       - REDIS_URL=${REDIS_URL}
 
   dashboard:
-    image: classroomio/dashboard:latest
+    image: classroomio/dashboard:0.1.10
     ports:
       - "3082:3082"
     environment:
