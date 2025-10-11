@@ -62,6 +62,7 @@ COPY --from=builder --chown=cio-user:nodejs ./cio/apps/dashboard ./apps/dashboar
 COPY --from=builder --chown=cio-user:nodejs ./cio/node_modules ./node_modules
 COPY --from=builder --chown=cio-user:nodejs ./cio/package.json ./package.json
 COPY --from=builder --chown=cio-user:nodejs ./cio/turbo.json ./turbo.json
+COPY --from=builder --chown=cio-user:nodejs ./cio/pnpm-workspace.yaml ./pnpm-workspace.yaml
 
 RUN echo "LS LA DASHBOARD"
 RUN ls -la apps/dashboard
