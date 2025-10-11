@@ -10,7 +10,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: ./apps/api/Dockerfile
+      dockerfile: ./Dockerfile.api
       args:
         - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
         - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
@@ -46,11 +46,12 @@ services:
       - SMTP_PASSWORD=${SMTP_PASSWORD}
       - SMTP_PORT=${SMTP_PORT}
       - SMTP_SENDER=${SMTP_SENDER}
+      - REDIS_URL=${REDIS_URL}
 
   dashboard:
     build:
       context: .
-      dockerfile: ./apps/dashboard/Dockerfile
+      dockerfile: ./docker/Dockerfile.dashboard
       args:
         - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
         - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}

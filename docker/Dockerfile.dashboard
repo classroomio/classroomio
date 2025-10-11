@@ -20,7 +20,16 @@ RUN npm install -g pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # Copy everything (filtered by .dockerignore)
-COPY . .
+COPY package.json ./
+COPY pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml ./
+COPY turbo.json ./
+COPY packages/tsconfig ./packages/tsconfig
+COPY packages/shared ./packages/shared
+
+# Copy the api package.json
+COPY apps/dashboard ./apps/dashboard
+COPY apps/api ./apps/api
 
 # Install all dependencies (monorepo context)
 RUN pnpm install
@@ -63,12 +72,6 @@ COPY --from=builder --chown=cio-user:nodejs ./cio/node_modules ./node_modules
 COPY --from=builder --chown=cio-user:nodejs ./cio/package.json ./package.json
 COPY --from=builder --chown=cio-user:nodejs ./cio/turbo.json ./turbo.json
 COPY --from=builder --chown=cio-user:nodejs ./cio/pnpm-workspace.yaml ./pnpm-workspace.yaml
-
-RUN echo "LS LA DASHBOARD"
-RUN ls -la apps/dashboard
-
-RUN echo "LS LA BUILD"
-RUN ls -la apps/dashboard/build
 
 # Expose the port (default for SvelteKit Node adapter)
 EXPOSE 3082
