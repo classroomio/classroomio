@@ -10,8 +10,8 @@
     "format": "prettier . --write",
     "release": "standard-version",
     "ci": "cypress run",
-    "dashboard:start": "PORT=3082 pnpm start --filter @cio/dashboard",
-    "api:start": "PORT=3081 pnpm start --filter @cio/api",
+    "dashboard:start": "pnpm start --filter @cio/dashboard",
+    "api:start": "pnpm start --filter @cio/api",
     "supabase:push": "pnpx supabase link --project-ref $PROJECT_ID && pnpx supabase db push --include-all"
   },
   "license": "MIT",
