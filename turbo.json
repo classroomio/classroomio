@@ -5,6 +5,14 @@
     "@cio/dashboard#build": {
       "dependsOn": ["@cio/api#build"]
     },
+    "@cio/dashboard#start": {
+      "cache": false,
+      "persistent": true
+    },
+    "@cio/api#start": {
+      "cache": false,
+      "persistent": true
+    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**", ".svelte-kit/**", ".vercel/**", "dist/**"]

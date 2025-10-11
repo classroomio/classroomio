@@ -62,7 +62,7 @@ services:
         - PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL}
         - PUBLIC_IP_REGISTRY_KEY=${PUBLIC_IP_REGISTRY_KEY}
     ports:
-      - "3000:3000"
+      - "3082:3082"
     # volumes:
     #   - .:/app
     #   - /app/node_modules
