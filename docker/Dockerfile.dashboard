@@ -26,7 +26,7 @@ RUN pnpm install
 RUN ls -la
 
 # Build the dashboard app
-RUN NODE_OPTIONS="--max-old-space-size=3072" pnpm build --filter @cio/dashboard
+RUN NODE_OPTIONS="--max-old-space-size=3072" PUBLIC_IS_SELFHOSTED=true pnpm build --filter @cio/dashboard
 
 # ----------- Production Stage -----------
 FROM node:20.19.3-alpine AS runner
