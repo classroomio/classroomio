@@ -52,5 +52,9 @@ COPY --from=builder --chown=cio-user:nodejs ./cio/pnpm-workspace.yaml ./pnpm-wor
 # Expose the port (default for SvelteKit Node adapter)
 EXPOSE 3082
 
+# Set environment variables for production
+ENV NODE_ENV=production \
+    PUBLIC_IS_SELFHOSTED=true
+
 # Start the app
 CMD ["pnpm", "dashboard:start"]
