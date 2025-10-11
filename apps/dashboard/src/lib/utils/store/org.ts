@@ -3,11 +3,11 @@ import { browser, dev } from '$app/environment';
 import { derived, writable } from 'svelte/store';
 
 import { PLAN } from 'shared/src/plans/constants';
+import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { ROLE } from '$lib/utils/constants/roles';
 import { STEPS } from '../constants/quiz';
 import type { UserLessonDataType } from '$lib/utils/types';
 import type { Writable } from 'svelte/store';
-import { env } from '$env/dynamic/public';
 
 // Trigger build
 export const defaultCurrentOrgState: CurrentOrg = {
@@ -74,7 +74,7 @@ export const currentOrgDomain = derived(currentOrg, ($currentOrg) => {
 });
 
 export const isFreePlan = derived(currentOrg, ($currentOrg) => {
-  if (!$currentOrg.id || env.PUBLIC_IS_SELFHOSTED === 'true') return false;
+  if (!$currentOrg.id || PUBLIC_IS_SELFHOSTED === 'true') return false;
 
   const plan = getActivePlan($currentOrg);
 
