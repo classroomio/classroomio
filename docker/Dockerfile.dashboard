@@ -57,4 +57,4 @@ ENV NODE_ENV=production \
     PUBLIC_IS_SELFHOSTED=true
 
 # Start the app
-CMD ["pnpm", "dashboard:start"]
+CMD ["PORT=3082", "pnpm", "dashboard:start"]
