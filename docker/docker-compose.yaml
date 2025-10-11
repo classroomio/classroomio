@@ -8,7 +8,7 @@ version: "3.8"
 
 services:
   api:
-    image: classroomio/api:coolify-dockertest
+    image: classroomio/api:latest
     ports:
       - "3002:3002"
     environment:
@@ -30,7 +30,7 @@ services:
       - REDIS_URL=${REDIS_URL}
 
   dashboard:
-    image: classroomio/dashboard:coolify-dockertest
+    image: classroomio/dashboard:latest
     ports:
       - "3082:3082"
     environment:
