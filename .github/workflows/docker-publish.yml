@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - coolify-dockertest
     tags:
       - "v*"
   workflow_dispatch:
@@ -63,12 +64,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          # Conditionally apply cache-from and cache-to
-          # This disables cache for tag pushes (i.e., new versions)
-          # cache-from: |
-          #   ${{ github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') && format('type=registry,ref={0}/{1}:buildcache', env.DOCKERHUB_USERNAME, matrix.image) || '' }}
-          # cache-to: |
-          #   ${{ github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') && format('type=registry,ref={0}/{1}:buildcache,mode=max', env.DOCKERHUB_USERNAME, matrix.image) || '' }}
+          cache-from: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/${{ matrix.image }}:buildcache
+          cache-to: type=registry,ref=${{ env.DOCKERHUB_USERNAME }}/${{ matrix.image }}:buildcache,mode=max
           platforms: linux/amd64
 
       - name: Image digest
