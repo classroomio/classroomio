@@ -21,8 +21,6 @@
     redirect = ''
   }: Props = $props();
 
-  let mobileMenuRef: HTMLElement | undefined = $state();
-
   function closeMobileMenu() {
     mobileMenuOpen = false;
   }
@@ -36,7 +34,6 @@
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
-      bind:this={mobileMenuRef}
       class="mobile-menu-sidebar absolute right-0 top-0 h-full w-64 transform bg-white shadow-lg transition-transform duration-300 ease-in-out"
       onclick={stopPropagation()}
     >

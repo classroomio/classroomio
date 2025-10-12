@@ -14,13 +14,7 @@
     "moduleResolution": "bundler",
     "noImplicitAny": false,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "paths": {
-      "$lib": ["./src/lib"],
-      "$lib/*": ["./src/lib/*"],
-      "$mail": ["./src/mail"],
-      "$mail/*": ["./src/mail/*"]
-    }
+    "noUnusedParameters": true
   }
 
   // Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
