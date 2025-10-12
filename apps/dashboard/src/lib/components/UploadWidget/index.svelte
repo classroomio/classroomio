@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { preventDefault } from 'svelte/legacy';
+  import { preventDefault } from '$lib/utils/functions/svelte';
 
   import { onMount } from 'svelte';
   import Tabs from '$lib/components/Tabs/index.svelte';

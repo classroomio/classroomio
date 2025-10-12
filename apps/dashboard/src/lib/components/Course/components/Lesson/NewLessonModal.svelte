@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { preventDefault } from 'svelte/legacy';
+  import { preventDefault } from '$lib/utils/functions/svelte';
 
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';

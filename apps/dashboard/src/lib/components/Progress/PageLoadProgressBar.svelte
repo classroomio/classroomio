@@ -9,10 +9,7 @@
 -->
 
 <script lang="ts">
-  // import { run } from 'svelte/legacy';
   import { beforeNavigate } from '$app/navigation';
-
-  // This component is a modified version of the component from the following repo:
 
   interface Props {
     // https://github.com/saibotsivad/svelte-progress-bar

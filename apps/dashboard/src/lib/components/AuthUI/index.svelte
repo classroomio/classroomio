@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { preventDefault } from 'svelte/legacy';
+  import { preventDefault } from '$lib/utils/functions/svelte';
 
   import { page } from '$app/state';
   import Avatar from '$lib/components/Avatar/index.svelte';

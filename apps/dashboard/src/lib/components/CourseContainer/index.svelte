@@ -1,5 +1,4 @@
 <script lang="ts">
-  // import { run } from 'svelte/legacy';
   import { get } from 'svelte/store';
   import { goto } from '$app/navigation';
   import { Moon } from 'svelte-loading-spinners';

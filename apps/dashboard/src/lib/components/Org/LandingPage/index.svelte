@@ -1,6 +1,6 @@
 <script lang="ts">
   import { untrack } from 'svelte';
-  import { preventDefault } from 'svelte/legacy';
+  import { preventDefault } from '$lib/utils/functions/svelte';
 
   import { goto } from '$app/navigation';
   import Box from '$lib/components/Box/index.svelte';

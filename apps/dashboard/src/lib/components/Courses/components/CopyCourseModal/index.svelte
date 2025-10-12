@@ -1,5 +1,5 @@
 <script>
-  import { preventDefault } from 'svelte/legacy';
+  import { preventDefault } from '$lib/utils/functions/svelte';
 
   import { goto } from '$app/navigation';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';

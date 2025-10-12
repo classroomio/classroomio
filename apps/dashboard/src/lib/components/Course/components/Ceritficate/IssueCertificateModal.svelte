@@ -1,5 +1,5 @@
 <script>
-  import { preventDefault } from 'svelte/legacy';
+  import { preventDefault } from '$lib/utils/functions/svelte';
 
   import { Toggle } from 'carbon-components-svelte';
   import Modal from '$lib/components/Modal/index.svelte';

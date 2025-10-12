@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { createBubbler, preventDefault } from 'svelte/legacy';
+  import { preventDefault } from '$lib/utils/functions/svelte';
 
-  const bubble = createBubbler();
   import {
     questionnaire,
     deleteConfirmation,
@@ -101,7 +100,7 @@
   width="w-2/4"
   modalHeading={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.delete_modal')}
 >
-  <form onsubmit={preventDefault(bubble('submit'))}>
+  <form onsubmit={preventDefault()}>
     <h1 class="text-xl dark:text-white">
       {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.sure')}
     </h1>

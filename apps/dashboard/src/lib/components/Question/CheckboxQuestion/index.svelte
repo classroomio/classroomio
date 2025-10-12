@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { preventDefault } from 'svelte/legacy';
+  import { preventDefault } from '$lib/utils/functions/svelte';
 
   import CodeSnippet from '$lib/components/CodeSnippet/index.svelte';
   import Checkbox from '$lib/components/Form/Checkbox.svelte';

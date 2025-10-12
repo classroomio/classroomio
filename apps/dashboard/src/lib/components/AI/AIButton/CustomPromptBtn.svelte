@@ -1,5 +1,5 @@
 <script lang="ts">
-  // import { preventDefault } from 'svelte/legacy';
+  // import { preventDefault } from '$lib/utils/functions/svelte';
   // import { writable } from 'svelte/store';
   // // import { useCompletion } from 'ai/svelte';
   // import { Popover } from 'carbon-components-svelte';

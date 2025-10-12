@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { preventDefault } from 'svelte/legacy';
+  import { preventDefault } from '$lib/utils/functions/svelte';
 
   import TextField from '$lib/components/Form/TextField.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
@@ -23,7 +23,7 @@
     email: ''
   });
 
-  let errors = $state({
+  let errors: Record<string, string> = $state({
     fullname: '',
     email: ''
   });

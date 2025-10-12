@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { createBubbler, stopPropagation } from 'svelte/legacy';
+  import { stopPropagation } from '$lib/utils/functions/svelte';
 
-  const bubble = createBubbler();
   import { page } from '$app/stores';
   import { user } from '$lib/utils/store/user';
   import { type TCustomLinks } from './types';
@@ -22,7 +21,7 @@
     redirect = ''
   }: Props = $props();
 
-  let mobileMenuRef: HTMLElement = $state();
+  let mobileMenuRef: HTMLElement | undefined = $state();
 
   function closeMobileMenu() {
     mobileMenuOpen = false;
@@ -33,30 +32,23 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 {#if mobileMenuOpen}
-  <div
-    class="mobile-menu-overlay fixed inset-0 z-50 bg-black bg-opacity-50 lg:hidden"
-    onclick={closeMobileMenu}
-  >
+  <div class="mobile-menu-overlay fixed inset-0 z-50 bg-black bg-opacity-50 lg:hidden" onclick={closeMobileMenu}>
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
       bind:this={mobileMenuRef}
       class="mobile-menu-sidebar absolute right-0 top-0 h-full w-64 transform bg-white shadow-lg transition-transform duration-300 ease-in-out"
-      onclick={stopPropagation(bubble('click'))}
+      onclick={stopPropagation()}
     >
       <div class="flex items-center justify-between border-b border-gray-200 p-4">
         <h3 class="text-lg font-semibold text-gray-800">Menu</h3>
         <button
           onclick={closeMobileMenu}
+          aria-label="Close menu"
           class="rounded-md p-2 text-gray-500 transition-colors duration-200 hover:bg-gray-100 hover:text-gray-700"
         >
           <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            ></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
         </button>
       </div>
@@ -68,12 +60,7 @@
           <!-- Login/Signup buttons in mobile menu -->
           {#if !$user.isLoggedIn && !$page.url.pathname?.includes('/404')}
             <li class="pt-4">
-              <AuthButtons
-                {disableSignup}
-                {redirect}
-                isMobile={true}
-                onMobileClick={closeMobileMenu}
-              />
+              <AuthButtons {disableSignup} {redirect} isMobile={true} onMobileClick={closeMobileMenu} />
             </li>
           {/if}
         </ul>

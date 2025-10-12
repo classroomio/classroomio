@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { preventDefault } from 'svelte/legacy';
+  import { preventDefault } from '$lib/utils/functions/svelte';
   import { untrack } from 'svelte';
   import copy from 'copy-to-clipboard';
   import { Popover } from 'carbon-components-svelte';
