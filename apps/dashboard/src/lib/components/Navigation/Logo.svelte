@@ -9,6 +9,7 @@
   <a
     href="/"
     title={`${$t('navigation.goto')} ${orgName || 'ClassroomIO'} ${$t('navigation.home')}`}
+    class="flex items-center gap-2"
     id="logo"
     data-hveid="8"
   >
