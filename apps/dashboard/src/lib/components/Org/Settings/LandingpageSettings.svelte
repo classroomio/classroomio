@@ -19,18 +19,11 @@
   import type { OrgLandingPageJson } from '$lib/utils/types/org';
   import { landingPageSettings } from './store';
 
-<<<<<<< HEAD
-  let isSaving = $state(false);
-  let creatingNewQuestion = $state(false);
-  let hasUnsavedChanges = $state(false);
-  let widgetKey = $state('');
-=======
   let isSaving = false;
   let creatingNewQuestion = false;
   let creatingNewCustomLink = false;
   let hasUnsavedChanges = false;
   let widgetKey = '';
->>>>>>> 9c9f049917fc76c540bc21b5a7c4c4d34b89e0b4
   const banner = [
     { value: 'video', label: `${$t('settings.landing_page.actions.banner_type.video')}` },
     { value: 'image', label: `${$t('settings.landing_page.actions.banner_type.image')}` }
@@ -164,17 +157,11 @@
         landingpage.header.background = $landingPageSettings.header.background;
       }
 
-<<<<<<< HEAD
       untrack(() => {
         $landingPageSettings = {
           ...landingpage
         };
       });
-=======
-      $landingPageSettings = {
-        ...landingpage
-      } as OrgLandingPageJson;
->>>>>>> 9c9f049917fc76c540bc21b5a7c4c4d34b89e0b4
     }
   }
   $effect(() => {
@@ -600,12 +587,8 @@
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.custom_links.heading')}</SectionTitle>
       <Toggle bind:toggled={$landingPageSettings.customLinks.show} size="sm">
-        <span slot="labelA" style="color: gray"
-          >{$t('settings.landing_page.custom_links.hide_links')}</span
-        >
-        <span slot="labelB" style="color: gray"
-          >{$t('settings.landing_page.custom_links.show_links')}</span
-        >
+        <span slot="labelA" style="color: gray">{$t('settings.landing_page.custom_links.hide_links')}</span>
+        <span slot="labelB" style="color: gray">{$t('settings.landing_page.custom_links.show_links')}</span>
       </Toggle>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">

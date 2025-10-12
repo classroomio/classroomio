@@ -1,70 +1,3 @@
-export interface OrgLandingPageJson {
-  header: {
-    title: string;
-    titleHighlight: string;
-    subtitle: string;
-    action: {
-      label: string;
-      link: string;
-      redirect: boolean;
-    };
-    banner: {
-      video: string;
-      image: string;
-      type: string;
-      show: boolean;
-    };
-    background?: {
-      image: string;
-      show: boolean;
-    };
-    show: boolean;
-  };
-  aboutUs: {
-    title: string;
-    content: string;
-    imageUrl: string;
-    show: boolean;
-  };
-  courses: {
-    title: string;
-    titleHighlight: string;
-    subtitle: string;
-    show: boolean;
-  };
-  faq: {
-    title: string;
-    questions: Array<{
-      id: number;
-      title: string;
-      content: string;
-    }>;
-    show: boolean;
-  };
-  contact: {
-    title: string;
-    titleHighlight: string;
-    subtitle: string;
-    address: string;
-    phone: string;
-    email: string;
-    show: boolean;
-  };
-  mailinglist: {
-    title: string;
-    subtitle: string;
-    buttonLabel: string;
-    show: boolean;
-  };
-  footer: {
-    facebook: string;
-    instagram: string;
-    twitter: string;
-    linkedin: string;
-    show: boolean;
-  };
-}
-
 export interface OrgCustomization {
   dashboard: {
     community: boolean;
@@ -90,7 +23,9 @@ export interface CurrentOrg {
   avatar_url: string;
   memberId: string;
   role_id: number;
-  landingpage: OrgLandingPageJson;
+  landingpage: {
+    [key: string]: unknown;
+  };
   customization: OrgCustomization;
   theme: string;
   organization_plan: {

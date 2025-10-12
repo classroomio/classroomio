@@ -208,13 +208,7 @@
         }`}
         style="background-image: {getBgImage($landingPageSettings)}"
       >
-<<<<<<< HEAD
-        <Navigation logo={org.avatar_url} orgName={org.name} disableSignup={true} isOrgSite={true} />
-
-        <div class="absolute top-0 z-10 h-[100vh] w-full bg-white opacity-80 md:h-[90vh]"></div>
-=======
         <div class="absolute top-0 z-10 h-[100vh] w-full bg-white opacity-80 md:h-[90vh]" />
->>>>>>> 9c9f049917fc76c540bc21b5a7c4c4d34b89e0b4
         {#if $landingPageSettings.header.banner.show}
           <div class="flex items-center justify-center py-2 md:h-full">
             <div

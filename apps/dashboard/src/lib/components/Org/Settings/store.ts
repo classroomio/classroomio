@@ -1,8 +1,5 @@
-import type { OrgLandingPageJson } from '$lib/utils/types/org';
 import type { Writable } from 'svelte/store';
-<<<<<<< HEAD
 import { writable } from 'svelte/store';
-=======
 
 export interface OrgLandingPageJson {
   header: {
@@ -79,7 +76,6 @@ export interface OrgLandingPageJson {
     show: boolean;
   };
 }
->>>>>>> 9c9f049917fc76c540bc21b5a7c4c4d34b89e0b4
 
 export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
   header: {
