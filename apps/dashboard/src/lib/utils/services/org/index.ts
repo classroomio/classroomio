@@ -1,11 +1,12 @@
-import { goto } from '$app/navigation';
-import { ROLE, ROLE_LABEL } from '$lib/utils/constants/roles';
-import { supabase } from '$lib/utils/functions/supabase';
-import { currentOrg, orgAudience, orgs, orgTeam } from '$lib/utils/store/org';
-import type { OrganizationPlan } from '$lib/utils/types';
 import type { CurrentOrg, OrgTeamMember } from '$lib/utils/types/org';
+import { ROLE, ROLE_LABEL } from '$lib/utils/constants/roles';
+import { currentOrg, orgAudience, orgTeam, orgs } from '$lib/utils/store/org';
+
+import type { OrganizationPlan } from '$lib/utils/types';
 import type { PostgrestError } from '@supabase/supabase-js';
 import { get } from 'svelte/store';
+import { goto } from '$app/navigation';
+import { supabase } from '$lib/utils/functions/supabase';
 
 export async function getOrgTeam(orgId: string) {
   const { data, error } = await supabase
