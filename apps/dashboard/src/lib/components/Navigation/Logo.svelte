@@ -1,8 +1,12 @@
 <script lang="ts">
   import { t } from '$lib/utils/functions/translations';
 
-  export let logo: string | undefined;
-  export let orgName: string | undefined;
+  interface Props {
+    logo: string | undefined;
+    orgName: string | undefined;
+  }
+
+  let { logo, orgName }: Props = $props();
 </script>
 
 <div class="logo">

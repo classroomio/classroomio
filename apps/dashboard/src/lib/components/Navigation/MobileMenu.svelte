@@ -1,16 +1,28 @@
 <script lang="ts">
+  import { createBubbler, stopPropagation } from 'svelte/legacy';
+
+  const bubble = createBubbler();
   import { page } from '$app/stores';
   import { user } from '$lib/utils/store/user';
   import { type TCustomLinks } from './types';
   import CustomLinks from './CustomLinks.svelte';
   import AuthButtons from './AuthButtons.svelte';
 
-  export let mobileMenuOpen = false;
-  export let customLinks: TCustomLinks | undefined = undefined;
-  export let disableSignup = false;
-  export let redirect = '';
+  interface Props {
+    mobileMenuOpen?: boolean;
+    customLinks?: TCustomLinks | undefined;
+    disableSignup?: boolean;
+    redirect?: string;
+  }
 
-  let mobileMenuRef: HTMLElement;
+  let {
+    mobileMenuOpen = $bindable(false),
+    customLinks = undefined,
+    disableSignup = false,
+    redirect = ''
+  }: Props = $props();
+
+  let mobileMenuRef: HTMLElement = $state();
 
   function closeMobileMenu() {
     mobileMenuOpen = false;
@@ -18,24 +30,24 @@
 </script>
 
 <!-- Mobile Menu Overlay -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 {#if mobileMenuOpen}
   <div
     class="mobile-menu-overlay fixed inset-0 z-50 bg-black bg-opacity-50 lg:hidden"
-    on:click={closeMobileMenu}
+    onclick={closeMobileMenu}
   >
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
       bind:this={mobileMenuRef}
       class="mobile-menu-sidebar absolute right-0 top-0 h-full w-64 transform bg-white shadow-lg transition-transform duration-300 ease-in-out"
-      on:click|stopPropagation
+      onclick={stopPropagation(bubble('click'))}
     >
       <div class="flex items-center justify-between border-b border-gray-200 p-4">
         <h3 class="text-lg font-semibold text-gray-800">Menu</h3>
         <button
-          on:click={closeMobileMenu}
+          onclick={closeMobileMenu}
           class="rounded-md p-2 text-gray-500 transition-colors duration-200 hover:bg-gray-100 hover:text-gray-700"
         >
           <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
