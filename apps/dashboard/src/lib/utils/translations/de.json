@@ -1286,6 +1286,20 @@
         "title": "Hintergrundbild",
         "show_background": "Hintergrund anzeigen",
         "hide_background": "Hintergrund ausblenden"
+      },
+      "custom_links": {
+        "heading": "Benutzerdefinierte Links",
+        "hide_links": "Links verbergen",
+        "show_links": "Links anzeigen",
+        "description": "Fügen Sie benutzerdefinierte Navigationslinks hinzu, die in der Header -Navigationsleiste angezeigt werden.",
+        "label": "Etikett",
+        "url": "URL",
+        "label_placeholder": "z. B. über uns",
+        "url_placeholder": "z. B. #über- oder https://example.com",
+        "new_tab": "Offen in neuer Registerkarte",
+        "save": "Speichern",
+        "cancel": "Stornieren",
+        "add": "Neuen Link hinzufügen"
       }
     },
     "organization": {

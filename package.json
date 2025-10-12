@@ -1,16 +1,17 @@
 {
   "name": "classroomio",
-  "version": "0.1.1",
+  "version": "0.1.13",
   "scripts": {
     "build": "turbo run build",
+    "start": "turbo run start",
     "dev": "turbo prepare --concurrency 13 && turbo run dev",
     "lint": "turbo run lint",
     "clean": "turbo clean && rm -rf node_modules",
     "format": "prettier . --write",
     "release": "standard-version",
     "ci": "cypress run",
-    "dashboard:build": "cd apps/dashboard && pnpm i && PUBLIC_IS_SELFHOSTED=true NODE_OPTIONS='--max-old-space-size=20384' pnpm build",
-    "dashboard:start": "cd apps/dashboard && node build",
+    "dashboard:start": "pnpm start --filter @cio/dashboard",
+    "api:start": "pnpm start --filter @cio/api",
     "supabase:push": "pnpx supabase link --project-ref $PROJECT_ID && pnpx supabase db push --include-all"
   },
   "license": "MIT",

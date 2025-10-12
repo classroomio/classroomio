@@ -9,6 +9,10 @@
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**", ".svelte-kit/**", ".vercel/**", "dist/**"]
     },
+    "start": {
+      "cache": false,
+      "persistent": true
+    },
     "lint": {
       "dependsOn": ["^build"]
     },

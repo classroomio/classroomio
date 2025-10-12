@@ -1,8 +1,8 @@
 import { getSupabase, supabase } from '$lib/utils/functions/supabase';
 
 import type { CurrentOrg } from '$lib/utils/types/org';
-import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import type { MetaTagsProps } from 'svelte-meta-tags';
+import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { blockedSubdomain } from '$lib/utils/constants/app';
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/private';

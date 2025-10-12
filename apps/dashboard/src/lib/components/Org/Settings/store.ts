@@ -1,6 +1,85 @@
 import type { OrgLandingPageJson } from '$lib/utils/types/org';
 import type { Writable } from 'svelte/store';
+<<<<<<< HEAD
 import { writable } from 'svelte/store';
+=======
+
+export interface OrgLandingPageJson {
+  header: {
+    title: string;
+    titleHighlight: string;
+    subtitle: string;
+    action: {
+      label: string;
+      link: string;
+      redirect: boolean;
+    };
+    banner: {
+      video: string;
+      image: string;
+      type: string;
+      show: boolean;
+    };
+    background: {
+      image: string;
+      show: boolean;
+    };
+    show: boolean;
+  };
+  aboutUs: {
+    title: string;
+    content: string;
+    imageUrl: string;
+    show: boolean;
+  };
+  courses: {
+    title: string;
+    titleHighlight: string;
+    subtitle: string;
+    show: boolean;
+  };
+  faq: {
+    title: string;
+    questions: Array<{
+      id: number;
+      title: string;
+      content: string;
+    }>;
+    show: boolean;
+  };
+  contact: {
+    title: string;
+    titleHighlight: string;
+    subtitle: string;
+    address: string;
+    phone: string;
+    email: string;
+    show: boolean;
+  };
+  mailinglist: {
+    title: string;
+    subtitle: string;
+    buttonLabel: string;
+    show: boolean;
+  };
+  customLinks: {
+    show: boolean;
+    links: Array<{
+      id: number;
+      label: string;
+      url: string;
+      openInNewTab: boolean;
+    }>;
+  };
+  footer: {
+    facebook: string;
+    instagram: string;
+    twitter: string;
+    linkedin: string;
+    show: boolean;
+  };
+}
+>>>>>>> 9c9f049917fc76c540bc21b5a7c4c4d34b89e0b4
 
 export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
   header: {
@@ -76,6 +155,35 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
       'We are constantly releasing new courses and sharing them with our email list. Subscribe to get notified once we release a new course',
     buttonLabel: 'Subscribe',
     show: true
+  },
+  customLinks: {
+    show: true,
+    links: [
+      {
+        id: 1,
+        label: 'About Us',
+        url: '#aboutus',
+        openInNewTab: false
+      },
+      {
+        id: 2,
+        label: 'Courses',
+        url: '#courses',
+        openInNewTab: false
+      },
+      {
+        id: 3,
+        label: 'FAQ',
+        url: '#faq',
+        openInNewTab: false
+      },
+      {
+        id: 4,
+        label: 'Contact Us',
+        url: '#contact',
+        openInNewTab: false
+      }
+    ]
   },
   footer: {
     facebook: '#',

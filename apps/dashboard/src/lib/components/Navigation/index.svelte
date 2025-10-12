@@ -1,12 +1,21 @@
 <script lang="ts">
+<<<<<<< HEAD
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
+=======
+  import { page } from '$app/stores';
+>>>>>>> 9c9f049917fc76c540bc21b5a7c4c4d34b89e0b4
   import { user } from '$lib/utils/store/user';
   import { isCoursePage } from '$lib/utils/functions/app';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { t } from '$lib/utils/functions/translations';
+  import type { TCustomLinks } from './types';
 
+  import Logo from './Logo.svelte';
+  import CustomLinks from './CustomLinks.svelte';
+  import AuthButtons from './AuthButtons.svelte';
+  import MobileMenu from './MobileMenu.svelte';
+
+<<<<<<< HEAD
   interface Props {
     disableSignup?: boolean;
     logo: any;
@@ -26,54 +35,66 @@
   let navClass = $state('');
 
   const redirect = isCoursePage(page.url.pathname) ? `?redirect=${page.url.pathname}` : '';
+=======
+  export let disableSignup = false;
+  export let logo: string | undefined = undefined;
+  export let orgName: string | undefined = undefined;
+  export let isOrgSite = false;
+  export let backgroundColor = 'bg-white dark:bg-black';
+  export let customLinks: TCustomLinks | undefined = undefined;
+
+  let navClass = '';
+  let mobileMenuOpen = false;
+
+  $: redirect = isCoursePage($page.url.pathname) ? `?redirect=${$page.url.pathname}` : '';
+  $: showLinks =
+    customLinks && customLinks.show && customLinks.links && customLinks.links.length > 0;
+
+  function toggleMobileMenu() {
+    mobileMenuOpen = !mobileMenuOpen;
+  }
+>>>>>>> 9c9f049917fc76c540bc21b5a7c4c4d34b89e0b4
 </script>
 
 <nav
   class="{navClass} {backgroundColor} sticky top-0 z-50 flex w-full border-b border-l-0 border-r-0 border-t-0 border-gray-300 px-2 py-1"
 >
   <ul class="flex w-full items-center">
-    <div class="logo">
-      <a
-        href="/"
-        title={`${$t('navigation.goto')} ${orgName || 'ClassroomIO'} ${$t('navigation.home')}`}
-        data-hveid="8"
+    <Logo {logo} {orgName} />
+
+    <span class="flex-grow" />
+
+    <!-- Mobile Menu Button - Only show when custom links exist -->
+    {#if isOrgSite && showLinks}
+      <button
+        class="mobile-menu-btn hover:text-primary-600 rounded-md p-2 text-gray-700 transition-colors duration-200 hover:bg-gray-100 lg:hidden"
+        on:click={toggleMobileMenu}
+        aria-label="Toggle mobile menu"
       >
-        <img
-          src={logo || '/logo-192.png'}
-          alt={`${orgName || 'ClassroomIO'} logo`}
-          class="mx-auto inline-block w-9 rounded"
-          data-atf="1"
-        />
-        {#if orgName}
-          <span class="line-clamp-1 hidden text-sm font-medium md:block">{orgName}</span>
-        {/if}
-      </a>
-    </div>
-
-    {#if $user.isLoggedIn}
-      <li class="hidden">
-        <a class="block" href="dashboard"> {$t('navigation.dashboard')} </a>
-      </li>
-
-      <li class="hidden">
-        <a class="block" href="courses"> {$t('navigation.courses')} </a>
-      </li>
-
-      <li class="hidden">
-        <a class="block" href="discussions"> {$t('navigation.discussion')} </a>
-      </li>
-
-      <li class="hidden">
-        <a class="block" href="people">{$t('navigation.people')} </a>
-      </li>
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          ></path>
+        </svg>
+      </button>
     {/if}
 
+<<<<<<< HEAD
     <span class="flex-grow"></span>
+=======
+    {#if customLinks && showLinks}
+      <CustomLinks {customLinks} />
+    {/if}
+>>>>>>> 9c9f049917fc76c540bc21b5a7c4c4d34b89e0b4
 
     {#if $user.isLoggedIn}
       {#if isOrgSite}
         <li><a class="block" href="/lms"> {$t('navigation.goto_lms')} </a></li>
       {/if}
+<<<<<<< HEAD
     {:else if !page.url.pathname?.includes('/404')}
       <li>
         <div class="flex">
@@ -95,33 +116,21 @@
           </div>
         {/if}
       </li>
+=======
+    {:else if isOrgSite && !$page.url.pathname?.includes('/404')}
+      <!-- Hide login/signup buttons on mobile when custom links exist -->
+      <div class="hidden lg:block">
+        <AuthButtons {disableSignup} {redirect} />
+      </div>
+    {:else if !isOrgSite && !$page.url.pathname?.includes('/404')}
+      <AuthButtons {disableSignup} {redirect} />
+>>>>>>> 9c9f049917fc76c540bc21b5a7c4c4d34b89e0b4
     {/if}
-    <!-- <li class="hidden">
-      <a
-        class="flex items-center"
-        href="https://t.me/classroomio"
-        target="_blank"
-      >
-        <img
-          alt="File:Telegram logo.svg"
-          class="mr-1"
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Telegram_alternative_logo.svg/50px-Telegram_alternative_logo.svg.png"
-          decoding="async"
-          width="25"
-          height="25"
-          srcset="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Telegram_alternative_logo.svg/50px-Telegram_alternative_logo.svg.png 1.5x, https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/1024px-Telegram_logo.svg.png 2x"
-          data-file-width="25"
-          data-file-height="25"
-        />
-        <span><SendAlt32 class="carbon-icon dark:text-white" /> Канал</span>
-        <SendAlt32 class="carbon-icon dark:text-white" />
-        <span>Канал</span>
-      </a>
-    </li> -->
-    <!-- <li class="new-question">
-      <NewQuestion />
-    </li> -->
   </ul>
+
+  {#if showLinks}
+    <MobileMenu bind:mobileMenuOpen {customLinks} {disableSignup} {redirect} />
+  {/if}
 </nav>
 
 <style>
@@ -130,16 +139,11 @@
     padding: 0;
   }
 
-  /* clearfix */
   ul::after {
     content: '';
     display: block;
     clear: both;
   }
-
-  /* li.new-question {
-    margin-top: 10px;
-  } */
 
   a {
     text-decoration: none;
@@ -149,9 +153,15 @@
     display: flex;
     gap: 0.5rem;
     align-items: center;
+    flex-direction: column;
   }
 
-  @media only screen and (max-width: 1002px) {
+  /* Mobile menu button styles */
+  .mobile-menu-btn {
+    display: none;
+  }
+
+  @media only screen and (max-width: 1023px) {
     nav.hide {
       display: none;
     }
@@ -161,6 +171,10 @@
 
     a {
       padding: 0 0.5em;
+    }
+
+    .mobile-menu-btn {
+      display: block;
     }
   }
 </style>

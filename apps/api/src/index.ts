@@ -10,7 +10,7 @@ import { showRoutes } from 'hono/dev';
 const port = env.PORT ? parseInt(env.PORT) : 3002;
 
 function startServer() {
-  console.log('Starting server...');
+  console.log('Starting server on port:', port);
 
   serve({ fetch: app.fetch, port });
 

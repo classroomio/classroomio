@@ -19,10 +19,18 @@
   import type { OrgLandingPageJson } from '$lib/utils/types/org';
   import { landingPageSettings } from './store';
 
+<<<<<<< HEAD
   let isSaving = $state(false);
   let creatingNewQuestion = $state(false);
   let hasUnsavedChanges = $state(false);
   let widgetKey = $state('');
+=======
+  let isSaving = false;
+  let creatingNewQuestion = false;
+  let creatingNewCustomLink = false;
+  let hasUnsavedChanges = false;
+  let widgetKey = '';
+>>>>>>> 9c9f049917fc76c540bc21b5a7c4c4d34b89e0b4
   const banner = [
     { value: 'video', label: `${$t('settings.landing_page.actions.banner_type.video')}` },
     { value: 'image', label: `${$t('settings.landing_page.actions.banner_type.image')}` }
@@ -33,6 +41,12 @@
     title: '',
     content: ''
   });
+
+  let newCustomLink = {
+    label: '',
+    url: '',
+    openInNewTab: false
+  };
 
   function widgetControl(key: string) {
     widgetKey = key;
@@ -71,6 +85,40 @@
     $landingPageSettings.faq.questions = filteredFaq;
   }
 
+  function createNewCustomLink() {
+    newCustomLink = {
+      label: '',
+      url: '',
+      openInNewTab: false
+    };
+    creatingNewCustomLink = true;
+  }
+
+  function saveNewCustomLink() {
+    if (newCustomLink.label !== '' && newCustomLink.url !== '') {
+      $landingPageSettings.customLinks.links = [
+        ...$landingPageSettings.customLinks.links,
+        {
+          id: new Date().getTime(),
+          label: newCustomLink.label,
+          url: newCustomLink.url,
+          openInNewTab: newCustomLink.openInNewTab
+        }
+      ];
+      creatingNewCustomLink = false;
+    }
+  }
+
+  function cancelNewCustomLink() {
+    creatingNewCustomLink = false;
+  }
+
+  function deleteCustomLink(id: number) {
+    let customLinks = $landingPageSettings.customLinks.links;
+    const filteredCustomLinks = customLinks.filter((link) => link.id !== id);
+    $landingPageSettings.customLinks.links = filteredCustomLinks;
+  }
+
   const checkPrefix = (inputValue: string) => {
     if (!inputValue) return;
 
@@ -97,7 +145,7 @@
       const message = error?.message || 'snackbar.lms.error.try_again';
       snackbar.error(`snackbar.lms.error.update ${message}`);
     } else {
-      $currentOrg.landingpage = $landingPageSettings;
+      $currentOrg.landingpage = $landingPageSettings as any;
       snackbar.success('snackbar.success_update');
       hasUnsavedChanges = false;
     }
@@ -116,11 +164,17 @@
         landingpage.header.background = $landingPageSettings.header.background;
       }
 
+<<<<<<< HEAD
       untrack(() => {
         $landingPageSettings = {
           ...landingpage
         };
       });
+=======
+      $landingPageSettings = {
+        ...landingpage
+      } as OrgLandingPageJson;
+>>>>>>> 9c9f049917fc76c540bc21b5a7c4c4d34b89e0b4
     }
   }
   $effect(() => {
@@ -539,6 +593,99 @@
         bind:value={$landingPageSettings.mailinglist.buttonLabel}
         onChange={() => (hasUnsavedChanges = true)}
       />
+    </Column>
+  </Row>
+
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
+    <Column sm={4} md={4} lg={4}
+      ><SectionTitle>{$t('settings.landing_page.custom_links.heading')}</SectionTitle>
+      <Toggle bind:toggled={$landingPageSettings.customLinks.show} size="sm">
+        <span slot="labelA" style="color: gray"
+          >{$t('settings.landing_page.custom_links.hide_links')}</span
+        >
+        <span slot="labelB" style="color: gray"
+          >{$t('settings.landing_page.custom_links.show_links')}</span
+        >
+      </Toggle>
+    </Column>
+    <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
+      <p class="mb-4 text-sm text-gray-600">
+        {$t('settings.landing_page.custom_links.description')}
+      </p>
+
+      {#each $landingPageSettings.customLinks.links as link (link.id)}
+        <div class="mb-4 rounded-lg border border-gray-200 p-4">
+          <div class="mb-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <TextField
+              label={$t('settings.landing_page.custom_links.label')}
+              placeholder={$t('settings.landing_page.custom_links.label_placeholder')}
+              bind:value={link.label}
+              className="mb-3"
+            />
+            <TextField
+              label={$t('settings.landing_page.custom_links.url')}
+              placeholder={$t('settings.landing_page.custom_links.url_placeholder')}
+              bind:value={link.url}
+              className="mb-3"
+            />
+          </div>
+          <div class="flex items-center justify-between">
+            <label class="flex items-center">
+              <input type="checkbox" bind:checked={link.openInNewTab} class="mr-2" />
+              <span class="text-sm">{$t('settings.landing_page.custom_links.new_tab')}</span>
+            </label>
+            <IconButton onClick={() => deleteCustomLink(link.id)}>
+              <TrashCan size={20} class="fill-red-700" />
+            </IconButton>
+          </div>
+        </div>
+      {/each}
+
+      {#if creatingNewCustomLink}
+        <div class="mb-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
+          <div class="mb-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <TextField
+              label={$t('settings.landing_page.custom_links.label')}
+              placeholder={$t('settings.landing_page.custom_links.label_placeholder')}
+              bind:value={newCustomLink.label}
+              className="mb-3"
+            />
+            <TextField
+              label={$t('settings.landing_page.custom_links.url')}
+              placeholder={$t('settings.landing_page.custom_links.url_placeholder')}
+              bind:value={newCustomLink.url}
+              className="mb-3"
+            />
+          </div>
+          <div class="flex items-center justify-between">
+            <label class="flex items-center">
+              <input type="checkbox" bind:checked={newCustomLink.openInNewTab} class="mr-2" />
+              <span class="text-sm">{$t('settings.landing_page.custom_links.new_tab')}</span>
+            </label>
+            <div class="flex gap-2">
+              <PrimaryButton
+                variant={VARIANTS.OUTLINED}
+                label={$t('settings.landing_page.custom_links.save')}
+                onClick={saveNewCustomLink}
+                className="text-sm px-3 py-1"
+              />
+              <PrimaryButton
+                variant={VARIANTS.OUTLINED}
+                label={$t('settings.landing_page.custom_links.cancel')}
+                onClick={cancelNewCustomLink}
+                className="text-sm px-3 py-1"
+              />
+            </div>
+          </div>
+        </div>
+      {:else}
+        <PrimaryButton
+          variant={VARIANTS.OUTLINED}
+          label={$t('settings.landing_page.custom_links.add')}
+          onClick={createNewCustomLink}
+          className="mt-2"
+        />
+      {/if}
     </Column>
   </Row>
 
