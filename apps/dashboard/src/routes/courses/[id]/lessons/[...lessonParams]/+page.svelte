@@ -24,7 +24,7 @@
     lessons,
     lessonSections
   } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { getGroupMemberId } from '$lib/components/Course/function';
+  import { getGroupMemberId } from '$lib/components/Course/functions';
   import { course, group } from '$lib/components/Course/store';
   import IconButton from '$lib/components/IconButton/index.svelte';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';

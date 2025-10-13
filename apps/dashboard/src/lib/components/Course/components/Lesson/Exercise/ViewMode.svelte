@@ -15,7 +15,7 @@
   import { QUESTION_TYPE } from '$lib/components/Question/constants';
   import { STATUS } from './constants';
   import { getPropsForQuestion, filterOutDeleted, wasCorrectAnswerSelected } from './functions';
-  import { formatAnswers, getGroupMemberId } from '$lib/components/Course/function';
+  import { formatAnswers, getGroupMemberId } from '$lib/components/Course/functions';
   import { submitExercise } from '$lib/utils/services/courses';
   import { fetchSubmission } from '$lib/utils/services/submissions';
   import { profile } from '$lib/utils/store/user';
@@ -295,7 +295,7 @@
         {/if}
       </div>
 
-      <article class="preview prose prose-sm sm:prose mt-3 p-2">
+      <article class="preview prose prose-sm mt-3 p-2 sm:prose">
         {@html $questionnaire.description || 'No desription'}
       </article>
 

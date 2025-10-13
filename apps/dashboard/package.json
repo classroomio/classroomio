@@ -50,6 +50,7 @@
     "js-yaml": "^4.1.0",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.2",
+    "jszip": "^3.10.1",
     "ky": "^1.10.0",
     "lodash": "^4.17.21",
     "openai-edge": "^1.2.2",

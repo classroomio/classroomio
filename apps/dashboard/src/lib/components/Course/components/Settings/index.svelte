@@ -34,8 +34,9 @@
   import { currentOrg, currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import type { Course } from '$lib/utils/types';
   import { COURSE_TYPE } from '$lib/utils/types';
-  import { lessons } from '../Lesson/store/lessons';
+  import { lessons, lessonSections } from '../Lesson/store/lessons';
   import { settings } from './store';
+  import { getAccessToken } from '$lib/utils/functions/supabase';
 
   let isSaving = false;
   let isLoading = false;
@@ -194,8 +195,60 @@
       allow_new_students: course.metadata.allowNewStudent
     });
   }
-  $: setDefault($course);
 
+  const handleScormExport = async () => {
+    try {
+      console.log('🚀 Starting SCORM export for course:', $course.id);
+
+      const accessToken = await getAccessToken();
+
+      const response = await fetch(`/api/scorm?courseId=${$course.id}`, {
+        method: 'POST',
+        headers: {
+          Authorization: accessToken,
+          Accept: 'application/zip'
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Export failed');
+      }
+
+      // Get the filename from the response headers
+      const contentDisposition = response.headers.get('Content-Disposition');
+      const filename = contentDisposition
+        ? contentDisposition.split('filename=')[1]?.replace(/"/g, '')
+        : `scorm-course-${Date.now()}.zip`;
+
+      console.log('✅ Download response received, filename:', filename);
+
+      // Convert response to blob
+      const blob = await response.blob();
+
+      // Create download link and trigger download
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = filename;
+
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      // Clean up the URL object
+      URL.revokeObjectURL(url);
+
+      console.log('✅ SCORM package downloaded successfully!');
+      snackbar.success('SCORM package downloaded successfully!');
+    } catch (error) {
+      console.error('❌ SCORM export failed:', error);
+      snackbar.error('snackbar.course_settings.error.not_right');
+    }
+  };
+
+  $: setDefault($course);
   $: courseLink = `${$currentOrgDomain}/course/${$course.slug}`;
 </script>
 
@@ -430,6 +483,7 @@
     </Column>
   </Row>
 
+  <!-- delete -->
   <Row id="delete" class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.delete')}</SectionTitle>
@@ -445,6 +499,24 @@
       />
     </Column>
   </Row>
+
+  <!-- export as scorm -->
+  <Row id="export" class="border-bottom-c flex flex-col py-7 lg:flex-row">
+    <Column sm={8} md={8} lg={8}>
+      <SectionTitle>{$t('course.navItem.settings.export')}</SectionTitle>
+      <p>{$t('course.navItem.settings.export_text')}</p>
+    </Column>
+    <Column sm={8} md={8} lg={8}>
+      <PrimaryButton
+        variant={VARIANTS.CONTAINED}
+        label={$t('course.navItem.settings.export')}
+        onClick={() => handleScormExport()}
+        isLoading={isDeleting}
+        isDisabled={isDeleting}
+      />
+    </Column>
+  </Row>
+
   <Row class="flex w-full items-center justify-end p-5">
     <PrimaryButton
       label={$t('course.navItem.settings.save')}

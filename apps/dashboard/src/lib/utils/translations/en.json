@@ -1192,7 +1192,9 @@
         "self_paced": "Self paced",
         "delete": "Delete Course",
         "delete_text": "Delete this course,this action cannot be undone",
-        "save": "Save Changes"
+        "save": "Save Changes",
+        "export": "Export Course",
+        "export_text": "Export all course data in a SCORM Format"
       }
     },
 

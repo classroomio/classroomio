@@ -7,7 +7,7 @@
   import PlayFilled from 'carbon-icons-svelte/lib/PlayFilled.svelte';
   import { ImageLoader, InlineLoading } from 'carbon-components-svelte';
 
-  import { getLectureNo } from '../Course/function';
+  import { getLectureNo } from '../Course/functions';
   import { currentOrg } from '$lib/utils/store/org';
   import { course } from '$lib/components/Course/store';
   import { t } from '$lib/utils/functions/translations';
@@ -260,7 +260,7 @@
         <!-- Sections - Goal -->
         {#if navItemKeys.includes(NAV_ITEM_KEY.GOALS)}
           <section id="goals" transition:fade={{ delay: 250, duration: 300 }} class="mt-8 pb-10">
-            <h3 class="text-2xl font-bold mt-0 mb-3">{$t('course.navItem.landing_page.learn')}</h3>
+            <h3 class="mb-3 mt-0 text-2xl font-bold">{$t('course.navItem.landing_page.learn')}</h3>
             <ul class="list font-light">
               <HtmlRender content={get(courseData, 'metadata.goals', '')} />
             </ul>
@@ -272,10 +272,10 @@
           <section
             id="certificate"
             transition:fade={{ delay: 250, duration: 300 }}
-            class="border-b border-gray-300 mt-8 pb-10"
+            class="mt-8 border-b border-gray-300 pb-10"
           >
-            <h3 class="text-2xl font-bold mt-0">{$t('course.navItem.landing_page.certificate')}</h3>
-            <p class="dark:text-white text-sm font-light mb-3">
+            <h3 class="mt-0 text-2xl font-bold">{$t('course.navItem.landing_page.certificate')}</h3>
+            <p class="mb-3 text-sm font-light dark:text-white">
               {$t('course.navItem.landing_page.certificate_text')}
             </p>
 
@@ -294,24 +294,24 @@
 
         <!-- Sections - Lessons -->
         {#if courseData.version === COURSE_VERSION.V1}
-          <section id="lessons" class="border-b border-gray-300 mt-8 pb-10">
-            <div class="flex items-center justify-between w-full mb-3">
-              <h3 class="text-2xl font-bold mt-0 mb-3">
+          <section id="lessons" class="mt-8 border-b border-gray-300 pb-10">
+            <div class="mb-3 flex w-full items-center justify-between">
+              <h3 class="mb-3 mt-0 text-2xl font-bold">
                 {$t('course.navItem.landing_page.content')}
               </h3>
-              <p class="dark:text-white text-sm font-light">
+              <p class="text-sm font-light dark:text-white">
                 {pluralize('lesson', lessons.length, true)}
               </p>
             </div>
 
             <div class="flex flex-wrap">
               {#each lessons as lesson, index}
-                <div class="px-2 py-1 m-2 border rounded">
+                <div class="m-2 rounded border px-2 py-1">
                   <Chip
                     value={getLectureNo(index + 1, '0')}
                     className="bg-primary-100 text-primary-700 inline "
                   />
-                  <p class="ml-2 text-xs font-light dark:text-white inline">
+                  <p class="ml-2 inline text-xs font-light dark:text-white">
                     {lesson.title}
                   </p>
                 </div>
@@ -343,7 +343,7 @@
         <!-- Sections - Reviews -->
         {#if navItemKeys.includes(NAV_ITEM_KEY.REVIEWS)}
           <section id="reviews" transition:fade={{ delay: 250, duration: 300 }}>
-            <h2 class="my-16 mr-0 mb-6 ml-0 font-semibold">
+            <h2 class="my-16 mb-6 ml-0 mr-0 font-semibold">
               {$t('course.navItem.landing_page.reviews')}
             </h2>
             <div class="flex flex-wrap">
@@ -413,7 +413,7 @@
                     {averageRating}
                     {$t('course.navItem.landing_page.reviews_modal.rating')}
                   </h2>
-                  <h2 class="text-lg font-semibold mt-2">
+                  <h2 class="mt-2 text-lg font-semibold">
                     {reviews.length}
                     {$t('course.navItem.landing_page.reviews_modal.ratings')}
                   </h2>
@@ -457,10 +457,10 @@
 
         <!-- Sections - Instructor -->
         <section id="instructor" class="mt-8 pb-10">
-          <h3 class="text-2xl font-bold mt-0 mb-3">
+          <h3 class="mb-3 mt-0 text-2xl font-bold">
             {$t('course.navItem.landing_page.instructor')}
           </h3>
-          <div class="flex items-center mb-4">
+          <div class="mb-4 flex items-center">
             <img
               alt="Author Avatar"
               class="mr-3 block h-20 w-20 rounded-full"

@@ -3,7 +3,7 @@
   import { goto } from '$app/navigation';
   import Box from '$lib/components/Box/index.svelte';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { getLectureNo } from '$lib/components/Course/function.js';
+  import { getLectureNo } from '$lib/components/Course/functions';
   import { course, group } from '$lib/components/Course/store';
   import CourseContainer from '$lib/components/CourseContainer/index.svelte';
   import { PageBody, PageNav } from '$lib/components/Page';

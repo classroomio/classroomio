@@ -7,7 +7,7 @@
   import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
   import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
   import NavExpandable from './NavExpandable.svelte';
-  import { getNavItemRoute, getLessonsRoute, getLectureNo } from '$lib/components/Course/function';
+  import { getNavItemRoute, getLessonsRoute, getLectureNo } from '$lib/components/Course/functions';
   import { lessons, lessonSections } from '../Lesson/store/lessons';
   import { course } from '$lib/components/Course/store';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
