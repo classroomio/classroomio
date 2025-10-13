@@ -669,7 +669,12 @@
           "questions_tried": "Przydzielił ten wynik z powodu całkowitej próby:",
           "delete_prompt": "Usuwać",
           "delete_error": "Nie udało się usunąć zgłoszenia",
-          "delete_success": "Pomyślnie usunięte zgłoszenie"
+          "delete_success": "Pomyślnie usunięte zgłoszenie",
+          "allocated": "Przydzielono ten wynik, ponieważ",
+          "total_try": "wszystkich prób:",
+          "options_correct": "wybrano prawidłowe opcje",
+          "out_of": "z",
+          "options_wrong": "i liczba błędnych wyborów"
         },
         "submission_status": {
           "submitted": "Złożony",
@@ -842,7 +847,8 @@
               "heading": "Opis",
               "describe": "Opisz ćwiczenie swoim uczniowi",
               "no": "Brak opisu"
-            }
+            },
+            "address": "Wpisz tutaj swój adres"
           },
           "new_exercise_modal": {
             "heading": "Nowe ćwiczenie",
@@ -1356,7 +1362,8 @@
         "title_highlight": "Title-Highlight",
         "subtitle": "Podtytuł",
         "phone_number": "Numer telefonu",
-        "email": "E-mail"
+        "email": "E-mail",
+        "address": "Adres"
       },
       "faq": {
         "heading": "Często zadawane pytania",

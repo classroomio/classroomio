@@ -156,6 +156,10 @@
       if (!landingpage?.header?.background) {
         landingpage.header.background = $landingPageSettings.header.background;
       }
+      
+      if (!landingpage.customLinks) {
+        landingpage.customLinks = $landingPageSettings.customLinks;
+      }
 
       untrack(() => {
         $landingPageSettings = {
@@ -230,7 +234,6 @@
         </Toggle>
       </div>
 
-      <div></div>
       <RadioButtonGroup
         legendText={$t('settings.landing_page.actions.banner_type.heading')}
         bind:selected={$landingPageSettings.header.banner.type}
@@ -525,6 +528,13 @@
         bind:value={$landingPageSettings.contact.subtitle}
         onChange={() => (hasUnsavedChanges = true)}
         isAIEnabled={true}
+      />
+      <TextField
+        label={$t('settings.landing_page.contact_us.address')}
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.address')}
+        className="mt-3 mb-5"
+        bind:value={$landingPageSettings.contact.address}
+        onChange={() => (hasUnsavedChanges = true)}
       />
       <TextField
         label={$t('settings.landing_page.contact_us.phone_number')}

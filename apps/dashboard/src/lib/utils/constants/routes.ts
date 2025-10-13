@@ -31,12 +31,12 @@ export const PUBLIC_ROUTES = [
 ];
 
 export const ROUTES_TO_HIDE_NAV = [
-  ROUTE.LOGIN,
-  ROUTE.SIGN_UP,
+  `^${ROUTE.LOGIN}$`,
+  `^${ROUTE.SIGN_UP}$`,
   ROUTE.LMS_HOME,
   `^${ROUTE.INVITE_TEACHER}/.*`,
   `^${ROUTE.INVITE_STUDENT}/.*`,
-  ROUTE.FORGOT,
-  ROUTE.RESET,
-  ROUTE.ONBOARDING
+  `^${ROUTE.FORGOT}$`,
+  `^${ROUTE.RESET}$`,
+  `^${ROUTE.ONBOARDING}$`
 ];

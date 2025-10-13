@@ -67,7 +67,7 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
     subtitle: 'Reach out to us with any question you might have.',
     address: 'Ashwoodfield House Farm, Kidderminster Rd, Stourbridge, Kingswinford DY6 0AA',
     phone: '+4407339904995',
-    email: 'help@digdippa.com',
+    email: 'help@lms.com',
     show: true
   },
   mailinglist: {
