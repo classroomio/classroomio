@@ -678,7 +678,8 @@
               "no": "Không có mô tả"
             },
             "no_answer": "Không có câu trả lời nào được đưa ra",
-            "check": "Kiểm tra"
+            "check": "Kiểm tra",
+            "address": "Viết địa chỉ của bạn ở đây"
           },
           "new_exercise_modal": {
             "heading": "Bài tập mới",
@@ -1240,7 +1241,8 @@
         "title_highlight": "Tiêu đề-Đánh dấu",
         "subtitle": "Phụ đề",
         "phone_number": "Số điện thoại",
-        "email": "E-mail"
+        "email": "E-mail",
+        "address": "Địa chỉ"
       },
       "faq": {
         "heading": "Các câu hỏi thường gặp",

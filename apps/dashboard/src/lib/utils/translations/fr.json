@@ -678,7 +678,8 @@
               "no": "Pas de description"
             },
             "no_answer": "Aucune réponse n'a été fournie",
-            "check": "Vérifier"
+            "check": "Vérifier",
+            "address": "Écrivez votre adresse ici"
           },
           "new_exercise_modal": {
             "heading": "Nouvel exercice",
@@ -1240,7 +1241,8 @@
         "title_highlight": "Titre-Point culminant",
         "subtitle": "Sous-titre",
         "phone_number": "Numéro de téléphone",
-        "email": "E-mail"
+        "email": "E-mail",
+        "address": "Adresse"
       },
       "faq": {
         "heading": "Questions fréquemment posées",
