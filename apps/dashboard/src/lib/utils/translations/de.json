@@ -678,7 +678,8 @@
               "no": "Keine Beschreibung"
             },
             "no_answer": "Es wurde keine Antwort gegeben",
-            "check": "Überprüfen"
+            "check": "Überprüfen",
+            "address": "Geben Sie hier Ihre Adresse ein"
           },
           "new_exercise_modal": {
             "heading": "Neue Übung",
@@ -1240,7 +1241,8 @@
         "title_highlight": "Titel-Highlight",
         "subtitle": "Untertitel",
         "phone_number": "Telefonnummer",
-        "email": "Email"
+        "email": "Email",
+        "address": "Adresse"
       },
       "faq": {
         "heading": "Häufig gestellte Fragen",

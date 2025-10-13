@@ -559,6 +559,13 @@
         isAIEnabled={true}
       />
       <TextField
+        label={$t('settings.landing_page.contact_us.address')}
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.address')}
+        className="mt-3 mb-5"
+        bind:value={$landingPageSettings.contact.address}
+        onChange={() => (hasUnsavedChanges = true)}
+      />
+      <TextField
         label={$t('settings.landing_page.contact_us.phone_number')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.number')}
         className="mt-3 mb-5"
