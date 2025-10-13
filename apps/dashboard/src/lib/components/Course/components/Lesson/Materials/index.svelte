@@ -70,18 +70,41 @@
   let localeExists: Record<string, boolean> = {};
   // let prevContent = '';
   let timeoutId: NodeJS.Timeout;
-  let tabs = $state(CONSTANTS.tabs);
-  let currentTab = $state(tabs[0].value);
   let errors: Record<string, string> = {};
   let editorWindowRef: Window | undefined = $state();
   let aiButtonRef: HTMLDivElement | undefined = $state();
   let openPopover = $state(false);
   let player: HTMLVideoElement | undefined = $state();
-  let componentsToRender = $state(getComponentOrder(tabs));
   let aiButtonClass =
     'flex items-center px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2';
 
   const lessonTitle = $derived($lesson.title);
+
+  const tabs = $derived.by(() => {
+    const ordered = orderedTabs(CONSTANTS.tabs, $course.metadata?.lessonTabsOrder);
+    const content = $lessonByTranslation[lessonId]?.[$lesson.locale] || '';
+
+    const { slide_url, videos, note, documents } = $lesson.materials;
+
+    return ordered.map((tab) => {
+      let badgeValue = 0;
+
+      if (tab.value === 1 && (!isHtmlValueEmpty(note) || !isHtmlValueEmpty(content))) {
+        badgeValue = 1;
+      } else if (tab.value === 2 && !!slide_url) {
+        badgeValue = 1;
+      } else if (tab.value === 3 && !isEmpty(videos)) {
+        badgeValue = videos.length;
+      } else if (tab.value === 4 && !isEmpty(documents)) {
+        badgeValue = documents.length;
+      }
+      tab.badgeValue = badgeValue;
+      return tab;
+    });
+  });
+  const componentsToRender = $derived(getComponentOrder(tabs));
+
+  let currentTab = $derived(tabs[0].value);
 
   const onChange = (tab) => {
     return () => {
@@ -173,28 +196,6 @@
     });
   }
 
-  function addBadgeValueToTab(materials: LessonPage['materials'], localeContent: string) {
-    untrack(() => {
-      const { slide_url, videos, note, documents } = materials;
-
-      tabs = tabs.map((tab) => {
-        let badgeValue = 0;
-
-        if (tab.value === 1 && (!isHtmlValueEmpty(note) || !isHtmlValueEmpty(localeContent))) {
-          badgeValue = 1;
-        } else if (tab.value === 2 && !!slide_url) {
-          badgeValue = 1;
-        } else if (tab.value === 3 && !isEmpty(videos)) {
-          badgeValue = videos.length;
-        } else if (tab.value === 4 && !isEmpty(documents)) {
-          badgeValue = documents.length;
-        }
-        tab.badgeValue = badgeValue;
-        return tab;
-      });
-    });
-  }
-
   const openAddVideoModal = () => {
     $lessonVideoUpload.isModalOpen = true;
   };
@@ -271,16 +272,6 @@
     });
   }
 
-  async function onLessonIdChange(_lid: string) {
-    untrack(() => {
-      isSaving = false;
-
-      tabs = orderedTabs(tabs, $course.metadata?.lessonTabsOrder);
-      currentTab = tabs[0].value;
-      componentsToRender = getComponentOrder(tabs);
-    });
-  }
-
   const onClose = () => {
     if ($lessonVideoUpload.isUploading) return;
 
@@ -321,18 +312,8 @@
   });
 
   $effect(() => {
-    console.log('onLessonIdChange...');
-    onLessonIdChange(lessonId);
-  });
-
-  $effect(() => {
     console.log('handleSave...');
     handleSave(prevMode);
-  });
-
-  $effect(() => {
-    console.log('addBadgeValueToTab...');
-    addBadgeValueToTab($lesson.materials, $lessonByTranslation[lessonId]?.[$lesson.locale] || '');
   });
 
   // $effect(() => {

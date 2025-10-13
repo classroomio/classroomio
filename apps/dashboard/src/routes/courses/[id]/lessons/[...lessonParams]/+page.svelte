@@ -45,9 +45,7 @@
   const isLessonComplete = $derived(getIsLessonComplete($lesson.lesson_completion, $profile.id));
 
   async function fetchReqData(lessonId = '', isMaterialsTabActive: boolean) {
-    if (hasFetched) return;
-
-    hasFetched = true;
+    if (lessonId === $lesson.id) return;
 
     const timeout = setTimeout(() => {
       $lesson.isFetching = true;

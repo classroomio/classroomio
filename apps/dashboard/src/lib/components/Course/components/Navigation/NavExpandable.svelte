@@ -86,17 +86,19 @@
     onclick={onClick}
     disabled={isLoading}
   >
-    <NavIcons {name} />
-    {#if isLoading}
-      <div class="mx-auto w-11/12">
-        <SkeletonText class="rounded-md" style="margin: 0px; height: 30px;" />
-      </div>
-    {:else}
-      <span class="text-md line-clamp-2 text-start font-bold leading-4">{label}</span>
-      {#if total}
-        <span class="ml-1">({total})</span>
+    <div class="flex w-full items-center gap-2.5">
+      <NavIcons {name} />
+      {#if isLoading}
+        <div class="mx-auto w-11/12">
+          <SkeletonText class="rounded-md" style="margin: 0px; height: 20px;" />
+        </div>
+      {:else}
+        <span class="text-md line-clamp-2 text-start font-bold leading-4">{label}</span>
+        {#if total}
+          <span class="ml-1">({total})</span>
+        {/if}
       {/if}
-    {/if}
+    </div>
     <span class="grow"></span>
 
     {#if isPaidFeature && $isFreePlan}
