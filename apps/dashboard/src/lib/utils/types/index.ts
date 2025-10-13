@@ -10,7 +10,8 @@ export enum LOCALE {
   DE = 'de',
   VI = 'vi',
   RU = 'ru',
-  ES = 'es'
+  ES = 'es',
+  DA = 'da'
 }
 
 //===============Custom Type===============

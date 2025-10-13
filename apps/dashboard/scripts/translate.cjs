@@ -24,7 +24,8 @@ const languageFiles = {
   pl: path.resolve(__dirname, '../src/lib/utils/translations/pl.json'),
   pt: path.resolve(__dirname, '../src/lib/utils/translations/pt.json'),
   ru: path.resolve(__dirname, '../src/lib/utils/translations/ru.json'),
-  vi: path.resolve(__dirname, '../src/lib/utils/translations/vi.json')
+  vi: path.resolve(__dirname, '../src/lib/utils/translations/vi.json'),
+  da: path.resolve(__dirname, '../src/lib/utils/translations/da.json')
 };
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

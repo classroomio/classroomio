@@ -57,7 +57,8 @@
     { id: 'pl', text: 'Polish' },
     { id: 'pt', text: 'Portuguese' },
     { id: 'ru', text: 'Russian' },
-    { id: 'vi', text: 'Vietnamese' }
+    { id: 'vi', text: 'Vietnamese' },
+    { id: 'da', text: 'Danish' }
   ];
 
   const educatorGoals: Goal[] = [
