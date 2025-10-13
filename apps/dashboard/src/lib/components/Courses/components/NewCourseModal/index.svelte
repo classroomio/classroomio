@@ -19,8 +19,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
-  import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
 
   let isLoading = $state(false);
   let errors = $state({
@@ -166,11 +165,7 @@
             onclick={!option.isDisabled ? () => (type = option.type) : undefined}
           >
             <div class="flex h-[70%] w-full flex-row-reverse">
-              {#if option.type === type}
-                <CheckmarkFilledIcon size={16} class="carbon-icon text-primary-600 dark:text-primary-200" />
-              {:else if !option.isDisabled}
-                <CheckmarkOutlineIcon size={16} class="carbon-icon" />
-              {/if}
+              <CircleCheckIcon filled={option.type === type} />
             </div>
 
             <div>

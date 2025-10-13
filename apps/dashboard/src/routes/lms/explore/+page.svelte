@@ -10,9 +10,9 @@
   import type { Course } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
 
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import Grid from 'carbon-icons-svelte/lib/Grid.svelte';
-  import List from 'carbon-icons-svelte/lib/List.svelte';
+  import { IconButton } from '$lib/components/IconButton';
+  import GridIcon from '@lucide/svelte/icons/grid-2x2';
+  import ListIcon from '@lucide/svelte/icons/list';
 
   let searchValue = $state('');
   let selectedId: string | undefined = $state();
@@ -106,11 +106,11 @@
 
         {#if $courseMetaDeta.view === 'list'}
           <IconButton onClick={() => setViewPreference('grid')}>
-            <Grid size={24} />
+            <GridIcon />
           </IconButton>
         {:else}
           <IconButton onClick={() => setViewPreference('list')}>
-            <List size={24} />
+            <ListIcon />
           </IconButton>
         {/if}
       </div>

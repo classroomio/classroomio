@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Grid, Row, Column } from 'carbon-components-svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import Save from 'carbon-icons-svelte/lib/Save.svelte';
+  import SaveIcon from '@lucide/svelte/icons/save';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import SectionTitle from '../SectionTitle.svelte';
   import { Toggle } from 'carbon-components-svelte';
@@ -162,6 +162,6 @@
 
 <div class="absolute bottom-8 right-6 z-[120] block md:hidden">
   <PrimaryButton onClick={handleSave} isLoading={isSaving} isDisabled={isSaving}>
-    <Save size={24} class="" />
+    <SaveIcon />
   </PrimaryButton>
 </div>

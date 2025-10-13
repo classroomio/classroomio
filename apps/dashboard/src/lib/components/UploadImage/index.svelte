@@ -1,7 +1,7 @@
 <script lang="ts">
   import { t } from '$lib/utils/functions/translations';
   import { Loading } from 'carbon-components-svelte';
-  import Camera from 'carbon-icons-svelte/lib/Camera.svelte';
+  import CameraIcon from '@lucide/svelte/icons/camera';
 
   interface Props {
     avatar: string | undefined;
@@ -92,7 +92,7 @@
       {#if isUploading}
         <Loading withOverlay={false} small />
       {:else}
-        <Camera size={20} />
+        <CameraIcon />
       {/if}
       <span class="ml-2">{$t('settings.profile.profile_picture.upload_image')}</span>
     </button>

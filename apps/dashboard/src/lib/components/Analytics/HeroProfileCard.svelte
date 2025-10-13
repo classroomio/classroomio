@@ -3,8 +3,8 @@
   import { calDateDiff } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
   import type { UserAnalytics } from '$lib/utils/types/analytics';
-  import Alarm from 'carbon-icons-svelte/lib/Alarm.svelte';
-  import Email from 'carbon-icons-svelte/lib/Email.svelte';
+  import AlarmClockIcon from '@lucide/svelte/icons/alarm-clock';
+  import MailIcon from '@lucide/svelte/icons/mail';
 
   interface Props {
     user: UserAnalytics['user'];
@@ -23,12 +23,12 @@
 
       <div class="flex flex-col items-center gap-1 md:flex-row md:gap-4">
         <p class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">
-          <Email />
+          <MailIcon />
           {user.email}
         </p>
 
         <p class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">
-          <Alarm />
+          <AlarmClockIcon />
           {$t('analytics.last_seen')}:
           <span class="italic">
             {user.lastSeen ? calDateDiff(user.lastSeen) : $t('analytics.a_while_ago')}

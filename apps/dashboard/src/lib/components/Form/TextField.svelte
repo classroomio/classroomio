@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import PasswordEye from '../Icons/PasswordEye.svelte';
 
   interface Props {

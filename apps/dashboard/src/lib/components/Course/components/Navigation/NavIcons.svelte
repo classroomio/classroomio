@@ -1,15 +1,15 @@
 <script lang="ts">
-  import TableOfContents from 'carbon-icons-svelte/lib/TableOfContents.svelte'; // overview
-  import Result from 'carbon-icons-svelte/lib/Result.svelte';
-  import Workspace from 'carbon-icons-svelte/lib/Workspace.svelte';
-  import ListChecked from 'carbon-icons-svelte/lib/ListChecked.svelte';
-  import Group from 'carbon-icons-svelte/lib/Group.svelte';
-  import ApplicationWeb from 'carbon-icons-svelte/lib/ApplicationWeb.svelte';
-  import Badge from 'carbon-icons-svelte/lib/Badge.svelte';
-  import IbmWatsonKnowledgeCatalog from 'carbon-icons-svelte/lib/IbmWatsonKnowledgeCatalog.svelte';
-  import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
-  import Bullhorn from 'carbon-icons-svelte/lib/Bullhorn.svelte';
-  import Analytics from 'carbon-icons-svelte/lib/Analytics.svelte';
+  import TableOfContentsIcon from '@lucide/svelte/icons/table-of-contents'; // overview
+  import BookCheckIcon from '@lucide/svelte/icons/book-check';
+  import ListTodoIcon from '@lucide/svelte/icons/list-todo';
+  import UsersIcon from '@lucide/svelte/icons/users';
+  import ScreenShareIcon from '@lucide/svelte/icons/screen-share';
+  import AwardIcon from '@lucide/svelte/icons/award';
+  import ScrollTextIcon from '@lucide/svelte/icons/scroll-text';
+  import SettingsIcon from '@lucide/svelte/icons/settings';
+  import MegaphoneIcon from '@lucide/svelte/icons/megaphone';
+  import ChartLineIcon from '@lucide/svelte/icons/chart-line';
+  import ListIcon from '@lucide/svelte/icons/list';
   import { NAV_IDS } from './constants';
 
   interface Props {
@@ -20,25 +20,25 @@
 </script>
 
 {#if name === NAV_IDS.SECTION}
-  <TableOfContents size={20} class="carbon-icon mr-2" style="min-width: 20px;" />
+  <TableOfContentsIcon />
 {:else if name === NAV_IDS.NEWS_FEED}
-  <Bullhorn size={20} class="carbon-icon mr-2" />
+  <MegaphoneIcon />
 {:else if name === NAV_IDS.LESSONS}
-  <IbmWatsonKnowledgeCatalog size={20} class="carbon-icon mr-2" />
+  <ScrollTextIcon />
 {:else if name === NAV_IDS.ATTENDANCE}
-  <ListChecked size={20} class="carbon-icon mr-2" />
+  <ListIcon />
 {:else if name === NAV_IDS.SUBMISSIONS}
-  <Workspace size={20} class="carbon-icon mr-2" />
+  <ListTodoIcon />
 {:else if name === NAV_IDS.MARKS}
-  <Result size={20} class="carbon-icon mr-2" />
+  <BookCheckIcon />
 {:else if name === NAV_IDS.PEOPLE}
-  <Group size={20} class="carbon-icon mr-2" />
+  <UsersIcon />
 {:else if name === NAV_IDS.ANALYTICS}
-  <Analytics size={20} class="carbon-icon mr-2" />
+  <ChartLineIcon />
 {:else if name === NAV_IDS.LANDING_PAGE}
-  <ApplicationWeb size={20} class="carbon-icon mr-2" />
+  <ScreenShareIcon />
 {:else if name === NAV_IDS.CERTIFICATES}
-  <Badge size={20} class="carbon-icon mr-2" />
+  <AwardIcon />
 {:else if name === NAV_IDS.SETTINGS}
-  <Settings size={20} class="carbon-icon mr-2" />
+  <SettingsIcon />
 {/if}

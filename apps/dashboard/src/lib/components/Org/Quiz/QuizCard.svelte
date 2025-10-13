@@ -1,7 +1,7 @@
 <script lang="ts">
   import pluralize from 'pluralize';
   import { ImageLoader } from 'carbon-components-svelte';
-  import OverflowMenuHorizontalIcon from 'carbon-icons-svelte/lib/OverflowMenuHorizontal.svelte';
+  import EllipsisIcon from '@lucide/svelte/icons/ellipsis';
   import { currentOrgPath } from '$lib/utils/store/org';
   import Dropdown from '$lib/components/Dropdown/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -69,7 +69,7 @@
 
         <Dropdown options={getOptions()} classNames="absolute top-4 right-4" isIcon={true}>
           <div class="rounded-full bg-gray-200 p-1 dark:bg-gray-600">
-            <OverflowMenuHorizontalIcon size={20} class="carbon-icon active" />
+            <EllipsisIcon />
           </div>
         </Dropdown>
       </div>

@@ -3,14 +3,14 @@
   import { goto } from '$app/navigation';
   import cloneDeep from 'lodash/cloneDeep';
   import set from 'lodash/set';
-  import ChevronRightIcon from 'carbon-icons-svelte/lib/ChevronRight.svelte';
-  import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
-  import ArrowUpRightIcon from 'carbon-icons-svelte/lib/ArrowUpRight.svelte';
-  import ChevronLeftIcon from 'carbon-icons-svelte/lib/ChevronLeft.svelte';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+  import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-right';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+  import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
   import { currentOrgDomain } from '$lib/utils/store/org';
 
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import CloseButton from '$lib/components/Buttons/Close/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
+  import { CloseButton } from '$lib/components/Buttons/Close';
   import HeaderForm from './HeaderForm.svelte';
   import RequirementForm from './RequirementForm.svelte';
   import DescriptionForm from './DescriptionForm.svelte';
@@ -181,9 +181,9 @@
           }}
     >
       {#if show}
-        <ChevronRightIcon size={16} />
+        <ChevronRightIcon />
       {:else}
-        <ChevronLeftIcon size={16} />
+        <ChevronLeftIcon />
       {/if}
     </IconButton>
   </div>
@@ -201,7 +201,7 @@
             isLoading={loading}
           />
           <IconButton onClick={handlePreview} disabled={loading || !course.slug}>
-            <ArrowUpRightIcon size={24} class="carbon-icon dark:text-white" title="Preview" />
+            <ArrowUpRightIcon />
           </IconButton>
         </div>
       </div>
@@ -218,14 +218,14 @@
             {section.title}
             {$t('course.navItem.landing_page.editor.section')}
           </p>
-          <ChevronRightIcon size={24} class="carbon-class" />
+          <ChevronRightIcon />
         </button>
       {/each}
     {:else}
       <!-- Title -->
       <div class="flex items-center {borderBottomGrey} w-full">
         <IconButton onClick={handleClose}>
-          <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" title="Go back" />
+          <ArrowLeftIcon />
         </IconButton>
         <div class=" flex items-center">
           <h3 class="dark:text-white">

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { Column, Grid, Row } from 'carbon-components-svelte';
-  import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
+  import ZapIcon from '@lucide/svelte/icons/zap';
   import debounce from 'lodash/debounce';
   import ColorPicker from 'svelte-awesome-color-picker';
 
@@ -299,7 +299,7 @@
         onClick={() => gotoSettings('/domains')}
       >
         {#if $isFreePlan}
-          <FlashFilled size={16} class="text-blue-700" />
+          <ZapIcon class="filled" />
         {/if}
         {$t('settings.organization.organization_profile.custom_domain.button')}
       </PrimaryButton>
@@ -322,7 +322,7 @@
         onClick={() => gotoSettings('/teams')}
       >
         {#if $isFreePlan}
-          <FlashFilled size={16} class="text-blue-700" />
+          <ZapIcon class="filled" />
         {/if}
         {$t('settings.organization.organization_profile.team.button')}
       </PrimaryButton>

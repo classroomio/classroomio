@@ -1,8 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
-  import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import WarningFilledIcon from 'carbon-icons-svelte/lib/WarningFilled.svelte';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
+  import CircleAlertIcon from '@lucide/svelte/icons/circle-alert';
   import cloneDeep from 'lodash/cloneDeep';
   import isBoolean from 'lodash/isBoolean';
   import { onMount } from 'svelte';
@@ -240,7 +240,7 @@
   <aside class="root h-full w-1/5 bg-gray-100 p-4 dark:bg-neutral-800">
     <div class="flex h-full flex-col">
       <a class="text-md flex items-center text-gray-500 dark:text-white" href={`${$currentOrgPath}/quiz`}>
-        <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" /> Back to Quizzes
+        <ArrowLeftIcon /> Back to Quizzes
       </a>
 
       <h3 class="my-3">Quiz</h3>
@@ -266,7 +266,7 @@
             Question {i + 1}
 
             {#if qHasError(question.id, errors)}
-              <WarningFilledIcon size={20} class="carbon-icon error" />
+              <CircleAlertIcon class="filled" />
             {/if}
           </button>
         {/each}
@@ -384,7 +384,7 @@
               'border-primary-700'}"
           >
             {#if $quizStore.theme === _theme.id}
-              <CheckmarkFilledIcon size={24} class="carbon-icon absolute right-4 top-4" style="fill:white;" />
+              <CircleCheckIcon filled />
             {/if}
             <div
               role="button"

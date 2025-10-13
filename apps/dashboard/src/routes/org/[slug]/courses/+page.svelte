@@ -7,16 +7,16 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { courses, courseMetaDeta } from '$lib/components/Courses/store';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import { Add } from 'carbon-icons-svelte';
+  import PlusIcon from '@lucide/svelte/icons/plus';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import type { Course } from '$lib/utils/types';
   import { browser } from '$app/environment';
   import { t } from '$lib/utils/functions/translations';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import Grid from 'carbon-icons-svelte/lib/Grid.svelte';
-  import List from 'carbon-icons-svelte/lib/List.svelte';
+  import { IconButton } from '$lib/components/IconButton';
+  import GridIcon from '@lucide/svelte/icons/grid-2x2';
+  import ListIcon from '@lucide/svelte/icons/list';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
 
@@ -108,7 +108,7 @@
       <h1 class="text-2xl font-bold md:text-3xl dark:text-white">{$t('courses.heading')}</h1>
       {#if $isMobile}
         <PrimaryButton isDisabled={!$isOrgAdmin} onClick={openNewCourseModal}>
-          <Add size={24} />
+          <PlusIcon />
         </PrimaryButton>
       {:else}
         <PrimaryButton
@@ -138,11 +138,11 @@
         />
         {#if $courseMetaDeta.view === 'list'}
           <IconButton onClick={() => setViewPreference('grid')}>
-            <Grid size={24} />
+            <GridIcon />
           </IconButton>
         {:else}
           <IconButton onClick={() => setViewPreference('list')}>
-            <List size={24} />
+            <ListIcon />
           </IconButton>
         {/if}
       </div>

@@ -4,9 +4,8 @@
   import { CourseContainer } from '$lib/components/CourseContainer';
   import { checkExercisesComplete, fetchLesson, updateLessonCompletion } from '$lib/utils/services/courses';
   import { globalStore } from '$lib/utils/store/app';
-  import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
-  import ListChecked from 'carbon-icons-svelte/lib/ListChecked.svelte';
+  import ListChecksIcon from '@lucide/svelte/icons/list-checks';
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
 
   import { browser } from '$app/environment';
   import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
@@ -16,7 +15,7 @@
   import { lesson, setLesson, lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
   import { getGroupMemberId } from '$lib/components/Course/function';
   import { course, group } from '$lib/components/Course/store';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import { PageBody, PageNav } from '$lib/components/Page';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
@@ -27,8 +26,11 @@
   import { profile } from '$lib/utils/store/user';
   import { COURSE_VERSION, type Lesson, type LessonCompletion } from '$lib/utils/types';
   import { Dropdown } from 'carbon-components-svelte';
-  import { ChevronLeft, ChevronRight, Edit, Save } from 'carbon-icons-svelte';
-  import ResultOld from 'carbon-icons-svelte/lib/ResultOld.svelte';
+  import PencilIcon from '@lucide/svelte/icons/pencil';
+  import SaveIcon from '@lucide/svelte/icons/save';
+  import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+  import HistoryIcon from '@lucide/svelte/icons/history';
 
   let { data = $bindable() } = $props();
 
@@ -228,7 +230,7 @@
             <!-- Version control -->
             {#if mode === MODES.edit && window.innerWidth >= 1024}
               <IconButton onClick={() => (isVersionDrawerOpen = true)}>
-                <ResultOld size={24} />
+                <HistoryIcon />
               </IconButton>
             {/if}
 
@@ -240,9 +242,9 @@
                 disabled={isSaving}
               >
                 {#if mode === MODES.edit}
-                  <Save size={24} />
+                  <SaveIcon />
                 {:else}
-                  <Edit size={24} />
+                  <PencilIcon />
                 {/if}
               </IconButton>
             </div>
@@ -280,7 +282,7 @@
         }`}
         onclick={() => goToNextOrPrevLesson(data.lessonId, true)}
       >
-        <ChevronLeft size={24} />
+        <ChevronLeftIcon />
 
         <span class="hidden md:block">{$t('course.navItem.lessons.prev')}</span>
       </button>
@@ -289,7 +291,7 @@
           class="my-2 flex items-center border border-b-0 border-l-0 border-t-0 border-gray-300 px-2 pr-4"
           onclick={() => goto(`${path}/exercises`)}
         >
-          <ListChecked size={24} class="carbon-icon" />
+          <ListChecksIcon />
           <span class="ml-1">{$lesson.totalExercises}</span>
         </button>
       {:else}
@@ -305,11 +307,7 @@
         onclick={() => markLessonComplete(data.lessonId)}
         disabled={isMarkingComplete}
       >
-        {#if isLessonComplete}
-          <CheckmarkFilledIcon size={24} class="carbon-icon text-primary-600" />
-        {:else}
-          <CheckmarkOutlineIcon size={24} class="carbon-icon" />
-        {/if}
+        <CircleCheckIcon filled={isLessonComplete} />
       </button>
       <button
         disabled={isNextDisabled}
@@ -317,7 +315,7 @@
         onclick={() => goToNextOrPrevLesson(data.lessonId, false)}
       >
         <span class="hidden md:block">{$t('course.navItem.lessons.next')}</span>
-        <ChevronRight size={24} />
+        <ChevronRightIcon />
       </button>
     </div>
   </div>

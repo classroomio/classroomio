@@ -1,9 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { Column, CopyButton, Grid, Row } from 'carbon-components-svelte';
-  import ArrowUpRight from 'carbon-icons-svelte/lib/ArrowUpRight.svelte';
-  import Restart from 'carbon-icons-svelte/lib/Restart.svelte';
-  import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
+  import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
+  import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
+  import TrashIcon from '@lucide/svelte/icons/trash';
   import isValidDomain from 'is-valid-domain';
   import { untrack } from 'svelte';
   import { parse } from 'tldts';
@@ -13,7 +13,7 @@
   import ComingSoon from '$lib/components/ComingSoon/index.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -254,7 +254,7 @@
                 {$currentOrg.customDomain}
 
                 <IconButton contained={true} size="small" onClick={() => goto(`https://${$currentOrg.customDomain}`)}>
-                  <ArrowUpRight size={16} />
+                  <ArrowUpRightIcon />
                 </IconButton>
               </p>
 
@@ -303,7 +303,7 @@
               variant={VARIANTS.OUTLINED}
             >
               {#if !isRefreshing}
-                <Restart size={16} />
+                <RotateCcwIcon />
               {/if}
               {$t('components.settings.domains.refresh')}
             </PrimaryButton>
@@ -315,7 +315,7 @@
               variant={VARIANTS.CONTAINED_DANGER}
             >
               {#if !isCustomDomainLoading}
-                <TrashCan size={16} />
+                <TrashIcon />
               {/if}
               {$t('components.settings.domains.remove')}
             </PrimaryButton>

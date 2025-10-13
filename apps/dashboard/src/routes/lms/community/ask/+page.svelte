@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import { Dropdown } from 'carbon-components-svelte';
   import { currentOrg } from '$lib/utils/store/org';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -89,7 +89,7 @@
 <section class="mx-auto w-full max-w-3xl">
   <div class="p-5">
     <a class="text-md flex items-center text-gray-500 dark:text-white" href="/lms/community">
-      <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" />
+      <ArrowLeftIcon />
       {$t('community.ask.go_back')}
     </a>
     <div class="flex items-center justify-between">

@@ -5,7 +5,7 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { createQuizModal } from '$lib/utils/store/org';
   import { isMobile } from '$lib/utils/store/useMobile';
-  import { Add } from 'carbon-icons-svelte';
+  import PlusIcon from '@lucide/svelte/icons/plus';
 </script>
 
 <svelte:head>
@@ -18,7 +18,7 @@
       <h1 class="text-2xl font-bold md:text-3xl dark:text-white">Interactive Quizzes</h1>
       {#if $isMobile}
         <PrimaryButton onClick={() => ($createQuizModal.open = true)}>
-          <Add size={24} />
+          <PlusIcon />
         </PrimaryButton>
       {:else}
         <PrimaryButton label="Create Quiz" onClick={() => ($createQuizModal.open = true)} />

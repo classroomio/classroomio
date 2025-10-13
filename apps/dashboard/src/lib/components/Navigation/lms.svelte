@@ -1,15 +1,16 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { browser } from '$app/environment';
-  import NotificationIcon from 'carbon-icons-svelte/lib/Notification.svelte';
-  import MoonIcon from 'carbon-icons-svelte/lib/Moon.svelte';
-  import SunIcon from 'carbon-icons-svelte/lib/Sun.svelte';
+  import BellIcon from '@lucide/svelte/icons/bell';
+  import MoonIcon from '@lucide/svelte/icons/moon';
+  import SunIcon from '@lucide/svelte/icons/sun';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
+  import XIcon from '@lucide/svelte/icons/x';
+  import MenuIcon from '@lucide/svelte/icons/menu';
 
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import { globalStore } from '$lib/utils/store/app';
-  import { Close, Menu } from 'carbon-icons-svelte';
   import { sideBar } from '$lib/components/Org/store';
   import { currentOrg } from '$lib/utils/store/org';
   import { toggleBodyByMode } from '$lib/utils/functions/app';
@@ -44,9 +45,9 @@
     <li class="md:hidden">
       <IconButton onClick={toggleSidebar}>
         {#if $sideBar.hidden}
-          <Menu size={16} class=" text-white" />
+          <MenuIcon />
         {:else}
-          <Close size={16} class=" text-white" />
+          <XIcon />
         {/if}
       </IconButton>
     </li>
@@ -73,14 +74,14 @@
     <span class="flex-grow"></span>
 
     <li>
-      <NotificationIcon size={20} class="mr-2 text-white" />
+      <BellIcon />
     </li>
     <li>
       <IconButton size="small" onClick={toggleDarkMode}>
         {#if $globalStore.isDark}
-          <SunIcon size={16} class="text-white" />
+          <SunIcon />
         {:else}
-          <MoonIcon size={16} class="text-white" />
+          <MoonIcon />
         {/if}
       </IconButton>
     </li>

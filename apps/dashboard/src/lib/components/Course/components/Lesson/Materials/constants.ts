@@ -1,5 +1,8 @@
+import BookOpenIcon from '@lucide/svelte/icons/book-open';
+import FileTextIcon from '@lucide/svelte/icons/file-text';
+import PresentationIcon from '@lucide/svelte/icons/presentation';
 import type { Tabs } from '$lib/utils/types';
-import { Notebook, PresentationFile, Video, Document } from 'carbon-icons-svelte';
+import VideoIcon from '@lucide/svelte/icons/video';
 
 interface MaterialTab {
   label: string;
@@ -11,25 +14,25 @@ interface MaterialTab {
 export const tabs: MaterialTab[] = [
   {
     label: 'course.navItem.lessons.materials.tabs.note.title',
-    icon: Notebook,
+    icon: BookOpenIcon,
     value: 1,
     badgeValue: 0
   },
   {
     label: 'course.navItem.lessons.materials.tabs.slide.title',
-    icon: PresentationFile,
+    icon: PresentationIcon,
     value: 2,
     badgeValue: 0
   },
   {
     label: 'course.navItem.lessons.materials.tabs.video.title',
-    icon: Video,
+    icon: VideoIcon,
     value: 3,
     badgeValue: 0
   },
   {
     label: 'course.navItem.lessons.materials.tabs.document.title',
-    icon: Document,
+    icon: FileTextIcon,
     value: 4,
     badgeValue: 0
   }

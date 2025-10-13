@@ -22,13 +22,13 @@
   import { getCourseBySiteName } from '$lib/utils/services/org';
   import type { CurrentOrg } from '$lib/utils/types/org';
   import { Accordion, AccordionItem, Column, Grid, Row } from 'carbon-components-svelte';
-  import Email from 'carbon-icons-svelte/lib/Email.svelte';
-  import LocationFilled from 'carbon-icons-svelte/lib/LocationFilled.svelte';
-  import LogoFacebook from 'carbon-icons-svelte/lib/LogoFacebook.svelte';
-  import LogoLinkedin from 'carbon-icons-svelte/lib/LogoLinkedin.svelte';
-  import LogoTwitter from 'carbon-icons-svelte/lib/LogoTwitter.svelte';
-  import Phone from 'carbon-icons-svelte/lib/Phone.svelte';
-  import Rocket from 'carbon-icons-svelte/lib/Rocket.svelte';
+  import MailIcon from '@lucide/svelte/icons/mail';
+  import MapPinIcon from '@lucide/svelte/icons/map-pin';
+  import FacebookIcon from '@lucide/svelte/icons/facebook';
+  import LinkedinIcon from '@lucide/svelte/icons/linkedin';
+  import TwitterIcon from '@lucide/svelte/icons/twitter';
+  import PhoneIcon from '@lucide/svelte/icons/phone';
+  import RocketIcon from '@lucide/svelte/icons/rocket';
   import get from 'lodash/get';
   import { fade } from 'svelte/transition';
   import PageLoader from './PageLoader.svelte';
@@ -411,7 +411,7 @@
               <Column
                 class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg py-2 text-center transition-all duration-500 hover:shadow-xl"
               >
-                <LocationFilled size={32} />
+                <MapPinIcon class="filled" />
                 <p class="mt-3 max-w-[200px] text-xs md:text-sm">
                   {$landingPageSettings.contact.address}
                 </p>
@@ -419,13 +419,13 @@
               <Column
                 class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg py-2 text-center transition-all duration-500 hover:shadow-xl"
               >
-                <Phone size={32} />
+                <PhoneIcon />
                 <p class="mt-3 text-xs md:text-sm">{$landingPageSettings.contact.phone}</p>
               </Column>
               <Column
                 class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg py-2 text-center transition-all duration-500 hover:shadow-xl"
               >
-                <Email size={32} />
+                <MailIcon />
                 <p class="mt-3 text-xs md:text-sm">{$landingPageSettings.contact.email}</p>
               </Column>
             </Row>
@@ -476,7 +476,7 @@
 
                   <PrimaryButton className="w-full mx-auto mt-5 md:mt-0" type="submit" isLoading={isContactSubmiting}>
                     <span class="text-md mr-2">{$t('course.navItem.landing_page.submit')}</span>
-                    <Rocket size={24} />
+                    <RocketIcon />
                   </PrimaryButton>
                 </form>
               {/if}
@@ -557,7 +557,7 @@
                   id="logo-fb"
                   data-hveid="8"
                 >
-                  <LogoFacebook size={24} />
+                  <FacebookIcon />
                 </a>
               </li>
             {/if}
@@ -570,7 +570,7 @@
                   id="logo-tw"
                   data-hveid="8"
                 >
-                  <LogoTwitter size={24} />
+                  <TwitterIcon />
                 </a>
               </li>
             {/if}
@@ -584,7 +584,7 @@
                   id="logo-ln"
                   data-hveid="8"
                 >
-                  <LogoLinkedin size={24} />
+                  <LinkedinIcon />
                 </a>
               </li>
             {/if}

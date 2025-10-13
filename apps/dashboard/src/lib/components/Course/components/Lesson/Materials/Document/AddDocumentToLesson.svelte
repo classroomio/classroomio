@@ -4,14 +4,13 @@
   import { t } from '$lib/utils/functions/translations';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import DocumentIcon from 'carbon-icons-svelte/lib/Document.svelte';
-  import PdfIcon from 'carbon-icons-svelte/lib/Pdf.svelte';
-  import CloseIcon from 'carbon-icons-svelte/lib/Close.svelte';
+  import FileTextIcon from '@lucide/svelte/icons/file-text';
   import { DocumentUploader } from '$lib/utils/services/courses/presign';
   import { onDestroy, untrack } from 'svelte';
   import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
   import { isFreePlan } from '$lib/utils/store/org';
   import { lesson } from '../../store/lessons';
+  import { CloseButton } from '$lib/components/Buttons/Close';
 
   let fileInput: HTMLInputElement | undefined = $state();
   let selectedFile: File | null = $state(null);
@@ -173,15 +172,6 @@
     if (fileInput) fileInput.value = '';
   }
 
-  function getFileIcon(type: string) {
-    switch (type) {
-      case 'application/pdf':
-        return PdfIcon;
-      default:
-        return DocumentIcon;
-    }
-  }
-
   function autoClearError(error: string | null) {
     if (!error) {
       return;
@@ -231,19 +221,16 @@
     ondragleave={handleDragLeave}
   >
     {#if selectedFile}
-      {@const SvelteComponent = getFileIcon(selectedFile.type)}
       <div class="mb-4 flex items-center justify-center space-x-3">
-        <SvelteComponent size={32} class="text-blue-600" />
+        <FileTextIcon />
         <div class="text-left">
           <p class="font-medium text-gray-900">{selectedFile.name}</p>
           <p class="text-sm text-gray-500">{formatFileSize(selectedFile.size)}</p>
         </div>
-        <button onclick={removeSelectedFile} class="rounded-full p-1 hover:bg-gray-200">
-          <CloseIcon size={20} class="text-gray-500" />
-        </button>
+        <CloseButton onClick={removeSelectedFile} />
       </div>
     {:else}
-      <DocumentIcon size={32} class="mx-auto mb-4 text-gray-400" />
+      <FileTextIcon />
       <p class="mb-2 text-gray-600">
         {$t('course.navItem.lessons.materials.tabs.document.drag_drop')}
       </p>

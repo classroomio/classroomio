@@ -14,17 +14,16 @@
   } from '../store/exercise';
   import { Select, SelectItem } from 'carbon-components-svelte';
 
-  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
-  import AddFilledIcon from 'carbon-icons-svelte/lib/AddFilled.svelte';
-  import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
+  import TrashIcon from '@lucide/svelte/icons/trash';
+  import CirclePlusIcon from '@lucide/svelte/icons/circle-plus';
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
 
   import TextField from '$lib/components/Form/TextField.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import Checkbox from '$lib/components/Form/Checkbox.svelte';
   import RadioItem from '$lib/components/Form/RadioItem.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import ErrorMessage from '$lib/components/ErrorMessage/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -181,7 +180,7 @@
               placeholder={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.write')}
             />
             <IconButton value="write-code" onClick={() => handleCode(question.id, false)}>
-              <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
+              <TrashIcon />
             </IconButton>
           </div>
         {/if}
@@ -198,18 +197,14 @@
                 {#snippet iconbutton()}
                   <div class="flex items-center">
                     <IconButton value={option.id} onClick={handleRemoveOption(question.id, option.id)}>
-                      <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
+                      <TrashIcon />
                     </IconButton>
                     <IconButton
                       value={option.id}
                       onClick={handleAnswerSelect(question.id, option.id)}
                       buttonClassName={option.is_correct && 'success'}
                     >
-                      {#if option.is_correct}
-                        <CheckmarkFilledIcon size={24} class="carbon-icon dark:text-white" />
-                      {:else}
-                        <CheckmarkOutlineIcon size={24} class="carbon-icon dark:text-white" />
-                      {/if}
+                      <CircleCheckIcon filled={option.is_correct} />
                     </IconButton>
                   </div>
                 {/snippet}
@@ -228,18 +223,14 @@
                 {#snippet iconbutton()}
                   <div class="flex items-center">
                     <IconButton value={option.id} onClick={handleRemoveOption(question.id, option.id)}>
-                      <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
+                      <TrashIcon />
                     </IconButton>
                     <IconButton
                       value={option.id}
                       onClick={handleAnswerSelect(question.id, option.id)}
                       buttonClassName={option.is_correct && 'success'}
                     >
-                      {#if option.is_correct}
-                        <CheckmarkFilledIcon size={24} class="carbon-icon dark:text-white" />
-                      {:else}
-                        <CheckmarkOutlineIcon size={24} class="carbon-icon dark:text-white" />
-                      {/if}
+                      <CircleCheckIcon filled={option.is_correct} />
                     </IconButton>
                   </div>
                 {/snippet}
@@ -264,7 +255,7 @@
               variant={VARIANTS.OUTLINED}
               onClick={handleAddOption(question.id)}
             >
-              <AddFilledIcon size={24} class="carbon-icon dark:text-white" />
+              <CirclePlusIcon />
               <p class="ml-2 dark:text-white">
                 {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.option')}
               </p>

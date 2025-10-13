@@ -1,13 +1,13 @@
 <script lang="ts">
   import { lesson, deleteLessonDocument } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { CloseButton } from '$lib/components/Buttons/Close';
   import { lessonDocUpload } from '$lib/components/Course/components/Lesson/store/lessons';
   import MODES from '$lib/utils/constants/mode';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import CloseIcon from 'carbon-icons-svelte/lib/Close.svelte';
-  import ChevronLeftIcon from 'carbon-icons-svelte/lib/ChevronLeft.svelte';
-  import ChevronRightIcon from 'carbon-icons-svelte/lib/ChevronRight.svelte';
-  import ZoomInIcon from 'carbon-icons-svelte/lib/ZoomIn.svelte';
-  import ZoomOutIcon from 'carbon-icons-svelte/lib/ZoomOut.svelte';
+  import { IconButton } from '$lib/components/IconButton';
+  import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+  import ZoomInIcon from '@lucide/svelte/icons/zoom-in';
+  import ZoomOutIcon from '@lucide/svelte/icons/zoom-out';
   import { onMount } from 'svelte';
   import DocumentList from '../Document/DocumentList.svelte';
   import { t } from '$lib/utils/functions/translations';
@@ -19,7 +19,7 @@
   let downloadingDocuments = $state(new Set<string>());
   let viewingPDF: any = $state(null);
   let pdfViewerOpen = $state(false);
-  let pdfCanvas: HTMLCanvasElement = $state();
+  let pdfCanvas: HTMLCanvasElement | undefined = $state();
   let pdfDoc: any = null;
   let pageNum = $state(1);
   let pageCount = $state(0);
@@ -339,7 +339,7 @@
               disabled={pageNum <= 1}
               toolTipProps={{ title: 'Previous page (←)', hotkeys: ['ArrowLeft'] }}
             >
-              <ChevronLeftIcon size={20} class="carbon-icon" />
+              <ChevronLeftIcon />
             </IconButton>
 
             <IconButton
@@ -347,7 +347,7 @@
               disabled={pageNum >= pageCount}
               toolTipProps={{ title: 'Next page (→)', hotkeys: ['ArrowRight'] }}
             >
-              <ChevronRightIcon size={20} class="carbon-icon" />
+              <ChevronRightIcon />
             </IconButton>
           </div>
 
@@ -358,7 +358,7 @@
               disabled={scale <= 0.5}
               toolTipProps={{ title: 'Zoom out (-)', hotkeys: ['-'] }}
             >
-              <ZoomOutIcon size={20} class="carbon-icon" />
+              <ZoomOutIcon />
             </IconButton>
 
             <span class="min-w-[3rem] text-center text-sm text-gray-600">
@@ -370,15 +370,12 @@
               disabled={scale >= 3.0}
               toolTipProps={{ title: 'Zoom in (+)', hotkeys: ['+'] }}
             >
-              <ZoomInIcon size={20} class="carbon-icon" />
+              <ZoomInIcon />
             </IconButton>
           </div>
         {/if}
 
-        <!-- Close Button -->
-        <IconButton onClick={closePDFViewer} toolTipProps={{ title: 'Close (Esc)', hotkeys: ['Esc'] }}>
-          <CloseIcon size={20} class="carbon-icon" />
-        </IconButton>
+        <CloseButton onClick={closePDFViewer} toolTipProps={{ title: 'Close (Esc)', hotkeys: ['Esc'] }} />
       </div>
     </div>
 

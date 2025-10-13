@@ -1,7 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { CodeSnippet, Column, Grid, RadioButton, RadioButtonGroup, Row, Toggle } from 'carbon-components-svelte';
-  import { ArrowUpRight, Restart } from 'carbon-icons-svelte';
+  import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
+  import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
   import { untrack } from 'svelte';
 
   import TextArea from '$lib/components/Form/TextArea.svelte';
@@ -13,7 +14,7 @@
 
   import { course } from '$lib/components/Course/store';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -276,11 +277,11 @@
         <p class="text-md mb-2 flex items-center gap-2">
           {$t('course.navItem.settings.link')}
           <IconButton contained={true} size="small" onClick={generateNewCourseLink}>
-            <Restart size={16} />
+            <RotateCcwIcon />
           </IconButton>
           <span class="grow"></span>
           <IconButton contained={true} size="small" onClick={() => goto(courseLink)}>
-            <ArrowUpRight size={16} />
+            <ArrowUpRightIcon />
           </IconButton>
         </p>
         {#if $course.slug}

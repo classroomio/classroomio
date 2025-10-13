@@ -28,7 +28,7 @@
   import { profile } from '$lib/utils/store/user';
   import type { Feed } from '$lib/utils/types/feed';
   import type { CurrentOrg } from '$lib/utils/types/org';
-  import PinFilled from 'carbon-icons-svelte/lib/PinFilled.svelte';
+  import PinIcon from '@lucide/svelte/icons/pin';
   import { onMount } from 'svelte';
 
   let { data = $bindable() } = $props();
@@ -281,7 +281,7 @@
         {#each $newsFeed as feed}
           {#if feed.isPinned}
             <div class="mb-3 flex items-center gap-2">
-              <PinFilled size={16} />
+              <PinIcon class="filled" />
 
               <p class="text-sm">{$t('course.navItem.news_feed.pinned')}</p>
             </div>

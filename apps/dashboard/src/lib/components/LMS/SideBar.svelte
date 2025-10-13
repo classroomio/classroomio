@@ -1,8 +1,8 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
-  import LicenseDraft from 'carbon-icons-svelte/lib/LicenseDraft.svelte';
-  import Explore from 'carbon-icons-svelte/lib/Explore.svelte';
+  import BadgeHelpIcon from '@lucide/svelte/icons/badge-help';
+  import ListTodoIcon from '@lucide/svelte/icons/list-todo';
+  import MapPlusIcon from '@lucide/svelte/icons/map-plus';
   import HomeIcon from '$lib/components/Icons/HomeIcon.svelte';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import CommunityIcon from '$lib/components/Icons/CommunityIcon.svelte';
@@ -12,8 +12,9 @@
   import { profileMenu, sideBar } from '$lib/components/Org/store';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
-  import { ChevronRight } from 'carbon-icons-svelte';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import ProfileMenu from '$lib/components/Org/ProfileMenu/index.svelte';
+
   interface SideLinks {
     name: string;
     icon: any;
@@ -46,7 +47,7 @@
       },
       {
         name: $t('lms_navigation.exercise'),
-        icon: LicenseDraft,
+        icon: ListTodoIcon,
         link: '/lms/exercises',
         show() {
           return $currentOrg?.customization?.dashboard?.exercise;
@@ -62,7 +63,7 @@
       },
       {
         name: $t('lms_navigation.explore'),
-        icon: Explore,
+        icon: MapPlusIcon,
         link: '/lms/explore'
       }
     ].filter((link) => (link.show ? link.show() : true))
@@ -101,7 +102,7 @@
                   ? NavClasses.active
                   : 'dark:text-white'}"
               >
-                <item.icon size={24} class="carbon-icon dark:fill-[#fff]" />
+                <item.icon />
                 <p class="ml-2 dark:text-white">{item.name}</p>
               </li>
             </a>
@@ -112,7 +113,7 @@
       <ul class="my-5 px-4 pb-5">
         <a href="/lms" class="text-black" onclick={toggleSidebar}>
           <li class="mb-2 flex items-center rounded px-4 py-3">
-            <HelpIcon size={20} class="carbon-icon dark:text-white" />
+            <BadgeHelpIcon />
             <p class="ml-2 dark:text-white">{$t('lms_navigation.help')}</p>
           </li>
         </a>
@@ -133,7 +134,7 @@
               </p>
             </div>
             <div>
-              <ChevronRight />
+              <ChevronRightIcon />
             </div>
           </div>
         </button>

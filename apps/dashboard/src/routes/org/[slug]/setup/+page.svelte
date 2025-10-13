@@ -2,7 +2,7 @@
   import Chip from '$lib/components/Chip/Text.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import CheckmarkOutline from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
 
   import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
@@ -115,7 +115,7 @@
               isDisabled={list.is_completed}
             >
               {#if list.is_completed}
-                <CheckmarkOutline />
+                <CircleCheckIcon />
               {/if}
               {$t(list.button_label)}
             </PrimaryButton>

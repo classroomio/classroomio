@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
-  import ChevronLeftIcon from 'carbon-icons-svelte/lib/ChevronLeft.svelte';
-  import ChevronRightIcon from 'carbon-icons-svelte/lib/ChevronRight.svelte';
+  import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import QuizQuestion from '../QuizQuestion.svelte';
   import PlayContainer from './Container.svelte';
   import PlayHeader from './Header/index.svelte';
@@ -10,7 +10,7 @@
   import { themeImages } from '$lib/utils/constants/quiz';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
 
   let { exitPreview = () => {} } = $props();
 
@@ -80,11 +80,11 @@
 
               <div class="flex items-center justify-center">
                 <IconButton onClick={handlePrev} size="small">
-                  <ChevronLeftIcon size={16} class="carbon-icon dark:text-white" />
+                  <ChevronLeftIcon />
                 </IconButton>
                 <p class="mx-3">{curQId + 1} / {totalQ}</p>
                 <IconButton onClick={handleNext} size="small">
-                  <ChevronRightIcon size={16} class="carbon-icon dark:text-white" />
+                  <ChevronRightIcon />
                 </IconButton>
               </div>
             {/if}

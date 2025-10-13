@@ -4,7 +4,7 @@
   import pluralize from 'pluralize';
   import { page } from '$app/state';
   import { onMount, onDestroy } from 'svelte';
-  import PlayFilled from 'carbon-icons-svelte/lib/PlayFilled.svelte';
+  import PlayIcon from '@lucide/svelte/icons/play';
   import { ImageLoader, InlineLoading } from 'carbon-components-svelte';
 
   import { getLectureNo } from '../Course/function';
@@ -456,7 +456,7 @@
                 {get(instructor, 'role', '')}
               </p>
               <p class="text-md flex items-center font-light dark:text-white">
-                <PlayFilled size={16} class="text-primary-700" />
+                <PlayIcon class="filled" />
                 <span class="ml-1"
                   >{get(instructor, 'courseNo', '')}
                   {$t('course.navItem.landing_page.courses')}</span

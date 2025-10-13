@@ -7,9 +7,9 @@
   import { t } from '$lib/utils/functions/translations';
   import { COURSE_TYPE } from '$lib/utils/types';
   import { ImageLoader, OverflowMenu, OverflowMenuItem, SkeletonPlaceholder, Tag } from 'carbon-components-svelte';
-  import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
-  import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
-  import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
+  import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
+  import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
+  import UserIcon from '@lucide/svelte/icons/user';
 
   interface Props {
     bannerImage: string | undefined;
@@ -85,19 +85,19 @@
     [COURSE_TYPE.LIVE_CLASS]: {
       style: '',
       label: $t('course.navItem.settings.live_class'),
-      icon: RadioButtonChecked,
+      icon: CircleDotIcon,
       iconStyle: 'text-red-700'
     },
     [COURSE_TYPE.SELF_PACED]: {
       style: '',
       label: $t('course.navItem.settings.self_paced'),
-      icon: UserProfileIcon,
+      icon: UserIcon,
       iconStyle: 'text-primary-700'
     },
     SPECIALIZATION: {
       style: '',
       label: $t('specialization.course_tag'),
-      icon: GrowthIcon
+      icon: TrendingUpIcon
     }
   };
 
@@ -111,7 +111,7 @@
 <div
   role="button"
   tabindex="0"
-  onclick={(e) => {
+  onclick={() => {
     goto(courseUrl);
   }}
   onkeydown={(e) => {
@@ -141,19 +141,19 @@
         alt="Course Logo"
         class="relative h-[200px] w-full rounded dark:border dark:border-neutral-600"
       >
-        {#snippet loading()}
+        <svelte:fragment slot="loading">
           <SkeletonPlaceholder style="width: 100%; height: 200px;" />
-        {/snippet}
-        {#snippet error()}
+        </svelte:fragment>
+        <svelte:fragment slot="errror">
           {$t('courses.course_card.error_message')}
-        {/snippet}
+        </svelte:fragment>
       </ImageLoader>
       {#if type}
         {@const tag = COURSE_TAG[type]}
         <span
           class="bg-primary-50 absolute bottom-2 left-2 z-10 flex items-center gap-1 rounded-sm p-1 font-mono text-xs capitalize"
         >
-          <tag.icon size={16} class={tag.iconStyle} />
+          <tag.icon class={tag.iconStyle} />
           {tag.label}
         </span>
       {/if}

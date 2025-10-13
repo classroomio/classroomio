@@ -1,12 +1,13 @@
 <script lang="ts">
-  import CloseIcon from 'carbon-icons-svelte/lib/Close.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import XIcon from '@lucide/svelte/icons/x';
+  import IconButton, { type Props as IconButtonProps } from '$lib/components/IconButton/index.svelte';
 
   interface Props {
-    onClick?: any;
+    onClick?: IconButtonProps['onClick'];
     contained?: boolean;
     color?: string;
-    size?: string;
+    size?: IconButtonProps['size'];
+    toolTipProps?: IconButtonProps['toolTipProps'];
   }
 
   let {
@@ -18,10 +19,5 @@
 </script>
 
 <IconButton {onClick} {color} {contained} {size}>
-  {#if size === 'large'}
-    <CloseIcon size={24} class="carbon-icon dark:text-black" title="Delete" />
-  {:else}
-    <CloseIcon size={20} class="carbon-icon dark:text-black" title="Delete" />
-  {/if}
+  <XIcon size={size === 'large' ? 24 : 20} class="carbon-icon dark:text-black" />
 </IconButton>
-<!-- color="text-primary-700 bg-primary-200 dark:bg-gray-200 dark:text-black" -->

@@ -2,12 +2,13 @@
   import { globalStore } from '$lib/utils/store/app';
   import { user, profile, defaultProfileState, defaultUserState } from '$lib/utils/store/user';
   import { currentOrg, orgs, defaultCurrentOrgState, currentOrgDomain, currentOrgPath } from '$lib/utils/store/org';
-  import { ChevronDown, Settings } from 'carbon-icons-svelte';
+  import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+  import SettingsIcon from '@lucide/svelte/icons/settings';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
-  import Logout from 'carbon-icons-svelte/lib/Logout.svelte';
-  import Rocket from 'carbon-icons-svelte/lib/Rocket.svelte';
-  import NewTab from 'carbon-icons-svelte/lib/NewTab.svelte';
+  import LogOutIcon from '@lucide/svelte/icons/log-out';
+  import RocketIcon from '@lucide/svelte/icons/rocket';
+  import BellPlusIcon from '@lucide/svelte/icons/bell-plus';
   import { goto } from '$app/navigation';
   import { profileMenu } from '../store';
   import { supabase } from '$lib/utils/functions/supabase';
@@ -56,7 +57,7 @@
         </div>
       </span>
       <div>
-        <Settings size={20} />
+        <SettingsIcon />
       </div>
     </a>
   </div>
@@ -82,7 +83,7 @@
           </div>
         </span>
         <div>
-          <Settings size={20} />
+          <SettingsIcon />
         </div>
       </a>
     </div>
@@ -125,7 +126,7 @@
     >
       <div class="flex items-center gap-1 text-xs font-semibold text-blue-900">
         {$t('profileMenu.see_more')}
-        <ChevronDown class="text-blue-900" />
+        <ChevronDownIcon class="text-blue-900" />
       </div>
     </a>
   </div>
@@ -137,7 +138,7 @@
         onclick={closeMenu}
         class="flex items-center gap-2 hover:no-underline"
       >
-        <NewTab />
+        <BellPlusIcon />
         <p class="text-sm font-semibold">{$t('profileMenu.whats_new')}</p>
       </a>
       <a
@@ -146,7 +147,7 @@
         onclick={closeMenu}
         class="flex items-center gap-2 hover:no-underline"
       >
-        <Rocket />
+        <RocketIcon />
         <p class="text-sm font-semibold">{$t('profileMenu.launch_week')}</p>
       </a>
     </div>
@@ -154,7 +155,7 @@
 
   <button onclick={logout} class="w-full space-y-4 pt-3">
     <span class="flex items-center gap-2">
-      <Logout />
+      <LogOutIcon />
       <p class="text-sm font-semibold">{$t('settings.profile.logout')}</p>
     </span>
   </button>

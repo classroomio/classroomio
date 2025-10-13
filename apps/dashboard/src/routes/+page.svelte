@@ -2,9 +2,9 @@
   import { preventDefault } from '$lib/utils/functions/svelte';
 
   import { onMount } from 'svelte';
-  import FlowStreamReferenceIcon from 'carbon-icons-svelte/lib/FlowStreamReference.svelte';
-  import ChartClusterBarIcon from 'carbon-icons-svelte/lib/ChartClusterBar.svelte';
-  import MachineLearningModelIcon from 'carbon-icons-svelte/lib/MachineLearningModel.svelte';
+  import DoorOpenIcon from '@lucide/svelte/icons/door-open';
+  import ChartAreaIcon from '@lucide/svelte/icons/chart-area';
+  import BotIcon from '@lucide/svelte/icons/bot';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { getSupabase } from '$lib/utils/functions/supabase';
@@ -98,11 +98,11 @@
       >
         <h3 class="text-3xl dark:text-white">
           {#if index === 0}
-            <FlowStreamReferenceIcon size={32} class="carbon-icon dark:text-white" />
+            <DoorOpenIcon />
           {:else if index === 1}
-            <ChartClusterBarIcon size={32} class="carbon-icon dark:text-white" />
+            <ChartAreaIcon />
           {:else if index === 2}
-            <MachineLearningModelIcon size={32} class="carbon-icon dark:text-white" />
+            <BotIcon />
           {/if}
           {area.title}
         </h3>

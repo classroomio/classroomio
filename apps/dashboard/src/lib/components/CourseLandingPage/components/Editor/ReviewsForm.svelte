@@ -1,8 +1,8 @@
 <script lang="ts">
   import get from 'lodash/get';
   import z from 'zod';
-  import ChevronDownIcon from 'carbon-icons-svelte/lib/ChevronDown.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+  import { IconButton } from '$lib/components/IconButton';
   import { isMobile } from '$lib/utils/store/useMobile';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -102,7 +102,7 @@
             <p class="text-sm">{review.name}</p>
 
             <IconButton value="expand" onClick={() => onExpand(review.id)} size={$isMobile ? 'large' : 'small'}>
-              <ChevronDownIcon size={16} class="carbon-icon dark:text-white" />
+              <ChevronDownIcon />
             </IconButton>
           </div>
         {/if}

@@ -1,8 +1,8 @@
 <script lang="ts">
   import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
-  import Send from 'carbon-icons-svelte/lib/Send.svelte';
+  import SendHorizontalIcon from '@lucide/svelte/icons/send-horizontal';
   import Chip from '$lib/components/Chip/index.svelte';
-  import UserMultiple from 'carbon-icons-svelte/lib/UserMultiple.svelte';
+  import UsersIcon from '@lucide/svelte/icons/users';
   import { calDateDiff } from '$lib/utils/functions/date';
   import type { Author, Feed } from '$lib/utils/types/feed';
   import DeleteFeedConfirmation from './DeleteFeedConfirmation.svelte';
@@ -179,7 +179,7 @@
   <section class="border-t border-gray-200 p-3 dark:border-neutral-600">
     {#if feed.comment.length > 0}
       <button onclick={expandComment} class="-mx-2 flex flex-row items-center gap-1 rounded-md px-2">
-        <UserMultiple size={16} />
+        <UsersIcon />
         <p class="py-2 text-sm">
           {pluralize('comment', feed.comment.length, true)}
         </p>
@@ -230,7 +230,7 @@
         />
       </div>
       <button onclick={handleAddNewComment}>
-        <Send size={24} />
+        <SendHorizontalIcon />
       </button>
     </div>
     {#if errors?.newComment}

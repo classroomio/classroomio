@@ -12,7 +12,8 @@
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { Dropdown, Search } from 'carbon-components-svelte';
-  import AddCommentIcon from 'carbon-icons-svelte/lib/AddComment.svelte';
+  import MessageCirclePlusIcon from '@lucide/svelte/icons/message-circle-plus';
+
   import CommunityLoader from './Loader.svelte';
 
   interface Props {
@@ -148,7 +149,7 @@
         </div>
         <div class="flex-grow"></div>
         <div class="flex items-center">
-          <AddCommentIcon size={20} />
+          <MessageCirclePlusIcon />
           <span class="ml-1">{discussion.comments}</span>
         </div>
       </div>

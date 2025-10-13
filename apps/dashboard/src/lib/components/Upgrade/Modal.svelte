@@ -14,7 +14,7 @@
   import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { Loading } from 'carbon-components-svelte';
-  import Checkmark from 'carbon-icons-svelte/lib/Checkmark.svelte';
+  import CheckIcon from '@lucide/svelte/icons/check';
   import PLANS from 'shared/src/plans/data.json';
 
   const disabledClass = 'bg-gray-300 text-gray-400 hover:cursor-not-allowed';
@@ -208,7 +208,7 @@
               {#each PLANS[planName].FEATURES as features}
                 <li class="flex items-center">
                   <div>
-                    <Checkmark
+                    <CheckIcon
                       size={16}
                       fill={planName === 'EARLY_ADOPTER' ? '#fff' : '#1D4EE2'}
                       class="mr-2 lg:mr-3"

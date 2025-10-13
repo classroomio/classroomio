@@ -1,14 +1,14 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { browser } from '$app/environment';
-  import NotificationIcon from 'carbon-icons-svelte/lib/Notification.svelte';
-  import Moon from 'carbon-icons-svelte/lib/Moon.svelte';
-  import Sun from 'carbon-icons-svelte/lib/Sun.svelte';
-  import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
-  import Close from 'carbon-icons-svelte/lib/Close.svelte';
-  import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
+  import BellIcon from '@lucide/svelte/icons/bell';
+  import MoonIcon from '@lucide/svelte/icons/moon';
+  import SunIcon from '@lucide/svelte/icons/sun';
+  import MenuIcon from '@lucide/svelte/icons/menu';
+  import XIcon from '@lucide/svelte/icons/x';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrgPath } from '$lib/utils/store/org';
   import { toggleBodyByMode } from '$lib/utils/functions/app';
@@ -52,9 +52,9 @@
           }}
         >
           {#if $sideBar.hidden}
-            <Menu size={16} class=" text-white" />
+            <MenuIcon />
           {:else}
-            <Close size={16} class=" text-white" />
+            <XIcon />
           {/if}
         </IconButton>
       </li>
@@ -66,12 +66,12 @@
               toggleSidebar();
             }}
           >
-            <Menu size={16} class=" text-white" />
+            <MenuIcon />
           </IconButton>
         </li>
         <li class="hidden md:block">
           <IconButton onClick={() => goto(coursesPath)}>
-            <ArrowLeft size={16} class="text-white" />
+            <ArrowLeftIcon />
           </IconButton>
         </li>
       {/if}
@@ -88,14 +88,14 @@
     <span class="flex-grow"></span>
 
     <li>
-      <NotificationIcon size={20} class="mr-2 text-white" />
+      <BellIcon />
     </li>
     <li>
       <IconButton size="small" onClick={toggleDarkMode}>
         {#if $globalStore.isDark}
-          <Sun size={16} class="text-white" />
+          <SunIcon />
         {:else}
-          <Moon size={16} class="text-white" />
+          <MoonIcon />
         {/if}
       </IconButton>
     </li>

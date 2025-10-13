@@ -2,10 +2,10 @@
   import { onMount, untrack } from 'svelte';
   import { createEventDispatcher } from 'svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import CaretRight from 'carbon-icons-svelte/lib/CaretRight.svelte';
+  import PlayIcon from '@lucide/svelte/icons/play';
   import { fetchLesssonLanguageHistory } from '$lib/utils/services/courses';
   import { diffLines } from 'diff';
   import { lesson, lessons } from '$lib/components/Course/components/Lesson/store/lessons';
@@ -173,7 +173,7 @@
     <div class="w-full p-10 pr-80">
       <div class="flex items-start gap-x-10">
         <PrimaryButton variant={VARIANTS.OUTLINED} onClick={handleDrawerClose}>
-          <ArrowLeft />
+          <ArrowLeftIcon />
         </PrimaryButton>
 
         {#if selectedVersionIndex != 0}
@@ -218,7 +218,7 @@
             ? 'bg-gray-200 dark:bg-neutral-700'
             : ''}"
         >
-          <CaretRight class="mt-1"></CaretRight>
+          <PlayIcon class="mt-1" />
           <div>
             <span class="inline-block text-base font-medium">{formatTimestamp(version.timestamp)}</span>
             {#if index == 0}

@@ -1,8 +1,8 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import ChevronDownIcon from 'carbon-icons-svelte/lib/ChevronDown.svelte';
-  import ChevronUpIcon from 'carbon-icons-svelte/lib/ChevronUp.svelte';
-  import LinkIcon from 'carbon-icons-svelte/lib/Link.svelte';
+  import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+  import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
+  import LinkIcon from '@lucide/svelte/icons/link';
 
   interface Props {
     id?: string;
@@ -43,15 +43,15 @@
       {title}
       {#if supportsLink}
         <a class="ml-2" href="{page.url.pathname}#{id}" onclick={(e) => e.stopPropagation()}>
-          <LinkIcon size={24} class="carbon-icon dark:text-white" />
+          <LinkIcon />
         </a>
       {/if}
     </p>
 
     {#if isExpanded}
-      <ChevronUpIcon size={24} class="carbon-icon dark:text-white" />
+      <ChevronUpIcon />
     {:else}
-      <ChevronDownIcon size={24} class="carbon-icon dark:text-white" />
+      <ChevronDownIcon />
     {/if}
   </button>
   {#if isExpanded}

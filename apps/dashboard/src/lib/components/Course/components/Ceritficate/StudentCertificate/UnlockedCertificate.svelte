@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import Download from 'carbon-icons-svelte/lib/Download.svelte';
+  import DownloadIcon from '@lucide/svelte/icons/download';
 
   import { course } from '$lib/components/Course/store';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
@@ -100,7 +100,7 @@
       isDisabled={!isCourseComplete}
       {isLoading}
     >
-      <Download size={16} />
+      <DownloadIcon />
       {$t('course.navItem.certificates.download_certificate')}
     </PrimaryButton>
   </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ChartBar } from 'carbon-icons-svelte';
+  import ChartBarIcon from '@lucide/svelte/icons/chart-bar';
 
   interface Props {
     title?: string;
@@ -11,7 +11,7 @@
   let {
     title = 'No data available',
     description = 'There is no data to display at this time.',
-    icon = ChartBar,
+    icon = ChartBarIcon,
     className = ''
   }: Props = $props();
 

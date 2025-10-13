@@ -9,9 +9,10 @@
   import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
-  import { ChevronRight, SettingsAdjust } from 'carbon-icons-svelte';
-  import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
-  import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+  import SettingsIcon from '@lucide/svelte/icons/settings';
+  import MessageSquareMoreIcon from '@lucide/svelte/icons/message-square-more';
+  import BadgeHelpIcon from '@lucide/svelte/icons/badge-help';
 
   import { goto } from '$app/navigation';
   import ProfileMenu from '$lib/components/Org/ProfileMenu/index.svelte';
@@ -108,13 +109,13 @@
                   {:else if menuItem.path === '/site'}
                     <SiteSettingsIcon />
                   {:else if menuItem.path === '/community'}
-                    <ForumIcon size={20} class="carbon-icon fill-[#000] dark:fill-[#fff]" />
+                    <MessageSquareMoreIcon />
                   {:else if menuItem.path === '/quiz'}
                     <QuizIcon />
                   {:else if menuItem.path === '/audience'}
                     <AudienceIcon />
                   {:else if menuItem.path === '/setup'}
-                    <SettingsAdjust />
+                    <SettingsIcon />
                   {/if}
                   <p class="text-sm font-medium">{menuItem.label}</p>
                 </li>
@@ -141,7 +142,7 @@
       <ul class="my-5 px-4 pb-5">
         <a href={$currentOrgPath} class="text-black no-underline" onclick={toggleSidebar}>
           <li class="mb-2 flex items-center rounded px-2.5 py-1.5">
-            <HelpIcon size={20} class="carbon-icon dark:text-white" />
+            <BadgeHelpIcon />
             <p class="ml-2.5 text-sm font-medium dark:text-white">{$t('org_navigation.help')}</p>
           </li>
         </a>
@@ -167,7 +168,7 @@
               </p>
             </div>
             <div>
-              <ChevronRight />
+              <ChevronRightIcon />
             </div>
           </div>
         </button>

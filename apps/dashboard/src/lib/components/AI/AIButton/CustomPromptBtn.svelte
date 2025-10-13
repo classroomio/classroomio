@@ -4,8 +4,8 @@
   // // import { useCompletion } from 'ai/svelte';
   // import { Popover } from 'carbon-components-svelte';
   // import type { PopoverProps } from 'carbon-components-svelte/types/Popover/Popover.svelte';
-  // import MagicWandFilled from 'carbon-icons-svelte/lib/MagicWandFilled.svelte';
-  // import IconButton from '$lib/components/IconButton/index.svelte';
+  // import WandSparklesIcon from '@lucide/svelte/icons/wand-sparkles';
+  // import { IconButton } from '$lib/components/IconButton';
   // import { Loading } from 'carbon-components-svelte';
   // import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   // import { t } from '$lib/utils/functions/translations';
@@ -78,7 +78,7 @@
     size="large"
     onClick={() => (openPopover = !openPopover)}
   >
-    <MagicWandFilled size={16} class="carbon-icon" />
+    <MagicWandFilled  />
     <Popover caret align={alignPopover} bind:open={openPopover}>
       <div class="h-[220px] w-[300px] p-2 text-start">
         {#if isSubmitted}

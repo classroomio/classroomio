@@ -1,8 +1,11 @@
 <script lang="ts">
   import { slide } from 'svelte/transition';
-  import { ChevronDown, ChevronUp, Add, FlashFilled } from 'carbon-icons-svelte';
+  import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+  import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
+  import PlusIcon from '@lucide/svelte/icons/plus';
+  import ZapIcon from '@lucide/svelte/icons/zap';
   import { SkeletonText } from 'carbon-components-svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { handleAddLessonWidget } from '../Lesson/store';
   import NavIcons from './NavIcons.svelte';
@@ -97,17 +100,17 @@
     <span class="grow"></span>
 
     {#if isPaidFeature && $isFreePlan}
-      <FlashFilled size={20} class="text-blue-700" />
+      <ZapIcon class="filled" />
     {/if}
     {#if (isLesson || isSection) && !isLoading && !isStudent}
       <IconButton stopPropagation={true} onClick={addLesson} size="small">
-        <Add />
+        <PlusIcon />
       </IconButton>
       <IconButton size="small" stopPropagation={true} onClick={toggleIsExpanded}>
         {#if isExpanded}
-          <ChevronUp class="carbon-icon dark:text-white" />
+          <ChevronUpIcon class="carbon-icon dark:text-white" />
         {:else}
-          <ChevronDown class="carbon-icon dark:text-white" />
+          <ChevronDownIcon class="carbon-icon dark:text-white" />
         {/if}
       </IconButton>
     {/if}

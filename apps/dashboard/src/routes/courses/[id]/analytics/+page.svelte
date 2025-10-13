@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import ChartBarIcon from '@lucide/svelte/icons/chart-bar';
   import { CourseContainer } from '$lib/components/CourseContainer';
   import { PageBody, PageNav } from '$lib/components/Page';
   import { t } from '$lib/utils/functions/translations';
@@ -11,7 +12,6 @@
   import AnalyticsGraph from '$lib/components/Course/components/Analytics/AnalyticsGraph.svelte';
   import AnalyticsSkeleton from '$lib/components/Course/components/Analytics/AnalyticsSkeleton.svelte';
   import AnalyticsCard from '$lib/components/Course/components/Analytics/AnalyticsCard.svelte';
-  import { ChartBar } from 'carbon-icons-svelte';
   import StudentsIcon from '$lib/components/Course/components/Analytics/icons/StudentsIcon.svelte';
   import LessonsIcon from '$lib/components/Course/components/Analytics/icons/LessonsIcon.svelte';
   import ProgressIcon from '$lib/components/Course/components/Analytics/icons/ProgressIcon.svelte';
@@ -130,7 +130,7 @@
       <EmptyState
         title={$t('analytics.no_analytics_data')}
         description={$t('analytics.no_analytics_description')}
-        icon={ChartBar}
+        icon={ChartBarIcon}
         className="h-screen"
       />
     {/if}

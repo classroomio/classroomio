@@ -6,15 +6,15 @@
   import { t } from '$lib/utils/functions/translations';
   import type { UserCourseAnalytics } from '$lib/utils/types/analytics';
   import { Grid, Tag } from 'carbon-components-svelte';
-  import Notebook from 'carbon-icons-svelte/lib/Notebook.svelte';
-  import Report from 'carbon-icons-svelte/lib/Report.svelte';
-  import RowExpand from 'carbon-icons-svelte/lib/RowExpand.svelte';
+  import BookOpenIcon from '@lucide/svelte/icons/book-open';
+  import ChartLineIcon from '@lucide/svelte/icons/chart-line';
+  import UnfoldVerticalIcon from '@lucide/svelte/icons/unfold-vertical';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
 
   let { data } = $props();
 
-  let userCourseAnalytics: UserCourseAnalytics = $state();
+  let userCourseAnalytics: UserCourseAnalytics | undefined = $state();
 
   function getPercentage(a: number, b: number): number {
     if (b === 0) {
@@ -58,22 +58,22 @@
   let learningActivities = $derived([
     {
       description: $t('analytics.overall_course_progress_user_description'),
-      icon: Notebook,
+      icon: BookOpenIcon,
       percentage: userCourseAnalytics?.progressPercentage,
       title: $t('analytics.overall_course_progress')
     },
     {
       description: $t('analytics.assignment_completion_description'),
-      icon: Report,
+      icon: ChartLineIcon,
       percentage: getPercentage(
-        userCourseAnalytics?.userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length,
-        userCourseAnalytics?.userExercisesStats?.length
+        userCourseAnalytics?.userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length || 0,
+        userCourseAnalytics?.userExercisesStats?.length || 0
       ),
       title: $t('analytics.assignment_completion')
     },
     {
       description: $t('analytics.average_grade_description'),
-      icon: RowExpand,
+      icon: UnfoldVerticalIcon,
       percentage: userCourseAnalytics?.averageGrade,
       title: $t('analytics.average_grade')
     }
@@ -88,10 +88,10 @@
     })
   );
   let completedExercises = $derived(
-    userCourseAnalytics?.userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length
+    userCourseAnalytics?.userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length || 0
   );
   let incompleteExercises = $derived(
-    userCourseAnalytics?.userExercisesStats?.filter((exercise) => !exercise.isCompleted)?.length
+    userCourseAnalytics?.userExercisesStats?.filter((exercise) => !exercise.isCompleted)?.length || 0
   );
 </script>
 
@@ -160,7 +160,7 @@
             transition:fade={{ duration: 300 }}
           >
             <div class="flex w-2/3 items-center gap-4">
-              <Notebook size={24} class="text-black" />
+              <BookOpenIcon />
               <div>
                 <div class="mb-2">
                   <a

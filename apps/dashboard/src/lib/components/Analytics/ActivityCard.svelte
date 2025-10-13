@@ -18,7 +18,7 @@
   class="flex flex-col items-center justify-center gap-5 rounded-xl border p-3 md:flex-row md:p-5 dark:border-neutral-600"
 >
   <div class="bg-primary-200 w-fit rounded-full p-4 text-black">
-    <activity.icon size={24} />
+    <activity.icon />
   </div>
 
   <div>

@@ -15,8 +15,8 @@
   import type { GroupPerson } from '$lib/utils/types';
   import type { CurrentOrg } from '$lib/utils/types/org';
   import { Loading, OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
-  import AudioConsoleIcon from 'carbon-icons-svelte/lib/AudioConsole.svelte';
-  import Download from 'carbon-icons-svelte/lib/Download.svelte';
+  import BadgeXIcon from '@lucide/svelte/icons/badge-x';
+  import DownloadIcon from '@lucide/svelte/icons/download';
   import jsPDF from 'jspdf';
   import autoTable from 'jspdf-autotable';
   import Papa from 'papaparse';
@@ -223,7 +223,7 @@
                 {#if isDownloading}
                   <Loading withOverlay={false} small />
                 {:else}
-                  <Download />
+                  <DownloadIcon />
                 {/if}
               </div>
             </div>
@@ -303,7 +303,7 @@
           </div>
         {:else}
           <Box>
-            <AudioConsoleIcon size={32} class="carbon-icon w-80" />
+            <BadgeXIcon />
             <h3 class="text-3xl text-gray-500 dark:text-white">
               {$t('course.navItem.marks.no_student')}
             </h3>

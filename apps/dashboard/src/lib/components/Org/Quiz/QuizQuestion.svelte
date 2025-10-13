@@ -1,9 +1,8 @@
 <script lang="ts">
-  import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
   import { optionImage } from '$lib/utils/constants/quiz';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -59,11 +58,7 @@
             onClick={() => (option.isCorrect = !option.isCorrect)}
             buttonClassName={option.isCorrect && 'success'}
           >
-            {#if option.isCorrect}
-              <CheckmarkFilledIcon size={24} class="carbon-icon dark:text-white" />
-            {:else}
-              <CheckmarkOutlineIcon size={24} class="carbon-icon dark:text-white" />
-            {/if}
+            <CircleCheckIcon filled={option.isCorrect} />
           </IconButton>
         </div>
       {/if}

@@ -3,7 +3,7 @@
   import { ActivityCard } from '$lib/components/Analytics';
   import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import Progress from '$lib/components/Progress/index.svelte';
-  import UserProfile from 'carbon-icons-svelte/lib/UserProfile.svelte';
+  import UserIcon from '@lucide/svelte/icons/user';
 
   import { snackbar } from '$lib/components/Snackbar/store';
   import { calDateDiff } from '$lib/utils/functions/date';
@@ -11,10 +11,11 @@
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import type { OrganisationAnalytics } from '$lib/utils/types/analytics';
-  import Add from 'carbon-icons-svelte/lib/Add.svelte';
-  import Book from 'carbon-icons-svelte/lib/Book.svelte';
-  import CurrencyDollar from 'carbon-icons-svelte/lib/CurrencyDollar.svelte';
-  import UserMultiple from 'carbon-icons-svelte/lib/UserMultiple.svelte';
+  import PlusIcon from '@lucide/svelte/icons/plus';
+
+  import BookIcon from '@lucide/svelte/icons/book';
+  import DollarSignIcon from '@lucide/svelte/icons/dollar-sign';
+  import UsersIcon from '@lucide/svelte/icons/users';
 
   import Avatar from '$lib/components/Avatar/index.svelte';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
@@ -68,21 +69,21 @@
 
   let cards = $derived([
     {
-      icon: CurrencyDollar,
+      icon: DollarSignIcon,
       title: `${$t('dashboard.revenue')} ($)`,
       percentage: dashAnalytics?.revenue ?? 0,
       description: $t('dashboard.revenue_description'),
       hidePercentage: true
     },
     {
-      icon: Book,
+      icon: BookIcon,
       title: $t('dashboard.no_of_courses'),
       percentage: dashAnalytics?.numberOfCourses ?? 0,
       description: $t('dashboard.no_courses_description'),
       hidePercentage: true
     },
     {
-      icon: UserMultiple,
+      icon: UsersIcon,
       title: $t('dashboard.total_students'),
       percentage: dashAnalytics?.totalStudents ?? 0,
       description: $t('dashboard.total_students_description'),
@@ -111,7 +112,7 @@
         className="min-h-[36px]"
       >
         {#if $isMobile}
-          <Add size={24} />
+          <PlusIcon />
         {:else}
           {$t('dashboard.create_course')}
         {/if}
@@ -225,7 +226,7 @@
           {:else}
             <div class="flex flex-col h-full items-center justify-center p-3">
               <div class="bg-primary-200 w-fit rounded-full p-4 text-black">
-                <UserProfile size={24} />
+                <UserIcon />
               </div>
               <div class="my-4 text-center">
                 <p class=" text-xl font-semibold">

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Grid, Column, Row } from 'carbon-components-svelte';
-  import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
   import { supabase } from '$lib/utils/functions/supabase';
   import { profile } from '$lib/utils/store/user';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -11,7 +11,7 @@
   import ArrowUpRightIcon from '$lib/components/Icons/ArrowTopRight.svelte';
   import { t } from '$lib/utils/functions/translations';
 
-  let chatId: number | null = $state();
+  let chatId: number | null = $state(null);
 
   async function addChatId() {
     if (!chatId || `${chatId}`.length < 5) return;
@@ -57,7 +57,7 @@
       {#if $profile.telegram_chat_id !== null}
         <div class="flex w-full flex-col items-center">
           <div class="flex items-center">
-            <CheckmarkFilled size={32} class="mr-2" style="fill: green;" />
+            <CircleCheckIcon filled />
             <SectionTitle>{$t('settings.integrations.success_message')}</SectionTitle>
           </div>
           <PrimaryButton className="mt-3" variant={VARIANTS.CONTAINED_DANGER} onClick={deleteChatId}

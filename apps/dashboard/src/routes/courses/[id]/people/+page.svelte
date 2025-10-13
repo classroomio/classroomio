@@ -10,7 +10,7 @@
   import type { ProfileRole } from '$lib/components/Course/components/People/types';
   import { group } from '$lib/components/Course/store';
   import Select from '$lib/components/Form/Select.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
@@ -28,7 +28,7 @@
     StructuredListHead,
     StructuredListRow
   } from 'carbon-components-svelte';
-  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
+  import TrashIcon from '@lucide/svelte/icons/trash';
 
   let member: { id?: string; email?: string; profile?: { email: string } } = $state({});
   let filterBy: ProfileRole = $state(ROLES[0]);
@@ -206,12 +206,12 @@
                       $deleteMemberModal.open = true;
                     }}
                   >
-                    <TrashCanIcon size={16} class="carbon-icon dark:text-white" />
+                    <TrashIcon />
                   </IconButton>
                   <!-- <IconButton
                     onClick={() => gotoPerson(person)}
                   >
-                    <TrashCanIcon size={16} class="carbon-icon dark:text-white" />
+                    <TrashIcon />
                   </IconButton> -->
 
                   <PrimaryButton

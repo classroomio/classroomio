@@ -1,6 +1,6 @@
 <script>
   import { RadioButtonGroup, RadioButton, Toggle } from 'carbon-components-svelte';
-  import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
+  import ZapIcon from '@lucide/svelte/icons/zap';
   import { goto } from '$app/navigation';
   import { updateCourse } from '$lib/utils/services/courses';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -176,7 +176,7 @@
       isDisabled={$isFreePlan}
     >
       {#if $isFreePlan}
-        <FlashFilled size={16} class="text-blue-700" />
+        <ZapIcon class="filled" />
       {/if}
       {$t('course.navItem.certificates.save')}
     </PrimaryButton>

@@ -3,7 +3,7 @@
   import { Tag, Pagination } from 'carbon-components-svelte';
   import type { StudentOverview } from '$lib/utils/types/analytics';
   import EmptyState from './EmptyState.svelte';
-  import { User } from 'carbon-icons-svelte';
+  import UserIcon from '@lucide/svelte/icons/user';
   import { course } from '../../store';
   import { goto } from '$app/navigation';
   import { t } from '$lib/utils/functions/translations';
@@ -48,7 +48,7 @@
   <EmptyState
     title={$t('analytics.no_students_found')}
     description={$t('analytics.no_students_description')}
-    icon={User}
+    icon={UserIcon}
   />
 {:else}
   <!-- Responsive Table -->

@@ -1,5 +1,5 @@
 <script>
-  import { ArrowUpRight } from 'carbon-icons-svelte';
+  import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
 
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
@@ -14,7 +14,7 @@
     <span
       class="flex items-center gap-1 overflow-hidden rounded-md border border-gray-50 bg-white px-2 py-1 text-sm font-medium text-black shadow-md transition duration-500 group-hover:border-blue-600 group-hover:bg-blue-600 group-hover:text-white dark:text-black"
     >
-      <ArrowUpRight
+      <ArrowUpRightIcon
         class="
             absolute left-3 -translate-x-full translate-y-full text-white
             opacity-0 transition duration-500 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100"

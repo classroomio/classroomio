@@ -2,11 +2,12 @@
   import { page } from '$app/state';
   import { flip } from 'svelte/animate';
   import { dndzone } from 'svelte-dnd-action';
-  import { Add, ScreenMap } from 'carbon-icons-svelte';
+  import PlusIcon from '@lucide/svelte/icons/plus';
+  import ListChecksIcon from '@lucide/svelte/icons/list-checks';
   import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { t } from '$lib/utils/functions/translations';
@@ -219,7 +220,7 @@
               />
             {:else}
               <IconButton contained size="small" onClick={() => handleAddLesson(section.id)} disabled={!!lessonEditing}>
-                <Add size={20} />
+                <PlusIcon />
               </IconButton>
               <OverflowMenu size="xl" flipped>
                 <OverflowMenuItem
@@ -281,7 +282,7 @@
                   </a>
 
                   <div class="mb-3 mt-1 flex items-center lg:mb-0">
-                    <ScreenMap size={16} class="carbon-icon dark:text-white" />
+                    <ListChecksIcon />
                     <p class="ml-2 text-xs text-gray-500 dark:text-white">
                       {lesson?.totalExercises ? lesson?.totalExercises?.map((c) => c.count) : 0}
                       {$t('exercises.heading')}

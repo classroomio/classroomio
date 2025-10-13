@@ -1,6 +1,6 @@
 <script lang="ts">
   import { openUpgradeModal } from '$lib/utils/functions/org';
-  import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
+  import ZapIcon from '@lucide/svelte/icons/zap';
   import { isFreePlan } from '$lib/utils/store/org';
 
   interface Props {
@@ -20,7 +20,7 @@
       openUpgradeModal();
     }}
   >
-    <FlashFilled size={16} class="text-blue-700" />
+    <ZapIcon class="filled" />
     <p class="text-sm font-semibold text-blue-700">
       {@render children?.()}
     </p>

@@ -4,8 +4,8 @@
   import { page } from '$app/state';
   import { browser } from '$app/environment';
   import TextChip from '$lib/components/Chip/Text.svelte';
-  import LockedIcon from 'carbon-icons-svelte/lib/Locked.svelte';
-  import CheckmarkFilled from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
+  import LockIcon from '@lucide/svelte/icons/lock';
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
   import NavExpandable from './NavExpandable.svelte';
   import { getNavItemRoute, getLessonsRoute, getLectureNo } from '$lib/components/Course/function';
   import { lessons, lessonSections } from '../Lesson/store/lessons';
@@ -319,11 +319,11 @@
                     <span class="grow"></span>
                     {#if !item.is_unlocked}
                       <span class="text-md ml-2" title="This lesson is locked.">
-                        <LockedIcon class="carbon-icon dark:text-white" />
+                        <LockIcon class="carbon-icon dark:text-white" />
                       </span>
                     {:else if getIsLessonComplete(item.lesson_completion, $profile.id)}
                       <span class="ml-2" title="You have completed this lesson">
-                        <CheckmarkFilled class="carbon-icon dark:text-white" />
+                        <CircleCheckIcon filled />
                       </span>
                     {/if}
                   </div>
@@ -361,11 +361,11 @@
                         <span class="grow"></span>
                         {#if !item.is_unlocked}
                           <span class="text-md ml-2" title="This lesson is locked.">
-                            <LockedIcon class="carbon-icon dark:text-white" />
+                            <LockIcon class="carbon-icon dark:text-white" />
                           </span>
                         {:else if getIsLessonComplete(item.lesson_completion, $profile.id)}
                           <span class="ml-2" title="You have completed this lesson">
-                            <CheckmarkFilled class="carbon-icon dark:text-white" />
+                            <CircleCheckIcon filled />
                           </span>
                         {/if}
                       </div>

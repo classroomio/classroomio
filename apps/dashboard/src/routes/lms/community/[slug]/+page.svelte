@@ -1,15 +1,15 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import pluralize from 'pluralize';
-  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
+  import TrashIcon from '@lucide/svelte/icons/trash';
   import { Dropdown, SkeletonPlaceholder, SkeletonText } from 'carbon-components-svelte';
-  import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import Vote from '$lib/components/Vote/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import Avatar from '$lib/components/Avatar/index.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
+  import { IconButton } from '$lib/components/IconButton';
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
   import { currentOrg, isOrgAdmin } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { supabase } from '$lib/utils/functions/supabase';
@@ -397,7 +397,7 @@
   {:else}
     <div class="px-5 py-10">
       <a class="text-md flex items-center text-gray-500 dark:text-white" href="/lms/community">
-        <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" />
+        <ArrowLeftIcon />
         {$t('community.ask.go_back')}
       </a>
       <div class="my-5 flex items-center justify-between">
@@ -454,7 +454,7 @@
                 deleteQuestion.questionId = question.id;
               }}
             >
-              <TrashCanIcon size={16} class="carbon-icon dark:text-white" />
+              <TrashIcon />
             </IconButton>
           {/if}
         </header>
@@ -495,7 +495,7 @@
               </div>
 
               {#if isValidAnswer}
-                <CheckmarkOutlineIcon size={20} />
+                <CircleCheckIcon />
               {/if}
 
               {#if comment.authorId === $profile.id || $isOrgAdmin}
@@ -506,7 +506,7 @@
                     deleteComment.commentId = comment.id;
                   }}
                 >
-                  <TrashCanIcon size={16} class="carbon-icon dark:text-white" />
+                  <TrashIcon />
                 </IconButton>
               {/if}
             </header>

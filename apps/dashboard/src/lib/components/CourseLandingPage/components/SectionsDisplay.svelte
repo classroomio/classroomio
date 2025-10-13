@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { CheckmarkOutline, ChevronDown, ChevronUp } from 'carbon-icons-svelte';
+  import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
+  import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+  import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
   import pluralize from 'pluralize';
 
   import { t } from '$lib/utils/functions/translations';
@@ -25,9 +27,9 @@
   >
     <span class="flex items-center gap-2">
       {#if expand}
-        <ChevronUp />
+        <ChevronUpIcon />
       {:else}
-        <ChevronDown />
+        <ChevronDownIcon />
       {/if}
       {title}
     </span>
@@ -40,7 +42,7 @@
   {#if expand}
     {#each lessons as lesson}
       <div class="lesson-section flex items-center gap-2 py-3 pl-3 text-[13px] text-[#656565]">
-        <CheckmarkOutline size={16} class="scale-[0.8]" />
+        <CircleCheckIcon />
         {lesson.title}
       </div>
     {/each}

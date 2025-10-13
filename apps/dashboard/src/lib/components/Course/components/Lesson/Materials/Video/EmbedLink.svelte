@@ -2,11 +2,11 @@
   import type { LessonVideoType } from '$lib/utils/types';
   import { isLessonDirty, lesson } from '$lib/components/Course/components/Lesson/store/lessons';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { CopyButton, Tag } from 'carbon-components-svelte';
-  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
+  import TrashIcon from '@lucide/svelte/icons/trash';
 
   let genericLinks = $state('');
   let error = $state('');
@@ -55,7 +55,7 @@
   }
 
   function removeVideo(index = 0) {
-    $lesson.materials.videos = $lesson.materials.videos.filter((v, i) => i !== index);
+    $lesson.materials.videos = $lesson.materials.videos.filter((_v, i) => i !== index);
   }
 </script>
 
@@ -90,7 +90,7 @@
         </Tag>
         <CopyButton text={video.link} feedback="Copied to clipboard" />
         <IconButton value="delete-video" onClick={() => removeVideo(index)}>
-          <TrashCanIcon size={16} class="carbon-icon dark:text-white" />
+          <TrashIcon />
         </IconButton>
       </div>
     {/if}

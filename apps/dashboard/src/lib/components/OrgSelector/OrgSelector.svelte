@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Popover, SkeletonText } from 'carbon-components-svelte';
-  import ChevronSort from 'carbon-icons-svelte/lib/ChevronSort.svelte';
+  import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
   import OrgSelectorItem from './OrgSelectorItem.svelte';
   import { currentOrg, orgs, currentOrgPath, currentOrgPlan } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
@@ -62,7 +62,7 @@
 
           <Plan name={$currentOrgPlan ? PLAN_NAMES[$currentOrgPlan.plan_name] : PLAN_NAMES.BASIC} />
         </div>
-        <ChevronSort size={16} />
+        <ChevronsUpDownIcon />
       </div>
     </button>
   {:else}

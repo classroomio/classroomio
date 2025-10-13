@@ -15,7 +15,7 @@
   import { profile } from '$lib/utils/store/user';
   import type { Course } from '$lib/utils/types';
   import { Dropdown } from 'carbon-components-svelte';
-  import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 
   let errors: {
     title?: string;
@@ -94,7 +94,7 @@
 <section class="w-full md:mx-auto md:max-w-3xl">
   <div class="p-5">
     <a class="text-md flex items-center text-gray-500 dark:text-white" href={`${$currentOrgPath}/community`}>
-      <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" />
+      <ArrowLeftIcon />
       {$t('community.ask.go_back')}
     </a>
     <div class="flex items-center justify-between gap-12">

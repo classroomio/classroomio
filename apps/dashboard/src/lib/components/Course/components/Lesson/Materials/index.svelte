@@ -10,14 +10,13 @@
     isLessonDirty,
     lesson,
     lessonByTranslation,
-    // lessons,
     lessonVideoUpload,
     lessonDocUpload
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { course } from '$lib/components/Course/store';
   import TextField from '$lib/components/Form/TextField.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import Modal from '$lib/components/Modal/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -34,11 +33,11 @@
   import type { LessonPage, LOCALE } from '$lib/utils/types';
   // import { useCompletion } from 'ai/svelte';
   import { Popover } from 'carbon-components-svelte';
-  import AlignBoxTopLeftIcon from 'carbon-icons-svelte/lib/AlignBoxTopLeft.svelte';
-  import IbmWatsonKnowledgeStudioIcon from 'carbon-icons-svelte/lib/IbmWatsonKnowledgeStudio.svelte';
-  import ListIcon from 'carbon-icons-svelte/lib/List.svelte';
-  import MagicWandFilled from 'carbon-icons-svelte/lib/MagicWandFilled.svelte';
-  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
+  import NotepadTextIcon from '@lucide/svelte/icons/notepad-text';
+  import ListTodoIcon from '@lucide/svelte/icons/list-todo';
+  import ListChecksIcon from '@lucide/svelte/icons/list-checks';
+  import WandSparklesIcon from '@lucide/svelte/icons/wand-sparkles';
+  import TrashIcon from '@lucide/svelte/icons/trash';
   import isEmpty from 'lodash/isEmpty';
   import { fade } from 'svelte/transition';
   import Comments from './components/Comments.svelte';
@@ -393,7 +392,7 @@
                 variant={VARIANTS.OUTLINED}
                 disableScale
               >
-                <MagicWandFilled size={20} class="carbon-icon mr-3" />
+                <WandSparklesIcon />
                 AI
                 <Popover
                   caret
@@ -405,15 +404,15 @@
                 >
                   <div class="p-2">
                     <button class={aiButtonClass} onclick={() => callAI('outline')}>
-                      <ListIcon class="carbon-icon mr-2" />
+                      <ListChecksIcon class="carbon-icon mr-2" />
                       {$t('course.navItem.lessons.materials.tabs.note.ai.outline')}
                     </button>
                     <button class={aiButtonClass} onclick={() => callAI('note')}>
-                      <AlignBoxTopLeftIcon class="carbon-icon mr-2" />
+                      <NotepadTextIcon class="carbon-icon mr-2" />
                       {$t('course.navItem.lessons.materials.tabs.note.ai.note')}
                     </button>
                     <button class={aiButtonClass} onclick={() => callAI('activities')}>
-                      <IbmWatsonKnowledgeStudioIcon class="carbon-icon mr-2" />
+                      <ListTodoIcon class="carbon-icon mr-2" />
                       {$t('course.navItem.lessons.materials.tabs.note.ai.activities')}
                     </button>
                   </div>
@@ -465,7 +464,7 @@
                 {#if mode === MODES.edit}
                   <div class="ml-auto">
                     <IconButton value="delete-video" contained={true} onClick={() => deleteLessonVideo(index)}>
-                      <TrashCanIcon size={20} class="carbon-icon dark:text-white" />
+                      <TrashIcon />
                     </IconButton>
                   </div>
                 {/if}

@@ -1,7 +1,7 @@
 <script lang="ts">
   import ToolTip from '../ToolTip/index.svelte';
 
-  interface Props {
+  export interface Props {
     onClick?: any;
     stopPropagation?: boolean;
     disabled?: boolean;
@@ -21,7 +21,7 @@
   }
 
   let {
-    onClick = (v: string) => {},
+    onClick = (_v: string) => {},
     stopPropagation = false,
     disabled = false,
     selected = false,

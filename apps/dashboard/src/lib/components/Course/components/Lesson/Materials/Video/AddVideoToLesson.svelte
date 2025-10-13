@@ -5,7 +5,7 @@
   import * as CONSTANTS from './constants';
   import { t } from '$lib/utils/functions/translations';
   import { isFreePlan } from '$lib/utils/store/org';
-  import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
+  import ZapIcon from '@lucide/svelte/icons/zap';
 
   interface Props {
     lessonId?: string;
@@ -34,9 +34,9 @@
         } flex cursor-pointer flex-row items-center justify-start gap-2 whitespace-nowrap rounded-md`}
       >
         {#if $isFreePlan && item.value === 3}
-          <FlashFilled size={20} class="text-blue-700" />
+          <ZapIcon class="filled" />
         {:else}
-          <item.icon size={20} color={`${currentTab === item.value ? 'dark:invert-0' : 'dark:invert'}`} />
+          <item.icon color={`${currentTab === item.value ? 'dark:invert-0' : 'dark:invert'}`} />
         {/if}
         <p>{$t(item.title)}</p>
       </button>

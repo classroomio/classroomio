@@ -2,7 +2,7 @@
   import { flip } from 'svelte/animate';
   import { settings } from './store';
   import { dndzone } from 'svelte-dnd-action';
-  import Draggable from 'carbon-icons-svelte/lib/Draggable.svelte';
+  import GripVerticalIcon from '@lucide/svelte/icons/grip-vertical';
   import { t } from '$lib/utils/functions/translations';
   import { createEventDispatcher } from 'svelte';
 
@@ -39,7 +39,7 @@
       animate:flip={{ duration: flipDurationMs }}
       class="flex items-center justify-start gap-1 rounded-md bg-slate-100 p-2 text-center text-xs md:gap-2 md:text-base dark:bg-slate-700 dark:text-white"
     >
-      <Draggable size={16} />
+      <GripVerticalIcon />
       {$t(item.name)}
     </div>
   {/each}

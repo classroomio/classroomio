@@ -4,8 +4,8 @@
   import Modal from '$lib/components/Modal/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
+
   import ComingSoon from '$lib/components/ComingSoon/index.svelte';
   import { Tag } from 'carbon-components-svelte';
   import { type GeneratedTemplates, getAllTemplates, TAGS } from '$lib/mocks';
@@ -160,11 +160,7 @@
             onclick={!option.isDisabled ? () => (type = option.type) : undefined}
           >
             <div class="flex h-[70%] w-full flex-row-reverse">
-              {#if option.type === type}
-                <CheckmarkFilledIcon size={16} class="carbon-icon text-primary-600 dark:text-primary-200" />
-              {:else if !option.isDisabled}
-                <CheckmarkOutlineIcon size={16} class="carbon-icon" />
-              {/if}
+              <CircleCheckIcon filled={option.type === type} />
             </div>
 
             <div>

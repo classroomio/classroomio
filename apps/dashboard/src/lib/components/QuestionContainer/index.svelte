@@ -1,7 +1,7 @@
 <script lang="ts">
   import TextField from '../Form/TextField.svelte';
-  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import TrashIcon from '@lucide/svelte/icons/trash';
+  import { IconButton } from '$lib/components/IconButton';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -66,7 +66,7 @@
 
       {#if onClose && !isTitle}
         <IconButton onClick={onClose}>
-          <TrashCanIcon size={24} />
+          <TrashIcon />
         </IconButton>
       {/if}
     </div>

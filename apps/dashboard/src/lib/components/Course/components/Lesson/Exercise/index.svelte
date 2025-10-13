@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import { PageBody } from '$lib/components/Page';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -18,9 +18,8 @@
     OverflowMenuItem
     // Switch
   } from 'carbon-components-svelte';
-  import AddAltIcon from 'carbon-icons-svelte/lib/AddAlt.svelte';
-  import ViewIcon from 'carbon-icons-svelte/lib/View.svelte';
-  import ViewFilledIcon from 'carbon-icons-svelte/lib/ViewFilled.svelte';
+  import CirclePlusIcon from '@lucide/svelte/icons/circle-plus';
+  import EyeIcon from '@lucide/svelte/icons/eye';
   import { onDestroy, onMount, untrack } from 'svelte';
   import {
     handleAddQuestion,
@@ -149,14 +148,10 @@
                 hotkeys: []
               }}
             >
-              {#if preview}
-                <ViewFilledIcon size={24} class="carbon-icon dark:text-white" />
-              {:else}
-                <ViewIcon size={24} class="carbon-icon dark:text-white" />
-              {/if}
+              <EyeIcon class={preview ? 'filled' : ''} />
             </IconButton>
             <IconButton onClick={() => handleAddQuestion()} size="small">
-              <AddAltIcon size={24} class="carbon-icon dark:text-white" />
+              <CirclePlusIcon />
             </IconButton>
             <OverflowMenu flipped>
               <OverflowMenuItem

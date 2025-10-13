@@ -7,16 +7,16 @@
   import { currentOrgPath } from '$lib/utils/store/org';
   import type { UserAnalytics } from '$lib/utils/types/analytics';
   import { Grid, Tag } from 'carbon-components-svelte';
-  import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
-  import Notebook from 'carbon-icons-svelte/lib/Notebook.svelte';
-  import Report from 'carbon-icons-svelte/lib/Report.svelte';
-  import RowExpand from 'carbon-icons-svelte/lib/RowExpand.svelte';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+  import BookOpenIcon from '@lucide/svelte/icons/book-open';
+  import ChartLineIcon from '@lucide/svelte/icons/chart-line';
+  import UnfoldVerticalIcon from '@lucide/svelte/icons/unfold-vertical';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
 
   let { data } = $props();
 
-  let userAnalytics: UserAnalytics = $state();
+  let userAnalytics: UserAnalytics | undefined = $state();
 
   let courseFilter = $state('all');
   function toggleCourseFilter(filter: 'completed' | 'incomplete') {
@@ -52,20 +52,20 @@
 
   let userMetrics = $derived([
     {
-      icon: Notebook,
+      icon: BookOpenIcon,
       title: $t('analytics.enrolled_courses'),
       description: $t('analytics.enrolled_courses_description'),
       percentage: userAnalytics?.courses?.length,
       hidePercentage: true
     },
     {
-      icon: Report,
+      icon: ChartLineIcon,
       title: $t('analytics.overall_course_progress'),
       description: $t('analytics.overall_course_progress_description'),
       percentage: userAnalytics?.overallCourseProgress
     },
     {
-      icon: RowExpand,
+      icon: UnfoldVerticalIcon,
       title: $t('analytics.total_average_grade'),
       description: $t('analytics.total_average_grade_description'),
       percentage: userAnalytics?.overallAverageGrade
@@ -93,7 +93,7 @@
   <section class="w-full md:mx-auto md:max-w-5xl">
     <div class="p-5">
       <a class="text-md flex items-center text-gray-500 dark:text-white" href={`${$currentOrgPath}/audience`}>
-        <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" />
+        <ArrowLeftIcon />
         {$t('community.ask.go_back')}
       </a>
     </div>

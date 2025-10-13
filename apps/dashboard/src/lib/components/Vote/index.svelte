@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ArrowUpIcon from 'carbon-icons-svelte/lib/ArrowUp.svelte';
+  import ArrowUpIcon from '@lucide/svelte/icons/arrow-up';
   import Chip from '../Chip/index.svelte';
 
   interface Props {
@@ -15,7 +15,7 @@
   class="vote border-none {disabled ? 'cursor-not-allowed' : 'cursor-pointer'}"
   onclick={disabled ? undefined : upVote}
 >
-  <ArrowUpIcon size={16} />
+  <ArrowUpIcon />
   <Chip {value} />
 </button>
 

@@ -3,7 +3,7 @@
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -13,13 +13,13 @@
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
   import { Column, Grid, RadioButton, RadioButtonGroup, Row, Toggle } from 'carbon-components-svelte';
-  import Save from 'carbon-icons-svelte/lib/Save.svelte';
-  import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
+  import SaveIcon from '@lucide/svelte/icons/save';
+  import TrashIcon from '@lucide/svelte/icons/trash';
   import SectionTitle from '../SectionTitle.svelte';
   import type { OrgLandingPageJson } from '$lib/utils/types/org';
   import { landingPageSettings } from './store';
 
-  let isSaving = false;
+  let isSaving = $state(false);
   let creatingNewQuestion = false;
   let creatingNewCustomLink = false;
   let hasUnsavedChanges = false;
@@ -450,7 +450,7 @@
             isAIEnabled={true}
           />
           <IconButton onClick={() => deleteFaq(item.id)}>
-            <TrashCan size={24} class="fill-red-700" />
+            <TrashIcon />
           </IconButton>
         </div>
       {/each}
@@ -618,7 +618,7 @@
               <span class="text-sm">{$t('settings.landing_page.custom_links.new_tab')}</span>
             </label>
             <IconButton onClick={() => deleteCustomLink(link.id)}>
-              <TrashCan size={20} class="fill-red-700" />
+              <TrashIcon />
             </IconButton>
           </div>
         </div>
@@ -726,7 +726,7 @@
 >
   <span>
     <IconButton onClick={handleSave} disabled={isSaving}>
-      <Save size={32} class=" rounded-full bg-blue-700 p-1" />
+      <SaveIcon />
     </IconButton>
   </span>
 </div>

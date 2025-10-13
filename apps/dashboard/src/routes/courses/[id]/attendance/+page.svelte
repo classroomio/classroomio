@@ -23,7 +23,7 @@
     StructuredListHead,
     StructuredListRow
   } from 'carbon-components-svelte';
-  import AudioConsoleIcon from 'carbon-icons-svelte/lib/AudioConsole.svelte';
+  import BadgeXIcon from '@lucide/svelte/icons/badge-x';
 
   let { data = $bindable() } = $props();
 
@@ -210,7 +210,7 @@
       </StructuredList>
       {#if students.length === 0}
         <Box className="h-[300px] w-full">
-          <AudioConsoleIcon size={32} class="carbon-icon w-80" />
+          <BadgeXIcon />
           <h3 class="text-center text-3xl text-gray-500 dark:text-white">
             {$t('course.navItem.attendance.no_student')}
           </h3>
