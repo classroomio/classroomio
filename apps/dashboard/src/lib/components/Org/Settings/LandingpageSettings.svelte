@@ -468,10 +468,7 @@
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.contact_us.heading')}</SectionTitle>
-      <Toggle toggled={$landingPageSettings.contact?.show} size="sm" on:change={() => {
-        hasUnsavedChanges = true
-
-      }}>
+      <Toggle toggled={$landingPageSettings.contact.show} size="sm" on:change={() => (hasUnsavedChanges = true)}>
         <span slot="labelA" style="color: gray">{$t('settings.landing_page.contact_us.hide_section')}</span>
         <span slot="labelB" style="color: gray">{$t('settings.landing_page.contact_us.show_section')}</span>
       </Toggle>

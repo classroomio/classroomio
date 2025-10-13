@@ -208,7 +208,8 @@
         "title_highlight": "Title-Highlight",
         "subtitle": "Subtitle",
         "phone_number": "Phone Number",
-        "email": "Email"
+        "email": "Email",
+        "address": "Address"
       },
       "mailing_list": {
         "heading": "Mailing List",
