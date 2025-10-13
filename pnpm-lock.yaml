@@ -149,76 +149,6 @@ importers:
         specifier: 4.21.x
         version: 4.21.2(bufferutil@4.0.9)(utf-8-validate@6.0.5)
 
-  apps/classroomio-com:
-    dependencies:
-      html-to-image:
-        specifier: ^1.11.11
-        version: 1.11.13
-      just-extend:
-        specifier: ^6.2.0
-        version: 6.2.0
-      posthog-node:
-        specifier: ^3.1.3
-        version: 3.6.3
-      rehype-slug:
-        specifier: ^6.0.0
-        version: 6.0.0
-      remark-toc:
-        specifier: ^9.0.0
-        version: 9.0.0
-      remark-unwrap-images:
-        specifier: ^4.0.0
-        version: 4.0.1
-      shared:
-        specifier: workspace:*
-        version: link:../../packages/shared
-      shiki:
-        specifier: ^0.14.7
-        version: 0.14.7
-      svelte-meta-tags:
-        specifier: ^3.1.2
-        version: 3.1.4(svelte@4.2.20)
-    devDependencies:
-      '@sveltejs/adapter-auto':
-        specifier: ^3.0.0
-        version: 3.3.1(@sveltejs/kit@2.46.4(@sveltejs/vite-plugin-svelte@3.1.2(svelte@4.2.20)(vite@5.4.19(@types/node@24.0.1)(lightningcss@1.30.1)(sass@1.89.2)))(svelte@4.2.20)(vite@5.4.19(@types/node@24.0.1)(lightningcss@1.30.1)(sass@1.89.2)))
-      '@sveltejs/kit':
-        specifier: ^2.0.0
-        version: 2.46.4(@sveltejs/vite-plugin-svelte@3.1.2(svelte@4.2.20)(vite@5.4.19(@types/node@24.0.1)(lightningcss@1.30.1)(sass@1.89.2)))(svelte@4.2.20)(vite@5.4.19(@types/node@24.0.1)(lightningcss@1.30.1)(sass@1.89.2))
-      '@sveltejs/vite-plugin-svelte':
-        specifier: ^3.0.0
-        version: 3.1.2(svelte@4.2.20)(vite@5.4.19(@types/node@24.0.1)(lightningcss@1.30.1)(sass@1.89.2))
-      autoprefixer:
-        specifier: ^10.4.15
-        version: 10.4.21(postcss@8.5.5)
-      carbon-icons-svelte:
-        specifier: ^12.3.0
-        version: 12.17.0
-      mdsvex:
-        specifier: ^0.11.0
-        version: 0.11.2(svelte@4.2.20)
-      postcss:
-        specifier: ^8.4.29
-        version: 8.5.5
-      svelte:
-        specifier: ^4.1.2
-        version: 4.2.20
-      svelte-check:
-        specifier: ^3.4.3
-        version: 3.8.6(@babel/core@7.27.4)(postcss-load-config@4.0.2(postcss@8.5.5)(ts-node@10.9.2(@types/node@24.0.1)(typescript@5.9.3)))(postcss@8.5.5)(sass@1.89.2)(svelte@4.2.20)
-      svelte-sequential-preprocessor:
-        specifier: ^2.0.1
-        version: 2.0.2
-      tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.17(ts-node@10.9.2(@types/node@24.0.1)(typescript@5.9.3))
-      typescript:
-        specifier: ^5.0.0
-        version: 5.9.3
-      vite:
-        specifier: ^5.4.4
-        version: 5.4.19(@types/node@24.0.1)(lightningcss@1.30.1)(sass@1.89.2)
-
   apps/course-app:
     dependencies:
       '@tailwindcss/container-queries':
@@ -626,6 +556,76 @@ importers:
       typescript:
         specifier: ^4.9.3
         version: 4.9.5
+
+  apps/website:
+    dependencies:
+      html-to-image:
+        specifier: ^1.11.11
+        version: 1.11.13
+      just-extend:
+        specifier: ^6.2.0
+        version: 6.2.0
+      posthog-node:
+        specifier: ^3.1.3
+        version: 3.6.3
+      rehype-slug:
+        specifier: ^6.0.0
+        version: 6.0.0
+      remark-toc:
+        specifier: ^9.0.0
+        version: 9.0.0
+      remark-unwrap-images:
+        specifier: ^4.0.0
+        version: 4.0.1
+      shared:
+        specifier: workspace:*
+        version: link:../../packages/shared
+      shiki:
+        specifier: ^0.14.7
+        version: 0.14.7
+      svelte-meta-tags:
+        specifier: ^3.1.2
+        version: 3.1.4(svelte@4.2.20)
+    devDependencies:
+      '@sveltejs/adapter-auto':
+        specifier: ^3.0.0
+        version: 3.3.1(@sveltejs/kit@2.46.4(@sveltejs/vite-plugin-svelte@3.1.2(svelte@4.2.20)(vite@5.4.19(@types/node@24.0.1)(lightningcss@1.30.1)(sass@1.89.2)))(svelte@4.2.20)(vite@5.4.19(@types/node@24.0.1)(lightningcss@1.30.1)(sass@1.89.2)))
+      '@sveltejs/kit':
+        specifier: ^2.0.0
+        version: 2.46.4(@sveltejs/vite-plugin-svelte@3.1.2(svelte@4.2.20)(vite@5.4.19(@types/node@24.0.1)(lightningcss@1.30.1)(sass@1.89.2)))(svelte@4.2.20)(vite@5.4.19(@types/node@24.0.1)(lightningcss@1.30.1)(sass@1.89.2))
+      '@sveltejs/vite-plugin-svelte':
+        specifier: ^3.0.0
+        version: 3.1.2(svelte@4.2.20)(vite@5.4.19(@types/node@24.0.1)(lightningcss@1.30.1)(sass@1.89.2))
+      autoprefixer:
+        specifier: ^10.4.15
+        version: 10.4.21(postcss@8.5.6)
+      carbon-icons-svelte:
+        specifier: ^12.3.0
+        version: 12.17.0
+      mdsvex:
+        specifier: ^0.11.0
+        version: 0.11.2(svelte@4.2.20)
+      postcss:
+        specifier: ^8.4.29
+        version: 8.5.6
+      svelte:
+        specifier: ^4.1.2
+        version: 4.2.20
+      svelte-check:
+        specifier: ^3.4.3
+        version: 3.8.6(@babel/core@7.27.4)(postcss-load-config@4.0.2(postcss@8.5.6)(ts-node@10.9.2(@types/node@24.0.1)(typescript@5.9.3)))(postcss@8.5.6)(sass@1.89.2)(svelte@4.2.20)
+      svelte-sequential-preprocessor:
+        specifier: ^2.0.1
+        version: 2.0.2
+      tailwindcss:
+        specifier: ^3.3.3
+        version: 3.4.17(ts-node@10.9.2(@types/node@24.0.1)(typescript@5.9.3))
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+      vite:
+        specifier: ^5.4.4
+        version: 5.4.19(@types/node@24.0.1)(lightningcss@1.30.1)(sass@1.89.2)
 
   packages/course-app:
     dependencies:
@@ -11813,7 +11813,7 @@ snapshots:
   '@jridgewell/trace-mapping@0.3.9':
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
 
   '@lemonsqueezy/lemonsqueezy.js@2.2.0': {}
 
@@ -12774,7 +12774,7 @@ snapshots:
       devalue: 5.3.2
       esm-env: 1.2.2
       kleur: 4.1.5
-      magic-string: 0.30.17
+      magic-string: 0.30.19
       mrmime: 2.0.1
       sade: 1.8.1
       set-cookie-parser: 2.7.1
@@ -12824,7 +12824,7 @@ snapshots:
       debug: 4.4.1
       deepmerge: 4.3.1
       kleur: 4.1.5
-      magic-string: 0.30.17
+      magic-string: 0.30.19
       svelte: 4.2.20
       svelte-hmr: 0.16.0(svelte@4.2.20)
       vite: 5.4.19(@types/node@24.0.1)(lightningcss@1.30.1)(sass@1.89.2)
@@ -14191,7 +14191,7 @@ snapshots:
 
   code-red@1.0.4:
     dependencies:
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
       '@types/estree': 1.0.8
       acorn: 8.15.0
       estree-walker: 3.0.3
@@ -17981,6 +17981,15 @@ snapshots:
       postcss: 8.5.5
       ts-node: 10.9.2(@types/node@24.0.1)(typescript@5.9.3)
 
+  postcss-load-config@4.0.2(postcss@8.5.6)(ts-node@10.9.2(@types/node@24.0.1)(typescript@5.9.3)):
+    dependencies:
+      lilconfig: 3.1.3
+      yaml: 2.8.0
+    optionalDependencies:
+      postcss: 8.5.6
+      ts-node: 10.9.2(@types/node@24.0.1)(typescript@5.9.3)
+    optional: true
+
   postcss-nested@6.2.0(postcss@8.5.5):
     dependencies:
       postcss: 8.5.5
@@ -17990,9 +17999,9 @@ snapshots:
     dependencies:
       postcss: 8.5.5
 
-  postcss-scss@4.0.9(postcss@8.5.5):
+  postcss-scss@4.0.9(postcss@8.5.6):
     dependencies:
-      postcss: 8.5.5
+      postcss: 8.5.6
 
   postcss-selector-parser@6.0.10:
     dependencies:
@@ -18658,7 +18667,7 @@ snapshots:
 
   sorcery@0.11.1:
     dependencies:
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
       buffer-crc32: 1.0.0
       minimist: 1.2.8
       sander: 0.5.1
@@ -18893,14 +18902,14 @@ snapshots:
     dependencies:
       svelte: 5.34.1
 
-  svelte-check@3.8.6(@babel/core@7.27.4)(postcss-load-config@4.0.2(postcss@8.5.5)(ts-node@10.9.2(@types/node@24.0.1)(typescript@5.9.3)))(postcss@8.5.5)(sass@1.89.2)(svelte@4.2.20):
+  svelte-check@3.8.6(@babel/core@7.27.4)(postcss-load-config@4.0.2(postcss@8.5.6)(ts-node@10.9.2(@types/node@24.0.1)(typescript@5.9.3)))(postcss@8.5.6)(sass@1.89.2)(svelte@4.2.20):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
       chokidar: 3.6.0
       picocolors: 1.1.1
       sade: 1.8.1
       svelte: 4.2.20
-      svelte-preprocess: 5.1.4(@babel/core@7.27.4)(postcss-load-config@4.0.2(postcss@8.5.5)(ts-node@10.9.2(@types/node@24.0.1)(typescript@5.9.3)))(postcss@8.5.5)(sass@1.89.2)(svelte@4.2.20)(typescript@5.9.3)
+      svelte-preprocess: 5.1.4(@babel/core@7.27.4)(postcss-load-config@4.0.2(postcss@8.5.6)(ts-node@10.9.2(@types/node@24.0.1)(typescript@5.9.3)))(postcss@8.5.6)(sass@1.89.2)(svelte@4.2.20)(typescript@5.9.3)
       typescript: 5.9.3
     transitivePeerDependencies:
       - '@babel/core'
@@ -18946,8 +18955,8 @@ snapshots:
       eslint-scope: 8.4.0
       eslint-visitor-keys: 4.2.1
       espree: 10.4.0
-      postcss: 8.5.5
-      postcss-scss: 4.0.9(postcss@8.5.5)
+      postcss: 8.5.6
+      postcss-scss: 4.0.9(postcss@8.5.6)
       postcss-selector-parser: 7.1.0
     optionalDependencies:
       svelte: 5.34.1
@@ -18991,18 +19000,18 @@ snapshots:
       svelte: 5.34.1
       tslib: 2.8.1
 
-  svelte-preprocess@5.1.4(@babel/core@7.27.4)(postcss-load-config@4.0.2(postcss@8.5.5)(ts-node@10.9.2(@types/node@24.0.1)(typescript@5.9.3)))(postcss@8.5.5)(sass@1.89.2)(svelte@4.2.20)(typescript@5.9.3):
+  svelte-preprocess@5.1.4(@babel/core@7.27.4)(postcss-load-config@4.0.2(postcss@8.5.6)(ts-node@10.9.2(@types/node@24.0.1)(typescript@5.9.3)))(postcss@8.5.6)(sass@1.89.2)(svelte@4.2.20)(typescript@5.9.3):
     dependencies:
       '@types/pug': 2.0.10
       detect-indent: 6.1.0
-      magic-string: 0.30.17
+      magic-string: 0.30.19
       sorcery: 0.11.1
       strip-indent: 3.0.0
       svelte: 4.2.20
     optionalDependencies:
       '@babel/core': 7.27.4
-      postcss: 8.5.5
-      postcss-load-config: 4.0.2(postcss@8.5.5)(ts-node@10.9.2(@types/node@24.0.1)(typescript@5.9.3))
+      postcss: 8.5.6
+      postcss-load-config: 4.0.2(postcss@8.5.6)(ts-node@10.9.2(@types/node@24.0.1)(typescript@5.9.3))
       sass: 1.89.2
       typescript: 5.9.3
 
@@ -19032,7 +19041,7 @@ snapshots:
   svelte@4.2.20:
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
       '@jridgewell/trace-mapping': 0.3.25
       '@types/estree': 1.0.8
       acorn: 8.15.0
@@ -19043,7 +19052,7 @@ snapshots:
       estree-walker: 3.0.3
       is-reference: 3.0.3
       locate-character: 3.0.0
-      magic-string: 0.30.17
+      magic-string: 0.30.19
       periscopic: 3.1.0
 
   svelte@5.34.1:
@@ -19926,7 +19935,7 @@ snapshots:
       esbuild: 0.25.5
       fdir: 6.4.6(picomatch@4.0.2)
       picomatch: 4.0.2
-      postcss: 8.5.5
+      postcss: 8.5.6
       rollup: 4.43.0
       tinyglobby: 0.2.14
     optionalDependencies:
