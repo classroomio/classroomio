@@ -11,7 +11,14 @@
   import { t } from '$lib/utils/functions/translations';
 
   let { data } = $props();
-  let setupList = $state(data.setup || []);
+  const setupList = $derived(
+    (data.setup || []).map((item) => {
+      if (item.id === 'profile') {
+        item.is_completed = !$profile.avatar_url.includes('avatars/avatar.png');
+      }
+      return item;
+    })
+  );
 
   const completed = $derived(setupList.filter((list) => list.is_completed).length);
 
@@ -71,15 +78,6 @@
         break;
     }
   };
-
-  $effect(() => {
-    setupList = setupList.map((item) => {
-      if (item.id === 'profile') {
-        item.is_completed = !$profile.avatar_url.includes('avatars/avatar.png');
-      }
-      return item;
-    });
-  });
 </script>
 
 <section class="mx-auto w-full md:max-w-4xl">

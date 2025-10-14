@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -16,14 +15,13 @@
   import SaveIcon from '@lucide/svelte/icons/save';
   import TrashIcon from '@lucide/svelte/icons/trash';
   import SectionTitle from '../SectionTitle.svelte';
-  import type { OrgLandingPageJson } from '$lib/utils/types/org';
   import { landingPageSettings } from './store';
 
   let isSaving = $state(false);
-  let creatingNewQuestion = false;
-  let creatingNewCustomLink = false;
-  let hasUnsavedChanges = false;
-  let widgetKey = '';
+  let creatingNewQuestion = $state(false);
+  let creatingNewCustomLink = $state(false);
+  let hasUnsavedChanges = $state(false);
+  let widgetKey = $state('');
   const banner = [
     { value: 'video', label: `${$t('settings.landing_page.actions.banner_type.video')}` },
     { value: 'image', label: `${$t('settings.landing_page.actions.banner_type.image')}` }
@@ -35,11 +33,11 @@
     content: ''
   });
 
-  let newCustomLink = {
+  let newCustomLink = $state({
     label: '',
     url: '',
     openInNewTab: false
-  };
+  });
 
   function widgetControl(key: string) {
     widgetKey = key;
@@ -146,9 +144,12 @@
     isSaving = false;
   }
 
-  function setDefault(landingpage: OrgLandingPageJson) {
-    if (landingpage && Object.keys(landingpage).length) {
-      // Added new key, support backward compatibility
+  // Set default from store
+  currentOrg.subscribe((cOrg) => {
+    if (cOrg.landingpage && Object.keys(cOrg.landingpage).length) {
+      const landingpage = { ...cOrg.landingpage };
+
+      // Fallbacks for new keys we added into JSON, in case a user already saved the old JSON
       if (!landingpage?.header?.banner) {
         landingpage.header.banner = $landingPageSettings.header.banner;
       }
@@ -156,24 +157,19 @@
       if (!landingpage?.header?.background) {
         landingpage.header.background = $landingPageSettings.header.background;
       }
-      
+
       if (!landingpage.customLinks) {
         landingpage.customLinks = $landingPageSettings.customLinks;
       }
-
-      untrack(() => {
-        $landingPageSettings = {
-          ...landingpage
-        };
-      });
+      $landingPageSettings = {
+        ...landingpage
+      };
     }
-  }
-  $effect(() => {
-    setDefault($currentOrg?.landingpage as unknown as OrgLandingPageJson);
   });
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
+
 <Grid class="border-c relative mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}>
@@ -237,7 +233,10 @@
       <RadioButtonGroup
         legendText={$t('settings.landing_page.actions.banner_type.heading')}
         bind:selected={$landingPageSettings.header.banner.type}
-        on:change={() => (hasUnsavedChanges = true)}
+        on:click={() => {
+          if (hasUnsavedChanges) return;
+          hasUnsavedChanges = true;
+        }}
         class="mb-5 mt-10"
       >
         {#each banner as item}

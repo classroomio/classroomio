@@ -369,7 +369,8 @@
       <RadioButtonGroup
         hideLegend
         bind:selected={$settings.type}
-        on:change={() => {
+        on:click={() => {
+          if (hasUnsavedChanges) return;
           hasUnsavedChanges = true;
         }}
       >

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { goto } from '$app/navigation';
   import { Column, Grid, Row } from 'carbon-components-svelte';
   import ZapIcon from '@lucide/svelte/icons/zap';
@@ -30,8 +31,19 @@
     orgName: ''
   });
   let loading = $state(false);
+  let hex = $state('');
 
-  let hex = $derived(setHex($currentOrg.theme));
+  $effect(() => {
+    const theme = $currentOrg.theme;
+
+    // if not a custom theme, don't update hex
+    if (!theme || theme.includes('theme-')) return;
+
+    // only update hex with value of `theme` when theme changes not when HEX changes
+    untrack(() => {
+      hex = theme;
+    });
+  });
 
   const themes = {
     rose: 'theme-rose',
@@ -40,11 +52,6 @@
     violet: 'theme-violet',
     default: ''
   };
-
-  function setHex(theme?: string) {
-    if (!theme || hex || theme.includes('theme-')) hex;
-    return theme;
-  }
 
   const saveTheme = debounce(async (theme) => {
     const { error, data } = await supabase.from('organization').update({ theme }).match({ id: $currentOrg.id });
@@ -147,6 +154,7 @@
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
+
 <Grid class="border-c mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}>

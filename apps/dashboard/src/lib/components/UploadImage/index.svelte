@@ -4,7 +4,7 @@
   import CameraIcon from '@lucide/svelte/icons/camera';
 
   interface Props {
-    avatar: string | undefined;
+    avatar: string | File | undefined;
     src: string | undefined;
     widthHeight?: string;
     shape?: string;
@@ -18,7 +18,7 @@
 
   let {
     avatar = $bindable(),
-    src = $bindable(),
+    src,
     widthHeight = '',
     shape = 'rounded-full',
     errorMessage = $bindable(null),
@@ -29,7 +29,9 @@
     change
   }: Props = $props();
 
+  const defaultImg = 'https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png';
   let fileinput: HTMLInputElement | undefined = $state();
+  let imgRef: HTMLImageElement | undefined = $state();
 
   const onFileSelected = (
     e: Event & {
@@ -37,7 +39,6 @@
     }
   ) => {
     const image = e.currentTarget?.files?.[0];
-
     if (!image) return;
 
     const maxFileSize = maxFileSizeInMb * 1024 * 1024;
@@ -46,16 +47,23 @@
       return;
     }
 
-    let reader = new FileReader();
-    reader.readAsDataURL(image);
-    reader.onload = (e) => {
-      avatar = image.toString();
+    const reader = new FileReader();
+    reader.addEventListener('load', function () {
+      if (!imgRef || !reader.result) return;
 
+      // pass image as avatar to parent component
+      avatar = image;
+
+      // update the image src on the DOM
+      imgRef.setAttribute('src', reader.result.toString());
+
+      // trigger onchange to parent
       change?.();
 
-      src = e.target?.result?.toString() || undefined;
-      errorMessage = null; // Clear error message on successful load
-    };
+      // clear error
+      errorMessage = null;
+    });
+    reader.readAsDataURL(image);
   };
 </script>
 
@@ -64,17 +72,7 @@
     class="avatar-container {widthHeight ||
       'setwidthheight'} pointer relative border-2 border-gray-200 dark:border-neutral-600 {shape}"
   >
-    {#if src}
-      <img class="h-full w-full {shape}" {src} alt="Avatar" />
-    {:else if avatar}
-      <img class="h-full w-full {shape}" src={avatar} alt="Avatar" />
-    {:else}
-      <img
-        class="h-full w-full {shape}"
-        src="https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png"
-        alt=""
-      />
-    {/if}
+    <img bind:this={imgRef} class="h-full w-full {shape}" src={src || defaultImg} alt="" />
   </div>
 
   <div class="flex flex-col items-center">

@@ -1,5 +1,5 @@
-import { getSupabase } from '$lib/utils/functions/supabase';
 import get from 'lodash/get';
+import { getSupabase } from '$lib/utils/functions/supabase';
 
 const supabase = getSupabase();
 

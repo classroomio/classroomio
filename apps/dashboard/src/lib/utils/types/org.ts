@@ -99,9 +99,7 @@ export interface CurrentOrg {
   avatar_url: string;
   memberId: string;
   role_id: number;
-  landingpage: {
-    [key: string]: unknown;
-  };
+  landingpage: OrgLandingPageJson;
   customization: OrgCustomization;
   theme: string;
   organization_plan: {

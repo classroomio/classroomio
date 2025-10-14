@@ -1,6 +1,6 @@
 <script>
   import { Popover } from 'carbon-components-svelte';
-  import MenuIcon from '@lucide/svelte/icons/menu';
+  import Menu from './Menu.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { profileMenu } from '../store';
@@ -14,7 +14,7 @@
     containerClass="h-full !max-h-[70vh] pt-0 pb-2"
     headerClass="py-1"
   >
-    <MenuIcon />
+    <Menu />
   </Modal>
 {:else}
   <Popover
@@ -25,6 +25,6 @@
       $profileMenu.open = !!$profileMenu.ref?.contains(detail.target);
     }}
   >
-    <MenuIcon />
+    <Menu />
   </Popover>
 {/if}
