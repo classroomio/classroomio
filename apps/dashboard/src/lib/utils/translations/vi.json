@@ -937,6 +937,17 @@
       "date_created": "Ngày tạo",
       "published": "Được phát hành",
       "lessons": "Những bài học"
+    },
+    "copy_course": {
+      "title": "Tạo một khóa học",
+      "course_name_label": "Tên khóa học",
+      "course_name_placeholder": "Tên khóa học của bạn",
+      "course_description_label": "Mô tả khóa học",
+      "course_description_placeholder": "Nhập mô tả cho khóa học của bạn",
+      "create_button": "Tạo nên",
+      "error": {
+        "failed_to_clone": "Không thể sao chép khóa học"
+      }
     }
   },
   "ai": {

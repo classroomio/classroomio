@@ -9,6 +9,7 @@
   import { classroomio } from '$lib/utils/services/api';
   import generateSlug from '$lib/utils/functions/generateSlug';
   import { currentOrg } from '$lib/utils/store/org';
+  import { t } from '$lib/utils/functions/translations';
 
   // clone, show spinner and redirect to new course
   async function createCourse() {
@@ -35,7 +36,7 @@
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error((result as any).error  || 'Failed to clone course');
+        throw new Error((result as any).error  || $t('courses.copy_course.error.failed_to_clone'));
       }
 
       // Option 3: Close modal and reset state before navigation
@@ -62,23 +63,23 @@
   onClose={() => ($copyCourseModal.open = false)}
   bind:open={$copyCourseModal.open}
   width="w-96"
-  modalHeading="Create a Course"
+  modalHeading={$t('courses.copy_course.title')}
 >
   <form on:submit|preventDefault={createCourse}>
     <TextField
-      label="Course name"
+      label={$t('courses.copy_course.course_name_label')}
       bind:value={$copyCourseModal.title}
       autoFocus={true}
-      placeholder="Your course name"
+      placeholder={$t('courses.copy_course.course_name_placeholder')}
       className="mb-4"
       isRequired={true}
       autoComplete={false}
     />
 
     <TextArea
-      label="Course description"
+      label={$t('courses.copy_course.course_description_label')}
       bind:value={$copyCourseModal.description}
-      placeholder="Enter a description for your course"
+      placeholder={$t('courses.copy_course.course_description_placeholder')}
       className="mb-4"
       rows={4}
     />
@@ -86,7 +87,7 @@
     <div class="mt-5 flex flex-row-reverse items-center">
       <PrimaryButton
         className="px-6 py-3"
-        label="Create"
+        label={$t('courses.copy_course.create_button')}
         type="submit"
         isLoading={$copyCourseModal.isSaving}
         isDisabled={$copyCourseModal.isSaving}

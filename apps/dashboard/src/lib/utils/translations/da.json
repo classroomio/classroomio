@@ -1091,6 +1091,17 @@
       "date_created": "Dato oprettet",
       "published": "Offentliggjort",
       "lessons": "Lektioner"
+    },
+    "copy_course": {
+      "title": "Opret et kursus",
+      "course_name_label": "Kursusnavn",
+      "course_name_placeholder": "Dit kursusnavn",
+      "course_description_label": "Kursusbeskrivelse",
+      "course_description_placeholder": "Indtast en beskrivelse til dit kursus",
+      "create_button": "Skabe",
+      "error": {
+        "failed_to_clone": "Kunne ikke klone kursus"
+      }
     }
   },
   "ai": {
@@ -1380,7 +1391,8 @@
         "title_highlight": "Titelhøjlight",
         "subtitle": "Undertekst",
         "phone_number": "Telefonnummer",
-        "email": "E -mail"
+        "email": "E -mail",
+        "address": "Adresse"
       },
       "faq": {
         "heading": "Ofte stillede spørgsmål",

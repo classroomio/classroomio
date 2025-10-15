@@ -1087,6 +1087,17 @@
       "date_created": "Utworzona data",
       "published": "Opublikowany",
       "lessons": "Lekcje"
+    },
+    "copy_course": {
+      "title": "Utwórz kurs",
+      "course_name_label": "Nazwa kursu",
+      "course_name_placeholder": "Nazwa Twojego kursu",
+      "course_description_label": "Opis kursu",
+      "course_description_placeholder": "Wprowadź opis swojego kursu",
+      "create_button": "Tworzyć",
+      "error": {
+        "failed_to_clone": "Nie udało się sklonować kursu"
+      }
     }
   },
   "ai": {

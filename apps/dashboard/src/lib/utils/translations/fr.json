@@ -937,6 +937,17 @@
       "date_created": "date créée",
       "published": "Publié",
       "lessons": "Cours"
+    },
+    "copy_course": {
+      "title": "Créer un cours",
+      "course_name_label": "Nom du cours",
+      "course_name_placeholder": "Le nom de votre cours",
+      "course_description_label": "Descriptif du cours",
+      "course_description_placeholder": "Entrez une description pour votre cours",
+      "create_button": "Créer",
+      "error": {
+        "failed_to_clone": "Échec du clonage du cours"
+      }
     }
   },
   "ai": {
