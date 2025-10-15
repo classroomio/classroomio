@@ -48,3 +48,13 @@ export const ZCourseDownloadPresignedUrl = z.object({
 });
 
 export type TCourseDownloadPresignedUrl = z.infer<typeof ZCourseDownloadPresignedUrl>;
+
+export const ZCourseClone = z.object({
+  courseId: z.string().min(1, 'Course ID is required'),
+  newTitle: z.string().min(1, 'New course title is required'),
+  newDescription: z.string().optional(),
+  newSlug: z.string().min(1, 'Course slug is required'),
+  organizationId: z.string().min(1, 'Organization ID is required')
+});
+
+export type TCourseClone = z.infer<typeof ZCourseClone>;

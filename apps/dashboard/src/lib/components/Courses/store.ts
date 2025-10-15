@@ -40,6 +40,7 @@ export const copyCourseModalInitialState = {
   courseIdToCopy: null,
   id: '',
   title: '',
+  description: '',
   isSaving: false,
   error: null
 };

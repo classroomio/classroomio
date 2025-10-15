@@ -4,20 +4,46 @@
   import Modal from '$lib/components/Modal/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
   import TextField from '$lib/components/Form/TextField.svelte';
+  import TextArea from '$lib/components/Form/TextArea.svelte';
   import { copyCourseModalInitialState, copyCourseModal } from '$lib/components/Courses/store';
-  import { cloneCourse } from '$lib/utils/services/courses/clone';
+  import { classroomio } from '$lib/utils/services/api';
+  import generateSlug from '$lib/utils/functions/generateSlug';
+  import { currentOrg } from '$lib/utils/store/org';
 
   // clone, show spinner and redirect to new course
   async function createCourse() {
+    // Prevent double submission (Option 1: Early Return Guard)
+    if ($copyCourseModal.isSaving) return;
+
     console.log('Create course');
     $copyCourseModal.isSaving = true;
 
     try {
-      const newCourse = await cloneCourse($copyCourseModal.id, $copyCourseModal.title);
+      // Generate unique slug from the new title
+      const newSlug = generateSlug($copyCourseModal.title);
 
-      goto(`/courses/${newCourse.id}`);
+      const response = await classroomio.course.clone.$post({
+        json: {
+          courseId: $copyCourseModal.id,
+          newTitle: $copyCourseModal.title,
+          newDescription: $copyCourseModal.description,
+          newSlug,
+          organizationId: $currentOrg.id
+        }
+      });
 
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to clone course');
+      }
+
+      // Option 3: Close modal and reset state before navigation
+      $copyCourseModal.open = false;
       copyCourseModal.set(copyCourseModalInitialState);
+      
+      // Navigate to the new course
+      goto(`/courses/${result.course.id}`);
     } catch (error) {
       console.error(error);
 
@@ -49,12 +75,21 @@
       autoComplete={false}
     />
 
-    <div class="mt-5 flex items-center flex-row-reverse">
+    <TextArea
+      label="Course description"
+      bind:value={$copyCourseModal.description}
+      placeholder="Enter a description for your course"
+      className="mb-4"
+      rows={4}
+    />
+
+    <div class="mt-5 flex flex-row-reverse items-center">
       <PrimaryButton
         className="px-6 py-3"
         label="Create"
         type="submit"
         isLoading={$copyCourseModal.isSaving}
+        disabled={$copyCourseModal.isSaving}
       />
     </div>
   </form>

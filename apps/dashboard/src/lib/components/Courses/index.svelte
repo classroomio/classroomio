@@ -15,7 +15,7 @@
     StructuredListBody
   } from 'carbon-components-svelte';
   import { t } from '$lib/utils/functions/translations';
-
+  import CopyCourseModal from './components/CopyCourseModal/index.svelte';
   export let courses: Course[] = [];
   export let emptyTitle = $t('courses.course_card.empty_title');
   export let emptyDescription = $t('courses.course_card.empty_description');
@@ -30,7 +30,7 @@
   }
 </script>
 
-<!-- <CopyCourseModal /> -->
+<CopyCourseModal />
 
 <div class="mx-auto my-4 w-full">
   {#if $courseMetaDeta.isLoading}

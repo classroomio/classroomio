@@ -16,7 +16,7 @@
   import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
   import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
   import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
-
+  import { copyCourseModal } from '$lib/components/Courses/store';
   export let bannerImage: string | undefined;
   export let id = '';
   export let slug = '';
@@ -44,7 +44,11 @@
 
   function handleCloneCourse() {
     // TODO: Clone course functionality
-    alert('WIP: Clone course');
+    $copyCourseModal.open = true;
+    $copyCourseModal.id = id;
+    $copyCourseModal.title = title;
+    $copyCourseModal.description = description;
+    // alert('WIP: Clone course');
   }
 
   function handleShareCourse() {
