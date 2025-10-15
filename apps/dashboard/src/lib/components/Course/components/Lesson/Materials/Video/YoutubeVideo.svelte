@@ -79,7 +79,7 @@
         </Tag>
         <CopyButton text={video.link} feedback="Copied to clipboard" />
         <IconButton value="delete-video" onClick={() => removeVideo(index)}>
-          <TrashIcon />
+          <TrashIcon size={16} />
         </IconButton>
       </div>
     {/if}

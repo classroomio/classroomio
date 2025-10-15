@@ -210,7 +210,7 @@
       </StructuredList>
       {#if students.length === 0}
         <Box className="h-[300px] w-full">
-          <BadgeXIcon />
+          <BadgeXIcon size={48} />
           <h3 class="text-center text-3xl text-gray-500 dark:text-white">
             {$t('course.navItem.attendance.no_student')}
           </h3>

@@ -206,12 +206,12 @@
                       $deleteMemberModal.open = true;
                     }}
                   >
-                    <TrashIcon />
+                    <TrashIcon size={16} />
                   </IconButton>
                   <!-- <IconButton
                     onClick={() => gotoPerson(person)}
                   >
-                    <TrashIcon />
+                    <TrashIcon size={16} />
                   </IconButton> -->
 
                   <PrimaryButton

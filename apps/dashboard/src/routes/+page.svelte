@@ -98,11 +98,11 @@
       >
         <h3 class="text-3xl dark:text-white">
           {#if index === 0}
-            <DoorOpenIcon />
+            <DoorOpenIcon size={16} />
           {:else if index === 1}
-            <ChartAreaIcon />
+            <ChartAreaIcon size={16} />
           {:else if index === 2}
-            <BotIcon />
+            <BotIcon size={16} />
           {/if}
           {area.title}
         </h3>

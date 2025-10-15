@@ -281,7 +281,7 @@
         {#each $newsFeed as feed}
           {#if feed.isPinned}
             <div class="mb-3 flex items-center gap-2">
-              <PinIcon class="filled" />
+              <PinIcon size={16} class="filled" />
 
               <p class="text-sm">{$t('course.navItem.news_feed.pinned')}</p>
             </div>

@@ -27,9 +27,9 @@
   >
     <span class="flex items-center gap-2">
       {#if expand}
-        <ChevronUpIcon />
+        <ChevronUpIcon size={16} />
       {:else}
-        <ChevronDownIcon />
+        <ChevronDownIcon size={16} />
       {/if}
       {title}
     </span>
@@ -42,7 +42,7 @@
   {#if expand}
     {#each lessons as lesson}
       <div class="lesson-section flex items-center gap-2 py-3 pl-3 text-[13px] text-[#656565]">
-        <CircleCheckIcon />
+        <CircleCheckIcon size={16} />
         {lesson.title}
       </div>
     {/each}

@@ -14,7 +14,7 @@
     content?: import('svelte').Snippet;
   }
 
-  let { tabs = [], currentTab, onChange = (v: string | number) => () => {}, content }: Props = $props();
+  let { tabs = [], currentTab, onChange = (_v: string | number) => () => {}, content }: Props = $props();
 </script>
 
 <div class="flex w-full flex-col">
@@ -44,9 +44,9 @@
             : 'dark:bg-gray-500 dark:text-white'} mr-8 w-24 px-2 py-3 text-left font-semibold focus:outline-none dark:bg-transparent"
           onclick={onChange(tab.value)}
         >
-          <div class="grid grid-cols-5 items-center gap-5 md:grid-cols-4 md:gap-3">
+          <div class="flex items-center gap-1 md:grid-cols-4 md:gap-3">
             {#if tab.icon}
-              <tab.icon />
+              <tab.icon size={16} />
             {/if}
             {$t(tab.label)}
             {#if typeof tab.badgeValue === 'number'}

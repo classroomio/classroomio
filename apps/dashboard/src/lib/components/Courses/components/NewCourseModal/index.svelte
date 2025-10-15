@@ -165,7 +165,7 @@
             onclick={!option.isDisabled ? () => (type = option.type) : undefined}
           >
             <div class="flex h-[70%] w-full flex-row-reverse">
-              <CircleCheckIcon filled={option.type === type} />
+              <CircleCheckIcon size={16} filled={option.type === type} />
             </div>
 
             <div>

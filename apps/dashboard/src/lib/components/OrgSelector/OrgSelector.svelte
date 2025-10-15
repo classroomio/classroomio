@@ -62,7 +62,7 @@
 
           <Plan name={$currentOrgPlan ? PLAN_NAMES[$currentOrgPlan.plan_name] : PLAN_NAMES.BASIC} />
         </div>
-        <ChevronsUpDownIcon />
+        <ChevronsUpDownIcon size={16} />
       </div>
     </button>
   {:else}

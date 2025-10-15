@@ -15,7 +15,7 @@
   class="vote border-none {disabled ? 'cursor-not-allowed' : 'cursor-pointer'}"
   onclick={disabled ? undefined : upVote}
 >
-  <ArrowUpIcon />
+  <ArrowUpIcon size={16} />
   <Chip {value} />
 </button>
 

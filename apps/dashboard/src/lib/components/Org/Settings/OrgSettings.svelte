@@ -307,7 +307,7 @@
         onClick={() => gotoSettings('/domains')}
       >
         {#if $isFreePlan}
-          <ZapIcon class="filled" />
+          <ZapIcon size={16} class="filled" />
         {/if}
         {$t('settings.organization.organization_profile.custom_domain.button')}
       </PrimaryButton>
@@ -330,7 +330,7 @@
         onClick={() => gotoSettings('/teams')}
       >
         {#if $isFreePlan}
-          <ZapIcon class="filled" />
+          <ZapIcon size={16} class="filled" />
         {/if}
         {$t('settings.organization.organization_profile.team.button')}
       </PrimaryButton>

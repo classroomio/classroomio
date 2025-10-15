@@ -220,7 +220,7 @@
               />
             {:else}
               <IconButton contained size="small" onClick={() => handleAddLesson(section.id)} disabled={!!lessonEditing}>
-                <PlusIcon />
+                <PlusIcon size={16} />
               </IconButton>
               <OverflowMenu size="xl" flipped>
                 <OverflowMenuItem
@@ -282,7 +282,7 @@
                   </a>
 
                   <div class="mb-3 mt-1 flex items-center lg:mb-0">
-                    <ListChecksIcon />
+                    <ListChecksIcon size={16} />
                     <p class="ml-2 text-xs text-gray-500 dark:text-white">
                       {lesson?.totalExercises ? lesson?.totalExercises?.map((c) => c.count) : 0}
                       {$t('exercises.heading')}

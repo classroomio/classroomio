@@ -124,11 +124,12 @@ code {
   color: var(--main-primary-color);
 }
 
-svg.lucide-icon {
-  width: 16px;
-  height: 16px;
+svg.lucide-icon:not(.custom) {
+  color: #666666;
 }
-
+.dark svg.lucide-icon:not(.custom) {
+  color: #fff;
+}
 /* .success :global(svg.carbon-icon) {
   fill: green;
 }

@@ -113,7 +113,7 @@
 </div>
 {#if !$courseMetaDeta.isLoading && !courses.length}
   <Box className="w-full">
-    <CoursesEmptyIcon />
+    <CoursesEmptyIcon size={16} />
     <h3 class="my-5 text-2xl dark:text-white">{emptyTitle}</h3>
     <p class="w-1/3 text-center dark:text-white">
       {emptyDescription}

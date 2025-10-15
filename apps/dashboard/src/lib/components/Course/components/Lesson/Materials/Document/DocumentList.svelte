@@ -52,7 +52,7 @@
       {#each displayDocuments as document, index}
         <div class="rounded-lg border border-gray-200 p-4">
           <div class="flex items-center space-x-3">
-            <FileTextIcon />
+            <FileTextIcon size={16} />
             <div class="flex-1">
               <h4 class="mb-2 font-medium text-gray-900 dark:text-gray-300">{document.name}</h4>
               <div class="mb-3 flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
@@ -71,7 +71,7 @@
                     onclick={() => handleViewPDF(document)}
                     class="text-sm text-blue-600 underline hover:text-blue-800"
                   >
-                    <EyeIcon />
+                    <EyeIcon size={16} />
                     {$t('course.navItem.lessons.materials.tabs.document.view_pdf')}
                   </button>
                 {:else}
@@ -103,7 +103,7 @@
     {#each displayDocuments as document}
       <div class="rounded-md border border-gray-200 p-4 dark:border-neutral-600">
         <div class="flex items-center space-x-3">
-          <FileTextIcon />
+          <FileTextIcon size={16} />
           <div class="flex-1">
             <h4 class="mb-2 font-medium text-gray-900 dark:text-gray-300">{document.name}</h4>
             <div class="mb-3 flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
@@ -116,7 +116,7 @@
             <div class="flex gap-3">
               {#if document.type === 'pdf'}
                 <PrimaryButton variant={VARIANTS.CONTAINED_DARK} onClick={() => handleViewPDF(document)} {isLoading}>
-                  <EyeIcon />
+                  <EyeIcon size={16} />
                   {$t('course.navItem.lessons.materials.tabs.document.view_pdf')}
                 </PrimaryButton>
               {:else}

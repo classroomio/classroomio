@@ -85,11 +85,11 @@
         class="border-primary-600 flex items-center rounded-md border p-4"
       >
         {#if item.type === 1}
-          <SquareCheckIcon />
+          <SquareCheckIcon size={16} />
         {:else if item.type === 2}
-          <CircleDotIcon />
+          <CircleDotIcon size={16} />
         {:else}
-          <TablePropertiesIcon />
+          <TablePropertiesIcon size={16} />
         {/if}
         {` ${item.name}`}
       </div>

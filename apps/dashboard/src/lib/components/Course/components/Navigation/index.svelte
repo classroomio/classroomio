@@ -319,11 +319,11 @@
                     <span class="grow"></span>
                     {#if !item.is_unlocked}
                       <span class="text-md ml-2" title="This lesson is locked.">
-                        <LockIcon class="carbon-icon dark:text-white" />
+                        <LockIcon size={16} class="carbon-icon dark:text-white" />
                       </span>
                     {:else if getIsLessonComplete(item.lesson_completion, $profile.id)}
                       <span class="ml-2" title="You have completed this lesson">
-                        <CircleCheckIcon filled />
+                        <CircleCheckIcon size={16} filled />
                       </span>
                     {/if}
                   </div>
@@ -361,11 +361,11 @@
                         <span class="grow"></span>
                         {#if !item.is_unlocked}
                           <span class="text-md ml-2" title="This lesson is locked.">
-                            <LockIcon class="carbon-icon dark:text-white" />
+                            <LockIcon size={16} class="carbon-icon dark:text-white" />
                           </span>
                         {:else if getIsLessonComplete(item.lesson_completion, $profile.id)}
                           <span class="ml-2" title="You have completed this lesson">
-                            <CircleCheckIcon filled />
+                            <CircleCheckIcon size={16} filled />
                           </span>
                         {/if}
                       </div>

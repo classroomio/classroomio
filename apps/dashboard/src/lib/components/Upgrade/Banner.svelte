@@ -20,7 +20,7 @@
       openUpgradeModal();
     }}
   >
-    <ZapIcon class="filled" />
+    <ZapIcon size={16} class="filled" />
     <p class="text-sm font-semibold text-blue-700">
       {@render children?.()}
     </p>

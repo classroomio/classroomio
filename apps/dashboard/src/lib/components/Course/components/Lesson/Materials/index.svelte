@@ -76,7 +76,7 @@
   let openPopover = $state(false);
   let player: HTMLVideoElement | undefined = $state();
   let aiButtonClass =
-    'flex items-center px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2';
+    'flex items-center gap-2 px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2';
 
   const lessonTitle = $derived($lesson.title);
 
@@ -373,7 +373,7 @@
                 variant={VARIANTS.OUTLINED}
                 disableScale
               >
-                <WandSparklesIcon />
+                <WandSparklesIcon size={16} />
                 AI
                 <Popover
                   caret
@@ -385,15 +385,15 @@
                 >
                   <div class="p-2">
                     <button class={aiButtonClass} onclick={() => callAI('outline')}>
-                      <ListChecksIcon class="carbon-icon mr-2" />
+                      <ListChecksIcon size={16} />
                       {$t('course.navItem.lessons.materials.tabs.note.ai.outline')}
                     </button>
                     <button class={aiButtonClass} onclick={() => callAI('note')}>
-                      <NotepadTextIcon class="carbon-icon mr-2" />
+                      <NotepadTextIcon size={16} />
                       {$t('course.navItem.lessons.materials.tabs.note.ai.note')}
                     </button>
                     <button class={aiButtonClass} onclick={() => callAI('activities')}>
-                      <ListTodoIcon class="carbon-icon mr-2" />
+                      <ListTodoIcon size={16} />
                       {$t('course.navItem.lessons.materials.tabs.note.ai.activities')}
                     </button>
                   </div>
@@ -445,7 +445,7 @@
                 {#if mode === MODES.edit}
                   <div class="ml-auto">
                     <IconButton value="delete-video" contained={true} onClick={() => deleteLessonVideo(index)}>
-                      <TrashIcon />
+                      <TrashIcon size={16} />
                     </IconButton>
                   </div>
                 {/if}

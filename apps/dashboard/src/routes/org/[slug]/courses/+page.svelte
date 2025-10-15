@@ -108,7 +108,7 @@
       <h1 class="text-2xl font-bold md:text-3xl dark:text-white">{$t('courses.heading')}</h1>
       {#if $isMobile}
         <PrimaryButton isDisabled={!$isOrgAdmin} onClick={openNewCourseModal}>
-          <PlusIcon />
+          <PlusIcon size={16} />
         </PrimaryButton>
       {:else}
         <PrimaryButton
@@ -138,11 +138,11 @@
         />
         {#if $courseMetaDeta.view === 'list'}
           <IconButton onClick={() => setViewPreference('grid')}>
-            <GridIcon />
+            <GridIcon size={16} />
           </IconButton>
         {:else}
           <IconButton onClick={() => setViewPreference('list')}>
-            <ListIcon />
+            <ListIcon size={16} />
           </IconButton>
         {/if}
       </div>

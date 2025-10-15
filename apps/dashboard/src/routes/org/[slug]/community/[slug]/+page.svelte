@@ -404,7 +404,7 @@
   {:else}
     <div class="px-5 py-10">
       <a class="text-md flex items-center text-gray-500 dark:text-white" href={`${$currentOrgPath}/community`}>
-        <ArrowLeftIcon />
+        <ArrowLeftIcon size={16} />
         {$t('community.ask.go_back')}
       </a>
       <div class="my-5 flex items-center justify-between">
@@ -461,7 +461,7 @@
                 deleteQuestion.questionId = question.id;
               }}
             >
-              <TrashIcon />
+              <TrashIcon size={16} />
             </IconButton>
           {/if}
         </header>
@@ -502,7 +502,7 @@
               </div>
 
               {#if isValidAnswer}
-                <CircleCheckIcon />
+                <CircleCheckIcon size={16} />
               {/if}
 
               {#if comment.authorId === $profile.id || $isOrgAdmin}
@@ -513,7 +513,7 @@
                     deleteComment.commentId = comment.id;
                   }}
                 >
-                  <TrashIcon />
+                  <TrashIcon size={16} />
                 </IconButton>
               {/if}
             </header>

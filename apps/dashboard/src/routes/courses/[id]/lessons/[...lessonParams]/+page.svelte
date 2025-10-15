@@ -6,6 +6,12 @@
   import { globalStore } from '$lib/utils/store/app';
   import ListChecksIcon from '@lucide/svelte/icons/list-checks';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
+  import LibraryBigIcon from '@lucide/svelte/icons/library-big';
+  import PencilIcon from '@lucide/svelte/icons/pencil';
+  import SaveIcon from '@lucide/svelte/icons/save';
+  import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+  import HistoryIcon from '@lucide/svelte/icons/history';
 
   import { browser } from '$app/environment';
   import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
@@ -16,7 +22,6 @@
   import { getGroupMemberId } from '$lib/components/Course/function';
   import { course, group } from '$lib/components/Course/store';
   import { IconButton } from '$lib/components/IconButton';
-  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import { PageBody, PageNav } from '$lib/components/Page';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -26,11 +31,6 @@
   import { profile } from '$lib/utils/store/user';
   import { COURSE_VERSION, type Lesson, type LessonCompletion } from '$lib/utils/types';
   import { Dropdown } from 'carbon-components-svelte';
-  import PencilIcon from '@lucide/svelte/icons/pencil';
-  import SaveIcon from '@lucide/svelte/icons/save';
-  import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
-  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-  import HistoryIcon from '@lucide/svelte/icons/history';
 
   let { data = $bindable() } = $props();
 
@@ -39,7 +39,7 @@
   let isMarkingComplete = $state(false);
   let isSaving = $state(false);
   let isVersionDrawerOpen = $state(false);
-  let hasFetched = $state(false);
+  let hasFetched = $state('');
 
   const path = $derived(page.url?.pathname?.replace(/\/exercises[\/ 0-9 a-z -]*/, ''));
   const isLessonComplete = $derived(getIsLessonComplete($lesson.lesson_completion, $profile.id));
@@ -47,16 +47,17 @@
   async function fetchReqData(lessonId = '', isMaterialsTabActive: boolean) {
     if (lessonId === $lesson.id) return;
 
-    const timeout = setTimeout(() => {
-      $lesson.isFetching = true;
-    }, 500);
+    if (!lessonId || hasFetched === lessonId) return;
+
+    hasFetched = lessonId;
+
+    $lesson.isFetching = true;
+    console.log('fetching', $lesson.isFetching);
 
     let lessonData;
     if (isMaterialsTabActive) {
       const lesson = await fetchLesson(lessonId);
       lessonData = lesson.data;
-
-      clearTimeout(timeout);
     }
 
     console.log({ lessonData });
@@ -182,7 +183,7 @@
     isVersionDrawerOpen = false;
     if (data.courseId && browser) {
       mode = MODES.view;
-      hasFetched = false;
+      hasFetched = '';
       fetchReqData(data.lessonId, data.isMaterialsTabActive);
     }
 
@@ -228,7 +229,7 @@
             <!-- Version control -->
             {#if mode === MODES.edit && window.innerWidth >= 1024}
               <IconButton onClick={() => (isVersionDrawerOpen = true)}>
-                <HistoryIcon />
+                <HistoryIcon size={20} />
               </IconButton>
             {/if}
 
@@ -240,9 +241,9 @@
                 disabled={isSaving}
               >
                 {#if mode === MODES.edit}
-                  <SaveIcon />
+                  <SaveIcon size={20} />
                 {:else}
-                  <PencilIcon />
+                  <PencilIcon size={20} />
                 {/if}
               </IconButton>
             </div>
@@ -280,7 +281,7 @@
         }`}
         onclick={() => goToNextOrPrevLesson(data.lessonId, true)}
       >
-        <ChevronLeftIcon />
+        <ChevronLeftIcon size={16} />
 
         <span class="hidden md:block">{$t('course.navItem.lessons.prev')}</span>
       </button>
@@ -289,7 +290,7 @@
           class="my-2 flex items-center border border-b-0 border-l-0 border-t-0 border-gray-300 px-2 pr-4"
           onclick={() => goto(`${path}/exercises`)}
         >
-          <ListChecksIcon />
+          <ListChecksIcon size={16} />
           <span class="ml-1">{$lesson.totalExercises}</span>
         </button>
       {:else}
@@ -297,7 +298,7 @@
           class="my-2 flex items-center border border-b-0 border-l-0 border-t-0 border-gray-300 px-2 pr-4"
           onclick={() => goto(path)}
         >
-          <CourseIcon />
+          <LibraryBigIcon size={16} />
         </button>
       {/if}
       <button
@@ -313,7 +314,7 @@
         onclick={() => goToNextOrPrevLesson(data.lessonId, false)}
       >
         <span class="hidden md:block">{$t('course.navItem.lessons.next')}</span>
-        <ChevronRightIcon />
+        <ChevronRightIcon size={16} />
       </button>
     </div>
   </div>

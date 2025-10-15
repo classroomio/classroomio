@@ -1,18 +1,18 @@
 <script lang="ts">
   import { page } from '$app/state';
   import Avatar from '$lib/components/Avatar/index.svelte';
-  import AudienceIcon from '$lib/components/Icons/AudienceIcon.svelte';
-  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
-  import HomeIcon from '$lib/components/Icons/HomeIcon.svelte';
-  import QuizIcon from '$lib/components/Icons/QuizIcon.svelte';
-  import SiteSettingsIcon from '$lib/components/Icons/SiteSettingsIcon.svelte';
-  import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
+  import LayoutDashboardIcon from '@lucide/svelte/icons/layout-dashboard';
+  import LibraryBigIcon from '@lucide/svelte/icons/library-big';
+  import UsersIcon from '@lucide/svelte/icons/users';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import SettingsIcon from '@lucide/svelte/icons/settings';
   import MessageSquareMoreIcon from '@lucide/svelte/icons/message-square-more';
   import BadgeHelpIcon from '@lucide/svelte/icons/badge-help';
+  import Dice6Icon from '@lucide/svelte/icons/dice-6';
+  import LayoutTemplateIcon from '@lucide/svelte/icons/layout-template';
+  import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
 
   import { goto } from '$app/navigation';
   import ProfileMenu from '$lib/components/Org/ProfileMenu/index.svelte';
@@ -103,19 +103,19 @@
                     : 'dark:text-white'}"
                 >
                   {#if menuItem.path === ''}
-                    <HomeIcon />
+                    <LayoutDashboardIcon size={16} />
                   {:else if menuItem.path === '/courses'}
-                    <CourseIcon />
+                    <LibraryBigIcon size={16} />
                   {:else if menuItem.path === '/site'}
-                    <SiteSettingsIcon />
+                    <LayoutTemplateIcon size={16} />
                   {:else if menuItem.path === '/community'}
-                    <MessageSquareMoreIcon />
+                    <MessageSquareMoreIcon size={16} />
                   {:else if menuItem.path === '/quiz'}
-                    <QuizIcon />
+                    <Dice6Icon size={16} />
                   {:else if menuItem.path === '/audience'}
-                    <AudienceIcon />
+                    <UsersIcon size={16} />
                   {:else if menuItem.path === '/setup'}
-                    <SettingsIcon />
+                    <SettingsIcon size={16} />
                   {/if}
                   <p class="text-sm font-medium">{menuItem.label}</p>
                 </li>
@@ -142,7 +142,7 @@
       <ul class="my-5 px-4 pb-5">
         <a href={$currentOrgPath} class="text-black no-underline" onclick={toggleSidebar}>
           <li class="mb-2 flex items-center rounded px-2.5 py-1.5">
-            <BadgeHelpIcon />
+            <BadgeHelpIcon size={16} />
             <p class="ml-2.5 text-sm font-medium dark:text-white">{$t('org_navigation.help')}</p>
           </li>
         </a>
@@ -168,7 +168,7 @@
               </p>
             </div>
             <div>
-              <ChevronRightIcon />
+              <ChevronRightIcon size={16} />
             </div>
           </div>
         </button>

@@ -254,7 +254,7 @@
                 {$currentOrg.customDomain}
 
                 <IconButton contained={true} size="small" onClick={() => goto(`https://${$currentOrg.customDomain}`)}>
-                  <ArrowUpRightIcon />
+                  <ArrowUpRightIcon size={16} />
                 </IconButton>
               </p>
 
@@ -303,7 +303,7 @@
               variant={VARIANTS.OUTLINED}
             >
               {#if !isRefreshing}
-                <RotateCcwIcon />
+                <RotateCcwIcon size={16} />
               {/if}
               {$t('components.settings.domains.refresh')}
             </PrimaryButton>
@@ -315,7 +315,7 @@
               variant={VARIANTS.CONTAINED_DANGER}
             >
               {#if !isCustomDomainLoading}
-                <TrashIcon />
+                <TrashIcon size={16} />
               {/if}
               {$t('components.settings.domains.remove')}
             </PrimaryButton>

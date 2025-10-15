@@ -60,7 +60,7 @@
         </p>
         {#if isCloseable}
           <div class="rounded-full">
-            <CloseButton onClick={onClose} contained={true} size="small" />
+            <CloseButton onClick={onClose} contained={true} />
           </div>
         {/if}
       </div>

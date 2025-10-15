@@ -80,11 +80,11 @@
 
               <div class="flex items-center justify-center">
                 <IconButton onClick={handlePrev} size="small">
-                  <ChevronLeftIcon />
+                  <ChevronLeftIcon size={16} />
                 </IconButton>
                 <p class="mx-3">{curQId + 1} / {totalQ}</p>
                 <IconButton onClick={handleNext} size="small">
-                  <ChevronRightIcon />
+                  <ChevronRightIcon size={16} />
                 </IconButton>
               </div>
             {/if}

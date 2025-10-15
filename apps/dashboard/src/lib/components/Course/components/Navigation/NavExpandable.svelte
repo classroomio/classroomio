@@ -102,17 +102,17 @@
     <span class="grow"></span>
 
     {#if isPaidFeature && $isFreePlan}
-      <ZapIcon class="filled" />
+      <ZapIcon size={16} class="filled" />
     {/if}
     {#if (isLesson || isSection) && !isLoading && !isStudent}
       <IconButton stopPropagation={true} onClick={addLesson} size="small">
-        <PlusIcon />
+        <PlusIcon size={16} />
       </IconButton>
       <IconButton size="small" stopPropagation={true} onClick={toggleIsExpanded}>
         {#if isExpanded}
-          <ChevronUpIcon class="carbon-icon dark:text-white" />
+          <ChevronUpIcon size={16} class="carbon-icon dark:text-white" />
         {:else}
-          <ChevronDownIcon class="carbon-icon dark:text-white" />
+          <ChevronDownIcon size={16} class="carbon-icon dark:text-white" />
         {/if}
       </IconButton>
     {/if}

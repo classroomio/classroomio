@@ -39,7 +39,7 @@
       animate:flip={{ duration: flipDurationMs }}
       class="flex items-center justify-start gap-1 rounded-md bg-slate-100 p-2 text-center text-xs md:gap-2 md:text-base dark:bg-slate-700 dark:text-white"
     >
-      <GripVerticalIcon />
+      <GripVerticalIcon size={16} />
       {$t(item.name)}
     </div>
   {/each}

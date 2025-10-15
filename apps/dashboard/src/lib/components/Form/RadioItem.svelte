@@ -1,7 +1,8 @@
 <script lang="ts">
   import TextField from '$lib/components/Form/TextField.svelte';
+
   interface Props {
-    label?: string;
+    label?: string | null;
     value?: string;
     checked?: boolean;
     name?: string;
@@ -9,7 +10,7 @@
     disabled?: boolean;
     className?: string;
     onChange?: any; // This is to know if element is 'dirty'
-    iconbutton?: import('svelte').Snippet;
+    children?: import('svelte').Snippet;
   }
 
   let {
@@ -21,11 +22,11 @@
     disabled = false,
     className = '',
     onChange = () => {},
-    iconbutton
+    children
   }: Props = $props();
 </script>
 
-<label class="{className} inline-flex w-full items-center {disabled ? 'cursor-not-allowed' : 'cursor-pointer'}">
+<div class="{className} group inline-flex w-full items-center {disabled ? 'cursor-not-allowed' : 'cursor-pointer'}">
   <input class="form-radio" type="radio" {checked} {name} {value} disabled={disabled || isEditable} />
   {#if isEditable}
     <div class="w-2/4">
@@ -35,5 +36,5 @@
     <span class="ml-2 dark:text-white">{label}</span>
   {/if}
 
-  {@render iconbutton?.()}
-</label>
+  {@render children?.()}
+</div>

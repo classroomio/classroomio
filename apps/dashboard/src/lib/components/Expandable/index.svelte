@@ -43,15 +43,15 @@
       {title}
       {#if supportsLink}
         <a class="ml-2" href="{page.url.pathname}#{id}" onclick={(e) => e.stopPropagation()}>
-          <LinkIcon />
+          <LinkIcon size={16} />
         </a>
       {/if}
     </p>
 
     {#if isExpanded}
-      <ChevronUpIcon />
+      <ChevronUpIcon size={16} />
     {:else}
-      <ChevronDownIcon />
+      <ChevronDownIcon size={16} />
     {/if}
   </button>
   {#if isExpanded}

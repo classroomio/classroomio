@@ -29,7 +29,7 @@
     <AudienceList {isLoading} />
   {:else}
     <Box>
-      <AudienceEmptyIcon />
+      <AudienceEmptyIcon size={16} />
       <h3 class="my-5 text-center text-2xl dark:text-white">{$t('audience.no_audience')}!</h3>
       <p class="w-1/3 text-center dark:text-white">
         {$t('audience.manage')}.

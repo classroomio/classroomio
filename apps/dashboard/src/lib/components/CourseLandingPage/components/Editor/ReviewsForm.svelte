@@ -102,7 +102,7 @@
             <p class="text-sm">{review.name}</p>
 
             <IconButton value="expand" onClick={() => onExpand(review.id)} size={$isMobile ? 'large' : 'small'}>
-              <ChevronDownIcon />
+              <ChevronDownIcon size={16} />
             </IconButton>
           </div>
         {/if}

@@ -136,7 +136,7 @@
   onClose={handleCancelAddExercise}
   bind:open
   modalHeading={$t('course.navItem.lessons.exercises.new_exercise_modal.heading')}
-  maxWidth="max-w-4xl"
+  maxWidth="max-w-2xl"
   width="w-4/5"
 >
   {#if !isLoading && isAIStarted}
@@ -160,7 +160,7 @@
             onclick={!option.isDisabled ? () => (type = option.type) : undefined}
           >
             <div class="flex h-[70%] w-full flex-row-reverse">
-              <CircleCheckIcon filled={option.type === type} />
+              <CircleCheckIcon size={16} filled={option.type === type} />
             </div>
 
             <div>

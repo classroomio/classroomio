@@ -18,7 +18,7 @@
       <h1 class="text-2xl font-bold md:text-3xl dark:text-white">Interactive Quizzes</h1>
       {#if $isMobile}
         <PrimaryButton onClick={() => ($createQuizModal.open = true)}>
-          <PlusIcon />
+          <PlusIcon size={16} />
         </PrimaryButton>
       {:else}
         <PrimaryButton label="Create Quiz" onClick={() => ($createQuizModal.open = true)} />

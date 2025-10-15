@@ -223,7 +223,7 @@
                 {#if isDownloading}
                   <Loading withOverlay={false} small />
                 {:else}
-                  <DownloadIcon />
+                  <DownloadIcon size={16} />
                 {/if}
               </div>
             </div>
@@ -303,7 +303,7 @@
           </div>
         {:else}
           <Box>
-            <BadgeXIcon />
+            <BadgeXIcon size={16} />
             <h3 class="text-3xl text-gray-500 dark:text-white">
               {$t('course.navItem.marks.no_student')}
             </h3>

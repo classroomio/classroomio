@@ -94,7 +94,7 @@
 <section class="w-full md:mx-auto md:max-w-3xl">
   <div class="p-5">
     <a class="text-md flex items-center text-gray-500 dark:text-white" href={`${$currentOrgPath}/community`}>
-      <ArrowLeftIcon />
+      <ArrowLeftIcon size={16} />
       {$t('community.ask.go_back')}
     </a>
     <div class="flex items-center justify-between gap-12">

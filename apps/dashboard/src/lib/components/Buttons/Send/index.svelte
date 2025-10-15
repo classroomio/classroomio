@@ -6,5 +6,5 @@
 </script>
 
 <IconButton {onClick}>
-  <SendHorizontalIcon class="filled" />
+  <SendHorizontalIcon size={16} class="filled" />
 </IconButton>

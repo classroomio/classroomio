@@ -181,9 +181,9 @@
           }}
     >
       {#if show}
-        <ChevronRightIcon />
+        <ChevronRightIcon size={16} />
       {:else}
-        <ChevronLeftIcon />
+        <ChevronLeftIcon size={16} />
       {/if}
     </IconButton>
   </div>
@@ -201,7 +201,7 @@
             isLoading={loading}
           />
           <IconButton onClick={handlePreview} disabled={loading || !course.slug}>
-            <ArrowUpRightIcon />
+            <ArrowUpRightIcon size={16} />
           </IconButton>
         </div>
       </div>
@@ -218,14 +218,14 @@
             {section.title}
             {$t('course.navItem.landing_page.editor.section')}
           </p>
-          <ChevronRightIcon />
+          <ChevronRightIcon size={16} />
         </button>
       {/each}
     {:else}
       <!-- Title -->
       <div class="flex items-center {borderBottomGrey} w-full">
         <IconButton onClick={handleClose}>
-          <ArrowLeftIcon />
+          <ArrowLeftIcon size={16} />
         </IconButton>
         <div class=" flex items-center">
           <h3 class="dark:text-white">

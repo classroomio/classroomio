@@ -149,13 +149,13 @@
         </div>
         <div class="flex-grow"></div>
         <div class="flex items-center">
-          <MessageCirclePlusIcon />
+          <MessageCirclePlusIcon size={16} />
           <span class="ml-1">{discussion.comments}</span>
         </div>
       </div>
     {:else}
       <Box className="w-screen">
-        <CoursesEmptyIcon />
+        <CoursesEmptyIcon size={16} />
         <h3 class="dark:text-white text-2xl my-5">{$t('community.no_question')}</h3>
         <p class="dark:text-white w-1/3 text-center">{$t('community.ask_a_question')}</p>
       </Box>

@@ -179,7 +179,7 @@
   <section class="border-t border-gray-200 p-3 dark:border-neutral-600">
     {#if feed.comment.length > 0}
       <button onclick={expandComment} class="-mx-2 flex flex-row items-center gap-1 rounded-md px-2">
-        <UsersIcon />
+        <UsersIcon size={16} />
         <p class="py-2 text-sm">
           {pluralize('comment', feed.comment.length, true)}
         </p>
@@ -230,7 +230,7 @@
         />
       </div>
       <button onclick={handleAddNewComment}>
-        <SendHorizontalIcon />
+        <SendHorizontalIcon size={16} />
       </button>
     </div>
     {#if errors?.newComment}

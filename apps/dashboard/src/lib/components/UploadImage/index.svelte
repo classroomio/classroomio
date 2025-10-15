@@ -90,7 +90,7 @@
       {#if isUploading}
         <Loading withOverlay={false} small />
       {:else}
-        <CameraIcon />
+        <CameraIcon size={16} />
       {/if}
       <span class="ml-2">{$t('settings.profile.profile_picture.upload_image')}</span>
     </button>

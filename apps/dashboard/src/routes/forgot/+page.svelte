@@ -49,7 +49,7 @@
 <AuthUI {supabase} {handleSubmit} showOnlyContent={true} showLogo={!success}>
   {#if success}
     <div class="mt-4 flex w-full flex-col items-center justify-center">
-      <EmailSentIcon />
+      <EmailSentIcon size={16} />
       <h3 class="my-3 text-xl font-semibold dark:text-white">Email Sent!</h3>
       <p class="text-md mb-6 text-center dark:text-white">
         We have sent a confirmation email to <span class="text-primary-700">{fields.email}</span>. Kindly check your

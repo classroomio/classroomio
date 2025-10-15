@@ -1,5 +1,6 @@
-import { QUESTION_TEMPLATE, QUESTION_TYPE } from '$lib/components/Question/constants';
+import { QUESTION_TEMPLATE, QUESTION_TYPE, QUESTION_TYPES } from '$lib/components/Question/constants';
 
+import type { Question } from '$lib/components/Course/types';
 import type { Writable } from 'svelte/store';
 import { isUUID } from '$lib/utils/functions/isUUID';
 import { questionnaireMetaData } from './answers';
@@ -19,7 +20,7 @@ export const questionnaire: Writable<{
   is_title_dirty?: boolean;
   description?: string;
   is_description_dirty?: boolean;
-  questions: Array<any>;
+  questions: Question[];
   totalSubmissions: number;
 }> = writable({
   title: '',
@@ -88,9 +89,8 @@ export function handleAddQuestion() {
           value: '',
           points: 0,
           order: questions.length,
-          question_type: {
-            id: QUESTION_TYPE.RADIO
-          },
+          question_type: QUESTION_TYPES[0],
+          question_type_id: QUESTION_TYPES[0].id,
           options: [
             {
               id: '1-form',
@@ -118,7 +118,7 @@ export function handleAddOption(questionId) {
               options: [
                 ...question.options,
                 {
-                  id: `${question.options.length + 1}-form`,
+                  id: `${new Date().getTime()}-form`,
                   label: '',
                   value: '',
                   is_correct: false
@@ -137,26 +137,17 @@ export function handleAddOption(questionId) {
 export function handleRemoveOption(questionId, optionId) {
   return () => {
     questionnaire.update((q) => {
-      const { questions } = q;
+      const questionIndex = q.questions.findIndex((qItem) => qItem.id === questionId);
+      if (questionIndex === -1) return q;
 
-      return {
-        ...q,
-        questions: questions.map((question) => {
-          if (question.id === questionId) {
-            return {
-              ...question,
-              options: question.options.map((option) => {
-                if (option.id === optionId) {
-                  option.deleted_at = new Date();
-                }
-                return option;
-              })
-            };
-          }
+      const optionsIndex = q.questions[questionIndex].options.findIndex((oItem) => oItem.id === optionId);
+      if (optionsIndex === -1) return q;
 
-          return question;
-        })
-      };
+      q.questions[questionIndex].options[optionsIndex].deleted_at = new Date().toString();
+      q.questions[questionIndex].options[optionsIndex].is_dirty = true;
+      q.questions[questionIndex].is_dirty = true; // Mark as dirty if needed
+
+      return q;
     });
   };
 }
@@ -164,38 +155,25 @@ export function handleRemoveOption(questionId, optionId) {
 export function handleRemoveQuestion(questionId) {
   return () => {
     questionnaire.update((q) => {
-      const { questions } = q;
+      const questionIndex = q.questions.findIndex((qItem) => qItem.id === questionId);
+      if (questionIndex === -1) return q;
 
-      return {
-        ...q,
-        questions: questions.map((q) => {
-          if (q.id === questionId) {
-            q.deleted_at = new Date();
-          }
-          return q;
-        })
-      };
+      q.questions[questionIndex].deleted_at = new Date().toString();
+
+      return q;
     });
   };
 }
 
 export function handleCode(questionId, shouldAdd = true) {
   questionnaire.update((q) => {
-    const { questions } = q;
+    const questionIndex = q.questions.findIndex((qItem) => qItem.id === questionId);
+    if (questionIndex === -1) return q;
 
-    return {
-      ...q,
-      questions: questions.map((question) => {
-        if (question.id === questionId) {
-          return {
-            ...question,
-            code: shouldAdd ? question.code || '' : undefined
-          };
-        }
+    const question = q.questions[questionIndex];
+    q.questions[questionIndex].code = shouldAdd ? question.code || '' : undefined;
 
-        return question;
-      })
-    };
+    return q;
   });
 }
 
@@ -242,7 +220,7 @@ export function addDynamicValue(questionId, optionId) {
                 if (option.id === optionId) {
                   const label = e.target.value;
 
-                  if (!isUUID(option.value)) {
+                  if (!isUUID(option.value || '')) {
                     option.value = label.split(' ').join('-');
                   }
 

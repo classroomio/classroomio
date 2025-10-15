@@ -55,7 +55,7 @@
       </div>
     {:else}
       <div class="flex flex-col items-center">
-        <CoursesEmptyIcon />
+        <CoursesEmptyIcon size={16} />
         <h3 class="text-center">{$t('dashboard.no_courses')}</h3>
         <p class="w-[75%] text-center">{$t('dashboard.start_course')}</p>
       </div>

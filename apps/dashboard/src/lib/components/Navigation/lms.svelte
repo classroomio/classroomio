@@ -45,9 +45,9 @@
     <li class="md:hidden">
       <IconButton onClick={toggleSidebar}>
         {#if $sideBar.hidden}
-          <MenuIcon />
+          <MenuIcon size={16} />
         {:else}
-          <XIcon />
+          <XIcon size={16} />
         {/if}
       </IconButton>
     </li>
@@ -74,14 +74,14 @@
     <span class="flex-grow"></span>
 
     <li>
-      <BellIcon />
+      <BellIcon class="text-white" size={16} />
     </li>
     <li>
       <IconButton size="small" onClick={toggleDarkMode}>
         {#if $globalStore.isDark}
-          <SunIcon />
+          <SunIcon class="text-white" size={16} />
         {:else}
-          <MoonIcon />
+          <MoonIcon class="text-white" size={16} />
         {/if}
       </IconButton>
     </li>

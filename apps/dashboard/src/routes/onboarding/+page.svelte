@@ -263,7 +263,7 @@
         <div
           class="mb-6 flex w-64 items-center justify-center rounded-2xl border border-gray-300 bg-gray-100 py-6 dark:bg-neutral-800"
         >
-          <UserProfileIcon />
+          <UserProfileIcon size={16} />
           <p class="ml-2 text-sm dark:text-white">{$profile.email}</p>
         </div>
       </div>

@@ -57,7 +57,7 @@
       {#if $profile.telegram_chat_id !== null}
         <div class="flex w-full flex-col items-center">
           <div class="flex items-center">
-            <CircleCheckIcon filled />
+            <CircleCheckIcon size={16} filled />
             <SectionTitle>{$t('settings.integrations.success_message')}</SectionTitle>
           </div>
           <PrimaryButton className="mt-3" variant={VARIANTS.CONTAINED_DANGER} onClick={deleteChatId}
@@ -75,7 +75,7 @@
             variant={VARIANTS.OUTLINED}
             onClick={() => window.open('https://t.me/classroomio_bot', '_blank')}
             ><span class="mr-2">{$t('settings.integrations.open_bot_button')}</span>
-            <ArrowUpRightIcon /></PrimaryButton
+            <ArrowUpRightIcon size={16} /></PrimaryButton
           >
           <h4 class="font-normal">{$t('settings.integrations.step_chatId')}</h4>
           <TextField

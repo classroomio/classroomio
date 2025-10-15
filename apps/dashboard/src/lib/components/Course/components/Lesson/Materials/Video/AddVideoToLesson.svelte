@@ -34,7 +34,7 @@
         } flex cursor-pointer flex-row items-center justify-start gap-2 whitespace-nowrap rounded-md`}
       >
         {#if $isFreePlan && item.value === 3}
-          <ZapIcon class="filled" />
+          <ZapIcon size={16} class="filled" />
         {:else}
           <item.icon color={`${currentTab === item.value ? 'dark:invert-0' : 'dark:invert'}`} />
         {/if}

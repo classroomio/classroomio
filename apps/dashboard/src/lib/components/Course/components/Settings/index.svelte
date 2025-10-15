@@ -277,11 +277,11 @@
         <p class="text-md mb-2 flex items-center gap-2">
           {$t('course.navItem.settings.link')}
           <IconButton contained={true} size="small" onClick={generateNewCourseLink}>
-            <RotateCcwIcon />
+            <RotateCcwIcon size={16} />
           </IconButton>
           <span class="grow"></span>
           <IconButton contained={true} size="small" onClick={() => goto(courseLink)}>
-            <ArrowUpRightIcon />
+            <ArrowUpRightIcon size={16} />
           </IconButton>
         </p>
         {#if $course.slug}

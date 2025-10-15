@@ -100,9 +100,16 @@
   $effect(() => {
     onSelectedIndexChange(selectedIndex);
   });
-  $effect(() => {
-    $questionnaire?.questions?.length < 1 && handleAddQuestion();
-  });
+  // $effect(() => {
+  //   const addNewQ = $questionnaire?.questions?.length < 1;
+  //   console.log('addNewQ', addNewQ);
+
+  //   if (addNewQ) {
+  //     untrack(() => {
+  //       handleAddQuestion();
+  //     });
+  //   }
+  // });
 </script>
 
 <PageBody isPageNavHidden={$globalStore.isStudent} padding="px-4 overflow-x-hidden">
@@ -148,10 +155,17 @@
                 hotkeys: []
               }}
             >
-              <EyeIcon class={preview ? 'filled' : ''} />
+              <EyeIcon size={20} class={preview ? 'filled' : ''} />
             </IconButton>
-            <IconButton onClick={() => handleAddQuestion()} size="small">
-              <CirclePlusIcon />
+            <IconButton
+              onClick={handleAddQuestion}
+              toolTipProps={{
+                title: $t('course.navItem.lessons.exercises.all_exercises.add_question'),
+                direction: 'bottom',
+                hotkeys: []
+              }}
+            >
+              <CirclePlusIcon size={20} />
             </IconButton>
             <OverflowMenu flipped>
               <OverflowMenuItem

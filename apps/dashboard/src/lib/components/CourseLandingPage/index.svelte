@@ -456,7 +456,7 @@
                 {get(instructor, 'role', '')}
               </p>
               <p class="text-md flex items-center font-light dark:text-white">
-                <PlayIcon class="filled" />
+                <PlayIcon size={16} class="filled" />
                 <span class="ml-1"
                   >{get(instructor, 'courseNo', '')}
                   {$t('course.navItem.landing_page.courses')}</span

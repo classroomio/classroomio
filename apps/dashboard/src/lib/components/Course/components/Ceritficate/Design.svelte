@@ -176,7 +176,7 @@
       isDisabled={$isFreePlan}
     >
       {#if $isFreePlan}
-        <ZapIcon class="filled" />
+        <ZapIcon size={16} class="filled" />
       {/if}
       {$t('course.navItem.certificates.save')}
     </PrimaryButton>

@@ -10,7 +10,7 @@
 </script>
 
 <div class="root flex w-screen flex-col items-center justify-center">
-  <LockIcon />
+  <LockIcon size={16} />
   <div class="flex w-4/5 flex-col items-center justify-center gap-3 lg:w-2/5 dark:text-white">
     <p class="mt-5 text-4xl font-semibold dark:text-white">Restricted Page</p>
     <p class=" mb-5 text-center text-lg text-gray-700 dark:text-white">

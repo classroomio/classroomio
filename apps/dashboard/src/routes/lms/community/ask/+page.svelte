@@ -89,7 +89,7 @@
 <section class="mx-auto w-full max-w-3xl">
   <div class="p-5">
     <a class="text-md flex items-center text-gray-500 dark:text-white" href="/lms/community">
-      <ArrowLeftIcon />
+      <ArrowLeftIcon size={16} />
       {$t('community.ask.go_back')}
     </a>
     <div class="flex items-center justify-between">

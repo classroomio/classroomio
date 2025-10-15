@@ -23,12 +23,12 @@
 
       <div class="flex flex-col items-center gap-1 md:flex-row md:gap-4">
         <p class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">
-          <MailIcon />
+          <MailIcon size={16} />
           {user.email}
         </p>
 
         <p class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">
-          <AlarmClockIcon />
+          <AlarmClockIcon size={16} />
           {$t('analytics.last_seen')}:
           <span class="italic">
             {user.lastSeen ? calDateDiff(user.lastSeen) : $t('analytics.a_while_ago')}

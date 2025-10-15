@@ -349,7 +349,7 @@
           </div>
         {:else}
           <Box>
-            <CoursesEmptyIcon />
+            <CoursesEmptyIcon size={16} />
             <h3 class="my-5 text-2xl dark:text-white">
               {$t('course.navItem.landing_page.no_course_published')}
             </h3>
@@ -411,7 +411,7 @@
               <Column
                 class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg py-2 text-center transition-all duration-500 hover:shadow-xl"
               >
-                <MapPinIcon class="filled" />
+                <MapPinIcon size={16} class="filled" />
                 <p class="mt-3 max-w-[200px] text-xs md:text-sm">
                   {$landingPageSettings.contact.address}
                 </p>
@@ -419,13 +419,13 @@
               <Column
                 class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg py-2 text-center transition-all duration-500 hover:shadow-xl"
               >
-                <PhoneIcon />
+                <PhoneIcon size={16} />
                 <p class="mt-3 text-xs md:text-sm">{$landingPageSettings.contact.phone}</p>
               </Column>
               <Column
                 class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg py-2 text-center transition-all duration-500 hover:shadow-xl"
               >
-                <MailIcon />
+                <MailIcon size={16} />
                 <p class="mt-3 text-xs md:text-sm">{$landingPageSettings.contact.email}</p>
               </Column>
             </Row>
@@ -476,7 +476,7 @@
 
                   <PrimaryButton className="w-full mx-auto mt-5 md:mt-0" type="submit" isLoading={isContactSubmiting}>
                     <span class="text-md mr-2">{$t('course.navItem.landing_page.submit')}</span>
-                    <RocketIcon />
+                    <RocketIcon size={16} />
                   </PrimaryButton>
                 </form>
               {/if}
@@ -557,7 +557,7 @@
                   id="logo-fb"
                   data-hveid="8"
                 >
-                  <FacebookIcon />
+                  <FacebookIcon size={16} />
                 </a>
               </li>
             {/if}
@@ -570,7 +570,7 @@
                   id="logo-tw"
                   data-hveid="8"
                 >
-                  <TwitterIcon />
+                  <TwitterIcon size={16} />
                 </a>
               </li>
             {/if}
@@ -584,7 +584,7 @@
                   id="logo-ln"
                   data-hveid="8"
                 >
-                  <LinkedinIcon />
+                  <LinkedinIcon size={16} />
                 </a>
               </li>
             {/if}

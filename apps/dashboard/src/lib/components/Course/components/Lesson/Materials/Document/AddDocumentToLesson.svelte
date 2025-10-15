@@ -222,7 +222,7 @@
   >
     {#if selectedFile}
       <div class="mb-4 flex items-center justify-center space-x-3">
-        <FileTextIcon />
+        <FileTextIcon size={16} />
         <div class="text-left">
           <p class="font-medium text-gray-900">{selectedFile.name}</p>
           <p class="text-sm text-gray-500">{formatFileSize(selectedFile.size)}</p>
@@ -230,7 +230,7 @@
         <CloseButton onClick={removeSelectedFile} />
       </div>
     {:else}
-      <FileTextIcon />
+      <FileTextIcon size={16} />
       <p class="mb-2 text-gray-600">
         {$t('course.navItem.lessons.materials.tabs.document.drag_drop')}
       </p>

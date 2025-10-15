@@ -34,9 +34,9 @@
   <div class="flex w-72 items-center justify-center lg:w-2/4">
     <!-- to check if it's in dark mode so as to render the appropriate svg -->
     {#if $globalStore.isDark}
-      <ErrorIconDarkMode />
+      <ErrorIcon size="{16}DarkMode" />
     {:else}
-      <ErrorIcon />
+      <ErrorIcon size={16} />
     {/if}
   </div>
 </div>

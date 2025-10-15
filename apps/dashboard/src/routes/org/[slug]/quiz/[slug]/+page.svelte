@@ -240,7 +240,7 @@
   <aside class="root h-full w-1/5 bg-gray-100 p-4 dark:bg-neutral-800">
     <div class="flex h-full flex-col">
       <a class="text-md flex items-center text-gray-500 dark:text-white" href={`${$currentOrgPath}/quiz`}>
-        <ArrowLeftIcon /> Back to Quizzes
+        <ArrowLeftIcon size={16} /> Back to Quizzes
       </a>
 
       <h3 class="my-3">Quiz</h3>
@@ -266,7 +266,7 @@
             Question {i + 1}
 
             {#if qHasError(question.id, errors)}
-              <CircleAlertIcon class="filled" />
+              <CircleAlertIcon size={16} class="filled" />
             {/if}
           </button>
         {/each}
@@ -384,7 +384,7 @@
               'border-primary-700'}"
           >
             {#if $quizStore.theme === _theme.id}
-              <CircleCheckIcon filled />
+              <CircleCheckIcon size={16} filled />
             {/if}
             <div
               role="button"

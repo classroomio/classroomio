@@ -86,13 +86,13 @@
       style: '',
       label: $t('course.navItem.settings.live_class'),
       icon: CircleDotIcon,
-      iconStyle: 'text-red-700'
+      iconStyle: 'custom text-red-700'
     },
     [COURSE_TYPE.SELF_PACED]: {
       style: '',
       label: $t('course.navItem.settings.self_paced'),
       icon: UserIcon,
-      iconStyle: 'text-primary-700'
+      iconStyle: 'custom text-primary-700'
     },
     SPECIALIZATION: {
       style: '',

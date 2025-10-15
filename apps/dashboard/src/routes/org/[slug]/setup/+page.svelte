@@ -113,7 +113,7 @@
               isDisabled={list.is_completed}
             >
               {#if list.is_completed}
-                <CircleCheckIcon />
+                <CircleCheckIcon size={16} />
               {/if}
               {$t(list.button_label)}
             </PrimaryButton>

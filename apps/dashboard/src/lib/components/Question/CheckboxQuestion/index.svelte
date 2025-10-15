@@ -12,7 +12,7 @@
   import ReasonBox from '../ReasonBox.svelte';
 
   interface Props {
-    key: string;
+    key: string | number;
     title?: string;
     index?: number | string;
     code: any;

@@ -11,6 +11,7 @@
     points?: any;
     hasError?: boolean;
     onPointsChange?: any;
+    key?: string;
     children?: import('svelte').Snippet;
   }
 
@@ -21,6 +22,7 @@
     points = $bindable(undefined),
     hasError = false,
     onPointsChange = () => {},
+    key,
     children
   }: Props = $props();
 
@@ -34,6 +36,10 @@
         inline: 'nearest'
       });
     }
+  });
+
+  $effect(() => {
+    console.log('container key', key);
   });
 </script>
 
@@ -66,7 +72,7 @@
 
       {#if onClose && !isTitle}
         <IconButton onClick={onClose}>
-          <TrashIcon />
+          <TrashIcon size={16} />
         </IconButton>
       {/if}
     </div>

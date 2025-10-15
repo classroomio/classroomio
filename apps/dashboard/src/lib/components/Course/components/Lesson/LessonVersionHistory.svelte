@@ -173,7 +173,7 @@
     <div class="w-full p-10 pr-80">
       <div class="flex items-start gap-x-10">
         <PrimaryButton variant={VARIANTS.OUTLINED} onClick={handleDrawerClose}>
-          <ArrowLeftIcon />
+          <ArrowLeftIcon size={16} />
         </PrimaryButton>
 
         {#if selectedVersionIndex != 0}
@@ -218,7 +218,7 @@
             ? 'bg-gray-200 dark:bg-neutral-700'
             : ''}"
         >
-          <PlayIcon class="mt-1" />
+          <PlayIcon size={16} class="mt-1" />
           <div>
             <span class="inline-block text-base font-medium">{formatTimestamp(version.timestamp)}</span>
             {#if index == 0}

@@ -23,7 +23,7 @@
       <h1 class="text-2xl font-bold md:text-3xl dark:text-white">{$t('community.title')}</h1>
       {#if $isMobile}
         <PrimaryButton onClick={askCommunity}>
-          <PlusIcon />
+          <PlusIcon size={16} />
         </PrimaryButton>
       {:else}
         <PrimaryButton label={$t('community.ask_button')} variant={VARIANTS.CONTAINED_DARK} onClick={askCommunity} />

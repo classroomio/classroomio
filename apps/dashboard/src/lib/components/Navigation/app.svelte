@@ -43,7 +43,7 @@
 </script>
 
 <nav class="{navClass} bg-primary-700 flex h-[48px] w-full p-1 transition delay-150 duration-300 ease-in-out md:px-6">
-  <ul class="flex w-full items-center">
+  <ul class="flex w-full items-center gap-2">
     <div class="flex items-center text-white">
       <li class="md:hidden">
         <IconButton
@@ -52,9 +52,9 @@
           }}
         >
           {#if $sideBar.hidden}
-            <MenuIcon />
+            <MenuIcon size={16} class="custom" />
           {:else}
-            <XIcon />
+            <XIcon size={16} class="custom" />
           {/if}
         </IconButton>
       </li>
@@ -66,12 +66,12 @@
               toggleSidebar();
             }}
           >
-            <MenuIcon />
+            <MenuIcon size={16} class="custom" />
           </IconButton>
         </li>
         <li class="hidden md:block">
           <IconButton onClick={() => goto(coursesPath)}>
-            <ArrowLeftIcon />
+            <ArrowLeftIcon size={16} class="custom" />
           </IconButton>
         </li>
       {/if}
@@ -88,14 +88,14 @@
     <span class="flex-grow"></span>
 
     <li>
-      <BellIcon />
+      <BellIcon class="custom text-white" size={16} />
     </li>
     <li>
       <IconButton size="small" onClick={toggleDarkMode}>
         {#if $globalStore.isDark}
-          <SunIcon />
+          <SunIcon size={16} class="custom" />
         {:else}
-          <MoonIcon />
+          <MoonIcon class="custom text-white" size={16} />
         {/if}
       </IconButton>
     </li>

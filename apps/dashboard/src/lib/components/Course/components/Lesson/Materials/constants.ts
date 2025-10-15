@@ -1,4 +1,5 @@
 import BookOpenIcon from '@lucide/svelte/icons/book-open';
+import type { Component } from 'svelte';
 import FileTextIcon from '@lucide/svelte/icons/file-text';
 import PresentationIcon from '@lucide/svelte/icons/presentation';
 import type { Tabs } from '$lib/utils/types';
@@ -6,7 +7,7 @@ import VideoIcon from '@lucide/svelte/icons/video';
 
 interface MaterialTab {
   label: string;
-  icon: any;
+  icon: Component;
   value: number;
   badgeValue?: number;
 }
@@ -40,6 +41,7 @@ export const tabs: MaterialTab[] = [
 
 export function orderedTabs(tabs: MaterialTab[], settingTabs?: Tabs[]) {
   if (!Array.isArray(settingTabs)) return tabs;
+
   const reorderedTabs: MaterialTab[] = [];
 
   const tabMap = new Map(tabs.map((tab) => [tab.value, tab]));
@@ -52,5 +54,6 @@ export function orderedTabs(tabs: MaterialTab[], settingTabs?: Tabs[]) {
   });
 
   const filteredReorderedTabs = reorderedTabs.filter((tab) => tab !== undefined);
+
   return filteredReorderedTabs;
 }

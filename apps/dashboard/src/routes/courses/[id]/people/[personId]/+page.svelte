@@ -160,7 +160,7 @@
             transition:fade={{ duration: 300 }}
           >
             <div class="flex w-2/3 items-center gap-4">
-              <BookOpenIcon />
+              <BookOpenIcon size={16} />
               <div>
                 <div class="mb-2">
                   <a

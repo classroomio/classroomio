@@ -126,7 +126,7 @@
         <div class="mt-2 flex w-4/5 flex-col items-start justify-between lg:flex-row lg:items-center">
           <!-- Lesson Length -->
           <div class="mb-3 flex items-center lg:mb-0">
-            <ListChecksIcon />
+            <ListChecksIcon size={16} />
             <p class="ml-2 text-sm text-gray-500 dark:text-white">
               {lesson?.totalExercises ? lesson?.totalExercises?.map((c) => c.count) : 0}
               {$t('exercises.heading')}

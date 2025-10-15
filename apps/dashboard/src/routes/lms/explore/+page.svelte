@@ -106,11 +106,11 @@
 
         {#if $courseMetaDeta.view === 'list'}
           <IconButton onClick={() => setViewPreference('grid')}>
-            <GridIcon />
+            <GridIcon size={16} />
           </IconButton>
         {:else}
           <IconButton onClick={() => setViewPreference('list')}>
-            <ListIcon />
+            <ListIcon size={16} />
           </IconButton>
         {/if}
       </div>

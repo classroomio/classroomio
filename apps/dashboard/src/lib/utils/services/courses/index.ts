@@ -13,6 +13,7 @@ import type { PostgrestError, PostgrestSingleResponse } from '@supabase/supabase
 
 import { GenericUploader } from './presign';
 import { QUESTION_TYPE } from '$lib/components/Question/constants';
+import type { Question } from '$lib/components/Course/types';
 import { STATUS } from '$lib/utils/constants/course';
 import { get } from 'svelte/store';
 import { isOrgAdmin } from '$lib/utils/store/org';
@@ -535,7 +536,7 @@ interface LooseObject {
 
 export async function submitExercise(
   answers: Record<string, string>,
-  questions: Array<{ name: string; id: string }>,
+  questions: Question[],
   exerciseId: Exercise['id'],
   courseId: Course['id'],
   groupMemberId: Groupmember['id'] | undefined

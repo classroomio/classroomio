@@ -69,7 +69,7 @@
 
         <Dropdown options={getOptions()} classNames="absolute top-4 right-4" isIcon={true}>
           <div class="rounded-full bg-gray-200 p-1 dark:bg-gray-600">
-            <EllipsisIcon />
+            <EllipsisIcon size={16} />
           </div>
         </Dropdown>
       </div>

@@ -339,7 +339,7 @@
               disabled={pageNum <= 1}
               toolTipProps={{ title: 'Previous page (←)', hotkeys: ['ArrowLeft'] }}
             >
-              <ChevronLeftIcon />
+              <ChevronLeftIcon size={16} />
             </IconButton>
 
             <IconButton
@@ -347,7 +347,7 @@
               disabled={pageNum >= pageCount}
               toolTipProps={{ title: 'Next page (→)', hotkeys: ['ArrowRight'] }}
             >
-              <ChevronRightIcon />
+              <ChevronRightIcon size={16} />
             </IconButton>
           </div>
 
@@ -358,7 +358,7 @@
               disabled={scale <= 0.5}
               toolTipProps={{ title: 'Zoom out (-)', hotkeys: ['-'] }}
             >
-              <ZoomOutIcon />
+              <ZoomOutIcon size={16} />
             </IconButton>
 
             <span class="min-w-[3rem] text-center text-sm text-gray-600">
@@ -370,7 +370,7 @@
               disabled={scale >= 3.0}
               toolTipProps={{ title: 'Zoom in (+)', hotkeys: ['+'] }}
             >
-              <ZoomInIcon />
+              <ZoomInIcon size={16} />
             </IconButton>
           </div>
         {/if}

@@ -162,6 +162,6 @@
 
 <div class="absolute bottom-8 right-6 z-[120] block md:hidden">
   <PrimaryButton onClick={handleSave} isLoading={isSaving} isDisabled={isSaving}>
-    <SaveIcon />
+    <SaveIcon size={16} />
   </PrimaryButton>
 </div>

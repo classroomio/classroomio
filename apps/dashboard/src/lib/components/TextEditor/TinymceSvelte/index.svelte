@@ -74,7 +74,7 @@
     disabled = false,
     conf = $bindable({}),
     modelEvents = 'change input undo redo',
-    value = $bindable(''),
+    value = $bindable(),
     text = $bindable(''),
     cssClass = 'tinymce-wrapper'
   }: Props = $props();
@@ -125,7 +125,9 @@
       setup: (editor: any) => {
         editorRef = editor;
         editor.on('init', () => {
-          editor.setContent(value);
+          if (value) {
+            editor.setContent(value);
+          }
           // bind model events
           editor.on(modelEvents, () => {
             lastVal = editor.getContent();

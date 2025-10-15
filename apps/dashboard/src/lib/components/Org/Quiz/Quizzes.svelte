@@ -44,7 +44,7 @@
       <QuizCard {quiz} totalQuestions={quiz.questions?.length || 0} />
     {:else}
       <Box>
-        <CoursesEmptyIcon />
+        <CoursesEmptyIcon size={16} />
         <h3 class="dark:text-white text-2xl my-5">{$t('components.quiz.no_quizz')}</h3>
         <p class="dark:text-white w-1/3 text-center">
           {$t('components.quiz.interactive')}

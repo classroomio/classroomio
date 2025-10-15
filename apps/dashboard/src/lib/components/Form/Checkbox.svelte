@@ -2,7 +2,7 @@
   import TextField from '$lib/components/Form/TextField.svelte';
 
   interface Props {
-    label?: string;
+    label?: string | null;
     value?: string;
     checked?: boolean;
     name?: string;
@@ -10,7 +10,7 @@
     disabled?: boolean;
     className?: string;
     onChange?: any;
-    iconbutton?: import('svelte').Snippet;
+    children?: import('svelte').Snippet;
   }
 
   let {
@@ -22,11 +22,11 @@
     disabled = false,
     className = '',
     onChange = () => {},
-    iconbutton
+    children
   }: Props = $props();
 </script>
 
-<label class="{className} inline-flex w-full items-center {disabled ? 'cursor-not-allowed' : 'cursor-pointer'}">
+<div class="{className} group inline-flex w-full items-center {disabled ? 'cursor-not-allowed' : 'cursor-pointer'}">
   <input
     type="checkbox"
     class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 focus:ring-offset-0"
@@ -43,5 +43,5 @@
     <span class="ml-2 dark:text-white">{label}</span>
   {/if}
 
-  {@render iconbutton?.()}
-</label>
+  {@render children?.()}
+</div>

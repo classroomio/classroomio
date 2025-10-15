@@ -1,11 +1,12 @@
 <script lang="ts">
+  import type { Component } from 'svelte';
   import { page } from '$app/state';
   import BadgeHelpIcon from '@lucide/svelte/icons/badge-help';
   import ListTodoIcon from '@lucide/svelte/icons/list-todo';
   import MapPlusIcon from '@lucide/svelte/icons/map-plus';
-  import HomeIcon from '$lib/components/Icons/HomeIcon.svelte';
-  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
-  import CommunityIcon from '$lib/components/Icons/CommunityIcon.svelte';
+  import LayoutDashboardIcon from '@lucide/svelte/icons/layout-dashboard';
+  import LibraryBigIcon from '@lucide/svelte/icons/library-big';
+  import UsersIcon from '@lucide/svelte/icons/users';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { profile } from '$lib/utils/store/user';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
@@ -17,7 +18,7 @@
 
   interface SideLinks {
     name: string;
-    icon: any;
+    icon: Component;
     link: string;
     show?: () => boolean;
   }
@@ -37,12 +38,12 @@
     [
       {
         name: $t('lms_navigation.home'),
-        icon: HomeIcon,
+        icon: LayoutDashboardIcon,
         link: '/lms'
       },
       {
         name: $t('lms_navigation.my_learning'),
-        icon: CourseIcon,
+        icon: LibraryBigIcon,
         link: '/lms/mylearning'
       },
       {
@@ -55,7 +56,7 @@
       },
       {
         name: $t('lms_navigation.community'),
-        icon: CommunityIcon,
+        icon: UsersIcon,
         link: '/lms/community',
         show() {
           return $currentOrg?.customization?.dashboard?.community;
@@ -113,7 +114,7 @@
       <ul class="my-5 px-4 pb-5">
         <a href="/lms" class="text-black" onclick={toggleSidebar}>
           <li class="mb-2 flex items-center rounded px-4 py-3">
-            <BadgeHelpIcon />
+            <BadgeHelpIcon size={16} />
             <p class="ml-2 dark:text-white">{$t('lms_navigation.help')}</p>
           </li>
         </a>
@@ -134,7 +135,7 @@
               </p>
             </div>
             <div>
-              <ChevronRightIcon />
+              <ChevronRightIcon size={16} />
             </div>
           </div>
         </button>

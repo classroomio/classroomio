@@ -1,8 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { ActivityCard } from '$lib/components/Analytics';
-  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import Progress from '$lib/components/Progress/index.svelte';
+  import LibraryBigIcon from '@lucide/svelte/icons/library-big';
   import UserIcon from '@lucide/svelte/icons/user';
 
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -100,7 +100,7 @@
 
 <div class="w-full max-w-5xl px-5 py-10 md:mx-auto">
   <div class="mb-5 flex items-center justify-between">
-    <h1 class="mb-3 text-2xl font-bold md:text-3xl dark:text-white">
+    <h1 class="mb-3 text-2xl dark:text-white">
       {$t(getGreeting())}
       {$profile.fullname}!
     </h1>
@@ -112,7 +112,7 @@
         className="min-h-[36px]"
       >
         {#if $isMobile}
-          <PlusIcon />
+          <PlusIcon size={16} />
         {:else}
           {$t('dashboard.create_course')}
         {/if}
@@ -172,7 +172,7 @@
           {:else}
             <div class="flex flex-col h-full items-center justify-center p-3">
               <div class="bg-primary-200 w-fit rounded-full p-4 text-black">
-                <CourseIcon width="30" height="30" />
+                <LibraryBigIcon size={30} />
               </div>
               <div class="my-4 text-center">
                 <p class=" text-xl font-semibold">
@@ -226,7 +226,7 @@
           {:else}
             <div class="flex flex-col h-full items-center justify-center p-3">
               <div class="bg-primary-200 w-fit rounded-full p-4 text-black">
-                <UserIcon />
+                <UserIcon size={16} />
               </div>
               <div class="my-4 text-center">
                 <p class=" text-xl font-semibold">

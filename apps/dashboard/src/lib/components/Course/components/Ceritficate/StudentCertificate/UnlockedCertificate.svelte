@@ -100,7 +100,7 @@
       isDisabled={!isCourseComplete}
       {isLoading}
     >
-      <DownloadIcon />
+      <DownloadIcon size={16} />
       {$t('course.navItem.certificates.download_certificate')}
     </PrimaryButton>
   </div>

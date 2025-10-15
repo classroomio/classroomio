@@ -58,7 +58,7 @@
             onClick={() => (option.isCorrect = !option.isCorrect)}
             buttonClassName={option.isCorrect && 'success'}
           >
-            <CircleCheckIcon filled={option.isCorrect} />
+            <CircleCheckIcon size={16} filled={option.isCorrect} />
           </IconButton>
         </div>
       {/if}

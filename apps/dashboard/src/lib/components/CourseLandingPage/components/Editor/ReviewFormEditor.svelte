@@ -84,10 +84,10 @@
 
   <div class="mt-8 flex w-full items-center justify-between">
     <IconButton contained={true} value="delete" onClick={deleteReviewData} size="large">
-      <TrashIcon />
+      <TrashIcon size={16} />
     </IconButton>
     <IconButton contained={true} value="save" onClick={() => onExpand(review.id)} size="large">
-      <SaveIcon />
+      <SaveIcon size={16} />
     </IconButton>
   </div>
 </div>

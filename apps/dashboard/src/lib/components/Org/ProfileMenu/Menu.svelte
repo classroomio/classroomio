@@ -57,7 +57,7 @@
         </div>
       </span>
       <div>
-        <SettingsIcon />
+        <SettingsIcon size={16} />
       </div>
     </a>
   </div>
@@ -83,7 +83,7 @@
           </div>
         </span>
         <div>
-          <SettingsIcon />
+          <SettingsIcon size={16} />
         </div>
       </a>
     </div>
@@ -126,7 +126,7 @@
     >
       <div class="flex items-center gap-1 text-xs font-semibold text-blue-900">
         {$t('profileMenu.see_more')}
-        <ChevronDownIcon class="text-blue-900" />
+        <ChevronDownIcon size={16} class="text-blue-900" />
       </div>
     </a>
   </div>
@@ -138,7 +138,7 @@
         onclick={closeMenu}
         class="flex items-center gap-2 hover:no-underline"
       >
-        <BellPlusIcon />
+        <BellPlusIcon size={16} />
         <p class="text-sm font-semibold">{$t('profileMenu.whats_new')}</p>
       </a>
       <a
@@ -147,7 +147,7 @@
         onclick={closeMenu}
         class="flex items-center gap-2 hover:no-underline"
       >
-        <RocketIcon />
+        <RocketIcon size={16} />
         <p class="text-sm font-semibold">{$t('profileMenu.launch_week')}</p>
       </a>
     </div>
@@ -155,7 +155,7 @@
 
   <button onclick={logout} class="w-full space-y-4 pt-3">
     <span class="flex items-center gap-2">
-      <LogOutIcon />
+      <LogOutIcon size={16} />
       <p class="text-sm font-semibold">{$t('settings.profile.logout')}</p>
     </span>
   </button>

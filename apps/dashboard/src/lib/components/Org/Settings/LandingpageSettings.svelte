@@ -452,7 +452,7 @@
             isAIEnabled={true}
           />
           <IconButton onClick={() => deleteFaq(item.id)}>
-            <TrashIcon />
+            <TrashIcon size={16} />
           </IconButton>
         </div>
       {/each}
@@ -627,7 +627,7 @@
               <span class="text-sm">{$t('settings.landing_page.custom_links.new_tab')}</span>
             </label>
             <IconButton onClick={() => deleteCustomLink(link.id)}>
-              <TrashIcon />
+              <TrashIcon size={16} />
             </IconButton>
           </div>
         </div>
@@ -735,7 +735,7 @@
 >
   <span>
     <IconButton onClick={handleSave} disabled={isSaving}>
-      <SaveIcon />
+      <SaveIcon size={16} />
     </IconButton>
   </span>
 </div>

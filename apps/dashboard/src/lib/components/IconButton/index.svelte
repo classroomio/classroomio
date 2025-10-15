@@ -8,6 +8,7 @@
     selected?: boolean;
     buttonClassName?: string;
     contained?: boolean;
+    bordered?: boolean;
     value?: string;
     type?: 'button' | 'submit' | 'reset' | null | undefined;
     size?: 'small' | 'large';
@@ -27,6 +28,7 @@
     selected = false,
     buttonClassName = '',
     contained = false,
+    bordered = false,
     value = '',
     type = 'button',
     size = 'large',
@@ -50,7 +52,7 @@
 <ToolTip title={toolTipProps.title} hotkeys={disabled ? [] : toolTipProps.hotkeys} direction={toolTipProps.direction}>
   <button
     class="root {color} {selected && 'active'} {disabled && 'disabled'} {size} {contained &&
-      'contained dark:bg-neutral-700'} {buttonClassName}"
+      'contained dark:bg-neutral-700'} {bordered && 'border'} {buttonClassName}"
     {disabled}
     {type}
     onclick={handleClick}
@@ -67,7 +69,6 @@
     text-align: center;
     transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
     border-radius: 50%;
-    border: 0;
     cursor: pointer;
     margin: 0;
     display: flex;

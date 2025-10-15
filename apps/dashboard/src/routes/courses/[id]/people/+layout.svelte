@@ -34,7 +34,7 @@
       {#if data.personId}
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           <IconButton size="large" onClick={handleBackNavigation}>
-            <ArrowLeftIcon />
+            <ArrowLeftIcon size={16} />
           </IconButton>
         </RoleBasedSecurity>
       {/if}

@@ -20,25 +20,25 @@
 </script>
 
 {#if name === NAV_IDS.SECTION}
-  <TableOfContentsIcon />
+  <TableOfContentsIcon size={16} />
 {:else if name === NAV_IDS.NEWS_FEED}
-  <MegaphoneIcon />
+  <MegaphoneIcon size={16} />
 {:else if name === NAV_IDS.LESSONS}
-  <ScrollTextIcon />
+  <ScrollTextIcon size={16} />
 {:else if name === NAV_IDS.ATTENDANCE}
-  <ListIcon />
+  <ListIcon size={16} />
 {:else if name === NAV_IDS.SUBMISSIONS}
-  <ListTodoIcon />
+  <ListTodoIcon size={16} />
 {:else if name === NAV_IDS.MARKS}
-  <BookCheckIcon />
+  <BookCheckIcon size={16} />
 {:else if name === NAV_IDS.PEOPLE}
-  <UsersIcon />
+  <UsersIcon size={16} />
 {:else if name === NAV_IDS.ANALYTICS}
-  <ChartLineIcon />
+  <ChartLineIcon size={16} />
 {:else if name === NAV_IDS.LANDING_PAGE}
-  <ScreenShareIcon />
+  <ScreenShareIcon size={16} />
 {:else if name === NAV_IDS.CERTIFICATES}
-  <AwardIcon />
+  <AwardIcon size={16} />
 {:else if name === NAV_IDS.SETTINGS}
-  <SettingsIcon />
+  <SettingsIcon size={16} />
 {/if}
