@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
@@ -29,21 +29,21 @@
           newDescription: $copyCourseModal.description,
           newSlug,
           organizationId: $currentOrg.id
-        }
+        },
       });
 
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to clone course');
+        throw new Error((result as any).error  || 'Failed to clone course');
       }
 
       // Option 3: Close modal and reset state before navigation
-      $copyCourseModal.open = false;
       copyCourseModal.set(copyCourseModalInitialState);
       
       // Navigate to the new course
-      goto(`/courses/${result.course.id}`);
+      goto(`/courses/${(result as any).course.id}`);
+      $copyCourseModal.open = false;
     } catch (error) {
       console.error(error);
 
@@ -89,7 +89,7 @@
         label="Create"
         type="submit"
         isLoading={$copyCourseModal.isSaving}
-        disabled={$copyCourseModal.isSaving}
+        isDisabled={$copyCourseModal.isSaving}
       />
     </div>
   </form>

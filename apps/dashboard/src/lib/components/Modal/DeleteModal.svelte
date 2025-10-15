@@ -6,15 +6,16 @@
 
   export let open = false;
   export let onDelete = () => {};
+  export let isLoading = false;
 
-  function handleDelete() {
-    onDelete();
-    open = false;
+  async function handleDelete() {
+    await onDelete();
+    // Modal will be closed by the parent component after successful deletion
   }
 </script>
 
 <Modal
-  onClose={() => (open = false)}
+  onClose={() => !isLoading && (open = false)}
   bind:open
   width="w-96"
   containerClass="p-6"
@@ -32,12 +33,15 @@
         variant={VARIANTS.OUTLINED}
         label={$t('delete_modal.no')}
         onClick={() => (open = false)}
+        isDisabled={isLoading}
       />
       <PrimaryButton
         className="px-6 py-3"
         variant={VARIANTS.CONTAINED_DANGER}
         label={$t('delete_modal.yes')}
         onClick={handleDelete}
+        isLoading={isLoading}
+        isDisabled={isLoading}
       />
     </div>
   </div>

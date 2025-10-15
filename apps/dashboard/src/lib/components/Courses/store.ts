@@ -46,3 +46,12 @@ export const copyCourseModalInitialState = {
 };
 
 export const copyCourseModal = writable({ ...copyCourseModalInitialState });
+
+export const deleteCourseModalInitialState = {
+  open: false,
+  id: '',
+  title: '',
+  isDeleting: false
+};
+
+export const deleteCourseModal = writable({ ...deleteCourseModalInitialState });
