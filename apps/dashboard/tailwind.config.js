@@ -1,9 +1,12 @@
 /** @type {import('tailwindcss').Config} */
+import typography from '@tailwindcss/typography';
+import forms from '@tailwindcss/forms';
+
 export default {
   darkMode: 'class',
-  content: ['./src/**/*.{html,js,svelte,ts}'],
+  content: ['./src/**/*.{html,js,svelte,ts}', '../../packages/text-editor/src/**/*.{html,js,svelte,ts}'],
   theme: {
     extend: {}
   },
-  plugins: [require('@tailwindcss/typography'), require('@tailwindcss/forms')]
+  plugins: [typography, forms]
 };
