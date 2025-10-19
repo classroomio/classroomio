@@ -71,7 +71,7 @@
       </a>
     </div>
 
-    <span class="flex-grow"></span>
+    <span class="grow"></span>
 
     <li>
       <BellIcon class="text-white" size={16} />

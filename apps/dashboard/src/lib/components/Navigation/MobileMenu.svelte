@@ -51,7 +51,7 @@
       </div>
 
       <nav>
-        <ul class="space-y-4 divide-y-[1px]">
+        <ul class="space-y-4 divide-y">
           <CustomLinks {customLinks} isMobile={true} onMobileClick={closeMobileMenu} />
 
           <!-- Login/Signup buttons in mobile menu -->

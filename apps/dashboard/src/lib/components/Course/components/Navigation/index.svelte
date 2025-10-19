@@ -267,12 +267,12 @@
 
 <aside
   class={`
-  ${$sideBar.hidden ? 'absolute z-[40] -translate-x-[100%]' : 'absolute z-[40] translate-x-0 md:relative'}
+  ${$sideBar.hidden ? 'absolute z-40 -translate-x-full' : 'absolute z-40 translate-x-0 md:relative'}
     h-[calc(100vh-48px)] w-[90vw] bg-gray-100 transition md:w-[300px] lg:w-[350px] dark:bg-black 
   
   ${
     resize ? 'border-r-8 border-r-blue-500' : 'dark:border-r-neutral-600'
-  } border-r-1 overflow-y-auto border border-b-0 border-l-0 border-t-0`}
+  } border-r overflow-y-auto border border-b-0 border-l-0 border-t-0`}
   style={$sideBar.hidden === true ? 'width:0' : 'width:300px'}
   bind:this={sidebarRef}
 >

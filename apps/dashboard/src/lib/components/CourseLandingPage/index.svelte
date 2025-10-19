@@ -294,7 +294,7 @@
 
             <div class="flex flex-wrap">
               {#each lessons as lesson, index}
-                <div class="m-2 rounded border px-2 py-1">
+                <div class="m-2 rounded-sm border px-2 py-1">
                   <Chip value={getLectureNo(index + 1, '0')} className="bg-primary-100 text-primary-700 inline " />
                   <p class="ml-2 inline text-xs font-light dark:text-white">
                     {lesson.title}

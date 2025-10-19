@@ -131,7 +131,7 @@
             <Tag
               interactive
               filter={courseFilter === 'incomplete'}
-              type={courseFilter === 'incomplete' ? 'gray' : 'outline'}
+              type={courseFilter === 'incomplete' ? 'gray' : 'outline-solid'}
               class="text-yellow-700 dark:text-yellow-500"
               on:click={() => toggleCourseFilter('incomplete')}
             >
@@ -141,7 +141,7 @@
             <Tag
               interactive
               filter={courseFilter === 'completed'}
-              type={courseFilter === 'completed' ? 'gray' : 'outline'}
+              type={courseFilter === 'completed' ? 'gray' : 'outline-solid'}
               class="text-green-700 dark:text-green-500"
               on:click={() => toggleCourseFilter('completed')}
             >

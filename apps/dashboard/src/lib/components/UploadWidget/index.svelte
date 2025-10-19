@@ -155,7 +155,7 @@
                   id=""
                   class="ml-2 w-[85%] rounded-lg dark:text-black"
                 />
-                <button type="submit" class="rounded-lg border-[1px] border-gray-500 bg-white px-3 py-1 text-black"
+                <button type="submit" class="rounded-lg border border-gray-500 bg-white px-3 py-1 text-black"
                   >{$t('course.navItem.landing_page.upload_widget.submit')}</button
                 >
               </form>

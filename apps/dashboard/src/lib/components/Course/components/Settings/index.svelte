@@ -207,7 +207,7 @@
 
 <DeleteModal onDelete={handleDeleteCourse} bind:open={openDeleteModal} />
 
-<Grid class="border-c rounded border-gray-200 dark:border-neutral-600">
+<Grid class="border-c rounded-sm border-gray-200 dark:border-neutral-600">
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={8} md={8} lg={8}>
       <SectionTitle>{$t('course.navItem.settings.cover_image')}</SectionTitle>
@@ -234,7 +234,7 @@
     </Column>
 
     <Column sm={8} md={8} lg={6}>
-      <div class="relative z-[20] w-fit">
+      <div class="relative z-20 w-fit">
         <img
           style="min-width:280px; min-height:200px"
           alt="About us"

@@ -28,7 +28,7 @@
   import { onMount } from 'svelte';
   import { MetaTags } from 'svelte-meta-tags';
 
-  import '../app.postcss';
+  import '../app.css';
 
   let { data, children } = $props();
 

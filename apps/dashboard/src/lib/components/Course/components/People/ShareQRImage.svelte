@@ -22,7 +22,7 @@
 <div
   bind:this={node}
   id="qr-container"
-  class="flex h-[60rem] w-[40rem] flex-col items-center justify-center rounded-xl bg-blue-900 p-10 pb-20"
+  class="flex h-240 w-160 flex-col items-center justify-center rounded-xl bg-blue-900 p-10 pb-20"
 >
   <div class="rounded-3xl bg-white p-6 pb-3 text-center">
     <div class="my-4 rounded-xl bg-gray-100 p-2 text-xl font-bold">Scan QR</div>

@@ -9,7 +9,7 @@
 >
   <img src="./unauthorized.svg" alt="unauthorized" class="w-[220px]" />
   <p class=" text-4xl font-bold text-black md:text-5xl dark:text-white">Page not found</p>
-  <p class=" mb-2 mt-1 text-base font-[400] text-[#656565] dark:text-white">
+  <p class=" mb-2 mt-1 text-base font-normal text-[#656565] dark:text-white">
     The page you are trying to access does not exist
   </p>
 

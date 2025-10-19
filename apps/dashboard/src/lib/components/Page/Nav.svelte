@@ -49,7 +49,7 @@
       {#if isTitleEditable}
         {#if !enterEditTitleMode}
           <button class="w-full" onclick={() => (enterEditTitleMode = true)}>
-            <h4 class="editable-title overflow-ellipsis rounded-md px-3 hover:bg-gray-100 dark:bg-black">
+            <h4 class="editable-title text-ellipsis rounded-md px-3 hover:bg-gray-100 dark:bg-black">
               {title}
             </h4>
           </button>

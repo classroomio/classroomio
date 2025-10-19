@@ -119,7 +119,7 @@
       goto(courseUrl);
     }
   }}
-  class="border-gray group relative w-full max-w-[320px] rounded border text-black dark:border-neutral-600"
+  class="border-gray group relative w-full max-w-[320px] rounded-sm border text-black dark:border-neutral-600"
 >
   <div class="p-4">
     <div class="relative mb-5">
@@ -139,7 +139,7 @@
       <ImageLoader
         src={bannerImage}
         alt="Course Logo"
-        class="relative h-[200px] w-full rounded dark:border dark:border-neutral-600"
+        class="relative h-[200px] w-full rounded-sm dark:border dark:border-neutral-600"
       >
         <svelte:fragment slot="loading">
           <SkeletonPlaceholder style="width: 100%; height: 200px;" />
@@ -151,7 +151,7 @@
       {#if type}
         {@const tag = COURSE_TAG[type]}
         <span
-          class="bg-primary-50 absolute bottom-2 left-2 z-10 flex items-center gap-1 rounded-sm p-1 font-mono text-xs capitalize"
+          class="bg-primary-50 absolute bottom-2 left-2 z-10 flex items-center gap-1 rounded-xs p-1 font-mono text-xs capitalize"
         >
           <tag.icon class={tag.iconStyle} />
           {tag.label}

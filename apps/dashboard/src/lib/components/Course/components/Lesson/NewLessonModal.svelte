@@ -143,7 +143,7 @@
               bind:value={lesson.profile}
               options={$group.tutors}
               labelKey="fullname"
-              className="sm:my-1 w-[100%]"
+              className="sm:my-1 w-full"
             />
           </div>
 

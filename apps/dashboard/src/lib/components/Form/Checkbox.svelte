@@ -29,7 +29,7 @@
 <div class="{className} group inline-flex w-full items-center {disabled ? 'cursor-not-allowed' : 'cursor-pointer'}">
   <input
     type="checkbox"
-    class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 focus:ring-offset-0"
+    class="rounded-sm border-gray-300 text-indigo-600 shadow-xs focus:border-indigo-300 focus:ring-3 focus:ring-indigo-200 focus:ring-opacity-50 focus:ring-offset-0"
     {name}
     {value}
     disabled={disabled || isEditable}

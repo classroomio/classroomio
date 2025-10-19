@@ -79,7 +79,7 @@
   <aside
     class={`${
       $sideBar.hidden
-        ? 'absolute top-[48px] z-40 -translate-x-[100%] md:relative md:top-0 md:translate-x-0'
+        ? 'absolute top-[48px] z-40 -translate-x-full md:relative md:top-0 md:translate-x-0'
         : 'absolute top-[48px] z-40 translate-x-0 md:relative md:top-0'
     }  h-[calc(100vh-48px)] w-[250px] min-w-[250px] overflow-y-auto bg-gray-100 transition dark:bg-neutral-900`}
   >
@@ -110,10 +110,10 @@
           {/each}
         </ul>
       </div>
-      <span class="flex-grow"></span>
+      <span class="grow"></span>
       <ul class="my-5 px-4 pb-5">
         <a href="/lms" class="text-black" onclick={toggleSidebar}>
-          <li class="mb-2 flex items-center rounded px-4 py-3">
+          <li class="mb-2 flex items-center rounded-sm px-4 py-3">
             <BadgeHelpIcon size={16} />
             <p class="ml-2 dark:text-white">{$t('lms_navigation.help')}</p>
           </li>

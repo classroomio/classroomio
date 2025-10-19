@@ -11,7 +11,7 @@
     bind:open={$profileMenu.open}
     onClose={() => ($profileMenu.open = false)}
     width="w-4/5"
-    containerClass="h-full !max-h-[70vh] pt-0 pb-2"
+    containerClass="h-full max-h-[70vh]! pt-0 pb-2"
     headerClass="py-1"
   >
     <Menu />

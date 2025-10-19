@@ -436,13 +436,13 @@
               label={$t('community.ask.cancel')}
               variant={VARIANTS.TEXT}
               onClick={() => (isEditMode = !isEditMode)}
-              className="py-3 px-6 rounded-sm h-fit"
+              className="py-3 px-6 rounded-xs h-fit"
               disablePadding={true}
             />
           {/if}
         {/if}
       </div>
-      <div class="border-1 border-gray my-1 rounded-lg border px-1">
+      <div class="border border-gray my-1 rounded-lg border px-1">
         <header class="flex items-center justify-between p-2 leading-none">
           <div class="flex items-center text-black no-underline hover:underline">
             <Avatar src={question.author.avatar} name={question.author.name} width="w-7" height="h-7" />
@@ -491,7 +491,7 @@
             upVote={() => upvoteQuestion('comment', comment.id)}
             disabled={voted.comment[comment.id]}
           />
-          <div class="border-1 border-gray w-full rounded-lg border">
+          <div class="border border-gray w-full rounded-lg border">
             <header class="flex items-center justify-between p-2 leading-none">
               <div class="flex items-center text-black">
                 <Avatar src={comment.avatar} name={comment.name} width="w-7" height="h-7" />

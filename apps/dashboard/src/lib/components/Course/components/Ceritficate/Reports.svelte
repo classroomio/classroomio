@@ -17,7 +17,7 @@
 
 <section class="-ml-4 -mr-4 mb-10 flex flex-wrap items-start gap-2">
   {#each CertificateReportData as data (data.id)}
-    <div class="box mb-5 flex flex-col justify-center rounded border border-gray-200 px-2 dark:border-neutral-600">
+    <div class="box mb-5 flex flex-col justify-center rounded-sm border border-gray-200 px-2 dark:border-neutral-600">
       <p class="text-xs font-normal">{data.title}</p>
       <bold class="text-2xl font-medium">{data.value}</bold>
     </div>

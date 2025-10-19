@@ -38,7 +38,7 @@
 <!-- Options -->
 <div class="flex w-full flex-wrap justify-between">
   {#each currentQuestion.options || [] as option}
-    <div class="relative mb-5 w-2/5 rounded bg-white p-5 dark:bg-neutral-800">
+    <div class="relative mb-5 w-2/5 rounded-sm bg-white p-5 dark:bg-neutral-800">
       <img src={optionImage[option.id]} alt={option.id} />
 
       {#if isPreview}

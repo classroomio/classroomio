@@ -200,7 +200,7 @@
   });
 </script>
 
-<Grid class="mt-5 w-full rounded border border-gray-200 dark:border-neutral-600">
+<Grid class="mt-5 w-full rounded-sm border border-gray-200 dark:border-neutral-600">
   <Row class="border-bottom-c py-7">
     <Column sm={2} md={2} lg={4} class="text-lg">
       <SectionTitle>{$t('components.settings.domains.add')}</SectionTitle>

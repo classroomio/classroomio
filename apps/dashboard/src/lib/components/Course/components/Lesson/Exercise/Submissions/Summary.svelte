@@ -153,7 +153,7 @@
             <ul>
               {#each q.chartData as answer (answer)}
                 {#if answer.group}
-                  <div class="my-1 w-full rounded bg-slate-100 p-2 dark:bg-slate-300">
+                  <div class="my-1 w-full rounded-sm bg-slate-100 p-2 dark:bg-slate-300">
                     <li class="text-base font-medium text-black">{answer.group}</li>
                   </div>
                 {/if}

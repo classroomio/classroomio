@@ -46,7 +46,7 @@
   </p>
 {/if}
 <span
-  class="form-input custom-placeholder form-input mt-2 block min-h-[50px] w-full resize overflow-hidden rounded-t-md border border-b-2 border-l-0 border-r-0 border-t-0 border-gray-200 p-3 pt-3.5 leading-5 outline-none focus:border-b-2 focus:border-l-0 focus:border-r-0 focus:border-t-0 dark:border-neutral-600 dark:bg-white dark:text-black {inputClassName} {focusClass} {isDisabled &&
+  class="form-input custom-placeholder form-input mt-2 block min-h-[50px] w-full resize overflow-hidden rounded-t-md border border-b-2 border-l-0 border-r-0 border-t-0 border-gray-200 p-3 pt-3.5 leading-5 outline-hidden focus:border-b-2 focus:border-l-0 focus:border-r-0 focus:border-t-0 dark:border-neutral-600 dark:bg-white dark:text-black {inputClassName} {focusClass} {isDisabled &&
     'opacity-50 hover:cursor-not-allowed'} mt-1 block w-full p-3 dark:text-black {bgColor} {errorMessage
     ? 'border-red-600'
     : ''}"

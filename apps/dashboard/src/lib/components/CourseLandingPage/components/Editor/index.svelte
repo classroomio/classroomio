@@ -163,8 +163,8 @@
 
 <aside
   class={`${
-    show ? 'fixed z-[50] -translate-x-[100%] md:absolute' : 'fixed z-[50] translate-x-0 md:relative'
-  }left-0 border-r-1 z-[50] h-full w-[90vw] min-w-[300px] max-w-[350px] border border-b-0 border-l-0 border-t-0 bg-gray-100 transition dark:bg-neutral-800`}
+    show ? 'fixed z-50 -translate-x-full md:absolute' : 'fixed z-50 translate-x-0 md:relative'
+  }left-0 border-r z-50 h-full w-[90vw] min-w-[300px] max-w-[350px] border border-b-0 border-l-0 border-t-0 bg-gray-100 transition dark:bg-neutral-800`}
 >
   <div class="toggler absolute rounded-full shadow-lg">
     <IconButton

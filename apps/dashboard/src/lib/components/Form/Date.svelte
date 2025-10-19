@@ -22,7 +22,7 @@
     bind:value
     {placeholder}
     type="date"
-    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-neutral-800 dark:text-white"
+    class="mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-300 focus:ring-3 focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-neutral-800 dark:text-white"
     onblur={onChange}
   />
 </label>

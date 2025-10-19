@@ -71,7 +71,7 @@
 
 <div></div>
 <!-- 
-<div class="{className} relative z-[100]">
+<div class="{className} relative z-100">
   <IconButton
     contained={true}
     color="text-primary-700 dark:bg-neutral-500 dark:text-white"
@@ -97,7 +97,7 @@
             </div>
             <div class="ml-2 flex gap-5">
               <button
-                class="cursor-pointer rounded-md border-[1px] px-4 py-2 text-xs font-medium"
+                class="cursor-pointer rounded-md border px-4 py-2 text-xs font-medium"
                 onclick={() => {
                   handleInsert(plainText);
                   openPopover = false;
@@ -112,7 +112,7 @@
                 {/if}
               </button>
               <button
-                class="cursor-pointer rounded-md border-[1px] px-4 py-2 text-xs font-medium {$isLoading &&
+                class="cursor-pointer rounded-md border px-4 py-2 text-xs font-medium {$isLoading &&
                   'cursor-not-allowed opacity-25'}"
                 onclick={preventDefault(() => callAI(prompt, true))}
                 type="button"
@@ -122,7 +122,7 @@
               </button>
               {#if !$isLoading}
                 <button
-                  class="cursor-pointer rounded-md border-[1px] px-4 py-2 text-xs font-medium"
+                  class="cursor-pointer rounded-md border px-4 py-2 text-xs font-medium"
                   onclick={preventDefault(restart)}
                   type="button"
                 >

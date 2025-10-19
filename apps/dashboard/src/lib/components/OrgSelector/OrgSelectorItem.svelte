@@ -28,7 +28,7 @@
 
 <div class="relative">
   <button
-    class="w-full {disabled && 'opacity-25'} flex w-[14rem] items-center px-2.5 py-1.5 text-start {hasDivider &&
+    class="w-full {disabled && 'opacity-25'} flex w-56 items-center px-2.5 py-1.5 text-start {hasDivider &&
       'border-b border-gray-100 dark:border-neutral-600'} {active && 'bg-gray-200 dark:bg-neutral-700 dark:text-white'}"
     onclick={disabled ? undefined : onClick}
   >

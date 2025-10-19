@@ -63,7 +63,7 @@
         <button
           class="relative {currentTab === tab.value
             ? 'text-primary-700'
-            : 'dark:bg-gray-500 dark:text-white'} mr-4 w-fit px-2 py-3 text-center font-semibold focus:outline-none dark:bg-transparent"
+            : 'dark:bg-gray-500 dark:text-white'} mr-4 w-fit px-2 py-3 text-center font-semibold focus:outline-hidden dark:bg-transparent"
           onclick={onChange(tab.value)}
         >
           <div class="flex w-full items-center justify-center text-center">

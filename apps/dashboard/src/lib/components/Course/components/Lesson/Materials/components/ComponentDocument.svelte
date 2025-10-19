@@ -361,7 +361,7 @@
               <ZoomOutIcon size={16} />
             </IconButton>
 
-            <span class="min-w-[3rem] text-center text-sm text-gray-600">
+            <span class="min-w-12 text-center text-sm text-gray-600">
               {Math.round(scale * 100)}%
             </span>
 

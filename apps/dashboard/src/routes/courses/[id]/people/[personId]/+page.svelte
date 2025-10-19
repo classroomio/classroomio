@@ -129,7 +129,7 @@
           <Tag
             interactive
             filter={exerciseFilter === 'incomplete'}
-            type={exerciseFilter === 'incomplete' ? 'gray' : 'outline'}
+            type={exerciseFilter === 'incomplete' ? 'gray' : 'outline-solid'}
             class="lowercase text-yellow-700 dark:text-yellow-500"
             on:click={() => toggleExerciseFilter('incomplete')}
           >
@@ -139,7 +139,7 @@
           <Tag
             interactive
             filter={exerciseFilter === 'completed'}
-            type={exerciseFilter === 'completed' ? 'gray' : 'outline'}
+            type={exerciseFilter === 'completed' ? 'gray' : 'outline-solid'}
             class="lowercase text-green-700 dark:text-green-500"
             on:click={() => toggleExerciseFilter('completed')}
           >
@@ -181,7 +181,7 @@
                   Score: {exercise.score}/{exercise.totalPoints}
 
                   {#if exercise.isCompleted}
-                    <Tag type={exercise.status === 3 ? 'high-contrast' : 'outline'} size="sm">
+                    <Tag type={exercise.status === 3 ? 'high-contrast' : 'outline-solid'} size="sm">
                       {exercise.status === 3 ? $t('analytics.graded') : $t('analytics.not_graded')}
                     </Tag>
                   {/if}

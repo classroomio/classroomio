@@ -10,7 +10,7 @@
 
   let open = $state(false);
 
-  const notIconClass = 'border rounded-lg border-grey p-3 focus:outline-none focus:border-gray-400 focus:bg-gray-200';
+  const notIconClass = 'border rounded-lg border-grey p-3 focus:outline-hidden focus:border-gray-400 focus:bg-gray-200';
 
   function isOptionLast(index) {
     return index === options.length - 1;

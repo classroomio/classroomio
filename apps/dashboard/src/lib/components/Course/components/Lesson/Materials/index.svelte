@@ -384,9 +384,9 @@
                   }}
                 >
                   <div class="p-2">
-                    <button class={aiButtonClass} onclick={() => callAI('outline')}>
+                    <button class={aiButtonClass} onclick={() => callAI('outline-solid')}>
                       <ListChecksIcon size={16} />
-                      {$t('course.navItem.lessons.materials.tabs.note.ai.outline')}
+                      {$t('course.navItem.lessons.materials.tabs.note.ai.outline-solid')}
                     </button>
                     <button class={aiButtonClass} onclick={() => callAI('note')}>
                       <NotepadTextIcon size={16} />

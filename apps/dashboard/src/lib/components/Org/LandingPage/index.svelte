@@ -203,12 +203,12 @@
     {#if $landingPageSettings.header.show}
       <header
         id="header"
-        class={`relative mb-10 h-[100vh] w-full md:h-[90vh] ${
+        class={`relative mb-10 h-screen w-full md:h-[90vh] ${
           $landingPageSettings.header.background?.show ? 'bg-cover bg-center' : 'border-b border-gray-300'
         }`}
         style="background-image: {getBgImage($landingPageSettings)}"
       >
-        <div class="absolute top-0 z-10 h-[100vh] w-full bg-white opacity-80 md:h-[90vh]"></div>
+        <div class="absolute top-0 z-10 h-screen w-full bg-white opacity-80 md:h-[90vh]"></div>
         {#if $landingPageSettings.header.banner.show}
           <div class="flex items-center justify-center py-2 md:h-full">
             <div
@@ -538,14 +538,14 @@
               <img
                 src={org.avatar_url || '/logo-192.png'}
                 alt={`${org.name} logo`}
-                class="mx-auto inline-block max-h-10 w-10 rounded"
+                class="mx-auto inline-block max-h-10 w-10 rounded-sm"
                 data-atf="1"
               />
               <h3 class="ml-3 text-xl text-black">{org.name}</h3>
             </a>
           </div>
 
-          <span class="flex-grow"></span>
+          <span class="grow"></span>
 
           <div class="mt-5 flex gap-2 sm:mt-0">
             {#if $landingPageSettings.footer.facebook}

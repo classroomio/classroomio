@@ -170,7 +170,7 @@
 
 <UnsavedChanges bind:hasUnsavedChanges />
 
-<Grid class="border-c relative mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
+<Grid class="border-c relative mt-5 w-full rounded-sm border-gray-200 dark:border-neutral-600">
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}>
       <SectionTitle>{$t('settings.landing_page.heading')}</SectionTitle>
@@ -719,7 +719,7 @@
       />
     </Column>
   </Row>
-  <div class="desktop sticky bottom-12 z-[120] float-right mr-2">
+  <div class="desktop sticky bottom-12 z-120 float-right mr-2">
     <PrimaryButton
       label={$t('settings.landing_page.save_changes')}
       isLoading={isSaving}
@@ -731,7 +731,7 @@
 
 <div
   class="mobile
- absolute bottom-8 right-6 z-[120]"
+ absolute bottom-8 right-6 z-120"
 >
   <span>
     <IconButton onClick={handleSave} disabled={isSaving}>

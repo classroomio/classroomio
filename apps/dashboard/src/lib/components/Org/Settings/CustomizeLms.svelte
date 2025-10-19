@@ -43,7 +43,7 @@
   }
 </script>
 
-<Grid class="border-c relative mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
+<Grid class="border-c relative mt-5 w-full rounded-sm border-gray-200 dark:border-neutral-600">
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}>
       <SectionTitle>{$t('components.settings.customize_lms.dashboard.title')}</SectionTitle>
@@ -150,7 +150,7 @@
     </Column>
   </Row>
 
-  <div class="sticky bottom-12 z-[120] float-right mr-2 hidden md:block">
+  <div class="sticky bottom-12 z-120 float-right mr-2 hidden md:block">
     <PrimaryButton
       label={$t('components.settings.customize_lms.save')}
       onClick={handleSave}
@@ -160,7 +160,7 @@
   </div>
 </Grid>
 
-<div class="absolute bottom-8 right-6 z-[120] block md:hidden">
+<div class="absolute bottom-8 right-6 z-120 block md:hidden">
   <PrimaryButton onClick={handleSave} isLoading={isSaving} isDisabled={isSaving}>
     <SaveIcon size={16} />
   </PrimaryButton>

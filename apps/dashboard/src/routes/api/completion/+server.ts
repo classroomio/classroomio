@@ -15,7 +15,7 @@ export const config = {
 };
 
 const instruction = {
-  outline: 'a structured lesson outline',
+  outline: 'a structured lesson outline-solid',
   note: 'a sample lesson note',
   activities: 'few interactive lesson activities to my lecture'
 };

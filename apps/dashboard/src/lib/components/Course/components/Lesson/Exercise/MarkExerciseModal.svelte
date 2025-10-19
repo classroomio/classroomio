@@ -231,7 +231,7 @@
   bind:open
   {onClose}
   width="w-4/5 h-[90%]"
-  containerClass="flex items-start !max-h-full h-[85%] py-0 px-4"
+  containerClass="flex items-start max-h-full! h-[85%] py-0 px-4"
   headerClass="py-2"
   labelClass="text-base font-semibold"
 >
@@ -282,11 +282,11 @@
         <p class="text-base font-bold dark:text-white">
           {$t('course.navItem.submissions.grading_modal.details')}
           {#if data.isEarly}
-            <span class="badge ml-2 rounded-sm bg-green-500 px-2 text-sm text-white">
+            <span class="badge ml-2 rounded-xs bg-green-500 px-2 text-sm text-white">
               {$t('course.navItem.submissions.grading_modal.early')}</span
             >
           {:else}
-            <span class="badge ml-2 rounded-sm bg-red-500 px-2 text-sm text-white">
+            <span class="badge ml-2 rounded-xs bg-red-500 px-2 text-sm text-white">
               {$t('course.navItem.submissions.grading_modal.late')}
             </span>
           {/if}

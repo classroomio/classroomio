@@ -252,7 +252,7 @@
       </div>
     </div>
 
-    <div class="absolute left-[-1000px] w-[40rem]">
+    <div class="absolute left-[-1000px] w-160">
       <ShareQrImage {qrImage} course={$course} currentOrg={$currentOrg} />
     </div>
 

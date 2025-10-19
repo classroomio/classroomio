@@ -12,10 +12,10 @@
 
 <div class="root">
   <div class="flex justify-center">
-    <button onclick={handleTabClick(1)} class="p-2 focus:outline-none {isWriteMode && `${activeClassName}`}">
+    <button onclick={handleTabClick(1)} class="p-2 focus:outline-hidden {isWriteMode && `${activeClassName}`}">
       {$t('markdown_editor.write')}
     </button>
-    <button onclick={handleTabClick(2)} class="p-2 focus:outline-none {!isWriteMode && `${activeClassName}`}">
+    <button onclick={handleTabClick(2)} class="p-2 focus:outline-hidden {!isWriteMode && `${activeClassName}`}">
       {$t('markdown_editor.preview')}
     </button>
   </div>

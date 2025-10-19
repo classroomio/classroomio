@@ -92,7 +92,7 @@
           {$t('dashboard.your_progress')}
         </p>
         <div
-          class="flex h-fit items-center justify-center gap-2 rounded border border-[#EAEAEA] p-3 lg:h-[40vh] lg:overflow-y-auto dark:bg-neutral-800"
+          class="flex h-fit items-center justify-center gap-2 rounded-sm border border-[#EAEAEA] p-3 lg:h-[40vh] lg:overflow-y-auto dark:bg-neutral-800"
         >
           <div
             class="flex h-full w-full flex-col items-center justify-between gap-5 sm:flex-row lg:items-center lg:justify-around xl:flex-col xl:items-start"

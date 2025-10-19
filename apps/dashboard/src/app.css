@@ -1,136 +1,155 @@
-/*Write your global styles here, in PostCSS syntax */
-@tailwind base;
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-/** Global scrollbar styles */
-html {
-  --scrollbarBG: #fff;
-  --thumbBG: #ccc;
-  scroll-behavior: smooth;
-  font-family:
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    Segoe UI,
-    Roboto,
-    Helvetica Neue,
-    Arial,
-    Noto Sans,
-    sans-serif,
-    'Apple Color Emoji',
-    'Segoe UI Emoji',
-    Segoe UI Symbol,
-    'Noto Color Emoji' !important;
-}
+@plugin '@tailwindcss/typography';
+@plugin '@tailwindcss/forms';
 
-#calendar .grid {
-  --sc-theme-calendar-colors-background-highlight: var(--main-primary-color);
-}
+@import './carbon.css';
 
-html .dark {
-  --scrollbarBG: #000;
-}
+@custom-variant dark (&:is(.dark *));
 
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--thumbBG) var(--scrollbarBG);
-}
-html .dark {
-  --scrollbarBG: #000;
-}
-*::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
 
-*::-webkit-scrollbar-track {
-  background: var(--scrollbarBG);
-}
-
-*::-webkit-scrollbar-thumb {
-  background-color: var(--thumbBG);
-  border-radius: 10px;
-  border: 2px solid var(--scrollbarBG);
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-size: revert;
-  font-weight: revert;
-  margin: 0.8em 0;
-}
-
-.prose h1,
-.prose h2,
-.prose h3,
-.prose h4,
-.prose h5,
-.prose h6 {
-  margin-top: 0px !important;
-  margin-bottom: 16px !important;
-  font-weight: 600 !important;
-  line-height: 1.25 !important;
-}
-
-.prose p {
-  margin-top: 0px !important;
-  margin-bottom: 10px !important;
-}
-
-.dark .prose h1,
-.dark .prose h2,
-.dark .prose h3,
-.dark .prose h4,
-.dark .prose h5,
-.dark .prose h6,
-.dark .prose li,
-.dark .prose strong,
-.dark .prose li::marker,
-.dark .prose p {
-  color: #fff !important;
-}
-
-iframe.iframe {
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-  height: 450px;
-  border: 1px solid gray;
-  border-radius: 5px;
-}
-@media (max-width: 760px) {
-  iframe.iframe {
-    height: 209px;
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
   }
-}
+  /** Global scrollbar styles */
+  html {
+    --scrollbarBG: #fff;
+    --thumbBG: #ccc;
+    scroll-behavior: smooth;
+    font-family:
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      Segoe UI,
+      Roboto,
+      Helvetica Neue,
+      Arial,
+      Noto Sans,
+      sans-serif,
+      'Apple Color Emoji',
+      'Segoe UI Emoji',
+      Segoe UI Symbol,
+      'Noto Color Emoji' !important;
+  }
 
-code {
-  white-space: pre-wrap;
-}
+  #calendar .grid {
+    --sc-theme-calendar-colors-background-highlight: var(--main-primary-color);
+  }
 
-/* [aria-current] :global(svg.carbon-icon),
+  html .dark {
+    --scrollbarBG: #000;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+  }
+  html .dark {
+    --scrollbarBG: #000;
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: var(--scrollbarBG);
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--thumbBG);
+    border-radius: 10px;
+    border: 2px solid var(--scrollbarBG);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: revert;
+    font-weight: revert;
+    margin: 0.8em 0;
+  }
+
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose h5,
+  .prose h6 {
+    margin-top: 0px !important;
+    margin-bottom: 16px !important;
+    font-weight: 600 !important;
+    line-height: 1.25 !important;
+  }
+
+  .prose p {
+    margin-top: 0px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .dark .prose h1,
+  .dark .prose h2,
+  .dark .prose h3,
+  .dark .prose h4,
+  .dark .prose h5,
+  .dark .prose h6,
+  .dark .prose li,
+  .dark .prose strong,
+  .dark .prose li::marker,
+  .dark .prose p {
+    color: #fff !important;
+  }
+
+  iframe.iframe {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    height: 450px;
+    border: 1px solid gray;
+    border-radius: 5px;
+  }
+  @media (max-width: 760px) {
+    iframe.iframe {
+      height: 209px;
+    }
+  }
+
+  code {
+    white-space: pre-wrap;
+  }
+
+  /* [aria-current] :global(svg.carbon-icon),
 .active :global(svg.carbon-icon) {
   fill: var(--main-primary-color);
 } */
 
-.prose a {
-  color: var(--main-primary-color);
-}
+  .prose a {
+    color: var(--main-primary-color);
+  }
 
-svg.lucide-icon:not(.custom) {
-  color: #666666;
-}
-.dark svg.lucide-icon:not(.custom) {
-  color: #fff;
-}
-/* .success :global(svg.carbon-icon) {
+  svg.lucide-icon:not(.custom) {
+    color: #666666;
+  }
+  .dark svg.lucide-icon:not(.custom) {
+    color: #fff;
+  }
+  /* .success :global(svg.carbon-icon) {
   fill: green;
 }
 
@@ -138,63 +157,60 @@ svg.lucide-icon:not(.custom) {
   fill: red;
 } */
 
-.org-root {
-  height: calc(100vh - 48px);
-}
-.org-slot {
-  min-width: calc(100vw - 250px);
-  height: calc(100vh - 48px);
-  overflow-y: auto;
-}
-
-.shake {
-  animation: shake 0.85s;
-}
-@keyframes shake {
-  10%,
-  90% {
-    transform: translate3d(-15px, 0, 0);
+  .org-root {
+    height: calc(100vh - 48px);
   }
-  20%,
-  80% {
-    transform: translate3d(15px, 0, 0);
-  }
-  30%,
-  50%,
-  70% {
-    transform: translate3d(-15px, 0, 0);
-  }
-  40%,
-  60% {
-    transform: translate3d(15px, 0, 0);
-  }
-}
-
-.bx--list-box__menu-item__option {
-  white-space: normal !important;
-}
-.bx--list-box--xl .bx--list-box__menu-item,
-.bx--list-box--lg .bx--list-box__menu-item,
-.bx--list-box__menu-item__option {
-  height: fit-content !important;
-}
-.cio-bg-blue {
-  background: rgb(2, 51, 189);
-  background-size: cover;
-  background: radial-gradient(circle at 50% 100%, rgba(2, 51, 189, 1) 1%, rgb(4, 2, 56) 100%);
-}
-
-@media screen and (max-width: 457px) {
   .org-slot {
-    min-width: 100%;
-    max-height: calc(100vh - 48px);
+    min-width: calc(100vw - 250px);
+    height: calc(100vh - 48px);
     overflow-y: auto;
   }
+
+  .shake {
+    animation: shake 0.85s;
+  }
+  @keyframes shake {
+    10%,
+    90% {
+      transform: translate3d(-15px, 0, 0);
+    }
+    20%,
+    80% {
+      transform: translate3d(15px, 0, 0);
+    }
+    30%,
+    50%,
+    70% {
+      transform: translate3d(-15px, 0, 0);
+    }
+    40%,
+    60% {
+      transform: translate3d(15px, 0, 0);
+    }
+  }
+
+  .bx--list-box__menu-item__option {
+    white-space: normal !important;
+  }
+  .bx--list-box--xl .bx--list-box__menu-item,
+  .bx--list-box--lg .bx--list-box__menu-item,
+  .bx--list-box__menu-item__option {
+    height: fit-content !important;
+  }
+  .cio-bg-blue {
+    background: rgb(2, 51, 189);
+    background-size: cover;
+    background: radial-gradient(circle at 50% 100%, rgba(2, 51, 189, 1) 1%, rgb(4, 2, 56) 100%);
+  }
+
+  @media screen and (max-width: 457px) {
+    .org-slot {
+      min-width: 100%;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+    }
+  }
 }
-
-@tailwind components;
-
-@tailwind utilities;
 
 /**
   Rose Theme

@@ -19,7 +19,7 @@
     {$t('dashboard.current_lesson')}
   </p>
   <div
-    class="flex w-full flex-col items-center gap-2 rounded border border-[#EAEAEA] p-3 lg:h-[40vh] dark:bg-neutral-800"
+    class="flex w-full flex-col items-center gap-2 rounded-sm border border-[#EAEAEA] p-3 lg:h-[40vh] dark:bg-neutral-800"
   >
     {#if last3Courses.length > 0}
       <div class="flex h-full w-full flex-col justify-start overflow-y-auto">

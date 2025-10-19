@@ -121,7 +121,7 @@
   />
 </div>
 <div
-  class="border-c m-auto my-4 flex flex-wrap items-center justify-center rounded bg-gray-100 lg:justify-start dark:bg-neutral-800"
+  class="border-c m-auto my-4 flex flex-wrap items-center justify-center rounded-sm bg-gray-100 lg:justify-start dark:bg-neutral-800"
 >
   {#if isLoading}
     <CommunityLoader />
@@ -147,7 +147,7 @@
             </span>
           </a>
         </div>
-        <div class="flex-grow"></div>
+        <div class="grow"></div>
         <div class="flex items-center">
           <MessageCirclePlusIcon size={16} />
           <span class="ml-1">{discussion.comments}</span>

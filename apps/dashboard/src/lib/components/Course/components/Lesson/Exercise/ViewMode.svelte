@@ -339,7 +339,7 @@
     </div>
 
     {#if $questionnaireMetaData.status === STATUS.GRADED && $questionnaireMetaData.comment && $course.type !== COURSE_TYPE.SELF_PACED}
-      <div class="bg-primary-700 mt-3 flex items-center justify-between rounded-sm p-4 text-white">
+      <div class="bg-primary-700 mt-3 flex items-center justify-between rounded-xs p-4 text-white">
         <span> {$questionnaireMetaData.comment}</span>
       </div>
     {/if}

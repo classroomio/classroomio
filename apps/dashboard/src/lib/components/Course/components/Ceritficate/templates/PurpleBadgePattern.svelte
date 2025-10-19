@@ -14,7 +14,7 @@
 
 <div class="relative w-full dark:text-black">
   <img src="/images/purple-badge-pattern-background.svg" alt="" class="absolute z-0 h-full w-full object-cover" />
-  <div class="relative z-20 m-2 flex h-full justify-between bg-white md:h-[17rem]">
+  <div class="relative z-20 m-2 flex h-full justify-between bg-white md:h-68">
     <div class="w-[70%] pl-3">
       <header class="absolute flex w-full items-center justify-center gap-1 text-sm font-bold">
         <img src={$currentOrg.avatar_url ? $currentOrg.avatar_url : logo} alt="logo" class="w-5" />
@@ -50,7 +50,7 @@
     </div>
 
     <div class="flex items-center justify-center overflow-hidden">
-      <img src="/images/purple-badge-pattern-badge.svg" alt="A badge" class="w-[8rem] max-w-none md:w-[10rem]" />
+      <img src="/images/purple-badge-pattern-badge.svg" alt="A badge" class="w-32 max-w-none md:w-40" />
     </div>
   </div>
 </div>

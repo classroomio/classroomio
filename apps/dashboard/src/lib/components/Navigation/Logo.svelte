@@ -20,7 +20,7 @@
     <img
       src={logo || '/logo-192.png'}
       alt={`${orgName || 'ClassroomIO'} logo`}
-      class="mx-auto inline-block w-9 rounded"
+      class="mx-auto inline-block w-9 rounded-sm"
       data-atf="1"
     />
     {#if orgName}

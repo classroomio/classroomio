@@ -85,9 +85,9 @@
   <aside
     class={`${
       $sideBar.hidden
-        ? 'absolute top-[48px] z-40 -translate-x-[100%] md:relative md:top-0 md:translate-x-0'
+        ? 'absolute top-[48px] z-40 -translate-x-full md:relative md:top-0 md:translate-x-0'
         : 'absolute top-[48px] z-40 translate-x-0 md:relative md:top-0'
-    } border-r-1 h-[calc(100vh-48px)] w-[250px] min-w-[250px] overflow-y-auto border border-b-0 border-l-0 border-t-0 border-gray-100 bg-gray-100 transition dark:border-neutral-600 dark:bg-neutral-900`}
+    } border-r h-[calc(100vh-48px)] w-[250px] min-w-[250px] overflow-y-auto border border-b-0 border-l-0 border-t-0 border-gray-100 bg-gray-100 transition dark:border-neutral-600 dark:bg-neutral-900`}
   >
     <div class="flex h-full flex-col">
       <div class="">
@@ -124,7 +124,7 @@
           {/each}
         </ul>
       </div>
-      <span class="flex-grow"></span>
+      <span class="grow"></span>
 
       {#if $isFreePlan}
         <div
@@ -141,7 +141,7 @@
 
       <ul class="my-5 px-4 pb-5">
         <a href={$currentOrgPath} class="text-black no-underline" onclick={toggleSidebar}>
-          <li class="mb-2 flex items-center rounded px-2.5 py-1.5">
+          <li class="mb-2 flex items-center rounded-sm px-2.5 py-1.5">
             <BadgeHelpIcon size={16} />
             <p class="ml-2.5 text-sm font-medium dark:text-white">{$t('org_navigation.help')}</p>
           </li>
