@@ -1,15 +1,5 @@
 import { getSupabase } from '$src/utils/supabase';
-import type {
-  Course,
-  Lesson,
-  LessonSection,
-  LessonLanguage,
-  Exercise,
-  Question,
-  Option,
-  Group,
-  GroupMember
-} from '$src/types/database';
+import type { Course, Lesson, LessonSection, GroupMember } from '$src/types/database';
 import type { PostgrestError } from '@supabase/supabase-js';
 
 const supabase = getSupabase();
@@ -57,7 +47,6 @@ interface AddGroupMemberParams {
   role_id: number;
 }
 
-
 // fetches course data with backward compatibility for courses that is either V1 or V2
 async function fetchCourseData(courseId: string): Promise<FetchCourseDataResponse> {
   const { data, error } = await supabase
@@ -101,10 +90,10 @@ async function cloneGroupAndBasicCourse(
   // 1. Create group
   const { data: newGroup, error: groupError } = await supabase
     .from('group')
-    .insert({ 
-      name: newTitle, 
+    .insert({
+      name: newTitle,
       description: finalDescription,
-      organization_id: organizationId 
+      organization_id: organizationId
     })
     .select();
 
@@ -130,7 +119,7 @@ async function cloneGroupAndBasicCourse(
       title: newTitle,
       description: finalDescription,
       slug: finalSlug,
-      group_id,
+      group_id
     })
     .select();
 

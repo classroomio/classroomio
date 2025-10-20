@@ -1,57 +1,29 @@
 import { Hono } from 'hono';
-import { ZCourseClone } from '$src/types/course';
+import { ZCourseClone, TCourseClone } from '$src/types/course';
 import { zValidator } from '@hono/zod-validator';
-import { cloneCourse } from '$src/services/course-clone';
-import { validateUser } from '$src/utils/auth/validate-user';
+import { cloneCourse } from '$src/services/course/clone';
+import { authMiddleware } from '$src/middlewares/auth';
 import type { CloneCourseResponse, CloneCourseErrorResponse } from '$src/types/database';
 import type { User } from '@supabase/supabase-js';
-import type { TCourseClone } from '$src/types/course';
 
-export const cloneRouter = new Hono().post(
+type Variables = {
+  user: User;
+};
+
+export const cloneRouter = new Hono<{ Variables: Variables }>().post(
   '/',
+  authMiddleware,
   zValidator('json', ZCourseClone),
   async (c) => {
     try {
-      
       const validatedData = (c.req.valid as (key: 'json') => TCourseClone)('json');
-      const { courseId, newTitle, newDescription, newSlug, organizationId } = validatedData;
+      const { id, title, description, slug, organizationId } = validatedData;
 
-      // Get the authorization header
-      const authHeader = c.req.header('Authorization');
-      if (!authHeader) {
-        const errorResponse: CloneCourseErrorResponse = { error: 'Unauthorized' };
-        return c.json(errorResponse, 401);
-      }
-
-      // Extract the token
-      const token = authHeader.replace('Bearer ', '');
-
-      // Validate user and get their ID
-      let user: User;
-      try {
-        user = await validateUser(token);
-      } catch (err) {
-        const errorResponse: CloneCourseErrorResponse = { 
-          error: 'Invalid authentication token',
-          details: err instanceof Error ? err.message : 'Unknown error'
-        };
-        return c.json(errorResponse, 401);
-      }
-
-      if (!user || !user.id) {
-        const errorResponse: CloneCourseErrorResponse = { error: 'User not found' };
-        return c.json(errorResponse, 401);
-      }
+      // Get user from context (set by authMiddleware)
+      const user = c.get('user');
 
       // Clone the course
-      const newCourse = await cloneCourse(
-        courseId,
-        newTitle,
-        user.id,
-        newDescription,
-        newSlug,
-        organizationId
-      );
+      const newCourse = await cloneCourse(id, title, user.id, description, slug, organizationId);
 
       const successResponse: CloneCourseResponse = {
         success: true,

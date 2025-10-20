@@ -11,6 +11,12 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
 
+  interface CloneCourseResponse {
+    success: boolean;
+    course: { id: string };
+    error?: string;
+  }
+
   // clone, show spinner and redirect to new course
   async function createCourse() {
     // Prevent double submission (Option 1: Early Return Guard)
@@ -20,30 +26,30 @@
     $copyCourseModal.isSaving = true;
 
     try {
-      // Generate unique slug from the new title
-      const newSlug = generateSlug($copyCourseModal.title);
+      // Generate unique slug from the title
+      const slug = generateSlug($copyCourseModal.title);
 
       const response = await classroomio.course.clone.$post({
         json: {
-          courseId: $copyCourseModal.id,
-          newTitle: $copyCourseModal.title,
-          newDescription: $copyCourseModal.description,
-          newSlug,
+          id: $copyCourseModal.id,
+          title: $copyCourseModal.title,
+          description: $copyCourseModal.description,
+          slug,
           organizationId: $currentOrg.id
-        },
+        }
       });
 
-      const result = await response.json();
+      const result = (await response.json()) as CloneCourseResponse;
 
       if (!response.ok) {
-        throw new Error((result as any).error  || $t('courses.copy_course.error.failed_to_clone'));
+        throw new Error(result.error || $t('courses.copy_course.error.failed_to_clone'));
       }
 
       // Option 3: Close modal and reset state before navigation
       copyCourseModal.set(copyCourseModalInitialState);
-      
+
       // Navigate to the new course
-      goto(`/courses/${(result as any).course.id}`);
+      goto(`/courses/${result.course.id}`);
       $copyCourseModal.open = false;
     } catch (error) {
       console.error(error);
