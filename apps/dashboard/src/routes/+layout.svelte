@@ -29,6 +29,10 @@
   import { MetaTags } from 'svelte-meta-tags';
 
   import '../app.postcss';
+  import '@cio/text-editor/app.css';
+  import '@cio/text-editor/editor.css';
+  import '@cio/text-editor/shadcn.css';
+  import '@cio/text-editor/oneDark.css';
 
   let { data, children } = $props();
 

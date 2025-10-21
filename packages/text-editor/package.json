@@ -7,12 +7,12 @@
     "preview": "vite preview"
   },
   "exports": {
-    ".": "./src/lib/components/edra/shadcn/index.ts",
-    "./EdraEditor": "./src/lib/components/edra/shadcn/editor.svelte",
     "./app.css": "./src/app.css",
     "./editor.css": "./src/lib/components/edra/editor.css",
     "./shadcn.css": "./src/lib/components/edra/shadcn/style.css",
     "./oneDark.css": "./src/lib/components/edra/onedark.css",
+    ".": "./src/lib/components/edra/shadcn/index.ts",
+    "./EdraEditor": "./src/lib/components/edra/shadcn/editor.svelte",
     "./EdraToolBar": "./src/lib/components/edra/shadcn/toolbar.svelte",
     "./EdraDragHandleExtended": "./src/lib/components/edra/shadcn/drag-handle-extended.svelte",
     "./types": "./src/lib/components/edra/types.ts"

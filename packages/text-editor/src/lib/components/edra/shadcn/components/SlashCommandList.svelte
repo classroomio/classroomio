@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button } from '../../../ui/button/index.js';
+  import { Button } from '@cio/shadcn-ui/button';
   import { cn } from '../../../../utils';
 
   interface Props {

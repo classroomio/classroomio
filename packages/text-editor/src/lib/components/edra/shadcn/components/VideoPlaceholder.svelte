@@ -4,7 +4,7 @@
 
   const { editor }: NodeViewProps = $props();
   import Video from '@lucide/svelte/icons/video';
-  import { buttonVariants } from '../../../ui/button/button.svelte';
+  import { buttonVariants } from '@cio/shadcn-ui/button';
 
   function handleClick() {
     const videoUrl = prompt('Please enter the video URL');

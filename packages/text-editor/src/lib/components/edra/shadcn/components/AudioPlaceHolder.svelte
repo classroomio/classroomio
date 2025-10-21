@@ -4,7 +4,7 @@
 
   const { editor }: NodeViewProps = $props();
   import Audio from '@lucide/svelte/icons/audio-lines';
-  import { buttonVariants } from '../../../ui/button/button.svelte';
+  import { buttonVariants } from '@cio/shadcn-ui/button';
 
   function handleClick() {
     const audioUrl = prompt('Please enter the audio URL');

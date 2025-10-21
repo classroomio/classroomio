@@ -1,13 +1,13 @@
 <script lang="ts">
   import type { Editor } from '@tiptap/core';
-  import * as DropdownMenu from '../../../../ui/dropdown-menu/index.js';
+  import { buttonVariants } from '@cio/shadcn-ui/button';
+  import * as DropdownMenu from '@cio/shadcn-ui/dropdown-menu';
   import Heading from '@lucide/svelte/icons/heading';
   import ChevronDown from '@lucide/svelte/icons/chevron-down';
   import commands from '../../../commands/toolbar-commands.js';
   import { cn } from '../../../../../utils';
   import EdraToolTip from '../EdraToolTip.svelte';
   import Paragraph from '@lucide/svelte/icons/pilcrow';
-  import { buttonVariants } from '../../../../ui/button/index.js';
 
   interface Props {
     editor: Editor;

@@ -49,13 +49,10 @@
   import { orderedTabs } from './constants';
   import Loader from './Loader.svelte';
 
-  import '@cio/text-editor/app.css';
-  import '@cio/text-editor/editor.css';
-  import '@cio/text-editor/shadcn.css';
-  import '@cio/text-editor/oneDark.css';
   import { EdraEditor, EdraToolBar } from '@cio/text-editor';
-
   import type { EdraEditorProps } from '@cio/text-editor/types';
+
+  // -- note: remove old editor & console logs
 
   interface Props {
     mode?: any;
@@ -78,14 +75,23 @@
   let content = $state<EdraEditorProps['Content']>();
   let editor = $state<EdraEditorProps['Editor']>();
   function onUpdate() {
-    content = editor?.getJSON();
+    content = editor?.getHTML();
+    console.log('content updated:', content);
+    if (mode === MODES.view) return;
+
+    $lessonByTranslation[lessonId][$lesson.locale] = content;
+
+    try {
+      localStorage.setItem(`lesson-${lessonId}-${$lesson.locale}`, content);
+    } catch (error) {}
+    $isLessonDirty = true;
   }
 
   let localeExists: Record<string, boolean> = {};
   // let prevContent = '';
   let timeoutId: NodeJS.Timeout;
   let errors: Record<string, string> = {};
-  let editorWindowRef: Window | undefined = $state();
+  // let editorWindowRef: Window | undefined = $state();
   let aiButtonRef: HTMLDivElement | undefined = $state();
   let openPopover = $state(false);
   let player: HTMLVideoElement | undefined = $state();
@@ -417,19 +423,25 @@
           </div>
 
           <div class="mt-5 h-[60vh]">
-            <!-- <div class="bg-background z-50 mt-12 size-full max-w-5xl rounded-md border border-dashed"> -->
-            {#if editor && !editor.isDestroyed}
-              <EdraToolBar
-                class="bg-secondary/50 flex w-full items-center overflow-x-auto border-b border-dashed p-0.5"
-                {editor}
+            <div class="bg-background z-50 mt-12 size-full max-w-5xl rounded-md border border-dashed">
+              {#if editor && !editor.isDestroyed}
+                <EdraToolBar
+                  class="bg-secondary/50 flex w-full items-center overflow-x-auto border-b border-dashed p-0.5"
+                  {editor}
+                />
+              {:else}
+                <div>
+                  Debug: Editor state - {editor ? 'exists' : 'undefined'}, destroyed: {editor?.isDestroyed || 'N/A'}
+                </div>
+              {/if}
+              <EdraEditor
+                bind:editor
+                content={editorValue}
+                autofocus={true}
+                class="h-[300px] outline-none"
+                {onUpdate}
               />
-            {:else}
-              <div>
-                Debug: Editor state - {editor ? 'exists' : 'undefined'}, destroyed: {editor?.isDestroyed || 'N/A'}
-              </div>
-            {/if}
-            <EdraEditor bind:editor {content} class="h-[30rem] max-h-screen overflow-y-scroll pl-6 pr-2" {onUpdate} />
-            <!-- </div> -->
+            </div>
             <!-- <TextEditor
               id={lessonId}
               bind:editorWindowRef

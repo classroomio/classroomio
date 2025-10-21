@@ -4,7 +4,7 @@
 
   const { editor }: NodeViewProps = $props();
   import Image from '@lucide/svelte/icons/image';
-  import { buttonVariants } from '../../../ui/button/button.svelte';
+  import { buttonVariants } from '@cio/shadcn-ui/button';
 
   function handleClick() {
     const imageUrl = prompt('Please enter the image URL');

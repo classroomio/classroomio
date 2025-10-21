@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { Button, buttonVariants } from '../../../../ui/button/index.js';
-  import * as Popover from '../../../../ui/popover/index.js';
+  import { Button, buttonVariants } from '@cio/shadcn-ui/button';
+  import * as Popover from '@cio/shadcn-ui/popover';
   import type { Editor } from '@tiptap/core';
   import ChevronDown from '@lucide/svelte/icons/chevron-down';
   import { cn } from '../../../../../utils';

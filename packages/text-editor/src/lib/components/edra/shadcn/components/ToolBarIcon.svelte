@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Button from '../../../ui/button/button.svelte';
+  import { Button } from '@cio/shadcn-ui/button';
   import type { EdraToolBarCommands } from '../../commands/types.js';
   import type { Editor } from '@tiptap/core';
   import EdraToolTip from './EdraToolTip.svelte';

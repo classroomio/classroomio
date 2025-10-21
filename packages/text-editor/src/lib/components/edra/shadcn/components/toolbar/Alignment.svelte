@@ -1,11 +1,11 @@
 <script lang="ts">
-  import * as DropdownMenu from '../../../../ui/dropdown-menu/index.js';
+  import * as DropdownMenu from '@cio/shadcn-ui/dropdown-menu';
   import commands from '../../../commands/toolbar-commands.js';
   import type { Editor } from '@tiptap/core';
   import AlignLeft from '@lucide/svelte/icons/align-left';
   import EdraToolTip from '../EdraToolTip.svelte';
   import ChevronDown from '@lucide/svelte/icons/chevron-down';
-  import { buttonVariants } from '../../../../ui/button/index.js';
+  import { buttonVariants } from '@cio/shadcn-ui/button';
   import { cn } from '../../../../../utils';
 
   interface Props {

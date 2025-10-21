@@ -1,5 +1,5 @@
 <script lang="ts">
-  import * as Tooltip from '../../../ui/tooltip/index.js';
+  import * as Tooltip from '@cio/shadcn-ui/tooltip';
   import type { Snippet } from 'svelte';
   interface Props {
     tooltip: string;

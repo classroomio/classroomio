@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Button from '../../../../ui/button/button.svelte';
-  import * as DropdownMenu from '../../../../ui/dropdown-menu/index.js';
+  import { Button } from '@cio/shadcn-ui/button';
+  import * as DropdownMenu from '@cio/shadcn-ui/dropdown-menu';
   import { Editor } from '@tiptap/core';
   import ChevronDown from '@lucide/svelte/icons/chevron-down';
   import { cn } from '../../../../../utils';

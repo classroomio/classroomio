@@ -11,7 +11,9 @@
     "./dropdown-menu": "./src/lib/components/ui/dropdown-menu/index",
     "./input": "./src/lib/components/ui/input/index",
     "./popover": "./src/lib/components/ui/popover/index",
-    "./tooltip": "./src/lib/components/ui/tooltip/index"
+    "./tooltip": "./src/lib/components/ui/tooltip/index",
+    "./skeleton": "./src/lib/components/ui/skeleton/index",
+    "./app.css": "./src/app.css"
   },
   "devDependencies": {
     "@internationalized/date": "^3.8.1",

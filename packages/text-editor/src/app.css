@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 
+/* --- added shadcn's css */
+@import '@cio/shadcn-ui/app.css';
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -73,6 +76,7 @@
   * {
     border-color: hsl(var(--border));
   }
+
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));

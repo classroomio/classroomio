@@ -29,8 +29,9 @@
   import { LANGUAGES } from '$lib/utils/constants/translation';
   import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';
-  import { COURSE_VERSION, type Lesson, type LessonCompletion } from '$lib/utils/types';
-  import { Dropdown } from 'carbon-components-svelte';
+  import { COURSE_VERSION, LOCALE, type Lesson, type LessonCompletion } from '$lib/utils/types';
+  // import { Dropdown } from 'carbon-components-svelte';
+  import * as DropdownMenu from '@cio/shadcn-ui/dropdown-menu';
 
   let { data = $bindable() } = $props();
 
@@ -198,6 +199,10 @@
 
   const isPrevDisabled = $derived(isNextOrPrevDisabled(data.lessonId, true));
   const isNextDisabled = $derived(isNextOrPrevDisabled(data.lessonId, false));
+
+  $effect(() => {
+    console.log('lesson locale', $lesson.locale);
+  });
 </script>
 
 <CourseContainer
@@ -248,7 +253,20 @@
               </IconButton>
             </div>
 
-            <Dropdown items={LANGUAGES} bind:selectedId={$lesson.locale} class="h-full" />
+            <div>
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger>Open</DropdownMenu.Trigger>
+                <DropdownMenu.Content>
+                  <DropdownMenu.Group>
+                    {#each LANGUAGES as lang}
+                      <DropdownMenu.Item onclick={() => ($lesson.locale = lang.id as LOCALE)}>
+                        {lang.text}
+                      </DropdownMenu.Item>
+                    {/each}
+                  </DropdownMenu.Group>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
+            </div>
           {/if}
         </RoleBasedSecurity>
       </div>

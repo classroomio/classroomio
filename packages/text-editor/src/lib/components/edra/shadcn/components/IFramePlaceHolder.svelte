@@ -4,7 +4,7 @@
 
   const { editor }: NodeViewProps = $props();
   import Audio from '@lucide/svelte/icons/code-xml';
-  import { buttonVariants } from '../../../ui/button/button.svelte';
+  import { buttonVariants } from '@cio/shadcn-ui/button';
 
   function handleClick() {
     const iframUrl = prompt('Please enter the IFrame URL');

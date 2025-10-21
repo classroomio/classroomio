@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { Button } from '../../../../ui/button/index.js';
+  import { Button } from '@cio/shadcn-ui/button';
   import type { Editor } from '@tiptap/core';
   import Search from '@lucide/svelte/icons/search';
-  import * as Popover from '../../../../ui/popover/index.js';
-  import { Input } from '../../../../ui/input/index.js';
+  import * as Popover from '@cio/shadcn-ui/popover';
+  import { Input } from '@cio/shadcn-ui/input';
   import ArrowLeft from '@lucide/svelte/icons/arrow-left';
   import ArrowRight from '@lucide/svelte/icons/arrow-right';
   import ChevronDown from '@lucide/svelte/icons/chevron-down';

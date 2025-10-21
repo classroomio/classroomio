@@ -3,7 +3,7 @@
   import { NodeViewWrapper } from 'svelte-tiptap';
   import type { NodeViewProps } from '@tiptap/core';
   import { cn } from '../../../../utils';
-  import { Button, buttonVariants } from '../../../ui/button/index.js';
+  import { Button, buttonVariants } from '@cio/shadcn-ui/button';
 
   import AlignCenter from '@lucide/svelte/icons/align-center';
   import AlignLeft from '@lucide/svelte/icons/align-left';
@@ -14,7 +14,7 @@
   import Trash from '@lucide/svelte/icons/trash';
   import Captions from '@lucide/svelte/icons/captions';
 
-  import * as DropdownMenu from '../../../ui/dropdown-menu/index.js';
+  import * as DropdownMenu from '@cio/shadcn-ui/dropdown-menu';
   import { duplicateContent } from '../../utils.js';
 
   interface MediaExtendedProps extends NodeViewProps {

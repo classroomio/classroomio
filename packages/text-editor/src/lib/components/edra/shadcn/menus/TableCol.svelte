@@ -5,7 +5,7 @@
   import ArrowRightFromLine from '@lucide/svelte/icons/arrow-right-from-line';
 
   import Trash from '@lucide/svelte/icons/trash';
-  import Button from '@cio/shadcn-ui/button';
+  import { Button } from '@cio/shadcn-ui/button';
   import { isColumnGripSelected } from '../../extensions/table/utils.js';
   import EdraToolTip from '../components/EdraToolTip.svelte';
   import BubbleMenu from '../../components/BubbleMenu.svelte';

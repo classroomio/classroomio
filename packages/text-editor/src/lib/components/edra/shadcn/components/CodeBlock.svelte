@@ -1,9 +1,9 @@
 <script lang="ts">
   import { NodeViewWrapper, NodeViewContent } from 'svelte-tiptap';
   import type { NodeViewProps } from '@tiptap/core';
-  import { Button, buttonVariants } from '../../../ui/button/index.js';
+  import { Button, buttonVariants } from '@cio/shadcn-ui/button';
   const { node, updateAttributes, extension }: NodeViewProps = $props();
-  import * as DropdownMenu from '../../../ui/dropdown-menu/index.js';
+  import * as DropdownMenu from '@cio/shadcn-ui/dropdown-menu';
   import ChevronDown from '@lucide/svelte/icons/chevron-down';
   import Check from '@lucide/svelte/icons/check';
   import Copy from '@lucide/svelte/icons/copy';

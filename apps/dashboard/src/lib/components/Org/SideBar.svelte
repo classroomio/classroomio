@@ -150,6 +150,7 @@
         <button
           class="w-full"
           onclick={() => {
+            console.log('clicked', $profileMenu);
             $profileMenu.open = !$profileMenu.open;
             $sideBar.hidden = true;
           }}
