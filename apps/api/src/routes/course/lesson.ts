@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
-import { ZLessonDownloadContent } from '$src/types/course/lesson';
-import { generateLessonPdf } from '$src/utils/lesson';
+import { ZLessonDownloadContent } from '@api/types/course/lesson';
+import { generateLessonPdf } from '@api/utils/lesson';
 import { zValidator } from '@hono/zod-validator';
 
 export const lessonRouter = new Hono().post(

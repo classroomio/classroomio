@@ -25,7 +25,7 @@
     "prettier-plugin-svelte": "^3.4.0",
     "prettier-plugin-tailwindcss": "^0.5.7",
     "standard-version": "^9.5.0",
-    "tsconfig": "workspace:*",
+    "@cio/tsconfig": "workspace:*",
     "typescript": "^5.1.6"
   },
   "engines": {

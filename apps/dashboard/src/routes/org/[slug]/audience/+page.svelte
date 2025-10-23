@@ -3,7 +3,7 @@
   import Audience from '$lib/components/Org/Audience/index.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { orgAudience, currentOrgPlan, currentOrgMaxAudience } from '$lib/utils/store/org';
-  import { PLAN } from 'shared/src/plans/constants';
+  import { PLAN } from '@cio/utils/plans';
   import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
 
   let isLoading = $state(false);

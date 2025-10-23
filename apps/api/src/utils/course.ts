@@ -1,5 +1,5 @@
-import type { TCourseDownloadContent } from '$src/types/course';
-import { getCloudflarePdfBuffer } from '$src/utils/cloudflare';
+import type { TCourseDownloadContent } from '@api/types/course';
+import { getCloudflarePdfBuffer } from '@api/utils/cloudflare';
 import { marked } from 'marked';
 
 function getHtmlTemplate(body: string): string {

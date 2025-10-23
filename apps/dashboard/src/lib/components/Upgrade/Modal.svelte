@@ -15,7 +15,7 @@
   import { profile } from '$lib/utils/store/user';
   import { Loading } from 'carbon-components-svelte';
   import CheckIcon from '@lucide/svelte/icons/check';
-  import PLANS from 'shared/src/plans/data.json';
+  import { PLANS } from '@cio/utils/plans';
 
   const disabledClass = 'bg-gray-300 text-gray-400 hover:cursor-not-allowed';
 
