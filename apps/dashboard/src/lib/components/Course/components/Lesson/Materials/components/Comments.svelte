@@ -83,6 +83,7 @@
         isSaving = false;
         if (error) {
           console.error('Error adding comment:', error);
+          snackbar.error($t('course.navItem.lessons.comments.comment_error'));
           return;
         }
 
@@ -352,7 +353,7 @@
               />
             </div>
           {:else}
-            <article class="prose sm:prose-sm max-w-[300px] dark:text-white">
+            <article class="prose max-w-[300px] sm:prose-sm dark:text-white">
               {commentItem.comment}
             </article>
           {/if}
