@@ -584,7 +584,8 @@
           "text_area_title": "एक टिप्पणी छोड़ें",
           "comment_btn": "टिप्पणी",
           "load_more_btn": "और लोड करें",
-          "cancel_btn": "रद्द करना"
+          "cancel_btn": "रद्द करना",
+          "comment_error": "टिप्पणी पोस्ट करने में विफल. कृपया पुन: प्रयास करें।"
         },
         "exercises": {
           "heading": "सभी व्यायाम",

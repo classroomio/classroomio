@@ -753,7 +753,8 @@
           "placeholder": "Co sądzisz o tej lekcji?",
           "comment_btn": "Komentarz",
           "cancel_btn": "Anulować",
-          "load_more_btn": "Załaduj więcej"
+          "load_more_btn": "Załaduj więcej",
+          "comment_error": "Nie udało się opublikować komentarza. Spróbuj ponownie."
         },
         "exercises": {
           "heading": "Wszystkie ćwiczenia",
