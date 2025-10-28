@@ -33,14 +33,14 @@
         variant={VARIANTS.OUTLINED}
         label={$t('delete_modal.no')}
         onClick={() => (open = false)}
-        isDisabled={isLoading}
+        {isLoading}
       />
       <PrimaryButton
         className="px-6 py-3"
         variant={VARIANTS.CONTAINED_DANGER}
         label={$t('delete_modal.yes')}
         onClick={handleDelete}
-        isLoading={isLoading}
+        {isLoading}
         isDisabled={isLoading}
       />
     </div>

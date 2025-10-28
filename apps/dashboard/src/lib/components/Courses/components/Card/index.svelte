@@ -43,12 +43,10 @@
   $: formatter = getCurrencyFormatter(currency);
 
   function handleCloneCourse() {
-    // TODO: Clone course functionality
     $copyCourseModal.open = true;
     $copyCourseModal.id = id;
     $copyCourseModal.title = title;
     $copyCourseModal.description = description;
-    // alert('WIP: Clone course');
   }
 
   function handleShareCourse() {
