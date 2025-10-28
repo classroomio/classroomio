@@ -26,7 +26,7 @@
 
   // editor configuration
   let conf = {
-    plugins: 'lists, link, emoticons, code, media, eqneditor',
+    plugins: 'lists, link, emoticons, code, media, searchreplace, eqneditor',
     toolbar: [
       { name: 'history', items: ['undo', 'redo'] },
       { name: 'styles', items: ['styles'] },
@@ -38,6 +38,7 @@
       { name: 'insert', items: ['emoticons'] },
       { name: 'code', items: ['code'] },
       { name: 'media', items: ['media'] },
+      { name: 'search', items: ['searchreplace'] },
       { name: 'eqneditor', items: ['eqneditor'] }
     ],
     lists_indent_on_tab: false,

@@ -858,7 +858,8 @@
           "placeholder": "What do you think about this lesson?",
           "comment_btn": "Comment",
           "cancel_btn": "Cancel",
-          "load_more_btn": "Load more"
+          "load_more_btn": "Load more",
+          "comment_error": "Failed to post comment. Please try again."
         },
 
         "polls": {
