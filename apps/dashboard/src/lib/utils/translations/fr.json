@@ -363,7 +363,6 @@
             "rating": "Notation",
             "hide": "Masquer l'avis",
             "validations": {
-              "invalid_type_error": "Ne doit pas être vide",
               "description": {
                 "min_char": "'La description est trop courte, minimum 5 caractères"
               },
@@ -1449,7 +1448,6 @@
     "launch_week": "Semaine de lancement"
   },
   "validations": {
-    "invalid_type_error": "Ne doit pas être vide",
     "email": {
       "not_valid": "E-mail non valide"
     },

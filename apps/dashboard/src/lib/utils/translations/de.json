@@ -363,7 +363,6 @@
             "rating": "Bewertung",
             "hide": "Bewertung ausblenden",
             "validations": {
-              "invalid_type_error": "Darf nicht leer sein",
               "description": {
                 "min_char": "„Beschreibung ist zu kurz, mindestens 5 Zeichen.“"
               },
@@ -1449,7 +1448,6 @@
     "launch_week": "Startwoche"
   },
   "validations": {
-    "invalid_type_error": "Darf nicht leer sein",
     "email": {
       "not_valid": "Ungültige E-Mail-Adresse"
     },

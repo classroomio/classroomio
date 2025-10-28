@@ -109,14 +109,12 @@ const onboardingValidationSchema = {
   stepTwo: z.object({
     goal: z
       .string({
-        required_error: `${t.get('validations.onboarding.step_two.goal.required')}`,
-        invalid_type_error: `${t.get('validations.onboarding.step_two.goal.required')}`
+        required_error: `${t.get('validations.onboarding.step_two.goal.required')}`
       })
       .min(1),
     source: z
       .string({
-        required_error: `${t.get('validations.onboarding.step_two.source.required')}`,
-        invalid_type_error: `${t.get('validations.onboarding.step_two.source.required')}`
+        required_error: `${t.get('validations.onboarding.step_two.source.required')}`
       })
       .min(1)
   })

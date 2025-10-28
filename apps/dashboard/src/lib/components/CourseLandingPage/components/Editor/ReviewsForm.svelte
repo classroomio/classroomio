@@ -47,17 +47,11 @@
       name: z.string().min(5, {
         message: `${$t(
           'course.navItem.landing_page.editor.reviews_form.validations.name.min_char'
-        )}`,
-        invalid_type_error: `${$t(
-          'course.navItem.landing_page.editor.reviews_form.validations.invalid_type_error'
         )}`
       }),
       avatar_url: z.string().min(6, {
         message: `${$t(
           'course.navItem.landing_page.editor.reviews_form.validations.avatar_url.message'
-        )}`,
-        invalid_type_error: `${$t(
-          'course.navItem.landing_page.editor.reviews_form.validations.invalid_type_error'
         )}`
       }),
       rating: z
@@ -65,25 +59,16 @@
         .min(1, {
           message: `${$t(
             'course.navItem.landing_page.editor.reviews_form.validations.rating.message'
-          )}`,
-          invalid_type_error: `${$t(
-            'course.navItem.landing_page.editor.reviews_form.validations.invalid_type_error'
           )}`
         })
         .max(5, {
           message: `${$t(
             'course.navItem.landing_page.editor.reviews_form.validations.rating.message'
-          )}`,
-          invalid_type_error: `${$t(
-            'course.navItem.landing_page.editor.reviews_form.validations.invalid_type_error'
           )}`
         }),
       description: z.string().min(10, {
         message: `${$t(
           'course.navItem.landing_page.editor.reviews_form.validations.description.min_char'
-        )}`,
-        invalid_type_error: `${$t(
-          'course.navItem.landing_page.editor.reviews_form.validations.invalid_type_error'
         )}`
       })
     });
@@ -120,11 +105,11 @@
     {#each reviews || [] as review}
       <div
         id={review.id}
-        class="relative flex items-center flex-col border border-gray-300 rounded-lg p-2 my-2.5"
+        class="relative my-2.5 flex flex-col items-center rounded-lg border border-gray-300 p-2"
       >
         {#if review.id !== reviewToExpand}
           <!-- the headers -->
-          <div class="flex w-full justify-between items-center">
+          <div class="flex w-full items-center justify-between">
             <Avatar src={review.avatar_url} name={review.name} className="mt-1" />
             <p class="text-sm">{review.name}</p>
 

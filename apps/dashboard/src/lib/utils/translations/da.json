@@ -5,7 +5,6 @@
     }
   },
   "validations": {
-    "invalid_type_error": "Må ikke være tom",
     "email": {
       "not_valid": "Ikke gyldig e -mail"
     },
@@ -535,7 +534,6 @@
             "rating": "Bedømmelse",
             "hide": "Skjul gennemgang",
             "validations": {
-              "invalid_type_error": "Må ikke være tom",
               "description": {
                 "min_char": "'Beskrivelse er for kort, min af 5 tegn"
               },
