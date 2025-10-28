@@ -1,9 +1,8 @@
-<script>
+<script lang="ts">
   import TextField from '$lib/components/Form/TextField.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
   import generateUUID from '$lib/utils/functions/generateUUID';
   import { supabase } from '$lib/utils/functions/supabase';
@@ -13,14 +12,15 @@
   import { Column, Grid, Row } from 'carbon-components-svelte';
   import SectionTitle from '../SectionTitle.svelte';
   import LanguagePicker from './LanguagePicker.svelte';
+  import { LOCALE } from '$lib/utils/types';
+  import { getErrorMessage } from '$lib/utils/functions/error';
 
-  let avatar = '';
+  let avatar: string | undefined = '';
   let loading = false;
   let hasLangChanged = false;
-  let locale = '';
-  let hasUnsavedChanges = false;
-
-  let errors = {};
+  let locale: LOCALE = LOCALE.EN;
+  let updates: typeof $profile;
+  let errors: Record<string, string> = {};
 
   async function handleUpdate() {
     errors = updateProfileValidation($profile);
@@ -32,14 +32,6 @@
     try {
       console.log({ hasLangChanged });
       loading = true;
-
-      const updates = {
-        fullname: $profile.fullname,
-        username: $profile.username,
-        email: $profile.email,
-        locale
-      };
-      console.log('updates', updates);
 
       if (avatar) {
         const filename = `user/${generateUUID()}.webp`;
@@ -54,7 +46,34 @@
           updates.avatar_url = response.publicUrl;
           $profile.avatar_url = response.publicUrl;
         }
-        avatar = undefined;
+        avatar = '';
+      }
+
+      // Check for change in email and handle verification flow
+      if ($profile.email !== updates.email) {
+        console.log('changing email 1');
+
+        const currentPath = window.location.pathname;
+        const currentUrl = window.location.origin;
+
+        // Update Supabase Auth email
+        const { error: emailError } = await supabase.auth.updateUser(
+          {
+            email: updates.email
+          },
+          {
+            emailRedirectTo: `${currentUrl}${currentPath}`
+          }
+        );
+
+        if (emailError) {
+          console.log('email error', emailError);
+          throw emailError;
+        }
+
+        // Set context so modal knows this is an email change (not signup)
+        // emailVerificationContext.set('email_change');
+        // updates.is_email_verified = false;
       }
 
       let { error } = await supabase.from('profile').update(updates).match({ id: $profile.id });
@@ -63,18 +82,19 @@
         ..._profile,
         ...updates
       }));
-      snackbar.success('snackbar.course_settings.success.update_successful');
+      snackbar.success(`${$t('snackbar.course_settings.success.update_successful')}`);
 
       if (hasLangChanged) {
         handleLocaleChange(locale);
       }
-      hasUnsavedChanges = false;
+
       if (error) throw error;
     } catch (error) {
-      let message = error.message;
+      let message = getErrorMessage(error);
       if (message.includes('profile_username_key')) {
         message = $t('snackbar.lms.error.username_exists');
       }
+
       snackbar.error(`${$t('snackbar.lms.error.update')} ${message}`);
       loading = false;
     } finally {
@@ -83,66 +103,59 @@
   }
 
   $: locale = !locale ? $profile.locale : locale;
+
+  function setUpdates(_profile: typeof $profile) {
+    updates = { ...$profile };
+  }
+  $: setUpdates($profile);
 </script>
 
-<UnsavedChanges bind:hasUnsavedChanges />
-<Grid class="border-c mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
-  <Row class="border-bottom-c flex flex-col items-center py-7 lg:flex-row lg:items-start ">
-    <Column sm={4} md={8} lg={4} class="mt-2 md:mt-0">
-      <SectionTitle>{$t('settings.profile.profile_picture.heading')}</SectionTitle>
-    </Column>
-    <Column sm={2} md={4} lg={8} class="mt-2 lg:mt-0">
-      <UploadImage
-        bind:avatar
-        src={$profile.avatar_url}
-        widthHeight="w-16 h-16 lg:w-24 lg:h-24"
-        on:change={() => (hasUnsavedChanges = true)}
-      />
-    </Column>
-  </Row>
-  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
-    <Column sm={4} md={4} lg={4}>
-      <SectionTitle>{$t('settings.profile.personal_information.heading')}</SectionTitle>
-    </Column>
-    <Column sm={8} md={8} lg={8} class="mt-2 lg:mt-0">
-      <TextField
-        label={$t('settings.profile.personal_information.full_name')}
-        bind:value={$profile.fullname}
-        className="w-full lg:w-60 mb-4"
-        errorMessage={$t(errors.fullname)}
-        onChange={() => (hasUnsavedChanges = true)}
-      />
-      <TextField
-        label={$t('settings.profile.personal_information.username')}
-        bind:value={$profile.username}
-        className="w-full lg:w-60 mb-4"
-        errorMessage={$t(errors.username)}
-        onChange={() => (hasUnsavedChanges = true)}
-      />
-      <TextField
-        label={$t('settings.profile.personal_information.email')}
-        bind:value={$profile.email}
-        className="w-full lg:w-60 mb-4"
-        errorMessage={$t(errors.email)}
-        onChange={() => (hasUnsavedChanges = true)}
-      />
-      <LanguagePicker
-        onChange={() => (hasUnsavedChanges = true)}
-        bind:hasLangChanged
-        bind:value={locale}
-        className="w-full lg:w-60 mb-4"
-      />
-    </Column>
-  </Row>
+{#if updates}
+  <Grid class="border-c mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
+    <Row class="border-bottom-c flex flex-col items-center py-7 lg:flex-row lg:items-start ">
+      <Column sm={4} md={8} lg={4} class="mt-2 md:mt-0">
+        <SectionTitle>{$t('settings.profile.profile_picture.heading')}</SectionTitle>
+      </Column>
+      <Column sm={2} md={4} lg={8} class="mt-2 lg:mt-0">
+        <UploadImage bind:avatar src={updates.avatar_url} widthHeight="w-16 h-16 lg:w-24 lg:h-24" />
+      </Column>
+    </Row>
+    <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
+      <Column sm={4} md={4} lg={4}>
+        <SectionTitle>{$t('settings.profile.personal_information.heading')}</SectionTitle>
+      </Column>
+      <Column sm={8} md={8} lg={8} class="mt-2 lg:mt-0">
+        <TextField
+          label={$t('settings.profile.personal_information.full_name')}
+          bind:value={updates.fullname}
+          className="w-full lg:w-60 mb-4"
+          errorMessage={$t(errors.fullname)}
+        />
+        <TextField
+          label={$t('settings.profile.personal_information.username')}
+          bind:value={updates.username}
+          className="w-full lg:w-60 mb-4"
+          errorMessage={$t(errors.username)}
+        />
+        <TextField
+          label={$t('settings.profile.personal_information.email')}
+          bind:value={updates.email}
+          className="w-full lg:w-60 mb-4"
+          errorMessage={$t(errors.email)}
+        />
+        <LanguagePicker bind:hasLangChanged bind:value={locale} className="w-full lg:w-60 mb-4" />
+      </Column>
+    </Row>
 
-  <Row class="m-5 flex w-full items-center gap-2 lg:justify-center">
-    <PrimaryButton
-      label={$t('settings.profile.update_profile')}
-      variant={VARIANTS.CONTAINED_DARK}
-      className="mr-5"
-      isLoading={loading}
-      isDisabled={loading}
-      onClick={handleUpdate}
-    />
-  </Row>
-</Grid>
+    <Row class="m-5 flex w-full items-center gap-2 lg:justify-center">
+      <PrimaryButton
+        label={$t('settings.profile.update_profile')}
+        variant={VARIANTS.CONTAINED_DARK}
+        className="mr-5"
+        isLoading={loading}
+        isDisabled={loading}
+        onClick={handleUpdate}
+      />
+    </Row>
+  </Grid>
+{/if}
