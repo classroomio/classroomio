@@ -7,11 +7,6 @@
   export let open = false;
   export let onDelete = () => {};
   export let isLoading = false;
-
-  async function handleDelete() {
-    await onDelete();
-    // Modal will be closed by the parent component after successful deletion
-  }
 </script>
 
 <Modal
@@ -39,9 +34,8 @@
         className="px-6 py-3"
         variant={VARIANTS.CONTAINED_DANGER}
         label={$t('delete_modal.yes')}
-        onClick={handleDelete}
+        onClick={onDelete}
         {isLoading}
-        isDisabled={isLoading}
       />
     </div>
   </div>
