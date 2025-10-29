@@ -11,6 +11,7 @@ const envSchema = z.object({
   PORT: z.string().optional(),
   PUBLIC_SUPABASE_ANON_KEY: z.string(),
   PUBLIC_SUPABASE_URL: z.string(),
+  PRIVATE_SUPABASE_SERVICE_ROLE: z.string(),
   REDIS_URL: z.string().optional(),
   SMTP_HOST: z.string().optional(),
   SMTP_PASSWORD: z.string().optional(),

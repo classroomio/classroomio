@@ -937,6 +937,17 @@
       "date_created": "Дата создания",
       "published": "Опубликовано",
       "lessons": "Уроки"
+    },
+    "copy_course": {
+      "title": "Создать курс",
+      "course_name_label": "Название курса",
+      "course_name_placeholder": "Название вашего курса",
+      "course_description_label": "Описание курса",
+      "course_description_placeholder": "Введите описание вашего курса",
+      "create_button": "Создавать",
+      "error": {
+        "failed_to_clone": "Не удалось клонировать курс."
+      }
     }
   },
   "ai": {

@@ -1,4 +1,4 @@
-import { ZCertificateDownload, ZCourseDownloadContent } from '$src/types/course';
+import { TCourseClone,TCourseDownloadContent, TCertificateDownload, ZCertificateDownload, ZCourseDownloadContent } from '$src/types/course';
 
 import { Hono } from 'hono';
 import { generateCertificate } from '$src/utils/certificate';
@@ -6,11 +6,12 @@ import { generateCoursePdf } from '$src/utils/course';
 import { katexRouter } from '$src/routes/course/katex';
 import { lessonRouter } from '$src/routes/course/lesson';
 import { presignRouter } from '$src/routes/course/presign';
+import { cloneRouter } from '$src/routes/course/clone';
 import { zValidator } from '@hono/zod-validator';
 
 export const courseRouter = new Hono()
   .post('/download/certificate', zValidator('json', ZCertificateDownload), async (c) => {
-    const validatedData = c.req.valid('json');
+    const validatedData = (c.req.valid as (key: 'json') => TCertificateDownload)('json');
 
     const result = await generateCertificate(validatedData);
 
@@ -30,7 +31,7 @@ export const courseRouter = new Hono()
     );
   })
   .post('/download/content', zValidator('json', ZCourseDownloadContent), async (c) => {
-    const validatedData = c.req.valid('json');
+    const validatedData = (c.req.valid as (key: 'json') => TCourseDownloadContent)('json');
 
     const pdfBuffer = await generateCoursePdf(validatedData);
 
@@ -47,4 +48,5 @@ export const courseRouter = new Hono()
   })
   .route('/katex', katexRouter)
   .route('/lesson', lessonRouter)
-  .route('/presign', presignRouter);
+  .route('/presign', presignRouter)
+  .route('/clone', cloneRouter);

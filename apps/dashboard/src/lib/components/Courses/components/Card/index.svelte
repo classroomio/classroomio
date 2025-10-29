@@ -16,7 +16,7 @@
   import GrowthIcon from 'carbon-icons-svelte/lib/Growth.svelte';
   import RadioButtonChecked from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
   import UserProfileIcon from 'carbon-icons-svelte/lib/UserProfile.svelte';
-
+  import { copyCourseModal, deleteCourseModal } from '$lib/components/Courses/store';
   export let bannerImage: string | undefined;
   export let id = '';
   export let slug = '';
@@ -43,8 +43,10 @@
   $: formatter = getCurrencyFormatter(currency);
 
   function handleCloneCourse() {
-    // TODO: Clone course functionality
-    alert('WIP: Clone course');
+    $copyCourseModal.open = true;
+    $copyCourseModal.id = id;
+    $copyCourseModal.title = title;
+    $copyCourseModal.description = description;
   }
 
   function handleShareCourse() {
@@ -56,7 +58,9 @@
   }
 
   function handleDeleteCourse() {
-    goto(`/courses/${id}/settings#delete`);
+    $deleteCourseModal.open = true;
+    $deleteCourseModal.id = id;
+    $deleteCourseModal.title = title;
   }
 
   const COURSE_TAG: Record<
@@ -122,7 +126,10 @@
         >
           <OverflowMenuItem
             text={$t('courses.course_card.context_menu.clone')}
-            on:click={handleCloneCourse}
+            on:click={(e) => {
+              e.stopPropagation();
+              handleCloneCourse();
+            }}
           />
           <OverflowMenuItem
             text={$t('courses.course_card.context_menu.share')}
@@ -135,7 +142,10 @@
           <OverflowMenuItem
             danger
             text={$t('courses.course_card.context_menu.delete')}
-            on:click={handleDeleteCourse}
+            on:click={(e) => {
+              e.stopPropagation();
+              handleDeleteCourse();
+            }}
           />
         </OverflowMenu>
       {/if}
