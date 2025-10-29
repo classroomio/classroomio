@@ -14,31 +14,32 @@
 
   interface Props {
     name?: string;
+    isHovered?: boolean;
   }
 
-  let { name = '' }: Props = $props();
+  let { name = '', isHovered = false }: Props = $props();
 </script>
 
 {#if name === NAV_IDS.SECTION}
-  <TableOfContentsIcon size={16} />
+  <TableOfContentsIcon size={16} class={isHovered ? 'animate-flip-book' : ''} />
 {:else if name === NAV_IDS.NEWS_FEED}
-  <MegaphoneIcon size={16} />
+  <MegaphoneIcon size={16} class={isHovered ? 'animate-shake-announcement' : ''} />
 {:else if name === NAV_IDS.LESSONS}
-  <ScrollTextIcon size={16} />
+  <ScrollTextIcon size={16} class={isHovered ? 'animate-scroll-unroll' : ''} />
 {:else if name === NAV_IDS.ATTENDANCE}
-  <ListIcon size={16} />
+  <ListIcon size={16} class={isHovered ? 'animate-check-items' : ''} />
 {:else if name === NAV_IDS.SUBMISSIONS}
-  <ListTodoIcon size={16} />
+  <ListTodoIcon size={16} class={isHovered ? 'animate-task-complete' : ''} />
 {:else if name === NAV_IDS.MARKS}
-  <BookCheckIcon size={16} />
+  <BookCheckIcon size={16} class={isHovered ? 'animate-grade-glow' : ''} />
 {:else if name === NAV_IDS.PEOPLE}
-  <UsersIcon size={16} />
+  <UsersIcon size={16} class={isHovered ? 'animate-people-wave' : ''} />
 {:else if name === NAV_IDS.ANALYTICS}
-  <ChartLineIcon size={16} />
+  <ChartLineIcon size={16} class={isHovered ? 'animate-chart-grow' : ''} />
 {:else if name === NAV_IDS.LANDING_PAGE}
-  <ScreenShareIcon size={16} />
+  <ScreenShareIcon size={16} class={isHovered ? 'animate-screen-glow' : ''} />
 {:else if name === NAV_IDS.CERTIFICATES}
-  <AwardIcon size={16} />
+  <AwardIcon size={16} class={isHovered ? 'animate-bounce' : ''} />
 {:else if name === NAV_IDS.SETTINGS}
-  <SettingsIcon size={16} />
+  <SettingsIcon size={16} class={isHovered ? 'animate-spin' : ''} />
 {/if}
