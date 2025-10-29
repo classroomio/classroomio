@@ -363,7 +363,6 @@
             "rating": "Xếp hạng",
             "hide": "Ẩn đánh giá",
             "validations": {
-              "invalid_type_error": "Không được để trống",
               "description": {
                 "min_char": "'Mô tả quá ngắn, tối thiểu 5 ký tự"
               },
@@ -1450,7 +1449,6 @@
     "launch_week": "Tuần ra mắt"
   },
   "validations": {
-    "invalid_type_error": "Không được để trống",
     "email": {
       "not_valid": "Email không hợp lệ"
     },

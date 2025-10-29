@@ -1067,7 +1067,6 @@
             "rating": "Rating",
             "hide": "Hide Review",
             "validations": {
-              "invalid_type_error": "Must not be empty",
               "name": {
                 "min_char": "Name is too short, min of 5 character"
               },
@@ -1643,8 +1642,7 @@
     },
     "email": {
       "not_valid": "Not valid email"
-    },
-    "invalid_type_error": "Must not be empty"
+    }
   },
 
   "common": {

@@ -1,7 +1,17 @@
-import { t } from '$lib/utils/functions/translations';
-import isNumber from 'lodash/isNumber';
 import z from 'zod';
+import { get } from 'svelte/store';
+import isNumber from 'lodash/isNumber';
 import { validateEmail } from './validateEmail';
+import { t as _t, initialized } from '$lib/utils/functions/translations';
+
+const t = {
+  get: (key: string) => {
+    const isInitialized = get(initialized);
+    if (!isInitialized) return key;
+
+    return _t.get(key);
+  }
+};
 
 const getOrgNameValidation = () =>
   z
@@ -31,73 +41,60 @@ const lessonSchema = z.object({
 
 const createQuizValidationSchema = z.object({
   title: z.string().min(6, {
-    message: 'Must be 6 or more characters long',
-    invalid_type_error: `${t.get('validations.invalid_type_error')}`
+    message: `${t.get('validations.course_payment.full_name.min_char')}`
   })
 });
 
 const askCommunityValidationSchema = z.object({
   title: z.string().min(6, {
-    message: `${t.get('validations.ask_community.title.min_char')}`,
-    invalid_type_error: `${t.get('validations.invalid_type_error')}`
+    message: `${t.get('validations.ask_community.title.min_char')}`
   }),
   body: z.string().min(20, {
-    message: `${t.get('validations.ask_community.body.min_char')}`,
-    invalid_type_error: `${t.get('validations.invalid_type_error')}`
+    message: `${t.get('validations.ask_community.body.min_char')}`
   }),
   courseId: z.string().min(36, {
-    message: `${t.get('validations.ask_community.course_id.select_course')}`,
-    invalid_type_error: `${t.get('validations.ask_community.course_id.select_course')}`
+    message: `${t.get('validations.ask_community.course_id.select_course')}`
   })
 });
 const commentInCommunityValidationSchema = z.object({
   comment: z.string().min(6, {
-    message: `${t.get('validations.comment_in_community.min_char')}`,
-    invalid_type_error: `${t.get('validations.invalid_type_error')}`
+    message: `${t.get('validations.comment_in_community.min_char')}`
   })
 });
 
 const orgLandingpageValidationSchema = z.object({
   name: z.string().min(6, {
-    message: `${t.get('validations.org_landing_page.name.min_char')}`,
-    invalid_type_error: `${t.get('validations.invalid_type_error')}`
+    message: `${t.get('validations.org_landing_page.name.min_char')}`
   }),
   email: z.string().email({
-    message: `${t.get('validations.org_landing_page.email.invalid_email')}`,
-    invalid_type_error: `${t.get('validations.invalid_type_error')}`
+    message: `${t.get('validations.org_landing_page.email.invalid_email')}`
   }),
   phone: z.string().min(6, {
-    message: `${t.get('validations.org_landing_page.phone.min_char')}`,
-    invalid_type_error: `${t.get('validations.invalid_type_error')}`
+    message: `${t.get('validations.org_landing_page.phone.min_char')}`
   }),
   message: z.string().min(20, {
-    message: `${t.get('validations.org_landing_page.message.min_char')}`,
-    invalid_type_error: `${t.get('validations.invalid_type_error')}`
+    message: `${t.get('validations.org_landing_page.message.min_char')}`
   })
 });
 
 const forgotValidationSchema = z.object({
   email: z.string().email({
-    message: `${t.get('validations.forgot.invalid_email')}`,
-    invalid_type_error: `${t.get('validations.invalid_type_error')}`
+    message: `${t.get('validations.forgot.invalid_email')}`
   })
 });
 
 const authValidationSchema = z.object({
   email: z.string().email({
-    message: 'validations.auth.email.invalid_email',
-    invalid_type_error: 'validations.invalid_type_error'
+    message: 'validations.auth.email.invalid_email'
   }),
   password: z.string().min(6, {
-    message: 'validations.auth.password.min_char',
-    invalid_type_error: 'validations.invalid_type_error'
+    message: 'validations.auth.password.min_char'
   })
 });
 
 const resetValidationSchema = z.object({
   password: z.string().min(6, {
-    message: `${t.get('validations.reset.password.min_char')}`,
-    invalid_type_error: `${t.get('validations.invalid_type_error')}`
+    message: `${t.get('validations.reset.password.min_char')}`
   })
 });
 
@@ -112,14 +109,12 @@ const onboardingValidationSchema = {
   stepTwo: z.object({
     goal: z
       .string({
-        required_error: `${t.get('validations.onboarding.step_two.goal.required')}`,
-        invalid_type_error: `${t.get('validations.onboarding.step_two.goal.required')}`
+        required_error: `${t.get('validations.onboarding.step_two.goal.required')}`
       })
       .min(1),
     source: z
       .string({
-        required_error: `${t.get('validations.onboarding.step_two.source.required')}`,
-        invalid_type_error: `${t.get('validations.onboarding.step_two.source.required')}`
+        required_error: `${t.get('validations.onboarding.step_two.source.required')}`
       })
       .min(1)
   })
@@ -190,12 +185,10 @@ export const lessonValidation = (lesson = {}) => {
 export const coursePaymentValidation = (fields = {}) => {
   const schema = z.object({
     fullname: z.string().min(6, {
-      message: `${t.get('validations.course_payment.full_name.min_char')}`,
-      invalid_type_error: `${t.get('validations.invalid_type_error')}`
+      message: `${t.get('validations.course_payment.full_name.min_char')}`
     }),
     email: z.string().email({
-      message: `${t.get('validations.course_payment.email.invalid_email')}`,
-      invalid_type_error: `${t.get('validations.invalid_type_error')}`
+      message: `${t.get('validations.course_payment.email.invalid_email')}`
     })
   });
   const { error } = schema.safeParse(fields);

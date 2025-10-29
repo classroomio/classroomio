@@ -363,7 +363,6 @@
             "rating": "रेटिंग",
             "hide": "समीक्षा छिपाएँ",
             "validations": {
-              "invalid_type_error": "खाली नहीं होना चाहिए",
               "description": {
                 "min_char": "'विवरण बहुत छोटा है, न्यूनतम 5 अक्षर"
               },
@@ -1450,7 +1449,6 @@
     "launch_week": "लॉन्च सप्ताह"
   },
   "validations": {
-    "invalid_type_error": "खाली नहीं होना चाहिए",
     "email": {
       "not_valid": "वैध ईमेल नहीं"
     },

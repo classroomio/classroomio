@@ -13,7 +13,7 @@
   import { isFreePlan } from '$lib/utils/store/org';
   import { lesson } from '../../store/lessons';
 
-  export let lessonId = '';
+  export const lessonId = '';
 
   let fileInput: HTMLInputElement;
   let selectedFile: File | null = null;

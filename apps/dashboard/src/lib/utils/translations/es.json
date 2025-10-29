@@ -363,7 +363,6 @@
             "rating": "Clasificación",
             "hide": "Ocultar reseña",
             "validations": {
-              "invalid_type_error": "No debe estar vacío",
               "description": {
                 "min_char": "'La descripción es demasiado corta, mínimo de 5 caracteres."
               },
@@ -1450,7 +1449,6 @@
     "launch_week": "Semana de lanzamiento"
   },
   "validations": {
-    "invalid_type_error": "No debe estar vacío",
     "email": {
       "not_valid": "Correo electrónico no válido"
     },

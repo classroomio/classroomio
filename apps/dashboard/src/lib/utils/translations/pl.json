@@ -1,6 +1,5 @@
 {
   "validations": {
-    "invalid_type_error": "Nie może być pusty",
     "email": {
       "not_valid": "Nieważny e -mail"
     },
@@ -527,7 +526,6 @@
             "rating": "Ocena",
             "hide": "Ukryj recenzję",
             "validations": {
-              "invalid_type_error": "Nie może być pusty",
               "description": {
                 "min_char": "„Opis jest zbyt krótki, min z 5 znaków"
               },
