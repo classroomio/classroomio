@@ -5,7 +5,7 @@
   import LibraryBigIcon from '@lucide/svelte/icons/library-big';
   import UsersIcon from '@lucide/svelte/icons/users';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-  import SettingsIcon from '@lucide/svelte/icons/settings';
+  import Settings2 from '@lucide/svelte/icons/settings-2';
   import MessageSquareMoreIcon from '@lucide/svelte/icons/message-square-more';
   import BadgeHelpIcon from '@lucide/svelte/icons/badge-help';
   import Dice6Icon from '@lucide/svelte/icons/dice-6';
@@ -125,7 +125,7 @@
                   {:else if menuItem.path === '/audience'}
                     <UsersIcon size={16} class={hoveredItem === menuItem.path ? 'animate-audience-gather' : ''} />
                   {:else if menuItem.path === '/setup'}
-                    <SettingsIcon size={16} class={hoveredItem === menuItem.path ? 'animate-setup-configure' : ''} />
+                    <Settings2 size={16} class={hoveredItem === menuItem.path ? 'animate-setup-configure' : ''} />
                   {/if}
                   <p class="text-sm font-medium">{menuItem.label}</p>
                 </li>
