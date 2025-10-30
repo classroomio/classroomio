@@ -1601,5 +1601,11 @@
     "unsaved_changes": {
       "message": "Vous avez des changements non sauvés. Êtes-vous sûr de vouloir partir?"
     }
+  },
+  "verify_new_email_modal": {
+    "heading": "Vérifier le nouvel e-mail",
+    "sent_verification": "Nous avons envoyé un e-mail de vérification à",
+    "to_confirm": "pour confirmer votre changement d'e-mail.",
+    "no_email": "Vous n'avez pas reçu l'e-mail ? Contactez l'administrateur ou contactez-nous à"
   }
 }

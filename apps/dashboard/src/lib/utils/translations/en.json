@@ -10,6 +10,13 @@
     "snackbar_error": "error while sending code"
   },
 
+  "verify_new_email_modal": {
+    "heading": "Verify new email",
+    "sent_verification": "We've sent a verification email to",
+    "to_confirm": "to confirm your email change.",
+    "no_email": "Didn't receive the email? Contact admin or contact us at"
+  },
+
   "delete_modal": {
     "label": "Delete",
     "content": "Are you sure?",

@@ -5,7 +5,7 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
   import { supabase } from '$lib/utils/functions/supabase';
-  import { profile } from '$lib/utils/store/user';
+  import { profile, user } from '$lib/utils/store/user';
   import { snackbar } from '$lib/components/Snackbar/store';
   import generateUUID from '$lib/utils/functions/generateUUID';
   import { t } from '$lib/utils/functions/translations';
@@ -40,12 +40,10 @@
       }
 
       if ($profile.email !== updates.email) {
-        console.log('changing email 2');
-
         const currentPath = window.location.pathname;
         const currentUrl = window.location.origin;
 
-        const { error: emailError } = await supabase.auth.updateUser(
+        const { data, error: emailError } = await supabase.auth.updateUser(
           {
             email: updates.email
           },
@@ -58,8 +56,10 @@
           throw emailError;
         }
 
-        // emailVerificationContext.set('email_change');
-        // updates.is_email_verified = false;
+        user.update((_user) => ({
+          ..._user,
+          currentSession: data.user
+        }));
       }
 
       let { error } = await supabase.from('profile').update(updates).match({ id: $profile.id });
@@ -68,6 +68,7 @@
         ..._profile,
         ...updates
       }));
+
       snackbar.success();
 
       if (hasLangChanged) {

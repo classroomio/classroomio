@@ -1571,5 +1571,11 @@
     "unsaved_changes": {
       "message": "Masz niezbawione zmiany. Czy na pewno chcesz odejść?"
     }
+  },
+  "verify_new_email_modal": {
+    "heading": "Zweryfikuj nowy adres e-mail",
+    "sent_verification": "Wysłaliśmy e-mail weryfikacyjny na adres",
+    "to_confirm": "aby potwierdzić zmianę adresu e-mail.",
+    "no_email": "Nie otrzymałeś e-maila? Skontaktuj się z administratorem lub skontaktuj się z nami pod adresem"
   }
 }

@@ -1601,5 +1601,11 @@
     "unsaved_changes": {
       "message": "Sie haben nicht gerettete Änderungen. Bist du sicher, dass du gehen willst?"
     }
+  },
+  "verify_new_email_modal": {
+    "heading": "Neue E-Mail bestätigen",
+    "sent_verification": "Wir haben eine Bestätigungs-E-Mail an gesendet",
+    "to_confirm": "um Ihre E-Mail-Änderung zu bestätigen.",
+    "no_email": "Sie haben die E-Mail nicht erhalten? Kontaktieren Sie den Administrator oder kontaktieren Sie uns unter"
   }
 }

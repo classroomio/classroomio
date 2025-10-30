@@ -8,7 +8,7 @@
   import { supabase } from '$lib/utils/functions/supabase';
   import { handleLocaleChange, t } from '$lib/utils/functions/translations';
   import { updateProfileValidation } from '$lib/utils/functions/validator';
-  import { profile } from '$lib/utils/store/user';
+  import { profile, user } from '$lib/utils/store/user';
   import { Column, Grid, Row } from 'carbon-components-svelte';
   import SectionTitle from '../SectionTitle.svelte';
   import LanguagePicker from './LanguagePicker.svelte';
@@ -51,13 +51,11 @@
 
       // Check for change in email and handle verification flow
       if ($profile.email !== updates.email) {
-        console.log('changing email 1');
-
         const currentPath = window.location.pathname;
         const currentUrl = window.location.origin;
 
         // Update Supabase Auth email
-        const { error: emailError } = await supabase.auth.updateUser(
+        const { data, error: emailError } = await supabase.auth.updateUser(
           {
             email: updates.email
           },
@@ -71,9 +69,10 @@
           throw emailError;
         }
 
-        // Set context so modal knows this is an email change (not signup)
-        // emailVerificationContext.set('email_change');
-        // updates.is_email_verified = false;
+        user.update((_user) => ({
+          ..._user,
+          currentSession: data.user
+        }));
       }
 
       let { error } = await supabase.from('profile').update(updates).match({ id: $profile.id });

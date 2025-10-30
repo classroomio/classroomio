@@ -1601,5 +1601,11 @@
     "unsaved_changes": {
       "message": "Bạn có những thay đổi chưa được lưu. Bạn có chắc bạn muốn rời đi?"
     }
+  },
+  "verify_new_email_modal": {
+    "heading": "Xác minh email mới",
+    "sent_verification": "Chúng tôi đã gửi email xác minh tới",
+    "to_confirm": "để xác nhận thay đổi email của bạn.",
+    "no_email": "Bạn không nhận được email? Liên hệ với quản trị viên hoặc liên hệ với chúng tôi tại"
   }
 }
