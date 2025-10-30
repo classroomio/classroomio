@@ -13,7 +13,13 @@
   // import PageLoadProgressBar from '$lib/components/Progress/PageLoadProgressBar.svelte';
   import Snackbar from '$lib/components/Snackbar/index.svelte';
   import UpgradeModal from '$lib/components/Upgrade/Modal.svelte';
-  import { isCoursesPage, isLMSPage, isOrgPage, toggleBodyByMode } from '$lib/utils/functions/app';
+  import {
+    isCoursesPage,
+    isLMSPage,
+    isOrgPage
+
+    // toggleBodyByMode
+  } from '$lib/utils/functions/app';
   import { getProfile, setupAnalytics } from '$lib/utils/functions/appSetup';
   import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
   import { getSupabase } from '$lib/utils/functions/supabase';
@@ -28,11 +34,7 @@
   import { onMount } from 'svelte';
   import { MetaTags } from 'svelte-meta-tags';
 
-  import '../app.postcss';
-  import '@cio/text-editor/app.css';
-  import '@cio/text-editor/editor.css';
-  import '@cio/text-editor/shadcn.css';
-  import '@cio/text-editor/oneDark.css';
+  import '../app.css';
 
   let { data, children } = $props();
 
@@ -56,8 +58,8 @@
 
     if (browser) {
       // Update theme - dark or light mode
-      $globalStore.isDark = localStorage.getItem('mode') === 'dark';
-      toggleBodyByMode($globalStore.isDark);
+      // $globalStore.isDark = localStorage.getItem('mode') === 'dark';
+      // toggleBodyByMode($globalStore.isDark);
 
       if (data.isOrgSite && data.org?.theme) {
         setTheme(data.org?.theme);

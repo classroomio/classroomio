@@ -1,7 +1,6 @@
 packages:
   - apps/*
   - packages/*
-  - packages/ui/*
   - packages/course-app/src/*
 onlyBuiltDependencies:
   - esbuild

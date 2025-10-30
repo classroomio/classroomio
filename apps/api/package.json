@@ -59,7 +59,7 @@
   },
   "devDependencies": {
     "@types/katex": "^0.16.7",
-    "@types/node": "^20.11.19",
+    "@types/node": "^20.19.0",
     "@types/nodemailer": "^6.4.17",
     "@typescript-eslint/eslint-plugin": "7.0.1",
     "@typescript-eslint/parser": "7.0.1",

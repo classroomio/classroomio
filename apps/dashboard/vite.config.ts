@@ -27,13 +27,14 @@ export default ({ mode }) => {
     resolve: {
       mainFields: ['browser'],
       alias: {
-        '@cio/api': path.resolve(__dirname, '../api/dist')
+        '@cio/api': path.resolve(__dirname, '../api/dist'),
+        '@cio/ui': path.resolve(__dirname, '../../packages/ui')
       }
     }
   });
 };
 
-function getServer(params: any) {
+function getServer(params) {
   const { VITE_USE_HTTPS_ON_LOCALHOST } = params || {};
   if (VITE_USE_HTTPS_ON_LOCALHOST === 'true') {
     return {

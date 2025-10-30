@@ -30,8 +30,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';
   import { COURSE_VERSION, LOCALE, type Lesson, type LessonCompletion } from '$lib/utils/types';
-  // import { Dropdown } from 'carbon-components-svelte';
-  import * as DropdownMenu from '@cio/shadcn-ui/dropdown-menu';
+  import * as DropdownMenu from '@cio/ui/dropdown-menu';
 
   let { data = $bindable() } = $props();
 

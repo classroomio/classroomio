@@ -9,6 +9,7 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { validateEmail } from '$lib/utils/functions/validateEmail';
+  import Edra from '$lib/components/Edra/EdraRoot.svelte';
 
   let email = $state('');
   let isAdding = $state(false);
@@ -73,6 +74,7 @@
     <p class="text-center text-lg dark:text-white">The operating system for classroooms of the future 🚀🚀🚀.</p>
   </div>
 
+  <Edra />
   <form onsubmit={preventDefault(handleSubmit)} class="my-4 hidden">
     <div class="flex flex-col items-center sm:flex-row">
       {#if success}
@@ -91,7 +93,7 @@
     </div>
   </form>
 
-  <div class="mt-4 flex flex-col md:flex-row">
+  <div class="mt-4 flex hidden flex-col md:flex-row">
     {#each areas as area, index}
       <div
         class="active hover:border-primary-700 m-3 max-w-[350px] rounded-md border-2 bg-white px-12 py-3 shadow-xl dark:bg-black {animate}"

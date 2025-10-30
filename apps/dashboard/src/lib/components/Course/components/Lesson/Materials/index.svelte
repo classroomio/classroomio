@@ -49,9 +49,6 @@
   import { orderedTabs } from './constants';
   import Loader from './Loader.svelte';
 
-  import { EdraEditor, EdraToolBar } from '@cio/text-editor';
-  import type { EdraEditorProps } from '@cio/text-editor/types';
-
   // -- note: remove old editor & console logs
 
   interface Props {
@@ -72,20 +69,20 @@
     toggleMode = () => {}
   }: Props = $props();
 
-  let content = $state<EdraEditorProps['Content']>();
-  let editor = $state<EdraEditorProps['Editor']>();
-  function onUpdate() {
-    content = editor?.getHTML();
-    console.log('content updated:', content);
-    if (mode === MODES.view) return;
+  // let content = $state<EdraEditorProps['Content']>();
+  // let editor = $state<EdraEditorProps['Editor']>();
+  // function onUpdate() {
+  //   content = editor?.getHTML();
+  //   console.log('content updated:', content);
+  //   if (mode === MODES.view) return;
 
-    $lessonByTranslation[lessonId][$lesson.locale] = content;
+  //   $lessonByTranslation[lessonId][$lesson.locale] = content;
 
-    try {
-      localStorage.setItem(`lesson-${lessonId}-${$lesson.locale}`, content);
-    } catch (error) {}
-    $isLessonDirty = true;
-  }
+  //   try {
+  //     localStorage.setItem(`lesson-${lessonId}-${$lesson.locale}`, content);
+  //   } catch (error) {}
+  //   $isLessonDirty = true;
+  // }
 
   let localeExists: Record<string, boolean> = {};
   // let prevContent = '';
@@ -344,7 +341,7 @@
     initPlyr(player, $lesson.materials.videos);
   });
 
-  let editorValue = $derived(
+  let _editorValue = $derived(
     lessonFallbackNote($lesson.materials.note, $lessonByTranslation[lessonId], $lesson.locale)
   );
 </script>
@@ -423,7 +420,7 @@
           </div>
 
           <div class="mt-5 h-[60vh]">
-            <div class="bg-background z-50 mt-12 size-full max-w-5xl rounded-md border border-dashed">
+            <!-- <div class="bg-background z-50 mt-12 size-full max-w-5xl rounded-md border border-dashed">
               {#if editor && !editor.isDestroyed}
                 <EdraToolBar
                   class="bg-secondary/50 flex w-full items-center overflow-x-auto border-b border-dashed p-0.5"
@@ -441,7 +438,7 @@
                 class="h-[300px] outline-none"
                 {onUpdate}
               />
-            </div>
+            </div> -->
             <!-- <TextEditor
               id={lessonId}
               bind:editorWindowRef

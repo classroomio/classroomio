@@ -12,7 +12,6 @@ const config = {
   // Consult https://kit.svelte.dev/docs/integrations#preprocessors
   // for more information about preprocessors
   preprocess: [vitePreprocess({})],
-
   kit: {
     adapter: useNodeAdapter ? adapterNode() : adapterVercel(),
     alias: {
