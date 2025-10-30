@@ -13,7 +13,14 @@ export default {
         'grade-glow': 'gradeGlow 1s ease-in-out',
         'people-wave': 'peopleWave 0.8s ease-in-out',
         'chart-grow': 'dataScan 1s ease-in-out',
-        'screen-glow': 'screenGlow 1s ease-in-out'
+        'screen-glow': 'screenGlow 1s ease-in-out',
+        // --- org navigation animations
+        'library-expand': 'libraryExpand 0.7s ease-out',
+        'template-morph': 'templateMorph 0.6s ease-in-out',
+        'community-ripple': 'communityRipple 0.9s ease-out',
+        'quiz-roll': 'quizRoll 0.8s ease-in-out',
+        'audience-gather': 'audienceGather 0.7s ease-in-out',
+        'setup-configure': 'setupConfigure 1s ease-in-out'
       },
       keyframes: {
         shakeAnnouncement: {
@@ -120,6 +127,98 @@ export default {
             transform: 'scale(1.1)',
             filter: 'brightness(1.2) drop-shadow(0 0 6px rgba(59, 130, 246, 0.5))'
           }
+        },
+        // --- org navigation keyframes
+        libraryExpand: {
+          '0%': {
+            transform: 'translateY(-100%) scale(0.8)',
+            opacity: '0'
+          },
+          '30%': {
+            transform: 'translateY(-20%) scale(0.9)',
+            opacity: '0.7'
+          },
+          '60%': {
+            transform: 'translateY(5%) scale(1.05)',
+            opacity: '1'
+          },
+          '80%': {
+            transform: 'translateY(-2%) scale(1.02)',
+            opacity: '1'
+          },
+          '100%': {
+            transform: 'translateY(0%) scale(1)',
+            opacity: '1'
+          }
+        },
+        templateMorph: {
+          '0%': { transform: 'scale(1) rotate(0deg)' },
+          '25%': { transform: 'scale(1.05) rotate(-2deg) skewX(2deg)' },
+          '50%': { transform: 'scale(1.1) rotate(2deg) skewX(-2deg)' },
+          '75%': { transform: 'scale(1.05) rotate(-1deg) skewX(1deg)' },
+          '100%': { transform: 'scale(1) rotate(0deg) skewX(0deg)' }
+        },
+        communityRipple: {
+          '0%': {
+            transform: 'translateX(-100%) scale(0.8)',
+            opacity: '0'
+          },
+          '30%': {
+            transform: 'translateX(-20%) scale(0.9)',
+            opacity: '0.7'
+          },
+          '60%': {
+            transform: 'translateX(5%) scale(1.05)',
+            opacity: '1'
+          },
+          '80%': {
+            transform: 'translateX(-2%) scale(1.02)',
+            opacity: '1'
+          },
+          '100%': {
+            transform: 'translateX(0%) scale(1)',
+            opacity: '1'
+          }
+        },
+        quizRoll: {
+          '0%': { transform: 'scale(1) rotate(0deg)' },
+          '20%': { transform: 'scale(1.05) rotate(72deg)' },
+          '40%': { transform: 'scale(1.1) rotate(144deg)' },
+          '60%': { transform: 'scale(1.15) rotate(216deg)' },
+          '80%': { transform: 'scale(1.1) rotate(288deg)' },
+          '100%': { transform: 'scale(1) rotate(360deg)' }
+        },
+        audienceGather: {
+          '0%': {
+            transform: 'scale(1)',
+            filter: 'brightness(1) drop-shadow(0 0 0 rgba(147, 51, 234, 0))'
+          },
+          '25%': {
+            transform: 'scale(0.95) scaleX(1.1)',
+            filter: 'brightness(1.05) drop-shadow(0 0 2px rgba(147, 51, 234, 0.3))'
+          },
+          '50%': {
+            transform: 'scale(1.1) scaleX(0.9)',
+            filter: 'brightness(1.1) drop-shadow(0 0 4px rgba(147, 51, 234, 0.5))'
+          },
+          '75%': {
+            transform: 'scale(1.05) scaleX(1.05)',
+            filter: 'brightness(1.05) drop-shadow(0 0 2px rgba(147, 51, 234, 0.3))'
+          },
+          '100%': {
+            transform: 'scale(1) scaleX(1)',
+            filter: 'brightness(1) drop-shadow(0 0 0 rgba(147, 51, 234, 0))'
+          }
+        },
+        setupConfigure: {
+          '0%': { transform: 'scale(1) rotate(0deg)' },
+          '15%': { transform: 'scale(1.02) rotate(15deg)' },
+          '30%': { transform: 'scale(1.04) rotate(-10deg)' },
+          '45%': { transform: 'scale(1.06) rotate(20deg)' },
+          '60%': { transform: 'scale(1.08) rotate(-15deg)' },
+          '75%': { transform: 'scale(1.06) rotate(10deg)' },
+          '90%': { transform: 'scale(1.02) rotate(-5deg)' },
+          '100%': { transform: 'scale(1) rotate(0deg)' }
         }
       }
     }
