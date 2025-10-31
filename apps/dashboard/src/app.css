@@ -721,9 +721,9 @@ svg.lucide-icon:not(.custom) {
   --animate-screen-glow: screenGlow 1s ease-in-out;
   --animate-library-expand: libraryExpand 0.7s ease-out;
   --animate-template-morph: templateMorph 0.6s ease-in-out;
-  --animate-community-ripple: communityRipple 0.9s ease-out;
-  --animate-quiz-roll: quizRoll 0.8s ease-in-out;
-  --animate-audience-gather: audienceGather 0.7s ease-in-out;
+  --animate-ripple: communityRipple 0.9s ease-out;
+  --animate-roll: quizRoll 0.8s ease-in-out;
+  --animate-gather: audienceGather 0.7s ease-in-out;
   --animate-setup-configure: setupConfigure 1s ease-in-out;
 }
 

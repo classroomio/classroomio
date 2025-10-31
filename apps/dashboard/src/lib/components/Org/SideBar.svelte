@@ -103,17 +103,17 @@
                     : 'dark:text-white'}"
                 >
                   {#if menuItem.path === ''}
-                    <LayoutDashboardIcon size={16} class="group-hover:animate-pulse" />
+                    <LayoutDashboardIcon size={16} class="group-hover:animate-gather" />
                   {:else if menuItem.path === '/courses'}
                     <LibraryBigIcon size={16} class="group-hover:animate-library-expand" />
                   {:else if menuItem.path === '/site'}
                     <LayoutTemplateIcon size={16} class="group-hover:animate-template-morph" />
                   {:else if menuItem.path === '/community'}
-                    <MessageSquareMoreIcon size={16} class="group-hover:animate-community-ripple" />
+                    <MessageSquareMoreIcon size={16} class="group-hover:animate-ripple" />
                   {:else if menuItem.path === '/quiz'}
-                    <Dice6Icon size={16} class="group-hover:animate-quiz-roll" />
+                    <Dice6Icon size={16} class="group-hover:animate-roll" />
                   {:else if menuItem.path === '/audience'}
-                    <UsersIcon size={16} class="group-hover:animate-audience-gather" />
+                    <UsersIcon size={16} class="group-hover:animate-gather" />
                   {:else if menuItem.path === '/setup'}
                     <Settings2 size={16} class="group-hover:animate-setup-configure" />
                   {/if}
