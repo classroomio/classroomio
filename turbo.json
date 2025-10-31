@@ -21,8 +21,11 @@
       "cache": false,
       "persistent": true
     },
-    "build:watch": {
-      "dependsOn": ["^dev"],
+    "dashboard:dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "storybook:dev": {
       "cache": false,
       "persistent": true
     },

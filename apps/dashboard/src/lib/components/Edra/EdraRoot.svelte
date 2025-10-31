@@ -2,7 +2,7 @@
   import { browser } from '$app/environment';
   import type { Content, Editor } from '@tiptap/core';
   import type { Transaction } from '@tiptap/pm/state';
-  import { EdraEditor, EdraToolBar, EdraBubbleMenu, EdraDragHandleExtended } from '@cio/ui/editor';
+  import { EdraEditor, EdraToolBar, EdraBubbleMenu, EdraDragHandleExtended } from '@cio/ui/custom/editor/ui';
   import { slide } from 'svelte/transition';
   import defaultContent from './default-content';
 

@@ -14,8 +14,8 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "module": "ES2022",
-    "moduleResolution": "bundler"
+    "target": "ESNext",
+    "module": "ESNext"
   },
   "include": ["src", "src/**/*.svelte", "src/**/*.ts", "scripts/**/*.ts"]
 }

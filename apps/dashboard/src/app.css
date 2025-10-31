@@ -1,7 +1,9 @@
 /*Write your global styles here, in PostCSS syntax */
 @import 'tailwindcss';
 
-@import '../node_modules/@cio/ui/dist/ui.css';
+@import '@cio/ui/output.css';
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 /** Global scrollbar styles */
 html {
@@ -83,7 +85,7 @@ h6 {
   margin-bottom: 10px !important;
 }
 
-.dark .prose h1,
+/* .dark .prose h1,
 .dark .prose h2,
 .dark .prose h3,
 .dark .prose h4,
@@ -94,7 +96,7 @@ h6 {
 .dark .prose li::marker,
 .dark .prose p {
   color: #fff !important;
-}
+} */
 
 iframe.iframe {
   width: 100%;
@@ -126,9 +128,9 @@ code {
 svg.lucide-icon:not(.custom) {
   color: #666666;
 }
-.dark svg.lucide-icon:not(.custom) {
+/* .dark svg.lucide-icon:not(.custom) {
   color: #fff;
-}
+} */
 /* .success :global(svg.carbon-icon) {
   fill: green;
 }

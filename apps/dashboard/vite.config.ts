@@ -1,7 +1,6 @@
 import { defineConfig, loadEnv } from 'vite';
 
 import fs from 'fs';
-import path from 'path';
 import { sveltekit } from '@sveltejs/kit/vite';
 
 export default ({ mode }) => {
@@ -25,11 +24,7 @@ export default ({ mode }) => {
       include: ['@cio/api/rpc-types']
     },
     resolve: {
-      mainFields: ['browser'],
-      alias: {
-        '@cio/api': path.resolve(__dirname, '../api/dist'),
-        '@cio/ui': path.resolve(__dirname, '../../packages/ui')
-      }
+      mainFields: ['browser']
     }
   });
 };

@@ -16,7 +16,13 @@ const config = {
     adapter: useNodeAdapter ? adapterNode() : adapterVercel(),
     alias: {
       $lib: path.resolve('./src/lib'),
-      $mail: path.resolve('./src/mail')
+      $mail: path.resolve('./src/mail'),
+      '$src/tools': path.resolve('../../packages/ui/src/tools/index.ts'),
+      '$src/base/*': path.resolve('../../packages/ui/src/base/*'),
+      '@cio/ui': path.resolve('../../packages/ui/src'),
+      '@cio/ui/*': path.resolve('../../packages/ui/src/*'),
+      '@cio/api': path.resolve('../api/dist'),
+      '@cio/api/*': path.resolve('../api/dist/*')
     }
   }
 };

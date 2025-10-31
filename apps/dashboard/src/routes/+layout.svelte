@@ -34,6 +34,8 @@
   import { onMount } from 'svelte';
   import { MetaTags } from 'svelte-meta-tags';
 
+  import { ModeWatcher } from '@cio/ui/base/dark-mode';
+
   import '../app.css';
 
   let { data, children } = $props();
@@ -122,9 +124,11 @@
 
 <svelte:window onresize={handleResize} />
 
+<ModeWatcher />
+
 <MetaTags {...metaTags} />
 
-<Theme bind:theme={carbonTheme} />
+<!-- <Theme bind:theme={carbonTheme} /> -->
 
 <UpgradeModal />
 

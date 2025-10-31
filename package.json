@@ -10,9 +10,11 @@
     "format": "prettier . --write",
     "release": "standard-version",
     "ci": "cypress run",
+    "dashboard:dev": "pnpm dev --filter=@cio/dashboard --filter=@cio/ui",
     "dashboard:start": "pnpm start --filter @cio/dashboard",
     "api:start": "pnpm start --filter @cio/api",
-    "supabase:push": "pnpx supabase link --project-ref $PROJECT_ID && pnpx supabase db push --include-all"
+    "supabase:push": "pnpx supabase link --project-ref $PROJECT_ID && pnpx supabase db push --include-all",
+    "storybook:dev": "pnpm dev --filter=@cio/storybook --filter=@cio/ui"
   },
   "license": "MIT",
   "dependencies": {
