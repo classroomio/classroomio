@@ -23,7 +23,7 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import TabContent from '$lib/components/TabContent/index.svelte';
   import Tabs from '$lib/components/Tabs/index.svelte';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  // import TextEditor from '$lib/components/TextEditor/index.svelte';
   import MODES from '$lib/utils/constants/mode';
   import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
   import { supabase } from '$lib/utils/functions/supabase';
@@ -49,6 +49,8 @@
   import { orderedTabs } from './constants';
   import Loader from './Loader.svelte';
 
+  // -- note: remove old editor & console logs
+
   interface Props {
     mode?: any;
     prevMode?: string;
@@ -67,11 +69,26 @@
     toggleMode = () => {}
   }: Props = $props();
 
+  // let content = $state<EdraEditorProps['Content']>();
+  // let editor = $state<EdraEditorProps['Editor']>();
+  // function onUpdate() {
+  //   content = editor?.getHTML();
+  //   console.log('content updated:', content);
+  //   if (mode === MODES.view) return;
+
+  //   $lessonByTranslation[lessonId][$lesson.locale] = content;
+
+  //   try {
+  //     localStorage.setItem(`lesson-${lessonId}-${$lesson.locale}`, content);
+  //   } catch (error) {}
+  //   $isLessonDirty = true;
+  // }
+
   let localeExists: Record<string, boolean> = {};
   // let prevContent = '';
   let timeoutId: NodeJS.Timeout;
   let errors: Record<string, string> = {};
-  let editorWindowRef: Window | undefined = $state();
+  // let editorWindowRef: Window | undefined = $state();
   let aiButtonRef: HTMLDivElement | undefined = $state();
   let openPopover = $state(false);
   let player: HTMLVideoElement | undefined = $state();
@@ -324,7 +341,7 @@
     initPlyr(player, $lesson.materials.videos);
   });
 
-  let editorValue = $derived(
+  let _editorValue = $derived(
     lessonFallbackNote($lesson.materials.note, $lessonByTranslation[lessonId], $lesson.locale)
   );
 </script>
@@ -403,7 +420,26 @@
           </div>
 
           <div class="mt-5 h-[60vh]">
-            <TextEditor
+            <!-- <div class="bg-background z-50 mt-12 size-full max-w-5xl rounded-md border border-dashed">
+              {#if editor && !editor.isDestroyed}
+                <EdraToolBar
+                  class="bg-secondary/50 flex w-full items-center overflow-x-auto border-b border-dashed p-0.5"
+                  {editor}
+                />
+              {:else}
+                <div>
+                  Debug: Editor state - {editor ? 'exists' : 'undefined'}, destroyed: {editor?.isDestroyed || 'N/A'}
+                </div>
+              {/if}
+              <EdraEditor
+                bind:editor
+                content={editorValue}
+                autofocus={true}
+                class="h-[300px] outline-none"
+                {onUpdate}
+              />
+            </div> -->
+            <!-- <TextEditor
               id={lessonId}
               bind:editorWindowRef
               value={editorValue}
@@ -419,7 +455,7 @@
                 $isLessonDirty = true;
               }}
               placeholder={$t('course.navItem.lessons.materials.tabs.note.placeholder')}
-            />
+            /> -->
           </div>
         </TabContent>
 

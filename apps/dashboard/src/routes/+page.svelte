@@ -9,6 +9,7 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { validateEmail } from '$lib/utils/functions/validateEmail';
+  import Edra from '$lib/components/Edra/EdraRoot.svelte';
 
   let email = $state('');
   let isAdding = $state(false);
@@ -57,7 +58,7 @@
   <title>ClassroomIO - The classroom software</title>
 </svelte:head>
 
-<div class="m-2 flex w-screen flex-col items-center justify-center font-sans sm:m-0 md:h-[93vh]">
+<div class="m-2 flex w-screen flex-col items-center justify-center font-sans sm:m-0 md:min-h-[93vh] dark:bg-black">
   <!--
     <img
       src="/logo-192.png"
@@ -73,8 +74,9 @@
     <p class="text-center text-lg dark:text-white">The operating system for classroooms of the future 🚀🚀🚀.</p>
   </div>
 
+  <Edra />
   <form onsubmit={preventDefault(handleSubmit)} class="my-4 hidden">
-    <div class="flex flex-col items-center sm:flex-row">
+    <div class="flex hidden flex-col items-center sm:flex-row">
       {#if success}
         <p class="dark:text-white">You have been added successfully. Thanks for joining.</p>
       {:else}
@@ -91,18 +93,18 @@
     </div>
   </form>
 
-  <div class="mt-4 flex flex-col md:flex-row">
+  <div class="mt-4 flex md:flex-row">
     {#each areas as area, index}
       <div
         class="active hover:border-primary-700 m-3 max-w-[350px] rounded-md border-2 bg-white px-12 py-3 shadow-xl dark:bg-black {animate}"
       >
         <h3 class="text-3xl dark:text-white">
           {#if index === 0}
-            <DoorOpenIcon size={16} />
+            <DoorOpenIcon size={30} />
           {:else if index === 1}
-            <ChartAreaIcon size={16} />
+            <ChartAreaIcon size={30} />
           {:else if index === 2}
-            <BotIcon size={16} />
+            <BotIcon size={30} />
           {/if}
           {area.title}
         </h3>
