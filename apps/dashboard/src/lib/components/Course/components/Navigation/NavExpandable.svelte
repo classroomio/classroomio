@@ -50,8 +50,6 @@
     children
   }: Props = $props();
 
-  let isHovered = $state(false);
-
   function addLesson() {
     goto('/courses/' + $course.id + '/lessons');
     $handleAddLessonWidget.open = true;
@@ -81,23 +79,15 @@
 
 <div class={className}>
   <button
-    class="item relative flex items-center {btnPadding} mb-1 ml-2 {NavClasses.item} {isGroupActive &&
+    class="item group relative flex items-center {btnPadding} mb-1 ml-2 {NavClasses.item} {isGroupActive &&
       !isLoading &&
       NavClasses.active} w-[95%]"
     tabindex="0"
     onclick={onClick}
     disabled={isLoading}
-    onmouseenter={() => {
-      isHovered = true;
-      console.log(`Mouse entered: ${name}`);
-    }}
-    onmouseleave={() => {
-      isHovered = false;
-      console.log(`Mouse left: ${name}`);
-    }}
   >
     <div class="flex w-full items-center gap-2.5">
-      <NavIcons {isHovered} {name} />
+      <NavIcons {name} />
       {#if isLoading}
         <div class="mx-auto w-11/12">
           <SkeletonText class="rounded-md" style="margin: 0px; height: 20px;" />

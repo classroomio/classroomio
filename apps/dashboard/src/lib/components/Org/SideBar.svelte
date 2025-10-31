@@ -29,8 +29,6 @@
     isActive: boolean;
   }
 
-  let hoveredItem = $state('');
-
   function isActive(pagePath: string, itemPath: string) {
     const pageLinkItems = pagePath.split('/');
     const itemLinkItems = itemPath.split('/');
@@ -100,32 +98,24 @@
             {#if menuItem.show}
               <a href="{$currentOrgPath}{menuItem.path}" class="text-black no-underline" onclick={toggleSidebar}>
                 <li
-                  class="mb-1 flex items-center gap-2.5 px-2.5 py-2 {NavClasses.item} {menuItem.isActive
+                  class="group mb-1 flex items-center gap-2.5 px-2.5 py-2 {NavClasses.item} {menuItem.isActive
                     ? NavClasses.active
                     : 'dark:text-white'}"
-                  onmouseenter={() => (hoveredItem = menuItem.path)}
-                  onmouseleave={() => (hoveredItem = '')}
                 >
                   {#if menuItem.path === ''}
-                    <LayoutDashboardIcon size={16} class={hoveredItem === menuItem.path ? 'animate-pulse' : ''} />
+                    <LayoutDashboardIcon size={16} class="group-hover:animate-pulse" />
                   {:else if menuItem.path === '/courses'}
-                    <LibraryBigIcon size={16} class={hoveredItem === menuItem.path ? 'animate-library-expand' : ''} />
+                    <LibraryBigIcon size={16} class="group-hover:animate-library-expand" />
                   {:else if menuItem.path === '/site'}
-                    <LayoutTemplateIcon
-                      size={16}
-                      class={hoveredItem === menuItem.path ? 'animate-template-morph' : ''}
-                    />
+                    <LayoutTemplateIcon size={16} class="group-hover:animate-template-morph" />
                   {:else if menuItem.path === '/community'}
-                    <MessageSquareMoreIcon
-                      size={16}
-                      class={hoveredItem === menuItem.path ? 'animate-community-ripple' : ''}
-                    />
+                    <MessageSquareMoreIcon size={16} class="group-hover:animate-community-ripple" />
                   {:else if menuItem.path === '/quiz'}
-                    <Dice6Icon size={16} class={hoveredItem === menuItem.path ? 'animate-quiz-roll' : ''} />
+                    <Dice6Icon size={16} class="group-hover:animate-quiz-roll" />
                   {:else if menuItem.path === '/audience'}
-                    <UsersIcon size={16} class={hoveredItem === menuItem.path ? 'animate-audience-gather' : ''} />
+                    <UsersIcon size={16} class="group-hover:animate-audience-gather" />
                   {:else if menuItem.path === '/setup'}
-                    <Settings2 size={16} class={hoveredItem === menuItem.path ? 'animate-setup-configure' : ''} />
+                    <Settings2 size={16} class="group-hover:animate-setup-configure" />
                   {/if}
                   <p class="text-sm font-medium">{menuItem.label}</p>
                 </li>

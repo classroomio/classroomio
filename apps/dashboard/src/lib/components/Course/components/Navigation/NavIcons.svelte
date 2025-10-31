@@ -5,7 +5,7 @@
   import AwardIcon from '@lucide/svelte/icons/award';
   import ScrollTextIcon from '@lucide/svelte/icons/scroll-text';
   import SettingsIcon from '@lucide/svelte/icons/settings';
-  import MegaphoneIcon from '@lucide/svelte/icons/megaphone'; 
+  import MegaphoneIcon from '@lucide/svelte/icons/megaphone';
   import ChartLineIcon from '@lucide/svelte/icons/chart-line';
   import SquareLibrary from '@lucide/svelte/icons/square-library';
   import BookOpenCheck from '@lucide/svelte/icons/book-open-check';
@@ -14,32 +14,31 @@
 
   interface Props {
     name?: string;
-    isHovered?: boolean;
   }
 
-  let { name = '', isHovered = false }: Props = $props();
+  let { name = '' }: Props = $props();
 </script>
 
 {#if name === NAV_IDS.SECTION}
-  <TableOfContentsIcon size={16} class={isHovered ? 'animate-flip-book' : ''} />
+  <TableOfContentsIcon size={16} class="group-hover:animate-flip-book" />
 {:else if name === NAV_IDS.NEWS_FEED}
-  <MegaphoneIcon size={16} class={isHovered ? 'animate-shake-announcement' : ''} />
+  <MegaphoneIcon size={16} class="group-hover:animate-shake-announcement" />
 {:else if name === NAV_IDS.LESSONS}
-  <ScrollTextIcon size={16} class={isHovered ? 'animate-scroll-unroll' : ''} />
+  <ScrollTextIcon size={16} class="group-hover:animate-scroll-unroll" />
 {:else if name === NAV_IDS.ATTENDANCE}
-  <BookOpenCheck size={16} class={isHovered ? 'animate-check-items' : ''} />
+  <BookOpenCheck size={16} class="group-hover:animate-check-items" />
 {:else if name === NAV_IDS.SUBMISSIONS}
-  <SquareLibrary size={16} class={isHovered ? 'animate-task-complete' : ''} />
+  <SquareLibrary size={16} class="group-hover:animate-task-complete" />
 {:else if name === NAV_IDS.MARKS}
-  <BookCheckIcon size={16} class={isHovered ? 'animate-grade-glow' : ''} />
+  <BookCheckIcon size={16} class="group-hover:animate-grade-glow" />
 {:else if name === NAV_IDS.PEOPLE}
-  <UsersIcon size={16} class={isHovered ? 'animate-people-wave' : ''} />
+  <UsersIcon size={16} class="group-hover:animate-people-wave" />
 {:else if name === NAV_IDS.ANALYTICS}
-  <ChartLineIcon size={16} class={isHovered ? 'animate-chart-grow' : ''} />
+  <ChartLineIcon size={16} class="group-hover:animate-chart-grow" />
 {:else if name === NAV_IDS.LANDING_PAGE}
-  <PanelTop size={16} class={isHovered ? 'animate-screen-glow' : ''} />
+  <PanelTop size={16} class="group-hover:animate-screen-glow" />
 {:else if name === NAV_IDS.CERTIFICATES}
-  <AwardIcon size={16} class={isHovered ? 'animate-bounce' : ''} />
+  <AwardIcon size={16} class="group-hover:animate-bounce" />
 {:else if name === NAV_IDS.SETTINGS}
-  <SettingsIcon size={16} class={isHovered ? 'animate-spin' : ''} />
+  <SettingsIcon size={16} class="group-hover:animate-spin" />
 {/if}
