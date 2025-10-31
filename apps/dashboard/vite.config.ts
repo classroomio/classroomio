@@ -17,7 +17,10 @@ export default ({ mode }) => {
     plugins: [sveltekit()],
     server: getServer(process.env),
     build: {
-      sourcemap: false
+      sourcemap: false,
+      rollupOptions: {
+        external: ['@floating-ui/dom']
+      }
     },
     optimizeDeps: {
       entries: ['src/routes/**/+*.{js,ts,svelte}'],
