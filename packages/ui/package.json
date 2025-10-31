@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@aarkue/tiptap-math-extension": "^1.4.0",
+    "@floating-ui/dom": "^1.7.4",
     "@lucide/svelte": "^0.546.0",
     "@tiptap/core": "^3.7.1",
     "@tiptap/extension-bubble-menu": "^3.7.1",

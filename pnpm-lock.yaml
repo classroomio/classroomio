@@ -829,6 +829,9 @@ importers:
       '@aarkue/tiptap-math-extension':
         specifier: ^1.4.0
         version: 1.4.0(@tiptap/core@3.7.1(@tiptap/pm@3.7.1))(@tiptap/pm@3.7.1)
+      '@floating-ui/dom':
+        specifier: ^1.7.4
+        version: 1.7.4
       '@lucide/svelte':
         specifier: ^0.546.0
         version: 0.546.0(svelte@5.39.11)
