@@ -1,17 +1,14 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { browser } from '$app/environment';
   import BellIcon from '@lucide/svelte/icons/bell';
-  import MoonIcon from '@lucide/svelte/icons/moon';
-  import SunIcon from '@lucide/svelte/icons/sun';
   import MenuIcon from '@lucide/svelte/icons/menu';
   import XIcon from '@lucide/svelte/icons/x';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+  import { ModeSwitcher } from '@cio/ui/base/dark-mode';
 
   import { IconButton } from '$lib/components/IconButton';
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrgPath } from '$lib/utils/store/org';
-  import { toggleBodyByMode } from '$lib/utils/functions/app';
   import { sideBar } from '../Org/store';
   import { t } from '$lib/utils/functions/translations';
 
@@ -26,16 +23,6 @@
   const toggleSidebar = () => {
     $sideBar.hidden = !$sideBar.hidden;
   };
-
-  function toggleDarkMode() {
-    $globalStore.isDark = !$globalStore.isDark;
-
-    toggleBodyByMode($globalStore.isDark);
-
-    if (browser) {
-      localStorage.setItem('mode', $globalStore.isDark ? 'dark' : '');
-    }
-  }
 
   let coursesPath = $derived(
     $globalStore.isOrgSite ? '/lms/mylearning' : isCoursePage ? `${$currentOrgPath}/courses` : $currentOrgPath
@@ -91,13 +78,14 @@
       <BellIcon class="custom text-white" size={16} />
     </li>
     <li>
-      <IconButton size="small" onClick={toggleDarkMode}>
+      <!-- <IconButton size="small" onClick={toggleDarkMode}>
         {#if $globalStore.isDark}
           <SunIcon size={16} class="custom" />
         {:else}
           <MoonIcon class="custom text-white" size={16} />
         {/if}
-      </IconButton>
+      </IconButton> -->
+      <ModeSwitcher />
     </li>
 
     <li></li>
