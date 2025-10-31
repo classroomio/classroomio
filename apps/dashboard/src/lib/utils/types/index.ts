@@ -131,6 +131,11 @@ export interface LessonComment {
 export interface Organization {
   id: string /* primary key */;
   name: any; // type unknown;
+  siteName: string;
+  avatar_url?: string;
+  settings: any;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface OrganizationPlan {
@@ -436,3 +441,45 @@ export interface Tabs {
   id: number;
   name: string;
 }
+
+export interface ProductInvite {
+  created_at: string;
+  email: string;
+  id: string;
+  items: ProductInviteItem[];
+  expires_at: string;
+  organization_id: string;
+  accepted_at: string;
+
+  // join fields
+  organization?: Pick<Organization, 'id' | 'name' | 'siteName'>;
+}
+
+export type ProductInviteItem = {
+  group_id: string;
+  type: 'course';
+  product_name: string;
+};
+
+export type Orders = {
+  id: string;
+  profile_id?: string;
+  email: string;
+  stripe_checkout_session_id: string;
+  stripe_payment_intent_id: string;
+  status: 'pending' | 'completed';
+  total_amount: number;
+  currency: 'USD';
+  valid_until: string;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type OrderItems = {
+  id?: string;
+  order_id?: Orders['id'];
+  group_id: Group['id'];
+  quantity?: number;
+  price_at_purchase: number;
+  type: 'course';
+};

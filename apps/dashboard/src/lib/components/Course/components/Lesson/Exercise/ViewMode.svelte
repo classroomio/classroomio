@@ -20,10 +20,7 @@
   import { fetchSubmission } from '$lib/utils/services/submissions';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
-  import {
-    NOTIFICATION_NAME,
-    triggerSendEmail
-  } from '$lib/utils/services/notification/notification';
+  import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification';
   import { lesson } from '../store/lessons';
   import { browser } from '$app/environment';
   import { COURSE_TYPE } from '$lib/utils/types';
@@ -295,7 +292,7 @@
         {/if}
       </div>
 
-      <article class="preview prose prose-sm sm:prose mt-3 p-2">
+      <article class="preview prose prose-sm mt-3 p-2 sm:prose">
         {@html $questionnaire.description || 'No desription'}
       </article>
 
