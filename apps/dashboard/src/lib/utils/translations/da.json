@@ -1580,5 +1580,11 @@
     "resend_in": "Send verifikation i",
     "seconds": "sekunder",
     "snackbar_error": "Fejl under afsendelse af kode"
+  },
+  "verify_new_email_modal": {
+    "heading": "Bekræft ny e-mail",
+    "sent_verification": "Vi har sendt en bekræftelses-e-mail til",
+    "to_confirm": "for at bekræfte din e-mail-ændring.",
+    "no_email": "Modtog du ikke e-mailen? Kontakt admin eller kontakt os på"
   }
 }
