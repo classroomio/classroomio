@@ -5,7 +5,7 @@
   import LibraryBigIcon from '@lucide/svelte/icons/library-big';
   import UsersIcon from '@lucide/svelte/icons/users';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-  import SettingsIcon from '@lucide/svelte/icons/settings';
+  import Settings2 from '@lucide/svelte/icons/settings-2';
   import MessageSquareMoreIcon from '@lucide/svelte/icons/message-square-more';
   import BadgeHelpIcon from '@lucide/svelte/icons/badge-help';
   import Dice6Icon from '@lucide/svelte/icons/dice-6';
@@ -98,24 +98,24 @@
             {#if menuItem.show}
               <a href="{$currentOrgPath}{menuItem.path}" class="text-black no-underline" onclick={toggleSidebar}>
                 <li
-                  class="mb-1 flex items-center gap-2.5 px-2.5 py-2 {NavClasses.item} {menuItem.isActive
+                  class="group mb-1 flex items-center gap-2.5 px-2.5 py-2 {NavClasses.item} {menuItem.isActive
                     ? NavClasses.active
                     : 'dark:text-white'}"
                 >
                   {#if menuItem.path === ''}
-                    <LayoutDashboardIcon size={16} />
+                    <LayoutDashboardIcon size={16} class="group-hover:animate-gather" />
                   {:else if menuItem.path === '/courses'}
-                    <LibraryBigIcon size={16} />
+                    <LibraryBigIcon size={16} class="group-hover:animate-library-expand" />
                   {:else if menuItem.path === '/site'}
-                    <LayoutTemplateIcon size={16} />
+                    <LayoutTemplateIcon size={16} class="group-hover:animate-template-morph" />
                   {:else if menuItem.path === '/community'}
-                    <MessageSquareMoreIcon size={16} />
+                    <MessageSquareMoreIcon size={16} class="group-hover:animate-ripple" />
                   {:else if menuItem.path === '/quiz'}
-                    <Dice6Icon size={16} />
+                    <Dice6Icon size={16} class="group-hover:animate-roll" />
                   {:else if menuItem.path === '/audience'}
-                    <UsersIcon size={16} />
+                    <UsersIcon size={16} class="group-hover:animate-gather" />
                   {:else if menuItem.path === '/setup'}
-                    <SettingsIcon size={16} />
+                    <Settings2 size={16} class="group-hover:animate-setup-configure" />
                   {/if}
                   <p class="text-sm font-medium">{menuItem.label}</p>
                 </li>
@@ -150,7 +150,6 @@
         <button
           class="w-full"
           onclick={() => {
-            console.log('clicked', $profileMenu);
             $profileMenu.open = !$profileMenu.open;
             $sideBar.hidden = true;
           }}
