@@ -584,7 +584,8 @@
           "text_area_title": "Deja un comentario",
           "comment_btn": "Comentario",
           "load_more_btn": "Cargar más",
-          "cancel_btn": "Cancelar"
+          "cancel_btn": "Cancelar",
+          "comment_error": "No se pudo publicar el comentario. Por favor inténtalo de nuevo."
         },
         "exercises": {
           "heading": "Todos los ejercicios",

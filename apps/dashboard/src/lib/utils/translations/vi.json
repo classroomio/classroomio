@@ -584,7 +584,8 @@
           "text_area_title": "Để lại một bình luận",
           "comment_btn": "Bình luận",
           "load_more_btn": "Tải thêm",
-          "cancel_btn": "Hủy bỏ"
+          "cancel_btn": "Hủy bỏ",
+          "comment_error": "Không thể gửi bình luận. Vui lòng thử lại."
         },
         "exercises": {
           "heading": "Tất cả các bài tập",

@@ -584,7 +584,8 @@
           "text_area_title": "Hinterlassen Sie einen Kommentar",
           "comment_btn": "Kommentar",
           "load_more_btn": "Mehr laden",
-          "cancel_btn": "Stornieren"
+          "cancel_btn": "Stornieren",
+          "comment_error": "Kommentar konnte nicht gepostet werden. Bitte versuchen Sie es erneut."
         },
         "exercises": {
           "heading": "Alle Übungen",

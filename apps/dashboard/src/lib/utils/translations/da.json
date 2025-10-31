@@ -761,7 +761,8 @@
           "placeholder": "Hvad synes du om denne lektion?",
           "comment_btn": "Kommentar",
           "cancel_btn": "Ophæve",
-          "load_more_btn": "Indlæs mere"
+          "load_more_btn": "Indlæs mere",
+          "comment_error": "Kunne ikke skrive kommentar. Prøv venligst igen."
         },
         "exercises": {
           "heading": "Alle øvelser",
