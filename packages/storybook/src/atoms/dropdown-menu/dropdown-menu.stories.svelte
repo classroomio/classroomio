@@ -3,7 +3,7 @@
   import { DropdownMenu, Button } from '@cio/ui';
 
   const { Story } = defineMeta({
-    title: 'Base/DropdownMenu',
+    title: 'Atom/DropdownMenu',
     component: DropdownMenu.Root,
     parameters: {
       layout: 'centered'

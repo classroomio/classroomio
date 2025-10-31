@@ -3,7 +3,7 @@
   import { Popover, Button, Input, Label } from '@cio/ui';
 
   const { Story } = defineMeta({
-    title: 'Base/Popover',
+    title: 'Atom/Popover',
     component: Popover.Root,
     parameters: {
       layout: 'centered'

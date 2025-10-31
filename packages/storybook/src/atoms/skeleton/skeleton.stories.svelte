@@ -4,7 +4,7 @@
   import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
-    title: 'Base/Skeleton',
+    title: 'Atom/Skeleton',
     component: Skeleton,
     parameters: {
       layout: 'centered',

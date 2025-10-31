@@ -5,7 +5,7 @@
   import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
-    title: 'Base/Input',
+    title: 'Atom/Input',
     component: Input,
     parameters: {
       layout: 'centered',

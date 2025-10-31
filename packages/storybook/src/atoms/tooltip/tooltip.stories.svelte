@@ -5,7 +5,7 @@
   // import { Arro}
 
   const { Story } = defineMeta({
-    title: 'Base/Tooltip',
+    title: 'Atom/Tooltip',
     component: Provider,
     parameters: {
       layout: 'centered'

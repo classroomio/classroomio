@@ -15,7 +15,9 @@
     "sourceMap": true,
     "strict": true,
     "target": "ESNext",
-    "module": "ESNext"
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "typeRoots": ["../../node_modules/@types", "./node_modules/@types"]
   },
-  "include": ["src", "src/**/*.svelte", "src/**/*.ts", "scripts/**/*.ts"]
+  "include": ["src", "src/**/*"]
 }
