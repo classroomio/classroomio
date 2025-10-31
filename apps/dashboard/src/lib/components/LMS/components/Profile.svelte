@@ -12,14 +12,22 @@
   import LanguagePicker from '$lib/components/Org/Settings/LanguagePicker.svelte';
   import { handleLocaleChange } from '$lib/utils/functions/translations';
   import { LOCALE } from '$lib/utils/types';
+  import { getErrorMessage } from '$lib/utils/functions/error';
+  import { updateProfileValidation } from '$lib/utils/functions/validator';
 
   let avatar = '';
   let loading = false;
   let hasLangChanged = false;
   let locale: LOCALE = LOCALE.EN;
   let updates: typeof $profile;
+  let errors: Record<string, string> = {};
 
   async function handleUpdate() {
+    errors = updateProfileValidation($profile);
+    if (Object.values(errors).some((error) => error)) {
+      loading = false;
+      return;
+    }
     try {
       loading = true;
 
@@ -77,7 +85,7 @@
 
       if (error) throw error;
     } catch (error) {
-      let message = error instanceof Error ? error.message : `${error}`;
+      let message = getErrorMessage(error);
       if (message.includes('profile_username_key')) {
         message = $t('username already exists');
       }
@@ -122,16 +130,19 @@
           label={$t('settings.profile.personal_information.full_name')}
           bind:value={updates.fullname}
           className="w-full lg:w-60 mb-4"
+          errorMessage={$t(errors.fullname)}
         />
         <TextField
           label={$t('settings.profile.personal_information.username')}
           bind:value={updates.username}
           className="w-full lg:w-60 mb-4"
+          errorMessage={$t(errors.username)}
         />
         <TextField
           label={$t('settings.profile.personal_information.email')}
           bind:value={updates.email}
           className="w-full lg:w-60 mb-4"
+          errorMessage={$t(errors.email)}
         />
 
         <LanguagePicker
