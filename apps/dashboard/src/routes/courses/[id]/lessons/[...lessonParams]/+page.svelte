@@ -30,7 +30,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';
   import { COURSE_VERSION, LOCALE, type Lesson, type LessonCompletion } from '$lib/utils/types';
-  import * as DropdownMenu from '@cio/ui/dropdown-menu';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
 
   let { data = $bindable() } = $props();
 
