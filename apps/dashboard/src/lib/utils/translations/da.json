@@ -5,7 +5,6 @@
     }
   },
   "validations": {
-    "invalid_type_error": "Må ikke være tom",
     "email": {
       "not_valid": "Ikke gyldig e -mail"
     },
@@ -535,7 +534,6 @@
             "rating": "Bedømmelse",
             "hide": "Skjul gennemgang",
             "validations": {
-              "invalid_type_error": "Må ikke være tom",
               "description": {
                 "min_char": "'Beskrivelse er for kort, min af 5 tegn"
               },
@@ -761,7 +759,8 @@
           "placeholder": "Hvad synes du om denne lektion?",
           "comment_btn": "Kommentar",
           "cancel_btn": "Ophæve",
-          "load_more_btn": "Indlæs mere"
+          "load_more_btn": "Indlæs mere",
+          "comment_error": "Kunne ikke skrive kommentar. Prøv venligst igen."
         },
         "exercises": {
           "heading": "Alle øvelser",
@@ -1092,6 +1091,17 @@
       "date_created": "Dato oprettet",
       "published": "Offentliggjort",
       "lessons": "Lektioner"
+    },
+    "copy_course": {
+      "title": "Opret et kursus",
+      "course_name_label": "Kursusnavn",
+      "course_name_placeholder": "Dit kursusnavn",
+      "course_description_label": "Kursusbeskrivelse",
+      "course_description_placeholder": "Indtast en beskrivelse til dit kursus",
+      "create_button": "Skabe",
+      "error": {
+        "failed_to_clone": "Kunne ikke klone kursus"
+      }
     }
   },
   "ai": {

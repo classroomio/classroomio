@@ -10,6 +10,7 @@
   import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
   import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
   import UserIcon from '@lucide/svelte/icons/user';
+  import { copyCourseModal, deleteCourseModal } from '$lib/components/Courses/store';
 
   interface Props {
     bannerImage: string | undefined;
@@ -57,8 +58,10 @@
   let formatter = $derived(getCurrencyFormatter(currency));
 
   function handleCloneCourse() {
-    // TODO: Clone course functionality
-    alert('WIP: Clone course');
+    $copyCourseModal.open = true;
+    $copyCourseModal.id = id;
+    $copyCourseModal.title = title;
+    $copyCourseModal.description = description;
   }
 
   function handleShareCourse() {
@@ -70,7 +73,9 @@
   }
 
   function handleDeleteCourse() {
-    goto(`/courses/${id}/settings#delete`);
+    $deleteCourseModal.open = true;
+    $deleteCourseModal.id = id;
+    $deleteCourseModal.title = title;
   }
 
   const COURSE_TAG: Record<

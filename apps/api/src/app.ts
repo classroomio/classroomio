@@ -2,11 +2,11 @@ import 'dotenv/config';
 
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { courseRouter } from '$src/routes/course/course';
+import { courseRouter } from '@api/routes/course/course';
 import { logger } from 'hono/logger';
-import { mailRouter } from '$src/routes/mail';
+import { mailRouter } from '@api/routes/mail';
 import { prettyJSON } from 'hono/pretty-json';
-import { rateLimiterMiddleware } from '$src/middlewares/rate-limiter';
+import { rateLimiterMiddleware } from '@api/middlewares/rate-limiter';
 import { secureHeaders } from 'hono/secure-headers';
 
 // Create Hono app with chaining for RPC support

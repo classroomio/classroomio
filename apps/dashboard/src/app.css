@@ -128,9 +128,9 @@ code {
 svg.lucide-icon:not(.custom) {
   color: #666666;
 }
-/* .dark svg.lucide-icon:not(.custom) {
+.dark svg.lucide-icon:not(.custom) {
   color: #fff;
-} */
+}
 /* .success :global(svg.carbon-icon) {
   fill: green;
 }

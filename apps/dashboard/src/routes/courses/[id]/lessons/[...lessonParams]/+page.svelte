@@ -198,10 +198,6 @@
 
   const isPrevDisabled = $derived(isNextOrPrevDisabled(data.lessonId, true));
   const isNextDisabled = $derived(isNextOrPrevDisabled(data.lessonId, false));
-
-  $effect(() => {
-    console.log('lesson locale', $lesson.locale);
-  });
 </script>
 
 <CourseContainer

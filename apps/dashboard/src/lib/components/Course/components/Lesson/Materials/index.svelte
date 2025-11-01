@@ -49,8 +49,6 @@
   import { orderedTabs } from './constants';
   import Loader from './Loader.svelte';
 
-  // -- note: remove old editor & console logs
-
   interface Props {
     mode?: any;
     prevMode?: string;
@@ -89,11 +87,7 @@
   let timeoutId: NodeJS.Timeout;
   let errors: Record<string, string> = {};
   // let editorWindowRef: Window | undefined = $state();
-  let aiButtonRef: HTMLDivElement | undefined = $state();
-  let openPopover = $state(false);
-  let player: HTMLVideoElement | undefined = $state();
-  let aiButtonClass =
-    'flex items-center gap-2 px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2';
+  ('flex items-center gap-2 px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2');
 
   const lessonTitle = $derived($lesson.title);
 

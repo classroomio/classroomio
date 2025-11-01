@@ -40,7 +40,6 @@
     "@hono/standard-validator": "^0.1.5",
     "@hono/zod-validator": "^0.7.2",
     "@scalar/hono-api-reference": "^0.9.18",
-    "@sentry/node": "^7.110.1",
     "@sentry/profiling-node": "^7.110.1",
     "@supabase/supabase-js": "^2.32.0",
     "axios": "^1.4.0",
@@ -72,8 +71,5 @@
     "typescript": "^5.5.2",
     "vitest": "^1.2.2",
     "wrangler": "4.21.x"
-  },
-  "_moduleAliases": {
-    "$src": "src"
   }
 }

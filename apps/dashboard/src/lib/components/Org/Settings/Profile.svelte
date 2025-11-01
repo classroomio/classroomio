@@ -56,7 +56,8 @@
           updates.avatar_url = response.publicUrl;
           $profile.avatar_url = response.publicUrl;
         }
-        avatar = undefined;
+
+        avatar = '';
       }
 
       let { error } = await supabase.from('profile').update(updates).match({ id: $profile.id });
@@ -74,12 +75,14 @@
       hasUnsavedChanges = false;
       if (error) throw error;
     } catch (error) {
-      let message = error instanceof Error ? error.message : error?.toString();
+      let message = error instanceof Error ? error.message : `${error}`;
 
-      if (message?.includes('profile_username_key')) {
+      if (message.includes('profile_username_key')) {
         message = $t('snackbar.lms.error.username_exists');
       }
-      snackbar.error(`${$t('snackbar.lms.error.update')} ${message}`);
+
+      snackbar.error(`${$t('snackbar.lms.error.update')}: ${message}`);
+
       loading = false;
     } finally {
       loading = false;

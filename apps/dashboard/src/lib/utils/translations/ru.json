@@ -363,7 +363,6 @@
             "rating": "Рейтинг",
             "hide": "Скрыть обзор",
             "validations": {
-              "invalid_type_error": "Не должно быть пустым",
               "description": {
                 "min_char": "'Описание слишком короткое, минимум 5 символов."
               },
@@ -584,7 +583,8 @@
           "text_area_title": "Оставить комментарий",
           "comment_btn": "Комментарий",
           "load_more_btn": "Загрузить больше",
-          "cancel_btn": "Отмена"
+          "cancel_btn": "Отмена",
+          "comment_error": "Не удалось опубликовать комментарий. Пожалуйста, попробуйте еще раз."
         },
         "exercises": {
           "heading": "Все упражнения",
@@ -938,6 +938,17 @@
       "date_created": "Дата создания",
       "published": "Опубликовано",
       "lessons": "Уроки"
+    },
+    "copy_course": {
+      "title": "Создать курс",
+      "course_name_label": "Название курса",
+      "course_name_placeholder": "Название вашего курса",
+      "course_description_label": "Описание курса",
+      "course_description_placeholder": "Введите описание вашего курса",
+      "create_button": "Создавать",
+      "error": {
+        "failed_to_clone": "Не удалось клонировать курс."
+      }
     }
   },
   "ai": {
@@ -1450,7 +1461,6 @@
     "launch_week": "Неделя запуска"
   },
   "validations": {
-    "invalid_type_error": "Не должно быть пустым",
     "email": {
       "not_valid": "Недействительный адрес электронной почты"
     },

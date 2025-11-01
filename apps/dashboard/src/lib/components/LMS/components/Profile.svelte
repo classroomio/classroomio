@@ -58,12 +58,13 @@
 
       if (error) throw error;
     } catch (error) {
-      let message = error.message;
+      let message = error instanceof Error ? error.message : `${error}`;
       if (message.includes('profile_username_key')) {
         message = $t('username already exists');
       }
 
-      snackbar.error(`snackbar.lms.error.update: ${message}`);
+      snackbar.error(`${$t('snackbar.lms.error.update')}: ${message}`);
+
       loading = false;
     } finally {
       loading = false;

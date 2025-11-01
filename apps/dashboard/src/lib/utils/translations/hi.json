@@ -363,7 +363,6 @@
             "rating": "रेटिंग",
             "hide": "समीक्षा छिपाएँ",
             "validations": {
-              "invalid_type_error": "खाली नहीं होना चाहिए",
               "description": {
                 "min_char": "'विवरण बहुत छोटा है, न्यूनतम 5 अक्षर"
               },
@@ -584,7 +583,8 @@
           "text_area_title": "एक टिप्पणी छोड़ें",
           "comment_btn": "टिप्पणी",
           "load_more_btn": "और लोड करें",
-          "cancel_btn": "रद्द करना"
+          "cancel_btn": "रद्द करना",
+          "comment_error": "टिप्पणी पोस्ट करने में विफल. कृपया पुन: प्रयास करें।"
         },
         "exercises": {
           "heading": "सभी व्यायाम",
@@ -938,6 +938,17 @@
       "date_created": "बनाया गया दिनांक",
       "published": "प्रकाशित",
       "lessons": "पाठ"
+    },
+    "copy_course": {
+      "title": "एक कोर्स बनाएं",
+      "course_name_label": "कोर्स का नाम",
+      "course_name_placeholder": "आपके पाठ्यक्रम का नाम",
+      "course_description_label": "पाठ्यक्रम विवरण",
+      "course_description_placeholder": "अपने पाठ्यक्रम के लिए विवरण दर्ज करें",
+      "create_button": "बनाएं",
+      "error": {
+        "failed_to_clone": "पाठ्यक्रम क्लोन करने में विफल"
+      }
     }
   },
   "ai": {
@@ -1450,7 +1461,6 @@
     "launch_week": "लॉन्च सप्ताह"
   },
   "validations": {
-    "invalid_type_error": "खाली नहीं होना चाहिए",
     "email": {
       "not_valid": "वैध ईमेल नहीं"
     },

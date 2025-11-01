@@ -10,7 +10,7 @@
   import { setTheme } from '$lib/utils/functions/theme';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import Plan from '$lib/components/Chip/Plan.svelte';
-  import { PLAN_NAMES } from 'shared/src/plans/constants';
+  import { PLAN_NAMES } from '@cio/utils/plans';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {

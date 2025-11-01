@@ -1,7 +1,7 @@
 <script>
   import { fade } from 'svelte/transition';
   import Checkmark from 'carbon-icons-svelte/lib/Checkmark.svelte';
-  import PLANS from 'shared/src/plans/data.json';
+  import { PLANS } from '@cio/utils/plans';
   import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
   import PageHeader from '$lib/PageHeader/PageHeader.svelte';
 
@@ -113,11 +113,14 @@
         </p>
 
         {#key isYearlyPlan}
-          <p class="mt-6 flex items-baseline gap-x-1 text-4xl font-medium text-white lg:text-4xl" in:fade>
+          <p
+            class="mt-6 flex items-baseline gap-x-1 text-4xl font-medium text-white lg:text-4xl"
+            in:fade
+          >
             ${isYearlyPlan ? PLANS.EARLY_ADOPTER.PRICE.YEARLY : PLANS.EARLY_ADOPTER.PRICE.MONTHLY}
           </p>
           <span class="text-base text-white" in:fade>
-            per {isYearlyPlan ? 'year': 'month'}
+            per {isYearlyPlan ? 'year' : 'month'}
           </span>
         {/key}
 

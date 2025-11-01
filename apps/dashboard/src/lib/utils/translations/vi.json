@@ -363,7 +363,6 @@
             "rating": "Xếp hạng",
             "hide": "Ẩn đánh giá",
             "validations": {
-              "invalid_type_error": "Không được để trống",
               "description": {
                 "min_char": "'Mô tả quá ngắn, tối thiểu 5 ký tự"
               },
@@ -584,7 +583,8 @@
           "text_area_title": "Để lại một bình luận",
           "comment_btn": "Bình luận",
           "load_more_btn": "Tải thêm",
-          "cancel_btn": "Hủy bỏ"
+          "cancel_btn": "Hủy bỏ",
+          "comment_error": "Không thể gửi bình luận. Vui lòng thử lại."
         },
         "exercises": {
           "heading": "Tất cả các bài tập",
@@ -938,6 +938,17 @@
       "date_created": "Ngày tạo",
       "published": "Được phát hành",
       "lessons": "Những bài học"
+    },
+    "copy_course": {
+      "title": "Tạo một khóa học",
+      "course_name_label": "Tên khóa học",
+      "course_name_placeholder": "Tên khóa học của bạn",
+      "course_description_label": "Mô tả khóa học",
+      "course_description_placeholder": "Nhập mô tả cho khóa học của bạn",
+      "create_button": "Tạo nên",
+      "error": {
+        "failed_to_clone": "Không thể sao chép khóa học"
+      }
     }
   },
   "ai": {
@@ -1450,7 +1461,6 @@
     "launch_week": "Tuần ra mắt"
   },
   "validations": {
-    "invalid_type_error": "Không được để trống",
     "email": {
       "not_valid": "Email không hợp lệ"
     },

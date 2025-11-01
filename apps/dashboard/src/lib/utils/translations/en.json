@@ -540,6 +540,17 @@
       "button": "Finish",
       "back": "Back",
       "next": "Next"
+    },
+    "copy_course": {
+      "title": "Create a Course",
+      "course_name_label": "Course name",
+      "course_name_placeholder": "Your course name",
+      "course_description_label": "Course description",
+      "course_description_placeholder": "Enter a description for your course",
+      "create_button": "Create",
+      "error": {
+        "failed_to_clone": "Failed to clone course"
+      }
     }
   },
 
@@ -859,7 +870,8 @@
           "placeholder": "What do you think about this lesson?",
           "comment_btn": "Comment",
           "cancel_btn": "Cancel",
-          "load_more_btn": "Load more"
+          "load_more_btn": "Load more",
+          "comment_error": "Failed to post comment. Please try again."
         },
 
         "polls": {
@@ -1067,7 +1079,6 @@
             "rating": "Rating",
             "hide": "Hide Review",
             "validations": {
-              "invalid_type_error": "Must not be empty",
               "name": {
                 "min_char": "Name is too short, min of 5 character"
               },
@@ -1643,8 +1654,7 @@
     },
     "email": {
       "not_valid": "Not valid email"
-    },
-    "invalid_type_error": "Must not be empty"
+    }
   },
 
   "common": {

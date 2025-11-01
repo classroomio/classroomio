@@ -1,4 +1,4 @@
-import type { TLessonDownloadContent } from '$src/types/course/lesson';
+import type { TLessonDownloadContent } from '@api/types/course/lesson';
 import { marked } from 'marked';
 
 function getHtmlTemplate(body: string): string {
