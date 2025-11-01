@@ -27,7 +27,7 @@
     "storybook": "^8.4.2",
     "svelte": "^5.39.11",
     "tailwindcss": "^4.1.14",
-    "tsconfig": "workspace:*",
+    "@cio/tsconfig": "workspace:*",
     "typescript-svelte-plugin": "^0.3.50",
     "vite": "^7.1.4"
   }
