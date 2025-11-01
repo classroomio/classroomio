@@ -6,7 +6,7 @@
 
   interface Props {
     className?: string;
-    value?: any;
+    value?: LOCALE;
     hasLangChanged?: boolean;
     change?: () => void;
   }

@@ -56,7 +56,8 @@
           updates.avatar_url = response.publicUrl;
           $profile.avatar_url = response.publicUrl;
         }
-        avatar = undefined;
+
+        avatar = '';
       }
 
       let { error } = await supabase.from('profile').update(updates).match({ id: $profile.id });
