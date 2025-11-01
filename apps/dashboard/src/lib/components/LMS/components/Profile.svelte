@@ -12,10 +12,10 @@
   import LanguagePicker from '$lib/components/Org/Settings/LanguagePicker.svelte';
   import { handleLocaleChange } from '$lib/utils/functions/translations';
 
-  let avatar = '';
-  let loading = false;
-  let hasLangChanged = false;
-  let locale = '';
+  let avatar = $state('');
+  let loading = $state(false);
+  let hasLangChanged = $state(false);
+  let locale = $derived($profile.locale);
 
   async function handleUpdate() {
     try {
@@ -70,8 +70,6 @@
       loading = false;
     }
   }
-
-  $: locale = $profile.locale;
 </script>
 
 <Grid class="border-c mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
@@ -104,11 +102,7 @@
         className="w-full lg:w-60 mb-4"
       />
 
-      <LanguagePicker
-        bind:hasLangChanged
-        bind:value={$profile.locale}
-        className="w-full lg:w-60 mb-4"
-      />
+      <LanguagePicker bind:hasLangChanged bind:value={$profile.locale} className="w-full lg:w-60 mb-4" />
     </Column>
   </Row>
   <Row class="m-5 flex w-full items-center gap-2 lg:justify-center">

@@ -83,7 +83,7 @@ export async function getProfile({
   }
 
   // Check if user has profile
-  let {
+  const {
     data: profileData,
     error,
     status

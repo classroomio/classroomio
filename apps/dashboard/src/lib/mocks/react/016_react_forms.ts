@@ -97,8 +97,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'Can you use the same form for both controlled and uncontrolled form inputs in React?',
+        title: 'Can you use the same form for both controlled and uncontrolled form inputs in React?',
         name: 'q10',
         points: 1,
         order: 9,

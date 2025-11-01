@@ -1,40 +1,44 @@
-<script>
-  import TableOfContents from 'carbon-icons-svelte/lib/TableOfContents.svelte'; // overview
-  import Result from 'carbon-icons-svelte/lib/Result.svelte';
-  import Workspace from 'carbon-icons-svelte/lib/Workspace.svelte';
-  import ListChecked from 'carbon-icons-svelte/lib/ListChecked.svelte';
-  import Group from 'carbon-icons-svelte/lib/Group.svelte';
-  import ApplicationWeb from 'carbon-icons-svelte/lib/ApplicationWeb.svelte';
-  import Badge from 'carbon-icons-svelte/lib/Badge.svelte';
-  import IbmWatsonKnowledgeCatalog from 'carbon-icons-svelte/lib/IbmWatsonKnowledgeCatalog.svelte';
-  import Settings from 'carbon-icons-svelte/lib/Settings.svelte';
-  import Bullhorn from 'carbon-icons-svelte/lib/Bullhorn.svelte';
-  import Analytics from 'carbon-icons-svelte/lib/Analytics.svelte';
+<script lang="ts">
+  import TableOfContentsIcon from '@lucide/svelte/icons/table-of-contents';
+  import BookCheckIcon from '@lucide/svelte/icons/book-check';
+  import UsersIcon from '@lucide/svelte/icons/users';
+  import AwardIcon from '@lucide/svelte/icons/award';
+  import ScrollTextIcon from '@lucide/svelte/icons/scroll-text';
+  import SettingsIcon from '@lucide/svelte/icons/settings';
+  import MegaphoneIcon from '@lucide/svelte/icons/megaphone';
+  import ChartLineIcon from '@lucide/svelte/icons/chart-line';
+  import SquareLibrary from '@lucide/svelte/icons/square-library';
+  import BookOpenCheck from '@lucide/svelte/icons/book-open-check';
+  import PanelTop from '@lucide/svelte/icons/panel-top';
   import { NAV_IDS } from './constants';
 
-  export let name = '';
+  interface Props {
+    name?: string;
+  }
+
+  let { name = '' }: Props = $props();
 </script>
 
 {#if name === NAV_IDS.SECTION}
-  <TableOfContents size={20} class="carbon-icon mr-2" style="min-width: 20px;" />
+  <TableOfContentsIcon size={16} class="group-hover:animate-flip-book" />
 {:else if name === NAV_IDS.NEWS_FEED}
-  <Bullhorn size={20} class="carbon-icon mr-2" />
+  <MegaphoneIcon size={16} class="group-hover:animate-shake-announcement" />
 {:else if name === NAV_IDS.LESSONS}
-  <IbmWatsonKnowledgeCatalog size={20} class="carbon-icon mr-2" />
+  <ScrollTextIcon size={16} class="group-hover:animate-scroll-unroll" />
 {:else if name === NAV_IDS.ATTENDANCE}
-  <ListChecked size={20} class="carbon-icon mr-2" />
+  <BookOpenCheck size={16} class="group-hover:animate-check-items" />
 {:else if name === NAV_IDS.SUBMISSIONS}
-  <Workspace size={20} class="carbon-icon mr-2" />
+  <SquareLibrary size={16} class="group-hover:animate-task-complete" />
 {:else if name === NAV_IDS.MARKS}
-  <Result size={20} class="carbon-icon mr-2" />
+  <BookCheckIcon size={16} class="group-hover:animate-grade-glow" />
 {:else if name === NAV_IDS.PEOPLE}
-  <Group size={20} class="carbon-icon mr-2" />
+  <UsersIcon size={16} class="group-hover:animate-people-wave" />
 {:else if name === NAV_IDS.ANALYTICS}
-  <Analytics size={20} class="carbon-icon mr-2" />
+  <ChartLineIcon size={16} class="group-hover:animate-chart-grow" />
 {:else if name === NAV_IDS.LANDING_PAGE}
-  <ApplicationWeb size={20} class="carbon-icon mr-2" />
+  <PanelTop size={16} class="group-hover:animate-screen-glow" />
 {:else if name === NAV_IDS.CERTIFICATES}
-  <Badge size={20} class="carbon-icon mr-2" />
+  <AwardIcon size={16} class="group-hover:animate-bounce" />
 {:else if name === NAV_IDS.SETTINGS}
-  <Settings size={20} class="carbon-icon mr-2" />
+  <SettingsIcon size={16} class="group-hover:animate-spin" />
 {/if}

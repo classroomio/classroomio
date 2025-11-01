@@ -7,18 +7,22 @@
     hidePercentage?: boolean;
   }
 
-  export let activity: Activity;
+  interface Props {
+    activity: Activity;
+  }
+
+  let { activity }: Props = $props();
 </script>
 
 <div
-  class="flex flex-col items-center justify-center gap-5 rounded-xl border p-3 dark:border-neutral-600 md:flex-row md:p-5"
+  class="flex flex-col items-center justify-center gap-5 rounded-xl border p-3 md:flex-row md:p-5 dark:border-neutral-600"
 >
   <div class="bg-primary-200 w-fit rounded-full p-4 text-black">
-    <svelte:component this={activity.icon} size={24} />
+    <activity.icon />
   </div>
 
   <div>
-    <p class="text-center text-sm font-medium text-gray-600 dark:text-gray-200 md:text-left">
+    <p class="text-center text-sm font-medium text-gray-600 md:text-left dark:text-gray-200">
       {activity.title}
     </p>
     <p class="text-center text-2xl font-bold md:text-left">
@@ -27,7 +31,7 @@
         %
       {/if}
     </p>
-    <p class="text-center text-xs text-gray-500 dark:text-gray-300 md:text-left md:text-sm">
+    <p class="text-center text-xs text-gray-500 md:text-left md:text-sm dark:text-gray-300">
       {activity.description}
     </p>
   </div>

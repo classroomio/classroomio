@@ -1,19 +1,14 @@
 <script>
   import { globalStore } from '$lib/utils/store/app';
   import { user, profile, defaultProfileState, defaultUserState } from '$lib/utils/store/user';
-  import {
-    currentOrg,
-    orgs,
-    defaultCurrentOrgState,
-    currentOrgDomain,
-    currentOrgPath
-  } from '$lib/utils/store/org';
-  import { ChevronDown, Settings } from 'carbon-icons-svelte';
+  import { currentOrg, orgs, defaultCurrentOrgState, currentOrgDomain, currentOrgPath } from '$lib/utils/store/org';
+  import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+  import SettingsIcon from '@lucide/svelte/icons/settings';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
-  import Logout from 'carbon-icons-svelte/lib/Logout.svelte';
-  import Rocket from 'carbon-icons-svelte/lib/Rocket.svelte';
-  import NewTab from 'carbon-icons-svelte/lib/NewTab.svelte';
+  import LogOutIcon from '@lucide/svelte/icons/log-out';
+  import RocketIcon from '@lucide/svelte/icons/rocket';
+  import BellPlusIcon from '@lucide/svelte/icons/bell-plus';
   import { goto } from '$app/navigation';
   import { profileMenu } from '../store';
   import { supabase } from '$lib/utils/functions/supabase';
@@ -52,7 +47,7 @@
     <a
       href={`${!$globalStore.isOrgSite ? $currentOrgPath : '/lms'}/settings`}
       class="flex items-center justify-between hover:no-underline"
-      on:click={closeMenu}
+      onclick={closeMenu}
     >
       <span class="flex max-w-[70%] items-center gap-2">
         <img src={$profile.avatar_url} alt="profile" class="h-8 w-8 rounded-full" />
@@ -62,7 +57,7 @@
         </div>
       </span>
       <div>
-        <Settings size={20} />
+        <SettingsIcon size={16} />
       </div>
     </a>
   </div>
@@ -72,23 +67,13 @@
       <a
         href={`${$currentOrgPath}/settings?tab=org`}
         class="flex items-center justify-between hover:no-underline"
-        on:click={closeMenu}
+        onclick={closeMenu}
       >
         <span class="flex max-w-[70%] items-center gap-2">
           {#if $currentOrg.avatar_url && $currentOrg.name}
-            <Avatar
-              src={$currentOrg.avatar_url}
-              name={$currentOrg.name}
-              shape="rounded-md"
-              width="w-7"
-              height="h-7"
-            />
+            <Avatar src={$currentOrg.avatar_url} name={$currentOrg.name} shape="rounded-md" width="w-7" height="h-7" />
           {:else if $currentOrg.shortName}
-            <TextChip
-              size="sm"
-              value={$currentOrg.shortName}
-              className="bg-primary-200 dark:text-black font-medium"
-            />
+            <TextChip size="sm" value={$currentOrg.shortName} className="bg-primary-200 dark:text-black font-medium" />
           {/if}
           <div>
             <p class="w-[80%] truncate text-sm font-semibold">{$currentOrg.name}</p>
@@ -98,7 +83,7 @@
           </div>
         </span>
         <div>
-          <Settings size={20} />
+          <SettingsIcon size={16} />
         </div>
       </a>
     </div>
@@ -110,7 +95,7 @@
       href="https://classroomio.com/tools/progress"
       target="_blank"
       class="flex items-center gap-2"
-      on:click={closeMenu}
+      onclick={closeMenu}
     >
       <img src="/progress.svg" alt="progress" class="h-6 w-6 rounded-full" />
       <p class="text-sm font-semibold">{$t('profileMenu.progress')}</p>
@@ -119,7 +104,7 @@
       href="https://classroomio.com/tools/activity-stopwatch"
       target="_blank"
       class=" flex items-center gap-2"
-      on:click={closeMenu}
+      onclick={closeMenu}
     >
       <img src="/timer.svg" alt="timer" class="h-6 w-6 rounded-full" />
       <p class="text-sm font-semibold">{$t('profileMenu.timer')}</p>
@@ -128,20 +113,20 @@
       href="https://classroomio.com/tools/tic-tac-toe"
       target="_blank"
       class=" flex items-center gap-2"
-      on:click={closeMenu}
+      onclick={closeMenu}
     >
       <img src="/tictac.svg" alt="tic_tac_toe" class="h-6 w-6 rounded-full" />
       <p class="text-sm font-semibold">{$t('profileMenu.tic_tac')}</p>
     </a>
     <a
       href="https://classroomio.com/tools"
-      on:click={closeMenu}
+      onclick={closeMenu}
       target="_blank"
       class="ml-auto flex w-fit items-center justify-end"
     >
       <div class="flex items-center gap-1 text-xs font-semibold text-blue-900">
         {$t('profileMenu.see_more')}
-        <ChevronDown class="text-blue-900" />
+        <ChevronDownIcon size={16} class="text-blue-900" />
       </div>
     </a>
   </div>
@@ -150,27 +135,27 @@
       <a
         href="https://classroomio.com/roadmap"
         target="_blank"
-        on:click={closeMenu}
+        onclick={closeMenu}
         class="flex items-center gap-2 hover:no-underline"
       >
-        <NewTab />
+        <BellPlusIcon size={16} />
         <p class="text-sm font-semibold">{$t('profileMenu.whats_new')}</p>
       </a>
       <a
         href="https://classroomio.com/blog/launch-week"
         target="_blank"
-        on:click={closeMenu}
+        onclick={closeMenu}
         class="flex items-center gap-2 hover:no-underline"
       >
-        <Rocket />
+        <RocketIcon size={16} />
         <p class="text-sm font-semibold">{$t('profileMenu.launch_week')}</p>
       </a>
     </div>
   {/if}
 
-  <button on:click={logout} class="w-full space-y-4 pt-3">
+  <button onclick={logout} class="w-full space-y-4 pt-3">
     <span class="flex items-center gap-2">
-      <Logout />
+      <LogOutIcon size={16} />
       <p class="text-sm font-semibold">{$t('settings.profile.logout')}</p>
     </span>
   </button>

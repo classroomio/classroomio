@@ -1,15 +1,15 @@
 <script lang="ts">
   import { CopyButton, Tag } from 'carbon-components-svelte';
-  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import TrashIcon from '@lucide/svelte/icons/trash';
+  import { IconButton } from '$lib/components/IconButton';
   import TextField from '$lib/components/Form/TextField.svelte';
   import { lesson, isLessonDirty } from '$lib/components/Course/components/Lesson/store/lessons';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { t } from '$lib/utils/functions/translations';
   import type { LessonVideoType } from '$lib/utils/types';
 
-  let youtubeLinks = '';
-  let error = '';
+  let youtubeLinks = $state('');
+  let error = $state('');
 
   function getVideoUrls(urls = '') {
     return (urls || '').split(',').filter((url) => !!url.trim());
@@ -38,14 +38,13 @@
   }
 
   function isValidYouTubeLink(link = '') {
-    const youtubeRegex =
-      /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
 
     return youtubeRegex.test(link.trim());
   }
 
   function removeVideo(index = 0) {
-    $lesson.materials.videos = $lesson.materials.videos.filter((v, i) => i !== index);
+    $lesson.materials.videos = $lesson.materials.videos.filter((_v, i) => i !== index);
   }
 </script>
 
@@ -68,8 +67,7 @@
 <p class="mt-4 pl-2 text-sm">
   {$t('course.navItem.lessons.materials.tabs.video.add_video.videos_added')}:
   <strong>
-    {$lesson?.materials?.videos.filter((v) => v.type === 'youtube' && isValidYouTubeLink(v.link))
-      .length || 0}
+    {$lesson?.materials?.videos.filter((v) => v.type === 'youtube' && isValidYouTubeLink(v.link)).length || 0}
   </strong>
 </p>
 <div class="">
@@ -81,7 +79,7 @@
         </Tag>
         <CopyButton text={video.link} feedback="Copied to clipboard" />
         <IconButton value="delete-video" onClick={() => removeVideo(index)}>
-          <TrashCanIcon size={16} class="carbon-icon dark:text-white" />
+          <TrashIcon size={16} />
         </IconButton>
       </div>
     {/if}

@@ -2,7 +2,7 @@ import type { CurrentOrg, OrgAudience, OrgTeamMember } from '../types/org';
 import { browser, dev } from '$app/environment';
 import { derived, writable } from 'svelte/store';
 
-import { PLAN } from 'shared/src/plans/constants';
+import { PLAN } from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { ROLE } from '$lib/utils/constants/roles';
 import { STEPS } from '../constants/quiz';

@@ -1,21 +1,26 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { browser } from '$app/environment';
-  import NotificationIcon from 'carbon-icons-svelte/lib/Notification.svelte';
-  import MoonIcon from 'carbon-icons-svelte/lib/Moon.svelte';
-  import SunIcon from 'carbon-icons-svelte/lib/Sun.svelte';
+  import BellIcon from '@lucide/svelte/icons/bell';
+  import MoonIcon from '@lucide/svelte/icons/moon';
+  import SunIcon from '@lucide/svelte/icons/sun';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
+  import XIcon from '@lucide/svelte/icons/x';
+  import MenuIcon from '@lucide/svelte/icons/menu';
 
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import { globalStore } from '$lib/utils/store/app';
-  import { Close, Menu } from 'carbon-icons-svelte';
   import { sideBar } from '$lib/components/Org/store';
   import { currentOrg } from '$lib/utils/store/org';
   import { toggleBodyByMode } from '$lib/utils/functions/app';
   import { t } from '$lib/utils/functions/translations';
 
-  export let navClass = '';
+  interface Props {
+    navClass?: string;
+  }
+
+  let { navClass = '' }: Props = $props();
 
   const toggleSidebar = () => {
     $sideBar.hidden = !$sideBar.hidden;
@@ -35,24 +40,19 @@
   }
 </script>
 
-<nav class="{navClass} flex w-full p-2 md:px-6 bg-primary-700 h-[48px]">
+<nav class="{navClass} bg-primary-700 flex h-[48px] w-full p-2 md:px-6">
   <ul class="flex w-full items-center">
     <li class="md:hidden">
       <IconButton onClick={toggleSidebar}>
         {#if $sideBar.hidden}
-          <Menu size={16} class=" text-white" />
+          <MenuIcon size={16} />
         {:else}
-          <Close size={16} class=" text-white" />
+          <XIcon size={16} />
         {/if}
       </IconButton>
     </li>
     <div class="">
-      <a
-        href={$page.url.pathname}
-        title={$t('navigation.goto_home')}
-        id="logo"
-        class="text-lg flex items-center"
-      >
+      <a href={page.url.pathname} title={$t('navigation.goto_home')} id="logo" class="flex items-center text-lg">
         {#if $currentOrg.avatar_url}
           <Avatar
             src={$currentOrg.avatar_url}
@@ -63,10 +63,7 @@
             className="mr-2"
           />
         {:else}
-          <TextChip
-            value={shortenName($currentOrg.name)}
-            className="bg-primary-200 font-bold mr-2 dark:text-black"
-          />
+          <TextChip value={shortenName($currentOrg.name)} className="bg-primary-200 font-bold mr-2 dark:text-black" />
         {/if}
         <span class="line-clamp-1">
           {$currentOrg.name}
@@ -74,21 +71,21 @@
       </a>
     </div>
 
-    <span class="flex-grow" />
+    <span class="flex-grow"></span>
 
     <li>
-      <NotificationIcon size={20} class="text-white mr-2" />
+      <BellIcon class="text-white" size={16} />
     </li>
     <li>
       <IconButton size="small" onClick={toggleDarkMode}>
         {#if $globalStore.isDark}
-          <SunIcon size={16} class="text-white" />
+          <SunIcon class="text-white" size={16} />
         {:else}
-          <MoonIcon size={16} class="text-white" />
+          <MoonIcon class="text-white" size={16} />
         {/if}
       </IconButton>
     </li>
-    <li />
+    <li></li>
   </ul>
 </nav>
 

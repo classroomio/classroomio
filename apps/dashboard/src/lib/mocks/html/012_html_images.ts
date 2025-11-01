@@ -56,8 +56,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which attribute is used to provide a text description for an image for accessibility?',
+        title: 'Which attribute is used to provide a text description for an image for accessibility?',
         name: 'q5',
         points: 1,
         order: 4,

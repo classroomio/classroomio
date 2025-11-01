@@ -191,8 +191,7 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO
         options: [
           {
-            label:
-              'The code in that case is executed, and then the switch statement continues to the next case',
+            label: 'The code in that case is executed, and then the switch statement continues to the next case',
             is_correct: true
           },
           {

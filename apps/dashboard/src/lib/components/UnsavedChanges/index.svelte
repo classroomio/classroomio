@@ -2,7 +2,12 @@
   import { beforeNavigate } from '$app/navigation';
   import { t } from '$lib/utils/functions/translations';
 
-  export let hasUnsavedChanges = false;
+  interface Props {
+    hasUnsavedChanges?: boolean;
+    children?: import('svelte').Snippet;
+  }
+
+  let { hasUnsavedChanges = $bindable(false), children }: Props = $props();
 
   beforeNavigate(({ cancel }) => {
     if (!shouldAbandonChanges()) {
@@ -20,10 +25,10 @@
 </script>
 
 <svelte:window
-  on:beforeunload={(e) => {
+  onbeforeunload={(e) => {
     const result = shouldAbandonChanges();
     if (!result) e.preventDefault();
   }}
 />
 
-<slot />
+{@render children?.()}

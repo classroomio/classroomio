@@ -73,11 +73,7 @@ async function getAudienceData(userId: string, orgId: string): Promise<UserAnaly
     overallAverageGrade: 0
   };
 
-  const userResult = await supabase
-    .from('profile')
-    .select('fullname, email, avatar_url')
-    .eq('id', userId)
-    .single();
+  const userResult = await supabase.from('profile').select('fullname, email, avatar_url').eq('id', userId).single();
 
   if (userResult.error) throw new Error('Failed to fetch user profile');
 
@@ -112,21 +108,12 @@ async function getAudienceData(userId: string, orgId: string): Promise<UserAnaly
     });
   }
 
-  const totalLessons = audienceAnalytics.courses.reduce(
-    (acc, course) => acc + course.lessons_count,
-    0
-  );
-  const completedLessons = audienceAnalytics.courses.reduce(
-    (acc, course) => acc + course.lessons_completed,
-    0
-  );
+  const totalLessons = audienceAnalytics.courses.reduce((acc, course) => acc + course.lessons_count, 0);
+  const completedLessons = audienceAnalytics.courses.reduce((acc, course) => acc + course.lessons_completed, 0);
   const overallCourseProgress = calcPercentageWithRounding(completedLessons, totalLessons);
 
   const allGrades = sumArrObject(audienceAnalytics.courses, 'average_grade');
-  const overallAverageGrade = calcPercentageWithRounding(
-    allGrades,
-    audienceAnalytics.courses.length
-  );
+  const overallAverageGrade = calcPercentageWithRounding(allGrades, audienceAnalytics.courses.length);
 
   audienceAnalytics.overallCourseProgress = overallCourseProgress;
   audienceAnalytics.overallAverageGrade = overallAverageGrade || 0;
@@ -134,10 +121,7 @@ async function getAudienceData(userId: string, orgId: string): Promise<UserAnaly
   return audienceAnalytics;
 }
 
-async function getStudentAnalyticsData(
-  userId: string,
-  courseId: string
-): Promise<UserCourseAnalytics> {
+async function getStudentAnalyticsData(userId: string, courseId: string): Promise<UserCourseAnalytics> {
   const userCourseAnalytics: UserCourseAnalytics = {
     user: {
       id: userId,
@@ -191,18 +175,12 @@ async function getStudentAnalyticsData(
 
   console.log('completedLessons.length', completedLessons.length);
   console.log('lessons.length', lessons.length);
-  userCourseAnalytics.progressPercentage = calcPercentageWithRounding(
-    completedLessons.length,
-    lessons.length
-  );
+  userCourseAnalytics.progressPercentage = calcPercentageWithRounding(completedLessons.length, lessons.length);
 
   return userCourseAnalytics;
 }
 
-async function fetchUserExercisesStats(
-  courseId: string,
-  userId: string
-): Promise<UserExercisesStats[] | undefined> {
+async function fetchUserExercisesStats(courseId: string, userId: string): Promise<UserExercisesStats[] | undefined> {
   try {
     const { data: courseData, error: queryError } = await supabase
       .from('course')

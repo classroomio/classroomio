@@ -41,6 +41,5 @@ export const NODEJS_TEMPLATES = {
   [NODEJS_IDS.NODE_SQLUPDATE]: async () => (await import('./017_node_sqlUpdate')).default,
   [NODEJS_IDS.NODE_SQLLIMIT]: async () => (await import('./018_node_sqlLimit')).default,
   [NODEJS_IDS.NODE_SQLJOIN]: async () => (await import('./019_node_sqlJoin')).default,
-  [NODEJS_IDS.NODE_MONGODBDATABASE]: async () =>
-    (await import('./020_node_mongodbDatabase')).default
+  [NODEJS_IDS.NODE_MONGODBDATABASE]: async () => (await import('./020_node_mongodbDatabase')).default
 };

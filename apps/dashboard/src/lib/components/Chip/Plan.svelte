@@ -1,9 +1,11 @@
-<script>
-  export let name = '';
+<script lang="ts">
+  interface Props {
+    name?: string;
+  }
+
+  let { name = '' }: Props = $props();
 </script>
 
-<p
-  class="w-fit text-xs border font-semibold px-1.5 rounded-md text-center text-blue-700 border-blue-700"
->
+<p class="w-fit rounded-md border border-blue-700 px-1.5 text-center text-xs font-semibold text-blue-700">
   {name}
 </p>

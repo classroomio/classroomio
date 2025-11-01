@@ -1,7 +1,12 @@
 <script lang="ts">
-  export let title = '';
-  export let hotkeys: string[] = [];
-  export let direction = '';
+  interface Props {
+    title?: string;
+    hotkeys?: string[];
+    direction?: string;
+    children?: import('svelte').Snippet;
+  }
+
+  let { title = '', hotkeys = [], direction = '', children }: Props = $props();
 </script>
 
 {#if !!title}
@@ -22,10 +27,10 @@
         </span>
       {/if}
     </span>
-    <slot />
+    {@render children?.()}
   </div>
 {:else}
-  <slot />
+  {@render children?.()}
 {/if}
 
 <style>

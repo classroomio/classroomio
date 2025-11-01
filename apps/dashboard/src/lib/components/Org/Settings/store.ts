@@ -1,88 +1,12 @@
+import type { OrgLandingPageJson } from '$lib/utils/types/org';
 import type { Writable } from 'svelte/store';
 import { writable } from 'svelte/store';
-
-export interface OrgLandingPageJson {
-  header: {
-    title: string;
-    titleHighlight: string;
-    subtitle: string;
-    action: {
-      label: string;
-      link: string;
-      redirect: boolean;
-    };
-    banner: {
-      video: string;
-      image: string;
-      type: string;
-      show: boolean;
-    };
-    background: {
-      image: string;
-      show: boolean;
-    };
-    show: boolean;
-  };
-  aboutUs: {
-    title: string;
-    content: string;
-    imageUrl: string;
-    show: boolean;
-  };
-  courses: {
-    title: string;
-    titleHighlight: string;
-    subtitle: string;
-    show: boolean;
-  };
-  faq: {
-    title: string;
-    questions: Array<{
-      id: number;
-      title: string;
-      content: string;
-    }>;
-    show: boolean;
-  };
-  contact: {
-    title: string;
-    titleHighlight: string;
-    subtitle: string;
-    address: string;
-    phone: string;
-    email: string;
-    show: boolean;
-  };
-  mailinglist: {
-    title: string;
-    subtitle: string;
-    buttonLabel: string;
-    show: boolean;
-  };
-  customLinks: {
-    show: boolean;
-    links: Array<{
-      id: number;
-      label: string;
-      url: string;
-      openInNewTab: boolean;
-    }>;
-  };
-  footer: {
-    facebook: string;
-    instagram: string;
-    twitter: string;
-    linkedin: string;
-    show: boolean;
-  };
-}
 
 export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
   header: {
     title: 'Web Development Courses for',
     titleHighlight: 'Everyone',
-    subtitle:
-      'Practical project-based courses that are easy to understand and straight to the point',
+    subtitle: 'Practical project-based courses that are easy to understand and straight to the point',
     action: {
       label: 'Start learning Today',
       link: '#contact',
@@ -104,8 +28,7 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
     title: 'Our Story',
     content:
       'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Repudiandae, quaerat cum. Ullam similique quae dicta ipsum atque quam fugit iusto eligendi magni voluptatum aut, exercitationem deserunt vitae iste rem sunt!\nLorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores obcaecati veritatis tenetur in, nihil repellat quasi cumque sed molestias id reiciendis harum doloremque minus fugit quia cum dolores quas pariatur.',
-    imageUrl:
-      'https://pgrest.classroomio.com/storage/v1/object/public/avatars/landingpage/riverside.jpeg',
+    imageUrl: 'https://pgrest.classroomio.com/storage/v1/object/public/avatars/landingpage/riverside.jpeg',
     show: true
   },
   courses: {

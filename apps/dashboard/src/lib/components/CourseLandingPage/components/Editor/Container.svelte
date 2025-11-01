@@ -1,16 +1,16 @@
-<script>
-  import ChevronLeftIcon from 'carbon-icons-svelte/lib/ChevronLeft.svelte';
-  import ChevronRightIcon from 'carbon-icons-svelte/lib/ChevronRight.svelte';
-  import { isMobile } from '$lib/utils/store/useMobile';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+<script lang="ts">
+  interface Props {
+    show?: boolean;
+    children?: import('svelte').Snippet;
+  }
 
-  export let show = true;
+  let { show = true, children }: Props = $props();
 </script>
 
 <section class="root z-10">
   {#if show}
     <div class="relative h-full bg-white dark:bg-black">
-      <slot />
+      {@render children?.()}
     </div>
   {/if}
 </section>

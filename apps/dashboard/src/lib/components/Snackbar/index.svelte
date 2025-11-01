@@ -8,7 +8,13 @@
   import { t } from '$lib/utils/functions/translations';
 
   let timeoutId: NodeJS.Timeout | undefined;
-  let kind: 'error' | 'info' | 'info-square' | 'success' | 'warning' | 'warning-alt' = 'info';
+  let kind: 'error' | 'info' | 'info-square' | 'success' | 'warning' | 'warning-alt' = $derived(
+    $snackbarStore.severity === SNACKBAR_SEVERITY.SUCCESS
+      ? 'success'
+      : $snackbarStore.severity === SNACKBAR_SEVERITY.ERROR
+        ? 'error'
+        : 'info'
+  );
 
   function handleClose() {
     if (typeof $snackbarStore.handleClose === 'function') {
@@ -37,13 +43,9 @@
     }
   }
 
-  $: handleOpen($snackbarStore.open);
-  $: kind =
-    $snackbarStore.severity === SNACKBAR_SEVERITY.SUCCESS
-      ? 'success'
-      : $snackbarStore.severity === SNACKBAR_SEVERITY.ERROR
-        ? 'error'
-        : 'info';
+  $effect(() => {
+    handleOpen($snackbarStore.open);
+  });
 </script>
 
 {#if $snackbarStore.open}

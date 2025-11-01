@@ -1,9 +1,6 @@
 <script lang="ts">
   import Avatar from '$lib/components/Avatar/index.svelte';
-  import {
-    lesson,
-    lessonCommentsChannel
-  } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { lesson, lessonCommentsChannel } from '$lib/components/Course/components/Lesson/store/lessons';
   import { group } from '$lib/components/Course/store';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
@@ -15,27 +12,27 @@
   import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';
   import type { GroupPerson, LessonComment, LessonCommentInsertPayload } from '$lib/utils/types';
-  import type {
-    PostgrestSingleResponse,
-    RealtimeChannel,
-    RealtimePostgresChangesPayload
-  } from '@supabase/supabase-js';
+  import type { PostgrestSingleResponse, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
   import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
   import { onDestroy, onMount } from 'svelte';
 
   const supabase = getSupabase();
   const PAGE_SIZE = 20;
 
-  export let lessonId = '';
+  interface Props {
+    lessonId?: string;
+  }
 
-  let comment = '';
-  let comments: LessonComment[] = [];
-  let groupmember: GroupPerson | undefined;
-  let isSaving: boolean = false;
-  let isFetching = false;
-  let openDeleteModal = false;
-  let deleteCommentId: number | null = null;
-  let editCommentId: number | null = null;
+  let { lessonId = '' }: Props = $props();
+
+  let comment = $state('');
+  let comments: LessonComment[] = $state([]);
+  let groupmember: GroupPerson | undefined = $state();
+  let isSaving: boolean = $state(false);
+  let isFetching = $state(false);
+  let openDeleteModal = $state(false);
+  let deleteCommentId: number | null = $state(null);
+  let editCommentId: number | null = $state(null);
 
   interface FetchComments {
     id: number;
@@ -87,9 +84,7 @@
           return;
         }
 
-        comments = comments.map((comment) =>
-          comment.id === 0 ? { ...comment, id: data.id } : comment
-        );
+        comments = comments.map((comment) => (comment.id === 0 ? { ...comment, id: data.id } : comment));
         isSaving = false;
         comment = '';
       });
@@ -177,11 +172,11 @@
     pagination.count = comments.length;
   }
 
-  let pagination = {
+  let pagination = $state({
     hasMore: true,
     count: 0,
     page: 0
-  };
+  });
 
   async function fetchComments(people: GroupPerson[]) {
     if (!pagination.hasMore) return;
@@ -250,11 +245,7 @@
       lessonCommentsChannel.set(
         supabase
           .channel('any')
-          .on(
-            'postgres_changes',
-            { event: 'INSERT', schema: 'public', table: 'lesson_comment' },
-            handleInsert
-          )
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'lesson_comment' }, handleInsert)
           .subscribe()
       );
     }
@@ -276,13 +267,7 @@
   </div>
   <div>
     <div class="flex h-full items-start gap-3">
-      <Avatar
-        src={$profile.avatar_url}
-        name={$profile.fullname}
-        width="w-8"
-        height="h-8"
-        className="mt-2"
-      />
+      <Avatar src={$profile.avatar_url} name={$profile.fullname} width="w-8" height="h-8" className="mt-2" />
       <div class="h-full w-full">
         <TextArea
           label={$t('course.navItem.lessons.comments.text_area_title')}

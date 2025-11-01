@@ -1,0 +1,24 @@
+{
+  "name": "@cio/db",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "db": "drizzle-kit",
+    "move-users": "tsx src/scripts/supabase-to-betterauth.ts",
+    "pull": "drizzle-kit pull --config drizzle.config.ts"
+  },
+  "dependencies": {
+    "@cio/tsconfig": "workspace:*",
+    "better-auth": "^1.3.28",
+    "drizzle-kit": "^0.31.5",
+    "drizzle-orm": "^0.44.6",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.8.1",
+    "@types/pg": "^8.15.5",
+    "dotenv": "^17.2.3",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.3"
+  }
+}

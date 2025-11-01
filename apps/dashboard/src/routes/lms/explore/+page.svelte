@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import { Search, Dropdown } from 'carbon-components-svelte';
   import { profile } from '$lib/utils/store/user';
   import { fetchExploreCourses } from '$lib/utils/services/courses';
@@ -8,46 +8,45 @@
   import { courseMetaDeta } from '$lib/components/Courses/store';
   import { currentOrg } from '$lib/utils/store/org';
   import type { Course } from '$lib/utils/types';
-  import { browser } from '$app/environment';
   import { t } from '$lib/utils/functions/translations';
 
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import Grid from 'carbon-icons-svelte/lib/Grid.svelte';
-  import List from 'carbon-icons-svelte/lib/List.svelte';
+  import { IconButton } from '$lib/components/IconButton';
+  import GridIcon from '@lucide/svelte/icons/grid-2x2';
+  import ListIcon from '@lucide/svelte/icons/list';
 
-  let searchValue = '';
-  let selectedId: string;
-  let filteredExploreCourses: Course[];
+  let searchValue = $state('');
+  let selectedId: string | undefined = $state();
   let hasFetched = false;
-  let exploreCourseList: Course[] = [];
+  let exploreCourseList: Course[] = $state([]);
 
-  async function getCourses(userId: string | null, orgId: string) {
+  const filteredExploreCourses: Course[] = $derived(filterCourses(searchValue, selectedId || '', exploreCourseList));
+
+  function getCourses(userId?: string, orgId?: string) {
     if (hasFetched || !userId || !orgId) {
       return;
     }
 
-    $courseMetaDeta.isLoading = true;
+    // don't rerun this function if any state is updated in this function.
+    untrack(async () => {
+      $courseMetaDeta.isLoading = true;
 
-    const coursesResult = await fetchExploreCourses(userId, orgId);
+      const coursesResult = await fetchExploreCourses(userId, orgId);
 
-    $courseMetaDeta.isLoading = false;
+      $courseMetaDeta.isLoading = false;
 
-    if (!coursesResult) return;
+      if (!coursesResult) return;
 
-    exploreCourseList = coursesResult.allCourses;
-    hasFetched = true;
+      exploreCourseList = coursesResult.allCourses;
+      hasFetched = true;
+    });
   }
 
-  function filterCourses(searchValue: string, _selectedId: string, courses: Course[]) {
-    if (browser) {
-      if (!selectedId) {
-        selectedId = localStorage.getItem('classroomio_filter_course_key') || '0';
-      } else {
-        localStorage.setItem('classroomio_filter_course_key', _selectedId);
-      }
+  function filterCourses(searchValue: string, _selectedId: string | null, courses: Course[]) {
+    if (_selectedId) {
+      localStorage.setItem('classroomio_filter_course_key', _selectedId);
     }
 
-    filteredExploreCourses = courses.filter((course) => {
+    const coursesFiltered = courses.filter((course) => {
       if (!searchValue || course.title.toLowerCase().includes(searchValue.toLowerCase())) {
         return true;
       }
@@ -56,14 +55,12 @@
     });
 
     if (_selectedId === '0') {
-      filteredExploreCourses = filteredExploreCourses.sort(
-        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-      );
+      return coursesFiltered.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
     } else if (_selectedId === '1') {
-      filteredExploreCourses = filteredExploreCourses.sort(
-        (a, b) => b.total_lessons - a.total_lessons
-      );
+      return coursesFiltered.sort((a, b) => (b.total_lessons ?? 0) - (a.total_lessons ?? 0));
     }
+
+    return coursesFiltered;
   }
 
   const setViewPreference = (preference: 'grid' | 'list') => {
@@ -77,18 +74,18 @@
     if (courseView) {
       $courseMetaDeta.view = courseView;
     }
+
+    selectedId = localStorage.getItem('classroomio_filter_course_key') || '0';
   });
 
-  $: filterCourses(searchValue, selectedId, exploreCourseList);
-
-  $: if (browser && $profile.id && $currentOrg.id) {
+  $effect(() => {
     getCourses($profile.id, $currentOrg.id);
-  }
+  });
 </script>
 
-<section class="w-full md:max-w-6xl md:mx-auto">
-  <div class="py-2 md:py-10 px-2 md:px-5">
-    <h1 class="dark:text-white text-3xl font-bold">{$t('explore.heading')}</h1>
+<section class="w-full md:mx-auto md:max-w-6xl">
+  <div class="px-2 py-2 md:px-5 md:py-10">
+    <h1 class="text-3xl font-bold dark:text-white">{$t('explore.heading')}</h1>
     <div class="flex flex-row-reverse">
       <div class="filter-container flex items-end justify-start">
         <Search
@@ -109,17 +106,17 @@
 
         {#if $courseMetaDeta.view === 'list'}
           <IconButton onClick={() => setViewPreference('grid')}>
-            <Grid size={24} />
+            <GridIcon size={16} />
           </IconButton>
         {:else}
           <IconButton onClick={() => setViewPreference('list')}>
-            <List size={24} />
+            <ListIcon size={16} />
           </IconButton>
         {/if}
       </div>
     </div>
     <Courses
-      bind:courses={filteredExploreCourses}
+      courses={filteredExploreCourses}
       emptyTitle={$t('explore.empty_heading')}
       emptyDescription={$t('explore.empty_description')}
       isExplore={true}

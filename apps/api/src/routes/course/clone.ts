@@ -1,9 +1,9 @@
 import { Hono } from 'hono';
-import { ZCourseClone, TCourseClone } from '$src/types/course';
+import { ZCourseClone, TCourseClone } from '@api/types/course';
 import { zValidator } from '@hono/zod-validator';
-import { cloneCourse } from '$src/services/course/clone';
-import { authMiddleware } from '$src/middlewares/auth';
-import type { CloneCourseResponse, CloneCourseErrorResponse } from '$src/types/database';
+import { cloneCourse } from '@api/services/course/clone';
+import { authMiddleware } from '@api/middlewares/auth';
+import type { CloneCourseResponse, CloneCourseErrorResponse } from '@api/types/database';
 import type { User } from '@supabase/supabase-js';
 
 type Variables = {

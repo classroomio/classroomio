@@ -1,12 +1,16 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { fetchSubmission } from '$lib/utils/services/submissions';
-  import { browser } from '$app/environment';
   import Summary from './Summary.svelte';
   import Individual from './Individual.svelte';
   import { submissions } from './store';
   import { t } from '$lib/utils/functions/translations';
 
-  export let exerciseId: string;
+  interface Props {
+    exerciseId: string;
+  }
+
+  let { exerciseId = $bindable('') }: Props = $props();
 
   const tabs = [
     {
@@ -18,32 +22,36 @@
       value: 'individual'
     }
   ];
-  let currentTab = tabs[0].value;
+  let currentTab = $state(tabs[0].value);
 
-  let isLoading = true;
+  let isLoading = $state(true);
 
   const onChange = (tabValue: string) => () => (currentTab = tabValue);
 
-  async function fetchSubmissions(id: string | undefined) {
-    if (!id) return;
-    isLoading = true;
+  function fetchSubmissions(id: string | undefined) {
+    untrack(async () => {
+      if (!id) return;
+      isLoading = true;
 
-    const { data } = await fetchSubmission({
-      exerciseId: id
+      const { data } = await fetchSubmission({
+        exerciseId: id
+      });
+
+      if (!data) return;
+
+      submissions.set(data);
+
+      isLoading = false;
     });
-
-    if (!data) return;
-
-    submissions.set(data);
-
-    isLoading = false;
   }
 
-  $: browser && fetchSubmissions(exerciseId);
+  $effect(() => {
+    fetchSubmissions(exerciseId);
+  });
 </script>
 
-<div class="w-full flex flex-col">
-  <div class="border rounded-md mb-2 px-4">
+<div class="flex w-full flex-col">
+  <div class="mb-2 rounded-md border px-4">
     <div class="mt-4">
       <p class="text-lg">
         {$submissions.length}
@@ -55,18 +63,18 @@
         <button
           class="relative {currentTab === tab.value
             ? 'text-primary-700'
-            : 'dark:bg-gray-500 dark:text-white'} dark:bg-transparent font-semibold focus:outline-none w-fit mr-4 text-center py-3 px-2"
-          on:click={onChange(tab.value)}
+            : 'dark:bg-gray-500 dark:text-white'} mr-4 w-fit px-2 py-3 text-center font-semibold focus:outline-none dark:bg-transparent"
+          onclick={onChange(tab.value)}
         >
-          <div class="flex items-center justify-center w-full text-center">
+          <div class="flex w-full items-center justify-center text-center">
             {tab.label}
           </div>
           <span
-            class="absolute bottom-0 left-0 h-[2px] bg-primary-700 transition-all ease-in-out duration-500 {currentTab ===
+            class="bg-primary-700 absolute bottom-0 left-0 h-[2px] transition-all duration-500 ease-in-out {currentTab ===
             tab.value
               ? 'w-full'
               : 'w-0'}"
-          />
+          ></span>
         </button>
       {/each}
     </div>

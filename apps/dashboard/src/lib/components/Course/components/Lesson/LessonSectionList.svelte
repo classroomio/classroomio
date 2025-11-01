@@ -1,12 +1,13 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { flip } from 'svelte/animate';
   import { dndzone } from 'svelte-dnd-action';
-  import { Add, ScreenMap } from 'carbon-icons-svelte';
+  import PlusIcon from '@lucide/svelte/icons/plus';
+  import ListChecksIcon from '@lucide/svelte/icons/list-checks';
   import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { t } from '$lib/utils/functions/translations';
@@ -33,12 +34,16 @@
     lessonTitle?: string;
   };
 
-  export let reorder = false;
-  export let lessonEditing: string | undefined;
+  interface Props {
+    reorder?: boolean;
+    lessonEditing: string | undefined;
+  }
 
-  let prevTitle: string | undefined;
-  let errors: Record<string, string>;
-  let openDeleteModal = false;
+  let { reorder = false, lessonEditing = $bindable() }: Props = $props();
+
+  let prevTitle: string | undefined = $state();
+  let errors: Record<string, string> = $state({});
+  let openDeleteModal = $state(false);
   let deletingData = {
     id: '',
     isSection: false
@@ -126,9 +131,7 @@
 
       if (order !== prevSectionsOrder[section.id]) {
         $lessonSections[index].order = order;
-        updateLessonSection({ order }, section.id).then((update) =>
-          console.log(`updated section order`, update)
-        );
+        updateLessonSection({ order }, section.id).then((update) => console.log(`updated section order`, update));
       }
     });
   }
@@ -156,9 +159,7 @@
           order,
           section_id: $lessonSections[colIdx].id
         };
-        updateLesson(lessonUpdate, lesson.id).then((update) =>
-          console.log(`updated lesson order`, update)
-        );
+        updateLesson(lessonUpdate, lesson.id).then((update) => console.log(`updated lesson order`, update));
       }
     });
   }
@@ -188,15 +189,13 @@
     },
     dragDisabled: !reorder
   }}
-  on:consider={handleDndConsiderColumns}
-  on:finalize={handleDndFinalizeColumns}
+  onconsider={handleDndConsiderColumns}
+  onfinalize={handleDndFinalizeColumns}
 >
   {#each $lessonSections as section (section.id)}
-    <div
-      class="mb-3 m-auto max-w-xl border-2 border-gray-200 dark:border-neutral-600 dark:bg-neutral-800 rounded-md"
-    >
+    <div class="m-auto mb-3 max-w-xl rounded-md border-2 border-gray-200 dark:border-neutral-600 dark:bg-neutral-800">
       <div
-        class="mb-2 px-3 py-1 min-h-[50px] border-b bg-gray-50 dark:bg-neutral-700 rounded-tl-md rounded-tr-md flex justify-between items-center"
+        class="mb-2 flex min-h-[50px] items-center justify-between rounded-tl-md rounded-tr-md border-b bg-gray-50 px-3 py-1 dark:bg-neutral-700"
       >
         {#if lessonEditing === section.id}
           <TextField className="w-4/6" bind:value={section.title} errorMessage={errors?.title} />
@@ -220,13 +219,8 @@
                 onClick={() => onSave({ sectionId: section.id })}
               />
             {:else}
-              <IconButton
-                contained
-                size="small"
-                onClick={() => handleAddLesson(section.id)}
-                disabled={!!lessonEditing}
-              >
-                <Add size={20} />
+              <IconButton contained size="small" onClick={() => handleAddLesson(section.id)} disabled={!!lessonEditing}>
+                <PlusIcon size={16} />
               </IconButton>
               <OverflowMenu size="xl" flipped>
                 <OverflowMenuItem
@@ -256,18 +250,18 @@
           },
           dragDisabled: !reorder
         }}
-        on:consider={(e) => handleDndConsiderCards(section.id, e)}
-        on:finalize={(e) => handleDndFinalizeCards(section.id, e)}
+        onconsider={(e) => handleDndConsiderCards(section.id, e)}
+        onfinalize={(e) => handleDndFinalizeCards(section.id, e)}
       >
         {#each section.lessons as lesson (lesson.id)}
           <div
-            class="border max-w-xl border-gray-200 px-3 py-1 min-h-[50px] rounded-md mb-2 flex items-center justify-between"
+            class="mb-2 flex min-h-[50px] max-w-xl items-center justify-between rounded-md border border-gray-200 px-3 py-1"
             animate:flip={{ duration: flipDurationMs }}
           >
             {#if lessonEditing === lesson.id}
               <TextField className="w-4/6" bind:value={lesson.title} errorMessage={errors?.title} />
             {:else}
-              <div class="w-4/5 flex items-center gap-2">
+              <div class="flex w-4/5 items-center gap-2">
                 <TextChip
                   value={getLessonOrder(section.lessons, lesson.id)}
                   size="sm"
@@ -277,10 +271,9 @@
                 <div>
                   <a
                     href={$globalStore.isStudent && !lesson.is_unlocked
-                      ? $page.url.pathname
+                      ? page.url.pathname
                       : `/courses/${$course.id}/lessons/${lesson.id}`}
-                    class=" text-black dark:text-white {$globalStore.isStudent &&
-                    !lesson.is_unlocked
+                    class=" text-black dark:text-white {$globalStore.isStudent && !lesson.is_unlocked
                       ? 'cursor-not-allowed'
                       : ''}"
                     data-sveltekit-preload-data="off"
@@ -288,8 +281,8 @@
                     {lesson.title}
                   </a>
 
-                  <div class="mt-1 mb-3 flex items-center lg:mb-0">
-                    <ScreenMap size={16} class="carbon-icon dark:text-white" />
+                  <div class="mb-3 mt-1 flex items-center lg:mb-0">
+                    <ListChecksIcon size={16} />
                     <p class="ml-2 text-xs text-gray-500 dark:text-white">
                       {lesson?.totalExercises ? lesson?.totalExercises?.map((c) => c.count) : 0}
                       {$t('exercises.heading')}

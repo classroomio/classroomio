@@ -1,19 +1,33 @@
-<script>
+<script lang="ts">
   import CheckboxQuestion from '$lib/components/Question/CheckboxQuestion/index.svelte';
   import RadioQuestion from '$lib/components/Question/RadioQuestion/index.svelte';
   import TextareaQuestion from '$lib/components/Question/TextareaQuestion/index.svelte';
   import { QUESTION_TYPE } from '$lib/components/Question/constants';
   import { getPropsForQuestion } from './functions';
 
-  export let questions = [];
-  export let questionnaireMetaData = {};
-  export let grades = {};
-  export let onSubmit = () => {};
-  export let onPrevious = () => {};
-  export let disableGrading = true;
-  export let isGradeWithAI = false;
-  export let isLoading = false;
-  export let reasons = {};
+  interface Props {
+    questions?: any;
+    questionnaireMetaData?: any;
+    grades?: any;
+    onSubmit?: any;
+    onPrevious?: any;
+    disableGrading?: boolean;
+    isGradeWithAI?: boolean;
+    isLoading?: boolean;
+    reasons?: any;
+  }
+
+  let {
+    questions = [],
+    questionnaireMetaData = {},
+    grades = $bindable({}),
+    onSubmit = () => {},
+    onPrevious = () => {},
+    disableGrading = true,
+    isGradeWithAI = $bindable(false),
+    isLoading = $bindable(false),
+    reasons = $bindable({})
+  }: Props = $props();
 </script>
 
 {#each questions as currentQuestion, currentQuestionIndex}

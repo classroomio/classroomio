@@ -71,8 +71,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Explain the difference between "addListener" and "on" methods in the EventEmitter class.',
+        title: 'Explain the difference between "addListener" and "on" methods in the EventEmitter class.',
         name: 'question4',
         points: 2,
         order: 3,
@@ -164,8 +163,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'How can you use the "EventEmitter" class to implement a custom event in your Node.js application?',
+        title: 'How can you use the "EventEmitter" class to implement a custom event in your Node.js application?',
         name: 'question9',
         points: 2,
         order: 8,

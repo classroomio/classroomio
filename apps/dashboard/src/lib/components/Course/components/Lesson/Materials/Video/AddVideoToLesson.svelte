@@ -1,16 +1,20 @@
-<script>
+<script lang="ts">
   import YoutubeVideo from './YoutubeVideo.svelte';
   import UploadVideo from './UploadVideo.svelte';
   import EmbedLink from './EmbedLink.svelte';
   import * as CONSTANTS from './constants';
   import { t } from '$lib/utils/functions/translations';
   import { isFreePlan } from '$lib/utils/store/org';
-  import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
+  import ZapIcon from '@lucide/svelte/icons/zap';
 
-  export let lessonId = '';
+  interface Props {
+    lessonId?: string;
+  }
+
+  let { lessonId = '' }: Props = $props();
 
   const tabs = CONSTANTS.videoTabs;
-  let currentTab = tabs[0].value;
+  let currentTab = $state(tabs[0].value);
 
   const onChange = (tab) => () => (currentTab = tab);
 </script>
@@ -22,7 +26,7 @@
     </p>
     {#each tabs as item (item.value)}
       <button
-        on:click={onChange(item.value)}
+        onclick={onChange(item.value)}
         class={`my-1 w-full border px-4 py-3 ${
           currentTab === item.value
             ? 'border border-[#0233BD] bg-[#F5F8FE] dark:text-black'
@@ -30,13 +34,9 @@
         } flex cursor-pointer flex-row items-center justify-start gap-2 whitespace-nowrap rounded-md`}
       >
         {#if $isFreePlan && item.value === 3}
-          <FlashFilled size={20} class="text-blue-700" />
+          <ZapIcon size={16} class="filled" />
         {:else}
-          <svelte:component
-            this={item.icon}
-            size={20}
-            color={`${currentTab === item.value ? 'dark:invert-0' : 'dark:invert'}`}
-          />
+          <item.icon color={`${currentTab === item.value ? 'dark:invert-0' : 'dark:invert'}`} />
         {/if}
         <p>{$t(item.title)}</p>
       </button>

@@ -163,8 +163,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'How can you prevent SQL injection when executing user-provided SQL queries in Node.js?',
+        title: 'How can you prevent SQL injection when executing user-provided SQL queries in Node.js?',
         name: 'question9',
         points: 2,
         order: 8,

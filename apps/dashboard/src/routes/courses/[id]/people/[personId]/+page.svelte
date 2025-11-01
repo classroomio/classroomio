@@ -6,15 +6,15 @@
   import { t } from '$lib/utils/functions/translations';
   import type { UserCourseAnalytics } from '$lib/utils/types/analytics';
   import { Grid, Tag } from 'carbon-components-svelte';
-  import Notebook from 'carbon-icons-svelte/lib/Notebook.svelte';
-  import Report from 'carbon-icons-svelte/lib/Report.svelte';
-  import RowExpand from 'carbon-icons-svelte/lib/RowExpand.svelte';
+  import BookOpenIcon from '@lucide/svelte/icons/book-open';
+  import ChartLineIcon from '@lucide/svelte/icons/chart-line';
+  import UnfoldVerticalIcon from '@lucide/svelte/icons/unfold-vertical';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
 
-  export let data;
+  let { data } = $props();
 
-  let userCourseAnalytics: UserCourseAnalytics;
+  let userCourseAnalytics: UserCourseAnalytics | undefined = $state();
 
   function getPercentage(a: number, b: number): number {
     if (b === 0) {
@@ -23,7 +23,7 @@
     return Math.round((a / b) * 100);
   }
 
-  let exerciseFilter: 'all' | 'completed' | 'incomplete' = 'all';
+  let exerciseFilter: 'all' | 'completed' | 'incomplete' = $state('all');
   function toggleExerciseFilter(filter: 'completed' | 'incomplete') {
     if (exerciseFilter === filter) {
       exerciseFilter = 'all';
@@ -55,42 +55,44 @@
     fetchUserCourseAnalytics();
   });
 
-  $: learningActivities = [
+  let learningActivities = $derived([
     {
       description: $t('analytics.overall_course_progress_user_description'),
-      icon: Notebook,
+      icon: BookOpenIcon,
       percentage: userCourseAnalytics?.progressPercentage,
       title: $t('analytics.overall_course_progress')
     },
     {
       description: $t('analytics.assignment_completion_description'),
-      icon: Report,
+      icon: ChartLineIcon,
       percentage: getPercentage(
-        userCourseAnalytics?.userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length,
-        userCourseAnalytics?.userExercisesStats?.length
+        userCourseAnalytics?.userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length || 0,
+        userCourseAnalytics?.userExercisesStats?.length || 0
       ),
       title: $t('analytics.assignment_completion')
     },
     {
       description: $t('analytics.average_grade_description'),
-      icon: RowExpand,
+      icon: UnfoldVerticalIcon,
       percentage: userCourseAnalytics?.averageGrade,
       title: $t('analytics.average_grade')
     }
-  ];
+  ]);
 
-  $: filteredExercises = userCourseAnalytics?.userExercisesStats?.filter((exercise) => {
-    if (exerciseFilter === 'all') {
-      return true;
-    }
-    return exercise.isCompleted === (exerciseFilter === 'completed');
-  });
-  $: completedExercises = userCourseAnalytics?.userExercisesStats?.filter(
-    (exercise) => exercise.isCompleted
-  )?.length;
-  $: incompleteExercises = userCourseAnalytics?.userExercisesStats?.filter(
-    (exercise) => !exercise.isCompleted
-  )?.length;
+  let filteredExercises = $derived(
+    userCourseAnalytics?.userExercisesStats?.filter((exercise) => {
+      if (exerciseFilter === 'all') {
+        return true;
+      }
+      return exercise.isCompleted === (exerciseFilter === 'completed');
+    })
+  );
+  let completedExercises = $derived(
+    userCourseAnalytics?.userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length || 0
+  );
+  let incompleteExercises = $derived(
+    userCourseAnalytics?.userExercisesStats?.filter((exercise) => !exercise.isCompleted)?.length || 0
+  );
 </script>
 
 {#if userCourseAnalytics}
@@ -122,9 +124,7 @@
             })}
           </p>
         </div>
-        <Progress
-          value={getPercentage(completedExercises, userCourseAnalytics?.userExercisesStats?.length)}
-        />
+        <Progress value={getPercentage(completedExercises, userCourseAnalytics?.userExercisesStats?.length)} />
         <div class="flex items-center justify-between">
           <Tag
             interactive
@@ -160,7 +160,7 @@
             transition:fade={{ duration: 300 }}
           >
             <div class="flex w-2/3 items-center gap-4">
-              <svelte:component this={Notebook} size={24} class="text-black" />
+              <BookOpenIcon size={16} />
               <div>
                 <div class="mb-2">
                   <a
@@ -189,13 +189,7 @@
               </div>
             </div>
 
-            <Tag
-              class={`${
-                exercise.isCompleted
-                  ? 'bg-green-200 text-green-700'
-                  : 'bg-yellow-200 text-yellow-700'
-              }`}
-            >
+            <Tag class={`${exercise.isCompleted ? 'bg-green-200 text-green-700' : 'bg-yellow-200 text-yellow-700'}`}>
               {exercise.isCompleted ? $t('analytics.completed') : $t('analytics.incomplete')}
             </Tag>
           </div>

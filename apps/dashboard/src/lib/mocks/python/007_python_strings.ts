@@ -109,8 +109,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which method is used to remove whitespace from the beginning and end of a string in Python?',
+        title: 'Which method is used to remove whitespace from the beginning and end of a string in Python?',
         name: 'question10',
         points: 2,
         order: 9,

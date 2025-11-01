@@ -1,8 +1,7 @@
 <script lang="ts">
   import { Grid, Row, Column } from 'carbon-components-svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import Save from 'carbon-icons-svelte/lib/Save.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import SaveIcon from '@lucide/svelte/icons/save';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import SectionTitle from '../SectionTitle.svelte';
   import { Toggle } from 'carbon-components-svelte';
@@ -16,8 +15,8 @@
 
   const supabase = getSupabase();
 
-  let widgetKey = '';
-  let isSaving = false;
+  let widgetKey = $state('');
+  let isSaving = $state(false);
 
   function widgetControl(key: string) {
     widgetKey = key;
@@ -44,8 +43,8 @@
   }
 </script>
 
-<Grid class="border-c rounded border-gray-200 dark:border-neutral-600 w-full mt-5 relative">
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+<Grid class="border-c relative mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}>
       <SectionTitle>{$t('components.settings.customize_lms.dashboard.title')}</SectionTitle>
     </Column>
@@ -53,24 +52,24 @@
       <div>
         <p>{$t('components.settings.customize_lms.dashboard.community')}</p>
         <Toggle size="sm" class="mb-3" bind:toggled={$currentOrg.customization.dashboard.community}>
-          <span slot="labelA" style="color: gray"
-            >{$t('components.settings.customize_lms.disabled')}</span
-          >
-          <span slot="labelB" style="color: gray"
-            >{$t('components.settings.customize_lms.enabled')}</span
-          >
+          <span slot="labelA" style="color: gray">
+            {$t('components.settings.customize_lms.disabled')}
+          </span>
+          <span slot="labelB" style="color: gray">
+            {$t('components.settings.customize_lms.enabled')}
+          </span>
         </Toggle>
       </div>
 
       <div>
         <p>{$t('components.settings.customize_lms.dashboard.exercises')}</p>
         <Toggle size="sm" class="mb-3" bind:toggled={$currentOrg.customization.dashboard.exercise}>
-          <span slot="labelA" style="color: gray"
-            >{$t('components.settings.customize_lms.disabled')}</span
-          >
-          <span slot="labelB" style="color: gray"
-            >{$t('components.settings.customize_lms.enabled')}</span
-          >
+          <span slot="labelA" style="color: gray">
+            {$t('components.settings.customize_lms.disabled')}
+          </span>
+          <span slot="labelB" style="color: gray">
+            {$t('components.settings.customize_lms.enabled')}
+          </span>
         </Toggle>
       </div>
 
@@ -83,11 +82,7 @@
           onClick={() => widgetControl('banner-image')}
         />
         {#if $currentOrg.customization.dashboard.bannerImage}
-          <img
-            alt="Banner"
-            src={$currentOrg.customization.dashboard.bannerImage}
-            class="mt-2 rounded-md w-full"
-          />
+          <img alt="Banner" src={$currentOrg.customization.dashboard.bannerImage} class="mt-2 w-full rounded-md" />
         {/if}
         {#if $handleOpenWidget.open && widgetKey === 'banner-image'}
           <UploadWidget bind:imageURL={$currentOrg.customization.dashboard.bannerImage} />
@@ -106,7 +101,7 @@
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('components.settings.customize_lms.course.title')}</SectionTitle></Column
     >
@@ -114,30 +109,26 @@
       <div>
         <p>{$t('components.settings.customize_lms.course.newsfeed')}</p>
         <Toggle size="sm" class="mb-3" bind:toggled={$currentOrg.customization.course.newsfeed}>
-          <span slot="labelA" style="color: gray"
-            >{$t('components.settings.customize_lms.disabled')}</span
-          >
-          <span slot="labelB" style="color: gray"
-            >{$t('components.settings.customize_lms.enabled')}</span
-          >
+          <span slot="labelA" style="color: gray">
+            {$t('components.settings.customize_lms.disabled')}
+          </span>
+          <span slot="labelB" style="color: gray">
+            {$t('components.settings.customize_lms.enabled')}
+          </span>
         </Toggle>
       </div>
 
       <div>
         <p>{$t('components.settings.customize_lms.course.grading')}</p>
         <Toggle size="sm" class="mb-3" bind:toggled={$currentOrg.customization.course.grading}>
-          <span slot="labelA" style="color: gray"
-            >{$t('components.settings.customize_lms.disabled')}</span
-          >
-          <span slot="labelB" style="color: gray"
-            >{$t('components.settings.customize_lms.enabled')}</span
-          >
+          <span slot="labelA" style="color: gray">{$t('components.settings.customize_lms.disabled')}</span>
+          <span slot="labelB" style="color: gray">{$t('components.settings.customize_lms.enabled')}</span>
         </Toggle>
       </div>
     </Column>
   </Row>
 
-  <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
+  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('components.settings.customize_lms.apps.title')}</SectionTitle></Column
     >
@@ -145,29 +136,21 @@
       <div>
         <p>{$t('components.settings.customize_lms.apps.poll')}</p>
         <Toggle size="sm" class="mb-3" bind:toggled={$currentOrg.customization.apps.poll}>
-          <span slot="labelA" style="color: gray"
-            >{$t('components.settings.customize_lms.disabled')}</span
-          >
-          <span slot="labelB" style="color: gray"
-            >{$t('components.settings.customize_lms.enabled')}</span
-          >
+          <span slot="labelA" style="color: gray">{$t('components.settings.customize_lms.disabled')}</span>
+          <span slot="labelB" style="color: gray">{$t('components.settings.customize_lms.enabled')}</span>
         </Toggle>
       </div>
       <div>
         <p>{$t('components.settings.customize_lms.apps.live_comment')}</p>
         <Toggle size="sm" class="mb-3" bind:toggled={$currentOrg.customization.apps.comments}>
-          <span slot="labelA" style="color: gray"
-            >{$t('components.settings.customize_lms.disabled')}</span
-          >
-          <span slot="labelB" style="color: gray"
-            >{$t('components.settings.customize_lms.enabled')}</span
-          >
+          <span slot="labelA" style="color: gray">{$t('components.settings.customize_lms.disabled')}</span>
+          <span slot="labelB" style="color: gray">{$t('components.settings.customize_lms.enabled')}</span>
         </Toggle>
       </div>
     </Column>
   </Row>
 
-  <div class="hidden md:block sticky float-right bottom-12 mr-2 z-[120]">
+  <div class="sticky bottom-12 z-[120] float-right mr-2 hidden md:block">
     <PrimaryButton
       label={$t('components.settings.customize_lms.save')}
       onClick={handleSave}
@@ -177,8 +160,8 @@
   </div>
 </Grid>
 
-<div class="absolute block md:hidden right-6 bottom-8 z-[120]">
+<div class="absolute bottom-8 right-6 z-[120] block md:hidden">
   <PrimaryButton onClick={handleSave} isLoading={isSaving} isDisabled={isSaving}>
-    <Save size={24} class="" />
+    <SaveIcon size={16} />
   </PrimaryButton>
 </div>

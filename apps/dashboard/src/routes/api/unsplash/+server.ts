@@ -28,9 +28,6 @@ export async function POST({ request }) {
   } catch (error) {
     console.error(error);
 
-    return json(
-      { success: false, message: 'Error fetching photos from Unsplash' },
-      { status: 500 }
-    );
+    return json({ success: false, message: 'Error fetching photos from Unsplash' }, { status: 500 });
   }
 }

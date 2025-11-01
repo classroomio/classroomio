@@ -4,9 +4,14 @@
   import { LANGUAGES } from '$lib/utils/constants/translation';
   import { LOCALE } from '$lib/utils/types';
 
-  export let className = '';
-  export let value: LOCALE = LOCALE.EN;
-  export let hasLangChanged = false;
+  interface Props {
+    className?: string;
+    value?: LOCALE;
+    hasLangChanged?: boolean;
+    change?: () => void;
+  }
+
+  let { className = '', value = $bindable(LOCALE.EN), hasLangChanged = $bindable(false), change }: Props = $props();
 
   const dropdownItems = [{ id: '', text: 'Pick a Language' }, ...LANGUAGES];
 
@@ -14,6 +19,8 @@
     value = event.detail.selectedId;
 
     hasLangChanged = true;
+
+    change?.();
   }
 </script>
 

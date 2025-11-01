@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import { Dropdown } from 'carbon-components-svelte';
   import { currentOrg } from '$lib/utils/store/org';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -14,20 +14,27 @@
   import { t } from '$lib/utils/functions/translations';
   import { courses } from '$lib/components/Courses/store';
   import type { Course } from '$lib/utils/types';
+  import { fetchCourses } from '$lib/utils/services/courses';
 
   let errors: {
     title?: string;
     courseId?: string;
-  } = {};
-  let fields = {
+  } = $state({});
+  let fields = $state({
     title: '',
     body: '',
     courseId: ''
-  };
+  });
 
-  let fetchedCourses: Course[] = [];
+  let fetchedCourses: Course[] = $state([]);
+  let hasFetched = $state(false);
 
-  async function getCourses(userId: string | null, orgId: string) {
+  async function getCourses(userId?: string, orgId?: string) {
+    if (!userId || !orgId || hasFetched) {
+      return;
+    }
+
+    hasFetched = true;
     if ($courses.length) {
       fetchedCourses = [...$courses];
       return;
@@ -70,30 +77,28 @@
     }
   }
 
-  $: {
-    if ($profile.id && $currentOrg.id) {
-      getCourses($profile.id, $currentOrg.id);
-    }
-  }
+  $effect(() => {
+    getCourses($profile.id, $currentOrg.id);
+  });
 </script>
 
 <svelte:head>
   <title>Ask the Community - ClassroomIO</title>
 </svelte:head>
 
-<section class="w-full max-w-3xl mx-auto">
+<section class="mx-auto w-full max-w-3xl">
   <div class="p-5">
-    <a class="text-gray-500 dark:text-white text-md flex items-center" href={`/lms/community`}>
-      <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" />
+    <a class="text-md flex items-center text-gray-500 dark:text-white" href="/lms/community">
+      <ArrowLeftIcon size={16} />
       {$t('community.ask.go_back')}
     </a>
     <div class="flex items-center justify-between">
-      <h1 class="dark:text-white text-3xl font-bold">{$t('community.ask.ask_the')}</h1>
+      <h1 class="text-3xl font-bold dark:text-white">{$t('community.ask.ask_the')}</h1>
       <PrimaryButton label={$t('community.ask.publish')} onClick={handleSave} />
     </div>
   </div>
 
-  <div class="mb-3 p-2 flex gap-x-5 justify-between">
+  <div class="mb-3 flex justify-between gap-x-5 p-2">
     <TextField
       bind:value={fields.title}
       placeholder={$t('community.ask.title')}
@@ -101,7 +106,7 @@
       className="w-[75%]"
     />
     <Dropdown
-      class="w-[25%] h-full"
+      class="h-full w-[25%]"
       size="xl"
       label={$t('community.ask.select_course')}
       invalid={!!errors.courseId}

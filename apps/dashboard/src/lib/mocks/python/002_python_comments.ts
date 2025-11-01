@@ -108,8 +108,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'Which type of comment is used for documenting functions, classes, and modules in Python?',
+        title: 'Which type of comment is used for documenting functions, classes, and modules in Python?',
         name: 'question10',
         points: 2,
         order: 9,

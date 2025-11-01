@@ -1,22 +1,28 @@
 <script lang="ts">
-  import {
-    StructuredListRow,
-    StructuredListCell,
-    Tag,
-    OverflowMenuItem,
-    OverflowMenu
-  } from 'carbon-components-svelte';
+  import { StructuredListRow, StructuredListCell, Tag, OverflowMenuItem, OverflowMenu } from 'carbon-components-svelte';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { goto } from '$app/navigation';
   import { t } from '$lib/utils/functions/translations';
 
-  export let id = '';
-  export let title = '';
-  export let type = '';
-  export let description = '';
-  export let isPublished = false;
-  export let totalLessons = 0;
-  export let totalStudents = 0;
+  interface Props {
+    id?: string;
+    title?: string;
+    type?: string;
+    description?: string;
+    isPublished?: boolean;
+    totalLessons?: number;
+    totalStudents?: number;
+  }
+
+  let {
+    id = '',
+    title = '',
+    type = '',
+    description = '',
+    isPublished = false,
+    totalLessons = 0,
+    totalStudents = 0
+  }: Props = $props();
 
   function handleCloneCourse(e) {
     e.stopPropagation();
@@ -70,23 +76,10 @@
         e.stopPropagation();
       }}
     >
-      <OverflowMenuItem
-        text={$t('courses.course_card.context_menu.clone')}
-        on:click={handleCloneCourse}
-      />
-      <OverflowMenuItem
-        text={$t('courses.course_card.context_menu.share')}
-        on:click={handleShareCourse}
-      />
-      <OverflowMenuItem
-        text={$t('courses.course_card.context_menu.invite')}
-        on:click={handleInvite}
-      />
-      <OverflowMenuItem
-        danger
-        text={$t('courses.course_card.context_menu.delete')}
-        on:click={handleDeleteCourse}
-      />
+      <OverflowMenuItem text={$t('courses.course_card.context_menu.clone')} on:click={handleCloneCourse} />
+      <OverflowMenuItem text={$t('courses.course_card.context_menu.share')} on:click={handleShareCourse} />
+      <OverflowMenuItem text={$t('courses.course_card.context_menu.invite')} on:click={handleInvite} />
+      <OverflowMenuItem danger text={$t('courses.course_card.context_menu.delete')} on:click={handleDeleteCourse} />
     </OverflowMenu>
   </StructuredListCell>
 </StructuredListRow>

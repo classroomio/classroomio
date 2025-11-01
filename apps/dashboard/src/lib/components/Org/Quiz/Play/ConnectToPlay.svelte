@@ -9,7 +9,7 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
 
-  let isGettingPin = true;
+  let isGettingPin = $state(true);
 
   function getPin() {
     setTimeout(() => {
@@ -28,27 +28,33 @@
 </script>
 
 <PlayContainer>
-  <div slot="header">
-    <PlayHeader startCount={true} showCountDown={true} />
-  </div>
-
-  <div slot="body" class="w-full rounded-md bg-white dark:bg-neutral-800 py-7 px-5">
-    <div class="mb-3">
-      <p>1. Visit</p>
-      <h3>play.classroomio.com</h3>
+  {#snippet header()}
+    <div>
+      <PlayHeader startCount={true} showCountDown={true} />
     </div>
-    <div class="">
-      <p>2. Enter Pin</p>
-      {#if isGettingPin}
-        <SyncLoader size="50" color="#1d4ed8" unit="px" duration="1s" />
-      {:else}
-        <h3>{$quizStore.pin}</h3>
-      {/if}
-    </div>
-  </div>
+  {/snippet}
 
-  <div slot="footer" class="flex justify-center items-center">
-    <p class="font-bold mr-3">Let's go</p>
-    <PrimaryButton label="View Players" variant={VARIANTS.OUTLINED} onClick={goToPlayersStep} />
-  </div>
+  {#snippet body()}
+    <div class="w-full rounded-md bg-white px-5 py-7 dark:bg-neutral-800">
+      <div class="mb-3">
+        <p>1. Visit</p>
+        <h3>play.classroomio.com</h3>
+      </div>
+      <div class="">
+        <p>2. Enter Pin</p>
+        {#if isGettingPin}
+          <SyncLoader size="50" color="#1d4ed8" unit="px" duration="1s" />
+        {:else}
+          <h3>{$quizStore.pin}</h3>
+        {/if}
+      </div>
+    </div>
+  {/snippet}
+
+  {#snippet footer()}
+    <div class="flex items-center justify-center">
+      <p class="mr-3 font-bold">Let's go</p>
+      <PrimaryButton label="View Players" variant={VARIANTS.OUTLINED} onClick={goToPlayersStep} />
+    </div>
+  {/snippet}
 </PlayContainer>

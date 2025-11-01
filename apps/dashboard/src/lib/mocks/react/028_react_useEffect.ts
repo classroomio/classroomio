@@ -68,8 +68,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'In which parameter of useEffect can you specify the dependencies for running the effect?',
+        title: 'In which parameter of useEffect can you specify the dependencies for running the effect?',
         name: 'q6',
         points: 1,
         order: 5,
@@ -81,8 +80,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the effect of passing an empty array [] as the second parameter in useEffect?',
+        title: 'What is the effect of passing an empty array [] as the second parameter in useEffect?',
         name: 'q7',
         points: 1,
         order: 6,
@@ -103,8 +101,7 @@ const template: ExerciseTemplate = {
           { label: 'By using if statements inside the effect function', is_correct: false },
           { label: 'By using a conditional inside the second parameter array', is_correct: false },
           {
-            label:
-              'By specifying the condition inside the effect function and using it as a dependency',
+            label: 'By specifying the condition inside the effect function and using it as a dependency',
             is_correct: true
           }
         ]

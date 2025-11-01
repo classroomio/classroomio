@@ -61,19 +61,11 @@ export async function createNewFeed(post: {
 }
 
 export async function handleEditFeed(feedId: string, content: string) {
-  const response = await supabase
-    .from('course_newsfeed')
-    .update({ content: content })
-    .match({ id: feedId })
-    .select();
+  const response = await supabase.from('course_newsfeed').update({ content: content }).match({ id: feedId }).select();
   return response;
 }
 
-export async function createComment(comment: {
-  content: string;
-  author_id: string;
-  course_newsfeed_id: string;
-}) {
+export async function createComment(comment: { content: string; author_id: string; course_newsfeed_id: string }) {
   const response = await supabase
     .from('course_newsfeed_comment')
     .insert({
@@ -109,11 +101,7 @@ export async function deleteNewsFeed(feedId: string) {
   return response;
 }
 
-export async function getFeedForNotification(params: {
-  feedId: string;
-  authorId: string;
-  supabase: typeof supabase;
-}) {
+export async function getFeedForNotification(params: { feedId: string; authorId: string; supabase: typeof supabase }) {
   const { data, error } = await params.supabase
     .from('course_newsfeed')
     .select(

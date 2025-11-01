@@ -847,7 +847,8 @@
               "describe": "Opisz ćwiczenie swoim uczniowi",
               "no": "Brak opisu"
             },
-            "address": "Wpisz tutaj swój adres"
+            "address": "Wpisz tutaj swój adres",
+            "add_question": "Dodaj pytanie"
           },
           "new_exercise_modal": {
             "heading": "Nowe ćwiczenie",

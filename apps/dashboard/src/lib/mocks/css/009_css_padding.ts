@@ -72,8 +72,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'What is the CSS property used to set the padding between the content and border of an element?',
+        title: 'What is the CSS property used to set the padding between the content and border of an element?',
         name: 'q7',
         points: 1,
         order: 6,
@@ -113,8 +112,7 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO
         options: [
           {
-            label:
-              "To control how the padding is calculated in relation to the element's total width and height",
+            label: "To control how the padding is calculated in relation to the element's total width and height",
             is_correct: true
           },
           { label: 'To hide the padding', is_correct: false },

@@ -10,21 +10,18 @@
   import type { CurrentOrg } from '$lib/utils/types/org.js';
   import { ROLE } from '$lib/utils/constants/roles';
   import { profile } from '$lib/utils/store/user';
-  import {
-    triggerSendEmail,
-    NOTIFICATION_NAME
-  } from '$lib/utils/services/notification/notification';
+  import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
   import { snackbar } from '$lib/components/Snackbar/store.js';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { page } from '$app/stores';
 
-  export let data;
+  let { data } = $props();
 
   let supabase = getSupabase();
-  let loading = false;
+  let loading = $state(false);
 
   let disableSubmit = false;
-  let formRef: HTMLFormElement;
+  let formRef: HTMLFormElement = $state();
 
   async function handleSubmit() {
     loading = true;
@@ -34,11 +31,7 @@
       return goto(`/signup?redirect=${$page.url?.pathname || ''}`);
     }
 
-    const { data: courseData, error } = await supabase
-      .from('course')
-      .select('group_id')
-      .eq('id', data.id)
-      .single();
+    const { data: courseData, error } = await supabase.from('course').select('group_id').eq('id', data.id).single();
 
     console.log({ courseData });
     if (!courseData?.group_id) {
@@ -118,9 +111,8 @@
 
   onMount(async () => {
     setTheme(data.currentOrg?.theme || '');
+    setCurOrg(data.currentOrg as CurrentOrg);
   });
-
-  $: setCurOrg(data.currentOrg as CurrentOrg);
 </script>
 
 <svelte:head>

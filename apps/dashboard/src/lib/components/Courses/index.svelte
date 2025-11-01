@@ -20,11 +20,20 @@
   import { deleteCourse } from '$lib/utils/services/courses';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { deleteCourseModal, deleteCourseModalInitialState, courses as coursesStore } from './store';
-  
-  export let courses: Course[] = [];
-  export let emptyTitle = $t('courses.course_card.empty_title');
-  export let emptyDescription = $t('courses.course_card.empty_description');
-  export let isExplore = false;
+
+  interface Props {
+    courses?: Course[];
+    emptyTitle?: any;
+    emptyDescription?: any;
+    isExplore?: boolean;
+  }
+
+  let {
+    courses = [],
+    emptyTitle = $t('courses.course_card.empty_title'),
+    emptyDescription = $t('courses.course_card.empty_description'),
+    isExplore = false
+  }: Props = $props();
 
   function calcProgressRate(progressRate?: number, totalLessons?: number): number {
     if (!progressRate || !totalLessons) {
@@ -41,19 +50,19 @@
 
     try {
       await deleteCourse($deleteCourseModal.id);
-      
+
       // Remove the course from the courses store
-      $coursesStore = $coursesStore.filter(course => course.id !== $deleteCourseModal.id);
-      
+      $coursesStore = $coursesStore.filter((course) => course.id !== $deleteCourseModal.id);
+
       // Show success message
       snackbar.success('snackbar.course_deleted');
-      
+
       // Close modal and reset state
       deleteCourseModal.set(deleteCourseModalInitialState);
     } catch (error) {
       console.error('Error deleting course:', error);
       snackbar.error('snackbar.course_settings.error.went_wrong');
-      
+
       // Stop deleting state on error
       $deleteCourseModal.isDeleting = false;
     }
@@ -61,8 +70,8 @@
 </script>
 
 <CopyCourseModal />
-<DeleteModal 
-  onDelete={handleDeleteCourse} 
+<DeleteModal
+  onDelete={handleDeleteCourse}
   bind:open={$deleteCourseModal.open}
   isLoading={$deleteCourseModal.isDeleting}
 />
@@ -96,7 +105,7 @@
           <StructuredListCell head>
             {$t('courses.course_card.list_view.published')}
           </StructuredListCell>
-          <StructuredListCell head>{''}</StructuredListCell>
+          <StructuredListCell head></StructuredListCell>
         </StructuredListRow>
       </StructuredListHead>
       <StructuredListBody>
@@ -139,7 +148,7 @@
 </div>
 {#if !$courseMetaDeta.isLoading && !courses.length}
   <Box className="w-full">
-    <CoursesEmptyIcon />
+    <CoursesEmptyIcon size={16} />
     <h3 class="my-5 text-2xl dark:text-white">{emptyTitle}</h3>
     <p class="w-1/3 text-center dark:text-white">
       {emptyDescription}

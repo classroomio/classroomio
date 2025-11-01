@@ -70,8 +70,7 @@ const template: ExerciseTemplate = {
             is_correct: false
           },
           {
-            label:
-              'An object type with properties `name` and `age`, where `name` is a string and `age` is a number.',
+            label: 'An object type with properties `name` and `age`, where `name` is a string and `age` is a number.',
             is_correct: true
           },
           {
@@ -194,8 +193,7 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO type
         options: [
           {
-            label:
-              'Interfaces are more flexible and allow for dynamic typing, while type aliases are more rigid.',
+            label: 'Interfaces are more flexible and allow for dynamic typing, while type aliases are more rigid.',
             is_correct: false
           },
           {
@@ -203,13 +201,11 @@ const template: ExerciseTemplate = {
             is_correct: true
           },
           {
-            label:
-              'Type aliases are more powerful and can define complex types, while interfaces are limited.',
+            label: 'Type aliases are more powerful and can define complex types, while interfaces are limited.',
             is_correct: false
           },
           {
-            label:
-              'There is no difference between interfaces and type aliases for defining object types.',
+            label: 'There is no difference between interfaces and type aliases for defining object types.',
             is_correct: false
           }
         ]
@@ -255,8 +251,7 @@ const template: ExerciseTemplate = {
             is_correct: false
           },
           {
-            label:
-              'A technique for extracting properties from objects and assigning them to variables.',
+            label: 'A technique for extracting properties from objects and assigning them to variables.',
             is_correct: true
           },
           {

@@ -14,26 +14,31 @@
   import { globalStore } from '$lib/utils/store/app';
   import type { ExerciseTemplate } from '$lib/utils/types';
   import { Breadcrumb, BreadcrumbItem } from 'carbon-components-svelte';
-  import { onMount } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import { Moon } from 'svelte-loading-spinners';
   import Exercise from '../Exercise/index.svelte';
   import { isQuestionnaireFetching, questionnaire } from '../store/exercise';
   import { lesson } from '../store/lessons';
+  import type { Exercise as ExerciseType } from '$lib/utils/types';
 
-  export let path = '';
-  export let exerciseId = '';
-  export let lessonId = '';
+  interface Props {
+    path?: string;
+    exerciseId?: string;
+    lessonId?: string;
+  }
 
-  let open = false;
-  let isFetching = false;
-  let newExercise = {
+  let { path = $bindable(''), exerciseId = '', lessonId = '' }: Props = $props();
+
+  let open = $state(false);
+  let isFetching = $state(false);
+  let newExercise = $state({
     id: 1,
     title: '',
     description: ''
-  };
+  });
 
   async function handleTemplateCreate(template: ExerciseTemplate): Promise<void> {
-    const newExercise = await createExerciseFromTemplate(lessonId, template);
+    const newExercise = (await createExerciseFromTemplate(lessonId, template)) as ExerciseType;
     console.log('newExercise', newExercise);
     if (newExercise) {
       lesson.update((_lesson) => ({
@@ -52,10 +57,13 @@
       lesson_id: lessonId
     });
 
+    if (!data) return;
+
     console.log(`data, error `, data, error);
+    const insertedExercise = data?.[0] as ExerciseType;
     lesson.update((_lesson) => ({
       ..._lesson,
-      exercises: [..._lesson.exercises, data[0]]
+      exercises: [..._lesson.exercises, insertedExercise]
     }));
 
     handleCancelAddExercise();
@@ -70,27 +78,31 @@
     };
   }
 
-  async function getExercises() {
-    if (!lessonId) return;
-    isFetching = true;
-    const exercisesData = await supabase
-      .from('exercise')
-      .select(`id, title, created_at`)
-      .match({ lesson_id: lessonId });
+  function getExercises(lId: string | undefined) {
+    if (!lId) return;
 
-    $lesson.exercises = exercisesData.data;
-    isFetching = false;
+    untrack(async () => {
+      isFetching = true;
+
+      const exercisesData = await supabase.from('exercise').select(`id, title, created_at`).match({ lesson_id: lId });
+
+      $lesson.exercises = exercisesData.data as ExerciseType[];
+      isFetching = false;
+    });
   }
 
   async function getExercise(exerciseId: string | undefined) {
     if (!exerciseId) return;
-    isFetching = true;
-    isQuestionnaireFetching.update(() => true);
 
-    let { data, error } = await supabase
-      .from('exercise')
-      .select(
-        `
+    untrack(async () => {
+      isFetching = true;
+
+      isQuestionnaireFetching.update(() => true);
+
+      let { data, error } = await supabase
+        .from('exercise')
+        .select(
+          `
         id, title, description, due_by,
         totalSubmissions:submission(count),
         questions:question(
@@ -99,38 +111,37 @@
           question_type:question_type_id(id, label)
         )
       `
-      )
-      .eq('id', exerciseId)
-      .single();
+        )
+        .eq('id', exerciseId)
+        .single();
 
-    if (error) {
-      return;
-    }
+      if (error) {
+        return;
+      }
 
-    if (data && Array.isArray(data.questions)) {
-      // Need to set the question type inorder for the select in the questionnaire builder to match
-      data.questions.forEach((question) => {
-        question.question_type = QUESTION_TYPES.find(
-          (type) => type.id === question.question_type.id
-        );
-        return question;
+      if (data && Array.isArray(data.questions)) {
+        // Need to set the question type inorder for the select in the questionnaire builder to match
+        data.questions.forEach((question) => {
+          question.question_type = QUESTION_TYPES.find((type) => type.id === question.question_type.id);
+          return question;
+        });
+        data.questions = data.questions.sort((a, b) => a.order - b.order);
+      } else if (data) {
+        data.questions = [];
+      }
+
+      questionnaire.set({
+        ...(data || {}),
+        is_title_dirty: false,
+        is_description_dirty: false,
+        is_due_by_dirty: false,
+        questions: Array.isArray(data?.questions) ? data?.questions : [],
+        totalSubmissions: data?.totalSubmissions?.[0]?.count || 0
       });
-      data.questions = data.questions.sort((a, b) => a.order - b.order);
-    } else if (data) {
-      data.questions = [];
-    }
 
-    questionnaire.set({
-      ...(data || {}),
-      is_title_dirty: false,
-      is_description_dirty: false,
-      is_due_by_dirty: false,
-      questions: Array.isArray(data.questions) ? data.questions : [],
-      totalSubmissions: data?.totalSubmissions?.[0]?.count || 0
+      isQuestionnaireFetching.update(() => false);
+      isFetching = false;
     });
-
-    isQuestionnaireFetching.update(() => false);
-    isFetching = false;
   }
 
   function goBack() {
@@ -138,10 +149,12 @@
   }
 
   onMount(() => {
-    getExercises();
+    getExercises(lessonId);
   });
 
-  $: getExercise(exerciseId);
+  $effect(() => {
+    getExercise(exerciseId);
+  });
 </script>
 
 {#if isFetching}
@@ -151,7 +164,7 @@
 {/if}
 
 {#if exerciseId}
-  <Exercise {exerciseId} {goBack} bind:path {isFetching} />
+  <Exercise {exerciseId} {goBack} {path} {isFetching} />
 {:else}
   <NewExerciseModal
     bind:open
@@ -161,29 +174,27 @@
     bind:title={newExercise.title}
   />
 
-  <PageBody bind:isPageNavHidden={$globalStore.isStudent}>
-    <slot:fragment slot="header">
-      <Breadcrumb class="my-2">
-        <BreadcrumbItem href={path}>{$t('course.navItem.lessons.exercises.heading')}</BreadcrumbItem
-        >
-      </Breadcrumb>
-      <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <PrimaryButton
-          className="mr-2 my-2"
-          label={$t('course.navItem.lessons.exercises.add_button')}
-          onClick={() => (open = !open)}
-        />
-      </RoleBasedSecurity>
-    </slot:fragment>
+  <PageBody isPageNavHidden={$globalStore.isStudent}>
+    {#snippet header()}
+      <slot:fragment>
+        <Breadcrumb class="my-2">
+          <BreadcrumbItem href={path}>{$t('course.navItem.lessons.exercises.heading')}</BreadcrumbItem>
+        </Breadcrumb>
+        <RoleBasedSecurity allowedRoles={[1, 2]}>
+          <PrimaryButton
+            className="mr-2 my-2"
+            label={$t('course.navItem.lessons.exercises.add_button')}
+            onClick={() => (open = !open)}
+          />
+        </RoleBasedSecurity>
+      </slot:fragment>
+    {/snippet}
 
-    <div class="flex flex-wrap mt-5">
+    <div class="mt-5 flex flex-wrap">
       {#each $lesson.exercises as exercise}
-        <a
-          class="w-52 bg-gray-100 dark:bg-neutral-800 px-4 py-7 mr-4 mb-4 rounded-lg"
-          href="{path}/{exercise.id}"
-        >
-          <h3 class="dark:text-white text-xl">{exercise.title}</h3>
-          <p class="dark:text-white mt-4 text-sm">{formatDate(exercise.created_at)}</p>
+        <a class="mb-4 mr-4 w-52 rounded-lg bg-gray-100 px-4 py-7 dark:bg-neutral-800" href="{path}/{exercise.id}">
+          <h3 class="text-xl dark:text-white">{exercise.title}</h3>
+          <p class="mt-4 text-sm dark:text-white">{formatDate(exercise.created_at)}</p>
         </a>
       {:else}
         <Box className="mt-3 text-center">

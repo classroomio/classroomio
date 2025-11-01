@@ -16,8 +16,7 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To declare variables', is_correct: false },
           {
-            label:
-              'To define reusable pieces of code that can be imported and used in other modules',
+            label: 'To define reusable pieces of code that can be imported and used in other modules',
             is_correct: true
           },
           { label: 'To create new functions', is_correct: false }

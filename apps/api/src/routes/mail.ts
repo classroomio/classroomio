@@ -1,8 +1,8 @@
-import { sendWithNodemailer, sendWithZoho } from '$src/services/mail';
+import { sendWithNodemailer, sendWithZoho } from '@api/services/mail';
 
 import { Hono } from 'hono';
-import { ZSendEmailValidation } from '$src/types/mail';
-import { env } from '$src/config/env';
+import { ZSendEmailValidation } from '@api/types/mail';
+import { env } from '@api/config/env';
 import { zValidator } from '@hono/zod-validator';
 
 export const mailRouter = new Hono().post(

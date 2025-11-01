@@ -1,24 +1,43 @@
 <script lang="ts">
-  export let label = '';
-  export let value: string | number | null;
-  export let placeholder = '';
-  export let inputClassName = '';
-  export let labelClassName = 'font-light';
-  export let isDisabled = false;
-  export let isRequired = false;
-  export let bgColor = 'bg-gray-100 focus:bg-primary-50 dark:bg-neutral-800 dark:text-white';
-  export let errorMessage = '';
-  export let helperMessage = '';
-  export let onInput = (e) => {};
-  export let onKeyDown = (e) => {};
-  export let onInputChange = (e) => {};
-  export let onChange = () => {}; // This is to know if element is 'dirty'
+  interface Props {
+    label?: string;
+    value: string | number | null;
+    placeholder?: string;
+    inputClassName?: string;
+    labelClassName?: string;
+    isDisabled?: boolean;
+    isRequired?: boolean;
+    bgColor?: string;
+    errorMessage?: string;
+    helperMessage?: string;
+    onInput?: any;
+    onKeyDown?: any;
+    onInputChange?: any;
+    onChange?: any; // This is to know if element is 'dirty'
+  }
 
-  let focusClass = '';
+  let {
+    label = '',
+    value,
+    placeholder = '',
+    inputClassName = '',
+    labelClassName = 'font-light',
+    isDisabled = false,
+    isRequired = false,
+    bgColor = 'bg-gray-100 focus:bg-primary-50 dark:bg-neutral-800 dark:text-white',
+    errorMessage = '',
+    helperMessage = '',
+    onInput = (e) => {},
+    onKeyDown = (e) => {},
+    onInputChange = (e) => {},
+    onChange = () => {}
+  }: Props = $props();
+
+  let focusClass = $state('');
 </script>
 
 {#if label}
-  <p class="text-sm dark:text-white text-left m-0 {labelClassName}">
+  <p class="m-0 text-left text-sm dark:text-white {labelClassName}">
     {label}
 
     {#if isRequired}
@@ -27,29 +46,29 @@
   </p>
 {/if}
 <span
-  class="form-input custom-placeholder w-full block overflow-hidden resize min-h-[50px] leading-5 border mt-2 p-3 pt-3.5 outline-none dark:text-black dark:bg-white form-input border-l-0 border-r-0 border-t-0 border-b-2 border-gray-200 dark:border-neutral-600 focus:border-l-0 focus:border-r-0 rounded-t-md focus:border-t-0 focus:border-b-2 {inputClassName} {focusClass} {isDisabled &&
-    'hover:cursor-not-allowed opacity-50'} dark:text-black p-3 mt-1 block w-full {bgColor} {errorMessage
+  class="form-input custom-placeholder form-input mt-2 block min-h-[50px] w-full resize overflow-hidden rounded-t-md border border-b-2 border-l-0 border-r-0 border-t-0 border-gray-200 p-3 pt-3.5 leading-5 outline-none focus:border-b-2 focus:border-l-0 focus:border-r-0 focus:border-t-0 dark:border-neutral-600 dark:bg-white dark:text-black {inputClassName} {focusClass} {isDisabled &&
+    'opacity-50 hover:cursor-not-allowed'} mt-1 block w-full p-3 dark:text-black {bgColor} {errorMessage
     ? 'border-red-600'
     : ''}"
   role="textbox"
   tabindex={0}
   contenteditable
-  on:input={onInput}
-  on:keydown={onKeyDown}
-  on:change={onInputChange}
-  on:blur={(e) => {
+  oninput={onInput}
+  onkeydown={onKeyDown}
+  onchange={onInputChange}
+  onblur={(e) => {
     if (focusClass.includes('border-primary-600')) {
       focusClass = focusClass.replace('border-primary-600', '');
     }
     onChange(e);
   }}
-  on:focus={() => (focusClass += ' border-primary-600')}
+  onfocus={() => (focusClass += ' border-primary-600')}
   style="--placeholder: '{placeholder}'">{value}</span
 >
 {#if errorMessage}
   <p class="text-sm text-red-500">{errorMessage}</p>
 {:else if helperMessage}
-  <p class="dark:text-white text-sm">
+  <p class="text-sm dark:text-white">
     {helperMessage}
   </p>
 {/if}

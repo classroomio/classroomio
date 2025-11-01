@@ -1,21 +1,37 @@
-<script>
+<script lang="ts">
   import { t } from '$lib/utils/functions/translations';
   import Chip from '../Chip/index.svelte';
   import TextField from '../Form/TextField.svelte';
 
-  export let title = '';
-  export let overidableStyle = '';
-  export let navItems = [];
-  export let disableSticky = false;
-  export let isTitleEditable = false;
-  export let onEditComplete = () => {};
-  export let paddingClass = 'px-2';
-  export let hideOnMobile = false;
+  interface Props {
+    title?: string;
+    overidableStyle?: string;
+    navItems?: any;
+    disableSticky?: boolean;
+    isTitleEditable?: boolean;
+    onEditComplete?: any;
+    paddingClass?: string;
+    hideOnMobile?: boolean;
+    image?: import('svelte').Snippet;
+    widget?: import('svelte').Snippet;
+  }
 
-  let dynamicRootClass = '';
-  let enterEditTitleMode = false;
+  let {
+    title = $bindable(''),
+    overidableStyle = '',
+    navItems = [],
+    disableSticky = false,
+    isTitleEditable = false,
+    onEditComplete = () => {},
+    paddingClass = 'px-2',
+    hideOnMobile = false,
+    image,
+    widget
+  }: Props = $props();
 
-  $: dynamicRootClass = Array.isArray(navItems) && navItems.length > 4 ? 'bring-down' : '';
+  let enterEditTitleMode = $state(false);
+
+  const dynamicRootClass = $derived(Array.isArray(navItems) && navItems.length > 4 ? 'bring-down' : '');
 </script>
 
 <div
@@ -32,10 +48,8 @@
     {#if !!title}
       {#if isTitleEditable}
         {#if !enterEditTitleMode}
-          <button class="w-full" on:click={() => (enterEditTitleMode = true)}>
-            <h4
-              class="editable-title overflow-ellipsis rounded-md px-3 hover:bg-gray-100 dark:bg-black"
-            >
+          <button class="w-full" onclick={() => (enterEditTitleMode = true)}>
+            <h4 class="editable-title overflow-ellipsis rounded-md px-3 hover:bg-gray-100 dark:bg-black">
               {title}
             </h4>
           </button>
@@ -54,12 +68,8 @@
         {/if}
       {:else}
         <div class="flex w-full items-center" {title}>
-          <slot name="image" />
-          <h4
-            class="{$$slots.image
-              ? 'ml-2'
-              : ''} truncate whitespace-nowrap text-lg font-semibold dark:text-white"
-          >
+          {@render image?.()}
+          <h4 class="{image ? 'ml-2' : ''} truncate whitespace-nowrap text-lg font-semibold dark:text-white">
             {title}
           </h4>
         </div>
@@ -83,12 +93,12 @@
               class="bg-primary-700 absolute bottom-0 left-0 h-1 transition-all duration-500 ease-in-out {item.isActive
                 ? 'w-full'
                 : 'w-0'}"
-            />
+            ></span>
           </a>
         {/each}
       </div>
     {/if}
-    <slot name="widget" />
+    {@render widget?.()}
   </div>
 </div>
 

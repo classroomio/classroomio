@@ -16,8 +16,7 @@ const template: ExerciseTemplate = {
         options: [
           { label: 'To push changes to a remote repository', is_correct: false },
           {
-            label:
-              'To fetch changes from a remote repository and merge them into the current branch',
+            label: 'To fetch changes from a remote repository and merge them into the current branch',
             is_correct: true
           },
           { label: 'To delete a remote repository', is_correct: false }

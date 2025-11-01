@@ -1,29 +1,35 @@
 <script lang="ts">
-  import { CheckmarkOutline, ChevronDown, ChevronUp } from 'carbon-icons-svelte';
+  import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
+  import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+  import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
   import pluralize from 'pluralize';
 
   import { t } from '$lib/utils/functions/translations';
   import type { Lesson } from '$lib/utils/types';
 
-  export let title: string;
-  export let lessonCount: number;
-  export let exerciseCount: number;
-  export let lessons: Lesson[];
+  interface Props {
+    title: string;
+    lessonCount: number;
+    exerciseCount: number;
+    lessons: Lesson[];
+  }
 
-  let expand = false;
+  let { title, lessonCount, exerciseCount, lessons }: Props = $props();
+
+  let expand = $state(false);
 </script>
 
-<div class="w-full rounded-md my-3">
+<div class="my-3 w-full rounded-md">
   <!-- lesson header -->
   <button
-    class="py-3 pl-3 pr-4 bg-[#F7F7F7] dark:bg-neutral-700 text-sm font-medium flex items-center justify-between w-full"
-    on:click={() => (expand = !expand)}
+    class="flex w-full items-center justify-between bg-[#F7F7F7] py-3 pl-3 pr-4 text-sm font-medium dark:bg-neutral-700"
+    onclick={() => (expand = !expand)}
   >
     <span class="flex items-center gap-2">
       {#if expand}
-        <ChevronUp />
+        <ChevronUpIcon size={16} />
       {:else}
-        <ChevronDown />
+        <ChevronDownIcon size={16} />
       {/if}
       {title}
     </span>
@@ -35,8 +41,8 @@
 
   {#if expand}
     {#each lessons as lesson}
-      <div class="py-3 pl-3 text-[13px] text-[#656565] flex items-center gap-2 lesson-section">
-        <CheckmarkOutline size={16} class="scale-[0.8]" />
+      <div class="lesson-section flex items-center gap-2 py-3 pl-3 text-[13px] text-[#656565]">
+        <CircleCheckIcon size={16} />
         {lesson.title}
       </div>
     {/each}

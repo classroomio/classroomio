@@ -29,8 +29,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'How do you export a component as the default export in a file named "Component.js"?',
+        title: 'How do you export a component as the default export in a file named "Component.js"?',
         name: 'exportDefaultComponent',
         points: 1,
         order: 1,
@@ -72,8 +71,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'How would you import and use a default export named "Header" from a file named "Header.js"?',
+        title: 'How would you import and use a default export named "Header" from a file named "Header.js"?',
         name: 'importAndUseDefaultExport',
         points: 1,
         order: 3,
@@ -201,8 +199,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Explain briefly why you might use named exports instead of a default export for multiple values.',
+        title: 'Explain briefly why you might use named exports instead of a default export for multiple values.',
         name: 'namedExportsAdvantage',
         points: 5,
         order: 9,

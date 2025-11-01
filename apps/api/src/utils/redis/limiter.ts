@@ -3,7 +3,7 @@ import {
   DEFAULT_WINDOW_MS,
   ERROR_MESSAGES,
   RATE_LIMIT_KEY_PREFIX
-} from '$src/constants/rate-limiter';
+} from '@api/constants/rate-limiter';
 
 import { Redis } from 'ioredis';
 import { redis } from './redis';

@@ -13,10 +13,7 @@ class ApiClient {
     this.config = { ...DEFAULT_CONFIG, ...config };
   }
 
-  private async makeRequest(
-    input: RequestInfo | URL,
-    requestConfig: RequestConfig = {}
-  ): Promise<Response> {
+  private async makeRequest(input: RequestInfo | URL, requestConfig: RequestConfig = {}): Promise<Response> {
     console.log('makeRequest', input, requestConfig);
     const {
       timeout = this.config.timeout,
@@ -38,11 +35,7 @@ class ApiClient {
 
     // Handle body serialization and content-type
     let requestBody = fetchConfig.body;
-    if (
-      fetchConfig.body &&
-      typeof fetchConfig.body === 'object' &&
-      !(fetchConfig.body instanceof FormData)
-    ) {
+    if (fetchConfig.body && typeof fetchConfig.body === 'object' && !(fetchConfig.body instanceof FormData)) {
       // Auto-stringify objects (except FormData)
       requestBody = JSON.stringify(fetchConfig.body);
       if (!headers.has('Content-Type')) {
@@ -96,22 +89,12 @@ class ApiClient {
 
         if (response.status === 401) {
           await this.config.onAuthError();
-          throw new ApiError(
-            'Authentication failed',
-            response.status,
-            response.statusText,
-            response
-          );
+          throw new ApiError('Authentication failed', response.status, response.statusText, response);
         }
 
         if (response.status >= 400 && response.status < 500) {
           const errorText = await response.text().catch(() => 'Unknown error');
-          throw new ApiError(
-            `Client error: ${errorText}`,
-            response.status,
-            response.statusText,
-            response
-          );
+          throw new ApiError(`Client error: ${errorText}`, response.status, response.statusText, response);
         }
 
         if (response.status >= 500) {
@@ -132,12 +115,7 @@ class ApiClient {
         }
 
         // Other status codes
-        throw new ApiError(
-          `Unexpected status: ${response.statusText}`,
-          response.status,
-          response.statusText,
-          response
-        );
+        throw new ApiError(`Unexpected status: ${response.statusText}`, response.status, response.statusText, response);
       } catch (error) {
         clearTimeout(timeoutId);
 

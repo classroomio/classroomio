@@ -2,7 +2,7 @@
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -12,33 +12,32 @@
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
   import { Column, Grid, RadioButton, RadioButtonGroup, Row, Toggle } from 'carbon-components-svelte';
-  import Save from 'carbon-icons-svelte/lib/Save.svelte';
-  import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
+  import SaveIcon from '@lucide/svelte/icons/save';
+  import TrashIcon from '@lucide/svelte/icons/trash';
   import SectionTitle from '../SectionTitle.svelte';
-  import type { OrgLandingPageJson } from './store';
   import { landingPageSettings } from './store';
 
-  let isSaving = false;
-  let creatingNewQuestion = false;
-  let creatingNewCustomLink = false;
-  let hasUnsavedChanges = false;
-  let widgetKey = '';
+  let isSaving = $state(false);
+  let creatingNewQuestion = $state(false);
+  let creatingNewCustomLink = $state(false);
+  let hasUnsavedChanges = $state(false);
+  let widgetKey = $state('');
   const banner = [
     { value: 'video', label: `${$t('settings.landing_page.actions.banner_type.video')}` },
     { value: 'image', label: `${$t('settings.landing_page.actions.banner_type.image')}` }
   ];
   const supabase = getSupabase();
 
-  let newQuestion = {
+  let newQuestion = $state({
     title: '',
     content: ''
-  };
+  });
 
-  let newCustomLink = {
+  let newCustomLink = $state({
     label: '',
     url: '',
     openInNewTab: false
-  };
+  });
 
   function widgetControl(key: string) {
     widgetKey = key;
@@ -145,9 +144,12 @@
     isSaving = false;
   }
 
-  function setDefault(landingpage: OrgLandingPageJson) {
-    if (landingpage && Object.keys(landingpage).length) {
-      // Added new key, support backward compatibility
+  // Set default from store
+  currentOrg.subscribe((cOrg) => {
+    if (cOrg.landingpage && Object.keys(cOrg.landingpage).length) {
+      const landingpage = { ...cOrg.landingpage };
+
+      // Fallbacks for new keys we added into JSON, in case a user already saved the old JSON
       if (!landingpage?.header?.banner) {
         landingpage.header.banner = $landingPageSettings.header.banner;
       }
@@ -159,16 +161,15 @@
       if (!landingpage.customLinks) {
         landingpage.customLinks = $landingPageSettings.customLinks;
       }
-
       $landingPageSettings = {
         ...landingpage
-      } as OrgLandingPageJson;
+      };
     }
-  }
-  $: setDefault($currentOrg?.landingpage as unknown as OrgLandingPageJson);
+  });
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
+
 <Grid class="border-c relative mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}>
@@ -232,7 +233,10 @@
       <RadioButtonGroup
         legendText={$t('settings.landing_page.actions.banner_type.heading')}
         bind:selected={$landingPageSettings.header.banner.type}
-        on:change={() => (hasUnsavedChanges = true)}
+        on:click={() => {
+          if (hasUnsavedChanges) return;
+          hasUnsavedChanges = true;
+        }}
         class="mb-5 mt-10"
       >
         {#each banner as item}
@@ -271,7 +275,7 @@
       {#if $handleOpenWidget.open && widgetKey === 'banner'}
         <UploadWidget
           bind:imageURL={$landingPageSettings.header.banner.image}
-          on:change={() => (hasUnsavedChanges = true)}
+          onchange={() => (hasUnsavedChanges = true)}
         />
       {/if}
 
@@ -294,15 +298,40 @@
           />
         {/if}
 
-        <Toggle bind:toggled={$landingPageSettings.header.background.show} size="sm">
+        <Toggle
+          toggled={$landingPageSettings.header.background?.show}
+          on:change={() => {
+            hasUnsavedChanges = true;
+            if (!$landingPageSettings.header.background) {
+              $landingPageSettings.header.background = {
+                image: '',
+                show: false
+              };
+            } else {
+              $landingPageSettings.header.background.show = !$landingPageSettings.header.background.show;
+            }
+          }}
+          size="sm"
+        >
           <span slot="labelA" style="color: gray">{$t('settings.landing_page.background.hide_background')}</span>
           <span slot="labelB" style="color: gray">{$t('settings.landing_page.background.show_background')}</span>
         </Toggle>
 
         {#if $handleOpenWidget.open && widgetKey === 'background'}
           <UploadWidget
-            bind:imageURL={$landingPageSettings.header.background.image}
-            on:change={() => (hasUnsavedChanges = true)}
+            imageURL={$landingPageSettings.header.background?.image}
+            onchange={(imgUrl) => {
+              hasUnsavedChanges = true;
+
+              if (!$landingPageSettings.header.background) {
+                $landingPageSettings.header.background = {
+                  image: imgUrl,
+                  show: true
+                };
+              } else {
+                $landingPageSettings.header.background.image = imgUrl;
+              }
+            }}
           />
         {/if}
       </div>
@@ -388,8 +417,9 @@
   </Row>
 
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
-    <Column sm={4} md={4} lg={4}
-      ><SectionTitle>{$t('settings.landing_page.faq.heading')}</SectionTitle>
+    <Column sm={4} md={4} lg={4}>
+      <SectionTitle>{$t('settings.landing_page.faq.heading')}</SectionTitle>
+
       <Toggle bind:toggled={$landingPageSettings.faq.show} size="sm" on:change={() => (hasUnsavedChanges = true)}>
         <span slot="labelA" style="color: gray">{$t('settings.landing_page.faq.hide_section')}</span>
         <span slot="labelB" style="color: gray">{$t('settings.landing_page.faq.show_section')}</span>
@@ -422,7 +452,7 @@
             isAIEnabled={true}
           />
           <IconButton onClick={() => deleteFaq(item.id)}>
-            <TrashCan size={24} class="fill-red-700" />
+            <TrashIcon size={16} />
           </IconButton>
         </div>
       {/each}
@@ -468,7 +498,7 @@
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('settings.landing_page.contact_us.heading')}</SectionTitle>
-      <Toggle toggled={$landingPageSettings.contact.show} size="sm" on:change={() => (hasUnsavedChanges = true)}>
+      <Toggle bind:toggled={$landingPageSettings.contact.show} size="sm" on:change={() => (hasUnsavedChanges = true)}>
         <span slot="labelA" style="color: gray">{$t('settings.landing_page.contact_us.hide_section')}</span>
         <span slot="labelB" style="color: gray">{$t('settings.landing_page.contact_us.show_section')}</span>
       </Toggle>
@@ -597,7 +627,7 @@
               <span class="text-sm">{$t('settings.landing_page.custom_links.new_tab')}</span>
             </label>
             <IconButton onClick={() => deleteCustomLink(link.id)}>
-              <TrashCan size={20} class="fill-red-700" />
+              <TrashIcon size={16} />
             </IconButton>
           </div>
         </div>
@@ -705,7 +735,7 @@
 >
   <span>
     <IconButton onClick={handleSave} disabled={isSaving}>
-      <Save size={32} class=" rounded-full bg-blue-700 p-1" />
+      <SaveIcon size={16} />
     </IconButton>
   </span>
 </div>

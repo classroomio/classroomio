@@ -1,10 +1,10 @@
-<script>
-  import SendFilled from 'carbon-icons-svelte/lib/SendFilled.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+<script lang="ts">
+  import SendHorizontalIcon from '@lucide/svelte/icons/send-horizontal';
+  import { IconButton } from '$lib/components/IconButton';
 
-  export let onClick;
+  let { onClick } = $props();
 </script>
 
 <IconButton {onClick}>
-  <SendFilled size={24} class="carbon-icon dark:text-white" />
+  <SendHorizontalIcon size={16} class="filled" />
 </IconButton>

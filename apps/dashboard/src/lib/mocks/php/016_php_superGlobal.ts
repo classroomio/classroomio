@@ -8,8 +8,7 @@ const template: ExerciseTemplate = {
   questionnaire: {
     questions: [
       {
-        title:
-          'Which superglobal in PHP is used to collect form data after submitting an HTML form?',
+        title: 'Which superglobal in PHP is used to collect form data after submitting an HTML form?',
         name: 'question1',
         points: 2,
         order: 0,

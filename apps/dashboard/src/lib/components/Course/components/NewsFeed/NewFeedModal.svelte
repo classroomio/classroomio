@@ -7,33 +7,46 @@
   import { createNewFeed } from '$lib/utils/services/newsfeed';
   import { snackbar } from '$lib/components/Snackbar/store';
   import type { Feed, Author } from '$lib/utils/types/feed';
-  import {
-    NOTIFICATION_NAME,
-    triggerSendEmail
-  } from '$lib/utils/services/notification/notification';
+  import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/notification';
   import { t } from '$lib/utils/functions/translations';
   import { createNewsfeedValidation } from '$lib/utils/functions/validator';
   import { getTextFromHTML } from '$lib/utils/functions/toHtml';
 
-  export let author: Author | any = {};
-  export let courseId = '';
-  export let onSave = (feed: Feed) => {};
-  export let onEdit = (id: string, content: string) => {};
-  export let edit = false;
-  export let editFeed: Feed;
+  interface Props {
+    author?: Author | any;
+    courseId?: string;
+    onSave?: any;
+    onEdit?: any;
+    edit?: boolean;
+    editFeed: Feed | null;
+  }
 
-  let newPost = '';
-  let isLoading = false;
+  let {
+    author = {},
+    courseId = '',
+    onSave = (_feed: Feed) => {},
+    onEdit = (_id: string, _content: string) => {},
+    edit = $bindable(false),
+    editFeed = $bindable()
+  }: Props = $props();
+
+  let isLoading = $state(false);
   let createdFeed;
-  let errors = {};
+  let errors: Record<string, string> = $state({
+    newPost: ''
+  });
+
+  let newPost = $state(edit === true ? editFeed?.content : '');
 
   const onPost = async () => {
-    errors = createNewsfeedValidation(getTextFromHTML(newPost));
+    errors = createNewsfeedValidation(getTextFromHTML(newPost ?? ''));
 
-    if (Object.keys(errors).length) {
+    if (Object.keys(errors).length || !editFeed) {
       return;
     }
+
     isLoading = true;
+
     try {
       if (edit) {
         onEdit(editFeed.id, newPost);
@@ -46,7 +59,7 @@
         const {
           response: { data }
         } = await createNewFeed({
-          content: newPost,
+          content: newPost ?? '',
           author_id: author.id,
           course_id: courseId,
           reaction: {
@@ -97,7 +110,6 @@
     edit = false;
     $isNewFeedModal.open = false;
   };
-  $: newPost = edit === true ? editFeed?.content : '';
 </script>
 
 <Modal
@@ -109,7 +121,7 @@
     ? $t('course.navItem.news_feed.heading_button.edit_post')
     : $t('course.navItem.news_feed.heading_button.make_a_post')}
 >
-  <section class="flex flex-col rounded-xl pb-3 h-full w-2/">
+  <section class="w-2/ flex h-full flex-col rounded-xl pb-3">
     <TextEditor
       value={newPost}
       onChange={(text) => {
@@ -128,11 +140,7 @@
           variant={VARIANTS.OUTLINED}
           onClick={resetEditor}
         />
-        <PrimaryButton
-          {isLoading}
-          label={$t('course.navItem.news_feed.heading_button.post')}
-          onClick={onPost}
-        />
+        <PrimaryButton {isLoading} label={$t('course.navItem.news_feed.heading_button.post')} onClick={onPost} />
       </div>
     </div>
   </section>

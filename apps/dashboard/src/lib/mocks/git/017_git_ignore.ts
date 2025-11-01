@@ -79,8 +79,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'What happens if you add a file to the .gitignore list after it has been committed to the repository?',
+        title: 'What happens if you add a file to the .gitignore list after it has been committed to the repository?',
         name: 'q5',
         points: 1,
         order: 4,

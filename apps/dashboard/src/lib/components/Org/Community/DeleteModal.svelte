@@ -1,14 +1,24 @@
-<script>
+<script lang="ts">
   import Modal from '$lib/components/Modal/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { t } from '$lib/utils/functions/translations';
 
-  export let onDelete = () => {};
-  export let onCancel = () => {};
-  export let open = false;
-  export let isQuestion = false;
-  export let isDeleting = false;
+  interface Props {
+    onDelete?: any;
+    onCancel?: any;
+    open?: boolean;
+    isQuestion?: boolean;
+    isDeleting?: boolean;
+  }
+
+  let {
+    onDelete = () => {},
+    onCancel = () => {},
+    open = $bindable(false),
+    isQuestion = false,
+    isDeleting = false
+  }: Props = $props();
 </script>
 
 <Modal

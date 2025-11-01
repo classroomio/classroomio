@@ -679,7 +679,8 @@
             },
             "no_answer": "Aucune réponse n'a été fournie",
             "check": "Vérifier",
-            "address": "Écrivez votre adresse ici"
+            "address": "Écrivez votre adresse ici",
+            "add_question": "Ajouter une question"
           },
           "new_exercise_modal": {
             "heading": "Nouvel exercice",

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import Modal from '$lib/components/Modal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { t } from '$lib/utils/functions/translations';
@@ -6,8 +6,7 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { deleteConfirmation } from '../store/exercise';
 
-  export let onDelete = () => {};
-  export let onCancel = () => {};
+  let { onDelete = () => {}, onCancel = () => {} } = $props();
 </script>
 
 <Modal

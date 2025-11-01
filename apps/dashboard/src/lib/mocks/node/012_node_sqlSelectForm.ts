@@ -8,8 +8,7 @@ const template: ExerciseTemplate = {
   questionnaire: {
     questions: [
       {
-        title:
-          'What is the purpose of selecting data from a MySQL database in a Node.js application?',
+        title: 'What is the purpose of selecting data from a MySQL database in a Node.js application?',
         name: 'question1',
         points: 2,
         order: 0,
@@ -122,8 +121,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'How do you handle asynchronous data retrieval when selecting data from a MySQL database in Node.js?',
+        title: 'How do you handle asynchronous data retrieval when selecting data from a MySQL database in Node.js?',
         name: 'question7',
         points: 1,
         order: 6,

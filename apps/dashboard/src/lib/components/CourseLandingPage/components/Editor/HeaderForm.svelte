@@ -6,7 +6,7 @@
   import { handleOpenWidget } from '../../store';
   import { t } from '$lib/utils/functions/translations';
 
-  export let course = {};
+  let { course = $bindable() } = $props();
 
   function widgetControl() {
     $handleOpenWidget.open = !$handleOpenWidget.open;
@@ -23,7 +23,7 @@
 <TextArea
   label={$t('course.navItem.landing_page.editor.header_form.description')}
   bind:value={course.description}
-  rows="6"
+  rows={6}
   className="mt-5"
   labelClassName="font-bold"
 />
@@ -38,7 +38,7 @@
   bind:value={course.metadata.videoUrl}
 />
 <div class="mt-7">
-  <p class="font-bold mb-3">{$t('course.navItem.landing_page.editor.header_form.replace_cover')}</p>
+  <p class="mb-3 font-bold">{$t('course.navItem.landing_page.editor.header_form.replace_cover')}</p>
   <PrimaryButton
     label={$t('course.navItem.landing_page.editor.header_form.replace')}
     variant={VARIANTS.OUTLINED}

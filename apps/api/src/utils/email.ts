@@ -1,6 +1,6 @@
 import { SendMailClient } from 'zeptomail';
 import type { Transporter } from 'nodemailer';
-import { env } from '$src/config/env';
+import { env } from '@api/config/env';
 import nodemailer from 'nodemailer';
 
 export const zohoClient = new SendMailClient({

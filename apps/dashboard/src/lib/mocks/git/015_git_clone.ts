@@ -50,8 +50,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the default name of the directory where "git clone" creates a local copy of the repository?',
+        title: 'What is the default name of the directory where "git clone" creates a local copy of the repository?',
         name: 'q3',
         points: 1,
         order: 2,
@@ -188,8 +187,7 @@ const template: ExerciseTemplate = {
             is_correct: false
           },
           {
-            label:
-              'git clone is used for cloning remote repositories, while git pull is used for local repositories',
+            label: 'git clone is used for cloning remote repositories, while git pull is used for local repositories',
             is_correct: false
           }
         ]

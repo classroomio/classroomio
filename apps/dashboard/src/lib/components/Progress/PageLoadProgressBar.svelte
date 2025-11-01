@@ -11,22 +11,38 @@
 <script lang="ts">
   import { beforeNavigate } from '$app/navigation';
 
-  // This component is a modified version of the component from the following repo:
-  // https://github.com/saibotsivad/svelte-progress-bar
+  interface Props {
+    // https://github.com/saibotsivad/svelte-progress-bar
+    id?: string | undefined;
+    viewTransitionName?: string;
+    busy?: boolean;
+    color?: string;
+    textColorClass?: `text-${string}` | '';
+    zIndex?: number;
+    minimum?: number;
+    maximum?: number;
+    settleTime?: number;
+    intervalTime?: number;
+    stepSizes?: any;
+    displayThresholdMs?: number;
+    noNavigationProgress?: boolean;
+  }
 
-  export let id: string | undefined = undefined;
-  export let viewTransitionName = 'sveltekit-progress-bar';
-  export let busy = false;
-  export let color = 'currentColor';
-  export let textColorClass: `text-${string}` | '' = '';
-  export let zIndex = 1;
-  export let minimum = 0.08;
-  export let maximum = 0.994;
-  export let settleTime = 700;
-  export let intervalTime = 700;
-  export let stepSizes = [0, 0.005, 0.01, 0.02];
-  export let displayThresholdMs = 150;
-  export let noNavigationProgress = false;
+  let {
+    id = undefined,
+    viewTransitionName = 'sveltekit-progress-bar',
+    busy = $bindable(false),
+    color = 'currentColor',
+    textColorClass = '',
+    zIndex = 1,
+    minimum = 0.08,
+    maximum = 0.994,
+    settleTime = 700,
+    intervalTime = 700,
+    stepSizes = [0, 0.005, 0.01, 0.02],
+    displayThresholdMs = 150,
+    noNavigationProgress = false
+  }: Props = $props();
 
   // Towards the end of the progress bar animation, we want to shorten the increment
   // step size, to give it the appearance of slowing down. This indicates to the user
@@ -40,108 +56,15 @@
   };
 
   // Internal private state.
-  let running = false;
+  let running = $state(false);
   let updater: ReturnType<typeof setInterval> | null = null;
-  let completed = false;
-  let width = 0;
+  let completed = $state(false);
+  let width = $state(0);
 
   // Update the busy prop when the internal `running` variable changes.
-  $: busy = running;
-
-  interface Props {
-    /** If set, an ID for the progress bar on the HTML page.
-     * This ID must be unique on the page to avoid conflicts.
-     *
-     * Might be used with another element to signal to assistive technologies that
-     * progress is ongoing.
-     *
-     * @example
-     * <ProgressBar id="my-progress-bar" bind:busy />
-     * <div aria-busy={busy} aria-describedby="my-progress-bar">
-     *  A div that is currently loading...
-     * </div>
-     */
-    id?: string | undefined;
-    /**
-     * The name of the CSS view transition to use for the progress bar.
-     * Sets the `view-transition-name` CSS property on the progress bar and leader elements.
-     *
-     * @default "sveltekit-progress-bar"
-     * @see https://developer.chrome.com/docs/web-platform/view-transitions/
-     * @see https://svelte.dev/blog/view-transitions
-     */
-    viewTransitionName?: string;
-    /** Will be set to true when the progress bar is running. */
-    busy?: boolean;
-    /**
-     * The CSS color to use to style the progress bar.
-     *
-     * If you're using Tailwind or Windi CSS, leave this to the default
-     * and set the `class` attribute to a `text-` class instead.
-     */
-    color?: string;
-    /**
-     * A Tailwind/Windi `text-` class to use to color the Progress Bar.
-     *
-     * This prop will be ignored if the `color` prop is set to something other than `currentColor`.
-     *
-     * **WARNING**: Do not set this prop with something other than a `text-` class,
-     *              as it could interfere with the styling of the Progress Bar.
-     *
-     * @example text-green-500
-     */
-    class?: `text-${string}` | '';
-
-    /**
-     * The `z-index` CSS property value to use for the progress bar.
-     * Be aware that the glowing effect on the bar will use this `zIndex` + 1.
-     */
-    zIndex?: number;
-
-    // These are defaults that you shouldn't need to change, but are exposed here in case you do.
-    /**
-     * The starting percent width use when the bar starts.
-     * Starting at 0 doesn't usually look very good.
-     * @default 0.08
-     */
-    minimum?: number;
-
-    /**
-     * The maximum percent width value to use when the bar is at the end but not marked as complete.
-     * Letting the bar stay at 100% width for a while doesn't usually look very good either.
-     * @default 0.994
-     */
-    maximum?: number;
-    /**
-     * Milliseconds to wait after the complete method is called to hide the progress bar.
-     * Letting it sit at 100% width for a very short time makes it feel more fluid.
-     * @default 700
-     */
-    settleTime?: number;
-
-    /**
-     * Milliseconds to wait between incrementing bar width when using
-     * the `start` (auto-increment) method.
-     * @default 700
-     */
-    intervalTime?: number;
-
-    /** Reset the progress bar back to the beginning, leaving it in a running state. */
-    stepSizes?: any;
-
-    /** When navigating, this is the threshold duration in milliseconds
-     * that the progress bar will wait before showing.
-     *
-     * This means that if the navigation takes less than this amount of time,
-     * the progress bar will not be shown. This is to prevent the progress bar
-     * from flashing in and out on the screen.
-     *
-     * @default 150 ms
-     */
-    displayThresholdMs?: number;
-    /** Set to `true` to disable the showing of the progress bar on navigation. */
-    noNavigationProgress?: boolean;
-  }
+  // run(() => {
+  //   busy = running;
+  // });
 
   export const reset = (min = minimum) => {
     width = min;
@@ -227,17 +150,19 @@
     };
   };
 
-  $: barStyle =
+  let barStyle = $derived(
     (color ? `background-color: ${color};` : '') +
-    (width && width * 100 ? `width: ${width * 100}%;` : '') +
-    `z-index: ${zIndex};` +
-    `view-transition-name: ${viewTransitionName}-bar;`;
+      (width && width * 100 ? `width: ${width * 100}%;` : '') +
+      `z-index: ${zIndex};` +
+      `view-transition-name: ${viewTransitionName}-bar;`
+  );
 
   // the box shadow of the leader bar uses `color` to set its shadow color
-  $: leaderColorStyle =
+  let leaderColorStyle = $derived(
     (color ? `background-color: ${color}; color: ${color};` : '') +
-    `z-index: ${zIndex + 1};` +
-    `view-transition-name: ${viewTransitionName}-leader;`;
+      `z-index: ${zIndex + 1};` +
+      `view-transition-name: ${viewTransitionName}-leader;`
+  );
 
   let progressBarStartTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -253,10 +178,7 @@
       if (displayThresholdMs > 0) {
         // Schedule a display of the progress bar in `displayThresholdMs` milliseconds.
         // This is to avoid flickering/flashing when the navigation is fast.
-        progressBarStartTimeout = setTimeout(
-          () => !noNavigationProgress && start(),
-          displayThresholdMs
-        );
+        progressBarStartTimeout = setTimeout(() => !noNavigationProgress && start(), displayThresholdMs);
       } else start();
 
       nav.complete.catch().finally(() => {

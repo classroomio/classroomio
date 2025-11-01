@@ -1,7 +1,9 @@
 <script lang="ts">
+  import { preventDefault } from '$lib/utils/functions/svelte';
+  import { untrack } from 'svelte';
   import copy from 'copy-to-clipboard';
   import { Popover } from 'carbon-components-svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import QRCode from 'qrcode';
   import { toPng } from 'html-to-image';
@@ -18,10 +20,7 @@
   import { qrInviteNodeStore } from './store';
   import { getStudentInviteLink } from '$lib/utils/functions/course';
   import ShareQrImage from './ShareQRImage.svelte';
-  import {
-    triggerSendEmail,
-    NOTIFICATION_NAME
-  } from '$lib/utils/services/notification/notification';
+  import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { t } from '$lib/utils/functions/translations';
 
@@ -32,24 +31,19 @@
     profileId?: string;
   }
 
-  let addPeopleParm;
-  let tutors: Tutor[] = [];
-  let selectedIds: Array<number> = [];
-  let selectedTutors: Tutor[] = [];
-  let isLoadingTutors = false;
-  let copied = false;
-  let qrImage = '';
-  let isLoadingQRDownload = false;
+  let tutors: Tutor[] = $state([]);
+  let selectedIds: Array<number> = $state([]);
+  let selectedTutors: Tutor[] = $state([]);
+  let isLoadingTutors = $state(false);
+  let copied = $state(false);
+  let qrImage = $state('');
+  let isLoadingQRDownload = $state(false);
 
-  function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
-    return value !== null && value !== undefined;
-  }
-  const formatSelected = (i: Array<number>): Tutor[] =>
-    i.length === 0 ? [] : i.map((id) => tutors.find((tutor) => tutor.id === id)).filter(notEmpty);
+  const addPeopleParm = $derived(new URLSearchParams(page.url.search).get('add'));
 
   function onSubmit() {
     if (!selectedTutors.length) {
-      goto($page.url.pathname);
+      goto(page.url.pathname);
       return;
     }
 
@@ -72,7 +66,7 @@
       });
     }
 
-    addGroupMember(membersStack).then(async (membersAdded) => {
+    addGroupMember(membersStack).then(async () => {
       if (!$course?.group?.id) return;
 
       const group = await fetchGroup($course?.group?.id);
@@ -85,7 +79,7 @@
         false
       );
 
-      goto($page.url.pathname);
+      goto(page.url.pathname);
     });
   }
 
@@ -105,20 +99,23 @@
       }));
   }
 
-  async function setTutors(orgId: string | undefined) {
+  function setTutors(orgId: string | undefined) {
     if (!orgId) return;
 
-    isLoadingTutors = true;
-    const { team, error } = await getOrgTeam(orgId);
-    if (error) {
-      console.error('Error fetching teams', error);
+    untrack(async () => {
+      isLoadingTutors = true;
+
+      const { team, error } = await getOrgTeam(orgId);
+      if (error) {
+        console.error('Error fetching teams', error);
+        isLoadingTutors = false;
+        return;
+      }
+
+      tutors = getTutors(team);
+
       isLoadingTutors = false;
-      return;
-    }
-
-    tutors = getTutors(team);
-
-    isLoadingTutors = false;
+    });
   }
 
   function copyLink() {
@@ -137,50 +134,52 @@
   }
 
   function closeModal() {
-    goto($page.url.pathname);
+    goto(page.url.pathname);
   }
 
   function handleQRDownload() {
     if (!$qrInviteNodeStore) {
-			console.error('Node is not defined');
-			return;
-		}
+      console.error('Node is not defined');
+      return;
+    }
 
-		isLoadingQRDownload = true;
-		setTimeout(() => {
-			toPng($qrInviteNodeStore)
-				.then((dataUrl) => {
-					const link = document.createElement('a');
-					link.download = `${$course.slug}-qr-code.png`;
-					link.href = dataUrl;
-					link.click();
-				})
-				.catch((error) => {
-					isLoadingQRDownload = false;
-					console.error('Oops, something went wrong!', error);
-				})
-				.finally(() => {
-					isLoadingQRDownload = false;
-				});
-		}, 300);
+    isLoadingQRDownload = true;
+    setTimeout(() => {
+      toPng($qrInviteNodeStore)
+        .then((dataUrl) => {
+          const link = document.createElement('a');
+          link.download = `${$course.slug}-qr-code.png`;
+          link.href = dataUrl;
+          link.click();
+        })
+        .catch((error) => {
+          isLoadingQRDownload = false;
+          console.error('Oops, something went wrong!', error);
+        })
+        .finally(() => {
+          isLoadingQRDownload = false;
+        });
+    }, 300);
   }
 
   async function generateQR(text) {
     try {
-      qrImage = await QRCode.toDataURL(text);
+      const image = await QRCode.toDataURL(text);
+      untrack(() => {
+        qrImage = image;
+      });
     } catch (err) {
       console.error(err);
     }
   }
 
-  $: {
-    selectedTutors = formatSelected(selectedIds);
-    const query = new URLSearchParams($page.url.search);
-    addPeopleParm = query.get('add');
-  }
+  $effect(() => {
+    setTutors($currentOrg.id);
+  });
 
-  $: setTutors($currentOrg.id);
-  $: generateQR(getStudentInviteLink($course, $currentOrg.siteName, $currentOrgDomain));
+  $effect(() => {
+    generateQR(getStudentInviteLink($course, $currentOrg.siteName, $currentOrgDomain));
+  });
 </script>
 
 <Modal
@@ -190,9 +189,9 @@
   maxWidth="max-w-lg"
   modalHeading={$t('course.navItem.people.invite_modal.title')}
 >
-  <form on:submit|preventDefault={onSubmit}>
+  <form onsubmit={preventDefault(onSubmit)}>
     <div class="mb-8">
-      <p class="text-base mb-1 font-semibold">{$t('course.navItem.people.invite_modal.invite')}</p>
+      <p class="mb-1 text-base font-semibold">{$t('course.navItem.people.invite_modal.invite')}</p>
       <MultiSelect
         disabled={isLoadingTutors}
         label={$t('course.navItem.people.invite_modal.select')}
@@ -206,30 +205,23 @@
       {:else}
         <span>
           {$t('course.navItem.people.invite_modal.to_add')}
-          <a
-            href={`/org/${$currentOrg.siteName}/settings/teams`}
-            class="underline text-primary-600"
-          >
+          <a href={`/org/${$currentOrg.siteName}/settings/teams`} class="text-primary-600 underline">
             {$t('course.navItem.people.invite_modal.go_to')}
           </a>
         </span>
       {/if}
     </div>
 
-    <div class="mb-8 w-full flex justify-between items-center">
+    <div class="mb-8 flex w-full items-center justify-between">
       <div class="w-3/5">
-        <p class="text-base mb-1 font-semibold">
+        <p class="mb-1 text-base font-semibold">
           {$t('course.navItem.people.invite_modal.invite_students')}
         </p>
         <p class=" text-sm">{$t('course.navItem.people.invite_modal.via_link')}</p>
       </div>
 
       <div class="relative">
-        <button
-          type="button"
-          on:click={copyLink}
-          class="underline text-primary-800 font-bold cursor-pointer capitalize"
-        >
+        <button type="button" onclick={copyLink} class="text-primary-800 cursor-pointer font-bold capitalize underline">
           {$t('course.navItem.people.invite_modal.copy_link')}
         </button>
 
@@ -240,10 +232,10 @@
     </div>
 
     <div
-      class="flex gap-5 flex-col-reverse md:flex-row justify-between items-center md:items-stretch p-4 w-full border rounded-md"
+      class="flex w-full flex-col-reverse items-center justify-between gap-5 rounded-md border p-4 md:flex-row md:items-stretch"
     >
-      <div class="flex flex-col gap-3 items-center md:items-start justify-between">
-        <span class="font-medium text-sm">
+      <div class="flex flex-col items-center justify-between gap-3 md:items-start">
+        <span class="text-sm font-medium">
           {$t('course.navItem.people.invite_modal.via_qr')}
         </span>
 
@@ -255,8 +247,8 @@
         />
       </div>
 
-      <div class="w-full md:w-28 border-4 p-1 border-[#f7f7f7]">
-        <img src={qrImage} alt="link qrcode" class="w-full h-full" />
+      <div class="w-full border-4 border-[#f7f7f7] p-1 md:w-28">
+        <img src={qrImage} alt="link qrcode" class="h-full w-full" />
       </div>
     </div>
 
@@ -264,12 +256,8 @@
       <ShareQrImage {qrImage} course={$course} currentOrg={$currentOrg} />
     </div>
 
-    <div class="mt-5 flex items-center flex-row-reverse">
-      <PrimaryButton
-        className="px-6 py-3"
-        label={$t('course.navItem.people.invite_modal.finish')}
-        type="submit"
-      />
+    <div class="mt-5 flex flex-row-reverse items-center">
+      <PrimaryButton className="px-6 py-3" label={$t('course.navItem.people.invite_modal.finish')} type="submit" />
     </div>
   </form>
 </Modal>

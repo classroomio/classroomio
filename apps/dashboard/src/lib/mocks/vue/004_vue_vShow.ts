@@ -82,8 +82,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'How can you use "v-show" with "v-else-if" to conditionally render content in Vue.js?',
+        title: 'How can you use "v-show" with "v-else-if" to conditionally render content in Vue.js?',
         name: 'q7',
         points: 2,
         order: 6,
@@ -91,8 +90,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'What is the key difference between "v-show" and "v-if" in terms of rendering in Vue.js?',
+        title: 'What is the key difference between "v-show" and "v-if" in terms of rendering in Vue.js?',
         name: 'q8',
         points: 3,
         order: 7,
@@ -100,8 +98,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'How do you use "v-else-if" with "v-show" to conditionally render content in Vue.js?',
+        title: 'How do you use "v-else-if" with "v-show" to conditionally render content in Vue.js?',
         name: 'q9',
         points: 1,
         order: 8,

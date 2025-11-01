@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
   const uuid = (prefix: string): string => {
     return prefix + '_' + Math.floor(Math.random() * 1000000000) + String(Date.now());
   };
@@ -16,7 +16,7 @@
       injected: false
     };
 
-    const injectScript = (scriptId: string, doc: Document, url: string, cb: () => void) => {
+    const injectScript = (_scriptId: string, doc: Document, url: string, cb: () => void) => {
       state.injected = true;
       const script = doc.createElement('script');
       script.referrerPolicy = 'origin';
@@ -53,28 +53,42 @@
 <script lang="ts">
   import { onMount, createEventDispatcher, onDestroy } from 'svelte';
   import { bindHandlers } from './Utils';
-  export let id: string = uuid('tinymce-svelte'); // default values
-  export let inline: boolean | undefined = undefined;
-  export let disabled: boolean = false;
   // export let apiKey: string = 'no-api-key';
   // export let channel: string = '6';
-  // export let scriptSrc: string | undefined = undefined;
-  export let conf: any = {};
-  export let modelEvents: string = 'change input undo redo';
-  export let value: string = '';
-  export let text: string = '';
-  export let cssClass: string = 'tinymce-wrapper';
 
-  let container: HTMLElement;
-  let element: HTMLElement;
-  let editorRef: any;
+  interface Props {
+    id?: string; // default values
+    inline?: boolean | undefined;
+    disabled?: boolean;
+    // export let scriptSrc: string | undefined = undefined;
+    conf?: any;
+    modelEvents?: string;
+    value?: string;
+    text?: string;
+    cssClass?: string;
+  }
 
-  let lastVal = value;
-  let disablindCache = disabled;
+  let {
+    id = uuid('tinymce-svelte'),
+    inline = undefined,
+    disabled = false,
+    conf = $bindable({}),
+    modelEvents = 'change input undo redo',
+    value = $bindable(),
+    text = $bindable(''),
+    cssClass = 'tinymce-wrapper'
+  }: Props = $props();
+
+  let container: HTMLElement | undefined = $state();
+  let element: HTMLElement | undefined = $state();
+  let editorRef: any = $state();
+
+  let lastVal = $state(value);
+  let disablindCache = $state(disabled);
 
   const dispatch = createEventDispatcher();
 
-  $: {
+  $effect(() => {
     if (editorRef && lastVal !== value) {
       try {
         editorRef.setContent(value);
@@ -91,7 +105,7 @@
         editorRef.setMode(disabled ? 'readonly' : 'design');
       }
     }
-  }
+  });
 
   const getTinymce = () => {
     const getSink = () => {
@@ -111,7 +125,9 @@
       setup: (editor: any) => {
         editorRef = editor;
         editor.on('init', () => {
-          editor.setContent(value);
+          if (value) {
+            editor.setContent(value);
+          }
           // bind model events
           editor.on(modelEvents, () => {
             lastVal = editor.getContent();
@@ -127,7 +143,9 @@
         }
       }
     };
-    element.style.visibility = '';
+    if (element) {
+      element.style.visibility = '';
+    }
     getTinymce().init(finalInit);
   };
 
@@ -135,6 +153,8 @@
     if (getTinymce() !== null) {
       init();
     } else {
+      if (!container) return;
+
       const script = window.location.origin + '/js/tinymce/tinymce.min.js';
       scriptLoader.load(container.ownerDocument, script, () => {
         init();

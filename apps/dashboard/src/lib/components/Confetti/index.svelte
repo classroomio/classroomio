@@ -3,7 +3,7 @@
   import confetti from 'canvas-confetti';
   import { confettiStore } from './store';
 
-  let myCanvas;
+  let myCanvas = $state();
   let myConfetti;
 
   function showConfetti(show) {
@@ -29,13 +29,13 @@
       myConfetti(
         Object.assign({}, defaults, {
           particleCount,
-          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
         })
       );
       myConfetti(
         Object.assign({}, defaults, {
           particleCount,
-          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
         })
       );
     }, 250);
@@ -44,14 +44,16 @@
   onMount(() => {
     myConfetti = confetti.create(myCanvas, {
       resize: true,
-      useWorker: true,
+      useWorker: true
     });
   });
 
-  $: showConfetti($confettiStore.show);
+  $effect(() => {
+    showConfetti($confettiStore.show);
+  });
 </script>
 
-<canvas bind:this={myCanvas} />
+<canvas bind:this={myCanvas}></canvas>
 
 <style>
   canvas {

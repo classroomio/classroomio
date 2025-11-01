@@ -7,25 +7,34 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import { Dropdown, Tag } from 'carbon-components-svelte';
-  import { useCompletion } from 'ai/svelte';
-  import { QUESTION_TYPE } from '$lib/components/Question/constants';
+  // import { useCompletion } from 'ai/svelte';
+  // import { QUESTION_TYPE } from '$lib/components/Question/constants';
   import { t } from '$lib/utils/functions/translations';
   import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
   import type { SubmissionIdData } from '$lib/utils/types/submission';
+  import { untrack } from 'svelte';
 
-  export let open = false;
-  export let onClose = () => {};
-  export let handleSave = (d: SubmissionIdData) => {};
-  export let isGradeWithAI = false;
-  export let data: SubmissionIdData;
-  export let deleteSubmission = async (id: string, statusId: number) => {};
-  export let updateStatus = (arg: {
-    submissionId: string;
-    prevStatusId: number;
-    nextStatusId: number;
-    total: number;
-  }) => {};
-  export let isSaving = false;
+  interface Props {
+    open?: boolean;
+    onClose?: any;
+    handleSave?: any;
+    isGradeWithAI?: boolean;
+    data: SubmissionIdData;
+    deleteSubmission?: any;
+    updateStatus?: any;
+    isSaving?: boolean;
+  }
+
+  let {
+    open = $bindable(false),
+    onClose = () => {},
+    handleSave = (_d: SubmissionIdData) => {},
+    isGradeWithAI = $bindable(false),
+    data = $bindable(),
+    deleteSubmission = async (_id: string, _statusId: number) => {},
+    updateStatus = (_arg: { submissionId: string; prevStatusId: number; nextStatusId: number; total: number }) => {},
+    isSaving = false
+  }: Props = $props();
 
   const SELECTABLE_STATUS = [
     {
@@ -43,14 +52,15 @@
   ];
 
   let status = SELECTABLE_STATUS[0];
-  let selectedId = status.id;
-  let reasons = {};
-  let isLoading = false;
-  let total = 0;
-  let maxPoints = 0;
-  let openMenu = false;
-  let openDeletePrompt = false;
-  let isDeleting = false;
+  let selectedId = $state(status.id);
+  let reasons = $state({});
+  let isLoading = $state(false);
+  let openMenu = $state(false);
+  let openDeletePrompt = $state(false);
+  let isDeleting = $state(false);
+
+  const total = calculateTotal(data.questionAnswerByPoint);
+  const maxPoints = $derived(getMaxPoints(data.questions));
 
   function getMaxPoints(questions) {
     return (questions || []).reduce((acc, question) => acc + question.points, 0);
@@ -80,41 +90,43 @@
   }
 
   function setStatus(data: SubmissionIdData) {
-    const statusBySelectedId = SELECTABLE_STATUS.find((status) => status.id === data.statusId);
+    untrack(() => {
+      const statusBySelectedId = SELECTABLE_STATUS.find((status) => status.id === data.statusId);
 
-    if (!statusBySelectedId) {
-      return;
-    }
+      if (!statusBySelectedId) {
+        return;
+      }
 
-    status = statusBySelectedId;
+      status = statusBySelectedId;
 
-    if (data.statusId !== selectedId) {
-      selectedId = data.statusId;
-    }
+      if (data.statusId !== selectedId) {
+        selectedId = data.statusId;
+      }
+    });
   }
 
-  const getMultipleAnswersGrade = (options, answer, points) => {
-    const correctOptions = options
-      .filter((option) => option.is_correct)
-      .map((option) => option.value);
+  // const getMultipleAnswersGrade = (options, answer, points) => {
+  //   const correctOptions = options
+  //     .filter((option) => option.is_correct)
+  //     .map((option) => option.value);
 
-    const correctSelections = answer.answers.filter((answer) =>
-      correctOptions.includes(answer)
-    ).length;
+  //   const correctSelections = answer.answers.filter((answer) =>
+  //     correctOptions.includes(answer)
+  //   ).length;
 
-    const incorrectSelections = answer.answers.length - correctSelections;
+  //   const incorrectSelections = answer.answers.length - correctSelections;
 
-    const pointsEarned = (correctSelections / correctOptions.length) * points;
-    const deduction = (incorrectSelections * points) / correctOptions.length;
-    const finalPoints = Math.max(pointsEarned - deduction, 0);
+  //   const pointsEarned = (correctSelections / correctOptions.length) * points;
+  //   const deduction = (incorrectSelections * points) / correctOptions.length;
+  //   const finalPoints = Math.max(pointsEarned - deduction, 0);
 
-    return {
-      finalPoints,
-      correctOptions,
-      correctSelections,
-      incorrectSelections
-    };
-  };
+  //   return {
+  //     finalPoints,
+  //     correctOptions,
+  //     correctSelections,
+  //     incorrectSelections
+  //   };
+  // };
 
   async function handleDeleteSubmission() {
     isDeleting = true;
@@ -122,97 +134,96 @@
     isDeleting = false;
   }
 
-  const { input, handleSubmit, completion } = useCompletion({
-    api: '/api/completion/gradingprompt',
-    onFinish: async () => {
-      try {
-        const responseData = $completion.replace('```json', '').replace('```', '');
+  // const { input, handleSubmit, completion } = useCompletion({
+  //   api: '/api/completion/gradingprompt',
+  //   onFinish: async () => {
+  //     try {
+  //       const responseData = $completion.replace('```json', '').replace('```', '');
 
-        let aiResponses: {
-          id: number;
-          score: number;
-          explanation: string;
-        }[] = [];
-        try {
-          // Parse the modified response data as JSON
-          aiResponses = JSON.parse(responseData);
-        } catch (error) {
-          console.error('Error parsing AI response', error);
-        }
+  //       let aiResponses: {
+  //         id: number;
+  //         score: number;
+  //         explanation: string;
+  //       }[] = [];
+  //       try {
+  //         // Parse the modified response data as JSON
+  //         aiResponses = JSON.parse(responseData);
+  //       } catch (error) {
+  //         console.error('Error parsing AI response', error);
+  //       }
 
-        data?.questions.forEach((question) => {
-          const { id, points, question_type_id, options } = question;
-          if (question_type_id == QUESTION_TYPE.RADIO) {
-            const answer = data.questionAnswers.find((q) => q.question_id === id);
+  //       data?.questions.forEach((question) => {
+  //         const { id, points, question_type_id, options } = question;
+  //         if (question_type_id == QUESTION_TYPE.RADIO) {
+  //           const answer = data.questionAnswers.find((q) => q.question_id === id);
 
-            const answerPoints = answer?.answers?.length ?? 0;
+  //           const answerPoints = answer?.answers?.length ?? 0;
 
-            reasons = {
-              ...reasons,
-              [id]: `${$t('course.navItem.submissions.grading_modal.allocated')} ${$t(
-                'course.navItem.submissions.grading_modal.total_try'
-              )} ${answerPoints} `
-            };
-            data.questionAnswerByPoint[id] = `${Math.ceil(points / answerPoints)}`;
-          } else if (question_type_id == QUESTION_TYPE.CHECKBOX) {
-            const answer = data.questionAnswers.find((q) => q.question_id === id);
+  //           reasons = {
+  //             ...reasons,
+  //             [id]: `${$t('course.navItem.submissions.grading_modal.allocated')} ${$t(
+  //               'course.navItem.submissions.grading_modal.total_try'
+  //             )} ${answerPoints} `
+  //           };
+  //           data.questionAnswerByPoint[id] = `${Math.ceil(points / answerPoints)}`;
+  //         } else if (question_type_id == QUESTION_TYPE.CHECKBOX) {
+  //           const answer = data.questionAnswers.find((q) => q.question_id === id);
 
-            const { finalPoints, correctOptions, correctSelections, incorrectSelections } =
-              getMultipleAnswersGrade(options, answer, points);
+  //           const { finalPoints, correctOptions, correctSelections, incorrectSelections } =
+  //             getMultipleAnswersGrade(options, answer, points);
 
-            reasons = {
-              ...reasons,
-              [id]: `${$t(
-                'course.navItem.submissions.grading_modal.allocated'
-              )} ${correctSelections} ${$t('course.navItem.submissions.grading_modal.out_of')} ${
-                correctOptions.length
-              } ${$t('course.navItem.submissions.grading_modal.options_correct')} ${$t(
-                'course.navItem.submissions.grading_modal.options_wrong'
-              )} ${incorrectSelections} `
-            };
+  //           reasons = {
+  //             ...reasons,
+  //             [id]: `${$t(
+  //               'course.navItem.submissions.grading_modal.allocated'
+  //             )} ${correctSelections} ${$t('course.navItem.submissions.grading_modal.out_of')} ${
+  //               correctOptions.length
+  //             } ${$t('course.navItem.submissions.grading_modal.options_correct')} ${$t(
+  //               'course.navItem.submissions.grading_modal.options_wrong'
+  //             )} ${incorrectSelections} `
+  //           };
 
-            data.questionAnswerByPoint[id] = `${finalPoints}`;
-          } else if (aiResponses.length) {
-            const graded = aiResponses.find((res) => res.id === id);
+  //           data.questionAnswerByPoint[id] = `${finalPoints}`;
+  //         } else if (aiResponses.length) {
+  //           const graded = aiResponses.find((res) => res.id === id);
 
-            reasons = {
-              ...reasons,
-              [id]: `${graded?.explanation}`
-            };
+  //           reasons = {
+  //             ...reasons,
+  //             [id]: `${graded?.explanation}`
+  //           };
 
-            data.questionAnswerByPoint[id] = `${graded?.score}`;
-          }
-        });
-      } catch (error) {
-        console.error('Error', error);
-      } finally {
-        isLoading = false;
-      }
-    }
-  });
+  //           data.questionAnswerByPoint[id] = `${graded?.score}`;
+  //         }
+  //       });
+  //     } catch (error) {
+  //       console.error('Error', error);
+  //     } finally {
+  //       isLoading = false;
+  //     }
+  //   }
+  // });
 
   function gradeWithAI() {
-    isGradeWithAI = true;
-    isLoading = true;
-    const paragraphAiInput = data.questions
-      .filter((q) => q.question_type_id === QUESTION_TYPE.TEXTAREA)
-      .map((q) => {
-        const answer = data.questionAnswers.find((qA) => qA.question_id === q.id); // { open_answer: '' }
-        return {
-          id: q.id,
-          question: q.title,
-          answer: answer?.open_answer,
-          point: q.points
-        };
-      });
-
-    $input = JSON.stringify(paragraphAiInput);
-    handleSubmit({ preventDefault: () => {} });
+    // isGradeWithAI = true;
+    // isLoading = true;
+    // const paragraphAiInput = data.questions
+    //   .filter((q) => q.question_type_id === QUESTION_TYPE.TEXTAREA)
+    //   .map((q) => {
+    //     const answer = data.questionAnswers.find((qA) => qA.question_id === q.id); // { open_answer: '' }
+    //     return {
+    //       id: q.id,
+    //       question: q.title,
+    //       answer: answer?.open_answer,
+    //       point: q.points
+    //     };
+    //   });
+    // $input = JSON.stringify(paragraphAiInput);
+    // handleSubmit({ preventDefault: () => {} });
   }
 
-  $: total = calculateTotal(data.questionAnswerByPoint);
-  $: maxPoints = getMaxPoints(data.questions);
-  $: setStatus(data);
+  $effect(() => {
+    setStatus(data);
+  });
 </script>
 
 <Modal
@@ -250,9 +261,7 @@
       </div>
     {:else}
       <Preview
-        questions={Array.isArray(data.questions)
-          ? data.questions.sort((a, b) => a.order - b.order)
-          : []}
+        questions={Array.isArray(data.questions) ? data.questions.sort((a, b) => a.order - b.order) : []}
         questionnaireMetaData={{
           answers: data.answers || {},
           isFinished: true
@@ -300,9 +309,7 @@
           {$t('course.navItem.submissions.grading_modal.total_grade')}:
         </p>
 
-        <Tag
-          class="w-fit rounded-md bg-gray-100 font-semibold text-black dark:bg-neutral-700 dark:text-white"
-        >
+        <Tag class="w-fit rounded-md bg-gray-100 font-semibold text-black dark:bg-neutral-700 dark:text-white">
           {total}/{maxPoints}
         </Tag>
       </div>
@@ -318,14 +325,8 @@
           {$t('course.navItem.submissions.grading_modal.student')}:
         </p>
         {#if data.student}
-          <div
-            class="flex flex-row items-center justify-center rounded-md bg-gray-100 p-[6px] dark:bg-neutral-700"
-          >
-            <img
-              alt="Student avatar"
-              class="flex h-5 w-5 rounded-full"
-              src={data.student.avatar_url}
-            />
+          <div class="flex flex-row items-center justify-center rounded-md bg-gray-100 p-[6px] dark:bg-neutral-700">
+            <img alt="Student avatar" class="flex h-5 w-5 rounded-full" src={data.student.avatar_url} />
             <p class="ml-2 line-clamp-1 text-sm font-semibold dark:text-white">
               {data.student.fullname}
             </p>
@@ -344,12 +345,7 @@
         <p class="font-semibold text-gray-500 dark:text-white">
           {$t('course.navItem.submissions.grading_modal.status')}:
         </p>
-        <Dropdown
-          bind:selectedId
-          items={SELECTABLE_STATUS}
-          class="w-full"
-          on:select={handleStatusChange}
-        />
+        <Dropdown bind:selectedId items={SELECTABLE_STATUS} class="w-full" on:select={handleStatusChange} />
       </div>
 
       <div class="flex flex-col items-start px-3 py-2 text-sm">
@@ -365,11 +361,7 @@
       </div>
 
       <div class="flex w-full flex-col space-y-3 px-3 py-2">
-        <PrimaryButton
-          onClick={gradeWithAI}
-          variant={VARIANTS.OUTLINED}
-          className="space-x-3 py-3 px-8 w-full "
-        >
+        <PrimaryButton onClick={gradeWithAI} variant={VARIANTS.OUTLINED} className="space-x-3 py-3 px-8 w-full ">
           <img src="/ai.svg" alt="ai" />
           <p class="text-sm font-semibold">
             {$t('course.navItem.submissions.grading_modal.grade_with_ai')}

@@ -1,0 +1,6 @@
+{
+  "extends": "@cio/tsconfig/base.json",
+  "compilerOptions": {
+    "resolveJsonModule": true
+  }
+}

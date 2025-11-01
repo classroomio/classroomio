@@ -7,14 +7,7 @@ import sendEmail from '$mail/sendEmail';
 export async function POST({ fetch, request }) {
   const { to, courseName, teacherEmail, studentFullname, orgName } = await request.json();
   // const accessToken = request.headers.get('Authorization') || '';
-  console.log(
-    '/POST api/email/course/student_prove_payment',
-    to,
-    courseName,
-    teacherEmail,
-    studentFullname,
-    orgName
-  );
+  console.log('/POST api/email/course/student_prove_payment', to, courseName, teacherEmail, studentFullname, orgName);
 
   if (!to || !courseName || !teacherEmail || !studentFullname || !orgName) {
     return json({ success: false, message: 'Missing required fields' }, { status: 400 });
