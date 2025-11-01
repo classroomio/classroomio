@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import TextField from '$lib/components/Form/TextField.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -13,14 +13,15 @@
   import { Column, Grid, Row } from 'carbon-components-svelte';
   import SectionTitle from '../SectionTitle.svelte';
   import LanguagePicker from './LanguagePicker.svelte';
+  import { LOCALE } from '$lib/utils/types';
 
   let avatar = '';
   let loading = false;
   let hasLangChanged = false;
-  let locale = '';
+  let locale: LOCALE;
   let hasUnsavedChanges = false;
 
-  let errors = {};
+  let errors: Record<string, string> = {};
 
   async function handleUpdate() {
     errors = updateProfileValidation($profile);
@@ -33,7 +34,7 @@
       console.log({ hasLangChanged });
       loading = true;
 
-      const updates = {
+      const updates: Partial<typeof $profile> = {
         fullname: $profile.fullname,
         username: $profile.username,
         email: $profile.email,
@@ -54,7 +55,8 @@
           updates.avatar_url = response.publicUrl;
           $profile.avatar_url = response.publicUrl;
         }
-        avatar = undefined;
+
+        avatar = '';
       }
 
       let { error } = await supabase.from('profile').update(updates).match({ id: $profile.id });
@@ -127,12 +129,7 @@
         errorMessage={$t(errors.email)}
         onChange={() => (hasUnsavedChanges = true)}
       />
-      <LanguagePicker
-        onChange={() => (hasUnsavedChanges = true)}
-        bind:hasLangChanged
-        bind:value={locale}
-        className="w-full lg:w-60 mb-4"
-      />
+      <LanguagePicker bind:hasLangChanged bind:value={locale} className="w-full lg:w-60 mb-4" />
     </Column>
   </Row>
 
