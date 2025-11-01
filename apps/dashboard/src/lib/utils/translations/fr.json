@@ -363,7 +363,6 @@
             "rating": "Notation",
             "hide": "Masquer l'avis",
             "validations": {
-              "invalid_type_error": "Ne doit pas être vide",
               "description": {
                 "min_char": "'La description est trop courte, minimum 5 caractères"
               },
@@ -584,7 +583,8 @@
           "text_area_title": "Laisser un commentaire",
           "comment_btn": "Commentaire",
           "load_more_btn": "Charger plus",
-          "cancel_btn": "Annuler"
+          "cancel_btn": "Annuler",
+          "comment_error": "Échec de la publication du commentaire. Veuillez réessayer."
         },
         "exercises": {
           "heading": "Tous les exercices",
@@ -938,6 +938,17 @@
       "date_created": "date créée",
       "published": "Publié",
       "lessons": "Cours"
+    },
+    "copy_course": {
+      "title": "Créer un cours",
+      "course_name_label": "Nom du cours",
+      "course_name_placeholder": "Le nom de votre cours",
+      "course_description_label": "Descriptif du cours",
+      "course_description_placeholder": "Entrez une description pour votre cours",
+      "create_button": "Créer",
+      "error": {
+        "failed_to_clone": "Échec du clonage du cours"
+      }
     }
   },
   "ai": {
@@ -1450,7 +1461,6 @@
     "launch_week": "Semaine de lancement"
   },
   "validations": {
-    "invalid_type_error": "Ne doit pas être vide",
     "email": {
       "not_valid": "E-mail non valide"
     },

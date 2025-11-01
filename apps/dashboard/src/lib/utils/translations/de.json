@@ -363,7 +363,6 @@
             "rating": "Bewertung",
             "hide": "Bewertung ausblenden",
             "validations": {
-              "invalid_type_error": "Darf nicht leer sein",
               "description": {
                 "min_char": "„Beschreibung ist zu kurz, mindestens 5 Zeichen.“"
               },
@@ -584,7 +583,8 @@
           "text_area_title": "Hinterlassen Sie einen Kommentar",
           "comment_btn": "Kommentar",
           "load_more_btn": "Mehr laden",
-          "cancel_btn": "Stornieren"
+          "cancel_btn": "Stornieren",
+          "comment_error": "Kommentar konnte nicht gepostet werden. Bitte versuchen Sie es erneut."
         },
         "exercises": {
           "heading": "Alle Übungen",
@@ -938,6 +938,17 @@
       "date_created": "Datum erstellt",
       "published": "Veröffentlicht",
       "lessons": "Unterricht"
+    },
+    "copy_course": {
+      "title": "Erstellen Sie einen Kurs",
+      "course_name_label": "Kursname",
+      "course_name_placeholder": "Ihr Kursname",
+      "course_description_label": "Kursbeschreibung",
+      "course_description_placeholder": "Geben Sie eine Beschreibung für Ihren Kurs ein",
+      "create_button": "Erstellen",
+      "error": {
+        "failed_to_clone": "Der Kurs konnte nicht geklont werden"
+      }
     }
   },
   "ai": {
@@ -1450,7 +1461,6 @@
     "launch_week": "Startwoche"
   },
   "validations": {
-    "invalid_type_error": "Darf nicht leer sein",
     "email": {
       "not_valid": "Ungültige E-Mail-Adresse"
     },

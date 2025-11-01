@@ -15,6 +15,11 @@
     StructuredListBody
   } from 'carbon-components-svelte';
   import { t } from '$lib/utils/functions/translations';
+  import CopyCourseModal from './components/CopyCourseModal/index.svelte';
+  import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
+  import { deleteCourse } from '$lib/utils/services/courses';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { deleteCourseModal, deleteCourseModalInitialState, courses as coursesStore } from './store';
 
   interface Props {
     courses?: Course[];
@@ -29,6 +34,11 @@
     emptyDescription = $t('courses.course_card.empty_description'),
     isExplore = false
   }: Props = $props();
+  
+  export let courses: Course[] = [];
+  export let emptyTitle = $t('courses.course_card.empty_title');
+  export let emptyDescription = $t('courses.course_card.empty_description');
+  export let isExplore = false;
 
   function calcProgressRate(progressRate?: number, totalLessons?: number): number {
     if (!progressRate || !totalLessons) {
@@ -37,9 +47,39 @@
 
     return Math.round((progressRate / totalLessons) * 100);
   }
+
+  async function handleDeleteCourse() {
+    if (!$deleteCourseModal.id) return;
+
+    $deleteCourseModal.isDeleting = true;
+
+    try {
+      await deleteCourse($deleteCourseModal.id);
+      
+      // Remove the course from the courses store
+      $coursesStore = $coursesStore.filter(course => course.id !== $deleteCourseModal.id);
+      
+      // Show success message
+      snackbar.success('snackbar.course_deleted');
+      
+      // Close modal and reset state
+      deleteCourseModal.set(deleteCourseModalInitialState);
+    } catch (error) {
+      console.error('Error deleting course:', error);
+      snackbar.error('snackbar.course_settings.error.went_wrong');
+      
+      // Stop deleting state on error
+      $deleteCourseModal.isDeleting = false;
+    }
+  }
 </script>
 
-<!-- <CopyCourseModal /> -->
+<CopyCourseModal />
+<DeleteModal 
+  onDelete={handleDeleteCourse} 
+  bind:open={$deleteCourseModal.open}
+  isLoading={$deleteCourseModal.isDeleting}
+/>
 
 <div class="mx-auto my-4 w-full">
   {#if $courseMetaDeta.isLoading}

@@ -6,10 +6,11 @@
 
   interface Props {
     open?: boolean;
-    onDelete?: any;
+    onDelete?: () => void;
+    isLoading?: boolean;
   }
 
-  let { open = $bindable(false), onDelete = () => {} }: Props = $props();
+  let { open = $bindable(false), onDelete = () => {}, isLoading = false }: Props = $props();
 
   function handleDelete() {
     onDelete();
@@ -18,7 +19,7 @@
 </script>
 
 <Modal
-  onClose={() => (open = false)}
+  onClose={() => !isLoading && (open = false)}
   bind:open
   width="w-96"
   containerClass="p-6"
@@ -36,12 +37,14 @@
         variant={VARIANTS.OUTLINED}
         label={$t('delete_modal.no')}
         onClick={() => (open = false)}
+        {isLoading}
       />
       <PrimaryButton
         className="px-6 py-3"
         variant={VARIANTS.CONTAINED_DANGER}
         label={$t('delete_modal.yes')}
-        onClick={handleDelete}
+        onClick={onDelete}
+        {isLoading}
       />
     </div>
   </div>
