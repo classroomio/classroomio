@@ -39,7 +39,6 @@ export async function POST({ fetch, request }) {
   await sendEmail(fetch)(emailData);
 
   return json({
-    success: true,
-    message: `Email sent ${verificationLink}`
+    success: true
   });
 }
