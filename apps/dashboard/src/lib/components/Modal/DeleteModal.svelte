@@ -11,11 +11,6 @@
   }
 
   let { open = $bindable(false), onDelete = () => {}, isLoading = false }: Props = $props();
-
-  function handleDelete() {
-    onDelete();
-    open = false;
-  }
 </script>
 
 <Modal

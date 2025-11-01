@@ -35,7 +35,7 @@
         }
       });
 
-      const result = (await response.json());
+      const result = await response.json();
 
       if (!response.ok) {
         throw new Error(result.error || $t('courses.copy_course.error.failed_to_clone'));

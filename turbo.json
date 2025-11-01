@@ -3,7 +3,7 @@
   "globalEnv": ["PUBLIC_IS_SELFHOSTED"],
   "pipeline": {
     "@cio/dashboard#build": {
-      "dependsOn": ["@cio/api#build"]
+      "dependsOn": ["@cio/api#build", "@cio/ui#build"]
     },
     "build": {
       "dependsOn": ["^build"],
@@ -18,6 +18,14 @@
     },
     "format": { "cache": true },
     "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "dashboard:dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "storybook:dev": {
       "cache": false,
       "persistent": true
     },

@@ -1,0 +1,454 @@
+/* Base TipTap Editor Styles with Light/Dark Theme Support */
+
+.tiptap :first-child {
+	margin-top: 0;
+}
+
+/* For Placeholder */
+.tiptap .is-empty::before {
+	pointer-events: none;
+	float: left;
+	height: 0;
+	color: var(--border-color-hover);
+	content: attr(data-placeholder);
+}
+
+/* Heading Styles */
+.tiptap h1,
+.tiptap h2,
+.tiptap h3,
+.tiptap h4,
+.tiptap h5,
+.tiptap h6 {
+	line-height: 1.2;
+	margin-top: 1rem;
+	text-wrap: pretty;
+}
+
+.tiptap h1,
+.tiptap h2 {
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+}
+
+.tiptap h1 {
+	scroll-margin: 5rem;
+	font-size: 2.25rem;
+	line-height: 2.5rem;
+	font-weight: 800;
+	letter-spacing: -0.015em;
+}
+
+.tiptap h2 {
+	font-size: 1.5rem;
+	font-weight: 700;
+}
+
+.tiptap h3 {
+	font-size: 1.25rem;
+	font-weight: 600;
+}
+
+.tiptap h4,
+.tiptap h5,
+.tiptap h6 {
+	font-size: 1rem;
+	font-weight: 600;
+}
+
+.tiptap blockquote {
+	margin: 1rem 0rem;
+	padding: 0.5rem 0;
+	padding-left: 0.75rem;
+	font-style: italic;
+	color: var(--blockquote-color);
+	position: relative;
+}
+
+.tiptap blockquote::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 0.25rem;
+	background-color: var(--blockquote-border);
+	border-radius: 0.5rem;
+}
+
+.tiptap blockquote p {
+	margin: 0;
+}
+
+/* Horizontal Rule */
+.tiptap hr {
+	border: none;
+	border-top: 1px solid var(--border-color);
+	margin: 1rem 0;
+}
+
+/* Inline Code */
+.tiptap code:not(pre code) {
+	background-color: var(--code-bg);
+	border-radius: 0.25rem;
+	padding: 0.2rem 0.3rem;
+	font-family: monospace;
+	font-size: 0.875rem;
+	font-weight: bold;
+}
+
+/* List Styling */
+
+.tiptap ul,
+.tiptap ol {
+	padding: 0 1rem;
+	margin: 0.5rem 1rem 0.5rem 0.4rem;
+}
+
+.tiptap ul li p,
+.tiptap ol li p {
+	margin-top: 0.25rem;
+	margin-bottom: 0.25rem;
+}
+
+/* Task List Styling */
+.tiptap ul[data-type='taskList'] {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.tiptap ul[data-type='taskList'] li {
+	align-items: flex-start;
+	display: flex;
+}
+
+.tiptap ul[data-type='taskList'] li > label {
+	flex: 0 0 auto;
+	margin-right: 0.5rem;
+	user-select: none;
+}
+
+.tiptap ul[data-type='taskList'] li > div {
+	flex: 1 1 auto;
+}
+
+.tiptap ul[data-type='taskList'] input[type='checkbox'] {
+	cursor: pointer;
+}
+
+.tiptap ul[data-type='taskList'] ul[data-type='taskList'] {
+	margin: 0;
+}
+
+ul[data-type='taskList'] li[data-checked='true'] div {
+	color: var(--task-completed-color);
+	text-decoration: line-through;
+}
+
+input[type='checkbox'] {
+	position: relative;
+	top: 0.25rem;
+	margin: 0;
+	display: grid;
+	place-content: center;
+	cursor: pointer;
+	width: 1rem;
+	height: 1rem;
+	border-radius: 0.25rem;
+}
+
+/* Color Swatches */
+.color {
+	white-space: nowrap;
+}
+
+.color::before {
+	margin-bottom: 0.15rem;
+	margin-right: 0.1rem;
+	display: inline-block;
+	width: 1rem;
+	height: 1rem;
+	border-radius: 0.25rem;
+	border: 1px solid var(--border-color);
+	vertical-align: middle;
+	background-color: var(--color);
+	content: ' ';
+}
+
+/* Code Block Styling */
+.tiptap pre {
+	margin: 0;
+	display: flex;
+	height: fit-content;
+	overflow: auto;
+	background-color: transparent;
+	padding: 0;
+}
+
+.tiptap pre code {
+	flex: 1;
+	border-radius: 0 !important;
+	background-color: transparent;
+	padding: 0;
+	color: inherit;
+	font-family: 'JetBrains Mono', monospace, Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono';
+}
+
+/* Drag Handle Styling */
+.drag-handle {
+	position: fixed;
+	z-index: 50;
+	width: 1.5rem;
+	height: 1.5rem;
+	display: flex;
+	padding-right: 0.5rem;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	cursor: grab;
+	opacity: 100;
+	transition-property: opacity;
+	transition-duration: 200ms;
+	transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+	color: var(--border-color-hover);
+}
+
+.drag-handle:active {
+	cursor: grabbing;
+}
+
+.drag-handle.hide {
+	opacity: 0;
+	pointer-events: none;
+}
+
+@media screen and (max-width: 600px) {
+	.drag-handle {
+		display: none;
+		pointer-events: none;
+	}
+}
+
+.drag-handle svg {
+	height: 1rem;
+	width: 1rem;
+}
+
+/* Math Equations (KaTeX) */
+.katex:hover {
+	background-color: var(--code-bg);
+}
+
+.katex.result {
+	border-bottom: 1px dashed var(--highlight-border);
+	background-color: var(--highlight-color);
+}
+
+/* Table Styling */
+.ProseMirror .tableWrapper {
+	margin: 0;
+	overflow: auto;
+	padding: 1rem;
+}
+
+.ProseMirror table {
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+	box-sizing: border-box;
+	width: 100%;
+	border-collapse: collapse;
+	border-radius: 0.25rem;
+	border: 1px solid var(--table-border);
+}
+
+.ProseMirror table td,
+.ProseMirror table th {
+	position: relative;
+	min-width: 100px;
+	border: 1px solid var(--table-border);
+	padding: 0.5rem;
+	text-align: left;
+	vertical-align: top;
+}
+
+.ProseMirror table td:first-of-type:not(a),
+.ProseMirror table th:first-of-type:not(a) {
+	margin-top: 0;
+}
+
+.ProseMirror table td p,
+.ProseMirror table th p {
+	margin: 0;
+}
+
+.ProseMirror table td p + p,
+.ProseMirror table th p + p {
+	margin-top: 0.75rem;
+}
+
+.ProseMirror table th {
+	font-weight: bold;
+}
+
+.ProseMirror table .column-resize-handle {
+	pointer-events: none;
+	position: absolute;
+	top: 0;
+	right: -0.25rem;
+	bottom: -2px;
+	display: flex;
+	width: 0.5rem;
+	background-color: var(--table-border);
+}
+
+.ProseMirror table .column-resize-handle::before {
+	content: '';
+	margin-left: 0.5rem;
+	height: 100%;
+	width: 1px;
+	background-color: var(--table-border);
+}
+
+.ProseMirror table .selectedCell {
+	border-style: double;
+	border-color: var(--table-border);
+	background-color: var(--table-bg-selected);
+}
+
+.ProseMirror table .grip-column,
+.ProseMirror table .grip-row {
+	position: absolute;
+	z-index: 10;
+	display: flex;
+	cursor: pointer;
+	align-items: center;
+	justify-content: center;
+	background-color: var(--table-bg-selected);
+}
+
+.ProseMirror table .grip-column {
+	top: -0.75rem;
+	left: 0;
+	margin-left: -1px;
+	height: 0.75rem;
+	width: calc(100% + 1px);
+	border-left: 1px solid var(--table-border);
+}
+
+.ProseMirror table .grip-column:hover::before,
+.ProseMirror table .grip-column.selected::before {
+	content: '';
+	width: 0.625rem;
+}
+
+.ProseMirror table .grip-column:hover {
+	background-color: var(--table-bg-hover);
+}
+
+.ProseMirror table .grip-column:hover::before {
+	border-bottom: 2px dotted var(--border-color-hover);
+}
+
+.ProseMirror table .grip-column.first {
+	border-top-left-radius: 0.125rem;
+	border-color: transparent;
+}
+
+.ProseMirror table .grip-column.last {
+	border-top-right-radius: 0.125rem;
+}
+
+.ProseMirror table .grip-column.selected {
+	border-color: var(--table-border);
+	background-color: var(--table-bg-hover);
+	box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.ProseMirror table .grip-column.selected::before {
+	border-bottom: 2px dotted var(--border-color-hover);
+}
+
+.ProseMirror table .grip-row {
+	left: -0.75rem;
+	top: 0;
+	margin-top: -1px;
+	height: calc(100% + 1px);
+	width: 0.75rem;
+	border-top: 1px solid var(--table-border);
+}
+
+.ProseMirror table .grip-row:hover::before,
+.ProseMirror table .grip-row.selected::before {
+	content: '';
+	height: 0.625rem;
+}
+
+.ProseMirror table .grip-row:hover {
+	background-color: var(--table-bg-hover);
+}
+
+.ProseMirror table .grip-row:hover::before {
+	border-left: 2px dotted var(--border-color-hover);
+}
+
+.ProseMirror table .grip-row.first {
+	border-top-left-radius: 0.125rem;
+	border-color: transparent;
+}
+
+.ProseMirror table .grip-row.last {
+	border-bottom-left-radius: 0.125rem;
+}
+
+.ProseMirror table .grip-row.selected {
+	border-color: var(--table-border);
+	background-color: var(--table-bg-hover);
+	box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.ProseMirror table .grip-row.selected::before {
+	border-left: 2px dotted var(--border-color-hover);
+}
+
+.tiptap .search-result {
+	background-color: var(--search-result-bg);
+	color: black;
+}
+
+.tiptap .search-result-current {
+	background-color: var(--search-result-current-bg);
+	color: black;
+}
+
+.code-wrapper {
+	background-color: var(--codeblock-bg);
+	border-radius: 0.5rem;
+	padding: 1rem;
+	position: relative;
+	height: fit-content;
+	width: 100%;
+	margin: 0.5rem 0;
+}
+
+.code-wrapper-tile {
+	opacity: 0;
+	width: 100%;
+	display: flex;
+	position: absolute;
+	top: 0;
+	padding: 0.25rem;
+	right: 0;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	transition: opacity 0.2s ease-in-out;
+}
+
+.code-wrapper:hover .code-wrapper-tile {
+	opacity: 1;
+}
+
+.tiptap iframe {
+	aspect-ratio: 16 / 9;
+}

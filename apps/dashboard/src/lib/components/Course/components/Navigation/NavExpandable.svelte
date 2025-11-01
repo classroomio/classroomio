@@ -79,7 +79,7 @@
 
 <div class={className}>
   <button
-    class="item relative flex items-center {btnPadding} mb-1 ml-2 {NavClasses.item} {isGroupActive &&
+    class="item group relative flex items-center {btnPadding} mb-1 ml-2 {NavClasses.item} {isGroupActive &&
       !isLoading &&
       NavClasses.active} w-[95%]"
     tabindex="0"

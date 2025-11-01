@@ -76,10 +76,11 @@
       if (error) throw error;
     } catch (error) {
       let message = error instanceof Error ? error.message : `${error}`;
+
       if (message.includes('profile_username_key')) {
         message = $t('snackbar.lms.error.username_exists');
       }
-      
+
       snackbar.error(`${$t('snackbar.lms.error.update')}: ${message}`);
 
       loading = false;
