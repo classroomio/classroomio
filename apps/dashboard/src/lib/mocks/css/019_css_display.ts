@@ -8,8 +8,7 @@ const template: ExerciseTemplate = {
   questionnaire: {
     questions: [
       {
-        title:
-          'Which CSS property is used to hide an element without affecting the layout of the page?',
+        title: 'Which CSS property is used to hide an element without affecting the layout of the page?',
         name: 'q1',
         points: 1,
         order: 0,
@@ -48,8 +47,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which CSS property is used to hide an element but still occupy space in the layout?',
+        title: 'Which CSS property is used to hide an element but still occupy space in the layout?',
         name: 'q4',
         points: 1,
         order: 3,
@@ -91,8 +89,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'How can you make an element invisible to the screen reader while still rendering it on the page?',
+        title: 'How can you make an element invisible to the screen reader while still rendering it on the page?',
         name: 'q8',
         points: 1,
         order: 7,

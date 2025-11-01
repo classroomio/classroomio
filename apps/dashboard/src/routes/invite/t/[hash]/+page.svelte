@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import AuthUI from '$lib/components/AuthUI/index.svelte';
   import type { Profile } from '$lib/components/Course/components/People/types';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -12,34 +11,31 @@
   import { setTheme } from '$lib/utils/functions/theme';
   import { t } from '$lib/utils/functions/translations';
   import { profile, user } from '$lib/utils/store/user';
-  import {
-    authValidation,
-    getConfirmPasswordError,
-    getDisableSubmit
-  } from '$lib/utils/functions/validator';
+  import { authValidation, getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import type { CurrentOrg } from '$lib/utils/types/org';
-  import { onMount } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import { snackbar } from '$lib/components/Snackbar/store.js';
 
-  export let data;
+  let { data } = $props();
 
   let supabase = getSupabase();
-  let fields = Object.assign({}, SIGNUP_FIELDS);
-  let loading = false;
-  let isLoggingOut = false;
-  let shouldLogout = false;
+  let fields = $state(Object.assign({}, SIGNUP_FIELDS));
+  let loading = $state(false);
+  let isLoggingOut = $state(false);
+  let shouldLogout = $state(false);
 
   let errors: {
     name?: string;
     email?: string;
     password?: string;
-    confirmPassword?: string;
-  } = {};
+  } = $state({});
 
-  let submitError: string;
-  let disableSubmit = false;
-  let formRef: HTMLFormElement;
+  let submitError: string = $state('');
+  let formRef: HTMLFormElement | undefined = $state();
+
+  const confirmPasswordError = $derived(getConfirmPasswordError(fields));
+  const disableSubmit = $derived(getDisableSubmit(fields));
 
   async function joinOrg(profileId: string, email: string) {
     if (!profileId || !email || !data.invite.currentOrg?.id) return;
@@ -163,23 +159,20 @@
     setCurOrg(data.invite.currentOrg as CurrentOrg);
   });
 
-  $: errors.confirmPassword = getConfirmPasswordError(fields);
-  $: disableSubmit = getDisableSubmit(fields);
+  const isLoading = $derived(loading || $user.fetchingUser);
 
-  $: autoLogout($profile?.email);
-  function autoLogout(email?: string) {
+  $effect(() => {
+    const email = $profile?.email;
     if (!email) return;
 
     if (email !== data.invite.email) {
       console.log('logout');
       snackbar.error('You are logged in with a different email');
-      shouldLogout = true;
+      untrack(() => {
+        shouldLogout = true;
+      });
     }
-  }
-
-  $: isLoading = loading || $user.fetchingUser;
-  $: console.log('$profile', $profile);
-  $: console.log('data.invite', data.invite);
+  });
 </script>
 
 <svelte:head>
@@ -188,7 +181,7 @@
 
 <AuthUI
   {supabase}
-  redirectPathname={$page.url.pathname}
+  redirectPathname={page.url.pathname}
   isLogin={false}
   {handleSubmit}
   {isLoading}
@@ -248,7 +241,7 @@
           className="mb-6"
           inputClassName="w-full"
           isDisabled={isLoading}
-          errorMessage={errors.confirmPassword}
+          errorMessage={confirmPasswordError}
           isRequired
         />
       {/if}

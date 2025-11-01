@@ -62,16 +62,14 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the second argument passed to the useMemo function, and why is it important?',
+        title: 'What is the second argument passed to the useMemo function, and why is it important?',
         name: 'q5',
         points: 1,
         order: 4,
         question_type: QuestionTypes[0], // RADIO
         options: [
           {
-            label:
-              'An array of dependencies; it specifies when the memoized value should recompute',
+            label: 'An array of dependencies; it specifies when the memoized value should recompute',
             is_correct: true
           },
           {
@@ -109,8 +107,7 @@ const template: ExerciseTemplate = {
             is_correct: true
           },
           {
-            label:
-              'useMemo is used for creating reusable components, while useCallback is for state management',
+            label: 'useMemo is used for creating reusable components, while useCallback is for state management',
             is_correct: false
           },
           {

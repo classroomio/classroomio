@@ -60,8 +60,7 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO
         options: [
           {
-            label:
-              'The commit history is preserved, but the branch pointer moves to a different commit',
+            label: 'The commit history is preserved, but the branch pointer moves to a different commit',
             is_correct: true
           },
           {

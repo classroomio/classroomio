@@ -151,8 +151,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which comment style is recommended for adding documentation comments in JavaScript?',
+        title: 'Which comment style is recommended for adding documentation comments in JavaScript?',
         name: 'q8',
         points: 1,
         order: 8,

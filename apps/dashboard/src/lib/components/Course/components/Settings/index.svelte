@@ -1,16 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { env } from '$env/dynamic/public';
-  import {
-    CodeSnippet,
-    Column,
-    Grid,
-    RadioButton,
-    RadioButtonGroup,
-    Row,
-    Toggle
-  } from 'carbon-components-svelte';
-  import { ArrowUpRight, Restart } from 'carbon-icons-svelte';
+  import { CodeSnippet, Column, Grid, RadioButton, RadioButtonGroup, Row, Toggle } from 'carbon-components-svelte';
+  import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
+  import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
+  import { untrack } from 'svelte';
 
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -21,7 +14,7 @@
 
   import { course } from '$lib/components/Course/store';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -37,16 +30,19 @@
   import { lessons } from '../Lesson/store/lessons';
   import { settings } from './store';
 
-  let isSaving = false;
-  let isLoading = false;
-  let isDeleting = false;
+  let isSaving = $state(false);
+  let isLoading = $state(false);
+  let isDeleting = $state(false);
   let errors: {
     title: string | undefined;
     description: string | undefined;
-  };
+  } = $state({
+    title: undefined,
+    description: undefined
+  });
   let avatar: string | undefined;
-  let hasUnsavedChanges = false;
-  let openDeleteModal = false;
+  let hasUnsavedChanges = $state(false);
+  let openDeleteModal = $state(false);
 
   function widgetControl() {
     $handleOpenWidget.open = !$handleOpenWidget.open;
@@ -62,6 +58,9 @@
   }
 
   const downloadCourse = async () => {
+    alert('Coming soon');
+    return;
+
     isLoading = true;
 
     try {
@@ -73,7 +72,7 @@
         video: lesson.videos || ''
       }));
 
-      const response = await fetch(env.PUBLIC_SERVER_URL + '/downloadCourse', {
+      const response = await fetch('/downloadCourse', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -182,21 +181,26 @@
   async function setDefault(course: Course) {
     if (!course || !Object.keys(course).length) return;
 
-    settings.set({
-      course_title: course.title,
-      type: course.type,
-      course_description: course.description,
-      logo: course.logo || '',
-      tabs: course.metadata.lessonTabsOrder || $settings.tabs,
-      grading: !!course.metadata.grading,
-      lesson_download: !!course.metadata.lessonDownload,
-      is_published: !!course.is_published,
-      allow_new_students: course.metadata.allowNewStudent
+    untrack(() => {
+      settings.set({
+        course_title: course.title,
+        type: course.type,
+        course_description: course.description,
+        logo: course.logo || '',
+        tabs: course.metadata.lessonTabsOrder || $settings.tabs,
+        grading: !!course.metadata.grading,
+        lesson_download: !!course.metadata.lessonDownload,
+        is_published: !!course.is_published,
+        allow_new_students: course.metadata.allowNewStudent
+      });
     });
   }
-  $: setDefault($course);
 
-  $: courseLink = `${$currentOrgDomain}/course/${$course.slug}`;
+  $effect(() => {
+    setDefault($course);
+  });
+
+  let courseLink = $derived(`${$currentOrgDomain}/course/${$course.slug}`);
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
@@ -217,16 +221,12 @@
           className="mr-2"
           onClick={widgetControl}
         />
-        <PrimaryButton
-          variant={VARIANTS.OUTLINED}
-          label={$t('ai.reset')}
-          onClick={deleteBannerImage}
-        />
+        <PrimaryButton variant={VARIANTS.OUTLINED} label={$t('ai.reset')} onClick={deleteBannerImage} />
       </span>
       {#if $handleOpenWidget.open}
         <UploadWidget
           bind:imageURL={$settings.logo}
-          on:change={() => {
+          onchange={() => {
             hasUnsavedChanges = true;
           }}
         />
@@ -277,11 +277,11 @@
         <p class="text-md mb-2 flex items-center gap-2">
           {$t('course.navItem.settings.link')}
           <IconButton contained={true} size="small" onClick={generateNewCourseLink}>
-            <Restart size={16} />
+            <RotateCcwIcon size={16} />
           </IconButton>
-          <span class="grow" />
+          <span class="grow"></span>
           <IconButton contained={true} size="small" onClick={() => goto(courseLink)}>
-            <ArrowUpRight size={16} />
+            <ArrowUpRightIcon size={16} />
           </IconButton>
         </p>
         {#if $course.slug}
@@ -353,7 +353,7 @@
           variant={VARIANTS.OUTLINED}
           label={$t('course.navItem.settings.download')}
           onClick={downloadCourse}
-          isDisabled={isLoading || !env.PUBLIC_SERVER_URL}
+          isDisabled={isLoading}
           {isLoading}
         />
       {/if}
@@ -369,18 +369,13 @@
       <RadioButtonGroup
         hideLegend
         bind:selected={$settings.type}
-        on:change={() => {
+        on:click={() => {
+          if (hasUnsavedChanges) return;
           hasUnsavedChanges = true;
         }}
       >
-        <RadioButton
-          labelText={$t('course.navItem.settings.live_class')}
-          value={COURSE_TYPE.LIVE_CLASS}
-        />
-        <RadioButton
-          labelText={$t('course.navItem.settings.self_paced')}
-          value={COURSE_TYPE.SELF_PACED}
-        />
+        <RadioButton labelText={$t('course.navItem.settings.live_class')} value={COURSE_TYPE.LIVE_CLASS} />
+        <RadioButton labelText={$t('course.navItem.settings.self_paced')} value={COURSE_TYPE.SELF_PACED} />
       </RadioButtonGroup>
     </Column>
   </Row>

@@ -11,11 +11,11 @@
   import EmailSentIcon from '$lib/components/Icons/EmailSentIcon.svelte';
 
   let supabase = getSupabase();
-  let fields = Object.assign({}, FORGOT_PASSWORD_FIELDS);
-  let submitError;
-  let loading = false;
-  let success = false;
-  let errors = {};
+  let fields = $state(Object.assign({}, FORGOT_PASSWORD_FIELDS));
+  let submitError = $state();
+  let loading = $state(false);
+  let success = $state(false);
+  let errors = $state({});
 
   async function handleSubmit() {
     errors = forgotValidation(fields);
@@ -48,27 +48,22 @@
 
 <AuthUI {supabase} {handleSubmit} showOnlyContent={true} showLogo={!success}>
   {#if success}
-    <div class="mt-4 w-full flex items-center justify-center flex-col">
-      <EmailSentIcon />
-      <h3 class="dark:text-white text-xl font-semibold my-3">Email Sent!</h3>
-      <p class="dark:text-white text-md mb-6 text-center">
-        We have sent a confirmation email to <span class="text-primary-700">{fields.email}</span>.
-        Kindly check your inbox to reset password or spam to reset your password.
+    <div class="mt-4 flex w-full flex-col items-center justify-center">
+      <EmailSentIcon size={16} />
+      <h3 class="my-3 text-xl font-semibold dark:text-white">Email Sent!</h3>
+      <p class="text-md mb-6 text-center dark:text-white">
+        We have sent a confirmation email to <span class="text-primary-700">{fields.email}</span>. Kindly check your
+        inbox to reset password or spam to reset your password.
       </p>
     </div>
 
-    <div class="my-4 w-full flex justify-end items-center flex-col">
-      <PrimaryButton
-        label="Okay"
-        type="button"
-        className="sm:w-full w-full mb-4"
-        onClick={() => goto(ROUTE.LOGIN)}
-      />
+    <div class="my-4 flex w-full flex-col items-center justify-end">
+      <PrimaryButton label="Okay" type="button" className="sm:w-full w-full mb-4" onClick={() => goto(ROUTE.LOGIN)} />
     </div>
   {:else}
     <div class="mt-4 w-full">
-      <h3 class="dark:text-white text-xl font-semibold my-3">Forgot Password</h3>
-      <p class="dark:text-white text-sm mb-6">We will send you a reset link to your email</p>
+      <h3 class="my-3 text-xl font-semibold dark:text-white">Forgot Password</h3>
+      <p class="mb-6 text-sm dark:text-white">We will send you a reset link to your email</p>
       <TextField
         label="Your email"
         bind:value={fields.email}
@@ -85,7 +80,7 @@
       {/if}
     </div>
 
-    <div class="my-4 w-full flex justify-end items-center flex-col">
+    <div class="my-4 flex w-full flex-col items-center justify-end">
       <PrimaryButton
         label="Reset Password"
         type="submit"

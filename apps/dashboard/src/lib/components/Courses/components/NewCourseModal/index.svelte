@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { preventDefault } from '$lib/utils/functions/svelte';
+
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import ComingSoon from '$lib/components/ComingSoon/index.svelte';
   import { validateForm } from '$lib/components/Courses/functions';
   import { courses, createCourseModal } from '$lib/components/Courses/store';
@@ -17,15 +19,14 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
-  import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
 
-  let isLoading = false;
-  let errors = {
+  let isLoading = $state(false);
+  let errors = $state({
     title: '',
     description: ''
-  };
-  let step = 0;
+  });
+  let step = $state(0);
 
   const options = [
     {
@@ -43,7 +44,7 @@
       isDisabled: false
     }
   ];
-  let type = options[0].type;
+  let type = $state(options[0].type);
 
   function onClose(redirectTo) {
     goto(redirectTo);
@@ -132,7 +133,7 @@
     isLoading = false;
   }
 
-  $: open = new URLSearchParams($page.url.search).get('create') === 'true';
+  let open = $derived(new URLSearchParams(page.url.search).get('create') === 'true');
 </script>
 
 <svelte:head>
@@ -140,7 +141,7 @@
 </svelte:head>
 
 <Modal
-  onClose={() => onClose($page.url.pathname)}
+  onClose={() => onClose(page.url.pathname)}
   bind:open
   width="w-4/5 md:w-2/5 md:min-w-[600px]"
   containerClass="max-w-2xl mx-auto"
@@ -155,25 +156,16 @@
       <div class="my-8 flex flex-col items-center justify-evenly gap-4 md:flex-row">
         {#each options as option}
           <button
-            class="w-11/12 rounded-md border-2 p-5 dark:bg-neutral-700 md:h-[240px] md:w-[261px] {option.type ===
-            type
+            class="w-11/12 rounded-md border-2 p-5 md:h-[240px] md:w-[261px] dark:bg-neutral-700 {option.type === type
               ? 'border-primary-400'
               : `border-gray-200 dark:border-neutral-600 ${
                   !option.isDisabled && 'hover:scale-95'
-                }`} flex flex-col {option.isDisabled &&
-              'cursor-not-allowed opacity-60'} transition-all ease-in-out"
+                }`} flex flex-col {option.isDisabled && 'cursor-not-allowed opacity-60'} transition-all ease-in-out"
             type="button"
-            on:click={!option.isDisabled ? () => (type = option.type) : undefined}
+            onclick={!option.isDisabled ? () => (type = option.type) : undefined}
           >
             <div class="flex h-[70%] w-full flex-row-reverse">
-              {#if option.type === type}
-                <CheckmarkFilledIcon
-                  size={16}
-                  class="carbon-icon text-primary-600 dark:text-primary-200"
-                />
-              {:else if !option.isDisabled}
-                <CheckmarkOutlineIcon size={16} class="carbon-icon" />
-              {/if}
+              <CircleCheckIcon size={16} filled={option.type === type} />
             </div>
 
             <div>
@@ -199,7 +191,7 @@
       </div>
     </div>
   {:else}
-    <form on:submit|preventDefault={createCourse}>
+    <form onsubmit={preventDefault(createCourse)}>
       <div class="mb-4 flex items-end space-x-2">
         <TextField
           label={$t('courses.new_course_modal.course_name')}

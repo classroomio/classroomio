@@ -79,8 +79,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'How do you keep a forked repository up to date with changes from the original repository?',
+        title: 'How do you keep a forked repository up to date with changes from the original repository?',
         name: 'q5',
         points: 2,
         order: 4,
@@ -172,8 +171,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'How do you contribute changes from a forked repository back to the original repository?',
+        title: 'How do you contribute changes from a forked repository back to the original repository?',
         name: 'q10',
         points: 2,
         order: 9,

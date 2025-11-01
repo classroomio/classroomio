@@ -1,10 +1,21 @@
 <script lang="ts">
-  export let label = '';
-  export let placeholder = '';
-  export let value: string | Date = '';
-  export let className = '';
-  export let onInput = () => {};
-  export let isRequired: boolean = false;
+  interface Props {
+    label?: string;
+    placeholder?: string;
+    value?: string | Date;
+    className?: string;
+    onInput?: any;
+    isRequired?: boolean;
+  }
+
+  let {
+    label = '',
+    placeholder = '',
+    value = $bindable(''),
+    className = '',
+    onInput = () => {},
+    isRequired = false
+  }: Props = $props();
 </script>
 
 <label class="block {className}">
@@ -16,7 +27,7 @@
   </span>
   <input
     bind:value
-    on:input={onInput}
+    oninput={onInput}
     {placeholder}
     type="datetime-local"
     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-neutral-800 dark:text-white"

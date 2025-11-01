@@ -1,6 +1,6 @@
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
 
-import { env } from '$src/config/env';
+import { env } from '@api/config/env';
 
 const { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL, PRIVATE_SUPABASE_SERVICE_ROLE } = env;
 

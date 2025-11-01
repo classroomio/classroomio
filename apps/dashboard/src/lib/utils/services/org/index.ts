@@ -293,10 +293,7 @@ export async function createOrgPlan(params: {
   });
 }
 
-export async function cancelOrgPlan(params: {
-  subscriptionId: string;
-  data: OrganizationPlan['payload'];
-}) {
+export async function cancelOrgPlan(params: { subscriptionId: string; data: OrganizationPlan['payload'] }) {
   return await supabase
     .from('organization_plan')
     .update({

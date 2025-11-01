@@ -104,8 +104,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'What is the difference between the "descendant" selector and the "child" selector in CSS?',
+        title: 'What is the difference between the "descendant" selector and the "child" selector in CSS?',
         name: 'q10',
         points: 2,
         order: 9,

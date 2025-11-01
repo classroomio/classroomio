@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
+  import ChartBarIcon from '@lucide/svelte/icons/chart-bar';
+  import { CourseContainer } from '$lib/components/CourseContainer';
   import { PageBody, PageNav } from '$lib/components/Page';
   import { t } from '$lib/utils/functions/translations';
   import { getAccessToken } from '$lib/utils/functions/supabase';
@@ -11,17 +12,16 @@
   import AnalyticsGraph from '$lib/components/Course/components/Analytics/AnalyticsGraph.svelte';
   import AnalyticsSkeleton from '$lib/components/Course/components/Analytics/AnalyticsSkeleton.svelte';
   import AnalyticsCard from '$lib/components/Course/components/Analytics/AnalyticsCard.svelte';
-  import { ChartBar } from 'carbon-icons-svelte';
   import StudentsIcon from '$lib/components/Course/components/Analytics/icons/StudentsIcon.svelte';
   import LessonsIcon from '$lib/components/Course/components/Analytics/icons/LessonsIcon.svelte';
   import ProgressIcon from '$lib/components/Course/components/Analytics/icons/ProgressIcon.svelte';
   import ExercisesIcon from '$lib/components/Course/components/Analytics/icons/ExercisesIcon.svelte';
   import EmptyState from '$lib/components/Course/components/Analytics/EmptyState.svelte';
 
-  export let data;
+  let { data = $bindable() } = $props();
 
-  let courseAnalytics: CourseAnalytics | null = null;
-  let isLoading = true;
+  let courseAnalytics: CourseAnalytics | null = $state(null);
+  let isLoading = $state(true);
 
   async function fetchCourseAnalytics() {
     try {
@@ -58,7 +58,7 @@
   });
 </script>
 
-<CourseContainer bind:courseId={data.courseId}>
+<CourseContainer courseId={data.courseId}>
   <PageNav title={$t('course.navItem.analytics.title')} />
   <PageBody width="w-full max-w-6xl md:w-11/12">
     {#if isLoading}
@@ -114,9 +114,7 @@
           </div>
 
           <!-- Students Overview Table -->
-          <div
-            class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-neutral-800"
-          >
+          <div class="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-neutral-800">
             <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
               <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                 {$t('analytics.student_progress_overview')}
@@ -132,7 +130,7 @@
       <EmptyState
         title={$t('analytics.no_analytics_data')}
         description={$t('analytics.no_analytics_description')}
-        icon={ChartBar}
+        icon={ChartBarIcon}
         className="h-screen"
       />
     {/if}

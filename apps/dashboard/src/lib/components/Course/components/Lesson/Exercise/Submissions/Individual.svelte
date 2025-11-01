@@ -5,17 +5,18 @@
   import { submissions } from './store';
   import { t } from '$lib/utils/functions/translations';
 
-  export let isLoading = false;
+  interface Props {
+    isLoading?: boolean;
+  }
+
+  let { isLoading = $bindable(false) }: Props = $props();
 
   const defaultImg =
     'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=60&w=800&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YXZhdGFyc3xlbnwwfHwwfHx8Mg%3D%3D';
 
-  let studentSelected = 0;
+  let studentSelected = $state(0);
 
-  const isSelected = (
-    student: ExerciseSubmissions,
-    option: { question_id: number; value: string[] }
-  ) => {
+  const isSelected = (student: ExerciseSubmissions, option: { question_id: number; value: string[] }) => {
     if ($submissions) {
       let submittedAnswer = student?.answers;
       let filteredAnswer = submittedAnswer.filter(
@@ -42,9 +43,7 @@
   };
   const getOpenAnswer = (student: ExerciseSubmissions, q: never) => {
     let submittedAnswer = student?.answers;
-    let filteredAnswer = submittedAnswer.filter(
-      (ans: { question_id: number }) => ans.question_id === q.id
-    );
+    let filteredAnswer = submittedAnswer.filter((ans: { question_id: number }) => ans.question_id === q.id);
     if (filteredAnswer.some((ans: { open_answer: string }) => ans.open_answer == '')) {
       return $t('course.navItem.lessons.exercises.all_exercises.analytics.individual.no');
     } else {
@@ -56,20 +55,18 @@
 {#if isLoading}
   <Loading withOverlay={true} />
 {:else if $submissions?.length}
-  <div class="flex gap-1 w-full overflow-auto mt-2 mb-5">
+  <div class="mb-5 mt-2 flex w-full gap-1 overflow-auto">
     {#each $submissions as student, i}
-      <button on:click={() => (studentSelected = i)} class="flex flex-col items-center w-20">
+      <button onclick={() => (studentSelected = i)} class="flex w-20 flex-col items-center">
         <div
-          class={`flex items-center justify-center w-12 h-12 rounded-full ${
-            studentSelected == i ? 'border-[3px] border-primary-700' : ''
+          class={`flex h-12 w-12 items-center justify-center rounded-full ${
+            studentSelected == i ? 'border-primary-700 border-[3px]' : ''
           }`}
         >
           <img
-            src={student.submitted_by.profile.avatar_url
-              ? student.submitted_by.profile.avatar_url
-              : defaultImg}
+            src={student.submitted_by.profile.avatar_url ? student.submitted_by.profile.avatar_url : defaultImg}
             alt="student"
-            class={`w-10 max-h-10 rounded-full bg-white m-1`}
+            class="m-1 max-h-10 w-10 rounded-full bg-white"
           />
         </div>
         <p class="line-clamp-2 w-20 whitespace-pre-wrap leading-4">
@@ -79,7 +76,7 @@
     {/each}
   </div>
 
-  <p class="font-medium mb-2">
+  <p class="mb-2 font-medium">
     {$submissions[studentSelected].submitted_by.profile.fullname}'s {$t(
       'course.navItem.lessons.exercises.all_exercises.analytics.individual.answers'
     )}
@@ -92,7 +89,7 @@
           {#if q.question_type_id !== 3}
             {#each q.options as option, i}
               <div
-                class={`flex gap-2 items-center my-2 border-2 border-gray-300 rounded-md p-2 ${isCorrect(
+                class={`my-2 flex items-center gap-2 rounded-md border-2 border-gray-300 p-2 ${isCorrect(
                   $submissions[studentSelected],
                   option
                 )}`}
@@ -108,7 +105,7 @@
               </div>
             {/each}
           {:else}
-            <div class="rounded bg-slate-100 dark:bg-slate-300 p-2 my-1 w-full">
+            <div class="my-1 w-full rounded bg-slate-100 p-2 dark:bg-slate-300">
               <span class="text-base font-medium text-black">
                 {getOpenAnswer($submissions[studentSelected], q)}
               </span>

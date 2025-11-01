@@ -9,10 +9,7 @@ export async function POST({ fetch, request }) {
   console.log('/POST api/email/invite', body);
 
   if (!org || !Object.keys(org).length || !email) {
-    return json(
-      { success: false, message: 'Org data and Teacher name are required' },
-      { status: 400 }
-    );
+    return json({ success: false, message: 'Org data and Teacher name are required' }, { status: 400 });
   }
 
   const { id, name, siteName } = org;

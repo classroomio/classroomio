@@ -44,8 +44,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which of the following is a valid way to create a new file using the File System module?',
+        title: 'Which of the following is a valid way to create a new file using the File System module?',
         name: 'q4',
         points: 1,
         order: 4,
@@ -58,8 +57,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Explain the difference between synchronous and asynchronous file operations in Node.js.',
+        title: 'Explain the difference between synchronous and asynchronous file operations in Node.js.',
         name: 'q5',
         points: 2,
         order: 5,

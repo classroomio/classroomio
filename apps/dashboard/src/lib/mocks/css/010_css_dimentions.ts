@@ -69,8 +69,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'How do you set the width of an element to be relative to the width of its containing element?',
+        title: 'How do you set the width of an element to be relative to the width of its containing element?',
         name: 'q6',
         points: 2,
         order: 5,
@@ -107,8 +106,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'How do you set the minimum width and height of an element to be 100 pixels using CSS?',
+        title: 'How do you set the minimum width and height of an element to be 100 pixels using CSS?',
         name: 'q9',
         points: 1,
         order: 8,

@@ -12,17 +12,13 @@ export let supabase: SupabaseClient;
 export const getServerSupabase = () => {
   if (supabase) return supabase;
 
-  supabase = createClient(
-    config.supabaseConfig.url,
-    env.PRIVATE_SUPABASE_SERVICE_ROLE || 'some-key-here',
-    {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-        detectSessionInUrl: false
-      }
+  supabase = createClient(config.supabaseConfig.url, env.PRIVATE_SUPABASE_SERVICE_ROLE || 'some-key-here', {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false
     }
-  );
+  });
 
   return supabase;
 };

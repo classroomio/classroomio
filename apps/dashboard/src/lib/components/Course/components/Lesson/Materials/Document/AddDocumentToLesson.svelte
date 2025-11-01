@@ -4,22 +4,19 @@
   import { t } from '$lib/utils/functions/translations';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import DocumentIcon from 'carbon-icons-svelte/lib/Document.svelte';
-  import PdfIcon from 'carbon-icons-svelte/lib/Pdf.svelte';
-  import CloseIcon from 'carbon-icons-svelte/lib/Close.svelte';
+  import FileTextIcon from '@lucide/svelte/icons/file-text';
   import { DocumentUploader } from '$lib/utils/services/courses/presign';
-  import { onDestroy } from 'svelte';
+  import { onDestroy, untrack } from 'svelte';
   import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
   import { isFreePlan } from '$lib/utils/store/org';
   import { lesson } from '../../store/lessons';
+  import { CloseButton } from '$lib/components/Buttons/Close';
 
-  export const lessonId = '';
-
-  let fileInput: HTMLInputElement;
-  let selectedFile: File | null = null;
-  let dragOver = false;
-  let errorTimeout: NodeJS.Timeout | null = null;
-  let isDisabled = false;
+  let fileInput: HTMLInputElement | undefined = $state();
+  let selectedFile: File | null = $state(null);
+  let dragOver = $state(false);
+  let errorTimeout: NodeJS.Timeout | null = $state(null);
+  let isDisabled = $derived($lessonDocUpload.isUploading || $isFreePlan);
 
   const ALLOWED_TYPES = [
     'application/pdf',
@@ -33,8 +30,7 @@
 
   function getFileType(file: File): 'pdf' | 'docx' | 'doc' {
     if (file.type === 'application/pdf') return 'pdf';
-    if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-      return 'docx';
+    if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') return 'docx';
     if (file.type === 'application/msword') return 'doc';
     return 'pdf'; // fallback
   }
@@ -152,9 +148,7 @@
       console.error('Upload error:', error);
 
       if ($lessonDocUpload.isCancelled) {
-        $lessonDocUpload.error = $t(
-          'course.navItem.lessons.materials.tabs.document.upload_cancelled'
-        );
+        $lessonDocUpload.error = $t('course.navItem.lessons.materials.tabs.document.upload_cancelled');
         snackbar.info($t('course.navItem.lessons.materials.tabs.document.upload_cancelled'));
       } else {
         $lessonDocUpload.error = error instanceof Error ? error.message : 'Upload failed';
@@ -178,29 +172,29 @@
     if (fileInput) fileInput.value = '';
   }
 
-  function getFileIcon(type: string) {
-    switch (type) {
-      case 'application/pdf':
-        return PdfIcon;
-      default:
-        return DocumentIcon;
+  function autoClearError(error: string | null) {
+    if (!error) {
+      return;
     }
+
+    if (errorTimeout) clearTimeout(errorTimeout);
+
+    errorTimeout = setTimeout(() => {
+      untrack(() => {
+        $lessonDocUpload.error = null;
+      });
+    }, 5000);
   }
 
   // Auto-clear error after 5 seconds
-  $: if ($lessonDocUpload.error) {
-    if (errorTimeout) clearTimeout(errorTimeout);
-    errorTimeout = setTimeout(() => {
-      $lessonDocUpload.error = null;
-    }, 5000);
-  }
+  $effect(() => {
+    autoClearError($lessonDocUpload.error);
+  });
 
   // Clear error timeout when component is destroyed
   onDestroy(() => {
     if (errorTimeout) clearTimeout(errorTimeout);
   });
-
-  $: isDisabled = $lessonDocUpload.isUploading || $isFreePlan;
 </script>
 
 <UpgradeBanner className="mb-3" onClick={() => ($lessonDocUpload.isModalOpen = false)}>
@@ -218,29 +212,25 @@
   </div>
 
   <!-- File Upload Area -->
-  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     class="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center transition-colors {isDisabled &&
-      'opacity-50 hover:cursor-not-allowed'} {dragOver
-      ? 'border-blue-500 bg-blue-50'
-      : 'hover:border-gray-400'}"
-    on:drop={handleDrop}
-    on:dragover={handleDragOver}
-    on:dragleave={handleDragLeave}
+      'opacity-50 hover:cursor-not-allowed'} {dragOver ? 'border-blue-500 bg-blue-50' : 'hover:border-gray-400'}"
+    ondrop={handleDrop}
+    ondragover={handleDragOver}
+    ondragleave={handleDragLeave}
   >
     {#if selectedFile}
       <div class="mb-4 flex items-center justify-center space-x-3">
-        <svelte:component this={getFileIcon(selectedFile.type)} size={32} class="text-blue-600" />
+        <FileTextIcon size={16} />
         <div class="text-left">
           <p class="font-medium text-gray-900">{selectedFile.name}</p>
           <p class="text-sm text-gray-500">{formatFileSize(selectedFile.size)}</p>
         </div>
-        <button on:click={removeSelectedFile} class="rounded-full p-1 hover:bg-gray-200">
-          <CloseIcon size={20} class="text-gray-500" />
-        </button>
+        <CloseButton onClick={removeSelectedFile} />
       </div>
     {:else}
-      <DocumentIcon size={32} class="mx-auto mb-4 text-gray-400" />
+      <FileTextIcon size={16} />
       <p class="mb-2 text-gray-600">
         {$t('course.navItem.lessons.materials.tabs.document.drag_drop')}
       </p>
@@ -252,7 +242,7 @@
         disabled={isDisabled}
         type="file"
         accept=".pdf,.docx,.doc"
-        on:change={handleFileSelect}
+        onchange={handleFileSelect}
         class="hidden"
       />
       <div class="flex justify-center">

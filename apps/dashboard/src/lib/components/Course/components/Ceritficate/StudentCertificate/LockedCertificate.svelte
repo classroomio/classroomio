@@ -4,12 +4,12 @@
 </script>
 
 <Box>
-  <div class="flex flex-col items-center justify-center w-max h-full gap-2">
+  <div class="flex h-full w-max flex-col items-center justify-center gap-2">
     <img src="/images/student-certificate-preview.png" alt="Certificate" class="max-w-[218px]" />
-    <p class="text-xl font-normal text-center">
+    <p class="text-center text-xl font-normal">
       {$t('course.navItem.certificates.locked_certificate')}
     </p>
-    <p class="text-sm font-normal text-center">
+    <p class="text-center text-sm font-normal">
       {$t('course.navItem.certificates.instructor_unlock')} <br />
       {$t('course.navItem.certificates.contact_instructor')}
     </p>

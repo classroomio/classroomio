@@ -158,8 +158,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the output of the code snippet: `if (true) { echo "Hello"; } else { echo "Goodbye"; }`?',
+        title: 'What is the output of the code snippet: `if (true) { echo "Hello"; } else { echo "Goodbye"; }`?',
         name: 'question7',
         points: 2,
         order: 6,

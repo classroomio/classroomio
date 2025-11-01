@@ -7,6 +7,6 @@
   });
 </script>
 
-<div class="app-background w-full min-h-screen flex items-center justify-center">
+<div class="app-background flex min-h-screen w-full items-center justify-center">
   <div>Logging you out...</div>
 </div>

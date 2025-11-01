@@ -1,8 +1,5 @@
-<script>
-  export let content = '';
-  export let className = '';
-  export let id = '';
-  export let disableMaxWidth = false;
+<script lang="ts">
+  let { children, className = '', id = '', disableMaxWidth = false } = $props();
 </script>
 
 <article
@@ -10,9 +7,5 @@
   {id}
   class="preview prose sm:prose-sm {className} dark:text-white"
 >
-  {#if $$slots.content}
-    <slot name="content" />
-  {:else}
-    {@html content}
-  {/if}
+  {@render children()}
 </article>

@@ -1,4 +1,9 @@
-<script>
+<script lang="ts">
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
+
+  let { children }: Props = $props();
   let hovering;
 
   function enter() {
@@ -10,6 +15,6 @@
   }
 </script>
 
-<div on:mouseenter={enter} on:mouseleave={leave}>
-  <slot></slot>
+<div onmouseenter={enter} onmouseleave={leave}>
+  {@render children?.()}
 </div>

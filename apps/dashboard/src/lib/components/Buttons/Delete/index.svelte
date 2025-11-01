@@ -1,10 +1,10 @@
-<script>
-  import Close from 'carbon-icons-svelte/lib/Close.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+<script lang="ts">
+  import XIcon from '@lucide/svelte/icons/x';
+  import { IconButton } from '$lib/components/IconButton';
 
-  export let onClick = () => {};
+  let { onClick = () => {} } = $props();
 </script>
 
 <IconButton {onClick}>
-  <Close size={24} class="carbon-icon dark:text-white" title="Close" />
+  <XIcon size={16} class="carbon-icon dark:text-white" />
 </IconButton>

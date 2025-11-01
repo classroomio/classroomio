@@ -1,13 +1,15 @@
 <script lang="ts">
-  export let disableCenteredContent = false;
-  export let className = '';
+  interface Props {
+    disableCenteredContent?: boolean;
+    className?: string;
+    children?: import('svelte').Snippet;
+  }
+
+  let { disableCenteredContent = false, className = '', children }: Props = $props();
 </script>
 
-<div
-  class="root {!className.includes('opacity') && 'opacity-100'} {!disableCenteredContent &&
-    'center'} {className}"
->
-  <slot />
+<div class="root {!className.includes('opacity') && 'opacity-100'} {!disableCenteredContent && 'center'} {className}">
+  {@render children?.()}
 </div>
 
 <style>

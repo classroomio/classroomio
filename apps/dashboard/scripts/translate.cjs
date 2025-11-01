@@ -50,9 +50,7 @@ const getMissingTranslations = async (toLanguage, outputFilePath) => {
 
   // Check if there are missing translations, if not, stop the process
   if (!missingKeysWithDetails) {
-    console.log(
-      `No missing translations for ${toLanguage.toUpperCase()}. Stopping translation process.`
-    );
+    console.log(`No missing translations for ${toLanguage.toUpperCase()}. Stopping translation process.`);
     return;
   }
 

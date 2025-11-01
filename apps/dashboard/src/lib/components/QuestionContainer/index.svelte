@@ -1,19 +1,34 @@
-<script>
+<script lang="ts">
   import TextField from '../Form/TextField.svelte';
-  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import TrashIcon from '@lucide/svelte/icons/trash';
+  import { IconButton } from '$lib/components/IconButton';
   import { t } from '$lib/utils/functions/translations';
 
-  export let isTitle = false;
-  export let onClose = () => {};
-  export let scrollToQuestion = false;
-  export let points = undefined;
-  export let hasError = false;
-  export let onPointsChange = () => {};
+  interface Props {
+    isTitle?: boolean;
+    onClose?: any;
+    scrollToQuestion?: boolean;
+    points?: any;
+    hasError?: boolean;
+    onPointsChange?: any;
+    key?: string;
+    children?: import('svelte').Snippet;
+  }
 
-  let ref;
+  let {
+    isTitle = false,
+    onClose = () => {},
+    scrollToQuestion = false,
+    points = $bindable(undefined),
+    hasError = false,
+    onPointsChange = () => {},
+    key,
+    children
+  }: Props = $props();
 
-  $: {
+  let ref: HTMLDivElement | undefined = $state();
+
+  $effect(() => {
     if (ref && scrollToQuestion) {
       ref.scrollIntoView({
         block: 'start',
@@ -21,28 +36,30 @@
         inline: 'nearest'
       });
     }
-  }
+  });
+
+  $effect(() => {
+    console.log('container key', key);
+  });
 </script>
 
 <div
   bind:this={ref}
-  class="bg-white dark:bg-black border-2 {hasError
+  class="border-2 bg-white dark:bg-black {hasError
     ? 'border-red-700'
-    : 'border-gray hover:border-primary-700'} rounded-md mb-6 relative root"
+    : 'border-gray hover:border-primary-700'} root relative mb-6 rounded-md"
 >
   {#if isTitle}
-    <div class="title absolute bg-primary-700" />
+    <div class="title bg-primary-700 absolute"></div>
   {/if}
   <div class="px-4 {isTitle ? 'pt-4' : 'pt-2'} pb-3">
-    <slot />
+    {@render children?.()}
   </div>
 
   {#if typeof points !== 'undefined'}
-    <div
-      class="flex justify-between items-center border-gray border-t-2 border-r-0 border-b-0 border-l-0 p-2"
-    >
-      <div class="flex items-center w-40">
-        <p class="dark:text-white text-sm mr-2">
+    <div class="border-gray flex items-center justify-between border-b-0 border-l-0 border-r-0 border-t-2 p-2">
+      <div class="flex w-40 items-center">
+        <p class="mr-2 text-sm dark:text-white">
           {$t('course.navItem.lessons.exercises.new_exercise_modal.points')}:
         </p>
         <TextField
@@ -55,7 +72,7 @@
 
       {#if onClose && !isTitle}
         <IconButton onClick={onClose}>
-          <TrashCanIcon size={24} />
+          <TrashIcon size={16} />
         </IconButton>
       {/if}
     </div>

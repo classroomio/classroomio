@@ -1,8 +1,11 @@
 <script lang="ts">
   import { slide } from 'svelte/transition';
-  import { ChevronDown, ChevronUp, Add, FlashFilled } from 'carbon-icons-svelte';
+  import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+  import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
+  import PlusIcon from '@lucide/svelte/icons/plus';
+  import ZapIcon from '@lucide/svelte/icons/zap';
   import { SkeletonText } from 'carbon-components-svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { handleAddLessonWidget } from '../Lesson/store';
   import NavIcons from './NavIcons.svelte';
@@ -11,20 +14,41 @@
   import { course } from '$lib/components/Course/store';
   import { COURSE_VERSION } from '$lib/utils/types';
 
-  export let handleClick = () => {};
-  export let id = '';
-  export let name = '';
-  export let label = '';
-  export let isGroupActive = false;
-  export let isExpanded: boolean | undefined;
-  export let total = 0;
-  export let isLoading = true;
-  export let isLesson = false;
-  export let isSection = false;
-  export let isStudent = true;
-  export let isPaidFeature = false;
-  export let className = '';
-  export let btnPadding = 'py-3 px-4';
+  interface Props {
+    handleClick?: any;
+    id?: string;
+    name?: string;
+    label?: string;
+    isGroupActive?: boolean;
+    isExpanded: boolean | undefined;
+    total?: number;
+    isLoading?: boolean;
+    isLesson?: boolean;
+    isSection?: boolean;
+    isStudent?: boolean;
+    isPaidFeature?: boolean;
+    className?: string;
+    btnPadding?: string;
+    children?: import('svelte').Snippet;
+  }
+
+  let {
+    handleClick = () => {},
+    id = '',
+    name = '',
+    label = '',
+    isGroupActive = false,
+    isExpanded = $bindable(),
+    total = 0,
+    isLoading = true,
+    isLesson = false,
+    isSection = false,
+    isStudent = true,
+    isPaidFeature = false,
+    className = '',
+    btnPadding = 'py-3 px-4',
+    children
+  }: Props = $props();
 
   function addLesson() {
     goto('/courses/' + $course.id + '/lessons');
@@ -55,45 +79,47 @@
 
 <div class={className}>
   <button
-    class="item relative flex items-center {btnPadding} ml-2 mb-1 {NavClasses.item} {isGroupActive &&
+    class="item relative flex items-center {btnPadding} mb-1 ml-2 {NavClasses.item} {isGroupActive &&
       !isLoading &&
       NavClasses.active} w-[95%]"
     tabindex="0"
-    on:click={onClick}
+    onclick={onClick}
     disabled={isLoading}
   >
-    <NavIcons {name} />
-    {#if isLoading}
-      <div class="w-11/12 mx-auto">
-        <SkeletonText class="rounded-md" style="margin: 0px; height: 30px;" />
-      </div>
-    {:else}
-      <span class="font-bold text-md text-start leading-4 line-clamp-2">{label}</span>
-      {#if total}
-        <span class="ml-1">({total})</span>
+    <div class="flex w-full items-center gap-2.5">
+      <NavIcons {name} />
+      {#if isLoading}
+        <div class="mx-auto w-11/12">
+          <SkeletonText class="rounded-md" style="margin: 0px; height: 20px;" />
+        </div>
+      {:else}
+        <span class="text-md line-clamp-2 text-start font-bold leading-4">{label}</span>
+        {#if total}
+          <span class="ml-1">({total})</span>
+        {/if}
       {/if}
-    {/if}
-    <span class="grow" />
+    </div>
+    <span class="grow"></span>
 
     {#if isPaidFeature && $isFreePlan}
-      <FlashFilled size={20} class="text-blue-700" />
+      <ZapIcon size={16} class="filled" />
     {/if}
     {#if (isLesson || isSection) && !isLoading && !isStudent}
       <IconButton stopPropagation={true} onClick={addLesson} size="small">
-        <Add />
+        <PlusIcon size={16} />
       </IconButton>
       <IconButton size="small" stopPropagation={true} onClick={toggleIsExpanded}>
         {#if isExpanded}
-          <ChevronUp class="carbon-icon dark:text-white" />
+          <ChevronUpIcon size={16} class="carbon-icon dark:text-white" />
         {:else}
-          <ChevronDown class="carbon-icon dark:text-white" />
+          <ChevronDownIcon size={16} class="carbon-icon dark:text-white" />
         {/if}
       </IconButton>
     {/if}
   </button>
   {#if isExpanded && !isLoading}
     <div in:slide out:slide class="flex flex-col">
-      <slot />
+      {@render children?.()}
     </div>
   {/if}
 </div>

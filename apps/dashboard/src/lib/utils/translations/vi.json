@@ -679,7 +679,8 @@
             },
             "no_answer": "Không có câu trả lời nào được đưa ra",
             "check": "Kiểm tra",
-            "address": "Viết địa chỉ của bạn ở đây"
+            "address": "Viết địa chỉ của bạn ở đây",
+            "add_question": "Thêm câu hỏi"
           },
           "new_exercise_modal": {
             "heading": "Bài tập mới",

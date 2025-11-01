@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
   import pluralize from 'pluralize';
   import { ImageLoader } from 'carbon-components-svelte';
-  import OverflowMenuHorizontalIcon from 'carbon-icons-svelte/lib/OverflowMenuHorizontal.svelte';
+  import EllipsisIcon from '@lucide/svelte/icons/ellipsis';
   import { currentOrgPath } from '$lib/utils/store/org';
   import Dropdown from '$lib/components/Dropdown/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -11,8 +11,7 @@
   import { calDateDiff } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
 
-  export let quiz;
-  export let totalQuestions;
+  let { quiz, totalQuestions } = $props();
 
   function getOptions() {
     return [
@@ -54,7 +53,7 @@
 
 {#if quiz}
   <div
-    class="root w-full border hover:shadow-2xl transition ease-in-out rounded-lg bg-gray-100 dark:bg-black mb-5 relative flex flex-col lg:flex-row p-3"
+    class="root relative mb-5 flex w-full flex-col rounded-lg border bg-gray-100 p-3 transition ease-in-out hover:shadow-2xl lg:flex-row dark:bg-black"
   >
     <ImageLoader
       src={themeImages[quiz.theme]?.card || themeImages.standard.card}
@@ -62,20 +61,20 @@
       style="max-width:300px, min-width: 200px;"
     />
 
-    <div class="p-2 md:p-5 flex flex-col justify-between w-full">
+    <div class="flex w-full flex-col justify-between p-2 md:p-5">
       <div class="flex justify-between">
-        <h4 class="dark:text-white title text-md font-bold capitalize">
+        <h4 class="title text-md font-bold capitalize dark:text-white">
           <a href="{$currentOrgPath}/quiz/{quiz.id}">{quiz.title}</a>
         </h4>
 
         <Dropdown options={getOptions()} classNames="absolute top-4 right-4" isIcon={true}>
-          <div class="p-1 rounded-full bg-gray-200 dark:bg-gray-600">
-            <OverflowMenuHorizontalIcon size={20} class="carbon-icon active" />
+          <div class="rounded-full bg-gray-200 p-1 dark:bg-gray-600">
+            <EllipsisIcon size={16} />
           </div>
         </Dropdown>
       </div>
 
-      <div class="flex md:flex-row flex-col justify-between">
+      <div class="flex flex-col justify-between md:flex-row">
         <div>
           <p class="mb-2">{pluralize('question', totalQuestions, true)}</p>
           <p class="mb-2 md:mb-0">{$t('components.quiz.updated')} {calDateDiff(quiz.updated_at)}</p>

@@ -1,30 +1,36 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { dndzone } from 'svelte-dnd-action';
   import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import { course } from '$lib/components/Course/store';
   import { globalStore } from '$lib/utils/store/app';
-  import ScreenMap from 'carbon-icons-svelte/lib/ScreenMap.svelte';
+  import ListChecksIcon from '@lucide/svelte/icons/list-checks';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import {
-    lessons,
-    handleSaveLesson
-  } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { lessons, handleSaveLesson } from '$lib/components/Course/components/Lesson/store/lessons';
   import { updateLesson } from '$lib/utils/services/courses';
   import type { Course, Lesson } from '$lib/utils/types';
   import Box from '$lib/components/Box/index.svelte';
 
   const flipDurationMs = 300;
 
-  export let reorder = false;
-  export let lessonEditing: string | undefined;
-  export let lessonToDelete: Lesson | undefined;
-  export let openDeleteModal = false;
+  interface Props {
+    reorder?: boolean;
+    lessonEditing: string | undefined;
+    lessonToDelete: Lesson | undefined;
+    openDeleteModal?: boolean;
+  }
 
-  let errors: Record<string, string> = {};
+  let {
+    reorder = false,
+    lessonEditing = $bindable(),
+    lessonToDelete = $bindable(),
+    openDeleteModal = $bindable(false)
+  }: Props = $props();
+
+  let errors: Record<string, string> = $state({});
 
   async function saveLesson(lesson: Lesson, courseId: Course['id']) {
     const validationRes = await handleSaveLesson(lesson, courseId);
@@ -52,9 +58,7 @@
 
       if (order !== prevLessonsByOrder[item.id]) {
         $lessons[index].order = order;
-        updateLesson({ order }, item.id).then((update) =>
-          console.log(`updated lesson order`, update)
-        );
+        updateLesson({ order }, item.id).then((update) => console.log(`updated lesson order`, update));
       }
     });
   }
@@ -81,12 +85,12 @@
       'border-style': 'dashed'
     }
   }}
-  on:consider={handleDndConsider}
-  on:finalize={handleDndFinalize}
+  onconsider={handleDndConsider}
+  onfinalize={handleDndFinalize}
 >
   {#each $lessons as lesson (lesson.id)}
     <div
-      class={`relative m-auto mb-4 flex max-w-xl items-center rounded-md border-2 border-gray-200 dark:border-neutral-600 p-5 dark:bg-neutral-800`}
+      class="relative m-auto mb-4 flex max-w-xl items-center rounded-md border-2 border-gray-200 p-5 dark:border-neutral-600 dark:bg-neutral-800"
     >
       <!-- Number Chip -->
       <div class="mr-5">
@@ -102,17 +106,12 @@
       <div class="w-4/5">
         <!-- Lesson Title -->
         {#if lessonEditing === lesson.id}
-          <TextField
-            bind:value={lesson.title}
-            autoFocus={true}
-            className="max-w-lg"
-            errorMessage={errors?.title}
-          />
+          <TextField bind:value={lesson.title} autoFocus={true} className="max-w-lg" errorMessage={errors?.title} />
         {:else}
           <h3 class="m-0 flex items-center text-lg dark:text-white">
             <a
               href={$globalStore.isStudent && !lesson.is_unlocked
-                ? $page.url.pathname
+                ? page.url.pathname
                 : `/courses/${$course.id}/lessons/${lesson.id}`}
               class="font-medium text-black no-underline hover:underline dark:text-white {$globalStore.isStudent &&
               !lesson.is_unlocked
@@ -124,12 +123,10 @@
           </h3>
         {/if}
 
-        <div
-          class="mt-2 flex w-4/5 flex-col items-start justify-between lg:flex-row lg:items-center"
-        >
+        <div class="mt-2 flex w-4/5 flex-col items-start justify-between lg:flex-row lg:items-center">
           <!-- Lesson Length -->
           <div class="mb-3 flex items-center lg:mb-0">
-            <ScreenMap size={20} class="carbon-icon dark:text-white" />
+            <ListChecksIcon size={16} />
             <p class="ml-2 text-sm text-gray-500 dark:text-white">
               {lesson?.totalExercises ? lesson?.totalExercises?.map((c) => c.count) : 0}
               {$t('exercises.heading')}

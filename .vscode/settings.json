@@ -19,7 +19,7 @@
   "deno.importMap": "./supabase/functions/import_map.json",
   "editor.formatOnSave": true,
   "[svelte]": {
-    "editor.defaultFormatter": "svelte.svelte-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "vitest.disableWorkspaceWarning": true
 }

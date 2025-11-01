@@ -1,23 +1,27 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
   import { browser } from '$app/environment';
-  import NotificationIcon from 'carbon-icons-svelte/lib/Notification.svelte';
-  import Moon from 'carbon-icons-svelte/lib/Moon.svelte';
-  import Sun from 'carbon-icons-svelte/lib/Sun.svelte';
-  import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
-  import Close from 'carbon-icons-svelte/lib/Close.svelte';
-  import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
+  import BellIcon from '@lucide/svelte/icons/bell';
+  import MoonIcon from '@lucide/svelte/icons/moon';
+  import SunIcon from '@lucide/svelte/icons/sun';
+  import MenuIcon from '@lucide/svelte/icons/menu';
+  import XIcon from '@lucide/svelte/icons/x';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrgPath } from '$lib/utils/store/org';
   import { toggleBodyByMode } from '$lib/utils/functions/app';
   import { sideBar } from '../Org/store';
   import { t } from '$lib/utils/functions/translations';
 
-  export let title = '';
-  export let navClass = '';
-  export let isCoursePage = false;
+  interface Props {
+    title?: string;
+    navClass?: string;
+    isCoursePage?: boolean;
+  }
+
+  let { title = $bindable(''), navClass = '', isCoursePage = false }: Props = $props();
 
   const toggleSidebar = () => {
     $sideBar.hidden = !$sideBar.hidden;
@@ -33,17 +37,13 @@
     }
   }
 
-  $: coursesPath = $globalStore.isOrgSite
-    ? '/lms/mylearning'
-    : isCoursePage
-      ? `${$currentOrgPath}/courses`
-      : $currentOrgPath;
+  let coursesPath = $derived(
+    $globalStore.isOrgSite ? '/lms/mylearning' : isCoursePage ? `${$currentOrgPath}/courses` : $currentOrgPath
+  );
 </script>
 
-<nav
-  class="{navClass} flex w-full p-1 md:px-6 bg-primary-700 transition delay-150 duration-300 ease-in-out h-[48px]"
->
-  <ul class="flex w-full items-center">
+<nav class="{navClass} bg-primary-700 flex h-[48px] w-full p-1 transition delay-150 duration-300 ease-in-out md:px-6">
+  <ul class="flex w-full items-center gap-2">
     <div class="flex items-center text-white">
       <li class="md:hidden">
         <IconButton
@@ -52,9 +52,9 @@
           }}
         >
           {#if $sideBar.hidden}
-            <Menu size={16} class=" text-white" />
+            <MenuIcon size={16} class="custom" />
           {:else}
-            <Close size={16} class=" text-white" />
+            <XIcon size={16} class="custom" />
           {/if}
         </IconButton>
       </li>
@@ -66,43 +66,41 @@
               toggleSidebar();
             }}
           >
-            <Menu size={16} class=" text-white" />
+            <MenuIcon size={16} class="custom" />
           </IconButton>
         </li>
         <li class="hidden md:block">
           <IconButton onClick={() => goto(coursesPath)}>
-            <ArrowLeft size={16} class="text-white" />
+            <ArrowLeftIcon size={16} class="custom" />
           </IconButton>
         </li>
       {/if}
       <a
         href={coursesPath}
-        title="{$t('navigation.goto')} {isCoursePage
-          ? $t('navigation.courses')
-          : $t('navigation.classroomio_home')}"
+        title="{$t('navigation.goto')} {isCoursePage ? $t('navigation.courses') : $t('navigation.classroomio_home')}"
         id="logo"
-        class="text-lg line-clamp-1"
+        class="line-clamp-1 text-lg"
       >
         {isCoursePage ? title : 'ClassroomIO'}
       </a>
     </div>
 
-    <span class="flex-grow" />
+    <span class="flex-grow"></span>
 
     <li>
-      <NotificationIcon size={20} class="text-white mr-2" />
+      <BellIcon class="custom text-white" size={16} />
     </li>
     <li>
       <IconButton size="small" onClick={toggleDarkMode}>
         {#if $globalStore.isDark}
-          <Sun size={16} class="text-white" />
+          <SunIcon size={16} class="custom" />
         {:else}
-          <Moon size={16} class="text-white" />
+          <MoonIcon class="custom text-white" size={16} />
         {/if}
       </IconButton>
     </li>
 
-    <li />
+    <li></li>
   </ul>
 </nav>
 

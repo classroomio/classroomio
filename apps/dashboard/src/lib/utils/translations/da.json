@@ -854,7 +854,8 @@
               "heading": "Beskrivelse",
               "describe": "Beskriv øvelsen til din studerende",
               "no": "Ingen beskrivelse"
-            }
+            },
+            "add_question": "Tilføj et spørgsmål"
           },
           "new_exercise_modal": {
             "heading": "Ny øvelse",

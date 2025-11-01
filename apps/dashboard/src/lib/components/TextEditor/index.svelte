@@ -2,16 +2,29 @@
   import Editor from './TinymceSvelte/index.svelte';
   import { globalStore } from '$lib/utils/store/app';
   import { addMathPlugin } from '$lib/utils/functions/tinymce/plugins';
+  import { untrack } from 'svelte';
 
-  export let id = '';
-  export let value: string | undefined = '';
-  export let onChange = (html: string) => {};
-  export let height = 300;
-  export let placeholder = '';
-  export let editorWindowRef: Window | undefined = undefined;
-  export let maxHeight: number | undefined = undefined;
+  interface Props {
+    id?: string;
+    value?: string | undefined;
+    onChange?: any;
+    height?: number;
+    placeholder?: string;
+    editorWindowRef?: Window | undefined;
+    maxHeight?: number | undefined;
+  }
 
-  let unmount = false;
+  let {
+    id = '',
+    value = $bindable(),
+    onChange = (_html: string) => {},
+    height = 300,
+    placeholder = '',
+    editorWindowRef = $bindable(undefined),
+    maxHeight = undefined
+  }: Props = $props();
+
+  let unmount = $state(false);
   let editorChangeHandlerId;
 
   function getTinymce() {
@@ -25,7 +38,7 @@
   }
 
   // editor configuration
-  let conf = {
+  let conf = $state({
     plugins: 'lists, link, emoticons, code, media, searchreplace, eqneditor',
     toolbar: [
       { name: 'history', items: ['undo', 'redo'] },
@@ -70,7 +83,7 @@
         }, 1000);
       });
     }
-  };
+  });
 
   function handleModeChange(isDark: boolean) {
     if (isDark) {
@@ -81,15 +94,17 @@
       conf.skin = 'oxide';
     }
 
-    unmount = true;
-    setTimeout(() => {
-      unmount = false;
-    }, 200);
+    untrack(() => {
+      unmount = true;
+      setTimeout(() => {
+        unmount = false;
+      }, 200);
+    });
   }
 
-  $: value = !value ? '' : value;
-
-  $: handleModeChange($globalStore.isDark);
+  $effect(() => {
+    handleModeChange($globalStore.isDark);
+  });
 </script>
 
 <svelte:head>

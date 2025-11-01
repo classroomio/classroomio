@@ -84,8 +84,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'Which CSS property is used to set the color of an element when a user hovers over it?',
+        title: 'Which CSS property is used to set the color of an element when a user hovers over it?',
         name: 'q8',
         points: 1,
         order: 7,

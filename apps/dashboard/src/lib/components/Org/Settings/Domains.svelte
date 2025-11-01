@@ -1,10 +1,11 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { Column, CopyButton, Grid, Row } from 'carbon-components-svelte';
-  import ArrowUpRight from 'carbon-icons-svelte/lib/ArrowUpRight.svelte';
-  import Restart from 'carbon-icons-svelte/lib/Restart.svelte';
-  import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
+  import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
+  import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
+  import TrashIcon from '@lucide/svelte/icons/trash';
   import isValidDomain from 'is-valid-domain';
+  import { untrack } from 'svelte';
   import { parse } from 'tldts';
 
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
@@ -12,7 +13,7 @@
   import ComingSoon from '$lib/components/ComingSoon/index.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -24,26 +25,26 @@
   import { t } from '$lib/utils/functions/translations';
   import { updateOrgSiteNameValidation } from '$lib/utils/functions/validator';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
-  import type { CurrentOrg } from '$lib/utils/types/org';
   import SectionTitle from '../SectionTitle.svelte';
 
-  let siteName = '';
-  let customDomain = '';
-  let customCode = '';
-  let favicon = '';
-  let isDomainValid = false;
-  let isLoading = false;
-  let isCustomDomainLoading = false;
-  let isRefreshing = false;
+  let siteName = $derived($currentOrg.siteName);
+  let customDomain = $state('');
+  let customCode = $state('');
+  let favicon = $state('');
+  let isLoading = $state(false);
+  let isCustomDomainLoading = $state(false);
+  let isRefreshing = $state(false);
+
+  const isDomainValid = $derived(isValidDomain(sanitizeDomain(customDomain), { subdomain: true }));
 
   type Error = {
     siteName: string;
     customDomain: string;
   };
-  let errors: Error = {
+  let errors: Error = $state({
     siteName: '',
     customDomain: ''
-  };
+  });
 
   async function handleSaveSiteName() {
     errors = updateOrgSiteNameValidation(siteName) as Error;
@@ -59,10 +60,7 @@
     }
     isLoading = true;
 
-    const { data: org, error } = await supabase
-      .from('organization')
-      .update({ siteName })
-      .match({ id: $currentOrg.id });
+    const { data: org, error } = await supabase.from('organization').update({ siteName }).match({ id: $currentOrg.id });
 
     console.log('Updating organisation', org);
     if (error) {
@@ -171,10 +169,7 @@
       if (data.verified && !$currentOrg.isCustomDomainVerified) {
         $currentOrg.isCustomDomainVerified = true;
 
-        await supabase
-          .from('organization')
-          .update({ isCustomDomainVerified: true })
-          .match({ id: $currentOrg.id });
+        await supabase.from('organization').update({ isCustomDomainVerified: true }).match({ id: $currentOrg.id });
       }
     } catch (error) {
       console.log('Error: refreshing domain', error);
@@ -185,18 +180,14 @@
   }
 
   function resetErrors(_siteName: string, _customDomain: string) {
-    if (errors.siteName) {
-      errors.siteName = '';
-    }
-    if (errors.customDomain) {
-      errors.customDomain = '';
-    }
-  }
-
-  function setDefaults(org: CurrentOrg) {
-    if (!siteName) {
-      siteName = org.siteName;
-    }
+    untrack(() => {
+      if (errors.siteName) {
+        errors.siteName = '';
+      }
+      if (errors.customDomain) {
+        errors.customDomain = '';
+      }
+    });
   }
 
   function getSubdomain() {
@@ -204,10 +195,9 @@
     return details.subdomain;
   }
 
-  $: setDefaults($currentOrg);
-  $: resetErrors(siteName, customDomain);
-
-  $: isDomainValid = isValidDomain(sanitizeDomain(customDomain), { subdomain: true });
+  $effect(() => {
+    resetErrors(siteName, customDomain);
+  });
 </script>
 
 <Grid class="mt-5 w-full rounded border border-gray-200 dark:border-neutral-600">
@@ -263,33 +253,19 @@
               <p class="text-md flex items-center gap-2 font-medium">
                 {$currentOrg.customDomain}
 
-                <IconButton
-                  contained={true}
-                  size="small"
-                  onClick={() => goto(`https://${$currentOrg.customDomain}`)}
-                >
-                  <ArrowUpRight size={16} />
+                <IconButton contained={true} size="small" onClick={() => goto(`https://${$currentOrg.customDomain}`)}>
+                  <ArrowUpRightIcon size={16} />
                 </IconButton>
               </p>
 
               <div
-                class="mt-1 h-2 w-2 rounded-full bg-{$currentOrg.isCustomDomainVerified
-                  ? 'green'
-                  : 'yellow'}-400"
+                class="mt-1 h-2 w-2 rounded-full bg-{$currentOrg.isCustomDomainVerified ? 'green' : 'yellow'}-400"
               ></div>
             </div>
             {#if $currentOrg.isCustomDomainVerified}
-              <TextChip
-                value="Verified"
-                className="bg-green-500 text-white text-xs px-3"
-                size="sm"
-              />
+              <TextChip value="Verified" className="bg-green-500 text-white text-xs px-3" size="sm" />
             {:else}
-              <TextChip
-                value="Pending verification"
-                className="bg-yellow-500 text-white text-xs px-3"
-                size="sm"
-              />
+              <TextChip value="Pending verification" className="bg-yellow-500 text-white text-xs px-3" size="sm" />
             {/if}
           </div>
 
@@ -327,7 +303,7 @@
               variant={VARIANTS.OUTLINED}
             >
               {#if !isRefreshing}
-                <Restart size={16} />
+                <RotateCcwIcon size={16} />
               {/if}
               {$t('components.settings.domains.refresh')}
             </PrimaryButton>
@@ -339,7 +315,7 @@
               variant={VARIANTS.CONTAINED_DANGER}
             >
               {#if !isCustomDomainLoading}
-                <TrashCan size={16} />
+                <TrashIcon size={16} />
               {/if}
               {$t('components.settings.domains.remove')}
             </PrimaryButton>

@@ -117,8 +117,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What happens if the "LIMIT" value is greater than the total number of rows in the result set?',
+        title: 'What happens if the "LIMIT" value is greater than the total number of rows in the result set?',
         name: 'question7',
         points: 1,
         order: 6,
@@ -139,8 +138,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which SQL statement is used to limit the number of rows returned from the beginning of a result set?',
+        title: 'Which SQL statement is used to limit the number of rows returned from the beginning of a result set?',
         name: 'question8',
         points: 2,
         order: 7,

@@ -108,8 +108,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the CSS property used to set the space between the borders of adjacent cells in a table?',
+        title: 'What is the CSS property used to set the space between the borders of adjacent cells in a table?',
         name: 'q10',
         points: 1,
         order: 9,

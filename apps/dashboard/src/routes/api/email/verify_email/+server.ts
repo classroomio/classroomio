@@ -15,9 +15,7 @@ export async function POST({ fetch, request }) {
     orgSiteName
   });
 
-  const verificationLink = `${origin}/api/verify?data=${encodeURIComponent(
-    btoa(verificationData)
-  )}`;
+  const verificationLink = `${origin}/api/verify?data=${encodeURIComponent(btoa(verificationData))}`;
 
   const emailData = [
     {
@@ -39,7 +37,6 @@ export async function POST({ fetch, request }) {
   await sendEmail(fetch)(emailData);
 
   return json({
-    success: true,
-    message: `Email sent ${verificationLink}`
+    success: true
   });
 }

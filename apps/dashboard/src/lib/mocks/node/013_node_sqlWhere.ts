@@ -121,8 +121,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'How can you combine multiple conditions with different logical operators in a WHERE clause?',
+        title: 'How can you combine multiple conditions with different logical operators in a WHERE clause?',
         name: 'question7',
         points: 1,
         order: 6,

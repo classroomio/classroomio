@@ -103,8 +103,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the difference between an abstract class and a regular class in TypeScript?',
+        title: 'What is the difference between an abstract class and a regular class in TypeScript?',
         name: 'q9',
         points: 2,
         order: 9,

@@ -1,49 +1,47 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
   import Box from '$lib/components/Box/index.svelte';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
   import { getLectureNo } from '$lib/components/Course/function.js';
-  import { course, group } from '$lib/components/Course/store';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
+  import { course } from '$lib/components/Course/store';
+  import { CourseContainer } from '$lib/components/CourseContainer';
   import { PageBody, PageNav } from '$lib/components/Page';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { ROLE } from '$lib/utils/constants/roles';
   import { t } from '$lib/utils/functions/translations';
   import { fetchExercisesByMarks } from '$lib/utils/services/courses';
   import { fetchMarks } from '$lib/utils/services/marks';
-  import { globalStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
-  import { profile } from '$lib/utils/store/user';
   import type { GroupPerson } from '$lib/utils/types';
   import type { CurrentOrg } from '$lib/utils/types/org';
   import { Loading, OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
-  import AudioConsoleIcon from 'carbon-icons-svelte/lib/AudioConsole.svelte';
-  import Download from 'carbon-icons-svelte/lib/Download.svelte';
+  import BadgeXIcon from '@lucide/svelte/icons/badge-x';
+  import DownloadIcon from '@lucide/svelte/icons/download';
   import jsPDF from 'jspdf';
   import autoTable from 'jspdf-autotable';
   import Papa from 'papaparse';
 
-  export let data;
+  let { data } = $props();
 
   let borderBottomGrey = 'border-r-0 border-t-0 border-b border-l-0 border-gray-300';
   let borderleftGrey = 'border-r-0 border-t-0 border-b-0 border-l border-gray-300';
-  let students: GroupPerson[] = [];
-  let lessonMapping = {}; // { lessonId: { exerciseId: exerciseTitle, ... }, ... }
-  let studentMarksByExerciseId = {}; // { groupMemberId: { exerciseId: `total_gotten/points`, ... }, ... }
-  let isDownloading = false;
+  let students: GroupPerson[] = $state([]);
+  let lessonMapping: Record<string, Record<string, { title: string; points: number }>> = $state({}); // { lessonId: { exerciseId: exerciseTitle, ... }, ... }
+  let studentMarksByExerciseId: Record<string, Record<string, string>> = $state({}); // { groupMemberId: { exerciseId: `total_gotten/points`, ... }, ... }
+  let isDownloading = $state(false);
+  let hasFetched = $state(false);
 
   function calculateStudentTotal(studentExerciseData) {
     if (!studentExerciseData) return 0;
 
-    return Object.values(studentExerciseData).reduce(
-      (total: number, point) => (total += parseInt(point as string)),
-      0
-    );
+    return Object.values(studentExerciseData).reduce((total: number, point) => (total += parseInt(point as string)), 0);
   }
 
-  async function firstRender(courseId: string) {
+  async function firstRender(courseId?: string) {
+    if (!courseId || hasFetched) return;
+
+    hasFetched = true;
+
     const { data: marks, error } = await fetchMarks(courseId);
     if (error) {
       console.error('Error fetching marks', error);
@@ -204,14 +202,12 @@
     }
   }
 
-  $: students = $globalStore.isStudent
-    ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
-    : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
-
-  $: browser && $course.id && firstRender($course.id);
+  $effect(() => {
+    firstRender($course.id);
+  });
 </script>
 
-<CourseContainer bind:courseId={data.courseId}>
+<CourseContainer courseId={data.courseId}>
   <RoleBasedSecurity
     allowedRoles={getPageRoles($currentOrg)}
     onDenied={() => {
@@ -219,22 +215,24 @@
     }}
   >
     <PageNav title={$t('course.navItem.marks.title')}>
-      <slot:fragment slot="widget">
+      {#snippet widget()}
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           <OverflowMenu flipped style="border-radius: 50px" class="bg-gray-100 dark:bg-neutral-800">
             <div slot="menu" style="">
-              {#if isDownloading}
-                <Loading withOverlay={false} small />
-              {:else}
-                <Download />
-              {/if}
+              <div style="">
+                {#if isDownloading}
+                  <Loading withOverlay={false} small />
+                {:else}
+                  <DownloadIcon size={16} />
+                {/if}
+              </div>
             </div>
 
             <OverflowMenuItem text={$t('course.navItem.marks.export.csv')} on:click={downloadCSV} />
             <OverflowMenuItem text={$t('course.navItem.marks.export.pdf')} on:click={downloadPDF} />
           </OverflowMenu>
         </RoleBasedSecurity>
-      </slot:fragment>
+      {/snippet}
     </PageNav>
 
     <PageBody width="w-full max-w-6xl md:w-11/12">
@@ -249,9 +247,7 @@
                 <p class="col lesson-number dark:text-white" title={lesson.title}>
                   {getLectureNo(index + 1)}
                 </p>
-                <div
-                  class="flex h-full items-center border-b-0 border-l-0 border-r-0 border-t border-gray-300"
-                >
+                <div class="flex h-full items-center border-b-0 border-l-0 border-r-0 border-t border-gray-300">
                   {#each Object.keys(lessonMapping[lesson.id]) as exerciseId, index}
                     <p
                       class="col text-sm dark:text-white {index && borderleftGrey}"
@@ -273,11 +269,7 @@
         {#each students as student}
           <div class="relative flex cursor-pointer items-center p-3 {borderBottomGrey}">
             <div class="flex w-40 items-center">
-              <img
-                alt="Student avatar"
-                src={student.profile.avatar_url}
-                class="mr-2 h-8 w-8 rounded-full"
-              />
+              <img alt="Student avatar" src={student.profile.avatar_url} class="mr-2 h-8 w-8 rounded-full" />
               <div class="text-sm">
                 <p class="font-semibold dark:text-white">
                   {student.profile.fullname}
@@ -311,7 +303,7 @@
           </div>
         {:else}
           <Box>
-            <AudioConsoleIcon size={32} class="carbon-icon w-80" />
+            <BadgeXIcon size={16} />
             <h3 class="text-3xl text-gray-500 dark:text-white">
               {$t('course.navItem.marks.no_student')}
             </h3>

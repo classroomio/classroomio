@@ -3,10 +3,10 @@
 </script>
 
 <div
-  class="root w-full border border-gray-100 dark:border-neutral-600 dark:bg-neutral-800 mr-4 mb-4 rounded-md transition ease-in-out relative flex p-3"
+  class="root relative mb-4 mr-4 flex w-full rounded-md border border-gray-100 p-3 transition ease-in-out dark:border-neutral-600 dark:bg-neutral-800"
 >
   <SkeletonPlaceholder style="width: 20%; height: 100%;" />
-  <div class="w-full mx-5 flex justify-evenly flex-col">
+  <div class="mx-5 flex w-full flex-col justify-evenly">
     <!-- Title -->
     <SkeletonText style="width: 50%;" />
     <!-- Description -->

@@ -10,41 +10,39 @@
   import { fetchCourses } from '$lib/utils/services/courses';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
-  import type { Course } from '$lib/utils/types';
+  import { untrack } from 'svelte';
 
   let hasFetched = false;
-  let progressPercentage = 0;
-  let totalLessons = 0;
-  let totalCompleted = 0;
 
-  async function getCourses(userId: string | undefined, orgId: string) {
+  let totalCompleted = $derived($courses.reduce((acc, cur) => acc + (cur.progress_rate || 0), 0));
+  let totalLessons = $derived($courses.reduce((acc, cur) => acc + (cur.total_lessons || 0), 0));
+  let progressPercentage = $derived(Math.round((totalCompleted / totalLessons) * 100) || 0);
+
+  function getCourses(userId?: string, orgId?: string) {
     if (hasFetched || !userId || !orgId) {
       return;
     }
-    // only show is loading when fetching for the first time
-    if (!$courses.length) {
-      $courseMetaDeta.isLoading = true;
-    }
 
-    const coursesResult = await fetchCourses(userId, orgId);
-    console.log(`coursesResult`, coursesResult);
+    untrack(async () => {
+      // only show is loading when fetching for the first time
+      if (!$courses.length) {
+        $courseMetaDeta.isLoading = true;
+      }
 
-    $courseMetaDeta.isLoading = false;
-    if (!coursesResult) return;
+      const coursesResult = await fetchCourses(userId, orgId);
+      console.log(`coursesResult`, coursesResult);
 
-    courses.set(coursesResult.allCourses);
-    hasFetched = true;
+      $courseMetaDeta.isLoading = false;
+      if (!coursesResult) return;
+
+      courses.set(coursesResult.allCourses);
+      hasFetched = true;
+    });
   }
 
-  function calcTotalProgress(courses: Course[]) {
-    totalCompleted = courses.reduce((acc, cur) => acc + (cur.progress_rate || 0), 0);
-    totalLessons = courses.reduce((acc, cur) => acc + (cur.total_lessons || 0), 0);
-
-    progressPercentage = Math.round((totalCompleted / totalLessons) * 100) || 0;
-  }
-
-  $: getCourses($profile.id, $currentOrg.id);
-  $: calcTotalProgress($courses);
+  $effect(() => {
+    getCourses($profile.id, $currentOrg.id);
+  });
 </script>
 
 <svelte:head>
@@ -54,7 +52,7 @@
 <section class="mx-auto max-w-6xl gap-5">
   <div class="m-5">
     <div class="mb-10 flex items-center justify-between">
-      <h1 class="text-2xl font-bold dark:text-white md:text-3xl">
+      <h1 class="text-2xl font-bold md:text-3xl dark:text-white">
         {$t(getGreeting())}
         {$profile.fullname}!
       </h1>
@@ -94,7 +92,7 @@
           {$t('dashboard.your_progress')}
         </p>
         <div
-          class="flex h-fit items-center justify-center gap-2 rounded border border-[#EAEAEA] p-3 dark:bg-neutral-800 lg:h-[40vh] lg:overflow-y-auto"
+          class="flex h-fit items-center justify-center gap-2 rounded border border-[#EAEAEA] p-3 lg:h-[40vh] lg:overflow-y-auto dark:bg-neutral-800"
         >
           <div
             class="flex h-full w-full flex-col items-center justify-between gap-5 sm:flex-row lg:items-center lg:justify-around xl:flex-col xl:items-start"
@@ -117,9 +115,7 @@
                 </p>
               {/if}
             </span>
-            <h1
-              class="my-0 whitespace-nowrap text-5xl font-bold text-[#262626] dark:text-white lg:text-6xl"
-            >
+            <h1 class="my-0 whitespace-nowrap text-5xl font-bold text-[#262626] lg:text-6xl dark:text-white">
               {progressPercentage} %
             </h1>
           </div>

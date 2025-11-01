@@ -1,7 +1,8 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { goto } from '$app/navigation';
   import { Column, Grid, Row } from 'carbon-components-svelte';
-  import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
+  import ZapIcon from '@lucide/svelte/icons/zap';
   import debounce from 'lodash/debounce';
   import ColorPicker from 'svelte-awesome-color-picker';
 
@@ -19,18 +20,30 @@
   import UploadImage from '$lib/components/UploadImage/index.svelte';
   import SectionTitle from '../SectionTitle.svelte';
 
-  let avatar;
-  let hasUnsavedChanges = false;
+  let avatar = $state<string | undefined>();
+  let hasUnsavedChanges = $state(false);
 
   type Error = {
     orgName: string;
   };
 
-  let errors: Error = {
+  let errors: Error = $state({
     orgName: ''
-  };
-  let loading = false;
-  let hex = '';
+  });
+  let loading = $state(false);
+  let hex = $state('');
+
+  $effect(() => {
+    const theme = $currentOrg.theme;
+
+    // if not a custom theme, don't update hex
+    if (!theme || theme.includes('theme-')) return;
+
+    // only update hex with value of `theme` when theme changes not when HEX changes
+    untrack(() => {
+      hex = theme;
+    });
+  });
 
   const themes = {
     rose: 'theme-rose',
@@ -41,10 +54,7 @@
   };
 
   const saveTheme = debounce(async (theme) => {
-    const { error, data } = await supabase
-      .from('organization')
-      .update({ theme })
-      .match({ id: $currentOrg.id });
+    const { error, data } = await supabase.from('organization').update({ theme }).match({ id: $currentOrg.id });
 
     console.log('Debounced update theme', data);
 
@@ -59,7 +69,7 @@
         .split(' ')
         .filter((c) => !c.includes('theme'))
         .join(' ')
-        .concat(!!t ? ' ' : '', t);
+        .concat(t ? ' ' : '', t);
       $currentOrg.theme = t;
 
       hex = '';
@@ -113,10 +123,7 @@
         avatar = undefined;
       }
 
-      let { error } = await supabase
-        .from('organization')
-        .update(updates)
-        .match({ id: $currentOrg.id });
+      let { error } = await supabase.from('organization').update(updates).match({ id: $currentOrg.id });
 
       currentOrg.update((_currentOrg) => ({
         ..._currentOrg,
@@ -143,16 +150,11 @@
     goto(`${$currentOrgPath}/settings${pathname}`);
   }
 
-  function setHex(theme?: string) {
-    if (!theme || hex || theme.includes('theme-')) return;
-    hex = theme;
-  }
-
-  $: setHex($currentOrg.theme);
-  $: isCustomTheme = hex && !hex.includes('theme-');
+  let isCustomTheme = $derived(hex && !hex.includes('theme-'));
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
+
 <Grid class="border-c mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}>
@@ -173,8 +175,9 @@
         src={$currentOrg.avatar_url}
         shape="rounded-md"
         widthHeight="w-24 h-24"
-        on:change={() => (hasUnsavedChanges = true)}
+        change={() => (hasUnsavedChanges = true)}
       />
+
       <PrimaryButton
         label={$t('settings.organization.organization_profile.update_organization')}
         className="px-6 py-3 lg:mr-5 mt-5"
@@ -186,11 +189,10 @@
   </Row>
   <Row class="border-bottom-c relative flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
-      ><SectionTitle>{$t('settings.organization.organization_profile.theme.heading')}</SectionTitle
-      ></Column
+      ><SectionTitle>{$t('settings.organization.organization_profile.theme.heading')}</SectionTitle></Column
     >
     <Column sm={8} md={8} lg={8}>
-      <h4 class="dark:text-white lg:mt-0">
+      <h4 class="lg:mt-0 dark:text-white">
         {$t('settings.organization.organization_profile.theme.sub_heading')}
       </h4>
 
@@ -198,41 +200,46 @@
         <button
           class="rounded-full border-2 {$currentOrg.theme === themes.default &&
             'border-[#1d4ee2]'} flex h-fit items-center justify-center"
-          on:click={handleChangeTheme(themes.default)}
+          onclick={handleChangeTheme(themes.default)}
+          aria-label="Default blue theme"
         >
-          <div class="m-1 h-6 w-6 rounded-full bg-[#1d4ee2] md:h-6 md:w-6" />
+          <div class="m-1 h-6 w-6 rounded-full bg-[#1d4ee2] md:h-6 md:w-6"></div>
         </button>
 
         <button
           class="rounded-full border-2 {$currentOrg.theme === themes.rose &&
             'border-[#be1241]'} flex h-fit items-center justify-center"
-          on:click={handleChangeTheme(themes.rose)}
+          onclick={handleChangeTheme(themes.rose)}
+          aria-label="Rose theme"
         >
-          <div class="m-1 h-6 w-6 rounded-full bg-[#be1241] md:h-6 md:w-6" />
+          <div class="m-1 h-6 w-6 rounded-full bg-[#be1241] md:h-6 md:w-6"></div>
         </button>
 
         <button
           class="rounded-full border-2 {$currentOrg.theme === themes.green &&
             'border-[#0c891b]'} flex h-fit items-center justify-center"
-          on:click={handleChangeTheme(themes.green)}
+          onclick={handleChangeTheme(themes.green)}
+          aria-label="Green theme"
         >
-          <div class="m-1 h-6 w-6 rounded-full bg-[#0c891b] md:h-6 md:w-6" />
+          <div class="m-1 h-6 w-6 rounded-full bg-[#0c891b] md:h-6 md:w-6"></div>
         </button>
 
         <button
           class="rounded-full border-2 {$currentOrg.theme === themes.orange &&
             'border-[#cc4902]'} flex h-fit items-center justify-center"
-          on:click={handleChangeTheme(themes.orange)}
+          onclick={handleChangeTheme(themes.orange)}
+          aria-label="Orange theme"
         >
-          <div class="m-1 h-6 w-6 rounded-full bg-[#cc4902] md:h-6 md:w-6" />
+          <div class="m-1 h-6 w-6 rounded-full bg-[#cc4902] md:h-6 md:w-6"></div>
         </button>
 
         <button
           class="rounded-full border-2 {$currentOrg.theme === themes.violet &&
             'border-[#cf00ce]'} flex h-fit items-center justify-center"
-          on:click={handleChangeTheme(themes.violet)}
+          onclick={handleChangeTheme(themes.violet)}
+          aria-label="Violet theme"
         >
-          <div class="m-1 h-6 w-6 rounded-full bg-[#cf00ce] md:h-6 md:w-6" />
+          <div class="m-1 h-6 w-6 rounded-full bg-[#cf00ce] md:h-6 md:w-6"></div>
         </button>
 
         <div
@@ -245,9 +252,7 @@
             class="pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-200"
           >
             <svg
-              class="h-6 w-6 text-{isCustomTheme
-                ? 'white'
-                : 'black'} z-10 opacity-100 dark:text-white"
+              class="h-6 w-6 text-{isCustomTheme ? 'white' : 'black'} z-10 opacity-100 dark:text-white"
               fill="none"
               stroke="currentColor"
               stroke-width="2"
@@ -270,7 +275,7 @@
       </SectionTitle>
     </Column>
     <Column sm={8} md={8} lg={8}>
-      <h4 class="dark:text-white lg:mt-0">
+      <h4 class="lg:mt-0 dark:text-white">
         {$t('settings.organization.organization_profile.customize_lms.sub_heading')}
       </h4>
       <p class="text-sm text-gray-500 dark:text-white">
@@ -287,12 +292,10 @@
   </Row>
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
-      ><SectionTitle
-        >{$t('settings.organization.organization_profile.custom_domain.heading')}</SectionTitle
-      ></Column
+      ><SectionTitle>{$t('settings.organization.organization_profile.custom_domain.heading')}</SectionTitle></Column
     >
     <Column sm={8} md={8} lg={8}>
-      <h4 class="dark:text-white lg:mt-0">
+      <h4 class="lg:mt-0 dark:text-white">
         {$t('settings.organization.organization_profile.custom_domain.sub_heading')}
       </h4>
       <p class="text-sm text-gray-500 dark:text-white">
@@ -304,7 +307,7 @@
         onClick={() => gotoSettings('/domains')}
       >
         {#if $isFreePlan}
-          <FlashFilled size={16} class="text-blue-700" />
+          <ZapIcon size={16} class="filled" />
         {/if}
         {$t('settings.organization.organization_profile.custom_domain.button')}
       </PrimaryButton>
@@ -312,11 +315,10 @@
   </Row>
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}
-      ><SectionTitle>{$t('settings.organization.organization_profile.team.heading')}</SectionTitle
-      ></Column
+      ><SectionTitle>{$t('settings.organization.organization_profile.team.heading')}</SectionTitle></Column
     >
     <Column sm={8} md={8} lg={8}>
-      <h4 class="dark:text-white lg:mt-0">
+      <h4 class="lg:mt-0 dark:text-white">
         {$t('settings.organization.organization_profile.team.sub_heading')}
       </h4>
       <p class="text-sm text-gray-500 dark:text-white">
@@ -328,7 +330,7 @@
         onClick={() => gotoSettings('/teams')}
       >
         {#if $isFreePlan}
-          <FlashFilled size={16} class="text-blue-700" />
+          <ZapIcon size={16} class="filled" />
         {/if}
         {$t('settings.organization.organization_profile.team.button')}
       </PrimaryButton>

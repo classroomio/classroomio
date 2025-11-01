@@ -9,8 +9,7 @@
     "moduleResolution": "Bundler",
     "outDir": "./dist",
     "paths": {
-      "$src": ["./src"],
-      "$src/*": ["./src/*"]
+      "@api/*": ["src/*"]
     },
     "resolveJsonModule": false,
     "skipLibCheck": true,

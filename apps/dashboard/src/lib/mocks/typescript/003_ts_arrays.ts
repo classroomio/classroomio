@@ -95,8 +95,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What TypeScript method is used to remove the last element from an array and return that element?',
+        title: 'What TypeScript method is used to remove the last element from an array and return that element?',
         name: 'q4',
         points: 1,
         order: 4,
@@ -271,8 +270,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which TypeScript method is used to add one or more elements to the beginning of an array?',
+        title: 'Which TypeScript method is used to add one or more elements to the beginning of an array?',
         name: 'q10',
         points: 1,
         order: 10,

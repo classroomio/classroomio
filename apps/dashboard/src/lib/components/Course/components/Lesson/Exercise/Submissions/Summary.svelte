@@ -1,22 +1,21 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import { browser } from '$app/environment';
   import type { ExerciseSubmissions } from '$lib/utils/types';
   import { questionnaire } from '../../store/exercise';
   import { replaceHTMLTag } from '$lib/utils/functions/course';
-  import type {
-    BarChartOptions,
-    PieChartOptions,
-    PieChart,
-    BarChartSimple
-  } from '@carbon/charts-svelte';
+  import type { BarChartOptions, PieChartOptions, PieChart, BarChartSimple } from '@carbon/charts-svelte';
   import { getChartOptions } from './functions';
   import { submissions } from './store';
   import '@carbon/charts-svelte/styles.css';
   import { Loading } from 'carbon-components-svelte';
   import { t } from '$lib/utils/functions/translations';
 
-  export let isLoading = true;
+  interface Props {
+    isLoading?: boolean;
+  }
+
+  let { isLoading = $bindable(true) }: Props = $props();
 
   type TranformedQuestionChartData = {
     group: string;
@@ -29,11 +28,11 @@
     chartData: TranformedQuestionChartData[];
   }
 
-  let transformedQuestions: TranformedQuestion[] = [];
-  let barChart: typeof BarChartSimple;
-  let pieChart: typeof PieChart;
-  let pieOptions: PieChartOptions;
-  let barOptions: BarChartOptions;
+  let transformedQuestions: TranformedQuestion[] = $state([]);
+  let barChart: typeof BarChartSimple | undefined = $state();
+  let pieChart: typeof PieChart | undefined = $state();
+  let pieOptions: PieChartOptions | undefined = $derived(getChartOptions(isLoading).pieOptions);
+  let barOptions: BarChartOptions | undefined = $derived(getChartOptions(isLoading).barOptions);
 
   function getAnswerToQuestionOfStudent(
     questionId: number,
@@ -99,11 +98,7 @@
             };
 
             $submissions.forEach((studentSubmission) => {
-              const studentAnswer = getAnswerToQuestionOfStudent(
-                question.id,
-                false,
-                studentSubmission
-              );
+              const studentAnswer = getAnswerToQuestionOfStudent(question.id, false, studentSubmission);
 
               if (studentAnswer.includes(value)) {
                 chartData.value += 1;
@@ -117,7 +112,9 @@
       }
     );
 
-    transformedQuestions = [..._transformedQuestions];
+    untrack(() => {
+      transformedQuestions = [..._transformedQuestions];
+    });
 
     console.log({ transformedQuestions });
   };
@@ -128,37 +125,35 @@
     pieChart = charts.PieChart;
   });
 
-  $: browser && $submissions?.length && getTransformedData($submissions);
-
-  $: {
-    let chartOptions = getChartOptions(isLoading);
-    barOptions = chartOptions.barOptions;
-    pieOptions = chartOptions.pieOptions;
-
-    console.log({ chartOptions });
-  }
+  $effect(() => {
+    if ($submissions?.length) {
+      getTransformedData($submissions);
+    }
+  });
 </script>
 
 {#if isLoading}
   <Loading withOverlay={true} />
 {:else if browser}
   <div>
-    <p class="text-2xl mb-3">
+    <p class="mb-3 text-2xl">
       {$t('course.navItem.lessons.exercises.all_exercises.analytics.summary.question_chart')}
     </p>
     {#each transformedQuestions as q}
       <div class="mb-4">
         <p>{q.title}</p>
-        {#if q.type === 1}
-          <svelte:component this={pieChart} data={q.chartData} options={pieOptions} />
-        {:else if q.type === 2}
-          <svelte:component this={barChart} data={q.chartData} options={barOptions} />
+        {#if q.type === 1 && pieOptions}
+          {@const SvelteComponent = pieChart}
+          <SvelteComponent data={q.chartData} options={pieOptions} />
+        {:else if q.type === 2 && barOptions}
+          {@const SvelteComponent_1 = barChart}
+          <SvelteComponent_1 data={q.chartData} options={barOptions} />
         {:else}
           <div class="max-h-[250px] overflow-auto">
             <ul>
               {#each q.chartData as answer (answer)}
                 {#if answer.group}
-                  <div class="rounded bg-slate-100 dark:bg-slate-300 p-2 my-1 w-full">
+                  <div class="my-1 w-full rounded bg-slate-100 p-2 dark:bg-slate-300">
                     <li class="text-base font-medium text-black">{answer.group}</li>
                   </div>
                 {/if}

@@ -1,25 +1,45 @@
 <script lang="ts">
   import ToolTip from '../ToolTip/index.svelte';
 
-  export let onClick = (v: string) => {};
-  export let stopPropagation = false;
-  export let disabled = false;
-  export let selected = false;
-  export let buttonClassName = '';
-  export let contained = false;
-  export let value = '';
-  export let type: 'button' | 'submit' | 'reset' | null | undefined = 'button';
-  export let size: 'small' | 'large' = 'large';
-  export let color = '';
-  export let toolTipProps: {
-    title: string;
-    hotkeys: string[];
-    direction?: string;
-  } = {
-    title: '',
-    hotkeys: [],
-    direction: ''
-  };
+  export interface Props {
+    onClick?: any;
+    stopPropagation?: boolean;
+    disabled?: boolean;
+    selected?: boolean;
+    buttonClassName?: string;
+    contained?: boolean;
+    bordered?: boolean;
+    value?: string;
+    type?: 'button' | 'submit' | 'reset' | null | undefined;
+    size?: 'small' | 'large';
+    color?: string;
+    toolTipProps?: {
+      title: string;
+      hotkeys: string[];
+      direction?: string;
+    };
+    children?: import('svelte').Snippet;
+  }
+
+  let {
+    onClick = (_v: string) => {},
+    stopPropagation = false,
+    disabled = false,
+    selected = false,
+    buttonClassName = '',
+    contained = false,
+    bordered = false,
+    value = '',
+    type = 'button',
+    size = 'large',
+    color = '',
+    toolTipProps = {
+      title: '',
+      hotkeys: [],
+      direction: ''
+    },
+    children
+  }: Props = $props();
 
   function handleClick(e: Event) {
     if (stopPropagation) {
@@ -29,19 +49,15 @@
   }
 </script>
 
-<ToolTip
-  title={toolTipProps.title}
-  hotkeys={disabled ? [] : toolTipProps.hotkeys}
-  direction={toolTipProps.direction}
->
+<ToolTip title={toolTipProps.title} hotkeys={disabled ? [] : toolTipProps.hotkeys} direction={toolTipProps.direction}>
   <button
     class="root {color} {selected && 'active'} {disabled && 'disabled'} {size} {contained &&
-      'contained dark:bg-neutral-700'} {buttonClassName}"
+      'contained dark:bg-neutral-700'} {bordered && 'border'} {buttonClassName}"
     {disabled}
     {type}
-    on:click={handleClick}
+    onclick={handleClick}
   >
-    <slot />
+    {@render children?.()}
   </button>
 </ToolTip>
 
@@ -53,7 +69,6 @@
     text-align: center;
     transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
     border-radius: 50%;
-    border: 0;
     cursor: pointer;
     margin: 0;
     display: flex;

@@ -1,10 +1,9 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
   import Box from '$lib/components/Box/index.svelte';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
   import { getLectureNo } from '$lib/components/Course/function.js';
   import { course, group } from '$lib/components/Course/store';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
+  import { CourseContainer } from '$lib/components/CourseContainer';
   import { PageBody, PageNav } from '$lib/components/Page';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { ROLE } from '$lib/utils/constants/roles';
@@ -24,9 +23,9 @@
     StructuredListHead,
     StructuredListRow
   } from 'carbon-components-svelte';
-  import AudioConsoleIcon from 'carbon-icons-svelte/lib/AudioConsole.svelte';
+  import BadgeXIcon from '@lucide/svelte/icons/badge-x';
 
-  export let data;
+  let { data = $bindable() } = $props();
 
   interface CourseData {
     attendance: {
@@ -37,8 +36,14 @@
     }[];
   }
 
-  let students: GroupPerson[] = [];
-  let searchValue = '';
+  let hasFetched = $state(false);
+
+  const students: GroupPerson[] = $derived(
+    $globalStore.isStudent
+      ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
+      : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT)
+  );
+  let searchValue = $state('');
 
   function setAttendance(courseData: CourseData) {
     for (const attendanceItem of courseData.attendance) {
@@ -115,34 +120,30 @@
   // function for the searchbar
   function searchStudents(query: string, _students: GroupPerson[]) {
     const lowercaseQuery = query.toLowerCase();
-    return _students.filter((student) =>
-      student.profile?.fullname?.toLowerCase()?.includes(lowercaseQuery)
-    );
+    return _students.filter((student) => student.profile?.fullname?.toLowerCase()?.includes(lowercaseQuery));
   }
 
-  async function firstRender(courseId: string) {
-    if (courseId) {
-      if (!Object.keys($attendance).length) {
-        setAttendance($course);
-      }
-      return;
+  async function firstRender(courseId?: string) {
+    if (!courseId || hasFetched) return;
+
+    hasFetched = true;
+
+    if (!Object.keys($attendance).length) {
+      setAttendance($course);
     }
+    return;
   }
 
-  $: students = $globalStore.isStudent
-    ? $group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
-    : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT);
-
-  $: browser && $course.id && firstRender($course.id);
+  $effect(() => {
+    firstRender($course.id);
+  });
 </script>
 
-<CourseContainer bind:courseId={data.courseId}>
+<CourseContainer courseId={data.courseId}>
   <PageNav title={$t('course.navItem.attendance.title')} />
   <PageBody width="w-full max-w-6xl md:w-11/12">
     <section class="mx-2 my-5 flex items-center lg:mx-9">
-      <div
-        class="flex w-full flex-col items-start justify-between gap-2 lg:flex-row lg:items-center"
-      >
+      <div class="flex w-full flex-col items-start justify-between gap-2 lg:flex-row lg:items-center">
         <div class="flex">
           <p class="mr-5 flex items-center">
             <Checkbox checked disabled />
@@ -171,11 +172,9 @@
             <StructuredListCell head class="text-primary-600 py-3"
               >{$t('course.navItem.attendance.student')}</StructuredListCell
             >
-            {#each $lessons as lesson, index}
+            {#each $lessons as _lesson, index}
               <StructuredListCell head class="text-primary-600 py-3"
-                >{$t('course.navItem.attendance.lesson')} 0{getLectureNo(
-                  index + 1
-                )}</StructuredListCell
+                >{$t('course.navItem.attendance.lesson')} 0{getLectureNo(index + 1)}</StructuredListCell
               >
             {/each}
           </StructuredListRow>
@@ -211,7 +210,7 @@
       </StructuredList>
       {#if students.length === 0}
         <Box className="h-[300px] w-full">
-          <AudioConsoleIcon size={32} class="carbon-icon w-80" />
+          <BadgeXIcon size={48} />
           <h3 class="text-center text-3xl text-gray-500 dark:text-white">
             {$t('course.navItem.attendance.no_student')}
           </h3>

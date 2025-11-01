@@ -1,10 +1,10 @@
 <script>
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
 
   import { PageNotFound } from '$lib/components/Page';
 
-  $: query = new URLSearchParams($page.url.search);
-  $: isOrg = query.get('type') === 'org';
+  let query = $derived(new URLSearchParams(page.url.search));
+  let isOrg = $derived(query.get('type') === 'org');
 </script>
 
 <PageNotFound {isOrg} />

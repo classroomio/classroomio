@@ -1,38 +1,23 @@
 <script lang="ts">
-  import cloneDeep from 'lodash/cloneDeep';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import set from 'lodash/set';
   import get from 'lodash/get';
-  import isEmpty from 'lodash/isEmpty';
   import { Toggle } from 'carbon-components-svelte';
   import type { Course } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { NAV_ITEM_KEY } from '../../constants';
 
-  export let course: Course;
-
-  let show: boolean;
-  let hasBeenSet = false;
-
-  function setter(value: any, setterKey: string) {
-    if (typeof value === 'undefined') return;
-
-    const _course = cloneDeep(course);
-    set(_course, setterKey, value);
-
-    course = _course;
+  interface Props {
+    course: Course;
+    setter: (value: any, key: string) => void;
   }
 
-  function setDefaults(course: Course) {
-    if (isEmpty(course) || hasBeenSet) return;
+  let { course = $bindable(), setter }: Props = $props();
 
-    hasBeenSet = true;
+  let show = $derived(get(course, `metadata.sectionDisplay.${NAV_ITEM_KEY.GOALS}`) ?? true);
 
-    show = get(course, `metadata.sectionDisplay.${NAV_ITEM_KEY.GOALS}`) ?? true;
-  }
-
-  $: setter(show, `metadata.sectionDisplay.${NAV_ITEM_KEY.GOALS}`);
-  $: setDefaults(course);
+  $effect(() => {
+    setter(show, `metadata.sectionDisplay.${NAV_ITEM_KEY.GOALS}`);
+  });
 </script>
 
 <div class="">

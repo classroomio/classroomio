@@ -1,8 +1,9 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { dndzone } from 'svelte-dnd-action';
-  import CheckboxCheckedFilledIcon from 'carbon-icons-svelte/lib/CheckboxCheckedFilled.svelte';
-  import RadioButtonCheckedIcon from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
-  import TextAlignJustifyIcon from 'carbon-icons-svelte/lib/TextAlignJustify.svelte';
+  import SquareCheckIcon from '@lucide/svelte/icons/square-check';
+  import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
+  import TablePropertiesIcon from '@lucide/svelte/icons/table-properties';
 
   import { flip } from 'svelte/animate';
   import Modal from '$lib/components/Modal/index.svelte';
@@ -19,7 +20,17 @@
     type: number;
   }
 
-  let items: Array<Question> = [];
+  let items: Array<Question> = $state([]);
+
+  function setItemsFromQuestions(questions: typeof $questionnaire.questions) {
+    untrack(() => {
+      items = filterOutDeleted(questions).map((q) => ({
+        id: q.id,
+        name: q.title,
+        type: q.question_type.id
+      }));
+    });
+  }
 
   function handleDndConsider(e) {
     items = e.detail.items;
@@ -44,11 +55,9 @@
     $questionnaireOrder.open = false;
   }
 
-  $: items = filterOutDeleted($questionnaire.questions).map((q) => ({
-    id: q.id,
-    name: q.title,
-    type: q.question_type.id
-  }));
+  $effect(() => {
+    setItemsFromQuestions($questionnaire.questions);
+  });
 </script>
 
 <Modal
@@ -66,21 +75,21 @@
         'border-style': 'dashed'
       }
     }}
-    on:consider={handleDndConsider}
-    on:finalize={handleDndFinalize}
+    onconsider={handleDndConsider}
+    onfinalize={handleDndFinalize}
     class="w-full"
   >
     {#each items as item (item.id)}
       <div
         animate:flip={{ duration: flipDurationMs }}
-        class="flex items-center rounded-md p-4 border border-primary-600"
+        class="border-primary-600 flex items-center rounded-md border p-4"
       >
         {#if item.type === 1}
-          <RadioButtonCheckedIcon size={16} class="carbon-icon active" />
+          <SquareCheckIcon size={16} />
         {:else if item.type === 2}
-          <CheckboxCheckedFilledIcon size={16} class="carbon-icon active" />
+          <CircleDotIcon size={16} />
         {:else}
-          <TextAlignJustifyIcon size={16} class="carbon-icon active" />
+          <TablePropertiesIcon size={16} />
         {/if}
         {` ${item.name}`}
       </div>

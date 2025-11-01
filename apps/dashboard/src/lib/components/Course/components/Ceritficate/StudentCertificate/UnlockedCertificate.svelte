@@ -1,8 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import Download from 'carbon-icons-svelte/lib/Download.svelte';
+  import DownloadIcon from '@lucide/svelte/icons/download';
 
-  import { env } from '$env/dynamic/public';
   import { course } from '$lib/components/Course/store';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
@@ -15,8 +14,8 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import { classroomio } from '$lib/utils/services/api';
 
-  let isLoading = false;
-  let isCourseComplete = false;
+  let isLoading = $state(false);
+  let isCourseComplete = $state(false);
   let progress: ProfileCourseProgress | undefined;
 
   const downLoadCertificate = async () => {
@@ -73,12 +72,16 @@
     hasUserCompletedCourse();
   });
 
-  $: title = isCourseComplete
-    ? 'course.navItem.certificates.unlocked_certificate'
-    : 'course.navItem.certificates.complete_to_download_title';
-  $: subtitle = isCourseComplete
-    ? 'course.navItem.certificates.unlocked_certificate_subtitle'
-    : 'course.navItem.certificates.complete_to_download_subtitle';
+  let title = $derived(
+    isCourseComplete
+      ? 'course.navItem.certificates.unlocked_certificate'
+      : 'course.navItem.certificates.complete_to_download_title'
+  );
+  let subtitle = $derived(
+    isCourseComplete
+      ? 'course.navItem.certificates.unlocked_certificate_subtitle'
+      : 'course.navItem.certificates.complete_to_download_subtitle'
+  );
 </script>
 
 <Box>
@@ -94,10 +97,10 @@
       className="flex items-center gap-2"
       onClick={downLoadCertificate}
       variant={VARIANTS.CONTAINED_DARK}
-      isDisabled={!env.PUBLIC_SERVER_URL || !isCourseComplete}
+      isDisabled={!isCourseComplete}
       {isLoading}
     >
-      <Download size={16} />
+      <DownloadIcon size={16} />
       {$t('course.navItem.certificates.download_certificate')}
     </PrimaryButton>
   </div>

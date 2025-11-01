@@ -109,7 +109,7 @@ export const load = async ({ url, cookies, request }): Promise<LoadOutput> => {
     response.org = (await getCurrentOrg(response.orgSiteName, true)) || null;
 
     if (!response.org && !isDev) {
-      throw redirect(307, 'https://app.classroomio.com/404?type=org');
+      redirect(307, 'https://app.classroomio.com/404?type=org');
     } else if (!response.org && _orgSiteName) {
       cookies.delete('_orgSiteName', { path: '/' });
     }
@@ -117,7 +117,7 @@ export const load = async ({ url, cookies, request }): Promise<LoadOutput> => {
     response.skipAuth = true;
   } else if (!APP_SUBDOMAINS.includes(subdomain) && !isDev) {
     // This case is for anything in our blockedSubdomains
-    throw redirect(307, 'https://app.classroomio.com');
+    redirect(307, 'https://app.classroomio.com');
   }
 
   return response;
@@ -128,9 +128,7 @@ function isURLCustomDomain(url: URL) {
     return false;
   }
 
-  const notCustomDomainHosts = [env.PRIVATE_APP_HOST || '', 'classroomio.com', 'vercel.app'].filter(
-    Boolean
-  );
+  const notCustomDomainHosts = [env.PRIVATE_APP_HOST || '', 'classroomio.com', 'vercel.app'].filter(Boolean);
 
   return !notCustomDomainHosts.some((host) => url.host.endsWith(host));
 }

@@ -158,8 +158,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is a benefit of using interfaces for function type declarations in TypeScript?',
+        title: 'What is a benefit of using interfaces for function type declarations in TypeScript?',
         name: 'q7',
         points: 1,
         order: 7,

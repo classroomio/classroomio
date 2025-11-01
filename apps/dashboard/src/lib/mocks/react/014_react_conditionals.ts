@@ -80,8 +80,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the purpose of the "map" function in conditional rendering with lists in React?',
+        title: 'What is the purpose of the "map" function in conditional rendering with lists in React?',
         name: 'mapFunctionPurpose',
         points: 1,
         order: 4,
@@ -139,8 +138,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'How would you conditionally render a component "ErrorMessage" if a form input is invalid?',
+        title: 'How would you conditionally render a component "ErrorMessage" if a form input is invalid?',
         name: 'conditionalRenderingInvalidInput',
         points: 1,
         order: 8,

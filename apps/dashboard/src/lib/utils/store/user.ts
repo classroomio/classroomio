@@ -10,7 +10,7 @@ interface UserStore {
   expiresAt: number;
 }
 
-interface ProfileStore {
+export interface ProfileStore {
   id: string | undefined;
   fullname: string;
   avatar_url: string;

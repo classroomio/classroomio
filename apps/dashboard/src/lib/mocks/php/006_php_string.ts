@@ -58,8 +58,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the output of the following PHP code: `echo strpos("Hello World", "World");`?',
+        title: 'What is the output of the following PHP code: `echo strpos("Hello World", "World");`?',
         name: 'question3',
         points: 2,
         order: 2,
@@ -234,8 +233,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the correct way to escape a single quote (apostrophe) within a string in PHP?',
+        title: 'What is the correct way to escape a single quote (apostrophe) within a string in PHP?',
         name: 'question10',
         points: 2,
         order: 9,

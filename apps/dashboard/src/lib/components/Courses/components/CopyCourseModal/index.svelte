@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { preventDefault } from '$lib/utils/functions/svelte';
+
   import { goto } from '$app/navigation';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
@@ -10,12 +12,6 @@
   import generateSlug from '$lib/utils/functions/generateSlug';
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-
-  interface CloneCourseResponse {
-    success: boolean;
-    course: { id: string };
-    error?: string;
-  }
 
   // clone, show spinner and redirect to new course
   async function createCourse() {
@@ -39,7 +35,7 @@
         }
       });
 
-      const result = (await response.json()) as CloneCourseResponse;
+      const result = (await response.json());
 
       if (!response.ok) {
         throw new Error(result.error || $t('courses.copy_course.error.failed_to_clone'));
@@ -71,7 +67,7 @@
   width="w-96"
   modalHeading={$t('courses.copy_course.title')}
 >
-  <form on:submit|preventDefault={createCourse}>
+  <form onsubmit={preventDefault(createCourse)}>
     <TextField
       label={$t('courses.copy_course.course_name_label')}
       bind:value={$copyCourseModal.title}
@@ -96,7 +92,6 @@
         label={$t('courses.copy_course.create_button')}
         type="submit"
         isLoading={$copyCourseModal.isSaving}
-        isDisabled={$copyCourseModal.isSaving}
       />
     </div>
   </form>

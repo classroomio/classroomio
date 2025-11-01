@@ -60,8 +60,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Write an example of rendering a list of items in React using the `map` method and keys.',
+        title: 'Write an example of rendering a list of items in React using the `map` method and keys.',
         name: 'q5',
         points: 1,
         order: 4,
@@ -77,8 +76,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'What is the purpose of the `index` argument in the `map` method when rendering lists in React?',
+        title: 'What is the purpose of the `index` argument in the `map` method when rendering lists in React?',
         name: 'q7',
         points: 1,
         order: 6,

@@ -3,7 +3,6 @@
   import { page } from '$app/stores';
   import debounce from 'lodash/debounce';
 
-  import Apps from '$lib/components/Apps/index.svelte';
   import { course } from '$lib/components/Course/store';
   import OrgNavigation from '$lib/components/Navigation/app.svelte';
   import LandingNavigation from '$lib/components/Navigation/index.svelte';
@@ -11,13 +10,12 @@
   import OrgLandingPage from '$lib/components/Org/LandingPage/index.svelte';
   import PlayQuiz from '$lib/components/Org/Quiz/Play/index.svelte';
   import { PageRestricted } from '$lib/components/Page';
-  import PageLoadProgressBar from '$lib/components/Progress/PageLoadProgressBar.svelte';
+  // import PageLoadProgressBar from '$lib/components/Progress/PageLoadProgressBar.svelte';
   import Snackbar from '$lib/components/Snackbar/index.svelte';
   import UpgradeModal from '$lib/components/Upgrade/Modal.svelte';
   import { isCoursesPage, isLMSPage, isOrgPage, toggleBodyByMode } from '$lib/utils/functions/app';
   import { getProfile, setupAnalytics } from '$lib/utils/functions/appSetup';
   import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
-  import showAppsSideBar from '$lib/utils/functions/showAppsSideBar';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { setTheme } from '$lib/utils/functions/theme';
   import { initOrgAnalytics } from '$lib/utils/services/posthog';
@@ -32,12 +30,12 @@
 
   import '../app.postcss';
 
-  export let data;
+  let { data, children } = $props();
 
   let supabase = getSupabase();
-  let path = $page.url?.pathname?.replace('/', '');
+  let path = $derived($page.url?.pathname?.replace('/', ''));
   let queryParam = $page.url?.search;
-  let carbonTheme: CarbonTheme = 'white';
+  let carbonTheme: CarbonTheme = $derived($globalStore.isDark ? 'g100' : 'white');
 
   function handleResize() {
     isMobile.update(() => window.innerWidth <= 760);
@@ -70,7 +68,7 @@
     //   return goto('/login?redirect=/' + path);
     // }
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event) => {
       // Log key events
       console.log(`event`, event);
 
@@ -113,12 +111,10 @@
     };
   });
 
-  $: path = $page.url?.pathname?.replace('/', '');
-  $: carbonTheme = $globalStore.isDark ? 'g100' : 'white';
-  $: metaTags = merge(data.baseMetaTags, $page.data.pageMetaTags);
+  let metaTags = $derived(merge(data.baseMetaTags, $page.data.pageMetaTags));
 </script>
 
-<svelte:window on:resize={handleResize} />
+<svelte:window onresize={handleResize} />
 
 <MetaTags {...metaTags} />
 
@@ -150,15 +146,11 @@
         />
       {/if}
 
-      <PageLoadProgressBar textColorClass="text-neutral-700" />
+      <!-- <PageLoadProgressBar textColorClass="text-neutral-700" /> -->
     {/if}
 
     <div class={path.includes('home') ? '' : 'flex justify-between'}>
-      <slot />
-
-      {#if showAppsSideBar(path)}
-        <Apps />
-      {/if}
+      {@render children?.()}
     </div>
   </main>
 {/if}
@@ -176,11 +168,7 @@
     --main-primary-color: rgba(29, 78, 216, 1);
     --border-color: #eaecef;
     --app-background-color: #fafbfc;
-    --app-background: radial-gradient(
-      circle at 10% 20%,
-      rgb(239, 246, 249) 0%,
-      rgb(206, 239, 253) 90%
-    );
+    --app-background: radial-gradient(circle at 10% 20%, rgb(239, 246, 249) 0%, rgb(206, 239, 253) 90%);
     --dark-app-background: radial-gradient(circle at 10% 20%, rgb(0 0 0) 0%, rgb(27 60 74) 90%);
   }
 

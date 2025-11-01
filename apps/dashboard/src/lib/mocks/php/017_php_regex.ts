@@ -83,8 +83,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which regular expression modifier is used in PHP to perform a case-insensitive match?',
+        title: 'Which regular expression modifier is used in PHP to perform a case-insensitive match?',
         name: 'question4',
         points: 2,
         order: 3,

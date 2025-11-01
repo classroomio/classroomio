@@ -1,10 +1,10 @@
-import { extractNameAndEmail, withEmailTemplate } from '$src/utils/mail';
-import { nodemailerTransporter, zohoClient } from '$src/utils/email';
+import { extractNameAndEmail, withEmailTemplate } from '@api/utils/mail';
+import { nodemailerTransporter, zohoClient } from '@api/utils/email';
 
 import { Hono } from 'hono';
-import type { TSendEmailValidation } from '$src/types/mail';
+import type { TSendEmailValidation } from '@api/types/mail';
 import type { Transporter } from 'nodemailer';
-import { env } from '$src/config/env';
+import { env } from '@api/config/env';
 
 export const mailRouter = new Hono();
 

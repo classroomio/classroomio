@@ -1,9 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { ActivityCard } from '$lib/components/Analytics';
-  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
   import Progress from '$lib/components/Progress/index.svelte';
-  import UserProfile from 'carbon-icons-svelte/lib/UserProfile.svelte';
+  import LibraryBigIcon from '@lucide/svelte/icons/library-big';
+  import UserIcon from '@lucide/svelte/icons/user';
 
   import { snackbar } from '$lib/components/Snackbar/store';
   import { calDateDiff } from '$lib/utils/functions/date';
@@ -11,10 +11,11 @@
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import type { OrganisationAnalytics } from '$lib/utils/types/analytics';
-  import Add from 'carbon-icons-svelte/lib/Add.svelte';
-  import Book from 'carbon-icons-svelte/lib/Book.svelte';
-  import CurrencyDollar from 'carbon-icons-svelte/lib/CurrencyDollar.svelte';
-  import UserMultiple from 'carbon-icons-svelte/lib/UserMultiple.svelte';
+  import PlusIcon from '@lucide/svelte/icons/plus';
+
+  import BookIcon from '@lucide/svelte/icons/book';
+  import DollarSignIcon from '@lucide/svelte/icons/dollar-sign';
+  import UsersIcon from '@lucide/svelte/icons/users';
 
   import Avatar from '$lib/components/Avatar/index.svelte';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
@@ -27,16 +28,17 @@
   import { isMobile } from '$lib/utils/store/useMobile';
   import { Grid, Link, SkeletonPlaceholder } from 'carbon-components-svelte';
 
-  // export let data;
-
-  let dashAnalytics: OrganisationAnalytics;
+  let dashAnalytics: OrganisationAnalytics | undefined = $state();
+  let hasFetched = $state(false);
 
   function createCourse() {
     goto(`${$currentOrgPath}/courses?create=true`);
   }
 
   async function fetchDashAnalytics(orgId: string) {
-    if (!orgId) return;
+    if (!orgId || hasFetched) return;
+
+    hasFetched = true;
 
     const accessToken = await getAccessToken();
 
@@ -61,31 +63,33 @@
     }
   }
 
-  $: fetchDashAnalytics($currentOrg.id);
+  $effect(() => {
+    fetchDashAnalytics($currentOrg.id);
+  });
 
-  $: cards = [
+  let cards = $derived([
     {
-      icon: CurrencyDollar,
+      icon: DollarSignIcon,
       title: `${$t('dashboard.revenue')} ($)`,
       percentage: dashAnalytics?.revenue ?? 0,
       description: $t('dashboard.revenue_description'),
       hidePercentage: true
     },
     {
-      icon: Book,
+      icon: BookIcon,
       title: $t('dashboard.no_of_courses'),
       percentage: dashAnalytics?.numberOfCourses ?? 0,
       description: $t('dashboard.no_courses_description'),
       hidePercentage: true
     },
     {
-      icon: UserMultiple,
+      icon: UsersIcon,
       title: $t('dashboard.total_students'),
       percentage: dashAnalytics?.totalStudents ?? 0,
       description: $t('dashboard.total_students_description'),
       hidePercentage: true
     }
-  ];
+  ]);
 </script>
 
 <svelte:head>
@@ -96,7 +100,7 @@
 
 <div class="w-full max-w-5xl px-5 py-10 md:mx-auto">
   <div class="mb-5 flex items-center justify-between">
-    <h1 class="mb-3 text-2xl font-bold dark:text-white md:text-3xl">
+    <h1 class="mb-3 text-2xl dark:text-white">
       {$t(getGreeting())}
       {$profile.fullname}!
     </h1>
@@ -108,7 +112,7 @@
         className="min-h-[36px]"
       >
         {#if $isMobile}
-          <Add size={24} />
+          <PlusIcon size={16} />
         {:else}
           {$t('dashboard.create_course')}
         {/if}
@@ -123,10 +127,7 @@
       <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {#each cards as card}
           {#if !dashAnalytics}
-            <SkeletonPlaceholder
-              style="width: 100%; min-width: 300px; height: 10rem;"
-              class="rounded-md"
-            />
+            <SkeletonPlaceholder style="width: 100%; min-width: 300px; height: 10rem;" class="rounded-md" />
           {:else}
             <ActivityCard activity={card} />
           {/if}
@@ -136,9 +137,7 @@
   </div>
 
   <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-    <div
-      class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 dark:border-neutral-600 md:p-5"
-    >
+    <div class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 md:p-5 dark:border-neutral-600">
       <h3 class="mt-0 text-2xl font-bold">
         {$t('dashboard.top_courses')}
       </h3>
@@ -173,7 +172,7 @@
           {:else}
             <div class="flex flex-col h-full items-center justify-center p-3">
               <div class="bg-primary-200 w-fit rounded-full p-4 text-black">
-                <CourseIcon width="30" height="30" />
+                <LibraryBigIcon size={30} />
               </div>
               <div class="my-4 text-center">
                 <p class=" text-xl font-semibold">
@@ -183,20 +182,14 @@
                   {$t('dashboard.create_first_course_description')}
                 </p>
               </div>
-              <PrimaryButton
-                variant={VARIANTS.OUTLINED}
-                onClick={createCourse}
-                label={$t('dashboard.create_course')}
-              />
+              <PrimaryButton variant={VARIANTS.OUTLINED} onClick={createCourse} label={$t('dashboard.create_course')} />
             </div>
           {/each}
         {/if}
       </div>
     </div>
 
-    <div
-      class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 dark:border-neutral-600 md:p-5"
-    >
+    <div class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 md:p-5 dark:border-neutral-600">
       <h3 class="mt-0 text-2xl font-bold">
         {$t('dashboard.recent_enrollments')}
       </h3>
@@ -210,12 +203,7 @@
           {#each dashAnalytics.enrollments as enrollment}
             <div class="flex items-center justify-between gap-2">
               <div class="flex items-center gap-2">
-                <Avatar
-                  src={enrollment.avatarUrl}
-                  name={enrollment.name}
-                  width="w-6"
-                  height="h-6"
-                />
+                <Avatar src={enrollment.avatarUrl} name={enrollment.name} width="w-6" height="h-6" />
 
                 <div class="min-h-[45px] space-y-1">
                   <p class="text-sm font-medium capitalize leading-none">{enrollment.name}</p>
@@ -238,7 +226,7 @@
           {:else}
             <div class="flex flex-col h-full items-center justify-center p-3">
               <div class="bg-primary-200 w-fit rounded-full p-4 text-black">
-                <UserProfile size={24} />
+                <UserIcon size={16} />
               </div>
               <div class="my-4 text-center">
                 <p class=" text-xl font-semibold">

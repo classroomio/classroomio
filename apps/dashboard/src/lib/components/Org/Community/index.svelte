@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { goto } from '$app/navigation';
   import Box from '$lib/components/Box/index.svelte';
   import { courses } from '$lib/components/Courses/store';
@@ -11,35 +12,42 @@
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { Dropdown, Search } from 'carbon-components-svelte';
-  import AddCommentIcon from 'carbon-icons-svelte/lib/AddComment.svelte';
+  import MessageCirclePlusIcon from '@lucide/svelte/icons/message-circle-plus';
+
   import CommunityLoader from './Loader.svelte';
 
-  export let isLMS = false;
+  interface Props {
+    isLMS?: boolean;
+  }
 
-  let isLoading = false;
-  let discussions = [];
-  let searchValue = '';
-  let allCourses: any[] = [];
-  let selectedId = '';
+  let { isLMS = false }: Props = $props();
 
-  async function fetchCommunityQuestions(orgId?: string, profileId?: string) {
+  let isLoading = $state(false);
+  let discussions = $state([]);
+  let searchValue = $state('');
+  let allCourses: any[] = $state([]);
+  let selectedId = $state('');
+
+  function fetchCommunityQuestions(orgId?: string, profileId?: string) {
     if (!orgId || !profileId) return;
-    isLoading = true;
 
-    if ($courses.length) {
-      allCourses = [...$courses];
-    } else {
-      const courseResult = (await fetchCourses(profileId, orgId)) || { allCourses: [] };
-      allCourses = courseResult.allCourses;
-    }
+    untrack(async () => {
+      isLoading = true;
 
-    const courseIds = allCourses.map((course) => course.id);
-    const courseIdsFilter = `(${courseIds.join(',')})`;
+      if ($courses.length) {
+        allCourses = [...$courses];
+      } else {
+        const courseResult = (await fetchCourses(profileId, orgId)) || { allCourses: [] };
+        allCourses = courseResult.allCourses;
+      }
 
-    const { data, error } = await supabase
-      .from('community_question')
-      .select(
-        `
+      const courseIds = allCourses.map((course) => course.id);
+      const courseIdsFilter = `(${courseIds.join(',')})`;
+
+      const { data, error } = await supabase
+        .from('community_question')
+        .select(
+          `
         organization_id,
         course_id,
         title,
@@ -54,37 +62,43 @@
           title
         )
       `
-      )
-      .filter('course_id', 'in', courseIdsFilter)
-      .order('created_at', { ascending: false });
-    console.log('data', data);
-    console.log('error', error);
+        )
+        .filter('course_id', 'in', courseIdsFilter)
+        .order('created_at', { ascending: false });
+      console.log('data', data);
+      console.log('error', error);
 
-    isLoading = false;
+      isLoading = false;
 
-    if (error) {
-      console.error('Error loading community', error);
-      return goto(isLMS ? '/lms' : $currentOrgPath);
-    }
+      if (error) {
+        console.error('Error loading community', error);
+        return goto(isLMS ? '/lms' : $currentOrgPath);
+      }
 
-    discussions =
-      data?.map((discussion) => ({
-        title: discussion.title,
-        courseId: discussion.course_id,
-        courseTitle: discussion.course?.title,
-        slug: discussion.slug,
-        author: discussion?.author?.fullname,
-        comments: discussion.comments?.[0]?.count || 0,
-        votes: discussion.votes,
-        createdAt: calDateDiff(discussion.created_at)
-      })) || [];
+      discussions =
+        data?.map((discussion) => ({
+          title: discussion.title,
+          courseId: discussion.course_id,
+          courseTitle: discussion.course?.title,
+          slug: discussion.slug,
+          author: discussion?.author?.fullname,
+          comments: discussion.comments?.[0]?.count || 0,
+          votes: discussion.votes,
+          createdAt: calDateDiff(discussion.created_at)
+        })) || [];
+    });
   }
 
-  $: fetchCommunityQuestions($currentOrg.id, $profile.id);
-  $: filteredDiscussions = discussions.filter(
-    (discussion) =>
-      discussion.title.toLowerCase().includes(searchValue.toLowerCase()) &&
-      (!selectedId || discussion.courseId === selectedId)
+  $effect(() => {
+    fetchCommunityQuestions($currentOrg.id, $profile.id);
+  });
+
+  let filteredDiscussions = $derived(
+    discussions.filter(
+      (discussion) =>
+        discussion.title.toLowerCase().includes(searchValue.toLowerCase()) &&
+        (!selectedId || discussion.courseId === selectedId)
+    )
   );
 </script>
 
@@ -107,7 +121,7 @@
   />
 </div>
 <div
-  class="border-c m-auto my-4 flex flex-wrap items-center justify-center rounded bg-gray-100 dark:bg-neutral-800 lg:justify-start"
+  class="border-c m-auto my-4 flex flex-wrap items-center justify-center rounded bg-gray-100 lg:justify-start dark:bg-neutral-800"
 >
   {#if isLoading}
     <CommunityLoader />
@@ -120,10 +134,7 @@
         <Vote value={discussion.votes} />
         <div class="flex flex-col gap-y-0.5 text-sm">
           <h4 class="mt-0">
-            <a
-              class="text-black dark:text-white"
-              href="{isLMS ? '/lms' : $currentOrgPath}/community/{discussion.slug}"
-            >
+            <a class="text-black dark:text-white" href="{isLMS ? '/lms' : $currentOrgPath}/community/{discussion.slug}">
               {discussion.title}
             </a>
           </h4>
@@ -136,15 +147,15 @@
             </span>
           </a>
         </div>
-        <div class="flex-grow" />
+        <div class="flex-grow"></div>
         <div class="flex items-center">
-          <AddCommentIcon size={20} />
+          <MessageCirclePlusIcon size={16} />
           <span class="ml-1">{discussion.comments}</span>
         </div>
       </div>
     {:else}
       <Box className="w-screen">
-        <CoursesEmptyIcon />
+        <CoursesEmptyIcon size={16} />
         <h3 class="dark:text-white text-2xl my-5">{$t('community.no_question')}</h3>
         <p class="dark:text-white w-1/3 text-center">{$t('community.ask_a_question')}</p>
       </Box>

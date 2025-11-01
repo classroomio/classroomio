@@ -14,17 +14,30 @@
   import { t } from '$lib/utils/functions/translations';
   import { calcCourseDiscount } from '$lib/utils/functions/course';
 
-  export let className = '';
-  export let editMode = false;
-  export let courseData: Course;
-  export let startCoursePayment = false;
-  export let mobile = false;
+  interface Props {
+    className?: string;
+    editMode?: boolean;
+    courseData: Course;
+    startCoursePayment?: boolean;
+    mobile?: boolean;
+  }
 
-  let openModal = false;
-  let calculatedCost = 0;
-  let discount = 0;
-  let formatter: Intl.NumberFormat | undefined;
-  let isFree = false;
+  let {
+    className = '',
+    editMode = false,
+    courseData,
+    startCoursePayment = $bindable(false),
+    mobile = false
+  }: Props = $props();
+
+  let openModal = $state(false);
+  let formatter: Intl.NumberFormat | undefined = $state();
+
+  const discount = $derived(get(courseData, 'metadata.discount', 0));
+  const calculatedCost = $derived(
+    calcCourseDiscount(discount, courseData.cost || 0, !!courseData.metadata.showDiscount)
+  );
+  const isFree = $derived(isCourseFree(calculatedCost));
 
   function handleJoinCourse() {
     if (editMode) return;
@@ -56,16 +69,13 @@
     return firstTutor?.profile?.email || '';
   }
 
-  $: setFormatter(courseData.currency);
+  $effect(() => {
+    setFormatter(courseData.currency);
+  });
 
-  $: discount = get(courseData, 'metadata.discount', 0);
-  $: calculatedCost = calcCourseDiscount(
-    discount,
-    courseData.cost || 0,
-    !!courseData.metadata.showDiscount
-  );
-  $: isFree = isCourseFree(calculatedCost);
-  $: startCoursePayment && handleJoinCourse();
+  $effect(() => {
+    startCoursePayment && handleJoinCourse();
+  });
 </script>
 
 <PaymentModal
@@ -180,7 +190,7 @@
     <!-- Gift Container -->
     {#if courseData?.metadata?.reward?.show}
       <div class="flex flex-col items-center border-b border-t border-gray-300 p-10">
-        <HtmlRender content={get(courseData, 'metadata.reward.description', '')} />
+        <HtmlRender>{@html get(courseData, 'metadata.reward.description', '')}</HtmlRender>
       </div>
     {/if}
   </aside>

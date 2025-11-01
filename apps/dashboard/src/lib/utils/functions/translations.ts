@@ -59,8 +59,7 @@ export const config = {
   ]
 };
 
-export const { t, loading, locales, locale, initialized, translations, loadTranslations } =
-  new i18n(config);
+export const { t, loading, locales, locale, initialized, translations, loadTranslations } = new i18n(config);
 
 export const selectedLocale = writable<string>('en');
 
@@ -73,7 +72,7 @@ loading.subscribe(async ($loading) => {
   }
 });
 
-export function handleLocaleChange(newLocale: string) {
+export function handleLocaleChange(newLocale: LOCALE) {
   if (!newLocale) {
     return;
   }
@@ -83,11 +82,7 @@ export function handleLocaleChange(newLocale: string) {
   selectedLocale.set(newLocale);
 }
 
-export function lessonFallbackNote(
-  note: string,
-  translation: Record<LOCALE, string>,
-  locale: LOCALE
-) {
+export function lessonFallbackNote(note: string, translation: Record<LOCALE, string>, locale: LOCALE) {
   if (!translation) {
     return note;
   }

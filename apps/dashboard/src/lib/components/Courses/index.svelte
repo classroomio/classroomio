@@ -20,6 +20,20 @@
   import { deleteCourse } from '$lib/utils/services/courses';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { deleteCourseModal, deleteCourseModalInitialState, courses as coursesStore } from './store';
+
+  interface Props {
+    courses?: Course[];
+    emptyTitle?: any;
+    emptyDescription?: any;
+    isExplore?: boolean;
+  }
+
+  let {
+    courses = [],
+    emptyTitle = $t('courses.course_card.empty_title'),
+    emptyDescription = $t('courses.course_card.empty_description'),
+    isExplore = false
+  }: Props = $props();
   
   export let courses: Course[] = [];
   export let emptyTitle = $t('courses.course_card.empty_title');
@@ -96,7 +110,7 @@
           <StructuredListCell head>
             {$t('courses.course_card.list_view.published')}
           </StructuredListCell>
-          <StructuredListCell head>{''}</StructuredListCell>
+          <StructuredListCell head></StructuredListCell>
         </StructuredListRow>
       </StructuredListHead>
       <StructuredListBody>
@@ -139,7 +153,7 @@
 </div>
 {#if !$courseMetaDeta.isLoading && !courses.length}
   <Box className="w-full">
-    <CoursesEmptyIcon />
+    <CoursesEmptyIcon size={16} />
     <h3 class="my-5 text-2xl dark:text-white">{emptyTitle}</h3>
     <p class="w-1/3 text-center dark:text-white">
       {emptyDescription}

@@ -6,7 +6,7 @@
     "start": "turbo run start",
     "dev": "turbo prepare --concurrency 13 && turbo run dev",
     "lint": "turbo run lint",
-    "clean": "turbo clean && rm -rf node_modules",
+    "clean": "turbo clean && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' + && pnpm store prune",
     "format": "prettier . --write",
     "release": "standard-version",
     "ci": "cypress run",
@@ -22,13 +22,18 @@
     "concurrently": "^8.2.2",
     "eslint": "^8.54.0",
     "prettier": "^3.1.0",
-    "prettier-plugin-svelte": "^3.1.2",
+    "prettier-plugin-svelte": "^3.4.0",
     "prettier-plugin-tailwindcss": "^0.5.7",
     "standard-version": "^9.5.0",
-    "tsconfig": "workspace:*",
+    "@cio/tsconfig": "workspace:*",
     "typescript": "^5.1.6"
   },
   "engines": {
     "node": "^20.19.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

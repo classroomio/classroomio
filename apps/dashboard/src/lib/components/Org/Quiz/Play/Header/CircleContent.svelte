@@ -1,9 +1,13 @@
-<script>
+<script lang="ts">
   import { slide } from 'svelte/transition';
 
-  export let value = false;
-  export let label = '';
-  export let className = '';
+  interface Props {
+    value?: boolean;
+    label?: string;
+    className?: string;
+  }
+
+  let { value = false, label = '', className = '' }: Props = $props();
 
   function fadeSlide(node, options) {
     const slideTrans = slide(node, options);
@@ -17,7 +21,7 @@
   }
 </script>
 
-<div class="circle flex items-center flex-col justify-center {className}">
+<div class="circle flex flex-col items-center justify-center {className}">
   {#key value}
     <h3 class="text-primary-600" transition:fadeSlide={{ duration: 500 }}>
       {value}

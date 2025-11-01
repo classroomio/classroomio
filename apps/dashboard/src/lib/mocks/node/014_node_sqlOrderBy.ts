@@ -142,8 +142,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          "What happens if you don't specify a sorting order (ASC or DESC) in the 'ORDER BY' clause?",
+        title: "What happens if you don't specify a sorting order (ASC or DESC) in the 'ORDER BY' clause?",
         name: 'question8',
         points: 1,
         order: 7,

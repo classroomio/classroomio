@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { preventDefault } from '$lib/utils/functions/svelte';
+
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   // import Select from '$lib/components/Form/Select.svelte';
@@ -16,10 +18,10 @@
   import { COURSE_TYPE } from '$lib/utils/types';
   import type { Lesson } from '$lib/utils/types';
 
-  let errors = {
+  let errors = $state({
     title: ''
-  };
-  let lesson: Lesson = {
+  });
+  let lesson: Lesson = $state({
     id: '',
     course_id: $course.id || '',
     title: '',
@@ -29,7 +31,7 @@
     is_unlocked: true,
     lesson_completion: [],
     created_at: ''
-  };
+  });
 
   const handleSave = async () => {
     if (!lesson.title.trim()) {
@@ -112,14 +114,12 @@
   maxWidth="max-w-2xl"
   containerClass="overflow-hidden"
   modalHeading={$t(
-    `course.navItem.lessons.add_lesson.${
-      $handleAddLessonWidget.isSection ? 'modal_heading_section' : 'modal_heading'
-    }`
+    `course.navItem.lessons.add_lesson.${$handleAddLessonWidget.isSection ? 'modal_heading_section' : 'modal_heading'}`
   )}
 >
   <form
-    on:submit|preventDefault={handleSave}
-    class="relative m-auto py-2 md:py-3 px-2 md:px-5 mb-2 md:mb-4 flex flex-wrap items-center dark:bg-neutral-800"
+    onsubmit={preventDefault(handleSave)}
+    class="relative m-auto mb-2 flex flex-wrap items-center px-2 py-2 md:mb-4 md:px-5 md:py-3 dark:bg-neutral-800"
   >
     <div class="w-full">
       <TextField

@@ -1,40 +1,69 @@
 <script lang="ts">
   import { t } from '$lib/utils/functions/translations';
   import { Loading } from 'carbon-components-svelte';
-  import Camera from 'carbon-icons-svelte/lib/Camera.svelte';
-  import { createEventDispatcher } from 'svelte';
+  import CameraIcon from '@lucide/svelte/icons/camera';
 
-  export let avatar: string | undefined;
-  export let src: string | undefined;
-  export let widthHeight = '';
-  export let shape = 'rounded-full';
-  export let errorMessage: string | null = null;
-  export let isDisabled = false;
-  export let maxFileSizeInMb: number = 2; // Default max file size 2MB
-  export let flexDirection = 'flex-col';
-  export let isUploading = false;
+  interface Props {
+    avatar: string | File | undefined;
+    src: string | undefined;
+    widthHeight?: string;
+    shape?: string;
+    errorMessage?: string | null;
+    isDisabled?: boolean;
+    maxFileSizeInMb?: number; // Default max file size 2MB
+    flexDirection?: string;
+    isUploading?: boolean;
+    change?: () => void;
+  }
 
-  let fileinput: HTMLInputElement;
-  const dispatch = createEventDispatcher();
+  let {
+    avatar = $bindable(),
+    src,
+    widthHeight = '',
+    shape = 'rounded-full',
+    errorMessage = $bindable(null),
+    isDisabled = false,
+    maxFileSizeInMb = 2,
+    flexDirection = 'flex-col',
+    isUploading = $bindable(false),
+    change
+  }: Props = $props();
 
-  const onFileSelected = (e: Event<HTMLInputElement>) => {
-    const image = e.target.files[0];
+  const defaultImg = 'https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png';
+  let fileinput: HTMLInputElement | undefined = $state();
+  let imgRef: HTMLImageElement | undefined = $state();
+
+  const onFileSelected = (
+    e: Event & {
+      currentTarget: EventTarget & HTMLInputElement;
+    }
+  ) => {
+    const image = e.currentTarget?.files?.[0];
+    if (!image) return;
+
     const maxFileSize = maxFileSizeInMb * 1024 * 1024;
     if (image.size > maxFileSize) {
-      errorMessage = `${$t('settings.profile.profile_picture.validation_error')} ${
-        maxFileSize / (1024 * 1024)
-      } MB`;
+      errorMessage = `${$t('settings.profile.profile_picture.validation_error')} ${maxFileSize / (1024 * 1024)} MB`;
       return;
     }
-    let reader = new FileReader();
-    reader.readAsDataURL(image);
-    reader.onload = (e) => {
+
+    const reader = new FileReader();
+    reader.addEventListener('load', function () {
+      if (!imgRef || !reader.result) return;
+
+      // pass image as avatar to parent component
       avatar = image;
-      dispatch('change');
-      // @ts-ignore
-      src = e.target?.result || undefined;
-      errorMessage = null; // Clear error message on successful load
-    };
+
+      // update the image src on the DOM
+      imgRef.setAttribute('src', reader.result.toString());
+
+      // trigger onchange to parent
+      change?.();
+
+      // clear error
+      errorMessage = null;
+    });
+    reader.readAsDataURL(image);
   };
 </script>
 
@@ -43,28 +72,17 @@
     class="avatar-container {widthHeight ||
       'setwidthheight'} pointer relative border-2 border-gray-200 dark:border-neutral-600 {shape}"
   >
-    {#if src}
-      <img class="h-full w-full {shape}" {src} alt="Avatar" />
-    {:else if avatar}
-      <img class="h-full w-full {shape}" src={avatar} alt="Avatar" />
-    {:else}
-      <img
-        class="h-full w-full {shape}"
-        src="https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png"
-        alt=""
-      />
-    {/if}
+    <img bind:this={imgRef} class="h-full w-full {shape}" src={src || defaultImg} alt="" />
   </div>
 
   <div class="flex flex-col items-center">
     <button
-      class="width-fit text-primary-700 flex flex-col items-center text-sm {isDisabled ||
-      isUploading
+      class="width-fit text-primary-700 flex flex-col items-center text-sm {isDisabled || isUploading
         ? 'cursor-not-allowed opacity-50'
         : 'cursor-pointer'}"
-      on:click={() => {
+      onclick={() => {
         if (!isDisabled || isUploading) {
-          fileinput.click();
+          fileinput?.click();
         }
       }}
       disabled={isDisabled || isUploading}
@@ -72,7 +90,7 @@
       {#if isUploading}
         <Loading withOverlay={false} small />
       {:else}
-        <Camera size={20} />
+        <CameraIcon size={16} />
       {/if}
       <span class="ml-2">{$t('settings.profile.profile_picture.upload_image')}</span>
     </button>
@@ -90,7 +108,7 @@
     style="display:none"
     type="file"
     accept=".jpg, .jpeg, .png, .webp"
-    on:change={(e) => onFileSelected(e)}
+    onchange={(e) => onFileSelected(e)}
     bind:this={fileinput}
   />
 </section>

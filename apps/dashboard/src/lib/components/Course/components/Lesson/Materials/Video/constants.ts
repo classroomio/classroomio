@@ -1,22 +1,21 @@
-import Link from 'carbon-icons-svelte/lib/Link.svelte';
-import Video from 'carbon-icons-svelte/lib/Video.svelte';
-
-import DirectLink from 'carbon-icons-svelte/lib/DirectLink.svelte';
+import FileSymlinkIcon from '@lucide/svelte/icons/file-symlink';
+import VideoIcon from '@lucide/svelte/icons/video';
+import YoutubeIcon from '@lucide/svelte/icons/youtube';
 
 export const videoTabs = [
   {
     value: 1,
     title: 'course.navItem.lessons.materials.tabs.video.add_video.youtube_link',
-    icon: Link
+    icon: YoutubeIcon
   },
   {
     value: 2,
     title: 'course.navItem.lessons.materials.tabs.video.embed_link',
-    icon: DirectLink
+    icon: FileSymlinkIcon
   },
   {
     value: 3,
     title: 'course.navItem.lessons.materials.tabs.video.upload',
-    icon: Video
+    icon: VideoIcon
   }
 ];

@@ -1,6 +1,10 @@
-<script>
-  export let value = 0;
-  export let className = '';
+<script lang="ts">
+  interface Props {
+    value?: number;
+    className?: string;
+  }
+
+  let { value = 0, className = '' }: Props = $props();
 </script>
 
 <p class={className ? className : 'bg-set mt-2'}>{value}</p>

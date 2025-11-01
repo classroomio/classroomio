@@ -75,8 +75,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Write an example of using the ternary operator to conditionally assign a value in JavaScript.',
+        title: 'Write an example of using the ternary operator to conditionally assign a value in JavaScript.',
         name: 'q6',
         points: 1,
         order: 5,
@@ -84,8 +83,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'Explain the concept of a "truthy" and "falsy" value in the context of the ternary operator.',
+        title: 'Explain the concept of a "truthy" and "falsy" value in the context of the ternary operator.',
         name: 'q7',
         points: 1,
         order: 6,

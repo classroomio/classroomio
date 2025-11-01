@@ -1,17 +1,30 @@
-<script>
-  import { page } from '$app/stores';
-  import ChevronDownIcon from 'carbon-icons-svelte/lib/ChevronDown.svelte';
-  import ChevronUpIcon from 'carbon-icons-svelte/lib/ChevronUp.svelte';
-  import LinkIcon from 'carbon-icons-svelte/lib/Link.svelte';
+<script lang="ts">
+  import { page } from '$app/state';
+  import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+  import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
+  import LinkIcon from '@lucide/svelte/icons/link';
 
-  export let id = '';
-  export let title = '';
-  export let titleClass = '';
-  export let disableContainerPadding = false;
-  export let rootClass = '';
-  export let supportsLink = false;
+  interface Props {
+    id?: string;
+    title?: string;
+    titleClass?: string;
+    disableContainerPadding?: boolean;
+    rootClass?: string;
+    supportsLink?: boolean;
+    isExpanded?: boolean;
+    children?: import('svelte').Snippet;
+  }
 
-  export let isExpanded = true;
+  let {
+    id = '',
+    title = '',
+    titleClass = '',
+    disableContainerPadding = false,
+    rootClass = '',
+    supportsLink = false,
+    isExpanded = $bindable(true),
+    children
+  }: Props = $props();
 
   function handleClick(e) {
     e.stopPropagation();
@@ -22,28 +35,28 @@
 
 <div {id} class="w-full bg-white dark:bg-black {rootClass}">
   <button
-    class="w-full relative flex items-center justify-between {!disableContainerPadding && 'p-5'}"
+    class="relative flex w-full items-center justify-between {!disableContainerPadding && 'p-5'}"
     tabindex="0"
-    on:click={handleClick}
+    onclick={handleClick}
   >
-    <p class="dark:text-white font-bold flex items-center {titleClass}">
+    <p class="flex items-center font-bold dark:text-white {titleClass}">
       {title}
       {#if supportsLink}
-        <a class="ml-2" href="{$page.url.pathname}#{id}" on:click={(e) => e.stopPropagation()}>
-          <LinkIcon size={24} class="carbon-icon dark:text-white" />
+        <a class="ml-2" href="{page.url.pathname}#{id}" onclick={(e) => e.stopPropagation()}>
+          <LinkIcon size={16} />
         </a>
       {/if}
     </p>
 
     {#if isExpanded}
-      <ChevronUpIcon size={24} class="carbon-icon dark:text-white" />
+      <ChevronUpIcon size={16} />
     {:else}
-      <ChevronDownIcon size={24} class="carbon-icon dark:text-white" />
+      <ChevronDownIcon size={16} />
     {/if}
   </button>
   {#if isExpanded}
     <div class="flex flex-col p-5">
-      <slot />
+      {@render children?.()}
     </div>
   {/if}
 </div>

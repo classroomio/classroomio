@@ -1,17 +1,18 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import Avatar from '$lib/components/Avatar/index.svelte';
-  import AudienceIcon from '$lib/components/Icons/AudienceIcon.svelte';
-  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
-  import HomeIcon from '$lib/components/Icons/HomeIcon.svelte';
-  import QuizIcon from '$lib/components/Icons/QuizIcon.svelte';
-  import SiteSettingsIcon from '$lib/components/Icons/SiteSettingsIcon.svelte';
+  import LayoutDashboardIcon from '@lucide/svelte/icons/layout-dashboard';
+  import LibraryBigIcon from '@lucide/svelte/icons/library-big';
+  import UsersIcon from '@lucide/svelte/icons/users';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+  import SettingsIcon from '@lucide/svelte/icons/settings';
+  import MessageSquareMoreIcon from '@lucide/svelte/icons/message-square-more';
+  import BadgeHelpIcon from '@lucide/svelte/icons/badge-help';
+  import Dice6Icon from '@lucide/svelte/icons/dice-6';
+  import LayoutTemplateIcon from '@lucide/svelte/icons/layout-template';
   import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
-  import { ChevronRight, SettingsAdjust } from 'carbon-icons-svelte';
-  import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
-  import HelpIcon from 'carbon-icons-svelte/lib/Help.svelte';
 
   import { goto } from '$app/navigation';
   import ProfileMenu from '$lib/components/Org/ProfileMenu/index.svelte';
@@ -21,14 +22,12 @@
   import { profile } from '$lib/utils/store/user';
   import { profileMenu, sideBar } from './store';
 
-  interface menuItems {
+  interface MenuItems {
     label: string;
     path: string;
     show: boolean;
     isActive: boolean;
   }
-
-  let menuItems: menuItems[] = [];
 
   function isActive(pagePath: string, itemPath: string) {
     const pageLinkItems = pagePath.split('/');
@@ -48,38 +47,38 @@
     goto(window.location.pathname + '?upgrade=true');
   };
 
-  $: menuItems = [
+  const menuItems: MenuItems[] = $derived.by(() => [
     {
       path: '',
       label: $t('org_navigation.dashboard'),
-      isActive: isActive($page.url.pathname, `${$currentOrgPath}`),
+      isActive: isActive(page.url.pathname, `${$currentOrgPath}`),
       show: true
     },
     {
       path: '/courses',
       label: $t('org_navigation.courses'),
-      isActive: $page.url.pathname.includes(`${$currentOrgPath}/courses`),
+      isActive: page.url.pathname.includes(`${$currentOrgPath}/courses`),
       show: true
     },
     {
       path: '/community',
       label: $t('org_navigation.community'),
-      isActive: $page.url.pathname.includes(`${$currentOrgPath}/community`),
+      isActive: page.url.pathname.includes(`${$currentOrgPath}/community`),
       show: true
     },
     {
       path: '/audience',
       label: $t('org_navigation.audience'),
-      isActive: $page.url.pathname.includes(`${$currentOrgPath}/audience`),
+      isActive: page.url.pathname.includes(`${$currentOrgPath}/audience`),
       show: true
     },
     {
       path: '/setup',
       label: $t('org_navigation.setup'),
-      isActive: $page.url.pathname.includes(`${$currentOrgPath}/setup`),
-      show: $isOrgAdmin
+      isActive: page.url.pathname.includes(`${$currentOrgPath}/setup`),
+      show: !!$isOrgAdmin
     }
-  ];
+  ]);
 </script>
 
 <div bind:this={$profileMenu.ref} class="static md:relative">
@@ -97,30 +96,26 @@
         <ul class="my-2 mt-4 px-4">
           {#each menuItems as menuItem}
             {#if menuItem.show}
-              <a
-                href="{$currentOrgPath}{menuItem.path}"
-                class="text-black no-underline"
-                on:click={toggleSidebar}
-              >
+              <a href="{$currentOrgPath}{menuItem.path}" class="text-black no-underline" onclick={toggleSidebar}>
                 <li
                   class="mb-1 flex items-center gap-2.5 px-2.5 py-2 {NavClasses.item} {menuItem.isActive
                     ? NavClasses.active
                     : 'dark:text-white'}"
                 >
                   {#if menuItem.path === ''}
-                    <HomeIcon />
+                    <LayoutDashboardIcon size={16} />
                   {:else if menuItem.path === '/courses'}
-                    <CourseIcon />
+                    <LibraryBigIcon size={16} />
                   {:else if menuItem.path === '/site'}
-                    <SiteSettingsIcon />
+                    <LayoutTemplateIcon size={16} />
                   {:else if menuItem.path === '/community'}
-                    <ForumIcon size={20} class="carbon-icon fill-[#000] dark:fill-[#fff]" />
+                    <MessageSquareMoreIcon size={16} />
                   {:else if menuItem.path === '/quiz'}
-                    <QuizIcon />
+                    <Dice6Icon size={16} />
                   {:else if menuItem.path === '/audience'}
-                    <AudienceIcon />
+                    <UsersIcon size={16} />
                   {:else if menuItem.path === '/setup'}
-                    <SettingsAdjust />
+                    <SettingsIcon size={16} />
                   {/if}
                   <p class="text-sm font-medium">{menuItem.label}</p>
                 </li>
@@ -129,7 +124,7 @@
           {/each}
         </ul>
       </div>
-      <span class="flex-grow" />
+      <span class="flex-grow"></span>
 
       {#if $isFreePlan}
         <div
@@ -140,49 +135,40 @@
             <p class="text-base font-semibold">{$t('org_navigation.early_adopter')}</p>
             <p class="text-xs">{$t('org_navigation.unlock')}</p>
           </span>
-          <PrimaryButton
-            label={$t('org_navigation.upgrade')}
-            onClick={openModal}
-            className="font-normal"
-          />
+          <PrimaryButton label={$t('org_navigation.upgrade')} onClick={openModal} className="font-normal" />
         </div>
       {/if}
 
       <ul class="my-5 px-4 pb-5">
-        <a href={$currentOrgPath} class="text-black no-underline" on:click={toggleSidebar}>
+        <a href={$currentOrgPath} class="text-black no-underline" onclick={toggleSidebar}>
           <li class="mb-2 flex items-center rounded px-2.5 py-1.5">
-            <HelpIcon size={20} class="carbon-icon dark:text-white" />
+            <BadgeHelpIcon size={16} />
             <p class="ml-2.5 text-sm font-medium dark:text-white">{$t('org_navigation.help')}</p>
           </li>
         </a>
 
         <button
           class="w-full"
-          on:click={() => {
+          onclick={() => {
             $profileMenu.open = !$profileMenu.open;
             $sideBar.hidden = true;
           }}
         >
           <div
-            class="mb-2 flex cursor-pointer items-center justify-between gap-2.5 px-2.5 py-2 text-black no-underline {NavClasses.item} {$page.url.pathname.includes(
+            class="mb-2 flex cursor-pointer items-center justify-between gap-2.5 px-2.5 py-2 text-black no-underline {NavClasses.item} {page.url.pathname.includes(
               'settings'
             )
               ? NavClasses.active
               : 'dark:text-white'}"
           >
             <div class="flex w-full items-center justify-start space-x-1 text-start">
-              <Avatar
-                src={$profile.avatar_url}
-                name={$profile.username}
-                width="w-[1.2rem]"
-                height="h-[1.2rem]"
-              />
+              <Avatar src={$profile.avatar_url} name={$profile.username} width="w-[1.2rem]" height="h-[1.2rem]" />
               <p class="max-w-full truncate text-sm font-medium dark:text-white">
                 {$profile.fullname}
               </p>
             </div>
             <div>
-              <ChevronRight />
+              <ChevronRightIcon size={16} />
             </div>
           </div>
         </button>

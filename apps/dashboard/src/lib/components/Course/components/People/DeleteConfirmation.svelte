@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import Modal from '$lib/components/Modal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
@@ -6,8 +6,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { deleteMemberModal } from './store';
 
-  export let email;
-  export let deletePerson = () => {};
+  let { email, deletePerson = () => {} } = $props();
 
   async function handleDelete() {
     deletePerson();

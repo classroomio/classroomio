@@ -68,8 +68,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What happens if a component attempts to consume context outside a context provider?',
+        title: 'What happens if a component attempts to consume context outside a context provider?',
         name: 'q6',
         points: 1,
         order: 5,
