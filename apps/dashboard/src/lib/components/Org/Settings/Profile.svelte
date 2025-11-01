@@ -86,7 +86,6 @@
   }
 
   $: locale = !locale ? $profile.locale : locale;
-  $: console.log('errors', errors);
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
