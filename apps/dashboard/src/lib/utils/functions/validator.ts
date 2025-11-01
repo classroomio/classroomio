@@ -5,9 +5,9 @@ import { validateEmail } from './validateEmail';
 import { t as _t, initialized } from '$lib/utils/functions/translations';
 
 const t = {
-  get: (key: string) => {
+  get: (key: string, fallback?: string) => {
     const isInitialized = get(initialized);
-    if (!isInitialized) return key;
+    if (!isInitialized) return fallback ?? key;
 
     return _t.get(key);
   }
@@ -16,17 +16,33 @@ const t = {
 const getOrgNameValidation = () =>
   z
     .string()
-    .min(5, { message: `${t.get('validations.organization_name.min_char')}` })
+    .min(5, {
+      message: t.get(
+        'validations.organization_name.min_char',
+        'Organization name must be at least 5 characters long'
+      )
+    })
     .refine((val) => !/^[-]|[-]$/.test(val), {
-      message: `${t.get('validations.organization_name.hyphen_rule')}`
+      message: t.get(
+        'validations.organization_name.hyphen_rule',
+        "Organization name can't start or end with a hyphen"
+      )
     });
 
 const getSiteNameValidation = () =>
   z
     .string()
-    .min(5, { message: `${t.get('validations.site_name.min_char')}` })
+    .min(5, {
+      message: t.get(
+        'validations.site_name.min_char',
+        'Site name must be at least 5 characters long'
+      )
+    })
     .refine((val) => !/^[-]|[-]$/.test(val), {
-      message: `${t.get('validations.site_name.hyphen_rule')}`
+      message: t.get(
+        'validations.site_name.hyphen_rule',
+        "Site name can't start or end with a hyphen"
+      )
     });
 
 const getNewsfeedValidation = () =>
@@ -100,23 +116,39 @@ const resetValidationSchema = z.object({
 
 const onboardingValidationSchema = {
   stepOne: z.object({
-    fullname: z
-      .string()
-      .min(5, { message: `${t.get('validations.onboarding.step_one.full_name.min_char')}` }),
+    fullname: z.string().min(5, {
+      message: t.get(
+        'validations.onboarding.step_one.full_name.min_char',
+        'Full name must be at least 5 characters long'
+      )
+    }),
     orgName: getOrgNameValidation(),
     siteName: getSiteNameValidation()
   }),
   stepTwo: z.object({
     goal: z
       .string({
-        required_error: `${t.get('validations.onboarding.step_two.goal.required')}`
+        required_error: t.get(
+          'validations.onboarding.step_two.goal.required',
+          'Please select your goal'
+        )
       })
-      .min(1),
+      .min(1, {
+        message: t.get('validations.onboarding.step_two.goal.min', 'Please select your goal')
+      }),
     source: z
       .string({
-        required_error: `${t.get('validations.onboarding.step_two.source.required')}`
+        required_error: t.get(
+          'validations.onboarding.step_two.source.required',
+          'Please select where you heard about Classroomio'
+        )
       })
-      .min(1)
+      .min(1, {
+        message: t.get(
+          'validations.onboarding.step_two.source.min',
+          'Please select where you heard about Classroomio'
+        )
+      })
   })
 };
 
