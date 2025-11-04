@@ -9,7 +9,7 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import EdraEditor from '$lib/components/Edra/EdraRoot.svelte';
   import Vote from '$lib/components/Vote/index.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { supabase } from '$lib/utils/functions/supabase';
@@ -467,14 +467,10 @@
         </header>
         {#if isEditMode && editorInstance}
           <div class="my-2">
-            <TextEditor
-              bind:value={editContent.body}
-              placeholder={$t('community.ask.give')}
-              onChange={(html) => (editContent.body = html)}
-            />
+            <EdraEditor content={editContent.body} onContentChange={(content) => (editContent.body = content)} />
           </div>
         {:else}
-          <section class="prose prose-sm sm:prose p-2">
+          <section class="prose prose-sm p-2 sm:prose">
             {@html question.body}
           </section>
         {/if}
@@ -517,7 +513,7 @@
                 </IconButton>
               {/if}
             </header>
-            <article class="prose prose-sm sm:prose p-2">
+            <article class="prose prose-sm p-2 sm:prose">
               {@html comment.comment}
             </article>
           </div>
@@ -528,11 +524,7 @@
 
       <div class="mt-4">
         {#if !editorInstance}
-          <TextEditor
-            bind:value={comment}
-            placeholder={$t('community.ask.give')}
-            onChange={(html) => (comment = html)}
-          />
+          <EdraEditor content={comment} onContentChange={(content) => (comment = content)} />
         {/if}
 
         <div class="mt-2 flex justify-end">

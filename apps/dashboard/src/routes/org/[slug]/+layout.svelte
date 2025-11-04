@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as Sidebar from '$src/base/sidebar';
   import { page } from '$app/state';
   import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
   import { isQuizPage } from '$lib/utils/functions/app';
@@ -24,15 +25,18 @@
 
 <VerifyEmailModal />
 
-<div class="org-root flex w-full items-center justify-between">
-  {#if !isQuizPage(page.url?.pathname)}
-    <OrgSideBar />
-  {/if}
-  <div class="org-slot w-full bg-white dark:bg-black">
-    {#if data.orgName === '*'}
-      <Box>Taking you to your organization...</Box>
-    {:else}
-      {@render children?.()}
-    {/if}
+<Sidebar.Provider>
+  <div class="org-root flex w-full items-center justify-between">
+    <div class="org-slot flex w-full items-start bg-white dark:bg-black">
+      {#if !isQuizPage(page.url?.pathname)}
+        <OrgSideBar />
+      {/if}
+
+      {#if data.orgName === '*'}
+        <Box>Taking you to your organization...</Box>
+      {:else}
+        {@render children?.()}
+      {/if}
+    </div>
   </div>
-</div>
+</Sidebar.Provider>

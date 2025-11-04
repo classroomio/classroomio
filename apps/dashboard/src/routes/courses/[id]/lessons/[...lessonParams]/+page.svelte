@@ -233,19 +233,36 @@
               </IconButton>
             {/if}
 
-            <div class="hidden flex-row items-center lg:flex">
-              <IconButton
+            <div class="flex-row items-center lg:flex">
+              <!-- <IconButton
                 onClick={() => {
                   toggleMode();
                 }}
                 disabled={isSaving}
               >
                 {#if mode === MODES.edit}
-                  <SaveIcon size={20} />
+                  <SaveIcon size={20} /> 
+                  <p class="text-black dark:text-white">save</p>
                 {:else}
-                  <PencilIcon size={20} />
+                   <PencilIcon size={20} /> 
+                  <p class="text-black dark:text-white">edit</p>
                 {/if}
-              </IconButton>
+              </IconButton> -->
+
+              <button
+                onclick={() => {
+                  toggleMode();
+                }}
+                disabled={isSaving}
+              >
+                {#if mode === MODES.edit}
+                  <!-- <SaveIcon size={20} /> -->
+                  <p class="text-black dark:text-white">save</p>
+                {:else}
+                  <!-- <PencilIcon size={20} /> -->
+                  <p class="text-black dark:text-white">edit</p>
+                {/if}
+              </button>
             </div>
 
             <div>

@@ -8,7 +8,7 @@
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
   import generateSlug from '$lib/utils/functions/generateSlug';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import EdraEditor from '$lib/components/Edra/EdraRoot.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
@@ -116,9 +116,5 @@
     />
   </div>
 
-  <TextEditor
-    bind:value={fields.body}
-    placeholder={$t('community.ask.ask_community')}
-    onChange={(html) => (fields.body = html)}
-  />
+  <EdraEditor content={fields.body} onContentChange={(content) => (fields.body = content)} />
 </section>

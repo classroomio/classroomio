@@ -1,10 +1,10 @@
 <script lang="ts">
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
   import get from 'lodash/get';
   import { Toggle } from 'carbon-components-svelte';
   import type { Course } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { NAV_ITEM_KEY } from '../../constants';
+  import EdraEditor from '$lib/components/Edra/EdraRoot.svelte';
 
   interface Props {
     course: Course;
@@ -21,7 +21,7 @@
 </script>
 
 <div class="">
-  <TextEditor bind:value={course.metadata.goals} />
+  <EdraEditor content={course.metadata.goals} onContentChange={(content) => setter(content, `metadata.goals`)} />
 </div>
 
 <div class="mt-5">

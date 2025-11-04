@@ -4,7 +4,6 @@
   import LayoutDashboardIcon from '@lucide/svelte/icons/layout-dashboard';
   import LibraryBigIcon from '@lucide/svelte/icons/library-big';
   import UsersIcon from '@lucide/svelte/icons/users';
-  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import Settings2 from '@lucide/svelte/icons/settings-2';
   import MessageSquareMoreIcon from '@lucide/svelte/icons/message-square-more';
   import BadgeHelpIcon from '@lucide/svelte/icons/badge-help';
@@ -15,12 +14,16 @@
   import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
 
   import { goto } from '$app/navigation';
-  import ProfileMenu from '$lib/components/Org/ProfileMenu/index.svelte';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { t } from '$lib/utils/functions/translations';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
-  import { profileMenu, sideBar } from './store';
+  import { sideBar } from './store';
+
+  import * as Sidebar from '$src/base/sidebar';
+  import * as DropdownMenu from '$src/base/dropdown-menu';
+  import ChevronRight from '@lucide/svelte/icons/chevron-right';
+  import Menu from './ProfileMenu/Menu.svelte';
 
   interface MenuItems {
     label: string;
@@ -81,100 +84,127 @@
   ]);
 </script>
 
-<div bind:this={$profileMenu.ref} class="static md:relative">
-  <aside
-    class={`${
-      $sideBar.hidden
-        ? 'absolute top-[48px] z-40 -translate-x-[100%] md:relative md:top-0 md:translate-x-0'
-        : 'absolute top-[48px] z-40 translate-x-0 md:relative md:top-0'
-    } border-r-1 h-[calc(100vh-48px)] w-[250px] min-w-[250px] overflow-y-auto border border-b-0 border-l-0 border-t-0 border-gray-100 bg-gray-100 transition dark:border-neutral-600 dark:bg-neutral-900`}
-  >
-    <div class="flex h-full flex-col">
-      <div class="">
-        <OrgSelector />
+<section class="relative flex items-start">
+  <Sidebar.Root variant="floating" class="inset-y-12 block h-[calc(100vh-48px)] w-[250px] min-w-[250px]">
+    <Sidebar.Content>
+      <Sidebar.Group>
+        <Sidebar.GroupContent>
+          <OrgSelector />
+        </Sidebar.GroupContent>
+      </Sidebar.Group>
 
-        <ul class="my-2 mt-4 px-4">
-          {#each menuItems as menuItem}
-            {#if menuItem.show}
-              <a href="{$currentOrgPath}{menuItem.path}" class="text-black no-underline" onclick={toggleSidebar}>
-                <li
-                  class="group mb-1 flex items-center gap-2.5 px-2.5 py-2 {NavClasses.item} {menuItem.isActive
-                    ? NavClasses.active
-                    : 'dark:text-white'}"
-                >
-                  {#if menuItem.path === ''}
-                    <LayoutDashboardIcon size={16} class="group-hover:animate-gather" />
-                  {:else if menuItem.path === '/courses'}
-                    <LibraryBigIcon size={16} class="group-hover:animate-library-expand" />
-                  {:else if menuItem.path === '/site'}
-                    <LayoutTemplateIcon size={16} class="group-hover:animate-template-morph" />
-                  {:else if menuItem.path === '/community'}
-                    <MessageSquareMoreIcon size={16} class="group-hover:animate-ripple" />
-                  {:else if menuItem.path === '/quiz'}
-                    <Dice6Icon size={16} class="group-hover:animate-roll" />
-                  {:else if menuItem.path === '/audience'}
-                    <UsersIcon size={16} class="group-hover:animate-gather" />
-                  {:else if menuItem.path === '/setup'}
-                    <Settings2 size={16} class="group-hover:animate-setup-configure" />
-                  {/if}
-                  <p class="text-sm font-medium">{menuItem.label}</p>
-                </li>
-              </a>
-            {/if}
-          {/each}
-        </ul>
-      </div>
-      <span class="flex-grow"></span>
+      <Sidebar.Group>
+        <Sidebar.GroupContent>
+          <Sidebar.Menu>
+            {#each menuItems as menuItem}
+              {#if menuItem.show}
+                <Sidebar.MenuItem>
+                  <Sidebar.MenuButton>
+                    {#snippet child()}
+                      <a
+                        href="{$currentOrgPath}{menuItem.path}"
+                        class="text-black no-underline"
+                        onclick={toggleSidebar}
+                      >
+                        <li
+                          class="group mb-1 flex items-center gap-2.5 px-2.5 py-2 {NavClasses.item} {menuItem.isActive
+                            ? NavClasses.active
+                            : 'dark:text-white'}"
+                        >
+                          {#if menuItem.path === ''}
+                            <LayoutDashboardIcon size={16} class="group-hover:animate-gather" />
+                          {:else if menuItem.path === '/courses'}
+                            <LibraryBigIcon size={16} class="group-hover:animate-library-expand" />
+                          {:else if menuItem.path === '/site'}
+                            <LayoutTemplateIcon size={16} class="group-hover:animate-template-morph" />
+                          {:else if menuItem.path === '/community'}
+                            <MessageSquareMoreIcon size={16} class="group-hover:animate-ripple" />
+                          {:else if menuItem.path === '/quiz'}
+                            <Dice6Icon size={16} class="group-hover:animate-roll" />
+                          {:else if menuItem.path === '/audience'}
+                            <UsersIcon size={16} class="group-hover:animate-gather" />
+                          {:else if menuItem.path === '/setup'}
+                            <Settings2 size={16} class="group-hover:animate-setup-configure" />
+                          {/if}
+                          <p class="text-sm font-medium">{menuItem.label}</p>
+                        </li>
+                      </a>
+                    {/snippet}
+                  </Sidebar.MenuButton>
+                </Sidebar.MenuItem>
+              {/if}
+            {/each}
+          </Sidebar.Menu>
+        </Sidebar.GroupContent>
+      </Sidebar.Group>
 
-      {#if $isFreePlan}
-        <div
-          class="border-primary-700 mx-4 flex flex-col items-center justify-center gap-4 rounded-md border px-2 py-6 text-center transition-all ease-in-out hover:scale-95"
-        >
-          <img src="/upgrade.png" alt="upgrade" class="h-16 w-16" />
-          <span class="flex flex-col gap-1">
-            <p class="text-base font-semibold">{$t('org_navigation.early_adopter')}</p>
-            <p class="text-xs">{$t('org_navigation.unlock')}</p>
-          </span>
-          <PrimaryButton label={$t('org_navigation.upgrade')} onClick={openModal} className="font-normal" />
-        </div>
-      {/if}
+      <span class="grow"></span>
 
-      <ul class="my-5 px-4 pb-5">
-        <a href={$currentOrgPath} class="text-black no-underline" onclick={toggleSidebar}>
-          <li class="mb-2 flex items-center rounded px-2.5 py-1.5">
-            <BadgeHelpIcon size={16} />
-            <p class="ml-2.5 text-sm font-medium dark:text-white">{$t('org_navigation.help')}</p>
-          </li>
-        </a>
-
-        <button
-          class="w-full"
-          onclick={() => {
-            $profileMenu.open = !$profileMenu.open;
-            $sideBar.hidden = true;
-          }}
-        >
+      <Sidebar.Group>
+        {#if $isFreePlan}
           <div
-            class="mb-2 flex cursor-pointer items-center justify-between gap-2.5 px-2.5 py-2 text-black no-underline {NavClasses.item} {page.url.pathname.includes(
-              'settings'
-            )
-              ? NavClasses.active
-              : 'dark:text-white'}"
+            class="border-primary-700 mx-4 flex flex-col items-center justify-center gap-4 rounded-md border px-2 py-6 text-center transition-all ease-in-out hover:scale-95"
           >
-            <div class="flex w-full items-center justify-start space-x-1 text-start">
-              <Avatar src={$profile.avatar_url} name={$profile.username} width="w-[1.2rem]" height="h-[1.2rem]" />
-              <p class="max-w-full truncate text-sm font-medium dark:text-white">
-                {$profile.fullname}
-              </p>
-            </div>
-            <div>
-              <ChevronRightIcon size={16} />
-            </div>
+            <img src="/upgrade.png" alt="upgrade" class="h-16 w-16" />
+            <span class="flex flex-col gap-1">
+              <p class="text-base font-semibold">{$t('org_navigation.early_adopter')}</p>
+              <p class="text-xs">{$t('org_navigation.unlock')}</p>
+            </span>
+            <PrimaryButton label={$t('org_navigation.upgrade')} onClick={openModal} className="font-normal" />
           </div>
-        </button>
-      </ul>
-    </div>
-  </aside>
+        {/if}
+      </Sidebar.Group>
 
-  <ProfileMenu />
-</div>
+      <Sidebar.Footer>
+        <Sidebar.Menu>
+          <Sidebar.MenuItem>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger>
+                {#snippet child({ props })}
+                  <Sidebar.MenuButton
+                    {...props}
+                    class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                  >
+                    <a
+                      href={$currentOrgPath}
+                      class="flex h-full w-full items-center justify-start space-x-2 text-start"
+                      onclick={toggleSidebar}
+                    >
+                      <BadgeHelpIcon size={20} />
+                      <p class="text-sm font-medium dark:text-white">{$t('org_navigation.help')}</p>
+                    </a></Sidebar.MenuButton
+                  >
+
+                  <Sidebar.MenuButton
+                    {...props}
+                    class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                  >
+                    <div class="flex w-full items-center justify-start space-x-2 text-start">
+                      <Avatar
+                        src={$profile.avatar_url}
+                        name={$profile.username}
+                        width="w-[1.2rem]"
+                        height="h-[1.2rem]"
+                      />
+                      <p class="max-w-full truncate text-sm font-medium dark:text-white">
+                        {$profile.fullname}
+                      </p>
+                    </div>
+                    <ChevronRight class="ml-auto" />
+                  </Sidebar.MenuButton>
+                {/snippet}
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content side="right" class="w-(--bits-dropdown-menu-anchor-width)">
+                <Menu />
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
+          </Sidebar.MenuItem>
+        </Sidebar.Menu>
+      </Sidebar.Footer>
+    </Sidebar.Content>
+  </Sidebar.Root>
+
+  <button class="mt-3 scale-110">
+    <Sidebar.Trigger />
+  </button>
+</section>

@@ -3,7 +3,7 @@
   import DateTime from '$lib/components/Form/DateTime.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import { questionnaire } from '../store/exercise';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import EdraEditor from '$lib/components/Edra/EdraRoot.svelte';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -43,14 +43,14 @@
         <p class="mb-1">
           {$t('course.navItem.lessons.exercises.all_exercises.description.heading')}
         </p>
-        <TextEditor
-          value={$questionnaire.description}
-          onChange={(html) => {
+
+        <EdraEditor
+          content={$questionnaire.description}
+          onContentChange={(html) => {
             $questionnaire.is_description_dirty = true;
             $questionnaire.description = html;
           }}
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.description.describe')}
-          maxHeight={300}
+          editorClass="max-h-[300px]"
         />
       </div>
     {:else if preview}
@@ -78,7 +78,7 @@
         {/if}
       </div>
 
-      <article class="preview prose prose-sm sm:prose mt-3 p-2">
+      <article class="preview prose prose-sm mt-3 p-2 sm:prose">
         {@html $questionnaire.description || $t('course.navItem.lessons.exercises.all_exercises.description.no')}
       </article>
     {/if}

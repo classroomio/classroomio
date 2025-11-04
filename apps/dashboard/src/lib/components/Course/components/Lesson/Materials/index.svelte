@@ -1,6 +1,5 @@
 <script lang="ts">
   import { untrack } from 'svelte';
-  import { writable } from 'svelte/store';
   import Box from '$lib/components/Box/index.svelte';
   import AddVideoToLesson from '$lib/components/Course/components/Lesson/Materials/Video/AddVideoToLesson.svelte';
   import AddDocumentToLesson from '$lib/components/Course/components/Lesson/Materials/Document/AddDocumentToLesson.svelte';
@@ -23,7 +22,6 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import TabContent from '$lib/components/TabContent/index.svelte';
   import Tabs from '$lib/components/Tabs/index.svelte';
-  // import TextEditor from '$lib/components/TextEditor/index.svelte';
   import MODES from '$lib/utils/constants/mode';
   import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
   import { supabase } from '$lib/utils/functions/supabase';
@@ -31,7 +29,7 @@
   import { lessonFallbackNote, t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
   import type { LessonPage, LOCALE } from '$lib/utils/types';
-  // import { useCompletion } from 'ai/svelte';
+  import type { Editor } from '@tiptap/core';
   import { Popover } from 'carbon-components-svelte';
   import NotepadTextIcon from '@lucide/svelte/icons/notepad-text';
   import ListTodoIcon from '@lucide/svelte/icons/list-todo';
@@ -48,6 +46,8 @@
   import * as CONSTANTS from './constants';
   import { orderedTabs } from './constants';
   import Loader from './Loader.svelte';
+  import Edra from '$lib/components/Edra/EdraRoot.svelte';
+  import { writable } from 'svelte/store';
 
   interface Props {
     mode?: any;
@@ -67,26 +67,34 @@
     toggleMode = () => {}
   }: Props = $props();
 
-  // let content = $state<EdraEditorProps['Content']>();
-  // let editor = $state<EdraEditorProps['Editor']>();
-  // function onUpdate() {
-  //   content = editor?.getHTML();
-  //   console.log('content updated:', content);
-  //   if (mode === MODES.view) return;
+  let openPopover = $state<boolean>(false);
+  let aiButtonRef = $state<HTMLDivElement>();
+  let aiButtonClass =
+    'flex items-center px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2';
+  let player = $state<HTMLVideoElement>();
 
-  //   $lessonByTranslation[lessonId][$lesson.locale] = content;
+  function onEdraUpdate(content: string) {
+    console.log('content updated:', content);
 
-  //   try {
-  //     localStorage.setItem(`lesson-${lessonId}-${$lesson.locale}`, content);
-  //   } catch (error) {}
-  //   $isLessonDirty = true;
-  // }
+    if (mode === MODES.view) return;
+
+    $lessonByTranslation[lessonId][$lesson.locale] = content;
+
+    try {
+      localStorage.setItem(`lesson-${lessonId}-${$lesson.locale}`, content);
+    } catch (error) {
+      console.error('Error saving lesson note to localStorage', error);
+    }
+
+    $isLessonDirty = true;
+  }
 
   let localeExists: Record<string, boolean> = {};
   // let prevContent = '';
   let timeoutId: NodeJS.Timeout;
   let errors: Record<string, string> = {};
-  // let editorWindowRef: Window | undefined = $state();
+  let editorWindowRef: Window | undefined = $state();
+  let editorInstance = $state<Editor>(); // Add proper typing
   ('flex items-center gap-2 px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2');
 
   const lessonTitle = $derived($lesson.title);
@@ -217,27 +225,33 @@
   // });
 
   // function updateNoteByCompletion(completion: string) {
-  //   if (!completion) return;
-
-  //   if ($lessonByTranslation[lessonId]) {
-  //     $lessonByTranslation[lessonId][$lesson.locale] = `${prevContent}${completion}`;
+  // if (!completion) return;
+  // if ($lessonByTranslation[lessonId]) {
+  //   $lessonByTranslation[lessonId][$lesson.locale] = `${prevContent}${completion}`;
+  // }
+  // autoSave($lesson.materials, $lessonByTranslation[lessonId], false, lessonId);
+  // if (editorInstance && editorInstance.view) {
+  //   try {
+  //     // For TipTap editor, we can use the editor's commands to scroll
+  //     const { view } = editorInstance;
+  //     const { state } = view;
+  //     const endPos = state.doc.content.size;
+  //     // Move cursor to end and scroll into view
+  //     editorInstance.commands.setTextSelection(endPos);
+  //     editorInstance.commands.scrollIntoView();
+  //     // Alternative: Focus the editor
+  //     editorInstance.commands.focus();
+  //   } catch (error) {
+  //     console.warn('Error scrolling editor:', error);
   //   }
-
-  //   autoSave($lesson.materials, $lessonByTranslation[lessonId], false, lessonId);
-
-  //   if (editorWindowRef) {
-  //     const tmceBody = editorWindowRef?.document?.querySelector('body');
-  //     if (typeof tmceBody?.scrollHeight === 'number') {
-  //       editorWindowRef?.scrollTo(0, tmceBody.scrollHeight);
-  //     }
-  //   }
+  // }
   // }
 
   function callAI(_type = '') {
     // prevContent = $lessonByTranslation[lessonId]?.[$lesson.locale] || '';
     // const _lesson = $lessons.find((les) => les.id === $lesson.id);
     // $input = JSON.stringify({
-    //   type,
+    //   _type,
     //   lessonTitle: _lesson?.title || '',
     //   courseTitle: $course.title,
     //   locale: $lesson.locale
@@ -414,42 +428,14 @@
           </div>
 
           <div class="mt-5 h-[60vh]">
-            <!-- <div class="bg-background z-50 mt-12 size-full max-w-5xl rounded-md border border-dashed">
-              {#if editor && !editor.isDestroyed}
-                <EdraToolBar
-                  class="bg-secondary/50 flex w-full items-center overflow-x-auto border-b border-dashed p-0.5"
-                  {editor}
-                />
-              {:else}
-                <div>
-                  Debug: Editor state - {editor ? 'exists' : 'undefined'}, destroyed: {editor?.isDestroyed || 'N/A'}
-                </div>
-              {/if}
-              <EdraEditor
-                bind:editor
-                content={editorValue}
-                autofocus={true}
-                class="h-[300px] outline-none"
-                {onUpdate}
-              />
-            </div> -->
-            <!-- <TextEditor
-              id={lessonId}
-              bind:editorWindowRef
-              value={editorValue}
-              onChange={(html) => {
-                if (mode === MODES.view) return;
-
-                $lessonByTranslation[lessonId][$lesson.locale] = html;
-
-                try {
-                  // Backup locale of lesson content
-                  localStorage.setItem(`lesson-${lessonId}-${$lesson.locale}`, html);
-                } catch (error) {}
-                $isLessonDirty = true;
+            <Edra
+              content={_editorValue}
+              onContentChange={(content) => onEdraUpdate(content)}
+              onEditorReady={(editor) => {
+                editorInstance = editor;
+                editorWindowRef = editor.view.dom.ownerDocument.defaultView;
               }}
-              placeholder={$t('course.navItem.lessons.materials.tabs.note.placeholder')}
-            /> -->
+            />
           </div>
         </TabContent>
 

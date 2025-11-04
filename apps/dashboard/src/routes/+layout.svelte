@@ -141,7 +141,7 @@
 {:else if data.isOrgSite && !path}
   <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org} />
 {:else}
-  <main class="font-roboto dark:bg-black">
+  <main class="font-roboto z-[20000] dark:bg-black">
     {#if !hideNavByRoute($page.url?.pathname)}
       {#if isOrgPage($page.url?.pathname) || $page.url?.pathname.includes('profile') || isCoursesPage(path)}
         <OrgNavigation bind:title={$course.title} isCoursePage={isCoursesPage(path)} />

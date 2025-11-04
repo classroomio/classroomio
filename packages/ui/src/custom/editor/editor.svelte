@@ -111,7 +111,7 @@
 
   function onUpdate(props: { editor: Editor; transaction: Transaction }) {
     if (props?.editor && !props.editor.isDestroyed) {
-      const newContent = props.editor.getJSON();
+      const newContent = props.editor.getHTML();
       content = newContent;
       onContentChange?.(newContent);
     }

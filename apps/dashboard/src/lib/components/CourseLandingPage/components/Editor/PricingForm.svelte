@@ -3,7 +3,7 @@
   import { Toggle, Select, SelectItem } from 'carbon-components-svelte';
 
   import TextField from '$lib/components/Form/TextField.svelte';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import EdraEditor from '$lib/components/Edra/EdraRoot.svelte';
   import { isCourseFree } from '$lib/utils/functions/course';
   import type { Course } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
@@ -20,8 +20,8 @@
   let showDiscount = $derived(get(course, 'metadata.showDiscount', false));
   let giftToggled = $derived(get(course, 'metadata.reward.show', false));
 
-  function handleChange(html: string) {
-    setter(html, 'metadata.reward.description');
+  function handleChange(content: string) {
+    setter(content, 'metadata.reward.description');
   }
 
   $effect(() => {
@@ -95,7 +95,10 @@
     </p>
 
     <div class="h-2/5">
-      <TextEditor value={get(course, 'metadata.reward.description', '')} onChange={handleChange} />
+      <EdraEditor
+        content={get(course, 'metadata.reward.description', '')}
+        onContentChange={(content) => handleChange(content)}
+      />
     </div>
   {/if}
 {/if}

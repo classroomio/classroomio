@@ -17,7 +17,7 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import TextField from '$lib/components/Form/TextField.svelte';
   import DeleteModal from '$lib/components/Org/Community/DeleteModal.svelte';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import EdraEditor from '$lib/components/Edra/EdraRoot.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { untrack } from 'svelte';
   import { fetchCourses } from '$lib/utils/services/courses';
@@ -460,14 +460,10 @@
         </header>
         {#if isEditMode && editorInstance}
           <div class="my-2">
-            <TextEditor
-              bind:value={editContent.body}
-              placeholder="Give an answer"
-              onChange={(html) => (editContent.body = html)}
-            />
+            <EdraEditor content={editContent.body} onContentChange={(content) => (editContent.body = content)} />
           </div>
         {:else}
-          <section class="prose prose-sm sm:prose p-2">
+          <section class="prose prose-sm p-2 sm:prose">
             {@html question.body}
           </section>
         {/if}
@@ -510,7 +506,7 @@
                 </IconButton>
               {/if}
             </header>
-            <article class="prose prose-sm sm:prose p-2">
+            <article class="prose prose-sm p-2 sm:prose">
               {@html comment.comment}
             </article>
           </div>
@@ -521,7 +517,7 @@
 
       <div>
         {#if !editorInstance}
-          <TextEditor bind:value={comment} placeholder="Give an answer" onChange={(html) => (comment = html)} />
+          <EdraEditor content={comment} onContentChange={(content) => (comment = content)} />
         {/if}
 
         <div class="mr-2 flex justify-end">

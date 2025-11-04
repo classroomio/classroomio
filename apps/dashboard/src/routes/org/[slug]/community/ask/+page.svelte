@@ -5,7 +5,7 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import EdraEditor from '$lib/components/Edra/EdraRoot.svelte';
   import generateSlug from '$lib/utils/functions/generateSlug';
   import { supabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
@@ -121,11 +121,7 @@
     />
   </div>
   <div class="px-2">
-    <TextEditor
-      bind:value={fields.body}
-      placeholder={$t('community.ask.ask_community')}
-      onChange={(html) => (fields.body = html)}
-    />
+    <EdraEditor content={fields.body} onContentChange={(content) => (fields.body = content)} />
 
     {#if errors.body}
       <p class="mt-2 text-sm text-red-500">{errors.body}</p>
