@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
-  import * as Sidebar from '@cio/ui/base/sidebar';
+  // import * as Sidebar from '@cio/ui/base/sidebar';
   import UsersIcon from '@lucide/svelte/icons/users';
   import Dice6Icon from '@lucide/svelte/icons/dice-6';
   import Settings2 from '@lucide/svelte/icons/settings-2';
@@ -16,6 +16,7 @@
   import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
 
+  import Sidebar from '$lib/components/Sidebar/index.svelte';
   import Footer from './OrgFooter/OrgFooter.svelte';
   import OrgSelector from '../OrgSelector/OrgSelector.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -79,7 +80,7 @@
   ]);
 </script>
 
-<section class="relative flex items-start">
+<!-- <section class="relative flex items-start">
   <Sidebar.Root variant="floating" class="inset-y-12 block h-[calc(100vh-48px)] w-[250px] min-w-[250px]">
     <Sidebar.Header>
       <Sidebar.Menu>
@@ -165,4 +166,6 @@
   <button class="mt-3 scale-110">
     <Sidebar.Trigger />
   </button>
-</section>
+</section> -->
+
+<Sidebar />

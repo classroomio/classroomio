@@ -9,6 +9,9 @@ export * as Skeleton from './base/skeleton';
 export * as Tooltip from './base/tooltip';
 export * as Sidebar from './base/sidebar';
 export * as Command from './base/command';
+export * as Avatar from './base/avatar';
+export * as Collapsible from './base/collapsible';
+export * as Breadcrumb from './base/breadcrumb';
 
 export * from './tools';
 

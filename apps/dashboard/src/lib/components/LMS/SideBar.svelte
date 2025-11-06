@@ -10,11 +10,11 @@
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { profile } from '$lib/utils/store/user';
   import { NavClasses } from '$lib/utils/constants/reusableClass';
-  import { profileMenu, sideBar } from '$lib/components/Org/store';
+  import { sideBar } from '$lib/components/Org/store';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-  import ProfileMenu from '$lib/components/Org/ProfileMenu/index.svelte';
+  // import ProfileMenu from '$lib/components/Org/ProfileMenu/index.svelte';
 
   interface SideLinks {
     name: string;
@@ -121,7 +121,7 @@
         <button
           class="w-full"
           onclick={() => {
-            $profileMenu.open = !$profileMenu.open;
+            // $profileMenu.open = !$profileMenu.open;
             $sideBar.hidden = true;
           }}
         >
@@ -143,5 +143,5 @@
     </div>
   </aside>
 
-  <ProfileMenu />
+  <!-- <ProfileMenu /> -->
 </div>
