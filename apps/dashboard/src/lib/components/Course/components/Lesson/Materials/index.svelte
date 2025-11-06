@@ -3,7 +3,6 @@
   import isEmpty from 'lodash/isEmpty';
   import { writable } from 'svelte/store';
   import { fade } from 'svelte/transition';
-  import type { Editor } from '@tiptap/core';
   import { Popover } from 'carbon-components-svelte';
 
   import TrashIcon from '@lucide/svelte/icons/trash';
@@ -32,6 +31,7 @@
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { lessonFallbackNote, t } from '$lib/utils/functions/translations';
+  import type { Content } from '@cio/ui/custom/editor';
 
   import Loader from './Loader.svelte';
   import Box from '$lib/components/Box/index.svelte';
@@ -79,8 +79,8 @@
   // let prevContent = '';
   let timeoutId: NodeJS.Timeout;
   let errors: Record<string, string> = {};
-  let editorWindowRef: Window | undefined = $state();
-  let editorInstance = $state<Editor>(); // Add proper typing
+  // let editorWindowRef: Window | undefined = $state();
+  // let editorInstance = $state<Editor>(); // Add proper typing
   ('flex items-center gap-2 px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2');
 
   let isLoading = writable(false);
@@ -110,15 +110,15 @@
   const componentsToRender = $derived(getComponentOrder(tabs));
   let currentTab = $derived(tabs[0].value);
 
-  function onEdraUpdate(content: string) {
+  function onEditorChange(content: Content) {
     console.log('content updated:', content);
 
     if (mode === MODES.view) return;
 
-    $lessonByTranslation[lessonId][$lesson.locale] = content;
+    $lessonByTranslation[lessonId][$lesson.locale] = `${content}`;
 
     try {
-      localStorage.setItem(`lesson-${lessonId}-${$lesson.locale}`, content);
+      localStorage.setItem(`lesson-${lessonId}-${$lesson.locale}`, `${content}`);
     } catch (error) {
       console.error('Error saving lesson note to localStorage', error);
     }
@@ -430,11 +430,13 @@
           <div class="mt-5 h-[60vh]">
             <TextEditor
               content={_editorValue}
-              onChange={(content) => onEdraUpdate(content)}
-              onReady={(editor) => {
-                editorInstance = editor;
-                editorWindowRef = editor.view.dom.ownerDocument.defaultView;
-              }}
+              onChange={(content) => onEditorChange(content)}
+              onReady={() =>
+                // editor
+                {
+                  // editorInstance = editor;
+                  // editorWindowRef = editor.view.dom.ownerDocument.defaultView;
+                }}
               placeholder={$t('course.navItem.lessons.materials.tabs.note.placeholder')}
             />
           </div>

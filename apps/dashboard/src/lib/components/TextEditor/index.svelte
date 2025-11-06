@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Editor } from '@cio/ui/custom/editor';
-  import type { Content, Editor as TiptapEditor } from '@tiptap/core';
+  import type { Content, TiptapEditor } from '@cio/ui/custom/editor';
 
   interface Props {
     placeholder?: string | ((node: any) => string);
