@@ -58,7 +58,7 @@
   <title>ClassroomIO - The classroom software</title>
 </svelte:head>
 
-<div class="m-2 flex w-screen flex-col items-center justify-center font-sans sm:m-0 md:min-h-[93vh] dark:bg-black">
+<div class="m-2 flex w-screen flex-col items-center justify-center sm:m-0 md:min-h-[93vh] dark:bg-black">
   <!--
     <img
       src="/logo-192.png"

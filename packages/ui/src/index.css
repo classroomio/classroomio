@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
+
 @import 'tailwindcss';
 
 @import 'tw-animate-css';
@@ -74,10 +76,7 @@
 }
 
 @theme inline {
-  --font-cio: "Geist", "sans-serif";
-}
-
-@theme inline {
+  --font-cio: 'Geist', 'sans-serif';
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -120,35 +119,6 @@
     @apply border-border outline-ring/50;
   }
 
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
-@layer base {
-
-  /* Geist Sans ExtraLight */
-  @font-face {
-    font-family: "Geist", sans-serif;
-    font-optical-sizing: auto;
-    src: url("./public/cio-fonts/geist-font/otf/Geist-ExtraLight.otf");
-    src:
-      url("./public/cio-fonts/geist-font/otf/Geist-ExtraLight.otf") format("embedded-opentype"),
-      url("./public/cio-fonts/geist-font/ttf/Geist-ExtraLight.ttf") format("truetype");
-    font-weight: 200;
-    font-style: normal;
-  }
-
-  /* TODO: Add for the others */
-  /* Geist Sans Light */
-  /* Geist Sans Regular */
-  /* Geist Sans Medium */
-  /* Geist Sans Semibold */
-  /* Geist Sans Bold */
-  /* Geist Sans Extrabold */
-}
-
-@layer base {
   body {
     @apply bg-background text-foreground font-cio;
   }
