@@ -29,7 +29,7 @@ export default ({ mode }) => {
       mainFields: ['browser']
     },
     assetsInclude: ['**/*.woff', '**/*.woff2', '**/*.ttf', '**/*.otf', '**/*.eot', '**/*.svg'],
-    publicDir: 'public'
+    publicDir: 'static'
   });
 };
 

@@ -131,10 +131,10 @@
   @font-face {
     font-family: "Geist", sans-serif;
     font-optical-sizing: auto;
-    src: url("../public/cio-fonts/geist-font/otf/Geist-ExtraLight.otf");
+    src: url("./public/cio-fonts/geist-font/otf/Geist-ExtraLight.otf");
     src:
-      url("./cio-fonts/geist-font/otf/Geist-ExtraLight.otf") format("embedded-opentype"),
-      url("../public/cio-fonts/geist-font/ttf/Geist-ExtraLight.ttf") format("truetype");
+      url("./public/cio-fonts/geist-font/otf/Geist-ExtraLight.otf") format("embedded-opentype"),
+      url("./public/cio-fonts/geist-font/ttf/Geist-ExtraLight.ttf") format("truetype");
     font-weight: 200;
     font-style: normal;
   }
