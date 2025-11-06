@@ -477,13 +477,13 @@
             />
           </div>
         {:else}
-          <section class="prose prose-sm p-2 sm:prose">
+          <section class="prose prose-sm sm:prose p-2">
             {@html question.body}
           </section>
         {/if}
       </div>
 
-      <div class="my-8 font-bold">
+      <div class="my-8">
         {pluralize($t('community.answers'), question.totalComments, true)}
       </div>
 
@@ -520,7 +520,7 @@
                 </IconButton>
               {/if}
             </header>
-            <article class="prose prose-sm p-2 sm:prose">
+            <article class="prose prose-sm sm:prose p-2">
               {@html comment.comment}
             </article>
           </div>

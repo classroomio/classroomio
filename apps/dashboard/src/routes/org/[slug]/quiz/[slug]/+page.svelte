@@ -248,7 +248,7 @@
       <div class="mb-3">
         {#each $quizStore.questions as question, i}
           <button
-            class="mb-3 flex w-full justify-between rounded p-3 text-left font-bold text-gray-500 dark:text-white {activeClass(
+            class="mb-3 flex w-full justify-between rounded p-3 text-left text-gray-500 dark:text-white {activeClass(
               question,
               currentQuestion
             )}"
@@ -285,7 +285,7 @@
         ?.editor}) no-repeat center center fixed; -webkit-background-size: cover;-moz-background-size: cover;-o-background-size: cover;background-size: cover;"
     >
       <div class="content m-auto">
-        <h1 class="my-5 font-bold text-white">{$quizStore.title}</h1>
+        <h1 class="my-5 text-white">{$quizStore.title}</h1>
 
         <QuizQuestion {currentQuestion} {optionHasError} {currentError} />
 

@@ -110,7 +110,7 @@
       </Grid>
 
       <div class="mt-5 rounded-md border p-3 md:p-5 dark:border-neutral-600">
-        <h3 class="text-2xl font-bold">
+        <h3 class="text-2xl">
           {$t('analytics.courses')}
         </h3>
 

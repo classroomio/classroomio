@@ -23,7 +23,7 @@
   <div class="px-5 py-10">
     <div class="mb-10 flex items-center justify-between">
       <div class="flex items-end">
-        <h1 class="m-0 text-2xl font-bold md:text-3xl dark:text-white">{$t('audience.title')}</h1>
+        <h1 class="m-0 text-2xl md:text-3xl dark:text-white">{$t('audience.title')}</h1>
         {#if $currentOrgPlan?.plan_name !== PLAN.ENTERPRISE}
           <span class="ml-2">
             ({$orgAudience.length} / {$currentOrgMaxAudience})

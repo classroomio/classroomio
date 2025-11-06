@@ -14,7 +14,7 @@
       >{$t('upgrade.back')}</a
     >
     <div class="mb-10 flex items-center justify-between">
-      <h1 class="text-3xl font-bold dark:text-white">
+      <h1 class="text-3xl dark:text-white">
         {$t('components.settings.customize_lms.title')}
       </h1>
     </div>

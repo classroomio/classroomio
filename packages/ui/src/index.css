@@ -76,7 +76,8 @@
 }
 
 @theme inline {
-  --font-cio: 'Geist', 'sans-serif';
+  --font-cio: 'Geist', Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji, sans-serif;
+  --default-font-family: var(--font-cio);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -121,5 +122,14 @@
 
   body {
     @apply bg-background text-foreground font-cio;
+  }
+
+  button,
+  input,
+  select,
+  optgroup,
+  textarea,
+  ::file-selector-button {
+    @apply font-cio;
   }
 }

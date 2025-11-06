@@ -15,7 +15,7 @@
 <section class="mx-auto w-full max-w-6xl">
   <div class="px-5 py-10">
     <div class="mb-10 flex items-center justify-between">
-      <h1 class="text-2xl font-bold md:text-3xl dark:text-white">Interactive Quizzes</h1>
+      <h1 class="text-2xl md:text-3xl dark:text-white">Interactive Quizzes</h1>
       {#if $isMobile}
         <PrimaryButton onClick={() => ($createQuizModal.open = true)}>
           <PlusIcon size={16} />
