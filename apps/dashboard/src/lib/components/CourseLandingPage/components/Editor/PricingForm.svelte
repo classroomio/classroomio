@@ -64,7 +64,7 @@
   {/if}
 
   <div class="mt-5">
-    <!-- <label for="text-field" class="m-0 font-bold mb-2">Discount</label> -->
+    <!-- <label for="text-field" class="m-0 mb-2">Discount</label> -->
     <Toggle labelText={$t('course.navItem.landing_page.editor.pricing_form.discount')} bind:toggled={showDiscount}>
       <span slot="labelA">{$t('course.navItem.landing_page.editor.pricing_form.no')}</span>
       <span slot="labelB">{$t('course.navItem.landing_page.editor.pricing_form.yes')}</span>
@@ -83,7 +83,7 @@
   {/if}
 
   <div class="mt-5">
-    <!-- <label for="text-field" class="m-0 font-bold mb-2">Discount</label> -->
+    <!-- <label for="text-field" class="m-0 mb-2">Discount</label> -->
     <Toggle labelText="Gift on Completion" bind:toggled={giftToggled}>
       <span slot="labelA">{$t('course.navItem.landing_page.editor.pricing_form.no')}</span>
       <span slot="labelB">{$t('course.navItem.landing_page.editor.pricing_form.yes')}</span>
@@ -91,7 +91,7 @@
   </div>
 
   {#if giftToggled}
-    <p class="mt-5 font-bold dark:text-white">
+    <p class="mt-5 dark:text-white">
       {$t('course.navItem.landing_page.editor.pricing_form.gift')}
     </p>
 

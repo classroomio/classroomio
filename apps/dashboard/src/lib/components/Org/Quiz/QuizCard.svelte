@@ -63,7 +63,7 @@
 
     <div class="flex w-full flex-col justify-between p-2 md:p-5">
       <div class="flex justify-between">
-        <h4 class="title text-md font-bold capitalize dark:text-white">
+        <h4 class="title text-md capitalize dark:text-white">
           <a href="{$currentOrgPath}/quiz/{quiz.id}">{quiz.title}</a>
         </h4>
 

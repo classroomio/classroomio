@@ -75,7 +75,7 @@
   };
 </script>
 
-<div bind:this={$profileMenu.ref} class="static md:relative">
+<div class="static md:relative">
   <aside
     class={`${
       $sideBar.hidden
@@ -89,7 +89,7 @@
           <Avatar src={$profile.avatar_url} name={$profile.fullname} shape="rounded-full" width="w-20" height="h-20" />
 
           <div class="mt-5 flex w-full justify-center">
-            <p class="max-w-[80%] truncate whitespace-nowrap text-center text-lg font-bold dark:text-white">
+            <p class="max-w-[80%] truncate whitespace-nowrap text-center text-lg dark:text-white">
               {$profile.fullname}
             </p>
           </div>

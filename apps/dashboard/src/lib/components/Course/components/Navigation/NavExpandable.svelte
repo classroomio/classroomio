@@ -95,7 +95,7 @@
           <Skeleton class="h-5 w-full rounded-md" />
         </div>
       {:else}
-        <span class="text-md line-clamp-2 text-start font-bold leading-4">{label}</span>
+        <span class="text-md line-clamp-2 text-start leading-4">{label}</span>
         {#if total}
           <span class="ml-1">({total})</span>
         {/if}

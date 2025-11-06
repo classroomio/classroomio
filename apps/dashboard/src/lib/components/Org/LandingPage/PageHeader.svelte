@@ -9,7 +9,7 @@
   <div class="flex w-full flex-col-reverse items-center justify-center md:flex-row">
     <!-- Course Description -->
     <div class="course-descr w-11/12 py-10">
-      <h1 class="my-4 text-center text-5xl font-bold text-white dark:text-white">
+      <h1 class="my-4 text-center text-5xl text-white dark:text-white">
         {$t('course.navItem.landing_page.explore')}
       </h1>
       <p class="text-md mb-6 text-center text-white dark:text-white">

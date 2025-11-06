@@ -279,7 +279,7 @@
       <div
         class="flex items-center justify-between gap-1 border-b border-l-0 border-r-0 border-t-0 border-gray-300 p-3"
       >
-        <p class="text-base font-bold dark:text-white">
+        <p class="text-base dark:text-white">
           {$t('course.navItem.submissions.grading_modal.details')}
           {#if data.isEarly}
             <span class="badge ml-2 rounded-sm bg-green-500 px-2 text-sm text-white">
@@ -314,7 +314,7 @@
         </Tag>
       </div>
       <!-- <div class="flex items-center text-sm p-3">
-        <p class="dark:text-white font-bold w-1/2">Status</p>
+        <p class="dark:text-white w-1/2">Status</p>
         <div class="flex items-center">
           <p class="dark:text-white rounded-full w-5 h-5 bg-yellow-300 mr-2" />
           <p class="dark:text-white">Grading</p>
@@ -379,7 +379,7 @@
         />
       </div>
       <!-- <div class="flex items-center text-sm p-3">
-        <p class="dark:text-white font-bold w-1/2">Teacher</p>
+        <p class="dark:text-white w-1/2">Teacher</p>
         <p class="dark:text-white">rotimi-best</p>
       </div> -->
     </div>

@@ -261,7 +261,7 @@
 <div class="mx-auto w-full max-w-[65ch]">
   <!-- <hr class="my-5" /> -->
   <div class="mb-5">
-    <p class="text-xl font-bold capitalize">
+    <p class="text-xl capitalize">
       {$t('course.navItem.lessons.comments.title')} ({pagination.count})
     </p>
   </div>
@@ -294,7 +294,7 @@
 
         <div class="w-full rounded-md border px-4 pb-4 pt-2 dark:border-neutral-700">
           <div class="flex items-center justify-between gap-2">
-            <p class="text-md font-bold dark:text-white">
+            <p class="text-md dark:text-white">
               {commentItem.name}
               <span
                 class="ml-1 text-xs font-normal text-gray-800 dark:text-white"
@@ -338,7 +338,7 @@
               />
             </div>
           {:else}
-            <article class="prose max-w-[300px] sm:prose-sm dark:text-white">
+            <article class="prose sm:prose-sm max-w-[300px] dark:text-white">
               {commentItem.comment}
             </article>
           {/if}

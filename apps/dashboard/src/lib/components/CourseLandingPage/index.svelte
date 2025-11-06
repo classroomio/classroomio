@@ -116,7 +116,7 @@
     <div class="flex w-full flex-col-reverse items-center justify-between md:w-5/6 md:flex-row">
       <!-- Course Description -->
       <div class="w-11/12 py-10 md:w-2/5">
-        <h1 class="my-4 text-5xl font-bold text-white dark:text-white">
+        <h1 class="my-4 text-5xl text-white dark:text-white">
           {get(courseData, 'title', '')}
         </h1>
         <p class="text-md mb-6 text-white dark:text-white">
@@ -218,7 +218,7 @@
             transition:fade={{ delay: 250, duration: 300 }}
             class="mt-8 border-b border-gray-300 pb-10"
           >
-            <h3 class="mb-3 mt-0 text-2xl font-bold">
+            <h3 class="mb-3 mt-0 text-2xl">
               {$t('course.navItem.landing_page.requirement')}
             </h3>
 
@@ -235,7 +235,7 @@
             transition:fade={{ delay: 250, duration: 300 }}
             class="mt-8 border-b border-gray-300 pb-10"
           >
-            <h3 class="mb-3 mt-0 text-2xl font-bold">
+            <h3 class="mb-3 mt-0 text-2xl">
               {$t('course.navItem.landing_page.description')}
             </h3>
 
@@ -248,7 +248,7 @@
         <!-- Sections - Goal -->
         {#if navItemKeys.includes(NAV_ITEM_KEY.GOALS)}
           <section id="goals" transition:fade={{ delay: 250, duration: 300 }} class="mt-8 pb-10">
-            <h3 class="mb-3 mt-0 text-2xl font-bold">{$t('course.navItem.landing_page.learn')}</h3>
+            <h3 class="mb-3 mt-0 text-2xl">{$t('course.navItem.landing_page.learn')}</h3>
             <ul class="list font-light">
               <HtmlRender>{@html get(courseData, 'metadata.goals', '')}</HtmlRender>
             </ul>
@@ -262,7 +262,7 @@
             transition:fade={{ delay: 250, duration: 300 }}
             class="mt-8 border-b border-gray-300 pb-10"
           >
-            <h3 class="mt-0 text-2xl font-bold">{$t('course.navItem.landing_page.certificate')}</h3>
+            <h3 class="mt-0 text-2xl">{$t('course.navItem.landing_page.certificate')}</h3>
             <p class="mb-3 text-sm font-light dark:text-white">
               {$t('course.navItem.landing_page.certificate_text')}
             </p>
@@ -284,7 +284,7 @@
         {#if courseData.version === COURSE_VERSION.V1}
           <section id="lessons" class="mt-8 border-b border-gray-300 pb-10">
             <div class="mb-3 flex w-full items-center justify-between">
-              <h3 class="mb-3 mt-0 text-2xl font-bold">
+              <h3 class="mb-3 mt-0 text-2xl">
                 {$t('course.navItem.landing_page.content')}
               </h3>
               <p class="text-sm font-light dark:text-white">
@@ -391,7 +391,7 @@
               <div class="flex">
                 <!-- ratings -->
                 <div class="w-1/3">
-                  <h2 class="text-xl font-bold">
+                  <h2 class="text-xl">
                     {averageRating}
                     {$t('course.navItem.landing_page.reviews_modal.rating')}
                   </h2>
@@ -439,7 +439,7 @@
 
         <!-- Sections - Instructor -->
         <section id="instructor" class="mt-8 pb-10">
-          <h3 class="mb-3 mt-0 text-2xl font-bold">
+          <h3 class="mb-3 mt-0 text-2xl">
             {$t('course.navItem.landing_page.instructor')}
           </h3>
           <div class="mb-4 flex items-center">

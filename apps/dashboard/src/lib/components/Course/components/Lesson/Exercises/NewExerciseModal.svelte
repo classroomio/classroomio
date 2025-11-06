@@ -164,7 +164,7 @@
             </div>
 
             <div>
-              <p class="flex items-center text-start font-bold">
+              <p class="flex items-center text-start">
                 <span class="mr-2 text-sm">{option.title}</span>
                 {#if option.isDisabled}
                   <ComingSoon />
@@ -246,7 +246,7 @@
                   onclick={() => (selectedTemplateId = template.id)}
                 >
                   <div class="flex h-full flex-col justify-evenly">
-                    <p class="flex items-center text-start text-sm font-bold">
+                    <p class="flex items-center text-start text-sm">
                       {template.title}
                     </p>
                     <div class="flex flex-col items-start justify-between gap-1">

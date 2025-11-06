@@ -25,7 +25,7 @@
     <p class="text-center text-sm font-medium text-gray-600 md:text-left dark:text-gray-200">
       {activity.title}
     </p>
-    <p class="text-center text-2xl font-bold md:text-left">
+    <p class="text-center text-2xl md:text-left">
       {activity.percentage}
       {#if !activity.hidePercentage}
         %

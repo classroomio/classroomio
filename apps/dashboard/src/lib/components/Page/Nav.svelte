@@ -79,7 +79,7 @@
       <div class="flex items-center justify-evenly">
         {#each navItems as item}
           <a
-            class="relative mr-5 flex items-center pb-2 text-sm font-bold {item.isActive
+            class="relative mr-5 flex items-center pb-2 text-sm {item.isActive
               ? 'text-primary-700'
               : 'text-black dark:text-white'} hover:no-underline"
             href={item.href}

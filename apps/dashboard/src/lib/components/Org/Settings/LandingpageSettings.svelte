@@ -282,7 +282,7 @@
       <!-- background -->
 
       <div class="mt-4">
-        <p class="mb-4 font-bold">{$t('settings.landing_page.background.title')}</p>
+        <p class="mb-4">{$t('settings.landing_page.background.title')}</p>
         <PrimaryButton
           variant={VARIANTS.OUTLINED}
           label={$t('settings.landing_page.about.select_image')}

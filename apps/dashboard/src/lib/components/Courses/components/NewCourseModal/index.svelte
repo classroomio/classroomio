@@ -169,7 +169,7 @@
             </div>
 
             <div>
-              <p class="flex items-center text-start font-bold">
+              <p class="flex items-center text-start">
                 <span class="mr-2 text-sm">{option.title}</span>
                 {#if option.isDisabled}
                   <ComingSoon />

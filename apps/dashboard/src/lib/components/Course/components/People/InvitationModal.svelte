@@ -221,7 +221,7 @@
       </div>
 
       <div class="relative">
-        <button type="button" onclick={copyLink} class="text-primary-800 cursor-pointer font-bold capitalize underline">
+        <button type="button" onclick={copyLink} class="text-primary-800 cursor-pointer capitalize underline">
           {$t('course.navItem.people.invite_modal.copy_link')}
         </button>
 

@@ -14,10 +14,9 @@ export const VARIANTS = {
 };
 
 export const VARIANTS_CLASS = {
-  [VARIANTS.CONTAINED]: 'border-none bg-primary-700 hover:bg-primary-900 text-white font-bold',
-  [VARIANTS.CONTAINED_DARK]:
-    'border-none bg-black hover:bg-neutral-600 text-white dark:bg-white dark:text-black font-bold',
-  [VARIANTS.CONTAINED_LIGHT]: 'border-none bg-primary-600 hover:bg-primary-900 text-white font-bold',
+  [VARIANTS.CONTAINED]: 'border-none bg-primary-700 hover:bg-primary-900 text-white',
+  [VARIANTS.CONTAINED_DARK]: 'border-none bg-black hover:bg-neutral-600 text-white dark:bg-white dark:text-black',
+  [VARIANTS.CONTAINED_LIGHT]: 'border-none bg-primary-600 hover:bg-primary-900 text-white',
   [VARIANTS.CONTAINED_WHITE]:
     'border-none bg-white hover:border-black-300 hover:bg-primary-700 dark:hover:bg-primary-900 text-black',
   [VARIANTS.CONTAINED_INFO]: 'border-none bg-gray-400 hover:bg-gray-600 text-white',

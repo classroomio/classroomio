@@ -219,7 +219,7 @@
                 <p class=" text-primary-600 text-2xl font-semibold capitalize">
                   {org.name}
                 </p>
-                <h1 class="my-4 text-center text-4xl font-bold md:text-start md:text-5xl lg:text-6xl">
+                <h1 class="my-4 text-center text-4xl md:text-start md:text-5xl lg:text-6xl">
                   {$landingPageSettings.header.title} <br /><span class="text-primary-600"
                     >{$landingPageSettings.header.titleHighlight}</span
                   >
@@ -264,7 +264,7 @@
           <div class="relative z-20 flex h-full w-full items-center justify-center md:flex-row">
             <div class="mx-auto flex w-11/12 max-w-[600px] flex-col items-center py-10">
               <p class=" text-primary-600 text-2xl font-semibold capitalize">{org.name}</p>
-              <h1 class="my-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl">
+              <h1 class="my-4 text-center text-4xl md:text-5xl lg:text-6xl">
                 {$landingPageSettings.header.title} <br /><span class="text-primary-600"
                   >{$landingPageSettings.header.titleHighlight}</span
                 >
@@ -309,7 +309,7 @@
       <section id="courses" transition:fade class="mx-auto my-10 w-full max-w-6xl">
         <div class="w-full">
           <div class="mx-auto w-11/12 max-w-[500px] py-10">
-            <h1 class="my-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl">
+            <h1 class="my-4 text-center text-4xl md:text-5xl lg:text-6xl">
               {$landingPageSettings.courses.title}
               <span class="text-primary-600">{$landingPageSettings.courses.titleHighlight}</span>
             </h1>
@@ -376,7 +376,7 @@
     {#if $landingPageSettings.faq.show}
       <section id="faq" transition:fade class="mx-auto my-10 w-full max-w-[700px]">
         <div class="py-10">
-          <h1 class="my-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl">
+          <h1 class="my-4 text-center text-4xl md:text-5xl lg:text-6xl">
             {$landingPageSettings.faq.title}
           </h1>
         </div>
@@ -399,7 +399,7 @@
       <section id="contact" transition:fade class="bg-primary-50 my-10 w-full">
         <div class="mx-auto w-full max-w-6xl">
           <div class="mx-auto w-11/12 max-w-[500px] py-10">
-            <h1 class="my-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl">
+            <h1 class="my-4 text-center text-4xl md:text-5xl lg:text-6xl">
               {$landingPageSettings.contact.title}
               <span class="text-primary-600">{$landingPageSettings.contact.titleHighlight}</span>
             </h1>
@@ -491,7 +491,7 @@
       <section id="waitlist" transition:fade class="mx-auto my-10 w-[95%] max-w-6xl">
         <div class="bg-primary-700 flex flex-col rounded-lg px-4 py-14 md:px-10 lg:flex-row lg:items-center">
           <div class="w-full md:mr-4 md:w-[65%]">
-            <h1 class="mb-5 mt-0 text-4xl font-bold text-white">
+            <h1 class="mb-5 mt-0 text-4xl text-white">
               {$landingPageSettings.mailinglist.title}
             </h1>
             <p class="text-lg text-white">
