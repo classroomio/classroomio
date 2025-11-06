@@ -95,7 +95,7 @@
       {$t('community.ask.go_back')}
     </a>
     <div class="flex items-center justify-between">
-      <h1 class="text-3xl font-bold dark:text-white">{$t('community.ask.ask_the')}</h1>
+      <h1 class="text-3xl dark:text-white">{$t('community.ask.ask_the')}</h1>
       <PrimaryButton label={$t('community.ask.publish')} onClick={handleSave} />
     </div>
   </div>

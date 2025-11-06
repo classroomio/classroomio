@@ -374,7 +374,7 @@
           >
             <div class="mb-2 flex items-center">
               <Chip value={items.length} className="bg-set dark:bg-neutral-800" />
-              <p class="ml-2 font-bold dark:text-white">{title}</p>
+              <p class="ml-2 dark:text-white">{title}</p>
             </div>
             {#if fetching}
               <SkeletonPlaceholder style="width: 100%; height: 170px;" class="my-2 rounded-md" />
@@ -407,7 +407,7 @@
                         {item.student.username}
                       </p>
                     </a>
-                    <a class="text-primary-700 text-md font-bold" href="{page.url.pathname}?submissionId={item.id}">
+                    <a class="text-primary-700 text-md" href="{page.url.pathname}?submissionId={item.id}">
                       {item.exercise.title}
                     </a>
                     <a

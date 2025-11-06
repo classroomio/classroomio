@@ -85,7 +85,7 @@
 
 <section class="w-full md:mx-auto md:max-w-6xl">
   <div class="px-2 py-2 md:px-5 md:py-10">
-    <h1 class="text-3xl font-bold dark:text-white">{$t('explore.heading')}</h1>
+    <h1 class="text-3xl dark:text-white">{$t('explore.heading')}</h1>
     <div class="flex flex-row-reverse">
       <div class="filter-container flex items-end justify-start">
         <Search

@@ -52,7 +52,7 @@
 <section class="mx-auto max-w-6xl gap-5">
   <div class="m-5">
     <div class="mb-10 flex items-center justify-between">
-      <h1 class="text-2xl font-bold md:text-3xl dark:text-white">
+      <h1 class="text-2xl md:text-3xl dark:text-white">
         {$t(getGreeting())}
         {$profile.fullname}!
       </h1>
@@ -115,7 +115,7 @@
                 </p>
               {/if}
             </span>
-            <h1 class="my-0 whitespace-nowrap text-5xl font-bold text-[#262626] lg:text-6xl dark:text-white">
+            <h1 class="my-0 whitespace-nowrap text-5xl text-[#262626] lg:text-6xl dark:text-white">
               {progressPercentage} %
             </h1>
           </div>
