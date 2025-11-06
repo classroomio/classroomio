@@ -1,21 +1,23 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { courses } from '$lib/components/Courses/store';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import EdraEditor from '$lib/components/Edra/EdraRoot.svelte';
-  import generateSlug from '$lib/utils/functions/generateSlug';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { t } from '$lib/utils/functions/translations';
-  import { askCommunityValidation } from '$lib/utils/functions/validator';
-  import { fetchCourses } from '$lib/utils/services/courses';
-  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import { profile } from '$lib/utils/store/user';
-  import type { Course } from '$lib/utils/types';
   import { Dropdown } from 'carbon-components-svelte';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+
+  import type { Course } from '$lib/utils/types';
+  import { profile } from '$lib/utils/store/user';
+  import { t } from '$lib/utils/functions/translations';
+  import { courses } from '$lib/components/Courses/store';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { fetchCourses } from '$lib/utils/services/courses';
+  import generateSlug from '$lib/utils/functions/generateSlug';
+  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { askCommunityValidation } from '$lib/utils/functions/validator';
+
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   let errors: {
     title?: string;
@@ -121,7 +123,7 @@
     />
   </div>
   <div class="px-2">
-    <EdraEditor content={fields.body} onContentChange={(content) => (fields.body = content)} />
+    <TextEditor placeholder="Give an answer" content={fields.body} onChange={(content) => (fields.body = content)} />
 
     {#if errors.body}
       <p class="mt-2 text-sm text-red-500">{errors.body}</p>

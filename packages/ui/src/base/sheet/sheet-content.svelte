@@ -25,7 +25,7 @@
   import XIcon from '@lucide/svelte/icons/x';
   import type { Snippet } from 'svelte';
   import SheetOverlay from './sheet-overlay.svelte';
-  import { cn, type WithoutChildrenOrChild } from '../../../src/tools/index';
+  import { cn, type WithoutChildrenOrChild } from '../../../src/tools';
 
   let {
     ref = $bindable(null),

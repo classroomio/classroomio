@@ -2,11 +2,12 @@
   import get from 'lodash/get';
   import { Toggle, Select, SelectItem } from 'carbon-components-svelte';
 
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import EdraEditor from '$lib/components/Edra/EdraRoot.svelte';
-  import { isCourseFree } from '$lib/utils/functions/course';
   import type { Course } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
+  import { isCourseFree } from '$lib/utils/functions/course';
+
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
 
   interface Props {
     course: Course;
@@ -95,9 +96,9 @@
     </p>
 
     <div class="h-2/5">
-      <EdraEditor
+      <TextEditor
         content={get(course, 'metadata.reward.description', '')}
-        onContentChange={(content) => handleChange(content)}
+        onChange={(content) => handleChange(content)}
       />
     </div>
   {/if}

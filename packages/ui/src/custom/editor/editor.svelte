@@ -22,6 +22,8 @@
     class?: string;
     // CSS class for the editor itself
     editorClass?: string;
+    // Placeholder text for the editor
+    placeholder?: string | ((node: any) => string);
     // Callback functions
     onContentChange?: (content: Content) => void;
     onEditorReady?: (editor: Editor) => void;
@@ -37,6 +39,7 @@
     editableStorageKey = 'edra-editable',
     class: className = '',
     editorClass = '',
+    placeholder,
     onContentChange,
     onEditorReady,
     onEditorDestroy
@@ -142,8 +145,9 @@
       class={cn('h-[32rem] overflow-auto p-4', editorClass)}
       bind:editor
       {editable}
-      content={content || getDefaultContent()}
+      {content}
       {onUpdate}
+      {placeholder}
     />
   </div>
 {/if}

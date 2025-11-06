@@ -1,13 +1,15 @@
 <script lang="ts">
-  import * as Sidebar from '$src/base/sidebar';
   import { page } from '$app/state';
-  import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
-  import { isQuizPage } from '$lib/utils/functions/app';
-  import OrgSideBar from '$lib/components/Org/SideBar.svelte';
-  import VerifyEmailModal from '$lib/components/Org/VerifyEmail/VerifyEmailModal.svelte';
-  import Box from '$lib/components/Box/index.svelte';
-  import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
+  import * as Sidebar from '@cio/ui/base/sidebar';
+
+  import { currentOrg } from '$lib/utils/store/org';
+  import { isQuizPage } from '$lib/utils/functions/app';
+
+  import Box from '$lib/components/Box/index.svelte';
+  import OrgSideBar from '$lib/components/Org/SideBar.svelte';
+  import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
+  import VerifyEmailModal from '$lib/components/Org/VerifyEmail/VerifyEmailModal.svelte';
 
   let { data, children } = $props();
 

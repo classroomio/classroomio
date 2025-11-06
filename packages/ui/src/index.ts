@@ -7,7 +7,8 @@ export * as Label from './base/label';
 export * as Popover from './base/popover';
 export * as Skeleton from './base/skeleton';
 export * as Tooltip from './base/tooltip';
-export * as Sidebar from './base/sidebar/index';
+export * as Sidebar from './base/sidebar';
+export * as Command from './base/command';
 
 export * from './tools';
 

@@ -1,10 +1,11 @@
 <script lang="ts">
-  import QuestionContainer from '$lib/components/QuestionContainer/index.svelte';
+  import { questionnaire } from '../store/exercise';
+  import { t } from '$lib/utils/functions/translations';
+
   import DateTime from '$lib/components/Form/DateTime.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import { questionnaire } from '../store/exercise';
-  import EdraEditor from '$lib/components/Edra/EdraRoot.svelte';
-  import { t } from '$lib/utils/functions/translations';
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import QuestionContainer from '$lib/components/QuestionContainer/index.svelte';
 
   interface Props {
     preview: boolean;
@@ -44,13 +45,14 @@
           {$t('course.navItem.lessons.exercises.all_exercises.description.heading')}
         </p>
 
-        <EdraEditor
+        <TextEditor
           content={$questionnaire.description}
-          onContentChange={(html) => {
+          onChange={(html) => {
             $questionnaire.is_description_dirty = true;
             $questionnaire.description = html;
           }}
           editorClass="max-h-[300px]"
+          placeholder={$t('course.navItem.lessons.exercises.all_exercises.description.describe')}
         />
       </div>
     {:else if preview}

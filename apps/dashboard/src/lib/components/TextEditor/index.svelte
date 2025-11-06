@@ -1,9 +1,9 @@
 <script lang="ts">
   import { Editor } from '@cio/ui/custom/editor';
-  import defaultContent from './default-content';
   import type { Content, Editor as TiptapEditor } from '@tiptap/core';
 
   interface Props {
+    placeholder?: string | ((node: any) => string);
     // Content of the editor
     content?: Content;
     // Whether the toolbar should be visible
@@ -21,13 +21,13 @@
     // CSS class for the editor itself
     editorClass?: string;
     // Callback functions
-    onContentChange?: (content: Content) => void;
-    onEditorReady?: (editor: TiptapEditor) => void;
+    onChange?: (content: Content) => void;
+    onReady?: (editor: TiptapEditor) => void;
     onEditorDestroy?: () => void;
   }
 
   let {
-    content = $bindable(defaultContent),
+    content,
     showToolBar = true,
     editable = true,
     enablePersistence = false,
@@ -35,8 +35,9 @@
     editableStorageKey = 'edra-editable',
     class: className = '',
     editorClass = '',
-    onContentChange,
-    onEditorReady,
+    placeholder = 'Welcome to ClassroomIO',
+    onChange,
+    onReady,
     onEditorDestroy
   }: Props = $props();
 </script>
@@ -50,7 +51,8 @@
   {editableStorageKey}
   class={className}
   {editorClass}
-  {onContentChange}
-  {onEditorReady}
+  {placeholder}
+  onContentChange={onChange}
+  onEditorReady={onReady}
   {onEditorDestroy}
 />

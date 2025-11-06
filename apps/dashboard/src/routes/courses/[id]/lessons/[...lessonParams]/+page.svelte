@@ -31,6 +31,8 @@
   import { profile } from '$lib/utils/store/user';
   import { COURSE_VERSION, LOCALE, type Lesson, type LessonCompletion } from '$lib/utils/types';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import Save from '@lucide/svelte/icons/save';
+  import Pencil from '@lucide/svelte/icons/pencil';
 
   let { data = $bindable() } = $props();
 
@@ -234,35 +236,18 @@
             {/if}
 
             <div class="flex-row items-center lg:flex">
-              <!-- <IconButton
+              <IconButton
                 onClick={() => {
                   toggleMode();
                 }}
                 disabled={isSaving}
               >
                 {#if mode === MODES.edit}
-                  <SaveIcon size={20} /> 
-                  <p class="text-black dark:text-white">save</p>
+                  <Save size={20} />
                 {:else}
-                   <PencilIcon size={20} /> 
-                  <p class="text-black dark:text-white">edit</p>
+                  <Pencil size={20} />
                 {/if}
-              </IconButton> -->
-
-              <button
-                onclick={() => {
-                  toggleMode();
-                }}
-                disabled={isSaving}
-              >
-                {#if mode === MODES.edit}
-                  <!-- <SaveIcon size={20} /> -->
-                  <p class="text-black dark:text-white">save</p>
-                {:else}
-                  <!-- <PencilIcon size={20} /> -->
-                  <p class="text-black dark:text-white">edit</p>
-                {/if}
-              </button>
+              </IconButton>
             </div>
 
             <div>

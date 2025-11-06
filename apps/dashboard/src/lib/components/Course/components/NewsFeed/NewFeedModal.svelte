@@ -1,16 +1,17 @@
 <script lang="ts">
-  import Modal from '$lib/components/Modal/index.svelte';
-  import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import EdraEditor from '$lib/components/Edra/EdraRoot.svelte';
-  import { createNewFeed } from '$lib/utils/services/newsfeed';
+  import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$lib/components/Snackbar/store';
   import type { Feed, Author } from '$lib/utils/types/feed';
-  import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/notification';
-  import { t } from '$lib/utils/functions/translations';
-  import { createNewsfeedValidation } from '$lib/utils/functions/validator';
+  import { createNewFeed } from '$lib/utils/services/newsfeed';
   import { getTextFromHTML } from '$lib/utils/functions/toHtml';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { createNewsfeedValidation } from '$lib/utils/functions/validator';
+  import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
+  import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/notification';
+
+  import Modal from '$lib/components/Modal/index.svelte';
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   interface Props {
     author?: Author | any;
@@ -122,12 +123,13 @@
     : $t('course.navItem.news_feed.heading_button.make_a_post')}
 >
   <section class="w-2/ flex h-full flex-col rounded-xl pb-3">
-    <EdraEditor
+    <TextEditor
       content={newPost}
-      onContentChange={(text) => {
+      onChange={(text) => {
         newPost = text;
       }}
       editorClass="max-h-[400px]"
+      placeholder={$t('course.navItem.news_feed.heading_button.placeholder')}
     />
     {#if errors.newPost}
       <p class="text-sm text-red-500">{errors.newPost}</p>

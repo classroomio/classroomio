@@ -17,7 +17,9 @@ export default ({ mode }) => {
     plugins: [sveltekit()],
     server: getServer(process.env),
     build: {
-      sourcemap: false
+      sourcemap: false,
+      copyPublicDir: true,
+      assetsDir: 'assets'
     },
     optimizeDeps: {
       entries: ['src/routes/**/+*.{js,ts,svelte}'],
@@ -25,7 +27,9 @@ export default ({ mode }) => {
     },
     resolve: {
       mainFields: ['browser']
-    }
+    },
+    assetsInclude: ['**/*.woff', '**/*.woff2', '**/*.ttf', '**/*.otf', '**/*.eot', '**/*.svg'],
+    publicDir: 'public'
   });
 };
 

@@ -1,29 +1,24 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import Avatar from '$lib/components/Avatar/index.svelte';
-  import LayoutDashboardIcon from '@lucide/svelte/icons/layout-dashboard';
-  import LibraryBigIcon from '@lucide/svelte/icons/library-big';
+  import { goto } from '$app/navigation';
+  import * as Sidebar from '@cio/ui/base/sidebar';
   import UsersIcon from '@lucide/svelte/icons/users';
-  import Settings2 from '@lucide/svelte/icons/settings-2';
-  import MessageSquareMoreIcon from '@lucide/svelte/icons/message-square-more';
-  import BadgeHelpIcon from '@lucide/svelte/icons/badge-help';
   import Dice6Icon from '@lucide/svelte/icons/dice-6';
+  import Settings2 from '@lucide/svelte/icons/settings-2';
+  import LibraryBigIcon from '@lucide/svelte/icons/library-big';
   import LayoutTemplateIcon from '@lucide/svelte/icons/layout-template';
-  import OrgSelector from '$lib/components/OrgSelector/OrgSelector.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import LayoutDashboardIcon from '@lucide/svelte/icons/layout-dashboard';
+  import MessageSquareMoreIcon from '@lucide/svelte/icons/message-square-more';
+
+  import { sideBar } from './store';
+  import { isOrgAdmin } from '$lib/utils/store/org';
+  import { t } from '$lib/utils/functions/translations';
+  import { NavClasses } from '$lib/utils/constants/reusableClass';
   import { currentOrgPath, isFreePlan } from '$lib/utils/store/org';
 
-  import { goto } from '$app/navigation';
-  import { NavClasses } from '$lib/utils/constants/reusableClass';
-  import { t } from '$lib/utils/functions/translations';
-  import { isOrgAdmin } from '$lib/utils/store/org';
-  import { profile } from '$lib/utils/store/user';
-  import { sideBar } from './store';
-
-  import * as Sidebar from '$src/base/sidebar';
-  import * as DropdownMenu from '$src/base/dropdown-menu';
-  import ChevronRight from '@lucide/svelte/icons/chevron-right';
-  import Menu from './ProfileMenu/Menu.svelte';
+  import Footer from './OrgFooter/OrgFooter.svelte';
+  import OrgSelector from '../OrgSelector/OrgSelector.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   interface MenuItems {
     label: string;
@@ -86,13 +81,15 @@
 
 <section class="relative flex items-start">
   <Sidebar.Root variant="floating" class="inset-y-12 block h-[calc(100vh-48px)] w-[250px] min-w-[250px]">
-    <Sidebar.Content>
-      <Sidebar.Group>
-        <Sidebar.GroupContent>
+    <Sidebar.Header>
+      <Sidebar.Menu>
+        <Sidebar.MenuItem>
           <OrgSelector />
-        </Sidebar.GroupContent>
-      </Sidebar.Group>
+        </Sidebar.MenuItem>
+      </Sidebar.Menu>
+    </Sidebar.Header>
 
+    <Sidebar.Content>
       <Sidebar.Group>
         <Sidebar.GroupContent>
           <Sidebar.Menu>
@@ -158,46 +155,7 @@
       <Sidebar.Footer>
         <Sidebar.Menu>
           <Sidebar.MenuItem>
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger>
-                {#snippet child({ props })}
-                  <Sidebar.MenuButton
-                    {...props}
-                    class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                  >
-                    <a
-                      href={$currentOrgPath}
-                      class="flex h-full w-full items-center justify-start space-x-2 text-start"
-                      onclick={toggleSidebar}
-                    >
-                      <BadgeHelpIcon size={20} />
-                      <p class="text-sm font-medium dark:text-white">{$t('org_navigation.help')}</p>
-                    </a></Sidebar.MenuButton
-                  >
-
-                  <Sidebar.MenuButton
-                    {...props}
-                    class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                  >
-                    <div class="flex w-full items-center justify-start space-x-2 text-start">
-                      <Avatar
-                        src={$profile.avatar_url}
-                        name={$profile.username}
-                        width="w-[1.2rem]"
-                        height="h-[1.2rem]"
-                      />
-                      <p class="max-w-full truncate text-sm font-medium dark:text-white">
-                        {$profile.fullname}
-                      </p>
-                    </div>
-                    <ChevronRight class="ml-auto" />
-                  </Sidebar.MenuButton>
-                {/snippet}
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Content side="right" class="w-(--bits-dropdown-menu-anchor-width)">
-                <Menu />
-              </DropdownMenu.Content>
-            </DropdownMenu.Root>
+            <Footer />
           </Sidebar.MenuItem>
         </Sidebar.Menu>
       </Sidebar.Footer>

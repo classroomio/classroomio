@@ -1,32 +1,32 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import pluralize from 'pluralize';
-  import TrashIcon from '@lucide/svelte/icons/trash';
-  import { Dropdown, SkeletonPlaceholder, SkeletonText } from 'carbon-components-svelte';
-  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
-  import Vote from '$lib/components/Vote/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import Avatar from '$lib/components/Avatar/index.svelte';
-  import { IconButton } from '$lib/components/IconButton';
-  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
-  import { currentOrg, isOrgAdmin } from '$lib/utils/store/org';
-  import { profile } from '$lib/utils/store/user';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { askCommunityValidation, commentInCommunityValidation } from '$lib/utils/functions/validator';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import DeleteModal from '$lib/components/Org/Community/DeleteModal.svelte';
-  import EdraEditor from '$lib/components/Edra/EdraRoot.svelte';
-  import { calDateDiff } from '$lib/utils/functions/date';
   import { untrack } from 'svelte';
-  import { fetchCourses } from '$lib/utils/services/courses';
+  import pluralize from 'pluralize';
+  import { goto } from '$app/navigation';
+  import { Skeleton } from '@cio/ui/base/skeleton';
+  import TrashIcon from '@lucide/svelte/icons/trash';
+  import { Dropdown } from 'carbon-components-svelte';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+
+  import type { Course } from '$lib/utils/types';
+  import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import { courses } from '$lib/components/Courses/store';
-  import type { Course } from '$lib/utils/types';
+  import { calDateDiff } from '$lib/utils/functions/date';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { fetchCourses } from '$lib/utils/services/courses';
+  import { currentOrg, isOrgAdmin } from '$lib/utils/store/org';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { askCommunityValidation, commentInCommunityValidation } from '$lib/utils/functions/validator';
 
-  let { data } = $props();
-  const { slug } = data;
+  import Vote from '$lib/components/Vote/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
+  import Avatar from '$lib/components/Avatar/index.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import DeleteModal from '$lib/components/Org/Community/DeleteModal.svelte';
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
 
   interface Comment {
     id: string;
@@ -52,6 +52,9 @@
     totalComments: number;
     courseId: string;
   }
+
+  let { data } = $props();
+  const { slug } = data;
 
   let question: Question | undefined = $state();
   let comment = $state('');
@@ -390,9 +393,9 @@
 <section class="mx-auto max-w-3xl md:mx-10 lg:mb-20">
   {#if !question}
     <div class="mb-3 px-5 py-10">
-      <SkeletonText style="width: 25%;" />
-      <SkeletonText style="width: 100%; margin-bottom: 2rem" />
-      <SkeletonPlaceholder style="width: 100%; height: 20rem;" />
+      <Skeleton class="h-4 w-[25%]" />
+      <Skeleton class="mb-2 h-4 w-full" />
+      <Skeleton class="h-80 w-full" />
     </div>
   {:else}
     <div class="px-5 py-10">
@@ -460,7 +463,11 @@
         </header>
         {#if isEditMode && editorInstance}
           <div class="my-2">
-            <EdraEditor content={editContent.body} onContentChange={(content) => (editContent.body = content)} />
+            <TextEditor
+              placeholder="Give an answer"
+              content={editContent.body}
+              onChange={(content) => (editContent.body = content)}
+            />
           </div>
         {:else}
           <section class="prose prose-sm p-2 sm:prose">
@@ -517,7 +524,7 @@
 
       <div>
         {#if !editorInstance}
-          <EdraEditor content={comment} onContentChange={(content) => (comment = content)} />
+          <TextEditor placeholder="Give an answer" content={comment} onChange={(content) => (comment = content)} />
         {/if}
 
         <div class="mr-2 flex justify-end">

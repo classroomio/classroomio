@@ -33,6 +33,7 @@
   import '../editor.css';
   import './style.css';
   import '../onedark.css';
+  import { Placeholder } from '@tiptap/extensions';
 
   const lowlight = createLowlight(all);
 
@@ -46,7 +47,8 @@
     content,
     onUpdate,
     autofocus = false,
-    class: className
+    class: className,
+    placeholder = ''
   }: EdraEditorProps = $props();
 
   onMount(() => {
@@ -69,7 +71,10 @@
         AudioExtended(AudioExtendedComp),
         IFramePlaceholder(IFramePlaceHolderComp),
         IFrameExtended(IFrameExtendedComp),
-        slashcommand(SlashCommandList)
+        slashcommand(SlashCommandList),
+        Placeholder.configure({
+          placeholder
+        })
       ],
       {
         onUpdate,
@@ -79,7 +84,8 @@
         },
         editable,
         autofocus
-      }
+      },
+      placeholder
     );
   });
 

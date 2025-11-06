@@ -1,18 +1,20 @@
 <script lang="ts">
-  import { slide } from 'svelte/transition';
-  import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
-  import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
-  import PlusIcon from '@lucide/svelte/icons/plus';
-  import ZapIcon from '@lucide/svelte/icons/zap';
-  import { SkeletonText } from 'carbon-components-svelte';
-  import { IconButton } from '$lib/components/IconButton';
-  import { NavClasses } from '$lib/utils/constants/reusableClass';
-  import { handleAddLessonWidget } from '../Lesson/store';
-  import NavIcons from './NavIcons.svelte';
-  import { isFreePlan } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
-  import { course } from '$lib/components/Course/store';
+  import { slide } from 'svelte/transition';
+  import ZapIcon from '@lucide/svelte/icons/zap';
+  import { Skeleton } from '@cio/ui/base/skeleton';
+  import PlusIcon from '@lucide/svelte/icons/plus';
+  import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
+  import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+
   import { COURSE_VERSION } from '$lib/utils/types';
+  import { isFreePlan } from '$lib/utils/store/org';
+  import { course } from '$lib/components/Course/store';
+  import { handleAddLessonWidget } from '../Lesson/store';
+  import { NavClasses } from '$lib/utils/constants/reusableClass';
+
+  import NavIcons from './NavIcons.svelte';
+  import { IconButton } from '$lib/components/IconButton';
 
   interface Props {
     handleClick?: any;
@@ -90,7 +92,7 @@
       <NavIcons {name} />
       {#if isLoading}
         <div class="mx-auto w-11/12">
-          <SkeletonText class="rounded-md" style="margin: 0px; height: 20px;" />
+          <Skeleton class="h-5 w-full rounded-md" />
         </div>
       {:else}
         <span class="text-md line-clamp-2 text-start font-bold leading-4">{label}</span>

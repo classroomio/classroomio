@@ -1,10 +1,12 @@
 <script lang="ts">
   import get from 'lodash/get';
   import { Toggle } from 'carbon-components-svelte';
+
   import type { Course } from '$lib/utils/types';
-  import { t } from '$lib/utils/functions/translations';
   import { NAV_ITEM_KEY } from '../../constants';
-  import EdraEditor from '$lib/components/Edra/EdraRoot.svelte';
+  import { t } from '$lib/utils/functions/translations';
+
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
 
   interface Props {
     course: Course;
@@ -21,10 +23,7 @@
 </script>
 
 <div>
-  <EdraEditor
-    content={course.metadata.requirements}
-    onContentChange={(content) => setter(content, `metadata.requirements`)}
-  />
+  <TextEditor content={course.metadata.requirements} onChange={(content) => setter(content, `metadata.requirements`)} />
 </div>
 
 <div class="mt-5">

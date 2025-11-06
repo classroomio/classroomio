@@ -2,19 +2,21 @@
   import { goto } from '$app/navigation';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import { Dropdown } from 'carbon-components-svelte';
-  import { currentOrg } from '$lib/utils/store/org';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { askCommunityValidation } from '$lib/utils/functions/validator';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import generateSlug from '$lib/utils/functions/generateSlug';
-  import EdraEditor from '$lib/components/Edra/EdraRoot.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
+
+  import type { Course } from '$lib/utils/types';
   import { profile } from '$lib/utils/store/user';
+  import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { courses } from '$lib/components/Courses/store';
-  import type { Course } from '$lib/utils/types';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import { fetchCourses } from '$lib/utils/services/courses';
+  import generateSlug from '$lib/utils/functions/generateSlug';
+  import { askCommunityValidation } from '$lib/utils/functions/validator';
+
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   let errors: {
     title?: string;
@@ -116,5 +118,9 @@
     />
   </div>
 
-  <EdraEditor content={fields.body} onContentChange={(content) => (fields.body = content)} />
+  <TextEditor
+    placeholder={$t('community.ask.ask_community')}
+    content={fields.body}
+    onChange={(content) => (fields.body = content)}
+  />
 </section>

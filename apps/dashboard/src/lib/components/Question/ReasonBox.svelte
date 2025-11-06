@@ -1,8 +1,10 @@
 <script lang="ts">
+  import { Skeleton } from '@cio/ui/base/skeleton';
+
   import { VARIANTS } from '../PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import { SkeletonPlaceholder, SkeletonText } from 'carbon-components-svelte';
+
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   interface Props {
     reason?: string;
@@ -20,12 +22,13 @@
       <div class="flex w-full flex-row items-start space-x-4">
         <img src="/ai.svg" alt="alt" class="animate-pulse" />
         <div class="w-full">
-          <SkeletonText width="100%" paragraph lines={3} />
+          <Skeleton class="h-4 w-full" />
+          <Skeleton class="h-4 w-full" />
+          <Skeleton class="h-4 w-full" />
         </div>
       </div>
       <div class="flex space-x-2">
-        <SkeletonPlaceholder style="height: 2rem; width: 5rem;" />
-        <SkeletonPlaceholder style="height: 2rem; width: 5rem;" />
+        <Skeleton class="h-4 w-20" />
       </div>
     </div>
   {:else}

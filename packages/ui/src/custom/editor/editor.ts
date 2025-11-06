@@ -21,7 +21,8 @@ export default (
   element?: HTMLElement,
   content?: Content,
   extensions?: Extensions,
-  options?: Partial<EditorOptions>
+  options?: Partial<EditorOptions>,
+  placeholder?: string | ((node: any) => string)
 ) => {
   const editor = new Editor({
     element,
@@ -55,14 +56,16 @@ export default (
         emptyEditorClass: 'is-empty',
         // Use a placeholder:
         // Use different placeholders depending on the node type:
-        placeholder: ({ node }) => {
-          if (node.type.name === 'heading') {
-            return 'What’s the title?';
-          } else if (node.type.name === 'paragraph') {
-            return 'Press / or write something ...';
-          }
-          return '';
-        }
+        placeholder:
+          placeholder ||
+          (({ node }) => {
+            if (node.type.name === 'heading') {
+              return "What's the title?";
+            } else if (node.type.name === 'paragraph') {
+              return 'Press / or write something ...';
+            }
+            return '';
+          })
       }),
       Color,
       Subscript,
