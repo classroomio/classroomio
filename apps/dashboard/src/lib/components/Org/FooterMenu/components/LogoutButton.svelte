@@ -1,7 +1,7 @@
 <script lang="ts">
   import posthog from 'posthog-js';
   import { goto } from '$app/navigation';
-  import * as Command from '@cio/ui/base/command';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import LogOutIcon from '@lucide/svelte/icons/log-out';
 
   import { t } from '$lib/utils/functions/translations';
@@ -29,11 +29,12 @@
   }
 </script>
 
-<Command.Group class="mt-3">
+<DropdownMenu.Separator />
+<DropdownMenu.Item>
   <button onclick={logout} class="w-full cursor-pointer">
     <span class="flex items-center gap-2">
-      <LogOutIcon size={16} />
+      <LogOutIcon />
       <p class="text-sm">{$t('settings.profile.logout')}</p>
     </span>
   </button>
-</Command.Group>
+</DropdownMenu.Item>

@@ -98,7 +98,7 @@
 
 <WelcomeModal />
 
-<div class="w-full max-w-5xl px-5 py-10 md:mx-auto">
+<div class="w-full px-5 py-10 md:mx-auto">
   <div class="mb-5 flex items-center justify-between">
     <h1 class="mb-3 text-2xl dark:text-white">
       {$t(getGreeting())}
