@@ -117,6 +117,14 @@
   }
 
   onMount(async () => {
+    // check if user has session, if not redirect to sign up with redirect back to this page
+    const {
+      data: { session }
+    } = await supabase.auth.getSession();
+    if (!session) {
+      return goto(`/login?redirect=${$page.url?.pathname || ''}`);
+    }
+
     setTheme(data.currentOrg?.theme || '');
   });
 
