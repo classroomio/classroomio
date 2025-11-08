@@ -1,44 +1,20 @@
 <script>
   import { globalStore } from '$lib/utils/store/app';
-  import { user, profile, defaultProfileState, defaultUserState } from '$lib/utils/store/user';
-  import {
-    currentOrg,
-    orgs,
-    defaultCurrentOrgState,
-    currentOrgDomain,
-    currentOrgPath
-  } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
+  import { currentOrg, currentOrgDomain, currentOrgPath } from '$lib/utils/store/org';
   import { ChevronDown, Settings } from 'carbon-icons-svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import Logout from 'carbon-icons-svelte/lib/Logout.svelte';
   import Rocket from 'carbon-icons-svelte/lib/Rocket.svelte';
   import NewTab from 'carbon-icons-svelte/lib/NewTab.svelte';
-  import { goto } from '$app/navigation';
   import { profileMenu } from '../store';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { t } from '$lib/utils/functions/translations';
-  import posthog from 'posthog-js';
+  import { logout } from '$lib/utils/functions/logout';
 
-  async function logout() {
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-      console.error('Error logging out: ', error);
-    }
-
-    currentOrg.set(defaultCurrentOrgState);
-    orgs.set([]);
-    user.set(defaultUserState);
-    profile.set(defaultProfileState);
-
-    capturePosthogEvent('user_logged_out');
-    posthog.reset();
-
+  async function handleLogout() {
+    await logout();
     closeMenu();
-
-    goto('/login');
   }
 
   function closeMenu() {
@@ -168,7 +144,7 @@
     </div>
   {/if}
 
-  <button on:click={logout} class="w-full space-y-4 pt-3">
+  <button on:click={handleLogout} class="w-full space-y-4 pt-3">
     <span class="flex items-center gap-2">
       <Logout />
       <p class="text-sm font-semibold">{$t('settings.profile.logout')}</p>
