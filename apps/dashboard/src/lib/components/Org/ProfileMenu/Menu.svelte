@@ -1,7 +1,7 @@
 <script>
   import { globalStore } from '$lib/utils/store/app';
-  import { user, profile, defaultProfileState, defaultUserState } from '$lib/utils/store/user';
-  import { currentOrg, orgs, defaultCurrentOrgState, currentOrgDomain, currentOrgPath } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
+  import { currentOrg, currentOrgDomain, currentOrgPath } from '$lib/utils/store/org';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
   import SettingsIcon from '@lucide/svelte/icons/settings';
   import Avatar from '$lib/components/Avatar/index.svelte';
@@ -9,31 +9,13 @@
   import LogOutIcon from '@lucide/svelte/icons/log-out';
   import RocketIcon from '@lucide/svelte/icons/rocket';
   import BellPlusIcon from '@lucide/svelte/icons/bell-plus';
-  import { goto } from '$app/navigation';
   import { profileMenu } from '../store';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { t } from '$lib/utils/functions/translations';
-  import posthog from 'posthog-js';
+  import { logout } from '$lib/utils/functions/logout';
 
-  async function logout() {
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-      console.error('Error logging out: ', error);
-    }
-
-    currentOrg.set(defaultCurrentOrgState);
-    orgs.set([]);
-    user.set(defaultUserState);
-    profile.set(defaultProfileState);
-
-    capturePosthogEvent('user_logged_out');
-    posthog.reset();
-
+  async function handleLogout() {
+    await logout();
     closeMenu();
-
-    goto('/login');
   }
 
   function closeMenu() {
@@ -153,7 +135,7 @@
     </div>
   {/if}
 
-  <button onclick={logout} class="w-full space-y-4 pt-3">
+  <button onclick={handleLogout} class="w-full space-y-4 pt-3">
     <span class="flex items-center gap-2">
       <LogOutIcon size={16} />
       <p class="text-sm font-semibold">{$t('settings.profile.logout')}</p>
