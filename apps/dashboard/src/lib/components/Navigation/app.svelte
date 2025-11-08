@@ -33,6 +33,7 @@
     }
   }
 
+  $: console.log('$globalStore in app.svelte', $globalStore);
   $: coursesPath = $globalStore.isOrgSite
     ? '/lms/mylearning'
     : isCoursePage
@@ -41,7 +42,7 @@
 </script>
 
 <nav
-  class="{navClass} flex w-full p-1 md:px-6 bg-primary-700 transition delay-150 duration-300 ease-in-out h-[48px]"
+  class="{navClass} bg-primary-700 flex h-[48px] w-full p-1 transition delay-150 duration-300 ease-in-out md:px-6"
 >
   <ul class="flex w-full items-center">
     <div class="flex items-center text-white">
@@ -81,7 +82,7 @@
           ? $t('navigation.courses')
           : $t('navigation.classroomio_home')}"
         id="logo"
-        class="text-lg line-clamp-1"
+        class="line-clamp-1 text-lg"
       >
         {isCoursePage ? title : 'ClassroomIO'}
       </a>
@@ -90,7 +91,7 @@
     <span class="flex-grow" />
 
     <li>
-      <NotificationIcon size={20} class="text-white mr-2" />
+      <NotificationIcon size={20} class="mr-2 text-white" />
     </li>
     <li>
       <IconButton size="small" onClick={toggleDarkMode}>

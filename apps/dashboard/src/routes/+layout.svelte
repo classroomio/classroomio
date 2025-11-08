@@ -117,6 +117,7 @@
     };
   });
 
+  $: console.log('$globalStore in root', $globalStore);
   $: path = $page.url?.pathname?.replace('/', '');
   $: carbonTheme = $globalStore.isDark ? 'g100' : 'white';
   $: metaTags = merge(data.baseMetaTags, $page.data.pageMetaTags);
