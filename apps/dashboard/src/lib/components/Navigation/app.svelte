@@ -33,7 +33,6 @@
     }
   }
 
-  $: console.log('$globalStore in app.svelte', $globalStore);
   $: coursesPath = $globalStore.isOrgSite
     ? '/lms/mylearning'
     : isCoursePage
