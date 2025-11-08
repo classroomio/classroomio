@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import Modal from '$lib/components/Modal/index.svelte';
@@ -6,7 +6,7 @@
   import { supabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
 
-  export let onDelete = () => {};
+  let { onDelete = () => {} } = $props();
 
   function closeModal() {
     deleteModal.update((m) => ({
@@ -35,13 +35,11 @@
   onClose={closeModal}
   bind:open={$deleteModal.open}
   width="w-2/5"
-  modalHeading={$deleteModal.isQuestion
-    ? $t('components.quiz.question_delete')
-    : $t('components.quiz.quiz_delete')}
+  modalHeading={$deleteModal.isQuestion ? $t('components.quiz.question_delete') : $t('components.quiz.quiz_delete')}
   size="sm"
 >
-  <div class="w-full flex flex-col items-center my-10">
-    <h1 class="dark:text-white text-lg text-center">
+  <div class="my-10 flex w-full flex-col items-center">
+    <h1 class="text-center text-lg dark:text-white">
       {#if $deleteModal.isQuestion}
         {$t('components.quiz.delete_question')}
       {:else}

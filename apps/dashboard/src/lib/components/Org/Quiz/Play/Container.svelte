@@ -1,22 +1,32 @@
-<div class="root flex flex-col justify-between h-full m-auto">
-  {#if $$slots.header}
+<script lang="ts">
+  interface Props {
+    header?: import('svelte').Snippet;
+    body?: import('svelte').Snippet;
+    footer?: import('svelte').Snippet;
+  }
+
+  let { header, body, footer }: Props = $props();
+</script>
+
+<div class="root m-auto flex h-full flex-col justify-between">
+  {#if header}
     <!-- HEADER -->
     <div class="header">
-      <slot name="header" />
+      {@render header?.()}
     </div>
   {/if}
 
-  {#if $$slots.body}
+  {#if body}
     <!-- BODY -->
     <div class="body mb-3">
-      <slot name="body" />
+      {@render body?.()}
     </div>
   {/if}
 
-  {#if $$slots.footer}
+  {#if footer}
     <!-- FOOTER -->
-    <div class="footer bg-white dark:bg-neutral-800 py-6 px-2 m-auto">
-      <slot name="footer" />
+    <div class="footer m-auto bg-white px-2 py-6 dark:bg-neutral-800">
+      {@render footer?.()}
     </div>
   {/if}
 </div>

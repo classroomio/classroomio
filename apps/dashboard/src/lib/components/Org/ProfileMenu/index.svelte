@@ -1,9 +1,10 @@
 <script>
-  import { Popover } from 'carbon-components-svelte';
   import Menu from './Menu.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
+
   import { isMobile } from '$lib/utils/store/useMobile';
   import { profileMenu } from '../store';
+  import { clickOutside } from '$lib/utils/functions/routes/dashboard';
 </script>
 
 {#if $isMobile}
@@ -16,15 +17,12 @@
   >
     <Menu />
   </Modal>
-{:else}
-  <Popover
-    bind:open={$profileMenu.open}
-    align="right-bottom"
-    caret={true}
-    on:click:outside={({ detail }) => {
-      $profileMenu.open = !!$profileMenu.ref?.contains(detail.target);
-    }}
+{:else if $profileMenu.open}
+  <div
+    use:clickOutside
+    on:click:outside={() => ($profileMenu.open = false)}
+    class="absolute bottom-28 left-0 z-[300] w-full border bg-black p-2 dark:bg-white"
   >
     <Menu />
-  </Popover>
+  </div>
 {/if}

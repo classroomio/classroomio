@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { preventDefault } from '$lib/utils/functions/svelte';
+
   import CodeSnippet from '$lib/components/CodeSnippet/index.svelte';
   import Checkbox from '$lib/components/Form/Checkbox.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
@@ -9,31 +11,57 @@
   import QuestionTitle from '../QuestionTitle.svelte';
   import ReasonBox from '../ReasonBox.svelte';
 
-  export let title = '';
-  export let index = 1;
-  export let code;
-  export let name = '';
-  export let options: { value: string; label: string }[] = [];
-  export let onSubmit = (a: string, b: string[]) => {};
-  export let onPrevious = () => {};
-  export let defaultValue: string[] = [];
-  export let disablePreviousButton = false;
-  export let isLast = false;
-  export let disabled = false;
-  export let isPreview = false;
-  export let nextButtonProps = {
-    isDisabled: false,
-    isActive: false
-  };
-  export let grade: number | undefined;
-  export let gradeMax = 0;
-  export let disableGrading = false;
-  export let isGradeWithAI = false;
-  export let reason;
-  export let isLoading = false;
-  export let hideGrading = false;
+  interface Props {
+    key: string | number;
+    title?: string;
+    index?: number | string;
+    code: any;
+    name?: string;
+    options?: { value: string; label: string }[];
+    onSubmit?: any;
+    onPrevious?: any;
+    defaultValue?: string[];
+    disablePreviousButton?: boolean;
+    isLast?: boolean;
+    disabled?: boolean;
+    isPreview?: boolean;
+    nextButtonProps?: any;
+    grade?: number;
+    gradeMax?: number;
+    disableGrading?: boolean;
+    isGradeWithAI?: boolean;
+    reason?: string;
+    isLoading?: boolean;
+    hideGrading?: boolean;
+  }
 
-  let gradeWithAI = false;
+  let {
+    title = '',
+    index = 1,
+    code,
+    name = '',
+    options = [],
+    onSubmit = (_a: string, _b: string[]) => {},
+    onPrevious = () => {},
+    defaultValue = [],
+    disablePreviousButton = false,
+    isLast = false,
+    disabled = false,
+    isPreview = false,
+    nextButtonProps = {
+      isDisabled: false,
+      isActive: false
+    },
+    grade = $bindable(),
+    gradeMax = 0,
+    disableGrading = false,
+    isGradeWithAI = false,
+    reason,
+    isLoading = false,
+    hideGrading = false
+  }: Props = $props();
+
+  let gradeWithAI = $derived(isGradeWithAI);
 
   function getVal(form, name) {
     let values: string[] = [];
@@ -79,16 +107,12 @@
     gradeWithAI = false;
     grade = 0;
   }
-
-  $: gradeWithAI = isGradeWithAI;
 </script>
 
-<form on:submit|preventDefault={handleFormSubmit}>
+<form onsubmit={preventDefault(handleFormSubmit)}>
   <div class="flex items-center justify-between">
     <HtmlRender className="mt-4 {typeof grade === 'number' && 'w-4/5'}" disableMaxWidth>
-      <svelte:fragment slot="content">
-        <QuestionTitle {index} {title} />
-      </svelte:fragment>
+      <QuestionTitle {index} {title} />
     </HtmlRender>
     {#if !hideGrading}
       <Grade {gradeMax} bind:grade {disableGrading} />

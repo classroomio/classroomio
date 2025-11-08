@@ -4,9 +4,13 @@
   import { t } from '$lib/utils/functions/translations';
   import Modal from './index.svelte';
 
-  export let open = false;
-  export let onDelete = () => {};
-  export let isLoading = false;
+  interface Props {
+    open?: boolean;
+    onDelete?: () => void;
+    isLoading?: boolean;
+  }
+
+  let { open = $bindable(false), onDelete = () => {}, isLoading = false }: Props = $props();
 </script>
 
 <Modal

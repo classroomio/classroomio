@@ -1,16 +1,13 @@
-<script>
-  export let isClosed = true;
+<script lang="ts">
+  interface Props {
+    isClosed?: boolean;
+  }
+
+  let { isClosed = true }: Props = $props();
 </script>
 
 {#if isClosed}
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    class="dark"
-  >
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="dark">
     <path
       fill-rule="evenodd"
       clip-rule="evenodd"
@@ -19,14 +16,7 @@
     />
   </svg>
 {:else}
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    class="dark"
-  >
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="dark">
     <path
       d="M0.666748 8.00008C0.666748 8.00008 3.33341 2.66675 8.00008 2.66675C12.6667 2.66675 15.3334 8.00008 15.3334 8.00008C15.3334 8.00008 12.6667 13.3334 8.00008 13.3334C3.33341 13.3334 0.666748 8.00008 0.666748 8.00008Z"
       stroke="#ADADAD"

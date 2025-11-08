@@ -1,8 +1,7 @@
-<script>
-  export let value;
-  export let index;
+<script lang="ts">
+  let { value, index, children } = $props();
 </script>
 
 {#if value === index}
-  <slot />
+  {@render children?.()}
 {/if}

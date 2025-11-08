@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { Grid, Row, Column, Select, SelectItem } from 'carbon-components-svelte';
   import { Moon } from 'svelte-loading-spinners';
   import TextField from '$lib/components/Form/TextField.svelte';
@@ -14,20 +15,17 @@
   import { profile } from '$lib/utils/store/user';
   import { supabase } from '$lib/utils/functions/supabase';
   import SectionTitle from '../SectionTitle.svelte';
-  import {
-    triggerSendEmail,
-    NOTIFICATION_NAME
-  } from '$lib/utils/services/notification/notification';
+  import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
   import { isFreePlan } from '$lib/utils/store/org';
   import type { OrgTeamMember } from '$lib/utils/types/org';
   import { t } from '$lib/utils/functions/translations';
 
-  let emailsStr = '';
-  let errorMessage = '';
-  let role = ROLE.TUTOR;
-  let isFetching = false;
-  let isLoading = false;
-  let isRemoving: number | null = null;
+  let emailsStr = $state('');
+  let errorMessage = $state('');
+  let role = $state(ROLE.TUTOR);
+  let isFetching = $state(false);
+  let isLoading = $state(false);
+  let isRemoving: number | null = $state(null);
 
   async function onSendInvite() {
     const { hasError, error: _error, emails } = validateEmailInString(emailsStr);
@@ -42,9 +40,7 @@
     emails.forEach(async (email: string, index: number) => {
       if (apiError) return;
 
-      const doesEmailExist = $orgTeam.some(
-        (teamMember) => teamMember.email.toLowerCase() === email.toLowerCase()
-      );
+      const doesEmailExist = $orgTeam.some((teamMember) => teamMember.email.toLowerCase() === email.toLowerCase());
 
       if (doesEmailExist) {
         snackbar.error('snackbar.team_members.user_exists');
@@ -119,19 +115,24 @@
     isRemoving = null;
   }
 
-  const fetchTeam = async (id: string) => {
+  const fetchTeam = (id: string) => {
     if (!id) return;
 
-    isFetching = true;
-    await getOrgTeam(id);
-    isFetching = false;
+    untrack(async () => {
+      isFetching = true;
+      await getOrgTeam(id);
+      isFetching = false;
+      isFetching = false;
+    });
   };
 
   const isTeamMemberAdmin = (members: OrgTeamMember[], profileId: string | undefined) => {
     return members.some((member) => member.profileId === profileId && member.isAdmin);
   };
 
-  $: fetchTeam($currentOrg.id);
+  $effect(() => {
+    fetchTeam($currentOrg.id);
+  });
 </script>
 
 <Grid class="relative mt-5 w-full rounded border border-gray-200 dark:border-neutral-600">

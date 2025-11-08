@@ -13,15 +13,16 @@
   import { Column, Grid, Row } from 'carbon-components-svelte';
   import SectionTitle from '../SectionTitle.svelte';
   import LanguagePicker from './LanguagePicker.svelte';
+  import type { ProfileStore } from '$lib/utils/store/user';
   import { LOCALE } from '$lib/utils/types';
 
-  let avatar = '';
-  let loading = false;
-  let hasLangChanged = false;
-  let locale: LOCALE;
-  let hasUnsavedChanges = false;
+  let avatar = $state<string | undefined>();
+  let loading = $state(false);
+  let hasLangChanged = $state(false);
+  let locale = $derived<LOCALE | undefined>($profile.locale);
+  let hasUnsavedChanges = $state(false);
 
-  let errors: Record<string, string> = {};
+  let errors = $state<Record<string, string>>({});
 
   async function handleUpdate() {
     errors = updateProfileValidation($profile);
@@ -34,7 +35,7 @@
       console.log({ hasLangChanged });
       loading = true;
 
-      const updates: Partial<typeof $profile> = {
+      const updates: Partial<ProfileStore> = {
         fullname: $profile.fullname,
         username: $profile.username,
         email: $profile.email,
@@ -67,16 +68,19 @@
       }));
       snackbar.success('snackbar.course_settings.success.update_successful');
 
-      if (hasLangChanged) {
+      if (hasLangChanged && locale) {
         handleLocaleChange(locale);
       }
+
       hasUnsavedChanges = false;
       if (error) throw error;
     } catch (error) {
       let message = error instanceof Error ? error.message : `${error}`;
+
       if (message.includes('profile_username_key')) {
         message = $t('snackbar.lms.error.username_exists');
       }
+
       snackbar.error(`${$t('snackbar.lms.error.update')}: ${message}`);
 
       loading = false;
@@ -84,11 +88,10 @@
       loading = false;
     }
   }
-
-  $: locale = !locale ? $profile.locale : locale;
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
+
 <Grid class="border-c mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
   <Row class="border-bottom-c flex flex-col items-center py-7 lg:flex-row lg:items-start ">
     <Column sm={4} md={8} lg={4} class="mt-2 md:mt-0">
@@ -99,7 +102,7 @@
         bind:avatar
         src={$profile.avatar_url}
         widthHeight="w-16 h-16 lg:w-24 lg:h-24"
-        on:change={() => (hasUnsavedChanges = true)}
+        change={() => (hasUnsavedChanges = true)}
       />
     </Column>
   </Row>
@@ -129,7 +132,12 @@
         errorMessage={$t(errors.email)}
         onChange={() => (hasUnsavedChanges = true)}
       />
-      <LanguagePicker bind:hasLangChanged bind:value={locale} className="w-full lg:w-60 mb-4" />
+      <LanguagePicker
+        change={() => (hasUnsavedChanges = true)}
+        bind:hasLangChanged
+        bind:value={locale}
+        className="w-full lg:w-60 mb-4"
+      />
     </Column>
   </Row>
 

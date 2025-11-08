@@ -46,10 +46,7 @@ interface FetchLMSExercisesResponse {
   error: PostgrestError | null;
 }
 
-export async function fetchLMSExercises(
-  profileId: string,
-  orgId: string
-): Promise<FetchLMSExercisesResponse> {
+export async function fetchLMSExercises(profileId: string, orgId: string): Promise<FetchLMSExercisesResponse> {
   const { data, error } = await supabase
     .from('exercise')
     .select(

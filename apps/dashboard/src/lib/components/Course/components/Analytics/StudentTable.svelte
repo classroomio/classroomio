@@ -3,27 +3,32 @@
   import { Tag, Pagination } from 'carbon-components-svelte';
   import type { StudentOverview } from '$lib/utils/types/analytics';
   import EmptyState from './EmptyState.svelte';
-  import { User } from 'carbon-icons-svelte';
+  import UserIcon from '@lucide/svelte/icons/user';
   import { course } from '../../store';
   import { goto } from '$app/navigation';
   import { t } from '$lib/utils/functions/translations';
 
-  export let students: StudentOverview[] = [];
+  interface Props {
+    students?: StudentOverview[];
+  }
+
+  let { students = [] }: Props = $props();
 
   // Pagination state
-  let currentPage = 1;
+  let currentPage = $state(1);
   const pageSize = 15;
 
   // Computed values
-  $: totalPages = Math.ceil(students.length / pageSize);
-  $: startIndex = (currentPage - 1) * pageSize;
-  $: endIndex = startIndex + pageSize;
-  $: paginatedStudents = students.slice(startIndex, endIndex);
-  $: startItem = startIndex + 1;
-  $: endItem = Math.min(endIndex, students.length);
+  let totalPages = $derived(Math.ceil(students.length / pageSize));
+  let startIndex = $derived((currentPage - 1) * pageSize);
+  let endIndex = $derived(startIndex + pageSize);
+  let paginatedStudents = $derived(students.slice(startIndex, endIndex));
+  let startItem = $derived(startIndex + 1);
+  let endItem = $derived(Math.min(endIndex, students.length));
 
   const GotoFullProfile = (student: StudentOverview) => {
     if (!student) return;
+
     goto(`/courses/${$course.id}/people/${student.id}?back=/courses/${$course.id}/analytics`);
   };
 
@@ -32,16 +37,18 @@
   }
 
   // Reset to first page when students array changes
-  $: if (students.length > 0 && currentPage > totalPages) {
-    currentPage = 1;
-  }
+  $effect(() => {
+    if (students.length > 0 && currentPage > totalPages) {
+      currentPage = 1;
+    }
+  });
 </script>
 
 {#if students.length === 0}
   <EmptyState
     title={$t('analytics.no_students_found')}
     description={$t('analytics.no_students_description')}
-    icon={User}
+    icon={UserIcon}
   />
 {:else}
   <!-- Responsive Table -->
@@ -91,12 +98,7 @@
                 class="sticky left-0 z-10 min-w-[200px] whitespace-nowrap bg-white px-4 py-3 transition-colors group-hover:bg-gray-50 dark:bg-neutral-800 dark:group-hover:bg-gray-700"
               >
                 <div class="flex items-center gap-3">
-                  <Avatar
-                    src={student.profile.avatar_url}
-                    name={student.profile.fullname}
-                    width="w-8"
-                    height="h-8"
-                  />
+                  <Avatar src={student.profile.avatar_url} name={student.profile.fullname} width="w-8" height="h-8" />
                   <div class="min-w-0 flex-1">
                     <p class="truncate font-medium text-gray-900 dark:text-white">
                       {student.profile.fullname}
@@ -115,10 +117,7 @@
                   </span>
                   <div class="w-20 flex-shrink-0">
                     <div class="h-2 rounded-full bg-gray-200 dark:bg-neutral-700">
-                      <div
-                        class="h-2 rounded-full bg-blue-500"
-                        style="width: {student.progressPercentage}%"
-                      ></div>
+                      <div class="h-2 rounded-full bg-blue-500" style="width: {student.progressPercentage}%"></div>
                     </div>
                   </div>
                 </div>
@@ -130,11 +129,7 @@
               </td>
               <td class="min-w-[120px] whitespace-nowrap px-4 py-3">
                 <Tag
-                  type={student.averageGrade >= 80
-                    ? 'green'
-                    : student.averageGrade >= 60
-                      ? 'blue'
-                      : 'red'}
+                  type={student.averageGrade >= 80 ? 'green' : student.averageGrade >= 60 ? 'blue' : 'red'}
                   size="sm"
                 >
                   {student.averageGrade}%
@@ -148,7 +143,7 @@
               <td class="min-w-[120px] whitespace-nowrap px-4 py-3">
                 <button
                   class="whitespace-nowrap rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-                  on:click={() => GotoFullProfile(student)}
+                  onclick={() => GotoFullProfile(student)}
                 >
                   {$t('analytics.view_details')}
                 </button>
@@ -162,9 +157,7 @@
 
   <!-- Pagination Controls -->
   {#if students.length > pageSize}
-    <div
-      class="mt-4 flex items-center justify-between border-t border-gray-200 px-4 py-3 dark:border-neutral-600"
-    >
+    <div class="mt-4 flex items-center justify-between border-t border-gray-200 px-4 py-3 dark:border-neutral-600">
       <div class="text-sm text-gray-700 dark:text-gray-300">
         {$t('analytics.showing_students', {
           start: startItem,
@@ -172,12 +165,7 @@
           total: students.length
         })}
       </div>
-      <Pagination
-        page={currentPage}
-        totalItems={students.length}
-        {pageSize}
-        on:change={handlePageChange}
-      />
+      <Pagination page={currentPage} totalItems={students.length} {pageSize} on:change={handlePageChange} />
     </div>
   {/if}
 {/if}

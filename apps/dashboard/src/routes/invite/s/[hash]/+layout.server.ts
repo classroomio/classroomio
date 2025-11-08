@@ -26,6 +26,6 @@ export const load = async ({ params = { hash: '' } }) => {
     };
   } catch (error) {
     console.error('Error decoding course invite params.hash', error);
-    throw redirect(307, '/404');
+    redirect(307, '/404');
   }
 };

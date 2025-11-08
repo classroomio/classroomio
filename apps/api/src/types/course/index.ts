@@ -1,4 +1,4 @@
-import { ALLOWED_CONTENT_TYPES, ALLOWED_DOCUMENT_TYPES } from '$src/constants/upload';
+import { ALLOWED_CONTENT_TYPES, ALLOWED_DOCUMENT_TYPES } from '@api/constants/upload';
 
 import { z } from 'zod';
 

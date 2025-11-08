@@ -679,7 +679,8 @@
             },
             "no_answer": "Es wurde keine Antwort gegeben",
             "check": "Überprüfen",
-            "address": "Geben Sie hier Ihre Adresse ein"
+            "address": "Geben Sie hier Ihre Adresse ein",
+            "add_question": "Fügen Sie eine Frage hinzu"
           },
           "new_exercise_modal": {
             "heading": "Neue Übung",

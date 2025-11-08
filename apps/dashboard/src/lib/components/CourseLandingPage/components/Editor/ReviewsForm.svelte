@@ -1,10 +1,8 @@
-<script>
-  import cloneDeep from 'lodash/cloneDeep';
+<script lang="ts">
   import get from 'lodash/get';
-  import set from 'lodash/set';
   import z from 'zod';
-  import ChevronDownIcon from 'carbon-icons-svelte/lib/ChevronDown.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+  import { IconButton } from '$lib/components/IconButton';
   import { isMobile } from '$lib/utils/store/useMobile';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -12,20 +10,18 @@
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { processErrors } from '$lib/utils/functions/validator';
   import { t } from '$lib/utils/functions/translations';
+  import type { Course } from '$lib/utils/types';
 
-  export let course = {};
-
-  let reviews = get(course, 'metadata.reviews', []);
-  let reviewToExpand = null;
-  let errors = {};
-
-  function setter(value, setterKey) {
-    if (!value) return;
-
-    const _course = cloneDeep(course);
-    set(_course, setterKey, value);
-    course = _course;
+  interface Props {
+    course: Course;
+    setter: (value: any, key: string) => void;
   }
+
+  let { course = $bindable(), setter }: Props = $props();
+
+  let reviews = $state(get(course, 'metadata.reviews', []));
+  let reviewToExpand = $state<number | null>(null);
+  let errors = $state({});
 
   function addReviewForm() {
     const _review = {
@@ -45,31 +41,21 @@
     const review = reviews.find((r) => r.id === id);
     const reviewSchema = z.object({
       name: z.string().min(5, {
-        message: `${$t(
-          'course.navItem.landing_page.editor.reviews_form.validations.name.min_char'
-        )}`
+        message: `${$t('course.navItem.landing_page.editor.reviews_form.validations.name.min_char')}`
       }),
       avatar_url: z.string().min(6, {
-        message: `${$t(
-          'course.navItem.landing_page.editor.reviews_form.validations.avatar_url.message'
-        )}`
+        message: `${$t('course.navItem.landing_page.editor.reviews_form.validations.avatar_url.message')}`
       }),
       rating: z
         .number()
         .min(1, {
-          message: `${$t(
-            'course.navItem.landing_page.editor.reviews_form.validations.rating.message'
-          )}`
+          message: `${$t('course.navItem.landing_page.editor.reviews_form.validations.rating.message')}`
         })
         .max(5, {
-          message: `${$t(
-            'course.navItem.landing_page.editor.reviews_form.validations.rating.message'
-          )}`
+          message: `${$t('course.navItem.landing_page.editor.reviews_form.validations.rating.message')}`
         }),
       description: z.string().min(10, {
-        message: `${$t(
-          'course.navItem.landing_page.editor.reviews_form.validations.description.min_char'
-        )}`
+        message: `${$t('course.navItem.landing_page.editor.reviews_form.validations.description.min_char')}`
       })
     });
 
@@ -96,15 +82,17 @@
     reviewToExpand = id;
   }
 
-  $: setter(reviews, 'metadata.reviews');
+  $effect(() => {
+    setter(reviews, 'metadata.reviews');
+  });
 </script>
 
 <!-- Sections - Reviews -->
 <section id="reviews">
   <div class="">
-    {#each reviews || [] as review}
+    {#each reviews || [] as review, index}
       <div
-        id={review.id}
+        id={String(review.id)}
         class="relative my-2.5 flex flex-col items-center rounded-lg border border-gray-300 p-2"
       >
         {#if review.id !== reviewToExpand}
@@ -113,18 +101,14 @@
             <Avatar src={review.avatar_url} name={review.name} className="mt-1" />
             <p class="text-sm">{review.name}</p>
 
-            <IconButton
-              value="expand"
-              onClick={() => onExpand(review.id)}
-              size={$isMobile ? 'large' : 'small'}
-            >
-              <ChevronDownIcon size={16} class="carbon-icon dark:text-white" />
+            <IconButton value="expand" onClick={() => onExpand(review.id)} size={$isMobile ? 'large' : 'small'}>
+              <ChevronDownIcon size={16} />
             </IconButton>
           </div>
         {/if}
         <!-- the body -->
         {#if review.id === reviewToExpand}
-          <ReviewFormEditor bind:reviews bind:review {errors} courseId={course.id} {onExpand} />
+          <ReviewFormEditor bind:reviews bind:review={reviews[index]} {errors} courseId={course.id} {onExpand} />
         {/if}
       </div>
     {/each}

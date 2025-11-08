@@ -1,21 +1,17 @@
-<script>
-  import SaveIcon from 'carbon-icons-svelte/lib/Save.svelte';
-  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
+<script lang="ts">
+  import SaveIcon from '@lucide/svelte/icons/save';
+  import TrashIcon from '@lucide/svelte/icons/trash';
   import { Toggle } from 'carbon-components-svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import { uploadAvatar } from '$lib/utils/services/courses';
   import { t } from '$lib/utils/functions/translations';
 
-  export let courseId;
-  export let reviews = [];
-  export let review = {};
-  export let errors = {};
-  export let onExpand = () => {};
+  let { courseId, reviews = $bindable([]), review = $bindable({}), errors = {}, onExpand = () => {} } = $props();
 
-  let avatar;
+  let avatar = $state<string | undefined>();
 
   // function to delete review
   function deleteReviewData() {
@@ -28,17 +24,13 @@
     review.avatar_url = await uploadAvatar(courseId, _avatar);
   }
 
-  $: onAvatarChange(avatar);
-  $: review.rating = parseInt(review.rating);
+  $effect(() => {
+    onAvatarChange(avatar);
+  });
 </script>
 
-<div class="flex items-center flex-col w-full">
-  <UploadImage
-    bind:avatar
-    src={review.avatar_url}
-    widthHeight="w-20 h-20"
-    errorMessage={errors.avatar_url}
-  />
+<div class="flex w-full flex-col items-center">
+  <UploadImage bind:avatar src={review.avatar_url} widthHeight="w-20 h-20" errorMessage={errors.avatar_url} />
 
   <TextField
     className="mt-2 w-full"
@@ -53,7 +45,7 @@
   <!-- Description -->
   <TextArea
     label={$t('course.navItem.landing_page.editor.reviews_form.description')}
-    rows="4"
+    rows={4}
     className="mt-2 w-full"
     labelClassName="font-normal"
     placeholder=""
@@ -64,7 +56,7 @@
     aiAlignPopover="top-right"
   />
 
-  <div class="flex justify-between w-full items-center mt-2">
+  <div class="mt-2 flex w-full items-center justify-between">
     <!-- Rating -->
     <TextField
       className="mt-2 w-20"
@@ -74,6 +66,9 @@
       min={1}
       max={5}
       bind:value={review.rating}
+      onInputChange={(e) => {
+        review.rating = parseInt(e.target.value);
+      }}
       errorMessage={errors.rating}
     />
 
@@ -87,12 +82,12 @@
     </div>
   </div>
 
-  <div class="mt-8 flex justify-between items-center w-full">
+  <div class="mt-8 flex w-full items-center justify-between">
     <IconButton contained={true} value="delete" onClick={deleteReviewData} size="large">
-      <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
+      <TrashIcon size={16} />
     </IconButton>
     <IconButton contained={true} value="save" onClick={() => onExpand(review.id)} size="large">
-      <SaveIcon size={24} class="carbon-icon dark:text-white" />
+      <SaveIcon size={16} />
     </IconButton>
   </div>
 </div>

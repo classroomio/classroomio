@@ -1,0 +1,7 @@
+node_modules
+dist
+build
+.vercel
+.turbo
+.svelte-kit
+static

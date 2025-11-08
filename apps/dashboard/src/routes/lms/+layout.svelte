@@ -1,10 +1,15 @@
-<script>
+<script lang="ts">
   import LMSSideBar from '$lib/components/LMS/SideBar.svelte';
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
+
+  let { children }: Props = $props();
 </script>
 
-<div class="org-root w-full flex items-center justify-between">
+<div class="org-root flex w-full items-center justify-between">
   <LMSSideBar />
-  <div class="org-slot bg-white dark:bg-black w-full">
-    <slot />
+  <div class="org-slot w-full bg-white dark:bg-black">
+    {@render children?.()}
   </div>
 </div>

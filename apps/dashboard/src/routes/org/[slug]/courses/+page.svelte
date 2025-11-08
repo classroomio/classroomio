@@ -7,26 +7,27 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { courses, courseMetaDeta } from '$lib/components/Courses/store';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import { Add } from 'carbon-icons-svelte';
+  import PlusIcon from '@lucide/svelte/icons/plus';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import type { Course } from '$lib/utils/types';
   import { browser } from '$app/environment';
   import { t } from '$lib/utils/functions/translations';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import Grid from 'carbon-icons-svelte/lib/Grid.svelte';
-  import List from 'carbon-icons-svelte/lib/List.svelte';
+  import { IconButton } from '$lib/components/IconButton';
+  import GridIcon from '@lucide/svelte/icons/grid-2x2';
+  import ListIcon from '@lucide/svelte/icons/list';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
 
-  export let data;
+  let { data } = $props();
 
   let { cantFetch } = data;
-  let searchValue = '';
-  let selectedId: string;
-  let filteredCourses: Course[];
+  let searchValue = $state('');
+  let selectedId: string = $state('0');
   let hasFetched = false;
+
+  const filteredCourses: Course[] = $derived(filterCourses(searchValue, selectedId, $courses));
 
   async function getCourses(userId: string | undefined, orgId: string) {
     if (cantFetch && typeof cantFetch === 'boolean' && orgId && !hasFetched) {
@@ -56,7 +57,7 @@
       }
     }
 
-    filteredCourses = courses.filter((course) => {
+    const filteredCourses = courses.filter((course) => {
       if (!searchValue || course.title.toLowerCase().includes(searchValue.toLowerCase())) {
         return true;
       }
@@ -65,14 +66,14 @@
     });
 
     if (_selectedId === '0') {
-      filteredCourses = filteredCourses.sort(
-        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-      );
+      return filteredCourses.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
     } else if (_selectedId === '1') {
-      filteredCourses = filteredCourses.sort((a, b) => b.is_published - a.is_published);
+      return filteredCourses.sort((a, b) => (b.is_published ? 0 : 1) - (a.is_published ? 0 : 1));
     } else if (_selectedId === '2') {
-      filteredCourses = filteredCourses.sort((a, b) => b.total_lessons - a.total_lessons);
+      return filteredCourses.sort((a, b) => (b.total_lessons ?? 0) - (a.total_lessons ?? 0));
     }
+
+    return filteredCourses;
   }
 
   const setViewPreference = (preference: 'grid' | 'list') => {
@@ -92,21 +93,22 @@
     }
   });
 
-  $: filterCourses(searchValue, selectedId, $courses);
-  $: getCourses($profile.id, $currentOrg.id);
+  $effect(() => {
+    getCourses($profile.id, $currentOrg.id);
+  });
 </script>
 
 <svelte:head>
   <title>Courses - ClassroomIO</title>
 </svelte:head>
 
-<section class="w-full md:max-w-6xl md:mx-auto">
-  <div class="py-2 md:py-10 px-2 md:px-5">
-    <div class="flex items-center justify-between mb-5">
-      <h1 class="dark:text-white text-2xl md:text-3xl font-bold">{$t('courses.heading')}</h1>
+<section class="w-full md:mx-auto md:max-w-6xl">
+  <div class="px-2 py-2 md:px-5 md:py-10">
+    <div class="mb-5 flex items-center justify-between">
+      <h1 class="text-2xl font-bold md:text-3xl dark:text-white">{$t('courses.heading')}</h1>
       {#if $isMobile}
         <PrimaryButton isDisabled={!$isOrgAdmin} onClick={openNewCourseModal}>
-          <Add size={24} />
+          <PlusIcon size={16} />
         </PrimaryButton>
       {:else}
         <PrimaryButton
@@ -117,7 +119,7 @@
         />
       {/if}
     </div>
-    <div class="flex flex-row-reverse mb-5">
+    <div class="mb-5 flex flex-row-reverse">
       <div class="filter-containter flex items-end justify-start">
         <Search
           placeholder={$t('courses.search_placeholder')}
@@ -136,18 +138,18 @@
         />
         {#if $courseMetaDeta.view === 'list'}
           <IconButton onClick={() => setViewPreference('grid')}>
-            <Grid size={24} />
+            <GridIcon size={16} />
           </IconButton>
         {:else}
           <IconButton onClick={() => setViewPreference('list')}>
-            <List size={24} />
+            <ListIcon size={16} />
           </IconButton>
         {/if}
       </div>
     </div>
 
     <NewCourseModal />
-    <Courses bind:courses={filteredCourses} />
+    <Courses courses={filteredCourses} />
   </div>
 </section>
 

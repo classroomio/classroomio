@@ -3,10 +3,10 @@ import {
   ERROR_MESSAGES,
   HTTP_STATUS,
   RATE_LIMIT_HEADERS
-} from '$src/constants/rate-limiter';
+} from '@api/constants/rate-limiter';
 
 import type { MiddlewareHandler } from 'hono';
-import { rateLimiter } from '$src/utils/redis/limiter';
+import { rateLimiter } from '@api/utils/redis/limiter';
 import { userKeyGenerator } from '../utils/redis/key-generators';
 
 export interface RateLimiterOptions {

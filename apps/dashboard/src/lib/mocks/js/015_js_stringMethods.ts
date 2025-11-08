@@ -8,8 +8,7 @@ const template: ExerciseTemplate = {
   questionnaire: {
     questions: [
       {
-        title:
-          'Which string method is used to extract a specific number of characters from a string?',
+        title: 'Which string method is used to extract a specific number of characters from a string?',
         name: 'q1',
         points: 1,
         order: 1,
@@ -30,8 +29,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which string method is used to replace a specified value with another value in a string?',
+        title: 'Which string method is used to replace a specified value with another value in a string?',
         name: 'q2',
         points: 1,
         order: 2,

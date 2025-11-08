@@ -103,8 +103,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'In TypeScript, is "keyof" limited to object types, or can it also be used with other types?',
+        title: 'In TypeScript, is "keyof" limited to object types, or can it also be used with other types?',
         name: 'q9',
         points: 2,
         order: 9,

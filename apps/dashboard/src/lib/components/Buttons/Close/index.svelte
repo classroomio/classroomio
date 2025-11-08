@@ -1,18 +1,23 @@
-<script>
-  import CloseIcon from 'carbon-icons-svelte/lib/Close.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+<script lang="ts">
+  import XIcon from '@lucide/svelte/icons/x';
+  import IconButton, { type Props as IconButtonProps } from '$lib/components/IconButton/index.svelte';
 
-  export let onClick = () => {};
-  export let contained = false;
-  export let color = 'text-primary-700 bg-primary-200 dark:bg-neutral-500';
-  export let size = 'small';
+  interface Props {
+    onClick?: IconButtonProps['onClick'];
+    contained?: boolean;
+    color?: string;
+    size?: IconButtonProps['size'];
+    toolTipProps?: IconButtonProps['toolTipProps'];
+  }
+
+  let {
+    onClick = () => {},
+    contained = false,
+    color = 'text-primary-700 bg-primary-200 dark:bg-neutral-500',
+    size = 'small'
+  }: Props = $props();
 </script>
 
 <IconButton {onClick} {color} {contained} {size}>
-  {#if size === 'large'}
-    <CloseIcon size={24} class="carbon-icon dark:text-black" title="Delete" />
-  {:else}
-    <CloseIcon size={20} class="carbon-icon dark:text-black" title="Delete" />
-  {/if}
+  <XIcon size={size === 'large' ? 24 : 16} class="carbon-icon dark:text-black" />
 </IconButton>
-<!-- color="text-primary-700 bg-primary-200 dark:bg-gray-200 dark:text-black" -->

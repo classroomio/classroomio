@@ -1,26 +1,27 @@
-<script>
+<script lang="ts">
+  import { untrack } from 'svelte';
   import { goto } from '$app/navigation';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { getSupabase } from '$lib/utils/functions/supabase';
-  import {
-    resetValidation,
-    getConfirmPasswordError,
-    getDisableSubmit
-  } from '$lib/utils/functions/validator';
+  import { resetValidation, getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';
   import { RESET_FIELDS } from '$lib/utils/constants/authentication';
   import AuthUI from '$lib/components/AuthUI/index.svelte';
 
   let supabase = getSupabase();
-  let fields = Object.assign({}, RESET_FIELDS);
-  let loading = false;
-  let success = false;
-  let errors = {};
-  let submitError;
-  let disableSubmit = false;
-  let formRef;
+  let fields = $state(Object.assign({}, RESET_FIELDS));
+  let loading = $state(false);
+  let errors: {
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+  } = $state({});
+  let submitError = $state();
+  let formRef: HTMLFormElement | undefined = $state();
 
-  async function handleSubmit(e) {
+  const disableSubmit = $derived(getDisableSubmit(fields));
+
+  async function handleSubmit() {
     errors = resetValidation(fields);
     console.log('errors', errors);
 
@@ -40,14 +41,21 @@
 
       return goto('/login');
     } catch (error) {
-      submitError = error.error_description || error.message;
+      submitError = error instanceof Error ? error.message : String(error);
     } finally {
       loading = false;
     }
   }
 
-  $: errors.confirmPassword = getConfirmPasswordError(fields);
-  $: disableSubmit = getDisableSubmit(fields);
+  function setConfirmPasswordError(fields) {
+    untrack(() => {
+      errors.confirmPassword = getConfirmPasswordError(fields);
+    });
+  }
+
+  $effect(() => {
+    setConfirmPasswordError(fields);
+  });
 </script>
 
 <svelte:head>
@@ -64,8 +72,8 @@
   bind:formRef
 >
   <div class="mt-4 w-full">
-    <h3 class="dark:text-white text-xl font-semibold my-3">New Password</h3>
-    <p class="dark:text-white text-sm mb-6">Enter your new password details</p>
+    <h3 class="my-3 text-xl font-semibold dark:text-white">New Password</h3>
+    <p class="mb-6 text-sm dark:text-white">Enter your new password details</p>
     <TextField
       label="Your Password"
       bind:value={fields.password}
@@ -94,7 +102,7 @@
     {/if}
   </div>
 
-  <div class="my-4 w-full flex justify-end items-center">
+  <div class="my-4 flex w-full items-center justify-end">
     <PrimaryButton
       label="Reset Password"
       type="submit"

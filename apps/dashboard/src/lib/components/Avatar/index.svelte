@@ -1,10 +1,21 @@
-<script>
-  export let name = '';
-  export let src = '';
-  export let className = '';
-  export let shape = 'rounded-full';
-  export let width = 'w-10';
-  export let height = 'h-10';
+<script lang="ts">
+  interface Props {
+    name?: string;
+    src?: string;
+    className?: string;
+    shape?: string;
+    width?: string;
+    height?: string;
+  }
+
+  let {
+    name = '',
+    src = '',
+    className = '',
+    shape = 'rounded-full',
+    width = 'w-10',
+    height = 'h-10'
+  }: Props = $props();
 </script>
 
 <img alt={name} {src} class="{className} {width} {height} {shape}" />

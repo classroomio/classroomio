@@ -1,8 +1,4 @@
-import {
-  addDomainToVercel,
-  getConfigResponse,
-  removeDomainFromVercelProject
-} from '$lib/utils/services/org/domain';
+import { addDomainToVercel, getConfigResponse, removeDomainFromVercelProject } from '$lib/utils/services/org/domain';
 
 import { json } from '@sveltejs/kit';
 
@@ -15,10 +11,7 @@ export async function POST({ request }) {
   }
 
   if (params?.domain?.includes('classroomio.com')) {
-    return json(
-      { success: false, message: 'Domain cannot contain classroomio.com' },
-      { status: 400 }
-    );
+    return json({ success: false, message: 'Domain cannot contain classroomio.com' }, { status: 400 });
   }
 
   try {

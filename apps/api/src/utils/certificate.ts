@@ -1,5 +1,5 @@
-import type { TCertificateDownload } from '$src/types/course/lesson';
-import { getCloudflarePdfBuffer } from '$src/utils/cloudflare';
+import type { TCertificateDownload } from '@api/types/course/lesson';
+import { getCloudflarePdfBuffer } from '@api/utils/cloudflare';
 
 export interface CertificateData {
   theme: string;

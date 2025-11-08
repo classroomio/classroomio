@@ -20,21 +20,18 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the main difference between a functional component and a class component in React?',
+        title: 'What is the main difference between a functional component and a class component in React?',
         name: 'q2',
         points: 1,
         order: 1,
         question_type: QuestionTypes[0], // RADIO
         options: [
           {
-            label:
-              'Functional components use the `render` method, while class components use functions',
+            label: 'Functional components use the `render` method, while class components use functions',
             is_correct: false
           },
           {
-            label:
-              'Functional components use functions, while class components use the `render` method',
+            label: 'Functional components use functions, while class components use the `render` method',
             is_correct: true
           },
           {
@@ -100,8 +97,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'What is the significance of the `super()` method in a React class component constructor?',
+        title: 'What is the significance of the `super()` method in a React class component constructor?',
         name: 'q8',
         points: 1,
         order: 7,

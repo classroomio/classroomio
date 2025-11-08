@@ -73,8 +73,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Explain how to use the "before" pseudo-element to add an icon before a text element.',
+        title: 'Explain how to use the "before" pseudo-element to add an icon before a text element.',
         name: 'q6',
         points: 2,
         order: 5,

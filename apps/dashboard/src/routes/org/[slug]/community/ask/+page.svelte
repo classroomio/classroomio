@@ -15,24 +15,28 @@
   import { profile } from '$lib/utils/store/user';
   import type { Course } from '$lib/utils/types';
   import { Dropdown } from 'carbon-components-svelte';
-  import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 
   let errors: {
     title?: string;
     courseId?: string;
     body?: string;
-  } = {};
-  let fields = {
+  } = $state({});
+  let fields = $state({
     title: '',
     body: '',
     courseId: ''
-  };
+  });
 
-  let fetchedCourses: Course[] = [];
+  let hasFetched = $state(false);
+  let fetchedCourses: Course[] = $state([]);
 
   async function getCourses(userId: string | null, orgId: string) {
+    if (hasFetched) return;
+
     if ($courses.length) {
       fetchedCourses = [...$courses];
+      hasFetched = true;
       return;
     }
 
@@ -40,6 +44,7 @@
     if (!coursesResults) return;
 
     fetchedCourses = coursesResults.allCourses;
+    hasFetched = true;
   }
 
   async function handleSave() {
@@ -75,11 +80,11 @@
     }
   }
 
-  $: {
+  $effect(() => {
     if ($profile.id && $currentOrg.id) {
       getCourses($profile.id, $currentOrg.id);
     }
-  }
+  });
 </script>
 
 <svelte:head>
@@ -88,20 +93,13 @@
 
 <section class="w-full md:mx-auto md:max-w-3xl">
   <div class="p-5">
-    <a
-      class="text-md flex items-center text-gray-500 dark:text-white"
-      href={`${$currentOrgPath}/community`}
-    >
-      <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" />
+    <a class="text-md flex items-center text-gray-500 dark:text-white" href={`${$currentOrgPath}/community`}>
+      <ArrowLeftIcon size={16} />
       {$t('community.ask.go_back')}
     </a>
     <div class="flex items-center justify-between gap-12">
-      <h1 class="text-2xl font-bold dark:text-white md:text-3xl">{$t('community.ask.ask_the')}</h1>
-      <PrimaryButton
-        label={$t('community.ask.publish')}
-        variant={VARIANTS.CONTAINED_DARK}
-        onClick={handleSave}
-      />
+      <h1 class="text-2xl font-bold md:text-3xl dark:text-white">{$t('community.ask.ask_the')}</h1>
+      <PrimaryButton label={$t('community.ask.publish')} variant={VARIANTS.CONTAINED_DARK} onClick={handleSave} />
     </div>
   </div>
 

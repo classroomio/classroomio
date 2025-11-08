@@ -208,8 +208,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'In TypeScript, can you assign a value to an enum member that is not part of the enum?',
+        title: 'In TypeScript, can you assign a value to an enum member that is not part of the enum?',
         name: 'q9',
         points: 1,
         order: 9,

@@ -4,7 +4,7 @@
  */
 
 import type { Context } from 'hono';
-import { supabase } from '$src/utils/supabase';
+import { supabase } from '@api/utils/supabase';
 
 /**
  * Extract user ID from JWT token

@@ -1,8 +1,5 @@
 import { type Writable, get } from 'svelte/store';
-import {
-  lessonDocUpload,
-  lessonVideoUpload
-} from '$lib/components/Course/components/Lesson/store/lessons';
+import { lessonDocUpload, lessonVideoUpload } from '$lib/components/Course/components/Lesson/store/lessons';
 
 import axios from 'axios';
 import { classroomio } from '$lib/utils/services/api';
@@ -22,9 +19,7 @@ export class GenericUploader {
 
   async getDownloadPresignedUrl(keys: string[], type = this.uploadType) {
     const endpoint =
-      type === 'document'
-        ? classroomio.course.presign.document.download
-        : classroomio.course.presign.video.download;
+      type === 'document' ? classroomio.course.presign.document.download : classroomio.course.presign.video.download;
 
     const response = await endpoint.$post({
       json: {

@@ -4,7 +4,10 @@
   import { lesson } from '../../store/lessons';
 
   let errors: Record<string, string> = {};
-  let videoElements: (HTMLVideoElement | null)[] = [];
+  let videoElements: (HTMLVideoElement | null)[] = $derived.by(() => {
+    let elements = videoElements.slice(0, $lesson.materials.videos.length);
+    return [...elements, ...Array($lesson.materials.videos.length - elements.length).fill(null)];
+  });
 
   function initPlyr() {
     if (typeof (window as any).Plyr === 'undefined') {
@@ -17,14 +20,6 @@
     if (typeof window !== 'undefined') {
       (window as any).players = players;
     }
-  }
-
-  $: {
-    videoElements = videoElements.slice(0, $lesson.materials.videos.length);
-    videoElements = [
-      ...videoElements,
-      ...Array($lesson.materials.videos.length - videoElements.length).fill(null)
-    ];
   }
 
   onMount(() => {
@@ -46,7 +41,7 @@
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen
-              />
+              ></iframe>
             {:else if video.type === 'generic'}
               <iframe
                 width="100%"
@@ -57,7 +52,7 @@
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen
-              />
+              ></iframe>
             {:else if video.metadata?.svid}
               <div style="position:relative;padding-bottom:51.416579%">
                 <iframe
@@ -67,7 +62,7 @@
                   frameborder="0"
                   allowfullscreen
                   title="Muse AI Video Embed"
-                />
+                ></iframe>
               </div>
             {:else}
               <video

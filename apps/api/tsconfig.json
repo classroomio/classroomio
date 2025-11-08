@@ -9,14 +9,13 @@
     "moduleResolution": "Bundler",
     "outDir": "./dist",
     "paths": {
-      "$src": ["./src"],
-      "$src/*": ["./src/*"]
+      "@api/*": ["src/*"]
     },
     "resolveJsonModule": false,
     "skipLibCheck": true,
     "sourceMap": true,
     "target": "ESNext",
-    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "typeRoots": ["../../node_modules/@types", "./node_modules/@types", "./src/types"],
     "types": ["node"]
   },
   "include": ["src/**/*"],

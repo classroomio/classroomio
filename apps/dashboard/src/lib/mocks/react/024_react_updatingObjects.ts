@@ -37,8 +37,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'How can you update an object within an array in state without mutating the original state?',
+        title: 'How can you update an object within an array in state without mutating the original state?',
         name: 'updateObjectInArray',
         points: 1,
         order: 2,
@@ -59,8 +58,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the purpose of the "spread operator" (...) when updating objects in React state?',
+        title: 'What is the purpose of the "spread operator" (...) when updating objects in React state?',
         name: 'spreadOperatorPurpose',
         points: 1,
         order: 3,
@@ -89,8 +87,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the recommended approach for updating state when the new state depends on the previous state?',
+        title: 'What is the recommended approach for updating state when the new state depends on the previous state?',
         name: 'updatingStateDependsOnPreviousState',
         points: 1,
         order: 5,
@@ -148,8 +145,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'How can you optimize the performance of a React component when updating objects in state?',
+        title: 'How can you optimize the performance of a React component when updating objects in state?',
         name: 'optimizePerformance',
         points: 1,
         order: 9,

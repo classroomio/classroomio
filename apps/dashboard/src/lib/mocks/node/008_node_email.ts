@@ -142,8 +142,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the purpose of the "attachments" option when sending emails with nodemailer?',
+        title: 'What is the purpose of the "attachments" option when sending emails with nodemailer?',
         name: 'question8',
         points: 1,
         order: 7,

@@ -102,8 +102,7 @@ const template: ExerciseTemplate = {
       },
       // Question 6 - CHECKBOX
       {
-        title:
-          'Which of the following are valid use cases for using a reducer in React? (Select all that apply)',
+        title: 'Which of the following are valid use cases for using a reducer in React? (Select all that apply)',
         name: 'question6',
         points: 3,
         order: 5,
@@ -167,26 +166,22 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[0], // RADIO
         options: [
           {
-            label:
-              'useState is used for managing complex state logic, while useReducer is for simple state.',
+            label: 'useState is used for managing complex state logic, while useReducer is for simple state.',
             is_correct: false
           },
           {
-            label:
-              'useState is for managing local component state, while useReducer is for managing global state.',
+            label: 'useState is for managing local component state, while useReducer is for managing global state.',
             is_correct: true
           },
           {
-            label:
-              'useState is used for asynchronous state updates, while useReducer is for synchronous updates.',
+            label: 'useState is used for asynchronous state updates, while useReducer is for synchronous updates.',
             is_correct: false
           }
         ]
       },
       // Question 10 - CHECKBOX
       {
-        title:
-          'Which of the following are common actions you can perform in a reducer? (Select all that apply)',
+        title: 'Which of the following are common actions you can perform in a reducer? (Select all that apply)',
         name: 'question10',
         points: 3,
         order: 9,

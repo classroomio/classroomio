@@ -13,12 +13,8 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "noImplicitAny": false,
-    "paths": {
-      "$lib": ["./src/lib"],
-      "$lib/*": ["./src/lib/*"],
-      "$mail": ["./src/mail"],
-      "$mail/*": ["./src/mail/*"]
-    }
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   }
 
   // Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias

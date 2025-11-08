@@ -1,41 +1,40 @@
-<script>
+<script lang="ts">
   import TextField from '$lib/components/Form/TextField.svelte';
-  export let label = '';
-  export let value = '';
-  export let checked = false;
-  export let name = '';
-  export let isEditable = false;
-  export let disabled = false;
-  export let className = '';
-  export let onChange = () => {}; // This is to know if element is 'dirty'
+
+  interface Props {
+    label?: string | null;
+    value?: string;
+    checked?: boolean;
+    name?: string;
+    isEditable?: boolean;
+    disabled?: boolean;
+    className?: string;
+    onChange?: any; // This is to know if element is 'dirty'
+    children?: import('svelte').Snippet;
+  }
+
+  let {
+    label = $bindable(''),
+    value = '',
+    checked = false,
+    name = '',
+    isEditable = false,
+    disabled = false,
+    className = '',
+    onChange = () => {},
+    children
+  }: Props = $props();
 </script>
 
-<label
-  class="{className} inline-flex items-center w-full {disabled
-    ? 'cursor-not-allowed'
-    : 'cursor-pointer'}"
->
-  <input
-    class="form-radio"
-    type="radio"
-    {checked}
-    {name}
-    {value}
-    disabled={disabled || isEditable}
-  />
+<div class="{className} group inline-flex w-full items-center {disabled ? 'cursor-not-allowed' : 'cursor-pointer'}">
+  <input class="form-radio" type="radio" {checked} {name} {value} disabled={disabled || isEditable} />
   {#if isEditable}
     <div class="w-2/4">
-      <TextField
-        bind:value={label}
-        placeholder="Your option"
-        className="ml-1"
-        type="text"
-        {onChange}
-      />
+      <TextField bind:value={label} placeholder="Your option" className="ml-1" type="text" {onChange} />
     </div>
   {:else}
-    <span class="dark:text-white ml-2">{label}</span>
+    <span class="ml-2 dark:text-white">{label}</span>
   {/if}
 
-  <slot name="iconbutton" />
-</label>
+  {@render children?.()}
+</div>

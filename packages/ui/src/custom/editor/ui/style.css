@@ -1,0 +1,25 @@
+:root {
+	--border-color: var(--muted);
+	--border-color-hover: var(--muted-foreground);
+	--blockquote-border: var(--border);
+	--blockquote-color: var(--muted-foreground);
+	--codeblock-bg: var(--muted);
+	--code-bg: var(--muted);
+	--table-border: var(--border);
+	--table-bg-selected: color-mix(in oklch, var(--muted) 60%, transparent);
+	--table-bg-hover: color-mix(in oklch, var(--muted) 30%, transparent);
+	--task-completed-color: var(--muted-foreground);
+	--highlight-color: rgba(0, 255, 0, 0.1);
+	--highlight-border: green;
+	--search-result-bg: yellow;
+	--search-result-current-bg: orange;
+}
+
+.dark {
+	--codeblock-bg: color-mix(in oklch, var(--muted) 30%, transparent);
+}
+
+.tiptap a {
+	color: oklch(62.3% 0.214 259.815);
+	text-decoration: underline;
+}

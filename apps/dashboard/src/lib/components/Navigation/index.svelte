@@ -4,25 +4,36 @@
   import { isCoursePage } from '$lib/utils/functions/app';
   import { t } from '$lib/utils/functions/translations';
   import type { TCustomLinks } from './types';
+  import { ModeSwitcher } from '@cio/ui/base/dark-mode';
 
   import Logo from './Logo.svelte';
   import CustomLinks from './CustomLinks.svelte';
   import AuthButtons from './AuthButtons.svelte';
   import MobileMenu from './MobileMenu.svelte';
 
-  export let disableSignup = false;
-  export let logo: string | undefined = undefined;
-  export let orgName: string | undefined = undefined;
-  export let isOrgSite = false;
-  export let backgroundColor = 'bg-white dark:bg-black';
-  export let customLinks: TCustomLinks | undefined = undefined;
+  interface Props {
+    disableSignup?: boolean;
+    logo?: string | undefined;
+    orgName?: string | undefined;
+    isOrgSite?: boolean;
+    backgroundColor?: string;
+    customLinks?: TCustomLinks | undefined;
+  }
+
+  let {
+    disableSignup = false,
+    logo = undefined,
+    orgName = undefined,
+    isOrgSite = false,
+    backgroundColor = 'bg-white dark:bg-black',
+    customLinks = undefined
+  }: Props = $props();
 
   let navClass = '';
-  let mobileMenuOpen = false;
+  let mobileMenuOpen = $state(false);
 
-  $: redirect = isCoursePage($page.url.pathname) ? `?redirect=${$page.url.pathname}` : '';
-  $: showLinks =
-    customLinks && customLinks.show && customLinks.links && customLinks.links.length > 0;
+  let redirect = $derived(isCoursePage($page.url.pathname) ? `?redirect=${$page.url.pathname}` : '');
+  let showLinks = $derived(customLinks && customLinks.show && customLinks.links && customLinks.links.length > 0);
 
   function toggleMobileMenu() {
     mobileMenuOpen = !mobileMenuOpen;
@@ -35,22 +46,17 @@
   <ul class="flex w-full items-center">
     <Logo {logo} {orgName} />
 
-    <span class="flex-grow" />
+    <span class="flex-grow"></span>
 
     <!-- Mobile Menu Button - Only show when custom links exist -->
     {#if isOrgSite && showLinks}
       <button
         class="mobile-menu-btn hover:text-primary-600 rounded-md p-2 text-gray-700 transition-colors duration-200 hover:bg-gray-100 lg:hidden"
-        on:click={toggleMobileMenu}
+        onclick={toggleMobileMenu}
         aria-label="Toggle mobile menu"
       >
         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M4 6h16M4 12h16M4 18h16"
-          ></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
       </button>
     {/if}
@@ -71,6 +77,8 @@
     {:else if !isOrgSite && !$page.url.pathname?.includes('/404')}
       <AuthButtons {disableSignup} {redirect} />
     {/if}
+
+    <ModeSwitcher />
   </ul>
 
   {#if showLinks}

@@ -32,8 +32,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which property is used to repeat a background image both horizontally and vertically?',
+        title: 'Which property is used to repeat a background image both horizontally and vertically?',
         name: 'q3',
         points: 1,
         order: 2,

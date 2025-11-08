@@ -94,13 +94,11 @@ const template: ExerciseTemplate = {
         question_type: QuestionTypes[1],
         options: [
           {
-            label:
-              'useReducer is used for managing complex state logic, while useState is for simple state.',
+            label: 'useReducer is used for managing complex state logic, while useState is for simple state.',
             is_correct: true
           },
           {
-            label:
-              'useState is used for managing complex state logic, while useReducer is for simple state.',
+            label: 'useState is used for managing complex state logic, while useReducer is for simple state.',
             is_correct: false
           },
           {

@@ -81,12 +81,7 @@ export async function fetchSubmission({
 }
 
 export async function updateSubmission(
-  {
-    id,
-    status_id,
-    total,
-    feedback
-  }: { id: string; status_id?: number; total?: number; feedback?: string },
+  { id, status_id, total, feedback }: { id: string; status_id?: number; total?: number; feedback?: string },
   otherArgs?: Record<string, string>
 ) {
   const toUpdate: {
@@ -109,9 +104,6 @@ export async function deleteSubmission(id: string) {
   return supabase.from('submission').delete().match({ id });
 }
 
-export async function updateQuestionAnswer(
-  update: Record<string, string>,
-  match: Record<string, string>
-) {
+export async function updateQuestionAnswer(update: Record<string, string>, match: Record<string, string>) {
   return supabase.from('question_answer').update(update).match(match);
 }

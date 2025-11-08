@@ -38,12 +38,9 @@ export const handle: Handle = async ({ event, resolve }) => {
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === 'Unauthenticated user') {
-        return new Response(
-          JSON.stringify({ code: 'unauthenticated', message: 'Unauthenticated user' }),
-          {
-            status: 401
-          }
-        );
+        return new Response(JSON.stringify({ code: 'unauthenticated', message: 'Unauthenticated user' }), {
+          status: 401
+        });
       }
     }
   }

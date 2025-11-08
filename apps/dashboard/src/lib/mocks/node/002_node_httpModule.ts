@@ -85,8 +85,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the purpose of the "request" and "response" objects in an HTTP server callback?',
+        title: 'What is the purpose of the "request" and "response" objects in an HTTP server callback?',
         name: 'q8',
         points: 2,
         order: 8,

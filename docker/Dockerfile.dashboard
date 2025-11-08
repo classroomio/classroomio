@@ -14,7 +14,7 @@ COPY pnpm-lock.yaml ./
 COPY pnpm-workspace.yaml ./
 COPY turbo.json ./
 COPY packages/tsconfig ./packages/tsconfig
-COPY packages/shared ./packages/shared
+COPY packages/utils ./packages/utils
 
 # Copy the api package.json
 COPY apps/dashboard ./apps/dashboard

@@ -201,8 +201,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which TypeScript type can be used to represent a value that is not available yet or an error?',
+        title: 'Which TypeScript type can be used to represent a value that is not available yet or an error?',
         name: 'q10',
         points: 1,
         order: 10,

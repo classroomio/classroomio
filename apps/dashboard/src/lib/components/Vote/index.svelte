@@ -1,15 +1,19 @@
-<script>
-  import ArrowUpIcon from 'carbon-icons-svelte/lib/ArrowUp.svelte';
+<script lang="ts">
+  import ArrowUpIcon from '@lucide/svelte/icons/arrow-up';
   import Chip from '../Chip/index.svelte';
 
-  export let value = 0;
-  export let upVote = () => {};
-  export let disabled = false;
+  interface Props {
+    value?: number;
+    upVote?: any;
+    disabled?: boolean;
+  }
+
+  let { value = 0, upVote = () => {}, disabled = false }: Props = $props();
 </script>
 
 <button
   class="vote border-none {disabled ? 'cursor-not-allowed' : 'cursor-pointer'}"
-  on:click={disabled ? undefined : upVote}
+  onclick={disabled ? undefined : upVote}
 >
   <ArrowUpIcon size={16} />
   <Chip {value} />

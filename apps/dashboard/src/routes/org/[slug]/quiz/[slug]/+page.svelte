@@ -1,8 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
-  import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import WarningFilledIcon from 'carbon-icons-svelte/lib/WarningFilled.svelte';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
+  import CircleAlertIcon from '@lucide/svelte/icons/circle-alert';
   import cloneDeep from 'lodash/cloneDeep';
   import isBoolean from 'lodash/isBoolean';
   import { onMount } from 'svelte';
@@ -32,34 +32,36 @@
     options: QuizOption[];
   }
 
-  export let data;
+  let { data } = $props();
   const { quizId } = data;
 
   // Questionnaire State
-  let currentQuestion: QuizQuestion = $quizStore.questions[0] || {
-    id: 0,
-    label: '',
-    type: 'multichoice',
-    options: []
-  };
+  let currentQuestion: QuizQuestion = $state(
+    $quizStore.questions[0] || {
+      id: 0,
+      label: '',
+      type: 'multichoice',
+      options: []
+    }
+  );
 
   // Behavioural State
-  let openPreview = false;
-  let type = 'multichoice';
+  let openPreview = $state(false);
+  let type = $state('multichoice');
   let errors: Array<{
     isLabelEmpty: boolean;
     hasOneAnswer: boolean;
     id: number;
     options: Array<{ id: number; error: boolean }>;
-  }> = [];
+  }> = $state([]);
   let currentError: {
     isLabelEmpty?: boolean;
     hasOneAnswer?: boolean;
     id?: number;
     options?: Array<{ id: number; error: boolean }>;
-  } = {};
-  let isFocused = false;
-  let selectEl: Select | null = null;
+  } = $state({});
+  let isFocused = $state(false);
+  let selectEl: Select | null = $state(null);
 
   function activeClass(q, cq) {
     if (q.id === cq.id) {
@@ -200,9 +202,7 @@
 
   function qHasError(qId, _errs) {
     return _errs.some((qe) => {
-      return (
-        (qId ? qe.id === qId : true) && (qe.isLabelEmpty || !qe.hasOneAnswer || !!qe.options.length)
-      );
+      return (qId ? qe.id === qId : true) && (qe.isLabelEmpty || !qe.hasOneAnswer || !!qe.options.length);
     });
   }
 
@@ -239,11 +239,8 @@
   <!-- Questions list -->
   <aside class="root h-full w-1/5 bg-gray-100 p-4 dark:bg-neutral-800">
     <div class="flex h-full flex-col">
-      <a
-        class="text-md flex items-center text-gray-500 dark:text-white"
-        href={`${$currentOrgPath}/quiz`}
-      >
-        <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" /> Back to Quizzes
+      <a class="text-md flex items-center text-gray-500 dark:text-white" href={`${$currentOrgPath}/quiz`}>
+        <ArrowLeftIcon size={16} /> Back to Quizzes
       </a>
 
       <h3 class="my-3">Quiz</h3>
@@ -255,11 +252,11 @@
               question,
               currentQuestion
             )}"
-            on:click={() => {
+            onclick={() => {
               currentQuestion = question;
               type = question.type;
             }}
-            on:keydown={(e) => {
+            onkeydown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 currentQuestion = question;
                 type = question.type;
@@ -269,7 +266,7 @@
             Question {i + 1}
 
             {#if qHasError(question.id, errors)}
-              <WarningFilledIcon size={20} class="carbon-icon error" />
+              <CircleAlertIcon size={16} class="filled" />
             {/if}
           </button>
         {/each}
@@ -325,18 +322,8 @@
   <aside class="settings h-full w-1/5 bg-gray-100 p-4 dark:bg-neutral-800">
     <div class="py-5">
       <h5>Quiz settings</h5>
-      <PrimaryButton
-        label="Save Changes"
-        variant={VARIANTS.CONTAINED}
-        onClick={saveQuiz}
-        className="my-3"
-      />
-      <PrimaryButton
-        label="Preview Quiz"
-        variant={VARIANTS.OUTLINED}
-        onClick={previewQuiz}
-        className="my-3"
-      />
+      <PrimaryButton label="Save Changes" variant={VARIANTS.CONTAINED} onClick={saveQuiz} className="my-3" />
+      <PrimaryButton label="Preview Quiz" variant={VARIANTS.OUTLINED} onClick={previewQuiz} className="my-3" />
       <PrimaryButton
         label="Delete question"
         variant={VARIANTS.TEXT}
@@ -377,11 +364,7 @@
         </Select>
 
         <!--  -->
-        <Select
-          labelText="Time limit"
-          bind:selected={$quizStore.timelimit}
-          class="mb-3 flex items-center"
-        >
+        <Select labelText="Time limit" bind:selected={$quizStore.timelimit} class="mb-3 flex items-center">
           <SelectItem value="10 seconds" text="10s" />
           <SelectItem value="20 seconds" text="20s" />
           <SelectItem value="30 seconds" text="30s" />
@@ -397,23 +380,19 @@
 
         {#each allThemes as _theme}
           <div
-            class="theme relative mb-5 w-full cursor-pointer rounded-md border {$quizStore.theme ===
-              _theme.id && 'border-primary-700'}"
+            class="theme relative mb-5 w-full cursor-pointer rounded-md border {$quizStore.theme === _theme.id &&
+              'border-primary-700'}"
           >
             {#if $quizStore.theme === _theme.id}
-              <CheckmarkFilledIcon
-                size={24}
-                class="carbon-icon absolute right-4 top-4"
-                style="fill:white;"
-              />
+              <CircleCheckIcon size={16} filled />
             {/if}
             <div
               role="button"
               tabindex="0"
               class="flex h-full w-full flex-col-reverse rounded-md border"
               style="background: url({themeImages[_theme.id]?.card});"
-              on:click={() => ($quizStore.theme = _theme.id)}
-              on:keydown={(e) => {
+              onclick={() => ($quizStore.theme = _theme.id)}
+              onkeydown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   $quizStore.theme = _theme.id;
                 }

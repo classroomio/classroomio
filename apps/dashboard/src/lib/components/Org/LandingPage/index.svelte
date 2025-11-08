@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
+  import { preventDefault } from '$lib/utils/functions/svelte';
+
   import { goto } from '$app/navigation';
   import Box from '$lib/components/Box/index.svelte';
   import Card from '$lib/components/Courses/components/Card/index.svelte';
@@ -19,34 +22,38 @@
   import { getCourseBySiteName } from '$lib/utils/services/org';
   import type { CurrentOrg } from '$lib/utils/types/org';
   import { Accordion, AccordionItem, Column, Grid, Row } from 'carbon-components-svelte';
-  import Email from 'carbon-icons-svelte/lib/Email.svelte';
-  import LocationFilled from 'carbon-icons-svelte/lib/LocationFilled.svelte';
-  import LogoFacebook from 'carbon-icons-svelte/lib/LogoFacebook.svelte';
-  import LogoLinkedin from 'carbon-icons-svelte/lib/LogoLinkedin.svelte';
-  import LogoTwitter from 'carbon-icons-svelte/lib/LogoTwitter.svelte';
-  import Phone from 'carbon-icons-svelte/lib/Phone.svelte';
-  import Rocket from 'carbon-icons-svelte/lib/Rocket.svelte';
+  import MailIcon from '@lucide/svelte/icons/mail';
+  import MapPinIcon from '@lucide/svelte/icons/map-pin';
+  import FacebookIcon from '@lucide/svelte/icons/facebook';
+  import LinkedinIcon from '@lucide/svelte/icons/linkedin';
+  import TwitterIcon from '@lucide/svelte/icons/twitter';
+  import PhoneIcon from '@lucide/svelte/icons/phone';
+  import RocketIcon from '@lucide/svelte/icons/rocket';
   import get from 'lodash/get';
   import { fade } from 'svelte/transition';
   import PageLoader from './PageLoader.svelte';
 
-  export let orgSiteName = '';
-  export let org: CurrentOrg | null;
+  interface Props {
+    orgSiteName?: string;
+    org: CurrentOrg | null;
+  }
 
-  let email: string | undefined;
-  let isAdding = false;
-  let success = false;
-  let successContactSaved = false;
-  let viewAll = false;
-  let isContactSubmiting = false;
-  let player;
-  let contact = {
+  let { orgSiteName = '', org }: Props = $props();
+
+  let email: string | undefined = $state('');
+  let isAdding = $state(false);
+  let success = $state(false);
+  let successContactSaved = $state(false);
+  let viewAll = $state(false);
+  let isContactSubmiting = $state(false);
+  let player = $state();
+  let contact = $state({
     name: '',
     email: '',
     phone: '',
     message: ''
-  };
-  let contactError: Record<string, string> = {};
+  });
+  let contactError: Record<string, string> = $state({});
 
   const supabase = getSupabase();
 
@@ -103,25 +110,24 @@
     };
   }
   function isYouTubeLink(link: string) {
-    const youtubeRegex =
-      /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
 
     return youtubeRegex.test(link.trim());
   }
 
-  $: loadData(orgSiteName);
-
-  async function loadData(siteName) {
+  function loadData(siteName) {
     if (!siteName) return;
 
-    try {
-      $courseMetaDeta.isLoading = true;
-      const coursesResult = await getCourseBySiteName(siteName);
-      courses.set(coursesResult);
-      $courseMetaDeta.isLoading = false;
-    } catch (error) {
-      console.log('error', error);
-    }
+    untrack(async () => {
+      try {
+        $courseMetaDeta.isLoading = true;
+        const coursesResult = await getCourseBySiteName(siteName);
+        courses.set(coursesResult);
+        $courseMetaDeta.isLoading = false;
+      } catch (error) {
+        console.log('error', error);
+      }
+    });
   }
 
   function initPlyr(_player: any, _video: string | undefined) {
@@ -140,9 +146,11 @@
         landingpage.header.banner = $landingPageSettings.header.banner;
       }
 
-      $landingPageSettings = {
-        ...landingpage
-      };
+      untrack(() => {
+        $landingPageSettings = {
+          ...landingpage
+        };
+      });
     }
   }
 
@@ -161,8 +169,15 @@
     }
   }
 
-  $: initPlyr(player, $landingPageSettings.header?.banner?.video);
-  $: setDefault(org?.landingpage);
+  $effect(() => {
+    loadData(orgSiteName);
+  });
+  $effect(() => {
+    initPlyr(player, $landingPageSettings.header?.banner?.video);
+  });
+  $effect(() => {
+    setDefault(org?.landingpage);
+  });
 </script>
 
 <svelte:head>
@@ -189,13 +204,11 @@
       <header
         id="header"
         class={`relative mb-10 h-[100vh] w-full md:h-[90vh] ${
-          $landingPageSettings.header.background?.show
-            ? 'bg-cover bg-center'
-            : 'border-b border-gray-300'
+          $landingPageSettings.header.background?.show ? 'bg-cover bg-center' : 'border-b border-gray-300'
         }`}
         style="background-image: {getBgImage($landingPageSettings)}"
       >
-        <div class="absolute top-0 z-10 h-[100vh] w-full bg-white opacity-80 md:h-[90vh]" />
+        <div class="absolute top-0 z-10 h-[100vh] w-full bg-white opacity-80 md:h-[90vh]"></div>
         {#if $landingPageSettings.header.banner.show}
           <div class="flex items-center justify-center py-2 md:h-full">
             <div
@@ -206,9 +219,7 @@
                 <p class=" text-primary-600 text-2xl font-semibold capitalize">
                   {org.name}
                 </p>
-                <h1
-                  class="my-4 text-center text-4xl font-bold md:text-start md:text-5xl lg:text-6xl"
-                >
+                <h1 class="my-4 text-center text-4xl font-bold md:text-start md:text-5xl lg:text-6xl">
                   {$landingPageSettings.header.title} <br /><span class="text-primary-600"
                     >{$landingPageSettings.header.titleHighlight}</span
                   >
@@ -221,8 +232,7 @@
                   label={$landingPageSettings.header.action.label}
                   className="mt-2 md:mt-5 px-10 w-fit"
                   onClick={() => {
-                    $landingPageSettings.header.action.redirect &&
-                      goto($landingPageSettings.header.action.link);
+                    $landingPageSettings.header.action.redirect && goto($landingPageSettings.header.action.link);
                   }}
                 />
               </div>
@@ -236,7 +246,7 @@
                       allowfullscreen
                       allowtransparency
                       allow="autoplay"
-                    />
+                    ></iframe>
                   </div>
                 {:else}
                   <!-- <video class="w-full rounded-xl" controls loop autoplay>
@@ -245,11 +255,7 @@
                       Captions are optional
                       <track kind="captions" />
                     </video> -->
-                  <img
-                    class="rounded-md"
-                    src={$landingPageSettings.header?.banner?.image}
-                    alt="landing page banner"
-                  />
+                  <img class="rounded-md" src={$landingPageSettings.header?.banner?.image} alt="landing page banner" />
                 {/if}
               </div>
             </div>
@@ -271,8 +277,7 @@
                 label={$landingPageSettings.header.action.label}
                 className="mt-5 px-10 w-fit"
                 onClick={() => {
-                  $landingPageSettings.header.action.redirect &&
-                    goto($landingPageSettings.header.action.link);
+                  $landingPageSettings.header.action.redirect && goto($landingPageSettings.header.action.link);
                 }}
               />
             </div>
@@ -293,11 +298,7 @@
           </div>
 
           <div class="image">
-            <img
-              src={$landingPageSettings.aboutUs.imageUrl}
-              alt="Our Story"
-              class=" max-h-[450px] rounded-2xl"
-            />
+            <img src={$landingPageSettings.aboutUs.imageUrl} alt="Our Story" class=" max-h-[450px] rounded-2xl" />
           </div>
         </div>
       </section>
@@ -348,7 +349,7 @@
           </div>
         {:else}
           <Box>
-            <CoursesEmptyIcon />
+            <CoursesEmptyIcon size={16} />
             <h3 class="my-5 text-2xl dark:text-white">
               {$t('course.navItem.landing_page.no_course_published')}
             </h3>
@@ -363,9 +364,7 @@
             <PrimaryButton
               variant={VARIANTS.OUTLINED}
               onClick={() => (viewAll = !viewAll)}
-              label={viewAll
-                ? $t('course.navItem.landing_page.view_less')
-                : $t('course.navItem.landing_page.view_all')}
+              label={viewAll ? $t('course.navItem.landing_page.view_less') : $t('course.navItem.landing_page.view_all')}
               className="px-10 py-5 w-fit"
             />
           </div>
@@ -412,7 +411,7 @@
               <Column
                 class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg py-2 text-center transition-all duration-500 hover:shadow-xl"
               >
-                <LocationFilled size={32} />
+                <MapPinIcon size={16} class="filled" />
                 <p class="mt-3 max-w-[200px] text-xs md:text-sm">
                   {$landingPageSettings.contact.address}
                 </p>
@@ -420,13 +419,13 @@
               <Column
                 class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg py-2 text-center transition-all duration-500 hover:shadow-xl"
               >
-                <Phone size={32} />
+                <PhoneIcon size={16} />
                 <p class="mt-3 text-xs md:text-sm">{$landingPageSettings.contact.phone}</p>
               </Column>
               <Column
                 class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg py-2 text-center transition-all duration-500 hover:shadow-xl"
               >
-                <Email size={32} />
+                <MailIcon size={16} />
                 <p class="mt-3 text-xs md:text-sm">{$landingPageSettings.contact.email}</p>
               </Column>
             </Row>
@@ -438,7 +437,7 @@
                   {$t('course.navItem.landing_page.thank_you')}
                 </div>
               {:else}
-                <form on:submit|preventDefault={handleContactSubmit}>
+                <form onsubmit={preventDefault(handleContactSubmit)}>
                   <div class="flex w-full flex-col justify-between md:flex-row">
                     <div class="mr-5 w-full md:w-2/4">
                       <TextField
@@ -475,13 +474,9 @@
                     </div>
                   </div>
 
-                  <PrimaryButton
-                    className="w-full mx-auto mt-5 md:mt-0"
-                    type="submit"
-                    isLoading={isContactSubmiting}
-                  >
+                  <PrimaryButton className="w-full mx-auto mt-5 md:mt-0" type="submit" isLoading={isContactSubmiting}>
                     <span class="text-md mr-2">{$t('course.navItem.landing_page.submit')}</span>
-                    <Rocket size={24} />
+                    <RocketIcon size={16} />
                   </PrimaryButton>
                 </form>
               {/if}
@@ -494,9 +489,7 @@
     <!-- Waitlist Section -->
     {#if $landingPageSettings.mailinglist.show}
       <section id="waitlist" transition:fade class="mx-auto my-10 w-[95%] max-w-6xl">
-        <div
-          class="bg-primary-700 flex flex-col rounded-lg px-4 py-14 md:px-10 lg:flex-row lg:items-center"
-        >
+        <div class="bg-primary-700 flex flex-col rounded-lg px-4 py-14 md:px-10 lg:flex-row lg:items-center">
           <div class="w-full md:mr-4 md:w-[65%]">
             <h1 class="mb-5 mt-0 text-4xl font-bold text-white">
               {$landingPageSettings.mailinglist.title}
@@ -505,7 +498,7 @@
               {$landingPageSettings.mailinglist.subtitle}
             </p>
           </div>
-          <form on:submit|preventDefault={handleSubmit} class="my-4 w-full md:w-fit">
+          <form onsubmit={preventDefault(handleSubmit)} class="my-4 w-full md:w-fit">
             <div class="flex flex-col items-center sm:flex-row">
               {#if success}
                 <p class="text-white">{$t('course.navItem.landing_page.successful_sub')}</p>
@@ -541,13 +534,7 @@
       >
         <ul class="flex w-11/12 flex-col items-center sm:flex-row">
           <div class="logo">
-            <a
-              href="/"
-              title={`Go to ${org.name} Home`}
-              id="logo"
-              data-hveid="8"
-              class="flex items-center"
-            >
+            <a href="/" title={`Go to ${org.name} Home`} id="logo" data-hveid="8" class="flex items-center">
               <img
                 src={org.avatar_url || '/logo-192.png'}
                 alt={`${org.name} logo`}
@@ -558,7 +545,7 @@
             </a>
           </div>
 
-          <span class="flex-grow" />
+          <span class="flex-grow"></span>
 
           <div class="mt-5 flex gap-2 sm:mt-0">
             {#if $landingPageSettings.footer.facebook}
@@ -570,7 +557,7 @@
                   id="logo-fb"
                   data-hveid="8"
                 >
-                  <LogoFacebook size={24} />
+                  <FacebookIcon size={16} />
                 </a>
               </li>
             {/if}
@@ -583,7 +570,7 @@
                   id="logo-tw"
                   data-hveid="8"
                 >
-                  <LogoTwitter size={24} />
+                  <TwitterIcon size={16} />
                 </a>
               </li>
             {/if}
@@ -597,7 +584,7 @@
                   id="logo-ln"
                   data-hveid="8"
                 >
-                  <LogoLinkedin size={24} />
+                  <LinkedinIcon size={16} />
                 </a>
               </li>
             {/if}

@@ -97,8 +97,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'What is the difference between regular functions and arrow functions in terms of "this" binding?',
+        title: 'What is the difference between regular functions and arrow functions in terms of "this" binding?',
         name: 'q9',
         points: 1,
         order: 8,

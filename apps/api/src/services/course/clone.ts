@@ -1,5 +1,5 @@
-import { getSupabase } from '$src/utils/supabase';
-import type { Course, Lesson, LessonSection, GroupMember } from '$src/types/database';
+import { getSupabase } from '@api/utils/supabase';
+import type { Course, Lesson, LessonSection, GroupMember } from '@api/types/database';
 import type { PostgrestError } from '@supabase/supabase-js';
 
 const supabase = getSupabase();
@@ -145,10 +145,7 @@ async function cloneGroupAndBasicCourse(
   };
 }
 
-async function cloneLessonSections(
-  sections: LessonSection[],
-  courseId: string
-): Promise<CloneSectionsResponse> {
+async function cloneLessonSections(sections: LessonSection[], courseId: string): Promise<CloneSectionsResponse> {
   if (!sections || sections.length === 0) {
     return { newSections: [], sectionIdMap: undefined };
   }
@@ -161,10 +158,7 @@ async function cloneLessonSections(
       course_id: courseId
     }));
 
-  const { data: newSections } = await supabase
-    .from('lesson_section')
-    .insert(clonedSections)
-    .select();
+  const { data: newSections } = await supabase.from('lesson_section').insert(clonedSections).select();
 
   // Map old section IDs to new section IDs
   const sectionIdMap = new Map<string, string>();
@@ -350,9 +344,7 @@ export async function cloneCourse(
   // @ts-ignore - lessons comes from the query
   if (course.lessons && course.lessons.length > 0) {
     // @ts-ignore
-    const orphanedLessons = course.lessons.filter(
-      (lesson: Lesson) => !lesson.section_id || !sectionIdMap
-    );
+    const orphanedLessons = course.lessons.filter((lesson: Lesson) => !lesson.section_id || !sectionIdMap);
     allLessons = [...allLessons, ...orphanedLessons];
   }
 

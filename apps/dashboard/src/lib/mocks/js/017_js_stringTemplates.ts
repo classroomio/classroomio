@@ -50,8 +50,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the syntax for embedding an expression inside a JavaScript string template?',
+        title: 'What is the syntax for embedding an expression inside a JavaScript string template?',
         name: 'q3',
         points: 1,
         order: 3,
@@ -72,8 +71,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'In a JavaScript string template, can you embed multiple expressions within a single template?',
+        title: 'In a JavaScript string template, can you embed multiple expressions within a single template?',
         name: 'q4',
         points: 1,
         order: 4,
@@ -94,8 +92,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which of the following is a valid example of a JavaScript string template with an embedded expression?',
+        title: 'Which of the following is a valid example of a JavaScript string template with an embedded expression?',
         name: 'q5',
         points: 1,
         order: 5,
@@ -116,8 +113,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the advantage of using JavaScript string templates over traditional string concatenation?',
+        title: 'What is the advantage of using JavaScript string templates over traditional string concatenation?',
         name: 'q6',
         points: 1,
         order: 6,

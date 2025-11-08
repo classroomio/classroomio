@@ -1,6 +1,6 @@
 import { Context, Next } from 'hono';
 
-import { validateUser } from '$src/utils/auth/validate-user';
+import { validateUser } from '@api/utils/auth/validate-user';
 
 export const authMiddleware = async (c: Context, next: Next) => {
   try {

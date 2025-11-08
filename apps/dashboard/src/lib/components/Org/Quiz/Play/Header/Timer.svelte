@@ -1,11 +1,15 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import CircleContent from './CircleContent.svelte';
 
-  export let startCount = false;
-  export let timelimit = '';
+  interface Props {
+    startCount?: boolean;
+    timelimit?: string;
+  }
 
-  let countDownNo = 0;
+  let { startCount = false, timelimit = '' }: Props = $props();
+
+  let countDownNo = $state(0);
   let started = false;
 
   function triggerCountDown(start) {
@@ -33,7 +37,9 @@
     }
   });
 
-  $: triggerCountDown(startCount);
+  $effect(() => {
+    triggerCountDown(startCount);
+  });
 </script>
 
 <CircleContent value={countDownNo} label="Second(s)" className="mr-3" />

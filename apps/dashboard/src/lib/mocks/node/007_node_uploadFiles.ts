@@ -79,8 +79,7 @@ const template: ExerciseTemplate = {
         options: []
       },
       {
-        title:
-          'How can you restrict the types of files that users can upload in an Express.js application?',
+        title: 'How can you restrict the types of files that users can upload in an Express.js application?',
         name: 'question5',
         points: 2,
         order: 4,

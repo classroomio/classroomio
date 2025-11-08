@@ -4,10 +4,19 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { t } from '$lib/utils/functions/translations';
 
-  export let disableSignup = false;
-  export let redirect = '';
-  export let isMobile = false;
-  export let onMobileClick: (() => void) | undefined = undefined;
+  interface Props {
+    disableSignup?: boolean;
+    redirect?: string;
+    isMobile?: boolean;
+    onMobileClick?: (() => void) | undefined;
+  }
+
+  let {
+    disableSignup = false,
+    redirect = '',
+    isMobile = false,
+    onMobileClick = undefined
+  }: Props = $props();
 
   function handleLogin() {
     if (onMobileClick) onMobileClick();

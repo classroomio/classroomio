@@ -133,8 +133,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which of the following is a predefined constant in PHP that represents the current file name?',
+        title: 'Which of the following is a predefined constant in PHP that represents the current file name?',
         name: 'question6',
         points: 2,
         order: 5,

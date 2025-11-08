@@ -1,21 +1,29 @@
-<script>
-  import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
+<script lang="ts">
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
   import { optionImage } from '$lib/utils/constants/quiz';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import { t } from '$lib/utils/functions/translations';
 
-  export let currentQuestion = {
-    label: ''
-  };
-  export let currentError = {};
-  export let optionHasError = () => false;
-  export let isPreview = false;
+  interface Props {
+    currentQuestion?: any;
+    currentError?: any;
+    optionHasError?: any;
+    isPreview?: boolean;
+  }
+
+  let {
+    currentQuestion = $bindable({
+      label: ''
+    }),
+    currentError = {},
+    optionHasError = () => false,
+    isPreview = false
+  }: Props = $props();
 </script>
 
 {#if isPreview}
-  <h1 class="text-white mb-5 font-bold">{currentQuestion.label}</h1>
+  <h1 class="mb-5 font-bold text-white">{currentQuestion.label}</h1>
 {:else}
   <TextField
     placeholder={$t('components.quiz.start_typing')}
@@ -28,9 +36,9 @@
 {/if}
 
 <!-- Options -->
-<div class="flex justify-between w-full flex-wrap">
+<div class="flex w-full flex-wrap justify-between">
   {#each currentQuestion.options || [] as option}
-    <div class="w-2/5 bg-white dark:bg-neutral-800 rounded p-5 mb-5 relative">
+    <div class="relative mb-5 w-2/5 rounded bg-white p-5 dark:bg-neutral-800">
       <img src={optionImage[option.id]} alt={option.id} />
 
       {#if isPreview}
@@ -42,20 +50,15 @@
           bgColor="bg-white"
           className="mt-3"
           isDisabled={currentQuestion.type === 'boolean'}
-          errorMessage={optionHasError(option.id, currentError.options) &&
-            $t('components.quiz.label')}
+          errorMessage={optionHasError(option.id, currentError.options) && $t('components.quiz.label')}
         />
-        <div class="flex justify-end absolute top-2 right-2">
+        <div class="absolute right-2 top-2 flex justify-end">
           <IconButton
             value={option.id}
             onClick={() => (option.isCorrect = !option.isCorrect)}
             buttonClassName={option.isCorrect && 'success'}
           >
-            {#if option.isCorrect}
-              <CheckmarkFilledIcon size={24} class="carbon-icon dark:text-white" />
-            {:else}
-              <CheckmarkOutlineIcon size={24} class="carbon-icon dark:text-white" />
-            {/if}
+            <CircleCheckIcon size={16} filled={option.isCorrect} />
           </IconButton>
         </div>
       {/if}

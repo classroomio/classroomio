@@ -1,4 +1,6 @@
 <script>
+  import { preventDefault } from '$lib/utils/functions/svelte';
+
   import { Toggle } from 'carbon-components-svelte';
   import Modal from '$lib/components/Modal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -33,16 +35,13 @@
         <span slot="labelA" style="color: #161616">Automatic</span>
         <span slot="labelB" style="color: green">Automatic</span>
       </Toggle>
-      <p class="text-sm font-medium my-4">
-        If you set this as automatic, certificates will be issued after the
-        learner completes the course.
+      <p class="my-4 text-sm font-medium">
+        If you set this as automatic, certificates will be issued after the learner completes the course.
       </p>
     </div>
-    <p class="text-xs font-normal text-gray-500 my-4">
-      or send a personalised/ custom certificate below:
-    </p>
-    <form on:submit|preventDefault={issueCertificate}>
-      <div class="flex flex-col md:flex-row gap-2 w-full">
+    <p class="my-4 text-xs font-normal text-gray-500">or send a personalised/ custom certificate below:</p>
+    <form onsubmit={preventDefault(issueCertificate)}>
+      <div class="flex w-full flex-col gap-2 md:flex-row">
         <TextField
           label="Email address of the student"
           className="w-full my-4"
@@ -65,18 +64,13 @@
         label="Add a personalized message"
         labelClassName="text-xs font-normal"
         bind:value={$issueCertificateModal.message}
-        rows="2"
-        maxRows="3"
+        rows={2}
         placeholder="your message here"
         className="mb-4"
       />
 
       <div class="mt-5 flex w-full items-end justify-end">
-        <PrimaryButton
-          className="px-6 py-3 rounded-md text-sm font-medium"
-          label="Issue certificate"
-          type="submit"
-        />
+        <PrimaryButton className="px-6 py-3 rounded-md text-sm font-medium" label="Issue certificate" type="submit" />
       </div>
     </form>
   </main>

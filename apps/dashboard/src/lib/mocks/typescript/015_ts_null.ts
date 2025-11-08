@@ -8,8 +8,7 @@ const template: ExerciseTemplate = {
   questionnaire: {
     questions: [
       {
-        title:
-          'What is the value of a variable that has been declared but not assigned in TypeScript?',
+        title: 'What is the value of a variable that has been declared but not assigned in TypeScript?',
         name: 'q1',
         points: 2,
         order: 1,
@@ -34,8 +33,7 @@ const template: ExerciseTemplate = {
             is_correct: true
           },
           {
-            label:
-              'null is a number with a value of zero, while undefined is a number with a value of NaN.',
+            label: 'null is a number with a value of zero, while undefined is a number with a value of NaN.',
             is_correct: false
           }
         ]
@@ -53,8 +51,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Which of the following statements is true about the "undefined" type in TypeScript?',
+        title: 'Which of the following statements is true about the "undefined" type in TypeScript?',
         name: 'q4',
         points: 2,
         order: 4,

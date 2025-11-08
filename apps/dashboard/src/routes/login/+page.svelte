@@ -10,12 +10,12 @@
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
 
-  let formRef: HTMLFormElement;
+  let formRef: HTMLFormElement = $state();
   let supabase = getSupabase();
-  let fields = Object.assign({}, LOGIN_FIELDS);
-  let submitError: string;
-  let loading = false;
-  let errors = Object.assign({}, LOGIN_FIELDS);
+  let fields = $state(Object.assign({}, LOGIN_FIELDS));
+  let submitError: string = $state();
+  let loading = $state(false);
+  let errors = $state(Object.assign({}, LOGIN_FIELDS));
 
   async function handleSubmit() {
     const validationRes = authValidation(fields);

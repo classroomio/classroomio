@@ -8,8 +8,7 @@ const template: ExerciseTemplate = {
   questionnaire: {
     questions: [
       {
-        title:
-          'What is the purpose of inserting data into a MySQL database in a Node.js application?',
+        title: 'What is the purpose of inserting data into a MySQL database in a Node.js application?',
         name: 'question1',
         points: 2,
         order: 0,
@@ -51,8 +50,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the purpose of prepared statements when inserting data into a MySQL database?',
+        title: 'What is the purpose of prepared statements when inserting data into a MySQL database?',
         name: 'question3',
         points: 1,
         order: 2,
@@ -73,8 +71,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'Explain the difference between synchronous and asynchronous data insertion in Node.js.',
+        title: 'Explain the difference between synchronous and asynchronous data insertion in Node.js.',
         name: 'question4',
         points: 2,
         order: 3,
@@ -187,8 +184,7 @@ const template: ExerciseTemplate = {
         ]
       },
       {
-        title:
-          'What is the purpose of the "ON DUPLICATE KEY UPDATE" clause in an "INSERT INTO" statement?',
+        title: 'What is the purpose of the "ON DUPLICATE KEY UPDATE" clause in an "INSERT INTO" statement?',
         name: 'question10',
         points: 2,
         order: 9,

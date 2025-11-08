@@ -1,15 +1,16 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { goto } from '$app/navigation';
   import cloneDeep from 'lodash/cloneDeep';
   import set from 'lodash/set';
-  import ChevronRightIcon from 'carbon-icons-svelte/lib/ChevronRight.svelte';
-  import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
-  import ArrowUpRightIcon from 'carbon-icons-svelte/lib/ArrowUpRight.svelte';
-  import ChevronLeftIcon from 'carbon-icons-svelte/lib/ChevronLeft.svelte';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+  import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-right';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+  import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
   import { currentOrgDomain } from '$lib/utils/store/org';
 
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import CloseButton from '$lib/components/Buttons/Close/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
+  import { CloseButton } from '$lib/components/Buttons/Close';
   import HeaderForm from './HeaderForm.svelte';
   import RequirementForm from './RequirementForm.svelte';
   import DescriptionForm from './DescriptionForm.svelte';
@@ -24,17 +25,21 @@
   import generateSlug from '$lib/utils/functions/generateSlug';
 
   import { isMobile } from '$lib/utils/store/useMobile';
-  import CustomPromptBtn from '$lib/components/AI/AIButton/CustomPromptBtn.svelte';
+  // import CustomPromptBtn from '$lib/components/AI/AIButton/CustomPromptBtn.svelte';
   import type { Course } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
 
-  export let course: Course;
-  export let courseId: string;
-  export let syncCourseStore: (course: Course) => void;
+  interface Props {
+    course: Course;
+    courseId: string;
+    syncCourseStore: (course: Course) => void;
+  }
+
+  let { course = $bindable(), courseId, syncCourseStore }: Props = $props();
 
   let borderBottomGrey = 'border-r-0 border-b border-l-0 border-gray-300';
-  let loading = false;
-  let show = false;
+  let loading = $state(false);
+  let show = $state(false);
 
   interface Section {
     key: number;
@@ -92,7 +97,7 @@
       title: $t('course.navItem.landing_page.editor.title.pricing')
     }
   ];
-  let selectedSection: Section | null = null;
+  let selectedSection: Section | null = $state(null);
 
   function handleClose() {
     if (!selectedSection) {
@@ -124,8 +129,10 @@
     loading = true;
     course.slug = course.slug || generateSlug(course.title);
 
+    console.log('course', course);
     await updateCourse(courseId, undefined, {
       ...course,
+      id: courseId,
       attendance: undefined,
       group: undefined,
       lessons: undefined,
@@ -142,14 +149,24 @@
     const link = `${$currentOrgDomain}/course/${course.slug}`;
     window.open(link, '_blank');
   }
+
+  function setter(value: any, setterKey: string) {
+    if (typeof value === 'undefined') return;
+
+    // Untrack the course change to avoid unnecessary re-renders
+    const _course = untrack(() => cloneDeep(course));
+    set(_course, setterKey, value);
+
+    course = _course;
+  }
 </script>
 
 <aside
   class={`${
-    show ? '-translate-x-[100%] fixed md:absolute z-[50]' : 'translate-x-0 fixed md:relative z-[50]'
-  }left-0 z-[50] transition w-[90vw] min-w-[300px] max-w-[350px] bg-gray-100 dark:bg-neutral-800 h-full border border-l-0 border-t-0 border-b-0 border-r-1`}
+    show ? 'fixed z-[50] -translate-x-[100%] md:absolute' : 'fixed z-[50] translate-x-0 md:relative'
+  }left-0 border-r-1 z-[50] h-full w-[90vw] min-w-[300px] max-w-[350px] border border-b-0 border-l-0 border-t-0 bg-gray-100 transition dark:bg-neutral-800`}
 >
-  <div class="toggler rounded-full shadow-lg absolute">
+  <div class="toggler absolute rounded-full shadow-lg">
     <IconButton
       value="toggle"
       onClick={() => (show = !show)}
@@ -170,9 +187,9 @@
       {/if}
     </IconButton>
   </div>
-  <div class="h-full flex flex-col">
+  <div class="flex h-full flex-col">
     {#if !selectedSection}
-      <div class="flex justify-between items-center px-2 w-full">
+      <div class="flex w-full items-center justify-between px-2">
         <CloseButton onClick={handleClose} />
         <div class="flex items-center">
           <PrimaryButton
@@ -184,37 +201,37 @@
             isLoading={loading}
           />
           <IconButton onClick={handlePreview} disabled={loading || !course.slug}>
-            <ArrowUpRightIcon size={24} class="carbon-icon dark:text-white" title="Preview" />
+            <ArrowUpRightIcon size={16} />
           </IconButton>
         </div>
       </div>
-      <div class="flex justify-between items-center px-2 w-full mb-2">
+      <div class="mb-2 flex w-full items-center justify-between px-2">
         <h3 class="dark:text-white">{$t('course.navItem.landing_page.editor.page_builder')}</h3>
       </div>
       {#each sections as section, index}
         <button
-          class="w-full flex items-center justify-between px-2 py-3 border border-l-0 {index + 1 <
-            sections.length && 'border-b-0'} border-gray-300"
-          on:click={handleSectionSelect(section.key)}
+          class="flex w-full items-center justify-between border border-l-0 px-2 py-3 {index + 1 < sections.length &&
+            'border-b-0'} border-gray-300"
+          onclick={handleSectionSelect(section.key)}
         >
-          <p class="dark:text-white mr-2">
+          <p class="mr-2 dark:text-white">
             {section.title}
             {$t('course.navItem.landing_page.editor.section')}
           </p>
-          <ChevronRightIcon size={24} class="carbon-class" />
+          <ChevronRightIcon size={16} />
         </button>
       {/each}
     {:else}
       <!-- Title -->
       <div class="flex items-center {borderBottomGrey} w-full">
         <IconButton onClick={handleClose}>
-          <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" title="Go back" />
+          <ArrowLeftIcon size={16} />
         </IconButton>
         <div class=" flex items-center">
           <h3 class="dark:text-white">
             {selectedSection.title}
           </h3>
-          {#if selectedSection.enableAIWriter}
+          <!-- {#if selectedSection.enableAIWriter}
             <CustomPromptBtn
               className="w-fit ml-2"
               alignPopover="bottom-left"
@@ -227,27 +244,27 @@
                 course = _course;
               }}
             />
-          {/if}
+          {/if} -->
         </div>
       </div>
 
-      <div class="title-content p-2 overflow-y-auto">
+      <div class="title-content overflow-y-auto p-2">
         {#if selectedSection.key === 1}
           <HeaderForm bind:course />
         {:else if selectedSection.key === 2}
-          <RequirementForm bind:course />
+          <RequirementForm bind:course {setter} />
         {:else if selectedSection.key === 3}
-          <DescriptionForm bind:course />
+          <DescriptionForm bind:course {setter} />
         {:else if selectedSection.key === 4}
-          <GoalsForm bind:course />
+          <GoalsForm bind:course {setter} />
         {:else if selectedSection.key === 5}
-          <CertificateForm bind:course />
+          <CertificateForm bind:course {setter} />
         {:else if selectedSection.key === 6}
-          <ReviewsForm bind:course />
+          <ReviewsForm bind:course {setter} />
         {:else if selectedSection.key === 7}
-          <InstructorForm bind:course />
+          <InstructorForm bind:course {setter} />
         {:else if selectedSection.key === 8}
-          <PricingForm bind:course />
+          <PricingForm bind:course {setter} />
         {/if}
       </div>
     {/if}

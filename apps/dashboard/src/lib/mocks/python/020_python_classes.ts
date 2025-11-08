@@ -110,8 +110,7 @@ const template: ExerciseTemplate = {
             is_correct: false
           },
           {
-            label:
-              'It refers to the instance of the class and is used to access its attributes and methods',
+            label: 'It refers to the instance of the class and is used to access its attributes and methods',
             is_correct: true
           },
           { label: 'It is used to pass parameters to the class constructor', is_correct: false }

@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { Scalar } from '@scalar/hono-api-reference';
-import { env } from '$src/config/env';
+import { env } from '@api/config/env';
 
 export function configureOpenAPI(app: Hono) {
   if (env.OPENAPI_URL) {

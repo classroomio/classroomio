@@ -1,0 +1,11 @@
+{
+  "name": "@cio/utils",
+  "version": "1.0.0",
+  "exports": {
+    "./plans": "./src/plans/index.ts",
+    "./senja": "./src/senja/index.ts"
+  },
+  "dependencies": {
+    "@cio/tsconfig": "workspace:*"
+  }
+}
