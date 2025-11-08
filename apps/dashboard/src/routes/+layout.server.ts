@@ -102,11 +102,9 @@ export const load = async ({ url, cookies, request, locals }): Promise<LoadOutpu
       return response;
     }
 
-    const answer = !!subdomain;
-
     console.log('subdomain', subdomain);
 
-    response.isOrgSite = debugMode || answer;
+    response.isOrgSite = debugMode || !!subdomain;
     response.orgSiteName = debugMode ? _orgSiteName : subdomain;
     response.org = (await getCurrentOrg(response.orgSiteName, true)) || null;
 
@@ -174,11 +172,16 @@ function getBaseMetaTags(url: URL) {
 }
 
 function getSubdomain(url: URL) {
-  const host = url.host.replace('www.', '');
-  const parts = host?.split('.');
+  const host = url.hostname.replace('www.', '');
+  const parts = host.split('.');
+  const appHost = env.PRIVATE_APP_HOST;
 
-  if (host?.endsWith(env.PRIVATE_APP_HOST)) {
-    return parts?.length >= 3 ? parts[0] : null;
+  const appHostParts = appHost.split('.');
+  const isAppHost = parts.slice(-appHostParts.length).join('.') === appHost;
+
+  if (isAppHost) {
+    // Subdomain exists only if extra part(s) before main domain
+    return parts.length > appHostParts.length ? parts[0] : null;
   }
 
   return null;

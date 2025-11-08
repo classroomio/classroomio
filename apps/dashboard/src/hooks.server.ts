@@ -1,7 +1,7 @@
 import type { Handle } from '@sveltejs/kit';
 import { getSessionData } from '$lib/utils/services/auth/session';
 
-const PUBLIC_ROUTES = [
+const PUBLIC_API_ROUTES = [
   '/api/completion',
   'student_prove_payment',
   'teacher_student_buycourse',
@@ -11,7 +11,7 @@ const PUBLIC_ROUTES = [
 ];
 
 function isPublicRoute(pathname: string) {
-  return PUBLIC_ROUTES.some((route) => pathname.includes(route));
+  return PUBLIC_API_ROUTES.some((route) => pathname.includes(route));
 }
 
 export const handle: Handle = async ({ event, resolve }) => {

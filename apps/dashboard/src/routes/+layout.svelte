@@ -19,10 +19,15 @@
   import { initOrgAnalytics } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
+  import { accountManager } from '$lib/services/layout/init';
+  // import { Theme } from 'carbon-components-svelte';
+  // import type { CarbonTheme } from 'carbon-components-svelte/types/Theme/Theme.svelte';
   import merge from 'lodash/merge';
   import { onMount } from 'svelte';
   import { MetaTags } from 'svelte-meta-tags';
-  import { accountManager } from '$lib/services/layout/init';
+  import isPublicRoute from '$lib/utils/functions/routes/isPublicRoute';
+  import { hasSession } from '$lib/utils/functions/supabase';
+  import { goto } from '$app/navigation';
 
   import { ModeWatcher } from '@cio/ui/base/dark-mode';
 
@@ -40,16 +45,17 @@
     console.log('better session calling', $accountLoading, $accountError, $accountData);
   });
 
-  onMount(() => {
+  function pageSetup() {
     console.log(
       'Welcome to ClassroomIO, we are grateful you chose us.',
       page.url.host,
-      `\nIs student domain: ${data.isOrgSite}`
+      `\nIs student domain: ${data.isOrgSite}`,
+      data
     );
 
-    if (data.org?.theme) {
-      setTheme(data.org?.theme);
-    }
+    // $globalStore.isDark = localStorage.getItem('mode') === 'dark';
+    // toggleBodyByMode($globalStore.isDark);
+
     setupAnalytics();
 
     if (data.locals.user) {
@@ -62,23 +68,43 @@
 
     console.log('user', $user);
 
+    // Authentication Steps
+    if (!data.isOrgSite || !data.org) return;
+
+    $globalStore.orgSiteName = data.orgSiteName;
+    $globalStore.isOrgSite = data.isOrgSite;
+
+    currentOrg.set(data.org);
+
+    // Setup internal analytics
+    initOrgAnalytics(data.orgSiteName);
+
+    setTheme(data.org?.theme);
+  }
+
+  onMount(() => {
+    pageSetup();
+
+    if (!hasSession() && !isPublicRoute(page.url?.pathname)) {
+      console.log('No auth token and is not a public route, redirect to login', page.url?.pathname);
+      return goto('/login?redirect=/' + page.url?.pathname);
+    }
+
     const { data: authListener } = supabase.auth.onAuthStateChange((event) => {
-      // Authentication Steps
+      console.log(`event`, event);
+
+      if (path.includes('reset')) {
+        console.log('Dont change auth when on reset page');
+        return;
+      }
+
+      if (data.skipAuth) return;
+
       if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
         // Setup app: fetch account data and update stores
         accountManager.setupApp(data.locals, { isOrgSite: data.isOrgSite, orgSiteName: data.orgSiteName });
       }
     });
-
-    if (data.isOrgSite && data.org && !$currentOrg.siteName) {
-      $globalStore.orgSiteName = data.orgSiteName;
-      $globalStore.isOrgSite = data.isOrgSite;
-
-      currentOrg.set(data.org);
-
-      // Setup internal analytics
-      initOrgAnalytics(data.orgSiteName);
-    }
 
     return () => {
       console.log('unsubscribed');
@@ -115,7 +141,7 @@
       {:else}
         <LandingNavigation
           isOrgSite={data.isOrgSite}
-          logo={data.isOrgSite ? $currentOrg.avatar_url : undefined}
+          logo={data.isOrgSite ? $currentOrg.avatarUrl : undefined}
           orgName={data.isOrgSite ? $currentOrg.name : undefined}
           disableSignup={false}
         />
