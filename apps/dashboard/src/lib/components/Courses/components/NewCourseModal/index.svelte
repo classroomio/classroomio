@@ -156,7 +156,7 @@
       <div class="my-8 flex flex-col items-center justify-evenly gap-4 md:flex-row">
         {#each options as option}
           <button
-            class="w-11/12 rounded-md border-2 p-5 md:h-[240px] md:w-[261px] dark:bg-neutral-700 {option.type === type
+            class="w-11/12 rounded-md border-2 p-5 md:h-60 md:w-[261px] dark:bg-neutral-700 {option.type === type
               ? 'border-primary-400'
               : `border-gray-200 dark:border-neutral-600 ${
                   !option.isDisabled && 'hover:scale-95'

@@ -76,7 +76,8 @@
 }
 
 @theme inline {
-  --font-cio: 'Geist', Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji, sans-serif;
+  /* --font-cio: 'Geist', Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji, sans-serif; */
+  --font-cio: var(--font-sans);
   --default-font-family: var(--font-cio);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
