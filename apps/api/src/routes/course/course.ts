@@ -1,5 +1,10 @@
-import { Hono } from 'hono';
-import { TCourseClone,TCourseDownloadContent, TCertificateDownload, ZCertificateDownload, ZCourseDownloadContent } from '@api/types/course';
+import { Hono } from '@api/utils/hono';
+import {
+  TCourseDownloadContent,
+  TCertificateDownload,
+  ZCertificateDownload,
+  ZCourseDownloadContent
+} from '@api/types/course';
 
 import { generateCertificate } from '@api/utils/certificate';
 import { generateCoursePdf } from '@api/utils/course';
@@ -16,10 +21,7 @@ export const courseRouter = new Hono()
     const result = await generateCertificate(validatedData);
 
     c.header('Content-Type', 'application/pdf');
-    c.header(
-      'Content-Disposition',
-      `attachment; filename="certificate-${validatedData.courseName}.pdf"`
-    );
+    c.header('Content-Disposition', `attachment; filename="certificate-${validatedData.courseName}.pdf"`);
 
     return c.body(
       new ReadableStream({

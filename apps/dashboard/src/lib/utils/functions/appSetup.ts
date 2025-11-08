@@ -12,7 +12,7 @@ import { goto } from '$app/navigation';
 import { handleLocaleChange } from '$lib/utils/functions/translations';
 import isEmpty from 'lodash/isEmpty';
 import isPublicRoute from '$lib/utils/functions/routes/isPublicRoute';
-import { page } from '$app/stores';
+import { page } from '$app/state';
 import { setTheme } from '$lib/utils/functions/theme';
 import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
 import { supabase } from '$lib/utils/functions/supabase';
@@ -48,6 +48,10 @@ function setAnalyticsUser() {
   });
 }
 
+// export function setupUser(locals: App.Locals) {
+
+// }
+
 export async function getProfile({
   path,
   queryParam,
@@ -59,8 +63,6 @@ export async function getProfile({
   isOrgSite: boolean;
   orgSiteName: string;
 }) {
-  const pageStore = get(page);
-  const profileStore = get(profile);
   const currentOrgStore = get(currentOrg);
   const currentOrgDomainStore = get(currentOrgDomain);
 
@@ -72,7 +74,7 @@ export async function getProfile({
   const { user: authUser } = session || {};
   console.log('Get user', authUser);
 
-  if (!authUser && !isPublicRoute(pageStore.url?.pathname)) {
+  if (!authUser && !isPublicRoute(page.url?.pathname)) {
     return goto('/login?redirect=/' + path + queryParam);
   }
 

@@ -13,13 +13,12 @@
   import { Column, Grid, Row } from 'carbon-components-svelte';
   import SectionTitle from '../SectionTitle.svelte';
   import LanguagePicker from './LanguagePicker.svelte';
-  import type { ProfileStore } from '$lib/utils/store/user';
-  import { LOCALE } from '$lib/utils/types';
+  import type { LocaleEnum, Profile } from '@cio/utils/types/db';
 
   let avatar = $state<string | undefined>();
   let loading = $state(false);
   let hasLangChanged = $state(false);
-  let locale = $derived<LOCALE | undefined>($profile.locale);
+  let locale = $derived<LocaleEnum | undefined>($profile.locale);
   let hasUnsavedChanges = $state(false);
 
   let errors = $state<Record<string, string>>({});
@@ -35,7 +34,7 @@
       console.log({ hasLangChanged });
       loading = true;
 
-      const updates: Partial<ProfileStore> = {
+      const updates: Partial<Profile> = {
         fullname: $profile.fullname,
         username: $profile.username,
         email: $profile.email,
@@ -53,8 +52,8 @@
         if (data) {
           const { data: response } = await supabase.storage.from('avatars').getPublicUrl(filename);
 
-          updates.avatar_url = response.publicUrl;
-          $profile.avatar_url = response.publicUrl;
+          updates.avatarUrl = response.publicUrl;
+          $profile.avatarUrl = response.publicUrl;
         }
 
         avatar = '';
@@ -100,7 +99,7 @@
     <Column sm={2} md={4} lg={8} class="mt-2 lg:mt-0">
       <UploadImage
         bind:avatar
-        src={$profile.avatar_url}
+        src={$profile.avatarUrl}
         widthHeight="w-16 h-16 lg:w-24 lg:h-24"
         change={() => (hasUnsavedChanges = true)}
       />

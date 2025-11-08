@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { IconButton } from '$lib/components/IconButton';
   import { PageBody } from '$lib/components/Page';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -86,12 +86,12 @@
 
   function onSelectedIndexChange(index: number) {
     untrack(() => {
-      goto($page.url.pathname + '?tabIndex=' + index);
+      goto(page.url.pathname + '?tabIndex=' + index);
     });
   }
 
   onMount(() => {
-    const tabIndex = $page.url.searchParams.get('tabIndex');
+    const tabIndex = page.url.searchParams.get('tabIndex');
     if (tabIndex) {
       selectedIndex = parseInt(tabIndex);
     }

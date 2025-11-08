@@ -1,36 +1,20 @@
 import { Context, Next } from 'hono';
 
-import { validateUser } from '@api/utils/auth/validate-user';
+import { auth } from '@cio/db/auth';
 
 export const authMiddleware = async (c: Context, next: Next) => {
   try {
-    const authHeader = c.req.header('authorization');
+    const session = await auth.api.getSession({ headers: c.req.raw.headers });
 
-    if (!authHeader) {
-      return c.json(
-        {
-          success: false,
-          message: 'No authorization header provided'
-        },
-        401
-      );
+    if (!session) {
+      c.set('user', null);
+      c.set('session', null);
+      throw new Error('Unauthorized');
     }
 
-    // Extract the token from "Bearer <token>"
-    const token = authHeader.split(' ')[1];
+    c.set('user', session.user);
+    c.set('session', session.session);
 
-    if (!token) {
-      return c.json(
-        {
-          success: false,
-          message: 'Invalid authorization header format'
-        },
-        401
-      );
-    }
-
-    const user = await validateUser(token);
-    c.set('user', user); // Attach the user to the context
     await next();
   } catch (error) {
     return c.json(

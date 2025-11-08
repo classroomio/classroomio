@@ -1,4 +1,3 @@
-// Types for better type safety
 export interface ApiClientConfig {
   baseURL?: string;
   timeout?: number;

@@ -1,3 +1,4 @@
+import { Hono } from '@api/utils/hono';
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import {
   ZCourseDocumentPresignUrlUpload,
@@ -9,7 +10,6 @@ import { describeRoute, validator } from 'hono-openapi';
 import { BUCKET_NAME } from '@api/constants/upload';
 import { CLOUDFLARE } from '@api/constants';
 import type { GetSignedUrlParameters } from '@api/utils/s3';
-import { Hono } from 'hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { generateFileKey } from '@api/utils/upload';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';

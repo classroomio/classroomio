@@ -1,11 +1,56 @@
 {
   "name": "@cio/utils",
   "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "generate-types": "tsx scripts/generate-db-types.ts"
+  },
   "exports": {
-    "./plans": "./src/plans/index.ts",
-    "./senja": "./src/senja/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./plans": {
+      "types": "./dist/plans/index.d.ts",
+      "default": "./dist/plans/index.js"
+    },
+    "./senja": {
+      "types": "./dist/senja/index.d.ts",
+      "default": "./dist/senja/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/types/index.js"
+    },
+    "./types/db": {
+      "types": "./dist/types/db/index.d.ts",
+      "default": "./dist/types/db/index.js"
+    },
+    "./types/requests": {
+      "types": "./dist/types/requests/index.d.ts",
+      "default": "./dist/types/requests/index.js"
+    },
+    "./types/validations": {
+      "types": "./dist/types/validations/index.d.ts",
+      "default": "./dist/types/validations/index.js"
+    }
   },
   "dependencies": {
-    "@cio/tsconfig": "workspace:*"
+    "@cio/tsconfig": "workspace:*",
+    "@cio/db": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.2",
+    "drizzle-orm": "^0.44.6",
+    "drizzle-zod": "^0.5.1",
+    "zod": "^3.22.4",
+    "tsx": "^4.7.1"
   }
 }

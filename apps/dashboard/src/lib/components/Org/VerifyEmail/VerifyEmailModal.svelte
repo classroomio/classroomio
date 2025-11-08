@@ -17,7 +17,7 @@
   let interval;
   let countDown = $state(WAIT_SEC);
 
-  const open = $derived(Boolean(!$profile.is_email_verified && !!$profile.id && !!$currentOrg.id));
+  const open = $derived(Boolean(!$profile.isEmailVerified && !!$profile.id && !!$currentOrg.id));
 
   const sendVerificationCode = async () => {
     loading = true;

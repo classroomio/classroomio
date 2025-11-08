@@ -3,7 +3,6 @@ import { type ApiClientConfig, ApiError, type RequestConfig } from './types';
 import { DEFAULT_CONFIG } from './constants';
 import { delay } from './utils';
 import { env } from '$env/dynamic/public';
-import { getAccessToken } from '$lib/utils/functions/supabase';
 import { hcWithType } from '@cio/api/rpc-types';
 
 class ApiClient {
@@ -14,13 +13,7 @@ class ApiClient {
   }
 
   private async makeRequest(input: RequestInfo | URL, requestConfig: RequestConfig = {}): Promise<Response> {
-    console.log('makeRequest', input, requestConfig);
-    const {
-      timeout = this.config.timeout,
-      retries = this.config.retries,
-      skipAuth = false,
-      ...fetchConfig
-    } = requestConfig;
+    const { timeout = this.config.timeout, retries = this.config.retries, ...fetchConfig } = requestConfig;
 
     const url = typeof input === 'string' ? input : input.toString();
     const fullUrl = url.startsWith('http') ? url : `${this.config.baseURL}${url}`;
@@ -45,19 +38,6 @@ class ApiClient {
       // Set content-type for other body types if not already set
       if (typeof fetchConfig.body === 'string') {
         headers.set('Content-Type', 'text/plain');
-      }
-    }
-
-    // Add authentication if not skipped
-    if (!skipAuth) {
-      try {
-        const token = await getAccessToken();
-        if (token) {
-          headers.set('Authorization', `Bearer ${token}`);
-        }
-      } catch (error) {
-        console.warn('Failed to get access token:', error);
-        // Continue without auth if token retrieval fails
       }
     }
 
@@ -165,6 +145,9 @@ export const apiClient = new ApiClient();
 export const classroomio = hcWithType(env.PUBLIC_SERVER_URL, {
   fetch: async (input: RequestInfo | URL, requestInit?: RequestInit) => {
     return apiClient.request(input, requestInit);
+  },
+  init: {
+    credentials: 'include' // Required for sending cookies cross-origin
   }
 });
 

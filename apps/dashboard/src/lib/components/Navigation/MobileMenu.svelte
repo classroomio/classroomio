@@ -1,7 +1,7 @@
 <script lang="ts">
   import { stopPropagation } from '$lib/utils/functions/svelte';
 
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { user } from '$lib/utils/store/user';
   import { type TCustomLinks } from './types';
   import CustomLinks from './CustomLinks.svelte';
@@ -55,7 +55,7 @@
           <CustomLinks {customLinks} isMobile={true} onMobileClick={closeMobileMenu} />
 
           <!-- Login/Signup buttons in mobile menu -->
-          {#if !$user.isLoggedIn && !$page.url.pathname?.includes('/404')}
+          {#if !$user.isLoggedIn && !page.url.pathname?.includes('/404')}
             <li class="pt-4">
               <AuthButtons {disableSignup} {redirect} isMobile={true} onMobileClick={closeMobileMenu} />
             </li>

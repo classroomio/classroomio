@@ -22,18 +22,20 @@ interface LoadOutput {
   org: CurrentOrg | null;
   baseMetaTags: MetaTagsProps;
   serverLang: string;
+  locals: App.Locals;
 }
 
 const APP_SUBDOMAINS = env.PRIVATE_APP_SUBDOMAINS?.split(',') || [];
 
-export const load = async ({ url, cookies, request }): Promise<LoadOutput> => {
+export const load = async ({ url, cookies, request, locals }): Promise<LoadOutput> => {
   const response: LoadOutput = {
     orgSiteName: '',
     isOrgSite: false,
     skipAuth: false,
     org: null,
     baseMetaTags: getBaseMetaTags(url),
-    serverLang: request.headers?.get('accept-language') || ''
+    serverLang: request.headers?.get('accept-language') || '',
+    locals
   };
 
   console.log('PUBLIC_IS_SELFHOSTED', PUBLIC_IS_SELFHOSTED);

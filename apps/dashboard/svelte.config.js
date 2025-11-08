@@ -17,12 +17,14 @@ const config = {
     alias: {
       $lib: path.resolve('./src/lib'),
       $mail: path.resolve('./src/mail'),
-      '$src/tools': path.resolve('../../packages/ui/src/tools/index.ts'),
-      '$src/base/*': path.resolve('../../packages/ui/src/base/*'),
-      '@cio/ui': path.resolve('../../packages/ui/src'),
-      '@cio/ui/*': path.resolve('../../packages/ui/src/*'),
-      '@cio/api': path.resolve('../api/dist'),
-      '@cio/api/*': path.resolve('../api/dist/*')
+      '$src/tools': path.resolve('./node_modules/@cio/ui/src/tools/index.ts'),
+      '$src/base/*': path.resolve('./node_modules/@cio/ui/src/base/*'),
+      '@cio/ui': path.resolve('./node_modules/@cio/ui/src'),
+      '@cio/ui/*': path.resolve('./node_modules/@cio/ui/src/*'),
+      '@cio/api': path.resolve('./node_modules/@cio/api/dist'),
+      '@cio/api/*': path.resolve('./node_modules/@cio/api/dist/*'),
+      '@cio/utils': path.resolve('./node_modules/@cio/utils/dist'),
+      '@cio/utils/*': path.resolve('./node_modules/@cio/utils/dist/*')
     }
   }
 };

@@ -1,6 +1,6 @@
 <script>
   import { dev } from '$app/environment';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import Footer from '$lib/Footer/Footer.svelte';
   import Navigation from '$lib/Navigation/Navigation.svelte';
   import NotFound from '$lib/NotFound/NotFound.svelte';
@@ -19,7 +19,7 @@
     }
   });
 
-  $: metaTags = extend(true, {}, data.baseMetaTags, $page.data.pageMetaTags);
+  $: metaTags = extend(true, {}, data.baseMetaTags, page.data.pageMetaTags);
 </script>
 
 <MetaTags {...metaTags} />
@@ -28,7 +28,7 @@
   <Navigation />
 
   <PageTransition url={data.url}>
-    {#if $page.status === 404}
+    {#if page.status === 404}
       <NotFound className="mt-5" />
     {:else}
       <slot />

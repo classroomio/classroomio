@@ -1,6 +1,8 @@
 <script lang="ts">
+  import type { Component } from 'svelte';
+
   interface Activity {
-    icon: any;
+    icon: Component;
     title: string;
     percentage: number | string;
     description: string;

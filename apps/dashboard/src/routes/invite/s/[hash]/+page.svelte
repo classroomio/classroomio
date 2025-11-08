@@ -13,7 +13,7 @@
   import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
   import { snackbar } from '$lib/components/Snackbar/store.js';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
 
   let { data } = $props();
 
@@ -21,14 +21,14 @@
   let loading = $state(false);
 
   let disableSubmit = false;
-  let formRef: HTMLFormElement = $state();
+  let formRef: HTMLFormElement | undefined = $state();
 
   async function handleSubmit() {
     loading = true;
 
     if (!$profile.id || !$profile.email) {
       console.log('Profile not found', $profile);
-      return goto(`/signup?redirect=${$page.url?.pathname || ''}`);
+      return goto(`/signup?redirect=${page.url?.pathname || ''}`);
     }
 
     const { data: courseData, error } = await supabase.from('course').select('group_id').eq('id', data.id).single();

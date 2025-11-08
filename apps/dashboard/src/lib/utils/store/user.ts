@@ -1,5 +1,6 @@
+import type { Profile, User } from '@cio/utils/types';
+
 import { LOCALE } from '../types';
-import type { User } from '@supabase/supabase-js';
 import { writable } from 'svelte/store';
 
 interface UserStore {
@@ -10,22 +11,10 @@ interface UserStore {
   expiresAt: number;
 }
 
-export interface ProfileStore {
+// Using Profile type from @cio/utils/types with optional id for store initialization
+export type ProfileStore = Omit<Profile, 'id'> & {
   id: string | undefined;
-  fullname: string;
-  avatar_url: string;
-  profile_url?: string;
-  username: string;
-  user_id: string;
-  email: string;
-  role: string;
-  goal: string;
-  source: string;
-  telegram_chat_id: number | null;
-  locale: LOCALE;
-  is_email_verified: boolean;
-  verified_at: string;
-}
+};
 
 export const defaultUserState: UserStore = {
   openAuthModal: false,
@@ -35,22 +24,26 @@ export const defaultUserState: UserStore = {
   expiresAt: 0
 };
 
-export const defaultProfileState: ProfileStore = {
-  id: undefined,
+export const defaultProfileState: Profile = {
+  id: '',
   fullname: '',
-  avatar_url: '',
+  avatarUrl: '',
   username: '',
-  user_id: '',
-  email: '',
-  role: '',
-  goal: '',
-  source: '',
-  telegram_chat_id: null,
+  email: null,
+  role: null,
+  goal: null,
+  source: null,
+  telegramChatId: null,
   locale: LOCALE.EN,
-  is_email_verified: false,
-  verified_at: ''
+  isEmailVerified: false,
+  verifiedAt: null,
+  canAddCourse: true,
+  isRestricted: false,
+  createdAt: '',
+  updatedAt: '',
+  metadata: null
 };
 
 export const user = writable<UserStore>(defaultUserState);
 
-export const profile = writable<ProfileStore>(defaultProfileState);
+export const profile = writable<Profile>(defaultProfileState);

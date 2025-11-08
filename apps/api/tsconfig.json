@@ -9,7 +9,9 @@
     "moduleResolution": "Bundler",
     "outDir": "./dist",
     "paths": {
-      "@api/*": ["src/*"]
+      "@api/*": ["src/*"],
+      "@db/*": ["./node_modules/@cio/db/src/*"],
+      "@cio/db/*": ["./node_modules/@cio/db/src/*"]
     },
     "resolveJsonModule": false,
     "skipLibCheck": true,

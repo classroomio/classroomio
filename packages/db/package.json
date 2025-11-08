@@ -2,6 +2,18 @@
   "name": "@cio/db",
   "version": "1.0.0",
   "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./types": {
+      "types": "./src/types.ts",
+      "default": "./src/types.ts"
+    }
+  },
   "scripts": {
     "db": "drizzle-kit",
     "move-users": "tsx src/scripts/supabase-to-betterauth.ts",

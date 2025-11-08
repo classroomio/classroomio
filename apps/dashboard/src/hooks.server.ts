@@ -1,5 +1,5 @@
 import type { Handle } from '@sveltejs/kit';
-import { validateUser } from '$lib/utils/services/middlewares';
+import { getSessionData } from '$lib/utils/services/auth/session';
 
 const PUBLIC_ROUTES = [
   '/api/completion',
@@ -15,9 +15,16 @@ function isPublicRoute(pathname: string) {
 }
 
 export const handle: Handle = async ({ event, resolve }) => {
-  const response = await resolve(event);
+  console.log('handle hook called');
+  const sessionToken = event.cookies.get('better-auth.session_token');
+  const sessionData = await getSessionData(sessionToken);
+
+  if (sessionData) {
+    event.locals = sessionData;
+  }
 
   const { pathname } = event.url;
+  const response = await resolve(event);
 
   // Only validate API routes
   if (!pathname.includes('/api')) {
@@ -29,12 +36,10 @@ export const handle: Handle = async ({ event, resolve }) => {
     return response;
   }
 
-  const accessToken = event.request.headers.get('Authorization')!;
-
   try {
-    const user = await validateUser(accessToken);
-
-    response.headers.set('user_id', `${user.id}`);
+    if (!event.locals.user) {
+      throw new Error('Unauthenticated user');
+    }
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === 'Unauthenticated user') {

@@ -55,20 +55,20 @@
       icon: BookOpenIcon,
       title: $t('analytics.enrolled_courses'),
       description: $t('analytics.enrolled_courses_description'),
-      percentage: userAnalytics?.courses?.length,
+      percentage: userAnalytics?.courses?.length || 0,
       hidePercentage: true
     },
     {
       icon: ChartLineIcon,
       title: $t('analytics.overall_course_progress'),
       description: $t('analytics.overall_course_progress_description'),
-      percentage: userAnalytics?.overallCourseProgress
+      percentage: userAnalytics?.overallCourseProgress || 0
     },
     {
       icon: UnfoldVerticalIcon,
       title: $t('analytics.total_average_grade'),
       description: $t('analytics.total_average_grade_description'),
-      percentage: userAnalytics?.overallAverageGrade
+      percentage: userAnalytics?.overallAverageGrade || 0
     }
   ]);
 

@@ -1,6 +1,18 @@
 {
   "extends": "@cio/tsconfig/base.json",
   "compilerOptions": {
-    "resolveJsonModule": true
-  }
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "resolveJsonModule": true,
+    "module": "ES2022",
+    "target": "ES2020",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+      "@db/*": ["./node_modules/@cio/db/src/*"],
+      "@cio/db/*": ["./node_modules/@cio/db/src/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "scripts"]
 }

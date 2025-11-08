@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import CourseIcon from '$lib/Icons/CourseIcon.svelte';
   import ChevronDown from 'carbon-icons-svelte/lib/ChevronDown.svelte';
   import CloseLarge from 'carbon-icons-svelte/lib/CloseLarge.svelte';
@@ -50,8 +50,8 @@
     }
   ];
 
-  $: activeLink = $page.url.pathname;
-  $: activeHash = $page.url.hash;
+  $: activeLink = page.url.pathname;
+  $: activeHash = page.url.hash;
   $: isSolutionsActive = solutions.some((s) => activeHash.includes(s.key));
 
   async function setStars() {
