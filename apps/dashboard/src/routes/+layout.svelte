@@ -48,7 +48,7 @@
 
   const getProfileDebounced = debounce(getProfile, 1000);
 
-  onMount(() => {
+  function pageSetup() {
     console.log(
       'Welcome to ClassroomIO, we are grateful you chose us.',
       $page.url.host,
@@ -56,18 +56,33 @@
       data
     );
 
-    if (browser) {
-      // Update theme - dark or light mode
-      $globalStore.isDark = localStorage.getItem('mode') === 'dark';
-      toggleBodyByMode($globalStore.isDark);
+    $globalStore.isDark = localStorage.getItem('mode') === 'dark';
+    toggleBodyByMode($globalStore.isDark);
 
-      if (data.isOrgSite && data.org?.theme) {
-        setTheme(data.org?.theme);
-      }
-    }
     setupAnalytics();
 
     handleResize();
+
+    if (!data.isOrgSite || !data.org) return;
+
+    if ($currentOrg.siteName !== data.org.siteName) {
+      $globalStore.orgSiteName = data.orgSiteName;
+      $globalStore.isOrgSite = data.isOrgSite;
+
+      console.log('Setting current org to', data.org);
+      currentOrg.set(data.org);
+
+      // Setup internal analytics
+      initOrgAnalytics(data.orgSiteName);
+    }
+
+    setTheme(data.org?.theme);
+  }
+
+  $: console.log('Current org', $currentOrg);
+
+  onMount(() => {
+    pageSetup();
 
     if (!hasSession() && !isPublicRoute($page.url?.pathname)) {
       console.log('No auth token and is not a public route, redirect to login', path);
@@ -75,7 +90,6 @@
     }
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event) => {
-      // Log key events
       console.log(`event`, event);
 
       if (path.includes('reset')) {
@@ -83,10 +97,8 @@
         return;
       }
 
-      // Skip Authentication
       if (data.skipAuth) return;
 
-      // Authentication Steps
       if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
         getProfileDebounced({
           path,
@@ -95,23 +107,7 @@
           orgSiteName: data.orgSiteName
         });
       }
-      // else if (!['TOKEN_REFRESHED'].includes(event)) {
-      //   console.log('not logged in, go to login');
-      //   return goto('/login');
-      // }
     });
-
-    console.log('BEFORE === Setting currentOrg in layout', data.org, $currentOrg);
-    if (data.isOrgSite && data.org && $currentOrg.siteName !== data.org.siteName) {
-      console.log('Setting currentOrg in layout');
-      $globalStore.orgSiteName = data.orgSiteName;
-      $globalStore.isOrgSite = data.isOrgSite;
-
-      currentOrg.set(data.org);
-
-      // Setup internal analytics
-      initOrgAnalytics(data.orgSiteName);
-    }
 
     return () => {
       console.log('unsubscribed');
@@ -119,7 +115,6 @@
     };
   });
 
-  $: console.log('$globalStore in root', $globalStore);
   $: path = $page.url?.pathname?.replace('/', '');
   $: carbonTheme = $globalStore.isDark ? 'g100' : 'white';
   $: metaTags = merge(data.baseMetaTags, $page.data.pageMetaTags);
