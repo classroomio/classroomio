@@ -68,7 +68,6 @@
     $globalStore.orgSiteName = data.orgSiteName;
     $globalStore.isOrgSite = data.isOrgSite;
 
-    console.log('Setting current org to', data.org);
     currentOrg.set(data.org);
 
     // Setup internal analytics
@@ -76,8 +75,6 @@
 
     setTheme(data.org?.theme);
   }
-
-  $: console.log('Current org', $currentOrg);
 
   onMount(() => {
     pageSetup();

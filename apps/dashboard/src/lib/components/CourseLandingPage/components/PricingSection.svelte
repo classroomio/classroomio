@@ -37,10 +37,10 @@
       course_cost: courseData.cost,
       course_free: isFree
     });
-    console.log('$currentOrg', $currentOrg);
+
     if (isFree) {
       const link = getStudentInviteLink(courseData, $currentOrg.siteName, $currentOrgDomain);
-      console.log('link', link);
+
       goto(link);
     } else {
       openModal = true;
