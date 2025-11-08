@@ -29,6 +29,9 @@
   import merge from 'lodash/merge';
   import { onMount } from 'svelte';
   import { MetaTags } from 'svelte-meta-tags';
+  import isPublicRoute from '$lib/utils/functions/routes/isPublicRoute';
+  import { isSupabaseTokenInLocalStorage } from '$lib/utils/functions/supabase';
+  import { goto } from '$app/navigation';
 
   import '../app.postcss';
 
@@ -65,10 +68,10 @@
 
     handleResize();
 
-    // if (!isSupabaseTokenInLocalStorage() && !isPublicRoute($page.url?.pathname)) {
-    //   console.log('No auth token and is not a public route, redirect to login', path);
-    //   return goto('/login?redirect=/' + path);
-    // }
+    if (!isSupabaseTokenInLocalStorage() && !isPublicRoute($page.url?.pathname)) {
+      console.log('No auth token and is not a public route, redirect to login', path);
+      return goto('/login?redirect=/' + path);
+    }
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       // Log key events

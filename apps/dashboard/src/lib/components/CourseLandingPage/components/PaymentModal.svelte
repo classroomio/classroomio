@@ -20,7 +20,7 @@
     email: ''
   };
 
-  let errors = {
+  let errors: Record<string, string> = {
     fullname: '',
     email: ''
   };
@@ -94,7 +94,7 @@
         errorMessage={errors.email}
       />
 
-      <div class="mt-5 flex items-center flex-row-reverse">
+      <div class="mt-5 flex flex-row-reverse items-center">
         <PrimaryButton
           className="px-6 py-3"
           label={paymentLink ? 'Next' : 'Finish'}
@@ -107,7 +107,7 @@
       You will now be taken to a payment page, once you've paid send a proof of payment to the
       course admin
     </p>
-    <div class="mt-5 flex items-center flex-row-reverse">
+    <div class="mt-5 flex flex-row-reverse items-center">
       <Link href={paymentLink} target="_blank" on:click={onClickPaymentLink}>Go to payment</Link>
     </div>
   {/if}
