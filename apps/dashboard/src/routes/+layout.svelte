@@ -52,7 +52,8 @@
     console.log(
       'Welcome to ClassroomIO, we are grateful you chose us.',
       $page.url.host,
-      `\nIs student domain: ${data.isOrgSite}`
+      `\nIs student domain: ${data.isOrgSite}`,
+      data
     );
 
     if (browser) {
@@ -100,7 +101,7 @@
       // }
     });
 
-    if (data.isOrgSite && data.org && !$currentOrg.siteName) {
+    if (data.isOrgSite && data.org && $currentOrg.siteName !== data.org.siteName) {
       $globalStore.orgSiteName = data.orgSiteName;
       $globalStore.isOrgSite = data.isOrgSite;
 

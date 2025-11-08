@@ -172,15 +172,16 @@ function getBaseMetaTags(url: URL) {
 }
 
 function getSubdomain(url: URL) {
-  console.log('url.host', url);
-  const host = url.host.replace('www.', '');
-  console.log('host', host);
-  const parts = host?.split('.');
-  console.log('parts', parts);
+  const host = url.hostname.replace('www.', '');
+  const parts = host.split('.');
+  const appHost = env.PRIVATE_APP_HOST;
 
-  if (host?.endsWith(env.PRIVATE_APP_HOST)) {
-    console.log('is app host');
-    return parts?.length >= 3 ? parts[0] : null;
+  const appHostParts = appHost.split('.');
+  const isAppHost = parts.slice(-appHostParts.length).join('.') === appHost;
+
+  if (isAppHost) {
+    // Subdomain exists only if extra part(s) before main domain
+    return parts.length > appHostParts.length ? parts[0] : null;
   }
 
   return null;
