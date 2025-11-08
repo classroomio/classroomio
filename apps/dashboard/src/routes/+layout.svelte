@@ -30,7 +30,7 @@
   import { onMount } from 'svelte';
   import { MetaTags } from 'svelte-meta-tags';
   import isPublicRoute from '$lib/utils/functions/routes/isPublicRoute';
-  import { isSupabaseTokenInLocalStorage } from '$lib/utils/functions/supabase';
+  import { hasSession } from '$lib/utils/functions/supabase';
   import { goto } from '$app/navigation';
 
   import '../app.postcss';
@@ -69,12 +69,12 @@
 
     handleResize();
 
-    if (!isSupabaseTokenInLocalStorage() && !isPublicRoute($page.url?.pathname)) {
+    if (!hasSession() && !isPublicRoute($page.url?.pathname)) {
       console.log('No auth token and is not a public route, redirect to login', path);
       return goto('/login?redirect=/' + path);
     }
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event) => {
       // Log key events
       console.log(`event`, event);
 
@@ -101,7 +101,9 @@
       // }
     });
 
+    console.log('BEFORE === Setting currentOrg in layout', data.org, $currentOrg);
     if (data.isOrgSite && data.org && $currentOrg.siteName !== data.org.siteName) {
+      console.log('Setting currentOrg in layout');
       $globalStore.orgSiteName = data.orgSiteName;
       $globalStore.isOrgSite = data.isOrgSite;
 
