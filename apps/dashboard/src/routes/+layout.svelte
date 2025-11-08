@@ -65,16 +65,14 @@
 
     if (!data.isOrgSite || !data.org) return;
 
-    if ($currentOrg.siteName !== data.org.siteName) {
-      $globalStore.orgSiteName = data.orgSiteName;
-      $globalStore.isOrgSite = data.isOrgSite;
+    $globalStore.orgSiteName = data.orgSiteName;
+    $globalStore.isOrgSite = data.isOrgSite;
 
-      console.log('Setting current org to', data.org);
-      currentOrg.set(data.org);
+    console.log('Setting current org to', data.org);
+    currentOrg.set(data.org);
 
-      // Setup internal analytics
-      initOrgAnalytics(data.orgSiteName);
-    }
+    // Setup internal analytics
+    initOrgAnalytics(data.orgSiteName);
 
     setTheme(data.org?.theme);
   }
