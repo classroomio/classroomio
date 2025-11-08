@@ -100,11 +100,9 @@ export const load = async ({ url, cookies, request }): Promise<LoadOutput> => {
       return response;
     }
 
-    const answer = !!subdomain;
-
     console.log('subdomain', subdomain);
 
-    response.isOrgSite = debugMode || answer;
+    response.isOrgSite = debugMode || !!subdomain;
     response.orgSiteName = debugMode ? _orgSiteName : subdomain;
     response.org = (await getCurrentOrg(response.orgSiteName, true)) || null;
 
@@ -174,10 +172,14 @@ function getBaseMetaTags(url: URL) {
 }
 
 function getSubdomain(url: URL) {
+  console.log('url.host', url);
   const host = url.host.replace('www.', '');
+  console.log('host', host);
   const parts = host?.split('.');
+  console.log('parts', parts);
 
   if (host?.endsWith(env.PRIVATE_APP_HOST)) {
+    console.log('is app host');
     return parts?.length >= 3 ? parts[0] : null;
   }
 
