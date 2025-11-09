@@ -41,6 +41,7 @@ Documenting my thoughts on how authentication works in the app.
 
 ### migrate from supabase
 
+- [ ] implement logout
 - [ ] google auth flow (local and on test environment)
 - [ ] support google auth for teacher invite
 - [ ] forgot password flow

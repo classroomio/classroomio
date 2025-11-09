@@ -1,19 +1,16 @@
-import { apiClient } from '$lib/utils/services/api';
+import { classroomio } from '$lib/utils/services/api';
 
-export const getSessionData = async (sessionToken?: string) => {
-  if (!sessionToken) return null;
-
+export const getSessionData = async (cookie: string) => {
   try {
-    const session = await apiClient.request('/api/auth/get-session', {
+    const session = await classroomio.session.$get(undefined, {
       headers: {
-        Cookie: `better-auth.session_token=${sessionToken}`
+        cookie: cookie || ''
       }
     });
 
-    const sessionData = await session.json();
-
-    return sessionData;
+    return session.json();
   } catch (error) {
     console.error('Session verification failed:', error);
+    return null;
   }
 };

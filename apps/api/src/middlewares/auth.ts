@@ -12,9 +12,6 @@ export const authMiddleware = async (c: Context, next: Next) => {
       throw new Error('Unauthorized');
     }
 
-    c.set('user', session.user);
-    c.set('session', session.session);
-
     await next();
   } catch (error) {
     return c.json(

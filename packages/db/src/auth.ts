@@ -13,7 +13,8 @@ export const auth = betterAuth({
   baseURL: process.env.SERVER_URL,
   database: drizzleAdapter(db, {
     provider: 'pg',
-    schema
+    schema,
+    debugLogs: true
   }),
   emailVerification: {},
   emailAndPassword: {
@@ -37,6 +38,7 @@ export const auth = betterAuth({
   },
   trustedOrigins: ['*'],
   advanced: {
+    cookiePrefix: 'classroomio',
     crossSubDomainCookies: {
       enabled: true
     }
@@ -44,16 +46,7 @@ export const auth = betterAuth({
   session: {
     cookieCache: {
       enabled: true,
-      maxAge: 5 * 60 // 5 minutes
-    }
-  },
-  logger: {
-    disabled: false,
-    disableColors: false,
-    level: 'error',
-    log: (level, message, ...args) => {
-      // Custom logging implementation
-      console.log(`[${level}] ${message}`, ...args);
+      maxAge: 60 * 60 // 1 hour
     }
   },
   hooks: {
