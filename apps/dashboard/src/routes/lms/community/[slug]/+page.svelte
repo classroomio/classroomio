@@ -2,9 +2,9 @@
   import { untrack } from 'svelte';
   import pluralize from 'pluralize';
   import { goto } from '$app/navigation';
+  import * as Select from '@cio/ui/base/select';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import TrashIcon from '@lucide/svelte/icons/trash';
-  import { Dropdown } from 'carbon-components-svelte';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 
   import type { Course } from '$lib/utils/types';
@@ -406,13 +406,22 @@
       <div class="my-5 flex items-center justify-between">
         {#if isEditMode}
           <TextField bind:value={editContent.title} className="w-full mr-2" errorMessage={errors.title} />
-          <Dropdown
-            class="h-full w-[25%]"
-            size="xl"
-            label="Select Course"
-            items={fetchedCourses.map((course) => ({ id: course.id, text: course.title }))}
-            bind:selectedId={editContent.courseId}
-          />
+          <Select.Root type="single" bind:value={editContent.courseId}>
+            <Select.Trigger class="h-full w-[25%]">
+              <p>
+                {editContent.courseId
+                  ? fetchedCourses.find((course) => course.id === editContent.courseId)?.title
+                  : 'Select Course'}
+              </p>
+            </Select.Trigger>
+            <Select.Content>
+              {#each fetchedCourses as course}
+                {#if course.id}
+                  <Select.Item value={course.id}>{course.title}</Select.Item>
+                {/if}
+              {/each}
+            </Select.Content>
+          </Select.Root>
         {:else}
           <div class="flex items-center">
             <Vote value={question.votes} upVote={() => upvoteQuestion('question')} disabled={voted.question} />
@@ -470,7 +479,7 @@
             />
           </div>
         {:else}
-          <section class="prose prose-sm sm:prose p-2">
+          <section class="prose prose-sm p-2 sm:prose">
             {@html question.body}
           </section>
         {/if}
@@ -513,7 +522,7 @@
                 </IconButton>
               {/if}
             </header>
-            <article class="prose prose-sm sm:prose p-2">
+            <article class="prose prose-sm p-2 sm:prose">
               {@html comment.comment}
             </article>
           </div>

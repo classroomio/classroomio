@@ -1,32 +1,32 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { ActivityCard } from '$lib/components/Analytics';
-  import Progress from '$lib/components/Progress/index.svelte';
-  import LibraryBigIcon from '@lucide/svelte/icons/library-big';
+  import BookIcon from '@lucide/svelte/icons/book';
+  import { Skeleton } from '@cio/ui/base/skeleton';
   import UserIcon from '@lucide/svelte/icons/user';
+  import UsersIcon from '@lucide/svelte/icons/users';
+  import LibraryBigIcon from '@lucide/svelte/icons/library-big';
+  import DollarSignIcon from '@lucide/svelte/icons/dollar-sign';
 
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { profile } from '$lib/utils/store/user';
+  import PlusIcon from '@lucide/svelte/icons/plus';
+  import { isOrgAdmin } from '$lib/utils/store/org';
+  import { t } from '$lib/utils/functions/translations';
+  import { isMobile } from '$lib/utils/store/useMobile';
   import { calDateDiff } from '$lib/utils/functions/date';
+  import { getGreeting } from '$lib/utils/functions/date';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import { getAccessToken } from '$lib/utils/functions/supabase';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import { profile } from '$lib/utils/store/user';
   import type { OrganisationAnalytics } from '$lib/utils/types/analytics';
-  import PlusIcon from '@lucide/svelte/icons/plus';
-
-  import BookIcon from '@lucide/svelte/icons/book';
-  import DollarSignIcon from '@lucide/svelte/icons/dollar-sign';
-  import UsersIcon from '@lucide/svelte/icons/users';
 
   import Avatar from '$lib/components/Avatar/index.svelte';
-  import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
+  import { ActivityCard } from '$lib/components/Analytics';
+  import Progress from '$lib/components/Progress/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import Grid from '$lib/components/Org/Settings/Layout/Grid.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import WelcomeModal from '$lib/components/WelcomeModal/WelcomeModal.svelte';
-  import { getGreeting } from '$lib/utils/functions/date';
-  import { t } from '$lib/utils/functions/translations';
-  import { isOrgAdmin } from '$lib/utils/store/org';
-  import { isMobile } from '$lib/utils/store/useMobile';
-  import { Grid, Link, SkeletonPlaceholder } from 'carbon-components-svelte';
+  import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
 
   let dashAnalytics: OrganisationAnalytics | undefined = $state();
   let hasFetched = $state(false);
@@ -123,11 +123,11 @@
   </div>
 
   <div class="mb-10 flex flex-wrap items-start">
-    <Grid class="px-0" fullWidth>
+    <Grid class="px-0">
       <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {#each cards as card}
           {#if !dashAnalytics}
-            <SkeletonPlaceholder style="width: 100%; min-width: 300px; height: 10rem;" class="rounded-md" />
+            <Skeleton style="width: 100%; min-width: 300px; height: 10rem;" class="rounded-md" />
           {:else}
             <ActivityCard activity={card} />
           {/if}
@@ -145,18 +145,18 @@
       <div class="h-full space-y-6">
         {#if !dashAnalytics}
           {#each Array(5) as _}
-            <SkeletonPlaceholder style="width: 100%; height: 40px;" class="rounded-md" />
+            <Skeleton class="h-10 w-full rounded-md" />
           {/each}
         {:else}
           {#each dashAnalytics.topCourses as course}
             <div class="flex items-center gap-2">
               <div class="w-4/6 space-y-1">
-                <Link href={`/courses/${course.id}`}>
+                <a href={`/courses/${course.id}`}>
                   <p class="line-clamp-2 pb-[0.1rem] text-sm font-medium leading-none">
                     {course.title}
                   </p>
-                </Link>
-                <p class="text-muted-foreground text-sm">
+                </a>
+                <p class="text-sm">
                   {course.enrollments}
                   {$t(course.enrollments === 1 ? 'dashboard.student' : 'dashboard.students')}
                 </p>
@@ -197,7 +197,7 @@
       <div class="h-full space-y-6">
         {#if !dashAnalytics}
           {#each Array(5) as _}
-            <SkeletonPlaceholder style="width: 100%; height: 40px;" class="rounded-md" />
+            <Skeleton class="h-10 w-full rounded-md" />
           {/each}
         {:else}
           {#each dashAnalytics.enrollments as enrollment}
@@ -216,11 +216,11 @@
               </div>
 
               <div class="w-2/4">
-                <Link href={`/courses/${enrollment.courseId}`}>
+                <a href={`/courses/${enrollment.courseId}`}>
                   <p class="line-clamp-2 pb-[0.1rem] text-sm font-medium leading-none">
                     {enrollment.course}
                   </p>
-                </Link>
+                </a>
               </div>
             </div>
           {:else}

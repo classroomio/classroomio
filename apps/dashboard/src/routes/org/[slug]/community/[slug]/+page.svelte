@@ -3,8 +3,8 @@
   import pluralize from 'pluralize';
   import { goto } from '$app/navigation';
   import { Skeleton } from '@cio/ui/base/skeleton';
+  import * as Select from '@cio/ui/base/select';
   import TrashIcon from '@lucide/svelte/icons/trash';
-  import { Dropdown } from 'carbon-components-svelte';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 
   import { t } from '$lib/utils/functions/translations';
@@ -14,6 +14,7 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import { fetchCourses } from '$lib/utils/services/courses';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { currentOrg, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
   import { askCommunityValidation, commentInCommunityValidation } from '$lib/utils/functions/validator';
 
   import type { Course } from '$lib/utils/types';
@@ -26,7 +27,6 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import DeleteModal from '$lib/components/Org/Community/DeleteModal.svelte';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
-  import { currentOrg, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
 
   interface Comment {
     id: string;
@@ -413,13 +413,20 @@
       <div class="my-5 flex items-center justify-between">
         {#if isEditMode}
           <TextField bind:value={editContent.title} className="w-full mr-2" errorMessage={errors.title} />
-          <Dropdown
-            class="h-full w-[25%]"
-            size="xl"
-            label={$t('community.ask.select_course')}
-            items={fetchedCourses.map((course) => ({ id: course.id, text: course.title }))}
-            bind:selectedId={editContent.courseId}
-          />
+          <Select.Root type="single" bind:value={editContent.courseId}>
+            <Select.Trigger class="h-full w-[25%]">
+              <p>
+                {editContent.courseId
+                  ? fetchedCourses.find((course) => course.id === editContent.courseId)?.title
+                  : $t('community.ask.select_course')}
+              </p>
+            </Select.Trigger>
+            <Select.Content>
+              {#each fetchedCourses as course}
+                <Select.Item value={course.id || ''}>{course.title}</Select.Item>
+              {/each}
+            </Select.Content>
+          </Select.Root>
         {:else}
           <div class="flex items-center">
             <Vote value={question.votes} upVote={() => upvoteQuestion('question')} disabled={voted.question} />
@@ -477,7 +484,7 @@
             />
           </div>
         {:else}
-          <section class="prose prose-sm sm:prose p-2">
+          <section class="prose prose-sm p-2 sm:prose">
             {@html question.body}
           </section>
         {/if}
@@ -520,7 +527,7 @@
                 </IconButton>
               {/if}
             </header>
-            <article class="prose prose-sm sm:prose p-2">
+            <article class="prose prose-sm p-2 sm:prose">
               {@html comment.comment}
             </article>
           </div>

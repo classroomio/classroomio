@@ -1,23 +1,25 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
-  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
-  import CircleAlertIcon from '@lucide/svelte/icons/circle-alert';
   import cloneDeep from 'lodash/cloneDeep';
   import isBoolean from 'lodash/isBoolean';
-  import { onMount } from 'svelte';
+  import { Label } from '@cio/ui/base/label';
+  import * as Select from '@cio/ui/base/select';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+  import CircleAlertIcon from '@lucide/svelte/icons/circle-alert';
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
 
-  import DeleteModal from '$lib/components/Org/Quiz/DeleteModal.svelte';
   import Preview from '$lib/components/Org/Quiz/Play/Preview.svelte';
-  import QuizQuestion from '$lib/components/Org/Quiz/QuizQuestion.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import DeleteModal from '$lib/components/Org/Quiz/DeleteModal.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { allOptions, allThemes, booleanOptions, themeImages } from '$lib/utils/constants/quiz';
-  import { supabase } from '$lib/utils/functions/supabase';
+  import QuizQuestion from '$lib/components/Org/Quiz/QuizQuestion.svelte';
+
   import { t } from '$lib/utils/functions/translations';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { currentOrgPath, deleteModal, quizStore, quizesStore } from '$lib/utils/store/org';
-  import { Select, SelectItem } from 'carbon-components-svelte';
+  import { allOptions, allThemes, booleanOptions, themeImages } from '$lib/utils/constants/quiz';
 
   interface QuizOption {
     id: number;
@@ -58,10 +60,9 @@
     isLabelEmpty?: boolean;
     hasOneAnswer?: boolean;
     id?: number;
-    options?: Array<{ id: number; error: boolean }>;
+    options: Array<{ id: number; error: boolean }>;
   } = $state({});
   let isFocused = $state(false);
-  let selectEl: Select | null = $state(null);
 
   function activeClass(q, cq) {
     if (q.id === cq.id) {
@@ -339,39 +340,44 @@
     <div class="flex flex-col justify-evenly">
       <div class="my-3">
         <!-- Question type -->
-        <Select
-          labelText="Question type"
-          bind:this={selectEl}
-          bind:selected={type}
-          class="mb-3 flex items-center"
-          on:focus={() => (isFocused = true)}
-          on:blur={() => (isFocused = false)}
-          on:change={() => {
-            if (!isFocused) return;
-            // Blur after change
-            const onBlur = selectEl?.$$?.callbacks?.blur?.[0];
-            const onFocus = selectEl?.$$?.callbacks?.focus?.[0];
-            setTimeout(() => {
-              onBlur();
-              onFocus();
-            }, 1000);
-
-            handleQuestionTypeChange(type);
-          }}
-        >
-          <SelectItem value="multichoice" text="Multi-choice answers" />
-          <SelectItem value="boolean" text="True or False" />
-        </Select>
+        <div class="mb-3">
+          <Label class="mb-2">Question type</Label>
+          <Select.Root
+            type="single"
+            bind:value={type}
+            onValueChange={(value) => {
+              if (value) {
+                handleQuestionTypeChange(value);
+              }
+            }}
+          >
+            <Select.Trigger class="w-full">
+              <p>{type === 'multichoice' ? 'Multi-choice answers' : 'True or False'}</p>
+            </Select.Trigger>
+            <Select.Content>
+              <Select.Item value="multichoice">Multi-choice answers</Select.Item>
+              <Select.Item value="boolean">True or False</Select.Item>
+            </Select.Content>
+          </Select.Root>
+        </div>
 
         <!--  -->
-        <Select labelText="Time limit" bind:selected={$quizStore.timelimit} class="mb-3 flex items-center">
-          <SelectItem value="10 seconds" text="10s" />
-          <SelectItem value="20 seconds" text="20s" />
-          <SelectItem value="30 seconds" text="30s" />
-          <SelectItem value="1 minute" text="1m" />
-          <SelectItem value="2 minute" text="2m" />
-          <SelectItem value="3 minute" text="3m" />
-        </Select>
+        <div class="mb-3">
+          <Label class="mb-2">Time limit</Label>
+          <Select.Root type="single" bind:value={$quizStore.timelimit}>
+            <Select.Trigger class="w-full">
+              <p>{$quizStore.timelimit || 'Select time limit'}</p>
+            </Select.Trigger>
+            <Select.Content>
+              <Select.Item value="10 seconds">10s</Select.Item>
+              <Select.Item value="20 seconds">20s</Select.Item>
+              <Select.Item value="30 seconds">30s</Select.Item>
+              <Select.Item value="1 minute">1m</Select.Item>
+              <Select.Item value="2 minute">2m</Select.Item>
+              <Select.Item value="3 minute">3m</Select.Item>
+            </Select.Content>
+          </Select.Root>
+        </div>
       </div>
 
       <!-- Theme settings -->

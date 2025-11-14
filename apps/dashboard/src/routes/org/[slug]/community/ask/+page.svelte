@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { Dropdown } from 'carbon-components-svelte';
+  import * as Select from '@cio/ui/base/select';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 
   import type { Course } from '$lib/utils/types';
@@ -112,15 +112,27 @@
       errorMessage={errors.title}
       className="w-[75%]"
     />
-    <Dropdown
-      class="h-full w-[25%]"
-      size="xl"
-      label={$t('community.ask.select_course')}
-      invalid={!!errors.courseId}
-      invalidText={errors.courseId}
-      items={fetchedCourses.map((course) => ({ id: course.id, text: course.title }))}
-      bind:selectedId={fields.courseId}
-    />
+    <div class="w-[25%]">
+      <Select.Root type="single" bind:value={fields.courseId}>
+        <Select.Trigger class="h-full w-full">
+          <p>
+            {fields.courseId
+              ? fetchedCourses.find((course) => course.id === fields.courseId)?.title
+              : $t('community.ask.select_course')}
+          </p>
+        </Select.Trigger>
+        <Select.Content>
+          {#each fetchedCourses as course}
+            <Select.Item value={course.id}>{course.title}</Select.Item>
+          {/each}
+        </Select.Content>
+      </Select.Root>
+      {#if errors.courseId}
+        <p class="mt-1 text-sm text-red-500">
+          {errors.courseId}
+        </p>
+      {/if}
+    </div>
   </div>
   <div class="px-2">
     <TextEditor placeholder="Give an answer" content={fields.body} onChange={(content) => (fields.body = content)} />

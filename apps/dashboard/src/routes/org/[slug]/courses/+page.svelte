@@ -1,5 +1,8 @@
 <script lang="ts">
-  import { Search, Dropdown } from 'carbon-components-svelte';
+  import { Input } from '@cio/ui/base/input';
+  import * as Select from '@cio/ui/base/select';
+  import SearchIcon from '@lucide/svelte/icons/search';
+
   import { profile } from '$lib/utils/store/user';
   import { fetchCourses } from '$lib/utils/services/courses';
   import Courses from '$lib/components/Courses/index.svelte';
@@ -26,6 +29,16 @@
   let searchValue = $state('');
   let selectedId: string = $state('0');
   let hasFetched = false;
+
+  const filterOptions = $derived([
+    { value: '0', label: $t('courses.course_filter.date_created') },
+    { value: '1', label: $t('courses.course_filter.published') },
+    { value: '2', label: $t('courses.course_filter.lessons') }
+  ]);
+
+  const selectedLabel = $derived(
+    filterOptions.find((opt) => opt.value === selectedId)?.label || filterOptions[0].label
+  );
 
   const filteredCourses: Course[] = $derived(filterCourses(searchValue, selectedId, $courses));
 
@@ -120,22 +133,22 @@
       {/if}
     </div>
     <div class="mb-5 flex flex-row-reverse">
-      <div class="filter-containter flex items-end justify-start">
-        <Search
-          placeholder={$t('courses.search_placeholder')}
-          bind:value={searchValue}
-          searchClass="mr-2"
-          class=" bg-gray-100 dark:bg-neutral-800"
-        />
-        <Dropdown
-          class="h-full min-w-[150px]"
-          bind:selectedId
-          items={[
-            { id: '0', text: $t('courses.course_filter.date_created') },
-            { id: '1', text: $t('courses.course_filter.published') },
-            { id: '2', text: $t('courses.course_filter.lessons') }
-          ]}
-        />
+      <div class="filter-containter flex items-end justify-start gap-2">
+        <div class="relative">
+          <Input type="text" placeholder={$t('courses.search_placeholder')} bind:value={searchValue} class="pl-9" />
+
+          <SearchIcon class="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+        </div>
+        <Select.Root type="single" bind:value={selectedId}>
+          <Select.Trigger class="min-w-[150px]">
+            <p>{selectedId ? selectedLabel : filterOptions[0].label}</p>
+          </Select.Trigger>
+          <Select.Content>
+            {#each filterOptions as option}
+              <Select.Item value={option.value}>{option.label}</Select.Item>
+            {/each}
+          </Select.Content>
+        </Select.Root>
         {#if $courseMetaDeta.view === 'list'}
           <IconButton onClick={() => setViewPreference('grid')}>
             <GridIcon size={16} />
@@ -152,10 +165,3 @@
     <Courses courses={filteredCourses} />
   </div>
 </section>
-
-<style>
-  .filter-containter :global(.bx--dropdown) {
-    max-height: unset;
-    height: 100%;
-  }
-</style>

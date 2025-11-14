@@ -50,16 +50,16 @@
             align={sidebar.isMobile ? 'end' : 'start'}
           >
             <DropdownMenu.Item>
-              <FolderIcon class="text-muted-foreground" />
+              <FolderIcon />
               <span>View Project</span>
             </DropdownMenu.Item>
             <DropdownMenu.Item>
-              <ForwardIcon class="text-muted-foreground" />
+              <ForwardIcon />
               <span>Share Project</span>
             </DropdownMenu.Item>
             <DropdownMenu.Separator />
             <DropdownMenu.Item>
-              <Trash2Icon class="text-muted-foreground" />
+              <Trash2Icon />
               <span>Delete Project</span>
             </DropdownMenu.Item>
           </DropdownMenu.Content>
