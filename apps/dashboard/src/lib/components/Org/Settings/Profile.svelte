@@ -144,14 +144,14 @@
     </Column>
   </Row>
 
-  <Row class="m-5 flex w-full items-center gap-2 lg:justify-center">
+  <div class="m-5 flex w-full items-center gap-2 lg:justify-center">
     <PrimaryButton
       label={$t('settings.profile.update_profile')}
       variant={VARIANTS.CONTAINED_DARK}
-      className="mr-5"
+      className="mr-5 w-fit"
       isLoading={loading}
       isDisabled={loading}
       onClick={handleUpdate}
     />
-  </Row>
+  </div>
 </Grid>

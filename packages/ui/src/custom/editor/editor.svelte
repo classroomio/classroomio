@@ -122,12 +122,7 @@
 </script>
 
 {#if browser}
-  <div
-    class={cn(
-      'bg-background z-50 mx-auto mt-12 flex size-full w-[95%] max-w-5xl flex-col rounded-md border border-dashed sm:w-[85%]',
-      className
-    )}
-  >
+  <div class={cn('bg-background z-50 flex size-full w-full flex-col rounded-md border border-dashed', className)}>
     {#if editor && !editor.isDestroyed}
       {#if showToolBar}
         <div transition:slide>

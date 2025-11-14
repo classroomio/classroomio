@@ -27,8 +27,8 @@
   <TextEditor content={course.metadata.goals} onChange={(content) => setter(content, `metadata.goals`)} />
 </div>
 
-<div class="mt-5">
-  <p class="font-bold">
+<div class="mt-5 flex flex-col gap-2">
+  <p class="font-semibold">
     {$t('course.navItem.landing_page.editor.display_section')}
   </p>
 

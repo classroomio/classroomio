@@ -44,9 +44,9 @@
 {#if typeof course !== 'undefined'}
   <div>
     <Label class="mb-2 font-bold">{$t('course.navItem.landing_page.editor.pricing_form.currency')}</Label>
-    <Select.Root type="single" bind:value={course.currency}>
+    <Select.Root type="single" value={course.currency} onValueChange={(value) => setter(value, 'currency')}>
       <Select.Trigger class="w-full">
-        <p>{course.currency ? course.currency : 'Select currency'}</p>
+        <p>{course.currency === 'NGN' ? 'NGN' : 'USD'}</p>
       </Select.Trigger>
       <Select.Content>
         <Select.Item value="NGN">NGN</Select.Item>

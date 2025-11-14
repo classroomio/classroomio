@@ -48,22 +48,24 @@
   });
 </script>
 
-<div class="border-bottom-c mt-5">
-  <p class="font-bold">
-    {$t('course.navItem.landing_page.editor.certificate_form.upload_template')}
-  </p>
-  <UploadImage bind:avatar src={templateUrl} shape="rounded-none" bind:isUploading />
-</div>
+<div class="flex flex-col items-center">
+  <div class="border-bottom-c mt-5">
+    <p class="text-center font-bold">
+      {$t('course.navItem.landing_page.editor.certificate_form.upload_template')}
+    </p>
+    <UploadImage bind:avatar src={templateUrl} shape="rounded-none" bind:isUploading />
+  </div>
 
-<div class="mt-5">
-  <p class="font-bold">
-    {$t('course.navItem.landing_page.editor.display_section')}
-  </p>
+  <div class="mt-5 flex flex-col gap-2">
+    <p class="font-semibold">
+      {$t('course.navItem.landing_page.editor.display_section')}
+    </p>
 
-  <div class="flex items-center space-x-2">
-    <Switch bind:checked={show} />
-    <Label class="text-gray-600">
-      {show ? $t('settings.landing_page.show_section') : $t('settings.landing_page.hide_section')}
-    </Label>
+    <div class="flex items-center space-x-2">
+      <Switch bind:checked={show} />
+      <Label class="text-gray-600">
+        {show ? $t('settings.landing_page.show_section') : $t('settings.landing_page.hide_section')}
+      </Label>
+    </div>
   </div>
 </div>
