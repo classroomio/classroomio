@@ -3,7 +3,7 @@
   import isEmpty from 'lodash/isEmpty';
   import { writable } from 'svelte/store';
   import { fade } from 'svelte/transition';
-  import { Popover } from 'carbon-components-svelte';
+  import * as Popover from '@cio/ui/base/popover';
 
   import TrashIcon from '@lucide/svelte/icons/trash';
   import ListTodoIcon from '@lucide/svelte/icons/list-todo';
@@ -15,6 +15,7 @@
   import { orderedTabs } from './constants';
   import MODES from '$lib/utils/constants/mode';
   import { currentOrg } from '$lib/utils/store/org';
+  import type { Content } from '@cio/ui/custom/editor';
   import { course } from '$lib/components/Course/store';
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -31,8 +32,7 @@
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { lessonFallbackNote, t } from '$lib/utils/functions/translations';
-  import type { Content } from '@cio/ui/custom/editor';
-
+  import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
   import Loader from './Loader.svelte';
   import Box from '$lib/components/Box/index.svelte';
   import Comments from './components/Comments.svelte';
@@ -48,7 +48,6 @@
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import ComponentDocument from './components/ComponentDocument.svelte';
-  import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
   import AddVideoToLesson from '$lib/components/Course/components/Lesson/Materials/Video/AddVideoToLesson.svelte';
   import AddDocumentToLesson from '$lib/components/Course/components/Lesson/Materials/Document/AddDocumentToLesson.svelte';
 
@@ -71,7 +70,6 @@
   }: Props = $props();
 
   let openPopover = $state<boolean>(false);
-  let aiButtonRef = $state<HTMLDivElement>();
   let aiButtonClass =
     'flex items-center px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2';
   let player = $state<HTMLVideoElement>();
@@ -387,27 +385,24 @@
         <TabContent value={getValue('course.navItem.lessons.materials.tabs.note.title')} index={currentTab}>
           <div class="flex justify-end gap-1">
             <!-- Update this when ai-sdk is updated -->
-            <div bind:this={aiButtonRef} class="hidden flex-row-reverse">
-              <PrimaryButton
-                className="flex items-center relative"
-                onClick={() => {
-                  openPopover = !openPopover;
-                }}
-                isLoading={$isLoading}
-                isDisabled={$isLoading}
-                variant={VARIANTS.OUTLINED}
-                disableScale
-              >
-                <WandSparklesIcon size={16} />
-                AI
-                <Popover
-                  caret
-                  align="left"
-                  bind:open={openPopover}
-                  on:click:outside={({ detail }) => {
-                    openPopover = aiButtonRef?.contains(detail.target) || false;
-                  }}
-                >
+            <div class="hidden flex-row-reverse">
+              <Popover.Root>
+                <Popover.Trigger>
+                  <PrimaryButton
+                    className="flex items-center relative"
+                    onClick={() => {
+                      openPopover = !openPopover;
+                    }}
+                    isLoading={$isLoading}
+                    isDisabled={$isLoading}
+                    variant={VARIANTS.OUTLINED}
+                    disableScale
+                  >
+                    <WandSparklesIcon size={16} />
+                    AI
+                  </PrimaryButton>
+                </Popover.Trigger>
+                <Popover.Content align="start" class="w-80">
                   <div class="p-2">
                     <button class={aiButtonClass} onclick={() => callAI('outline')}>
                       <ListChecksIcon size={16} />
@@ -422,8 +417,8 @@
                       {$t('course.navItem.lessons.materials.tabs.note.ai.activities')}
                     </button>
                   </div>
-                </Popover>
-              </PrimaryButton>
+                </Popover.Content>
+              </Popover.Root>
             </div>
           </div>
 

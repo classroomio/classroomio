@@ -80,7 +80,7 @@
   };
 </script>
 
-<section class="mx-auto w-full md:max-w-4xl">
+<section class="mx-auto w-full md:max-w-6xl">
   <div class="px-2 py-2 md:px-5 md:py-10">
     <div class="flex items-center gap-2">
       <h1 class="text-2xl md:text-3xl dark:text-white">{$t('setup.get_started')}</h1>

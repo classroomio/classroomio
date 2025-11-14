@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { t } from '$lib/utils/functions/translations';
-  import { Loading } from 'carbon-components-svelte';
+  import { Progress } from '@cio/ui/base/progress';
   import CameraIcon from '@lucide/svelte/icons/camera';
+
+  import { t } from '$lib/utils/functions/translations';
 
   interface Props {
     avatar: string | File | undefined;
@@ -88,7 +89,7 @@
       disabled={isDisabled || isUploading}
     >
       {#if isUploading}
-        <Loading withOverlay={false} small />
+        <Progress />
       {:else}
         <CameraIcon size={16} />
       {/if}

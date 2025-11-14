@@ -13,7 +13,6 @@
   import { sideBar } from '$lib/components/Org/store';
   import { t } from '$lib/utils/functions/translations';
 
-  import Avatar from '$lib/components/Avatar/index.svelte';
   import NavUser from '../Sidebar/components/nav-user.svelte';
 
   interface SideLinks {
@@ -83,17 +82,6 @@
 
 <Sidebar.Provider class="w-fit">
   <Sidebar.Root collapsible="icon" class="inset-y-12 h-[calc(100vh-48px)] {$sideBar.hidden ? 'hidden' : ''}">
-    <Sidebar.Header class="border-b border-gray-200 dark:border-neutral-600">
-      <div class="flex w-full flex-col items-center p-4">
-        <Avatar src={$profile.avatar_url} name={$profile.fullname} shape="rounded-full" width="w-20" height="h-20" />
-        <div class="mt-5 flex w-full justify-center">
-          <p class="max-w-[80%] truncate whitespace-nowrap text-center text-lg dark:text-white">
-            {$profile.fullname}
-          </p>
-        </div>
-      </div>
-    </Sidebar.Header>
-
     <Sidebar.Content>
       <Sidebar.Group>
         <Sidebar.GroupLabel>LMS Navigation</Sidebar.GroupLabel>

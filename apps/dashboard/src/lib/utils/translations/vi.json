@@ -1612,5 +1612,11 @@
     "unsaved_changes": {
       "message": "Bạn có những thay đổi chưa được lưu. Bạn có chắc bạn muốn rời đi?"
     }
+  },
+  "new_course_modal": {
+    "live_class_label": "Lớp học trực tiếp",
+    "live_class_subtitle": "Loại khóa học này lý tưởng cho các chương trình đào tạo trong đó các bài học dựa trên thời gian và bạn cần tham dự và chấm điểm",
+    "self_paced_label": "tự nhịp độ",
+    "self_paced_subtitle": "Loại khóa học này lý tưởng cho các khóa học mà học sinh có thể học theo tốc độ của riêng mình mà không cần giáo viên"
   }
 }

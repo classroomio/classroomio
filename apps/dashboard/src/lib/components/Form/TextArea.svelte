@@ -1,6 +1,6 @@
 <script lang="ts">
   // import CustomPromptBtn from '$lib/components/AI/AIButton/CustomPromptBtn.svelte';
-  import type { PopoverProps } from 'carbon-components-svelte/types/Popover/Popover.svelte';
+  import { Popover as PopoverPrimitive } from 'bits-ui';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -20,7 +20,7 @@
     ref?: HTMLTextAreaElement | null;
     isAIEnabled?: boolean;
     initAIPrompt?: string;
-    aiAlignPopover?: PopoverProps['align']; // $: minHeight = `${1 + parseInt(rows, 10) * 1.2}em`;
+    aiAlignPopover?: PopoverPrimitive.ContentProps['align'];
     iconbutton?: import('svelte').Snippet;
   }
 
@@ -82,7 +82,7 @@
     bind:value
     bind:this={ref}
     required={isRequired}
-    class="form-textarea focus:border-primary-600 mt-1 block w-full rounded-t-md border-b-2 border-l-0 border-r-0 border-t-0 border-gray-200 focus:border-b-2 focus:border-l-0 focus:border-r-0 focus:border-t-0 dark:border-neutral-600
+    class="form-textarea focus:border-primary-600 mt-1 block w-full rounded-t-md border-b-2 border-l-0 border-r-0 border-t-0 border-gray-200 p-3 focus:border-b-2 focus:border-l-0 focus:border-r-0 focus:border-t-0 dark:border-neutral-600
     {bgColor} {errorMessage ? 'border-red-500' : 'border-gray-300'}"
     onchange={onChange}
   ></textarea>

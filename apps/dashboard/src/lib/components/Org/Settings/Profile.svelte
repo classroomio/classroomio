@@ -1,20 +1,23 @@
 <script lang="ts">
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
-  import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import generateUUID from '$lib/utils/functions/generateUUID';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { handleLocaleChange, t } from '$lib/utils/functions/translations';
-  import { updateProfileValidation } from '$lib/utils/functions/validator';
+  import { LOCALE } from '$lib/utils/types';
   import { profile } from '$lib/utils/store/user';
-  import { Column, Grid, Row } from 'carbon-components-svelte';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import type { ProfileStore } from '$lib/utils/store/user';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { updateProfileValidation } from '$lib/utils/functions/validator';
+  import { handleLocaleChange, t } from '$lib/utils/functions/translations';
+
+  import Grid from './Layout/Grid.svelte';
+  import Row from './Layout/Row.svelte';
+  import Column from './Layout/Column.svelte';
   import SectionTitle from '../SectionTitle.svelte';
   import LanguagePicker from './LanguagePicker.svelte';
-  import type { ProfileStore } from '$lib/utils/store/user';
-  import { LOCALE } from '$lib/utils/types';
+  import generateUUID from '$lib/utils/functions/generateUUID';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import UploadImage from '$lib/components/UploadImage/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
 
   let avatar = $state<string | undefined>();
   let loading = $state(false);
@@ -92,7 +95,7 @@
 
 <UnsavedChanges bind:hasUnsavedChanges />
 
-<Grid class="border-c mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
+<Grid class="mt-5 w-full">
   <Row class="border-bottom-c flex flex-col items-center py-7 lg:flex-row lg:items-start ">
     <Column sm={4} md={8} lg={4} class="mt-2 md:mt-0">
       <SectionTitle>{$t('settings.profile.profile_picture.heading')}</SectionTitle>

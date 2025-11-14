@@ -1,13 +1,12 @@
 <script lang="ts">
-  import { preventDefault } from '$lib/utils/functions/svelte';
-
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import Modal from '$lib/components/Modal/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { coursePaymentValidation } from '$lib/utils/functions/validator';
-  import { Link } from 'carbon-components-svelte';
   import { currentOrg } from '$lib/utils/store/org';
+  import { preventDefault } from '$lib/utils/functions/svelte';
+  import { coursePaymentValidation } from '$lib/utils/functions/validator';
   import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
+
+  import Modal from '$lib/components/Modal/index.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   interface Props {
     open?: boolean;
@@ -104,7 +103,7 @@
   {:else if step === STEPS.STEP_2}
     <p>You will now be taken to a payment page, once you've paid send a proof of payment to the course admin</p>
     <div class="mt-5 flex flex-row-reverse items-center">
-      <Link href={paymentLink} target="_blank" on:click={onClickPaymentLink}>Go to payment</Link>
+      <a href={paymentLink} target="_blank" onclick={onClickPaymentLink} class="text-sm font-semibold">Go to payment</a>
     </div>
   {/if}
 </Modal>

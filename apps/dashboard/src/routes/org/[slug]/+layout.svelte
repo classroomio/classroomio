@@ -1,13 +1,10 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
-  import FrameIcon from '@lucide/svelte/icons/frame';
+  import { Skeleton } from '@cio/ui/base/skeleton';
   import UsersIcon from '@lucide/svelte/icons/users';
-  import ChartPieIcon from '@lucide/svelte/icons/chart-pie';
   import Settings2Icon from '@lucide/svelte/icons/settings-2';
   import LibraryBigIcon from '@lucide/svelte/icons/library-big';
-  import AudioWaveformIcon from '@lucide/svelte/icons/audio-waveform';
-  import SquareTerminalIcon from '@lucide/svelte/icons/square-terminal';
   import LayoutDashboardIcon from '@lucide/svelte/icons/layout-dashboard';
   import MessageSquareMoreIcon from '@lucide/svelte/icons/message-square-more';
 
@@ -41,18 +38,7 @@
   }
 
   const sidebarData = $derived({
-    teams: [
-      ...$orgs.map((org) => ({
-        name: org.name,
-        logo: AudioWaveformIcon,
-        plan: org.organization_plan?.[0]?.plan_name || 'Free'
-      })),
-      {
-        name: 'Add Team',
-        logo: FrameIcon,
-        plan: 'Free'
-      }
-    ],
+    teams: $orgs,
     navMain: [
       {
         title: $t('org_navigation.dashboard'),
@@ -89,29 +75,14 @@
           ]
         : [])
     ],
-    projects: [
-      {
-        name: $t('profileMenu.progress'),
-        url: 'https://classroomio.com/tools/progress',
-        icon: ChartPieIcon
-      },
-      {
-        name: $t('profileMenu.timer'),
-        url: 'https://classroomio.com/tools/activity-stopwatch',
-        icon: SquareTerminalIcon
-      },
-      {
-        name: $t('profileMenu.tic_tac'),
-        url: 'https://classroomio.com/tools/tic-tac-toe',
-        icon: FrameIcon
-      }
-    ],
     user: {
       name: $profile.fullname,
       email: $profile.email,
       avatar: $profile.avatar_url
     }
   });
+
+  const isSidebarReady = $derived($orgs.length > 0 && $profile.fullname && $profile.email);
 
   $effect(() => {
     data.orgName === '*' && redirect($currentOrg.siteName);
@@ -125,7 +96,19 @@
 <div class="org-root flex w-full items-center justify-between">
   <div class="org-slot flex w-full items-start bg-white dark:bg-black">
     {#if !isQuizPage(page.url?.pathname)}
-      <OrgSideBar data={sidebarData} />
+      {#if isSidebarReady}
+        <OrgSideBar data={sidebarData} />
+      {:else}
+        <div class="w-[15%] space-y-4 p-4">
+          {#each Array(4) as _, i (i)}
+            <div class="space-y-4">
+              {#each Array(4) as _, j (j)}
+                <Skeleton class="h-10 w-full rounded-md" />
+              {/each}
+            </div>
+          {/each}
+        </div>
+      {/if}
     {:else}
       <div class="flex-1">
         {#if data.orgName === '*'}

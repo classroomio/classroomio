@@ -1,22 +1,32 @@
 <script lang="ts">
-  import { Skeleton } from '@cio/ui/base/skeleton';
+  import * as Avatar from '@cio/ui/base/avatar';
   import * as Sidebar from '@cio/ui/base/sidebar';
+  import PlusIcon from '@lucide/svelte/icons/plus';
+  import { Skeleton } from '@cio/ui/base/skeleton';
   import { useSidebar } from '@cio/ui/base/sidebar';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
-  import PlusIcon from '@lucide/svelte/icons/plus';
 
-  import { goto } from '$app/navigation';
   import { setTheme } from '$lib/utils/functions/theme';
   import type { CurrentOrg } from '$lib/utils/types/org';
   import { currentOrg, currentOrgPath, orgs } from '$lib/utils/store/org';
 
-  let { teams, canAddOrg = true }: { teams: { name: string; logo: any; plan: string }[]; canAddOrg?: boolean } =
-    $props();
+  import TextChip from '$lib/components/Chip/Text.svelte';
+  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
+
+  let {
+    teams,
+    canAddOrg = true
+  }: {
+    teams: CurrentOrg[];
+    canAddOrg?: boolean;
+  } = $props();
 
   const sidebar = useSidebar();
 
-  let activeTeam = $state(teams?.[0] || null);
+  let activeTeam = $state($currentOrg || null);
+
+  console.log('Active Team:', $currentOrg);
 
   function getOrg(org: CurrentOrg) {
     return $orgs.find((team) => team.name === org.name);
@@ -27,12 +37,11 @@
     const organization = getOrg(org);
 
     if (organization) {
-      console.log('found organization', organization);
       localStorage.setItem('classroomio_org_sitename', organization.siteName);
       currentOrg.set(organization);
 
       setTheme(organization.theme);
-      goto($currentOrgPath);
+      window.location.href = $currentOrgPath;
     }
   }
 </script>
@@ -49,16 +58,19 @@
               class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               {#if $currentOrg.name}
-                <div
-                  class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg"
-                >
-                  <activeTeam.logo class="size-4" />
-                </div>
+                <Avatar.Root class="flex size-8 items-center justify-center rounded-lg">
+                  {#if $currentOrg.avatar_url && $currentOrg.name}
+                    <Avatar.Image src={$currentOrg.avatar_url} alt={$currentOrg.name} />
+                  {:else if $currentOrg.shortName}
+                    <TextChip size="sm" value={$currentOrg.shortName} className="bg-primary-200 dark:text-black" />
+                  {/if}
+                </Avatar.Root>
+
                 <div class="grid flex-1 text-left text-sm leading-tight">
                   <span class="truncate font-medium">
                     {activeTeam.name}
                   </span>
-                  <span class="truncate text-xs">{activeTeam.plan}</span>
+                  <span class="truncate text-xs">{activeTeam.organization_plan[0]?.plan_name}</span>
                 </div>
                 <ChevronsUpDownIcon class="ml-auto" />
               {:else}
@@ -76,23 +88,30 @@
           sideOffset={4}
         >
           <DropdownMenu.Label class="text-muted-foreground text-xs">Teams</DropdownMenu.Label>
-          {#each teams as team, index (team.name)}
+          {#each teams as team (team.name)}
             {#if canAddOrg}
               <DropdownMenu.Item onSelect={() => onClick(team)} class="gap-2 p-2">
-                <div class="flex size-6 items-center justify-center rounded-md border">
-                  <team.logo class="size-3.5 shrink-0" />
-                </div>
+                <Avatar.Root class="flex size-8 items-center justify-center rounded-lg">
+                  {#if $currentOrg.avatar_url && $currentOrg.name}
+                    <Avatar.Image src={$currentOrg.avatar_url} alt={$currentOrg.name} />
+                  {:else if $currentOrg.shortName}
+                    <TextChip size="sm" value={$currentOrg.shortName} className="bg-primary-200 dark:text-black" />
+                  {/if}
+                </Avatar.Root>
+
                 {team.name}
-                <DropdownMenu.Shortcut>⌘{index + 1}</DropdownMenu.Shortcut>
+                <!-- <DropdownMenu.Shortcut>⌘{index + 1}</DropdownMenu.Shortcut> -->
               </DropdownMenu.Item>
             {/if}
           {/each}
           <DropdownMenu.Separator />
-          <DropdownMenu.Item class="gap-2 p-2">
+          <DropdownMenu.Item class="cursor-not-allowed gap-2 p-2 opacity-50">
             <div class="flex size-6 items-center justify-center rounded-md border bg-transparent">
               <PlusIcon class="size-4" />
             </div>
             <div class="text-muted-foreground font-medium">Add team</div>
+
+            <ComingSoon />
           </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Root>

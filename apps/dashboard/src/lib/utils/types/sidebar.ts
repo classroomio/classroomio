@@ -1,13 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ComponentProps } from 'svelte';
 import * as Sidebar from '@cio/ui/base/sidebar';
+import type { CurrentOrg } from './org';
 
 export interface SidebarData {
-  teams: Array<{
-    name: string;
-    logo: any;
-    plan: string;
-  }>;
+  teams: CurrentOrg[];
   navMain: Array<{
     title: string;
     url: string;
@@ -17,11 +14,6 @@ export interface SidebarData {
       title: string;
       url: string;
     }[];
-  }>;
-  projects: Array<{
-    name: string;
-    url: string;
-    icon: any;
   }>;
   user: {
     name: string;

@@ -1,20 +1,23 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import { goto } from '$app/navigation';
-  import Box from '$lib/components/Box/index.svelte';
-  import { courses } from '$lib/components/Courses/store';
-  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
-  import Vote from '$lib/components/Vote/index.svelte';
-  import { calDateDiff } from '$lib/utils/functions/date';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { t } from '$lib/utils/functions/translations';
-  import { fetchCourses } from '$lib/utils/services/courses';
-  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import { profile } from '$lib/utils/store/user';
-  import { Dropdown, Search } from 'carbon-components-svelte';
+  import { Input } from '@cio/ui/base/input';
+  import * as Select from '@cio/ui/base/select';
+  import Search from '@lucide/svelte/icons/search';
   import MessageCirclePlusIcon from '@lucide/svelte/icons/message-circle-plus';
 
+  import { profile } from '$lib/utils/store/user';
+  import { t } from '$lib/utils/functions/translations';
+  import { courses } from '$lib/components/Courses/store';
+  import { calDateDiff } from '$lib/utils/functions/date';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { fetchCourses } from '$lib/utils/services/courses';
+  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
+
   import CommunityLoader from './Loader.svelte';
+  import Box from '$lib/components/Box/index.svelte';
+  import Vote from '$lib/components/Vote/index.svelte';
+  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
 
   interface Props {
     isLMS?: boolean;
@@ -93,6 +96,10 @@
     fetchCommunityQuestions($currentOrg.id, $profile.id);
   });
 
+  $effect(() => {
+    console.log('allCourses', allCourses);
+  });
+
   let filteredDiscussions = $derived(
     discussions.filter(
       (discussion) =>
@@ -102,23 +109,31 @@
   );
 </script>
 
-<div class="flex justify-between">
-  <Search
-    placeholder={$t('community.find_question')}
-    bind:value={searchValue}
-    searchClass="mr-2"
-    class=" bg-gray-100 dark:bg-neutral-800"
-  />
-  <Dropdown
-    class="h-full w-[25%]"
-    size="xl"
-    label={$t('community.ask.select_course')}
-    items={[
-      { id: '', text: $t('community.all') },
-      ...allCourses.map((course) => ({ id: course.id, text: course.title }))
-    ]}
-    bind:selectedId
-  />
+<div class="flex w-full gap-2">
+  <div class="relative flex-1">
+    <Search class="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+    <Input
+      type="text"
+      placeholder={$t('community.find_question')}
+      bind:value={searchValue}
+      class="bg-gray-100 dark:bg-neutral-800"
+    />
+  </div>
+  <div class="w-[25%] border">
+    <Select.Root type="single" bind:value={selectedId}>
+      <Select.Trigger class="w-full bg-gray-100 dark:bg-neutral-800">
+        <p class="truncate">
+          {selectedId ? allCourses.find((course) => course.id === selectedId)?.title : $t('community.all')}
+        </p>
+      </Select.Trigger>
+      <Select.Content>
+        <Select.Item value="">{$t('community.all')}</Select.Item>
+        {#each allCourses as course}
+          <Select.Item value={course.id}>{course.title}</Select.Item>
+        {/each}
+      </Select.Content>
+    </Select.Root>
+  </div>
 </div>
 <div
   class="border-c m-auto my-4 flex flex-wrap items-center justify-center rounded bg-gray-100 lg:justify-start dark:bg-neutral-800"

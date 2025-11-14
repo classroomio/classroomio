@@ -152,7 +152,7 @@
   const toggleSidebarOnMobile = () => $isMobile && ($sideBar.hidden = !$sideBar.hidden);
 </script>
 
-<Sidebar.Provider class="w-fit">
+<Sidebar.Provider class="flex w-fit items-start gap-2">
   <Sidebar.Root collapsible="icon" class="inset-y-12 h-[calc(100vh-48px)] {$sideBar.hidden ? 'hidden' : ''}">
     <Sidebar.Content>
       <Sidebar.Group>
@@ -241,6 +241,6 @@
   </Sidebar.Root>
 
   <Sidebar.Inset>
-    <Sidebar.Trigger class="-ml-1" />
+    <Sidebar.Trigger />
   </Sidebar.Inset>
 </Sidebar.Provider>

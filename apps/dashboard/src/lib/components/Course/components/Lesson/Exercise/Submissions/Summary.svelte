@@ -1,15 +1,16 @@
 <script lang="ts">
   import { onMount, untrack } from 'svelte';
   import { browser } from '$app/environment';
-  import type { ExerciseSubmissions } from '$lib/utils/types';
-  import { questionnaire } from '../../store/exercise';
-  import { replaceHTMLTag } from '$lib/utils/functions/course';
+  import { Spinner } from '@cio/ui/base/spinner';
   import type { BarChartOptions, PieChartOptions, PieChart, BarChartSimple } from '@carbon/charts-svelte';
-  import { getChartOptions } from './functions';
+
   import { submissions } from './store';
   import '@carbon/charts-svelte/styles.css';
-  import { Loading } from 'carbon-components-svelte';
+  import { getChartOptions } from './functions';
+  import { questionnaire } from '../../store/exercise';
   import { t } from '$lib/utils/functions/translations';
+  import type { ExerciseSubmissions } from '$lib/utils/types';
+  import { replaceHTMLTag } from '$lib/utils/functions/course';
 
   interface Props {
     isLoading?: boolean;
@@ -133,7 +134,7 @@
 </script>
 
 {#if isLoading}
-  <Loading withOverlay={true} />
+  <Spinner />
 {:else if browser}
   <div>
     <p class="mb-3 text-2xl">

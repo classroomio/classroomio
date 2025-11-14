@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Loading } from 'carbon-components-svelte';
+  import { Progress } from '@cio/ui/base/progress';
   import { VARIANTS, VARIANTS_CLASS } from './constants';
 
   interface Props {
@@ -34,7 +34,7 @@
     isLoading || isDisabled ? 'cursor-not-allowed opacity-25' : `cursor-pointer ${!disableScale && 'hover:scale-95'}`
   );
   let cname = $derived(
-    `flex items-center h-auto ${loadingClass} ${VARIANTS_CLASS[isLoading ? VARIANTS.OUTLINED : variant]} ${
+    `flex items-center h-auto text-sm ${loadingClass} ${VARIANTS_CLASS[isLoading ? VARIANTS.OUTLINED : variant]} ${
       !disablePadding && 'px-5 py-[0.2rem]'
     } rounded-md min-h-[36px] w-fit justify-center sm:w-auto ${
       variant !== VARIANTS.TEXT && 'hover:shadow-xl'
@@ -44,7 +44,7 @@
 
 <button class={`${cname} ${className}`} onclick={onClick} {name} {type} disabled={isLoading || isDisabled}>
   {#if isLoading}
-    <Loading withOverlay={false} small class="mr-2" />
+    <Progress class="mr-2" />
   {/if}
   {#if !!label}
     {label}

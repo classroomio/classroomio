@@ -1,18 +1,22 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { dndzone } from 'svelte-dnd-action';
-  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import TextChip from '$lib/components/Chip/Text.svelte';
-  import { course } from '$lib/components/Course/store';
-  import { globalStore } from '$lib/utils/store/app';
+  import { Button } from '@cio/ui/base/button';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import ListChecksIcon from '@lucide/svelte/icons/list-checks';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import { t } from '$lib/utils/functions/translations';
-  import { lessons, handleSaveLesson } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { updateLesson } from '$lib/utils/services/courses';
-  import type { Course, Lesson } from '$lib/utils/types';
+  import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+
   import Box from '$lib/components/Box/index.svelte';
+  import TextChip from '$lib/components/Chip/Text.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { lessons, handleSaveLesson } from '$lib/components/Course/components/Lesson/store/lessons';
+
+  import { globalStore } from '$lib/utils/store/app';
+  import { course } from '$lib/components/Course/store';
+  import { t } from '$lib/utils/functions/translations';
+  import type { Course, Lesson } from '$lib/utils/types';
+  import { updateLesson } from '$lib/utils/services/courses';
 
   const flipDurationMs = 300;
 
@@ -138,37 +142,48 @@
       <!-- 3 dot edit -->
       <div class="flex flex-row">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <OverflowMenu size="xl">
-            <OverflowMenuItem
-              text={lesson.is_unlocked
-                ? $t('course.navItem.lessons.add_lesson.lock')
-                : $t('course.navItem.lessons.add_lesson.unlock')}
-              on:click={() => {
-                lesson.is_unlocked = !lesson.is_unlocked;
-                handleSaveLesson(lesson, $course.id);
-              }}
-            />
-            <OverflowMenuItem
-              text={lessonEditing === lesson.id
-                ? $t('course.navItem.lessons.add_lesson.save')
-                : $t('course.navItem.lessons.add_lesson.edit')}
-              on:click={() => {
-                if (lessonEditing === lesson.id) {
-                  saveLesson(lesson, $course.id);
-                } else {
-                  lessonEditing = lesson.id;
-                }
-              }}
-            />
-            <OverflowMenuItem
-              danger
-              text={$t('course.navItem.lessons.add_lesson.delete')}
-              on:click={() => {
-                lessonToDelete = lesson;
-                openDeleteModal = true;
-              }}
-            />
-          </OverflowMenu>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+              <Button variant="ghost" size="icon" class="h-8 w-8">
+                <EllipsisVerticalIcon class="h-5 w-5" />
+                <span class="sr-only">Open menu</span>
+              </Button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content align="end">
+              <DropdownMenu.Item
+                onclick={() => {
+                  lesson.is_unlocked = !lesson.is_unlocked;
+                  handleSaveLesson(lesson, $course.id);
+                }}
+              >
+                {lesson.is_unlocked
+                  ? $t('course.navItem.lessons.add_lesson.lock')
+                  : $t('course.navItem.lessons.add_lesson.unlock')}
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                onclick={() => {
+                  if (lessonEditing === lesson.id) {
+                    saveLesson(lesson, $course.id);
+                  } else {
+                    lessonEditing = lesson.id;
+                  }
+                }}
+              >
+                {lessonEditing === lesson.id
+                  ? $t('course.navItem.lessons.add_lesson.save')
+                  : $t('course.navItem.lessons.add_lesson.edit')}
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                class="text-red-600 focus:text-red-600 dark:text-red-400"
+                onclick={() => {
+                  lessonToDelete = lesson;
+                  openDeleteModal = true;
+                }}
+              >
+                {$t('course.navItem.lessons.add_lesson.delete')}
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
         </RoleBasedSecurity>
       </div>
     </div>

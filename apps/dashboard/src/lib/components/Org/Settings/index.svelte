@@ -1,14 +1,16 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { Tabs, Tab, TabContent } from 'carbon-components-svelte';
+  import * as Tabs from '@cio/ui/base/tabs';
+
   import Profile from './Profile.svelte';
-  import LandingpageSettings from './LandingpageSettings.svelte';
-  // import Account from './Account.svelte';
-  import OrgSettings from './OrgSettings.svelte';
   import Billing from './Billing.svelte';
   import { goto } from '$app/navigation';
-  import { isOrgAdmin } from '$lib/utils/store/org';
+  import OrgSettings from './OrgSettings.svelte';
   import Integrations from './Integrations.svelte';
+  import LandingpageSettings from './LandingpageSettings.svelte';
+  // import Account from './Account.svelte';
+
+  import { isOrgAdmin } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
 
   interface TabItem {
@@ -59,45 +61,41 @@
       disabled: false
     }
   ]);
-  let selected = $derived(getSelectedByTab(tabs, tabKey));
 
-  function getSelectedByTab(_tabs: TabItem[], tabKey = '') {
-    const tab = _tabs.find((t) => t.tabKey === tabKey);
-    return tab ? tab.key : 0;
-  }
-
-  function onTabChange(e: CustomEvent<number>) {
-    const key = e.detail;
-    const tab = tabs.find((t) => t.key === key);
+  function onTabChange(value: string) {
+    const tab = tabs.find((t) => t.tabKey === value);
     if (tab) {
       goto(tab.href);
     }
   }
 </script>
 
-<Tabs autoWidth bind:selected on:change={onTabChange}>
-  {#each tabs as tab}
-    <Tab label={tab.label} href={tab.href} disabled={tab.disabled} />
-  {/each}
-  <!-- <Tab label="Account" /> -->
-  <svelte:fragment slot="content">
-    <TabContent class="w-full p-0">
-      <Profile />
-    </TabContent>
-    <!-- <TabContent>
-        <Account />
-      </TabContent> -->
-    <TabContent class="w-full p-0">
-      <OrgSettings />
-    </TabContent>
-    <TabContent class="w-full p-0">
-      <LandingpageSettings />
-    </TabContent>
-    <TabContent class="w-full p-0">
-      <Billing />
-    </TabContent>
-    <TabContent class="w-full p-0">
-      <Integrations />
-    </TabContent>
-  </svelte:fragment>
-</Tabs>
+<Tabs.Root value={tabKey} onValueChange={onTabChange} class="w-full">
+  <Tabs.List class="w-full">
+    {#each tabs as tab}
+      <Tabs.Trigger value={tab.tabKey} disabled={tab.disabled}>
+        {tab.label}
+      </Tabs.Trigger>
+    {/each}
+  </Tabs.List>
+
+  <Tabs.Content value="" class="w-full p-0">
+    <Profile />
+  </Tabs.Content>
+
+  <Tabs.Content value="org" class="w-full p-0">
+    <OrgSettings />
+  </Tabs.Content>
+
+  <Tabs.Content value="landingpage" class="w-full p-0">
+    <LandingpageSettings />
+  </Tabs.Content>
+
+  <Tabs.Content value="billing" class="w-full p-0">
+    <Billing />
+  </Tabs.Content>
+
+  <Tabs.Content value="integrations" class="w-full p-0">
+    <Integrations />
+  </Tabs.Content>
+</Tabs.Root>

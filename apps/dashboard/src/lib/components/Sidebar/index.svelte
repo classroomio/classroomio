@@ -5,7 +5,7 @@
   let { data } = $props();
 </script>
 
-<Sidebar.Provider class="w-fit">
+<Sidebar.Provider class="flex w-fit items-start gap-4">
   <AppSidebar sidebarData={data} />
   <Sidebar.Inset>
     <Sidebar.Trigger class="-ml-1" />

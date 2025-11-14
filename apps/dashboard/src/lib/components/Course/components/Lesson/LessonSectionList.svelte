@@ -4,7 +4,9 @@
   import { dndzone } from 'svelte-dnd-action';
   import PlusIcon from '@lucide/svelte/icons/plus';
   import ListChecksIcon from '@lucide/svelte/icons/list-checks';
-  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
+  import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import { Button } from '@cio/ui/base/button';
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import { IconButton } from '$lib/components/IconButton';
@@ -222,18 +224,29 @@
               <IconButton contained size="small" onClick={() => handleAddLesson(section.id)} disabled={!!lessonEditing}>
                 <PlusIcon size={16} />
               </IconButton>
-              <OverflowMenu size="xl" flipped>
-                <OverflowMenuItem
-                  text={$t('course.navItem.lessons.add_lesson.edit')}
-                  disabled={!!lessonEditing}
-                  on:click={() => onEdit({ sectionId: section.id, sectionTitle: section.title })}
-                />
-                <OverflowMenuItem
-                  danger
-                  text={$t('course.navItem.lessons.add_lesson.delete')}
-                  on:click={() => onDelete({ sectionId: section.id })}
-                />
-              </OverflowMenu>
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger>
+                  <Button variant="ghost" size="icon" class="h-8 w-8">
+                    <EllipsisVerticalIcon class="h-5 w-5" />
+                    <span class="sr-only">Open menu</span>
+                  </Button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content align="end">
+                  <DropdownMenu.Item
+                    disabled={!!lessonEditing}
+                    onclick={() => onEdit({ sectionId: section.id, sectionTitle: section.title })}
+                  >
+                    {$t('course.navItem.lessons.add_lesson.edit')}
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Separator />
+                  <DropdownMenu.Item
+                    class="text-red-600 focus:text-red-600 dark:text-red-400"
+                    onclick={() => onDelete({ sectionId: section.id })}
+                  >
+                    {$t('course.navItem.lessons.add_lesson.delete')}
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
             {/if}
           </div>
         </RoleBasedSecurity>
@@ -309,26 +322,36 @@
                     onClick={() => onSave({ lessonId: lesson.id }, lesson)}
                   />
                 {:else}
-                  <OverflowMenu size="sm" flipped>
-                    <OverflowMenuItem
-                      text={lesson.is_unlocked
-                        ? $t('course.navItem.lessons.add_lesson.lock')
-                        : $t('course.navItem.lessons.add_lesson.unlock')}
-                      on:click={() => {
-                        lesson.is_unlocked = !lesson.is_unlocked;
-                        handleSaveLesson(lesson, $course.id);
-                      }}
-                    />
-                    <OverflowMenuItem
-                      text={$t('course.navItem.lessons.add_lesson.edit')}
-                      on:click={() => onEdit({ lessonId: lesson.id, lessonTitle: lesson.title })}
-                    />
-                    <OverflowMenuItem
-                      danger
-                      text={$t('course.navItem.lessons.add_lesson.delete')}
-                      on:click={() => onDelete({ lessonId: lesson.id })}
-                    />
-                  </OverflowMenu>
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger>
+                      <Button variant="ghost" size="icon" class="h-8 w-8">
+                        <EllipsisVerticalIcon class="h-5 w-5" />
+                        <span class="sr-only">Open menu</span>
+                      </Button>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content align="end">
+                      <DropdownMenu.Item
+                        onclick={() => {
+                          lesson.is_unlocked = !lesson.is_unlocked;
+                          handleSaveLesson(lesson, $course.id);
+                        }}
+                      >
+                        {lesson.is_unlocked
+                          ? $t('course.navItem.lessons.add_lesson.lock')
+                          : $t('course.navItem.lessons.add_lesson.unlock')}
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item onclick={() => onEdit({ lessonId: lesson.id, lessonTitle: lesson.title })}>
+                        {$t('course.navItem.lessons.add_lesson.edit')}
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Separator />
+                      <DropdownMenu.Item
+                        class="text-red-600 focus:text-red-600 dark:text-red-400"
+                        onclick={() => onDelete({ lessonId: lesson.id })}
+                      >
+                        {$t('course.navItem.lessons.add_lesson.delete')}
+                      </DropdownMenu.Item>
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Root>
                 {/if}
               </div>
             </RoleBasedSecurity>

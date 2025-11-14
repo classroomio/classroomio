@@ -1,6 +1,8 @@
 <script>
-  import { Search } from 'carbon-components-svelte';
+  import { Input } from '@cio/ui/base/input';
+
   import { t } from '$lib/utils/functions/translations';
+  import Search from '@lucide/svelte/icons/search';
 
   let searchValue = $state('');
 </script>
@@ -16,7 +18,10 @@
         {$t('course.navItem.landing_page.find')}🌎.
       </p>
 
-      <Search placeholder={$t('course.navItem.landing_page.find_course')} bind:value={searchValue} />
+      <div class="relative mx-auto max-w-xl">
+        <Input type="text" placeholder={$t('course.navItem.landing_page.find_course')} bind:value={searchValue} />
+        <Search class="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+      </div>
     </div>
   </div>
 </section>

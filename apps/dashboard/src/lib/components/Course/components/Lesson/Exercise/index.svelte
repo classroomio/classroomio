@@ -1,26 +1,14 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { IconButton } from '$lib/components/IconButton';
-  import { PageBody } from '$lib/components/Page';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { t } from '$lib/utils/functions/translations';
-  import { upsertExercise } from '$lib/utils/services/courses';
-  import { globalStore } from '$lib/utils/store/app';
-  import {
-    Breadcrumb,
-    BreadcrumbItem,
-    // ContentSwitcher,
-    OverflowMenu,
-    OverflowMenuItem
-    // Switch
-  } from 'carbon-components-svelte';
-  import CirclePlusIcon from '@lucide/svelte/icons/circle-plus';
+  import { goto } from '$app/navigation';
+  import { Button } from '@cio/ui/base/button';
   import EyeIcon from '@lucide/svelte/icons/eye';
   import { onDestroy, onMount, untrack } from 'svelte';
+  import * as Breadcrumb from '@cio/ui/base/breadcrumb';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import CirclePlusIcon from '@lucide/svelte/icons/circle-plus';
+  import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+
   import {
     handleAddQuestion,
     questionnaire,
@@ -28,10 +16,20 @@
     reset,
     validateQuestionnaire
   } from '../store/exercise';
+  import { globalStore } from '$lib/utils/store/app';
+  import { t } from '$lib/utils/functions/translations';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { upsertExercise } from '$lib/utils/services/courses';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+
   import EditMode from './EditMode.svelte';
-  import Analytics from './Submissions/index.svelte';
-  import UpdateDescription from './UpdateDescription.svelte';
   import ViewMode from './ViewMode.svelte';
+  import { PageBody } from '$lib/components/Page';
+  import Analytics from './Submissions/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
+  import UpdateDescription from './UpdateDescription.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
 
   interface Props {
     exerciseId?: string;
@@ -114,14 +112,21 @@
 
 <PageBody isPageNavHidden={$globalStore.isStudent} padding="px-4 overflow-x-hidden">
   <div class="sticky top-0 z-10 mb-3 bg-gray-100 p-2 dark:bg-neutral-800">
-    <Breadcrumb noTrailingSlash>
-      <BreadcrumbItem href={path}>
-        {$t('course.navItem.lessons.exercises.all_exercises.heading')}
-      </BreadcrumbItem>
-      <BreadcrumbItem href={`${path}/${exerciseId}`} isCurrentPage>
-        {$questionnaire.title}
-      </BreadcrumbItem>
-    </Breadcrumb>
+    <Breadcrumb.Root>
+      <Breadcrumb.List>
+        <Breadcrumb.Item>
+          <Breadcrumb.Link href={path}>
+            {$t('course.navItem.lessons.exercises.all_exercises.heading')}
+          </Breadcrumb.Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Separator />
+        <Breadcrumb.Item>
+          <Breadcrumb.Page>
+            {$questionnaire.title}
+          </Breadcrumb.Page>
+        </Breadcrumb.Item>
+      </Breadcrumb.List>
+    </Breadcrumb.Root>
 
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       <!-- <ContentSwitcher bind:selectedIndex class="mb-2">
@@ -167,17 +172,26 @@
             >
               <CirclePlusIcon size={20} />
             </IconButton>
-            <OverflowMenu flipped>
-              <OverflowMenuItem
-                text={$t('course.navItem.lessons.exercises.all_exercises.reorder')}
-                on:click={() => ($questionnaireOrder.open = true)}
-              />
-              <OverflowMenuItem
-                danger
-                text={$t('course.navItem.lessons.exercises.all_exercises.delete_exercise')}
-                on:click={() => (shouldDeleteExercise = true)}
-              />
-            </OverflowMenu>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger>
+                <Button variant="ghost" size="icon" class="h-8 w-8">
+                  <EllipsisVerticalIcon class="h-5 w-5" />
+                  <span class="sr-only">Open menu</span>
+                </Button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content align="end">
+                <DropdownMenu.Item onclick={() => ($questionnaireOrder.open = true)}>
+                  {$t('course.navItem.lessons.exercises.all_exercises.reorder')}
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator />
+                <DropdownMenu.Item
+                  class="text-red-600 focus:text-red-600 dark:text-red-400"
+                  onclick={() => (shouldDeleteExercise = true)}
+                >
+                  {$t('course.navItem.lessons.exercises.all_exercises.delete_exercise')}
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
           </div>
         </div>
       {/if}

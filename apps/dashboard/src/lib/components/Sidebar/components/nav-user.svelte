@@ -6,7 +6,7 @@
   import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
 
   import { globalStore } from '$lib/utils/store/app';
-  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgDomain, currentOrgPath } from '$lib/utils/store/org';
 
   import TextChip from '$lib/components/Chip/Text.svelte';
   import Menu from '$lib/components/Org/FooterMenu/Menu.svelte';
@@ -76,8 +76,8 @@
                 {/if}
               </Avatar.Root>
               <div class="grid flex-1 text-left text-sm leading-tight">
-                <span class="truncate font-medium">{user.name}</span>
-                <span class="truncate text-xs">{user.email}</span>
+                <span class="truncate font-medium">{$currentOrg.name}</span>
+                <span class="truncate text-xs">{$currentOrgDomain}</span>
               </div>
             </a>
           </DropdownMenu.Label>

@@ -1,37 +1,41 @@
 <script lang="ts">
+  import get from 'lodash/get';
   import { untrack } from 'svelte';
-  import { preventDefault } from '$lib/utils/functions/svelte';
-
   import { goto } from '$app/navigation';
-  import Box from '$lib/components/Box/index.svelte';
-  import Card from '$lib/components/Courses/components/Card/index.svelte';
-  import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
-  import { courseMetaDeta, courses } from '$lib/components/Courses/store';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
-  import Navigation from '$lib/components/Navigation/index.svelte';
-  import { landingPageSettings } from '$lib/components/Org/Settings/store';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
-  import { getSupabase } from '$lib/utils/functions/supabase';
-  import { t } from '$lib/utils/functions/translations';
-  import { validateEmail } from '$lib/utils/functions/validateEmail';
-  import { orgLandingpageValidation } from '$lib/utils/functions/validator';
-  import { getCourseBySiteName } from '$lib/utils/services/org';
-  import type { CurrentOrg } from '$lib/utils/types/org';
-  import { Accordion, AccordionItem, Column, Grid, Row } from 'carbon-components-svelte';
+  import { fade } from 'svelte/transition';
   import MailIcon from '@lucide/svelte/icons/mail';
-  import MapPinIcon from '@lucide/svelte/icons/map-pin';
-  import FacebookIcon from '@lucide/svelte/icons/facebook';
-  import LinkedinIcon from '@lucide/svelte/icons/linkedin';
-  import TwitterIcon from '@lucide/svelte/icons/twitter';
   import PhoneIcon from '@lucide/svelte/icons/phone';
   import RocketIcon from '@lucide/svelte/icons/rocket';
-  import get from 'lodash/get';
-  import { fade } from 'svelte/transition';
+  import MapPinIcon from '@lucide/svelte/icons/map-pin';
+  import TwitterIcon from '@lucide/svelte/icons/twitter';
+  import FacebookIcon from '@lucide/svelte/icons/facebook';
+  import LinkedinIcon from '@lucide/svelte/icons/linkedin';
+  import { preventDefault } from '$lib/utils/functions/svelte';
+
+  import Box from '$lib/components/Box/index.svelte';
+  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import Navigation from '$lib/components/Navigation/index.svelte';
+  import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import Card from '$lib/components/Courses/components/Card/index.svelte';
+  import { landingPageSettings } from '$lib/components/Org/Settings/store';
+  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
+  import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
+
   import PageLoader from './PageLoader.svelte';
+  import Row from '../Settings/Layout/Row.svelte';
+  import Grid from '../Settings/Layout/Grid.svelte';
+  import * as Accordion from '@cio/ui/base/accordion';
+  import { t } from '$lib/utils/functions/translations';
+  import Column from '../Settings/Layout/Column.svelte';
+  import type { CurrentOrg } from '$lib/utils/types/org';
+  import { getSupabase } from '$lib/utils/functions/supabase';
+  import { getCourseBySiteName } from '$lib/utils/services/org';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { validateEmail } from '$lib/utils/functions/validateEmail';
+  import { courseMetaDeta, courses } from '$lib/components/Courses/store';
+  import { orgLandingpageValidation } from '$lib/utils/functions/validator';
 
   interface Props {
     orgSiteName?: string;
@@ -349,7 +353,7 @@
           </div>
         {:else}
           <Box>
-            <CoursesEmptyIcon size={16} />
+            <CoursesEmptyIcon />
             <h3 class="my-5 text-2xl dark:text-white">
               {$t('course.navItem.landing_page.no_course_published')}
             </h3>
@@ -381,15 +385,20 @@
           </h1>
         </div>
         <div class="mx-2">
-          <Accordion size="xl">
-            {#each $landingPageSettings.faq.questions as faq}
-              <AccordionItem title={faq.title} class="text-3xl">
-                <p class="text-lg">
-                  {faq.content}
-                </p>
-              </AccordionItem>
+          <Accordion.Root type="single" class="w-full">
+            {#each $landingPageSettings.faq.questions as faq, index}
+              <Accordion.Item value="item-{index}">
+                <Accordion.Trigger class="text-left text-lg font-medium">
+                  {faq.title}
+                </Accordion.Trigger>
+                <Accordion.Content>
+                  <p class="text-lg">
+                    {faq.content}
+                  </p>
+                </Accordion.Content>
+              </Accordion.Item>
             {/each}
-          </Accordion>
+          </Accordion.Root>
         </div>
       </section>
     {/if}

@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { preventDefault } from '$lib/utils/functions/svelte';
+  import * as Select from '@cio/ui/base/select';
+  import TrashIcon from '@lucide/svelte/icons/trash';
+  import CirclePlusIcon from '@lucide/svelte/icons/circle-plus';
 
   import {
     questionnaire,
@@ -12,28 +14,25 @@
     handleAnswerSelect,
     addDynamicValue
   } from '../store/exercise';
-  import { Select, SelectItem } from 'carbon-components-svelte';
+  import { preventDefault } from '$lib/utils/functions/svelte';
+  import { deleteExercise } from '$lib/utils/services/courses';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { QUESTION_TYPE, QUESTION_TYPES } from '$lib/components/Question/constants';
 
-  import TrashIcon from '@lucide/svelte/icons/trash';
-  import CirclePlusIcon from '@lucide/svelte/icons/circle-plus';
-  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
-
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { lesson } from '../store/lessons';
+  import OrderModal from './OrderModal.svelte';
+  import { t } from '$lib/utils/functions/translations';
   import Modal from '$lib/components/Modal/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import Checkbox from '$lib/components/Form/Checkbox.svelte';
   import RadioItem from '$lib/components/Form/RadioItem.svelte';
-  import { IconButton } from '$lib/components/IconButton';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import DeleteConfirmationModal from './DeleteConfirmation.svelte';
   import ErrorMessage from '$lib/components/ErrorMessage/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
   import QuestionContainer from '$lib/components/QuestionContainer/index.svelte';
-  import DeleteConfirmationModal from './DeleteConfirmation.svelte';
-  import OrderModal from './OrderModal.svelte';
-  import { QUESTION_TYPE, QUESTION_TYPES } from '$lib/components/Question/constants';
-  import { deleteExercise } from '$lib/utils/services/courses';
-  import { lesson } from '../store/lessons';
-  import { t } from '$lib/utils/functions/translations';
 
   const initialQuestionsLength = $questionnaire.questions.length;
 
@@ -171,23 +170,26 @@
               />
             </div>
 
-            <Select
-              size="xl"
-              class="w-[50px]"
-              selected={question?.question_type?.id}
-              on:change={(e) => {
-                const id = (e.target as HTMLSelectElement)?.value;
-                if (!id) return;
+            <Select.Root
+              type="single"
+              onValueChange={(value) => {
+                if (!value) return;
+                const id = parseInt(value);
 
-                question.question_type = QUESTION_TYPES.find((q) => q.id === parseInt(id)) ?? QUESTION_TYPES[0];
+                question.question_type = QUESTION_TYPES.find((q) => q.id === id) ?? QUESTION_TYPES[0];
                 question.question_type_id = question.question_type.id;
                 question.is_dirty = true;
               }}
             >
-              {#each QUESTION_TYPES as type}
-                <SelectItem value={type.id} text={$t(type.label)} />
-              {/each}
-            </Select>
+              <Select.Trigger class="w-[180px]">
+                {question?.question_type?.label ? $t(question.question_type.label) : 'Select type'}
+              </Select.Trigger>
+              <Select.Content>
+                {#each QUESTION_TYPES as type}
+                  <Select.Item value={type.id.toString()} label={$t(type.label)} />
+                {/each}
+              </Select.Content>
+            </Select.Root>
           </div>
 
           {#if typeof question.code === 'string'}
@@ -261,9 +263,5 @@
 <style>
   :global(#dnd-action-dragged-el div) {
     z-index: 100;
-  }
-
-  :global(select) {
-    background-image: none;
   }
 </style>

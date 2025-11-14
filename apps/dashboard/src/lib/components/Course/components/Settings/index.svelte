@@ -1,34 +1,41 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import { CodeSnippet, Column, Grid, RadioButton, RadioButtonGroup, Row, Toggle } from 'carbon-components-svelte';
-  import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
-  import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
   import { untrack } from 'svelte';
+  import { goto } from '$app/navigation';
+  import { Label } from '@cio/ui/base/label';
+  import { Switch } from '@cio/ui/base/switch';
+  import * as RadioGroup from '@cio/ui/base/radio-group';
+  import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
+  import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
 
+  import DragAndDrop from './DragAndDrop.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
+  import Row from '$lib/components/Org/Settings/Layout/Row.svelte';
   import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
-  import DragAndDrop from './DragAndDrop.svelte';
-
-  import { course } from '$lib/components/Course/store';
-  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
-  import { IconButton } from '$lib/components/IconButton';
-  import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import Grid from '$lib/components/Org/Settings/Layout/Grid.svelte';
   import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
-  import generateSlug from '$lib/utils/functions/generateSlug';
-  import { isObject } from '$lib/utils/functions/isObject';
-  import { t } from '$lib/utils/functions/translations';
-  import { deleteCourse, updateCourse } from '$lib/utils/services/courses';
-  import { currentOrg, currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import Column from '$lib/components/Org/Settings/Layout/Column.svelte';
+  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
+
+  import { settings } from './store';
+  import Copy from '@lucide/svelte/icons/copy';
   import type { Course } from '$lib/utils/types';
   import { COURSE_TYPE } from '$lib/utils/types';
   import { lessons } from '../Lesson/store/lessons';
-  import { settings } from './store';
+  import { course } from '$lib/components/Course/store';
+  import { t } from '$lib/utils/functions/translations';
+  import { isObject } from '$lib/utils/functions/isObject';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import generateSlug from '$lib/utils/functions/generateSlug';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
+  import { deleteCourse, updateCourse } from '$lib/utils/services/courses';
+  import { copyToClipboard } from '$lib/utils/functions/formatYoutubeVideo';
+  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+  import { currentOrg, currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
 
   let isSaving = $state(false);
   let isLoading = $state(false);
@@ -284,11 +291,23 @@
             <ArrowUpRightIcon size={16} />
           </IconButton>
         </p>
-        {#if $course.slug}
-          <CodeSnippet wrapText type="multi" code={courseLink} />
-        {:else}
-          <CodeSnippet code="Setup landing page to get course link" />
-        {/if}
+        <div class="flex items-center justify-between rounded-md border p-3">
+          {#if $course.slug}
+            <p class="text-sm">{courseLink}</p>
+
+            <IconButton
+              contained={true}
+              size="small"
+              onClick={() => {
+                copyToClipboard(courseLink);
+              }}
+            >
+              <Copy size={16} />
+            </IconButton>
+          {:else}
+            <p class="text-sm">Setup landing page to get course link</p>
+          {/if}
+        </div>
       </div>
     </Column>
   </Row>
@@ -327,16 +346,18 @@
       {#if $isFreePlan}
         <UpgradeBanner>{$t('upgrade.download_lessons')}</UpgradeBanner>
       {:else}
-        <Toggle
-          size="sm"
-          bind:toggled={$settings.lesson_download}
-          on:toggle={() => {
-            hasUnsavedChanges = true;
-          }}
-        >
-          <span slot="labelA" style="color: gray">{$t('course.navItem.settings.disabled')}</span>
-          <span slot="labelB" style="color: gray">{$t('course.navItem.settings.enabled')}</span>
-        </Toggle>
+        <div class="flex items-center space-x-2">
+          <Switch
+            id="lesson-download"
+            bind:checked={$settings.lesson_download}
+            onCheckedChange={() => {
+              hasUnsavedChanges = true;
+            }}
+          />
+          <Label for="lesson-download" class="text-sm text-gray-500">
+            {$settings.lesson_download ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
+          </Label>
+        </div>
       {/if}
     </Column>
   </Row>
@@ -366,17 +387,23 @@
       <p>{$t('course.navItem.settings.course_type_desc')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
-      <RadioButtonGroup
-        hideLegend
-        bind:selected={$settings.type}
-        on:click={() => {
+      <RadioGroup.Root
+        value={$settings.type}
+        onValueChange={(value) => {
+          $settings.type = value as COURSE_TYPE;
           if (hasUnsavedChanges) return;
           hasUnsavedChanges = true;
         }}
       >
-        <RadioButton labelText={$t('course.navItem.settings.live_class')} value={COURSE_TYPE.LIVE_CLASS} />
-        <RadioButton labelText={$t('course.navItem.settings.self_paced')} value={COURSE_TYPE.SELF_PACED} />
-      </RadioButtonGroup>
+        <div class="mb-3 flex items-center space-x-2">
+          <RadioGroup.Item value={COURSE_TYPE.LIVE_CLASS} id="live-class" />
+          <Label for="live-class">{$t('course.navItem.settings.live_class')}</Label>
+        </div>
+        <div class="flex items-center space-x-2">
+          <RadioGroup.Item value={COURSE_TYPE.SELF_PACED} id="self-paced" />
+          <Label for="self-paced">{$t('course.navItem.settings.self_paced')}</Label>
+        </div>
+      </RadioGroup.Root>
     </Column>
   </Row>
 
@@ -386,16 +413,20 @@
       <p>{$t('course.navItem.settings.access')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
-      <Toggle
-        size="sm"
-        bind:toggled={$settings.allow_new_students}
-        on:click={() => {
-          hasUnsavedChanges = true;
-        }}
-      >
-        <span slot="labelA" style="color: gray">{$t('course.navItem.settings.disabled')}</span>
-        <span slot="labelB" style="color: gray">{$t('course.navItem.settings.enabled')}</span>
-      </Toggle>
+      <div class="flex items-center space-x-2">
+        <Switch
+          id="allow-new-students"
+          bind:checked={$settings.allow_new_students}
+          onCheckedChange={() => {
+            hasUnsavedChanges = true;
+          }}
+        />
+        <Label for="allow-new-students" class="text-sm text-gray-500">
+          {$settings.allow_new_students
+            ? $t('course.navItem.settings.enabled')
+            : $t('course.navItem.settings.disabled')}
+        </Label>
+      </div>
     </Column>
   </Row>
 
@@ -406,22 +437,22 @@
       <p>{$t('course.navItem.settings.determines')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
-      <Toggle
-        size="sm"
-        bind:toggled={$settings.is_published}
-        on:click={() => {
-          hasUnsavedChanges = true;
-        }}
-        on:toggle={(e) => {
-          $settings.allow_new_students = e.detail.toggled;
-          if (!$course.slug) {
-            generateNewCourseLink();
-          }
-        }}
-      >
-        <span slot="labelA" style="color: gray">{$t('course.navItem.settings.unpublished')}</span>
-        <span slot="labelB" style="color: gray">{$t('course.navItem.settings.published')}</span>
-      </Toggle>
+      <div class="flex items-center space-x-2">
+        <Switch
+          id="is-published"
+          bind:checked={$settings.is_published}
+          onCheckedChange={(checked) => {
+            hasUnsavedChanges = true;
+            $settings.allow_new_students = checked;
+            if (!$course.slug) {
+              generateNewCourseLink();
+            }
+          }}
+        />
+        <Label for="is-published" class="text-sm text-gray-500">
+          {$settings.is_published ? $t('course.navItem.settings.published') : $t('course.navItem.settings.unpublished')}
+        </Label>
+      </div>
     </Column>
   </Row>
 

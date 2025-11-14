@@ -1,18 +1,23 @@
 <script lang="ts">
-  import Modal from '$lib/components/Modal/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import Preview from './Preview.svelte';
+  import { untrack } from 'svelte';
+  import { Badge } from '@cio/ui/base/badge';
+  import * as Select from '@cio/ui/base/select';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+
   import { STATUS } from './constants';
+  import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import type { SubmissionIdData } from '$lib/utils/types/submission';
+
+  import Preview from './Preview.svelte';
+  import Modal from '$lib/components/Modal/index.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
-  import { Dropdown, Tag } from 'carbon-components-svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+
   // import { useCompletion } from 'ai/svelte';
   // import { QUESTION_TYPE } from '$lib/components/Question/constants';
-  import { t } from '$lib/utils/functions/translations';
-  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
-  import type { SubmissionIdData } from '$lib/utils/types/submission';
-  import { untrack } from 'svelte';
 
   interface Props {
     open?: boolean;
@@ -51,16 +56,17 @@
     }
   ];
 
-  let status = SELECTABLE_STATUS[0];
-  let selectedId = $state(status.id);
+  let status = $state(SELECTABLE_STATUS[0]);
   let reasons = $state({});
   let isLoading = $state(false);
-  let openMenu = $state(false);
   let openDeletePrompt = $state(false);
   let isDeleting = $state(false);
 
   const total = calculateTotal(data.questionAnswerByPoint);
   const maxPoints = $derived(getMaxPoints(data.questions));
+  const sortedQuestions = $derived(
+    Array.isArray(data.questions) ? [...data.questions].sort((a, b) => a.order - b.order) : []
+  );
 
   function getMaxPoints(questions) {
     return (questions || []).reduce((acc, question) => acc + question.points, 0);
@@ -71,36 +77,35 @@
     return Object.values(grades).reduce((acc, grade) => acc + parseInt(grade || '0'), 0);
   }
 
-  function handleStatusChange(event) {
-    const newSelectedId = event.detail.selectedId;
+  function handleStatusChange(value: string) {
+    const newSelectedId = parseInt(value);
+    const prevStatusId = data.statusId;
 
-    setStatus({
-      ...data,
-      statusId: newSelectedId
-    });
+    // Find the new status
+    const newStatus = SELECTABLE_STATUS.find((s) => s.id === newSelectedId);
 
-    updateStatus({
-      submissionId: data.id,
-      prevStatusId: data.statusId,
-      nextStatusId: status.id,
-      total
-    });
+    if (newStatus) {
+      // Update state
+      status = newStatus;
+      data.statusId = newSelectedId;
 
-    snackbar.success(`${$t('snackbar.exercise.submission_updated')} '${status.text}'`);
+      updateStatus({
+        submissionId: data.id,
+        prevStatusId: prevStatusId,
+        nextStatusId: newSelectedId,
+        total
+      });
+
+      snackbar.success(`${$t('snackbar.exercise.submission_updated')} '${newStatus.text}'`);
+    }
   }
 
   function setStatus(data: SubmissionIdData) {
     untrack(() => {
-      const statusBySelectedId = SELECTABLE_STATUS.find((status) => status.id === data.statusId);
+      const statusBySelectedId = SELECTABLE_STATUS.find((s) => s.id === data.statusId);
 
-      if (!statusBySelectedId) {
-        return;
-      }
-
-      status = statusBySelectedId;
-
-      if (data.statusId !== selectedId) {
-        selectedId = data.statusId;
+      if (statusBySelectedId) {
+        status = statusBySelectedId;
       }
     });
   }
@@ -261,7 +266,7 @@
       </div>
     {:else}
       <Preview
-        questions={Array.isArray(data.questions) ? data.questions.sort((a, b) => a.order - b.order) : []}
+        questions={sortedQuestions}
         questionnaireMetaData={{
           answers: data.answers || {},
           isFinished: true
@@ -292,16 +297,23 @@
           {/if}
         </p>
 
-        <OverflowMenu open={openMenu} flipped>
-          <OverflowMenuItem
-            text={$t('delete_modal.label')}
-            on:click={() => {
-              openDeletePrompt = true;
-              openMenu = false;
-            }}
-            danger
-          />
-        </OverflowMenu>
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger
+            class="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-neutral-700"
+          >
+            <EllipsisVerticalIcon class="h-5 w-5" />
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content align="end">
+            <DropdownMenu.Item
+              class="text-red-600"
+              onclick={() => {
+                openDeletePrompt = true;
+              }}
+            >
+              {$t('delete_modal.label')}
+            </DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
       </div>
 
       <div class="flex items-center space-x-4 px-3 py-2 text-sm">
@@ -309,9 +321,9 @@
           {$t('course.navItem.submissions.grading_modal.total_grade')}:
         </p>
 
-        <Tag class="w-fit rounded-md bg-gray-100 font-semibold text-black dark:bg-neutral-700 dark:text-white">
+        <Badge class="w-fit rounded-md bg-gray-100 font-semibold text-black dark:bg-neutral-700 dark:text-white">
           {total}/{maxPoints}
-        </Tag>
+        </Badge>
       </div>
       <!-- <div class="flex items-center text-sm p-3">
         <p class="dark:text-white w-1/2">Status</p>
@@ -345,7 +357,26 @@
         <p class="font-semibold text-gray-500 dark:text-white">
           {$t('course.navItem.submissions.grading_modal.status')}:
         </p>
-        <Dropdown bind:selectedId items={SELECTABLE_STATUS} class="w-full" on:select={handleStatusChange} />
+        <Select.Root
+          type="single"
+          value={status.id.toString()}
+          onValueChange={(value) => {
+            if (value) {
+              handleStatusChange(value);
+            }
+          }}
+        >
+          <Select.Trigger class="w-full">
+            {status.text}
+          </Select.Trigger>
+          <Select.Content>
+            {#each SELECTABLE_STATUS as statusOption}
+              <Select.Item value={statusOption.id.toString()}>
+                {statusOption.text}
+              </Select.Item>
+            {/each}
+          </Select.Content>
+        </Select.Root>
       </div>
 
       <div class="flex flex-col items-start px-3 py-2 text-sm">

@@ -1,24 +1,27 @@
 <script>
-  import { RadioButtonGroup, RadioButton, Toggle } from 'carbon-components-svelte';
-  import ZapIcon from '@lucide/svelte/icons/zap';
   import { goto } from '$app/navigation';
-  import { updateCourse } from '$lib/utils/services/courses';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import Professional from './templates/Professional.svelte';
-  import Plain from './templates/Plain.svelte';
+  import { Label } from '@cio/ui/base/label';
+  import { Switch } from '@cio/ui/base/switch';
+  import ZapIcon from '@lucide/svelte/icons/zap';
+  import * as RadioGroup from '@cio/ui/base/radio-group';
+
   import { course } from '$lib/components/Course/store';
-  import { currentOrg, isFreePlan } from '$lib/utils/store/org';
-  import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
-  import PurpleProfessionalBadge from './templates/PurpleProfessionalBadge.svelte';
-  import BlueProfessionalBadge from './templates/BlueProfessionalBadge.svelte';
-  import PurpleBadgePattern from './templates/PurpleBadgePattern.svelte';
-  import BlueBadgePattern from './templates/BlueBadgePattern.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import { updateCourse } from '$lib/utils/services/courses';
+  import { currentOrg, isFreePlan } from '$lib/utils/store/org';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { saveCertificateValidation } from '$lib/utils/functions/validator';
+
+  import Plain from './templates/Plain.svelte';
+  import Professional from './templates/Professional.svelte';
+  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
+  import BlueBadgePattern from './templates/BlueBadgePattern.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import PurpleBadgePattern from './templates/PurpleBadgePattern.svelte';
+  import BlueProfessionalBadge from './templates/BlueProfessionalBadge.svelte';
+  import PurpleProfessionalBadge from './templates/PurpleProfessionalBadge.svelte';
 
   const studentNamePlaceholder = 'Name of student';
   const themes = [
@@ -94,16 +97,20 @@
       <p class="my-4 text-xs font-normal dark:text-gray-100">
         {$t('course.navItem.certificates.theme')}
       </p>
-      <RadioButtonGroup bind:selected={$course.certificate_theme} class="mb-10" disabled={$isFreePlan}>
+
+      <RadioGroup.Root bind:value={$course.certificate_theme} disabled={$isFreePlan} class="mb-10">
         <div class="flex flex-wrap justify-between gap-y-5">
           {#each themes as theme}
-            <div class="mr-3 flex">
-              <RadioButton value={theme} />
-              <img src={`/images/certificate_theme_${theme}.png`} alt="themes" class="h-[82px] w-[110px]" />
+            <div class="mr-3 flex items-start space-x-2">
+              <RadioGroup.Item value={theme} id={theme} />
+              <Label for={theme} class="cursor-pointer">
+                <img src={`/images/certificate_theme_${theme}.png`} alt="themes" class="h-[82px] w-[110px]" />
+              </Label>
             </div>
           {/each}
         </div>
-      </RadioButtonGroup>
+      </RadioGroup.Root>
+
       <div>
         <p class="my-2 text-xs font-normal text-black dark:text-gray-100">
           {$t('course.navItem.certificates.logo')}
@@ -135,18 +142,16 @@
             helperMessage={helperText}
           />
         </span>
-        <Toggle
-          labelText={$t('course.navItem.certificates.allow')}
-          bind:toggled={$course.is_certificate_downloadable}
-          class="my-4"
-          size="sm"
-          disabled={$isFreePlan}
-        >
-          <span slot="labelA" style={$globalStore.isDark ? 'color: white' : 'color: #161616'}
-            >{$t('generic.locked')}</span
-          >
-          <span slot="labelB" style="color: green">{$t('generic.unlocked')}</span>
-        </Toggle>
+        <div class="my-4 flex items-center space-x-2">
+          <Switch
+            id="certificate-downloadable"
+            bind:checked={$course.is_certificate_downloadable}
+            disabled={$isFreePlan}
+          />
+          <Label for="certificate-downloadable" class="text-sm font-medium dark:text-gray-100">
+            {$t('course.navItem.certificates.allow')}
+          </Label>
+        </div>
       </div>
     </section>
     <section class="flex w-full items-center justify-center rounded-md bg-gray-100 lg:w-3/5 dark:bg-neutral-800">

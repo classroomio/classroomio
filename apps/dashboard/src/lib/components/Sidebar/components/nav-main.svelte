@@ -2,7 +2,6 @@
   import { currentOrgPath } from '$lib/utils/store/org';
   import * as Collapsible from '@cio/ui/base/collapsible';
   import * as Sidebar from '@cio/ui/base/sidebar';
-  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 
   let {
     items
@@ -36,9 +35,9 @@
                     <item.icon />
                   {/if}
                   <a href="{$currentOrgPath}{item.url}">{item.title}</a>
-                  <ChevronRightIcon
+                  <!-- <ChevronRightIcon
                     class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
-                  />
+                  /> -->
                 </Sidebar.MenuButton>
               {/snippet}
             </Collapsible.Trigger>

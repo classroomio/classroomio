@@ -1,24 +1,20 @@
 <script lang="ts">
+  import * as Table from '@cio/ui/base/table';
+
   import Box from '../Box/index.svelte';
   import Card from './components/Card/index.svelte';
   import List from './components/List/index.svelte';
   import CardLoader from './components/Card/Loader.svelte';
   import CoursesEmptyIcon from '../Icons/CoursesEmptyIcon.svelte';
+  import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
+  import CopyCourseModal from './components/CopyCourseModal/index.svelte';
+
   import { courseMetaDeta } from './store';
   import type { Course } from '$lib/utils/types';
   import { globalStore } from '$lib/utils/store/app';
-  import {
-    StructuredList,
-    StructuredListHead,
-    StructuredListRow,
-    StructuredListCell,
-    StructuredListBody
-  } from 'carbon-components-svelte';
   import { t } from '$lib/utils/functions/translations';
-  import CopyCourseModal from './components/CopyCourseModal/index.svelte';
-  import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
-  import { deleteCourse } from '$lib/utils/services/courses';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import { deleteCourse } from '$lib/utils/services/courses';
   import { deleteCourseModal, deleteCourseModalInitialState, courses as coursesStore } from './store';
 
   interface Props {
@@ -84,44 +80,34 @@
       <CardLoader />
     </section>
   {:else if $courseMetaDeta.view === 'list'}
-    <StructuredList selection class="w-full">
-      <StructuredListHead>
-        <StructuredListRow head>
-          <StructuredListCell head>
-            {$t('courses.course_card.list_view.title')}
-          </StructuredListCell>
-          <StructuredListCell head>
-            {$t('courses.course_card.list_view.description')}
-          </StructuredListCell>
-          <StructuredListCell head>
-            {$t('courses.course_card.list_view.type')}
-          </StructuredListCell>
-          <StructuredListCell head>
-            {$t('courses.course_card.list_view.lessons')}
-          </StructuredListCell>
-          <StructuredListCell head>
-            {$t('courses.course_card.list_view.students')}
-          </StructuredListCell>
-          <StructuredListCell head>
-            {$t('courses.course_card.list_view.published')}
-          </StructuredListCell>
-          <StructuredListCell head></StructuredListCell>
-        </StructuredListRow>
-      </StructuredListHead>
-      <StructuredListBody>
-        {#each courses as courseData}
-          <List
-            id={courseData.id}
-            title={courseData.title}
-            type={$t(`course.navItem.settings.${courseData.type.toLowerCase()}`)}
-            description={courseData.description}
-            isPublished={courseData.is_published}
-            totalLessons={courseData.total_lessons}
-            totalStudents={courseData.total_students}
-          />
-        {/each}
-      </StructuredListBody>
-    </StructuredList>
+    <div class="w-full rounded-md border">
+      <Table.Root>
+        <Table.Header>
+          <Table.Row>
+            <Table.Head>{$t('courses.course_card.list_view.title')}</Table.Head>
+            <Table.Head>{$t('courses.course_card.list_view.description')}</Table.Head>
+            <Table.Head>{$t('courses.course_card.list_view.type')}</Table.Head>
+            <Table.Head>{$t('courses.course_card.list_view.lessons')}</Table.Head>
+            <Table.Head>{$t('courses.course_card.list_view.students')}</Table.Head>
+            <Table.Head>{$t('courses.course_card.list_view.published')}</Table.Head>
+            <Table.Head></Table.Head>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {#each courses as courseData}
+            <List
+              id={courseData.id}
+              title={courseData.title}
+              type={$t(`course.navItem.settings.${courseData.type.toLowerCase()}`)}
+              description={courseData.description}
+              isPublished={courseData.is_published}
+              totalLessons={courseData.total_lessons}
+              totalStudents={courseData.total_students}
+            />
+          {/each}
+        </Table.Body>
+      </Table.Root>
+    </div>
   {:else}
     <section class={`relative ${$courseMetaDeta.isLoading || courses ? 'cards-container' : ''} `}>
       {#each courses as courseData}
@@ -148,7 +134,7 @@
 </div>
 {#if !$courseMetaDeta.isLoading && !courses.length}
   <Box className="w-full">
-    <CoursesEmptyIcon size={16} />
+    <CoursesEmptyIcon />
     <h3 class="my-5 text-2xl dark:text-white">{emptyTitle}</h3>
     <p class="w-1/3 text-center dark:text-white">
       {emptyDescription}

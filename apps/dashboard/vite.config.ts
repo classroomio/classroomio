@@ -19,6 +19,9 @@ export default ({ mode }) => {
     build: {
       sourcemap: false
     },
+    ssr: {
+      noExternal: ['svelte-sonner']
+    },
     optimizeDeps: {
       entries: ['src/routes/**/+*.{js,ts,svelte}'],
       include: ['@cio/api/rpc-types']

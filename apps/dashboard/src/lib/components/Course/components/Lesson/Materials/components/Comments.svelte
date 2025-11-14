@@ -1,20 +1,23 @@
 <script lang="ts">
-  import Avatar from '$lib/components/Avatar/index.svelte';
-  import { lesson, lessonCommentsChannel } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { onDestroy, onMount } from 'svelte';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+  import type { PostgrestSingleResponse, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+
   import { group } from '$lib/components/Course/store';
+  import Avatar from '$lib/components/Avatar/index.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { calDateDiff } from '$lib/utils/functions/date';
-  import { getSupabase } from '$lib/utils/functions/supabase';
-  import { t } from '$lib/utils/functions/translations';
+  import { lesson, lessonCommentsChannel } from '$lib/components/Course/components/Lesson/store/lessons';
+
   import { profile } from '$lib/utils/store/user';
+  import { t } from '$lib/utils/functions/translations';
+  import { calDateDiff } from '$lib/utils/functions/date';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { getSupabase } from '$lib/utils/functions/supabase';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import type { GroupPerson, LessonComment, LessonCommentInsertPayload } from '$lib/utils/types';
-  import type { PostgrestSingleResponse, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
-  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
-  import { onDestroy, onMount } from 'svelte';
 
   const supabase = getSupabase();
   const PAGE_SIZE = 20;
@@ -305,17 +308,25 @@
             </p>
 
             {#if groupmember?.id === commentItem.groupmember_id}
-              <OverflowMenu flipped>
-                <OverflowMenuItem text="Edit" on:click={() => (editCommentId = commentItem.id)} />
-                <OverflowMenuItem
-                  danger
-                  text="Delete"
-                  on:click={() => {
-                    deleteCommentId = commentItem.id;
-                    openDeleteModal = true;
-                  }}
-                />
-              </OverflowMenu>
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger
+                  class="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-neutral-700"
+                >
+                  <EllipsisVerticalIcon class="h-5 w-5" />
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content align="end">
+                  <DropdownMenu.Item onclick={() => (editCommentId = commentItem.id)}>Edit</DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    class="text-red-600"
+                    onclick={() => {
+                      deleteCommentId = commentItem.id;
+                      openDeleteModal = true;
+                    }}
+                  >
+                    Delete
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
             {/if}
           </div>
 
@@ -338,7 +349,7 @@
               />
             </div>
           {:else}
-            <article class="prose sm:prose-sm max-w-[300px] dark:text-white">
+            <article class="prose max-w-[300px] sm:prose-sm dark:text-white">
               {commentItem.comment}
             </article>
           {/if}

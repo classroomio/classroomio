@@ -8,7 +8,6 @@
 
   import NavMain from './nav-main.svelte';
   import NavUser from './nav-user.svelte';
-  import NavProjects from './nav-projects.svelte';
   import TeamSwitcher from './team-switcher.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
@@ -34,10 +33,6 @@
 
   <Sidebar.Content>
     <NavMain items={sidebarData.navMain} />
-
-    {#if sidebarData?.projects?.length > 0}
-      <NavProjects projects={sidebarData.projects} />
-    {/if}
   </Sidebar.Content>
 
   {#if $isFreePlan}

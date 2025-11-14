@@ -1,15 +1,17 @@
 <script lang="ts">
   import pluralize from 'pluralize';
-  import { ImageLoader } from 'carbon-components-svelte';
   import EllipsisIcon from '@lucide/svelte/icons/ellipsis';
+
   import { currentOrgPath } from '$lib/utils/store/org';
-  import Dropdown from '$lib/components/Dropdown/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { onRename, onDelete } from '$lib/utils/services/org/quiz';
+  import { t } from '$lib/utils/functions/translations';
   import { themeImages } from '$lib/utils/constants/quiz';
   import { calDateDiff } from '$lib/utils/functions/date';
-  import { t } from '$lib/utils/functions/translations';
+  import { onRename, onDelete } from '$lib/utils/services/org/quiz';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+
+  import ImageRenderer from '../ImageRenderer.svelte';
+  import Dropdown from '$lib/components/Dropdown/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   let { quiz, totalQuestions } = $props();
 
@@ -55,10 +57,10 @@
   <div
     class="root relative mb-5 flex w-full flex-col rounded-lg border bg-gray-100 p-3 transition ease-in-out hover:shadow-2xl lg:flex-row dark:bg-black"
   >
-    <ImageLoader
+    <ImageRenderer
       src={themeImages[quiz.theme]?.card || themeImages.standard.card}
       alt="quiz-card"
-      style="max-width:300px, min-width: 200px;"
+      className="max-w-[300px] min-w-[200px]"
     />
 
     <div class="flex w-full flex-col justify-between p-2 md:p-5">

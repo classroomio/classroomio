@@ -1,35 +1,34 @@
 <script lang="ts">
-  import { fade } from 'svelte/transition';
   import get from 'lodash/get';
   import pluralize from 'pluralize';
   import { page } from '$app/state';
+  import { fade } from 'svelte/transition';
   import { onMount, onDestroy } from 'svelte';
   import PlayIcon from '@lucide/svelte/icons/play';
-  import { ImageLoader, InlineLoading } from 'carbon-components-svelte';
 
   import { getLectureNo } from '../Course/function';
   import { currentOrg } from '$lib/utils/store/org';
-  import { course, sortLesson } from '$lib/components/Course/store';
+  import { NAV_ITEM_KEY, NAV_ITEMS } from './constants';
   import { t } from '$lib/utils/functions/translations';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { handleOpenWidget, reviewsModalStore } from './store';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { COURSE_VERSION, type Course } from '$lib/utils/types';
+  import { course, sortLesson } from '$lib/components/Course/store';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
+  import { getExerciseCount, getLessonSections, getTotalLessons, filterNavItems } from './utils';
 
   import Chip from '../Chip/index.svelte';
   import Modal from '../Modal/index.svelte';
+  import ImageRenderer from '../Org/ImageRenderer.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import PricingSection from './components/PricingSection.svelte';
   import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
+  import SectionsDisplay from './components/SectionsDisplay.svelte';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
-  import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { observeIntersection } from './components/IntersectionObserver';
-  import SectionsDisplay from './components/SectionsDisplay.svelte';
-
-  import { getExerciseCount, getLessonSections, getTotalLessons, filterNavItems } from './utils';
-  import { NAV_ITEM_KEY, NAV_ITEMS } from './constants';
 
   interface Props {
     editMode?: boolean;
@@ -267,16 +266,11 @@
               {$t('course.navItem.landing_page.certificate_text')}
             </p>
 
-            <ImageLoader
-              class="certificate-img max-h-[215px]"
+            <ImageRenderer
               src={certificate?.templateUrl}
               alt="certificate template"
-            >
-              <svelte:fragment slot="loading">
-                <InlineLoading />
-              </svelte:fragment>
-              <svelte:fragment slot="error">An error occurred.</svelte:fragment>
-            </ImageLoader>
+              className="certificate-img max-h-[215px]"
+            />
           </section>
         {/if}
 

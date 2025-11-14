@@ -17,6 +17,13 @@
     "yes": "Yes"
   },
 
+  "new_course_modal": {
+    "live_class_label": "Live Class",
+    "live_class_subtitle": "This course type is ideal for bootcamps where lessons are time based and you need attendance and grading",
+    "self_paced_label": "Self Paced",
+    "self_paced_subtitle": "This course type is ideal for courses where students can take lessons on their own pace without a teacher"
+  },
+
   "onboarding": {
     "sell": "Sell courses online",
     "teach": "Teach my current students online",

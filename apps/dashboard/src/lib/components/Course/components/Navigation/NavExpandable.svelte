@@ -112,9 +112,9 @@
       </IconButton>
       <IconButton size="small" stopPropagation={true} onClick={toggleIsExpanded}>
         {#if isExpanded}
-          <ChevronUpIcon size={16} class="carbon-icon dark:text-white" />
+          <ChevronUpIcon size={16} class="dark:text-white" />
         {:else}
-          <ChevronDownIcon size={16} class="carbon-icon dark:text-white" />
+          <ChevronDownIcon size={16} class="dark:text-white" />
         {/if}
       </IconButton>
     {/if}

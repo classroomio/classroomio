@@ -6,5 +6,5 @@
 </script>
 
 <IconButton {onClick}>
-  <XIcon size={16} class="carbon-icon dark:text-white" />
+  <XIcon size={16} class="dark:text-white" />
 </IconButton>
