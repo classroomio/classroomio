@@ -95,12 +95,12 @@
 
 <UnsavedChanges bind:hasUnsavedChanges />
 
-<Grid class="mt-5 w-full">
-  <Row class="border-bottom-c flex flex-col items-center py-7 lg:flex-row lg:items-start ">
+<Grid class="mt-0 w-full md:mt-5">
+  <Row class="border-bottom-c flex flex-col items-center lg:flex-row lg:items-start lg:py-7 ">
     <Column sm={4} md={8} lg={4} class="mt-2 md:mt-0">
       <SectionTitle>{$t('settings.profile.profile_picture.heading')}</SectionTitle>
     </Column>
-    <Column sm={2} md={4} lg={8} class="mt-2 lg:mt-0">
+    <Column sm={8} md={8} lg={8} class="mt-2 lg:mt-0">
       <UploadImage
         bind:avatar
         src={$profile.avatar_url}

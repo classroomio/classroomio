@@ -810,15 +810,15 @@ svg.lucide-icon:not(.custom) {
 
 /* Tailwind v4 Custom Animations and Keyframes */
 @theme {
-  --animate-shake-announcement: shakeAnnouncement 0.5s ease-in-out;
-  --animate-flip-book: flipBook 0.6s ease-in-out;
-  --animate-scroll-unroll: scrollUnroll 0.8s ease-out;
-  --animate-check-items: attendanceCount 0.8s ease-in-out;
-  --animate-task-complete: taskComplete 0.6s ease-in-out;
-  --animate-grade-glow: gradeGlow 1s ease-in-out;
-  --animate-people-wave: peopleWave 0.8s ease-in-out;
-  --animate-chart-grow: dataScan 1s ease-in-out;
-  --animate-screen-glow: screenGlow 1s ease-in-out;
+  --animate-NEWS_FEED: shakeAnnouncement 0.5s ease-in-out;
+  --animate-SECTION: flipBook 0.6s ease-in-out;
+  --animate-LESSONS: scrollUnroll 0.8s ease-out;
+  --animate-ATTENDANCE: attendanceCount 0.8s ease-in-out;
+  --animate-SUBMISSIONS: taskComplete 0.6s ease-in-out;
+  --animate-MARKS: gradeGlow 1s ease-in-out;
+  --animate-PEOPLE: peopleWave 0.8s ease-in-out;
+  --animate-ANALYTICS: dataScan 1s ease-in-out;
+  --animate-LANDING_PAGE: screenGlow 1s ease-in-out;
   --animate-library-expand: libraryExpand 0.7s ease-out;
   --animate-template-morph: templateMorph 0.6s ease-in-out;
   --animate-ripple: communityRipple 0.9s ease-out;

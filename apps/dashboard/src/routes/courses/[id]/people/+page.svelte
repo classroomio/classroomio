@@ -111,11 +111,6 @@
         options={ROLES.map((role) => ({ label: $t(role.label), value: role.value }))}
         className="dark:text-black mt-3 max-w-[80px]"
       />
-      <!-- <select bind:value={filterBy} class="mt-3">
-        {#each ROLES as option}
-          <option value={option.value}>{option.label}</option>
-        {/each}
-      </select> -->
     </div>
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       <p class="hidden w-20 text-lg lg:block dark:text-white"></p>

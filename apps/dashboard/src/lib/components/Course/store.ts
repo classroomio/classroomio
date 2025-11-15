@@ -131,8 +131,8 @@ export async function setCourse(data: Course, setLesson = true) {
       people: []
     };
 
-    if (Array.isArray(groupData.members)) {
-      for (const member of groupData.members) {
+    if (Array.isArray(data.group.members)) {
+      for (const member of data.group.members) {
         if (member.role_id === ROLE.STUDENT) {
           groupData.students.push(member);
         } else if (member.profile) {
@@ -143,10 +143,10 @@ export async function setCourse(data: Course, setLesson = true) {
         }
       }
 
-      groupData.people = groupData.members;
+      groupData.people = data.group.members;
     }
 
-    delete groupData.members;
+    console.log('groupData', groupData);
 
     group.set(groupData);
   }

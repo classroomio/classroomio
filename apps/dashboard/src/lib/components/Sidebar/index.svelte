@@ -7,7 +7,8 @@
 
 <Sidebar.Provider class="flex w-fit items-start gap-4">
   <AppSidebar sidebarData={data} />
-  <Sidebar.Inset>
+
+  <Sidebar.Inset class="hidden md:block">
     <Sidebar.Trigger class="-ml-1" />
   </Sidebar.Inset>
 </Sidebar.Provider>

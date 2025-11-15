@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { Progress } from '@cio/ui/base/progress';
   import { VARIANTS, VARIANTS_CLASS } from './constants';
+  import { Spinner } from '@cio/ui/base/spinner';
 
   interface Props {
     label?: string;
@@ -44,7 +44,7 @@
 
 <button class={`${cname} ${className}`} onclick={onClick} {name} {type} disabled={isLoading || isDisabled}>
   {#if isLoading}
-    <Progress class="mr-2" />
+    <Spinner class="mr-2 text-white" />
   {/if}
   {#if !!label}
     {label}

@@ -42,27 +42,27 @@
     navMain: [
       {
         title: $t('org_navigation.dashboard'),
-        url: '',
+        url: '/',
         icon: LayoutDashboardIcon,
-        isActive: isActive(page.url.pathname, ``)
+        isActive: isActive(page.url.pathname, `/org/${data.orgName}`)
       },
       {
         title: $t('org_navigation.courses'),
         url: `/courses`,
         icon: LibraryBigIcon,
-        isActive: page.url.pathname.includes(`/courses`)
+        isActive: isActive(page.url.pathname, `/org/${data.orgName}/courses`)
       },
       {
         title: $t('org_navigation.community'),
         url: `/community`,
         icon: MessageSquareMoreIcon,
-        isActive: page.url.pathname.includes(`/community`)
+        isActive: isActive(page.url.pathname, `/org/${data.orgName}/community`)
       },
       {
         title: $t('org_navigation.audience'),
         url: `/audience`,
         icon: UsersIcon,
-        isActive: page.url.pathname.includes(`/audience`)
+        isActive: isActive(page.url.pathname, `/org/${data.orgName}/audience`)
       },
       ...(!!$isOrgAdmin
         ? [
@@ -70,7 +70,7 @@
               title: $t('org_navigation.setup'),
               url: `/setup`,
               icon: Settings2Icon,
-              isActive: page.url.pathname.includes(`/setup`)
+              isActive: isActive(page.url.pathname, `/org/${data.orgName}/setup`)
             }
           ]
         : [])

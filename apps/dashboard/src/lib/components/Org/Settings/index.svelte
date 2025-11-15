@@ -70,7 +70,7 @@
   }
 </script>
 
-<Tabs.Root value={tabKey} onValueChange={onTabChange} class="w-full">
+<Tabs.Root value={tabKey} onValueChange={onTabChange} class="w-full p-0">
   <Tabs.List class="w-full">
     {#each tabs as tab}
       <Tabs.Trigger value={tab.tabKey} disabled={tab.disabled}>

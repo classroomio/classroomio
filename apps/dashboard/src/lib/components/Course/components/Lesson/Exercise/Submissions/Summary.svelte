@@ -1,12 +1,11 @@
 <script lang="ts">
-  import { onMount, untrack } from 'svelte';
+  import { untrack } from 'svelte';
   import { browser } from '$app/environment';
   import { Spinner } from '@cio/ui/base/spinner';
-  import type { BarChartOptions, PieChartOptions, PieChart, BarChartSimple } from '@carbon/charts-svelte';
+  // import * as Chart from '@cio/ui/base/chart';
+  // import { scaleBand } from '@cio/ui/base/chart';
 
   import { submissions } from './store';
-  import '@carbon/charts-svelte/styles.css';
-  import { getChartOptions } from './functions';
   import { questionnaire } from '../../store/exercise';
   import { t } from '$lib/utils/functions/translations';
   import type { ExerciseSubmissions } from '$lib/utils/types';
@@ -18,22 +17,31 @@
 
   let { isLoading = $bindable(true) }: Props = $props();
 
-  type TranformedQuestionChartData = {
-    group: string;
-    value: number;
+  type TransformedQuestionChartData = {
+    option: string;
+    responses: number;
     isCorrect?: boolean;
   };
-  interface TranformedQuestion {
+
+  interface TransformedQuestion {
     title: string;
     type: number;
-    chartData: TranformedQuestionChartData[];
+    chartData: TransformedQuestionChartData[];
   }
 
-  let transformedQuestions: TranformedQuestion[] = $state([]);
-  let barChart: typeof BarChartSimple | undefined = $state();
-  let pieChart: typeof PieChart | undefined = $state();
-  let pieOptions: PieChartOptions | undefined = $derived(getChartOptions(isLoading).pieOptions);
-  let barOptions: BarChartOptions | undefined = $derived(getChartOptions(isLoading).barOptions);
+  let transformedQuestions: TransformedQuestion[] = $state([]);
+
+  // Create dynamic chart config based on question data
+  function getChartConfig(chartData: TransformedQuestionChartData[]): any {
+    const config: any = {};
+    chartData.forEach((item, index) => {
+      config[`option${index}`] = {
+        label: item.option,
+        color: item.isCorrect ? '#22c55e' : `hsl(${index * 60}, 70%, 50%)`
+      };
+    });
+    return config;
+  }
 
   function getAnswerToQuestionOfStudent(
     questionId: number,
@@ -58,7 +66,7 @@
   }
 
   const getTransformedData = ($submissions: ExerciseSubmissions[]): void => {
-    const _transformedQuestions: TranformedQuestion[] = [];
+    const _transformedQuestions: TransformedQuestion[] = [];
 
     $questionnaire.questions.forEach(
       (question: {
@@ -70,7 +78,7 @@
         const transformedQuestion: {
           title: string;
           type: number;
-          chartData: TranformedQuestionChartData[];
+          chartData: TransformedQuestionChartData[];
         } = {
           title: question.title,
           type: question.question_type_id,
@@ -80,9 +88,9 @@
         // If textarea don't calculate the value just get the student's answer
         if (transformedQuestion.type === 3) {
           $submissions.forEach((submission) => {
-            const chartData: TranformedQuestionChartData = {
-              group: getAnswerToQuestionOfStudent(question.id, true, submission)[0],
-              value: 0
+            const chartData: TransformedQuestionChartData = {
+              option: getAnswerToQuestionOfStudent(question.id, true, submission)[0],
+              responses: 0
             };
 
             // Update the transformed question chartData
@@ -92,9 +100,9 @@
           // radio or checkbox
           question.options.forEach((option) => {
             const { value, is_correct, label } = option;
-            const chartData: TranformedQuestionChartData = {
-              group: replaceHTMLTag(label),
-              value: 0,
+            const chartData: TransformedQuestionChartData = {
+              option: replaceHTMLTag(label),
+              responses: 0,
               isCorrect: is_correct
             };
 
@@ -102,7 +110,7 @@
               const studentAnswer = getAnswerToQuestionOfStudent(question.id, false, studentSubmission);
 
               if (studentAnswer.includes(value)) {
-                chartData.value += 1;
+                chartData.responses += 1;
               }
             });
             transformedQuestion.chartData.push(chartData);
@@ -120,12 +128,6 @@
     console.log({ transformedQuestions });
   };
 
-  onMount(async () => {
-    const charts = await import('@carbon/charts-svelte');
-    barChart = charts.BarChartSimple;
-    pieChart = charts.PieChart;
-  });
-
   $effect(() => {
     if ($submissions?.length) {
       getTransformedData($submissions);
@@ -141,21 +143,42 @@
       {$t('course.navItem.lessons.exercises.all_exercises.analytics.summary.question_chart')}
     </p>
     {#each transformedQuestions as q}
-      <div class="mb-4">
-        <p>{q.title}</p>
-        {#if q.type === 1 && pieOptions}
-          {@const SvelteComponent = pieChart}
-          <SvelteComponent data={q.chartData} options={pieOptions} />
-        {:else if q.type === 2 && barOptions}
-          {@const SvelteComponent_1 = barChart}
-          <SvelteComponent_1 data={q.chartData} options={barOptions} />
+      <div class="mb-6">
+        <p class="mb-3 font-medium">{q.title}</p>
+        {#if q.type === 1}
+          <!-- Pie Chart for Radio Questions (single choice) -->
+          {@const chartConfig = getChartConfig(q.chartData)}
+          {console.log('chartConfig', chartConfig)}
+          <!-- <Chart.Container config={chartConfig} class="min-h-[300px] w-full">
+            <Chart.PieChart data={q.chartData} value="responses" name="option" />
+          </Chart.Container> -->
+        {:else if q.type === 2}
+          <!-- Bar Chart for Checkbox Questions (multiple choice) -->
+          {@const chartConfig = getChartConfig(q.chartData)}
+          {console.log('chartConfig', chartConfig)}
+          <!-- <Chart.Container config={chartConfig} class="min-h-[300px] w-full">
+            <Chart.BarChart
+              data={q.chartData}
+              xScale={scaleBand().padding(0.25)}
+              x="option"
+              y="responses"
+              axis="x"
+              tooltip={false}
+              series={q.chartData.map((item, idx) => ({
+                key: 'responses',
+                label: item.option,
+                color: item.isCorrect ? '#22c55e' : `hsl(${idx * 60}, 70%, 50%)`
+              }))}
+            />
+          </Chart.Container> -->
         {:else}
+          <!-- Text answers -->
           <div class="max-h-[250px] overflow-auto">
             <ul>
               {#each q.chartData as answer (answer)}
-                {#if answer.group}
+                {#if answer.option}
                   <div class="my-1 w-full rounded bg-slate-100 p-2 dark:bg-slate-300">
-                    <li class="text-base font-medium text-black">{answer.group}</li>
+                    <li class="text-base font-medium text-black">{answer.option}</li>
                   </div>
                 {/if}
               {/each}

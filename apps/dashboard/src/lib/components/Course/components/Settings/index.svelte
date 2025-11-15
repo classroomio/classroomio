@@ -366,7 +366,7 @@
       <SectionTitle>{$t('course.navItem.settings.course_download')}</SectionTitle>
       <p>{$t('course.navItem.settings.course_avail')}</p>
     </Column>
-    <Column sm={8} md={8} lg={8}>
+    <Column sm={4} md={4} lg={4}>
       {#if $isFreePlan}
         <UpgradeBanner>{$t('upgrade.download_course')}</UpgradeBanner>
       {:else}
@@ -471,12 +471,12 @@
       />
     </Column>
   </Row>
-  <Row class="flex w-full items-center justify-end p-5">
+  <div class="flex w-full items-center justify-end p-5">
     <PrimaryButton
       label={$t('course.navItem.settings.save')}
       isLoading={isSaving}
       isDisabled={isSaving}
       onClick={handleSave}
     />
-  </Row>
+  </div>
 </Grid>

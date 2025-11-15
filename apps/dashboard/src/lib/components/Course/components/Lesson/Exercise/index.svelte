@@ -6,6 +6,7 @@
   import { onDestroy, onMount, untrack } from 'svelte';
   import * as Breadcrumb from '@cio/ui/base/breadcrumb';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  // import * as Tabs from '@cio/ui/base/tabs';
   import CirclePlusIcon from '@lucide/svelte/icons/circle-plus';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
 
@@ -43,7 +44,7 @@
   let preview: boolean = $state(false);
   let shouldDeleteExercise = $state(false);
   let isSaving = $state(false);
-  let selectedIndex = $state(0);
+  let selectedTab = $state('questions');
 
   async function handleSave() {
     if ($globalStore.isStudent) return;
@@ -82,21 +83,17 @@
     reset();
   });
 
-  function onSelectedIndexChange(index: number) {
-    untrack(() => {
-      goto($page.url.pathname + '?tabIndex=' + index);
-    });
-  }
-
   onMount(() => {
-    const tabIndex = $page.url.searchParams.get('tabIndex');
-    if (tabIndex) {
-      selectedIndex = parseInt(tabIndex);
+    const tabParam = $page.url.searchParams.get('tab');
+    if (tabParam) {
+      selectedTab = tabParam;
     }
   });
 
   $effect(() => {
-    onSelectedIndexChange(selectedIndex);
+    untrack(() => {
+      goto($page.url.pathname + '?tab=' + selectedTab);
+    });
   });
   // $effect(() => {
   //   const addNewQ = $questionnaire?.questions?.length < 1;
@@ -129,19 +126,18 @@
     </Breadcrumb.Root>
 
     <RoleBasedSecurity allowedRoles={[1, 2]}>
-      <!-- <ContentSwitcher bind:selectedIndex class="mb-2">
-        <Switch
-          text="{$t('course.navItem.lessons.exercises.all_exercises.questions')} ({$questionnaire
-            .questions.length})"
-        />
-        <Switch
-          text="{$t(
-            'course.navItem.lessons.exercises.all_exercises.submissions'
-          )} ({$questionnaire.totalSubmissions})"
-        />
-      </ContentSwitcher> -->
+      <!-- <Tabs.Root bind:value={selectedTab} class="w-full">
+        <Tabs.List class="mb-2">
+          <Tabs.Trigger value="questions">
+            {$t('course.navItem.lessons.exercises.all_exercises.questions')} ({$questionnaire.questions.length})
+          </Tabs.Trigger>
+          <Tabs.Trigger value="submissions">
+            {$t('course.navItem.lessons.exercises.all_exercises.submissions')} ({$questionnaire.totalSubmissions})
+          </Tabs.Trigger>
+        </Tabs.List>
+      </Tabs.Root> -->
 
-      {#if selectedIndex === 0}
+      {#if selectedTab === 'questions'}
         <div class="right-0 flex w-full items-center justify-end">
           <div class="flex items-center">
             <PrimaryButton
@@ -198,7 +194,7 @@
     </RoleBasedSecurity>
   </div>
 
-  {#if selectedIndex === 0}
+  {#if selectedTab === 'questions'}
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       <UpdateDescription {preview} />
     </RoleBasedSecurity>
@@ -207,7 +203,7 @@
     {:else}
       <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} />
     {/if}
-  {:else if selectedIndex === 1}
+  {:else if selectedTab === 'submissions'}
     <Analytics bind:exerciseId />
   {/if}
 </PageBody>

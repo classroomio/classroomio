@@ -5,6 +5,18 @@
   import * as Collapsible from '@cio/ui/base/collapsible';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 
+  import TableOfContentsIcon from '@lucide/svelte/icons/table-of-contents';
+  import BookCheckIcon from '@lucide/svelte/icons/book-check';
+  import UsersIcon from '@lucide/svelte/icons/users';
+  import AwardIcon from '@lucide/svelte/icons/award';
+  import ScrollTextIcon from '@lucide/svelte/icons/scroll-text';
+  import SettingsIcon from '@lucide/svelte/icons/settings';
+  import MegaphoneIcon from '@lucide/svelte/icons/megaphone';
+  import ChartLineIcon from '@lucide/svelte/icons/chart-line';
+  import SquareLibrary from '@lucide/svelte/icons/square-library';
+  import BookOpenCheck from '@lucide/svelte/icons/book-open-check';
+  import PanelTop from '@lucide/svelte/icons/panel-top';
+
   import { NAV_IDS } from './constants';
   import { profile } from '$lib/utils/store/user';
   import { sideBar } from '$lib/components/Org/store';
@@ -16,7 +28,6 @@
   import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
   import { lessons, lessonSections } from '../Lesson/store/lessons';
 
-  import NavIcons from './NavIcons.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
   import { getNavItemRoute, getLessonsRoute, getLectureNo } from '$lib/components/Course/function';
@@ -37,7 +48,8 @@
         isActive: (path || page.url.pathname) === getNavItemRoute($course.id),
         show() {
           return isStudent ? $currentOrg.customization.course.newsfeed : true;
-        }
+        },
+        icon: getNavIcon(NAV_IDS.NEWS_FEED)
       },
       {
         id: NAV_IDS.LESSONS,
@@ -47,6 +59,7 @@
           (path || page.url.pathname).includes('/lessons') ||
           (path || page.url.pathname) === getLessonsRoute($course.id),
         isLesson: true,
+        icon: getNavIcon(NAV_IDS.LESSONS),
         items:
           $course.version === COURSE_VERSION.V1
             ? ($lessons || []).map((lesson, index) => ({
@@ -73,7 +86,8 @@
         isActive: (path || page.url.pathname) === getNavItemRoute($course.id, 'analytics'),
         show() {
           return !isStudent;
-        }
+        },
+        icon: getNavIcon(NAV_IDS.ANALYTICS)
       },
       {
         id: NAV_IDS.ATTENDANCE,
@@ -83,7 +97,8 @@
         show() {
           if ($course.type !== COURSE_TYPE.LIVE_CLASS) return false;
           return true;
-        }
+        },
+        icon: getNavIcon(NAV_IDS.ATTENDANCE)
       },
       {
         id: NAV_IDS.SUBMISSIONS,
@@ -93,7 +108,8 @@
         show() {
           if (isStudent) return false;
           return true;
-        }
+        },
+        icon: getNavIcon(NAV_IDS.SUBMISSIONS)
       },
       {
         id: NAV_IDS.MARKS,
@@ -105,7 +121,8 @@
             return isStudent ? $currentOrg.customization.course.grading : true;
           }
           return false;
-        }
+        },
+        icon: getNavIcon(NAV_IDS.MARKS)
       },
       {
         id: NAV_IDS.CERTIFICATES,
@@ -117,7 +134,8 @@
             return false;
           }
           return true;
-        }
+        },
+        icon: getNavIcon(NAV_IDS.CERTIFICATES)
       },
       {
         id: NAV_IDS.LANDING_PAGE,
@@ -126,7 +144,8 @@
         isActive: (path || page.url.pathname) === getNavItemRoute($course.id, 'landingpage'),
         show() {
           return !isStudent;
-        }
+        },
+        icon: getNavIcon(NAV_IDS.LANDING_PAGE)
       },
       {
         id: NAV_IDS.PEOPLE,
@@ -135,7 +154,8 @@
         isActive: (path || page.url.pathname) === getNavItemRoute($course.id, 'people'),
         show() {
           return !isStudent;
-        }
+        },
+        icon: getNavIcon(NAV_IDS.PEOPLE)
       },
       {
         id: NAV_IDS.SETTINGS,
@@ -144,12 +164,43 @@
         isActive: (path || page.url.pathname) === getNavItemRoute($course.id, 'settings'),
         show() {
           return !isStudent;
-        }
+        },
+        icon: getNavIcon(NAV_IDS.SETTINGS)
       }
     ].filter((item) => !item.show || item.show())
   );
 
   const toggleSidebarOnMobile = () => $isMobile && ($sideBar.hidden = !$sideBar.hidden);
+
+  function getNavIcon(id: string) {
+    if (!id) return null;
+
+    if (id === NAV_IDS.SECTION) {
+      return TableOfContentsIcon;
+    } else if (id === NAV_IDS.NEWS_FEED) {
+      return MegaphoneIcon;
+    } else if (id === NAV_IDS.LESSONS) {
+      return ScrollTextIcon;
+    } else if (id === NAV_IDS.ATTENDANCE) {
+      return BookOpenCheck;
+    } else if (id === NAV_IDS.SUBMISSIONS) {
+      return SquareLibrary;
+    } else if (id === NAV_IDS.MARKS) {
+      return BookCheckIcon;
+    } else if (id === NAV_IDS.PEOPLE) {
+      return UsersIcon;
+    } else if (id === NAV_IDS.ANALYTICS) {
+      return ChartLineIcon;
+    } else if (id === NAV_IDS.LANDING_PAGE) {
+      return PanelTop;
+    } else if (id === NAV_IDS.CERTIFICATES) {
+      return AwardIcon;
+    } else if (id === NAV_IDS.SETTINGS) {
+      return SettingsIcon;
+    }
+
+    return null;
+  }
 </script>
 
 <Sidebar.Provider class="flex w-fit items-start gap-2">
@@ -159,20 +210,26 @@
         <Sidebar.GroupLabel>Course Navigation</Sidebar.GroupLabel>
         <Sidebar.Menu>
           {#each navItems as item (item.id)}
-            <Collapsible.Root open={item.isActive || (item.isLesson && item.isActive)} class="group/collapsible">
+            <Collapsible.Root open={item.isActive} class="group/collapsible">
               {#snippet child({ props })}
                 <Sidebar.MenuItem {...props}>
                   {#if item.isLesson && item.items}
                     <Collapsible.Trigger>
                       {#snippet child({ props })}
-                        <Sidebar.MenuButton {...props} tooltipContent={item.title}>
-                          <a href={item.url} onclick={toggleSidebarOnMobile} class="flex w-full items-center gap-4"
-                            ><NavIcons name={item.id} /> {item.title}</a
+                        <a href={item.url} onclick={toggleSidebarOnMobile}>
+                          <Sidebar.MenuButton
+                            {...props}
+                            tooltipContent={item.title}
+                            class="flex w-full items-center gap-4 px-1.5 py-2"
                           >
-                          <ChevronRightIcon
-                            class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
-                          />
-                        </Sidebar.MenuButton>
+                            {@const Icon = item.icon}
+                            <Icon size={16} class="nav-icon group-hover:animate-{item.id}" />
+                            {item.title}
+                            <ChevronRightIcon
+                              class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+                            />
+                          </Sidebar.MenuButton>
+                        </a>
                       {/snippet}
                     </Collapsible.Trigger>
                     <Collapsible.Content>
@@ -219,16 +276,18 @@
                       </Sidebar.MenuSub>
                     </Collapsible.Content>
                   {:else}
-                    <Sidebar.MenuButton tooltipContent={item.title}>
-                      <a
-                        href={item.url}
-                        onclick={toggleSidebarOnMobile}
-                        class="flex w-full items-center gap-4 {item.isActive ? 'bg-accent text-accent-foreground' : ''}"
+                    <a href={item.url} onclick={toggleSidebarOnMobile}>
+                      <Sidebar.MenuButton
+                        tooltipContent={item.title}
+                        class="flex w-full items-center gap-4 px-1.5 py-2 {item.isActive
+                          ? 'bg-accent text-accent-foreground'
+                          : ''}"
                       >
-                        <NavIcons name={item.id} />
+                        {@const Icon = item.icon}
+                        <Icon size={16} class="nav-icon group-hover:animate-{item.id}" />
                         {item.title}
-                      </a>
-                    </Sidebar.MenuButton>
+                      </Sidebar.MenuButton>
+                    </a>
                   {/if}
                 </Sidebar.MenuItem>
               {/snippet}

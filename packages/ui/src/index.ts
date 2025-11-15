@@ -27,7 +27,9 @@ export * as Spinner from './base/spinner';
 export * as Progress from './base/progress';
 export * as Accordion from './base/accordion';
 export * as Tabs from './base/tabs';
+
 export { Toaster } from './base/sonner';
+export { BarChart, LineChart, AreaChart, PieChart, scaleBand } from './base/chart';
 
 export * from './tools';
 
