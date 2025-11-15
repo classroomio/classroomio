@@ -119,7 +119,7 @@
       class="bg-gray-100 dark:bg-neutral-800"
     />
   </div>
-  <div class="w-[25%] border">
+  <div class="w-[25%]">
     <Select.Root type="single" bind:value={selectedId}>
       <Select.Trigger class="w-full bg-gray-100 dark:bg-neutral-800">
         <p class="truncate">
