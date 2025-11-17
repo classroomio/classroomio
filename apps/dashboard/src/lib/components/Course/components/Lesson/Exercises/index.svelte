@@ -15,7 +15,7 @@
   import type { ExerciseTemplate } from '$lib/utils/types';
   import { Breadcrumb, BreadcrumbItem } from 'carbon-components-svelte';
   import { onMount, untrack } from 'svelte';
-  import { Moon } from 'svelte-loading-spinners';
+  import { Circle } from 'svelte-loading-spinners';
   import Exercise from '../Exercise/index.svelte';
   import { isQuestionnaireFetching, questionnaire } from '../store/exercise';
   import { lesson } from '../store/lessons';
@@ -159,7 +159,7 @@
 
 {#if isFetching}
   <Backdrop>
-    <Moon size="60" color="#1d4ed8" unit="px" duration="1s" />
+    <Circle size="60" color="#1d4ed8" unit="px" duration="1s" />
   </Backdrop>
 {/if}
 

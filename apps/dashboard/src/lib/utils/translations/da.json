@@ -99,6 +99,21 @@
       "email": "Ugyldig e -mail -adresse",
       "username": "Brugernavn kan ikke være tomt",
       "fullname": "Navnet skal være mindst 5 tegn"
+    },
+    "generic": {
+      "invalid_type": "Ugyldig type{forventet, vælg, udefineret{} anden{. Forventet {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "too_big": "Værdien er for stor{maksimum, vælg, udefineret{} andet{. Maksimum {maksimum}}}",
+      "too_small": "Værdien er for lille{minimum, vælg, udefineret{} andet{. Minimum {minimum}}}",
+      "invalid_format": "Ugyldigt format{validering, vælg, udefineret{} andet{ for {validation}}}",
+      "not_multiple_of": "Værdien skal være et multiplum af {multipleOf}",
+      "unrecognized_keys": "Indeholder ikke-genkendte nøgler{nøgler, vælg, udefineret{} andet{: {nøgler}}}",
+      "invalid_union": "Ugyldig værdi for angivne muligheder{unionErrors, select, undefined{} other{. {unionErrors} valgmulighed(er) mislykkedes}}",
+      "invalid_key": "Ugyldig nøgle{nøgle, vælg, udefineret{} anden{: {nøgle}}}",
+      "invalid_element": "Ugyldigt element{indeks, vælg, udefineret{} andet{ ved indeks {indeks}}}",
+      "invalid_value": "Ugyldig værdi{forventet, vælg, udefineret{} anden{. Forventet {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "custom": "{besked}",
+      "required_field": "Dette felt er påkrævet",
+      "invalid_field": "Ugyldig værdi"
     }
   },
   "generic": {

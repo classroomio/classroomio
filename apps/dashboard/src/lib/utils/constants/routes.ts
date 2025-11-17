@@ -19,7 +19,7 @@ export const ROUTE = {
 };
 
 export const PUBLIC_ROUTES = [
-  `^${ROUTE.HOME}$`,
+  // `^${ROUTE.HOME}$`,
   ROUTE.LOGIN,
   ROUTE.SIGN_UP,
   `^${ROUTE.INVITE_TEACHER}/.*`,

@@ -15,6 +15,13 @@
       "when": 1760912065001,
       "tag": "0001_tranquil_thunderbolts",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1762733677656,
+      "tag": "0002_many_revanche",
+      "breakpoints": true
     }
   ]
 }

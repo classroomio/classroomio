@@ -6,7 +6,7 @@
   import { CourseContainer } from '$lib/components/CourseContainer';
   import { PageBody, PageNav } from '$lib/components/Page';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { ROLE } from '$lib/utils/constants/roles';
+  import { ROLE } from '@cio/utils/constants';
   import { t } from '$lib/utils/functions/translations';
   import { takeAttendance } from '$lib/utils/services/attendance';
   import { globalStore } from '$lib/utils/store/app';

@@ -1,18 +1,7 @@
 export * from './config';
 export * from './dashboard';
 
-export enum LOCALE {
-  EN = 'en',
-  HI = 'hi',
-  FR = 'fr',
-  PL = 'pl',
-  PT = 'pt',
-  DE = 'de',
-  VI = 'vi',
-  RU = 'ru',
-  ES = 'es',
-  DA = 'da'
-}
+import type { TLocale } from '@cio/db/types';
 
 //===============Custom Type===============
 
@@ -304,7 +293,7 @@ export interface LessonPage {
   title: string;
   totalExercises: number;
   totalComments: number;
-  locale: LOCALE;
+  locale: TLocale;
   isSaving: boolean;
   isFetching: boolean;
   materials: {

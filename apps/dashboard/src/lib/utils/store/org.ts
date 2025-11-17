@@ -2,10 +2,10 @@ import type { OrgAudience, OrgTeamMember } from '../types/org';
 import { browser, dev } from '$app/environment';
 import { derived, writable } from 'svelte/store';
 
-import type { AccountOrg } from '$lib/services/layout/types';
+import type { AccountOrg } from '$lib/features/app/types';
 import { PLAN } from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
-import { ROLE } from '$lib/utils/constants/roles';
+import { ROLE } from '@cio/utils/constants';
 import { STEPS } from '../constants/quiz';
 import type { UserLessonDataType } from '$lib/utils/types';
 import type { Writable } from 'svelte/store';

@@ -1,55 +1,42 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
+  import { page } from '$app/state';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { getSupabase } from '$lib/utils/functions/supabase';
-  import { resetValidation, getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';
-  import { RESET_FIELDS } from '$lib/utils/constants/authentication';
+  import { getConfirmPasswordError } from '$lib/utils/functions/validator';
   import AuthUI from '$lib/components/AuthUI/index.svelte';
+  import { resetApi } from '$lib/features/auth/api/reset.svelte';
+  import type { TResetPasswordForm } from '$lib/features/auth/utils/types';
+  import { snackbar } from '$lib/components/Snackbar/store';
 
-  let supabase = getSupabase();
-  let fields = $state(Object.assign({}, RESET_FIELDS));
-  let loading = $state(false);
-  let errors: {
-    email?: string;
-    password?: string;
-    confirmPassword?: string;
-  } = $state({});
-  let submitError = $state();
-  let formRef: HTMLFormElement | undefined = $state();
+  let fields: TResetPasswordForm = $state({
+    password: '',
+    confirmPassword: '',
+    token: ''
+  });
 
-  const disableSubmit = $derived(getDisableSubmit(fields));
+  const isSubmitDisabled = $derived!!(
+    fields.password && fields.confirmPassword && fields.password !== fields.confirmPassword
+  );
+  const token = $derived(new URLSearchParams(page.url.search).get('token'));
 
-  async function handleSubmit() {
-    errors = resetValidation(fields);
-    console.log('errors', errors);
+  onMount(() => {
+    if (token) return;
 
-    if (Object.keys(errors).length) {
-      return;
-    }
+    snackbar.error('Invalid Token');
 
-    try {
-      loading = true;
-      const { data, error } = await supabase.auth.updateUser({
-        password: fields.password
-      });
-      console.log('data', data);
-      if (error) throw error;
+    setTimeout(() => {
+      goto(resolve('/login', {}));
+    }, 2000);
+  });
 
-      formRef?.reset();
-
-      return goto('/login');
-    } catch (error) {
-      submitError = error instanceof Error ? error.message : String(error);
-    } finally {
-      loading = false;
-    }
-  }
-
-  function setConfirmPasswordError(fields) {
+  function setConfirmPasswordError(fields: TResetPasswordForm) {
     untrack(() => {
-      errors.confirmPassword = getConfirmPasswordError(fields);
+      const errors = { ...resetApi.errors };
+      errors.confirmPassword = getConfirmPasswordError(fields) ?? '';
+      resetApi.setError(errors);
     });
   }
 
@@ -59,17 +46,15 @@
 </script>
 
 <svelte:head>
-  <title>Join ClassroomIO</title>
+  <title>Reset Password - ClassroomIO</title>
 </svelte:head>
 
 <AuthUI
-  {supabase}
   isLogin={false}
-  {handleSubmit}
+  handleSubmit={() => resetApi.submit({ ...fields, token: token ?? '' })}
   showOnlyContent={true}
-  isLoading={loading}
+  isLoading={resetApi.isLoading}
   showLogo={true}
-  bind:formRef
 >
   <div class="mt-4 w-full">
     <h3 class="my-3 text-xl font-semibold dark:text-white">New Password</h3>
@@ -81,9 +66,9 @@
       placeholder="************"
       className="mb-6"
       inputClassName="w-full"
-      isDisabled={loading}
-      errorMessage={errors.password}
-      helperMessage="Password must be more than 6 characters"
+      isDisabled={resetApi.isLoading}
+      errorMessage={resetApi.errors.password}
+      helperMessage="Password must be more than 8 characters"
       isRequired
     />
     <TextField
@@ -93,13 +78,10 @@
       placeholder="************"
       className="mb-6"
       inputClassName="w-full"
-      isDisabled={loading}
-      errorMessage={errors.confirmPassword}
+      isDisabled={resetApi.isLoading}
+      errorMessage={resetApi.errors.confirmPassword}
       isRequired
     />
-    {#if submitError}
-      <p class="text-sm text-red-500">{submitError}</p>
-    {/if}
   </div>
 
   <div class="my-4 flex w-full items-center justify-end">
@@ -107,8 +89,8 @@
       label="Reset Password"
       type="submit"
       className="sm:w-full w-full"
-      isDisabled={disableSubmit || loading}
-      isLoading={loading}
+      isDisabled={isSubmitDisabled || resetApi.isLoading}
+      isLoading={resetApi.isLoading}
     />
   </div>
 </AuthUI>

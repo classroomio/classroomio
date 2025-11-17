@@ -13,12 +13,12 @@
   import { Column, Grid, Row } from 'carbon-components-svelte';
   import SectionTitle from '../SectionTitle.svelte';
   import LanguagePicker from './LanguagePicker.svelte';
-  import type { LocaleEnum, Profile } from '@cio/utils/types/db';
+  import type { TLocale, TProfile } from '@cio/db/types';
 
   let avatar = $state<string | undefined>();
   let loading = $state(false);
   let hasLangChanged = $state(false);
-  let locale = $derived<LocaleEnum | undefined>($profile.locale);
+  let locale = $derived<TLocale | undefined>($profile.locale || undefined);
   let hasUnsavedChanges = $state(false);
 
   let errors = $state<Record<string, string>>({});
@@ -34,7 +34,7 @@
       console.log({ hasLangChanged });
       loading = true;
 
-      const updates: Partial<Profile> = {
+      const updates: Partial<TProfile> = {
         fullname: $profile.fullname,
         username: $profile.username,
         email: $profile.email,

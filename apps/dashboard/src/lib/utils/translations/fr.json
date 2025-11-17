@@ -1555,6 +1555,21 @@
       "email": "Adresse e-mail invalide",
       "username": "Le nom d'utilisateur ne peut pas être vide",
       "fullname": "Le nom doit comporter au minimum 5 caractères"
+    },
+    "generic": {
+      "invalid_type": "Type non valide{attendu, sélectionné, non défini{} autre{. Attendu {attendu}}}{reçu, sélectionné, non défini{} autre{ (reçu {reçu})}}",
+      "too_big": "La valeur est trop grande{maximum, select, undefined{} autre{. Maximum {maximum}}}",
+      "too_small": "La valeur est trop petite{minimum, select, undefined{} autre{. Minimum {minimum}}}",
+      "invalid_format": "Format invalide{validation, select, non défini{} autre{ pour {validation}}}",
+      "not_multiple_of": "La valeur doit être un multiple de {multipleOf}",
+      "unrecognized_keys": "Contient des clés non reconnues{keys, select, undefined{} other{: {keys}}}",
+      "invalid_union": "Valeur non valide pour les options fournies {unionErrors, select, undefined{} other{. {unionErrors} option(s) a échoué}}",
+      "invalid_key": "Clé invalide{key, select, undefined{} other{: {key}}}",
+      "invalid_element": "Élément invalide{index, select, undefined{} autre{ à l'index {index}}}",
+      "invalid_value": "Valeur non valide{attendue, sélectionnée, non définie{} autre{. Attendu {attendu}}}{reçu, sélectionné, non défini{} autre{ (reçu {reçu})}}",
+      "custom": "{message}",
+      "required_field": "Ce champ est obligatoire",
+      "invalid_field": "Valeur invalide"
     }
   },
   "explore": {

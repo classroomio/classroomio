@@ -11,6 +11,8 @@ export const getSupabase = () => {
   return supabase;
 };
 
+getSupabase();
+
 export const hasSession = async () => {
   const { data } = await getSupabase().auth.getSession();
   console.log('has session', data);

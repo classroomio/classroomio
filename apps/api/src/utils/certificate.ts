@@ -1,15 +1,5 @@
-import type { TCertificateDownload } from '@api/types/course/lesson';
+import type { TCertificateDownload } from '@cio/utils/validation/course';
 import { getCloudflarePdfBuffer } from '@api/utils/cloudflare';
-
-export interface CertificateData {
-  theme: string;
-  studentName: string;
-  courseName: string;
-  courseDescription: string;
-  orgLogoUrl: string;
-  orgName: string;
-  facilitator?: string;
-}
 
 export interface CertificateGenerationResult {
   success: boolean;

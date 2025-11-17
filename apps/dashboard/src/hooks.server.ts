@@ -4,8 +4,7 @@ import { isPublicApiRoute, isPublicRoute } from '$lib/utils/functions/routes/isP
 
 export const handle: Handle = async (args) => {
   const { event } = args;
-
-  const sessionData = await getSessionData(event.request.headers.get('cookie'));
+  const sessionData = await getSessionData(event.cookies);
 
   if (sessionData) {
     event.locals = sessionData;

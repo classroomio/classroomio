@@ -1555,6 +1555,21 @@
       "email": "Ungültige E-Mail-Adresse",
       "username": "Benutzername darf nicht leer sein",
       "fullname": "Der Name sollte mindestens 5 Zeichen lang sein"
+    },
+    "generic": {
+      "invalid_type": "Ungültiger Typ {erwartet, ausgewählt, undefiniert{} andere{. Erwartet {erwartet}}}{received, select, undefiniert{} other{ (received {received})}}",
+      "too_big": "Der Wert ist zu groß{maximum, select, undefiniert{} other{. Maximum {maximum}}}",
+      "too_small": "Der Wert ist zu klein{minimum, select, undefiniert{} other{. Minimum {Minimum}}}",
+      "invalid_format": "Ungültiges Format{validation, select, undefiniert{} other{ für {validation}}}",
+      "not_multiple_of": "Der Wert muss ein Vielfaches von {multipleOf} sein",
+      "unrecognized_keys": "Enthält nicht erkannte Schlüssel{keys, select, undefiniert{} other{: {keys}}}",
+      "invalid_union": "Ungültiger Wert für die bereitgestellten Optionen {unionErrors, select, undefined{} other{. {unionErrors}-Option(en) fehlgeschlagen}}",
+      "invalid_key": "Ungültiger Schlüssel{key, select, undefiniert{} other{: {key}}}",
+      "invalid_element": "Ungültiges Element{index, select, undefiniert{} other{ am Index {index}}}",
+      "invalid_value": "Invalid value{expected, select, undefined{} other{. Erwartet {erwartet}}}{received, select, undefiniert{} other{ (received {received})}}",
+      "custom": "{Nachricht}",
+      "required_field": "Dieses Feld ist erforderlich",
+      "invalid_field": "Ungültiger Wert"
     }
   },
   "explore": {

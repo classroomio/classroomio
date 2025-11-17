@@ -1555,6 +1555,21 @@
       "email": "Endereço de email invalido",
       "username": "O nome de usuário não pode ficar vazio",
       "fullname": "O nome deve ter no mínimo 5 caracteres"
+    },
+    "generic": {
+      "invalid_type": "Tipo inválido{esperado, selecionado, indefinido{} outro{. Esperado {esperado}}}{recebido, selecionado, indefinido{} outro{ (recebido {recebido})}}",
+      "too_big": "O valor é muito grande{máximo, seleção, indefinido{} outro{. Máximo {máximo}}}",
+      "too_small": "O valor é muito pequeno{mínimo, selecione, indefinido{} outro{. Mínimo {mínimo}}}",
+      "invalid_format": "Formato inválido{validação, seleção, indefinido{} outro{ para {validação}}}",
+      "not_multiple_of": "O valor precisa ser um múltiplo de {multipleOf}",
+      "unrecognized_keys": "Contém chaves não reconhecidas{keys, select, undefined{} other{: {keys}}}",
+      "invalid_union": "Valor inválido para opções fornecidas{unionErrors, select, indefinido{} other{. Falha na(s) opção(ões) {unionErrors}}}",
+      "invalid_key": "Chave inválida{chave, seleção, indefinida{} outra{: {chave}}}",
+      "invalid_element": "Elemento inválido{index, select, indefinido{} other{ no índice {index}}}",
+      "invalid_value": "Valor inválido{esperado, selecionado, indefinido{} outro{. Esperado {esperado}}}{recebido, selecionado, indefinido{} outro{ (recebido {recebido})}}",
+      "custom": "{mensagem}",
+      "required_field": "Este campo é obrigatório",
+      "invalid_field": "Valor inválido"
     }
   },
   "explore": {

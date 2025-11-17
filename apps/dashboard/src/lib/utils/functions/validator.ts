@@ -1,8 +1,7 @@
-import z from 'zod';
-import { get } from 'svelte/store';
 import isNumber from 'lodash/isNumber';
+import { t } from '$lib/utils/functions/translations';
 import { validateEmail } from './validateEmail';
-import { t, initialized } from '$lib/utils/functions/translations';
+import z from 'zod';
 
 function getOrgNameValidation() {
   return z
@@ -106,28 +105,6 @@ export const coursePaymentValidation = (fields = {}) => {
     }),
     email: z.string().email({
       message: `${t.get('validations.course_payment.email.invalid_email')}`
-    })
-  });
-  const { error } = schema.safeParse(fields);
-
-  return processErrors(error);
-};
-
-export const resetValidation = (fields = {}) => {
-  const schema = z.object({
-    password: z.string().min(6, {
-      message: `${t.get('validations.reset.password.min_char')}`
-    })
-  });
-  const { error } = schema.safeParse(fields);
-
-  return processErrors(error);
-};
-
-export const forgotValidation = (fields = {}) => {
-  const schema = z.object({
-    email: z.string().email({
-      message: `${t.get('validations.forgot.invalid_email')}`
     })
   });
   const { error } = schema.safeParse(fields);

@@ -8,7 +8,7 @@
   import { setTheme } from '$lib/utils/functions/theme';
   import { addGroupMember } from '$lib/utils/services/courses';
   import type { CurrentOrg } from '$lib/utils/types/org.js';
-  import { ROLE } from '$lib/utils/constants/roles';
+  import { ROLE } from '@cio/utils/constants';
   import { profile } from '$lib/utils/store/user';
   import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
   import { snackbar } from '$lib/components/Snackbar/store.js';
@@ -115,7 +115,7 @@
       data: { session }
     } = await supabase.auth.getSession();
     if (!session) {
-      return goto(`/login?redirect=${$page.url?.pathname || ''}`);
+      return goto(`/login?redirect=${page.url?.pathname || ''}`);
     }
 
     setTheme(data.currentOrg?.theme || '');

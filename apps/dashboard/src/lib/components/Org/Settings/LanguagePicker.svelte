@@ -2,16 +2,16 @@
   import { Dropdown } from 'carbon-components-svelte';
   import { t, initialized } from '$lib/utils/functions/translations';
   import { LANGUAGES } from '$lib/utils/constants/translation';
-  import { LOCALE } from '$lib/utils/types';
+  import type { TLocale } from '@cio/db/types';
 
   interface Props {
     className?: string;
-    value?: LOCALE;
+    value?: TLocale;
     hasLangChanged?: boolean;
     change?: () => void;
   }
 
-  let { className = '', value = $bindable(LOCALE.EN), hasLangChanged = $bindable(false), change }: Props = $props();
+  let { className = '', value = $bindable('en'), hasLangChanged = $bindable(false), change }: Props = $props();
 
   const dropdownItems = [{ id: '', text: 'Pick a Language' }, ...LANGUAGES];
 

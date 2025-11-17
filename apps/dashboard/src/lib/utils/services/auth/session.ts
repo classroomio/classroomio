@@ -1,16 +1,44 @@
+import type { Cookies } from '@sveltejs/kit';
+import { authClient } from './client';
 import { classroomio } from '$lib/utils/services/api';
 
-export const getSessionData = async (cookie: string) => {
+export const getSessionData = async (cookies: Cookies): Promise<App.Locals | null> => {
   try {
-    const session = await classroomio.session.$get(undefined, {
-      headers: {
-        cookie: cookie || ''
-      }
-    });
+    const cioCookies = cookies
+      .getAll()
+      .filter((c) => c.name.includes('classroomio'))
+      .map((c) => `${c.name}=${c.value}`)
+      .join('; ');
 
-    return session.json();
+    if (!cioCookies) return null;
+
+    return getThroughAuthClient(cioCookies);
   } catch (error) {
     console.error('Session verification failed:', error);
     return null;
   }
 };
+
+export async function getThroughTrpc(allCookies: string) {
+  const session = await classroomio.session.$get(undefined, {
+    headers: {
+      cookie: allCookies
+    }
+  });
+
+  const data = (await session.json()) as App.Locals;
+
+  return data;
+}
+
+async function getThroughAuthClient(allCookies: string) {
+  const session = await authClient.getSession({
+    fetchOptions: {
+      headers: {
+        cookie: allCookies
+      }
+    }
+  });
+
+  return session.data as App.Locals | null;
+}

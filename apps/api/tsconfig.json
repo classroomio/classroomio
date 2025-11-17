@@ -1,27 +1,39 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
-    "baseUrl": "./",
+    "baseUrl": ".",
     "declaration": true,
+    "composite": true,
     "declarationMap": true,
     "esModuleInterop": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "outDir": "./dist",
-    "paths": {
-      "@api/*": ["src/*"],
-      "@db/*": ["./node_modules/@cio/db/src/*"],
-      "@cio/db/*": ["./node_modules/@cio/db/src/*"]
-    },
+    "rootDir": "./src",
     "resolveJsonModule": false,
     "skipLibCheck": true,
-    "sourceMap": true,
     "target": "ESNext",
     "typeRoots": ["../../node_modules/@types", "./node_modules/@types", "./src/types"],
-    "types": ["node"]
+    "types": ["node"],
+    "paths": {
+      "@api/*": ["src/*"],
+      "@db/types": ["./node_modules/@cio/db/dist/types.d.ts"],
+      "@db/*": ["./node_modules/@cio/db/dist/*"],
+      "@cio/db/*": ["./node_modules/@cio/db/dist/*"],
+      "@cio/db/types": ["./node_modules/@cio/db/dist/types.d.ts"],
+      "@cio/utils": ["./node_modules/@cio/utils/dist/index.ts"],
+      "@cio/utils/*": ["./node_modules/@cio/utils/dist/*"],
+      "@cio/email/*": ["./node_modules/@cio/email/dist/*"],
+      "@cio/email": ["./node_modules/@cio/email/dist/index.d.ts"]
+    }
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"],
+  "exclude": ["node_modules", "dist", "tsconfig.tsbuildinfo"],
+  "references": [
+    { "path": "../../packages/db" },
+    { "path": "../../packages/utils" },
+    { "path": "../../packages/email" }
+  ],
   "tsc-alias": {
     "resolveFullPaths": true,
     "verbose": false

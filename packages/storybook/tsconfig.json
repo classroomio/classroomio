@@ -1,6 +1,7 @@
 {
   "extends": "@cio/tsconfig/base.json",
   "compilerOptions": {
+    "composite": true,
     "allowJs": true,
     "checkJs": true,
     "esModuleInterop": true,
@@ -32,5 +33,6 @@
       }
     ]
   },
-  "include": ["src/**/*", ".storybook/**/*", "vite.config.ts"]
+  "include": ["src/**/*", ".storybook/**/*", "vite.config.ts"],
+  "exclude": ["node_modules", "dist"]
 }

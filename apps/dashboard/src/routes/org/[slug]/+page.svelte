@@ -21,7 +21,8 @@
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import WelcomeModal from '$lib/components/WelcomeModal/WelcomeModal.svelte';
+  import { WelcomeModal } from '$lib/features/onboarding/components';
+
   import { getGreeting } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
   import { isOrgAdmin } from '$lib/utils/store/org';

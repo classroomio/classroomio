@@ -18,10 +18,11 @@
   import { initOrgAnalytics } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
-  import { accountManager } from '$lib/services/layout/init';
+  import { appInitApi } from '$lib/features/app/init.svelte';
   import merge from 'lodash/merge';
   import { onMount } from 'svelte';
   import { MetaTags } from 'svelte-meta-tags';
+  import { authClient } from '$lib/utils/services/auth/client';
 
   import { ModeWatcher } from '@cio/ui/base/dark-mode';
 
@@ -31,11 +32,8 @@
 
   let path = $derived(page.url?.pathname?.replace('/', ''));
 
-  // Destructure stores from accountManager for easy access
-  const { loading: accountLoading, error: accountError, data: accountData } = accountManager;
-
   $effect(() => {
-    console.log('better session calling', $accountLoading, $accountError, $accountData);
+    console.log('account status, loading,error,data:', appInitApi.loading, appInitApi.error, appInitApi.data);
   });
 
   function intialAppSetup() {
@@ -76,9 +74,19 @@
     intialAppSetup();
 
     if (data.skipAuth) return;
+  });
 
-    // Setup app: fetch account data and update stores
-    accountManager.setupApp(data.locals, { isOrgSite: data.isOrgSite, orgSiteName: data.orgSiteName });
+  const session = authClient.useSession();
+  $effect(() => {
+    const isSessionReady = !$session.isPending && !$session.isRefetching && $session.data;
+    if (isSessionReady && !appInitApi.isInitializedAndReady) {
+      console.log('setting up account with session data');
+
+      appInitApi.setupApp($session.data as App.Locals, {
+        isOrgSite: data.isOrgSite,
+        orgSiteName: data.orgSiteName
+      });
+    }
   });
 
   const metaTags = $derived(merge(data.baseMetaTags, page.data.pageMetaTags));

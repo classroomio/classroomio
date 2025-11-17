@@ -12,6 +12,7 @@
     containerClass?: string;
     size?: string;
     isCloseable?: boolean;
+    isClosing?: boolean;
     children?: import('svelte').Snippet;
   }
 
@@ -26,6 +27,7 @@
     containerClass = '',
     size = '',
     isCloseable = true,
+    isClosing = false,
     children
   }: Props = $props();
 
@@ -60,7 +62,7 @@
         </p>
         {#if isCloseable}
           <div class="rounded-full">
-            <CloseButton onClick={onClose} contained={true} />
+            <CloseButton onClick={onClose} contained={true} {isClosing} />
           </div>
         {/if}
       </div>

@@ -1,14 +1,15 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import { Grid, Row, Column, Select, SelectItem } from 'carbon-components-svelte';
-  import { Moon } from 'svelte-loading-spinners';
+  import { Circle } from 'svelte-loading-spinners';
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import ComingSoon from '$lib/components/ComingSoon/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { validateEmailInString } from '$lib/utils/functions/validator';
-  import { ROLE_LABEL, ROLE } from '$lib/utils/constants/roles';
+  import { ROLE_LABEL } from '$lib/utils/constants/roles';
+  import { ROLE } from '@cio/utils/constants';
   import { currentOrg, orgTeam } from '$lib/utils/store/org';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { getOrgTeam } from '$lib/utils/services/org';
@@ -181,7 +182,7 @@
     >
     <Column sm={2} md={6} lg={8}>
       {#if isFetching}
-        <Moon />
+        <Circle />
       {:else}
         {#each $orgTeam as teamMember}
           <div class="mb-5 flex items-center justify-between">

@@ -30,7 +30,8 @@
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { lessonFallbackNote, t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
-  import type { LessonPage, LOCALE } from '$lib/utils/types';
+  import type { LessonPage } from '$lib/utils/types';
+  import type { TLocale } from '@cio/db/types';
   // import { useCompletion } from 'ai/svelte';
   import { Popover } from 'carbon-components-svelte';
   import NotepadTextIcon from '@lucide/svelte/icons/notepad-text';
@@ -187,7 +188,7 @@
     return lessonRes;
   }
 
-  function isMaterialsEmpty(materials: LessonPage['materials'], translation: Record<LOCALE, string>) {
+  function isMaterialsEmpty(materials: LessonPage['materials'], translation: Record<TLocale, string>) {
     const { slide_url, videos, note, documents } = materials;
 
     return (
@@ -261,7 +262,7 @@
 
   function autoSave(
     updatedMaterials: LessonPage['materials'],
-    _translation: Record<LOCALE, string>,
+    _translation: Record<TLocale, string>,
     _isLoading?: boolean,
     _lessonId?: string
   ) {

@@ -3,4 +3,4 @@ export * from './drizzle';
 export * from './schema';
 export * from './relations';
 export * from './auth';
-export * from './auth-schema';
+export * from './types';

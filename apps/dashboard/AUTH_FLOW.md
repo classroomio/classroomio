@@ -35,17 +35,26 @@ Documenting my thoughts on how authentication works in the app.
 ### actions to trigger [in code]
 
 - [ ] After sign up
-  - [ ] create a profile by new user.
+  - [x] create a profile by new user.
   - [ ] if sign up was triggered from a subdomain (aka is lms), add profile to org with student role
   - [ ] send verification email
 
 ### migrate from supabase
 
-- [ ] implement logout
+- [x] after login redirect to next page
+- [x] after signup redirect to next page (onboarding | lms | )
+- [x] implement logout
+- [x] forgot password flow
+- [x] complete onboarding flow
+- [ ] change email flow.
 - [ ] google auth flow (local and on test environment)
 - [ ] support google auth for teacher invite
-- [ ] forgot password flow
-- [ ] change email flow.
+- [ ] support google auth for student invite
+
+### others
+
+- [ ] block org routes when isOrgSite === true.
+- [ ] routes belonging to orgsite should proxy to courseapp (site-theme)
 
 ---
 

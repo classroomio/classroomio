@@ -29,7 +29,8 @@
   import { LANGUAGES } from '$lib/utils/constants/translation';
   import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';
-  import { COURSE_VERSION, LOCALE, type Lesson, type LessonCompletion } from '$lib/utils/types';
+  import { COURSE_VERSION, type Lesson, type LessonCompletion } from '$lib/utils/types';
+  import type { TLocale } from '@cio/db/types';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
 
   let { data = $bindable() } = $props();
@@ -70,7 +71,7 @@
       lessonData,
       totalExercises,
       totalComments,
-      locale: $profile.locale
+      locale: $profile.locale || 'en'
     });
     $lesson.isFetching = false;
   }
@@ -254,7 +255,7 @@
                 <DropdownMenu.Content>
                   <DropdownMenu.Group>
                     {#each LANGUAGES as lang}
-                      <DropdownMenu.Item onclick={() => ($lesson.locale = lang.id as LOCALE)}>
+                      <DropdownMenu.Item onclick={() => ($lesson.locale = lang.id as TLocale)}>
                         {lang.text}
                       </DropdownMenu.Item>
                     {/each}

@@ -1,6 +1,7 @@
 {
   "extends": "@cio/tsconfig/base.json",
   "compilerOptions": {
+    "composite": true,
     "baseUrl": ".",
     "paths": {
       "$src": ["./src"],
@@ -19,5 +20,6 @@
     "moduleResolution": "bundler",
     "typeRoots": ["../../node_modules/@types", "./node_modules/@types"]
   },
-  "include": ["src", "src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

@@ -1,3 +1,14 @@
 {
-  "extends": "@cio/tsconfig/base.json"
+  "extends": "@cio/tsconfig/base.json",
+  "files": [],
+  "exclude": ["node_modules", "dist", "build", ".next", ".svelte-kit", "coverage"],
+  "references": [
+    { "path": "./apps/api" },
+    { "path": "./packages/db" },
+    { "path": "./packages/email" },
+    { "path": "./packages/ui" },
+    { "path": "./packages/utils" },
+    { "path": "./packages/course-app" },
+    { "path": "./packages/storybook" }
+  ]
 }

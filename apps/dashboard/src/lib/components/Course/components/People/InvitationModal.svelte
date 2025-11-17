@@ -10,7 +10,7 @@
 
   import Modal from '$lib/components/Modal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { ROLE } from '$lib/utils/constants/roles';
+  import { ROLE } from '@cio/utils/constants';
   import { addGroupMember, fetchGroup } from '$lib/utils/services/courses';
   import { course, setCourse } from '$lib/components/Course/store';
   import { MultiSelect, Loading } from 'carbon-components-svelte';

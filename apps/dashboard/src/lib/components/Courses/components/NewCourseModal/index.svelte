@@ -11,7 +11,7 @@
   import Modal from '$lib/components/Modal/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { ROLE } from '$lib/utils/constants/roles';
+  import { ROLE } from '@cio/utils/constants';
   import { supabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
   import { addDefaultNewsFeed, addGroupMember } from '$lib/utils/services/courses';

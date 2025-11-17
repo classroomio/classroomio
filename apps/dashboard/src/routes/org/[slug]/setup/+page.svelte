@@ -14,7 +14,7 @@
   const setupList = $derived(
     (data.setup || []).map((item) => {
       if (item.id === 'profile') {
-        item.is_completed = !$profile.avatar_url.includes('avatars/avatar.png');
+        item.is_completed = !$profile.avatarUrl?.includes('avatars/avatar.png');
       }
       return item;
     })
@@ -31,11 +31,11 @@
     PUBLISH_COURSE: 'publish'
   };
 
-  const isCompleted = (id) => {
+  const isCompleted = (id: string) => {
     return setupList?.find((c) => c.id === id)?.is_completed == true;
   };
 
-  const handleClick = (id) => {
+  const handleClick = (id: string) => {
     switch (id) {
       case StepsEnum.CREATE_COURSE:
         goto(`/org/${$currentOrg.siteName}/courses?create=true`);
@@ -86,7 +86,7 @@
       <h1 class="text-2xl font-bold md:text-3xl dark:text-white">{$t('setup.get_started')}</h1>
       <Chip
         value={`${completed}/${setupList.length}`}
-        className="text-[10px] font-semibold px-3 !py-1"
+        className="text-[10px] font-semibold px-3 py-1!"
         shape="rounded-full"
       />
     </div>
@@ -98,7 +98,7 @@
         >
           <div class={`flex-1 space-y-1 ${list.is_completed ? 'opacity-50' : ''}  lg:max-w-[50%]`}>
             <div class="flex items-center gap-3">
-              <Chip value={i + 1} className={`text-[10px] font-semibold !py-1 `} shape="rounded-full" />
+              <Chip value={i + 1} className="text-[10px] font-semibold py-1" shape="rounded-full" />
               <p class="text-lg font-medium">{$t(list.title)}</p>
             </div>
             <p class="text-sm">
@@ -108,7 +108,7 @@
           <div class="w-full lg:w-[30%]">
             <PrimaryButton
               variant={list.is_completed ? VARIANTS.CONTAINED_DARK : VARIANTS.OUTLINED}
-              className="!w-full font-normal text-sm flex items-center gap-2"
+              className="w-full font-normal text-sm flex items-center gap-2"
               onClick={() => handleClick(list.id)}
               isDisabled={list.is_completed}
             >

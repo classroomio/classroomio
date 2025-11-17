@@ -6,9 +6,10 @@ import { Hono } from '@api/utils/hono';
 import { accountRouter } from '@api/routes/account';
 import { auth } from '@cio/db/auth';
 import { cors } from 'hono/cors';
-import { courseRouter } from '@api/routes/course/course';
+import { courseRouter } from '@api/routes/course';
 import { logger } from 'hono/logger';
 import { mailRouter } from '@api/routes/mail';
+import { onboardingRouter } from '@api/routes/onboarding';
 import { prettyJSON } from 'hono/pretty-json';
 import rateLimiter from '@api/middlewares/rate-limiter';
 import { secureHeaders } from 'hono/secure-headers';
@@ -65,6 +66,7 @@ export const app = new Hono()
       user
     });
   })
+  .route('/onboarding', onboardingRouter)
   .route('/account', accountRouter)
   .route('/course', courseRouter)
   .route('/mail', mailRouter)

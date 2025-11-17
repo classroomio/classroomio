@@ -1,18 +1,17 @@
-import type { Profile, User } from '@cio/utils/types';
+import type { TProfile, TUser } from '@cio/db/types';
 
-import { LOCALE } from '../types';
 import { writable } from 'svelte/store';
 
 interface UserStore {
   openAuthModal: boolean;
   fetchingUser: boolean;
   isLoggedIn: boolean;
-  currentSession: User | undefined;
+  currentSession: TUser | undefined;
   expiresAt: number;
 }
 
-// Using Profile type from @cio/utils/types with optional id for store initialization
-export type ProfileStore = Omit<Profile, 'id'> & {
+// Using TProfile type from @cio/utils/types with optional id for store initialization
+export type ProfileStore = Omit<TProfile, 'id'> & {
   id: string | undefined;
 };
 
@@ -24,7 +23,7 @@ export const defaultUserState: UserStore = {
   expiresAt: 0
 };
 
-export const defaultProfileState: Profile = {
+export const defaultProfileState: TProfile = {
   id: '',
   fullname: '',
   avatarUrl: '',
@@ -34,7 +33,7 @@ export const defaultProfileState: Profile = {
   goal: null,
   source: null,
   telegramChatId: null,
-  locale: LOCALE.EN,
+  locale: 'en',
   isEmailVerified: false,
   verifiedAt: null,
   canAddCourse: true,
@@ -46,4 +45,4 @@ export const defaultProfileState: Profile = {
 
 export const user = writable<UserStore>(defaultUserState);
 
-export const profile = writable<Profile>(defaultProfileState);
+export const profile = writable<TProfile>(defaultProfileState);

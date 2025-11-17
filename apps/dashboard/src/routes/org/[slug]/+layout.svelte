@@ -3,7 +3,7 @@
   import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
   import { isQuizPage } from '$lib/utils/functions/app';
   import OrgSideBar from '$lib/components/Org/SideBar.svelte';
-  import VerifyEmailModal from '$lib/components/Org/VerifyEmail/VerifyEmailModal.svelte';
+  import { VerifyEmailModal } from '$lib/features/onboarding/components';
   import Box from '$lib/components/Box/index.svelte';
   import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';

@@ -1,6 +1,7 @@
 import * as schema from '@db/schema';
 
 import type { OrganizationPlan, OrganizationWithMemberAndPlans } from './types';
+import type { TNewOrganization, TNewOrganizationmember, TOrganization } from '@db/types';
 import { eq, sql } from 'drizzle-orm';
 
 import { db } from '@db/drizzle';
@@ -65,8 +66,34 @@ export const getOrganizationByProfileId = async (profileId: string): Promise<Org
   }
 
   return Array.from(organizationMap.values()).map(({ organization, member, plans }) => ({
-    ...organization,
+    ...(organization as TOrganization),
     member,
     plans
   }));
+};
+
+export const createOrganization = async (data: TNewOrganization) => {
+  const [organization] = await db.insert(schema.organization).values(data).returning();
+
+  return organization;
+};
+
+export const createOrganizationMember = async (data: TNewOrganizationmember) => {
+  const [member] = await db.insert(schema.organizationmember).values(data).returning();
+
+  return member;
+};
+
+export const checkSiteNameExists = async (siteName: string): Promise<boolean> => {
+  const result = await db
+    .select({ id: schema.organization.id })
+    .from(schema.organization)
+    .where(eq(schema.organization.siteName, siteName))
+    .limit(1);
+
+  return result.length > 0;
+};
+
+export const deleteOrganizationById = async (id: string) => {
+  await db.delete(schema.organization).where(eq(schema.organization.id, id));
 };

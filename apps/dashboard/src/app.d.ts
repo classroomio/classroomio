@@ -1,9 +1,9 @@
-import type { User, Session, Profile, Organization, OrganizationMember, OrganizationPlan } from '@cio/utils/types/db';
+import type { TUser, TSession, TProfile, TOrganization, TOrganizationmember, TOrganizationPlan } from '@cio/db/types';
 
-type AccountOrganization = Organization & {
-  member: OrganizationMember | null;
+type AccountOrganization = TOrganization & {
+  member: TOrganizationmember | null;
   plan:
-    | (Pick<OrganizationPlan, 'planName' | 'isActive' | 'provider' | 'subscriptionId'> & { customerId: string })
+    | (Pick<TOrganizationPlan, 'planName' | 'isActive' | 'provider' | 'subscriptionId'> & { customerId: string })
     | null;
 };
 
@@ -11,9 +11,9 @@ type AccountOrganization = Organization & {
 declare global {
   namespace App {
     interface Locals {
-      user: User | null;
-      session: Session | null;
-      profile: Profile | null;
+      user: TUser | null;
+      session: TSession | null;
+      profile: TProfile | null;
       organizations: AccountOrganization[];
       // getAccount: () =>
     }

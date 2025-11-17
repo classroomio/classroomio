@@ -11,13 +11,13 @@
   import GoogleIconColored from '../Icons/GoogleIconColored.svelte';
 
   interface Props {
-    supabase: SupabaseClient;
+    supabase?: SupabaseClient;
     handleSubmit?: any;
     isLogin?: boolean;
     showOnlyContent?: boolean;
     isLoading?: boolean;
     showLogo?: boolean;
-    formRef: any;
+    formRef?: any;
     hideGoogleAuth?: boolean;
     redirectPathname?: string;
     children?: import('svelte').Snippet;
@@ -37,7 +37,7 @@
   }: Props = $props();
 
   async function signInWithGoogle() {
-    if (isLoading) {
+    if (isLoading || !supabase) {
       return;
     }
 
@@ -74,7 +74,7 @@
       {#if !showOnlyContent || showLogo}
         <div class="flex w-full flex-col items-center justify-center pt-2">
           <Avatar
-            src={$currentOrg.avatar_url ? $currentOrg.avatar_url : '/logo-192.png'}
+            src={$currentOrg.avatarUrl ? $currentOrg.avatarUrl : '/logo-192.png'}
             name={$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
             shape="rounded-md"
             width="w-10"
