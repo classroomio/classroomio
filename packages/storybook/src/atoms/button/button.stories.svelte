@@ -70,6 +70,12 @@
   {/snippet}
 </Story>
 
+<Story name="Loading">
+  {#snippet template(args)}
+    <Button {...args} isLoading>Loading Button</Button>
+  {/snippet}
+</Story>
+
 <Story name="As Link">
   {#snippet template(args)}
     <Button {...args} href="#">Link Button</Button>
