@@ -7,6 +7,5 @@ export const FIELDS: (keyof ComponentProps<typeof Switch>)[] = [
   'disabled',
   'name',
   'required',
-  'value',
-  'ref'
+  'value'
 ];

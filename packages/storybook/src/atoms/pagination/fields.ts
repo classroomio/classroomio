@@ -6,6 +6,5 @@ export const FIELDS: (keyof ComponentProps<typeof Pagination>)[] = [
   'page',
   'onPageChange',
   'perPage',
-  'orientation',
-  'ref'
+  'orientation'
 ];

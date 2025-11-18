@@ -1,7 +1,7 @@
 import { type ComponentProps } from 'svelte';
-import { Spinner } from '@cio/ui/base/spinner';
+import { Tooltip } from '@cio/ui/base/tooltip';
 
-export const FIELDS: (keyof ComponentProps<typeof Spinner>)[] = [
+export const FIELDS: (keyof ComponentProps<typeof Tooltip>)[] = [
   'disableHoverableContent',
   'delayDuration',
   'ignoreNonKeyboardFocus',

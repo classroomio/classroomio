@@ -6,6 +6,5 @@ export const FIELDS: (keyof ComponentProps<typeof Tabs>)[] = [
   'onValueChange',
   'disabled',
   'activationMode',
-  'orientation',
-  'ref'
+  'orientation'
 ];

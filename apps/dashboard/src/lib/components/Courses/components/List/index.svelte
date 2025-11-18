@@ -54,9 +54,9 @@
 </script>
 
 <Table.Row class="cursor-pointer" onclick={() => goto(`/courses/${id}`)}>
-  <Table.Cell class="truncate"><p class="truncate font-semibold">{title}</p></Table.Cell>
+  <Table.Cell class="truncate"><p class="font-semibold">{title}</p></Table.Cell>
   <Table.Cell class="truncate">
-    <p class="truncate">{description}</p>
+    <p>{description}</p>
   </Table.Cell>
   {#if !$isMobile}
     <Table.Cell class="truncate">{type}</Table.Cell>

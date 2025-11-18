@@ -249,11 +249,7 @@
               </IconButton>
             </div>
 
-            <Select.Root
-              type="single"
-              bind:value={$lesson.locale}
-              onValueChange={(value) => ($lesson.locale = value as LOCALE)}
-            >
+            <Select.Root type="single" bind:value={$lesson.locale}>
               <Select.Trigger class="h-9 w-[120px]">
                 {LANGUAGES.find((lang) => lang.id === $lesson.locale)?.text || 'Language'}
               </Select.Trigger>

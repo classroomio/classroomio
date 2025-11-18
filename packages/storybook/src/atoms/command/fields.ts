@@ -7,6 +7,5 @@ export const FIELDS: (keyof ComponentProps<typeof Command>)[] = [
   'label',
   'filter',
   'columns',
-  'ref',
   'disablePointerSelection'
 ];

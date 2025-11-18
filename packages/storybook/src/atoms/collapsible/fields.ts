@@ -5,6 +5,5 @@ export const FIELDS: (keyof ComponentProps<typeof Collapsible>)[] = [
   'open',
   'onOpenChange',
   'onOpenChangeComplete',
-  'disabled',
-  'ref'
+  'disabled'
 ];

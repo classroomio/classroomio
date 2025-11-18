@@ -6,6 +6,5 @@ export const FIELDS: (keyof ComponentProps<typeof Menubar>)[] = [
   'value',
   'dir',
   'onOpenChange',
-  'ref',
   'disabled'
 ];
