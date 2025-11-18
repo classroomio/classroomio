@@ -58,7 +58,7 @@
     </div>
 
     <nav
-      class="mt-16 flex w-full min-w-[400px] flex-col items-start justify-end gap-12 space-y-6 lg:mt-0 lg:w-3/4 lg:flex-row lg:space-y-0"
+      class="mt-16 flex w-full min-w-0 sm:min-w-[200px] flex-col items-start justify-end gap-12 space-y-6 lg:mt-0 lg:w-3/4 lg:flex-row lg:space-y-0"
     >
       <div class="max-w-[120px]">
         <p class="lg:text-base mb-3 text-base font-semibold leading-6 text-gray-900 lg:mb-10">
