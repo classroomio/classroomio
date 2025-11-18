@@ -42,17 +42,19 @@
   }: Props = $props();
 </script>
 
-<Editor
-  bind:content
-  {showToolBar}
-  {editable}
-  {enablePersistence}
-  {contentStorageKey}
-  {editableStorageKey}
-  class={className}
-  {editorClass}
-  {placeholder}
-  onContentChange={onChange}
-  onEditorReady={onReady}
-  {onEditorDestroy}
-/>
+{#if content !== undefined}
+  <Editor
+    bind:content
+    {showToolBar}
+    {editable}
+    {enablePersistence}
+    {contentStorageKey}
+    {editableStorageKey}
+    class={className}
+    {editorClass}
+    {placeholder}
+    onContentChange={onChange}
+    onEditorReady={onReady}
+    {onEditorDestroy}
+  />
+{/if}

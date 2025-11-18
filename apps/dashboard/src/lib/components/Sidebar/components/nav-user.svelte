@@ -91,3 +91,9 @@
     </DropdownMenu.Root>
   </Sidebar.MenuItem>
 </Sidebar.Menu>
+
+<style>
+  a {
+    text-decoration: none;
+  }
+</style>

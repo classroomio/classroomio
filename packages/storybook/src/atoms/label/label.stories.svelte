@@ -2,12 +2,16 @@
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import { Label } from '@cio/ui/base/label';
   import { Input } from '@cio/ui/base/input';
+  import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
     title: 'Atom/Label',
     component: Label,
     parameters: {
-      layout: 'centered'
+      layout: 'centered',
+      controls: {
+        include: FIELDS
+      }
     },
     tags: ['autodocs']
   });

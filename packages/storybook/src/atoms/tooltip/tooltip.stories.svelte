@@ -2,13 +2,34 @@
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import { Tooltip, Provider, Trigger, Content } from '@cio/ui/base/tooltip';
   import { Button } from '@cio/ui/base/button';
-  // import { Arro}
+  import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
     title: 'Atom/Tooltip',
     component: Provider,
     parameters: {
-      layout: 'centered'
+      layout: 'centered',
+      controls: {
+        include: FIELDS
+      }
+    },
+    argTypes: {
+      disableHoverableContent: {
+        control: 'boolean',
+        description: 'Prevents the content from being hoverable'
+      },
+      delayDuration: {
+        control: 'number',
+        description: 'The delay in milliseconds before the tooltip appears'
+      },
+      ignoreNonKeyboardFocus: {
+        control: 'boolean',
+        description: 'Whether to ignore non-keyboard focus events'
+      },
+      disabled: {
+        control: 'boolean',
+        description: 'Whether the tooltip is disabled'
+      }
     },
     tags: ['autodocs']
   });

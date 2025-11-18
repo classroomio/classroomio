@@ -146,8 +146,6 @@ export async function setCourse(data: Course, setLesson = true) {
       groupData.people = data.group.members;
     }
 
-    console.log('groupData', groupData);
-
     group.set(groupData);
   }
 

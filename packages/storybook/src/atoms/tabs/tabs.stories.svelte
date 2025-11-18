@@ -1,12 +1,16 @@
 <script module>
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import * as Tabs from '@cio/ui/base/tabs';
+  import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
     title: 'Atom/Tabs',
     component: Tabs.Root,
     parameters: {
-      layout: 'centered'
+      layout: 'centered',
+      controls: {
+        include: FIELDS
+      }
     },
     tags: ['autodocs']
   });

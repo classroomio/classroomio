@@ -2,12 +2,16 @@
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import { Toaster, toast } from '@cio/ui/base/sonner';
   import { Button } from '@cio/ui/base/button';
+  import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
     title: 'Atom/Sonner (Toast)',
     component: Toaster,
     parameters: {
-      layout: 'centered'
+      layout: 'centered',
+      controls: {
+        include: FIELDS
+      }
     },
     tags: ['autodocs']
   });

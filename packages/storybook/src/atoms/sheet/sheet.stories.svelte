@@ -1,12 +1,26 @@
 <script module>
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import { Sheet, Button, Input, Label } from '@cio/ui';
+  import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
     title: 'Atom/Sheet',
     component: Sheet.Root,
     parameters: {
-      layout: 'centered'
+      layout: 'centered',
+      controls: {
+        include: FIELDS
+      }
+    },
+    argTypes: {
+      open: {
+        control: 'boolean',
+        description: 'The controlled open state of the sheet'
+      },
+      onOpenChange: {
+        control: false,
+        description: 'Callback function when the open state changes'
+      }
     },
     tags: ['autodocs']
   });

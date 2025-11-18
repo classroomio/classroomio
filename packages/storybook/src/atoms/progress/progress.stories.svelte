@@ -1,12 +1,16 @@
 <script module>
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import { Progress } from '@cio/ui/base/progress';
+  import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
     title: 'Atom/Progress',
     component: Progress,
     parameters: {
-      layout: 'centered'
+      layout: 'centered',
+      controls: {
+        include: FIELDS
+      }
     },
     tags: ['autodocs']
   });

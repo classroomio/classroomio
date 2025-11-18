@@ -1,12 +1,43 @@
 <script module>
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import * as Menubar from '@cio/ui/base/menubar';
+  import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
     title: 'Atom/Menubar',
     component: Menubar.Root,
     parameters: {
-      layout: 'centered'
+      layout: 'centered',
+      controls: {
+        include: FIELDS
+      }
+    },
+    argTypes: {
+      value: {
+        control: 'text',
+        description: 'The controlled value of the active menu'
+      },
+      onValueChange: {
+        control: false,
+        description: 'Callback function when the active menu changes'
+      },
+      dir: {
+        control: 'select',
+        options: ['ltr', 'rtl'],
+        description: 'The reading direction of the menubar'
+      },
+      onOpenChange: {
+        control: false,
+        description: 'Callback function when the open state changes'
+      },
+      ref: {
+        control: false,
+        description: 'The underlying DOM element reference'
+      },
+      disabled: {
+        control: 'boolean',
+        description: 'Whether the menubar is disabled'
+      }
     },
     tags: ['autodocs']
   });

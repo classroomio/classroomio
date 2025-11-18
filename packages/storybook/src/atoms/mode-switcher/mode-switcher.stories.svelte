@@ -3,7 +3,7 @@
   import { ModeSwitcher } from '@cio/ui/base/dark-mode';
 
   const { Story } = defineMeta({
-    title: 'Atom/Dark Mode',
+    title: 'Atom/Mode Switcher',
     component: ModeSwitcher,
     parameters: {
       layout: 'centered'

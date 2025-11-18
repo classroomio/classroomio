@@ -2,12 +2,16 @@
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@cio/ui/base/collapsible';
   import { Button } from '@cio/ui';
+  import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
     title: 'Atom/Collapsible',
     component: Collapsible,
     parameters: {
-      layout: 'centered'
+      layout: 'centered',
+      controls: {
+        include: FIELDS
+      }
     },
     tags: ['autodocs']
   });

@@ -2,12 +2,16 @@
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import * as RadioGroup from '@cio/ui/base/radio-group';
   import { Label } from '@cio/ui/base/label';
+  import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
     title: 'Atom/RadioGroup',
     component: RadioGroup.Root,
     parameters: {
-      layout: 'centered'
+      layout: 'centered',
+      controls: {
+        include: FIELDS
+      }
     },
     tags: ['autodocs']
   });

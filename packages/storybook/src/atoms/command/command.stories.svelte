@@ -1,12 +1,16 @@
 <script module>
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import { Command } from '@cio/ui';
+  import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
     title: 'Atom/Command',
     component: Command.Root,
     parameters: {
-      layout: 'centered'
+      layout: 'centered',
+      controls: {
+        include: FIELDS
+      }
     },
     tags: ['autodocs']
   });

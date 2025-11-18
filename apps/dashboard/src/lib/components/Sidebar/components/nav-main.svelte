@@ -36,7 +36,7 @@
               {#if item.icon}
                 <item.icon />
               {/if}
-              <a href="{$currentOrgPath}{item.url}">{item.title}</a>
+              <a href="{$currentOrgPath}{item.url}" class="w-full">{item.title}</a>
             </Sidebar.MenuButton>
           </Sidebar.MenuItem>
         {/snippet}
@@ -44,3 +44,9 @@
     {/each}
   </Sidebar.Menu>
 </Sidebar.Group>
+
+<style>
+  a {
+    text-decoration: none;
+  }
+</style>

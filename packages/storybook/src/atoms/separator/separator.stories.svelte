@@ -1,12 +1,16 @@
 <script module>
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import { Separator } from '@cio/ui/base/separator';
+  import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
     title: 'Atom/Separator',
     component: Separator,
     parameters: {
-      layout: 'centered'
+      layout: 'centered',
+      controls: {
+        include: FIELDS
+      }
     },
     tags: ['autodocs']
   });

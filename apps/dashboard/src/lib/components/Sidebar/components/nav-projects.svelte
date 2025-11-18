@@ -74,3 +74,9 @@
     </Sidebar.MenuItem>
   </Sidebar.Menu>
 </Sidebar.Group>
+
+<style>
+  a {
+    text-decoration: none;
+  }
+</style>

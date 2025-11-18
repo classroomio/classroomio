@@ -54,12 +54,12 @@
 </script>
 
 <Table.Row class="cursor-pointer" onclick={() => goto(`/courses/${id}`)}>
-  <Table.Cell><p class="font-semibold">{title}</p></Table.Cell>
-  <Table.Cell>
-    <p class="line-clamp-2">{description}</p>
+  <Table.Cell class="truncate"><p class="truncate font-semibold">{title}</p></Table.Cell>
+  <Table.Cell class="truncate">
+    <p class="truncate">{description}</p>
   </Table.Cell>
   {#if !$isMobile}
-    <Table.Cell>{type}</Table.Cell>
+    <Table.Cell class="truncate">{type}</Table.Cell>
     <Table.Cell>{totalLessons}</Table.Cell>
     <Table.Cell>{totalStudents}</Table.Cell>
     <Table.Cell>
@@ -72,7 +72,7 @@
       </Badge>
     </Table.Cell>
   {/if}
-  <Table.Cell>
+  <Table.Cell class="text-center">
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
         class="flex items-center justify-center rounded-md p-1 hover:bg-gray-100"

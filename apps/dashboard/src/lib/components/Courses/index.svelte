@@ -80,17 +80,17 @@
       <CardLoader />
     </section>
   {:else if $courseMetaDeta.view === 'list'}
-    <div class="w-full rounded-md border">
-      <Table.Root>
+    <div class="w-full overflow-hidden rounded-md border">
+      <Table.Root class="w-full table-fixed">
         <Table.Header>
           <Table.Row>
-            <Table.Head>{$t('courses.course_card.list_view.title')}</Table.Head>
-            <Table.Head>{$t('courses.course_card.list_view.description')}</Table.Head>
-            <Table.Head>{$t('courses.course_card.list_view.type')}</Table.Head>
-            <Table.Head>{$t('courses.course_card.list_view.lessons')}</Table.Head>
-            <Table.Head>{$t('courses.course_card.list_view.students')}</Table.Head>
-            <Table.Head>{$t('courses.course_card.list_view.published')}</Table.Head>
-            <Table.Head></Table.Head>
+            <Table.Head class="w-[20%]">{$t('courses.course_card.list_view.title')}</Table.Head>
+            <Table.Head class="w-[30%]">{$t('courses.course_card.list_view.description')}</Table.Head>
+            <Table.Head class="w-[10%]">{$t('courses.course_card.list_view.type')}</Table.Head>
+            <Table.Head class="w-[10%]">{$t('courses.course_card.list_view.lessons')}</Table.Head>
+            <Table.Head class="w-[10%]">{$t('courses.course_card.list_view.students')}</Table.Head>
+            <Table.Head class="w-[12%]">{$t('courses.course_card.list_view.published')}</Table.Head>
+            <Table.Head class="w-[8%]"></Table.Head>
           </Table.Row>
         </Table.Header>
         <Table.Body>

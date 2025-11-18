@@ -1,12 +1,16 @@
 <script module>
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import * as Accordion from '@cio/ui/base/accordion';
+  import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
     title: 'Atom/Accordion',
     component: Accordion.Root,
     parameters: {
-      layout: 'centered'
+      layout: 'centered',
+      controls: {
+        include: FIELDS
+      }
     },
     tags: ['autodocs']
   });

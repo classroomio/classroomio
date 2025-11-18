@@ -1,12 +1,16 @@
 <script module>
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import * as Pagination from '@cio/ui/base/pagination';
+  import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
     title: 'Atom/Pagination',
     component: Pagination.Root,
     parameters: {
-      layout: 'centered'
+      layout: 'centered',
+      controls: {
+        include: FIELDS
+      }
     },
     tags: ['autodocs']
   });

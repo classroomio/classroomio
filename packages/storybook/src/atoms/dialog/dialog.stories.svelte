@@ -1,20 +1,39 @@
 <script module>
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import { Dialog, Button, Input, Label } from '@cio/ui';
+  import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
     title: 'Atom/Dialog',
     component: Dialog.Root,
     parameters: {
-      layout: 'centered'
+      layout: 'centered',
+      controls: {
+        include: FIELDS
+      }
+    },
+    argTypes: {
+      open: {
+        control: 'boolean',
+        description: 'Whether the dialog is open',
+        table: { defaultValue: { summary: 'false' } }
+      },
+      onOpenChange: {
+        control: false,
+        description: 'Callback function called when the open state changes',
+        table: {
+          type: { summary: '(open: boolean) => void' },
+          defaultValue: { summary: 'undefined' }
+        }
+      }
     },
     tags: ['autodocs']
   });
 </script>
 
 <Story name="Default">
-  {#snippet template()}
-    <Dialog.Root>
+  {#snippet template(args)}
+    <Dialog.Root {...args}>
       <Dialog.DialogTrigger>
         <Button.Root>Open Dialog</Button.Root>
       </Dialog.DialogTrigger>
@@ -32,8 +51,8 @@
 </Story>
 
 <Story name="With Form">
-  {#snippet template()}
-    <Dialog.Root>
+  {#snippet template(args)}
+    <Dialog.Root {...args}>
       <Dialog.DialogTrigger>
         <Button.Root>Edit Profile</Button.Root>
       </Dialog.DialogTrigger>

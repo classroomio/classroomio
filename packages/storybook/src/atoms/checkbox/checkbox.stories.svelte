@@ -2,12 +2,16 @@
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import { Checkbox } from '@cio/ui/base/checkbox';
   import { Label } from '@cio/ui/base/label';
+  import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
     title: 'Atom/Checkbox',
     component: Checkbox,
     parameters: {
-      layout: 'centered'
+      layout: 'centered',
+      controls: {
+        include: FIELDS
+      }
     },
     tags: ['autodocs']
   });

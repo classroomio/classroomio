@@ -1,12 +1,16 @@
 <script module>
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import { Avatar, AvatarImage, AvatarFallback } from '@cio/ui/base/avatar';
+  import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
     title: 'Atom/Avatar',
     component: Avatar,
     parameters: {
-      layout: 'centered'
+      layout: 'centered',
+      controls: {
+        include: FIELDS
+      }
     },
     tags: ['autodocs']
   });
