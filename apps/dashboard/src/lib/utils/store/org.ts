@@ -46,7 +46,7 @@ const getActivePlan = (org: CurrentOrg) => {
 export const currentOrgPlan = derived(currentOrg, ($currentOrg) => getActivePlan($currentOrg));
 
 export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
-  $currentOrg.siteName ? `/org/${$currentOrg.siteName}` : ''
+  $currentOrg.siteName ? `/org/${$currentOrg.siteName}` : '/org/*'
 );
 
 export const currentOrgDomain = derived(currentOrg, ($currentOrg) => {
