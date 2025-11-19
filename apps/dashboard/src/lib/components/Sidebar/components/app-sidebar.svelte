@@ -2,9 +2,9 @@
   import { goto } from '$app/navigation';
   import * as Sidebar from '@cio/ui/base/sidebar';
 
+  import type { AppSidebar } from './types';
   import { isFreePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import type { AppSidebar } from '$lib/utils/types/sidebar';
 
   import NavMain from './nav-main.svelte';
   import NavUser from './nav-user.svelte';

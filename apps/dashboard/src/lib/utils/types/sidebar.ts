@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { ComponentProps } from 'svelte';
-import * as Sidebar from '@cio/ui/base/sidebar';
+import type { Icon } from '@lucide/svelte';
+
 import type { CurrentOrg } from './org';
 
 export interface SidebarData {
@@ -8,7 +7,7 @@ export interface SidebarData {
   navMain: Array<{
     title: string;
     url: string;
-    icon: any;
+    icon?: typeof Icon;
     isActive: boolean;
     items?: {
       title: string;
@@ -20,9 +19,4 @@ export interface SidebarData {
     email: string;
     avatar: string;
   };
-}
-
-export interface AppSidebar extends ComponentProps<typeof Sidebar.Root> {
-  sidebarData: SidebarData;
-  canAddOrg?: boolean;
 }
