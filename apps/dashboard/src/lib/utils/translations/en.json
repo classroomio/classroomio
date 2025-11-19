@@ -110,7 +110,10 @@
         "heading": "Personal Information",
         "full_name": "Full Name",
         "username": "Username",
-        "email": "Email"
+        "email": "Email",
+        "confirm": "Confirm",
+        "cancel": "Cancel",
+        "email_change_verification_note": "A verification email has been sent to your current email address. The new email will not be in effect until you accept the verification email."
       },
       "update_profile": "Update Profile",
       "logout": "Log out"

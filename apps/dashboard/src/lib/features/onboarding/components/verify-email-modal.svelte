@@ -6,6 +6,8 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { authClient } from '$lib/utils/services/auth/client';
+  import { globalStore } from '$lib/utils/store/app';
+  import { page } from '$app/state';
 
   const WAIT_SEC = 120; // 2 minutes
   const WAIT_TIME = WAIT_SEC * 1000;
@@ -25,12 +27,22 @@
       return;
     }
 
+    if (loading || isSent) return;
+
     loading = true;
 
     try {
+      const callbackURL = new URL(page.url.href);
+      callbackURL.searchParams.set('trigger', 'app');
+
+      // Avoid showing welcome popup in lms
+      if (!$globalStore.isOrgSite) {
+        callbackURL.searchParams.set('welcomePopup', 'true');
+      }
+
       await authClient.sendVerificationEmail({
         email: $profile.email,
-        callbackURL: window.location.href + '?welcomePopup=true'
+        callbackURL: callbackURL.toString()
       });
 
       isSent = true;

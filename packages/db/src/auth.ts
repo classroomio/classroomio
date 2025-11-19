@@ -1,6 +1,7 @@
 import * as schema from '@db/schema';
 
 import { admin, anonymous } from 'better-auth/plugins';
+import { sendChangeEmailVerification, sendVerificationEmail } from './auth/email-verification';
 
 import { betterAuth } from 'better-auth';
 import { combineAfterHooks } from './auth/hooks';
@@ -8,8 +9,7 @@ import { createAuthMiddleware } from 'better-auth/api';
 import { db } from '@db/drizzle';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { config as emailAndPassword } from './auth/email-password';
-import { markProfileAsVerified } from './auth/hooks/verify-profile';
-import { sendVerificationEmail } from './auth/email-verification';
+import { syncUserWithProfile } from './auth/hooks/sync-user';
 
 export const auth = betterAuth({
   baseURL: process.env.SERVER_URL,
@@ -19,6 +19,12 @@ export const auth = betterAuth({
     debugLogs: true
   }),
   emailAndPassword: emailAndPassword,
+  user: {
+    changeEmail: {
+      enabled: true,
+      sendChangeEmailVerification
+    }
+  },
   emailVerification: {
     enabled: true,
     sendVerificationEmail
@@ -53,7 +59,7 @@ export const auth = betterAuth({
     user: {
       update: {
         after: async (user) => {
-          await markProfileAsVerified(user);
+          await syncUserWithProfile(user);
         }
       }
     }

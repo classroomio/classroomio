@@ -43,9 +43,14 @@ export class OnboardingApi {
 
       const result = await response.json();
       if (!result.success) {
-        this.errors = { [`${result.field}`]: result.error };
+        const errorMessage = 'error' in result ? result.error : result.message;
+        if ('field' in result && result.field) {
+          this.errors = { [result.field]: errorMessage };
+        } else {
+          this.errors = { general: errorMessage };
+        }
 
-        snackbar.error(result.error);
+        snackbar.error(errorMessage);
         return false;
       }
 
@@ -83,7 +88,12 @@ export class OnboardingApi {
 
       const result = await response.json();
       if (!result.success) {
-        this.errors = { [`${result.field}`]: result.error };
+        const errorMessage = 'error' in result ? result.error : result.message;
+        if ('field' in result && result.field) {
+          this.errors = { [result.field]: errorMessage };
+        } else {
+          snackbar.error(errorMessage);
+        }
         return false;
       }
 

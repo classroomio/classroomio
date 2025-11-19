@@ -119,7 +119,7 @@ function buildTranslationParams(
       if ('exact' in details) params.exact = details.exact;
       break;
     case 'invalid_format':
-      if ('validation' in details) params.validation = details.validation;
+      if ('format' in details) params.validation = details.format;
       if ('regex' in details) params.regex = details.regex;
       break;
     case 'not_multiple_of':

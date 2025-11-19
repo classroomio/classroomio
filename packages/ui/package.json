@@ -12,7 +12,7 @@
     "@lucide/svelte": "^0.544.0",
     "@sveltejs/adapter-auto": "^3.0.0",
     "@sveltejs/kit": "^2.5.27",
-    "@sveltejs/vite-plugin-svelte": "^4.0.4",
+    "@sveltejs/vite-plugin-svelte": "^6.2.1",
     "@tailwindcss/typography": "^0.5.18",
     "bits-ui": "^2.11.7",
     "clsx": "^2.1.1",

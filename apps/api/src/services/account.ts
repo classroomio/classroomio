@@ -1,7 +1,8 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { getProfileById, updateProfile } from '@cio/db/queries/auth';
 
+import type { TProfile } from '@cio/db/types';
 import { getOrganizationByProfileId } from '@cio/db/queries/organization';
-import { getProfileById } from '@cio/db/queries/auth';
 
 /**
  * Fetches account data including profile and organizations for a user
@@ -19,4 +20,40 @@ export async function getAccountData(userId: string) {
     profile,
     organizations
   };
+}
+
+/**
+ * Updates profile data for a user
+ * @param userId - The user ID to update profile for
+ * @param data - Partial profile data to update (excluding email, id, createdAt, updatedAt)
+ * @returns Updated profile data
+ */
+export async function updateUser(
+  userId: string,
+  data: Partial<Omit<TProfile, 'id' | 'email' | 'createdAt' | 'updatedAt'>>
+) {
+  try {
+    const updatedProfile = await updateProfile(userId, data);
+
+    if (!updatedProfile) {
+      throw new AppError(`Profile not found for user ID: ${userId}`, ErrorCodes.PROFILE_NOT_FOUND, 404);
+    }
+
+    return updatedProfile;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    // Handle unique constraint violations
+    if (error instanceof Error && error.message.includes('profile_username_key')) {
+      throw new AppError('Username already exists', ErrorCodes.VALIDATION_ERROR, 400, 'username');
+    }
+
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to update profile',
+      ErrorCodes.PROFILE_UPDATE_FAILED,
+      500
+    );
+  }
 }

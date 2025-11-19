@@ -513,7 +513,7 @@ Schemas should be **clean** - only validation rules, no error messages:
 
 ```typescript
 // packages/utils/src/validation/course/course.ts
-import { z } from 'zod';
+import * as z from 'zod';
 import { ALLOWED_CONTENT_TYPES } from '../constants';
 
 export const ZCourseClone = z.object({
@@ -854,6 +854,215 @@ export const organizationRouter = new Hono()
 - Use generic error messages like "Something went wrong" (provide context)
 - Expose internal implementation details in responses
 - Call queries directly from routes (use services)
+
+---
+
+## Creating a New Route: Complete Walkthrough
+
+This section provides a complete end-to-end example of creating a new API route, based on the user profile update implementation.
+
+### Example: User Profile Update Route
+
+We'll create a `PUT /account/user` route that updates a user's profile information.
+
+---
+
+### Step 1: Create Validation Schema
+
+**Location**: `packages/utils/src/validation/{domain}/{entity}.ts`
+
+```typescript
+import * as z from 'zod';
+
+export const ZUpdateProfile = z.object({
+  fullname: z.string().min(5).optional(),
+  username: z.string().min(1).optional(),
+  locale: z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']).optional()
+});
+
+export type TUpdateProfile = z.infer<typeof ZUpdateProfile>;
+```
+
+**Export**: Add to `packages/utils/src/validation/{domain}/index.ts` and `packages/utils/src/validation/index.ts`
+
+---
+
+### Step 2: Create Service Function
+
+**Location**: `apps/api/src/services/{domain}.ts`
+
+```typescript
+import { AppError, ErrorCodes } from '@api/utils/errors';
+import { updateProfile } from '@cio/db/queries/auth';
+
+export async function updateUser(userId: string, data: Partial<TProfile>) {
+  try {
+    const updatedProfile = await updateProfile(userId, data);
+    if (!updatedProfile) {
+      throw new AppError('Profile not found', ErrorCodes.PROFILE_NOT_FOUND, 404);
+    }
+    return updatedProfile;
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    
+    // Handle constraint violations
+    if (error instanceof Error && error.message.includes('profile_username_key')) {
+      throw new AppError('Username already exists', ErrorCodes.VALIDATION_ERROR, 400, 'username');
+    }
+    
+    throw new AppError('Failed to update profile', ErrorCodes.PROFILE_UPDATE_FAILED, 500);
+  }
+}
+```
+
+---
+
+### Step 3: Create Route
+
+**Location**: `apps/api/src/routes/{domain}/{entity}.ts`
+
+```typescript
+import { updateUser } from '@api/services/account';
+import { Hono } from '@api/utils/hono';
+import { ZUpdateProfile } from '@cio/utils/validation/account';
+import { authMiddleware } from '@api/middlewares/auth';
+import { handleError } from '@api/utils/errors';
+import { zValidator } from '@hono/zod-validator';
+
+export const accountRouter = new Hono()
+  .put('/user', authMiddleware, zValidator('json', ZUpdateProfile), async (c) => {
+    try {
+      const user = c.get('user');
+      const validatedData = c.req.valid('json');
+      const updatedProfile = await updateUser(user.id, validatedData);
+
+      return c.json({ success: true, profile: updatedProfile }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to update profile');
+    }
+  });
+```
+
+---
+
+### Step 4: Export and Register Route
+
+```typescript
+// apps/api/src/routes/account/index.ts
+export * from './account';
+
+// apps/api/src/app.ts
+import { accountRouter } from '@api/routes/account';
+
+export const app = new Hono()
+  .route('/account', accountRouter);  // Route available at PUT /account/user
+```
+
+---
+
+### Step 5: Use in Frontend
+
+**Location**: `apps/dashboard/src/lib/features/{domain}/api/{entity}.svelte.ts`
+
+```typescript
+import { ZProfileUpdateForm } from '@cio/utils/validation/account';
+import { classroomio } from '$lib/utils/services/api';
+import { mapZodErrorsToTranslations } from '$lib/utils/validation';
+
+export class ProfileApi {
+  isLoading = $state(false);
+  errors = $state<Record<string, string>>({});
+
+  async submit(fields: TProfileUpdateForm) {
+    // Client-side validation
+    const result = ZProfileUpdateForm.safeParse(fields);
+    if (!result.success) {
+      this.errors = mapZodErrorsToTranslations(result.error);
+      return;
+    }
+
+    try {
+      this.isLoading = true;
+      
+      // Call API using RPC client (matches route path)
+      const response = await classroomio.account.user.$put({
+        json: result.data
+      });
+      
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error);
+      
+      // Update local state, show success message, etc.
+    } catch (error) {
+      this.errors.general = error.message;
+    } finally {
+      this.isLoading = false;
+    }
+  }
+}
+```
+
+---
+
+### Route Path Convention
+
+When adding routes to an existing router:
+
+- **GET `/`** - Fetch/list resources (e.g., `GET /account` - get account data)
+- **GET `/{id}`** - Fetch single resource (e.g., `GET /course/{id}`)
+- **POST `/`** - Create resource (e.g., `POST /course` - create course)
+- **PUT `/{resource}`** - Update resource (e.g., `PUT /account/user` - update user)
+- **DELETE `/{id}`** - Delete resource (e.g., `DELETE /course/{id}`)
+
+**Example router with multiple routes**:
+
+```typescript
+export const accountRouter = new Hono()
+  .get('/', authMiddleware, async (c) => {
+    // GET /account - get account data
+  })
+  .put('/user', authMiddleware, zValidator('json', ZUpdateProfile), async (c) => {
+    // PUT /account/user - update user profile
+  })
+  .put('/password', authMiddleware, zValidator('json', ZChangePassword), async (c) => {
+    // PUT /account/password - change password
+  });
+```
+
+---
+
+### Quick Reference Checklist
+
+When creating a new route, follow this checklist:
+
+1. **Validation Schema** (`packages/utils/src/validation/`)
+   - [ ] Create Zod schema with validation rules
+   - [ ] Export schema and types
+   - [ ] Add to validation index
+
+2. **Service** (`apps/api/src/services/`)
+   - [ ] Create service function with business logic
+   - [ ] Use `AppError` for structured errors
+   - [ ] Handle database constraint violations
+   - [ ] Add JSDoc comments
+
+3. **Route** (`apps/api/src/routes/`)
+   - [ ] Create route handler
+   - [ ] Use `zValidator` for input validation
+   - [ ] Apply `authMiddleware` if needed
+   - [ ] Use `handleError` for error handling
+   - [ ] Return consistent response format
+
+4. **Registration**
+   - [ ] Export router in index file
+   - [ ] Register route in `app.ts`
+
+5. **Frontend** (`apps/dashboard/src/lib/features/`)
+   - [ ] Create API abstraction class (`.svelte.ts`)
+   - [ ] Use shared validation schema
+   - [ ] Use RPC client for API calls
+   - [ ] Map errors to translations
+   - [ ] Update local state after success
 
 ---
 

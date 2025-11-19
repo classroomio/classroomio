@@ -4,10 +4,10 @@ import { User } from 'better-auth';
 import { db } from '@db/drizzle';
 import { eq } from 'drizzle-orm';
 
-export const markProfileAsVerified = async (user: User) => {
-  console.debug('markProfileAsVerified');
+export const syncUserWithProfile = async (user: User) => {
+  console.debug('syncUserWithProfile', user);
 
-  if (!user?.id || !user.emailVerified) {
+  if (!user?.id) {
     return;
   }
 
@@ -16,8 +16,8 @@ export const markProfileAsVerified = async (user: User) => {
     await db
       .update(schema.profile)
       .set({
-        isEmailVerified: user.emailVerified,
-        verifiedAt: new Date().toISOString()
+        email: user.email,
+        isEmailVerified: user.emailVerified
       })
       .where(eq(schema.profile.id, user.id));
   } catch (error) {

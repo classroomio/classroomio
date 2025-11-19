@@ -46,7 +46,7 @@ Documenting my thoughts on how authentication works in the app.
 - [x] implement logout
 - [x] forgot password flow
 - [x] complete onboarding flow
-- [ ] change email flow.
+- [x] change email flow.
 - [ ] google auth flow (local and on test environment)
 - [ ] support google auth for teacher invite
 - [ ] support google auth for student invite
