@@ -96,10 +96,6 @@
     fetchCommunityQuestions($currentOrg.id, $profile.id);
   });
 
-  $effect(() => {
-    console.log('allCourses', allCourses);
-  });
-
   let filteredDiscussions = $derived(
     discussions.filter(
       (discussion) =>
