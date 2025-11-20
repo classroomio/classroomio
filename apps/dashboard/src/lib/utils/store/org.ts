@@ -11,34 +11,26 @@ import type { UserLessonDataType } from '$lib/utils/types';
 import type { Writable } from 'svelte/store';
 
 export const defaultCurrentOrgState: AccountOrg = {
-  id: '',
-  name: '',
-  siteName: '',
   avatarUrl: '',
-  landingpage: {},
+  createdAt: '',
+  customCode: '',
+  customDomain: '',
   customization: {
     apps: { poll: true, comments: true },
     course: { grading: true, newsfeed: true },
     dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' }
   },
-  theme: '',
   favicon: '',
-  plans: [],
-  isRestricted: false,
-  createdAt: '',
-  settings: {},
-  customCode: '',
-  customDomain: '',
+  id: '',
   isCustomDomainVerified: false,
-  member: {
-    id: 0,
-    email: '',
-    createdAt: '',
-    organizationId: '',
-    roleId: 0,
-    profileId: '',
-    verified: false
-  }
+  isRestricted: false,
+  landingpage: {},
+  name: '',
+  plans: [],
+  roleId: 0,
+  settings: {},
+  siteName: '',
+  theme: ''
 };
 
 export const orgs = writable<AccountOrg[]>([]);
@@ -47,14 +39,14 @@ export const currentOrg: Writable<AccountOrg> = writable(defaultCurrentOrgState)
 export const orgAudience = writable<OrgAudience[]>([]);
 export const orgTeam = writable<OrgTeamMember[]>([]);
 export const isOrgAdmin = derived(currentOrg, ($currentOrg) => {
-  if ($currentOrg.member.roleId === 0) return null;
+  if ($currentOrg.roleId === 0) return null;
 
-  return $currentOrg.member.roleId === ROLE.ADMIN;
+  return $currentOrg.roleId === ROLE.ADMIN;
 });
 export const isOrgStudent = derived(currentOrg, ($currentOrg) => {
-  if ($currentOrg.member.roleId === 0) return null;
+  if ($currentOrg.roleId === 0) return null;
 
-  return $currentOrg.member.roleId === ROLE.STUDENT;
+  return $currentOrg.roleId === ROLE.STUDENT;
 });
 
 const getActivePlan = (org: AccountOrg) => {

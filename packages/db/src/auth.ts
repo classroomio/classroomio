@@ -1,3 +1,4 @@
+import * as CONSTANTS from './constants';
 import * as schema from '@db/schema';
 
 import { admin, anonymous } from 'better-auth/plugins';
@@ -12,7 +13,7 @@ import { config as emailAndPassword } from './auth/email-password';
 import { syncUserWithProfile } from './auth/hooks/sync-user';
 
 export const auth = betterAuth({
-  baseURL: process.env.SERVER_URL,
+  baseURL: CONSTANTS.BASE_URL,
   database: drizzleAdapter(db, {
     provider: 'pg',
     schema,
@@ -37,7 +38,7 @@ export const auth = betterAuth({
       prompt: 'select_account consent'
     }
   },
-  trustedOrigins: ['*'],
+  trustedOrigins: CONSTANTS.TRUSTED_ORIGINS,
   advanced: {
     cookiePrefix: 'classroomio',
     crossSubDomainCookies: {

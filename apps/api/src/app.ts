@@ -10,6 +10,7 @@ import { courseRouter } from '@api/routes/course';
 import { logger } from 'hono/logger';
 import { mailRouter } from '@api/routes/mail';
 import { onboardingRouter } from '@api/routes/onboarding';
+import { organizationRouter } from '@api/routes/organization';
 import { prettyJSON } from 'hono/pretty-json';
 import rateLimiter from '@api/middlewares/rate-limiter';
 import { secureHeaders } from 'hono/secure-headers';
@@ -70,6 +71,7 @@ export const app = new Hono()
   .route('/account', accountRouter)
   .route('/course', courseRouter)
   .route('/mail', mailRouter)
+  .route('/organization', organizationRouter)
 
   // Error handling
   .onError((err, c) => {

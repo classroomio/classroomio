@@ -1,9 +1,9 @@
+import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type { TLocale, TProfile } from '@cio/db/types';
 import { ZChangeEmail, ZProfileUpdateForm } from '@cio/utils/validation/account';
 
 import type { TProfileUpdateForm as TProfileUpdateFormSchema } from '@cio/utils/validation/account';
 import { authClient } from '$lib/utils/services/auth/client';
-import { classroomio } from '$lib/utils/services/api';
 import generateUUID from '$lib/utils/functions/generateUUID';
 import { handleLocaleChange } from '$lib/utils/functions/translations';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
@@ -21,11 +21,7 @@ export interface TChangeEmailForm {
   callbackURL?: string;
 }
 
-export class ProfileApi {
-  isLoading = $state(false);
-  errors = $state<Record<string, string>>({});
-  success = $state(false);
-
+export class ProfileApi extends BaseApiWithErrors {
   private validateForm(fields: TProfileUpdateForm): boolean {
     const validationData = {
       fullname: fields.fullname,
@@ -111,21 +107,16 @@ export class ProfileApi {
       return;
     }
 
-    const response = await classroomio.account.user.$put({
-      json: profileUpdates
+    await this.execute<typeof classroomio.account.user.$put>({
+      requestFn: () => classroomio.account.user.$put({ json: profileUpdates }),
+      logContext: 'updating profile',
+      onSuccess: (response) => {
+        profileStore.update((_profile) => ({
+          ..._profile,
+          ...response.profile
+        }));
+      }
     });
-
-    const result = await response.json();
-
-    if (!result.success || !result.profile) {
-      throw new Error('Failed to update profile');
-    }
-
-    // Update the profile store
-    profileStore.update((_profile) => ({
-      ..._profile,
-      ...result.profile
-    }));
   }
 
   private handleError(error: unknown): void {

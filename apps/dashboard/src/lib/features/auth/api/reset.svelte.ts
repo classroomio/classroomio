@@ -1,3 +1,4 @@
+import { BaseApiWithErrors } from '$lib/utils/services/api';
 import type { TResetPasswordForm } from '../utils/types';
 import { authClient } from '$lib/utils/services/auth/client';
 import { goto } from '$app/navigation';
@@ -5,11 +6,7 @@ import { resetPasswordValidation } from '../utils/validation';
 import { resolve } from '$app/paths';
 import { snackbar } from '$lib/components/Snackbar/store';
 
-export class ResetApi {
-  isLoading = $state(false);
-  errors = $state<Record<string, string>>({});
-  success = $state(false);
-
+export class ResetApi extends BaseApiWithErrors {
   async submit(fields: TResetPasswordForm) {
     const errors = resetPasswordValidation(fields);
     if (errors) {
@@ -40,12 +37,6 @@ export class ResetApi {
     } finally {
       this.isLoading = false;
     }
-  }
-
-  reset() {
-    this.isLoading = false;
-    this.errors = {};
-    this.success = false;
   }
 
   setError(_errors: Record<string, string>) {

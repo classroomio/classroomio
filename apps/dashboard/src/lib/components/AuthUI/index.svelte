@@ -7,11 +7,10 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
-  import type { SupabaseClient } from '@supabase/supabase-js';
   import GoogleIconColored from '../Icons/GoogleIconColored.svelte';
+  import { authClient } from '$lib/utils/services/auth/client';
 
   interface Props {
-    supabase?: SupabaseClient;
     handleSubmit?: any;
     isLogin?: boolean;
     showOnlyContent?: boolean;
@@ -24,7 +23,6 @@
   }
 
   let {
-    supabase,
     handleSubmit = () => {},
     isLogin = true,
     showOnlyContent = false,
@@ -37,7 +35,7 @@
   }: Props = $props();
 
   async function signInWithGoogle() {
-    if (isLoading || !supabase) {
+    if (isLoading) {
       return;
     }
 
@@ -46,22 +44,19 @@
     // const redirectTo = `https://app.classroomio.com?forwardTo=${
     //   window.location.origin + params.get('redirect')
     // }`;
-    const pathname = redirectPathname || params.get('redirect');
+    const pathname = redirectPathname || params.get('redirect') || '';
     const redirectTo = `${window.location.origin + pathname}`;
 
     console.log({ redirectTo });
 
     try {
       console.log('signInWithGoogle');
-      const { error, data } = await supabase.auth.signInWithOAuth({
+      const data = await authClient.signIn.social({
         provider: 'google',
-        options: {
-          redirectTo
-        }
+        callbackURL: redirectTo
       });
 
       console.log('data', data);
-      console.log('error', error);
     } catch (error) {
       console.log('catch error', error);
     }

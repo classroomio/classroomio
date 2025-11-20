@@ -74,16 +74,11 @@ class ApiClient {
 
         if (response.status >= 400 && response.status < 500) {
           const errorText = await response.text().catch(() => 'Unknown error');
-          throw new ApiError(`Client error: ${errorText}`, response.status, response.statusText, response);
+          throw new ApiError(errorText, response.status, response.statusText, response);
         }
 
         if (response.status >= 500) {
-          const error = new ApiError(
-            `Server error: ${response.statusText}`,
-            response.status,
-            response.statusText,
-            response
-          );
+          const error = new ApiError(response.statusText, response.status, response.statusText, response);
 
           if (attempt === retries) {
             throw error;
@@ -171,3 +166,6 @@ export {
 } from './utils';
 
 export type { InferResponseType, InferRequestType } from '@cio/api/rpc-types';
+
+// Export base API classes
+export { BaseApi, BaseApiWithErrors } from './base.svelte';

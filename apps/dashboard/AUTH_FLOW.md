@@ -47,13 +47,13 @@ Documenting my thoughts on how authentication works in the app.
 - [x] forgot password flow
 - [x] complete onboarding flow
 - [x] change email flow.
-- [ ] google auth flow (local and on test environment)
+- [x] google auth flow (local and on test environment)
 - [ ] support google auth for teacher invite
 - [ ] support google auth for student invite
 
 ### others
 
-- [ ] block org routes when isOrgSite === true.
+- [x] block org routes when isOrgSite === true.
 - [ ] routes belonging to orgsite should proxy to courseapp (site-theme)
 
 ---

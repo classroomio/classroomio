@@ -349,7 +349,7 @@
           </div>
         {:else}
           <Box>
-            <CoursesEmptyIcon size={16} />
+            <CoursesEmptyIcon />
             <h3 class="my-5 text-2xl dark:text-white">
               {$t('course.navItem.landing_page.no_course_published')}
             </h3>

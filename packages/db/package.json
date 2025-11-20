@@ -17,8 +17,9 @@
     "format": "prettier . --write"
   },
   "dependencies": {
-    "@cio/tsconfig": "workspace:*",
     "@cio/email": "workspace:*",
+    "@cio/utils": "workspace:*",
+    "@cio/tsconfig": "workspace:*",
     "better-auth": "^1.3.28",
     "drizzle-kit": "^0.31.5",
     "drizzle-orm": "^0.44.7",

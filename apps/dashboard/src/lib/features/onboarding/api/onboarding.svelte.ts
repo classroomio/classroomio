@@ -2,7 +2,7 @@ import type { OnboardingField, OnboardingStep } from '../utils/types';
 import { currentOrg, orgs } from '$lib/utils/store/org';
 
 import { ONBOARDING_STEPS } from '../utils/constants';
-import { classroomio } from '$lib/utils/services/api';
+import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import { goto } from '$app/navigation';
 import { handleLocaleChange } from '$lib/utils/functions/translations';
 import { onboardingValidation } from '../utils/validations';
@@ -10,9 +10,7 @@ import { profile } from '$lib/utils/store/user';
 import { resolve } from '$app/paths';
 import { snackbar } from '$lib/components/Snackbar/store';
 
-export class OnboardingApi {
-  isLoading = $state(false);
-  errors = $state<Record<string, string>>({});
+export class OnboardingApi extends BaseApiWithErrors {
   step: OnboardingStep = $state(ONBOARDING_STEPS.ORG_SETUP);
 
   async submit(data: OnboardingField) {
@@ -34,42 +32,35 @@ export class OnboardingApi {
       return false;
     }
 
-    this.isLoading = true;
+    await this.execute<typeof classroomio.onboarding.step1.$post>({
+      requestFn: () => classroomio.onboarding.step1.$post({ json: data }),
+      logContext: 'submitting organization setup',
+      onSuccess: (result) => {
+        const { organizations } = result.data;
 
-    try {
-      const response = await classroomio.onboarding.step1.$post({
-        json: data
-      });
+        orgs.set(organizations);
+        currentOrg.set(organizations[0]);
 
-      const result = await response.json();
-      if (!result.success) {
-        const errorMessage = 'error' in result ? result.error : result.message;
-        if ('field' in result && result.field) {
-          this.errors = { [result.field]: errorMessage };
-        } else {
-          this.errors = { general: errorMessage };
+        this.errors = {};
+        this.step = ONBOARDING_STEPS.USER_METADATA;
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error(result);
+          return;
         }
 
-        snackbar.error(errorMessage);
-        return false;
+        if ('message' in result) {
+          snackbar.error(result.message);
+          return;
+        }
+
+        // map api validation back to frontend fields
+        if ('error' in result) {
+          this.handleValidationError(result);
+        }
       }
-
-      console.log('got response', result);
-
-      const { organizations } = result.data;
-
-      orgs.set(organizations);
-      currentOrg.set(organizations[0]);
-
-      this.errors = {};
-      this.step = ONBOARDING_STEPS.USER_METADATA;
-
-      return true;
-    } catch (error) {
-      console.error(error);
-    } finally {
-      this.isLoading = false;
-    }
+    });
   }
 
   async submitUserMetada(data: OnboardingField) {
@@ -79,42 +70,38 @@ export class OnboardingApi {
       return false;
     }
 
-    this.isLoading = true;
+    await this.execute<typeof classroomio.onboarding.step2.$post>({
+      requestFn: () => classroomio.onboarding.step2.$post({ json: data }),
+      logContext: 'submitting organization setup',
+      onSuccess: (result) => {
+        profile.set(result.data);
+        handleLocaleChange(result.data.locale ?? 'en');
 
-    try {
-      const response = await classroomio.onboarding.step2.$post({
-        json: data
-      });
+        const welcomePopup = `${result.data.isEmailVerified}`;
 
-      const result = await response.json();
-      if (!result.success) {
-        const errorMessage = 'error' in result ? result.error : result.message;
-        if ('field' in result && result.field) {
-          this.errors = { [result.field]: errorMessage };
-        } else {
-          snackbar.error(errorMessage);
+        return goto(resolve(`/org/${data.siteName}?welcomePopup=${welcomePopup}`, {}));
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error(result);
+          return;
         }
-        return false;
+
+        if ('message' in result) {
+          snackbar.error(result.message);
+          return;
+        }
+
+        // map api validation back to frontend fields
+        if ('error' in result) {
+          this.handleValidationError(result);
+        }
       }
-
-      profile.set(result.data);
-      handleLocaleChange(result.data.locale ?? 'en');
-
-      this.errors = {};
-
-      const welcomePopup = `${result.data.isEmailVerified}`;
-
-      return goto(resolve(`/org/${data.siteName}?welcomePopup=${welcomePopup}`, {}));
-    } catch (error) {
-      console.error(error);
-    } finally {
-      this.isLoading = false;
-    }
+    });
   }
 
-  reset() {
-    this.isLoading = false;
-    this.errors = {};
+  override reset() {
+    super.reset();
   }
 }
 

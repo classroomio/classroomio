@@ -18,7 +18,7 @@
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import { IconButton } from '$lib/components/IconButton';
   import Modal from '$lib/components/Modal/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  // import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { snackbar } from '$lib/components/Snackbar/store';
   import TabContent from '$lib/components/TabContent/index.svelte';
@@ -33,11 +33,11 @@
   import type { LessonPage } from '$lib/utils/types';
   import type { TLocale } from '@cio/db/types';
   // import { useCompletion } from 'ai/svelte';
-  import { Popover } from 'carbon-components-svelte';
-  import NotepadTextIcon from '@lucide/svelte/icons/notepad-text';
-  import ListTodoIcon from '@lucide/svelte/icons/list-todo';
-  import ListChecksIcon from '@lucide/svelte/icons/list-checks';
-  import WandSparklesIcon from '@lucide/svelte/icons/wand-sparkles';
+  // import { Popover } from 'carbon-components-svelte';
+  // import NotepadTextIcon from '@lucide/svelte/icons/notepad-text';
+  // import ListTodoIcon from '@lucide/svelte/icons/list-todo';
+  // import ListChecksIcon from '@lucide/svelte/icons/list-checks';
+  // import WandSparklesIcon from '@lucide/svelte/icons/wand-sparkles';
   import TrashIcon from '@lucide/svelte/icons/trash';
   import isEmpty from 'lodash/isEmpty';
   import { fade } from 'svelte/transition';
@@ -332,6 +332,7 @@
   //   updateNoteByCompletion($completion);
   // });
 
+  let player = $state<HTMLVideoElement | null>(null);
   $effect(() => {
     initPlyr(player, $lesson.materials.videos);
   });
@@ -374,7 +375,7 @@
         <TabContent value={getValue('course.navItem.lessons.materials.tabs.note.title')} index={currentTab}>
           <div class="flex justify-end gap-1">
             <!-- Update this when ai-sdk is updated -->
-            <div bind:this={aiButtonRef} class="hidden flex-row-reverse">
+            <!-- <div bind:this={aiButtonRef} class="hidden flex-row-reverse">
               <PrimaryButton
                 className="flex items-center relative"
                 onClick={() => {
@@ -411,7 +412,7 @@
                   </div>
                 </Popover>
               </PrimaryButton>
-            </div>
+            </div> -->
           </div>
 
           <div class="mt-5 h-[60vh]">
@@ -548,8 +549,9 @@
         <Component {lessonId} />
       {/each}
 
-      {#if $currentOrg.customization.apps.comments}
+      {#if $currentOrg.customization?.apps?.comments}
         <hr class="my-5" />
+        {$currentOrg.customization}
         <Comments {lessonId} />
       {/if}
     </div>

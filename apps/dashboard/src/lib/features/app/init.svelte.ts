@@ -1,9 +1,9 @@
+import { BaseApi, classroomio } from '$lib/utils/services/api';
 import { currentOrg, isOrgStudent, orgs } from '$lib/utils/store/org';
 import { defaultProfileState, defaultUserState, profile, user } from '$lib/utils/store/user';
 
 import type { AccountResponse } from './types';
 import type { TUser } from '@cio/db/types';
-import { classroomio } from '$lib/utils/services/api';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { handleLocaleChange } from '$lib/utils/functions/translations';
@@ -21,11 +21,13 @@ type AppSetupParams = {
 /*
   Manages everything related to loading the logged in user and setting up the organization.
 */
-class AppInitApi {
-  loading = $state(true);
-  error = $state<string | null>(null);
+class AppInitApi extends BaseApi {
   data = $state<AccountResponse>(null);
   session = $state<App.Locals | null>(null);
+
+  get loading() {
+    return this.isLoading;
+  }
 
   async setupApp(locals: App.Locals, params: AppSetupParams): Promise<boolean | undefined> {
     if (!locals.user) {
@@ -33,31 +35,18 @@ class AppInitApi {
       return;
     }
 
-    this.loading = true;
-    this.error = null;
     this.session = locals;
 
-    try {
-      // Automatically uses cookie auth to fetch account data for currently logged in user
-      const response = await classroomio.account.$get();
-      const accountData = await response.json();
-
-      this.data = accountData;
-
-      this.setupStores();
-
-      this.setUserAnalytics();
-
-      this.routeUserToNextPage(params);
-
-      return true;
-    } catch (error) {
-      console.error('Error fetching account', error);
-
-      this.error = error instanceof Error ? error.message : 'Failed to fetch account';
-    } finally {
-      this.loading = false;
-    }
+    await this.execute<typeof classroomio.account.$get>({
+      requestFn: () => classroomio.account.$get(),
+      logContext: 'fetching account',
+      onSuccess: (accountData) => {
+        this.data = accountData;
+        this.setupStores();
+        this.setUserAnalytics();
+        this.routeUserToNextPage(params);
+      }
+    });
   }
 
   /*
@@ -154,8 +143,7 @@ class AppInitApi {
   }
 
   reset() {
-    this.loading = false;
-    this.error = null;
+    super.reset();
     this.data = null;
 
     user.set(defaultUserState);
@@ -163,7 +151,7 @@ class AppInitApi {
   }
 
   get isInitializedAndReady() {
-    return !this.loading && !this.error && this.data !== null;
+    return !this.isLoading && !this.error && this.data !== null;
   }
 }
 

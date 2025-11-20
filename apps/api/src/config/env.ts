@@ -19,7 +19,8 @@ const envSchema = z.object({
   SMTP_PORT: z.string().optional(),
   SMTP_SENDER: z.string().optional(),
   SMTP_USER: z.string().optional(),
-  ZOHO_TOKEN: z.string().optional()
+  ZOHO_TOKEN: z.string().optional(),
+  TRUSTED_ORIGINS: z.string().optional()
 });
 
 export const env = envSchema.parse(process.env);
