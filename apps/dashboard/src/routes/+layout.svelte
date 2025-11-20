@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
+  // import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import debounce from 'lodash/debounce';
 
@@ -31,6 +31,9 @@
   import merge from 'lodash/merge';
   import { onMount } from 'svelte';
   import { MetaTags } from 'svelte-meta-tags';
+  import isPublicRoute from '$lib/utils/functions/routes/isPublicRoute';
+  import { hasSession } from '$lib/utils/functions/supabase';
+  import { goto } from '$app/navigation';
 
   import { ModeWatcher } from '@cio/ui/base/dark-mode';
 
@@ -48,33 +51,43 @@
 
   const getProfileDebounced = debounce(getProfile, 1000);
 
-  onMount(() => {
+  function pageSetup() {
     console.log(
       'Welcome to ClassroomIO, we are grateful you chose us.',
       $page.url.host,
-      `\nIs student domain: ${data.isOrgSite}`
+      `\nIs student domain: ${data.isOrgSite}`,
+      data
     );
 
-    if (browser) {
-      // Update theme - dark or light mode
-      // $globalStore.isDark = localStorage.getItem('mode') === 'dark';
-      // toggleBodyByMode($globalStore.isDark);
+    // $globalStore.isDark = localStorage.getItem('mode') === 'dark';
+    // toggleBodyByMode($globalStore.isDark);
 
-      if (data.isOrgSite && data.org?.theme) {
-        setTheme(data.org?.theme);
-      }
-    }
     setupAnalytics();
 
     handleResize();
 
-    // if (!isSupabaseTokenInLocalStorage() && !isPublicRoute($page.url?.pathname)) {
-    //   console.log('No auth token and is not a public route, redirect to login', path);
-    //   return goto('/login?redirect=/' + path);
-    // }
+    if (!data.isOrgSite || !data.org) return;
+
+    $globalStore.orgSiteName = data.orgSiteName;
+    $globalStore.isOrgSite = data.isOrgSite;
+
+    currentOrg.set(data.org);
+
+    // Setup internal analytics
+    initOrgAnalytics(data.orgSiteName);
+
+    setTheme(data.org?.theme);
+  }
+
+  onMount(() => {
+    pageSetup();
+
+    if (!hasSession() && !isPublicRoute($page.url?.pathname)) {
+      console.log('No auth token and is not a public route, redirect to login', path);
+      return goto('/login?redirect=/' + path);
+    }
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event) => {
-      // Log key events
       console.log(`event`, event);
 
       if (path.includes('reset')) {
@@ -82,10 +95,8 @@
         return;
       }
 
-      // Skip Authentication
       if (data.skipAuth) return;
 
-      // Authentication Steps
       if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
         getProfileDebounced({
           path,
@@ -94,21 +105,7 @@
           orgSiteName: data.orgSiteName
         });
       }
-      // else if (!['TOKEN_REFRESHED'].includes(event)) {
-      //   console.log('not logged in, go to login');
-      //   return goto('/login');
-      // }
     });
-
-    if (data.isOrgSite && data.org && !$currentOrg.siteName) {
-      $globalStore.orgSiteName = data.orgSiteName;
-      $globalStore.isOrgSite = data.isOrgSite;
-
-      currentOrg.set(data.org);
-
-      // Setup internal analytics
-      initOrgAnalytics(data.orgSiteName);
-    }
 
     return () => {
       console.log('unsubscribed');
