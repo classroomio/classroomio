@@ -1,18 +1,21 @@
 <script lang="ts">
-  import { ActivityCard, HeroProfileCard, LoadingPage } from '$lib/components/Analytics';
-  import Progress from '$lib/components/Progress/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { getAccessToken } from '$lib/utils/functions/supabase';
-  import { t } from '$lib/utils/functions/translations';
-  import { currentOrgPath } from '$lib/utils/store/org';
-  import type { UserAnalytics } from '$lib/utils/types/analytics';
-  import { Grid, Tag } from 'carbon-components-svelte';
-  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
-  import BookOpenIcon from '@lucide/svelte/icons/book-open';
-  import ChartLineIcon from '@lucide/svelte/icons/chart-line';
-  import UnfoldVerticalIcon from '@lucide/svelte/icons/unfold-vertical';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
+  import { Badge } from '@cio/ui/base/badge';
+  import UnfoldVerticalIcon from '@lucide/svelte/icons/unfold-vertical';
+
+  import BookOpenIcon from '@lucide/svelte/icons/book-open';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+  import ChartLineIcon from '@lucide/svelte/icons/chart-line';
+  import Progress from '$lib/components/Progress/index.svelte';
+  import Grid from '$lib/components/Org/Settings/Layout/Grid.svelte';
+  import { ActivityCard, HeroProfileCard, LoadingPage } from '$lib/components/Analytics';
+
+  import { t } from '$lib/utils/functions/translations';
+  import { currentOrgPath } from '$lib/utils/store/org';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { getAccessToken } from '$lib/utils/functions/supabase';
+  import type { UserAnalytics } from '$lib/utils/types/analytics';
 
   let { data } = $props();
 
@@ -101,7 +104,7 @@
     <div class="px-5 py-1">
       <HeroProfileCard user={userAnalytics.user} />
 
-      <Grid class="mt-5 px-0" fullWidth>
+      <Grid class="mt-5 px-0">
         <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {#each userMetrics as activity}
             <ActivityCard {activity} />
@@ -110,7 +113,7 @@
       </Grid>
 
       <div class="mt-5 rounded-md border p-3 md:p-5 dark:border-neutral-600">
-        <h3 class="text-2xl font-bold">
+        <h3 class="text-2xl">
           {$t('analytics.courses')}
         </h3>
 
@@ -128,26 +131,22 @@
           </div>
           <Progress value={userAnalytics.overallCourseProgress} />
           <div class="flex items-center justify-between">
-            <Tag
-              interactive
-              filter={courseFilter === 'incomplete'}
-              type={courseFilter === 'incomplete' ? 'gray' : 'outline'}
+            <Badge
+              type={courseFilter === 'incomplete' ? 'secondary' : 'outline'}
               class="text-yellow-700 dark:text-yellow-500"
-              on:click={() => toggleCourseFilter('incomplete')}
+              onclick={() => toggleCourseFilter('incomplete')}
             >
               {incompleteCourses}
               {$t('analytics.incomplete')}
-            </Tag>
-            <Tag
-              interactive
-              filter={courseFilter === 'completed'}
-              type={courseFilter === 'completed' ? 'gray' : 'outline'}
+            </Badge>
+            <Badge
+              type={courseFilter === 'completed' ? 'secondary' : 'outline'}
               class="text-green-700 dark:text-green-500"
-              on:click={() => toggleCourseFilter('completed')}
+              onclick={() => toggleCourseFilter('completed')}
             >
               {completedCourses}
               {$t('analytics.complete')}
-            </Tag>
+            </Badge>
           </div>
         </div>
 
@@ -181,7 +180,7 @@
                   </div>
                 </div>
 
-                <Tag
+                <Badge
                   class={`${
                     course.lessons_count === course.lessons_completed
                       ? 'bg-green-200 text-green-700'
@@ -191,7 +190,7 @@
                   {course.lessons_count === course.lessons_completed
                     ? $t('analytics.completed')
                     : $t('analytics.incomplete')}
-                </Tag>
+                </Badge>
               </div>
 
               <div class="flex w-full items-center gap-1">

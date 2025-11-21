@@ -5,6 +5,7 @@ import type { EditorView } from '@tiptap/pm/view';
 import type { Snippet } from 'svelte';
 
 export interface EdraEditorProps {
+  placeholder?: string | ((node: any) => string);
   content?: Content;
   editable?: boolean;
   editor?: Editor;

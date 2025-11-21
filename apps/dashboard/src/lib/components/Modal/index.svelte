@@ -82,9 +82,9 @@
   .container {
     max-width: 1000px;
   }
-  .body {
+  /* .body {
     max-height: 60vh;
-  }
+  } */
 
   .small {
     max-width: 388px;

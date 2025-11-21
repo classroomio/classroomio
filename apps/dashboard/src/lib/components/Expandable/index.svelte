@@ -39,7 +39,7 @@
     tabindex="0"
     onclick={handleClick}
   >
-    <p class="flex items-center font-bold dark:text-white {titleClass}">
+    <p class="flex items-center dark:text-white {titleClass}">
       {title}
       {#if supportsLink}
         <a class="ml-2" href="{page.url.pathname}#{id}" onclick={(e) => e.stopPropagation()}>

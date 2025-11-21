@@ -1,21 +1,23 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { courses } from '$lib/components/Courses/store';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import generateSlug from '$lib/utils/functions/generateSlug';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { t } from '$lib/utils/functions/translations';
-  import { askCommunityValidation } from '$lib/utils/functions/validator';
-  import { fetchCourses } from '$lib/utils/services/courses';
-  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import { profile } from '$lib/utils/store/user';
-  import type { Course } from '$lib/utils/types';
-  import { Dropdown } from 'carbon-components-svelte';
+  import * as Select from '@cio/ui/base/select';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+
+  import type { Course } from '$lib/utils/types';
+  import { profile } from '$lib/utils/store/user';
+  import { t } from '$lib/utils/functions/translations';
+  import { courses } from '$lib/components/Courses/store';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { fetchCourses } from '$lib/utils/services/courses';
+  import generateSlug from '$lib/utils/functions/generateSlug';
+  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { askCommunityValidation } from '$lib/utils/functions/validator';
+
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   let errors: {
     title?: string;
@@ -98,7 +100,7 @@
       {$t('community.ask.go_back')}
     </a>
     <div class="flex items-center justify-between gap-12">
-      <h1 class="text-2xl font-bold md:text-3xl dark:text-white">{$t('community.ask.ask_the')}</h1>
+      <h1 class="text-2xl md:text-3xl dark:text-white">{$t('community.ask.ask_the')}</h1>
       <PrimaryButton label={$t('community.ask.publish')} variant={VARIANTS.CONTAINED_DARK} onClick={handleSave} />
     </div>
   </div>
@@ -110,22 +112,30 @@
       errorMessage={errors.title}
       className="w-[75%]"
     />
-    <Dropdown
-      class="h-full w-[25%]"
-      size="xl"
-      label={$t('community.ask.select_course')}
-      invalid={!!errors.courseId}
-      invalidText={errors.courseId}
-      items={fetchedCourses.map((course) => ({ id: course.id, text: course.title }))}
-      bind:selectedId={fields.courseId}
-    />
+    <div class="w-[25%]">
+      <Select.Root type="single" bind:value={fields.courseId}>
+        <Select.Trigger class="h-full w-full">
+          <p>
+            {fields.courseId
+              ? fetchedCourses.find((course) => course.id === fields.courseId)?.title
+              : $t('community.ask.select_course')}
+          </p>
+        </Select.Trigger>
+        <Select.Content>
+          {#each fetchedCourses as course}
+            <Select.Item value={course.id}>{course.title}</Select.Item>
+          {/each}
+        </Select.Content>
+      </Select.Root>
+      {#if errors.courseId}
+        <p class="mt-1 text-sm text-red-500">
+          {errors.courseId}
+        </p>
+      {/if}
+    </div>
   </div>
   <div class="px-2">
-    <TextEditor
-      bind:value={fields.body}
-      placeholder={$t('community.ask.ask_community')}
-      onChange={(html) => (fields.body = html)}
-    />
+    <TextEditor placeholder="Give an answer" content={fields.body} onChange={(content) => (fields.body = content)} />
 
     {#if errors.body}
       <p class="mt-2 text-sm text-red-500">{errors.body}</p>

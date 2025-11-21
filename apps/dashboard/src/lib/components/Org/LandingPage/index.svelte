@@ -1,37 +1,41 @@
 <script lang="ts">
+  import get from 'lodash/get';
   import { untrack } from 'svelte';
-  import { preventDefault } from '$lib/utils/functions/svelte';
-
   import { goto } from '$app/navigation';
-  import Box from '$lib/components/Box/index.svelte';
-  import Card from '$lib/components/Courses/components/Card/index.svelte';
-  import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
-  import { courseMetaDeta, courses } from '$lib/components/Courses/store';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
-  import Navigation from '$lib/components/Navigation/index.svelte';
-  import { landingPageSettings } from '$lib/components/Org/Settings/store';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
-  import { getSupabase } from '$lib/utils/functions/supabase';
-  import { t } from '$lib/utils/functions/translations';
-  import { validateEmail } from '$lib/utils/functions/validateEmail';
-  import { orgLandingpageValidation } from '$lib/utils/functions/validator';
-  import { getCourseBySiteName } from '$lib/utils/services/org';
-  import type { CurrentOrg } from '$lib/utils/types/org';
-  import { Accordion, AccordionItem, Column, Grid, Row } from 'carbon-components-svelte';
+  import { fade } from 'svelte/transition';
   import MailIcon from '@lucide/svelte/icons/mail';
-  import MapPinIcon from '@lucide/svelte/icons/map-pin';
-  import FacebookIcon from '@lucide/svelte/icons/facebook';
-  import LinkedinIcon from '@lucide/svelte/icons/linkedin';
-  import TwitterIcon from '@lucide/svelte/icons/twitter';
   import PhoneIcon from '@lucide/svelte/icons/phone';
   import RocketIcon from '@lucide/svelte/icons/rocket';
-  import get from 'lodash/get';
-  import { fade } from 'svelte/transition';
+  import MapPinIcon from '@lucide/svelte/icons/map-pin';
+  import TwitterIcon from '@lucide/svelte/icons/twitter';
+  import FacebookIcon from '@lucide/svelte/icons/facebook';
+  import LinkedinIcon from '@lucide/svelte/icons/linkedin';
+  import { preventDefault } from '$lib/utils/functions/svelte';
+
+  import Box from '$lib/components/Box/index.svelte';
+  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import Navigation from '$lib/components/Navigation/index.svelte';
+  import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import Card from '$lib/components/Courses/components/Card/index.svelte';
+  import { landingPageSettings } from '$lib/components/Org/Settings/store';
+  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
+  import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
+
   import PageLoader from './PageLoader.svelte';
+  import Row from '../Settings/Layout/Row.svelte';
+  import Grid from '../Settings/Layout/Grid.svelte';
+  import * as Accordion from '@cio/ui/base/accordion';
+  import { t } from '$lib/utils/functions/translations';
+  import Column from '../Settings/Layout/Column.svelte';
+  import type { CurrentOrg } from '$lib/utils/types/org';
+  import { getSupabase } from '$lib/utils/functions/supabase';
+  import { getCourseBySiteName } from '$lib/utils/services/org';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { validateEmail } from '$lib/utils/functions/validateEmail';
+  import { courseMetaDeta, courses } from '$lib/components/Courses/store';
+  import { orgLandingpageValidation } from '$lib/utils/functions/validator';
 
   interface Props {
     orgSiteName?: string;
@@ -219,7 +223,7 @@
                 <p class=" text-primary-600 text-2xl font-semibold capitalize">
                   {org.name}
                 </p>
-                <h1 class="my-4 text-center text-4xl font-bold md:text-start md:text-5xl lg:text-6xl">
+                <h1 class="my-4 text-center text-4xl md:text-start md:text-5xl lg:text-6xl">
                   {$landingPageSettings.header.title} <br /><span class="text-primary-600"
                     >{$landingPageSettings.header.titleHighlight}</span
                   >
@@ -264,7 +268,7 @@
           <div class="relative z-20 flex h-full w-full items-center justify-center md:flex-row">
             <div class="mx-auto flex w-11/12 max-w-[600px] flex-col items-center py-10">
               <p class=" text-primary-600 text-2xl font-semibold capitalize">{org.name}</p>
-              <h1 class="my-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl">
+              <h1 class="my-4 text-center text-4xl md:text-5xl lg:text-6xl">
                 {$landingPageSettings.header.title} <br /><span class="text-primary-600"
                   >{$landingPageSettings.header.titleHighlight}</span
                 >
@@ -309,7 +313,7 @@
       <section id="courses" transition:fade class="mx-auto my-10 w-full max-w-6xl">
         <div class="w-full">
           <div class="mx-auto w-11/12 max-w-[500px] py-10">
-            <h1 class="my-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl">
+            <h1 class="my-4 text-center text-4xl md:text-5xl lg:text-6xl">
               {$landingPageSettings.courses.title}
               <span class="text-primary-600">{$landingPageSettings.courses.titleHighlight}</span>
             </h1>
@@ -376,20 +380,25 @@
     {#if $landingPageSettings.faq.show}
       <section id="faq" transition:fade class="mx-auto my-10 w-full max-w-[700px]">
         <div class="py-10">
-          <h1 class="my-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl">
+          <h1 class="my-4 text-center text-4xl md:text-5xl lg:text-6xl">
             {$landingPageSettings.faq.title}
           </h1>
         </div>
         <div class="mx-2">
-          <Accordion size="xl">
-            {#each $landingPageSettings.faq.questions as faq}
-              <AccordionItem title={faq.title} class="text-3xl">
-                <p class="text-lg">
-                  {faq.content}
-                </p>
-              </AccordionItem>
+          <Accordion.Root type="single" class="w-full">
+            {#each $landingPageSettings.faq.questions as faq, index}
+              <Accordion.Item value="item-{index}">
+                <Accordion.Trigger class="text-left text-lg font-medium">
+                  {faq.title}
+                </Accordion.Trigger>
+                <Accordion.Content>
+                  <p class="text-lg">
+                    {faq.content}
+                  </p>
+                </Accordion.Content>
+              </Accordion.Item>
             {/each}
-          </Accordion>
+          </Accordion.Root>
         </div>
       </section>
     {/if}
@@ -399,7 +408,7 @@
       <section id="contact" transition:fade class="bg-primary-50 my-10 w-full">
         <div class="mx-auto w-full max-w-6xl">
           <div class="mx-auto w-11/12 max-w-[500px] py-10">
-            <h1 class="my-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl">
+            <h1 class="my-4 text-center text-4xl md:text-5xl lg:text-6xl">
               {$landingPageSettings.contact.title}
               <span class="text-primary-600">{$landingPageSettings.contact.titleHighlight}</span>
             </h1>
@@ -491,7 +500,7 @@
       <section id="waitlist" transition:fade class="mx-auto my-10 w-[95%] max-w-6xl">
         <div class="bg-primary-700 flex flex-col rounded-lg px-4 py-14 md:px-10 lg:flex-row lg:items-center">
           <div class="w-full md:mr-4 md:w-[65%]">
-            <h1 class="mb-5 mt-0 text-4xl font-bold text-white">
+            <h1 class="mb-5 mt-0 text-4xl text-white">
               {$landingPageSettings.mailinglist.title}
             </h1>
             <p class="text-lg text-white">

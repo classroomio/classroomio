@@ -1,20 +1,23 @@
 <script lang="ts">
-  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
-  import SendHorizontalIcon from '@lucide/svelte/icons/send-horizontal';
-  import Chip from '$lib/components/Chip/index.svelte';
+  import { onMount } from 'svelte';
+  import pluralize from 'pluralize';
   import UsersIcon from '@lucide/svelte/icons/users';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import SendHorizontalIcon from '@lucide/svelte/icons/send-horizontal';
+  import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+
+  import { profile } from '$lib/utils/store/user';
+  import { isOrgAdmin } from '$lib/utils/store/org';
   import { calDateDiff } from '$lib/utils/functions/date';
   import type { Author, Feed } from '$lib/utils/types/feed';
+  import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
+  import { addNewsfeedCommentValidation } from '$lib/utils/functions/validator';
+  import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
+
+  import Chip from '$lib/components/Chip/index.svelte';
   import DeleteFeedConfirmation from './DeleteFeedConfirmation.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import { isOrgAdmin } from '$lib/utils/store/org';
-  import { profile } from '$lib/utils/store/user';
-  import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
-  import pluralize from 'pluralize';
-  import { onMount } from 'svelte';
-  import { addNewsfeedCommentValidation } from '$lib/utils/functions/validator';
 
   interface Props {
     feed: Feed;
@@ -138,11 +141,22 @@
           </span>
         </span>
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <OverflowMenu flipped>
-            <OverflowMenuItem text={feed.isPinned ? 'Unpin' : 'Pin'} on:click={() => onPin(feed.id, feed.isPinned)} />
-            <OverflowMenuItem text="Edit" on:click={openEditFeed} />
-            <OverflowMenuItem danger text="Delete" on:click={() => (isDeleteFeedModal = true)} />
-          </OverflowMenu>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger
+              class="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-neutral-700"
+            >
+              <EllipsisVerticalIcon class="h-5 w-5" />
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content align="end">
+              <DropdownMenu.Item onclick={() => onPin(feed.id, feed.isPinned)}>
+                {feed.isPinned ? 'Unpin' : 'Pin'}
+              </DropdownMenu.Item>
+              <DropdownMenu.Item onclick={openEditFeed}>Edit</DropdownMenu.Item>
+              <DropdownMenu.Item class="text-red-600" onclick={() => (isDeleteFeedModal = true)}>
+                Delete
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
         </RoleBasedSecurity>
       </div>
       {#if !isHtmlValueEmpty(feed.content)}
@@ -207,9 +221,18 @@
             </span>
 
             {#if comment.author?.profile?.id === $profile.id || $isOrgAdmin}
-              <OverflowMenu flipped class="hidden group-hover:flex">
-                <OverflowMenuItem danger text="Delete" on:click={() => handleDeleteComment(comment.id)} />
-              </OverflowMenu>
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger
+                  class="hidden h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 group-hover:flex dark:hover:bg-neutral-700"
+                >
+                  <EllipsisVerticalIcon class="h-5 w-5" />
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content align="end">
+                  <DropdownMenu.Item class="text-red-600" onclick={() => handleDeleteComment(comment.id)}>
+                    Delete
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
             {/if}
           </div>
         {/if}

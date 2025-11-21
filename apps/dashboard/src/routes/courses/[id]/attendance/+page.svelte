@@ -1,29 +1,26 @@
 <script lang="ts">
-  import Box from '$lib/components/Box/index.svelte';
-  import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { getLectureNo } from '$lib/components/Course/function.js';
-  import { course, group } from '$lib/components/Course/store';
-  import { CourseContainer } from '$lib/components/CourseContainer';
-  import { PageBody, PageNav } from '$lib/components/Page';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { ROLE } from '@cio/utils/constants';
-  import { t } from '$lib/utils/functions/translations';
-  import { takeAttendance } from '$lib/utils/services/attendance';
-  import { globalStore } from '$lib/utils/store/app';
-  import { attendance } from '$lib/utils/store/attendance';
-  import { profile } from '$lib/utils/store/user';
-  import type { GroupPerson, Lesson } from '$lib/utils/types/index';
-  import {
-    Checkbox,
-    Pagination,
-    Search,
-    StructuredList,
-    StructuredListBody,
-    StructuredListCell,
-    StructuredListHead,
-    StructuredListRow
-  } from 'carbon-components-svelte';
+  import { Input } from '@cio/ui/base/input';
+  import * as Table from '@cio/ui/base/table';
+  import Search from '@lucide/svelte/icons/search';
+  import { Checkbox } from '@cio/ui/base/checkbox';
+  import * as Pagination from '@cio/ui/base/pagination';
   import BadgeXIcon from '@lucide/svelte/icons/badge-x';
+
+  import { profile } from '$lib/utils/store/user';
+  import { ROLE } from '@cio/utils/constants';
+  import { globalStore } from '$lib/utils/store/app';
+  import { t } from '$lib/utils/functions/translations';
+  import { attendance } from '$lib/utils/store/attendance';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { course, group } from '$lib/components/Course/store';
+  import { takeAttendance } from '$lib/utils/services/attendance';
+  import { getLectureNo } from '$lib/components/Course/function.js';
+  import type { GroupPerson, Lesson } from '$lib/utils/types/index';
+  import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
+
+  import Box from '$lib/components/Box/index.svelte';
+  import { PageBody, PageNav } from '$lib/components/Page';
+  import { CourseContainer } from '$lib/components/CourseContainer';
 
   let { data = $bindable() } = $props();
 
@@ -44,6 +41,12 @@
       : $group.people.filter((person) => !!person.profile && person.role_id === ROLE.STUDENT)
   );
   let searchValue = $state('');
+  let currentPage = $state(1);
+  let pageSize = $state(10);
+
+  const filteredStudents = $derived(searchStudents(searchValue, students));
+  const totalStudents = $derived(filteredStudents.length);
+  const paginatedStudents = $derived(filteredStudents.slice((currentPage - 1) * pageSize, currentPage * pageSize));
 
   function setAttendance(courseData: CourseData) {
     for (const attendanceItem of courseData.attendance) {
@@ -144,70 +147,67 @@
   <PageBody width="w-full max-w-6xl md:w-11/12">
     <section class="mx-2 my-5 flex items-center lg:mx-9">
       <div class="flex w-full flex-col items-start justify-between gap-2 lg:flex-row lg:items-center">
-        <div class="flex">
-          <p class="mr-5 flex items-center">
-            <Checkbox checked disabled />
-            {$t('course.navItem.attendance.present')}
-          </p>
-          <p class="flex items-center">
+        <div class="flex gap-5">
+          <p class="flex items-center gap-2">
             <Checkbox disabled />
-            {$t('course.navItem.attendance.absent')}
+            <span>{$t('course.navItem.attendance.present')}</span>
+          </p>
+          <p class="flex items-center gap-2">
+            <Checkbox disabled />
+            <span>{$t('course.navItem.attendance.absent')}</span>
           </p>
         </div>
-        <div>
-          <Search
-            class="dark:text-slate-950"
-            placeholder={$t('course.navItem.attendance.search_students')}
-            bind:value={searchValue}
-          />
+
+        <div class="relative w-full">
+          <Input type="text" placeholder={$t('course.navItem.attendance.search_students')} bind:value={searchValue} />
+
+          <Search class="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2" />
         </div>
       </div>
     </section>
 
     <section class="mx-2 my-5 lg:mx-9">
-      <StructuredList class="relative m-0">
-        <!-- Moved the lesson headers outside the students loop -->
-        <StructuredListHead class="bg-primary-100">
-          <StructuredListRow head class="mx-7">
-            <StructuredListCell head class="text-primary-600 py-3"
-              >{$t('course.navItem.attendance.student')}</StructuredListCell
-            >
-            {#each $lessons as _lesson, index}
-              <StructuredListCell head class="text-primary-600 py-3"
-                >{$t('course.navItem.attendance.lesson')} 0{getLectureNo(index + 1)}</StructuredListCell
-              >
-            {/each}
-          </StructuredListRow>
-        </StructuredListHead>
-
-        {#each searchStudents(searchValue, students) as student}
-          <StructuredListBody>
-            <StructuredListRow>
-              <StructuredListCell>
-                <div class="flex w-1/4 items-center">
-                  <p class="font-semibold dark:text-white">
-                    {student.profile.fullname}
-                  </p>
-                </div>
-              </StructuredListCell>
-              {#each $lessons as lesson}
-                <StructuredListCell class="">
-                  <Checkbox
-                    class={$globalStore.isStudent ? 'cursor-not-allowed' : ''}
-                    disabled={$globalStore.isStudent}
-                    checked={$attendance[student.id]
-                      ? $attendance[student.id][lesson.id]
-                        ? $attendance[student.id][lesson.id].is_present
-                        : false
-                      : false}
-                    on:change={(e) => handleAttendanceChange(e, student, lesson)}
-                  />
-                </StructuredListCell>
+      <div class="rounded-md border">
+        <Table.Root>
+          <Table.Header>
+            <Table.Row>
+              <Table.Head class="w-1/4">{$t('course.navItem.attendance.student')}</Table.Head>
+              {#each $lessons as _lesson, index}
+                <Table.Head class="text-center"
+                  >{$t('course.navItem.attendance.lesson')} 0{getLectureNo(index + 1)}</Table.Head
+                >
               {/each}
-            </StructuredListRow>
-          </StructuredListBody>
-        {/each}
-      </StructuredList>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {#each paginatedStudents as student}
+              <Table.Row>
+                <Table.Cell class="font-semibold">
+                  {student.profile.fullname}
+                </Table.Cell>
+                {#each $lessons as lesson}
+                  <Table.Cell class="text-center">
+                    <div class="flex justify-center">
+                      <Checkbox
+                        disabled={$globalStore.isStudent}
+                        checked={$attendance[student.id]
+                          ? $attendance[student.id][lesson.id]
+                            ? $attendance[student.id][lesson.id].is_present
+                            : false
+                          : false}
+                        onCheckedChange={(checked) => {
+                          const e = { target: { checked } };
+                          handleAttendanceChange(e, student, lesson);
+                        }}
+                      />
+                    </div>
+                  </Table.Cell>
+                {/each}
+              </Table.Row>
+            {/each}
+          </Table.Body>
+        </Table.Root>
+      </div>
       {#if students.length === 0}
         <Box className="h-[300px] w-full">
           <BadgeXIcon size={48} />
@@ -216,8 +216,39 @@
           </h3>
         </Box>
       {/if}
-      {#if students.length !== 0}
-        <Pagination totalItems={10} pageSizes={[10, 15, 20]} />
+      {#if totalStudents > 0}
+        <div class="mt-4">
+          <Pagination.Root
+            count={totalStudents}
+            perPage={pageSize}
+            page={currentPage}
+            onPageChange={(page) => (currentPage = page)}
+          >
+            {#snippet children({ pages, currentPage: activePage })}
+              <Pagination.Content>
+                <Pagination.Item>
+                  <Pagination.PrevButton />
+                </Pagination.Item>
+                {#each pages as page (page.key)}
+                  {#if page.type === 'ellipsis'}
+                    <Pagination.Item>
+                      <Pagination.Ellipsis />
+                    </Pagination.Item>
+                  {:else}
+                    <Pagination.Item>
+                      <Pagination.Link {page} isActive={activePage === page.value}>
+                        {page.value}
+                      </Pagination.Link>
+                    </Pagination.Item>
+                  {/if}
+                {/each}
+                <Pagination.Item>
+                  <Pagination.NextButton />
+                </Pagination.Item>
+              </Pagination.Content>
+            {/snippet}
+          </Pagination.Root>
+        </div>
       {/if}
     </section>
   </PageBody>

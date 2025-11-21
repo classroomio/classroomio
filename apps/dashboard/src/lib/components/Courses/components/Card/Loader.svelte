@@ -1,21 +1,23 @@
 <script lang="ts">
-  import { SkeletonPlaceholder, SkeletonText } from 'carbon-components-svelte';
+  import { Skeleton } from '@cio/ui/base/skeleton';
 </script>
 
 <div class="root relative mb-4 mr-4 w-72 rounded-md border bg-gray-100 transition ease-in-out dark:bg-black">
-  <SkeletonPlaceholder style="width: 100%; height: 10rem;" />
+  <Skeleton class="h-40 w-full" />
   <div class="p-3 pb-0">
     <!-- Title -->
-    <SkeletonText style="width: 50%;" />
+    <Skeleton class="h-4 w-2/4" />
+
     <!-- Description -->
-    <SkeletonText style="width: 100%; margin-top: 1rem;" />
-    <SkeletonText style="width: 100%; margin-bottom: 1rem;" />
+    <Skeleton class="h-4 w-2/4" />
+    <Skeleton class="h-4 w-2/4" />
+    <Skeleton class="mt-4 h-4 w-full" />
+    <Skeleton class="mb-4 h-4 w-full" />
 
     <div class="mb-3 flex justify-between">
-      <SkeletonText style="width: 25%" />
-      <SkeletonText style="width: 25%" />
+      <Skeleton class="h-4 w-1/4" />
     </div>
-    <SkeletonText style="width: 25%" />
+    <Skeleton class="h-4 w-1/4" />
   </div>
 </div>
 

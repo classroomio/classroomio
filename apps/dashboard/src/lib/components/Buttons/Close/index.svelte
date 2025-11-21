@@ -25,6 +25,6 @@
   {#if isClosing}
     <Circle size="20" color="#1d4ee2" unit="px" duration="1s" />
   {:else}
-    <XIcon size={size === 'large' ? 24 : 16} class="carbon-icon dark:text-black" />
+    <XIcon size={size === 'large' ? 24 : 16} class="dark:text-black" />
   {/if}
 </IconButton>

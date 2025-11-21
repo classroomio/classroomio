@@ -1,25 +1,29 @@
 <script lang="ts">
+  import jsPDF from 'jspdf';
+  import Papa from 'papaparse';
   import { goto } from '$app/navigation';
-  import Box from '$lib/components/Box/index.svelte';
-  import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { getLectureNo } from '$lib/components/Course/function.js';
-  import { course } from '$lib/components/Course/store';
-  import { CourseContainer } from '$lib/components/CourseContainer';
-  import { PageBody, PageNav } from '$lib/components/Page';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { t } from '$lib/utils/functions/translations';
-  import { fetchExercisesByMarks } from '$lib/utils/services/courses';
-  import { fetchMarks } from '$lib/utils/services/marks';
-  import { currentOrg } from '$lib/utils/store/org';
-  import type { GroupPerson } from '$lib/utils/types';
-  import type { CurrentOrg } from '$lib/utils/types/org';
-  import { Loading, OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
+  import autoTable from 'jspdf-autotable';
+  import { Button } from '@cio/ui/base/button';
+  import { Progress } from '@cio/ui/base/progress';
   import BadgeXIcon from '@lucide/svelte/icons/badge-x';
   import DownloadIcon from '@lucide/svelte/icons/download';
-  import jsPDF from 'jspdf';
-  import autoTable from 'jspdf-autotable';
-  import Papa from 'papaparse';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+
+  import { currentOrg } from '$lib/utils/store/org';
+  import type { GroupPerson } from '$lib/utils/types';
+  import { t } from '$lib/utils/functions/translations';
+  import { fetchMarks } from '$lib/utils/services/marks';
+  import type { CurrentOrg } from '$lib/utils/types/org';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { getLectureNo } from '$lib/components/Course/function.js';
+  import { fetchExercisesByMarks } from '$lib/utils/services/courses';
+
+  import Box from '$lib/components/Box/index.svelte';
+  import { course } from '$lib/components/Course/store';
+  import { PageBody, PageNav } from '$lib/components/Page';
+  import { CourseContainer } from '$lib/components/CourseContainer';
+  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
 
   let { data } = $props();
 
@@ -217,20 +221,25 @@
     <PageNav title={$t('course.navItem.marks.title')}>
       {#snippet widget()}
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <OverflowMenu flipped style="border-radius: 50px" class="bg-gray-100 dark:bg-neutral-800">
-            <div slot="menu" style="">
-              <div style="">
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+              <Button variant="ghost" size="icon" class="rounded-full">
                 {#if isDownloading}
-                  <Loading withOverlay={false} small />
+                  <Progress />
                 {:else}
                   <DownloadIcon size={16} />
                 {/if}
-              </div>
-            </div>
-
-            <OverflowMenuItem text={$t('course.navItem.marks.export.csv')} on:click={downloadCSV} />
-            <OverflowMenuItem text={$t('course.navItem.marks.export.pdf')} on:click={downloadPDF} />
-          </OverflowMenu>
+              </Button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content align="end">
+              <DropdownMenu.Item onclick={downloadCSV}>
+                {$t('course.navItem.marks.export.csv')}
+              </DropdownMenu.Item>
+              <DropdownMenu.Item onclick={downloadPDF}>
+                {$t('course.navItem.marks.export.pdf')}
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
         </RoleBasedSecurity>
       {/snippet}
     </PageNav>

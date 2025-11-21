@@ -1,15 +1,18 @@
 <script>
-  import { Grid, Row, Column } from 'carbon-components-svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import Row from '$lib/components/Org/Settings/Layout/Row.svelte';
+  import Grid from '$lib/components/Org/Settings/Layout/Grid.svelte';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import { supabase } from '$lib/utils/functions/supabase';
+  import Column from '$lib/components/Org/Settings/Layout/Column.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import LanguagePicker from '$lib/components/Org/Settings/LanguagePicker.svelte';
+
   import { profile } from '$lib/utils/store/user';
+  import { t } from '$lib/utils/functions/translations';
+  import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
   import generateUUID from '$lib/utils/functions/generateUUID';
-  import { t } from '$lib/utils/functions/translations';
-  import LanguagePicker from '$lib/components/Org/Settings/LanguagePicker.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { handleLocaleChange } from '$lib/utils/functions/translations';
 
   let avatar = $state('');

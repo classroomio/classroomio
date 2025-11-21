@@ -1,17 +1,22 @@
 <script lang="ts">
-  import { Grid, Row, Column } from 'carbon-components-svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Label } from '@cio/ui/base/label';
+  import { Switch } from '@cio/ui/base/switch';
   import SaveIcon from '@lucide/svelte/icons/save';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import SectionTitle from '../SectionTitle.svelte';
-  import { Toggle } from 'carbon-components-svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
+
   import { currentOrg } from '$lib/utils/store/org';
-  import { getSupabase } from '$lib/utils/functions/supabase';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
-  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
   import { t } from '$lib/utils/functions/translations';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { getSupabase } from '$lib/utils/functions/supabase';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+
+  import Row from './Layout/Row.svelte';
+  import Grid from './Layout/Grid.svelte';
+  import Column from './Layout/Column.svelte';
+  import SectionTitle from '../SectionTitle.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   const supabase = getSupabase();
 
@@ -44,37 +49,40 @@
 </script>
 
 <Grid class="border-c relative mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
-  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
+  <Row class="border-bottom-c flex flex-col items-start py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}>
       <SectionTitle>{$t('components.settings.customize_lms.dashboard.title')}</SectionTitle>
     </Column>
-    <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
-      <div>
-        <p>{$t('components.settings.customize_lms.dashboard.community')}</p>
-        <Toggle size="sm" class="mb-3" bind:toggled={$currentOrg.customization.dashboard.community}>
-          <span slot="labelA" style="color: gray">
-            {$t('components.settings.customize_lms.disabled')}
-          </span>
-          <span slot="labelB" style="color: gray">
-            {$t('components.settings.customize_lms.enabled')}
-          </span>
-        </Toggle>
+
+    <Column sm={8} md={8} lg={8} class="space-y-2">
+      <div class="flex flex-col gap-3">
+        <p class="text-sm">{$t('components.settings.customize_lms.dashboard.community')}</p>
+        <div class="mb-3 flex items-center space-x-2">
+          <Switch bind:checked={$currentOrg.customization.dashboard.community} />
+
+          <Label class="text-sm">
+            {$currentOrg.customization.dashboard.community
+              ? $t('components.settings.customize_lms.enabled')
+              : $t('components.settings.customize_lms.disabled')}
+          </Label>
+        </div>
       </div>
 
-      <div>
-        <p>{$t('components.settings.customize_lms.dashboard.exercises')}</p>
-        <Toggle size="sm" class="mb-3" bind:toggled={$currentOrg.customization.dashboard.exercise}>
-          <span slot="labelA" style="color: gray">
-            {$t('components.settings.customize_lms.disabled')}
-          </span>
-          <span slot="labelB" style="color: gray">
-            {$t('components.settings.customize_lms.enabled')}
-          </span>
-        </Toggle>
+      <div class="flex flex-col gap-3">
+        <p class="text-sm">{$t('components.settings.customize_lms.dashboard.exercises')}</p>
+        <div class="mb-3 flex items-center space-x-2">
+          <Switch bind:checked={$currentOrg.customization.dashboard.exercise} />
+
+          <Label class="text-sm">
+            {$currentOrg.customization.dashboard.exercise
+              ? $t('components.settings.customize_lms.enabled')
+              : $t('components.settings.customize_lms.disabled')}
+          </Label>
+        </div>
       </div>
 
       <div class="mb-3">
-        <p>{$t('components.settings.customize_lms.dashboard.banner_image')}</p>
+        <p class="text-sm">{$t('components.settings.customize_lms.dashboard.banner_image')}</p>
         <PrimaryButton
           variant={VARIANTS.OUTLINED}
           label={$t('components.settings.customize_lms.dashboard.banner_image_btn')}
@@ -94,7 +102,6 @@
         <TextField
           label={$t('components.settings.customize_lms.dashboard.banner_text_label')}
           placeholder={$t('components.settings.customize_lms.dashboard.banner_text_placeholder')}
-          className="mb-5"
           bind:value={$currentOrg.customization.dashboard.bannerText}
         />
       </div>
@@ -105,25 +112,30 @@
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('components.settings.customize_lms.course.title')}</SectionTitle></Column
     >
-    <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
-      <div>
-        <p>{$t('components.settings.customize_lms.course.newsfeed')}</p>
-        <Toggle size="sm" class="mb-3" bind:toggled={$currentOrg.customization.course.newsfeed}>
-          <span slot="labelA" style="color: gray">
-            {$t('components.settings.customize_lms.disabled')}
-          </span>
-          <span slot="labelB" style="color: gray">
-            {$t('components.settings.customize_lms.enabled')}
-          </span>
-        </Toggle>
+    <Column sm={8} md={8} lg={8} class="space-y-4">
+      <div class="flex flex-col gap-3">
+        <p class="text-sm">{$t('components.settings.customize_lms.course.newsfeed')}</p>
+        <div class="flex items-center space-x-2">
+          <Switch bind:checked={$currentOrg.customization.course.newsfeed} />
+
+          <Label class="text-gray-600">
+            {$currentOrg.customization.course.newsfeed
+              ? $t('components.settings.customize_lms.enabled')
+              : $t('components.settings.customize_lms.disabled')}
+          </Label>
+        </div>
       </div>
 
-      <div>
-        <p>{$t('components.settings.customize_lms.course.grading')}</p>
-        <Toggle size="sm" class="mb-3" bind:toggled={$currentOrg.customization.course.grading}>
-          <span slot="labelA" style="color: gray">{$t('components.settings.customize_lms.disabled')}</span>
-          <span slot="labelB" style="color: gray">{$t('components.settings.customize_lms.enabled')}</span>
-        </Toggle>
+      <div class="flex flex-col gap-3">
+        <p class="text-sm">{$t('components.settings.customize_lms.course.grading')}</p>
+        <div class="flex items-center space-x-2">
+          <Switch bind:checked={$currentOrg.customization.course.grading} />
+          <Label class="text-gray-600">
+            {$currentOrg.customization.course.grading
+              ? $t('components.settings.customize_lms.enabled')
+              : $t('components.settings.customize_lms.disabled')}
+          </Label>
+        </div>
       </div>
     </Column>
   </Row>
@@ -132,20 +144,30 @@
     <Column sm={4} md={4} lg={4}
       ><SectionTitle>{$t('components.settings.customize_lms.apps.title')}</SectionTitle></Column
     >
-    <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
-      <div>
-        <p>{$t('components.settings.customize_lms.apps.poll')}</p>
-        <Toggle size="sm" class="mb-3" bind:toggled={$currentOrg.customization.apps.poll}>
-          <span slot="labelA" style="color: gray">{$t('components.settings.customize_lms.disabled')}</span>
-          <span slot="labelB" style="color: gray">{$t('components.settings.customize_lms.enabled')}</span>
-        </Toggle>
+    <Column sm={8} md={8} lg={8} class="space-y-4">
+      <div class="flex flex-col gap-3">
+        <p class="text-sm">{$t('components.settings.customize_lms.apps.poll')}</p>
+        <div class="flex items-center space-x-2">
+          <Switch bind:checked={$currentOrg.customization.apps.poll} />
+
+          <Label class="text-gray-600">
+            {$currentOrg.customization.apps.poll
+              ? $t('components.settings.customize_lms.enabled')
+              : $t('components.settings.customize_lms.disabled')}
+          </Label>
+        </div>
       </div>
-      <div>
-        <p>{$t('components.settings.customize_lms.apps.live_comment')}</p>
-        <Toggle size="sm" class="mb-3" bind:toggled={$currentOrg.customization.apps.comments}>
-          <span slot="labelA" style="color: gray">{$t('components.settings.customize_lms.disabled')}</span>
-          <span slot="labelB" style="color: gray">{$t('components.settings.customize_lms.enabled')}</span>
-        </Toggle>
+      <div class="flex flex-col gap-3">
+        <p class="text-sm">{$t('components.settings.customize_lms.apps.live_comment')}</p>
+        <div class="flex items-center space-x-2">
+          <Switch bind:checked={$currentOrg.customization.apps.comments} />
+
+          <Label class="text-gray-600">
+            {$currentOrg.customization.apps.comments
+              ? $t('components.settings.customize_lms.enabled')
+              : $t('components.settings.customize_lms.disabled')}
+          </Label>
+        </div>
       </div>
     </Column>
   </Row>

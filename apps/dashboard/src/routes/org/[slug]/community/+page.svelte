@@ -17,10 +17,10 @@
   <title>Community - ClassroomIO</title>
 </svelte:head>
 
-<section class="w-full md:mx-auto md:max-w-4xl">
+<section class="w-full md:mx-auto md:max-w-6xl">
   <div class="w-full px-5 py-10">
     <div class="mb-10 flex w-full items-center justify-between">
-      <h1 class="text-2xl font-bold md:text-3xl dark:text-white">{$t('community.title')}</h1>
+      <h1 class="text-2xl md:text-3xl dark:text-white">{$t('community.title')}</h1>
       {#if $isMobile}
         <PrimaryButton onClick={askCommunity}>
           <PlusIcon size={16} />

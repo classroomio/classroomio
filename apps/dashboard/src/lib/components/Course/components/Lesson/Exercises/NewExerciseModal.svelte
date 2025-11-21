@@ -1,24 +1,18 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  // import { browser } from '$app/environment';
+  import { Badge } from '@cio/ui/base/badge';
+
   import Modal from '$lib/components/Modal/index.svelte';
+  import Confetti from '$lib/components/Confetti/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
+  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
 
-  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
-  import { Tag } from 'carbon-components-svelte';
-  import { type GeneratedTemplates, getAllTemplates, TAGS } from '$lib/mocks';
-  import type { ExerciseTemplate } from '$lib/utils/types';
-  // import { lesson, lessonByTranslation } from '../store/lessons';
-  // import { useCompletion } from 'ai/svelte';
-  import Confetti from '$lib/components/Confetti/index.svelte';
-  // import { toggleConfetti } from '$lib/components/Confetti/store';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  // import { getTextFromHTML } from '$lib/utils/functions/toHtml';
-  // import { Circle3 } from 'svelte-loading-spinners';
   import { t } from '$lib/utils/functions/translations';
-  // import { lessonFallbackNote } from '$lib/utils/functions/translations';
+  import type { ExerciseTemplate } from '$lib/utils/types';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { type GeneratedTemplates, getAllTemplates, TAGS } from '$lib/mocks';
 
   interface Props {
     open: boolean;
@@ -164,7 +158,7 @@
             </div>
 
             <div>
-              <p class="flex items-center text-start font-bold">
+              <p class="flex items-center text-start">
                 <span class="mr-2 text-sm">{option.title}</span>
                 {#if option.isDisabled}
                   <ComingSoon />
@@ -222,14 +216,12 @@
         <div>
           <div class="mb-5 flex items-center gap-2">
             {#each tags as tag}
-              <Tag
-                type={selectedTag === tag ? 'warm-gray' : 'outline'}
+              <Badge
                 class={selectedTag === tag ? 'bg-primary-400' : ''}
-                interactive
-                on:click={() => {
+                onclick={() => {
                   selectedTag = tag;
                   selectedTemplateId = '';
-                }}>{tag}</Tag
+                }}>{tag}</Badge
               >
             {/each}
           </div>
@@ -246,7 +238,7 @@
                   onclick={() => (selectedTemplateId = template.id)}
                 >
                   <div class="flex h-full flex-col justify-evenly">
-                    <p class="flex items-center text-start text-sm font-bold">
+                    <p class="flex items-center text-start text-sm">
                       {template.title}
                     </p>
                     <div class="flex flex-col items-start justify-between gap-1">

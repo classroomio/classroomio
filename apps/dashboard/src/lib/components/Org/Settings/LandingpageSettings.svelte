@@ -1,21 +1,28 @@
 <script lang="ts">
-  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import { IconButton } from '$lib/components/IconButton';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
-  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
-  import { getSupabase } from '$lib/utils/functions/supabase';
-  import { t } from '$lib/utils/functions/translations';
-  import { currentOrg } from '$lib/utils/store/org';
-  import { Column, Grid, RadioButton, RadioButtonGroup, Row, Toggle } from 'carbon-components-svelte';
+  import { Label } from '@cio/ui/base/label';
+  import { Switch } from '@cio/ui/base/switch';
   import SaveIcon from '@lucide/svelte/icons/save';
   import TrashIcon from '@lucide/svelte/icons/trash';
-  import SectionTitle from '../SectionTitle.svelte';
+  import * as RadioGroup from '@cio/ui/base/radio-group';
+
   import { landingPageSettings } from './store';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { t } from '$lib/utils/functions/translations';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { getSupabase } from '$lib/utils/functions/supabase';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+
+  import Row from './Layout/Row.svelte';
+  import Grid from './Layout/Grid.svelte';
+  import Column from './Layout/Column.svelte';
+  import SectionTitle from '../SectionTitle.svelte';
+  import { IconButton } from '$lib/components/IconButton';
+  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
 
   let isSaving = $state(false);
   let creatingNewQuestion = $state(false);
@@ -170,14 +177,19 @@
 
 <UnsavedChanges bind:hasUnsavedChanges />
 
-<Grid class="border-c relative mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
+<Grid class="relative mt-5 w-full">
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}>
       <SectionTitle>{$t('settings.landing_page.heading')}</SectionTitle>
-      <Toggle bind:toggled={$landingPageSettings.header.show} size="sm" on:change={() => (hasUnsavedChanges = true)}>
-        <span slot="labelA" style="color: gray">{$t('settings.landing_page.hide_section')}</span>
-        <span slot="labelB" style="color: gray">{$t('settings.landing_page.show_section')}</span>
-      </Toggle>
+      <div class="flex items-center space-x-2">
+        <Switch bind:checked={$landingPageSettings.header.show} onCheckedChange={() => (hasUnsavedChanges = true)} />
+
+        <Label class="text-gray-600">
+          {$landingPageSettings.header.show
+            ? $t('settings.landing_page.show_section')
+            : $t('settings.landing_page.hide_section')}
+        </Label>
+      </div>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <TextField
@@ -220,29 +232,37 @@
           bind:value={$landingPageSettings.header.action.link}
           onChange={() => (hasUnsavedChanges = true)}
         />
-        <Toggle
-          bind:toggled={$landingPageSettings.header.action.redirect}
-          size="sm"
-          on:change={() => (hasUnsavedChanges = true)}
-        >
-          <span slot="labelA" style="color: gray">{$t('settings.landing_page.actions.no_redirect')}</span>
-          <span slot="labelB" style="color: gray">{$t('settings.landing_page.actions.redirect')}</span>
-        </Toggle>
+        <div class="mt-3 flex items-center space-x-2">
+          <Switch
+            bind:checked={$landingPageSettings.header.action.redirect}
+            onCheckedChange={() => (hasUnsavedChanges = true)}
+          />
+
+          <Label class="text-gray-600">
+            {$landingPageSettings.header.action.redirect
+              ? $t('settings.landing_page.actions.redirect')
+              : $t('settings.landing_page.actions.no_redirect')}
+          </Label>
+        </div>
       </div>
 
-      <RadioButtonGroup
-        legendText={$t('settings.landing_page.actions.banner_type.heading')}
-        bind:selected={$landingPageSettings.header.banner.type}
-        on:click={() => {
-          if (hasUnsavedChanges) return;
-          hasUnsavedChanges = true;
-        }}
-        class="mb-5 mt-10"
-      >
-        {#each banner as item}
-          <RadioButton value={item.value} labelText={item.label} />
-        {/each}
-      </RadioButtonGroup>
+      <div class="mb-5 mt-10">
+        <Label class="mb-3 block font-medium">{$t('settings.landing_page.actions.banner_type.heading')}</Label>
+        <RadioGroup.Root
+          bind:value={$landingPageSettings.header.banner.type}
+          onValueChange={() => {
+            if (hasUnsavedChanges) return;
+            hasUnsavedChanges = true;
+          }}
+        >
+          {#each banner as item}
+            <div class="flex items-center space-x-2">
+              <RadioGroup.Item value={item.value} id={item.value} />
+              <Label for={item.value} class="cursor-pointer">{item.label}</Label>
+            </div>
+          {/each}
+        </RadioGroup.Root>
+      </div>
       {#if $landingPageSettings.header.banner.type === 'video'}
         <div class="mb-5 mt-3 gap-2">
           <TextField
@@ -264,14 +284,17 @@
         <img alt="bannerImage" src={$landingPageSettings.header.banner.image} class="mt-2 w-full rounded-md" />
       {/if}
 
-      <Toggle
-        bind:toggled={$landingPageSettings.header.banner.show}
-        size="sm"
-        on:change={() => (hasUnsavedChanges = true)}
-      >
-        <span slot="labelA" style="color: gray">{$t('settings.landing_page.actions.hide_banner')}</span>
-        <span slot="labelB" style="color: gray">{$t('settings.landing_page.actions.show_banner')}</span>
-      </Toggle>
+      <div class="flex items-center space-x-2">
+        <Switch
+          bind:checked={$landingPageSettings.header.banner.show}
+          onCheckedChange={() => (hasUnsavedChanges = true)}
+        />
+        <Label class="text-gray-600">
+          {$landingPageSettings.header.banner.show
+            ? $t('settings.landing_page.actions.show_banner')
+            : $t('settings.landing_page.actions.hide_banner')}
+        </Label>
+      </div>
       {#if $handleOpenWidget.open && widgetKey === 'banner'}
         <UploadWidget
           bind:imageURL={$landingPageSettings.header.banner.image}
@@ -282,7 +305,7 @@
       <!-- background -->
 
       <div class="mt-4">
-        <p class="mb-4 font-bold">{$t('settings.landing_page.background.title')}</p>
+        <p class="mb-4">{$t('settings.landing_page.background.title')}</p>
         <PrimaryButton
           variant={VARIANTS.OUTLINED}
           label={$t('settings.landing_page.about.select_image')}
@@ -298,24 +321,27 @@
           />
         {/if}
 
-        <Toggle
-          toggled={$landingPageSettings.header.background?.show}
-          on:change={() => {
-            hasUnsavedChanges = true;
-            if (!$landingPageSettings.header.background) {
-              $landingPageSettings.header.background = {
-                image: '',
-                show: false
-              };
-            } else {
-              $landingPageSettings.header.background.show = !$landingPageSettings.header.background.show;
-            }
-          }}
-          size="sm"
-        >
-          <span slot="labelA" style="color: gray">{$t('settings.landing_page.background.hide_background')}</span>
-          <span slot="labelB" style="color: gray">{$t('settings.landing_page.background.show_background')}</span>
-        </Toggle>
+        <div class="mt-2 flex items-center space-x-2">
+          <Switch
+            checked={$landingPageSettings.header.background?.show}
+            onCheckedChange={() => {
+              hasUnsavedChanges = true;
+              if (!$landingPageSettings.header.background) {
+                $landingPageSettings.header.background = {
+                  image: '',
+                  show: true
+                };
+              } else {
+                $landingPageSettings.header.background.show = !$landingPageSettings.header.background.show;
+              }
+            }}
+          />
+          <Label class="text-gray-600">
+            {$landingPageSettings.header.background?.show
+              ? $t('settings.landing_page.background.show_background')
+              : $t('settings.landing_page.background.hide_background')}
+          </Label>
+        </div>
 
         {#if $handleOpenWidget.open && widgetKey === 'background'}
           <UploadWidget
@@ -339,14 +365,17 @@
   </Row>
 
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
-    <Column sm={4} md={4} lg={4}
-      ><SectionTitle>{$t('settings.landing_page.about.heading')}</SectionTitle>
-
-      <Toggle bind:toggled={$landingPageSettings.aboutUs.show} on:change={() => (hasUnsavedChanges = true)} size="sm">
-        <span slot="labelA" style="color: gray">{$t('settings.landing_page.hide_section')}</span>
-        <span slot="labelB" style="color: gray">{$t('settings.landing_page.show_section')}</span>
-      </Toggle></Column
-    >
+    <Column sm={4} md={4} lg={4}>
+      <SectionTitle>{$t('settings.landing_page.about.heading')}</SectionTitle>
+      <div class="flex items-center space-x-2">
+        <Switch bind:checked={$landingPageSettings.aboutUs.show} onCheckedChange={() => (hasUnsavedChanges = true)} />
+        <Label class="text-gray-600">
+          {$landingPageSettings.aboutUs.show
+            ? $t('settings.landing_page.show_section')
+            : $t('settings.landing_page.hide_section')}
+        </Label>
+      </div>
+    </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <TextField
         label={$t('settings.landing_page.about.title')}
@@ -385,12 +414,16 @@
   </Row>
 
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
-    <Column sm={4} md={4} lg={4}
-      ><SectionTitle>{$t('settings.landing_page.courses.heading')}</SectionTitle>
-      <Toggle bind:toggled={$landingPageSettings.courses.show} size="sm" on:change={() => (hasUnsavedChanges = true)}>
-        <span slot="labelA" style="color: gray">{$t('settings.landing_page.courses.hide_section')}</span>
-        <span slot="labelB" style="color: gray">{$t('settings.landing_page.courses.show_section')}</span>
-      </Toggle>
+    <Column sm={4} md={4} lg={4}>
+      <SectionTitle>{$t('settings.landing_page.courses.heading')}</SectionTitle>
+      <div class="flex items-center space-x-2">
+        <Switch bind:checked={$landingPageSettings.courses.show} onCheckedChange={() => (hasUnsavedChanges = true)} />
+        <Label class="text-gray-600">
+          {$landingPageSettings.courses.show
+            ? $t('settings.landing_page.courses.show_section')
+            : $t('settings.landing_page.courses.hide_section')}
+        </Label>
+      </div>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <TextField
@@ -419,11 +452,15 @@
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}>
       <SectionTitle>{$t('settings.landing_page.faq.heading')}</SectionTitle>
+      <div class="flex items-center space-x-2">
+        <Switch bind:checked={$landingPageSettings.faq.show} onCheckedChange={() => (hasUnsavedChanges = true)} />
 
-      <Toggle bind:toggled={$landingPageSettings.faq.show} size="sm" on:change={() => (hasUnsavedChanges = true)}>
-        <span slot="labelA" style="color: gray">{$t('settings.landing_page.faq.hide_section')}</span>
-        <span slot="labelB" style="color: gray">{$t('settings.landing_page.faq.show_section')}</span>
-      </Toggle>
+        <Label class="text-gray-600">
+          {$landingPageSettings.faq.show
+            ? $t('settings.landing_page.faq.show_section')
+            : $t('settings.landing_page.faq.hide_section')}
+        </Label>
+      </div>
     </Column>
     <Column sm={8} md={8} lg={8}>
       <TextField
@@ -496,12 +533,16 @@
   </Row>
 
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
-    <Column sm={4} md={4} lg={4}
-      ><SectionTitle>{$t('settings.landing_page.contact_us.heading')}</SectionTitle>
-      <Toggle bind:toggled={$landingPageSettings.contact.show} size="sm" on:change={() => (hasUnsavedChanges = true)}>
-        <span slot="labelA" style="color: gray">{$t('settings.landing_page.contact_us.hide_section')}</span>
-        <span slot="labelB" style="color: gray">{$t('settings.landing_page.contact_us.show_section')}</span>
-      </Toggle>
+    <Column sm={4} md={4} lg={4}>
+      <SectionTitle>{$t('settings.landing_page.contact_us.heading')}</SectionTitle>
+      <div class="flex items-center space-x-2">
+        <Switch bind:checked={$landingPageSettings.contact.show} onCheckedChange={() => (hasUnsavedChanges = true)} />
+        <Label class="text-gray-600">
+          {$landingPageSettings.contact.show
+            ? $t('settings.landing_page.contact_us.show_section')
+            : $t('settings.landing_page.contact_us.hide_section')}
+        </Label>
+      </div>
     </Column>
     <Column sm={8} md={8} lg={8}>
       <TextField
@@ -553,16 +594,19 @@
   </Row>
 
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
-    <Column sm={4} md={4} lg={4}
-      ><SectionTitle>{$t('settings.landing_page.mailing_list.heading')}</SectionTitle>
-      <Toggle
-        bind:toggled={$landingPageSettings.mailinglist.show}
-        size="sm"
-        on:change={() => (hasUnsavedChanges = true)}
-      >
-        <span slot="labelA" style="color: gray">{$t('settings.landing_page.mailing_list.hide_section')}</span>
-        <span slot="labelB" style="color: gray">{$t('settings.landing_page.mailing_list.show_section')}</span>
-      </Toggle>
+    <Column sm={4} md={4} lg={4}>
+      <SectionTitle>{$t('settings.landing_page.mailing_list.heading')}</SectionTitle>
+      <div class="flex items-center space-x-2">
+        <Switch
+          bind:checked={$landingPageSettings.mailinglist.show}
+          onCheckedChange={() => (hasUnsavedChanges = true)}
+        />
+        <Label class="text-gray-600">
+          {$landingPageSettings.mailinglist.show
+            ? $t('settings.landing_page.mailing_list.show_section')
+            : $t('settings.landing_page.mailing_list.hide_section')}
+        </Label>
+      </div>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <TextField
@@ -593,12 +637,17 @@
   </Row>
 
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
-    <Column sm={4} md={4} lg={4}
-      ><SectionTitle>{$t('settings.landing_page.custom_links.heading')}</SectionTitle>
-      <Toggle bind:toggled={$landingPageSettings.customLinks.show} size="sm">
-        <span slot="labelA" style="color: gray">{$t('settings.landing_page.custom_links.hide_links')}</span>
-        <span slot="labelB" style="color: gray">{$t('settings.landing_page.custom_links.show_links')}</span>
-      </Toggle>
+    <Column sm={4} md={4} lg={4}>
+      <SectionTitle>{$t('settings.landing_page.custom_links.heading')}</SectionTitle>
+      <div class="flex items-center space-x-2">
+        <Switch bind:checked={$landingPageSettings.customLinks.show} />
+
+        <Label class="text-gray-600">
+          {$landingPageSettings.customLinks.show
+            ? $t('settings.landing_page.custom_links.show_links')
+            : $t('settings.landing_page.custom_links.hide_links')}
+        </Label>
+      </div>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <p class="mb-4 text-sm text-gray-600">
@@ -682,12 +731,17 @@
   </Row>
 
   <Row class="flex flex-col py-7 lg:flex-row">
-    <Column sm={4} md={4} lg={4}
-      ><SectionTitle>{$t('settings.landing_page.footer.heading')}</SectionTitle>
-      <Toggle bind:toggled={$landingPageSettings.footer.show} size="sm" on:change={() => (hasUnsavedChanges = true)}>
-        <span slot="labelA" style="color: gray">{$t('settings.landing_page.footer.hide_section')}</span>
-        <span slot="labelB" style="color: gray">{$t('settings.landing_page.footer.show_section')}</span>
-      </Toggle>
+    <Column sm={4} md={4} lg={4}>
+      <SectionTitle>{$t('settings.landing_page.footer.heading')}</SectionTitle>
+      <div class="flex items-center space-x-2">
+        <Switch bind:checked={$landingPageSettings.footer.show} onCheckedChange={() => (hasUnsavedChanges = true)} />
+
+        <Label class="text-gray-600">
+          {$landingPageSettings.footer.show
+            ? $t('settings.landing_page.footer.show_section')
+            : $t('settings.landing_page.footer.hide_section')}
+        </Label>
+      </div>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
       <TextField

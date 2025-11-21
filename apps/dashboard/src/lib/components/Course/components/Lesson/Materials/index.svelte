@@ -1,9 +1,26 @@
 <script lang="ts">
   import { untrack } from 'svelte';
+  import isEmpty from 'lodash/isEmpty';
   import { writable } from 'svelte/store';
-  import Box from '$lib/components/Box/index.svelte';
-  import AddVideoToLesson from '$lib/components/Course/components/Lesson/Materials/Video/AddVideoToLesson.svelte';
-  import AddDocumentToLesson from '$lib/components/Course/components/Lesson/Materials/Document/AddDocumentToLesson.svelte';
+  import { fade } from 'svelte/transition';
+  import * as Popover from '@cio/ui/base/popover';
+
+  import TrashIcon from '@lucide/svelte/icons/trash';
+  import ListTodoIcon from '@lucide/svelte/icons/list-todo';
+  import ListChecksIcon from '@lucide/svelte/icons/list-checks';
+  import NotepadTextIcon from '@lucide/svelte/icons/notepad-text';
+  import WandSparklesIcon from '@lucide/svelte/icons/wand-sparkles';
+
+  import * as CONSTANTS from './constants';
+  import { orderedTabs } from './constants';
+  import MODES from '$lib/utils/constants/mode';
+  import { currentOrg } from '$lib/utils/store/org';
+  import type { Content } from '@cio/ui/custom/editor';
+  import { course } from '$lib/components/Course/store';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import type { LessonPage } from '$lib/utils/types';
+  import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import {
     deleteLessonVideo,
     handleUpdateLessonMaterials,
@@ -13,42 +30,27 @@
     lessonVideoUpload,
     lessonDocUpload
   } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { course } from '$lib/components/Course/store';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import { IconButton } from '$lib/components/IconButton';
-  import Modal from '$lib/components/Modal/index.svelte';
-  // import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import TabContent from '$lib/components/TabContent/index.svelte';
-  import Tabs from '$lib/components/Tabs/index.svelte';
-  // import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import MODES from '$lib/utils/constants/mode';
-  import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { lessonFallbackNote, t } from '$lib/utils/functions/translations';
-  import { currentOrg } from '$lib/utils/store/org';
-  import type { LessonPage } from '$lib/utils/types';
-  import type { TLocale } from '@cio/db/types';
-  // import { useCompletion } from 'ai/svelte';
-  // import { Popover } from 'carbon-components-svelte';
-  // import NotepadTextIcon from '@lucide/svelte/icons/notepad-text';
-  // import ListTodoIcon from '@lucide/svelte/icons/list-todo';
-  // import ListChecksIcon from '@lucide/svelte/icons/list-checks';
-  // import WandSparklesIcon from '@lucide/svelte/icons/wand-sparkles';
-  import TrashIcon from '@lucide/svelte/icons/trash';
-  import isEmpty from 'lodash/isEmpty';
-  import { fade } from 'svelte/transition';
+  import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
+  import Loader from './Loader.svelte';
+  import Box from '$lib/components/Box/index.svelte';
   import Comments from './components/Comments.svelte';
+  import Tabs from '$lib/components/Tabs/index.svelte';
+  import Modal from '$lib/components/Modal/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
+  import TextField from '$lib/components/Form/TextField.svelte';
   import ComponentNote from './components/ComponentNote.svelte';
   import ComponentSlide from './components/ComponentSlide.svelte';
   import ComponentVideo from './components/ComponentVideo.svelte';
+  import TabContent from '$lib/components/TabContent/index.svelte';
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import ComponentDocument from './components/ComponentDocument.svelte';
-  import * as CONSTANTS from './constants';
-  import { orderedTabs } from './constants';
-  import Loader from './Loader.svelte';
+  import AddVideoToLesson from '$lib/components/Course/components/Lesson/Materials/Video/AddVideoToLesson.svelte';
+  import AddDocumentToLesson from '$lib/components/Course/components/Lesson/Materials/Document/AddDocumentToLesson.svelte';
+  import type { TLocale } from '@cio/db/types';
 
   interface Props {
     mode?: any;
@@ -68,30 +70,19 @@
     toggleMode = () => {}
   }: Props = $props();
 
-  // let content = $state<EdraEditorProps['Content']>();
-  // let editor = $state<EdraEditorProps['Editor']>();
-  // function onUpdate() {
-  //   content = editor?.getHTML();
-  //   console.log('content updated:', content);
-  //   if (mode === MODES.view) return;
-
-  //   $lessonByTranslation[lessonId][$lesson.locale] = content;
-
-  //   try {
-  //     localStorage.setItem(`lesson-${lessonId}-${$lesson.locale}`, content);
-  //   } catch (error) {}
-  //   $isLessonDirty = true;
-  // }
-
+  let openPopover = $state<boolean>(false);
+  let aiButtonClass =
+    'flex items-center px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2';
   let localeExists: Record<string, boolean> = {};
   // let prevContent = '';
   let timeoutId: NodeJS.Timeout;
   let errors: Record<string, string> = {};
   // let editorWindowRef: Window | undefined = $state();
+  // let editorInstance = $state<Editor>(); // Add proper typing
   ('flex items-center gap-2 px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2');
 
+  let isLoading = writable(false);
   const lessonTitle = $derived($lesson.title);
-
   const tabs = $derived.by(() => {
     const ordered = orderedTabs(CONSTANTS.tabs, $course.metadata?.lessonTabsOrder);
     const content = $lessonByTranslation[lessonId]?.[$lesson.locale] || '';
@@ -115,8 +106,23 @@
     });
   });
   const componentsToRender = $derived(getComponentOrder(tabs));
-
   let currentTab = $derived(tabs[0].value);
+
+  function onEditorChange(content: Content) {
+    console.log('content updated:', content);
+
+    if (mode === MODES.view) return;
+
+    $lessonByTranslation[lessonId][$lesson.locale] = `${content}`;
+
+    try {
+      localStorage.setItem(`lesson-${lessonId}-${$lesson.locale}`, `${content}`);
+    } catch (error) {
+      console.error('Error saving lesson note to localStorage', error);
+    }
+
+    $isLessonDirty = true;
+  }
 
   const onChange = (tab) => {
     return () => {
@@ -212,33 +218,38 @@
     $lessonVideoUpload.isModalOpen = true;
   };
 
-  let isLoading = writable(false);
   // const { input, handleSubmit, completion, isLoading } = useCompletion({
   //   api: '/api/completion'
   // });
 
   // function updateNoteByCompletion(completion: string) {
-  //   if (!completion) return;
-
-  //   if ($lessonByTranslation[lessonId]) {
-  //     $lessonByTranslation[lessonId][$lesson.locale] = `${prevContent}${completion}`;
+  // if (!completion) return;
+  // if ($lessonByTranslation[lessonId]) {
+  //   $lessonByTranslation[lessonId][$lesson.locale] = `${prevContent}${completion}`;
+  // }
+  // autoSave($lesson.materials, $lessonByTranslation[lessonId], false, lessonId);
+  // if (editorInstance && editorInstance.view) {
+  //   try {
+  //     // For TipTap editor, we can use the editor's commands to scroll
+  //     const { view } = editorInstance;
+  //     const { state } = view;
+  //     const endPos = state.doc.content.size;
+  //     // Move cursor to end and scroll into view
+  //     editorInstance.commands.setTextSelection(endPos);
+  //     editorInstance.commands.scrollIntoView();
+  //     // Alternative: Focus the editor
+  //     editorInstance.commands.focus();
+  //   } catch (error) {
+  //     console.warn('Error scrolling editor:', error);
   //   }
-
-  //   autoSave($lesson.materials, $lessonByTranslation[lessonId], false, lessonId);
-
-  //   if (editorWindowRef) {
-  //     const tmceBody = editorWindowRef?.document?.querySelector('body');
-  //     if (typeof tmceBody?.scrollHeight === 'number') {
-  //       editorWindowRef?.scrollTo(0, tmceBody.scrollHeight);
-  //     }
-  //   }
+  // }
   // }
 
   function callAI(_type = '') {
     // prevContent = $lessonByTranslation[lessonId]?.[$lesson.locale] || '';
     // const _lesson = $lessons.find((les) => les.id === $lesson.id);
     // $input = JSON.stringify({
-    //   type,
+    //   _type,
     //   lessonTitle: _lesson?.title || '',
     //   courseTitle: $course.title,
     //   locale: $lesson.locale
@@ -375,27 +386,24 @@
         <TabContent value={getValue('course.navItem.lessons.materials.tabs.note.title')} index={currentTab}>
           <div class="flex justify-end gap-1">
             <!-- Update this when ai-sdk is updated -->
-            <!-- <div bind:this={aiButtonRef} class="hidden flex-row-reverse">
-              <PrimaryButton
-                className="flex items-center relative"
-                onClick={() => {
-                  openPopover = !openPopover;
-                }}
-                isLoading={$isLoading}
-                isDisabled={$isLoading}
-                variant={VARIANTS.OUTLINED}
-                disableScale
-              >
-                <WandSparklesIcon size={16} />
-                AI
-                <Popover
-                  caret
-                  align="left"
-                  bind:open={openPopover}
-                  on:click:outside={({ detail }) => {
-                    openPopover = aiButtonRef?.contains(detail.target) || false;
-                  }}
-                >
+            <div class="hidden flex-row-reverse">
+              <Popover.Root>
+                <Popover.Trigger>
+                  <PrimaryButton
+                    className="flex items-center relative"
+                    onClick={() => {
+                      openPopover = !openPopover;
+                    }}
+                    isLoading={$isLoading}
+                    isDisabled={$isLoading}
+                    variant={VARIANTS.OUTLINED}
+                    disableScale
+                  >
+                    <WandSparklesIcon size={16} />
+                    AI
+                  </PrimaryButton>
+                </Popover.Trigger>
+                <Popover.Content align="start" class="w-80">
                   <div class="p-2">
                     <button class={aiButtonClass} onclick={() => callAI('outline')}>
                       <ListChecksIcon size={16} />
@@ -410,48 +418,23 @@
                       {$t('course.navItem.lessons.materials.tabs.note.ai.activities')}
                     </button>
                   </div>
-                </Popover>
-              </PrimaryButton>
-            </div> -->
+                </Popover.Content>
+              </Popover.Root>
+            </div>
           </div>
 
           <div class="mt-5 h-[60vh]">
-            <!-- <div class="bg-background z-50 mt-12 size-full max-w-5xl rounded-md border border-dashed">
-              {#if editor && !editor.isDestroyed}
-                <EdraToolBar
-                  class="bg-secondary/50 flex w-full items-center overflow-x-auto border-b border-dashed p-0.5"
-                  {editor}
-                />
-              {:else}
-                <div>
-                  Debug: Editor state - {editor ? 'exists' : 'undefined'}, destroyed: {editor?.isDestroyed || 'N/A'}
-                </div>
-              {/if}
-              <EdraEditor
-                bind:editor
-                content={editorValue}
-                autofocus={true}
-                class="h-[300px] outline-none"
-                {onUpdate}
-              />
-            </div> -->
-            <!-- <TextEditor
-              id={lessonId}
-              bind:editorWindowRef
-              value={editorValue}
-              onChange={(html) => {
-                if (mode === MODES.view) return;
-
-                $lessonByTranslation[lessonId][$lesson.locale] = html;
-
-                try {
-                  // Backup locale of lesson content
-                  localStorage.setItem(`lesson-${lessonId}-${$lesson.locale}`, html);
-                } catch (error) {}
-                $isLessonDirty = true;
-              }}
+            <TextEditor
+              content={_editorValue}
+              onChange={(content) => onEditorChange(content)}
+              onReady={() =>
+                // editor
+                {
+                  // editorInstance = editor;
+                  // editorWindowRef = editor.view.dom.ownerDocument.defaultView;
+                }}
               placeholder={$t('course.navItem.lessons.materials.tabs.note.placeholder')}
-            /> -->
+            />
           </div>
         </TabContent>
 

@@ -1,16 +1,20 @@
 <script lang="ts">
-  import { Search } from 'carbon-components-svelte';
+  import { untrack } from 'svelte';
+  import { Input } from '@cio/ui/base/input';
+  import SearchIcon from '@lucide/svelte/icons/search';
+
   import Tabs from '$lib/components/Tabs/index.svelte';
-  import TabContent from '$lib/components/TabContent/index.svelte';
   import Courses from '$lib/components/Courses/index.svelte';
   import { fetchCourses } from '$lib/utils/services/courses';
+  import TabContent from '$lib/components/TabContent/index.svelte';
+
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
-  import { courses, courseMetaDeta, coursesComplete, coursesInProgress } from '$lib/components/Courses/store';
-  import { untrack } from 'svelte';
   import { t } from '$lib/utils/functions/translations';
+  import { courses, courseMetaDeta, coursesComplete, coursesInProgress } from '$lib/components/Courses/store';
 
   let hasFetched = false;
+  let searchValue = $state('');
 
   function onChange(tab) {
     return () => (currentTab = tab);
@@ -60,8 +64,9 @@
 
 <section class="mx-auto max-w-6xl">
   <div class="m-2 md:m-5">
-    <div role="searchbox" class=" w-full bg-gray-100 md:w-[60%] lg:w-[30%]">
-      <Search placeholder={$t('my_learning.search')} class="dark:text-black" />
+    <div role="searchbox" class="relative w-full md:w-[60%] lg:w-[30%]">
+      <Input type="text" placeholder={$t('my_learning.search')} bind:value={searchValue} />
+      <SearchIcon class="text-muted-foreground absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2" />
     </div>
     <h1 class="my-4 text-3xl font-semibold">{$t('my_learning.heading')}</h1>
     <Tabs {tabs} {currentTab} {onChange}>

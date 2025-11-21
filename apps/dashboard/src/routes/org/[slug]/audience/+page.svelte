@@ -19,11 +19,11 @@
   <title>Audience - ClassroomIO</title>
 </svelte:head>
 
-<section class="mx-auto w-full max-w-4xl">
+<section class="mx-auto w-full max-w-6xl">
   <div class="px-5 py-10">
     <div class="mb-10 flex items-center justify-between">
       <div class="flex items-end">
-        <h1 class="m-0 text-2xl font-bold md:text-3xl dark:text-white">{$t('audience.title')}</h1>
+        <h1 class="m-0 text-2xl md:text-3xl dark:text-white">{$t('audience.title')}</h1>
         {#if $currentOrgPlan?.plan_name !== PLAN.ENTERPRISE}
           <span class="ml-2">
             ({$orgAudience.length} / {$currentOrgMaxAudience})

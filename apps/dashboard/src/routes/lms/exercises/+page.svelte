@@ -129,7 +129,7 @@
 <section class="mx-auto w-full max-w-6xl">
   <div class="p-5">
     <div class="mb-10 flex items-center justify-between">
-      <h1 class="text-3xl font-bold dark:text-white">{$t('exercises.heading')}</h1>
+      <h1 class="text-3xl dark:text-white">{$t('exercises.heading')}</h1>
     </div>
 
     <div>
@@ -139,7 +139,7 @@
             class="mr-3 h-[70vh] min-w-[355px] max-w-[355px] overflow-hidden rounded-md border border-gray-50 bg-gray-100 p-3 dark:border-neutral-700 dark:bg-black"
           >
             <div class="mb-2 flex items-center gap-2">
-              <p class="ml-2 font-bold dark:text-white">{title}</p>
+              <p class="ml-2 dark:text-white">{title}</p>
               <Chip value={items.length} {className} />
             </div>
             <div class="h-full overflow-y-auto pb-3 pr-2">
@@ -148,7 +148,7 @@
                   <a class="text-primary-600 mb-2 flex w-full cursor-pointer items-center" href={item.courseURL}>
                     <p class="text-xs">{item.courseTitle}</p>
                   </a>
-                  <a class="text-md font-bold text-black dark:text-white" href={item.exerciseURL}>
+                  <a class="text-md text-black dark:text-white" href={item.exerciseURL}>
                     {#if id === 3}
                       ({item.grade}) -
                     {/if}

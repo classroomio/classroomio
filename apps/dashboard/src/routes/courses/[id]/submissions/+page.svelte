@@ -1,29 +1,31 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import Chip from '$lib/components/Chip/index.svelte';
-  import MarkExerciseModal from '$lib/components/Course/components/Lesson/Exercise/MarkExerciseModal.svelte';
-  import { formatAnswers } from '$lib/components/Course/function.js';
-  import { course } from '$lib/components/Course/store';
-  import { CourseContainer } from '$lib/components/CourseContainer';
-  import { PageBody, PageNav } from '$lib/components/Page';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import formatDate from '$lib/utils/functions/formatDate';
-  import isSubmissionEarly from '$lib/utils/functions/isSubmissionEarly';
-  import { t } from '$lib/utils/functions/translations';
-  import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/notification';
+  import { flip } from 'svelte/animate';
+  import { goto } from '$app/navigation';
+  import { dndzone } from 'svelte-dnd-action';
+
   import {
     deleteSubmission,
     fetchSubmissions,
     updateQuestionAnswer,
     updateSubmission
   } from '$lib/utils/services/submissions';
+  import { course } from '$lib/components/Course/store';
+  import { t } from '$lib/utils/functions/translations';
+  import formatDate from '$lib/utils/functions/formatDate';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { formatAnswers } from '$lib/components/Course/function.js';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
+  import isSubmissionEarly from '$lib/utils/functions/isSubmissionEarly';
+  import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/notification';
   import type { SubmissionIdData, SubmissionItem, SubmissionSection } from '$lib/utils/types/submission';
-  import { SkeletonPlaceholder } from 'carbon-components-svelte';
-  import { dndzone } from 'svelte-dnd-action';
-  import { flip } from 'svelte/animate';
+
+  import { Skeleton } from '@cio/ui/base/skeleton';
+  import Chip from '$lib/components/Chip/index.svelte';
+  import { PageBody, PageNav } from '$lib/components/Page';
+  import { CourseContainer } from '$lib/components/CourseContainer';
+  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import MarkExerciseModal from '$lib/components/Course/components/Lesson/Exercise/MarkExerciseModal.svelte';
 
   let { data = $bindable() } = $props();
   const { courseId } = data;
@@ -374,12 +376,12 @@
           >
             <div class="mb-2 flex items-center">
               <Chip value={items.length} className="bg-set dark:bg-neutral-800" />
-              <p class="ml-2 font-bold dark:text-white">{title}</p>
+              <p class="ml-2 dark:text-white">{title}</p>
             </div>
             {#if fetching}
-              <SkeletonPlaceholder style="width: 100%; height: 170px;" class="my-2 rounded-md" />
-              <SkeletonPlaceholder style="width: 100%; height: 170px;" class="my-2 rounded-md" />
-              <SkeletonPlaceholder style="width: 100%; height: 170px;" class="my-2 rounded-md" />
+              <Skeleton class="my-2 h-[170px] w-full rounded-md" />
+              <Skeleton class="my-2 h-[170px] w-full rounded-md" />
+              <Skeleton class="my-2 h-[170px] w-full rounded-md" />
             {:else}
               <div
                 class="content mb-3 overflow-y-auto pr-2"
@@ -407,7 +409,7 @@
                         {item.student.username}
                       </p>
                     </a>
-                    <a class="text-primary-700 text-md font-bold" href="{page.url.pathname}?submissionId={item.id}">
+                    <a class="text-primary-700 text-md" href="{page.url.pathname}?submissionId={item.id}">
                       {item.exercise.title}
                     </a>
                     <a

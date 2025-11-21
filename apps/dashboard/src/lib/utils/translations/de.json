@@ -1627,5 +1627,11 @@
     "unsaved_changes": {
       "message": "Sie haben nicht gerettete Änderungen. Bist du sicher, dass du gehen willst?"
     }
+  },
+  "new_course_modal": {
+    "live_class_label": "Live-Klasse",
+    "live_class_subtitle": "Dieser Kurstyp ist ideal für Bootcamps, bei denen der Unterricht zeitbasiert ist und Anwesenheit und Benotung erforderlich sind",
+    "self_paced_label": "Eigenständig",
+    "self_paced_subtitle": "Dieser Kurstyp ist ideal für Kurse, bei denen die Studierenden den Unterricht in ihrem eigenen Tempo ohne Lehrer absolvieren können"
   }
 }

@@ -1,13 +1,16 @@
 <script lang="ts">
+  import { Label } from '@cio/ui/base/label';
+  import { Switch } from '@cio/ui/base/switch';
   import SaveIcon from '@lucide/svelte/icons/save';
   import TrashIcon from '@lucide/svelte/icons/trash';
-  import { Toggle } from 'carbon-components-svelte';
+
+  import { t } from '$lib/utils/functions/translations';
+  import { uploadAvatar } from '$lib/utils/services/courses';
+
   import { IconButton } from '$lib/components/IconButton';
-  import UploadImage from '$lib/components/UploadImage/index.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import { uploadAvatar } from '$lib/utils/services/courses';
-  import { t } from '$lib/utils/functions/translations';
+  import UploadImage from '$lib/components/UploadImage/index.svelte';
 
   let { courseId, reviews = $bindable([]), review = $bindable({}), errors = {}, onExpand = () => {} } = $props();
 
@@ -53,10 +56,10 @@
     errorMessage={errors.description}
     isAIEnabled={true}
     initAIPrompt="Generate a 20 word review from a student saying good things about me teaching"
-    aiAlignPopover="top-right"
+    aiAlignPopover="end"
   />
 
-  <div class="mt-2 flex w-full items-center justify-between">
+  <div class="mt-2 flex w-full items-end justify-between">
     <!-- Rating -->
     <TextField
       className="mt-2 w-20"
@@ -73,12 +76,12 @@
     />
 
     <!-- Toggle -->
-    <div class="w-24">
-      <Toggle
-        labelText={$t('course.navItem.landing_page.editor.reviews_form.hide')}
-        size="sm"
-        bind:toggled={review.hide}
-      />
+    <div class="flex w-24 flex-col items-center gap-2 space-x-2">
+      <Switch bind:checked={review.hide} />
+
+      <Label class="text-sm">
+        {review.hide ? $t('settings.landing_page.show_section') : $t('settings.landing_page.hide_section')}
+      </Label>
     </div>
   </div>
 

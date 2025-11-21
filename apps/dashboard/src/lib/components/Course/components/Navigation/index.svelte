@@ -1,24 +1,39 @@
 <script lang="ts">
-  import { onDestroy, onMount } from 'svelte';
-  import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import { browser } from '$app/environment';
-  import TextChip from '$lib/components/Chip/Text.svelte';
+  import { goto } from '$app/navigation';
+  import Plus from '@lucide/svelte/icons/plus';
+  import * as Sidebar from '@cio/ui/base/sidebar';
   import LockIcon from '@lucide/svelte/icons/lock';
-  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
-  import NavExpandable from './NavExpandable.svelte';
-  import { getNavItemRoute, getLessonsRoute, getLectureNo } from '$lib/components/Course/function';
-  import { lessons, lessonSections } from '../Lesson/store/lessons';
-  import { course } from '$lib/components/Course/store';
-  import { NavClasses } from '$lib/utils/constants/reusableClass';
-  import { isMobile } from '$lib/utils/store/useMobile';
-  import { sideBar } from '$lib/components/Org/store';
+  import * as Collapsible from '@cio/ui/base/collapsible';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+
+  import UsersIcon from '@lucide/svelte/icons/users';
+  import AwardIcon from '@lucide/svelte/icons/award';
+  import PanelTop from '@lucide/svelte/icons/panel-top';
+  import SettingsIcon from '@lucide/svelte/icons/settings';
+  import MegaphoneIcon from '@lucide/svelte/icons/megaphone';
+  import ChartLineIcon from '@lucide/svelte/icons/chart-line';
+  import BookCheckIcon from '@lucide/svelte/icons/book-check';
+  import ScrollTextIcon from '@lucide/svelte/icons/scroll-text';
+  import SquareLibrary from '@lucide/svelte/icons/square-library';
+  import BookOpenCheck from '@lucide/svelte/icons/book-open-check';
+  import TableOfContentsIcon from '@lucide/svelte/icons/table-of-contents';
+
+  import { NAV_IDS } from './constants';
   import { profile } from '$lib/utils/store/user';
+  import { sideBar } from '$lib/components/Org/store';
+  import { course } from '$lib/components/Course/store';
+  import { isMobile } from '$lib/utils/store/useMobile';
+  import { t } from '$lib/utils/functions/translations';
+  import { handleAddLessonWidget } from '../Lesson/store';
   import { getIsLessonComplete } from '../Lesson/functions';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
-  import { t } from '$lib/utils/functions/translations';
-  import { COURSE_TYPE, COURSE_VERSION, type Lesson } from '$lib/utils/types';
-  import { NAV_IDS } from './constants';
+  import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
+  import { lessons, lessonSections } from '../Lesson/store/lessons';
+  import { getNavItemRoute, getLessonsRoute, getLectureNo } from '$lib/components/Course/function';
+
+  import TextChip from '$lib/components/Chip/Text.svelte';
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
 
   interface Props {
     path: string;
@@ -27,356 +42,366 @@
 
   let { path, isStudent = false }: Props = $props();
 
-  interface Section {
-    id: string;
-    order: number;
-    label: string;
-    lessons: Lesson[];
-    isExpanded?: boolean;
-  }
-  interface NavItem {
-    id: string;
-    label: string;
-    to: string;
-    hideSortIcon: boolean;
-    isLesson?: boolean;
-    isPaidFeature: boolean;
-    isExpanded?: boolean;
-    sections?: Section[];
-    show?: () => boolean;
-  }
-
-  let resize = $state(false);
-  let isDragging = false;
-  let startX: number;
-  let initialWidth: number;
-  let sidebarRef: HTMLElement | undefined = $state();
-  let menuContentRef: HTMLUListElement | undefined = $state();
-
-  const navItems: NavItem[] = $derived([
-    {
-      id: NAV_IDS.NEWS_FEED,
-      label: $t('course.navItems.nav_news_feed'),
-      to: getNavItemRoute($course.id),
-      hideSortIcon: true,
-      isPaidFeature: false,
-      show() {
-        return isStudent ? $currentOrg.customization.course.newsfeed : true;
-      }
-    },
-    {
-      id: NAV_IDS.LESSONS,
-      label: $t('course.navItems.nav_content'),
-      to: getLessonsRoute($course.id),
-      hideSortIcon: false,
-      isPaidFeature: false,
-      isLesson: true,
-      sections: $lessonSections.map((section) => ({
-        ...section,
-        label: section.title,
-        isExpanded: true
-      })),
-      isExpanded: isStudent ? true : page.url.pathname.includes('/lessons')
-    },
-    {
-      id: NAV_IDS.ANALYTICS,
-      label: $t('course.navItems.nav_analytics'),
-      to: getNavItemRoute($course.id, 'analytics'),
-      isPaidFeature: false,
-      hideSortIcon: true,
-      show() {
-        return !isStudent;
-      }
-    },
-    {
-      id: NAV_IDS.ATTENDANCE,
-      label: $t('course.navItems.nav_attendance'),
-      to: getNavItemRoute($course.id, 'attendance'),
-      isPaidFeature: false,
-      hideSortIcon: true,
-      show() {
-        if ($course.type !== COURSE_TYPE.LIVE_CLASS) return false;
-
-        return true;
-      }
-    },
-    {
-      id: NAV_IDS.SUBMISSIONS,
-      label: $t('course.navItems.nav_submissions'),
-      to: getNavItemRoute($course.id, 'submissions'),
-      hideSortIcon: true,
-      isPaidFeature: false,
-      show() {
-        if (isStudent) return false;
-
-        return true;
-      }
-    },
-    {
-      id: NAV_IDS.MARKS,
-      label: $t('course.navItems.nav_marks'),
-      to: getNavItemRoute($course.id, 'marks'),
-      isPaidFeature: false,
-      hideSortIcon: true,
-      show() {
-        if ($course.type == COURSE_TYPE.LIVE_CLASS) {
-          return isStudent ? $currentOrg.customization.course.grading : true;
-        }
-
-        return false;
-      }
-    },
-    {
-      id: NAV_IDS.CERTIFICATES,
-      label: $t('course.navItems.nav_certificates'),
-      to: getNavItemRoute($course.id, 'certificates'),
-      hideSortIcon: true,
-      isPaidFeature: true,
-      show() {
-        // Dont show students if org on free plan
-        if (isStudent && $isFreePlan) {
+  const navItems = $derived(
+    [
+      {
+        id: NAV_IDS.NEWS_FEED,
+        title: $t('course.navItems.nav_news_feed'),
+        url: getNavItemRoute($course.id),
+        isActive: (path || page.url.pathname) === getNavItemRoute($course.id),
+        show() {
+          return isStudent ? $currentOrg.customization.course.newsfeed : true;
+        },
+        icon: getNavIcon(NAV_IDS.NEWS_FEED)
+      },
+      {
+        id: NAV_IDS.LESSONS,
+        title: $t('course.navItems.nav_content'),
+        url: getLessonsRoute($course.id),
+        isActive:
+          (path || page.url.pathname).includes('/lessons') ||
+          (path || page.url.pathname) === getLessonsRoute($course.id),
+        isLesson: true,
+        icon: getNavIcon(NAV_IDS.LESSONS),
+        items:
+          $course.version === COURSE_VERSION.V1
+            ? ($lessons || []).map((lesson, index) => ({
+                title: lesson.title,
+                url: getLessonsRoute($course.id, lesson.id),
+                lesson,
+                index,
+                isV1: true
+              }))
+            : $lessonSections.flatMap((section) =>
+                section.lessons.map((lesson) => ({
+                  title: lesson.title,
+                  url: getLessonsRoute($course.id, lesson.id),
+                  lesson,
+                  sectionTitle: section.title,
+                  isV1: false
+                }))
+              )
+      },
+      {
+        id: NAV_IDS.ANALYTICS,
+        title: $t('course.navItems.nav_analytics'),
+        url: getNavItemRoute($course.id, 'analytics'),
+        isActive: (path || page.url.pathname) === getNavItemRoute($course.id, 'analytics'),
+        show() {
+          return !isStudent;
+        },
+        icon: getNavIcon(NAV_IDS.ANALYTICS)
+      },
+      {
+        id: NAV_IDS.ATTENDANCE,
+        title: $t('course.navItems.nav_attendance'),
+        url: getNavItemRoute($course.id, 'attendance'),
+        isActive: (path || page.url.pathname) === getNavItemRoute($course.id, 'attendance'),
+        show() {
+          if ($course.type !== COURSE_TYPE.LIVE_CLASS) return false;
+          return true;
+        },
+        icon: getNavIcon(NAV_IDS.ATTENDANCE)
+      },
+      {
+        id: NAV_IDS.SUBMISSIONS,
+        title: $t('course.navItems.nav_submissions'),
+        url: getNavItemRoute($course.id, 'submissions'),
+        isActive: (path || page.url.pathname) === getNavItemRoute($course.id, 'submissions'),
+        show() {
+          if (isStudent) return false;
+          return true;
+        },
+        icon: getNavIcon(NAV_IDS.SUBMISSIONS)
+      },
+      {
+        id: NAV_IDS.MARKS,
+        title: $t('course.navItems.nav_marks'),
+        url: getNavItemRoute($course.id, 'marks'),
+        isActive: (path || page.url.pathname) === getNavItemRoute($course.id, 'marks'),
+        show() {
+          if ($course.type == COURSE_TYPE.LIVE_CLASS) {
+            return isStudent ? $currentOrg.customization.course.grading : true;
+          }
           return false;
-        }
-        return true;
+        },
+        icon: getNavIcon(NAV_IDS.MARKS)
+      },
+      {
+        id: NAV_IDS.CERTIFICATES,
+        title: $t('course.navItems.nav_certificates'),
+        url: getNavItemRoute($course.id, 'certificates'),
+        isActive: (path || page.url.pathname) === getNavItemRoute($course.id, 'certificates'),
+        show() {
+          if (isStudent && $isFreePlan) {
+            return false;
+          }
+          return true;
+        },
+        icon: getNavIcon(NAV_IDS.CERTIFICATES)
+      },
+      {
+        id: NAV_IDS.LANDING_PAGE,
+        title: $t('course.navItems.nav_landing_page'),
+        url: getNavItemRoute($course.id, 'landingpage'),
+        isActive: (path || page.url.pathname) === getNavItemRoute($course.id, 'landingpage'),
+        show() {
+          return !isStudent;
+        },
+        icon: getNavIcon(NAV_IDS.LANDING_PAGE)
+      },
+      {
+        id: NAV_IDS.PEOPLE,
+        title: $t('course.navItems.nav_people'),
+        url: getNavItemRoute($course.id, 'people'),
+        isActive: (path || page.url.pathname) === getNavItemRoute($course.id, 'people'),
+        show() {
+          return !isStudent;
+        },
+        icon: getNavIcon(NAV_IDS.PEOPLE)
+      },
+      {
+        id: NAV_IDS.SETTINGS,
+        title: $t('course.navItems.nav_settings'),
+        url: getNavItemRoute($course.id, 'settings'),
+        isActive: (path || page.url.pathname) === getNavItemRoute($course.id, 'settings'),
+        show() {
+          return !isStudent;
+        },
+        icon: getNavIcon(NAV_IDS.SETTINGS)
       }
-    },
-    {
-      id: NAV_IDS.LANDING_PAGE,
-      label: $t('course.navItems.nav_landing_page'),
-      to: getNavItemRoute($course.id, 'landingpage'),
-      hideSortIcon: true,
-      isPaidFeature: false,
-      show() {
-        return !isStudent;
-      }
-    },
-    {
-      id: NAV_IDS.PEOPLE,
-      label: $t('course.navItems.nav_people'),
-      to: getNavItemRoute($course.id, 'people'),
-      isPaidFeature: false,
-      hideSortIcon: true,
-      show() {
-        return !isStudent;
-      }
-    },
-    {
-      id: NAV_IDS.SETTINGS,
-      label: $t('course.navItems.nav_settings'),
-      to: getNavItemRoute($course.id, 'settings'),
-      hideSortIcon: true,
-      isPaidFeature: false,
-      show() {
-        return !isStudent;
-      }
-    }
-  ]);
+    ].filter((item) => !item.show || item.show())
+  );
 
-  const toggleSidebar = (defaultValue?: boolean) => {
-    $sideBar.hidden = defaultValue ?? !$sideBar.hidden;
-  };
-  const toggleSidebarOnMobile = () => $isMobile && toggleSidebar();
+  function addLesson(isSection: boolean, id: string) {
+    goto('/courses/' + $course.id + '/lessons');
+    $handleAddLessonWidget.open = true;
 
-  function handleMainGroupClick(href: string) {
-    return () => {
-      goto(href);
-      toggleSidebarOnMobile();
-    };
-  }
+    if ($course.version === COURSE_VERSION.V2) {
+      $handleAddLessonWidget.isSection = isSection ? false : true;
 
-  function handleCursor(event: MouseEvent) {
-    if (!resize && sidebarRef) {
-      const isNearLeftBorder = event.clientX - sidebarRef.getBoundingClientRect().left < 8;
-      const isNearRightBorder = sidebarRef.getBoundingClientRect().right - event.clientX < 8;
-
-      if (isNearLeftBorder || isNearRightBorder) {
-        sidebarRef.style.cursor = 'ew-resize';
-      } else {
-        sidebarRef.style.cursor = 'auto';
-      }
-    }
-  }
-
-  function startDragging(event: MouseEvent) {
-    if (event.button === 0 && sidebarRef) {
-      event.preventDefault();
-
-      const isNearRightBorder = sidebarRef.getBoundingClientRect().right - event.clientX < 8;
-      const isNearLeftBorder = event.clientX - sidebarRef.getBoundingClientRect().left < 8;
-
-      if ((isNearRightBorder || isNearLeftBorder) && event.clientX >= 0 && event.clientX <= window.innerWidth) {
-        isDragging = true;
-        resize = true;
-        startX = event.clientX;
-        initialWidth = parseInt(getComputedStyle(sidebarRef).width, 10);
+      if (isSection) {
+        $handleAddLessonWidget.id = id;
       }
     }
   }
 
-  function stopDragging() {
-    isDragging = false;
-    resize = false;
-  }
+  const toggleSidebarOnMobile = () => $isMobile && ($sideBar.hidden = !$sideBar.hidden);
 
-  function dragSidebar(event: MouseEvent) {
-    if (!(window.innerWidth >= 1024)) return;
-    if (!isDragging || !sidebarRef || !menuContentRef) return;
+  function getNavIcon(id: string) {
+    if (!id) return null;
 
-    const deltaX = event.clientX - startX;
-    let newWidth = initialWidth + deltaX;
-
-    if (newWidth < 150) {
-      sidebarRef.style.width = '0';
-      menuContentRef.style.display = 'none';
-      $sideBar.hidden = true;
-      isDragging = false;
-      resize = false;
-    } else if (newWidth > window.innerWidth / 3 && window.innerWidth >= 1280) {
-      sidebarRef.style.width = '40vw';
-    } else if (newWidth > window.innerWidth / 4 && window.innerWidth < 1280) {
-      sidebarRef.style.width = '28vw';
-    } else {
-      sidebarRef.style.width = newWidth + 'px';
-      menuContentRef.style.display = 'block';
-    }
-  }
-
-  onMount(() => {
-    if ($isMobile || !sidebarRef) return;
-
-    sidebarRef.addEventListener('mousedown', startDragging);
-    document.addEventListener('mousemove', dragSidebar);
-    document.addEventListener('mouseup', stopDragging);
-    document.addEventListener('mousemove', handleCursor);
-    toggleSidebar(false);
-  });
-
-  onDestroy(() => {
-    if (!browser) {
-      return;
+    if (id === NAV_IDS.SECTION) {
+      return TableOfContentsIcon;
+    } else if (id === NAV_IDS.NEWS_FEED) {
+      return MegaphoneIcon;
+    } else if (id === NAV_IDS.LESSONS) {
+      return ScrollTextIcon;
+    } else if (id === NAV_IDS.ATTENDANCE) {
+      return BookOpenCheck;
+    } else if (id === NAV_IDS.SUBMISSIONS) {
+      return SquareLibrary;
+    } else if (id === NAV_IDS.MARKS) {
+      return BookCheckIcon;
+    } else if (id === NAV_IDS.PEOPLE) {
+      return UsersIcon;
+    } else if (id === NAV_IDS.ANALYTICS) {
+      return ChartLineIcon;
+    } else if (id === NAV_IDS.LANDING_PAGE) {
+      return PanelTop;
+    } else if (id === NAV_IDS.CERTIFICATES) {
+      return AwardIcon;
+    } else if (id === NAV_IDS.SETTINGS) {
+      return SettingsIcon;
     }
 
-    if ($isMobile || !sidebarRef) return;
-
-    sidebarRef.removeEventListener('mousedown', startDragging);
-    document.removeEventListener('mousemove', dragSidebar);
-    document.removeEventListener('mouseup', stopDragging);
-    document.removeEventListener('mousemove', handleCursor);
-  });
+    return null;
+  }
 </script>
 
-<aside
-  class={`
-  ${$sideBar.hidden ? 'absolute z-[40] -translate-x-[100%]' : 'absolute z-[40] translate-x-0 md:relative'}
-    h-[calc(100vh-48px)] w-[90vw] bg-gray-100 transition md:w-[300px] lg:w-[350px] dark:bg-black 
-  
-  ${
-    resize ? 'border-r-8 border-r-blue-500' : 'dark:border-r-neutral-600'
-  } border-r-1 overflow-y-auto border border-b-0 border-l-0 border-t-0`}
-  style={$sideBar.hidden === true ? 'width:0' : 'width:300px'}
-  bind:this={sidebarRef}
->
-  <div class="flex flex-col">
-    <ul class="sidebar-content my-5" bind:this={menuContentRef} style={$sideBar.hidden === true ? '' : 'display:block'}>
-      {#each navItems as navItem}
-        {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show())}
-          <NavExpandable
-            id={navItem.id}
-            name={navItem.id}
-            label={navItem.label}
-            handleClick={handleMainGroupClick(navItem.to)}
-            isGroupActive={(path || page.url.pathname) === navItem.to}
-            total={navItem.isLesson ? ($lessons || []).length : 0}
-            isLoading={!$course.id}
-            isLesson={navItem.isLesson}
-            isPaidFeature={navItem.isPaidFeature}
-            isExpanded={navItem.isExpanded}
-            {isStudent}
-          >
-            {#if $course.version === COURSE_VERSION.V1}
-              {#each $lessons as item, index}
-                <a
-                  class="mb-2 w-[95%] pl-7 text-[0.80rem] text-black dark:text-white {isStudent && !item.is_unlocked
-                    ? 'cursor-not-allowed'
-                    : ''}"
-                  href={isStudent && !item.is_unlocked ? page.url.pathname : getLessonsRoute($course.id, item.id)}
-                  onclick={toggleSidebarOnMobile}
-                  aria-disabled={!item.is_unlocked}
-                  title={item.title}
-                >
-                  <div
-                    class="flex items-center px-4 py-2 {NavClasses.item} {(path || page.url.pathname).includes(
-                      item.id
-                    ) && NavClasses.active}"
-                  >
-                    <TextChip
-                      value={getLectureNo(index + 1)}
-                      className="bg-primary-200 text-primary-600 text-xs mr-2"
-                      size="sm"
-                      shape="rounded-full"
-                    />
-                    <span class="line-clamp-2 w-[85%] text-ellipsis">{item.title}</span>
-                    <span class="grow"></span>
-                    {#if !item.is_unlocked}
-                      <span class="text-md ml-2" title="This lesson is locked.">
-                        <LockIcon size={16} class="carbon-icon dark:text-white" />
-                      </span>
-                    {:else if getIsLessonComplete(item.lesson_completion, $profile.id)}
-                      <span class="ml-2" title="You have completed this lesson">
-                        <CircleCheckIcon size={16} filled />
-                      </span>
-                    {/if}
-                  </div>
-                </a>
-              {/each}
-            {:else if navItem.sections}
-              {#each navItem.sections as section}
-                <NavExpandable
-                  id={section.id}
-                  name={NAV_IDS.SECTION}
-                  label={section.label}
-                  isLoading={!$course.id}
-                  isSection={true}
-                  isExpanded={section.isExpanded}
-                  className="ml-4"
-                  btnPadding="py-2 px-3"
-                  {isStudent}
-                >
-                  {#each section.lessons as item}
-                    <a
-                      class="mb-2 w-[95%] pl-7 text-[0.80rem] text-black dark:text-white {isStudent && !item.is_unlocked
-                        ? 'cursor-not-allowed'
-                        : ''}"
-                      href={isStudent && !item.is_unlocked ? page.url.pathname : getLessonsRoute($course.id, item.id)}
-                      onclick={toggleSidebarOnMobile}
-                      aria-disabled={!item.is_unlocked}
-                      title={item.title}
-                    >
-                      <div
-                        class="flex items-center px-4 py-2 {NavClasses.item} {(path || page.url.pathname).includes(
-                          item.id
-                        ) && NavClasses.active}"
-                      >
-                        <span class="line-clamp-2 w-[85%] text-ellipsis">{item.title}</span>
-                        <span class="grow"></span>
-                        {#if !item.is_unlocked}
-                          <span class="text-md ml-2" title="This lesson is locked.">
-                            <LockIcon size={16} class="carbon-icon dark:text-white" />
-                          </span>
-                        {:else if getIsLessonComplete(item.lesson_completion, $profile.id)}
-                          <span class="ml-2" title="You have completed this lesson">
-                            <CircleCheckIcon size={16} filled />
-                          </span>
+<Sidebar.Provider class="flex w-fit items-start gap-2">
+  <Sidebar.Root collapsible="icon" class="inset-y-12 h-[calc(100vh-48px)] {$sideBar.hidden ? 'hidden' : ''}">
+    <Sidebar.Content>
+      <Sidebar.Group>
+        <Sidebar.GroupLabel>Course Navigation</Sidebar.GroupLabel>
+        <Sidebar.Menu>
+          {#each navItems as item (item.id)}
+            <Collapsible.Root open={item.isActive} class="group/collapsible">
+              {#snippet child({ props })}
+                <Sidebar.MenuItem {...props}>
+                  {#if item.isLesson && item.items}
+                    <Collapsible.Trigger>
+                      {#snippet child({ props })}
+                        <a href={item.url} onclick={toggleSidebarOnMobile}>
+                          <Sidebar.MenuButton
+                            {...props}
+                            tooltipContent={item.title}
+                            class="flex w-full items-center gap-4 py-2 pl-1.5"
+                          >
+                            {@const Icon = item.icon}
+                            <Icon size={16} class="nav-icon group-hover:animate-{item.id}" />
+                            {item.title}
+
+                            <div class="ml-auto flex items-center gap-1">
+                              <Plus
+                                size={20}
+                                class="rounded-full p-1 hover:bg-gray-200"
+                                onclick={() => addLesson(false, item.id)}
+                              />
+
+                              <ChevronRightIcon
+                                size={20}
+                                class="rounded-full p-1 transition-transform duration-200 hover:bg-gray-200 group-data-[state=open]/collapsible:rotate-90"
+                              />
+                            </div>
+                          </Sidebar.MenuButton>
+                        </a>
+                      {/snippet}
+                    </Collapsible.Trigger>
+                    <Collapsible.Content>
+                      <Sidebar.MenuSub>
+                        {#if $course.version === COURSE_VERSION.V1}
+                          {#each item.items as lessonItem}
+                            <Sidebar.MenuSubItem>
+                              <Sidebar.MenuSubButton
+                                isActive={(path || page.url.pathname).includes(lessonItem.lesson.id)}
+                              >
+                                {#snippet child({ props })}
+                                  <a
+                                    href={isStudent && !lessonItem.lesson.is_unlocked
+                                      ? page.url.pathname
+                                      : lessonItem.url}
+                                    onclick={toggleSidebarOnMobile}
+                                    aria-disabled={!lessonItem.lesson.is_unlocked}
+                                    title={lessonItem.lesson.title}
+                                    class="flex w-full items-center gap-2 {isStudent && !lessonItem.lesson.is_unlocked
+                                      ? 'cursor-not-allowed opacity-50'
+                                      : ''}"
+                                    {...props}
+                                  >
+                                    {#if lessonItem.isV1 && 'index' in lessonItem}
+                                      <TextChip
+                                        value={getLectureNo(lessonItem.index + 1)}
+                                        className="bg-primary-200 text-primary-600 text-xs"
+                                        size="sm"
+                                        shape="rounded-full"
+                                      />
+                                    {/if}
+                                    <span class="flex-1 truncate">{lessonItem.lesson.title}</span>
+                                    {#if !lessonItem.lesson.is_unlocked}
+                                      <LockIcon size={16} class="shrink-0" />
+                                    {:else if getIsLessonComplete(lessonItem.lesson.lesson_completion, $profile.id)}
+                                      <span class="shrink-0">
+                                        <CircleCheckIcon size={16} filled />
+                                      </span>
+                                    {/if}
+                                  </a>
+                                {/snippet}
+                              </Sidebar.MenuSubButton>
+                            </Sidebar.MenuSubItem>
+                          {/each}
+                        {:else}
+                          {#each $lessonSections as section}
+                            <Collapsible.Root open={true} class="group/section">
+                              {#snippet child({ props })}
+                                <Sidebar.MenuSubItem {...props}>
+                                  <Collapsible.Trigger>
+                                    {#snippet child({ props })}
+                                      <Sidebar.MenuSubButton
+                                        {...props}
+                                        class="flex w-full items-center gap-2 font-medium"
+                                      >
+                                        {@const Icon = getNavIcon(NAV_IDS.SECTION)}
+                                        <Icon size={14} />
+                                        <span class="flex-1 truncate">{section.title}</span>
+                                        <div class="ml-auto flex items-center gap-1">
+                                          <Plus
+                                            size={20}
+                                            class="rounded-full p-1 hover:bg-gray-200"
+                                            onclick={() => addLesson(true, section.id)}
+                                          />
+
+                                          <ChevronRightIcon
+                                            size={20}
+                                            class="rounded-full p-1 transition-transform duration-200 hover:bg-gray-200 group-data-[state=open]/collapsible:rotate-90"
+                                          />
+                                        </div>
+                                      </Sidebar.MenuSubButton>
+                                    {/snippet}
+                                  </Collapsible.Trigger>
+                                  <Collapsible.Content>
+                                    <Sidebar.MenuSub class="ml-2">
+                                      {#each section.lessons as lesson}
+                                        <Sidebar.MenuSubItem>
+                                          <Sidebar.MenuSubButton
+                                            isActive={(path || page.url.pathname).includes(lesson.id)}
+                                          >
+                                            {#snippet child({ props })}
+                                              <a
+                                                href={isStudent && !lesson.is_unlocked
+                                                  ? page.url.pathname
+                                                  : getLessonsRoute($course.id, lesson.id)}
+                                                onclick={toggleSidebarOnMobile}
+                                                aria-disabled={!lesson.is_unlocked}
+                                                title={lesson.title}
+                                                class="flex w-full items-center gap-2 {isStudent && !lesson.is_unlocked
+                                                  ? 'cursor-not-allowed opacity-50'
+                                                  : ''}"
+                                                {...props}
+                                              >
+                                                <span class="flex-1 truncate">{lesson.title}</span>
+                                                {#if !lesson.is_unlocked}
+                                                  <LockIcon size={16} class="shrink-0" />
+                                                {:else if getIsLessonComplete(lesson.lesson_completion, $profile.id)}
+                                                  <span class="shrink-0">
+                                                    <CircleCheckIcon size={16} filled />
+                                                  </span>
+                                                {/if}
+                                              </a>
+                                            {/snippet}
+                                          </Sidebar.MenuSubButton>
+                                        </Sidebar.MenuSubItem>
+                                      {/each}
+                                    </Sidebar.MenuSub>
+                                  </Collapsible.Content>
+                                </Sidebar.MenuSubItem>
+                              {/snippet}
+                            </Collapsible.Root>
+                          {/each}
                         {/if}
-                      </div>
+                      </Sidebar.MenuSub>
+                    </Collapsible.Content>
+                  {:else}
+                    <a href={item.url} onclick={toggleSidebarOnMobile}>
+                      <Sidebar.MenuButton
+                        tooltipContent={item.title}
+                        class="flex w-full cursor-pointer items-center gap-4 px-1.5 py-2 {item.isActive
+                          ? 'bg-accent text-accent-foreground'
+                          : ''}"
+                      >
+                        {@const Icon = item.icon}
+                        <Icon size={16} class="nav-icon group-hover:animate-{item.id}" />
+                        {item.title}
+                      </Sidebar.MenuButton>
                     </a>
-                  {/each}
-                </NavExpandable>
-              {/each}
-            {/if}
-          </NavExpandable>
-        {/if}
-      {/each}
-    </ul>
-  </div>
-</aside>
+                  {/if}
+                </Sidebar.MenuItem>
+              {/snippet}
+            </Collapsible.Root>
+          {/each}
+        </Sidebar.Menu>
+      </Sidebar.Group>
+    </Sidebar.Content>
+    <Sidebar.Rail />
+  </Sidebar.Root>
+
+  <Sidebar.Inset>
+    <Sidebar.Trigger />
+  </Sidebar.Inset>
+</Sidebar.Provider>
+
+<style>
+  a {
+    text-decoration: none;
+  }
+</style>

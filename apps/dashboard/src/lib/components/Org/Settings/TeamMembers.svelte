@@ -1,29 +1,35 @@
 <script lang="ts">
   import { untrack } from 'svelte';
-  import { Grid, Row, Column, Select, SelectItem } from 'carbon-components-svelte';
+  import { Label } from '@cio/ui/base/label';
+  import * as Select from '@cio/ui/base/select';
   import { Circle } from 'svelte-loading-spinners';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import TextChip from '$lib/components/Chip/Text.svelte';
-  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { validateEmailInString } from '$lib/utils/functions/validator';
+
+  import { profile } from '$lib/utils/store/user';
+  import { isFreePlan } from '$lib/utils/store/org';
+  import { getOrgTeam } from '$lib/utils/services/org';
+  import { t } from '$lib/utils/functions/translations';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import type { OrgTeamMember } from '$lib/utils/types/org';
+  import { currentOrg, orgTeam } from '$lib/utils/store/org';
   import { ROLE_LABEL } from '$lib/utils/constants/roles';
   import { ROLE } from '@cio/utils/constants';
-  import { currentOrg, orgTeam } from '$lib/utils/store/org';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { getOrgTeam } from '$lib/utils/services/org';
-  import { profile } from '$lib/utils/store/user';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import SectionTitle from '../SectionTitle.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { validateEmailInString } from '$lib/utils/functions/validator';
   import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
-  import { isFreePlan } from '$lib/utils/store/org';
-  import type { OrgTeamMember } from '$lib/utils/types/org';
-  import { t } from '$lib/utils/functions/translations';
+
+  import Row from './Layout/Row.svelte';
+  import Grid from './Layout/Grid.svelte';
+  import Column from './Layout/Column.svelte';
+  import SectionTitle from '../SectionTitle.svelte';
+  import TextChip from '$lib/components/Chip/Text.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   let emailsStr = $state('');
   let errorMessage = $state('');
-  let role = $state(ROLE.TUTOR);
+  let role = $state(ROLE.TUTOR.toString());
   let isFetching = $state(false);
   let isLoading = $state(false);
   let isRemoving: number | null = $state(null);
@@ -138,10 +144,10 @@
 
 <Grid class="relative mt-5 w-full rounded border border-gray-200 dark:border-neutral-600">
   <Row class="border-bottom-c py-7">
-    <Column sm={2} md={2} lg={4} class="text-lg"
+    <Column sm={4} md={4} lg={4} class="text-lg"
       ><SectionTitle>{$t('course.navItem.people.teams.add')}</SectionTitle></Column
     >
-    <Column sm={2} md={6} lg={8}>
+    <Column sm={8} md={8} lg={8}>
       <p class="text-md mb-5 text-gray-500 dark:text-white">
         {$t('course.navItem.people.teams.add_team')}
       </p>
@@ -156,15 +162,18 @@
           {errorMessage}
         />
 
-        <Select
-          labelText={$t('course.navItem.people.teams.role')}
-          bind:selected={role}
-          class="mb-5 w-40"
-          disabled={$isFreePlan}
-        >
-          <SelectItem value={ROLE.ADMIN} text={$t(ROLE_LABEL[ROLE.ADMIN])} />
-          <SelectItem value={ROLE.TUTOR} text={$t(ROLE_LABEL[ROLE.TUTOR])} />
-        </Select>
+        <div class="mb-5">
+          <Label class="mb-2 block">{$t('course.navItem.people.teams.role')}</Label>
+          <Select.Root type="single" bind:value={role} disabled={$isFreePlan}>
+            <Select.Trigger class="w-40">
+              <p>{role ? $t(ROLE_LABEL[role]) : $t('course.navItem.people.teams.select_role')}</p>
+            </Select.Trigger>
+            <Select.Content>
+              <Select.Item value={ROLE.ADMIN.toString()}>{$t(ROLE_LABEL[ROLE.ADMIN])}</Select.Item>
+              <Select.Item value={ROLE.TUTOR.toString()}>{$t(ROLE_LABEL[ROLE.TUTOR])}</Select.Item>
+            </Select.Content>
+          </Select.Root>
+        </div>
 
         <PrimaryButton
           label={$t('course.navItem.people.teams.send_invite')}
@@ -177,10 +186,10 @@
   </Row>
 
   <Row class="border-bottom-c py-7">
-    <Column sm={2} md={2} lg={4} class="text-lg"
+    <Column sm={4} md={4} lg={4} class="text-lg"
       ><SectionTitle>{$t('course.navItem.people.teams.members')}</SectionTitle></Column
     >
-    <Column sm={2} md={6} lg={8}>
+    <Column sm={8} md={8} lg={8}>
       {#if isFetching}
         <Circle />
       {:else}

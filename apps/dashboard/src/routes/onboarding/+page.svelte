@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Dropdown } from 'carbon-components-svelte';
+  import * as Select from '@cio/ui/base/select';
   import TextField from '$lib/components/Form/TextField.svelte';
   import UserProfileIcon from '$lib/components/Icons/UserProfileIcon.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -21,11 +21,6 @@
   let isSiteNameTouched = $state(false);
 
   const progress = $derived(Math.round((onboardingApi.step / Object.keys(ONBOARDING_STEPS).length) * 100));
-
-  function handleSelect(event) {
-    const newSelectedId = event.detail.selectedId;
-    fields.locale = newSelectedId;
-  }
 
   function updateSiteName(sname?: string) {
     if (!sname) return;
@@ -169,8 +164,17 @@
 
               <!-- Language Picker -->
               <div class="mt-10">
-                <span>{$t('content.toggle_label')}: </span>
-                <Dropdown items={DROPDOWN_ITEMS} selectedId="en" on:select={handleSelect} class="w-full" />
+                <span class="dark:text-white">{$t('content.toggle_label')}: </span>
+                <Select.Root type="single" bind:value={fields.locale}>
+                  <Select.Trigger class="w-full">
+                    <p>{fields.locale}</p>
+                  </Select.Trigger>
+                  <Select.Content>
+                    {#each DROPDOWN_ITEMS as item}
+                      <Select.Item value={item.id}>{item.text}</Select.Item>
+                    {/each}
+                  </Select.Content>
+                </Select.Root>
               </div>
             </div>
           </div>

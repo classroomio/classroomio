@@ -1,16 +1,16 @@
 <script>
+  import { Label } from '@cio/ui/base/label';
+  import { Switch } from '@cio/ui/base/switch';
+
+  import { issueCertificateModal, resetForm } from './store';
   import { preventDefault } from '$lib/utils/functions/svelte';
 
-  import { Toggle } from 'carbon-components-svelte';
   import Modal from '$lib/components/Modal/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import { issueCertificateModal, resetForm } from './store';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
-  const onToggle = (e) => {
-    console.log(e);
-  };
+  let isAutomatic = $state(false);
 
   const issueCertificate = () => {
     resetForm();
@@ -26,15 +26,10 @@
 >
   <main>
     <div>
-      <Toggle
-        labelText="Automatically send certificates on completion"
-        on:toggle={(e) => onToggle(e)}
-        size="sm"
-        class="mb-4"
-      >
-        <span slot="labelA" style="color: #161616">Automatic</span>
-        <span slot="labelB" style="color: green">Automatic</span>
-      </Toggle>
+      <div class="mb-4 flex items-center space-x-2">
+        <Switch id="auto-certificate" bind:checked={isAutomatic} />
+        <Label for="auto-certificate" class="text-sm font-medium">Automatic</Label>
+      </div>
       <p class="my-4 text-sm font-medium">
         If you set this as automatic, certificates will be issued after the learner completes the course.
       </p>

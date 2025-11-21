@@ -1,10 +1,13 @@
 <script lang="ts">
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
   import get from 'lodash/get';
-  import { Toggle } from 'carbon-components-svelte';
+  import { Label } from '@cio/ui/base/label';
+  import { Switch } from '@cio/ui/base/switch';
+
   import type { Course } from '$lib/utils/types';
-  import { t } from '$lib/utils/functions/translations';
   import { NAV_ITEM_KEY } from '../../constants';
+  import { t } from '$lib/utils/functions/translations';
+
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
 
   interface Props {
     course: Course;
@@ -21,16 +24,19 @@
 </script>
 
 <div>
-  <TextEditor bind:value={course.metadata.description} />
+  <TextEditor content={course.metadata.description} onChange={(content) => setter(content, `metadata.description`)} />
 </div>
 
-<div class="mt-5">
-  <p class="font-bold">
+<div class="mt-5 flex flex-col gap-2">
+  <p class="font-semibold">
     {$t('course.navItem.landing_page.editor.display_section')}
   </p>
 
-  <Toggle bind:toggled={show} size="sm">
-    <span slot="labelA" style="color: gray">{$t('settings.landing_page.hide_section')}</span>
-    <span slot="labelB" style="color: gray">{$t('settings.landing_page.show_section')}</span>
-  </Toggle>
+  <div class="flex items-center space-x-2">
+    <Switch bind:checked={show} />
+
+    <Label class="font-bold">
+      {show ? $t('settings.landing_page.show_section') : $t('settings.landing_page.hide_section')}
+    </Label>
+  </div>
 </div>

@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { SkeletonPlaceholder, SkeletonText } from 'carbon-components-svelte';
+  import { Skeleton } from '@cio/ui/base/skeleton';
 </script>
 
 <div class="w-full">
-  <SkeletonPlaceholder style="width: 100%; height: 10rem;" />
+  <Skeleton class="h-40 w-full" />
   <div class="my-3">
-    <SkeletonText style="width: 100%;" />
-    <SkeletonText style="width: 100%;" />
-    <SkeletonText style="width: 100%;" />
+    <Skeleton class="h-4 w-full" />
+    <Skeleton class="h-4 w-full" />
+    <Skeleton class="h-4 w-full" />
   </div>
 </div>

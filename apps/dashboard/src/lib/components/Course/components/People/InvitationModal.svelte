@@ -1,28 +1,32 @@
 <script lang="ts">
-  import { preventDefault } from '$lib/utils/functions/svelte';
-  import { untrack } from 'svelte';
-  import copy from 'copy-to-clipboard';
-  import { Popover } from 'carbon-components-svelte';
-  import { page } from '$app/state';
-  import { goto } from '$app/navigation';
   import QRCode from 'qrcode';
+  import { untrack } from 'svelte';
+  import { page } from '$app/state';
+  import copy from 'copy-to-clipboard';
   import { toPng } from 'html-to-image';
+  import { goto } from '$app/navigation';
+  import XIcon from '@lucide/svelte/icons/x';
+  import { Badge } from '@cio/ui/base/badge';
+  import * as Select from '@cio/ui/base/select';
+  import { Spinner } from '@cio/ui/base/spinner';
+  import * as Popover from '@cio/ui/base/popover';
 
+  import { qrInviteNodeStore } from './store';
+  import { ROLE } from '@cio/utils/constants';
+  import { getOrgTeam } from '$lib/utils/services/org';
+  import { t } from '$lib/utils/functions/translations';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import type { OrgTeamMember } from '$lib/utils/types/org';
+  import { preventDefault } from '$lib/utils/functions/svelte';
+  import { course, setCourse } from '$lib/components/Course/store';
+  import { getStudentInviteLink } from '$lib/utils/functions/course';
+  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
+  import { addGroupMember, fetchGroup } from '$lib/utils/services/courses';
+  import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
+
+  import ShareQrImage from './ShareQRImage.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { ROLE } from '@cio/utils/constants';
-  import { addGroupMember, fetchGroup } from '$lib/utils/services/courses';
-  import { course, setCourse } from '$lib/components/Course/store';
-  import { MultiSelect, Loading } from 'carbon-components-svelte';
-  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
-  import { getOrgTeam } from '$lib/utils/services/org';
-  import type { OrgTeamMember } from '$lib/utils/types/org';
-  import { qrInviteNodeStore } from './store';
-  import { getStudentInviteLink } from '$lib/utils/functions/course';
-  import ShareQrImage from './ShareQRImage.svelte';
-  import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { t } from '$lib/utils/functions/translations';
 
   interface Tutor {
     id: number;
@@ -32,9 +36,10 @@
   }
 
   let tutors: Tutor[] = $state([]);
-  let selectedIds: Array<number> = $state([]);
-  let selectedTutors: Tutor[] = $state([]);
+  let selectedIds: string[] = $state([]);
   let isLoadingTutors = $state(false);
+
+  const selectedTutors = $derived(tutors.filter((tutor) => selectedIds.includes(tutor.id.toString())));
   let copied = $state(false);
   let qrImage = $state('');
   let isLoadingQRDownload = $state(false);
@@ -192,18 +197,47 @@
   <form onsubmit={preventDefault(onSubmit)}>
     <div class="mb-8">
       <p class="mb-1 text-base font-semibold">{$t('course.navItem.people.invite_modal.invite')}</p>
-      <MultiSelect
-        disabled={isLoadingTutors}
-        label={$t('course.navItem.people.invite_modal.select')}
-        bind:selectedIds
-        items={tutors}
-      />
+      <Select.Root type="multiple" bind:value={selectedIds} disabled={isLoadingTutors}>
+        <Select.Trigger class="w-full">
+          <div>
+            {#if selectedTutors.length > 0}
+              <div class="flex flex-wrap gap-1">
+                {#each selectedTutors as tutor}
+                  <Badge variant="secondary" class="flex items-center gap-1">
+                    {tutor.text}
+                    <button
+                      type="button"
+                      onclick={(e) => {
+                        e.stopPropagation();
+                        selectedIds = selectedIds.filter((id) => id !== tutor.id.toString());
+                      }}
+                      class="rounded-sm hover:bg-gray-200"
+                    >
+                      <XIcon size={14} />
+                    </button>
+                  </Badge>
+                {/each}
+              </div>
+            {:else}
+              {$t('course.navItem.people.invite_modal.select')}
+            {/if}
+          </div>
+        </Select.Trigger>
+        <Select.Content>
+          {#each tutors as tutor}
+            <Select.Item value={tutor.id.toString()}>
+              {tutor.text}
+            </Select.Item>
+          {/each}
+        </Select.Content>
+      </Select.Root>
       {#if isLoadingTutors}
-        <span>
-          <Loading withOverlay={false} small />
-        </span>
+        <div class="mt-2 flex items-center gap-2">
+          <Spinner class="h-4 w-4" />
+          <span class="text-sm">Loading...</span>
+        </div>
       {:else}
-        <span>
+        <span class="mt-2 block text-sm">
           {$t('course.navItem.people.invite_modal.to_add')}
           <a href={`/org/${$currentOrg.siteName}/settings/teams`} class="text-primary-600 underline">
             {$t('course.navItem.people.invite_modal.go_to')}
@@ -220,15 +254,16 @@
         <p class=" text-sm">{$t('course.navItem.people.invite_modal.via_link')}</p>
       </div>
 
-      <div class="relative">
-        <button type="button" onclick={copyLink} class="text-primary-800 cursor-pointer font-bold capitalize underline">
-          {$t('course.navItem.people.invite_modal.copy_link')}
-        </button>
-
-        <Popover caret open={copied} align="left">
-          <div style="padding: 5px">{$t('course.navItem.people.invite_modal.success')}</div>
-        </Popover>
-      </div>
+      <Popover.Root>
+        <Popover.Trigger>
+          <button type="button" onclick={copyLink} class="text-primary-800 cursor-pointer capitalize underline">
+            {$t('course.navItem.people.invite_modal.copy_link')}
+          </button>
+        </Popover.Trigger>
+        <Popover.Content align="start" class="w-auto">
+          <div class="p-1 text-sm">{$t('course.navItem.people.invite_modal.success')}</div>
+        </Popover.Content>
+      </Popover.Root>
     </div>
 
     <div

@@ -1,19 +1,19 @@
 <script lang="ts">
+  import { Badge } from '@cio/ui/base/badge';
+  import CopyIcon from '@lucide/svelte/icons/copy';
+  import TrashIcon from '@lucide/svelte/icons/trash';
+
+  import { t } from '$lib/utils/functions/translations';
   import type { LessonVideoType } from '$lib/utils/types';
   import { isLessonDirty, lesson } from '$lib/components/Course/components/Lesson/store/lessons';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { copyToClipboard, getVideoUrls, removeVideo } from '$lib/utils/functions/formatYoutubeVideo';
+
   import { IconButton } from '$lib/components/IconButton';
+  import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { t } from '$lib/utils/functions/translations';
-  import { CopyButton, Tag } from 'carbon-components-svelte';
-  import TrashIcon from '@lucide/svelte/icons/trash';
 
   let genericLinks = $state('');
   let error = $state('');
-
-  function getVideoUrls(urls = '') {
-    return (urls || '').split(',').filter((url) => !!url.trim());
-  }
 
   function addVideo() {
     const links = getVideoUrls(genericLinks);
@@ -53,10 +53,6 @@
       }
     }
   }
-
-  function removeVideo(index = 0) {
-    $lesson.materials.videos = $lesson.materials.videos.filter((_v, i) => i !== index);
-  }
 </script>
 
 <div class="flex w-full items-{error ? 'center' : 'end'} justify-between gap-5">
@@ -85,10 +81,12 @@
   {#each $lesson?.materials?.videos as video, index}
     {#if video.type === 'generic'}
       <div class="flex items-center gap-1">
-        <Tag type="blue">
+        <Badge class="max-w-md truncate" variant="secondary">
           {video.link}
-        </Tag>
-        <CopyButton text={video.link} feedback="Copied to clipboard" />
+        </Badge>
+        <IconButton value="copy-video" onClick={() => copyToClipboard(video.link)}>
+          <CopyIcon size={16} />
+        </IconButton>
         <IconButton value="delete-video" onClick={() => removeVideo(index)}>
           <TrashIcon size={16} />
         </IconButton>

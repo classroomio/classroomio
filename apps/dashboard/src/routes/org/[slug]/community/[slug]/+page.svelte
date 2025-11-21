@@ -1,32 +1,32 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { untrack } from 'svelte';
-  import Avatar from '$lib/components/Avatar/index.svelte';
+  import pluralize from 'pluralize';
+  import { goto } from '$app/navigation';
+  import { Skeleton } from '@cio/ui/base/skeleton';
+  import * as Select from '@cio/ui/base/select';
+  import TrashIcon from '@lucide/svelte/icons/trash';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+
+  import { t } from '$lib/utils/functions/translations';
   import { courses } from '$lib/components/Courses/store';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import { IconButton } from '$lib/components/IconButton';
-  import DeleteModal from '$lib/components/Org/Community/DeleteModal.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import Vote from '$lib/components/Vote/index.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { supabase } from '$lib/utils/functions/supabase';
-  import { t } from '$lib/utils/functions/translations';
-  import { askCommunityValidation, commentInCommunityValidation } from '$lib/utils/functions/validator';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import { fetchCourses } from '$lib/utils/services/courses';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { currentOrg, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
-  import { profile } from '$lib/utils/store/user';
-  import type { Course } from '$lib/utils/types';
-  import { Dropdown, SkeletonPlaceholder, SkeletonText } from 'carbon-components-svelte';
-  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
-  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
-  import TrashIcon from '@lucide/svelte/icons/trash';
-  import pluralize from 'pluralize';
+  import { askCommunityValidation, commentInCommunityValidation } from '$lib/utils/functions/validator';
 
-  let { data } = $props();
-  const { slug } = data;
+  import type { Course } from '$lib/utils/types';
+  import { profile } from '$lib/utils/store/user';
+  import Vote from '$lib/components/Vote/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
+  import Avatar from '$lib/components/Avatar/index.svelte';
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import DeleteModal from '$lib/components/Org/Community/DeleteModal.svelte';
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
 
   interface Comment {
     id: string;
@@ -52,6 +52,9 @@
     totalComments: number;
     courseId: string;
   }
+
+  let { data } = $props();
+  const { slug } = data;
 
   let question: Question | undefined = $state();
   let comment = $state('');
@@ -397,9 +400,9 @@
 <section class="mx-auto max-w-3xl md:mx-10 lg:mb-20">
   {#if !question}
     <div class="mb-3 px-5 py-10">
-      <SkeletonText style="width: 25%;" />
-      <SkeletonText style="width: 100%; margin-bottom: 2rem" />
-      <SkeletonPlaceholder style="width: 100%; height: 20rem;" />
+      <Skeleton class="h-4 w-[25%]" />
+      <Skeleton class="mb-2 h-4 w-full" />
+      <Skeleton class="h-80 w-full" />
     </div>
   {:else}
     <div class="px-5 py-10">
@@ -410,13 +413,20 @@
       <div class="my-5 flex items-center justify-between">
         {#if isEditMode}
           <TextField bind:value={editContent.title} className="w-full mr-2" errorMessage={errors.title} />
-          <Dropdown
-            class="h-full w-[25%]"
-            size="xl"
-            label={$t('community.ask.select_course')}
-            items={fetchedCourses.map((course) => ({ id: course.id, text: course.title }))}
-            bind:selectedId={editContent.courseId}
-          />
+          <Select.Root type="single" bind:value={editContent.courseId}>
+            <Select.Trigger class="h-full w-[25%]">
+              <p>
+                {editContent.courseId
+                  ? fetchedCourses.find((course) => course.id === editContent.courseId)?.title
+                  : $t('community.ask.select_course')}
+              </p>
+            </Select.Trigger>
+            <Select.Content>
+              {#each fetchedCourses as course}
+                <Select.Item value={course.id || ''}>{course.title}</Select.Item>
+              {/each}
+            </Select.Content>
+          </Select.Root>
         {:else}
           <div class="flex items-center">
             <Vote value={question.votes} upVote={() => upvoteQuestion('question')} disabled={voted.question} />
@@ -442,7 +452,7 @@
           {/if}
         {/if}
       </div>
-      <div class="border-1 border-gray my-1 rounded-lg border px-1">
+      <div class="border-gray my-1 rounded-lg border px-1">
         <header class="flex items-center justify-between p-2 leading-none">
           <div class="flex items-center text-black no-underline hover:underline">
             <Avatar src={question.author.avatar} name={question.author.name} width="w-7" height="h-7" />
@@ -468,19 +478,19 @@
         {#if isEditMode && editorInstance}
           <div class="my-2">
             <TextEditor
-              bind:value={editContent.body}
-              placeholder={$t('community.ask.give')}
-              onChange={(html) => (editContent.body = html)}
+              placeholder="Give an answer"
+              content={editContent.body}
+              onChange={(content) => (editContent.body = content)}
             />
           </div>
         {:else}
-          <section class="prose prose-sm sm:prose p-2">
+          <section class="prose prose-sm p-2 sm:prose">
             {@html question.body}
           </section>
         {/if}
       </div>
 
-      <div class="my-8 font-bold">
+      <div class="my-8">
         {pluralize($t('community.answers'), question.totalComments, true)}
       </div>
 
@@ -491,7 +501,7 @@
             upVote={() => upvoteQuestion('comment', comment.id)}
             disabled={voted.comment[comment.id]}
           />
-          <div class="border-1 border-gray w-full rounded-lg border">
+          <div class="border-gray w-full rounded-lg border">
             <header class="flex items-center justify-between p-2 leading-none">
               <div class="flex items-center text-black">
                 <Avatar src={comment.avatar} name={comment.name} width="w-7" height="h-7" />
@@ -517,7 +527,7 @@
                 </IconButton>
               {/if}
             </header>
-            <article class="prose prose-sm sm:prose p-2">
+            <article class="prose prose-sm p-2 sm:prose">
               {@html comment.comment}
             </article>
           </div>
@@ -528,11 +538,7 @@
 
       <div class="mt-4">
         {#if !editorInstance}
-          <TextEditor
-            bind:value={comment}
-            placeholder={$t('community.ask.give')}
-            onChange={(html) => (comment = html)}
-          />
+          <TextEditor placeholder="Give an answer" content={comment} onChange={(content) => (comment = content)} />
         {/if}
 
         <div class="mt-2 flex justify-end">

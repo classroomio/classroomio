@@ -1,12 +1,15 @@
 <script lang="ts">
   import get from 'lodash/get';
-  import { Toggle, Select, SelectItem } from 'carbon-components-svelte';
+  import * as Select from '@cio/ui/base/select';
+  import { Switch } from '@cio/ui/base/switch';
+  import { Label } from '@cio/ui/base/label';
+
+  import type { Course } from '$lib/utils/types';
+  import { t } from '$lib/utils/functions/translations';
+  import { isCourseFree } from '$lib/utils/functions/course';
 
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import { isCourseFree } from '$lib/utils/functions/course';
-  import type { Course } from '$lib/utils/types';
-  import { t } from '$lib/utils/functions/translations';
 
   interface Props {
     course: Course;
@@ -20,8 +23,8 @@
   let showDiscount = $derived(get(course, 'metadata.showDiscount', false));
   let giftToggled = $derived(get(course, 'metadata.reward.show', false));
 
-  function handleChange(html: string) {
-    setter(html, 'metadata.reward.description');
+  function handleChange(content: string) {
+    setter(content, 'metadata.reward.description');
   }
 
   $effect(() => {
@@ -39,10 +42,18 @@
 </script>
 
 {#if typeof course !== 'undefined'}
-  <Select labelText={$t('course.navItem.landing_page.editor.pricing_form.currency')} bind:selected={course.currency}>
-    <SelectItem value="NGN" />
-    <SelectItem value="USD" />
-  </Select>
+  <div>
+    <Label class="mb-2 font-bold">{$t('course.navItem.landing_page.editor.pricing_form.currency')}</Label>
+    <Select.Root type="single" value={course.currency} onValueChange={(value) => setter(value, 'currency')}>
+      <Select.Trigger class="w-full">
+        <p>{course.currency === 'NGN' ? 'NGN' : 'USD'}</p>
+      </Select.Trigger>
+      <Select.Content>
+        <Select.Item value="NGN">NGN</Select.Item>
+        <Select.Item value="USD">USD</Select.Item>
+      </Select.Content>
+    </Select.Root>
+  </div>
 
   <TextField
     className="mt-5"
@@ -63,11 +74,17 @@
   {/if}
 
   <div class="mt-5">
-    <!-- <label for="text-field" class="m-0 font-bold mb-2">Discount</label> -->
-    <Toggle labelText={$t('course.navItem.landing_page.editor.pricing_form.discount')} bind:toggled={showDiscount}>
-      <span slot="labelA">{$t('course.navItem.landing_page.editor.pricing_form.no')}</span>
-      <span slot="labelB">{$t('course.navItem.landing_page.editor.pricing_form.yes')}</span>
-    </Toggle>
+    <div class="mb-2">
+      <Label class="font-bold">{$t('course.navItem.landing_page.editor.pricing_form.discount')}</Label>
+    </div>
+    <div class="flex items-center space-x-2">
+      <Switch bind:checked={showDiscount} />
+      <Label class="text-gray-600">
+        {showDiscount
+          ? $t('course.navItem.landing_page.editor.pricing_form.yes')
+          : $t('course.navItem.landing_page.editor.pricing_form.no')}
+      </Label>
+    </div>
   </div>
 
   {#if showDiscount}
@@ -82,20 +99,30 @@
   {/if}
 
   <div class="mt-5">
-    <!-- <label for="text-field" class="m-0 font-bold mb-2">Discount</label> -->
-    <Toggle labelText="Gift on Completion" bind:toggled={giftToggled}>
-      <span slot="labelA">{$t('course.navItem.landing_page.editor.pricing_form.no')}</span>
-      <span slot="labelB">{$t('course.navItem.landing_page.editor.pricing_form.yes')}</span>
-    </Toggle>
+    <div class="mb-2">
+      <Label class="font-bold">Gift on Completion</Label>
+    </div>
+    <div class="flex items-center space-x-2">
+      <Switch bind:checked={giftToggled} />
+
+      <Label class="text-gray-600">
+        {giftToggled
+          ? $t('course.navItem.landing_page.editor.pricing_form.yes')
+          : $t('course.navItem.landing_page.editor.pricing_form.no')}
+      </Label>
+    </div>
   </div>
 
   {#if giftToggled}
-    <p class="mt-5 font-bold dark:text-white">
+    <p class="mt-5 dark:text-white">
       {$t('course.navItem.landing_page.editor.pricing_form.gift')}
     </p>
 
     <div class="h-2/5">
-      <TextEditor value={get(course, 'metadata.reward.description', '')} onChange={handleChange} />
+      <TextEditor
+        content={get(course, 'metadata.reward.description', '')}
+        onChange={(content) => handleChange(content)}
+      />
     </div>
   {/if}
 {/if}

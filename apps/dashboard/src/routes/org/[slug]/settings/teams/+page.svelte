@@ -15,7 +15,7 @@
       >{$t('upgrade.back')}</a
     >
     <div class="mb-10 flex items-center justify-between">
-      <h1 class="text-3xl font-bold dark:text-white">{$t('upgrade.team_members')}</h1>
+      <h1 class="text-3xl dark:text-white">{$t('upgrade.team_members')}</h1>
     </div>
 
     <UpgradeBanner>{$t('upgrade.team')}</UpgradeBanner>

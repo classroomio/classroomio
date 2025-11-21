@@ -75,7 +75,7 @@
 <Modal {open} isCloseable={false} width="w-4/5" maxWidth="w-[500px]" containerClass="p-4">
   <div class="flex flex-col items-center space-y-6 text-center">
     <img src="/verify-email.svg" alt="email verification" />
-    <p class="text-xl font-bold">{$t('verify_email_modal.heading')}</p>
+    <p class="text-xl">{$t('verify_email_modal.heading')}</p>
     <p class="w-[70%] text-sm text-gray-700 dark:text-gray-200">
       {$t('verify_email_modal.sent_verification')}
       {$profile.email}

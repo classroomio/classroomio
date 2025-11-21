@@ -1,15 +1,18 @@
 <script lang="ts">
-  import { Grid, Column, Row } from 'carbon-components-svelte';
-  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
-  import { supabase } from '$lib/utils/functions/supabase';
   import { profile } from '$lib/utils/store/user';
+  import { t } from '$lib/utils/functions/translations';
+  import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+
+  import Row from './Layout/Row.svelte';
+  import Grid from './Layout/Grid.svelte';
+  import Column from './Layout/Column.svelte';
+  import SectionTitle from '../SectionTitle.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import SectionTitle from '../SectionTitle.svelte';
   import ArrowUpRightIcon from '$lib/components/Icons/ArrowTopRight.svelte';
-  import { t } from '$lib/utils/functions/translations';
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
 
   let chatId: number | null = $state(null);
 
@@ -46,7 +49,7 @@
   }
 </script>
 
-<Grid class="border-c mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
+<Grid class="mt-5 w-full">
   <Row class="border-bottom-c flex flex-col justify-center py-7 lg:flex-row lg:justify-start">
     <Column sm={4} md={4} lg={4} class="flex items-center justify-center">
       <img src="/telegram-svg.svg" alt="" class="mr-2 w-10" />
@@ -75,7 +78,7 @@
             variant={VARIANTS.OUTLINED}
             onClick={() => window.open('https://t.me/classroomio_bot', '_blank')}
             ><span class="mr-2">{$t('settings.integrations.open_bot_button')}</span>
-            <ArrowUpRightIcon size={16} /></PrimaryButton
+            <ArrowUpRightIcon /></PrimaryButton
           >
           <h4 class="font-normal">{$t('settings.integrations.step_chatId')}</h4>
           <TextField

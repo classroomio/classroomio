@@ -1,15 +1,20 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { Badge } from '@cio/ui/base/badge';
+  import UserIcon from '@lucide/svelte/icons/user';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
+  import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
+  import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import ImageRenderer from '$lib/components/Org/ImageRenderer.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+
+  import { COURSE_TYPE } from '$lib/utils/types';
+  import { t } from '$lib/utils/functions/translations';
   import { calcCourseDiscount } from '$lib/utils/functions/course';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
-  import { t } from '$lib/utils/functions/translations';
-  import { COURSE_TYPE } from '$lib/utils/types';
-  import { ImageLoader, OverflowMenu, OverflowMenuItem, SkeletonPlaceholder, Tag } from 'carbon-components-svelte';
-  import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
-  import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
-  import UserIcon from '@lucide/svelte/icons/user';
   import { copyCourseModal, deleteCourseModal } from '$lib/components/Courses/store';
 
   interface Props {
@@ -129,30 +134,37 @@
   <div class="p-4">
     <div class="relative mb-5">
       {#if !isLMS && !isOnLandingPage}
-        <OverflowMenu
-          class="absolute right-2 top-2 z-40 rounded-full bg-gray-200 opacity-0 transition-all delay-150  duration-200 ease-in-out group-hover:opacity-100 dark:bg-neutral-800"
-          size="sm"
-          on:click={(e) => e.stopPropagation()}
-        >
-          <OverflowMenuItem text={$t('courses.course_card.context_menu.clone')} on:click={handleCloneCourse} />
-          <OverflowMenuItem text={$t('courses.course_card.context_menu.share')} on:click={handleShareCourse} />
-          <OverflowMenuItem text={$t('courses.course_card.context_menu.invite')} on:click={handleInvite} />
-          <OverflowMenuItem danger text={$t('courses.course_card.context_menu.delete')} on:click={handleDeleteCourse} />
-        </OverflowMenu>
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger
+            class="absolute right-2 top-2 z-40 flex items-center justify-center rounded-full bg-gray-200 p-2 opacity-0 transition-all delay-150 duration-200 ease-in-out group-hover:opacity-100 dark:bg-neutral-800"
+            onclick={(e) => e.stopPropagation()}
+          >
+            <EllipsisVerticalIcon size={16} />
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content align="end">
+            <DropdownMenu.Item onclick={handleCloneCourse}>
+              {$t('courses.course_card.context_menu.clone')}
+            </DropdownMenu.Item>
+            <DropdownMenu.Item onclick={handleShareCourse}>
+              {$t('courses.course_card.context_menu.share')}
+            </DropdownMenu.Item>
+            <DropdownMenu.Item onclick={handleInvite}>
+              {$t('courses.course_card.context_menu.invite')}
+            </DropdownMenu.Item>
+            <DropdownMenu.Separator />
+            <DropdownMenu.Item class="text-red-600" onclick={handleDeleteCourse}>
+              {$t('courses.course_card.context_menu.delete')}
+            </DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
       {/if}
 
-      <ImageLoader
+      <ImageRenderer
         src={bannerImage}
-        alt="Course Logo"
-        class="relative h-[200px] w-full rounded dark:border dark:border-neutral-600"
-      >
-        <svelte:fragment slot="loading">
-          <SkeletonPlaceholder style="width: 100%; height: 200px;" />
-        </svelte:fragment>
-        <svelte:fragment slot="errror">
-          {$t('courses.course_card.error_message')}
-        </svelte:fragment>
-      </ImageLoader>
+        alt="Banner Image"
+        className="relative h-[200px] w-full rounded dark:border dark:border-neutral-600"
+      />
+
       {#if type}
         {@const tag = COURSE_TAG[type]}
         <span
@@ -203,13 +215,13 @@
             </div>
           {/if}
         {:else}
-          <Tag type={isPublished ? 'green' : 'cool-gray'}>
+          <Badge variant={isPublished ? 'default' : 'secondary'}>
             {#if isPublished}
               {$t('courses.course_card.published')}
             {:else}
               {$t('courses.course_card.unpublished')}
             {/if}
-          </Tag>
+          </Badge>
         {/if}
       </p>
     </div>

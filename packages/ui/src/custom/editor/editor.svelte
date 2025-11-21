@@ -22,6 +22,8 @@
     class?: string;
     // CSS class for the editor itself
     editorClass?: string;
+    // Placeholder text for the editor
+    placeholder?: string | ((node: any) => string);
     // Callback functions
     onContentChange?: (content: Content) => void;
     onEditorReady?: (editor: Editor) => void;
@@ -37,6 +39,7 @@
     editableStorageKey = 'edra-editable',
     class: className = '',
     editorClass = '',
+    placeholder,
     onContentChange,
     onEditorReady,
     onEditorDestroy
@@ -111,7 +114,7 @@
 
   function onUpdate(props: { editor: Editor; transaction: Transaction }) {
     if (props?.editor && !props.editor.isDestroyed) {
-      const newContent = props.editor.getJSON();
+      const newContent = props.editor.getHTML();
       content = newContent;
       onContentChange?.(newContent);
     }
@@ -119,12 +122,7 @@
 </script>
 
 {#if browser}
-  <div
-    class={cn(
-      'bg-background z-50 mx-auto mt-12 flex size-full w-[95%] max-w-5xl flex-col rounded-md border border-dashed sm:w-[85%]',
-      className
-    )}
-  >
+  <div class={cn('bg-background z-50 flex size-full w-full flex-col rounded-md border border-dashed', className)}>
     {#if editor && !editor.isDestroyed}
       {#if showToolBar}
         <div transition:slide>
@@ -142,8 +140,9 @@
       class={cn('h-[32rem] overflow-auto p-4', editorClass)}
       bind:editor
       {editable}
-      content={content || getDefaultContent()}
+      {content}
       {onUpdate}
+      {placeholder}
     />
   </div>
 {/if}
