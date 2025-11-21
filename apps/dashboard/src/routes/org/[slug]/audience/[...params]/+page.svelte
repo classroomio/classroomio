@@ -8,7 +8,7 @@
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import ChartLineIcon from '@lucide/svelte/icons/chart-line';
   import Progress from '$lib/components/Progress/index.svelte';
-  import Grid from '$lib/components/Org/Settings/Layout/Grid.svelte';
+  import { Grid } from '$lib/components/Org/Settings/Layout';
   import { ActivityCard, HeroProfileCard, LoadingPage } from '$lib/components/Analytics';
 
   import { t } from '$lib/utils/functions/translations';

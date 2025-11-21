@@ -25,5 +25,16 @@ export function isQuizPage(path) {
 }
 
 export function isLMSPage(path) {
-  return /lms[\/a-z 0-9 -]*/.test(path);
+  return /lms[/a-z 0-9 -]*/.test(path);
+}
+
+export function isActive(pagePath: string, itemPath: string) {
+  const pageLinkItems = pagePath.split('/');
+  const itemLinkItems = itemPath.split('/');
+
+  if (itemLinkItems.length !== pageLinkItems.length) {
+    return false;
+  }
+
+  return pagePath.includes(itemPath);
 }

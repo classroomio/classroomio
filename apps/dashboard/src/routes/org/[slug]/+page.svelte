@@ -23,7 +23,7 @@
   import { ActivityCard } from '$lib/components/Analytics';
   import Progress from '$lib/components/Progress/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import Grid from '$lib/components/Org/Settings/Layout/Grid.svelte';
+  import { Grid } from '$lib/components/Org/Settings/Layout';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { WelcomeModal } from '$lib/features/onboarding/components';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';

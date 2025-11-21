@@ -4,9 +4,7 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { currentOrgPlan, isFreePlan } from '$lib/utils/store/org';
 
-  import Row from './Layout/Row.svelte';
-  import Grid from './Layout/Grid.svelte';
-  import Column from './Layout/Column.svelte';
+  import { Row, Grid, Column } from './Layout';
   import SectionTitle from '../SectionTitle.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 

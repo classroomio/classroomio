@@ -16,7 +16,7 @@
   let { className = '', value = $bindable('en'), hasLangChanged = $bindable(false), change }: Props = $props();
 
   function handleSelect(selectedValue: string) {
-    value = selectedValue as LOCALE;
+    value = selectedValue as TLocale;
     hasLangChanged = true;
     change?.();
   }

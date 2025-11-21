@@ -5,9 +5,7 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
 
-  import Row from './Layout/Row.svelte';
-  import Grid from './Layout/Grid.svelte';
-  import Column from './Layout/Column.svelte';
+  import { Row, Grid, Column } from './Layout';
   import SectionTitle from '../SectionTitle.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';

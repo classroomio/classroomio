@@ -151,7 +151,7 @@
         {$t('courses.new_course_modal.type_selector_title')}
       </h2>
 
-      <div class="my-8 flex flex-col items-center justify-evenly gap-4 md:flex-row!">
+      <div class="my-8 flex flex-col items-center justify-evenly gap-4 md:flex-row">
         {#each options as option}
           <button
             class="w-11/12 rounded-md border-2 p-5 md:h-60 md:w-[261px] dark:bg-neutral-700 {option.type === type

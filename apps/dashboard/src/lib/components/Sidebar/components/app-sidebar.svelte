@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import * as Sidebar from '@cio/ui/base/sidebar';
 
   import type { AppSidebar } from './types';
@@ -8,31 +7,20 @@
 
   import NavMain from './nav-main.svelte';
   import NavUser from './nav-user.svelte';
-  import TeamSwitcher from './team-switcher.svelte';
+  import OrgSwitcher from './org-switcher.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { openUpgradeModal } from '$lib/utils/functions/org';
 
-  let {
-    sidebarData,
-    canAddOrg = true,
-    ref = $bindable(null),
-    collapsible = 'icon',
-    ...restProps
-  }: AppSidebar = $props();
-
-  const openModal = () => {
-    goto(window.location.pathname + '?upgrade=true');
-  };
+  let { data, canAddOrg = true, ref = $bindable(null), collapsible = 'icon', ...restProps }: AppSidebar = $props();
 </script>
 
 <Sidebar.Root {collapsible} {...restProps} class="inset-y-12 h-[calc(100vh-48px)]">
-  {#if sidebarData.teams}
-    <Sidebar.Header>
-      <TeamSwitcher {canAddOrg} teams={sidebarData.teams} />
-    </Sidebar.Header>
-  {/if}
+  <Sidebar.Header>
+    <OrgSwitcher {canAddOrg} />
+  </Sidebar.Header>
 
   <Sidebar.Content>
-    <NavMain items={sidebarData.navMain} />
+    <NavMain items={data.navMain} />
   </Sidebar.Content>
 
   {#if $isFreePlan}
@@ -45,14 +33,14 @@
           <p class="text-base font-semibold">{$t('org_navigation.early_adopter')}</p>
           <p class="text-xs">{$t('org_navigation.unlock')}</p>
         </span>
-        <PrimaryButton label={$t('org_navigation.upgrade')} onClick={openModal} className="font-normal" />
+        <PrimaryButton label={$t('org_navigation.upgrade')} onClick={openUpgradeModal} className="font-normal" />
       </div>
     </Sidebar.Content>
   {/if}
 
-  {#if sidebarData.user}
+  {#if data.user}
     <Sidebar.Footer>
-      <NavUser user={sidebarData.user} />
+      <NavUser user={data.user} />
     </Sidebar.Footer>
   {/if}
 

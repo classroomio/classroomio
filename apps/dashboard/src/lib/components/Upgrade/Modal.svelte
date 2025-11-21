@@ -31,7 +31,7 @@
   let isConfirming = $derived((query.get('confirmation') || '') === 'true');
 
   async function handleClick(plan, planName: string) {
-    if (plan.CTA.IS_DISABLED || !$profile.id) {
+    if (plan.CTA.IS_DISABLED || !$profile.id || !$profile.email) {
       return;
     }
 
@@ -51,7 +51,7 @@
       checkoutURL.searchParams.set(
         'metadata',
         JSON.stringify({
-          triggeredBy: $currentOrg.memberId,
+          triggeredBy: $currentOrg.roleId,
           orgId: $currentOrg.id,
           orgSlug: $currentOrg.siteName
         })
@@ -131,7 +131,7 @@
     </div>
   {:else}
     <div class="flex flex-col items-center justify-center">
-      <div class="relative mb-2 flex items-center rounded-[30px] border-[2px] p-[2px] lg:scale-100">
+      <div class="relative mb-2 flex items-center rounded-[30px] border-2 p-2 lg:scale-100">
         <button
           style="background-color: {isYearlyPlan ? 'initial' : '#1D4EE2'}; color: {isYearlyPlan ? '#5e636b' : '#fff'}"
           class="rounded-[30px] bg-blue-700 px-3 py-1 text-xs text-white transition-all duration-500 ease-in-out lg:px-4 lg:py-2"

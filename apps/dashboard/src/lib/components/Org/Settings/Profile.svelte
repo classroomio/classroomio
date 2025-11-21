@@ -5,6 +5,7 @@
   import { profileApi } from '$lib/features/auth/api/profile.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { t } from '$lib/utils/functions/translations';
+  import { Row, Grid, Column } from './Layout';
 
   import SectionTitle from '../SectionTitle.svelte';
   import LanguagePicker from './LanguagePicker.svelte';

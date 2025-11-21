@@ -1,10 +1,9 @@
+@import 'tailwindcss' prefix(ui);
+@import 'tw-animate-css';
+
 @import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
 
 @source '../node_modules/layerchart/dist';
-
-@import 'tailwindcss';
-
-@import 'tw-animate-css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -120,11 +119,11 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply ui:border-border ui:outline-ring/50;
   }
 
   body {
-    @apply bg-background text-foreground font-cio;
+    @apply ui:bg-background ui:text-foreground ui:font-cio;
   }
 
   button,
@@ -133,6 +132,6 @@
   optgroup,
   textarea,
   ::file-selector-button {
-    @apply font-cio;
+    @apply ui:font-cio;
   }
 }

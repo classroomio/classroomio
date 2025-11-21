@@ -18,9 +18,7 @@
   import { updateOrgSiteNameValidation } from '$lib/utils/functions/validator';
   import { sanitizeDomain, sendDomainRequest } from '$lib/utils/functions/domain';
 
-  import Row from './Layout/Row.svelte';
-  import Grid from './Layout/Grid.svelte';
-  import Column from './Layout/Column.svelte';
+  import { Row, Grid, Column } from './Layout';
   import SectionTitle from '../SectionTitle.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import { IconButton } from '$lib/components/IconButton';

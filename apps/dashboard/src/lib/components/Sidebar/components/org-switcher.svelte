@@ -6,49 +6,39 @@
   import { useSidebar } from '@cio/ui/base/sidebar';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
+  import { getShortOrgName } from '$lib/utils/functions/org';
+  import type { AccountOrg } from '$lib/features/app/types';
 
   import { setTheme } from '$lib/utils/functions/theme';
-  import type { CurrentOrg } from '$lib/utils/types/org';
   import { currentOrg, currentOrgPath, orgs } from '$lib/utils/store/org';
 
   import TextChip from '$lib/components/Chip/Text.svelte';
   import ComingSoon from '$lib/components/ComingSoon/index.svelte';
 
   let {
-    teams,
     canAddOrg = true
   }: {
-    teams: CurrentOrg[];
     canAddOrg?: boolean;
   } = $props();
 
   const sidebar = useSidebar();
 
-  let activeTeam = $state($currentOrg || null);
-
   console.log('Active Team:', $currentOrg);
 
-  function getOrg(org: CurrentOrg) {
-    return $orgs.find((team) => team.name === org.name);
-  }
+  function onClick(org: AccountOrg) {
+    if (org.id === $currentOrg.id) return;
 
-  function onClick(org: any) {
-    activeTeam = org;
-    const organization = getOrg(org);
+    localStorage.setItem('classroomio_org_sitename', org.siteName);
+    currentOrg.set(org);
 
-    if (organization) {
-      localStorage.setItem('classroomio_org_sitename', organization.siteName);
-      currentOrg.set(organization);
-
-      setTheme(organization.theme);
-      window.location.href = $currentOrgPath;
-    }
+    setTheme(org.theme);
+    window.location.href = $currentOrgPath;
   }
 </script>
 
 <Sidebar.Menu>
   <Sidebar.MenuItem>
-    {#if activeTeam}
+    {#if $currentOrg.id}
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
           {#snippet child({ props })}
@@ -59,18 +49,22 @@
             >
               {#if $currentOrg.name}
                 <Avatar.Root class="flex size-8 items-center justify-center rounded-lg">
-                  {#if $currentOrg.avatar_url && $currentOrg.name}
-                    <Avatar.Image src={$currentOrg.avatar_url} alt={$currentOrg.name} />
-                  {:else if $currentOrg.shortName}
-                    <TextChip size="sm" value={$currentOrg.shortName} className="bg-primary-200 dark:text-black" />
+                  {#if $currentOrg.avatarUrl}
+                    <Avatar.Image src={$currentOrg.avatarUrl} alt={$currentOrg.name} />
+                  {:else}
+                    <TextChip
+                      size="sm"
+                      value={getShortOrgName($currentOrg.name)}
+                      className="bg-primary-200 dark:text-black"
+                    />
                   {/if}
                 </Avatar.Root>
 
                 <div class="grid flex-1 text-left text-sm leading-tight">
                   <span class="truncate font-medium">
-                    {activeTeam.name}
+                    {$currentOrg.name}
                   </span>
-                  <span class="truncate text-xs">{activeTeam.organization_plan[0]?.plan_name}</span>
+                  <span class="truncate text-xs">{$currentOrg.plans?.[0]?.planName || 'Free'}</span>
                 </div>
                 <ChevronsUpDownIcon class="ml-auto" />
               {:else}
@@ -87,20 +81,19 @@
           side={sidebar.isMobile ? 'bottom' : 'right'}
           sideOffset={4}
         >
-          <DropdownMenu.Label class="text-muted-foreground text-xs">Teams</DropdownMenu.Label>
-          {#each teams as team (team.name)}
+          <DropdownMenu.Label class="text-muted-foreground text-xs">Organizations</DropdownMenu.Label>
+          {#each $orgs as org (org.name)}
             {#if canAddOrg}
-              <DropdownMenu.Item onSelect={() => onClick(team)} class="gap-2 p-2">
+              <DropdownMenu.Item onSelect={() => onClick(org)} class="gap-2 p-2">
                 <Avatar.Root class="flex size-8 items-center justify-center rounded-lg">
-                  {#if $currentOrg.avatar_url && $currentOrg.name}
-                    <Avatar.Image src={$currentOrg.avatar_url} alt={$currentOrg.name} />
-                  {:else if $currentOrg.shortName}
-                    <TextChip size="sm" value={$currentOrg.shortName} className="bg-primary-200 dark:text-black" />
+                  {#if org.avatarUrl}
+                    <Avatar.Image src={org.avatarUrl} alt={org.name} />
+                  {:else}
+                    <TextChip size="sm" value={getShortOrgName(org.name)} className="bg-primary-200 dark:text-black" />
                   {/if}
                 </Avatar.Root>
 
-                {team.name}
-                <!-- <DropdownMenu.Shortcut>⌘{index + 1}</DropdownMenu.Shortcut> -->
+                {org.name}
               </DropdownMenu.Item>
             {/if}
           {/each}
@@ -109,7 +102,7 @@
             <div class="flex size-6 items-center justify-center rounded-md border bg-transparent">
               <PlusIcon class="size-4" />
             </div>
-            <div class="text-muted-foreground font-medium">Add team</div>
+            <div class="text-muted-foreground font-medium">Add Organization</div>
 
             <ComingSoon />
           </DropdownMenu.Item>
@@ -123,7 +116,7 @@
           <PlusIcon class="size-4" />
         </div>
         <div class="grid flex-1 text-left text-sm leading-tight">
-          <span class="truncate font-medium">No teams</span>
+          <span class="truncate font-medium">No orgs</span>
           <span class="truncate text-xs">Loading...</span>
         </div>
       </Sidebar.MenuButton>
