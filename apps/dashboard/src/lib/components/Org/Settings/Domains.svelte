@@ -156,7 +156,7 @@
 
     snackbar.success();
 
-    $currentOrg.customDomain = undefined;
+    $currentOrg.customDomain = '';
     $currentOrg.isCustomDomainVerified = false;
     isCustomDomainLoading = false;
   }

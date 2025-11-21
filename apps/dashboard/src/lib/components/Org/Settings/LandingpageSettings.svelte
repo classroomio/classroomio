@@ -21,6 +21,7 @@
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
+  import type { OrgLandingPageJson } from '$lib/utils/types/org';
 
   let isSaving = $state(false);
   let creatingNewQuestion = $state(false);
@@ -152,7 +153,7 @@
   // Set default from store
   currentOrg.subscribe((cOrg) => {
     if (cOrg.landingpage && Object.keys(cOrg.landingpage).length) {
-      const landingpage = { ...cOrg.landingpage };
+      const landingpage = { ...(cOrg.landingpage as unknown as OrgLandingPageJson) };
 
       // Fallbacks for new keys we added into JSON, in case a user already saved the old JSON
       if (!landingpage?.header?.banner) {
