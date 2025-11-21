@@ -1582,5 +1582,11 @@
     "unsaved_changes": {
       "message": "Masz niezbawione zmiany. Czy na pewno chcesz odejść?"
     }
+  },
+  "new_course_modal": {
+    "live_class_label": "Zajęcia na żywo",
+    "live_class_subtitle": "Ten typ kursu jest idealny w przypadku obozów typu bootcampy, gdzie lekcje zależą od czasu i wymagana jest obecność i ocena",
+    "self_paced_label": "Samodzielne tempo",
+    "self_paced_subtitle": "Ten typ kursu jest idealny do kursów, w których uczniowie mogą brać udział w lekcjach we własnym tempie, bez nauczyciela"
   }
 }

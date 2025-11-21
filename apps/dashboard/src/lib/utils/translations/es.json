@@ -1612,5 +1612,11 @@
     "unsaved_changes": {
       "message": "Tienes cambios no salvos. ¿Estás seguro de que quieres irte?"
     }
+  },
+  "new_course_modal": {
+    "live_class_label": "Clase en vivo",
+    "live_class_subtitle": "Este tipo de curso es ideal para bootcamps donde las lecciones se basan en el tiempo y necesitas asistencia y calificaciones.",
+    "self_paced_label": "a tu propio ritmo",
+    "self_paced_subtitle": "Este tipo de curso es ideal para cursos donde los estudiantes pueden tomar lecciones a su propio ritmo sin un profesor."
   }
 }

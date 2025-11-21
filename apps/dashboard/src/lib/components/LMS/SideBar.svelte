@@ -1,20 +1,19 @@
 <script lang="ts">
-  import type { Component } from 'svelte';
   import { page } from '$app/state';
-  import BadgeHelpIcon from '@lucide/svelte/icons/badge-help';
-  import ListTodoIcon from '@lucide/svelte/icons/list-todo';
-  import MapPlusIcon from '@lucide/svelte/icons/map-plus';
-  import LayoutDashboardIcon from '@lucide/svelte/icons/layout-dashboard';
-  import LibraryBigIcon from '@lucide/svelte/icons/library-big';
+  import type { Component } from 'svelte';
+  import * as Sidebar from '@cio/ui/base/sidebar';
   import UsersIcon from '@lucide/svelte/icons/users';
-  import Avatar from '$lib/components/Avatar/index.svelte';
+  import MapPlusIcon from '@lucide/svelte/icons/map-plus';
+  import ListTodoIcon from '@lucide/svelte/icons/list-todo';
+  import LibraryBigIcon from '@lucide/svelte/icons/library-big';
+  import LayoutDashboardIcon from '@lucide/svelte/icons/layout-dashboard';
+
   import { profile } from '$lib/utils/store/user';
-  import { NavClasses } from '$lib/utils/constants/reusableClass';
-  import { profileMenu, sideBar } from '$lib/components/Org/store';
-  import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
-  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-  import ProfileMenu from '$lib/components/Org/ProfileMenu/index.svelte';
+  import { sideBar } from '$lib/components/Org/store';
+  import { t } from '$lib/utils/functions/translations';
+
+  import NavUser from '../Sidebar/components/nav-user.svelte';
 
   interface SideLinks {
     name: string;
@@ -22,6 +21,12 @@
     link: string;
     show?: () => boolean;
   }
+
+  const user = $derived.by(() => ({
+    name: $profile.fullname,
+    email: $profile.email,
+    avatar: $profile.avatar_url
+  }));
 
   function isActive(pagePath: string, itemPath: string) {
     const pageLinkItems = pagePath.split('/');
@@ -75,73 +80,44 @@
   };
 </script>
 
-<div bind:this={$profileMenu.ref} class="static md:relative">
-  <aside
-    class={`${
-      $sideBar.hidden
-        ? 'absolute top-[48px] z-40 -translate-x-[100%] md:relative md:top-0 md:translate-x-0'
-        : 'absolute top-[48px] z-40 translate-x-0 md:relative md:top-0'
-    }  h-[calc(100vh-48px)] w-[250px] min-w-[250px] overflow-y-auto bg-gray-100 transition dark:bg-neutral-900`}
-  >
-    <div class="flex h-full flex-col">
-      <div class="border-b border-gray-200 px-4 pt-5 dark:border-neutral-600">
-        <div class="flex w-full flex-col items-center">
-          <Avatar src={$profile.avatar_url} name={$profile.fullname} shape="rounded-full" width="w-20" height="h-20" />
-
-          <div class="mt-5 flex w-full justify-center">
-            <p class="max-w-[80%] truncate whitespace-nowrap text-center text-lg font-bold dark:text-white">
-              {$profile.fullname}
-            </p>
-          </div>
-        </div>
-
-        <ul class="my-5">
-          {#each sideLinks as item}
-            <a href={item.link} class="text-black" onclick={toggleSidebar}>
-              <li
-                class="mb-2 flex items-center px-4 py-3 {NavClasses.item} {isActive(page.url.pathname, `${item.link}`)
-                  ? NavClasses.active
-                  : 'dark:text-white'}"
-              >
-                <item.icon />
-                <p class="ml-2 dark:text-white">{item.name}</p>
-              </li>
-            </a>
+<Sidebar.Provider class="w-fit">
+  <Sidebar.Root collapsible="icon" class="inset-y-12 h-[calc(100vh-48px)] {$sideBar.hidden ? 'hidden' : ''}">
+    <Sidebar.Content>
+      <Sidebar.Group>
+        <Sidebar.GroupLabel>LMS Navigation</Sidebar.GroupLabel>
+        <Sidebar.Menu>
+          {#each sideLinks as item (item.link)}
+            <Sidebar.MenuItem>
+              <Sidebar.MenuButton tooltipContent={item.name}>
+                <a
+                  href={item.link}
+                  onclick={toggleSidebar}
+                  class="flex w-full items-center gap-4 {isActive(page.url.pathname, item.link)
+                    ? 'bg-accent text-accent-foreground rounded-md px-3 py-2'
+                    : ''}"
+                >
+                  <item.icon size={16} />
+                  {item.name}
+                </a>
+              </Sidebar.MenuButton>
+            </Sidebar.MenuItem>
           {/each}
-        </ul>
-      </div>
-      <span class="flex-grow"></span>
-      <ul class="my-5 px-4 pb-5">
-        <a href="/lms" class="text-black" onclick={toggleSidebar}>
-          <li class="mb-2 flex items-center rounded px-4 py-3">
-            <BadgeHelpIcon size={16} />
-            <p class="ml-2 dark:text-white">{$t('lms_navigation.help')}</p>
-          </li>
-        </a>
-        <button
-          class="w-full"
-          onclick={() => {
-            $profileMenu.open = !$profileMenu.open;
-            $sideBar.hidden = true;
-          }}
-        >
-          <div
-            class="mb-2 flex w-full cursor-pointer items-center justify-between px-2.5 py-1.5 text-black no-underline {NavClasses.item}"
-          >
-            <div class="flex items-center justify-start space-x-1 text-start">
-              <Avatar src={$profile.avatar_url} name={$profile.username} width="w-[1.2rem]" height="h-[1.2rem]" />
-              <p class="max-w-full truncate text-sm font-medium dark:text-white">
-                {$profile.fullname}
-              </p>
-            </div>
-            <div>
-              <ChevronRightIcon size={16} />
-            </div>
-          </div>
-        </button>
-      </ul>
-    </div>
-  </aside>
+        </Sidebar.Menu>
+      </Sidebar.Group>
+    </Sidebar.Content>
 
-  <ProfileMenu />
-</div>
+    {#if user}
+      <Sidebar.Footer>
+        <NavUser {user} />
+      </Sidebar.Footer>
+    {/if}
+
+    <Sidebar.Rail />
+  </Sidebar.Root>
+
+  <!-- TODO: FIGURE OUT WHY THIS APPEARANCE IS BUGGY  -->
+  <!-- TODO: THE SIDEBAR COLLAPSE VIEW IS BAD -->
+  <!-- <Sidebar.Inset>
+    <Sidebar.Trigger class="-ml-1" />
+  </Sidebar.Inset> -->
+</Sidebar.Provider>

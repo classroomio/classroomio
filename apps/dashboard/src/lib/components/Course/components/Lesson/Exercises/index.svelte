@@ -1,25 +1,27 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import Backdrop from '$lib/components/Backdrop/index.svelte';
-  import Box from '$lib/components/Box/index.svelte';
-  import NewExerciseModal from '$lib/components/Course/components/Lesson/Exercises/NewExerciseModal.svelte';
-  import { PageBody } from '$lib/components/Page';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { QUESTION_TYPES } from '$lib/components/Question/constants';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import { formatDate } from '$lib/utils/functions/routes/dashboard';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { t } from '$lib/utils/functions/translations';
-  import { createExercise, createExerciseFromTemplate } from '$lib/utils/services/courses';
-  import { globalStore } from '$lib/utils/store/app';
-  import type { ExerciseTemplate } from '$lib/utils/types';
-  import { Breadcrumb, BreadcrumbItem } from 'carbon-components-svelte';
   import { onMount, untrack } from 'svelte';
   import { Moon } from 'svelte-loading-spinners';
-  import Exercise from '../Exercise/index.svelte';
-  import { isQuestionnaireFetching, questionnaire } from '../store/exercise';
+
   import { lesson } from '../store/lessons';
+  import { globalStore } from '$lib/utils/store/app';
+  import { t } from '$lib/utils/functions/translations';
+  import * as Breadcrumb from '@cio/ui/base/breadcrumb';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import type { ExerciseTemplate } from '$lib/utils/types';
   import type { Exercise as ExerciseType } from '$lib/utils/types';
+  import { formatDate } from '$lib/utils/functions/routes/dashboard';
+  import { isQuestionnaireFetching, questionnaire } from '../store/exercise';
+  import { createExercise, createExerciseFromTemplate } from '$lib/utils/services/courses';
+
+  import { PageBody } from '$lib/components/Page';
+  import Exercise from '../Exercise/index.svelte';
+  import Box from '$lib/components/Box/index.svelte';
+  import Backdrop from '$lib/components/Backdrop/index.svelte';
+  import { QUESTION_TYPES } from '$lib/components/Question/constants';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import NewExerciseModal from '$lib/components/Course/components/Lesson/Exercises/NewExerciseModal.svelte';
 
   interface Props {
     path?: string;
@@ -177,9 +179,15 @@
   <PageBody isPageNavHidden={$globalStore.isStudent}>
     {#snippet header()}
       <slot:fragment>
-        <Breadcrumb class="my-2">
-          <BreadcrumbItem href={path}>{$t('course.navItem.lessons.exercises.heading')}</BreadcrumbItem>
-        </Breadcrumb>
+        <Breadcrumb.Root class="my-2">
+          <Breadcrumb.List>
+            <Breadcrumb.Item>
+              <Breadcrumb.Link href={path}>
+                {$t('course.navItem.lessons.exercises.heading')}
+              </Breadcrumb.Link>
+            </Breadcrumb.Item>
+          </Breadcrumb.List>
+        </Breadcrumb.Root>
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           <PrimaryButton
             className="mr-2 my-2"

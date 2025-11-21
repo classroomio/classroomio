@@ -8,10 +8,10 @@
   <title>Settings - ClassroomIO</title>
 </svelte:head>
 
-<section class="mx-auto w-full md:max-w-4xl">
-  <div class="px-5 py-10">
+<section class="w-full md:max-w-6xl lg:mx-auto">
+  <div class="px-5 md:py-10">
     <div class="mb-10 flex items-center justify-between">
-      <h1 class="text-3xl font-bold dark:text-white">{$t('settings.heading')}</h1>
+      <h1 class="text-3xl dark:text-white">{$t('settings.heading')}</h1>
 
       <ViewSiteBtn />
     </div>

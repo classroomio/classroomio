@@ -63,7 +63,7 @@
             className="mr-2"
           />
         {:else}
-          <TextChip value={shortenName($currentOrg.name)} className="bg-primary-200 font-bold mr-2 dark:text-black" />
+          <TextChip value={shortenName($currentOrg.name)} className="bg-primary-200 mr-2 dark:text-black" />
         {/if}
         <span class="line-clamp-1">
           {$currentOrg.name}

@@ -1,35 +1,34 @@
 <script lang="ts">
-  import { fade } from 'svelte/transition';
   import get from 'lodash/get';
   import pluralize from 'pluralize';
   import { page } from '$app/state';
+  import { fade } from 'svelte/transition';
   import { onMount, onDestroy } from 'svelte';
   import PlayIcon from '@lucide/svelte/icons/play';
-  import { ImageLoader, InlineLoading } from 'carbon-components-svelte';
 
   import { getLectureNo } from '../Course/function';
   import { currentOrg } from '$lib/utils/store/org';
-  import { course, sortLesson } from '$lib/components/Course/store';
+  import { NAV_ITEM_KEY, NAV_ITEMS } from './constants';
   import { t } from '$lib/utils/functions/translations';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { handleOpenWidget, reviewsModalStore } from './store';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { COURSE_VERSION, type Course } from '$lib/utils/types';
+  import { course, sortLesson } from '$lib/components/Course/store';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
+  import { getExerciseCount, getLessonSections, getTotalLessons, filterNavItems } from './utils';
 
   import Chip from '../Chip/index.svelte';
   import Modal from '../Modal/index.svelte';
+  import ImageRenderer from '../Org/ImageRenderer.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import PricingSection from './components/PricingSection.svelte';
   import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
+  import SectionsDisplay from './components/SectionsDisplay.svelte';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
-  import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { observeIntersection } from './components/IntersectionObserver';
-  import SectionsDisplay from './components/SectionsDisplay.svelte';
-
-  import { getExerciseCount, getLessonSections, getTotalLessons, filterNavItems } from './utils';
-  import { NAV_ITEM_KEY, NAV_ITEMS } from './constants';
 
   interface Props {
     editMode?: boolean;
@@ -116,7 +115,7 @@
     <div class="flex w-full flex-col-reverse items-center justify-between md:w-5/6 md:flex-row">
       <!-- Course Description -->
       <div class="w-11/12 py-10 md:w-2/5">
-        <h1 class="my-4 text-5xl font-bold text-white dark:text-white">
+        <h1 class="my-4 text-5xl text-white dark:text-white">
           {get(courseData, 'title', '')}
         </h1>
         <p class="text-md mb-6 text-white dark:text-white">
@@ -218,7 +217,7 @@
             transition:fade={{ delay: 250, duration: 300 }}
             class="mt-8 border-b border-gray-300 pb-10"
           >
-            <h3 class="mb-3 mt-0 text-2xl font-bold">
+            <h3 class="mb-3 mt-0 text-2xl">
               {$t('course.navItem.landing_page.requirement')}
             </h3>
 
@@ -235,7 +234,7 @@
             transition:fade={{ delay: 250, duration: 300 }}
             class="mt-8 border-b border-gray-300 pb-10"
           >
-            <h3 class="mb-3 mt-0 text-2xl font-bold">
+            <h3 class="mb-3 mt-0 text-2xl">
               {$t('course.navItem.landing_page.description')}
             </h3>
 
@@ -248,7 +247,7 @@
         <!-- Sections - Goal -->
         {#if navItemKeys.includes(NAV_ITEM_KEY.GOALS)}
           <section id="goals" transition:fade={{ delay: 250, duration: 300 }} class="mt-8 pb-10">
-            <h3 class="mb-3 mt-0 text-2xl font-bold">{$t('course.navItem.landing_page.learn')}</h3>
+            <h3 class="mb-3 mt-0 text-2xl">{$t('course.navItem.landing_page.learn')}</h3>
             <ul class="list font-light">
               <HtmlRender>{@html get(courseData, 'metadata.goals', '')}</HtmlRender>
             </ul>
@@ -262,21 +261,16 @@
             transition:fade={{ delay: 250, duration: 300 }}
             class="mt-8 border-b border-gray-300 pb-10"
           >
-            <h3 class="mt-0 text-2xl font-bold">{$t('course.navItem.landing_page.certificate')}</h3>
+            <h3 class="mt-0 text-2xl">{$t('course.navItem.landing_page.certificate')}</h3>
             <p class="mb-3 text-sm font-light dark:text-white">
               {$t('course.navItem.landing_page.certificate_text')}
             </p>
 
-            <ImageLoader
-              class="certificate-img max-h-[215px]"
+            <ImageRenderer
               src={certificate?.templateUrl}
               alt="certificate template"
-            >
-              <svelte:fragment slot="loading">
-                <InlineLoading />
-              </svelte:fragment>
-              <svelte:fragment slot="error">An error occurred.</svelte:fragment>
-            </ImageLoader>
+              className="certificate-img max-h-[215px]"
+            />
           </section>
         {/if}
 
@@ -284,7 +278,7 @@
         {#if courseData.version === COURSE_VERSION.V1}
           <section id="lessons" class="mt-8 border-b border-gray-300 pb-10">
             <div class="mb-3 flex w-full items-center justify-between">
-              <h3 class="mb-3 mt-0 text-2xl font-bold">
+              <h3 class="mb-3 mt-0 text-2xl">
                 {$t('course.navItem.landing_page.content')}
               </h3>
               <p class="text-sm font-light dark:text-white">
@@ -391,7 +385,7 @@
               <div class="flex">
                 <!-- ratings -->
                 <div class="w-1/3">
-                  <h2 class="text-xl font-bold">
+                  <h2 class="text-xl">
                     {averageRating}
                     {$t('course.navItem.landing_page.reviews_modal.rating')}
                   </h2>
@@ -439,7 +433,7 @@
 
         <!-- Sections - Instructor -->
         <section id="instructor" class="mt-8 pb-10">
-          <h3 class="mb-3 mt-0 text-2xl font-bold">
+          <h3 class="mb-3 mt-0 text-2xl">
             {$t('course.navItem.landing_page.instructor')}
           </h3>
           <div class="mb-4 flex items-center">

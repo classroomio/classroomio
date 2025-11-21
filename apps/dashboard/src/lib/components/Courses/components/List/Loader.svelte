@@ -1,7 +1,7 @@
 <script>
-  import { SkeletonText } from 'carbon-components-svelte';
+  import { Skeleton } from '@cio/ui/base/skeleton';
 </script>
 
 <div class="my-2">
-  <SkeletonText heading />
+  <Skeleton class="h-4 w-full" />
 </div>

@@ -1581,5 +1581,11 @@
     "resend_in": "Send verifikation i",
     "seconds": "sekunder",
     "snackbar_error": "Fejl under afsendelse af kode"
+  },
+  "new_course_modal": {
+    "live_class_label": "Live klasse",
+    "live_class_subtitle": "Denne kursustype er ideel til bootcamps, hvor undervisningen er tidsbaseret, og du har brug for deltagelse og karaktergivning",
+    "self_paced_label": "Selv tempo",
+    "self_paced_subtitle": "Denne kursustype er ideel til kurser, hvor elever kan tage lektioner i deres eget tempo uden en lærer"
   }
 }

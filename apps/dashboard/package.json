@@ -92,7 +92,6 @@
     "@types/node": "^20",
     "all-object-keys": "^2.2.0",
     "babel-jest": "^29.7.0",
-    "carbon-components-svelte": "^0.79.0",
     "diff": "^5.2.0",
     "dotenv": "^16.3.1",
     "eslint": "^9.36.0",

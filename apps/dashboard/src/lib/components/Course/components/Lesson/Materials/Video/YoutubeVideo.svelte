@@ -1,19 +1,19 @@
 <script lang="ts">
-  import { CopyButton, Tag } from 'carbon-components-svelte';
+  import { Badge } from '@cio/ui/base/badge';
+  import CopyIcon from '@lucide/svelte/icons/copy';
   import TrashIcon from '@lucide/svelte/icons/trash';
-  import { IconButton } from '$lib/components/IconButton';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import { lesson, isLessonDirty } from '$lib/components/Course/components/Lesson/store/lessons';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+
   import { t } from '$lib/utils/functions/translations';
+  import { IconButton } from '$lib/components/IconButton';
   import type { LessonVideoType } from '$lib/utils/types';
+  import { copyToClipboard, getVideoUrls, removeVideo } from '$lib/utils/functions/formatYoutubeVideo';
+  import { lesson, isLessonDirty } from '$lib/components/Course/components/Lesson/store/lessons';
+
+  import TextField from '$lib/components/Form/TextField.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   let youtubeLinks = $state('');
   let error = $state('');
-
-  function getVideoUrls(urls = '') {
-    return (urls || '').split(',').filter((url) => !!url.trim());
-  }
 
   function addVideo() {
     const links = getVideoUrls(youtubeLinks);
@@ -41,10 +41,6 @@
     const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
 
     return youtubeRegex.test(link.trim());
-  }
-
-  function removeVideo(index = 0) {
-    $lesson.materials.videos = $lesson.materials.videos.filter((_v, i) => i !== index);
   }
 </script>
 
@@ -74,10 +70,12 @@
   {#each $lesson?.materials?.videos as video, index}
     {#if video.type === 'youtube'}
       <div class="flex items-center gap-1">
-        <Tag type="blue">
+        <Badge class="max-w-md truncate" variant="secondary">
           {video.link}
-        </Tag>
-        <CopyButton text={video.link} feedback="Copied to clipboard" />
+        </Badge>
+        <IconButton value="copy-video" onClick={() => copyToClipboard(video.link)}>
+          <CopyIcon size={16} />
+        </IconButton>
         <IconButton value="delete-video" onClick={() => removeVideo(index)}>
           <TrashIcon size={16} />
         </IconButton>

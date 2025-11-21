@@ -1,21 +1,22 @@
 <script lang="ts">
   import { untrack } from 'svelte';
-  import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import Confetti from '$lib/components/Confetti/index.svelte';
-  import { toggleConfetti } from '$lib/components/Confetti/store';
-
-  import StepDoneIcon from '$lib/components/Icons/StepDoneIcon.svelte';
-  import Modal from '$lib/components/Modal/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { t } from '$lib/utils/functions/translations';
-  import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
-  import { profile } from '$lib/utils/store/user';
-  import { Loading } from 'carbon-components-svelte';
+  import { goto } from '$app/navigation';
+  import { Progress } from '@cio/ui/base/progress';
   import CheckIcon from '@lucide/svelte/icons/check';
+
   import { PLANS } from '@cio/utils/plans';
+  import { profile } from '$lib/utils/store/user';
+  import { t } from '$lib/utils/functions/translations';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { toggleConfetti } from '$lib/components/Confetti/store';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
+
+  import Modal from '$lib/components/Modal/index.svelte';
+  import Confetti from '$lib/components/Confetti/index.svelte';
+  import StepDoneIcon from '$lib/components/Icons/StepDoneIcon.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   const disabledClass = 'bg-gray-300 text-gray-400 hover:cursor-not-allowed';
 
@@ -126,7 +127,7 @@
     </div>
   {:else if isConfirming}
     <div class="relative mb-4 flex w-full flex-col items-center justify-center">
-      <Loading withOverlay={false} />
+      <Progress />
     </div>
   {:else}
     <div class="flex flex-col items-center justify-center">
@@ -162,29 +163,29 @@
                 ? 'text-white'
                 : 'text-gray-900'} lg:text-xl dark:text-white"
             >
-              {PLANS[planName].NAME}
+              {PLANS[planName]?.NAME}
             </p>
             <p
               class="text-baseline flex items-baseline gap-x-1 font-medium {planName === 'EARLY_ADOPTER'
                 ? 'text-white'
                 : 'text-black'} dark:text-gray-300"
             >
-              {PLANS[planName].PRICE.CURRENCY}
-              {isYearlyPlan ? PLANS[planName].PRICE.YEARLY : PLANS[planName].PRICE.MONTHLY}
+              {PLANS[planName]?.PRICE?.CURRENCY}
+              {isYearlyPlan ? PLANS[planName]?.PRICE?.YEARLY : PLANS[planName]?.PRICE?.MONTHLY}
             </p>
             <p
               class=" mt-4 text-sm font-light leading-6 {planName === 'EARLY_ADOPTER'
                 ? 'text-white'
                 : 'text-black'} lg:leading-6 dark:text-gray-300"
             >
-              {PLANS[planName].DESCRIPTION}
+              {PLANS[planName]?.DESCRIPTION}
             </p>
 
             <button
               class="text-md mt-4 block w-full rounded-md {isLoadingPlan === planName && disabledClass} {planName ===
               'EARLY_ADOPTER'
                 ? 'bg-white text-slate-900 hover:bg-indigo-50'
-                : PLANS[planName].CTA.IS_DISABLED
+                : PLANS[planName]?.CTA?.IS_DISABLED
                   ? disabledClass
                   : 'bg-primary-900 hover:bg-primary-700 text-white'} flex items-center justify-center py-3 text-center font-medium hover:no-underline lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
               onclick={() => {
@@ -194,9 +195,9 @@
               }}
             >
               {#if isLoadingPlan === planName}
-                <Loading withOverlay={false} small />
+                <Progress />
               {:else}
-                {PLANS[planName].CTA.DASHBOARD_LABEL}
+                {PLANS[planName]?.CTA?.DASHBOARD_LABEL}
               {/if}
             </button>
 
@@ -205,7 +206,7 @@
                 ? 'text-white'
                 : 'text-black'} dark:text-gray-300"
             >
-              {#each PLANS[planName].FEATURES as features}
+              {#each PLANS[planName]?.FEATURES as features}
                 <li class="flex items-center">
                   <div>
                     <CheckIcon

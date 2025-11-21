@@ -13,6 +13,8 @@
     "@cio/ui": "workspace:*"
   },
   "devDependencies": {
+    "@tiptap/pm": "^3.7.1",
+    "@tiptap/core": "^3.7.1",
     "@storybook/addon-essentials": "^8.4.2",
     "@storybook/addon-interactions": "^8.4.2",
     "@storybook/addon-links": "^8.4.2",

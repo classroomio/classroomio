@@ -1,10 +1,11 @@
 <script lang="ts">
-  import QuestionContainer from '$lib/components/QuestionContainer/index.svelte';
+  import { questionnaire } from '../store/exercise';
+  import { t } from '$lib/utils/functions/translations';
+
   import DateTime from '$lib/components/Form/DateTime.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import { questionnaire } from '../store/exercise';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import { t } from '$lib/utils/functions/translations';
+  import QuestionContainer from '$lib/components/QuestionContainer/index.svelte';
 
   interface Props {
     preview: boolean;
@@ -43,14 +44,15 @@
         <p class="mb-1">
           {$t('course.navItem.lessons.exercises.all_exercises.description.heading')}
         </p>
+
         <TextEditor
-          value={$questionnaire.description}
+          content={$questionnaire.description}
           onChange={(html) => {
             $questionnaire.is_description_dirty = true;
             $questionnaire.description = html;
           }}
+          editorClass="max-h-[300px]"
           placeholder={$t('course.navItem.lessons.exercises.all_exercises.description.describe')}
-          maxHeight={300}
         />
       </div>
     {:else if preview}
@@ -78,7 +80,7 @@
         {/if}
       </div>
 
-      <article class="preview prose prose-sm sm:prose mt-3 p-2">
+      <article class="preview prose prose-sm mt-3 p-2 sm:prose">
         {@html $questionnaire.description || $t('course.navItem.lessons.exercises.all_exercises.description.no')}
       </article>
     {/if}

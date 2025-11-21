@@ -1,11 +1,14 @@
 <script>
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
   import { t } from '$lib/utils/functions/translations';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { currentOrgPlan, isFreePlan } from '$lib/utils/store/org';
-  import { Column, Grid, Row } from 'carbon-components-svelte';
+
+  import Row from './Layout/Row.svelte';
+  import Grid from './Layout/Grid.svelte';
+  import Column from './Layout/Column.svelte';
   import SectionTitle from '../SectionTitle.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   let isRedirecting = $state(false);
 
@@ -43,7 +46,7 @@
   }
 </script>
 
-<Grid class="border-c mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
+<Grid class="mt-5 w-full">
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}><SectionTitle>{$t('settings.billing.sub_title')}</SectionTitle></Column>
     <Column sm={8} md={8} lg={8}>

@@ -7,8 +7,6 @@
   import Design from '$lib/components/Course/components/Ceritficate/Design.svelte';
   // import Reports from '$lib/components/Course/components/Ceritficate/Reports.svelte';
   // import { issueCertificateModal } from '$lib/components/Course/components/Ceritficate/store';
-  // import { Tabs, Tab } from 'carbon-components-svelte';
-  // import TabContent from 'carbon-components-svelte/src/Tabs/TabContent.svelte';
   import StudentCertificate from '$lib/components/Course/components/Ceritficate/StudentCertificate/Index.svelte';
   import { t } from '$lib/utils/functions/translations';
 

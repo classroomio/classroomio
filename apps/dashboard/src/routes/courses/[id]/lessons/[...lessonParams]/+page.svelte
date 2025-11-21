@@ -1,36 +1,37 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import { CourseContainer } from '$lib/components/CourseContainer';
-  import { checkExercisesComplete, fetchLesson, updateLessonCompletion } from '$lib/utils/services/courses';
-  import { globalStore } from '$lib/utils/store/app';
+  import { goto } from '$app/navigation';
+  import { browser } from '$app/environment';
+  import Save from '@lucide/svelte/icons/save';
+  import * as Select from '@cio/ui/base/select';
+  import Pencil from '@lucide/svelte/icons/pencil';
+  import HistoryIcon from '@lucide/svelte/icons/history';
   import ListChecksIcon from '@lucide/svelte/icons/list-checks';
-  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
   import LibraryBigIcon from '@lucide/svelte/icons/library-big';
-  import PencilIcon from '@lucide/svelte/icons/pencil';
-  import SaveIcon from '@lucide/svelte/icons/save';
   import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-  import HistoryIcon from '@lucide/svelte/icons/history';
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
 
-  import { browser } from '$app/environment';
-  import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
-  import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
-  import LessonVersionHistory from '$lib/components/Course/components/Lesson/LessonVersionHistory.svelte';
-  import Materials from '$lib/components/Course/components/Lesson/Materials/index.svelte';
-  import { lesson, setLesson, lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { getGroupMemberId } from '$lib/components/Course/function';
+  import MODES from '$lib/utils/constants/mode';
+  import { profile } from '$lib/utils/store/user';
+  import { globalStore } from '$lib/utils/store/app';
+  import { t } from '$lib/utils/functions/translations';
+  import { snackbar } from '$lib/components/Snackbar/store';
   import { course, group } from '$lib/components/Course/store';
+  import { LANGUAGES } from '$lib/utils/constants/translation';
+  import { getGroupMemberId } from '$lib/components/Course/function';
+  import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
+  import { COURSE_VERSION, LOCALE, type Lesson, type LessonCompletion } from '$lib/utils/types';
+  import LessonVersionHistory from '$lib/components/Course/components/Lesson/LessonVersionHistory.svelte';
+  import { checkExercisesComplete, fetchLesson, updateLessonCompletion } from '$lib/utils/services/courses';
+  import { lesson, setLesson, lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
+
   import { IconButton } from '$lib/components/IconButton';
   import { PageBody, PageNav } from '$lib/components/Page';
+  import { CourseContainer } from '$lib/components/CourseContainer';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import MODES from '$lib/utils/constants/mode';
-  import { LANGUAGES } from '$lib/utils/constants/translation';
-  import { t } from '$lib/utils/functions/translations';
-  import { profile } from '$lib/utils/store/user';
-  import { COURSE_VERSION, LOCALE, type Lesson, type LessonCompletion } from '$lib/utils/types';
-  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
+  import Materials from '$lib/components/Course/components/Lesson/Materials/index.svelte';
 
   let { data = $bindable() } = $props();
 
@@ -233,7 +234,7 @@
               </IconButton>
             {/if}
 
-            <div class="hidden flex-row items-center lg:flex">
+            <div class="flex-row items-center lg:flex">
               <IconButton
                 onClick={() => {
                   toggleMode();
@@ -241,27 +242,27 @@
                 disabled={isSaving}
               >
                 {#if mode === MODES.edit}
-                  <SaveIcon size={20} />
+                  <Save size={20} />
                 {:else}
-                  <PencilIcon size={20} />
+                  <Pencil size={20} />
                 {/if}
               </IconButton>
             </div>
 
-            <div>
-              <DropdownMenu.Root>
-                <DropdownMenu.Trigger>Open</DropdownMenu.Trigger>
-                <DropdownMenu.Content>
-                  <DropdownMenu.Group>
-                    {#each LANGUAGES as lang}
-                      <DropdownMenu.Item onclick={() => ($lesson.locale = lang.id as LOCALE)}>
-                        {lang.text}
-                      </DropdownMenu.Item>
-                    {/each}
-                  </DropdownMenu.Group>
-                </DropdownMenu.Content>
-              </DropdownMenu.Root>
-            </div>
+            <Select.Root type="single" bind:value={$lesson.locale}>
+              <Select.Trigger class="h-9 w-[120px]">
+                {LANGUAGES.find((lang) => lang.id === $lesson.locale)?.text || 'Language'}
+              </Select.Trigger>
+              <Select.Content>
+                <Select.Group>
+                  {#each LANGUAGES as lang}
+                    <Select.Item value={lang.id}>
+                      {lang.text}
+                    </Select.Item>
+                  {/each}
+                </Select.Group>
+              </Select.Content>
+            </Select.Root>
           {/if}
         </RoleBasedSecurity>
       </div>

@@ -1,3 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
+
+@source '../node_modules/layerchart/dist';
+
 @import 'tailwindcss';
 
 @import 'tw-animate-css';
@@ -74,6 +78,9 @@
 }
 
 @theme inline {
+  /* --font-cio: 'Geist', Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji, sans-serif; */
+  --font-cio: var(--font-sans);
+  --default-font-family: var(--font-cio);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -117,6 +124,15 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-cio;
+  }
+
+  button,
+  input,
+  select,
+  optgroup,
+  textarea,
+  ::file-selector-button {
+    @apply font-cio;
   }
 }

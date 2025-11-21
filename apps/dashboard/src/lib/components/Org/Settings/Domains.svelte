@@ -1,31 +1,36 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import { Column, CopyButton, Grid, Row } from 'carbon-components-svelte';
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
   import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
   import TrashIcon from '@lucide/svelte/icons/trash';
+  import Copy from '@lucide/svelte/icons/copy';
   import isValidDomain from 'is-valid-domain';
+  import { goto } from '$app/navigation';
   import { untrack } from 'svelte';
   import { parse } from 'tldts';
 
-  import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
+  import { t } from '$lib/utils/functions/translations';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { blockedSubdomain } from '$lib/utils/constants/app';
+  import { currentOrg, isFreePlan } from '$lib/utils/store/org';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { copyToClipboard } from '$lib/utils/functions/formatYoutubeVideo';
+  import { updateOrgSiteNameValidation } from '$lib/utils/functions/validator';
+  import { sanitizeDomain, sendDomainRequest } from '$lib/utils/functions/domain';
+
+  import Row from './Layout/Row.svelte';
+  import Grid from './Layout/Grid.svelte';
+  import Column from './Layout/Column.svelte';
+  import SectionTitle from '../SectionTitle.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
-  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
+  import { IconButton } from '$lib/components/IconButton';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import { IconButton } from '$lib/components/IconButton';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
   import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import { blockedSubdomain } from '$lib/utils/constants/app';
-  import { sanitizeDomain, sendDomainRequest } from '$lib/utils/functions/domain';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { t } from '$lib/utils/functions/translations';
-  import { updateOrgSiteNameValidation } from '$lib/utils/functions/validator';
-  import { currentOrg, isFreePlan } from '$lib/utils/store/org';
-  import SectionTitle from '../SectionTitle.svelte';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
 
   let siteName = $derived($currentOrg.siteName);
   let customDomain = $state('');
@@ -202,10 +207,11 @@
 
 <Grid class="mt-5 w-full rounded border border-gray-200 dark:border-neutral-600">
   <Row class="border-bottom-c py-7">
-    <Column sm={2} md={2} lg={4} class="text-lg">
+    <Column sm={4} md={4} lg={4} class="text-lg">
       <SectionTitle>{$t('components.settings.domains.add')}</SectionTitle>
     </Column>
-    <Column sm={2} md={6} lg={8}>
+
+    <Column sm={8} md={8} lg={8} class="space-y-2">
       <p class="text-md mb-5 text-gray-500 dark:text-white">
         {$t('settings.organization.organization_profile.custom_domain.body')}
       </p>
@@ -225,7 +231,7 @@
         <div class="mb-6 flex items-center">
           <PrimaryButton
             label={$t('components.settings.domains.update')}
-            className="py-4"
+            className="py-2"
             variant={VARIANTS.OUTLINED}
             onClick={handleSaveSiteName}
             isDisabled={isLoading}
@@ -239,12 +245,13 @@
 
   <Row class="py-7">
     <UpgradeBanner className="mb-5">{$t('upgrade.domain')}</UpgradeBanner>
-    <Column sm={2} md={2} lg={4} class="text-lg">
+    <Column sm={4} md={4} lg={4} class="text-lg">
       <SectionTitle>
         {$t('components.settings.domains.custom')}
       </SectionTitle>
     </Column>
-    <Column sm={2} md={6} lg={10}>
+
+    <Column sm={8} md={8} lg={8} class="space-y-2">
       <div class="border-bottom-c pb-10">
         <!-- DNS Configuration -->
         {#if $currentOrg.customDomain}
@@ -290,14 +297,18 @@
               <p class="text-sm font-light">{$t('components.settings.domains.dns_value')}</p>
               <p class=" flex items-center gap-1">
                 cname.vercel-dns.com
-                <CopyButton text="cname.vercel-dns.com" />
+                <IconButton onClick={() => copyToClipboard('cname.vercel-dns.com')}>
+                  <p>cname.vercel-dns.com</p>
+
+                  <Copy />
+                </IconButton>
               </p>
             </div>
           </div>
 
           <div class="mt-5 flex items-center justify-between">
             <PrimaryButton
-              className="py-4 flex items-center gap-2"
+              className="py-2 flex items-center gap-2"
               onClick={handleRefreshCustomDomain}
               isLoading={isRefreshing}
               variant={VARIANTS.OUTLINED}
@@ -309,7 +320,7 @@
             </PrimaryButton>
 
             <PrimaryButton
-              className="py-4 flex items-center gap-2"
+              className="py-2 flex items-center gap-2"
               onClick={handleRemoveCustomDomain}
               isLoading={isCustomDomainLoading}
               variant={VARIANTS.CONTAINED_DANGER}
@@ -338,7 +349,7 @@
           <div class="mt-5 flex items-center">
             <PrimaryButton
               label={$t('components.settings.domains.save')}
-              className="py-4"
+              className="py-2"
               onClick={$isFreePlan ? () => {} : handleSaveCustomDomain}
               isLoading={isCustomDomainLoading}
               isDisabled={isLoading || !isDomainValid}

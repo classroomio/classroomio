@@ -1,15 +1,14 @@
 <script lang="ts">
+  import { Progress } from '@cio/ui/base/progress';
   import { preventDefault } from '$lib/utils/functions/svelte';
-
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { lesson, lessonVideoUpload, cancelVideoUpload } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { ProgressBar } from 'carbon-components-svelte';
-  import { isFreePlan } from '$lib/utils/store/org';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
-  import { t } from '$lib/utils/functions/translations';
+  import { lesson, lessonVideoUpload, cancelVideoUpload } from '$lib/components/Course/components/Lesson/store/lessons';
 
+  import { isFreePlan } from '$lib/utils/store/org';
+  import { t } from '$lib/utils/functions/translations';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { VideoUploader } from '$lib/utils/services/courses/presign';
+  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   interface Props {
     lessonId?: string;
@@ -142,12 +141,7 @@
           <p class="mt-5 text-center">
             {$t('course.navItem.lessons.materials.tabs.video.add_video.uploading')}
           </p>
-          <ProgressBar
-            class="w-full"
-            value={$lessonVideoUpload.uploadProgress}
-            max={100}
-            status={$lessonVideoUpload.uploadProgress === 100 ? 'finished' : 'active'}
-          />
+          <Progress class="w-full" value={$lessonVideoUpload.uploadProgress} max={100} />
           <p class="text-sm">{helperText}</p>
           <div class="mt-3">
             <PrimaryButton

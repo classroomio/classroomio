@@ -53,7 +53,7 @@
 
   {#snippet footer()}
     <div class="flex items-center justify-center">
-      <p class="mr-3 font-bold">Let's go</p>
+      <p class="mr-3">Let's go</p>
       <PrimaryButton label="View Players" variant={VARIANTS.OUTLINED} onClick={goToPlayersStep} />
     </div>
   {/snippet}

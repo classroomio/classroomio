@@ -1,7 +1,11 @@
 <script lang="ts">
-  import { StructuredListRow, StructuredListCell, Tag, OverflowMenuItem, OverflowMenu } from 'carbon-components-svelte';
-  import { isMobile } from '$lib/utils/store/useMobile';
   import { goto } from '$app/navigation';
+  import { Badge } from '@cio/ui/base/badge';
+  import * as Table from '@cio/ui/base/table';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+
+  import { isMobile } from '$lib/utils/store/useMobile';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -49,37 +53,48 @@
   }
 </script>
 
-<StructuredListRow label for="row-{id}" on:click={() => goto(`/courses/${id}`)}>
-  <StructuredListCell><p class="font-semibold">{title}</p></StructuredListCell>
-  <StructuredListCell>
-    <p class="line-clamp-2">{description}</p>
-  </StructuredListCell>
+<Table.Row class="cursor-pointer" onclick={() => goto(`/courses/${id}`)}>
+  <Table.Cell class="truncate"><p class="font-semibold">{title}</p></Table.Cell>
+  <Table.Cell class="truncate">
+    <p>{description}</p>
+  </Table.Cell>
   {#if !$isMobile}
-    <StructuredListCell>{type}</StructuredListCell>
-    <StructuredListCell>{totalLessons}</StructuredListCell>
-    <StructuredListCell>{totalStudents}</StructuredListCell>
-    <StructuredListCell>
-      <Tag class="break-normal" type={isPublished ? 'green' : 'cool-gray'}>
+    <Table.Cell class="truncate">{type}</Table.Cell>
+    <Table.Cell>{totalLessons}</Table.Cell>
+    <Table.Cell>{totalStudents}</Table.Cell>
+    <Table.Cell>
+      <Badge variant={isPublished ? 'default' : 'secondary'}>
         {#if isPublished}
           {$t('courses.course_card.published')}
         {:else}
           {$t('courses.course_card.unpublished')}
         {/if}
-      </Tag>
-    </StructuredListCell>
+      </Badge>
+    </Table.Cell>
   {/if}
-  <StructuredListCell>
-    <OverflowMenu
-      id="course-list"
-      flipped
-      on:click={(e) => {
-        e.stopPropagation();
-      }}
-    >
-      <OverflowMenuItem text={$t('courses.course_card.context_menu.clone')} on:click={handleCloneCourse} />
-      <OverflowMenuItem text={$t('courses.course_card.context_menu.share')} on:click={handleShareCourse} />
-      <OverflowMenuItem text={$t('courses.course_card.context_menu.invite')} on:click={handleInvite} />
-      <OverflowMenuItem danger text={$t('courses.course_card.context_menu.delete')} on:click={handleDeleteCourse} />
-    </OverflowMenu>
-  </StructuredListCell>
-</StructuredListRow>
+  <Table.Cell class="text-center">
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger
+        class="flex items-center justify-center rounded-md p-1 hover:bg-gray-100"
+        onclick={(e) => e.stopPropagation()}
+      >
+        <EllipsisVerticalIcon size={16} />
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content align="end">
+        <DropdownMenu.Item onclick={handleCloneCourse}>
+          {$t('courses.course_card.context_menu.clone')}
+        </DropdownMenu.Item>
+        <DropdownMenu.Item onclick={handleShareCourse}>
+          {$t('courses.course_card.context_menu.share')}
+        </DropdownMenu.Item>
+        <DropdownMenu.Item onclick={handleInvite}>
+          {$t('courses.course_card.context_menu.invite')}
+        </DropdownMenu.Item>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item class="text-red-600" onclick={handleDeleteCourse}>
+          {$t('courses.course_card.context_menu.delete')}
+        </DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
+  </Table.Cell>
+</Table.Row>

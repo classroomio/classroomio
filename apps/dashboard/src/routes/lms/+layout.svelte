@@ -1,5 +1,6 @@
 <script lang="ts">
   import LMSSideBar from '$lib/components/LMS/SideBar.svelte';
+
   interface Props {
     children?: import('svelte').Snippet;
   }

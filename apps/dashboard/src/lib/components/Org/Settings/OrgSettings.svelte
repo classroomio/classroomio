@@ -1,24 +1,26 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import { goto } from '$app/navigation';
-  import { Column, Grid, Row } from 'carbon-components-svelte';
   import ZapIcon from '@lucide/svelte/icons/zap';
   import debounce from 'lodash/debounce';
   import ColorPicker from 'svelte-awesome-color-picker';
 
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { injectCustomTheme, setCustomTheme, setTheme } from '$lib/utils/functions/theme';
   import { t } from '$lib/utils/functions/translations';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { updateOrgNameValidation } from '$lib/utils/functions/validator';
   import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
+  import { injectCustomTheme, setCustomTheme, setTheme } from '$lib/utils/functions/theme';
 
+  import Row from './Layout/Row.svelte';
+  import Grid from './Layout/Grid.svelte';
+  import Column from './Layout/Column.svelte';
+  import SectionTitle from '../SectionTitle.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import UploadImage from '$lib/components/UploadImage/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
-  import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import SectionTitle from '../SectionTitle.svelte';
 
   let avatar = $state<string | undefined>();
   let hasUnsavedChanges = $state(false);
@@ -155,7 +157,7 @@
 
 <UnsavedChanges bind:hasUnsavedChanges />
 
-<Grid class="border-c mt-5 w-full rounded border-gray-200 dark:border-neutral-600">
+<Grid class="mt-5 w-full">
   <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
     <Column sm={4} md={4} lg={4}>
       <SectionTitle>

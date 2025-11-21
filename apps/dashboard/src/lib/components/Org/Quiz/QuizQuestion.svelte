@@ -23,7 +23,7 @@
 </script>
 
 {#if isPreview}
-  <h1 class="mb-5 font-bold text-white">{currentQuestion.label}</h1>
+  <h1 class="mb-5 text-white">{currentQuestion.label}</h1>
 {:else}
   <TextField
     placeholder={$t('components.quiz.start_typing')}

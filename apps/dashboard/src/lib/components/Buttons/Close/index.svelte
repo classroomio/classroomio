@@ -19,5 +19,5 @@
 </script>
 
 <IconButton {onClick} {color} {contained} {size}>
-  <XIcon size={size === 'large' ? 24 : 16} class="carbon-icon dark:text-black" />
+  <XIcon size={size === 'large' ? 24 : 16} class="dark:text-black" />
 </IconButton>

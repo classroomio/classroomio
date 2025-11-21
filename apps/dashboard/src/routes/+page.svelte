@@ -1,15 +1,15 @@
 <script>
-  import { preventDefault } from '$lib/utils/functions/svelte';
-
   import { onMount } from 'svelte';
+  import BotIcon from '@lucide/svelte/icons/bot';
   import DoorOpenIcon from '@lucide/svelte/icons/door-open';
   import ChartAreaIcon from '@lucide/svelte/icons/chart-area';
-  import BotIcon from '@lucide/svelte/icons/bot';
+
+  import { getSupabase } from '$lib/utils/functions/supabase';
+  import { preventDefault } from '$lib/utils/functions/svelte';
+  import { validateEmail } from '$lib/utils/functions/validateEmail';
+
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { getSupabase } from '$lib/utils/functions/supabase';
-  import { validateEmail } from '$lib/utils/functions/validateEmail';
-  import Edra from '$lib/components/Edra/EdraRoot.svelte';
 
   let email = $state('');
   let isAdding = $state(false);
@@ -58,7 +58,7 @@
   <title>ClassroomIO - The classroom software</title>
 </svelte:head>
 
-<div class="m-2 flex w-screen flex-col items-center justify-center font-sans sm:m-0 md:min-h-[93vh] dark:bg-black">
+<div class="m-2 flex w-screen flex-col items-center justify-center sm:m-0 md:min-h-[93vh] dark:bg-black">
   <!--
     <img
       src="/logo-192.png"
@@ -74,7 +74,6 @@
     <p class="text-center text-lg dark:text-white">The operating system for classroooms of the future 🚀🚀🚀.</p>
   </div>
 
-  <Edra />
   <form onsubmit={preventDefault(handleSubmit)} class="my-4 hidden">
     <div class="flex hidden flex-col items-center sm:flex-row">
       {#if success}

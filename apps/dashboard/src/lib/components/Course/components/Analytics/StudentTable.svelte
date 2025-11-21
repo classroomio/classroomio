@@ -1,12 +1,15 @@
 <script lang="ts">
-  import Avatar from '$lib/components/Avatar/index.svelte';
-  import { Tag, Pagination } from 'carbon-components-svelte';
-  import type { StudentOverview } from '$lib/utils/types/analytics';
-  import EmptyState from './EmptyState.svelte';
-  import UserIcon from '@lucide/svelte/icons/user';
-  import { course } from '../../store';
   import { goto } from '$app/navigation';
+  import { Badge } from '@cio/ui/base/badge';
+  import UserIcon from '@lucide/svelte/icons/user';
+  import * as Pagination from '@cio/ui/base/pagination';
+
+  import { course } from '../../store';
   import { t } from '$lib/utils/functions/translations';
+
+  import EmptyState from './EmptyState.svelte';
+  import Avatar from '$lib/components/Avatar/index.svelte';
+  import type { StudentOverview } from '$lib/utils/types/analytics';
 
   interface Props {
     students?: StudentOverview[];
@@ -31,10 +34,6 @@
 
     goto(`/courses/${$course.id}/people/${student.id}?back=/courses/${$course.id}/analytics`);
   };
-
-  function handlePageChange(event: CustomEvent) {
-    currentPage = event.detail.page;
-  }
 
   // Reset to first page when students array changes
   $effect(() => {
@@ -128,12 +127,15 @@
                 </span>
               </td>
               <td class="min-w-[120px] whitespace-nowrap px-4 py-3">
-                <Tag
-                  type={student.averageGrade >= 80 ? 'green' : student.averageGrade >= 60 ? 'blue' : 'red'}
-                  size="sm"
+                <Badge
+                  class={student.averageGrade >= 80
+                    ? 'bg-green-600'
+                    : student.averageGrade >= 60
+                      ? 'bg-blue-600'
+                      : 'bg-red-600'}
                 >
                   {student.averageGrade}%
-                </Tag>
+                </Badge>
               </td>
               <td class="min-w-[120px] whitespace-nowrap px-4 py-3">
                 <span class="text-sm text-gray-500 dark:text-gray-400">
@@ -165,7 +167,37 @@
           total: students.length
         })}
       </div>
-      <Pagination page={currentPage} totalItems={students.length} {pageSize} on:change={handlePageChange} />
+
+      <Pagination.Root
+        count={students.length}
+        perPage={pageSize}
+        page={currentPage}
+        onPageChange={(page) => (currentPage = page)}
+      >
+        {#snippet children({ pages, currentPage: activePage })}
+          <Pagination.Content>
+            <Pagination.Item>
+              <Pagination.PrevButton />
+            </Pagination.Item>
+            {#each pages as page (page.key)}
+              {#if page.type === 'ellipsis'}
+                <Pagination.Item>
+                  <Pagination.Ellipsis />
+                </Pagination.Item>
+              {:else}
+                <Pagination.Item>
+                  <Pagination.Link {page} isActive={activePage === page.value}>
+                    {page.value}
+                  </Pagination.Link>
+                </Pagination.Item>
+              {/if}
+            {/each}
+            <Pagination.Item>
+              <Pagination.NextButton />
+            </Pagination.Item>
+          </Pagination.Content>
+        {/snippet}
+      </Pagination.Root>
     </div>
   {/if}
 {/if}

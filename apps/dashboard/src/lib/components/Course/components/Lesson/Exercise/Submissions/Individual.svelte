@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { Loading } from 'carbon-components-svelte';
-  import type { ExerciseSubmissions } from '$lib/utils/types';
-  import { questionnaire } from '../../store/exercise';
+  import { Spinner } from '@cio/ui/base/spinner';
+
   import { submissions } from './store';
+  import { questionnaire } from '../../store/exercise';
   import { t } from '$lib/utils/functions/translations';
+  import type { ExerciseSubmissions } from '$lib/utils/types';
 
   interface Props {
     isLoading?: boolean;
@@ -53,7 +54,7 @@
 </script>
 
 {#if isLoading}
-  <Loading withOverlay={true} />
+  <Spinner />
 {:else if $submissions?.length}
   <div class="mb-5 mt-2 flex w-full gap-1 overflow-auto">
     {#each $submissions as student, i}

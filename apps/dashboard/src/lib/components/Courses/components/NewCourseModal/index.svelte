@@ -30,16 +30,14 @@
 
   const options = [
     {
-      title: 'Live Class',
-      subtitle:
-        'This course type is ideal for bootcamps where lessons are time based and you need attendance and grading',
+      title: $t('new_course_modal.live_class_label'),
+      subtitle: $t('new_course_modal.live_class_subtitle'),
       type: COURSE_TYPE.LIVE_CLASS,
       isDisabled: false
     },
     {
-      title: 'Self Paced',
-      subtitle:
-        'This course type is ideal for courses where students can take lessons on their own pace without a teacher',
+      title: $t('new_course_modal.self_paced_label'),
+      subtitle: $t('new_course_modal.self_paced_subtitle'),
       type: COURSE_TYPE.SELF_PACED,
       isDisabled: false
     }
@@ -153,10 +151,10 @@
         {$t('courses.new_course_modal.type_selector_title')}
       </h2>
 
-      <div class="my-8 flex flex-col items-center justify-evenly gap-4 md:flex-row">
+      <div class="my-8 flex flex-col items-center justify-evenly gap-4 md:flex-row!">
         {#each options as option}
           <button
-            class="w-11/12 rounded-md border-2 p-5 md:h-[240px] md:w-[261px] dark:bg-neutral-700 {option.type === type
+            class="w-11/12 rounded-md border-2 p-5 md:h-60 md:w-[261px] dark:bg-neutral-700 {option.type === type
               ? 'border-primary-400'
               : `border-gray-200 dark:border-neutral-600 ${
                   !option.isDisabled && 'hover:scale-95'
@@ -169,7 +167,7 @@
             </div>
 
             <div>
-              <p class="flex items-center text-start font-bold">
+              <p class="flex items-center text-start">
                 <span class="mr-2 text-sm">{option.title}</span>
                 {#if option.isDisabled}
                   <ComingSoon />

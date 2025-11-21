@@ -2,11 +2,8 @@
   // import { preventDefault } from '$lib/utils/functions/svelte';
   // import { writable } from 'svelte/store';
   // // import { useCompletion } from 'ai/svelte';
-  // import { Popover } from 'carbon-components-svelte';
-  // import type { PopoverProps } from 'carbon-components-svelte/types/Popover/Popover.svelte';
   // import WandSparklesIcon from '@lucide/svelte/icons/wand-sparkles';
   // import { IconButton } from '$lib/components/IconButton';
-  // import { Loading } from 'carbon-components-svelte';
   // import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   // import { t } from '$lib/utils/functions/translations';
 

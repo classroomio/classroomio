@@ -1,6 +1,7 @@
 <script module>
   import { defineMeta } from '@storybook/addon-svelte-csf';
-  import { DropdownMenu, Button } from '@cio/ui';
+  import { Button } from '@cio/ui';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
 
   const { Story } = defineMeta({
     title: 'Atom/DropdownMenu',

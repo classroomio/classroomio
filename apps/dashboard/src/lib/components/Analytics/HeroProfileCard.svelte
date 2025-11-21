@@ -17,7 +17,7 @@
   <div class="flex w-full flex-col items-center justify-start gap-4 text-start md:flex-row">
     <Avatar src={user.avatarUrl} name={user.fullName} width="w-16" height="h-16" />
     <div class="flex flex-col space-y-2">
-      <p class="text-center text-2xl font-bold md:text-left dark:text-white">
+      <p class="text-center text-2xl md:text-left dark:text-white">
         {user.fullName}
       </p>
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { env } from '$env/dynamic/public';
   import { goto } from '$app/navigation';
-  import { Dropdown } from 'carbon-components-svelte';
+  import * as Select from '@cio/ui/base/select';
   import TextField from '$lib/components/Form/TextField.svelte';
   import UserProfileIcon from '$lib/components/Icons/UserProfileIcon.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -43,19 +43,18 @@
   let step = $state(1);
   let loading = $state(false);
   let isSiteNameTouched = $state(false);
-  let selectedId = 'en';
 
   let dropdownItems = [
-    { id: 'de', text: 'German' },
-    { id: 'en', text: 'English' },
-    { id: 'es', text: 'Spanish' },
-    { id: 'fr', text: 'French' },
-    { id: 'hi', text: 'Hindi' },
-    { id: 'pl', text: 'Polish' },
-    { id: 'pt', text: 'Portuguese' },
-    { id: 'ru', text: 'Russian' },
-    { id: 'vi', text: 'Vietnamese' },
-    { id: 'da', text: 'Danish' }
+    { id: 'de' as LOCALE, text: 'German' },
+    { id: 'en' as LOCALE, text: 'English' },
+    { id: 'es' as LOCALE, text: 'Spanish' },
+    { id: 'fr' as LOCALE, text: 'French' },
+    { id: 'hi' as LOCALE, text: 'Hindi' },
+    { id: 'pl' as LOCALE, text: 'Polish' },
+    { id: 'pt' as LOCALE, text: 'Portuguese' },
+    { id: 'ru' as LOCALE, text: 'Russian' },
+    { id: 'vi' as LOCALE, text: 'Vietnamese' },
+    { id: 'da' as LOCALE, text: 'Danish' }
   ];
 
   const progress = $derived(Math.round((step / maxSteps) * 100));
@@ -101,11 +100,6 @@
       value: 'friends-family'
     }
   ];
-
-  function handleSelect(event) {
-    const newSelectedId = event.detail.selectedId;
-    fields.locale = newSelectedId;
-  }
 
   async function setMetaData() {
     if (!env.PUBLIC_IP_REGISTRY_KEY) return;
@@ -363,8 +357,17 @@
 
               <!-- Language Picker -->
               <div class="mt-10">
-                <span>{$t('content.toggle_label')}: </span>
-                <Dropdown items={dropdownItems} {selectedId} on:select={handleSelect} class="w-full" />
+                <span class="dark:text-white">{$t('content.toggle_label')}: </span>
+                <Select.Root type="single" bind:value={fields.locale}>
+                  <Select.Trigger class="w-full">
+                    <p>{fields.locale}</p>
+                  </Select.Trigger>
+                  <Select.Content>
+                    {#each dropdownItems as item}
+                      <Select.Item value={item.id}>{item.text}</Select.Item>
+                    {/each}
+                  </Select.Content>
+                </Select.Root>
               </div>
             </div>
           </div>

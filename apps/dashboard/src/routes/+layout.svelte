@@ -28,8 +28,6 @@
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
   import { isMobile } from '$lib/utils/store/useMobile';
-  // import { Theme } from 'carbon-components-svelte';
-  // import type { CarbonTheme } from 'carbon-components-svelte/types/Theme/Theme.svelte';
   import merge from 'lodash/merge';
   import { onMount } from 'svelte';
   import { MetaTags } from 'svelte-meta-tags';
@@ -46,7 +44,6 @@
   let supabase = getSupabase();
   let path = $derived($page.url?.pathname?.replace('/', ''));
   let queryParam = $page.url?.search;
-  // let carbonTheme: CarbonTheme = $derived($globalStore.isDark ? 'g100' : 'white');
 
   function handleResize() {
     isMobile.update(() => window.innerWidth <= 760);
@@ -125,8 +122,6 @@
 
 <MetaTags {...metaTags} />
 
-<!-- <Theme bind:theme={carbonTheme} /> -->
-
 <UpgradeModal />
 
 <Snackbar />
@@ -138,7 +133,7 @@
 {:else if data.isOrgSite && !path}
   <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org} />
 {:else}
-  <main class="font-roboto dark:bg-black">
+  <main class="z-20000 dark:bg-black">
     {#if !hideNavByRoute($page.url?.pathname)}
       {#if isOrgPage($page.url?.pathname) || $page.url?.pathname.includes('profile') || isCoursesPage(path)}
         <OrgNavigation bind:title={$course.title} isCoursePage={isCoursesPage(path)} />
