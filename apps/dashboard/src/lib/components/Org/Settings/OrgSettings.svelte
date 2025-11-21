@@ -117,8 +117,8 @@
         if (data) {
           const { data: response } = supabase.storage.from('avatars').getPublicUrl(filename);
 
-          updates.avatar_url = response.publicUrl;
-          $currentOrg.avatar_url = response.publicUrl;
+          updates.avatarUrl = response.publicUrl;
+          $currentOrg.avatarUrl = response.publicUrl;
         }
         avatar = undefined;
       }
@@ -172,7 +172,7 @@
       />
       <UploadImage
         bind:avatar
-        src={$currentOrg.avatar_url}
+        src={$currentOrg.avatarUrl}
         shape="rounded-md"
         widthHeight="w-24 h-24"
         change={() => (hasUnsavedChanges = true)}
