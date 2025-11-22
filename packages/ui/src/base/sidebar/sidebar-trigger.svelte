@@ -3,7 +3,7 @@
   import { cn } from '../../tools';
   import PanelLeftIcon from '@lucide/svelte/icons/panel-left';
   import type { ComponentProps } from 'svelte';
-  import { useSidebar } from './context.svelte.js';
+  import { useSidebar } from './context.svelte';
 
   let {
     ref = $bindable(null),
@@ -22,7 +22,7 @@
   data-slot="sidebar-trigger"
   variant="ghost"
   size="icon"
-  class={cn('size-7', className)}
+  class={cn('ui:size-7', className)}
   type="button"
   onclick={(e) => {
     onclick?.(e);

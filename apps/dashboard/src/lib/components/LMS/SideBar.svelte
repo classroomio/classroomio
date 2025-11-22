@@ -25,7 +25,7 @@
   const user = $derived.by(() => ({
     name: $profile.fullname,
     email: $profile.email,
-    avatar: $profile.avatar_url
+    avatar: $profile.avatarUrl
   }));
 
   function isActive(pagePath: string, itemPath: string) {
@@ -81,7 +81,7 @@
 </script>
 
 <Sidebar.Provider class="w-fit">
-  <Sidebar.Root collapsible="icon" class="inset-y-12 h-[calc(100vh-48px)] {$sideBar.hidden ? 'hidden' : ''}">
+  <Sidebar.Root collapsible="icon" class="ui:inset-y-12 h-[calc(100vh-48px)] {$sideBar.hidden ? 'hidden' : ''}">
     <Sidebar.Content>
       <Sidebar.Group>
         <Sidebar.GroupLabel>LMS Navigation</Sidebar.GroupLabel>
@@ -93,7 +93,7 @@
                   href={item.link}
                   onclick={toggleSidebar}
                   class="flex w-full items-center gap-4 {isActive(page.url.pathname, item.link)
-                    ? 'bg-accent text-accent-foreground rounded-md px-3 py-2'
+                    ? 'ui:bg-accent ui:text-accent-foreground rounded-md px-3 py-2'
                     : ''}"
                 >
                   <item.icon size={16} />

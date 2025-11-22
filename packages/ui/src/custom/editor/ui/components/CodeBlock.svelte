@@ -39,12 +39,12 @@
         >{defaultLanguage}
         <ChevronDown class="!size-2" />
       </DropdownMenu.Trigger>
-      <DropdownMenu.Content class="h-96 w-40 overflow-auto" contenteditable="false">
+      <DropdownMenu.Content class="ui:h-96 ui:w-40 ui:overflow-auto" contenteditable="false">
         {#each languages as language (language)}
           <DropdownMenu.Item
             contenteditable="false"
             data-current={defaultLanguage === language}
-            class="data-[current=true]:bg-muted"
+            class="ui:data-[current=true]:bg-muted"
             textValue={language}
             onclick={() => {
               defaultLanguage = language;
@@ -53,17 +53,17 @@
           >
             <span>{language}</span>
             {#if defaultLanguage === language}
-              <Check class="ml-auto" />
+              <Check class="ui:ml-auto" />
             {/if}
           </DropdownMenu.Item>
         {/each}
       </DropdownMenu.Content>
     </DropdownMenu.Root>
-    <Button variant="ghost" class="text-muted-foreground size-4 p-0" onclick={copyCode}>
+    <Button variant="ghost" class="ui:text-muted-foreground ui:size-4 ui:p-0" onclick={copyCode}>
       {#if isCopying}
-        <Check class="size-3 text-green-500" />
+        <Check class="ui:size-3 ui:text-green-500" />
       {:else}
-        <Copy class="size-3" />
+        <Copy class="ui:size-3" />
       {/if}
     </Button>
   </div>

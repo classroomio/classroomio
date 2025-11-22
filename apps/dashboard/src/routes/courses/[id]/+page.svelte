@@ -48,7 +48,7 @@
       id: groupMember?.id || '',
       username: $profile.username || '',
       fullname: $profile.fullname || '',
-      avatar_url: $profile.avatar_url || ''
+      avatar_url: $profile.avatarUrl || ''
     };
   });
 

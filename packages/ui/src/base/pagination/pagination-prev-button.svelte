@@ -13,7 +13,7 @@
 </script>
 
 {#snippet Fallback()}
-  <ChevronLeftIcon class="size-4" />
+  <ChevronLeftIcon class="ui:size-4" />
   <span>Previous</span>
 {/snippet}
 
@@ -24,7 +24,7 @@
     buttonVariants({
       size: 'default',
       variant: 'ghost',
-      class: 'gap-1 px-2.5 sm:pl-2.5'
+      class: 'ui:gap-1 ui:px-2.5 ui:sm:pl-2.5'
     }),
     className
   )}

@@ -8,6 +8,6 @@
 <SheetPrimitive.Title
   bind:ref
   data-slot="sheet-title"
-  class={cn('text-foreground font-semibold', className)}
+  class={cn('ui:text-foreground ui:font-semibold', className)}
   {...restProps}
 />

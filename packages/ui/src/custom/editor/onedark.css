@@ -1,14 +1,14 @@
 /* One Dark and Light Theme for Highlight.js using Pure CSS */
 /* Light Theme (Default) */
 .tiptap pre code {
-	color: #383a42;
+  color: #383a42;
 }
 
 /* Comment */
 .hljs-comment,
 .hljs-quote {
-	font-style: italic;
-	color: #a0a1a7;
+  font-style: italic;
+  color: #a0a1a7;
 }
 
 /* Red */
@@ -20,7 +20,7 @@
 .hljs-selector-class,
 .hljs-regexp,
 .hljs-deletion {
-	color: #e45649;
+  color: #e45649;
 }
 
 /* Orange */
@@ -31,12 +31,12 @@
 .hljs-params,
 .hljs-meta,
 .hljs-link {
-	color: #986801;
+  color: #986801;
 }
 
 /* Yellow */
 .hljs-attribute {
-	color: #c18401;
+  color: #c18401;
 }
 
 /* Green */
@@ -44,133 +44,133 @@
 .hljs-symbol,
 .hljs-bullet,
 .hljs-addition {
-	color: #50a14f;
+  color: #50a14f;
 }
 
 /* Blue */
 .hljs-title,
 .hljs-section {
-	color: #4078f2;
+  color: #4078f2;
 }
 
 /* Purple */
 .hljs-keyword,
 .hljs-selector-tag {
-	color: #a626a4;
+  color: #a626a4;
 }
 
 /* Cyan */
 .hljs-emphasis {
-	font-style: italic;
-	color: #0184bc;
+  font-style: italic;
+  color: #0184bc;
 }
 
 .hljs-strong {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 /* Base styles */
 .hljs-doctag,
 .hljs-formula {
-	color: #a626a4;
+  color: #a626a4;
 }
 
 .hljs-attr,
 .hljs-subst {
-	color: #383a42;
+  color: #383a42;
 }
 
 /* Line highlights */
 .hljs-addition {
-	background-color: #e6ffed;
+  background-color: #e6ffed;
 }
 
 .hljs-deletion {
-	background-color: #ffeef0;
+  background-color: #ffeef0;
 }
 
 /* Dark Theme (All dark styles consolidated in one media query) */
 html.dark {
-	.tiptap pre code {
-		color: #abb2bf;
-	}
+  .tiptap pre code {
+    color: #abb2bf;
+  }
 
-	/* Comment */
-	.hljs-comment,
-	.hljs-quote {
-		color: #5c6370;
-	}
+  /* Comment */
+  .hljs-comment,
+  .hljs-quote {
+    color: #5c6370;
+  }
 
-	/* Red */
-	.hljs-variable,
-	.hljs-template-variable,
-	.hljs-tag,
-	.hljs-name,
-	.hljs-selector-id,
-	.hljs-selector-class,
-	.hljs-regexp,
-	.hljs-deletion {
-		color: #e06c75;
-	}
+  /* Red */
+  .hljs-variable,
+  .hljs-template-variable,
+  .hljs-tag,
+  .hljs-name,
+  .hljs-selector-id,
+  .hljs-selector-class,
+  .hljs-regexp,
+  .hljs-deletion {
+    color: #e06c75;
+  }
 
-	/* Orange */
-	.hljs-number,
-	.hljs-built_in,
-	.hljs-literal,
-	.hljs-type,
-	.hljs-params,
-	.hljs-meta,
-	.hljs-link {
-		color: #d19a66;
-	}
+  /* Orange */
+  .hljs-number,
+  .hljs-built_in,
+  .hljs-literal,
+  .hljs-type,
+  .hljs-params,
+  .hljs-meta,
+  .hljs-link {
+    color: #d19a66;
+  }
 
-	/* Yellow */
-	.hljs-attribute {
-		color: #e5c07b;
-	}
+  /* Yellow */
+  .hljs-attribute {
+    color: #e5c07b;
+  }
 
-	/* Green */
-	.hljs-string,
-	.hljs-symbol,
-	.hljs-bullet,
-	.hljs-addition {
-		color: #98c379;
-	}
+  /* Green */
+  .hljs-string,
+  .hljs-symbol,
+  .hljs-bullet,
+  .hljs-addition {
+    color: #98c379;
+  }
 
-	/* Blue */
-	.hljs-title,
-	.hljs-section {
-		color: #61afef;
-	}
+  /* Blue */
+  .hljs-title,
+  .hljs-section {
+    color: #61afef;
+  }
 
-	/* Purple */
-	.hljs-keyword,
-	.hljs-selector-tag {
-		color: #c678dd;
-	}
+  /* Purple */
+  .hljs-keyword,
+  .hljs-selector-tag {
+    color: #c678dd;
+  }
 
-	/* Cyan */
-	.hljs-emphasis {
-		color: #56b6c2;
-	}
+  /* Cyan */
+  .hljs-emphasis {
+    color: #56b6c2;
+  }
 
-	/* Base styles */
-	.hljs-doctag,
-	.hljs-formula {
-		color: #c678dd;
-	}
+  /* Base styles */
+  .hljs-doctag,
+  .hljs-formula {
+    color: #c678dd;
+  }
 
-	.hljs-attr,
-	.hljs-subst {
-		color: #abb2bf;
-	}
+  .hljs-attr,
+  .hljs-subst {
+    color: #abb2bf;
+  }
 
-	/* Line highlights */
-	.hljs-addition {
-		background-color: #283428;
-	}
+  /* Line highlights */
+  .hljs-addition {
+    background-color: #283428;
+  }
 
-	.hljs-deletion {
-		background-color: #342828;
-	}
+  .hljs-deletion {
+    background-color: #342828;
+  }
 }

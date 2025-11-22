@@ -4,6 +4,7 @@
   import { useSidebar } from '@cio/ui/base/sidebar';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
+  import { getShortOrgName } from '$lib/utils/functions/org';
 
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrg, currentOrgDomain, currentOrgPath } from '$lib/utils/store/org';
@@ -11,7 +12,7 @@
   import TextChip from '$lib/components/Chip/Text.svelte';
   import Menu from '$lib/components/Org/FooterMenu/Menu.svelte';
 
-  let { user }: { user: { name: string; email: string; avatar: string } } = $props();
+  let { user }: { user: { name: string; email: string | null; avatar: string | null } } = $props();
 
   const sidebar = useSidebar();
 </script>
@@ -23,7 +24,7 @@
         {#snippet child({ props })}
           <Sidebar.MenuButton
             size="lg"
-            class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            class="ui:data-[state=open]:bg-sidebar-accent ui:data-[state=open]:text-sidebar-accent-foreground"
             {...props}
           >
             <Avatar.Root class="size-8 rounded-lg">
@@ -39,7 +40,7 @@
         {/snippet}
       </DropdownMenu.Trigger>
       <DropdownMenu.Content
-        class="w-(--bits-dropdown-menu-anchor-width) min-w-56 rounded-lg"
+        class="ui:w-(--bits-dropdown-menu-anchor-width) ui:min-w-56 ui:rounded-lg"
         side={sidebar.isMobile ? 'bottom' : 'right'}
         align="end"
         sideOffset={4}
@@ -69,10 +70,14 @@
               class="flex items-center gap-2 px-1 py-1.5 text-left text-sm"
             >
               <Avatar.Root class="size-8 rounded-lg">
-                {#if $currentOrg.avatar_url && $currentOrg.name}
-                  <Avatar.Image src={$currentOrg.avatar_url} alt={$currentOrg.name} />
-                {:else if $currentOrg.shortName}
-                  <TextChip size="sm" value={$currentOrg.shortName} className="bg-primary-200 dark:text-black" />
+                {#if $currentOrg.avatarUrl}
+                  <Avatar.Image src={$currentOrg.avatarUrl} alt={$currentOrg.name} />
+                {:else}
+                  <TextChip
+                    size="sm"
+                    value={getShortOrgName($currentOrg.name)}
+                    className="bg-primary-200 dark:text-black"
+                  />
                 {/if}
               </Avatar.Root>
               <div class="grid flex-1 text-left text-sm leading-tight">

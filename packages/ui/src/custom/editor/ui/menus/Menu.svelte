@@ -90,7 +90,10 @@
   {editor}
   pluginKey="link-bubble-menu"
   {shouldShow}
-  class={cn('edra-bubble-menu bg-popover flex h-fit w-fit items-center rounded-lg p-0.5', className)}
+  class={cn(
+    'edra-bubble-menu ui:bg-popover ui:flex ui:h-fit ui:w-fit ui:items-center ui:rounded-lg ui:p-0.5',
+    className
+  )}
 >
   {#if children}
     {@render children()}

@@ -14,7 +14,7 @@
 
 {#snippet Fallback()}
   <span>Next</span>
-  <ChevronRightIcon class="size-4" />
+  <ChevronRightIcon class="ui:size-4" />
 {/snippet}
 
 <PaginationPrimitive.NextButton
@@ -24,7 +24,7 @@
     buttonVariants({
       size: 'default',
       variant: 'ghost',
-      class: 'gap-1 px-2.5 sm:pr-2.5'
+      class: 'ui:gap-1 ui:px-2.5 ui:sm:pr-2.5'
     }),
     className
   )}

@@ -1,85 +1,85 @@
 import { Node } from '@tiptap/core';
 
 export interface IframeOptions {
-	allowFullscreen: boolean;
-	HTMLAttributes: {
-		[key: string]: unknown;
-	};
+  allowFullscreen: boolean;
+  HTMLAttributes: {
+    [key: string]: unknown;
+  };
 }
 
 declare module '@tiptap/core' {
-	interface Commands<ReturnType> {
-		iframe: {
-			/**
-			 * Add an iframe with src
-			 */
-			setIframe: (options: { src: string }) => ReturnType;
-			removeIframe: () => ReturnType;
-		};
-	}
+  interface Commands<ReturnType> {
+    iframe: {
+      /**
+       * Add an iframe with src
+       */
+      setIframe: (options: { src: string }) => ReturnType;
+      removeIframe: () => ReturnType;
+    };
+  }
 }
 
 export default Node.create<IframeOptions>({
-	name: 'iframe',
+  name: 'iframe',
 
-	group: 'block',
+  group: 'block',
 
-	atom: true,
+  atom: true,
 
-	addOptions() {
-		return {
-			allowFullscreen: true,
-			HTMLAttributes: {
-				class: 'iframe-wrapper'
-			}
-		};
-	},
+  addOptions() {
+    return {
+      allowFullscreen: true,
+      HTMLAttributes: {
+        class: 'iframe-wrapper'
+      }
+    };
+  },
 
-	addAttributes() {
-		return {
-			src: {
-				default: null
-			},
-			frameborder: {
-				default: 0
-			},
-			allowfullscreen: {
-				default: this.options.allowFullscreen,
-				parseHTML: () => this.options.allowFullscreen
-			}
-		};
-	},
+  addAttributes() {
+    return {
+      src: {
+        default: null
+      },
+      frameborder: {
+        default: 0
+      },
+      allowfullscreen: {
+        default: this.options.allowFullscreen,
+        parseHTML: () => this.options.allowFullscreen
+      }
+    };
+  },
 
-	parseHTML() {
-		return [
-			{
-				tag: 'iframe'
-			}
-		];
-	},
+  parseHTML() {
+    return [
+      {
+        tag: 'iframe'
+      }
+    ];
+  },
 
-	renderHTML({ HTMLAttributes }) {
-		return ['div', this.options.HTMLAttributes, ['iframe', HTMLAttributes]];
-	},
+  renderHTML({ HTMLAttributes }) {
+    return ['div', this.options.HTMLAttributes, ['iframe', HTMLAttributes]];
+  },
 
-	addCommands() {
-		return {
-			setIframe:
-				(options: { src: string }) =>
-				({ tr, dispatch }) => {
-					const { selection } = tr;
-					const node = this.type.create(options);
+  addCommands() {
+    return {
+      setIframe:
+        (options: { src: string }) =>
+        ({ tr, dispatch }) => {
+          const { selection } = tr;
+          const node = this.type.create(options);
 
-					if (dispatch) {
-						tr.replaceRangeWith(selection.from, selection.to, node);
-					}
+          if (dispatch) {
+            tr.replaceRangeWith(selection.from, selection.to, node);
+          }
 
-					return true;
-				},
-			removeIframe:
-				() =>
-				({ commands }) =>
-					commands.deleteNode(this.name)
-		};
-	}
+          return true;
+        },
+      removeIframe:
+        () =>
+        ({ commands }) =>
+          commands.deleteNode(this.name)
+    };
+  }
 });

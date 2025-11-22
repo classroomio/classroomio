@@ -13,7 +13,7 @@
 <tfoot
   bind:this={ref}
   data-slot="table-footer"
-  class={cn('bg-muted/50 border-t font-medium [&>tr]:last:border-b-0', className)}
+  class={cn('ui:bg-muted/50 ui:border-t ui:font-medium ui:[&>tr]:last:border-b-0', className)}
   {...restProps}
 >
   {@render children?.()}

@@ -130,7 +130,7 @@
       <Progress />
     </div>
   {:else}
-    <div class="flex flex-col items-center justify-center">
+    <div class="my-2 flex h-full flex-col items-center justify-center">
       <div class="relative mb-2 flex items-center rounded-[30px] border-2 p-2 lg:scale-100">
         <button
           style="background-color: {isYearlyPlan ? 'initial' : '#1D4EE2'}; color: {isYearlyPlan ? '#5e636b' : '#fff'}"
@@ -152,7 +152,7 @@
           </div>
         </button>
       </div>
-      <div class="isolate grid grid-cols-1 gap-3 lg:grid-cols-3">
+      <div class="isolate grid grid-cols-1 gap-3 overflow-y-scroll p-2 md:overflow-y-hidden lg:grid-cols-3">
         {#each planNames as planName}
           <div
             class="max-w-xl rounded-xl {planName === 'EARLY_ADOPTER' &&

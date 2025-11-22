@@ -2,6 +2,7 @@
   import { currentOrgPath } from '$lib/utils/store/org';
   import * as Collapsible from '@cio/ui/base/collapsible';
   import * as Sidebar from '@cio/ui/base/sidebar';
+  import { Icon } from '@lucide/svelte';
 
   let {
     items
@@ -9,9 +10,7 @@
     items: {
       title: string;
       url: string;
-      // this should be `Component` after @lucide/svelte updates types
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      icon?: any;
+      icon?: typeof Icon;
       isActive?: boolean;
       items?: {
         title: string;
@@ -31,7 +30,7 @@
             <Sidebar.MenuButton
               {...props}
               tooltipContent={item.title}
-              class={item.isActive ? 'bg-accent text-accent-foreground' : ''}
+              class={item.isActive ? 'ui:bg-accent ui:text-accent-foreground' : ''}
             >
               {#if item.icon}
                 <item.icon />

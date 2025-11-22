@@ -2,6 +2,7 @@ import { defineConfig, loadEnv } from 'vite';
 
 import fs from 'fs';
 import { sveltekit } from '@sveltejs/kit/vite';
+import tailwindcss from '@tailwindcss/vite';
 
 export default ({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
@@ -14,7 +15,7 @@ export default ({ mode }) => {
         }
       }
     },
-    plugins: [sveltekit()],
+    plugins: [tailwindcss(), sveltekit()],
     server: getServer(process.env),
     build: {
       sourcemap: false

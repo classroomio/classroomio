@@ -22,7 +22,7 @@
     {sideOffset}
     {side}
     class={cn(
-      'bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-(--bits-tooltip-content-transform-origin) z-50 w-fit text-balance rounded-md px-3 py-1.5 text-xs',
+      'ui:bg-primary ui:text-primary-foreground ui:animate-in ui:fade-in-0 ui:zoom-in-95 ui:data-[state=closed]:animate-out ui:data-[state=closed]:fade-out-0 ui:data-[state=closed]:zoom-out-95 ui:data-[side=bottom]:slide-in-from-top-2 ui:data-[side=left]:slide-in-from-right-2 ui:data-[side=right]:slide-in-from-left-2 ui:data-[side=top]:slide-in-from-bottom-2 ui:origin-(--bits-tooltip-content-transform-origin) ui:z-50 ui:w-fit ui:text-balance ui:rounded-md ui:px-3 ui:py-1.5 ui:text-xs',
       className
     )}
     {...restProps}
@@ -32,11 +32,11 @@
       {#snippet child({ props })}
         <div
           class={cn(
-            'bg-primary z-50 size-2.5 rotate-45 rounded-[2px]',
-            'data-[side=top]:translate-x-1/2 data-[side=top]:translate-y-[calc(-50%_+_2px)]',
-            'data-[side=bottom]:-translate-x-1/2 data-[side=bottom]:-translate-y-[calc(-50%_+_1px)]',
-            'data-[side=right]:translate-x-[calc(50%_+_2px)] data-[side=right]:translate-y-1/2',
-            'data-[side=left]:-translate-y-[calc(50%_-_3px)]',
+            'ui:bg-primary ui:z-50 ui:size-2.5 ui:rotate-45 ui:rounded-[2px]',
+            'ui:data-[side=top]:translate-x-1/2 ui:data-[side=top]:translate-y-[calc(-50%+2px)]',
+            'ui:data-[side=bottom]:-translate-x-1/2 ui:data-[side=bottom]:-translate-y-[calc(-50%+1px)]',
+            'ui:data-[side=right]:translate-x-[calc(50%+2px)] ui:data-[side=right]:translate-y-1/2',
+            'ui:data-[side=left]:-translate-y-[calc(50%-3px)]',
             arrowClasses
           )}
           {...props}

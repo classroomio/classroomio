@@ -50,7 +50,7 @@
         url: getNavItemRoute($course.id),
         isActive: (path || page.url.pathname) === getNavItemRoute($course.id),
         show() {
-          return isStudent ? $currentOrg.customization.course.newsfeed : true;
+          return isStudent ? $currentOrg.customization?.['course']?.['newsfeed'] : true;
         },
         icon: getNavIcon(NAV_IDS.NEWS_FEED)
       },
@@ -121,7 +121,7 @@
         isActive: (path || page.url.pathname) === getNavItemRoute($course.id, 'marks'),
         show() {
           if ($course.type == COURSE_TYPE.LIVE_CLASS) {
-            return isStudent ? $currentOrg.customization.course.grading : true;
+            return isStudent ? ($currentOrg.customization?.['course']?.['grading'] ?? false) : true;
           }
           return false;
         },
@@ -220,7 +220,7 @@
 </script>
 
 <Sidebar.Provider class="flex w-fit items-start gap-2">
-  <Sidebar.Root collapsible="icon" class="inset-y-12 h-[calc(100vh-48px)] {$sideBar.hidden ? 'hidden' : ''}">
+  <Sidebar.Root collapsible="icon" class="ui:inset-y-12 h-[calc(100vh-48px)] {$sideBar.hidden ? 'hidden' : ''}">
     <Sidebar.Content>
       <Sidebar.Group>
         <Sidebar.GroupLabel>Course Navigation</Sidebar.GroupLabel>
@@ -376,7 +376,7 @@
                       <Sidebar.MenuButton
                         tooltipContent={item.title}
                         class="flex w-full cursor-pointer items-center gap-4 px-1.5 py-2 {item.isActive
-                          ? 'bg-accent text-accent-foreground'
+                          ? 'ui:bg-accent ui:text-accent-foreground'
                           : ''}"
                       >
                         {@const Icon = item.icon}

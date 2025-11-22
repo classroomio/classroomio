@@ -42,7 +42,7 @@
 
 {#if open}
   <div
-    class="dialog fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-gray-100 bg-opacity-50"
+    class="dialog fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden bg-gray-100 bg-opacity-50"
     onclick={onClose}
     role="presentation"
   >
@@ -50,12 +50,12 @@
     <div
       class="{maxWidth || 'container'} {size === 'sm'
         ? 'small'
-        : ''} mx-auto bg-white dark:bg-neutral-800 {width} rounded-md pt-2 shadow-lg"
+        : ''} mx-auto bg-white dark:bg-neutral-800 {width}  max-h-4/5 overflow-y-auto rounded-md shadow-lg"
       onclick={(e) => e.stopPropagation()}
       role="presentation"
     >
       <div
-        class="{headerClass} flex items-center justify-between border border-l-0 border-r-0 border-t-0 border-gray-100 p-4 px-5 dark:border-neutral-600"
+        class="{headerClass} sticky top-0 z-10 flex items-center justify-between border border-l-0 border-r-0 border-t-0 border-gray-100 bg-white p-4 px-5 dark:border-neutral-600 dark:bg-neutral-800"
       >
         <p class="text-md m-0 font-medium dark:text-white {labelClass}">
           {modalHeading}
@@ -67,7 +67,7 @@
         {/if}
       </div>
 
-      <div class="body h-4/5 overflow-y-auto p-6 {containerClass}">
+      <div class="body p-6 {containerClass} ">
         {@render children?.()}
       </div>
     </div>

@@ -36,18 +36,18 @@
         class={buttonVariants({
           variant: 'ghost',
           size: 'icon',
-          class: cn('gap-0.5', className)
+          class: cn('ui:gap-0.5', className)
         })}
         style={`color: ${currentColor}; background-color: ${currentHighlight}50;`}
       >
         <span>A</span>
-        <ChevronDown class="text-muted-foreground !size-2" />
+        <ChevronDown class="ui:text-muted-foreground !size-2" />
       </div>
     </EdraToolTip>
   </Popover.Trigger>
-  <Popover.Content class="size-fit shadow-lg" portalProps={{ disabled: true, to: undefined }}>
-    <div class="text-muted-foreground my-2 text-xs">Text Colors</div>
-    <div class="grid grid-cols-5 gap-2">
+  <Popover.Content class="ui:size-fit ui:shadow-lg" portalProps={{ disabled: true, to: undefined }}>
+    <div class="ui:text-muted-foreground ui:my-2 ui:text-xs">Text Colors</div>
+    <div class="ui:grid ui:gap-2 grid-cols-5">
       {#each colors as color (color)}
         <Button
           variant="ghost"
@@ -72,8 +72,8 @@
         </Button>
       {/each}
     </div>
-    <div class="text-muted-foreground my-2 text-xs">Highlight Colors</div>
-    <div class="grid grid-cols-5 gap-2">
+    <div class="ui:text-muted-foreground ui:my-2 ui:text-xs">Highlight Colors</div>
+    <div class="ui:grid ui:gap-2 grid-cols-5">
       {#each colors as color (color)}
         <Button
           variant="ghost"

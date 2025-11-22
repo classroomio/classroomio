@@ -5,7 +5,10 @@
   "scripts": {
     "generate-css": "echo 'generating CSS' && pnpx @tailwindcss/cli -i ./src/index.css -o ./src/output.css --minify",
     "build": "pnpm generate-css",
-    "dev": "pnpm generate-css --watch"
+    "dev": "pnpm generate-css --watch",
+    "format": "prettier --write .",
+    "prefix:list": "node add-ui-prefix.cjs --dry-run",
+    "prefix": "node add-ui-prefix.cjs && pnpm format"
   },
   "devDependencies": {
     "@internationalized/date": "^3.8.1",

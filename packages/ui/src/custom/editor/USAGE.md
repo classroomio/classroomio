@@ -68,7 +68,7 @@ You can also set HTML content programmatically:
       <p>This content was loaded after the editor was ready.</p>
       <code>console.log('Hello, world!');</code>
     `;
-    
+
     if (editor) {
       editor.commands.setContent(htmlString);
     }
@@ -79,14 +79,9 @@ You can also set HTML content programmatically:
   }
 </script>
 
-<Editor 
-  bind:content
-  onEditorReady={handleEditorReady}
-/>
+<Editor bind:content onEditorReady={handleEditorReady} />
 
-<button on:click={loadHtmlContent}>
-  Load HTML Content
-</button>
+<button on:click={loadHtmlContent}> Load HTML Content </button>
 ```
 
 ## Advanced Usage with All Props
@@ -105,7 +100,7 @@ You can also set HTML content programmatically:
       }
     ]
   };
-  
+
   let editable = true;
   let showToolBar = true;
 
@@ -120,7 +115,7 @@ You can also set HTML content programmatically:
   }
 </script>
 
-<Editor 
+<Editor
   bind:content
   bind:editable
   {showToolBar}
@@ -148,16 +143,12 @@ You can also set HTML content programmatically:
 <div class="grid grid-cols-2 gap-4">
   <div>
     <h2>Article</h2>
-    <Editor 
-      bind:content={article}
-      contentStorageKey="article-content"
-      enablePersistence={true}
-    />
+    <Editor bind:content={article} contentStorageKey="article-content" enablePersistence={true} />
   </div>
-  
+
   <div>
     <h2>Notes</h2>
-    <Editor 
+    <Editor
       bind:content={notes}
       showToolBar={false}
       contentStorageKey="notes-content"
@@ -170,30 +161,30 @@ You can also set HTML content programmatically:
 
 ## Props Reference
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `content` | `Content` | Default doc with placeholder | Editor content (bindable) |
-| `showToolBar` | `boolean` | `true` | Whether to show the toolbar |
-| `editable` | `boolean` | `true` | Whether the editor is editable |
-| `enablePersistence` | `boolean` | `false` | Enable localStorage persistence |
-| `contentStorageKey` | `string` | `'edra-content'` | localStorage key for content |
-| `editableStorageKey` | `string` | `'edra-editable'` | localStorage key for editable state |
-| `class` | `string` | Default wrapper classes | CSS classes for wrapper |
-| `editorClass` | `string` | `'h-[32rem] overflow-auto'` | CSS classes for editor |
-| `onContentChange` | `(content: Content) => void` | `undefined` | Callback when content changes |
-| `onEditorReady` | `(editor: Editor) => void` | `undefined` | Callback when editor is ready |
-| `onEditorDestroy` | `() => void` | `undefined` | Callback when editor is destroyed |
+| Prop                 | Type                         | Default                      | Description                         |
+| -------------------- | ---------------------------- | ---------------------------- | ----------------------------------- |
+| `content`            | `Content`                    | Default doc with placeholder | Editor content (bindable)           |
+| `showToolBar`        | `boolean`                    | `true`                       | Whether to show the toolbar         |
+| `editable`           | `boolean`                    | `true`                       | Whether the editor is editable      |
+| `enablePersistence`  | `boolean`                    | `false`                      | Enable localStorage persistence     |
+| `contentStorageKey`  | `string`                     | `'edra-content'`             | localStorage key for content        |
+| `editableStorageKey` | `string`                     | `'edra-editable'`            | localStorage key for editable state |
+| `class`              | `string`                     | Default wrapper classes      | CSS classes for wrapper             |
+| `editorClass`        | `string`                     | `'h-[32rem] overflow-auto'`  | CSS classes for editor              |
+| `onContentChange`    | `(content: Content) => void` | `undefined`                  | Callback when content changes       |
+| `onEditorReady`      | `(editor: Editor) => void`   | `undefined`                  | Callback when editor is ready       |
+| `onEditorDestroy`    | `() => void`                 | `undefined`                  | Callback when editor is destroyed   |
 
 ## Callbacks
 
-| Callback | Type | Description |
-|----------|------|-------------|
+| Callback          | Type                         | Description                        |
+| ----------------- | ---------------------------- | ---------------------------------- |
 | `onContentChange` | `(content: Content) => void` | Called when editor content changes |
-| `onEditorReady` | `(editor: Editor) => void` | Called when editor is ready |
-| `onEditorDestroy` | `() => void` | Called when editor is destroyed |
+| `onEditorReady`   | `(editor: Editor) => void`   | Called when editor is ready        |
+| `onEditorDestroy` | `() => void`                 | Called when editor is destroyed    |
 
 ```svelte
-<Editor 
+<Editor
   content={myContent}
   onContentChange={(content) => {
     console.log('New content:', content);
@@ -225,7 +216,7 @@ You can also set HTML content programmatically:
 <script>
   import { Editor } from './editor.svelte';
   import type { Content } from '@tiptap/core';
-  
+
   let content: Content = { type: 'doc', content: [] };
 </script>
 

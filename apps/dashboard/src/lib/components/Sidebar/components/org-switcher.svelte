@@ -23,8 +23,6 @@
 
   const sidebar = useSidebar();
 
-  console.log('Active Team:', $currentOrg);
-
   function onClick(org: AccountOrg) {
     if (org.id === $currentOrg.id) return;
 
@@ -45,10 +43,10 @@
             <Sidebar.MenuButton
               {...props}
               size="lg"
-              class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              class="ui:data-[state=open]:bg-sidebar-accent ui:data-[state=open]:text-sidebar-accent-foreground"
             >
               {#if $currentOrg.name}
-                <Avatar.Root class="flex size-8 items-center justify-center rounded-lg">
+                <Avatar.Root class="ui:flex ui:size-8 ui:items-center ui:justify-center ui:rounded-lg">
                   {#if $currentOrg.avatarUrl}
                     <Avatar.Image src={$currentOrg.avatarUrl} alt={$currentOrg.name} />
                   {:else}
@@ -76,12 +74,12 @@
           {/snippet}
         </DropdownMenu.Trigger>
         <DropdownMenu.Content
-          class="w-(--bits-dropdown-menu-anchor-width) min-w-56 rounded-lg"
+          class="ui:w-(--bits-dropdown-menu-anchor-width) ui:min-w-56 ui:rounded-lg"
           align="start"
           side={sidebar.isMobile ? 'bottom' : 'right'}
           sideOffset={4}
         >
-          <DropdownMenu.Label class="text-muted-foreground text-xs">Organizations</DropdownMenu.Label>
+          <DropdownMenu.Label class="ui:text-muted-foreground ui:text-xs">Organizations</DropdownMenu.Label>
           {#each $orgs as org (org.name)}
             {#if canAddOrg}
               <DropdownMenu.Item onSelect={() => onClick(org)} class="gap-2 p-2">
@@ -89,7 +87,11 @@
                   {#if org.avatarUrl}
                     <Avatar.Image src={org.avatarUrl} alt={org.name} />
                   {:else}
-                    <TextChip size="sm" value={getShortOrgName(org.name)} className="bg-primary-200 dark:text-black" />
+                    <TextChip
+                      size="sm"
+                      value={getShortOrgName(org.name)}
+                      className="ui:bg-primary-200 ui:dark:text-black"
+                    />
                   {/if}
                 </Avatar.Root>
 
@@ -102,7 +104,7 @@
             <div class="flex size-6 items-center justify-center rounded-md border bg-transparent">
               <PlusIcon class="size-4" />
             </div>
-            <div class="text-muted-foreground font-medium">Add Organization</div>
+            <div class="ui:text-muted-foreground ui:font-medium">Add Organization</div>
 
             <ComingSoon />
           </DropdownMenu.Item>
@@ -111,7 +113,7 @@
     {:else}
       <Sidebar.MenuButton size="lg">
         <div
-          class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg"
+          class="ui:bg-sidebar-primary ui:text-sidebar-primary-foreground ui:flex ui:aspect-square ui:size-8 ui:items-center ui:justify-center ui:rounded-lg"
         >
           <PlusIcon class="size-4" />
         </div>

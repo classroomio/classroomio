@@ -1,5 +1,4 @@
 <script lang="ts">
-  import AppSidebar from './components/app-sidebar.svelte';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { t } from '$lib/utils/functions/translations';
   import LayoutDashboardIcon from '@lucide/svelte/icons/layout-dashboard';
@@ -13,6 +12,7 @@
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { currentOrg, orgs } from '$lib/utils/store/org';
   import SidebarSkeleton from './components/sidebar-skeleton.svelte';
+  import AppSidebar from './components/app-sidebar.svelte';
 
   const data = $derived({
     navMain: [
@@ -64,10 +64,10 @@
 {#if !isReady}
   <SidebarSkeleton />
 {:else}
-  <Sidebar.Provider class="flex w-fit items-start gap-4">
+  <Sidebar.Provider class="ui:flex ui:w-fit ui:items-start ui:gap-4">
     <AppSidebar {data} />
 
-    <Sidebar.Inset class="hidden md:block">
+    <Sidebar.Inset class="">
       <Sidebar.Trigger class="-ml-1" />
     </Sidebar.Inset>
   </Sidebar.Provider>
