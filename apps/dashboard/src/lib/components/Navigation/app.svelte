@@ -2,7 +2,6 @@
   import { goto } from '$app/navigation';
   import BellIcon from '@lucide/svelte/icons/bell';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
-  import { ModeSwitcher } from '@cio/ui/base/dark-mode';
 
   import { IconButton } from '$lib/components/IconButton';
   import { globalStore } from '$lib/utils/store/app';
@@ -46,16 +45,6 @@
 
     <li>
       <BellIcon class="custom text-white" size={16} />
-    </li>
-    <li>
-      <!-- <IconButton size="small" onClick={toggleDarkMode}>
-        {#if $globalStore.isDark}
-          <SunIcon size={16} class="custom" />
-        {:else}
-          <MoonIcon class="custom text-white" size={16} />
-        {/if}
-      </IconButton> -->
-      <ModeSwitcher />
     </li>
 
     <li></li>

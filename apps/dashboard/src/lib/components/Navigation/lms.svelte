@@ -1,16 +1,10 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { browser } from '$app/environment';
   import BellIcon from '@lucide/svelte/icons/bell';
-  import MoonIcon from '@lucide/svelte/icons/moon';
-  import SunIcon from '@lucide/svelte/icons/sun';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
 
-  import { IconButton } from '$lib/components/IconButton';
-  import { globalStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
-  import { toggleBodyByMode } from '$lib/utils/functions/app';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -18,15 +12,6 @@
   }
 
   let { navClass = '' }: Props = $props();
-
-  function toggleDarkMode() {
-    $globalStore.isDark = !$globalStore.isDark;
-
-    toggleBodyByMode($globalStore.isDark);
-    if (browser) {
-      localStorage.setItem('mode', $globalStore.isDark ? 'dark' : '');
-    }
-  }
 
   function shortenName(name: string) {
     return name?.substring(0, 2)?.toUpperCase() || '';
@@ -59,15 +44,6 @@
 
     <li>
       <BellIcon class="text-white" size={16} />
-    </li>
-    <li>
-      <IconButton size="small" onClick={toggleDarkMode}>
-        {#if $globalStore.isDark}
-          <SunIcon class="text-white" size={16} />
-        {:else}
-          <MoonIcon class="text-white" size={16} />
-        {/if}
-      </IconButton>
     </li>
     <li></li>
   </ul>
