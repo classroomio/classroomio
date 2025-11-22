@@ -15,6 +15,7 @@ declare global {
       session: TSession | null;
       profile: TProfile | null;
       organizations: AccountOrganization[];
+      fromSessions?: boolean;
       // getAccount: () =>
     }
     // interface PageData {}

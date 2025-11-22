@@ -10,10 +10,9 @@
 
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
-  import { sideBar } from '$lib/components/Org/store';
   import { t } from '$lib/utils/functions/translations';
 
-  import NavUser from '../Sidebar/components/nav-user.svelte';
+  import { SidebarFooterMenu } from '$lib/features/ui/sidebar/footer';
 
   interface SideLinks {
     name: string;
@@ -74,14 +73,10 @@
       }
     ].filter((link) => (link.show ? link.show() : true))
   );
-
-  const toggleSidebar = () => {
-    $sideBar.hidden = !$sideBar.hidden;
-  };
 </script>
 
 <Sidebar.Provider class="w-fit">
-  <Sidebar.Root collapsible="icon" class="ui:inset-y-12 h-[calc(100vh-48px)] {$sideBar.hidden ? 'hidden' : ''}">
+  <Sidebar.Root collapsible="icon" class="ui:inset-y-12 h-[calc(100vh-48px)]">
     <Sidebar.Content>
       <Sidebar.Group>
         <Sidebar.GroupLabel>LMS Navigation</Sidebar.GroupLabel>
@@ -91,7 +86,6 @@
               <Sidebar.MenuButton tooltipContent={item.name}>
                 <a
                   href={item.link}
-                  onclick={toggleSidebar}
                   class="flex w-full items-center gap-4 {isActive(page.url.pathname, item.link)
                     ? 'ui:bg-accent ui:text-accent-foreground rounded-md px-3 py-2'
                     : ''}"
@@ -108,7 +102,7 @@
 
     {#if user}
       <Sidebar.Footer>
-        <NavUser {user} />
+        <SidebarFooterMenu />
       </Sidebar.Footer>
     {/if}
 

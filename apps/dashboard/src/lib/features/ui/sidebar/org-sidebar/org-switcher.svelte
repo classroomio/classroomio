@@ -12,14 +12,7 @@
   import { setTheme } from '$lib/utils/functions/theme';
   import { currentOrg, currentOrgPath, orgs } from '$lib/utils/store/org';
 
-  import TextChip from '$lib/components/Chip/Text.svelte';
-  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
-
-  let {
-    canAddOrg = true
-  }: {
-    canAddOrg?: boolean;
-  } = $props();
+  import { ComingSoon } from '$lib/features/ui';
 
   const sidebar = useSidebar();
 
@@ -47,22 +40,17 @@
             >
               {#if $currentOrg.name}
                 <Avatar.Root class="ui:flex ui:size-8 ui:items-center ui:justify-center ui:rounded-lg">
-                  {#if $currentOrg.avatarUrl}
-                    <Avatar.Image src={$currentOrg.avatarUrl} alt={$currentOrg.name} />
-                  {:else}
-                    <TextChip
-                      size="sm"
-                      value={getShortOrgName($currentOrg.name)}
-                      className="bg-primary-200 dark:text-black"
-                    />
-                  {/if}
+                  <Avatar.Image src={$currentOrg.avatarUrl} alt={$currentOrg.name} />
+                  <Avatar.Fallback class="rounded-lg">{getShortOrgName($currentOrg.name)}</Avatar.Fallback>
                 </Avatar.Root>
 
                 <div class="grid flex-1 text-left text-sm leading-tight">
                   <span class="truncate font-medium">
                     {$currentOrg.name}
                   </span>
-                  <span class="truncate text-xs">{$currentOrg.plans?.[0]?.planName || 'Free'}</span>
+                  <span class="truncate text-xs">
+                    {$currentOrg.plans?.[0]?.planName || 'Free'}
+                  </span>
                 </div>
                 <ChevronsUpDownIcon class="ml-auto" />
               {:else}
@@ -80,26 +68,20 @@
           sideOffset={4}
         >
           <DropdownMenu.Label class="ui:text-muted-foreground ui:text-xs">Organizations</DropdownMenu.Label>
-          {#each $orgs as org (org.name)}
-            {#if canAddOrg}
-              <DropdownMenu.Item onSelect={() => onClick(org)} class="gap-2 p-2">
-                <Avatar.Root class="flex size-8 items-center justify-center rounded-lg">
-                  {#if org.avatarUrl}
-                    <Avatar.Image src={org.avatarUrl} alt={org.name} />
-                  {:else}
-                    <TextChip
-                      size="sm"
-                      value={getShortOrgName(org.name)}
-                      className="ui:bg-primary-200 ui:dark:text-black"
-                    />
-                  {/if}
-                </Avatar.Root>
 
-                {org.name}
-              </DropdownMenu.Item>
-            {/if}
+          {#each $orgs as org (org.name)}
+            <DropdownMenu.Item onSelect={() => onClick(org)} class="gap-2 p-2">
+              <Avatar.Root class="flex size-8 items-center justify-center rounded-lg">
+                <Avatar.Image src={org.avatarUrl} alt={org.name} />
+                <Avatar.Fallback class="rounded-lg">{getShortOrgName(org.name)}</Avatar.Fallback>
+              </Avatar.Root>
+
+              {org.name}
+            </DropdownMenu.Item>
           {/each}
+
           <DropdownMenu.Separator />
+
           <DropdownMenu.Item class="cursor-not-allowed gap-2 p-2 opacity-50">
             <div class="flex size-6 items-center justify-center rounded-md border bg-transparent">
               <PlusIcon class="size-4" />

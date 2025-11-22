@@ -21,9 +21,7 @@
 
   import { NAV_IDS } from './constants';
   import { profile } from '$lib/utils/store/user';
-  import { sideBar } from '$lib/components/Org/store';
   import { course } from '$lib/components/Course/store';
-  import { isMobile } from '$lib/utils/store/useMobile';
   import { t } from '$lib/utils/functions/translations';
   import { handleAddLessonWidget } from '../Lesson/store';
   import { getIsLessonComplete } from '../Lesson/functions';
@@ -186,8 +184,6 @@
     }
   }
 
-  const toggleSidebarOnMobile = () => $isMobile && ($sideBar.hidden = !$sideBar.hidden);
-
   function getNavIcon(id: string) {
     if (!id) return null;
 
@@ -217,10 +213,12 @@
 
     return null;
   }
+
+  function toggleSidebarOnMobile() {}
 </script>
 
 <Sidebar.Provider class="flex w-fit items-start gap-2">
-  <Sidebar.Root collapsible="icon" class="ui:inset-y-12 h-[calc(100vh-48px)] {$sideBar.hidden ? 'hidden' : ''}">
+  <Sidebar.Root collapsible="icon" class="ui:inset-y-12 h-[calc(100vh-48px)]">
     <Sidebar.Content>
       <Sidebar.Group>
         <Sidebar.GroupLabel>Course Navigation</Sidebar.GroupLabel>
@@ -232,7 +230,7 @@
                   {#if item.isLesson && item.items}
                     <Collapsible.Trigger>
                       {#snippet child({ props })}
-                        <a href={item.url} onclick={toggleSidebarOnMobile}>
+                        <a href={item.url}>
                           <Sidebar.MenuButton
                             {...props}
                             tooltipContent={item.title}

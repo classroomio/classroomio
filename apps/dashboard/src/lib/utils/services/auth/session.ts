@@ -12,7 +12,13 @@ export const getSessionData = async (cookies: Cookies): Promise<App.Locals | nul
 
     if (!cioCookies) return null;
 
-    return getThroughAuthClient(cioCookies);
+    const locals = await getThroughAuthClient(cioCookies);
+
+    if (!locals) return null;
+
+    locals.fromSessions = !!cookies.get('classroomio.session_data');
+
+    return locals;
   } catch (error) {
     console.error('Session verification failed:', error);
     return null;

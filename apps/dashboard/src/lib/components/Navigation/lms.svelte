@@ -6,12 +6,9 @@
   import SunIcon from '@lucide/svelte/icons/sun';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
-  import XIcon from '@lucide/svelte/icons/x';
-  import MenuIcon from '@lucide/svelte/icons/menu';
 
   import { IconButton } from '$lib/components/IconButton';
   import { globalStore } from '$lib/utils/store/app';
-  import { sideBar } from '$lib/components/Org/store';
   import { currentOrg } from '$lib/utils/store/org';
   import { toggleBodyByMode } from '$lib/utils/functions/app';
   import { t } from '$lib/utils/functions/translations';
@@ -21,10 +18,6 @@
   }
 
   let { navClass = '' }: Props = $props();
-
-  const toggleSidebar = () => {
-    $sideBar.hidden = !$sideBar.hidden;
-  };
 
   function toggleDarkMode() {
     $globalStore.isDark = !$globalStore.isDark;
@@ -42,15 +35,6 @@
 
 <nav class="{navClass} bg-primary-700 flex h-[48px] w-full p-2 md:px-6">
   <ul class="flex w-full items-center">
-    <li class="md:hidden">
-      <IconButton onClick={toggleSidebar}>
-        {#if $sideBar.hidden}
-          <MenuIcon size={16} />
-        {:else}
-          <XIcon size={16} />
-        {/if}
-      </IconButton>
-    </li>
     <div class="">
       <a href={page.url.pathname} title={$t('navigation.goto_home')} id="logo" class="flex items-center text-lg">
         {#if $currentOrg.avatar_url}

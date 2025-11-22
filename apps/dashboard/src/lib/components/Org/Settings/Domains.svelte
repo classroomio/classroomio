@@ -24,7 +24,7 @@
   import { IconButton } from '$lib/components/IconButton';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
+  import { ComingSoon } from '$lib/features/ui';
   import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';

@@ -22,7 +22,7 @@
   import SectionTitle from '../SectionTitle.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
+  import { ComingSoon } from '$lib/features/ui';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   let emailsStr = $state('');

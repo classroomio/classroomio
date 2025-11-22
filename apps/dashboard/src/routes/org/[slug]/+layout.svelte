@@ -7,7 +7,7 @@
   import { VerifyEmailModal } from '$lib/features/onboarding/components';
 
   import Box from '$lib/components/Box/index.svelte';
-  import { OrgSidebar } from '$lib/components/Sidebar';
+  import { OrgSidebar } from '$lib/features/ui/sidebar/org-sidebar/index.js';
   import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
 
   let { data, children } = $props();

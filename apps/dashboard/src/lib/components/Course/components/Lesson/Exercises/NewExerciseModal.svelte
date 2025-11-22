@@ -5,7 +5,7 @@
   import Modal from '$lib/components/Modal/index.svelte';
   import Confetti from '$lib/components/Confetti/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
+  import { ComingSoon } from '$lib/features/ui';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
 

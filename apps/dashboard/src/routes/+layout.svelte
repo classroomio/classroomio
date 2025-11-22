@@ -32,10 +32,6 @@
 
   let path = $derived(page.url?.pathname?.replace('/', ''));
 
-  $effect(() => {
-    console.log('account status, loading,error,data:', appInitApi.loading, appInitApi.error, appInitApi.data);
-  });
-
   function intialAppSetup() {
     console.log(
       'Welcome to ClassroomIO, we are grateful you chose us.',
@@ -77,9 +73,19 @@
   });
 
   const session = authClient.useSession();
+  const isSessionReady = $derived(!$session.isPending && !$session.isRefetching && $session.data);
+
   $effect(() => {
-    const isSessionReady = !$session.isPending && !$session.isRefetching && $session.data;
-    if (isSessionReady && !appInitApi.isInitializedAndReady) {
+    // this means the session cookie 'classroomio.session_data' expired and we need to trigger a new session
+    if (!data.locals.fromSessions && isSessionReady) {
+      authClient.getSession().then(() => {
+        console.log('triggered new session');
+      });
+    }
+  });
+
+  $effect(() => {
+    if (isSessionReady && !appInitApi.isInitializedAndReady && !appInitApi.loading) {
       console.log('setting up account with session data');
 
       appInitApi.setupApp($session.data as App.Locals, {

@@ -11,8 +11,12 @@
   import { profile } from '$lib/utils/store/user';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { currentOrg, orgs } from '$lib/utils/store/org';
-  import SidebarSkeleton from './components/sidebar-skeleton.svelte';
-  import AppSidebar from './components/app-sidebar.svelte';
+
+  import OrgSwitcher from './org-switcher.svelte';
+  import NavMain from './nav-main.svelte';
+  import { SidebarFooterMenu } from '../footer';
+  import UpgradeTrigger from './upgrade-trigger.svelte';
+  import SidebarSkeleton from '../sidebar-skeleton.svelte';
 
   const data = $derived({
     navMain: [
@@ -58,14 +62,32 @@
     }
   });
 
-  const isReady = $derived($orgs.length > 0 && $profile.fullname && $profile.email);
+  const isOrgLoaded = $derived($orgs.length > 0 && $profile.fullname && $profile.email);
 </script>
 
-{#if !isReady}
+{#if !isOrgLoaded}
   <SidebarSkeleton />
 {:else}
   <Sidebar.Provider class="ui:flex ui:w-fit ui:items-start ui:gap-4">
-    <AppSidebar {data} />
+    <Sidebar.Root collapsible="icon" class="ui:inset-y-12 h-[calc(100vh-48px)]">
+      <Sidebar.Header>
+        <OrgSwitcher />
+      </Sidebar.Header>
+
+      <Sidebar.Content>
+        <NavMain items={data.navMain} />
+      </Sidebar.Content>
+
+      <UpgradeTrigger />
+
+      {#if data.user}
+        <Sidebar.Footer>
+          <SidebarFooterMenu />
+        </Sidebar.Footer>
+      {/if}
+
+      <Sidebar.Rail />
+    </Sidebar.Root>
 
     <Sidebar.Inset class="">
       <Sidebar.Trigger class="-ml-1" />
