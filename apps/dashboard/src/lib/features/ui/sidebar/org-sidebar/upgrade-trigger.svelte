@@ -38,7 +38,7 @@
         data-slot="upgrade-trigger"
         variant="ghost"
         size="icon"
-        class=" flex w-full items-center justify-center"
+        class="mx-1 flex w-full items-center justify-center"
         type="button"
         onclick={openUpgradeModal}
       >

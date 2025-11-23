@@ -115,53 +115,51 @@
   <title>Courses - ClassroomIO</title>
 </svelte:head>
 
-<section class="w-full md:mx-auto md:max-w-6xl">
-  <div class="px-2 py-2 md:px-5 md:py-10">
-    <div class="mb-5 flex items-center justify-between">
-      <h1 class="text-2xl md:text-3xl dark:text-white">{$t('courses.heading')}</h1>
-      {#if $isMobile}
-        <PrimaryButton isDisabled={!$isOrgAdmin} onClick={openNewCourseModal}>
-          <PlusIcon size={16} />
-        </PrimaryButton>
+<section class="w-full">
+  <div class="mb-5 flex items-center justify-between">
+    <h1 class="text-2xl md:text-3xl dark:text-white">{$t('courses.heading')}</h1>
+    {#if $isMobile}
+      <PrimaryButton isDisabled={!$isOrgAdmin} onClick={openNewCourseModal}>
+        <PlusIcon size={16} />
+      </PrimaryButton>
+    {:else}
+      <PrimaryButton
+        label={$t('courses.heading_button')}
+        variant={VARIANTS.CONTAINED_DARK}
+        isDisabled={!$isOrgAdmin}
+        onClick={openNewCourseModal}
+      />
+    {/if}
+  </div>
+  <div class="mb-5 flex flex-row-reverse">
+    <div class="filter-containter flex items-end justify-start gap-2">
+      <div class="relative">
+        <Input type="text" placeholder={$t('courses.search_placeholder')} bind:value={searchValue} class="pl-9" />
+
+        <SearchIcon class="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+      </div>
+      <Select.Root type="single" bind:value={selectedId}>
+        <Select.Trigger class="min-w-[150px]">
+          <p>{selectedId ? selectedLabel : filterOptions[0].label}</p>
+        </Select.Trigger>
+        <Select.Content>
+          {#each filterOptions as option}
+            <Select.Item value={option.value}>{option.label}</Select.Item>
+          {/each}
+        </Select.Content>
+      </Select.Root>
+      {#if $courseMetaDeta.view === 'list'}
+        <IconButton onClick={() => setViewPreference('grid')}>
+          <GridIcon size={16} />
+        </IconButton>
       {:else}
-        <PrimaryButton
-          label={$t('courses.heading_button')}
-          variant={VARIANTS.CONTAINED_DARK}
-          isDisabled={!$isOrgAdmin}
-          onClick={openNewCourseModal}
-        />
+        <IconButton onClick={() => setViewPreference('list')}>
+          <ListIcon size={16} />
+        </IconButton>
       {/if}
     </div>
-    <div class="mb-5 flex flex-row-reverse">
-      <div class="filter-containter flex items-end justify-start gap-2">
-        <div class="relative">
-          <Input type="text" placeholder={$t('courses.search_placeholder')} bind:value={searchValue} class="pl-9" />
-
-          <SearchIcon class="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2" />
-        </div>
-        <Select.Root type="single" bind:value={selectedId}>
-          <Select.Trigger class="min-w-[150px]">
-            <p>{selectedId ? selectedLabel : filterOptions[0].label}</p>
-          </Select.Trigger>
-          <Select.Content>
-            {#each filterOptions as option}
-              <Select.Item value={option.value}>{option.label}</Select.Item>
-            {/each}
-          </Select.Content>
-        </Select.Root>
-        {#if $courseMetaDeta.view === 'list'}
-          <IconButton onClick={() => setViewPreference('grid')}>
-            <GridIcon size={16} />
-          </IconButton>
-        {:else}
-          <IconButton onClick={() => setViewPreference('list')}>
-            <ListIcon size={16} />
-          </IconButton>
-        {/if}
-      </div>
-    </div>
-
-    <NewCourseModal />
-    <Courses courses={filteredCourses} />
   </div>
+
+  <NewCourseModal />
+  <Courses courses={filteredCourses} />
 </section>

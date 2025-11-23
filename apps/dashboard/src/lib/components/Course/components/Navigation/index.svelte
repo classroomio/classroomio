@@ -218,7 +218,7 @@
 </script>
 
 <Sidebar.Provider class="flex w-fit items-start gap-2">
-  <Sidebar.Root collapsible="icon" class="ui:inset-y-12 h-[calc(100vh-48px)]">
+  <Sidebar.Root collapsible="icon">
     <Sidebar.Content>
       <Sidebar.Group>
         <Sidebar.GroupLabel>Course Navigation</Sidebar.GroupLabel>

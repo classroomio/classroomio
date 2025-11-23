@@ -76,7 +76,7 @@
 </script>
 
 <Sidebar.Provider class="w-fit">
-  <Sidebar.Root collapsible="icon" class="ui:inset-y-12 h-[calc(100vh-48px)]">
+  <Sidebar.Root collapsible="icon">
     <Sidebar.Content>
       <Sidebar.Group>
         <Sidebar.GroupLabel>LMS Navigation</Sidebar.GroupLabel>

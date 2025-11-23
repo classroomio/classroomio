@@ -275,6 +275,7 @@
   },
 
   "org_navigation": {
+    "platform": "Platform",
     "dashboard": "Dashboard",
     "courses": "Courses",
     "community": "Community",

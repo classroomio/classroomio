@@ -98,9 +98,9 @@
 
 <WelcomeModal />
 
-<div class="w-full px-5 py-10 md:mx-auto">
+<div class="w-full">
   <div class="mb-5 flex items-center justify-between">
-    <h1 class="mb-3 text-2xl dark:text-white">
+    <h1 class="m-0 text-xl font-medium dark:text-white">
       {$t(getGreeting())}
       {$profile.fullname}!
     </h1>

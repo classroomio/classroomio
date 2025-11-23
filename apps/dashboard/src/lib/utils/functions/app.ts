@@ -28,9 +28,13 @@ export function isLMSPage(path) {
   return /lms[/a-z 0-9 -]*/.test(path);
 }
 
-export function isActive(pagePath: string, itemPath: string) {
+export function isActive(pagePath: string, itemPath: string, exact: boolean = false) {
   const pageLinkItems = pagePath.split('/');
   const itemLinkItems = itemPath.split('/');
+
+  if (exact) {
+    return pagePath === itemPath;
+  }
 
   if (itemLinkItems.length !== pageLinkItems.length) {
     return false;

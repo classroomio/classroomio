@@ -11,7 +11,7 @@
   import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
   import ThemeToggle from './theme-toggle.svelte';
 
-  import { currentOrg, currentOrgDomain, currentOrgPath } from '$lib/utils/store/org';
+  import { currentOrgPath } from '$lib/utils/store/org';
 
   import { t } from '$lib/utils/functions/translations';
   import { logout } from '$lib/utils/functions/logout';
@@ -30,34 +30,19 @@
     <Avatar.Image src={$profile.avatarUrl} alt={$profile.fullname} />
     <Avatar.Fallback class="rounded-lg">{$profile.fullname.slice(0, 2)}</Avatar.Fallback>
   </Avatar.Root>
-  <div class="grid flex-1 text-left text-sm leading-tight">
-    <span class="truncate font-medium">{$profile.fullname}</span>
+  <div class="grid flex-1 text-left text-sm font-normal leading-tight">
+    <span class="truncate">{$profile.fullname}</span>
     <span class="truncate text-xs">{$profile.email}</span>
   </div>
 {/snippet}
 
 {#snippet usertrigger()}
-  <DropdownMenu.Label class="p-0 font-normal">
+  <DropdownMenu.Label class="p-0">
     <a
       href={`${!$globalStore.isOrgSite ? $currentOrgPath : '/lms'}/settings`}
       class="flex items-center gap-2 px-1 py-1.5 text-left text-sm"
     >
       {@render avatarblock()}
-    </a>
-  </DropdownMenu.Label>
-{/snippet}
-
-{#snippet orgtrigger()}
-  <DropdownMenu.Label class="p-0 font-normal">
-    <a href={`${$currentOrgPath}/settings?tab=org`} class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-      <Avatar.Root>
-        <Avatar.Image src={$currentOrg.avatarUrl} alt={$currentOrg.name} />
-        <Avatar.Fallback class="rounded-lg">{$currentOrg.name.slice(0, 2)}</Avatar.Fallback>
-      </Avatar.Root>
-      <div class="grid flex-1 text-left text-sm leading-tight">
-        <span class="truncate font-medium">{$currentOrg.name}</span>
-        <span class="truncate text-xs">{$currentOrgDomain}</span>
-      </div>
     </a>
   </DropdownMenu.Label>
 {/snippet}
@@ -99,11 +84,6 @@
       >
         {@render usertrigger()}
 
-        {#if !$globalStore.isOrgSite}
-          <DropdownMenu.Separator />
-          {@render orgtrigger()}
-        {/if}
-
         <DropdownMenu.Separator />
         {@render themetoggle()}
 
@@ -132,7 +112,12 @@
                 </DropdownMenu.Item>
 
                 <DropdownMenu.Item class="m-0">
-                  <a href={$currentOrgPath} class="flex h-full w-full items-center justify-start space-x-2 text-start">
+                  <a
+                    href="https://classroomio.com/contact"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex h-full w-full items-center justify-start space-x-2 text-start"
+                  >
                     <BadgeHelpIcon size={20} />
                     <p class="text-sm dark:text-white">{$t('org_navigation.help')}</p>
                   </a>

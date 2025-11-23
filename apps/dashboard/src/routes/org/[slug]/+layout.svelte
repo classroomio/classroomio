@@ -1,18 +1,21 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
-
+  import * as Sidebar from '@cio/ui/base/sidebar';
+  import { Skeleton } from '@cio/ui/base/skeleton';
   import { currentOrg } from '$lib/utils/store/org';
-  import { isQuizPage } from '$lib/utils/functions/app';
+  import { AppHeader } from '$lib/features/ui';
+
   import { VerifyEmailModal } from '$lib/features/onboarding/components';
 
-  import Box from '$lib/components/Box/index.svelte';
   import { OrgSidebar } from '$lib/features/ui/sidebar/org-sidebar/index.js';
   import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
 
   let { data, children } = $props();
 
   function redirect(siteName: string) {
+    if (!siteName) return;
+
     const newUrl = page.url.pathname.replace('*', siteName);
     goto(newUrl + page.url.search);
   }
@@ -26,28 +29,23 @@
 
 <VerifyEmailModal />
 
-<div class="org-root flex w-full items-center justify-between">
-  <div class="org-slot flex w-full items-start bg-white dark:bg-black">
-    {#if !isQuizPage(page.url?.pathname)}
-      <OrgSidebar />
-    {:else}
-      <div class="flex-1">
-        {#if data.orgName === '*'}
-          <Box>Taking you to your organization...</Box>
-        {:else}
-          {@render children?.()}
-        {/if}
-      </div>
-    {/if}
+<Sidebar.Provider>
+  <OrgSidebar />
 
-    {#if !isQuizPage(page.url?.pathname)}
-      <div class="flex-1">
-        {#if data.orgName === '*'}
-          <Box>Taking you to your organization...</Box>
-        {:else}
-          {@render children?.()}
-        {/if}
-      </div>
-    {/if}
-  </div>
-</div>
+  <Sidebar.Inset>
+    <AppHeader />
+
+    <div class="container mx-auto flex max-w-6xl flex-1 flex-col gap-4 p-4 pt-0">
+      {#if data.orgName === '*'}
+        <div class="grid auto-rows-min gap-4 md:grid-cols-3">
+          <Skeleton class="aspect-video rounded-xl" />
+          <Skeleton class="aspect-video rounded-xl" />
+          <Skeleton class="aspect-video rounded-xl" />
+        </div>
+        <Skeleton class="h-[50vh] w-full rounded-xl" />
+      {:else}
+        {@render children?.()}
+      {/if}
+    </div>
+  </Sidebar.Inset>
+</Sidebar.Provider>

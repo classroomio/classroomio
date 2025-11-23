@@ -1,19 +1,13 @@
 <script lang="ts">
   import { page } from '$app/state';
 
-  import { course } from '$lib/components/Course/store';
-  import OrgNavigation from '$lib/components/Navigation/app.svelte';
-  import LandingNavigation from '$lib/components/Navigation/index.svelte';
-  import LMSNavigation from '$lib/components/Navigation/lms.svelte';
   import OrgLandingPage from '$lib/components/Org/LandingPage/index.svelte';
   import PlayQuiz from '$lib/components/Org/Quiz/Play/index.svelte';
   import { PageRestricted } from '$lib/components/Page';
   import Snackbar from '$lib/components/Snackbar/index.svelte';
   import UpgradeModal from '$lib/components/Upgrade/Modal.svelte';
   import { user } from '$lib/utils/store/user';
-  import { isCoursesPage, isLMSPage, isOrgPage } from '$lib/utils/functions/app';
   import { setupAnalytics } from '$lib/utils/functions/appSetup';
-  import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
   import { setTheme } from '$lib/utils/functions/theme';
   import { initOrgAnalytics } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';
@@ -23,6 +17,7 @@
   import { onMount } from 'svelte';
   import { MetaTags } from 'svelte-meta-tags';
   import { authClient } from '$lib/utils/services/auth/client';
+  import { PageLoadProgress } from '$lib/features/ui';
 
   import { ModeWatcher } from '@cio/ui/base/dark-mode';
 
@@ -113,39 +108,12 @@
 {:else if data.isOrgSite && !path}
   <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org} />
 {:else}
-  <main class="z-20000 dark:bg-black">
-    {#if !hideNavByRoute(page.url?.pathname)}
-      {#if isOrgPage(page.url?.pathname) || page.url?.pathname.includes('profile') || isCoursesPage(path)}
-        <OrgNavigation bind:title={$course.title} isCoursePage={isCoursesPage(path)} />
-      {:else if isLMSPage(page.url?.pathname)}
-        <LMSNavigation />
-      {:else}
-        <LandingNavigation
-          isOrgSite={data.isOrgSite}
-          logo={data.isOrgSite ? $currentOrg.avatarUrl : undefined}
-          orgName={data.isOrgSite ? $currentOrg.name : undefined}
-          disableSignup={false}
-        />
-      {/if}
+  <PageLoadProgress zIndex={10000} />
 
-      <!-- <PageLoadProgressBar textColorClass="text-neutral-700" /> -->
-    {/if}
-
-    <div class={path.includes('home') ? '' : 'flex justify-between'}>
-      {@render children?.()}
-    </div>
-  </main>
+  {@render children?.()}
 {/if}
 
 <style>
-  main {
-    background-color: white;
-    box-sizing: border-box;
-  }
-
-  :global(a:hover) {
-    text-decoration: underline;
-  }
   :global(:root) {
     --main-primary-color: rgba(29, 78, 216, 1);
     --border-color: #eaecef;
@@ -161,10 +129,6 @@
     background: var(--dark-app-background);
   }
 
-  :global(.bx--data-table-container) {
-    width: 100%;
-  }
-
   :global(.dark svg.dark) {
     fill: #fff;
   }
@@ -175,14 +139,6 @@
 
   :global(.border-bottom-c) {
     border-bottom: 1px solid var(--border-color);
-  }
-
-  :global(.bx--search-close > svg) {
-    fill: black;
-  }
-
-  :global(.dark .bx--search-close:hover > svg) {
-    fill: #fff;
   }
 
   :global(.plyr__controls) {
