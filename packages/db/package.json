@@ -18,9 +18,9 @@
   },
   "dependencies": {
     "@cio/email": "workspace:*",
-    "@cio/utils": "workspace:*",
     "@cio/tsconfig": "workspace:*",
-    "better-auth": "^1.3.28",
+    "@cio/utils": "workspace:*",
+    "better-auth": "^1.4.1",
     "drizzle-kit": "^0.31.5",
     "drizzle-orm": "^0.44.7",
     "postgres": "^3.4.7"

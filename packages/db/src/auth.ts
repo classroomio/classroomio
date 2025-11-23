@@ -2,9 +2,9 @@ import * as CONSTANTS from './constants';
 import * as schema from '@db/schema';
 
 import { admin, anonymous } from 'better-auth/plugins';
-import { sendChangeEmailVerification, sendVerificationEmail } from './auth/email-verification';
+import { sendChangeEmailConfirmation, sendVerificationEmail } from './auth/email-verification';
 
-import { betterAuth } from 'better-auth';
+import { betterAuth } from 'better-auth/minimal';
 import { combineAfterHooks } from './auth/hooks';
 import { createAuthMiddleware } from 'better-auth/api';
 import { db } from '@db/drizzle';
@@ -23,7 +23,7 @@ export const auth = betterAuth({
   user: {
     changeEmail: {
       enabled: true,
-      sendChangeEmailVerification
+      sendChangeEmailConfirmation
     }
   },
   emailVerification: {
@@ -47,6 +47,9 @@ export const auth = betterAuth({
     database: {
       generateId: false
     }
+  },
+  account: {
+    storeAccountCookie: true
   },
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
