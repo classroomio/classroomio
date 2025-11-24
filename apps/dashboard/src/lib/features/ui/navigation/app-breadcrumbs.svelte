@@ -23,10 +23,10 @@
     )
   );
 
-  const ITEMS_TO_DISPLAY = 1; // Show last 1 items (since we have org switcher as first)
   let open = $state(false);
 
   const isDesktop = new MediaQuery('(min-width: 768px)');
+  const ITEMS_TO_DISPLAY = $derived(isDesktop.current ? 2 : 1); // Show last 2 items (since we have org switcher as first)
 </script>
 
 <Breadcrumb.Root>

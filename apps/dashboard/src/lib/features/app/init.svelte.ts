@@ -8,6 +8,7 @@ import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { handleLocaleChange } from '$lib/utils/functions/translations';
 import { identifyPosthogUser } from '$lib/utils/services/posthog';
+import { logout } from '$lib/utils/functions/logout';
 import { page } from '$app/state';
 import { resolve } from '$app/paths';
 import { setSentryUser } from '$lib/utils/services/sentry';
@@ -45,6 +46,9 @@ class AppInitApi extends BaseApi {
         this.setupStores();
         this.setUserAnalytics();
         this.routeUserToNextPage(params);
+      },
+      onError: () => {
+        logout();
       }
     });
   }

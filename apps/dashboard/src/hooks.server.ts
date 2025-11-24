@@ -1,6 +1,7 @@
 import { getSessionData } from '$lib/utils/services/auth/session';
 import { type Handle, redirect } from '@sveltejs/kit';
 import { isPublicApiRoute, isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
+import { ROUTE } from '$lib/utils/constants/routes';
 
 export const handle: Handle = async (args) => {
   const { event } = args;
@@ -27,7 +28,10 @@ const handlePagesRoutes: Handle = async ({ event, resolve }) => {
   }
 
   if (!event.locals.user) {
-    return redirect(303, `/login?redirect=${pathname}`);
+    const shouldAddRedirectParam = !pathname.includes(ROUTE.LOGOUT);
+    const redirectPath = shouldAddRedirectParam ? `${ROUTE.LOGIN}?redirect=${pathname}` : ROUTE.LOGIN;
+
+    return redirect(303, redirectPath);
   }
 
   return resolve(event);

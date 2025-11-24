@@ -15,7 +15,8 @@ export const ROUTE = {
   DISCUSSIONS: '/discussions',
   ASK: '/ask',
   FORGOT: '/forgot',
-  RESET: '/reset'
+  RESET: '/reset',
+  LOGOUT: '/logout'
 };
 
 export const PUBLIC_ROUTES = [

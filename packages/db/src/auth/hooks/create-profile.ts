@@ -2,28 +2,17 @@ import * as schema from '@db/schema';
 
 import { and, eq } from 'drizzle-orm';
 
-import type { AuthMiddlewareContext } from '.';
+import { User } from 'better-auth';
 import { db } from '@db/drizzle';
 
 /**
- * Hook that automatically creates a profile entry when a user signs up.
  * This hook runs after user creation (email/password or OAuth signup).
  *
  * We use the profile table for everything related to the user because we heavily used supabase and supabase didn't allow you add fields to the auth.users table.
  *
  */
-export const createProfileHook = async (ctx: AuthMiddlewareContext) => {
-  console.debug('createProfileHook', ctx.path);
-  if (!ctx.path.startsWith('/sign-up')) {
-    return;
-  }
-
-  const user = ctx.context.newSession?.user;
-  console.debug('user', user);
-
-  if (!user?.id) {
-    return;
-  }
+export const createProfileHook = async (user: User) => {
+  console.debug('createProfileHook', user);
 
   const existingProfile = await db.select().from(schema.profile).where(eq(schema.profile.id, user.id)).limit(1);
   console.debug('existingProfile', existingProfile);
@@ -36,8 +25,8 @@ export const createProfileHook = async (ctx: AuthMiddlewareContext) => {
     .from(schema.account)
     .where(and(eq(schema.account.userId, user.id), eq(schema.account.providerId, 'google')))
     .limit(1);
-  console.debug('googleAccount', googleAccount);
-  const isEmailVerified = googleAccount.length > 0;
+
+  const isEmailVerified = user.emailVerified || googleAccount.length > 0;
   const verifiedAt = isEmailVerified ? new Date().toISOString() : undefined;
 
   // Extract username from email (part before @)

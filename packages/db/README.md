@@ -19,7 +19,7 @@ Here is how I do it:
 I have a postgres tool where I can make changes to the db as I want. I am not so familiar with drizzle that much so I am sticking with this for now.
 
     ```bash
-    pnpm db generate
+    pnpm db pull # this does sql -> drizzle ts code
     ```
 
 ### 2. Drizzle Schema file to Prod SQL
@@ -27,5 +27,9 @@ I have a postgres tool where I can make changes to the db as I want. I am not so
 Now when I am ready to deploy the feature, I can use [option 2](https://orm.drizzle.team/docs/migrations) which is makes the typescript schema the source of truth. This command will only run on CI on every merge on a condition that there was a change to the schema file `packages/db/src/schema.ts`
 
     ```bash
-    pnpm db migrate
+    pnpm db push # this does drizzle ts code to prod db
     ```
+
+## OR
+
+I can make changes directly to the schema file and run `pnpm db push` to push the changes to the source db.

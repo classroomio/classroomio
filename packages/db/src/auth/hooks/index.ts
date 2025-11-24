@@ -1,5 +1,4 @@
 import { createAuthMiddleware } from 'better-auth/api';
-import { createProfileHook } from './create-profile';
 
 export type AuthMiddlewareContext = Parameters<Parameters<typeof createAuthMiddleware>[0]>[0];
 
@@ -8,7 +7,9 @@ export type AuthMiddlewareContext = Parameters<Parameters<typeof createAuthMiddl
  *
  * Add new hooks here to register them
  */
-const afterHooks: Array<(context: AuthMiddlewareContext) => Promise<unknown>> = [createProfileHook];
+const afterHooks: Array<(context: AuthMiddlewareContext) => Promise<unknown>> = [
+  // add hooks here
+];
 
 /**
  * Combines all after hooks into a single function

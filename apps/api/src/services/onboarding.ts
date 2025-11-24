@@ -23,6 +23,7 @@ export async function createOrganizationWithOwner(
   // Business Logic: Check sitename availability
   const exists = await checkSiteNameExists(input.siteName);
   if (exists) {
+    console.error('Site name already exists:', input.siteName);
     throw new AppError(`Site name '${input.siteName}' already exists`, ErrorCodes.SITENAME_EXISTS, 409);
   }
 
@@ -53,6 +54,7 @@ export async function createOrganizationWithOwner(
       organizations
     };
   } catch (error) {
+    console.error('Error creating organization:', error);
     // Handle database constraint violations
     if (error.code === '23505') {
       throw new AppError(`Site name '${input.siteName}' already exists`, ErrorCodes.SITENAME_EXISTS, 409);

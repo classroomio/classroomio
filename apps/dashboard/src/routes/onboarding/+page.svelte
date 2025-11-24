@@ -167,7 +167,7 @@
                 <span class="dark:text-white">{$t('content.toggle_label')}: </span>
                 <Select.Root type="single" bind:value={fields.locale}>
                   <Select.Trigger class="w-full">
-                    <p>{fields.locale}</p>
+                    <p>{DROPDOWN_ITEMS.find((item) => item.id === fields.locale)?.text}</p>
                   </Select.Trigger>
                   <Select.Content>
                     {#each DROPDOWN_ITEMS as item}

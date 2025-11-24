@@ -97,6 +97,8 @@ export const checkSiteNameExists = async (siteName: string): Promise<boolean> =>
     .where(eq(schema.organization.siteName, siteName))
     .limit(1);
 
+  console.debug('checkSiteNameExists result:', result);
+
   return result.length > 0;
 };
 

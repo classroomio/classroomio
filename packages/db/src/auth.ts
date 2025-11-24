@@ -5,8 +5,7 @@ import { admin, anonymous } from 'better-auth/plugins';
 import { sendChangeEmailConfirmation, sendVerificationEmail } from './auth/email-verification';
 
 import { betterAuth } from 'better-auth/minimal';
-import { combineAfterHooks } from './auth/hooks';
-import { createAuthMiddleware } from 'better-auth/api';
+import { createProfileHook } from './auth/hooks/create-profile';
 import { db } from '@db/drizzle';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { config as emailAndPassword } from './auth/email-password';
@@ -61,15 +60,17 @@ export const auth = betterAuth({
   },
   databaseHooks: {
     user: {
+      create: {
+        after: async (user) => {
+          await createProfileHook(user);
+        }
+      },
       update: {
         after: async (user) => {
           await syncUserWithProfile(user);
         }
       }
     }
-  },
-  hooks: {
-    after: createAuthMiddleware(combineAfterHooks)
   },
   plugins: [admin(), anonymous()]
 });

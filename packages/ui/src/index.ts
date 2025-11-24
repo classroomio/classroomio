@@ -13,6 +13,7 @@ export * as Drawer from './base/drawer';
 export * as DropdownMenu from './base/dropdown-menu';
 export * as Input from './base/input';
 export * as InputGroup from './base/input-group';
+export * as Item from './base/item';
 export * as Kbd from './base/kbd';
 export * as Label from './base/label';
 export * as Menubar from './base/menubar';

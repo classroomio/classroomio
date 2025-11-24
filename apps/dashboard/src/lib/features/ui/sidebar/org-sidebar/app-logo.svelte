@@ -14,8 +14,13 @@
       class="ui:data-[state=open]:bg-sidebar-accent ui:data-[state=open]:text-sidebar-accent-foreground"
     >
       {#snippet child({ props })}
-        <a href="/" {...props}>
-          <Avatar.Root class="ui:flex ui:size-8 ui:items-center ui:justify-center">
+        <a
+          href="https://classroomio.com?utm_source={$currentOrg.siteName}.classroomio.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          {...props}
+        >
+          <Avatar.Root class="ui:flex ui:size-6 ui:items-center ui:justify-center">
             <Avatar.Image src={'/logo-192.png'} alt="ClassroomIO logo" />
           </Avatar.Root>
 
