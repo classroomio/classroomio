@@ -74,7 +74,7 @@
 </script>
 
 <div class="drag-handle">
-  <Button variant="ghost" class="!size-6 rounded-sm p-0" onclick={() => (open = true)}>
+  <Button variant="ghost" class="ui:rounded-sm ui:p-0 !size-6" onclick={() => (open = true)}>
     <GripVertical />
   </Button>
   <DropdownMenu.Root bind:open>
@@ -95,7 +95,7 @@
         Copy to clipboard
       </DropdownMenu.Item>
       <DropdownMenu.Item onclick={handleDelete}>
-        <Delete class="text-destructive" />
+        <Delete class="ui:text-destructive" />
         Delete Node
       </DropdownMenu.Item>
     </DropdownMenu.Content>

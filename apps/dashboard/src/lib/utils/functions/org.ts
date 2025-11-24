@@ -1,4 +1,5 @@
 import { goto } from '$app/navigation';
+import { resolve } from '$app/paths';
 
 export function genQuizPin(): number {
   const minm = 100000;
@@ -20,5 +21,9 @@ export function openUpgradeModal() {
 
   const searchParams = url.searchParams.toString();
 
-  goto(window.location.pathname + `?${searchParams}`);
+  goto(resolve(window.location.pathname + `?${searchParams}`, {}));
+}
+
+export function getShortOrgName(name: string) {
+  return name?.substring(0, 2)?.toUpperCase() || '';
 }

@@ -60,12 +60,7 @@
       "YEARLY": "Request Pricing",
       "IS_PREMIUM": true
     },
-    "FEATURES": [
-      "Everything in Early Adopters plus:",
-      "Unlimited students",
-      "Custom Domain",
-      "24/7 Support"
-    ],
+    "FEATURES": ["Everything in Early Adopters plus:", "Unlimited students", "Custom Domain", "24/7 Support"],
     "CTA": {
       "LABEL": "Contact Us",
       "LINK": "https://cal.com/classroomio/enterprise",

@@ -1,49 +1,52 @@
-import type { Handle } from '@sveltejs/kit';
-import { validateUser } from '$lib/utils/services/middlewares';
+import { getSessionData } from '$lib/utils/services/auth/session';
+import { type Handle, redirect } from '@sveltejs/kit';
+import { isPublicApiRoute, isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
+import { ROUTE } from '$lib/utils/constants/routes';
 
-const PUBLIC_API_ROUTES = [
-  '/api/completion',
-  'student_prove_payment',
-  'teacher_student_buycourse',
-  '/api/polar',
-  '/api/lmz',
-  '/api/verify'
-];
+export const handle: Handle = async (args) => {
+  const { event } = args;
+  const sessionData = await getSessionData(event.cookies);
 
-function isPublicRoute(pathname: string) {
-  return PUBLIC_API_ROUTES.some((route) => pathname.includes(route));
-}
+  if (sessionData) {
+    event.locals = sessionData;
+  }
 
-export const handle: Handle = async ({ event, resolve }) => {
-  const response = await resolve(event);
+  // Handle API routes
+  if (event.url.pathname.includes('/api')) {
+    return handleAPIRoutes(args);
+  }
 
+  // Handle other routes (ui pages, etc.)
+  return handlePagesRoutes(args);
+};
+
+const handlePagesRoutes: Handle = async ({ event, resolve }) => {
   const { pathname } = event.url;
 
-  // Only validate API routes
-  if (!pathname.includes('/api')) {
-    return response;
-  }
-
-  // Skip public routes
   if (isPublicRoute(pathname)) {
-    return response;
+    return resolve(event);
   }
 
-  const accessToken = event.request.headers.get('Authorization')!;
+  if (!event.locals.user) {
+    const shouldAddRedirectParam = !pathname.includes(ROUTE.LOGOUT);
+    const redirectPath = shouldAddRedirectParam ? `${ROUTE.LOGIN}?redirect=${pathname}` : ROUTE.LOGIN;
 
-  try {
-    const user = await validateUser(accessToken);
-
-    response.headers.set('user_id', `${user.id}`);
-  } catch (error) {
-    if (error instanceof Error) {
-      if (error.message === 'Unauthenticated user') {
-        return new Response(JSON.stringify({ code: 'unauthenticated', message: 'Unauthenticated user' }), {
-          status: 401
-        });
-      }
-    }
+    return redirect(303, redirectPath);
   }
 
-  return response;
+  return resolve(event);
+};
+
+const handleAPIRoutes: Handle = async ({ event, resolve }) => {
+  const { pathname } = event.url;
+
+  if (isPublicApiRoute(pathname)) {
+    return resolve(event);
+  }
+
+  if (!event.locals.user) {
+    redirect(303, '/login');
+  }
+
+  return resolve(event);
 };

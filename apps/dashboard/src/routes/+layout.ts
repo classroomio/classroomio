@@ -1,17 +1,13 @@
 import { config, loadTranslations } from '$lib/utils/functions/translations';
-import { profile } from '$lib/utils/store/user';
-import { get } from 'svelte/store';
 
 const SUPPORTED_LANGUAGES = config?.loaders?.map((loader) => loader.locale) || [];
 
 export const load = async ({ url, data }) => {
   const { pathname } = url;
 
-  const profileStore = get(profile);
-
   const serverLang = data.serverLang.split('-')[0];
 
-  const userLocale = profileStore.id ? profileStore.locale : getInitialLocale(serverLang);
+  const userLocale = data.locals?.profile?.locale || getInitialLocale(serverLang);
 
   const initLocale = getInitialLocale(userLocale);
   await loadTranslations(initLocale, pathname); // keep this just before the `return`

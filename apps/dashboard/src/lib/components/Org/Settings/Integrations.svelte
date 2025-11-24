@@ -5,9 +5,7 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
 
-  import Row from './Layout/Row.svelte';
-  import Grid from './Layout/Grid.svelte';
-  import Column from './Layout/Column.svelte';
+  import { Row, Grid, Column } from './Layout';
   import SectionTitle from '../SectionTitle.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -30,7 +28,7 @@
       console.log(error);
       snackbar.error('snackbar.course_settings.error.failed_integration');
     } else {
-      $profile.telegram_chat_id = chatId;
+      $profile.telegramChatId = chatId;
       chatId = null;
       snackbar.success('snackbar.course_settings.success.successful_integration');
     }
@@ -43,7 +41,7 @@
       snackbar.error('snackbar.course_settings.error.failed_deletion');
       console.log(error);
     } else {
-      $profile.telegram_chat_id = null;
+      $profile.telegramChatId = null;
       snackbar.success('snackbar.course_settings.success.successful_deletion');
     }
   }
@@ -57,7 +55,7 @@
     >
 
     <Column sm={8} md={8} lg={8} class="mt-2 flex flex-col items-center lg:mt-0 lg:items-start">
-      {#if $profile.telegram_chat_id !== null}
+      {#if $profile.telegramChatId !== null}
         <div class="flex w-full flex-col items-center">
           <div class="flex items-center">
             <CircleCheckIcon size={16} filled />

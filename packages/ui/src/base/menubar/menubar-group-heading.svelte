@@ -17,6 +17,6 @@
   bind:ref
   data-slot="menubar-group-heading"
   data-inset={inset}
-  class={cn('px-2 py-1.5 text-sm font-medium data-[inset]:pl-8', className)}
+  class={cn('ui:px-2 ui:py-1.5 ui:text-sm ui:font-medium ui:data-inset:pl-8', className)}
   {...restProps}
 />

@@ -15,7 +15,9 @@
     "noImplicitAny": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true
-  }
+  },
+  "include": ["src/**/*", ".svelte-kit/ambient.d.ts"],
+  "exclude": ["node_modules", "build", "**/*.spec.ts", "**/*.test.ts"]
 
   // Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
   //

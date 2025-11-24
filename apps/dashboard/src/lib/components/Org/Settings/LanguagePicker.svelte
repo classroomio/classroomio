@@ -2,21 +2,21 @@
   import { Label } from '@cio/ui/base/label';
   import * as Select from '@cio/ui/base/select';
 
-  import { LOCALE } from '$lib/utils/types';
+  import type { TLocale } from '@cio/db/types';
   import { LANGUAGES } from '$lib/utils/constants/translation';
   import { t, initialized } from '$lib/utils/functions/translations';
 
   interface Props {
     className?: string;
-    value?: LOCALE;
+    value?: TLocale;
     hasLangChanged?: boolean;
     change?: () => void;
   }
 
-  let { className = '', value = $bindable(LOCALE.EN), hasLangChanged = $bindable(false), change }: Props = $props();
+  let { className = '', value = $bindable('en'), hasLangChanged = $bindable(false), change }: Props = $props();
 
   function handleSelect(selectedValue: string) {
-    value = selectedValue as LOCALE;
+    value = selectedValue as TLocale;
     hasLangChanged = true;
     change?.();
   }

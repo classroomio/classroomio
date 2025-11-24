@@ -2,7 +2,7 @@
   import { untrack } from 'svelte';
   import { Label } from '@cio/ui/base/label';
   import * as Select from '@cio/ui/base/select';
-  import { Moon } from 'svelte-loading-spinners';
+  import { Circle } from 'svelte-loading-spinners';
 
   import { profile } from '$lib/utils/store/user';
   import { isFreePlan } from '$lib/utils/store/org';
@@ -12,18 +12,17 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import type { OrgTeamMember } from '$lib/utils/types/org';
   import { currentOrg, orgTeam } from '$lib/utils/store/org';
-  import { ROLE_LABEL, ROLE } from '$lib/utils/constants/roles';
+  import { ROLE_LABEL } from '$lib/utils/constants/roles';
+  import { ROLE } from '@cio/utils/constants';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { validateEmailInString } from '$lib/utils/functions/validator';
   import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
 
-  import Row from './Layout/Row.svelte';
-  import Grid from './Layout/Grid.svelte';
-  import Column from './Layout/Column.svelte';
+  import { Row, Grid, Column } from './Layout';
   import SectionTitle from '../SectionTitle.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
+  import { ComingSoon } from '$lib/features/ui';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   let emailsStr = $state('');
@@ -190,7 +189,7 @@
     >
     <Column sm={8} md={8} lg={8}>
       {#if isFetching}
-        <Moon />
+        <Circle />
       {:else}
         {#each $orgTeam as teamMember}
           <div class="mb-5 flex items-center justify-between">

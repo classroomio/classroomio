@@ -68,12 +68,8 @@
           "name": "analytics_login_events_user_id_fkey",
           "tableFrom": "analytics_login_events",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -83,9 +79,7 @@
         "analytics_login_events_user_id_unique": {
           "name": "analytics_login_events_user_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "user_id"
-          ]
+          "columns": ["user_id"]
         }
       },
       "policies": {
@@ -93,18 +87,14 @@
           "name": "Enable delete for users based on user_id",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "(auth.uid() = user_id)"
         },
         "Users can insert their own login events": {
           "name": "Users can insert their own login events",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         }
       },
       "checkConstraints": {},
@@ -179,12 +169,8 @@
           "name": "apps_poll_authorId_fkey",
           "tableFrom": "apps_poll",
           "tableTo": "groupmember",
-          "columnsFrom": [
-            "authorId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["authorId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -192,12 +178,8 @@
           "name": "apps_poll_courseId_fkey",
           "tableFrom": "apps_poll",
           "tableTo": "course",
-          "columnsFrom": [
-            "courseId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["courseId"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -209,34 +191,26 @@
           "name": "Delete only your own poll",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "(auth.uid() = ( SELECT groupmember.profile_id\n   FROM groupmember\n  WHERE (groupmember.id = apps_poll.\"authorId\")))"
         },
         "Update only your own": {
           "name": "Update only your own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be a course member to INSERT": {
           "name": "User must be a course member to INSERT",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be course member to SELECT": {
           "name": "User must be course member to SELECT",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -295,12 +269,8 @@
           "name": "apps_poll_option_poll_id_fkey",
           "tableFrom": "apps_poll_option",
           "tableTo": "apps_poll",
-          "columnsFrom": [
-            "poll_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["poll_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -312,34 +282,26 @@
           "name": "User must be a course member to INSERT",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "withCheck": "is_user_in_course_group_or_admin(( SELECT groupmember.group_id\n   FROM groupmember\n  WHERE (groupmember.id = ( SELECT apps_poll.\"authorId\"\n           FROM apps_poll\n          WHERE (apps_poll.id = apps_poll_option.poll_id)\n         LIMIT 1))\n LIMIT 1))"
         },
         "User must be a course member to UPDATE": {
           "name": "User must be a course member to UPDATE",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be a teacher to DELETE": {
           "name": "User must be a teacher to DELETE",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be course member to SELECT": {
           "name": "User must be course member to SELECT",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -398,12 +360,8 @@
           "name": "apps_poll_submission_poll_id_fkey",
           "tableFrom": "apps_poll_submission",
           "tableTo": "apps_poll",
-          "columnsFrom": [
-            "poll_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["poll_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -411,12 +369,8 @@
           "name": "apps_poll_submission_poll_option_id_fkey",
           "tableFrom": "apps_poll_submission",
           "tableTo": "apps_poll_option",
-          "columnsFrom": [
-            "poll_option_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["poll_option_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -424,12 +378,8 @@
           "name": "apps_poll_submission_selected_by_id_fkey",
           "tableFrom": "apps_poll_submission",
           "tableTo": "groupmember",
-          "columnsFrom": [
-            "selected_by_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["selected_by_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -441,34 +391,26 @@
           "name": "Authenticated users can read",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "(auth.uid() IS NOT NULL)"
         },
         "Delete your own submission": {
           "name": "Delete your own submission",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "Enable insert for authenticated users only": {
           "name": "Enable insert for authenticated users only",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         },
         "Update your own submission": {
           "name": "Update your own submission",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -529,12 +471,8 @@
           "name": "community_answer_author_id_fkey",
           "tableFrom": "community_answer",
           "tableTo": "organizationmember",
-          "columnsFrom": [
-            "author_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["author_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -542,12 +480,8 @@
           "name": "community_answer_author_profile_id_fkey",
           "tableFrom": "community_answer",
           "tableTo": "profile",
-          "columnsFrom": [
-            "author_profile_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["author_profile_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -555,12 +489,8 @@
           "name": "community_answer_question_id_fkey",
           "tableFrom": "community_answer",
           "tableTo": "community_question",
-          "columnsFrom": [
-            "question_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["question_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -572,34 +502,26 @@
           "name": "Authenticated users can SELECT",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "(auth.uid() IS NOT NULL)"
         },
         "Delete your own answer": {
           "name": "Delete your own answer",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "Enable insert for authenticated users only": {
           "name": "Enable insert for authenticated users only",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         },
         "Update your own answer": {
           "name": "Update your own answer",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -689,12 +611,8 @@
           "name": "community_question_author_id_fkey",
           "tableFrom": "community_question",
           "tableTo": "organizationmember",
-          "columnsFrom": [
-            "author_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["author_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -702,12 +620,8 @@
           "name": "community_question_author_profile_id_fkey",
           "tableFrom": "community_question",
           "tableTo": "profile",
-          "columnsFrom": [
-            "author_profile_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["author_profile_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -715,12 +629,8 @@
           "name": "community_question_course_id_fkey",
           "tableFrom": "community_question",
           "tableTo": "course",
-          "columnsFrom": [
-            "course_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["course_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -728,12 +638,8 @@
           "name": "community_question_organization_id_fkey",
           "tableFrom": "community_question",
           "tableTo": "organization",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -745,34 +651,26 @@
           "name": "Authenticated users can SELECT",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "(auth.uid() IS NOT NULL)"
         },
         "Delete your own question": {
           "name": "Delete your own question",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "Enable insert for authenticated users only": {
           "name": "Enable insert for authenticated users only",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         },
         "Update your own question": {
           "name": "Update your own question",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -925,12 +823,8 @@
           "name": "course_group_id_fkey",
           "tableFrom": "course",
           "tableTo": "group",
-          "columnsFrom": [
-            "group_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["group_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -940,9 +834,7 @@
         "course_slug_key": {
           "name": "course_slug_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "slug"
-          ]
+          "columns": ["slug"]
         }
       },
       "policies": {
@@ -950,34 +842,26 @@
           "name": "Enable access to all users if PUBLIC or to course members when ",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "(is_published OR is_user_in_course_group_or_admin(group_id))"
         },
         "User must be an org member to DELETE": {
           "name": "User must be an org member to DELETE",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to INSERT": {
           "name": "User must be an org member to INSERT",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to UPDATE": {
           "name": "User must be an org member to UPDATE",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -1040,12 +924,8 @@
           "name": "course_newsfeed_author_id_fkey",
           "tableFrom": "course_newsfeed",
           "tableTo": "groupmember",
-          "columnsFrom": [
-            "author_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["author_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1053,12 +933,8 @@
           "name": "course_newsfeed_course_id_fkey",
           "tableFrom": "course_newsfeed",
           "tableTo": "course",
-          "columnsFrom": [
-            "course_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["course_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1070,34 +946,26 @@
           "name": "Delete your own comment",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "(auth.uid() = ( SELECT groupmember.profile_id\n   FROM groupmember\n  WHERE (groupmember.id = course_newsfeed.author_id)))"
         },
         "Update only your own": {
           "name": "Update only your own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be a course member to INSERT": {
           "name": "User must be a course member to INSERT",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be a course member to SELECT": {
           "name": "User must be a course member to SELECT",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -1156,12 +1024,8 @@
           "name": "course_newsfeed_comment_author_id_fkey",
           "tableFrom": "course_newsfeed_comment",
           "tableTo": "groupmember",
-          "columnsFrom": [
-            "author_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["author_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1169,12 +1033,8 @@
           "name": "course_newsfeed_comment_course_newsfeed_id_fkey",
           "tableFrom": "course_newsfeed_comment",
           "tableTo": "course_newsfeed",
-          "columnsFrom": [
-            "course_newsfeed_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["course_newsfeed_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1184,9 +1044,7 @@
         "course_newsfeed_comment_id_key": {
           "name": "course_newsfeed_comment_id_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       },
       "policies": {
@@ -1194,34 +1052,26 @@
           "name": "Delete your own",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "(auth.uid() = ( SELECT groupmember.profile_id\n   FROM groupmember\n  WHERE (groupmember.id = course_newsfeed_comment.author_id)))"
         },
         "Update only your own": {
           "name": "Update only your own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be a course member to INSERT": {
           "name": "User must be a course member to INSERT",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be a course member to SELECT": {
           "name": "User must be a course member to SELECT",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -1326,12 +1176,8 @@
           "name": "exercise_lesson_id_fkey",
           "tableFrom": "exercise",
           "tableTo": "lesson",
-          "columnsFrom": [
-            "lesson_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["lesson_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1343,34 +1189,26 @@
           "name": "Enable read access for all users",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "true"
         },
         "User must be an org member to DELETE": {
           "name": "User must be an org member to DELETE",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to INSERT": {
           "name": "User must be an org member to INSERT",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to UPDATE": {
           "name": "User must be an org member to UPDATE",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -1426,12 +1264,8 @@
           "name": "group_organization_id_fkey",
           "tableFrom": "group",
           "tableTo": "organization",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1443,34 +1277,26 @@
           "name": "Enable insert for authenticated users only",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "withCheck": "true"
         },
         "Enable read access for all users": {
           "name": "Enable read access for all users",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "Only org admins can delete": {
           "name": "Only org admins can delete",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "Only org admins can update": {
           "name": "Only org admins can update",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -1543,12 +1369,8 @@
           "name": "group_attendance_course_id_fkey",
           "tableFrom": "group_attendance",
           "tableTo": "course",
-          "columnsFrom": [
-            "course_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["course_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1556,12 +1378,8 @@
           "name": "group_attendance_student_id_fkey",
           "tableFrom": "group_attendance",
           "tableTo": "groupmember",
-          "columnsFrom": [
-            "student_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["student_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1573,34 +1391,26 @@
           "name": "User must be a course member to INSERT",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "withCheck": "is_user_in_course_group_or_admin(( SELECT course.group_id\n   FROM course\n  WHERE (course.id = group_attendance.course_id)\n LIMIT 1))"
         },
         "User must be a course member to SELECT": {
           "name": "User must be a course member to SELECT",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be a course member to UPDATE": {
           "name": "User must be a course member to UPDATE",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to DELETE": {
           "name": "User must be an org member to DELETE",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -1661,12 +1471,8 @@
           "name": "groupmember_group_id_fkey",
           "tableFrom": "groupmember",
           "tableTo": "group",
-          "columnsFrom": [
-            "group_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["group_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1674,12 +1480,8 @@
           "name": "groupmember_profile_id_fkey",
           "tableFrom": "groupmember",
           "tableTo": "profile",
-          "columnsFrom": [
-            "profile_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["profile_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1687,12 +1489,8 @@
           "name": "groupmember_role_id_fkey",
           "tableFrom": "groupmember",
           "tableTo": "role",
-          "columnsFrom": [
-            "role_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["role_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1702,27 +1500,17 @@
         "unique_entries": {
           "name": "unique_entries",
           "nullsNotDistinct": false,
-          "columns": [
-            "group_id",
-            "profile_id",
-            "email"
-          ]
+          "columns": ["group_id", "profile_id", "email"]
         },
         "unique_group_email": {
           "name": "unique_group_email",
           "nullsNotDistinct": false,
-          "columns": [
-            "group_id",
-            "email"
-          ]
+          "columns": ["group_id", "email"]
         },
         "unique_group_profile": {
           "name": "unique_group_profile",
           "nullsNotDistinct": false,
-          "columns": [
-            "group_id",
-            "profile_id"
-          ]
+          "columns": ["group_id", "profile_id"]
         }
       },
       "policies": {
@@ -1730,34 +1518,26 @@
           "name": "Enable insert for authenticated users only",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "withCheck": "true"
         },
         "Enable read access for all users": {
           "name": "Enable read access for all users",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to DELETE": {
           "name": "User must be an org member to DELETE",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to UPDATE": {
           "name": "User must be an org member to UPDATE",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -1891,12 +1671,8 @@
           "name": "lesson_course_id_fkey",
           "tableFrom": "lesson",
           "tableTo": "course",
-          "columnsFrom": [
-            "course_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["course_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1904,12 +1680,8 @@
           "name": "lesson_teacher_id_fkey",
           "tableFrom": "lesson",
           "tableTo": "profile",
-          "columnsFrom": [
-            "teacher_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["teacher_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1917,12 +1689,8 @@
           "name": "public_lesson_section_id_fkey",
           "tableFrom": "lesson",
           "tableTo": "lesson_section",
-          "columnsFrom": [
-            "section_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["section_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -1934,34 +1702,26 @@
           "name": "Enable read access for all users",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "true"
         },
         "User must be an org member to DELETE": {
           "name": "User must be an org member to DELETE",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to INSERT": {
           "name": "User must be an org member to INSERT",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to UPDATE": {
           "name": "User must be an org member to UPDATE",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -2027,12 +1787,8 @@
           "name": "lesson_comment_groupmember_id_fkey",
           "tableFrom": "lesson_comment",
           "tableTo": "groupmember",
-          "columnsFrom": [
-            "groupmember_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["groupmember_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2040,12 +1796,8 @@
           "name": "lesson_comment_lesson_id_fkey",
           "tableFrom": "lesson_comment",
           "tableTo": "lesson",
-          "columnsFrom": [
-            "lesson_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["lesson_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2057,34 +1809,26 @@
           "name": "Delete only your own comment",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "(auth.uid() = ( SELECT groupmember.profile_id\n   FROM groupmember\n  WHERE (groupmember.id = lesson_comment.groupmember_id)))"
         },
         "Enable read access for all users": {
           "name": "Enable read access for all users",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "Update only your own": {
           "name": "Update only your own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be in course group to INSERT": {
           "name": "User must be in course group to INSERT",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -2151,12 +1895,8 @@
           "name": "lesson_completion_lesson_id_fkey",
           "tableFrom": "lesson_completion",
           "tableTo": "lesson",
-          "columnsFrom": [
-            "lesson_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["lesson_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2164,12 +1904,8 @@
           "name": "lesson_completion_profile_id_fkey",
           "tableFrom": "lesson_completion",
           "tableTo": "profile",
-          "columnsFrom": [
-            "profile_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["profile_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -2179,10 +1915,7 @@
         "unique_lesson_profile": {
           "name": "unique_lesson_profile",
           "nullsNotDistinct": false,
-          "columns": [
-            "lesson_id",
-            "profile_id"
-          ]
+          "columns": ["lesson_id", "profile_id"]
         }
       },
       "policies": {
@@ -2190,34 +1923,26 @@
           "name": "Enable read access for all users",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "true"
         },
         "User must be an course member or Admin to perform ALL operation": {
           "name": "User must be an course member or Admin to perform ALL operation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to DELETE": {
           "name": "User must be an org member to DELETE",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to UPDATE": {
           "name": "User must be an org member to UPDATE",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -2272,12 +1997,8 @@
           "name": "public_lesson_language_lesson_id_fkey",
           "tableFrom": "lesson_language",
           "tableTo": "lesson",
-          "columnsFrom": [
-            "lesson_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["lesson_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -2289,34 +2010,26 @@
           "name": "Enable read access for all users",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "true"
         },
         "User must be an org member to DELETE": {
           "name": "User must be an org member to DELETE",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to INSERT": {
           "name": "User must be an org member to INSERT",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to UPDATE": {
           "name": "User must be an org member to UPDATE",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -2364,12 +2077,8 @@
           "name": "public_lesson_language_history_lesson_language_id_fkey",
           "tableFrom": "lesson_language_history",
           "tableTo": "lesson_language",
-          "columnsFrom": [
-            "lesson_language_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["lesson_language_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -2381,34 +2090,26 @@
           "name": "Authenticated users can SELECT",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "(auth.uid() IS NOT NULL)"
         },
         "User must be an org member to DELETE": {
           "name": "User must be an org member to DELETE",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to INSERT": {
           "name": "User must be an org member to INSERT",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to UPDATE": {
           "name": "User must be an org member to UPDATE",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -2465,12 +2166,8 @@
           "name": "public_lesson_section_course_id_fkey",
           "tableFrom": "lesson_section",
           "tableTo": "course",
-          "columnsFrom": [
-            "course_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["course_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -2482,34 +2179,26 @@
           "name": "Enable read access for all users",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "true"
         },
         "User must be an org member to DELETE": {
           "name": "User must be an org member to DELETE",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to INSERT": {
           "name": "User must be an org member to INSERT",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to UPDATE": {
           "name": "User must be an org member to UPDATE",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -2583,12 +2272,8 @@
           "name": "option_question_id_fkey",
           "tableFrom": "option",
           "tableTo": "question",
-          "columnsFrom": [
-            "question_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["question_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2600,34 +2285,26 @@
           "name": "Allow authenticated users to SELECT",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "(auth.uid() IS NOT NULL)"
         },
         "User must be an org member to DELETE": {
           "name": "User must be an org member to DELETE",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to INSERT": {
           "name": "User must be an org member to INSERT",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to UPDATE": {
           "name": "User must be an org member to UPDATE",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -2736,16 +2413,12 @@
         "organization_siteName_key": {
           "name": "organization_siteName_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "siteName"
-          ]
+          "columns": ["siteName"]
         },
         "organization_customDomain_key": {
           "name": "organization_customDomain_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "customDomain"
-          ]
+          "columns": ["customDomain"]
         }
       },
       "policies": {
@@ -2753,34 +2426,26 @@
           "name": "Authenticated users can delete",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "(auth.uid() IS NOT NULL)"
         },
         "Enable insert for authenticated users only": {
           "name": "Enable insert for authenticated users only",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         },
         "Enable read access for all users": {
           "name": "Enable read access for all users",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be admin to UPDATE": {
           "name": "User must be admin to UPDATE",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -2851,12 +2516,8 @@
           "name": "organization_contacts_organization_id_fkey",
           "tableFrom": "organization_contacts",
           "tableTo": "organization",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -2868,9 +2529,7 @@
           "name": "Enable read access for all users",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "withCheck": "true"
         }
       },
@@ -2924,12 +2583,8 @@
           "name": "organization_emaillist_organization_id_fkey",
           "tableFrom": "organization_emaillist",
           "tableTo": "organization",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -2941,9 +2596,7 @@
           "name": "Enable read access for all users",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "withCheck": "true"
         }
       },
@@ -3042,12 +2695,8 @@
           "name": "organization_plan_org_id_fkey",
           "tableFrom": "organization_plan",
           "tableTo": "organization",
-          "columnsFrom": [
-            "org_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["org_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -3055,12 +2704,8 @@
           "name": "organization_plan_triggered_by_fkey",
           "tableFrom": "organization_plan",
           "tableTo": "organizationmember",
-          "columnsFrom": [
-            "triggered_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["triggered_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -3070,9 +2715,7 @@
         "organization_plan_subscription_id_key": {
           "name": "organization_plan_subscription_id_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "subscription_id"
-          ]
+          "columns": ["subscription_id"]
         }
       },
       "policies": {
@@ -3080,34 +2723,26 @@
           "name": "Enable read access for all users",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "true"
         },
         "User must be an org member to DELETE": {
           "name": "User must be an org member to DELETE",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to INSERT": {
           "name": "User must be an org member to INSERT",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to UPDATE": {
           "name": "User must be an org member to UPDATE",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -3179,12 +2814,8 @@
           "name": "organizationmember_organization_id_fkey",
           "tableFrom": "organizationmember",
           "tableTo": "organization",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -3192,12 +2823,8 @@
           "name": "organizationmember_profile_id_fkey",
           "tableFrom": "organizationmember",
           "tableTo": "profile",
-          "columnsFrom": [
-            "profile_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["profile_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -3205,12 +2832,8 @@
           "name": "organizationmember_role_id_fkey",
           "tableFrom": "organizationmember",
           "tableTo": "role",
-          "columnsFrom": [
-            "role_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["role_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -3222,50 +2845,38 @@
           "name": "Allow authenticated users to read.",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "(auth.uid() IS NOT NULL)"
         },
         "Enable insert for authenticated users only": {
           "name": "Enable insert for authenticated users only",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         },
         "Only admin can delete": {
           "name": "Only admin can delete",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "Only admin can update": {
           "name": "Only admin can update",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "Only user can update their account via email": {
           "name": "Only user can update their account via email",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an admin to INSERT or allow if no existing member": {
           "name": "User must be an admin to INSERT or allow if no existing member",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -3392,12 +3003,8 @@
           "name": "profile_id_fkey",
           "tableFrom": "profile",
           "tableTo": "user",
-          "columnsFrom": [
-            "id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -3407,16 +3014,12 @@
         "profile_username_key": {
           "name": "profile_username_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "username"
-          ]
+          "columns": ["username"]
         },
         "profile_email_key": {
           "name": "profile_email_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {
@@ -3424,43 +3027,32 @@
           "name": "Only auth users can read profile",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "anon",
-            "authenticated"
-          ],
+          "to": ["anon", "authenticated"],
           "using": "true"
         },
         "Public profiles are viewable by everyone.": {
           "name": "Public profiles are viewable by everyone.",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User can only delete their profiles": {
           "name": "User can only delete their profiles",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "Users can insert their own profile.": {
           "name": "Users can insert their own profile.",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "Users can update own profile.": {
           "name": "Users can update own profile.",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -3545,12 +3137,8 @@
           "name": "question_exercise_id_fkey",
           "tableFrom": "question",
           "tableTo": "exercise",
-          "columnsFrom": [
-            "exercise_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["exercise_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3558,12 +3146,8 @@
           "name": "question_question_type_id_fkey",
           "tableFrom": "question",
           "tableTo": "question_type",
-          "columnsFrom": [
-            "question_type_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["question_type_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -3575,34 +3159,26 @@
           "name": "Allow authenticated users to SELECT",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "(auth.uid() IS NOT NULL)"
         },
         "User must be an org member to DELETE": {
           "name": "User must be an org member to DELETE",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to INSERT": {
           "name": "User must be an org member to INSERT",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an org member to UPDATE": {
           "name": "User must be an org member to UPDATE",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -3673,12 +3249,8 @@
           "name": "question_answer_group_member_id_fkey",
           "tableFrom": "question_answer",
           "tableTo": "groupmember",
-          "columnsFrom": [
-            "group_member_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["group_member_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -3686,12 +3258,8 @@
           "name": "question_answer_question_id_fkey",
           "tableFrom": "question_answer",
           "tableTo": "question",
-          "columnsFrom": [
-            "question_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["question_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3699,12 +3267,8 @@
           "name": "question_answer_submission_id_fkey",
           "tableFrom": "question_answer",
           "tableTo": "submission",
-          "columnsFrom": [
-            "submission_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["submission_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3716,34 +3280,26 @@
           "name": "Only authenticated users can select.",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "(auth.uid() IS NOT NULL)"
         },
         "User must be an course member to DELETE": {
           "name": "User must be an course member to DELETE",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an course member to INSERT": {
           "name": "User must be an course member to INSERT",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be an course member to UPDATE": {
           "name": "User must be an course member to UPDATE",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -3806,9 +3362,7 @@
           "name": "Enable read access for all users",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "true"
         }
       },
@@ -3879,12 +3433,8 @@
           "name": "quiz_organization_id_fkey",
           "tableFrom": "quiz",
           "tableTo": "organization",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -3896,9 +3446,7 @@
           "name": "Authenticated users can SELECT",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "true"
         }
       },
@@ -4007,12 +3555,8 @@
           "name": "quiz_play_quiz_id_fkey",
           "tableFrom": "quiz_play",
           "tableTo": "quiz",
-          "columnsFrom": [
-            "quiz_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["quiz_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -4022,9 +3566,7 @@
         "quiz_play_pin_key": {
           "name": "quiz_play_pin_key",
           "nullsNotDistinct": false,
-          "columns": [
-            "pin"
-          ]
+          "columns": ["pin"]
         }
       },
       "policies": {
@@ -4032,9 +3574,7 @@
           "name": "Authenticated users can SELECT",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "true"
         }
       },
@@ -4098,9 +3638,7 @@
           "name": "Enable read access for all users",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "true"
         }
       },
@@ -4183,12 +3721,8 @@
           "name": "submission_course_id_fkey",
           "tableFrom": "submission",
           "tableTo": "course",
-          "columnsFrom": [
-            "course_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["course_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4196,12 +3730,8 @@
           "name": "submission_exercise_id_fkey",
           "tableFrom": "submission",
           "tableTo": "exercise",
-          "columnsFrom": [
-            "exercise_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["exercise_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -4209,12 +3739,8 @@
           "name": "submission_status_id_fkey",
           "tableFrom": "submission",
           "tableTo": "submissionstatus",
-          "columnsFrom": [
-            "status_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["status_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -4222,12 +3748,8 @@
           "name": "submission_submitted_by_fkey",
           "tableFrom": "submission",
           "tableTo": "groupmember",
-          "columnsFrom": [
-            "submitted_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["submitted_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -4239,34 +3761,26 @@
           "name": "Only authenticated users can SELECT",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "true"
         },
         "User must be a course member to DELETE": {
           "name": "User must be a course member to DELETE",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be a course member to INSERT": {
           "name": "User must be a course member to INSERT",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         },
         "User must be a course member to UPDATE": {
           "name": "User must be a course member to UPDATE",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "public"
-          ]
+          "to": ["public"]
         }
       },
       "checkConstraints": {},
@@ -4316,9 +3830,7 @@
           "name": "Authenticated users can SELECT",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "true"
         }
       },
@@ -4454,9 +3966,7 @@
         "constraint_name": {
           "name": "constraint_name",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -4468,43 +3978,22 @@
     "public.COURSE_TYPE": {
       "name": "COURSE_TYPE",
       "schema": "public",
-      "values": [
-        "SELF_PACED",
-        "LIVE_CLASS"
-      ]
+      "values": ["SELF_PACED", "LIVE_CLASS"]
     },
     "public.COURSE_VERSION": {
       "name": "COURSE_VERSION",
       "schema": "public",
-      "values": [
-        "V1",
-        "V2"
-      ]
+      "values": ["V1", "V2"]
     },
     "public.LOCALE": {
       "name": "LOCALE",
       "schema": "public",
-      "values": [
-        "en",
-        "hi",
-        "fr",
-        "pt",
-        "de",
-        "vi",
-        "ru",
-        "es",
-        "pl",
-        "da"
-      ]
+      "values": ["en", "hi", "fr", "pt", "de", "vi", "ru", "es", "pl", "da"]
     },
     "public.PLAN": {
       "name": "PLAN",
       "schema": "public",
-      "values": [
-        "EARLY_ADOPTER",
-        "ENTERPRISE",
-        "BASIC"
-      ]
+      "values": ["EARLY_ADOPTER", "ENTERPRISE", "BASIC"]
     }
   },
   "schemas": {},

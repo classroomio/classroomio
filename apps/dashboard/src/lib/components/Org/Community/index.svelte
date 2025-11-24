@@ -165,7 +165,7 @@
         </div>
       </div>
     {:else}
-      <Box className="w-screen">
+      <Box className="">
         <CoursesEmptyIcon size={16} />
         <h3 class="dark:text-white text-2xl my-5">{$t('community.no_question')}</h3>
         <p class="dark:text-white w-1/3 text-center">{$t('community.ask_a_question')}</p>

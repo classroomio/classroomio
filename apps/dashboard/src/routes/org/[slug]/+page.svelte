@@ -23,9 +23,9 @@
   import { ActivityCard } from '$lib/components/Analytics';
   import Progress from '$lib/components/Progress/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import Grid from '$lib/components/Org/Settings/Layout/Grid.svelte';
+  import { Grid } from '$lib/components/Org/Settings/Layout';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import WelcomeModal from '$lib/components/WelcomeModal/WelcomeModal.svelte';
+  import { WelcomeModal } from '$lib/features/onboarding/components';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
 
   let dashAnalytics: OrganisationAnalytics | undefined = $state();
@@ -98,9 +98,9 @@
 
 <WelcomeModal />
 
-<div class="w-full px-5 py-10 md:mx-auto">
+<div class="w-full">
   <div class="mb-5 flex items-center justify-between">
-    <h1 class="mb-3 text-2xl dark:text-white">
+    <h1 class="m-0 text-xl font-medium dark:text-white">
       {$t(getGreeting())}
       {$profile.fullname}!
     </h1>

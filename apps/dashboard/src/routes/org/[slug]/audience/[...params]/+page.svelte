@@ -8,7 +8,7 @@
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import ChartLineIcon from '@lucide/svelte/icons/chart-line';
   import Progress from '$lib/components/Progress/index.svelte';
-  import Grid from '$lib/components/Org/Settings/Layout/Grid.svelte';
+  import { Grid } from '$lib/components/Org/Settings/Layout';
   import { ActivityCard, HeroProfileCard, LoadingPage } from '$lib/components/Analytics';
 
   import { t } from '$lib/utils/functions/translations';
@@ -58,20 +58,20 @@
       icon: BookOpenIcon,
       title: $t('analytics.enrolled_courses'),
       description: $t('analytics.enrolled_courses_description'),
-      percentage: userAnalytics?.courses?.length,
+      percentage: userAnalytics?.courses?.length || 0,
       hidePercentage: true
     },
     {
       icon: ChartLineIcon,
       title: $t('analytics.overall_course_progress'),
       description: $t('analytics.overall_course_progress_description'),
-      percentage: userAnalytics?.overallCourseProgress
+      percentage: userAnalytics?.overallCourseProgress || 0
     },
     {
       icon: UnfoldVerticalIcon,
       title: $t('analytics.total_average_grade'),
       description: $t('analytics.total_average_grade_description'),
-      percentage: userAnalytics?.overallAverageGrade
+      percentage: userAnalytics?.overallAverageGrade || 0
     }
   ]);
 

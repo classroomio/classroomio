@@ -10,21 +10,6 @@ html {
   --scrollbarBG: #fff;
   --thumbBG: #ccc;
   scroll-behavior: smooth;
-  font-family:
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    Segoe UI,
-    Roboto,
-    Helvetica Neue,
-    Arial,
-    Noto Sans,
-    sans-serif,
-    'Apple Color Emoji',
-    'Segoe UI Emoji',
-    Segoe UI Symbol,
-    'Noto Color Emoji' !important;
 }
 
 #calendar .grid {
@@ -146,7 +131,6 @@ svg.lucide-icon:not(.custom) {
 }
 
 @keyframes shake {
-
   10%,
   90% {
     transform: translate3d(-15px, 0, 0);
@@ -828,7 +812,6 @@ svg.lucide-icon:not(.custom) {
 }
 
 @keyframes shakeAnnouncement {
-
   0%,
   100% {
     transform: translateX(0);
@@ -936,7 +919,6 @@ svg.lucide-icon:not(.custom) {
 }
 
 @keyframes gradeGlow {
-
   0%,
   100% {
     transform: scale(1);
@@ -950,7 +932,6 @@ svg.lucide-icon:not(.custom) {
 }
 
 @keyframes peopleWave {
-
   0%,
   100% {
     transform: rotate(0deg) scale(1);
@@ -997,7 +978,6 @@ svg.lucide-icon:not(.custom) {
 }
 
 @keyframes screenGlow {
-
   0%,
   100% {
     transform: scale(1);

@@ -1,4 +1,4 @@
-import type { TCourseDownloadContent } from '@api/types/course';
+import type { TCourseDownloadContent } from '@cio/utils/validation/course';
 import { getCloudflarePdfBuffer } from '@api/utils/cloudflare';
 import { marked } from 'marked';
 
@@ -138,12 +138,7 @@ function getLessonBody(
   `;
 }
 
-function getCourseBody({
-  courseTitle,
-  orgName,
-  orgTheme,
-  lessons
-}: TCourseDownloadContent): string {
+function getCourseBody({ courseTitle, orgName, orgTheme, lessons }: TCourseDownloadContent): string {
   return `
     <header class="flex justify-center items-center flex-col border-[${orgTheme ? orgTheme : '#0030FF'}] border-[40px] mx-3 h-[100vh] m-0">
       <h1 class="font-bold text-8xl text-black m-0 mx-96">${courseTitle}</h1>
@@ -155,11 +150,7 @@ function getCourseBody({
   `;
 }
 
-async function generateSinglePdfFromHtml(
-  htmlContent: string,
-  courseTitle: string,
-  orgTheme: string
-): Promise<Buffer> {
+async function generateSinglePdfFromHtml(htmlContent: string, courseTitle: string, orgTheme: string): Promise<Buffer> {
   return await getCloudflarePdfBuffer(htmlContent);
 }
 

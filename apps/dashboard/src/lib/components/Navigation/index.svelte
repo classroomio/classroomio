@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { user } from '$lib/utils/store/user';
   import { isCoursePage } from '$lib/utils/functions/app';
   import { t } from '$lib/utils/functions/translations';
@@ -32,7 +32,7 @@
   let navClass = '';
   let mobileMenuOpen = $state(false);
 
-  let redirect = $derived(isCoursePage($page.url.pathname) ? `?redirect=${$page.url.pathname}` : '');
+  let redirect = $derived(isCoursePage(page.url.pathname) ? `?redirect=${page.url.pathname}` : '');
   let showLinks = $derived(customLinks && customLinks.show && customLinks.links && customLinks.links.length > 0);
 
   function toggleMobileMenu() {
@@ -69,12 +69,12 @@
       {#if isOrgSite}
         <li><a class="block" href="/lms"> {$t('navigation.goto_lms')} </a></li>
       {/if}
-    {:else if isOrgSite && !$page.url.pathname?.includes('/404')}
+    {:else if isOrgSite && !page.url.pathname?.includes('/404')}
       <!-- Hide login/signup buttons on mobile when custom links exist -->
       <div class="hidden lg:block">
         <AuthButtons {disableSignup} {redirect} />
       </div>
-    {:else if !isOrgSite && !$page.url.pathname?.includes('/404')}
+    {:else if !isOrgSite && !page.url.pathname?.includes('/404')}
       <AuthButtons {disableSignup} {redirect} />
     {/if}
 

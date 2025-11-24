@@ -15,11 +15,12 @@ export const ROUTE = {
   DISCUSSIONS: '/discussions',
   ASK: '/ask',
   FORGOT: '/forgot',
-  RESET: '/reset'
+  RESET: '/reset',
+  LOGOUT: '/logout'
 };
 
 export const PUBLIC_ROUTES = [
-  `^${ROUTE.HOME}$`,
+  // `^${ROUTE.HOME}$`,
   ROUTE.LOGIN,
   ROUTE.SIGN_UP,
   `^${ROUTE.INVITE_TEACHER}/.*`,
@@ -28,6 +29,15 @@ export const PUBLIC_ROUTES = [
   `^${ROUTE.PAGES}/.*`,
   `^${ROUTE.COURSE}/.*`,
   '/404'
+];
+
+export const PUBLIC_API_ROUTES = [
+  '/api/completion',
+  'student_prove_payment',
+  'teacher_student_buycourse',
+  '/api/polar',
+  '/api/lmz',
+  '/api/verify'
 ];
 
 export const ROUTES_TO_HIDE_NAV = [

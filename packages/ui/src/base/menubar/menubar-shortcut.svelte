@@ -13,7 +13,7 @@
 <span
   bind:this={ref}
   data-slot="menubar-shortcut"
-  class={cn('text-muted-foreground ml-auto text-xs tracking-widest', className)}
+  class={cn('ui:text-muted-foreground ui:ml-auto ui:text-xs ui:tracking-widest', className)}
   {...restProps}
 >
   {@render children?.()}

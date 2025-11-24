@@ -21,7 +21,7 @@
   import { LANGUAGES } from '$lib/utils/constants/translation';
   import { getGroupMemberId } from '$lib/components/Course/function';
   import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
-  import { COURSE_VERSION, LOCALE, type Lesson, type LessonCompletion } from '$lib/utils/types';
+  import { COURSE_VERSION, type Lesson, type LessonCompletion } from '$lib/utils/types';
   import LessonVersionHistory from '$lib/components/Course/components/Lesson/LessonVersionHistory.svelte';
   import { checkExercisesComplete, fetchLesson, updateLessonCompletion } from '$lib/utils/services/courses';
   import { lesson, setLesson, lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
@@ -71,7 +71,7 @@
       lessonData,
       totalExercises,
       totalComments,
-      locale: $profile.locale
+      locale: $profile.locale || 'en'
     });
     $lesson.isFetching = false;
   }

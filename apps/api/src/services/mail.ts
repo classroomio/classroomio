@@ -1,12 +1,8 @@
-import { extractNameAndEmail, withEmailTemplate } from '@api/utils/mail';
-import { nodemailerTransporter, zohoClient } from '@api/utils/email';
+import { extractNameAndEmail, nodemailerTransporter, withEmailTemplate, zohoClient } from '@api/utils/mail';
 
-import { Hono } from 'hono';
-import type { TSendEmailValidation } from '@api/types/mail';
+import type { TEmailData } from '@cio/utils/validation/mail';
 import type { Transporter } from 'nodemailer';
 import { env } from '@api/config/env';
-
-export const mailRouter = new Hono();
 
 interface EmailResponse {
   success: boolean;
@@ -20,9 +16,7 @@ nodemailerTransporter().then((t: Transporter | null) => {
   transporter = t;
 });
 
-export async function sendWithNodemailer(
-  emailData: TSendEmailValidation[0]
-): Promise<EmailResponse> {
+export async function sendWithNodemailer(emailData: TEmailData): Promise<EmailResponse> {
   const { from, to, subject, content, replyTo } = emailData;
 
   if (!transporter) {
@@ -54,7 +48,7 @@ export async function sendWithNodemailer(
   }
 }
 
-export async function sendWithZoho(emailData: TSendEmailValidation[0]): Promise<EmailResponse> {
+export async function sendWithZoho(emailData: TEmailData): Promise<EmailResponse> {
   const { from, to, subject, content } = emailData;
 
   const fromData = extractNameAndEmail(from || '');

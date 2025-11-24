@@ -76,4 +76,4 @@ export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareH
 };
 
 // Default rate limiter middleware with standard configuration
-export const rateLimiterMiddleware = createRateLimiter();
+export default createRateLimiter();

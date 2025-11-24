@@ -12,7 +12,7 @@
   import * as Popover from '@cio/ui/base/popover';
 
   import { qrInviteNodeStore } from './store';
-  import { ROLE } from '$lib/utils/constants/roles';
+  import { ROLE } from '@cio/utils/constants';
   import { getOrgTeam } from '$lib/utils/services/org';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$lib/components/Snackbar/store';

@@ -73,7 +73,7 @@
 
 {#snippet TooltipLabel()}
   {#if formattedLabel}
-    <div class={cn('font-medium', labelClassName)}>
+    <div class={cn('ui:font-medium', labelClassName)}>
       {#if typeof formattedLabel === 'function'}
         {@render formattedLabel()}
       {:else}
@@ -86,7 +86,7 @@
 <TooltipPrimitive.Root variant="none">
   <div
     class={cn(
-      'border-border/50 bg-background grid min-w-[9rem] items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl',
+      'ui:border-border/50 ui:bg-background ui:grid ui:min-w-[9rem] ui:items-start ui:gap-1.5 ui:rounded-lg ui:border ui:px-2.5 ui:py-1.5 ui:text-xs ui:shadow-xl',
       className
     )}
     {...restProps}
@@ -94,14 +94,14 @@
     {#if !nestLabel}
       {@render TooltipLabel()}
     {/if}
-    <div class="grid gap-1.5">
+    <div class="ui:grid ui:gap-1.5">
       {#each tooltipCtx.payload as item, i (item.key + i)}
         {@const key = `${nameKey || item.key || item.name || 'value'}`}
         {@const itemConfig = getPayloadConfigFromPayload(chart.config, item, key)}
         {@const indicatorColor = color || item.payload?.color || item.color}
         <div
           class={cn(
-            '[&>svg]:text-muted-foreground flex w-full flex-wrap items-stretch gap-2 [&>svg]:size-2.5',
+            'ui:[&>svg]:text-muted-foreground ui:flex ui:w-full ui:flex-wrap ui:items-stretch ui:gap-2 ui:[&>svg]:size-2.5',
             indicator === 'dot' && 'items-center'
           )}
         >
@@ -119,27 +119,30 @@
             {:else if !hideIndicator}
               <div
                 style="--color-bg: {indicatorColor}; --color-border: {indicatorColor};"
-                class={cn('border-(--color-border) bg-(--color-bg) shrink-0 rounded-[2px]', {
-                  'size-2.5': indicator === 'dot',
-                  'h-full w-1': indicator === 'line',
-                  'w-0 border-[1.5px] border-dashed bg-transparent': indicator === 'dashed',
-                  'my-0.5': nestLabel && indicator === 'dashed'
+                class={cn('ui:border-(--color-border) ui:bg-(--color-bg) ui:shrink-0 ui:rounded-[2px]', {
+                  'ui:size-2.5': indicator === 'dot',
+                  'ui:h-full ui:w-1': indicator === 'line',
+                  'ui:w-0 ui:border-[1.5px] ui:border-dashed ui:bg-transparent': indicator === 'dashed',
+                  'ui:my-0.5': nestLabel && indicator === 'dashed'
                 })}
               ></div>
             {/if}
             <div
-              class={cn('flex flex-1 shrink-0 justify-between leading-none', nestLabel ? 'items-end' : 'items-center')}
+              class={cn(
+                'ui:flex ui:flex-1 ui:shrink-0 ui:justify-between ui:leading-none',
+                nestLabel ? 'ui:items-end' : 'ui:items-center'
+              )}
             >
-              <div class="grid gap-1.5">
+              <div class="ui:grid ui:gap-1.5">
                 {#if nestLabel}
                   {@render TooltipLabel()}
                 {/if}
-                <span class="text-muted-foreground">
+                <span class="ui:text-muted-foreground">
                   {itemConfig?.label || item.name}
                 </span>
               </div>
               {#if item.value !== undefined}
-                <span class="text-foreground font-mono font-medium tabular-nums">
+                <span class="ui:text-foreground ui:font-mono ui:font-medium tabular-nums">
                   {item.value.toLocaleString()}
                 </span>
               {/if}
