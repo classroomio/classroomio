@@ -375,7 +375,7 @@
             animate:flip={{ duration: flipDurationMs }}
           >
             <div class="mb-2 flex items-center">
-              <Chip value={items.length} className="bg-set dark:bg-neutral-800" />
+              <Chip value={items.length} className="bg-set bg-[#d1d5da80] dark:bg-neutral-800" />
               <p class="ml-2 dark:text-white">{title}</p>
             </div>
             {#if fetching}

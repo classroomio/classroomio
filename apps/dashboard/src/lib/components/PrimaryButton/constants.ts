@@ -1,3 +1,5 @@
+import type { ButtonVariant } from '@cio/ui/base/button';
+
 export const VARIANTS = {
   CONTAINED: 'CONTAINED',
   CONTAINED_DARK: 'CONTAINED_DARK',
@@ -28,4 +30,19 @@ export const VARIANTS_CLASS = {
   [VARIANTS.TEXT]: 'text-black dark:text-white hover:underline',
   [VARIANTS.LINK]: 'text-primary-500 dark:text-primary-500 hover:underline',
   [VARIANTS.TEXT_DANGER]: 'text-red-500 hover:border border-t-0 border-l-0 border-r-0 border-red-300'
+};
+
+export const VARIANT_TO_BASE_VARIANT: Record<string, ButtonVariant> = {
+  [VARIANTS.CONTAINED]: 'default',
+  [VARIANTS.CONTAINED_DARK]: 'default',
+  [VARIANTS.CONTAINED_LIGHT]: 'default',
+  [VARIANTS.CONTAINED_WHITE]: 'default',
+  [VARIANTS.CONTAINED_INFO]: 'secondary',
+  [VARIANTS.CONTAINED_SUCCESS]: 'default',
+  [VARIANTS.CONTAINED_DANGER]: 'destructive',
+  [VARIANTS.OUTLINED]: 'outline',
+  [VARIANTS.NONE]: 'ghost',
+  [VARIANTS.TEXT]: 'ghost',
+  [VARIANTS.LINK]: 'link',
+  [VARIANTS.TEXT_DANGER]: 'destructive'
 };

@@ -116,7 +116,7 @@
   maxWidth=""
   modalHeading={$t('course.navItem.landing_page.upload_widget.title')}
 >
-  <div class="w-full bg-white p-5 dark:bg-inherit">
+  <div class="w-full bg-white dark:bg-inherit">
     <Tabs {tabs} {currentTab} {onChange}>
       {#snippet content()}
         <slot:fragment>

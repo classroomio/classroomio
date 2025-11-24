@@ -97,7 +97,7 @@
   modalHeading={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.delete_modal')}
 >
   <form onsubmit={preventDefault()}>
-    <h1 class="text-xl dark:text-white">
+    <h1 class="text-center text-sm font-normal dark:text-white">
       {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.sure')}
     </h1>
 

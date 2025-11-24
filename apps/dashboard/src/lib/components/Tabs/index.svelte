@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as Tabs from '@cio/ui/base/tabs';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import { t } from '$lib/utils/functions/translations';
 
@@ -10,66 +11,48 @@
       badgeValue?: number;
     }[];
     currentTab: string | number;
-    onChange?: any;
+    onChange?: (value: string | number) => void;
     content?: import('svelte').Snippet;
   }
 
-  let { tabs = [], currentTab, onChange = (_v: string | number) => () => {}, content }: Props = $props();
+  let { tabs = [], currentTab = $bindable(), onChange = (_v: string | number) => {}, content }: Props = $props();
+
+  function handleValueChange(newValue: string) {
+    currentTab = newValue;
+    onChange(newValue);
+  }
 </script>
 
-<div class="flex w-full flex-col">
-  <div class="mb-2 flex w-full items-center overflow-x-auto border-b">
+<Tabs.Root value={String(currentTab)} onValueChange={handleValueChange} class="flex w-full flex-col">
+  <Tabs.List
+    class="mb-2 flex h-auto w-full items-center justify-start overflow-x-auto rounded-none border-b bg-transparent p-0"
+  >
     {#each tabs as tab}
-      {#if !tab.icon && !tab.badgeValue}
-        <button
-          class="relative {currentTab === tab.value
-            ? 'text-primary-700'
-            : 'dark:bg-gray-500 dark:text-white'} mr-4 w-fit px-2 py-3 text-center font-semibold focus:outline-none dark:bg-transparent"
-          onclick={onChange(tab.value)}
-        >
-          <div class="flex w-full items-center justify-center text-center">
-            {$t(tab.label)}
-          </div>
-          <span
-            class="bg-primary-700 absolute bottom-0 left-0 h-[2px] transition-all duration-500 ease-in-out {currentTab ===
-            tab.value
-              ? 'w-full'
-              : 'w-0'}"
-          ></span>
-        </button>
-      {:else}
-        <button
-          class="relative {currentTab === tab.value
-            ? 'text-primary-700'
-            : 'dark:bg-gray-500 dark:text-white'} mr-8 w-24 px-2 py-3 text-left font-semibold focus:outline-none dark:bg-transparent"
-          onclick={onChange(tab.value)}
-        >
-          <div class="flex items-center gap-1 md:grid-cols-4 md:gap-3">
-            {#if tab.icon}
-              <tab.icon size={16} />
-            {/if}
-            {$t(tab.label)}
-            {#if typeof tab.badgeValue === 'number'}
-              <TextChip
-                value={`${tab.badgeValue}`}
-                size="sm"
-                shape="rounded-full"
-                className="bg-gray-300 dark:text-black text-xs absolute -right-2 px-2"
-              />
-            {/if}
-          </div>
-          <span
-            class="bg-primary-700 absolute bottom-0 left-0 h-[2px] transition-all duration-500 ease-in-out {currentTab ===
-            tab.value
-              ? 'w-full'
-              : 'w-0'}"
-          ></span>
-        </button>
-      {/if}
+      <Tabs.Trigger
+        value={String(tab.value)}
+        class="data-[state=active]:border-primary-700 data-[state=active]:text-primary-700 relative mr-4 w-fit rounded-none border-b-2 border-transparent px-2 py-3
+          text-center font-semibold data-[state=active]:bg-transparent
+          dark:data-[state=inactive]:text-white"
+      >
+        <div class="flex items-center gap-1 {tab.icon || tab.badgeValue ? 'justify-start' : 'justify-center'}">
+          {#if tab.icon}
+            <svelte:component this={tab.icon} size={16} />
+          {/if}
+          {$t(tab.label)}
+          {#if typeof tab.badgeValue === 'number'}
+            <TextChip
+              value={`${tab.badgeValue}`}
+              size="sm"
+              shape="rounded-full"
+              className="absolute -right-2 bg-gray-300 px-2 text-xs dark:text-black"
+            />
+          {/if}
+        </div>
+      </Tabs.Trigger>
     {/each}
-  </div>
+  </Tabs.List>
 
-  <div class="mt-5">
+  <Tabs.Content value={String(currentTab)} class="mt-5">
     {@render content?.()}
-  </div>
-</div>
+  </Tabs.Content>
+</Tabs.Root>

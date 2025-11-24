@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as Avatar from '@cio/ui/base/avatar';
   interface Props {
     name?: string;
     src?: string;
@@ -18,4 +19,6 @@
   }: Props = $props();
 </script>
 
-<img alt={name} {src} class="{className} {width} {height} {shape}" />
+<Avatar.Root class="flex size-8 items-center justify-center rounded-lg">
+  <Avatar.Image {src} alt={name} class="{className} {width} {height} {shape}" />
+</Avatar.Root>

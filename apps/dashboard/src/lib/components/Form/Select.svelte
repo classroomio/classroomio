@@ -1,13 +1,17 @@
 <script lang="ts">
+  import * as Select from '@cio/ui/base/select';
+  import { t } from '$lib/utils/functions/translations';
+
   interface Props {
     label?: string;
     value: any;
-    options?: any;
+    options?: any[];
     labelKey?: string;
+    valueKey?: string;
     isRequired?: boolean;
     className?: string;
     selectClassName?: string;
-    onChange?: any; // This is to know if element is 'dirty'
+    onChange?: (value: any) => void;
   }
 
   let {
@@ -15,47 +19,45 @@
     value = $bindable(),
     options = [],
     labelKey = 'label',
+    valueKey = 'value',
     isRequired = false,
     className = '',
     selectClassName = '',
     onChange = () => {}
   }: Props = $props();
 
-  // onMount(() => {
-  //   value = options[0];
-  // });
+  // -- convert value to string
+  let selectedValue = $state(value ? String(value[valueKey] ?? value) : '');
+
+  function handleValueChange(newValue: string) {
+    const selectedOption = options.find((opt) => String(opt[valueKey] ?? opt) === newValue);
+    value = selectedOption;
+    onChange(selectedOption);
+  }
+
+  $effect(() => {
+    selectedValue = value ? String(value[valueKey] ?? value) : '';
+  });
+
+  const triggerContent = $derived(value ? value[labelKey] : 'Select an option');
 </script>
 
-<label class="block {className}">
+<div class="block {className}">
   {#if label}
     <span class="mr-2 text-gray-700 dark:text-white">{label}</span>
   {/if}
-  <select
-    bind:value
-    class="form-select mt-1 block w-auto rounded-md border-2 px-2 py-1.5 dark:bg-neutral-700 dark:text-white {selectClassName}"
-    required={isRequired}
-    onblur={() => {}}
-    onchange={onChange}
-    class:customColor={!!selectClassName}
-  >
-    {#each options as option}
-      <option class="bg-white text-black" value={option}>
-        {option[labelKey]}
-      </option>
-    {/each}
-  </select>
-</label>
-
-<style>
-  select.customColor {
-    font-weight: 700;
-    cursor: pointer;
-    border-radius: 4px;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' class='text-white' viewBox='0 0 20 20'%3e%3cpath stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-  }
-
-  select.customColor option {
-    background-color: #fff;
-    color: #000;
-  }
-</style>
+  <Select.Root type="single" value={selectedValue} onValueChange={handleValueChange} required={isRequired}>
+    <Select.Trigger class="mt-1 w-full {selectClassName}">
+      {$t(triggerContent)}
+    </Select.Trigger>
+    <Select.Content>
+      <Select.Group>
+        {#each options as option}
+          <Select.Item value={String(option[valueKey] ?? option)} label={option[labelKey]}>
+            {option[labelKey]}
+          </Select.Item>
+        {/each}
+      </Select.Group>
+    </Select.Content>
+  </Select.Root>
+</div>

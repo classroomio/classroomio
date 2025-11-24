@@ -119,7 +119,7 @@
 >
   <form
     onsubmit={preventDefault(handleSave)}
-    class="relative m-auto mb-2 flex flex-wrap items-center px-2 py-2 md:mb-4 md:px-5 md:py-3 dark:bg-neutral-800"
+    class="relative mb-2 flex flex-wrap items-center px-2 md:mb-4 md:px-5 dark:bg-neutral-800"
   >
     <div class="w-full">
       <TextField
@@ -130,7 +130,7 @@
         )}
         bind:value={lesson.title}
         autoFocus={true}
-        className="flex-1 min-w-lg max-w-lg"
+        className="w-full"
         isRequired={true}
         errorMessage={errors.title}
       />

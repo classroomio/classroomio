@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { VARIANTS, VARIANTS_CLASS } from './constants';
-  import { Spinner } from '@cio/ui/base/spinner';
+  import { Button } from '@cio/ui/base/button';
+
+  import { VARIANTS, VARIANTS_CLASS, VARIANT_TO_BASE_VARIANT } from './constants';
 
   interface Props {
     label?: string;
@@ -42,13 +43,18 @@
   );
 </script>
 
-<button class={`${cname} ${className}`} onclick={onClick} {name} {type} disabled={isLoading || isDisabled}>
-  {#if isLoading}
-    <Spinner class="mr-2 text-white" />
-  {/if}
+<Button
+  variant={VARIANT_TO_BASE_VARIANT[variant]}
+  {isLoading}
+  disabled={isDisabled || isLoading}
+  class={`${cname} ${className}`}
+  onclick={onClick}
+  {name}
+  {type}
+>
   {#if !!label}
     {label}
   {:else}
     {@render children?.()}
   {/if}
-</button>
+</Button>
