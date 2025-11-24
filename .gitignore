@@ -45,3 +45,5 @@ vite.config.ts*.mjs
 .github/instructions/codacy.instructions.md
 
 tsconfig.tsbuildinfo*
+
+storybook-static

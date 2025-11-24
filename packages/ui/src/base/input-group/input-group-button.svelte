@@ -22,7 +22,7 @@
 <script lang="ts">
   import { cn } from '../../tools';
   import type { ComponentProps } from 'svelte';
-  import { Button } from '$src/base/button/index.js';
+  import { Button } from '../button';
 
   let {
     ref = $bindable(null),

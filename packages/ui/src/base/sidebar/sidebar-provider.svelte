@@ -1,5 +1,5 @@
 <script lang="ts">
-  import * as Tooltip from '$src/base/tooltip/index.js';
+  import * as Tooltip from '../tooltip';
   import { cn, type WithElementRef } from '../../tools';
   import type { HTMLAttributes } from 'svelte/elements';
   import { SIDEBAR_COOKIE_MAX_AGE, SIDEBAR_COOKIE_NAME, SIDEBAR_WIDTH, SIDEBAR_WIDTH_ICON } from './constants.js';

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { cn, type WithElementRef } from '../../tools';
-  import { Skeleton } from '$src/base/skeleton/index.js';
+  import { Skeleton } from '../skeleton';
   import type { HTMLAttributes } from 'svelte/elements';
 
   let {

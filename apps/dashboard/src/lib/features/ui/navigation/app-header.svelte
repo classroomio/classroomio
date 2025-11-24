@@ -6,6 +6,8 @@
   import * as Popover from '@cio/ui/base/popover';
   import Search from '../search.svelte';
   import AppBreadcrumbs from './app-breadcrumbs.svelte';
+  import RefreshCcwIcon from '@lucide/svelte/icons/refresh-ccw';
+  import * as Empty from '@cio/ui/base/empty';
 </script>
 
 <header
@@ -31,11 +33,21 @@
         </Button>
       </Popover.Trigger>
       <Popover.Content>
-        <div class="flex flex-col gap-2">
-          <div class="flex items-center justify-between gap-2">
-            <p class="text-sm">Your notifications will show here</p>
-          </div>
-        </div>
+        <Empty.Root class="ui:from-muted/50 ui:to-background ui:h-full ui:bg-gradient-to-b ui:from-30%">
+          <Empty.Header>
+            <Empty.Media variant="icon">
+              <BellIcon />
+            </Empty.Media>
+            <Empty.Title>No Notifications</Empty.Title>
+            <Empty.Description>You're all caught up. New notifications will appear here.</Empty.Description>
+          </Empty.Header>
+          <Empty.Content>
+            <Button variant="outline" size="sm">
+              <RefreshCcwIcon />
+              Refresh
+            </Button>
+          </Empty.Content>
+        </Empty.Root>
       </Popover.Content>
     </Popover.Root>
   </div>
