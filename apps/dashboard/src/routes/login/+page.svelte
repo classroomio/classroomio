@@ -3,7 +3,6 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { LOGIN_FIELDS } from '$lib/utils/constants/authentication';
-  import { getSupabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
   import { authValidation } from '$lib/utils/functions/validator';
   import { currentOrg } from '$lib/utils/store/org';
@@ -12,7 +11,6 @@
   import { globalStore } from '$lib/utils/store/app';
 
   let formRef: HTMLFormElement | undefined = $state();
-  let supabase = getSupabase();
   let fields = $state(Object.assign({}, LOGIN_FIELDS));
   let submitError: string | undefined = $state();
   let loading = $state(false);
@@ -34,7 +32,6 @@
         {
           email: fields.email,
           password: fields.password
-          // callbackURL: '/' // the root page should shows a spinner until the account is loaded and redirect happens in +layout.svelte (accountManager.init())
         },
         {
           onSuccess: () => {
@@ -67,7 +64,7 @@
   <title>Welcome back to {$currentOrg.name || 'ClassroomIO'}</title>
 </svelte:head>
 
-<AuthUI {supabase} isLogin={true} {handleSubmit} isLoading={loading} bind:formRef>
+<AuthUI isLogin={true} {handleSubmit} isLoading={loading} bind:formRef>
   <div class="mt-4 w-full">
     <p class="mb-6 text-lg font-semibold dark:text-white">{$t('login.welcome')}</p>
     <TextField

@@ -9,6 +9,7 @@ export * as ButtonGroup from './base/button-group';
 export * as Checkbox from './base/checkbox';
 export * as Collapsible from './base/collapsible';
 export * as Command from './base/command';
+export { CopyButton } from './base/copy-button';
 export * as Dialog from './base/dialog';
 export * as Drawer from './base/drawer';
 export * as DropdownMenu from './base/dropdown-menu';

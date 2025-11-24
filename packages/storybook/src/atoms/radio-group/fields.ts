@@ -1,7 +1,4 @@
-import { type ComponentProps } from 'svelte';
-import { RadioGroup } from '@cio/ui/base/radio-group';
-
-export const FIELDS: (keyof ComponentProps<typeof RadioGroup>)[] = [
+export const FIELDS = [
   'value',
   'onValueChange',
   'disabled',
@@ -9,4 +6,4 @@ export const FIELDS: (keyof ComponentProps<typeof RadioGroup>)[] = [
   'name',
   'loop',
   'orientation'
-];
+] as string[];

@@ -1,10 +1,7 @@
-import { type ComponentProps } from 'svelte';
-import { Tabs } from '@cio/ui/base/tabs';
-
-export const FIELDS: (keyof ComponentProps<typeof Tabs>)[] = [
+export const FIELDS = [
   'value',
   'onValueChange',
   'disabled',
   'activationMode',
   'orientation'
-];
+] as string[];

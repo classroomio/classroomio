@@ -1,10 +1,7 @@
-import { type ComponentProps } from 'svelte';
-import { Pagination } from '@cio/ui/base/pagination';
-
-export const FIELDS: (keyof ComponentProps<typeof Pagination>)[] = [
+export const FIELDS = [
   'count',
   'page',
   'onPageChange',
   'perPage',
   'orientation'
-];
+] as string[];

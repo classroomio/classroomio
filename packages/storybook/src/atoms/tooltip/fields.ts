@@ -1,9 +1,6 @@
-import { type ComponentProps } from 'svelte';
-import { Tooltip } from '@cio/ui/base/tooltip';
-
-export const FIELDS: (keyof ComponentProps<typeof Tooltip>)[] = [
+export const FIELDS = [
   'disableHoverableContent',
   'delayDuration',
   'ignoreNonKeyboardFocus',
   'disabled'
-];
+] as string[];
