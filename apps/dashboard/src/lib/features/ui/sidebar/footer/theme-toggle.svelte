@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
   import { MonitorIcon, SunIcon, MoonIcon } from '@lucide/svelte';
-  import { userPrefersMode, resetMode, setMode } from 'mode-watcher';
+  import { userPrefersMode, resetMode, setMode } from '@cio/ui/base/dark-mode';
 
   type UserPrefersMode = typeof userPrefersMode.current;
 
