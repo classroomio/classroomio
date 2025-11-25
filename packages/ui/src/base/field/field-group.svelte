@@ -14,7 +14,7 @@
   bind:this={ref}
   data-slot="field-group"
   class={cn(
-    'group/field-group @container/field-group flex w-full flex-col gap-7 data-[slot=checkbox-group]:gap-3 [&>[data-slot=field-group]]:gap-4',
+    'ui:group/field-group ui:@container/field-group ui:flex ui:w-full ui:flex-col ui:gap-7 ui:data-[slot=checkbox-group]:gap-3 ui:*:data-[slot=field-group]:gap-4',
     className
   )}
   {...restProps}

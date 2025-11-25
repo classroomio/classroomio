@@ -12,9 +12,9 @@
 
 <div
   bind:this={ref}
-  data-slot="field-title"
+  data-slot="card-header"
   class={cn(
-    'ui:flex ui:w-fit ui:items-center ui:gap-2 ui:text-sm ui:font-medium ui:leading-snug ui:group-data-[disabled=true]/field:opacity-50',
+    '@container/card-header ui:has-data-[slot=card-action]:grid-cols-[1fr_auto] ui:[.border-b]:pb-6 ui:grid ui:auto-rows-min ui:grid-rows-[auto_auto] ui:items-start ui:gap-1.5 ui:px-6',
     className
   )}
   {...restProps}

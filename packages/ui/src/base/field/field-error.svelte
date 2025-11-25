@@ -38,7 +38,7 @@
     bind:this={ref}
     role="alert"
     data-slot="field-error"
-    class={cn('text-destructive text-sm font-normal', className)}
+    class={cn('ui:text-destructive ui:text-sm ui:font-normal', className)}
     {...restProps}
   >
     {#if children}
@@ -46,7 +46,7 @@
     {:else if singleErrorMessage}
       {singleErrorMessage}
     {:else if isMultipleErrors}
-      <ul class="ms-4 flex list-disc flex-col gap-1">
+      <ul class="ui:ms-4 ui:flex ui:list-disc ui:flex-col ui:gap-1">
         {#each errors ?? [] as error, index (index)}
           {#if error?.message}
             <li>{error.message}</li>

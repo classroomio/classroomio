@@ -14,8 +14,8 @@
   bind:this={ref}
   data-slot="field-set"
   class={cn(
-    'flex flex-col gap-6',
-    'has-[>[data-slot=checkbox-group]]:gap-3 has-[>[data-slot=radio-group]]:gap-3',
+    'ui:flex ui:flex-col ui:gap-6',
+    'ui:has-[>[data-slot=checkbox-group]]:gap-3 ui:has-[>[data-slot=radio-group]]:gap-3',
     className
   )}
   {...restProps}

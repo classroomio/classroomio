@@ -20,13 +20,13 @@
   bind:this={ref}
   data-slot="field-separator"
   data-content={hasContent}
-  class={cn('relative -my-2 h-5 text-sm group-data-[variant=outline]/field-group:-mb-2', className)}
+  class={cn('ui:relative ui:-my-2 ui:h-5 ui:text-sm ui:group-data-[variant=outline]/field-group:-mb-2', className)}
   {...restProps}
 >
-  <Separator class="absolute inset-0 top-1/2" />
+  <Separator class="ui:absolute ui:inset-0 ui:top-1/2" />
   {#if children}
     <span
-      class="bg-background text-muted-foreground relative mx-auto block w-fit px-2"
+      class="ui:bg-background ui:text-muted-foreground ui:relative ui:mx-auto ui:block ui:w-fit ui:px-2"
       data-slot="field-separator-content"
     >
       {@render children()}

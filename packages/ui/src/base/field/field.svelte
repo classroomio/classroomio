@@ -2,19 +2,19 @@
   import { tv, type VariantProps } from 'tailwind-variants';
 
   export const fieldVariants = tv({
-    base: 'group/field data-[invalid=true]:text-destructive flex w-full gap-3',
+    base: 'ui:group/field ui:data-[invalid=true]:text-destructive ui:flex ui:w-full ui:gap-3',
     variants: {
       orientation: {
-        vertical: 'flex-col [&>*]:w-full [&>.sr-only]:w-auto',
+        vertical: 'ui:flex-col ui:*:w-full ui:*.sr-only:w-auto',
         horizontal: [
-          'flex-row items-center',
+          'ui:flex-row ui:items-center',
           '[&>[data-slot=field-label]]:flex-auto',
-          'has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px has-[>[data-slot=field-content]]:items-start'
+          'ui:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px ui:has-[>[data-slot=field-content]]:items-start'
         ],
         responsive: [
-          '@md/field-group:flex-row @md/field-group:items-center @md/field-group:[&>*]:w-auto flex-col [&>*]:w-full [&>.sr-only]:w-auto',
-          '@md/field-group:[&>[data-slot=field-label]]:flex-auto',
-          '@md/field-group:has-[>[data-slot=field-content]]:items-start @md/field-group:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px'
+          '@md/field-group:ui:flex-row @md/field-group:ui:items-center @md/field-group:ui:[&>*]:w-auto ui:flex-col ui:*:w-full ui:*.sr-only:w-auto',
+          '@md/field-group:ui:[&>[data-slot=field-label]]:flex-auto',
+          '@md/field-group:ui:has-[>[data-slot=field-content]]:items-start @md/field-group:ui:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px'
         ]
       }
     },
