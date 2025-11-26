@@ -11,6 +11,15 @@ export const getSupabase = () => {
   return supabase;
 };
 
+getSupabase();
+
+export const hasSession = async () => {
+  const { data } = await getSupabase().auth.getSession();
+  console.log('has session', data);
+
+  return data.session !== null;
+};
+
 export const isSupabaseTokenInLocalStorage = () => {
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);

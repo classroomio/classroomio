@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+**/node_modules/
+.pnp
+.pnp.js
+.pnpm-store/
+
+# Build outputs
+**/dist/
+**/.next/
+**/out/
+**/build/
+**/.turbo/
+**/.svelte-kit/
+
+# Testing
+**/coverage/
+cypress/downloads/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Misc
+.DS_Store
+*.pem
+
+# Generated files
+apps/api/dist/
+packages/utils/dist/
+packages/course-app/dist/
+packages/db/dist/
+
+# Vite temp files
+vite.config.ts*.mjs
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+

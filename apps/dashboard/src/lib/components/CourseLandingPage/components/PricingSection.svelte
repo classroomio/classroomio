@@ -2,17 +2,15 @@
   import get from 'lodash/get';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
-  import { isCourseFree } from '$lib/utils/functions/course';
-  import { getStudentInviteLink } from '$lib/utils/functions/course';
+  import { isCourseFree, getStudentInviteLink, calcCourseDiscount } from '$lib/utils/functions/course';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import PaymentModal from './PaymentModal.svelte';
   import type { Course } from '$lib/utils/types';
-  import { ROLE } from '$lib/utils/constants/roles';
+  import { ROLE } from '@cio/utils/constants';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { t } from '$lib/utils/functions/translations';
-  import { calcCourseDiscount } from '$lib/utils/functions/course';
 
   interface Props {
     className?: string;
@@ -48,8 +46,10 @@
       course_cost: courseData.cost,
       course_free: isFree
     });
+
     if (isFree) {
       const link = getStudentInviteLink(courseData, $currentOrg.siteName, $currentOrgDomain);
+
       goto(link);
     } else {
       openModal = true;

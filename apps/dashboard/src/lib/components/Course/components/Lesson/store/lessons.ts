@@ -1,5 +1,4 @@
 import type { Course, Lesson, LessonComment, LessonCompletion, LessonPage, LessonSection } from '$lib/utils/types';
-import type { Updater, Writable } from 'svelte/store';
 import {
   createLesson,
   createLessonSection,
@@ -9,8 +8,9 @@ import {
   updateLessonSection
 } from '$lib/utils/services/courses';
 
-import { LOCALE } from '$lib/utils/types';
 import type { RealtimeChannel } from '@supabase/supabase-js';
+import type { TLocale } from '@cio/db/types';
+import type { Writable } from 'svelte/store';
 import { lessonValidation } from '$lib/utils/functions/validator';
 import { snackbar } from '$lib/components/Snackbar/store';
 import { writable } from 'svelte/store';
@@ -40,7 +40,7 @@ export const lessonCommentsChannel: Writable<RealtimeChannel> = writable();
 
 export const lesson = writable<LessonPage>({
   id: null,
-  locale: LOCALE.EN,
+  locale: 'en',
   title: '',
   totalExercises: 0,
   totalComments: 0,
@@ -57,7 +57,7 @@ export const lesson = writable<LessonPage>({
 });
 
 export const lessonByTranslation = writable<{
-  [key: string]: Record<LOCALE, string>;
+  [key: string]: Record<TLocale, string>;
 }>({});
 
 export const lessonComments = writable<LessonComment[]>([]);
@@ -72,8 +72,8 @@ export function setLesson({
   totalComments
 }: {
   id: string;
-  lessonData: Lesson & { lesson_language: { locale: LOCALE; content: string }[] };
-  locale: LOCALE;
+  lessonData: Lesson & { lesson_language: { locale: TLocale; content: string }[] };
+  locale: TLocale;
   totalExercises: number;
   totalComments: number;
 }) {
@@ -111,7 +111,7 @@ export function setLesson({
             acc[cur.locale] = cur.content;
             return acc;
           },
-          {} as Record<LOCALE, string>
+          {} as Record<TLocale, string>
         )
       };
     });

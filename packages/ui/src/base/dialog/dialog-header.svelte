@@ -13,7 +13,11 @@
 <div
   bind:this={ref}
   data-slot="dialog-header"
+<<<<<<< HEAD
   class={cn('flex flex-col gap-2 text-center sm:text-left', className)}
+=======
+  class={cn('ui:flex ui:flex-col ui:gap-2 ui:text-center ui:sm:text-left', className)}
+>>>>>>> feat/release-v2
   {...restProps}
 >
   {@render children?.()}

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { get } from 'svelte/store';
   import { goto } from '$app/navigation';
-  import { Moon } from 'svelte-loading-spinners';
+  import { Circle } from 'svelte-loading-spinners';
   import Navigation from '../Course/components/Navigation/index.svelte';
   import Backdrop from '$lib/components/Backdrop/index.svelte';
   import { course, group, courseStore } from '../Course/store';
@@ -65,7 +65,7 @@
 
 {#if isFetching}
   <Backdrop>
-    <Moon size="60" color="#1d4ed8" unit="px" duration="1s" />
+    <Circle size="60" color="#1d4ed8" unit="px" duration="1s" />
   </Backdrop>
 {/if}
 

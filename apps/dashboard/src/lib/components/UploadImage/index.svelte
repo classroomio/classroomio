@@ -6,7 +6,7 @@
 
   interface Props {
     avatar: string | File | undefined;
-    src: string | undefined;
+    src: string | undefined | null;
     widthHeight?: string;
     shape?: string;
     errorMessage?: string | null;

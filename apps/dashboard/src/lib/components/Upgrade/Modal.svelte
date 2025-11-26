@@ -31,7 +31,7 @@
   let isConfirming = $derived((query.get('confirmation') || '') === 'true');
 
   async function handleClick(plan, planName: string) {
-    if (plan.CTA.IS_DISABLED || !$profile.id) {
+    if (plan.CTA.IS_DISABLED || !$profile.id || !$profile.email) {
       return;
     }
 
@@ -51,7 +51,7 @@
       checkoutURL.searchParams.set(
         'metadata',
         JSON.stringify({
-          triggeredBy: $currentOrg.memberId,
+          triggeredBy: $currentOrg.roleId,
           orgId: $currentOrg.id,
           orgSlug: $currentOrg.siteName
         })
@@ -130,8 +130,8 @@
       <Progress />
     </div>
   {:else}
-    <div class="flex flex-col items-center justify-center">
-      <div class="relative mb-2 flex items-center rounded-[30px] border-[2px] p-[2px] lg:scale-100">
+    <div class="my-2 flex h-full flex-col items-center justify-center">
+      <div class="relative mb-2 flex items-center rounded-[30px] border p-1">
         <button
           style="background-color: {isYearlyPlan ? 'initial' : '#1D4EE2'}; color: {isYearlyPlan ? '#5e636b' : '#fff'}"
           class="rounded-[30px] bg-blue-700 px-3 py-1 text-xs text-white transition-all duration-500 ease-in-out lg:px-4 lg:py-2"
@@ -145,14 +145,12 @@
           onclick={toggleIsYearlyPlan}
         >
           {$t('pricing.modal.annually')}
-          <div
-            class="absolute -top-4 right-[-40%] scale-[90%] rounded-full bg-[#006600] px-1.5 py-1 text-[0.7rem] text-white"
-          >
+          <div class="absolute -top-4 right-[-40%] rounded-full bg-[#006600] px-1.5 py-1 text-[0.7rem] text-white">
             {$t('pricing.modal.save')}
           </div>
         </button>
       </div>
-      <div class="isolate grid grid-cols-1 gap-3 lg:grid-cols-3">
+      <div class="isolate grid grid-cols-1 gap-3 overflow-y-scroll p-2 md:overflow-y-hidden lg:grid-cols-3">
         {#each planNames as planName}
           <div
             class="max-w-xl rounded-xl {planName === 'EARLY_ADOPTER' &&
@@ -210,9 +208,9 @@
                 <li class="flex items-center">
                   <div>
                     <CheckIcon
-                      size={16}
-                      fill={planName === 'EARLY_ADOPTER' ? '#fff' : '#1D4EE2'}
-                      class="mr-2 lg:mr-3"
+                      class="custom mr-2 size-4 lg:mr-3 {planName === 'EARLY_ADOPTER'
+                        ? 'text-white'
+                        : 'text-[#1D4EE2]'}"
                     />
                   </div>
                   <p class="text-sm">

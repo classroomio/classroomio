@@ -8,12 +8,12 @@
   import { setTheme } from '$lib/utils/functions/theme';
   import { addGroupMember } from '$lib/utils/services/courses';
   import type { CurrentOrg } from '$lib/utils/types/org.js';
-  import { ROLE } from '$lib/utils/constants/roles';
+  import { ROLE } from '@cio/utils/constants';
   import { profile } from '$lib/utils/store/user';
   import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
   import { snackbar } from '$lib/components/Snackbar/store.js';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
 
   let { data } = $props();
 
@@ -21,14 +21,14 @@
   let loading = $state(false);
 
   let disableSubmit = false;
-  let formRef: HTMLFormElement = $state();
+  let formRef: HTMLFormElement | undefined = $state();
 
   async function handleSubmit() {
     loading = true;
 
     if (!$profile.id || !$profile.email) {
       console.log('Profile not found', $profile);
-      return goto(`/signup?redirect=${$page.url?.pathname || ''}`);
+      return goto(`/signup?redirect=${page.url?.pathname || ''}`);
     }
 
     const { data: courseData, error } = await supabase.from('course').select('group_id').eq('id', data.id).single();
@@ -110,6 +110,14 @@
   }
 
   onMount(async () => {
+    // check if user has session, if not redirect to sign up with redirect back to this page
+    const {
+      data: { session }
+    } = await supabase.auth.getSession();
+    if (!session) {
+      return goto(`/login?redirect=${page.url?.pathname || ''}`);
+    }
+
     setTheme(data.currentOrg?.theme || '');
     setCurOrg(data.currentOrg as CurrentOrg);
   });

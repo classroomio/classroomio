@@ -34,12 +34,12 @@
         class={buttonVariants({
           variant: 'ghost',
           size: 'icon',
-          class: cn('gap-0')
+          class: cn('ui:gap-0')
         })}
         class:bg-muted={isActive}
       >
         <HeadingIcon />
-        <ChevronDown class="text-muted-foreground !size-2" />
+        <ChevronDown class="ui:text-muted-foreground !size-2" />
       </div>
     </EdraToolTip>
   </DropdownMenu.Trigger>

@@ -7,7 +7,11 @@
   import BadgeXIcon from '@lucide/svelte/icons/badge-x';
 
   import { profile } from '$lib/utils/store/user';
+<<<<<<< HEAD
   import { ROLE } from '$lib/utils/constants/roles';
+=======
+  import { ROLE } from '@cio/utils/constants';
+>>>>>>> feat/release-v2
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { attendance } from '$lib/utils/store/attendance';

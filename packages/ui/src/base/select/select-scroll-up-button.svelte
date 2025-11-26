@@ -13,8 +13,15 @@
 <SelectPrimitive.ScrollUpButton
   bind:ref
   data-slot="select-scroll-up-button"
+<<<<<<< HEAD
   class={cn('flex cursor-default items-center justify-center py-1', className)}
   {...restProps}
 >
   <ChevronUpIcon class="size-4" />
+=======
+  class={cn('ui:flex ui:cursor-default ui:items-center ui:justify-center ui:py-1', className)}
+  {...restProps}
+>
+  <ChevronUpIcon class="ui:size-4" />
+>>>>>>> feat/release-v2
 </SelectPrimitive.ScrollUpButton>

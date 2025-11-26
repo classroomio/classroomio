@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "composite": true,
     "allowJs": true,
     "checkJs": true,
     "esModuleInterop": true,

@@ -1,11 +1,36 @@
 import './index.css';
 
+export * as Accordion from './base/accordion';
+export * as Avatar from './base/avatar';
+export * as Badge from './base/badge';
+export * as Breadcrumb from './base/breadcrumb';
 export * as Button from './base/button';
+export * as Checkbox from './base/checkbox';
+export * as Collapsible from './base/collapsible';
+export * as Command from './base/command';
+export * as Dialog from './base/dialog';
+export * as Drawer from './base/drawer';
 export * as DropdownMenu from './base/dropdown-menu';
 export * as Input from './base/input';
+export * as InputGroup from './base/input-group';
+export * as Item from './base/item';
+export * as Kbd from './base/kbd';
 export * as Label from './base/label';
+export * as Menubar from './base/menubar';
+export * as Pagination from './base/pagination';
 export * as Popover from './base/popover';
+export * as Progress from './base/progress';
+export * as RadioGroup from './base/radio-group';
+export * as Select from './base/select';
+export * as Separator from './base/separator';
+export * as Sheet from './base/sheet';
+export * as Sidebar from './base/sidebar';
 export * as Skeleton from './base/skeleton';
+export * as Spinner from './base/spinner';
+export * as Switch from './base/switch';
+export * as Table from './base/table';
+export * as Tabs from './base/tabs';
+export * as Textarea from './base/textarea';
 export * as Tooltip from './base/tooltip';
 export * as Sidebar from './base/sidebar';
 export * as Command from './base/command';
@@ -27,6 +52,9 @@ export * as Spinner from './base/spinner';
 export * as Progress from './base/progress';
 export * as Accordion from './base/accordion';
 export * as Tabs from './base/tabs';
+
+export { Toaster } from './base/sonner';
+export { BarChart, LineChart, AreaChart, PieChart, scaleBand } from './base/chart';
 
 export { Toaster } from './base/sonner';
 export { BarChart, LineChart, AreaChart, PieChart, scaleBand } from './base/chart';

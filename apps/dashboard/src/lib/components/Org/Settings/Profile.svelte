@@ -1,4 +1,5 @@
 <script lang="ts">
+<<<<<<< HEAD
   import { LOCALE } from '$lib/utils/types';
   import { profile } from '$lib/utils/store/user';
   import { supabase } from '$lib/utils/functions/supabase';
@@ -14,81 +15,65 @@
   import SectionTitle from '../SectionTitle.svelte';
   import LanguagePicker from './LanguagePicker.svelte';
   import generateUUID from '$lib/utils/functions/generateUUID';
+=======
+  import type { TLocale } from '@cio/db/types';
+  import { profile } from '$lib/utils/store/user';
+  import { CircleCheckBig } from '@lucide/svelte';
+  import { profileApi } from '$lib/features/auth/api/profile.svelte';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { t } from '$lib/utils/functions/translations';
+  import { Row, Grid, Column } from './Layout';
+
+  import SectionTitle from '../SectionTitle.svelte';
+  import LanguagePicker from './LanguagePicker.svelte';
+>>>>>>> feat/release-v2
   import TextField from '$lib/components/Form/TextField.svelte';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
 
-  let avatar = $state<string | undefined>();
-  let loading = $state(false);
+  let avatar = $state<string | File | undefined>();
   let hasLangChanged = $state(false);
-  let locale = $derived<LOCALE | undefined>($profile.locale);
+  let locale = $derived<TLocale | undefined>($profile.locale || undefined);
   let hasUnsavedChanges = $state(false);
-
-  let errors = $state<Record<string, string>>({});
+  let email = $derived($profile.email || '');
+  let isChangingEmail = $state(false);
+  let emailChangeInitiated = $state(false);
 
   async function handleUpdate() {
-    errors = updateProfileValidation($profile);
-    if (Object.values(errors).some((error) => error)) {
-      loading = false;
+    await profileApi.submit(
+      {
+        fullname: $profile.fullname,
+        username: $profile.username,
+        locale,
+        avatar
+      },
+      $profile,
+      hasLangChanged,
+      locale
+    );
+
+    if (profileApi.success) {
+      hasUnsavedChanges = false;
+      avatar = undefined;
+    }
+  }
+
+  async function handleEmailChange() {
+    if (email === $profile.email) {
       return;
     }
 
-    try {
-      console.log({ hasLangChanged });
-      loading = true;
+    await profileApi.changeEmail({
+      newEmail: email,
+      callbackURL: window.location.href
+    });
 
-      const updates: Partial<ProfileStore> = {
-        fullname: $profile.fullname,
-        username: $profile.username,
-        email: $profile.email,
-        locale
-      };
-      console.log('updates', updates);
-
-      if (avatar) {
-        const filename = `user/${generateUUID()}.webp`;
-
-        const { data } = await supabase.storage.from('avatars').upload(filename, avatar, {
-          cacheControl: '3600',
-          upsert: false
-        });
-        if (data) {
-          const { data: response } = await supabase.storage.from('avatars').getPublicUrl(filename);
-
-          updates.avatar_url = response.publicUrl;
-          $profile.avatar_url = response.publicUrl;
-        }
-
-        avatar = '';
-      }
-
-      let { error } = await supabase.from('profile').update(updates).match({ id: $profile.id });
-
-      profile.update((_profile) => ({
-        ..._profile,
-        ...updates
-      }));
-      snackbar.success('snackbar.course_settings.success.update_successful');
-
-      if (hasLangChanged && locale) {
-        handleLocaleChange(locale);
-      }
-
-      hasUnsavedChanges = false;
-      if (error) throw error;
-    } catch (error) {
-      let message = error instanceof Error ? error.message : `${error}`;
-
-      if (message.includes('profile_username_key')) {
-        message = $t('snackbar.lms.error.username_exists');
-      }
-
-      snackbar.error(`${$t('snackbar.lms.error.update')}: ${message}`);
-
-      loading = false;
-    } finally {
-      loading = false;
+    if (profileApi.success) {
+      isChangingEmail = false;
+      emailChangeInitiated = true;
+      // Reset email field to current email after successful change request
+      email = $profile.email || '';
     }
   }
 </script>
@@ -103,8 +88,9 @@
     <Column sm={8} md={8} lg={8} class="mt-2 lg:mt-0">
       <UploadImage
         bind:avatar
-        src={$profile.avatar_url}
+        src={$profile.avatarUrl}
         widthHeight="w-16 h-16 lg:w-24 lg:h-24"
+        isDisabled={profileApi.isLoading}
         change={() => (hasUnsavedChanges = true)}
       />
     </Column>
@@ -118,23 +104,64 @@
         label={$t('settings.profile.personal_information.full_name')}
         bind:value={$profile.fullname}
         className="w-full lg:w-60 mb-4"
-        errorMessage={$t(errors.fullname)}
+        errorMessage={profileApi.errors.fullname ? $t(profileApi.errors.fullname) : undefined}
         onChange={() => (hasUnsavedChanges = true)}
       />
       <TextField
         label={$t('settings.profile.personal_information.username')}
         bind:value={$profile.username}
         className="w-full lg:w-60 mb-4"
-        errorMessage={$t(errors.username)}
+        errorMessage={profileApi.errors.username ? $t(profileApi.errors.username) : undefined}
         onChange={() => (hasUnsavedChanges = true)}
       />
-      <TextField
-        label={$t('settings.profile.personal_information.email')}
-        bind:value={$profile.email}
-        className="w-full lg:w-60 mb-4"
-        errorMessage={$t(errors.email)}
-        onChange={() => (hasUnsavedChanges = true)}
-      />
+      <div class="mb-4 w-full lg:w-60">
+        <TextField
+          label={$t('settings.profile.personal_information.email')}
+          bind:value={email}
+          className="w-full"
+          type="email"
+          isDisabled={profileApi.isLoading}
+          errorMessage={profileApi.errors.newEmail ? $t(profileApi.errors.newEmail) : undefined}
+          onChange={() => {
+            if (email !== $profile.email) {
+              isChangingEmail = true;
+              emailChangeInitiated = false;
+            }
+          }}
+        />
+        {#if isChangingEmail && email !== $profile.email}
+          <div class="mt-2 flex gap-2">
+            <PrimaryButton
+              label={$t('settings.profile.personal_information.confirm')}
+              variant={VARIANTS.CONTAINED_DARK}
+              className="text-sm"
+              isLoading={profileApi.isLoading}
+              isDisabled={profileApi.isLoading}
+              onClick={handleEmailChange}
+            />
+            <PrimaryButton
+              label={$t('settings.profile.personal_information.cancel')}
+              variant={VARIANTS.NONE}
+              className="text-sm text-primary-700"
+              isDisabled={profileApi.isLoading}
+              onClick={() => {
+                email = $profile.email || '';
+                isChangingEmail = false;
+                emailChangeInitiated = false;
+                profileApi.errors.newEmail = '';
+              }}
+            />
+          </div>
+        {/if}
+        {#if emailChangeInitiated}
+          <div
+            class="ml-2 mt-2 flex w-4/5 items-center gap-2 rounded-md border border-gray-200 p-2 text-sm text-amber-500"
+          >
+            <CircleCheckBig />
+            <p>{$t('settings.profile.personal_information.email_change_verification_note')}</p>
+          </div>
+        {/if}
+      </div>
       <LanguagePicker
         change={() => (hasUnsavedChanges = true)}
         bind:hasLangChanged
@@ -149,8 +176,12 @@
       label={$t('settings.profile.update_profile')}
       variant={VARIANTS.CONTAINED_DARK}
       className="mr-5 w-fit"
+<<<<<<< HEAD
       isLoading={loading}
       isDisabled={loading}
+=======
+      isLoading={profileApi.isLoading}
+>>>>>>> feat/release-v2
       onClick={handleUpdate}
     />
   </div>

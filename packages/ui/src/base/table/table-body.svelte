@@ -10,6 +10,10 @@
   }: WithElementRef<HTMLAttributes<HTMLTableSectionElement>> = $props();
 </script>
 
+<<<<<<< HEAD
 <tbody bind:this={ref} data-slot="table-body" class={cn('[&_tr:last-child]:border-0', className)} {...restProps}>
+=======
+<tbody bind:this={ref} data-slot="table-body" class={cn('ui:[&_tr:last-child]:border-0', className)} {...restProps}>
+>>>>>>> feat/release-v2
   {@render children?.()}
 </tbody>

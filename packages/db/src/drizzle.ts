@@ -1,16 +1,14 @@
 import 'dotenv/config';
 
-import * as schema from './schema';
-
 import { SQL, sql } from 'drizzle-orm';
 
-import { drizzle } from 'drizzle-orm/node-postgres';
+import { drizzle } from 'drizzle-orm/postgres-js';
+
+// import * as schema from './schema';
 
 const connectionString = process.env.DATABASE_URL ?? process.env.PRIVATE_DATABASE_URL ?? '';
 
-export const db = drizzle(connectionString, {
-  schema
-});
+export const db = drizzle(connectionString);
 
 export * from 'drizzle-orm';
 export * from './schema';

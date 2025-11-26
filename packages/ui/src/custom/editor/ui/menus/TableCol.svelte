@@ -32,7 +32,7 @@
       from: props.from
     });
   }}
-  class="bg-background flex h-fit w-fit items-center gap-1 rounded border shadow-lg"
+  class="ui:bg-background ui:flex ui:h-fit ui:w-fit ui:items-center ui:gap-1 ui:rounded ui:border ui:shadow-lg"
 >
   <EdraToolTip tooltip="Add Column After">
     <Button variant="ghost" size="icon" onclick={() => editor.chain().focus().addColumnAfter().run()}>

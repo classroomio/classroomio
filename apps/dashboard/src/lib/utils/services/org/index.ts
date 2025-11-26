@@ -1,9 +1,10 @@
 import type { CurrentOrg, OrgTeamMember } from '$lib/utils/types/org';
-import { ROLE, ROLE_LABEL } from '$lib/utils/constants/roles';
 import { currentOrg, orgAudience, orgTeam, orgs } from '$lib/utils/store/org';
 
 import type { OrganizationPlan } from '$lib/utils/types';
 import type { PostgrestError } from '@supabase/supabase-js';
+import { ROLE } from '@cio/utils/constants';
+import { ROLE_LABEL } from '$lib/utils/constants/roles';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { supabase } from '$lib/utils/functions/supabase';

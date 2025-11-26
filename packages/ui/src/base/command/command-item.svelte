@@ -9,7 +9,11 @@
   bind:ref
   data-slot="command-item"
   class={cn(
+<<<<<<< HEAD
     "aria-selected:bg-accent aria-selected:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground outline-hidden relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+=======
+    "ui:aria-selected:bg-accent ui:aria-selected:text-accent-foreground ui:[&_svg:not([class*='text-'])]:text-muted-foreground ui:outline-hidden ui:relative ui:flex ui:cursor-default ui:select-none ui:items-center ui:gap-2 ui:rounded-sm ui:px-2 ui:py-1.5 ui:text-sm ui:data-disabled:pointer-events-none ui:data-disabled:opacity-50 ui:[&_svg:not([class*='size-'])]:size-4 ui:[&_svg]:pointer-events-none ui:[&_svg]:shrink-0",
+>>>>>>> feat/release-v2
     className
   )}
   {...restProps}

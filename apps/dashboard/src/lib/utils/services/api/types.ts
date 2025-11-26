@@ -1,4 +1,5 @@
-// Types for better type safety
+import type { ZodError } from 'zod';
+
 export interface ApiClientConfig {
   baseURL?: string;
   timeout?: number;
@@ -9,6 +10,13 @@ export interface ApiClientConfig {
   onNetworkError?: (error: Error) => Promise<void> | void;
   onResponse?: (response: Response) => Promise<void> | void;
 }
+
+export type ZodValidationError = {
+  message: string; // stringified error.issues from zod
+  name: 'ZodError';
+};
+
+export type ZodValidatorMesssage = ZodError['issues'];
 
 export interface RequestConfig extends RequestInit {
   timeout?: number;

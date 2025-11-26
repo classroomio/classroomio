@@ -31,7 +31,11 @@
   data-chart={chartId}
   data-slot="chart"
   class={cn(
+<<<<<<< HEAD
     'flex aspect-video justify-center overflow-visible text-xs',
+=======
+    'ui:flex ui:justify-center ui:overflow-visible ui:text-xs aspect-video',
+>>>>>>> feat/release-v2
     // Overrides
     //
     // Stroke around dots/marks when hovering

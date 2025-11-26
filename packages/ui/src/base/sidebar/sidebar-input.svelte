@@ -16,6 +16,10 @@
   bind:value
   data-slot="sidebar-input"
   data-sidebar="input"
+<<<<<<< HEAD
   class={cn('bg-background h-8 w-full shadow-none', className)}
+=======
+  class={cn('ui:bg-background ui:h-8 ui:w-full ui:shadow-none', className)}
+>>>>>>> feat/release-v2
   {...restProps}
 />

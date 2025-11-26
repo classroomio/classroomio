@@ -11,9 +11,8 @@
   import { IconButton } from '$lib/components/IconButton';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import Row from '$lib/components/Org/Settings/Layout/Row.svelte';
+  import { Row, Grid, Column } from '$lib/components/Org/Settings/Layout';
   import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
-  import Grid from '$lib/components/Org/Settings/Layout/Grid.svelte';
   import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';

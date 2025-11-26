@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
+<<<<<<< HEAD
   import { Skeleton } from '@cio/ui/base/skeleton';
   import UsersIcon from '@lucide/svelte/icons/users';
   import Settings2Icon from '@lucide/svelte/icons/settings-2';
@@ -18,10 +19,23 @@
   import OrgSideBar from '$lib/components/Sidebar/index.svelte';
   import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
   import VerifyEmailModal from '$lib/components/Org/VerifyEmail/VerifyEmailModal.svelte';
+=======
+  import * as Sidebar from '@cio/ui/base/sidebar';
+  import { Skeleton } from '@cio/ui/base/skeleton';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { AppHeader } from '$lib/features/ui';
+
+  import { VerifyEmailModal } from '$lib/features/onboarding/components';
+
+  import { OrgSidebar } from '$lib/features/ui/sidebar/org-sidebar/index.js';
+  import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
+>>>>>>> feat/release-v2
 
   let { data, children } = $props();
 
   function redirect(siteName: string) {
+    if (!siteName) return;
+
     const newUrl = page.url.pathname.replace('*', siteName);
     goto(newUrl + page.url.search);
   }
@@ -93,6 +107,7 @@
 
 <VerifyEmailModal />
 
+<<<<<<< HEAD
 <div class="org-root flex w-full items-center justify-between">
   <div class="org-slot flex w-full items-start bg-white dark:bg-black">
     {#if !isQuizPage(page.url?.pathname)}
@@ -166,3 +181,25 @@
     {/if}
   </div>
 </div>
+=======
+<Sidebar.Provider>
+  <OrgSidebar />
+
+  <Sidebar.Inset>
+    <AppHeader />
+
+    <div class="container mx-auto flex max-w-6xl flex-1 flex-col gap-4 p-4 pt-0">
+      {#if data.orgName === '*'}
+        <div class="grid auto-rows-min gap-4 md:grid-cols-3">
+          <Skeleton class="aspect-video rounded-xl" />
+          <Skeleton class="aspect-video rounded-xl" />
+          <Skeleton class="aspect-video rounded-xl" />
+        </div>
+        <Skeleton class="h-[50vh] w-full rounded-xl" />
+      {:else}
+        {@render children?.()}
+      {/if}
+    </div>
+  </Sidebar.Inset>
+</Sidebar.Provider>
+>>>>>>> feat/release-v2

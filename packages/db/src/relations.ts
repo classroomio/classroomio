@@ -32,11 +32,11 @@ import {
   quizPlay,
   role,
   submission,
-  submissionstatus
+  submissionstatus,
+  user
 } from './schema';
 
 import { relations } from 'drizzle-orm/relations';
-import { user } from './auth-schema';
 
 export const analyticsLoginEventsRelations = relations(analyticsLoginEvents, ({ one }) => ({
   usersInAuth: one(user, {

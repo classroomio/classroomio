@@ -22,9 +22,15 @@
 <section class="mx-auto w-full max-w-6xl">
   <div class="px-5 py-10">
     <div class="mb-10 flex items-center justify-between">
+<<<<<<< HEAD
       <div class="flex items-end">
         <h1 class="m-0 text-2xl md:text-3xl dark:text-white">{$t('audience.title')}</h1>
         {#if $currentOrgPlan?.plan_name !== PLAN.ENTERPRISE}
+=======
+      <div class="flex items-center">
+        <h1 class="m-0 text-2xl md:text-3xl dark:text-white">{$t('audience.title')}</h1>
+        {#if $currentOrgPlan?.planName !== PLAN.ENTERPRISE}
+>>>>>>> feat/release-v2
           <span class="ml-2">
             ({$orgAudience.length} / {$currentOrgMaxAudience})
           </span>

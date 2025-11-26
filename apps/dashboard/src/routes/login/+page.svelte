@@ -6,14 +6,15 @@
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
   import { authValidation } from '$lib/utils/functions/validator';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { authClient } from '$lib/utils/services/auth/client';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';
-  import { currentOrg } from '$lib/utils/store/org';
 
-  let formRef: HTMLFormElement = $state();
+  let formRef: HTMLFormElement | undefined = $state();
   let supabase = getSupabase();
   let fields = $state(Object.assign({}, LOGIN_FIELDS));
-  let submitError: string = $state();
+  let submitError: string | undefined = $state();
   let loading = $state(false);
   let errors = $state(Object.assign({}, LOGIN_FIELDS));
 
@@ -28,22 +29,33 @@
 
     try {
       loading = true;
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: fields.email,
-        password: fields.password
-      });
+
+      const { data, error } = await authClient.signIn.email(
+        {
+          email: fields.email,
+          password: fields.password
+          // callbackURL: '/' // the root page should shows a spinner until the account is loaded and redirect happens in +layout.svelte (accountManager.init())
+        },
+        {
+          onSuccess: () => {
+            capturePosthogEvent('login', {
+              email: fields.email
+            });
+
+            if ($globalStore.isOrgSite) {
+              capturePosthogEvent('student_login', {
+                email: fields.email
+              });
+            }
+
+            window.location.href = '/';
+          }
+        }
+      );
+
       console.log('data', data);
+
       if (error) throw error;
-
-      capturePosthogEvent('login', {
-        email: fields.email
-      });
-
-      if ($globalStore.isOrgSite) {
-        capturePosthogEvent('student_login', {
-          email: fields.email
-        });
-      }
     } catch (error: any) {
       submitError = error.error_description || error.message;
       loading = false;

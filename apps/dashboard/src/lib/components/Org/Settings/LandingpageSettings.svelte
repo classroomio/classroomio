@@ -13,9 +13,13 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
 
+<<<<<<< HEAD
   import Row from './Layout/Row.svelte';
   import Grid from './Layout/Grid.svelte';
   import Column from './Layout/Column.svelte';
+=======
+  import { Row, Grid, Column } from './Layout';
+>>>>>>> feat/release-v2
   import SectionTitle from '../SectionTitle.svelte';
   import { IconButton } from '$lib/components/IconButton';
   import TextArea from '$lib/components/Form/TextArea.svelte';
@@ -23,6 +27,10 @@
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
+<<<<<<< HEAD
+=======
+  import type { OrgLandingPageJson } from '$lib/utils/types/org';
+>>>>>>> feat/release-v2
 
   let isSaving = $state(false);
   let creatingNewQuestion = $state(false);
@@ -154,7 +162,7 @@
   // Set default from store
   currentOrg.subscribe((cOrg) => {
     if (cOrg.landingpage && Object.keys(cOrg.landingpage).length) {
-      const landingpage = { ...cOrg.landingpage };
+      const landingpage = { ...(cOrg.landingpage as unknown as OrgLandingPageJson) };
 
       // Fallbacks for new keys we added into JSON, in case a user already saved the old JSON
       if (!landingpage?.header?.banner) {

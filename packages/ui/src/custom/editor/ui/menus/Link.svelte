@@ -25,10 +25,10 @@
   options={{
     strategy: 'fixed'
   }}
-  class="bg-popover flex h-fit w-fit items-center gap-1 rounded border p-1 shadow-lg"
+  class="ui:bg-popover ui:flex ui:h-fit ui:w-fit ui:items-center ui:gap-1 ui:rounded ui:border ui:p-1 ui:shadow-lg"
 >
-  <Button variant="link" href={link} class="max-w-80 p-1" target="_blank">
-    <span class="w-full overflow-hidden text-ellipsis">
+  <Button variant="link" href={link} class="ui:max-w-80 ui:p-1" target="_blank">
+    <span class="ui:w-full ui:overflow-hidden ui:text-ellipsis">
       {link}
     </span>
   </Button>
@@ -36,7 +36,7 @@
     variant="ghost"
     title="Copy Link"
     size="icon"
-    class="z-50"
+    class="ui:z-50"
     onclick={() => {
       navigator.clipboard.writeText(link);
     }}

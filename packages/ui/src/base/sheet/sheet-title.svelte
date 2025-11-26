@@ -8,6 +8,10 @@
 <SheetPrimitive.Title
   bind:ref
   data-slot="sheet-title"
+<<<<<<< HEAD
   class={cn('text-foreground font-semibold', className)}
+=======
+  class={cn('ui:text-foreground ui:font-semibold', className)}
+>>>>>>> feat/release-v2
   {...restProps}
 />

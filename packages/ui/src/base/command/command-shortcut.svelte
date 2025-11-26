@@ -13,7 +13,11 @@
 <span
   bind:this={ref}
   data-slot="command-shortcut"
+<<<<<<< HEAD
   class={cn('text-muted-foreground ml-auto text-xs tracking-widest', className)}
+=======
+  class={cn('ui:text-muted-foreground ui:ml-auto ui:text-xs ui:tracking-widest', className)}
+>>>>>>> feat/release-v2
   {...restProps}
 >
   {@render children?.()}

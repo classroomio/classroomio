@@ -12,14 +12,14 @@
   import { supabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
 
-  import { LOCALE } from '$lib/utils/types';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import type { TLocale } from '@cio/db/types';
 
   interface LessonHistory {
     new_content: string;
     old_content: string;
     timestamp: Date;
-    locale: LOCALE;
+    locale: TLocale;
     lesson_id: string;
   }
 
@@ -34,7 +34,7 @@
     new_content: '',
     old_content: '',
     timestamp: new Date(),
-    locale: LOCALE.EN,
+    locale: 'en',
     lesson_id: ''
   };
   let selectedVersionIndex = $state(0);

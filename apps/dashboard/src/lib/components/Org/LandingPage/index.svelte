@@ -24,11 +24,17 @@
   import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
 
   import PageLoader from './PageLoader.svelte';
+<<<<<<< HEAD
   import Row from '../Settings/Layout/Row.svelte';
   import Grid from '../Settings/Layout/Grid.svelte';
   import * as Accordion from '@cio/ui/base/accordion';
   import { t } from '$lib/utils/functions/translations';
   import Column from '../Settings/Layout/Column.svelte';
+=======
+  import { Row, Grid, Column } from '../Settings/Layout';
+  import * as Accordion from '@cio/ui/base/accordion';
+  import { t } from '$lib/utils/functions/translations';
+>>>>>>> feat/release-v2
   import type { CurrentOrg } from '$lib/utils/types/org';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { getCourseBySiteName } from '$lib/utils/services/org';

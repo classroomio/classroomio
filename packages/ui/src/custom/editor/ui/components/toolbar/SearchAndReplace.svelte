@@ -84,26 +84,29 @@
 >
   <Popover.Trigger>
     <EdraToolTip tooltip="Search and Replace">
-      <Button variant="ghost" size="icon" class="gap-0.5">
+      <Button variant="ghost" size="icon" class="ui:gap-0.5">
         <Search />
-        <ChevronDown class="text-muted-foreground !size-2" />
+        <ChevronDown class="ui:text-muted-foreground !size-2" />
       </Button>
     </EdraToolTip>
   </Popover.Trigger>
-  <Popover.Content class="flex w-fit items-center gap-1 p-2" portalProps={{ disabled: true, to: undefined }}>
+  <Popover.Content
+    class="ui:flex ui:w-fit ui:items-center ui:gap-1 ui:p-2"
+    portalProps={{ disabled: true, to: undefined }}
+  >
     <Button
       variant="ghost"
       size="icon"
-      class={cn('transition-transform', showMore && 'bg-muted rotate-90')}
+      class={cn('ui:transition-transform', showMore && 'bg-muted rotate-90')}
       onclick={() => (showMore = !showMore)}
       title="Show More"
     >
       <ChevronRight />
     </Button>
-    <div class="flex size-full flex-col gap-1">
-      <div class="flex w-full items-center gap-1">
-        <Input placeholder="Search..." bind:value={searchText} oninput={() => updateSearchTerm()} class="w-40" />
-        <span class="text-muted-foreground text-sm">{searchCount > 0 ? searchIndex + 1 : 0}/{searchCount} </span>
+    <div class="ui:flex ui:size-full ui:flex-col ui:gap-1">
+      <div class="ui:flex ui:w-full ui:items-center ui:gap-1">
+        <Input placeholder="Search..." bind:value={searchText} oninput={() => updateSearchTerm()} class="ui:w-40" />
+        <span class="ui:text-muted-foreground ui:text-sm">{searchCount > 0 ? searchIndex + 1 : 0}/{searchCount} </span>
         <EdraToolTip tooltip="Case Sensitive">
           <Button
             variant="ghost"
@@ -129,8 +132,8 @@
         </EdraToolTip>
       </div>
       {#if showMore}
-        <div transition:slide class="flex w-full items-center gap-1">
-          <Input placeholder="Replace..." bind:value={replaceText} oninput={() => updateSearchTerm()} class="w-40" />
+        <div transition:slide class="ui:flex ui:w-full ui:items-center ui:gap-1">
+          <Input placeholder="Replace..." bind:value={replaceText} oninput={() => updateSearchTerm()} class="ui:w-40" />
           <EdraToolTip tooltip="Replace">
             <Button variant="ghost" size="icon" onclick={replace}>
               <Replace />

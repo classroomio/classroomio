@@ -94,6 +94,21 @@
       "email": "Nieprawidłowy adres e -mail",
       "username": "Nazwa użytkownika nie może być pusta",
       "fullname": "Nazwa powinna mieć minimum 5 znaków"
+    },
+    "generic": {
+      "invalid_type": "Nieprawidłowy typ{oczekiwany, wybierz, niezdefiniowany{} inny{. Oczekiwany {oczekiwany}}}{otrzymany, wybierz, niezdefiniowany{} inny{ (otrzymany {otrzymany})}}",
+      "too_big": "Wartość jest za duża{maksymalna, wybierz, niezdefiniowana{} inna{. Maksymalnie {maksimum}}}",
+      "too_small": "Wartość jest za mała{minimum, wybierz, niezdefiniowane{} inne{. Minimum {minimum}}}",
+      "invalid_format": "Nieprawidłowy format{validacja, wybierz, niezdefiniowany{} other{ for {validation}}}",
+      "not_multiple_of": "Wartość musi być wielokrotnością {multipleOf}",
+      "unrecognized_keys": "Zawiera nierozpoznane klucze{klucze, wybierz, niezdefiniowane{} inne{: {klucze}}}",
+      "invalid_union": "Nieprawidłowa wartość podanych opcji{unionErrors, wybierz, niezdefiniowane{} inne{. Niepowodzenie opcji: {unionErrors}}}",
+      "invalid_key": "Nieprawidłowy klucz{klucz, wybierz, niezdefiniowany{} inny{: {klucz}}}",
+      "invalid_element": "Nieprawidłowy element{index, wybierz, niezdefiniowany{} other{ w indeksie {index}}}",
+      "invalid_value": "Nieprawidłowa wartość{oczekiwana, wybierz, niezdefiniowana{} inna{. Oczekiwany {oczekiwany}}}{otrzymany, wybierz, niezdefiniowany{} inny{ (otrzymany {otrzymany})}}",
+      "custom": "{wiadomość}",
+      "required_field": "To pole jest wymagane",
+      "invalid_field": "Nieprawidłowa wartość"
     }
   },
   "generic": {

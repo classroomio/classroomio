@@ -9,8 +9,12 @@
 
 <DropdownMenu.Root>
   <DropdownMenu.Trigger class={buttonVariants({ variant: 'outline', size: 'icon' })}>
-    <SunIcon class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 !transition-all dark:-rotate-90 dark:scale-0" />
-    <MoonIcon class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 !transition-all dark:rotate-0 dark:scale-100" />
+    <SunIcon
+      class="ui:h-[1.2rem] ui:w-[1.2rem] ui:rotate-0 ui:scale-100 ui:dark:-rotate-90 ui:dark:scale-0 !transition-all"
+    />
+    <MoonIcon
+      class="ui:absolute ui:h-[1.2rem] ui:w-[1.2rem] ui:rotate-90 ui:scale-0 ui:dark:rotate-0 ui:dark:scale-100 !transition-all"
+    />
     <span class="sr-only">Toggle theme</span>
   </DropdownMenu.Trigger>
   <DropdownMenu.Content align="end">

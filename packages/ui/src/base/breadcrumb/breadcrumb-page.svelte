@@ -16,7 +16,11 @@
   role="link"
   aria-disabled="true"
   aria-current="page"
+<<<<<<< HEAD
   class={cn('text-foreground font-normal', className)}
+=======
+  class={cn('ui:text-foreground ui:font-normal', className)}
+>>>>>>> feat/release-v2
   {...restProps}
 >
   {@render children?.()}

@@ -16,7 +16,11 @@
 
   const attrs = $derived({
     'data-slot': 'breadcrumb-link',
+<<<<<<< HEAD
     class: cn('hover:text-foreground transition-colors', className),
+=======
+    class: cn('ui:hover:text-foreground ui:transition-colors', className),
+>>>>>>> feat/release-v2
     href,
     ...restProps
   });

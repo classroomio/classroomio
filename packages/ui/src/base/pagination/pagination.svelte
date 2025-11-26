@@ -20,7 +20,11 @@
   role="navigation"
   aria-label="pagination"
   data-slot="pagination"
+<<<<<<< HEAD
   class={cn('mx-auto flex w-full justify-center', className)}
+=======
+  class={cn('ui:mx-auto ui:flex ui:w-full ui:justify-center', className)}
+>>>>>>> feat/release-v2
   {count}
   {perPage}
   {siblingCount}

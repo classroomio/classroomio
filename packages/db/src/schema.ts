@@ -1,4 +1,3 @@
-import { account, session, user } from './auth-schema';
 import {
   bigint,
   boolean,
@@ -27,7 +26,83 @@ export const courseVersion = pgEnum('COURSE_VERSION', ['V1', 'V2']);
 export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
 
-export { user, session, account };
+export const user = pgTable('user', {
+  id: uuid()
+    .default(sql`uuid_generate_v4()`)
+    .primaryKey()
+    .notNull(),
+  name: text('name').notNull(),
+  email: text('email').notNull().unique(),
+  emailVerified: boolean('email_verified').default(false).notNull(),
+  image: text('image'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+  role: text('role'),
+  banned: boolean('banned').default(false),
+  banReason: text('ban_reason'),
+  banExpires: timestamp('ban_expires'),
+  isAnonymous: boolean('is_anonymous')
+});
+
+export const session = pgTable('session', {
+  id: uuid()
+    .default(sql`uuid_generate_v4()`)
+    .primaryKey()
+    .notNull(),
+  expiresAt: timestamp('expires_at').notNull(),
+  token: text('token').notNull().unique(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+  ipAddress: text('ip_address'),
+  userAgent: text('user_agent'),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  impersonatedBy: text('impersonated_by')
+});
+
+export const account = pgTable('account', {
+  id: uuid('id')
+    .default(sql`uuid_generate_v4()`)
+    .primaryKey()
+    .notNull(),
+  accountId: text('account_id').notNull(),
+  providerId: text('provider_id').notNull(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  accessToken: text('access_token'),
+  refreshToken: text('refresh_token'),
+  idToken: text('id_token'),
+  accessTokenExpiresAt: timestamp('access_token_expires_at'),
+  refreshTokenExpiresAt: timestamp('refresh_token_expires_at'),
+  scope: text('scope'),
+  password: text('password'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull()
+});
+
+export const verification = pgTable('verification', {
+  id: uuid('id')
+    .default(sql`uuid_generate_v4()`)
+    .primaryKey()
+    .notNull(),
+  identifier: text('identifier').notNull(),
+  value: text('value').notNull(),
+  expiresAt: timestamp('expires_at').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull()
+});
 
 export const analyticsLoginEvents = pgTable(
   'analytics_login_events',
@@ -127,7 +202,6 @@ export const groupAttendance = pgTable(
       startWith: 1,
       increment: 1,
       minValue: 1,
-      maxValue: 9223372036854775807,
       cache: 1
     }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
@@ -170,7 +244,6 @@ export const currency = pgTable('currency', {
     startWith: 1,
     increment: 1,
     minValue: 1,
-    maxValue: 9223372036854775807,
     cache: 1
   }),
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
@@ -186,7 +259,6 @@ export const appsPollOption = pgTable(
       startWith: 1,
       increment: 1,
       minValue: 1,
-      maxValue: 9223372036854775807,
       cache: 1
     }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -250,6 +322,8 @@ export const profile = pgTable(
     }),
     unique('profile_username_key').on(table.username),
     unique('profile_email_key').on(table.email),
+    index('idx_profile_id').on(table.id),
+    index('idx_profile_email').on(table.email),
     pgPolicy('Only auth users can read profile', {
       as: 'permissive',
       for: 'select',
@@ -272,7 +346,6 @@ export const option = pgTable(
       startWith: 1,
       increment: 1,
       minValue: 1,
-      maxValue: 9223372036854775807,
       cache: 1
     }),
     label: varchar().notNull(),
@@ -310,7 +383,6 @@ export const quizPlay = pgTable(
       startWith: 1,
       increment: 1,
       minValue: 1,
-      maxValue: 9223372036854775807,
       cache: 1
     }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
@@ -351,7 +423,6 @@ export const organizationContacts = pgTable(
       startWith: 1,
       increment: 1,
       minValue: 1,
-      maxValue: 9223372036854775807,
       cache: 1
     }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -385,7 +456,6 @@ export const lessonComment = pgTable(
       startWith: 1,
       increment: 1,
       minValue: 1,
-      maxValue: 9223372036854775807,
       cache: 1
     }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -511,7 +581,6 @@ export const submissionstatus = pgTable(
       startWith: 1,
       increment: 1,
       minValue: 1,
-      maxValue: 9223372036854775807,
       cache: 1
     }),
     label: varchar().notNull(),
@@ -619,7 +688,6 @@ export const videoTranscripts = pgTable('video_transcripts', {
     startWith: 1,
     increment: 1,
     minValue: 1,
-    maxValue: 9223372036854775807,
     cache: 1
   }),
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -638,7 +706,6 @@ export const organizationEmaillist = pgTable(
       startWith: 1,
       increment: 1,
       minValue: 1,
-      maxValue: 9223372036854775807,
       cache: 1
     }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -720,7 +787,6 @@ export const appsPollSubmission = pgTable(
       startWith: 1,
       increment: 1,
       minValue: 1,
-      maxValue: 9223372036854775807,
       cache: 1
     }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -839,7 +905,6 @@ export const lessonCompletion = pgTable(
       startWith: 1,
       increment: 1,
       minValue: 1,
-      maxValue: 9223372036854775807,
       cache: 1
     }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -925,7 +990,6 @@ export const communityQuestion = pgTable(
       startWith: 1,
       increment: 1,
       minValue: 1,
-      maxValue: 9223372036854775807,
       cache: 1
     }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
@@ -1021,7 +1085,6 @@ export const courseNewsfeedComment = pgTable(
       startWith: 1,
       increment: 1,
       minValue: 1,
-      maxValue: 9223372036854775807,
       cache: 1
     }),
     courseNewsfeedId: uuid('course_newsfeed_id')
@@ -1066,7 +1129,6 @@ export const organizationPlan = pgTable(
       startWith: 1,
       increment: 1,
       minValue: 1,
-      maxValue: 9223372036854775807,
       cache: 1
     }),
     activatedAt: timestamp('activated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -1093,6 +1155,7 @@ export const organizationPlan = pgTable(
       name: 'organization_plan_triggered_by_fkey'
     }),
     unique('organization_plan_subscription_id_key').on(table.subscriptionId),
+    index('idx_organization_plan_org_id').on(table.orgId),
     pgPolicy('Enable read access for all users', { as: 'permissive', for: 'select', to: ['public'], using: sql`true` }),
     pgPolicy('User must be an org member to DELETE', { as: 'permissive', for: 'delete', to: ['public'] }),
     pgPolicy('User must be an org member to INSERT', { as: 'permissive', for: 'insert', to: ['public'] }),
@@ -1109,7 +1172,6 @@ export const lessonLanguage = pgTable(
       startWith: 1,
       increment: 1,
       minValue: 1,
-      maxValue: 9223372036854775807,
       cache: 1
     }),
     content: text(),
@@ -1171,7 +1233,6 @@ export const organizationmember = pgTable(
       startWith: 1,
       increment: 1,
       minValue: 1,
-      maxValue: 9223372036854775807,
       cache: 1
     }),
     organizationId: uuid('organization_id').notNull(),
@@ -1200,6 +1261,9 @@ export const organizationmember = pgTable(
       foreignColumns: [role.id],
       name: 'organizationmember_role_id_fkey'
     }),
+    index('idx_organizationmember_profile_id').on(table.profileId),
+    index('idx_organizationmember_organization_id').on(table.organizationId),
+    index('idx_organizationmember_profile_org').on(table.profileId, table.organizationId),
     pgPolicy('Allow authenticated users to read.', {
       as: 'permissive',
       for: 'select',
@@ -1227,7 +1291,6 @@ export const question = pgTable(
       startWith: 1,
       increment: 1,
       minValue: 1,
-      maxValue: 9223372036854775807,
       cache: 1
     }),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
@@ -1273,7 +1336,6 @@ export const questionAnswer = pgTable(
       startWith: 1,
       increment: 1,
       minValue: 1,
-      maxValue: 9223372036854775807,
       cache: 1
     }),
     answers: varchar().array(),
@@ -1322,7 +1384,6 @@ export const questionType = pgTable(
       startWith: 1,
       increment: 1,
       minValue: 1,
-      maxValue: 9223372036854775807,
       cache: 1
     }),
     label: varchar().notNull(),
@@ -1346,7 +1407,6 @@ export const role = pgTable(
       startWith: 1,
       increment: 1,
       minValue: 1,
-      maxValue: 9223372036854775807,
       cache: 1
     }),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
@@ -1366,7 +1426,6 @@ export const waitinglist = pgTable(
       startWith: 1,
       increment: 1,
       minValue: 1,
-      maxValue: 9223372036854775807,
       cache: 1
     }),
     email: varchar().notNull(),

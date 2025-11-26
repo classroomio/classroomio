@@ -1,8 +1,7 @@
-import z from 'zod';
-import { get } from 'svelte/store';
 import isNumber from 'lodash/isNumber';
+import { t } from '$lib/utils/functions/translations';
 import { validateEmail } from './validateEmail';
-import { t, initialized } from '$lib/utils/functions/translations';
+import z from 'zod';
 
 function getOrgNameValidation() {
   return z
@@ -55,7 +54,7 @@ export const processErrors = (error, mapToId?: boolean) => {
 
       if (mapToId) {
         let value = '';
-        path.forEach((p, i) => {
+        path.forEach((p) => {
           const formatP = isNumber(p) ? `[${p}]` : p;
 
           value += !value ? formatP : `.${formatP}`;
@@ -113,28 +112,6 @@ export const coursePaymentValidation = (fields = {}) => {
   return processErrors(error);
 };
 
-export const resetValidation = (fields = {}) => {
-  const schema = z.object({
-    password: z.string().min(6, {
-      message: `${t.get('validations.reset.password.min_char')}`
-    })
-  });
-  const { error } = schema.safeParse(fields);
-
-  return processErrors(error);
-};
-
-export const forgotValidation = (fields = {}) => {
-  const schema = z.object({
-    email: z.string().email({
-      message: `${t.get('validations.forgot.invalid_email')}`
-    })
-  });
-  const { error } = schema.safeParse(fields);
-
-  return processErrors(error);
-};
-
 export const orgLandingpageValidation = (fields = {}) => {
   const schema = z.object({
     name: z.string().min(6, {
@@ -154,58 +131,6 @@ export const orgLandingpageValidation = (fields = {}) => {
 
   return processErrors(error);
 };
-
-export const onboardingValidation = (fields = {}, step) => {
-  const onboardingValidationSchema = {
-    stepOne: z.object({
-      fullname: z.string().min(5, { message: `${t.get('validations.onboarding.step_one.full_name.min_char')}` }),
-      orgName: getOrgNameValidation(),
-      siteName: getSiteNameValidation()
-    }),
-    stepTwo: z.object({
-      goal: z
-        .string({
-          required_error: `${t.get('validations.onboarding.step_two.goal.required')}`
-        })
-        .min(1),
-      source: z
-        .string({
-          required_error: `${t.get('validations.onboarding.step_two.source.required')}`
-        })
-        .min(1)
-    })
-  };
-
-  const schema = step === 1 ? onboardingValidationSchema.stepOne : onboardingValidationSchema.stepTwo;
-  const { error } = schema.safeParse(fields);
-
-  return processErrors(error);
-};
-
-export const updateProfileValidation = (fields = {}) => {
-  const schema = z.object({
-    email: z.string().email({ message: 'validations.user_profile.email' }),
-    username: z.string().nonempty({ message: 'validations.user_profile.username' }),
-    fullname: z.string().min(5, { message: 'validations.user_profile.fullname' })
-  });
-  const { error } = schema.safeParse(fields);
-
-  return processErrors(error);
-};
-
-// export const createTemplateExerciseValidation = (fields = {}) => {
-//   const schema = z.object({
-//     orgName: z.string().min(5, {
-//       message: 'Must be 5 or more characters long',
-//     }),
-//     siteName: z.string().min(5, {
-//       message: 'Must be 5 or more characters long',
-//     })
-//   });
-//   const { error } = schema.safeParse(fields);
-
-//   return processErrors(error);
-// };
 
 export const createNewsfeedValidation = (newPost) => {
   const schema = z.object({

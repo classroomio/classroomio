@@ -8,6 +8,10 @@
 <AvatarPrimitive.Image
   bind:ref
   data-slot="avatar-image"
+<<<<<<< HEAD
   class={cn('aspect-square size-full', className)}
+=======
+  class={cn('ui:size-full aspect-square', className)}
+>>>>>>> feat/release-v2
   {...restProps}
 />

@@ -13,9 +13,13 @@
   import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { injectCustomTheme, setCustomTheme, setTheme } from '$lib/utils/functions/theme';
 
+<<<<<<< HEAD
   import Row from './Layout/Row.svelte';
   import Grid from './Layout/Grid.svelte';
   import Column from './Layout/Column.svelte';
+=======
+  import { Row, Grid, Column } from './Layout';
+>>>>>>> feat/release-v2
   import SectionTitle from '../SectionTitle.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
@@ -119,8 +123,8 @@
         if (data) {
           const { data: response } = supabase.storage.from('avatars').getPublicUrl(filename);
 
-          updates.avatar_url = response.publicUrl;
-          $currentOrg.avatar_url = response.publicUrl;
+          updates.avatarUrl = response.publicUrl;
+          $currentOrg.avatarUrl = response.publicUrl;
         }
         avatar = undefined;
       }
@@ -174,7 +178,7 @@
       />
       <UploadImage
         bind:avatar
-        src={$currentOrg.avatar_url}
+        src={$currentOrg.avatarUrl}
         shape="rounded-md"
         widthHeight="w-24 h-24"
         change={() => (hasUnsavedChanges = true)}

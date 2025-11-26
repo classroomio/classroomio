@@ -8,6 +8,10 @@
 <DialogPrimitive.Title
   bind:ref
   data-slot="dialog-title"
+<<<<<<< HEAD
   class={cn('text-lg font-semibold leading-none', className)}
+=======
+  class={cn('ui:text-lg ui:font-semibold ui:leading-none', className)}
+>>>>>>> feat/release-v2
   {...restProps}
 />

@@ -19,7 +19,7 @@ const sendEmail = (sFetch: typeof fetch) => {
         return;
       }
 
-      console.log('Emails sent successfully:', response);
+      console.log('Emails sent successfully', response.status);
       return response;
     } catch (error) {
       console.error('Error sending emails:', error);

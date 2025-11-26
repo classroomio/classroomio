@@ -3,7 +3,7 @@ import type { Course, GroupPerson, Lesson, LessonSection } from '$lib/utils/type
 import { get, writable, type Writable } from 'svelte/store';
 import { lessonSections, lessons } from './components/Lesson/store/lessons';
 
-import { ROLE } from '$lib/utils/constants/roles';
+import { ROLE } from '@cio/utils/constants';
 import { fetchCourse } from '$lib/utils/services/courses';
 
 export const defaultCourse: Course = {

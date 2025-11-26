@@ -1,11 +1,26 @@
 {
   "extends": "@cio/tsconfig/base.json",
   "include": ["src"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "dist"],
   "compilerOptions": {
+    "composite": true,
+    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true,
+    "declarationMap": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ESNext",
     "paths": {
-      "@db/*": ["./src/*"]
+      "@db/*": ["./src/*"],
+      "@cio/email": ["./node_modules/@cio/email/dist/index.d.ts"],
+      "@cio/email/*": ["./node_modules/@cio/email/dist/*"]
     }
+  },
+  "tsc-alias": {
+    "resolveFullPaths": true,
+    "verbose": false
   }
 }

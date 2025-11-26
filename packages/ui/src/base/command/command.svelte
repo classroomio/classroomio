@@ -20,6 +20,13 @@
   bind:value
   bind:ref
   data-slot="command"
+<<<<<<< HEAD
   class={cn('bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md', className)}
+=======
+  class={cn(
+    'ui:bg-popover ui:text-popover-foreground ui:flex ui:h-full ui:w-full ui:flex-col ui:overflow-hidden ui:rounded-md',
+    className
+  )}
+>>>>>>> feat/release-v2
   {...restProps}
 />

@@ -7,24 +7,22 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
-  import type { SupabaseClient } from '@supabase/supabase-js';
   import GoogleIconColored from '../Icons/GoogleIconColored.svelte';
+  import { authClient } from '$lib/utils/services/auth/client';
 
   interface Props {
-    supabase: SupabaseClient;
     handleSubmit?: any;
     isLogin?: boolean;
     showOnlyContent?: boolean;
     isLoading?: boolean;
     showLogo?: boolean;
-    formRef: any;
+    formRef?: any;
     hideGoogleAuth?: boolean;
     redirectPathname?: string;
     children?: import('svelte').Snippet;
   }
 
   let {
-    supabase,
     handleSubmit = () => {},
     isLogin = true,
     showOnlyContent = false,
@@ -46,22 +44,19 @@
     // const redirectTo = `https://app.classroomio.com?forwardTo=${
     //   window.location.origin + params.get('redirect')
     // }`;
-    const pathname = redirectPathname || params.get('redirect');
+    const pathname = redirectPathname || params.get('redirect') || '';
     const redirectTo = `${window.location.origin + pathname}`;
 
     console.log({ redirectTo });
 
     try {
       console.log('signInWithGoogle');
-      const { error, data } = await supabase.auth.signInWithOAuth({
+      const data = await authClient.signIn.social({
         provider: 'google',
-        options: {
-          redirectTo
-        }
+        callbackURL: redirectTo
       });
 
       console.log('data', data);
-      console.log('error', error);
     } catch (error) {
       console.log('catch error', error);
     }
@@ -74,7 +69,7 @@
       {#if !showOnlyContent || showLogo}
         <div class="flex w-full flex-col items-center justify-center pt-2">
           <Avatar
-            src={$currentOrg.avatar_url ? $currentOrg.avatar_url : '/logo-192.png'}
+            src={$currentOrg.avatarUrl ? $currentOrg.avatarUrl : '/logo-192.png'}
             name={$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
             shape="rounded-md"
             width="w-10"

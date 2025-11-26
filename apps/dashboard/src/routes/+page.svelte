@@ -1,4 +1,5 @@
 <script>
+<<<<<<< HEAD
   import { onMount } from 'svelte';
   import BotIcon from '@lucide/svelte/icons/bot';
   import DoorOpenIcon from '@lucide/svelte/icons/door-open';
@@ -52,12 +53,17 @@
   onMount(() => {
     console.log('Welcome to CIO');
   });
+=======
+  import { appInitApi } from '$lib/features/app/init.svelte';
+  import { Circle } from 'svelte-loading-spinners';
+>>>>>>> feat/release-v2
 </script>
 
 <svelte:head>
-  <title>ClassroomIO - The classroom software</title>
+  <title>ClassroomIO - Beautiful and Robust Course Platform</title>
 </svelte:head>
 
+<<<<<<< HEAD
 <div class="m-2 flex w-screen flex-col items-center justify-center sm:m-0 md:min-h-[93vh] dark:bg-black">
   <!--
     <img
@@ -111,4 +117,12 @@
       </div>
     {/each}
   </div>
+=======
+<div class="m-2 flex w-screen flex-col items-center justify-center font-sans sm:m-0 md:min-h-[93vh] dark:bg-black">
+  {#if appInitApi.loading || appInitApi.data}
+    <Circle size="50" color="#1d4ee2" unit="px" duration="1s" />
+  {:else if appInitApi.error}
+    <p class="text-red-500">{appInitApi.error}</p>
+  {/if}
+>>>>>>> feat/release-v2
 </div>

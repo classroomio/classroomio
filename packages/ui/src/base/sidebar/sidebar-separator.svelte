@@ -10,6 +10,10 @@
   bind:ref
   data-slot="sidebar-separator"
   data-sidebar="separator"
+<<<<<<< HEAD
   class={cn('bg-sidebar-border', className)}
+=======
+  class={cn('ui:bg-sidebar-border', className)}
+>>>>>>> feat/release-v2
   {...restProps}
 />
