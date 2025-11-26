@@ -892,6 +892,9 @@ importers:
       '@tiptap/pm':
         specifier: ^3.7.1
         version: 3.10.1
+      '@zxcvbn-ts/core':
+        specifier: ^3.0.4
+        version: 3.0.4
       dotenv:
         specifier: ^16.3.1
         version: 16.6.1

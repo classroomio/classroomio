@@ -46,17 +46,6 @@ html .dark {
   border: 2px solid var(--scrollbarBG);
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-size: revert;
-  font-weight: revert;
-  margin: 0.8em 0;
-}
-
 .prose h1,
 .prose h2,
 .prose h3,

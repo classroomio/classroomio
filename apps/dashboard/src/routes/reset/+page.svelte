@@ -6,7 +6,7 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { getConfirmPasswordError } from '$lib/utils/functions/validator';
-  import AuthUI from '$lib/components/AuthUI/index.svelte';
+  import { AuthUI } from '$lib/features/ui';
   import { resetApi } from '$lib/features/auth/api/reset.svelte';
   import type { TResetPasswordForm } from '$lib/features/auth/utils/types';
   import { snackbar } from '$lib/components/Snackbar/store';

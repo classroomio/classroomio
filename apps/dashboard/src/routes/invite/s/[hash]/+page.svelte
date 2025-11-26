@@ -3,7 +3,7 @@
   import { onMount } from 'svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { getSupabase } from '$lib/utils/functions/supabase';
-  import AuthUI from '$lib/components/AuthUI/index.svelte';
+  import { AuthUI } from '$lib/features/ui';
   import { currentOrg } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
   import { addGroupMember } from '$lib/utils/services/courses';
@@ -128,7 +128,6 @@
 </svelte:head>
 
 <AuthUI
-  {supabase}
   isLogin={false}
   {handleSubmit}
   isLoading={loading || !$profile.id}

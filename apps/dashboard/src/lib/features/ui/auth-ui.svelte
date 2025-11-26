@@ -7,7 +7,7 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
-  import GoogleIconColored from '../Icons/GoogleIconColored.svelte';
+  import GoogleIconColored from '$lib/components/Icons/GoogleIconColored.svelte';
   import { authClient } from '$lib/utils/services/auth/client';
 
   interface Props {
@@ -64,7 +64,7 @@
 </script>
 
 <div class="app-background flex min-h-screen w-full items-center justify-center">
-  <div class="border-gray container border bg-white dark:bg-black">
+  <div class="border-gray w-full max-w-[450px] border bg-white dark:bg-black">
     <div class="flex flex-col items-center p-2 lg:px-8 lg:py-3">
       {#if !showOnlyContent || showLogo}
         <div class="flex w-full flex-col items-center justify-center pt-2">
@@ -116,9 +116,3 @@
     {/if}
   </div>
 </div>
-
-<style>
-  .container {
-    width: 450px;
-  }
-</style>

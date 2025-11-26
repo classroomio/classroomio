@@ -10,6 +10,6 @@
   }: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();
 </script>
 
-<div bind:this={ref} data-slot="page" class={cn('ui:flex ui:flex-col ui:gap-6', className)} {...restProps}>
+<div bind:this={ref} data-slot="page" class={cn('ui:flex ui:flex-col ui:gap-4', className)} {...restProps}>
   {@render children?.()}
 </div>

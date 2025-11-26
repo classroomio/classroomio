@@ -4,7 +4,7 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { ROUTE } from '$lib/utils/constants/routes';
-  import AuthUI from '$lib/components/AuthUI/index.svelte';
+  import { AuthUI } from '$lib/features/ui';
   import EmailSentIcon from '$lib/components/Icons/EmailSentIcon.svelte';
   import { forgotApi } from '$lib/features/auth/api/forgot.svelte';
   import type { TForgotPasswordForm } from '$lib/features/auth/utils/types';

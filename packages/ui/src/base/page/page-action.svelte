@@ -10,8 +10,12 @@
   }: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();
 </script>
 
-<div bind:this={ref} data-slot="page-header" class={cn('ui:flex ui:my-4 ui:flex-col', className)} {...restProps}>
-  <div class="ui:flex ui:items-start ui:justify-between ui:gap-4">
-    {@render children?.()}
-  </div>
+<div
+  bind:this={ref}
+  data-slot="page-action"
+  class={cn('ui:flex ui:items-center ui:gap-2', className)}
+  {...restProps}
+>
+  {@render children?.()}
 </div>
+

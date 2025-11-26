@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import AuthUI from '$lib/components/AuthUI/index.svelte';
+  import { AuthUI } from '$lib/features/ui';
   import type { Profile } from '$lib/components/Course/components/People/types';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -37,7 +37,7 @@
   const confirmPasswordError = $derived(getConfirmPasswordError(fields));
   const disableSubmit = $derived(getDisableSubmit(fields));
 
-  async function joinOrg(profileId: string, email: string) {
+  async function joinOrg(profileId: string, email: string | null) {
     if (!profileId || !email || !data.invite.currentOrg?.id) return;
 
     // Update member response
@@ -179,15 +179,7 @@
   <title>Join ClassroomIO</title>
 </svelte:head>
 
-<AuthUI
-  {supabase}
-  redirectPathname={page.url.pathname}
-  isLogin={false}
-  {handleSubmit}
-  {isLoading}
-  showLogo={true}
-  bind:formRef
->
+<AuthUI redirectPathname={page.url.pathname} isLogin={false} {handleSubmit} {isLoading} showLogo={true} bind:formRef>
   <div class="mt-4 w-full {shouldLogout ? 'hidden' : ''}">
     <p class="mb-6 text-lg font-semibold dark:text-white">
       {#if data.invite.profile}

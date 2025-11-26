@@ -1,18 +1,16 @@
 <script lang="ts">
   import { untrack } from 'svelte';
-  import AuthUI from '$lib/components/AuthUI/index.svelte';
+  import { AuthUI } from '$lib/features/ui';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import SenjaEmbed from '$lib/components/Senja/Embed.svelte';
   import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
-  import { getSupabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
   import { authValidation, getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';
   import { authClient } from '$lib/utils/services/auth/client';
 
-  let supabase = getSupabase();
   let fields = $state(Object.assign({}, SIGNUP_FIELDS));
   let loading = $state(false);
   let errors: {
@@ -90,7 +88,7 @@
 
 <SenjaEmbed id="aa054658-1e15-4d00-8920-91f424326c4e" />
 
-<AuthUI {supabase} isLogin={false} {handleSubmit} isLoading={loading} bind:formRef>
+<AuthUI isLogin={false} {handleSubmit} isLoading={loading} bind:formRef>
   <div class="mt-4 w-full">
     <p class="mb-6 text-lg font-semibold dark:text-white">Create a free account</p>
     <!-- <TextField

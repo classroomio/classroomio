@@ -49,7 +49,7 @@
           <Page.Title>Courses</Page.Title>
           <Page.Subtitle>Manage and organize your course offerings.</Page.Subtitle>
         </Page.HeaderContent>
-        <div class="ui:flex ui:gap-2">
+        <Page.Action>
           <Button variant="default">
             <PlusIcon />
             New Course
@@ -58,7 +58,7 @@
             Visit Site
             <ArrowUpRightIcon />
           </Button>
-        </div>
+        </Page.Action>
       </Page.Header>
       <Page.Body>
         {#snippet child()}
@@ -96,56 +96,58 @@
           <Page.Title>Courses</Page.Title>
           <Page.Subtitle>Manage and organize your course offerings.</Page.Subtitle>
         </Page.HeaderContent>
-        <ButtonGroup.Root>
+        <Page.Action>
           <ButtonGroup.Root>
-            <Input placeholder="Search courses..." />
-            <Button variant="outline" size="icon" aria-label="Search">
-              <SearchIcon />
-            </Button>
+            <ButtonGroup.Root>
+              <Input placeholder="Search courses..." />
+              <Button variant="outline" size="icon" aria-label="Search">
+                <SearchIcon />
+              </Button>
+            </ButtonGroup.Root>
+            <ButtonGroup.Root>
+              <Button variant="outline">
+                <FilterIcon />
+                Filter
+              </Button>
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger>
+                  {#snippet child({ props })}
+                    <Button {...props} variant="outline" class="ps-2!">
+                      <ChevronDownIcon />
+                    </Button>
+                  {/snippet}
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content align="end" class="[--radius:1rem]">
+                  <DropdownMenu.Group>
+                    <DropdownMenu.Item>
+                      <DownloadIcon />
+                      Export Courses
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item>
+                      <ShareIcon />
+                      Share Courses
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item>
+                      <ArchiveIcon />
+                      Archive Selected
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Group>
+                  <DropdownMenu.Separator />
+                  <DropdownMenu.Group>
+                    <DropdownMenu.Item variant="destructive">
+                      <TrashIcon />
+                      Delete Selected
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Group>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
+            </ButtonGroup.Root>
           </ButtonGroup.Root>
-          <ButtonGroup.Root>
-            <Button variant="outline">
-              <FilterIcon />
-              Filter
-            </Button>
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger>
-                {#snippet child({ props })}
-                  <Button {...props} variant="outline" class="ps-2!">
-                    <ChevronDownIcon />
-                  </Button>
-                {/snippet}
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Content align="end" class="[--radius:1rem]">
-                <DropdownMenu.Group>
-                  <DropdownMenu.Item>
-                    <DownloadIcon />
-                    Export Courses
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item>
-                    <ShareIcon />
-                    Share Courses
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item>
-                    <ArchiveIcon />
-                    Archive Selected
-                  </DropdownMenu.Item>
-                </DropdownMenu.Group>
-                <DropdownMenu.Separator />
-                <DropdownMenu.Group>
-                  <DropdownMenu.Item variant="destructive">
-                    <TrashIcon />
-                    Delete Selected
-                  </DropdownMenu.Item>
-                </DropdownMenu.Group>
-              </DropdownMenu.Content>
-            </DropdownMenu.Root>
-          </ButtonGroup.Root>
-        </ButtonGroup.Root>
-        <Button>
-          <PlusIcon />
-          New Course
-        </Button>
+          <Button>
+            <PlusIcon />
+            New Course
+          </Button>
+        </Page.Action>
       </Page.Header>
       <Page.Body>
         {#snippet child()}
@@ -183,45 +185,47 @@
           <Page.Title>Classes</Page.Title>
           <Page.Subtitle>View and manage your class schedules and sessions.</Page.Subtitle>
         </Page.HeaderContent>
-        <ButtonGroup.Root>
+        <Page.Action>
           <ButtonGroup.Root>
-            <Input placeholder="Search classes..." />
-            <Button variant="outline" size="icon" aria-label="Search">
-              <SearchIcon />
-            </Button>
+            <ButtonGroup.Root>
+              <Input placeholder="Search classes..." />
+              <Button variant="outline" size="icon" aria-label="Search">
+                <SearchIcon />
+              </Button>
+            </ButtonGroup.Root>
+            <ButtonGroup.Root>
+              <Button variant="outline">
+                <FilterIcon />
+                Filter
+              </Button>
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger>
+                  {#snippet child({ props })}
+                    <Button {...props} variant="outline" class="ps-2!">
+                      <ChevronDownIcon />
+                    </Button>
+                  {/snippet}
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content align="end" class="[--radius:1rem]">
+                  <DropdownMenu.Group>
+                    <DropdownMenu.Item>
+                      <DownloadIcon />
+                      Export Schedule
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item>
+                      <SettingsIcon />
+                      Class Settings
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Group>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
+            </ButtonGroup.Root>
           </ButtonGroup.Root>
-          <ButtonGroup.Root>
-            <Button variant="outline">
-              <FilterIcon />
-              Filter
-            </Button>
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger>
-                {#snippet child({ props })}
-                  <Button {...props} variant="outline" class="ps-2!">
-                    <ChevronDownIcon />
-                  </Button>
-                {/snippet}
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Content align="end" class="[--radius:1rem]">
-                <DropdownMenu.Group>
-                  <DropdownMenu.Item>
-                    <DownloadIcon />
-                    Export Schedule
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item>
-                    <SettingsIcon />
-                    Class Settings
-                  </DropdownMenu.Item>
-                </DropdownMenu.Group>
-              </DropdownMenu.Content>
-            </DropdownMenu.Root>
-          </ButtonGroup.Root>
-        </ButtonGroup.Root>
-        <Button>
-          <PlusIcon />
-          New Class
-        </Button>
+          <Button>
+            <PlusIcon />
+            New Class
+          </Button>
+        </Page.Action>
       </Page.Header>
       <Page.Body>
         {#snippet child()}
@@ -256,49 +260,51 @@
           <Page.Title>Students</Page.Title>
           <Page.Subtitle>Manage student enrollments and track progress.</Page.Subtitle>
         </Page.HeaderContent>
-        <ButtonGroup.Root>
+        <Page.Action>
           <ButtonGroup.Root>
-            <Input placeholder="Search students..." />
-            <Button variant="outline" size="icon" aria-label="Search">
-              <SearchIcon />
-            </Button>
+            <ButtonGroup.Root>
+              <Input placeholder="Search students..." />
+              <Button variant="outline" size="icon" aria-label="Search">
+                <SearchIcon />
+              </Button>
+            </ButtonGroup.Root>
+            <ButtonGroup.Root>
+              <Button variant="outline">
+                <FilterIcon />
+                Filter
+              </Button>
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger>
+                  {#snippet child({ props })}
+                    <Button {...props} variant="outline" class="ps-2!">
+                      <ChevronDownIcon />
+                    </Button>
+                  {/snippet}
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content align="end" class="[--radius:1rem]">
+                  <DropdownMenu.Group>
+                    <DropdownMenu.Item>
+                      <DownloadIcon />
+                      Export Student List
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item>
+                      <FileTextIcon />
+                      Generate Report
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item>
+                      <ShareIcon />
+                      Share Student List
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Group>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
+            </ButtonGroup.Root>
           </ButtonGroup.Root>
-          <ButtonGroup.Root>
-            <Button variant="outline">
-              <FilterIcon />
-              Filter
-            </Button>
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger>
-                {#snippet child({ props })}
-                  <Button {...props} variant="outline" class="ps-2!">
-                    <ChevronDownIcon />
-                  </Button>
-                {/snippet}
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Content align="end" class="[--radius:1rem]">
-                <DropdownMenu.Group>
-                  <DropdownMenu.Item>
-                    <DownloadIcon />
-                    Export Student List
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item>
-                    <FileTextIcon />
-                    Generate Report
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item>
-                    <ShareIcon />
-                    Share Student List
-                  </DropdownMenu.Item>
-                </DropdownMenu.Group>
-              </DropdownMenu.Content>
-            </DropdownMenu.Root>
-          </ButtonGroup.Root>
-        </ButtonGroup.Root>
-        <Button>
-          <UserPlusIcon />
-          Add Student
-        </Button>
+          <Button>
+            <UserPlusIcon />
+            Add Student
+          </Button>
+        </Page.Action>
       </Page.Header>
       <Page.Body>
         {#snippet child()}
@@ -336,41 +342,43 @@
           <Page.Title>Analytics Dashboard</Page.Title>
           <Page.Subtitle>View and analyze your learning management data.</Page.Subtitle>
         </Page.HeaderContent>
-        <ButtonGroup.Root>
+        <Page.Action>
           <ButtonGroup.Root>
-            <Input placeholder="Search..." />
-            <Button variant="outline" size="icon" aria-label="Search">
-              <SearchIcon />
-            </Button>
+            <ButtonGroup.Root>
+              <Input placeholder="Search..." />
+              <Button variant="outline" size="icon" aria-label="Search">
+                <SearchIcon />
+              </Button>
+            </ButtonGroup.Root>
+            <ButtonGroup.Root>
+              <Button variant="outline">
+                <DownloadIcon />
+                Export
+              </Button>
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger>
+                  {#snippet child({ props })}
+                    <Button {...props} variant="outline" class="ps-2!">
+                      <ChevronDownIcon />
+                    </Button>
+                  {/snippet}
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content align="end" class="[--radius:1rem]">
+                  <DropdownMenu.Group>
+                    <DropdownMenu.Item>
+                      <ShareIcon />
+                      Share Dashboard
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item>
+                      <SettingsIcon />
+                      Dashboard Settings
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Group>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
+            </ButtonGroup.Root>
           </ButtonGroup.Root>
-          <ButtonGroup.Root>
-            <Button variant="outline">
-              <DownloadIcon />
-              Export
-            </Button>
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger>
-                {#snippet child({ props })}
-                  <Button {...props} variant="outline" class="ps-2!">
-                    <ChevronDownIcon />
-                  </Button>
-                {/snippet}
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Content align="end" class="[--radius:1rem]">
-                <DropdownMenu.Group>
-                  <DropdownMenu.Item>
-                    <ShareIcon />
-                    Share Dashboard
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item>
-                    <SettingsIcon />
-                    Dashboard Settings
-                  </DropdownMenu.Item>
-                </DropdownMenu.Group>
-              </DropdownMenu.Content>
-            </DropdownMenu.Root>
-          </ButtonGroup.Root>
-        </ButtonGroup.Root>
+        </Page.Action>
       </Page.Header>
     </Page.Root>
   {/snippet}

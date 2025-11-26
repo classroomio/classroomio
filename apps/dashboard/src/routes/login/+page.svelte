@@ -1,5 +1,5 @@
 <script lang="ts">
-  import AuthUI from '$lib/components/AuthUI/index.svelte';
+  import { AuthUI } from '$lib/features/ui';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { LOGIN_FIELDS } from '$lib/utils/constants/authentication';
