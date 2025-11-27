@@ -10,7 +10,6 @@
 
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
-  import { sideBar } from '$lib/components/Org/store';
   import { t } from '$lib/utils/functions/translations';
 
   import { SidebarFooterMenu } from '$lib/features/ui/sidebar/footer';

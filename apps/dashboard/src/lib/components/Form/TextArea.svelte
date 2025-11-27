@@ -19,7 +19,6 @@
     isAIEnabled?: boolean;
     initAIPrompt?: string;
     aiAlignPopover?: PopoverPrimitive.ContentProps['align'];
-    aiAlignPopover?: PopoverPrimitive.ContentProps['align'];
     iconbutton?: import('svelte').Snippet;
   }
 
