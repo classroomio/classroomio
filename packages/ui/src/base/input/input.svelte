@@ -24,9 +24,9 @@
     bind:this={ref}
     data-slot={dataSlot}
     class={cn(
-      'selection:bg-primary dark:bg-input/30 selection:text-primary-foreground border-input ring-offset-background placeholder:text-muted-foreground shadow-xs flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 pt-1.5 text-sm font-medium outline-none transition-[color,box-shadow] disabled:cursor-not-allowed disabled:opacity-50',
-      'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
-      'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
+      'ui:selection:bg-primary ui:dark:bg-input/30 ui:selection:text-primary-foreground ui:border-input ui:ring-offset-background ui:placeholder:text-muted-foreground ui:shadow-xs ui:flex ui:h-9 ui:w-full ui:min-w-0 ui:rounded-md ui:border ui:bg-transparent ui:px-3 ui:pt-1.5 ui:text-sm ui:font-medium ui:outline-none ui:transition-[color,box-shadow] ui:disabled:cursor-not-allowed ui:disabled:opacity-50',
+      'ui:focus-visible:border-ring ui:focus-visible:ring-ring/50 ui:focus-visible:ring-[3px]',
+      'ui:aria-invalid:ring-destructive/20 ui:dark:aria-invalid:ring-destructive/40 ui:aria-invalid:border-destructive',
       className
     )}
     type="file"

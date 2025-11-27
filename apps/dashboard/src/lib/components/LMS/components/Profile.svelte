@@ -1,9 +1,7 @@
 <script>
   import TextField from '$lib/components/Form/TextField.svelte';
-  import Row from '$lib/components/Org/Settings/Layout/Row.svelte';
-  import Grid from '$lib/components/Org/Settings/Layout/Grid.svelte';
+  import { Row, Grid, Column } from '$lib/components/Org/Settings/Layout';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import Column from '$lib/components/Org/Settings/Layout/Column.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import LanguagePicker from '$lib/components/Org/Settings/LanguagePicker.svelte';
 

@@ -1,39 +1,24 @@
 <script lang="ts">
-  // import { browser } from '$app/environment';
-  import { page } from '$app/stores';
-  import debounce from 'lodash/debounce';
+  import { page } from '$app/state';
 
-  import { course } from '$lib/components/Course/store';
-  import OrgNavigation from '$lib/components/Navigation/app.svelte';
-  import LandingNavigation from '$lib/components/Navigation/index.svelte';
-  import LMSNavigation from '$lib/components/Navigation/lms.svelte';
   import OrgLandingPage from '$lib/components/Org/LandingPage/index.svelte';
   import PlayQuiz from '$lib/components/Org/Quiz/Play/index.svelte';
   import { PageRestricted } from '$lib/components/Page';
-  // import PageLoadProgressBar from '$lib/components/Progress/PageLoadProgressBar.svelte';
   import Snackbar from '$lib/components/Snackbar/index.svelte';
   import UpgradeModal from '$lib/components/Upgrade/Modal.svelte';
-  import {
-    isCoursesPage,
-    isLMSPage,
-    isOrgPage
-
-    // toggleBodyByMode
-  } from '$lib/utils/functions/app';
-  import { getProfile, setupAnalytics } from '$lib/utils/functions/appSetup';
-  import hideNavByRoute from '$lib/utils/functions/routes/hideNavByRoute';
-  import { getSupabase } from '$lib/utils/functions/supabase';
+  import { user } from '$lib/utils/store/user';
+  import { setupAnalytics } from '$lib/utils/functions/appSetup';
   import { setTheme } from '$lib/utils/functions/theme';
   import { initOrgAnalytics } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
   import { isMobile } from '$lib/utils/store/useMobile';
+  import { appInitApi } from '$lib/features/app/init.svelte';
   import merge from 'lodash/merge';
   import { onMount } from 'svelte';
   import { MetaTags } from 'svelte-meta-tags';
-  import isPublicRoute from '$lib/utils/functions/routes/isPublicRoute';
-  import { hasSession } from '$lib/utils/functions/supabase';
-  import { goto } from '$app/navigation';
+  import { authClient } from '$lib/utils/services/auth/client';
+  import { PageLoadProgress } from '$lib/features/ui';
 
   import { ModeWatcher } from '@cio/ui/base/dark-mode';
 
@@ -41,31 +26,29 @@
 
   let { data, children } = $props();
 
-  let supabase = getSupabase();
-  let path = $derived($page.url?.pathname?.replace('/', ''));
-  let queryParam = $page.url?.search;
+  let path = $derived(page.url?.pathname?.replace('/', ''));
 
-  function handleResize() {
-    isMobile.update(() => window.innerWidth <= 760);
-  }
-
-  const getProfileDebounced = debounce(getProfile, 1000);
-
-  function pageSetup() {
+  function intialAppSetup() {
     console.log(
       'Welcome to ClassroomIO, we are grateful you chose us.',
-      $page.url.host,
+      page.url.host,
       `\nIs student domain: ${data.isOrgSite}`,
       data
     );
 
-    // $globalStore.isDark = localStorage.getItem('mode') === 'dark';
-    // toggleBodyByMode($globalStore.isDark);
-
     setupAnalytics();
 
-    handleResize();
+    if (data.locals.user) {
+      user.set({
+        ...$user,
+        isLoggedIn: true,
+        currentSession: data.locals.user
+      });
+    }
 
+    console.log('user', $user);
+
+    // Authentication Steps
     if (!data.isOrgSite || !data.org) return;
 
     $globalStore.orgSiteName = data.orgSiteName;
@@ -80,43 +63,36 @@
   }
 
   onMount(() => {
-    pageSetup();
+    intialAppSetup();
 
-    if (!hasSession() && !isPublicRoute($page.url?.pathname)) {
-      console.log('No auth token and is not a public route, redirect to login', path);
-      return goto('/login?redirect=/' + path);
-    }
-
-    const { data: authListener } = supabase.auth.onAuthStateChange((event) => {
-      console.log(`event`, event);
-
-      if (path.includes('reset')) {
-        console.log('Dont change auth when on reset page');
-        return;
-      }
-
-      if (data.skipAuth) return;
-
-      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-        getProfileDebounced({
-          path,
-          queryParam,
-          isOrgSite: data.isOrgSite,
-          orgSiteName: data.orgSiteName
-        });
-      }
-    });
-
-    return () => {
-      console.log('unsubscribed');
-      authListener.subscription.unsubscribe();
-    };
+    if (data.skipAuth) return;
   });
 
-  let metaTags = $derived(merge(data.baseMetaTags, $page.data.pageMetaTags));
-</script>
+  const session = authClient.useSession();
+  const isSessionReady = $derived(!$session.isPending && !$session.isRefetching && $session.data);
 
-<svelte:window onresize={handleResize} />
+  $effect(() => {
+    // this means the session cookie 'classroomio.session_data' expired and we need to trigger a new session
+    if (!data.locals.fromSessions && isSessionReady) {
+      authClient.getSession().then(() => {
+        console.log('triggered new session');
+      });
+    }
+  });
+
+  $effect(() => {
+    if (isSessionReady && !appInitApi.isInitializedAndReady && !appInitApi.loading) {
+      console.log('setting up account with session data');
+
+      appInitApi.setupApp($session.data as App.Locals, {
+        isOrgSite: data.isOrgSite,
+        orgSiteName: data.orgSiteName
+      });
+    }
+  });
+
+  const metaTags = $derived(merge(data.baseMetaTags, page.data.pageMetaTags));
+</script>
 
 <ModeWatcher />
 
@@ -126,46 +102,19 @@
 
 <Snackbar />
 
-{#if data.org?.is_restricted || $currentOrg.is_restricted}
+{#if data.org?.is_restricted || $currentOrg.isRestricted}
   <PageRestricted />
 {:else if data.skipAuth}
   <PlayQuiz />
 {:else if data.isOrgSite && !path}
   <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org} />
 {:else}
-  <main class="z-20000 dark:bg-black">
-    {#if !hideNavByRoute($page.url?.pathname)}
-      {#if isOrgPage($page.url?.pathname) || $page.url?.pathname.includes('profile') || isCoursesPage(path)}
-        <OrgNavigation bind:title={$course.title} isCoursePage={isCoursesPage(path)} />
-      {:else if isLMSPage($page.url?.pathname)}
-        <LMSNavigation />
-      {:else}
-        <LandingNavigation
-          isOrgSite={data.isOrgSite}
-          logo={data.isOrgSite ? $currentOrg.avatar_url : undefined}
-          orgName={data.isOrgSite ? $currentOrg.name : undefined}
-          disableSignup={false}
-        />
-      {/if}
+  <PageLoadProgress zIndex={10000} />
 
-      <!-- <PageLoadProgressBar textColorClass="text-neutral-700" /> -->
-    {/if}
-
-    <div class={path.includes('home') ? '' : 'flex justify-between'}>
-      {@render children?.()}
-    </div>
-  </main>
+  {@render children?.()}
 {/if}
 
 <style>
-  main {
-    background-color: white;
-    box-sizing: border-box;
-  }
-
-  :global(a:hover) {
-    text-decoration: underline;
-  }
   :global(:root) {
     --main-primary-color: rgba(29, 78, 216, 1);
     --border-color: #eaecef;
@@ -181,10 +130,6 @@
     background: var(--dark-app-background);
   }
 
-  :global(.bx--data-table-container) {
-    width: 100%;
-  }
-
   :global(.dark svg.dark) {
     fill: #fff;
   }
@@ -195,14 +140,6 @@
 
   :global(.border-bottom-c) {
     border-bottom: 1px solid var(--border-color);
-  }
-
-  :global(.bx--search-close > svg) {
-    fill: black;
-  }
-
-  :global(.dark .bx--search-close:hover > svg) {
-    fill: #fff;
   }
 
   :global(.plyr__controls) {

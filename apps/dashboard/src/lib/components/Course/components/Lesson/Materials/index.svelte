@@ -19,7 +19,7 @@
   import { course } from '$lib/components/Course/store';
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import type { LessonPage, LOCALE } from '$lib/utils/types';
+  import type { LessonPage } from '$lib/utils/types';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import {
     deleteLessonVideo,
@@ -50,6 +50,7 @@
   import ComponentDocument from './components/ComponentDocument.svelte';
   import AddVideoToLesson from '$lib/components/Course/components/Lesson/Materials/Video/AddVideoToLesson.svelte';
   import AddDocumentToLesson from '$lib/components/Course/components/Lesson/Materials/Document/AddDocumentToLesson.svelte';
+  import type { TLocale } from '@cio/db/types';
 
   interface Props {
     mode?: any;
@@ -72,7 +73,6 @@
   let openPopover = $state<boolean>(false);
   let aiButtonClass =
     'flex items-center px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2';
-  let player = $state<HTMLVideoElement>();
   let localeExists: Record<string, boolean> = {};
   // let prevContent = '';
   let timeoutId: NodeJS.Timeout;
@@ -194,7 +194,7 @@
     return lessonRes;
   }
 
-  function isMaterialsEmpty(materials: LessonPage['materials'], translation: Record<LOCALE, string>) {
+  function isMaterialsEmpty(materials: LessonPage['materials'], translation: Record<TLocale, string>) {
     const { slide_url, videos, note, documents } = materials;
 
     return (
@@ -273,7 +273,7 @@
 
   function autoSave(
     updatedMaterials: LessonPage['materials'],
-    _translation: Record<LOCALE, string>,
+    _translation: Record<TLocale, string>,
     _isLoading?: boolean,
     _lessonId?: string
   ) {
@@ -343,6 +343,7 @@
   //   updateNoteByCompletion($completion);
   // });
 
+  let player = $state<HTMLVideoElement | null>(null);
   $effect(() => {
     initPlyr(player, $lesson.materials.videos);
   });
@@ -531,8 +532,9 @@
         <Component {lessonId} />
       {/each}
 
-      {#if $currentOrg.customization.apps.comments}
+      {#if $currentOrg.customization?.apps?.comments}
         <hr class="my-5" />
+        {$currentOrg.customization}
         <Comments {lessonId} />
       {/if}
     </div>

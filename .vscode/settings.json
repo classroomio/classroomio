@@ -21,5 +21,30 @@
   "[svelte]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "vitest.disableWorkspaceWarning": true
+  "vitest.disableWorkspaceWarning": true,
+  "typescript.tsserver.maxTsServerMemory": 4072,
+  "typescript.disableAutomaticTypeAcquisition": false,
+  "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/.hg/store/**": true,
+    "**/dist/**": true,
+    "**/.next/**": true,
+    "**/.svelte-kit/**": true,
+    "**/build/**": true,
+    "**/.turbo/**": true,
+    "**/coverage/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.next": true,
+    "**/.svelte-kit": true,
+    "**/build": true,
+    "**/.turbo": true,
+    "**/coverage": true
+    // "pnpm-lock.yaml": true
+  }
 }

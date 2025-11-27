@@ -13,7 +13,7 @@
 <ul
   bind:this={ref}
   data-slot="pagination-content"
-  class={cn('flex flex-row items-center gap-1', className)}
+  class={cn('ui:flex ui:flex-row ui:items-center ui:gap-1', className)}
   {...restProps}
 >
   {@render children?.()}

@@ -122,12 +122,17 @@
 </script>
 
 {#if browser}
-  <div class={cn('bg-background z-50 flex size-full w-full flex-col rounded-md border border-dashed', className)}>
+  <div
+    class={cn(
+      'ui:bg-background ui:z-50 ui:flex ui:size-full ui:w-full ui:flex-col ui:rounded-md ui:border ui:border-dashed',
+      className
+    )}
+  >
     {#if editor && !editor.isDestroyed}
       {#if showToolBar}
         <div transition:slide>
           <EdraToolBar
-            class="bg-secondary/50 flex w-full items-center overflow-x-auto border-b border-dashed p-0.5"
+            class="ui:bg-secondary/50 ui:flex ui:w-full ui:items-center ui:overflow-x-auto ui:border-b ui:border-dashed ui:p-0.5"
             {editor}
           />
         </div>
@@ -137,7 +142,7 @@
       <EdraDragHandleExtended {editor} />
     {/if}
     <EdraEditor
-      class={cn('h-[32rem] overflow-auto p-4', editorClass)}
+      class={cn('ui:h-128 ui:overflow-auto ui:p-4', editorClass)}
       bind:editor
       {editable}
       {content}

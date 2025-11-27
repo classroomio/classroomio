@@ -96,10 +96,10 @@
 {#if items.length}
   <div
     bind:this={scrollContainer}
-    class="bg-popover flex max-h-80 flex-col gap-1 overflow-auto scroll-smooth rounded border"
+    class="ui:bg-popover ui:flex ui:max-h-80 ui:flex-col ui:gap-1 ui:overflow-auto ui:scroll-smooth ui:rounded ui:border"
   >
     {#each items as grp, groupIndex (groupIndex)}
-      <span class="text-muted-foreground p-2 text-xs">{grp.title}</span>
+      <span class="ui:text-muted-foreground ui:p-2 ui:text-xs">{grp.title}</span>
 
       {#each grp.commands as command, commandIndex (commandIndex)}
         {@const Icon = command.icon}
@@ -107,7 +107,7 @@
         <Button
           id={`${groupIndex}-${commandIndex}`}
           variant="ghost"
-          class={cn('h-8 w-full justify-start gap-2 rounded-sm', isActive && 'bg-muted')}
+          class={cn('ui:h-8 ui:w-full ui:justify-start ui:gap-2 ui:rounded-sm', isActive && 'bg-muted')}
           onclick={() => selectItem(groupIndex, commandIndex)}
         >
           <Icon />

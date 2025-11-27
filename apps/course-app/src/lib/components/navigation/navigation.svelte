@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import ArrowUpRight from 'lucide-svelte/icons/arrow-up-right';
 
   const getClass = (active: boolean) => (active ? 'text-foreground' : 'text-foreground/60');
 
   let activeClass = $derived({
-    template: getClass($page.url.href.includes('#templates')),
-    features: getClass($page.url.href.includes('#features'))
+    template: getClass(page.url.href.includes('#templates')),
+    features: getClass(page.url.href.includes('#features'))
   });
 </script>
 
 <header
-  class="border-border/40 bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur"
+  class="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
 >
   <p class="bg-blue-700 py-1.5 text-center text-sm font-medium text-white">
     brought to you by
@@ -59,7 +59,7 @@
           href="/npm"
           target="_blank"
           rel="noopener noreferrer"
-          class="hover:text-foreground/80 text-foreground/60 flex items-center gap-1 transition-colors"
+          class="flex items-center gap-1 text-foreground/60 transition-colors hover:text-foreground/80"
         >
           NPM <ArrowUpRight class="h-4 w-4" />
         </a>{' '}
@@ -80,7 +80,7 @@
           rel="noopener noreferrer"
         >
           <div
-            class="focus-visible:ring-ring hover:bg-accent hover:text-accent-foreground inline-flex h-8 w-8 items-center justify-center whitespace-nowrap rounded-md px-0 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50"
+            class="inline-flex h-8 w-8 items-center justify-center whitespace-nowrap rounded-md px-0 text-xs font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
           >
             <svg viewBox="0 0 438.549 438.549" class="h-4 w-4">
               <path
@@ -93,7 +93,7 @@
         </a>{' '}
         <a href="https://twitter.com/classroomio" target="_blank" rel="noreferrer">
           <div
-            class="focus-visible:ring-ring hover:bg-accent hover:text-accent-foreground inline-flex h-8 w-8 items-center justify-center whitespace-nowrap rounded-md px-0 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50"
+            class="inline-flex h-8 w-8 items-center justify-center whitespace-nowrap rounded-md px-0 text-xs font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
           >
             <svg
               height="23"

@@ -1,27 +1,21 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
+  import * as Sidebar from '@cio/ui/base/sidebar';
   import { Skeleton } from '@cio/ui/base/skeleton';
-  import UsersIcon from '@lucide/svelte/icons/users';
-  import Settings2Icon from '@lucide/svelte/icons/settings-2';
-  import LibraryBigIcon from '@lucide/svelte/icons/library-big';
-  import LayoutDashboardIcon from '@lucide/svelte/icons/layout-dashboard';
-  import MessageSquareMoreIcon from '@lucide/svelte/icons/message-square-more';
-
-  import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
-  import { isQuizPage } from '$lib/utils/functions/app';
-  import { t } from '$lib/utils/functions/translations';
-  import { orgs, isOrgAdmin } from '$lib/utils/store/org';
+  import { AppHeader } from '$lib/features/ui';
 
-  import Box from '$lib/components/Box/index.svelte';
-  import OrgSideBar from '$lib/components/Sidebar/index.svelte';
+  import { VerifyEmailModal } from '$lib/features/onboarding/components';
+
+  import { OrgSidebar } from '$lib/features/ui/sidebar/org-sidebar/index.js';
   import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
-  import VerifyEmailModal from '$lib/components/Org/VerifyEmail/VerifyEmailModal.svelte';
 
   let { data, children } = $props();
 
   function redirect(siteName: string) {
+    if (!siteName) return;
+
     const newUrl = page.url.pathname.replace('*', siteName);
     goto(newUrl + page.url.search);
   }
@@ -93,76 +87,23 @@
 
 <VerifyEmailModal />
 
-<div class="org-root flex w-full items-center justify-between">
-  <div class="org-slot flex w-full items-start bg-white dark:bg-black">
-    {#if !isQuizPage(page.url?.pathname)}
-      {#if isSidebarReady}
-        <OrgSideBar data={sidebarData} />
-      {:else}
-        <div class="bg-sidebar flex h-[calc(100vh-48px)] w-64 flex-col gap-2 border-r p-2">
-          <!-- org switcher -->
-          <div class="flex items-center gap-2 rounded-md p-2">
-            <Skeleton class="h-8 w-8 rounded-lg" />
-            <div class="flex flex-1 flex-col gap-1">
-              <Skeleton class="h-4 w-24" />
-              <Skeleton class="h-3 w-16" />
-            </div>
-            <Skeleton class="h-4 w-4" />
-          </div>
+<Sidebar.Provider>
+  <OrgSidebar />
 
-          <!-- nav main -->
-          <div class="flex flex-col gap-1 py-2">
-            <Skeleton class="mb-2 h-3 w-16 px-2" />
-            {#each Array(5) as _, i (i)}
-              <div class="flex items-center gap-2 rounded-md p-2">
-                <Skeleton class="h-4 w-4" />
-                <Skeleton class="h-4 w-full" />
-              </div>
-            {/each}
-          </div>
+  <Sidebar.Inset>
+    <AppHeader />
 
-          <!-- spacer -->
-          <div class="flex-1"></div>
-
-          <!-- upgrade banner -->
-          <div class="mx-4 mb-2 flex flex-col items-center gap-3 rounded-md border p-4">
-            <Skeleton class="h-16 w-16 rounded-md" />
-            <div class="flex flex-col items-center gap-2">
-              <Skeleton class="h-4 w-32" />
-              <Skeleton class="h-3 w-40" />
-            </div>
-            <Skeleton class="h-9 w-24 rounded-md" />
-          </div>
-
-          <!-- nav user -->
-          <div class="flex items-center gap-2 rounded-md p-2">
-            <Skeleton class="h-8 w-8 rounded-lg" />
-            <div class="flex flex-1 flex-col gap-1">
-              <Skeleton class="h-4 w-24" />
-              <Skeleton class="h-3 w-20" />
-            </div>
-            <Skeleton class="h-4 w-4" />
-          </div>
+    <div class="container mx-auto flex max-w-6xl flex-1 flex-col gap-4 p-4 pt-0">
+      {#if data.orgName === '*'}
+        <div class="grid auto-rows-min gap-4 md:grid-cols-3">
+          <Skeleton class="aspect-video rounded-xl" />
+          <Skeleton class="aspect-video rounded-xl" />
+          <Skeleton class="aspect-video rounded-xl" />
         </div>
+        <Skeleton class="h-[50vh] w-full rounded-xl" />
+      {:else}
+        {@render children?.()}
       {/if}
-    {:else}
-      <div class="flex-1">
-        {#if data.orgName === '*'}
-          <Box>Taking you to your organization...</Box>
-        {:else}
-          {@render children?.()}
-        {/if}
-      </div>
-    {/if}
-
-    {#if !isQuizPage(page.url?.pathname)}
-      <div class="flex-1">
-        {#if data.orgName === '*'}
-          <Box>Taking you to your organization...</Box>
-        {:else}
-          {@render children?.()}
-        {/if}
-      </div>
-    {/if}
-  </div>
-</div>
+    </div>
+  </Sidebar.Inset>
+</Sidebar.Provider>

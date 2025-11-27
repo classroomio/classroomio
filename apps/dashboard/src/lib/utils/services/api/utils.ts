@@ -3,6 +3,23 @@ import { ApiError } from './types';
 // Utility function for exponential backoff
 export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+export const getErrMsg = (error: unknown, fallback = 'Something went wrong'): string => {
+  if (error instanceof ApiError) {
+    return error.message;
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  if (typeof error === 'string') {
+    return error;
+  }
+  if (error instanceof Object && 'message' in error) {
+    return error.message as string;
+  }
+
+  return fallback;
+};
+
 // Helper function to handle JSON responses
 export const handleJsonResponse = async <T = any>(response: Response): Promise<T> => {
   if (!response.ok) {

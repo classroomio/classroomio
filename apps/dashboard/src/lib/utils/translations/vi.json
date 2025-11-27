@@ -1555,6 +1555,21 @@
       "email": "địa chỉ email không hợp lệ",
       "username": "Tên ngươi dung không được để trông",
       "fullname": "Tên phải có tối thiểu 5 ký tự"
+    },
+    "generic": {
+      "invalid_type": "Loại không hợp lệ{dự kiến, chọn, không xác định{} khác{. Dự kiến {mong đợi}}}{đã nhận, chọn, không xác định{} khác{ (đã nhận {đã nhận})}}",
+      "too_big": "Giá trị quá lớn{tối đa, chọn, không xác định{} khác{. Tối đa {tối đa}}}",
+      "too_small": "Giá trị quá nhỏ{tối thiểu, chọn, không xác định{} khác{. Tối thiểu {tối thiểu}}}",
+      "invalid_format": "Định dạng không hợp lệ{xác thực, chọn, không xác định{} khác{ cho {xác thực}}}",
+      "not_multiple_of": "Giá trị phải là bội số của {multipleOf}",
+      "unrecognized_keys": "Chứa các khóa không được nhận dạng{keys, select, undefind{} other{: {keys}}}",
+      "invalid_union": "Giá trị không hợp lệ cho các tùy chọn được cung cấp{unionErrors, select, unknown{} other{. {unionErrors} tùy chọn không thành công}}",
+      "invalid_key": "Khóa không hợp lệ{khóa, chọn, không xác định{} khác{: {key}}}",
+      "invalid_element": "Phần tử không hợp lệ{chỉ mục, chọn, không xác định{} khác{ tại chỉ mục {index}}}",
+      "invalid_value": "Giá trị không hợp lệ{dự kiến, chọn, không xác định{} khác{. Dự kiến {mong đợi}}}{đã nhận, chọn, không xác định{} khác{ (đã nhận {đã nhận})}}",
+      "custom": "{tin nhắn}",
+      "required_field": "Trường này là bắt buộc",
+      "invalid_field": "Giá trị không hợp lệ"
     }
   },
   "explore": {

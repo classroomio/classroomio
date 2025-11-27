@@ -43,3 +43,5 @@ vite.config.ts*.mjs
 
 #Ignore vscode AI rules
 .github/instructions/codacy.instructions.md
+
+tsconfig.tsbuildinfo*

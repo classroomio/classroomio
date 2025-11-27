@@ -141,7 +141,7 @@
   <NodeViewWrapper
     id="resizable-container-media"
     class={cn(
-      'relative my-2 flex flex-col rounded-md border-2 border-transparent',
+      'ui:relative ui:my-2 ui:flex ui:flex-col ui:rounded-md ui:border-2 ui:border-transparent',
       selected ? 'border-muted-foreground' : '',
       node.attrs.align === 'left' && 'left-0 -translate-x-0',
       node.attrs.align === 'center' && 'left-1/2 -translate-x-1/2',
@@ -149,7 +149,7 @@
     )}
     style={`width: ${node.attrs.width}`}
   >
-    <div class={cn('group relative flex flex-col rounded-md', resizing && '')}>
+    <div class={cn('ui:relative ui:flex ui:flex-col ui:rounded-md group', resizing && '')}>
       {@render children()}
 
       {#if editor.isEditable}
@@ -157,7 +157,7 @@
           role="button"
           tabindex="0"
           aria-label="Back"
-          class="absolute inset-y-0 z-20 flex w-[25px] cursor-col-resize items-center justify-start p-2"
+          class="ui:absolute ui:inset-y-0 ui:z-20 ui:flex ui:w-[25px] ui:cursor-col-resize ui:items-center ui:justify-start ui:p-2"
           style="left: 0px"
           onmousedown={(event: MouseEvent) => {
             handleResizingPosition(event, 'left');
@@ -167,7 +167,7 @@
           }}
         >
           <div
-            class="bg-muted z-20 h-[70px] w-1 rounded-xl border opacity-0 transition-all group-hover:opacity-100"
+            class="ui:bg-muted ui:z-20 ui:h-[70px] ui:w-1 ui:rounded-xl ui:border ui:opacity-0 ui:transition-all group-hover:opacity-100"
           ></div>
         </div>
 
@@ -175,7 +175,7 @@
           role="button"
           tabindex="0"
           aria-label="Back"
-          class="absolute inset-y-0 z-20 flex w-[25px] cursor-col-resize items-center justify-end p-2"
+          class="ui:absolute ui:inset-y-0 ui:z-20 ui:flex ui:w-[25px] ui:cursor-col-resize ui:items-center ui:justify-end ui:p-2"
           style="right: 0px"
           onmousedown={(event: MouseEvent) => {
             handleResizingPosition(event, 'right');
@@ -185,48 +185,48 @@
           }}
         >
           <div
-            class="bg-muted z-20 h-[70px] w-1 rounded-xl border opacity-0 transition-all group-hover:opacity-100"
+            class="ui:bg-muted ui:z-20 ui:h-[70px] ui:w-1 ui:rounded-xl ui:border ui:opacity-0 ui:transition-all group-hover:opacity-100"
           ></div>
         </div>
         <div
           class={cn(
-            'bg-background/50 absolute -top-2 left-[calc(50%-3rem)] flex items-center gap-1 rounded border p-1 opacity-0 backdrop-blur-sm transition-opacity',
+            'ui:bg-background/50 ui:absolute ui:-top-2 ui:left-[calc(50%-3rem)] ui:flex ui:items-center ui:gap-1 ui:rounded ui:border ui:p-1 ui:opacity-0 ui:backdrop-blur-sm ui:transition-opacity',
             !resizing && 'group-hover:opacity-100',
             openedMore && 'opacity-100'
           )}
         >
           <Button
             variant="ghost"
-            class={cn('size-6 p-0', node.attrs.align === 'left' && 'bg-muted')}
+            class={cn('ui:size-6 ui:p-0', node.attrs.align === 'left' && 'bg-muted')}
             onclick={() => updateAttributes({ align: 'left' })}
             title="Align Left"
           >
-            <AlignLeft class="size-4" />
+            <AlignLeft class="ui:size-4" />
           </Button>
           <Button
             variant="ghost"
-            class={cn('size-6 p-0', node.attrs.align === 'center' && 'bg-muted')}
+            class={cn('ui:size-6 ui:p-0', node.attrs.align === 'center' && 'bg-muted')}
             onclick={() => updateAttributes({ align: 'center' })}
             title="Align Center"
           >
-            <AlignCenter class="size-4" />
+            <AlignCenter class="ui:size-4" />
           </Button>
           <Button
             variant="ghost"
-            class={cn('size-6 p-0', node.attrs.align === 'right' && 'bg-muted')}
+            class={cn('ui:size-6 ui:p-0', node.attrs.align === 'right' && 'bg-muted')}
             onclick={() => updateAttributes({ align: 'right' })}
             title="Align Right"
           >
-            <AlignRight class="size-4" />
+            <AlignRight class="ui:size-4" />
           </Button>
           <DropdownMenu.Root bind:open={openedMore} onOpenChange={(value) => (openedMore = value)}>
             <DropdownMenu.Trigger
               class={buttonVariants({ variant: 'ghost', class: 'size-6 p-0' })}
               title="More Options"
             >
-              <EllipsisVertical class="size-4" />
+              <EllipsisVertical class="ui:size-4" />
             </DropdownMenu.Trigger>
-            <DropdownMenu.Content align="start" alignOffset={-90} class="mt-1 overflow-auto text-sm">
+            <DropdownMenu.Content align="start" alignOffset={-90} class="ui:mt-1 ui:overflow-auto ui:text-sm">
               <DropdownMenu.Item
                 onclick={() => {
                   if (node.attrs.title === null || node.attrs.title.trim() === '')
@@ -235,14 +235,14 @@
                     });
                 }}
               >
-                <Captions class="mr-1 size-4" /> Caption
+                <Captions class="ui:mr-1 ui:size-4" /> Caption
               </DropdownMenu.Item>
               <DropdownMenu.Item
                 onclick={() => {
                   duplicateContent(editor, node);
                 }}
               >
-                <CopyIcon class="mr-1 size-4" /> Duplicate
+                <CopyIcon class="ui:mr-1 ui:size-4" /> Duplicate
               </DropdownMenu.Item>
               <DropdownMenu.Item
                 onclick={() => {
@@ -251,15 +251,15 @@
                   });
                 }}
               >
-                <Fullscreen class="mr-1 size-4" /> Full Screen
+                <Fullscreen class="ui:mr-1 ui:size-4" /> Full Screen
               </DropdownMenu.Item>
               <DropdownMenu.Item
                 onclick={() => {
                   deleteNode();
                 }}
-                class="text-destructive"
+                class="ui:text-destructive"
               >
-                <Trash class="mr-1 size-4" /> Delete
+                <Trash class="ui:mr-1 ui:size-4" /> Delete
               </DropdownMenu.Item>
             </DropdownMenu.Content>
           </DropdownMenu.Root>

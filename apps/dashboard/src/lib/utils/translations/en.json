@@ -72,7 +72,7 @@
       "full_name": "Full Name",
       "password": "Your Password",
       "confirm_password": "Confirm Password",
-      "password_helper_message": "Password must be more than 6 characters",
+      "password_helper_message": "Password must be more than 8 characters",
       "create_account": "Create Account"
     },
     "validation": {
@@ -117,7 +117,10 @@
         "heading": "Personal Information",
         "full_name": "Full Name",
         "username": "Username",
-        "email": "Email"
+        "email": "Email",
+        "confirm": "Confirm",
+        "cancel": "Cancel",
+        "email_change_verification_note": "A verification email has been sent to your current email address. The new email will not be in effect until you accept the verification email."
       },
       "update_profile": "Update Profile",
       "logout": "Log out"
@@ -272,6 +275,7 @@
   },
 
   "org_navigation": {
+    "platform": "Platform",
     "dashboard": "Dashboard",
     "courses": "Courses",
     "community": "Community",
@@ -1661,6 +1665,21 @@
     },
     "email": {
       "not_valid": "Not valid email"
+    },
+    "generic": {
+      "invalid_type": "Invalid type{expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "too_big": "Value is too large{maximum, select, undefined{} other{. Maximum {maximum}}}",
+      "too_small": "Value is too small{minimum, select, undefined{} other{. Minimum {minimum}}}",
+      "invalid_format": "Invalid format{validation, select, undefined{} other{ for {validation}}}",
+      "not_multiple_of": "Value must be a multiple of {multipleOf}",
+      "unrecognized_keys": "Contains unrecognized keys{keys, select, undefined{} other{: {keys}}}",
+      "invalid_union": "Invalid value for provided options{unionErrors, select, undefined{} other{. {unionErrors} option(s) failed}}",
+      "invalid_key": "Invalid key{key, select, undefined{} other{: {key}}}",
+      "invalid_element": "Invalid element{index, select, undefined{} other{ at index {index}}}",
+      "invalid_value": "Invalid value{expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",
+      "custom": "{message}",
+      "required_field": "This field is required",
+      "invalid_field": "Invalid value"
     }
   },
 

@@ -11,7 +11,7 @@
 
   import TextChip from '$lib/components/Chip/Text.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
-  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
+  import { ComingSoon } from '$lib/features/ui';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
   import InvitationModal from '$lib/components/Course/components/People/InvitationModal.svelte';
@@ -130,11 +130,17 @@
         {#each filterPeople(searchValue, people) as person}
           <Table.Row>
             <!-- first column -->
-            <Table.Cell class="w-4/6 md:w-3/5">
+            <Table.Cell class="w-4/6 md:w-3/6">
               {#if person.profile}
-                <div class="flex items-start gap-3 lg:items-center">
-                  <Avatar src={person.profile.avatar_url} name={person.profile.fullname} width="w-8" height="h-8" />
-                  <div class="flex flex-col items-start lg:flex-row">
+                <div class="flex items-start lg:items-center">
+                  <Avatar
+                    src={person.profile.avatar_url}
+                    name={person.profile.fullname}
+                    width="w-8"
+                    height="h-8"
+                    className="mr-3"
+                  />
+                  <div class="flex flex-col items-start lg:flex-row lg:items-center">
                     <div class="mr-2">
                       <p class="text-base font-normal dark:text-white">
                         {person.profile.fullname}
@@ -143,7 +149,7 @@
                         {obscureEmail(getEmail(person))}
                       </p>
                     </div>
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center">
                       <RoleBasedSecurity allowedRoles={[1, 2]}>
                         <Button
                           variant="ghost"

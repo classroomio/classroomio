@@ -8,6 +8,6 @@
 <AvatarPrimitive.Image
   bind:ref
   data-slot="avatar-image"
-  class={cn('aspect-square size-full', className)}
+  class={cn('ui:size-full aspect-square', className)}
   {...restProps}
 />

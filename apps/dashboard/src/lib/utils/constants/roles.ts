@@ -1,8 +1,4 @@
-export const ROLE = {
-  ADMIN: 1,
-  TUTOR: 2,
-  STUDENT: 3
-};
+import { ROLE } from '@cio/utils/constants';
 
 export const ROLE_LABEL = {
   [ROLE.ADMIN]: 'course.navItem.people.roles.admin',

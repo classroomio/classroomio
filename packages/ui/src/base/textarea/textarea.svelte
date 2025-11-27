@@ -15,7 +15,7 @@
   bind:this={ref}
   data-slot={dataSlot}
   class={cn(
-    'border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 field-sizing-content shadow-xs flex min-h-16 w-full rounded-md border bg-transparent px-3 py-2 text-base outline-none transition-[color,box-shadow] focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
+    'ui:border-input ui:placeholder:text-muted-foreground ui:focus-visible:border-ring ui:focus-visible:ring-ring/50 ui:aria-invalid:ring-destructive/20 ui:dark:aria-invalid:ring-destructive/40 ui:aria-invalid:border-destructive ui:dark:bg-input/30 ui:field-sizing-content ui:shadow-xs ui:flex ui:min-h-16 ui:w-full ui:rounded-md ui:border ui:bg-transparent ui:px-3 ui:py-2 ui:text-base ui:outline-none ui:transition-[color,box-shadow] ui:focus-visible:ring-[3px] ui:disabled:cursor-not-allowed ui:disabled:opacity-50 ui:md:text-sm',
     className
   )}
   bind:value

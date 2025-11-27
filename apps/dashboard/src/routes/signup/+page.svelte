@@ -1,7 +1,5 @@
 <script lang="ts">
   import { untrack } from 'svelte';
-  import { goto } from '$app/navigation';
-  import { page } from '$app/state';
   import AuthUI from '$lib/components/AuthUI/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -12,13 +10,11 @@
   import { authValidation, getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';
-  import { currentOrg } from '$lib/utils/store/org';
-  import { profile } from '$lib/utils/store/user';
+  import { authClient } from '$lib/utils/services/auth/client';
 
   let supabase = getSupabase();
   let fields = $state(Object.assign({}, SIGNUP_FIELDS));
   let loading = $state(false);
-  let success = false;
   let errors: {
     email?: string;
     password?: string;
@@ -26,9 +22,6 @@
   } = $state({});
   let submitError: string = $state('');
   let formRef: HTMLFormElement | undefined = $state();
-
-  let query = new URLSearchParams(page.url.search);
-  let redirect = query.get('redirect');
 
   const disableSubmit = $derived(getDisableSubmit(fields));
 
@@ -43,74 +36,37 @@
 
     try {
       loading = true;
+      const name = fields.email.split('@')[0];
 
-      const {
-        data: { session },
-        error
-      } = await supabase.auth.signUp({
-        email: fields.email,
-        password: fields.password
-      });
-      console.log('session', session);
+      const { error } = await authClient.signUp.email(
+        {
+          email: fields.email,
+          password: fields.password,
+          name: name
+        },
+        {
+          onSuccess: (ctx) => {
+            console.log('Signup successful');
+            capturePosthogEvent('user_signed_up', {
+              distinct_id: ctx.data.user.id || '',
+              email: ctx.data.user.email,
+              username: name
+            });
+
+            if ($globalStore.isOrgSite) {
+              capturePosthogEvent('student_signed_up', {
+                distinct_id: ctx.data.user.id || '',
+                email: ctx.data.user.email,
+                username: name
+              });
+            }
+
+            window.location.href = '/';
+          }
+        }
+      );
 
       if (error) throw error;
-
-      const { user: authUser } = session || {};
-      if (!authUser) {
-        throw 'Error creating user';
-      }
-
-      if (!$currentOrg.id) return;
-
-      const [regexUsernameMatch] = [...(authUser.email?.matchAll(/(.*)@/g) || [])];
-      const response = await fetch('https://api.ipregistry.co/?key=tryout');
-      const metadata = await response.json();
-
-      const profileRes = await supabase
-        .from('profile')
-        .insert({
-          id: authUser.id,
-          username: regexUsernameMatch[1] + `${new Date().getTime()}`,
-          fullname: regexUsernameMatch[1],
-          email: authUser.email,
-          metadata
-        })
-        .select();
-      console.log('profileRes', profileRes);
-
-      if (profileRes.error) {
-        throw profileRes.error;
-      }
-
-      // Setting profile
-      console.log('setting profile', profileRes.data[0]);
-      profile.set(profileRes.data[0]);
-
-      capturePosthogEvent('user_signed_up', {
-        distinct_id: $profile.id || '',
-        email: authUser.email,
-        username: regexUsernameMatch[1],
-        metadata
-      });
-
-      if ($globalStore.isOrgSite) {
-        capturePosthogEvent('student_signed_up', {
-          distinct_id: $profile.id || '',
-          email: authUser.email,
-          username: regexUsernameMatch[1],
-          metadata
-        });
-      }
-
-      if (redirect) {
-        goto(redirect);
-      } else {
-        goto('/login');
-      }
-
-      formRef?.reset();
-      success = true;
-      fields = Object.assign({}, SIGNUP_FIELDS);
     } catch (error: any) {
       submitError = error?.error_description || error?.message;
       loading = false;

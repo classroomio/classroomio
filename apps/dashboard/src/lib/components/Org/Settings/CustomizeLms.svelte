@@ -10,9 +10,7 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
 
-  import Row from './Layout/Row.svelte';
-  import Grid from './Layout/Grid.svelte';
-  import Column from './Layout/Column.svelte';
+  import { Row, Grid, Column } from './Layout';
   import SectionTitle from '../SectionTitle.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';

@@ -1,15 +1,11 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import BellIcon from '@lucide/svelte/icons/bell';
-  import MenuIcon from '@lucide/svelte/icons/menu';
-  import XIcon from '@lucide/svelte/icons/x';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
-  import { ModeSwitcher } from '@cio/ui/base/dark-mode';
 
   import { IconButton } from '$lib/components/IconButton';
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrgPath } from '$lib/utils/store/org';
-  import { sideBar } from '../Org/store';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -20,42 +16,15 @@
 
   let { title = $bindable(''), navClass = '', isCoursePage = false }: Props = $props();
 
-  const toggleSidebar = () => {
-    $sideBar.hidden = !$sideBar.hidden;
-  };
-
   let coursesPath = $derived(
     $globalStore.isOrgSite ? '/lms/mylearning' : isCoursePage ? `${$currentOrgPath}/courses` : $currentOrgPath
   );
 </script>
 
-<nav class="{navClass} bg-primary-700 flex h-12 w-full p-1 transition delay-150 duration-300 ease-in-out md:px-6">
+<nav class="{navClass} bg-primary-700 flex h-12 w-full p-1 transition delay-150 duration-300 ease-in-out md:px-4">
   <ul class="flex w-full items-center gap-2">
     <div class="flex items-center text-white">
-      <li class="md:hidden">
-        <IconButton
-          onClick={() => {
-            toggleSidebar();
-          }}
-        >
-          {#if $sideBar.hidden}
-            <MenuIcon size={16} class="custom" />
-          {:else}
-            <XIcon size={16} class="custom" />
-          {/if}
-        </IconButton>
-      </li>
-
       {#if isCoursePage}
-        <li class="hidden md:block">
-          <IconButton
-            onClick={() => {
-              toggleSidebar();
-            }}
-          >
-            <MenuIcon size={16} class="custom" />
-          </IconButton>
-        </li>
         <li class="hidden md:block">
           <IconButton onClick={() => goto(coursesPath)}>
             <ArrowLeftIcon size={16} class="custom" />
@@ -76,16 +45,6 @@
 
     <li>
       <BellIcon class="custom text-white" size={16} />
-    </li>
-    <li>
-      <!-- <IconButton size="small" onClick={toggleDarkMode}>
-        {#if $globalStore.isDark}
-          <SunIcon size={16} class="custom" />
-        {:else}
-          <MoonIcon class="custom text-white" size={16} />
-        {/if}
-      </IconButton> -->
-      <ModeSwitcher />
     </li>
 
     <li></li>

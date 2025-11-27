@@ -21,9 +21,7 @@
 
   import { NAV_IDS } from './constants';
   import { profile } from '$lib/utils/store/user';
-  import { sideBar } from '$lib/components/Org/store';
   import { course } from '$lib/components/Course/store';
-  import { isMobile } from '$lib/utils/store/useMobile';
   import { t } from '$lib/utils/functions/translations';
   import { handleAddLessonWidget } from '../Lesson/store';
   import { getIsLessonComplete } from '../Lesson/functions';
@@ -50,7 +48,7 @@
         url: getNavItemRoute($course.id),
         isActive: (path || page.url.pathname) === getNavItemRoute($course.id),
         show() {
-          return isStudent ? $currentOrg.customization.course.newsfeed : true;
+          return isStudent ? $currentOrg.customization?.['course']?.['newsfeed'] : true;
         },
         icon: getNavIcon(NAV_IDS.NEWS_FEED)
       },
@@ -121,7 +119,7 @@
         isActive: (path || page.url.pathname) === getNavItemRoute($course.id, 'marks'),
         show() {
           if ($course.type == COURSE_TYPE.LIVE_CLASS) {
-            return isStudent ? $currentOrg.customization.course.grading : true;
+            return isStudent ? ($currentOrg.customization?.['course']?.['grading'] ?? false) : true;
           }
           return false;
         },
@@ -186,8 +184,6 @@
     }
   }
 
-  const toggleSidebarOnMobile = () => $isMobile && ($sideBar.hidden = !$sideBar.hidden);
-
   function getNavIcon(id: string) {
     if (!id) return null;
 
@@ -217,10 +213,12 @@
 
     return null;
   }
+
+  function toggleSidebarOnMobile() {}
 </script>
 
 <Sidebar.Provider class="flex w-fit items-start gap-2">
-  <Sidebar.Root collapsible="icon" class="inset-y-12 h-[calc(100vh-48px)] {$sideBar.hidden ? 'hidden' : ''}">
+  <Sidebar.Root collapsible="icon">
     <Sidebar.Content>
       <Sidebar.Group>
         <Sidebar.GroupLabel>Course Navigation</Sidebar.GroupLabel>
@@ -232,7 +230,7 @@
                   {#if item.isLesson && item.items}
                     <Collapsible.Trigger>
                       {#snippet child({ props })}
-                        <a href={item.url} onclick={toggleSidebarOnMobile}>
+                        <a href={item.url}>
                           <Sidebar.MenuButton
                             {...props}
                             tooltipContent={item.title}
@@ -376,7 +374,7 @@
                       <Sidebar.MenuButton
                         tooltipContent={item.title}
                         class="flex w-full cursor-pointer items-center gap-4 px-1.5 py-2 {item.isActive
-                          ? 'bg-accent text-accent-foreground'
+                          ? 'ui:bg-accent ui:text-accent-foreground'
                           : ''}"
                       >
                         {@const Icon = item.icon}

@@ -1,23 +1,23 @@
-import posthog from 'posthog-js';
-import { supabase } from '$lib/utils/functions/supabase';
+import { appInitApi } from '$lib/features/app/init.svelte';
+import { authClient } from '$lib/utils/services/auth/client';
 import { capturePosthogEvent } from '$lib/utils/services/posthog';
-import { user, profile, defaultProfileState, defaultUserState } from '$lib/utils/store/user';
 import { goto } from '$app/navigation';
+import posthog from 'posthog-js';
+import { resolve } from '$app/paths';
 
 export async function logout(redirect = true) {
-  const { error } = await supabase.auth.signOut();
+  const { error } = await authClient.signOut();
 
   if (error) {
     console.error('Error logging out: ', error);
   }
 
-  user.set(defaultUserState);
-  profile.set(defaultProfileState);
+  appInitApi.reset();
 
   capturePosthogEvent('user_logged_out');
   posthog.reset();
 
   if (redirect) {
-    goto('/login');
+    goto(resolve('/login', {}));
   }
 }

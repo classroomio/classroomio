@@ -71,7 +71,7 @@
       lessonData,
       totalExercises,
       totalComments,
-      locale: $profile.locale
+      locale: $profile.locale || 'en'
     });
     $lesson.isFetching = false;
   }

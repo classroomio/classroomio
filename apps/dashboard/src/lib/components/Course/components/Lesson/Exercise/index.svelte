@@ -1,12 +1,12 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
+  import { page } from '$app/state';
   import { Button } from '@cio/ui/base/button';
   import EyeIcon from '@lucide/svelte/icons/eye';
   import { onDestroy, onMount, untrack } from 'svelte';
   import * as Breadcrumb from '@cio/ui/base/breadcrumb';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
-  // import * as Tabs from '@cio/ui/base/tabs';
   import CirclePlusIcon from '@lucide/svelte/icons/circle-plus';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
 
@@ -84,7 +84,7 @@
   });
 
   onMount(() => {
-    const tabParam = $page.url.searchParams.get('tab');
+    const tabParam = page.url.searchParams.get('tab');
     if (tabParam) {
       selectedTab = tabParam;
     }
@@ -92,7 +92,7 @@
 
   $effect(() => {
     untrack(() => {
-      goto($page.url.pathname + '?tab=' + selectedTab);
+      goto(page.url.pathname + '?tab=' + selectedTab);
     });
   });
   // $effect(() => {
