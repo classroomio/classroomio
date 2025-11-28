@@ -137,3 +137,5 @@ export type TCourseVersion = (typeof schema.courseVersion.enumValues)[number];
 export type TLocale = (typeof schema.locale.enumValues)[number];
 
 export type TPlan = (typeof schema.plan.enumValues)[number];
+
+export type TDashStats = typeof schema.dashOrgStats.$inferSelect;

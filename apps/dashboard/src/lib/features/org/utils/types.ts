@@ -1,4 +1,5 @@
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
+import type { OrganisationAnalytics } from '$lib/utils/types/analytics';
 
 // Team member types
 export type GetTeamResponse = (typeof classroomio.organization)[':orgId']['team']['$get'];
@@ -23,3 +24,6 @@ export type CoursesByOrganizationSiteNameSuccess = Extract<
 >;
 
 export type CoursesByOrganizationSiteName = CoursesByOrganizationSiteNameSuccess['data'];
+
+// dashboard analytics types
+export type GetDashStatsResponse = InferResponseType<OrganisationAnalytics> | null;

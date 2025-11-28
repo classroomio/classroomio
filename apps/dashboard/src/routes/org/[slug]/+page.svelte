@@ -7,6 +7,7 @@
   import LibraryBigIcon from '@lucide/svelte/icons/library-big';
   import DollarSignIcon from '@lucide/svelte/icons/dollar-sign';
 
+  import type { PageData } from './$types';
   import { profile } from '$lib/utils/store/user';
   import PlusIcon from '@lucide/svelte/icons/plus';
   import { isOrgAdmin } from '$lib/utils/store/org';
@@ -14,10 +15,7 @@
   import { isMobile } from '$lib/utils/store/useMobile';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { getGreeting } from '$lib/utils/functions/date';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { getAccessToken } from '$lib/utils/functions/supabase';
-  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import type { OrganisationAnalytics } from '$lib/utils/types/analytics';
+  import { currentOrgPath } from '$lib/utils/store/org';
 
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { ActivityCard } from '$lib/components/Analytics';
@@ -28,64 +26,34 @@
   import { WelcomeModal } from '$lib/features/onboarding/components';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
 
-  let dashAnalytics: OrganisationAnalytics | undefined = $state();
-  let hasFetched = $state(false);
+  const props = $props();
+  const data: PageData = props.data;
+
+  const { enrollments, numberOfCourses, revenue, totalStudents, topCourses } = data;
 
   function createCourse() {
     goto(`${$currentOrgPath}/courses?create=true`);
   }
 
-  async function fetchDashAnalytics(orgId: string) {
-    if (!orgId || hasFetched) return;
-
-    hasFetched = true;
-
-    const accessToken = await getAccessToken();
-
-    try {
-      const response = await fetch('/api/analytics/dash', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: accessToken
-        },
-        body: JSON.stringify({ orgId })
-      });
-
-      if (!response.ok) {
-        console.error(response);
-        throw new Error('Failed to fetch analytics data');
-      }
-
-      dashAnalytics = (await response.json()) as OrganisationAnalytics;
-    } catch (error) {
-      snackbar.error('Failed to fetch analytics data');
-    }
-  }
-
-  $effect(() => {
-    fetchDashAnalytics($currentOrg.id);
-  });
-
   let cards = $derived([
     {
       icon: DollarSignIcon,
       title: `${$t('dashboard.revenue')} ($)`,
-      percentage: dashAnalytics?.revenue ?? 0,
+      percentage: revenue ?? 0,
       description: $t('dashboard.revenue_description'),
       hidePercentage: true
     },
     {
       icon: BookIcon,
       title: $t('dashboard.no_of_courses'),
-      percentage: dashAnalytics?.numberOfCourses ?? 0,
+      percentage: numberOfCourses ?? 0,
       description: $t('dashboard.no_courses_description'),
       hidePercentage: true
     },
     {
       icon: UsersIcon,
       title: $t('dashboard.total_students'),
-      percentage: dashAnalytics?.totalStudents ?? 0,
+      percentage: totalStudents ?? 0,
       description: $t('dashboard.total_students_description'),
       hidePercentage: true
     }
@@ -126,7 +94,7 @@
     <Grid class="px-0">
       <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {#each cards as card}
-          {#if !dashAnalytics}
+          {#if !revenue && !numberOfCourses && !totalStudents}
             <Skeleton style="width: 100%; min-width: 300px; height: 10rem;" class="rounded-md" />
           {:else}
             <ActivityCard activity={card} />
@@ -143,12 +111,12 @@
       </h3>
 
       <div class="h-full space-y-6">
-        {#if !dashAnalytics}
+        {#if !topCourses}
           {#each Array(5) as _}
             <Skeleton class="h-10 w-full rounded-md" />
           {/each}
         {:else}
-          {#each dashAnalytics.topCourses as course}
+          {#each topCourses as course}
             <div class="flex items-center gap-2">
               <div class="w-4/6 space-y-1">
                 <a href={`/courses/${course.id}`}>
@@ -195,12 +163,12 @@
       </h3>
 
       <div class="h-full space-y-6">
-        {#if !dashAnalytics}
+        {#if !enrollments}
           {#each Array(5) as _}
             <Skeleton class="h-10 w-full rounded-md" />
           {/each}
         {:else}
-          {#each dashAnalytics.enrollments as enrollment}
+          {#each enrollments as enrollment}
             <div class="flex items-center justify-between gap-2">
               <div class="flex items-center gap-2">
                 <Avatar src={enrollment.avatarUrl} name={enrollment.name} width="w-6" height="h-6" />

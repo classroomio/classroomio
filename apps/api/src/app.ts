@@ -1,19 +1,22 @@
 import 'dotenv/config';
+import { cors } from 'hono/cors';
+import { logger } from 'hono/logger';
+import { prettyJSON } from 'hono/pretty-json';
+import { secureHeaders } from 'hono/secure-headers';
 
+// --- utils
+import { auth } from '@cio/db/auth';
+import { Hono } from '@api/utils/hono';
+import rateLimiter from '@api/middlewares/rate-limiter';
 import { API_SERVER_URL, TRUSTED_ORIGINS } from '@api/constants';
 
-import { Hono } from '@api/utils/hono';
-import { accountRouter } from '@api/routes/account';
-import { auth } from '@cio/db/auth';
-import { cors } from 'hono/cors';
-import { courseRouter } from '@api/routes/course';
-import { logger } from 'hono/logger';
+// --- routes
 import { mailRouter } from '@api/routes/mail';
+import { courseRouter } from '@api/routes/course';
+import { accountRouter } from '@api/routes/account';
+import { dashAnalyticsRouter } from './routes/dash';
 import { onboardingRouter } from '@api/routes/onboarding';
 import { organizationRouter } from '@api/routes/organization';
-import { prettyJSON } from 'hono/pretty-json';
-import rateLimiter from '@api/middlewares/rate-limiter';
-import { secureHeaders } from 'hono/secure-headers';
 
 // Create Hono app with chaining for RPC support
 export const app = new Hono()
@@ -72,6 +75,7 @@ export const app = new Hono()
   .route('/course', courseRouter)
   .route('/mail', mailRouter)
   .route('/organization', organizationRouter)
+  .route('/dash', dashAnalyticsRouter)
 
   // Error handling
   .onError((err, c) => {

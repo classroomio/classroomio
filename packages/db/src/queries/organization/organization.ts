@@ -13,6 +13,10 @@ import { and, eq, sql } from 'drizzle-orm';
 import { ROLE } from '@cio/utils/constants';
 import { db } from '@db/drizzle';
 
+export function getOrgIdBySiteName(siteName: string) {
+  return db.select().from(schema.organization).where(eq(schema.organization.siteName, siteName)).limit(1);
+}
+
 export const getOrganizationByProfileId = async (profileId: string): Promise<OrganizationWithMemberAndPlans[]> => {
   const result = await db
     .select({

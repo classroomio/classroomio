@@ -5,3 +5,4 @@ export * from './course';
 export * from './mail';
 export * from './onboarding';
 export * from './organization';
+export * from './dash';

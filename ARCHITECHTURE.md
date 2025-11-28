@@ -74,8 +74,8 @@ Types are automatically generated from your Drizzle schema using Drizzle's built
 import * as schema from './schema';
 
 // For each table, two types are generated:
-export type TUser = typeof schema.user.$inferSelect;        // For reading
-export type TNewUser = typeof schema.user.$inferInsert;     // For creating
+export type TUser = typeof schema.user.$inferSelect; // For reading
+export type TNewUser = typeof schema.user.$inferInsert; // For creating
 
 export type TOrganization = typeof schema.organization.$inferSelect;
 export type TNewOrganization = typeof schema.organization.$inferInsert;
@@ -130,11 +130,8 @@ import type { TNewOrganization, TOrganization } from '@db/types';
  * @returns Created organization record
  */
 export const createOrganization = async (data: TNewOrganization) => {
-  const [organization] = await db
-    .insert(schema.organization)
-    .values(data)
-    .returning();
-  
+  const [organization] = await db.insert(schema.organization).values(data).returning();
+
   return organization;
 };
 
@@ -150,7 +147,7 @@ export const updateOrganization = async (id: string, data: TOrganization) => {
     .set(data)
     .where(eq(schema.organization.id, id))
     .returning();
-  
+
   return organization;
 };
 ```
@@ -242,11 +239,7 @@ export async function createOrganizationWithOwner(
   // Business Logic: Check sitename availability
   const exists = await checkSiteNameExists(input.siteName);
   if (exists) {
-    throw new AppError(
-      `Site name '${input.siteName}' already exists`,
-      ErrorCodes.SITENAME_EXISTS,
-      409
-    );
+    throw new AppError(`Site name '${input.siteName}' already exists`, ErrorCodes.SITENAME_EXISTS, 409);
   }
 
   // Business Logic: Create org and member in a transaction
@@ -278,11 +271,7 @@ export async function createOrganizationWithOwner(
   } catch (error) {
     // Handle database constraint violations
     if (error.code === '23505') {
-      throw new AppError(
-        `Site name '${input.siteName}' already exists`,
-        ErrorCodes.SITENAME_EXISTS,
-        409
-      );
+      throw new AppError(`Site name '${input.siteName}' already exists`, ErrorCodes.SITENAME_EXISTS, 409);
     }
     throw new AppError('Failed to create organization', ErrorCodes.ORG_CREATE_FAILED, 500);
   }
@@ -302,7 +291,7 @@ export class AppError extends Error {
     message: string,
     public code: string,
     public statusCode: ContentfulStatusCode = 500,
-    public field?: string  // Optional: for field-specific validation errors
+    public field?: string // Optional: for field-specific validation errors
   ) {
     super(message);
     this.name = 'AppError';
@@ -312,7 +301,7 @@ export class AppError extends Error {
 export const ErrorCodes = {
   SITENAME_EXISTS: 'SITENAME_EXISTS',
   ORG_CREATE_FAILED: 'ORG_CREATE_FAILED',
-  PROFILE_NOT_FOUND: 'PROFILE_NOT_FOUND',
+  PROFILE_NOT_FOUND: 'PROFILE_NOT_FOUND'
   // ... add more as needed
 } as const;
 ```
@@ -334,19 +323,25 @@ export const handleError = (
   console.error('Error in route:', error);
 
   if (error instanceof AppError) {
-    return c.json({
-      success: false,
-      error: error.message,
-      code: error.code,
-      field: error.field
-    }, error.statusCode);
+    return c.json(
+      {
+        success: false,
+        error: error.message,
+        code: error.code,
+        field: error.field
+      },
+      error.statusCode
+    );
   }
 
-  return c.json({
-    success: false,
-    error: fallbackMessage,
-    code: fallbackCode
-  }, 500);
+  return c.json(
+    {
+      success: false,
+      error: fallbackMessage,
+      code: fallbackCode
+    },
+    500
+  );
 };
 ```
 
@@ -466,20 +461,20 @@ All API responses should follow a consistent structure:
 
 Use semantically correct HTTP status codes:
 
-| Code | Meaning | Usage |
-|------|---------|-------|
-| `200 OK` | Success | Successful GET, PUT, PATCH requests |
-| `201 Created` | Created | Successful POST creating a new resource |
-| `204 No Content` | Success | Successful DELETE or update with no response body |
-| `400 Bad Request` | Client Error | Malformed request, validation errors |
-| `401 Unauthorized` | Auth Error | Missing or invalid authentication token |
-| `403 Forbidden` | Auth Error | Authenticated but not authorized for this action |
-| `404 Not Found` | Client Error | Resource doesn't exist |
-| `409 Conflict` | Client Error | Duplicate resource (e.g., email/sitename already exists) |
-| `422 Unprocessable Entity` | Client Error | Valid syntax but semantic validation failed |
-| `429 Too Many Requests` | Client Error | Rate limit exceeded |
-| `500 Internal Server Error` | Server Error | Unexpected server error |
-| `503 Service Unavailable` | Server Error | Temporary service outage |
+| Code                        | Meaning      | Usage                                                    |
+| --------------------------- | ------------ | -------------------------------------------------------- |
+| `200 OK`                    | Success      | Successful GET, PUT, PATCH requests                      |
+| `201 Created`               | Created      | Successful POST creating a new resource                  |
+| `204 No Content`            | Success      | Successful DELETE or update with no response body        |
+| `400 Bad Request`           | Client Error | Malformed request, validation errors                     |
+| `401 Unauthorized`          | Auth Error   | Missing or invalid authentication token                  |
+| `403 Forbidden`             | Auth Error   | Authenticated but not authorized for this action         |
+| `404 Not Found`             | Client Error | Resource doesn't exist                                   |
+| `409 Conflict`              | Client Error | Duplicate resource (e.g., email/sitename already exists) |
+| `422 Unprocessable Entity`  | Client Error | Valid syntax but semantic validation failed              |
+| `429 Too Many Requests`     | Client Error | Rate limit exceeded                                      |
+| `500 Internal Server Error` | Server Error | Unexpected server error                                  |
+| `503 Service Unavailable`   | Server Error | Temporary service outage                                 |
 
 #### 3. **Input Validation with Zod**
 
@@ -517,8 +512,8 @@ import * as z from 'zod';
 import { ALLOWED_CONTENT_TYPES } from '../constants';
 
 export const ZCourseClone = z.object({
-  id: z.string().min(1),              // No hardcoded message
-  title: z.string().min(1),           // No hardcoded message
+  id: z.string().min(1), // No hardcoded message
+  title: z.string().min(1), // No hardcoded message
   description: z.string().optional(),
   slug: z.string().min(1),
   organizationId: z.string().min(1)
@@ -536,11 +531,10 @@ export * from './course';
 import { ZCourseClone } from '@cio/utils/validation/course';
 import { zValidator } from '@hono/zod-validator';
 
-export const cloneRouter = new Hono()
-  .post('/', authMiddleware, zValidator('json', ZCourseClone), async (c) => {
-    const data = c.req.valid('json'); // Fully typed!
-    // ... route handler
-  });
+export const cloneRouter = new Hono().post('/', authMiddleware, zValidator('json', ZCourseClone), async (c) => {
+  const data = c.req.valid('json'); // Fully typed!
+  // ... route handler
+});
 ```
 
 **Using in Frontend Forms**:
@@ -583,11 +577,11 @@ This allows different messages for shared field names (e.g., "Course title is re
       "title": { "too_small": "Lesson title is required" },
       "duration": { "too_small": "Lesson duration must be at least 1 minute" }
     },
-    
+
     // Generic field translations (fallback for fields used across entities)
     "title": { "too_small": "Title is required" },
     "email": { "invalid_email": "Please enter a valid email address" },
-    
+
     // Generic error type translations (last resort)
     "generic": {
       "required": "This field is required",
@@ -602,11 +596,11 @@ This allows different messages for shared field names (e.g., "Course title is re
 
 ```typescript
 // With entity name (entity-specific messages)
-mapZodErrorsToTranslations(error, 'course')  // "Course title is required"
-mapZodErrorsToTranslations(error, 'lesson')  // "Lesson title is required"
+mapZodErrorsToTranslations(error, 'course'); // "Course title is required"
+mapZodErrorsToTranslations(error, 'lesson'); // "Lesson title is required"
 
 // Without entity name (generic messages)
-mapZodErrorsToTranslations(error)  // "Title is required"
+mapZodErrorsToTranslations(error); // "Title is required"
 ```
 
 **Key Principles**:
@@ -687,7 +681,7 @@ Skip entity names when:
         "too_small": "Lesson must be at least 1 minute long"
       }
     },
-    
+
     // 2. Generic field-level (fallback for common fields)
     "title": {
       "too_small": "Title is required"
@@ -698,7 +692,7 @@ Skip entity names when:
     "password": {
       "too_small": "Password must be at least 8 characters"
     },
-    
+
     // 3. Generic error types (last resort fallback)
     "generic": {
       "required": "This field is required",
@@ -760,7 +754,7 @@ if (!result.success) {
 ✅ **Maintainable**: Clear fallback hierarchy reduces duplication  
 ✅ **Developer-friendly**: Works with or without entity name parameter  
 ✅ **Multi-language**: Same system works across all locales  
-✅ **Professional UX**: Context-specific messages improve user experience  
+✅ **Professional UX**: Context-specific messages improve user experience
 
 ---
 
@@ -805,8 +799,11 @@ import { createOrganizationWithOwner } from '@api/services/organization';
 import { handleError } from '@api/utils/errors';
 import { ZCreateOrg } from '@cio/utils/validation/organization';
 
-export const organizationRouter = new Hono()
-  .post('/create', authMiddleware, zValidator('json', ZCreateOrg), async (c) => {
+export const organizationRouter = new Hono().post(
+  '/create',
+  authMiddleware,
+  zValidator('json', ZCreateOrg),
+  async (c) => {
     try {
       const user = c.get('user');
       const body = c.req.valid('json');
@@ -817,7 +814,8 @@ export const organizationRouter = new Hono()
     } catch (error) {
       return handleError(c, error, 'Failed to create organization');
     }
-  });
+  }
+);
 ```
 
 **Key Points:**
@@ -904,12 +902,12 @@ export async function updateUser(userId: string, data: Partial<TProfile>) {
     return updatedProfile;
   } catch (error) {
     if (error instanceof AppError) throw error;
-    
+
     // Handle constraint violations
     if (error instanceof Error && error.message.includes('profile_username_key')) {
       throw new AppError('Username already exists', ErrorCodes.VALIDATION_ERROR, 400, 'username');
     }
-    
+
     throw new AppError('Failed to update profile', ErrorCodes.PROFILE_UPDATE_FAILED, 500);
   }
 }
@@ -929,18 +927,17 @@ import { authMiddleware } from '@api/middlewares/auth';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 
-export const accountRouter = new Hono()
-  .put('/user', authMiddleware, zValidator('json', ZUpdateProfile), async (c) => {
-    try {
-      const user = c.get('user');
-      const validatedData = c.req.valid('json');
-      const updatedProfile = await updateUser(user.id, validatedData);
+export const accountRouter = new Hono().put('/user', authMiddleware, zValidator('json', ZUpdateProfile), async (c) => {
+  try {
+    const user = c.get('user');
+    const validatedData = c.req.valid('json');
+    const updatedProfile = await updateUser(user.id, validatedData);
 
-      return c.json({ success: true, profile: updatedProfile }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to update profile');
-    }
-  });
+    return c.json({ success: true, profile: updatedProfile }, 200);
+  } catch (error) {
+    return handleError(c, error, 'Failed to update profile');
+  }
+});
 ```
 
 ---
@@ -954,13 +951,20 @@ export * from './account';
 // apps/api/src/app.ts
 import { accountRouter } from '@api/routes/account';
 
-export const app = new Hono()
-  .route('/account', accountRouter);  // Route available at PUT /account/user
+export const app = new Hono().route('/account', accountRouter); // Route available at PUT /account/user
 ```
 
 ---
 
-### Step 5: Use in Frontend
+### Step 5: Run the api build command (at the root directory)
+
+```
+ sudo pnpm --filter @cio/api build
+```
+
+---
+
+### Step 6: Use in Frontend
 
 **Location**: `apps/dashboard/src/lib/features/{domain}/api/{entity}.svelte.ts`
 
@@ -983,15 +987,15 @@ export class ProfileApi {
 
     try {
       this.isLoading = true;
-      
+
       // Call API using RPC client (matches route path)
       const response = await classroomio.account.user.$put({
         json: result.data
       });
-      
+
       const data = await response.json();
       if (!data.success) throw new Error(data.error);
-      
+
       // Update local state, show success message, etc.
     } catch (error) {
       this.errors.general = error.message;
@@ -1083,19 +1087,27 @@ import { onboardingRouter } from '@api/routes/onboarding';
 
 export const app = new Hono()
   // ... middleware ...
-  
+
   // Routes
   .route('/account', accountRouter)
-  .route('/onboarding', onboardingRouter)  // Add new route
+  .route('/onboarding', onboardingRouter) // Add new route
   .route('/course', courseRouter)
-  .route('/mail', mailRouter)
-  
-  // ... error handling ...
+  .route('/mail', mailRouter);
+
+// ... error handling ...
 ```
 
 ---
 
-## Step 5: Update Frontend
+### Step 5: Run the api build command (at the root directory)
+
+```
+ sudo pnpm --filter @cio/api build
+```
+
+---
+
+## Step 6: Update Frontend
 
 **Location**: `apps/dashboard/src/lib/utils/services/api.ts` (or similar)
 
@@ -1178,7 +1190,7 @@ Example with **client-side validation** before API call:
 
     // Client-side validation with entity-specific translations
     const result = ZCourseCreate.safeParse(fields);
-    
+
     if (!result.success) {
       // Map validation errors to translated messages
       errors = mapZodErrorsToTranslations(result.error, 'course');
@@ -1209,7 +1221,7 @@ Example with **client-side validation** before API call:
       // Success - redirect to course
       const { course } = data.data;
       await goto(`/courses/${course.slug}`);
-      
+
     } catch (error) {
       console.error('Error creating course:', error);
       errors.general = 'Network error. Please try again.';
@@ -1259,7 +1271,7 @@ Example with **client-side validation** before API call:
 - **Use entity-specific translations** when multiple entities share field names
 
   ```typescript
-  mapZodErrorsToTranslations(error, 'course')  // "Course title is required"
+  mapZodErrorsToTranslations(error, 'course'); // "Course title is required"
   ```
 
 - **Provide generic translations** as fallbacks for shared fields (email, password)
@@ -1323,7 +1335,7 @@ Add JSDoc comments to document your routes:
 /**
  * POST /api/onboarding/create-org
  * Creates organization during onboarding
- * 
+ *
  * @requires Authentication
  * @returns {201} Created - Organization created successfully
  * @returns {409} Conflict - Sitename already exists
@@ -1347,11 +1359,11 @@ const paginationSchema = z.object({
 
 .get('/list', zValidator('query', paginationSchema), async (c) => {
   const { page, limit, sort, sortBy } = c.req.valid('query');
-  
+
   const offset = (page - 1) * limit;
   const items = await getItems({ offset, limit, sort, sortBy });
   const total = await getItemsCount();
-  
+
   return c.json({
     success: true,
     data: items,
@@ -1448,7 +1460,9 @@ describe('Onboarding Routes', () => {
     // Create first, then attempt duplicate
     const res = await app.request('/onboarding/create-org', {
       method: 'POST',
-      body: JSON.stringify({ /* duplicate data */ })
+      body: JSON.stringify({
+        /* duplicate data */
+      })
     });
 
     expect(res.status).toBe(409);
@@ -1564,11 +1578,11 @@ const result = await db.transaction(async (tx) => {
   items: z.array(itemSchema).min(1).max(100)
 })), async (c) => {
   const { items } = c.req.valid('json');
-  
+
   const results = await db.transaction(async (tx) => {
     return await Promise.all(items.map(item => createItem(item)));
   });
-  
+
   return c.json({ success: true, data: results }, 201);
 });
 ```
