@@ -23,8 +23,8 @@
   import * as ButtonGroup from '@cio/ui/base/button-group';
   import * as Empty from '@cio/ui/base/empty';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import * as InputGroup from '@cio/ui/base/input-group';
   import { Button } from '@cio/ui/base/button';
-  import { Input } from '@cio/ui/base/input';
 
   import { FIELDS } from './fields';
 
@@ -97,13 +97,21 @@
           <Page.Subtitle>Manage and organize your course offerings.</Page.Subtitle>
         </Page.HeaderContent>
         <Page.Action>
+          <Button>
+            <PlusIcon />
+            New Course
+          </Button>
+        </Page.Action>
+      </Page.Header>
+      <Page.Body>
+        <Page.BodyHeader align="right">
           <ButtonGroup.Root>
-            <ButtonGroup.Root>
-              <Input placeholder="Search courses..." />
-              <Button variant="outline" size="icon" aria-label="Search">
+            <InputGroup.Root>
+              <InputGroup.Input placeholder="Search courses..." />
+              <InputGroup.Addon>
                 <SearchIcon />
-              </Button>
-            </ButtonGroup.Root>
+              </InputGroup.Addon>
+            </InputGroup.Root>
             <ButtonGroup.Root>
               <Button variant="outline">
                 <FilterIcon />
@@ -143,13 +151,7 @@
               </DropdownMenu.Root>
             </ButtonGroup.Root>
           </ButtonGroup.Root>
-          <Button>
-            <PlusIcon />
-            New Course
-          </Button>
-        </Page.Action>
-      </Page.Header>
-      <Page.Body>
+        </Page.BodyHeader>
         {#snippet child()}
           <Empty.Root>
             <Empty.Header>

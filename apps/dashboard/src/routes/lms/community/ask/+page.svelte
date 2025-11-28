@@ -7,7 +7,7 @@
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import { courses } from '$lib/components/Courses/store';
+  import { courses } from '$lib/features/course/utils/store';
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { fetchCourses } from '$lib/utils/services/courses';

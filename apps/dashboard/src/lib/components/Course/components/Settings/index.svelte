@@ -13,7 +13,7 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import { Row, Grid, Column } from '$lib/components/Org/Settings/Layout';
   import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
-  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
+  import { UpgradeBanner } from '$lib/features/ui';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';

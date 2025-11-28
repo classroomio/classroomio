@@ -1,0 +1,146 @@
+<script lang="ts">
+  import * as Table from '@cio/ui/base/table';
+  import { page as pageStore } from '$app/state';
+  import { Skeleton } from '@cio/ui/base/skeleton';
+  import { Search } from '@cio/ui/custom/search';
+  import * as Pagination from '@cio/ui/base/pagination';
+  import UsersIcon from '@lucide/svelte/icons/users';
+  import { getOrgAudience } from '$lib/utils/services/org';
+  import { t } from '$lib/utils/functions/translations';
+  import { untrack } from 'svelte';
+  import { Empty } from '@cio/ui/custom/empty';
+  import { UpgradeBanner } from '$lib/features/ui';
+  import { orgAudience, currentOrg, currentOrgMaxAudience } from '$lib/utils/store/org';
+  import Avatar from '$lib/components/Avatar/index.svelte';
+  import * as Page from '@cio/ui/base/page';
+
+  let isLoading = $state(false);
+
+  function fetchInitData(orgId) {
+    if (!orgId) return;
+
+    untrack(async () => {
+      isLoading = true;
+      await getOrgAudience(orgId);
+      isLoading = false;
+    });
+  }
+
+  $effect(() => {
+    fetchInitData($currentOrg.id);
+  });
+
+  const headers = [
+    { key: 'name', value: $t('audience.name') },
+    { key: 'email', value: $t('audience.email') },
+    { key: 'date_joined', value: $t('audience.date_joined') }
+  ];
+  let pageSize = $state(5);
+  let currentPage = $state(1);
+  let searchValue = $state('');
+
+  const filteredRows = $derived(
+    searchValue
+      ? $orgAudience.filter((row) =>
+          Object.values(row).some((val) => String(val).toLowerCase().includes(searchValue.toLowerCase()))
+        )
+      : $orgAudience
+  );
+
+  const totalPages = $derived(Math.ceil(filteredRows.length / pageSize));
+  const startIndex = $derived((currentPage - 1) * pageSize);
+  const endIndex = $derived(startIndex + pageSize);
+  const paginatedRows = $derived(filteredRows.slice(startIndex, endIndex));
+
+  $effect(() => {
+    if (filteredRows.length > 0 && currentPage > totalPages) {
+      currentPage = 1;
+    }
+  });
+</script>
+
+{#if $orgAudience.length >= $currentOrgMaxAudience}
+  <UpgradeBanner>{$t('audience.upgrade')}</UpgradeBanner>
+{/if}
+
+<Page.BodyHeader>
+  <Search placeholder="Search..." bind:value={searchValue} class="" />
+</Page.BodyHeader>
+
+{#if $orgAudience.length || isLoading}
+  <div class="w-full space-y-4">
+    <!-- Table -->
+    {#if isLoading}
+      <div class="space-y-2">
+        {#each Array(pageSize) as _}
+          <Skeleton class="h-12 w-full" />
+        {/each}
+      </div>
+    {:else}
+      <div class="rounded-md border">
+        <Table.Root>
+          <Table.Header>
+            <Table.Row>
+              {#each headers as header}
+                <Table.Head>{header.value}</Table.Head>
+              {/each}
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {#each paginatedRows as row}
+              <Table.Row>
+                <Table.Cell>
+                  <a
+                    href={`${pageStore.url.href}/${row.id}/${$currentOrg.id}`}
+                    class="text-primary-700 flex items-center gap-2 hover:underline"
+                  >
+                    <Avatar src={row.avatar_url} width="w-5" height="h-5" />
+                    {row.name}
+                  </a>
+                </Table.Cell>
+                <Table.Cell>{row.email}</Table.Cell>
+                <Table.Cell>{row.date_joined}</Table.Cell>
+              </Table.Row>
+            {/each}
+          </Table.Body>
+        </Table.Root>
+      </div>
+    {/if}
+
+    <!-- Pagination -->
+    <div class="flex items-center justify-between">
+      <Pagination.Root
+        count={filteredRows.length}
+        perPage={pageSize}
+        page={currentPage}
+        onPageChange={(page) => (currentPage = page)}
+      >
+        {#snippet children({ pages, currentPage: activePage })}
+          <Pagination.Content>
+            <Pagination.Item>
+              <Pagination.PrevButton />
+            </Pagination.Item>
+            {#each pages as page (page.key)}
+              {#if page.type === 'ellipsis'}
+                <Pagination.Item>
+                  <Pagination.Ellipsis />
+                </Pagination.Item>
+              {:else}
+                <Pagination.Item>
+                  <Pagination.Link {page} isActive={activePage === page.value}>
+                    {page.value}
+                  </Pagination.Link>
+                </Pagination.Item>
+              {/if}
+            {/each}
+            <Pagination.Item>
+              <Pagination.NextButton />
+            </Pagination.Item>
+          </Pagination.Content>
+        {/snippet}
+      </Pagination.Root>
+    </div>
+  </div>
+{:else}
+  <Empty title={$t('audience.no_audience')} description={$t('audience.manage')} icon={UsersIcon} variant="page" />
+{/if}

@@ -5,7 +5,7 @@
   import PlayQuiz from '$lib/components/Org/Quiz/Play/index.svelte';
   import { PageRestricted } from '$lib/components/Page';
   import Snackbar from '$lib/components/Snackbar/index.svelte';
-  import UpgradeModal from '$lib/components/Upgrade/Modal.svelte';
+  import { UpgradeModal } from '$lib/features/ui';
   import { user } from '$lib/utils/store/user';
   import { setupAnalytics } from '$lib/utils/functions/appSetup';
   import { setTheme } from '$lib/utils/functions/theme';

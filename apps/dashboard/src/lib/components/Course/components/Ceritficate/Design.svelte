@@ -16,7 +16,7 @@
   import Plain from './templates/Plain.svelte';
   import Professional from './templates/Professional.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
-  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
+  import { UpgradeBanner } from '$lib/features/ui';
   import BlueBadgePattern from './templates/BlueBadgePattern.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import PurpleBadgePattern from './templates/PurpleBadgePattern.svelte';

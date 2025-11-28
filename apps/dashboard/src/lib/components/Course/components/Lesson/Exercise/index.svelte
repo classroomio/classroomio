@@ -29,7 +29,7 @@
   import { IconButton } from '$lib/components/IconButton';
   import UpdateDescription from './UpdateDescription.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/features/ui';
 
   interface Props {
     exerciseId?: string;

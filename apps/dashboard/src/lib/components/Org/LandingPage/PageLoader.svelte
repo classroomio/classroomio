@@ -1,6 +1,6 @@
 <script>
   import { Skeleton } from '@cio/ui/base/skeleton';
-  import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
+  import { CourseCardLoader } from '$lib/features/course/components';
 </script>
 
 <section class="h-screen w-screen p-5">
@@ -19,8 +19,8 @@
   </div>
   <!-- cards -->
   <div class="my-4 flex flex-wrap items-center justify-center gap-5 overflow-hidden rounded-md">
-    <CardLoader />
-    <CardLoader />
-    <CardLoader />
+    <CourseCardLoader />
+    <CourseCardLoader />
+    <CourseCardLoader />
   </div>
 </section>

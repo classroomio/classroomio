@@ -291,8 +291,8 @@ importers:
         specifier: ^1.3.34
         version: 1.3.34(@sveltejs/kit@2.48.4(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.43.2)(vite@5.4.21(@types/node@20.19.24)(lightningcss@1.30.2)(sass@1.93.3)))(svelte@5.43.2)(vite@5.4.21(@types/node@20.19.24)(lightningcss@1.30.2)(sass@1.93.3)))(react@18.3.1)(solid-js@1.9.10)(svelte@5.43.2)(vue@3.5.22(typescript@5.9.3))
       bits-ui:
-        specifier: ^2.14.1
-        version: 2.14.2(@internationalized/date@3.10.0)(@sveltejs/kit@2.48.4(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.43.2)(vite@5.4.21(@types/node@20.19.24)(lightningcss@1.30.2)(sass@1.93.3)))(svelte@5.43.2)(vite@5.4.21(@types/node@20.19.24)(lightningcss@1.30.2)(sass@1.93.3)))(svelte@5.43.2)
+        specifier: ^2.14.4
+        version: 2.14.4(@internationalized/date@3.10.0)(@sveltejs/kit@2.48.4(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.43.2)(vite@5.4.21(@types/node@20.19.24)(lightningcss@1.30.2)(sass@1.93.3)))(svelte@5.43.2)(vite@5.4.21(@types/node@20.19.24)(lightningcss@1.30.2)(sass@1.93.3)))(svelte@5.43.2)
       body-parser:
         specifier: ^1.20.2
         version: 1.20.3
@@ -5638,13 +5638,6 @@ packages:
     resolution: {integrity: sha512-XFZ7/bK7j/K+5iktxX/ZpmoFHjYjpPzP5EOO/4bWiaFg5TG1iMcfjDhlBTQnJxD6BoVoHuqeZPHZvaTgF4Iv3Q==}
     peerDependencies:
       svelte: ^4.0.0 || ^5.0.0-next.118
-
-  bits-ui@2.14.2:
-    resolution: {integrity: sha512-YqpAJj/nRTZjf7IlgUC3QlepVZ7YFiAQWpZaYUOAZFW5Py+g5DYkhEDTdNFI5SReo7l1rct/nRpMK4pfL9Xffw==}
-    engines: {node: '>=20'}
-    peerDependencies:
-      '@internationalized/date': ^3.8.1
-      svelte: ^5.33.0
 
   bits-ui@2.14.4:
     resolution: {integrity: sha512-W6kenhnbd/YVvur+DKkaVJ6GldE53eLewur5AhUCqslYQ0vjZr8eWlOfwZnMiPB+PF5HMVqf61vXBvmyrAmPWg==}
@@ -16915,7 +16908,7 @@ snapshots:
       nanoid: 5.1.6
       svelte: 5.43.2
 
-  bits-ui@2.14.2(@internationalized/date@3.10.0)(@sveltejs/kit@2.48.4(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.43.2)(vite@5.4.21(@types/node@20.19.24)(lightningcss@1.30.2)(sass@1.93.3)))(svelte@5.43.2)(vite@5.4.21(@types/node@20.19.24)(lightningcss@1.30.2)(sass@1.93.3)))(svelte@5.43.2):
+  bits-ui@2.14.4(@internationalized/date@3.10.0)(@sveltejs/kit@2.48.4(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.43.2)(vite@5.4.21(@types/node@20.19.24)(lightningcss@1.30.2)(sass@1.93.3)))(svelte@5.43.2)(vite@5.4.21(@types/node@20.19.24)(lightningcss@1.30.2)(sass@1.93.3)))(svelte@5.43.2):
     dependencies:
       '@floating-ui/core': 1.7.3
       '@floating-ui/dom': 1.7.4

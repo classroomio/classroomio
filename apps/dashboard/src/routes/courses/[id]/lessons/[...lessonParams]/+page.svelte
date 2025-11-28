@@ -29,7 +29,7 @@
   import { IconButton } from '$lib/components/IconButton';
   import { PageBody, PageNav } from '$lib/components/Page';
   import { CourseContainer } from '$lib/components/CourseContainer';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/features/ui';
   import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
   import Materials from '$lib/components/Course/components/Lesson/Materials/index.svelte';
 

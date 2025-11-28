@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Content, Editor } from '@tiptap/core';
+  import type { HTMLContent, Content, Editor } from '@tiptap/core';
   import type { Transaction } from '@tiptap/pm/state';
   import { EdraEditor, EdraToolBar, EdraBubbleMenu, EdraDragHandleExtended } from './ui';
   import { slide } from 'svelte/transition';
@@ -7,7 +7,7 @@
 
   interface Props {
     // Content of the editor
-    content?: Content;
+    content?: HTMLContent;
     // Whether the toolbar should be visible
     showToolBar?: boolean;
     // Whether the editor is editable
@@ -25,13 +25,13 @@
     // Placeholder text for the editor
     placeholder?: string | ((node: any) => string);
     // Callback functions
-    onContentChange?: (content: Content) => void;
+    onContentChange?: (content: HTMLContent) => void;
     onEditorReady?: (editor: Editor) => void;
     onEditorDestroy?: () => void;
   }
 
   let {
-    content = $bindable(getDefaultContent()),
+    content = $bindable(''),
     showToolBar = true,
     editable = true,
     enablePersistence = false,
@@ -49,24 +49,6 @@
 
   // Browser detection
   const browser = typeof window !== 'undefined';
-
-  // Default content fallback
-  function getDefaultContent(): Content {
-    return {
-      type: 'doc',
-      content: [
-        {
-          type: 'paragraph',
-          content: [
-            {
-              type: 'text',
-              text: 'Start typing...'
-            }
-          ]
-        }
-      ]
-    };
-  }
 
   // Handle content persistence
   $effect(() => {
@@ -89,9 +71,8 @@
         // Load content
         const rawContentString = localStorage.getItem(contentStorageKey);
         if (rawContentString !== null) {
-          const persistedContent: Content = JSON.parse(rawContentString);
-          console.log('persistedContent', persistedContent);
-          content = persistedContent;
+          console.log('persistedContent', rawContentString);
+          content = rawContentString;
         }
 
         // Load editable state

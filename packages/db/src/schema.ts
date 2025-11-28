@@ -28,7 +28,7 @@ export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
 
 export const user = pgTable('user', {
   id: uuid()
-    .default(sql`uuid_generate_v4()`)
+    .default(sql`gen_random_uuid()`)
     .primaryKey()
     .notNull(),
   name: text('name').notNull(),
@@ -49,7 +49,7 @@ export const user = pgTable('user', {
 
 export const session = pgTable('session', {
   id: uuid()
-    .default(sql`uuid_generate_v4()`)
+    .default(sql`gen_random_uuid()`)
     .primaryKey()
     .notNull(),
   expiresAt: timestamp('expires_at').notNull(),
@@ -68,7 +68,7 @@ export const session = pgTable('session', {
 
 export const account = pgTable('account', {
   id: uuid('id')
-    .default(sql`uuid_generate_v4()`)
+    .default(sql`gen_random_uuid()`)
     .primaryKey()
     .notNull(),
   accountId: text('account_id').notNull(),
@@ -91,7 +91,7 @@ export const account = pgTable('account', {
 
 export const verification = pgTable('verification', {
   id: uuid('id')
-    .default(sql`uuid_generate_v4()`)
+    .default(sql`gen_random_uuid()`)
     .primaryKey()
     .notNull(),
   identifier: text('identifier').notNull(),
@@ -108,7 +108,7 @@ export const analyticsLoginEvents = pgTable(
   'analytics_login_events',
   {
     id: uuid()
-      .default(sql`uuid_generate_v4()`)
+      .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
     userId: uuid('user_id').notNull(),
@@ -166,7 +166,7 @@ export const group = pgTable(
   'group',
   {
     id: uuid()
-      .default(sql`uuid_generate_v4()`)
+      .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
     name: varchar().notNull(),
@@ -352,7 +352,7 @@ export const option = pgTable(
     isCorrect: boolean('is_correct').default(false).notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     questionId: bigint('question_id', { mode: 'number' }).notNull(),
-    value: uuid().default(sql`extensions.gen_random_uuid()`),
+    value: uuid().default(sql`gen_random_uuid()`),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
   },
@@ -493,7 +493,7 @@ export const quiz = pgTable(
   'quiz',
   {
     id: uuid()
-      .default(sql`extensions.gen_random_uuid()`)
+      .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
@@ -523,7 +523,7 @@ export const submission = pgTable(
   'submission',
   {
     id: uuid()
-      .default(sql`uuid_generate_v4()`)
+      .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
@@ -603,7 +603,7 @@ export const course = pgTable(
     description: varchar().notNull(),
     overview: varchar().default('Welcome to this amazing course 🚀 '),
     id: uuid()
-      .default(sql`uuid_generate_v4()`)
+      .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
@@ -735,7 +735,7 @@ export const lesson = pgTable(
     slideUrl: varchar('slide_url'),
     courseId: uuid('course_id').notNull(),
     id: uuid()
-      .default(sql`uuid_generate_v4()`)
+      .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
@@ -832,7 +832,7 @@ export const exercise = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     id: uuid()
-      .default(sql`uuid_generate_v4()`)
+      .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
     dueBy: timestamp('due_by', { mode: 'string' })
@@ -854,7 +854,7 @@ export const groupmember = pgTable(
   'groupmember',
   {
     id: uuid()
-      .default(sql`uuid_generate_v4()`)
+      .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
     groupId: uuid('group_id').notNull(),
@@ -940,7 +940,7 @@ export const communityAnswer = pgTable(
   'community_answer',
   {
     id: uuid()
-      .default(sql`extensions.gen_random_uuid()`)
+      .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
@@ -1299,7 +1299,7 @@ export const question = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     exerciseId: uuid('exercise_id').notNull(),
-    name: uuid().default(sql`extensions.gen_random_uuid()`),
+    name: uuid().default(sql`gen_random_uuid()`),
     points: doublePrecision(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     order: bigint({ mode: 'number' })
@@ -1438,14 +1438,88 @@ export const organization = pgTable(
   'organization',
   {
     id: uuid()
-      .default(sql`uuid_generate_v4()`)
+      .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
     name: varchar().notNull(),
     siteName: text(),
     avatarUrl: text('avatar_url'),
     settings: jsonb().default({}),
-    landingpage: jsonb().default({}),
+    landingpage: jsonb().default({}).$type<{
+      header?: {
+        title: string;
+        titleHighlight: string;
+        subtitle: string;
+        action: {
+          label: string;
+          link: string;
+          redirect: boolean;
+        };
+        banner: {
+          video: string;
+          image: string;
+          type: string;
+          show: boolean;
+        };
+        background: {
+          image: string;
+          show: boolean;
+        };
+        show: boolean;
+      };
+      aboutUs?: {
+        title: string;
+        content: string;
+        imageUrl: string;
+        show: boolean;
+      };
+      courses?: {
+        title: string;
+        titleHighlight: string;
+        subtitle: string;
+        show: boolean;
+      };
+      faq?: {
+        title: string;
+        questions: Array<{
+          id: number;
+          title: string;
+          content: string;
+        }>;
+        show: boolean;
+      };
+      contact?: {
+        title: string;
+        titleHighlight: string;
+        subtitle: string;
+        address: string;
+        phone: string;
+        email: string;
+        show: boolean;
+      };
+      mailinglist?: {
+        title: string;
+        subtitle: string;
+        buttonLabel: string;
+        show: boolean;
+      };
+      customLinks?: {
+        show: boolean;
+        links: Array<{
+          id: number;
+          label: string;
+          url: string;
+          openInNewTab: boolean;
+        }>;
+      };
+      footer?: {
+        facebook: string;
+        instagram: string;
+        twitter: string;
+        linkedin: string;
+        show: boolean;
+      };
+    }>(),
     theme: text(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
       .default(sql`timezone('utc'::text, now())`)
@@ -1456,6 +1530,22 @@ export const organization = pgTable(
         course: { grading: true, newsfeed: true },
         dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' }
       })
+      .$type<{
+        dashboard: {
+          community: boolean;
+          exercise: boolean;
+          bannerImage: string;
+          bannerText: string;
+        };
+        course: {
+          newsfeed: boolean;
+          grading: boolean;
+        };
+        apps: {
+          poll: boolean;
+          comments: boolean;
+        };
+      }>()
       .notNull(),
     isRestricted: boolean('is_restricted').default(false).notNull(),
     customCode: text(),

@@ -16,12 +16,11 @@
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import Navigation from '$lib/components/Navigation/index.svelte';
-  import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
+  import { PoweredBy } from '$lib/features/ui';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import Card from '$lib/components/Courses/components/Card/index.svelte';
+  import { CourseCard, CourseCardLoader } from '$lib/features/course/components';
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
   import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
-  import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
 
   import PageLoader from './PageLoader.svelte';
   import { Row, Grid, Column } from '../Settings/Layout';
@@ -32,7 +31,7 @@
   import { getCourseBySiteName } from '$lib/utils/services/org';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { validateEmail } from '$lib/utils/functions/validateEmail';
-  import { courseMetaDeta, courses } from '$lib/components/Courses/store';
+  import { courseMetaDeta, courses } from '$lib/features/course/utils/store';
   import { orgLandingpageValidation } from '$lib/utils/functions/validator';
 
   interface Props {
@@ -322,14 +321,14 @@
         </div>
         {#if $courseMetaDeta.isLoading}
           <div class="cards-container mx-2 my-4">
-            <CardLoader />
-            <CardLoader />
-            <CardLoader />
+            <CourseCardLoader />
+            <CourseCardLoader />
+            <CourseCardLoader />
           </div>
         {:else if $courses.length > 0}
           <div class="cards-container mx-2 my-4">
             {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
-              <Card
+              <CourseCard
                 id={courseData.id}
                 slug={courseData.slug}
                 bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}

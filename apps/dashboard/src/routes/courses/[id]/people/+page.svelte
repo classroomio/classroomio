@@ -13,7 +13,7 @@
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { ComingSoon } from '$lib/features/ui';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/features/ui';
   import InvitationModal from '$lib/components/Course/components/People/InvitationModal.svelte';
   import DeleteConfirmation from '$lib/components/Course/components/People/DeleteConfirmation.svelte';
 

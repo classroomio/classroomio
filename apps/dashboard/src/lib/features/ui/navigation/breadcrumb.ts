@@ -64,7 +64,7 @@ export function generateBreadcrumbs(
 
   // Handle items with query params (like settings tabs)
   if (matchedNavItem?.items && searchParams) {
-    const subItem = matchedNavItem.items.find((sub) => isActive(pathWithQuery, sub.url, true));
+    const subItem = matchedNavItem.items.find((sub) => isActive(pathWithQuery, sub.url, undefined, true));
     if (subItem) {
       breadcrumbs.push({
         label: subItem.title,

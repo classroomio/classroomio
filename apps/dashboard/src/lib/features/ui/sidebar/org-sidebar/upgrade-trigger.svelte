@@ -10,40 +10,36 @@
 </script>
 
 {#if $isFreePlan}
-  {#if sidebar.open || sidebar.isMobile}
-    <div
-      class="animate-icon group mx-2 flex flex-col items-center justify-center gap-4 rounded-md border border-gray-200 px-2 py-6 text-center transition-all ease-in-out hover:border-blue-600"
-    >
-      <RocketIcon class="rocket-launch my-3 size-6" />
-      <span class="flex flex-col gap-1">
-        <p class="text-base font-semibold">{$t('org_navigation.early_adopter')}</p>
-        <p class="text-xs">{$t('org_navigation.unlock')}</p>
-      </span>
+  <div class="animate-icon">
+    {#if sidebar.open || sidebar.isMobile}
+      <div
+        class="mx-2 flex flex-col items-center justify-center gap-4 rounded-md border px-2 py-6 text-center transition-all ease-in-out hover:border-blue-600"
+      >
+        <RocketIcon class="rocket-launch my-3 size-6" />
+        <span class="flex flex-col gap-1">
+          <p class="text-base font-semibold">{$t('org_navigation.early_adopter')}</p>
+          <p class="text-xs">{$t('org_navigation.unlock')}</p>
+        </span>
+        <Button data-sidebar="upgrade-trigger" data-slot="upgrade-trigger" type="button" onclick={openUpgradeModal}>
+          <RocketIcon class="rocket-launch custom size-4" />
+          {$t('org_navigation.upgrade')}
+        </Button>
+      </div>
+    {:else}
       <Button
         data-sidebar="upgrade-trigger"
         data-slot="upgrade-trigger"
-        class="font-normal"
+        variant="ghost"
+        size="icon"
+        class="rocket-launch"
         type="button"
         onclick={openUpgradeModal}
       >
         <RocketIcon class="custom size-4" />
-        {$t('org_navigation.upgrade')}
+        <span class="sr-only">{$t('org_navigation.upgrade')}</span>
       </Button>
-    </div>
-  {:else}
-    <Button
-      data-sidebar="upgrade-trigger"
-      data-slot="upgrade-trigger"
-      variant="ghost"
-      size="icon"
-      class="flex w-full items-center justify-center"
-      type="button"
-      onclick={openUpgradeModal}
-    >
-      <RocketIcon class="custom size-4" />
-      <span class="sr-only">{$t('org_navigation.upgrade')}</span>
-    </Button>
-  {/if}
+    {/if}
+  </div>
 {/if}
 
 <style>

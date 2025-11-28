@@ -10,7 +10,7 @@
   import TextareaQuestion from '$lib/components/Question/TextareaQuestion/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import Box from '$lib/components/Box/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/features/ui';
   import Progress from '$lib/components/Progress/index.svelte';
   import { removeDuplicate } from '$lib/utils/functions/removeDuplicate';
   import { QUESTION_TYPE } from '$lib/components/Question/constants';

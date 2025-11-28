@@ -1,11 +1,11 @@
 <script lang="ts">
   import { Editor } from '@cio/ui/custom/editor';
-  import type { Content, TiptapEditor } from '@cio/ui/custom/editor';
+  import type { HTMLContent, TiptapEditor } from '@cio/ui/custom/editor';
 
   interface Props {
     placeholder?: string | ((node: any) => string);
     // Content of the editor
-    content?: Content;
+    content?: HTMLContent;
     // Whether the toolbar should be visible
     showToolBar?: boolean;
     // Whether the editor is editable
@@ -21,7 +21,7 @@
     // CSS class for the editor itself
     editorClass?: string;
     // Callback functions
-    onChange?: (content: Content) => void;
+    onChange?: (content: HTMLContent) => void;
     onReady?: (editor: TiptapEditor) => void;
     onEditorDestroy?: () => void;
   }

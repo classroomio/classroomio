@@ -1,5 +1,6 @@
 import Action from './page-action.svelte';
 import Body from './page-body.svelte';
+import BodyHeader from './page-body-header.svelte';
 import Header from './page-header.svelte';
 import HeaderContent from './page-header-content.svelte';
 import Root from './page.svelte';
@@ -14,6 +15,7 @@ export {
   Title,
   Subtitle,
   Body,
+  BodyHeader,
   //
   Root as Page,
   Header as PageHeader,
@@ -21,5 +23,6 @@ export {
   Action as PageAction,
   Title as PageTitle,
   Subtitle as PageSubtitle,
-  Body as PageBody
+  Body as PageBody,
+  BodyHeader as PageBodyHeader
 };

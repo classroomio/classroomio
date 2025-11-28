@@ -22,7 +22,7 @@
   import { course } from '$lib/components/Course/store';
   import { PageBody, PageNav } from '$lib/components/Page';
   import { CourseContainer } from '$lib/components/CourseContainer';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/features/ui';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
 
   let { data } = $props();

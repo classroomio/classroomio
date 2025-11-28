@@ -1,21 +1,24 @@
 <script>
-  import OrgSettings from '$lib/components/Org/Settings/index.svelte';
+  import { ProfilePage } from '$lib/features/settings/pages';
   import ViewSiteBtn from '$lib/components/Buttons/VisitOrgSite.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import * as Page from '@cio/ui/base/page';
 </script>
 
 <svelte:head>
   <title>Settings - ClassroomIO</title>
 </svelte:head>
 
-<section class="w-full md:max-w-6xl lg:mx-auto">
-  <div class="px-5 md:py-10">
-    <div class="mb-10 flex items-center justify-between">
-      <h1 class="text-3xl dark:text-white">{$t('settings.heading')}</h1>
-
-      <ViewSiteBtn />
-    </div>
-
-    <OrgSettings />
-  </div>
-</section>
+<Page.Header>
+  <Page.HeaderContent>
+    <Page.Title>{$t('settings.heading')}</Page.Title>
+  </Page.HeaderContent>
+  <Page.Action>
+    <ViewSiteBtn />
+  </Page.Action>
+</Page.Header>
+<Page.Body>
+  {#snippet child()}
+    <ProfilePage />
+  {/snippet}
+</Page.Body>

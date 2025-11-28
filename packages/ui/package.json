@@ -63,6 +63,6 @@
     "tiptap-markdown": "^0.9.0"
   },
   "peerDependencies": {
-    "bits-ui": "^2.14.1"
+    "bits-ui": "^2.14.4"
   }
 }

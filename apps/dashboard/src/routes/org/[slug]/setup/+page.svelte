@@ -1,8 +1,14 @@
 <script lang="ts">
-  import Chip from '$lib/components/Chip/Text.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
+  import { Button } from '@cio/ui/base/button';
+  import * as Item from '@cio/ui/base/item';
+  import * as Page from '@cio/ui/base/page';
+  import BadgeCheckIcon from '@lucide/svelte/icons/badge-check';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+  import BookOpenIcon from '@lucide/svelte/icons/book-open';
+  import UserPlusIcon from '@lucide/svelte/icons/user-plus';
+  import UsersIcon from '@lucide/svelte/icons/users';
+  import GlobeIcon from '@lucide/svelte/icons/globe';
+  import FileTextIcon from '@lucide/svelte/icons/file-text';
 
   import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
@@ -21,6 +27,8 @@
   );
 
   const completed = $derived(setupList.filter((list) => list.is_completed).length);
+  const total = $derived(setupList.length);
+  const progressPercentage = $derived(Math.round((completed / total) * 100));
 
   const StepsEnum = {
     UPDATE_PROFILE: 'profile',
@@ -74,52 +82,129 @@
         break;
 
       case StepsEnum.UPDATE_ORG_PROFILE:
-        goto(`/org/${$currentOrg.siteName}/settings?tab=org`);
+        goto(`/org/${$currentOrg.siteName}/settings/org`);
         break;
     }
   };
 </script>
 
-<section class="mx-auto w-full md:max-w-3xl">
-  <div class="px-2 py-2 md:px-5 md:py-10">
-    <div class="flex items-center gap-2">
-      <h1 class="text-2xl md:text-3xl dark:text-white">{$t('setup.get_started')}</h1>
-      <Chip
-        value={`${completed}/${setupList.length}`}
-        className="text-[10px] font-semibold px-3 py-1!"
-        shape="rounded-full"
-      />
-    </div>
+<svelte:head>
+  <title>Setup - ClassroomIO</title>
+</svelte:head>
 
-    <section class="px-4">
-      {#each setupList as list, i}
-        <div
-          class="flex w-full flex-col justify-between gap-2 border-b border-gray-300 py-8 lg:flex-row lg:items-center"
-        >
-          <div class={`flex-1 space-y-1 ${list.is_completed ? 'opacity-50' : ''}  lg:max-w-[50%]`}>
-            <div class="flex items-center gap-3">
-              <Chip value={i + 1} className="text-[10px] font-semibold py-1" shape="rounded-full" />
-              <p class="text-lg font-medium">{$t(list.title)}</p>
-            </div>
-            <p class="text-sm">
-              {$t(list.desc)}
-            </p>
-          </div>
-          <div class="w-full lg:w-[30%]">
-            <PrimaryButton
-              variant={list.is_completed ? VARIANTS.CONTAINED_DARK : VARIANTS.OUTLINED}
-              className="w-full font-normal text-sm flex items-center gap-2"
-              onClick={() => handleClick(list.id)}
-              isDisabled={list.is_completed}
-            >
-              {#if list.is_completed}
-                <CircleCheckIcon size={16} />
-              {/if}
-              {$t(list.button_label)}
-            </PrimaryButton>
-          </div>
+<Page.Root class="w-full md:max-w-4xl lg:mx-auto">
+  <Page.Header>
+    <Page.HeaderContent>
+      <Page.Title>{$t('setup.get_started')}</Page.Title>
+      <Page.Subtitle>{$t('setup.description')}</Page.Subtitle>
+    </Page.HeaderContent>
+
+    <Page.Action>
+      <div class="relative shrink-0">
+        <svg class="size-14 -rotate-90" viewBox="0 0 100 100">
+          <!-- Background circle -->
+          <circle
+            cx="50"
+            cy="50"
+            r="45"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="8"
+            class="text-gray-200 dark:text-gray-700"
+          />
+          <!-- Progress circle -->
+          <circle
+            cx="50"
+            cy="50"
+            r="45"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="8"
+            stroke-linecap="round"
+            class="text-green-600"
+            stroke-dasharray={2 * Math.PI * 45}
+            stroke-dashoffset={2 * Math.PI * 45 * (1 - progressPercentage / 100)}
+            style="transition: stroke-dashoffset 0.5s ease-in-out;"
+          />
+        </svg>
+        <!-- Center text -->
+        <div class="absolute inset-0 flex flex-col items-center justify-center">
+          <p class="text-sm font-bold">{progressPercentage}%</p>
         </div>
-      {/each}
-    </section>
-  </div>
-</section>
+      </div>
+    </Page.Action>
+  </Page.Header>
+  <Page.Body>
+    {#snippet child()}
+      <section class="space-y-6 px-4">
+        <Item.Root variant="outline">
+          <Item.Content>
+            <Item.Description class="mb-4">
+              {$t('setup.description')}
+            </Item.Description>
+            <div class="flex items-center gap-2">
+              <Item.Description class="text-sm">
+                {completed} of {total}
+                {$t('setup.completed')}
+              </Item.Description>
+              <div class="flex gap-1">
+                {#each Array(total) as _, i}
+                  <div
+                    class="size-2 rounded-full {i < completed ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'}"
+                  ></div>
+                {/each}
+              </div>
+            </div>
+          </Item.Content>
+        </Item.Root>
+
+        <!-- Setup Items -->
+        <Item.Group class="space-y-2">
+          {#each setupList as list}
+            <Item.Root variant="muted" class={list.is_completed ? 'opacity-60' : ''}>
+              <Item.Media variant="icon">
+                {#if list.is_completed}
+                  <div class="flex size-5 items-center justify-center rounded">
+                    <BadgeCheckIcon class="size-5 text-white" />
+                  </div>
+                {:else if list.id === StepsEnum.CREATE_COURSE}
+                  <BookOpenIcon class="size-5 text-gray-600" />
+                {:else if list.id === StepsEnum.CREATE_LESSON || list.id === StepsEnum.CREATE_EXERCISE}
+                  <FileTextIcon class="size-5 text-gray-600" />
+                {:else if list.id === StepsEnum.PUBLISH_COURSE}
+                  <GlobeIcon class="size-5 text-gray-600" />
+                {:else if list.id === StepsEnum.UPDATE_PROFILE}
+                  <UserPlusIcon class="size-5 text-gray-600" />
+                {:else if list.id === StepsEnum.UPDATE_ORG_PROFILE}
+                  <UsersIcon class="size-5 text-gray-600" />
+                {:else}
+                  <BookOpenIcon class="size-5 text-gray-600" />
+                {/if}
+              </Item.Media>
+              <Item.Content>
+                <Item.Title class={list.is_completed ? 'text-gray-500 line-through' : 'font-semibold'}>
+                  {$t(list.title)}
+                </Item.Title>
+                <Item.Description class={list.is_completed ? 'text-gray-500 line-through' : ''}>
+                  {$t(list.desc)}
+                </Item.Description>
+              </Item.Content>
+              <Item.Actions>
+                {#if list.is_completed}
+                  <Button variant="secondary" size="sm" disabled class="bg-gray-400 text-white">
+                    {$t('setup.done')}
+                  </Button>
+                {:else}
+                  <Button variant="outline" size="sm" onclick={() => handleClick(list.id)} class="w-full sm:w-auto">
+                    {$t('setup.todo')}
+                    <ChevronRightIcon class="ml-2 size-4" />
+                  </Button>
+                {/if}
+              </Item.Actions>
+            </Item.Root>
+          {/each}
+        </Item.Group>
+      </section>
+    {/snippet}
+  </Page.Body>
+</Page.Root>

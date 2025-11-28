@@ -309,6 +309,11 @@
 
   "setup": {
     "get_started": "Get Started",
+    "description": "Complete these steps to set up your learning platform",
+    "progress": "Progress",
+    "completed": "completed",
+    "done": "Done",
+    "todo": "Todo",
     "personal_profile": {
       "title": "Upload a profile picture and update username",
       "desc": "Personalize and add a human touch making interactions more personal and memorable",

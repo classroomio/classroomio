@@ -17,7 +17,7 @@
   import Chip from '$lib/components/Chip/index.svelte';
   import DeleteFeedConfirmation from './DeleteFeedConfirmation.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/features/ui';
 
   interface Props {
     feed: Feed;

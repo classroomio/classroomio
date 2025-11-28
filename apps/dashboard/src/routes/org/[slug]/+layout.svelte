@@ -35,7 +35,7 @@
   <Sidebar.Inset>
     <AppHeader />
 
-    <div class="container mx-auto flex max-w-6xl flex-1 flex-col gap-4 p-4 pt-0">
+    <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 overflow-y-auto px-4">
       {#if data.orgName === '*'}
         <div class="grid auto-rows-min gap-4 md:grid-cols-3">
           <Skeleton class="aspect-video rounded-xl" />

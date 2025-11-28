@@ -31,6 +31,7 @@ export interface NavItemConfig {
   useHashUrl?: boolean; // Use '#' as URL (for collapsible items like settings)
   nestedRoutes?: NestedRouteConfig[]; // Static nested routes
   supportsDynamicSegment?: boolean; // Supports dynamic segments (like [slug])
+  matchPattern?: string | ((orgSlug: string) => string); // Regex pattern for route matching
 }
 
 export interface NestedRouteConfig {
@@ -43,18 +44,21 @@ const baseNavConfig: NavItemConfig[] = [
   {
     titleKey: 'org_navigation.dashboard',
     path: '',
-    icon: LayoutDashboardIcon
+    icon: LayoutDashboardIcon,
+    matchPattern: '^/org/[^/]+/?$' // Exact match only
   },
   {
     titleKey: 'org_navigation.courses',
     path: '/courses',
-    icon: LibraryBigIcon
+    icon: LibraryBigIcon,
+    matchPattern: '^/org/[^/]+/courses(/.*)?$' // Matches nested routes
   },
   {
     titleKey: 'org_navigation.community',
     path: '/community',
     icon: MessageSquareMoreIcon,
     supportsDynamicSegment: true, // Supports /community/[slug]
+    matchPattern: '^/org/[^/]+/community(/.*)?$', // Matches nested routes
     nestedRoutes: [
       {
         path: 'ask',
@@ -65,19 +69,22 @@ const baseNavConfig: NavItemConfig[] = [
   {
     titleKey: 'org_navigation.audience',
     path: '/audience',
-    icon: UsersIcon
+    icon: UsersIcon,
+    matchPattern: '^/org/[^/]+/audience(/.*)?$' // Matches nested routes
   },
   {
     titleKey: 'org_navigation.setup',
     path: '/setup',
     icon: Settings2Icon,
-    requiresAdmin: true
+    requiresAdmin: true,
+    matchPattern: '^/org/[^/]+/setup(/.*)?$' // Matches nested routes
   },
   {
     titleKey: 'org_navigation.settings',
     path: '/settings',
     icon: CogIcon,
     useHashUrl: true, // Use '#' for collapsible parent
+    matchPattern: '^/org/[^/]+/settings(/.*)?$', // Matches nested routes
     items: [
       {
         titleKey: 'Profile',
@@ -85,16 +92,20 @@ const baseNavConfig: NavItemConfig[] = [
       },
       {
         titleKey: 'Organization',
-        path: '/settings?tab=org'
+        path: '/settings/org'
       },
       {
         titleKey: 'Landing Page',
-        path: '/settings?tab=landingpage'
+        path: '/settings/landingpage'
       },
       {
         titleKey: 'Billing',
-        path: '/settings?tab=billing'
+        path: '/settings/billing'
       }
+      // {
+      //   titleKey: 'Integrations',
+      //   path: '/settings/integrations'
+      // }
     ],
     nestedRoutes: [
       {
@@ -134,13 +145,17 @@ export function getOrgNavigationItems(
     const url = config.path === '' ? currentOrgPath : `${currentOrgPath}${config.path}`;
     const fullPath = config.path === '' ? `/org/${currentOrg.siteName}` : `/org/${currentOrg.siteName}${config.path}`;
 
+    // Extract match pattern (handle function case)
+    const matchPattern =
+      typeof config.matchPattern === 'function' ? config.matchPattern(currentOrg.siteName) : config.matchPattern;
+
     const item: NavItem = {
       title: t(config.titleKey),
       url: config.useHashUrl ? '#' : url,
       path: config.path, // Store actual path for breadcrumb generation
       icon: config.icon,
-      isActive: isActive(pagePathname, fullPath),
-      isExpanded: config.items ? isActive(pagePathname, fullPath) : undefined,
+      isActive: isActive(pagePathname, fullPath, matchPattern),
+      isExpanded: config.items ? isActive(pagePathname, fullPath, matchPattern) : undefined,
       useHashUrl: config.useHashUrl,
       nestedRoutes: config.nestedRoutes,
       supportsDynamicSegment: config.supportsDynamicSegment

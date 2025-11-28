@@ -1,12 +1,11 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import * as Select from '@cio/ui/base/select';
-  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 
   import type { Course } from '$lib/utils/types';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
-  import { courses } from '$lib/components/Courses/store';
+  import { courses } from '$lib/features/course/utils/store';
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { fetchCourses } from '$lib/utils/services/courses';
@@ -18,6 +17,7 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import * as Page from '@cio/ui/base/page';
 
   let errors: {
     title?: string;
@@ -93,52 +93,59 @@
   <title>Ask the Community - ClassroomIO</title>
 </svelte:head>
 
-<section class="w-full md:mx-auto md:max-w-3xl">
-  <div class="p-5">
-    <a class="text-md flex items-center text-gray-500 dark:text-white" href={`${$currentOrgPath}/community`}>
-      <ArrowLeftIcon size={16} />
-      {$t('community.ask.go_back')}
-    </a>
-    <div class="flex items-center justify-between gap-12">
-      <h1 class="text-2xl md:text-3xl dark:text-white">{$t('community.ask.ask_the')}</h1>
+<Page.Root>
+  <Page.Header>
+    <Page.HeaderContent>
+      <Page.Title>{$t('community.ask.ask_the')}</Page.Title>
+    </Page.HeaderContent>
+    <Page.Action>
       <PrimaryButton label={$t('community.ask.publish')} variant={VARIANTS.CONTAINED_DARK} onClick={handleSave} />
-    </div>
-  </div>
+    </Page.Action>
+  </Page.Header>
+  <Page.Body>
+    {#snippet child()}
+      <div class="mb-3 flex justify-between gap-x-5">
+        <TextField
+          bind:value={fields.title}
+          placeholder={$t('community.ask.title')}
+          errorMessage={errors.title}
+          className="w-[75%]"
+        />
+        <div class="w-[25%]">
+          <Select.Root type="single" bind:value={fields.courseId}>
+            <Select.Trigger class="h-full w-full">
+              <p>
+                {fields.courseId
+                  ? fetchedCourses.find((course) => course.id === fields.courseId)?.title
+                  : $t('community.ask.select_course')}
+              </p>
+            </Select.Trigger>
+            <Select.Content>
+              {#each fetchedCourses as course}
+                {#if course.id}
+                  <Select.Item value={course.id}>{course.title}</Select.Item>
+                {/if}
+              {/each}
+            </Select.Content>
+          </Select.Root>
+          {#if errors.courseId}
+            <p class="mt-1 text-sm text-red-500">
+              {errors.courseId}
+            </p>
+          {/if}
+        </div>
+      </div>
+      <div class="px-2">
+        <TextEditor
+          placeholder="Give an answer"
+          content={fields.body}
+          onChange={(content) => (fields.body = content)}
+        />
 
-  <div class="mb-3 flex justify-between gap-x-5 p-2">
-    <TextField
-      bind:value={fields.title}
-      placeholder={$t('community.ask.title')}
-      errorMessage={errors.title}
-      className="w-[75%]"
-    />
-    <div class="w-[25%]">
-      <Select.Root type="single" bind:value={fields.courseId}>
-        <Select.Trigger class="h-full w-full">
-          <p>
-            {fields.courseId
-              ? fetchedCourses.find((course) => course.id === fields.courseId)?.title
-              : $t('community.ask.select_course')}
-          </p>
-        </Select.Trigger>
-        <Select.Content>
-          {#each fetchedCourses as course}
-            <Select.Item value={course.id}>{course.title}</Select.Item>
-          {/each}
-        </Select.Content>
-      </Select.Root>
-      {#if errors.courseId}
-        <p class="mt-1 text-sm text-red-500">
-          {errors.courseId}
-        </p>
-      {/if}
-    </div>
-  </div>
-  <div class="px-2">
-    <TextEditor placeholder="Give an answer" content={fields.body} onChange={(content) => (fields.body = content)} />
-
-    {#if errors.body}
-      <p class="mt-2 text-sm text-red-500">{errors.body}</p>
-    {/if}
-  </div>
-</section>
+        {#if errors.body}
+          <p class="mt-2 text-sm text-red-500">{errors.body}</p>
+        {/if}
+      </div>
+    {/snippet}
+  </Page.Body>
+</Page.Root>
