@@ -4,21 +4,19 @@
   import { goto } from '$app/navigation';
   import { Progress } from '@cio/ui/base/progress';
   import CheckIcon from '@lucide/svelte/icons/check';
+  import { CircleCheckBig } from '@lucide/svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
+  import { Button } from '@cio/ui/base/button';
+  import { Badge } from '@cio/ui/base/badge';
+  import SparklesIcon from '@lucide/svelte/icons/sparkles';
 
   import { PLANS } from '@cio/utils/plans';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { toggleConfetti } from '$lib/components/Confetti/store';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
-
-  import Modal from '$lib/components/Modal/index.svelte';
   import Confetti from '$lib/components/Confetti/index.svelte';
-  import StepDoneIcon from '$lib/components/Icons/StepDoneIcon.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-
-  const disabledClass = 'bg-gray-300 text-gray-400 hover:cursor-not-allowed';
 
   const planNames = Object.keys(PLANS);
 
@@ -27,8 +25,12 @@
   let isYearlyPlan = $state(false);
 
   const query = $derived(new URLSearchParams(page.url.search));
-  let open = $derived((query.get('upgrade') || '') === 'true');
+  let open = $state(false);
   let isConfirming = $derived((query.get('confirmation') || '') === 'true');
+
+  $effect(() => {
+    open = (query.get('upgrade') || '') === 'true';
+  });
 
   async function handleClick(plan, planName: string) {
     if (plan.CTA.IS_DISABLED || !$profile.id || !$profile.email) {
@@ -83,11 +85,14 @@
     goto(path);
   }
 
+  function handleOpenChange(newOpen: boolean) {
+    if (!newOpen) {
+      onClose();
+    }
+  }
+
   function onLearnMore() {
     window.open('https://classroomio.com/blog/early-adopter', '_blank');
-  }
-  function toggleIsYearlyPlan() {
-    isYearlyPlan = !isYearlyPlan;
   }
 
   function handleUpgradeSuccess(upgradeSuccessful: boolean) {
@@ -105,124 +110,118 @@
   <Confetti />
 {/if}
 
-<Modal
-  {onClose}
-  {open}
-  width="w-4/5"
-  maxWidth={upgraded || isConfirming ? 'max-w-[600px]' : undefined}
-  modalHeading={$t('pricing.modal.heading')}
-  containerClass="pt-4"
->
-  {#if upgraded}
-    <div class="relative mb-4 flex w-full flex-col items-center justify-center">
-      <StepDoneIcon />
-      <h4 class="text-2xl">{$t('pricing.modal.thanks')}</h4>
-      <p class="mb-4 text-center">
-        {$t('pricing.modal.plan')}
-      </p>
-      <div class="flex items-center gap-4">
-        <PrimaryButton label={$t('pricing.modal.close')} variant={VARIANTS.OUTLINED} onClick={onClose} />
-        <PrimaryButton label={$t('pricing.modal.learn')} variant={VARIANTS.CONTAINED_DARK} onClick={onLearnMore} />
-      </div>
-    </div>
-  {:else if isConfirming}
-    <div class="relative mb-4 flex w-full flex-col items-center justify-center">
-      <Progress />
-    </div>
-  {:else}
-    <div class="my-2 flex h-full flex-col items-center justify-center">
-      <div class="relative mb-2 flex items-center rounded-[30px] border p-1">
-        <button
-          style="background-color: {isYearlyPlan ? 'initial' : '#1D4EE2'}; color: {isYearlyPlan ? '#5e636b' : '#fff'}"
-          class="rounded-[30px] bg-blue-700 px-3 py-1 text-xs text-white transition-all duration-500 ease-in-out lg:px-4 lg:py-2"
-          onclick={toggleIsYearlyPlan}
-        >
-          {$t('pricing.modal.monthly')}
-        </button>
-        <button
-          style="background-color: {isYearlyPlan ? '#1D4EE2' : ''}; color: {isYearlyPlan ? '#fff' : '#5e636b'}"
-          class="relative rounded-[30px] px-3 py-1 text-xs text-white transition-all duration-500 ease-in-out lg:px-4 lg:py-2"
-          onclick={toggleIsYearlyPlan}
-        >
-          {$t('pricing.modal.annually')}
-          <div class="absolute -top-4 right-[-40%] rounded-full bg-[#006600] px-1.5 py-1 text-[0.7rem] text-white">
-            {$t('pricing.modal.save')}
+<Dialog.Root bind:open onOpenChange={handleOpenChange}>
+  <Dialog.Content class="max-w-5xl! {upgraded || isConfirming ? 'ui:max-w-[600px]' : ''}">
+    {#if upgraded}
+      <Dialog.Header class="ui:items-center">
+        <div class="flex w-full flex-col items-center justify-center">
+          <CircleCheckBig class="mb-4 size-16 text-green-600" />
+          <Dialog.Title class="ui:text-2xl ui:mb-2">{$t('pricing.modal.thanks')}</Dialog.Title>
+          <Dialog.Description class="ui:mb-4 ui:text-center">
+            {$t('pricing.modal.plan')}
+          </Dialog.Description>
+          <div class="flex items-center gap-4">
+            <Button variant="outline" onclick={onClose}>
+              {$t('pricing.modal.close')}
+            </Button>
+            <Button variant="default" onclick={onLearnMore}>
+              {$t('pricing.modal.learn')}
+            </Button>
           </div>
-        </button>
-      </div>
-      <div class="isolate grid grid-cols-1 gap-3 overflow-y-scroll p-2 md:overflow-y-hidden lg:grid-cols-3">
-        {#each planNames as planName}
-          <div
-            class="max-w-xl rounded-xl {planName === 'EARLY_ADOPTER' &&
-              'cio-bg-blue'} p-4 ring-1 ring-gray-200 lg:max-w-sm"
+        </div>
+      </Dialog.Header>
+    {:else if isConfirming}
+      <Dialog.Header class="ui:items-center">
+        <div class="flex w-full flex-col items-center justify-center py-8">
+          <Progress />
+        </div>
+      </Dialog.Header>
+    {:else}
+      <Dialog.Header>
+        <Dialog.Title class="ui:text-center ui:mb-4">{$t('pricing.modal.heading')}</Dialog.Title>
+      </Dialog.Header>
+      <div class="flex h-full flex-col items-center justify-center">
+        <div class="white 0 relative mb-6 flex items-center rounded-full border p-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            class="rounded-full! transition-all duration-500 ease-in-out {isYearlyPlan
+              ? 'ui:text-foreground bg-transparent'
+              : 'bg-[#1D4EE2] text-white'}"
+            onclick={() => (isYearlyPlan = false)}
           >
-            <p
-              class="mb-2 text-lg font-semibold leading-8 {planName === 'EARLY_ADOPTER'
-                ? 'text-white'
-                : 'text-gray-900'} lg:text-xl dark:text-white"
+            {$t('pricing.modal.monthly')}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            class="rounded-full! transition-all duration-500 ease-in-out {isYearlyPlan
+              ? 'bg-[#1D4EE2] text-white'
+              : 'ui:text-foreground bg-transparent'}"
+            onclick={() => (isYearlyPlan = true)}
+          >
+            {$t('pricing.modal.annually')}
+          </Button>
+          <Badge variant="default" class="rotate-5 absolute -top-3 right-[-20%]">
+            <SparklesIcon class="text-amber-500! size-2" />
+            {$t('pricing.modal.save')}
+          </Badge>
+        </div>
+        <div class="grid w-full grid-cols-1 gap-6 overflow-y-auto p-2 md:grid-cols-3 md:overflow-y-visible">
+          {#each planNames as planName}
+            {@const plan = PLANS[planName]}
+            {@const isPopular = planName === 'EARLY_ADOPTER'}
+            <div
+              class="relative flex max-w-sm flex-col rounded-lg p-6 {isPopular ? 'animate-gradient-border' : 'border '}"
             >
-              {PLANS[planName]?.NAME}
-            </p>
-            <p
-              class="text-baseline flex items-baseline gap-x-1 font-medium {planName === 'EARLY_ADOPTER'
-                ? 'text-white'
-                : 'text-black'} dark:text-gray-300"
-            >
-              {PLANS[planName]?.PRICE?.CURRENCY}
-              {isYearlyPlan ? PLANS[planName]?.PRICE?.YEARLY : PLANS[planName]?.PRICE?.MONTHLY}
-            </p>
-            <p
-              class=" mt-4 text-sm font-light leading-6 {planName === 'EARLY_ADOPTER'
-                ? 'text-white'
-                : 'text-black'} lg:leading-6 dark:text-gray-300"
-            >
-              {PLANS[planName]?.DESCRIPTION}
-            </p>
-
-            <button
-              class="text-md mt-4 block w-full rounded-md {isLoadingPlan === planName && disabledClass} {planName ===
-              'EARLY_ADOPTER'
-                ? 'bg-white text-slate-900 hover:bg-indigo-50'
-                : PLANS[planName]?.CTA?.IS_DISABLED
-                  ? disabledClass
-                  : 'bg-primary-900 hover:bg-primary-700 text-white'} flex items-center justify-center py-3 text-center font-medium hover:no-underline lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
-              onclick={() => {
-                if (isLoadingPlan === planName) return;
-
-                handleClick(PLANS[planName], planName);
-              }}
-            >
-              {#if isLoadingPlan === planName}
-                <Progress />
-              {:else}
-                {PLANS[planName]?.CTA?.DASHBOARD_LABEL}
+              {#if isPopular}
+                <Badge
+                  variant="default"
+                  class="bg-linear-to-r absolute -top-3 left-1/2 -translate-x-1/2 from-pink-500 to-orange-500"
+                >
+                  Popular
+                </Badge>
               {/if}
-            </button>
+              <div class="mb-4">
+                <h3 class="mb-2 text-lg font-semibold">
+                  {plan?.NAME}
+                </h3>
+                <div class="mb-1 flex items-baseline gap-1">
+                  <span class="text-xl">
+                    {plan?.PRICE?.CURRENCY}
+                    {isYearlyPlan ? plan?.PRICE?.YEARLY : plan?.PRICE?.MONTHLY}
+                  </span>
+                </div>
+                <p class="text-sm text-gray-500">Per editor</p>
+              </div>
 
-            <ul
-              class="mt-4 space-y-2 text-sm {planName === 'EARLY_ADOPTER'
-                ? 'text-white'
-                : 'text-black'} dark:text-gray-300"
-            >
-              {#each PLANS[planName]?.FEATURES as features}
-                <li class="flex items-center">
-                  <div>
-                    <CheckIcon
-                      class="custom mr-2 size-4 lg:mr-3 {planName === 'EARLY_ADOPTER'
-                        ? 'text-white'
-                        : 'text-[#1D4EE2]'}"
-                    />
-                  </div>
-                  <p class="text-sm">
-                    {features}
-                  </p>
-                </li>
-              {/each}
-            </ul>
-          </div>
-        {/each}
+              <Button
+                variant={isPopular ? 'default' : 'outline'}
+                class="mb-6 w-full"
+                disabled={plan?.CTA?.IS_DISABLED || isLoadingPlan === planName}
+                loading={isLoadingPlan === planName}
+                onclick={() => {
+                  if (isLoadingPlan === planName) return;
+                  handleClick(plan, planName);
+                }}
+              >
+                {plan?.CTA?.DASHBOARD_LABEL}
+              </Button>
+
+              <ul class="space-y-3">
+                {#each plan?.FEATURES as feature}
+                  <li class="flex items-start gap-2">
+                    <CheckIcon class="mt-0.5 size-4 shrink-0" />
+                    <span class="text-sm leading-relaxed">
+                      {feature}
+                    </span>
+                  </li>
+                {/each}
+              </ul>
+            </div>
+          {/each}
+        </div>
       </div>
-    </div>
-  {/if}
-</Modal>
-
+    {/if}
+  </Dialog.Content>
+</Dialog.Root>

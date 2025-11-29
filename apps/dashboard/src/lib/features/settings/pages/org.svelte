@@ -28,7 +28,6 @@
   let errors: Error = $state({
     orgName: ''
   });
-  let loading = $state(false);
   let hex = $state('');
 
   $effect(() => {
@@ -89,17 +88,14 @@
     saveTheme(hex);
   }
 
-  async function handleUpdate() {
+  export async function handleUpdate() {
     errors = updateOrgNameValidation($currentOrg.name) as Error;
 
     if (Object.values(errors).length) {
-      loading = false;
       return;
     }
 
     try {
-      loading = true;
-
       const updates: Record<string, string> = {
         name: $currentOrg.name
       };
@@ -138,9 +134,6 @@
       }
 
       snackbar.error(`${$t('snackbar.lms.error.update')} ${message}`);
-      loading = false;
-    } finally {
-      loading = false;
     }
   }
 
@@ -171,12 +164,6 @@
           widthHeight="w-24 h-24"
           change={() => (hasUnsavedChanges = true)}
         />
-      </Field.Field>
-
-      <Field.Field orientation="horizontal">
-        <Button {loading} disabled={loading} onclick={handleUpdate}>
-          {$t('settings.organization.organization_profile.update_organization')}
-        </Button>
       </Field.Field>
     </Field.Group>
   </Field.Set>

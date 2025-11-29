@@ -3,13 +3,15 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { getConfirmPasswordError } from '$lib/utils/functions/validator';
   import { AuthUI } from '$lib/features/ui';
   import { resetApi } from '$lib/features/auth/api/reset.svelte';
   import type { TResetPasswordForm } from '$lib/features/auth/utils/types';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import * as Field from '@cio/ui/base/field';
+  import { Input } from '@cio/ui/base/input';
+  import { Button } from '@cio/ui/base/button';
+  import * as Card from '@cio/ui/base/card';
 
   let fields: TResetPasswordForm = $state({
     password: '',
@@ -56,41 +58,55 @@
   isLoading={resetApi.isLoading}
   showLogo={true}
 >
-  <div class="mt-4 w-full">
-    <h3 class="my-3 text-xl font-semibold dark:text-white">New Password</h3>
-    <p class="mb-6 text-sm dark:text-white">Enter your new password details</p>
-    <TextField
-      label="Your Password"
-      bind:value={fields.password}
-      type="password"
-      placeholder="************"
-      className="mb-6"
-      inputClassName="w-full"
-      isDisabled={resetApi.isLoading}
-      errorMessage={resetApi.errors.password}
-      helperMessage="Password must be more than 8 characters"
-      isRequired
-    />
-    <TextField
-      label="Confirm Password"
-      bind:value={fields.confirmPassword}
-      type="password"
-      placeholder="************"
-      className="mb-6"
-      inputClassName="w-full"
-      isDisabled={resetApi.isLoading}
-      errorMessage={resetApi.errors.confirmPassword}
-      isRequired
-    />
-  </div>
+  <div class="ui:flex ui:flex-col ui:gap-6">
+    <div>
+      <Card.Title class="ui:text-xl">New Password</Card.Title>
+      <Card.Description class="ui:mt-2">
+        Enter your new password details
+      </Card.Description>
+    </div>
+    <Field.Field>
+      <Field.Label for="password">Your Password</Field.Label>
+      <Field.Content>
+        <Input
+          id="password"
+          type="password"
+          bind:value={fields.password}
+          placeholder="************"
+          disabled={resetApi.isLoading}
+          aria-invalid={resetApi.errors.password ? 'true' : undefined}
+        />
+        {#if resetApi.errors.password}
+          <Field.Error>{resetApi.errors.password}</Field.Error>
+        {/if}
+        <Field.Description>Password must be more than 8 characters</Field.Description>
+      </Field.Content>
+    </Field.Field>
 
-  <div class="my-4 flex w-full items-center justify-end">
-    <PrimaryButton
-      label="Reset Password"
+    <Field.Field>
+      <Field.Label for="confirmPassword">Confirm Password</Field.Label>
+      <Field.Content>
+        <Input
+          id="confirmPassword"
+          type="password"
+          bind:value={fields.confirmPassword}
+          placeholder="************"
+          disabled={resetApi.isLoading}
+          aria-invalid={resetApi.errors.confirmPassword ? 'true' : undefined}
+        />
+        {#if resetApi.errors.confirmPassword}
+          <Field.Error>{resetApi.errors.confirmPassword}</Field.Error>
+        {/if}
+      </Field.Content>
+    </Field.Field>
+
+    <Button
       type="submit"
-      className="sm:w-full w-full"
-      isDisabled={isSubmitDisabled || resetApi.isLoading}
-      isLoading={resetApi.isLoading}
-    />
+      disabled={isSubmitDisabled || resetApi.isLoading}
+      loading={resetApi.isLoading}
+      class="ui:w-full"
+    >
+      Reset Password
+    </Button>
   </div>
 </AuthUI>

@@ -1,7 +1,5 @@
 <script lang="ts">
   import { AuthUI } from '$lib/features/ui';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { LOGIN_FIELDS } from '$lib/utils/constants/authentication';
   import { t } from '$lib/utils/functions/translations';
   import { authValidation } from '$lib/utils/functions/validator';
@@ -9,6 +7,9 @@
   import { authClient } from '$lib/utils/services/auth/client';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';
+  import * as Field from '@cio/ui/base/field';
+  import { Input } from '@cio/ui/base/input';
+  import { Button } from '@cio/ui/base/button';
 
   let formRef: HTMLFormElement | undefined = $state();
   let fields = $state(Object.assign({}, LOGIN_FIELDS));
@@ -65,45 +66,53 @@
 </svelte:head>
 
 <AuthUI isLogin={true} {handleSubmit} isLoading={loading} bind:formRef>
-  <div class="mt-4 w-full">
-    <p class="mb-6 text-lg font-semibold dark:text-white">{$t('login.welcome')}</p>
-    <TextField
-      label={$t('login.email')}
-      bind:value={fields.email}
-      type="email"
-      autoFocus={true}
-      placeholder="you@domain.com"
-      className="mb-6"
-      inputClassName="w-full"
-      isDisabled={loading}
-      errorMessage={$t(errors.email)}
-    />
-    <TextField
-      label={$t('login.password')}
-      bind:value={fields.password}
-      type="password"
-      placeholder="************"
-      className="mb-6"
-      inputClassName="w-full"
-      isDisabled={loading}
-      errorMessage={$t(errors.password)}
-    />
-    {#if submitError}
-      <p class="text-sm text-red-500">{submitError}</p>
-    {/if}
-    <div class="w-full text-right">
-      <a class="text-md text-primary-700" href="/forgot"> {$t('login.forgot')} </a>
-    </div>
-  </div>
+  <div class="ui:flex ui:flex-col ui:gap-6">
+    <Field.Field>
+      <Field.Label for="email">{$t('login.email')}</Field.Label>
+      <Field.Content>
+        <Input
+          id="email"
+          type="email"
+          bind:value={fields.email}
+          placeholder="you@domain.com"
+          disabled={loading}
+          autofocus
+          aria-invalid={errors.email ? 'true' : undefined}
+        />
+        {#if errors.email}
+          <Field.Error>{$t(errors.email)}</Field.Error>
+        {/if}
+      </Field.Content>
+    </Field.Field>
 
-  <div class="my-4 flex w-full items-center justify-end">
-    <!-- <a href="/login" class="text-primary-700 text-sm">Create an account</a> -->
-    <PrimaryButton
-      label={$t('login.login')}
-      type="submit"
-      className="sm:w-full w-full"
-      isDisabled={loading}
-      isLoading={loading}
-    />
+    <Field.Field>
+      <div class="ui:flex ui:items-center ui:justify-between">
+        <Field.Label for="password">{$t('login.password')}</Field.Label>
+        <a class="ui:text-sm ui:text-primary ui:hover:underline" href="/forgot">
+          {$t('login.forgot')}
+        </a>
+      </div>
+      <Field.Content>
+        <Input
+          id="password"
+          type="password"
+          bind:value={fields.password}
+          placeholder="************"
+          disabled={loading}
+          aria-invalid={errors.password ? 'true' : undefined}
+        />
+        {#if errors.password}
+          <Field.Error>{$t(errors.password)}</Field.Error>
+        {/if}
+      </Field.Content>
+    </Field.Field>
+
+    {#if submitError}
+      <p class="ui:text-sm ui:text-destructive">{submitError}</p>
+    {/if}
+
+    <Button type="submit" disabled={loading} {loading} class="ui:w-full">
+      {$t('login.login')}
+    </Button>
   </div>
 </AuthUI>

@@ -11,6 +11,7 @@
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
 
+  import { Checkbox } from '@cio/ui/base/checkbox';
   import { Input } from '@cio/ui/base/input';
   import { Textarea } from '@cio/ui/base/textarea';
   import { Button } from '@cio/ui/base/button';
@@ -19,7 +20,6 @@
   import * as Field from '@cio/ui/base/field';
   import type { OrgLandingPageJson } from '$lib/utils/types/org';
 
-  let isSaving = $state(false);
   let creatingNewQuestion = $state(false);
   let creatingNewCustomLink = $state(false);
   let hasUnsavedChanges = $state(false);
@@ -123,8 +123,7 @@
     return inputValue;
   };
 
-  async function handleSave() {
-    isSaving = true;
+  export async function handleSave() {
     $landingPageSettings.footer.twitter = checkPrefix($landingPageSettings.footer.twitter) || '';
     $landingPageSettings.footer.linkedin = checkPrefix($landingPageSettings.footer.linkedin) || '';
     $landingPageSettings.footer.facebook = checkPrefix($landingPageSettings.footer.facebook) || '';
@@ -142,8 +141,6 @@
       snackbar.success('snackbar.success_update');
       hasUnsavedChanges = false;
     }
-
-    isSaving = false;
   }
 
   // Set default from store
@@ -640,8 +637,8 @@
 
     <Field.Group>
       {#each $landingPageSettings.customLinks.links as link (link.id)}
-        <div class="mb-4 rounded-lg border border-gray-200 p-4">
-          <div class="mb-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div class="flex flex-col gap-2">
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Field.Field>
               <Field.Label>{$t('settings.landing_page.custom_links.label')}</Field.Label>
               <Input placeholder={$t('settings.landing_page.custom_links.label_placeholder')} bind:value={link.label} />
@@ -653,13 +650,15 @@
           </div>
           <div class="flex items-center justify-between">
             <Field.Field orientation="horizontal">
-              <input type="checkbox" bind:checked={link.openInNewTab} class="mr-2" />
+              <Checkbox id="new-tab-{link.id}" bind:checked={link.openInNewTab} />
               <Field.Label class="text-sm">{$t('settings.landing_page.custom_links.new_tab')}</Field.Label>
             </Field.Field>
             <Button variant="ghost" size="icon" onclick={() => deleteCustomLink(link.id)}>
               <TrashIcon size={16} />
             </Button>
           </div>
+
+          <Field.Separator />
         </div>
       {/each}
 
@@ -752,12 +751,6 @@
       </Field.Field>
     </Field.Group>
   </Field.Set>
-
-  <Field.Field orientation="horizontal">
-    <Button variant="default" loading={isSaving} disabled={isSaving} onclick={handleSave}>
-      {$t('settings.landing_page.save_changes')}
-    </Button>
-  </Field.Field>
 </Field.Group>
 
 <style>

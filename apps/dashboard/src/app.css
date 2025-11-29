@@ -800,6 +800,7 @@ svg.lucide-icon:not(.custom) {
   --animate-roll: quizRoll 0.8s ease-in-out;
   --animate-gather: audienceGather 0.7s ease-in-out;
   --animate-setup-configure: setupConfigure 1s ease-in-out;
+  --animate-border: border 4s linear infinite;
 }
 
 @keyframes shakeAnnouncement {
@@ -1142,4 +1143,57 @@ svg.lucide-icon:not(.custom) {
   100% {
     transform: scale(1) rotate(0deg);
   }
+}
+
+/* Animated Gradient Border */
+@property --border-angle {
+  inherits: false;
+  initial-value: 0deg;
+  syntax: '<angle>';
+}
+
+@keyframes border {
+  to {
+    --border-angle: 360deg;
+  }
+}
+
+/* Animated Gradient Border Class */
+.animate-gradient-border {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(45deg, white, white) padding-box,
+    conic-gradient(
+        from var(--border-angle),
+        rgb(148 163 184 / 0.3) 75%,
+        rgb(37 99 235) 82%,
+        rgb(96 165 250) 88%,
+        rgb(37 99 235) 92%,
+        rgb(148 163 184 / 0.3) 100%
+      )
+      border-box;
+  transition: --border-angle 3s ease-in-out;
+}
+
+.animate-gradient-border:hover {
+  animation: border 4s ease-in-out infinite;
+}
+
+.dark .animate-gradient-border {
+  background:
+    linear-gradient(45deg, rgb(0 0 0), rgb(0 0 0)) padding-box,
+    conic-gradient(
+        from var(--border-angle),
+        rgb(71 85 105 / 0.48) 75%,
+        rgb(37 99 235) 82%,
+        rgb(96 165 250) 88%,
+        rgb(37 99 235) 92%,
+        rgb(71 85 105 / 0.48) 100%
+      )
+      border-box;
+  transition: --border-angle 3s ease-in-out;
+}
+
+.dark .animate-gradient-border:hover {
+  animation: border 4s ease-in-out infinite;
 }

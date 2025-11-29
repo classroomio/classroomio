@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Switch } from '@cio/ui/base/switch';
-  import SaveIcon from '@lucide/svelte/icons/save';
 
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
@@ -16,16 +15,13 @@
   const supabase = getSupabase();
 
   let widgetKey = $state('');
-  let isSaving = $state(false);
 
   function widgetControl(key: string) {
     widgetKey = key;
     $handleOpenWidget.open = true;
   }
 
-  async function handleSave() {
-    isSaving = true;
-
+  export async function handleSave() {
     const { error } = await supabase
       .from('organization')
       .update({ customization: $currentOrg.customization })
@@ -38,8 +34,6 @@
     } else {
       snackbar.success('snackbar.success_update');
     }
-
-    isSaving = false;
   }
 </script>
 
@@ -142,16 +136,4 @@
       </Field.Field>
     </Field.Group>
   </Field.Set>
-
-  <Field.Field orientation="horizontal" class="z-120 sticky bottom-12 float-right mr-2 hidden md:block">
-    <Button variant="default" onclick={handleSave} loading={isSaving} disabled={isSaving}>
-      {$t('components.settings.customize_lms.save')}
-    </Button>
-  </Field.Field>
 </Field.Group>
-
-<div class="z-120 absolute bottom-8 right-6 block md:hidden">
-  <Button variant="ghost" size="icon" onclick={handleSave} loading={isSaving} disabled={isSaving}>
-    <SaveIcon size={16} />
-  </Button>
-</div>

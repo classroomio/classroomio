@@ -19,7 +19,7 @@
   let isChangingEmail = $state(false);
   let emailChangeInitiated = $state(false);
 
-  async function handleUpdate() {
+  export async function handleUpdate() {
     await profileApi.submit(
       {
         fullname: $profile.fullname,

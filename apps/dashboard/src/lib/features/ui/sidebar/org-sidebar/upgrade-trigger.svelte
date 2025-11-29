@@ -13,7 +13,7 @@
   <div class="animate-icon">
     {#if sidebar.open || sidebar.isMobile}
       <div
-        class="mx-2 flex flex-col items-center justify-center gap-4 rounded-md border px-2 py-6 text-center transition-all ease-in-out hover:border-blue-600"
+        class="animate-gradient-border mx-2 flex flex-col items-center justify-center gap-4 rounded-md px-2 py-6 text-center transition-all ease-in-out"
       >
         <RocketIcon class="rocket-launch my-3 size-6" />
         <span class="flex flex-col gap-1">

@@ -3,12 +3,13 @@
 
   import { page } from '$app/state';
   import Avatar from '$lib/components/Avatar/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
   import GoogleIconColored from '$lib/components/Icons/GoogleIconColored.svelte';
   import { authClient } from '$lib/utils/services/auth/client';
+  import * as Card from '@cio/ui/base/card';
+  import { Button } from '@cio/ui/base/button';
+  import { Separator } from '@cio/ui/base/separator';
 
   interface Props {
     handleSubmit?: any;
@@ -63,56 +64,59 @@
   }
 </script>
 
-<div class="app-background flex min-h-screen w-full items-center justify-center">
-  <div class="border-gray w-full max-w-[450px] border bg-white dark:bg-black">
-    <div class="flex flex-col items-center p-2 lg:px-8 lg:py-3">
-      {#if !showOnlyContent || showLogo}
-        <div class="flex w-full flex-col items-center justify-center pt-2">
-          <Avatar
-            src={$currentOrg.avatarUrl ? $currentOrg.avatarUrl : '/logo-192.png'}
-            name={$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
-            shape="rounded-md"
-            width="w-10"
-            height="max-h-10"
-            className="mr-2"
-          />
-          <a href="/">
-            <h4 class="mt-0 text-xl dark:text-white">
-              {$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
-            </h4>
-          </a>
-        </div>
-      {/if}
-      <form bind:this={formRef} onsubmit={preventDefault(handleSubmit)} class="flex w-10/12 flex-col items-center">
+<div class="flex min-h-screen w-full items-center justify-center p-4">
+  <Card.Root class="ui:w-full max-w-[400px]">
+    {#if !showOnlyContent || showLogo}
+      <Card.Header class="ui:flex ui:flex-col ui:items-center ui:gap-4">
+        <Avatar
+          src={$currentOrg.avatarUrl ? $currentOrg.avatarUrl : '/logo-192.png'}
+          name={$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
+          shape="rounded-md"
+          width="w-10"
+          height="max-h-10"
+          className="mr-2"
+        />
+        <a href="/">
+          <Card.Title class="ui:text-2xl ui:font-bold">
+            {isLogin ? $t('login.welcome') : $t('login.create_account')}
+          </Card.Title>
+        </a>
+        {#if isLogin}
+          <Card.Description class="ui:text-center">Sign in to continue</Card.Description>
+        {/if}
+      </Card.Header>
+    {/if}
+    <Card.Content>
+      <form bind:this={formRef} onsubmit={preventDefault(handleSubmit)} class="w-full">
         {@render children?.()}
       </form>
       {#if !showOnlyContent && !hideGoogleAuth}
-        <div class="mb-3 w-10/12">
-          <p class="mb-5 text-sm dark:text-white">{$t('login.signup_with')}:</p>
-          <PrimaryButton
-            variant={VARIANTS.OUTLINED}
-            onClick={signInWithGoogle}
-            isDisabled={isLoading}
-            className="py-3 sm:w-full w-full"
-          >
+        <div class="mt-6 flex flex-col gap-6">
+          <div class="relative flex items-center justify-center">
+            <Separator />
+            <span class="ui:bg-card ui:text-muted-foreground absolute px-2 text-sm"> Or continue With </span>
+          </div>
+          <Button variant="outline" onclick={signInWithGoogle} disabled={isLoading} class="w-full">
             <GoogleIconColored />
-            <span class="ml-2">
+            <span>
               {isLogin ? $t('login.login_with_google') : $t('login.signup_with_google')}
             </span>
-          </PrimaryButton>
+          </Button>
         </div>
       {/if}
-    </div>
+    </Card.Content>
     {#if !showOnlyContent}
-      <div class="border-grey w-full border-t p-6 text-center">
-        {#if isLogin}
-          {$t('login.not_registered_yet')}
-          <a class="text-primary-700 hover:underline" href="/signup{page.url.search}">{$t('login.signup')}</a>
-        {:else}
-          {$t('login.already_have_account')}
-          <a class="text-primary-700 hover:underline" href="/login{page.url.search}">{$t('login.login')}</a>
-        {/if}
-      </div>
+      <Card.Footer class="flex-col gap-2 border-t pt-6">
+        <p class="text-muted-foreground text-center text-sm">
+          {#if isLogin}
+            {$t('login.not_registered_yet')}
+            <a class="text-primary hover:underline" href="/signup{page.url.search}">{$t('login.signup')}</a>
+          {:else}
+            {$t('login.already_have_account')}
+            <a class="text-primary hover:underline" href="/login{page.url.search}">{$t('login.login')}</a>
+          {/if}
+        </p>
+      </Card.Footer>
     {/if}
-  </div>
+  </Card.Root>
 </div>
