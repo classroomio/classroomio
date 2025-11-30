@@ -30,7 +30,7 @@
 </script>
 
 <Breadcrumb.Root>
-  <Breadcrumb.List>
+  <Breadcrumb.List class="flex-nowrap!">
     <Breadcrumb.Item>
       <OrgSwitcher variant="breadcrumb" />
     </Breadcrumb.Item>

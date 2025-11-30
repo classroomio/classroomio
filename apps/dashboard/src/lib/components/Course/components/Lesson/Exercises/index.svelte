@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { onMount, untrack } from 'svelte';
-  import { Circle } from 'svelte-loading-spinners';
+  import { Spinner } from '@cio/ui/base/spinner';
   import { lesson } from '../store/lessons';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
@@ -160,7 +160,7 @@
 
 {#if isFetching}
   <Backdrop>
-    <Circle size="60" color="#1d4ed8" unit="px" duration="1s" />
+    <Spinner class="size-14! text-blue-700!" />
   </Backdrop>
 {/if}
 

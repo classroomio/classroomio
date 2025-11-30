@@ -9,9 +9,9 @@
   import { globalStore } from '$lib/utils/store/app';
   import * as Field from '@cio/ui/base/field';
   import { Input } from '@cio/ui/base/input';
+  import { Password } from '@cio/ui/custom/password';
   import { Button } from '@cio/ui/base/button';
 
-  let formRef: HTMLFormElement | undefined = $state();
   let fields = $state(Object.assign({}, LOGIN_FIELDS));
   let submitError: string | undefined = $state();
   let loading = $state(false);
@@ -65,7 +65,7 @@
   <title>Welcome back to {$currentOrg.name || 'ClassroomIO'}</title>
 </svelte:head>
 
-<AuthUI isLogin={true} {handleSubmit} isLoading={loading} bind:formRef>
+<AuthUI isLogin={true} {handleSubmit} isLoading={loading}>
   <div class="ui:flex ui:flex-col ui:gap-6">
     <Field.Field>
       <Field.Label for="email">{$t('login.email')}</Field.Label>
@@ -78,6 +78,7 @@
           disabled={loading}
           autofocus
           aria-invalid={errors.email ? 'true' : undefined}
+          autocomplete="username"
         />
         {#if errors.email}
           <Field.Error>{$t(errors.email)}</Field.Error>
@@ -93,13 +94,13 @@
         </a>
       </div>
       <Field.Content>
-        <Input
+        <Password
           id="password"
-          type="password"
           bind:value={fields.password}
           placeholder="************"
           disabled={loading}
           aria-invalid={errors.password ? 'true' : undefined}
+          autocomplete="current-password"
         />
         {#if errors.password}
           <Field.Error>{$t(errors.password)}</Field.Error>

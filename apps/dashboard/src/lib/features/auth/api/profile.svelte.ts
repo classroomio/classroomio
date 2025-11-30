@@ -185,7 +185,7 @@ export class ProfileApi extends BaseApiWithErrors {
 
       const { error } = await authClient.changeEmail({
         newEmail: fields.newEmail,
-        callbackURL: window.location.origin
+        callbackURL: fields.callbackURL
       });
 
       if (error) throw new Error(error.message);

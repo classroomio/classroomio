@@ -10,6 +10,7 @@
   import { authClient } from '$lib/utils/services/auth/client';
   import * as Field from '@cio/ui/base/field';
   import { Input } from '@cio/ui/base/input';
+  import { Password } from '@cio/ui/custom/password';
   import { Button } from '@cio/ui/base/button';
 
   let fields = $state(Object.assign({}, SIGNUP_FIELDS));
@@ -20,7 +21,6 @@
     confirmPassword?: string;
   } = $state({});
   let submitError: string = $state('');
-  let formRef: HTMLFormElement | undefined = $state();
 
   const disableSubmit = $derived(getDisableSubmit(fields));
 
@@ -89,7 +89,7 @@
 
 <SenjaEmbed id="aa054658-1e15-4d00-8920-91f424326c4e" />
 
-<AuthUI isLogin={false} {handleSubmit} isLoading={loading} bind:formRef>
+<AuthUI isLogin={false} {handleSubmit} isLoading={loading}>
   <div class="ui:flex ui:flex-col ui:gap-6">
     <Field.Field>
       <Field.Label for="email">{$t('login.fields.email')}</Field.Label>
@@ -102,6 +102,7 @@
           disabled={loading}
           autofocus
           aria-invalid={errors.email ? 'true' : undefined}
+          autocomplete="email"
         />
         {#if errors.email}
           <Field.Error>{$t(errors.email)}</Field.Error>
@@ -112,13 +113,13 @@
     <Field.Field>
       <Field.Label for="password">{$t('login.fields.password')}</Field.Label>
       <Field.Content>
-        <Input
+        <Password
           id="password"
-          type="password"
           bind:value={fields.password}
           placeholder="************"
           disabled={loading}
           aria-invalid={errors.password ? 'true' : undefined}
+          autocomplete="new-password"
         />
         {#if errors.password}
           <Field.Error>{$t(errors.password)}</Field.Error>
@@ -130,13 +131,13 @@
     <Field.Field>
       <Field.Label for="confirmPassword">{$t('login.fields.confirm_password')}</Field.Label>
       <Field.Content>
-        <Input
+        <Password
           id="confirmPassword"
-          type="password"
           bind:value={fields.confirmPassword}
           placeholder="************"
           disabled={loading}
           aria-invalid={errors.confirmPassword ? 'true' : undefined}
+          autocomplete="new-password"
         />
         {#if errors.confirmPassword}
           <Field.Error>{errors.confirmPassword}</Field.Error>
@@ -148,7 +149,7 @@
       <p class="ui:text-sm ui:text-destructive">{submitError}</p>
     {/if}
 
-    <Button type="submit" disabled={disableSubmit || loading} loading={loading} class="ui:w-full">
+    <Button type="submit" disabled={disableSubmit || loading} {loading} class="ui:w-full">
       {$t('login.create_account')}
     </Button>
   </div>

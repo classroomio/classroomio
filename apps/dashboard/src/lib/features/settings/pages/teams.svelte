@@ -1,7 +1,7 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import * as Select from '@cio/ui/base/select';
-  import { Circle } from 'svelte-loading-spinners';
+  import { Spinner } from '@cio/ui/base/spinner';
 
   import { profile } from '$lib/utils/store/user';
   import { isFreePlan, currentOrg, orgTeam } from '$lib/utils/store/org';
@@ -182,7 +182,7 @@
     <Field.Legend>{$t('course.navItem.people.teams.members')}</Field.Legend>
     <Field.Group>
       {#if isFetching}
-        <Circle />
+        <Spinner class="size-10! text-blue-700!" />
       {:else}
         {#each $orgTeam as teamMember}
           <Field.Field>

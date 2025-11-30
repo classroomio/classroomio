@@ -15,8 +15,8 @@ export const auth = betterAuth({
   baseURL: CONSTANTS.BASE_URL,
   database: drizzleAdapter(db, {
     provider: 'pg',
-    schema,
-    debugLogs: true
+    schema
+    // debugLogs: true
   }),
   emailAndPassword: emailAndPassword,
   user: {
@@ -67,6 +67,7 @@ export const auth = betterAuth({
       },
       update: {
         after: async (user) => {
+          console.log('update user', user);
           await syncUserWithProfile(user);
         }
       }

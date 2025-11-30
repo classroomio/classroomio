@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
-  import { SyncLoader } from 'svelte-loading-spinners';
+  import { Spinner } from '@cio/ui/base/spinner';
   import { themeImages, STEPS } from '$lib/utils/constants/quiz';
   import { quizStore, playQuizStore } from '$lib/utils/store/org';
   import ConnectToPlay from './ConnectToPlay.svelte';
@@ -39,7 +39,7 @@
         <Podium />
       {:else}
         <div class="m-auto w-full">
-          <SyncLoader size="20" color="#1d4ed8" unit="px" duration="1s" />
+          <Spinner class="size-8! text-blue-700!" />
         </div>
       {/if}
     </div>

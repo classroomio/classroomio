@@ -2,7 +2,7 @@
   import { untrack } from 'svelte';
   import { Label } from '@cio/ui/base/label';
   import * as Select from '@cio/ui/base/select';
-  import { Circle } from 'svelte-loading-spinners';
+  import { Spinner } from '@cio/ui/base/spinner';
 
   import { profile } from '$lib/utils/store/user';
   import { isFreePlan } from '$lib/utils/store/org';
@@ -189,7 +189,7 @@
     >
     <Column sm={8} md={8} lg={8}>
       {#if isFetching}
-        <Circle />
+        <Spinner class="size-10! text-blue-700!" />
       {:else}
         {#each $orgTeam as teamMember}
           <div class="mb-5 flex items-center justify-between">

@@ -9,7 +9,7 @@
   import type { TResetPasswordForm } from '$lib/features/auth/utils/types';
   import { snackbar } from '$lib/components/Snackbar/store';
   import * as Field from '@cio/ui/base/field';
-  import { Input } from '@cio/ui/base/input';
+  import { Password } from '@cio/ui/custom/password';
   import { Button } from '@cio/ui/base/button';
   import * as Card from '@cio/ui/base/card';
 
@@ -61,20 +61,18 @@
   <div class="ui:flex ui:flex-col ui:gap-6">
     <div>
       <Card.Title class="ui:text-xl">New Password</Card.Title>
-      <Card.Description class="ui:mt-2">
-        Enter your new password details
-      </Card.Description>
+      <Card.Description class="ui:mt-2">Enter your new password details</Card.Description>
     </div>
     <Field.Field>
       <Field.Label for="password">Your Password</Field.Label>
       <Field.Content>
-        <Input
+        <Password
           id="password"
-          type="password"
           bind:value={fields.password}
           placeholder="************"
           disabled={resetApi.isLoading}
           aria-invalid={resetApi.errors.password ? 'true' : undefined}
+          autocomplete="new-password"
         />
         {#if resetApi.errors.password}
           <Field.Error>{resetApi.errors.password}</Field.Error>
@@ -86,13 +84,13 @@
     <Field.Field>
       <Field.Label for="confirmPassword">Confirm Password</Field.Label>
       <Field.Content>
-        <Input
+        <Password
           id="confirmPassword"
-          type="password"
           bind:value={fields.confirmPassword}
           placeholder="************"
           disabled={resetApi.isLoading}
           aria-invalid={resetApi.errors.confirmPassword ? 'true' : undefined}
+          autocomplete="new-password"
         />
         {#if resetApi.errors.confirmPassword}
           <Field.Error>{resetApi.errors.confirmPassword}</Field.Error>

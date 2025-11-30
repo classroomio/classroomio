@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { preventDefault } from '$lib/utils/functions/svelte';
-
   import { page } from '$app/state';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import { t } from '$lib/utils/functions/translations';
@@ -10,28 +8,28 @@
   import * as Card from '@cio/ui/base/card';
   import { Button } from '@cio/ui/base/button';
   import { Separator } from '@cio/ui/base/separator';
+  import { preventDefault } from '$lib/utils/functions/svelte';
+  import { ROUTE } from '$lib/utils/constants/routes';
 
   interface Props {
-    handleSubmit?: any;
     isLogin?: boolean;
     showOnlyContent?: boolean;
     isLoading?: boolean;
     showLogo?: boolean;
-    formRef?: any;
     hideGoogleAuth?: boolean;
     redirectPathname?: string;
+    handleSubmit?: () => void;
     children?: import('svelte').Snippet;
   }
 
   let {
-    handleSubmit = () => {},
     isLogin = true,
     showOnlyContent = false,
     isLoading = false,
     showLogo = false,
-    formRef = $bindable(),
     hideGoogleAuth = false,
     redirectPathname = '',
+    handleSubmit = () => {},
     children
   }: Props = $props();
 
@@ -47,6 +45,7 @@
     // }`;
     const pathname = redirectPathname || params.get('redirect') || '';
     const redirectTo = `${window.location.origin + pathname}`;
+    const errorCallbackURL = `${window.location.origin + ROUTE.AUTH_FAILED}`;
 
     console.log({ redirectTo });
 
@@ -54,7 +53,8 @@
       console.log('signInWithGoogle');
       const data = await authClient.signIn.social({
         provider: 'google',
-        callbackURL: redirectTo
+        callbackURL: redirectTo,
+        errorCallbackURL: errorCallbackURL
       });
 
       console.log('data', data);
@@ -86,10 +86,12 @@
         {/if}
       </Card.Header>
     {/if}
+
     <Card.Content>
-      <form bind:this={formRef} onsubmit={preventDefault(handleSubmit)} class="w-full">
+      <form onsubmit={preventDefault(handleSubmit)}>
         {@render children?.()}
       </form>
+
       {#if !showOnlyContent && !hideGoogleAuth}
         <div class="mt-6 flex flex-col gap-6">
           <div class="relative flex items-center justify-center">

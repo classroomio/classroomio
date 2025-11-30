@@ -501,9 +501,6 @@ importers:
       svelte-jester:
         specifier: ^3.0.0
         version: 3.0.0(jest@29.7.0(@types/node@20.19.24)(ts-node@10.9.2(@types/node@20.19.24)(typescript@5.9.3)))(svelte@5.43.2)
-      svelte-loading-spinners:
-        specifier: ^0.3.4
-        version: 0.3.6
       svelte-preprocess:
         specifier: ^6.0.0
         version: 6.0.3(@babel/core@7.28.5)(postcss-load-config@4.0.2(postcss@8.5.6)(ts-node@10.9.2(@types/node@20.19.24)(typescript@5.9.3)))(postcss@8.5.6)(sass@1.93.3)(svelte@5.43.2)(typescript@5.9.3)
@@ -10227,9 +10224,6 @@ packages:
     peerDependencies:
       jest: '>= 27'
       svelte: '>= 3'
-
-  svelte-loading-spinners@0.3.6:
-    resolution: {integrity: sha512-mthHQ2TwiwzTWzbFry3CBnVEfzqPOD9WkVw84OfSYzHRq6N9wgQ+yv37u81uPeuLU/ZOIPqhujpXquB1aol5ZQ==}
 
   svelte-meta-tags@3.1.4:
     resolution: {integrity: sha512-TUIfhut0iVeTm7f5v/ZuU/tZ9XsNig9bNN8yK0t2x2WL9qw6AxAVRe9i5XddYJE0SuVwkoDCzjoSg5hXv7oWbQ==}
@@ -22387,8 +22381,6 @@ snapshots:
     dependencies:
       jest: 29.7.0(@types/node@20.19.24)(ts-node@10.9.2(@types/node@20.19.24)(typescript@5.9.3))
       svelte: 5.43.2
-
-  svelte-loading-spinners@0.3.6: {}
 
   svelte-meta-tags@3.1.4(svelte@4.2.20):
     dependencies:

@@ -32,7 +32,6 @@
   } = $state({});
 
   let submitError: string = $state('');
-  let formRef: HTMLFormElement | undefined = $state();
 
   const confirmPasswordError = $derived(getConfirmPasswordError(fields));
   const disableSubmit = $derived(getDisableSubmit(fields));
@@ -50,8 +49,6 @@
       .match({ email: email, organization_id: data.invite.currentOrg?.id });
 
     console.log('Update member response', updateMemberRes);
-
-    formRef?.reset();
 
     window.location.href = $currentOrgPath;
   }
@@ -179,7 +176,7 @@
   <title>Join ClassroomIO</title>
 </svelte:head>
 
-<AuthUI redirectPathname={page.url.pathname} isLogin={false} {handleSubmit} {isLoading} showLogo={true} bind:formRef>
+<AuthUI redirectPathname={page.url.pathname} isLogin={false} {handleSubmit} {isLoading} showLogo={true}>
   <div class="mt-4 w-full {shouldLogout ? 'hidden' : ''}">
     <p class="mb-6 text-lg font-semibold dark:text-white">
       {#if data.invite.profile}

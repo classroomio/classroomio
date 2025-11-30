@@ -4,7 +4,7 @@
   import { goto } from '$app/navigation';
   import { Progress } from '@cio/ui/base/progress';
   import CheckIcon from '@lucide/svelte/icons/check';
-  import { CircleCheckBig } from '@lucide/svelte';
+  import RocketIcon from '@lucide/svelte/icons/rocket';
   import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
   import { Badge } from '@cio/ui/base/badge';
@@ -111,35 +111,33 @@
 {/if}
 
 <Dialog.Root bind:open onOpenChange={handleOpenChange}>
-  <Dialog.Content class="max-w-5xl! {upgraded || isConfirming ? 'ui:max-w-[600px]' : ''}">
-    {#if upgraded}
-      <Dialog.Header class="ui:items-center">
-        <div class="flex w-full flex-col items-center justify-center">
-          <CircleCheckBig class="mb-4 size-16 text-green-600" />
-          <Dialog.Title class="ui:text-2xl ui:mb-2">{$t('pricing.modal.thanks')}</Dialog.Title>
-          <Dialog.Description class="ui:mb-4 ui:text-center">
-            {$t('pricing.modal.plan')}
-          </Dialog.Description>
-          <div class="flex items-center gap-4">
-            <Button variant="outline" onclick={onClose}>
-              {$t('pricing.modal.close')}
-            </Button>
-            <Button variant="default" onclick={onLearnMore}>
-              {$t('pricing.modal.learn')}
-            </Button>
-          </div>
+  <Dialog.Content class="max-w-5xl! {1 === 1 ? 'max-w-[600px]!' : ''}">
+    <Dialog.Header>
+      <Dialog.Title>{$t('pricing.modal.heading')}</Dialog.Title>
+    </Dialog.Header>
+    {#if !upgraded}
+      <div class="animate-icon flex w-full flex-col items-center justify-center gap-4">
+        <RocketIcon class="rocket-launch my-3 size-6" />
+        <p class="text-lg">{$t('pricing.modal.thanks')}</p>
+        <p class="ui:mb-4 ui:text-center">
+          {$t('pricing.modal.plan')}
+        </p>
+        <div class="flex items-center gap-4">
+          <Button variant="outline" onclick={onClose}>
+            {$t('pricing.modal.close')}
+          </Button>
+          <Button variant="default" onclick={onLearnMore}>
+            {$t('pricing.modal.learn')}
+          </Button>
         </div>
-      </Dialog.Header>
+      </div>
     {:else if isConfirming}
-      <Dialog.Header class="ui:items-center">
+      <div class="items-center">
         <div class="flex w-full flex-col items-center justify-center py-8">
           <Progress />
         </div>
-      </Dialog.Header>
+      </div>
     {:else}
-      <Dialog.Header>
-        <Dialog.Title class="ui:text-center ui:mb-4">{$t('pricing.modal.heading')}</Dialog.Title>
-      </Dialog.Header>
       <div class="flex h-full flex-col items-center justify-center">
         <div class="white 0 relative mb-6 flex items-center rounded-full border p-1">
           <Button

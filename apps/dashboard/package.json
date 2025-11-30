@@ -109,7 +109,6 @@
     "svelte": "^5.0.0",
     "svelte-dnd-action": "^0.9.24",
     "svelte-jester": "^3.0.0",
-    "svelte-loading-spinners": "^0.3.4",
     "svelte-preprocess": "^6.0.0",
     "tailwindcss": "^4.1.14",
     "ts-jest": "^29.1.1",

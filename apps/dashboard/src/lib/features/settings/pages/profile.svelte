@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/state';
   import type { TLocale } from '@cio/db/types';
   import { profile } from '$lib/utils/store/user';
   import { CircleCheckBig } from '@lucide/svelte';
@@ -42,10 +43,12 @@
     if (email === $profile.email) {
       return;
     }
+    const url = new URL(window.location.href);
+    url.searchParams.set('trigger', 'app');
 
     await profileApi.changeEmail({
       newEmail: email,
-      callbackURL: window.location.href
+      callbackURL: url.toString()
     });
 
     if (profileApi.success) {
@@ -55,6 +58,8 @@
       email = $profile.email || '';
     }
   }
+
+  const isVerificationSent = $derived(page.url.searchParams.get('trigger') === 'app');
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
@@ -77,6 +82,14 @@
 
   <Field.Set>
     <Field.Legend>{$t('settings.profile.personal_information.heading')}</Field.Legend>
+
+    {#if isVerificationSent}
+      <div class="flex items-center gap-2 rounded-md border border-gray-200 p-2 text-green-500">
+        <CircleCheckBig class="size-8" />
+        <p class="text-sm">{$t('settings.profile.personal_information.email_change_verification_sent')}</p>
+      </div>
+    {/if}
+
     <Field.Group>
       <Field.Field>
         <Field.Label>{$t('settings.profile.personal_information.full_name')}</Field.Label>
@@ -136,11 +149,9 @@
           </div>
         {/if}
         {#if emailChangeInitiated}
-          <div
-            class="ml-2 mt-2 flex w-4/5 items-center gap-2 rounded-md border border-gray-200 p-2 text-sm text-amber-500"
-          >
-            <CircleCheckBig />
-            <p>{$t('settings.profile.personal_information.email_change_verification_note')}</p>
+          <div class="mt-2 flex items-center gap-2 rounded-md border border-gray-200 p-2 text-amber-500">
+            <CircleCheckBig class="size-8" />
+            <p class="text-sm">{$t('settings.profile.personal_information.email_change_verification_note')}</p>
           </div>
         {/if}
       </Field.Field>
@@ -154,12 +165,4 @@
       </Field.Field>
     </Field.Group>
   </Field.Set>
-
-  <Field.Separator />
-
-  <Field.Field orientation="horizontal">
-    <Button variant="default" class="mr-5 w-fit" loading={profileApi.isLoading} onclick={handleUpdate}>
-      {$t('settings.profile.update_profile')}
-    </Button>
-  </Field.Field>
 </Field.Group>
