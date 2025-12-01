@@ -265,7 +265,7 @@ export const getOrganizations = async (filters?: {
  * @param data Organization plan creation data
  * @returns Created organization plan record
  */
-export const createOrganizationPlan = async (data: TNewOrganizationPlan) => {
+export const createOrganizationPlan = async (data: TNewOrganizationPlan): Promise<TOrganizationPlan> => {
   const [plan] = await db.insert(schema.organizationPlan).values(data).returning();
   return plan;
 };
@@ -276,7 +276,10 @@ export const createOrganizationPlan = async (data: TNewOrganizationPlan) => {
  * @param payload Payload data to update
  * @returns Updated organization plan record
  */
-export const updateOrganizationPlan = async (subscriptionId: string, payload: TOrganizationPlan['payload']) => {
+export const updateOrganizationPlan = async (
+  subscriptionId: string,
+  payload: TOrganizationPlan['payload']
+): Promise<TOrganizationPlan> => {
   const [plan] = await db
     .update(schema.organizationPlan)
     .set({ payload, updatedAt: sql`timezone('utc'::text, now())` })
@@ -291,7 +294,10 @@ export const updateOrganizationPlan = async (subscriptionId: string, payload: TO
  * @param payload Payload data to update
  * @returns Updated organization plan record
  */
-export const cancelOrganizationPlan = async (subscriptionId: string, payload: TOrganizationPlan['payload']) => {
+export const cancelOrganizationPlan = async (
+  subscriptionId: string,
+  payload: TOrganizationPlan['payload']
+): Promise<TOrganizationPlan> => {
   const [plan] = await db
     .update(schema.organizationPlan)
     .set({
@@ -304,4 +310,20 @@ export const cancelOrganizationPlan = async (subscriptionId: string, payload: TO
     .returning();
 
   return plan;
+};
+
+/**
+ * Updates an organization
+ * @param id Organization ID
+ * @param data Partial organization data to update
+ * @returns Updated organization record
+ */
+export const updateOrganization = async (id: string, data: Partial<TOrganization>): Promise<TOrganization> => {
+  const [organization] = await db
+    .update(schema.organization)
+    .set(data)
+    .where(eq(schema.organization.id, id))
+    .returning();
+
+  return organization;
 };

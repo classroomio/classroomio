@@ -14,6 +14,12 @@ export const ZGetOrganizationTeam = z.object({
 
 export type TGetOrganizationTeam = z.infer<typeof ZGetOrganizationTeam>;
 
+export const ZUpdateOrganizationParam = z.object({
+  orgId: z.uuid()
+});
+
+export type TUpdateOrganizationParam = z.infer<typeof ZUpdateOrganizationParam>;
+
 export const ZGetOrganizationAudience = z.object({
   orgId: z.uuid()
 });
@@ -49,3 +55,16 @@ export const ZCancelOrgPlan = z.object({
 });
 
 export type TCancelOrgPlan = z.infer<typeof ZCancelOrgPlan>;
+
+export const ZUpdateOrganization = z.object({
+  name: z
+    .string()
+    .min(5)
+    .refine((val) => !/^[-]|[-]$/.test(val), {
+      message: 'Organization name cannot start or end with a hyphen'
+    })
+    .optional(),
+  avatarUrl: z.url().optional()
+});
+
+export type TUpdateOrganization = z.infer<typeof ZUpdateOrganization>;

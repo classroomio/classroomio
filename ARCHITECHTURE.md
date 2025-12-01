@@ -1250,11 +1250,111 @@ Example with **client-side validation** before API call:
 </form>
 ```
 
+### API Abstraction Pattern (API Classes)
+
+When creating API abstractions in `apps/dashboard/src/lib/features/{domain}/api/{entity}.svelte.ts`, **always use the `execute` method** from `BaseApi` or `BaseApiWithErrors` classes. This provides automatic loading state management, error handling, and consistent response processing.
+
+#### Using the `execute` Method
+
+**Pattern:**
+```typescript
+import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+
+class MyApi extends BaseApiWithErrors {
+  async updateItem(id: string, data: Partial<Item>) {
+    await this.execute<typeof classroomio.items[':id']['$put']>({
+      requestFn: () => classroomio.items[':id'].$put({
+        param: { id },
+        json: data
+      }),
+      logContext: 'updating item',
+      onSuccess: (response) => {
+        // Update local stores with response.data
+        itemsStore.update((items) => {
+          const index = items.findIndex((i) => i.id === id);
+          if (index !== -1 && response.data) {
+            items[index] = { ...items[index], ...response.data };
+          }
+          return items;
+        });
+      },
+      onError: (result) => {
+        // Optional: Custom error handling
+        if (typeof result === 'string') {
+          snackbar.error(result);
+          return;
+        }
+        if ('error' in result) {
+          this.handleValidationError(result);
+        }
+      }
+    });
+  }
+}
+
+export const myApi = new MyApi();
+```
+
+**Key Points:**
+- **Always use `this.execute`** - Never call the RPC client directly
+- **Type the execute call** with `typeof classroomio.{route}.{method}` for type safety
+- **Use `requestFn`** - Wrap the RPC call in a function
+- **Use `logContext`** - Provide descriptive context for error logging
+- **Use `onSuccess`** - Update local stores/reactivity with response data
+- **Use `onError`** - Optional custom error handling (validation errors are handled automatically by `BaseApiWithErrors`)
+
+**Examples:**
+
+```typescript
+// Profile API - Simple update
+await this.execute<typeof classroomio.account.user.$put>({
+  requestFn: () => classroomio.account.user.$put({ json: profileUpdates }),
+  logContext: 'updating profile',
+  onSuccess: (response) => {
+    profileStore.update((_profile) => ({
+      ..._profile,
+      ...response.profile
+    }));
+  }
+});
+
+// Onboarding API - With error handling
+await this.execute<typeof classroomio.onboarding.step1.$post>({
+  requestFn: () => classroomio.onboarding.step1.$post({ json: data }),
+  logContext: 'submitting organization setup',
+  onSuccess: (result) => {
+    const { organizations } = result.data;
+    orgs.set(organizations);
+    currentOrg.set(organizations[0]);
+    this.errors = {};
+    this.step = ONBOARDING_STEPS.USER_METADATA;
+  },
+  onError: (result) => {
+    if (typeof result === 'string') {
+      snackbar.error(result);
+      return;
+    }
+    if ('error' in result) {
+      this.handleValidationError(result);
+    }
+  }
+});
+```
+
+**Benefits:**
+- ✅ Automatic loading state management (`this.isLoading`)
+- ✅ Automatic error state management (`this.error` or `this.errors`)
+- ✅ Consistent error handling across all API calls
+- ✅ Type-safe responses
+- ✅ Centralized logging
+- ✅ Easy to test and mock
+
 ### Frontend Best Practices
 
 #### ✅ DO
 
 - **Use type-safe RPC client** for API calls (Hono RPC)
+- **Always use `execute` method** in API abstraction classes (never call RPC client directly)
 - **Validate client-side** before API calls using shared schemas from `@cio/utils/validation`
 - **Use entity-specific translations** when multiple entities share field names
 
@@ -1272,6 +1372,7 @@ Example with **client-side validation** before API call:
 
 #### ❌ DON'T
 
+- **Call RPC client directly** in API classes (always use `execute` method)
 - Skip error handling assuming API calls always succeed
 - Display raw API error messages without formatting
 - Skip client-side validation (validate before API call for instant feedback)

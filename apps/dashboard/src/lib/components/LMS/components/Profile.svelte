@@ -64,7 +64,7 @@
         message = $t('username already exists');
       }
 
-      snackbar.error(`${$t('snackbar.lms.error.update')}: ${message}`);
+      snackbar.error(`${$t('snackbar.update_failed')}: ${message}`);
 
       loading = false;
     } finally {

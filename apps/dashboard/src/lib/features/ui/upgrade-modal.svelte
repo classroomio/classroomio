@@ -111,11 +111,11 @@
 {/if}
 
 <Dialog.Root bind:open onOpenChange={handleOpenChange}>
-  <Dialog.Content class="max-w-5xl! {1 === 1 ? 'max-w-[600px]!' : ''}">
+  <Dialog.Content class="max-w-5xl! {upgraded || isConfirming ? 'max-w-[600px]!' : ''}">
     <Dialog.Header>
       <Dialog.Title>{$t('pricing.modal.heading')}</Dialog.Title>
     </Dialog.Header>
-    {#if !upgraded}
+    {#if upgraded}
       <div class="animate-icon flex w-full flex-col items-center justify-center gap-4">
         <RocketIcon class="rocket-launch my-3 size-6" />
         <p class="text-lg">{$t('pricing.modal.thanks')}</p>
@@ -190,7 +190,7 @@
                     {isYearlyPlan ? plan?.PRICE?.YEARLY : plan?.PRICE?.MONTHLY}
                   </span>
                 </div>
-                <p class="text-sm text-gray-500">Per editor</p>
+                <p class="text-sm text-gray-500">Per Organization</p>
               </div>
 
               <Button

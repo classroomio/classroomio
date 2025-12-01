@@ -6,6 +6,7 @@ const envSchema = z.object({
   CLOUDFLARE_BUCKET_DOMAIN: z.string().optional(),
   CLOUDFLARE_RENDERING_API_KEY: z.string().optional(),
   CLOUDFLARE_SECRET_ACCESS_KEY: z.string().optional(),
+  CLOUDFLARE_IMAGE_BUCKET_DOMAIN: z.string().optional(),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   OPENAPI_URL: z.string().optional(),
   PORT: z.string().optional(),

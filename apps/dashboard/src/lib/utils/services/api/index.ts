@@ -28,7 +28,9 @@ class ApiClient {
 
     // Handle body serialization and content-type
     let requestBody = fetchConfig.body;
-    if (fetchConfig.body && typeof fetchConfig.body === 'object' && !(fetchConfig.body instanceof FormData)) {
+    const isFormData = fetchConfig.body instanceof FormData;
+
+    if (fetchConfig.body && typeof fetchConfig.body === 'object' && !isFormData) {
       // Auto-stringify objects (except FormData)
       requestBody = JSON.stringify(fetchConfig.body);
       if (!headers.has('Content-Type')) {
@@ -47,7 +49,7 @@ class ApiClient {
 
     const requestInit: RequestInit = {
       ...fetchConfig,
-      headers,
+      headers: isFormData ? undefined : headers,
       body: requestBody,
       signal: controller.signal
     };

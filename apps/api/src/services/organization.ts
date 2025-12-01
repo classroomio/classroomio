@@ -1,11 +1,12 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import type { TNewOrganizationPlan, TOrganizationPlan, TPlan } from '@db/types';
+import type { TNewOrganizationPlan, TOrganization, TOrganizationPlan, TPlan } from '@db/types';
 import {
   cancelOrganizationPlan,
   createOrganizationPlan,
   getOrganizationAudience,
   getOrganizationTeam,
   getOrganizations,
+  updateOrganization,
   updateOrganizationPlan
 } from '@cio/db/queries/organization';
 
@@ -108,6 +109,31 @@ export async function createOrgPlan(data: TNewOrganizationPlan) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to create organization plan',
       ErrorCodes.ORG_PLAN_CREATE_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Updates an organization
+ * @param orgId - The organization ID
+ * @param data - Partial organization data to update
+ * @returns Updated organization
+ */
+export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
+  try {
+    const organization = await updateOrganization(orgId, data);
+    if (!organization) {
+      throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
+    }
+    return organization;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to update organization',
+      ErrorCodes.INTERNAL_ERROR,
       500
     );
   }

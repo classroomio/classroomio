@@ -3,7 +3,7 @@
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import { uploadAvatar } from '$lib/utils/services/courses';
+  import { uploadImage } from '$lib/utils/services/upload';
   import type { Course } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
 
@@ -19,13 +19,14 @@
   let imgUrl = $state(get(course, 'metadata.instructor.imgUrl'));
   let description = $state(get(course, 'metadata.instructor.description'));
   let courseNo = $state(get(course, 'metadata.instructor.courseNo'));
-  let avatar: string | undefined = $state();
+  let avatar: File | undefined = $state();
   let isUploading = $state(false);
 
-  async function onAvatarChange(_avatar: string | undefined) {
+  async function onAvatarChange(_avatar: File | undefined) {
     if (!_avatar || !course.id) return;
+
     isUploading = true;
-    const logo = await uploadAvatar(course.id, _avatar);
+    const logo = await uploadImage(_avatar);
 
     if (!logo) return;
 

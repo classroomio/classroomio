@@ -4,13 +4,12 @@ import { ZChangeEmail, ZProfileUpdateForm } from '@cio/utils/validation/account'
 
 import type { TProfileUpdateForm as TProfileUpdateFormSchema } from '@cio/utils/validation/account';
 import { authClient } from '$lib/utils/services/auth/client';
-import generateUUID from '$lib/utils/functions/generateUUID';
 import { handleLocaleChange } from '$lib/utils/functions/translations';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { profile as profileStore } from '$lib/utils/store/user';
 import { snackbar } from '$lib/components/Snackbar/store';
-import { supabase } from '$lib/utils/functions/supabase';
 import { t } from '$lib/utils/functions/translations';
+import { uploadImage } from '$lib/utils/services/upload';
 
 export interface TProfileUpdateForm extends Omit<TProfileUpdateFormSchema, 'avatarUrl'> {
   avatar?: string | File | undefined;
@@ -35,24 +34,6 @@ export class ProfileApi extends BaseApiWithErrors {
       return false;
     }
     return true;
-  }
-
-  private async uploadAvatar(avatar: File): Promise<string | undefined> {
-    const filename = `user/${generateUUID()}.webp`;
-
-    const { data: uploadData, error: uploadError } = await supabase.storage.from('avatars').upload(filename, avatar, {
-      cacheControl: '3600',
-      upsert: false
-    });
-
-    if (uploadError) throw uploadError;
-
-    if (uploadData) {
-      const { data: urlData } = await supabase.storage.from('avatars').getPublicUrl(filename);
-      return urlData.publicUrl;
-    }
-
-    return undefined;
   }
 
   private async updateUserInfo(
@@ -124,11 +105,11 @@ export class ProfileApi extends BaseApiWithErrors {
     const message = error instanceof Error ? error.message : `${error}`;
 
     if (message.includes('profile_username_key')) {
-      this.errors.username = 'snackbar.lms.error.username_exists';
+      this.errors.username = t.get('snackbar.lms.error.username_exists');
       snackbar.error('snackbar.lms.error.username_exists');
     } else {
       this.errors.general = message;
-      snackbar.error(`snackbar.lms.error.update: ${message}`);
+      snackbar.error(`${t.get('snackbar.update_failed')}: ${message}`);
     }
   }
 
@@ -145,7 +126,7 @@ export class ProfileApi extends BaseApiWithErrors {
       // Handle avatar upload if provided
       let avatarUrl: string | undefined;
       if (fields.avatar instanceof File) {
-        avatarUrl = await this.uploadAvatar(fields.avatar);
+        avatarUrl = await uploadImage(fields.avatar);
       }
 
       // Update user info via Better Auth (name and image)
@@ -197,7 +178,7 @@ export class ProfileApi extends BaseApiWithErrors {
       const message = error instanceof Error ? error.message : `${error}`;
 
       this.errors.email = message;
-      snackbar.error(`${t.get('snackbar.lms.error.update')} ${message}`);
+      snackbar.error(`${t.get('snackbar.update_failed')}: ${message}`);
     } finally {
       this.isLoading = false;
     }

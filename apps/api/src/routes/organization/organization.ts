@@ -5,7 +5,9 @@ import {
   ZGetOrganizationAudience,
   ZGetOrganizationTeam,
   ZGetOrganizations,
-  ZUpdateOrgPlan
+  ZUpdateOrgPlan,
+  ZUpdateOrganization,
+  ZUpdateOrganizationParam
 } from '@cio/utils/validation/organization';
 import {
   cancelOrgPlan,
@@ -14,6 +16,7 @@ import {
   getOrgAudience,
   getOrgTeam,
   getOrganizationsWithFilters,
+  updateOrg,
   updateOrgPlan
 } from '@api/services/organization';
 
@@ -169,4 +172,34 @@ export const organizationRouter = new Hono()
     } catch (error) {
       return handleError(c, error, 'Failed to cancel organization plan');
     }
-  });
+  })
+  /**
+   * PUT /organization/:orgId
+   * Updates an organization (name, avatarUrl)
+   * Requires authentication
+   */
+  .put(
+    '/:orgId',
+    authMiddleware,
+    zValidator('param', ZUpdateOrganizationParam),
+    zValidator('json', ZUpdateOrganization),
+    async (c) => {
+      try {
+        const { orgId } = c.req.valid('param');
+
+        const data = c.req.valid('json');
+
+        const organization = await updateOrg(orgId, data);
+
+        return c.json(
+          {
+            success: true,
+            data: organization
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to update organization');
+      }
+    }
+  );

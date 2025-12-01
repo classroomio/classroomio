@@ -28,9 +28,10 @@
       .match({ id: $currentOrg.id });
 
     if (error) {
-      const message = error?.message || 'snackbar.lms.error.try_again';
+      const message = error?.message || $t('snackbar.lms.error.try_again');
+
       console.error('Error updating customizations', message);
-      snackbar.error('snackbar.lms.error.update');
+      snackbar.error(`${$t('snackbar.update_failed')}: ${message}`);
     } else {
       snackbar.success('snackbar.success_update');
     }

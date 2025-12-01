@@ -8,9 +8,9 @@
   import { t } from '$lib/utils/functions/translations';
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { updateOrgNameValidation } from '$lib/utils/functions/validator';
   import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { injectCustomTheme, setCustomTheme, setTheme } from '$lib/utils/functions/theme';
+  import { orgApi } from '$lib/features/org/api/org.svelte';
 
   import { Input } from '@cio/ui/base/input';
   import { Button } from '@cio/ui/base/button';
@@ -18,16 +18,8 @@
   import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
   import * as Field from '@cio/ui/base/field';
 
-  let avatar = $state<string | undefined>();
+  let avatar = $state<string | File | undefined>();
   let hasUnsavedChanges = $state(false);
-
-  type Error = {
-    orgName: string;
-  };
-
-  let errors: Error = $state({
-    orgName: ''
-  });
   let hex = $state('');
 
   $effect(() => {
@@ -89,51 +81,14 @@
   }
 
   export async function handleUpdate() {
-    errors = updateOrgNameValidation($currentOrg.name) as Error;
+    await orgApi.update($currentOrg.id, {
+      name: $currentOrg.name,
+      avatar
+    });
 
-    if (Object.values(errors).length) {
-      return;
-    }
-
-    try {
-      const updates: Record<string, string> = {
-        name: $currentOrg.name
-      };
-
-      if (avatar) {
-        const filename = `user/${$currentOrg.name + Date.now()}.webp`;
-
-        const { data } = await supabase.storage.from('avatars').upload(filename, avatar, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-        if (data) {
-          const { data: response } = supabase.storage.from('avatars').getPublicUrl(filename);
-
-          updates.avatarUrl = response.publicUrl;
-          $currentOrg.avatarUrl = response.publicUrl;
-        }
-        avatar = undefined;
-      }
-
-      let { error } = await supabase.from('organization').update(updates).match({ id: $currentOrg.id });
-
-      currentOrg.update((_currentOrg) => ({
-        ..._currentOrg,
-        ...updates
-      }));
-
-      snackbar.success('snackbar.course_settings.success.update_successful');
+    if (orgApi.success) {
       hasUnsavedChanges = false;
-      if (error) throw error;
-    } catch (error) {
-      let message = error as string;
-      if (message.includes('profile_username_key')) {
-        message = $t('snackbar.lms.error.username_exists');
-      }
-
-      snackbar.error(`${$t('snackbar.lms.error.update')} ${message}`);
+      avatar = undefined;
     }
   }
 
@@ -152,8 +107,8 @@
       <Field.Field>
         <Field.Label>{$t('settings.organization.organization_profile.organization_name')}</Field.Label>
         <Input bind:value={$currentOrg.name} oninput={() => (hasUnsavedChanges = true)} class="w-full lg:w-60" />
-        {#if errors.orgName}
-          <Field.Error>{errors.orgName}</Field.Error>
+        {#if orgApi.errors.name}
+          <Field.Error>{$t(orgApi.errors.name)}</Field.Error>
         {/if}
       </Field.Field>
       <Field.Field>

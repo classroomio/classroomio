@@ -8,7 +8,6 @@ export const mailRouter = new Hono().post('/send', zValidator('json', ZDeliverEm
   const validatedData = c.req.valid('json');
 
   try {
-    // Use service to send emails
     const results = await deliverEmail(validatedData);
 
     const hasErrors = results.some((result) => !result.success);

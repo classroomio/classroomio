@@ -1385,6 +1385,7 @@
     "success_delete": "Deleted successfully",
     "something": "Something went wrong - Please try later",
     "update": "Update",
+    "update_failed": "Update failed",
 
     "poll": {
       "error": {
