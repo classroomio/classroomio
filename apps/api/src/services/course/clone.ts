@@ -142,7 +142,6 @@ export async function cloneCourse(
 ): Promise<TCourse> {
   // 1. fetch old course
   const [course] = await getCourseById(courseId);
-  console.log('course', course);
 
   // 2. create group
   const [newGroup] = await createGroup({
@@ -187,7 +186,7 @@ export async function cloneCourse(
   // Only create sections if there are any
   let newSections: TLessonSection[] = [];
   let sectionMap = new Map<string, string>();
-  
+
   if (oldSections.length > 0) {
     newSections = await createLessonSections(
       oldSections.map((sec) => ({
@@ -196,7 +195,7 @@ export async function cloneCourse(
         courseId: newCourse.id
       }))
     );
-    
+
     // create map
     sectionMap = new Map(oldSections.map((old, i) => [old.id, newSections[i].id]));
   }
