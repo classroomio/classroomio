@@ -1,9 +1,10 @@
+import { getOrgIdBySiteName } from '@db/queries';
+import { OrganisationAnalytics } from '@api/types';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { getCourseStats, getDashOrgStats, getRecentEnrollments } from '@cio/db/queries/dash';
-import { getOrgIdBySiteName } from '@db/queries';
 
-export async function getOrganisationAnalytics(orgId?: string, siteName?: string) {
-  const analytics = {
+export async function getOrganisationAnalytics(orgId?: string, siteName?: string): Promise<OrganisationAnalytics> {
+  const analytics: OrganisationAnalytics = {
     revenue: 0,
     numberOfCourses: 0,
     totalStudents: 0,
@@ -51,7 +52,7 @@ export async function getOrganisationAnalytics(orgId?: string, siteName?: string
     }));
 
     return analytics;
-  } catch (error: any) {
+  } catch (error) {
     console.error('Failed to load organisation analytics:', error);
     throw new AppError('Failed to load organisation analytics', ErrorCodes.ORG_ANALYTICS_FETCH_FAILED, 500);
   }

@@ -4,7 +4,6 @@ import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 import { secureHeaders } from 'hono/secure-headers';
 
-// --- utils
 import { auth } from '@cio/db/auth';
 import { Hono } from '@api/utils/hono';
 import rateLimiter from '@api/middlewares/rate-limiter';
@@ -14,7 +13,7 @@ import { API_SERVER_URL, TRUSTED_ORIGINS } from '@api/constants';
 import { mailRouter } from '@api/routes/mail';
 import { courseRouter } from '@api/routes/course';
 import { accountRouter } from '@api/routes/account';
-import { dashAnalyticsRouter } from './routes/dash';
+import { dashAnalyticsRouter } from '@api/routes/dash';
 import { onboardingRouter } from '@api/routes/onboarding';
 import { organizationRouter } from '@api/routes/organization';
 
