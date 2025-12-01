@@ -1,5 +1,7 @@
 // Database types for course cloning
 
+import { TCourse } from '@db/types';
+
 export interface Course {
   id: string;
   title: string;
@@ -135,11 +137,10 @@ export interface Profile {
 // Response types
 export interface CloneCourseResponse {
   success: boolean;
-  course: Course;
+  course: TCourse;
 }
 
 export interface CloneCourseErrorResponse {
   error: string;
   details?: string;
 }
-

@@ -16,7 +16,7 @@ import {
   getOptionsByQuestionIds,
   createOptions
 } from '@db/queries';
-import { TCourse, TLesson } from '@db/types';
+import { TCourse, TLesson, TLessonSection } from '@db/types';
 
 // Constants
 const QUESTION_TYPE_TEXTAREA = 2; // Paragraph question type
@@ -142,6 +142,7 @@ export async function cloneCourse(
 ): Promise<TCourse> {
   // 1. fetch old course
   const [course] = await getCourseById(courseId);
+  console.log('course', course);
 
   // 2. create group
   const [newGroup] = await createGroup({
@@ -151,11 +152,25 @@ export async function cloneCourse(
   });
 
   // 3. create course for that group
+  // Explicitly select only the fields we want to copy (exclude id, createdAt, updatedAt)
   const [newCourse] = await createCourse({
-    ...course,
     title: newTitle,
+    description: course.description,
+    overview: course.overview,
+    groupId: newGroup.id,
+    isTemplate: course.isTemplate,
+    logo: course.logo,
     slug: newSlug ?? null,
-    groupId: newGroup.id
+    metadata: course.metadata,
+    cost: course.cost,
+    currency: course.currency,
+    bannerImage: course.bannerImage,
+    isPublished: course.isPublished,
+    isCertificateDownloadable: course.isCertificateDownloadable,
+    certificateTheme: course.certificateTheme,
+    status: course.status,
+    type: course.type,
+    version: course.version
   });
 
   // 4. add group member
@@ -169,25 +184,43 @@ export async function cloneCourse(
   // 5. clone sections
   const oldSections = await getSectionsByCourseId(courseId);
 
-  const newSections = await createLessonSections(
-    oldSections.map((sec) => ({
-      title: sec.title,
-      order: sec.order,
-      courseId: newCourse.id
-    }))
-  );
-
-  // create map
-  const sectionMap = new Map(oldSections.map((old, i) => [old.id, newSections[i].id]));
+  // Only create sections if there are any
+  let newSections: TLessonSection[] = [];
+  let sectionMap = new Map<string, string>();
+  
+  if (oldSections.length > 0) {
+    newSections = await createLessonSections(
+      oldSections.map((sec) => ({
+        title: sec.title,
+        order: sec.order,
+        courseId: newCourse.id
+      }))
+    );
+    
+    // create map
+    sectionMap = new Map(oldSections.map((old, i) => [old.id, newSections[i].id]));
+  }
 
   // 6. clone lessons
   const oldLessons = await getLessonsByCourseId(courseId);
 
   const newLessons = await createLessons(
     oldLessons.map((lesson) => ({
-      ...lesson,
+      note: lesson.note,
+      videoUrl: lesson.videoUrl,
+      slideUrl: lesson.slideUrl,
       courseId: newCourse.id,
-      sectionId: lesson.sectionId ? sectionMap.get(lesson.sectionId) : null
+      title: lesson.title,
+      public: lesson.public,
+      lessonAt: lesson.lessonAt,
+      teacherId: lesson.teacherId,
+      isComplete: lesson.isComplete,
+      callUrl: lesson.callUrl,
+      order: lesson.order,
+      isUnlocked: lesson.isUnlocked,
+      videos: lesson.videos,
+      sectionId: lesson.sectionId ? sectionMap.get(lesson.sectionId) : null,
+      documents: lesson.documents
     }))
   );
 
