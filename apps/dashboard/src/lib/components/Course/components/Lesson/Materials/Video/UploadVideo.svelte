@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Progress } from '@cio/ui/base/progress';
   import { preventDefault } from '$lib/utils/functions/svelte';
-  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
+  import { UpgradeBanner } from '$lib/features/ui';
   import { lesson, lessonVideoUpload, cancelVideoUpload } from '$lib/components/Course/components/Lesson/store/lessons';
 
   import { isFreePlan } from '$lib/utils/store/org';

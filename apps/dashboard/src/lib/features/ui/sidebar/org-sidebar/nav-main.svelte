@@ -44,7 +44,7 @@
                 <Sidebar.MenuSub>
                   {#each item.items ?? [] as subItem (subItem.title)}
                     <Sidebar.MenuSubItem>
-                      <Sidebar.MenuSubButton isActive={isActive(pathWithQuery, subItem.url, true)}>
+                      <Sidebar.MenuSubButton isActive={isActive(pathWithQuery, subItem.url, undefined, true)}>
                         {#snippet child({ props })}
                           <a href={subItem.url} {...props}>
                             <span>{subItem.title}</span>

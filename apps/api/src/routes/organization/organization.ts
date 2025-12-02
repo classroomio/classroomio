@@ -1,25 +1,39 @@
 import {
   ZCancelOrgPlan,
   ZCreateOrgPlan,
+  ZCreateOrganization,
   ZGetCoursesBySiteName,
+  ZGetOrgSetup,
   ZGetOrganizationAudience,
   ZGetOrganizationTeam,
   ZGetOrganizations,
-  ZUpdateOrgPlan
+  ZInviteTeamMembers,
+  ZRemoveTeamMember,
+  ZUpdateOrgPlan,
+  ZUpdateOrganization,
+  ZUpdateOrganizationParam
 } from '@cio/utils/validation/organization';
 import {
   cancelOrgPlan,
+  createOrg,
   createOrgPlan,
   getCoursesByOrgSiteName,
   getOrgAudience,
+  getOrgSetupData,
   getOrgTeam,
   getOrganizationsWithFilters,
+  inviteTeamMembers,
+  removeTeamMember,
+  updateOrg,
   updateOrgPlan
 } from '@api/services/organization';
 
 import { Hono } from '@api/utils/hono';
+import { TOrganization } from '@db/types';
 import { authMiddleware } from '@api/middlewares/auth';
+import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
 import { handleError } from '@api/utils/errors';
+import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { zValidator } from '@hono/zod-validator';
 
 export const organizationRouter = new Hono()
@@ -27,10 +41,12 @@ export const organizationRouter = new Hono()
    * GET /organization
    * Gets organizations with optional filters
    * Query params: siteName (string, optional), customDomain (string, optional), isCustomDomainVerified (boolean, optional)
+   * Accepts: User session OR API key (for server-side routes)
    */
-  .get('/', zValidator('query', ZGetOrganizations), async (c) => {
+  .get('/', authOrApiKeyMiddleware, zValidator('query', ZGetOrganizations), async (c) => {
     try {
       const filters = c.req.valid('query');
+      console.log('filters', filters);
       const organizations = await getOrganizationsWithFilters(filters);
 
       return c.json(
@@ -41,6 +57,7 @@ export const organizationRouter = new Hono()
         200
       );
     } catch (error) {
+      console.error('Error fetching organizations:', error);
       return handleError(c, error, 'Failed to fetch organizations');
     }
   })
@@ -65,6 +82,63 @@ export const organizationRouter = new Hono()
       return handleError(c, error, 'Failed to fetch organization team');
     }
   })
+  /**
+   * POST /organization/:orgId/team/invite
+   * Invites team members to an organization
+   * Requires authentication and admin role
+   */
+  .post(
+    '/:orgId/team/invite',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('param', ZGetOrganizationTeam),
+    zValidator('json', ZInviteTeamMembers),
+    async (c) => {
+      try {
+        const { orgId } = c.req.valid('param');
+        const { emails, roleId } = c.req.valid('json');
+
+        const members = await inviteTeamMembers(orgId, emails, roleId);
+
+        return c.json(
+          {
+            success: true,
+            data: members
+          },
+          201
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to invite team members');
+      }
+    }
+  )
+  /**
+   * DELETE /organization/:orgId/team/:memberId
+   * Removes a team member from an organization
+   * Requires authentication and admin role
+   */
+  .delete(
+    '/:orgId/team/:memberId',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('param', ZRemoveTeamMember),
+    async (c) => {
+      try {
+        const { orgId, memberId } = c.req.valid('param');
+
+        await removeTeamMember(orgId, memberId);
+
+        return c.json(
+          {
+            success: true
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to remove team member');
+      }
+    }
+  )
   /**
    * GET /organization/:orgId/audience
    * Gets organization audience (students)
@@ -91,28 +165,58 @@ export const organizationRouter = new Hono()
    * Gets courses by organization siteName
    * Query params: siteName (string)
    */
-  .get('/courses', zValidator('query', ZGetCoursesBySiteName), async (c) => {
+  .get(
+    '/courses',
+    // TODO: Ratelimit this endpoint
+    // TODO: Add cache
+    // TODO: Add pagination
+    // TODO: Add sorting
+    // TODO: Add filtering
+    zValidator('query', ZGetCoursesBySiteName),
+    async (c) => {
+      try {
+        const { siteName } = c.req.valid('query');
+        const courses = await getCoursesByOrgSiteName(siteName);
+
+        return c.json(
+          {
+            success: true,
+            data: courses
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch courses');
+      }
+    }
+  )
+  /**
+   * GET /organization/setup
+   * Gets setup data for an organization (courses, lessons, exercises, org info)
+   * Query params: siteName (string)
+   */
+  .get('/setup', zValidator('query', ZGetOrgSetup), async (c) => {
     try {
       const { siteName } = c.req.valid('query');
-      const courses = await getCoursesByOrgSiteName(siteName);
+      const setupData = await getOrgSetupData(siteName);
 
       return c.json(
         {
           success: true,
-          data: courses
+          data: setupData
         },
         200
       );
     } catch (error) {
-      return handleError(c, error, 'Failed to fetch courses');
+      return handleError(c, error, 'Failed to fetch setup data');
     }
   })
   /**
    * POST /organization/plan
    * Creates a new organization plan
-   * Requires authentication
+   * Requires authentication (user session or API key)
    */
-  .post('/plan', authMiddleware, zValidator('json', ZCreateOrgPlan), async (c) => {
+  .post('/plan', authOrApiKeyMiddleware, zValidator('json', ZCreateOrgPlan), async (c) => {
     try {
       const data = c.req.valid('json');
       const plan = await createOrgPlan(data);
@@ -131,9 +235,9 @@ export const organizationRouter = new Hono()
   /**
    * PUT /organization/plan
    * Updates an organization plan by subscription ID
-   * Requires authentication
+   * Requires authentication (user session or API key)
    */
-  .put('/plan', authMiddleware, zValidator('json', ZUpdateOrgPlan), async (c) => {
+  .put('/plan', authOrApiKeyMiddleware, zValidator('json', ZUpdateOrgPlan), async (c) => {
     try {
       const { subscriptionId, payload } = c.req.valid('json');
       const plan = await updateOrgPlan(subscriptionId, payload);
@@ -152,9 +256,9 @@ export const organizationRouter = new Hono()
   /**
    * POST /organization/plan/cancel
    * Cancels an organization plan by subscription ID
-   * Requires authentication
+   * Requires authentication (user session or API key)
    */
-  .post('/plan/cancel', authMiddleware, zValidator('json', ZCancelOrgPlan), async (c) => {
+  .post('/plan/cancel', authOrApiKeyMiddleware, zValidator('json', ZCancelOrgPlan), async (c) => {
     try {
       const { subscriptionId, payload } = c.req.valid('json');
       const plan = await cancelOrgPlan(subscriptionId, payload);
@@ -169,4 +273,60 @@ export const organizationRouter = new Hono()
     } catch (error) {
       return handleError(c, error, 'Failed to cancel organization plan');
     }
-  });
+  })
+  /**
+   * POST /organization
+   * Creates a new organization with the current user as owner
+   * Requires authentication
+   */
+  .post('/', authMiddleware, zValidator('json', ZCreateOrganization), async (c) => {
+    try {
+      const user = c.get('user');
+      const data = c.req.valid('json');
+
+      const result = await createOrg(user.id, data);
+
+      return c.json(
+        {
+          success: true,
+          data: result
+        },
+        201
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to create organization');
+    }
+  })
+  /**
+   * PUT /organization/:orgId
+   * Updates an organization (name, avatarUrl)
+   * Requires authentication
+   */
+  .put(
+    '/:orgId',
+    authMiddleware,
+    zValidator('param', ZUpdateOrganizationParam),
+    zValidator('json', ZUpdateOrganization),
+    async (c) => {
+      try {
+        console.log('updateOrg');
+        console.log(c.req.valid('param'));
+        console.log(c.req.valid('json'));
+        const { orgId } = c.req.valid('param');
+
+        const data = c.req.valid('json') as Partial<TOrganization>;
+
+        const organization = await updateOrg(orgId, data);
+
+        return c.json(
+          {
+            success: true,
+            data: organization
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to update organization');
+      }
+    }
+  );

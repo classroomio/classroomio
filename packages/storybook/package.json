@@ -7,14 +7,16 @@
     "dev": "storybook dev -p 6006",
     "build": "storybook build",
     "preview": "storybook preview",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "upload:storybook": "tsx scripts/upload-storybook.ts",
+    "publish:storybook": "pnpm build-storybook && pnpm upload:storybook"
   },
   "dependencies": {
     "@cio/ui": "workspace:*"
   },
   "devDependencies": {
-    "@tiptap/pm": "^3.7.1",
-    "@tiptap/core": "^3.7.1",
+    "@aws-sdk/client-s3": "^3.388.0",
+    "@cio/tsconfig": "workspace:*",
     "@storybook/addon-essentials": "^8.4.2",
     "@storybook/addon-interactions": "^8.4.2",
     "@storybook/addon-links": "^8.4.2",
@@ -26,10 +28,14 @@
     "@storybook/test": "^8.4.2",
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
     "@tailwindcss/vite": "^4.1.16",
+    "@tiptap/core": "^3.7.1",
+    "@tiptap/pm": "^3.7.1",
+    "@zxcvbn-ts/core": "^3.0.4",
+    "dotenv": "^16.3.1",
     "storybook": "^8.4.2",
     "svelte": "^5.39.11",
     "tailwindcss": "^4.1.14",
-    "@cio/tsconfig": "workspace:*",
+    "tsx": "^4.7.1",
     "typescript-svelte-plugin": "^0.3.50",
     "vite": "^7.1.4"
   }

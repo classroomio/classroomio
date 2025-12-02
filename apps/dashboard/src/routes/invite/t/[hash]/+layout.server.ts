@@ -1,11 +1,6 @@
-import { redirect } from '@sveltejs/kit';
-import { getCurrentOrg } from '$lib/utils/services/org';
-import { getSupabase, supabase } from '$lib/utils/functions/supabase';
+import { OrgApiServer } from '$lib/features/org/api/org.server';
 import { getProfile } from '$lib/utils/functions/user';
-
-if (!supabase) {
-  getSupabase();
-}
+import { redirect } from '@sveltejs/kit';
 
 // we need to know if the email exists or not.
 // with this we can only ask the user to accept
@@ -16,7 +11,7 @@ export const load = async ({ params = { hash: '' } }) => {
 
     const { orgId, email, orgSiteName } = JSON.parse(hashData);
 
-    const currentOrg = await getCurrentOrg(orgSiteName, true);
+    const currentOrg = await OrgApiServer.getOrgBySiteName(orgSiteName);
 
     const profile = await getProfile(email);
     console.log('profile data', profile);

@@ -10,9 +10,11 @@ export * from './forgot-password';
 export * from './welcome';
 export * from './verify-email';
 export * from './on-password-reset';
+export * from './invite-teacher';
 
 // Import types for schema mapping (must be after exports to avoid circular dependency)
 import type { forgotPasswordEmail } from './forgot-password';
+import type { inviteTeacherEmail } from './invite-teacher';
 import type { onPasswordResetEmail } from './on-password-reset';
 import type { verifyEmailEmail } from './verify-email';
 import type { welcomeEmail } from './welcome';
@@ -28,4 +30,5 @@ export type EmailSchemas = {
   welcome: typeof welcomeEmail.template.schema;
   verifyEmail: typeof verifyEmailEmail.template.schema;
   onPasswordReset: typeof onPasswordResetEmail.template.schema;
+  inviteTeacher: typeof inviteTeacherEmail.template.schema;
 };

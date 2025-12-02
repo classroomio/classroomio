@@ -4,7 +4,6 @@
   import { isCoursePage } from '$lib/utils/functions/app';
   import { t } from '$lib/utils/functions/translations';
   import type { TCustomLinks } from './types';
-  import { ModeSwitcher } from '@cio/ui/base/dark-mode';
 
   import Logo from './Logo.svelte';
   import CustomLinks from './CustomLinks.svelte';
@@ -77,8 +76,6 @@
     {:else if !isOrgSite && !page.url.pathname?.includes('/404')}
       <AuthButtons {disableSignup} {redirect} />
     {/if}
-
-    <ModeSwitcher />
   </ul>
 
   {#if showLinks}

@@ -19,6 +19,7 @@ import { get } from 'svelte/store';
 import { isOrgAdmin } from '$lib/utils/store/org';
 import { isUUID } from '$lib/utils/functions/isUUID';
 import { supabase } from '$lib/utils/functions/supabase';
+import { uploadImage } from '$lib/utils/services/upload';
 
 export async function fetchCourses(profileId, orgId) {
   if (!orgId || !profileId) return;
@@ -184,42 +185,10 @@ export async function fetchGroup(groupId: Group['id']) {
   };
 }
 
-export async function uploadAvatar(courseId: string, avatar: string) {
-  const filename = `course/${courseId + Date.now()}.webp`;
-  let logo;
-
-  const { data } = await supabase.storage.from('avatars').upload(filename, avatar, {
-    cacheControl: '3600',
-    upsert: false
-  });
-
-  if (data) {
-    const { data } = supabase.storage.from('avatars').getPublicUrl(filename);
-
-    if (!data.publicUrl) return;
-
-    logo = data.publicUrl;
-  }
-
-  return logo;
-}
-
-export async function updateCourse(courseId: Course['id'], avatar: string | undefined, course: Partial<Course>) {
+export async function updateCourse(courseId: Course['id'], avatar: File | undefined, course: Partial<Course>) {
   if (avatar && courseId) {
-    const filename = `course/${courseId + Date.now()}.webp`;
-
-    const { data } = await supabase.storage.from('avatars').upload(filename, avatar, {
-      cacheControl: '3600',
-      upsert: false
-    });
-
-    if (data) {
-      const { data: response } = supabase.storage.from('avatars').getPublicUrl(filename);
-
-      if (!response.publicUrl) return;
-
-      course.logo = response.publicUrl;
-    }
+    const logo = await uploadImage(avatar);
+    course.logo = logo;
   }
 
   await supabase.from('course').update(course).match({ id: courseId });

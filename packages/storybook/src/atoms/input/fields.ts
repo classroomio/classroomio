@@ -1,7 +1,4 @@
-import { type ComponentProps } from 'svelte';
-import { Input } from '@cio/ui/base/input';
-
-export const FIELDS: (keyof ComponentProps<typeof Input>)[] = [
+export const FIELDS = [
   'value',
   'type',
   'placeholder',
@@ -11,4 +8,4 @@ export const FIELDS: (keyof ComponentProps<typeof Input>)[] = [
   'name',
   'required',
   'readonly'
-];
+] as string[];

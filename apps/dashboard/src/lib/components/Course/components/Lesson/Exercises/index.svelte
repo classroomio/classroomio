@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { onMount, untrack } from 'svelte';
-  import { Circle } from 'svelte-loading-spinners';
+  import { Spinner } from '@cio/ui/base/spinner';
   import { lesson } from '../store/lessons';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
@@ -15,11 +15,11 @@
 
   import { PageBody } from '$lib/components/Page';
   import Exercise from '../Exercise/index.svelte';
-  import Box from '$lib/components/Box/index.svelte';
   import Backdrop from '$lib/components/Backdrop/index.svelte';
+  import * as Empty from '@cio/ui/base/empty';
   import { QUESTION_TYPES } from '$lib/components/Question/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/features/ui';
   import NewExerciseModal from '$lib/components/Course/components/Lesson/Exercises/NewExerciseModal.svelte';
 
   interface Props {
@@ -160,7 +160,7 @@
 
 {#if isFetching}
   <Backdrop>
-    <Circle size="60" color="#1d4ed8" unit="px" duration="1s" />
+    <Spinner class="size-14! text-blue-700!" />
   </Backdrop>
 {/if}
 
@@ -204,22 +204,24 @@
           <p class="mt-4 text-sm dark:text-white">{formatDate(exercise.created_at)}</p>
         </a>
       {:else}
-        <Box className="mt-3 text-center">
-          <div class="flex justify-between flex-col items-center w-[80%] md:w-96">
-            <img src="/images/empty-exercise-icon.svg" alt="Exercise" class="my-2.5 mx-auto" />
-            <h2 class="text-xl my-1.5 font-normal">
+        <Empty.Root class="mt-3">
+          <Empty.Header>
+            <Empty.Media variant="icon">
+              <img src="/images/empty-exercise-icon.svg" alt="Exercise" class="size-6" />
+            </Empty.Media>
+            <Empty.Title>
               {$t('course.navItem.lessons.exercises.no_exercises')}
-            </h2>
-            <p class="text-sm text-center text-slate-500">
+            </Empty.Title>
+            <Empty.Description>
               {#if $globalStore.isStudent}
                 {$t('course.navItem.lessons.exercises.no_assigned_exercises')}
                 <strong> {$t('course.navItem.lessons.exercises.chill')} :)</strong>
               {:else}
                 {$t('course.navItem.lessons.exercises.add_exercise')}
               {/if}
-            </p>
-          </div>
-        </Box>
+            </Empty.Description>
+          </Empty.Header>
+        </Empty.Root>
       {/each}
     </div>
   </PageBody>

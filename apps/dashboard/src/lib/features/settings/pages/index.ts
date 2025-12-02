@@ -1,0 +1,8 @@
+export { default as ProfilePage } from './profile.svelte';
+export { default as DomainsPage } from './domains.svelte';
+export { default as TeamsPage } from './teams.svelte';
+export { default as CustomizeLmsPage } from './customize-lms.svelte';
+export { default as OrgPage } from './org.svelte';
+export { default as LandingpagePage } from './landingpage.svelte';
+export { default as BillingPage } from './billing.svelte';
+export { default as IntegrationsPage } from './integrations.svelte';

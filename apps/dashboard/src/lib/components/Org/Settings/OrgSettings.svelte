@@ -139,7 +139,7 @@
         message = $t('snackbar.lms.error.username_exists');
       }
 
-      snackbar.error(`${$t('snackbar.lms.error.update')} ${message}`);
+      snackbar.error(`${$t('snackbar.update_failed')}: ${message}`);
       loading = false;
     } finally {
       loading = false;

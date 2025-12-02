@@ -33,3 +33,13 @@ Now when I am ready to deploy the feature, I can use [option 2](https://orm.driz
 ## OR
 
 I can make changes directly to the schema file and run `pnpm db push` to push the changes to the source db.
+
+## Change email flow
+
+1. User changes email on dashboard to new email
+2. We send an email verification to the current, permitting the change
+3. Meanwhile the frontend reverts to the previous email.
+4. User clicks approve link in email
+5. User is redirected to settings page with message that another email has been sent to the new email
+6. User goes to new email inbox and clicks approve link in email
+7. User is taken to the settings page with new email address.

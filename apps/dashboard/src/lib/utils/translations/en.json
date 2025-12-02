@@ -120,7 +120,8 @@
         "email": "Email",
         "confirm": "Confirm",
         "cancel": "Cancel",
-        "email_change_verification_note": "A verification email has been sent to your current email address. The new email will not be in effect until you accept the verification email."
+        "email_change_verification_note": "A verification email has been sent to your current email address. The new email will not be in effect until you accept the verification email.",
+        "email_change_verification_sent": "A verification email has been sent to your new email address. Please check your inbox to verify your new email address."
       },
       "update_profile": "Update Profile",
       "logout": "Log out"
@@ -308,7 +309,13 @@
   },
 
   "setup": {
+    "your_checklist": "Your Checklist",
     "get_started": "Get Started",
+    "description": "Complete these steps to set up your learning platform",
+    "progress": "Progress",
+    "completed": "completed",
+    "done": "Done",
+    "todo": "Todo",
     "personal_profile": {
       "title": "Upload a profile picture and update username",
       "desc": "Personalize and add a human touch making interactions more personal and memorable",
@@ -1379,6 +1386,7 @@
     "success_delete": "Deleted successfully",
     "something": "Something went wrong - Please try later",
     "update": "Update",
+    "update_failed": "Update failed",
 
     "poll": {
       "error": {

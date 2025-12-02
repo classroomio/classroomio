@@ -11,6 +11,13 @@ export function getExtension(filename: string): string {
   return ext.length > 1 ? ext[ext.length - 1] : '';
 }
 
+export function removeSpacesAndSpecialCharacters(fileName: string): string {
+  return fileName
+    .replace(/\s+/g, '-')
+    .replace(/[^a-zA-Z0-9.-]/g, '')
+    .toLowerCase();
+}
+
 /**
  * Generates a unique file key for storage, preserving the file extension.
  * Throws an error if the filename is invalid or has no extension.
@@ -20,5 +27,8 @@ export function generateFileKey(fileName: string): string {
   if (!ext) {
     throw new Error('Invalid file name or missing file extension');
   }
-  return `${nanoid()}.${ext}`;
+
+  const cleanedFileName = removeSpacesAndSpecialCharacters(fileName);
+
+  return `${nanoid()}-${cleanedFileName}`;
 }

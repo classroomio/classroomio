@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
-
 @import 'tailwindcss' prefix(ui);
 @import 'tw-animate-css';
 
@@ -133,5 +131,11 @@
   textarea,
   ::file-selector-button {
     @apply ui:font-cio;
+  }
+
+  .toaster {
+    --normal-bg: var(--color-popover);
+    --normal-text: var(--color-popover-foreground);
+    --normal-border: var(--color-border);
   }
 }

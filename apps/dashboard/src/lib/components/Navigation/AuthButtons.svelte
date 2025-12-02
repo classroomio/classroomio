@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -11,45 +9,24 @@
     onMobileClick?: (() => void) | undefined;
   }
 
-  let {
-    disableSignup = false,
-    redirect = '',
-    isMobile = false,
-    onMobileClick = undefined
-  }: Props = $props();
-
-  function handleLogin() {
-    if (onMobileClick) onMobileClick();
-    goto('/login' + redirect);
-  }
-
-  function handleSignup() {
-    if (onMobileClick) onMobileClick();
-    goto('/signup' + redirect);
-  }
+  let { disableSignup = false, redirect = '', isMobile = false, onMobileClick = undefined }: Props = $props();
 </script>
 
 <div class="flex {isMobile ? 'flex-col items-center justify-center space-y-3' : ''}">
   <li class={isMobile ? '' : 'block'}>
     <div class="flex">
-      <PrimaryButton
-        label={$t('navigation.login')}
-        variant={VARIANTS.TEXT}
-        onClick={handleLogin}
-        className={isMobile ? 'w-full justify-center' : ''}
-      />
+      <Button variant="link" size="sm" href={'/login' + redirect} onclick={onMobileClick}>
+        {$t('navigation.login')}
+      </Button>
     </div>
   </li>
 
   {#if !disableSignup}
     <li class={isMobile ? '' : 'block'}>
       <div class="flex">
-        <PrimaryButton
-          label={$t('navigation.signup')}
-          variant={VARIANTS.CONTAINED}
-          onClick={handleSignup}
-          className={isMobile ? 'w-full justify-center' : ''}
-        />
+        <Button variant="link" size="sm" href={'/signup' + redirect} onclick={onMobileClick}>
+          {$t('navigation.signup')}
+        </Button>
       </div>
     </li>
   {/if}

@@ -8,7 +8,7 @@
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 
   import { t } from '$lib/utils/functions/translations';
-  import { courses } from '$lib/components/Courses/store';
+  import { courses } from '$lib/features/course/utils/store';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -25,8 +25,9 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import DeleteModal from '$lib/components/Org/Community/DeleteModal.svelte';
+  import { CommunityDeleteModal } from '$lib/features/community/components';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
+  import * as Page from '@cio/ui/base/page';
 
   interface Comment {
     id: string;
@@ -377,18 +378,7 @@
   <title>{question?.title || $t('community.ask.question')}</title>
 </svelte:head>
 
-<DeleteModal
-  bind:open={deleteQuestion.shouldDelete}
-  isDeleting={deleteQuestion.isDeleting}
-  onCancel={() => {
-    deleteQuestion.shouldDelete = false;
-    deleteQuestion.questionId = '';
-  }}
-  onDelete={() => handleDelete(true)}
-  isQuestion={true}
-/>
-
-<DeleteModal
+<CommunityDeleteModal
   bind:open={deleteComment.shouldDelete}
   isDeleting={deleteComment.isDeleting}
   onCancel={() => {
@@ -397,44 +387,50 @@
   }}
   onDelete={() => handleDelete(false)}
 />
-<section class="mx-auto max-w-3xl md:mx-10 lg:mb-20">
-  {#if !question}
-    <div class="mb-3 px-5 py-10">
-      <Skeleton class="h-4 w-[25%]" />
-      <Skeleton class="mb-2 h-4 w-full" />
-      <Skeleton class="h-80 w-full" />
-    </div>
-  {:else}
+
+{#if !question}
+  <div class="mb-3 px-5 py-10">
+    <Skeleton class="h-4 w-[25%]" />
+    <Skeleton class="mb-2 h-4 w-full" />
+    <Skeleton class="h-80 w-full" />
+  </div>
+{:else}
+  <Page.Root class="mx-auto max-w-3xl md:mx-10 lg:mb-20">
     <div class="px-5 py-10">
       <a class="text-md flex items-center text-gray-500 dark:text-white" href={`${$currentOrgPath}/community`}>
         <ArrowLeftIcon size={16} />
         {$t('community.ask.go_back')}
       </a>
-      <div class="my-5 flex items-center justify-between">
+    </div>
+    <Page.Header>
+      <Page.HeaderContent>
         {#if isEditMode}
-          <TextField bind:value={editContent.title} className="w-full mr-2" errorMessage={errors.title} />
-          <Select.Root type="single" bind:value={editContent.courseId}>
-            <Select.Trigger class="h-full w-[25%]">
-              <p>
-                {editContent.courseId
-                  ? fetchedCourses.find((course) => course.id === editContent.courseId)?.title
-                  : $t('community.ask.select_course')}
-              </p>
-            </Select.Trigger>
-            <Select.Content>
-              {#each fetchedCourses as course}
-                <Select.Item value={course.id || ''}>{course.title}</Select.Item>
-              {/each}
-            </Select.Content>
-          </Select.Root>
+          <div class="flex w-full items-center gap-2">
+            <TextField bind:value={editContent.title} className="flex-1" errorMessage={errors.title} />
+            <Select.Root type="single" bind:value={editContent.courseId}>
+              <Select.Trigger class="h-full w-[25%]">
+                <p>
+                  {editContent.courseId
+                    ? fetchedCourses.find((course) => course.id === editContent.courseId)?.title
+                    : $t('community.ask.select_course')}
+                </p>
+              </Select.Trigger>
+              <Select.Content>
+                {#each fetchedCourses as course}
+                  <Select.Item value={course.id || ''}>{course.title}</Select.Item>
+                {/each}
+              </Select.Content>
+            </Select.Root>
+          </div>
         {:else}
-          <div class="flex items-center">
+          <div class="flex items-center gap-2">
             <Vote value={question.votes} upVote={() => upvoteQuestion('question')} disabled={voted.question} />
-            <h2 class="text-3xl">{question.title}</h2>
+            <Page.Title>{question.title}</Page.Title>
           </div>
         {/if}
-
-        {#if question.author.id === $profile.id}
+      </Page.HeaderContent>
+      {#if question.author.id === $profile.id}
+        <Page.Action>
           <PrimaryButton
             label={isEditMode ? $t('community.ask.save') : $t('community.ask.edit')}
             variant={VARIANTS.OUTLINED}
@@ -450,101 +446,105 @@
               disablePadding={true}
             />
           {/if}
-        {/if}
-      </div>
-      <div class="border-gray my-1 rounded-lg border px-1">
-        <header class="flex items-center justify-between p-2 leading-none">
-          <div class="flex items-center text-black no-underline hover:underline">
-            <Avatar src={question.author.avatar} name={question.author.name} width="w-7" height="h-7" />
-            <p class="ml-2 text-sm dark:text-white">{question.author.name}</p>
-            <p class="ml-2 text-sm text-gray-500 dark:text-white">
-              {question.createdAt}
-            </p>
-          </div>
-          {#if question.author.id === $profile.id || $isOrgAdmin}
-            <IconButton
-              value="delete-question"
-              onClick={() => {
-                if (!question) return;
+        </Page.Action>
+      {/if}
+    </Page.Header>
+    <Page.Body>
+      {#snippet child()}
+        <div class="border-gray my-1 rounded-lg border px-1">
+          <header class="flex items-center justify-between p-2 leading-none">
+            <div class="flex items-center text-black no-underline hover:underline">
+              <Avatar src={question.author.avatar} name={question.author.name} width="w-7" height="h-7" />
+              <p class="ml-2 text-sm dark:text-white">{question.author.name}</p>
+              <p class="ml-2 text-sm text-gray-500 dark:text-white">
+                {question.createdAt}
+              </p>
+            </div>
+            {#if question.author.id === $profile.id || $isOrgAdmin}
+              <IconButton
+                value="delete-question"
+                onClick={() => {
+                  if (!question) return;
 
-                deleteQuestion.shouldDelete = true;
-                deleteQuestion.questionId = question.id;
-              }}
-            >
-              <TrashIcon size={16} />
-            </IconButton>
+                  deleteQuestion.shouldDelete = true;
+                  deleteQuestion.questionId = question.id;
+                }}
+              >
+                <TrashIcon size={16} />
+              </IconButton>
+            {/if}
+          </header>
+          {#if isEditMode && editorInstance}
+            <div class="my-2">
+              <TextEditor
+                placeholder="Give an answer"
+                content={editContent.body}
+                onChange={(content) => (editContent.body = content)}
+              />
+            </div>
+          {:else}
+            <section class="prose prose-sm sm:prose p-2">
+              {@html question.body}
+            </section>
           {/if}
-        </header>
-        {#if isEditMode && editorInstance}
-          <div class="my-2">
-            <TextEditor
-              placeholder="Give an answer"
-              content={editContent.body}
-              onChange={(content) => (editContent.body = content)}
+        </div>
+
+        <div class="my-8">
+          {pluralize($t('community.answers'), question.totalComments, true)}
+        </div>
+
+        {#each question.comments as comment}
+          <div class="my-5 flex items-start px-1">
+            <Vote
+              value={comment.votes}
+              upVote={() => upvoteQuestion('comment', comment.id)}
+              disabled={voted.comment[comment.id]}
             />
+            <div class="border-gray w-full rounded-lg border">
+              <header class="flex items-center justify-between p-2 leading-none">
+                <div class="flex items-center text-black">
+                  <Avatar src={comment.avatar} name={comment.name} width="w-7" height="h-7" />
+                  <p class="ml-2 text-sm dark:text-white">{comment.name}</p>
+                  <p class="ml-2 text-sm text-gray-500 dark:text-white">
+                    {comment.createdAt}
+                  </p>
+                </div>
+
+                {#if isValidAnswer}
+                  <CircleCheckIcon size={16} />
+                {/if}
+
+                {#if comment.authorId === $profile.id || $isOrgAdmin}
+                  <IconButton
+                    value="delete-comment"
+                    onClick={() => {
+                      deleteComment.shouldDelete = true;
+                      deleteComment.commentId = comment.id;
+                    }}
+                  >
+                    <TrashIcon size={16} />
+                  </IconButton>
+                {/if}
+              </header>
+              <article class="prose prose-sm sm:prose p-2">
+                {@html comment.comment}
+              </article>
+            </div>
           </div>
-        {:else}
-          <section class="prose prose-sm p-2 sm:prose">
-            {@html question.body}
-          </section>
-        {/if}
-      </div>
+        {/each}
 
-      <div class="my-8">
-        {pluralize($t('community.answers'), question.totalComments, true)}
-      </div>
+        <hr />
 
-      {#each question.comments as comment}
-        <div class="my-5 flex items-start px-1">
-          <Vote
-            value={comment.votes}
-            upVote={() => upvoteQuestion('comment', comment.id)}
-            disabled={voted.comment[comment.id]}
-          />
-          <div class="border-gray w-full rounded-lg border">
-            <header class="flex items-center justify-between p-2 leading-none">
-              <div class="flex items-center text-black">
-                <Avatar src={comment.avatar} name={comment.name} width="w-7" height="h-7" />
-                <p class="ml-2 text-sm dark:text-white">{comment.name}</p>
-                <p class="ml-2 text-sm text-gray-500 dark:text-white">
-                  {comment.createdAt}
-                </p>
-              </div>
+        <div class="mt-4">
+          {#if !editorInstance}
+            <TextEditor placeholder="Give an answer" content={comment} onChange={(content) => (comment = content)} />
+          {/if}
 
-              {#if isValidAnswer}
-                <CircleCheckIcon size={16} />
-              {/if}
-
-              {#if comment.authorId === $profile.id || $isOrgAdmin}
-                <IconButton
-                  value="delete-comment"
-                  onClick={() => {
-                    deleteComment.shouldDelete = true;
-                    deleteComment.commentId = comment.id;
-                  }}
-                >
-                  <TrashIcon size={16} />
-                </IconButton>
-              {/if}
-            </header>
-            <article class="prose prose-sm p-2 sm:prose">
-              {@html comment.comment}
-            </article>
+          <div class="mt-2 flex justify-end">
+            <PrimaryButton label={$t('community.ask.comment')} onClick={submitComment} />
           </div>
         </div>
-      {/each}
-
-      <hr />
-
-      <div class="mt-4">
-        {#if !editorInstance}
-          <TextEditor placeholder="Give an answer" content={comment} onChange={(content) => (comment = content)} />
-        {/if}
-
-        <div class="mt-2 flex justify-end">
-          <PrimaryButton label={$t('community.ask.comment')} onClick={submitComment} />
-        </div>
-      </div>
-    </div>
-  {/if}
-</section>
+      {/snippet}
+    </Page.Body>
+  </Page.Root>
+{/if}

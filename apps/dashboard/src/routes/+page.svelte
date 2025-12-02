@@ -1,15 +1,15 @@
 <script>
   import { appInitApi } from '$lib/features/app/init.svelte';
-  import { Circle } from 'svelte-loading-spinners';
+  import { Spinner } from '@cio/ui/base/spinner';
 </script>
 
 <svelte:head>
   <title>ClassroomIO - Beautiful and Robust Course Platform</title>
 </svelte:head>
 
-<div class="m-2 flex w-screen flex-col items-center justify-center font-sans sm:m-0 md:min-h-[93vh] dark:bg-black">
+<div class="m-2 flex h-screen w-screen flex-col items-center justify-center font-sans sm:m-0">
   {#if appInitApi.loading || appInitApi.data}
-    <Circle size="50" color="#1d4ee2" unit="px" duration="1s" />
+    <Spinner class="size-14! text-blue-700!" />
   {:else if appInitApi.error}
     <p class="text-red-500">{appInitApi.error}</p>
   {/if}

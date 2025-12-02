@@ -28,17 +28,36 @@ export function isLMSPage(path) {
   return /lms[/a-z 0-9 -]*/.test(path);
 }
 
-export function isActive(pagePath: string, itemPath: string, exact: boolean = false) {
-  const pageLinkItems = pagePath.split('/');
-  const itemLinkItems = itemPath.split('/');
+export function isActive(pagePath: string, itemPath: string, matchPattern?: string, exact: boolean = false) {
+  // If a regex pattern is provided, use it for matching
+  if (matchPattern) {
+    try {
+      const regex = new RegExp(matchPattern);
+      return regex.test(pagePath);
+    } catch (error) {
+      console.warn('Invalid regex pattern in isActive:', matchPattern, error);
+      // Fall through to default matching logic
+    }
+  }
+
+  // Normalize paths by removing trailing slashes (except root)
+  const normalizedPagePath = pagePath === '/' ? '/' : pagePath.replace(/\/$/, '');
+  const normalizedItemPath = itemPath === '/' ? '/' : itemPath.replace(/\/$/, '');
 
   if (exact) {
-    return pagePath === itemPath;
+    return normalizedPagePath === normalizedItemPath;
   }
 
-  if (itemLinkItems.length !== pageLinkItems.length) {
-    return false;
+  // Exact match
+  if (normalizedPagePath === normalizedItemPath) {
+    return true;
   }
 
-  return pagePath.includes(itemPath);
+  // Check if pagePath is a nested route of itemPath
+  // e.g., /org/[slug]/courses matches /org/[slug]/courses/123
+  // We need to ensure we match at path segment boundaries
+  const pagePathWithSlash = normalizedPagePath + '/';
+  const itemPathWithSlash = normalizedItemPath + '/';
+
+  return pagePathWithSlash.startsWith(itemPathWithSlash);
 }

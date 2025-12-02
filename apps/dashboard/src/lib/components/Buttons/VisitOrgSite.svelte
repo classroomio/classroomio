@@ -1,7 +1,6 @@
 <script lang="ts">
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import ArrowUpRightIcon from '$lib/components/Icons/ArrowTopRight.svelte';
+  import { Button } from '@cio/ui/base/button';
+  import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
   import { currentOrgDomain } from '$lib/utils/store/org';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { t } from '$lib/utils/functions/translations';
@@ -18,7 +17,7 @@
 </script>
 
 <a {href} target="_blank" class="{className} ml-2 hover:no-underline">
-  <PrimaryButton variant={VARIANTS.CONTAINED_DARK}>
+  <Button variant="outline">
     {#if !$isMobile}
       {#if isLMS}
         {$t('dashboard.visit_site')}
@@ -27,5 +26,5 @@
       {/if}
     {/if}
     <ArrowUpRightIcon />
-  </PrimaryButton>
+  </Button>
 </a>

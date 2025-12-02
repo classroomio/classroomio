@@ -10,8 +10,8 @@
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import Courses from '$lib/components/Courses/index.svelte';
-  import { courseMetaDeta } from '$lib/components/Courses/store';
+  import { CoursesPage } from '$lib/features/course/pages';
+  import { courseMetaDeta } from '$lib/features/course/utils/store';
   import { fetchExploreCourses } from '$lib/utils/services/courses';
 
   import { IconButton } from '$lib/components/IconButton';
@@ -125,7 +125,7 @@
         {/if}
       </div>
     </div>
-    <Courses
+    <CoursesPage
       courses={filteredExploreCourses}
       emptyTitle={$t('explore.empty_heading')}
       emptyDescription={$t('explore.empty_description')}

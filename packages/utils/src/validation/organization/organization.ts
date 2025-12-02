@@ -1,5 +1,7 @@
 import * as z from 'zod';
 
+import { blockedSubdomain } from '@cio/utils/constants';
+
 export const ZGetOrganizations = z.object({
   siteName: z.string().min(1).optional(),
   customDomain: z.string().min(1).optional(),
@@ -14,6 +16,12 @@ export const ZGetOrganizationTeam = z.object({
 
 export type TGetOrganizationTeam = z.infer<typeof ZGetOrganizationTeam>;
 
+export const ZUpdateOrganizationParam = z.object({
+  orgId: z.uuid()
+});
+
+export type TUpdateOrganizationParam = z.infer<typeof ZUpdateOrganizationParam>;
+
 export const ZGetOrganizationAudience = z.object({
   orgId: z.uuid()
 });
@@ -25,6 +33,12 @@ export const ZGetCoursesBySiteName = z.object({
 });
 
 export type TGetCoursesBySiteName = z.infer<typeof ZGetCoursesBySiteName>;
+
+export const ZGetOrgSetup = z.object({
+  siteName: z.string().min(1)
+});
+
+export type TGetOrgSetup = z.infer<typeof ZGetOrgSetup>;
 
 export const ZCreateOrgPlan = z.object({
   orgId: z.uuid(),
@@ -49,3 +63,56 @@ export const ZCancelOrgPlan = z.object({
 });
 
 export type TCancelOrgPlan = z.infer<typeof ZCancelOrgPlan>;
+
+export const ZCreateOrganization = z.object({
+  name: z
+    .string()
+    .min(5)
+    .refine((val) => !/^[-]|[-]$/.test(val), {
+      message: 'Organization name cannot start or end with a hyphen'
+    }),
+  siteName: z
+    .string()
+    .min(5)
+    .refine((val) => !/^[-]|[-]$/.test(val), {
+      message: 'Site name cannot start or end with a hyphen'
+    })
+    .refine((val) => !blockedSubdomain.includes(val), {
+      message: 'Sitename already exists.'
+    })
+});
+
+export type TCreateOrganization = z.infer<typeof ZCreateOrganization>;
+
+export const ZUpdateOrganization = z.object({
+  name: z
+    .string()
+    .min(5)
+    .refine((val) => !/^[-]|[-]$/.test(val), {
+      message: 'Organization name cannot start or end with a hyphen'
+    })
+    .optional(),
+  avatarUrl: z.url().optional(),
+  theme: z.string().optional(),
+  landingpage: z.record(z.string(), z.unknown()).optional(),
+  siteName: z.string().min(1).optional(),
+  customDomain: z.string().nullable().optional(),
+  isCustomDomainVerified: z.boolean().optional(),
+  customization: z.record(z.string(), z.unknown()).optional()
+});
+
+export type TUpdateOrganization = z.infer<typeof ZUpdateOrganization>;
+
+export const ZInviteTeamMembers = z.object({
+  emails: z.array(z.string().email()).min(1).max(50),
+  roleId: z.number().int().positive()
+});
+
+export type TInviteTeamMembers = z.infer<typeof ZInviteTeamMembers>;
+
+export const ZRemoveTeamMember = z.object({
+  orgId: z.uuid(),
+  memberId: z.number().int().positive()
+});
+
+export type TRemoveTeamMember = z.infer<typeof ZRemoveTeamMember>;

@@ -4,7 +4,7 @@
   import { IconButton } from '$lib/components/IconButton';
   import { PageBody, PageNav } from '$lib/components/Page';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/features/ui';
   import { t } from '$lib/utils/functions/translations';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import { CourseContainer } from '$lib/components/CourseContainer';

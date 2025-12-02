@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { CurrentOrg } from '$lib/utils/types/org.ts';
-  import type { Course } from '$lib/utils/types/index.ts';
+  import type { AccountOrg } from '$lib/features/app/types';
+  import type { Course } from '$lib/utils/types';
   import { isFreePlan } from '$lib/utils/store/org';
   import { qrInviteNodeStore } from './store';
 
@@ -12,7 +12,7 @@
 
   interface Props {
     qrImage: string;
-    currentOrg: CurrentOrg;
+    currentOrg: AccountOrg;
     course: Course;
   }
 
@@ -22,7 +22,7 @@
 <div
   bind:this={node}
   id="qr-container"
-  class="flex h-[60rem] w-[40rem] flex-col items-center justify-center rounded-xl bg-blue-900 p-10 pb-20"
+  class="h-160 w-160 flex flex-col items-center justify-center rounded-xl bg-blue-900 p-10 pb-20"
 >
   <div class="rounded-3xl bg-white p-6 pb-3 text-center">
     <div class="my-4 rounded-xl bg-gray-100 p-2 text-xl">Scan QR</div>

@@ -1,21 +1,40 @@
-<script>
-  import OrgSettings from '$lib/components/Org/Settings/index.svelte';
+<script lang="ts">
+  import { ProfilePage } from '$lib/features/settings/pages';
   import ViewSiteBtn from '$lib/components/Buttons/VisitOrgSite.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import { Button } from '@cio/ui/base/button';
+  import * as Page from '@cio/ui/base/page';
+
+  let profileComponent: ProfilePage | null = $state(null);
+  let isLoading = $state(false);
+
+  async function handleUpdate() {
+    isLoading = true;
+    try {
+      await profileComponent?.handleUpdate();
+    } finally {
+      isLoading = false;
+    }
+  }
 </script>
 
 <svelte:head>
   <title>Settings - ClassroomIO</title>
 </svelte:head>
 
-<section class="w-full md:max-w-6xl lg:mx-auto">
-  <div class="px-5 md:py-10">
-    <div class="mb-10 flex items-center justify-between">
-      <h1 class="text-3xl dark:text-white">{$t('settings.heading')}</h1>
-
-      <ViewSiteBtn />
-    </div>
-
-    <OrgSettings />
-  </div>
-</section>
+<Page.Header>
+  <Page.HeaderContent>
+    <Page.Title>{$t('settings.heading')}</Page.Title>
+  </Page.HeaderContent>
+  <Page.Action>
+    <Button variant="default" loading={isLoading} onclick={handleUpdate}>
+      {$t('settings.profile.update_profile')}
+    </Button>
+    <ViewSiteBtn />
+  </Page.Action>
+</Page.Header>
+<Page.Body>
+  {#snippet child()}
+    <ProfilePage bind:this={profileComponent} />
+  {/snippet}
+</Page.Body>

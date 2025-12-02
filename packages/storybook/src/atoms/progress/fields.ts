@@ -1,4 +1,1 @@
-import { type ComponentProps } from 'svelte';
-import { Progress } from '@cio/ui/base/progress';
-
-export const FIELDS: (keyof ComponentProps<typeof Progress>)[] = ['max', 'min', 'value'];
+export const FIELDS = ['max', 'min', 'value'] as string[];

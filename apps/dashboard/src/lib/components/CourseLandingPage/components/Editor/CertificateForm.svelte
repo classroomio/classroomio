@@ -7,7 +7,7 @@
   import type { Course } from '$lib/utils/types';
   import { NAV_ITEM_KEY } from '../../constants';
   import { t } from '$lib/utils/functions/translations';
-  import { uploadAvatar } from '$lib/utils/services/courses';
+  import { uploadImage } from '$lib/utils/services/upload';
 
   import UploadImage from '$lib/components/UploadImage/index.svelte';
 
@@ -18,18 +18,18 @@
 
   let { course = $bindable(), setter }: Props = $props();
 
-  let avatar: string | undefined = $state();
+  let avatar: File | undefined = $state();
   let templateUrl = $derived(get(course, 'metadata.certificate.templateUrl', '/images/certificate-template.svg'));
   let isUploading = $state(false);
 
   let show = $derived(get(course, `metadata.sectionDisplay.${NAV_ITEM_KEY.CERTIFICATE}`) ?? true);
 
-  async function onTemplateChange(_avatar: string | undefined) {
+  async function onTemplateChange(_avatar: File | undefined) {
     untrack(async () => {
       if (!_avatar || !course.id) return;
       isUploading = true;
 
-      const logo = await uploadAvatar(course.id, _avatar);
+      const logo = await uploadImage(_avatar);
 
       if (logo) {
         templateUrl = logo;

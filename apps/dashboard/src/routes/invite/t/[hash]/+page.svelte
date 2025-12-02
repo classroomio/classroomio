@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import AuthUI from '$lib/components/AuthUI/index.svelte';
+  import { AuthUI } from '$lib/features/ui';
   import type { Profile } from '$lib/components/Course/components/People/types';
   import TextField from '$lib/components/Form/TextField.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
@@ -13,7 +13,6 @@
   import { profile, user } from '$lib/utils/store/user';
   import { authValidation, getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import type { CurrentOrg } from '$lib/utils/types/org';
   import { onMount, untrack } from 'svelte';
   import { snackbar } from '$lib/components/Snackbar/store.js';
 
@@ -32,12 +31,11 @@
   } = $state({});
 
   let submitError: string = $state('');
-  let formRef: HTMLFormElement | undefined = $state();
 
   const confirmPasswordError = $derived(getConfirmPasswordError(fields));
   const disableSubmit = $derived(getDisableSubmit(fields));
 
-  async function joinOrg(profileId: string, email: string) {
+  async function joinOrg(profileId: string, email: string | null) {
     if (!profileId || !email || !data.invite.currentOrg?.id) return;
 
     // Update member response
@@ -50,8 +48,6 @@
       .match({ email: email, organization_id: data.invite.currentOrg?.id });
 
     console.log('Update member response', updateMemberRes);
-
-    formRef?.reset();
 
     window.location.href = $currentOrgPath;
   }
@@ -146,17 +142,12 @@
     }
   }
 
-  function setCurOrg(cOrg: CurrentOrg) {
-    if (!cOrg) return;
-
-    console.log(cOrg);
-    currentOrg.set(cOrg);
-  }
-
   onMount(async () => {
+    if (!data.invite.currentOrg) return;
+
     setTheme(data.invite.currentOrg?.theme || '');
 
-    setCurOrg(data.invite.currentOrg as CurrentOrg);
+    currentOrg.set(data.invite.currentOrg);
   });
 
   const isLoading = $derived(loading || $user.fetchingUser);
@@ -179,15 +170,7 @@
   <title>Join ClassroomIO</title>
 </svelte:head>
 
-<AuthUI
-  {supabase}
-  redirectPathname={page.url.pathname}
-  isLogin={false}
-  {handleSubmit}
-  {isLoading}
-  showLogo={true}
-  bind:formRef
->
+<AuthUI redirectPathname={page.url.pathname} isLogin={false} {handleSubmit} {isLoading} showLogo={true}>
   <div class="mt-4 w-full {shouldLogout ? 'hidden' : ''}">
     <p class="mb-6 text-lg font-semibold dark:text-white">
       {#if data.invite.profile}

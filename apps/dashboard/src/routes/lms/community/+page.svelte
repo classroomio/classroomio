@@ -1,6 +1,6 @@
 <script>
   import { goto } from '$app/navigation';
-  import Community from '$lib/components/Org/Community/index.svelte';
+  import { CommunityPage } from '$lib/features/community/pages';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { t } from '$lib/utils/functions/translations';
 
@@ -20,6 +20,6 @@
       <PrimaryButton label={$t('community.ask_button')} onClick={askCommunity} />
     </div>
 
-    <Community isLMS={true} />
+    <CommunityPage isLMS={true} />
   </div>
 </section>

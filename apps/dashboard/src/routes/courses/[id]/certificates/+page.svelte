@@ -2,7 +2,7 @@
   import IssueCertificateModal from '$lib/components/Course/components/Ceritficate/IssueCertificateModal.svelte';
   import { CourseContainer } from '$lib/components/CourseContainer';
   import { PageBody, PageNav } from '$lib/components/Page';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/features/ui';
   // import DeleteConfirmation from '$lib/components/Course/components/People/DeleteConfirmation.svelte';
   import Design from '$lib/components/Course/components/Ceritficate/Design.svelte';
   // import Reports from '$lib/components/Course/components/Ceritficate/Reports.svelte';

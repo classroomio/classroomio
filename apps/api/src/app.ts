@@ -14,6 +14,7 @@ import { mailRouter } from '@api/routes/mail';
 import { courseRouter } from '@api/routes/course';
 import { accountRouter } from '@api/routes/account';
 import { dashAnalyticsRouter } from '@api/routes/dash';
+import { mediaRouter } from '@api/routes/media';
 import { onboardingRouter } from '@api/routes/onboarding';
 import { organizationRouter } from '@api/routes/organization';
 
@@ -28,7 +29,7 @@ export const app = new Hono()
     cors({
       origin: TRUSTED_ORIGINS,
       allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-      allowHeaders: ['Content-Type', 'Authorization'],
+      allowHeaders: ['Content-Type', 'Authorization', 'Cio-org-id'],
       exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
       maxAge: 600,
       credentials: true
@@ -73,6 +74,7 @@ export const app = new Hono()
   .route('/account', accountRouter)
   .route('/course', courseRouter)
   .route('/mail', mailRouter)
+  .route('/media', mediaRouter)
   .route('/organization', organizationRouter)
   .route('/dash', dashAnalyticsRouter)
 

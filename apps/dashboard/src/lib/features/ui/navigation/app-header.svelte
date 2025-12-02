@@ -6,10 +6,21 @@
   import * as Popover from '@cio/ui/base/popover';
   import Search from '../search.svelte';
   import AppBreadcrumbs from './app-breadcrumbs.svelte';
+  import RefreshCcwIcon from '@lucide/svelte/icons/refresh-ccw';
+  import * as Empty from '@cio/ui/base/empty';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { setupProgressApi } from '$lib/features/setup/api/setup-progress.svelte';
+  import AppSetup from './app-setup.svelte';
+
+  $effect(() => {
+    if ($currentOrg.siteName) {
+      setupProgressApi.fetchSetupProgress($currentOrg.siteName);
+    }
+  });
 </script>
 
 <header
-  class="group-has-data-[collapsible=icon]/sidebar-wrapper:h-8 border-border flex h-12 w-full shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear"
+  class="group-has-data-[collapsible=icon]/sidebar-wrapper:h-8 border-border ui:bg-background bg-background sticky top-0 z-50 flex h-12 w-full shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear"
 >
   <div class="flex w-full items-center gap-2 px-4">
     <Sidebar.Trigger />
@@ -22,6 +33,8 @@
 
     <span class="grow"></span>
 
+    <AppSetup />
+
     <Search />
 
     <Popover.Root>
@@ -31,11 +44,21 @@
         </Button>
       </Popover.Trigger>
       <Popover.Content>
-        <div class="flex flex-col gap-2">
-          <div class="flex items-center justify-between gap-2">
-            <p class="text-sm">Your notifications will show here</p>
-          </div>
-        </div>
+        <Empty.Root class="ui:from-muted/50 ui:to-background ui:h-full ui:bg-gradient-to-b ui:from-30%">
+          <Empty.Header>
+            <Empty.Media variant="icon">
+              <BellIcon />
+            </Empty.Media>
+            <Empty.Title>No Notifications</Empty.Title>
+            <Empty.Description>You're all caught up. New notifications will appear here.</Empty.Description>
+          </Empty.Header>
+          <Empty.Content>
+            <Button variant="outline" size="sm">
+              <RefreshCcwIcon />
+              Refresh
+            </Button>
+          </Empty.Content>
+        </Empty.Root>
       </Popover.Content>
     </Popover.Root>
   </div>
