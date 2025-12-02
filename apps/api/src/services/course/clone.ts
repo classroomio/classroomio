@@ -1,3 +1,4 @@
+import { ROLE } from '@cio/utils/constants';
 import {
   addGroupMember,
   createCourse,
@@ -177,7 +178,7 @@ export async function cloneCourse(
     profileId: userId,
     email: '',
     groupId: newGroup.id,
-    roleId: 2
+    roleId: ROLE.TUTOR
   });
 
   // 5. clone sections
