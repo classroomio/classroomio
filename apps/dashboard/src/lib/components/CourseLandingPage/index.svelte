@@ -23,7 +23,7 @@
   import ImageRenderer from '../Org/ImageRenderer.svelte';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import PricingSection from './components/PricingSection.svelte';
-  import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
+  import { PoweredBy } from '$lib/features/ui';
   import SectionsDisplay from './components/SectionsDisplay.svelte';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';

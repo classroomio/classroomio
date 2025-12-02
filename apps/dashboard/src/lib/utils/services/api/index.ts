@@ -4,6 +4,8 @@ import { DEFAULT_CONFIG } from './constants';
 import { delay } from './utils';
 import { env } from '$env/dynamic/public';
 import { hcWithType } from '@cio/api/rpc-types';
+import { get } from 'svelte/store';
+import { currentOrg } from '$lib/utils/store/org';
 
 class ApiClient {
   private config: Required<ApiClientConfig>;
@@ -26,9 +28,17 @@ class ApiClient {
       headers.set('Accept', 'application/json');
     }
 
+    // Add organization ID header if available
+    const org = get(currentOrg);
+    if (org?.id) {
+      headers.set('cio-org-id', org.id);
+    }
+
     // Handle body serialization and content-type
     let requestBody = fetchConfig.body;
-    if (fetchConfig.body && typeof fetchConfig.body === 'object' && !(fetchConfig.body instanceof FormData)) {
+    const isFormData = fetchConfig.body instanceof FormData;
+
+    if (fetchConfig.body && typeof fetchConfig.body === 'object' && !isFormData) {
       // Auto-stringify objects (except FormData)
       requestBody = JSON.stringify(fetchConfig.body);
       if (!headers.has('Content-Type')) {
@@ -47,7 +57,7 @@ class ApiClient {
 
     const requestInit: RequestInit = {
       ...fetchConfig,
-      headers,
+      headers: isFormData ? undefined : headers,
       body: requestBody,
       signal: controller.signal
     };

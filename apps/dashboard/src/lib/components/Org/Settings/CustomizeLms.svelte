@@ -37,7 +37,7 @@
     if (error) {
       const message = error?.message || 'snackbar.lms.error.try_again';
       console.error('Error updating customizations', message);
-      snackbar.error('snackbar.lms.error.update');
+      snackbar.error('snackbar.update_failed');
     } else {
       snackbar.success('snackbar.success_update');
     }

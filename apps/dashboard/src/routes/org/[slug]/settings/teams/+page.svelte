@@ -1,24 +1,20 @@
 <script>
-  import TeamMembers from '$lib/components/Org/Settings/TeamMembers.svelte';
-  import { currentOrgPath } from '$lib/utils/store/org';
-  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
+  import { TeamsPage } from '$lib/features/settings/pages';
   import { t } from '$lib/utils/functions/translations';
+  import * as Page from '@cio/ui/base/page';
 </script>
 
 <svelte:head>
   <title>Teams - ClassroomIO</title>
 </svelte:head>
 
-<section class="mx-auto w-full md:max-w-4xl">
-  <div class="px-3 py-10 md:px-5">
-    <a class="text-md text-gray-500 dark:text-white" href={`${$currentOrgPath}/settings?tab=org`}
-      >{$t('upgrade.back')}</a
-    >
-    <div class="mb-10 flex items-center justify-between">
-      <h1 class="text-3xl dark:text-white">{$t('upgrade.team_members')}</h1>
-    </div>
-
-    <UpgradeBanner>{$t('upgrade.team')}</UpgradeBanner>
-    <TeamMembers />
-  </div>
-</section>
+<Page.Header>
+  <Page.HeaderContent>
+    <Page.Title>{$t('upgrade.team_members')}</Page.Title>
+  </Page.HeaderContent>
+</Page.Header>
+<Page.Body>
+  {#snippet child()}
+    <TeamsPage />
+  {/snippet}
+</Page.Body>

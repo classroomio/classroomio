@@ -24,7 +24,7 @@
   import Chip from '$lib/components/Chip/index.svelte';
   import { PageBody, PageNav } from '$lib/components/Page';
   import { CourseContainer } from '$lib/components/CourseContainer';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/features/ui';
   import MarkExerciseModal from '$lib/components/Course/components/Lesson/Exercise/MarkExerciseModal.svelte';
 
   let { data = $bindable() } = $props();

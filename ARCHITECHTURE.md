@@ -507,6 +507,22 @@ packages/utils/src/validation/
   └── README.md          ← Documentation
 ```
 
+**File Naming Convention**:
+
+All file names should use **lowercase with hyphens** (kebab-case):
+
+- ✅ `setup-progress.svelte` (component files)
+- ✅ `org.svelte.ts` (API service files)
+- ✅ `course.ts` (validation/query files)
+- ✅ `user-profile.svelte` (multi-word component files)
+
+- ❌ `SetupProgress.svelte` (PascalCase - reserved for component names in imports)
+- ❌ `Org.svelte.ts` (PascalCase)
+- ❌ `userProfile.svelte` (camelCase)
+- ❌ `user_profile.svelte` (snake_case)
+
+**Note**: Component names in imports can still use PascalCase (e.g., `import SetupProgress from './setup-progress.svelte'`), but the actual file names must be lowercase with hyphens.
+
 **Example: Course Validations.**
 
 Schemas should be **clean** - only validation rules, no error messages:
@@ -768,11 +784,27 @@ if (!result.success) {
 
 ```typescript
 import { authMiddleware } from '@api/middlewares/auth';
+import { apiKeyMiddleware } from '@api/middlewares/api-key';
+import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
 
-// Protected route - requires authentication
+// Protected route - requires user authentication (session cookies)
 .post('/create', authMiddleware, async (c) => {
   const user = c.get('user'); // Always available after authMiddleware
   const session = c.get('session');
+  // ...
+});
+
+// Protected route - requires API key (server-to-server)
+.post('/webhook', apiKeyMiddleware, async (c) => {
+  // API key validated, proceed
+  // ...
+});
+
+// Protected route - accepts either user session OR API key
+.post('/plan', authOrApiKeyMiddleware, async (c) => {
+  // Can be called by:
+  // 1. Authenticated users (via session cookies)
+  // 2. Server-to-server (via API key: Authorization: Bearer <key>)
   // ...
 });
 
@@ -791,6 +823,12 @@ import { authMiddleware } from '@api/middlewares/auth';
   }
 });
 ```
+
+**API Key Authentication:**
+- Add `API_KEY` to `apps/api/src/config/env.ts` environment schema
+- Use `Authorization: Bearer <api-key>` header format (standard across popular APIs)
+- Use `apiKeyMiddleware` for API-key-only endpoints
+- Use `authOrApiKeyMiddleware` for endpoints that accept both user sessions and API keys
 
 ### Complete Route Example
 
@@ -1004,6 +1042,268 @@ export class ProfileApi {
 
 ---
 
+### Example: Creating an Organization (POST Route)
+
+We'll create a `POST /organization` route that creates a new organization with the current user as owner.
+
+---
+
+### Step 1: Create Validation Schema
+
+**Location**: `packages/utils/src/validation/organization/organization.ts`
+
+```typescript
+import * as z from 'zod';
+
+export const ZCreateOrganization = z.object({
+  name: z
+    .string()
+    .min(5)
+    .refine((val) => !/^[-]|[-]$/.test(val), {
+      message: 'Organization name cannot start or end with a hyphen'
+    }),
+  siteName: z
+    .string()
+    .min(5)
+    .refine((val) => !/^[-]|[-]$/.test(val), {
+      message: 'Site name cannot start or end with a hyphen'
+    })
+});
+
+export type TCreateOrganization = z.infer<typeof ZCreateOrganization>;
+```
+
+**Export**: Add to `packages/utils/src/validation/organization/index.ts` and `packages/utils/src/validation/index.ts`
+
+---
+
+### Step 2: Create or Reuse Service Function
+
+**Location**: `apps/api/src/services/organization.ts`
+
+**Option A: Reuse Existing Service** (if function exists in another service)
+
+```typescript
+import { createOrganizationWithOwner } from '@api/services/onboarding';
+
+export async function createOrg(profileId: string, data: { name: string; siteName: string }) {
+  // Reuse existing function from onboarding service
+  return await createOrganizationWithOwner(profileId, {
+    orgName: data.name,
+    siteName: data.siteName
+  });
+}
+```
+
+**Option B: Create New Service** (if you need different logic)
+
+```typescript
+import { AppError, ErrorCodes } from '@api/utils/errors';
+import { db } from '@cio/db/drizzle';
+import {
+  checkSiteNameExists,
+  createOrganization,
+  createOrganizationMember,
+  getOrganizationByProfileId
+} from '@cio/db/queries/organization';
+import { ROLE } from '@cio/utils/constants';
+
+export async function createOrg(profileId: string, data: { name: string; siteName: string }) {
+  // Business Logic: Check sitename availability
+  const exists = await checkSiteNameExists(data.siteName);
+  if (exists) {
+    throw new AppError(
+      `Site name '${data.siteName}' already exists`,
+      ErrorCodes.SITENAME_EXISTS,
+      409,
+      'siteName'
+    );
+  }
+
+  // Business Logic: Create org and member in a transaction
+  try {
+    const result = await db.transaction(async (tx) => {
+      const organization = await createOrganization({
+        name: data.name,
+        siteName: data.siteName
+      });
+
+      const member = await createOrganizationMember({
+        organizationId: organization.id,
+        profileId,
+        roleId: ROLE.ADMIN,
+        verified: true
+      });
+
+      return { organization, member };
+    });
+
+    // Fetch updated organizations list
+    const organizations = await getOrganizationByProfileId(profileId);
+
+    return {
+      organization: result.organization,
+      member: result.member,
+      organizations
+    };
+  } catch (error) {
+    // Handle database constraint violations
+    if (error.code === '23505') {
+      throw new AppError(
+        `Site name '${data.siteName}' already exists`,
+        ErrorCodes.SITENAME_EXISTS,
+        409,
+        'siteName'
+      );
+    }
+    throw new AppError('Failed to create organization', ErrorCodes.ORG_CREATE_FAILED, 500);
+  }
+}
+```
+
+---
+
+### Step 3: Create Route
+
+**Location**: `apps/api/src/routes/organization/organization.ts`
+
+```typescript
+import { createOrg } from '@api/services/organization';
+import { Hono } from '@api/utils/hono';
+import { ZCreateOrganization } from '@cio/utils/validation/organization';
+import { authMiddleware } from '@api/middlewares/auth';
+import { handleError } from '@api/utils/errors';
+import { zValidator } from '@hono/zod-validator';
+
+export const organizationRouter = new Hono()
+  .post('/', authMiddleware, zValidator('json', ZCreateOrganization), async (c) => {
+    try {
+      const user = c.get('user');
+      const data = c.req.valid('json');
+
+      const result = await createOrg(user.id, data);
+
+      return c.json({ success: true, data: result }, 201);
+    } catch (error) {
+      return handleError(c, error, 'Failed to create organization');
+    }
+  });
+```
+
+**Note**: Use `201 Created` status code for successful POST requests that create resources.
+
+---
+
+### Step 4: Export and Register Route
+
+```typescript
+// apps/api/src/routes/organization/index.ts
+export * from './organization';
+
+// apps/api/src/app.ts
+import { organizationRouter } from '@api/routes/organization';
+
+export const app = new Hono()
+  .route('/organization', organizationRouter);  // Route available at POST /organization
+```
+
+---
+
+### Step 5: Use in Frontend
+
+**Location**: `apps/dashboard/src/lib/features/org/api/org.svelte.ts`
+
+```typescript
+import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import { ZCreateOrganization } from '@cio/utils/validation/organization';
+import { mapZodErrorsToTranslations } from '$lib/utils/validation';
+import { orgs, currentOrg } from '$lib/utils/store/org';
+import { snackbar } from '$lib/components/Snackbar/store';
+
+class OrgApi extends BaseApiWithErrors {
+  async create(fields: { name: string; siteName: string }) {
+    // Client-side validation
+    const result = ZCreateOrganization.safeParse(fields);
+    if (!result.success) {
+      this.errors = mapZodErrorsToTranslations(result.error, 'organization');
+      return;
+    }
+
+    await this.execute<typeof classroomio.organization.$post>({
+      requestFn: () =>
+        classroomio.organization.$post({
+          json: result.data
+        }),
+      logContext: 'creating organization',
+      onSuccess: (response) => {
+        if (!response.data) return;
+
+        const { organization, organizations } = response.data;
+
+        // Update stores
+        orgs.set(organizations);
+        currentOrg.set(organization);
+
+        snackbar.success('Organization created successfully');
+        this.success = true;
+        this.errors = {};
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error(result);
+          return;
+        }
+        if ('error' in result && 'field' in result) {
+          // Field-specific error automatically mapped to this.errors[field]
+          this.errors[result.field as string] = result.error;
+        }
+      }
+    });
+  }
+}
+
+export const orgApi = new OrgApi();
+```
+
+**Key Points:**
+- Use `this.execute()` from `BaseApiWithErrors` for automatic loading/error state
+- Field-specific errors are automatically mapped to `this.errors[field]`
+- Update stores in `onSuccess` callback
+- Handle both validation and API errors
+
+---
+
+### Reusing Existing Service Functions
+
+Sometimes a service function exists in a different context (e.g., `createOrganizationWithOwner` in onboarding service).
+
+**When to Reuse:**
+- ✅ The function does exactly what you need
+- ✅ It's in the same domain (organization operations)
+- ✅ You can call it from your new route without modification
+
+**When to Create New:**
+- ❌ The existing function has domain-specific logic you don't want (e.g., onboarding-specific)
+- ❌ You need different parameters or return values
+- ❌ The function is in a different domain and mixing concerns would be inappropriate
+
+**Example: Reusing a Service**
+
+```typescript
+// apps/api/src/services/organization.ts
+import { createOrganizationWithOwner } from '@api/services/onboarding';
+
+export async function createOrg(profileId: string, data: { name: string; siteName: string }) {
+  // Reuse existing function, just adapt the parameters
+  return await createOrganizationWithOwner(profileId, {
+    orgName: data.name,
+    siteName: data.siteName
+  });
+}
+```
+
+---
+
 ### Route Path Convention
 
 When adding routes to an existing router:
@@ -1063,6 +1363,260 @@ When creating a new route, follow this checklist:
    - [ ] Use RPC client for API calls
    - [ ] Map errors to translations
    - [ ] Update local state after success
+
+---
+
+## Migrating Existing Supabase Calls to API Routes
+
+When you have existing components using direct Supabase calls, follow this migration pattern to move them to the API architecture.
+
+### Migration Workflow
+
+#### Step 1: Identify the Operation
+
+Analyze the existing Supabase call:
+- **What database operation?** (CREATE, UPDATE, DELETE, SELECT)
+- **What tables are involved?**
+- **Are there related operations?** (e.g., create org + create member should be atomic)
+- **What validation is currently done?** (client-side only or also server-side?)
+
+**Example Analysis:**
+```typescript
+// Current code
+const { data: org, error } = await supabase
+  .from('organization')
+  .insert({ name: orgName, siteName: siteName })
+  .select();
+
+const { data, error } = await supabase
+  .from('organizationmember')
+  .insert({ organization_id: org[0].id, profile_id: $profile.id, role_id: 1 });
+
+// Analysis:
+// - Operation: CREATE (organization + member)
+// - Tables: organization, organizationmember
+// - Related: Yes, should be atomic (transaction)
+// - Validation: Client-side only (needs server-side too)
+```
+
+#### Step 2: Check for Existing Services
+
+Search for existing service functions that might handle this:
+- Check `apps/api/src/services/` for similar operations
+- Look in related domains (e.g., onboarding might have org creation)
+- Check if the operation exists but in a different context
+
+**Decision:**
+- **Reuse existing service** if it does what you need
+- **Create new service** if you need different logic or parameters
+
+#### Step 3: Create/Update API Route
+
+If the route doesn't exist:
+- Follow the "Creating a New Route" workflow above
+- Use appropriate HTTP method: `POST` (create), `PUT` (update), `DELETE` (delete)
+
+If the route exists:
+- Add new endpoint to existing router
+- Follow route path conventions
+
+#### Step 4: Create Frontend API Method
+
+Add method to existing API class (e.g., `orgApi.create()`):
+
+```typescript
+// apps/dashboard/src/lib/features/org/api/org.svelte.ts
+class OrgApi extends BaseApiWithErrors {
+  async create(fields: { name: string; siteName: string }) {
+    // Client-side validation
+    const result = ZCreateOrganization.safeParse(fields);
+    if (!result.success) {
+      this.errors = mapZodErrorsToTranslations(result.error, 'organization');
+      return;
+    }
+
+    await this.execute<typeof classroomio.organization.$post>({
+      requestFn: () =>
+        classroomio.organization.$post({
+          json: result.data
+        }),
+      logContext: 'creating organization',
+      onSuccess: (response) => {
+        // Update stores, navigate, show success
+        if (response.data) {
+          orgs.set(response.data.organizations);
+          currentOrg.set(response.data.organization);
+        }
+        snackbar.success('Organization created');
+        this.success = true;
+      },
+      onError: (result) => {
+        // Error handling (automatic for validation errors)
+        if (typeof result === 'string') {
+          snackbar.error(result);
+        }
+      }
+    });
+  }
+}
+```
+
+**Key Points:**
+- Always use `this.execute()` from `BaseApiWithErrors`
+- Client-side validation before API call
+- Update stores in `onSuccess` callback
+- Errors automatically handled by `BaseApiWithErrors`
+
+#### Step 5: Update Component
+
+Replace Supabase calls with API class method:
+
+**Before (Direct Supabase):**
+```typescript
+<script lang="ts">
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { profile } from '$lib/utils/store/user';
+
+  async function createNewOrg() {
+    // Create organization
+    const { data: org, error } = await supabase
+      .from('organization')
+      .insert({ name: orgName, siteName })
+      .select();
+
+    if (error) {
+      errors.siteName = error.message;
+      return;
+    }
+
+    // Create member (separate call - not atomic!)
+    const { data, error: memberError } = await supabase
+      .from('organizationmember')
+      .insert({
+        organization_id: org[0].id,
+        profile_id: $profile.id,
+        role_id: 1
+      })
+      .select();
+
+    if (memberError) {
+      // Manual cleanup required
+      await supabase.from('organization').delete().match({ siteName });
+      errors.siteName = 'Failed to create member';
+      return;
+    }
+
+    // Manual store updates
+    await getOrganizations($profile.id);
+    goto(`/org/${siteName}`);
+  }
+</script>
+```
+
+**After (API Route):**
+```typescript
+<script lang="ts">
+  import { orgApi } from '$lib/features/org/api/org.svelte';
+  import { goto } from '$app/navigation';
+
+  async function createNewOrg() {
+    // Client-side validation (optional, for instant feedback)
+    errors = createOrgValidation({ orgName, siteName }) as Error;
+    if (Object.values(errors).length) {
+      return;
+    }
+
+    // Call API
+    await orgApi.create({ name: orgName, siteName });
+
+    if (orgApi.success) {
+      // Success - stores already updated by orgApi
+      goto(`/org/${siteName}`);
+      $newOrgModal.open = false;
+      resetForm();
+    } else {
+      // Errors automatically mapped to orgApi.errors
+      if (orgApi.errors.siteName) {
+        errors.siteName = orgApi.errors.siteName;
+      } else if (orgApi.errors.general) {
+        errors.general = orgApi.errors.general;
+      }
+    }
+  }
+</script>
+```
+
+**Key Differences:**
+- ✅ **No manual transaction cleanup** - Handled by service layer
+- ✅ **No separate member creation** - Handled atomically by service
+- ✅ **Automatic store updates** - Handled by API class `onSuccess`
+- ✅ **Consistent error structure** - Field-specific errors automatically mapped
+- ✅ **Type-safe** - Full TypeScript support end-to-end
+- ✅ **Server-side validation** - Always validated even if client validation passes
+
+### Mapping API Errors to Form Fields
+
+The `BaseApiWithErrors` class automatically maps field-specific errors from the API response:
+
+**API Response Structure:**
+```typescript
+// Field-specific error
+{
+  success: false,
+  error: "Sitename already exists",
+  code: "SITENAME_EXISTS",
+  field: "siteName"  // ← This maps to this.errors.siteName
+}
+
+// General error
+{
+  success: false,
+  error: "Failed to create organization",
+  code: "ORG_CREATE_FAILED"
+  // No field property → maps to this.errors.general
+}
+```
+
+**In Component:**
+```typescript
+await orgApi.create({ name: orgName, siteName });
+
+if (!orgApi.success) {
+  // Field-specific error automatically in orgApi.errors.siteName
+  if (orgApi.errors.siteName) {
+    errors.siteName = orgApi.errors.siteName;
+  }
+  
+  // General error automatically in orgApi.errors.general
+  if (orgApi.errors.general) {
+    errors.general = orgApi.errors.general;
+  }
+}
+```
+
+**How It Works:**
+1. API returns error with `field` property
+2. `BaseApiWithErrors.execute()` automatically sets `this.errors[field] = error`
+3. Component can access `orgApi.errors.fieldName` directly
+4. No manual error mapping needed
+
+### Migration Checklist
+
+When migrating a component from Supabase to API:
+
+- [ ] **Identify operations**: List all Supabase calls in component
+- [ ] **Check existing routes**: Search `apps/api/src/routes/` for existing API routes
+- [ ] **Check existing services**: Search `apps/api/src/services/` for reusable functions
+- [ ] **Create missing pieces**: Follow "Creating a New Route" if route doesn't exist
+- [ ] **Create API method**: Add method to appropriate API class using `execute()` pattern
+- [ ] **Update component**: Replace Supabase calls with API method
+- [ ] **Remove cleanup code**: Delete manual rollback/cleanup (handled by service transactions)
+- [ ] **Remove separate calls**: Combine related operations (handled atomically by service)
+- [ ] **Update error handling**: Use `orgApi.errors.fieldName` instead of Supabase error structure
+- [ ] **Update store sync**: Remove manual store updates (handled by API class `onSuccess`)
+- [ ] **Remove Supabase imports**: Delete unused `supabase` imports
+- [ ] **Test**: Verify success and error cases work correctly
+- [ ] **Test transactions**: Verify atomic operations (e.g., org + member creation)
 
 ---
 
@@ -1250,11 +1804,260 @@ Example with **client-side validation** before API call:
 </form>
 ```
 
+### API Abstraction Pattern (API Classes)
+
+When creating API abstractions in `apps/dashboard/src/lib/features/{domain}/api/{entity}.svelte.ts`, **always use the `execute` method** from `BaseApi` or `BaseApiWithErrors` classes. This provides automatic loading state management, error handling, and consistent response processing.
+
+**Important**: 
+- **`.svelte.ts` files** are for **client-side use only** (Svelte components). They use Svelte reactivity (`$state`, `$derived`) and manage component state. **Never** include API key logic in these files.
+- **`.server.ts` files** are for **server-side use only** (`+layout.server.ts`, `+page.server.ts`, `+server.ts`). They contain static methods with API key authentication and are automatically excluded from client bundles by SvelteKit.
+
+#### Using the `execute` Method
+
+**Pattern:**
+```typescript
+import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+
+class MyApi extends BaseApiWithErrors {
+  async updateItem(id: string, data: Partial<Item>) {
+    await this.execute<typeof classroomio.items[':id']['$put']>({
+      requestFn: () => classroomio.items[':id'].$put({
+        param: { id },
+        json: data
+      }),
+      logContext: 'updating item',
+      onSuccess: (response) => {
+        // Update local stores with response.data
+        itemsStore.update((items) => {
+          const index = items.findIndex((i) => i.id === id);
+          if (index !== -1 && response.data) {
+            items[index] = { ...items[index], ...response.data };
+          }
+          return items;
+        });
+      },
+      onError: (result) => {
+        // Optional: Custom error handling
+        if (typeof result === 'string') {
+          snackbar.error(result);
+          return;
+        }
+        if ('error' in result) {
+          this.handleValidationError(result);
+        }
+      }
+    });
+  }
+}
+
+export const myApi = new MyApi();
+```
+
+**Key Points:**
+- **Always use `this.execute`** - Never call the RPC client directly
+- **Type the execute call** with `typeof classroomio.{route}.{method}` for type safety
+- **Use `requestFn`** - Wrap the RPC call in a function
+- **Use `logContext`** - Provide descriptive context for error logging
+- **Use `onSuccess`** - Update local stores/reactivity with response data
+- **Use `onError`** - Optional custom error handling (validation errors are handled automatically by `BaseApiWithErrors`)
+
+**Examples:**
+
+```typescript
+// Profile API - Simple update
+await this.execute<typeof classroomio.account.user.$put>({
+  requestFn: () => classroomio.account.user.$put({ json: profileUpdates }),
+  logContext: 'updating profile',
+  onSuccess: (response) => {
+    profileStore.update((_profile) => ({
+      ..._profile,
+      ...response.profile
+    }));
+  }
+});
+
+// Onboarding API - With error handling
+await this.execute<typeof classroomio.onboarding.step1.$post>({
+  requestFn: () => classroomio.onboarding.step1.$post({ json: data }),
+  logContext: 'submitting organization setup',
+  onSuccess: (result) => {
+    const { organizations } = result.data;
+    orgs.set(organizations);
+    currentOrg.set(organizations[0]);
+    this.errors = {};
+    this.step = ONBOARDING_STEPS.USER_METADATA;
+  },
+  onError: (result) => {
+    if (typeof result === 'string') {
+      snackbar.error(result);
+      return;
+    }
+    if ('error' in result) {
+      this.handleValidationError(result);
+    }
+  }
+});
+```
+
+**Benefits:**
+- ✅ Automatic loading state management (`this.isLoading`)
+- ✅ Automatic error state management (`this.error` or `this.errors`)
+- ✅ Consistent error handling across all API calls
+- ✅ Type-safe responses
+- ✅ Centralized logging
+- ✅ Easy to test and mock
+
+### Server-Side API Calls
+
+**For server-side files** (`+layout.server.ts`, `+page.server.ts`, `+server.ts`), use **`.server.ts` API classes** instead of calling the RPC client directly. This prevents API keys from being accidentally bundled into client-side code.
+
+#### Pattern for Server-Side Files
+
+Create a `.server.ts` file alongside your `.svelte.ts` API class with static methods that use API key authentication:
+
+```typescript
+// apps/dashboard/src/lib/features/org/api/org.server.ts
+import { classroomio } from '$lib/utils/services/api';
+import { getApiKeyHeaders } from '$lib/utils/services/api/server';
+
+/**
+ * Server-side API methods for organization operations
+ * These methods use API key authentication and should only be used in server-side files
+ * (+server.ts, +layout.server.ts) to prevent API keys from being exposed to the client.
+ */
+export class OrgApiServer {
+  /**
+   * Gets organization by siteName (server-side)
+   * @param siteName Organization site name
+   * @returns Organization or null
+   */
+  static async getOrgBySiteName(siteName: string) {
+    try {
+      const response = await classroomio.organization.$get(
+        {
+          query: { siteName }
+        },
+        getApiKeyHeaders()
+      );
+
+      const data = await response.json();
+      return data.success && data.data && data.data.length > 0 ? data.data[0] : null;
+    } catch (error) {
+      console.error('Error fetching organization by siteName (server):', error);
+      return null;
+    }
+  }
+}
+```
+
+**Usage in server-side files:**
+
+```typescript
+// apps/dashboard/src/routes/invite/t/[hash]/+layout.server.ts
+import { OrgApiServer } from '$lib/features/org/api/org.server';
+
+export const load = async ({ params }) => {
+  // Use static method from .server.ts class
+  const org = await OrgApiServer.getOrgBySiteName(orgSiteName);
+
+  return { org };
+};
+```
+
+#### API Key Authentication for Webhooks/External Calls
+
+For server-to-server communication (webhooks, external integrations), create `.server.ts` files with static methods:
+
+```typescript
+// apps/dashboard/src/lib/features/org/api/org-plan.server.ts
+import { classroomio } from '$lib/utils/services/api';
+import { getApiKeyHeaders } from '$lib/utils/services/api/server';
+import type { TCreateOrgPlan } from '@cio/utils/validation/organization';
+
+/**
+ * Server-side API methods for organization plan operations
+ * These methods use API key authentication and should only be used in server-side files
+ * (+server.ts, +layout.server.ts) to prevent API keys from being exposed to the client.
+ */
+export class OrgPlanApiServer {
+  /**
+   * Creates a new organization plan (server-side)
+   * @param params Organization plan creation parameters
+   * @returns Response data or null on error
+   */
+  static async createOrgPlan(params: TCreateOrgPlan) {
+    try {
+      const response = await classroomio.organization.plan.$post(
+        {
+          json: params
+        },
+        getApiKeyHeaders()
+      );
+
+      const data = await response.json();
+      return data.success ? data.data : null;
+    } catch (error) {
+      console.error('Error creating org plan (server):', error);
+      return null;
+    }
+  }
+}
+```
+
+**Usage in webhook handlers:**
+
+```typescript
+// apps/dashboard/src/routes/api/polar/webhook/+server.ts
+import { OrgPlanApiServer } from '$lib/features/org/api/org-plan.server';
+
+// Use static method from .server.ts class
+const result = await OrgPlanApiServer.createOrgPlan(planData);
+```
+
+#### File Naming Convention
+
+- **`.svelte.ts`**: Client-side API classes (for Svelte components)
+  - Example: `org.svelte.ts`, `org-plan.svelte.ts`
+  - Uses Svelte reactivity (`$state`, `$derived`)
+  - Manages component state and loading/error states
+  - **Never** contains API key logic
+
+- **`.server.ts`**: Server-side API classes (for server-side files)
+  - Example: `org.server.ts`, `org-plan.server.ts`
+  - Contains static methods with API key authentication
+  - **Only** used in `+layout.server.ts`, `+page.server.ts`, `+server.ts` files
+  - Automatically excluded from client bundles by SvelteKit
+
+#### API Key Setup
+
+1. Add `API_KEY` to `apps/api/src/config/env.ts` environment schema
+2. Set `API_KEY` environment variable in your deployment
+3. Use `authOrApiKeyMiddleware` in API routes that accept both user sessions and API keys
+4. Create `.server.ts` files with static methods that use `getApiKeyHeaders()` helper
+
+**Helper Function**: Use `getApiKeyHeaders()` from `$lib/utils/services/api/server` to get API key headers. This helper:
+- Returns the correct headers format for RPC client
+- Validates that `API_KEY` is configured
+- Provides consistent API key authentication across all server-side files
+
+#### Why This Pattern?
+
+- ✅ **Security**: API keys are isolated in `.server.ts` files that cannot be imported on the client
+- ✅ **Clear separation**: Client-side (`.svelte.ts`) vs server-side (`.server.ts`) is explicit
+- ✅ **Type-safe**: Full TypeScript support end-to-end
+- ✅ **Consistent**: Same API routes, same validation, same error handling
+- ✅ **Maintainable**: Centralized server-side API methods in dedicated files
+- ✅ **SvelteKit convention**: `.server.ts` files are automatically excluded from client bundles
+
 ### Frontend Best Practices
 
 #### ✅ DO
 
 - **Use type-safe RPC client** for API calls (Hono RPC)
+- **Always use `execute` method** in API abstraction classes (never call RPC client directly)
+- **Use `.server.ts` API classes** in server-side files (`+layout.server.ts`, `+page.server.ts`, `+server.ts`)
+- **Create `.server.ts` files** with static methods for server-side API calls with API key authentication
+- **Use API key** for server-to-server communication (webhooks, external calls)
 - **Validate client-side** before API calls using shared schemas from `@cio/utils/validation`
 - **Use entity-specific translations** when multiple entities share field names
 
@@ -1272,6 +2075,10 @@ Example with **client-side validation** before API call:
 
 #### ❌ DON'T
 
+- **Call RPC client directly** in API classes (always use `execute` method)
+- **Call RPC client directly in server-side files** - use `.server.ts` API classes instead
+- **Use `.svelte.ts` API classes in server-side files** - they're for client-side Svelte components only
+- **Include API key logic in `.svelte.ts` files** - API keys must only be in `.server.ts` files
 - Skip error handling assuming API calls always succeed
 - Display raw API error messages without formatting
 - Skip client-side validation (validate before API call for instant feedback)

@@ -6,10 +6,10 @@
   import ListChecksIcon from '@lucide/svelte/icons/list-checks';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
 
-  import Box from '$lib/components/Box/index.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/features/ui';
+  import * as Empty from '@cio/ui/base/empty';
   import { lessons, handleSaveLesson } from '$lib/components/Course/components/Lesson/store/lessons';
 
   import { globalStore } from '$lib/utils/store/app';
@@ -188,14 +188,16 @@
       </div>
     </div>
   {:else}
-    <Box>
-      <div class="flex justify-between flex-col items-center w-[90%] md:w-96">
-        <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="my-2.5 mx-auto" />
-        <h2 class="text-xl my-1.5 font-normal">{$t('course.navItem.lessons.body_header')}</h2>
-        <p class="text-sm text-center text-slate-500">
+    <Empty.Root>
+      <Empty.Header>
+        <Empty.Media variant="icon">
+          <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="size-6" />
+        </Empty.Media>
+        <Empty.Title>{$t('course.navItem.lessons.body_header')}</Empty.Title>
+        <Empty.Description>
           {$t('course.navItem.lessons.body_content')}
-        </p>
-      </div>
-    </Box>
+        </Empty.Description>
+      </Empty.Header>
+    </Empty.Root>
   {/each}
 </section>

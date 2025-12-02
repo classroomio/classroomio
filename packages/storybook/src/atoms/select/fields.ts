@@ -1,7 +1,4 @@
-import { type ComponentProps } from 'svelte';
-import * as Select from '@cio/ui/base/select';
-
-export const FIELDS: (keyof ComponentProps<typeof Select.Root>)[] = [
+export const FIELDS = [
   'value',
   'onValueChange',
   'disabled',
@@ -11,4 +8,4 @@ export const FIELDS: (keyof ComponentProps<typeof Select.Root>)[] = [
   'required',
   'autocomplete',
   'allowDeselect'
-];
+] as string[];

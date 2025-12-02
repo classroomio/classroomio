@@ -1,10 +1,7 @@
-import { type ComponentProps } from 'svelte';
-import { Menubar } from '@cio/ui/base/menubar';
-
-export const FIELDS: (keyof ComponentProps<typeof Menubar>)[] = [
+export const FIELDS = [
   'onValueChange',
   'value',
   'dir',
   'onOpenChange',
   'disabled'
-];
+] as string[];

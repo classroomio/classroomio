@@ -1,4 +1,6 @@
 /*Write your global styles here, in PostCSS syntax */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
+
 @import 'tailwindcss';
 
 @import '@cio/ui/output.css';
@@ -42,17 +44,6 @@ html .dark {
   background-color: var(--thumbBG);
   border-radius: 10px;
   border: 2px solid var(--scrollbarBG);
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-size: revert;
-  font-weight: revert;
-  margin: 0.8em 0;
 }
 
 .prose h1,
@@ -809,6 +800,7 @@ svg.lucide-icon:not(.custom) {
   --animate-roll: quizRoll 0.8s ease-in-out;
   --animate-gather: audienceGather 0.7s ease-in-out;
   --animate-setup-configure: setupConfigure 1s ease-in-out;
+  --animate-border: border 4s linear infinite;
 }
 
 @keyframes shakeAnnouncement {
@@ -1150,5 +1142,193 @@ svg.lucide-icon:not(.custom) {
 
   100% {
     transform: scale(1) rotate(0deg);
+  }
+}
+
+/* Animated Gradient Border */
+@property --border-angle {
+  inherits: false;
+  initial-value: 0deg;
+  syntax: '<angle>';
+}
+
+@keyframes border {
+  to {
+    --border-angle: 360deg;
+  }
+}
+
+/* Animated Gradient Border Class */
+.animate-gradient-border {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(45deg, white, white) padding-box,
+    conic-gradient(
+        from var(--border-angle),
+        rgb(148 163 184 / 0.3) 75%,
+        rgb(37 99 235) 82%,
+        rgb(96 165 250) 88%,
+        rgb(37 99 235) 92%,
+        rgb(148 163 184 / 0.3) 100%
+      )
+      border-box;
+  transition: --border-angle 3s ease-in-out;
+}
+
+.animate-gradient-border:hover {
+  animation: border 4s ease-in-out infinite;
+}
+
+.dark .animate-gradient-border {
+  background:
+    linear-gradient(45deg, rgb(0 0 0), rgb(0 0 0)) padding-box,
+    conic-gradient(
+        from var(--border-angle),
+        rgb(71 85 105 / 0.48) 75%,
+        rgb(37 99 235) 82%,
+        rgb(96 165 250) 88%,
+        rgb(37 99 235) 92%,
+        rgb(71 85 105 / 0.48) 100%
+      )
+      border-box;
+  transition: --border-angle 3s ease-in-out;
+}
+
+.dark .animate-gradient-border:hover {
+  animation: border 4s ease-in-out infinite;
+}
+
+/**
+ Rocket launch animation.
+**/
+.rocket-launch {
+  transform-origin: center bottom;
+  transform-box: fill-box;
+}
+
+/* Full sequence runs once per hover */
+.animate-icon:hover .rocket-launch {
+  animation: rocket-sequence 5s ease-in-out infinite;
+}
+
+/* Optional: flame flicker during pre-launch + launch */
+.animate-icon:hover .rocket-launch path:first-of-type {
+  animation: flame-sequence 5s ease-in-out infinite;
+}
+
+/*
+  Rocket:
+  - 0–60% (~3s): jitter/pre-launch, small moves along nose direction
+  - 60–70%: launch along ~60° diagonal (up-right), fade out
+  - 70–80%: invisible pause
+  - 80–100%: re-enter from opposite side (down-left)
+*/
+@keyframes rocket-sequence {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+
+  10% {
+    transform: translate(1px, -2px) scale(1.02);
+    opacity: 1;
+  }
+
+  20% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+
+  30% {
+    transform: translate(2px, -3px) scale(1.03);
+    opacity: 1;
+  }
+
+  40% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(1px, -2px) scale(1.02);
+    opacity: 1;
+  }
+
+  60% {
+    transform: translate(0, 0) scale(1.05);
+    opacity: 1;
+  }
+
+  /* Launch along a ~60° diagonal: up (-Y) and to the right (+X) */
+  70% {
+    transform: translate(100%, -173%) scale(1.1);
+    opacity: 0;
+  }
+
+  /* Off-screen / invisible pause (~1s, 70–80%) */
+  80% {
+    /* Reposition off-screen in the opposite direction: down-left */
+    transform: translate(-100%, 173%) scale(1.1);
+    opacity: 0;
+  }
+
+  /* Fly back into view from below-left to original position */
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+}
+
+/*
+  Flame sequence:
+  - Moves opposite rocket travel (down-left: -X, +Y) to match exhaust
+  - No vertical-only scaling; just uniform scale + diagonal translation
+  - Visible 0–70%, then off
+*/
+@keyframes flame-sequence {
+  0% {
+    stroke: var(--main-primary-color);
+    opacity: 1;
+    transform: translate(-0.5px, 0.9px) scale(1.02);
+  }
+
+  10% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1.02);
+  }
+
+  30% {
+    opacity: 0.8;
+    transform: translate(-0.5px, 0.9px) scale(1);
+  }
+
+  40% {
+    opacity: 0.8;
+    transform: translate(0, 0) scale(1.02);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translate(-0.5px, 0.9px) scale(1);
+  }
+
+  60% {
+    opacity: 0.8;
+    transform: translate(0, 0) scale(1.02);
+  }
+
+  70% {
+    opacity: 0;
+    transform: translate(-0.5px, 0.9px) scale(1.1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-1px, 1.7px) scale(1.12);
   }
 }

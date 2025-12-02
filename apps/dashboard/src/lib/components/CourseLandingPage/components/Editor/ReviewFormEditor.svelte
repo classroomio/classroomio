@@ -5,26 +5,26 @@
   import TrashIcon from '@lucide/svelte/icons/trash';
 
   import { t } from '$lib/utils/functions/translations';
-  import { uploadAvatar } from '$lib/utils/services/courses';
+  import { uploadImage } from '$lib/utils/services/upload';
 
   import { IconButton } from '$lib/components/IconButton';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
 
-  let { courseId, reviews = $bindable([]), review = $bindable({}), errors = {}, onExpand = () => {} } = $props();
+  let { reviews = $bindable([]), review = $bindable({}), errors = {}, onExpand = () => {} } = $props();
 
-  let avatar = $state<string | undefined>();
+  let avatar = $state<File | undefined>();
 
   // function to delete review
   function deleteReviewData() {
     reviews = reviews.filter((r) => r.id !== review.id);
   }
 
-  async function onAvatarChange(_avatar) {
+  async function onAvatarChange(_avatar: File | undefined) {
     if (!_avatar) return;
 
-    review.avatar_url = await uploadAvatar(courseId, _avatar);
+    review.avatar_url = await uploadImage(_avatar);
   }
 
   $effect(() => {

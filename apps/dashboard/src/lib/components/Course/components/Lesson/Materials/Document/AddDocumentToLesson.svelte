@@ -7,7 +7,7 @@
   import FileTextIcon from '@lucide/svelte/icons/file-text';
   import { DocumentUploader } from '$lib/utils/services/courses/presign';
   import { onDestroy, untrack } from 'svelte';
-  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
+  import { UpgradeBanner } from '$lib/features/ui';
   import { isFreePlan } from '$lib/utils/store/org';
   import { lesson } from '../../store/lessons';
   import { CloseButton } from '$lib/components/Buttons/Close';

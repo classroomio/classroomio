@@ -1,8 +1,8 @@
-import type { OrgAudience, OrgTeamMember } from '../types/org';
 import { browser, dev } from '$app/environment';
 import { derived, writable } from 'svelte/store';
 
 import type { AccountOrg } from '$lib/features/app/types';
+import type { OrgTeamMember } from '../types/org';
 import { PLAN } from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { ROLE } from '@cio/utils/constants';
@@ -10,7 +10,9 @@ import { STEPS } from '../constants/quiz';
 import type { UserLessonDataType } from '$lib/utils/types';
 import type { Writable } from 'svelte/store';
 
-export const defaultCurrentOrgState: AccountOrg = {
+export const orgs = writable<AccountOrg[]>([]);
+
+export const currentOrg: Writable<AccountOrg> = writable({
   avatarUrl: '',
   createdAt: '',
   customCode: '',
@@ -31,12 +33,7 @@ export const defaultCurrentOrgState: AccountOrg = {
   settings: {},
   siteName: '',
   theme: ''
-};
-
-export const orgs = writable<AccountOrg[]>([]);
-
-export const currentOrg: Writable<AccountOrg> = writable(defaultCurrentOrgState);
-export const orgAudience = writable<OrgAudience[]>([]);
+});
 export const orgTeam = writable<OrgTeamMember[]>([]);
 export const isOrgAdmin = derived(currentOrg, ($currentOrg) => {
   if ($currentOrg.roleId === 0) return null;

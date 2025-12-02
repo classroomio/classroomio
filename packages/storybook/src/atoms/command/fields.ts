@@ -1,11 +1,8 @@
-import { type ComponentProps } from 'svelte';
-import { Command } from '@cio/ui/base/command';
-
-export const FIELDS: (keyof ComponentProps<typeof Command>)[] = [
+export const FIELDS = [
   'value',
   'onValueChange',
   'label',
   'filter',
   'columns',
   'disablePointerSelection'
-];
+] as string[];

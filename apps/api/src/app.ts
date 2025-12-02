@@ -9,6 +9,7 @@ import { cors } from 'hono/cors';
 import { courseRouter } from '@api/routes/course';
 import { logger } from 'hono/logger';
 import { mailRouter } from '@api/routes/mail';
+import { mediaRouter } from '@api/routes/media';
 import { onboardingRouter } from '@api/routes/onboarding';
 import { organizationRouter } from '@api/routes/organization';
 import { prettyJSON } from 'hono/pretty-json';
@@ -26,7 +27,7 @@ export const app = new Hono()
     cors({
       origin: TRUSTED_ORIGINS,
       allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-      allowHeaders: ['Content-Type', 'Authorization'],
+      allowHeaders: ['Content-Type', 'Authorization', 'Cio-org-id'],
       exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
       maxAge: 600,
       credentials: true
@@ -71,6 +72,7 @@ export const app = new Hono()
   .route('/account', accountRouter)
   .route('/course', courseRouter)
   .route('/mail', mailRouter)
+  .route('/media', mediaRouter)
   .route('/organization', organizationRouter)
 
   // Error handling

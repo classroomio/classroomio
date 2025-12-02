@@ -42,7 +42,7 @@
 
 {#if open}
   <div
-    class="dialog fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden bg-gray-100 bg-opacity-50"
+    class="dialog z-100 fixed inset-0 flex items-center justify-center overflow-x-hidden bg-gray-100 bg-opacity-50"
     onclick={onClose}
     role="presentation"
   >

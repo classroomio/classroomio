@@ -13,7 +13,7 @@
 
   import { qrInviteNodeStore } from './store';
   import { ROLE } from '@cio/utils/constants';
-  import { getOrgTeam } from '$lib/utils/services/org';
+  import { orgApi } from '$lib/features/org/api/org.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$lib/components/Snackbar/store';
   import type { OrgTeamMember } from '$lib/utils/types/org';
@@ -37,10 +37,8 @@
 
   let tutors: Tutor[] = $state([]);
   let selectedIds: string[] = $state([]);
-  let isLoadingTutors = $state(false);
 
   const selectedTutors = $derived(tutors.filter((tutor) => selectedIds.includes(tutor.id.toString())));
-  let copied = $state(false);
   let qrImage = $state('');
   let isLoadingQRDownload = $state(false);
 
@@ -108,18 +106,13 @@
     if (!orgId) return;
 
     untrack(async () => {
-      isLoadingTutors = true;
-
-      const { team, error } = await getOrgTeam(orgId);
-      if (error) {
-        console.error('Error fetching teams', error);
-        isLoadingTutors = false;
+      await orgApi.getOrgTeam(orgId);
+      if (orgApi.error) {
+        console.error('Error fetching teams', orgApi.error);
         return;
       }
 
-      tutors = getTutors(team);
-
-      isLoadingTutors = false;
+      tutors = getTutors(orgApi.teamMembers);
     });
   }
 
@@ -132,10 +125,6 @@
 
     const link = getStudentInviteLink($course, $currentOrg.siteName, $currentOrgDomain);
     copy(link);
-    copied = true;
-    setTimeout(() => {
-      copied = false;
-    }, 1000);
   }
 
   function closeModal() {
@@ -197,7 +186,7 @@
   <form onsubmit={preventDefault(onSubmit)}>
     <div class="mb-8">
       <p class="mb-1 text-base font-semibold">{$t('course.navItem.people.invite_modal.invite')}</p>
-      <Select.Root type="multiple" bind:value={selectedIds} disabled={isLoadingTutors}>
+      <Select.Root type="multiple" bind:value={selectedIds} disabled={orgApi.isLoading}>
         <Select.Trigger class="w-full">
           <div>
             {#if selectedTutors.length > 0}
@@ -231,7 +220,7 @@
           {/each}
         </Select.Content>
       </Select.Root>
-      {#if isLoadingTutors}
+      {#if orgApi.isLoading}
         <div class="mt-2 flex items-center gap-2">
           <Spinner class="h-4 w-4" />
           <span class="text-sm">Loading...</span>
@@ -287,7 +276,7 @@
       </div>
     </div>
 
-    <div class="absolute left-[-1000px] w-[40rem]">
+    <div class="w-160 absolute left-[-1000px]">
       <ShareQrImage {qrImage} course={$course} currentOrg={$currentOrg} />
     </div>
 

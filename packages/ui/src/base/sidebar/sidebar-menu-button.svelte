@@ -26,7 +26,7 @@
 </script>
 
 <script lang="ts">
-  import * as Tooltip from '$src/base/tooltip/index.js';
+  import * as Tooltip from '../tooltip';
   import { cn, type WithElementRef, type WithoutChildrenOrChild } from '../../tools';
   import { mergeProps } from 'bits-ui';
   import type { ComponentProps, Snippet } from 'svelte';

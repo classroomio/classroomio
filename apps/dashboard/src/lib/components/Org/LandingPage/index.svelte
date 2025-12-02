@@ -12,32 +12,29 @@
   import LinkedinIcon from '@lucide/svelte/icons/linkedin';
   import { preventDefault } from '$lib/utils/functions/svelte';
 
-  import Box from '$lib/components/Box/index.svelte';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
   import Navigation from '$lib/components/Navigation/index.svelte';
-  import PoweredBy from '$lib/components/Upgrade/PoweredBy.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import Card from '$lib/components/Courses/components/Card/index.svelte';
+  import { PoweredBy } from '$lib/features/ui';
+  import { CourseCard, CourseCardLoader } from '$lib/features/course/components';
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
   import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
-  import CardLoader from '$lib/components/Courses/components/Card/Loader.svelte';
 
   import PageLoader from './PageLoader.svelte';
-  import { Row, Grid, Column } from '../Settings/Layout';
   import * as Accordion from '@cio/ui/base/accordion';
+  import * as Button from '@cio/ui/base/button';
+  import * as Field from '@cio/ui/base/field';
+  import { Input } from '@cio/ui/base/input';
+  import { Textarea } from '@cio/ui/base/textarea';
+  import { Empty } from '@cio/ui/custom/empty';
   import { t } from '$lib/utils/functions/translations';
-  import type { CurrentOrg } from '$lib/utils/types/org';
-  import { getSupabase } from '$lib/utils/functions/supabase';
-  import { getCourseBySiteName } from '$lib/utils/services/org';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import type { AccountOrg } from '$lib/features/app/types';
+  import { orgApi } from '$lib/features/org/api/org.svelte';
   import { validateEmail } from '$lib/utils/functions/validateEmail';
-  import { courseMetaDeta, courses } from '$lib/components/Courses/store';
+  import { courseMetaDeta, courses } from '$lib/features/course/utils/store';
   import { orgLandingpageValidation } from '$lib/utils/functions/validator';
 
   interface Props {
     orgSiteName?: string;
-    org: CurrentOrg | null;
+    org: AccountOrg;
   }
 
   let { orgSiteName = '', org }: Props = $props();
@@ -57,20 +54,11 @@
   });
   let contactError: Record<string, string> = $state({});
 
-  const supabase = getSupabase();
-
   async function handleSubmit() {
     if (!email || !validateEmail(email) || !org) return;
     isAdding = true;
 
-    const { error } = await supabase.from('organization_emaillist').insert({
-      email,
-      organization_id: org.id
-    });
-
-    if (error) {
-      console.error('Error', error);
-    }
+    // TODO: Implement email list submission
 
     success = true;
     setTimeout(() => {
@@ -89,18 +77,7 @@
     }
 
     // Save to db
-    const { error } = await supabase.from('organization_contacts').insert({
-      name: contact.name,
-      email: contact.email,
-      phone: contact.phone,
-      message: contact.message,
-      organization_id: org?.id
-    });
-
-    if (error) {
-      console.error('Something went wrong', error, '\n\nContact', contact);
-      isContactSubmiting = false;
-    }
+    // TODO: Implement contact submission
 
     isContactSubmiting = false;
     successContactSaved = true;
@@ -123,11 +100,17 @@
     untrack(async () => {
       try {
         $courseMetaDeta.isLoading = true;
-        const coursesResult = await getCourseBySiteName(siteName);
-        courses.set(coursesResult);
+        await orgApi.getCourseBySiteName(siteName);
+        if (orgApi.error) {
+          console.error('Error fetching courses', orgApi.error);
+          courses.set([]);
+        } else {
+          courses.set(orgApi.orgSiteCourses);
+        }
         $courseMetaDeta.isLoading = false;
       } catch (error) {
         console.log('error', error);
+        $courseMetaDeta.isLoading = false;
       }
     });
   }
@@ -157,18 +140,18 @@
   }
 
   function getBgImage(settings) {
+    const defaultImg = '/images/org-landingpage-banner.jpeg';
+
     const { show, image } = settings.header.background || {
       show: true,
-      image: '/images/org-landingpage-banner.jpeg'
+      image: defaultImg
     };
 
     if (!show) {
       return undefined;
     }
 
-    if (image) {
-      return `url('${image}')`;
-    }
+    return `url('${image || defaultImg}')`;
   }
 
   $effect(() => {
@@ -195,7 +178,7 @@
 {:else}
   <main>
     <Navigation
-      logo={org.avatar_url}
+      logo={org.avatarUrl}
       orgName={org.name}
       disableSignup={true}
       isOrgSite={true}
@@ -205,12 +188,12 @@
     {#if $landingPageSettings.header.show}
       <header
         id="header"
-        class={`relative mb-10 h-[100vh] w-full md:h-[90vh] ${
+        class={`relative mb-10 h-screen w-full md:h-[90vh] ${
           $landingPageSettings.header.background?.show ? 'bg-cover bg-center' : 'border-b border-gray-300'
         }`}
         style="background-image: {getBgImage($landingPageSettings)}"
       >
-        <div class="absolute top-0 z-10 h-[100vh] w-full bg-white opacity-80 md:h-[90vh]"></div>
+        <div class="absolute top-0 z-10 h-screen w-full bg-white opacity-80 md:h-[90vh]"></div>
         {#if $landingPageSettings.header.banner.show}
           <div class="flex items-center justify-center py-2 md:h-full">
             <div
@@ -230,13 +213,14 @@
                   {$landingPageSettings.header.subtitle}
                 </p>
 
-                <PrimaryButton
-                  label={$landingPageSettings.header.action.label}
-                  className="mt-2 md:mt-5 px-10 w-fit"
-                  onClick={() => {
+                <Button.Root
+                  class="mt-2 w-fit px-10 md:mt-5"
+                  onclick={() => {
                     $landingPageSettings.header.action.redirect && goto($landingPageSettings.header.action.link);
                   }}
-                />
+                >
+                  {$landingPageSettings.header.action.label}
+                </Button.Root>
               </div>
 
               <div class="flex w-5/6 md:w-1/2 md:max-w-[650px]">
@@ -275,13 +259,14 @@
                 {$landingPageSettings.header.subtitle}
               </p>
 
-              <PrimaryButton
-                label={$landingPageSettings.header.action.label}
-                className="mt-5 px-10 w-fit"
-                onClick={() => {
+              <Button.Root
+                class="mt-5 w-fit px-10"
+                onclick={() => {
                   $landingPageSettings.header.action.redirect && goto($landingPageSettings.header.action.link);
                 }}
-              />
+              >
+                {$landingPageSettings.header.action.label}
+              </Button.Root>
             </div>
           </div>
         {/if}
@@ -322,14 +307,14 @@
         </div>
         {#if $courseMetaDeta.isLoading}
           <div class="cards-container mx-2 my-4">
-            <CardLoader />
-            <CardLoader />
-            <CardLoader />
+            <CourseCardLoader />
+            <CourseCardLoader />
+            <CourseCardLoader />
           </div>
         {:else if $courses.length > 0}
           <div class="cards-container mx-2 my-4">
             {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
-              <Card
+              <CourseCard
                 id={courseData.id}
                 slug={courseData.slug}
                 bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
@@ -350,25 +335,19 @@
             {/each}
           </div>
         {:else}
-          <Box>
-            <CoursesEmptyIcon />
-            <h3 class="my-5 text-2xl dark:text-white">
-              {$t('course.navItem.landing_page.no_course_published')}
-            </h3>
-            <p class="w-1/3 text-center dark:text-white">
-              {$t('course.navItem.landing_page.coming_your_way')}
-            </p>
-          </Box>
+          <Empty
+            icon={CoursesEmptyIcon}
+            title={$t('course.navItem.landing_page.no_course_published')}
+            description={$t('course.navItem.landing_page.coming_your_way')}
+            variant="page"
+          />
         {/if}
 
         {#if $courses.length > 3}
           <div class="mt-3 flex w-full justify-center">
-            <PrimaryButton
-              variant={VARIANTS.OUTLINED}
-              onClick={() => (viewAll = !viewAll)}
-              label={viewAll ? $t('course.navItem.landing_page.view_less') : $t('course.navItem.landing_page.view_all')}
-              className="px-10 py-5 w-fit"
-            />
+            <Button.Root variant="outline" onclick={() => (viewAll = !viewAll)} class="w-fit px-10 py-5">
+              {viewAll ? $t('course.navItem.landing_page.view_less') : $t('course.navItem.landing_page.view_all')}
+            </Button.Root>
           </div>
         {/if}
       </section>
@@ -386,13 +365,11 @@
           <Accordion.Root type="single" class="w-full">
             {#each $landingPageSettings.faq.questions as faq, index}
               <Accordion.Item value="item-{index}">
-                <Accordion.Trigger class="text-left text-lg font-medium">
+                <Accordion.Trigger>
                   {faq.title}
                 </Accordion.Trigger>
                 <Accordion.Content>
-                  <p class="text-lg">
-                    {faq.content}
-                  </p>
+                  {faq.content}
                 </Accordion.Content>
               </Accordion.Item>
             {/each}
@@ -412,30 +389,30 @@
             </h1>
             <p class="text-md text-center">{$landingPageSettings.contact.subtitle}</p>
           </div>
-          <Grid class="max-w-[700px] pb-10">
+          <div class="mx-auto max-w-[700px] pb-10">
             <!-- Contact Details -->
-            <Row>
-              <Column
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div
                 class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg py-2 text-center transition-all duration-500 hover:shadow-xl"
               >
                 <MapPinIcon size={16} class="filled" />
                 <p class="mt-3 max-w-[200px] text-xs md:text-sm">
                   {$landingPageSettings.contact.address}
                 </p>
-              </Column>
-              <Column
+              </div>
+              <div
                 class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg py-2 text-center transition-all duration-500 hover:shadow-xl"
               >
                 <PhoneIcon size={16} />
                 <p class="mt-3 text-xs md:text-sm">{$landingPageSettings.contact.phone}</p>
-              </Column>
-              <Column
+              </div>
+              <div
                 class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg py-2 text-center transition-all duration-500 hover:shadow-xl"
               >
                 <MailIcon size={16} />
                 <p class="mt-3 text-xs md:text-sm">{$landingPageSettings.contact.email}</p>
-              </Column>
-            </Row>
+              </div>
+            </div>
 
             <!-- Contact Form -->
             <div class="mt-8 rounded-lg bg-white p-7">
@@ -447,48 +424,69 @@
                 <form onsubmit={preventDefault(handleContactSubmit)}>
                   <div class="flex w-full flex-col justify-between md:flex-row">
                     <div class="mr-5 w-full md:w-2/4">
-                      <TextField
-                        label={$t('course.navItem.landing_page.name')}
-                        bind:value={contact.name}
-                        errorMessage={contactError.name}
-                        className="mb-5"
-                        labelClassName="font-bold"
-                        placeholder="Elon Musk"
-                      />
-                      <TextField
-                        label={$t('course.navItem.landing_page.email')}
-                        bind:value={contact.email}
-                        errorMessage={contactError.email}
-                        className="text-xs font-normal mb-5"
-                        placeholder="musk@x.com"
-                      />
-                      <TextField
-                        label={$t('course.navItem.landing_page.phone')}
-                        bind:value={contact.phone}
-                        errorMessage={contactError.phone}
-                        className="text-xs font-normal mb-5"
-                        placeholder="+1194802480"
-                      />
+                      <Field.Field class="mb-5">
+                        <Field.Label class="font-bold">
+                          {$t('course.navItem.landing_page.name')}
+                        </Field.Label>
+                        <Input bind:value={contact.name} placeholder="Elon Musk" aria-invalid={!!contactError.name} />
+                        {#if contactError.name}
+                          <Field.Error>{contactError.name}</Field.Error>
+                        {/if}
+                      </Field.Field>
+                      <Field.Field class="mb-5">
+                        <Field.Label class="text-xs font-normal">
+                          {$t('course.navItem.landing_page.email')}
+                        </Field.Label>
+                        <Input
+                          bind:value={contact.email}
+                          type="email"
+                          placeholder="musk@x.com"
+                          aria-invalid={!!contactError.email}
+                        />
+                        {#if contactError.email}
+                          <Field.Error>{contactError.email}</Field.Error>
+                        {/if}
+                      </Field.Field>
+                      <Field.Field class="mb-5">
+                        <Field.Label class="text-xs font-normal">
+                          {$t('course.navItem.landing_page.phone')}
+                        </Field.Label>
+                        <Input
+                          bind:value={contact.phone}
+                          placeholder="+1194802480"
+                          aria-invalid={!!contactError.phone}
+                        />
+                        {#if contactError.phone}
+                          <Field.Error>{contactError.phone}</Field.Error>
+                        {/if}
+                      </Field.Field>
                     </div>
                     <div class="w-full md:w-2/4">
-                      <TextArea
-                        label={$t('course.navItem.landing_page.message')}
-                        bind:value={contact.message}
-                        errorMessage={contactError.message}
-                        rows={9}
-                        placeholder={$t('course.navItem.landing_page.your_message')}
-                      />
+                      <Field.Field>
+                        <Field.Label>
+                          {$t('course.navItem.landing_page.message')}
+                        </Field.Label>
+                        <Textarea
+                          bind:value={contact.message}
+                          rows={9}
+                          placeholder={$t('course.navItem.landing_page.your_message')}
+                          aria-invalid={!!contactError.message}
+                        />
+                        {#if contactError.message}
+                          <Field.Error>{contactError.message}</Field.Error>
+                        {/if}
+                      </Field.Field>
                     </div>
                   </div>
 
-                  <PrimaryButton className="w-full mx-auto mt-5 md:mt-0" type="submit" isLoading={isContactSubmiting}>
+                  <Button.Root class="mx-auto mt-5 w-full md:mt-0" type="submit" loading={isContactSubmiting}>
                     <span class="text-md mr-2">{$t('course.navItem.landing_page.submit')}</span>
                     <RocketIcon size={16} />
-                  </PrimaryButton>
+                  </Button.Root>
                 </form>
               {/if}
             </div>
-          </Grid>
+          </div>
         </div>
       </section>
     {/if}
@@ -496,38 +494,35 @@
     <!-- Waitlist Section -->
     {#if $landingPageSettings.mailinglist.show}
       <section id="waitlist" transition:fade class="mx-auto my-10 w-[95%] max-w-6xl">
-        <div class="bg-primary-700 flex flex-col rounded-lg px-4 py-14 md:px-10 lg:flex-row lg:items-center">
-          <div class="w-full md:mr-4 md:w-[65%]">
-            <h1 class="mb-5 mt-0 text-4xl text-white">
-              {$landingPageSettings.mailinglist.title}
-            </h1>
-            <p class="text-lg text-white">
-              {$landingPageSettings.mailinglist.subtitle}
-            </p>
-          </div>
-          <form onsubmit={preventDefault(handleSubmit)} class="my-4 w-full md:w-fit">
-            <div class="flex flex-col items-center sm:flex-row">
-              {#if success}
-                <p class="text-white">{$t('course.navItem.landing_page.successful_sub')}</p>
-              {:else}
-                <TextField
-                  bind:value={email}
-                  type="email"
-                  placeholder={$t('course.navItem.landing_page.enter')}
-                  className="sm:mr-3 my-0 w-full md:w-fit"
-                  isRequired={true}
-                  isDisabled={isAdding}
-                  inputClassName="py-2"
-                />
-                <PrimaryButton
-                  className="my-1 w-full mt-2"
-                  variant={VARIANTS.CONTAINED_LIGHT}
-                  type="submit"
-                  isLoading={isAdding}>{$landingPageSettings.mailinglist.buttonLabel}</PrimaryButton
-                >
-              {/if}
+        <div class="bg-primary-700 gap-4 rounded-lg px-4 py-14 md:px-10 lg:flex-row lg:items-center">
+          <div class="mx-auto flex max-w-[700px] flex-col lg:flex-row lg:items-center lg:justify-between">
+            <div class="w-3/5">
+              <h1 class="mb-5 mt-0 text-4xl text-white">
+                {$landingPageSettings.mailinglist.title}
+              </h1>
+              <p class="text-md text-white">
+                {$landingPageSettings.mailinglist.subtitle}
+              </p>
             </div>
-          </form>
+            <form onsubmit={preventDefault(handleSubmit)} class="">
+              <div class="flex max-w-60 flex-col items-center">
+                {#if success}
+                  <p class="text-white">{$t('course.navItem.landing_page.successful_sub')}</p>
+                {:else}
+                  <Input
+                    bind:value={email}
+                    type="email"
+                    placeholder={$t('course.navItem.landing_page.enter')}
+                    required={true}
+                    disabled={isAdding}
+                  />
+                  <Button.Root class="my-1 mt-2 w-full" type="submit" loading={isAdding}>
+                    {$landingPageSettings.mailinglist.buttonLabel}
+                  </Button.Root>
+                {/if}
+              </div>
+            </form>
+          </div>
         </div>
       </section>
     {/if}
@@ -543,7 +538,7 @@
           <div class="logo">
             <a href="/" title={`Go to ${org.name} Home`} id="logo" data-hveid="8" class="flex items-center">
               <img
-                src={org.avatar_url || '/logo-192.png'}
+                src={org.avatarUrl || '/logo-192.png'}
                 alt={`${org.name} logo`}
                 class="mx-auto inline-block max-h-10 w-10 rounded"
                 data-atf="1"

@@ -2,9 +2,10 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { goto } from '$app/navigation';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
-  import { courses } from '$lib/components/Courses/store';
+  import { courses } from '$lib/features/course/utils/store';
   import { t } from '$lib/utils/functions/translations';
+  import { Empty } from '@cio/ui/custom/empty';
+  import BookOpenIcon from '@lucide/svelte/icons/book-open';
 
   const gotoCourse = (id: string | undefined) => {
     if (!id) return;
@@ -54,11 +55,7 @@
         {/each}
       </div>
     {:else}
-      <div class="flex flex-col items-center">
-        <CoursesEmptyIcon size={16} />
-        <h3 class="text-center">{$t('dashboard.no_courses')}</h3>
-        <p class="w-[75%] text-center">{$t('dashboard.start_course')}</p>
-      </div>
+      <Empty title={$t('dashboard.no_courses')} description={$t('dashboard.start_course')} icon={BookOpenIcon} />
     {/if}
   </div>
 </section>

@@ -1,10 +1,11 @@
 <script>
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import Audience from '$lib/components/Org/Audience/index.svelte';
+  import { AudiencePage } from '$lib/features/audience/pages';
   import { t } from '$lib/utils/functions/translations';
-  import { orgAudience, currentOrgPlan, currentOrgMaxAudience } from '$lib/utils/store/org';
+  import { currentOrgPlan, currentOrgMaxAudience } from '$lib/utils/store/org';
   import { PLAN } from '@cio/utils/plans';
-  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
+  import * as Page from '@cio/ui/base/page';
+  import { orgApi } from '$lib/features/org/api/org.svelte';
 
   let isLoading = $state(false);
 
@@ -19,23 +20,25 @@
   <title>Audience - ClassroomIO</title>
 </svelte:head>
 
-<section class="mx-auto w-full max-w-6xl">
-  <div class="px-5 py-10">
-    <div class="mb-10 flex items-center justify-between">
-      <div class="flex items-center">
-        <h1 class="m-0 text-2xl md:text-3xl dark:text-white">{$t('audience.title')}</h1>
+<Page.Root class="mx-auto w-full max-w-6xl">
+  <Page.Header>
+    <Page.HeaderContent>
+      <Page.Title>
+        {$t('audience.title')}
         {#if $currentOrgPlan?.planName !== PLAN.ENTERPRISE}
-          <span class="ml-2">
-            ({$orgAudience.length} / {$currentOrgMaxAudience})
+          <span class="ml-2 text-sm">
+            ({orgApi.audience.length} / {$currentOrgMaxAudience})
           </span>
         {/if}
-      </div>
+      </Page.Title>
+    </Page.HeaderContent>
+    <Page.Action>
       <PrimaryButton label={$t('audience.export')} onClick={exportAudience} isDisabled={isLoading} {isLoading} />
-    </div>
-
-    {#if $orgAudience.length >= $currentOrgMaxAudience}
-      <UpgradeBanner>{$t('audience.upgrade')}</UpgradeBanner>
-    {/if}
-    <Audience />
-  </div>
-</section>
+    </Page.Action>
+  </Page.Header>
+  <Page.Body>
+    {#snippet child()}
+      <AudiencePage />
+    {/snippet}
+  </Page.Body>
+</Page.Root>

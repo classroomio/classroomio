@@ -17,8 +17,8 @@
 </script>
 
 <Story name="Default">
-  {#snippet template()}
-    <Button>Default Button</Button>
+  {#snippet template(args)}
+    <Button {...args}>Default Button</Button>
   {/snippet}
 </Story>
 
@@ -72,7 +72,7 @@
 
 <Story name="Loading">
   {#snippet template(args)}
-    <Button {...args} isLoading>Loading Button</Button>
+    <Button {...args} loading>Loading Button</Button>
   {/snippet}
 </Story>
 

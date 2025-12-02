@@ -1,7 +1,4 @@
-import { type ComponentProps } from 'svelte';
-import { Accordion } from '@cio/ui/base/accordion';
-
-export const FIELDS: (keyof ComponentProps<typeof Accordion>)[] = [
+export const FIELDS = [
   'type',
   'value',
   'onValueChange',
@@ -9,4 +6,4 @@ export const FIELDS: (keyof ComponentProps<typeof Accordion>)[] = [
   'name',
   'loop',
   'orientation'
-];
+] as string[];

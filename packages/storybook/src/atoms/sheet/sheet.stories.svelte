@@ -39,7 +39,7 @@
             >Make changes to your profile here. Click save when you're done.</Sheet.SheetDescription
           >
         </Sheet.SheetHeader>
-        <div class="grid gap-4 py-4">
+        <div class="grid gap-4 p-4">
           <div class="grid grid-cols-4 items-center gap-4">
             <Label.Root for="name" class="text-right">Name</Label.Root>
             <Input.Root id="name" value="Pedro Duarte" class="col-span-3" />

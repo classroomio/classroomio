@@ -617,12 +617,6 @@ async function seed() {
 
     // Seed questions
     console.log('📝 Seeding questions...');
-    const targetExerciseIds = [
-      'e2ea9fb8-6448-4f6c-a1d5-02c2b12cf862',
-      'e78bfd24-8ac3-43e9-a117-a2f9d00f74b1',
-      'bd6e81c7-3d28-4037-acf0-a3028c583771',
-      'd8cd1cf7-1951-46b3-ad1c-41e415185bc1'
-    ];
 
     const existingQuestions = await db
       .select()

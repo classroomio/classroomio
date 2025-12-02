@@ -139,8 +139,8 @@
       .match({ id: $currentOrg.id });
 
     if (error) {
-      const message = error?.message || 'snackbar.lms.error.try_again';
-      snackbar.error(`snackbar.lms.error.update ${message}`);
+      const message = error?.message || $t('snackbar.lms.error.try_again');
+      snackbar.error(`${$t('snackbar.update_failed')}: ${message}`);
     } else {
       $currentOrg.landingpage = $landingPageSettings as any;
       snackbar.success('snackbar.success_update');

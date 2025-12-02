@@ -16,11 +16,12 @@ export const ROUTE = {
   ASK: '/ask',
   FORGOT: '/forgot',
   RESET: '/reset',
-  LOGOUT: '/logout'
+  LOGOUT: '/logout',
+  AUTH_FAILED: '/auth-failed'
 };
 
 export const PUBLIC_ROUTES = [
-  // `^${ROUTE.HOME}$`,
+  `^${ROUTE.HOME}$`,
   ROUTE.LOGIN,
   ROUTE.SIGN_UP,
   `^${ROUTE.INVITE_TEACHER}/.*`,
@@ -28,7 +29,8 @@ export const PUBLIC_ROUTES = [
   ROUTE.RESET,
   `^${ROUTE.PAGES}/.*`,
   `^${ROUTE.COURSE}/.*`,
-  '/404'
+  '/404',
+  ROUTE.AUTH_FAILED
 ];
 
 export const PUBLIC_API_ROUTES = [

@@ -8,7 +8,7 @@ import type {
   TOrganization,
   TOrganizationPlan
 } from '@db/types';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, eq, inArray, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { db } from '@db/drizzle';
@@ -90,6 +90,17 @@ export const createOrganizationMember = async (data: TNewOrganizationmember) => 
   return member;
 };
 
+/**
+ * Creates multiple organization members in a single query
+ * @param data Array of organization member creation data
+ * @returns Array of created members
+ */
+export const createOrganizationMembers = async (data: TNewOrganizationmember[]) => {
+  const members = await db.insert(schema.organizationmember).values(data).returning();
+
+  return members;
+};
+
 export const checkSiteNameExists = async (siteName: string): Promise<boolean> => {
   const result = await db
     .select({ id: schema.organization.id })
@@ -102,8 +113,130 @@ export const checkSiteNameExists = async (siteName: string): Promise<boolean> =>
   return result.length > 0;
 };
 
+/**
+ * Gets an organization by siteName
+ * @param siteName Organization site name
+ * @returns Organization or null if not found
+ */
+export const getOrganizationBySiteName = async (siteName: string): Promise<TOrganization | null> => {
+  const [organization] = await db
+    .select()
+    .from(schema.organization)
+    .where(eq(schema.organization.siteName, siteName))
+    .limit(1);
+
+  return organization || null;
+};
+
+/**
+ * Gets an organization by ID
+ * @param id Organization ID
+ * @returns Organization or null if not found
+ */
+export const getOrganizationById = async (id: string): Promise<TOrganization | null> => {
+  const [organization] = await db.select().from(schema.organization).where(eq(schema.organization.id, id)).limit(1);
+
+  return organization || null;
+};
+
 export const deleteOrganizationById = async (id: string) => {
   await db.delete(schema.organization).where(eq(schema.organization.id, id));
+};
+
+/**
+ * Checks if an email already exists as a team member in an organization
+ * @param orgId Organization ID
+ * @param email Email address to check
+ * @returns True if email exists, false otherwise
+ */
+export const checkEmailExistsInOrg = async (orgId: string, email: string): Promise<boolean> => {
+  const result = await db
+    .select({ id: schema.organizationmember.id })
+    .from(schema.organizationmember)
+    .where(
+      and(eq(schema.organizationmember.organizationId, orgId), eq(schema.organizationmember.email, email.toLowerCase()))
+    )
+    .limit(1);
+
+  return result.length > 0;
+};
+
+/**
+ * Checks which emails already exist as team members in an organization (bulk check)
+ * Checks both organizationmember.email and profile.email (via organizationmember.profileId)
+ * @param orgId Organization ID
+ * @param emails Array of email addresses to check (should already be normalized)
+ * @returns Array of emails that already exist in the organization
+ */
+export const checkEmailsExistInOrg = async (orgId: string, emails: string[]): Promise<string[]> => {
+  if (emails.length === 0) {
+    return [];
+  }
+
+  const [orgMemberEmails, profileEmails] = await Promise.all([
+    db
+      .select({ email: schema.organizationmember.email })
+      .from(schema.organizationmember)
+      .where(
+        and(eq(schema.organizationmember.organizationId, orgId), inArray(schema.organizationmember.email, emails))
+      ),
+    db
+      .select({ email: schema.profile.email })
+      .from(schema.organizationmember)
+      .innerJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
+      .where(and(eq(schema.organizationmember.organizationId, orgId), inArray(schema.profile.email, emails)))
+  ]);
+
+  const existingEmails = new Set<string>();
+  orgMemberEmails.forEach((r) => {
+    if (r.email) {
+      existingEmails.add(r.email.toLowerCase());
+    }
+  });
+  profileEmails.forEach((r) => {
+    if (r.email) {
+      existingEmails.add(r.email.toLowerCase());
+    }
+  });
+
+  return Array.from(existingEmails);
+};
+
+/**
+ * Deletes an organization member by ID
+ * @param orgId Organization ID
+ * @param memberId Member ID to delete
+ * @returns Deleted member or null if not found
+ */
+export const deleteOrganizationMember = async (orgId: string, memberId: number) => {
+  const [deleted] = await db
+    .delete(schema.organizationmember)
+    .where(and(eq(schema.organizationmember.organizationId, orgId), eq(schema.organizationmember.id, memberId)))
+    .returning();
+
+  return deleted || null;
+};
+
+/**
+ * Checks if a user is an admin of an organization
+ * @param orgId Organization ID
+ * @param profileId Profile ID to check
+ * @returns True if user is admin, false otherwise
+ */
+export const isUserOrgAdmin = async (orgId: string, profileId: string): Promise<boolean> => {
+  const result = await db
+    .select({ roleId: schema.organizationmember.roleId })
+    .from(schema.organizationmember)
+    .where(
+      and(
+        eq(schema.organizationmember.organizationId, orgId),
+        eq(schema.organizationmember.profileId, profileId),
+        eq(schema.organizationmember.roleId, ROLE.ADMIN)
+      )
+    )
+    .limit(1);
+
+  return result.length > 0;
 };
 
 /**
@@ -167,8 +300,8 @@ export const getOrganizationAudience = async (orgId: string) => {
     id: profile.id,
     name: profile.fullname,
     email: profile.email || '',
-    avatar_url: profile.avatarUrl || '',
-    date_joined: profile.createdAt ? new Date(profile.createdAt).toDateString() : ''
+    avatarUrl: profile.avatarUrl || '',
+    createdAt: profile.createdAt ? new Date(profile.createdAt).toDateString() : ''
   }));
 };
 
@@ -265,7 +398,7 @@ export const getOrganizations = async (filters?: {
  * @param data Organization plan creation data
  * @returns Created organization plan record
  */
-export const createOrganizationPlan = async (data: TNewOrganizationPlan) => {
+export const createOrganizationPlan = async (data: TNewOrganizationPlan): Promise<TOrganizationPlan> => {
   const [plan] = await db.insert(schema.organizationPlan).values(data).returning();
   return plan;
 };
@@ -276,7 +409,10 @@ export const createOrganizationPlan = async (data: TNewOrganizationPlan) => {
  * @param payload Payload data to update
  * @returns Updated organization plan record
  */
-export const updateOrganizationPlan = async (subscriptionId: string, payload: TOrganizationPlan['payload']) => {
+export const updateOrganizationPlan = async (
+  subscriptionId: string,
+  payload: TOrganizationPlan['payload']
+): Promise<TOrganizationPlan> => {
   const [plan] = await db
     .update(schema.organizationPlan)
     .set({ payload, updatedAt: sql`timezone('utc'::text, now())` })
@@ -291,7 +427,10 @@ export const updateOrganizationPlan = async (subscriptionId: string, payload: TO
  * @param payload Payload data to update
  * @returns Updated organization plan record
  */
-export const cancelOrganizationPlan = async (subscriptionId: string, payload: TOrganizationPlan['payload']) => {
+export const cancelOrganizationPlan = async (
+  subscriptionId: string,
+  payload: TOrganizationPlan['payload']
+): Promise<TOrganizationPlan> => {
   const [plan] = await db
     .update(schema.organizationPlan)
     .set({
@@ -304,4 +443,20 @@ export const cancelOrganizationPlan = async (subscriptionId: string, payload: TO
     .returning();
 
   return plan;
+};
+
+/**
+ * Updates an organization
+ * @param id Organization ID
+ * @param data Partial organization data to update
+ * @returns Updated organization record
+ */
+export const updateOrganization = async (id: string, data: Partial<TOrganization>): Promise<TOrganization> => {
+  const [organization] = await db
+    .update(schema.organization)
+    .set(data)
+    .where(eq(schema.organization.id, id))
+    .returning();
+
+  return organization;
 };

@@ -1,6 +1,6 @@
 import { getSupabase, supabase } from '$lib/utils/functions/supabase';
 
-import type { CurrentOrg } from '$lib/utils/types/org';
+import type { AccountOrg } from '$lib/features/app/types';
 import type { MetaTagsProps } from 'svelte-meta-tags';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { dev } from '$app/environment';
@@ -20,7 +20,7 @@ interface LoadOutput {
   orgSiteName: string;
   isOrgSite: boolean;
   skipAuth: boolean;
-  org: CurrentOrg | null;
+  org: AccountOrg | null;
   baseMetaTags: MetaTagsProps;
   serverLang: string;
   locals: App.Locals;

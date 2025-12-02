@@ -2,104 +2,29 @@
   import { preventDefault } from '$lib/utils/functions/svelte';
 
   import Modal from '$lib/components/Modal/index.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { profile } from '$lib/utils/store/user';
+  import { Input } from '@cio/ui/base/input';
+  import { DomainInput } from '@cio/ui/custom/domain-input';
+  import { Button } from '@cio/ui/base/button';
+  import * as Field from '@cio/ui/base/field';
   import { generateSitename } from '$lib/utils/functions/org';
-  import { getOrganizations } from '$lib/utils/services/org';
-  import { blockedSubdomain } from '$lib/utils/constants/app';
   import { newOrgModal } from '../store';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { createOrgValidation } from '$lib/utils/functions/validator';
-  import { goto } from '$app/navigation';
   import { t } from '$lib/utils/functions/translations';
+  import { orgApi } from '$lib/features/org/api/org.svelte';
 
-  type Error = {
-    orgName: string;
-    siteName: string;
-  };
-  let loading = $state(false);
   let orgName = $state('');
   let siteName = $derived(generateSitename(orgName));
-
-  let errors: Error = $state({
-    orgName: '',
-    siteName: ''
-  });
 
   function resetForm() {
     orgName = '';
     siteName = '';
-    loading = false;
-
-    errors = {
-      orgName: '',
-      siteName: ''
-    };
+    orgApi.errors = {};
   }
 
   async function createNewOrg() {
-    errors = createOrgValidation({
-      orgName,
-      siteName
-    }) as Error;
+    await orgApi.create({ name: orgName, siteName });
 
-    if (Object.values(errors).length) {
-      loading = false;
-      return;
-    }
-    // Validate if domain is among our seculeded subdomains
-    if (blockedSubdomain.includes(siteName || '')) {
-      errors.siteName = 'Sitename already exists.';
-      loading = false;
-      return;
-    }
-
-    const { data: org, error } = await supabase
-      .from('organization')
-      .insert({
-        name: orgName,
-        siteName: siteName
-      })
-      .select();
-    console.log('Create organisation', org);
-
-    if (error) {
-      console.log('Error: create organisation', error);
-      errors.siteName = 'Sitename already exists.';
-      loading = false;
-      return;
-    }
-
-    if (Array.isArray(org) && org.length) {
-      const orgData = org[0];
-      const { data, error } = await supabase
-        .from('organizationmember')
-        .insert({
-          organization_id: orgData.id,
-          profile_id: $profile.id,
-          role_id: 1
-        })
-        .select();
-
-      console.log('Create organisation member', data);
-
-      if (error) {
-        console.log('Error: create organisation member', error);
-        errors.siteName = $t('add_org.error_organization');
-
-        // Delete organization so it can be recreated.
-        await supabase.from('organization').delete().match({ siteName });
-        loading = false;
-        return;
-      }
-
-      snackbar.success();
-      await getOrganizations($profile.id);
-      goto(`/org/${siteName}`);
+    if (orgApi.success) {
       $newOrgModal.open = false;
-
       resetForm();
     }
   }
@@ -112,32 +37,28 @@
   modalHeading={$t('add_org.create_org')}
 >
   <form onsubmit={preventDefault(createNewOrg)} class="px-2">
-    <TextField
-      label={$t('add_org.name')}
-      bind:value={orgName}
-      autoFocus={true}
-      placeholder="e.g Pepsi Co"
-      className="mb-4"
-      isRequired={true}
-      errorMessage={errors.orgName}
-      autoComplete={false}
-    />
-    <!-- Org Site Name -->
-    <TextField
-      label={$t('add_org.org_sitename')}
-      helperMessage={`https://${siteName || ''}.classroomio.com`}
-      bind:value={siteName}
-      name="sitename"
-      type="text"
-      placeholder="e.g edforall"
-      className="mb-5 w-full"
-      labelClassName="text-lg font-normal"
-      errorMessage={errors.siteName}
-      isRequired={true}
-    />
+    <Field.Group>
+      <Field.Field>
+        <Field.Label>{$t('add_org.name')}</Field.Label>
+        <Input bind:value={orgName} placeholder="e.g Pepsi Co" autofocus />
+        {#if orgApi.errors.name || orgApi.errors.orgName}
+          <Field.Error>{orgApi.errors.name || orgApi.errors.orgName}</Field.Error>
+        {/if}
+      </Field.Field>
 
-    <div class="mt-5 flex flex-row-reverse items-center">
-      <PrimaryButton className="px-6 py-3" label={$t('add_org.create')} type="submit" isLoading={loading} />
-    </div>
+      <Field.Field>
+        <Field.Label>{$t('add_org.org_sitename')}</Field.Label>
+        <DomainInput bind:value={siteName} placeholder="myschool" prefix="https://" suffix=".classroomio.com" />
+        {#if orgApi.errors.siteName || orgApi.errors.general}
+          <Field.Error>{orgApi.errors.siteName || orgApi.errors.general}</Field.Error>
+        {/if}
+      </Field.Field>
+
+      <Field.Field orientation="horizontal">
+        <Button type="submit" loading={orgApi.isLoading} class="ml-auto">
+          {$t('add_org.create')}
+        </Button>
+      </Field.Field>
+    </Field.Group>
   </form>
 </Modal>

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
-  import { courseMetaDeta, courses } from '$lib/components/Courses/store';
+  import { courseMetaDeta, courses } from '$lib/features/course/utils/store';
   import Learning from '$lib/components/LMS/components/Learning.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';

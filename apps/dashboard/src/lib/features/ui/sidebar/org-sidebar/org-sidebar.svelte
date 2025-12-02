@@ -22,10 +22,10 @@
 
     <Sidebar.Content>
       <NavMain />
-      <UpgradeTrigger />
     </Sidebar.Content>
 
-    <Sidebar.Footer>
+    <Sidebar.Footer class="gap-4!">
+      <UpgradeTrigger />
       <SidebarFooterMenu />
     </Sidebar.Footer>
 

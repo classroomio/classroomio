@@ -25,7 +25,7 @@
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import { ComingSoon } from '$lib/features/ui';
-  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
+  import { UpgradeBanner } from '$lib/features/ui';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';

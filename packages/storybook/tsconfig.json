@@ -17,9 +17,9 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "paths": {
-      "@cio/ui": ["../ui/src"],
-      "@cio/ui/*": ["../ui/src/*"],
-      "$src/*": ["../ui/*"]
+      "@cio/ui": ["./node_modules/@cio/ui/src"],
+      "@cio/ui/*": ["./node_modules/@cio/ui/src/*"],
+      "$src/*": ["./node_modules/@cio/ui/*"]
     },
     "typeRoots": ["../../node_modules/@types", "./node_modules/@types"],
     "types": ["node"],
@@ -34,5 +34,6 @@
     ]
   },
   "include": ["src/**/*", ".storybook/**/*", "vite.config.ts"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist"],
+  "references": [{ "path": "../ui" }]
 }

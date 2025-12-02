@@ -1,11 +1,8 @@
-import { type ComponentProps } from 'svelte';
-import { Checkbox } from '@cio/ui/base/checkbox';
-
-export const FIELDS: (keyof ComponentProps<typeof Checkbox>)[] = [
+export const FIELDS = [
   'checked',
   'onCheckedChange',
   'disabled',
   'name',
   'value',
   'required'
-];
+] as string[];

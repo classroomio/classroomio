@@ -28,17 +28,20 @@ type ChangeEmailConfirmationOptions = Parameters<
  */
 export const sendVerificationEmail = async (options: EmailVerificationOptions) => {
   const { user, url } = options;
-  console.log('\nsendVerificationEmail');
+  console.log('\nsendVerificationEmail', options);
 
   // The purpose of this is to prevent verification email trigger from better-auth because we already have a flow in the UI for triggering this email.
   if (!url.includes('trigger=app') && !url.includes('trigger%3Dapp')) {
     return;
   }
 
+  // Remove trigger=app or trigger%3Dapp from the URL
+  const link = url.replace('trigger=app', '').replace('trigger%3Dapp', '');
+
   await sendEmail('verifyEmail', {
     to: user.email,
     fields: {
-      link: url,
+      link,
       userName: user.name || undefined
     }
   });
@@ -51,7 +54,7 @@ export const sendVerificationEmail = async (options: EmailVerificationOptions) =
  */
 export const sendChangeEmailConfirmation = async (options: ChangeEmailConfirmationOptions) => {
   const { user, newEmail, url } = options;
-  console.log('\nsendChangeEmailConfirmation');
+  console.log('\nsendChangeEmailConfirmation', options);
 
   await sendEmail('verifyEmail', {
     to: user.email,

@@ -13,7 +13,7 @@
   import type { GroupPerson } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { fetchMarks } from '$lib/utils/services/marks';
-  import type { CurrentOrg } from '$lib/utils/types/org';
+  import type { AccountOrg } from '$lib/features/app/types';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { getLectureNo } from '$lib/components/Course/function.js';
   import { fetchExercisesByMarks } from '$lib/utils/services/courses';
@@ -22,7 +22,7 @@
   import { course } from '$lib/components/Course/store';
   import { PageBody, PageNav } from '$lib/components/Page';
   import { CourseContainer } from '$lib/components/CourseContainer';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
+  import { RoleBasedSecurity } from '$lib/features/ui';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
 
   let { data } = $props();
@@ -90,10 +90,10 @@
   }
   // TODO WRITE A REDIRECT FUNCTION FOR THIS THIS PAGE
 
-  function getPageRoles(org: CurrentOrg) {
+  function getPageRoles(org: AccountOrg) {
     const roles = [1, 2];
 
-    if (org.customization.course.grading) {
+    if (org.customization?.course?.grading) {
       roles.push(3);
     }
 

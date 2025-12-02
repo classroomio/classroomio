@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { SyncLoader } from 'svelte-loading-spinners';
+  import { Spinner } from '@cio/ui/base/spinner';
   import PlayContainer from './Container.svelte';
   import PlayHeader from './Header/index.svelte';
   import { quizStore, playQuizStore } from '$lib/utils/store/org';
@@ -43,7 +43,7 @@
       <div class="">
         <p>2. Enter Pin</p>
         {#if isGettingPin}
-          <SyncLoader size="50" color="#1d4ed8" unit="px" duration="1s" />
+          <Spinner class="size-10! text-blue-700!" />
         {:else}
           <h3>{$quizStore.pin}</h3>
         {/if}

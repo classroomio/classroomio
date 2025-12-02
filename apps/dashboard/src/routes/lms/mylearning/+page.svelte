@@ -4,14 +4,14 @@
   import SearchIcon from '@lucide/svelte/icons/search';
 
   import Tabs from '$lib/components/Tabs/index.svelte';
-  import Courses from '$lib/components/Courses/index.svelte';
+  import { CoursesPage } from '$lib/features/course/pages';
   import { fetchCourses } from '$lib/utils/services/courses';
   import TabContent from '$lib/components/TabContent/index.svelte';
 
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import { courses, courseMetaDeta, coursesComplete, coursesInProgress } from '$lib/components/Courses/store';
+  import { courses, courseMetaDeta, coursesComplete, coursesInProgress } from '$lib/features/course/utils/store';
 
   let hasFetched = false;
   let searchValue = $state('');
@@ -73,14 +73,14 @@
       {#snippet content()}
         <slot:fragment>
           <TabContent value={tabs[0].value} index={currentTab}>
-            <Courses
+            <CoursesPage
               courses={$coursesInProgress}
               emptyTitle={$t('my_learning.not_in_progress')}
               emptyDescription={$t('my_learning.any_progress')}
             />
           </TabContent>
           <TabContent value={tabs[1].value} index={currentTab}>
-            <Courses
+            <CoursesPage
               courses={$coursesComplete}
               emptyTitle={$t('my_learning.not_completed')}
               emptyDescription={$t('my_learning.any_course')}

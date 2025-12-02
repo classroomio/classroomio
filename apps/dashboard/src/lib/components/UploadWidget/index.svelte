@@ -3,7 +3,6 @@
 
   import { onMount } from 'svelte';
   import Tabs from '$lib/components/Tabs/index.svelte';
-  import { getSupabase } from '$lib/utils/functions/supabase';
   import TabContent from '$lib/components/TabContent/index.svelte';
   import { snackbar } from '../Snackbar/store';
   import Modal from '$lib/components/Modal/index.svelte';
@@ -11,6 +10,7 @@
   import { queryUnsplash } from './utils';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import { uploadImage } from '$lib/utils/services/upload';
 
   interface Props {
     imageURL?: string;
@@ -18,8 +18,6 @@
   }
 
   let { imageURL = $bindable(''), onchange }: Props = $props();
-
-  const supabase = getSupabase();
 
   const tabs = [
     { label: 'Unsplash', value: 'unsplash' },
@@ -65,28 +63,20 @@
       let reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => {
-        uploadImage(file);
+        handleUploadImage(file);
       };
     }
   };
 
-  const uploadImage = async (image: File) => {
+  const handleUploadImage = async (image: File) => {
     isUploading = true;
     if (!image) {
       return;
     }
-    const filename = `uploadwidget/${Date.now()}` + image.name;
-    const { data } = await supabase.storage.from('avatars').upload(filename, image, {
-      cacheControl: '3600',
-      upsert: false
-    });
 
-    if (data) {
-      const { data: response } = await supabase.storage.from('avatars').getPublicUrl(filename);
-      imageURL = response.publicUrl;
+    imageURL = await uploadImage(image);
 
-      onchange?.(response.publicUrl);
-    }
+    onchange?.(imageURL);
     isUploading = false;
 
     snackbar.success(`snackbar.landing_page_settings.success.complete`);

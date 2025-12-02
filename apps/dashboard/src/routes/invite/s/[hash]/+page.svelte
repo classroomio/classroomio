@@ -3,11 +3,10 @@
   import { onMount } from 'svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { getSupabase } from '$lib/utils/functions/supabase';
-  import AuthUI from '$lib/components/AuthUI/index.svelte';
+  import { AuthUI } from '$lib/features/ui';
   import { currentOrg } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
   import { addGroupMember } from '$lib/utils/services/courses';
-  import type { CurrentOrg } from '$lib/utils/types/org.js';
   import { ROLE } from '@cio/utils/constants';
   import { profile } from '$lib/utils/store/user';
   import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
@@ -21,7 +20,6 @@
   let loading = $state(false);
 
   let disableSubmit = false;
-  let formRef: HTMLFormElement | undefined = $state();
 
   async function handleSubmit() {
     loading = true;
@@ -104,11 +102,6 @@
     });
   }
 
-  function setCurOrg(cOrg: CurrentOrg) {
-    if (!cOrg) return;
-    currentOrg.set(cOrg);
-  }
-
   onMount(async () => {
     // check if user has session, if not redirect to sign up with redirect back to this page
     const {
@@ -118,8 +111,11 @@
       return goto(`/login?redirect=${page.url?.pathname || ''}`);
     }
 
+    if (!data.currentOrg) return;
+
     setTheme(data.currentOrg?.theme || '');
-    setCurOrg(data.currentOrg as CurrentOrg);
+
+    currentOrg.set(data.currentOrg);
   });
 </script>
 
@@ -127,15 +123,7 @@
   <title>Join {data.name} on ClassroomIO</title>
 </svelte:head>
 
-<AuthUI
-  {supabase}
-  isLogin={false}
-  {handleSubmit}
-  isLoading={loading || !$profile.id}
-  showOnlyContent={true}
-  showLogo={true}
-  bind:formRef
->
+<AuthUI isLogin={false} {handleSubmit} isLoading={loading || !$profile.id} showOnlyContent={true} showLogo={true}>
   <div class="mt-0 w-full">
     <h3 class="mb-4 mt-0 text-center text-lg font-medium dark:text-white">{data.name}</h3>
     <p class="text-center text-sm font-light dark:text-white">{data.description}</p>

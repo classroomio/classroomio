@@ -10,7 +10,7 @@
   import type { Course } from '$lib/utils/types';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
-  import { courses } from '$lib/components/Courses/store';
+  import { courses } from '$lib/features/course/utils/store';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -25,8 +25,8 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import DeleteModal from '$lib/components/Org/Community/DeleteModal.svelte';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
+  import { CommunityDeleteModal } from '$lib/features/community/components';
 
   interface Comment {
     id: string;
@@ -203,7 +203,7 @@
           id: _c.id,
           authorId: $profile.id || '',
           name: $profile?.fullname || '',
-          avatar: $profile?.avatar_url || '',
+          avatar: $profile?.avatarUrl || '',
           votes: 0,
           comment: _c.body,
           createdAt: calDateDiff(_c.created_at)
@@ -370,7 +370,7 @@
   <title>{question?.title || 'Question'}</title>
 </svelte:head>
 
-<DeleteModal
+<CommunityDeleteModal
   bind:open={deleteQuestion.shouldDelete}
   isDeleting={deleteQuestion.isDeleting}
   onCancel={() => {
@@ -381,15 +381,6 @@
   isQuestion={true}
 />
 
-<DeleteModal
-  bind:open={deleteComment.shouldDelete}
-  isDeleting={deleteComment.isDeleting}
-  onCancel={() => {
-    deleteComment.shouldDelete = false;
-    deleteComment.commentId = '';
-  }}
-  onDelete={() => handleDelete(false)}
-/>
 <section class="mx-auto max-w-3xl md:mx-10 lg:mb-20">
   {#if !question}
     <div class="mb-3 px-5 py-10">
@@ -479,7 +470,7 @@
             />
           </div>
         {:else}
-          <section class="prose prose-sm p-2 sm:prose">
+          <section class="prose prose-sm sm:prose p-2">
             {@html question.body}
           </section>
         {/if}
@@ -522,7 +513,7 @@
                 </IconButton>
               {/if}
             </header>
-            <article class="prose prose-sm p-2 sm:prose">
+            <article class="prose prose-sm sm:prose p-2">
               {@html comment.comment}
             </article>
           </div>
