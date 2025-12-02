@@ -40,7 +40,7 @@ function Home() {
         <Link
           to="/docs/$"
           params={{
-            _splat: 'howtoguides/create-first-course'
+            _splat: 'what-is-classroomio',
           }}
           className="bg-fd-primary text-fd-primary-foreground mt-8 inline-block rounded-lg px-4 py-2 font-medium"
         >
