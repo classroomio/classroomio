@@ -1,19 +1,16 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
   import * as Select from '@cio/ui/base/select';
   import { Spinner } from '@cio/ui/base/spinner';
 
   import { profile } from '$lib/utils/store/user';
-  import { isFreePlan, currentOrg, orgTeam } from '$lib/utils/store/org';
-  import { getOrgTeam } from '$lib/utils/services/org';
+  import { isFreePlan, currentOrg } from '$lib/utils/store/org';
+  import { orgApi } from '$lib/features/org/api/org.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
   import type { OrgTeamMember } from '$lib/utils/types/org';
-  import { ROLE_LABEL } from '$lib/utils/constants/roles';
   import { ROLE } from '@cio/utils/constants';
+  import { ROLE_LABEL } from '$lib/utils/constants/roles';
   import { validateEmailInString } from '$lib/utils/functions/validator';
-  import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
 
   import { Badge } from '@cio/ui/base/badge';
   import { Input } from '@cio/ui/base/input';
@@ -24,8 +21,6 @@
   let emailsStr = $state('');
   let errorMessage = $state('');
   let role = $state(ROLE.TUTOR.toString());
-  let isFetching = $state(false);
-  let isLoading = $state(false);
   let isRemoving: number | null = $state(null);
 
   async function onSendInvite() {
@@ -36,103 +31,41 @@
       return;
     }
 
-    isLoading = true;
-    let apiError = '';
-    emails.forEach(async (email: string, index: number) => {
-      if (apiError) return;
+    errorMessage = '';
+    await orgApi.inviteTeamMembers($currentOrg.id, emails, parseInt(role));
 
-      const doesEmailExist = $orgTeam.some((teamMember) => teamMember.email.toLowerCase() === email.toLowerCase());
-
-      if (doesEmailExist) {
-        snackbar.error('snackbar.team_members.user_exists');
-        isLoading = false;
-        return;
+    if (orgApi.success) {
+      snackbar.success('snackbar.team_members.invite_sent');
+      emailsStr = '';
+    } else {
+      // Errors are handled by orgApi, but check for field-specific errors
+      if (orgApi.errors.emails) {
+        errorMessage = orgApi.errors.emails;
+      } else if (orgApi.errors.general) {
+        snackbar.error(orgApi.errors.general);
       }
-      const { data, error } = await supabase
-        .from('organizationmember')
-        .insert({
-          organization_id: $currentOrg.id,
-          email,
-          role_id: role,
-          verified: false
-        })
-        .select();
-      console.log('data', data);
-
-      if (error) {
-        apiError = `${error}`;
-
-        console.error('onSendInvite:', error);
-        snackbar.error(`snackbar.team_members.invite_fail`);
-        isLoading = false;
-        return;
-      }
-      const [newMember] = data || [];
-      if (newMember) {
-        orgTeam.update((team) => [
-          {
-            id: newMember.id,
-            email: newMember?.email,
-            fullname: newMember?.fullname || '',
-            verified: newMember?.verified,
-            role: ROLE_LABEL[newMember?.role_id] || '',
-            isAdmin: newMember?.role_id === ROLE.ADMIN
-          },
-          ...team
-        ]);
-      }
-
-      triggerSendEmail(NOTIFICATION_NAME.INVITE_TEACHER, {
-        email: newMember.email,
-        org: {
-          id: $currentOrg.id,
-          name: $currentOrg.name,
-          siteName: $currentOrg.siteName
-        }
-      });
-
-      const isLast = index === emails.length - 1;
-      if (isLast) {
-        snackbar.success('snackbar.team_members.invite_sent');
-
-        emailsStr = '';
-        isLoading = false;
-      }
-    });
+    }
   }
 
   async function onRemove(id: number) {
-    console.log('onRemove called');
     isRemoving = id;
-    const { error } = await supabase.from('organizationmember').delete().match({ id });
+    await orgApi.removeTeamMember($currentOrg.id, id);
 
-    if (error) {
-      console.error('onRemove:', error);
-      snackbar.error('snackbar.team_members.remove_fail');
+    if (orgApi.success) {
+      snackbar.success('snackbar.team_members.remove_success');
     } else {
-      orgTeam.update((team) => [...team.filter((member) => member.id !== id)]);
+      snackbar.error('snackbar.team_members.remove_fail');
     }
 
     isRemoving = null;
   }
-
-  const fetchTeam = (id: string) => {
-    if (!id) return;
-
-    untrack(async () => {
-      isFetching = true;
-      await getOrgTeam(id);
-      isFetching = false;
-      isFetching = false;
-    });
-  };
 
   const isTeamMemberAdmin = (members: OrgTeamMember[], profileId: string | undefined) => {
     return members.some((member) => member.profileId === profileId && member.isAdmin);
   };
 
   $effect(() => {
-    fetchTeam($currentOrg.id);
+    orgApi.getOrgTeam($currentOrg.id);
   });
 </script>
 
@@ -170,7 +103,12 @@
         </Select.Root>
       </Field.Field>
 
-      <Button variant="default" onclick={onSendInvite} loading={isLoading} disabled={isLoading || $isFreePlan}>
+      <Button
+        variant="default"
+        onclick={onSendInvite}
+        loading={orgApi.isLoading}
+        disabled={orgApi.isLoading || $isFreePlan}
+      >
         {$t('course.navItem.people.teams.send_invite')}
       </Button>
     </Field.Group>
@@ -181,10 +119,10 @@
   <Field.Set>
     <Field.Legend>{$t('course.navItem.people.teams.members')}</Field.Legend>
     <Field.Group>
-      {#if isFetching}
+      {#if orgApi.isLoading && orgApi.teamMembers.length === 0}
         <Spinner class="size-10! text-blue-700!" />
-      {:else}
-        {#each $orgTeam as teamMember}
+      {:else if orgApi.teamMembers.length > 0}
+        {#each orgApi.teamMembers as teamMember}
           <Field.Field>
             <div class="flex items-center justify-between">
               <div class="flex items-center">
@@ -200,7 +138,7 @@
                   <ComingSoon label={$t('course.navItem.people.teams.you')} />
                 {/if}
               </div>
-              {#if teamMember.profileId !== $profile.id && isTeamMemberAdmin($orgTeam, $profile.id)}
+              {#if teamMember.profileId !== $profile.id && isTeamMemberAdmin(orgApi.teamMembers, $profile.id)}
                 <Button
                   variant="ghost"
                   onclick={() => onRemove(teamMember.id)}

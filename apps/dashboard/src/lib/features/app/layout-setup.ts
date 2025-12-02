@@ -1,13 +1,13 @@
+import type { AccountOrg } from '$lib/features/app/types';
 import type { Cookies } from '@sveltejs/kit';
-import type { CurrentOrg } from '$lib/utils/types/org';
+import { OrgApiServer } from '$lib/features/org/api/org.server';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { blockedSubdomain } from '$lib/utils/constants/app';
 import { env } from '$env/dynamic/private';
-import { getCurrentOrg } from '$lib/utils/services/org';
 
 export interface OrgSiteInfo {
   isOrgSite: boolean;
-  org: CurrentOrg | null;
+  org: AccountOrg | null;
   subdomain: string;
   orgSiteName: string;
 }
@@ -26,14 +26,14 @@ export async function getOrgSiteInfo(url: URL, cookies: Cookies): Promise<OrgSit
 
     // Student dashboard
     if (subdomain) {
-      const org = (await getCurrentOrg(subdomain, true)) || null;
+      const org = await OrgApiServer.getOrgBySiteName(subdomain);
 
       // Organization by subdomain not found
       if (!org) {
         return response;
       }
 
-      response.org = org;
+      response.org = org as AccountOrg;
       response.isOrgSite = true;
       response.orgSiteName = subdomain;
       response.subdomain = subdomain;
@@ -59,12 +59,14 @@ export async function getOrgSiteInfo(url: URL, cookies: Cookies): Promise<OrgSit
 
   // Custom domain
   if (isURLCustomDomain(url)) {
-    response.org = (await getCurrentOrg(url.host, true, true)) || null;
+    const orgs = await OrgApiServer.getOrgsByCustomDomain(url.host, true);
 
-    if (!response.org) {
+    if (!orgs || orgs.length === 0) {
       return response;
     }
 
+    const org = orgs[0];
+    response.org = org as AccountOrg;
     response.isOrgSite = true;
     response.orgSiteName = response.org?.siteName || '';
     response.subdomain = subdomain;
@@ -82,7 +84,11 @@ export async function getOrgSiteInfo(url: URL, cookies: Cookies): Promise<OrgSit
 
     response.isOrgSite = debugMode || !!subdomain;
     response.orgSiteName = debugMode ? _orgSiteName : subdomain;
-    response.org = (await getCurrentOrg(response.orgSiteName, true)) || null;
+
+    if (response.orgSiteName) {
+      const org = await OrgApiServer.getOrgBySiteName(response.orgSiteName);
+      response.org = (org as AccountOrg) || null;
+    }
 
     const shouldDeleteCookie = !response.org && _orgSiteName;
     if (shouldDeleteCookie) {

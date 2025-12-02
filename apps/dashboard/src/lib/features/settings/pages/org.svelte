@@ -6,8 +6,6 @@
   import ColorPicker from 'svelte-awesome-color-picker';
 
   import { t } from '$lib/utils/functions/translations';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { snackbar } from '$lib/components/Snackbar/store';
   import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { injectCustomTheme, setCustomTheme, setTheme } from '$lib/utils/functions/theme';
   import { orgApi } from '$lib/features/org/api/org.svelte';
@@ -42,14 +40,10 @@
     default: ''
   };
 
-  const saveTheme = debounce(async (theme) => {
-    const { error, data } = await supabase.from('organization').update({ theme }).match({ id: $currentOrg.id });
-
-    console.log('Debounced update theme', data);
-
-    if (error) {
-      snackbar.error('Failed to update theme: ' + error.message);
-    }
+  const saveTheme = debounce(async (theme: string) => {
+    await orgApi.update($currentOrg.id, {
+      theme
+    });
   }, 700);
 
   function handleChangeTheme(t = '') {

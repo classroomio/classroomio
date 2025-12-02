@@ -8,6 +8,15 @@
   import AppBreadcrumbs from './app-breadcrumbs.svelte';
   import RefreshCcwIcon from '@lucide/svelte/icons/refresh-ccw';
   import * as Empty from '@cio/ui/base/empty';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { setupProgressApi } from '$lib/features/setup/api/setup-progress.svelte';
+  import AppSetup from './app-setup.svelte';
+
+  $effect(() => {
+    if ($currentOrg.siteName) {
+      setupProgressApi.fetchSetupProgress($currentOrg.siteName);
+    }
+  });
 </script>
 
 <header
@@ -23,6 +32,8 @@
     <AppBreadcrumbs />
 
     <span class="grow"></span>
+
+    <AppSetup />
 
     <Search />
 

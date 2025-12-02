@@ -9,18 +9,23 @@
   import UsersIcon from '@lucide/svelte/icons/users';
   import GlobeIcon from '@lucide/svelte/icons/globe';
   import FileTextIcon from '@lucide/svelte/icons/file-text';
+  import SetupProgress from '$lib/features/setup/components/setup-progress.svelte';
 
   import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
   import { snackbar } from '$lib/components/Snackbar/store.js';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
+  import { setupProgressApi } from '$lib/features/setup/api/setup-progress.svelte';
+  import { onMount } from 'svelte';
 
-  let { data } = $props();
   const setupList = $derived(
-    (data.setup || []).map((item) => {
+    setupProgressApi.setupList.map((item) => {
       if (item.id === 'profile') {
-        item.is_completed = !$profile.avatarUrl?.includes('avatars/avatar.png');
+        return {
+          ...item,
+          is_completed: !$profile.avatarUrl?.includes('avatars/avatar.png')
+        };
       }
       return item;
     })
@@ -28,7 +33,14 @@
 
   const completed = $derived(setupList.filter((list) => list.is_completed).length);
   const total = $derived(setupList.length);
-  const progressPercentage = $derived(Math.round((completed / total) * 100));
+
+  // Ensure setup progress is fetched when page loads
+  onMount(() => {
+    if ($currentOrg.siteName && setupProgressApi.progress.setup.length === 0) {
+      // The app-header should have already fetched it, but ensure it's loaded
+      setupProgressApi.fetchSetupProgress($currentOrg.siteName);
+    }
+  });
 
   const StepsEnum = {
     UPDATE_PROFILE: 'profile',
@@ -51,8 +63,11 @@
 
       case StepsEnum.CREATE_LESSON:
         if (isCompleted('course')) {
-          const courseId = data?.courses[0].id;
-          goto(`/courses/${courseId}/lessons`);
+          const courses = setupProgressApi.progress.courses || [];
+          const courseId = courses[0]?.id;
+          if (courseId) {
+            goto(`/courses/${courseId}/lessons`);
+          }
         } else {
           snackbar.info('setup.info_course');
         }
@@ -60,9 +75,13 @@
 
       case StepsEnum.CREATE_EXERCISE:
         if (isCompleted('lesson')) {
-          const courseId = data?.courses[0].id;
-          const lessonId = data?.lessons[0].id;
-          goto(`/courses/${courseId}/lessons/${lessonId}`);
+          const courses = setupProgressApi.progress.courses || [];
+          const lessons = setupProgressApi.progress.lessons || [];
+          const courseId = courses[0]?.id;
+          const lessonId = lessons[0]?.id;
+          if (courseId && lessonId) {
+            goto(`/courses/${courseId}/lessons/${lessonId}`);
+          }
         } else {
           snackbar.info('setup.info_lesson');
         }
@@ -70,8 +89,11 @@
 
       case StepsEnum.PUBLISH_COURSE:
         if (isCompleted('course')) {
-          const courseId = data?.courses[0].id;
-          goto(`/courses/${courseId}/settings`);
+          const courses = setupProgressApi.progress.courses || [];
+          const courseId = courses[0]?.id;
+          if (courseId) {
+            goto(`/courses/${courseId}/settings`);
+          }
         } else {
           snackbar.info('setup.info_course');
         }
@@ -100,44 +122,13 @@
     </Page.HeaderContent>
 
     <Page.Action>
-      <div class="relative shrink-0">
-        <svg class="size-14 -rotate-90" viewBox="0 0 100 100">
-          <!-- Background circle -->
-          <circle
-            cx="50"
-            cy="50"
-            r="45"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="8"
-            class="text-gray-200 dark:text-gray-700"
-          />
-          <!-- Progress circle -->
-          <circle
-            cx="50"
-            cy="50"
-            r="45"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="8"
-            stroke-linecap="round"
-            class="text-green-600"
-            stroke-dasharray={2 * Math.PI * 45}
-            stroke-dashoffset={2 * Math.PI * 45 * (1 - progressPercentage / 100)}
-            style="transition: stroke-dashoffset 0.5s ease-in-out;"
-          />
-        </svg>
-        <!-- Center text -->
-        <div class="absolute inset-0 flex flex-col items-center justify-center">
-          <p class="text-sm font-bold">{progressPercentage}%</p>
-        </div>
-      </div>
+      <SetupProgress setupItems={setupList} />
     </Page.Action>
   </Page.Header>
   <Page.Body>
     {#snippet child()}
       <section class="space-y-6 px-4">
-        <Item.Root variant="outline">
+        <Item.Root variant="outline" class="ui:cursor-default">
           <Item.Content>
             <Item.Description class="mb-4">
               {$t('setup.description')}

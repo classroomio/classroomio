@@ -13,7 +13,6 @@
   import { profile, user } from '$lib/utils/store/user';
   import { authValidation, getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import type { CurrentOrg } from '$lib/utils/types/org';
   import { onMount, untrack } from 'svelte';
   import { snackbar } from '$lib/components/Snackbar/store.js';
 
@@ -143,17 +142,12 @@
     }
   }
 
-  function setCurOrg(cOrg: CurrentOrg) {
-    if (!cOrg) return;
-
-    console.log(cOrg);
-    currentOrg.set(cOrg);
-  }
-
   onMount(async () => {
+    if (!data.invite.currentOrg) return;
+
     setTheme(data.invite.currentOrg?.theme || '');
 
-    setCurOrg(data.invite.currentOrg as CurrentOrg);
+    currentOrg.set(data.invite.currentOrg);
   });
 
   const isLoading = $derived(loading || $user.fetchingUser);

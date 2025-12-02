@@ -3,16 +3,13 @@
 
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { getSupabase } from '$lib/utils/functions/supabase';
+  import { orgApi } from '$lib/features/org/api/org.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
   import { Button } from '@cio/ui/base/button';
   import { Input } from '@cio/ui/base/input';
 
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import * as Field from '@cio/ui/base/field';
-
-  const supabase = getSupabase();
 
   let widgetKey = $state('');
 
@@ -22,19 +19,9 @@
   }
 
   export async function handleSave() {
-    const { error } = await supabase
-      .from('organization')
-      .update({ customization: $currentOrg.customization })
-      .match({ id: $currentOrg.id });
-
-    if (error) {
-      const message = error?.message || $t('snackbar.lms.error.try_again');
-
-      console.error('Error updating customizations', message);
-      snackbar.error(`${$t('snackbar.update_failed')}: ${message}`);
-    } else {
-      snackbar.success('snackbar.success_update');
-    }
+    await orgApi.update($currentOrg.id, {
+      customization: $currentOrg.customization
+    });
   }
 </script>
 

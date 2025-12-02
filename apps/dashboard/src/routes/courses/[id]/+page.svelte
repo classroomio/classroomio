@@ -27,9 +27,9 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import type { Feed } from '$lib/utils/types/feed';
-  import type { CurrentOrg } from '$lib/utils/types/org';
   import PinIcon from '@lucide/svelte/icons/pin';
   import { onMount } from 'svelte';
+  import type { AccountOrg } from '$lib/features/app/types';
 
   let { data = $bindable() } = $props();
 
@@ -214,7 +214,7 @@
     }
   };
 
-  function getPageRoles(org: CurrentOrg) {
+  function getPageRoles(org: AccountOrg) {
     const roles: number[] = [1, 2];
 
     if (org.customization.course.newsfeed) {

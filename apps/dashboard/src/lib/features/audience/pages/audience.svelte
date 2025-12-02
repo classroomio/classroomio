@@ -5,29 +5,16 @@
   import { Search } from '@cio/ui/custom/search';
   import * as Pagination from '@cio/ui/base/pagination';
   import UsersIcon from '@lucide/svelte/icons/users';
-  import { getOrgAudience } from '$lib/utils/services/org';
+  import { orgApi } from '$lib/features/org/api/org.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import { untrack } from 'svelte';
   import { Empty } from '@cio/ui/custom/empty';
   import { UpgradeBanner } from '$lib/features/ui';
-  import { orgAudience, currentOrg, currentOrgMaxAudience } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgMaxAudience } from '$lib/utils/store/org';
   import Avatar from '$lib/components/Avatar/index.svelte';
   import * as Page from '@cio/ui/base/page';
 
-  let isLoading = $state(false);
-
-  function fetchInitData(orgId) {
-    if (!orgId) return;
-
-    untrack(async () => {
-      isLoading = true;
-      await getOrgAudience(orgId);
-      isLoading = false;
-    });
-  }
-
   $effect(() => {
-    fetchInitData($currentOrg.id);
+    orgApi.getOrgAudience($currentOrg.id);
   });
 
   const headers = [
@@ -41,10 +28,10 @@
 
   const filteredRows = $derived(
     searchValue
-      ? $orgAudience.filter((row) =>
+      ? orgApi.audience.filter((row) =>
           Object.values(row).some((val) => String(val).toLowerCase().includes(searchValue.toLowerCase()))
         )
-      : $orgAudience
+      : orgApi.audience
   );
 
   const totalPages = $derived(Math.ceil(filteredRows.length / pageSize));
@@ -59,7 +46,7 @@
   });
 </script>
 
-{#if $orgAudience.length >= $currentOrgMaxAudience}
+{#if orgApi.audience.length >= $currentOrgMaxAudience}
   <UpgradeBanner>{$t('audience.upgrade')}</UpgradeBanner>
 {/if}
 
@@ -67,10 +54,10 @@
   <Search placeholder="Search..." bind:value={searchValue} class="" />
 </Page.BodyHeader>
 
-{#if $orgAudience.length || isLoading}
+{#if orgApi.audience.length || orgApi.isLoading}
   <div class="w-full space-y-4">
     <!-- Table -->
-    {#if isLoading}
+    {#if orgApi.isLoading}
       <div class="space-y-2">
         {#each Array(pageSize) as _}
           <Skeleton class="h-12 w-full" />

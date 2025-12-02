@@ -7,7 +7,6 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
   import { addGroupMember } from '$lib/utils/services/courses';
-  import type { CurrentOrg } from '$lib/utils/types/org.js';
   import { ROLE } from '@cio/utils/constants';
   import { profile } from '$lib/utils/store/user';
   import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
@@ -103,11 +102,6 @@
     });
   }
 
-  function setCurOrg(cOrg: CurrentOrg) {
-    if (!cOrg) return;
-    currentOrg.set(cOrg);
-  }
-
   onMount(async () => {
     // check if user has session, if not redirect to sign up with redirect back to this page
     const {
@@ -117,8 +111,11 @@
       return goto(`/login?redirect=${page.url?.pathname || ''}`);
     }
 
+    if (!data.currentOrg) return;
+
     setTheme(data.currentOrg?.theme || '');
-    setCurOrg(data.currentOrg as CurrentOrg);
+
+    currentOrg.set(data.currentOrg);
   });
 </script>
 

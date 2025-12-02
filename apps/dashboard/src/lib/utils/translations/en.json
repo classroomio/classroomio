@@ -309,6 +309,7 @@
   },
 
   "setup": {
+    "your_checklist": "Your Checklist",
     "get_started": "Get Started",
     "description": "Complete these steps to set up your learning platform",
     "progress": "Progress",

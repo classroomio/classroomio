@@ -48,3 +48,74 @@ export const getCoursesBySiteName = async (siteName: string) => {
     }
   }));
 };
+
+/**
+ * Gets lessons by organization siteName
+ * @param siteName Organization site name
+ * @returns Array of lessons
+ */
+export const getLessonsBySiteName = async (siteName: string) => {
+  const result = await db
+    .select({
+      lesson: schema.lesson
+    })
+    .from(schema.lesson)
+    .innerJoin(schema.course, eq(schema.lesson.courseId, schema.course.id))
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
+    .where(eq(schema.organization.siteName, siteName))
+    .limit(1);
+
+  return result.map((row) => row.lesson);
+};
+
+/**
+ * Gets exercises by organization siteName
+ * @param siteName Organization site name
+ * @returns Array of exercises
+ */
+export const getExercisesBySiteName = async (siteName: string) => {
+  const result = await db
+    .select({
+      exercise: schema.exercise
+    })
+    .from(schema.exercise)
+    .innerJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+    .innerJoin(schema.course, eq(schema.lesson.courseId, schema.course.id))
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
+    .where(eq(schema.organization.siteName, siteName))
+    .limit(1);
+
+  return result.map((row) => row.exercise);
+};
+
+/**
+ * Gets courses by organization siteName (for setup - includes unpublished courses)
+ * @param siteName Organization site name
+ * @returns Array of courses with organization info
+ */
+export const getCoursesBySiteNameForSetup = async (siteName: string) => {
+  const result = await db
+    .select({
+      course: schema.course,
+      organization: {
+        id: schema.organization.id,
+        name: schema.organization.name,
+        siteName: schema.organization.siteName,
+        avatarUrl: schema.organization.avatarUrl
+      }
+    })
+    .from(schema.course)
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
+    .where(eq(schema.organization.siteName, siteName))
+    .limit(1);
+
+  return result.map((row) => ({
+    ...row.course,
+    group: {
+      organization: row.organization
+    }
+  }));
+};

@@ -47,3 +47,5 @@ vite.config.ts*.mjs
 tsconfig.tsbuildinfo*
 
 storybook-static
+
+.svelte-kit/

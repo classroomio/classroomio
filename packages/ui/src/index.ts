@@ -17,6 +17,7 @@ export * as Drawer from './base/drawer';
 export * as DropdownMenu from './base/dropdown-menu';
 export * as Empty from './base/empty';
 export * as Field from './base/field';
+export * as HoverCard from './base/hover-card';
 export * as Input from './base/input';
 export * as InputGroup from './base/input-group';
 export * as Item from './base/item';

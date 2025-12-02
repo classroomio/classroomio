@@ -17,7 +17,7 @@
       <ArrowUpRightIcon
         size={16}
         class="
-            absolute left-3 -translate-x-full translate-y-full text-white
+            custom absolute left-3 -translate-x-full translate-y-full text-white
             opacity-0 transition duration-500 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100"
       />
       <img src="/logo-192.png" alt="logo" class="h-[24px] opacity-100 group-hover:opacity-0" />
@@ -25,4 +25,3 @@
     </span>
   </a>
 {/if}
-

@@ -8,7 +8,6 @@ import {
   json,
   jsonb,
   pgEnum,
-  pgPolicy,
   pgTable,
   pgView,
   serial,
@@ -125,14 +124,7 @@ export const analyticsLoginEvents = pgTable(
       foreignColumns: [user.id],
       name: 'analytics_login_events_user_id_fkey'
     }),
-    unique('analytics_login_events_user_id_unique').on(table.userId),
-    pgPolicy('Enable delete for users based on user_id', {
-      as: 'permissive',
-      for: 'delete',
-      to: ['public'],
-      using: sql`(auth.uid() = user_id)`
-    }),
-    pgPolicy('Users can insert their own login events', { as: 'permissive', for: 'insert', to: ['authenticated'] })
+    unique('analytics_login_events_user_id_unique').on(table.userId)
   ]
 );
 
@@ -154,11 +146,7 @@ export const lessonSection = pgTable(
       name: 'public_lesson_section_course_id_fkey'
     })
       .onUpdate('cascade')
-      .onDelete('cascade'),
-    pgPolicy('Enable read access for all users', { as: 'permissive', for: 'select', to: ['public'], using: sql`true` }),
-    pgPolicy('User must be an org member to DELETE', { as: 'permissive', for: 'delete', to: ['public'] }),
-    pgPolicy('User must be an org member to INSERT', { as: 'permissive', for: 'insert', to: ['public'] }),
-    pgPolicy('User must be an org member to UPDATE', { as: 'permissive', for: 'update', to: ['public'] })
+      .onDelete('cascade')
   ]
 );
 
@@ -180,16 +168,7 @@ export const group = pgTable(
       columns: [table.organizationId],
       foreignColumns: [organization.id],
       name: 'group_organization_id_fkey'
-    }),
-    pgPolicy('Enable insert for authenticated users only', {
-      as: 'permissive',
-      for: 'insert',
-      to: ['authenticated'],
-      withCheck: sql`true`
-    }),
-    pgPolicy('Enable read access for all users', { as: 'permissive', for: 'select', to: ['public'] }),
-    pgPolicy('Only org admins can delete', { as: 'permissive', for: 'delete', to: ['public'] }),
-    pgPolicy('Only org admins can update', { as: 'permissive', for: 'update', to: ['public'] })
+    })
   ]
 );
 
@@ -221,19 +200,7 @@ export const groupAttendance = pgTable(
       columns: [table.studentId],
       foreignColumns: [groupmember.id],
       name: 'group_attendance_student_id_fkey'
-    }),
-    pgPolicy('User must be a course member to INSERT', {
-      as: 'permissive',
-      for: 'insert',
-      to: ['public'],
-      withCheck: sql`is_user_in_course_group_or_admin(( SELECT course.group_id
-   FROM course
-  WHERE (course.id = group_attendance.course_id)
- LIMIT 1))`
-    }),
-    pgPolicy('User must be a course member to SELECT', { as: 'permissive', for: 'select', to: ['public'] }),
-    pgPolicy('User must be a course member to UPDATE', { as: 'permissive', for: 'update', to: ['public'] }),
-    pgPolicy('User must be an org member to DELETE', { as: 'permissive', for: 'delete', to: ['public'] })
+    })
   ]
 );
 
@@ -271,22 +238,7 @@ export const appsPollOption = pgTable(
       columns: [table.pollId],
       foreignColumns: [appsPoll.id],
       name: 'apps_poll_option_poll_id_fkey'
-    }),
-    pgPolicy('User must be a course member to INSERT', {
-      as: 'permissive',
-      for: 'insert',
-      to: ['public'],
-      withCheck: sql`is_user_in_course_group_or_admin(( SELECT groupmember.group_id
-   FROM groupmember
-  WHERE (groupmember.id = ( SELECT apps_poll."authorId"
-           FROM apps_poll
-          WHERE (apps_poll.id = apps_poll_option.poll_id)
-         LIMIT 1))
- LIMIT 1))`
-    }),
-    pgPolicy('User must be a course member to UPDATE', { as: 'permissive', for: 'update', to: ['public'] }),
-    pgPolicy('User must be a teacher to DELETE', { as: 'permissive', for: 'delete', to: ['public'] }),
-    pgPolicy('User must be course member to SELECT', { as: 'permissive', for: 'select', to: ['public'] })
+    })
   ]
 );
 
@@ -323,17 +275,7 @@ export const profile = pgTable(
     unique('profile_username_key').on(table.username),
     unique('profile_email_key').on(table.email),
     index('idx_profile_id').on(table.id),
-    index('idx_profile_email').on(table.email),
-    pgPolicy('Only auth users can read profile', {
-      as: 'permissive',
-      for: 'select',
-      to: ['anon', 'authenticated'],
-      using: sql`true`
-    }),
-    pgPolicy('Public profiles are viewable by everyone.', { as: 'permissive', for: 'select', to: ['public'] }),
-    pgPolicy('User can only delete their profiles', { as: 'permissive', for: 'delete', to: ['public'] }),
-    pgPolicy('Users can insert their own profile.', { as: 'permissive', for: 'insert', to: ['public'] }),
-    pgPolicy('Users can update own profile.', { as: 'permissive', for: 'update', to: ['public'] })
+    index('idx_profile_email').on(table.email)
   ]
 );
 
@@ -361,16 +303,7 @@ export const option = pgTable(
       columns: [table.questionId],
       foreignColumns: [question.id],
       name: 'option_question_id_fkey'
-    }).onDelete('cascade'),
-    pgPolicy('Allow authenticated users to SELECT', {
-      as: 'permissive',
-      for: 'select',
-      to: ['public'],
-      using: sql`(auth.uid() IS NOT NULL)`
-    }),
-    pgPolicy('User must be an org member to DELETE', { as: 'permissive', for: 'delete', to: ['public'] }),
-    pgPolicy('User must be an org member to INSERT', { as: 'permissive', for: 'insert', to: ['public'] }),
-    pgPolicy('User must be an org member to UPDATE', { as: 'permissive', for: 'update', to: ['public'] })
+    }).onDelete('cascade')
   ]
 );
 
@@ -404,13 +337,7 @@ export const quizPlay = pgTable(
       foreignColumns: [quiz.id],
       name: 'quiz_play_quiz_id_fkey'
     }),
-    unique('quiz_play_pin_key').on(table.pin),
-    pgPolicy('Authenticated users can SELECT', {
-      as: 'permissive',
-      for: 'select',
-      to: ['authenticated'],
-      using: sql`true`
-    })
+    unique('quiz_play_pin_key').on(table.pin)
   ]
 );
 
@@ -437,12 +364,6 @@ export const organizationContacts = pgTable(
       columns: [table.organizationId],
       foreignColumns: [organization.id],
       name: 'organization_contacts_organization_id_fkey'
-    }),
-    pgPolicy('Enable read access for all users', {
-      as: 'permissive',
-      for: 'insert',
-      to: ['public'],
-      withCheck: sql`true`
     })
   ]
 );
@@ -474,18 +395,7 @@ export const lessonComment = pgTable(
       columns: [table.lessonId],
       foreignColumns: [lesson.id],
       name: 'lesson_comment_lesson_id_fkey'
-    }).onDelete('cascade'),
-    pgPolicy('Delete only your own comment', {
-      as: 'permissive',
-      for: 'delete',
-      to: ['public'],
-      using: sql`(auth.uid() = ( SELECT groupmember.profile_id
-   FROM groupmember
-  WHERE (groupmember.id = lesson_comment.groupmember_id)))`
-    }),
-    pgPolicy('Enable read access for all users', { as: 'permissive', for: 'select', to: ['public'] }),
-    pgPolicy('Update only your own', { as: 'permissive', for: 'update', to: ['public'] }),
-    pgPolicy('User must be in course group to INSERT', { as: 'permissive', for: 'insert', to: ['public'] })
+    }).onDelete('cascade')
   ]
 );
 
@@ -509,12 +419,6 @@ export const quiz = pgTable(
       columns: [table.organizationId],
       foreignColumns: [organization.id],
       name: 'quiz_organization_id_fkey'
-    }),
-    pgPolicy('Authenticated users can SELECT', {
-      as: 'permissive',
-      for: 'select',
-      to: ['authenticated'],
-      using: sql`true`
     })
   ]
 );
@@ -559,16 +463,7 @@ export const submission = pgTable(
       columns: [table.submittedBy],
       foreignColumns: [groupmember.id],
       name: 'submission_submitted_by_fkey'
-    }),
-    pgPolicy('Only authenticated users can SELECT', {
-      as: 'permissive',
-      for: 'select',
-      to: ['authenticated'],
-      using: sql`true`
-    }),
-    pgPolicy('User must be a course member to DELETE', { as: 'permissive', for: 'delete', to: ['public'] }),
-    pgPolicy('User must be a course member to INSERT', { as: 'permissive', for: 'insert', to: ['public'] }),
-    pgPolicy('User must be a course member to UPDATE', { as: 'permissive', for: 'update', to: ['public'] })
+    })
   ]
 );
 
@@ -586,14 +481,7 @@ export const submissionstatus = pgTable(
     label: varchar().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
   },
-  (table) => [
-    pgPolicy('Authenticated users can SELECT', {
-      as: 'permissive',
-      for: 'select',
-      to: ['authenticated'],
-      using: sql`true`
-    })
-  ]
+  (table) => []
 );
 
 export const course = pgTable(
@@ -630,16 +518,7 @@ export const course = pgTable(
       foreignColumns: [group.id],
       name: 'course_group_id_fkey'
     }),
-    unique('course_slug_key').on(table.slug),
-    pgPolicy('Enable access to all users if PUBLIC or to course members when ', {
-      as: 'permissive',
-      for: 'select',
-      to: ['public'],
-      using: sql`(is_published OR is_user_in_course_group_or_admin(group_id))`
-    }),
-    pgPolicy('User must be an org member to DELETE', { as: 'permissive', for: 'delete', to: ['public'] }),
-    pgPolicy('User must be an org member to INSERT', { as: 'permissive', for: 'insert', to: ['public'] }),
-    pgPolicy('User must be an org member to UPDATE', { as: 'permissive', for: 'update', to: ['public'] })
+    unique('course_slug_key').on(table.slug)
   ]
 );
 
@@ -666,18 +545,7 @@ export const appsPoll = pgTable(
       columns: [table.courseId],
       foreignColumns: [course.id],
       name: 'apps_poll_courseId_fkey'
-    }),
-    pgPolicy('Delete only your own poll', {
-      as: 'permissive',
-      for: 'delete',
-      to: ['public'],
-      using: sql`(auth.uid() = ( SELECT groupmember.profile_id
-   FROM groupmember
-  WHERE (groupmember.id = apps_poll."authorId")))`
-    }),
-    pgPolicy('Update only your own', { as: 'permissive', for: 'update', to: ['public'] }),
-    pgPolicy('User must be a course member to INSERT', { as: 'permissive', for: 'insert', to: ['public'] }),
-    pgPolicy('User must be course member to SELECT', { as: 'permissive', for: 'select', to: ['public'] })
+    })
   ]
 );
 
@@ -717,12 +585,6 @@ export const organizationEmaillist = pgTable(
       columns: [table.organizationId],
       foreignColumns: [organization.id],
       name: 'organization_emaillist_organization_id_fkey'
-    }),
-    pgPolicy('Enable read access for all users', {
-      as: 'permissive',
-      for: 'insert',
-      to: ['public'],
-      withCheck: sql`true`
     })
   ]
 );
@@ -770,11 +632,7 @@ export const lesson = pgTable(
       name: 'public_lesson_section_id_fkey'
     })
       .onUpdate('cascade')
-      .onDelete('cascade'),
-    pgPolicy('Enable read access for all users', { as: 'permissive', for: 'select', to: ['public'], using: sql`true` }),
-    pgPolicy('User must be an org member to DELETE', { as: 'permissive', for: 'delete', to: ['public'] }),
-    pgPolicy('User must be an org member to INSERT', { as: 'permissive', for: 'insert', to: ['public'] }),
-    pgPolicy('User must be an org member to UPDATE', { as: 'permissive', for: 'update', to: ['public'] })
+      .onDelete('cascade')
   ]
 );
 
@@ -810,16 +668,7 @@ export const appsPollSubmission = pgTable(
       columns: [table.selectedById],
       foreignColumns: [groupmember.id],
       name: 'apps_poll_submission_selected_by_id_fkey'
-    }),
-    pgPolicy('Authenticated users can read', {
-      as: 'permissive',
-      for: 'select',
-      to: ['public'],
-      using: sql`(auth.uid() IS NOT NULL)`
-    }),
-    pgPolicy('Delete your own submission', { as: 'permissive', for: 'delete', to: ['public'] }),
-    pgPolicy('Enable insert for authenticated users only', { as: 'permissive', for: 'insert', to: ['authenticated'] }),
-    pgPolicy('Update your own submission', { as: 'permissive', for: 'update', to: ['public'] })
+    })
   ]
 );
 
@@ -842,11 +691,7 @@ export const exercise = pgTable(
       columns: [table.lessonId],
       foreignColumns: [lesson.id],
       name: 'exercise_lesson_id_fkey'
-    }).onDelete('cascade'),
-    pgPolicy('Enable read access for all users', { as: 'permissive', for: 'select', to: ['public'], using: sql`true` }),
-    pgPolicy('User must be an org member to DELETE', { as: 'permissive', for: 'delete', to: ['public'] }),
-    pgPolicy('User must be an org member to INSERT', { as: 'permissive', for: 'insert', to: ['public'] }),
-    pgPolicy('User must be an org member to UPDATE', { as: 'permissive', for: 'update', to: ['public'] })
+    }).onDelete('cascade')
   ]
 );
 
@@ -883,16 +728,7 @@ export const groupmember = pgTable(
     }),
     unique('unique_entries').on(table.groupId, table.profileId, table.email),
     unique('unique_group_email').on(table.groupId, table.email),
-    unique('unique_group_profile').on(table.groupId, table.profileId),
-    pgPolicy('Enable insert for authenticated users only', {
-      as: 'permissive',
-      for: 'insert',
-      to: ['authenticated'],
-      withCheck: sql`true`
-    }),
-    pgPolicy('Enable read access for all users', { as: 'permissive', for: 'select', to: ['public'] }),
-    pgPolicy('User must be an org member to DELETE', { as: 'permissive', for: 'delete', to: ['public'] }),
-    pgPolicy('User must be an org member to UPDATE', { as: 'permissive', for: 'update', to: ['public'] })
+    unique('unique_group_profile').on(table.groupId, table.profileId)
   ]
 );
 
@@ -924,15 +760,7 @@ export const lessonCompletion = pgTable(
       foreignColumns: [profile.id],
       name: 'lesson_completion_profile_id_fkey'
     }),
-    unique('unique_lesson_profile').on(table.lessonId, table.profileId),
-    pgPolicy('Enable read access for all users', { as: 'permissive', for: 'select', to: ['public'], using: sql`true` }),
-    pgPolicy('User must be an course member or Admin to perform ALL operation', {
-      as: 'permissive',
-      for: 'all',
-      to: ['public']
-    }),
-    pgPolicy('User must be an org member to DELETE', { as: 'permissive', for: 'delete', to: ['public'] }),
-    pgPolicy('User must be an org member to UPDATE', { as: 'permissive', for: 'update', to: ['public'] })
+    unique('unique_lesson_profile').on(table.lessonId, table.profileId)
   ]
 );
 
@@ -968,16 +796,7 @@ export const communityAnswer = pgTable(
       columns: [table.questionId],
       foreignColumns: [communityQuestion.id],
       name: 'community_answer_question_id_fkey'
-    }),
-    pgPolicy('Authenticated users can SELECT', {
-      as: 'permissive',
-      for: 'select',
-      to: ['public'],
-      using: sql`(auth.uid() IS NOT NULL)`
-    }),
-    pgPolicy('Delete your own answer', { as: 'permissive', for: 'delete', to: ['public'] }),
-    pgPolicy('Enable insert for authenticated users only', { as: 'permissive', for: 'insert', to: ['authenticated'] }),
-    pgPolicy('Update your own answer', { as: 'permissive', for: 'update', to: ['public'] })
+    })
   ]
 );
 
@@ -1024,16 +843,7 @@ export const communityQuestion = pgTable(
       columns: [table.organizationId],
       foreignColumns: [organization.id],
       name: 'community_question_organization_id_fkey'
-    }),
-    pgPolicy('Authenticated users can SELECT', {
-      as: 'permissive',
-      for: 'select',
-      to: ['public'],
-      using: sql`(auth.uid() IS NOT NULL)`
-    }),
-    pgPolicy('Delete your own question', { as: 'permissive', for: 'delete', to: ['public'] }),
-    pgPolicy('Enable insert for authenticated users only', { as: 'permissive', for: 'insert', to: ['authenticated'] }),
-    pgPolicy('Update your own question', { as: 'permissive', for: 'update', to: ['public'] })
+    })
   ]
 );
 
@@ -1058,18 +868,7 @@ export const courseNewsfeed = pgTable(
       columns: [table.courseId],
       foreignColumns: [course.id],
       name: 'course_newsfeed_course_id_fkey'
-    }),
-    pgPolicy('Delete your own comment', {
-      as: 'permissive',
-      for: 'delete',
-      to: ['public'],
-      using: sql`(auth.uid() = ( SELECT groupmember.profile_id
-   FROM groupmember
-  WHERE (groupmember.id = course_newsfeed.author_id)))`
-    }),
-    pgPolicy('Update only your own', { as: 'permissive', for: 'update', to: ['public'] }),
-    pgPolicy('User must be a course member to INSERT', { as: 'permissive', for: 'insert', to: ['public'] }),
-    pgPolicy('User must be a course member to SELECT', { as: 'permissive', for: 'select', to: ['public'] })
+    })
   ]
 );
 
@@ -1100,18 +899,7 @@ export const courseNewsfeedComment = pgTable(
       foreignColumns: [courseNewsfeed.id],
       name: 'course_newsfeed_comment_course_newsfeed_id_fkey'
     }),
-    unique('course_newsfeed_comment_id_key').on(table.id),
-    pgPolicy('Delete your own', {
-      as: 'permissive',
-      for: 'delete',
-      to: ['public'],
-      using: sql`(auth.uid() = ( SELECT groupmember.profile_id
-   FROM groupmember
-  WHERE (groupmember.id = course_newsfeed_comment.author_id)))`
-    }),
-    pgPolicy('Update only your own', { as: 'permissive', for: 'update', to: ['public'] }),
-    pgPolicy('User must be a course member to INSERT', { as: 'permissive', for: 'insert', to: ['public'] }),
-    pgPolicy('User must be a course member to SELECT', { as: 'permissive', for: 'select', to: ['public'] })
+    unique('course_newsfeed_comment_id_key').on(table.id)
   ]
 );
 
@@ -1155,11 +943,7 @@ export const organizationPlan = pgTable(
       name: 'organization_plan_triggered_by_fkey'
     }),
     unique('organization_plan_subscription_id_key').on(table.subscriptionId),
-    index('idx_organization_plan_org_id').on(table.orgId),
-    pgPolicy('Enable read access for all users', { as: 'permissive', for: 'select', to: ['public'], using: sql`true` }),
-    pgPolicy('User must be an org member to DELETE', { as: 'permissive', for: 'delete', to: ['public'] }),
-    pgPolicy('User must be an org member to INSERT', { as: 'permissive', for: 'insert', to: ['public'] }),
-    pgPolicy('User must be an org member to UPDATE', { as: 'permissive', for: 'update', to: ['public'] })
+    index('idx_organization_plan_org_id').on(table.orgId)
   ]
 );
 
@@ -1185,11 +969,7 @@ export const lessonLanguage = pgTable(
       name: 'public_lesson_language_lesson_id_fkey'
     })
       .onUpdate('cascade')
-      .onDelete('cascade'),
-    pgPolicy('Enable read access for all users', { as: 'permissive', for: 'select', to: ['public'], using: sql`true` }),
-    pgPolicy('User must be an org member to DELETE', { as: 'permissive', for: 'delete', to: ['public'] }),
-    pgPolicy('User must be an org member to INSERT', { as: 'permissive', for: 'insert', to: ['public'] }),
-    pgPolicy('User must be an org member to UPDATE', { as: 'permissive', for: 'update', to: ['public'] })
+      .onDelete('cascade')
   ]
 );
 
@@ -1211,16 +991,7 @@ export const lessonLanguageHistory = pgTable(
       name: 'public_lesson_language_history_lesson_language_id_fkey'
     })
       .onUpdate('cascade')
-      .onDelete('cascade'),
-    pgPolicy('Authenticated users can SELECT', {
-      as: 'permissive',
-      for: 'select',
-      to: ['public'],
-      using: sql`(auth.uid() IS NOT NULL)`
-    }),
-    pgPolicy('User must be an org member to DELETE', { as: 'permissive', for: 'delete', to: ['public'] }),
-    pgPolicy('User must be an org member to INSERT', { as: 'permissive', for: 'insert', to: ['public'] }),
-    pgPolicy('User must be an org member to UPDATE', { as: 'permissive', for: 'update', to: ['public'] })
+      .onDelete('cascade')
   ]
 );
 
@@ -1263,22 +1034,7 @@ export const organizationmember = pgTable(
     }),
     index('idx_organizationmember_profile_id').on(table.profileId),
     index('idx_organizationmember_organization_id').on(table.organizationId),
-    index('idx_organizationmember_profile_org').on(table.profileId, table.organizationId),
-    pgPolicy('Allow authenticated users to read.', {
-      as: 'permissive',
-      for: 'select',
-      to: ['public'],
-      using: sql`(auth.uid() IS NOT NULL)`
-    }),
-    pgPolicy('Enable insert for authenticated users only', { as: 'permissive', for: 'insert', to: ['authenticated'] }),
-    pgPolicy('Only admin can delete', { as: 'permissive', for: 'delete', to: ['public'] }),
-    pgPolicy('Only admin can update', { as: 'permissive', for: 'update', to: ['public'] }),
-    pgPolicy('Only user can update their account via email', { as: 'permissive', for: 'update', to: ['public'] }),
-    pgPolicy('User must be an admin to INSERT or allow if no existing member', {
-      as: 'permissive',
-      for: 'insert',
-      to: ['public']
-    })
+    index('idx_organizationmember_profile_org').on(table.profileId, table.organizationId)
   ]
 );
 
@@ -1314,16 +1070,7 @@ export const question = pgTable(
       columns: [table.questionTypeId],
       foreignColumns: [questionType.id],
       name: 'question_question_type_id_fkey'
-    }),
-    pgPolicy('Allow authenticated users to SELECT', {
-      as: 'permissive',
-      for: 'select',
-      to: ['public'],
-      using: sql`(auth.uid() IS NOT NULL)`
-    }),
-    pgPolicy('User must be an org member to DELETE', { as: 'permissive', for: 'delete', to: ['public'] }),
-    pgPolicy('User must be an org member to INSERT', { as: 'permissive', for: 'insert', to: ['public'] }),
-    pgPolicy('User must be an org member to UPDATE', { as: 'permissive', for: 'update', to: ['public'] })
+    })
   ]
 );
 
@@ -1362,16 +1109,7 @@ export const questionAnswer = pgTable(
       columns: [table.submissionId],
       foreignColumns: [submission.id],
       name: 'question_answer_submission_id_fkey'
-    }).onDelete('cascade'),
-    pgPolicy('Only authenticated users can select.', {
-      as: 'permissive',
-      for: 'select',
-      to: ['public'],
-      using: sql`(auth.uid() IS NOT NULL)`
-    }),
-    pgPolicy('User must be an course member to DELETE', { as: 'permissive', for: 'delete', to: ['public'] }),
-    pgPolicy('User must be an course member to INSERT', { as: 'permissive', for: 'insert', to: ['public'] }),
-    pgPolicy('User must be an course member to UPDATE', { as: 'permissive', for: 'update', to: ['public'] })
+    }).onDelete('cascade')
   ]
 );
 
@@ -1391,9 +1129,7 @@ export const questionType = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     typename: varchar()
   },
-  (table) => [
-    pgPolicy('Enable read access for all users', { as: 'permissive', for: 'select', to: ['public'], using: sql`true` })
-  ]
+  (table) => []
 );
 
 export const role = pgTable(
@@ -1412,9 +1148,7 @@ export const role = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow()
   },
-  (table) => [
-    pgPolicy('Enable read access for all users', { as: 'permissive', for: 'select', to: ['public'], using: sql`true` })
-  ]
+  (table) => []
 );
 
 export const waitinglist = pgTable(
@@ -1555,18 +1289,10 @@ export const organization = pgTable(
   },
   (table) => [
     unique('organization_siteName_key').on(table.siteName),
-    unique('organization_customDomain_key').on(table.customDomain),
-    pgPolicy('Authenticated users can delete', {
-      as: 'permissive',
-      for: 'delete',
-      to: ['public'],
-      using: sql`(auth.uid() IS NOT NULL)`
-    }),
-    pgPolicy('Enable insert for authenticated users only', { as: 'permissive', for: 'insert', to: ['authenticated'] }),
-    pgPolicy('Enable read access for all users', { as: 'permissive', for: 'select', to: ['public'] }),
-    pgPolicy('User must be admin to UPDATE', { as: 'permissive', for: 'update', to: ['public'] })
+    unique('organization_customDomain_key').on(table.customDomain)
   ]
 );
+
 export const dashOrgStats = pgView('dash_org_stats', {
   orgId: uuid('org_id'),
   // You can use { mode: "bigint" } if numbers are exceeding js number limitations

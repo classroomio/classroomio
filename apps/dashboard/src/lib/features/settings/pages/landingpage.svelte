@@ -7,8 +7,7 @@
   import { landingPageSettings } from '../utils/store';
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { getSupabase } from '$lib/utils/functions/supabase';
+  import { orgApi } from '$lib/features/org/api/org.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
 
   import { Checkbox } from '@cio/ui/base/checkbox';
@@ -19,6 +18,7 @@
   import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
   import * as Field from '@cio/ui/base/field';
   import type { OrgLandingPageJson } from '$lib/utils/types/org';
+  import type { AccountOrg } from '$lib/features/app/types';
 
   let creatingNewQuestion = $state(false);
   let creatingNewCustomLink = $state(false);
@@ -28,7 +28,6 @@
     { value: 'video', label: `${$t('settings.landing_page.actions.banner_type.video')}` },
     { value: 'image', label: `${$t('settings.landing_page.actions.banner_type.image')}` }
   ];
-  const supabase = getSupabase();
 
   let newQuestion = $state({
     title: '',
@@ -128,18 +127,12 @@
     $landingPageSettings.footer.linkedin = checkPrefix($landingPageSettings.footer.linkedin) || '';
     $landingPageSettings.footer.facebook = checkPrefix($landingPageSettings.footer.facebook) || '';
 
-    const { error } = await supabase
-      .from('organization')
-      .update({ landingpage: $landingPageSettings })
-      .match({ id: $currentOrg.id });
+    await orgApi.update($currentOrg.id, {
+      landingpage: $landingPageSettings as AccountOrg['landingpage']
+    });
 
-    if (error) {
-      const message = error?.message || $t('snackbar.lms.error.try_again');
-
-      snackbar.error(`${$t('snackbar.update_failed')}: ${message}`);
-    } else {
-      $currentOrg.landingpage = $landingPageSettings as any;
-      snackbar.success('snackbar.success_update');
+    if (orgApi.success) {
+      $currentOrg.landingpage = $landingPageSettings as AccountOrg['landingpage'];
       hasUnsavedChanges = false;
     }
   }

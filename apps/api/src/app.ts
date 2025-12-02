@@ -27,7 +27,7 @@ export const app = new Hono()
     cors({
       origin: TRUSTED_ORIGINS,
       allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-      allowHeaders: ['Content-Type', 'Authorization'],
+      allowHeaders: ['Content-Type', 'Authorization', 'Cio-org-id'],
       exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
       maxAge: 600,
       credentials: true

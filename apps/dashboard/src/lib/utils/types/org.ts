@@ -74,48 +74,6 @@ export interface OrgLandingPageJson {
   };
 }
 
-export interface OrgCustomization {
-  dashboard: {
-    community: boolean;
-    exercise: boolean;
-    bannerImage: string;
-    bannerText: string;
-  };
-  course: {
-    newsfeed: boolean;
-    grading: boolean;
-  };
-  apps: {
-    poll: boolean;
-    comments: boolean;
-  };
-}
-
-export interface CurrentOrg {
-  id: string;
-  name: string;
-  shortName: string;
-  siteName: string;
-  avatar_url: string;
-  memberId: string;
-  role_id: number;
-  landingpage: OrgLandingPageJson;
-  customization: OrgCustomization;
-  theme: string;
-  organization_plan: {
-    provider: 'polar' | 'lmz';
-    subscriptionId: string;
-    customerId: string;
-    plan_name: string;
-    is_active: boolean;
-  }[];
-  is_restricted: boolean;
-  customDomain?: string;
-  isCustomDomainVerified?: boolean;
-  customCode?: string;
-  favicon?: string;
-}
-
 export interface OrgTeamMember {
   id: number;
   email: string;

@@ -1,11 +1,10 @@
 <script lang="ts">
   import * as Select from '@cio/ui/base/select';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { Input } from '@cio/ui/base/input';
   import { DomainInput } from '@cio/ui/custom/domain-input';
   import * as Field from '@cio/ui/base/field';
+  import { Button } from '@cio/ui/base/button';
   import UserProfileIcon from '$lib/components/Icons/UserProfileIcon.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { profile } from '$lib/utils/store/user';
   import { onboardingApi } from '$lib/features/onboarding/api/onboarding.svelte';
   import { generateSitename } from '$lib/utils/functions/org';
@@ -74,36 +73,28 @@
       <div class="form-container w-full overflow-y-auto px-2">
         {#if onboardingApi.step === ONBOARDING_STEPS.ORG_SETUP}
           <!-- Name/Organization Question -->
-          <div id="role-question" class="mb-6 flex flex-col items-start">
+          <Field.Group class="mb-6">
             <!-- Full name -->
-            <TextField
-              label={$t('onboarding.fullname')}
-              bind:value={fields.fullname}
-              name="fullname"
-              type="text"
-              placeholder="e.g Joke Silva"
-              className="mb-5 w-full"
-              labelClassName="text-lg font-normal"
-              errorMessage={onboardingApi.errors.fullname}
-              isRequired
-            />
+            <Field.Field>
+              <Field.Label>{$t('onboarding.fullname')}</Field.Label>
+              <Input bind:value={fields.fullname} name="fullname" type="text" placeholder="e.g Joke Silva" />
+              {#if onboardingApi.errors.fullname}
+                <Field.Error>{onboardingApi.errors.fullname}</Field.Error>
+              {/if}
+            </Field.Field>
 
             <!-- Org name -->
-            <TextField
-              label={$t('onboarding.name')}
-              bind:value={fields.orgName}
-              name="orgname"
-              type="text"
-              placeholder="e.g Education For All"
-              className="mb-5 w-full"
-              labelClassName="text-lg font-normal"
-              errorMessage={onboardingApi.errors.orgName}
-              isRequired
-            />
+            <Field.Field>
+              <Field.Label>{$t('onboarding.name')}</Field.Label>
+              <Input bind:value={fields.orgName} name="orgname" type="text" placeholder="e.g My School Name" />
+              {#if onboardingApi.errors.orgName}
+                <Field.Error>{onboardingApi.errors.orgName}</Field.Error>
+              {/if}
+            </Field.Field>
 
             <!-- Org Site Name -->
-            <Field.Field class="mb-5 w-full">
-              <Field.Label class="text-lg font-normal">{$t('onboarding.organisation_sitename')}</Field.Label>
+            <Field.Field>
+              <Field.Label>{$t('onboarding.organisation_sitename')}</Field.Label>
               <DomainInput
                 bind:value={fields.siteName}
                 placeholder="myschool"
@@ -117,7 +108,7 @@
                 <Field.Error>{onboardingApi.errors.siteName}</Field.Error>
               {/if}
             </Field.Field>
-          </div>
+          </Field.Group>
         {:else}
           <!-- Goal/Source Question -->
           <div id="goal-question" class="mb-6 flex flex-col items-center">
@@ -191,21 +182,13 @@
 
         <div class="flex">
           {#if onboardingApi.step > ONBOARDING_STEPS.ORG_SETUP}
-            <PrimaryButton
-              label={$t('onboarding.back')}
-              variant={VARIANTS.NONE}
-              className="py-3 px-6 mr-2 text-primary-700"
-              onClick={() => (onboardingApi.step = ONBOARDING_STEPS.ORG_SETUP)}
-            />
+            <Button variant="ghost" onclick={() => (onboardingApi.step = ONBOARDING_STEPS.ORG_SETUP)}>
+              {$t('onboarding.back')}
+            </Button>
           {/if}
-          <PrimaryButton
-            label={$t('onboarding.continue')}
-            variant={VARIANTS.CONTAINED}
-            type="button"
-            className="px-5 py-3"
-            isLoading={onboardingApi.isLoading}
-            onClick={() => onboardingApi.submit(fields)}
-          />
+          <Button loading={onboardingApi.isLoading} onclick={() => onboardingApi.submit(fields)}>
+            {$t('onboarding.continue')}
+          </Button>
         </div>
       </div>
     </div>

@@ -1,8 +1,7 @@
 <script lang="ts">
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  // import { snackbar } from '$lib/components/Snackbar/store';
   import { Input } from '@cio/ui/base/input';
   import { Button } from '@cio/ui/base/button';
   import ArrowUpRightIcon from '$lib/components/Icons/ArrowTopRight.svelte';
@@ -14,33 +13,27 @@
   async function addChatId() {
     if (!chatId || `${chatId}`.length < 5) return;
 
-    const { error } = await supabase
-      .from('profile')
-      .update({
-        telegram_chat_id: chatId
-      })
-      .match({ id: $profile.id });
+    // TODO: Update profile with telegram chat id
 
-    if (error) {
-      console.log(error);
-      snackbar.error('snackbar.course_settings.error.failed_integration');
-    } else {
-      $profile.telegramChatId = chatId;
-      chatId = null;
-      snackbar.success('snackbar.course_settings.success.successful_integration');
-    }
+    // if (error) {
+    //   console.log(error);
+    //   snackbar.error('snackbar.course_settings.error.failed_integration');
+    // } else {
+    //   $profile.telegramChatId = chatId;
+    //   chatId = null;
+    //   snackbar.success('snackbar.course_settings.success.successful_integration');
+    // }
   }
 
   async function deleteChatId() {
-    const { error } = await supabase.from('profile').update({ telegram_chat_id: null }).match({ id: $profile.id });
-
-    if (error) {
-      snackbar.error('snackbar.course_settings.error.failed_deletion');
-      console.log(error);
-    } else {
-      $profile.telegramChatId = null;
-      snackbar.success('snackbar.course_settings.success.successful_deletion');
-    }
+    // const { error } = await supabase.from('profile').update({ telegram_chat_id: null }).match({ id: $profile.id });
+    // if (error) {
+    //   snackbar.error('snackbar.course_settings.error.failed_deletion');
+    //   console.log(error);
+    // } else {
+    //   $profile.telegramChatId = null;
+    //   snackbar.success('snackbar.course_settings.success.successful_deletion');
+    // }
   }
 </script>
 

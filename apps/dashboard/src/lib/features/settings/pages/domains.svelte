@@ -9,8 +9,8 @@
   import { parse } from 'tldts';
 
   import { t } from '$lib/utils/functions/translations';
-  import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import { orgApi } from '$lib/features/org/api/org.svelte';
   import { blockedSubdomain } from '$lib/utils/constants/app';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { copyToClipboard } from '$lib/utils/functions/formatYoutubeVideo';
@@ -60,17 +60,19 @@
     }
     isLoading = true;
 
-    const { data: org, error } = await supabase.from('organization').update({ siteName }).match({ id: $currentOrg.id });
+    await orgApi.update($currentOrg.id, {
+      siteName
+    });
 
-    console.log('Updating organisation', org);
-    if (error) {
-      console.log('Error: create organisation', error);
-      errors.siteName = $t('add_org.sitename');
-    } else {
-      snackbar.success();
+    if (orgApi.success) {
       $currentOrg.siteName = siteName;
-
       goto(`/org/${$currentOrg.siteName}/settings/domains`);
+    } else {
+      if (orgApi.errors.general) {
+        errors.siteName = orgApi.errors.general;
+      } else {
+        errors.siteName = $t('add_org.sitename');
+      }
     }
 
     isLoading = false;
@@ -93,14 +95,13 @@
     }
 
     isCustomDomainLoading = true;
-    const { error } = await supabase
-      .from('organization')
-      .update({ customDomain: sanitizedDomain })
-      .match({ id: $currentOrg.id });
 
-    if (error) {
-      console.log('Error: create organisation', error);
-      errors.customDomain = error.message;
+    await orgApi.update($currentOrg.id, {
+      customDomain: sanitizedDomain
+    });
+
+    if (!orgApi.success) {
+      errors.customDomain = orgApi.errors.general || 'Failed to update custom domain';
       isCustomDomainLoading = false;
       return;
     }
@@ -115,9 +116,8 @@
       isCustomDomainLoading = false;
       return;
     }
-    snackbar.success('components.settings.domains.custom_domain_success');
-    $currentOrg.customDomain = sanitizedDomain;
 
+    $currentOrg.customDomain = sanitizedDomain;
     isCustomDomainLoading = false;
   }
 
@@ -125,14 +125,14 @@
     if (!$currentOrg.customDomain) return;
 
     isCustomDomainLoading = true;
-    const { error } = await supabase
-      .from('organization')
-      .update({ customDomain: null, isCustomDomainVerified: false })
-      .match({ id: $currentOrg.id });
 
-    if (error) {
-      console.log('Error: updating organisation', error);
-      snackbar.error(error.message);
+    await orgApi.update($currentOrg.id, {
+      customDomain: null,
+      isCustomDomainVerified: false
+    });
+
+    if (!orgApi.success) {
+      snackbar.error(orgApi.errors.general || 'Failed to remove custom domain');
       isCustomDomainLoading = false;
       return;
     }
@@ -151,8 +151,6 @@
       return;
     }
 
-    snackbar.success();
-
     $currentOrg.customDomain = '';
     $currentOrg.isCustomDomainVerified = false;
     isCustomDomainLoading = false;
@@ -167,9 +165,13 @@
 
       console.log('data', data);
       if (data.verified && !$currentOrg.isCustomDomainVerified) {
-        $currentOrg.isCustomDomainVerified = true;
+        await orgApi.update($currentOrg.id, {
+          isCustomDomainVerified: true
+        });
 
-        await supabase.from('organization').update({ isCustomDomainVerified: true }).match({ id: $currentOrg.id });
+        if (orgApi.success) {
+        $currentOrg.isCustomDomainVerified = true;
+        }
       }
     } catch (error) {
       console.log('Error: refreshing domain', error);

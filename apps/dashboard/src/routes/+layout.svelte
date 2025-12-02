@@ -101,11 +101,11 @@
 
 <Snackbar />
 
-{#if data.org?.is_restricted || $currentOrg.isRestricted}
+{#if data.org?.isRestricted || $currentOrg.isRestricted}
   <PageRestricted />
 {:else if data.skipAuth}
   <PlayQuiz />
-{:else if data.isOrgSite && !path}
+{:else if data.isOrgSite && data.org && !path}
   <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org} />
 {:else}
   <PageLoadProgress zIndex={10000} />

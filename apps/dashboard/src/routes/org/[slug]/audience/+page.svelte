@@ -2,9 +2,10 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { AudiencePage } from '$lib/features/audience/pages';
   import { t } from '$lib/utils/functions/translations';
-  import { orgAudience, currentOrgPlan, currentOrgMaxAudience } from '$lib/utils/store/org';
+  import { currentOrgPlan, currentOrgMaxAudience } from '$lib/utils/store/org';
   import { PLAN } from '@cio/utils/plans';
   import * as Page from '@cio/ui/base/page';
+  import { orgApi } from '$lib/features/org/api/org.svelte';
 
   let isLoading = $state(false);
 
@@ -26,7 +27,7 @@
         {$t('audience.title')}
         {#if $currentOrgPlan?.planName !== PLAN.ENTERPRISE}
           <span class="ml-2 text-sm">
-            ({$orgAudience.length} / {$currentOrgMaxAudience})
+            ({orgApi.audience.length} / {$currentOrgMaxAudience})
           </span>
         {/if}
       </Page.Title>

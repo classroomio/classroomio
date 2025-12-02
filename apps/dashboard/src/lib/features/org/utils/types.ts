@@ -5,7 +5,16 @@ export type GetTeamResponse = (typeof classroomio.organization)[':orgId']['team'
 export type OrganizationTeamResponse = InferResponseType<GetTeamResponse> | null;
 export type OrganizationTeamSuccess = Extract<InferResponseType<GetTeamResponse>, { success: true }>;
 
-export type OrganizationTeamMembers = OrganizationTeamSuccess['data'];
+export type OrganizationTeamMembersRaw = OrganizationTeamSuccess['data'];
+
+// Mapped team members with role and isAdmin (mapped in API layer)
+export type OrganizationTeamMembers = Array<
+  OrganizationTeamMembersRaw[number] & {
+    role: string;
+    isAdmin: boolean;
+    verified: boolean;
+  }
+>;
 
 // Audience types
 export type GetAudienceResponse = (typeof classroomio.organization)[':orgId']['audience']['$get'];
@@ -23,3 +32,10 @@ export type CoursesByOrganizationSiteNameSuccess = Extract<
 >;
 
 export type CoursesByOrganizationSiteName = CoursesByOrganizationSiteNameSuccess['data'];
+
+export type InviteTeamResponse = (typeof classroomio.organization)[':orgId']['team']['invite']['$post'];
+export type InviteTeamSuccess = Extract<InferResponseType<InviteTeamResponse>, { success: true }>;
+export type InviteTeamData = InviteTeamSuccess['data'];
+
+export type DeleteTeamResponse = (typeof classroomio.organization)[':orgId']['team'][':memberId']['$delete'];
+export type DeleteTeamSuccess = Extract<InferResponseType<DeleteTeamResponse>, { success: true }>;
