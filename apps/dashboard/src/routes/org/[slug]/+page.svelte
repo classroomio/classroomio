@@ -95,7 +95,7 @@
         <div
           class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 md:p-5 dark:border-neutral-600 dark:text-white"
         >
-          <h3 class="mt-0 text-lg">
+          <h3 class="mb-4 text-lg">
             {$t('dashboard.top_courses')}
           </h3>
 
@@ -108,8 +108,8 @@
               {#each topCourses as course}
                 <div class="flex items-center gap-2">
                   <div class="w-4/6 space-y-1">
-                    <a href={`/courses/${course.id}`}>
-                      <p class="line-clamp-2 pb-[0.1rem] text-sm font-medium leading-none">
+                    <a class="hover:underline" href={`/courses/${course.id}`}>
+                      <p class="line-clamp-2 pb-[0.1rem] text-sm leading-none">
                         {course.title}
                       </p>
                     </a>
@@ -120,7 +120,7 @@
                   </div>
                   <div class="ml-auto w-2/6">
                     <Progress value={course.completion} />
-                    <div class="text-sm font-medium">
+                    <div class="text-sm">
                       {course.completion}%
                       {$t('dashboard.completion')}
                     </div>
@@ -143,7 +143,7 @@
         <div
           class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 md:p-5 dark:border-neutral-600 dark:text-white"
         >
-          <h3 class="mt-0 text-lg">
+          <h3 class="mb-4 text-lg">
             {$t('dashboard.recent_enrollments')}
           </h3>
 
@@ -165,7 +165,7 @@
                     </Avatar.Root>
 
                     <div class="min-h-[45px] space-y-1">
-                      <p class="text-sm font-medium capitalize leading-none">{enrollment.name}</p>
+                      <p class="text-sm capitalize leading-none">{enrollment.name}</p>
                       <p class="text-muted-foreground text-sm">
                         <span class="italic">
                           {calDateDiff(enrollment.date)}
@@ -175,8 +175,8 @@
                   </div>
 
                   <div class="w-2/4">
-                    <a href={`/courses/${enrollment.courseId}`}>
-                      <p class="line-clamp-2 pb-[0.1rem] text-sm font-medium leading-none">
+                    <a class="hover:underline" href={`/courses/${enrollment.courseId}`}>
+                      <p class="line-clamp-2 pb-[0.1rem] text-sm leading-none">
                         {enrollment.course}
                       </p>
                     </a>

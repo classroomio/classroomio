@@ -12,8 +12,6 @@ export const dashAnalyticsRouter = new Hono().post(
   async (c) => {
     try {
       const { orgId, siteName } = c.req.valid('json');
-      console.log('orgId', orgId);
-      console.log('siteName', siteName);
 
       const result = await getOrganisationAnalytics(orgId, siteName);
 

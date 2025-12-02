@@ -21,8 +21,6 @@ class DashStatApi extends BaseApi {
    * @returns Organization analytics data (enrollments, courses, revenue, students, top courses)
    */
   async fetchOrgStats({ orgId, siteName }: { orgId?: string; siteName?: string }) {
-    console.log('orgId', orgId);
-    console.log('siteName', siteName);
     await this.execute<typeof classroomio.dash.stats.$post>({
       requestFn: () => classroomio.dash.stats.$post({ json: { orgId, siteName } }),
       logContext: 'fetching organization stats',
