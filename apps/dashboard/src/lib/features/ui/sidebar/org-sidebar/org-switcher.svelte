@@ -8,7 +8,7 @@
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
-  import { getShortOrgName } from '$lib/utils/functions/org';
+  import { shortenName } from '$lib/utils/functions/string';
   import type { AccountOrg } from '$lib/features/app/types';
 
   import { setTheme } from '$lib/utils/functions/theme';
@@ -44,7 +44,7 @@
           {#if $currentOrg.name}
             <Avatar.Root class="rounded-md! size-6! flex items-center justify-center">
               <Avatar.Image src={$currentOrg.avatarUrl} alt={$currentOrg.name} />
-              <Avatar.Fallback class="rounded-md! text-xs">{getShortOrgName($currentOrg.name)}</Avatar.Fallback>
+              <Avatar.Fallback class="rounded-md! text-xs">{shortenName($currentOrg.name)}</Avatar.Fallback>
             </Avatar.Root>
             <span class="hidden truncate text-sm font-medium md:block">{$currentOrg.name}</span>
             <ChevronDownIcon class="ml-auto hidden size-4 md:block" />
@@ -66,7 +66,7 @@
         <DropdownMenu.Item onSelect={() => onClick(org)} class="gap-2 p-2">
           <Avatar.Root class="flex size-8 items-center justify-center rounded-lg">
             <Avatar.Image src={org.avatarUrl} alt={org.name} />
-            <Avatar.Fallback class="rounded-lg">{getShortOrgName(org.name)}</Avatar.Fallback>
+            <Avatar.Fallback class="rounded-lg">{shortenName(org.name)}</Avatar.Fallback>
           </Avatar.Root>
 
           {org.name}
@@ -100,7 +100,7 @@
               {#if $currentOrg.name}
                 <Avatar.Root class="ui:flex ui:size-8 ui:items-center ui:justify-center ui:rounded-lg">
                   <Avatar.Image src={$currentOrg.avatarUrl} alt={$currentOrg.name} />
-                  <Avatar.Fallback class="rounded-lg">{getShortOrgName($currentOrg.name)}</Avatar.Fallback>
+                  <Avatar.Fallback class="rounded-lg">{shortenName($currentOrg.name)}</Avatar.Fallback>
                 </Avatar.Root>
 
                 <div class="grid flex-1 text-left text-sm leading-tight">
@@ -132,7 +132,7 @@
             <DropdownMenu.Item onSelect={() => onClick(org)} class="gap-2 p-2">
               <Avatar.Root class="flex size-8 items-center justify-center rounded-lg">
                 <Avatar.Image src={org.avatarUrl} alt={org.name} />
-                <Avatar.Fallback class="rounded-lg">{getShortOrgName(org.name)}</Avatar.Fallback>
+                <Avatar.Fallback class="rounded-lg">{shortenName(org.name)}</Avatar.Fallback>
               </Avatar.Root>
 
               {org.name}

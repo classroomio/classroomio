@@ -33,6 +33,11 @@ export type CoursesByOrganizationSiteNameSuccess = Extract<
 
 export type CoursesByOrganizationSiteName = CoursesByOrganizationSiteNameSuccess['data'];
 
+// dashboard analytics types
+export type GetDashStatsResponse = typeof classroomio.dash.stats.$post;
+export type DashStatsResponse = InferResponseType<GetDashStatsResponse> | null;
+export type DashStatsSuccess = Extract<InferResponseType<GetDashStatsResponse>, { success: true }>;
+
 export type InviteTeamResponse = (typeof classroomio.organization)[':orgId']['team']['invite']['$post'];
 export type InviteTeamSuccess = Extract<InferResponseType<InviteTeamResponse>, { success: true }>;
 export type InviteTeamData = InviteTeamSuccess['data'];

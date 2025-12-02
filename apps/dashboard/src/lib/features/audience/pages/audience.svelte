@@ -10,8 +10,9 @@
   import { Empty } from '@cio/ui/custom/empty';
   import { UpgradeBanner } from '$lib/features/ui';
   import { currentOrg, currentOrgMaxAudience } from '$lib/utils/store/org';
-  import Avatar from '$lib/components/Avatar/index.svelte';
+  import * as Avatar from '@cio/ui/base/avatar';
   import * as Page from '@cio/ui/base/page';
+  import { shortenName } from '$lib/utils/functions/string';
 
   $effect(() => {
     orgApi.getOrgAudience($currentOrg.id);
@@ -81,7 +82,13 @@
                     href={`${pageStore.url.href}/${row.id}/${$currentOrg.id}`}
                     class="text-primary-700 flex items-center gap-2 hover:underline"
                   >
-                    <Avatar src={row.avatar_url} width="w-5" height="h-5" />
+                    <Avatar.Root class="h-5 w-5">
+                      <Avatar.Image
+                        src={row.avatar_url ? row.avatar_url : '/logo-192.png'}
+                        alt={row.name ? row.name : 'User'}
+                      />
+                      <Avatar.Fallback>{shortenName(row.name) || 'U'}</Avatar.Fallback>
+                    </Avatar.Root>
                     {row.name}
                   </a>
                 </Table.Cell>

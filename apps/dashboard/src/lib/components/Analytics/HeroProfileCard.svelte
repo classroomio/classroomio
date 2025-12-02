@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Avatar from '$lib/components/Avatar/index.svelte';
+  import * as Avatar from '@cio/ui/base/avatar';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
   import type { UserAnalytics } from '$lib/utils/types/analytics';
@@ -15,7 +15,13 @@
 
 <div class="rounded-md border p-5 dark:border-neutral-600">
   <div class="flex w-full flex-col items-center justify-start gap-4 text-start md:flex-row">
-    <Avatar src={user.avatarUrl} name={user.fullName} width="w-16" height="h-16" />
+    <Avatar.Root class="h-16 w-16">
+      <Avatar.Image
+        src={user.avatarUrl ? user.avatarUrl : '/logo-192.png'}
+        alt={user.fullName ? user.fullName : 'User'}
+      />
+      <Avatar.Fallback>{user.fullName ? user.fullName : 'User'}</Avatar.Fallback>
+    </Avatar.Root>
     <div class="flex flex-col space-y-2">
       <p class="text-center text-2xl md:text-left dark:text-white">
         {user.fullName}

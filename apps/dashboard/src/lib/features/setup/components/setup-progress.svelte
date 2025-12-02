@@ -47,7 +47,7 @@
     </svg>
     <!-- Center text -->
     <div class="absolute inset-0 flex flex-col items-center justify-center">
-      <p class="{size === 'small' ? 'text-[10px]' : 'text-sm'} font-bold">{progressPercentage}%</p>
+      <p class={size === 'small' ? 'text-[10px]' : 'text-sm'}>{progressPercentage}%</p>
     </div>
   {/if}
 </div>

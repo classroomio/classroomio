@@ -21,8 +21,9 @@
   import { profile } from '$lib/utils/store/user';
   import Vote from '$lib/components/Vote/index.svelte';
   import { IconButton } from '$lib/components/IconButton';
-  import Avatar from '$lib/components/Avatar/index.svelte';
+  import * as Avatar from '@cio/ui/base/avatar';
   import TextField from '$lib/components/Form/TextField.svelte';
+  import { shortenName } from '$lib/utils/functions/string';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { CommunityDeleteModal } from '$lib/features/community/components';
@@ -454,7 +455,13 @@
         <div class="border-gray my-1 rounded-lg border px-1">
           <header class="flex items-center justify-between p-2 leading-none">
             <div class="flex items-center text-black no-underline hover:underline">
-              <Avatar src={question.author.avatar} name={question.author.name} width="w-7" height="h-7" />
+              <Avatar.Root class="h-7 w-7">
+                <Avatar.Image
+                  src={question.author.avatar ? question.author.avatar : '/logo-192.png'}
+                  alt={question.author.name ? question.author.name : 'User'}
+                />
+                <Avatar.Fallback>{shortenName(question.author.name) || 'U'}</Avatar.Fallback>
+              </Avatar.Root>
               <p class="ml-2 text-sm dark:text-white">{question.author.name}</p>
               <p class="ml-2 text-sm text-gray-500 dark:text-white">
                 {question.createdAt}
@@ -503,7 +510,13 @@
             <div class="border-gray w-full rounded-lg border">
               <header class="flex items-center justify-between p-2 leading-none">
                 <div class="flex items-center text-black">
-                  <Avatar src={comment.avatar} name={comment.name} width="w-7" height="h-7" />
+                  <Avatar.Root class="h-7 w-7">
+                    <Avatar.Image
+                      src={comment.avatar ? comment.avatar : '/logo-192.png'}
+                      alt={comment.name ? comment.name : 'User'}
+                    />
+                    <Avatar.Fallback>{shortenName(comment.name) || 'U'}</Avatar.Fallback>
+                  </Avatar.Root>
                   <p class="ml-2 text-sm dark:text-white">{comment.name}</p>
                   <p class="ml-2 text-sm text-gray-500 dark:text-white">
                     {comment.createdAt}

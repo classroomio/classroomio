@@ -7,8 +7,9 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import ReviewFormEditor from './ReviewFormEditor.svelte';
-  import Avatar from '$lib/components/Avatar/index.svelte';
+  import * as Avatar from '@cio/ui/base/avatar';
   import { processErrors } from '$lib/utils/functions/validator';
+  import { shortenName } from '$lib/utils/functions/string';
   import { t } from '$lib/utils/functions/translations';
   import type { Course } from '$lib/utils/types';
 
@@ -98,7 +99,13 @@
         {#if review.id !== reviewToExpand}
           <!-- the headers -->
           <div class="flex w-full items-center justify-between">
-            <Avatar src={review.avatar_url} name={review.name} className="mt-1" />
+            <Avatar.Root class="mt-1 h-10 w-10">
+              <Avatar.Image
+                src={review.avatar_url ? review.avatar_url : '/logo-192.png'}
+                alt={review.name ? review.name : 'Reviewer'}
+              />
+              <Avatar.Fallback>{shortenName(review.name) || 'R'}</Avatar.Fallback>
+            </Avatar.Root>
             <p class="text-sm">{review.name}</p>
 
             <IconButton value="expand" onClick={() => onExpand(review.id)} size={$isMobile ? 'large' : 'small'}>

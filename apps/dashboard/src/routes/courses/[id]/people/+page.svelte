@@ -10,7 +10,7 @@
   import SearchIcon from '@lucide/svelte/icons/search';
 
   import TextChip from '$lib/components/Chip/Text.svelte';
-  import Avatar from '$lib/components/Avatar/index.svelte';
+  import * as Avatar from '@cio/ui/base/avatar';
   import { ComingSoon } from '$lib/features/ui';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { RoleBasedSecurity } from '$lib/features/ui';
@@ -21,6 +21,7 @@
   import type { GroupPerson } from '$lib/utils/types';
   import { group } from '$lib/components/Course/store';
   import { t } from '$lib/utils/functions/translations';
+  import { shortenName } from '$lib/utils/functions/string';
   import Select from '$lib/components/Form/Select.svelte';
   import { IconButton } from '$lib/components/IconButton';
   import { ROLE_LABEL, ROLES } from '$lib/utils/constants/roles';
@@ -133,13 +134,13 @@
             <Table.Cell class="w-4/6 md:w-3/6">
               {#if person.profile}
                 <div class="flex items-start lg:items-center">
-                  <Avatar
-                    src={person.profile.avatar_url}
-                    name={person.profile.fullname}
-                    width="w-8"
-                    height="h-8"
-                    className="mr-3"
-                  />
+                  <Avatar.Root class="mr-3">
+                    <Avatar.Image
+                      src={person.profile.avatar_url ? person.profile.avatar_url : '/logo-192.png'}
+                      alt={person.profile.fullname ? person.profile.fullname : 'User'}
+                    />
+                    <Avatar.Fallback>{shortenName(person.profile.fullname) || 'U'}</Avatar.Fallback>
+                  </Avatar.Root>
                   <div class="flex flex-col items-start lg:flex-row lg:items-center">
                     <div class="mr-2">
                       <p class="text-base font-normal dark:text-white">
@@ -173,7 +174,7 @@
               {:else}
                 <div class="flex w-2/4 items-start lg:items-center">
                   <TextChip
-                    value={person.email.substring(0, 2).toUpperCase()}
+                    value={shortenName(person.email)}
                     className="bg-primary-200 text-black font-semibold text-xs mr-3"
                     shape="rounded-full"
                   />

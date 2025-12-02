@@ -5,8 +5,9 @@
   import type { PostgrestSingleResponse, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
   import { group } from '$lib/components/Course/store';
-  import Avatar from '$lib/components/Avatar/index.svelte';
+  import * as Avatar from '@cio/ui/base/avatar';
   import TextArea from '$lib/components/Form/TextArea.svelte';
+  import { shortenName } from '$lib/utils/functions/string';
   import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { lesson, lessonCommentsChannel } from '$lib/components/Course/components/Lesson/store/lessons';
@@ -62,7 +63,7 @@
         id: 0,
         comment: comment,
         name: $t('course.navItem.lessons.comments.you'),
-        avatar: $profile.avatar_url,
+        avatar: $profile.avatarUrl,
         commentAt: new Date(),
         groupmember_id: groupmember.id
       },
@@ -270,7 +271,13 @@
   </div>
   <div>
     <div class="flex h-full items-start gap-3">
-      <Avatar src={$profile.avatar_url} name={$profile.fullname} width="w-8" height="h-8" className="mt-2" />
+      <Avatar.Root class="mt-2 h-8 w-8">
+        <Avatar.Image
+          src={$profile.avatarUrl ? $profile.avatarUrl : '/logo-192.png'}
+          alt={$profile.fullname ? $profile.fullname : 'User'}
+        />
+        <Avatar.Fallback>{shortenName($profile.fullname) || 'U'}</Avatar.Fallback>
+      </Avatar.Root>
       <div class="h-full w-full">
         <TextArea
           label={$t('course.navItem.lessons.comments.text_area_title')}
@@ -293,7 +300,13 @@
   <div class="my-10">
     {#each comments as commentItem}
       <div class="mt-2 flex items-start gap-3 pb-2">
-        <Avatar src={commentItem.avatar} name={commentItem.name} width="w-8" height="h-8" />
+        <Avatar.Root class="h-8 w-8">
+          <Avatar.Image
+            src={commentItem.avatar ? commentItem.avatar : '/logo-192.png'}
+            alt={commentItem.name ? commentItem.name : 'User'}
+          />
+          <Avatar.Fallback>{shortenName(commentItem.name) || 'U'}</Avatar.Fallback>
+        </Avatar.Root>
 
         <div class="w-full rounded-md border px-4 pb-4 pt-2 dark:border-neutral-700">
           <div class="flex items-center justify-between gap-2">
@@ -349,7 +362,7 @@
               />
             </div>
           {:else}
-            <article class="prose max-w-[300px] sm:prose-sm dark:text-white">
+            <article class="prose sm:prose-sm max-w-[300px] dark:text-white">
               {commentItem.comment}
             </article>
           {/if}

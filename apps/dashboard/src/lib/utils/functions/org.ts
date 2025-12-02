@@ -23,7 +23,3 @@ export function openUpgradeModal() {
 
   goto(resolve(window.location.pathname + `?${searchParams}`, {}));
 }
-
-export function getShortOrgName(name: string) {
-  return name?.substring(0, 2)?.toUpperCase() || '';
-}

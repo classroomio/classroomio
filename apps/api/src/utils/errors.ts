@@ -28,6 +28,10 @@ export interface ErrorResponse {
 
 // Error codes constants for consistency
 export const ErrorCodes = {
+  // Dashboard Analytics errors
+  ORG_ANALYTICS_FETCH_FAILED: 'ORG_ANALYTICS_FETCH_FAILED',
+  NO_ORG_ID_PROVIDED: 'NO_ORG_ID_PROVIDED',
+
   // Organization errors
   SITENAME_EXISTS: 'SITENAME_EXISTS',
   ORG_CREATE_FAILED: 'ORG_CREATE_FAILED',
