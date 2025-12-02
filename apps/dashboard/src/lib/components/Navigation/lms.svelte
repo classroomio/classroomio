@@ -1,39 +1,30 @@
 <script lang="ts">
   import { page } from '$app/state';
   import BellIcon from '@lucide/svelte/icons/bell';
-  import Avatar from '$lib/components/Avatar/index.svelte';
-  import TextChip from '$lib/components/Chip/Text.svelte';
+  import * as Avatar from '@cio/ui/base/avatar';
 
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
+  import { shortenName } from '$lib/utils/functions/string';
 
   interface Props {
     navClass?: string;
   }
 
   let { navClass = '' }: Props = $props();
-
-  function shortenName(name: string) {
-    return name?.substring(0, 2)?.toUpperCase() || '';
-  }
 </script>
 
 <nav class="{navClass} bg-primary-700 flex h-[48px] w-full p-2 md:px-6">
   <ul class="flex w-full items-center">
     <div class="">
       <a href={page.url.pathname} title={$t('navigation.goto_home')} id="logo" class="flex items-center text-lg">
-        {#if $currentOrg.avatar_url}
-          <Avatar
-            src={$currentOrg.avatar_url}
-            name={$currentOrg.name}
-            shape="rounded-md"
-            width="w-7"
-            height="h-7"
-            className="mr-2"
+        <Avatar.Root class="mr-2 h-7 w-7 rounded-md">
+          <Avatar.Image
+            src={$currentOrg.avatarUrl ? $currentOrg.avatarUrl : '/logo-192.png'}
+            alt={$currentOrg.name ? $currentOrg.name : 'Organization'}
           />
-        {:else}
-          <TextChip value={shortenName($currentOrg.name)} className="bg-primary-200 mr-2 dark:text-black" />
-        {/if}
+          <Avatar.Fallback>{shortenName($currentOrg.name)}</Avatar.Fallback>
+        </Avatar.Root>
         <span class="line-clamp-1">
           {$currentOrg.name}
         </span>

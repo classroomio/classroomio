@@ -21,9 +21,10 @@
   import Chip from '../Chip/index.svelte';
   import Modal from '../Modal/index.svelte';
   import ImageRenderer from '../Org/ImageRenderer.svelte';
-  import Avatar from '$lib/components/Avatar/index.svelte';
+  import * as Avatar from '@cio/ui/base/avatar';
   import PricingSection from './components/PricingSection.svelte';
   import { PoweredBy } from '$lib/features/ui';
+  import { shortenName } from '$lib/utils/functions/string';
   import SectionsDisplay from './components/SectionsDisplay.svelte';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
@@ -332,7 +333,13 @@
                   <div class="item-start my-2 flex w-2/4 flex-row">
                     <!-- image container -->
                     {#if review.avatar_url}
-                      <Avatar src={review.avatar_url} name="Avatar" className="mt-1" />
+                      <Avatar.Root class="mt-1 size-10">
+                        <Avatar.Image
+                          src={review.avatar_url ? review.avatar_url : '/logo-192.png'}
+                          alt={review.name ? review.name : 'Avatar'}
+                        />
+                        <Avatar.Fallback>{shortenName(review.name) || 'AV'}</Avatar.Fallback>
+                      </Avatar.Root>
                     {/if}
 
                     <!-- profile content -->
@@ -401,7 +408,13 @@
                     <div class="item-start my-2 flex w-full flex-row">
                       <!-- image container -->
                       {#if review.avatar_url}
-                        <Avatar src={review.avatar_url} name={review.name} className="mt-1" />
+                        <Avatar.Root class="mt-1 h-10 w-10">
+                          <Avatar.Image
+                            src={review.avatar_url ? review.avatar_url : '/logo-192.png'}
+                            alt={review.name ? review.name : 'Avatar'}
+                          />
+                          <Avatar.Fallback>{shortenName(review.name) || 'AV'}</Avatar.Fallback>
+                        </Avatar.Root>
                       {/if}
 
                       <!-- profile content -->

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import Avatar from '$lib/components/Avatar/index.svelte';
+  import * as Avatar from '@cio/ui/base/avatar';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
   import GoogleIconColored from '$lib/components/Icons/GoogleIconColored.svelte';
@@ -68,14 +68,14 @@
   <Card.Root class="ui:w-full max-w-[400px]">
     {#if !showOnlyContent || showLogo}
       <Card.Header class="ui:flex ui:flex-col ui:items-center ui:gap-4">
-        <Avatar
-          src={$currentOrg.avatarUrl ? $currentOrg.avatarUrl : '/logo-192.png'}
-          name={$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
-          shape="rounded-md"
-          width="w-10"
-          height="max-h-10"
-          className="mr-2"
-        />
+        <Avatar.Root>
+          <Avatar.Image
+            src={$currentOrg.avatarUrl ? $currentOrg.avatarUrl : '/logo-192.png'}
+            alt={$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}
+          />
+          <Avatar.Fallback>{$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}</Avatar.Fallback>
+        </Avatar.Root>
+
         <a href="/">
           <Card.Title class="ui:text-2xl ui:font-bold">
             {isLogin ? $t('login.welcome') : $t('login.create_account')}

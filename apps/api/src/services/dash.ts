@@ -1,7 +1,8 @@
-import { getOrgIdBySiteName } from '@db/queries';
-import { OrganisationAnalytics } from '@api/types';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { getCourseStats, getDashOrgStats, getRecentEnrollments } from '@cio/db/queries/dash';
+
+import { OrganisationAnalytics } from '@api/types';
+import { getOrgIdBySiteName } from '@db/queries';
 
 export async function getOrganisationAnalytics(orgId?: string, siteName?: string): Promise<OrganisationAnalytics> {
   const analytics: OrganisationAnalytics = {
@@ -15,10 +16,10 @@ export async function getOrganisationAnalytics(orgId?: string, siteName?: string
   let resolvedOrgId = orgId;
 
   if (!resolvedOrgId && siteName) {
-    const org = await getOrgIdBySiteName(siteName);
+    const [org] = await getOrgIdBySiteName(siteName);
 
-    if (org && org.length > 0) {
-      resolvedOrgId = org[0].id;
+    if (org) {
+      resolvedOrgId = org.id;
     } else {
       throw new AppError('Organization not found for the given site name', ErrorCodes.ORG_NOT_FOUND, 404);
     }

@@ -1,10 +1,9 @@
-import { authMiddleware } from '@api/middlewares/auth';
-
-import { handleError } from '@api/utils/errors';
-import { ZDashStats } from '@cio/utils/validation/dash';
-import { zValidator } from '@hono/zod-validator';
 import { Hono } from '@api/utils/hono';
+import { ZDashStats } from '@cio/utils/validation/dash';
+import { authMiddleware } from '@api/middlewares/auth';
 import { getOrganisationAnalytics } from '@api/services/dash';
+import { handleError } from '@api/utils/errors';
+import { zValidator } from '@hono/zod-validator';
 
 export const dashAnalyticsRouter = new Hono().post(
   '/stats',
@@ -13,6 +12,8 @@ export const dashAnalyticsRouter = new Hono().post(
   async (c) => {
     try {
       const { orgId, siteName } = c.req.valid('json');
+      console.log('orgId', orgId);
+      console.log('siteName', siteName);
 
       const result = await getOrganisationAnalytics(orgId, siteName);
 

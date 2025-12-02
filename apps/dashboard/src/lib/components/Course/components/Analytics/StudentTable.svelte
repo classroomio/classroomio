@@ -8,8 +8,9 @@
   import { t } from '$lib/utils/functions/translations';
 
   import EmptyState from './EmptyState.svelte';
-  import Avatar from '$lib/components/Avatar/index.svelte';
+  import * as Avatar from '@cio/ui/base/avatar';
   import type { StudentOverview } from '$lib/utils/types/analytics';
+  import { shortenName } from '$lib/utils/functions/string';
 
   interface Props {
     students?: StudentOverview[];
@@ -97,7 +98,13 @@
                 class="sticky left-0 z-10 min-w-[200px] whitespace-nowrap bg-white px-4 py-3 transition-colors group-hover:bg-gray-50 dark:bg-neutral-800 dark:group-hover:bg-gray-700"
               >
                 <div class="flex items-center gap-3">
-                  <Avatar src={student.profile.avatar_url} name={student.profile.fullname} width="w-8" height="h-8" />
+                  <Avatar.Root class="size-8">
+                    <Avatar.Image
+                      src={student.profile.avatar_url ? student.profile.avatar_url : '/logo-192.png'}
+                      alt={student.profile.fullname ? student.profile.fullname : 'Student'}
+                    />
+                    <Avatar.Fallback>{shortenName(student.profile.fullname) || 'S'}</Avatar.Fallback>
+                  </Avatar.Root>
                   <div class="min-w-0 flex-1">
                     <p class="truncate font-medium text-gray-900 dark:text-white">
                       {student.profile.fullname}
