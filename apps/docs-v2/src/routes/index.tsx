@@ -5,8 +5,8 @@ export const Route = createFileRoute('/')({
     throw redirect({
       to: '/$',
       params: {
-        _splat: 'what-is-classroomio',
-      },
+        _splat: 'home'
+      }
     });
-  },
+  }
 });
