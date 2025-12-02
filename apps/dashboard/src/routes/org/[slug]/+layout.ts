@@ -1,15 +1,8 @@
 import { dashStatApi } from '$lib/features/org/api';
-
-interface DashAnalytics {
-  enrollments: any[];
-  numberOfCourses: number;
-  revenue: number;
-  totalStudents: number;
-  topCourses: any[];
-}
+import type { DashStatsSuccess } from '$lib/features/org/utils/types';
 
 export const load = async ({ params }) => {
-  let dashAnalytics: DashAnalytics = {
+  let dashAnalytics: DashStatsSuccess['data'] = {
     enrollments: [],
     numberOfCourses: 0,
     revenue: 0,
