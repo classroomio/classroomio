@@ -1,5 +1,5 @@
 {
-  "name": "@cio/docs",
+  "name": "@cio/docs-v2",
   "private": true,
   "sideEffects": false,
   "type": "module",
