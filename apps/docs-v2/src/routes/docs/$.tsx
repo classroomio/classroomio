@@ -1,17 +1,12 @@
-import { createFileRoute, notFound } from '@tanstack/react-router';
-import { DocsLayout } from 'fumadocs-ui/layouts/docs';
-import { createServerFn } from '@tanstack/react-start';
-import { source } from '@/lib/source';
-import type * as PageTree from 'fumadocs-core/page-tree';
-import { useMemo } from 'react';
-import browserCollections from 'fumadocs-mdx:collections/browser';
-import {
-  DocsBody,
-  DocsDescription,
-  DocsPage,
-  DocsTitle,
-} from 'fumadocs-ui/layouts/docs/page';
+import { useEffect, useState } from 'react';
 import defaultMdxComponents from 'fumadocs-ui/mdx';
+import { HomeLayout } from 'fumadocs-ui/layouts/home';
+import { createServerFn } from '@tanstack/react-start';
+import browserCollections from 'fumadocs-mdx:collections/browser';
+import { createFileRoute, notFound } from '@tanstack/react-router';
+
+import { source } from '@/lib/source';
+import { DocsNav } from '@/components/docs-nav';
 import { baseOptions } from '@/lib/layout.shared';
 
 export const Route = createFileRoute('/docs/$')({
@@ -21,11 +16,11 @@ export const Route = createFileRoute('/docs/$')({
     const data = await loader({ data: slugs });
     await clientLoader.preload(data.path);
     return data;
-  },
+  }
 });
 
 const loader = createServerFn({
-  method: 'GET',
+  method: 'GET'
 })
   .inputValidator((slugs: string[]) => slugs)
   .handler(async ({ data: slugs }) => {
@@ -33,73 +28,64 @@ const loader = createServerFn({
     if (!page) throw notFound();
 
     return {
-      tree: source.pageTree as object,
-      path: page.path,
+      path: page.path
     };
   });
 
 const clientLoader = browserCollections.docs.createClientLoader({
   component({ toc, frontmatter, default: MDX }) {
     return (
-      <DocsPage toc={toc}>
-        <DocsTitle>{frontmatter.title}</DocsTitle>
-        <DocsDescription>{frontmatter.description}</DocsDescription>
-        <DocsBody>
+      <div className="mx-auto max-w-4xl px-6 py-12">
+        <h1 className="mb-2 text-4xl font-bold">{frontmatter.title}</h1>
+        {frontmatter.description && (
+          <p className="text-muted-foreground mb-8 text-lg">{frontmatter.description}</p>
+        )}
+        <div className="prose dark:prose-invert">
           <MDX
             components={{
-              ...defaultMdxComponents,
+              ...defaultMdxComponents
             }}
           />
-        </DocsBody>
-      </DocsPage>
+        </div>
+      </div>
     );
-  },
+  }
 });
 
 function Page() {
   const data = Route.useLoaderData();
   const Content = clientLoader.getComponent(data.path);
-  const tree = useMemo(
-    () => transformPageTree(data.tree as PageTree.Folder),
-    [data.tree],
-  );
+  const base = baseOptions();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
-    <DocsLayout {...baseOptions()} tree={tree}>
-      <Content />
-    </DocsLayout>
+    <HomeLayout
+      {...baseOptions()}
+      links={[
+        {
+          type: 'custom',
+          on: 'all',
+          children: <DocsNav />,
+          secondary: isMobile
+        }
+      ]}
+      nav={{
+        ...base.nav
+      }}
+    >
+      <section className="w-full">
+        <Content />
+      </section>
+    </HomeLayout>
   );
-}
-
-function transformPageTree(root: PageTree.Root): PageTree.Root {
-  function mapNode<T extends PageTree.Node>(item: T): T {
-    if (typeof item.icon === 'string') {
-      item = {
-        ...item,
-        icon: (
-          <span
-            dangerouslySetInnerHTML={{
-              __html: item.icon,
-            }}
-          />
-        ),
-      };
-    }
-
-    if (item.type === 'folder') {
-      return {
-        ...item,
-        index: item.index ? mapNode(item.index) : undefined,
-        children: item.children.map(mapNode),
-      };
-    }
-
-    return item;
-  }
-
-  return {
-    ...root,
-    children: root.children.map(mapNode),
-    fallback: root.fallback ? transformPageTree(root.fallback) : undefined,
-  };
 }

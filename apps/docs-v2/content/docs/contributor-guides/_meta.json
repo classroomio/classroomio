@@ -1,0 +1,10 @@
+{
+  "devs": "Developers Guide",
+  "design": "Design Contribution Guide",
+  "supabase-cloud": "Supabase Cloud Setup",
+  "cloudflare-setup": "Cloudflare Setup",
+  "gitpod": "Gitpod Setup",
+  "demo-accounts": "Login with Demo Accounts",
+  "student-dashboard": "Student Dashboard Guide",
+  "adding-translation-to-code": "Adding Translations to Code"
+}

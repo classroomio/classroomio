@@ -1,0 +1,169 @@
+---
+title: Supabase Cloud Setup
+description: Guide to setting up Supabase cloud for ClassroomIO.
+---
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Supabase Cloud Setup
+
+In this guide, you will learn how to setup a supabase cloud project and link it to your local environment.
+
+## Who is this guide for?
+
+1. You don't want to setup supabase on your local machine
+2. You can't run docker on your computer
+3. You are experiencing performance issues using supabase locally
+4. You want to selfhost our frontend app but use supabase cloud
+
+If your requirement matches any of the above, then this guide is for you.
+
+## Video Walkthrough
+
+<div style={{ display: 'flex', justifyContent: 'center', marginY: '16px' }}>
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/dAZAZ0oiky0?si=1h-KtppNqJ3U4BTe"
+    title="YouTube video player"
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowFullScreen
+    style={{ borderRadius: '8px' }}
+  ></iframe>
+</div>
+
+## Step by Step Guide
+
+<Steps>
+<Step>
+### Create a Supabase project
+
+For this step you need to have signed up for supabase and create an account, just visit [supabase.com](https://supabase.com).
+
+Once you have an account just click on the _New Project_ on your dashboard. After that you should see a similar screen to the below, fill in the fields.
+
+![New project in supabase](/new-project.webp)
+
+<Callout title="Important">
+  Make sure you save your database password somewhere, else you won't be able to get it back
+  anywhere in the dashboard for security reasons.
+</Callout>
+
+</Step>
+
+<Step>
+### Setup Supabase CLI
+
+Follow the instructions [here](https://supabase.com/docs/guides/local-development/cli/getting-started) to setup the Supabase CLI on your computer.
+
+</Step>
+
+<Step>
+### Login to Supabase via the CLI
+
+Open your terminal and go to the root of the project. Run the following:
+
+```bash
+supabase login
+```
+
+Follow the instruction in your terminal to generate your access token. Paste the token in the console and hit **Enter**
+
+</Step>
+
+<Step>
+### Push migrations to your Supabase project
+
+- Go to the supabase dashboard, go to your project, click on the settings icon on the left side bar
+
+![DB URL in the supabase dashboard](/db-url.webp)
+
+- Copy the URL in the image above for your `db url`
+- Paste it somewhere
+- In the url, replace `[YOUR PASSWORD]` with your db password (which you saved in section 1).
+- Then run in your terminal:
+
+```bash
+supabase db push --db-url "URL HERE"
+```
+
+<Callout title="Important">
+  Make sure you preserve the double quotes before and after the url. Only replace `URL HERE` with
+  your `db url` that contains your password
+</Callout>
+
+#### Result
+
+![Result of supabase db push](/db-push-result.webp)
+
+</Step>
+
+<Step>
+### Configure Auth in your Supabase project
+
+Here we will update our email configurations, to prevent supabase from sending confirmation emails on signup. This is because we don't use Supabase for email verification, we handle that internally due to the quality of the email.
+
+![Authentication configuration](/auth-settings.webp)
+
+</Step>
+
+<Step>
+### Configure SMTP
+
+Supabase [now requires adding custom SMTP](https://github.com/orgs/supabase/discussions/29370) to your supabase project in order to avoid abuse of their system. Without adding a custom SMTP, your signup requests to your supabase project will fail. To avoid this, you should go to the [SMTP section](https://supabase.com/dashboard/project/_/settings/auth) of your supabase settings.
+
+Make sure to toggle **Enable Custom SMTP** and fill in the following fields:
+
+- Sender email
+- Sender name
+- SMTP host
+- SMTP port
+- SMTP username
+- SMTP password
+
+![SMTP Settings](/smtp-settings.webp)
+
+<Callout title="ℹ️ Learn More">
+  Learn more about setting up SMTP [here](https://supabase.com/docs/guides/auth/auth-smtp)
+</Callout>
+
+</Step>
+
+<Step>
+### Add configurations to your environment variables
+
+Now with all these set up you need to get update the .env file in `apps/dashboard`. You need to update the following environment variables:
+
+```bash
+PUBLIC_SUPABASE_URL=
+PUBLIC_SUPABASE_ANON_KEY=
+PRIVATE_SUPABASE_SERVICE_ROLE=
+```
+
+To get the correct environment variables, follow the instructions in this image:
+
+![Source of supabase environment variables](/match-env.webp)
+
+</Step>
+
+<Step>
+### Tada - That's all
+
+Now you can run:
+
+```bash
+pnpm dev --filter=dashboard
+```
+
+- Open the url in your browser
+- Click on Sign up
+- And that's it...
+
+<Callout title="ℹ️ Learn More">
+  Visit the [Sign up guide](/docs/quickstart/signup) to learn how to signup
+</Callout>
+
+</Step>
+</Steps>

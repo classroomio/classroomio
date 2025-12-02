@@ -1,0 +1,20 @@
+{
+  "index": {
+    "title": "ClassroomIO Documentation"
+  },
+  "what-is-classroomio": "What is ClassroomIO",
+  "audience": "Audience",
+  "organization": "Organization",
+  "course": "Course",
+  "student-dashboard": "Student Dashboard",
+  "community": "Community",
+  "quickstart": {
+    "title": "Quickstart"
+  },
+  "howtoguides": {
+    "title": "How-to Guides"
+  },
+  "contributor-guides": {
+    "title": "Contributor Guides"
+  }
+}
