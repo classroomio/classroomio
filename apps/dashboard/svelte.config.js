@@ -27,7 +27,9 @@ const config = {
           'https://assets.cdn.clsrio.com',
           'https://cdnjs.cloudflare.com',
           'https://*.i.posthog.com',
-          'https://*.senja.io'
+          'https://*.senja.io',
+          'https://www.youtube.com',
+          'https://youtube.com'
         ],
         'style-src': [
           'self',
@@ -50,8 +52,7 @@ const config = {
         'connect-src': [
           'self',
           'https://*.supabase.co',
-          'https://pgrest.classroomio.com',
-          'https://api.classroomio.com',
+          'https://*.classroomio.com',
           'https://assets.cdn.clsrio.com',
           'https://cdn.plyr.io',
           'https://*.i.posthog.com',
@@ -63,6 +64,7 @@ const config = {
           'wss://*.supabase.co',
           'https://*.senja.io'
         ],
+        'worker-src': ['self', 'blob:'],
         'object-src': ['none'],
         'base-uri': ['self'],
         'form-action': ['self'],
@@ -76,7 +78,9 @@ const config = {
           'https://assets.cdn.clsrio.com',
           'https://cdnjs.cloudflare.com',
           'https://*.i.posthog.com',
-          'https://*.senja.io'
+          'https://*.senja.io',
+          'https://www.youtube.com',
+          'https://youtube.com'
         ],
         'style-src': [
           'self',
@@ -108,10 +112,11 @@ const config = {
           'https://*.r2.cloudflarestorage.com',
           'http://localhost:54321',
           'ws://localhost:54321',
-          'wss://*.supabase.co',
           'wss://*.classroomio.com',
+          'wss://*.supabase.co',
           'https://*.senja.io'
         ],
+        'worker-src': ['self', 'blob:'],
         'object-src': ['none'],
         'base-uri': ['self'],
         'form-action': ['self'],
