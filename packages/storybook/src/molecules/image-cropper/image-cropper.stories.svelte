@@ -5,7 +5,7 @@
   import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
-    title: 'Molecule/ImageCropper',
+    title: 'Molecules/ImageCropper',
     component: ImageCropper.Root,
     parameters: {
       layout: 'centered',
