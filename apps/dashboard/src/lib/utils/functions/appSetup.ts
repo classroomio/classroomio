@@ -90,6 +90,12 @@ export async function getProfile({
   } = await supabase.from('profile').select(`*`).eq('id', authUser?.id).single();
   console.log('Get profile', profileData);
 
+  if (authUser?.email?.endsWith('@test.com')) {
+    // This is a test email, auto logout
+    window.location.href = '/logout';
+    return;
+  }
+
   if (error && !profileData && status === 406 && authUser) {
     // User wasn't found, create profile
     console.log(`User wasn't found, create profile`);
