@@ -189,29 +189,33 @@
     }
 
     // Add global CSS to prevent any missed interactions
-    const style = document.createElement('style');
-    style.id = 'email-verification-protection';
-    style.textContent = `
-      body:not(.email-verified) button:not([data-verification-modal] button),
-      body:not(.email-verified) a:not([data-verification-modal] a),
-      body:not(.email-verified) input:not([data-verification-modal] input),
-      body:not(.email-verified) textarea:not([data-verification-modal] textarea),
-      body:not(.email-verified) [contenteditable="true"]:not([data-verification-modal] [contenteditable]) {
-        pointer-events: none !important;
-        opacity: 0.5 !important;
-        user-select: none !important;
-      }
-    `;
-    document.head.appendChild(style);
+    if (document) {
+      const style = document.createElement('style');
+      style.id = 'email-verification-protection';
+      style.textContent = `
+        body:not(.email-verified) button:not([data-verification-modal] button),
+        body:not(.email-verified) a:not([data-verification-modal] a),
+        body:not(.email-verified) input:not([data-verification-modal] input),
+        body:not(.email-verified) textarea:not([data-verification-modal] textarea),
+        body:not(.email-verified) [contenteditable="true"]:not([data-verification-modal] [contenteditable]) {
+          pointer-events: none !important;
+          opacity: 0.5 !important;
+          user-select: none !important;
+        }
+      `;
+      document.head.appendChild(style);
+    }
   }
 
   function updateBodyClass() {
-    if (browser) {
-      if ($profile.is_email_verified) {
-        document.body.classList.add('email-verified');
-      } else {
-        document.body.classList.remove('email-verified');
-      }
+    if (!browser) {
+      return;
+    }
+
+    if ($profile.is_email_verified) {
+      document.body.classList.add('email-verified');
+    } else {
+      document.body.classList.remove('email-verified');
     }
   }
 
@@ -256,13 +260,15 @@
     if (domObserver) domObserver.disconnect();
 
     // Clean up protection styles
-    const style = document.getElementById('email-verification-protection');
-    if (style) style.remove();
+    if (browser) {
+      const style = document?.getElementById('email-verification-protection');
+      if (style) style.remove();
+    }
   });
 
   $: open = Boolean(!$profile.is_email_verified && !!$profile.id && !!$currentOrg.id);
   $: open && sendVerificationCode();
-  $: updateBodyClass();
+  $: if (browser) updateBodyClass();
 
   // Console warning for developers trying to bypass
   $: if (browser && !$profile.is_email_verified && $profile.id) {
