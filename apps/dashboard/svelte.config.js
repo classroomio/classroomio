@@ -22,7 +22,12 @@ const config = {
     csp: {
       directives: {
         'default-src': ['self'],
-        'script-src': ['self', 'https://assets.cdn.clsrio.com', 'https://cdnjs.cloudflare.com'],
+        'script-src': [
+          'self',
+          'https://assets.cdn.clsrio.com',
+          'https://cdnjs.cloudflare.com',
+          'https://eu-assets.i.posthog.com'
+        ],
         'style-src': [
           'self',
           'unsafe-inline',
@@ -43,10 +48,14 @@ const config = {
         'connect-src': [
           'self',
           'https://*.supabase.co',
+          'https://pgrest.classroomio.com',
           'https://assets.cdn.clsrio.com',
           'https://cdn.plyr.io',
+          'https://eu.i.posthog.com',
+          'https://umami.hz.oncws.com',
           'http://localhost:54321',
           'ws://localhost:54321',
+          'wss://*.classroomio.com',
           'wss://*.supabase.co'
         ],
         'object-src': ['none'],
@@ -57,7 +66,12 @@ const config = {
       },
       reportOnly: {
         'default-src': ['self'],
-        'script-src': ['self', 'https://assets.cdn.clsrio.com', 'https://cdnjs.cloudflare.com'],
+        'script-src': [
+          'self',
+          'https://assets.cdn.clsrio.com',
+          'https://cdnjs.cloudflare.com',
+          'https://eu-assets.i.posthog.com'
+        ],
         'style-src': [
           'self',
           'unsafe-inline',
@@ -78,11 +92,15 @@ const config = {
         'connect-src': [
           'self',
           'https://*.supabase.co',
+          'https://pgrest.classroomio.com',
           'https://assets.cdn.clsrio.com',
           'https://cdn.plyr.io',
+          'https://eu.i.posthog.com',
+          'https://umami.hz.oncws.com',
           'http://localhost:54321',
           'ws://localhost:54321',
-          'wss://*.supabase.co'
+          'wss://*.supabase.co',
+          'wss://*.classroomio.com'
         ],
         'object-src': ['none'],
         'base-uri': ['self'],
