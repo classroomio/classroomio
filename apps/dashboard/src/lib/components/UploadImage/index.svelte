@@ -3,6 +3,7 @@
   import { Loading } from 'carbon-components-svelte';
   import Camera from 'carbon-icons-svelte/lib/Camera.svelte';
   import { createEventDispatcher } from 'svelte';
+  import { validateImageUpload } from '$lib/utils/functions/fileValidation';
 
   export let avatar: string | undefined;
   export let src: string | undefined;
@@ -19,13 +20,24 @@
 
   const onFileSelected = (e: Event<HTMLInputElement>) => {
     const image = e.target.files[0];
+    
+    // Validate file type first (security check)
+    const validation = validateImageUpload(image);
+    if (!validation.isValid) {
+      errorMessage = validation.error;
+      fileinput.value = ''; // Clear the input
+      return;
+    }
+    
     const maxFileSize = maxFileSizeInMb * 1024 * 1024;
     if (image.size > maxFileSize) {
       errorMessage = `${$t('settings.profile.profile_picture.validation_error')} ${
         maxFileSize / (1024 * 1024)
       } MB`;
+      fileinput.value = ''; // Clear the input
       return;
     }
+    
     let reader = new FileReader();
     reader.readAsDataURL(image);
     reader.onload = (e) => {

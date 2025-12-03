@@ -16,7 +16,7 @@ export function sanitizeHtml(html: string): string {
     return fallbackSanitize(html);
   }
 
-  return DOMPurify.sanitize(html, {
+  let sanitized = DOMPurify.sanitize(html, {
     // Allow safe HTML tags
     ALLOWED_TAGS: [
       'p',
@@ -59,7 +59,7 @@ export function sanitizeHtml(html: string): string {
       'onselect',
       'onunload'
     ],
-    // Forbid dangerous tags
+    // Forbid dangerous tags (including svg)
     FORBID_TAGS: [
       'script',
       'iframe',
@@ -71,7 +71,9 @@ export function sanitizeHtml(html: string): string {
       'select',
       'button',
       'meta',
-      'link'
+      'link',
+      'svg',
+      'math'
     ],
     // Keep content of forbidden tags
     KEEP_CONTENT: true,
@@ -79,10 +81,15 @@ export function sanitizeHtml(html: string): string {
     SANITIZE_DOM: true,
     // Allow data attributes
     ALLOW_DATA_ATTR: false,
-    // Transform URLs
+    // Transform URLs and filter dangerous protocols
     ALLOWED_URI_REGEXP:
       /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i
   });
+
+  // Additional post-processing to remove any SVG data URLs that might have slipped through
+  sanitized = sanitized.replace(/src\s*=\s*["']data:image\/svg[^"']*["']/gi, 'src=""');
+
+  return sanitized;
 }
 
 /**
@@ -91,11 +98,18 @@ export function sanitizeHtml(html: string): string {
 function fallbackSanitize(html: string): string {
   if (typeof html !== 'string') return '';
 
+  // Remove SVG tags and their content completely
+  html = html.replace(/<svg\b[^<]*(?:(?!<\/svg>)<[^<]*)*<\/svg>/gi, '');
+  html = html.replace(/<svg\b[^>]*\/>/gi, '');
+
   // Remove script tags and their content
   html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
 
   // Remove javascript: protocol from attributes
   html = html.replace(/javascript:/gi, '');
+
+  // Remove data:image/svg URLs which can contain XSS
+  html = html.replace(/src\s*=\s*["']data:image\/svg[^"']*["']/gi, 'src=""');
 
   // Remove on* event handlers (onclick, onload, onerror, etc.)
   html = html.replace(/\s*on\w+\s*=\s*["'][^"']*["']/gi, '');
@@ -120,7 +134,9 @@ function fallbackSanitize(html: string): string {
     'input',
     'textarea',
     'select',
-    'button'
+    'button',
+    'svg',
+    'math'
   ];
   dangerousTags.forEach((tag) => {
     const regex = new RegExp(`<${tag}\\b[^>]*>.*?<\\/${tag}>`, 'gi');
