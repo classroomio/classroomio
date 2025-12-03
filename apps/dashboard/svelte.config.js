@@ -18,6 +18,78 @@ const config = {
     alias: {
       $lib: path.resolve('./src/lib'),
       $mail: path.resolve('./src/mail')
+    },
+    csp: {
+      directives: {
+        'default-src': ['self'],
+        'script-src': ['self', 'https://assets.cdn.clsrio.com', 'https://cdnjs.cloudflare.com'],
+        'style-src': [
+          'self',
+          'unsafe-inline',
+          'https://cdn.plyr.io',
+          'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
+          'https://assets.cdn.clsrio.com/eqneditor_1.css'
+        ],
+        'style-src-elem': [
+          'self',
+          'unsafe-inline',
+          'https://cdn.plyr.io',
+          'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
+          'https://assets.cdn.clsrio.com/eqneditor_1.css'
+        ],
+        'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
+        'img-src': ['self', 'data:', 'https:'],
+        'frame-src': ['self', 'https://www.youtube.com', 'https://youtube.com'],
+        'connect-src': [
+          'self',
+          'https://*.supabase.co',
+          'https://assets.cdn.clsrio.com',
+          'https://cdn.plyr.io',
+          'http://localhost:54321',
+          'ws://localhost:54321',
+          'wss://*.supabase.co'
+        ],
+        'object-src': ['none'],
+        'base-uri': ['self'],
+        'form-action': ['self'],
+        'frame-ancestors': ['none'],
+        'upgrade-insecure-requests': true
+      },
+      reportOnly: {
+        'default-src': ['self'],
+        'script-src': ['self', 'https://assets.cdn.clsrio.com', 'https://cdnjs.cloudflare.com'],
+        'style-src': [
+          'self',
+          'unsafe-inline',
+          'https://cdn.plyr.io',
+          'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
+          'https://assets.cdn.clsrio.com/eqneditor_1.css'
+        ],
+        'style-src-elem': [
+          'self',
+          'unsafe-inline',
+          'https://cdn.plyr.io',
+          'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
+          'https://assets.cdn.clsrio.com/eqneditor_1.css'
+        ],
+        'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
+        'img-src': ['self', 'data:', 'https:'],
+        'frame-src': ['self', 'https://www.youtube.com', 'https://youtube.com'],
+        'connect-src': [
+          'self',
+          'https://*.supabase.co',
+          'https://assets.cdn.clsrio.com',
+          'https://cdn.plyr.io',
+          'http://localhost:54321',
+          'ws://localhost:54321',
+          'wss://*.supabase.co'
+        ],
+        'object-src': ['none'],
+        'base-uri': ['self'],
+        'form-action': ['self'],
+        'frame-ancestors': ['none'],
+        'report-uri': ['/csp-report']
+      }
     }
   }
 };

@@ -1,5 +1,6 @@
 <script lang="ts">
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
+  import { sanitizeHtml } from '$lib/utils/functions/sanitize';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import {
     lesson,
@@ -26,7 +27,7 @@
   <HtmlRender className="m-auto">
     <svelte:fragment slot="content">
       <div>
-        {@html content}
+        {@html sanitizeHtml(content)}
       </div>
     </svelte:fragment>
   </HtmlRender>

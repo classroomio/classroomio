@@ -1,4 +1,5 @@
 <script>
+  import { sanitizeHtml } from '$lib/utils/functions/sanitize';
   export let content = '';
   export let className = '';
   export let id = '';
@@ -13,6 +14,6 @@
   {#if $$slots.content}
     <slot name="content" />
   {:else}
-    {@html content}
+    {@html sanitizeHtml(content)}
   {/if}
 </article>
