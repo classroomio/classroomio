@@ -312,7 +312,8 @@
     "team_members": "Teammedlemmer",
     "back": "Tilbage til indstillinger",
     "download_lessons": "Opgrader for at downloade lektioner",
-    "download_course": "Opgrader for at downloade kursus"
+    "download_course": "Opgrader for at downloade kursus",
+    "required": "Opgradering påkrævet"
   },
   "analytics": {
     "courses": "Kurser",

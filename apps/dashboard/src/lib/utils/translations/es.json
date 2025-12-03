@@ -197,7 +197,8 @@
     "back": "Volver a configuración",
     "download_lessons": "Actualice para descargar lecciones",
     "download_course": "Actualizar para descargar el curso",
-    "domain": "Actualice su plan para agregar dominios personalizados"
+    "domain": "Actualice su plan para agregar dominios personalizados",
+    "required": "Actualización requerida"
   },
   "audience": {
     "title": "Audiencia",

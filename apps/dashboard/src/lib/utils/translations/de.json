@@ -197,7 +197,8 @@
     "back": "Zurück zu den Einstellungen",
     "download_lessons": "Führen Sie ein Upgrade durch, um Lektionen herunterzuladen",
     "download_course": "Upgrade zum Download-Kurs",
-    "domain": "Aktualisieren Sie Ihren Plan, um benutzerdefinierte Domänen hinzuzufügen"
+    "domain": "Aktualisieren Sie Ihren Plan, um benutzerdefinierte Domänen hinzuzufügen",
+    "required": "Upgrade erforderlich"
   },
   "audience": {
     "title": "Publikum",

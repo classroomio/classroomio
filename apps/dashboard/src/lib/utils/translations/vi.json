@@ -197,7 +197,8 @@
     "back": "Quay lại Cài đặt",
     "download_lessons": "Nâng cấp để tải bài học",
     "download_course": "Nâng cấp để tải xuống khóa học",
-    "domain": "Nâng cấp gói của bạn để thêm miền tùy chỉnh"
+    "domain": "Nâng cấp gói của bạn để thêm miền tùy chỉnh",
+    "required": "Yêu cầu nâng cấp"
   },
   "audience": {
     "title": "Khán giả",

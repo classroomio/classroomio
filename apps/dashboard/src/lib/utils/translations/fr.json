@@ -197,7 +197,8 @@
     "back": "Retour aux paramètres",
     "download_lessons": "Mettre à niveau pour télécharger les leçons",
     "download_course": "Mettre à niveau pour télécharger le cours",
-    "domain": "Mettez à niveau votre forfait pour ajouter des domaines personnalisés"
+    "domain": "Mettez à niveau votre forfait pour ajouter des domaines personnalisés",
+    "required": "Mise à niveau requise"
   },
   "audience": {
     "title": "Public",

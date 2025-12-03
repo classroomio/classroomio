@@ -1322,7 +1322,8 @@
     "team_members": "Team members",
     "back": "Back to Settings",
     "download_lessons": "Upgrade to download lessons",
-    "download_course": "Upgrade to download course"
+    "download_course": "Upgrade to download course",
+    "required": "Upgrade Required"
   },
 
   "lms_navigation": {

@@ -307,7 +307,8 @@
     "team_members": "Członkowie zespołu",
     "back": "Powrót do ustawień",
     "download_lessons": "Upgrade to pobieranie lekcji",
-    "download_course": "Upgrade to Pobierz"
+    "download_course": "Upgrade to Pobierz",
+    "required": "Wymagana aktualizacja"
   },
   "analytics": {
     "courses": "Kursy",
