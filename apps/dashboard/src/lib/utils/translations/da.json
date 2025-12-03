@@ -1581,5 +1581,47 @@
     "resend_in": "Send verifikation i",
     "seconds": "sekunder",
     "snackbar_error": "Fejl under afsendelse af kode"
+  },
+  "email_verification": {
+    "security_footer": "Din kontosikkerhed er vores topprioritet. Alle verifikationsforsøg logges til sikkerhedsovervågning.",
+    "actions": {
+      "request_new": "Anmod om ny bekræftelses-e-mail",
+      "contact_support": "Kontakt support",
+      "back_to_dashboard": "Tilbage til Dashboard"
+    },
+    "security_notice": {
+      "title": "Sikkerhedsforbedring",
+      "message": "Vi har opgraderet vores e-mailbekræftelsessystem for bedre sikkerhed. Gamle bekræftelseslinks er ikke længere gyldige for at beskytte din konto."
+    },
+    "errors": {
+      "unknown": {
+        "title": "Bekræftelse mislykkedes",
+        "message": "Der opstod en uventet fejl under e-mailbekræftelse. Prøv venligst igen, eller kontakt vores supportteam for at få hjælp."
+      },
+      "database": {
+        "title": "Systemfejl",
+        "message": "Vi oplever tekniske problemer. Prøv venligst igen senere, eller kontakt vores supportteam, hvis problemet fortsætter."
+      },
+      "legacy_blocked": {
+        "title": "Ikke-understøttet bekræftelsesmetode",
+        "message": "Denne bekræftelsesmetode understøttes ikke længere af sikkerhedsmæssige årsager. Anmod om en ny bekræftelses-e-mail ved hjælp af vores sikre bekræftelsessystem."
+      },
+      "email_mismatch": {
+        "title": "E-mail-adresse ændret",
+        "message": "Din e-mailadresse er blevet ændret, siden dette bekræftelseslink blev genereret. Anmod om et nyt bekræftelseslink til din nuværende e-mailadresse."
+      },
+      "token_expired": {
+        "title": "Bekræftelseslink er udløbet",
+        "message": "Dette bekræftelseslink er udløbet af sikkerhedsmæssige årsager. Anmod om en ny bekræftelses-e-mail for at fortsætte."
+      },
+      "token_used": {
+        "title": "Link er allerede brugt",
+        "message": "Dette bekræftelseslink er allerede blevet brugt. Hvis du har brug for at bekræfte din e-mail igen, bedes du anmode om et nyt bekræftelseslink."
+      },
+      "invalid_token": {
+        "title": "Ugyldigt bekræftelseslink",
+        "message": "Dette bekræftelseslink er ugyldigt eller forkert udformet. Tjek venligst din e-mail for det korrekte link, eller anmod om en ny bekræftelses-e-mail."
+      }
+    }
   }
 }

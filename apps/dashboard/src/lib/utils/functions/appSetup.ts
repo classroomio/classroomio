@@ -76,6 +76,12 @@ export async function getProfile({
     return goto('/login?redirect=/' + path + queryParam);
   }
 
+  if (authUser?.email?.endsWith('@test.com') && !dev) {
+    // This is a test email, auto logout
+    window.location.href = '/logout';
+    return;
+  }
+
   // Skip refetching profile, if already in store
   if (profileStore.id) {
     handleLocaleChange(profileStore.locale);
@@ -89,12 +95,6 @@ export async function getProfile({
     status
   } = await supabase.from('profile').select(`*`).eq('id', authUser?.id).single();
   console.log('Get profile', profileData);
-
-  if (authUser?.email?.endsWith('@test.com')) {
-    // This is a test email, auto logout
-    window.location.href = '/logout';
-    return;
-  }
 
   if (error && !profileData && status === 406 && authUser) {
     // User wasn't found, create profile

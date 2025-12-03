@@ -1612,5 +1612,47 @@
     "unsaved_changes": {
       "message": "Vous avez des changements non sauvés. Êtes-vous sûr de vouloir partir?"
     }
+  },
+  "email_verification": {
+    "security_footer": "La sécurité de votre compte est notre priorité absolue. Toutes les tentatives de vérification sont enregistrées pour la surveillance de la sécurité.",
+    "actions": {
+      "request_new": "Demander un nouvel e-mail de vérification",
+      "contact_support": "Contacter l'assistance",
+      "back_to_dashboard": "Retour au tableau de bord"
+    },
+    "security_notice": {
+      "title": "Amélioration de la sécurité",
+      "message": "Nous avons mis à niveau notre système de vérification des e-mails pour une meilleure sécurité. Les anciens liens de vérification ne sont plus valides pour protéger votre compte."
+    },
+    "errors": {
+      "unknown": {
+        "title": "Échec de la vérification",
+        "message": "Une erreur inattendue s'est produite lors de la vérification du courrier électronique. Veuillez réessayer ou contacter notre équipe d'assistance pour obtenir de l'aide."
+      },
+      "database": {
+        "title": "Erreur système",
+        "message": "Nous rencontrons des difficultés techniques. Veuillez réessayer plus tard ou contacter notre équipe d'assistance si le problème persiste."
+      },
+      "legacy_blocked": {
+        "title": "Méthode de vérification non prise en charge",
+        "message": "Cette méthode de vérification n'est plus prise en charge pour des raisons de sécurité. Veuillez demander un nouvel e-mail de vérification en utilisant notre système de vérification sécurisé."
+      },
+      "email_mismatch": {
+        "title": "Adresse e-mail modifiée",
+        "message": "Votre adresse e-mail a été modifiée depuis la génération de ce lien de vérification. Veuillez demander un nouveau lien de vérification pour votre adresse e-mail actuelle."
+      },
+      "token_expired": {
+        "title": "Lien de vérification expiré",
+        "message": "Ce lien de vérification a expiré pour des raisons de sécurité. Veuillez demander un nouvel e-mail de vérification pour continuer."
+      },
+      "token_used": {
+        "title": "Lien déjà utilisé",
+        "message": "Ce lien de vérification a déjà été utilisé. Si vous devez vérifier à nouveau votre adresse e-mail, veuillez demander un nouveau lien de vérification."
+      },
+      "invalid_token": {
+        "title": "Lien de vérification invalide",
+        "message": "Ce lien de vérification est invalide ou mal formé. Veuillez vérifier votre courrier électronique pour trouver le lien correct ou demander un nouvel e-mail de vérification."
+      }
+    }
   }
 }

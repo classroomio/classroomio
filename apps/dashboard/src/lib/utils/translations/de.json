@@ -1612,5 +1612,47 @@
     "unsaved_changes": {
       "message": "Sie haben nicht gerettete Änderungen. Bist du sicher, dass du gehen willst?"
     }
+  },
+  "email_verification": {
+    "security_footer": "Die Sicherheit Ihres Kontos hat für uns oberste Priorität. Alle Verifizierungsversuche werden zur Sicherheitsüberwachung protokolliert.",
+    "actions": {
+      "request_new": "Fordern Sie eine neue Bestätigungs-E-Mail an",
+      "contact_support": "Kontaktieren Sie den Support",
+      "back_to_dashboard": "Zurück zum Dashboard"
+    },
+    "security_notice": {
+      "title": "Sicherheitsverbesserung",
+      "message": "Wir haben unser E-Mail-Verifizierungssystem für mehr Sicherheit aktualisiert. Alte Bestätigungslinks sind zum Schutz Ihres Kontos nicht mehr gültig."
+    },
+    "errors": {
+      "unknown": {
+        "title": "Überprüfung fehlgeschlagen",
+        "message": "Bei der E-Mail-Verifizierung ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es erneut oder wenden Sie sich an unser Support-Team, um Hilfe zu erhalten."
+      },
+      "database": {
+        "title": "Systemfehler",
+        "message": "Wir haben technische Schwierigkeiten. Bitte versuchen Sie es später noch einmal oder kontaktieren Sie unser Support-Team, wenn das Problem weiterhin besteht."
+      },
+      "legacy_blocked": {
+        "title": "Nicht unterstützte Verifizierungsmethode",
+        "message": "Diese Verifizierungsmethode wird aus Sicherheitsgründen nicht mehr unterstützt. Bitte fordern Sie über unser sicheres Verifizierungssystem eine neue Verifizierungs-E-Mail an."
+      },
+      "email_mismatch": {
+        "title": "E-Mail-Adresse geändert",
+        "message": "Ihre E-Mail-Adresse wurde seit der Erstellung dieses Bestätigungslinks geändert. Bitte fordern Sie einen neuen Bestätigungslink für Ihre aktuelle E-Mail-Adresse an."
+      },
+      "token_expired": {
+        "title": "Bestätigungslink abgelaufen",
+        "message": "Dieser Bestätigungslink ist aus Sicherheitsgründen abgelaufen. Bitte fordern Sie eine neue Bestätigungs-E-Mail an, um fortzufahren."
+      },
+      "token_used": {
+        "title": "Link bereits verwendet",
+        "message": "Dieser Bestätigungslink wurde bereits verwendet. Wenn Sie Ihre E-Mail-Adresse erneut bestätigen müssen, fordern Sie bitte einen neuen Bestätigungslink an."
+      },
+      "invalid_token": {
+        "title": "Ungültiger Bestätigungslink",
+        "message": "Dieser Bestätigungslink ist ungültig oder fehlerhaft. Bitte überprüfen Sie Ihre E-Mails auf den richtigen Link oder fordern Sie eine neue Bestätigungs-E-Mail an."
+      }
+    }
   }
 }

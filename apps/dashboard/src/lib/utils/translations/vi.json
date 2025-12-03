@@ -1612,5 +1612,47 @@
     "unsaved_changes": {
       "message": "Bạn có những thay đổi chưa được lưu. Bạn có chắc bạn muốn rời đi?"
     }
+  },
+  "email_verification": {
+    "security_footer": "Bảo mật tài khoản của bạn là ưu tiên hàng đầu của chúng tôi. Tất cả các nỗ lực xác minh đều được ghi lại để giám sát bảo mật.",
+    "actions": {
+      "request_new": "Yêu cầu email xác minh mới",
+      "contact_support": "Liên hệ hỗ trợ",
+      "back_to_dashboard": "Quay lại Trang tổng quan"
+    },
+    "security_notice": {
+      "title": "Tăng cường bảo mật",
+      "message": "Chúng tôi đã nâng cấp hệ thống xác minh email của mình để bảo mật tốt hơn. Các liên kết xác minh cũ không còn hiệu lực để bảo vệ tài khoản của bạn."
+    },
+    "errors": {
+      "unknown": {
+        "title": "Xác minh không thành công",
+        "message": "Đã xảy ra lỗi không mong muốn trong quá trình xác minh email. Vui lòng thử lại hoặc liên hệ với nhóm hỗ trợ của chúng tôi để được hỗ trợ."
+      },
+      "database": {
+        "title": "Lỗi hệ thống",
+        "message": "Chúng tôi đang gặp khó khăn về mặt kỹ thuật. Vui lòng thử lại sau hoặc liên hệ với nhóm hỗ trợ của chúng tôi nếu sự cố vẫn tiếp diễn."
+      },
+      "legacy_blocked": {
+        "title": "Phương thức xác minh không được hỗ trợ",
+        "message": "Phương thức xác minh này không còn được hỗ trợ vì lý do bảo mật. Vui lòng yêu cầu email xác minh mới bằng hệ thống xác minh an toàn của chúng tôi."
+      },
+      "email_mismatch": {
+        "title": "Địa chỉ Email đã thay đổi",
+        "message": "Địa chỉ email của bạn đã được thay đổi kể từ khi liên kết xác minh này được tạo. Vui lòng yêu cầu liên kết xác minh mới cho địa chỉ email hiện tại của bạn."
+      },
+      "token_expired": {
+        "title": "Liên kết xác minh đã hết hạn",
+        "message": "Liên kết xác minh này đã hết hạn vì lý do bảo mật. Vui lòng yêu cầu email xác minh mới để tiếp tục."
+      },
+      "token_used": {
+        "title": "Liên kết đã được sử dụng",
+        "message": "Liên kết xác minh này đã được sử dụng. Nếu bạn cần xác minh lại email của mình, vui lòng yêu cầu liên kết xác minh mới."
+      },
+      "invalid_token": {
+        "title": "Liên kết xác minh không hợp lệ",
+        "message": "Liên kết xác minh này không hợp lệ hoặc không đúng định dạng. Vui lòng kiểm tra email của bạn để tìm liên kết chính xác hoặc yêu cầu email xác minh mới."
+      }
+    }
   }
 }

@@ -26,7 +26,8 @@ const config = {
           'self',
           'https://assets.cdn.clsrio.com',
           'https://cdnjs.cloudflare.com',
-          'https://eu-assets.i.posthog.com'
+          'https://*.i.posthog.com',
+          'https://*.senja.io'
         ],
         'style-src': [
           'self',
@@ -59,7 +60,8 @@ const config = {
           'http://localhost:54321',
           'ws://localhost:54321',
           'wss://*.classroomio.com',
-          'wss://*.supabase.co'
+          'wss://*.supabase.co',
+          'https://*.senja.io'
         ],
         'object-src': ['none'],
         'base-uri': ['self'],
@@ -73,7 +75,8 @@ const config = {
           'self',
           'https://assets.cdn.clsrio.com',
           'https://cdnjs.cloudflare.com',
-          'https://eu-assets.i.posthog.com'
+          'https://*.i.posthog.com',
+          'https://*.senja.io'
         ],
         'style-src': [
           'self',
@@ -106,7 +109,8 @@ const config = {
           'http://localhost:54321',
           'ws://localhost:54321',
           'wss://*.supabase.co',
-          'wss://*.classroomio.com'
+          'wss://*.classroomio.com',
+          'https://*.senja.io'
         ],
         'object-src': ['none'],
         'base-uri': ['self'],

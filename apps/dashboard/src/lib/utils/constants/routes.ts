@@ -15,7 +15,8 @@ export const ROUTE = {
   DISCUSSIONS: '/discussions',
   ASK: '/ask',
   FORGOT: '/forgot',
-  RESET: '/reset'
+  RESET: '/reset',
+  VERIFY_EMAIL_ERROR: '/verify-email-error'
 };
 
 export const PUBLIC_ROUTES = [
@@ -27,6 +28,7 @@ export const PUBLIC_ROUTES = [
   ROUTE.RESET,
   `^${ROUTE.PAGES}/.*`,
   `^${ROUTE.COURSE}/.*`,
+  `^${ROUTE.VERIFY_EMAIL_ERROR}$`,
   '/404'
 ];
 
@@ -38,5 +40,6 @@ export const ROUTES_TO_HIDE_NAV = [
   `^${ROUTE.INVITE_STUDENT}/.*`,
   `^${ROUTE.FORGOT}$`,
   `^${ROUTE.RESET}$`,
-  `^${ROUTE.ONBOARDING}$`
+  `^${ROUTE.ONBOARDING}$`,
+  `^${ROUTE.VERIFY_EMAIL_ERROR}$`
 ];
