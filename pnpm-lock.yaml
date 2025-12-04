@@ -1042,6 +1042,9 @@ importers:
       svelte:
         specifier: ^5.39.11
         version: 5.43.2
+      svelte-easy-crop:
+        specifier: ^5.0.0
+        version: 5.0.0(svelte@5.43.2)
       svelte-sonner:
         specifier: ^1.0.5
         version: 1.0.6(svelte@5.43.2)
@@ -10285,6 +10288,11 @@ packages:
     resolution: {integrity: sha512-arH+Xd72qV1DRfOOY0I0n+RBtKlt1vjVVW4ao2B0sU9OW7rXNNukxs+DMyudFJGxuOcxfMaP/PBsD2hsrH97zw==}
     peerDependencies:
       svelte: '>=3.23.0 || ^5.0.0-next.0'
+
+  svelte-easy-crop@5.0.0:
+    resolution: {integrity: sha512-niWtner+qYVas6ypIOQ277NKNACVz9qz6wfpEW7t+x5Lhv6nOjpv3S1WhEPO+SnDaW3VZv+0bmm6jVDHK2GMAg==}
+    peerDependencies:
+      svelte: ^5.0.0
 
   svelte-eslint-parser@1.4.0:
     resolution: {integrity: sha512-fjPzOfipR5S7gQ/JvI9r2H8y9gMGXO3JtmrylHLLyahEMquXI0lrebcjT+9/hNgDej0H7abTyox5HpHmW1PSWA==}
@@ -22508,6 +22516,10 @@ snapshots:
       - picomatch
 
   svelte-dnd-action@0.9.66(svelte@5.43.2):
+    dependencies:
+      svelte: 5.43.2
+
+  svelte-easy-crop@5.0.0(svelte@5.43.2):
     dependencies:
       svelte: 5.43.2
 
