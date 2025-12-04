@@ -1,7 +1,5 @@
 {
   "name": "@cio/docs-v2",
-  "private": true,
-  "sideEffects": false,
   "type": "module",
   "scripts": {
     "dev": "vite dev",
