@@ -6,7 +6,6 @@ description: Guide to self-hosting ClassroomIO on your own servers.
 import { Callout } from 'fumadocs-ui/components/callout';
 import { Step, Steps } from 'fumadocs-ui/components/steps';
 
-
 This guide will help you quickly self-host ClassroomIO.
 
 ![Selfhost ClassroomIO](/selfhost-classroomio.webp)
@@ -27,7 +26,7 @@ The quickest and easiest way to deploy both the api and dashboard is by using ou
 
 Both for the supabase and api setup, you'd need a custom SMTP for email sending. Most importantly you need these values:
 
-```bash
+```zsh title="env"
 SMTP_HOST=
 SMTP_PORT=
 SMTP_USER=
@@ -50,7 +49,7 @@ We have a standalone guide to help you setup your Supabase Cloud and you can fin
 
 After you go through that guide you will need the following environment variables, please also store them somewhere:
 
-```bash
+```zsh title="env"
 PUBLIC_SUPABASE_URL=
 PUBLIC_SUPABASE_ANON_KEY=
 PRIVATE_SUPABASE_SERVICE_ROLE=
@@ -74,7 +73,7 @@ Go ahead and click this button to get started.
 
 #### cio-api
 
-```bash
+```zsh title="env"
 # Required
 SMTP_HOST=""
 SMTP_PORT=""
@@ -100,7 +99,7 @@ SENTRY_DNS=""
 
 #### cio-dashboard
 
-```bash
+```zsh title="env"
 # Required
 PUBLIC_SUPABASE_URL=""
 PUBLIC_SUPABASE_ANON_KEY=""
@@ -126,7 +125,7 @@ We provide a docker-compose configuration to deploy both the api and dashboard s
 
 1. Clone the repository:
 
-```bash
+```zsh title="Terminal"
 git clone https://github.com/rotimi-best/classroomio.git
 cd classroomio
 ```
@@ -135,7 +134,7 @@ cd classroomio
 
 3. Start the services:
 
-```bash
+```zsh title="Terminal"
 docker compose up --build
 ```
 

@@ -1,17 +1,12 @@
-import {
-  DocsBody,
-  DocsDescription,
-  DocsPage,
-  DocsTitle,
-} from 'fumadocs-ui/layouts/docs/page';
+import { useMemo } from 'react';
 import defaultMdxComponents from 'fumadocs-ui/mdx';
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import { createServerFn } from '@tanstack/react-start';
 import type * as PageTree from 'fumadocs-core/page-tree';
 import browserCollections from 'fumadocs-mdx:collections/browser';
 import { createFileRoute, notFound } from '@tanstack/react-router';
+import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/layouts/docs/page';
 
-import { useMemo } from 'react';
 import { source } from '@/lib/source';
 import { baseOptions } from '@/lib/layout.shared';
 
@@ -22,11 +17,11 @@ export const Route = createFileRoute('/$')({
     const data = await loader({ data: slugs });
     await clientLoader.preload(data.path);
     return data;
-  },
+  }
 });
 
 const loader = createServerFn({
-  method: 'GET',
+  method: 'GET'
 })
   .inputValidator((slugs: string[]) => slugs)
   .handler(async ({ data: slugs }) => {
@@ -35,7 +30,7 @@ const loader = createServerFn({
 
     return {
       tree: source.pageTree as object,
-      path: page.path,
+      path: page.path
     };
   });
 
@@ -48,22 +43,19 @@ const clientLoader = browserCollections.docs.createClientLoader({
         <DocsBody>
           <MDX
             components={{
-              ...defaultMdxComponents,
+              ...defaultMdxComponents
             }}
           />
         </DocsBody>
       </DocsPage>
     );
-  },
+  }
 });
 
 function Page() {
   const data = Route.useLoaderData();
   const Content = clientLoader.getComponent(data.path);
-  const tree = useMemo(
-    () => transformPageTree(data.tree as PageTree.Folder),
-    [data.tree],
-  );
+  const tree = useMemo(() => transformPageTree(data.tree as PageTree.Folder), [data.tree]);
 
   return (
     <DocsLayout {...baseOptions()} tree={tree}>
@@ -80,10 +72,10 @@ function transformPageTree(root: PageTree.Root): PageTree.Root {
         icon: (
           <span
             dangerouslySetInnerHTML={{
-              __html: item.icon,
+              __html: item.icon
             }}
           />
-        ),
+        )
       };
     }
 
@@ -91,7 +83,7 @@ function transformPageTree(root: PageTree.Root): PageTree.Root {
       return {
         ...item,
         index: item.index ? mapNode(item.index) : undefined,
-        children: item.children.map(mapNode),
+        children: item.children.map(mapNode)
       };
     }
 
@@ -101,6 +93,6 @@ function transformPageTree(root: PageTree.Root): PageTree.Root {
   return {
     ...root,
     children: root.children.map(mapNode),
-    fallback: root.fallback ? transformPageTree(root.fallback) : undefined,
+    fallback: root.fallback ? transformPageTree(root.fallback) : undefined
   };
 }

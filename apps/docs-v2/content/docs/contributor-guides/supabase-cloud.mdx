@@ -63,7 +63,7 @@ Follow the instructions [here](https://supabase.com/docs/guides/local-developmen
 
 Open your terminal and go to the root of the project. Run the following:
 
-```bash
+```zsh title="Terminal"
 supabase login
 ```
 
@@ -83,7 +83,7 @@ Follow the instruction in your terminal to generate your access token. Paste the
 - In the url, replace `[YOUR PASSWORD]` with your db password (which you saved in section 1).
 - Then run in your terminal:
 
-```bash
+```zsh title="Terminal"
 supabase db push --db-url "URL HERE"
 ```
 
@@ -134,7 +134,7 @@ Make sure to toggle **Enable Custom SMTP** and fill in the following fields:
 
 Now with all these set up you need to get update the .env file in `apps/dashboard`. You need to update the following environment variables:
 
-```bash
+```zsh title="env"
 PUBLIC_SUPABASE_URL=
 PUBLIC_SUPABASE_ANON_KEY=
 PRIVATE_SUPABASE_SERVICE_ROLE=
@@ -151,7 +151,7 @@ To get the correct environment variables, follow the instructions in this image:
 
 Now you can run:
 
-```bash
+```zsh title="Terminal"
 pnpm dev --filter=dashboard
 ```
 

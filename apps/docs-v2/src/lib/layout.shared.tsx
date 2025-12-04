@@ -3,7 +3,12 @@ import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
-      title: 'ClassroomIO'
+      title: (
+        <>
+          <img src="/logo-16.png" alt="" />
+          <span className="font-medium">ClassroomIO</span>
+        </>
+      )
     }
   };
 }

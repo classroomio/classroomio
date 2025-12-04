@@ -1,14 +1,19 @@
 {
   "pages": [
+    "---Introduction---",
     "home",
     "what-is-classroomio",
     "quickstart",
-    "howtoguides",
-    "contributor-guides",
+
+    "---Core Features---",
     "course",
     "audience",
     "community",
     "organization",
-    "student-dashboard"
+    "student-dashboard",
+
+    "---Guides---",
+    "howtoguides",
+    "contributor-guides"
   ]
 }
