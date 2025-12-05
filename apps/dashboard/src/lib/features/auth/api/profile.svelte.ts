@@ -88,8 +88,8 @@ export class ProfileApi extends BaseApiWithErrors {
       return;
     }
 
-    await this.execute<typeof classroomio.account.user.$put>({
-      requestFn: () => classroomio.account.user.$put({ json: profileUpdates }),
+    await this.execute<typeof classroomio.account.profile.$put>({
+      requestFn: () => classroomio.account.profile.$put({ json: profileUpdates }),
       logContext: 'updating profile',
       onSuccess: (response) => {
         profileStore.update((_profile) => ({

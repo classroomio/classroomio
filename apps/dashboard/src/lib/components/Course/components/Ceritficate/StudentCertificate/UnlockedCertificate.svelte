@@ -23,13 +23,14 @@
 
     isLoading = true;
     try {
-      const response = await classroomio.course.download.certificate.$post({
+      const response = await classroomio.course[':courseId']['download']['certificate']['$post']({
+        param: { courseId: $course.id },
         json: {
           theme: `${$course.certificate_theme}`,
           studentName: `${$profile.fullname}`,
           courseName: `${$course.title}`,
           courseDescription: `${$course.description}`,
-          orgLogoUrl: $currentOrg.avatar_url || `${$currentOrgDomain}/logo-512.png`,
+          orgLogoUrl: $currentOrg.avatarUrl || `${$currentOrgDomain}/logo-512.png`,
           orgName: `${$currentOrg.name}`
         }
       });

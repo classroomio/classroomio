@@ -2,7 +2,7 @@ import * as z from 'zod';
 
 const fullnameValidation = z.string().min(5);
 
-export const ZOnboardingStep1 = z.object({
+export const ZOnboardingCreateOrg = z.object({
   fullname: fullnameValidation,
   orgName: z
     .string()
@@ -17,11 +17,11 @@ export const ZOnboardingStep1 = z.object({
       message: 'validations.site_name.hyphen_rule'
     })
 });
-export type TOnboardingStep1 = z.infer<typeof ZOnboardingStep1>;
+export type TOnboardingCreateOrg = z.infer<typeof ZOnboardingCreateOrg>;
 
-export const ZOnboardingStep2 = z.object({
+export const ZOnboardingUpdateMetadata = z.object({
   fullname: fullnameValidation,
   goal: z.string().min(5),
   source: z.string().min(5)
 });
-export type TOnboardingStep2 = z.infer<typeof ZOnboardingStep2>;
+export type TOnboardingUpdateMetadata = z.infer<typeof ZOnboardingUpdateMetadata>;

@@ -420,6 +420,8 @@ export * from './course';
 
 **Location**: `apps/api/src/routes/{domain}/{entity}.ts`
 
+> **📖 Route Naming Conventions**: For comprehensive guidelines on route naming, URL structure, HTTP methods, nested resources, and action endpoints, see [`apps/api/ROUTE_NAMING_BEST_PRACTICES.md`](apps/api/ROUTE_NAMING_BEST_PRACTICES.md).
+
 ### Public API Standards
 
 Since routes may be exposed as public APIs, follow these standards rigorously:
@@ -1308,33 +1310,6 @@ export async function createOrg(profileId: string, data: { name: string; siteNam
 
 ---
 
-### Route Path Convention
-
-When adding routes to an existing router:
-
-- **GET `/`** - Fetch/list resources (e.g., `GET /account` - get account data)
-- **GET `/{id}`** - Fetch single resource (e.g., `GET /course/{id}`)
-- **POST `/`** - Create resource (e.g., `POST /course` - create course)
-- **PUT `/{resource}`** - Update resource (e.g., `PUT /account/user` - update user)
-- **DELETE `/{id}`** - Delete resource (e.g., `DELETE /course/{id}`)
-
-**Example router with multiple routes**:
-
-```typescript
-export const accountRouter = new Hono()
-  .get('/', authMiddleware, async (c) => {
-    // GET /account - get account data
-  })
-  .put('/user', authMiddleware, zValidator('json', ZUpdateProfile), async (c) => {
-    // PUT /account/user - update user profile
-  })
-  .put('/password', authMiddleware, zValidator('json', ZChangePassword), async (c) => {
-    // PUT /account/password - change password
-  });
-```
-
----
-
 ### Quick Reference Checklist
 
 When creating a new route, follow this checklist:
@@ -1422,7 +1397,7 @@ If the route doesn't exist:
 
 If the route exists:
 - Add new endpoint to existing router
-- Follow route path conventions
+- Follow route naming conventions (see [`apps/api/ROUTE_NAMING_BEST_PRACTICES.md`](apps/api/ROUTE_NAMING_BEST_PRACTICES.md))
 
 #### Step 4: Create Frontend API Method
 

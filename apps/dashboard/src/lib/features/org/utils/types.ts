@@ -34,7 +34,7 @@ export type CoursesByOrganizationSiteNameSuccess = Extract<
 export type CoursesByOrganizationSiteName = CoursesByOrganizationSiteNameSuccess['data'];
 
 // dashboard analytics types
-export type GetDashStatsResponse = typeof classroomio.dash.stats.$post;
+export type GetDashStatsResponse = typeof classroomio.dash.stats.$get;
 export type DashStatsResponse = InferResponseType<GetDashStatsResponse> | null;
 export type DashStatsSuccess = Extract<InferResponseType<GetDashStatsResponse>, { success: true }>;
 

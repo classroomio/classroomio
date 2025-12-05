@@ -276,7 +276,7 @@ class OrgApi extends BaseApiWithErrors {
   async inviteTeamMembers(orgId: string, emails: string[], roleId: number) {
     return this.execute<InviteTeamResponse>({
       requestFn: () =>
-        classroomio.organization[':orgId'].team.invite.$post({
+        classroomio.organization[':orgId']['team']['invite']['$post']({
           param: { orgId },
           // @ts-expect-error - the json type is not inferred correctly
           json: { emails, roleId }

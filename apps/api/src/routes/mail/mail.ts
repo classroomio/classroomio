@@ -4,7 +4,7 @@ import { deliverEmail } from '@cio/email';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 
-export const mailRouter = new Hono().post('/send', zValidator('json', ZDeliverEmail), async (c) => {
+export const mailRouter = new Hono().post('/', zValidator('json', ZDeliverEmail), async (c) => {
   const validatedData = c.req.valid('json');
 
   try {

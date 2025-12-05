@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 const envSchema = z.object({
   SMTP_HOST: z.string().optional(),

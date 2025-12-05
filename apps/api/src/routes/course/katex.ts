@@ -1,7 +1,7 @@
-import { Hono } from '@api/utils/hono';
+import * as z from 'zod';
 
+import { Hono } from '@api/utils/hono';
 import katex from 'katex';
-import { z } from 'zod';
 
 export const katexRouter = new Hono().get('/', async (c) => {
   try {

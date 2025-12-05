@@ -17,7 +17,7 @@
 </script>
 
 <a {href} target="_blank" class="{className} ml-2 hover:no-underline">
-  <Button variant="outline">
+  <Button variant="default">
     {#if !$isMobile}
       {#if isLMS}
         {$t('dashboard.visit_site')}
@@ -25,6 +25,6 @@
         {$t('settings.subheadings.view_site')}
       {/if}
     {/if}
-    <ArrowUpRightIcon />
+    <ArrowUpRightIcon class="custom" />
   </Button>
 </a>

@@ -1,4 +1,4 @@
-import { ZOnboardingStep1, ZOnboardingStep2 } from '@cio/utils/validation/onboarding';
+import { ZOnboardingCreateOrg, ZOnboardingUpdateMetadata } from '@cio/utils/validation/onboarding';
 import { completeOnboarding, createOrganizationWithOwner, updateUserOnboarding } from '@api/services/onboarding';
 
 import { Hono } from '@api/utils/hono';
@@ -7,7 +7,7 @@ import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 
 export const onboardingRouter = new Hono()
-  .post('/step1', authMiddleware, zValidator('json', ZOnboardingStep1), async (c) => {
+  .post('/create-org', authMiddleware, zValidator('json', ZOnboardingCreateOrg), async (c) => {
     try {
       const user = c.get('user');
       const { fullname, orgName, siteName } = c.req.valid('json');
@@ -19,7 +19,7 @@ export const onboardingRouter = new Hono()
       return handleError(c, error, 'Failed to create organization');
     }
   })
-  .post('/step2', authMiddleware, zValidator('json', ZOnboardingStep2), async (c) => {
+  .post('/update-metadata', authMiddleware, zValidator('json', ZOnboardingUpdateMetadata), async (c) => {
     try {
       const user = c.get('user');
       const { goal, source, fullname } = c.req.valid('json');

@@ -1,5 +1,6 @@
+import * as z from 'zod';
+
 import { ALLOWED_IMAGE_TYPES } from '../constants';
-import { z } from 'zod';
 
 /**
  * Schema for image upload presign URL request

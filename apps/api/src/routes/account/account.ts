@@ -28,7 +28,7 @@ export const accountRouter = new Hono()
       return handleError(c, error, 'Failed to fetch account data');
     }
   })
-  .put('/user', authMiddleware, zValidator('json', ZUpdateProfile), async (c) => {
+  .put('/profile', authMiddleware, zValidator('json', ZUpdateProfile), async (c) => {
     const user = c.get('user');
 
     try {

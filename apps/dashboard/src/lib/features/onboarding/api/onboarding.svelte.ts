@@ -32,8 +32,8 @@ export class OnboardingApi extends BaseApiWithErrors {
       return false;
     }
 
-    await this.execute<typeof classroomio.onboarding.step1.$post>({
-      requestFn: () => classroomio.onboarding.step1.$post({ json: data }),
+    await this.execute<(typeof classroomio.onboarding)['create-org']['$post']>({
+      requestFn: () => classroomio.onboarding['create-org'].$post({ json: data }),
       logContext: 'submitting organization setup',
       onSuccess: (result) => {
         const { organizations } = result.data;
@@ -70,8 +70,8 @@ export class OnboardingApi extends BaseApiWithErrors {
       return false;
     }
 
-    await this.execute<typeof classroomio.onboarding.step2.$post>({
-      requestFn: () => classroomio.onboarding.step2.$post({ json: data }),
+    await this.execute<(typeof classroomio.onboarding)['update-metadata']['$post']>({
+      requestFn: () => classroomio.onboarding['update-metadata'].$post({ json: data }),
       logContext: 'submitting organization setup',
       onSuccess: (result) => {
         profile.set(result.data);
