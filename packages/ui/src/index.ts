@@ -49,5 +49,6 @@ export { BarChart, LineChart, AreaChart, PieChart, scaleBand } from './base/char
 
 export * from './tools';
 
+export * as UnderlineTabs from './custom/underline-tabs';
 export * from './custom/editor/ui';
 export * as ImageCropper from './custom/image-cropper';
