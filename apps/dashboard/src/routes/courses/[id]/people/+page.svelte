@@ -117,7 +117,7 @@
       </select> -->
     </div>
     <RoleBasedSecurity allowedRoles={[1, 2]}>
-      <p class="hidden w-20 text-lg dark:text-white lg:block" />
+      <p class="hidden w-20 text-lg lg:block dark:text-white" />
     </RoleBasedSecurity>
   </div>
 
@@ -136,7 +136,7 @@
           >{$t('course.navItem.people.action')}</StructuredListCell
         >
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <p class="hidden w-20 text-lg dark:text-white lg:block" />
+          <p class="hidden w-20 text-lg lg:block dark:text-white" />
         </RoleBasedSecurity>
       </StructuredListRow>
     </StructuredListHead>

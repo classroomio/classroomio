@@ -15,26 +15,23 @@ function isPublicRoute(pathname: string) {
 }
 
 export const handle: Handle = async ({ event, resolve }) => {
-  const response = await resolve(event);
-
   const { pathname } = event.url;
 
   // Only validate API routes
   if (!pathname.includes('/api')) {
-    return response;
+    return resolve(event);
   }
 
   // Skip public routes
   if (isPublicRoute(pathname)) {
-    return response;
+    return resolve(event);
   }
 
   const accessToken = event.request.headers.get('Authorization')!;
 
   try {
     const user = await validateUser(accessToken);
-
-    response.headers.set('user_id', `${user.id}`);
+    event.request.headers.set('user_id', `${user.id}`);
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === 'Unauthenticated user') {
@@ -47,6 +44,5 @@ export const handle: Handle = async ({ event, resolve }) => {
       }
     }
   }
-
-  return response;
+  return resolve(event);
 };

@@ -91,7 +91,8 @@ export async function setCourse(data: Course, setLesson = true) {
   // const tutorsById = {};
 
   if (data.group) {
-    const groupData = Object.assign(data.group, {
+    const copiedGroup = JSON.parse(JSON.stringify(data.group));
+    const groupData = Object.assign(copiedGroup, {
       tutors: [],
       students: [],
       people: []

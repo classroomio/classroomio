@@ -8,7 +8,7 @@
   import Confetti from '../Confetti/index.svelte';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { profile } from '$lib/utils/store/user';
-  import { fetchCourse } from '$lib/utils/services/courses';
+  import { fetchCourseFromAPI } from '$lib/utils/services/courses';
   import { globalStore } from '$lib/utils/store/app';
   import { lessons } from '../Course/components/Lesson/store/lessons';
   import Modal from '$lib/components/Modal/index.svelte';
@@ -32,7 +32,7 @@
     course.set(defaultCourse);
     lessons.set([]);
 
-    const { data: _data } = await fetchCourse(courseId);
+    const { data: _data } = await fetchCourseFromAPI(courseId);
 
     if (_data) {
       $course.type = _data.type;
@@ -52,7 +52,6 @@
   $: onCourseIdChange(courseId);
 
   $: {
-    console.log('isOrgAdmin', $isOrgAdmin);
     const user = $group.people.find((person) => person.profile_id === $profile.id);
     if (user) {
       $globalStore.isStudent = user.role_id === 3;

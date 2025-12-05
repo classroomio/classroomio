@@ -6,61 +6,41 @@ import type { OrganizationPlan } from '$lib/utils/types';
 import type { PostgrestError } from '@supabase/supabase-js';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
-import { supabase } from '$lib/utils/functions/supabase';
+import { supabase, getAccessToken } from '$lib/utils/functions/supabase';
 
 export async function getOrgTeam(orgId: string) {
-  const { data, error } = await supabase
-    .from('organizationmember')
-    .select(
-      `
-      id,
-      email,
-      verified,
-      role_id,
-      profile(
-        id,
-        fullname,
-        email
-      )
-    `
-    )
-    .eq('organization_id', orgId)
-    .neq('role_id', ROLE.STUDENT)
-    .order('id', { ascending: false })
-    .returns<
-      {
-        id: number;
-        email: string;
-        verified: boolean;
-        role_id: number;
-        profile: {
-          id: string;
-          fullname: string;
-          email: string;
-        };
-      }[]
-    >();
+  const accessToken = await getAccessToken();
 
-  const team: OrgTeamMember[] = [];
-  if (data?.length) {
-    data.forEach((teamMember) => {
-      team.push({
-        id: teamMember.id,
-        email: teamMember?.profile?.email || teamMember.email,
-        verified: teamMember.verified,
-        profileId: teamMember?.profile?.id,
-        fullname: teamMember?.profile?.fullname || '',
-        role: ROLE_LABEL[teamMember?.role_id] || '',
-        isAdmin: teamMember?.role_id === ROLE.ADMIN
-      });
-    });
+  const response = await fetch(`/api/org/team?orgId=${orgId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: accessToken
+    }
+  });
 
-    orgTeam.set(team);
+  if (!response.ok) {
+    const error = await response.text();
+    return {
+      team: [],
+      error: { message: error }
+    };
   }
+
+  const { success, team, message } = await response.json();
+
+  if (!success) {
+    return {
+      team: [],
+      error: { message }
+    };
+  }
+
+  orgTeam.set(team);
 
   return {
     team: get(orgTeam),
-    error
+    error: null
   };
 }
 
@@ -146,39 +126,38 @@ export async function getOrganizations(userId: string, isOrgSite?: boolean, orgS
 }
 
 export async function getOrgAudience(orgId: string) {
-  // get all students who are participants in any course belonging to an org
-  const { data, error } = await supabase
-    .from('profile')
-    .select(
-      `
-      id,
-      fullname,
-      email,
-      avatar_url,
-      created_at,
-      groupmember!inner(
-        role_id,
-        group_id:group!inner(
-          organization_id
-        )
-      )
-    `
-    )
-    .eq('groupmember.group.organization_id', orgId)
-    .eq('groupmember.role_id', ROLE.STUDENT);
+  const accessToken = await getAccessToken();
 
-  const audience = (data || []).map((profile) => ({
-    id: profile.id,
-    name: profile.fullname,
-    email: profile.email,
-    avatar_url: profile.avatar_url,
-    date_joined: new Date(profile.created_at).toDateString()
-  }));
+  const response = await fetch(`/api/org/audience?orgId=${orgId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: accessToken
+    }
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    return {
+      audience: [],
+      error: { message: error }
+    };
+  }
+
+  const { audience, error } = await response.json();
+
+  if (error) {
+    return {
+      audience: [],
+      error
+    };
+  }
+
   orgAudience.set(audience);
 
   return {
     audience: audience,
-    error
+    error: null
   };
 }
 
