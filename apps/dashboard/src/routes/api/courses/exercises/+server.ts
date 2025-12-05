@@ -49,16 +49,9 @@ export const POST: RequestHandler = async ({ request }) => {
       throw new Error('Error fetching exercises');
     }
 
-    const formattedExercises = exercises.map((exercise) => ({
-      lesson_id: exercise.lesson_id,
-      exercise_id: exercise.id,
-      exercise_title: exercise.title,
-      points: exercise.points
-    }));
-
     return json({
       success: true,
-      data: formattedExercises
+      data: exercises
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Internal server error';

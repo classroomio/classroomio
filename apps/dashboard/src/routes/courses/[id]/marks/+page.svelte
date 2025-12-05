@@ -18,7 +18,12 @@
   import { profile } from '$lib/utils/store/user';
   import type { GroupPerson } from '$lib/utils/types';
   import type { CurrentOrg } from '$lib/utils/types/org';
-  import { Loading, OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
+  import {
+    Loading,
+    OverflowMenu,
+    OverflowMenuItem,
+    SkeletonPlaceholder
+  } from 'carbon-components-svelte';
   import AudioConsoleIcon from 'carbon-icons-svelte/lib/AudioConsole.svelte';
   import Download from 'carbon-icons-svelte/lib/Download.svelte';
   import jsPDF from 'jspdf';
@@ -33,6 +38,7 @@
   let lessonMapping = {}; // { lessonId: { exerciseId: exerciseTitle, ... }, ... }
   let studentMarksByExerciseId = {}; // { groupMemberId: { exerciseId: `total_gotten/points`, ... }, ... }
   let isDownloading = false;
+  let isLoading = false;
 
   function calculateStudentTotal(studentExerciseData) {
     if (!studentExerciseData) return 0;
@@ -44,14 +50,19 @@
   }
 
   async function firstRender(courseId: string) {
+    isLoading = true;
     const { data: marks, error } = await fetchMarks(courseId);
     if (error) {
+      isLoading = false;
       console.error('Error fetching marks', error);
       snackbar.error('snackbar.marks.error');
       return;
     }
 
-    if (!marks || !Array.isArray(marks)) return;
+    if (!marks || !Array.isArray(marks)) {
+      isLoading = false;
+      return;
+    }
 
     marks.forEach((mark) => {
       const { groupmember_id, exercise_id, total_points_gotten } = mark;
@@ -85,6 +96,8 @@
         };
       }
     });
+
+    isLoading = false;
   }
   // TODO WRITE A REDIRECT FUNCTION FOR THIS THIS PAGE
 
@@ -238,86 +251,95 @@
     </PageNav>
 
     <PageBody width="w-full max-w-6xl md:w-11/12">
-      <div id="tableContainer" class="table w-full rounded-md border border-gray-300">
-        <div class="flex items-center {borderBottomGrey}">
-          <div class="box flex items-center p-3">
-            <p class="w-40 dark:text-white">{$t('course.navItem.marks.student')}</p>
-          </div>
-          {#each $lessons as lesson, index}
-            {#if lessonMapping[lesson.id]}
-              <div class="box flex flex-col items-center {borderleftGrey}">
-                <p class="col lesson-number dark:text-white" title={lesson.title}>
-                  {getLectureNo(index + 1)}
-                </p>
-                <div
-                  class="flex h-full items-center border-b-0 border-l-0 border-r-0 border-t border-gray-300"
-                >
-                  {#each Object.keys(lessonMapping[lesson.id]) as exerciseId, index}
-                    <p
-                      class="col text-sm dark:text-white {index && borderleftGrey}"
-                      title={lessonMapping[lesson.id][exerciseId].title}
-                    >
-                      {lessonMapping[lesson.id][exerciseId].title}
-                      <span>({lessonMapping[lesson.id][exerciseId].points})</span>
-                    </p>
-                  {/each}
-                </div>
-              </div>
-            {/if}
-          {/each}
-          <div class="box flex items-center {borderleftGrey}">
-            <p class="w-20 text-center dark:text-white">{$t('course.navItem.marks.total')}</p>
-          </div>
+      {#if isLoading}
+        <div class=" h-full w-full">
+          <SkeletonPlaceholder class="mb-4 h-8 w-full" />
+          <SkeletonPlaceholder class="mb-4 h-8 w-full" />
+          <SkeletonPlaceholder class="mb-4 h-8 w-full" />
+          <SkeletonPlaceholder class="mb-4 h-8 w-full" />
         </div>
-
-        {#each students as student}
-          <div class="relative flex cursor-pointer items-center p-3 {borderBottomGrey}">
-            <div class="flex w-40 items-center">
-              <img
-                alt="Student avatar"
-                src={student.profile.avatar_url}
-                class="mr-2 h-8 w-8 rounded-full"
-              />
-              <div class="text-sm">
-                <p class="font-semibold dark:text-white">
-                  {student.profile.fullname}
-                </p>
-                <p class="dark:text-white">
-                  {`${student.assigned_student_id ? '#' + student.assigned_student_id : '-'}`}
-                </p>
-              </div>
+      {:else}
+        <div id="tableContainer" class="table w-full rounded-md border border-gray-300">
+          <div class="flex items-center {borderBottomGrey}">
+            <div class="box flex items-center p-3">
+              <p class="w-40 dark:text-white">{$t('course.navItem.marks.student')}</p>
             </div>
-            {#each $lessons as lesson}
+            {#each $lessons as lesson, index}
               {#if lessonMapping[lesson.id]}
-                <div class="flex items-center">
-                  {#each Object.keys(lessonMapping[lesson.id]) as exerciseId}
-                    <p class="col dark:text-white">
-                      {studentMarksByExerciseId[student.id]
-                        ? studentMarksByExerciseId[student.id][exerciseId] || '-'
-                        : '-'}
-                    </p>
-                  {/each}
+                <div class="box flex flex-col items-center {borderleftGrey}">
+                  <p class="col lesson-number dark:text-white" title={lesson.title}>
+                    {getLectureNo(index + 1)}
+                  </p>
+                  <div
+                    class="flex h-full items-center border-b-0 border-l-0 border-r-0 border-t border-gray-300"
+                  >
+                    {#each Object.keys(lessonMapping[lesson.id]) as exerciseId, index}
+                      <p
+                        class="col text-sm dark:text-white {index && borderleftGrey}"
+                        title={lessonMapping[lesson.id][exerciseId].title}
+                      >
+                        {lessonMapping[lesson.id][exerciseId].title}
+                        <span>({lessonMapping[lesson.id][exerciseId].points})</span>
+                      </p>
+                    {/each}
+                  </div>
                 </div>
               {/if}
             {/each}
-
-            <div class="flex w-20 items-center">
-              <div class="text-sm">
-                <p class="col dark:text-white">
-                  {calculateStudentTotal(studentMarksByExerciseId[student.id])}
-                </p>
-              </div>
+            <div class="box flex items-center {borderleftGrey}">
+              <p class="w-20 text-center dark:text-white">{$t('course.navItem.marks.total')}</p>
             </div>
           </div>
-        {:else}
-          <Box>
-            <AudioConsoleIcon size={32} class="carbon-icon w-80" />
-            <h3 class="text-3xl text-gray-500 dark:text-white">
-              {$t('course.navItem.marks.no_student')}
-            </h3>
-          </Box>
-        {/each}
-      </div>
+
+          {#each students as student}
+            <div class="relative flex cursor-pointer items-center p-3 {borderBottomGrey}">
+              <div class="flex w-40 items-center">
+                <img
+                  alt="Student avatar"
+                  src={student.profile.avatar_url}
+                  class="mr-2 h-8 w-8 rounded-full"
+                />
+                <div class="text-sm">
+                  <p class="font-semibold dark:text-white">
+                    {student.profile.fullname}
+                  </p>
+                  <p class="dark:text-white">
+                    {`${student.assigned_student_id ? '#' + student.assigned_student_id : '-'}`}
+                  </p>
+                </div>
+              </div>
+              {#each $lessons as lesson}
+                {#if lessonMapping[lesson.id]}
+                  <div class="flex items-center">
+                    {#each Object.keys(lessonMapping[lesson.id]) as exerciseId}
+                      <p class="col dark:text-white">
+                        {studentMarksByExerciseId[student.id]
+                          ? studentMarksByExerciseId[student.id][exerciseId] || '-'
+                          : '-'}
+                      </p>
+                    {/each}
+                  </div>
+                {/if}
+              {/each}
+
+              <div class="flex w-20 items-center">
+                <div class="text-sm">
+                  <p class="col dark:text-white">
+                    {calculateStudentTotal(studentMarksByExerciseId[student.id])}
+                  </p>
+                </div>
+              </div>
+            </div>
+          {:else}
+            <Box>
+              <AudioConsoleIcon size={32} class="carbon-icon w-80" />
+              <h3 class="text-3xl text-gray-500 dark:text-white">
+                {$t('course.navItem.marks.no_student')}
+              </h3>
+            </Box>
+          {/each}
+        </div>
+      {/if}
     </PageBody>
   </RoleBasedSecurity>
 </CourseContainer>
