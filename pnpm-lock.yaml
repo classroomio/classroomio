@@ -72,9 +72,6 @@ importers:
       '@sentry/profiling-node':
         specifier: ^7.110.1
         version: 7.120.4
-      '@supabase/supabase-js':
-        specifier: ^2.32.0
-        version: 2.78.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       axios:
         specifier: ^1.4.0
         version: 1.13.1

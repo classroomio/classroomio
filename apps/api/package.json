@@ -47,7 +47,6 @@
     "@hono/zod-validator": "^0.7.2",
     "@scalar/hono-api-reference": "^0.9.18",
     "@sentry/profiling-node": "^7.110.1",
-    "@supabase/supabase-js": "^2.32.0",
     "axios": "^1.4.0",
     "dotenv": "^16.3.1",
     "hono": "^4.9.7",
