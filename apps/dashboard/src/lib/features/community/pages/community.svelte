@@ -133,12 +133,10 @@
   <CommunityListLoader />
 {:else}
   {#each filteredDiscussions as discussion}
-    <div
-      class="border-c m-auto my-4 flex flex-wrap items-center justify-center rounded bg-gray-100 lg:justify-start dark:bg-neutral-800"
-    >
+    <div class="flex flex-wrap items-center justify-center rounded bg-gray-100 lg:justify-start dark:bg-neutral-800">
       <div class="border-bottom-c flex w-full p-3">
         <Vote value={discussion.votes} />
-        <div class="flex flex-col gap-y-0.5 text-sm">
+        <div class="flex flex-col gap-y-0.5">
           <h4 class="mt-0">
             <a class="text-black dark:text-white" href="{isLMS ? '/lms' : $currentOrgPath}/community/{discussion.slug}">
               {discussion.title}
@@ -148,7 +146,7 @@
             {discussion.author} asked {discussion.createdAt}
           </span>
           <a class="m-0" href="/courses/{discussion.courseId}">
-            <span class="text-primary-200 text-primary-700 p-0 text-xs dark:text-black">
+            <span class="text-muted-foreground p-0 text-xs">
               #{discussion.courseTitle}
             </span>
           </a>
