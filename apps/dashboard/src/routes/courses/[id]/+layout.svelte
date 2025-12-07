@@ -15,7 +15,7 @@
   <CourseSidebar {path} />
 
   <Sidebar.Inset>
-    <AppHeader />
+    <AppHeader hideSearch={true} />
 
     <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 overflow-y-auto px-4">
       {@render children?.()}
