@@ -12,10 +12,12 @@
   import { setupProgressApi } from '$lib/features/setup/api/setup-progress.svelte';
   import AppSetup from './app-setup.svelte';
 
+  const siteName = $derived($currentOrg.siteName);
+
   $effect(() => {
-    if ($currentOrg.siteName) {
-      setupProgressApi.fetchSetupProgress($currentOrg.siteName);
-    }
+    if (!siteName) return;
+
+    setupProgressApi.fetchSetupProgress(siteName);
   });
 </script>
 
