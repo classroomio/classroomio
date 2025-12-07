@@ -217,186 +217,166 @@
   function toggleSidebarOnMobile() {}
 </script>
 
-<Sidebar.Provider class="flex w-fit items-start gap-2">
-  <Sidebar.Root collapsible="icon">
-    <Sidebar.Content>
-      <Sidebar.Group>
-        <Sidebar.GroupLabel>Course Navigation</Sidebar.GroupLabel>
-        <Sidebar.Menu>
-          {#each navItems as item (item.id)}
-            <Collapsible.Root open={item.isActive} class="group/collapsible">
-              {#snippet child({ props })}
-                <Sidebar.MenuItem {...props}>
-                  {#if item.isLesson && item.items}
-                    <Collapsible.Trigger>
-                      {#snippet child({ props })}
-                        <a href={item.url}>
-                          <Sidebar.MenuButton
-                            {...props}
-                            tooltipContent={item.title}
-                            class="flex w-full items-center gap-4 py-2 pl-1.5"
-                          >
-                            {@const Icon = item.icon}
-                            <Icon size={16} class="nav-icon group-hover:animate-{item.id}" />
-                            {item.title}
+<Sidebar.Group>
+  <Sidebar.GroupLabel>Course Navigation</Sidebar.GroupLabel>
+  <Sidebar.Menu>
+    {#each navItems as item (item.id)}
+      <Collapsible.Root open={item.isActive} class="group/collapsible">
+        {#snippet child({ props })}
+          <Sidebar.MenuItem {...props}>
+            {#if item.isLesson && item.items}
+              <Collapsible.Trigger>
+                {#snippet child({ props })}
+                  <a href={item.url}>
+                    <Sidebar.MenuButton
+                      {...props}
+                      tooltipContent={item.title}
+                      class="flex w-full items-center gap-4 py-2 pl-1.5"
+                    >
+                      {@const Icon = item.icon}
+                      <Icon size={16} class="nav-icon group-hover:animate-{item.id}" />
+                      {item.title}
 
-                            <div class="ml-auto flex items-center gap-1">
-                              <Plus
-                                size={20}
-                                class="rounded-full p-1 hover:bg-gray-200"
-                                onclick={() => addLesson(false, item.id)}
-                              />
+                      <div class="ml-auto flex items-center gap-1">
+                        <Plus
+                          size={20}
+                          class="rounded-full p-1 hover:bg-gray-200"
+                          onclick={() => addLesson(false, item.id)}
+                        />
 
-                              <ChevronRightIcon
-                                size={20}
-                                class="rounded-full p-1 transition-transform duration-200 hover:bg-gray-200 group-data-[state=open]/collapsible:rotate-90"
-                              />
-                            </div>
-                          </Sidebar.MenuButton>
-                        </a>
-                      {/snippet}
-                    </Collapsible.Trigger>
-                    <Collapsible.Content>
-                      <Sidebar.MenuSub>
-                        {#if $course.version === COURSE_VERSION.V1}
-                          {#each item.items as lessonItem}
-                            <Sidebar.MenuSubItem>
-                              <Sidebar.MenuSubButton
-                                isActive={(path || page.url.pathname).includes(lessonItem.lesson.id)}
-                              >
-                                {#snippet child({ props })}
-                                  <a
-                                    href={isStudent && !lessonItem.lesson.is_unlocked
-                                      ? page.url.pathname
-                                      : lessonItem.url}
-                                    onclick={toggleSidebarOnMobile}
-                                    aria-disabled={!lessonItem.lesson.is_unlocked}
-                                    title={lessonItem.lesson.title}
-                                    class="flex w-full items-center gap-2 {isStudent && !lessonItem.lesson.is_unlocked
-                                      ? 'cursor-not-allowed opacity-50'
-                                      : ''}"
-                                    {...props}
-                                  >
-                                    {#if lessonItem.isV1 && 'index' in lessonItem}
-                                      <TextChip
-                                        value={getLectureNo(lessonItem.index + 1)}
-                                        className="bg-primary-200 text-primary-600 text-xs"
-                                        size="sm"
-                                        shape="rounded-full"
-                                      />
-                                    {/if}
-                                    <span class="flex-1 truncate">{lessonItem.lesson.title}</span>
-                                    {#if !lessonItem.lesson.is_unlocked}
-                                      <LockIcon size={16} class="shrink-0" />
-                                    {:else if getIsLessonComplete(lessonItem.lesson.lesson_completion, $profile.id)}
-                                      <span class="shrink-0">
-                                        <CircleCheckIcon size={16} filled />
-                                      </span>
-                                    {/if}
-                                  </a>
-                                {/snippet}
-                              </Sidebar.MenuSubButton>
-                            </Sidebar.MenuSubItem>
-                          {/each}
-                        {:else}
-                          {#each $lessonSections as section}
-                            <Collapsible.Root open={true} class="group/section">
-                              {#snippet child({ props })}
-                                <Sidebar.MenuSubItem {...props}>
-                                  <Collapsible.Trigger>
-                                    {#snippet child({ props })}
-                                      <Sidebar.MenuSubButton
-                                        {...props}
-                                        class="flex w-full items-center gap-2 font-medium"
-                                      >
-                                        {@const Icon = getNavIcon(NAV_IDS.SECTION)}
-                                        <Icon size={14} />
-                                        <span class="flex-1 truncate">{section.title}</span>
-                                        <div class="ml-auto flex items-center gap-1">
-                                          <Plus
-                                            size={20}
-                                            class="rounded-full p-1 hover:bg-gray-200"
-                                            onclick={() => addLesson(true, section.id)}
-                                          />
-
-                                          <ChevronRightIcon
-                                            size={20}
-                                            class="rounded-full p-1 transition-transform duration-200 hover:bg-gray-200 group-data-[state=open]/collapsible:rotate-90"
-                                          />
-                                        </div>
-                                      </Sidebar.MenuSubButton>
-                                    {/snippet}
-                                  </Collapsible.Trigger>
-                                  <Collapsible.Content>
-                                    <Sidebar.MenuSub class="ml-2">
-                                      {#each section.lessons as lesson}
-                                        <Sidebar.MenuSubItem>
-                                          <Sidebar.MenuSubButton
-                                            isActive={(path || page.url.pathname).includes(lesson.id)}
-                                          >
-                                            {#snippet child({ props })}
-                                              <a
-                                                href={isStudent && !lesson.is_unlocked
-                                                  ? page.url.pathname
-                                                  : getLessonsRoute($course.id, lesson.id)}
-                                                onclick={toggleSidebarOnMobile}
-                                                aria-disabled={!lesson.is_unlocked}
-                                                title={lesson.title}
-                                                class="flex w-full items-center gap-2 {isStudent && !lesson.is_unlocked
-                                                  ? 'cursor-not-allowed opacity-50'
-                                                  : ''}"
-                                                {...props}
-                                              >
-                                                <span class="flex-1 truncate">{lesson.title}</span>
-                                                {#if !lesson.is_unlocked}
-                                                  <LockIcon size={16} class="shrink-0" />
-                                                {:else if getIsLessonComplete(lesson.lesson_completion, $profile.id)}
-                                                  <span class="shrink-0">
-                                                    <CircleCheckIcon size={16} filled />
-                                                  </span>
-                                                {/if}
-                                              </a>
-                                            {/snippet}
-                                          </Sidebar.MenuSubButton>
-                                        </Sidebar.MenuSubItem>
-                                      {/each}
-                                    </Sidebar.MenuSub>
-                                  </Collapsible.Content>
-                                </Sidebar.MenuSubItem>
-                              {/snippet}
-                            </Collapsible.Root>
-                          {/each}
-                        {/if}
-                      </Sidebar.MenuSub>
-                    </Collapsible.Content>
+                        <ChevronRightIcon
+                          size={20}
+                          class="rounded-full p-1 transition-transform duration-200 hover:bg-gray-200 group-data-[state=open]/collapsible:rotate-90"
+                        />
+                      </div>
+                    </Sidebar.MenuButton>
+                  </a>
+                {/snippet}
+              </Collapsible.Trigger>
+              <Collapsible.Content>
+                <Sidebar.MenuSub>
+                  {#if $course.version === COURSE_VERSION.V1}
+                    {#each item.items as lessonItem}
+                      <Sidebar.MenuSubItem>
+                        <Sidebar.MenuSubButton isActive={(path || page.url.pathname).includes(lessonItem.lesson.id)}>
+                          {#snippet child({ props })}
+                            <a
+                              href={isStudent && !lessonItem.lesson.is_unlocked ? page.url.pathname : lessonItem.url}
+                              onclick={toggleSidebarOnMobile}
+                              aria-disabled={!lessonItem.lesson.is_unlocked}
+                              title={lessonItem.lesson.title}
+                              class="flex w-full items-center gap-2 {isStudent && !lessonItem.lesson.is_unlocked
+                                ? 'cursor-not-allowed opacity-50'
+                                : ''}"
+                              {...props}
+                            >
+                              {#if lessonItem.isV1 && 'index' in lessonItem}
+                                <TextChip
+                                  value={getLectureNo(lessonItem.index + 1)}
+                                  className="bg-primary-200 text-primary-600 text-xs"
+                                  size="sm"
+                                  shape="rounded-full"
+                                />
+                              {/if}
+                              <span class="flex-1 truncate">{lessonItem.lesson.title}</span>
+                              {#if !lessonItem.lesson.is_unlocked}
+                                <LockIcon size={16} class="shrink-0" />
+                              {:else if getIsLessonComplete(lessonItem.lesson.lesson_completion, $profile.id)}
+                                <span class="shrink-0">
+                                  <CircleCheckIcon size={16} filled />
+                                </span>
+                              {/if}
+                            </a>
+                          {/snippet}
+                        </Sidebar.MenuSubButton>
+                      </Sidebar.MenuSubItem>
+                    {/each}
                   {:else}
-                    <a href={item.url} onclick={toggleSidebarOnMobile}>
-                      <Sidebar.MenuButton
-                        tooltipContent={item.title}
-                        class="flex w-full cursor-pointer items-center gap-4 px-1.5 py-2 {item.isActive
-                          ? 'ui:bg-accent ui:text-accent-foreground'
-                          : ''}"
-                      >
-                        {@const Icon = item.icon}
-                        <Icon size={16} class="nav-icon group-hover:animate-{item.id}" />
-                        {item.title}
-                      </Sidebar.MenuButton>
-                    </a>
-                  {/if}
-                </Sidebar.MenuItem>
-              {/snippet}
-            </Collapsible.Root>
-          {/each}
-        </Sidebar.Menu>
-      </Sidebar.Group>
-    </Sidebar.Content>
-    <Sidebar.Rail />
-  </Sidebar.Root>
+                    {#each $lessonSections as section}
+                      <Collapsible.Root open={true} class="group/section">
+                        {#snippet child({ props })}
+                          <Sidebar.MenuSubItem {...props}>
+                            <Collapsible.Trigger>
+                              {#snippet child({ props })}
+                                <Sidebar.MenuSubButton {...props} class="flex w-full items-center gap-2 font-medium">
+                                  {@const Icon = getNavIcon(NAV_IDS.SECTION)}
+                                  <Icon size={14} />
+                                  <span class="flex-1 truncate">{section.title}</span>
+                                  <div class="ml-auto flex items-center gap-1">
+                                    <Plus
+                                      size={20}
+                                      class="rounded-full p-1 hover:bg-gray-200"
+                                      onclick={() => addLesson(true, section.id)}
+                                    />
 
-  <Sidebar.Inset>
-    <Sidebar.Trigger />
-  </Sidebar.Inset>
-</Sidebar.Provider>
+                                    <ChevronRightIcon
+                                      size={20}
+                                      class="rounded-full p-1 transition-transform duration-200 hover:bg-gray-200 group-data-[state=open]/collapsible:rotate-90"
+                                    />
+                                  </div>
+                                </Sidebar.MenuSubButton>
+                              {/snippet}
+                            </Collapsible.Trigger>
+                            <Collapsible.Content>
+                              <Sidebar.MenuSub class="ml-2">
+                                {#each section.lessons as lesson}
+                                  <Sidebar.MenuSubItem>
+                                    <Sidebar.MenuSubButton isActive={(path || page.url.pathname).includes(lesson.id)}>
+                                      {#snippet child({ props })}
+                                        <a
+                                          href={isStudent && !lesson.is_unlocked
+                                            ? page.url.pathname
+                                            : getLessonsRoute($course.id, lesson.id)}
+                                          onclick={toggleSidebarOnMobile}
+                                          aria-disabled={!lesson.is_unlocked}
+                                          title={lesson.title}
+                                          class="flex w-full items-center gap-2 {isStudent && !lesson.is_unlocked
+                                            ? 'cursor-not-allowed opacity-50'
+                                            : ''}"
+                                          {...props}
+                                        >
+                                          <span class="flex-1 truncate">{lesson.title}</span>
+                                          {#if !lesson.is_unlocked}
+                                            <LockIcon size={16} class="shrink-0" />
+                                          {:else if getIsLessonComplete(lesson.lesson_completion, $profile.id)}
+                                            <span class="shrink-0">
+                                              <CircleCheckIcon size={16} filled />
+                                            </span>
+                                          {/if}
+                                        </a>
+                                      {/snippet}
+                                    </Sidebar.MenuSubButton>
+                                  </Sidebar.MenuSubItem>
+                                {/each}
+                              </Sidebar.MenuSub>
+                            </Collapsible.Content>
+                          </Sidebar.MenuSubItem>
+                        {/snippet}
+                      </Collapsible.Root>
+                    {/each}
+                  {/if}
+                </Sidebar.MenuSub>
+              </Collapsible.Content>
+            {:else}
+              <a href={item.url} onclick={toggleSidebarOnMobile}>
+                <Sidebar.MenuButton
+                  tooltipContent={item.title}
+                  class="flex w-full cursor-pointer items-center gap-4 px-1.5 py-2 {item.isActive
+                    ? 'ui:bg-accent ui:text-accent-foreground'
+                    : ''}"
+                >
+                  {@const Icon = item.icon}
+                  <Icon size={16} class="nav-icon group-hover:animate-{item.id}" />
+                  {item.title}
+                </Sidebar.MenuButton>
+              </a>
+            {/if}
+          </Sidebar.MenuItem>
+        {/snippet}
+      </Collapsible.Root>
+    {/each}
+  </Sidebar.Menu>
+</Sidebar.Group>
 
 <style>
   a {
