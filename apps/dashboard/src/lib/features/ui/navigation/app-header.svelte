@@ -19,6 +19,12 @@
 
     setupProgressApi.fetchSetupProgress(siteName);
   });
+
+  interface Props {
+    hideSearch?: boolean;
+  }
+
+  let { hideSearch = false }: Props = $props();
 </script>
 
 <header
@@ -35,33 +41,34 @@
 
     <span class="grow"></span>
 
-    <AppSetup />
+    {#if !hideSearch}
+      <AppSetup />
+      <Search />
 
-    <Search />
-
-    <Popover.Root>
-      <Popover.Trigger>
-        <Button variant="outline" size="icon">
-          <BellIcon class="custom rounded-full" />
-        </Button>
-      </Popover.Trigger>
-      <Popover.Content>
-        <Empty.Root class="ui:from-muted/50 ui:to-background ui:h-full ui:bg-gradient-to-b ui:from-30%">
-          <Empty.Header>
-            <Empty.Media variant="icon">
-              <BellIcon />
-            </Empty.Media>
-            <Empty.Title>No Notifications</Empty.Title>
-            <Empty.Description>You're all caught up. New notifications will appear here.</Empty.Description>
-          </Empty.Header>
-          <Empty.Content>
-            <Button variant="outline" size="sm">
-              <RefreshCcwIcon />
-              Refresh
-            </Button>
-          </Empty.Content>
-        </Empty.Root>
-      </Popover.Content>
-    </Popover.Root>
+      <Popover.Root>
+        <Popover.Trigger>
+          <Button variant="outline" size="icon">
+            <BellIcon class="custom rounded-full" />
+          </Button>
+        </Popover.Trigger>
+        <Popover.Content>
+          <Empty.Root class="ui:from-muted/50 ui:to-background ui:h-full ui:bg-gradient-to-b ui:from-30%">
+            <Empty.Header>
+              <Empty.Media variant="icon">
+                <BellIcon />
+              </Empty.Media>
+              <Empty.Title>No Notifications</Empty.Title>
+              <Empty.Description>You're all caught up. New notifications will appear here.</Empty.Description>
+            </Empty.Header>
+            <Empty.Content>
+              <Button variant="outline" size="sm">
+                <RefreshCcwIcon />
+                Refresh
+              </Button>
+            </Empty.Content>
+          </Empty.Root>
+        </Popover.Content>
+      </Popover.Root>
+    {/if}
   </div>
 </header>

@@ -19,10 +19,11 @@
   import isSubmissionEarly from '$lib/utils/functions/isSubmissionEarly';
   import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/notification';
   import type { SubmissionIdData, SubmissionItem, SubmissionSection } from '$lib/utils/types/submission';
+  import * as Page from '@cio/ui/base/page';
 
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { Chip } from '@cio/ui/custom/chip';
-  import { PageBody, PageNav } from '$lib/components/Page';
+  import { PageBody } from '$lib/components/Page';
   import { CourseContainer } from '$lib/components/CourseContainer';
   import { RoleBasedSecurity } from '$lib/features/ui';
   import MarkExerciseModal from '$lib/components/Course/components/Lesson/Exercise/MarkExerciseModal.svelte';
@@ -365,7 +366,13 @@
 
 <CourseContainer courseId={data.courseId}>
   <RoleBasedSecurity allowedRoles={[1, 2]}>
-    <PageNav title={$t('course.navItem.submissions.title')} />
+    <Page.Header>
+      <Page.HeaderContent>
+        <Page.Title>
+          {$t('course.navItem.submissions.title')}
+        </Page.Title>
+      </Page.HeaderContent>
+    </Page.Header>
 
     <PageBody width="w-full max-w-6xl md:w-11/12 overflow-x-auto">
       <div class="flex w-full items-center">

@@ -20,8 +20,9 @@
 
   import Box from '$lib/components/Box/index.svelte';
   import { course } from '$lib/components/Course/store';
-  import { PageBody, PageNav } from '$lib/components/Page';
+  import { PageBody } from '$lib/components/Page';
   import { CourseContainer } from '$lib/components/CourseContainer';
+  import * as Page from '@cio/ui/base/page';
   import { RoleBasedSecurity } from '$lib/features/ui';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
 
@@ -218,31 +219,38 @@
       goto(`/courses/${data.courseId}/lessons?next=true`);
     }}
   >
-    <PageNav title={$t('course.navItem.marks.title')}>
-      {#snippet widget()}
-        <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger>
-              <Button variant="ghost" size="icon" class="rounded-full">
-                {#if isDownloading}
-                  <Progress />
-                {:else}
-                  <DownloadIcon size={16} />
-                {/if}
-              </Button>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content align="end">
-              <DropdownMenu.Item onclick={downloadCSV}>
-                {$t('course.navItem.marks.export.csv')}
-              </DropdownMenu.Item>
-              <DropdownMenu.Item onclick={downloadPDF}>
-                {$t('course.navItem.marks.export.pdf')}
-              </DropdownMenu.Item>
-            </DropdownMenu.Content>
-          </DropdownMenu.Root>
-        </RoleBasedSecurity>
-      {/snippet}
-    </PageNav>
+    <Page.Header>
+      <Page.HeaderContent>
+        <Page.Title>
+          {$t('course.navItem.attendance.title')}
+        </Page.Title>
+      </Page.HeaderContent>
+      <Page.Action>
+        <div class="flex w-full justify-end gap-2">
+          <RoleBasedSecurity allowedRoles={[1, 2]}>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger>
+                <Button variant="ghost" size="icon" class="rounded-full">
+                  {#if isDownloading}
+                    <Progress />
+                  {:else}
+                    <DownloadIcon size={16} />
+                  {/if}
+                </Button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content align="end">
+                <DropdownMenu.Item onclick={downloadCSV}>
+                  {$t('course.navItem.marks.export.csv')}
+                </DropdownMenu.Item>
+                <DropdownMenu.Item onclick={downloadPDF}>
+                  {$t('course.navItem.marks.export.pdf')}
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
+          </RoleBasedSecurity>
+        </div>
+      </Page.Action>
+    </Page.Header>
 
     <PageBody width="w-full max-w-6xl md:w-11/12">
       <div id="tableContainer" class="table w-full rounded-md border border-gray-300">

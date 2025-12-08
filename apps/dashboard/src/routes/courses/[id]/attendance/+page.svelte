@@ -16,10 +16,11 @@
   import { takeAttendance } from '$lib/utils/services/attendance';
   import { getLectureNo } from '$lib/components/Course/function.js';
   import type { GroupPerson, Lesson } from '$lib/utils/types/index';
+  import * as Page from '@cio/ui/base/page';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
 
   import Box from '$lib/components/Box/index.svelte';
-  import { PageBody, PageNav } from '$lib/components/Page';
+  import { PageBody } from '$lib/components/Page';
   import { CourseContainer } from '$lib/components/CourseContainer';
 
   let { data = $bindable() } = $props();
@@ -143,7 +144,13 @@
 </script>
 
 <CourseContainer courseId={data.courseId}>
-  <PageNav title={$t('course.navItem.attendance.title')} />
+  <Page.Header>
+    <Page.HeaderContent>
+      <Page.Title>
+        {$t('course.navItem.attendance.title')}
+      </Page.Title>
+    </Page.HeaderContent>
+  </Page.Header>
   <PageBody width="w-full max-w-6xl md:w-11/12">
     <section class="mx-2 my-5 flex items-center lg:mx-9">
       <div class="flex w-full flex-col items-start justify-between gap-2 lg:flex-row lg:items-center">

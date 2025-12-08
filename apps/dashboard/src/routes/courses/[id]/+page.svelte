@@ -1,15 +1,15 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import Box from '$lib/components/Box/index.svelte';
   import NewFeedModal from '$lib/components/Course/components/NewsFeed/NewFeedModal.svelte';
   import NewsFeedCard from '$lib/components/Course/components/NewsFeed/NewsFeedCard.svelte';
   import NewsFeedLoader from '$lib/components/Course/components/NewsFeed/NewsFeedLoader.svelte';
   import { isNewFeedModal, newsFeed } from '$lib/components/Course/components/NewsFeed/store';
   import { group } from '$lib/components/Course/store';
   import { CourseContainer } from '$lib/components/CourseContainer';
-  import { PageBody, PageNav } from '$lib/components/Page';
+  import { PageBody } from '$lib/components/Page';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import * as Page from '@cio/ui/base/page';
   import { RoleBasedSecurity } from '$lib/features/ui';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { supabase } from '$lib/utils/functions/supabase';
@@ -30,6 +30,9 @@
   import PinIcon from '@lucide/svelte/icons/pin';
   import { onMount } from 'svelte';
   import type { AccountOrg } from '$lib/features/app/types';
+  import { getGreeting } from '$lib/utils/functions/date.js';
+  import Empty from '@cio/ui/custom/empty/empty.svelte';
+  import { BookIcon } from '@lucide/svelte';
 
   let { data = $bindable() } = $props();
 
@@ -236,17 +239,21 @@
       goto(`/courses/${data.courseId}/lessons?next=true`);
     }}
   >
-    <PageNav title={$t('course.navItem.news_feed.heading')} disableSticky={true}>
-      {#snippet widget()}
-        <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <PrimaryButton
-            className="mr-2"
-            label={$t('course.navItem.news_feed.heading_button.title')}
-            onClick={() => ($isNewFeedModal.open = true)}
-          />
-        </RoleBasedSecurity>
-      {/snippet}
-    </PageNav>
+    <Page.Header>
+      <Page.HeaderContent>
+        <Page.Title>
+          {$t(getGreeting())}
+          {$profile.fullname}!
+        </Page.Title>
+      </Page.HeaderContent>
+      <Page.Action>
+        <PrimaryButton
+          className="mr-2"
+          label={$t('course.navItem.news_feed.heading_button.title')}
+          onClick={() => ($isNewFeedModal.open = true)}
+        />
+      </Page.Action>
+    </Page.Header>
 
     <PageBody width="max-w-4xl px-3">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
@@ -268,15 +275,12 @@
           <NewsFeedLoader />
         </div>
       {:else if !$newsFeed.length}
-        <Box>
-          <div class="flex w-[90%] flex-col items-center justify-between md:w-96">
-            <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="mx-auto my-2.5" />
-            <h2 class="my-1.5 text-xl font-normal">{$t('course.navItem.news_feed.body_header')}</h2>
-            <p class="text-center text-sm text-slate-500">
-              {$t('course.navItem.news_feed.body_content')}
-            </p>
-          </div>
-        </Box>
+        <Empty
+          title={$t('course.navItem.news_feed.body_header')}
+          description={$t('course.navItem.news_feed.body_content')}
+          icon={BookIcon}
+          class="h-full"
+        ></Empty>
       {:else}
         {#each $newsFeed as feed}
           {#if feed.isPinned}

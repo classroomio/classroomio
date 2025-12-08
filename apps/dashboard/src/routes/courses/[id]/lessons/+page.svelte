@@ -11,14 +11,16 @@
   import { handleDelete, lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
   import { course } from '$lib/components/Course/store';
   import { CourseContainer } from '$lib/components/CourseContainer';
-  import { PageBody, PageNav } from '$lib/components/Page';
+  import { PageBody } from '$lib/components/Page';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { RoleBasedSecurity } from '$lib/features/ui';
+  import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';
   import type { Lesson } from '$lib/utils/types';
   import { COURSE_VERSION } from '$lib/utils/types';
+  import { getGreeting } from '$lib/utils/functions/date.js';
 
   let { data } = $props();
 
@@ -93,8 +95,14 @@
   }}
   courseId={data.courseId}
 >
-  <PageNav title={$t('course.navItem.lessons.heading_v2')}>
-    {#snippet widget()}
+  <Page.Header>
+    <Page.HeaderContent>
+      <Page.Title>
+        {$t(getGreeting())}
+        {$profile.fullname}!
+      </Page.Title>
+    </Page.HeaderContent>
+    <Page.Action>
       <div class="flex w-full justify-end gap-2">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           {#if $course.version === COURSE_VERSION.V1}
@@ -118,8 +126,8 @@
           />
         </RoleBasedSecurity>
       </div>
-    {/snippet}
-  </PageNav>
+    </Page.Action>
+  </Page.Header>
 
   <PageBody width="max-w-6xl" padding="p-0">
     {#if shouldGoToNextLesson}

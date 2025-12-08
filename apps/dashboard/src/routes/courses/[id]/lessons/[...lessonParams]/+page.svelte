@@ -27,7 +27,8 @@
   import { lesson, setLesson, lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
 
   import { IconButton } from '$lib/components/IconButton';
-  import { PageBody, PageNav } from '$lib/components/Page';
+  import { PageBody } from '$lib/components/Page';
+  import * as Page from '@cio/ui/base/page';
   import { CourseContainer } from '$lib/components/CourseContainer';
   import { RoleBasedSecurity } from '$lib/features/ui';
   import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
@@ -207,23 +208,15 @@
   courseId={data.courseId}
   isExercisePage={!data.isMaterialsTabActive && !!data.exerciseId}
 >
-  <PageNav
-    hideOnMobile={$globalStore.isStudent}
-    navItems={[
-      {
-        label: $t('course.navItem.lessons.lesson_nav.materials'),
-        isActive: data.isMaterialsTabActive,
-        href: path
-      },
-      {
-        label: $t('course.navItem.lessons.lesson_nav.exercises'),
-        badgeValue: data.isMaterialsTabActive ? $lesson.totalExercises : $lesson.exercises.length,
-        isActive: !data.isMaterialsTabActive,
-        href: `${path}/exercises`
-      }
-    ]}
-  >
-    {#snippet widget()}
+  <Page.Header>
+    <Page.HeaderContent>
+      <Page.Title>
+        {data.isMaterialsTabActive
+          ? $t('course.navItem.lessons.lesson_nav.materials')
+          : $t('course.navItem.lessons.lesson_nav.exercises')}
+      </Page.Title>
+    </Page.HeaderContent>
+    <Page.Action>
       <div class="flex items-center gap-1">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           {#if data.isMaterialsTabActive}
@@ -266,8 +259,8 @@
           {/if}
         </RoleBasedSecurity>
       </div>
-    {/snippet}
-  </PageNav>
+    </Page.Action>
+  </Page.Header>
 
   {#if !data.isMaterialsTabActive}
     <Exercises lessonId={data.lessonId} exerciseId={data.exerciseId} path={`${path}/exercises`} />
