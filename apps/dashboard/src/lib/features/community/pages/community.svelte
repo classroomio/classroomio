@@ -19,6 +19,7 @@
   import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
   import { Empty } from '@cio/ui/custom/empty';
   import * as Page from '@cio/ui/base/page';
+  import * as Item from '@cio/ui/base/item';
 
   import { AskCommunityButton } from '../components';
 
@@ -133,33 +134,32 @@
   <CommunityListLoader />
 {:else}
   {#each filteredDiscussions as discussion}
-    <div
-      class="border-c m-auto my-4 flex flex-wrap items-center justify-center rounded bg-gray-100 lg:justify-start dark:bg-neutral-800"
-    >
-      <div class="border-bottom-c flex w-full p-3">
-        <Vote value={discussion.votes} />
-        <div class="flex flex-col gap-y-0.5 text-sm">
-          <h4 class="mt-0">
-            <a class="text-black dark:text-white" href="{isLMS ? '/lms' : $currentOrgPath}/community/{discussion.slug}">
+    <Item.Root variant="outline">
+      {#snippet child({ props })}
+        <a href="{isLMS ? '/lms' : $currentOrgPath}/community/{discussion.slug}" {...props}>
+          <Vote value={discussion.votes} />
+          <Item.Content class="gap-y-0.5">
+            <Item.Title class="mt-0">
               {discussion.title}
+            </Item.Title>
+            <Item.Description>
+              {discussion.author} asked {discussion.createdAt}
+            </Item.Description>
+            <a class="m-0" href="/courses/{discussion.courseId}" onclick={(e) => e.stopPropagation()}>
+              <span class="text-muted-foreground p-0 text-xs">
+                #{discussion.courseTitle}
+              </span>
             </a>
-          </h4>
-          <span class="text-gray-600 dark:text-white">
-            {discussion.author} asked {discussion.createdAt}
-          </span>
-          <a class="m-0" href="/courses/{discussion.courseId}">
-            <span class="text-primary-200 text-primary-700 p-0 text-xs dark:text-black">
-              #{discussion.courseTitle}
-            </span>
-          </a>
-        </div>
-        <div class="flex-grow"></div>
-        <div class="flex items-center">
-          <MessageCirclePlusIcon size={16} />
-          <span class="ml-1">{discussion.comments}</span>
-        </div>
-      </div>
-    </div>
+          </Item.Content>
+          <Item.Actions>
+            <div class="flex items-center">
+              <MessageCirclePlusIcon size={16} />
+              <span class="ml-1">{discussion.comments}</span>
+            </div>
+          </Item.Actions>
+        </a>
+      {/snippet}
+    </Item.Root>
   {:else}
     <Empty
       title={$t('community.no_question')}
@@ -171,13 +171,3 @@
     </Empty>
   {/each}
 {/if}
-
-<style>
-  h4 {
-    font-size: 16px;
-    font-weight: 900;
-    word-break: break-word;
-    overflow-wrap: break-word;
-    margin: 0;
-  }
-</style>

@@ -22,7 +22,7 @@
   import * as Page from '@cio/ui/base/page';
 
   import { Skeleton } from '@cio/ui/base/skeleton';
-  import Chip from '$lib/components/Chip/index.svelte';
+  import { Chip } from '@cio/ui/custom/chip';
   import { PageBody } from '$lib/components/Page';
   import { CourseContainer } from '$lib/components/CourseContainer';
   import { RoleBasedSecurity } from '$lib/features/ui';
@@ -382,7 +382,7 @@
             animate:flip={{ duration: flipDurationMs }}
           >
             <div class="mb-2 flex items-center">
-              <Chip value={items.length} className="bg-set dark:bg-neutral-800" />
+              <Chip value={items.length} />
               <p class="ml-2 dark:text-white">{title}</p>
             </div>
             {#if fetching}

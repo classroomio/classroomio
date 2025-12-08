@@ -22,7 +22,7 @@
 
   let isLoadingPlan: string | null = $state(null);
   let upgraded = $state(false);
-  let isYearlyPlan = $state(false);
+  let isYearlyPlan = $state(true);
 
   const query = $derived(new URLSearchParams(page.url.search));
   let open = $state(false);
@@ -141,26 +141,22 @@
       <div class="flex h-full flex-col items-center justify-center">
         <div class="white 0 relative mb-6 flex items-center rounded-full border p-1">
           <Button
-            variant="ghost"
+            variant={isYearlyPlan ? 'ghost' : 'secondary'}
             size="sm"
-            class="rounded-full! transition-all duration-500 ease-in-out {isYearlyPlan
-              ? 'ui:text-foreground bg-transparent'
-              : 'bg-[#1D4EE2] text-white'}"
+            class="rounded-full! transition-all duration-500 ease-in-out "
             onclick={() => (isYearlyPlan = false)}
           >
             {$t('pricing.modal.monthly')}
           </Button>
           <Button
-            variant="ghost"
+            variant={isYearlyPlan ? 'secondary' : 'ghost'}
             size="sm"
-            class="rounded-full! transition-all duration-500 ease-in-out {isYearlyPlan
-              ? 'bg-[#1D4EE2] text-white'
-              : 'ui:text-foreground bg-transparent'}"
+            class="rounded-full! transition-all duration-500 ease-in-out"
             onclick={() => (isYearlyPlan = true)}
           >
             {$t('pricing.modal.annually')}
           </Button>
-          <Badge variant="default" class="rotate-5 absolute -top-3 right-[-20%]">
+          <Badge variant="default" class="rotate-5 absolute -top-3 right-[-20%] shadow-2xl">
             <SparklesIcon class="text-amber-500! size-2" />
             {$t('pricing.modal.save')}
           </Badge>

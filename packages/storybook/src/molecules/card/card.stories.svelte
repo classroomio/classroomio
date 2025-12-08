@@ -44,7 +44,7 @@
             <div class="ui:grid ui:gap-2">
               <div class="ui:flex ui:items-center">
                 <Label for="password">Password</Label>
-                <a href="#" class="ui:ms-auto ui:inline-block ui:text-sm ui:underline-offset-4 hover:ui:underline">
+                <a href="/" class="ui:ms-auto ui:inline-block ui:text-sm ui:underline-offset-4 hover:ui:underline">
                   Forgot your password?
                 </a>
               </div>

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
   import { goto } from '$app/navigation';
   import ZapIcon from '@lucide/svelte/icons/zap';
   import debounce from 'lodash/debounce';
@@ -7,7 +6,7 @@
 
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
-  import { injectCustomTheme, setCustomTheme, setTheme } from '$lib/utils/functions/theme';
+  import { setTheme } from '$lib/utils/functions/theme';
   import { orgApi } from '$lib/features/org/api/org.svelte';
 
   import { Input } from '@cio/ui/base/input';
@@ -18,60 +17,38 @@
 
   let avatar = $state<string | File | undefined>();
   let hasUnsavedChanges = $state(false);
-  let hex = $state('');
-
-  $effect(() => {
-    const theme = $currentOrg.theme;
-
-    // if not a custom theme, don't update hex
-    if (!theme || theme.includes('theme-')) return;
-
-    // only update hex with value of `theme` when theme changes not when HEX changes
-    untrack(() => {
-      hex = theme;
-    });
-  });
 
   const themes = {
-    rose: 'theme-rose',
-    green: 'theme-green',
-    orange: 'theme-orange',
-    violet: 'theme-violet',
-    default: ''
+    rose: 'rose',
+    green: 'green',
+    orange: 'orange',
+    purple: 'purple',
+    blue: 'blue'
   };
 
-  const saveTheme = debounce(async (theme: string) => {
-    await orgApi.update($currentOrg.id, {
-      theme
-    });
-  }, 700);
+  const updateThemeApi = debounce(async (theme: string) => {
+    console.log('saving theme', theme);
+    await orgApi.update(
+      $currentOrg.id,
+      {
+        theme
+      },
+      {
+        onSuccess: () => {}
+      }
+    );
+  }, 2000);
 
   function handleChangeTheme(t = '') {
-    return async () => {
-      document.body.className = document.body.className
-        .split(' ')
-        .filter((c) => !c.includes('theme'))
-        .join(' ')
-        .concat(t ? ' ' : '', t);
-      $currentOrg.theme = t;
+    return () => {
+      if (t === $currentOrg.theme) return;
 
-      hex = '';
+      $currentOrg.theme = t;
 
       setTheme(t);
 
-      saveTheme(t);
+      updateThemeApi(t);
     };
-  }
-
-  async function handleCustomTheme() {
-    if (!hex) return;
-
-    injectCustomTheme(hex);
-    setCustomTheme('theme-custom');
-
-    $currentOrg.theme = hex;
-
-    saveTheme(hex);
   }
 
   export async function handleUpdate() {
@@ -89,8 +66,13 @@
   function gotoSettings(pathname: string) {
     goto(`${$currentOrgPath}/settings${pathname}`);
   }
+  let isCustomTheme = $derived($currentOrg?.theme?.includes('#'));
 
-  let isCustomTheme = $derived(hex && !hex.includes('theme-'));
+  $effect(() => {
+    console.log('$currentOrg?.theme', $currentOrg?.theme);
+    console.log('isCustomTheme', isCustomTheme);
+  });
+  let hex = $derived($currentOrg.theme.includes('#') ? $currentOrg.theme : undefined);
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
@@ -125,9 +107,9 @@
     <Field.Field>
       <div class="flex items-center gap-5">
         <button
-          class="rounded-full border-2 {$currentOrg.theme === themes.default &&
+          class="rounded-full border-2 {$currentOrg.theme === themes.blue &&
             'border-[#1d4ee2]'} flex h-fit items-center justify-center"
-          onclick={handleChangeTheme(themes.default)}
+          onclick={handleChangeTheme(themes.blue)}
           aria-label="Default blue theme"
         >
           <div class="m-1 h-6 w-6 rounded-full bg-[#1d4ee2] md:h-6 md:w-6"></div>
@@ -161,18 +143,17 @@
         </button>
 
         <button
-          class="rounded-full border-2 {$currentOrg.theme === themes.violet &&
-            'border-[#cf00ce]'} flex h-fit items-center justify-center"
-          onclick={handleChangeTheme(themes.violet)}
-          aria-label="Violet theme"
+          class="rounded-full border-2 {$currentOrg.theme === themes.purple &&
+            'border-purple-600'} flex h-fit items-center justify-center"
+          onclick={handleChangeTheme(themes.purple)}
+          aria-label="Purple theme"
         >
-          <div class="m-1 h-6 w-6 rounded-full bg-[#cf00ce] md:h-6 md:w-6"></div>
+          <div class="m-1 h-6 w-6 rounded-full bg-purple-600 md:h-6 md:w-6"></div>
         </button>
 
         <div
-          class="h-auto w-fit border-2 {isCustomTheme
-            ? 'border-primary-700'
-            : 'dark:border-neutral-700'} group relative rounded-full"
+          style={`border-color: ${isCustomTheme ? $currentOrg.theme : 'dark:border-neutral-700'};`}
+          class="group relative h-auto w-fit rounded-full border-2"
         >
           <!-- plus icon positioned over the color picker -->
           <div
@@ -189,7 +170,15 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
             </svg>
           </div>
-          <ColorPicker position="responsive" label="" bind:hex on:input={handleCustomTheme} />
+          <ColorPicker
+            position="responsive"
+            label=""
+            {hex}
+            on:input={(e) => {
+              console.log('hex changed', e.detail.hex);
+              handleChangeTheme(e.detail.hex)();
+            }}
+          />
         </div>
       </div>
     </Field.Field>

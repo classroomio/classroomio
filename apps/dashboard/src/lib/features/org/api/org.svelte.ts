@@ -194,8 +194,14 @@ class OrgApi extends BaseApiWithErrors {
    * Updates an organization
    * @param orgId Organization ID
    * @param fields Organization update data (name, avatar, theme, landingpage)
+   * @param options Options for the update operation
+   * @param options.onSuccess Callback function to be called on success
    */
-  async update(orgId: string, fields: TOrgUpdateForm) {
+  async update(
+    orgId: string,
+    fields: TOrgUpdateForm,
+    options: { onSuccess?: (data: TUpdateOrganization) => void } = {}
+  ) {
     const result = ZUpdateOrganization.safeParse(fields);
 
     if (!result.success) {
@@ -231,6 +237,10 @@ class OrgApi extends BaseApiWithErrors {
       onSuccess: (response) => {
         if (!response.data) {
           return;
+        }
+
+        if (options.onSuccess) {
+          return options.onSuccess(response.data);
         }
 
         orgs.update((_orgs) =>

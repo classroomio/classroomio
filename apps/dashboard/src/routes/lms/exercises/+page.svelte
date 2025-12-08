@@ -1,6 +1,6 @@
 <script lang="ts">
   import cloneDeep from 'lodash/cloneDeep';
-  import Chip from '$lib/components/Chip/index.svelte';
+  import { Chip } from '@cio/ui/custom/chip';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbar } from '$lib/components/Snackbar/store';

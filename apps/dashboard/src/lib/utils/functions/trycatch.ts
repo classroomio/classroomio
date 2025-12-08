@@ -4,7 +4,7 @@ export function tc<T>(tryFunc: () => T, catchFunc: T | ((e?: Error) => T)) {
     val = tryFunc();
   } catch (e: unknown) {
     if (typeof catchFunc === 'function') {
-      // @ts-ignore
+      // @ts-expect-error - catchFunc is a function
       val = catchFunc(e);
     } else {
       val = catchFunc;
