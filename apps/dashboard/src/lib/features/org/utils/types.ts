@@ -44,3 +44,15 @@ export type InviteTeamData = InviteTeamSuccess['data'];
 
 export type DeleteTeamResponse = (typeof classroomio.organization)[':orgId']['team'][':memberId']['$delete'];
 export type DeleteTeamSuccess = Extract<InferResponseType<DeleteTeamResponse>, { success: true }>;
+
+export type GetCommunityQuestionsResponse = typeof classroomio.community.questions.$get;
+export type CommunityQuestionsResponse = InferResponseType<GetCommunityQuestionsResponse> | null;
+export type CommunityQuestionsSuccess = Extract<InferResponseType<GetCommunityQuestionsResponse>, { success: true }>;
+
+export type GetCommunityQuestionResponse = typeof classroomio.community.question.$get;
+export type CommunityQuestionResponse = InferResponseType<GetCommunityQuestionResponse> | null;
+export type CommunityQuestionSuccess = Extract<InferResponseType<GetCommunityQuestionResponse>, { success: true }>;
+
+export type SubmitCommentResponse = typeof classroomio.community.comment.$post;
+export type SubmitCommentSuccess = Extract<InferResponseType<SubmitCommentResponse>, { success: true }>;
+export type SubmitCommentData = SubmitCommentSuccess['data'];

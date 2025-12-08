@@ -1,26 +1,25 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import { goto } from '$app/navigation';
+  import * as Page from '@cio/ui/base/page';
+  import { Empty } from '@cio/ui/custom/empty';
   import * as Select from '@cio/ui/base/select';
   import { Search } from '@cio/ui/custom/search';
+  import MessageSquareMoreIcon from '@lucide/svelte/icons/message-square-more';
   import MessageCirclePlusIcon from '@lucide/svelte/icons/message-circle-plus';
 
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
-  import { courses } from '$lib/features/course/utils/store';
+  import { communityApi } from '../api/community.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
-  import { supabase } from '$lib/utils/functions/supabase';
+  import { courses } from '$lib/features/course/utils/store';
   import { fetchCourses } from '$lib/utils/services/courses';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import MessageSquareMoreIcon from '@lucide/svelte/icons/message-square-more';
-
-  import { CommunityListLoader } from '../components';
-  import Vote from '$lib/components/Vote/index.svelte';
-  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
-  import { Empty } from '@cio/ui/custom/empty';
-  import * as Page from '@cio/ui/base/page';
+  import type { CommunityQuestionsSuccess } from '$lib/features/org/utils/types';
 
   import { AskCommunityButton } from '../components';
+  import { CommunityListLoader } from '../components';
+  import Vote from '$lib/components/Vote/index.svelte';
 
   interface Props {
     isLMS?: boolean;
@@ -28,8 +27,10 @@
 
   let { isLMS = false }: Props = $props();
 
+  let communityQuestions: CommunityQuestionsSuccess['data'] = $state([]);
+
   let isLoading = $state(false);
-  let discussions = $state([]);
+  let discussions: CommunityQuestionsSuccess['data'] = $state([]);
   let searchValue = $state('');
   let allCourses: any[] = $state([]);
   let selectedId = $state('');
@@ -47,50 +48,29 @@
         allCourses = courseResult.allCourses;
       }
 
-      const courseIds = allCourses.map((course) => course.id);
-      const courseIdsFilter = `(${courseIds.join(',')})`;
+      await communityApi.fetchCommunityQuestions({ orgId: orgId });
 
-      const { data, error } = await supabase
-        .from('community_question')
-        .select(
-          `
-        organization_id,
-        course_id,
-        title,
-        votes,
-        created_at,
-        slug,
-        comments:community_answer(count),
-        author:profile(
-          fullname
-        ),
-        course!inner (
-          title
-        )
-      `
-        )
-        .filter('course_id', 'in', courseIdsFilter)
-        .order('created_at', { ascending: false });
-      console.log('data', data);
-      console.log('error', error);
-
-      isLoading = false;
-
-      if (error) {
-        console.error('Error loading community', error);
+      if (communityApi.error) {
+        console.error('Error loading community questions:', communityApi.error);
+        communityQuestions = [];
         return goto(isLMS ? '/lms' : $currentOrgPath);
       }
 
+      communityQuestions = communityApi.questions;
+
+      isLoading = false;
+
       discussions =
-        data?.map((discussion) => ({
+        communityQuestions?.map((discussion) => ({
           title: discussion.title,
-          courseId: discussion.course_id,
-          courseTitle: discussion.course?.title,
+          courseId: discussion.courseId,
+          courseTitle: discussion.courseTitle,
           slug: discussion.slug,
-          author: discussion?.author?.fullname,
+          authorFullname: discussion?.authorFullname,
+          organizationId: discussion.organizationId,
           comments: discussion.comments?.[0]?.count || 0,
           votes: discussion.votes,
-          createdAt: calDateDiff(discussion.created_at)
+          createdAt: calDateDiff(discussion.createdAt)
         })) || [];
     });
   }
@@ -99,7 +79,7 @@
     fetchCommunityQuestions($currentOrg.id, $profile.id);
   });
 
-  let filteredDiscussions = $derived(
+  let filteredDiscussions: CommunityQuestionsSuccess['data'] = $derived(
     discussions.filter(
       (discussion) =>
         discussion.title.toLowerCase().includes(searchValue.toLowerCase()) &&
@@ -145,7 +125,7 @@
             </a>
           </h4>
           <span class="text-gray-600 dark:text-white">
-            {discussion.author} asked {discussion.createdAt}
+            {discussion.authorFullname} asked {discussion.createdAt}
           </span>
           <a class="m-0" href="/courses/{discussion.courseId}">
             <span class="text-primary-200 text-primary-700 p-0 text-xs dark:text-black">
@@ -153,7 +133,7 @@
             </span>
           </a>
         </div>
-        <div class="flex-grow"></div>
+        <div class="grow"></div>
         <div class="flex items-center">
           <MessageCirclePlusIcon size={16} />
           <span class="ml-1">{discussion.comments}</span>

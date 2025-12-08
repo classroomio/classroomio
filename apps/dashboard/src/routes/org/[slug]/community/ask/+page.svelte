@@ -1,23 +1,23 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import * as Page from '@cio/ui/base/page';
   import * as Select from '@cio/ui/base/select';
 
   import type { Course } from '$lib/utils/types';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
-  import { courses } from '$lib/features/course/utils/store';
-  import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { fetchCourses } from '$lib/utils/services/courses';
+  import { courses } from '$lib/features/course/utils/store';
   import generateSlug from '$lib/utils/functions/generateSlug';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { askCommunityValidation } from '$lib/utils/functions/validator';
+  import { communityApi } from '$lib/features/community/api/community.svelte';
 
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import * as Page from '@cio/ui/base/page';
 
   let errors: {
     title?: string;
@@ -57,26 +57,24 @@
       return;
     }
 
-    const { data: question, error } = await supabase
-      .from('community_question')
-      .insert({
-        title: fields.title,
-        body: fields.body,
-        organization_id: $currentOrg.id,
-        author_profile_id: $profile.id,
-        votes: 0,
-        slug: generateSlug(fields.title),
-        course_id: fields.courseId
-      })
-      .select();
+    const data = await communityApi.addCommunityQuestion({
+      title: fields.title,
+      body: fields.body,
+      course_id: fields.courseId,
+      organization_id: $currentOrg.id,
+      author_profile_id: $profile.id,
+      slug: generateSlug(fields.title),
+      votes: 0
+    });
 
-    if (error) {
-      console.error('Error: asking question', error);
+    if (communityApi.error) {
+      console.error('Error: asking question', communityApi.error);
       snackbar.error('snackbar.community.error.try_again');
     } else {
-      const slug = question[0]?.slug;
+      const questionData = Array.isArray(data) ? data[0] : data;
+      const slug = questionData?.slug || generateSlug(fields.title);
 
-      console.log('Success: asking question', question, slug);
+      console.log('Success: asking question', data, slug);
       snackbar.success('snackbar.community.success.question_submitted');
       goto(`${$currentOrgPath}/community/${slug}`);
     }

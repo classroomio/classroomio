@@ -2,63 +2,39 @@
   import { untrack } from 'svelte';
   import pluralize from 'pluralize';
   import { goto } from '$app/navigation';
-  import { Skeleton } from '@cio/ui/base/skeleton';
+  import * as Page from '@cio/ui/base/page';
   import * as Select from '@cio/ui/base/select';
+  import * as Avatar from '@cio/ui/base/avatar';
+  import { Skeleton } from '@cio/ui/base/skeleton';
   import TrashIcon from '@lucide/svelte/icons/trash';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
 
   import { t } from '$lib/utils/functions/translations';
-  import { courses } from '$lib/features/course/utils/store';
   import { calDateDiff } from '$lib/utils/functions/date';
-  import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
+  import { shortenName } from '$lib/utils/functions/string';
   import { fetchCourses } from '$lib/utils/services/courses';
+  import { courses } from '$lib/features/course/utils/store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { currentOrg, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
+  import { communityApi } from '$lib/features/community/api/community.svelte.js';
+  import type { CommunityQuestionSuccess } from '$lib/features/org/utils/types.js';
   import { askCommunityValidation, commentInCommunityValidation } from '$lib/utils/functions/validator';
 
   import type { Course } from '$lib/utils/types';
   import { profile } from '$lib/utils/store/user';
   import Vote from '$lib/components/Vote/index.svelte';
   import { IconButton } from '$lib/components/IconButton';
-  import * as Avatar from '@cio/ui/base/avatar';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import { shortenName } from '$lib/utils/functions/string';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { CommunityDeleteModal } from '$lib/features/community/components';
-  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
-  import * as Page from '@cio/ui/base/page';
-
-  interface Comment {
-    id: string;
-    authorId: string;
-    name: string;
-    avatar: string;
-    votes: number;
-    comment: string;
-    createdAt: string;
-  }
-  interface Question {
-    id: string;
-    title: string;
-    votes: number;
-    author: {
-      id: string;
-      name: string;
-      avatar: string;
-    };
-    body: string;
-    createdAt: string;
-    comments: Comment[];
-    totalComments: number;
-    courseId: string;
-  }
 
   let { data } = $props();
   const { slug } = data;
 
-  let question: Question | undefined = $state();
+  let question: CommunityQuestionSuccess['data'] | undefined = $state();
   let comment = $state('');
   let errors: {
     title?: string;
@@ -91,29 +67,31 @@
   let editorInstance = $state(false);
   let fetchedCourses: Course[] = $state([]);
 
-  function mapResToQuestion(data): Question {
+  function mapResToQuestion(data): CommunityQuestionSuccess['data'] {
     return {
       id: data.id,
       title: data.title,
       votes: data.votes,
-      author: {
-        id: data?.author?.id || '',
-        name: data?.author?.fullname || '',
-        avatar: data?.author?.avatar_url || ''
-      },
+      authorAvatarUrl: data.authorAvatarUrl,
+      authorFullname: data.authorFullname,
+      authorId: data.authorId,
       body: data.body,
-      createdAt: calDateDiff(data.created_at),
+      createdAt: calDateDiff(data.createdAt),
       comments: data.comments.map((c) => ({
         id: c.id,
-        authorId: c.author?.id || '',
-        name: c.author?.fullname || '',
-        avatar: c.author?.avatar_url || '',
+        author: {
+          id: c.author?.id || '',
+          fullname: c.author?.fullname || '',
+          avatar_url: c.author?.avatar_url || ''
+        },
         votes: c.votes,
-        comment: c.body,
-        createdAt: calDateDiff(c.created_at)
+        body: c.body,
+        created_at: calDateDiff(c.created_at)
       })),
-      totalComments: 0,
-      courseId: data.course_id
+      courseId: data.courseId,
+      courseTitle: data.courseTitle || '',
+      slug: data.slug || '',
+      organizationId: data.organizationId || ''
     };
   }
 
@@ -138,41 +116,16 @@
   async function fetchCommunityQuestion(slug: string) {
     if (!slug) return;
 
-    const { data, error } = await supabase
-      .from('community_question')
-      .select(
-        `
-        id,
-        title,
-        body,
-        votes,
-        created_at,
-        course_id,
-        slug,
-        comments:community_answer(
-          id,
-          body,
-          votes,
-          created_at,
-          author:profile(id, fullname, avatar_url)
-        ),
-        author:profile(id, fullname, avatar_url),
-        course!inner (
-          title
-        )
-      `
-      )
-      .eq('slug', slug)
-      .single();
+    await communityApi.fetchCommunityQuestion({ slug: slug });
 
-    if (error) {
-      console.error('[ORG] Error loading community', error);
+    if (communityApi.error) {
+      console.error('[ORG] Error loading community', communityApi.error);
       return goto(`${$currentOrgPath}`);
     }
 
     untrack(() => {
-      question = mapResToQuestion(data);
-      question.totalComments = question.comments.length;
+      question = mapResToQuestion(communityApi.question);
+      question.comments.length = question.comments.length;
     });
   }
 
@@ -184,37 +137,34 @@
       return;
     }
 
-    const { data, error } = await supabase
-      .from('community_answer')
-      .insert({
-        id: undefined,
-        body: comment,
-        question_id: question.id,
-        author_profile_id: $profile.id,
-        votes: 0
-      })
-      .select();
+    await communityApi.submitComment({
+      body: comment,
+      questionId: Number(question.id),
+      authorId: String($profile.id),
+      votes: 0
+    });
 
-    if (error) {
-      console.error('Error: commenting', error);
+    if (communityApi.error) {
+      console.error('Error: commenting', communityApi.error);
       snackbar.error('snackbar.community.error.try_again');
     } else {
-      console.log('Success: commenting', data);
-
+      console.log('Success: commenting', communityApi.answer);
       snackbar.success('snackbar.community.success.comment_submitted');
 
       // Add to comment
-      const _c = data?.[0];
+      const _c = communityApi.answer;
       question.comments = [
         ...question.comments,
         {
           id: _c.id,
-          authorId: $profile.id || '',
-          name: $profile?.fullname || '',
-          avatar: $profile?.avatar_url || '',
+          author: {
+            id: $profile.id || '',
+            fullname: $profile.fullname || '',
+            avatar_url: $profile.avatarUrl || ''
+          },
           votes: 0,
-          comment: _c.body,
-          createdAt: calDateDiff(_c.created_at)
+          body: _c.body,
+          created_at: _c.createdAt
         }
       ];
 
@@ -232,7 +182,6 @@
     if (isQuestion && voted.question) return;
     if (!isQuestion && commentId && voted.comment[commentId]) return;
 
-    const table = isQuestion ? 'community_question' : 'community_answer';
     const matchId = isQuestion ? question.id : commentId;
     let votes = 0;
 
@@ -242,15 +191,21 @@
     } else {
       question.comments = question.comments.map((c) => {
         if (c.id === commentId) {
-          c.votes = c.votes + 1;
+          c.votes = (c.votes || 0) + 1;
           votes = c.votes;
         }
         return c;
       });
     }
-    const { error } = await supabase.from(table).update({ votes }).match({ id: matchId });
-    if (error) {
-      console.error('Error: upvoteQuestion', error);
+
+    await communityApi.handleUpvote({
+      id: matchId ?? '',
+      votes,
+      isQuestion
+    });
+
+    if (communityApi.error) {
+      console.error('Error: upvoteQuestion', communityApi.error);
       snackbar.error('snackbar.community.error.try_again');
     } else {
       if (isQuestion) {
@@ -283,16 +238,16 @@
       if (Object.keys(errors).length) {
         return;
       }
-      const { error } = await supabase
-        .from('community_question')
-        .update({
-          title: editContent.title,
-          body: editContent.body,
-          course_id: editContent.courseId
-        })
-        .match({ id: question.id });
-      if (error) {
-        console.error('Error: handleQuestionEdit', error);
+
+      await communityApi.handleUpdateQuestion({
+        id: question.id,
+        title: editContent.title,
+        body: editContent.body,
+        course_id: editContent.courseId
+      });
+
+      if (communityApi.error) {
+        console.error('Error: handleQuestionEdit', communityApi.error);
         snackbar.error('snackbar.community.error.try_again');
       } else {
         question.title = editContent.title;
@@ -316,13 +271,13 @@
     if (!isQuestion) {
       deleteComment.isDeleting = true;
 
-      const { error } = await supabase.from('community_answer').delete().match({ id: deleteComment.commentId });
+      communityApi.handleDeleteCommentById({ id: deleteComment.commentId });
 
       deleteComment.isDeleting = false;
 
-      if (error) {
+      if (communityApi.error) {
         snackbar.error('snackbar.community.error.deleting_comments');
-        console.log('Error deleting comments', error);
+        console.log('Error deleting comments', communityApi.error);
         return;
       }
       snackbar.success('snackbar.community.success.success_delete');
@@ -336,27 +291,21 @@
     }
     deleteQuestion.isDeleting = true;
 
-    const { error: commentDeleteError } = await supabase
-      .from('community_answer')
-      .delete()
-      .match({ question_id: deleteQuestion.questionId });
+    communityApi.handleDeleteCommentByQuestionId({ questionId: Number(deleteQuestion.questionId) });
 
-    if (commentDeleteError) {
+    if (communityApi.error) {
       snackbar.error('snackbar.community.error.deleting_comments');
-      console.log('Error deleting comments', commentDeleteError);
+      console.log('Error deleting comments', communityApi.error);
 
       deleteQuestion.isDeleting = false;
       return;
     }
 
-    const { error: questionDeleteError } = await supabase
-      .from('community_question')
-      .delete()
-      .match({ id: deleteQuestion.questionId });
+    communityApi.handleDeleteQuestionById({ id: Number(deleteQuestion.questionId) });
 
-    if (questionDeleteError) {
+    if (communityApi.error) {
       snackbar.error('snackbar.community.error.deleting_question');
-      console.log('Error deleting question', questionDeleteError);
+      console.log('Error deleting question', communityApi.error);
       return;
     }
 
@@ -368,6 +317,7 @@
   $effect(() => {
     fetchCommunityQuestion(slug);
   });
+
   $effect(() => {
     if ($profile.id && $currentOrg.id) {
       getCourses($profile.id, $currentOrg.id);
@@ -430,7 +380,7 @@
           </div>
         {/if}
       </Page.HeaderContent>
-      {#if question.author.id === $profile.id}
+      {#if question.authorId === $profile.id}
         <Page.Action>
           <PrimaryButton
             label={isEditMode ? $t('community.ask.save') : $t('community.ask.edit')}
@@ -450,6 +400,7 @@
         </Page.Action>
       {/if}
     </Page.Header>
+
     <Page.Body>
       {#snippet child()}
         <div class="border-gray my-1 rounded-lg border px-1">
@@ -457,24 +408,24 @@
             <div class="flex items-center text-black no-underline hover:underline">
               <Avatar.Root class="h-7 w-7">
                 <Avatar.Image
-                  src={question.author.avatar ? question.author.avatar : '/logo-192.png'}
-                  alt={question.author.name ? question.author.name : 'User'}
+                  src={question?.authorAvatarUrl ? question?.authorAvatarUrl : '/logo-192.png'}
+                  alt={question?.authorFullname ? question?.authorFullname : 'User'}
                 />
-                <Avatar.Fallback>{shortenName(question.author.name) || 'U'}</Avatar.Fallback>
+                <Avatar.Fallback>{shortenName(question?.authorFullname) || 'U'}</Avatar.Fallback>
               </Avatar.Root>
-              <p class="ml-2 text-sm dark:text-white">{question.author.name}</p>
+              <p class="ml-2 text-sm dark:text-white">{question?.authorFullname}</p>
               <p class="ml-2 text-sm text-gray-500 dark:text-white">
-                {question.createdAt}
+                {question?.createdAt}
               </p>
             </div>
-            {#if question.author.id === $profile.id || $isOrgAdmin}
+            {#if question?.authorId === $profile.id || $isOrgAdmin}
               <IconButton
                 value="delete-question"
                 onClick={() => {
                   if (!question) return;
 
                   deleteQuestion.shouldDelete = true;
-                  deleteQuestion.questionId = question.id;
+                  deleteQuestion.questionId = String(question.id);
                 }}
               >
                 <TrashIcon size={16} />
@@ -491,19 +442,19 @@
             </div>
           {:else}
             <section class="prose prose-sm sm:prose p-2">
-              {@html question.body}
+              {@html question?.body}
             </section>
           {/if}
         </div>
 
         <div class="my-8">
-          {pluralize($t('community.answers'), question.totalComments, true)}
+          {pluralize($t('community.answers'), question?.comments.length ?? 0, true)}
         </div>
 
-        {#each question.comments as comment}
+        {#each question?.comments as comment}
           <div class="my-5 flex items-start px-1">
             <Vote
-              value={comment.votes}
+              value={comment.votes ?? 0}
               upVote={() => upvoteQuestion('comment', comment.id)}
               disabled={voted.comment[comment.id]}
             />
@@ -512,14 +463,14 @@
                 <div class="flex items-center text-black">
                   <Avatar.Root class="h-7 w-7">
                     <Avatar.Image
-                      src={comment.avatar ? comment.avatar : '/logo-192.png'}
-                      alt={comment.name ? comment.name : 'User'}
+                      src={comment.author.avatar_url ? comment.author.avatar_url : '/logo-192.png'}
+                      alt={comment.author.fullname ? comment.author.fullname : 'User'}
                     />
-                    <Avatar.Fallback>{shortenName(comment.name) || 'U'}</Avatar.Fallback>
+                    <Avatar.Fallback>{shortenName(comment.author.fullname) || 'U'}</Avatar.Fallback>
                   </Avatar.Root>
-                  <p class="ml-2 text-sm dark:text-white">{comment.name}</p>
+                  <p class="ml-2 text-sm dark:text-white">{comment.author.fullname}</p>
                   <p class="ml-2 text-sm text-gray-500 dark:text-white">
-                    {comment.createdAt}
+                    {comment.created_at}
                   </p>
                 </div>
 
@@ -527,7 +478,7 @@
                   <CircleCheckIcon size={16} />
                 {/if}
 
-                {#if comment.authorId === $profile.id || $isOrgAdmin}
+                {#if comment.author.id === $profile.id || $isOrgAdmin}
                   <IconButton
                     value="delete-comment"
                     onClick={() => {
@@ -540,7 +491,7 @@
                 {/if}
               </header>
               <article class="prose prose-sm sm:prose p-2">
-                {@html comment.comment}
+                {@html comment.body}
               </article>
             </div>
           </div>
