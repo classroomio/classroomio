@@ -10,8 +10,6 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextChip from '$lib/components/Chip/Text.svelte';
   import { IconButton } from '$lib/components/IconButton';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { t } from '$lib/utils/functions/translations';
   import { globalStore } from '$lib/utils/store/app';
   import { course } from '$lib/components/Course/store';
@@ -208,18 +206,18 @@
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           <div class="flex items-center">
             {#if lessonEditing === section.id}
-              <PrimaryButton
-                label={$t('course.navItem.lessons.add_lesson.cancel')}
-                variant={VARIANTS.OUTLINED}
-                onClick={() => {
+              <Button
+                variant="outline"
+                onclick={() => {
                   section.title = prevTitle ?? section.title;
                   resetEdit();
                 }}
-              />
-              <PrimaryButton
-                label={$t('course.navItem.lessons.add_lesson.save')}
-                onClick={() => onSave({ sectionId: section.id })}
-              />
+              >
+                {$t('course.navItem.lessons.add_lesson.cancel')}
+              </Button>
+              <Button onclick={() => onSave({ sectionId: section.id })}>
+                {$t('course.navItem.lessons.add_lesson.save')}
+              </Button>
             {:else}
               <IconButton contained size="small" onClick={() => handleAddLesson(section.id)} disabled={!!lessonEditing}>
                 <PlusIcon size={16} />
@@ -309,18 +307,18 @@
               <div class="flex items-center gap-1">
                 <!-- IS EDITING -->
                 {#if lessonEditing === lesson.id}
-                  <PrimaryButton
-                    label={$t('course.navItem.lessons.add_lesson.cancel')}
-                    variant={VARIANTS.OUTLINED}
-                    onClick={() => {
+                  <Button
+                    variant="outline"
+                    onclick={() => {
                       lesson.title = prevTitle ?? lesson.title;
                       resetEdit();
                     }}
-                  />
-                  <PrimaryButton
-                    label={$t('course.navItem.lessons.add_lesson.save')}
-                    onClick={() => onSave({ lessonId: lesson.id }, lesson)}
-                  />
+                  >
+                    {$t('course.navItem.lessons.add_lesson.cancel')}
+                  </Button>
+                  <Button onclick={() => onSave({ lessonId: lesson.id }, lesson)}>
+                    {$t('course.navItem.lessons.add_lesson.save')}
+                  </Button>
                 {:else}
                   <DropdownMenu.Root>
                     <DropdownMenu.Trigger>

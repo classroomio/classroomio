@@ -9,8 +9,7 @@
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import { ROLE } from '@cio/utils/constants';
   import { supabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
@@ -180,12 +179,9 @@
       </div>
 
       <div class="mt-8 flex flex-row-reverse items-center">
-        <PrimaryButton
-          className="px-6 py-3"
-          label={$t('courses.new_course_modal.next')}
-          onClick={() => (step = 1)}
-          isDisabled={!type}
-        />
+        <Button onclick={() => (step = 1)} disabled={!type}>
+          {$t('courses.new_course_modal.next')}
+        </Button>
       </div>
     </div>
   {:else}
@@ -215,19 +211,12 @@
       />
 
       <div class="mt-5 flex items-center justify-between">
-        <PrimaryButton
-          className="px-6 py-3"
-          label={$t('courses.new_course_modal.back')}
-          variant={VARIANTS.OUTLINED}
-          onClick={() => (step = 0)}
-        />
-        <PrimaryButton
-          className="px-6 py-3"
-          label={$t('courses.new_course_modal.button')}
-          type="submit"
-          isDisabled={isLoading}
-          {isLoading}
-        />
+        <Button variant="outline" onclick={() => (step = 0)}>
+          {$t('courses.new_course_modal.back')}
+        </Button>
+        <Button type="submit" disabled={isLoading} loading={isLoading}>
+          {$t('courses.new_course_modal.button')}
+        </Button>
       </div>
     </form>
   {/if}

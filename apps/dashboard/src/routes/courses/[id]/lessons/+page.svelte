@@ -12,8 +12,7 @@
   import { course } from '$lib/components/Course/store';
   import { CourseContainer } from '$lib/components/CourseContainer';
   import { PageBody } from '$lib/components/Page';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import { RoleBasedSecurity } from '$lib/features/ui';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
@@ -106,24 +105,16 @@
       <div class="flex w-full justify-end gap-2">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           {#if $course.version === COURSE_VERSION.V1}
-            <PrimaryButton
-              label={$t(`course.navItem.lessons.section_prompt.cta`)}
-              variant={VARIANTS.OUTLINED}
-              onClick={() => (activateSections = !activateSections)}
-              isDisabled={!!lessonEditing}
-            />
+            <Button variant="outline" onclick={() => (activateSections = !activateSections)} disabled={!!lessonEditing}>
+              {$t(`course.navItem.lessons.section_prompt.cta`)}
+            </Button>
           {/if}
-          <PrimaryButton
-            label={$t(`course.navItem.lessons.add_lesson.${reorder ? 'end_reorder' : 'start_reorder'}`)}
-            variant={VARIANTS.OUTLINED}
-            onClick={() => (reorder = !reorder)}
-            isDisabled={!!lessonEditing}
-          />
-          <PrimaryButton
-            label={$t('course.navItem.lessons.add_lesson.button_title')}
-            onClick={addLesson}
-            isDisabled={!!lessonEditing}
-          />
+          <Button variant="outline" onclick={() => (reorder = !reorder)} disabled={!!lessonEditing}>
+            {$t(`course.navItem.lessons.add_lesson.${reorder ? 'end_reorder' : 'start_reorder'}`)}
+          </Button>
+          <Button onclick={addLesson} disabled={!!lessonEditing}>
+            {$t('course.navItem.lessons.add_lesson.button_title')}
+          </Button>
         </RoleBasedSecurity>
       </div>
     </Page.Action>

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { preventDefault } from '$lib/utils/functions/svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import Modal from '$lib/components/Modal/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
@@ -52,12 +52,12 @@
     {/if}
 
     <div class="mt-5 flex flex-row-reverse items-center">
-      <PrimaryButton
-        className="px-6 py-3"
-        label={$t('courses.copy_course.create_button')}
+      <Button
         type="submit"
-        isLoading={$copyCourseModal.isSaving}
-      />
+        loading={$copyCourseModal.isSaving}
+      >
+        {$t('courses.copy_course.create_button')}
+      </Button>
     </div>
   </form>
 </Modal>

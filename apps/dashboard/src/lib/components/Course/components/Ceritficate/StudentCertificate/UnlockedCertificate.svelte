@@ -5,8 +5,7 @@
   import { course } from '$lib/components/Course/store';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import Box from '$lib/components/Box/index.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { fetchProfileCourseProgress } from '$lib/utils/services/courses';
@@ -94,15 +93,13 @@
     <p class="max-w-md text-center text-sm font-normal">
       {$t(subtitle)}
     </p>
-    <PrimaryButton
-      className="flex items-center gap-2"
-      onClick={downLoadCertificate}
-      variant={VARIANTS.CONTAINED_DARK}
-      isDisabled={!isCourseComplete}
-      {isLoading}
+    <Button
+      onclick={downLoadCertificate}
+      disabled={!isCourseComplete}
+      loading={isLoading}
     >
       <DownloadIcon size={16} />
       {$t('course.navItem.certificates.download_certificate')}
-    </PrimaryButton>
+    </Button>
   </div>
 </Box>

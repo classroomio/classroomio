@@ -1,8 +1,6 @@
 <script lang="ts">
   import Modal from '$lib/components/Modal/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
   import { deleteMemberModal } from './store';
 
@@ -28,18 +26,18 @@
     </p>
 
     <div class="mt-5 flex items-center justify-between">
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.OUTLINED}
-        label={$t('course.navItem.people.delete_confirmation.no')}
-        onClick={() => ($deleteMemberModal.open = false)}
-      />
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.OUTLINED}
-        label={$t('course.navItem.people.delete_confirmation.yes')}
-        onClick={handleDelete}
-      />
+      <Button
+        variant="outline"
+        onclick={() => ($deleteMemberModal.open = false)}
+      >
+        {$t('course.navItem.people.delete_confirmation.no')}
+      </Button>
+      <Button
+        variant="outline"
+        onclick={handleDelete}
+      >
+        {$t('course.navItem.people.delete_confirmation.yes')}
+      </Button>
     </div>
   </div>
 </Modal>

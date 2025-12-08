@@ -3,8 +3,7 @@
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
   import { courseMetaDeta, courses } from '$lib/features/course/utils/store';
   import Learning from '$lib/components/LMS/components/Learning.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import { getGreeting } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
   import { fetchCourses } from '$lib/utils/services/courses';
@@ -69,11 +68,11 @@
             ? $currentOrg.customization.dashboard.bannerText
             : $t('dashboard.lms_dashboard_hero')}
         </p>
-        <PrimaryButton
-          label={$t('dashboard.dont')}
-          variant={VARIANTS.CONTAINED_WHITE}
-          onClick={() => goto('/lms/mylearning')}
-        />
+        <Button
+          onclick={() => goto('/lms/mylearning')}
+        >
+          {$t('dashboard.dont')}
+        </Button>
       </div>
       <img
         src={$currentOrg.customization.dashboard.bannerImage

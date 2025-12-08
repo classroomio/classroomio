@@ -8,7 +8,7 @@
   import Modal from '$lib/components/Modal/index.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
 
   let isAutomatic = $state(false);
 
@@ -65,7 +65,7 @@
       />
 
       <div class="mt-5 flex w-full items-end justify-end">
-        <PrimaryButton className="px-6 py-3 rounded-md text-sm font-medium" label="Issue certificate" type="submit" />
+        <Button type="submit">Issue certificate</Button>
       </div>
     </form>
   </main>

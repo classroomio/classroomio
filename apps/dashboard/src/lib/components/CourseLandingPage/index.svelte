@@ -14,9 +14,9 @@
   import { handleOpenWidget, reviewsModalStore } from './store';
   import { COURSE_VERSION, type Course } from '$lib/utils/types';
   import { course, sortLesson } from '$lib/components/Course/store';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
   import { getExerciseCount, getLessonSections, getTotalLessons, filterNavItems } from './utils';
+  import { Button } from '@cio/ui/base/button';
 
   import Chip from '../Chip/index.svelte';
   import Modal from '../Modal/index.svelte';
@@ -28,7 +28,6 @@
   import SectionsDisplay from './components/SectionsDisplay.svelte';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { observeIntersection } from './components/IntersectionObserver';
 
   interface Props {
@@ -126,15 +125,16 @@
         <p class="author my-3 text-sm dark:text-white">
           {get(courseData, 'metadata.instructor.name', '')}
         </p>
-        <PrimaryButton
-          label={$t('course.navItem.landing_page.start_course')}
-          className="px-6 py-5 mt-6 sm:w-fit hidden md:block"
-          onClick={() => {
+        <Button
+          class="mt-6 sm:w-fit hidden md:block"
+          onclick={() => {
             if (editMode) return;
             startCoursePayment = true;
           }}
-          isDisabled={!allowNewStudent}
-        />
+          disabled={!allowNewStudent}
+        >
+          {$t('course.navItem.landing_page.start_course')}
+        </Button>
         {#if $handleOpenWidget.open}
           <UploadWidget bind:imageURL={$course.logo} />
         {/if}
@@ -374,12 +374,13 @@
               {/each}
             </div>
             {#if reviews.length > 4}
-              <PrimaryButton
-                label={$t('course.navItem.landing_page.see_all')}
-                className="w-3/12 p-4 mt-2"
-                variant={VARIANTS.OUTLINED}
-                onClick={() => ($reviewsModalStore.open = true)}
-              />
+              <Button
+                class="mt-2"
+                variant="outline"
+                onclick={() => ($reviewsModalStore.open = true)}
+              >
+                {$t('course.navItem.landing_page.see_all')}
+              </Button>
             {/if}
 
             <!-- Reviews Modal -->

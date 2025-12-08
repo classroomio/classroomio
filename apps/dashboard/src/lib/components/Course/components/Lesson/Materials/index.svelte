@@ -30,9 +30,9 @@
     lessonVideoUpload,
     lessonDocUpload
   } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { lessonFallbackNote, t } from '$lib/utils/functions/translations';
   import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
+  import { Button } from '@cio/ui/base/button';
   import Loader from './Loader.svelte';
   import Box from '$lib/components/Box/index.svelte';
   import Comments from './components/Comments.svelte';
@@ -46,7 +46,6 @@
   import TabContent from '$lib/components/TabContent/index.svelte';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import ComponentDocument from './components/ComponentDocument.svelte';
   import AddVideoToLesson from '$lib/components/Course/components/Lesson/Materials/Video/AddVideoToLesson.svelte';
   import AddDocumentToLesson from '$lib/components/Course/components/Lesson/Materials/Document/AddDocumentToLesson.svelte';
@@ -389,19 +388,17 @@
             <div class="hidden flex-row-reverse">
               <Popover.Root>
                 <Popover.Trigger>
-                  <PrimaryButton
-                    className="flex items-center relative"
-                    onClick={() => {
+                  <Button
+                    variant="outline"
+                    onclick={() => {
                       openPopover = !openPopover;
                     }}
-                    isLoading={$isLoading}
-                    isDisabled={$isLoading}
-                    variant={VARIANTS.OUTLINED}
-                    disableScale
+                    loading={$isLoading}
+                    disabled={$isLoading}
                   >
                     <WandSparklesIcon size={16} />
                     AI
-                  </PrimaryButton>
+                  </Button>
                 </Popover.Trigger>
                 <Popover.Content align="start" class="w-80">
                   <div class="p-2">
@@ -449,11 +446,9 @@
           {/if}
         </TabContent>
         <TabContent value={getValue('course.navItem.lessons.materials.tabs.video.title')} index={currentTab}>
-          <PrimaryButton
-            label={$t('course.navItem.lessons.materials.tabs.video.button')}
-            onClick={openAddVideoModal}
-            className="mb-2"
-          />
+          <Button onclick={openAddVideoModal} class="mb-2">
+            {$t('course.navItem.lessons.materials.tabs.video.button')}
+          </Button>
           {#if $lesson.materials.videos.length}
             <div class="flex h-full w-full flex-col items-start">
               {#each $lesson.materials.videos as video, index}
@@ -552,11 +547,9 @@
         <strong>{$t('course.navItem.lessons.materials.get_started')}</strong>
         {$t('course.navItem.lessons.materials.button')}.
       </p>
-      <PrimaryButton
-        label={$t('course.navItem.lessons.materials.get_started')}
-        className="rounded-md"
-        onClick={toggleMode}
-      />
+      <Button onclick={toggleMode}>
+        {$t('course.navItem.lessons.materials.get_started')}
+      </Button>
     {/if}
   </Box>
 {/if}

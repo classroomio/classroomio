@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as Sidebar from '@cio/ui/base/sidebar';
-  import { CourseSidebar } from '$lib/features/ui/sidebar/course-sidebar/index.js';
+  import { CourseSidebar } from '$lib/features/ui/sidebar/course-sidebar';
   import { AppHeader } from '$lib/features/ui';
 
   interface Props {

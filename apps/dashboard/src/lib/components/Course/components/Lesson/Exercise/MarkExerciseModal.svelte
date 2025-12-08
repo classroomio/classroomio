@@ -13,8 +13,7 @@
   import Preview from './Preview.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
   import TextArea from '$lib/components/Form/TextArea.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
 
   // import { useCompletion } from 'ai/svelte';
   // import { QUESTION_TYPE } from '$lib/components/Question/constants';
@@ -248,20 +247,12 @@
         </h1>
 
         <div class="mt-5 flex items-center justify-between">
-          <PrimaryButton
-            className="px-6 py-3"
-            variant={VARIANTS.OUTLINED}
-            label={$t('delete_modal.no')}
-            onClick={() => (openDeletePrompt = false)}
-            isDisabled={isDeleting}
-          />
-          <PrimaryButton
-            className="px-6 py-3"
-            variant={VARIANTS.OUTLINED}
-            label={$t('delete_modal.yes')}
-            onClick={handleDeleteSubmission}
-            isLoading={isDeleting}
-          />
+          <Button variant="outline" onclick={() => (openDeletePrompt = false)} disabled={isDeleting}>
+            {$t('delete_modal.no')}
+          </Button>
+          <Button variant="outline" onclick={handleDeleteSubmission} loading={isDeleting}>
+            {$t('delete_modal.yes')}
+          </Button>
         </div>
       </div>
     {:else}
@@ -392,22 +383,22 @@
       </div>
 
       <div class="flex w-full flex-col space-y-3 px-3 py-2">
-        <PrimaryButton onClick={gradeWithAI} variant={VARIANTS.OUTLINED} className="space-x-3 py-3 px-8 w-full ">
+        <Button variant="outline" onclick={gradeWithAI} class="w-full">
           <img src="/ai.svg" alt="ai" />
           <p class="text-sm font-semibold">
             {$t('course.navItem.submissions.grading_modal.grade_with_ai')}
           </p>
-        </PrimaryButton>
-        <PrimaryButton
-          onClick={() => {
+        </Button>
+        <Button
+          onclick={() => {
             handleSave(data);
             // onClose();
           }}
-          isLoading={isSaving}
-          label={$t('course.navItem.submissions.grading_modal.submit_grades')}
-          variant={VARIANTS.CONTAINED}
-          className="py-3 px-8 w-full"
-        />
+          loading={isSaving}
+          class="w-full"
+        >
+          {$t('course.navItem.submissions.grading_modal.submit_grades')}
+        </Button>
       </div>
       <!-- <div class="flex items-center text-sm p-3">
         <p class="dark:text-white w-1/2">Teacher</p>

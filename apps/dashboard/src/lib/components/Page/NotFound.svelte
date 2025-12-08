@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
 
   interface Props {
     isOrg?: boolean;
@@ -31,7 +30,9 @@
     <p class=" mb-5 text-center text-lg text-gray-700 dark:text-white">
       The page you are looking for doesn't exist or has been moved. Please go back to the homepage.
     </p>
-    <PrimaryButton variant={VARIANTS.CONTAINED_DARK} label="Go Home" className="text-lg" onClick={handleClick} />
+    <Button onclick={handleClick}>
+      Go Home
+    </Button>
   </div>
 </div>
 

@@ -27,9 +27,10 @@
     <Page.Title>{$t('settings.heading')}</Page.Title>
   </Page.HeaderContent>
   <Page.Action>
-    <Button variant="default" loading={isLoading} onclick={handleUpdate}>
+    <Button variant="secondary" loading={isLoading} onclick={handleUpdate}>
       {$t('settings.profile.update_profile')}
     </Button>
+
     <ViewSiteBtn />
   </Page.Action>
 </Page.Header>

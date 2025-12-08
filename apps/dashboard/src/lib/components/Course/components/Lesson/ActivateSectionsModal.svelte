@@ -1,8 +1,7 @@
 <script lang="ts">
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import Modal from '$lib/components/Modal/index.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { supabase } from '$lib/utils/functions/supabase';
   import { course } from '../../store';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -52,16 +51,18 @@
     </div>
 
     <div class="flex gap-2">
-      <PrimaryButton
-        variant={VARIANTS.OUTLINED}
-        label={$t('course.navItem.lessons.section_prompt.cancel')}
-        onClick={handleClose}
-      />
-      <PrimaryButton
-        label={$t('course.navItem.lessons.section_prompt.activate')}
-        onClick={activate}
-        isLoading={isActivating}
-      />
+      <Button
+        variant="outline"
+        onclick={handleClose}
+      >
+        {$t('course.navItem.lessons.section_prompt.cancel')}
+      </Button>
+      <Button
+        onclick={activate}
+        loading={isActivating}
+      >
+        {$t('course.navItem.lessons.section_prompt.activate')}
+      </Button>
     </div>
   </div>
 </Modal>

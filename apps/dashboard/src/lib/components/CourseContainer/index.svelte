@@ -9,7 +9,7 @@
   import { profile } from '$lib/utils/store/user';
   import Modal from '$lib/components/Modal/index.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import type { GroupPerson } from '$lib/utils/types';
 
@@ -73,13 +73,13 @@
     </p>
 
     <div class="mt-5 flex justify-center">
-      <PrimaryButton
-        className="px-6 py-3"
-        label={$t('course.not_permitted.button')}
-        onClick={() => {
+      <Button
+        onclick={() => {
           goto('/org/*');
         }}
-      />
+      >
+        {$t('course.not_permitted.button')}
+      </Button>
     </div>
   </div>
 </Modal>

@@ -10,7 +10,7 @@
   import { lesson, isLessonDirty } from '$lib/components/Course/components/Lesson/store/lessons';
 
   import TextField from '$lib/components/Form/TextField.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
 
   let youtubeLinks = $state('');
   let error = $state('');
@@ -54,11 +54,11 @@
     placeholder="https://www.youtube.com/watch?v="
     errorMessage={error}
   />
-  <PrimaryButton
-    label={$t('course.navItem.lessons.materials.tabs.video.add_video.add_video')}
-    className="rounded-md"
-    onClick={addVideo}
-  />
+  <Button
+    onclick={addVideo}
+  >
+    {$t('course.navItem.lessons.materials.tabs.video.add_video.add_video')}
+  </Button>
 </div>
 <p class="mt-4 pl-2 text-sm">
   {$t('course.navItem.lessons.materials.tabs.video.add_video.videos_added')}:

@@ -19,8 +19,7 @@
   import ReviewsForm from './ReviewsForm.svelte';
   import CertificateForm from './CertificateForm.svelte';
   import InstructorForm from './InstructorForm.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import { updateCourse } from '$lib/utils/services/courses';
   import generateSlug from '$lib/utils/functions/generateSlug';
 
@@ -192,14 +191,9 @@
       <div class="flex w-full items-center justify-between px-2">
         <CloseButton onClick={handleClose} />
         <div class="flex items-center">
-          <PrimaryButton
-            label={$t('course.navItem.landing_page.editor.save')}
-            type="button"
-            className="mr-1"
-            variant={VARIANTS.OUTLINED}
-            onClick={handleSave}
-            isLoading={loading}
-          />
+          <Button type="button" class="mr-1" variant="outline" onclick={handleSave} {loading}>
+            {$t('course.navItem.landing_page.editor.save')}
+          </Button>
           <IconButton onClick={handlePreview} disabled={loading || !course.slug}>
             <ArrowUpRightIcon size={16} />
           </IconButton>

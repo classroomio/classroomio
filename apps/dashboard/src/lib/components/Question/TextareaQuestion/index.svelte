@@ -2,8 +2,7 @@
   import { preventDefault } from '$lib/utils/functions/svelte';
 
   import CodeSnippet from '$lib/components/CodeSnippet/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import Grade from '$lib/components/Question/Grade.svelte';
@@ -110,20 +109,14 @@
 
   {#if !isPreview}
     <div class="mt-3 flex w-full items-center justify-between">
-      <PrimaryButton
-        variant={VARIANTS.OUTLINED}
-        onClick={handlePrevious}
-        label={$t('course.navItem.lessons.exercises.all_exercises.previous')}
-        isDisabled={disablePreviousButton}
-      />
-      <PrimaryButton
-        variant={VARIANTS.OUTLINED}
-        type="submit"
-        label={isLast
+      <Button variant="outline" onclick={handlePrevious} disabled={disablePreviousButton}>
+        {$t('course.navItem.lessons.exercises.all_exercises.previous')}
+      </Button>
+      <Button variant="outline" type="submit">
+        {isLast
           ? $t('course.navItem.lessons.exercises.all_exercises.finish')
           : $t('course.navItem.lessons.exercises.all_exercises.next')}
-        {name}
-      />
+      </Button>
     </div>
   {/if}
 </form>

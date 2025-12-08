@@ -21,8 +21,7 @@
   import { Button } from '@cio/ui/base/button';
   import { Textarea } from '@cio/ui/base/textarea';
   import { DomainInput } from '@cio/ui/custom/domain-input';
-  import { ComingSoon } from '$lib/features/ui';
-  import { UpgradeBanner } from '$lib/features/ui';
+  import { ComingSoon, UpgradeBanner } from '$lib/features/ui';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
   import * as Field from '@cio/ui/base/field';
@@ -170,7 +169,7 @@
         });
 
         if (orgApi.success) {
-        $currentOrg.isCustomDomainVerified = true;
+          $currentOrg.isCustomDomainVerified = true;
         }
       }
     } catch (error) {

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { preventDefault } from '$lib/utils/functions/svelte';
 
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import TextField from '$lib/components/Form/TextField.svelte';
   // import Select from '$lib/components/Form/Select.svelte';
   import {
@@ -164,6 +164,8 @@
   </form>
 
   <div class="flex flex-row-reverse">
-    <PrimaryButton label={$t('course.navItem.lessons.add_lesson.save')} onClick={handleSave} />
+    <Button onclick={handleSave}>
+      {$t('course.navItem.lessons.add_lesson.save')}
+    </Button>
   </div>
 </Modal>

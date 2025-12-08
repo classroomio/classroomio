@@ -8,7 +8,7 @@
   import { group } from '$lib/components/Course/store';
   import { CourseContainer } from '$lib/components/CourseContainer';
   import { PageBody } from '$lib/components/Page';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import * as Page from '@cio/ui/base/page';
   import { RoleBasedSecurity } from '$lib/features/ui';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -247,11 +247,9 @@
         </Page.Title>
       </Page.HeaderContent>
       <Page.Action>
-        <PrimaryButton
-          className="mr-2"
-          label={$t('course.navItem.news_feed.heading_button.title')}
-          onClick={() => ($isNewFeedModal.open = true)}
-        />
+        <Button class="mr-2" onclick={() => ($isNewFeedModal.open = true)}>
+          {$t('course.navItem.news_feed.heading_button.title')}
+        </Button>
       </Page.Action>
     </Page.Header>
 

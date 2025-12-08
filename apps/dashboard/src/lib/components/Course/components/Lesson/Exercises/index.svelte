@@ -18,7 +18,7 @@
   import Backdrop from '$lib/components/Backdrop/index.svelte';
   import * as Empty from '@cio/ui/base/empty';
   import { QUESTION_TYPES } from '$lib/components/Question/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import { RoleBasedSecurity } from '$lib/features/ui';
   import NewExerciseModal from '$lib/components/Course/components/Lesson/Exercises/NewExerciseModal.svelte';
 
@@ -188,11 +188,9 @@
           </Breadcrumb.List>
         </Breadcrumb.Root>
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <PrimaryButton
-            className="mr-2 my-2"
-            label={$t('course.navItem.lessons.exercises.add_button')}
-            onClick={() => (open = !open)}
-          />
+          <Button class="my-2 mr-2" onclick={() => (open = !open)}>
+            {$t('course.navItem.lessons.exercises.add_button')}
+          </Button>
         </RoleBasedSecurity>
       </slot:fragment>
     {/snippet}

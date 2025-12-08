@@ -1,6 +1,6 @@
 <script lang="ts">
   import get from 'lodash/get';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import { isCourseFree, getStudentInviteLink, calcCourseDiscount } from '$lib/utils/functions/course';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
@@ -124,14 +124,11 @@
 
         <!-- Call To Action Buttons -->
         <div class="flex h-full w-full flex-col items-center">
-          <PrimaryButton
-            label={isFree
+          <Button onclick={handleJoinCourse} disabled={!courseData.metadata.allowNewStudent}>
+            {isFree
               ? $t('course.navItem.landing_page.pricing_section.enroll')
               : $t('course.navItem.landing_page.pricing_section.buy')}
-            className="w-full sm:w-full h-[40px]"
-            onClick={handleJoinCourse}
-            isDisabled={!courseData.metadata.allowNewStudent}
-          />
+          </Button>
         </div>
       </div>
     </aside>
@@ -171,14 +168,11 @@
 
       <!-- Call To Action Buttons -->
       <div class="flex w-full flex-col items-center">
-        <PrimaryButton
-          label={isFree
+        <Button class="mb-3" onclick={handleJoinCourse} disabled={!courseData.metadata.allowNewStudent}>
+          {isFree
             ? $t('course.navItem.landing_page.pricing_section.enroll')
             : $t('course.navItem.landing_page.pricing_section.buy')}
-          className="w-full sm:w-full py-3 mb-3"
-          onClick={handleJoinCourse}
-          isDisabled={!courseData.metadata.allowNewStudent}
-        />
+        </Button>
         {#if courseData?.metadata?.showDiscount && courseData.metadata.allowNewStudent}
           <p class="text-sm font-light text-gray-500 dark:text-white">
             {$t('course.navItem.landing_page.pricing_section.bird')}

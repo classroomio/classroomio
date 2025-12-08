@@ -13,7 +13,7 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import { blockedSubdomain } from '$lib/utils/constants/app';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import { copyToClipboard } from '$lib/utils/functions/formatYoutubeVideo';
   import { updateOrgSiteNameValidation } from '$lib/utils/functions/validator';
   import { sanitizeDomain, sendDomainRequest } from '$lib/utils/functions/domain';
@@ -24,10 +24,8 @@
   import { IconButton } from '$lib/components/IconButton';
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import { ComingSoon } from '$lib/features/ui';
-  import { UpgradeBanner } from '$lib/features/ui';
+  import { ComingSoon, UpgradeBanner } from '$lib/features/ui';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
 
   let siteName = $derived($currentOrg.siteName);
@@ -227,13 +225,9 @@
           errorMessage={errors.siteName}
         />
         <div class="mb-6 flex items-center">
-          <PrimaryButton
-            label={$t('components.settings.domains.update')}
-            className="py-2"
-            variant={VARIANTS.OUTLINED}
-            onClick={handleSaveSiteName}
-            isDisabled={isLoading}
-          />
+          <Button variant="outline" onclick={handleSaveSiteName} disabled={isLoading}>
+            {$t('components.settings.domains.update')}
+          </Button>
 
           <VisitOrgSiteButton />
         </div>
@@ -305,29 +299,19 @@
           </div>
 
           <div class="mt-5 flex items-center justify-between">
-            <PrimaryButton
-              className="py-2 flex items-center gap-2"
-              onClick={handleRefreshCustomDomain}
-              isLoading={isRefreshing}
-              variant={VARIANTS.OUTLINED}
-            >
+            <Button variant="outline" onclick={handleRefreshCustomDomain} loading={isRefreshing}>
               {#if !isRefreshing}
                 <RotateCcwIcon size={16} />
               {/if}
               {$t('components.settings.domains.refresh')}
-            </PrimaryButton>
+            </Button>
 
-            <PrimaryButton
-              className="py-2 flex items-center gap-2"
-              onClick={handleRemoveCustomDomain}
-              isLoading={isCustomDomainLoading}
-              variant={VARIANTS.CONTAINED_DANGER}
-            >
+            <Button variant="destructive" onclick={handleRemoveCustomDomain} loading={isCustomDomainLoading}>
               {#if !isCustomDomainLoading}
                 <TrashIcon size={16} />
               {/if}
               {$t('components.settings.domains.remove')}
-            </PrimaryButton>
+            </Button>
           </div>
         {:else}
           <!-- Add Custom Domain -->
@@ -345,13 +329,13 @@
           />
 
           <div class="mt-5 flex items-center">
-            <PrimaryButton
-              label={$t('components.settings.domains.save')}
-              className="py-2"
-              onClick={$isFreePlan ? () => {} : handleSaveCustomDomain}
-              isLoading={isCustomDomainLoading}
-              isDisabled={isLoading || !isDomainValid}
-            />
+            <Button
+              onclick={$isFreePlan ? () => {} : handleSaveCustomDomain}
+              loading={isCustomDomainLoading}
+              disabled={isLoading || !isDomainValid}
+            >
+              {$t('components.settings.domains.save')}
+            </Button>
           </div>
         {/if}
       </div>

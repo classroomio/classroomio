@@ -1,15 +1,15 @@
-import { type Writable, get } from 'svelte/store';
 import { lessonDocUpload, lessonVideoUpload } from '$lib/components/Course/components/Lesson/store/lessons';
 
 import axios from 'axios';
 import { classroomio } from '$lib/utils/services/api';
+import { get } from 'svelte/store';
 
 export type UploadType = 'document' | 'video' | 'generic';
 
 export class GenericUploader {
   public abortController: AbortController | null = null;
   private uploadType: UploadType;
-  private uploadStore: Writable<any>;
+  private uploadStore: typeof lessonDocUpload | typeof lessonVideoUpload;
 
   constructor(uploadType: UploadType) {
     this.uploadType = uploadType;
@@ -27,7 +27,12 @@ export class GenericUploader {
       }
     });
 
-    return response.json();
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+
+    return result;
   }
 
   async getAllDownloadPresignedUrl(videoKeys: string[], docKeys: string[]) {
@@ -66,7 +71,12 @@ export class GenericUploader {
       }
     });
 
-    return response.json();
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+
+    return result;
   }
 
   async uploadFile(params: { url: string; file: File }) {

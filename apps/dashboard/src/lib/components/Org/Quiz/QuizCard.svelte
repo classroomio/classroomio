@@ -7,11 +7,10 @@
   import { themeImages } from '$lib/utils/constants/quiz';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { onRename, onDelete } from '$lib/utils/services/org/quiz';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
 
   import ImageRenderer from '../ImageRenderer.svelte';
   import Dropdown from '$lib/components/Dropdown/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   let { quiz, totalQuestions } = $props();
 
@@ -82,12 +81,9 @@
           <p class="mb-2 md:mb-0">{$t('components.quiz.updated')} {calDateDiff(quiz.updated_at)}</p>
         </div>
 
-        <PrimaryButton
-          className="px-6 py-3"
-          variant={VARIANTS.OUTLINED}
-          label={$t('components.quiz.start')}
-          onClick={startQuiz}
-        />
+        <Button variant="outline" onclick={startQuiz}>
+          {$t('components.quiz.start')}
+        </Button>
       </div>
     </div>
   </div>

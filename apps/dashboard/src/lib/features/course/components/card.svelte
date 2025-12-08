@@ -7,9 +7,8 @@
   import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
 
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import ImageRenderer from '$lib/components/Org/ImageRenderer.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
 
   import { COURSE_TYPE } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
@@ -227,11 +226,9 @@
     </div>
 
     {#if isLMS}
-      <PrimaryButton
-        label={isExplore ? $t('courses.course_card.learn_more') : $t('courses.course_card.continue_course')}
-        variant={VARIANTS.OUTLINED}
-        className="rounded-none"
-      />
+      <Button variant="outline">
+        {isExplore ? $t('courses.course_card.learn_more') : $t('courses.course_card.continue_course')}
+      </Button>
     {:else if !isOnLandingPage}
       <div class="flex flex-col justify-between">
         <p class="pl-2 text-xs dark:text-white">

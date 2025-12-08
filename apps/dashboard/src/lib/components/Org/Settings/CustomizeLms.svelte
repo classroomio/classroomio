@@ -7,14 +7,13 @@
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { getSupabase } from '$lib/utils/functions/supabase';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
 
   import { Row, Grid, Column } from './Layout';
   import SectionTitle from '../SectionTitle.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   const supabase = getSupabase();
 
@@ -81,12 +80,9 @@
 
       <div class="mb-3">
         <p class="text-sm">{$t('components.settings.customize_lms.dashboard.banner_image')}</p>
-        <PrimaryButton
-          variant={VARIANTS.OUTLINED}
-          label={$t('components.settings.customize_lms.dashboard.banner_image_btn')}
-          className="mt-3"
-          onClick={() => widgetControl('banner-image')}
-        />
+        <Button variant="outline" class="mt-3" onclick={() => widgetControl('banner-image')}>
+          {$t('components.settings.customize_lms.dashboard.banner_image_btn')}
+        </Button>
         {#if $currentOrg.customization.dashboard.bannerImage}
           <img alt="Banner" src={$currentOrg.customization.dashboard.bannerImage} class="mt-2 w-full rounded-md" />
         {/if}
@@ -171,17 +167,14 @@
   </Row>
 
   <div class="sticky bottom-12 z-[120] float-right mr-2 hidden md:block">
-    <PrimaryButton
-      label={$t('components.settings.customize_lms.save')}
-      onClick={handleSave}
-      isLoading={isSaving}
-      isDisabled={isSaving}
-    />
+    <Button onclick={handleSave} loading={isSaving} disabled={isSaving}>
+      {$t('components.settings.customize_lms.save')}
+    </Button>
   </div>
 </Grid>
 
-<div class="absolute bottom-8 right-6 z-[120] block md:hidden">
-  <PrimaryButton onClick={handleSave} isLoading={isSaving} isDisabled={isSaving}>
+<div class="z-120 absolute bottom-8 right-6 block md:hidden">
+  <Button onclick={handleSave} loading={isSaving} disabled={isSaving}>
     <SaveIcon size={16} />
-  </PrimaryButton>
+  </Button>
 </div>

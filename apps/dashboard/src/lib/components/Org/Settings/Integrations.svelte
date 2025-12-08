@@ -3,12 +3,11 @@
   import { t } from '$lib/utils/functions/translations';
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
 
   import { Row, Grid, Column } from './Layout';
   import SectionTitle from '../SectionTitle.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import ArrowUpRightIcon from '$lib/components/Icons/ArrowTopRight.svelte';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
 
@@ -61,9 +60,9 @@
             <CircleCheckIcon size={16} filled />
             <SectionTitle>{$t('settings.integrations.success_message')}</SectionTitle>
           </div>
-          <PrimaryButton className="mt-3" variant={VARIANTS.CONTAINED_DANGER} onClick={deleteChatId}
-            >{$t('settings.integrations.disconnect')}</PrimaryButton
-          >
+          <Button variant="destructive" onclick={deleteChatId} class="mt-3">
+            {$t('settings.integrations.disconnect')}
+          </Button>
         </div>
       {:else}
         <div>
@@ -71,13 +70,10 @@
             {$t('settings.integrations.sub_heading')}
           </h3>
           <h4 class="font-normal">{$t('settings.integrations.step_authenticate')}</h4>
-          <PrimaryButton
-            className="mb-5"
-            variant={VARIANTS.OUTLINED}
-            onClick={() => window.open('https://t.me/classroomio_bot', '_blank')}
-            ><span class="mr-2">{$t('settings.integrations.open_bot_button')}</span>
-            <ArrowUpRightIcon /></PrimaryButton
-          >
+          <Button variant="outline" onclick={() => window.open('https://t.me/classroomio_bot', '_blank')} class="mb-5">
+            <span class="mr-2">{$t('settings.integrations.open_bot_button')}</span>
+            <ArrowUpRightIcon />
+          </Button>
           <h4 class="font-normal">{$t('settings.integrations.step_chatId')}</h4>
           <TextField
             bind:value={chatId}
@@ -86,7 +82,9 @@
             type="number"
             isRequired
           />
-          <PrimaryButton onClick={addChatId}>{$t('settings.integrations.connect_button')}</PrimaryButton>
+          <Button onclick={addChatId}>
+            {$t('settings.integrations.connect_button')}
+          </Button>
         </div>
       {/if}
     </Column>

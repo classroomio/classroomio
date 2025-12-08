@@ -6,7 +6,7 @@
 
   import Modal from '$lib/components/Modal/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
 
   interface Props {
     open?: boolean;
@@ -97,7 +97,9 @@
       />
 
       <div class="mt-5 flex flex-row-reverse items-center">
-        <PrimaryButton className="px-6 py-3" label={paymentLink ? 'Next' : 'Finish'} type="submit" />
+        <Button type="submit">
+          {paymentLink ? 'Next' : 'Finish'}
+        </Button>
       </div>
     </form>
   {:else if step === STEPS.STEP_2}

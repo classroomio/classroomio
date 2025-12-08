@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { AuthUI } from '$lib/features/ui';
   import { currentOrg } from '$lib/utils/store/org';
@@ -130,11 +130,12 @@
   </div>
 
   <div class="my-4 flex w-full items-center justify-center">
-    <PrimaryButton
-      label="Join Course"
+    <Button
       type="submit"
-      isDisabled={disableSubmit || loading}
-      isLoading={loading || !$profile.id}
-    />
+      disabled={disableSubmit || loading}
+      loading={loading || !$profile.id}
+    >
+      Join Course
+    </Button>
   </div>
 </AuthUI>

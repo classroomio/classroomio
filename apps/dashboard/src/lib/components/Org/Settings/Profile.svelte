@@ -3,7 +3,7 @@
   import { profile } from '$lib/utils/store/user';
   import { CircleCheckBig } from '@lucide/svelte';
   import { profileApi } from '$lib/features/auth/api/profile.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
   import { Row, Grid, Column } from './Layout';
 
@@ -11,8 +11,7 @@
   import LanguagePicker from './LanguagePicker.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
+  import { UnsavedChanges } from '$lib/features/ui';
 
   let avatar = $state<string | File | undefined>();
   let hasLangChanged = $state(false);
@@ -113,26 +112,21 @@
         />
         {#if isChangingEmail && email !== $profile.email}
           <div class="mt-2 flex gap-2">
-            <PrimaryButton
-              label={$t('settings.profile.personal_information.confirm')}
-              variant={VARIANTS.CONTAINED_DARK}
-              className="text-sm"
-              isLoading={profileApi.isLoading}
-              isDisabled={profileApi.isLoading}
-              onClick={handleEmailChange}
-            />
-            <PrimaryButton
-              label={$t('settings.profile.personal_information.cancel')}
-              variant={VARIANTS.NONE}
-              className="text-sm text-primary-700"
-              isDisabled={profileApi.isLoading}
-              onClick={() => {
+            <Button onclick={handleEmailChange} loading={profileApi.isLoading} disabled={profileApi.isLoading}>
+              {$t('settings.profile.personal_information.confirm')}
+            </Button>
+            <Button
+              variant="ghost"
+              disabled={profileApi.isLoading}
+              onclick={() => {
                 email = $profile.email || '';
                 isChangingEmail = false;
                 emailChangeInitiated = false;
                 profileApi.errors.newEmail = '';
               }}
-            />
+            >
+              {$t('settings.profile.personal_information.cancel')}
+            </Button>
           </div>
         {/if}
         {#if emailChangeInitiated}
@@ -154,12 +148,8 @@
   </Row>
 
   <div class="m-5 flex w-full items-center gap-2 lg:justify-center">
-    <PrimaryButton
-      label={$t('settings.profile.update_profile')}
-      variant={VARIANTS.CONTAINED_DARK}
-      className="mr-5 w-fit"
-      isLoading={profileApi.isLoading}
-      onClick={handleUpdate}
-    />
+    <Button class="mr-5 w-fit" loading={profileApi.isLoading} onclick={handleUpdate}>
+      {$t('settings.profile.update_profile')}
+    </Button>
   </div>
 </Grid>

@@ -3,8 +3,7 @@
   import { AuthUI } from '$lib/features/ui';
   import type { Profile } from '$lib/components/Course/components/People/types';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
   import { logout } from '$lib/utils/functions/logout';
   import { getSupabase } from '$lib/utils/functions/supabase';
@@ -236,13 +235,11 @@
 
   <div class="my-4 flex w-full items-center justify-end">
     {#if shouldLogout}
-      <PrimaryButton
-        label="Logout"
+      <Button
         type="button"
-        className="sm:w-full w-full"
-        isLoading={isLoggingOut}
-        variant={VARIANTS.CONTAINED_DANGER}
-        onClick={async () => {
+        loading={isLoggingOut}
+        variant="destructive"
+        onclick={async () => {
           isLoggingOut = true;
 
           await logout(false);
@@ -250,15 +247,17 @@
           isLoggingOut = false;
           shouldLogout = false;
         }}
-      />
+      >
+        Logout
+      </Button>
     {:else}
-      <PrimaryButton
-        label="Accept Invite"
+      <Button
         type="submit"
-        className="sm:w-full w-full"
-        isDisabled={disableSubmit}
-        {isLoading}
-      />
+        disabled={disableSubmit}
+        loading={isLoading}
+      >
+        Accept Invite
+      </Button>
     {/if}
   </div>
 </AuthUI>

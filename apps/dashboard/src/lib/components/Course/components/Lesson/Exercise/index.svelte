@@ -20,15 +20,12 @@
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { upsertExercise } from '$lib/utils/services/courses';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-
   import EditMode from './EditMode.svelte';
   import ViewMode from './ViewMode.svelte';
   import { PageBody } from '$lib/components/Page';
   import Analytics from './Submissions/index.svelte';
   import { IconButton } from '$lib/components/IconButton';
   import UpdateDescription from './UpdateDescription.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { RoleBasedSecurity } from '$lib/features/ui';
 
   interface Props {
@@ -139,13 +136,9 @@
       {#if selectedTab === 'questions'}
         <div class="right-0 flex w-full items-center justify-end">
           <div class="flex items-center">
-            <PrimaryButton
-              className="mr-2"
-              variant={VARIANTS.CONTAINED}
-              label={$t('course.navItem.lessons.exercises.all_exercises.save')}
-              onClick={handleSave}
-              isLoading={isSaving}
-            />
+            <Button class="mr-2" onclick={handleSave} loading={isSaving}>
+              {$t('course.navItem.lessons.exercises.all_exercises.save')}
+            </Button>
             <IconButton
               onClick={() => (preview = !preview)}
               contained={preview}

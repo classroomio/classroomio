@@ -16,8 +16,8 @@
   } from '../store/exercise';
   import { preventDefault } from '$lib/utils/functions/svelte';
   import { deleteExercise } from '$lib/utils/services/courses';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { QUESTION_TYPE, QUESTION_TYPES } from '$lib/components/Question/constants';
+  import { Button } from '@cio/ui/base/button';
 
   import { lesson } from '../store/lessons';
   import OrderModal from './OrderModal.svelte';
@@ -30,7 +30,6 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import DeleteConfirmationModal from './DeleteConfirmation.svelte';
   import ErrorMessage from '$lib/components/ErrorMessage/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
   import QuestionContainer from '$lib/components/QuestionContainer/index.svelte';
 
@@ -102,22 +101,14 @@
     </h1>
 
     <div class="mt-5 flex items-center justify-between">
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.OUTLINED}
-        label={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.no')}
-        type="submit"
-        onClick={() => (shouldDeleteExercise = false)}
-      />
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.CONTAINED}
-        label={isDeleting
+      <Button variant="outline" type="submit" onclick={() => (shouldDeleteExercise = false)}>
+        {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.no')}
+      </Button>
+      <Button disabled={isDeleting} onclick={handleDelete} loading={isDeleting}>
+        {isDeleting
           ? $t('course.navItem.lessons.exercises.all_exercises.edit_mode.deleting')
           : $t('course.navItem.lessons.exercises.all_exercises.edit_mode.yes')}
-        isDisabled={isDeleting}
-        onClick={handleDelete}
-      />
+      </Button>
     </div>
   </form>
 </Modal>
@@ -241,17 +232,12 @@
 
           {#if QUESTION_TYPE.TEXTAREA !== question.question_type.id}
             <div class="mt-3 flex items-center">
-              <PrimaryButton
-                disablePadding={true}
-                className="p-2"
-                variant={VARIANTS.OUTLINED}
-                onClick={handleAddOption(question.id)}
-              >
+              <Button variant="outline" onclick={handleAddOption(question.id)}>
                 <CirclePlusIcon size={16} />
                 <p class="ml-2 dark:text-white">
                   {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.option')}
                 </p>
-              </PrimaryButton>
+              </Button>
             </div>
           {/if}
         </QuestionContainer>

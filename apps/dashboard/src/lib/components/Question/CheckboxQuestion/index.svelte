@@ -4,8 +4,7 @@
   import CodeSnippet from '$lib/components/CodeSnippet/index.svelte';
   import Checkbox from '$lib/components/Form/Checkbox.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import Grade from '$lib/components/Question/Grade.svelte';
   import { t } from '$lib/utils/functions/translations';
   import QuestionTitle from '../QuestionTitle.svelte';
@@ -148,21 +147,15 @@
 
   {#if !isPreview}
     <div class="mt-3 flex w-full items-center justify-between">
-      <PrimaryButton
-        onClick={handlePrevious}
-        label={$t('course.navItem.lessons.exercises.all_exercises.previous')}
-        isDisabled={disablePreviousButton}
-        variant={VARIANTS.OUTLINED}
-      />
-      <PrimaryButton
-        variant={nextButtonProps.isActive ? VARIANTS.CONTAINED : VARIANTS.OUTLINED}
-        type="submit"
-        label={isLast
+      <Button variant="outline" onclick={handlePrevious} disabled={disablePreviousButton}>
+        {$t('course.navItem.lessons.exercises.all_exercises.previous')}
+      </Button>
+      <Button variant={nextButtonProps.isActive ? 'default' : 'outline'} type="submit">
+        {isLast
           ? $t('course.navItem.lessons.exercises.all_exercises.finish')
           : $t('course.navItem.lessons.exercises.all_exercises.next')}
-        isDisabled={nextButtonProps.isDisabled}
-        {name}
-      />
+        disabled={nextButtonProps.isDisabled}
+      </Button>
     </div>
   {/if}
 </form>

@@ -16,7 +16,6 @@
 
   import { CommunityListLoader } from '../components';
   import Vote from '$lib/components/Vote/index.svelte';
-  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
   import { Empty } from '@cio/ui/custom/empty';
   import * as Page from '@cio/ui/base/page';
   import * as Item from '@cio/ui/base/item';

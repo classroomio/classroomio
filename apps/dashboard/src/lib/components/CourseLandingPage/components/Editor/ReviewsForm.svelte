@@ -4,8 +4,7 @@
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
   import { IconButton } from '$lib/components/IconButton';
   import { isMobile } from '$lib/utils/store/useMobile';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import ReviewFormEditor from './ReviewFormEditor.svelte';
   import * as Avatar from '@cio/ui/base/avatar';
   import { processErrors } from '$lib/utils/functions/validator';
@@ -121,11 +120,11 @@
     {/each}
 
     <!-- create reviews button -->
-    <PrimaryButton
-      label={$t('course.navItem.landing_page.editor.reviews_form.add_reviews')}
-      variant={VARIANTS.CONTAINED}
-      onClick={addReviewForm}
-      className="w-5 rounded-md mt-8"
-    />
+    <Button
+      class="mt-8"
+      onclick={addReviewForm}
+    >
+      {$t('course.navItem.landing_page.editor.reviews_form.add_reviews')}
+    </Button>
   </div>
 </section>

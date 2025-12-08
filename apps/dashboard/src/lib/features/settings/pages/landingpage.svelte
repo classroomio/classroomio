@@ -15,7 +15,7 @@
   import { Textarea } from '@cio/ui/base/textarea';
   import { Button } from '@cio/ui/base/button';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
-  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
+  import { UnsavedChanges } from '$lib/features/ui';
   import * as Field from '@cio/ui/base/field';
   import type { OrgLandingPageJson } from '$lib/utils/types/org';
   import type { AccountOrg } from '$lib/features/app/types';

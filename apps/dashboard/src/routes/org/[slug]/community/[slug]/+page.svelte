@@ -13,7 +13,7 @@
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { fetchCourses } from '$lib/utils/services/courses';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import { currentOrg, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
   import { askCommunityValidation, commentInCommunityValidation } from '$lib/utils/functions/validator';
 
@@ -25,7 +25,6 @@
   import TextField from '$lib/components/Form/TextField.svelte';
   import { shortenName } from '$lib/utils/functions/string';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { CommunityDeleteModal } from '$lib/features/community/components';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
   import * as Page from '@cio/ui/base/page';
@@ -432,20 +431,19 @@
       </Page.HeaderContent>
       {#if question.author.id === $profile.id}
         <Page.Action>
-          <PrimaryButton
-            label={isEditMode ? $t('community.ask.save') : $t('community.ask.edit')}
-            variant={VARIANTS.OUTLINED}
-            onClick={handleQuestionEdit}
-            className="h-fit"
-          />
+          <Button
+            variant="outline"
+            onclick={handleQuestionEdit}
+          >
+            {isEditMode ? $t('community.ask.save') : $t('community.ask.edit')}
+          </Button>
           {#if isEditMode}
-            <PrimaryButton
-              label={$t('community.ask.cancel')}
-              variant={VARIANTS.TEXT}
-              onClick={() => (isEditMode = !isEditMode)}
-              className="py-3 px-6 rounded-sm h-fit"
-              disablePadding={true}
-            />
+            <Button
+              variant="ghost"
+              onclick={() => (isEditMode = !isEditMode)}
+            >
+              {$t('community.ask.cancel')}
+            </Button>
           {/if}
         </Page.Action>
       {/if}
@@ -554,7 +552,9 @@
           {/if}
 
           <div class="mt-2 flex justify-end">
-            <PrimaryButton label={$t('community.ask.comment')} onClick={submitComment} />
+            <Button onclick={submitComment}>
+              {$t('community.ask.comment')}
+            </Button>
           </div>
         </div>
       {/snippet}

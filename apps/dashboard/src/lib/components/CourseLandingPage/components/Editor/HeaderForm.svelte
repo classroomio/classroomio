@@ -1,8 +1,7 @@
 <script lang="ts">
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import { handleOpenWidget } from '../../store';
   import { t } from '$lib/utils/functions/translations';
 
@@ -39,9 +38,7 @@
 />
 <div class="mt-7">
   <p class="mb-3">{$t('course.navItem.landing_page.editor.header_form.replace_cover')}</p>
-  <PrimaryButton
-    label={$t('course.navItem.landing_page.editor.header_form.replace')}
-    variant={VARIANTS.OUTLINED}
-    onClick={widgetControl}
-  />
+  <Button variant="outline" onclick={widgetControl}>
+    {$t('course.navItem.landing_page.editor.header_form.replace')}
+  </Button>
 </div>

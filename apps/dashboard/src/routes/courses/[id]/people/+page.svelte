@@ -11,9 +11,7 @@
 
   import TextChip from '$lib/components/Chip/Text.svelte';
   import * as Avatar from '@cio/ui/base/avatar';
-  import { ComingSoon } from '$lib/features/ui';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { RoleBasedSecurity } from '$lib/features/ui';
+  import { ComingSoon, RoleBasedSecurity } from '$lib/features/ui';
   import InvitationModal from '$lib/components/Course/components/People/InvitationModal.svelte';
   import DeleteConfirmation from '$lib/components/Course/components/People/DeleteConfirmation.svelte';
 
@@ -26,7 +24,6 @@
   import { IconButton } from '$lib/components/IconButton';
   import { ROLE_LABEL, ROLES } from '$lib/utils/constants/roles';
   import { deleteGroupMember } from '$lib/utils/services/courses';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import type { ProfileRole } from '$lib/components/Course/components/People/types';
   import { deleteMemberModal } from '$lib/components/Course/components/People/store';
 
@@ -228,11 +225,9 @@
                       <TrashIcon size={16} />
                     </IconButton>
 
-                    <PrimaryButton
-                      variant={VARIANTS.OUTLINED}
-                      label={$t('course.navItem.people.view')}
-                      onClick={() => gotoPerson(person)}
-                    />
+                    <Button variant="outline" onclick={() => gotoPerson(person)}>
+                      {$t('course.navItem.people.view')}
+                    </Button>
                   {/if}
                 </div>
               </RoleBasedSecurity>

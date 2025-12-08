@@ -10,7 +10,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { getSupabase } from '$lib/utils/functions/supabase';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
 
   import { Row, Grid, Column } from './Layout';
@@ -19,8 +19,7 @@
   import TextArea from '$lib/components/Form/TextArea.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
+  import { UnsavedChanges } from '$lib/features/ui';
   import type { OrgLandingPageJson } from '$lib/utils/types/org';
 
   let isSaving = $state(false);
@@ -272,12 +271,9 @@
           />
         </div>
       {:else}
-        <PrimaryButton
-          variant={VARIANTS.OUTLINED}
-          label={$t('settings.landing_page.about.select_image')}
-          className="mt-3"
-          onClick={() => widgetControl('banner')}
-        />
+        <Button variant="outline" class="mt-3" onclick={() => widgetControl('banner')}>
+          {$t('settings.landing_page.about.select_image')}
+        </Button>
       {/if}
       {#if $landingPageSettings.header.banner.image && $landingPageSettings.header.banner.type === 'image'}
         <img alt="bannerImage" src={$landingPageSettings.header.banner.image} class="mt-2 w-full rounded-md" />
@@ -305,12 +301,9 @@
 
       <div class="mt-4">
         <p class="mb-4">{$t('settings.landing_page.background.title')}</p>
-        <PrimaryButton
-          variant={VARIANTS.OUTLINED}
-          label={$t('settings.landing_page.about.select_image')}
-          className="mt-3"
-          onClick={() => widgetControl('background')}
-        />
+        <Button variant="outline" class="mt-3" onclick={() => widgetControl('background')}>
+          {$t('settings.landing_page.about.select_image')}
+        </Button>
 
         {#if $landingPageSettings.header.background?.image}
           <img
@@ -396,12 +389,9 @@
 
       <div>
         <p class="font-bold">{$t('settings.landing_page.about.upload_an_image')}</p>
-        <PrimaryButton
-          variant={VARIANTS.OUTLINED}
-          label={$t('settings.landing_page.about.select_image')}
-          className="mt-3"
-          onClick={() => widgetControl('about-us')}
-        />
+        <Button variant="outline" class="mt-3" onclick={() => widgetControl('about-us')}>
+          {$t('settings.landing_page.about.select_image')}
+        </Button>
         {#if $landingPageSettings.aboutUs.imageUrl}
           <img alt="About us" src={$landingPageSettings.aboutUs.imageUrl} class="mt-2 w-full rounded-md" />
         {/if}
@@ -510,23 +500,17 @@
           isAIEnabled={true}
         />
         <div class="flex items-center gap-2">
-          <PrimaryButton
-            variant={VARIANTS.OUTLINED}
-            label={$t('settings.landing_page.faq.save')}
-            onClick={saveNewFAQ}
-          />
-          <PrimaryButton
-            variant={VARIANTS.OUTLINED}
-            label={$t('settings.landing_page.faq.cancel')}
-            onClick={cancelNewFAQ}
-          />
+          <Button variant="outline" onclick={saveNewFAQ}>
+            {$t('settings.landing_page.faq.save')}
+          </Button>
+          <Button variant="outline" onclick={cancelNewFAQ}>
+            {$t('settings.landing_page.faq.cancel')}
+          </Button>
         </div>
       {:else}
-        <PrimaryButton
-          variant={VARIANTS.OUTLINED}
-          label={$t('settings.landing_page.faq.button')}
-          onClick={createNewFaq}
-        />
+        <Button variant="outline" onclick={createNewFaq}>
+          {$t('settings.landing_page.faq.button')}
+        </Button>
       {/if}
     </Column>
   </Row>
@@ -703,28 +687,19 @@
               <span class="text-sm">{$t('settings.landing_page.custom_links.new_tab')}</span>
             </label>
             <div class="flex gap-2">
-              <PrimaryButton
-                variant={VARIANTS.OUTLINED}
-                label={$t('settings.landing_page.custom_links.save')}
-                onClick={saveNewCustomLink}
-                className="text-sm px-3 py-1"
-              />
-              <PrimaryButton
-                variant={VARIANTS.OUTLINED}
-                label={$t('settings.landing_page.custom_links.cancel')}
-                onClick={cancelNewCustomLink}
-                className="text-sm px-3 py-1"
-              />
+              <Button variant="outline" onclick={saveNewCustomLink}>
+                {$t('settings.landing_page.custom_links.save')}
+              </Button>
+              <Button variant="outline" onclick={cancelNewCustomLink}>
+                {$t('settings.landing_page.custom_links.cancel')}
+              </Button>
             </div>
           </div>
         </div>
       {:else}
-        <PrimaryButton
-          variant={VARIANTS.OUTLINED}
-          label={$t('settings.landing_page.custom_links.add')}
-          onClick={createNewCustomLink}
-          className="mt-2"
-        />
+        <Button variant="outline" onclick={createNewCustomLink} class="mt-2">
+          {$t('settings.landing_page.custom_links.add')}
+        </Button>
       {/if}
     </Column>
   </Row>
@@ -773,12 +748,9 @@
     </Column>
   </Row>
   <div class="desktop sticky bottom-12 z-[120] float-right mr-2">
-    <PrimaryButton
-      label={$t('settings.landing_page.save_changes')}
-      isLoading={isSaving}
-      isDisabled={isSaving}
-      onClick={handleSave}
-    />
+    <Button onclick={handleSave} loading={isSaving} disabled={isSaving}>
+      {$t('settings.landing_page.save_changes')}
+    </Button>
   </div>
 </Grid>
 

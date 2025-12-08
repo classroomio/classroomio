@@ -1,6 +1,5 @@
 <script lang="ts">
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import Modal from '$lib/components/Modal/index.svelte';
   import { deleteModal, quizesStore } from '$lib/utils/store/org';
   import { supabase } from '$lib/utils/functions/supabase';
@@ -49,11 +48,8 @@
     </h1>
 
     <div class="mt-5">
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.CONTAINED}
-        label={$t('components.quiz.delete')}
-        onClick={() => {
+      <Button
+        onclick={() => {
           if ($deleteModal.isQuestion) {
             onDelete();
             $deleteModal.open = false;
@@ -61,7 +57,9 @@
             deleteQuiz();
           }
         }}
-      />
+      >
+        {$t('components.quiz.delete')}
+      </Button>
     </div>
   </div>
 </Modal>

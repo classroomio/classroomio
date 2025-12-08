@@ -10,7 +10,7 @@
 
   import { IconButton } from '$lib/components/IconButton';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
 
   let genericLinks = $state('');
   let error = $state('');
@@ -65,11 +65,11 @@
     placeholder="https://www.videoplayer.com/"
     errorMessage={error}
   />
-  <PrimaryButton
-    label={$t('course.navItem.lessons.materials.tabs.video.add_video.add_video')}
-    className="rounded-md"
-    onClick={addVideo}
-  />
+  <Button
+    onclick={addVideo}
+  >
+    {$t('course.navItem.lessons.materials.tabs.video.add_video.add_video')}
+  </Button>
 </div>
 <p class="mt-4 pl-2 text-sm">
   {$t('course.navItem.lessons.materials.tabs.video.add_video.videos_added')}:

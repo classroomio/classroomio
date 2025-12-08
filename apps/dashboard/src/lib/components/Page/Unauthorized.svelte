@@ -1,7 +1,6 @@
 <script>
   import { goto } from '$app/navigation';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
 </script>
 
 <div
@@ -13,8 +12,12 @@
     The page you are trying to access does not exist
   </p>
 
-  <PrimaryButton label="Go Home" onClick={() => goto('https://www.classroomio.com')} />
-  <PrimaryButton label="Help" variant={VARIANTS.LINK} onClick={() => goto('https://help.classroomio.com/')} />
+  <Button onclick={() => goto('https://www.classroomio.com')}>
+    Go Home
+  </Button>
+  <Button variant="link" onclick={() => goto('https://help.classroomio.com/')}>
+    Help
+  </Button>
 </div>
 
 <style>
