@@ -1,6 +1,7 @@
 <script lang="ts">
   import ArrowUpIcon from '@lucide/svelte/icons/arrow-up';
-  import Chip from '../Chip/index.svelte';
+  import { Chip } from '@cio/ui/custom/chip';
+  import { Button } from '@cio/ui/base/button';
 
   interface Props {
     value?: number;
@@ -11,22 +12,7 @@
   let { value = 0, upVote = () => {}, disabled = false }: Props = $props();
 </script>
 
-<button
-  class="vote border-none {disabled ? 'cursor-not-allowed' : 'cursor-pointer'}"
-  onclick={disabled ? undefined : upVote}
->
+<Button onclick={disabled ? undefined : upVote} {disabled} variant="ghost" class="h-fit! flex-col">
   <ArrowUpIcon size={16} />
   <Chip {value} />
-</button>
-
-<style>
-  .vote {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 25px;
-    width: 25px;
-    justify-content: center;
-    margin-right: 10px;
-  }
-</style>
+</Button>
