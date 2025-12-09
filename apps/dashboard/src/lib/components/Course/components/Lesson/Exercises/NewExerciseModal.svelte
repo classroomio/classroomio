@@ -2,17 +2,19 @@
   import { onMount } from 'svelte';
   import { Badge } from '@cio/ui/base/badge';
 
+  import { t } from '$lib/utils/functions/translations';
+  import { exerciseApi } from '$lib/features/exercise/api';
+  import type { ExerciseTemplate } from '$lib/utils/types';
+  import { snackbar } from '$lib/components/Snackbar/store';
+  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import type { GetAllTemplatesMetadataSuccess } from '$lib/features/org/utils/types';
+
+  import { ComingSoon } from '$lib/features/ui';
   import Modal from '$lib/components/Modal/index.svelte';
   import Confetti from '$lib/components/Confetti/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
-  import { ComingSoon } from '$lib/features/ui';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
-
-  import { t } from '$lib/utils/functions/translations';
-  import type { ExerciseTemplate } from '$lib/utils/types';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { type GeneratedTemplates, getAllTemplates, TAGS } from '$lib/mocks';
 
   interface Props {
     open: boolean;
@@ -35,6 +37,19 @@
     TEMPLATE: 1,
     AI: 2
   } as const;
+
+  const TAGS = {
+    HTML: 'HTML',
+    CSS: 'CSS',
+    JS: 'JS',
+    Typescript: 'Typescript',
+    ReactJS: 'ReactJS',
+    VueJS: 'VueJS',
+    NodeJS: 'NodeJS',
+    Python: 'Python',
+    PHP: 'PHP',
+    GIT: 'GIT'
+  };
 
   const options = [
     {
@@ -66,7 +81,7 @@
   // let optionNumber = $state(5);
   let isLoading = $state(false);
   let isAIStarted = $state(false);
-  let allTemplates: GeneratedTemplates | undefined = $state();
+  let allTemplates: GetAllTemplatesMetadataSuccess['data'] | undefined = $state();
 
   let selectedTag = $state(tags[0]);
   let selectedTemplateId = $state('');
@@ -113,8 +128,30 @@
   // }
 
   onMount(async () => {
-    allTemplates = await getAllTemplates();
+    await exerciseApi.fetchTemplates();
+    allTemplates = exerciseApi.templates;
   });
+
+  async function handleTemplateSelection() {
+    isTemplateFinishedLoading = true;
+    const template = allTemplates?.[selectedTag]?.find((t) => t.id === selectedTemplateId);
+
+    if (!template) return;
+
+    let fetchedTemplate: ExerciseTemplate | undefined;
+
+    try {
+      await exerciseApi.fetchTemplateById(template.id);
+      fetchedTemplate = exerciseApi.template[0];
+      console.log('Fetched template', fetchedTemplate);
+      await handleTemplateCreate(fetchedTemplate);
+    } catch (error) {
+      console.log('Error fetching template', error);
+      snackbar.error($t('course.navItem.lessons.exercises.new_exercise_modal.errors.template_fetch'));
+    } finally {
+      isTemplateFinishedLoading = false;
+    }
+  }
 
   // const content = $derived(
   //   lessonFallbackNote(
@@ -269,18 +306,7 @@
               className="px-6 py-3"
               label={$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
               isLoading={isTemplateFinishedLoading}
-              onClick={async () => {
-                isTemplateFinishedLoading = true;
-                const template = allTemplates?.[selectedTag]?.find((t) => t.id === selectedTemplateId);
-
-                if (!template) return;
-
-                console.log('Selected template', template);
-
-                await handleTemplateCreate(template.data);
-
-                isTemplateFinishedLoading = true;
-              }}
+              onClick={handleTemplateSelection}
             />
           </div>
         </div>

@@ -44,3 +44,15 @@ export type InviteTeamData = InviteTeamSuccess['data'];
 
 export type DeleteTeamResponse = (typeof classroomio.organization)[':orgId']['team'][':memberId']['$delete'];
 export type DeleteTeamSuccess = Extract<InferResponseType<DeleteTeamResponse>, { success: true }>;
+
+// mock data types
+export type GetAllTemplatesMetadataResponse = typeof classroomio.mocks.$get;
+export type getAllTemplatesMetadataResponse = InferResponseType<GetAllTemplatesMetadataResponse> | null;
+export type GetAllTemplatesMetadataSuccess = Extract<
+  InferResponseType<GetAllTemplatesMetadataResponse>,
+  { success: true }
+>;
+
+export type GetTemplateByIdResponse = (typeof classroomio.mocks)[':id']['$get'];
+export type GetTemplateByIdSuccess = Extract<InferResponseType<GetTemplateByIdResponse>, { success: true }>;
+export type GetTemplateByIdData = GetTemplateByIdSuccess['data'];
