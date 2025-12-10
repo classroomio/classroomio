@@ -4,6 +4,8 @@ export interface CustomQuestionType {
 }
 
 export interface ExerciseTemplate {
+  id?: string;
+  tag: string;
   title: string;
   description: string;
   questionnaire: {

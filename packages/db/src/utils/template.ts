@@ -10,7 +10,8 @@ export async function seedTemplates() {
     .map((t: any) => ({
       title: t.title,
       description: t.description,
-      questionnaire: t.questionnaire
+      questionnaire: t.questionnaire,
+      tag: t.tag
     }));
 
   if (templatesToInsert.length > 0) {

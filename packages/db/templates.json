@@ -193,7 +193,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "CSS"
   },
   {
     "title": "CSS Selectors Quiz",
@@ -389,7 +390,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "CSS"
   },
   {
     "title": "CSS How-To Quiz",
@@ -585,7 +587,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "CSS"
   },
   {
     "title": "CSS Comments Quiz",
@@ -786,7 +789,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "CSS"
   },
   {
     "title": "CSS Colors Quiz",
@@ -1008,7 +1012,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "CSS"
   },
   {
     "title": "CSS Background Quiz",
@@ -1230,7 +1235,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "CSS"
   },
   {
     "title": "CSS Border Quiz",
@@ -1452,7 +1458,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "CSS"
   },
   {
     "title": "CSS Margin Quiz",
@@ -1674,7 +1681,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "CSS"
   },
   {
     "title": "CSS Padding Quiz",
@@ -1932,7 +1940,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "CSS"
   },
   {
     "title": "CSS Dimension Quiz",
@@ -2186,7 +2195,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "CSS"
   },
   {
     "title": "CSS Box Model Quiz",
@@ -2440,7 +2450,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "CSS"
   },
   {
     "title": "CSS Outline Quiz",
@@ -2686,7 +2697,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "CSS"
   },
   {
     "title": "CSS Text Properties Quiz",
@@ -2949,7 +2961,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "CSS"
   },
   {
     "title": "CSS Font Properties Quiz",
@@ -3220,7 +3233,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "CSS"
   },
   {
     "title": "CSS Icons Quiz",
@@ -3491,7 +3505,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "CSS"
   },
   {
     "title": "CSS Link Quiz",
@@ -3762,7 +3777,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "CSS"
   },
   {
     "title": "CSS List Quiz",
@@ -4033,7 +4049,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "CSS"
   },
   {
     "title": "CSS Table Quiz",
@@ -4304,7 +4321,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "CSS"
   },
   {
     "title": "CSS Display and Visibility Quiz",
@@ -4541,7 +4559,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "CSS"
   },
   {
     "title": "CSS Max-Width Quiz",
@@ -4744,7 +4763,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "CSS"
   },
   {
     "title": "Git New Files Quiz",
@@ -4965,7 +4985,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "GIT"
   },
   {
     "title": "Git Staging Environment Quiz",
@@ -5186,7 +5207,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "GIT"
   },
   {
     "title": "Git Commit Quiz",
@@ -5407,7 +5429,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "GIT"
   },
   {
     "title": "Git Amend Quiz",
@@ -5628,7 +5651,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "GIT"
   },
   {
     "title": "Git Branch Quiz",
@@ -5849,7 +5873,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "GIT"
   },
   {
     "title": "Git Branch and Merge Quiz",
@@ -6070,7 +6095,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "GIT"
   },
   {
     "title": "Git Pull from Remote Quiz",
@@ -6291,7 +6317,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "GIT"
   },
   {
     "title": "Git Push to Remote Quiz",
@@ -6512,7 +6539,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "GIT"
   },
   {
     "title": "Git Remote Branch Quiz",
@@ -6733,7 +6761,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "GIT"
   },
   {
     "title": "Git Branch Pull from Remote Quiz",
@@ -6954,7 +6983,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "GIT"
   },
   {
     "title": "Git Branch Push to Remote Quiz",
@@ -7189,7 +7219,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "GIT"
   },
   {
     "title": "Git/GitHub Flow Quiz",
@@ -7411,7 +7442,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "GIT"
   },
   {
     "title": "GitHub Pages Quiz",
@@ -7633,7 +7665,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "GIT"
   },
   {
     "title": "Git Remote and Forking Quiz",
@@ -7855,7 +7888,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "GIT"
   },
   {
     "title": "Git Clone Quiz",
@@ -8077,7 +8111,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "GIT"
   },
   {
     "title": "Git Remote Pull Request Quiz",
@@ -8303,7 +8338,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "GIT"
   },
   {
     "title": "Git Ignore Quiz",
@@ -8525,7 +8561,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "GIT"
   },
   {
     "title": "Git Security and SSH Quiz",
@@ -8734,7 +8771,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "GIT"
   },
   {
     "title": "Git Revert Quiz",
@@ -8943,7 +8981,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "GIT"
   },
   {
     "title": "Git Reset Quiz",
@@ -9126,7 +9165,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "GIT"
   },
   {
     "title": "HTML Elements Quiz",
@@ -9335,7 +9375,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "HTML"
   },
   {
     "title": "HTML Attributes Quiz",
@@ -9535,7 +9576,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "HTML"
   },
   {
     "title": "HTML Headings Quiz",
@@ -9727,7 +9769,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "HTML"
   },
   {
     "title": "HTML Paragraphs Quiz",
@@ -9927,7 +9970,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "HTML"
   },
   {
     "title": "HTML Styles Quiz",
@@ -10131,7 +10175,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "HTML"
   },
   {
     "title": "HTML Formatting Quiz",
@@ -10379,7 +10424,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "HTML"
   },
   {
     "title": "HTML Quotation Elements Quiz",
@@ -10627,7 +10673,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "HTML"
   },
   {
     "title": "HTML Comments Quiz",
@@ -10871,7 +10918,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "HTML"
   },
   {
     "title": "HTML Colors Quiz",
@@ -11119,7 +11167,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "HTML"
   },
   {
     "title": "HTML CSS Quiz",
@@ -11353,7 +11402,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "HTML"
   },
   {
     "title": "HTML Links Quiz",
@@ -11601,7 +11651,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "HTML"
   },
   {
     "title": "HTML Images Quiz",
@@ -11849,7 +11900,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "HTML"
   },
   {
     "title": "HTML Favicon Quiz",
@@ -12097,7 +12149,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "HTML"
   },
   {
     "title": "HTML Page Title Quiz",
@@ -12349,7 +12402,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "HTML"
   },
   {
     "title": "HTML Tables Quiz",
@@ -12609,7 +12663,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "HTML"
   },
   {
     "title": "HTML Lists Quiz",
@@ -12844,7 +12899,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "HTML"
   },
   {
     "title": "HTML Blocks Quiz",
@@ -13053,7 +13109,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "HTML"
   },
   {
     "title": "HTML Classes Quiz",
@@ -13223,7 +13280,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "HTML"
   },
   {
     "title": "HTML ID Quiz",
@@ -13376,7 +13434,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "HTML"
   },
   {
     "title": "HTML Iframes Quiz",
@@ -13581,7 +13640,209 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "HTML"
+  },
+  {
+    "title": "HTML Paragraphs Quiz",
+    "description": "Test your knowledge of HTML paragraphs",
+    "questionnaire": {
+      "questions": [
+        {
+          "title": "What HTML tag is used to define a paragraph?",
+          "name": "q1",
+          "points": 1,
+          "order": 0,
+          "question_type": {
+            "id": 1,
+            "label": "RADIO"
+          },
+          "options": [
+            {
+              "label": "<p>",
+              "is_correct": true
+            },
+            {
+              "label": "<para>",
+              "is_correct": false
+            },
+            {
+              "label": "<text>",
+              "is_correct": false
+            }
+          ]
+        },
+        {
+          "title": "How can you create a line break in HTML?",
+          "name": "q2",
+          "points": 1,
+          "order": 1,
+          "question_type": {
+            "id": 1,
+            "label": "RADIO"
+          },
+          "options": [
+            {
+              "label": "<br>",
+              "is_correct": true
+            },
+            {
+              "label": "<lb>",
+              "is_correct": false
+            },
+            {
+              "label": "<linebreak>",
+              "is_correct": false
+            }
+          ]
+        },
+        {
+          "title": "What is the purpose of the ''align'' attribute in the ''p'' tag?",
+          "name": "q3",
+          "points": 1,
+          "order": 2,
+          "question_type": {
+            "id": 1,
+            "label": "RADIO"
+          },
+          "options": [
+            {
+              "label": "To specify the font size",
+              "is_correct": false
+            },
+            {
+              "label": "To specify the text alignment",
+              "is_correct": true
+            },
+            {
+              "label": "To add a border around the paragraph",
+              "is_correct": false
+            }
+          ]
+        },
+        {
+          "title": "Which HTML tag is used to create a preformatted text?",
+          "name": "q4",
+          "points": 1,
+          "order": 3,
+          "question_type": {
+            "id": 1,
+            "label": "RADIO"
+          },
+          "options": [
+            {
+              "label": "<pre>",
+              "is_correct": true
+            },
+            {
+              "label": "<text>",
+              "is_correct": false
+            },
+            {
+              "label": "<code>",
+              "is_correct": false
+            }
+          ]
+        },
+        {
+          "title": "How can you emphasize text in HTML?",
+          "name": "q5",
+          "points": 1,
+          "order": 4,
+          "question_type": {
+            "id": 2,
+            "label": "CHECKBOX"
+          },
+          "options": [
+            {
+              "label": "<strong>",
+              "is_correct": true
+            },
+            {
+              "label": "<em>",
+              "is_correct": true
+            },
+            {
+              "label": "<b>",
+              "is_correct": false
+            },
+            {
+              "label": "<i>",
+              "is_correct": false
+            }
+          ]
+        },
+        {
+          "title": "What is the purpose of the ''blockquote'' element in HTML?",
+          "name": "q6",
+          "points": 2,
+          "order": 5,
+          "question_type": {
+            "id": 2,
+            "label": "CHECKBOX"
+          },
+          "options": [
+            {
+              "label": "To create a quotation",
+              "is_correct": true
+            },
+            {
+              "label": "To add a background color",
+              "is_correct": false
+            },
+            {
+              "label": "To insert an image",
+              "is_correct": false
+            }
+          ]
+        },
+        {
+          "title": "Explain the use of the ''q'' element in HTML.",
+          "name": "q7",
+          "points": 2,
+          "order": 6,
+          "question_type": {
+            "id": 3,
+            "label": "TEXTAREA"
+          },
+          "options": []
+        },
+        {
+          "title": "How can you create a subscript text in HTML?",
+          "name": "q8",
+          "points": 2,
+          "order": 7,
+          "question_type": {
+            "id": 3,
+            "label": "TEXTAREA"
+          },
+          "options": []
+        },
+        {
+          "title": "What does the ''cite'' attribute in the ''blockquote'' element specify?",
+          "name": "q9",
+          "points": 1,
+          "order": 8,
+          "question_type": {
+            "id": 3,
+            "label": "TEXTAREA"
+          },
+          "options": []
+        },
+        {
+          "title": "How can you create a superscript text in HTML?",
+          "name": "q10",
+          "points": 2,
+          "order": 9,
+          "question_type": {
+            "id": 3,
+            "label": "TEXTAREA"
+          },
+          "options": []
+        }
+      ]
+    },
+    "tag": "HTML"
   },
   {
     "title": "JavaScript Statements Quiz",
@@ -13833,7 +14094,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "JS"
   },
   {
     "title": "JavaScript Syntax Quiz",
@@ -14081,7 +14343,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "JS"
   },
   {
     "title": "JavaScript Comments Quiz",
@@ -14325,207 +14588,8 @@
           ]
         }
       ]
-    }
-  },
-  {
-    "title": "HTML Paragraphs Quiz",
-    "description": "Test your knowledge of HTML paragraphs",
-    "questionnaire": {
-      "questions": [
-        {
-          "title": "What HTML tag is used to define a paragraph?",
-          "name": "q1",
-          "points": 1,
-          "order": 0,
-          "question_type": {
-            "id": 1,
-            "label": "RADIO"
-          },
-          "options": [
-            {
-              "label": "<p>",
-              "is_correct": true
-            },
-            {
-              "label": "<para>",
-              "is_correct": false
-            },
-            {
-              "label": "<text>",
-              "is_correct": false
-            }
-          ]
-        },
-        {
-          "title": "How can you create a line break in HTML?",
-          "name": "q2",
-          "points": 1,
-          "order": 1,
-          "question_type": {
-            "id": 1,
-            "label": "RADIO"
-          },
-          "options": [
-            {
-              "label": "<br>",
-              "is_correct": true
-            },
-            {
-              "label": "<lb>",
-              "is_correct": false
-            },
-            {
-              "label": "<linebreak>",
-              "is_correct": false
-            }
-          ]
-        },
-        {
-          "title": "What is the purpose of the ''align'' attribute in the ''p'' tag?",
-          "name": "q3",
-          "points": 1,
-          "order": 2,
-          "question_type": {
-            "id": 1,
-            "label": "RADIO"
-          },
-          "options": [
-            {
-              "label": "To specify the font size",
-              "is_correct": false
-            },
-            {
-              "label": "To specify the text alignment",
-              "is_correct": true
-            },
-            {
-              "label": "To add a border around the paragraph",
-              "is_correct": false
-            }
-          ]
-        },
-        {
-          "title": "Which HTML tag is used to create a preformatted text?",
-          "name": "q4",
-          "points": 1,
-          "order": 3,
-          "question_type": {
-            "id": 1,
-            "label": "RADIO"
-          },
-          "options": [
-            {
-              "label": "<pre>",
-              "is_correct": true
-            },
-            {
-              "label": "<text>",
-              "is_correct": false
-            },
-            {
-              "label": "<code>",
-              "is_correct": false
-            }
-          ]
-        },
-        {
-          "title": "How can you emphasize text in HTML?",
-          "name": "q5",
-          "points": 1,
-          "order": 4,
-          "question_type": {
-            "id": 2,
-            "label": "CHECKBOX"
-          },
-          "options": [
-            {
-              "label": "<strong>",
-              "is_correct": true
-            },
-            {
-              "label": "<em>",
-              "is_correct": true
-            },
-            {
-              "label": "<b>",
-              "is_correct": false
-            },
-            {
-              "label": "<i>",
-              "is_correct": false
-            }
-          ]
-        },
-        {
-          "title": "What is the purpose of the ''blockquote'' element in HTML?",
-          "name": "q6",
-          "points": 2,
-          "order": 5,
-          "question_type": {
-            "id": 2,
-            "label": "CHECKBOX"
-          },
-          "options": [
-            {
-              "label": "To create a quotation",
-              "is_correct": true
-            },
-            {
-              "label": "To add a background color",
-              "is_correct": false
-            },
-            {
-              "label": "To insert an image",
-              "is_correct": false
-            }
-          ]
-        },
-        {
-          "title": "Explain the use of the ''q'' element in HTML.",
-          "name": "q7",
-          "points": 2,
-          "order": 6,
-          "question_type": {
-            "id": 3,
-            "label": "TEXTAREA"
-          },
-          "options": []
-        },
-        {
-          "title": "How can you create a subscript text in HTML?",
-          "name": "q8",
-          "points": 2,
-          "order": 7,
-          "question_type": {
-            "id": 3,
-            "label": "TEXTAREA"
-          },
-          "options": []
-        },
-        {
-          "title": "What does the ''cite'' attribute in the ''blockquote'' element specify?",
-          "name": "q9",
-          "points": 1,
-          "order": 8,
-          "question_type": {
-            "id": 3,
-            "label": "TEXTAREA"
-          },
-          "options": []
-        },
-        {
-          "title": "How can you create a superscript text in HTML?",
-          "name": "q10",
-          "points": 2,
-          "order": 9,
-          "question_type": {
-            "id": 3,
-            "label": "TEXTAREA"
-          },
-          "options": []
-        }
-      ]
-    }
+    },
+    "tag": "JS"
   },
   {
     "title": "JavaScript \"let\" Quiz",
@@ -14765,7 +14829,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "JS"
   },
   {
     "title": "JavaScript \"const\" Quiz",
@@ -15009,7 +15074,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "JS"
   },
   {
     "title": "JavaScript Operators Quiz",
@@ -15245,7 +15311,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "JS"
   },
   {
     "title": "JavaScript Arithmetic Operators Quiz",
@@ -15481,7 +15548,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "JS"
   },
   {
     "title": "JavaScript Assignment Operators Quiz",
@@ -15729,7 +15797,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "JS"
   },
   {
     "title": "JavaScript Data Types Quiz",
@@ -15977,7 +16046,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "JS"
   },
   {
     "title": "JavaScript Functions Quiz",
@@ -16229,7 +16299,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "JS"
   },
   {
     "title": "JavaScript Objects Quiz",
@@ -16477,7 +16548,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "JS"
   },
   {
     "title": "JavaScript Events Quiz",
@@ -16725,7 +16797,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "JS"
   },
   {
     "title": "JavaScript Strings Quiz",
@@ -16973,7 +17046,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "JS"
   },
   {
     "title": "JavaScript String Methods Quiz",
@@ -17221,7 +17295,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "JS"
   },
   {
     "title": "JavaScript String Search Quiz",
@@ -17469,7 +17544,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "JS"
   },
   {
     "title": "JavaScript String Templates Quiz",
@@ -17717,7 +17793,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "JS"
   },
   {
     "title": "JavaScript Numbers Quiz",
@@ -17965,7 +18042,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "JS"
   },
   {
     "title": "JavaScript BigInt Quiz",
@@ -18221,7 +18299,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "JS"
   },
   {
     "title": "JavaScript Number Methods Quiz",
@@ -18465,7 +18544,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "JS"
   },
   {
     "title": "Node.js Modules Quiz",
@@ -18695,7 +18775,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "NodeJS"
   },
   {
     "title": "Node.js HTTP Quiz",
@@ -18908,7 +18989,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "NodeJS"
   },
   {
     "title": "Node.js File System Quiz",
@@ -19125,7 +19207,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "NodeJS"
   },
   {
     "title": "Node.js URL Handling Quiz",
@@ -19351,7 +19434,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "NodeJS"
   },
   {
     "title": "Node.js NPM Quiz",
@@ -19586,7 +19670,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "NodeJS"
   },
   {
     "title": "Node.js Events Quiz",
@@ -19821,7 +19906,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "NodeJS"
   },
   {
     "title": "Node.js File Upload Quiz",
@@ -20056,7 +20142,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "NodeJS"
   },
   {
     "title": "Node.js Email Handling Quiz",
@@ -20291,7 +20378,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "NodeJS"
   },
   {
     "title": "Node.js MySQL Database Creation Quiz",
@@ -20526,7 +20614,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "NodeJS"
   },
   {
     "title": "Node.js MySQL Table Creation Quiz",
@@ -20761,7 +20850,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "NodeJS"
   },
   {
     "title": "Node.js MySQL Data Insertion Quiz",
@@ -20996,7 +21086,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "NodeJS"
   },
   {
     "title": "Node.js MySQL Data Selection Quiz",
@@ -21231,7 +21322,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "NodeJS"
   },
   {
     "title": "Node.js MySQL WHERE Clause Quiz",
@@ -21466,7 +21558,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "NodeJS"
   },
   {
     "title": "Node.js MySQL ORDER BY Clause Quiz",
@@ -21701,7 +21794,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "NodeJS"
   },
   {
     "title": "Node.js MySQL DELETE Statement Quiz",
@@ -21923,7 +22017,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "NodeJS"
   },
   {
     "title": "Node.js MySQL DROP TABLE Quiz",
@@ -22141,7 +22236,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "NodeJS"
   },
   {
     "title": "Node.js MySQL UPDATE Quiz",
@@ -22346,7 +22442,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "NodeJS"
   },
   {
     "title": "Node.js MySQL LIMIT Quiz",
@@ -22551,7 +22648,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "NodeJS"
   },
   {
     "title": "Node.js MySQL JOIN Quiz",
@@ -22776,7 +22874,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "NodeJS"
   },
   {
     "title": "Node.js MongoDB Database Creation Quiz",
@@ -23001,7 +23100,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "NodeJS"
   },
   {
     "title": "PHP Syntax Quiz",
@@ -23243,7 +23343,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "PHP"
   },
   {
     "title": "PHP Comments Quiz",
@@ -23481,7 +23582,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "PHP"
   },
   {
     "title": "PHP Variables Quiz",
@@ -23715,7 +23817,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "PHP"
   },
   {
     "title": "PHP Echo and Print Quiz",
@@ -23923,7 +24026,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "PHP"
   },
   {
     "title": "PHP Data Types Quiz",
@@ -24173,7 +24277,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "PHP"
   },
   {
     "title": "PHP Strings Quiz",
@@ -24461,7 +24566,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "PHP"
   },
   {
     "title": "PHP Numbers Quiz",
@@ -24737,7 +24843,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "PHP"
   },
   {
     "title": "PHP Math Quiz",
@@ -25013,7 +25120,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "PHP"
   },
   {
     "title": "PHP Constants Quiz",
@@ -25289,7 +25397,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "PHP"
   },
   {
     "title": "PHP Operators Quiz",
@@ -25577,7 +25686,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "PHP"
   },
   {
     "title": "PHP If-Else Statements Quiz",
@@ -25865,7 +25975,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "PHP"
   },
   {
     "title": "PHP Switch Statements Quiz",
@@ -26153,7 +26264,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "PHP"
   },
   {
     "title": "PHP Looping Quiz",
@@ -26441,7 +26553,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "PHP"
   },
   {
     "title": "PHP Functions Quiz",
@@ -26729,7 +26842,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "PHP"
   },
   {
     "title": "PHP Arrays Quiz",
@@ -27017,7 +27131,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "PHP"
   },
   {
     "title": "PHP Superglobals Quiz",
@@ -27305,7 +27420,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "PHP"
   },
   {
     "title": "PHP Regular Expressions Quiz",
@@ -27593,7 +27709,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "PHP"
   },
   {
     "title": "PHP Forms Quiz",
@@ -27881,7 +27998,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "PHP"
   },
   {
     "title": "PHP Form Validation Quiz",
@@ -28054,7 +28172,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "PHP"
   },
   {
     "title": "PHP Form Required Quiz",
@@ -28227,7 +28346,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "PHP"
   },
   {
     "title": "Python Syntax Quiz",
@@ -28453,7 +28573,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Python"
   },
   {
     "title": "Python Comments Quiz",
@@ -28675,7 +28796,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Python"
   },
   {
     "title": "Python Variables Quiz",
@@ -28905,7 +29027,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Python"
   },
   {
     "title": "Python Data Types Quiz",
@@ -29135,7 +29258,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Python"
   },
   {
     "title": "Python Numbers Quiz",
@@ -29365,7 +29489,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Python"
   },
   {
     "title": "Python Casting Quiz",
@@ -29587,7 +29712,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Python"
   },
   {
     "title": "Python Strings Quiz",
@@ -29817,7 +29943,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Python"
   },
   {
     "title": "Python Booleans Quiz",
@@ -30031,7 +30158,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Python"
   },
   {
     "title": "Python Operators Quiz",
@@ -30240,7 +30368,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "Python"
   },
   {
     "title": "Python Lists Quiz",
@@ -30453,7 +30582,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "Python"
   },
   {
     "title": "Python Tuples Quiz",
@@ -30662,7 +30792,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "Python"
   },
   {
     "title": "Python Sets Quiz",
@@ -30871,7 +31002,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "Python"
   },
   {
     "title": "Python Dictionaries Quiz",
@@ -31080,7 +31212,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "Python"
   },
   {
     "title": "Python Conditions Quiz",
@@ -31289,7 +31422,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "Python"
   },
   {
     "title": "Python While Loops Quiz",
@@ -31498,7 +31632,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "Python"
   },
   {
     "title": "Python For Loops Quiz",
@@ -31707,7 +31842,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "Python"
   },
   {
     "title": "Python Functions Quiz",
@@ -31916,7 +32052,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "Python"
   },
   {
     "title": "Python Lambda Functions Quiz",
@@ -32121,7 +32258,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "Python"
   },
   {
     "title": "Python Arrays Quiz",
@@ -32330,7 +32468,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "Python"
   },
   {
     "title": "Python Classes Quiz",
@@ -32539,7 +32678,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "Python"
   },
   {
     "title": "React ES6 Classes Quiz",
@@ -32739,7 +32879,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React ES6 Arrow Functions Quiz",
@@ -32939,7 +33080,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React ES6 Variables Quiz",
@@ -33143,7 +33285,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React ES6 Array Methods Quiz",
@@ -33343,7 +33486,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React ES6 Destructuring Quiz",
@@ -33530,7 +33674,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React ES6 Spread Operator Quiz",
@@ -33717,7 +33862,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React ES6 Modules Quiz",
@@ -33904,7 +34050,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React ES6 Ternary Operator Quiz",
@@ -34091,7 +34238,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React JSX Quiz",
@@ -34278,7 +34426,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React Components Quiz",
@@ -34465,7 +34614,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React Class Components Quiz",
@@ -34652,7 +34802,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React Props Quiz",
@@ -34839,7 +34990,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React Events Quiz",
@@ -35013,7 +35165,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React Conditional Rendering Practical Quiz",
@@ -35209,7 +35362,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React Lists and Keys Quiz",
@@ -35396,7 +35550,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React Forms Quiz",
@@ -35583,7 +35738,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React Router Quiz",
@@ -35770,7 +35926,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React Memo and useMemo Quiz",
@@ -35970,7 +36127,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React CSS Styling Quiz",
@@ -36183,7 +36341,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React Sass Styling Quiz",
@@ -36396,7 +36555,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React Component Import and Export Practical Quiz",
@@ -36631,7 +36791,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "Quiz on Extracting State Logic into a Reducer",
@@ -36861,7 +37022,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React State Sharing Practical Quiz",
@@ -37057,7 +37219,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React Updating Objects in State Practical Quiz",
@@ -37253,7 +37416,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React Updating Arrays in State Practical Quiz",
@@ -37449,7 +37613,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React useState Hook Quiz",
@@ -37697,7 +37862,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React useContext Hook Quiz",
@@ -37945,7 +38111,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React useEffect Hook Quiz",
@@ -38193,7 +38360,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React useReducer Hook Quiz",
@@ -38441,7 +38609,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React useRef Hook Quiz",
@@ -38689,7 +38858,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React useCallback Hook Quiz",
@@ -38945,7 +39115,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React Custom Hooks Quiz",
@@ -39201,7 +39372,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "React useMemo Hook Quiz",
@@ -39457,7 +39629,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "ReactJS"
   },
   {
     "title": "TypeScript Simple Types Quiz",
@@ -39709,7 +39882,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Typescript"
   },
   {
     "title": "TypeScript Special Types Quiz",
@@ -40037,7 +40211,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Typescript"
   },
   {
     "title": "TypeScript Arrays Quiz",
@@ -40365,7 +40540,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Typescript"
   },
   {
     "title": "TypeScript Tuples Quiz",
@@ -40653,7 +40829,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Typescript"
   },
   {
     "title": "TypeScript Object Types Quiz",
@@ -40941,7 +41118,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Typescript"
   },
   {
     "title": "TypeScript Enums Quiz",
@@ -41229,7 +41407,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Typescript"
   },
   {
     "title": "TypeScript Aliases and Interfaces Quiz",
@@ -41517,7 +41696,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Typescript"
   },
   {
     "title": "TypeScript Union Types Quiz",
@@ -41805,7 +41985,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Typescript"
   },
   {
     "title": "TypeScript Functions Quiz",
@@ -42076,7 +42257,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "Typescript"
   },
   {
     "title": "TypeScript Quiz",
@@ -42319,7 +42501,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Typescript"
   },
   {
     "title": "TypeScript Classes Quiz",
@@ -42563,7 +42746,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Typescript"
   },
   {
     "title": "TypeScript Generics Quiz",
@@ -42807,7 +42991,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Typescript"
   },
   {
     "title": "TypeScript Utility Types Quiz",
@@ -43067,7 +43252,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Typescript"
   },
   {
     "title": "TypeScript keyof Quiz",
@@ -43307,7 +43493,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Typescript"
   },
   {
     "title": "TypeScript Null and Undefined Quiz",
@@ -43555,7 +43742,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Typescript"
   },
   {
     "title": "TypeScript Definitely Typed Quiz",
@@ -43803,7 +43991,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "Typescript"
   },
   {
     "title": "Vue.js Directives Quiz",
@@ -43999,7 +44188,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "VueJS"
   },
   {
     "title": "Vue.js v-bind Quiz",
@@ -44156,7 +44346,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "VueJS"
   },
   {
     "title": "Vue.js v-if Quiz",
@@ -44313,7 +44504,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "VueJS"
   },
   {
     "title": "Vue.js v-show Quiz",
@@ -44470,7 +44662,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "VueJS"
   },
   {
     "title": "Vue.js v-for Quiz",
@@ -44627,7 +44820,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "VueJS"
   },
   {
     "title": "Vue.js Events Quiz",
@@ -44771,7 +44965,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "VueJS"
   },
   {
     "title": "Vue.js v-on Directives Quiz",
@@ -44915,7 +45110,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "VueJS"
   },
   {
     "title": "Vue.js Methods Quiz",
@@ -45059,7 +45255,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "VueJS"
   },
   {
     "title": "Vue.js Event Modifiers Quiz",
@@ -45203,7 +45400,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "VueJS"
   },
   {
     "title": "Vue.js Forms Quiz",
@@ -45399,7 +45597,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "VueJS"
   },
   {
     "title": "Vue.js v-model Quiz",
@@ -45625,7 +45824,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "VueJS"
   },
   {
     "title": "Vue.js CSS Binding Quiz",
@@ -45847,7 +46047,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "VueJS"
   },
   {
     "title": "Vue.js Computed Properties Quiz",
@@ -46043,7 +46244,8 @@
           "options": []
         }
       ]
-    }
+    },
+    "tag": "VueJS"
   },
   {
     "title": "Vue.js Watchers Quiz",
@@ -46252,7 +46454,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "VueJS"
   },
   {
     "title": "Vue.js Templates Quiz",
@@ -46449,7 +46652,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "VueJS"
   },
   {
     "title": "Vue.js Components Quiz",
@@ -46646,7 +46850,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "VueJS"
   },
   {
     "title": "Vue.js Props Quiz",
@@ -46843,7 +47048,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "VueJS"
   },
   {
     "title": "Practical Vue.js v-for Quiz",
@@ -47040,7 +47246,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "VueJS"
   },
   {
     "title": "Practical Vue.js Emitting Events Quiz",
@@ -47237,7 +47444,8 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "VueJS"
   },
   {
     "title": "Practical Vue.js Emitting Events Quiz",
@@ -47434,6 +47642,7 @@
           ]
         }
       ]
-    }
+    },
+    "tag": "VueJS"
   }
 ]

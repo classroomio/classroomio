@@ -10,19 +10,6 @@ class TemplateApi extends BaseApi {
   template = $state<GetTemplateByIdSuccess['data']>([]);
 
   /**
-   * Fetches all exercise templates metadata
-   */
-  async fetchTemplates() {
-    await this.execute<typeof classroomio.template.$get>({
-      requestFn: () => classroomio.template.$get(),
-      logContext: 'fetching exercise templates',
-      onSuccess: (response) => {
-        this.templates = response.data;
-      }
-    });
-  }
-
-  /**
    * Fetches an exercise template metadata
    */
   async fetchTemplateById(id: string) {
@@ -31,6 +18,19 @@ class TemplateApi extends BaseApi {
       logContext: 'fetching exercise template by id',
       onSuccess: (response) => {
         this.template = response.data;
+      }
+    });
+  }
+
+  /**
+   * Fetches an exercise template metadata
+   */
+  async fetchTemplateByTag(tag: string) {
+    await this.execute<(typeof classroomio.template)[':id']['$get']>({
+      requestFn: () => classroomio.template.tag[':tag'].$get({ param: { tag } }),
+      logContext: 'fetching exercise template by tag',
+      onSuccess: (response) => {
+        this.templates = response.data;
       }
     });
   }

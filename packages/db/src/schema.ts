@@ -1324,5 +1324,6 @@ export const template = pgTable('template', {
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
   title: text(),
   description: text(),
+  tag: text(),
   questionnaire: jsonb().default([])
 });

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { Badge } from '@cio/ui/base/badge';
+  import { Spinner } from '@cio/ui/base/spinner';
 
   import { t } from '$lib/utils/functions/translations';
   import { templateApi } from '$lib/features/template/api';
@@ -127,11 +127,6 @@
   //   }, 500);
   // }
 
-  onMount(async () => {
-    await templateApi.fetchTemplates();
-    allTemplates = templateApi.templates;
-  });
-
   async function handleTemplateSelection() {
     isTemplateFinishedLoading = true;
     const template = allTemplates?.[selectedTag]?.find((t) => t.id === selectedTemplateId);
@@ -161,6 +156,14 @@
   //   )
   // );
   // const note = $derived(browser ? getTextFromHTML(content) : '');
+
+  $effect(() => {
+    if (!selectedTag) return;
+    (async () => {
+      await templateApi.fetchTemplateByTag(selectedTag);
+      allTemplates = templateApi.templates;
+    })();
+  });
 </script>
 
 <Modal
@@ -263,11 +266,15 @@
             {/each}
           </div>
 
-          <div class="flex flex-wrap items-start gap-2">
-            {#if allTemplates}
-              {#each allTemplates[selectedTag] as template}
+          <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
+            {#if templateApi.isLoading}
+              <div class="flex w-full items-center justify-center py-10">
+                <Spinner class="text-white" />
+              </div>
+            {:else if allTemplates}
+              {#each allTemplates as template}
                 <button
-                  class="h-[140px] w-[161px] rounded-md border-2 p-5 hover:scale-95 dark:bg-neutral-700 {template.id ===
+                  class="h-[140px] w-full rounded-md border-2 p-5 hover:scale-95 dark:bg-neutral-700 {template.id ===
                   selectedTemplateId
                     ? 'border-primary-400'
                     : `border-gray-200 dark:border-neutral-600 `} flex flex-col transition-all ease-in-out"
