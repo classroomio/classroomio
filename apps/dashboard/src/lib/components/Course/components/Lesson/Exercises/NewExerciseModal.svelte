@@ -3,7 +3,7 @@
   import { Badge } from '@cio/ui/base/badge';
 
   import { t } from '$lib/utils/functions/translations';
-  import { exerciseApi } from '$lib/features/exercise/api';
+  import { templateApi } from '$lib/features/template/api';
   import type { ExerciseTemplate } from '$lib/utils/types';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
@@ -128,8 +128,8 @@
   // }
 
   onMount(async () => {
-    await exerciseApi.fetchTemplates();
-    allTemplates = exerciseApi.templates;
+    await templateApi.fetchTemplates();
+    allTemplates = templateApi.templates;
   });
 
   async function handleTemplateSelection() {
@@ -138,11 +138,11 @@
 
     if (!template) return;
 
-    let fetchedTemplate: ExerciseTemplate | undefined;
+    let fetchedTemplate: ExerciseTemplate;
 
     try {
-      await exerciseApi.fetchTemplateById(template.id);
-      fetchedTemplate = exerciseApi.template[0];
+      await templateApi.fetchTemplateById(template.id);
+      fetchedTemplate = templateApi.template[0];
       console.log('Fetched template', fetchedTemplate);
       await handleTemplateCreate(fetchedTemplate);
     } catch (error) {
@@ -182,7 +182,7 @@
       <div class="my-8 flex justify-between gap-2">
         {#each options as option}
           <button
-            class="h-[240px] w-[261px] rounded-md border-2 p-5 dark:bg-neutral-700 {option.type === type
+            class="h-60 w-[261px] rounded-md border-2 p-5 dark:bg-neutral-700 {option.type === type
               ? 'border-primary-400'
               : `border-gray-200 dark:border-neutral-600 ${
                   !option.isDisabled && 'hover:scale-95'

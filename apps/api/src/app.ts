@@ -17,7 +17,7 @@ import { dashAnalyticsRouter } from '@api/routes/dash';
 import { mediaRouter } from '@api/routes/media';
 import { onboardingRouter } from '@api/routes/onboarding';
 import { organizationRouter } from '@api/routes/organization';
-import { mocksRouter } from './routes/mocks';
+import { templateRouter } from '@api/routes/template';
 
 // Create Hono app with chaining for RPC support
 export const app = new Hono()
@@ -78,7 +78,7 @@ export const app = new Hono()
   .route('/media', mediaRouter)
   .route('/organization', organizationRouter)
   .route('/dash', dashAnalyticsRouter)
-  .route('/mocks', mocksRouter)
+  .route('/template', templateRouter)
 
   // Error handling
   .onError((err, c) => {
