@@ -12,17 +12,16 @@ export const ZNewCommunityQuestion = z.object({
   slug: z.string().min(1, 'slug is required'),
   body: z.string().min(1, 'body is required'),
   title: z.string().min(1, 'title is required'),
-  course_id: z.string().min(1, 'course_id is required'),
-  organization_id: z.string().min(1, 'organization_id is required'),
-  author_profile_id: z.string().min(1, 'author_profile_id is required'),
+  courseId: z.string().min(1, 'courseId is required'),
+  organizationId: z.string().min(1, 'organizationId is required'),
+  authorProfileId: z.string().min(1, 'authorProfileId is required'),
   votes: z.number().optional()
 });
 
 export const ZCommunityQuestionUpdate = z.object({
-  id: z.number().min(1, 'id is required'),
   title: z.string().min(1, 'title is required'),
   body: z.string().min(1, 'body is required'),
-  course_id: z.string().min(1, 'course_id is required')
+  courseId: z.string().min(1, 'courseId is required')
 });
 
 export const ZCommunityQuestionDelete = z.object({

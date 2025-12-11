@@ -54,8 +54,8 @@ class CommunityApi extends BaseApi {
    * @returns Single community question with comments
    */
   async fetchCommunityQuestion({ slug }: { slug: string }) {
-    return this.execute<typeof classroomio.community.question.$get>({
-      requestFn: () => classroomio.community.question.$get({ query: { slug } }),
+    return this.execute<(typeof classroomio.community.question)[':slug']['$get']>({
+      requestFn: () => classroomio.community.question[':slug'].$get({ param: { slug } }),
       logContext: 'fetching community question',
       onSuccess: (response) => {
         this.question = response.data;
@@ -65,30 +65,30 @@ class CommunityApi extends BaseApi {
 
   /**
    * Adds community question
-   * @param params (title, body, course_id, organization_id, author_profile_id, votes, slug)
+   * @param params (title, body, courseId, organizationId, authorProfileId, votes, slug)
    * @returns Community Questions
    */
   async addCommunityQuestion({
     title,
     body,
-    course_id,
-    organization_id,
-    author_profile_id,
+    courseId,
+    organizationId,
+    authorProfileId,
     votes,
     slug
   }: {
     title: string;
     body: string;
-    course_id: string;
-    organization_id: string;
-    author_profile_id: string;
+    courseId: string;
+    organizationId: string;
+    authorProfileId: string;
     votes: number;
     slug: string;
   }) {
     return this.execute<typeof classroomio.community.question.$post>({
       requestFn: () =>
         classroomio.community.question.$post({
-          json: { title, body, course_id, organization_id, author_profile_id, votes, slug }
+          json: { title, body, courseId, organizationId, authorProfileId, votes, slug }
         }),
       logContext: 'fetching community question'
     });
@@ -132,21 +132,25 @@ class CommunityApi extends BaseApi {
 
   /**
    * Updates a question
-   * @param Comment (id, title, body, course_id)
+   * @param Comment (id, title, body, courseId)
    */
   async handleUpdateQuestion({
     id,
     title,
     body,
-    course_id
+    courseId
   }: {
     id: number;
     title: string;
     body: string;
-    course_id: string;
+    courseId: string;
   }) {
-    return this.execute<typeof classroomio.community.question.$put>({
-      requestFn: () => classroomio.community.question.$put({ json: { id, title, body, course_id } }),
+    return this.execute<(typeof classroomio.community.question)[':id']['$put']>({
+      requestFn: () =>
+        classroomio.community.question[':id'].$put({
+          param: { id: String(id) },
+          json: { title, body, courseId }
+        }),
       logContext: 'updating community question'
     });
   }

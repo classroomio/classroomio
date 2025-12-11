@@ -6,13 +6,13 @@ import { authMiddleware } from '@api/middlewares/auth';
 import {
   fetchCommunityQuestion,
   fetchCommunityQuestions,
-  handleAddQuestion,
-  handleDeleteCommentById,
-  handleDeleteCommentByQuestionId,
-  handleDeleteQuestion,
-  handleSubmitComment,
-  handleUpdateQuestion,
-  handleUpvote
+  createQuestion,
+  deleteComment,
+  deleteCommentsByQuestionId,
+  deleteQuestion,
+  createComment,
+  editQuestion,
+  upvote
 } from '@api/services/community';
 import {
   ZCommunityComment,
@@ -23,9 +23,9 @@ import {
   ZNewCommunityQuestion,
   ZUpvoteComment
 } from '@cio/utils/validation/community';
+import z from 'zod';
 
 export const communityRouter = new Hono()
-  // --- get all community questions
   .get('/questions', authMiddleware, zValidator('query', ZCommunityQuestions), async (c) => {
     try {
       const { orgId } = c.req.valid('query');
@@ -37,10 +37,9 @@ export const communityRouter = new Hono()
       return handleError(c, error, 'Failed to load community questions');
     }
   })
-  // --- get single community question
-  .get('/question', authMiddleware, zValidator('query', ZCommunityQuestion), async (c) => {
+  .get('/question/:slug', authMiddleware, zValidator('param', ZCommunityQuestion), async (c) => {
     try {
-      const { slug } = c.req.valid('query');
+      const { slug } = c.req.valid('param');
 
       const result = await fetchCommunityQuestion(slug);
 
@@ -49,17 +48,16 @@ export const communityRouter = new Hono()
       return handleError(c, error, 'Failed to load community question');
     }
   })
-  // --- add community question
   .post('/question', authMiddleware, zValidator('json', ZNewCommunityQuestion), async (c) => {
     try {
-      const { title, body, course_id, organization_id, author_profile_id, votes, slug } = c.req.valid('json');
+      const { title, body, courseId, organizationId, authorProfileId, votes, slug } = c.req.valid('json');
 
-      const result = await handleAddQuestion({
+      const result = await createQuestion({
         title,
         body,
-        course_id,
-        organization_id,
-        author_profile_id,
+        courseId,
+        organizationId,
+        authorProfileId,
         votes,
         slug
       });
@@ -69,24 +67,29 @@ export const communityRouter = new Hono()
       return handleError(c, error, 'Failed to add community question');
     }
   })
-  // --- update community question
-  .put('/question', authMiddleware, zValidator('json', ZCommunityQuestionUpdate), async (c) => {
-    try {
-      const { id, title, body, course_id } = c.req.valid('json');
+  .put(
+    '/question/:id',
+    authMiddleware,
+    zValidator('param', z.object({ id: z.coerce.number() })),
+    zValidator('json', ZCommunityQuestionUpdate),
+    async (c) => {
+      try {
+        const { id } = c.req.valid('param');
+        const { title, body, courseId } = c.req.valid('json');
 
-      const result = await handleUpdateQuestion({ id: Number(id), title, body, course_id });
+        const result = await editQuestion({ id, title, body, courseId });
 
-      return c.json({ success: true, data: result }, 201);
-    } catch (error) {
-      return handleError(c, error, 'Failed to update community question');
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to update community question');
+      }
     }
-  })
-  // --- delete community question (by id)
+  )
   .delete('/question', authMiddleware, zValidator('json', ZCommunityQuestionDelete), async (c) => {
     try {
       const { id } = c.req.valid('json');
 
-      const result = await handleDeleteQuestion({ id: Number(id) });
+      const result = await deleteQuestion({ id: Number(id) });
 
       return c.json({ success: true, data: result }, 201);
     } catch (error) {
@@ -94,12 +97,11 @@ export const communityRouter = new Hono()
     }
   })
 
-  // --- add comment
   .post('/comment', authMiddleware, zValidator('json', ZCommunityComment), async (c) => {
     try {
       const { body, questionId, authorId, votes } = c.req.valid('json');
 
-      const result = await handleSubmitComment({
+      const result = await createComment({
         body,
         questionId: Number(questionId),
         authorId: String(authorId),
@@ -111,31 +113,28 @@ export const communityRouter = new Hono()
       return handleError(c, error, 'Failed to submit comment');
     }
   })
-  // --- upvote comment/question
   .put('/comment', authMiddleware, zValidator('json', ZUpvoteComment), async (c) => {
     try {
       const { id, votes, isQuestion } = c.req.valid('json');
 
-      const result = await handleUpvote({
+      const result = await upvote({
         id,
         votes: Number(votes),
         isQuestion
       });
 
-      return c.json({ success: true, data: result }, 201);
+      return c.json({ success: true, data: result }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to upvote comment');
     }
   })
-  // --- delete comment by id
   .delete('/comment/:id', authMiddleware, async (c) => {
     const id = c.req.param('id');
-    const result = await handleDeleteCommentById({ id });
+    const result = await deleteComment({ id });
     return c.json({ success: true, data: result }, 200);
   })
-  // --- delete comment by questionId
   .delete('/comments/:questionId', authMiddleware, async (c) => {
     const questionId = c.req.param('questionId');
-    const result = await handleDeleteCommentByQuestionId({ questionId: Number(questionId) });
+    const result = await deleteCommentsByQuestionId({ questionId: Number(questionId) });
     return c.json({ success: true, data: result }, 200);
   });

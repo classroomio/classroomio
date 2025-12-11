@@ -72,14 +72,14 @@ export async function fetchCommunityQuestion(slug: string) {
   }
 }
 
-export async function handleAddQuestion({ title, body, course_id, organization_id, author_profile_id, votes, slug }) {
+export async function createQuestion({ title, body, courseId, organizationId, authorProfileId, votes, slug }) {
   try {
     const result = await createCommunityQuestion({
       title,
       body,
-      courseId: course_id,
-      organizationId: organization_id,
-      authorProfileId: author_profile_id,
+      courseId,
+      organizationId,
+      authorProfileId,
       votes,
       slug
     });
@@ -106,19 +106,19 @@ export async function handleAddQuestion({ title, body, course_id, organization_i
   }
 }
 
-export async function handleUpdateQuestion({
+export async function editQuestion({
   id,
   title,
   body,
-  course_id
+  courseId
 }: {
   id: number;
   title: string;
   body: string;
-  course_id: string;
+  courseId: string;
 }) {
   try {
-    const result = await editCommunityQuestion({ id, title, body, courseId: course_id });
+    const result = await editCommunityQuestion({ id, title, body, courseId: courseId });
 
     return result;
   } catch (error) {
@@ -128,7 +128,7 @@ export async function handleUpdateQuestion({
   }
 }
 
-export async function handleSubmitComment({
+export async function createComment({
   body,
   questionId,
   authorId,
@@ -160,15 +160,7 @@ export async function handleSubmitComment({
   }
 }
 
-export async function handleUpvote({
-  id,
-  votes,
-  isQuestion
-}: {
-  id: number | string;
-  votes: number;
-  isQuestion: boolean;
-}) {
+export async function upvote({ id, votes, isQuestion }: { id: number | string; votes: number; isQuestion: boolean }) {
   try {
     let result;
 
@@ -186,7 +178,7 @@ export async function handleUpvote({
   }
 }
 
-export async function handleDeleteQuestion({ id }: { id: number }) {
+export async function deleteQuestion({ id }: { id: number }) {
   try {
     const result = await deleteQuestionByQuestionId(id);
 
@@ -198,7 +190,7 @@ export async function handleDeleteQuestion({ id }: { id: number }) {
   }
 }
 
-export async function handleDeleteCommentById({ id }: { id: string }) {
+export async function deleteComment({ id }: { id: string }) {
   try {
     const result = await deleteCommentById(id);
 
@@ -210,7 +202,7 @@ export async function handleDeleteCommentById({ id }: { id: string }) {
   }
 }
 
-export async function handleDeleteCommentByQuestionId({ questionId }: { questionId: number }) {
+export async function deleteCommentsByQuestionId({ questionId }: { questionId: number }) {
   try {
     const result = await deleteCommentByQuestionId(questionId);
 
