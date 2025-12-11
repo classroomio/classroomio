@@ -266,12 +266,12 @@
             {/each}
           </div>
 
-          <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
-            {#if templateApi.isLoading}
-              <div class="flex w-full items-center justify-center py-10">
-                <Spinner class="text-white" />
-              </div>
-            {:else if allTemplates}
+          {#if templateApi.isLoading}
+            <div class="flex w-full items-center justify-center py-10">
+              <Spinner class="text-white" />
+            </div>
+          {:else if allTemplates}
+            <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
               {#each allTemplates as template}
                 <button
                   class="h-[140px] w-full rounded-md border-2 p-5 hover:scale-95 dark:bg-neutral-700 {template.id ===
@@ -298,8 +298,8 @@
                   </div>
                 </button>
               {/each}
-            {/if}
-          </div>
+            </div>
+          {/if}
 
           <div class="mt-5 flex items-center justify-between">
             <PrimaryButton

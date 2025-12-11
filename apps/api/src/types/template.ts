@@ -8,6 +8,7 @@ export interface ExerciseTemplate {
   tag: string;
   title: string;
   description: string;
+  questions?: number;
   questionnaire: {
     questions: {
       title: string;

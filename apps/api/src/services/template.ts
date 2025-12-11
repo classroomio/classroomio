@@ -7,6 +7,7 @@ function mapTemplateToMetadata(templates: ExerciseTemplate[]) {
     id: template.id,
     title: template.title,
     description: template.description,
+    questions: template.questionnaire.questions.length,
     points: calculateTotalPoints({ questionnaire: template.questionnaire } as ExerciseTemplate),
     tag: template.tag
   }));
@@ -29,7 +30,7 @@ export async function handleGetTemplateById(id: number): Promise<ExerciseTemplat
   try {
     template = await getTemplateById(id);
   } catch (error) {
-    console.error('Failed to fetch templates from DB:', error);
+    console.error('Failed to fetch template from DB:', error);
     throw error;
   }
 
@@ -40,7 +41,6 @@ export async function handleGetTemplateByTag(tag: string) {
   let template;
   try {
     template = await getTemplateByTag(tag);
-    console.log('Fetched template by tag:', template);
   } catch (error) {
     console.error('Failed to fetch templates from DB:', error);
     throw error;

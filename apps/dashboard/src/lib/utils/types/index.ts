@@ -33,6 +33,7 @@ export interface CustomQuestionType {
 export interface ExerciseTemplate {
   title: string;
   description: string;
+  questions?: number;
   questionnaire: {
     questions: {
       title: string;
