@@ -15,6 +15,7 @@ import {
   updateOrganizationPlan
 } from '@cio/db/queries/organization';
 import {
+  getCoursesById,
   getCoursesBySiteName,
   getCoursesBySiteNameForSetup,
   getExercisesBySiteName,
@@ -118,6 +119,24 @@ export async function getOrgAudience(orgId: string) {
 export async function getCoursesByOrgSiteName(siteName: string) {
   try {
     const courses = await getCoursesBySiteName(siteName);
+    return courses;
+  } catch (error) {
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch courses',
+      ErrorCodes.COURSES_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Gets courses by organization orgId
+ * @param orgId - The organization orgId
+ * @returns Array of courses
+ */
+export async function getCoursesByOrgId(orgId: string) {
+  try {
+    const courses = await getCoursesById(orgId);
     return courses;
   } catch (error) {
     throw new AppError(
