@@ -11,12 +11,11 @@
   import { fetchCourses } from '$lib/utils/services/courses';
   import generateSlug from '$lib/utils/functions/generateSlug';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { askCommunityValidation } from '$lib/utils/functions/validator';
+  import { Button } from '@cio/ui/base/button';
 
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import * as Page from '@cio/ui/base/page';
 
   let errors: {
@@ -99,13 +98,15 @@
       <Page.Title>{$t('community.ask.ask_the')}</Page.Title>
     </Page.HeaderContent>
     <Page.Action>
-      <PrimaryButton label={$t('community.ask.publish')} variant={VARIANTS.CONTAINED_DARK} onClick={handleSave} />
+      <Button variant="default" onclick={handleSave}>
+        {$t('community.ask.publish')}
+      </Button>
     </Page.Action>
   </Page.Header>
   <Page.Body>
     {#snippet child()}
       <div class="mb-3 flex justify-between gap-x-5">
-        <TextField
+        <InputField
           bind:value={fields.title}
           placeholder={$t('community.ask.title')}
           errorMessage={errors.title}

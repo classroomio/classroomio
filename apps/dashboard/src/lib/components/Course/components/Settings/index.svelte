@@ -8,15 +8,14 @@
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
 
   import DragAndDrop from './DragAndDrop.svelte';
-  import { IconButton } from '$lib/components/IconButton';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { IconButton } from '@cio/ui/custom/icon-button';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { Row, Grid, Column } from '$lib/components/Org/Settings/Layout';
   import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
-  import { UpgradeBanner } from '$lib/features/ui';
+  import { UpgradeBanner, UnsavedChanges } from '$lib/features/ui';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
+  import { Button } from '@cio/ui/base/button';
 
   import { settings } from './store';
   import Copy from '@lucide/svelte/icons/copy';
@@ -28,7 +27,6 @@
   import { isObject } from '$lib/utils/functions/isObject';
   import { snackbar } from '$lib/components/Snackbar/store';
   import generateSlug from '$lib/utils/functions/generateSlug';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
   import { deleteCourse, updateCourse } from '$lib/utils/services/courses';
   import { copyToClipboard } from '$lib/utils/functions/formatYoutubeVideo';
@@ -161,7 +159,7 @@
         },
         slug: $course.slug
       };
-      await updateCourse($course.id, avatar, updatedCourse);
+      await updateCourse($course.id, avatar ? new File([avatar], avatar) : undefined, updatedCourse);
 
       $course = {
         ...$course,
@@ -220,13 +218,12 @@
         {$t('course.navItem.settings.optional_image')}
       </p>
       <span class="flex items-center justify-start">
-        <PrimaryButton
-          variant={VARIANTS.CONTAINED_DARK}
-          label={$t('course.navItem.settings.replace')}
-          className="mr-2"
-          onClick={widgetControl}
-        />
-        <PrimaryButton variant={VARIANTS.OUTLINED} label={$t('ai.reset')} onClick={deleteBannerImage} />
+        <Button class="mr-2" onclick={widgetControl}>
+          {$t('course.navItem.settings.replace')}
+        </Button>
+        <Button variant="outline" onclick={deleteBannerImage}>
+          {$t('ai.reset')}
+        </Button>
       </span>
       {#if $handleOpenWidget.open}
         <UploadWidget
@@ -256,7 +253,7 @@
     </Column>
 
     <Column sm={8} md={8} lg={8}>
-      <TextField
+      <InputField
         label={$t('course.navItem.settings.course_title')}
         placeholder="Write the course title here"
         className="w-full mb-5"
@@ -267,25 +264,25 @@
           hasUnsavedChanges = true;
         }}
       />
-      <TextArea
+      <TextareaField
         label={$t('course.navItem.settings.course_description')}
         placeholder={$t('course.navItem.settings.placeholder')}
         className="w-full mb-5"
         isRequired
         bind:value={$settings.course_description}
         errorMessage={errors?.description}
-        onChange={() => {
+        onchange={() => {
           hasUnsavedChanges = true;
         }}
       />
       <div id="share">
         <p class="text-md mb-2 flex items-center gap-2">
           {$t('course.navItem.settings.link')}
-          <IconButton contained={true} size="small" onClick={generateNewCourseLink}>
+          <IconButton onclick={generateNewCourseLink}>
             <RotateCcwIcon size={16} />
           </IconButton>
           <span class="grow"></span>
-          <IconButton contained={true} size="small" onClick={() => goto(courseLink)}>
+          <IconButton onclick={() => goto(courseLink)}>
             <ArrowUpRightIcon size={16} />
           </IconButton>
         </p>
@@ -294,9 +291,7 @@
             <p class="text-sm">{courseLink}</p>
 
             <IconButton
-              contained={true}
-              size="small"
-              onClick={() => {
+              onclick={() => {
                 copyToClipboard(courseLink);
               }}
             >
@@ -368,13 +363,9 @@
       {#if $isFreePlan}
         <UpgradeBanner>{$t('upgrade.download_course')}</UpgradeBanner>
       {:else}
-        <PrimaryButton
-          variant={VARIANTS.OUTLINED}
-          label={$t('course.navItem.settings.download')}
-          onClick={downloadCourse}
-          isDisabled={isLoading}
-          {isLoading}
-        />
+        <Button variant="outline" onclick={downloadCourse} disabled={isLoading} loading={isLoading}>
+          {$t('course.navItem.settings.download')}
+        </Button>
       {/if}
     </Column>
   </Row>
@@ -460,21 +451,14 @@
       <p>{$t('course.navItem.settings.delete_text')}</p>
     </Column>
     <Column sm={8} md={8} lg={8}>
-      <PrimaryButton
-        variant={VARIANTS.CONTAINED_DANGER}
-        label={$t('course.navItem.settings.delete')}
-        onClick={() => (openDeleteModal = true)}
-        isLoading={isDeleting}
-        isDisabled={isDeleting}
-      />
+      <Button variant="destructive" onclick={() => (openDeleteModal = true)} loading={isDeleting} disabled={isDeleting}>
+        {$t('course.navItem.settings.delete')}
+      </Button>
     </Column>
   </Row>
   <div class="flex w-full items-center justify-end p-5">
-    <PrimaryButton
-      label={$t('course.navItem.settings.save')}
-      isLoading={isSaving}
-      isDisabled={isSaving}
-      onClick={handleSave}
-    />
+    <Button loading={isSaving} disabled={isSaving} onclick={handleSave}>
+      {$t('course.navItem.settings.save')}
+    </Button>
   </div>
 </Grid>

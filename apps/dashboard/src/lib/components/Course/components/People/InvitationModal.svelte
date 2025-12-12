@@ -26,7 +26,7 @@
 
   import ShareQrImage from './ShareQRImage.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
 
   interface Tutor {
     id: number;
@@ -263,12 +263,9 @@
           {$t('course.navItem.people.invite_modal.via_qr')}
         </span>
 
-        <PrimaryButton
-          isLoading={isLoadingQRDownload}
-          onClick={handleQRDownload}
-          label={$t('course.navItem.people.invite_modal.download_qr')}
-          className="font-medium"
-        />
+        <Button variant="outline" loading={isLoadingQRDownload} onclick={handleQRDownload}>
+          {$t('course.navItem.people.invite_modal.download_qr')}
+        </Button>
       </div>
 
       <div class="w-full border-4 border-[#f7f7f7] p-1 md:w-28">
@@ -281,7 +278,9 @@
     </div>
 
     <div class="mt-5 flex flex-row-reverse items-center">
-      <PrimaryButton className="px-6 py-3" label={$t('course.navItem.people.invite_modal.finish')} type="submit" />
+      <Button variant="secondary" type="submit">
+        {$t('course.navItem.people.invite_modal.finish')}
+      </Button>
     </div>
   </form>
 </Modal>

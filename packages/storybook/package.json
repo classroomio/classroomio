@@ -34,6 +34,7 @@
     "dotenv": "^16.3.1",
     "storybook": "^8.4.2",
     "svelte": "^5.39.11",
+    "svelte-easy-crop": "^5.0.0",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.7.1",
     "typescript-svelte-plugin": "^0.3.50",

@@ -1,6 +1,5 @@
 <script lang="ts">
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
   import MODES from '$lib/utils/constants/mode';
   import FileTextIcon from '@lucide/svelte/icons/file-text';
@@ -40,11 +39,9 @@
 
 {#if mode === MODES.edit}
   <div class="mb-4">
-    <PrimaryButton
-      label={$t('course.navItem.lessons.materials.tabs.document.add_document')}
-      onClick={openDocumentUploadModal}
-      className="mb-4"
-    />
+    <Button onclick={openDocumentUploadModal} class="mb-4">
+      {$t('course.navItem.lessons.materials.tabs.document.add_document')}
+    </Button>
   </div>
 
   {#if !isEmpty(displayDocuments)}
@@ -115,10 +112,10 @@
             </div>
             <div class="flex gap-3">
               {#if document.type === 'pdf'}
-                <PrimaryButton variant={VARIANTS.CONTAINED_DARK} onClick={() => handleViewPDF(document)} {isLoading}>
+                <Button onclick={() => handleViewPDF(document)} loading={isLoading}>
                   <EyeIcon size={16} />
                   {$t('course.navItem.lessons.materials.tabs.document.view_pdf')}
-                </PrimaryButton>
+                </Button>
               {:else}
                 <a
                   href={isLoading ? '#' : document.link}

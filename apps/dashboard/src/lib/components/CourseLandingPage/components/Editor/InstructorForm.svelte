@@ -1,7 +1,7 @@
 <script lang="ts">
   import get from 'lodash/get';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
+  import { InputField } from '@cio/ui/custom/input-field';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
   import { uploadImage } from '$lib/utils/services/upload';
   import type { Course } from '$lib/utils/types';
@@ -64,7 +64,7 @@
   </div>
 </div>
 
-<TextField
+<InputField
   className="mt-5"
   labelClassName="font-bold"
   label={$t('course.navItem.landing_page.editor.instructor_form.name')}
@@ -72,7 +72,7 @@
   bind:value={name}
 />
 
-<TextField
+<InputField
   className="mt-5"
   labelClassName="font-bold"
   label={$t('course.navItem.landing_page.editor.instructor_form.role')}
@@ -80,7 +80,7 @@
   bind:value={role}
 />
 
-<TextArea
+<TextareaField
   label={$t('course.navItem.landing_page.editor.instructor_form.about')}
   placeholder={$t('course.navItem.landing_page.editor.instructor_form.about_placeholder')}
   rows={6}
@@ -89,7 +89,7 @@
   bind:value={description}
 />
 
-<TextField
+<InputField
   className="mt-5"
   labelClassName="font-bold"
   label={$t('course.navItem.landing_page.editor.instructor_form.total')}

@@ -1,7 +1,7 @@
 <script lang="ts">
-  import TextField from '../Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import TrashIcon from '@lucide/svelte/icons/trash';
-  import { IconButton } from '$lib/components/IconButton';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -62,16 +62,16 @@
         <p class="mr-2 text-sm dark:text-white">
           {$t('course.navItem.lessons.exercises.new_exercise_modal.points')}:
         </p>
-        <TextField
+        <InputField
           placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.points')}
           bind:value={points}
           type="number"
-          onChange={onPointsChange}
+          onchange={onPointsChange}
         />
       </div>
 
       {#if onClose && !isTitle}
-        <IconButton onClick={onClose}>
+        <IconButton onclick={onClose}>
           <TrashIcon size={16} />
         </IconButton>
       {/if}

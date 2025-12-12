@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import ChartBarIcon from '@lucide/svelte/icons/chart-bar';
   import { CourseContainer } from '$lib/components/CourseContainer';
-  import { PageBody, PageNav } from '$lib/components/Page';
+  import { PageBody } from '$lib/components/Page';
   import { t } from '$lib/utils/functions/translations';
   import { getAccessToken } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -59,7 +59,6 @@
 </script>
 
 <CourseContainer courseId={data.courseId}>
-  <PageNav title={$t('course.navItem.analytics.title')} />
   <PageBody width="w-full max-w-6xl md:w-11/12">
     {#if isLoading}
       <AnalyticsSkeleton />

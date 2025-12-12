@@ -8,7 +8,7 @@
   import RadioQuestion from '$lib/components/Question/RadioQuestion/index.svelte';
   import CheckboxQuestion from '$lib/components/Question/CheckboxQuestion/index.svelte';
   import TextareaQuestion from '$lib/components/Question/TextareaQuestion/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import Box from '$lib/components/Box/index.svelte';
   import { RoleBasedSecurity } from '$lib/features/ui';
   import Progress from '$lib/components/Progress/index.svelte';
@@ -296,7 +296,7 @@
         {@html $questionnaire.description || 'No desription'}
       </article>
 
-      <PrimaryButton onClick={handleStart} label="Start" className="my-5 float-right" type="button" />
+      <Button onclick={handleStart} type="button" class="float-right my-5">Start</Button>
     </div>
   </RoleBasedSecurity>
 {:else if $questionnaireMetaData.isFinished}

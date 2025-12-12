@@ -4,14 +4,13 @@
 
   import Modal from '$lib/components/Modal/index.svelte';
   import Confetti from '$lib/components/Confetti/index.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { ComingSoon } from '$lib/features/ui';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
 
   import { t } from '$lib/utils/functions/translations';
   import type { ExerciseTemplate } from '$lib/utils/types';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { type GeneratedTemplates, getAllTemplates, TAGS } from '$lib/mocks';
 
   interface Props {
@@ -171,11 +170,9 @@
       </div>
 
       <div class="mt-8 flex flex-row-reverse items-center">
-        <PrimaryButton
-          className="px-6 py-3"
-          label={$t('course.navItem.lessons.exercises.new_exercise_modal.next')}
-          onClick={handleNext}
-        />
+        <Button onclick={handleNext}>
+          {$t('course.navItem.lessons.exercises.new_exercise_modal.next')}
+        </Button>
       </div>
     </div>
   {:else if step === 1}
@@ -185,7 +182,7 @@
           <h2 class="my-5 text-2xl font-medium">
             {$t('course.navItem.lessons.exercises.new_exercise_modal.title')}
           </h2>
-          <TextField
+          <InputField
             bind:value={title}
             autoFocus={true}
             placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.title_placeholder')}
@@ -193,17 +190,12 @@
           />
 
           <div class="mt-5 flex items-center justify-between">
-            <PrimaryButton
-              className="px-6 py-3"
-              label={$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
-              variant={VARIANTS.OUTLINED}
-              onClick={handleBack}
-            />
-            <PrimaryButton
-              className="px-6 py-3"
-              label={$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
-              onClick={handleAddExercise}
-            />
+            <Button variant="outline" onclick={handleBack}>
+              {$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
+            </Button>
+            <Button onclick={handleAddExercise}>
+              {$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
+            </Button>
           </div>
         </div>
       </div>
@@ -258,18 +250,13 @@
           </div>
 
           <div class="mt-5 flex items-center justify-between">
-            <PrimaryButton
-              className="px-6 py-3"
-              label={$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
-              variant={VARIANTS.OUTLINED}
-              onClick={handleBack}
-            />
-            <PrimaryButton
-              isDisabled={!selectedTemplateId || !allTemplates}
-              className="px-6 py-3"
-              label={$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
-              isLoading={isTemplateFinishedLoading}
-              onClick={async () => {
+            <Button variant="outline" onclick={handleBack}>
+              {$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
+            </Button>
+            <Button
+              disabled={!selectedTemplateId || !allTemplates}
+              loading={isTemplateFinishedLoading}
+              onclick={async () => {
                 isTemplateFinishedLoading = true;
                 const template = allTemplates?.[selectedTag]?.find((t) => t.id === selectedTemplateId);
 
@@ -281,7 +268,9 @@
 
                 isTemplateFinishedLoading = true;
               }}
-            />
+            >
+              {$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
+            </Button>
           </div>
         </div>
       </div>
@@ -294,7 +283,7 @@
               <p class="mb-4 text-sm">
                 {$t('course.navItem.lessons.exercises.new_exercise_modal.choose_questions')}
               </p>
-              <TextField
+              <InputField
                 label={$t('course.navItem.lessons.exercises.new_exercise_modal.how_many_questions')}
                 type="number"
                 bind:value={questionNumber}
@@ -302,7 +291,7 @@
                 className="mb-2"
                 isRequired
               />
-              <TextField
+              <InputField
                 label={$t('course.navItem.lessons.exercises.new_exercise_modal.how_many_options')}
                 type="number"
                 bind:value={optionNumber}
@@ -313,14 +302,14 @@
               <h3>{$t('course.navItem.lessons.exercises.new_exercise_modal.add_note')}</h3>
             {/if}
             <div class="mt-5 flex flex-row-reverse items-center">
-              <PrimaryButton
-                onClick={callAI}
-                {isLoading}
-                isDisabled={isLoading || !note}
-                variant={VARIANTS.OUTLINED}
+              <Button
+                onclick={callAI}
+                loading={isLoading}
+                disabled={isLoading || !note}
+                variant="outline"
               >
                 {$t('course.navItem.lessons.exercises.new_exercise_modal.generate')}
-              </PrimaryButton>
+              </Button>
             </div>
           </div>
           <div
@@ -340,18 +329,18 @@
           </div>
         </div>
         <div class="mt-5 flex items-center justify-between">
-          <PrimaryButton
-            className="px-6 py-3"
-            label={$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
-            variant={VARIANTS.TEXT}
-            onClick={handleBack}
-          />
-          <PrimaryButton
-            isDisabled={isLoading || !note}
-            className="px-6 py-3"
-            label={$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
-            onClick={handleAddExercise}
-          />
+          <Button
+            variant="ghost"
+            onclick={handleBack}
+          >
+            {$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
+          </Button>
+          <Button
+            disabled={isLoading || !note}
+            onclick={handleAddExercise}
+          >
+            {$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
+          </Button>
         </div>
       </div> -->
     {/if}

@@ -7,9 +7,9 @@
   import { t } from '$lib/utils/functions/translations';
   import { uploadImage } from '$lib/utils/services/upload';
 
-  import { IconButton } from '$lib/components/IconButton';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { IconButton } from '@cio/ui/custom/icon-button';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
+  import { InputField } from '@cio/ui/custom/input-field';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
 
   let { reviews = $bindable([]), review = $bindable({}), errors = {}, onExpand = () => {} } = $props();
@@ -35,7 +35,7 @@
 <div class="flex w-full flex-col items-center">
   <UploadImage bind:avatar src={review.avatar_url} widthHeight="w-20 h-20" errorMessage={errors.avatar_url} />
 
-  <TextField
+  <InputField
     className="mt-2 w-full"
     labelClassName="font-normal"
     label={$t('course.navItem.landing_page.editor.reviews_form.fullname')}
@@ -46,7 +46,7 @@
   />
 
   <!-- Description -->
-  <TextArea
+  <TextareaField
     label={$t('course.navItem.landing_page.editor.reviews_form.description')}
     rows={4}
     className="mt-2 w-full"
@@ -61,7 +61,7 @@
 
   <div class="mt-2 flex w-full items-end justify-between">
     <!-- Rating -->
-    <TextField
+    <InputField
       className="mt-2 w-20"
       labelClassName="font-normal"
       label={$t('course.navItem.landing_page.editor.reviews_form.rating')}
@@ -69,9 +69,6 @@
       min={1}
       max={5}
       bind:value={review.rating}
-      onInputChange={(e) => {
-        review.rating = parseInt(e.target.value);
-      }}
       errorMessage={errors.rating}
     />
 
@@ -86,10 +83,10 @@
   </div>
 
   <div class="mt-8 flex w-full items-center justify-between">
-    <IconButton contained={true} value="delete" onClick={deleteReviewData} size="large">
+    <IconButton onclick={deleteReviewData}>
       <TrashIcon size={16} />
     </IconButton>
-    <IconButton contained={true} value="save" onClick={() => onExpand(review.id)} size="large">
+    <IconButton onclick={() => onExpand(review.id)}>
       <SaveIcon size={16} />
     </IconButton>
   </div>

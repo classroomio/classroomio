@@ -1,5 +1,5 @@
 <script lang="ts">
-  import TextChip from '$lib/components/Chip/Text.svelte';
+  import { Chip } from '@cio/ui/custom/chip';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -50,12 +50,7 @@
             {/if}
             {$t(tab.label)}
             {#if typeof tab.badgeValue === 'number'}
-              <TextChip
-                value={`${tab.badgeValue}`}
-                size="sm"
-                shape="rounded-full"
-                className="bg-gray-300 dark:text-black text-xs absolute -right-2 px-2"
-              />
+              <Chip value={`${tab.badgeValue}`} className="absolute -right-2" />
             {/if}
           </div>
           <span

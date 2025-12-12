@@ -14,9 +14,9 @@
   import generateSlug from '$lib/utils/functions/generateSlug';
   import { askCommunityValidation } from '$lib/utils/functions/validator';
 
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
 
   let errors: {
     title?: string;
@@ -96,12 +96,14 @@
     </a>
     <div class="flex items-center justify-between">
       <h1 class="text-3xl dark:text-white">{$t('community.ask.ask_the')}</h1>
-      <PrimaryButton label={$t('community.ask.publish')} onClick={handleSave} />
+      <Button onclick={handleSave}>
+        {$t('community.ask.publish')}
+      </Button>
     </div>
   </div>
 
   <div class="mb-3 flex justify-between gap-x-5 p-2">
-    <TextField
+    <InputField
       bind:value={fields.title}
       placeholder={$t('community.ask.title')}
       errorMessage={errors.title}

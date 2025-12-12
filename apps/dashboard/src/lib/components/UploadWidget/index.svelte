@@ -8,9 +8,10 @@
   import Modal from '$lib/components/Modal/index.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
   import { queryUnsplash } from './utils';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+
   import { t } from '$lib/utils/functions/translations';
   import { uploadImage } from '$lib/utils/services/upload';
+  import { Button } from '@cio/ui/base/button';
 
   interface Props {
     imageURL?: string;
@@ -120,12 +121,9 @@
                 onchange={onFileSelected}
                 disabled={isUploading}
               />
-              <PrimaryButton
+              <Button onclick={handleUpload} loading={isUploading}>
                 {label}
-                onClick={handleUpload}
-                isLoading={isUploading}
-                className="w-full font-semibold m-auto"
-              />
+              </Button>
               <p class="my-2 text-center text-sm text-gray-500">
                 {$t('course.navItem.landing_page.upload_widget.width')}
               </p>

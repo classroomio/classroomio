@@ -1,5 +1,5 @@
 <script>
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import { AudiencePage } from '$lib/features/audience/pages';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrgPlan, currentOrgMaxAudience } from '$lib/utils/store/org';
@@ -33,7 +33,9 @@
       </Page.Title>
     </Page.HeaderContent>
     <Page.Action>
-      <PrimaryButton label={$t('audience.export')} onClick={exportAudience} isDisabled={isLoading} {isLoading} />
+      <Button onclick={exportAudience} disabled={isLoading} loading={isLoading}>
+        {$t('audience.export')}
+      </Button>
     </Page.Action>
   </Page.Header>
   <Page.Body>

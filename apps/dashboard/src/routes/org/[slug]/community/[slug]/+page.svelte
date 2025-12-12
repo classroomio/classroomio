@@ -13,19 +13,18 @@
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { fetchCourses } from '$lib/utils/services/courses';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import { currentOrg, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
   import { askCommunityValidation, commentInCommunityValidation } from '$lib/utils/functions/validator';
 
   import type { Course } from '$lib/utils/types';
   import { profile } from '$lib/utils/store/user';
   import Vote from '$lib/components/Vote/index.svelte';
-  import { IconButton } from '$lib/components/IconButton';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import * as Avatar from '@cio/ui/base/avatar';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { shortenName } from '$lib/utils/functions/string';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { CommunityDeleteModal } from '$lib/features/community/components';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
   import * as Page from '@cio/ui/base/page';
@@ -407,7 +406,7 @@
       <Page.HeaderContent>
         {#if isEditMode}
           <div class="flex w-full items-center gap-2">
-            <TextField bind:value={editContent.title} className="flex-1" errorMessage={errors.title} />
+            <InputField bind:value={editContent.title} className="flex-1" errorMessage={errors.title} />
             <Select.Root type="single" bind:value={editContent.courseId}>
               <Select.Trigger class="h-full w-[25%]">
                 <p>
@@ -432,20 +431,19 @@
       </Page.HeaderContent>
       {#if question.author.id === $profile.id}
         <Page.Action>
-          <PrimaryButton
-            label={isEditMode ? $t('community.ask.save') : $t('community.ask.edit')}
-            variant={VARIANTS.OUTLINED}
-            onClick={handleQuestionEdit}
-            className="h-fit"
-          />
+          <Button
+            variant="outline"
+            onclick={handleQuestionEdit}
+          >
+            {isEditMode ? $t('community.ask.save') : $t('community.ask.edit')}
+          </Button>
           {#if isEditMode}
-            <PrimaryButton
-              label={$t('community.ask.cancel')}
-              variant={VARIANTS.TEXT}
-              onClick={() => (isEditMode = !isEditMode)}
-              className="py-3 px-6 rounded-sm h-fit"
-              disablePadding={true}
-            />
+            <Button
+              variant="ghost"
+              onclick={() => (isEditMode = !isEditMode)}
+            >
+              {$t('community.ask.cancel')}
+            </Button>
           {/if}
         </Page.Action>
       {/if}
@@ -469,8 +467,7 @@
             </div>
             {#if question.author.id === $profile.id || $isOrgAdmin}
               <IconButton
-                value="delete-question"
-                onClick={() => {
+                onclick={() => {
                   if (!question) return;
 
                   deleteQuestion.shouldDelete = true;
@@ -529,8 +526,7 @@
 
                 {#if comment.authorId === $profile.id || $isOrgAdmin}
                   <IconButton
-                    value="delete-comment"
-                    onClick={() => {
+                    onclick={() => {
                       deleteComment.shouldDelete = true;
                       deleteComment.commentId = comment.id;
                     }}
@@ -554,7 +550,9 @@
           {/if}
 
           <div class="mt-2 flex justify-end">
-            <PrimaryButton label={$t('community.ask.comment')} onClick={submitComment} />
+            <Button onclick={submitComment}>
+              {$t('community.ask.comment')}
+            </Button>
           </div>
         </div>
       {/snippet}

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Tabs as TabsPrimitive } from 'bits-ui';
   import { cn } from '../../tools';
-  import { receive, send, useUnderlineTabsTrigger } from './underline-tabs.svelte.js';
+  import { receive, send, useUnderlineTabsTrigger } from './underline-tabs-utils.svelte';
   import { box } from 'svelte-toolbelt';
 
   let {

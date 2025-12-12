@@ -1,7 +1,6 @@
 <script lang="ts">
   import Modal from '$lib/components/Modal/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -30,18 +29,18 @@
     </h1>
 
     <div class="mt-5 flex items-center justify-between">
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.OUTLINED}
-        label={$t('delete_modal.no')}
-        onClick={() => (openDeleteModal = false)}
-      />
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.OUTLINED}
-        label={$t('delete_modal.yes')}
-        onClick={handleDelete}
-      />
+      <Button
+        variant="outline"
+        onclick={() => (openDeleteModal = false)}
+      >
+        {$t('delete_modal.no')}
+      </Button>
+      <Button
+        variant="outline"
+        onclick={handleDelete}
+      >
+        {$t('delete_modal.yes')}
+      </Button>
     </div>
   </div>
 </Modal>

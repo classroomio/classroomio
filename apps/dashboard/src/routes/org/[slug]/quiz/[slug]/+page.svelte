@@ -11,13 +11,12 @@
 
   import Preview from '$lib/components/Org/Quiz/Play/Preview.svelte';
   import DeleteModal from '$lib/components/Org/Quiz/DeleteModal.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import QuizQuestion from '$lib/components/Org/Quiz/QuizQuestion.svelte';
 
   import { t } from '$lib/utils/functions/translations';
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { currentOrgPath, deleteModal, quizStore, quizesStore } from '$lib/utils/store/org';
   import { allOptions, allThemes, booleanOptions, themeImages } from '$lib/utils/constants/quiz';
 
@@ -274,7 +273,7 @@
       </div>
 
       <div class="flex w-full justify-end">
-        <PrimaryButton label="Add Question" variant={VARIANTS.CONTAINED} onClick={addQuestion} />
+        <Button onclick={addQuestion}>Add Question</Button>
       </div>
     </div>
   </aside>
@@ -297,21 +296,16 @@
         {/if}
 
         {#if currentQuestion.type !== 'boolean'}
-          <div class="mb-4 flex w-full justify-center">
+          <div class="mb-4 flex w-full justify-center gap-4">
             {#if currentQuestion.options.length < allOptions.length}
-              <PrimaryButton
-                label={$t('components.quiz.add_more')}
-                variant={VARIANTS.CONTAINED_WHITE}
-                onClick={addOption}
-                className="mr-5"
-              />
+              <Button onclick={addOption}>
+                {$t('components.quiz.add_more')}
+              </Button>
             {/if}
             {#if currentQuestion.options.length > 0}
-              <PrimaryButton
-                label={$t('components.quiz.remove_last')}
-                variant={VARIANTS.CONTAINED_WHITE}
-                onClick={deleteOption}
-              />
+              <Button onclick={deleteOption}>
+                {$t('components.quiz.remove_last')}
+              </Button>
             {/if}
           </div>
         {/if}
@@ -323,17 +317,19 @@
   <aside class="settings h-full w-1/5 bg-gray-100 p-4 dark:bg-neutral-800">
     <div class="py-5">
       <h5>Quiz settings</h5>
-      <PrimaryButton label="Save Changes" variant={VARIANTS.CONTAINED} onClick={saveQuiz} className="my-3" />
-      <PrimaryButton label="Preview Quiz" variant={VARIANTS.OUTLINED} onClick={previewQuiz} className="my-3" />
-      <PrimaryButton
-        label="Delete question"
-        variant={VARIANTS.TEXT}
-        onClick={() => {
+      <Button onclick={saveQuiz} class="my-3">Save Changes</Button>
+      <Button variant="outline" onclick={previewQuiz} class="my-3">Preview Quiz</Button>
+      <Button
+        variant="ghost"
+        onclick={() => {
           if ($quizStore.questions.length === 1) return;
           $deleteModal.open = true;
           $deleteModal.isQuestion = true;
         }}
-        className="my-3"
+        class="my-3"
+      >
+        Delete question
+      </Button>
       />
     </div>
 

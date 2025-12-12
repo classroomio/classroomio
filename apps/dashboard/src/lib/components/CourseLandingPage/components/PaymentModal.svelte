@@ -5,8 +5,8 @@
   import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
 
   import Modal from '$lib/components/Modal/index.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
+  import { Button } from '@cio/ui/base/button';
 
   interface Props {
     open?: boolean;
@@ -76,7 +76,7 @@
 <Modal onClose={() => (open = false)} bind:open width="w-96" modalHeading="Process course payment">
   {#if step === STEPS.STEP_1}
     <form onsubmit={preventDefault(onSubmit)}>
-      <TextField
+      <InputField
         label="Your Fullname"
         bind:value={fields.fullname}
         autoFocus={true}
@@ -86,7 +86,7 @@
         autoComplete={false}
         errorMessage={errors.fullname}
       />
-      <TextField
+      <InputField
         label="Your Email"
         bind:value={fields.email}
         placeholder="johndoe@email.com"
@@ -97,7 +97,9 @@
       />
 
       <div class="mt-5 flex flex-row-reverse items-center">
-        <PrimaryButton className="px-6 py-3" label={paymentLink ? 'Next' : 'Finish'} type="submit" />
+        <Button type="submit">
+          {paymentLink ? 'Next' : 'Finish'}
+        </Button>
       </div>
     </form>
   {:else if step === STEPS.STEP_2}

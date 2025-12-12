@@ -16,16 +16,15 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import { fetchCourses } from '$lib/utils/services/courses';
   import { currentOrg, isOrgAdmin } from '$lib/utils/store/org';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import { askCommunityValidation, commentInCommunityValidation } from '$lib/utils/functions/validator';
 
   import Vote from '$lib/components/Vote/index.svelte';
-  import { IconButton } from '$lib/components/IconButton';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import * as Avatar from '@cio/ui/base/avatar';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { shortenName } from '$lib/utils/functions/string';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
   import { CommunityDeleteModal } from '$lib/features/community/components';
 
@@ -397,7 +396,7 @@
       </a>
       <div class="my-5 flex items-center justify-between">
         {#if isEditMode}
-          <TextField bind:value={editContent.title} className="w-full mr-2" errorMessage={errors.title} />
+          <InputField bind:value={editContent.title} className="w-full mr-2" errorMessage={errors.title} />
           <Select.Root type="single" bind:value={editContent.courseId}>
             <Select.Trigger class="h-full w-[25%]">
               <p>
@@ -422,20 +421,19 @@
         {/if}
 
         {#if question.author.id === $profile.id}
-          <PrimaryButton
-            label={isEditMode ? 'Save' : 'Edit'}
-            variant={VARIANTS.OUTLINED}
-            onClick={handleQuestionEdit}
-            className="h-fit"
-          />
+          <Button
+            variant="outline"
+            onclick={handleQuestionEdit}
+          >
+            {isEditMode ? 'Save' : 'Edit'}
+          </Button>
           {#if isEditMode}
-            <PrimaryButton
-              label="Cancel"
-              variant={VARIANTS.TEXT}
-              onClick={() => (isEditMode = !isEditMode)}
-              className="py-3 px-6 rounded-sm h-fit"
-              disablePadding={true}
-            />
+            <Button
+              variant="ghost"
+              onclick={() => (isEditMode = !isEditMode)}
+            >
+              Cancel
+            </Button>
           {/if}
         {/if}
       </div>
@@ -456,8 +454,7 @@
           </div>
           {#if question.author.id === $profile.id || $isOrgAdmin}
             <IconButton
-              value="delete-question"
-              onClick={() => {
+              onclick={() => {
                 if (!question) return;
 
                 deleteQuestion.shouldDelete = true;
@@ -516,8 +513,7 @@
 
               {#if comment.authorId === $profile.id || $isOrgAdmin}
                 <IconButton
-                  value="delete-comment"
-                  onClick={() => {
+                  onclick={() => {
                     deleteComment.shouldDelete = true;
                     deleteComment.commentId = comment.id;
                   }}
@@ -541,7 +537,9 @@
         {/if}
 
         <div class="mr-2 flex justify-end">
-          <PrimaryButton label="Comment" onClick={submitComment} />
+          <Button onclick={submitComment}>
+            Comment
+          </Button>
         </div>
       </div>
     </div>

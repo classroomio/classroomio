@@ -2,16 +2,14 @@
   import { get } from 'svelte/store';
   import { goto } from '$app/navigation';
   import { Spinner } from '@cio/ui/base/spinner';
-  import Navigation from '../Course/components/Navigation/index.svelte';
-  import Backdrop from '$lib/components/Backdrop/index.svelte';
+  import { Backdrop } from '$lib/features/ui';
   import { course, group, courseStore } from '../Course/store';
   import Confetti from '../Confetti/index.svelte';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { profile } from '$lib/utils/store/user';
-  import { globalStore } from '$lib/utils/store/app';
   import Modal from '$lib/components/Modal/index.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import type { GroupPerson } from '$lib/utils/types';
 
@@ -28,7 +26,6 @@
 
   let {
     courseId,
-    path = '',
     isExercisePage = false,
     isFetching = $bindable(false),
     containerClass = '',
@@ -76,13 +73,13 @@
     </p>
 
     <div class="mt-5 flex justify-center">
-      <PrimaryButton
-        className="px-6 py-3"
-        label={$t('course.not_permitted.button')}
-        onClick={() => {
+      <Button
+        onclick={() => {
           goto('/org/*');
         }}
-      />
+      >
+        {$t('course.not_permitted.button')}
+      </Button>
     </div>
   </div>
 </Modal>
@@ -91,7 +88,6 @@
   {@render children?.()}
 {:else}
   <div class="root">
-    <Navigation {path} isStudent={$globalStore.isStudent} />
     <div class="rightBar {containerClass}" class:isMobile={$isMobile}>
       {#if isExercisePage}
         <Confetti />

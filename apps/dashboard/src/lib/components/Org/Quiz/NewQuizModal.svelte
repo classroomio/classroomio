@@ -2,9 +2,9 @@
   import { preventDefault } from '$lib/utils/functions/svelte';
 
   import { goto } from '$app/navigation';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import Modal from '$lib/components/Modal/index.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { supabase } from '$lib/utils/functions/supabase';
   import { currentOrg, createQuizModal, currentOrgPath, quizesStore } from '$lib/utils/store/org';
@@ -114,7 +114,7 @@
   )}"
 >
   <form onsubmit={preventDefault(createQuiz)}>
-    <TextField
+    <InputField
       label={$t('components.quiz.quiz_title')}
       bind:value={$createQuizModal.title}
       autofocus={true}
@@ -126,13 +126,9 @@
     />
 
     <div class="mt-5 flex items-center justify-end">
-      <PrimaryButton
-        className="px-6 py-3"
-        label={$createQuizModal.openEdit ? $t('components.quiz.save') : $t('components.quiz.continue')}
-        type="submit"
-        isDisabled={isLoading}
-        {isLoading}
-      />
+      <Button type="submit" disabled={isLoading} loading={isLoading}>
+        {$createQuizModal.openEdit ? $t('components.quiz.save') : $t('components.quiz.continue')}
+      </Button>
     </div>
   </form>
 </Modal>

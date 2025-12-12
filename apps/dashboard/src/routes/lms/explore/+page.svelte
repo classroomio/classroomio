@@ -14,7 +14,7 @@
   import { courseMetaDeta } from '$lib/features/course/utils/store';
   import { fetchExploreCourses } from '$lib/utils/services/courses';
 
-  import { IconButton } from '$lib/components/IconButton';
+  import { IconButton } from '@cio/ui/custom/icon-button';
 
   let searchValue = $state('');
   let selectedId: string | undefined = $state();
@@ -115,11 +115,11 @@
         </Select.Root>
 
         {#if $courseMetaDeta.view === 'list'}
-          <IconButton onClick={() => setViewPreference('grid')}>
+          <IconButton onclick={() => setViewPreference('grid')}>
             <GridIcon size={16} />
           </IconButton>
         {:else}
-          <IconButton onClick={() => setViewPreference('list')}>
+          <IconButton onclick={() => setViewPreference('list')}>
             <ListIcon size={16} />
           </IconButton>
         {/if}

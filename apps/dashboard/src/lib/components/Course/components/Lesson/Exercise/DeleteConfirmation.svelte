@@ -1,9 +1,7 @@
 <script lang="ts">
   import Modal from '$lib/components/Modal/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
-
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { deleteConfirmation } from '../store/exercise';
 
   let { onDelete = () => {}, onCancel = () => {} } = $props();
@@ -21,24 +19,23 @@
     </p>
 
     <div class="mt-5 flex items-center justify-between">
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.OUTLINED}
-        label={$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.no')}
-        onClick={() => {
+      <Button
+        variant="outline"
+        onclick={() => {
           $deleteConfirmation.open = false;
           onCancel();
         }}
-      />
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.CONTAINED}
-        label={$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.yes')}
-        onClick={() => {
+      >
+        {$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.no')}
+      </Button>
+      <Button
+        onclick={() => {
           onDelete();
           $deleteConfirmation.open = false;
         }}
-      />
+      >
+        {$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.yes')}
+      </Button>
     </div>
   </div>
 </Modal>

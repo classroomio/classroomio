@@ -5,7 +5,7 @@
   import PlayQuiz from '$lib/components/Org/Quiz/Play/index.svelte';
   import { PageRestricted } from '$lib/components/Page';
   import Snackbar from '$lib/components/Snackbar/index.svelte';
-  import { UpgradeModal } from '$lib/features/ui';
+  import { UpgradeModal, PageLoadProgress } from '$lib/features/ui';
   import { user } from '$lib/utils/store/user';
   import { setupAnalytics } from '$lib/utils/functions/appSetup';
   import { setTheme } from '$lib/utils/functions/theme';
@@ -17,7 +17,6 @@
   import { onMount } from 'svelte';
   import { MetaTags } from 'svelte-meta-tags';
   import { authClient } from '$lib/utils/services/auth/client';
-  import { PageLoadProgress } from '$lib/features/ui';
 
   import { ModeWatcher } from '@cio/ui/base/dark-mode';
 

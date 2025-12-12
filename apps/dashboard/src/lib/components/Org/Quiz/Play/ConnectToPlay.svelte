@@ -6,8 +6,7 @@
   import { quizStore, playQuizStore } from '$lib/utils/store/org';
   import { STEPS } from '$lib/utils/constants/quiz';
   import { genQuizPin } from '$lib/utils/functions/org';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
 
   let isGettingPin = $state(true);
 
@@ -54,7 +53,7 @@
   {#snippet footer()}
     <div class="flex items-center justify-center">
       <p class="mr-3">Let's go</p>
-      <PrimaryButton label="View Players" variant={VARIANTS.OUTLINED} onClick={goToPlayersStep} />
+      <Button variant="outline" onclick={goToPlayersStep}>View Players</Button>
     </div>
   {/snippet}
 </PlayContainer>

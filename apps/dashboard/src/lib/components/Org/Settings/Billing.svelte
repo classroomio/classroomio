@@ -1,12 +1,11 @@
 <script>
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$lib/components/Snackbar/store';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import { currentOrgPlan, isFreePlan } from '$lib/utils/store/org';
 
   import { Row, Grid, Column } from './Layout';
   import SectionTitle from '../SectionTitle.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   let isRedirecting = $state(false);
 
@@ -54,12 +53,9 @@
       {:else}
         <p class="mb-3">{$t('settings.billing.provider')}</p>
 
-        <PrimaryButton
-          label={$t('settings.billing.open_billing')}
-          variant={VARIANTS.CONTAINED_DARK}
-          onClick={onOpenBilling}
-          isLoading={isRedirecting}
-        />
+        <Button onclick={onOpenBilling} loading={isRedirecting}>
+          {$t('settings.billing.open_billing')}
+        </Button>
       {/if}
     </Column>
   </Row>

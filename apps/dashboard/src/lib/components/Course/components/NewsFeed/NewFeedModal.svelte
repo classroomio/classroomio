@@ -4,14 +4,13 @@
   import type { Feed, Author } from '$lib/utils/types/feed';
   import { createNewFeed } from '$lib/utils/services/newsfeed';
   import { getTextFromHTML } from '$lib/utils/functions/toHtml';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import { createNewsfeedValidation } from '$lib/utils/functions/validator';
   import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
   import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/notification';
 
   import Modal from '$lib/components/Modal/index.svelte';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   interface Props {
     author?: Author | any;
@@ -136,12 +135,15 @@
     {/if}
     <div class="flex items-center justify-end py-2">
       <div class="flex gap-2">
-        <PrimaryButton
-          label={$t('course.navItem.news_feed.heading_button.cancel')}
-          variant={VARIANTS.OUTLINED}
-          onClick={resetEditor}
-        />
-        <PrimaryButton {isLoading} label={$t('course.navItem.news_feed.heading_button.post')} onClick={onPost} />
+        <Button
+          variant="outline"
+          onclick={resetEditor}
+        >
+          {$t('course.navItem.news_feed.heading_button.cancel')}
+        </Button>
+        <Button loading={isLoading} onclick={onPost}>
+          {$t('course.navItem.news_feed.heading_button.post')}
+        </Button>
       </div>
     </div>
   </section>

@@ -1,7 +1,7 @@
 <script>
   import { goto } from '$app/navigation';
   import { CommunityPage } from '$lib/features/community/pages';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
 
   function askCommunity() {
@@ -17,7 +17,9 @@
   <div class="px-5 py-10">
     <div class="mb-10 flex items-center justify-between">
       <h1 class="text-3xl dark:text-white">{$t('community.title')}</h1>
-      <PrimaryButton label={$t('community.ask_button')} onClick={askCommunity} />
+      <Button onclick={askCommunity}>
+        {$t('community.ask_button')}
+      </Button>
     </div>
 
     <CommunityPage isLMS={true} />

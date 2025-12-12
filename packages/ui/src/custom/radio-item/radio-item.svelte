@@ -1,5 +1,7 @@
 <script lang="ts">
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import * as RadioGroup from '../../base/radio-group';
+  import { InputField } from '../input-field';
+  import { cn } from '../../tools';
 
   interface Props {
     label?: string | null;
@@ -9,7 +11,7 @@
     isEditable?: boolean;
     disabled?: boolean;
     className?: string;
-    onChange?: any; // This is to know if element is 'dirty'
+    onchange?: (e: Event) => void;
     children?: import('svelte').Snippet;
   }
 
@@ -21,16 +23,16 @@
     isEditable = false,
     disabled = false,
     className = '',
-    onChange = () => {},
+    onchange = () => {},
     children
   }: Props = $props();
 </script>
 
-<div class="{className} group inline-flex w-full items-center {disabled ? 'cursor-not-allowed' : 'cursor-pointer'}">
-  <input class="form-radio" type="radio" {checked} {name} {value} disabled={disabled || isEditable} />
+<div class={cn('group inline-flex w-full items-center', disabled ? 'cursor-not-allowed' : 'cursor-pointer', className)}>
+  <RadioGroup.Item {value} disabled={disabled || isEditable} />
   {#if isEditable}
     <div class="w-2/4">
-      <TextField bind:value={label} placeholder="Your option" className="ml-1" type="text" {onChange} />
+      <InputField bind:value={label} placeholder="Your option" className="ml-1" type="text" {onchange} />
     </div>
   {:else}
     <span class="ml-2 dark:text-white">{label}</span>

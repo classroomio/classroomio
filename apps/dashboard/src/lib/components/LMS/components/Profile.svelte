@@ -1,8 +1,8 @@
 <script>
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { Row, Grid, Column } from '$lib/components/Org/Settings/Layout';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import LanguagePicker from '$lib/components/Org/Settings/LanguagePicker.svelte';
 
   import { profile } from '$lib/utils/store/user';
@@ -10,7 +10,6 @@
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
   import generateUUID from '$lib/utils/functions/generateUUID';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { handleLocaleChange } from '$lib/utils/functions/translations';
 
   let avatar = $state('');
@@ -87,17 +86,17 @@
       <p class="font-bold dark:text-white">{$t('settings.profile.personal_information.heading')}</p>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-2 lg:mt-0">
-      <TextField
+      <InputField
         label={$t('settings.profile.personal_information.full_name')}
         bind:value={$profile.fullname}
         className="w-full lg:w-60 mb-4"
       />
-      <TextField
+      <InputField
         label={$t('settings.profile.personal_information.username')}
         bind:value={$profile.username}
         className="w-full lg:w-60 mb-4"
       />
-      <TextField
+      <InputField
         label={$t('settings.profile.personal_information.email')}
         bind:value={$profile.email}
         className="w-full lg:w-60 mb-4"
@@ -107,13 +106,8 @@
     </Column>
   </Row>
   <Row class="m-5 flex w-full items-center gap-2 lg:justify-center">
-    <PrimaryButton
-      label={$t('settings.profile.update_profile')}
-      variant={VARIANTS.CONTAINED_DARK}
-      className="mr-5"
-      isLoading={loading}
-      isDisabled={loading}
-      onClick={handleUpdate}
-    />
+    <Button class="mr-5" {loading} disabled={loading} onclick={handleUpdate}>
+      {$t('settings.profile.update_profile')}
+    </Button>
   </Row>
 </Grid>

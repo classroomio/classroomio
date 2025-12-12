@@ -8,7 +8,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { isCourseFree } from '$lib/utils/functions/course';
 
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
 
   interface Props {
@@ -55,7 +55,7 @@
     </Select.Root>
   </div>
 
-  <TextField
+  <InputField
     className="mt-5"
     labelClassName="font-bold"
     label={$t('course.navItem.landing_page.editor.pricing_form.cost')}
@@ -64,7 +64,7 @@
   />
 
   {#if !isCourseFree(course.cost || 0)}
-    <TextField
+    <InputField
       className="mt-5"
       labelClassName="font-bold"
       label={$t('course.navItem.landing_page.editor.pricing_form.payment')}
@@ -88,7 +88,7 @@
   </div>
 
   {#if showDiscount}
-    <TextField
+    <InputField
       className="mt-5"
       labelClassName="font-bold"
       label={$t('course.navItem.landing_page.editor.pricing_form.percent')}

@@ -8,9 +8,8 @@
   import PlayHeader from './Header/index.svelte';
   import { quizStore } from '$lib/utils/store/org';
   import { themeImages } from '$lib/utils/constants/quiz';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { IconButton } from '$lib/components/IconButton';
+  import { Button } from '@cio/ui/base/button';
+  import { IconButton } from '@cio/ui/custom/icon-button';
 
   let { exitPreview = () => {} } = $props();
 
@@ -76,14 +75,14 @@
         {#snippet footer()}
           <div class="flex flex-col justify-center">
             {#if currentQuestion}
-              <PrimaryButton label="Exit Preview" variant={VARIANTS.TEXT} onClick={exitPreview} className="w-fit" />
+              <Button variant="ghost" onclick={exitPreview} class="w-fit">Exit Preview</Button>
 
               <div class="flex items-center justify-center">
-                <IconButton onClick={handlePrev} size="small">
+                <IconButton onclick={handlePrev}>
                   <ChevronLeftIcon size={16} />
                 </IconButton>
                 <p class="mx-3">{curQId + 1} / {totalQ}</p>
-                <IconButton onClick={handleNext} size="small">
+                <IconButton onclick={handleNext}>
                   <ChevronRightIcon size={16} />
                 </IconButton>
               </div>

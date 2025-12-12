@@ -13,22 +13,20 @@
   import { snackbar } from '$lib/components/Snackbar/store';
   import { blockedSubdomain } from '$lib/utils/constants/app';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import { copyToClipboard } from '$lib/utils/functions/formatYoutubeVideo';
   import { updateOrgSiteNameValidation } from '$lib/utils/functions/validator';
   import { sanitizeDomain, sendDomainRequest } from '$lib/utils/functions/domain';
 
   import { Row, Grid, Column } from './Layout';
   import SectionTitle from '../SectionTitle.svelte';
-  import TextChip from '$lib/components/Chip/Text.svelte';
-  import { IconButton } from '$lib/components/IconButton';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import { ComingSoon } from '$lib/features/ui';
-  import { UpgradeBanner } from '$lib/features/ui';
+  import { Chip } from '@cio/ui/custom/chip';
+  import { IconButton } from '@cio/ui/custom/icon-button';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
+  import { InputField } from '@cio/ui/custom/input-field';
+  import { ComingSoon, UpgradeBanner } from '$lib/features/ui';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
+  import { VisitOrgSiteButton } from '$lib/features/ui';
 
   let siteName = $derived($currentOrg.siteName);
   let customDomain = $state('');
@@ -216,7 +214,7 @@
 
       <div>
         <!-- Org Site Name -->
-        <TextField
+        <InputField
           label="URL"
           helperMessage={`https://${siteName || ''}.classroomio.com`}
           bind:value={siteName}
@@ -227,13 +225,9 @@
           errorMessage={errors.siteName}
         />
         <div class="mb-6 flex items-center">
-          <PrimaryButton
-            label={$t('components.settings.domains.update')}
-            className="py-2"
-            variant={VARIANTS.OUTLINED}
-            onClick={handleSaveSiteName}
-            isDisabled={isLoading}
-          />
+          <Button variant="outline" onclick={handleSaveSiteName} disabled={isLoading}>
+            {$t('components.settings.domains.update')}
+          </Button>
 
           <VisitOrgSiteButton />
         </div>
@@ -258,7 +252,7 @@
               <p class="text-md flex items-center gap-2 font-medium">
                 {$currentOrg.customDomain}
 
-                <IconButton contained={true} size="small" onClick={() => goto(`https://${$currentOrg.customDomain}`)}>
+                <IconButton onclick={() => goto(`https://${$currentOrg.customDomain}`)}>
                   <ArrowUpRightIcon size={16} />
                 </IconButton>
               </p>
@@ -268,9 +262,9 @@
               ></div>
             </div>
             {#if $currentOrg.isCustomDomainVerified}
-              <TextChip value="Verified" className="bg-green-500 text-white text-xs px-3" size="sm" />
+              <Chip value="Verified" className="bg-green-500 text-white" />
             {:else}
-              <TextChip value="Pending verification" className="bg-yellow-500 text-white text-xs px-3" size="sm" />
+              <Chip value="Pending verification" className="bg-yellow-500 text-white" />
             {/if}
           </div>
 
@@ -295,7 +289,7 @@
               <p class="text-sm font-light">{$t('components.settings.domains.dns_value')}</p>
               <p class=" flex items-center gap-1">
                 cname.vercel-dns.com
-                <IconButton onClick={() => copyToClipboard('cname.vercel-dns.com')}>
+                <IconButton onclick={() => copyToClipboard('cname.vercel-dns.com')}>
                   <p>cname.vercel-dns.com</p>
 
                   <Copy />
@@ -305,36 +299,26 @@
           </div>
 
           <div class="mt-5 flex items-center justify-between">
-            <PrimaryButton
-              className="py-2 flex items-center gap-2"
-              onClick={handleRefreshCustomDomain}
-              isLoading={isRefreshing}
-              variant={VARIANTS.OUTLINED}
-            >
+            <Button variant="outline" onclick={handleRefreshCustomDomain} loading={isRefreshing}>
               {#if !isRefreshing}
                 <RotateCcwIcon size={16} />
               {/if}
               {$t('components.settings.domains.refresh')}
-            </PrimaryButton>
+            </Button>
 
-            <PrimaryButton
-              className="py-2 flex items-center gap-2"
-              onClick={handleRemoveCustomDomain}
-              isLoading={isCustomDomainLoading}
-              variant={VARIANTS.CONTAINED_DANGER}
-            >
+            <Button variant="destructive" onclick={handleRemoveCustomDomain} loading={isCustomDomainLoading}>
               {#if !isCustomDomainLoading}
                 <TrashIcon size={16} />
               {/if}
               {$t('components.settings.domains.remove')}
-            </PrimaryButton>
+            </Button>
           </div>
         {:else}
           <!-- Add Custom Domain -->
           <div class="mb-4 flex items-center gap-5">
             <p class="font-bold">{$t('components.settings.domains.your_domain')}</p>
           </div>
-          <TextField
+          <InputField
             bind:value={customDomain}
             type="text"
             placeholder="courses.yourwebsite.com"
@@ -345,13 +329,13 @@
           />
 
           <div class="mt-5 flex items-center">
-            <PrimaryButton
-              label={$t('components.settings.domains.save')}
-              className="py-2"
-              onClick={$isFreePlan ? () => {} : handleSaveCustomDomain}
-              isLoading={isCustomDomainLoading}
-              isDisabled={isLoading || !isDomainValid}
-            />
+            <Button
+              onclick={$isFreePlan ? () => {} : handleSaveCustomDomain}
+              loading={isCustomDomainLoading}
+              disabled={isLoading || !isDomainValid}
+            >
+              {$t('components.settings.domains.save')}
+            </Button>
           </div>
         {/if}
       </div>
@@ -380,7 +364,7 @@
           <ComingSoon />
         </div>
 
-        <TextArea
+        <TextareaField
           bind:value={customCode}
           placeholder="e.g <link rel='stylesheet' href='https://example.com/style.css' />"
           className="w-4/5"

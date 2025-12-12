@@ -117,7 +117,7 @@
   {#if type !== undefined && loading}
     <div class="ui:absolute ui:flex ui:size-full ui:place-items-center ui:justify-center ui:bg-inherit">
       <div class="ui:flex ui:animate-spin ui:place-items-center ui:justify-center">
-        <LoaderCircleIcon class="ui:size-4" />
+        <LoaderCircleIcon class="custom ui:size-4" />
       </div>
     </div>
     <span class="ui:sr-only">Loading</span>

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { t } from '$lib/utils/functions/translations';
-  import Chip from '../Chip/index.svelte';
-  import TextField from '../Form/TextField.svelte';
+  import { Chip } from '@cio/ui/custom/chip';
+  import { InputField } from '@cio/ui/custom/input-field';
 
   interface Props {
     title?: string;
@@ -54,7 +54,7 @@
             </h4>
           </button>
         {:else}
-          <TextField
+          <InputField
             bind:value={title}
             placeholder={$t('course.navItem.settings.course_title')}
             onChange={() => {
@@ -87,7 +87,7 @@
             {item.label}
 
             {#if typeof item.badgeValue === 'number'}
-              <Chip value={item.badgeValue} className="ml-1 bg-gray-300 dark:text-black" />
+              <Chip value={item.badgeValue} className="ml-1" />
             {/if}
             <span
               class="bg-primary-700 absolute bottom-0 left-0 h-1 transition-all duration-500 ease-in-out {item.isActive

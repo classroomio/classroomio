@@ -1,6 +1,6 @@
 <script>
   import { Modal } from '$lib/components/Modal';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
@@ -83,13 +83,13 @@
     </p>
 
     <div class="flex flex-col items-center">
-      <PrimaryButton isDisabled={loading || isSent} className="font-normal" onClick={sendVerificationCode}>
+      <Button disabled={loading || isSent} onclick={sendVerificationCode}>
         {#if loading}
           {$t('verify_email_modal.loading')}
         {:else}
           {$t('verify_email_modal.resend')}
         {/if}
-      </PrimaryButton>
+      </Button>
       {#if isSent}
         <p class="text-xs text-gray-700">
           {$t('verify_email_modal.resend_in')}

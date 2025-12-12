@@ -1,5 +1,5 @@
 <script lang="ts">
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '../Snackbar/store';
 
@@ -20,7 +20,7 @@
 </script>
 
 <div class="flex items-center font-semibold">
-  <TextField
+  <InputField
     placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.points')}
     bind:value={grade}
     max={gradeMax}

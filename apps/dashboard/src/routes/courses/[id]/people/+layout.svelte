@@ -1,9 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import { IconButton } from '$lib/components/IconButton';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import { PageBody, PageNav } from '$lib/components/Page';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import { RoleBasedSecurity } from '$lib/features/ui';
   import { t } from '$lib/utils/functions/translations';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
@@ -33,7 +33,7 @@
     {#snippet image()}
       {#if data.personId}
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <IconButton size="large" onClick={handleBackNavigation}>
+          <IconButton onclick={handleBackNavigation}>
             <ArrowLeftIcon size={16} />
           </IconButton>
         </RoleBasedSecurity>
@@ -42,7 +42,9 @@
     {#snippet widget()}
       {#if !data.personId}
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <PrimaryButton className="mr-2" label={$t('course.navItem.people.add')} onClick={handleClick} />
+          <Button class="mr-2" onclick={handleClick}>
+            {$t('course.navItem.people.add')}
+          </Button>
         </RoleBasedSecurity>
       {/if}
     {/snippet}

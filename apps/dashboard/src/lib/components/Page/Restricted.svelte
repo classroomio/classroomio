@@ -1,7 +1,6 @@
 <script>
   import { goto } from '$app/navigation';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import LockIcon from '@lucide/svelte/icons/lock';
 
   function handleClick() {
@@ -16,7 +15,7 @@
     <p class=" mb-5 text-center text-lg text-gray-700 dark:text-white">
       This organization is restricted. In the mean time, you can checkout our features.
     </p>
-    <PrimaryButton variant={VARIANTS.CONTAINED_DARK} label="Go Home" className="text-lg" onClick={handleClick} />
+    <Button variant="secondary" onclick={handleClick}>Go Home</Button>
   </div>
 </div>
 

@@ -1,8 +1,6 @@
 <script lang="ts">
   import Modal from '$lib/components/Modal/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
 
   interface Props {
     openDeleteModal?: boolean;
@@ -22,13 +20,15 @@
     <h1 class="text-lg dark:text-white">Are you sure you want to delete this feed?</h1>
 
     <div class="mt-5 flex items-center justify-between">
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.OUTLINED}
-        label="No"
-        onClick={() => (openDeleteModal = false)}
-      />
-      <PrimaryButton className="px-6 py-3" variant={VARIANTS.OUTLINED} label="Yes" onClick={handleDelete} />
+      <Button
+        variant="outline"
+        onclick={() => (openDeleteModal = false)}
+      >
+        No
+      </Button>
+      <Button variant="outline" onclick={handleDelete}>
+        Yes
+      </Button>
     </div>
   </div>
 </Modal>

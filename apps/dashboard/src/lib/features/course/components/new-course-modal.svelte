@@ -6,11 +6,10 @@
   import { ComingSoon } from '$lib/features/ui';
   import { validateForm } from '../utils/functions';
   import { courses, createCourseModal } from '../utils/store';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
+  import { InputField } from '@cio/ui/custom/input-field';
   import Modal from '$lib/components/Modal/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import { ROLE } from '@cio/utils/constants';
   import { supabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
@@ -180,29 +179,26 @@
       </div>
 
       <div class="mt-8 flex flex-row-reverse items-center">
-        <PrimaryButton
-          className="px-6 py-3"
-          label={$t('courses.new_course_modal.next')}
-          onClick={() => (step = 1)}
-          isDisabled={!type}
-        />
+        <Button onclick={() => (step = 1)} disabled={!type}>
+          {$t('courses.new_course_modal.next')}
+        </Button>
       </div>
     </div>
   {:else}
     <form onsubmit={preventDefault(createCourse)}>
       <div class="mb-4 flex items-end space-x-2">
-        <TextField
+        <InputField
           label={$t('courses.new_course_modal.course_name')}
           bind:value={$createCourseModal.title}
           placeholder={$t('courses.new_course_modal.course_name_placeholder')}
-          className="w-full "
+          className="w-full"
           isRequired={true}
           errorMessage={errors.title}
           autoComplete={false}
         />
       </div>
 
-      <TextArea
+      <TextareaField
         label={$t('courses.new_course_modal.short_description')}
         bind:value={$createCourseModal.description}
         rows={4}
@@ -215,19 +211,12 @@
       />
 
       <div class="mt-5 flex items-center justify-between">
-        <PrimaryButton
-          className="px-6 py-3"
-          label={$t('courses.new_course_modal.back')}
-          variant={VARIANTS.OUTLINED}
-          onClick={() => (step = 0)}
-        />
-        <PrimaryButton
-          className="px-6 py-3"
-          label={$t('courses.new_course_modal.button')}
-          type="submit"
-          isDisabled={isLoading}
-          {isLoading}
-        />
+        <Button variant="outline" onclick={() => (step = 0)}>
+          {$t('courses.new_course_modal.back')}
+        </Button>
+        <Button type="submit" disabled={isLoading} loading={isLoading}>
+          {$t('courses.new_course_modal.button')}
+        </Button>
       </div>
     </form>
   {/if}

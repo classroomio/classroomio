@@ -9,7 +9,7 @@
   import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
   import { currentOrgDomain } from '$lib/utils/store/org';
 
-  import { IconButton } from '$lib/components/IconButton';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import { CloseButton } from '$lib/components/Buttons/Close';
   import HeaderForm from './HeaderForm.svelte';
   import RequirementForm from './RequirementForm.svelte';
@@ -19,8 +19,7 @@
   import ReviewsForm from './ReviewsForm.svelte';
   import CertificateForm from './CertificateForm.svelte';
   import InstructorForm from './InstructorForm.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import { updateCourse } from '$lib/utils/services/courses';
   import generateSlug from '$lib/utils/functions/generateSlug';
 
@@ -168,17 +167,9 @@
 >
   <div class="toggler absolute rounded-full shadow-lg">
     <IconButton
-      value="toggle"
-      onClick={() => (show = !show)}
-      size={$isMobile ? 'large' : 'small'}
-      color="text-black"
-      toolTipProps={$isMobile
-        ? undefined
-        : {
-            title: 'Toggle editor',
-            direction: 'right',
-            hotkeys: []
-          }}
+      onclick={() => (show = !show)}
+      tooltip={$isMobile ? undefined : 'Toggle editor'}
+      tooltipSide={$isMobile ? undefined : 'right'}
     >
       {#if show}
         <ChevronRightIcon size={16} />
@@ -192,15 +183,10 @@
       <div class="flex w-full items-center justify-between px-2">
         <CloseButton onClick={handleClose} />
         <div class="flex items-center">
-          <PrimaryButton
-            label={$t('course.navItem.landing_page.editor.save')}
-            type="button"
-            className="mr-1"
-            variant={VARIANTS.OUTLINED}
-            onClick={handleSave}
-            isLoading={loading}
-          />
-          <IconButton onClick={handlePreview} disabled={loading || !course.slug}>
+          <Button type="button" class="mr-1" variant="outline" onclick={handleSave} {loading}>
+            {$t('course.navItem.landing_page.editor.save')}
+          </Button>
+          <IconButton onclick={handlePreview} disabled={loading || !course.slug}>
             <ArrowUpRightIcon size={16} />
           </IconButton>
         </div>
@@ -224,7 +210,7 @@
     {:else}
       <!-- Title -->
       <div class="flex items-center {borderBottomGrey} w-full">
-        <IconButton onClick={handleClose}>
+        <IconButton onclick={handleClose}>
           <ArrowLeftIcon size={16} />
         </IconButton>
         <div class=" flex items-center">

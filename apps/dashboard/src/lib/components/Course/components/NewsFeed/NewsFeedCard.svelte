@@ -14,7 +14,7 @@
   import { addNewsfeedCommentValidation } from '$lib/utils/functions/validator';
   import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
 
-  import Chip from '$lib/components/Chip/index.svelte';
+  import { Chip } from '@cio/ui/custom/chip';
   import DeleteFeedConfirmation from './DeleteFeedConfirmation.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import { RoleBasedSecurity } from '$lib/features/ui';

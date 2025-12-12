@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { goto } from '$app/navigation';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import { courses } from '$lib/features/course/utils/store';
   import { t } from '$lib/utils/functions/translations';
   import { Empty } from '@cio/ui/custom/empty';
@@ -38,12 +37,9 @@
                   {course.description}
                 </p>
               </div>
-              <PrimaryButton
-                label={$t('dashboard.continue')}
-                variant={VARIANTS.OUTLINED}
-                className="rounded-none text-[#0233BD]"
-                onClick={() => gotoCourse(course.id)}
-              />
+              <Button variant="outline" onclick={() => gotoCourse(course.id)}>
+                {$t('dashboard.continue')}
+              </Button>
             </span>
             <div class="relative h-1 w-full bg-[#EAEAEA]">
               <div

@@ -14,11 +14,11 @@
   import { handleOpenWidget, reviewsModalStore } from './store';
   import { COURSE_VERSION, type Course } from '$lib/utils/types';
   import { course, sortLesson } from '$lib/components/Course/store';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
   import { getExerciseCount, getLessonSections, getTotalLessons, filterNavItems } from './utils';
+  import { Button } from '@cio/ui/base/button';
 
-  import Chip from '../Chip/index.svelte';
+  import { Chip } from '@cio/ui/custom/chip';
   import Modal from '../Modal/index.svelte';
   import ImageRenderer from '../Org/ImageRenderer.svelte';
   import * as Avatar from '@cio/ui/base/avatar';
@@ -28,7 +28,6 @@
   import SectionsDisplay from './components/SectionsDisplay.svelte';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { observeIntersection } from './components/IntersectionObserver';
 
   interface Props {
@@ -126,15 +125,16 @@
         <p class="author my-3 text-sm dark:text-white">
           {get(courseData, 'metadata.instructor.name', '')}
         </p>
-        <PrimaryButton
-          label={$t('course.navItem.landing_page.start_course')}
-          className="px-6 py-5 mt-6 sm:w-fit hidden md:block"
-          onClick={() => {
+        <Button
+          class="mt-6 hidden sm:w-fit md:block"
+          onclick={() => {
             if (editMode) return;
             startCoursePayment = true;
           }}
-          isDisabled={!allowNewStudent}
-        />
+          disabled={!allowNewStudent}
+        >
+          {$t('course.navItem.landing_page.start_course')}
+        </Button>
         {#if $handleOpenWidget.open}
           <UploadWidget bind:imageURL={$course.logo} />
         {/if}
@@ -290,7 +290,7 @@
             <div class="flex flex-wrap">
               {#each lessons as lesson, index}
                 <div class="m-2 rounded border px-2 py-1">
-                  <Chip value={getLectureNo(index + 1, '0')} className="bg-primary-100 text-primary-700 inline " />
+                  <Chip value={getLectureNo(index + 1, '0')} />
                   <p class="ml-2 inline text-xs font-light dark:text-white">
                     {lesson.title}
                   </p>
@@ -374,12 +374,9 @@
               {/each}
             </div>
             {#if reviews.length > 4}
-              <PrimaryButton
-                label={$t('course.navItem.landing_page.see_all')}
-                className="w-3/12 p-4 mt-2"
-                variant={VARIANTS.OUTLINED}
-                onClick={() => ($reviewsModalStore.open = true)}
-              />
+              <Button class="mt-2" variant="outline" onclick={() => ($reviewsModalStore.open = true)}>
+                {$t('course.navItem.landing_page.see_all')}
+              </Button>
             {/if}
 
             <!-- Reviews Modal -->
@@ -453,7 +450,7 @@
             <img
               alt="Author Avatar"
               class="mr-3 block h-20 w-20 rounded-full"
-              src={get(instructor, 'imgUrl', $currentOrg.avatar_url || '/logo-512.png')}
+              src={get(instructor, 'imgUrl', $currentOrg.avatarUrl || '/logo-512.png')}
             />
             <div>
               <p class="text-md font-light dark:text-white">
