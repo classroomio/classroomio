@@ -97,11 +97,11 @@
         <span>Educate Your</span>
         <div class="flex-wrap flex items-center justify-center lg:gap-3 mb-2">
           <span
-            class="w-full lg:w-[48%] h-[40px] md:h-[50px] lg:h-[75px] mb-0 mt-1 md:mt-0 lg:-mb-4 relative inline-block overflow-hidden lg:text-center"
+            class="w-full border lg:w-[48%] h-[40px] md:h-[50px] lg:h-[75px] mb-0 mt-1 md:mt-0 lg:-mb-4 relative inline-block overflow-hidden lg:text-center"
           >
             {#key titleIndex}
               <span
-                class="absolute left-0 right-[unset] lg:right-0 lg:left-[unset] w-full"
+                class="absolute border border-red-300 left-0 right-[unset] lg:right-0 lg:left-[unset] w-full"
                 style="color: {names[titleIndex].color}"
                 transition:fly={{ y: 100, delay: 0, easing: sineInOut }}
               >

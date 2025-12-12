@@ -1,6 +1,8 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@import '@cio/ui/output.css';
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 body {
   overflow-x: hidden;
@@ -16,11 +18,13 @@ li {
 }
 
 @-webkit-keyframes floating {
+
   0%,
   100% {
     -webkit-transform: translateY(0rem);
     transform: translateY(0rem);
   }
+
   50% {
     -webkit-transform: translateY(1rem);
     transform: translateY(1rem);
@@ -28,16 +32,19 @@ li {
 }
 
 @keyframes floating {
+
   0%,
   100% {
     -webkit-transform: translateY(0rem);
     transform: translateY(0rem);
   }
+
   50% {
     -webkit-transform: translateY(1rem);
     transform: translateY(1rem);
   }
 }
+
 .prose {
   font-family: 'Inter', sans-serif;
 }
@@ -46,21 +53,27 @@ li {
   font-weight: 700;
   margin-top: 20px;
 }
+
 .prose :is(h1) {
   font-size: 2em;
 }
+
 .prose :is(h2) {
   font-size: 1.5em;
 }
+
 .prose :is(h3) {
   font-size: 1.17em;
 }
+
 .prose :is(h4) {
   font-size: 1em;
 }
+
 .prose :is(h5) {
   font-size: 0.83em;
 }
+
 .prose :is(h6) {
   font-size: 0.67em;
 }
@@ -82,6 +95,7 @@ li {
   border-radius: 8px;
   tab-size: 2;
 }
+
 .prose blockquote {
   border-left: 4px solid gray;
   font-style: italic;
@@ -89,7 +103,8 @@ li {
   padding-left: 16px;
   margin: 20px 0;
 }
-.prose figure + em {
+
+.prose figure+em {
   display: block;
   font-size: 14px;
   margin-bottom: 40px;
@@ -105,11 +120,13 @@ li {
 .tools-hero-bg {
   background-image: url('https://assets.cdn.clsrio.com/www/tools-hero-bg.svg');
 }
+
 @media (min-width: 760px) {
   .tools-hero-bg {
     min-height: 350px;
   }
 }
+
 .cio-bg-blue {
   background: rgb(2, 51, 189);
   background-size: cover;
