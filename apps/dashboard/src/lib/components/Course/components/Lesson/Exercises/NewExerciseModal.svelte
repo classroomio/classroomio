@@ -115,7 +115,7 @@
 
   async function handleTemplateSelection() {
     isTemplateFinishedLoading = true;
-    const template = exerciseTemplateApi.templates?.[selectedTag]?.find((t) => t.id === selectedTemplateId);
+    const template = exerciseTemplateApi.templates?.find((t) => t.id === Number(selectedTemplateId));
 
     if (!template) return;
 
@@ -137,7 +137,7 @@
   const handleTagSelection = async (tag: string) => {
     selectedTag = tag;
     selectedTemplateId = '';
-    await exerciseTemplateApi.fetchTemplateByTag(selectedTag);
+    await exerciseTemplateApi.fetchTemplatesByTag(selectedTag);
   };
 
   // const content = $derived(
