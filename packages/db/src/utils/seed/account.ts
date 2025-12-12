@@ -1,6 +1,17 @@
 import { account, db } from '@db/drizzle';
+import { TAccount } from '@db/types';
 
-export async function seedAccount({ usersData }: { usersData }) {
+interface TUserSeedData extends TAccount {
+  encrypted_password?: string;
+  identities?: Array<{
+    provider: string;
+    identity_data?: {
+      sub?: string;
+    };
+  }>;
+}
+
+export async function seedAccount({ usersData }: { usersData: TUserSeedData[] }) {
   const existingAccounts = await db.select().from(account);
   const existingAccountKeys = existingAccounts.map((a) => `${a.userId}-${a.providerId}`);
 

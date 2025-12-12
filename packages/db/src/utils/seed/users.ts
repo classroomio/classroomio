@@ -1,15 +1,16 @@
 import { db, user } from '@db/drizzle';
+import { TUser } from '@db/types';
 
-export async function seedUsers({ usersData }: { usersData }) {
+export async function seedUsers({ usersData }: { usersData: TUser[] }) {
   const existingUsers = await db.select().from(user);
   const existingUserIds = existingUsers.map((u) => u.id);
 
   const usersToInsert = usersData
     .map((userData) => ({
       id: userData.id,
-      name: userData.profile_fullname,
+      name: userData.name,
       email: userData.email,
-      emailVerified: !!userData.email_confirmed_at,
+      emailVerified: userData.emailVerified,
       image: null,
       role: null,
       banned: false,

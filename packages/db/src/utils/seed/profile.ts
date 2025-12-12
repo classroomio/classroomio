@@ -1,13 +1,14 @@
 import { db, profile } from '@db/drizzle';
+import { TUser } from '@db/types';
 
-export async function seedProfile({ usersData }: { usersData }) {
+export async function seedProfile({ usersData }: { usersData: TUser[] }) {
   const existingProfiles = await db.select().from(profile);
   const existingProfileIds = existingProfiles.map((p) => p.id);
 
   const profilesToInsert = usersData
     .map((user) => ({
       id: user.id,
-      fullname: user.profile_fullname,
+      fullname: user.name,
       username: `${user.email.split('@')[0]}${Date.now()}`,
       email: user.email,
       avatarUrl: 'https://pgrest.classroomio.com/storage/v1/object/public/avatars/avatar.png',

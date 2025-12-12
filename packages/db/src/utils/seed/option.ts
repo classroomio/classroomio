@@ -1,10 +1,13 @@
-import { db, eq, option, or } from '@db/drizzle';
+import { db, eq, option, or, sql } from '@db/drizzle';
+import { TOption, TQuestion } from '@db/types';
 
-export async function seedOptions(insertedQuestions) {
+export async function seedOptions(insertedQuestions: TQuestion[]) {
+  const maxIdResult = await db.select({ maxId: sql<number>`COALESCE(MAX(${option.id}), 0)` }).from(option);
+  let nextId = (maxIdResult[0]?.maxId || 0) + 1;
+
   const questionIds = insertedQuestions.map((q) => q.id);
 
-  // Check if options already exist for these questions
-  let existingOptions = [];
+  let existingOptions: TOption[] = [];
   if (questionIds.length > 0) {
     const conditions = questionIds.map((id) => eq(option.questionId, id));
     existingOptions = await db
@@ -12,7 +15,7 @@ export async function seedOptions(insertedQuestions) {
       .from(option)
       .where(or(...conditions));
   }
-  const existingOptionQuestionIds = new Set(existingOptions.map((o) => o.questionId));
+  const existingOptionLabels = new Set(existingOptions.map((o) => o.label));
 
   // Get question IDs from inserted or existing questions
   const mvcQuestion = insertedQuestions.find((q) => q.exerciseId === 'e2ea9fb8-6448-4f6c-a1d5-02c2b12cf862');
@@ -117,7 +120,12 @@ export async function seedOptions(insertedQuestions) {
           }
         ]
       : [])
-  ].filter((o) => !existingOptionQuestionIds.has(o.questionId));
+  ]
+    .filter((o) => !existingOptionLabels.has(o.label))
+    .map((o) => ({
+      ...o,
+      id: nextId++
+    }));
 
   if (optionsToInsert.length > 0) {
     await db.insert(option).values(optionsToInsert);

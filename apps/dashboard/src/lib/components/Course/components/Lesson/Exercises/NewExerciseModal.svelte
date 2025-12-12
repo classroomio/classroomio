@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Badge } from '@cio/ui/base/badge';
-  import { Spinner } from '@cio/ui/base/spinner';
+  import { Skeleton } from '@cio/ui/base/skeleton';
 
   import { t } from '$lib/utils/functions/translations';
   import { exerciseTemplateApi } from '$lib/features/exercise-template/api';
@@ -247,10 +247,22 @@
           </div>
 
           {#if exerciseTemplateApi.isLoading}
-            <div class="flex w-full items-center justify-center py-10">
-              <Spinner class="text-white" />
+            <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
+              {#each Array(16) as _}
+                <div
+                  class="h-[140px] w-full rounded-md border-2 border-gray-200 p-5 dark:border-neutral-600 dark:bg-neutral-700"
+                >
+                  <div class="flex h-full flex-col justify-evenly">
+                    <Skeleton class="h-4 w-3/4" />
+                    <div class="flex flex-col items-start justify-between gap-1">
+                      <Skeleton class="h-3 w-20" />
+                      <Skeleton class="h-3 w-16" />
+                    </div>
+                  </div>
+                </div>
+              {/each}
             </div>
-          {:else if exerciseTemplateApi.templates.length === 0}
+          {:else if exerciseTemplateApi.templates.length > 0}
             <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
               {#each exerciseTemplateApi.templates as template}
                 <button

@@ -1,5 +1,6 @@
 import { db, template } from '@db/drizzle';
-import templatesData from '../../templates.json';
+import templatesData from '../../../templates.json';
+import { TTemplate } from '@db/types';
 
 export async function seedTemplates() {
   const existingTemplates = await db.select().from(template);
@@ -15,7 +16,7 @@ export async function seedTemplates() {
     }));
 
   if (templatesToInsert.length > 0) {
-    await db.insert(template).values(templatesToInsert);
+    await db.insert(template).values(templatesToInsert as TTemplate[]);
     console.log(`   ✓ Inserted ${templatesToInsert.length} template(s)`);
   } else {
     console.log('   ✓ Templates already exist, skipping');

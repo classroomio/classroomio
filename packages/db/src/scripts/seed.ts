@@ -1,21 +1,21 @@
 import 'dotenv/config';
 
 import usersData from '../../users.json';
-import { seedTemplates } from '@db/utils/template';
-import { seedQuestions } from '@db/utils/question';
-import { seedLessons } from '@db/utils/lesson';
-import { seedExercise } from '@db/utils/exercise';
-import { seedCourses } from '@db/utils/course';
-import { seedGroupmembers } from '@db/utils/groupmember';
-import { seedOrganizationMember } from '@db/utils/organizationmember';
-import { seedGroup } from '@db/utils/group';
-import { seedOrganization } from '@db/utils/organization';
-import { seedAccount } from '@db/utils/account';
-import { seedProfile } from '@db/utils/profile';
-import { seedUsers } from '@db/utils/users';
-import { seedTypes } from '@db/utils/questionType';
-import { seedSubmissions } from '@db/utils/submission';
-import { seedRoles } from '@db/utils/role';
+import { seedTemplates } from '@db/utils/seed/template';
+import { seedQuestions } from '@db/utils/seed/question';
+import { seedLessons } from '@db/utils/seed/lesson';
+import { seedExercise } from '@db/utils/seed/exercise';
+import { seedCourses } from '@db/utils/seed/course';
+import { seedGroupmembers } from '@db/utils/seed/groupmember';
+import { seedOrganizationMember } from '@db/utils/seed/organizationmember';
+import { seedGroup } from '@db/utils/seed/group';
+import { seedOrganization } from '@db/utils/seed/organization';
+import { seedAccount } from '@db/utils/seed/account';
+import { seedProfile } from '@db/utils/seed/profile';
+import { seedUsers } from '@db/utils/seed/users';
+import { seedTypes } from '@db/utils/seed/questionType';
+import { seedSubmissions } from '@db/utils/seed/submission';
+import { seedRoles } from '@db/utils/seed/role';
 
 async function seed() {
   try {
@@ -35,14 +35,17 @@ async function seed() {
 
     // Seed users (must be before profiles due to foreign key constraint)
     console.log('📝 Seeding users...');
+    // @ts-expect-error missing properties
     await seedUsers({ usersData });
 
     // Seed profiles
     console.log('📝 Seeding profiles...');
+    // @ts-expect-error missing properties
     await seedProfile({ usersData });
 
     // Seed accounts (must be after users due to foreign key constraint)
     console.log('📝 Seeding accounts...');
+    // @ts-expect-error missing properties
     await seedAccount({ usersData });
 
     // Seed organizations

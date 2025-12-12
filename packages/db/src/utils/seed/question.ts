@@ -1,21 +1,12 @@
-import { db, eq, or, question } from '@db/drizzle';
+import { db, eq, or, question, sql } from '@db/drizzle';
 import { seedOptions } from './option';
 
 export async function seedQuestions() {
-  const existingQuestions = await db
-    .select()
-    .from(question)
-    .where(
-      or(
-        eq(question.exerciseId, 'e2ea9fb8-6448-4f6c-a1d5-02c2b12cf862'),
-        eq(question.exerciseId, 'e78bfd24-8ac3-43e9-a117-a2f9d00f74b1'),
-        eq(question.exerciseId, 'bd6e81c7-3d28-4037-acf0-a3028c583771'),
-        eq(question.exerciseId, 'd8cd1cf7-1951-46b3-ad1c-41e415185bc1')
-      )
-    );
-  const existingQuestionExerciseIds = existingQuestions.map((q) => q.exerciseId);
+  // Get max id from the question table
+  const maxIdResult = await db.select({ maxId: sql<number>`COALESCE(MAX(${question.id}), 0)` }).from(question);
+  let nextId = (maxIdResult[0]?.maxId || 0) + 1;
 
-  const questionsToInsert = [
+  const questionsData = [
     {
       questionTypeId: 2, // CHECKBOX
       title: 'What does MVC stand for',
@@ -45,7 +36,20 @@ export async function seedQuestions() {
       points: 0,
       order: 0
     }
-  ].filter((q) => !existingQuestionExerciseIds.includes(q.exerciseId));
+  ];
+
+  const existingQuestions = await db
+    .select()
+    .from(question)
+    .where(or(...questionsData.map((q) => eq(question.title, q.title))));
+  const existingQuestionTitles = existingQuestions.map((q) => q.title);
+
+  const questionsToInsert = questionsData
+    .filter((q) => !existingQuestionTitles.includes(q.title))
+    .map((q) => ({
+      ...q,
+      id: nextId++
+    }));
 
   let insertedQuestions = [];
   if (questionsToInsert.length > 0) {
