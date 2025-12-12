@@ -9,7 +9,8 @@
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
 
-  let stars = 0;
+  export let stars: number;
+  
   let showDrawer = false;
   let showSolutions = false;
   let activeLink = '';
@@ -53,20 +54,6 @@
   $: activeLink = page.url.pathname;
   $: activeHash = page.url.hash;
   $: isSolutionsActive = solutions.some((s) => activeHash.includes(s.key));
-
-  async function setStars() {
-    try {
-      const response = await fetch('https://api.github.com/repos/classroomio/classroomio');
-      const data = await response.json();
-      stars = data?.stargazers_count || 0;
-    } catch (error) {
-      console.error('Error fetching GitHub stars:', error);
-    }
-  }
-
-  onMount(() => {
-    setStars();
-  });
 </script>
 
 <div

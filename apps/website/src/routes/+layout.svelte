@@ -25,7 +25,7 @@
 <MetaTags {...metaTags} />
 
 <div class="overflow-hidden bg-white">
-  <Navigation />
+  <Navigation stars={data.stars} />
 
   <PageTransition url={data.url}>
     {#if page.status === 404}
