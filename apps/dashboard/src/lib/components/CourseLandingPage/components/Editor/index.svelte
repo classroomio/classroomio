@@ -9,7 +9,7 @@
   import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
   import { currentOrgDomain } from '$lib/utils/store/org';
 
-  import { IconButton } from '$lib/components/IconButton';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import { CloseButton } from '$lib/components/Buttons/Close';
   import HeaderForm from './HeaderForm.svelte';
   import RequirementForm from './RequirementForm.svelte';
@@ -167,17 +167,9 @@
 >
   <div class="toggler absolute rounded-full shadow-lg">
     <IconButton
-      value="toggle"
-      onClick={() => (show = !show)}
-      size={$isMobile ? 'large' : 'small'}
-      color="text-black"
-      toolTipProps={$isMobile
-        ? undefined
-        : {
-            title: 'Toggle editor',
-            direction: 'right',
-            hotkeys: []
-          }}
+      onclick={() => (show = !show)}
+      tooltip={$isMobile ? undefined : 'Toggle editor'}
+      tooltipSide={$isMobile ? undefined : 'right'}
     >
       {#if show}
         <ChevronRightIcon size={16} />
@@ -194,7 +186,7 @@
           <Button type="button" class="mr-1" variant="outline" onclick={handleSave} {loading}>
             {$t('course.navItem.landing_page.editor.save')}
           </Button>
-          <IconButton onClick={handlePreview} disabled={loading || !course.slug}>
+          <IconButton onclick={handlePreview} disabled={loading || !course.slug}>
             <ArrowUpRightIcon size={16} />
           </IconButton>
         </div>
@@ -218,7 +210,7 @@
     {:else}
       <!-- Title -->
       <div class="flex items-center {borderBottomGrey} w-full">
-        <IconButton onClick={handleClose}>
+        <IconButton onclick={handleClose}>
           <ArrowLeftIcon size={16} />
         </IconButton>
         <div class=" flex items-center">

@@ -15,7 +15,7 @@
 
   import Plain from './templates/Plain.svelte';
   import Professional from './templates/Professional.svelte';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { UpgradeBanner } from '$lib/features/ui';
   import BlueBadgePattern from './templates/BlueBadgePattern.svelte';
   import PurpleBadgePattern from './templates/PurpleBadgePattern.svelte';
@@ -121,11 +121,7 @@
             {$t('course.navItem.certificates.and_upload')}
           </p>
 
-          <Button
-            variant="outline"
-            class="mt-3"
-            onclick={() => goto(`/org/${$currentOrg.siteName}/settings`)}
-          >
+          <Button variant="outline" class="mt-3" onclick={() => goto(`/org/${$currentOrg.siteName}/settings`)}>
             {$t('course.navItem.certificates.goto_settings')}
           </Button>
         </div>
@@ -133,7 +129,7 @@
           <p class="mb-2 mt-4 text-xs font-normal dark:text-gray-100">
             {$t('course.navItem.certificates.description')}
           </p>
-          <TextArea
+          <TextareaField
             rows={6}
             placeholder={$t('course.navItem.certificates.placeholder')}
             bind:value={$course.description}
@@ -173,12 +169,7 @@
     </section>
   </div>
   <div class="h-1/5">
-    <Button
-      variant="secondary"
-      onclick={saveCertificate}
-      loading={isSaving}
-      disabled={$isFreePlan}
-    >
+    <Button variant="secondary" onclick={saveCertificate} loading={isSaving} disabled={$isFreePlan}>
       {#if $isFreePlan}
         <ZapIcon size={16} class="filled" />
       {/if}

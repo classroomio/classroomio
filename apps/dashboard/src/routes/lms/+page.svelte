@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
+  import { VisitOrgSiteButton } from '$lib/features/ui';
   import { courseMetaDeta, courses } from '$lib/features/course/utils/store';
   import Learning from '$lib/components/LMS/components/Learning.svelte';
   import { Button } from '@cio/ui/base/button';
@@ -68,9 +68,7 @@
             ? $currentOrg.customization.dashboard.bannerText
             : $t('dashboard.lms_dashboard_hero')}
         </p>
-        <Button
-          onclick={() => goto('/lms/mylearning')}
-        >
+        <Button onclick={() => goto('/lms/mylearning')}>
           {$t('dashboard.dont')}
         </Button>
       </div>

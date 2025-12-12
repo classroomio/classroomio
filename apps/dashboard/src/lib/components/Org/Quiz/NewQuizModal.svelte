@@ -4,7 +4,7 @@
   import { goto } from '$app/navigation';
   import { Button } from '@cio/ui/base/button';
   import Modal from '$lib/components/Modal/index.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { supabase } from '$lib/utils/functions/supabase';
   import { currentOrg, createQuizModal, currentOrgPath, quizesStore } from '$lib/utils/store/org';
@@ -114,7 +114,7 @@
   )}"
 >
   <form onsubmit={preventDefault(createQuiz)}>
-    <TextField
+    <InputField
       label={$t('components.quiz.quiz_title')}
       bind:value={$createQuizModal.title}
       autofocus={true}

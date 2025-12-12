@@ -20,9 +20,9 @@
   import { askCommunityValidation, commentInCommunityValidation } from '$lib/utils/functions/validator';
 
   import Vote from '$lib/components/Vote/index.svelte';
-  import { IconButton } from '$lib/components/IconButton';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import * as Avatar from '@cio/ui/base/avatar';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { shortenName } from '$lib/utils/functions/string';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
@@ -396,7 +396,7 @@
       </a>
       <div class="my-5 flex items-center justify-between">
         {#if isEditMode}
-          <TextField bind:value={editContent.title} className="w-full mr-2" errorMessage={errors.title} />
+          <InputField bind:value={editContent.title} className="w-full mr-2" errorMessage={errors.title} />
           <Select.Root type="single" bind:value={editContent.courseId}>
             <Select.Trigger class="h-full w-[25%]">
               <p>
@@ -454,8 +454,7 @@
           </div>
           {#if question.author.id === $profile.id || $isOrgAdmin}
             <IconButton
-              value="delete-question"
-              onClick={() => {
+              onclick={() => {
                 if (!question) return;
 
                 deleteQuestion.shouldDelete = true;
@@ -514,8 +513,7 @@
 
               {#if comment.authorId === $profile.id || $isOrgAdmin}
                 <IconButton
-                  value="delete-comment"
-                  onClick={() => {
+                  onclick={() => {
                     deleteComment.shouldDelete = true;
                     deleteComment.commentId = comment.id;
                   }}

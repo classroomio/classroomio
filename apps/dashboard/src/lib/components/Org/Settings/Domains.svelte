@@ -20,13 +20,13 @@
 
   import { Row, Grid, Column } from './Layout';
   import SectionTitle from '../SectionTitle.svelte';
-  import TextChip from '$lib/components/Chip/Text.svelte';
-  import { IconButton } from '$lib/components/IconButton';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { Chip } from '@cio/ui/custom/chip';
+  import { IconButton } from '@cio/ui/custom/icon-button';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { ComingSoon, UpgradeBanner } from '$lib/features/ui';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
+  import { VisitOrgSiteButton } from '$lib/features/ui';
 
   let siteName = $derived($currentOrg.siteName);
   let customDomain = $state('');
@@ -214,7 +214,7 @@
 
       <div>
         <!-- Org Site Name -->
-        <TextField
+        <InputField
           label="URL"
           helperMessage={`https://${siteName || ''}.classroomio.com`}
           bind:value={siteName}
@@ -252,7 +252,7 @@
               <p class="text-md flex items-center gap-2 font-medium">
                 {$currentOrg.customDomain}
 
-                <IconButton contained={true} size="small" onClick={() => goto(`https://${$currentOrg.customDomain}`)}>
+                <IconButton onclick={() => goto(`https://${$currentOrg.customDomain}`)}>
                   <ArrowUpRightIcon size={16} />
                 </IconButton>
               </p>
@@ -262,9 +262,9 @@
               ></div>
             </div>
             {#if $currentOrg.isCustomDomainVerified}
-              <TextChip value="Verified" className="bg-green-500 text-white text-xs px-3" size="sm" />
+              <Chip value="Verified" className="bg-green-500 text-white" />
             {:else}
-              <TextChip value="Pending verification" className="bg-yellow-500 text-white text-xs px-3" size="sm" />
+              <Chip value="Pending verification" className="bg-yellow-500 text-white" />
             {/if}
           </div>
 
@@ -289,7 +289,7 @@
               <p class="text-sm font-light">{$t('components.settings.domains.dns_value')}</p>
               <p class=" flex items-center gap-1">
                 cname.vercel-dns.com
-                <IconButton onClick={() => copyToClipboard('cname.vercel-dns.com')}>
+                <IconButton onclick={() => copyToClipboard('cname.vercel-dns.com')}>
                   <p>cname.vercel-dns.com</p>
 
                   <Copy />
@@ -318,7 +318,7 @@
           <div class="mb-4 flex items-center gap-5">
             <p class="font-bold">{$t('components.settings.domains.your_domain')}</p>
           </div>
-          <TextField
+          <InputField
             bind:value={customDomain}
             type="text"
             placeholder="courses.yourwebsite.com"
@@ -364,7 +364,7 @@
           <ComingSoon />
         </div>
 
-        <TextArea
+        <TextareaField
           bind:value={customCode}
           placeholder="e.g <link rel='stylesheet' href='https://example.com/style.css' />"
           className="w-4/5"

@@ -2,8 +2,8 @@
   import { preventDefault } from '$lib/utils/functions/svelte';
   import { Button } from '@cio/ui/base/button';
   import Modal from '$lib/components/Modal/index.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { copyCourseModal } from '$lib/features/course/utils/store';
   import { courseCloneApi } from '$lib/features/course/api';
   import { t } from '$lib/utils/functions/translations';
@@ -27,7 +27,7 @@
   modalHeading={$t('courses.copy_course.title')}
 >
   <form onsubmit={preventDefault(createCourse)}>
-    <TextField
+    <InputField
       label={$t('courses.copy_course.course_name_label')}
       bind:value={$copyCourseModal.title}
       autoFocus={true}
@@ -38,7 +38,7 @@
       errorMessage={courseCloneApi.errors.title}
     />
 
-    <TextArea
+    <TextareaField
       label={$t('courses.copy_course.course_description_label')}
       bind:value={$copyCourseModal.description}
       placeholder={$t('courses.copy_course.course_description_placeholder')}
@@ -52,10 +52,7 @@
     {/if}
 
     <div class="mt-5 flex flex-row-reverse items-center">
-      <Button
-        type="submit"
-        loading={$copyCourseModal.isSaving}
-      >
+      <Button type="submit" loading={$copyCourseModal.isSaving}>
         {$t('courses.copy_course.create_button')}
       </Button>
     </div>

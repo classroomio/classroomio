@@ -7,9 +7,9 @@
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import { Button } from '@cio/ui/base/button';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import TextChip from '$lib/components/Chip/Text.svelte';
-  import { IconButton } from '$lib/components/IconButton';
+  import { InputField } from '@cio/ui/custom/input-field';
+  import { Chip } from '@cio/ui/custom/chip';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import { t } from '$lib/utils/functions/translations';
   import { globalStore } from '$lib/utils/store/app';
   import { course } from '$lib/components/Course/store';
@@ -198,7 +198,7 @@
         class="mb-2 flex min-h-[50px] items-center justify-between rounded-tl-md rounded-tr-md border-b bg-gray-50 px-3 py-1 dark:bg-neutral-700"
       >
         {#if lessonEditing === section.id}
-          <TextField className="w-4/6" bind:value={section.title} errorMessage={errors?.title} />
+          <InputField className="w-4/6" bind:value={section.title} errorMessage={errors?.title} />
         {:else}
           <p class="w-4/6 font-semibold">{section.title}</p>
         {/if}
@@ -219,7 +219,7 @@
                 {$t('course.navItem.lessons.add_lesson.save')}
               </Button>
             {:else}
-              <IconButton contained size="small" onClick={() => handleAddLesson(section.id)} disabled={!!lessonEditing}>
+              <IconButton onclick={() => handleAddLesson(section.id)} disabled={!!lessonEditing}>
                 <PlusIcon size={16} />
               </IconButton>
               <DropdownMenu.Root>
@@ -270,15 +270,10 @@
             animate:flip={{ duration: flipDurationMs }}
           >
             {#if lessonEditing === lesson.id}
-              <TextField className="w-4/6" bind:value={lesson.title} errorMessage={errors?.title} />
+              <InputField className="w-4/6" bind:value={lesson.title} errorMessage={errors?.title} />
             {:else}
               <div class="flex w-4/5 items-center gap-2">
-                <TextChip
-                  value={getLessonOrder(section.lessons, lesson.id)}
-                  size="sm"
-                  shape="rounded-full"
-                  className="bg-primary-200 text-primary-600 text-xs"
-                />
+                <Chip value={getLessonOrder(section.lessons, lesson.id)} />
                 <div>
                   <a
                     href={$globalStore.isStudent && !lesson.is_unlocked

@@ -3,7 +3,7 @@
   import { CloseButton } from '$lib/components/Buttons/Close';
   import { lessonDocUpload } from '$lib/components/Course/components/Lesson/store/lessons';
   import MODES from '$lib/utils/constants/mode';
-  import { IconButton } from '$lib/components/IconButton';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import ZoomInIcon from '@lucide/svelte/icons/zoom-in';
@@ -335,17 +335,17 @@
         {#if !isLoading && !error}
           <div class="flex items-center space-x-1">
             <IconButton
-              onClick={prevPage}
+              onclick={prevPage}
               disabled={pageNum <= 1}
-              toolTipProps={{ title: 'Previous page (←)', hotkeys: ['ArrowLeft'] }}
+              tooltip="Previous page (←)"
             >
               <ChevronLeftIcon size={16} />
             </IconButton>
 
             <IconButton
-              onClick={nextPage}
+              onclick={nextPage}
               disabled={pageNum >= pageCount}
-              toolTipProps={{ title: 'Next page (→)', hotkeys: ['ArrowRight'] }}
+              tooltip="Next page (→)"
             >
               <ChevronRightIcon size={16} />
             </IconButton>
@@ -354,9 +354,9 @@
           <!-- Zoom Controls -->
           <div class="flex items-center space-x-1">
             <IconButton
-              onClick={zoomOut}
+              onclick={zoomOut}
               disabled={scale <= 0.5}
-              toolTipProps={{ title: 'Zoom out (-)', hotkeys: ['-'] }}
+              tooltip="Zoom out (-)"
             >
               <ZoomOutIcon size={16} />
             </IconButton>
@@ -366,9 +366,9 @@
             </span>
 
             <IconButton
-              onClick={zoomIn}
+              onclick={zoomIn}
               disabled={scale >= 3.0}
-              toolTipProps={{ title: 'Zoom in (+)', hotkeys: ['+'] }}
+              tooltip="Zoom in (+)"
             >
               <ZoomInIcon size={16} />
             </IconButton>

@@ -4,7 +4,7 @@
 
   import Modal from '$lib/components/Modal/index.svelte';
   import Confetti from '$lib/components/Confetti/index.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { ComingSoon } from '$lib/features/ui';
   import { Button } from '@cio/ui/base/button';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
@@ -182,7 +182,7 @@
           <h2 class="my-5 text-2xl font-medium">
             {$t('course.navItem.lessons.exercises.new_exercise_modal.title')}
           </h2>
-          <TextField
+          <InputField
             bind:value={title}
             autoFocus={true}
             placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.title_placeholder')}
@@ -283,7 +283,7 @@
               <p class="mb-4 text-sm">
                 {$t('course.navItem.lessons.exercises.new_exercise_modal.choose_questions')}
               </p>
-              <TextField
+              <InputField
                 label={$t('course.navItem.lessons.exercises.new_exercise_modal.how_many_questions')}
                 type="number"
                 bind:value={questionNumber}
@@ -291,7 +291,7 @@
                 className="mb-2"
                 isRequired
               />
-              <TextField
+              <InputField
                 label={$t('course.navItem.lessons.exercises.new_exercise_modal.how_many_options')}
                 type="number"
                 bind:value={optionNumber}

@@ -15,7 +15,7 @@
 
   import { PageBody } from '$lib/components/Page';
   import Exercise from '../Exercise/index.svelte';
-  import Backdrop from '$lib/components/Backdrop/index.svelte';
+  import { Backdrop } from '$lib/features/ui';
   import * as Empty from '@cio/ui/base/empty';
   import { QUESTION_TYPES } from '$lib/components/Question/constants';
   import { Button } from '@cio/ui/base/button';

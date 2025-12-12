@@ -15,9 +15,9 @@
 
   import { Row, Grid, Column } from './Layout';
   import SectionTitle from '../SectionTitle.svelte';
-  import { IconButton } from '$lib/components/IconButton';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { IconButton } from '@cio/ui/custom/icon-button';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
+  import { InputField } from '@cio/ui/custom/input-field';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import { UnsavedChanges } from '$lib/features/ui';
   import type { OrgLandingPageJson } from '$lib/utils/types/org';
@@ -190,45 +190,45 @@
       </div>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
-      <TextField
+      <InputField
         label={$t('settings.landing_page.title')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.header.title}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
         className="w-full mb-5"
       />
-      <TextField
+      <InputField
         label={$t('settings.landing_page.title_highlight')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.highlight')}
         className="w-full mb-5"
         bind:value={$landingPageSettings.header.titleHighlight}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
       />
 
-      <TextArea
+      <TextareaField
         label={$t('settings.landing_page.subtitle')}
         labelClassName="font-light"
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_subtitle')}
         className="w-full mb-5"
         bind:value={$landingPageSettings.header.subtitle}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
         isAIEnabled={true}
       />
 
       <SectionTitle>{$t('settings.landing_page.actions.heading')}</SectionTitle>
-      <TextField
+      <InputField
         label={$t('settings.landing_page.actions.label')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.label')}
         className="w-full mt-3 mb-5"
         bind:value={$landingPageSettings.header.action.label}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
       />
       <div class="mb-5 gap-2">
-        <TextField
+        <InputField
           label={$t('settings.landing_page.actions.link')}
           placeholder={$t('course.navItem.lessons.exercises.all_exercises.link')}
           bind:value={$landingPageSettings.header.action.link}
-          onChange={() => (hasUnsavedChanges = true)}
+          onchange={() => (hasUnsavedChanges = true)}
         />
         <div class="mt-3 flex items-center space-x-2">
           <Switch
@@ -263,11 +263,11 @@
       </div>
       {#if $landingPageSettings.header.banner.type === 'video'}
         <div class="mb-5 mt-3 gap-2">
-          <TextField
+          <InputField
             label={$t('settings.landing_page.actions.link')}
             placeholder={$t('course.navItem.lessons.exercises.all_exercises.video')}
             bind:value={$landingPageSettings.header.banner.video}
-            onChange={() => (hasUnsavedChanges = true)}
+            onchange={() => (hasUnsavedChanges = true)}
           />
         </div>
       {:else}
@@ -369,21 +369,21 @@
       </div>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
-      <TextField
+      <InputField
         label={$t('settings.landing_page.about.title')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.aboutUs.title}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
         className="mb-5"
       />
 
-      <TextArea
+      <TextareaField
         label={$t('settings.landing_page.about.content')}
         labelClassName="font-light"
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.content')}
         className="mb-5"
         bind:value={$landingPageSettings.aboutUs.content}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
         isAIEnabled={true}
       />
 
@@ -415,24 +415,24 @@
       </div>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
-      <TextField
+      <InputField
         label={$t('settings.landing_page.courses.title')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.courses.title}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
       />
-      <TextField
+      <InputField
         label={$t('settings.landing_page.courses.title_highlight')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.highlight')}
         bind:value={$landingPageSettings.courses.titleHighlight}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
       />
-      <TextArea
+      <TextareaField
         label={$t('settings.landing_page.courses.subtitle')}
         labelClassName="font-light"
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_subtitle')}
         bind:value={$landingPageSettings.courses.subtitle}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
         isAIEnabled={true}
       />
     </Column>
@@ -452,50 +452,50 @@
       </div>
     </Column>
     <Column sm={8} md={8} lg={8}>
-      <TextField
+      <InputField
         label={$t('settings.landing_page.faq.title')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.faq.title}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
         className="mb-5"
       />
       {#each $landingPageSettings.faq.questions as item (item.id)}
         <div class="mb-3">
-          <TextField
+          <InputField
             label={$t('settings.landing_page.faq.question')}
             placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_question_here')}
             bind:value={item.title}
-            onChange={() => (hasUnsavedChanges = true)}
+            onchange={() => (hasUnsavedChanges = true)}
             className="mb-5"
           />
-          <TextArea
+          <TextareaField
             label={$t('settings.landing_page.faq.answer')}
             labelClassName="font-light"
             placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_answer_here')}
             bind:value={item.content}
             className="mb-5"
-            onChange={() => (hasUnsavedChanges = true)}
+            onchange={() => (hasUnsavedChanges = true)}
             isAIEnabled={true}
           />
-          <IconButton onClick={() => deleteFaq(item.id)}>
+          <IconButton onclick={() => deleteFaq(item.id)}>
             <TrashIcon size={16} />
           </IconButton>
         </div>
       {/each}
       {#if creatingNewQuestion}
-        <TextField
+        <InputField
           label={$t('settings.landing_page.faq.question')}
           placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_question_here')}
           bind:value={newQuestion.title}
-          onChange={() => (hasUnsavedChanges = true)}
+          onchange={() => (hasUnsavedChanges = true)}
           className="mb-5"
         />
-        <TextArea
+        <TextareaField
           label={$t('settings.landing_page.faq.answer')}
           labelClassName="font-light"
           placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_answer_here')}
           bind:value={newQuestion.content}
-          onChange={() => (hasUnsavedChanges = true)}
+          onchange={() => (hasUnsavedChanges = true)}
           className="mb-5"
           isAIEnabled={true}
         />
@@ -528,50 +528,50 @@
       </div>
     </Column>
     <Column sm={8} md={8} lg={8}>
-      <TextField
+      <InputField
         label={$t('settings.landing_page.contact_us.title')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.contact.title}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
         className="mb-5"
       />
-      <TextField
+      <InputField
         label={$t('settings.landing_page.contact_us.title_highlight')}
         labelClassName="font-light"
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.highlight')}
         className="mb-5"
         bind:value={$landingPageSettings.contact.titleHighlight}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
       />
-      <TextArea
+      <TextareaField
         label={$t('settings.landing_page.contact_us.subtitle')}
         labelClassName="font-light"
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_subtitle')}
         className="mt-3 mb-5"
         bind:value={$landingPageSettings.contact.subtitle}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
         isAIEnabled={true}
       />
-      <TextField
+      <InputField
         label={$t('settings.landing_page.contact_us.address')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.address')}
         className="mt-3 mb-5"
         bind:value={$landingPageSettings.contact.address}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
       />
-      <TextField
+      <InputField
         label={$t('settings.landing_page.contact_us.phone_number')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.number')}
         className="mt-3 mb-5"
         bind:value={$landingPageSettings.contact.phone}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
       />
-      <TextField
+      <InputField
         label={$t('settings.landing_page.contact_us.email')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.email')}
         className="mt-3 mb-5"
         bind:value={$landingPageSettings.contact.email}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
       />
     </Column>
   </Row>
@@ -592,29 +592,29 @@
       </div>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
-      <TextField
+      <InputField
         label={$t('settings.landing_page.mailing_list.title')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_title')}
         bind:value={$landingPageSettings.mailinglist.title}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
         className="mb-5"
       />
-      <TextArea
+      <TextareaField
         label={$t('settings.landing_page.mailing_list.subtitle')}
         labelClassName="font-light"
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_subtitle')}
         className="mb-5"
         bind:value={$landingPageSettings.mailinglist.subtitle}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
         isAIEnabled={true}
       />
 
-      <TextField
+      <InputField
         label={$t('settings.landing_page.mailing_list.button_label')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.label')}
         className="mb-5"
         bind:value={$landingPageSettings.mailinglist.buttonLabel}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
       />
     </Column>
   </Row>
@@ -640,13 +640,13 @@
       {#each $landingPageSettings.customLinks.links as link (link.id)}
         <div class="mb-4 rounded-lg border border-gray-200 p-4">
           <div class="mb-3 grid grid-cols-1 gap-4 md:grid-cols-2">
-            <TextField
+            <InputField
               label={$t('settings.landing_page.custom_links.label')}
               placeholder={$t('settings.landing_page.custom_links.label_placeholder')}
               bind:value={link.label}
               className="mb-3"
             />
-            <TextField
+            <InputField
               label={$t('settings.landing_page.custom_links.url')}
               placeholder={$t('settings.landing_page.custom_links.url_placeholder')}
               bind:value={link.url}
@@ -658,7 +658,7 @@
               <input type="checkbox" bind:checked={link.openInNewTab} class="mr-2" />
               <span class="text-sm">{$t('settings.landing_page.custom_links.new_tab')}</span>
             </label>
-            <IconButton onClick={() => deleteCustomLink(link.id)}>
+            <IconButton onclick={() => deleteCustomLink(link.id)}>
               <TrashIcon size={16} />
             </IconButton>
           </div>
@@ -668,13 +668,13 @@
       {#if creatingNewCustomLink}
         <div class="mb-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
           <div class="mb-3 grid grid-cols-1 gap-4 md:grid-cols-2">
-            <TextField
+            <InputField
               label={$t('settings.landing_page.custom_links.label')}
               placeholder={$t('settings.landing_page.custom_links.label_placeholder')}
               bind:value={newCustomLink.label}
               className="mb-3"
             />
-            <TextField
+            <InputField
               label={$t('settings.landing_page.custom_links.url')}
               placeholder={$t('settings.landing_page.custom_links.url_placeholder')}
               bind:value={newCustomLink.url}
@@ -718,32 +718,32 @@
       </div>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-4 lg:mt-0">
-      <TextField
+      <InputField
         label={$t('settings.landing_page.footer.facebook')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.facebook')}
         bind:value={$landingPageSettings.footer.facebook}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
         className="mb-5"
       />
-      <!-- <TextField
+      <!-- <InputField
         label="Instagram"
         placeholder="Write your Instagram link here"
         className="mb-5"
         bind:value={$landingPageSettings.footer.instagram}
       /> -->
-      <TextField
+      <InputField
         label={$t('settings.landing_page.footer.twitter')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.twitter')}
         className="mb-5"
         bind:value={$landingPageSettings.footer.twitter}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
       />
-      <TextField
+      <InputField
         label={$t('settings.landing_page.footer.linkedin')}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.linkedin')}
         className="mb-5"
         bind:value={$landingPageSettings.footer.linkedin}
-        onChange={() => (hasUnsavedChanges = true)}
+        onchange={() => (hasUnsavedChanges = true)}
       />
     </Column>
   </Row>
@@ -759,7 +759,7 @@
  absolute bottom-8 right-6 z-[120]"
 >
   <span>
-    <IconButton onClick={handleSave} disabled={isSaving}>
+    <IconButton onclick={handleSave} disabled={isSaving}>
       <SaveIcon size={16} />
     </IconButton>
   </span>

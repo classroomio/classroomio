@@ -2,7 +2,7 @@
   import { get } from 'svelte/store';
   import { goto } from '$app/navigation';
   import { Spinner } from '@cio/ui/base/spinner';
-  import Backdrop from '$lib/components/Backdrop/index.svelte';
+  import { Backdrop } from '$lib/features/ui';
   import { course, group, courseStore } from '../Course/store';
   import Confetti from '../Confetti/index.svelte';
   import { isMobile } from '$lib/utils/store/useMobile';

@@ -2,8 +2,7 @@
   import { preventDefault } from '$lib/utils/functions/svelte';
 
   import { Button } from '@cio/ui/base/button';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  // import Select from '$lib/components/Form/Select.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import {
     lessons,
     lessonSections,
@@ -122,7 +121,7 @@
     class="relative m-auto mb-2 flex flex-wrap items-center px-2 py-2 md:mb-4 md:px-5 md:py-3 dark:bg-neutral-800"
   >
     <div class="w-full">
-      <TextField
+      <InputField
         label={$t(
           `course.navItem.lessons.add_lesson.${
             $handleAddLessonWidget.isSection ? 'lesson_section_title' : 'lesson_title'
@@ -156,7 +155,7 @@
           </div>
 
           <div class="flex items-center mb-3 lg:mb-0">
-            <TextField className="w-[179px]" placeholder="https://meet.google.com/mga-dsjs-fmb" />
+            <InputField className="w-[179px]" placeholder="https://meet.google.com/mga-dsjs-fmb" />
           </div>
         </div> -->
       {/if}

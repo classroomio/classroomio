@@ -7,7 +7,7 @@
 
   import { Row, Grid, Column } from './Layout';
   import SectionTitle from '../SectionTitle.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import ArrowUpRightIcon from '$lib/components/Icons/ArrowTopRight.svelte';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
 
@@ -75,7 +75,7 @@
             <ArrowUpRightIcon />
           </Button>
           <h4 class="font-normal">{$t('settings.integrations.step_chatId')}</h4>
-          <TextField
+          <InputField
             bind:value={chatId}
             placeholder="360111"
             className="w-full lg:w-60 mb-5"

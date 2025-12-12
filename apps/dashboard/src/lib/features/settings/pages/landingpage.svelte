@@ -721,7 +721,7 @@
           oninput={() => (hasUnsavedChanges = true)}
         />
       </Field.Field>
-      <!-- <TextField
+      <!-- <InputField
         label="Instagram"
         placeholder="Write your Instagram link here"
         className="mb-5"

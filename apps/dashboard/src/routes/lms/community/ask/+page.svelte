@@ -14,7 +14,7 @@
   import generateSlug from '$lib/utils/functions/generateSlug';
   import { askCommunityValidation } from '$lib/utils/functions/validator';
 
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import { Button } from '@cio/ui/base/button';
 
@@ -103,7 +103,7 @@
   </div>
 
   <div class="mb-3 flex justify-between gap-x-5 p-2">
-    <TextField
+    <InputField
       bind:value={fields.title}
       placeholder={$t('community.ask.title')}
       errorMessage={errors.title}

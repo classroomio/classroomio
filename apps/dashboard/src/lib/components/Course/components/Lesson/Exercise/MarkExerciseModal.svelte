@@ -12,7 +12,7 @@
 
   import Preview from './Preview.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { Button } from '@cio/ui/base/button';
 
   // import { useCompletion } from 'ai/svelte';
@@ -374,7 +374,7 @@
         <p class="font-semibold text-gray-500 dark:text-white">
           {$t('course.navItem.submissions.grading_modal.add_comment')}:
         </p>
-        <TextArea
+        <TextareaField
           bgColor="bg-gray-100 dark:bg-neutral-700"
           className="font-semibold"
           placeholder={$t('course.navItem.submissions.grading_modal.add_comment_placeholder')}

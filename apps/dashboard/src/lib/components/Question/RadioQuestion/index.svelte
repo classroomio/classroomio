@@ -3,7 +3,7 @@
 
   import CodeSnippet from '$lib/components/CodeSnippet/index.svelte';
   import { Button } from '@cio/ui/base/button';
-  import RadioItem from '$lib/components/Form/RadioItem.svelte';
+  import { RadioItem } from '@cio/ui/custom/radio-item';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import Grade from '$lib/components/Question/Grade.svelte';
   import { t } from '$lib/utils/functions/translations';

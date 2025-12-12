@@ -1,6 +1,6 @@
 <script lang="ts">
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { Button } from '@cio/ui/base/button';
   import { handleOpenWidget } from '../../store';
   import { t } from '$lib/utils/functions/translations';
@@ -12,14 +12,14 @@
   }
 </script>
 
-<TextField
+<InputField
   className="mt-5"
   labelClassName="font-bold"
   label={$t('course.navItem.landing_page.editor.header_form.title')}
   bind:value={course.title}
 />
 
-<TextArea
+<TextareaField
   label={$t('course.navItem.landing_page.editor.header_form.description')}
   bind:value={course.description}
   rows={6}
@@ -27,7 +27,7 @@
   labelClassName="font-bold"
 />
 
-<TextField
+<InputField
   className="mt-5"
   labelClassName="font-bold"
   label={$t('course.navItem.landing_page.editor.header_form.short_video')}

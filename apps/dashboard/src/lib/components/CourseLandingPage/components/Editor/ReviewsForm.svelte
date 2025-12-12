@@ -2,7 +2,7 @@
   import get from 'lodash/get';
   import z from 'zod';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
-  import { IconButton } from '$lib/components/IconButton';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import { isMobile } from '$lib/utils/store/useMobile';
   import { Button } from '@cio/ui/base/button';
   import ReviewFormEditor from './ReviewFormEditor.svelte';
@@ -107,7 +107,7 @@
             </Avatar.Root>
             <p class="text-sm">{review.name}</p>
 
-            <IconButton value="expand" onClick={() => onExpand(review.id)} size={$isMobile ? 'large' : 'small'}>
+            <IconButton onclick={() => onExpand(review.id)}>
               <ChevronDownIcon size={16} />
             </IconButton>
           </div>

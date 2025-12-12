@@ -30,7 +30,7 @@
   import { lessons, lessonSections } from '../Lesson/store/lessons';
   import { getNavItemRoute, getLessonsRoute, getLectureNo } from '$lib/components/Course/function';
 
-  import TextChip from '$lib/components/Chip/Text.svelte';
+  import { Chip } from '@cio/ui/custom/chip';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
 
   interface Props {
@@ -271,12 +271,7 @@
                               {...props}
                             >
                               {#if lessonItem.isV1 && 'index' in lessonItem}
-                                <TextChip
-                                  value={getLectureNo(lessonItem.index + 1)}
-                                  className="bg-primary-200 text-primary-600 text-xs"
-                                  size="sm"
-                                  shape="rounded-full"
-                                />
+                                <Chip value={getLectureNo(lessonItem.index + 1)} />
                               {/if}
                               <span class="flex-1 truncate">{lessonItem.lesson.title}</span>
                               {#if !lessonItem.lesson.is_unlocked}

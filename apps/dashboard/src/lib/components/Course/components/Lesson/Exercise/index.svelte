@@ -24,7 +24,7 @@
   import ViewMode from './ViewMode.svelte';
   import { PageBody } from '$lib/components/Page';
   import Analytics from './Submissions/index.svelte';
-  import { IconButton } from '$lib/components/IconButton';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import UpdateDescription from './UpdateDescription.svelte';
   import { RoleBasedSecurity } from '$lib/features/ui';
 
@@ -140,23 +140,16 @@
               {$t('course.navItem.lessons.exercises.all_exercises.save')}
             </Button>
             <IconButton
-              onClick={() => (preview = !preview)}
-              contained={preview}
-              toolTipProps={{
-                title: $t('course.navItem.lessons.exercises.all_exercises.preview'),
-                direction: 'bottom',
-                hotkeys: []
-              }}
+              onclick={() => (preview = !preview)}
+              tooltip={$t('course.navItem.lessons.exercises.all_exercises.preview')}
+              tooltipSide="bottom"
             >
               <EyeIcon size={20} class={preview ? 'filled' : ''} />
             </IconButton>
             <IconButton
-              onClick={handleAddQuestion}
-              toolTipProps={{
-                title: $t('course.navItem.lessons.exercises.all_exercises.add_question'),
-                direction: 'bottom',
-                hotkeys: []
-              }}
+              onclick={handleAddQuestion}
+              tooltip={$t('course.navItem.lessons.exercises.all_exercises.add_question')}
+              tooltipSide="bottom"
             >
               <CirclePlusIcon size={20} />
             </IconButton>

@@ -20,7 +20,7 @@
   import Progress from '$lib/components/Progress/index.svelte';
   import { Button } from '@cio/ui/base/button';
   import { WelcomeModal } from '$lib/features/onboarding/components';
-  import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
+  import { VisitOrgSiteButton } from '$lib/features/ui';
   import * as Page from '@cio/ui/base/page';
   import { Empty } from '@cio/ui/custom/empty';
 

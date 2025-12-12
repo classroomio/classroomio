@@ -6,7 +6,7 @@
 
   import { group } from '$lib/components/Course/store';
   import * as Avatar from '@cio/ui/base/avatar';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { shortenName } from '$lib/utils/functions/string';
   import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
   import { Button } from '@cio/ui/base/button';
@@ -62,7 +62,7 @@
         id: 0,
         comment: comment,
         name: $t('course.navItem.lessons.comments.you'),
-        avatar: $profile.avatarUrl,
+        avatar: $profile.avatarUrl || 'AV',
         commentAt: new Date(),
         groupmember_id: groupmember.id
       },
@@ -278,7 +278,7 @@
         <Avatar.Fallback>{shortenName($profile.fullname) || 'U'}</Avatar.Fallback>
       </Avatar.Root>
       <div class="h-full w-full">
-        <TextArea
+        <TextareaField
           label={$t('course.navItem.lessons.comments.text_area_title')}
           placeholder={$t('course.navItem.lessons.comments.placeholder')}
           bind:value={comment}
@@ -340,7 +340,7 @@
           </div>
 
           {#if editCommentId === commentItem.id}
-            <TextArea
+            <TextareaField
               placeholder={$t('course.navItem.lessons.comments.placeholder')}
               bind:value={commentItem.comment}
             />

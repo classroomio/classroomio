@@ -23,7 +23,7 @@
   import { DomainInput } from '@cio/ui/custom/domain-input';
   import { ComingSoon, UpgradeBanner } from '$lib/features/ui';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
+  import { VisitOrgSiteButton } from '$lib/features/ui';
   import * as Field from '@cio/ui/base/field';
 
   let siteName = $derived($currentOrg.siteName);

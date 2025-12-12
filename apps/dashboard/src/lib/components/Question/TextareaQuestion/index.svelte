@@ -3,7 +3,7 @@
 
   import CodeSnippet from '$lib/components/CodeSnippet/index.svelte';
   import { Button } from '@cio/ui/base/button';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import Grade from '$lib/components/Question/Grade.svelte';
   import { t } from '$lib/utils/functions/translations';
@@ -99,7 +99,7 @@
         <ReasonBox {reason} {isLoading} {acceptGrade} {rejectGrade} />
       {/if}
     {:else}
-      <TextArea
+      <TextareaField
         bind:value={defaultValue}
         rows={5}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_answer_here')}

@@ -6,8 +6,8 @@
   import { ComingSoon } from '$lib/features/ui';
   import { validateForm } from '../utils/functions';
   import { courses, createCourseModal } from '../utils/store';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
+  import { InputField } from '@cio/ui/custom/input-field';
   import Modal from '$lib/components/Modal/index.svelte';
   import { Button } from '@cio/ui/base/button';
   import { ROLE } from '@cio/utils/constants';
@@ -187,18 +187,18 @@
   {:else}
     <form onsubmit={preventDefault(createCourse)}>
       <div class="mb-4 flex items-end space-x-2">
-        <TextField
+        <InputField
           label={$t('courses.new_course_modal.course_name')}
           bind:value={$createCourseModal.title}
           placeholder={$t('courses.new_course_modal.course_name_placeholder')}
-          className="w-full "
+          className="w-full"
           isRequired={true}
           errorMessage={errors.title}
           autoComplete={false}
         />
       </div>
 
-      <TextArea
+      <TextareaField
         label={$t('courses.new_course_modal.short_description')}
         bind:value={$createCourseModal.description}
         rows={4}

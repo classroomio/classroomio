@@ -1,8 +1,8 @@
 <script lang="ts">
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
   import { optionImage } from '$lib/utils/constants/quiz';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import { IconButton } from '$lib/components/IconButton';
+  import { InputField } from '@cio/ui/custom/input-field';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -25,7 +25,7 @@
 {#if isPreview}
   <h1 class="mb-5 text-white">{currentQuestion.label}</h1>
 {:else}
-  <TextField
+  <InputField
     placeholder={$t('components.quiz.start_typing')}
     bind:value={currentQuestion.label}
     className="w-full my-4"
@@ -44,7 +44,7 @@
       {#if isPreview}
         <p class="mt-5">{option.label}</p>
       {:else}
-        <TextField
+        <InputField
           bind:value={option.label}
           placeholder={$t('components.quiz.type_answer')}
           bgColor="bg-white"
@@ -54,9 +54,8 @@
         />
         <div class="absolute right-2 top-2 flex justify-end">
           <IconButton
-            value={option.id}
-            onClick={() => (option.isCorrect = !option.isCorrect)}
-            buttonClassName={option.isCorrect && 'success'}
+            onclick={() => (option.isCorrect = !option.isCorrect)}
+            class={option.isCorrect ? 'success' : ''}
           >
             <CircleCheckIcon size={16} filled={option.isCorrect} />
           </IconButton>

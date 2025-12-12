@@ -1,5 +1,5 @@
 <script>
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { Row, Grid, Column } from '$lib/components/Org/Settings/Layout';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
   import { Button } from '@cio/ui/base/button';
@@ -86,17 +86,17 @@
       <p class="font-bold dark:text-white">{$t('settings.profile.personal_information.heading')}</p>
     </Column>
     <Column sm={8} md={8} lg={8} class="mt-2 lg:mt-0">
-      <TextField
+      <InputField
         label={$t('settings.profile.personal_information.full_name')}
         bind:value={$profile.fullname}
         className="w-full lg:w-60 mb-4"
       />
-      <TextField
+      <InputField
         label={$t('settings.profile.personal_information.username')}
         bind:value={$profile.username}
         className="w-full lg:w-60 mb-4"
       />
-      <TextField
+      <InputField
         label={$t('settings.profile.personal_information.email')}
         bind:value={$profile.email}
         className="w-full lg:w-60 mb-4"

@@ -8,9 +8,9 @@
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
 
   import DragAndDrop from './DragAndDrop.svelte';
-  import { IconButton } from '$lib/components/IconButton';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { IconButton } from '@cio/ui/custom/icon-button';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { Row, Grid, Column } from '$lib/components/Org/Settings/Layout';
   import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
   import { UpgradeBanner, UnsavedChanges } from '$lib/features/ui';
@@ -253,7 +253,7 @@
     </Column>
 
     <Column sm={8} md={8} lg={8}>
-      <TextField
+      <InputField
         label={$t('course.navItem.settings.course_title')}
         placeholder="Write the course title here"
         className="w-full mb-5"
@@ -264,25 +264,25 @@
           hasUnsavedChanges = true;
         }}
       />
-      <TextArea
+      <TextareaField
         label={$t('course.navItem.settings.course_description')}
         placeholder={$t('course.navItem.settings.placeholder')}
         className="w-full mb-5"
         isRequired
         bind:value={$settings.course_description}
         errorMessage={errors?.description}
-        onChange={() => {
+        onchange={() => {
           hasUnsavedChanges = true;
         }}
       />
       <div id="share">
         <p class="text-md mb-2 flex items-center gap-2">
           {$t('course.navItem.settings.link')}
-          <IconButton contained={true} size="small" onClick={generateNewCourseLink}>
+          <IconButton onclick={generateNewCourseLink}>
             <RotateCcwIcon size={16} />
           </IconButton>
           <span class="grow"></span>
-          <IconButton contained={true} size="small" onClick={() => goto(courseLink)}>
+          <IconButton onclick={() => goto(courseLink)}>
             <ArrowUpRightIcon size={16} />
           </IconButton>
         </p>
@@ -291,9 +291,7 @@
             <p class="text-sm">{courseLink}</p>
 
             <IconButton
-              contained={true}
-              size="small"
-              onClick={() => {
+              onclick={() => {
                 copyToClipboard(courseLink);
               }}
             >

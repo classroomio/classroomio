@@ -9,7 +9,7 @@
   import { quizStore } from '$lib/utils/store/org';
   import { themeImages } from '$lib/utils/constants/quiz';
   import { Button } from '@cio/ui/base/button';
-  import { IconButton } from '$lib/components/IconButton';
+  import { IconButton } from '@cio/ui/custom/icon-button';
 
   let { exitPreview = () => {} } = $props();
 
@@ -78,11 +78,11 @@
               <Button variant="ghost" onclick={exitPreview} class="w-fit">Exit Preview</Button>
 
               <div class="flex items-center justify-center">
-                <IconButton onClick={handlePrev} size="small">
+                <IconButton onclick={handlePrev}>
                   <ChevronLeftIcon size={16} />
                 </IconButton>
                 <p class="mx-3">{curQId + 1} / {totalQ}</p>
-                <IconButton onClick={handleNext} size="small">
+                <IconButton onclick={handleNext}>
                   <ChevronRightIcon size={16} />
                 </IconButton>
               </div>

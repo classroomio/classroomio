@@ -3,7 +3,7 @@
   import { cn } from '../../tools';
 
   interface Props {
-    value?: number;
+    value?: number | string;
     className?: string;
   }
 

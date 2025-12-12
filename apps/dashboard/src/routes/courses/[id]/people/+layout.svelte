@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import { IconButton } from '$lib/components/IconButton';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import { PageBody, PageNav } from '$lib/components/Page';
   import { Button } from '@cio/ui/base/button';
   import { RoleBasedSecurity } from '$lib/features/ui';
@@ -33,7 +33,7 @@
     {#snippet image()}
       {#if data.personId}
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <IconButton size="large" onClick={handleBackNavigation}>
+          <IconButton onclick={handleBackNavigation}>
             <ArrowLeftIcon size={16} />
           </IconButton>
         </RoleBasedSecurity>

@@ -18,7 +18,7 @@
   import { getExerciseCount, getLessonSections, getTotalLessons, filterNavItems } from './utils';
   import { Button } from '@cio/ui/base/button';
 
-  import Chip from '../Chip/index.svelte';
+  import { Chip } from '@cio/ui/custom/chip';
   import Modal from '../Modal/index.svelte';
   import ImageRenderer from '../Org/ImageRenderer.svelte';
   import * as Avatar from '@cio/ui/base/avatar';
@@ -126,7 +126,7 @@
           {get(courseData, 'metadata.instructor.name', '')}
         </p>
         <Button
-          class="mt-6 sm:w-fit hidden md:block"
+          class="mt-6 hidden sm:w-fit md:block"
           onclick={() => {
             if (editMode) return;
             startCoursePayment = true;
@@ -290,7 +290,7 @@
             <div class="flex flex-wrap">
               {#each lessons as lesson, index}
                 <div class="m-2 rounded border px-2 py-1">
-                  <Chip value={getLectureNo(index + 1, '0')} className="bg-primary-100 text-primary-700 inline " />
+                  <Chip value={getLectureNo(index + 1, '0')} />
                   <p class="ml-2 inline text-xs font-light dark:text-white">
                     {lesson.title}
                   </p>
@@ -374,11 +374,7 @@
               {/each}
             </div>
             {#if reviews.length > 4}
-              <Button
-                class="mt-2"
-                variant="outline"
-                onclick={() => ($reviewsModalStore.open = true)}
-              >
+              <Button class="mt-2" variant="outline" onclick={() => ($reviewsModalStore.open = true)}>
                 {$t('course.navItem.landing_page.see_all')}
               </Button>
             {/if}
@@ -454,7 +450,7 @@
             <img
               alt="Author Avatar"
               class="mr-3 block h-20 w-20 rounded-full"
-              src={get(instructor, 'imgUrl', $currentOrg.avatar_url || '/logo-512.png')}
+              src={get(instructor, 'imgUrl', $currentOrg.avatarUrl || '/logo-512.png')}
             />
             <div>
               <p class="text-md font-light dark:text-white">

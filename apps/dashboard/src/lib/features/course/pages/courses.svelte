@@ -7,7 +7,7 @@
   import * as Select from '@cio/ui/base/select';
   import GridIcon from '@lucide/svelte/icons/grid-2x2';
   import ListIcon from '@lucide/svelte/icons/list';
-  import { IconButton } from '$lib/components/IconButton';
+  import { IconButton } from '@cio/ui/custom/icon-button';
 
   import {
     CourseCard,
@@ -124,11 +124,11 @@
     </Select.Content>
   </Select.Root>
   {#if $courseMetaDeta.view === 'list'}
-    <IconButton onClick={() => setViewPreference('grid')}>
+    <IconButton onclick={() => setViewPreference('grid')}>
       <GridIcon size={16} />
     </IconButton>
   {:else}
-    <IconButton onClick={() => setViewPreference('list')}>
+    <IconButton onclick={() => setViewPreference('list')}>
       <ListIcon size={16} />
     </IconButton>
   {/if}

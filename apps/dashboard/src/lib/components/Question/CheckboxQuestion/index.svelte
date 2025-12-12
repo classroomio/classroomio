@@ -2,7 +2,7 @@
   import { preventDefault } from '$lib/utils/functions/svelte';
 
   import CodeSnippet from '$lib/components/CodeSnippet/index.svelte';
-  import Checkbox from '$lib/components/Form/Checkbox.svelte';
+  import { CheckboxField } from '@cio/ui/custom/checkbox-field';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import { Button } from '@cio/ui/base/button';
   import Grade from '$lib/components/Question/Grade.svelte';
@@ -130,7 +130,7 @@
         )}"
         type="button"
       >
-        <Checkbox
+        <CheckboxField
           {name}
           className="p-2"
           value={option.value}

@@ -1,20 +1,19 @@
 <script lang="ts">
   import pluralize from 'pluralize';
-  import EllipsisIcon from '@lucide/svelte/icons/ellipsis';
+  // import EllipsisIcon from '@lucide/svelte/icons/ellipsis';
 
   import { currentOrgPath } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { themeImages } from '$lib/utils/constants/quiz';
   import { calDateDiff } from '$lib/utils/functions/date';
-  import { onRename, onDelete } from '$lib/utils/services/org/quiz';
+  // import { onRename, onDelete } from '$lib/utils/services/org/quiz';
   import { Button } from '@cio/ui/base/button';
 
   import ImageRenderer from '../ImageRenderer.svelte';
-  import Dropdown from '$lib/components/Dropdown/index.svelte';
 
   let { quiz, totalQuestions } = $props();
 
-  function getOptions() {
+  /*function getOptions() {
     return [
       // {
       //   label: 'Edit',
@@ -47,7 +46,7 @@
         }
       }
     ];
-  }
+  }*/
 
   function startQuiz() {}
 </script>
@@ -68,11 +67,11 @@
           <a href="{$currentOrgPath}/quiz/{quiz.id}">{quiz.title}</a>
         </h4>
 
-        <Dropdown options={getOptions()} classNames="absolute top-4 right-4" isIcon={true}>
+        <!-- <Dropdown options={getOptions()} classNames="absolute top-4 right-4" isIcon={true}>
           <div class="rounded-full bg-gray-200 p-1 dark:bg-gray-600">
             <EllipsisIcon size={16} />
           </div>
-        </Dropdown>
+        </Dropdown> -->
       </div>
 
       <div class="flex flex-col justify-between md:flex-row">

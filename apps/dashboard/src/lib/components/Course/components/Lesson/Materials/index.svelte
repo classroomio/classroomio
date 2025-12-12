@@ -38,8 +38,8 @@
   import Comments from './components/Comments.svelte';
   import Tabs from '$lib/components/Tabs/index.svelte';
   import Modal from '$lib/components/Modal/index.svelte';
-  import { IconButton } from '$lib/components/IconButton';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { IconButton } from '@cio/ui/custom/icon-button';
+  import { InputField } from '@cio/ui/custom/input-field';
   import ComponentNote from './components/ComponentNote.svelte';
   import ComponentSlide from './components/ComponentSlide.svelte';
   import ComponentVideo from './components/ComponentVideo.svelte';
@@ -437,7 +437,7 @@
 
         <TabContent value={getValue('course.navItem.lessons.materials.tabs.slide.title')} index={currentTab}>
           {#if mode === MODES.edit}
-            <TextField
+            <InputField
               label={$t('course.navItem.lessons.materials.tabs.slide.slide_link')}
               bind:value={$lesson.materials.slide_url}
               onInputChange={() => ($isLessonDirty = true)}
@@ -454,7 +454,7 @@
               {#each $lesson.materials.videos as video, index}
                 {#if mode === MODES.edit}
                   <div class="ml-auto">
-                    <IconButton value="delete-video" contained={true} onClick={() => deleteLessonVideo(index)}>
+                    <IconButton onclick={() => deleteLessonVideo(index)}>
                       <TrashIcon size={16} />
                     </IconButton>
                   </div>

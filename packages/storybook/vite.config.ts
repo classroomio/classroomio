@@ -15,7 +15,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['svelte-tiptap'],
-    exclude: ['@tiptap/core', '@tiptap/pm', 'svelte-easy-crop']
+    exclude: ['@tiptap/core', '@tiptap/pm']
   },
   ssr: {
     noExternal: ['svelte-tiptap']

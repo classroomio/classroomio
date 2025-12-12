@@ -1,6 +1,6 @@
 <script lang="ts">
   import { ProfilePage } from '$lib/features/settings/pages';
-  import ViewSiteBtn from '$lib/components/Buttons/VisitOrgSite.svelte';
+  import { VisitOrgSiteButton } from '$lib/features/ui';
   import { t } from '$lib/utils/functions/translations';
   import { Button } from '@cio/ui/base/button';
   import * as Page from '@cio/ui/base/page';
@@ -31,7 +31,7 @@
       {$t('settings.profile.update_profile')}
     </Button>
 
-    <ViewSiteBtn />
+    <VisitOrgSiteButton />
   </Page.Action>
 </Page.Header>
 <Page.Body>

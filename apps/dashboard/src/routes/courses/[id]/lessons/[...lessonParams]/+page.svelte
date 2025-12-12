@@ -26,7 +26,7 @@
   import { checkExercisesComplete, fetchLesson, updateLessonCompletion } from '$lib/utils/services/courses';
   import { lesson, setLesson, lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
 
-  import { IconButton } from '$lib/components/IconButton';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import { PageBody } from '$lib/components/Page';
   import * as Page from '@cio/ui/base/page';
   import { CourseContainer } from '$lib/components/CourseContainer';
@@ -222,14 +222,14 @@
           {#if data.isMaterialsTabActive}
             <!-- Version control -->
             {#if mode === MODES.edit && window.innerWidth >= 1024}
-              <IconButton onClick={() => (isVersionDrawerOpen = true)}>
+              <IconButton onclick={() => (isVersionDrawerOpen = true)}>
                 <HistoryIcon size={20} />
               </IconButton>
             {/if}
 
             <div class="flex-row items-center lg:flex">
               <IconButton
-                onClick={() => {
+                onclick={() => {
                   toggleMode();
                 }}
                 disabled={isSaving}

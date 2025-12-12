@@ -9,7 +9,7 @@
   import CheckIcon from '@lucide/svelte/icons/check';
   import SearchIcon from '@lucide/svelte/icons/search';
 
-  import TextChip from '$lib/components/Chip/Text.svelte';
+  import { Chip } from '@cio/ui/custom/chip';
   import * as Avatar from '@cio/ui/base/avatar';
   import { ComingSoon, RoleBasedSecurity } from '$lib/features/ui';
   import InvitationModal from '$lib/components/Course/components/People/InvitationModal.svelte';
@@ -20,15 +20,14 @@
   import { group } from '$lib/components/Course/store';
   import { t } from '$lib/utils/functions/translations';
   import { shortenName } from '$lib/utils/functions/string';
-  import Select from '$lib/components/Form/Select.svelte';
-  import { IconButton } from '$lib/components/IconButton';
+  import * as Select from '@cio/ui/base/select';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import { ROLE_LABEL, ROLES } from '$lib/utils/constants/roles';
   import { deleteGroupMember } from '$lib/utils/services/courses';
-  import type { ProfileRole } from '$lib/components/Course/components/People/types';
   import { deleteMemberModal } from '$lib/components/Course/components/People/store';
 
   let member: { id?: string; email?: string; profile?: { email: string } } = $state({});
-  let filterBy: ProfileRole = $state(ROLES[0]);
+  let filterBy: string = $state(`${ROLES[0]}`);
   let searchValue = $state('');
   let copiedEmail = $state<string | null>(null);
 
@@ -50,12 +49,12 @@
     await deleteGroupMember(member.id);
   }
 
-  function sortAndFilterPeople(_people: Array<GroupPerson>, filterBy: ProfileRole) {
+  function sortAndFilterPeople(_people: Array<GroupPerson>, filterBy: string) {
     return (_people || [])
       .filter((person) => {
-        if (filterBy.value === 'all') return true;
+        if (filterBy === 'all') return true;
 
-        return person.role_id === filterBy.value;
+        return person.role_id === Number(filterBy);
       })
       .sort((a: GroupPerson, b: GroupPerson) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
       .sort((a: GroupPerson, b: GroupPerson) => a.role_id - b.role_id);
@@ -90,6 +89,8 @@
       console.error('Failed to copy:', err);
     }
   }
+
+  const selectOptions = $derived(ROLES.map((role) => ({ label: $t(role.label), value: `${role.value}` })));
 </script>
 
 <InvitationModal />
@@ -104,11 +105,20 @@
       <SearchIcon class="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2" />
     </div>
     <div class="mb-3">
-      <Select
-        bind:value={filterBy}
-        options={ROLES.map((role) => ({ label: $t(role.label), value: role.value }))}
-        className="dark:text-black mt-3 max-w-[80px]"
-      />
+      <Select.Root type="single" name="roles" bind:value={filterBy}>
+        <Select.Trigger class="mt-3 max-w-[80px]">
+          {filterBy}
+        </Select.Trigger>
+        <Select.Content>
+          <Select.Group>
+            {#each selectOptions as option (option.value)}
+              <Select.Item value={option.value} label={option.label} disabled={option.value === filterBy}>
+                {option.label}
+              </Select.Item>
+            {/each}
+          </Select.Group>
+        </Select.Content>
+      </Select.Root>
     </div>
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       <p class="hidden w-20 text-lg lg:block dark:text-white"></p>
@@ -170,11 +180,7 @@
                 </div>
               {:else}
                 <div class="flex w-2/4 items-start lg:items-center">
-                  <TextChip
-                    value={shortenName(person.email)}
-                    className="bg-primary-200 text-black font-semibold text-xs mr-3"
-                    shape="rounded-full"
-                  />
+                  <Chip value={shortenName(person.email)} className="mr-3" />
                   <a href="mailto:{person.email}" class="text-md text-primary-600 mr-2 dark:text-white">
                     {person.email}
                   </a>
@@ -194,11 +200,7 @@
                       </Button>
                     </RoleBasedSecurity>
 
-                    <TextChip
-                      value={$t('course.navItem.people.pending')}
-                      className="text-xs bg-yellow-200 text-yellow-700 h-fit"
-                      size="sm"
-                    />
+                    <Chip value={$t('course.navItem.people.pending')} className="bg-yellow-200 text-yellow-700" />
                   </div>
                 </div>
               {/if}
@@ -217,7 +219,7 @@
                 <div class="hidden space-x-2 sm:flex sm:items-center">
                   {#if person.profile_id !== $profile.id}
                     <IconButton
-                      onClick={() => {
+                      onclick={() => {
                         member = person;
                         $deleteMemberModal.open = true;
                       }}

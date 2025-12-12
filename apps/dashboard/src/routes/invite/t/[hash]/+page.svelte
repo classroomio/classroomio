@@ -2,8 +2,10 @@
   import { page } from '$app/state';
   import { AuthUI } from '$lib/features/ui';
   import type { Profile } from '$lib/components/Course/components/People/types';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { Button } from '@cio/ui/base/button';
+  import * as Field from '@cio/ui/base/field';
+  import { Password } from '@cio/ui/custom/password';
   import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
   import { logout } from '$lib/utils/functions/logout';
   import { getSupabase } from '$lib/utils/functions/supabase';
@@ -178,54 +180,63 @@
         {$t('login.create_to_join')}
       {/if}
     </p>
-    <TextField
+    <InputField
       label={$t('login.fields.email')}
       value={data.invite.email}
       type="email"
       placeholder="you@domain.com"
       className="mb-6"
-      inputClassName="w-full"
       isDisabled={true}
     />
     {#if $profile?.email !== data.invite.email}
       {#if !data.invite.profile}
-        <TextField
+        <InputField
           label={$t('login.fields.full_name')}
           bind:value={fields.name}
           type="text"
           autoFocus={true}
           placeholder="e.g Joke Silva"
           className="mb-6"
-          inputClassName="w-full"
           isDisabled={isLoading}
           errorMessage={errors.name}
           isRequired
         />
       {/if}
-      <TextField
-        label={$t('login.fields.password')}
-        bind:value={fields.password}
-        type="password"
-        placeholder="************"
-        className="mb-6"
-        inputClassName="w-full"
-        isDisabled={isLoading}
-        errorMessage={errors.password}
-        helperMessage={$t('login.fields.password_helper_message')}
-        isRequired
-      />
+      <Field.Field class="mb-6">
+        <Field.Label for="password">{$t('login.fields.password')}</Field.Label>
+        <Field.Content>
+          <Password
+            id="password"
+            bind:value={fields.password}
+            placeholder="************"
+            disabled={isLoading}
+            aria-invalid={errors.password ? 'true' : undefined}
+            autocomplete={data.invite.profile ? 'current-password' : 'new-password'}
+          />
+          {#if errors.password}
+            <Field.Error>{$t(errors.password)}</Field.Error>
+          {:else}
+            <Field.Description>{$t('login.fields.password_helper_message')}</Field.Description>
+          {/if}
+        </Field.Content>
+      </Field.Field>
       {#if !data.invite.profile}
-        <TextField
-          label={$t('login.fields.confirm_password')}
-          bind:value={fields.confirmPassword}
-          type="password"
-          placeholder="************"
-          className="mb-6"
-          inputClassName="w-full"
-          isDisabled={isLoading}
-          errorMessage={confirmPasswordError}
-          isRequired
-        />
+        <Field.Field class="mb-6">
+          <Field.Label for="confirm-password">{$t('login.fields.confirm_password')}</Field.Label>
+          <Field.Content>
+            <Password
+              id="confirm-password"
+              bind:value={fields.confirmPassword}
+              placeholder="************"
+              disabled={isLoading}
+              aria-invalid={confirmPasswordError ? 'true' : undefined}
+              autocomplete="new-password"
+            />
+            {#if confirmPasswordError}
+              <Field.Error>{$t(confirmPasswordError)}</Field.Error>
+            {/if}
+          </Field.Content>
+        </Field.Field>
       {/if}
     {/if}
     {#if submitError}
@@ -251,13 +262,7 @@
         Logout
       </Button>
     {:else}
-      <Button
-        type="submit"
-        disabled={disableSubmit}
-        loading={isLoading}
-      >
-        Accept Invite
-      </Button>
+      <Button type="submit" disabled={disableSubmit} loading={isLoading}>Accept Invite</Button>
     {/if}
   </div>
 </AuthUI>

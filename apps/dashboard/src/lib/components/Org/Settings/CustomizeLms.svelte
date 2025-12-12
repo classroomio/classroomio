@@ -12,7 +12,7 @@
 
   import { Row, Grid, Column } from './Layout';
   import SectionTitle from '../SectionTitle.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
 
   const supabase = getSupabase();
@@ -93,7 +93,7 @@
 
       <div>
         <p>{$t('components.settings.customize_lms.dashboard.banner_text')}</p>
-        <TextField
+        <InputField
           label={$t('components.settings.customize_lms.dashboard.banner_text_label')}
           placeholder={$t('components.settings.customize_lms.dashboard.banner_text_placeholder')}
           bind:value={$currentOrg.customization.dashboard.bannerText}

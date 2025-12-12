@@ -20,9 +20,9 @@
   import type { Course } from '$lib/utils/types';
   import { profile } from '$lib/utils/store/user';
   import Vote from '$lib/components/Vote/index.svelte';
-  import { IconButton } from '$lib/components/IconButton';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import * as Avatar from '@cio/ui/base/avatar';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { shortenName } from '$lib/utils/functions/string';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
   import { CommunityDeleteModal } from '$lib/features/community/components';
@@ -406,7 +406,7 @@
       <Page.HeaderContent>
         {#if isEditMode}
           <div class="flex w-full items-center gap-2">
-            <TextField bind:value={editContent.title} className="flex-1" errorMessage={errors.title} />
+            <InputField bind:value={editContent.title} className="flex-1" errorMessage={errors.title} />
             <Select.Root type="single" bind:value={editContent.courseId}>
               <Select.Trigger class="h-full w-[25%]">
                 <p>
@@ -467,8 +467,7 @@
             </div>
             {#if question.author.id === $profile.id || $isOrgAdmin}
               <IconButton
-                value="delete-question"
-                onClick={() => {
+                onclick={() => {
                   if (!question) return;
 
                   deleteQuestion.shouldDelete = true;
@@ -527,8 +526,7 @@
 
                 {#if comment.authorId === $profile.id || $isOrgAdmin}
                   <IconButton
-                    value="delete-comment"
-                    onClick={() => {
+                    onclick={() => {
                       deleteComment.shouldDelete = true;
                       deleteComment.commentId = comment.id;
                     }}

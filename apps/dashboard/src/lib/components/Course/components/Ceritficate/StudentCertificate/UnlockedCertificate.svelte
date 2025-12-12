@@ -6,7 +6,7 @@
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { Button } from '@cio/ui/base/button';
-  import Box from '$lib/components/Box/index.svelte';
+  import Empty from '@cio/ui/custom/empty/empty.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { fetchProfileCourseProgress } from '$lib/utils/services/courses';
   import type { ProfileCourseProgress } from '$lib/utils/types';
@@ -93,11 +93,7 @@
     <p class="max-w-md text-center text-sm font-normal">
       {$t(subtitle)}
     </p>
-    <Button
-      onclick={downLoadCertificate}
-      disabled={!isCourseComplete}
-      loading={isLoading}
-    >
+    <Button onclick={downLoadCertificate} disabled={!isCourseComplete} loading={isLoading}>
       <DownloadIcon size={16} />
       {$t('course.navItem.certificates.download_certificate')}
     </Button>

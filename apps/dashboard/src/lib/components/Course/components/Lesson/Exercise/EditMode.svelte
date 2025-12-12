@@ -23,11 +23,11 @@
   import OrderModal from './OrderModal.svelte';
   import { t } from '$lib/utils/functions/translations';
   import Modal from '$lib/components/Modal/index.svelte';
-  import { IconButton } from '$lib/components/IconButton';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import Checkbox from '$lib/components/Form/Checkbox.svelte';
-  import RadioItem from '$lib/components/Form/RadioItem.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { IconButton } from '@cio/ui/custom/icon-button';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
+  import { CheckboxField } from '@cio/ui/custom/checkbox-field';
+  import { RadioItem } from '@cio/ui/custom/radio-item';
+  import { InputField } from '@cio/ui/custom/input-field';
   import DeleteConfirmationModal from './DeleteConfirmation.svelte';
   import ErrorMessage from '$lib/components/ErrorMessage/index.svelte';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
@@ -115,15 +115,12 @@
 
 {#snippet optionActions(question, option)}
   <div data-name="option-action" class="ml-2 flex items-center gap-2">
-    <IconButton value={`${option.id}`} onClick={handleRemoveOption(question.id, option.id)} size="small" bordered>
+    <IconButton onclick={handleRemoveOption(question.id, option.id)}>
       <TrashIcon size={18} />
     </IconButton>
     <IconButton
-      value={`${option.id}`}
-      onClick={handleAnswerSelect(question.id, option.id)}
-      buttonClassName={option.is_correct ? 'success' : ''}
-      size="small"
-      bordered
+      onclick={handleAnswerSelect(question.id, option.id)}
+      class={option.is_correct ? 'text-green-500! fill-green-500!' : ''}
     >
       <CircleCheckIcon size={18} filled={option.is_correct} />
     </IconButton>
@@ -151,11 +148,11 @@
         >
           <div class="flex items-center justify-between">
             <div class="mr-5 w-3/5">
-              <TextField
+              <InputField
                 placeholder={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.question')}
                 bind:value={question.title}
                 isRequired={true}
-                onChange={() => {
+                onchange={() => {
                   question.is_dirty = true;
                 }}
               />
@@ -185,12 +182,12 @@
 
           {#if typeof question.code === 'string'}
             <div class="my-3 flex w-3/5 items-center justify-between">
-              <TextArea
+              <TextareaField
                 bind:value={question.code}
                 rows={2}
                 placeholder={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.write')}
               />
-              <IconButton value="write-code" onClick={() => handleCode(question.id, false)}>
+              <IconButton onclick={() => handleCode(question.id, false)}>
                 <TrashIcon size={16} />
               </IconButton>
             </div>
@@ -204,25 +201,25 @@
                     isEditable={true}
                     name={question.title || 'radio-name'}
                     bind:label={option.label}
-                    onChange={addDynamicValue(question.id, option.id)}
+                    onchange={addDynamicValue(question.id, option.id)}
                   >
                     {@render optionActions(question, option)}
                   </RadioItem>
                 {:else if QUESTION_TYPE.CHECKBOX === question.question_type.id}
-                  <Checkbox
+                  <CheckboxField
                     isEditable={true}
                     name={question?.name || 'checkbox-name'}
                     bind:label={option.label}
-                    onChange={addDynamicValue(question.id, option.id)}
+                    onchange={addDynamicValue(question.id, option.id)}
                   >
                     {@render optionActions(question, option)}
-                  </Checkbox>
+                  </CheckboxField>
                 {/if}
               {/if}
             {/each}
 
             {#if QUESTION_TYPE.TEXTAREA === question.question_type.id}
-              <TextArea bind:value={question.value} disabled={true} />
+              <TextareaField bind:value={question.value} disabled={true} />
             {/if}
 
             {#if getQuestionErrorMsg(errors, question, 'option')}

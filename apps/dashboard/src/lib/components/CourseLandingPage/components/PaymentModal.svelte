@@ -5,7 +5,7 @@
   import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
 
   import Modal from '$lib/components/Modal/index.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { Button } from '@cio/ui/base/button';
 
   interface Props {
@@ -76,7 +76,7 @@
 <Modal onClose={() => (open = false)} bind:open width="w-96" modalHeading="Process course payment">
   {#if step === STEPS.STEP_1}
     <form onsubmit={preventDefault(onSubmit)}>
-      <TextField
+      <InputField
         label="Your Fullname"
         bind:value={fields.fullname}
         autoFocus={true}
@@ -86,7 +86,7 @@
         autoComplete={false}
         errorMessage={errors.fullname}
       />
-      <TextField
+      <InputField
         label="Your Email"
         bind:value={fields.email}
         placeholder="johndoe@email.com"
