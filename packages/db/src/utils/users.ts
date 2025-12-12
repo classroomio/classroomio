@@ -1,11 +1,11 @@
 import { db, user } from '@db/drizzle';
 
-export async function seedUsers({ usersData }: { usersData: any[] }) {
+export async function seedUsers({ usersData }: { usersData }) {
   const existingUsers = await db.select().from(user);
   const existingUserIds = existingUsers.map((u) => u.id);
 
   const usersToInsert = usersData
-    .map((userData: any) => ({
+    .map((userData) => ({
       id: userData.id,
       name: userData.profile_fullname,
       email: userData.email,
@@ -15,7 +15,7 @@ export async function seedUsers({ usersData }: { usersData: any[] }) {
       banned: false,
       isAnonymous: false
     }))
-    .filter((u: any) => !existingUserIds.includes(u.id));
+    .filter((u) => !existingUserIds.includes(u.id));
 
   if (usersToInsert.length > 0) {
     await db.insert(user).values(usersToInsert);

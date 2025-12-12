@@ -3,16 +3,16 @@
   import { Spinner } from '@cio/ui/base/spinner';
 
   import { t } from '$lib/utils/functions/translations';
-  import { templateApi } from '$lib/features/template/api';
+  import { exerciseTemplateApi } from '$lib/features/exercise-template/api';
   import type { ExerciseTemplate } from '$lib/utils/types';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import type { GetAllTemplatesMetadataSuccess } from '$lib/features/org/utils/types';
 
   import { ComingSoon } from '$lib/features/ui';
   import Modal from '$lib/components/Modal/index.svelte';
   import Confetti from '$lib/components/Confetti/index.svelte';
   import TextField from '$lib/components/Form/TextField.svelte';
+  import { TAGS } from '$lib/features/exercise-template/utils/constants';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
 
@@ -37,19 +37,6 @@
     TEMPLATE: 1,
     AI: 2
   } as const;
-
-  const TAGS = {
-    HTML: 'HTML',
-    CSS: 'CSS',
-    JS: 'JS',
-    Typescript: 'Typescript',
-    ReactJS: 'ReactJS',
-    VueJS: 'VueJS',
-    NodeJS: 'NodeJS',
-    Python: 'Python',
-    PHP: 'PHP',
-    GIT: 'GIT'
-  };
 
   const options = [
     {
@@ -81,7 +68,6 @@
   // let optionNumber = $state(5);
   let isLoading = $state(false);
   let isAIStarted = $state(false);
-  let allTemplates: GetAllTemplatesMetadataSuccess['data'] | undefined = $state();
 
   let selectedTag = $state(tags[0]);
   let selectedTemplateId = $state('');
@@ -129,15 +115,15 @@
 
   async function handleTemplateSelection() {
     isTemplateFinishedLoading = true;
-    const template = allTemplates?.[selectedTag]?.find((t) => t.id === selectedTemplateId);
+    const template = exerciseTemplateApi.templates?.[selectedTag]?.find((t) => t.id === selectedTemplateId);
 
     if (!template) return;
 
     let fetchedTemplate: ExerciseTemplate;
 
     try {
-      await templateApi.fetchTemplateById(template.id);
-      fetchedTemplate = templateApi.template[0];
+      await exerciseTemplateApi.fetchTemplateById(template.id);
+      fetchedTemplate = exerciseTemplateApi.template[0];
       console.log('Fetched template', fetchedTemplate);
       await handleTemplateCreate(fetchedTemplate);
     } catch (error) {
@@ -148,6 +134,12 @@
     }
   }
 
+  const handleTagSelection = async (tag: string) => {
+    selectedTag = tag;
+    selectedTemplateId = '';
+    await exerciseTemplateApi.fetchTemplateByTag(selectedTag);
+  };
+
   // const content = $derived(
   //   lessonFallbackNote(
   //     $lesson.materials.note,
@@ -156,14 +148,6 @@
   //   )
   // );
   // const note = $derived(browser ? getTextFromHTML(content) : '');
-
-  $effect(() => {
-    if (!selectedTag) return;
-    (async () => {
-      await templateApi.fetchTemplateByTag(selectedTag);
-      allTemplates = templateApi.templates;
-    })();
-  });
 </script>
 
 <Modal
@@ -256,23 +240,19 @@
         <div>
           <div class="mb-5 flex items-center gap-2">
             {#each tags as tag}
-              <Badge
-                class={selectedTag === tag ? 'bg-primary-400' : ''}
-                onclick={() => {
-                  selectedTag = tag;
-                  selectedTemplateId = '';
-                }}>{tag}</Badge
+              <Badge class={selectedTag === tag ? 'bg-primary-400' : ''} onclick={() => handleTagSelection(tag)}
+                >{tag}</Badge
               >
             {/each}
           </div>
 
-          {#if templateApi.isLoading}
+          {#if exerciseTemplateApi.isLoading}
             <div class="flex w-full items-center justify-center py-10">
               <Spinner class="text-white" />
             </div>
-          {:else if allTemplates}
+          {:else if exerciseTemplateApi.templates.length === 0}
             <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
-              {#each allTemplates as template}
+              {#each exerciseTemplateApi.templates as template}
                 <button
                   class="h-[140px] w-full rounded-md border-2 p-5 hover:scale-95 dark:bg-neutral-700 {template.id ===
                   selectedTemplateId
@@ -309,7 +289,7 @@
               onClick={handleBack}
             />
             <PrimaryButton
-              isDisabled={!selectedTemplateId || !allTemplates}
+              isDisabled={!selectedTemplateId || exerciseTemplateApi.templates.length === 0}
               className="px-6 py-3"
               label={$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
               isLoading={isTemplateFinishedLoading}

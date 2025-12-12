@@ -47,7 +47,7 @@ export async function seedQuestions() {
     }
   ].filter((q) => !existingQuestionExerciseIds.includes(q.exerciseId));
 
-  let insertedQuestions: any[] = [];
+  let insertedQuestions = [];
   if (questionsToInsert.length > 0) {
     const result = await db.insert(question).values(questionsToInsert).returning();
     insertedQuestions = result;

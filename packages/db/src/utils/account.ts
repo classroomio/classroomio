@@ -1,10 +1,10 @@
 import { account, db } from '@db/drizzle';
 
-export async function seedAccount({ usersData }: { usersData: any[] }) {
+export async function seedAccount({ usersData }: { usersData }) {
   const existingAccounts = await db.select().from(account);
   const existingAccountKeys = existingAccounts.map((a) => `${a.userId}-${a.providerId}`);
 
-  const accountsToInsert: any[] = [];
+  const accountsToInsert = [];
   for (const userData of usersData) {
     // Process identities to create accounts for all users in usersData
     // (whether they were just inserted or already existed)

@@ -6,8 +6,8 @@ export async function seedTemplates() {
   const existingTemplateTitles = existingTemplates.map((t) => t.title);
 
   const templatesToInsert = templatesData
-    .filter((t: any) => !existingTemplateTitles.includes(t.title))
-    .map((t: any) => ({
+    .filter((t) => !existingTemplateTitles.includes(t.title))
+    .map((t) => ({
       title: t.title,
       description: t.description,
       questionnaire: t.questionnaire,

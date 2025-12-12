@@ -1,11 +1,11 @@
 import { db, profile } from '@db/drizzle';
 
-export async function seedProfile({ usersData }: { usersData: any[] }) {
+export async function seedProfile({ usersData }: { usersData }) {
   const existingProfiles = await db.select().from(profile);
   const existingProfileIds = existingProfiles.map((p) => p.id);
 
   const profilesToInsert = usersData
-    .map((user: any) => ({
+    .map((user) => ({
       id: user.id,
       fullname: user.profile_fullname,
       username: `${user.email.split('@')[0]}${Date.now()}`,
@@ -14,7 +14,7 @@ export async function seedProfile({ usersData }: { usersData: any[] }) {
       canAddCourse: true,
       isEmailVerified: true
     }))
-    .filter((p: any) => !existingProfileIds.includes(p.id));
+    .filter((p) => !existingProfileIds.includes(p.id));
 
   if (profilesToInsert.length > 0) {
     await db.insert(profile).values(profilesToInsert);

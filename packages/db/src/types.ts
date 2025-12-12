@@ -130,6 +130,9 @@ export type TNewWaitinglist = typeof schema.waitinglist.$inferInsert;
 export type TOrganization = typeof schema.organization.$inferSelect;
 export type TNewOrganization = typeof schema.organization.$inferInsert;
 
+export type TTemplate = typeof schema.template.$inferSelect;
+export type TNewTemplate = typeof schema.template.$inferInsert;
+
 export type TCourseType = (typeof schema.courseType.enumValues)[number];
 
 export type TCourseVersion = (typeof schema.courseVersion.enumValues)[number];
@@ -137,5 +140,3 @@ export type TCourseVersion = (typeof schema.courseVersion.enumValues)[number];
 export type TLocale = (typeof schema.locale.enumValues)[number];
 
 export type TPlan = (typeof schema.plan.enumValues)[number];
-
-export type TDashStats = typeof schema.dashOrgStats.$inferSelect;

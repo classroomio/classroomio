@@ -1,20 +1,24 @@
-import { ExerciseTemplate } from '@api/types/template';
 import { calculateTotalPoints } from '@api/utils/template';
 import { getAllTemplates, getTemplateById, getTemplateByTag } from '@db/queries/template/template';
+import { TNewTemplate, TTemplate } from '@db/types';
 
-function mapTemplateToMetadata(templates: ExerciseTemplate[]) {
-  return templates.map((template) => ({
-    id: template.id,
-    title: template.title,
-    description: template.description,
-    questions: template.questionnaire.questions.length,
-    points: calculateTotalPoints({ questionnaire: template.questionnaire } as ExerciseTemplate),
-    tag: template.tag
-  }));
+function mapTemplateToMetadata(templates: TNewTemplate[]) {
+  return templates.map((template) => {
+    const questionnaire = template.questionnaire;
+
+    return {
+      id: template.id,
+      title: template.title,
+      description: template.description,
+      questions: questionnaire.questions.length,
+      points: calculateTotalPoints({ questionnaire }),
+      tag: template.tag
+    };
+  });
 }
 
-export async function handleGetAllTemplatesMetadata() {
-  let templates;
+export async function fetchAllTemplatesMetadata() {
+  let templates: TTemplate[];
   try {
     templates = await getAllTemplates();
   } catch (error) {
@@ -25,8 +29,8 @@ export async function handleGetAllTemplatesMetadata() {
   return mapTemplateToMetadata(templates);
 }
 
-export async function handleGetTemplateById(id: number): Promise<ExerciseTemplate[]> {
-  let template;
+export async function fetchTemplateById(id: number): Promise<TTemplate> {
+  let template: TTemplate;
   try {
     template = await getTemplateById(id);
   } catch (error) {
@@ -37,14 +41,14 @@ export async function handleGetTemplateById(id: number): Promise<ExerciseTemplat
   return template;
 }
 
-export async function handleGetTemplateByTag(tag: string) {
-  let template;
+export async function fetchTemplatesByTag(tag: string) {
+  let templates: TNewTemplate[];
   try {
-    template = await getTemplateByTag(tag);
+    templates = await getTemplateByTag(tag);
   } catch (error) {
     console.error('Failed to fetch templates from DB:', error);
     throw error;
   }
 
-  return mapTemplateToMetadata(template);
+  return mapTemplateToMetadata(templates);
 }

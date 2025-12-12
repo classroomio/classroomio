@@ -1,10 +1,10 @@
 import { db, eq, option, or } from '@db/drizzle';
 
-export async function seedOptions(insertedQuestions: any[]) {
+export async function seedOptions(insertedQuestions) {
   const questionIds = insertedQuestions.map((q) => q.id);
 
   // Check if options already exist for these questions
-  let existingOptions: any[] = [];
+  let existingOptions = [];
   if (questionIds.length > 0) {
     const conditions = questionIds.map((id) => eq(option.questionId, id));
     existingOptions = await db
