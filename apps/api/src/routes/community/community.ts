@@ -16,39 +16,41 @@ import {
 } from '@api/services/community';
 import {
   ZCommunityComment,
+  ZCommunityCommentDelete,
   ZCommunityQuestion,
-  ZCommunityQuestionDelete,
   ZCommunityQuestions,
   ZCommunityQuestionUpdate,
+  ZGetCommunity,
+  ZGetCommunityCommentQuestionId,
   ZNewCommunityQuestion,
-  ZUpvoteComment
+  ZUpvotePost,
+  ZUpvotePostParam
 } from '@cio/utils/validation/community';
-import z from 'zod';
 
 export const communityRouter = new Hono()
-  .get('/questions', authMiddleware, zValidator('query', ZCommunityQuestions), async (c) => {
+  .get('/', authMiddleware, zValidator('query', ZCommunityQuestions), async (c) => {
     try {
       const { orgId } = c.req.valid('query');
 
       const result = await fetchCommunityQuestions(orgId);
 
-      return c.json({ success: true, data: result }, 201);
+      return c.json({ success: true, data: result }, 200);
     } catch (error) {
-      return handleError(c, error, 'Failed to load community questions');
+      return handleError(c, error, 'Failed to load community posts');
     }
   })
-  .get('/question/:slug', authMiddleware, zValidator('param', ZCommunityQuestion), async (c) => {
+  .get('/:slug', authMiddleware, zValidator('param', ZCommunityQuestion), async (c) => {
     try {
       const { slug } = c.req.valid('param');
 
-      const result = await fetchCommunityQuestion(slug);
+      const result = await fetchCommunityQuestion({ slug });
 
-      return c.json({ success: true, data: result }, 201);
+      return c.json({ success: true, data: result }, 200);
     } catch (error) {
-      return handleError(c, error, 'Failed to load community question');
+      return handleError(c, error, 'Failed to load community post');
     }
   })
-  .post('/question', authMiddleware, zValidator('json', ZNewCommunityQuestion), async (c) => {
+  .post('/', authMiddleware, zValidator('json', ZNewCommunityQuestion), async (c) => {
     try {
       const { title, body, courseId, organizationId, authorProfileId, votes, slug } = c.req.valid('json');
 
@@ -64,13 +66,13 @@ export const communityRouter = new Hono()
 
       return c.json({ success: true, data: result }, 201);
     } catch (error) {
-      return handleError(c, error, 'Failed to add community question');
+      return handleError(c, error, 'Failed to create community post');
     }
   })
   .put(
-    '/question/:id',
+    '/:id',
     authMiddleware,
-    zValidator('param', z.object({ id: z.coerce.number() })),
+    zValidator('param', ZGetCommunity),
     zValidator('json', ZCommunityQuestionUpdate),
     async (c) => {
       try {
@@ -81,60 +83,75 @@ export const communityRouter = new Hono()
 
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
-        return handleError(c, error, 'Failed to update community question');
+        return handleError(c, error, 'Failed to update community post');
       }
     }
   )
-  .delete('/question', authMiddleware, zValidator('json', ZCommunityQuestionDelete), async (c) => {
+  .delete('/:id', authMiddleware, zValidator('param', ZGetCommunity), async (c) => {
     try {
-      const { id } = c.req.valid('json');
+      const { id } = c.req.valid('param');
 
-      const result = await deleteQuestion({ id: Number(id) });
-
-      return c.json({ success: true, data: result }, 201);
-    } catch (error) {
-      return handleError(c, error, 'Failed to delete community question');
-    }
-  })
-
-  .post('/comment', authMiddleware, zValidator('json', ZCommunityComment), async (c) => {
-    try {
-      const { body, questionId, authorId, votes } = c.req.valid('json');
-
-      const result = await createComment({
-        body,
-        questionId: Number(questionId),
-        authorId: String(authorId),
-        votes: Number(votes)
-      });
-
-      return c.json({ success: true, data: result }, 201);
-    } catch (error) {
-      return handleError(c, error, 'Failed to submit comment');
-    }
-  })
-  .put('/comment', authMiddleware, zValidator('json', ZUpvoteComment), async (c) => {
-    try {
-      const { id, votes, isQuestion } = c.req.valid('json');
-
-      const result = await upvote({
-        id,
-        votes: Number(votes),
-        isQuestion
-      });
+      const result = await deleteQuestion({ id });
 
       return c.json({ success: true, data: result }, 200);
     } catch (error) {
-      return handleError(c, error, 'Failed to upvote comment');
+      return handleError(c, error, 'Failed to delete community post');
     }
   })
-  .delete('/comment/:id', authMiddleware, async (c) => {
-    const id = c.req.param('id');
+
+  .post(
+    '/:id/comment',
+    authMiddleware,
+    zValidator('param', ZGetCommunity),
+    zValidator('json', ZCommunityComment),
+    async (c) => {
+      try {
+        const { id } = c.req.valid('param');
+        console.log('question id', id);
+        const { body, authorProfileId, votes } = c.req.valid('json');
+
+        const result = await createComment({
+          body,
+          questionId: id,
+          authorProfileId,
+          votes
+        });
+
+        return c.json({ success: true, data: result }, 201);
+      } catch (error) {
+        return handleError(c, error, 'Failed to submit comment');
+      }
+    }
+  )
+  .post(
+    '/:id/upvote',
+    authMiddleware,
+    zValidator('param', ZUpvotePostParam),
+    zValidator('json', ZUpvotePost),
+    async (c) => {
+      try {
+        const { id } = c.req.valid('param');
+        const { votes, isQuestion } = c.req.valid('json');
+
+        const result = await upvote({
+          id,
+          votes,
+          isQuestion
+        });
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to upvote post');
+      }
+    }
+  )
+  .delete('/:id/comment', authMiddleware, zValidator('param', ZCommunityCommentDelete), async (c) => {
+    const { id } = c.req.valid('param');
     const result = await deleteComment({ id });
     return c.json({ success: true, data: result }, 200);
   })
-  .delete('/comments/:questionId', authMiddleware, async (c) => {
-    const questionId = c.req.param('questionId');
-    const result = await deleteCommentsByQuestionId({ questionId: Number(questionId) });
+  .delete('/:questionId/comments', authMiddleware, zValidator('param', ZGetCommunityCommentQuestionId), async (c) => {
+    const { questionId } = c.req.valid('param');
+    const result = await deleteCommentsByQuestionId({ questionId });
     return c.json({ success: true, data: result }, 200);
   });

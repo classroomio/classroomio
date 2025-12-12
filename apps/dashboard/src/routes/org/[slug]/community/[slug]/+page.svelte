@@ -19,7 +19,7 @@
   import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { currentOrg, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
   import { communityApi } from '$lib/features/community/api/community.svelte.js';
-  import type { CommunityQuestionSuccess } from '$lib/features/org/utils/types.js';
+  import type { CommunityQuestionSuccess } from '$lib/features/community/utils/types';
   import { askCommunityValidation, commentInCommunityValidation } from '$lib/utils/functions/validator';
 
   import type { Course } from '$lib/utils/types';
@@ -137,10 +137,10 @@
       return;
     }
 
-    await communityApi.submitComment({
+    await communityApi.createComment({
+      id: Number(question.id),
       body: comment,
-      questionId: Number(question.id),
-      authorId: String($profile.id),
+      authorProfileId: String($profile.id),
       votes: 0
     });
 
@@ -160,11 +160,11 @@
           author: {
             id: $profile.id || '',
             fullname: $profile.fullname || '',
-            avatar_url: $profile.avatarUrl || ''
+            avatarUrl: $profile.avatarUrl || ''
           },
           votes: 0,
           body: _c.body,
-          created_at: _c.createdAt
+          createdAt: _c.createdAt
         }
       ];
 
@@ -198,8 +198,8 @@
       });
     }
 
-    await communityApi.handleUpvote({
-      id: matchId ?? '',
+    await communityApi.upvotePost({
+      id: Number(matchId) || 0,
       votes,
       isQuestion
     });
@@ -243,7 +243,7 @@
         id: question.id,
         title: editContent.title,
         body: editContent.body,
-        course_id: editContent.courseId
+        courseId: editContent.courseId
       });
 
       if (communityApi.error) {
@@ -271,7 +271,7 @@
     if (!isQuestion) {
       deleteComment.isDeleting = true;
 
-      communityApi.handleDeleteCommentById({ id: deleteComment.commentId });
+      await communityApi.handleDeleteCommentById({ id: deleteComment.commentId });
 
       deleteComment.isDeleting = false;
 
@@ -289,9 +289,10 @@
       // Handle only delete comment
       return;
     }
+
     deleteQuestion.isDeleting = true;
 
-    communityApi.handleDeleteCommentByQuestionId({ questionId: Number(deleteQuestion.questionId) });
+    await communityApi.handleDeleteCommentByQuestionId({ questionId: deleteQuestion.questionId });
 
     if (communityApi.error) {
       snackbar.error('snackbar.community.error.deleting_comments');
@@ -301,7 +302,7 @@
       return;
     }
 
-    communityApi.handleDeleteQuestionById({ id: Number(deleteQuestion.questionId) });
+    await communityApi.handleDeleteQuestionById({ id: deleteQuestion.questionId });
 
     if (communityApi.error) {
       snackbar.error('snackbar.community.error.deleting_question');
@@ -463,14 +464,14 @@
                 <div class="flex items-center text-black">
                   <Avatar.Root class="h-7 w-7">
                     <Avatar.Image
-                      src={comment.author.avatar_url ? comment.author.avatar_url : '/logo-192.png'}
+                      src={comment.author.avatarUrl ? comment.author.avatarUrl : '/logo-192.png'}
                       alt={comment.author.fullname ? comment.author.fullname : 'User'}
                     />
                     <Avatar.Fallback>{shortenName(comment.author.fullname) || 'U'}</Avatar.Fallback>
                   </Avatar.Root>
                   <p class="ml-2 text-sm dark:text-white">{comment.author.fullname}</p>
                   <p class="ml-2 text-sm text-gray-500 dark:text-white">
-                    {comment.created_at}
+                    {comment.createdAt}
                   </p>
                 </div>
 

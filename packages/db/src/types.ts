@@ -87,11 +87,9 @@ export type TNewLessonCompletion = typeof schema.lessonCompletion.$inferInsert;
 
 export type TCommunityAnswer = typeof schema.communityAnswer.$inferSelect;
 export type TNewCommunityAnswer = typeof schema.communityAnswer.$inferInsert;
-export type UpVoteAnswerParams = Pick<TNewCommunityAnswer, 'id' | 'votes'>;
 
 export type TCommunityQuestion = typeof schema.communityQuestion.$inferSelect;
 export type TNewCommunityQuestion = typeof schema.communityQuestion.$inferInsert;
-export type UpVoteQuestionParams = Pick<TNewCommunityQuestion, 'id' | 'votes'>;
 
 export type TCourseNewsfeed = typeof schema.courseNewsfeed.$inferSelect;
 export type TNewCourseNewsfeed = typeof schema.courseNewsfeed.$inferInsert;

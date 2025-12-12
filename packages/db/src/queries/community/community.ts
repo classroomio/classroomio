@@ -1,11 +1,21 @@
-import { communityAnswer, communityQuestion, course, db, desc, eq, inArray, profile, sql } from '@db/drizzle';
-import { TNewCommunityQuestion, UpVoteAnswerParams, UpVoteQuestionParams } from '@db/types';
+import {
+  communityAnswer,
+  communityQuestion,
+  course,
+  db,
+  desc,
+  eq,
+  inArray,
+  organization,
+  profile,
+  sql
+} from '@db/drizzle';
+import { TCommunityAnswer, TCommunityQuestion, TNewCommunityQuestion } from '@db/types';
 
 export async function getCommunityQuestions(courseIdsFilter: string[]) {
-  console.log('fetching for courseIdsFilter', courseIdsFilter);
   const commentsCount = sql<number>`COUNT(${communityAnswer.id})`;
 
-  return await db
+  return db
     .select({
       organizationId: communityQuestion.organizationId,
       courseId: communityQuestion.courseId,
@@ -48,7 +58,8 @@ export async function getCommunityQuestion(slug: string) {
       authorId: profile.id,
       authorName: profile.fullname,
       authorAvatar: profile.avatarUrl,
-      courseTitle: course.title
+      courseTitle: course.title,
+      organizationId: communityQuestion.organizationId
     })
     .from(communityQuestion)
     .innerJoin(course, eq(course.id, communityQuestion.courseId))
@@ -81,14 +92,15 @@ export async function getCommunityQuestion(slug: string) {
     title: q.title,
     body: q.body,
     votes: q.votes,
-    created_at: q.createdAt,
-    course_id: q.courseId,
+    createdAt: q.createdAt,
+    courseId: q.courseId,
     slug: q.slug,
+    organizationId: q.organizationId,
 
     author: {
       id: q.authorId,
       fullname: q.authorName,
-      avatar_url: q.authorAvatar
+      avatarUrl: q.authorAvatar
     },
 
     course: {
@@ -99,11 +111,11 @@ export async function getCommunityQuestion(slug: string) {
       id: c.id,
       body: c.body,
       votes: c.votes,
-      created_at: c.createdAt,
+      createdAt: c.createdAt,
       author: {
         id: c.authorId,
         fullname: c.authorName,
-        avatar_url: c.authorAvatar
+        avatarUrl: c.authorAvatar
       }
     }))
   };
@@ -112,43 +124,45 @@ export async function getCommunityQuestion(slug: string) {
 export async function submitComment({
   body,
   questionId,
-  authorId,
+  authorProfileId,
   votes
 }: {
   body: string;
   questionId: number;
-  authorId: string;
+  authorProfileId: string;
   votes: number;
 }) {
-  const inserted = await db
+  const response = await db
     .insert(communityAnswer)
     .values({
       body,
       questionId,
-      authorProfileId: authorId,
+      authorProfileId,
       votes
     })
     .returning();
 
-  return inserted[0];
+  return response[0];
 }
 
-export async function upvoteQuestion({ id, votes }: UpVoteQuestionParams) {
+export async function upvoteQuestion({ id, votes }: Partial<TCommunityQuestion>) {
   if (!id) throw new Error('Question ID is required for upvoting');
+
   await db.update(communityQuestion).set({ votes }).where(eq(communityQuestion.id, id));
 }
 
-export async function upvoteAnswer({ id, votes }: UpVoteAnswerParams) {
+export async function upvoteAnswer({ id, votes }: Partial<TCommunityAnswer>) {
   if (!id) throw new Error('Answer ID is required for upvoting');
+
   await db.update(communityAnswer).set({ votes }).where(eq(communityAnswer.id, id));
 }
 
 export async function editCommunityQuestion({ id, title, body, courseId }: TNewCommunityQuestion) {
   if (!id) throw new Error('Question ID is required for editing');
+
   await db.update(communityQuestion).set({ title, body, courseId }).where(eq(communityQuestion.id, id));
 }
 
-// --- delete
 export async function deleteCommentById(id: string) {
   await db.delete(communityAnswer).where(eq(communityAnswer.id, id));
 }
@@ -161,7 +175,6 @@ export async function deleteQuestionByQuestionId(questionId: number) {
   await db.delete(communityQuestion).where(eq(communityQuestion.id, questionId));
 }
 
-// --- ask
 export async function createCommunityQuestion({
   title,
   body,

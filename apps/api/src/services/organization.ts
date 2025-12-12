@@ -136,8 +136,7 @@ export async function getCoursesByOrgSiteName(siteName: string) {
  */
 export async function getCoursesByOrgId(orgId: string) {
   try {
-    const courses = await getCoursesById(orgId);
-    return courses;
+    return getCoursesById(orgId);
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to fetch courses',

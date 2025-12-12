@@ -12,7 +12,6 @@
   import { t } from '$lib/utils/functions/translations';
   import { courses } from '$lib/features/course/utils/store';
   import { calDateDiff } from '$lib/utils/functions/date';
-  import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { fetchCourses } from '$lib/utils/services/courses';
   import { currentOrg, isOrgAdmin } from '$lib/utils/store/org';
@@ -28,6 +27,7 @@
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
   import { CommunityDeleteModal } from '$lib/features/community/components';
+  import { communityApi } from '$lib/features/community/api/community.svelte.js';
 
   interface Comment {
     id: string;
@@ -129,35 +129,10 @@
   async function fetchCommunityQuestion(slug: string) {
     if (!slug) return;
 
-    const { data, error } = await supabase
-      .from('community_question')
-      .select(
-        `
-        id,
-        title,
-        body,
-        votes,
-        created_at,
-        course_id,
-        slug,
-        comments:community_answer(
-          id,
-          body,
-          votes,
-          created_at,
-          author:profile(id, fullname, avatar_url)
-        ),
-        author:profile(id, fullname, avatar_url),
-        course!inner (
-          title
-        )
-      `
-      )
-      .eq('slug', slug)
-      .single();
+    await communityApi.fetchCommunityQuestion({ slug: slug });
 
-    if (error) {
-      console.error('[LMS] Error loading community', error);
+    if (communityApi.error) {
+      console.error('[LMS] Error loading community', communityApi.error);
       return goto(`/lms`);
     }
 
@@ -177,27 +152,23 @@
       return;
     }
 
-    const { data, error } = await supabase
-      .from('community_answer')
-      .insert({
-        id: undefined,
-        body: comment,
-        question_id: question.id,
-        author_profile_id: $profile.id,
-        votes: 0
-      })
-      .select();
+    await communityApi.createComment({
+      id: Number(question.id),
+      body: comment,
+      authorProfileId: String($profile.id),
+      votes: 0
+    });
 
-    if (error) {
-      console.error('Error: commenting', error);
+    if (communityApi.error) {
+      console.error('Error: commenting', communityApi.error);
       snackbar.error('snackbar.community.error.try_again');
     } else {
-      console.log('Success: commenting', data);
+      console.log('Success: commenting', communityApi.answer);
 
       snackbar.success('snackbar.community.success.comment_submitted');
 
       // Add to comment
-      const _c = data?.[0];
+      const _c = communityApi.answer;
       question.comments = [
         ...question.comments,
         {
@@ -207,7 +178,7 @@
           avatar: $profile?.avatarUrl || '',
           votes: 0,
           comment: _c.body,
-          createdAt: calDateDiff(_c.created_at)
+          createdAt: calDateDiff(_c.createdAt)
         }
       ];
 
@@ -224,7 +195,6 @@
     if (isQuestion && voted.question) return;
     if (!isQuestion && commentId && voted.comment[commentId]) return;
 
-    const table = isQuestion ? 'community_question' : 'community_answer';
     const matchId = isQuestion ? question.id : commentId;
     let votes = 0;
 
@@ -240,9 +210,15 @@
         return c;
       });
     }
-    const { error } = await supabase.from(table).update({ votes }).match({ id: matchId });
-    if (error) {
-      console.error('Error: upvoteQuestion', error);
+
+    await communityApi.upvotePost({
+      id: Number(matchId) || 0,
+      votes,
+      isQuestion
+    });
+
+    if (communityApi.error) {
+      console.error('Error: upvoteQuestion', communityApi.error);
       snackbar.error('snackbar.community.error.try_again');
     } else {
       if (isQuestion) {
@@ -275,16 +251,16 @@
       if (Object.keys(errors).length) {
         return;
       }
-      const { error } = await supabase
-        .from('community_question')
-        .update({
-          title: editContent.title,
-          body: editContent.body,
-          course_id: editContent.courseId
-        })
-        .match({ id: question.id });
-      if (error) {
-        console.error('Error: handleQuestionEdit', error);
+
+      await communityApi.handleUpdateQuestion({
+        id: Number(question.id),
+        title: editContent.title,
+        body: editContent.body,
+        courseId: editContent.courseId
+      });
+
+      if (communityApi.error) {
+        console.error('Error: handleQuestionEdit', communityApi.error);
         snackbar.error('snackbar.community.error.try_again');
       } else {
         question.title = editContent.title;
@@ -308,13 +284,13 @@
     if (!isQuestion) {
       deleteComment.isDeleting = true;
 
-      const { error } = await supabase.from('community_answer').delete().match({ id: deleteComment.commentId });
+      await communityApi.handleDeleteCommentById({ id: deleteComment.commentId });
 
       deleteComment.isDeleting = false;
 
-      if (error) {
+      if (communityApi.error) {
         snackbar.error('snackbar.community.error.deleting_comments');
-        console.log('Error deleting comments', error);
+        console.log('Error deleting comments', communityApi.error);
         return;
       }
       snackbar.success('snackbar.community.success.success_delete');
@@ -326,29 +302,23 @@
       // Handle only delete comment
       return;
     }
+
     deleteQuestion.isDeleting = true;
 
-    const { error: commentDeleteError } = await supabase
-      .from('community_answer')
-      .delete()
-      .match({ question_id: deleteQuestion.questionId });
+    await communityApi.handleDeleteCommentByQuestionId({ questionId: deleteQuestion.questionId });
 
-    if (commentDeleteError) {
+    if (communityApi.error) {
       snackbar.error('snackbar.community.error.deleting_comments');
-      console.log('Error deleting comments', commentDeleteError);
-
+      console.log('Error deleting comments', communityApi.error);
       deleteQuestion.isDeleting = false;
       return;
     }
 
-    const { error: questionDeleteError } = await supabase
-      .from('community_question')
-      .delete()
-      .match({ id: deleteQuestion.questionId });
+    await communityApi.handleDeleteQuestionById({ id: deleteQuestion.questionId });
 
-    if (questionDeleteError) {
+    if (communityApi.error) {
       snackbar.error('snackbar.community.error.deleting_question');
-      console.log('Error deleting question', questionDeleteError);
+      console.log('Error deleting question', communityApi.error);
       return;
     }
 

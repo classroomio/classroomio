@@ -1,6 +1,3 @@
-import type { TCourse } from '@db/types';
-import { AppError, ErrorCodes } from '@api/utils/errors';
-import type { CommunityQuestion } from '@api/types/community';
 import {
   createCommunityQuestion,
   deleteCommentById,
@@ -13,11 +10,13 @@ import {
   upvoteAnswer,
   upvoteQuestion
 } from '@cio/db/queries/community';
+import { AppError, ErrorCodes } from '@api/utils/errors';
+import type { TCommunityAnswer, TCommunityQuestion, TCourse } from '@db/types';
 
 import { getCoursesByOrgId } from './organization';
 
-export async function fetchCommunityQuestions(orgId: string): Promise<CommunityQuestion[]> {
-  let discussions: CommunityQuestion[] = [];
+export async function fetchCommunityQuestions(orgId: string): Promise<Partial<TCommunityQuestion>[]> {
+  let discussions: Partial<TCommunityQuestion>[] = [];
 
   let courses: TCourse[];
 
@@ -33,8 +32,8 @@ export async function fetchCommunityQuestions(orgId: string): Promise<CommunityQ
 
   try {
     const courseIds = courses.map((course) => course.id);
-
     discussions = await getCommunityQuestions(courseIds);
+
     return discussions;
   } catch (error) {
     console.error('Failed to fetch community questions:', error);
@@ -42,7 +41,7 @@ export async function fetchCommunityQuestions(orgId: string): Promise<CommunityQ
   }
 }
 
-export async function fetchCommunityQuestion(slug: string) {
+export async function fetchCommunityQuestion({ slug }: Partial<TCommunityQuestion>) {
   try {
     const result = await getCommunityQuestion(slug);
 
@@ -55,14 +54,14 @@ export async function fetchCommunityQuestion(slug: string) {
       title: result.title,
       body: result.body,
       votes: result.votes,
-      createdAt: result.created_at,
-      courseId: result.course_id,
+      createdAt: result.createdAt,
+      courseId: result.courseId,
       courseTitle: result.course.title,
       slug: result.slug,
       authorId: result.author.id,
       authorFullname: result.author.fullname,
-      authorAvatarUrl: result.author.avatar_url,
-      organizationId: result.course_id,
+      authorAvatarUrl: result.author.avatarUrl,
+      organizationId: result.organizationId,
       comments: result.comments
     };
   } catch (error) {
@@ -72,7 +71,15 @@ export async function fetchCommunityQuestion(slug: string) {
   }
 }
 
-export async function createQuestion({ title, body, courseId, organizationId, authorProfileId, votes, slug }) {
+export async function createQuestion({
+  title,
+  body,
+  courseId,
+  organizationId,
+  authorProfileId,
+  votes,
+  slug
+}: Partial<TCommunityQuestion>) {
   try {
     const result = await createCommunityQuestion({
       title,
@@ -106,17 +113,7 @@ export async function createQuestion({ title, body, courseId, organizationId, au
   }
 }
 
-export async function editQuestion({
-  id,
-  title,
-  body,
-  courseId
-}: {
-  id: number;
-  title: string;
-  body: string;
-  courseId: string;
-}) {
+export async function editQuestion({ id, title, body, courseId }: Partial<TCommunityQuestion>) {
   try {
     const result = await editCommunityQuestion({ id, title, body, courseId: courseId });
 
@@ -128,19 +125,9 @@ export async function editQuestion({
   }
 }
 
-export async function createComment({
-  body,
-  questionId,
-  authorId,
-  votes
-}: {
-  body: string;
-  questionId: number;
-  authorId: string;
-  votes: number;
-}) {
+export async function createComment({ body, questionId, authorProfileId, votes }: Partial<TCommunityAnswer>) {
   try {
-    const result = await submitComment({ body, questionId, authorId, votes });
+    const result = await submitComment({ body, questionId, authorProfileId, votes });
 
     if (!result) {
       throw new AppError('Comment submission failed', ErrorCodes.COMMENT_SUBMISSION_FAILED, 404);
@@ -160,7 +147,7 @@ export async function createComment({
   }
 }
 
-export async function upvote({ id, votes, isQuestion }: { id: number | string; votes: number; isQuestion: boolean }) {
+export async function upvote({ id, votes, isQuestion }: { id: string | number; votes: number; isQuestion: boolean }) {
   try {
     let result;
 
@@ -178,7 +165,7 @@ export async function upvote({ id, votes, isQuestion }: { id: number | string; v
   }
 }
 
-export async function deleteQuestion({ id }: { id: number }) {
+export async function deleteQuestion({ id }: Partial<TCommunityQuestion>) {
   try {
     const result = await deleteQuestionByQuestionId(id);
 
@@ -190,7 +177,7 @@ export async function deleteQuestion({ id }: { id: number }) {
   }
 }
 
-export async function deleteComment({ id }: { id: string }) {
+export async function deleteComment({ id }: Partial<TCommunityAnswer>) {
   try {
     const result = await deleteCommentById(id);
 
@@ -202,7 +189,7 @@ export async function deleteComment({ id }: { id: string }) {
   }
 }
 
-export async function deleteCommentsByQuestionId({ questionId }: { questionId: number }) {
+export async function deleteCommentsByQuestionId({ questionId }: Partial<TCommunityAnswer>) {
   try {
     const result = await deleteCommentByQuestionId(questionId);
 

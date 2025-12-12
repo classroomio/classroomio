@@ -17,7 +17,7 @@ import { dashAnalyticsRouter } from '@api/routes/dash';
 import { mediaRouter } from '@api/routes/media';
 import { onboardingRouter } from '@api/routes/onboarding';
 import { organizationRouter } from '@api/routes/organization';
-import { communityRouter } from './routes/community';
+import { communityRouter } from '@api/routes/community';
 
 // Create Hono app with chaining for RPC support
 export const app = new Hono()

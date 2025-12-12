@@ -15,11 +15,11 @@
   import { courses } from '$lib/features/course/utils/store';
   import { fetchCourses } from '$lib/utils/services/courses';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import type { CommunityQuestionsSuccess } from '$lib/features/org/utils/types';
 
   import { AskCommunityButton } from '../components';
   import { CommunityListLoader } from '../components';
   import Vote from '$lib/components/Vote/index.svelte';
+  import type { CommunityQuestionData, CommunityQuestionsSuccess } from '../utils/types';
 
   interface Props {
     isLMS?: boolean;
@@ -27,10 +27,10 @@
 
   let { isLMS = false }: Props = $props();
 
-  let communityQuestions: CommunityQuestionsSuccess['data'] = $state([]);
+  let communityQuestions: CommunityQuestionData = $state([]);
 
   let isLoading = $state(false);
-  let discussions: CommunityQuestionsSuccess['data'] = $state([]);
+  let discussions: CommunityQuestionData = $state([]);
   let searchValue = $state('');
   let allCourses: any[] = $state([]);
   let selectedId = $state('');
@@ -48,7 +48,7 @@
         allCourses = courseResult.allCourses;
       }
 
-      await communityApi.fetchCommunityQuestions({ orgId: orgId });
+      await communityApi.fetchCommunityQuestions({ orgId });
 
       if (communityApi.error) {
         console.error('Error loading community questions:', communityApi.error);
