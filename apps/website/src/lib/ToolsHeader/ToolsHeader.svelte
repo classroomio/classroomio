@@ -2,6 +2,6 @@
   export let className = '';
 </script>
 
-<header class="tools-hero-bg text-center py-14 {className} border-b border-slate-100 bg-white">
+<header class="tools-hero-bg py-24 text-center {className} border-b border-slate-100 bg-white">
   <slot />
 </header>
