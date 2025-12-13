@@ -12,39 +12,6 @@
         include: FIELDS
       }
     },
-    argTypes: {
-      value: {
-        control: 'text',
-        description: 'The controlled value of the active navigation item'
-      },
-      onValueChange: {
-        control: false,
-        description: 'Callback function when the active navigation item changes'
-      },
-      dir: {
-        control: 'select',
-        options: ['ltr', 'rtl'],
-        description: 'The reading direction of the navigation menu'
-      },
-      orientation: {
-        control: 'select',
-        options: ['horizontal', 'vertical'],
-        description: 'The orientation of the navigation menu'
-      },
-      viewport: {
-        control: 'boolean',
-        description: 'Whether to show the viewport component',
-        defaultValue: true
-      },
-      disabled: {
-        control: 'boolean',
-        description: 'Whether the navigation menu is disabled'
-      },
-      ref: {
-        control: false,
-        description: 'The underlying DOM element reference'
-      }
-    },
     tags: ['autodocs']
   });
 </script>
@@ -172,78 +139,6 @@
                   <div class="ui:text-sm ui:font-medium ui:leading-none">Integrations</div>
                   <p class="ui:text-muted-foreground ui:line-clamp-2 ui:text-sm ui:leading-snug">
                     Connect with your favorite tools.
-                  </p>
-                </NavigationMenu.Link>
-              </li>
-            </ul>
-          </NavigationMenu.Content>
-        </NavigationMenu.Item>
-
-        <NavigationMenu.Item>
-          <NavigationMenu.Link href="/docs">Documentation</NavigationMenu.Link>
-        </NavigationMenu.Item>
-      </NavigationMenu.List>
-    </NavigationMenu.Root>
-  {/snippet}
-</Story>
-
-<Story name="Vertical">
-  {#snippet template()}
-    <NavigationMenu.Root orientation="vertical" class="ui:relative">
-      <NavigationMenu.List class="ui:flex ui:flex-col ui:gap-2">
-        <NavigationMenu.Item>
-          <NavigationMenu.Trigger>Getting started</NavigationMenu.Trigger>
-          <NavigationMenu.Content>
-            <ul class="ui:grid ui:w-[300px] ui:gap-3 ui:.p-4">
-              <li>
-                <NavigationMenu.Link
-                  href="/docs"
-                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground ui:block ui:select-none ui:space-y-1 ui:rounded-md ui:p-3 ui:leading-none ui:no-underline ui:outline-none ui:transition-colors"
-                >
-                  <div class="ui:text-sm ui:font-medium ui:leading-none">Introduction</div>
-                  <p class="ui:text-muted-foreground ui:line-clamp-2 ui:text-sm ui:leading-snug">
-                    Learn how to get started.
-                  </p>
-                </NavigationMenu.Link>
-              </li>
-              <li>
-                <NavigationMenu.Link
-                  href="/docs/installation"
-                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground ui:block ui:select-none ui:space-y-1 ui:rounded-md ui:p-3 ui:leading-none ui:no-underline ui:outline-none ui:transition-colors"
-                >
-                  <div class="ui:text-sm ui:font-medium ui:leading-none">Installation</div>
-                  <p class="ui:text-muted-foreground ui:line-clamp-2 ui:text-sm ui:leading-snug">
-                    How to install dependencies.
-                  </p>
-                </NavigationMenu.Link>
-              </li>
-            </ul>
-          </NavigationMenu.Content>
-        </NavigationMenu.Item>
-
-        <NavigationMenu.Item>
-          <NavigationMenu.Trigger>Components</NavigationMenu.Trigger>
-          <NavigationMenu.Content>
-            <ul class="ui:grid ui:w-[300px] ui:gap-3 ui:p-4">
-              <li>
-                <NavigationMenu.Link
-                  href="/components/button"
-                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground ui:block ui:select-none ui:space-y-1 ui:rounded-md ui:p-3 ui:leading-none ui:no-underline ui:outline-none ui:transition-colors"
-                >
-                  <div class="ui:text-sm ui:font-medium ui:leading-none">Button</div>
-                  <p class="ui:text-muted-foreground ui:line-clamp-2 ui:text-sm ui:leading-snug">
-                    Interactive button component.
-                  </p>
-                </NavigationMenu.Link>
-              </li>
-              <li>
-                <NavigationMenu.Link
-                  href="/components/input"
-                  class="ui:hover:bg-accent ui:hover:text-accent-foreground ui:focus:bg-accent ui:focus:text-accent-foreground ui:block ui:select-none ui:space-y-1 ui:rounded-md ui:p-3 ui:leading-none ui:no-underline ui:outline-none ui:transition-colors"
-                >
-                  <div class="ui:text-sm ui:font-medium ui:leading-none">Input</div>
-                  <p class="ui:text-muted-foreground ui:line-clamp-2 ui:text-sm ui:leading-snug">
-                    Text input field component.
                   </p>
                 </NavigationMenu.Link>
               </li>
