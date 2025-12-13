@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 import usersData from '../../users.json';
-import { seedTemplates } from '@db/utils/seed/template';
+import { seedExerciseTemplates } from '@db/utils/seed/exerciseTemplate';
 import { seedQuestions } from '@db/utils/seed/question';
 import { seedLessons } from '@db/utils/seed/lesson';
 import { seedExercise } from '@db/utils/seed/exercise';
@@ -105,8 +105,8 @@ async function seed() {
     await seedQuestions();
 
     // Seed templates
-    console.log('📝 Seeding templates...');
-    await seedTemplates();
+    console.log('📝 Seeding exercise templates...');
+    await seedExerciseTemplates();
 
     console.log('✅ Seed completed successfully!');
     process.exit(0);

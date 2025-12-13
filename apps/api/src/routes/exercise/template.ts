@@ -4,7 +4,7 @@ import { ZTemplateById, ZTemplateByTag } from '@cio/utils/validation/mocks';
 
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
-import { fetchAllTemplatesMetadata, fetchTemplateById, fetchTemplatesByTag } from '@api/services/template';
+import { fetchAllTemplatesMetadata, fetchTemplateById, fetchTemplatesByTag } from '@api/services/exercise/template';
 
 export const exerciseRouter = new Hono()
   .get('/template', authMiddleware, async (c) => {

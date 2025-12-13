@@ -130,8 +130,8 @@ export type TNewWaitinglist = typeof schema.waitinglist.$inferInsert;
 export type TOrganization = typeof schema.organization.$inferSelect;
 export type TNewOrganization = typeof schema.organization.$inferInsert;
 
-export type TTemplate = typeof schema.template.$inferSelect;
-export type TNewTemplate = typeof schema.template.$inferInsert;
+export type TExerciseTemplate = typeof schema.exerciseTemplate.$inferSelect;
+export type TNewExerciseTemplate = typeof schema.exerciseTemplate.$inferInsert;
 
 export type TCourseType = (typeof schema.courseType.enumValues)[number];
 

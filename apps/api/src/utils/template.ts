@@ -1,4 +1,6 @@
-export function calculateTotalPoints(template): number {
+import { TNewExerciseTemplate } from '@db/types';
+
+export function calculateTotalPoints(template: TNewExerciseTemplate): number {
   let totalPoints = 0;
 
   template.questionnaire.questions.forEach((question) => {

@@ -1,5 +1,5 @@
 import { BaseApi, classroomio } from '$lib/utils/services/api';
-import type { TTemplate } from '@cio/db/types';
+import type { TExerciseTemplate } from '@cio/db/types';
 import type { GetTemplateByIdResponse, GetTemplateByTagData, GetTemplateByTagResponse } from '../utils/types';
 
 /**
@@ -7,7 +7,7 @@ import type { GetTemplateByIdResponse, GetTemplateByTagData, GetTemplateByTagRes
  */
 class ExerciseTemplateApi extends BaseApi {
   templates = $state<GetTemplateByTagData>([]);
-  template = $state<TTemplate>({} as TTemplate);
+  template = $state<TExerciseTemplate>({} as TExerciseTemplate);
 
   /**
    * Fetches an exercise template metadata

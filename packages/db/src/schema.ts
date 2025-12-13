@@ -1313,11 +1313,11 @@ export const lessonVersions = pgView('lesson_versions', {
   sql`SELECT llh.old_content, llh.new_content, llh."timestamp", ll.locale, ll.lesson_id FROM lesson_language_history llh JOIN lesson_language ll ON ll.id = llh.lesson_language_id`
 );
 
-export const template = pgTable(
-  'template',
+export const exerciseTemplate = pgTable(
+  'exercise_template',
   {
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
-      name: 'template_id_seq',
+      name: 'exercise_template_id_seq',
       startWith: 1,
       increment: 1,
       minValue: 1,
@@ -1356,5 +1356,5 @@ export const template = pgTable(
       ];
     }>()
   },
-  (table) => [unique('template_pkey').on(table.id)]
+  (table) => [unique('exercise_template_pkey').on(table.id)]
 );

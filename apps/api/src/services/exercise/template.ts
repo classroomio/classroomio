@@ -1,8 +1,8 @@
 import { calculateTotalPoints } from '@api/utils/template';
 import { getAllTemplates, getTemplateById, getTemplateByTag } from '@db/queries/template/template';
-import { TNewTemplate, TTemplate } from '@db/types';
+import { TNewExerciseTemplate, TExerciseTemplate } from '@db/types';
 
-function mapTemplateToMetadata(templates: TNewTemplate[]) {
+function mapTemplateToMetadata(templates: TNewExerciseTemplate[]) {
   return templates.map((template) => {
     const questionnaire = template.questionnaire;
 
@@ -11,14 +11,14 @@ function mapTemplateToMetadata(templates: TNewTemplate[]) {
       title: template.title,
       description: template.description,
       questions: questionnaire.questions.length,
-      points: calculateTotalPoints({ questionnaire }),
+      points: calculateTotalPoints(template),
       tag: template.tag
     };
   });
 }
 
 export async function fetchAllTemplatesMetadata() {
-  let templates: TTemplate[];
+  let templates: TExerciseTemplate[];
   try {
     templates = await getAllTemplates();
   } catch (error) {
@@ -29,8 +29,8 @@ export async function fetchAllTemplatesMetadata() {
   return mapTemplateToMetadata(templates);
 }
 
-export async function fetchTemplateById(id: number): Promise<TTemplate> {
-  let template: TTemplate;
+export async function fetchTemplateById(id: number): Promise<TExerciseTemplate> {
+  let template: TExerciseTemplate;
   try {
     template = await getTemplateById(id);
   } catch (error) {
@@ -42,7 +42,7 @@ export async function fetchTemplateById(id: number): Promise<TTemplate> {
 }
 
 export async function fetchTemplatesByTag(tag: string) {
-  let templates: TNewTemplate[];
+  let templates: TNewExerciseTemplate[];
   try {
     templates = await getTemplateByTag(tag);
   } catch (error) {
