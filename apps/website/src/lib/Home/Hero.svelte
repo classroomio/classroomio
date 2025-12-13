@@ -30,32 +30,32 @@
   });
 </script>
 
-<div class="hero-bg relative border-b-2 text-center bg-[#F5F8FE] h-full mt-[5%] w-full">
-  <div class="pt-24 w-full">
-    <div class="mb-10 ml-[5%] lg:ml-0 flex w-full items-center justify-start lg:justify-center">
+<div class="hero-bg pt-18 relative h-full w-full border-b-2 bg-[#F5F8FE] text-center">
+  <div class="w-full pt-24">
+    <div class="mb-10 ml-[5%] flex w-full items-center justify-start lg:ml-0 lg:justify-center">
       <a
         target="_blank"
         rel="noopener noreferrer nofollow"
         href="/github"
         style="color: rgb(75, 85, 99);"
-        class="rounded-full border-2 border-[#C2D2FF] px-4 py-1 text-sm font-medium bg-[#DCE5FF] text-[#4B5563] hover:underline"
+        class="rounded-full border-2 border-[#C2D2FF] bg-[#DCE5FF] px-4 py-1 text-sm font-medium text-[#4B5563] hover:underline"
         >We are <span class="text-blue-700">100%</span> open source</a
       >
     </div>
 
-    <div class="justify-between w-[90%] absolute top-[10%] left-[5%] hidden lg:flex">
+    <div class="absolute left-[5%] top-[10%] hidden w-[90%] justify-between lg:flex">
       {#if animate}
         <div
-          class="relative transition-all hover:scale-110 rotate-12"
+          class="relative rotate-12 transition-all hover:scale-110"
           transition:fly={{ y: 100, delay: 0, easing: sineInOut }}
         >
           <a
             href="/#collaboration"
-            class="px-6 py-2 border-[1.5px] border-[#3ADFEC] rounded-[4px] bg-white text-[#3ADFEC] text-lg font-bold"
+            class="rounded-[4px] border-[1.5px] border-[#3ADFEC] bg-white px-6 py-2 text-lg font-bold text-[#3ADFEC]"
             >Collaboration</a
           >
           <svg
-            class="absolute -right-1 -bottom-2.5"
+            class="absolute -bottom-2.5 -right-1"
             width="11"
             height="11"
             viewBox="0 0 11 11"
@@ -67,17 +67,17 @@
         </div>
 
         <div
-          class="relative transition-all hover:scale-110 -rotate-12"
+          class="relative -rotate-12 transition-all hover:scale-110"
           transition:fly={{ x: 100, delay: 50, easing: sineInOut }}
         >
           <a
             href="/github"
             target="_blank"
-            class="px-6 py-2 border-[1.5px] border-[#BF0696] rounded-[4px] bg-white text-[#BF0696] text-lg font-bold"
+            class="rounded-[4px] border-[1.5px] border-[#BF0696] bg-white px-6 py-2 text-lg font-bold text-[#BF0696]"
             >Open Source</a
           >
           <svg
-            class="absolute -right-1 -bottom-2.5"
+            class="absolute -bottom-2.5 -right-1"
             width="11"
             height="11"
             viewBox="0 0 11 11"
@@ -91,21 +91,19 @@
     </div>
 
     <div class="w-full">
-      <div
-        class="font-bold md:leading-[1.5] text-left lg:text-center ml-6 text-slate-900 text-4xl lg:text-7xl"
-      >
+      <div class="ml-6 text-left text-4xl font-bold text-slate-900 lg:text-center lg:text-7xl">
         <span>Educate Your</span>
-        <div class="flex-wrap flex items-center justify-center lg:gap-3 mb-2">
+        <div class="mb-2 flex flex-wrap items-center justify-center lg:gap-3">
           <span
-            class="w-full border lg:w-[48%] h-[40px] md:h-[50px] lg:h-[75px] mb-0 mt-1 md:mt-0 lg:-mb-4 relative inline-block overflow-hidden lg:text-center"
+            class="relative mb-0 mt-1 inline-block h-[40px] w-full overflow-hidden md:mt-0 md:h-[50px] lg:-mb-4 lg:h-[75px] lg:w-[48%] lg:text-center"
           >
             {#key titleIndex}
               <span
-                class="absolute border border-red-300 left-0 right-[unset] lg:right-0 lg:left-[unset] w-full"
+                class="absolute left-0 right-[unset] w-full lg:left-[unset] lg:right-0"
                 style="color: {names[titleIndex].color}"
                 transition:fly={{ y: 100, delay: 0, easing: sineInOut }}
               >
-                <span class="w-full text-center m-auto">
+                <span class="m-auto w-full text-center">
                   {names[titleIndex].label}
                 </span>
               </span>
@@ -115,27 +113,27 @@
         <span>from one Platform</span>
       </div>
 
-      <p class="text-base mx-auto mt-10 px-4 text-slate-700 md:text-lg lg:mt-6 lg:w-[42%] lg:p-0">
-        ClassroomIO is an open source learning management system for companies. We give you a suite
-        of tools to help you achieve your training, onboarding and certification goals.
+      <p class="mx-auto mt-10 px-4 text-base text-slate-700 md:text-lg lg:mt-6 lg:w-[42%] lg:p-0">
+        ClassroomIO is an open source learning management system for companies. We give you a suite of tools to help you
+        achieve your training, onboarding and certification goals.
       </p>
     </div>
 
-    <div class="justify-between w-[90%] absolute top-[30%] left-[5%] hidden lg:flex">
+    <div class="absolute left-[5%] top-[30%] hidden w-[90%] justify-between lg:flex">
       {#if animate}
         <div
-          class="relative transition-all hover:scale-110 -rotate-12"
+          class="relative -rotate-12 transition-all hover:scale-110"
           transition:fly={{ x: -100, delay: 100, easing: sineInOut }}
         >
           <a
             href="/#customization"
-            class="px-6 py-2 border-[1.5px] border-[#0233BD] rounded-[4px] bg-white text-[#0233BD] text-lg font-bold"
+            class="rounded-[4px] border-[1.5px] border-[#0233BD] bg-white px-6 py-2 text-lg font-bold text-[#0233BD]"
           >
             Customizable LMS
           </a>
 
           <svg
-            class="absolute -right-1 -bottom-2.5"
+            class="absolute -bottom-2.5 -right-1"
             width="11"
             height="11"
             viewBox="0 0 11 11"
@@ -146,17 +144,17 @@
           </svg>
         </div>
         <div
-          class="relative transition-all hover:scale-110 rotate-12"
+          class="relative rotate-12 transition-all hover:scale-110"
           transition:fly={{ y: 100, delay: 150, easing: sineInOut }}
         >
           <a
             href="/#ai"
-            class="px-6 py-2 border-[1.5px] border-[#9747FF] rounded-[4px] bg-white text-[#9747FF] text-lg font-bold"
+            class="rounded-[4px] border-[1.5px] border-[#9747FF] bg-white px-6 py-2 text-lg font-bold text-[#9747FF]"
             >AI Support</a
           >
 
           <svg
-            class="absolute -right-1 -bottom-2.5"
+            class="absolute -bottom-2.5 -right-1"
             width="11"
             height="11"
             viewBox="0 0 11 11"
@@ -171,14 +169,14 @@
 
     <div class="my-10 flex flex-col items-center justify-center gap-4 md:flex-row">
       <a
-        class="md:text-base w-11/12 rounded-md border-gray-200 border-2 px-6 py-3 text-sm font-medium text-center transition-all delay-100 hover:bg-gray-200 hover:shadow-xl hover:scale-95 md:w-fit lg:px-6 lg:py-4 lg:font-semibold"
+        class="w-11/12 rounded-md border-2 border-gray-200 px-6 py-3 text-center text-sm font-medium transition-all delay-100 hover:scale-95 hover:bg-gray-200 hover:shadow-xl md:w-fit md:text-base lg:px-6 lg:py-4 lg:font-semibold"
         href="/demo"
         rel="noopener noreferrer nofollow"
       >
         Book a demo
       </a>
       <a
-        class="md:text-base w-11/12 rounded-md bg-blue-700 px-6 py-3 text-sm font-medium text-white text-center transition-all delay-100 hover:bg-blue-800 hover:shadow-xl hover:scale-95 md:w-fit lg:px-6 lg:py-4 lg:font-semibold"
+        class="w-11/12 rounded-md bg-blue-700 px-6 py-3 text-center text-sm font-medium text-white transition-all delay-100 hover:scale-95 hover:bg-blue-800 hover:shadow-xl md:w-fit md:text-base lg:px-6 lg:py-4 lg:font-semibold"
         href="/signup"
         rel="noopener noreferrer nofollow"
       >
@@ -204,10 +202,7 @@
       />
       
     </div> -->
-    <div
-      style="position: relative; padding-bottom: calc(50% + 42px);"
-      class="mx-auto w-[85%] lg:w-[70%]"
-    >
+    <div style="position: relative; padding-bottom: calc(50% + 42px);" class="mx-auto w-[85%] lg:w-[70%]">
       <iframe
         title="ClassroomIO Live Demo"
         src="https://app.supademo.com/embed/cluw8chyy06nhq2s9m697a680"

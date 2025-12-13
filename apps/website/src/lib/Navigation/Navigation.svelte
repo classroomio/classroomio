@@ -1,29 +1,21 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import * as NavigationMenu from '@cio/ui/base/navigation-menu';
   import CourseIcon from '$lib/Icons/CourseIcon.svelte';
   import ChevronDown from 'carbon-icons-svelte/lib/ChevronDown.svelte';
   import CloseLarge from 'carbon-icons-svelte/lib/CloseLarge.svelte';
   import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
   import MapCenter from 'carbon-icons-svelte/lib/MapCenter.svelte';
   import TextAlignJustify from 'carbon-icons-svelte/lib/TextAlignJustify.svelte';
-  import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
+  import { CostTotal, GameConsole, LicenseDraft, ProgressBarRound, Time } from 'carbon-icons-svelte';
+  import type { HTMLAttributes } from 'svelte/elements';
 
   export let stars: number;
-  
+
   let showDrawer = false;
   let showSolutions = false;
   let activeLink = '';
-  let closeTimeout: NodeJS.Timeout;
-
-  function closeSolutions() {
-    closeTimeout = setTimeout(() => {
-      showSolutions = false;
-    }, 100);
-  }
-  function resetCloseTimeout() {
-    clearTimeout(closeTimeout);
-  }
 
   function handleShowDrawer() {
     showDrawer = !showDrawer;
@@ -37,294 +29,348 @@
     {
       key: 'employee-training',
       title: 'Employee Training',
-      subtitle: 'Keep your team in sync.'
+      subtitle: 'Keep your team in sync.',
+      icon: 'training'
     },
     {
       key: 'bootcamps',
       title: 'Bootcamps',
-      subtitle: 'Drive student satisfaction.'
+      subtitle: 'Drive student satisfaction.',
+      icon: 'bootcamp'
     },
     {
       key: 'customer-education',
       title: 'Customer Education',
-      subtitle: 'Teach customers your product.'
+      subtitle: 'Teach customers your product.',
+      icon: 'education'
     }
   ];
+
+  const freeTools = [
+    {
+      key: 'progress',
+      title: 'Progress Tracker',
+      subtitle: 'Monitor learning journeys.',
+      icon: 'progress'
+    },
+    {
+      key: 'pomodoro',
+      title: 'Pomodoro Timer',
+      subtitle: 'Boost focus and productivity.',
+      icon: 'time'
+    },
+    {
+      key: 'name-picker',
+      title: 'Name Picker',
+      subtitle: 'Randomly select names.',
+      icon: 'license'
+    },
+    {
+      key: 'stopwatch',
+      title: 'Activity Stopwatch',
+      subtitle: 'Track time accurately.',
+      icon: 'cost'
+    },
+    {
+      key: 'tic-tac-toe',
+      title: 'Tic Tac Toe',
+      subtitle: 'Play the classic game.',
+      icon: 'game'
+    }
+  ];
+
+  type ListItemProps = HTMLAttributes<HTMLAnchorElement> & {
+    title: string;
+    href: string;
+    subtitle: string;
+    icon: string;
+  };
 
   $: activeLink = page.url.pathname;
   $: activeHash = page.url.hash;
   $: isSolutionsActive = solutions.some((s) => activeHash.includes(s.key));
 </script>
 
-<div
-  class="flex w-full justify-between items-center py-6 border-b-[1px] md:px-12 px-5 fixed top-0 z-[3000] filter backdrop-blur-xl shadow-sm bg-white"
->
-  <a href="/" class="w-[10%]">
-    <div class="flex items-center w-full">
-      <img
-        loading="lazy"
-        width="28"
-        height="28"
-        src="/logo-512.png"
-        alt="classroomio logo"
-        class="w-6 md:w-10"
-      />
-      <h1 class="text-xs md:text-lg font-medium ml-2">ClassroomIO</h1>
-    </div>
-  </a>
-
-  <nav class="w-[50%] hidden md:hidden lg:block">
-    <ul class="flex justify-center items-center w-full gap-5">
-      <li class="text-gray-800 font-semibold text-sm cursor-pointer relative">
-        <button
-          on:focus={() => (showSolutions = true)}
-          on:mouseenter={() => (showSolutions = true)}
-          on:mouseleave={closeSolutions}
-          class="flex items-center hover:bg-gray-100 {showSolutions &&
-            'bg-gray-100'} px-4 py-2 rounded-md transition-all duration-200"
-          on:click={() => (showSolutions = !showSolutions)}
-          class:active={isSolutionsActive}
-        >
-          <span class="mr-2">Solutions</span>
-          <ChevronDown size={16} />
-        </button>
-        {#if showSolutions}
-          <button
-            class="absolute w-[20rem] top-10 -left-10 border rounded-lg px-2 py-4 shadow-slate-700 z-[3001] bg-white flex flex-col gap-3"
-            on:mouseenter={resetCloseTimeout}
-            on:mouseleave={() => (showSolutions = false)}
-          >
-            {#each solutions as solution}
-              <a
-                class="flex justify-between items-center w-full rounded-lg hover:bg-gray-100 hover:cursor-pointer p-2 transition-colors duration-200"
-                href="/{solution.key}"
-                on:click={() => (showSolutions = false)}
-              >
-                {#if solution.key === 'employee-training'}
-                  <CourseIcon />
-                {:else if solution.key === 'bootcamps'}
-                  <MapCenter size={24} />
-                {:else if solution.key === 'customer-education'}
-                  <ForumIcon size={24} />
-                {/if}
-
-                <div class="w-[84%] text-start">
-                  <h3 class="font-semibold text-sm text-gray-700">
-                    {solution.title}
-                  </h3>
-                  <p class="font-normal text-sm text-gray-600">
-                    {solution.subtitle}
-                  </p>
-                </div>
-              </a>
-            {/each}
-          </button>
-        {/if}
-      </li>
-      <a
-        href="/tools"
-        class="text-gray-800 font-semibold text-sm cursor-pointer"
-        class:active={activeLink.startsWith('/tools')}
-      >
-        <li class="hover:bg-gray-100 px-4 py-2 rounded-md transition-all duration-200">
-          Free Tools
-        </li>
-      </a>
-
-      <a
-        href="/blog"
-        class="text-gray-800 font-semibold text-sm cursor-pointer"
-        class:active={activeLink.startsWith('/blog')}
-      >
-        <li class="hover:bg-gray-100 px-4 py-2 rounded-md transition-all duration-200">Blog</li>
-      </a>
-      <a
-        href="/pricing"
-        class="text-gray-800 font-semibold text-sm cursor-pointer"
-        class:active={activeLink.startsWith('/pricing')}
-      >
-        <li class="hover:bg-gray-100 px-4 py-2 rounded-md transition-all duration-200">Pricing</li>
-      </a>
-    </ul>
-  </nav>
-
-  <div class="justify-between items-center flex-row hidden md:hidden lg:flex gap-3">
-    <a
-      href="/discord"
-      target="_blank"
-      class="flex items-center hover:opacity-80 transition-opacity duration-200"
-    >
-      <img
-        loading="lazy"
-        alt="discord logo"
-        src="/discord-blue.png"
-        class="w-6 h-5 cursor-pointer"
-      />
-    </a>
-    <div class="flex items-center">
-      <a
-        href="/github"
-        target="_blank"
-        class="flex items-center gap-1.5 p-2 rounded-md transition-all duration-200 ease-in-out hover:bg-gray-100 group"
-      >
-        <img
-          loading="lazy"
-          alt="github logo"
-          src="/github-mark.png"
-          class="w-5 h-5 cursor-pointer transition-transform duration-200 group-hover:scale-110"
-        />
-        <span
-          class="text-sm text-gray-600 font-medium leading-none transition-colors duration-200 group-hover:text-black"
-        >
-          {stars}
-        </span>
-      </a>
-    </div>
-    <a
-      class="font-medium text-sm after:content-['→'] after:ml-2 hover:opacity-80 transition-opacity duration-200"
-      href="https://app.classroomio.com"
-    >
-      Dashboard
-    </a>
-  </div>
-
-  <button
-    type="button"
-    aria-label="Hamburger Menu"
-    class="block md:block lg:hidden"
-    on:click={handleShowSolutions}
-  >
-    <TextAlignJustify size={24} />
-  </button>
-
-  {#if showSolutions}
-    <div
-      in:fly={{ x: 20, duration: 700 }}
-      out:fly={{ x: 20, duration: 400 }}
-      class="w-[60%] md:w-[40%] h-[100vh] border-2 sm:block lg:hidden px-3 pt-3 pb-2 md:p-7 absolute right-0 top-0 bg-white"
-    >
-      <div class="flex justify-between py-2 mb-5">
-        <img
-          loading="lazy"
-          width="20"
-          height="20"
-          src="/logo-512.png"
-          alt="classroomio logo"
-          class="w-[15%]"
-        />
-        <button class="mr-5" on:click={handleShowSolutions}>
-          <CloseLarge size={24} />
-        </button>
-      </div>
-      <nav>
-        <ul class="flex items-center flex-col lg:flex-row justify-between w-full">
-          <li class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer w-full">
-            <button
-              class="w-full flex items-center justify-between hover:bg-gray-100 py-3 px-4 rounded-lg transition-all duration-200"
-              on:click={handleShowDrawer}
-              class:active={isSolutionsActive}
-            >
-              Our Superpowers <ChevronDown />
-            </button>
-            {#if showDrawer}
-              <div in:fly={{ y: -20, duration: 700 }} out:fly={{ y: 20, duration: 400 }}>
-                {#each solutions as solution}
-                  <a
-                    href="/{solution.key}"
-                    on:click={() => {
-                      handleShowSolutions();
-                    }}
-                  >
-                    <p
-                      class="font-normal text-xs text-gray-700 hover:bg-gray-100 rounded-lg py-2.5 pl-5 transition-colors duration-200"
-                    >
-                      {solution.title}
-                    </p>
-                  </a>
-                {/each}
-              </div>
-            {/if}
-          </li>
-          <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full transition-all duration-200"
-            on:click={handleShowSolutions}
-            href="/tools"
-          >
-            <li>Free Tools</li>
-          </a>
-          <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full transition-all duration-200"
-            on:click={() => {
-              handleShowSolutions();
-            }}
-            class:active={activeLink.startsWith('/blog')}
-            href="/blog"
-          >
-            <li>Blog</li>
-          </a>
-          <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-xl w-full transition-all duration-200"
-            on:click={() => {
-              handleShowSolutions();
-            }}
-            href="/pricing"
-            class:active={activeLink.startsWith('/pricing')}
-          >
-            <li>Pricing</li>
-          </a>
-          <a
-            class="text-gray-800 font-semibold text-sm md:text-lg cursor-pointer hover:bg-gray-100 py-3 px-4 rounded-md w-full transition-all duration-200"
-            on:click={() => {
-              handleShowSolutions();
-            }}
-            class:active={activeHash.includes('morefeatures')}
-            href="/#morefeatures"
-          >
-            <li>More features</li>
-          </a>
-        </ul>
-      </nav>
-      <div class="flex items-start flex-col gap-y-2 mt-5 border-t-[1px] pt-5">
+{#snippet ListItem({ title, subtitle, href, icon, class: className, ...restProps }: ListItemProps)}
+  <li>
+    <NavigationMenu.Link>
+      {#snippet child()}
         <a
-          href="/discord"
-          target="_blank"
-          class="flex items-center rounded-md w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg transition-all duration-200"
+          {href}
+          class="flex w-full flex-row items-center rounded-lg p-2 no-underline transition-colors duration-200 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none {className}"
+          {...restProps}
         >
-          <img
-            loading="lazy"
-            alt="discord logo"
-            src="/discord-blue.png"
-            class="w-6 h-5 mr-2 cursor-pointer"
-          />
-          <span>Discord</span>
+          <div class="shrink-0">
+            {#if icon === 'training'}
+              <CourseIcon />
+            {:else if icon === 'bootcamp'}
+              <MapCenter size={24} />
+            {:else if icon === 'education'}
+              <ForumIcon size={24} />
+            {:else if icon === 'progress'}
+              <ProgressBarRound size={24} />
+            {:else if icon === 'time'}
+              <Time size={24} />
+            {:else if icon === 'license'}
+              <LicenseDraft size={24} />
+            {:else if icon === 'cost'}
+              <CostTotal size={24} />
+            {:else if icon === 'game'}
+              <GameConsole size={24} />
+            {/if}
+          </div>
+          <div class="ml-3 text-start">
+            <h3 class="text-sm font-semibold leading-none text-gray-700">
+              {title}
+            </h3>
+            <p class="mt-1 text-sm font-normal leading-snug text-gray-600">
+              {subtitle}
+            </p>
+          </div>
         </a>
+      {/snippet}
+    </NavigationMenu.Link>
+  </li>
+{/snippet}
+
+<section class="z-3005 fixed top-0 w-full">
+  <div class="mx-auto flex w-[80%] items-center justify-between gap-20 px-5 py-6 md:px-12">
+    <a href="/" class="w-[10%]">
+      <div class="flex w-full items-center">
+        <img loading="lazy" width="28" height="28" src="/logo-512.png" alt="classroomio logo" class="w-6 md:w-7" />
+        <h1 class="ml-2 text-xs font-medium md:text-base">ClassroomIO</h1>
+      </div>
+    </a>
+
+    <NavigationMenu.Root class="hidden rounded-lg bg-white p-1 md:hidden lg:block">
+      <NavigationMenu.List class="flex w-full items-center justify-center gap-1">
+        <NavigationMenu.Item>
+          <NavigationMenu.Trigger
+            class="flex cursor-pointer items-center rounded-md px-4 py-2 text-sm font-medium text-gray-800 transition-all duration-200 hover:bg-gray-100 data-[state=open]:bg-gray-100"
+          >
+            <a href="/" class="no-underline"> Solutions </a>
+          </NavigationMenu.Trigger>
+          <NavigationMenu.Content>
+            <ul class="grid w-[560px] grid-cols-2 gap-2 p-2">
+              {#each solutions as solution}
+                {@render ListItem({
+                  href: `/${solution.key}`,
+                  title: solution.title,
+                  subtitle: solution.subtitle,
+                  icon: solution.icon
+                })}
+              {/each}
+            </ul>
+          </NavigationMenu.Content>
+        </NavigationMenu.Item>
+
+        <NavigationMenu.Item>
+          <NavigationMenu.Trigger
+            class="flex cursor-pointer items-center rounded-md px-4 py-2 text-sm font-medium text-gray-800 transition-all duration-200 hover:bg-gray-100 data-[state=open]:bg-gray-100"
+          >
+            <a href="/tools" class="no-underline"> Free Tools </a>
+          </NavigationMenu.Trigger>
+          <NavigationMenu.Content>
+            <ul class="grid w-[560px] grid-cols-2 gap-2 p-2">
+              {#each freeTools as tool}
+                {@render ListItem({
+                  href: `/tools/${tool.key}`,
+                  title: tool.title,
+                  subtitle: tool.subtitle,
+                  icon: tool.icon
+                })}
+              {/each}
+            </ul>
+          </NavigationMenu.Content>
+        </NavigationMenu.Item>
+
+        <NavigationMenu.Item>
+          <NavigationMenu.Link>
+            {#snippet child()}
+              <a
+                href="/blog"
+                class="cursor-pointer rounded-md px-4 py-2 text-sm font-medium text-gray-800 no-underline transition-all duration-200 hover:bg-gray-100 {activeLink.startsWith(
+                  '/blog'
+                )
+                  ? 'bg-gray-100'
+                  : ''}"
+              >
+                Blog
+              </a>
+            {/snippet}
+          </NavigationMenu.Link>
+        </NavigationMenu.Item>
+
+        <NavigationMenu.Item>
+          <NavigationMenu.Link>
+            {#snippet child()}
+              <a
+                href="/pricing"
+                class="cursor-pointer rounded-md px-4 py-2 text-sm font-medium text-gray-800 no-underline transition-all duration-200 hover:bg-gray-100 {activeLink.startsWith(
+                  '/pricing'
+                )
+                  ? 'bg-gray-100'
+                  : ''}"
+              >
+                Pricing
+              </a>
+            {/snippet}
+          </NavigationMenu.Link>
+        </NavigationMenu.Item>
+      </NavigationMenu.List>
+    </NavigationMenu.Root>
+
+    <div class="hidden flex-row items-center justify-between gap-3 md:hidden lg:flex">
+      <a href="/discord" target="_blank" class="flex items-center transition-opacity duration-200 hover:opacity-80">
+        <img loading="lazy" alt="discord logo" src="/discord-blue.png" class="h-5 w-6 cursor-pointer" />
+      </a>
+      <div class="flex items-center">
         <a
           href="/github"
           target="_blank"
-          class="flex items-center rounded-md w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg group transition-all duration-200"
+          class="group flex items-center gap-1.5 rounded-md p-2 transition-all duration-200 ease-in-out hover:bg-gray-100"
         >
           <img
             loading="lazy"
             alt="github logo"
             src="/github-mark.png"
-            class="w-5 h-5 cursor-pointer transition-transform duration-200 group-hover:scale-110"
+            class="h-5 w-5 cursor-pointer transition-transform duration-200 group-hover:scale-110"
           />
-          <span class="ml-3 transition-colors duration-200 group-hover:text-black">Github</span>
           <span
-            class="text-sm text-gray-600 font-medium ml-1 transition-colors duration-200 group-hover:text-black"
-            >({stars})</span
+            class="text-sm font-medium leading-none text-gray-600 transition-colors duration-200 group-hover:text-black"
           >
-        </a>
-        <a
-          class="font-semibold after:content-['→'] rounded-md after:ml-2 w-full text-left py-4 px-4 hover:bg-gray-100 text-sm md:text-lg transition-all duration-200"
-          href="https://app.classroomio.com"
-        >
-          Dashboard
+            {stars}
+          </span>
         </a>
       </div>
+      <a
+        class="text-sm font-medium transition-opacity duration-200 after:ml-2 after:content-['→'] hover:opacity-80"
+        href="https://app.classroomio.com"
+      >
+        Dashboard
+      </a>
     </div>
-  {/if}
-</div>
+
+    <button type="button" aria-label="Hamburger Menu" class="block md:block lg:hidden" on:click={handleShowSolutions}>
+      <TextAlignJustify size={24} />
+    </button>
+
+    {#if showSolutions}
+      <div
+        in:fly={{ x: 20, duration: 700 }}
+        out:fly={{ x: 20, duration: 400 }}
+        class="absolute right-0 top-0 h-screen w-[60%] border-2 bg-white px-3 pb-2 pt-3 sm:block md:w-[40%] md:p-7 lg:hidden"
+      >
+        <div class="mb-5 flex justify-between py-2">
+          <img loading="lazy" width="20" height="20" src="/logo-512.png" alt="classroomio logo" class="w-[15%]" />
+          <button class="mr-5" on:click={handleShowSolutions}>
+            <CloseLarge size={24} />
+          </button>
+        </div>
+        <nav>
+          <ul class="flex w-full flex-col items-center justify-between lg:flex-row">
+            <li class="w-full cursor-pointer text-sm font-semibold text-gray-800 md:text-lg">
+              <button
+                class="flex w-full items-center justify-between rounded-lg px-4 py-3 transition-all duration-200 hover:bg-gray-100"
+                on:click={handleShowDrawer}
+                class:active={isSolutionsActive}
+              >
+                Our Superpowers <ChevronDown />
+              </button>
+              {#if showDrawer}
+                <div in:fly={{ y: -20, duration: 700 }} out:fly={{ y: 20, duration: 400 }}>
+                  {#each solutions as solution}
+                    <a
+                      href="/{solution.key}"
+                      on:click={() => {
+                        handleShowSolutions();
+                      }}
+                    >
+                      <p
+                        class="rounded-lg py-2.5 pl-5 text-xs font-normal text-gray-700 transition-colors duration-200 hover:bg-gray-100"
+                      >
+                        {solution.title}
+                      </p>
+                    </a>
+                  {/each}
+                </div>
+              {/if}
+            </li>
+            <a
+              class="w-full cursor-pointer rounded-xl px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg"
+              on:click={handleShowSolutions}
+              href="/tools"
+            >
+              <li>Free Tools</li>
+            </a>
+            <a
+              class="w-full cursor-pointer rounded-md px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg"
+              on:click={() => {
+                handleShowSolutions();
+              }}
+              class:active={activeLink.startsWith('/blog')}
+              href="/blog"
+            >
+              <li>Blog</li>
+            </a>
+            <a
+              class="w-full cursor-pointer rounded-xl px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg"
+              on:click={() => {
+                handleShowSolutions();
+              }}
+              href="/pricing"
+              class:active={activeLink.startsWith('/pricing')}
+            >
+              <li>Pricing</li>
+            </a>
+            <a
+              class="w-full cursor-pointer rounded-md px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg"
+              on:click={() => {
+                handleShowSolutions();
+              }}
+              class:active={activeHash.includes('morefeatures')}
+              href="/#morefeatures"
+            >
+              <li>More features</li>
+            </a>
+          </ul>
+        </nav>
+        <div class="mt-5 flex flex-col items-start gap-y-2 border-t pt-5">
+          <a
+            href="/discord"
+            target="_blank"
+            class="flex w-full items-center rounded-md px-4 py-4 text-left text-sm transition-all duration-200 hover:bg-gray-100 md:text-lg"
+          >
+            <img loading="lazy" alt="discord logo" src="/discord-blue.png" class="mr-2 h-5 w-6 cursor-pointer" />
+            <span>Discord</span>
+          </a>
+          <a
+            href="/github"
+            target="_blank"
+            class="group flex w-full items-center rounded-md px-4 py-4 text-left text-sm transition-all duration-200 hover:bg-gray-100 md:text-lg"
+          >
+            <img
+              loading="lazy"
+              alt="github logo"
+              src="/github-mark.png"
+              class="h-5 w-5 cursor-pointer transition-transform duration-200 group-hover:scale-110"
+            />
+            <span class="ml-3 transition-colors duration-200 group-hover:text-black">Github</span>
+            <span class="ml-1 text-sm font-medium text-gray-600 transition-colors duration-200 group-hover:text-black"
+              >({stars})</span
+            >
+          </a>
+          <a
+            class="w-full rounded-md px-4 py-4 text-left text-sm font-semibold transition-all duration-200 after:ml-2 after:content-['→'] hover:bg-gray-100 md:text-lg"
+            href="https://app.classroomio.com"
+          >
+            Dashboard
+          </a>
+        </div>
+      </div>
+    {/if}
+  </div>
+</section>
 
 <style>
   .active {

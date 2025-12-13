@@ -78,22 +78,14 @@
 
 <svelte:head>
   <title>Tic Tac Toe | ClassroomIO</title>
-  <meta
-    property="og:image"
-    itemprop="image"
-    content="https://brand.cdn.clsrio.com/og/free-tools.png"
-  />
+  <meta property="og:image" itemprop="image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
   <meta property="og:title" content="Tic Tac Toe | ClassroomIO" />
   <meta
     property="og:description"
     content="A simple and free tic tac toe game to play to your friends in class or outside the classroom."
   />
 
-  <meta
-    property="og:image:secure_url"
-    itemprop="image"
-    content="https://brand.cdn.clsrio.com/og/free-tools.png"
-  />
+  <meta property="og:image:secure_url" itemprop="image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 
   <meta name="twitter:title" content="Tic Tac Toe | ClassroomIO" />
   <meta
@@ -103,42 +95,37 @@
   <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 </svelte:head>
 
-<section class="mt-[10%] md:mt-16 px-5 md:px-0 bg-white">
+<section class=" bg-white px-5 md:px-0">
   <ToolsHeader className="mb-10">
-    <img
-      src="/free-tools/tic-tac.svg"
-      class="w-14 md:w-[5%] mx-auto border rounded-full"
-      alt="Tic Tac Icon"
-    />
-    <h1 class="text-4xl md:text-6xl font-bold text-[#040F2D] my-3">Tic-Tac game</h1>
-    <p class="text-md text-[#656565] font-light md:font-normal md:w-[45%] mx-auto">
-      More than just a game; it's an educational tool that teaches pattern recognition, and
-      decision-making.
+    <img src="/free-tools/tic-tac.svg" class="mx-auto w-14 rounded-full border md:w-[5%]" alt="Tic Tac Icon" />
+    <h1 class="my-3 text-4xl font-bold text-[#040F2D] md:text-6xl">Tic-Tac game</h1>
+    <p class="text-md mx-auto font-light text-[#656565] md:w-[45%] md:font-normal">
+      More than just a game; it's an educational tool that teaches pattern recognition, and decision-making.
     </p>
   </ToolsHeader>
 
   <div
-    class="overflow-hidden relative tic-tac-bg text-white w-full h-[55vh] md:w-[59%] md:h-[82vh] border-8 border-black mx-auto flex justify-center items-center bg-white"
+    class="tic-tac-bg relative mx-auto flex h-[55vh] w-full items-center justify-center overflow-hidden border-8 border-black bg-white text-white md:h-[82vh] md:w-[59%]"
   >
     <!-- congratulatory message -->
     {#if message}
       <div
         transition:fly={{ x: -100, delay: 600, easing: sineInOut }}
-        class="absolute w-full top-[43%] flex flex-col justify-center items-center z-[150]"
+        class="absolute top-[43%] z-[150] flex w-full flex-col items-center justify-center"
       >
         <div
-          class="flex gap-10 justify-center py-1 h-[8vh] md:h-[13vh] w-full items-center bg-white font-bold text-[#0233BD]"
+          class="flex h-[8vh] w-full items-center justify-center gap-10 bg-white py-1 font-bold text-[#0233BD] md:h-[13vh]"
         >
           {#if message != 'Tie game!'}
             <img src="/free-tools/tic-tac/winner-star-icon.svg" alt="Star icon" class="h-full" />
           {/if}
-          <h2 class="md:text-base text-xs">{message}</h2>
+          <h2 class="text-xs md:text-base">{message}</h2>
         </div>
 
         <button
           type="button"
           on:click={playAgain}
-          class="px-16 pt-1 pb-1.5 md:text-base text-xs border border-white font-bold rounded-md mt-10 bg-[#0F62FE]"
+          class="mt-10 rounded-md border border-white bg-[#0F62FE] px-16 pb-1.5 pt-1 text-xs font-bold md:text-base"
           >Play Again</button
         >
       </div>
@@ -146,17 +133,13 @@
 
     <!-- this condition renders the game -->
     {#if startGame}
-      <div class="w-full h-full p-5 flex flex-col border justify-between items-center">
+      <div class="flex h-full w-full flex-col items-center justify-between border p-5">
         <header class="flex w-full items-center justify-between">
           <button
             on:click={changePlayer}
-            class="text-[10px] md:text-xs w-[35%] gap-2 md:w-28 flex flex-row items-center leading-3 font-medium"
+            class="flex w-[35%] flex-row items-center gap-2 text-[10px] font-medium leading-3 md:w-28 md:text-xs"
           >
-            <img
-              src="/free-tools/tic-tac/computer-icon.svg"
-              alt="Computer icon"
-              class="w-4 md:w-6"
-            />
+            <img src="/free-tools/tic-tac/computer-icon.svg" alt="Computer icon" class="w-4 md:w-6" />
             {#if $changeToComputer.change}
               Play two players
             {:else}
@@ -165,7 +148,7 @@
           </button>
           <button
             on:click={newGame}
-            class="text-[10px] w-24 flex flex-col gap-1 p-2 shadow-md rounded-md items-center leading-3 font-medium border text-[#0542CC] bg-white"
+            class="flex w-24 flex-col items-center gap-1 rounded-md border bg-white p-2 text-[10px] font-medium leading-3 text-[#0542CC] shadow-md"
           >
             <img src="/free-tools/tic-tac/restart-icon.svg" alt="Restart icon" class="w-3 md:w-4" />
             Reset Score</button
@@ -176,19 +159,17 @@
         <Board {game} {winner} />
 
         <!-- scores -->
-        <div
-          class="flex justify-between md:justify-center items-center gap-10 w-full text-white font-semibold"
-        >
-          <div class="md:text-3xl text-2xl flex items-center md:gap-5 gap-2">
-            <span class="px-1 md:p-1 bg-[#FE28CB99] md:text-sm text-[10px]">Player 1</span>
+        <div class="flex w-full items-center justify-between gap-10 font-semibold text-white md:justify-center">
+          <div class="flex items-center gap-2 text-2xl md:gap-5 md:text-3xl">
+            <span class="bg-[#FE28CB99] px-1 text-[10px] md:p-1 md:text-sm">Player 1</span>
             {$scores.X}
           </div>
-          <div class="md:text-3xl text-2xl flex items-center md:gap-5 gap-2">
-            <span class="px-1 md:p-1 bg-[#0F62FE] md:text-sm text-[10px]">Draw</span>
+          <div class="flex items-center gap-2 text-2xl md:gap-5 md:text-3xl">
+            <span class="bg-[#0F62FE] px-1 text-[10px] md:p-1 md:text-sm">Draw</span>
             {$scores.draw}
           </div>
-          <div class="md:text-3xl text-2xl flex items-center md:gap-5 gap-2">
-            <span class="px-1 md:p-1 bg-[#94F7FFB2] md:text-sm text-[10px]">Player 2</span>
+          <div class="flex items-center gap-2 text-2xl md:gap-5 md:text-3xl">
+            <span class="bg-[#94F7FFB2] px-1 text-[10px] md:p-1 md:text-sm">Player 2</span>
             {$scores.O}
           </div>
         </div>
@@ -197,11 +178,7 @@
       <!-- this condition renders the homepage -->
     {:else}
       <div class="flex flex-col items-center gap-5">
-        <img
-          src="/free-tools/tic-tac/tic-tac-start-icon.svg"
-          alt="Tic tac toe game icon"
-          class="w-[50%] md:w-[70%]"
-        />
+        <img src="/free-tools/tic-tac/tic-tac-start-icon.svg" alt="Tic tac toe game icon" class="w-[50%] md:w-[70%]" />
         <div class="flex flex-col gap-3">
           <button
             type="button"
@@ -209,7 +186,7 @@
               changePlayer();
               startTicTac();
             }}
-            class="mt-5 px-[3.3rem] pt-1 pb-1.5 border border-white text-sm font-bold rounded-md bg-[#0F62FE]"
+            class="mt-5 rounded-md border border-white bg-[#0F62FE] px-[3.3rem] pb-1.5 pt-1 text-sm font-bold"
           >
             Play with computer</button
           >
@@ -218,7 +195,7 @@
             on:click={() => {
               startTicTac();
             }}
-            class="px-16 pt-1 pb-1.5 border border-white text-sm font-bold rounded-md bg-[#0F62FE]"
+            class="rounded-md border border-white bg-[#0F62FE] px-16 pb-1.5 pt-1 text-sm font-bold"
             >Play two players</button
           >
         </div>
