@@ -789,7 +789,10 @@
             "add_note": "Please add a note to use this feature",
             "generate": "Generate",
             "completion": "AI Generation Complete",
-            "click_generate": "Click 'Generate' for some magic"
+            "click_generate": "Click 'Generate' for some magic",
+            "errors": {
+              "template_fetch": "Error fetching templates. Please try again."
+            }
           },
           "all_exercises": {
             "heading": "All Exercise",
