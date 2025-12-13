@@ -134,7 +134,7 @@
 {/snippet}
 
 <section class="z-3005 fixed top-0 w-full">
-  <div class="mx-auto flex w-[80%] items-center justify-between gap-20 px-5 py-6 md:px-12">
+  <div class="mx-auto flex w-full xl:w-[90%] items-center justify-between gap-20 px-5 py-6 md:px-12">
     <a href="/" class="w-[10%]">
       <div class="flex w-full items-center">
         <img loading="lazy" width="28" height="28" src="/logo-512.png" alt="classroomio logo" class="w-6 md:w-7" />
@@ -142,83 +142,85 @@
       </div>
     </a>
 
-    <NavigationMenu.Root class="hidden rounded-lg bg-white p-1 md:hidden lg:block">
-      <NavigationMenu.List class="flex w-full items-center justify-center gap-1">
-        <NavigationMenu.Item>
-          <NavigationMenu.Trigger
-            class="flex cursor-pointer items-center rounded-md px-4 py-2 text-sm font-medium text-gray-800 transition-all duration-200 hover:bg-gray-100 data-[state=open]:bg-gray-100"
-          >
-            <a href="/" class="no-underline"> Solutions </a>
-          </NavigationMenu.Trigger>
-          <NavigationMenu.Content>
-            <ul class="grid w-[560px] grid-cols-2 gap-2 p-2">
-              {#each solutions as solution}
-                {@render ListItem({
-                  href: `/${solution.key}`,
-                  title: solution.title,
-                  subtitle: solution.subtitle,
-                  icon: solution.icon
-                })}
-              {/each}
-            </ul>
-          </NavigationMenu.Content>
-        </NavigationMenu.Item>
+    <section class="hidden lg:block">
+      <NavigationMenu.Root class="rounded-lg bg-white p-1">
+        <NavigationMenu.List class="flex w-full items-center justify-center gap-1">
+          <NavigationMenu.Item>
+            <NavigationMenu.Trigger
+              class="flex cursor-pointer items-center rounded-md px-4 py-2 text-sm font-medium text-gray-800 transition-all duration-200 hover:bg-gray-100 data-[state=open]:bg-gray-100"
+            >
+              <a href="/" class="no-underline"> Solutions </a>
+            </NavigationMenu.Trigger>
+            <NavigationMenu.Content>
+              <ul class="grid w-[560px] grid-cols-2 gap-2 p-2">
+                {#each solutions as solution}
+                  {@render ListItem({
+                    href: `/${solution.key}`,
+                    title: solution.title,
+                    subtitle: solution.subtitle,
+                    icon: solution.icon
+                  })}
+                {/each}
+              </ul>
+            </NavigationMenu.Content>
+          </NavigationMenu.Item>
 
-        <NavigationMenu.Item>
-          <NavigationMenu.Trigger
-            class="flex cursor-pointer items-center rounded-md px-4 py-2 text-sm font-medium text-gray-800 transition-all duration-200 hover:bg-gray-100 data-[state=open]:bg-gray-100"
-          >
-            <a href="/tools" class="no-underline"> Free Tools </a>
-          </NavigationMenu.Trigger>
-          <NavigationMenu.Content>
-            <ul class="grid w-[560px] grid-cols-2 gap-2 p-2">
-              {#each freeTools as tool}
-                {@render ListItem({
-                  href: `/tools/${tool.key}`,
-                  title: tool.title,
-                  subtitle: tool.subtitle,
-                  icon: tool.icon
-                })}
-              {/each}
-            </ul>
-          </NavigationMenu.Content>
-        </NavigationMenu.Item>
+          <NavigationMenu.Item>
+            <NavigationMenu.Trigger
+              class="flex cursor-pointer items-center rounded-md px-4 py-2 text-sm font-medium text-gray-800 transition-all duration-200 hover:bg-gray-100 data-[state=open]:bg-gray-100"
+            >
+              <a href="/tools" class="no-underline"> Free Tools </a>
+            </NavigationMenu.Trigger>
+            <NavigationMenu.Content>
+              <ul class="grid w-[560px] grid-cols-2 gap-2 p-2">
+                {#each freeTools as tool}
+                  {@render ListItem({
+                    href: `/tools/${tool.key}`,
+                    title: tool.title,
+                    subtitle: tool.subtitle,
+                    icon: tool.icon
+                  })}
+                {/each}
+              </ul>
+            </NavigationMenu.Content>
+          </NavigationMenu.Item>
 
-        <NavigationMenu.Item>
-          <NavigationMenu.Link>
-            {#snippet child()}
-              <a
-                href="/blog"
-                class="cursor-pointer rounded-md px-4 py-2 text-sm font-medium text-gray-800 no-underline transition-all duration-200 hover:bg-gray-100 {activeLink.startsWith(
-                  '/blog'
-                )
-                  ? 'bg-gray-100'
-                  : ''}"
-              >
-                Blog
-              </a>
-            {/snippet}
-          </NavigationMenu.Link>
-        </NavigationMenu.Item>
+          <NavigationMenu.Item>
+            <NavigationMenu.Link>
+              {#snippet child()}
+                <a
+                  href="/blog"
+                  class="cursor-pointer rounded-md px-4 py-2 text-sm font-medium text-gray-800 no-underline transition-all duration-200 hover:bg-gray-100 {activeLink.startsWith(
+                    '/blog'
+                  )
+                    ? 'bg-gray-100'
+                    : ''}"
+                >
+                  Blog
+                </a>
+              {/snippet}
+            </NavigationMenu.Link>
+          </NavigationMenu.Item>
 
-        <NavigationMenu.Item>
-          <NavigationMenu.Link>
-            {#snippet child()}
-              <a
-                href="/pricing"
-                class="cursor-pointer rounded-md px-4 py-2 text-sm font-medium text-gray-800 no-underline transition-all duration-200 hover:bg-gray-100 {activeLink.startsWith(
-                  '/pricing'
-                )
-                  ? 'bg-gray-100'
-                  : ''}"
-              >
-                Pricing
-              </a>
-            {/snippet}
-          </NavigationMenu.Link>
-        </NavigationMenu.Item>
-      </NavigationMenu.List>
-    </NavigationMenu.Root>
+          <NavigationMenu.Item>
+            <NavigationMenu.Link>
+              {#snippet child()}
+                <a
+                  href="/pricing"
+                  class="cursor-pointer rounded-md px-4 py-2 text-sm font-medium text-gray-800 no-underline transition-all duration-200 hover:bg-gray-100 {activeLink.startsWith(
+                    '/pricing'
+                  )
+                    ? 'bg-gray-100'
+                    : ''}"
+                >
+                  Pricing
+                </a>
+              {/snippet}
+            </NavigationMenu.Link>
+          </NavigationMenu.Item>
+        </NavigationMenu.List>
+      </NavigationMenu.Root>
+    </section>
 
     <div class="hidden flex-row items-center justify-between gap-3 md:hidden lg:flex">
       <a href="/discord" target="_blank" class="flex items-center transition-opacity duration-200 hover:opacity-80">
