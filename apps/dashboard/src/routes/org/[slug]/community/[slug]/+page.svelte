@@ -8,7 +8,7 @@
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 
   import { t } from '$lib/utils/functions/translations';
-  import { courses } from '$lib/features/course/utils/store';
+  import { courses } from '$features/course/utils/store';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
@@ -25,7 +25,7 @@
   import { InputField } from '@cio/ui/custom/input-field';
   import { shortenName } from '$lib/utils/functions/string';
   import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import { CommunityDeleteModal } from '$lib/features/community/components';
+  import { CommunityDeleteModal } from '$features/community/components';
   import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
   import * as Page from '@cio/ui/base/page';
 

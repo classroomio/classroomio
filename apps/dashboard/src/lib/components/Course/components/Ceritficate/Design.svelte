@@ -16,7 +16,7 @@
   import Plain from './templates/Plain.svelte';
   import Professional from './templates/Professional.svelte';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
-  import { UpgradeBanner } from '$lib/features/ui';
+  import { UpgradeBanner } from '$features/ui';
   import BlueBadgePattern from './templates/BlueBadgePattern.svelte';
   import PurpleBadgePattern from './templates/PurpleBadgePattern.svelte';
   import BlueProfessionalBadge from './templates/BlueProfessionalBadge.svelte';

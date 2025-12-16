@@ -1,7 +1,7 @@
 import { browser, dev } from '$app/environment';
 import { derived, writable } from 'svelte/store';
 
-import type { AccountOrg } from '$lib/features/app/types';
+import type { AccountOrg } from '$features/app/types';
 import type { OrgTeamMember } from '../types/org';
 import { PLAN } from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';

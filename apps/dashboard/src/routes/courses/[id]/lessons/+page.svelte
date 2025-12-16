@@ -13,7 +13,7 @@
   import { CourseContainer } from '$lib/components/CourseContainer';
   import { PageBody } from '$lib/components/Page';
   import { Button } from '@cio/ui/base/button';
-  import { RoleBasedSecurity } from '$lib/features/ui';
+  import { RoleBasedSecurity } from '$features/ui';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';

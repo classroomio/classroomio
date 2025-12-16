@@ -1,6 +1,6 @@
-import type { AccountOrg } from '$lib/features/app/types';
+import type { AccountOrg } from '$features/app/types';
 import type { Cookies } from '@sveltejs/kit';
-import { OrgApiServer } from '$lib/features/org/api/org.server';
+import { OrgApiServer } from '$features/org/api/org.server';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { blockedSubdomain } from '$lib/utils/constants/app';
 import { env } from '$env/dynamic/private';

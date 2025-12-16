@@ -60,6 +60,6 @@ export const reviewsModalStore = writable({
   open: false
 });
 
-export let handleOpenWidget = writable({
+export const handleOpenWidget = writable({
   open: false
 });

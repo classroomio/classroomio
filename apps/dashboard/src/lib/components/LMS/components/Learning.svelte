@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { Button } from '@cio/ui/base/button';
-  import { courses } from '$lib/features/course/utils/store';
+  import { courses } from '$features/course/utils/store';
   import { t } from '$lib/utils/functions/translations';
   import { Empty } from '@cio/ui/custom/empty';
   import BookOpenIcon from '@lucide/svelte/icons/book-open';

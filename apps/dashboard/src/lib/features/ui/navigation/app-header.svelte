@@ -9,7 +9,7 @@
   import RefreshCcwIcon from '@lucide/svelte/icons/refresh-ccw';
   import * as Empty from '@cio/ui/base/empty';
   import { currentOrg } from '$lib/utils/store/org';
-  import { setupProgressApi } from '$lib/features/setup/api/setup-progress.svelte';
+  import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
   import AppSetup from './app-setup.svelte';
 
   const siteName = $derived($currentOrg.siteName);

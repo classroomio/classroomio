@@ -10,7 +10,7 @@
   import { currentOrgDomain } from '$lib/utils/store/org';
 
   import { IconButton } from '@cio/ui/custom/icon-button';
-  import { CloseButton } from '$lib/components/Buttons/Close';
+  import { CloseButton } from '$features/ui';
   import HeaderForm from './HeaderForm.svelte';
   import RequirementForm from './RequirementForm.svelte';
   import DescriptionForm from './DescriptionForm.svelte';

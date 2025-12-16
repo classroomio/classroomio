@@ -4,7 +4,7 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { PageBody, PageNav } from '$lib/components/Page';
   import { Button } from '@cio/ui/base/button';
-  import { RoleBasedSecurity } from '$lib/features/ui';
+  import { RoleBasedSecurity } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import { CourseContainer } from '$lib/components/CourseContainer';

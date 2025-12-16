@@ -1,10 +1,10 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { ROUTE } from '$lib/utils/constants/routes';
-  import { AuthUI } from '$lib/features/ui';
+  import { AuthUI } from '$features/ui';
   import EmailSentIcon from '$lib/components/Icons/EmailSentIcon.svelte';
-  import { forgotApi } from '$lib/features/auth/api/forgot.svelte';
-  import type { TForgotPasswordForm } from '$lib/features/auth/utils/types';
+  import { forgotApi } from '$features/auth/api/forgot.svelte';
+  import type { TForgotPasswordForm } from '$features/auth/utils/types';
   import * as Field from '@cio/ui/base/field';
   import { Input } from '@cio/ui/base/input';
   import { Button } from '@cio/ui/base/button';

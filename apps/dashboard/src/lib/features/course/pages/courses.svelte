@@ -10,13 +10,13 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
 
   import {
-    CourseCard,
+    CourseCardList,
     CourseCardLoader,
     CreateCourseButton,
     CourseList,
     CopyCourseModal,
     NewCourseModal
-  } from '$lib/features/course/components';
+  } from '$features/course/components';
 
   import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
   import type { Course } from '$lib/utils/types';
@@ -34,8 +34,8 @@
 
   interface Props {
     courses?: Course[];
-    emptyTitle?: any;
-    emptyDescription?: any;
+    emptyTitle?: string;
+    emptyDescription?: string;
     isExplore?: boolean;
     searchValue?: string;
     selectedId?: string;
@@ -66,14 +66,6 @@
       localStorage.setItem('courseView', preference);
     }
   };
-
-  function calcProgressRate(progressRate?: number, totalLessons?: number): number {
-    if (!progressRate || !totalLessons) {
-      return 0;
-    }
-
-    return Math.round((progressRate / totalLessons) * 100);
-  }
 
   async function handleDeleteCourse() {
     if (!$deleteCourseModal.id) return;
@@ -118,7 +110,7 @@
       <p>{selectedId ? selectedLabel : filterOptions[0].label}</p>
     </Select.Trigger>
     <Select.Content>
-      {#each filterOptions as option}
+      {#each filterOptions as option (option.label)}
         <Select.Item value={option.value}>{option.label}</Select.Item>
       {/each}
     </Select.Content>
@@ -160,7 +152,7 @@
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {#each courses as courseData}
+          {#each courses as courseData (courseData.id)}
             <CourseList
               id={courseData.id}
               title={courseData.title}
@@ -175,26 +167,6 @@
       </Table.Root>
     </div>
   {:else}
-    <section class={`relative ${$courseMetaDeta.isLoading || courses ? 'cards-container' : ''} `}>
-      {#each courses as courseData}
-        {#key courseData.id}
-          <CourseCard
-            id={courseData.id}
-            slug={courseData.slug}
-            bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
-            title={courseData.title}
-            description={courseData.description}
-            isPublished={courseData.is_published}
-            type={courseData.type}
-            currency={courseData.currency}
-            totalLessons={courseData.total_lessons}
-            totalStudents={courseData.total_students}
-            isLMS={$globalStore.isOrgSite}
-            {isExplore}
-            progressRate={calcProgressRate(courseData.progress_rate, courseData.total_lessons)}
-          />
-        {/key}
-      {/each}
-    </section>
+    <CourseCardList {courses} {isExplore} isLMS={$globalStore.isOrgSite} />
   {/if}
 </div>

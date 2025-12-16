@@ -40,7 +40,7 @@
   </button>
 
   {#if expand}
-    {#each lessons as lesson}
+    {#each lessons as lesson (lesson.id)}
       <div class="lesson-section flex items-center gap-2 py-3 pl-3 text-[13px] text-[#656565]">
         <CircleCheckIcon size={16} />
         {lesson.title}

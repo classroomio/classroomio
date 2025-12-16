@@ -30,7 +30,7 @@
   import { PageBody } from '$lib/components/Page';
   import * as Page from '@cio/ui/base/page';
   import { CourseContainer } from '$lib/components/CourseContainer';
-  import { RoleBasedSecurity } from '$lib/features/ui';
+  import { RoleBasedSecurity } from '$features/ui';
   import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
   import Materials from '$lib/components/Course/components/Lesson/Materials/index.svelte';
 

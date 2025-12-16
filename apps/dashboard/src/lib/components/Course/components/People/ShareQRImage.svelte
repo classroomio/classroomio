@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { AccountOrg } from '$lib/features/app/types';
+  import type { AccountOrg } from '$features/app/types';
   import type { Course } from '$lib/utils/types';
   import { isFreePlan } from '$lib/utils/store/org';
   import { qrInviteNodeStore } from './store';

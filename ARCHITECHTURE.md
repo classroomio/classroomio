@@ -1495,7 +1495,7 @@ Replace Supabase calls with API class method:
 **After (API Route):**
 ```typescript
 <script lang="ts">
-  import { orgApi } from '$lib/features/org/api/org.svelte';
+  import { orgApi } from '$features/org/api/org.svelte';
   import { goto } from '$app/navigation';
 
   async function createNewOrg() {
@@ -1941,7 +1941,7 @@ export class OrgApiServer {
 
 ```typescript
 // apps/dashboard/src/routes/invite/t/[hash]/+layout.server.ts
-import { OrgApiServer } from '$lib/features/org/api/org.server';
+import { OrgApiServer } from '$features/org/api/org.server';
 
 export const load = async ({ params }) => {
   // Use static method from .server.ts class
@@ -1995,7 +1995,7 @@ export class OrgPlanApiServer {
 
 ```typescript
 // apps/dashboard/src/routes/api/polar/webhook/+server.ts
-import { OrgPlanApiServer } from '$lib/features/org/api/org-plan.server';
+import { OrgPlanApiServer } from '$features/org/api/org-plan.server';
 
 // Use static method from .server.ts class
 const result = await OrgPlanApiServer.createOrgPlan(planData);

@@ -19,7 +19,7 @@
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
-  import { UnsavedChanges } from '$lib/features/ui';
+  import { UnsavedChanges } from '$features/ui';
   import type { OrgLandingPageJson } from '$lib/utils/types/org';
 
   let isSaving = $state(false);

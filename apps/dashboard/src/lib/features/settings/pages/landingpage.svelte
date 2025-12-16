@@ -7,7 +7,7 @@
   import { landingPageSettings } from '../utils/store';
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import { orgApi } from '$lib/features/org/api/org.svelte';
+  import { orgApi } from '$features/org/api/org.svelte';
   import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
 
   import { Checkbox } from '@cio/ui/base/checkbox';
@@ -15,10 +15,10 @@
   import { Textarea } from '@cio/ui/base/textarea';
   import { Button } from '@cio/ui/base/button';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
-  import { UnsavedChanges } from '$lib/features/ui';
+  import { UnsavedChanges } from '$features/ui';
   import * as Field from '@cio/ui/base/field';
   import type { OrgLandingPageJson } from '$lib/utils/types/org';
-  import type { AccountOrg } from '$lib/features/app/types';
+  import type { AccountOrg } from '$features/app/types';
 
   let creatingNewQuestion = $state(false);
   let creatingNewCustomLink = $state(false);

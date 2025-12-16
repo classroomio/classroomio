@@ -6,7 +6,7 @@
   import { isActive } from '$lib/utils/functions/app';
   import { page } from '$app/state';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-  import { getOrgNavigationItems } from '$lib/features/ui/navigation/org-navigation';
+  import { getOrgNavigationItems } from '$features/ui/navigation/org-navigation';
 
   const items = $derived(getOrgNavigationItems($currentOrgPath, $currentOrg, $isOrgAdmin, $t, page.url.pathname));
 

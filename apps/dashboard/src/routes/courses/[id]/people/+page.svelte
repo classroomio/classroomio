@@ -11,7 +11,7 @@
 
   import { Chip } from '@cio/ui/custom/chip';
   import * as Avatar from '@cio/ui/base/avatar';
-  import { ComingSoon, RoleBasedSecurity } from '$lib/features/ui';
+  import { ComingSoon, RoleBasedSecurity } from '$features/ui';
   import InvitationModal from '$lib/components/Course/components/People/InvitationModal.svelte';
   import DeleteConfirmation from '$lib/components/Course/components/People/DeleteConfirmation.svelte';
 

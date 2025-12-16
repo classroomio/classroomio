@@ -6,10 +6,10 @@
   import FileTextIcon from '@lucide/svelte/icons/file-text';
   import { DocumentUploader } from '$lib/utils/services/courses/presign';
   import { onDestroy, untrack } from 'svelte';
-  import { UpgradeBanner } from '$lib/features/ui';
+  import { UpgradeBanner } from '$features/ui';
   import { isFreePlan } from '$lib/utils/store/org';
   import { lesson } from '../../store/lessons';
-  import { CloseButton } from '$lib/components/Buttons/Close';
+  import { CloseButton } from '$features/ui';
 
   let fileInput: HTMLInputElement | undefined = $state();
   let selectedFile: File | null = $state(null);

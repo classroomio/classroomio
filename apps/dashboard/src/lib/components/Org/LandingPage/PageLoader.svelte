@@ -1,6 +1,6 @@
 <script>
   import { Skeleton } from '@cio/ui/base/skeleton';
-  import { CourseCardLoader } from '$lib/features/course/components';
+  import { CourseCardLoader } from '$features/course/components';
 </script>
 
 <section class="h-screen w-screen p-5">

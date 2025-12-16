@@ -1,5 +1,4 @@
 <script lang="ts">
-  import get from 'lodash/get';
   import { untrack } from 'svelte';
   import { goto } from '$app/navigation';
   import { fade } from 'svelte/transition';
@@ -13,8 +12,8 @@
   import { preventDefault } from '$lib/utils/functions/svelte';
 
   import Navigation from '$lib/components/Navigation/index.svelte';
-  import { PoweredBy } from '$lib/features/ui';
-  import { CourseCard, CourseCardLoader } from '$lib/features/course/components';
+  import { PoweredBy } from '$features/ui';
+  import { CourseCardList, CourseCardLoader } from '$features/course/components';
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
   import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
 
@@ -26,10 +25,10 @@
   import { Textarea } from '@cio/ui/base/textarea';
   import { Empty } from '@cio/ui/custom/empty';
   import { t } from '$lib/utils/functions/translations';
-  import type { AccountOrg } from '$lib/features/app/types';
-  import { orgApi } from '$lib/features/org/api/org.svelte';
+  import type { AccountOrg } from '$features/app/types';
+  import { orgApi } from '$features/org/api/org.svelte';
   import { validateEmail } from '$lib/utils/functions/validateEmail';
-  import { courseMetaDeta, courses } from '$lib/features/course/utils/store';
+  import { courseMetaDeta, courses } from '$features/course/utils/store';
   import { orgLandingpageValidation } from '$lib/utils/functions/validator';
 
   interface Props {
@@ -312,28 +311,7 @@
             <CourseCardLoader />
           </div>
         {:else if $courses.length > 0}
-          <div class="cards-container mx-2 my-4">
-            {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
-              <CourseCard
-                id={courseData.id}
-                slug={courseData.slug}
-                bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
-                title={courseData.title}
-                type={courseData.type}
-                description={courseData.description}
-                isPublished={courseData.is_published}
-                pricingData={{
-                  cost: courseData.cost,
-                  discount: courseData.metadata.discount,
-                  showDiscount: courseData.metadata.showDiscount,
-                  currency: courseData.currency
-                }}
-                currency={courseData.currency}
-                totalLessons={get(courseData, 'lessons[0].count', 0)}
-                isOnLandingPage={true}
-              />
-            {/each}
-          </div>
+          <CourseCardList courses={$courses.slice(0, viewAll ? $courses.length : 3)} isOnLandingPage={true} />
         {:else}
           <Empty
             icon={CoursesEmptyIcon}
@@ -393,7 +371,7 @@
             <!-- Contact Details -->
             <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div
-                class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg py-2 text-center transition-all duration-500 hover:shadow-xl"
+                class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg border py-2 text-center transition-all duration-500"
               >
                 <MapPinIcon size={16} class="filled" />
                 <p class="mt-3 max-w-[200px] text-xs md:text-sm">
@@ -401,13 +379,13 @@
                 </p>
               </div>
               <div
-                class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg py-2 text-center transition-all duration-500 hover:shadow-xl"
+                class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg border py-2 text-center transition-all duration-500"
               >
                 <PhoneIcon size={16} />
                 <p class="mt-3 text-xs md:text-sm">{$landingPageSettings.contact.phone}</p>
               </div>
               <div
-                class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg py-2 text-center transition-all duration-500 hover:shadow-xl"
+                class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg border py-2 text-center transition-all duration-500"
               >
                 <MailIcon size={16} />
                 <p class="mt-3 text-xs md:text-sm">{$landingPageSettings.contact.email}</p>
@@ -481,7 +459,7 @@
 
                   <Button.Root class="mx-auto mt-5 w-full md:mt-0" type="submit" loading={isContactSubmiting}>
                     <span class="text-md mr-2">{$t('course.navItem.landing_page.submit')}</span>
-                    <RocketIcon size={16} />
+                    <RocketIcon size={16} class="custom" />
                   </Button.Root>
                 </form>
               {/if}
@@ -494,7 +472,7 @@
     <!-- Waitlist Section -->
     {#if $landingPageSettings.mailinglist.show}
       <section id="waitlist" transition:fade class="mx-auto my-10 w-[95%] max-w-6xl">
-        <div class="bg-primary-700 gap-4 rounded-lg px-4 py-14 md:px-10 lg:flex-row lg:items-center">
+        <div class="ui:bg-primary gap-4 rounded-lg px-4 py-14 md:px-10 lg:flex-row lg:items-center">
           <div class="mx-auto flex max-w-[700px] flex-col lg:flex-row lg:items-center lg:justify-between">
             <div class="w-3/5">
               <h1 class="mb-5 mt-0 text-4xl text-white">
@@ -504,7 +482,7 @@
                 {$landingPageSettings.mailinglist.subtitle}
               </p>
             </div>
-            <form onsubmit={preventDefault(handleSubmit)} class="">
+            <form onsubmit={preventDefault(handleSubmit)}>
               <div class="flex max-w-60 flex-col items-center">
                 {#if success}
                   <p class="text-white">{$t('course.navItem.landing_page.successful_sub')}</p>
@@ -516,7 +494,7 @@
                     required={true}
                     disabled={isAdding}
                   />
-                  <Button.Root class="my-1 mt-2 w-full" type="submit" loading={isAdding}>
+                  <Button.Root class="my-1 mt-2 w-full" variant="outline" type="submit" loading={isAdding}>
                     {$landingPageSettings.mailinglist.buttonLabel}
                   </Button.Root>
                 {/if}

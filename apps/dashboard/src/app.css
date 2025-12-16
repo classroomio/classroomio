@@ -568,9 +568,9 @@ body[data-theme='violet'] {
     conic-gradient(
         from var(--border-angle),
         rgb(148 163 184 / 0.3) 75%,
-        rgb(37 99 235) 82%,
-        rgb(96 165 250) 88%,
-        rgb(37 99 235) 92%,
+        var(--primary) 82%,
+        var(--primary-foreground) 88%,
+        var(--primary) 92%,
         rgb(148 163 184 / 0.3) 100%
       )
       border-box;
@@ -587,9 +587,9 @@ body[data-theme='violet'] {
     conic-gradient(
         from var(--border-angle),
         rgb(71 85 105 / 0.48) 75%,
-        rgb(37 99 235) 82%,
-        rgb(96 165 250) 88%,
-        rgb(37 99 235) 92%,
+        var(--primary) 82%,
+        var(--primary-foreground) 88%,
+        var(--primary) 92%,
         rgb(71 85 105 / 0.48) 100%
       )
       border-box;
@@ -689,7 +689,6 @@ body[data-theme='violet'] {
 */
 @keyframes flame-sequence {
   0% {
-    stroke: var(--main-primary-color);
     opacity: 1;
     transform: translate(-0.5px, 0.9px) scale(1.02);
   }

@@ -10,7 +10,7 @@
   import { PageBody } from '$lib/components/Page';
   import { Button } from '@cio/ui/base/button';
   import * as Page from '@cio/ui/base/page';
-  import { RoleBasedSecurity } from '$lib/features/ui';
+  import { RoleBasedSecurity } from '$features/ui';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { supabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
@@ -29,7 +29,7 @@
   import type { Feed } from '$lib/utils/types/feed';
   import PinIcon from '@lucide/svelte/icons/pin';
   import { onMount } from 'svelte';
-  import type { AccountOrg } from '$lib/features/app/types';
+  import type { AccountOrg } from '$features/app/types';
   import { getGreeting } from '$lib/utils/functions/date.js';
   import Empty from '@cio/ui/custom/empty/empty.svelte';
   import { BookIcon } from '@lucide/svelte';

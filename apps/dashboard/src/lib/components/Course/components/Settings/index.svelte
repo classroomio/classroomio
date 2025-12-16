@@ -13,7 +13,7 @@
   import { InputField } from '@cio/ui/custom/input-field';
   import { Row, Grid, Column } from '$lib/components/Org/Settings/Layout';
   import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
-  import { UpgradeBanner, UnsavedChanges } from '$lib/features/ui';
+  import { UpgradeBanner, UnsavedChanges } from '$features/ui';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
   import { Button } from '@cio/ui/base/button';
 

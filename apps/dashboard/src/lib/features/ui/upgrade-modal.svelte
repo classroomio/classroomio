@@ -117,7 +117,7 @@
     </Dialog.Header>
     {#if upgraded}
       <div class="animate-icon flex w-full flex-col items-center justify-center gap-4">
-        <RocketIcon class="rocket-launch my-3 size-6" />
+        <RocketIcon class="rocket-launch my-3 size-6" color="var(--primary)" />
         <p class="text-lg">{$t('pricing.modal.thanks')}</p>
         <p class="ui:mb-4 ui:text-center">
           {$t('pricing.modal.plan')}

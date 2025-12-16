@@ -1,5 +1,5 @@
 <script lang="ts">
-  import CloseButton from '../Buttons/Close/index.svelte';
+  import { CloseButton } from '$features/ui';
 
   interface Props {
     open?: boolean;

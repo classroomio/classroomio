@@ -5,7 +5,7 @@
   import type { Course } from '$lib/utils/types';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
-  import { courses } from '$lib/features/course/utils/store';
+  import { courses } from '$features/course/utils/store';
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { fetchCourses } from '$lib/utils/services/courses';

@@ -13,7 +13,7 @@
   import type { GroupPerson } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { fetchMarks } from '$lib/utils/services/marks';
-  import type { AccountOrg } from '$lib/features/app/types';
+  import type { AccountOrg } from '$features/app/types';
   import { snackbar } from '$lib/components/Snackbar/store';
   import { getLectureNo } from '$lib/components/Course/function.js';
   import { fetchExercisesByMarks } from '$lib/utils/services/courses';
@@ -23,7 +23,7 @@
   import { PageBody } from '$lib/components/Page';
   import { CourseContainer } from '$lib/components/CourseContainer';
   import * as Page from '@cio/ui/base/page';
-  import { RoleBasedSecurity } from '$lib/features/ui';
+  import { RoleBasedSecurity } from '$features/ui';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
 
   let { data } = $props();

@@ -7,12 +7,12 @@
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
-  import { orgApi } from '$lib/features/org/api/org.svelte';
+  import { orgApi } from '$features/org/api/org.svelte';
 
   import { Input } from '@cio/ui/base/input';
   import { Button } from '@cio/ui/base/button';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import { UnsavedChanges } from '$lib/features/ui';
+  import { UnsavedChanges } from '$features/ui';
   import * as Field from '@cio/ui/base/field';
 
   let avatar = $state<string | File | undefined>();

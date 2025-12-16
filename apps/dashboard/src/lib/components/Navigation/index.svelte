@@ -45,7 +45,7 @@
   <ul class="flex w-full items-center">
     <Logo {logo} {orgName} />
 
-    <span class="flex-grow"></span>
+    <span class="grow"></span>
 
     <!-- Mobile Menu Button - Only show when custom links exist -->
     {#if isOrgSite && showLinks}

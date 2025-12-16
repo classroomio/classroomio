@@ -1,6 +1,6 @@
 <script>
   import { goto } from '$app/navigation';
-  import { CommunityPage } from '$lib/features/community/pages';
+  import { CommunityPage } from '$features/community/pages';
   import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
 

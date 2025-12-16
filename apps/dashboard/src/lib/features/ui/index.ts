@@ -1,7 +1,9 @@
 export { default as AppHeader } from './navigation/app-header.svelte';
 export { default as AuthUI } from './auth-ui.svelte';
 export { default as Backdrop } from './backdrop.svelte';
+export { default as CloseButton } from './close-btn.svelte';
 export { default as ComingSoon } from './coming-soon.svelte';
+export { default as Image } from './image.svelte';
 export { default as PageLoadProgress } from './page-load-progress.svelte';
 export { default as PoweredBy } from './upgrade-powered-by.svelte';
 export { default as RoleBasedSecurity } from './role-based-security.svelte';
@@ -10,3 +12,4 @@ export { default as UnsavedChanges } from './unsaved-changes.svelte';
 export { default as UpgradeBanner } from './upgrade-banner.svelte';
 export { default as UpgradeModal } from './upgrade-modal.svelte';
 export { default as VisitOrgSiteButton } from './visit-org-site-btn.svelte';
+export { default as PageRestricted } from './page-restricted.svelte';

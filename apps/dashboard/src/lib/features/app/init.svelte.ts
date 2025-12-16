@@ -101,7 +101,12 @@ class AppInitApi extends BaseApi {
   }
 
   routeUserToNextPage({ isOrgSite }: AppSetupParams) {
+    console.log('routeUserToNextPage', window.location.pathname);
     if (!this.data?.success) {
+      return;
+    }
+
+    if (isOrgSite && window.location.pathname === '/') {
       return;
     }
 

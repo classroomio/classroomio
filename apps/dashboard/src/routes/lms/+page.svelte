@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { VisitOrgSiteButton } from '$lib/features/ui';
-  import { courseMetaDeta, courses } from '$lib/features/course/utils/store';
+  import { VisitOrgSiteButton } from '$features/ui';
+  import { courseMetaDeta, courses } from '$features/course/utils/store';
   import Learning from '$lib/components/LMS/components/Learning.svelte';
   import { Button } from '@cio/ui/base/button';
   import { getGreeting } from '$lib/utils/functions/date';

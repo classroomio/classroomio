@@ -12,7 +12,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
 
-  import { SidebarFooterMenu } from '$lib/features/ui/sidebar/footer';
+  import { SidebarFooterMenu } from '$features/ui/sidebar/footer';
 
   interface SideLinks {
     name: string;

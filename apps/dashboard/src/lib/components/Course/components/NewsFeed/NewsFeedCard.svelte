@@ -17,7 +17,7 @@
   import { Chip } from '@cio/ui/custom/chip';
   import DeleteFeedConfirmation from './DeleteFeedConfirmation.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import { RoleBasedSecurity } from '$lib/features/ui';
+  import { RoleBasedSecurity } from '$features/ui';
 
   interface Props {
     feed: Feed;

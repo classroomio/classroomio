@@ -2,8 +2,8 @@
   import get from 'lodash/get';
   import pluralize from 'pluralize';
   import { page } from '$app/state';
-  import { fade } from 'svelte/transition';
   import { onMount, onDestroy } from 'svelte';
+  import { resolve } from '$app/paths';
   import PlayIcon from '@lucide/svelte/icons/play';
 
   import { getLectureNo } from '../Course/function';
@@ -19,11 +19,13 @@
   import { Button } from '@cio/ui/base/button';
 
   import { Chip } from '@cio/ui/custom/chip';
+  import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import Modal from '../Modal/index.svelte';
-  import ImageRenderer from '../Org/ImageRenderer.svelte';
+  import { Image } from '$features/ui';
   import * as Avatar from '@cio/ui/base/avatar';
   import PricingSection from './components/PricingSection.svelte';
-  import { PoweredBy } from '$lib/features/ui';
+  import NavSection from './components/NavSection.svelte';
+  import { PoweredBy } from '$features/ui';
   import { shortenName } from '$lib/utils/functions/string';
   import SectionsDisplay from './components/SectionsDisplay.svelte';
   import UploadWidget from '$lib/components/UploadWidget/index.svelte';
@@ -195,29 +197,22 @@
       <!-- Course Details -->
       <div class="course-content w-full p-3 lg:mr-10 lg:w-10/12">
         <!-- Navigation -->
-        <nav
-          class="sticky top-0 flex items-center border-b border-gray-300 py-3 {!editMode &&
-            'lg:top-11'} bg-white dark:bg-neutral-800"
-        >
-          {#each navItems as navItem}
-            <a
-              href="{page.url.pathname}{navItem.key}"
-              class="{navItem.key === activeNav &&
-                'active text-primary-700'} z-0 mr-6 rounded-lg px-2 font-normal text-slate-700 hover:bg-gray-200 dark:text-white dark:hover:text-slate-900"
-            >
-              {$t(navItem.label)}
-            </a>
-          {/each}
-        </nav>
+        <UnderlineTabs.Root bind:value={activeNav} class="ui:bg-background sticky top-0 py-2">
+          <UnderlineTabs.List>
+            {#each navItems as navItem (navItem.key)}
+              <UnderlineTabs.Trigger value={navItem.key}>
+                <a href={resolve(page.url.pathname + navItem.key, {})}>
+                  {$t(navItem.label)}
+                </a>
+              </UnderlineTabs.Trigger>
+            {/each}
+          </UnderlineTabs.List>
+        </UnderlineTabs.Root>
 
         <!-- Sections - Requirement -->
 
         {#if navItemKeys.includes(NAV_ITEM_KEY.REQUIREMENT)}
-          <section
-            id="requirement"
-            transition:fade={{ delay: 250, duration: 300 }}
-            class="mt-8 border-b border-gray-300 pb-10"
-          >
+          <NavSection id="requirement">
             <h3 class="mb-3 mt-0 text-2xl">
               {$t('course.navItem.landing_page.requirement')}
             </h3>
@@ -225,16 +220,12 @@
             <ul class="list font-light">
               <HtmlRender>{@html get(courseData, 'metadata.requirements', '')}</HtmlRender>
             </ul>
-          </section>
+          </NavSection>
         {/if}
 
         <!-- Sections - Course Description -->
         {#if navItemKeys.includes(NAV_ITEM_KEY.DESCRIPTION)}
-          <section
-            id="description"
-            transition:fade={{ delay: 250, duration: 300 }}
-            class="mt-8 border-b border-gray-300 pb-10"
-          >
+          <NavSection id="description">
             <h3 class="mb-3 mt-0 text-2xl">
               {$t('course.navItem.landing_page.description')}
             </h3>
@@ -242,42 +233,38 @@
             <HtmlRender className="dark:text-white text-sm font-light">
               {@html get(courseData, 'metadata.description', '')}
             </HtmlRender>
-          </section>
+          </NavSection>
         {/if}
 
         <!-- Sections - Goal -->
         {#if navItemKeys.includes(NAV_ITEM_KEY.GOALS)}
-          <section id="goals" transition:fade={{ delay: 250, duration: 300 }} class="mt-8 pb-10">
+          <NavSection id="goals">
             <h3 class="mb-3 mt-0 text-2xl">{$t('course.navItem.landing_page.learn')}</h3>
             <ul class="list font-light">
               <HtmlRender>{@html get(courseData, 'metadata.goals', '')}</HtmlRender>
             </ul>
-          </section>
+          </NavSection>
         {/if}
 
         <!-- Sections - Certificate -->
         {#if navItemKeys.includes(NAV_ITEM_KEY.CERTIFICATE)}
-          <section
-            id="certificate"
-            transition:fade={{ delay: 250, duration: 300 }}
-            class="mt-8 border-b border-gray-300 pb-10"
-          >
+          <NavSection id="certificate">
             <h3 class="mt-0 text-2xl">{$t('course.navItem.landing_page.certificate')}</h3>
             <p class="mb-3 text-sm font-light dark:text-white">
               {$t('course.navItem.landing_page.certificate_text')}
             </p>
 
-            <ImageRenderer
+            <Image
               src={certificate?.templateUrl}
               alt="certificate template"
               className="certificate-img max-h-[215px]"
             />
-          </section>
+          </NavSection>
         {/if}
 
         <!-- Sections - Lessons -->
         {#if courseData.version === COURSE_VERSION.V1}
-          <section id="lessons" class="mt-8 border-b border-gray-300 pb-10">
+          <NavSection id="lessons">
             <div class="mb-3 flex w-full items-center justify-between">
               <h3 class="mb-3 mt-0 text-2xl">
                 {$t('course.navItem.landing_page.content')}
@@ -288,7 +275,7 @@
             </div>
 
             <div class="flex flex-wrap">
-              {#each lessons as lesson, index}
+              {#each lessons as lesson, index (lesson.id)}
                 <div class="m-2 rounded border px-2 py-1">
                   <Chip value={getLectureNo(index + 1, '0')} />
                   <p class="ml-2 inline text-xs font-light dark:text-white">
@@ -297,9 +284,9 @@
                 </div>
               {/each}
             </div>
-          </section>
+          </NavSection>
         {:else if courseData.version === COURSE_VERSION.V2}
-          <section id="lessons">
+          <NavSection id="lessons">
             <!-- header -->
             <div class="flex items-center justify-between">
               <h1>{$t('course.navItem.landing_page.course_content')}</h1>
@@ -309,7 +296,7 @@
               </span>
             </div>
 
-            {#each lessonSections as section}
+            {#each lessonSections as section (section.id)}
               <SectionsDisplay
                 exerciseCount={getExerciseCount(section.lessons)}
                 lessonCount={section.lessons?.length}
@@ -317,17 +304,17 @@
                 title={section.title}
               />
             {/each}
-          </section>
+          </NavSection>
         {/if}
 
         <!-- Sections - Reviews -->
         {#if navItemKeys.includes(NAV_ITEM_KEY.REVIEWS)}
-          <section id="reviews" transition:fade={{ delay: 250, duration: 300 }}>
+          <NavSection id="reviews">
             <h2 class="my-16 mb-6 ml-0 mr-0 font-semibold">
               {$t('course.navItem.landing_page.reviews')}
             </h2>
             <div class="flex flex-wrap">
-              {#each reviews.slice(0, 4) as review, id}
+              {#each reviews.slice(0, 4) as review, id (review.id)}
                 {#if !review.hide}
                   <!-- review -->
                   <div class="item-start my-2 flex w-2/4 flex-row">
@@ -400,7 +387,7 @@
                 </div>
                 <!-- reviews -->
                 <div class="flex w-4/6 flex-wrap">
-                  {#each reviews as review, id}
+                  {#each reviews as review, id (review.id)}
                     <!-- review -->
                     <div class="item-start my-2 flex w-full flex-row">
                       <!-- image container -->
@@ -438,11 +425,11 @@
                 </div>
               </div>
             </Modal>
-          </section>
+          </NavSection>
         {/if}
 
         <!-- Sections - Instructor -->
-        <section id="instructor" class="mt-8 pb-10">
+        <NavSection id="instructor">
           <h3 class="mb-3 mt-0 text-2xl">
             {$t('course.navItem.landing_page.instructor')}
           </h3>
@@ -472,7 +459,7 @@
           <p class="text-sm font-light dark:text-white">
             {get(instructor, 'description', '')}
           </p>
-        </section>
+        </NavSection>
       </div>
 
       <!-- Pricing Details -->

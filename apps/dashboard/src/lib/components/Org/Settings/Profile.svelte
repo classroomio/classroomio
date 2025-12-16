@@ -2,7 +2,7 @@
   import type { TLocale } from '@cio/db/types';
   import { profile } from '$lib/utils/store/user';
   import { CircleCheckBig } from '@lucide/svelte';
-  import { profileApi } from '$lib/features/auth/api/profile.svelte';
+  import { profileApi } from '$features/auth/api/profile.svelte';
   import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
   import { Row, Grid, Column } from './Layout';
@@ -11,7 +11,7 @@
   import LanguagePicker from './LanguagePicker.svelte';
   import { InputField } from '@cio/ui/custom/input-field';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import { UnsavedChanges } from '$lib/features/ui';
+  import { UnsavedChanges } from '$features/ui';
 
   let avatar = $state<string | File | undefined>();
   let hasLangChanged = $state(false);

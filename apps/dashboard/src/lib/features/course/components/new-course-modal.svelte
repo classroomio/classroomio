@@ -3,7 +3,7 @@
 
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import { ComingSoon } from '$lib/features/ui';
+  import { ComingSoon } from '$features/ui';
   import { validateForm } from '../utils/functions';
   import { courses, createCourseModal } from '../utils/store';
   import { TextareaField } from '@cio/ui/custom/textarea-field';

@@ -13,7 +13,7 @@
 
   import { qrInviteNodeStore } from './store';
   import { ROLE } from '@cio/utils/constants';
-  import { orgApi } from '$lib/features/org/api/org.svelte';
+  import { orgApi } from '$features/org/api/org.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$lib/components/Snackbar/store';
   import type { OrgTeamMember } from '$lib/utils/types/org';

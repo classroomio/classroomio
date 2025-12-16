@@ -3,7 +3,7 @@
   import { onMount } from 'svelte';
   import { Button } from '@cio/ui/base/button';
   import { getSupabase } from '$lib/utils/functions/supabase';
-  import { AuthUI } from '$lib/features/ui';
+  import { AuthUI } from '$features/ui';
   import { currentOrg } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
   import { addGroupMember } from '$lib/utils/services/courses';

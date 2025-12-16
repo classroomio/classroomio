@@ -10,7 +10,7 @@
   import TextareaQuestion from '$lib/components/Question/TextareaQuestion/index.svelte';
   import { Button } from '@cio/ui/base/button';
   import Box from '$lib/components/Box/index.svelte';
-  import { RoleBasedSecurity } from '$lib/features/ui';
+  import { RoleBasedSecurity } from '$features/ui';
   import Progress from '$lib/components/Progress/index.svelte';
   import { removeDuplicate } from '$lib/utils/functions/removeDuplicate';
   import { QUESTION_TYPE } from '$lib/components/Question/constants';
@@ -64,7 +64,7 @@
     const submissionLink = `${baseUrl}/submissions`;
     const content = `
       <p>Hello ${teacherFullname},</p>
-      <p>A student ${student.profile.fullname} just submitted an exercise <a href=${exerciseLink}>${$questionnaire.title}</a> 
+      <p>A student ${student.profile.fullname} just submitted an exercise <a href=${exerciseLink}>${$questionnaire.title}</a>
         <p>You can get started grading by clicking "Open Submissions"</p>
       <div>
         <a class="button" href=${submissionLink}>Open Submissions</a>

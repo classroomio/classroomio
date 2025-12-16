@@ -26,7 +26,7 @@
   import Analytics from './Submissions/index.svelte';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import UpdateDescription from './UpdateDescription.svelte';
-  import { RoleBasedSecurity } from '$lib/features/ui';
+  import { RoleBasedSecurity } from '$features/ui';
 
   interface Props {
     exerciseId?: string;

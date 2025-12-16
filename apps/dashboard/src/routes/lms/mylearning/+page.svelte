@@ -4,14 +4,14 @@
   import SearchIcon from '@lucide/svelte/icons/search';
 
   import Tabs from '$lib/components/Tabs/index.svelte';
-  import { CoursesPage } from '$lib/features/course/pages';
+  import { CoursesPage } from '$features/course/pages';
   import { fetchCourses } from '$lib/utils/services/courses';
   import TabContent from '$lib/components/TabContent/index.svelte';
 
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import { courses, courseMetaDeta, coursesComplete, coursesInProgress } from '$lib/features/course/utils/store';
+  import { courses, courseMetaDeta, coursesComplete, coursesInProgress } from '$features/course/utils/store';
 
   let hasFetched = false;
   let searchValue = $state('');

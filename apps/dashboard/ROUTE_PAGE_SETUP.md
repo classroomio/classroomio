@@ -45,8 +45,8 @@ The route file should be minimal and only contain:
 
 ```svelte
 <script>
-  import { FeaturePage } from '$lib/features/[feature]/pages';
-  import { FeatureActionButton } from '$lib/features/[feature]/components';
+  import { FeaturePage } from '$features/[feature]/pages';
+  import { FeatureActionButton } from '$features/[feature]/components';
   import { t } from '$lib/utils/functions/translations';
   import * as Page from '@cio/ui/base/page';
 </script>
@@ -75,8 +75,8 @@ The route file should be minimal and only contain:
 ### Route File Rules
 
 - ✅ DO: Keep it minimal - only Page structure
-- ✅ DO: Import feature page from `$lib/features/[feature]/pages`
-- ✅ DO: Import action buttons/components from `$lib/features/[feature]/components`
+- ✅ DO: Import feature page from `$features/[feature]/pages`
+- ✅ DO: Import action buttons/components from `$features/[feature]/components`
 - ✅ DO: Use `Page.Root`, `Page.Header`, `Page.HeaderContent`, `Page.Title`, `Page.Action`, `Page.Body`
 - ❌ DON'T: Put business logic in route files
 - ❌ DON'T: Put state management in route files
@@ -110,7 +110,6 @@ The feature page contains all the business logic, state management, and UI compo
   let isLoading = $state(false);
   let searchValue = $state('');
   let selectedId = $state('');
-
 </script>
 
 <FeatureModal />
@@ -194,8 +193,8 @@ export { default as FeaturePage } from './feature.svelte';
 
 ```svelte
 <script>
-  import { CommunityPage } from '$lib/features/community/pages';
-  import { AskCommunityButton } from '$lib/features/community/components';
+  import { CommunityPage } from '$features/community/pages';
+  import { AskCommunityButton } from '$features/community/components';
   import { t } from '$lib/utils/functions/translations';
   import * as Page from '@cio/ui/base/page';
 </script>

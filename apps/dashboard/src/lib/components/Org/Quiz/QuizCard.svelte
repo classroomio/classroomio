@@ -9,7 +9,7 @@
   // import { onRename, onDelete } from '$lib/utils/services/org/quiz';
   import { Button } from '@cio/ui/base/button';
 
-  import ImageRenderer from '../ImageRenderer.svelte';
+  import { Image } from '$features/ui';
 
   let { quiz, totalQuestions } = $props();
 
@@ -55,7 +55,7 @@
   <div
     class="root relative mb-5 flex w-full flex-col rounded-lg border bg-gray-100 p-3 transition ease-in-out hover:shadow-2xl lg:flex-row dark:bg-black"
   >
-    <ImageRenderer
+    <Image
       src={themeImages[quiz.theme]?.card || themeImages.standard.card}
       alt="quiz-card"
       className="max-w-[300px] min-w-[200px]"

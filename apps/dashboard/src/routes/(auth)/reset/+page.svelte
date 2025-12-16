@@ -4,9 +4,9 @@
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { getConfirmPasswordError } from '$lib/utils/functions/validator';
-  import { AuthUI } from '$lib/features/ui';
-  import { resetApi } from '$lib/features/auth/api/reset.svelte';
-  import type { TResetPasswordForm } from '$lib/features/auth/utils/types';
+  import { AuthUI } from '$features/ui';
+  import { resetApi } from '$features/auth/api/reset.svelte';
+  import type { TResetPasswordForm } from '$features/auth/utils/types';
   import { snackbar } from '$lib/components/Snackbar/store';
   import * as Field from '@cio/ui/base/field';
   import { Password } from '@cio/ui/custom/password';

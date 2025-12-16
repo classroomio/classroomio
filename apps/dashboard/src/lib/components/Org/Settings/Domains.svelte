@@ -24,9 +24,9 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
-  import { ComingSoon, UpgradeBanner } from '$lib/features/ui';
+  import { ComingSoon, UpgradeBanner } from '$features/ui';
   import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import { VisitOrgSiteButton } from '$lib/features/ui';
+  import { VisitOrgSiteButton } from '$features/ui';
 
   let siteName = $derived($currentOrg.siteName);
   let customDomain = $state('');

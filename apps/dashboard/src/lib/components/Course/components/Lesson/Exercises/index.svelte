@@ -15,11 +15,11 @@
 
   import { PageBody } from '$lib/components/Page';
   import Exercise from '../Exercise/index.svelte';
-  import { Backdrop } from '$lib/features/ui';
+  import { Backdrop } from '$features/ui';
   import * as Empty from '@cio/ui/base/empty';
   import { QUESTION_TYPES } from '$lib/components/Question/constants';
   import { Button } from '@cio/ui/base/button';
-  import { RoleBasedSecurity } from '$lib/features/ui';
+  import { RoleBasedSecurity } from '$features/ui';
   import NewExerciseModal from '$lib/components/Course/components/Lesson/Exercises/NewExerciseModal.svelte';
 
   interface Props {

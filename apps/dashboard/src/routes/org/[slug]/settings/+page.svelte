@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { ProfilePage } from '$lib/features/settings/pages';
-  import { VisitOrgSiteButton } from '$lib/features/ui';
+  import { ProfilePage } from '$features/settings/pages';
+  import { VisitOrgSiteButton } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
   import { Button } from '@cio/ui/base/button';
   import * as Page from '@cio/ui/base/page';

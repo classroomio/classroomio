@@ -9,12 +9,12 @@
   import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
   import { shortenName } from '$lib/utils/functions/string';
-  import type { AccountOrg } from '$lib/features/app/types';
+  import type { AccountOrg } from '$features/app/types';
 
   import { setTheme } from '$lib/utils/functions/theme';
   import { currentOrg, currentOrgPath, orgs } from '$lib/utils/store/org';
 
-  import { ComingSoon } from '$lib/features/ui';
+  import { ComingSoon } from '$features/ui';
 
   const sidebar = useSidebar();
 

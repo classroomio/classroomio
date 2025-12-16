@@ -10,8 +10,8 @@
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import { CoursesPage } from '$lib/features/course/pages';
-  import { courseMetaDeta } from '$lib/features/course/utils/store';
+  import { CoursesPage } from '$features/course/pages';
+  import { courseMetaDeta } from '$features/course/utils/store';
   import { fetchExploreCourses } from '$lib/utils/services/courses';
 
   import { IconButton } from '@cio/ui/custom/icon-button';

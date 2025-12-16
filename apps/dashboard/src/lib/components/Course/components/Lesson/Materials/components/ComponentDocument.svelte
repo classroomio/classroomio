@@ -1,6 +1,6 @@
 <script lang="ts">
   import { lesson, deleteLessonDocument } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { CloseButton } from '$lib/components/Buttons/Close';
+  import { CloseButton } from '$features/ui';
   import { lessonDocUpload } from '$lib/components/Course/components/Lesson/store/lessons';
   import MODES from '$lib/utils/constants/mode';
   import { IconButton } from '@cio/ui/custom/icon-button';
@@ -334,30 +334,18 @@
         <!-- Navigation Controls -->
         {#if !isLoading && !error}
           <div class="flex items-center space-x-1">
-            <IconButton
-              onclick={prevPage}
-              disabled={pageNum <= 1}
-              tooltip="Previous page (←)"
-            >
+            <IconButton onclick={prevPage} disabled={pageNum <= 1} tooltip="Previous page (←)">
               <ChevronLeftIcon size={16} />
             </IconButton>
 
-            <IconButton
-              onclick={nextPage}
-              disabled={pageNum >= pageCount}
-              tooltip="Next page (→)"
-            >
+            <IconButton onclick={nextPage} disabled={pageNum >= pageCount} tooltip="Next page (→)">
               <ChevronRightIcon size={16} />
             </IconButton>
           </div>
 
           <!-- Zoom Controls -->
           <div class="flex items-center space-x-1">
-            <IconButton
-              onclick={zoomOut}
-              disabled={scale <= 0.5}
-              tooltip="Zoom out (-)"
-            >
+            <IconButton onclick={zoomOut} disabled={scale <= 0.5} tooltip="Zoom out (-)">
               <ZoomOutIcon size={16} />
             </IconButton>
 
@@ -365,11 +353,7 @@
               {Math.round(scale * 100)}%
             </span>
 
-            <IconButton
-              onclick={zoomIn}
-              disabled={scale >= 3.0}
-              tooltip="Zoom in (+)"
-            >
+            <IconButton onclick={zoomIn} disabled={scale >= 3.0} tooltip="Zoom in (+)">
               <ZoomInIcon size={16} />
             </IconButton>
           </div>

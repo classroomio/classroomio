@@ -4,8 +4,8 @@
   import Modal from '$lib/components/Modal/index.svelte';
   import { InputField } from '@cio/ui/custom/input-field';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
-  import { copyCourseModal } from '$lib/features/course/utils/store';
-  import { courseCloneApi } from '$lib/features/course/api';
+  import { copyCourseModal } from '$features/course/utils/store';
+  import { courseCloneApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
 
   async function createCourse() {

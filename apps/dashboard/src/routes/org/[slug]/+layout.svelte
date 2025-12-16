@@ -4,11 +4,11 @@
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { currentOrg } from '$lib/utils/store/org';
-  import { AppHeader } from '$lib/features/ui';
+  import { AppHeader } from '$features/ui';
 
-  import { VerifyEmailModal } from '$lib/features/onboarding/components';
+  import { VerifyEmailModal } from '$features/onboarding/components';
 
-  import { OrgSidebar } from '$lib/features/ui/sidebar/org-sidebar';
+  import { OrgSidebar } from '$features/ui/sidebar/org-sidebar';
   import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
 
   let { data, children } = $props();

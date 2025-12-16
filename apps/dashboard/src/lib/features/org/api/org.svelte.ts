@@ -12,7 +12,7 @@ import type { TCreateOrganization, TGetOrganizations, TUpdateOrganization } from
 import { ZCreateOrganization, ZUpdateOrganization } from '@cio/utils/validation/organization';
 import { currentOrg, orgs } from '$lib/utils/store/org';
 
-import type { AccountOrg } from '$lib/features/app/types';
+import type { AccountOrg } from '$features/app/types';
 import type { GetTeamResponse } from '../utils/types';
 import { ROLE } from '@cio/utils/constants';
 import { ROLE_LABEL } from '$lib/utils/constants/roles';

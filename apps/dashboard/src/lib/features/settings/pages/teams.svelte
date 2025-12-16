@@ -4,7 +4,7 @@
 
   import { profile } from '$lib/utils/store/user';
   import { isFreePlan, currentOrg } from '$lib/utils/store/org';
-  import { orgApi } from '$lib/features/org/api/org.svelte';
+  import { orgApi } from '$features/org/api/org.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$lib/components/Snackbar/store';
   import type { OrgTeamMember } from '$lib/utils/types/org';
@@ -15,7 +15,7 @@
   import { Badge } from '@cio/ui/base/badge';
   import { Input } from '@cio/ui/base/input';
   import { Button } from '@cio/ui/base/button';
-  import { ComingSoon, UpgradeBanner } from '$lib/features/ui';
+  import { ComingSoon, UpgradeBanner } from '$features/ui';
   import * as Field from '@cio/ui/base/field';
 
   let emailsStr = $state('');

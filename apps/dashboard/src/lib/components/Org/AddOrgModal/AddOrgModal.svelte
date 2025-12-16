@@ -9,7 +9,7 @@
   import { generateSitename } from '$lib/utils/functions/org';
   import { newOrgModal } from '../store';
   import { t } from '$lib/utils/functions/translations';
-  import { orgApi } from '$lib/features/org/api/org.svelte';
+  import { orgApi } from '$features/org/api/org.svelte';
 
   let orgName = $state('');
   let siteName = $derived(generateSitename(orgName));

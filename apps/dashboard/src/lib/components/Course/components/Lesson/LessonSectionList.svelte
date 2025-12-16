@@ -25,7 +25,7 @@
   import { updateLesson, updateLessonSection } from '$lib/utils/services/courses';
   import type { Lesson } from '$lib/utils/types';
   import DeleteLessonConfirmation from '$lib/components/Course/components/Lesson/DeleteLessonConfirmation.svelte';
-  import { RoleBasedSecurity } from '$lib/features/ui';
+  import { RoleBasedSecurity } from '$features/ui';
 
   type CrudParam = {
     sectionId?: string;

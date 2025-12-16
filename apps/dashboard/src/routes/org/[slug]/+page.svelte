@@ -11,16 +11,16 @@
   import { calDateDiff } from '$lib/utils/functions/date';
   import { getGreeting } from '$lib/utils/functions/date';
   import { currentOrgPath } from '$lib/utils/store/org';
-  import { dashStatApi } from '$lib/features/org/api';
+  import { dashStatApi } from '$features/org/api';
 
-  import { CreateCourseButton } from '$lib/features/course/components';
+  import { CreateCourseButton } from '$features/course/components';
   import * as Avatar from '@cio/ui/base/avatar';
   import { ActivityCard } from '$lib/components/Analytics';
   import { shortenName } from '$lib/utils/functions/string';
   import Progress from '$lib/components/Progress/index.svelte';
   import { Button } from '@cio/ui/base/button';
-  import { WelcomeModal } from '$lib/features/onboarding/components';
-  import { VisitOrgSiteButton } from '$lib/features/ui';
+  import { WelcomeModal } from '$features/onboarding/components';
+  import { VisitOrgSiteButton } from '$features/ui';
   import * as Page from '@cio/ui/base/page';
   import { Empty } from '@cio/ui/custom/empty';
 

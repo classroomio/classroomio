@@ -5,10 +5,10 @@
   import { Search } from '@cio/ui/custom/search';
   import * as Pagination from '@cio/ui/base/pagination';
   import UsersIcon from '@lucide/svelte/icons/users';
-  import { orgApi } from '$lib/features/org/api/org.svelte';
+  import { orgApi } from '$features/org/api/org.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { Empty } from '@cio/ui/custom/empty';
-  import { UpgradeBanner } from '$lib/features/ui';
+  import { UpgradeBanner } from '$features/ui';
   import { currentOrg, currentOrgMaxAudience } from '$lib/utils/store/org';
   import * as Avatar from '@cio/ui/base/avatar';
   import * as Page from '@cio/ui/base/page';

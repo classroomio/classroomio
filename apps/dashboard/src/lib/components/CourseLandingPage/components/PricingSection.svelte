@@ -124,7 +124,7 @@
 
         <!-- Call To Action Buttons -->
         <div class="flex h-full w-full flex-col items-center">
-          <Button onclick={handleJoinCourse} disabled={!courseData.metadata.allowNewStudent}>
+          <Button onclick={handleJoinCourse} disabled={!courseData.metadata.allowNewStudent} class="w-full">
             {isFree
               ? $t('course.navItem.landing_page.pricing_section.enroll')
               : $t('course.navItem.landing_page.pricing_section.buy')}
@@ -168,7 +168,7 @@
 
       <!-- Call To Action Buttons -->
       <div class="flex w-full flex-col items-center">
-        <Button class="mb-3" onclick={handleJoinCourse} disabled={!courseData.metadata.allowNewStudent}>
+        <Button class="mb-3 w-full" onclick={handleJoinCourse} disabled={!courseData.metadata.allowNewStudent}>
           {isFree
             ? $t('course.navItem.landing_page.pricing_section.enroll')
             : $t('course.navItem.landing_page.pricing_section.buy')}

@@ -8,7 +8,7 @@
 
   import { Chip } from '@cio/ui/custom/chip';
   import { InputField } from '@cio/ui/custom/input-field';
-  import { RoleBasedSecurity } from '$lib/features/ui';
+  import { RoleBasedSecurity } from '$features/ui';
   import * as Empty from '@cio/ui/base/empty';
   import { lessons, handleSaveLesson } from '$lib/components/Course/components/Lesson/store/lessons';
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import * as Sidebar from '@cio/ui/base/sidebar';
-  import { CourseSidebar } from '$lib/features/ui/sidebar/course-sidebar';
-  import { AppHeader } from '$lib/features/ui';
+  import { CourseSidebar } from '$features/ui/sidebar/course-sidebar';
+  import { AppHeader } from '$features/ui';
 
   interface Props {
     children?: import('svelte').Snippet;
