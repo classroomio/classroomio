@@ -1,6 +1,5 @@
 <script lang="ts">
-  import ImageCopy from 'carbon-icons-svelte/lib/ImageCopy.svelte';
-  import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
+  import { Copy, Trash2 } from '@lucide/svelte';
 
   export let imageURL = '';
   export let label = '';
@@ -35,7 +34,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div>
   {#if label}
-    <p class="dark:text-white text-left w-full flex items-center justify-between {labelClassName}">
+    <p class="flex w-full items-center justify-between text-left dark:text-white {labelClassName}">
       <span>
         {label}
         {#if isRequired}
@@ -45,13 +44,13 @@
 
       {#if imageURL}
         <span title="clear image" on:click={deleteImage}>
-          <TrashCan class="fill-red-500 " />
+          <Trash2 class="fill-red-500 " />
         </span>
       {/if}
     </p>
   {/if}
   <div
-    class="flex items-center justify-center w-full border rounded-md min-h-[200px] p-4"
+    class="flex min-h-[200px] w-full items-center justify-center rounded-md border p-4"
     on:click={() => fileInput.click()}
   >
     <input
@@ -63,13 +62,11 @@
       required={isRequired}
     />
     {#if imageURL}
-      <img src={imageURL} alt="selected file" class="w-[30%] h-auto mt-4" />
+      <img src={imageURL} alt="selected file" class="mt-4 h-auto w-[30%]" />
     {:else}
       <div class="space-y-4">
-        <ImageCopy size={24} class="mx-auto" />
-        <p class="text-center text-sm text-gray-500 my-2">
-          Max file size: 10MB, accepted: jpeg, jpg, png, gif
-        </p>
+        <Copy size={24} class="mx-auto" />
+        <p class="my-2 text-center text-sm text-gray-500">Max file size: 10MB, accepted: jpeg, jpg, png, gif</p>
       </div>
     {/if}
   </div>

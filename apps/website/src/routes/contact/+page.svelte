@@ -1,11 +1,12 @@
 <script lang="ts">
-  import ArrowUpRight from 'carbon-icons-svelte/lib/ArrowUpRight.svelte';
-  import PageHeader from '$lib/PageHeader/PageHeader.svelte';
+  import { ArrowUpRight } from '@lucide/svelte';
 
-  import FeedbackForm from '$lib/Contact/FeedbackForm.svelte';
-  import HelpForm from '$lib/Contact/HelpForm.svelte';
   import { FORM_TYPE } from '$lib/types';
   import type { FORM_TYPE_KEY } from '$lib/types';
+
+  import HelpForm from '$lib/Contact/HelpForm.svelte';
+  import PageHeader from '$lib/PageHeader/PageHeader.svelte';
+  import FeedbackForm from '$lib/Contact/FeedbackForm.svelte';
 
   let currentForm: FORM_TYPE_KEY;
 
@@ -45,40 +46,34 @@
 
 <section>
   <PageHeader className="flex flex-col items-center justify-center bg-[#F5F8FE] text-center">
-    <div class="mb-2 ml-[5%] lg:ml-0 flex w-full items-center justify-center">
+    <div class="mb-2 ml-[5%] flex w-full items-center justify-center lg:ml-0">
       <span
         style="color: rgb(75, 85, 99);"
-        class="rounded-full border-2 border-[#C2D2FF] px-4 py-1 text-sm font-medium bg-[#DCE5FF] text-blue-700"
+        class="rounded-full border-2 border-[#C2D2FF] bg-[#DCE5FF] px-4 py-1 text-sm font-medium text-blue-700"
       >
         Contact Us
       </span>
     </div>
-    <h1
-      class="mx-auto text-4xl md:text-7xl lg:text-6xl font-bold text-slate-900 flex flex-col items-center"
-    >
+    <h1 class="mx-auto flex flex-col items-center text-4xl font-bold text-slate-900 md:text-7xl lg:text-6xl">
       <span>Get in touch with <span class="text-blue-700">Us</span></span>
     </h1>
-    <p
-      class="w-[90%] md:w-[60%] max-w-3xl text-center font-normal text-lg text-slate-700 mt-10 lg:mt-7"
-    >
-      Report any bugs you encounter, request new features you'd like to see, or ask any questions
-      you have about ClassroomIO
+    <p class="mt-10 w-[90%] max-w-3xl text-center text-lg font-normal text-slate-700 md:w-[60%] lg:mt-7">
+      Report any bugs you encounter, request new features you'd like to see, or ask any questions you have about
+      ClassroomIO
     </p>
   </PageHeader>
 
-  <div class="my-20 mx-auto">
+  <div class="mx-auto my-20">
     <!-- Content here -->
-    <div
-      class="mx-auto w-[90%] lg:w-[60%] place-items-center grid grid-cols-1 md:grid-cols-2 gap-10"
-    >
+    <div class="mx-auto grid w-[90%] grid-cols-1 place-items-center gap-10 md:grid-cols-2 lg:w-[60%]">
       {#each formList as list}
         <button
           on:click={() => onChange(list.id, list.to)}
-          class="text-start border-[1.5px] w-full rounded-md p-3 {currentForm === list.id
+          class="w-full rounded-md border-[1.5px] p-3 text-start {currentForm === list.id
             ? `border-[#0233BD]`
             : `border-gray-200`} flex items-center justify-between"
         >
-          <p class="text-lg text-slate-700 font-normal">{list.title}</p>
+          <p class="text-lg font-normal text-slate-700">{list.title}</p>
           {#if list.to}
             <ArrowUpRight size={16} />
           {/if}
@@ -87,7 +82,7 @@
     </div>
 
     {#if currentForm === FORM_TYPE[currentForm]}
-      <div class="mx-auto w-[90%] lg:w-[60%] px-5">
+      <div class="mx-auto w-[90%] px-5 lg:w-[60%]">
         {#if currentForm === FORM_TYPE.HELP}
           <HelpForm />
         {:else if currentForm === FORM_TYPE.FEEDBACK}

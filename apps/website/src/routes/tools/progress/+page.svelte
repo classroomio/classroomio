@@ -1,16 +1,18 @@
 <script lang="ts">
-  import { LogoFacebook, LogoLinkedin } from 'carbon-icons-svelte';
   import { onDestroy } from 'svelte';
   import { fly } from 'svelte/transition';
   import { sineInOut } from 'svelte/easing';
+  import { Facebook, Linkedin } from '@lucide/svelte';
+
+  import { htmlBody, type HtmlBody, openModal, isFormComplete } from './components/store';
+
   import Mood from './components/Mood.svelte';
-  import ToolsHeader from '$lib/ToolsHeader/ToolsHeader.svelte';
   import Avatar from './components/Avatar.svelte';
-  import Background from './components/Background.svelte';
   import Report from './components/Report.svelte';
   import FullView from './components/FullView.svelte';
+  import Background from './components/Background.svelte';
+  import ToolsHeader from '$lib/ToolsHeader/ToolsHeader.svelte';
   import DownloadButton from './components/DownloadButton.svelte';
-  import { htmlBody, type HtmlBody, openModal, isFormComplete } from './components/store';
 
   const MAX_CHARS = 160;
   let remainingChars = MAX_CHARS;
@@ -265,14 +267,14 @@
                 on:click={shareOnFacebook}
                 class="w-10 transition-all duration-300 hover:scale-[1.2]"
               >
-                <LogoFacebook size={32} />
+                <Facebook size={32} />
               </button>
               <button
                 type="button"
                 on:click={shareOnLinkedIn}
                 class="w-10 transition-all duration-300 hover:scale-[1.2]"
               >
-                <LogoLinkedin size={32} />
+                <Linkedin size={32} />
               </button>
               <button type="button" on:click={shareOnTwitter} class="w-5 transition-all duration-300 hover:scale-[1.2]">
                 <img src="/twitter_logo.png" alt="X.com" />
@@ -313,14 +315,14 @@
                 on:click={shareOnFacebook}
                 class="w-10 transition-all duration-300 hover:scale-[1.2]"
               >
-                <LogoFacebook size={32} />
+                <Facebook size={32} />
               </button>
               <button
                 type="button"
                 on:click={shareOnLinkedIn}
                 class="w-10 transition-all duration-300 hover:scale-[1.2]"
               >
-                <LogoLinkedin size={32} />
+                <Linkedin size={32} />
               </button>
               <button type="button" on:click={shareOnTwitter} class="w-5 transition-all duration-300 hover:scale-[1.2]">
                 <img src="/twitter_logo.png" alt="X.com" />

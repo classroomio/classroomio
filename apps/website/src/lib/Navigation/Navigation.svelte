@@ -1,15 +1,22 @@
 <script lang="ts">
+  import {
+    ChevronDown,
+    Gamepad,
+    Hourglass,
+    LoaderCircle,
+    LocateFixed,
+    Menu,
+    MessagesSquare,
+    MousePointerClick,
+    Timer,
+    X
+  } from '@lucide/svelte';
   import { page } from '$app/state';
-  import * as NavigationMenu from '@cio/ui/base/navigation-menu';
-  import CourseIcon from '$lib/Icons/CourseIcon.svelte';
-  import ChevronDown from 'carbon-icons-svelte/lib/ChevronDown.svelte';
-  import CloseLarge from 'carbon-icons-svelte/lib/CloseLarge.svelte';
-  import ForumIcon from 'carbon-icons-svelte/lib/Forum.svelte';
-  import MapCenter from 'carbon-icons-svelte/lib/MapCenter.svelte';
-  import TextAlignJustify from 'carbon-icons-svelte/lib/TextAlignJustify.svelte';
   import { fly } from 'svelte/transition';
-  import { CostTotal, GameConsole, LicenseDraft, ProgressBarRound, Time } from 'carbon-icons-svelte';
   import type { HTMLAttributes } from 'svelte/elements';
+  import * as NavigationMenu from '@cio/ui/base/navigation-menu';
+
+  import CourseIcon from '$lib/Icons/CourseIcon.svelte';
 
   export let stars: number;
 
@@ -29,20 +36,17 @@
     {
       key: 'employee-training',
       title: 'Employee Training',
-      subtitle: 'Keep your team in sync.',
-      icon: 'training'
+      subtitle: 'Keep your team in sync.'
     },
     {
       key: 'bootcamps',
       title: 'Bootcamps',
-      subtitle: 'Drive student satisfaction.',
-      icon: 'bootcamp'
+      subtitle: 'Drive student satisfaction.'
     },
     {
       key: 'customer-education',
       title: 'Customer Education',
-      subtitle: 'Teach customers your product.',
-      icon: 'education'
+      subtitle: 'Teach customers your product.'
     }
   ];
 
@@ -50,32 +54,27 @@
     {
       key: 'progress',
       title: 'Progress Tracker',
-      subtitle: 'Monitor learning journeys.',
-      icon: 'progress'
+      subtitle: 'Monitor learning journeys.'
     },
     {
       key: 'pomodoro',
       title: 'Pomodoro Timer',
-      subtitle: 'Boost focus and productivity.',
-      icon: 'time'
+      subtitle: 'Boost focus and productivity.'
     },
     {
       key: 'name-picker',
       title: 'Name Picker',
-      subtitle: 'Randomly select names.',
-      icon: 'license'
+      subtitle: 'Randomly select names.'
     },
     {
       key: 'stopwatch',
       title: 'Activity Stopwatch',
-      subtitle: 'Track time accurately.',
-      icon: 'cost'
+      subtitle: 'Track time accurately.'
     },
     {
       key: 'tic-tac-toe',
       title: 'Tic Tac Toe',
-      subtitle: 'Play the classic game.',
-      icon: 'game'
+      subtitle: 'Play the classic game.'
     }
   ];
 
@@ -83,7 +82,7 @@
     title: string;
     href: string;
     subtitle: string;
-    icon: string;
+    key: string;
   };
 
   $: activeLink = page.url.pathname;
@@ -91,7 +90,7 @@
   $: isSolutionsActive = solutions.some((s) => activeHash.includes(s.key));
 </script>
 
-{#snippet ListItem({ title, subtitle, href, icon, class: className, ...restProps }: ListItemProps)}
+{#snippet ListItem({ title, subtitle, href, key, class: className, ...restProps }: ListItemProps)}
   <li>
     <NavigationMenu.Link>
       {#snippet child()}
@@ -101,22 +100,22 @@
           {...restProps}
         >
           <div class="shrink-0">
-            {#if icon === 'training'}
+            {#if key === 'employee-training'}
               <CourseIcon />
-            {:else if icon === 'bootcamp'}
-              <MapCenter size={24} />
-            {:else if icon === 'education'}
-              <ForumIcon size={24} />
-            {:else if icon === 'progress'}
-              <ProgressBarRound size={24} />
-            {:else if icon === 'time'}
-              <Time size={24} />
-            {:else if icon === 'license'}
-              <LicenseDraft size={24} />
-            {:else if icon === 'cost'}
-              <CostTotal size={24} />
-            {:else if icon === 'game'}
-              <GameConsole size={24} />
+            {:else if key === 'bootcamps'}
+              <LocateFixed size={24} />
+            {:else if key === 'customer-education'}
+              <MessagesSquare size={24} />
+            {:else if key === 'progress'}
+              <LoaderCircle size={24} />
+            {:else if key === 'pomodoro'}
+              <Hourglass size={24} />
+            {:else if key === 'name-picker'}
+              <MousePointerClick size={24} />
+            {:else if key === 'stopwatch'}
+              <Timer size={24} />
+            {:else if key === 'tic-tac-toe'}
+              <Gamepad size={24} />
             {/if}
           </div>
           <div class="ml-3 text-start">
@@ -134,7 +133,7 @@
 {/snippet}
 
 <section class="z-3005 fixed top-0 w-full">
-  <div class="mx-auto flex w-full xl:w-[90%] items-center justify-between gap-20 px-5 py-6 md:px-12">
+  <div class="mx-auto flex w-full items-center justify-between gap-20 px-5 py-6 md:px-12 xl:w-[90%]">
     <a href="/" class="w-[10%]">
       <div class="flex w-full items-center">
         <img loading="lazy" width="28" height="28" src="/logo-512.png" alt="classroomio logo" class="w-6 md:w-7" />
@@ -158,7 +157,7 @@
                     href: `/${solution.key}`,
                     title: solution.title,
                     subtitle: solution.subtitle,
-                    icon: solution.icon
+                    key: solution.key
                   })}
                 {/each}
               </ul>
@@ -178,7 +177,7 @@
                     href: `/tools/${tool.key}`,
                     title: tool.title,
                     subtitle: tool.subtitle,
-                    icon: tool.icon
+                    key: tool.key
                   })}
                 {/each}
               </ul>
@@ -254,7 +253,7 @@
     </div>
 
     <button type="button" aria-label="Hamburger Menu" class="block md:block lg:hidden" on:click={handleShowSolutions}>
-      <TextAlignJustify size={24} />
+      <Menu size={24} />
     </button>
 
     {#if showSolutions}
@@ -266,7 +265,7 @@
         <div class="mb-5 flex justify-between py-2">
           <img loading="lazy" width="20" height="20" src="/logo-512.png" alt="classroomio logo" class="w-[15%]" />
           <button class="mr-5" on:click={handleShowSolutions}>
-            <CloseLarge size={24} />
+            <X size={24} />
           </button>
         </div>
         <nav>

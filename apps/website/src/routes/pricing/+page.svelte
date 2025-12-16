@@ -1,7 +1,9 @@
 <script>
+  import { Check } from '@lucide/svelte';
   import { fade } from 'svelte/transition';
-  import Checkmark from 'carbon-icons-svelte/lib/Checkmark.svelte';
+
   import { PLANS } from '@cio/utils/plans';
+
   import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
   import PageHeader from '$lib/PageHeader/PageHeader.svelte';
 
@@ -18,27 +20,21 @@
 
 <section>
   <PageHeader className="flex flex-col items-center justify-center text-center">
-    <h1
-      class="mx-auto text-4xl md:text-7xl lg:text-6xl font-bold text-slate-900 flex flex-col items-center"
-    >
+    <h1 class="mx-auto flex flex-col items-center text-4xl font-bold text-slate-900 md:text-7xl lg:text-6xl">
       <span>There is room for</span>
-      <span class="text-blue-700 relative">Everyone.</span>
+      <span class="relative text-blue-700">Everyone.</span>
     </h1>
-    <p class="w-[90%] md:w-[60%] text-center font-normal text-lg text-slate-700 mt-10 lg:mt-7">
+    <p class="mt-10 w-[90%] text-center text-lg font-normal text-slate-700 md:w-[60%] lg:mt-7">
       You get a customizable LMS, AI integration for productive educators and many more...
     </p>
     <div class="relative mt-10 flex items-center rounded-[30px] border-[2px] p-[2px] lg:scale-100">
       <button
-        style="background-color: {isYearlyPlan ? 'initial' : '#1D4EE2'}; color: {isYearlyPlan
-          ? '#5e636b'
-          : '#fff'}"
+        style="background-color: {isYearlyPlan ? 'initial' : '#1D4EE2'}; color: {isYearlyPlan ? '#5e636b' : '#fff'}"
         class="rounded-[30px] bg-blue-700 px-3 py-1 text-xs text-white lg:px-4 lg:py-2"
         on:click={toggleIsYearlyPlan}>Monthly</button
       >
       <button
-        style="background-color: {isYearlyPlan ? '#1D4EE2' : ''}; color: {isYearlyPlan
-          ? '#fff'
-          : '#5e636b'}"
+        style="background-color: {isYearlyPlan ? '#1D4EE2' : ''}; color: {isYearlyPlan ? '#fff' : '#5e636b'}"
         class="rounded-[30px] px-3 py-1 text-xs text-white lg:px-4 lg:py-2"
         on:click={toggleIsYearlyPlan}>Annually</button
       >
@@ -71,7 +67,7 @@
           {PLANS.BASIC.NAME}
         </p>
 
-        <p class="lg:text-base mt-4 text-sm font-light leading-6 text-gray-500 lg:leading-6">
+        <p class="mt-4 text-sm font-light leading-6 text-gray-500 lg:text-base lg:leading-6">
           {PLANS.BASIC.DESCRIPTION}
         </p>
 
@@ -81,7 +77,7 @@
         <span class="text-base">Free forever</span>
 
         <a
-          class="text-base mt-10 block w-full rounded-md bg-slate-900 py-3 text-center font-medium text-white hover:bg-slate-700 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
+          class="mt-10 block w-full rounded-md bg-slate-900 py-3 text-center text-base font-medium text-white hover:bg-slate-700 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
           href={PLANS.BASIC.CTA.LINK}
           target="_blank"
         >
@@ -91,11 +87,7 @@
         <ul class="mt-8 space-y-2 text-sm text-gray-600 lg:space-y-5 xl:mt-10">
           {#each PLANS.BASIC.FEATURES as feature}
             <li class="flex items-center">
-              <Checkmark
-                size={24}
-                fill="#1D4EE2"
-                class="mr-2 scale-[70%] lg:mr-3 lg:scale-[100%]"
-              />
+              <Check size={24} fill="#1D4EE2" class="mr-2 scale-[70%] lg:mr-3 lg:scale-[100%]" />
               {feature}
             </li>
           {/each}
@@ -108,15 +100,12 @@
           {PLANS.EARLY_ADOPTER.NAME}
         </p>
 
-        <p class="lg:text-base mt-4 text-sm font-light leading-6 text-white lg:leading-6">
+        <p class="mt-4 text-sm font-light leading-6 text-white lg:text-base lg:leading-6">
           {PLANS.EARLY_ADOPTER.DESCRIPTION}
         </p>
 
         {#key isYearlyPlan}
-          <p
-            class="mt-6 flex items-baseline gap-x-1 text-4xl font-medium text-white lg:text-4xl"
-            in:fade
-          >
+          <p class="mt-6 flex items-baseline gap-x-1 text-4xl font-medium text-white lg:text-4xl" in:fade>
             ${isYearlyPlan ? PLANS.EARLY_ADOPTER.PRICE.YEARLY : PLANS.EARLY_ADOPTER.PRICE.MONTHLY}
           </p>
           <span class="text-base text-white" in:fade>
@@ -125,7 +114,7 @@
         {/key}
 
         <a
-          class="text-base mt-10 block w-full rounded-md bg-white py-3 text-center font-medium text-slate-900 hover:bg-indigo-50 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
+          class="mt-10 block w-full rounded-md bg-white py-3 text-center text-base font-medium text-slate-900 hover:bg-indigo-50 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
           href={PLANS.EARLY_ADOPTER.CTA.LINK}
           target="_blank"
         >
@@ -134,7 +123,7 @@
         <ul class="mt-8 space-y-3 text-sm font-light text-white lg:space-y-5 xl:mt-10">
           {#each PLANS.EARLY_ADOPTER.FEATURES as features}
             <li class="flex items-center">
-              <Checkmark size={24} fill="#fff" class="mr-2 scale-[70%] lg:mr-3 lg:scale-[100%]" />
+              <Check size={24} fill="#fff" class="mr-2 scale-[70%] lg:mr-3 lg:scale-[100%]" />
               {features}
             </li>
           {/each}
@@ -146,14 +135,12 @@
         <p class="text-lg font-semibold leading-8 text-gray-900 lg:text-xl">
           {PLANS.ENTERPRISE.NAME}
         </p>
-        <p class="lg:text-base mt-4 text-sm font-light leading-6 text-gray-500 lg:leading-6">
+        <p class="mt-4 text-sm font-light leading-6 text-gray-500 lg:text-base lg:leading-6">
           {PLANS.ENTERPRISE.DESCRIPTION}
         </p>
-        <p class="mt-6 flex items-baseline gap-x-1 text-xl font-medium lg:mt-6 lg:text-xl">
-          Request Pricing
-        </p>
+        <p class="mt-6 flex items-baseline gap-x-1 text-xl font-medium lg:mt-6 lg:text-xl">Request Pricing</p>
         <button
-          class="text-base mt-10 w-full rounded-md bg-slate-900 py-3 font-medium text-white hover:bg-slate-700 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
+          class="mt-10 w-full rounded-md bg-slate-900 py-3 text-base font-medium text-white hover:bg-slate-700 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
           data-cal-config={"{'layout':'month_view'}"}
           data-cal-link="classroomio/enterprise"
         >
@@ -163,11 +150,7 @@
         <ul class="mt-8 space-y-2 text-sm text-gray-600 lg:space-y-5 xl:mt-10">
           {#each PLANS.ENTERPRISE.FEATURES as features}
             <li class="flex items-center">
-              <Checkmark
-                size={24}
-                fill="#1D4EE2"
-                class="mr-2 scale-[70%] lg:mr-3 lg:scale-[100%]"
-              />
+              <Check size={24} fill="#1D4EE2" class="mr-2 scale-[70%] lg:mr-3 lg:scale-[100%]" />
               {features}
             </li>
           {/each}
