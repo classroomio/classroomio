@@ -1,6 +1,6 @@
 <script>
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { Button } from '@cio/ui/base/button';
   import { currentOrgPlan, isFreePlan } from '$lib/utils/store/org';
 

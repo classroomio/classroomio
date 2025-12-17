@@ -4,14 +4,13 @@
   import Search from '@lucide/svelte/icons/search';
   import { Checkbox } from '@cio/ui/base/checkbox';
   import * as Pagination from '@cio/ui/base/pagination';
-  import BadgeXIcon from '@lucide/svelte/icons/badge-x';
 
   import { profile } from '$lib/utils/store/user';
   import { ROLE } from '@cio/utils/constants';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { attendance } from '$lib/utils/store/attendance';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { course, group } from '$lib/components/Course/store';
   import { takeAttendance } from '$lib/utils/services/attendance';
   import { getLectureNo } from '$lib/components/Course/function.js';
@@ -19,8 +18,9 @@
   import * as Page from '@cio/ui/base/page';
   import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
 
-  import Box from '$lib/components/Box/index.svelte';
   import { PageBody } from '$lib/components/Page';
+  import { Empty } from '@cio/ui/custom/empty';
+  import UserXIcon from '@lucide/svelte/icons/user-x';
   import { CourseContainer } from '$lib/components/CourseContainer';
 
   let { data = $bindable() } = $props();
@@ -216,12 +216,7 @@
         </Table.Root>
       </div>
       {#if students.length === 0}
-        <Box className="h-[300px] w-full">
-          <BadgeXIcon size={48} />
-          <h3 class="text-center text-3xl text-gray-500 dark:text-white">
-            {$t('course.navItem.attendance.no_student')}
-          </h3>
-        </Box>
+        <Empty title={$t('course.navItem.attendance.no_student')} icon={UserXIcon} variant="page" />
       {/if}
       {#if totalStudents > 0}
         <div class="mt-4">

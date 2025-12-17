@@ -7,11 +7,11 @@
 
   import { STATUS } from './constants';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import type { SubmissionIdData } from '$lib/utils/types/submission';
 
   import Preview from './Preview.svelte';
-  import Modal from '$lib/components/Modal/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { Button } from '@cio/ui/base/button';
 
@@ -230,16 +230,17 @@
   });
 </script>
 
-<Modal
-  modalHeading={data.title}
+<Dialog.Root
   bind:open
-  {onClose}
-  width="w-4/5 h-[90%]"
-  containerClass="flex items-start !max-h-full h-[85%] py-0 px-4"
-  headerClass="py-2"
-  labelClass="text-base font-semibold"
+  onOpenChange={(isOpen) => {
+    if (!isOpen) onClose();
+  }}
 >
-  <div class="mt-2 h-full w-full">
+  <Dialog.Content class="w-4/5 h-[90%] flex items-start !max-h-full h-[85%] py-0 px-4">
+    <Dialog.Header class="py-2">
+      <Dialog.Title class="text-base font-semibold">{data.title}</Dialog.Title>
+    </Dialog.Header>
+    <div class="mt-2 h-full w-full">
     {#if openDeletePrompt}
       <div class="mx-auto w-96 rounded-md border border-gray-300 p-3">
         <h1 class="text-lg dark:text-white">
@@ -406,7 +407,8 @@
       </div> -->
     </div>
   </div>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>
 
 <style>
   .badge {

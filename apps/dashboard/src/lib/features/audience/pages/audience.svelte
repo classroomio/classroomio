@@ -84,7 +84,7 @@
                   >
                     <Avatar.Root class="h-5 w-5">
                       <Avatar.Image
-                        src={row.avatar_url ? row.avatar_url : '/logo-192.png'}
+                        src={row.avatarUrl ? row.avatarUrl : '/logo-192.png'}
                         alt={row.name ? row.name : 'User'}
                       />
                       <Avatar.Fallback>{shortenName(row.name) || 'U'}</Avatar.Fallback>
@@ -93,7 +93,7 @@
                   </a>
                 </Table.Cell>
                 <Table.Cell>{row.email}</Table.Cell>
-                <Table.Cell>{row.date_joined}</Table.Cell>
+                <Table.Cell>{row.createdAt}</Table.Cell>
               </Table.Row>
             {/each}
           </Table.Body>

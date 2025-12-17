@@ -3,9 +3,9 @@
 
   import { goto } from '$app/navigation';
   import { Button } from '@cio/ui/base/button';
-  import Modal from '$lib/components/Modal/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
   import { InputField } from '@cio/ui/custom/input-field';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { supabase } from '$lib/utils/functions/supabase';
   import { currentOrg, createQuizModal, currentOrgPath, quizesStore } from '$lib/utils/store/org';
   import { createQuizValidation } from '$lib/utils/functions/validator';
@@ -105,15 +105,21 @@
   <title>{$t('components.quiz.title')} - ClassroomIO</title>
 </svelte:head>
 
-<Modal
-  onClose={handleClose}
+<Dialog.Root
   bind:open
-  width="w-4/5 md:w-2/5"
-  modalHeading="{$createQuizModal.openEdit ? $t('components.quiz.update') : $t('components.quiz.create')} {$t(
-    'components.quiz.a_quiz'
-  )}"
+  onOpenChange={(isOpen) => {
+    if (!isOpen) handleClose();
+  }}
 >
-  <form onsubmit={preventDefault(createQuiz)}>
+  <Dialog.Content class="w-4/5 md:w-2/5">
+    <Dialog.Header>
+      <Dialog.Title>
+        {$createQuizModal.openEdit ? $t('components.quiz.update') : $t('components.quiz.create')} {$t(
+          'components.quiz.a_quiz'
+        )}
+      </Dialog.Title>
+    </Dialog.Header>
+    <form onsubmit={preventDefault(createQuiz)}>
     <InputField
       label={$t('components.quiz.quiz_title')}
       bind:value={$createQuizModal.title}
@@ -131,4 +137,5 @@
       </Button>
     </div>
   </form>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>

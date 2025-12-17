@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Modal from '$lib/components/Modal/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
 
@@ -20,15 +20,18 @@
   }: Props = $props();
 </script>
 
-<Modal
-  onClose={() => (open = false)}
+<Dialog.Root
   bind:open
-  width="w-96"
-  modalHeading="{$t('community.delete.title')} {isQuestion
-    ? $t('community.delete.question')
-    : $t('community.delete.comment')}"
 >
-  <div>
+  <Dialog.Content class="w-96">
+    <Dialog.Header>
+      <Dialog.Title>
+        {$t('community.delete.title')} {isQuestion
+          ? $t('community.delete.question')
+          : $t('community.delete.comment')}
+      </Dialog.Title>
+    </Dialog.Header>
+    <div>
     <p class="mt-0 text-base dark:text-white">
       {$t('community.delete.sure')}
       {isQuestion ? $t('community.delete.question') : $t('community.delete.comment')}?
@@ -49,4 +52,5 @@
       </Button>
     </div>
   </div>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>

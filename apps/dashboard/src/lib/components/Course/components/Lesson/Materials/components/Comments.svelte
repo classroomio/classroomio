@@ -8,14 +8,14 @@
   import * as Avatar from '@cio/ui/base/avatar';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { shortenName } from '$lib/utils/functions/string';
-  import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
+  import { DeleteModal } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
   import { lesson, lessonCommentsChannel } from '$lib/components/Course/components/Lesson/store/lessons';
 
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import { calDateDiff } from '$lib/utils/functions/date';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import type { GroupPerson, LessonComment, LessonCommentInsertPayload } from '$lib/utils/types';
 

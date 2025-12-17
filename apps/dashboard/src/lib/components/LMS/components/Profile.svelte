@@ -1,14 +1,14 @@
 <script>
   import { InputField } from '@cio/ui/custom/input-field';
   import { Row, Grid, Column } from '$lib/components/Org/Settings/Layout';
-  import UploadImage from '$lib/components/UploadImage/index.svelte';
+  import { UploadImage } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
   import LanguagePicker from '$lib/components/Org/Settings/LanguagePicker.svelte';
 
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import { supabase } from '$lib/utils/functions/supabase';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import generateUUID from '$lib/utils/functions/generateUUID';
   import { handleLocaleChange } from '$lib/utils/functions/translations';
 

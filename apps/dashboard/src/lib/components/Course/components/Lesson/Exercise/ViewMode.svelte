@@ -9,9 +9,10 @@
   import CheckboxQuestion from '$lib/components/Question/CheckboxQuestion/index.svelte';
   import TextareaQuestion from '$lib/components/Question/TextareaQuestion/index.svelte';
   import { Button } from '@cio/ui/base/button';
-  import Box from '$lib/components/Box/index.svelte';
   import { RoleBasedSecurity } from '$features/ui';
-  import Progress from '$lib/components/Progress/index.svelte';
+  import { Empty } from '@cio/ui/custom/empty';
+  import FileQuestionIcon from '@lucide/svelte/icons/file-question';
+  import { Progress } from '@cio/ui/base/progress';
   import { removeDuplicate } from '$lib/utils/functions/removeDuplicate';
   import { QUESTION_TYPE } from '$lib/components/Question/constants';
   import { STATUS } from './constants';
@@ -259,15 +260,18 @@
     <Preview questions={filterOutDeleted($questionnaire.questions)} questionnaireMetaData={$questionnaireMetaData} />
   </RoleBasedSecurity>
 {:else if !$questionnaire.questions.length}
-  <Box>
-    <img src="/images/empty-exercise-icon.svg" alt="Exercise svg" class="my-2.5" />
-    <h2 class="my-1.5 text-xl">No question added for this exercise</h2>
-    <p class="px-44 text-center text-sm">
-      <RoleBasedSecurity allowedRoles={[1, 2]}>
-        Click the <span class="text-primary-700">Edit</span> button to add.
-      </RoleBasedSecurity>
-    </p>
-  </Box>
+  <Empty
+    title="No question added for this exercise"
+    description="Click the Edit button to add."
+    icon={FileQuestionIcon}
+    variant="page"
+  >
+    <RoleBasedSecurity allowedRoles={[1, 2]}>
+      <p class="text-primary-700 text-center text-sm">
+        Click the <span class="font-semibold">Edit</span> button to add.
+      </p>
+    </RoleBasedSecurity>
+  </Empty>
 {:else if $questionnaireMetaData.currentQuestionIndex === 0}
   <RoleBasedSecurity allowedRoles={[3]}>
     <div>

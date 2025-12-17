@@ -3,7 +3,7 @@
 
   import OrgLandingPage from '$lib/components/Org/LandingPage/index.svelte';
   import PlayQuiz from '$lib/components/Org/Quiz/Play/index.svelte';
-  import Snackbar from '$lib/components/Snackbar/index.svelte';
+  import { Snackbar } from '$features/ui';
   import { UpgradeModal, PageLoadProgress, PageRestricted } from '$features/ui';
   import { user } from '$lib/utils/store/user';
   import { setupAnalytics } from '$lib/utils/functions/appSetup';

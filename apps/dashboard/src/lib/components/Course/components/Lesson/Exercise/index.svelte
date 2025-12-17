@@ -18,7 +18,7 @@
   } from '../store/exercise';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { upsertExercise } from '$lib/utils/services/courses';
   import EditMode from './EditMode.svelte';
   import ViewMode from './ViewMode.svelte';

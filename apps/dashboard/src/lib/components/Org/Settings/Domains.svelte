@@ -10,7 +10,7 @@
 
   import { t } from '$lib/utils/functions/translations';
   import { supabase } from '$lib/utils/functions/supabase';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { blockedSubdomain } from '$lib/utils/constants/app';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { Button } from '@cio/ui/base/button';
@@ -24,9 +24,7 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
-  import { ComingSoon, UpgradeBanner } from '$features/ui';
-  import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import { VisitOrgSiteButton } from '$features/ui';
+  import { ComingSoon, UpgradeBanner, UploadImage, VisitOrgSiteButton } from '$features/ui';
 
   let siteName = $derived($currentOrg.siteName);
   let customDomain = $state('');

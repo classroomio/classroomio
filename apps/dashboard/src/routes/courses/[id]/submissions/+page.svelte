@@ -13,7 +13,7 @@
   import { course } from '$lib/components/Course/store';
   import { t } from '$lib/utils/functions/translations';
   import formatDate from '$lib/utils/functions/formatDate';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { formatAnswers } from '$lib/components/Course/function.js';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import isSubmissionEarly from '$lib/utils/functions/isSubmissionEarly';

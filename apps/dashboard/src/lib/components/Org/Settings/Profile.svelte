@@ -10,8 +10,7 @@
   import SectionTitle from '../SectionTitle.svelte';
   import LanguagePicker from './LanguagePicker.svelte';
   import { InputField } from '@cio/ui/custom/input-field';
-  import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import { UnsavedChanges } from '$features/ui';
+  import { UploadImage, UnsavedChanges } from '$features/ui';
 
   let avatar = $state<string | File | undefined>();
   let hasLangChanged = $state(false);

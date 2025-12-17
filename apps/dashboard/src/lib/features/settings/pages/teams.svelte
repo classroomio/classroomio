@@ -6,7 +6,7 @@
   import { isFreePlan, currentOrg } from '$lib/utils/store/org';
   import { orgApi } from '$features/org/api/org.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import type { OrgTeamMember } from '$lib/utils/types/org';
   import { ROLE } from '@cio/utils/constants';
   import { ROLE_LABEL } from '$lib/utils/constants/roles';

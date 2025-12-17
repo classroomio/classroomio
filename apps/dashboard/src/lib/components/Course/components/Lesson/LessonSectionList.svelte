@@ -14,7 +14,7 @@
   import { globalStore } from '$lib/utils/store/app';
   import { course } from '$lib/components/Course/store';
   import { handleAddLessonWidget } from '$lib/components/Course/components/Lesson/store';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import {
     lessonSections,
     handleDelete,

@@ -1,8 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import Box from '$lib/components/Box/index.svelte';
   import ActivateSectionsModal from '$lib/components/Course/components/Lesson/ActivateSectionsModal.svelte';
+  import { Empty } from '@cio/ui/custom/empty';
+  import BookOpenIcon from '@lucide/svelte/icons/book-open';
   import DeleteLessonConfirmation from '$lib/components/Course/components/Lesson/DeleteLessonConfirmation.svelte';
   import LessonList from '$lib/components/Course/components/Lesson/LessonList.svelte';
   import LessonSectionList from '$lib/components/Course/components/Lesson/LessonSectionList.svelte';
@@ -122,15 +123,12 @@
 
   <PageBody width="max-w-6xl" padding="p-0">
     {#if shouldGoToNextLesson}
-      <Box className="w-full lg:w-11/12 lg:px-4 m-auto">
-        <div class="flex flex-col items-center justify-between">
-          <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="mx-auto my-2.5" />
-          <h2 class="my-1.5 text-xl font-normal">{$t('course.navItem.lessons.no_lesson')}</h2>
-          <p class="text-center text-sm text-slate-500">
-            {$t('course.navItem.lessons.share_your_knowledge')}
-          </p>
-        </div>
-      </Box>
+      <Empty
+        title={$t('course.navItem.lessons.no_lesson')}
+        description={$t('course.navItem.lessons.share_your_knowledge')}
+        icon={BookOpenIcon}
+        variant="page"
+      />
     {:else if lessonsLength > 0}
       {#if reorder}
         <p class="text-center text-xs italic text-gray-400 dark:text-white">
@@ -144,15 +142,12 @@
         <LessonSectionList {reorder} {lessonEditing} />
       {/if}
     {:else}
-      <Box className="w-full lg:w-11/12 lg:px-4 m-auto">
-        <div class="flex flex-col items-center justify-between">
-          <img src="/images/empty-lesson-icon.svg" alt="Lesson" class="mx-auto my-2.5" />
-          <h2 class="my-1.5 text-xl font-normal">{$t('course.navItem.lessons.body_header')}</h2>
-          <p class="text-center text-sm text-slate-500">
-            {$t('course.navItem.lessons.body_content')}
-          </p>
-        </div>
-      </Box>
+      <Empty
+        title={$t('course.navItem.lessons.body_header')}
+        description={$t('course.navItem.lessons.body_content')}
+        icon={BookOpenIcon}
+        variant="page"
+      />
     {/if}
   </PageBody>
 </CourseContainer>

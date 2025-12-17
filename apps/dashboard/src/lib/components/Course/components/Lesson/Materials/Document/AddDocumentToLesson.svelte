@@ -1,15 +1,14 @@
 <script lang="ts">
   import { lessonDocUpload, resetDocumentUploadStore } from '../../store/lessons';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { Button } from '@cio/ui/base/button';
   import FileTextIcon from '@lucide/svelte/icons/file-text';
   import { DocumentUploader } from '$lib/utils/services/courses/presign';
   import { onDestroy, untrack } from 'svelte';
-  import { UpgradeBanner } from '$features/ui';
+  import { UpgradeBanner, CloseButton } from '$features/ui';
   import { isFreePlan } from '$lib/utils/store/org';
   import { lesson } from '../../store/lessons';
-  import { CloseButton } from '$features/ui';
 
   let fileInput: HTMLInputElement | undefined = $state();
   let selectedFile: File | null = $state(null);

@@ -13,19 +13,19 @@
   import { courses } from '$features/course/utils/store';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { supabase } from '$lib/utils/functions/supabase';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { fetchCourses } from '$lib/utils/services/courses';
   import { currentOrg, isOrgAdmin } from '$lib/utils/store/org';
   import { Button } from '@cio/ui/base/button';
   import { askCommunityValidation, commentInCommunityValidation } from '$lib/utils/functions/validator';
 
-  import Vote from '$lib/components/Vote/index.svelte';
+  import { Vote } from '$features/ui';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import * as Avatar from '@cio/ui/base/avatar';
   import { InputField } from '@cio/ui/custom/input-field';
   import { shortenName } from '$lib/utils/functions/string';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
+  import { TextEditor } from '$features/ui';
+  import { CircleCheckIcon } from '$features/ui/icons';
   import { CommunityDeleteModal } from '$features/community/components';
 
   interface Comment {
@@ -421,19 +421,11 @@
         {/if}
 
         {#if question.author.id === $profile.id}
-          <Button
-            variant="outline"
-            onclick={handleQuestionEdit}
-          >
+          <Button variant="outline" onclick={handleQuestionEdit}>
             {isEditMode ? 'Save' : 'Edit'}
           </Button>
           {#if isEditMode}
-            <Button
-              variant="ghost"
-              onclick={() => (isEditMode = !isEditMode)}
-            >
-              Cancel
-            </Button>
+            <Button variant="ghost" onclick={() => (isEditMode = !isEditMode)}>Cancel</Button>
           {/if}
         {/if}
       </div>
@@ -537,9 +529,7 @@
         {/if}
 
         <div class="mr-2 flex justify-end">
-          <Button onclick={submitComment}>
-            Comment
-          </Button>
+          <Button onclick={submitComment}>Comment</Button>
         </div>
       </div>
     </div>

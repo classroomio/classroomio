@@ -11,8 +11,7 @@
 
   import { Input } from '@cio/ui/base/input';
   import { Button } from '@cio/ui/base/button';
-  import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import { UnsavedChanges } from '$features/ui';
+  import { UploadImage, UnsavedChanges } from '$features/ui';
   import * as Field from '@cio/ui/base/field';
 
   let avatar = $state<string | File | undefined>();

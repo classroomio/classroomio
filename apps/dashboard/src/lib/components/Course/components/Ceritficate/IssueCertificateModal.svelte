@@ -5,7 +5,7 @@
   import { issueCertificateModal, resetForm } from './store';
   import { preventDefault } from '$lib/utils/functions/svelte';
 
-  import Modal from '$lib/components/Modal/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
   import { Button } from '@cio/ui/base/button';
@@ -17,14 +17,17 @@
   };
 </script>
 
-<Modal
-  onClose={resetForm}
+<Dialog.Root
   bind:open={$issueCertificateModal.open}
-  width="w-3/5"
-  maxWidth=""
-  modalHeading="Send Certificate"
+  onOpenChange={(isOpen) => {
+    if (!isOpen) resetForm();
+  }}
 >
-  <main>
+  <Dialog.Content class="w-3/5">
+    <Dialog.Header>
+      <Dialog.Title>Send Certificate</Dialog.Title>
+    </Dialog.Header>
+    <main>
     <div>
       <div class="mb-4 flex items-center space-x-2">
         <Switch id="auto-certificate" bind:checked={isAutomatic} />
@@ -67,4 +70,5 @@
       </div>
     </form>
   </main>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>

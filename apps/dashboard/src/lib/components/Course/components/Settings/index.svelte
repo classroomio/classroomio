@@ -13,8 +13,7 @@
   import { InputField } from '@cio/ui/custom/input-field';
   import { Row, Grid, Column } from '$lib/components/Org/Settings/Layout';
   import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
-  import { UpgradeBanner, UnsavedChanges } from '$features/ui';
-  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
+  import { UpgradeBanner, UnsavedChanges, UploadWidget } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
 
   import { settings } from './store';
@@ -25,12 +24,12 @@
   import { course } from '$lib/components/Course/store';
   import { t } from '$lib/utils/functions/translations';
   import { isObject } from '$lib/utils/functions/isObject';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import generateSlug from '$lib/utils/functions/generateSlug';
-  import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
+  import { DeleteModal } from '$features/ui';
   import { deleteCourse, updateCourse } from '$lib/utils/services/courses';
   import { copyToClipboard } from '$lib/utils/functions/formatYoutubeVideo';
-  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+  import { handleOpenWidget } from '$features/ui/course-landing-page/store';
   import { currentOrg, currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
 
   let isSaving = $state(false);

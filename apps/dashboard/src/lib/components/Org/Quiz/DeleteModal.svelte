@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
-  import Modal from '$lib/components/Modal/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
   import { deleteModal, quizesStore } from '$lib/utils/store/org';
   import { supabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
@@ -30,14 +30,19 @@
   }
 </script>
 
-<Modal
-  onClose={closeModal}
+<Dialog.Root
   bind:open={$deleteModal.open}
-  width="w-2/5"
-  modalHeading={$deleteModal.isQuestion ? $t('components.quiz.question_delete') : $t('components.quiz.quiz_delete')}
-  size="sm"
+  onOpenChange={(isOpen) => {
+    if (!isOpen) closeModal();
+  }}
 >
-  <div class="my-10 flex w-full flex-col items-center">
+  <Dialog.Content class="w-2/5 max-w-[388px]">
+    <Dialog.Header>
+      <Dialog.Title>
+        {$deleteModal.isQuestion ? $t('components.quiz.question_delete') : $t('components.quiz.quiz_delete')}
+      </Dialog.Title>
+    </Dialog.Header>
+    <div class="my-10 flex w-full flex-col items-center">
     <h1 class="text-center text-lg dark:text-white">
       {#if $deleteModal.isQuestion}
         {$t('components.quiz.delete_question')}
@@ -62,4 +67,5 @@
       </Button>
     </div>
   </div>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>

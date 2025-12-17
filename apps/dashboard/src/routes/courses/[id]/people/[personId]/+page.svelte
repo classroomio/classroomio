@@ -7,13 +7,13 @@
   import UnfoldVerticalIcon from '@lucide/svelte/icons/unfold-vertical';
 
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { getAccessToken } from '$lib/utils/functions/supabase';
   import type { UserCourseAnalytics } from '$lib/utils/types/analytics';
 
-  import Progress from '$lib/components/Progress/index.svelte';
+  import { Progress } from '@cio/ui/base/progress';
   import { Grid } from '$lib/components/Org/Settings/Layout';
-  import { ActivityCard, HeroProfileCard, LoadingPage } from '$lib/components/Analytics';
+  import { ActivityCard, HeroProfileCard, LoadingPage } from '$features/ui';
 
   let { data } = $props();
 
@@ -62,7 +62,7 @@
     {
       description: $t('analytics.overall_course_progress_user_description'),
       icon: BookOpenIcon,
-      percentage: userCourseAnalytics?.progressPercentage,
+      percentage: userCourseAnalytics?.progressPercentage ?? 0,
       title: $t('analytics.overall_course_progress')
     },
     {
@@ -77,7 +77,7 @@
     {
       description: $t('analytics.average_grade_description'),
       icon: UnfoldVerticalIcon,
-      percentage: userCourseAnalytics?.averageGrade,
+      percentage: userCourseAnalytics?.averageGrade ?? 0,
       title: $t('analytics.average_grade')
     }
   ]);

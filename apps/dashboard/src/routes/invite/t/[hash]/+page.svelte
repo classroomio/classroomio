@@ -15,7 +15,7 @@
   import { authValidation, getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { onMount, untrack } from 'svelte';
-  import { snackbar } from '$lib/components/Snackbar/store.js';
+  import { snackbar } from '$features/ui/snackbar/store';
 
   let { data } = $props();
 

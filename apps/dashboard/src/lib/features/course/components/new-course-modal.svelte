@@ -8,7 +8,7 @@
   import { courses, createCourseModal } from '../utils/store';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
-  import Modal from '$lib/components/Modal/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
   import { ROLE } from '@cio/utils/constants';
   import { supabase } from '$lib/utils/functions/supabase';
@@ -18,7 +18,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
-  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
+  import { CircleCheckIcon } from '$features/ui/icons';
 
   let isLoading = $state(false);
   let errors = $state({
@@ -137,14 +137,17 @@
   <title>Create a new course</title>
 </svelte:head>
 
-<Modal
-  onClose={() => onClose(page.url.pathname)}
+<Dialog.Root
   bind:open
-  width="w-4/5 md:w-2/5 md:min-w-[600px]"
-  containerClass="max-w-2xl mx-auto"
-  modalHeading={$t('courses.new_course_modal.heading')}
+  onOpenChange={(isOpen) => {
+    if (!isOpen) onClose(page.url.pathname);
+  }}
 >
-  {#if step === 0}
+  <Dialog.Content class="w-4/5 md:w-2/5 md:min-w-[600px] max-w-2xl mx-auto">
+    <Dialog.Header>
+      <Dialog.Title>{$t('courses.new_course_modal.heading')}</Dialog.Title>
+    </Dialog.Header>
+    {#if step === 0}
     <div>
       <h2 class="my-5 text-xl font-medium">
         {$t('courses.new_course_modal.type_selector_title')}
@@ -219,5 +222,6 @@
         </Button>
       </div>
     </form>
-  {/if}
-</Modal>
+    {/if}
+  </Dialog.Content>
+</Dialog.Root>

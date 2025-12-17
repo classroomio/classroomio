@@ -9,7 +9,7 @@ import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { resolve } from '$app/paths';
-import { snackbar } from '$lib/components/Snackbar/store';
+import { snackbar } from '$features/ui/snackbar/store';
 import { t } from '$lib/utils/functions/translations';
 
 /**

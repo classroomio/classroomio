@@ -5,7 +5,7 @@
   import { PageBody } from '$lib/components/Page';
   import { t } from '$lib/utils/functions/translations';
   import { getAccessToken } from '$lib/utils/functions/supabase';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import type { CourseAnalytics } from '$lib/utils/types/analytics';
   import { fade } from 'svelte/transition';
   import StudentTable from '$lib/components/Course/components/Analytics/StudentTable.svelte';

@@ -1,9 +1,9 @@
 <script>
-  import Box from '$lib/components/Box/index.svelte';
   import QuizLoader from './Loader.svelte';
   import QuizCard from './QuizCard.svelte';
-  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { Empty } from '@cio/ui/custom/empty';
+  import HelpCircleIcon from '@lucide/svelte/icons/help-circle';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { supabase } from '$lib/utils/functions/supabase';
   import { currentOrg, quizesStore } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
@@ -43,13 +43,12 @@
     {#each $quizesStore as quiz}
       <QuizCard {quiz} totalQuestions={quiz.questions?.length || 0} />
     {:else}
-      <Box>
-        <CoursesEmptyIcon size={16} />
-        <h3 class="dark:text-white text-2xl my-5">{$t('components.quiz.no_quizz')}</h3>
-        <p class="dark:text-white w-1/3 text-center">
-          {$t('components.quiz.interactive')}
-        </p>
-      </Box>
+      <Empty
+        title={$t('components.quiz.no_quizz')}
+        description={$t('components.quiz.interactive')}
+        icon={HelpCircleIcon}
+        variant="page"
+      />
     {/each}
   {/if}
 </div>

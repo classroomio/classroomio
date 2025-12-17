@@ -1,7 +1,7 @@
 <script lang="ts">
   import { preventDefault } from '$lib/utils/functions/svelte';
   import { Button } from '@cio/ui/base/button';
-  import Modal from '$lib/components/Modal/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
   import { InputField } from '@cio/ui/custom/input-field';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { copyCourseModal } from '$features/course/utils/store';
@@ -20,13 +20,14 @@
   });
 </script>
 
-<Modal
-  onClose={() => ($copyCourseModal.open = false)}
+<Dialog.Root
   bind:open={$copyCourseModal.open}
-  width="w-96"
-  modalHeading={$t('courses.copy_course.title')}
 >
-  <form onsubmit={preventDefault(createCourse)}>
+  <Dialog.Content class="w-96">
+    <Dialog.Header>
+      <Dialog.Title>{$t('courses.copy_course.title')}</Dialog.Title>
+    </Dialog.Header>
+    <form onsubmit={preventDefault(createCourse)}>
     <InputField
       label={$t('courses.copy_course.course_name_label')}
       bind:value={$copyCourseModal.title}
@@ -57,4 +58,5 @@
       </Button>
     </div>
   </form>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>

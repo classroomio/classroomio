@@ -1,7 +1,7 @@
 <script lang="ts">
   import { preventDefault } from '$lib/utils/functions/svelte';
 
-  import CodeSnippet from '$lib/components/CodeSnippet/index.svelte';
+  import { CodeSnippet } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';

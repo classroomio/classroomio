@@ -15,7 +15,7 @@
   import MessageSquareMoreIcon from '@lucide/svelte/icons/message-square-more';
 
   import { CommunityListLoader } from '../components';
-  import Vote from '$lib/components/Vote/index.svelte';
+  import { Vote } from '$features/ui';
   import { Empty } from '@cio/ui/custom/empty';
   import * as Page from '@cio/ui/base/page';
   import * as Item from '@cio/ui/base/item';

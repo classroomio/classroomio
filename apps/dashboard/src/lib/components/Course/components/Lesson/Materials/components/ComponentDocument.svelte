@@ -12,7 +12,7 @@
   import DocumentList from '../Document/DocumentList.svelte';
   import { t } from '$lib/utils/functions/translations';
   import type { LessonDocument } from '$lib/utils/types';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
 
   let { mode = MODES.view } = $props();
 

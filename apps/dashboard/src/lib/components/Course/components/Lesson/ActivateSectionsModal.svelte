@@ -1,10 +1,10 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
-  import Modal from '$lib/components/Modal/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
   import { t } from '$lib/utils/functions/translations';
   import { supabase } from '$lib/utils/functions/supabase';
   import { course } from '../../store';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
 
   interface Props {
     open?: boolean;
@@ -33,14 +33,17 @@
   }
 </script>
 
-<Modal
-  onClose={handleClose}
+<Dialog.Root
   bind:open
-  width="w-[80%] md:w-[65%]"
-  maxWidth="max-w-xl"
-  modalHeading={$t(`course.navItem.lessons.section_prompt.header`)}
+  onOpenChange={(isOpen) => {
+    if (!isOpen) handleClose();
+  }}
 >
-  <div class="flex w-full flex-col items-center">
+  <Dialog.Content class="w-[80%] md:w-[65%] max-w-xl">
+    <Dialog.Header>
+      <Dialog.Title>{$t(`course.navItem.lessons.section_prompt.header`)}</Dialog.Title>
+    </Dialog.Header>
+    <div class="flex w-full flex-col items-center">
     <div class="mb-8">
       <h3 class="text-center text-2xl">
         {$t('course.navItem.lessons.section_prompt.title')}
@@ -65,4 +68,5 @@
       </Button>
     </div>
   </div>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>

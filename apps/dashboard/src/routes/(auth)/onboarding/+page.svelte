@@ -4,7 +4,7 @@
   import { DomainInput } from '@cio/ui/custom/domain-input';
   import * as Field from '@cio/ui/base/field';
   import { Button } from '@cio/ui/base/button';
-  import UserProfileIcon from '$lib/components/Icons/UserProfileIcon.svelte';
+  import { UserProfileIcon } from '$features/ui/icons';
   import { profile } from '$lib/utils/store/user';
   import { onboardingApi } from '$features/onboarding/api/onboarding.svelte';
   import { generateSitename } from '$lib/utils/functions/org';

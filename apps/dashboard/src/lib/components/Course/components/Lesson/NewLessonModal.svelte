@@ -10,7 +10,7 @@
     handleSaveLessonSection
   } from '$lib/components/Course/components/Lesson/store/lessons';
   import { course } from '$lib/components/Course/store';
-  import Modal from '$lib/components/Modal/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
   import { goto } from '$app/navigation';
   import { handleAddLessonWidget } from './store';
   import { t } from '$lib/utils/functions/translations';
@@ -106,17 +106,21 @@
   }
 </script>
 
-<Modal
-  onClose={handleClose}
+<Dialog.Root
   bind:open={$handleAddLessonWidget.open}
-  width="w-[80%] md:w-[65%]"
-  maxWidth="max-w-2xl"
-  containerClass="overflow-hidden"
-  modalHeading={$t(
-    `course.navItem.lessons.add_lesson.${$handleAddLessonWidget.isSection ? 'modal_heading_section' : 'modal_heading'}`
-  )}
+  onOpenChange={(isOpen) => {
+    if (!isOpen) handleClose();
+  }}
 >
-  <form
+  <Dialog.Content class="w-[80%] md:w-[65%] max-w-2xl overflow-hidden">
+    <Dialog.Header>
+      <Dialog.Title>
+        {$t(
+          `course.navItem.lessons.add_lesson.${$handleAddLessonWidget.isSection ? 'modal_heading_section' : 'modal_heading'}`
+        )}
+      </Dialog.Title>
+    </Dialog.Header>
+    <form
     onsubmit={preventDefault(handleSave)}
     class="relative m-auto mb-2 flex flex-wrap items-center px-2 py-2 md:mb-4 md:px-5 md:py-3 dark:bg-neutral-800"
   >
@@ -167,4 +171,5 @@
       {$t('course.navItem.lessons.add_lesson.save')}
     </Button>
   </div>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>

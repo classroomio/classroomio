@@ -2,12 +2,11 @@
   import { onMount } from 'svelte';
   import { Badge } from '@cio/ui/base/badge';
 
-  import Modal from '$lib/components/Modal/index.svelte';
-  import Confetti from '$lib/components/Confetti/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
+  import { Confetti, ComingSoon } from '$features/ui';
   import { InputField } from '@cio/ui/custom/input-field';
-  import { ComingSoon } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
-  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
+  import { CircleCheckIcon } from '$features/ui/icons';
 
   import { t } from '$lib/utils/functions/translations';
   import type { ExerciseTemplate } from '$lib/utils/types';
@@ -125,17 +124,20 @@
   // const note = $derived(browser ? getTextFromHTML(content) : '');
 </script>
 
-<Modal
-  onClose={handleCancelAddExercise}
+<Dialog.Root
   bind:open
-  modalHeading={$t('course.navItem.lessons.exercises.new_exercise_modal.heading')}
-  maxWidth="max-w-2xl"
-  width="w-4/5"
+  onOpenChange={(isOpen) => {
+    if (!isOpen) handleCancelAddExercise();
+  }}
 >
-  {#if !isLoading && isAIStarted}
-    <Confetti />
-  {/if}
-  {#if step === 0}
+  <Dialog.Content class="max-w-2xl w-4/5">
+    <Dialog.Header>
+      <Dialog.Title>{$t('course.navItem.lessons.exercises.new_exercise_modal.heading')}</Dialog.Title>
+    </Dialog.Header>
+    {#if !isLoading && isAIStarted}
+      <Confetti />
+    {/if}
+    {#if step === 0}
     <div>
       <h2 class="my-5 text-2xl font-medium">
         {$t('course.navItem.lessons.exercises.new_exercise_modal.how')}?
@@ -344,5 +346,6 @@
         </div>
       </div> -->
     {/if}
-  {/if}
-</Modal>
+    {/if}
+  </Dialog.Content>
+</Dialog.Root>

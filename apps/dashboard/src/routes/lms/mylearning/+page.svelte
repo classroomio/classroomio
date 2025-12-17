@@ -3,10 +3,9 @@
   import { Input } from '@cio/ui/base/input';
   import SearchIcon from '@lucide/svelte/icons/search';
 
-  import Tabs from '$lib/components/Tabs/index.svelte';
+  import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import { CoursesPage } from '$features/course/pages';
   import { fetchCourses } from '$lib/utils/services/courses';
-  import TabContent from '$lib/components/TabContent/index.svelte';
 
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
@@ -15,10 +14,6 @@
 
   let hasFetched = false;
   let searchValue = $state('');
-
-  function onChange(tab) {
-    return () => (currentTab = tab);
-  }
 
   function getCourses(userId?: string, orgId?: string) {
     if (hasFetched || !userId || !orgId) {
@@ -59,7 +54,7 @@
       value: '2'
     }
   ]);
-  let currentTab = $derived(tabs[0].value);
+  let currentTab = $state(tabs[0]?.value || '1');
 </script>
 
 <section class="mx-auto max-w-6xl">
@@ -69,25 +64,28 @@
       <SearchIcon class="text-muted-foreground absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2" />
     </div>
     <h1 class="my-4 text-3xl font-semibold">{$t('my_learning.heading')}</h1>
-    <Tabs {tabs} {currentTab} {onChange}>
-      {#snippet content()}
-        <slot:fragment>
-          <TabContent value={tabs[0].value} index={currentTab}>
-            <CoursesPage
-              courses={$coursesInProgress}
-              emptyTitle={$t('my_learning.not_in_progress')}
-              emptyDescription={$t('my_learning.any_progress')}
-            />
-          </TabContent>
-          <TabContent value={tabs[1].value} index={currentTab}>
-            <CoursesPage
-              courses={$coursesComplete}
-              emptyTitle={$t('my_learning.not_completed')}
-              emptyDescription={$t('my_learning.any_course')}
-            />
-          </TabContent>
-        </slot:fragment>
-      {/snippet}
-    </Tabs>
+    <UnderlineTabs.Root bind:value={currentTab}>
+      <UnderlineTabs.List>
+        {#each tabs as tab}
+          <UnderlineTabs.Trigger value={tab.value}>
+            {$t(tab.label)}
+          </UnderlineTabs.Trigger>
+        {/each}
+      </UnderlineTabs.List>
+      <UnderlineTabs.Content value={tabs[0].value}>
+        <CoursesPage
+          courses={$coursesInProgress}
+          emptyTitle={$t('my_learning.not_in_progress')}
+          emptyDescription={$t('my_learning.any_progress')}
+        />
+      </UnderlineTabs.Content>
+      <UnderlineTabs.Content value={tabs[1].value}>
+        <CoursesPage
+          courses={$coursesComplete}
+          emptyTitle={$t('my_learning.not_completed')}
+          emptyDescription={$t('my_learning.any_course')}
+        />
+      </UnderlineTabs.Content>
+    </UnderlineTabs.Root>
   </div>
 </section>

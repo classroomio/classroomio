@@ -11,7 +11,7 @@
   import { courses } from '$features/course/utils/store';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { supabase } from '$lib/utils/functions/supabase';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { fetchCourses } from '$lib/utils/services/courses';
   import { Button } from '@cio/ui/base/button';
   import { currentOrg, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
@@ -19,14 +19,14 @@
 
   import type { Course } from '$lib/utils/types';
   import { profile } from '$lib/utils/store/user';
-  import Vote from '$lib/components/Vote/index.svelte';
+  import { Vote } from '$features/ui';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import * as Avatar from '@cio/ui/base/avatar';
   import { InputField } from '@cio/ui/custom/input-field';
   import { shortenName } from '$lib/utils/functions/string';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import { TextEditor } from '$features/ui';
   import { CommunityDeleteModal } from '$features/community/components';
-  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
+  import { CircleCheckIcon } from '$features/ui/icons';
   import * as Page from '@cio/ui/base/page';
 
   interface Comment {
@@ -431,17 +431,11 @@
       </Page.HeaderContent>
       {#if question.author.id === $profile.id}
         <Page.Action>
-          <Button
-            variant="outline"
-            onclick={handleQuestionEdit}
-          >
+          <Button variant="outline" onclick={handleQuestionEdit}>
             {isEditMode ? $t('community.ask.save') : $t('community.ask.edit')}
           </Button>
           {#if isEditMode}
-            <Button
-              variant="ghost"
-              onclick={() => (isEditMode = !isEditMode)}
-            >
+            <Button variant="ghost" onclick={() => (isEditMode = !isEditMode)}>
               {$t('community.ask.cancel')}
             </Button>
           {/if}

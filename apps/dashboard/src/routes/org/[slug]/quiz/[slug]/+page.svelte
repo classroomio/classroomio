@@ -7,7 +7,7 @@
   import * as Select from '@cio/ui/base/select';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import CircleAlertIcon from '@lucide/svelte/icons/circle-alert';
-  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
+  import { CircleCheckIcon } from '$features/ui/icons';
 
   import Preview from '$lib/components/Org/Quiz/Play/Preview.svelte';
   import DeleteModal from '$lib/components/Org/Quiz/DeleteModal.svelte';
@@ -16,7 +16,7 @@
 
   import { t } from '$lib/utils/functions/translations';
   import { supabase } from '$lib/utils/functions/supabase';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { currentOrgPath, deleteModal, quizStore, quizesStore } from '$lib/utils/store/org';
   import { allOptions, allThemes, booleanOptions, themeImages } from '$lib/utils/constants/quiz';
 

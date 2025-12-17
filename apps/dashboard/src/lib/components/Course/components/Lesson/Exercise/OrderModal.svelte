@@ -6,7 +6,7 @@
   import TablePropertiesIcon from '@lucide/svelte/icons/table-properties';
 
   import { flip } from 'svelte/animate';
-  import Modal from '$lib/components/Modal/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
 
   import { questionnaireOrder, questionnaire } from '../store/exercise';
   import { filterOutDeleted } from './functions';
@@ -60,13 +60,17 @@
   });
 </script>
 
-<Modal
-  onClose={handleClose}
+<Dialog.Root
   bind:open={$questionnaireOrder.open}
-  width="w-96"
-  modalHeading={$t('course.navItem.lessons.exercises.all_exercises.order_questions')}
+  onOpenChange={(isOpen) => {
+    if (!isOpen) handleClose();
+  }}
 >
-  <section
+  <Dialog.Content class="w-96">
+    <Dialog.Header>
+      <Dialog.Title>{$t('course.navItem.lessons.exercises.all_exercises.order_questions')}</Dialog.Title>
+    </Dialog.Header>
+    <section
     use:dndzone={{
       items,
       flipDurationMs,
@@ -95,7 +99,8 @@
       </div>
     {/each}
   </section>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>
 
 <style>
   section {

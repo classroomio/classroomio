@@ -5,7 +5,6 @@
   import autoTable from 'jspdf-autotable';
   import { Button } from '@cio/ui/base/button';
   import { Progress } from '@cio/ui/base/progress';
-  import BadgeXIcon from '@lucide/svelte/icons/badge-x';
   import DownloadIcon from '@lucide/svelte/icons/download';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
 
@@ -14,12 +13,13 @@
   import { t } from '$lib/utils/functions/translations';
   import { fetchMarks } from '$lib/utils/services/marks';
   import type { AccountOrg } from '$features/app/types';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { getLectureNo } from '$lib/components/Course/function.js';
   import { fetchExercisesByMarks } from '$lib/utils/services/courses';
 
-  import Box from '$lib/components/Box/index.svelte';
   import { course } from '$lib/components/Course/store';
+  import { Empty } from '@cio/ui/custom/empty';
+  import UserXIcon from '@lucide/svelte/icons/user-x';
   import { PageBody } from '$lib/components/Page';
   import { CourseContainer } from '$lib/components/CourseContainer';
   import * as Page from '@cio/ui/base/page';
@@ -319,12 +319,7 @@
             </div>
           </div>
         {:else}
-          <Box>
-            <BadgeXIcon size={16} />
-            <h3 class="text-3xl text-gray-500 dark:text-white">
-              {$t('course.navItem.marks.no_student')}
-            </h3>
-          </Box>
+          <Empty title={$t('course.navItem.marks.no_student')} icon={UserXIcon} variant="page" />
         {/each}
       </div>
     </PageBody>

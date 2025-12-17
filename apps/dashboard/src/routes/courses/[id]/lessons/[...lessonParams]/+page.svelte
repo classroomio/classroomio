@@ -10,13 +10,13 @@
   import LibraryBigIcon from '@lucide/svelte/icons/library-big';
   import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
+  import { CircleCheckIcon } from '$features/ui/icons';
 
   import MODES from '$lib/utils/constants/mode';
   import { profile } from '$lib/utils/store/user';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { course, group } from '$lib/components/Course/store';
   import { LANGUAGES } from '$lib/utils/constants/translation';
   import { getGroupMemberId } from '$lib/components/Course/function';

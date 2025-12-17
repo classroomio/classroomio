@@ -11,7 +11,7 @@
   import { supabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
 
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import type { TLocale } from '@cio/db/types';
 
   interface LessonHistory {

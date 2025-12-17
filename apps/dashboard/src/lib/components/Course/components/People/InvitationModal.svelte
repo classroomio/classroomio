@@ -15,7 +15,7 @@
   import { ROLE } from '@cio/utils/constants';
   import { orgApi } from '$features/org/api/org.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import type { OrgTeamMember } from '$lib/utils/types/org';
   import { preventDefault } from '$lib/utils/functions/svelte';
   import { course, setCourse } from '$lib/components/Course/store';
@@ -25,7 +25,7 @@
   import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
 
   import ShareQrImage from './ShareQRImage.svelte';
-  import Modal from '$lib/components/Modal/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
 
   interface Tutor {
@@ -176,14 +176,17 @@
   });
 </script>
 
-<Modal
-  onClose={() => closeModal()}
+<Dialog.Root
   open={addPeopleParm === 'true'}
-  width="w-4/5 md:w-2/5"
-  maxWidth="max-w-lg"
-  modalHeading={$t('course.navItem.people.invite_modal.title')}
+  onOpenChange={(isOpen) => {
+    if (!isOpen) closeModal();
+  }}
 >
-  <form onsubmit={preventDefault(onSubmit)}>
+  <Dialog.Content class="w-4/5 md:w-2/5 max-w-lg">
+    <Dialog.Header>
+      <Dialog.Title>{$t('course.navItem.people.invite_modal.title')}</Dialog.Title>
+    </Dialog.Header>
+    <form onsubmit={preventDefault(onSubmit)}>
     <div class="mb-8">
       <p class="mb-1 text-base font-semibold">{$t('course.navItem.people.invite_modal.invite')}</p>
       <Select.Root type="multiple" bind:value={selectedIds} disabled={orgApi.isLoading}>
@@ -283,4 +286,5 @@
       </Button>
     </div>
   </form>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>

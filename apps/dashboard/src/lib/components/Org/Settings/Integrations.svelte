@@ -2,14 +2,13 @@
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import { supabase } from '$lib/utils/functions/supabase';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { Button } from '@cio/ui/base/button';
 
   import { Row, Grid, Column } from './Layout';
   import SectionTitle from '../SectionTitle.svelte';
   import { InputField } from '@cio/ui/custom/input-field';
-  import ArrowUpRightIcon from '$lib/components/Icons/ArrowTopRight.svelte';
-  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
+  import { ArrowTopRight, CircleCheckIcon } from '$features/ui/icons';
 
   let chatId: number | null = $state(null);
 
@@ -72,7 +71,7 @@
           <h4 class="font-normal">{$t('settings.integrations.step_authenticate')}</h4>
           <Button variant="outline" onclick={() => window.open('https://t.me/classroomio_bot', '_blank')} class="mb-5">
             <span class="mr-2">{$t('settings.integrations.open_bot_button')}</span>
-            <ArrowUpRightIcon />
+            <ArrowTopRight />
           </Button>
           <h4 class="font-normal">{$t('settings.integrations.step_chatId')}</h4>
           <InputField

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Modal from '$lib/components/Modal/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
 
@@ -16,14 +16,17 @@
   }
 </script>
 
-<Modal
-  onClose={() => (openDeleteModal = false)}
+<Dialog.Root
   bind:open={openDeleteModal}
-  width="w-96"
-  containerClass="px-6 pt-2 pb-6"
-  modalHeading={$t('delete_modal.label')}
+  onOpenChange={(isOpen) => {
+    if (!isOpen) openDeleteModal = false;
+  }}
 >
-  <div>
+  <Dialog.Content class="w-96 px-6 pt-2 pb-6">
+    <Dialog.Header>
+      <Dialog.Title>{$t('delete_modal.label')}</Dialog.Title>
+    </Dialog.Header>
+    <div>
     <h1 class="text-lg dark:text-white">
       {$t('delete_modal.content')}?
     </h1>
@@ -43,4 +46,5 @@
       </Button>
     </div>
   </div>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>

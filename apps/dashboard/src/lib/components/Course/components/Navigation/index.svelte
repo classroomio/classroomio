@@ -31,7 +31,7 @@
   import { getNavItemRoute, getLessonsRoute, getLectureNo } from '$lib/components/Course/function';
 
   import { Chip } from '@cio/ui/custom/chip';
-  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
+  import { CircleCheckIcon } from '$features/ui/icons';
 
   interface Props {
     path: string;

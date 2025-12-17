@@ -15,12 +15,11 @@
 
   import { CreateCourseButton } from '$features/course/components';
   import * as Avatar from '@cio/ui/base/avatar';
-  import { ActivityCard } from '$lib/components/Analytics';
   import { shortenName } from '$lib/utils/functions/string';
-  import Progress from '$lib/components/Progress/index.svelte';
+  import { Progress } from '@cio/ui/base/progress';
   import { Button } from '@cio/ui/base/button';
   import { WelcomeModal } from '$features/onboarding/components';
-  import { VisitOrgSiteButton } from '$features/ui';
+  import { ActivityCard, VisitOrgSiteButton } from '$features/ui';
   import * as Page from '@cio/ui/base/page';
   import { Empty } from '@cio/ui/custom/empty';
 

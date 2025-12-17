@@ -18,11 +18,11 @@
     NewCourseModal
   } from '$features/course/components';
 
-  import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
+  import { DeleteModal } from '$features/ui';
   import type { Course } from '$lib/utils/types';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { deleteCourse } from '$lib/utils/services/courses';
   import {
     deleteCourseModal,

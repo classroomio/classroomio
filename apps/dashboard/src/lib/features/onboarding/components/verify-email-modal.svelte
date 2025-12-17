@@ -1,7 +1,7 @@
 <script>
-  import { Modal } from '$lib/components/Modal';
+  import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
@@ -72,8 +72,12 @@
   });
 </script>
 
-<Modal {open} isCloseable={false} width="w-4/5" maxWidth="w-[500px]" containerClass="p-4">
-  <div class="flex flex-col items-center space-y-6 text-center">
+<Dialog.Root {open}>
+  <Dialog.Content class="w-4/5 max-w-[500px] p-4" showCloseButton={false}>
+    <Dialog.Header>
+      <Dialog.Title>{$t('verify_email_modal.heading')}</Dialog.Title>
+    </Dialog.Header>
+    <div class="flex flex-col items-center space-y-6 text-center">
     <img src="/verify-email.svg" alt="email verification" />
     <p class="text-xl">{$t('verify_email_modal.heading')}</p>
     <p class="w-[70%] text-sm text-gray-700 dark:text-gray-200">
@@ -99,4 +103,5 @@
       {/if}
     </div>
   </div>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>

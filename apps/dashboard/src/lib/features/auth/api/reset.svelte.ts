@@ -4,7 +4,7 @@ import { authClient } from '$lib/utils/services/auth/client';
 import { goto } from '$app/navigation';
 import { resetPasswordValidation } from '../utils/validation';
 import { resolve } from '$app/paths';
-import { snackbar } from '$lib/components/Snackbar/store';
+import { snackbar } from '$features/ui/snackbar/store';
 
 export class ResetApi extends BaseApiWithErrors {
   async submit(fields: TResetPasswordForm) {

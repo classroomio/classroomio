@@ -5,15 +5,15 @@
 
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { Button } from '@cio/ui/base/button';
-  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+  import { handleOpenWidget } from '$features/ui/course-landing-page/store';
 
   import { Row, Grid, Column } from './Layout';
   import SectionTitle from '../SectionTitle.svelte';
   import { InputField } from '@cio/ui/custom/input-field';
-  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
+  import { UploadWidget } from '$features/ui';
 
   const supabase = getSupabase();
 

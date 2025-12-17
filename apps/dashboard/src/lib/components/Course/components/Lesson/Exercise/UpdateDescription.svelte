@@ -3,7 +3,7 @@
   import { t } from '$lib/utils/functions/translations';
 
   import { InputField } from '@cio/ui/custom/input-field';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import { TextEditor } from '$features/ui';
   import QuestionContainer from '$lib/components/QuestionContainer/index.svelte';
 
   interface Props {

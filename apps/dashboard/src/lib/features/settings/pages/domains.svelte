@@ -9,7 +9,7 @@
   import { parse } from 'tldts';
 
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { orgApi } from '$features/org/api/org.svelte';
   import { blockedSubdomain } from '$lib/utils/constants/app';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
@@ -21,9 +21,7 @@
   import { Button } from '@cio/ui/base/button';
   import { Textarea } from '@cio/ui/base/textarea';
   import { DomainInput } from '@cio/ui/custom/domain-input';
-  import { ComingSoon, UpgradeBanner } from '$features/ui';
-  import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import { VisitOrgSiteButton } from '$features/ui';
+  import { ComingSoon, UpgradeBanner, UploadImage, VisitOrgSiteButton } from '$features/ui';
   import * as Field from '@cio/ui/base/field';
 
   let siteName = $derived($currentOrg.siteName);

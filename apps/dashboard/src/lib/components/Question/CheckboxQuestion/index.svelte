@@ -1,7 +1,7 @@
 <script lang="ts">
   import { preventDefault } from '$lib/utils/functions/svelte';
 
-  import CodeSnippet from '$lib/components/CodeSnippet/index.svelte';
+  import { CodeSnippet } from '$features/ui';
   import { CheckboxField } from '@cio/ui/custom/checkbox-field';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import { Button } from '@cio/ui/base/button';

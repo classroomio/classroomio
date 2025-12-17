@@ -22,15 +22,14 @@
   import { lesson } from '../store/lessons';
   import OrderModal from './OrderModal.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import Modal from '$lib/components/Modal/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { CheckboxField } from '@cio/ui/custom/checkbox-field';
   import { RadioItem } from '@cio/ui/custom/radio-item';
   import { InputField } from '@cio/ui/custom/input-field';
   import DeleteConfirmationModal from './DeleteConfirmation.svelte';
-  import ErrorMessage from '$lib/components/ErrorMessage/index.svelte';
-  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
+  import { CircleCheckIcon } from '$features/ui/icons';
   import QuestionContainer from '$lib/components/QuestionContainer/index.svelte';
 
   const initialQuestionsLength = $questionnaire.questions.length;
@@ -89,29 +88,34 @@
 
 <OrderModal />
 
-<Modal
-  onClose={() => (shouldDeleteExercise = false)}
+<Dialog.Root
   bind:open={shouldDeleteExercise}
-  width="w-2/4"
-  modalHeading={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.delete_modal')}
+  onOpenChange={(isOpen) => {
+    if (!isOpen) shouldDeleteExercise = false;
+  }}
 >
-  <form onsubmit={preventDefault()}>
-    <h1 class="text-xl dark:text-white">
-      {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.sure')}
-    </h1>
+  <Dialog.Content class="w-2/4">
+    <Dialog.Header>
+      <Dialog.Title>{$t('course.navItem.lessons.exercises.all_exercises.edit_mode.delete_modal')}</Dialog.Title>
+    </Dialog.Header>
+    <form onsubmit={preventDefault()}>
+      <h1 class="text-xl dark:text-white">
+        {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.sure')}
+      </h1>
 
-    <div class="mt-5 flex items-center justify-between">
-      <Button variant="outline" type="submit" onclick={() => (shouldDeleteExercise = false)}>
-        {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.no')}
-      </Button>
-      <Button disabled={isDeleting} onclick={handleDelete} loading={isDeleting}>
-        {isDeleting
-          ? $t('course.navItem.lessons.exercises.all_exercises.edit_mode.deleting')
-          : $t('course.navItem.lessons.exercises.all_exercises.edit_mode.yes')}
-      </Button>
-    </div>
-  </form>
-</Modal>
+      <div class="mt-5 flex items-center justify-between">
+        <Button variant="outline" type="submit" onclick={() => (shouldDeleteExercise = false)}>
+          {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.no')}
+        </Button>
+        <Button disabled={isDeleting} onclick={handleDelete} loading={isDeleting}>
+          {isDeleting
+            ? $t('course.navItem.lessons.exercises.all_exercises.edit_mode.deleting')
+            : $t('course.navItem.lessons.exercises.all_exercises.edit_mode.yes')}
+        </Button>
+      </div>
+    </form>
+  </Dialog.Content>
+</Dialog.Root>
 
 {#snippet optionActions(question, option)}
   <div data-name="option-action" class="ml-2 flex items-center gap-2">
@@ -130,7 +134,7 @@
 <div class="mb-20 w-full">
   {#if Object.values(errors).length}
     <div class="mb-4 flex w-full justify-center">
-      <ErrorMessage message={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.error')} />
+      <p class="text-sm text-red-500">{$t('course.navItem.lessons.exercises.all_exercises.edit_mode.error')}</p>
     </div>
   {/if}
   <div class="questions px-6 pt-6">
@@ -223,7 +227,7 @@
             {/if}
 
             {#if getQuestionErrorMsg(errors, question, 'option')}
-              <ErrorMessage message={getQuestionErrorMsg(errors, question, 'option')} />
+              <p class="text-sm text-red-500">{getQuestionErrorMsg(errors, question, 'option')}</p>
             {/if}
           </div>
 

@@ -18,7 +18,7 @@
   import type { Content } from '@cio/ui/custom/editor';
   import { course } from '$lib/components/Course/store';
   import { supabase } from '$lib/utils/functions/supabase';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import type { LessonPage } from '$lib/utils/types';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import {
@@ -33,18 +33,19 @@
   import { lessonFallbackNote, t } from '$lib/utils/functions/translations';
   import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
   import { Button } from '@cio/ui/base/button';
+  import { Chip } from '@cio/ui/custom/chip';
   import Loader from './Loader.svelte';
-  import Box from '$lib/components/Box/index.svelte';
   import Comments from './components/Comments.svelte';
-  import Tabs from '$lib/components/Tabs/index.svelte';
-  import Modal from '$lib/components/Modal/index.svelte';
+  import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
+  import { Empty } from '@cio/ui/custom/empty';
+  import VideoIcon from '@lucide/svelte/icons/video';
+  import * as Dialog from '@cio/ui/base/dialog';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { InputField } from '@cio/ui/custom/input-field';
   import ComponentNote from './components/ComponentNote.svelte';
   import ComponentSlide from './components/ComponentSlide.svelte';
   import ComponentVideo from './components/ComponentVideo.svelte';
-  import TabContent from '$lib/components/TabContent/index.svelte';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import { TextEditor } from '$features/ui';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import ComponentDocument from './components/ComponentDocument.svelte';
   import AddVideoToLesson from '$lib/components/Course/components/Lesson/Materials/Video/AddVideoToLesson.svelte';
@@ -105,7 +106,7 @@
     });
   });
   const componentsToRender = $derived(getComponentOrder(tabs));
-  let currentTab = $derived(tabs[0].value);
+  let currentTab = $state<string>('');
 
   function onEditorChange(content: Content) {
     console.log('content updated:', content);
@@ -123,11 +124,11 @@
     $isLessonDirty = true;
   }
 
-  const onChange = (tab) => {
-    return () => {
-      currentTab = tab;
-    };
-  };
+  $effect(() => {
+    if (tabs.length > 0 && !currentTab) {
+      currentTab = String(tabs[0].value);
+    }
+  });
 
   const getValue = (label: string) => {
     const tabValue = tabs.find((tab) => tab.label === label)?.value;
@@ -352,23 +353,33 @@
   );
 </script>
 
-<Modal
-  {onClose}
+<Dialog.Root
   bind:open={$lessonVideoUpload.isModalOpen}
-  width="w-4/5 w-[90%] h-[80%] md:h-[566px]"
-  modalHeading={$t('course.navItem.lessons.materials.tabs.video.add_video.title')}
+  onOpenChange={(isOpen) => {
+    if (!isOpen) onClose();
+  }}
 >
-  <AddVideoToLesson {lessonId} />
-</Modal>
+  <Dialog.Content class="max-w-4/5 w-[90%] h-[80%] md:h-[566px]">
+    <Dialog.Header>
+      <Dialog.Title>{$t('course.navItem.lessons.materials.tabs.video.add_video.title')}</Dialog.Title>
+    </Dialog.Header>
+    <AddVideoToLesson {lessonId} />
+  </Dialog.Content>
+</Dialog.Root>
 
-<Modal
-  onClose={onDocumentClose}
+<Dialog.Root
   bind:open={$lessonDocUpload.isModalOpen}
-  width="w-4/5 w-[90%] h-[80%] md:h-[566px]"
-  modalHeading={$t('course.navItem.lessons.materials.tabs.document.upload_title')}
+  onOpenChange={(isOpen) => {
+    if (!isOpen) onDocumentClose();
+  }}
 >
-  <AddDocumentToLesson />
-</Modal>
+  <Dialog.Content class="max-w-4/5 w-[90%] h-[80%] md:h-[566px]">
+    <Dialog.Header>
+      <Dialog.Title>{$t('course.navItem.lessons.materials.tabs.document.upload_title')}</Dialog.Title>
+    </Dialog.Header>
+    <AddDocumentToLesson />
+  </Dialog.Content>
+</Dialog.Root>
 
 <HtmlRender className="m-auto text-center">
   <h1 class="mt-0 text-2xl capitalize md:text-4xl">
@@ -379,147 +390,156 @@
 {#if $lesson.isFetching}
   <Loader />
 {:else if mode === MODES.edit}
-  <Tabs {tabs} {currentTab} {onChange}>
-    {#snippet content()}
-      <slot:fragment>
-        <TabContent value={getValue('course.navItem.lessons.materials.tabs.note.title')} index={currentTab}>
-          <div class="flex justify-end gap-1">
-            <!-- Update this when ai-sdk is updated -->
-            <div class="hidden flex-row-reverse">
-              <Popover.Root>
-                <Popover.Trigger>
-                  <Button
-                    variant="outline"
-                    onclick={() => {
-                      openPopover = !openPopover;
-                    }}
-                    loading={$isLoading}
-                    disabled={$isLoading}
-                  >
-                    <WandSparklesIcon size={16} />
-                    AI
-                  </Button>
-                </Popover.Trigger>
-                <Popover.Content align="start" class="w-80">
-                  <div class="p-2">
-                    <button class={aiButtonClass} onclick={() => callAI('outline')}>
-                      <ListChecksIcon size={16} />
-                      {$t('course.navItem.lessons.materials.tabs.note.ai.outline')}
-                    </button>
-                    <button class={aiButtonClass} onclick={() => callAI('note')}>
-                      <NotepadTextIcon size={16} />
-                      {$t('course.navItem.lessons.materials.tabs.note.ai.note')}
-                    </button>
-                    <button class={aiButtonClass} onclick={() => callAI('activities')}>
-                      <ListTodoIcon size={16} />
-                      {$t('course.navItem.lessons.materials.tabs.note.ai.activities')}
-                    </button>
-                  </div>
-                </Popover.Content>
-              </Popover.Root>
-            </div>
-          </div>
-
-          <div class="mt-5 h-[60vh]">
-            <TextEditor
-              content={_editorValue}
-              onChange={(content) => onEditorChange(content)}
-              onReady={() =>
-                // editor
-                {
-                  // editorInstance = editor;
-                  // editorWindowRef = editor.view.dom.ownerDocument.defaultView;
+  <UnderlineTabs.Root bind:value={currentTab}>
+    <UnderlineTabs.List>
+      {#each tabs as tab}
+        <UnderlineTabs.Trigger value={String(tab.value)}>
+          {#if tab.icon}
+            <tab.icon size={16} />
+          {/if}
+          {$t(tab.label)}
+          {#if typeof tab.badgeValue === 'number' && tab.badgeValue > 0}
+            <Chip value={`${tab.badgeValue}`} className="ml-1" />
+          {/if}
+        </UnderlineTabs.Trigger>
+      {/each}
+    </UnderlineTabs.List>
+    <UnderlineTabs.Content value={String(getValue('course.navItem.lessons.materials.tabs.note.title') || '')}>
+      <div class="flex justify-end gap-1">
+        <!-- Update this when ai-sdk is updated -->
+        <div class="hidden flex-row-reverse">
+          <Popover.Root>
+            <Popover.Trigger>
+              <Button
+                variant="outline"
+                onclick={() => {
+                  openPopover = !openPopover;
                 }}
-              placeholder={$t('course.navItem.lessons.materials.tabs.note.placeholder')}
-            />
-          </div>
-        </TabContent>
+                loading={$isLoading}
+                disabled={$isLoading}
+              >
+                <WandSparklesIcon size={16} />
+                AI
+              </Button>
+            </Popover.Trigger>
+            <Popover.Content align="start" class="w-80">
+              <div class="p-2">
+                <button class={aiButtonClass} onclick={() => callAI('outline')}>
+                  <ListChecksIcon size={16} />
+                  {$t('course.navItem.lessons.materials.tabs.note.ai.outline')}
+                </button>
+                <button class={aiButtonClass} onclick={() => callAI('note')}>
+                  <NotepadTextIcon size={16} />
+                  {$t('course.navItem.lessons.materials.tabs.note.ai.note')}
+                </button>
+                <button class={aiButtonClass} onclick={() => callAI('activities')}>
+                  <ListTodoIcon size={16} />
+                  {$t('course.navItem.lessons.materials.tabs.note.ai.activities')}
+                </button>
+              </div>
+            </Popover.Content>
+          </Popover.Root>
+        </div>
+      </div>
 
-        <TabContent value={getValue('course.navItem.lessons.materials.tabs.slide.title')} index={currentTab}>
-          {#if mode === MODES.edit}
-            <InputField
-              label={$t('course.navItem.lessons.materials.tabs.slide.slide_link')}
-              bind:value={$lesson.materials.slide_url}
-              onInputChange={() => ($isLessonDirty = true)}
-              helperMessage={$t('course.navItem.lessons.materials.tabs.slide.helper_message')}
-            />
-          {/if}
-        </TabContent>
-        <TabContent value={getValue('course.navItem.lessons.materials.tabs.video.title')} index={currentTab}>
-          <Button onclick={openAddVideoModal} class="mb-2">
-            {$t('course.navItem.lessons.materials.tabs.video.button')}
-          </Button>
-          {#if $lesson.materials.videos.length}
-            <div class="flex h-full w-full flex-col items-start">
-              {#each $lesson.materials.videos as video, index}
-                {#if mode === MODES.edit}
-                  <div class="ml-auto">
-                    <IconButton onclick={() => deleteLessonVideo(index)}>
-                      <TrashIcon size={16} />
-                    </IconButton>
-                  </div>
-                {/if}
-                <div class="flex h-full w-full flex-col gap-2 overflow-hidden">
-                  {#key video.link}
-                    <div class="mb-5">
-                      {#if video.type === 'youtube'}
-                        <iframe
-                          width="100%"
-                          height="569"
-                          class="iframe"
-                          src={formatYoutubeVideo(video.link, errors)}
-                          title="YouTube video player"
-                          frameborder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowfullscreen
-                        ></iframe>
-                      {:else if video.type === 'generic'}
-                        <iframe
-                          width="100%"
-                          height="569"
-                          class="iframe"
-                          src={video.link}
-                          title="Embeded Video player"
-                          frameborder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowfullscreen
-                        ></iframe>
-                      {:else if video.metadata?.svid}
-                        <div style="position:relative;padding-bottom:51.416579%">
-                          <iframe
-                            src="https://muse.ai/embed/{video.metadata
-                              ?.svid}?logo=https://app.classroomio.com/logo-512.png&subtitles=auto&cover_play_position=center"
-                            style="width:100%;height:100%;position:absolute;left:0;top:0"
-                            frameborder="0"
-                            allowfullscreen
-                            title="Muse AI Video Embed"
-                          ></iframe>
-                        </div>
-                      {:else}
-                        <video
-                          bind:this={player}
-                          class="plyr-video-trigger"
-                          style="max-height: 569px;"
-                          playsinline
-                          controls
-                        >
-                          <source src={video.link} type="video/mp4" />
-                          <track kind="captions" />
-                        </video>
-                      {/if}
+      <div class="mt-5 h-[60vh]">
+        <TextEditor
+          content={_editorValue}
+          onChange={(content) => onEditorChange(content)}
+          onReady={() =>
+            // editor
+            {
+              // editorInstance = editor;
+              // editorWindowRef = editor.view.dom.ownerDocument.defaultView;
+            }}
+          placeholder={$t('course.navItem.lessons.materials.tabs.note.placeholder')}
+        />
+      </div>
+    </UnderlineTabs.Content>
+
+    <UnderlineTabs.Content value={String(getValue('course.navItem.lessons.materials.tabs.slide.title') || '')}>
+      {#if mode === MODES.edit}
+        <InputField
+          label={$t('course.navItem.lessons.materials.tabs.slide.slide_link')}
+          bind:value={$lesson.materials.slide_url}
+          onInputChange={() => ($isLessonDirty = true)}
+          helperMessage={$t('course.navItem.lessons.materials.tabs.slide.helper_message')}
+        />
+      {/if}
+    </UnderlineTabs.Content>
+    <UnderlineTabs.Content value={String(getValue('course.navItem.lessons.materials.tabs.video.title') || '')}>
+      <Button onclick={openAddVideoModal} class="mb-2">
+        {$t('course.navItem.lessons.materials.tabs.video.button')}
+      </Button>
+      {#if $lesson.materials.videos.length}
+        <div class="flex h-full w-full flex-col items-start">
+          {#each $lesson.materials.videos as video, index}
+            {#if mode === MODES.edit}
+              <div class="ml-auto">
+                <IconButton onclick={() => deleteLessonVideo(index)}>
+                  <TrashIcon size={16} />
+                </IconButton>
+              </div>
+            {/if}
+            <div class="flex h-full w-full flex-col gap-2 overflow-hidden">
+              {#key video.link}
+                <div class="mb-5">
+                  {#if video.type === 'youtube'}
+                    <iframe
+                      width="100%"
+                      height="569"
+                      class="iframe"
+                      src={formatYoutubeVideo(video.link, errors)}
+                      title="YouTube video player"
+                      frameborder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowfullscreen
+                    ></iframe>
+                  {:else if video.type === 'generic'}
+                    <iframe
+                      width="100%"
+                      height="569"
+                      class="iframe"
+                      src={video.link}
+                      title="Embeded Video player"
+                      frameborder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowfullscreen
+                    ></iframe>
+                  {:else if video.metadata?.svid}
+                    <div style="position:relative;padding-bottom:51.416579%">
+                      <iframe
+                        src="https://muse.ai/embed/{video.metadata
+                          ?.svid}?logo=https://app.classroomio.com/logo-512.png&subtitles=auto&cover_play_position=center"
+                        style="width:100%;height:100%;position:absolute;left:0;top:0"
+                        frameborder="0"
+                        allowfullscreen
+                        title="Muse AI Video Embed"
+                      ></iframe>
                     </div>
-                  {/key}
+                  {:else}
+                    <video
+                      bind:this={player}
+                      class="plyr-video-trigger"
+                      style="max-height: 569px;"
+                      playsinline
+                      controls
+                    >
+                      <source src={video.link} type="video/mp4" />
+                      <track kind="captions" />
+                    </video>
+                  {/if}
                 </div>
-              {/each}
+              {/key}
             </div>
-          {/if}
-        </TabContent>
-        <TabContent value={getValue('course.navItem.lessons.materials.tabs.document.title')} index={currentTab}>
-          <ComponentDocument {mode} />
-        </TabContent>
-      </slot:fragment>
-    {/snippet}
-  </Tabs>
+          {/each}
+        </div>
+      {/if}
+    </UnderlineTabs.Content>
+    <UnderlineTabs.Content value={String(getValue('course.navItem.lessons.materials.tabs.document.title') || '')}>
+      <ComponentDocument {mode} />
+    </UnderlineTabs.Content>
+  </UnderlineTabs.Root>
 {:else if !isMaterialsEmpty($lesson.materials, $lessonByTranslation[lessonId])}
   {#key lessonId}
     <div class="mb-20 flex w-full flex-col gap-6" in:fade={{ delay: 500 }} out:fade>
@@ -535,21 +555,22 @@
     </div>
   {/key}
 {:else}
-  <Box className="text-center">
-    <img src="/no-video.svg" alt="Video not found" />
-    <h3 class="py-2 text-xl font-normal dark:text-white">
-      {$t('course.navItem.lessons.materials.body_heading')}
-    </h3>
-
+  <Empty
+    title={$t('course.navItem.lessons.materials.body_heading')}
+    description={$t('course.navItem.lessons.materials.body_content') +
+      ' ' +
+      $t('course.navItem.lessons.materials.get_started') +
+      ' ' +
+      $t('course.navItem.lessons.materials.button') +
+      '.'}
+    icon={VideoIcon}
+    variant="page"
+    class="text-center"
+  >
     {#if !isStudent}
-      <p class="py-2 text-center text-sm font-normal">
-        {$t('course.navItem.lessons.materials.body_content')}
-        <strong>{$t('course.navItem.lessons.materials.get_started')}</strong>
-        {$t('course.navItem.lessons.materials.button')}.
-      </p>
       <Button onclick={toggleMode}>
         {$t('course.navItem.lessons.materials.get_started')}
       </Button>
     {/if}
-  </Box>
+  </Empty>
 {/if}

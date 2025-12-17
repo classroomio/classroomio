@@ -13,10 +13,10 @@
   import { PLANS } from '@cio/utils/plans';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { toggleConfetti } from '$lib/components/Confetti/store';
+  import { snackbar } from '$features/ui/snackbar/store';
+  import { toggleConfetti } from './confetti/store';
   import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
-  import Confetti from '$lib/components/Confetti/index.svelte';
+  import Confetti from './confetti/confetti.svelte';
 
   const planNames = Object.keys(PLANS);
 

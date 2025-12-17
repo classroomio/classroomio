@@ -10,7 +10,7 @@
   import { ROLE } from '@cio/utils/constants';
   import { profile } from '$lib/utils/store/user';
   import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
-  import { snackbar } from '$lib/components/Snackbar/store.js';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { page } from '$app/state';
 

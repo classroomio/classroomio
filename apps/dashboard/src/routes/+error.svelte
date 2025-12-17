@@ -3,8 +3,7 @@
   import { browser } from '$app/environment';
   import { page } from '$app/state';
   import { globalStore } from '$lib/utils/store/app';
-  import ErrorIcon from '$lib/components/Icons/ErrorIcon.svelte';
-  import ErrorIconDarkMode from '$lib/components/Icons/ErrorIconDarkMode.svelte';
+  import { ErrorIcon } from '$features/ui/icons';
 
   if (page.status == 404 && browser) {
     goto('/404');

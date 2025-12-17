@@ -15,7 +15,7 @@
   import { PoweredBy } from '$features/ui';
   import { CourseCardList, CourseCardLoader } from '$features/course/components';
   import { landingPageSettings } from '$lib/components/Org/Settings/store';
-  import CoursesEmptyIcon from '$lib/components/Icons/CoursesEmptyIcon.svelte';
+  import { CoursesEmptyIcon } from '$features/ui/icons';
 
   import PageLoader from './PageLoader.svelte';
   import * as Accordion from '@cio/ui/base/accordion';

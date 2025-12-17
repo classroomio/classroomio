@@ -7,7 +7,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { courses } from '$features/course/utils/store';
   import { supabase } from '$lib/utils/functions/supabase';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { fetchCourses } from '$lib/utils/services/courses';
   import generateSlug from '$lib/utils/functions/generateSlug';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
@@ -15,7 +15,7 @@
   import { Button } from '@cio/ui/base/button';
 
   import { InputField } from '@cio/ui/custom/input-field';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import { TextEditor } from '$features/ui';
   import * as Page from '@cio/ui/base/page';
 
   let errors: {

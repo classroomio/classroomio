@@ -1,7 +1,7 @@
 <script lang="ts">
   import { InputField } from '@cio/ui/custom/input-field';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '../Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
 
   interface Props {
     gradeMax?: number;

@@ -3,7 +3,7 @@
   import { Chip } from '@cio/ui/custom/chip';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { fetchLMSExercises } from '$lib/utils/services/lms/exercises';
   import type { LMSExercise } from '$lib/utils/services/lms/exercises';
   import { calDateDiff } from '$lib/utils/functions/date';
