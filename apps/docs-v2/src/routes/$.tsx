@@ -64,6 +64,9 @@ function Page() {
         sidebar={{
           collapsible: false
         }}
+        themeSwitch={{
+          enabled: false
+        }}
         searchToggle={{
           enabled: false
         }}
