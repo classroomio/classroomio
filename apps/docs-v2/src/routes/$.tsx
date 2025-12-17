@@ -9,6 +9,7 @@ import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/layo
 
 import { source } from '@/lib/source';
 import { baseOptions } from '@/lib/layout.shared';
+import { HomeLayout } from 'fumadocs-ui/layouts/home';
 
 export const Route = createFileRoute('/$')({
   component: Page,
@@ -58,9 +59,19 @@ function Page() {
   const tree = useMemo(() => transformPageTree(data.tree as PageTree.Folder), [data.tree]);
 
   return (
-    <DocsLayout {...baseOptions()} tree={tree}>
-      <Content />
-    </DocsLayout>
+    <HomeLayout {...baseOptions()}>
+      <DocsLayout
+        sidebar={{
+          collapsible: false
+        }}
+        searchToggle={{
+          enabled: false
+        }}
+        tree={tree}
+      >
+        <Content />
+      </DocsLayout>
+    </HomeLayout>
   );
 }
 
