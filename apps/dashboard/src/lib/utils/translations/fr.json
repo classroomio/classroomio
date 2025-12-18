@@ -916,7 +916,6 @@
       "students": "étudiants",
       "published": "Publié",
       "unpublished": "Inédit",
-      "continue_course": "Continuer le cours",
       "list_view": {
         "title": "Titre",
         "description": "Description",
@@ -976,7 +975,6 @@
     "no_courses": "Aucun cours en cours pour le moment",
     "start_course": "Une fois que vous aurez commencé un cours, vos progrès seront reflétés ici",
     "lms_dashboard_hero": "Aujourd'hui est un autre jour pour vous rapprocher de vos objectifs d'apprentissage. N'abandonnez pas, plus vous apprenez, mieux vous vous améliorez.",
-    "dont": "N'abandonne pas",
     "lessons_completed": "Leçons terminées",
     "no_courses_started": "Aucun cours n'a commencé",
     "revenue": "Revenu",
@@ -1630,8 +1628,6 @@
   },
   "new_course_modal": {
     "live_class_label": "Cours en direct",
-    "live_class_subtitle": "Ce type de cours est idéal pour les bootcamps où les cours sont basés sur le temps et où vous avez besoin d'assiduité et de notation.",
-    "self_paced_label": "À votre rythme",
-    "self_paced_subtitle": "Ce type de cours est idéal pour les cours où les étudiants peuvent suivre des cours à leur rythme sans professeur."
+    "self_paced_label": "À votre rythme"
   }
 }

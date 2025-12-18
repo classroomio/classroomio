@@ -6,6 +6,7 @@
   import UserIcon from '@lucide/svelte/icons/user';
   import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
   import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
+  import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 
   import { Button } from '@cio/ui/base/button';
   import { Separator } from '@cio/ui/base/separator';
@@ -27,6 +28,8 @@
   }
 
   let { course, isOnLandingPage, isLMS, isExplore }: Props = $props();
+
+  $inspect('isLMS', isLMS);
 
   let {
     bannerImage,
@@ -123,11 +126,11 @@
       </Item.Header>
 
       <Item.Content>
-        <Item.Title class="text-base! line-clamp-1">
+        <Item.Title class="text-base! line-clamp-1 min-h-[44px]">
           {title}
         </Item.Title>
 
-        <Item.Description>{description}</Item.Description>
+        <Item.Description class="min-h-[63px]">{description}</Item.Description>
 
         <Separator class="my-3" />
 
@@ -161,7 +164,7 @@
                   </div>
                 {/if}
               {:else}
-                <Badge variant={isPublished ? 'default' : 'secondary'}>
+                <Badge variant={isPublished ? 'default' : 'outline'}>
                   {#if isPublished}
                     {$t('courses.course_card.published')}
                   {:else}
@@ -175,6 +178,8 @@
           {#if isLMS}
             <Button variant="outline">
               {isExplore ? $t('courses.course_card.learn_more') : $t('courses.course_card.continue_course')}
+
+              <ArrowRightIcon class="custom" />
             </Button>
           {:else if !isOnLandingPage}
             <div class="flex flex-col justify-between">

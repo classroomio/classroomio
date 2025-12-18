@@ -53,7 +53,7 @@ const getActivePlan = (org: AccountOrg) => {
 export const currentOrgPlan = derived(currentOrg, ($currentOrg) => getActivePlan($currentOrg));
 
 export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
-  $currentOrg.siteName ? `/org/${$currentOrg.siteName}` : ''
+  $currentOrg.siteName ? `/org/${$currentOrg.siteName}` : '#'
 );
 
 export const currentOrgDomain = derived(currentOrg, ($currentOrg) => {

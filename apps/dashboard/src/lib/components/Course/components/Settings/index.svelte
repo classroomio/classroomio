@@ -11,8 +11,7 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
-  import { Row, Grid, Column } from '$lib/components/Org/Settings/Layout';
-  import SectionTitle from '$lib/components/Org/SectionTitle.svelte';
+  import * as Field from '@cio/ui/base/field';
   import { UpgradeBanner, UnsavedChanges, UploadWidget } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
 
@@ -209,74 +208,76 @@
 
 <DeleteModal onDelete={handleDeleteCourse} bind:open={openDeleteModal} />
 
-<Grid class="border-c rounded border-gray-200 dark:border-neutral-600">
-  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
-    <Column sm={8} md={8} lg={8}>
-      <SectionTitle>{$t('course.navItem.settings.cover_image')}</SectionTitle>
-      <p>
-        {$t('course.navItem.settings.optional_image')}
-      </p>
-      <span class="flex items-center justify-start">
-        <Button class="mr-2" onclick={widgetControl}>
-          {$t('course.navItem.settings.replace')}
-        </Button>
-        <Button variant="outline" onclick={deleteBannerImage}>
-          {$t('ai.reset')}
-        </Button>
-      </span>
-      {#if $handleOpenWidget.open}
-        <UploadWidget
-          bind:imageURL={$settings.logo}
+<Field.Group class="max-w-md! w-full px-2">
+  <Field.Set>
+    <Field.Legend>{$t('course.navItem.settings.cover_image')}</Field.Legend>
+    <Field.Description>{$t('course.navItem.settings.optional_image')}</Field.Description>
+    <Field.Group>
+      <Field.Field>
+        <div class="flex items-center gap-2">
+          <Button onclick={widgetControl}>
+            {$t('course.navItem.settings.replace')}
+          </Button>
+          <Button variant="outline" onclick={deleteBannerImage}>
+            {$t('ai.reset')}
+          </Button>
+        </div>
+        {#if $handleOpenWidget.open}
+          <UploadWidget
+            bind:imageURL={$settings.logo}
+            onchange={() => {
+              hasUnsavedChanges = true;
+            }}
+          />
+        {/if}
+      </Field.Field>
+      <Field.Field>
+        <div class="relative z-20 w-fit">
+          <img
+            style="min-width:280px; min-height:200px"
+            alt="Course cover"
+            src={$settings.logo ? $settings.logo : '/images/classroomio-course-img-template.jpg'}
+            class="relative mt-2 h-[200px] w-[280px] rounded-md md:mt-0"
+          />
+        </div>
+      </Field.Field>
+    </Field.Group>
+  </Field.Set>
+
+  <Field.Separator />
+
+  <Field.Set id="share">
+    <Field.Legend>{$t('course.navItem.settings.course_details')}</Field.Legend>
+    <Field.Group>
+      <Field.Field>
+        <InputField
+          label={$t('course.navItem.settings.course_title')}
+          placeholder="Write the course title here"
+          className="w-full"
+          isRequired
+          bind:value={$settings.course_title}
+          errorMessage={errors?.title}
+          onInputChange={() => {
+            hasUnsavedChanges = true;
+          }}
+        />
+      </Field.Field>
+      <Field.Field>
+        <TextareaField
+          label={$t('course.navItem.settings.course_description')}
+          placeholder={$t('course.navItem.settings.placeholder')}
+          className="w-full"
+          isRequired
+          bind:value={$settings.course_description}
+          errorMessage={errors?.description}
           onchange={() => {
             hasUnsavedChanges = true;
           }}
         />
-      {/if}
-    </Column>
-
-    <Column sm={8} md={8} lg={6}>
-      <div class="relative z-[20] w-fit">
-        <img
-          style="min-width:280px; min-height:200px"
-          alt="About us"
-          src={$settings.logo ? $settings.logo : '/images/classroomio-course-img-template.jpg'}
-          class="relative mt-2 h-[200px] w-[280px] rounded-md md:mt-0"
-        />
-      </div>
-    </Column>
-  </Row>
-
-  <Row id="share" class="border-bottom-c flex flex-col py-7 lg:flex-row">
-    <Column sm={8} md={8} lg={8}>
-      <SectionTitle>{$t('course.navItem.settings.course_details')}</SectionTitle>
-    </Column>
-
-    <Column sm={8} md={8} lg={8}>
-      <InputField
-        label={$t('course.navItem.settings.course_title')}
-        placeholder="Write the course title here"
-        className="w-full mb-5"
-        isRequired
-        bind:value={$settings.course_title}
-        errorMessage={errors?.title}
-        onInputChange={() => {
-          hasUnsavedChanges = true;
-        }}
-      />
-      <TextareaField
-        label={$t('course.navItem.settings.course_description')}
-        placeholder={$t('course.navItem.settings.placeholder')}
-        className="w-full mb-5"
-        isRequired
-        bind:value={$settings.course_description}
-        errorMessage={errors?.description}
-        onchange={() => {
-          hasUnsavedChanges = true;
-        }}
-      />
-      <div id="share">
-        <p class="text-md mb-2 flex items-center gap-2">
-          {$t('course.navItem.settings.link')}
+      </Field.Field>
+      <Field.Field>
+        <Field.Label>{$t('course.navItem.settings.link')}</Field.Label>
+        <div class="mb-2 flex items-center gap-2">
           <IconButton onclick={generateNewCourseLink}>
             <RotateCcwIcon size={16} />
           </IconButton>
@@ -284,11 +285,10 @@
           <IconButton onclick={() => goto(courseLink)}>
             <ArrowUpRightIcon size={16} />
           </IconButton>
-        </p>
+        </div>
         <div class="flex items-center justify-between rounded-md border p-3">
           {#if $course.slug}
             <p class="text-sm">{courseLink}</p>
-
             <IconButton
               onclick={() => {
                 copyToClipboard(courseLink);
@@ -300,41 +300,30 @@
             <p class="text-sm">Setup landing page to get course link</p>
           {/if}
         </div>
-      </div>
-    </Column>
-  </Row>
-  <!-- <Row class="flex lg:flex-row flex-col py-7 border-bottom-c">
-    <Column sm={8} md={8} lg={8}>
-      <SectionTitle>{$t('course.navItem.settings.grading')}</SectionTitle>
-      <p>{$t('course.navItem.settings.reports')}</p>
-    </Column>
-    <Column sm={8} md={8} lg={8}>
-      <Toggle size="sm" bind:toggled={$settings.grading}>
-        <span slot="labelA" style="color: gray">{$t('course.navItem.settings.disabled')}</span>
-        <span slot="labelB" style="color: gray">{$t('course.navItem.settings.enabled')}</span>
-      </Toggle>
-    </Column>
-  </Row> -->
+      </Field.Field>
+    </Field.Group>
+  </Field.Set>
 
-  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
-    <Column sm={8} md={8} lg={8}>
-      <SectionTitle>{$t('course.navItem.settings.order')}</SectionTitle>
-      <p>{$t('course.navItem.settings.drag')}</p>
-    </Column>
-    <Column sm={8} md={8} lg={8}>
+  <Field.Separator />
+
+  <Field.Set>
+    <Field.Legend>{$t('course.navItem.settings.order')}</Field.Legend>
+    <Field.Description>{$t('course.navItem.settings.drag')}</Field.Description>
+    <Field.Field>
       <DragAndDrop
         on:change={() => {
           hasUnsavedChanges = true;
         }}
       />
-    </Column>
-  </Row>
-  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
-    <Column sm={8} md={8} lg={8}>
-      <SectionTitle>{$t('course.navItem.settings.lesson_download')}</SectionTitle>
-      <p>{$t('course.navItem.settings.available')}</p>
-    </Column>
-    <Column sm={8} md={8} lg={8}>
+    </Field.Field>
+  </Field.Set>
+
+  <Field.Separator />
+
+  <Field.Set>
+    <Field.Legend>{$t('course.navItem.settings.lesson_download')}</Field.Legend>
+    <Field.Description>{$t('course.navItem.settings.available')}</Field.Description>
+    <Field.Field>
       {#if $isFreePlan}
         <UpgradeBanner>{$t('upgrade.download_lessons')}</UpgradeBanner>
       {:else}
@@ -351,14 +340,15 @@
           </Label>
         </div>
       {/if}
-    </Column>
-  </Row>
-  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
-    <Column sm={8} md={8} lg={8}>
-      <SectionTitle>{$t('course.navItem.settings.course_download')}</SectionTitle>
-      <p>{$t('course.navItem.settings.course_avail')}</p>
-    </Column>
-    <Column sm={4} md={4} lg={4}>
+    </Field.Field>
+  </Field.Set>
+
+  <Field.Separator />
+
+  <Field.Set>
+    <Field.Legend>{$t('course.navItem.settings.course_download')}</Field.Legend>
+    <Field.Description>{$t('course.navItem.settings.course_avail')}</Field.Description>
+    <Field.Field>
       {#if $isFreePlan}
         <UpgradeBanner>{$t('upgrade.download_course')}</UpgradeBanner>
       {:else}
@@ -366,15 +356,15 @@
           {$t('course.navItem.settings.download')}
         </Button>
       {/if}
-    </Column>
-  </Row>
+    </Field.Field>
+  </Field.Set>
 
-  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
-    <Column sm={8} md={8} lg={8}>
-      <SectionTitle>{$t('course.navItem.settings.type')}</SectionTitle>
-      <p>{$t('course.navItem.settings.course_type_desc')}</p>
-    </Column>
-    <Column sm={8} md={8} lg={8}>
+  <Field.Separator />
+
+  <Field.Set>
+    <Field.Legend>{$t('course.navItem.settings.type')}</Field.Legend>
+    <Field.Description>{$t('course.navItem.settings.course_type_desc')}</Field.Description>
+    <Field.Field>
       <RadioGroup.Root
         value={$settings.type}
         onValueChange={(value) => {
@@ -392,72 +382,66 @@
           <Label for="self-paced">{$t('course.navItem.settings.self_paced')}</Label>
         </div>
       </RadioGroup.Root>
-    </Column>
-  </Row>
+    </Field.Field>
+  </Field.Set>
 
-  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
-    <Column sm={8} md={8} lg={8}>
-      <SectionTitle>{$t('course.navItem.settings.allow')}</SectionTitle>
-      <p>{$t('course.navItem.settings.access')}</p>
-    </Column>
-    <Column sm={8} md={8} lg={8}>
-      <div class="flex items-center space-x-2">
-        <Switch
-          id="allow-new-students"
-          bind:checked={$settings.allow_new_students}
-          onCheckedChange={() => {
-            hasUnsavedChanges = true;
-          }}
-        />
-        <Label for="allow-new-students" class="text-sm text-gray-500">
-          {$settings.allow_new_students
-            ? $t('course.navItem.settings.enabled')
-            : $t('course.navItem.settings.disabled')}
-        </Label>
-      </div>
-    </Column>
-  </Row>
+  <Field.Separator />
 
-  <!-- Publish Course -->
-  <Row class="border-bottom-c flex flex-col py-7 lg:flex-row">
-    <Column sm={8} md={8} lg={8}>
-      <SectionTitle>{$t('course.navItem.settings.publish')}</SectionTitle>
-      <p>{$t('course.navItem.settings.determines')}</p>
-    </Column>
-    <Column sm={8} md={8} lg={8}>
-      <div class="flex items-center space-x-2">
-        <Switch
-          id="is-published"
-          bind:checked={$settings.is_published}
-          onCheckedChange={(checked) => {
-            hasUnsavedChanges = true;
-            $settings.allow_new_students = checked;
-            if (!$course.slug) {
-              generateNewCourseLink();
-            }
-          }}
-        />
-        <Label for="is-published" class="text-sm text-gray-500">
-          {$settings.is_published ? $t('course.navItem.settings.published') : $t('course.navItem.settings.unpublished')}
-        </Label>
-      </div>
-    </Column>
-  </Row>
+  <Field.Set>
+    <Field.Legend>{$t('course.navItem.settings.allow')}</Field.Legend>
+    <Field.Description>{$t('course.navItem.settings.access')}</Field.Description>
+    <Field.Field orientation="horizontal">
+      <Switch
+        id="allow-new-students"
+        bind:checked={$settings.allow_new_students}
+        onCheckedChange={() => {
+          hasUnsavedChanges = true;
+        }}
+      />
+      <Label for="allow-new-students" class="text-sm text-gray-500">
+        {$settings.allow_new_students ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
+      </Label>
+    </Field.Field>
+  </Field.Set>
 
-  <Row id="delete" class="border-bottom-c flex flex-col py-7 lg:flex-row">
-    <Column sm={8} md={8} lg={8}>
-      <SectionTitle>{$t('course.navItem.settings.delete')}</SectionTitle>
-      <p>{$t('course.navItem.settings.delete_text')}</p>
-    </Column>
-    <Column sm={8} md={8} lg={8}>
+  <Field.Separator />
+
+  <Field.Set>
+    <Field.Legend>{$t('course.navItem.settings.publish')}</Field.Legend>
+    <Field.Description>{$t('course.navItem.settings.determines')}</Field.Description>
+    <Field.Field orientation="horizontal">
+      <Switch
+        id="is-published"
+        bind:checked={$settings.is_published}
+        onCheckedChange={(checked) => {
+          hasUnsavedChanges = true;
+          $settings.allow_new_students = checked;
+          if (!$course.slug) {
+            generateNewCourseLink();
+          }
+        }}
+      />
+      <Label for="is-published" class="text-sm text-gray-500">
+        {$settings.is_published ? $t('course.navItem.settings.published') : $t('course.navItem.settings.unpublished')}
+      </Label>
+    </Field.Field>
+  </Field.Set>
+
+  <Field.Separator />
+
+  <Field.Set id="delete">
+    <Field.Legend>{$t('course.navItem.settings.delete')}</Field.Legend>
+    <Field.Description>{$t('course.navItem.settings.delete_text')}</Field.Description>
+    <Field.Field>
       <Button variant="destructive" onclick={() => (openDeleteModal = true)} loading={isDeleting} disabled={isDeleting}>
         {$t('course.navItem.settings.delete')}
       </Button>
-    </Column>
-  </Row>
-  <div class="flex w-full items-center justify-end p-5">
-    <Button loading={isSaving} disabled={isSaving} onclick={handleSave}>
-      {$t('course.navItem.settings.save')}
-    </Button>
-  </div>
-</Grid>
+    </Field.Field>
+  </Field.Set>
+</Field.Group>
+
+<div class="flex w-full items-center justify-end p-5">
+  <Button loading={isSaving} disabled={isSaving} onclick={handleSave}>
+    {$t('course.navItem.settings.save')}
+  </Button>
+</div>

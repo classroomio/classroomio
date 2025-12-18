@@ -1,7 +1,5 @@
 <script>
-  import Quizzes from '$lib/components/Org/Quiz/Quizzes.svelte';
-  import NewQuizModal from '$lib/components/Org/Quiz/NewQuizModal.svelte';
-  import DeleteModal from '$lib/components/Org/Quiz/DeleteModal.svelte';
+  import { Quizzes, NewQuizModal, DeleteModal } from '$features/org';
   import { Button } from '@cio/ui/base/button';
   import { createQuizModal } from '$lib/utils/store/org';
   import { isMobile } from '$lib/utils/store/useMobile';

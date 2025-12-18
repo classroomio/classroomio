@@ -5,7 +5,6 @@
   import { Skeleton } from '@cio/ui/base/skeleton';
   import * as Select from '@cio/ui/base/select';
   import TrashIcon from '@lucide/svelte/icons/trash';
-  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 
   import { t } from '$lib/utils/functions/translations';
   import { courses } from '$features/course/utils/store';
@@ -63,7 +62,6 @@
     title?: string;
   } = $state({});
   let isValidAnswer = false; // V2 allow admin mark an answer as accepted
-  let resetInput = 1;
   let voted: {
     question: boolean;
     comment: {
@@ -210,7 +208,7 @@
           id: _c.id,
           authorId: $profile.id || '',
           name: $profile?.fullname || '',
-          avatar: $profile?.avatar_url || '',
+          avatar: $profile?.avatarUrl || '',
           votes: 0,
           comment: _c.body,
           createdAt: calDateDiff(_c.created_at)
@@ -219,7 +217,6 @@
 
       // Reset input
       comment = '';
-      resetInput = new Date().getTime();
     }
   }
 
@@ -396,12 +393,6 @@
   </div>
 {:else}
   <Page.Root class="mx-auto max-w-3xl md:mx-10 lg:mb-20">
-    <div class="px-5 py-10">
-      <a class="text-md flex items-center text-gray-500 dark:text-white" href={`${$currentOrgPath}/community`}>
-        <ArrowLeftIcon size={16} />
-        {$t('community.ask.go_back')}
-      </a>
-    </div>
     <Page.Header>
       <Page.HeaderContent>
         {#if isEditMode}

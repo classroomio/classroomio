@@ -12,7 +12,6 @@
   import type { UserCourseAnalytics } from '$lib/utils/types/analytics';
 
   import { Progress } from '@cio/ui/base/progress';
-  import { Grid } from '$lib/components/Org/Settings/Layout';
   import { ActivityCard, HeroProfileCard, LoadingPage } from '$features/ui';
 
   let { data } = $props();
@@ -102,13 +101,13 @@
   <section class="px-1">
     <HeroProfileCard user={userCourseAnalytics.user} />
 
-    <Grid class="mt-5 px-0">
+    <div class="mt-5 px-0">
       <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {#each learningActivities as activity}
           <ActivityCard {activity} />
         {/each}
       </div>
-    </Grid>
+    </div>
 
     <div class="mt-5 rounded-md border p-3 md:p-5 dark:border-neutral-600">
       <h3 class="text-2xl">

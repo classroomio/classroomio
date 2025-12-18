@@ -916,7 +916,6 @@
       "students": "Studenten",
       "published": "Veröffentlicht",
       "unpublished": "Unveröffentlicht",
-      "continue_course": "Kurs fortsetzen",
       "list_view": {
         "title": "Titel",
         "description": "Beschreibung",
@@ -976,7 +975,6 @@
     "no_courses": "Es sind noch keine Kurse im Gange",
     "start_course": "Sobald Sie einen Kurs beginnen, werden Ihre Fortschritte hier angezeigt",
     "lms_dashboard_hero": "Heute ist ein weiterer Tag, um Sie Ihren Lernzielen näher zu bringen. Geben Sie nicht auf, je mehr Sie lernen, desto besser werden Sie.",
-    "dont": "Gib nicht auf",
     "lessons_completed": "Lektionen abgeschlossen",
     "no_courses_started": "Es wurden keine Kurse gestartet",
     "revenue": "Einnahmen",
@@ -1630,8 +1628,6 @@
   },
   "new_course_modal": {
     "live_class_label": "Live-Klasse",
-    "live_class_subtitle": "Dieser Kurstyp ist ideal für Bootcamps, bei denen der Unterricht zeitbasiert ist und Anwesenheit und Benotung erforderlich sind",
-    "self_paced_label": "Eigenständig",
-    "self_paced_subtitle": "Dieser Kurstyp ist ideal für Kurse, bei denen die Studierenden den Unterricht in ihrem eigenen Tempo ohne Lehrer absolvieren können"
+    "self_paced_label": "Eigenständig"
   }
 }

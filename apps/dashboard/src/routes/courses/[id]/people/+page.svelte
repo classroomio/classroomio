@@ -27,7 +27,7 @@
   import { deleteMemberModal } from '$lib/components/Course/components/People/store';
 
   let member: { id?: string; email?: string; profile?: { email: string } } = $state({});
-  let filterBy: string = $state(`${ROLES[0]}`);
+  let filterBy: string = $state(`${ROLES[0].value}`);
   let searchValue = $state('');
   let copiedEmail = $state<string | null>(null);
 
@@ -107,7 +107,7 @@
     <div class="mb-3">
       <Select.Root type="single" name="roles" bind:value={filterBy}>
         <Select.Trigger class="mt-3 max-w-[80px]">
-          {filterBy}
+          {$t(ROLE_LABEL[Number(filterBy)])}
         </Select.Trigger>
         <Select.Content>
           <Select.Group>

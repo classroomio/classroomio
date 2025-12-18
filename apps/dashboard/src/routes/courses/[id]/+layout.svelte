@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as Sidebar from '@cio/ui/base/sidebar';
-  import { CourseSidebar } from '$features/ui/sidebar/course-sidebar';
+  import { CourseSidebar } from '$features/course/components/sidebar';
   import { AppHeader } from '$features/ui';
 
   interface Props {
@@ -17,7 +17,7 @@
   <Sidebar.Inset>
     <AppHeader hideSearch={true} />
 
-    <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 overflow-y-auto px-4">
+    <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4">
       {@render children?.()}
     </div>
   </Sidebar.Inset>

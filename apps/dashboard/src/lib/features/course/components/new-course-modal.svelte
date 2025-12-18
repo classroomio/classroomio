@@ -3,7 +3,6 @@
 
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import { ComingSoon } from '$features/ui';
   import { validateForm } from '../utils/functions';
   import { courses, createCourseModal } from '../utils/store';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
@@ -11,6 +10,8 @@
   import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
   import { ROLE } from '@cio/utils/constants';
+  import * as Field from '@cio/ui/base/field';
+  import * as RadioGroup from '@cio/ui/base/radio-group';
   import { supabase } from '$lib/utils/functions/supabase';
   import { t } from '$lib/utils/functions/translations';
   import { addDefaultNewsFeed, addGroupMember } from '$lib/utils/services/courses';
@@ -18,7 +19,6 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
-  import { CircleCheckIcon } from '$features/ui/icons';
 
   let isLoading = $state(false);
   let errors = $state({
@@ -29,12 +29,14 @@
 
   const options = [
     {
+      id: 'live-class',
       title: $t('new_course_modal.live_class_label'),
       subtitle: $t('new_course_modal.live_class_subtitle'),
       type: COURSE_TYPE.LIVE_CLASS,
       isDisabled: false
     },
     {
+      id: 'self-paced',
       title: $t('new_course_modal.self_paced_label'),
       subtitle: $t('new_course_modal.self_paced_subtitle'),
       type: COURSE_TYPE.SELF_PACED,
@@ -130,6 +132,8 @@
     isLoading = false;
   }
 
+  $inspect(type);
+
   let open = $derived(new URLSearchParams(page.url.search).get('create') === 'true');
 </script>
 
@@ -137,91 +141,80 @@
   <title>Create a new course</title>
 </svelte:head>
 
+{#snippet course_type_selector()}
+  <Field.Description>{$t('courses.new_course_modal.type_selector_title')}</Field.Description>
+
+  <RadioGroup.Root bind:value={type} class="grid-cols-2">
+    {#each options as option (option.id)}
+      <Field.Label for={option.id}>
+        <Field.Field orientation="horizontal">
+          <Field.Content>
+            <Field.Title>{option.title}</Field.Title>
+            <Field.Description>{option.subtitle}</Field.Description>
+          </Field.Content>
+
+          <RadioGroup.Item value={option.type} id={option.id} aria-label={option.title} />
+        </Field.Field>
+      </Field.Label>
+    {/each}
+  </RadioGroup.Root>
+{/snippet}
+
 <Dialog.Root
   bind:open
   onOpenChange={(isOpen) => {
     if (!isOpen) onClose(page.url.pathname);
   }}
 >
-  <Dialog.Content class="w-4/5 md:w-2/5 md:min-w-[600px] max-w-2xl mx-auto">
+  <Dialog.Content class="mx-auto w-4/5 max-w-2xl md:w-2/5 md:min-w-[600px]">
     <Dialog.Header>
       <Dialog.Title>{$t('courses.new_course_modal.heading')}</Dialog.Title>
     </Dialog.Header>
     {#if step === 0}
-    <div>
-      <h2 class="my-5 text-xl font-medium">
-        {$t('courses.new_course_modal.type_selector_title')}
-      </h2>
+      <div class="my-4 space-y-4">
+        {@render course_type_selector()}
 
-      <div class="my-8 flex flex-col items-center justify-evenly gap-4 md:flex-row">
-        {#each options as option}
-          <button
-            class="w-11/12 rounded-md border-2 p-5 md:h-60 md:w-[261px] dark:bg-neutral-700 {option.type === type
-              ? 'border-primary-400'
-              : `border-gray-200 dark:border-neutral-600 ${
-                  !option.isDisabled && 'hover:scale-95'
-                }`} flex flex-col {option.isDisabled && 'cursor-not-allowed opacity-60'} transition-all ease-in-out"
-            type="button"
-            onclick={!option.isDisabled ? () => (type = option.type) : undefined}
-          >
-            <div class="flex h-[70%] w-full flex-row-reverse">
-              <CircleCheckIcon size={16} filled={option.type === type} />
-            </div>
-
-            <div>
-              <p class="flex items-center text-start">
-                <span class="mr-2 text-sm">{option.title}</span>
-                {#if option.isDisabled}
-                  <ComingSoon />
-                {/if}
-              </p>
-              <p class="text-start text-xs font-light">{option.subtitle}</p>
-            </div>
-          </button>
-        {/each}
+        <Dialog.Footer>
+          <Button onclick={() => (step = 1)} disabled={!type}>
+            {$t('courses.new_course_modal.next')}
+          </Button>
+        </Dialog.Footer>
       </div>
+    {:else}
+      <form onsubmit={preventDefault(createCourse)}>
+        <div class="mb-4 flex items-end space-x-2">
+          <InputField
+            label={$t('courses.new_course_modal.course_name')}
+            bind:value={$createCourseModal.title}
+            placeholder={$t('courses.new_course_modal.course_name_placeholder')}
+            className="w-full"
+            isRequired={true}
+            errorMessage={errors.title}
+            autoComplete={false}
+          />
+        </div>
 
-      <div class="mt-8 flex flex-row-reverse items-center">
-        <Button onclick={() => (step = 1)} disabled={!type}>
-          {$t('courses.new_course_modal.next')}
-        </Button>
-      </div>
-    </div>
-  {:else}
-    <form onsubmit={preventDefault(createCourse)}>
-      <div class="mb-4 flex items-end space-x-2">
-        <InputField
-          label={$t('courses.new_course_modal.course_name')}
-          bind:value={$createCourseModal.title}
-          placeholder={$t('courses.new_course_modal.course_name_placeholder')}
-          className="w-full"
+        <TextareaField
+          label={$t('courses.new_course_modal.short_description')}
+          bind:value={$createCourseModal.description}
+          rows={4}
+          placeholder={$t('courses.new_course_modal.short_description_placeholder')}
+          className="mb-4"
           isRequired={true}
-          errorMessage={errors.title}
-          autoComplete={false}
+          errorMessage={errors.description}
+          isAIEnabled={true}
+          initAIPrompt="Write a 30 word description for a course titled: {$createCourseModal.title}"
         />
-      </div>
 
-      <TextareaField
-        label={$t('courses.new_course_modal.short_description')}
-        bind:value={$createCourseModal.description}
-        rows={4}
-        placeholder={$t('courses.new_course_modal.short_description_placeholder')}
-        className="mb-4"
-        isRequired={true}
-        errorMessage={errors.description}
-        isAIEnabled={true}
-        initAIPrompt="Write a 30 word description for a course titled: {$createCourseModal.title}"
-      />
-
-      <div class="mt-5 flex items-center justify-between">
-        <Button variant="outline" onclick={() => (step = 0)}>
-          {$t('courses.new_course_modal.back')}
-        </Button>
-        <Button type="submit" disabled={isLoading} loading={isLoading}>
-          {$t('courses.new_course_modal.button')}
-        </Button>
-      </div>
-    </form>
+        <Dialog.Footer>
+          <Button variant="outline" onclick={() => (step = 0)}>
+            {$t('courses.new_course_modal.back')}
+          </Button>
+          <Button type="submit" disabled={isLoading} loading={isLoading}>
+            {$t('courses.new_course_modal.button')}
+          </Button>
+        </Dialog.Footer>
+      </form>
     {/if}
   </Dialog.Content>
 </Dialog.Root>

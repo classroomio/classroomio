@@ -20,7 +20,6 @@
 
   import { DeleteModal } from '$features/ui';
   import type { Course } from '$lib/utils/types';
-  import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { deleteCourse } from '$lib/utils/services/courses';
@@ -37,6 +36,7 @@
     emptyTitle?: string;
     emptyDescription?: string;
     isExplore?: boolean;
+    isLMS?: boolean;
     searchValue?: string;
     selectedId?: string;
   }
@@ -46,6 +46,7 @@
     emptyTitle = $t('courses.course_card.empty_title'),
     emptyDescription = $t('courses.course_card.empty_description'),
     isExplore = false,
+    isLMS = false,
     searchValue = $bindable(''),
     selectedId = $bindable('0')
   }: Props = $props();
@@ -135,7 +136,9 @@
     </section>
   {:else if !courses.length}
     <Empty title={emptyTitle} description={emptyDescription} icon={LibraryBigIcon} variant="page">
-      <CreateCourseButton isResponsive />
+      {#if !isLMS}
+        <CreateCourseButton isResponsive />
+      {/if}
     </Empty>
   {:else if $courseMetaDeta.view === 'list'}
     <div class="w-full overflow-hidden rounded-md border">
@@ -167,6 +170,6 @@
       </Table.Root>
     </div>
   {:else}
-    <CourseCardList {courses} {isExplore} isLMS={$globalStore.isOrgSite} />
+    <CourseCardList {courses} {isExplore} {isLMS} />
   {/if}
 </div>

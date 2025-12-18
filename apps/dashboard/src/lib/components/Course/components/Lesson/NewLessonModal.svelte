@@ -112,7 +112,7 @@
     if (!isOpen) handleClose();
   }}
 >
-  <Dialog.Content class="w-[80%] md:w-[65%] max-w-2xl overflow-hidden">
+  <Dialog.Content>
     <Dialog.Header>
       <Dialog.Title>
         {$t(
@@ -121,24 +121,24 @@
       </Dialog.Title>
     </Dialog.Header>
     <form
-    onsubmit={preventDefault(handleSave)}
-    class="relative m-auto mb-2 flex flex-wrap items-center px-2 py-2 md:mb-4 md:px-5 md:py-3 dark:bg-neutral-800"
-  >
-    <div class="w-full">
-      <InputField
-        label={$t(
-          `course.navItem.lessons.add_lesson.${
-            $handleAddLessonWidget.isSection ? 'lesson_section_title' : 'lesson_title'
-          }`
-        )}
-        bind:value={lesson.title}
-        autoFocus={true}
-        className="flex-1 min-w-lg max-w-lg"
-        isRequired={true}
-        errorMessage={errors.title}
-      />
-      {#if $course.type == COURSE_TYPE.LIVE_CLASS}
-        <!-- <div
+      onsubmit={preventDefault(handleSave)}
+      class="relative mb-2 flex w-full flex-wrap items-center px-2 py-2 md:mb-4 md:px-5 md:py-3"
+    >
+      <div class="w-full">
+        <InputField
+          label={$t(
+            `course.navItem.lessons.add_lesson.${
+              $handleAddLessonWidget.isSection ? 'lesson_section_title' : 'lesson_title'
+            }`
+          )}
+          bind:value={lesson.title}
+          autoFocus={true}
+          className="w-full"
+          isRequired={true}
+          errorMessage={errors.title}
+        />
+        {#if $course.type == COURSE_TYPE.LIVE_CLASS}
+          <!-- <div
           class="flex items-start justify-evenly gap-1 flex-col lg:flex-row lg:items-center mt-2 w-4/5"
         >
           <div class="lg:mb-0">
@@ -162,14 +162,14 @@
             <InputField className="w-[179px]" placeholder="https://meet.google.com/mga-dsjs-fmb" />
           </div>
         </div> -->
-      {/if}
-    </div>
-  </form>
+        {/if}
+      </div>
+    </form>
 
-  <div class="flex flex-row-reverse">
-    <Button onclick={handleSave}>
-      {$t('course.navItem.lessons.add_lesson.save')}
-    </Button>
-  </div>
+    <div class="flex flex-row-reverse">
+      <Button onclick={handleSave}>
+        {$t('course.navItem.lessons.add_lesson.save')}
+      </Button>
+    </div>
   </Dialog.Content>
 </Dialog.Root>

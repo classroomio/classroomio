@@ -9,7 +9,7 @@
   import { VerifyEmailModal } from '$features/onboarding/components';
 
   import { OrgSidebar } from '$features/ui/sidebar/org-sidebar';
-  import AddOrgModal from '$lib/components/Org/AddOrgModal/AddOrgModal.svelte';
+  import { AddOrgModal } from '$features/org';
 
   let { data, children } = $props();
 
@@ -35,7 +35,7 @@
   <Sidebar.Inset>
     <AppHeader />
 
-    <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 overflow-y-auto px-4">
+    <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4">
       {#if data.orgName === '*'}
         <div class="grid auto-rows-min gap-4 md:grid-cols-3">
           <Skeleton class="aspect-video rounded-xl" />

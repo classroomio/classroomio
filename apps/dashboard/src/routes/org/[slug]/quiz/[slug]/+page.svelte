@@ -9,10 +9,8 @@
   import CircleAlertIcon from '@lucide/svelte/icons/circle-alert';
   import { CircleCheckIcon } from '$features/ui/icons';
 
-  import Preview from '$lib/components/Org/Quiz/Play/Preview.svelte';
-  import DeleteModal from '$lib/components/Org/Quiz/DeleteModal.svelte';
+  import { Preview, DeleteModal, QuizQuestion } from '$features/org';
   import { Button } from '@cio/ui/base/button';
-  import QuizQuestion from '$lib/components/Org/Quiz/QuizQuestion.svelte';
 
   import { t } from '$lib/utils/functions/translations';
   import { supabase } from '$lib/utils/functions/supabase';

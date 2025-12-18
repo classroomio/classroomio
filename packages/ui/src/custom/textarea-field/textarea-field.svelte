@@ -44,11 +44,7 @@
 
   <Textarea
     bind:value
-    class={cn(
-      'ui:border-b-2 ui:border-l-0 ui:border-r-0 ui:border-t-0 ui:rounded-t-md',
-      bgColor,
-      errorMessage ? 'ui:border-red-500' : ''
-    )}
+    class={cn(bgColor, errorMessage ? 'ui:border-red-500' : '')}
     aria-invalid={errorMessage ? 'true' : undefined}
     {...textareaProps}
   />

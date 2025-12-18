@@ -2,7 +2,7 @@
   import get from 'lodash/get';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
-  import UploadImage from '$lib/components/UploadImage/index.svelte';
+  import UploadImage from '$features/ui/upload-image.svelte';
   import { uploadImage } from '$lib/utils/services/upload';
   import type { Course } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
