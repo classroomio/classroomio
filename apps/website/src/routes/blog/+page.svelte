@@ -1,7 +1,5 @@
 <script>
-  import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
-  import PageHeader from '$lib/PageHeader/PageHeader.svelte';
-  import BlogListItem from '$lib/Blog/BlogListItem.svelte';
+  import { PageSignupCTA, PageHeader, BlogListItem } from '$lib/components';
 
   export let data;
 </script>
@@ -12,9 +10,7 @@
 
 <section>
   <PageHeader className="flex flex-col items-center justify-center text-center">
-    <h1
-      class="mx-auto text-4xl md:text-7xl lg:text-6xl font-bold text-slate-900 flex flex-col items-center"
-    >
+    <h1 class="mx-auto text-4xl md:text-6xl text-slate-900 flex flex-col items-center">
       <span>What's new on</span>
       <span class="text-blue-700 relative">ClassroomIO?</span>
     </h1>

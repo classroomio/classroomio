@@ -1,10 +1,10 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
   import { sineInOut } from 'svelte/easing';
-  import Board from './components/Board.svelte';
-  import { TicTacToe } from './components/board';
-  import { scores, changeToComputer } from './components/store';
-  import ToolsHeader from '$lib/ToolsHeader/ToolsHeader.svelte';
+  import Board from '$lib/features/tools/tic-tac-toe/board.svelte';
+  import { TicTacToe } from '$lib/features/tools/tic-tac-toe/board';
+  import { scores, changeToComputer } from '$lib/features/tools/tic-tac-toe/store';
+  import { ToolsHeader } from '$lib/components';
 
   let startGame = false;
   let message: string | null = null;

@@ -2,17 +2,18 @@
   import { onDestroy } from 'svelte';
   import { fly } from 'svelte/transition';
   import { sineInOut } from 'svelte/easing';
-  import { Facebook, Linkedin } from '@lucide/svelte';
+  import Facebook from '@lucide/svelte/icons/facebook';
+  import Linkedin from '@lucide/svelte/icons/linkedin';
 
-  import { htmlBody, type HtmlBody, openModal, isFormComplete } from './components/store';
+  import { htmlBody, type HtmlBody, openModal, isFormComplete } from '$lib/features/tools/progress/store';
 
-  import Mood from './components/Mood.svelte';
-  import Avatar from './components/Avatar.svelte';
-  import Report from './components/Report.svelte';
-  import FullView from './components/FullView.svelte';
-  import Background from './components/Background.svelte';
-  import ToolsHeader from '$lib/ToolsHeader/ToolsHeader.svelte';
-  import DownloadButton from './components/DownloadButton.svelte';
+  import Mood from '$lib/features/tools/progress/mood.svelte';
+  import Avatar from '$lib/features/tools/progress/avatar.svelte';
+  import Report from '$lib/features/tools/progress/report.svelte';
+  import FullView from '$lib/features/tools/progress/full-view.svelte';
+  import Background from '$lib/features/tools/progress/background.svelte';
+  import { ToolsHeader } from '$lib/components';
+  import DownloadButton from '$lib/features/tools/progress/download-button.svelte';
 
   const MAX_CHARS = 160;
   let remainingChars = MAX_CHARS;

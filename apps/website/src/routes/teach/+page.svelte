@@ -1,7 +1,7 @@
 <script lang="ts">
   import { slide } from 'svelte/transition';
-  import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
-  import PageHeader from '$lib/PageHeader/PageHeader.svelte';
+  import { PageSignupCTA, PageHeader } from '$lib/components';
+  import { Button } from '@cio/ui/base/button';
 
   const whyStart = [
     {
@@ -93,13 +93,12 @@
         With ClassroomIO, you can make side income while teaching the subject you love
       </p>
 
-      <a
+      <Button
         href="/teach/register"
         target="_blank"
-        class="block w-full rounded-md bg-blue-700 py-3 text-center text-base text-white lg:w-[30%]"
       >
         Register
-      </a>
+      </Button>
     </div>
 
     <div class=" ">
@@ -149,13 +148,13 @@
         {/each}
       </div>
       <div class="mt-3 flex justify-center px-[5%]">
-        <a
+        <Button
           href="/teach/register"
           target="_blank"
-          class="w-full rounded-md bg-blue-700 py-3 text-center text-base text-white lg:max-w-[20%]"
-        >
+          rel="noopener noreferrer nofollow"
+      >
           Get Started
-        </a>
+        </Button>
       </div>
     </div>
 

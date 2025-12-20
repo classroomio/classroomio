@@ -568,6 +568,9 @@ importers:
       '@cio/utils':
         specifier: workspace:*
         version: link:../../packages/utils
+      '@lucide/svelte':
+        specifier: ^0.545.0
+        version: 0.545.0(svelte@5.43.2)
       '@tailwindcss/postcss':
         specifier: ^4.1.17
         version: 4.1.17
@@ -614,9 +617,6 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.9
         version: 0.5.19(tailwindcss@4.1.17)
-      carbon-icons-svelte:
-        specifier: ^12.3.0
-        version: 12.19.0
       mdsvex:
         specifier: ^0.11.0
         version: 0.11.2(svelte@5.43.2)

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ToolsHeader from '$lib/ToolsHeader/ToolsHeader.svelte';
+  import { ToolsHeader } from '$lib/components';
 
   let namesInput = '';
   let numNames = 0;

@@ -20,7 +20,6 @@ body {
 }
 
 @-webkit-keyframes floating {
-
   0%,
   100% {
     -webkit-transform: translateY(0rem);
@@ -34,7 +33,6 @@ body {
 }
 
 @keyframes floating {
-
   0%,
   100% {
     -webkit-transform: translateY(0rem);
@@ -106,7 +104,7 @@ body {
   margin: 20px 0;
 }
 
-.prose figure+em {
+.prose figure + em {
   display: block;
   font-size: 14px;
   margin-bottom: 40px;
@@ -153,4 +151,8 @@ svg.lucide-icon:not(.custom) {
   .embed {
     width: 560px;
   }
+}
+
+body {
+  --primary: var(--color-blue-700);
 }

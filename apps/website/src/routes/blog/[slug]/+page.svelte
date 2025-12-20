@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { ChevronLeft } from '@lucide/svelte';
+  import ChevronLeft from '@lucide/svelte/icons/chevron-left';
+  import { Badge } from '@cio/ui/base/badge';
+  import { formatDate } from '$lib/utils/format-date';
+  import { Button } from '@cio/ui/base/button';
 
-  import { formatDate } from '$lib/utils/formatDate';
-
-  import Chip from '$lib/Chip/Chip.svelte';
-  import BlogListItem from '$lib/Blog/BlogListItem.svelte';
+  import { BlogListItem } from '$lib/components';
 
   export let data;
 </script>
@@ -17,7 +17,7 @@
         <p class="text-sm text-gray-500">{formatDate(data.meta.date)}</p>
         <p class="py-2 text-center text-3xl font-bold md:w-[60%]">{@html data.meta.title}</p>
       </hgroup>
-      <main class="mx-auto max-w-screen-md px-4 lg:px-8">
+      <main class="mx-auto max-w-3xl px-4 lg:px-8">
         <div class="my-2 flex items-center justify-start gap-4 border-y border-gray-200 py-4">
           <img loading="lazy" src={data.meta.avatar} alt="avatar" class="h-10 w-10 rounded-full" />
           <span>
@@ -32,7 +32,7 @@
           <!-- Tags -->
           <div class="flex gap-2 py-4">
             {#each data.meta.tags as tag}
-              <Chip label={tag} />
+              <Badge variant="outline">{tag}</Badge>
             {/each}
           </div>
         </div>
@@ -50,9 +50,9 @@
           </section>
         {/if}
 
-        <a href="/blog" class="my-10 flex items-center gap-2 text-lg font-medium text-slate-700 underline">
-          <ChevronLeft class=" h-6 w-6 font-medium" /> Back to all posts
-        </a>
+        <Button href="/blog" variant="link">
+          <ChevronLeft /> Back to all posts
+        </Button>
       </main>
     </article>
   {/if}

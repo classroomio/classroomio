@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { ArrowUpRight } from '@lucide/svelte';
+  import ArrowUpRight from '@lucide/svelte/icons/arrow-up-right';
 
-  import { FORM_TYPE } from '$lib/types';
-  import type { FORM_TYPE_KEY } from '$lib/types';
+  import { FORM_TYPE } from '$lib/utils/types';
+  import type { FORM_TYPE_KEY } from '$lib/utils/types';
 
-  import HelpForm from '$lib/Contact/HelpForm.svelte';
-  import PageHeader from '$lib/PageHeader/PageHeader.svelte';
-  import FeedbackForm from '$lib/Contact/FeedbackForm.svelte';
+  import HelpForm from '$lib/features/contact/help-form.svelte';
+  import { PageHeader } from '$lib/components';
+  import FeedbackForm from '$lib/features/contact/feedback-form.svelte';
 
   let currentForm: FORM_TYPE_KEY;
 
@@ -54,18 +54,22 @@
         Contact Us
       </span>
     </div>
-    <h1 class="mx-auto flex flex-col items-center text-4xl font-bold text-slate-900 md:text-7xl lg:text-6xl">
+    <h1 class="mx-auto flex flex-col items-center text-4xl text-slate-900 md:text-6xl">
       <span>Get in touch with <span class="text-blue-700">Us</span></span>
     </h1>
-    <p class="mt-10 w-[90%] max-w-3xl text-center text-lg font-normal text-slate-700 md:w-[60%] lg:mt-7">
-      Report any bugs you encounter, request new features you'd like to see, or ask any questions you have about
-      ClassroomIO
+    <p
+      class="mt-10 w-[90%] max-w-3xl text-center text-lg font-normal text-slate-700 md:w-[60%] lg:mt-7"
+    >
+      Report any bugs you encounter, request new features you'd like to see, or ask any questions
+      you have about ClassroomIO
     </p>
   </PageHeader>
 
   <div class="mx-auto my-20">
     <!-- Content here -->
-    <div class="mx-auto grid w-[90%] grid-cols-1 place-items-center gap-10 md:grid-cols-2 lg:w-[60%]">
+    <div
+      class="mx-auto grid w-[90%] grid-cols-1 place-items-center gap-10 md:grid-cols-2 lg:w-[60%]"
+    >
       {#each formList as list}
         <button
           on:click={() => onChange(list.id, list.to)}

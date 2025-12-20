@@ -1,5 +1,5 @@
 <script>
-  import PageHeader from '$lib/PageHeader/PageHeader.svelte';
+  import { PageHeader } from '$lib/components';
   import { tools } from '$lib/utils/constants/tools';
 
   const freeTools = tools.filter((item) => item.show);

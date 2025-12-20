@@ -2,8 +2,8 @@
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import { sineInOut } from 'svelte/easing';
-  import Timer from './components/Timer.svelte';
-  import ToolsHeader from '$lib/ToolsHeader/ToolsHeader.svelte';
+  import Timer from '$lib/features/tools/stopwatch/timer.svelte';
+  import { ToolsHeader } from '$lib/components';
 
   let timer: NodeJS.Timeout;
   let buzzSound: HTMLAudioElement;
