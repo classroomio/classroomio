@@ -1,9 +1,7 @@
 <script>
   import { dev } from '$app/environment';
   import { page } from '$app/state';
-  import Footer from '$lib/Footer/Footer.svelte';
-  import Navigation from '$lib/Navigation/Navigation.svelte';
-  import NotFound from '$lib/NotFound/NotFound.svelte';
+  import { Footer, Navigation, NotFound } from '$lib/components';
   import extend from 'just-extend';
   import { onMount } from 'svelte';
   import { MetaTags } from 'svelte-meta-tags';

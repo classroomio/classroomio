@@ -1,26 +1,23 @@
 <script lang="ts">
   import { slide } from 'svelte/transition';
-  import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
-  import PageHeader from '$lib/PageHeader/PageHeader.svelte';
+  import { PageSignupCTA, PageHeader } from '$lib/components';
+  import { Button } from '@cio/ui/base/button';
 
   const whyStart = [
     {
       src: '/teach/teach-from-anywhere.svg',
       header: 'Fully Online; Teach from anywhere',
-      subText:
-        ' Facilitate a subject from the comfort of your space, engaging students from highly diverse background'
+      subText: ' Facilitate a subject from the comfort of your space, engaging students from highly diverse background'
     },
     {
       src: '/teach/get-paid.svg',
       header: 'Get paid extra commission',
-      subText:
-        'Get paid for the course you design and earn extra comission based on course perfomance'
+      subText: 'Get paid for the course you design and earn extra comission based on course perfomance'
     },
     {
       src: '/teach/inspire-learners.svg',
       header: 'Inspire learners',
-      subText:
-        'Your opportunity to inspire thousands of learners to achieve dreams and academic pursue exellence'
+      subText: 'Your opportunity to inspire thousands of learners to achieve dreams and academic pursue exellence'
     }
   ];
 
@@ -79,22 +76,12 @@
   <title>Teach | ClassroomIO</title>
   <meta property="og:image" itemprop="image" content="https://brand.cdn.clsrio.com/og/teach.png" />
   <meta property="og:title" content="Teach on ClassroomIO" />
-  <meta
-    property="og:description"
-    content="On ClassroomIO you can make side income while doing what you love."
-  />
+  <meta property="og:description" content="On ClassroomIO you can make side income while doing what you love." />
 
-  <meta
-    property="og:image:secure_url"
-    itemprop="image"
-    content="https://brand.cdn.clsrio.com/og/teach.png"
-  />
+  <meta property="og:image:secure_url" itemprop="image" content="https://brand.cdn.clsrio.com/og/teach.png" />
 
   <meta name="twitter:title" content="Teach on ClassroomIO" />
-  <meta
-    name="twitter:description"
-    content="On ClassroomIO you can make side income while doing what you love."
-  />
+  <meta name="twitter:description" content="On ClassroomIO you can make side income while doing what you love." />
   <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/teach.png" />
 </svelte:head>
 
@@ -102,17 +89,16 @@
   <PageHeader className="flex items-center justify-evenly px-5 flex-wrap text-left">
     <div>
       <h1 class="text-5xl font-bold">Teach with us</h1>
-      <p class="my-5 lg:w-[77%] lg:text-left text-center">
+      <p class="my-5 text-center lg:w-[77%] lg:text-left">
         With ClassroomIO, you can make side income while teaching the subject you love
       </p>
 
-      <a
+      <Button
         href="/teach/register"
         target="_blank"
-        class="w-full block text-center lg:w-[30%] py-3 text-base text-white rounded-md bg-blue-700"
       >
         Register
-      </a>
+      </Button>
     </div>
 
     <div class=" ">
@@ -120,21 +106,21 @@
     </div>
   </PageHeader>
 
-  <div class="mt-10 mx-auto">
-    <div class="px-[10%] pb-10 border-b border-slate-100">
-      <h1 class="text-4xl pb-28 text-center font-bold flex gap-3 justify-center items-center">
+  <div class="mx-auto mt-10">
+    <div class="border-b border-slate-100 px-[10%] pb-10">
+      <h1 class="flex items-center justify-center gap-3 pb-28 text-center text-4xl font-bold">
         Why you should teach with us? <img src="/teach/star.svg" alt="" />
       </h1>
 
-      <div class="flex flex-wrap justify-center lg:justify-between mt-10">
+      <div class="mt-10 flex flex-wrap justify-center lg:justify-between">
         {#each whyStart as why}
           <figure
-            class="flex gap-3 flex-col justify-center items-center px-2 w-full h-full max-w-[250px] max-h-[380px] text-center"
+            class="flex h-full max-h-[380px] w-full max-w-[250px] flex-col items-center justify-center gap-3 px-2 text-center"
           >
-            <img src={why.src} alt="" class="w-[80px] h-[80px]" />
+            <img src={why.src} alt="" class="h-[80px] w-[80px]" />
             <figcaption>
-              <h1 class="font-bold text-base">{why.header}</h1>
-              <p class="text-sm mt-1">
+              <h1 class="text-base font-bold">{why.header}</h1>
+              <p class="mt-1 text-sm">
                 {why.subText}
               </p>
             </figcaption>
@@ -143,66 +129,66 @@
       </div>
     </div>
 
-    <div class="px-[10%] mt-10 py-10">
-      <h1 class="text-4xl mb-28 text-center font-bold flex gap-3 justify-center items-center">
+    <div class="mt-10 px-[10%] py-10">
+      <h1 class="mb-28 flex items-center justify-center gap-3 text-center text-4xl font-bold">
         How to get started <img src="/teach/thumbs-up.svg" alt="" />
       </h1>
 
-      <div class="flex flex-wrap justify-between gap-y-10 mx-auto mt-5">
+      <div class="mx-auto mt-5 flex flex-wrap justify-between gap-y-10">
         {#each steps as step, i}
-          <div class="lg:max-w-[40%] px-10 py-5">
-            <h1 class="font-bold text-2xl">
-              <span class="px-2 py-1 mr-3 bg-[#F7F7F7] rounded-md">{i + 1}</span>
+          <div class="px-10 py-5 lg:max-w-[40%]">
+            <h1 class="text-2xl font-bold">
+              <span class="mr-3 rounded-md bg-[#F7F7F7] px-2 py-1">{i + 1}</span>
               {step.title}
             </h1>
-            <p class="text-base text-gray-600 mt-5">
+            <p class="mt-5 text-base text-gray-600">
               {step.subText}
             </p>
           </div>
         {/each}
       </div>
-      <div class="flex justify-center px-[5%] mt-3">
-        <a
+      <div class="mt-3 flex justify-center px-[5%]">
+        <Button
           href="/teach/register"
           target="_blank"
-          class="w-full lg:max-w-[20%] py-3 text-base text-white rounded-md bg-blue-700 text-center"
-        >
+          rel="noopener noreferrer nofollow"
+      >
           Get Started
-        </a>
+        </Button>
       </div>
     </div>
 
-    <div class="px-2 lg:px-[12%] bg-[#F5F8FE] my-10 py-12 h-[75%] lg:h-[80%]">
-      <h1 class="text-2xl text-center font-bold flex gap-3 justify-center items-center">
+    <div class="my-10 h-[75%] bg-[#F5F8FE] px-2 py-12 lg:h-[80%] lg:px-[12%]">
+      <h1 class="flex items-center justify-center gap-3 text-center text-2xl font-bold">
         Word from our fufilled facilitators
       </h1>
 
       <div
-        class="mt-10 w-full md:w-2/4 mx-auto border shadow-sm bg-white rounded-md text-center py-6 relative before:w-[4.5%] before:absolute before:left-0 before:top-0 before:h-full before:bg-[#0233BD] before:rounded-tl-md before:rounded-bl-md"
+        class="relative mx-auto mt-10 w-full rounded-md border bg-white py-6 text-center shadow-sm before:absolute before:left-0 before:top-0 before:h-full before:w-[4.5%] before:rounded-bl-md before:rounded-tl-md before:bg-[#0233BD] md:w-2/4"
       >
-        <h1 class="text-base font-medium leading-5 w-[77%] mx-auto">
-          With ClassroomIO, I am training over 100 students. I am making more money than expected
-          with little effort and my students are happy. Love the product
+        <h1 class="mx-auto w-[77%] text-base font-medium leading-5">
+          With ClassroomIO, I am training over 100 students. I am making more money than expected with little effort and
+          my students are happy. Love the product
         </h1>
-        <div class="flex flex-row gap-4 justify-center items-center mt-3">
+        <div class="mt-3 flex flex-row items-center justify-center gap-4">
           <img src="/teach/user-profile.png" alt="" class="w-8" />
           <p class="text-sm">
-            <span class="font-semibold mr-2"> Bilik Diana </span> English tutor
+            <span class="mr-2 font-semibold"> Bilik Diana </span> English tutor
           </p>
         </div>
       </div>
     </div>
 
-    <div class="px-10 lg:px-[15%] lg:max-w-[65%] my-10 mt-10 mx-auto">
-      <h1 class="text-2xl text-center font-bold">Frequently asked questions</h1>
+    <div class="mx-auto my-10 mt-10 px-10 lg:max-w-[65%] lg:px-[15%]">
+      <h1 class="text-center text-2xl font-bold">Frequently asked questions</h1>
 
       <div class="mt-10">
         {#each faqs as faq, index}
-          <div class="border-b border-black lg:px-3 pt-1 pb-2">
+          <div class="border-b border-black pb-2 pt-1 lg:px-3">
             <div>
               <button
                 type="button"
-                class="w-full font-medium text-sm md:text-lg my-2 flex justify-between text-left md:text-center"
+                class="my-2 flex w-full justify-between text-left text-sm font-medium md:text-center md:text-lg"
                 on:click={() => toggleAnswer(index)}
               >
                 {faq.question} <span>{faq.showAnswer ? '-' : '+'}</span>

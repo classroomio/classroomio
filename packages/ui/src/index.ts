@@ -43,6 +43,7 @@ export * as Tabs from './base/tabs';
 export * as Textarea from './base/textarea';
 export * as Toggle from './base/toggle';
 export * as Tooltip from './base/tooltip';
+export * as NavigationMenu from './base/navigation-menu';
 
 export { Toaster } from './base/sonner';
 export { BarChart, LineChart, AreaChart, PieChart, scaleBand } from './base/chart';
