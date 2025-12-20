@@ -78,7 +78,7 @@
 
   <div class="flex flex-col items-center">
     <button
-      class="width-fit text-primary-700 flex flex-col items-center text-sm {isDisabled || isUploading
+      class="width-fit ui:text-primary flex flex-col items-center text-sm {isDisabled || isUploading
         ? 'cursor-not-allowed opacity-50'
         : 'cursor-pointer'}"
       onclick={() => {
@@ -128,4 +128,3 @@
     display: none;
   }
 </style>
-

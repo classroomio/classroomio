@@ -18,7 +18,7 @@
   let progress: ProfileCourseProgress | undefined;
 
   const downLoadCertificate = async () => {
-    if (!isCourseComplete) return;
+    if (!isCourseComplete || !$course.id) return;
 
     isLoading = true;
     try {
@@ -84,18 +84,11 @@
   );
 </script>
 
-<Box>
-  <div class="flex h-full w-max flex-col items-center justify-center gap-5">
-    <img src="/images/student-certificate-preview.png" alt="Certificate" class="max-w-[218px]" />
-    <p class="text-center text-xl font-normal">
-      {$t(title)}
-    </p>
-    <p class="max-w-md text-center text-sm font-normal">
-      {$t(subtitle)}
-    </p>
+<div class="flex-1">
+  <Empty title={$t(title)} description={$t(subtitle)} icon={DownloadIcon} variant="page">
     <Button onclick={downLoadCertificate} disabled={!isCourseComplete} loading={isLoading}>
       <DownloadIcon size={16} />
       {$t('course.navItem.certificates.download_certificate')}
     </Button>
-  </div>
-</Box>
+  </Empty>
+</div>

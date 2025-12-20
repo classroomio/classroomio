@@ -80,7 +80,7 @@
                 <Table.Cell>
                   <a
                     href={`${pageStore.url.href}/${row.id}/${$currentOrg.id}`}
-                    class="text-primary-700 flex items-center gap-2 hover:underline"
+                    class="ui:text-primary flex items-center gap-2 hover:underline"
                   >
                     <Avatar.Root class="h-5 w-5">
                       <Avatar.Image

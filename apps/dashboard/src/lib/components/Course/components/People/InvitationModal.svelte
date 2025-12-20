@@ -182,109 +182,109 @@
     if (!isOpen) closeModal();
   }}
 >
-  <Dialog.Content class="w-4/5 md:w-2/5 max-w-lg">
+  <Dialog.Content class="w-4/5 max-w-lg md:w-2/5">
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.people.invite_modal.title')}</Dialog.Title>
     </Dialog.Header>
     <form onsubmit={preventDefault(onSubmit)}>
-    <div class="mb-8">
-      <p class="mb-1 text-base font-semibold">{$t('course.navItem.people.invite_modal.invite')}</p>
-      <Select.Root type="multiple" bind:value={selectedIds} disabled={orgApi.isLoading}>
-        <Select.Trigger class="w-full">
-          <div>
-            {#if selectedTutors.length > 0}
-              <div class="flex flex-wrap gap-1">
-                {#each selectedTutors as tutor}
-                  <Badge variant="secondary" class="flex items-center gap-1">
-                    {tutor.text}
-                    <button
-                      type="button"
-                      onclick={(e) => {
-                        e.stopPropagation();
-                        selectedIds = selectedIds.filter((id) => id !== tutor.id.toString());
-                      }}
-                      class="rounded-sm hover:bg-gray-200"
-                    >
-                      <XIcon size={14} />
-                    </button>
-                  </Badge>
-                {/each}
-              </div>
-            {:else}
-              {$t('course.navItem.people.invite_modal.select')}
-            {/if}
+      <div class="mb-8">
+        <p class="mb-1 text-base font-semibold">{$t('course.navItem.people.invite_modal.invite')}</p>
+        <Select.Root type="multiple" bind:value={selectedIds} disabled={orgApi.isLoading}>
+          <Select.Trigger class="w-full">
+            <div>
+              {#if selectedTutors.length > 0}
+                <div class="flex flex-wrap gap-1">
+                  {#each selectedTutors as tutor}
+                    <Badge variant="secondary" class="flex items-center gap-1">
+                      {tutor.text}
+                      <button
+                        type="button"
+                        onclick={(e) => {
+                          e.stopPropagation();
+                          selectedIds = selectedIds.filter((id) => id !== tutor.id.toString());
+                        }}
+                        class="rounded-sm hover:bg-gray-200"
+                      >
+                        <XIcon size={14} />
+                      </button>
+                    </Badge>
+                  {/each}
+                </div>
+              {:else}
+                {$t('course.navItem.people.invite_modal.select')}
+              {/if}
+            </div>
+          </Select.Trigger>
+          <Select.Content>
+            {#each tutors as tutor}
+              <Select.Item value={tutor.id.toString()}>
+                {tutor.text}
+              </Select.Item>
+            {/each}
+          </Select.Content>
+        </Select.Root>
+        {#if orgApi.isLoading}
+          <div class="mt-2 flex items-center gap-2">
+            <Spinner class="h-4 w-4" />
+            <span class="text-sm">Loading...</span>
           </div>
-        </Select.Trigger>
-        <Select.Content>
-          {#each tutors as tutor}
-            <Select.Item value={tutor.id.toString()}>
-              {tutor.text}
-            </Select.Item>
-          {/each}
-        </Select.Content>
-      </Select.Root>
-      {#if orgApi.isLoading}
-        <div class="mt-2 flex items-center gap-2">
-          <Spinner class="h-4 w-4" />
-          <span class="text-sm">Loading...</span>
-        </div>
-      {:else}
-        <span class="mt-2 block text-sm">
-          {$t('course.navItem.people.invite_modal.to_add')}
-          <a href={`/org/${$currentOrg.siteName}/settings/teams`} class="text-primary-600 underline">
-            {$t('course.navItem.people.invite_modal.go_to')}
-          </a>
-        </span>
-      {/if}
-    </div>
-
-    <div class="mb-8 flex w-full items-center justify-between">
-      <div class="w-3/5">
-        <p class="mb-1 text-base font-semibold">
-          {$t('course.navItem.people.invite_modal.invite_students')}
-        </p>
-        <p class=" text-sm">{$t('course.navItem.people.invite_modal.via_link')}</p>
+        {:else}
+          <span class="mt-2 block text-sm">
+            {$t('course.navItem.people.invite_modal.to_add')}
+            <a href={`/org/${$currentOrg.siteName}/settings/teams`} class="ui:text-primary underline">
+              {$t('course.navItem.people.invite_modal.go_to')}
+            </a>
+          </span>
+        {/if}
       </div>
 
-      <Popover.Root>
-        <Popover.Trigger>
-          <button type="button" onclick={copyLink} class="text-primary-800 cursor-pointer capitalize underline">
-            {$t('course.navItem.people.invite_modal.copy_link')}
-          </button>
-        </Popover.Trigger>
-        <Popover.Content align="start" class="w-auto">
-          <div class="p-1 text-sm">{$t('course.navItem.people.invite_modal.success')}</div>
-        </Popover.Content>
-      </Popover.Root>
-    </div>
+      <div class="mb-8 flex w-full items-center justify-between">
+        <div class="w-3/5">
+          <p class="mb-1 text-base font-semibold">
+            {$t('course.navItem.people.invite_modal.invite_students')}
+          </p>
+          <p class=" text-sm">{$t('course.navItem.people.invite_modal.via_link')}</p>
+        </div>
 
-    <div
-      class="flex w-full flex-col-reverse items-center justify-between gap-5 rounded-md border p-4 md:flex-row md:items-stretch"
-    >
-      <div class="flex flex-col items-center justify-between gap-3 md:items-start">
-        <span class="text-sm font-medium">
-          {$t('course.navItem.people.invite_modal.via_qr')}
-        </span>
+        <Popover.Root>
+          <Popover.Trigger>
+            <button type="button" onclick={copyLink} class="text-primary-800 cursor-pointer capitalize underline">
+              {$t('course.navItem.people.invite_modal.copy_link')}
+            </button>
+          </Popover.Trigger>
+          <Popover.Content align="start" class="w-auto">
+            <div class="p-1 text-sm">{$t('course.navItem.people.invite_modal.success')}</div>
+          </Popover.Content>
+        </Popover.Root>
+      </div>
 
-        <Button variant="outline" loading={isLoadingQRDownload} onclick={handleQRDownload}>
-          {$t('course.navItem.people.invite_modal.download_qr')}
+      <div
+        class="flex w-full flex-col-reverse items-center justify-between gap-5 rounded-md border p-4 md:flex-row md:items-stretch"
+      >
+        <div class="flex flex-col items-center justify-between gap-3 md:items-start">
+          <span class="text-sm font-medium">
+            {$t('course.navItem.people.invite_modal.via_qr')}
+          </span>
+
+          <Button variant="outline" loading={isLoadingQRDownload} onclick={handleQRDownload}>
+            {$t('course.navItem.people.invite_modal.download_qr')}
+          </Button>
+        </div>
+
+        <div class="w-full border-4 border-[#f7f7f7] p-1 md:w-28">
+          <img src={qrImage} alt="link qrcode" class="h-full w-full" />
+        </div>
+      </div>
+
+      <div class="w-160 absolute left-[-1000px]">
+        <ShareQrImage {qrImage} course={$course} currentOrg={$currentOrg} />
+      </div>
+
+      <div class="mt-5 flex flex-row-reverse items-center">
+        <Button variant="secondary" type="submit">
+          {$t('course.navItem.people.invite_modal.finish')}
         </Button>
       </div>
-
-      <div class="w-full border-4 border-[#f7f7f7] p-1 md:w-28">
-        <img src={qrImage} alt="link qrcode" class="h-full w-full" />
-      </div>
-    </div>
-
-    <div class="w-160 absolute left-[-1000px]">
-      <ShareQrImage {qrImage} course={$course} currentOrg={$currentOrg} />
-    </div>
-
-    <div class="mt-5 flex flex-row-reverse items-center">
-      <Button variant="secondary" type="submit">
-        {$t('course.navItem.people.invite_modal.finish')}
-      </Button>
-    </div>
-  </form>
+    </form>
   </Dialog.Content>
 </Dialog.Root>

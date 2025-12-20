@@ -4,7 +4,6 @@
   import { Spinner } from '@cio/ui/base/spinner';
   import { Backdrop, Confetti } from '$features/ui';
   import { course, group, courseStore } from '../Course/store';
-  import { isMobile } from '$lib/utils/store/useMobile';
   import { profile } from '$lib/utils/store/user';
   import * as Dialog from '@cio/ui/base/dialog';
   import { t } from '$lib/utils/functions/translations';
@@ -27,7 +26,6 @@
     courseId,
     isExercisePage = false,
     isFetching = $bindable(false),
-    containerClass = '',
     onFetchingChange = (_v: boolean) => {},
     children,
     renderOnlyChildren = false
@@ -91,28 +89,12 @@
 {#if renderOnlyChildren}
   {@render children?.()}
 {:else}
-  <div class="root">
-    <div class="rightBar {containerClass}" class:isMobile={$isMobile}>
-      {#if isExercisePage}
-        <Confetti />
-      {/if}
+  {#if isExercisePage}
+    <Confetti />
+  {/if}
 
-      <!-- Show only if permitted -->
-      {#if isPermitted}
-        {@render children?.()}
-      {/if}
-    </div>
-  </div>
+  <!-- Show only if permitted -->
+  {#if isPermitted}
+    {@render children?.()}
+  {/if}
 {/if}
-
-<style>
-  .root {
-    display: flex;
-    width: 100%;
-  }
-
-  .rightBar {
-    flex-grow: 1;
-    width: calc(100% - 360px);
-  }
-</style>

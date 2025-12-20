@@ -11,6 +11,7 @@
   import { Button } from '@cio/ui/base/button';
   import { Separator } from '@cio/ui/base/separator';
   import * as Item from '@cio/ui/base/item';
+  import { Progress } from '@cio/ui/base/progress';
 
   import { Image } from '$features/ui';
   import { COURSE_TYPE, type Course } from '$lib/utils/types';
@@ -88,7 +89,7 @@
       style: '',
       label: $t('course.navItem.settings.self_paced'),
       icon: UserIcon,
-      iconStyle: 'custom text-primary-700'
+      iconStyle: 'custom ui:text-primary'
     },
     SPECIALIZATION: {
       style: '',
@@ -134,8 +135,8 @@
 
         <Separator class="my-3" />
 
-        <div class="flex justify-between {isLMS && 'items-center'}">
-          <div>
+        <div class="flex justify-between {isLMS && 'items-center'} w-full">
+          <div class="w-[50%]">
             <p class="text-xs {!isLMS && 'pl-2'} dark:text-white">
               {totalLessons}
               {$t('courses.course_card.lessons_number')}
@@ -156,11 +157,9 @@
                 </span>
               {:else if isLMS}
                 {#if !isExplore}
-                  <div class="flex items-center gap-2">
-                    <div class=" relative h-1 w-[50px] bg-[#EAEAEA]">
-                      <div style="width:{progressRate}%" class="bg-primary-700 absolute left-0 top-0 h-full"></div>
-                    </div>
-                    <p class="text-xs text-[#656565] dark:text-white">{progressRate}%</p>
+                  <div class="flex w-3/4 items-center gap-2">
+                    <Progress value={50} />
+                    <p class="ui:text-muted-foreground text-xs">{progressRate}%</p>
                   </div>
                 {/if}
               {:else}

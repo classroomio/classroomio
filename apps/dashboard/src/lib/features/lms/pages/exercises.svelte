@@ -137,7 +137,7 @@
       <div class="h-full overflow-y-auto pb-3 pr-2">
         {#each items as item}
           <div class=" mx-0 my-2 w-full rounded-md bg-white px-3 py-3 dark:bg-neutral-800">
-            <a class="text-primary-600 mb-2 flex w-full cursor-pointer items-center" href={item.courseURL}>
+            <a class="ui:text-primary mb-2 flex w-full cursor-pointer items-center" href={item.courseURL}>
               <p class="text-xs">{item.courseTitle}</p>
             </a>
             <a class="text-md text-black dark:text-white" href={item.exerciseURL}>

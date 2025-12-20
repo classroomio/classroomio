@@ -359,7 +359,7 @@
     if (!isOpen) onClose();
   }}
 >
-  <Dialog.Content class="max-w-4/5 w-[90%] h-[80%] md:h-[566px]">
+  <Dialog.Content class="max-w-4/5 h-[80%] w-[90%] md:h-[566px]">
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.lessons.materials.tabs.video.add_video.title')}</Dialog.Title>
     </Dialog.Header>
@@ -373,7 +373,7 @@
     if (!isOpen) onDocumentClose();
   }}
 >
-  <Dialog.Content class="max-w-4/5 w-[90%] h-[80%] md:h-[566px]">
+  <Dialog.Content class="max-w-4/5 h-[80%] w-[90%] md:h-[566px]">
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.lessons.materials.tabs.document.upload_title')}</Dialog.Title>
     </Dialog.Header>
@@ -549,7 +549,7 @@
 
       {#if $currentOrg.customization?.apps?.comments}
         <hr class="my-5" />
-        {$currentOrg.customization}
+
         <Comments {lessonId} />
       {/if}
     </div>

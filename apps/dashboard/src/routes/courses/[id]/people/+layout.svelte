@@ -2,11 +2,11 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import { IconButton } from '@cio/ui/custom/icon-button';
-  import { PageBody, PageNav } from '$lib/components/Page';
   import { Button } from '@cio/ui/base/button';
   import { RoleBasedSecurity } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+  import * as Page from '@cio/ui/base/page';
   import { CourseContainer } from '$lib/components/CourseContainer';
 
   let { data = $bindable(), children } = $props();
@@ -29,8 +29,8 @@
 </script>
 
 <CourseContainer courseId={data.courseId}>
-  <PageNav title={$t('course.navItem.people.title')} disableSticky={true}>
-    {#snippet image()}
+  <div class="mx-auto w-full max-w-3xl">
+    <Page.Header>
       {#if data.personId}
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           <IconButton onclick={handleBackNavigation}>
@@ -38,18 +38,26 @@
           </IconButton>
         </RoleBasedSecurity>
       {/if}
-    {/snippet}
-    {#snippet widget()}
-      {#if !data.personId}
-        <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <Button class="mr-2" onclick={handleClick}>
-            {$t('course.navItem.people.add')}
-          </Button>
-        </RoleBasedSecurity>
-      {/if}
-    {/snippet}
-  </PageNav>
-  <PageBody width="w-full max-w-6xl md:w-11/12">
-    {@render children?.()}
-  </PageBody>
+      <Page.HeaderContent>
+        <Page.Title>
+          {$t('course.navItem.people.title')}
+        </Page.Title>
+      </Page.HeaderContent>
+      <Page.Action>
+        {#if !data.personId}
+          <RoleBasedSecurity allowedRoles={[1, 2]}>
+            <Button class="mr-2" onclick={handleClick}>
+              {$t('course.navItem.people.add')}
+            </Button>
+          </RoleBasedSecurity>
+        {/if}
+      </Page.Action>
+    </Page.Header>
+
+    <Page.Body>
+      {#snippet child()}
+        {@render children?.()}
+      {/snippet}
+    </Page.Body>
+  </div>
 </CourseContainer>

@@ -267,7 +267,7 @@
     variant="page"
   >
     <RoleBasedSecurity allowedRoles={[1, 2]}>
-      <p class="text-primary-700 text-center text-sm">
+      <p class="ui:text-primary text-center text-sm">
         Click the <span class="font-semibold">Edit</span> button to add.
       </p>
     </RoleBasedSecurity>

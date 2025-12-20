@@ -99,22 +99,12 @@ code {
   color: var(--main-primary-color);
 }
 
-svg.lucide-icon:not(.custom) {
+:not([data-slot='button']) > svg.lucide-icon:not(.custom) {
   color: #666666;
 }
 
-.dark svg.lucide-icon:not(.custom) {
+.dark :not([data-slot='button']) > svg.lucide-icon:not(.custom) {
   color: #fff;
-}
-
-.org-root {
-  height: calc(100vh - 48px);
-}
-
-.org-slot {
-  min-width: calc(100vw - 250px);
-  height: calc(100vh - 48px);
-  overflow-y: auto;
 }
 
 .shake {

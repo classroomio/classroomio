@@ -22,7 +22,6 @@
   import { upsertExercise } from '$lib/utils/services/courses';
   import EditMode from './EditMode.svelte';
   import ViewMode from './ViewMode.svelte';
-  import { PageBody } from '$lib/components/Page';
   import Analytics from './Submissions/index.svelte';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import UpdateDescription from './UpdateDescription.svelte';
@@ -103,7 +102,7 @@
   // });
 </script>
 
-<PageBody isPageNavHidden={$globalStore.isStudent} padding="px-4 overflow-x-hidden">
+<div class="overflow-x-hidden px-4">
   <div class="sticky top-0 z-10 mb-3 bg-gray-100 p-2 dark:bg-neutral-800">
     <Breadcrumb.Root>
       <Breadcrumb.List>
@@ -191,4 +190,4 @@
   {:else if selectedTab === 'submissions'}
     <Analytics bind:exerciseId />
   {/if}
-</PageBody>
+</div>

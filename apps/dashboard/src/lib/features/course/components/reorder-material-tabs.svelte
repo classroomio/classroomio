@@ -1,12 +1,15 @@
-<script>
+<script lang="ts">
   import { flip } from 'svelte/animate';
-  import { settings } from './store';
+  import { settings } from '../utils/settings-store';
   import { dndzone } from 'svelte-dnd-action';
   import GripVerticalIcon from '@lucide/svelte/icons/grip-vertical';
   import { t } from '$lib/utils/functions/translations';
-  import { createEventDispatcher } from 'svelte';
 
-  const dispatch = createEventDispatcher();
+  interface Props {
+    onchange: () => void;
+  }
+
+  let { onchange }: Props = $props();
 
   const flipDurationMs = 300;
 
@@ -17,7 +20,7 @@
   function handleDndFinalize(e) {
     $settings.tabs = e.detail.items;
 
-    dispatch('change');
+    onchange();
   }
 </script>
 
@@ -26,20 +29,19 @@
     items: $settings.tabs,
     flipDurationMs,
     dropTargetStyle: {
-      border: '2px #1d4ed8 solid',
       'border-style': 'dashed'
     }
   }}
   onconsider={handleDndConsider}
   onfinalize={handleDndFinalize}
-  class="flex w-fit gap-1 p-1 md:gap-3"
+  class="ui:bg-muted ui:text-muted-foreground inline-flex h-12 w-fit items-center justify-start gap-2 rounded-lg px-2 py-1"
 >
   {#each $settings.tabs as item (item.id)}
     <div
       animate:flip={{ duration: flipDurationMs }}
-      class="flex items-center justify-start gap-1 rounded-md bg-slate-100 p-2 text-center text-xs md:gap-2 md:text-base dark:bg-slate-700 dark:text-white"
+      class="ui:bg-background ui:dark:text-foreground ui:border-input flex h-[calc(100%-3px)] items-center justify-start gap-2 rounded-md px-3 py-1 text-sm font-medium transition-[color,box-shadow]"
     >
-      <GripVerticalIcon size={16} />
+      <GripVerticalIcon size={16} class="custom text-primary" />
       {$t(item.name)}
     </div>
   {/each}

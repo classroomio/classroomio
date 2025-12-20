@@ -13,7 +13,6 @@
   import { isQuestionnaireFetching, questionnaire } from '../store/exercise';
   import { createExercise, createExerciseFromTemplate } from '$lib/utils/services/courses';
 
-  import { PageBody } from '$lib/components/Page';
   import Exercise from '../Exercise/index.svelte';
   import { Backdrop, RoleBasedSecurity } from '$features/ui';
   import * as Empty from '@cio/ui/base/empty';
@@ -174,7 +173,7 @@
     bind:title={newExercise.title}
   />
 
-  <PageBody isPageNavHidden={$globalStore.isStudent}>
+  <div>
     {#snippet header()}
       <slot:fragment>
         <Breadcrumb.Root class="my-2">
@@ -221,5 +220,5 @@
         </Empty.Root>
       {/each}
     </div>
-  </PageBody>
+  </div>
 {/if}

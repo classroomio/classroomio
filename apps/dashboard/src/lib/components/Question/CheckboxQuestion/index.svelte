@@ -11,7 +11,6 @@
   import ReasonBox from '../ReasonBox.svelte';
 
   interface Props {
-    key: string | number;
     title?: string;
     index?: number | string;
     code: any;
@@ -51,12 +50,12 @@
       isDisabled: false,
       isActive: false
     },
-    grade = $bindable(),
+    grade = $bindable(0),
     gradeMax = 0,
     disableGrading = false,
-    isGradeWithAI = false,
-    reason,
-    isLoading = false,
+    isGradeWithAI = $bindable(false),
+    reason = $bindable(''),
+    isLoading = $bindable(false),
     hideGrading = false
   }: Props = $props();
 

@@ -7,7 +7,7 @@
   import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
 
-  import DragAndDrop from './DragAndDrop.svelte';
+  import ReorderMaterialTabs from '$features/course/components/reorder-material-tabs.svelte';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
@@ -15,11 +15,11 @@
   import { UpgradeBanner, UnsavedChanges, UploadWidget } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
 
-  import { settings } from './store';
+  import { settings } from '$features/course/utils/settings-store';
   import Copy from '@lucide/svelte/icons/copy';
   import type { Course } from '$lib/utils/types';
   import { COURSE_TYPE } from '$lib/utils/types';
-  import { lessons } from '../Lesson/store/lessons';
+  import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
   import { course } from '$lib/components/Course/store';
   import { t } from '$lib/utils/functions/translations';
   import { isObject } from '$lib/utils/functions/isObject';
@@ -31,7 +31,6 @@
   import { handleOpenWidget } from '$features/ui/course-landing-page/store';
   import { currentOrg, currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
 
-  let isSaving = $state(false);
   let isLoading = $state(false);
   let isDeleting = $state(false);
   let errors: {
@@ -128,7 +127,7 @@
     isDeleting = false;
   }
 
-  const handleSave = async () => {
+  export async function handleSave() {
     if (!$settings.course_title) {
       errors.title = $t('snackbar.course_settings.error.title');
       return;
@@ -138,8 +137,6 @@
       errors.description = $t('snackbar.course_settings.error.description');
       return;
     }
-
-    isSaving = true;
 
     try {
       const updatedCourse = {
@@ -170,9 +167,7 @@
     } catch (error) {
       snackbar.error();
     }
-
-    isSaving = false;
-  };
+  }
 
   const generateNewCourseLink = () => {
     $course.slug = generateSlug($course.title);
@@ -310,8 +305,8 @@
     <Field.Legend>{$t('course.navItem.settings.order')}</Field.Legend>
     <Field.Description>{$t('course.navItem.settings.drag')}</Field.Description>
     <Field.Field>
-      <DragAndDrop
-        on:change={() => {
+      <ReorderMaterialTabs
+        onchange={() => {
           hasUnsavedChanges = true;
         }}
       />
@@ -330,8 +325,9 @@
         <div class="flex items-center space-x-2">
           <Switch
             id="lesson-download"
-            bind:checked={$settings.lesson_download}
-            onCheckedChange={() => {
+            checked={$settings.lesson_download}
+            onCheckedChange={(checked) => {
+              $settings.lesson_download = checked;
               hasUnsavedChanges = true;
             }}
           />
@@ -393,8 +389,9 @@
     <Field.Field orientation="horizontal">
       <Switch
         id="allow-new-students"
-        bind:checked={$settings.allow_new_students}
-        onCheckedChange={() => {
+        checked={$settings.allow_new_students}
+        onCheckedChange={(checked) => {
+          $settings.allow_new_students = checked;
           hasUnsavedChanges = true;
         }}
       />
@@ -412,7 +409,7 @@
     <Field.Field orientation="horizontal">
       <Switch
         id="is-published"
-        bind:checked={$settings.is_published}
+        checked={$settings.is_published}
         onCheckedChange={(checked) => {
           hasUnsavedChanges = true;
           $settings.allow_new_students = checked;
@@ -439,9 +436,3 @@
     </Field.Field>
   </Field.Set>
 </Field.Group>
-
-<div class="flex w-full items-center justify-end p-5">
-  <Button loading={isSaving} disabled={isSaving} onclick={handleSave}>
-    {$t('course.navItem.settings.save')}
-  </Button>
-</div>

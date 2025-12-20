@@ -27,7 +27,6 @@
   import { lesson, setLesson, lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
 
   import { IconButton } from '@cio/ui/custom/icon-button';
-  import { PageBody } from '$lib/components/Page';
   import * as Page from '@cio/ui/base/page';
   import { CourseContainer } from '$lib/components/CourseContainer';
   import { RoleBasedSecurity } from '$features/ui';
@@ -265,7 +264,7 @@
   {#if !data.isMaterialsTabActive}
     <Exercises lessonId={data.lessonId} exerciseId={data.exerciseId} path={`${path}/exercises`} />
   {:else if !!data.lessonId}
-    <PageBody isPageNavHidden={$globalStore.isStudent} width="lg:w-full xl:w-11/12" className="overflow-x-hidden">
+    <div class="overflow-x-hidden lg:w-full xl:w-11/12">
       <!-- Shows Lesson Note / Slides / Video -->
       <Materials
         lessonId={data.lessonId}
@@ -275,7 +274,7 @@
         bind:isSaving
         isStudent={$globalStore.isStudent}
       />
-    </PageBody>
+    </div>
   {/if}
 
   <!-- Bottom Lesson Widget -->

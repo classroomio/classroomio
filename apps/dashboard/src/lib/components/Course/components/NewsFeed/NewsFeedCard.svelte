@@ -102,7 +102,7 @@
     const usersReacted = feed.reaction[reactionType] || [];
 
     return usersReacted.includes(author.id)
-      ? 'bg-primary-200 border-primary-600 pl-2'
+      ? 'bg-primary-200 ui:border-primary pl-2'
       : 'bg-gray-200 border-gray-600 pl-2';
   };
 

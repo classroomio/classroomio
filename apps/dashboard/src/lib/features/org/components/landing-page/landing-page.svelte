@@ -198,13 +198,13 @@
             <div
               class="relative z-20 flex w-full flex-col-reverse items-center justify-center md:w-11/12 md:flex-row md:justify-between lg:w-5/6"
             >
-              <!-- Course Description -->
+              <!-- Org Description -->
               <div class="mr-3 flex w-11/12 flex-col items-center py-10 md:w-2/5 md:items-start">
-                <p class=" text-primary-600 text-2xl font-semibold capitalize">
+                <p class="ui:text-primary text-2xl font-semibold capitalize">
                   {org.name}
                 </p>
                 <h1 class="my-4 text-center text-4xl md:text-start md:text-5xl lg:text-6xl">
-                  {$landingPageSettings.header.title} <br /><span class="text-primary-600"
+                  {$landingPageSettings.header.title} <br /><span class="ui:text-primary"
                     >{$landingPageSettings.header.titleHighlight}</span
                   >
                 </h1>
@@ -248,9 +248,9 @@
         {:else}
           <div class="relative z-20 flex h-full w-full items-center justify-center md:flex-row">
             <div class="mx-auto flex w-11/12 max-w-[600px] flex-col items-center py-10">
-              <p class=" text-primary-600 text-2xl font-semibold capitalize">{org.name}</p>
+              <p class=" ui:text-primary text-2xl font-semibold capitalize">{org.name}</p>
               <h1 class="my-4 text-center text-4xl md:text-5xl lg:text-6xl">
-                {$landingPageSettings.header.title} <br /><span class="text-primary-600"
+                {$landingPageSettings.header.title} <br /><span class="ui:text-primary"
                   >{$landingPageSettings.header.titleHighlight}</span
                 >
               </h1>
@@ -297,7 +297,7 @@
           <div class="mx-auto w-11/12 max-w-[500px] py-10">
             <h1 class="my-4 text-center text-4xl md:text-5xl lg:text-6xl">
               {$landingPageSettings.courses.title}
-              <span class="text-primary-600">{$landingPageSettings.courses.titleHighlight}</span>
+              <span class="text-primary">{$landingPageSettings.courses.titleHighlight}</span>
             </h1>
             <p class="text-md text-center">
               {$landingPageSettings.courses.subtitle}
@@ -358,12 +358,12 @@
 
     <!-- Contact Section-->
     {#if $landingPageSettings.contact.show}
-      <section id="contact" transition:fade class="bg-primary-50 my-10 w-full">
+      <section id="contact" transition:fade class="ui:bg-primary-foreground my-10 w-full">
         <div class="mx-auto w-full max-w-6xl">
           <div class="mx-auto w-11/12 max-w-[500px] py-10">
             <h1 class="my-4 text-center text-4xl md:text-5xl lg:text-6xl">
               {$landingPageSettings.contact.title}
-              <span class="text-primary-600">{$landingPageSettings.contact.titleHighlight}</span>
+              <span class="ui:text-primary">{$landingPageSettings.contact.titleHighlight}</span>
             </h1>
             <p class="text-md text-center">{$landingPageSettings.contact.subtitle}</p>
           </div>

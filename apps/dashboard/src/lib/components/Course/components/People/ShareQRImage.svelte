@@ -28,7 +28,7 @@
     <div class="my-4 rounded-xl bg-gray-100 p-2 text-xl">Scan QR</div>
     <img src={qrImage} alt="qrcode" />
     <div class="pb-4 pt-1">
-      <p class="text-primary-600 mt-2 text-2xl">{course.title}</p>
+      <p class="ui:text-primary mt-2 text-2xl">{course.title}</p>
       <p class="mt-1 text-lg font-semibold text-black">{currentOrg.name}</p>
     </div>
   </div>

@@ -23,11 +23,11 @@
 
 <div class="circle flex flex-col items-center justify-center {className}">
   {#key value}
-    <h3 class="text-primary-600" transition:fadeSlide={{ duration: 500 }}>
+    <h3 class="ui:text-primary" transition:fadeSlide={{ duration: 500 }}>
       {value}
     </h3>
   {/key}
-  <p class="text-primary-600 text-md">{label}</p>
+  <p class="ui:text-primary text-md">{label}</p>
 </div>
 
 <style>

@@ -134,7 +134,7 @@
             </Button>
             <Button
               variant="ghost"
-              class="text-primary-700 text-sm"
+              class="ui:text-primary text-sm"
               disabled={profileApi.isLoading}
               onclick={() => {
                 email = $profile.email || '';

@@ -50,7 +50,7 @@
     <!-- Mobile Menu Button - Only show when custom links exist -->
     {#if isOrgSite && showLinks}
       <button
-        class="mobile-menu-btn hover:text-primary-600 rounded-md p-2 text-gray-700 transition-colors duration-200 hover:bg-gray-100 lg:hidden"
+        class="mobile-menu-btn hover:ui:text-primary rounded-md p-2 text-gray-700 transition-colors duration-200 hover:bg-gray-100 lg:hidden"
         onclick={toggleMobileMenu}
         aria-label="Toggle mobile menu"
       >

@@ -1,7 +1,8 @@
 <script lang="ts">
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { CourseSidebar } from '$features/course/components/sidebar';
-  import { AppHeader } from '$features/ui';
+  import { CourseHeader } from '$features/course/components';
+  import * as Page from '@cio/ui/base/page';
 
   interface Props {
     children?: import('svelte').Snippet;
@@ -15,10 +16,12 @@
   <CourseSidebar {path} />
 
   <Sidebar.Inset>
-    <AppHeader hideSearch={true} />
+    <CourseHeader />
 
-    <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4">
+    <Page.Root
+      class="mx-auto flex w-[calc(100vw-var(--sidebar-width))] overflow-x-hidden px-4 group-data-[collapsible=icon]:w-[calc(100vw-var(--sidebar-width-icon))] lg:max-w-6xl"
+    >
       {@render children?.()}
-    </div>
+    </Page.Root>
   </Sidebar.Inset>
 </Sidebar.Provider>

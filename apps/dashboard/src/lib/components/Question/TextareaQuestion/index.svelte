@@ -11,7 +11,6 @@
   import QuestionTitle from '../QuestionTitle.svelte';
 
   interface Props {
-    key: string | number;
     title?: string;
     index?: number | string;
     code?: string;
@@ -44,12 +43,12 @@
     isLast = false,
     isPreview = false,
     disabled = false,
-    grade = $bindable(),
+    grade = $bindable(0),
     gradeMax = 0,
     disableGrading = false,
-    isGradeWithAI = false,
-    reason,
-    isLoading = false,
+    isGradeWithAI = $bindable(false),
+    reason = $bindable(''),
+    isLoading = $bindable(false),
     hideGrading = false
   }: Props = $props();
 

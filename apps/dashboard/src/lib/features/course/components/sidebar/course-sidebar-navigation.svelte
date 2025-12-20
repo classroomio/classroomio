@@ -27,7 +27,8 @@
   import { t } from '$lib/utils/functions/translations';
   import { handleAddLessonWidget } from '$lib/components/Course/components/Lesson/store';
   import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
-  import { currentOrg, isFreePlan } from '$lib/utils/store/org';
+  import { currentOrg, isFreePlan, currentOrgPath } from '$lib/utils/store/org';
+  import { globalStore } from '$lib/utils/store/app';
   import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
   import { lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
   import { getNavItemRoute, getLessonsRoute, getLectureNo } from '$lib/components/Course/function';
@@ -41,6 +42,8 @@
   }
 
   let { path, isStudent = false }: Props = $props();
+
+  const coursesListPath = $derived($globalStore.isOrgSite ? '/lms/mylearning' : `${$currentOrgPath}/courses`);
 
   const navItems = $derived(
     [
@@ -220,12 +223,11 @@
 </script>
 
 <Sidebar.Group class="pt-0!">
-  <Button variant="link" class="justify-start! py-2! px-2! h-fit!">
+  <Button variant="link" class="justify-start! py-2! px-2! h-fit!" href={coursesListPath}>
     <ArrowLeftIcon class="custom" />
     <span class="text-xs">Courses</span>
   </Button>
 
-  <Sidebar.GroupLabel>Course Navigation</Sidebar.GroupLabel>
   <Sidebar.Menu>
     {#each navItems as item (item.id)}
       <Collapsible.Root open={item.isActive} class="group/collapsible">

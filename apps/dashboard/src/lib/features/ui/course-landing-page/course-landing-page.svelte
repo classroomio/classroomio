@@ -342,15 +342,13 @@
                         </p>
                       </div>
                       {#if !expandDescription[id] && review.description.split(' ').length > 9}
-                        <button
-                          class="text-primary-700 mt-2 font-normal underline"
-                          onclick={() => toggleDescription(id)}>See More</button
+                        <button class="ui:text-primary mt-2 font-normal underline" onclick={() => toggleDescription(id)}
+                          >See More</button
                         >
                       {/if}
                       {#if expandDescription[id]}
-                        <button
-                          class="text-primary-700 mt-2 font-normal underline"
-                          onclick={() => toggleDescription(id)}>See Less</button
+                        <button class="ui:text-primary mt-2 font-normal underline" onclick={() => toggleDescription(id)}
+                          >See Less</button
                         >
                       {/if}
                     </div>
@@ -365,64 +363,62 @@
             {/if}
 
             <!-- Reviews Modal -->
-            <Dialog.Root
-              bind:open={$reviewsModalStore.open}
-            >
+            <Dialog.Root bind:open={$reviewsModalStore.open}>
               <Dialog.Content class="w-9/12">
                 <Dialog.Header>
                   <Dialog.Title>{$t('course.navItem.landing_page.reviews_modal.title')}</Dialog.Title>
                 </Dialog.Header>
-              <div class="flex">
-                <!-- ratings -->
-                <div class="w-1/3">
-                  <h2 class="text-xl">
-                    {averageRating}
-                    {$t('course.navItem.landing_page.reviews_modal.rating')}
-                  </h2>
-                  <h2 class="mt-2 text-lg font-semibold">
-                    {reviews.length}
-                    {$t('course.navItem.landing_page.reviews_modal.ratings')}
-                  </h2>
-                </div>
-                <!-- reviews -->
-                <div class="flex w-4/6 flex-wrap">
-                  {#each reviews as review, id (review.id)}
-                    <!-- review -->
-                    <div class="item-start my-2 flex w-full flex-row">
-                      <!-- image container -->
-                      {#if review.avatar_url}
-                        <Avatar.Root class="mt-1 h-10 w-10">
-                          <Avatar.Image
-                            src={review.avatar_url ? review.avatar_url : '/logo-192.png'}
-                            alt={review.name ? review.name : 'Avatar'}
-                          />
-                          <Avatar.Fallback>{shortenName(review.name) || 'AV'}</Avatar.Fallback>
-                        </Avatar.Root>
-                      {/if}
+                <div class="flex">
+                  <!-- ratings -->
+                  <div class="w-1/3">
+                    <h2 class="text-xl">
+                      {averageRating}
+                      {$t('course.navItem.landing_page.reviews_modal.rating')}
+                    </h2>
+                    <h2 class="mt-2 text-lg font-semibold">
+                      {reviews.length}
+                      {$t('course.navItem.landing_page.reviews_modal.ratings')}
+                    </h2>
+                  </div>
+                  <!-- reviews -->
+                  <div class="flex w-4/6 flex-wrap">
+                    {#each reviews as review, id (review.id)}
+                      <!-- review -->
+                      <div class="item-start my-2 flex w-full flex-row">
+                        <!-- image container -->
+                        {#if review.avatar_url}
+                          <Avatar.Root class="mt-1 h-10 w-10">
+                            <Avatar.Image
+                              src={review.avatar_url ? review.avatar_url : '/logo-192.png'}
+                              alt={review.name ? review.name : 'Avatar'}
+                            />
+                            <Avatar.Fallback>{shortenName(review.name) || 'AV'}</Avatar.Fallback>
+                          </Avatar.Root>
+                        {/if}
 
-                      <!-- profile content -->
-                      <div class="w-11/12 pl-2.5">
-                        <p class="mb-0.5 font-medium">{review.name}</p>
-                        <!-- ratings -->
-                        <div class="flex flex-row">
-                          <img src="/images/rating-full.svg" alt="" class="mr-2" />
-                          <p class="text-xs text-gray-600">
-                            {calDateDiff(review.created_at)}
-                          </p>
-                        </div>
-                        <div
-                          class="read-more-content mb-2"
-                          style="max-height: {expandDescription[id] ? 'none' : '50px'}"
-                        >
-                          <p class="my-2 text-sm leading-5 text-gray-600">
-                            {review.description}
-                          </p>
+                        <!-- profile content -->
+                        <div class="w-11/12 pl-2.5">
+                          <p class="mb-0.5 font-medium">{review.name}</p>
+                          <!-- ratings -->
+                          <div class="flex flex-row">
+                            <img src="/images/rating-full.svg" alt="" class="mr-2" />
+                            <p class="text-xs text-gray-600">
+                              {calDateDiff(review.created_at)}
+                            </p>
+                          </div>
+                          <div
+                            class="read-more-content mb-2"
+                            style="max-height: {expandDescription[id] ? 'none' : '50px'}"
+                          >
+                            <p class="my-2 text-sm leading-5 text-gray-600">
+                              {review.description}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  {/each}
+                    {/each}
+                  </div>
                 </div>
-              </div>
               </Dialog.Content>
             </Dialog.Root>
           </NavSection>

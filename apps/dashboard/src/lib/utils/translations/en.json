@@ -1294,6 +1294,7 @@
   },
 
   "analytics": {
+    "title": "Analytics",
     "courses": "Courses",
     "progress": "Progress",
     "progress_description": "{value, number} of {total, number} complete",
