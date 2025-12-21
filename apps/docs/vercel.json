@@ -1,6 +1,1 @@
-{
-  "rewrites": [
-    { "source": "/docs", "destination": "https://classroomio-com.vercel.app/docs" },
-    { "source": "/docs/:match*", "destination": "https://classroomio-com.vercel.app/docs/:match*" }
-  ]
-}
+{}
