@@ -21,6 +21,15 @@ export default defineConfig({
     react(),
     // see https://tanstack.com/start/latest/docs/framework/react/guide/hosting for hosting config
     // we configured nitro by default
-    nitro()
+    nitro({
+      routeRules: {
+        '/': {
+          proxy: 'https://classroomio-com.vercel.app/'
+        },
+        '/:match*': {
+          proxy: 'https://classroomio-com.vercel.app/:match*'
+        }
+      }
+    })
   ]
 });
