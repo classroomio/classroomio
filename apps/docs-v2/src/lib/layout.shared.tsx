@@ -1,46 +1,50 @@
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
+import { SquareArrowOutUpRight } from 'lucide-react';
 
 export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
       title: (
-        <>
-          <img src="/logo-16.png" alt="" />
+        <div className="flex items-center gap-2">
+          <img src="/docs/logo-192.png" className="size-8" alt="ClassroomIO logo" />
           <span className="font-medium">ClassroomIO</span>
-        </>
+        </div>
       )
     },
     links: [
       {
-        type: 'menu',
-        text: 'Guide',
-        items: [
-          {
-            text: 'Contact',
-            description: 'Get in touch with our team on Twitter',
-            url: 'https://twitter.com/classroomio',
-            external: true
-          },
-          {
-            text: 'Demo',
-            description: 'Schedule a live demo to see ClassroomIO in action',
-            url: 'https://dub.sh/ciodemo',
-            external: true
-          },
-          {
-            text: 'Dashboard',
-            description: 'Access your ClassroomIO dashboard and manage courses',
-            url: 'https://app.classroomio.com/',
-            external: true
-          }
-        ]
+        text: (
+          <div className="flex items-center gap-2">
+            Contact <SquareArrowOutUpRight />
+          </div>
+        ),
+        url: 'https://twitter.com/classroomio',
+        external: true
+      },
+      {
+        text: (
+          <div className="flex items-center gap-2">
+            Demo <SquareArrowOutUpRight />
+          </div>
+        ),
+        url: 'https://dub.sh/ciodemo',
+        external: true
+      },
+      {
+        text: (
+          <div className="flex items-center gap-2">
+            Dashboard <SquareArrowOutUpRight />
+          </div>
+        ),
+        url: 'https://app.classroomio.com/',
+        external: true
       },
       {
         type: 'icon',
         label: 'Discord',
         icon: (
           <img
-            src="/discord-blue.png"
+            src="/docs/discord-blue.png"
             alt="discord icon"
             className="w-7 transition-all duration-500 hover:scale-90"
           />
