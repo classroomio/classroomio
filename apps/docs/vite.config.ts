@@ -22,7 +22,7 @@ export default defineConfig({
     // see https://tanstack.com/start/latest/docs/framework/react/guide/hosting for hosting config
     // we configured nitro by default
     nitro({
-      // baseURL: '/docs'
+      baseURL: '/docs'
     })
   ]
 });
