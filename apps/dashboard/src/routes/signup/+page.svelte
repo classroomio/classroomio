@@ -65,8 +65,6 @@
       if (!$currentOrg.id) return;
 
       const [regexUsernameMatch] = [...(authUser.email?.matchAll(/(.*)@/g) || [])];
-      const response = await fetch('https://api.ipregistry.co/?key=tryout');
-      const metadata = await response.json();
 
       const profileRes = await supabase
         .from('profile')
@@ -74,8 +72,7 @@
           id: authUser.id,
           username: regexUsernameMatch[1] + `${new Date().getTime()}`,
           fullname: regexUsernameMatch[1],
-          email: authUser.email,
-          metadata
+          email: authUser.email
         })
         .select();
       console.log('profileRes', profileRes);
@@ -91,16 +88,14 @@
       capturePosthogEvent('user_signed_up', {
         distinct_id: $profile.id || '',
         email: authUser.email,
-        username: regexUsernameMatch[1],
-        metadata
+        username: regexUsernameMatch[1]
       });
 
       if ($globalStore.isOrgSite) {
         capturePosthogEvent('student_signed_up', {
           distinct_id: $profile.id || '',
           email: authUser.email,
-          username: regexUsernameMatch[1],
-          metadata
+          username: regexUsernameMatch[1]
         });
       }
 

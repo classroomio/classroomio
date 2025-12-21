@@ -81,6 +81,12 @@
   async function handleSaveCustomDomain() {
     if (!isDomainValid) return;
 
+    // Prevent free plan users from bypassing UI restrictions
+    if ($isFreePlan) {
+      errors.customDomain = 'Custom domains are only available on paid plans';
+      return;
+    }
+
     const sanitizedDomain = sanitizeDomain(customDomain);
 
     const details = parse(sanitizedDomain);

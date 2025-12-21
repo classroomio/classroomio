@@ -197,7 +197,8 @@
     "back": "Voltar para configurações",
     "download_lessons": "Atualize para baixar lições",
     "download_course": "Atualize para baixar o curso",
-    "domain": "Atualize seu plano para adicionar domínios personalizados"
+    "domain": "Atualize seu plano para adicionar domínios personalizados",
+    "required": "Atualização necessária"
   },
   "audience": {
     "title": "Público",
@@ -1610,6 +1611,48 @@
   "common": {
     "unsaved_changes": {
       "message": "Você tem mudanças não salvas. Tem certeza de que deseja sair?"
+    }
+  },
+  "email_verification": {
+    "security_footer": "A segurança da sua conta é a nossa principal prioridade. Todas as tentativas de verificação são registradas para monitoramento de segurança.",
+    "actions": {
+      "request_new": "Solicitar novo e-mail de verificação",
+      "contact_support": "Contate o suporte",
+      "back_to_dashboard": "Voltar ao painel"
+    },
+    "security_notice": {
+      "title": "Aprimoramento de segurança",
+      "message": "Atualizamos nosso sistema de verificação de e-mail para melhor segurança. Links de verificação antigos não são mais válidos para proteger sua conta."
+    },
+    "errors": {
+      "unknown": {
+        "title": "Falha na verificação",
+        "message": "Ocorreu um erro inesperado durante a verificação do email. Tente novamente ou entre em contato com nossa equipe de suporte para obter assistência."
+      },
+      "database": {
+        "title": "Erro de sistema",
+        "message": "Estamos enfrentando dificuldades técnicas. Tente novamente mais tarde ou entre em contato com nossa equipe de suporte se o problema persistir."
+      },
+      "legacy_blocked": {
+        "title": "Método de verificação não suportado",
+        "message": "Este método de verificação não é mais suportado por motivos de segurança. Solicite um novo e-mail de verificação usando nosso sistema de verificação seguro."
+      },
+      "email_mismatch": {
+        "title": "Endereço de e-mail alterado",
+        "message": "Seu endereço de e-mail foi alterado desde que este link de verificação foi gerado. Solicite um novo link de verificação para seu endereço de e-mail atual."
+      },
+      "token_expired": {
+        "title": "Link de verificação expirou",
+        "message": "Este link de verificação expirou por motivos de segurança. Solicite um novo e-mail de verificação para continuar."
+      },
+      "token_used": {
+        "title": "Link já usado",
+        "message": "Este link de verificação já foi usado. Se você precisar verificar seu e-mail novamente, solicite um novo link de verificação."
+      },
+      "invalid_token": {
+        "title": "Link de verificação inválido",
+        "message": "Este link de verificação é inválido ou está incorreto. Verifique seu e-mail para obter o link correto ou solicite um novo e-mail de verificação."
+      }
     }
   }
 }

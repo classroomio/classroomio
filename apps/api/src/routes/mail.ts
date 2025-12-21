@@ -13,6 +13,14 @@ export const mailRouter = new Hono().post(
 
     const results = await Promise.all(
       validatedData.map(async (emailData) => {
+        if (emailData.to && /.+@test\..+/.test(emailData.to)) {
+          throw new Error('Sending from test.com addresses is not allowed');
+        }
+
+        if (!emailData.from?.includes('<notify@mail.classroomio.com>')) {
+          throw new Error('Emails must be sent from a @mail.classroomio.com address');
+        }
+
         try {
           const res = env.ZOHO_TOKEN
             ? await sendWithZoho(emailData)

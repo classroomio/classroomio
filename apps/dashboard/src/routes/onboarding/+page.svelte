@@ -108,14 +108,6 @@
     fields.locale = newSelectedId;
   }
 
-  async function setMetaData() {
-    if (!env.PUBLIC_IP_REGISTRY_KEY) return;
-
-    const response = await fetch(`https://api.ipregistry.co/?key=${env.PUBLIC_IP_REGISTRY_KEY}`);
-    const payload = await response.json();
-    fields.metadata = payload;
-  }
-
   function setOrgSiteName(orgName: string | undefined, isTouched: boolean) {
     if (!orgName || isTouched) return;
 
@@ -193,8 +185,6 @@
       // Submit filled
 
       // Set extra metadata based off location
-      await setMetaData();
-
       await supabase
         .from('profile')
         .update({

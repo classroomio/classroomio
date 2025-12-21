@@ -28,17 +28,18 @@
       isLoading = true;
 
       const accessToken = await getAccessToken();
-      const response = await fetch('/api/analytics/course', {
-        method: 'POST',
+      const response = await fetch(`/api/courses/analytics?courseId=${data.courseId}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           Authorization: accessToken
-        },
-        body: JSON.stringify({ courseId: data.courseId })
+        }
       });
 
       if (response.ok) {
-        courseAnalytics = (await response.json()) as CourseAnalytics;
+        const { data } = await response.json();
+
+        courseAnalytics = data as CourseAnalytics;
       } else {
         console.error('Failed to fetch course analytics:', response);
         snackbar.error('Failed to load analytics data');

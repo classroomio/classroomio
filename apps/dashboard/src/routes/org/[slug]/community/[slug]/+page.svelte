@@ -19,6 +19,7 @@
     commentInCommunityValidation
   } from '$lib/utils/functions/validator';
   import { fetchCourses } from '$lib/utils/services/courses';
+  import { sanitizeHtml } from '$lib/utils/functions/sanitize';
   import { currentOrg, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import type { Course } from '$lib/utils/types';
@@ -477,7 +478,7 @@
           </div>
         {:else}
           <section class="prose prose-sm sm:prose p-2">
-            {@html question.body}
+            {@html sanitizeHtml(question.body)}
           </section>
         {/if}
       </div>
@@ -520,7 +521,7 @@
               {/if}
             </header>
             <article class="prose prose-sm sm:prose p-2">
-              {@html comment.comment}
+              {@html sanitizeHtml(comment.comment)}
             </article>
           </div>
         </div>

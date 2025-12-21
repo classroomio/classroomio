@@ -9,6 +9,7 @@
   import { queryUnsplash } from './utils';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import { validateImageUpload } from '$lib/utils/functions/fileValidation';
 
   export let imageURL = '';
 
@@ -47,6 +48,16 @@
 
   const onFileSelected = () => {
     const file = fileInput?.files?.[0];
+    if (!file) return;
+    
+    const validation = validateImageUpload(file);
+    if (!validation.isValid) {
+      snackbar.error(validation.error || 'Invalid file type');
+      label = $t('snackbar.landing_page_settings.error.try_again');
+      fileInput.value = '';
+      return;
+    }
+
     const sizeInkb = file?.size! / 1024;
     if (sizeInkb > 500) {
       snackbar.error('snackbar.landing_page_settings.error.file_size');
@@ -115,6 +126,7 @@
           <div class="w-full">
             <input
               type="file"
+              accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp"
               style="display: none;"
               bind:this={fileInput}
               on:change={onFileSelected}

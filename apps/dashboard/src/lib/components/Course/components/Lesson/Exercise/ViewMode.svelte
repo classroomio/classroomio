@@ -27,6 +27,7 @@
   import { lesson } from '../store/lessons';
   import { browser } from '$app/environment';
   import { COURSE_TYPE } from '$lib/utils/types';
+  import { sanitizeHtml } from '$lib/utils/functions/sanitize';
   import { t } from '$lib/utils/functions/translations';
 
   export let preview: boolean = false;
@@ -296,7 +297,7 @@
       </div>
 
       <article class="preview prose prose-sm sm:prose mt-3 p-2">
-        {@html $questionnaire.description || 'No desription'}
+        {@html sanitizeHtml($questionnaire.description || 'No desription')}
       </article>
 
       <PrimaryButton

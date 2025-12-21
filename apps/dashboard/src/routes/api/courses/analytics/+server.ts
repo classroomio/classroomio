@@ -1,37 +1,55 @@
+import type { RequestHandler } from './$types';
 import type { CourseAnalytics, StudentOverview } from '$lib/utils/types/analytics';
-
 import type { UserExercisesStats } from '$lib/utils/types/analytics';
 import { calcPercentageWithRounding } from '$lib/utils/functions/number.js';
 import { fetchProfileCourseProgress } from '$lib/utils/services/courses';
 import { getServerSupabase } from '$lib/utils/functions/supabase.server';
+import { checkUserCoursePermissions } from '$lib/utils/functions/permissions';
 import { json } from '@sveltejs/kit';
-
-const supabase = getServerSupabase();
 
 const CACHE_DURATION = 60 * 5; // 5 minutes
 
-export async function POST({ setHeaders, request }) {
-  const { courseId } = await request.json();
-
-  if (!courseId) {
-    return json({ success: false, message: 'Request is missing required fields' }, { status: 400 });
+export const GET: RequestHandler = async ({ setHeaders, request }) => {
+  const userId = request.headers.get('user_id');
+  if (!userId) {
+    return json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }
 
-  setHeaders({
-    'cache-control': `max-age=${CACHE_DURATION}`,
-    'content-type': 'application/json'
-  });
+  const url = new URL(request.url);
+  const courseId = url.searchParams.get('courseId');
+  if (!courseId) {
+    return json({ success: false, message: 'Course ID is required' }, { status: 400 });
+  }
 
   try {
-    const analytics = await getCourseAnalytics(courseId);
-    return json(analytics, { status: 200 });
+    const supabase = getServerSupabase();
+
+    const hasPermission = await checkUserCoursePermissions(supabase, userId, courseId);
+
+    if (!hasPermission) {
+      return json(
+        {
+          success: false,
+          message: 'Access denied. User is not a member of this course or organization.'
+        },
+        { status: 403 }
+      );
+    }
+
+    setHeaders({
+      'cache-control': `max-age=${CACHE_DURATION}`,
+      'content-type': 'application/json'
+    });
+
+    const analytics = await getCourseAnalytics(supabase, courseId);
+    return json({ success: true, data: analytics });
   } catch (error) {
     console.error('Course analytics error:', error);
-    return json({ error: 'Something went wrong' }, { status: 500 });
+    return json({ success: false, message: 'Internal server error' }, { status: 500 });
   }
-}
+};
 
-async function getCourseAnalytics(courseId: string): Promise<CourseAnalytics> {
+async function getCourseAnalytics(supabase: any, courseId: string): Promise<CourseAnalytics> {
   const analytics: CourseAnalytics = {
     totalTutors: 0,
     totalStudents: 0,
@@ -93,7 +111,7 @@ async function getCourseAnalytics(courseId: string): Promise<CourseAnalytics> {
   const studentAnalytics = await Promise.all(
     members
       .filter((member) => member.role_id === 3)
-      .map((member) => getStudentOverview(courseId, member))
+      .map((member) => getStudentOverview(supabase, courseId, member))
   );
 
   analytics.students = studentAnalytics.filter(
@@ -126,7 +144,7 @@ async function getCourseAnalytics(courseId: string): Promise<CourseAnalytics> {
   return analytics;
 }
 
-async function getLastLogin(userId: string): Promise<string | undefined> {
+async function getLastLogin(supabase: any, userId: string): Promise<string | undefined> {
   try {
     const { data, error } = await supabase
       .from('analytics_login_events')
@@ -144,7 +162,11 @@ async function getLastLogin(userId: string): Promise<string | undefined> {
   }
 }
 
-async function getStudentOverview(courseId: string, member: any): Promise<StudentOverview | null> {
+async function getStudentOverview(
+  supabase: any,
+  courseId: string,
+  member: any
+): Promise<StudentOverview | null> {
   try {
     // Use the same service function that the working analytics/user API uses
     const { data: courseProgressData, error: progressError } = await fetchProfileCourseProgress(
@@ -164,7 +186,7 @@ async function getStudentOverview(courseId: string, member: any): Promise<Studen
     }
 
     // Fetch exercise stats using the same method as the people page
-    const userExercisesStats = await fetchUserExercisesStats(courseId, member.profile_id);
+    const userExercisesStats = await fetchUserExercisesStats(supabase, courseId, member.profile_id);
 
     // Calculate exercise completion using the same logic as people page
     const completedExercises =
@@ -172,7 +194,7 @@ async function getStudentOverview(courseId: string, member: any): Promise<Studen
     const totalExercises = userExercisesStats?.length || 0;
 
     // Get last login using the same approach as analytics/user API
-    const lastLoginDate = await getLastLogin(member.profile_id);
+    const lastLoginDate = await getLastLogin(supabase, member.profile_id);
 
     // Format last seen
     let lastSeen = 'Never';
@@ -225,6 +247,7 @@ async function getStudentOverview(courseId: string, member: any): Promise<Studen
 }
 
 async function fetchUserExercisesStats(
+  supabase: any,
   courseId: string,
   userId: string
 ): Promise<UserExercisesStats[] | undefined> {

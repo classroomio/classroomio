@@ -3,6 +3,7 @@
   import { group } from '../Course/store';
   import type { GroupPerson } from '$lib/utils/types';
   import { isOrgAdmin } from '$lib/utils/store/org';
+  import { browser } from '$app/environment';
 
   export let allowedRoles: number[] = [];
   export let onDenied = () => {};
@@ -17,19 +18,21 @@
   }
 
   $: {
-    const user: GroupPerson = $group.people.find((person) => person.profile_id === $profile.id)!;
+    if (browser) {
+      const user: GroupPerson = $group.people.find((person) => person.profile_id === $profile.id)!;
 
-    userRole = user ? user.role_id : userRole;
+      userRole = user ? user.role_id : userRole;
 
-    if (!$isOrgAdmin && $group.people.length && !isAllowed(userRole)) {
-      onDenied();
+      if (!$isOrgAdmin && $group.people.length && !isAllowed(userRole)) {
+        onDenied();
+      }
     }
   }
 
   $: if (onlyStudent) {
     show = isAllowed(userRole);
   } else {
-    show = isAllowed(userRole) || $isOrgAdmin;
+    show = isAllowed(userRole) || !!$isOrgAdmin;
   }
 </script>
 

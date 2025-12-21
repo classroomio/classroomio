@@ -10,6 +10,49 @@
     "snackbar_error": "error while sending code"
   },
 
+  "email_verification": {
+    "errors": {
+      "invalid_token": {
+        "title": "Invalid Verification Link",
+        "message": "This verification link is invalid or malformed. Please check your email for the correct link or request a new verification email."
+      },
+      "token_used": {
+        "title": "Link Already Used",
+        "message": "This verification link has already been used. If you need to verify your email again, please request a new verification link."
+      },
+      "token_expired": {
+        "title": "Verification Link Expired",
+        "message": "This verification link has expired for security reasons. Please request a new verification email to continue."
+      },
+      "email_mismatch": {
+        "title": "Email Address Changed",
+        "message": "Your email address has been changed since this verification link was generated. Please request a new verification link for your current email address."
+      },
+      "legacy_blocked": {
+        "title": "Unsupported Verification Method",
+        "message": "This verification method is no longer supported for security reasons. Please request a new verification email using our secure verification system."
+      },
+      "database": {
+        "title": "System Error",
+        "message": "We're experiencing technical difficulties. Please try again later or contact our support team if the issue persists."
+      },
+      "unknown": {
+        "title": "Verification Failed",
+        "message": "An unexpected error occurred during email verification. Please try again or contact our support team for assistance."
+      }
+    },
+    "security_notice": {
+      "title": "Security Enhancement",
+      "message": "We've upgraded our email verification system for better security. Old verification links are no longer valid to protect your account."
+    },
+    "actions": {
+      "request_new": "Request New Verification Email",
+      "contact_support": "Contact Support",
+      "back_to_dashboard": "Back to Dashboard"
+    },
+    "security_footer": "Your account security is our top priority. All verification attempts are logged for security monitoring."
+  },
+
   "delete_modal": {
     "label": "Delete",
     "content": "Are you sure?",
@@ -1322,7 +1365,8 @@
     "team_members": "Team members",
     "back": "Back to Settings",
     "download_lessons": "Upgrade to download lessons",
-    "download_course": "Upgrade to download course"
+    "download_course": "Upgrade to download course",
+    "required": "Upgrade Required"
   },
 
   "lms_navigation": {

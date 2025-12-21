@@ -1,6 +1,7 @@
 <script lang="ts">
   import ImageCopy from 'carbon-icons-svelte/lib/ImageCopy.svelte';
   import TrashCan from 'carbon-icons-svelte/lib/TrashCan.svelte';
+  import { ALLOWED_IMAGE_TYPES } from '$lib/utils/functions/fileValidation';
 
   export let imageURL = '';
   export let label = '';
@@ -8,13 +9,24 @@
   export let labelClassName = '';
   let isUploading = false;
   let fileInput: HTMLInputElement;
-
+  
   const onFileSelected = () => {
     const file = fileInput?.files?.[0];
-    const sizeInkb = file?.size! / 1024;
-    if (sizeInkb > 500) {
+    if (!file) return;
+    
+    // Validate file type to prevent SVG XSS attacks
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      alert('Invalid file type. Only JPEG, PNG, GIF, and WebP files are allowed.');
+      fileInput.value = '';
       return;
     }
+    
+    const sizeInMB = file?.size! / 1024 / 1024;
+    if (sizeInMB > 2) {
+      fileInput.value = '';
+      return;
+    }
+    
     if (file) {
       let reader = new FileReader();
       reader.readAsDataURL(file);
@@ -56,6 +68,7 @@
   >
     <input
       type="file"
+      accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp"
       style="display: none;"
       bind:this={fileInput}
       on:change={onFileSelected}
@@ -68,7 +81,7 @@
       <div class="space-y-4">
         <ImageCopy size={24} class="mx-auto" />
         <p class="text-center text-sm text-gray-500 my-2">
-          Max file size: 10MB, accepted: jpeg, jpg, png, gif
+          Max file size: 2MB, accepted: JPEG, PNG, GIF, WebP only
         </p>
       </div>
     {/if}

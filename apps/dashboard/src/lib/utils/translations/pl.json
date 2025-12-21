@@ -307,7 +307,8 @@
     "team_members": "Członkowie zespołu",
     "back": "Powrót do ustawień",
     "download_lessons": "Upgrade to pobieranie lekcji",
-    "download_course": "Upgrade to Pobierz"
+    "download_course": "Upgrade to Pobierz",
+    "required": "Wymagana aktualizacja"
   },
   "analytics": {
     "courses": "Kursy",
@@ -1580,6 +1581,48 @@
   "common": {
     "unsaved_changes": {
       "message": "Masz niezbawione zmiany. Czy na pewno chcesz odejść?"
+    }
+  },
+  "email_verification": {
+    "security_footer": "Bezpieczeństwo Twojego konta jest naszym najwyższym priorytetem. Wszystkie próby weryfikacji są rejestrowane w celu monitorowania bezpieczeństwa.",
+    "actions": {
+      "request_new": "Poproś o nowy e-mail weryfikacyjny",
+      "contact_support": "Skontaktuj się z pomocą techniczną",
+      "back_to_dashboard": "Powrót do Panelu"
+    },
+    "security_notice": {
+      "title": "Zwiększenie bezpieczeństwa",
+      "message": "Dla większego bezpieczeństwa ulepszyliśmy nasz system weryfikacji e-mailem. Stare linki weryfikacyjne nie są już ważne i chronią Twoje konto."
+    },
+    "errors": {
+      "unknown": {
+        "title": "Weryfikacja nie powiodła się",
+        "message": "Wystąpił nieoczekiwany błąd podczas weryfikacji e-mailowej. Spróbuj ponownie lub skontaktuj się z naszym zespołem wsparcia w celu uzyskania pomocy."
+      },
+      "database": {
+        "title": "Błąd systemu",
+        "message": "Mamy problemy techniczne. Spróbuj ponownie później lub skontaktuj się z naszym zespołem wsparcia, jeśli problem będzie się powtarzał."
+      },
+      "legacy_blocked": {
+        "title": "Nieobsługiwana metoda weryfikacji",
+        "message": "Ta metoda weryfikacji nie jest już obsługiwana ze względów bezpieczeństwa. Poproś o nowy e-mail weryfikacyjny, korzystając z naszego bezpiecznego systemu weryfikacji."
+      },
+      "email_mismatch": {
+        "title": "Adres e-mail zmieniony",
+        "message": "Twój adres e-mail został zmieniony od czasu wygenerowania tego linku weryfikacyjnego. Poproś o nowy link weryfikacyjny dla bieżącego adresu e-mail."
+      },
+      "token_expired": {
+        "title": "Link weryfikacyjny wygasł",
+        "message": "Ten link weryfikacyjny wygasł ze względów bezpieczeństwa. Aby kontynuować, poproś o nowy e-mail weryfikacyjny."
+      },
+      "token_used": {
+        "title": "Link już używany",
+        "message": "Ten link weryfikacyjny został już wykorzystany. Jeśli chcesz ponownie zweryfikować swój adres e-mail, poproś o nowy link weryfikacyjny."
+      },
+      "invalid_token": {
+        "title": "Nieprawidłowy link weryfikacyjny",
+        "message": "Ten link weryfikacyjny jest nieprawidłowy lub źle sformułowany. Sprawdź, czy w skrzynce e-mail znajduje się właściwy link, lub poproś o nowy e-mail weryfikacyjny."
+      }
     }
   }
 }

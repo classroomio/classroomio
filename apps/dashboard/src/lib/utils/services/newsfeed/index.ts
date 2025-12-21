@@ -1,5 +1,5 @@
 import type { Course } from '$lib/utils/types';
-import { supabase } from '$lib/utils/functions/supabase';
+import { supabase, getAccessToken } from '$lib/utils/functions/supabase';
 import type { Reaction, FeedApi, Feed } from '$lib/utils/types/feed';
 
 export async function fetchNewsFeedReaction(feedId: Feed['id']) {
@@ -7,38 +7,34 @@ export async function fetchNewsFeedReaction(feedId: Feed['id']) {
 }
 
 export async function fetchNewsFeeds(courseId?: Course['id']) {
-  const response = await supabase
-    .from('course_newsfeed')
-    .select(
-      `
-    id,
-    created_at,
-    content,
-    course_id,
-    author:groupmember(
-      profile(
-        id,
-        fullname,
-        avatar_url
-      )
-    ),
-    reaction,
-    is_pinned,
-    comment:course_newsfeed_comment(
-        id,
-        created_at,
-        author:groupmember( profile(id, fullname, avatar_url) ),
-        content,
-        course_newsfeed_id)
-    `
-    )
-    .match({ course_id: courseId })
-    .order('created_at', { ascending: false })
-    .returns<FeedApi[]>();
+  const accessToken = await getAccessToken();
 
-  const { data, error } = response;
+  const response = await fetch(`/api/courses/newsfeed?courseId=${courseId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: accessToken
+    }
+  });
 
-  return { data, error };
+  if (!response.ok) {
+    const error = await response.text();
+    return {
+      data: null,
+      error: { message: error }
+    };
+  }
+
+  const { success, data, message } = await response.json();
+
+  if (!success) {
+    return {
+      data: null,
+      error: { message }
+    };
+  }
+
+  return { data, error: null };
 }
 
 export async function createNewFeed(post: {

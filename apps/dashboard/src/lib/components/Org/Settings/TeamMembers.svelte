@@ -30,6 +30,12 @@
   let isRemoving: number | null = null;
 
   async function onSendInvite() {
+    // Check if user is on free plan
+    if ($isFreePlan) {
+      snackbar.error('upgrade.required');
+      return;
+    }
+
     const { hasError, error: _error, emails } = validateEmailInString(emailsStr);
 
     if (hasError) {
@@ -105,6 +111,12 @@
   }
 
   async function onRemove(id: number) {
+    // Check if user is on free plan
+    if ($isFreePlan) {
+      snackbar.error('upgrade.required');
+      return;
+    }
+
     console.log('onRemove called');
     isRemoving = id;
     const { error } = await supabase.from('organizationmember').delete().match({ id });
