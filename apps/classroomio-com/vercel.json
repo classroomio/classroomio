@@ -1,8 +1,12 @@
 {
   "rewrites": [
     {
+      "source": "/docs",
+      "destination": "https://ciodocs.vercel.app/docs"
+    },
+    {
       "source": "/docs/:path*",
-      "destination": "https://ciodocs.vercel.app/:path*"
+      "destination": "https://ciodocs.vercel.app/docs/:path*"
     }
   ]
 }
