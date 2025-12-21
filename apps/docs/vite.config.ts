@@ -10,6 +10,7 @@ export default defineConfig({
   server: {
     port: 3000
   },
+  base: '/docs',
   plugins: [
     mdx(await import('./source.config')),
     tailwindcss(),
@@ -21,6 +22,7 @@ export default defineConfig({
     // see https://tanstack.com/start/latest/docs/framework/react/guide/hosting for hosting config
     // we configured nitro by default
     nitro({
+      baseURL: '/docs'
       // routeRules: {
       //   '/': {
       //     proxy: 'https://classroomio-com.vercel.app/'
