@@ -2,11 +2,15 @@
   "rewrites": [
     {
       "source": "/docs",
-      "destination": "https://ciodocs.vercel.app/docs"
+      "destination": "https://ciodocs.vercel.app"
     },
     {
       "source": "/docs/:path*",
-      "destination": "https://ciodocs.vercel.app/docs/:path*"
+      "destination": "https://ciodocs.vercel.app/:path*"
+    },
+    {
+      "source": "/assets/:path*",
+      "destination": "https://ciodocs.vercel.app/assets/:path*"
     }
   ]
 }
