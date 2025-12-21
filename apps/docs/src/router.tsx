@@ -4,7 +4,6 @@ import { routeTree } from './routeTree.gen';
 
 export function getRouter() {
   return createTanStackRouter({
-    basepath: '/docs',
     defaultNotFoundComponent: NotFound,
     defaultPreload: 'intent',
     routeTree,

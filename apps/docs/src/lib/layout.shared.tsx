@@ -6,7 +6,7 @@ export function baseOptions(): BaseLayoutProps {
     nav: {
       title: (
         <div className="flex items-center gap-2">
-          <img src="/docs/logo-192.png" className="size-8" alt="ClassroomIO logo" />
+          <img src="/logo-192.png" className="size-8" alt="ClassroomIO logo" />
           <span className="font-medium">ClassroomIO</span>
         </div>
       )
@@ -44,7 +44,7 @@ export function baseOptions(): BaseLayoutProps {
         label: 'Discord',
         icon: (
           <img
-            src="/docs/discord-blue.png"
+            src="/discord-blue.png"
             alt="discord icon"
             className="w-7 transition-all duration-500 hover:scale-90"
           />
