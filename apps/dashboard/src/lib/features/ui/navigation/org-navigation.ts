@@ -1,4 +1,4 @@
-import type { AccountOrg } from '$lib/features/app/types';
+import type { AccountOrg } from '$features/app/types';
 import CogIcon from '@lucide/svelte/icons/cog';
 import type { Component } from 'svelte';
 import LayoutDashboardIcon from '@lucide/svelte/icons/layout-dashboard';

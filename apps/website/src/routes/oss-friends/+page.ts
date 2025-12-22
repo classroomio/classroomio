@@ -1,4 +1,4 @@
-import type { OssFriend } from '$lib/types';
+import type { OssFriend } from '$lib/utils/types';
 
 export async function load() {
   const friends: OssFriend[] = [

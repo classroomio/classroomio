@@ -12,7 +12,7 @@ import type { RealtimeChannel } from '@supabase/supabase-js';
 import type { TLocale } from '@cio/db/types';
 import type { Writable } from 'svelte/store';
 import { lessonValidation } from '$lib/utils/functions/validator';
-import { snackbar } from '$lib/components/Snackbar/store';
+import { snackbar } from '$features/ui/snackbar/store';
 import { writable } from 'svelte/store';
 
 export const lessonVideoUpload = writable({

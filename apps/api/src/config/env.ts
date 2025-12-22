@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 const envSchema = z.object({
   CLOUDFLARE_ACCESS_KEY: z.string().optional(),

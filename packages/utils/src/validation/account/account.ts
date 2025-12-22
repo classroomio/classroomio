@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 export const ZUpdateProfile = z.object({
   fullname: z.string().min(5).optional(),

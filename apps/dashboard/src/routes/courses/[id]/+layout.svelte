@@ -1,9 +1,27 @@
 <script lang="ts">
+  import * as Sidebar from '@cio/ui/base/sidebar';
+  import { CourseSidebar } from '$features/course/components/sidebar';
+  import { CourseHeader } from '$features/course/components';
+  import * as Page from '@cio/ui/base/page';
+
   interface Props {
     children?: import('svelte').Snippet;
+    path: string;
   }
 
-  let { children }: Props = $props();
+  let { children, path }: Props = $props();
 </script>
 
-{@render children?.()}
+<Sidebar.Provider>
+  <CourseSidebar {path} />
+
+  <Sidebar.Inset>
+    <CourseHeader />
+
+    <Page.Root
+      class="mx-auto flex w-[calc(100vw-var(--sidebar-width))] overflow-x-hidden px-4 group-data-[collapsible=icon]:w-[calc(100vw-var(--sidebar-width-icon))] lg:max-w-6xl"
+    >
+      {@render children?.()}
+    </Page.Root>
+  </Sidebar.Inset>
+</Sidebar.Provider>

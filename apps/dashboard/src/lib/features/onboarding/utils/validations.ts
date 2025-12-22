@@ -1,5 +1,5 @@
 import type { OnboardingField, OnboardingStep } from './types';
-import { ZOnboardingStep1, ZOnboardingStep2 } from '@cio/utils/validation/onboarding';
+import { ZOnboardingCreateOrg, ZOnboardingUpdateMetadata } from '@cio/utils/validation/onboarding';
 
 import { ONBOARDING_STEPS } from './constants';
 import { blockedSubdomain } from '@cio/utils/constants';
@@ -11,14 +11,14 @@ export const onboardingValidation = (field: OnboardingField, step: OnboardingSte
       return { siteName: 'Sitename already exists.' };
     }
 
-    const result = ZOnboardingStep1.safeParse(field);
+    const result = ZOnboardingCreateOrg.safeParse(field);
     if (!result.success) {
       return mapZodErrorsToTranslations(result.error);
     }
   }
 
   if (step === ONBOARDING_STEPS.USER_METADATA) {
-    const result = ZOnboardingStep2.safeParse(field);
+    const result = ZOnboardingUpdateMetadata.safeParse(field);
     if (!result.success) {
       return mapZodErrorsToTranslations(result.error);
     }

@@ -160,7 +160,7 @@ validations.{fieldName}.{errorCode}
 
 ```typescript
 // packages/utils/src/validation/lesson/lesson.ts
-import { z } from 'zod';
+import * as z from 'zod';
 
 /**
  * Lesson Create Validation Schema

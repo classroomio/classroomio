@@ -52,7 +52,7 @@ await send('forgotPassword', {
 
 ```typescript
 // packages/email/src/emails/forgot-password.ts
-import { z } from 'zod';
+import * as z from 'zod';
 import { defineEmail } from '../send';
 import { getDefaultTemplate } from '../templates';
 

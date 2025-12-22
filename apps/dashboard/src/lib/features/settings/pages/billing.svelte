@@ -1,6 +1,6 @@
 <script lang="ts">
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { currentOrgPlan, isFreePlan } from '$lib/utils/store/org';
   import HourglassIcon from '@lucide/svelte/icons/hourglass';
   import { openUpgradeModal } from '$lib/utils/functions/org';

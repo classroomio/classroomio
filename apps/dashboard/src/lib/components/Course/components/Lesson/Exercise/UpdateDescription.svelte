@@ -2,9 +2,8 @@
   import { questionnaire } from '../store/exercise';
   import { t } from '$lib/utils/functions/translations';
 
-  import DateTime from '$lib/components/Form/DateTime.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
+  import { TextEditor } from '$features/ui';
   import QuestionContainer from '$lib/components/QuestionContainer/index.svelte';
 
   interface Props {
@@ -13,9 +12,9 @@
 
   let { preview }: Props = $props();
 
-  function getTotalPossibleGrade(questions: { points: string }[]) {
+  function getTotalPossibleGrade(questions: { points: number | string }[]) {
     return questions.reduce((acc, question) => {
-      acc += parseFloat(question.points, 10);
+      acc += typeof question.points === 'string' ? parseFloat(question.points) : question.points;
       return acc;
     }, 0);
   }
@@ -24,18 +23,18 @@
 <div class="mb-5 {!preview ? 'px-6' : 'px-2'}">
   <QuestionContainer isTitle={true}>
     {#if !preview}
-      <TextField
+      <InputField
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.description.title')}
         bind:value={$questionnaire.title}
         className="mb-2"
-        onChange={() => ($questionnaire.is_title_dirty = true)}
+        onchange={() => ($questionnaire.is_title_dirty = true)}
       />
-      <DateTime
+      <InputField
         label={$t('course.navItem.lessons.exercises.all_exercises.view_mode.due')}
         className="w-50"
-        value={$questionnaire.due_by}
-        onInput={(e) => {
-          $questionnaire.due_by = e.target.value;
+        type="datetime-local"
+        bind:value={$questionnaire.due_by}
+        onchange={() => {
           $questionnaire.is_due_by_dirty = true;
         }}
       />
@@ -80,7 +79,7 @@
         {/if}
       </div>
 
-      <article class="preview prose prose-sm mt-3 p-2 sm:prose">
+      <article class="preview prose prose-sm sm:prose mt-3 p-2">
         {@html $questionnaire.description || $t('course.navItem.lessons.exercises.all_exercises.description.no')}
       </article>
     {/if}

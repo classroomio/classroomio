@@ -3,7 +3,7 @@
   import * as Avatar from '@cio/ui/base/avatar';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
-  import GoogleIconColored from '$lib/components/Icons/GoogleIconColored.svelte';
+  import { GoogleIconColored } from '$features/ui/icons';
   import { authClient } from '$lib/utils/services/auth/client';
   import * as Card from '@cio/ui/base/card';
   import { Button } from '@cio/ui/base/button';

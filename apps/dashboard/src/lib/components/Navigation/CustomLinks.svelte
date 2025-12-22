@@ -17,18 +17,17 @@
 
 {#if customLinks}
   <div class={isMobile ? 'space-y-4' : 'mr-4 hidden items-center space-x-6 lg:flex'}>
-    {#each customLinks.links as link}
+    {#each customLinks.links as link (link.url)}
       <li>
-        <Button
+        <a
           href={link.url}
           target={link.openInNewTab ? '_blank' : '_self'}
           rel={link.openInNewTab ? 'noopener noreferrer' : ''}
-          variant="link"
-          size="sm"
-          onclick={handleLinkClick}
         >
-          {link.label}
-        </Button>
+          <Button size="sm" variant="ghost" onclick={handleLinkClick}>
+            {link.label}
+          </Button>
+        </a>
       </li>
     {/each}
   </div>

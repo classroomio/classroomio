@@ -1,4 +1,5 @@
-import { z } from 'zod';
+import * as z from 'zod';
+
 import { defineEmail } from '../send';
 import { getDefaultTemplate } from '../templates';
 
@@ -23,4 +24,3 @@ export const inviteTeacherEmail = defineEmail({
     return getDefaultTemplate(content);
   }
 });
-

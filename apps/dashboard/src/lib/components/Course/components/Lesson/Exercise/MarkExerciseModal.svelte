@@ -7,14 +7,13 @@
 
   import { STATUS } from './constants';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import type { SubmissionIdData } from '$lib/utils/types/submission';
 
   import Preview from './Preview.svelte';
-  import Modal from '$lib/components/Modal/index.svelte';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
+  import { Button } from '@cio/ui/base/button';
 
   // import { useCompletion } from 'ai/svelte';
   // import { QUESTION_TYPE } from '$lib/components/Question/constants';
@@ -231,16 +230,17 @@
   });
 </script>
 
-<Modal
-  modalHeading={data.title}
+<Dialog.Root
   bind:open
-  {onClose}
-  width="w-4/5 h-[90%]"
-  containerClass="flex items-start !max-h-full h-[85%] py-0 px-4"
-  headerClass="py-2"
-  labelClass="text-base font-semibold"
+  onOpenChange={(isOpen) => {
+    if (!isOpen) onClose();
+  }}
 >
-  <div class="mt-2 h-full w-full">
+  <Dialog.Content class="w-4/5 h-[90%] flex items-start !max-h-full h-[85%] py-0 px-4">
+    <Dialog.Header class="py-2">
+      <Dialog.Title class="text-base font-semibold">{data.title}</Dialog.Title>
+    </Dialog.Header>
+    <div class="mt-2 h-full w-full">
     {#if openDeletePrompt}
       <div class="mx-auto w-96 rounded-md border border-gray-300 p-3">
         <h1 class="text-lg dark:text-white">
@@ -248,20 +248,12 @@
         </h1>
 
         <div class="mt-5 flex items-center justify-between">
-          <PrimaryButton
-            className="px-6 py-3"
-            variant={VARIANTS.OUTLINED}
-            label={$t('delete_modal.no')}
-            onClick={() => (openDeletePrompt = false)}
-            isDisabled={isDeleting}
-          />
-          <PrimaryButton
-            className="px-6 py-3"
-            variant={VARIANTS.OUTLINED}
-            label={$t('delete_modal.yes')}
-            onClick={handleDeleteSubmission}
-            isLoading={isDeleting}
-          />
+          <Button variant="outline" onclick={() => (openDeletePrompt = false)} disabled={isDeleting}>
+            {$t('delete_modal.no')}
+          </Button>
+          <Button variant="outline" onclick={handleDeleteSubmission} loading={isDeleting}>
+            {$t('delete_modal.yes')}
+          </Button>
         </div>
       </div>
     {:else}
@@ -383,7 +375,7 @@
         <p class="font-semibold text-gray-500 dark:text-white">
           {$t('course.navItem.submissions.grading_modal.add_comment')}:
         </p>
-        <TextArea
+        <TextareaField
           bgColor="bg-gray-100 dark:bg-neutral-700"
           className="font-semibold"
           placeholder={$t('course.navItem.submissions.grading_modal.add_comment_placeholder')}
@@ -392,22 +384,22 @@
       </div>
 
       <div class="flex w-full flex-col space-y-3 px-3 py-2">
-        <PrimaryButton onClick={gradeWithAI} variant={VARIANTS.OUTLINED} className="space-x-3 py-3 px-8 w-full ">
+        <Button variant="outline" onclick={gradeWithAI} class="w-full">
           <img src="/ai.svg" alt="ai" />
           <p class="text-sm font-semibold">
             {$t('course.navItem.submissions.grading_modal.grade_with_ai')}
           </p>
-        </PrimaryButton>
-        <PrimaryButton
-          onClick={() => {
+        </Button>
+        <Button
+          onclick={() => {
             handleSave(data);
             // onClose();
           }}
-          isLoading={isSaving}
-          label={$t('course.navItem.submissions.grading_modal.submit_grades')}
-          variant={VARIANTS.CONTAINED}
-          className="py-3 px-8 w-full"
-        />
+          loading={isSaving}
+          class="w-full"
+        >
+          {$t('course.navItem.submissions.grading_modal.submit_grades')}
+        </Button>
       </div>
       <!-- <div class="flex items-center text-sm p-3">
         <p class="dark:text-white w-1/2">Teacher</p>
@@ -415,7 +407,8 @@
       </div> -->
     </div>
   </div>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>
 
 <style>
   .badge {

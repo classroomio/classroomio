@@ -1,23 +1,21 @@
 <script lang="ts">
   import { page } from '$app/state';
 
-  import OrgLandingPage from '$lib/components/Org/LandingPage/index.svelte';
-  import PlayQuiz from '$lib/components/Org/Quiz/Play/index.svelte';
-  import { PageRestricted } from '$lib/components/Page';
-  import Snackbar from '$lib/components/Snackbar/index.svelte';
-  import { UpgradeModal } from '$lib/features/ui';
+  import { OrgLandingPage, PlayQuiz } from '$features/org';
+  import { Snackbar } from '$features/ui';
+  import { UpgradeModal, PageLoadProgress, PageRestricted } from '$features/ui';
   import { user } from '$lib/utils/store/user';
   import { setupAnalytics } from '$lib/utils/functions/appSetup';
   import { setTheme } from '$lib/utils/functions/theme';
   import { initOrgAnalytics } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
-  import { appInitApi } from '$lib/features/app/init.svelte';
+  import { appInitApi } from '$features/app/init.svelte';
   import merge from 'lodash/merge';
   import { onMount } from 'svelte';
   import { MetaTags } from 'svelte-meta-tags';
   import { authClient } from '$lib/utils/services/auth/client';
-  import { PageLoadProgress } from '$lib/features/ui';
+  import { isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
 
   import { ModeWatcher } from '@cio/ui/base/dark-mode';
 
@@ -25,7 +23,7 @@
 
   let { data, children } = $props();
 
-  let path = $derived(page.url?.pathname?.replace('/', ''));
+  let path = $derived(page.url.pathname);
 
   function intialAppSetup() {
     console.log(
@@ -70,8 +68,28 @@
   const session = authClient.useSession();
   const isSessionReady = $derived(!$session.isPending && !$session.isRefetching && $session.data);
 
+  // The goal of this effect is to make sure that we do a redirect to /login if the session data is expired
+  // This should be happening on the hooks.server.ts but we've made the home page public so we can show a loading spinner while the app is initializing OR an error message if the backend is down.
+  $effect(() => {
+    if ($session.isPending || $session.isRefetching) {
+      console.log('session is pending or refetching');
+      return;
+    }
+    console.log('path', path);
+    console.log('isPublicRoute', isPublicRoute(path));
+
+    // No need to require login for public routes
+    if (isPublicRoute(path)) return;
+
+    if (!$session.data && path !== '/login') {
+      console.log('session data is not available, go to login');
+      window.location.href = '/login';
+    }
+  });
+
   $effect(() => {
     // this means the session cookie 'classroomio.session_data' expired and we need to trigger a new session
+    // triggering a new session will update the session data in the cookies so that our hooks.server.ts doesn't always have to hit the DB when checking if user is logged in or not. Without the session cookie, every page navigation or route would always hit the database to check if user is logged in or not.
     if (!data.locals.fromSessions && isSessionReady) {
       authClient.getSession().then(() => {
         console.log('triggered new session');
@@ -105,7 +123,7 @@
   <PageRestricted />
 {:else if data.skipAuth}
   <PlayQuiz />
-{:else if data.isOrgSite && data.org && !path}
+{:else if data.isOrgSite && data.org && path === '/'}
   <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org} />
 {:else}
   <PageLoadProgress zIndex={10000} />

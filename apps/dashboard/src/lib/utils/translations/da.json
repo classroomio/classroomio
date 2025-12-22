@@ -1085,7 +1085,6 @@
       "students": "studerende",
       "published": "Offentliggjort",
       "unpublished": "Upubliceret",
-      "continue_course": "Fortsæt kursus",
       "learn_more": "Lær mere",
       "list_view": {
         "title": "Titel",
@@ -1141,7 +1140,6 @@
     "no_courses": "Ingen kurser i gang endnu",
     "start_course": "Når du starter et kursus, afspejler dine fremskridt her",
     "lms_dashboard_hero": "I dag er en anden dag for at bringe dig tættere på dine læringsmål. Giv ikke op, jo mere du lærer, jo bedre bliver du.",
-    "dont": "Giv ikke op",
     "lessons_completed": "Lektioner afsluttet",
     "no_courses_started": "Ingen kurser startede",
     "revenue": "Indtægter",
@@ -1599,8 +1597,6 @@
   },
   "new_course_modal": {
     "live_class_label": "Live klasse",
-    "live_class_subtitle": "Denne kursustype er ideel til bootcamps, hvor undervisningen er tidsbaseret, og du har brug for deltagelse og karaktergivning",
-    "self_paced_label": "Selv tempo",
-    "self_paced_subtitle": "Denne kursustype er ideel til kurser, hvor elever kan tage lektioner i deres eget tempo uden en lærer"
+    "self_paced_label": "Selv tempo"
   }
 }

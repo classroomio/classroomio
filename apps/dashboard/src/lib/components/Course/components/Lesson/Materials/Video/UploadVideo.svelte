@@ -1,14 +1,13 @@
 <script lang="ts">
   import { Progress } from '@cio/ui/base/progress';
   import { preventDefault } from '$lib/utils/functions/svelte';
-  import { UpgradeBanner } from '$lib/features/ui';
+  import { UpgradeBanner } from '$features/ui';
   import { lesson, lessonVideoUpload, cancelVideoUpload } from '$lib/components/Course/components/Lesson/store/lessons';
 
   import { isFreePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { VideoUploader } from '$lib/utils/services/courses/presign';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
 
   interface Props {
     lessonId?: string;
@@ -144,11 +143,9 @@
           <Progress class="w-full" value={$lessonVideoUpload.uploadProgress} max={100} />
           <p class="text-sm">{helperText}</p>
           <div class="mt-3">
-            <PrimaryButton
-              label={$t('course.navItem.lessons.materials.tabs.video.add_video.cancel_upload')}
-              variant={VARIANTS.OUTLINED}
-              onClick={cancelUpload}
-            />
+            <Button variant="outline" onclick={cancelUpload}>
+              {$t('course.navItem.lessons.materials.tabs.video.add_video.cancel_upload')}
+            </Button>
           </div>
         </div>
       {:else}
@@ -187,7 +184,9 @@
         {$t('course.navItem.lessons.materials.tabs.video.add_video.maximum_size')}
       </p>
     </span>
-    <PrimaryButton label={$t('course.navItem.lessons.materials.tabs.video.add_video.button')} onClick={tryAgain} />
+    <Button onclick={tryAgain}>
+      {$t('course.navItem.lessons.materials.tabs.video.add_video.button')}
+    </Button>
   </div>
 {:else if formRes?.status !== 200}
   <div class="flex h-full w-full flex-col items-center justify-center rounded-xl">
@@ -201,7 +200,9 @@
         {$t('course.navItem.lessons.materials.tabs.video.add_video.format')}
       </p>
     </span>
-    <PrimaryButton label={$t('course.navItem.lessons.materials.tabs.video.add_video.try_again')} onClick={tryAgain} />
+    <Button onclick={tryAgain}>
+      {$t('course.navItem.lessons.materials.tabs.video.add_video.try_again')}
+    </Button>
   </div>
 {:else}
   <div class=" w-full rounded-md border px-8 py-3">
@@ -214,10 +215,9 @@
         </video>
         <p>{fileInput?.files?.[0]?.name || fileName}</p>
       </div>
-      <PrimaryButton
-        label={$t('course.navItem.lessons.materials.button_done')}
-        onClick={() => ($lessonVideoUpload.isModalOpen = false)}
-      />
+      <Button onclick={() => ($lessonVideoUpload.isModalOpen = false)}>
+        {$t('course.navItem.lessons.materials.button_done')}
+      </Button>
     </div>
   </div>
 {/if}

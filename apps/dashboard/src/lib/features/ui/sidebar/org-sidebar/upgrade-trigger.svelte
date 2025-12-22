@@ -11,14 +11,14 @@
 
 {#if $isFreePlan}
   <div class="animate-icon">
-    {#if sidebar.open || sidebar.isMobile}
+    {#if sidebar.open || !sidebar.isMobile}
       <div
         class="animate-gradient-border mx-2 flex flex-col items-center justify-center gap-4 rounded-md px-2 py-6 text-center transition-all ease-in-out"
       >
-        <RocketIcon class="rocket-launch my-3 size-6" />
+        <RocketIcon class="rocket-launch my-3 size-6" color="var(--primary)" />
         <span class="flex flex-col gap-1">
-          <p class="text-base font-semibold">{$t('org_navigation.early_adopter')}</p>
-          <p class="text-xs">{$t('org_navigation.unlock')}</p>
+          <p class="text-base font-medium">{$t('org_navigation.early_adopter')}</p>
+          <p class="ui:text-muted-foreground text-xs">{$t('org_navigation.unlock')}</p>
         </span>
         <Button data-sidebar="upgrade-trigger" data-slot="upgrade-trigger" type="button" onclick={openUpgradeModal}>
           <RocketIcon class="rocket-launch custom size-4" />

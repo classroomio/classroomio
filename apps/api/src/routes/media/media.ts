@@ -5,7 +5,7 @@ import { authMiddleware } from '@api/middlewares/auth';
 import { handleError } from '@api/utils/errors';
 import { uploadImage } from '@api/services/media';
 
-export const mediaRouter = new Hono().post('/image/upload', authMiddleware, async (c) => {
+export const mediaRouter = new Hono().post('/image', authMiddleware, async (c) => {
   try {
     const body = await c.req.parseBody();
 

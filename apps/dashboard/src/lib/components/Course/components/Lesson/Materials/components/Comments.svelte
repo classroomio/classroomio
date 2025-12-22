@@ -6,18 +6,17 @@
 
   import { group } from '$lib/components/Course/store';
   import * as Avatar from '@cio/ui/base/avatar';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { shortenName } from '$lib/utils/functions/string';
-  import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { DeleteModal } from '$features/ui';
+  import { Button } from '@cio/ui/base/button';
   import { lesson, lessonCommentsChannel } from '$lib/components/Course/components/Lesson/store/lessons';
 
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import { calDateDiff } from '$lib/utils/functions/date';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { getSupabase } from '$lib/utils/functions/supabase';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import type { GroupPerson, LessonComment, LessonCommentInsertPayload } from '$lib/utils/types';
 
   const supabase = getSupabase();
@@ -63,7 +62,7 @@
         id: 0,
         comment: comment,
         name: $t('course.navItem.lessons.comments.you'),
-        avatar: $profile.avatarUrl,
+        avatar: $profile.avatarUrl || 'AV',
         commentAt: new Date(),
         groupmember_id: groupmember.id
       },
@@ -279,7 +278,7 @@
         <Avatar.Fallback>{shortenName($profile.fullname) || 'U'}</Avatar.Fallback>
       </Avatar.Root>
       <div class="h-full w-full">
-        <TextArea
+        <TextareaField
           label={$t('course.navItem.lessons.comments.text_area_title')}
           placeholder={$t('course.navItem.lessons.comments.placeholder')}
           bind:value={comment}
@@ -288,12 +287,9 @@
     </div>
 
     <div class="mt-2 flex flex-row-reverse">
-      <PrimaryButton
-        label={$t('course.navItem.lessons.comments.comment_btn')}
-        onClick={handleSend}
-        isDisabled={!comment}
-        isLoading={isSaving}
-      />
+      <Button onclick={handleSend} disabled={!comment} loading={isSaving}>
+        {$t('course.navItem.lessons.comments.comment_btn')}
+      </Button>
     </div>
   </div>
 
@@ -344,22 +340,17 @@
           </div>
 
           {#if editCommentId === commentItem.id}
-            <TextArea
+            <TextareaField
               placeholder={$t('course.navItem.lessons.comments.placeholder')}
               bind:value={commentItem.comment}
             />
             <div class="mt-2 flex flex-row-reverse items-center gap-2">
-              <PrimaryButton
-                variant={VARIANTS.OUTLINED}
-                label={$t('course.navItem.lessons.comments.cancel_btn')}
-                onClick={() => (editCommentId = null)}
-              />
-              <PrimaryButton
-                label={$t('course.navItem.lessons.comments.comment_btn')}
-                onClick={() => handleUpdate(commentItem)}
-                isDisabled={!commentItem.comment}
-                isLoading={isSaving}
-              />
+              <Button variant="outline" onclick={() => (editCommentId = null)}>
+                {$t('course.navItem.lessons.comments.cancel_btn')}
+              </Button>
+              <Button onclick={() => handleUpdate(commentItem)} disabled={!commentItem.comment} loading={isSaving}>
+                {$t('course.navItem.lessons.comments.comment_btn')}
+              </Button>
             </div>
           {:else}
             <article class="prose sm:prose-sm max-w-[300px] dark:text-white">
@@ -372,12 +363,9 @@
   </div>
   {#if pagination.hasMore}
     <div class="mt-2 flex items-center justify-center">
-      <PrimaryButton
-        label={$t('course.navItem.lessons.comments.load_more_btn')}
-        variant={VARIANTS.OUTLINED}
-        onClick={() => fetchComments($group.people)}
-        isLoading={isFetching}
-      />
+      <Button variant="outline" onclick={() => fetchComments($group.people)} loading={isFetching}>
+        {$t('course.navItem.lessons.comments.load_more_btn')}
+      </Button>
     </div>
   {/if}
 </div>

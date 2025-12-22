@@ -7,18 +7,17 @@
   import { landingPageSettings } from '../utils/store';
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import { orgApi } from '$lib/features/org/api/org.svelte';
-  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+  import { orgApi } from '$features/org/api/org.svelte';
+  import { handleOpenWidget } from '$features/ui/course-landing-page/store';
 
   import { Checkbox } from '@cio/ui/base/checkbox';
   import { Input } from '@cio/ui/base/input';
   import { Textarea } from '@cio/ui/base/textarea';
   import { Button } from '@cio/ui/base/button';
-  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
-  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
+  import { UploadWidget, UnsavedChanges } from '$features/ui';
   import * as Field from '@cio/ui/base/field';
   import type { OrgLandingPageJson } from '$lib/utils/types/org';
-  import type { AccountOrg } from '$lib/features/app/types';
+  import type { AccountOrg } from '$features/app/types';
 
   let creatingNewQuestion = $state(false);
   let creatingNewCustomLink = $state(false);
@@ -721,7 +720,7 @@
           oninput={() => (hasUnsavedChanges = true)}
         />
       </Field.Field>
-      <!-- <TextField
+      <!-- <InputField
         label="Instagram"
         placeholder="Write your Instagram link here"
         className="mb-5"

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CustomizeLmsPage } from '$lib/features/settings/pages';
+  import { CustomizeLmsPage } from '$features/settings/pages';
   import { t } from '$lib/utils/functions/translations';
   import { Button } from '@cio/ui/base/button';
   import * as Page from '@cio/ui/base/page';

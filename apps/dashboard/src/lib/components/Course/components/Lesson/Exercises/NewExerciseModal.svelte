@@ -2,16 +2,14 @@
   import { onMount } from 'svelte';
   import { Badge } from '@cio/ui/base/badge';
 
-  import Modal from '$lib/components/Modal/index.svelte';
-  import Confetti from '$lib/components/Confetti/index.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import { ComingSoon } from '$lib/features/ui';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
+  import { Confetti, ComingSoon } from '$features/ui';
+  import { InputField } from '@cio/ui/custom/input-field';
+  import { Button } from '@cio/ui/base/button';
+  import { CircleCheckIcon } from '$features/ui/icons';
 
   import { t } from '$lib/utils/functions/translations';
   import type { ExerciseTemplate } from '$lib/utils/types';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { type GeneratedTemplates, getAllTemplates, TAGS } from '$lib/mocks';
 
   interface Props {
@@ -126,17 +124,20 @@
   // const note = $derived(browser ? getTextFromHTML(content) : '');
 </script>
 
-<Modal
-  onClose={handleCancelAddExercise}
+<Dialog.Root
   bind:open
-  modalHeading={$t('course.navItem.lessons.exercises.new_exercise_modal.heading')}
-  maxWidth="max-w-2xl"
-  width="w-4/5"
+  onOpenChange={(isOpen) => {
+    if (!isOpen) handleCancelAddExercise();
+  }}
 >
-  {#if !isLoading && isAIStarted}
-    <Confetti />
-  {/if}
-  {#if step === 0}
+  <Dialog.Content class="max-w-2xl w-4/5">
+    <Dialog.Header>
+      <Dialog.Title>{$t('course.navItem.lessons.exercises.new_exercise_modal.heading')}</Dialog.Title>
+    </Dialog.Header>
+    {#if !isLoading && isAIStarted}
+      <Confetti />
+    {/if}
+    {#if step === 0}
     <div>
       <h2 class="my-5 text-2xl font-medium">
         {$t('course.navItem.lessons.exercises.new_exercise_modal.how')}?
@@ -171,11 +172,9 @@
       </div>
 
       <div class="mt-8 flex flex-row-reverse items-center">
-        <PrimaryButton
-          className="px-6 py-3"
-          label={$t('course.navItem.lessons.exercises.new_exercise_modal.next')}
-          onClick={handleNext}
-        />
+        <Button onclick={handleNext}>
+          {$t('course.navItem.lessons.exercises.new_exercise_modal.next')}
+        </Button>
       </div>
     </div>
   {:else if step === 1}
@@ -185,7 +184,7 @@
           <h2 class="my-5 text-2xl font-medium">
             {$t('course.navItem.lessons.exercises.new_exercise_modal.title')}
           </h2>
-          <TextField
+          <InputField
             bind:value={title}
             autoFocus={true}
             placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.title_placeholder')}
@@ -193,17 +192,12 @@
           />
 
           <div class="mt-5 flex items-center justify-between">
-            <PrimaryButton
-              className="px-6 py-3"
-              label={$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
-              variant={VARIANTS.OUTLINED}
-              onClick={handleBack}
-            />
-            <PrimaryButton
-              className="px-6 py-3"
-              label={$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
-              onClick={handleAddExercise}
-            />
+            <Button variant="outline" onclick={handleBack}>
+              {$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
+            </Button>
+            <Button onclick={handleAddExercise}>
+              {$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
+            </Button>
           </div>
         </div>
       </div>
@@ -258,18 +252,13 @@
           </div>
 
           <div class="mt-5 flex items-center justify-between">
-            <PrimaryButton
-              className="px-6 py-3"
-              label={$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
-              variant={VARIANTS.OUTLINED}
-              onClick={handleBack}
-            />
-            <PrimaryButton
-              isDisabled={!selectedTemplateId || !allTemplates}
-              className="px-6 py-3"
-              label={$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
-              isLoading={isTemplateFinishedLoading}
-              onClick={async () => {
+            <Button variant="outline" onclick={handleBack}>
+              {$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
+            </Button>
+            <Button
+              disabled={!selectedTemplateId || !allTemplates}
+              loading={isTemplateFinishedLoading}
+              onclick={async () => {
                 isTemplateFinishedLoading = true;
                 const template = allTemplates?.[selectedTag]?.find((t) => t.id === selectedTemplateId);
 
@@ -281,7 +270,9 @@
 
                 isTemplateFinishedLoading = true;
               }}
-            />
+            >
+              {$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
+            </Button>
           </div>
         </div>
       </div>
@@ -294,7 +285,7 @@
               <p class="mb-4 text-sm">
                 {$t('course.navItem.lessons.exercises.new_exercise_modal.choose_questions')}
               </p>
-              <TextField
+              <InputField
                 label={$t('course.navItem.lessons.exercises.new_exercise_modal.how_many_questions')}
                 type="number"
                 bind:value={questionNumber}
@@ -302,7 +293,7 @@
                 className="mb-2"
                 isRequired
               />
-              <TextField
+              <InputField
                 label={$t('course.navItem.lessons.exercises.new_exercise_modal.how_many_options')}
                 type="number"
                 bind:value={optionNumber}
@@ -313,14 +304,14 @@
               <h3>{$t('course.navItem.lessons.exercises.new_exercise_modal.add_note')}</h3>
             {/if}
             <div class="mt-5 flex flex-row-reverse items-center">
-              <PrimaryButton
-                onClick={callAI}
-                {isLoading}
-                isDisabled={isLoading || !note}
-                variant={VARIANTS.OUTLINED}
+              <Button
+                onclick={callAI}
+                loading={isLoading}
+                disabled={isLoading || !note}
+                variant="outline"
               >
                 {$t('course.navItem.lessons.exercises.new_exercise_modal.generate')}
-              </PrimaryButton>
+              </Button>
             </div>
           </div>
           <div
@@ -340,20 +331,21 @@
           </div>
         </div>
         <div class="mt-5 flex items-center justify-between">
-          <PrimaryButton
-            className="px-6 py-3"
-            label={$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
-            variant={VARIANTS.TEXT}
-            onClick={handleBack}
-          />
-          <PrimaryButton
-            isDisabled={isLoading || !note}
-            className="px-6 py-3"
-            label={$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
-            onClick={handleAddExercise}
-          />
+          <Button
+            variant="ghost"
+            onclick={handleBack}
+          >
+            {$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
+          </Button>
+          <Button
+            disabled={isLoading || !note}
+            onclick={handleAddExercise}
+          >
+            {$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
+          </Button>
         </div>
       </div> -->
     {/if}
-  {/if}
-</Modal>
+    {/if}
+  </Dialog.Content>
+</Dialog.Root>

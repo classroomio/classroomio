@@ -15,7 +15,7 @@
 </script>
 
 {#if $isFreePlan}
-  <Item.Root variant="outline" size="sm" class="border-blue-700! py-2! {className}">
+  <Item.Root variant="outline" size="sm" class="border-blue-700! py-2! h-fit w-full {className}">
     {#snippet child({ props })}
       <button
         {...props}

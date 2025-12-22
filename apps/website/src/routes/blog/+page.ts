@@ -1,4 +1,4 @@
-import type { BlogPost } from '$lib/types';
+import type { BlogPost } from '$lib/utils/types';
 
 /** @type {import('./$types').PageLoad} */
 export async function load({ fetch }) {

@@ -1,5 +1,5 @@
 <script>
-  import { BillingPage } from '$lib/features/settings/pages';
+  import { BillingPage } from '$features/settings/pages';
   import { t } from '$lib/utils/functions/translations';
   import * as Page from '@cio/ui/base/page';
 </script>

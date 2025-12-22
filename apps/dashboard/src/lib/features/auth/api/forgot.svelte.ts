@@ -2,7 +2,7 @@ import { BaseApiWithErrors } from '$lib/utils/services/api';
 import type { TForgotPasswordForm } from '../utils/types';
 import { authClient } from '$lib/utils/services/auth/client';
 import { forgotPasswordValidation } from '../utils/validation';
-import { snackbar } from '$lib/components/Snackbar/store';
+import { snackbar } from '$features/ui/snackbar/store';
 
 export class ForgotApi extends BaseApiWithErrors {
   async submit(fields: TForgotPasswordForm) {

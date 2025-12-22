@@ -1,5 +1,5 @@
 import { QUESTION_TYPE } from '$lib/components/Question/constants';
-import { toggleConfetti } from '$lib/components/Confetti/store';
+import { toggleConfetti } from '$features/ui/confetti/store';
 
 export const isAnswerCorrect = (options, answer) => {
   return options.some((option) => option.is_correct && option.value === answer);

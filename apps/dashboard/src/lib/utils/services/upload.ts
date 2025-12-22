@@ -8,7 +8,7 @@ import { classroomio } from './api';
  */
 export async function uploadImage(file: File): Promise<string> {
   try {
-    const response = await classroomio.media.image.upload.$post({
+    const response = await classroomio.media.image.$post({
       form: {
         file: file
       }

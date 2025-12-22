@@ -1,4 +1,4 @@
-import { appInitApi } from '$lib/features/app/init.svelte';
+import { appInitApi } from '$features/app/init.svelte';
 import { authClient } from '$lib/utils/services/auth/client';
 import { capturePosthogEvent } from '$lib/utils/services/posthog';
 import { goto } from '$app/navigation';

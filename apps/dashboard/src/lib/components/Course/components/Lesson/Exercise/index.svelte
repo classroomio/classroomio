@@ -18,18 +18,14 @@
   } from '../store/exercise';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { upsertExercise } from '$lib/utils/services/courses';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-
   import EditMode from './EditMode.svelte';
   import ViewMode from './ViewMode.svelte';
-  import { PageBody } from '$lib/components/Page';
   import Analytics from './Submissions/index.svelte';
-  import { IconButton } from '$lib/components/IconButton';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import UpdateDescription from './UpdateDescription.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { RoleBasedSecurity } from '$lib/features/ui';
+  import { RoleBasedSecurity } from '$features/ui';
 
   interface Props {
     exerciseId?: string;
@@ -106,7 +102,7 @@
   // });
 </script>
 
-<PageBody isPageNavHidden={$globalStore.isStudent} padding="px-4 overflow-x-hidden">
+<div class="overflow-x-hidden px-4">
   <div class="sticky top-0 z-10 mb-3 bg-gray-100 p-2 dark:bg-neutral-800">
     <Breadcrumb.Root>
       <Breadcrumb.List>
@@ -139,31 +135,20 @@
       {#if selectedTab === 'questions'}
         <div class="right-0 flex w-full items-center justify-end">
           <div class="flex items-center">
-            <PrimaryButton
-              className="mr-2"
-              variant={VARIANTS.CONTAINED}
-              label={$t('course.navItem.lessons.exercises.all_exercises.save')}
-              onClick={handleSave}
-              isLoading={isSaving}
-            />
+            <Button class="mr-2" onclick={handleSave} loading={isSaving}>
+              {$t('course.navItem.lessons.exercises.all_exercises.save')}
+            </Button>
             <IconButton
-              onClick={() => (preview = !preview)}
-              contained={preview}
-              toolTipProps={{
-                title: $t('course.navItem.lessons.exercises.all_exercises.preview'),
-                direction: 'bottom',
-                hotkeys: []
-              }}
+              onclick={() => (preview = !preview)}
+              tooltip={$t('course.navItem.lessons.exercises.all_exercises.preview')}
+              tooltipSide="bottom"
             >
               <EyeIcon size={20} class={preview ? 'filled' : ''} />
             </IconButton>
             <IconButton
-              onClick={handleAddQuestion}
-              toolTipProps={{
-                title: $t('course.navItem.lessons.exercises.all_exercises.add_question'),
-                direction: 'bottom',
-                hotkeys: []
-              }}
+              onclick={handleAddQuestion}
+              tooltip={$t('course.navItem.lessons.exercises.all_exercises.add_question')}
+              tooltipSide="bottom"
             >
               <CirclePlusIcon size={20} />
             </IconButton>
@@ -205,4 +190,4 @@
   {:else if selectedTab === 'submissions'}
     <Analytics bind:exerciseId />
   {/if}
-</PageBody>
+</div>

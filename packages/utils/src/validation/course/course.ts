@@ -1,15 +1,24 @@
+import * as z from 'zod';
+
 import { ALLOWED_CONTENT_TYPES, ALLOWED_DOCUMENT_TYPES } from '../constants';
 
-import { z } from 'zod';
-
 export const ZCourseClone = z.object({
-  id: z.string().min(1),
   title: z.string().min(1),
   description: z.string().optional(),
   slug: z.string().min(1),
   organizationId: z.string().min(1)
 });
 export type TCourseClone = z.infer<typeof ZCourseClone>;
+
+export const ZCourseCloneParam = z.object({
+  courseId: z.string().min(1)
+});
+export type TCourseCloneParam = z.infer<typeof ZCourseCloneParam>;
+
+export const ZCourseDownloadParam = z.object({
+  courseId: z.string().min(1)
+});
+export type TCourseDownloadParam = z.infer<typeof ZCourseDownloadParam>;
 
 export const ZCertificateDownload = z.object({
   theme: z.string().min(1),
