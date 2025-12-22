@@ -5,8 +5,8 @@
   import { lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
   import { CourseContainer } from '$lib/components/CourseContainer';
 
-  import CourseLandingPage from '$lib/components/CourseLandingPage/index.svelte';
-  import Editor from '$lib/components/CourseLandingPage/components/Editor/index.svelte';
+  import { CourseLandingPage } from '$features/ui';
+  import Editor from '$features/ui/course-landing-page/components/editor/editor.svelte';
 
   let { data } = $props();
 

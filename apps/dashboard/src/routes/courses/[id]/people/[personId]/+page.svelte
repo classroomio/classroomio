@@ -7,13 +7,12 @@
   import UnfoldVerticalIcon from '@lucide/svelte/icons/unfold-vertical';
 
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { getAccessToken } from '$lib/utils/functions/supabase';
   import type { UserCourseAnalytics } from '$lib/utils/types/analytics';
 
-  import Progress from '$lib/components/Progress/index.svelte';
-  import { Grid } from '$lib/components/Org/Settings/Layout';
-  import { ActivityCard, HeroProfileCard, LoadingPage } from '$lib/components/Analytics';
+  import { Progress } from '@cio/ui/base/progress';
+  import { ActivityCard, HeroProfileCard, LoadingPage } from '$features/ui';
 
   let { data } = $props();
 
@@ -62,7 +61,7 @@
     {
       description: $t('analytics.overall_course_progress_user_description'),
       icon: BookOpenIcon,
-      percentage: userCourseAnalytics?.progressPercentage,
+      percentage: userCourseAnalytics?.progressPercentage ?? 0,
       title: $t('analytics.overall_course_progress')
     },
     {
@@ -77,7 +76,7 @@
     {
       description: $t('analytics.average_grade_description'),
       icon: UnfoldVerticalIcon,
-      percentage: userCourseAnalytics?.averageGrade,
+      percentage: userCourseAnalytics?.averageGrade ?? 0,
       title: $t('analytics.average_grade')
     }
   ]);
@@ -102,13 +101,13 @@
   <section class="px-1">
     <HeroProfileCard user={userCourseAnalytics.user} />
 
-    <Grid class="mt-5 px-0">
+    <div class="mt-5 px-0">
       <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {#each learningActivities as activity}
           <ActivityCard {activity} />
         {/each}
       </div>
-    </Grid>
+    </div>
 
     <div class="mt-5 rounded-md border p-3 md:p-5 dark:border-neutral-600">
       <h3 class="text-2xl">

@@ -1,10 +1,8 @@
 <script lang="ts">
   import { Skeleton } from '@cio/ui/base/skeleton';
 
-  import { VARIANTS } from '../PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
-
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
 
   interface Props {
     reason?: string;
@@ -40,20 +38,12 @@
         </p>
       </div>
       <div class="flex space-x-2">
-        <PrimaryButton
-          variant={VARIANTS.CONTAINED_SUCCESS}
-          label={$t('course.navItem.submissions.grading_modal.accept_grade')}
-          className="rounded-none py-1 px-2"
-          disablePadding={true}
-          onClick={acceptGrade}
-        />
-        <PrimaryButton
-          variant={VARIANTS.CONTAINED_DANGER}
-          label={$t('course.navItem.submissions.grading_modal.reject_grade')}
-          className="rounded-none py-1 px-2"
-          disablePadding={true}
-          onClick={rejectGrade}
-        />
+        <Button onclick={acceptGrade}>
+          {$t('course.navItem.submissions.grading_modal.accept_grade')}
+        </Button>
+        <Button variant="destructive" onclick={rejectGrade}>
+          {$t('course.navItem.submissions.grading_modal.reject_grade')}
+        </Button>
       </div>
     </div>
   {/if}

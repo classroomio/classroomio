@@ -1,18 +1,16 @@
 <script lang="ts">
   import { preventDefault } from '$lib/utils/functions/svelte';
 
-  import CodeSnippet from '$lib/components/CodeSnippet/index.svelte';
-  import Checkbox from '$lib/components/Form/Checkbox.svelte';
+  import { CodeSnippet } from '$features/ui';
+  import { CheckboxField } from '@cio/ui/custom/checkbox-field';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import Grade from '$lib/components/Question/Grade.svelte';
   import { t } from '$lib/utils/functions/translations';
   import QuestionTitle from '../QuestionTitle.svelte';
   import ReasonBox from '../ReasonBox.svelte';
 
   interface Props {
-    key: string | number;
     title?: string;
     index?: number | string;
     code: any;
@@ -52,12 +50,12 @@
       isDisabled: false,
       isActive: false
     },
-    grade = $bindable(),
+    grade = $bindable(0),
     gradeMax = 0,
     disableGrading = false,
-    isGradeWithAI = false,
-    reason,
-    isLoading = false,
+    isGradeWithAI = $bindable(false),
+    reason = $bindable(''),
+    isLoading = $bindable(false),
     hideGrading = false
   }: Props = $props();
 
@@ -131,7 +129,7 @@
         )}"
         type="button"
       >
-        <Checkbox
+        <CheckboxField
           {name}
           className="p-2"
           value={option.value}
@@ -148,21 +146,15 @@
 
   {#if !isPreview}
     <div class="mt-3 flex w-full items-center justify-between">
-      <PrimaryButton
-        onClick={handlePrevious}
-        label={$t('course.navItem.lessons.exercises.all_exercises.previous')}
-        isDisabled={disablePreviousButton}
-        variant={VARIANTS.OUTLINED}
-      />
-      <PrimaryButton
-        variant={nextButtonProps.isActive ? VARIANTS.CONTAINED : VARIANTS.OUTLINED}
-        type="submit"
-        label={isLast
+      <Button variant="outline" onclick={handlePrevious} disabled={disablePreviousButton}>
+        {$t('course.navItem.lessons.exercises.all_exercises.previous')}
+      </Button>
+      <Button variant={nextButtonProps.isActive ? 'default' : 'outline'} type="submit">
+        {isLast
           ? $t('course.navItem.lessons.exercises.all_exercises.finish')
           : $t('course.navItem.lessons.exercises.all_exercises.next')}
-        isDisabled={nextButtonProps.isDisabled}
-        {name}
-      />
+        disabled={nextButtonProps.isDisabled}
+      </Button>
     </div>
   {/if}
 </form>

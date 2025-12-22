@@ -3,12 +3,12 @@
   import { Button } from '@cio/ui/base/button';
   import RefreshCcwIcon from '@lucide/svelte/icons/refresh-ccw';
   import CircleIcon from '@lucide/svelte/icons/circle';
-  import SetupProgress from '$lib/features/setup/components/setup-progress.svelte';
+  import SetupProgress from '$features/setup/components/setup-progress.svelte';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import BadgeCheckIcon from '@lucide/svelte/icons/badge-check';
-  import { calculateProgress, setupProgressApi } from '$lib/features/setup/api/setup-progress.svelte';
+  import { calculateProgress, setupProgressApi } from '$features/setup/api/setup-progress.svelte';
 
   function handleRefresh() {
     if ($currentOrg.siteName) {

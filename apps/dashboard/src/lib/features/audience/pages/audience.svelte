@@ -5,10 +5,10 @@
   import { Search } from '@cio/ui/custom/search';
   import * as Pagination from '@cio/ui/base/pagination';
   import UsersIcon from '@lucide/svelte/icons/users';
-  import { orgApi } from '$lib/features/org/api/org.svelte';
+  import { orgApi } from '$features/org/api/org.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { Empty } from '@cio/ui/custom/empty';
-  import { UpgradeBanner } from '$lib/features/ui';
+  import { UpgradeBanner } from '$features/ui';
   import { currentOrg, currentOrgMaxAudience } from '$lib/utils/store/org';
   import * as Avatar from '@cio/ui/base/avatar';
   import * as Page from '@cio/ui/base/page';
@@ -80,11 +80,11 @@
                 <Table.Cell>
                   <a
                     href={`${pageStore.url.href}/${row.id}/${$currentOrg.id}`}
-                    class="text-primary-700 flex items-center gap-2 hover:underline"
+                    class="ui:text-primary flex items-center gap-2 hover:underline"
                   >
                     <Avatar.Root class="h-5 w-5">
                       <Avatar.Image
-                        src={row.avatar_url ? row.avatar_url : '/logo-192.png'}
+                        src={row.avatarUrl ? row.avatarUrl : '/logo-192.png'}
                         alt={row.name ? row.name : 'User'}
                       />
                       <Avatar.Fallback>{shortenName(row.name) || 'U'}</Avatar.Fallback>
@@ -93,7 +93,7 @@
                   </a>
                 </Table.Cell>
                 <Table.Cell>{row.email}</Table.Cell>
-                <Table.Cell>{row.date_joined}</Table.Cell>
+                <Table.Cell>{row.createdAt}</Table.Cell>
               </Table.Row>
             {/each}
           </Table.Body>

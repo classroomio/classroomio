@@ -1,10 +1,9 @@
 <script lang="ts">
   import { preventDefault } from '$lib/utils/functions/svelte';
 
-  import CodeSnippet from '$lib/components/CodeSnippet/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import RadioItem from '$lib/components/Form/RadioItem.svelte';
+  import { CodeSnippet } from '$features/ui';
+  import { Button } from '@cio/ui/base/button';
+  import { RadioItem } from '@cio/ui/custom/radio-item';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import Grade from '$lib/components/Question/Grade.svelte';
   import { t } from '$lib/utils/functions/translations';
@@ -12,7 +11,6 @@
   import QuestionTitle from '../QuestionTitle.svelte';
 
   interface Props {
-    key: string | number;
     title?: string;
     index?: number | string;
     code?: string;
@@ -53,13 +51,13 @@
       isActive: false
     },
     isLast = false,
-    grade = $bindable(),
+    grade = $bindable(0),
     gradeMax = 0,
     disableGrading = false,
     disableOptContainerMargin = false,
-    isGradeWithAI = false,
-    reason,
-    isLoading = false,
+    isGradeWithAI = $bindable(false),
+    reason = $bindable(''),
+    isLoading = $bindable(false),
     hideGrading = false
   }: Props = $props();
 
@@ -150,21 +148,15 @@
 
   {#if !isPreview}
     <div class="mt-3 flex w-full items-center justify-between">
-      <PrimaryButton
-        onClick={handlePrevious}
-        label={$t('course.navItem.lessons.exercises.all_exercises.previous')}
-        isDisabled={disablePreviousButton}
-        variant={VARIANTS.OUTLINED}
-      />
-      <PrimaryButton
-        variant={nextButtonProps.isActive ? VARIANTS.CONTAINED : VARIANTS.OUTLINED}
-        type="submit"
-        label={isLast
+      <Button variant="outline" onclick={handlePrevious} disabled={disablePreviousButton}>
+        {$t('course.navItem.lessons.exercises.all_exercises.previous')}
+      </Button>
+      <Button variant={nextButtonProps.isActive ? 'default' : 'outline'} type="submit">
+        {isLast
           ? $t('course.navItem.lessons.exercises.all_exercises.finish')
           : $t('course.navItem.lessons.exercises.all_exercises.next')}
-        isDisabled={nextButtonProps.isDisabled}
-        {name}
-      />
+        disabled={nextButtonProps.isDisabled}
+      </Button>
     </div>
   {/if}
 </form>

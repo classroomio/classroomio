@@ -1,17 +1,16 @@
 <script lang="ts">
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import type { Feed, Author } from '$lib/utils/types/feed';
   import { createNewFeed } from '$lib/utils/services/newsfeed';
   import { getTextFromHTML } from '$lib/utils/functions/toHtml';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import { createNewsfeedValidation } from '$lib/utils/functions/validator';
   import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
   import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/notification';
 
-  import Modal from '$lib/components/Modal/index.svelte';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
+  import { TextEditor } from '$features/ui';
 
   interface Props {
     author?: Author | any;
@@ -113,16 +112,21 @@
   };
 </script>
 
-<Modal
-  onClose={resetEditor}
+<Dialog.Root
   bind:open={$isNewFeedModal.open}
-  width="w-4/5"
-  maxWidth="max-w-lg"
-  modalHeading={edit === true
-    ? $t('course.navItem.news_feed.heading_button.edit_post')
-    : $t('course.navItem.news_feed.heading_button.make_a_post')}
+  onOpenChange={(isOpen) => {
+    if (!isOpen) resetEditor();
+  }}
 >
-  <section class="w-2/ flex h-full flex-col rounded-xl pb-3">
+  <Dialog.Content class="w-4/5 max-w-lg">
+    <Dialog.Header>
+      <Dialog.Title>
+        {edit === true
+          ? $t('course.navItem.news_feed.heading_button.edit_post')
+          : $t('course.navItem.news_feed.heading_button.make_a_post')}
+      </Dialog.Title>
+    </Dialog.Header>
+    <section class="w-2/ flex h-full flex-col rounded-xl pb-3">
     <TextEditor
       content={newPost}
       onChange={(text) => {
@@ -136,13 +140,17 @@
     {/if}
     <div class="flex items-center justify-end py-2">
       <div class="flex gap-2">
-        <PrimaryButton
-          label={$t('course.navItem.news_feed.heading_button.cancel')}
-          variant={VARIANTS.OUTLINED}
-          onClick={resetEditor}
-        />
-        <PrimaryButton {isLoading} label={$t('course.navItem.news_feed.heading_button.post')} onClick={onPost} />
+        <Button
+          variant="outline"
+          onclick={resetEditor}
+        >
+          {$t('course.navItem.news_feed.heading_button.cancel')}
+        </Button>
+        <Button loading={isLoading} onclick={onPost}>
+          {$t('course.navItem.news_feed.heading_button.post')}
+        </Button>
       </div>
     </div>
   </section>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>

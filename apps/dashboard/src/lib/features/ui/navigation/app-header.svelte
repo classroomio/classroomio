@@ -4,18 +4,20 @@
   import BellIcon from '@lucide/svelte/icons/bell';
   import { Button } from '@cio/ui/base/button';
   import * as Popover from '@cio/ui/base/popover';
-  import Search from '../search.svelte';
+  import Search from '$features/ui/search.svelte';
   import AppBreadcrumbs from './app-breadcrumbs.svelte';
   import RefreshCcwIcon from '@lucide/svelte/icons/refresh-ccw';
   import * as Empty from '@cio/ui/base/empty';
   import { currentOrg } from '$lib/utils/store/org';
-  import { setupProgressApi } from '$lib/features/setup/api/setup-progress.svelte';
+  import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
   import AppSetup from './app-setup.svelte';
 
+  const siteName = $derived($currentOrg.siteName);
+
   $effect(() => {
-    if ($currentOrg.siteName) {
-      setupProgressApi.fetchSetupProgress($currentOrg.siteName);
-    }
+    if (!siteName) return;
+
+    setupProgressApi.fetchSetupProgress(siteName);
   });
 </script>
 
@@ -34,7 +36,6 @@
     <span class="grow"></span>
 
     <AppSetup />
-
     <Search />
 
     <Popover.Root>

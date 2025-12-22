@@ -1,6 +1,6 @@
 import { BaseApi, classroomio } from '$lib/utils/services/api';
 
-import type { DashStatsSuccess } from '$lib/features/org/utils/types';
+import type { DashStatsSuccess } from '$features/org/utils/types';
 
 /**
  * API class for organization dashboard analytics

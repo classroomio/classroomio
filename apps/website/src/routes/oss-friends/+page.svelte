@@ -1,5 +1,6 @@
 <script>
-  import PageHeader from '$lib/PageHeader/PageHeader.svelte';
+  import { PageHeader } from '$lib/components';
+  import { Button } from '@cio/ui/base/button';
 
   export let data;
 </script>
@@ -35,18 +36,14 @@
           </p>
         </div>
         <div class="text-left px-6 mt-3">
-          <a
+          <Button
             href={friend.href}
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-block w-full"
+            variant="outline"
           >
-            <button
-              class="font-semibold text-base text-white bg-gray-800 hover:bg-gray-900 hover:shadow-xl transition-all delay-100 px-4 py-3 rounded-md"
-            >
-              Learn more
-            </button>
-          </a>
+            Learn more
+          </Button>
         </div>
       </li>
     {/each}

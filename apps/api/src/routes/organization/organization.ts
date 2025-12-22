@@ -34,6 +34,7 @@ import { authMiddleware } from '@api/middlewares/auth';
 import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
 import { handleError } from '@api/utils/errors';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
+import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { zValidator } from '@hono/zod-validator';
 
 export const organizationRouter = new Hono()
@@ -66,7 +67,7 @@ export const organizationRouter = new Hono()
    * Gets organization team members (non-students)
    * Requires authentication
    */
-  .get('/:orgId/team', authMiddleware, zValidator('param', ZGetOrganizationTeam), async (c) => {
+  .get('/:orgId/team', authMiddleware, orgMemberMiddleware, zValidator('param', ZGetOrganizationTeam), async (c) => {
     try {
       const { orgId } = c.req.valid('param');
       const team = await getOrgTeam(orgId);
@@ -144,22 +145,28 @@ export const organizationRouter = new Hono()
    * Gets organization audience (students)
    * Requires authentication
    */
-  .get('/:orgId/audience', authMiddleware, zValidator('param', ZGetOrganizationAudience), async (c) => {
-    try {
-      const { orgId } = c.req.valid('param');
-      const audience = await getOrgAudience(orgId);
+  .get(
+    '/:orgId/audience',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZGetOrganizationAudience),
+    async (c) => {
+      try {
+        const { orgId } = c.req.valid('param');
+        const audience = await getOrgAudience(orgId);
 
-      return c.json(
-        {
-          success: true,
-          data: audience
-        },
-        200
-      );
-    } catch (error) {
-      return handleError(c, error, 'Failed to fetch organization audience');
+        return c.json(
+          {
+            success: true,
+            data: audience
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch organization audience');
+      }
     }
-  })
+  )
   /**
    * GET /organization/courses
    * Gets courses by organization siteName
@@ -305,6 +312,7 @@ export const organizationRouter = new Hono()
   .put(
     '/:orgId',
     authMiddleware,
+    orgAdminMiddleware,
     zValidator('param', ZUpdateOrganizationParam),
     zValidator('json', ZUpdateOrganization),
     async (c) => {

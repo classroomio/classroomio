@@ -1,7 +1,7 @@
 import { browser, dev } from '$app/environment';
 import { derived, writable } from 'svelte/store';
 
-import type { AccountOrg } from '$lib/features/app/types';
+import type { AccountOrg } from '$features/app/types';
 import type { OrgTeamMember } from '../types/org';
 import { PLAN } from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
@@ -53,7 +53,7 @@ const getActivePlan = (org: AccountOrg) => {
 export const currentOrgPlan = derived(currentOrg, ($currentOrg) => getActivePlan($currentOrg));
 
 export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
-  $currentOrg.siteName ? `/org/${$currentOrg.siteName}` : ''
+  $currentOrg.siteName ? `/org/${$currentOrg.siteName}` : '#'
 );
 
 export const currentOrgDomain = derived(currentOrg, ($currentOrg) => {

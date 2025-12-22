@@ -1,9 +1,9 @@
 <script lang="ts">
   import { profile } from '$lib/utils/store/user';
   import { fetchCourses } from '$lib/utils/services/courses';
-  import { CoursesPage } from '$lib/features/course/pages';
-  import { CreateCourseButton } from '$lib/features/course/components';
-  import { courses, courseMetaDeta } from '$lib/features/course/utils/store';
+  import { CoursesPage } from '$features/course/pages';
+  import { CreateCourseButton } from '$features/course/components';
+  import { courses, courseMetaDeta } from '$features/course/utils/store';
   import { currentOrg } from '$lib/utils/store/org';
   import type { Course } from '$lib/utils/types';
   import { browser } from '$app/environment';

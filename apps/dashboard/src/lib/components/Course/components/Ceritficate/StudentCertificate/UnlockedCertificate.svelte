@@ -5,13 +5,12 @@
   import { course } from '$lib/components/Course/store';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import Box from '$lib/components/Box/index.svelte';
+  import { Button } from '@cio/ui/base/button';
+  import Empty from '@cio/ui/custom/empty/empty.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { fetchProfileCourseProgress } from '$lib/utils/services/courses';
   import type { ProfileCourseProgress } from '$lib/utils/types';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { classroomio } from '$lib/utils/services/api';
 
   let isLoading = $state(false);
@@ -19,7 +18,7 @@
   let progress: ProfileCourseProgress | undefined;
 
   const downLoadCertificate = async () => {
-    if (!isCourseComplete) return;
+    if (!isCourseComplete || !$course.id) return;
 
     isLoading = true;
     try {
@@ -85,24 +84,11 @@
   );
 </script>
 
-<Box>
-  <div class="flex h-full w-max flex-col items-center justify-center gap-5">
-    <img src="/images/student-certificate-preview.png" alt="Certificate" class="max-w-[218px]" />
-    <p class="text-center text-xl font-normal">
-      {$t(title)}
-    </p>
-    <p class="max-w-md text-center text-sm font-normal">
-      {$t(subtitle)}
-    </p>
-    <PrimaryButton
-      className="flex items-center gap-2"
-      onClick={downLoadCertificate}
-      variant={VARIANTS.CONTAINED_DARK}
-      isDisabled={!isCourseComplete}
-      {isLoading}
-    >
+<div class="flex-1">
+  <Empty title={$t(title)} description={$t(subtitle)} icon={DownloadIcon} variant="page">
+    <Button onclick={downLoadCertificate} disabled={!isCourseComplete} loading={isLoading}>
       <DownloadIcon size={16} />
       {$t('course.navItem.certificates.download_certificate')}
-    </PrimaryButton>
-  </div>
-</Box>
+    </Button>
+  </Empty>
+</div>

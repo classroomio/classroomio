@@ -8,7 +8,7 @@ import { handleLocaleChange } from '$lib/utils/functions/translations';
 import { onboardingValidation } from '../utils/validations';
 import { profile } from '$lib/utils/store/user';
 import { resolve } from '$app/paths';
-import { snackbar } from '$lib/components/Snackbar/store';
+import { snackbar } from '$features/ui/snackbar/store';
 
 export class OnboardingApi extends BaseApiWithErrors {
   step: OnboardingStep = $state(ONBOARDING_STEPS.ORG_SETUP);

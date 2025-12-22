@@ -1,16 +1,16 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import { getSupabase } from '$lib/utils/functions/supabase';
-  import { AuthUI } from '$lib/features/ui';
+  import { AuthUI } from '$features/ui';
   import { currentOrg } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
   import { addGroupMember } from '$lib/utils/services/courses';
   import { ROLE } from '@cio/utils/constants';
   import { profile } from '$lib/utils/store/user';
   import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
-  import { snackbar } from '$lib/components/Snackbar/store.js';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { page } from '$app/state';
 
@@ -130,11 +130,12 @@
   </div>
 
   <div class="my-4 flex w-full items-center justify-center">
-    <PrimaryButton
-      label="Join Course"
+    <Button
       type="submit"
-      isDisabled={disableSubmit || loading}
-      isLoading={loading || !$profile.id}
-    />
+      disabled={disableSubmit || loading}
+      loading={loading || !$profile.id}
+    >
+      Join Course
+    </Button>
   </div>
 </AuthUI>

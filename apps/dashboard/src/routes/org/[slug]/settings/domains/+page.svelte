@@ -1,5 +1,5 @@
 <script>
-  import { DomainsPage } from '$lib/features/settings/pages';
+  import { DomainsPage } from '$features/settings/pages';
   import { t } from '$lib/utils/functions/translations';
   import * as Page from '@cio/ui/base/page';
 </script>

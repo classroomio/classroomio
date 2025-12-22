@@ -5,10 +5,10 @@
   import { issueCertificateModal, resetForm } from './store';
   import { preventDefault } from '$lib/utils/functions/svelte';
 
-  import Modal from '$lib/components/Modal/index.svelte';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
+  import { InputField } from '@cio/ui/custom/input-field';
+  import { Button } from '@cio/ui/base/button';
 
   let isAutomatic = $state(false);
 
@@ -17,14 +17,17 @@
   };
 </script>
 
-<Modal
-  onClose={resetForm}
+<Dialog.Root
   bind:open={$issueCertificateModal.open}
-  width="w-3/5"
-  maxWidth=""
-  modalHeading="Send Certificate"
+  onOpenChange={(isOpen) => {
+    if (!isOpen) resetForm();
+  }}
 >
-  <main>
+  <Dialog.Content class="w-3/5">
+    <Dialog.Header>
+      <Dialog.Title>Send Certificate</Dialog.Title>
+    </Dialog.Header>
+    <main>
     <div>
       <div class="mb-4 flex items-center space-x-2">
         <Switch id="auto-certificate" bind:checked={isAutomatic} />
@@ -37,25 +40,23 @@
     <p class="my-4 text-xs font-normal text-gray-500">or send a personalised/ custom certificate below:</p>
     <form onsubmit={preventDefault(issueCertificate)}>
       <div class="flex w-full flex-col gap-2 md:flex-row">
-        <TextField
+        <InputField
           label="Email address of the student"
           className="w-full my-4"
           labelClassName="text-xs font-normal"
-          inputClassName="text-sm placeholder:text-sm placeholder:font-medium "
           placeholder="email,comma seperated"
           bind:value={$issueCertificateModal.email}
         />
-        <TextField
+        <InputField
           label="Schedule date"
           className="w-full my-4"
           labelClassName="text-xs font-normal"
-          inputClassName="text-sm placeholder:text-sm placeholder:font-medium "
           placeholder="12/06/2023"
           bind:value={$issueCertificateModal.date}
         />
       </div>
 
-      <TextArea
+      <TextareaField
         label="Add a personalized message"
         labelClassName="text-xs font-normal"
         bind:value={$issueCertificateModal.message}
@@ -65,8 +66,9 @@
       />
 
       <div class="mt-5 flex w-full items-end justify-end">
-        <PrimaryButton className="px-6 py-3 rounded-md text-sm font-medium" label="Issue certificate" type="submit" />
+        <Button type="submit">Issue certificate</Button>
       </div>
     </form>
   </main>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>

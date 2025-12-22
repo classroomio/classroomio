@@ -63,7 +63,7 @@
     <Table.Cell>{totalLessons}</Table.Cell>
     <Table.Cell>{totalStudents}</Table.Cell>
     <Table.Cell>
-      <Badge variant={isPublished ? 'default' : 'secondary'}>
+      <Badge variant={isPublished ? 'default' : 'outline'}>
         {#if isPublished}
           {$t('courses.course_card.published')}
         {:else}

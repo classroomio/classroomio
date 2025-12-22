@@ -10,13 +10,13 @@
   import LibraryBigIcon from '@lucide/svelte/icons/library-big';
   import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-  import CircleCheckIcon from '$lib/components/Icons/CircleCheckIcon.svelte';
+  import { CircleCheckIcon } from '$features/ui/icons';
 
   import MODES from '$lib/utils/constants/mode';
   import { profile } from '$lib/utils/store/user';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { course, group } from '$lib/components/Course/store';
   import { LANGUAGES } from '$lib/utils/constants/translation';
   import { getGroupMemberId } from '$lib/components/Course/function';
@@ -26,10 +26,10 @@
   import { checkExercisesComplete, fetchLesson, updateLessonCompletion } from '$lib/utils/services/courses';
   import { lesson, setLesson, lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
 
-  import { IconButton } from '$lib/components/IconButton';
-  import { PageBody, PageNav } from '$lib/components/Page';
+  import { IconButton } from '@cio/ui/custom/icon-button';
+  import * as Page from '@cio/ui/base/page';
   import { CourseContainer } from '$lib/components/CourseContainer';
-  import { RoleBasedSecurity } from '$lib/features/ui';
+  import { RoleBasedSecurity } from '$features/ui';
   import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
   import Materials from '$lib/components/Course/components/Lesson/Materials/index.svelte';
 
@@ -207,36 +207,28 @@
   courseId={data.courseId}
   isExercisePage={!data.isMaterialsTabActive && !!data.exerciseId}
 >
-  <PageNav
-    hideOnMobile={$globalStore.isStudent}
-    navItems={[
-      {
-        label: $t('course.navItem.lessons.lesson_nav.materials'),
-        isActive: data.isMaterialsTabActive,
-        href: path
-      },
-      {
-        label: $t('course.navItem.lessons.lesson_nav.exercises'),
-        badgeValue: data.isMaterialsTabActive ? $lesson.totalExercises : $lesson.exercises.length,
-        isActive: !data.isMaterialsTabActive,
-        href: `${path}/exercises`
-      }
-    ]}
-  >
-    {#snippet widget()}
+  <Page.Header>
+    <Page.HeaderContent>
+      <Page.Title>
+        {data.isMaterialsTabActive
+          ? $t('course.navItem.lessons.lesson_nav.materials')
+          : $t('course.navItem.lessons.lesson_nav.exercises')}
+      </Page.Title>
+    </Page.HeaderContent>
+    <Page.Action>
       <div class="flex items-center gap-1">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           {#if data.isMaterialsTabActive}
             <!-- Version control -->
             {#if mode === MODES.edit && window.innerWidth >= 1024}
-              <IconButton onClick={() => (isVersionDrawerOpen = true)}>
+              <IconButton onclick={() => (isVersionDrawerOpen = true)}>
                 <HistoryIcon size={20} />
               </IconButton>
             {/if}
 
             <div class="flex-row items-center lg:flex">
               <IconButton
-                onClick={() => {
+                onclick={() => {
                   toggleMode();
                 }}
                 disabled={isSaving}
@@ -266,13 +258,13 @@
           {/if}
         </RoleBasedSecurity>
       </div>
-    {/snippet}
-  </PageNav>
+    </Page.Action>
+  </Page.Header>
 
   {#if !data.isMaterialsTabActive}
     <Exercises lessonId={data.lessonId} exerciseId={data.exerciseId} path={`${path}/exercises`} />
   {:else if !!data.lessonId}
-    <PageBody isPageNavHidden={$globalStore.isStudent} width="lg:w-full xl:w-11/12" className="overflow-x-hidden">
+    <div class="overflow-x-hidden lg:w-full xl:w-11/12">
       <!-- Shows Lesson Note / Slides / Video -->
       <Materials
         lessonId={data.lessonId}
@@ -282,7 +274,7 @@
         bind:isSaving
         isStudent={$globalStore.isStudent}
       />
-    </PageBody>
+    </div>
   {/if}
 
   <!-- Bottom Lesson Widget -->

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { ProfilePage } from '$lib/features/settings/pages';
-  import ViewSiteBtn from '$lib/components/Buttons/VisitOrgSite.svelte';
+  import { ProfilePage } from '$features/settings/pages';
+  import { VisitOrgSiteButton } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
   import { Button } from '@cio/ui/base/button';
   import * as Page from '@cio/ui/base/page';
@@ -27,10 +27,11 @@
     <Page.Title>{$t('settings.heading')}</Page.Title>
   </Page.HeaderContent>
   <Page.Action>
-    <Button variant="default" loading={isLoading} onclick={handleUpdate}>
+    <Button variant="secondary" loading={isLoading} onclick={handleUpdate}>
       {$t('settings.profile.update_profile')}
     </Button>
-    <ViewSiteBtn />
+
+    <VisitOrgSiteButton />
   </Page.Action>
 </Page.Header>
 <Page.Body>

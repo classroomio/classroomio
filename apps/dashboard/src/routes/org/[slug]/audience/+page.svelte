@@ -1,11 +1,11 @@
 <script>
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { AudiencePage } from '$lib/features/audience/pages';
+  import { Button } from '@cio/ui/base/button';
+  import { AudiencePage } from '$features/audience/pages';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrgPlan, currentOrgMaxAudience } from '$lib/utils/store/org';
   import { PLAN } from '@cio/utils/plans';
   import * as Page from '@cio/ui/base/page';
-  import { orgApi } from '$lib/features/org/api/org.svelte';
+  import { orgApi } from '$features/org/api/org.svelte';
 
   let isLoading = $state(false);
 
@@ -33,7 +33,9 @@
       </Page.Title>
     </Page.HeaderContent>
     <Page.Action>
-      <PrimaryButton label={$t('audience.export')} onClick={exportAudience} isDisabled={isLoading} {isLoading} />
+      <Button onclick={exportAudience} disabled={isLoading} loading={isLoading}>
+        {$t('audience.export')}
+      </Button>
     </Page.Action>
   </Page.Header>
   <Page.Body>

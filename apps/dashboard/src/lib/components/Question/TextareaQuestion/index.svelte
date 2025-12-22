@@ -1,10 +1,9 @@
 <script lang="ts">
   import { preventDefault } from '$lib/utils/functions/svelte';
 
-  import CodeSnippet from '$lib/components/CodeSnippet/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import { CodeSnippet } from '$features/ui';
+  import { Button } from '@cio/ui/base/button';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import Grade from '$lib/components/Question/Grade.svelte';
   import { t } from '$lib/utils/functions/translations';
@@ -12,7 +11,6 @@
   import QuestionTitle from '../QuestionTitle.svelte';
 
   interface Props {
-    key: string | number;
     title?: string;
     index?: number | string;
     code?: string;
@@ -45,12 +43,12 @@
     isLast = false,
     isPreview = false,
     disabled = false,
-    grade = $bindable(),
+    grade = $bindable(0),
     gradeMax = 0,
     disableGrading = false,
-    isGradeWithAI = false,
-    reason,
-    isLoading = false,
+    isGradeWithAI = $bindable(false),
+    reason = $bindable(''),
+    isLoading = $bindable(false),
     hideGrading = false
   }: Props = $props();
 
@@ -100,7 +98,7 @@
         <ReasonBox {reason} {isLoading} {acceptGrade} {rejectGrade} />
       {/if}
     {:else}
-      <TextArea
+      <TextareaField
         bind:value={defaultValue}
         rows={5}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_answer_here')}
@@ -110,20 +108,14 @@
 
   {#if !isPreview}
     <div class="mt-3 flex w-full items-center justify-between">
-      <PrimaryButton
-        variant={VARIANTS.OUTLINED}
-        onClick={handlePrevious}
-        label={$t('course.navItem.lessons.exercises.all_exercises.previous')}
-        isDisabled={disablePreviousButton}
-      />
-      <PrimaryButton
-        variant={VARIANTS.OUTLINED}
-        type="submit"
-        label={isLast
+      <Button variant="outline" onclick={handlePrevious} disabled={disablePreviousButton}>
+        {$t('course.navItem.lessons.exercises.all_exercises.previous')}
+      </Button>
+      <Button variant="outline" type="submit">
+        {isLast
           ? $t('course.navItem.lessons.exercises.all_exercises.finish')
           : $t('course.navItem.lessons.exercises.all_exercises.next')}
-        {name}
-      />
+      </Button>
     </div>
   {/if}
 </form>
