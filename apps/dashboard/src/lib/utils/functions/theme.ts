@@ -1,51 +1,17 @@
-import { tc } from '$lib/utils/functions/trycatch';
 import { darken, lighten } from 'color2k';
 
-function updateThemeClassInBody(newClass: string, customRegex?: string) {
-  const regex = /theme-[\w]+/gi;
-  document.body.className = document.body.className.replace(customRegex ?? regex, newClass);
-}
+import { tc } from '$lib/utils/functions/trycatch';
 
-export function setTheme(_theme?: string) {
-  const theme = _theme || '';
-
-  // this condition checks if it's a hex code from the db or a specified theme
-  if (theme && !theme.includes('theme-')) {
-    // add the "custom-theme" styles to the head tag
-    injectCustomTheme(theme);
-
-    // add the "custom-theme" classname to the head tag
-    setCustomTheme('theme-custom');
-  } else if (!theme && document.body.className.includes('theme-')) {
-    // if no theme and a theme is already applied, remove it
-    updateThemeClassInBody(theme);
-
-    return;
-  }
-
-  // In case theme already exists in dom, don't add
-  if (document.body.className.includes(theme)) return;
-
-  // set the new theme
+export function setTheme(theme: string) {
   localStorage.setItem('theme', theme);
-  document.body.className = document.body.className.concat(' ', theme);
-}
 
-export function setCustomTheme(theme?: string) {
-  // In case the default theme is added but another theme exists
-  if (!theme && document.body.className.includes('theme-')) {
-    updateThemeClassInBody(theme || '');
-    return;
-  }
+  if (theme.includes('#')) {
+    const escapedHex = theme.replace(/"/g, '\\"');
+    document.body.setAttribute('data-theme', escapedHex);
 
-  // Remove any class starting with "theme-"
-  updateThemeClassInBody('');
-
-  const _theme = theme || '';
-  // Add the new theme if it doesn't already exist
-  if (!document.body.className.includes(_theme)) {
-    localStorage.setItem('theme', _theme);
-    document.body.className = document.body.className.concat(' ', _theme);
+    injectCustomTheme(escapedHex);
+  } else {
+    document.body.setAttribute('data-theme', theme);
   }
 }
 
@@ -54,10 +20,8 @@ const _lighten = (hex: string, no: number) => tc(() => lighten(hex, no), hex);
 const _darken = (hex: string, no: number) => tc(() => darken(hex, no), hex);
 
 export function injectCustomTheme(hex: string) {
-  const styleId = 'theme-custom';
-  let styleElement = document.getElementById(styleId);
-
-  // generate shades using color2k's lighten function
+  // Generate shades using color2k's lighten/darken functions
+  // Following the same pattern as predefined themes (e.g., purple)
   const shades = {
     50: _lighten(hex, 0.7),
     100: _lighten(hex, 0.6),
@@ -72,46 +36,36 @@ export function injectCustomTheme(hex: string) {
   };
 
   const styleContent = `
-    .theme-custom .bg-primary-50 { background-color: ${shades[50]} !important; }
-    .theme-custom .bg-primary-100 { background-color: ${shades[100]} !important; }
-    .theme-custom .bg-primary-200 { background-color: ${shades[200]} !important; }
-    .theme-custom .bg-primary-300 { background-color: ${shades[300]} !important; }
-    .theme-custom .bg-primary-400 { background-color: ${shades[400]} !important; }
-    .theme-custom .bg-primary-500 { background-color: ${shades[500]} !important; }
-    .theme-custom .bg-primary-600 { background-color: ${shades[600]} !important; }
-    .theme-custom .bg-primary-700 { background-color: ${shades[700]} !important; }
-    .theme-custom .bg-primary-800 { background-color: ${shades[800]} !important; }
-    .theme-custom .bg-primary-900 { background-color: ${shades[900]} !important; }
+    body[data-theme="${hex}"] {
+      --primary: ${shades[600]};
+      --primary-foreground: ${shades[50]};
+      --ring: ${shades[400]};
+      --chart-1: ${shades[300]};
+      --chart-2: ${shades[500]};
+      --chart-3: ${shades[600]};
+      --chart-4: ${shades[700]};
+      --chart-5: ${shades[800]};
+      --sidebar-primary: ${shades[600]};
+      --sidebar-primary-foreground: ${shades[50]};
+      --sidebar-accent: ${shades[50]};
+      --sidebar-accent-foreground: ${shades[700]};
+      --sidebar-ring: ${shades[400]};
+    }
 
-    .theme-custom .text-primary-50 { color: ${shades[50]} !important; }
-    .theme-custom .text-primary-100 { color: ${shades[100]} !important; }
-    .theme-custom .text-primary-200 { color: ${shades[200]} !important; }
-    .theme-custom .text-primary-300 { color: ${shades[300]} !important; }
-    .theme-custom .text-primary-400 { color: ${shades[400]} !important; }
-    .theme-custom .text-primary-500 { color: ${shades[500]} !important; }
-    .theme-custom .text-primary-600 { color: ${shades[600]} !important; }
-    .theme-custom .text-primary-700 { color: ${shades[700]} !important; }
-    .theme-custom .text-primary-800 { color: ${shades[800]} !important; }
-    .theme-custom .text-primary-900 { color: ${shades[900]} !important; }
-
-    .theme-custom .border-primary-50 { border-color: ${shades[50]} !important; }
-    .theme-custom .border-primary-100 { border-color: ${shades[100]} !important; }
-    .theme-custom .border-primary-200 { border-color: ${shades[200]} !important; }
-    .theme-custom .border-primary-300 { border-color: ${shades[300]} !important; }
-    .theme-custom .border-primary-400 { border-color: ${shades[400]} !important; }
-    .theme-custom .border-primary-500 { border-color: ${shades[500]} !important; }
-    .theme-custom .border-primary-600 { border-color: ${shades[600]} !important; }
-    .theme-custom .border-primary-700 { border-color: ${shades[700]} !important; }
-    .theme-custom .border-primary-800 { border-color: ${shades[800]} !important; }
-    .theme-custom .border-primary-900 { border-color: ${shades[900]} !important; }
+    body.dark[data-theme="${hex}"],
+    html.dark body[data-theme="${hex}"] {
+      --primary: ${shades[500]};
+      --primary-foreground: ${shades[50]};
+      --ring: ${shades[900]};
+      --sidebar-primary: ${shades[500]};
+      --sidebar-primary-foreground: ${shades[50]};
+      --sidebar-accent: oklch(0.268 0.007 34.298);
+      --sidebar-accent-foreground: ${shades[500]};
+      --sidebar-ring: ${shades[900]};
+    }
   `;
 
-  if (styleElement) {
-    styleElement.innerHTML = styleContent;
-  } else {
-    styleElement = document.createElement('style');
-    styleElement.id = styleId;
-    styleElement.innerHTML = styleContent;
-    document.head.appendChild(styleElement);
-  }
+  const styleElement = document.createElement('style');
+  styleElement.innerHTML = styleContent;
+  document.head.appendChild(styleElement);
 }

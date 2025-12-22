@@ -4,13 +4,13 @@
   import TrashIcon from '@lucide/svelte/icons/trash';
 
   import { t } from '$lib/utils/functions/translations';
-  import { IconButton } from '$lib/components/IconButton';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import type { LessonVideoType } from '$lib/utils/types';
   import { copyToClipboard, getVideoUrls, removeVideo } from '$lib/utils/functions/formatYoutubeVideo';
   import { lesson, isLessonDirty } from '$lib/components/Course/components/Lesson/store/lessons';
 
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
+  import { Button } from '@cio/ui/base/button';
 
   let youtubeLinks = $state('');
   let error = $state('');
@@ -45,20 +45,17 @@
 </script>
 
 <div class="flex w-full items-{error ? 'center' : 'end'} justify-between gap-5">
-  <TextField
+  <InputField
     label={$t('course.navItem.lessons.materials.tabs.video.add_video.youtube_link')}
     bind:value={youtubeLinks}
-    className="flex-1 text-left "
-    inputClassName="text-sm"
-    onChange={() => ($isLessonDirty = true)}
+    className="flex-1 text-left"
+    onchange={() => ($isLessonDirty = true)}
     placeholder="https://www.youtube.com/watch?v="
     errorMessage={error}
   />
-  <PrimaryButton
-    label={$t('course.navItem.lessons.materials.tabs.video.add_video.add_video')}
-    className="rounded-md"
-    onClick={addVideo}
-  />
+  <Button onclick={addVideo}>
+    {$t('course.navItem.lessons.materials.tabs.video.add_video.add_video')}
+  </Button>
 </div>
 <p class="mt-4 pl-2 text-sm">
   {$t('course.navItem.lessons.materials.tabs.video.add_video.videos_added')}:
@@ -73,10 +70,10 @@
         <Badge class="max-w-md truncate" variant="secondary">
           {video.link}
         </Badge>
-        <IconButton value="copy-video" onClick={() => copyToClipboard(video.link)}>
+        <IconButton onclick={() => copyToClipboard(video.link)}>
           <CopyIcon size={16} />
         </IconButton>
-        <IconButton value="delete-video" onClick={() => removeVideo(index)}>
+        <IconButton onclick={() => removeVideo(index)}>
           <TrashIcon size={16} />
         </IconButton>
       </div>

@@ -1081,7 +1081,6 @@
       "students": "studenci",
       "published": "Opublikowany",
       "unpublished": "Niepublikowane",
-      "continue_course": "Kontynuuj kurs",
       "learn_more": "Dowiedz się więcej",
       "list_view": {
         "title": "Tytuł",
@@ -1137,7 +1136,6 @@
     "no_courses": "Nie ma jeszcze żadnych kursów",
     "start_course": "Po rozpoczęciu kursu twoje postępy będą się tutaj odzwierciedlać",
     "lms_dashboard_hero": "Dzisiaj jest kolejny dzień, aby zbliżyć cię do celów uczenia się. Nie poddawaj się, im więcej uczysz się, tym lepiej.",
-    "dont": "Nie poddawaj się",
     "lessons_completed": "Ukończone lekcje",
     "no_courses_started": "Żadne kursy nie rozpoczęły się",
     "revenue": "Przychód",
@@ -1600,8 +1598,6 @@
   },
   "new_course_modal": {
     "live_class_label": "Zajęcia na żywo",
-    "live_class_subtitle": "Ten typ kursu jest idealny w przypadku obozów typu bootcampy, gdzie lekcje zależą od czasu i wymagana jest obecność i ocena",
-    "self_paced_label": "Samodzielne tempo",
-    "self_paced_subtitle": "Ten typ kursu jest idealny do kursów, w których uczniowie mogą brać udział w lekcjach we własnym tempie, bez nauczyciela"
+    "self_paced_label": "Samodzielne tempo"
   }
 }

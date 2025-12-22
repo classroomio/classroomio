@@ -1,11 +1,11 @@
 import { getSupabase, supabase } from '$lib/utils/functions/supabase';
 
-import type { AccountOrg } from '$lib/features/app/types';
+import type { AccountOrg } from '$features/app/types';
 import type { MetaTagsProps } from 'svelte-meta-tags';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/private';
-import { getOrgSiteInfo } from '$lib/features/app/layout-setup';
+import { getOrgSiteInfo } from '$features/app/layout-setup';
 import { redirect } from '@sveltejs/kit';
 
 if (!supabase) {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { UserAnalyticsPage } from '$lib/features/audience/pages';
+  import { UserAnalyticsPage } from '$features/audience/pages';
   import * as Page from '@cio/ui/base/page';
 
   let { data } = $props();

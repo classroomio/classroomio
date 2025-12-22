@@ -12,6 +12,7 @@ import { logout } from '$lib/utils/functions/logout';
 import { page } from '$app/state';
 import { resolve } from '$app/paths';
 import { setSentryUser } from '$lib/utils/services/sentry';
+import { setTheme } from '$lib/utils/functions/theme';
 import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
 
 type AppSetupParams = {
@@ -91,10 +92,21 @@ class AppInitApi extends BaseApi {
     const lastOrg = this.data.organizations.find((org) => org.siteName === lastOrgSiteName);
 
     currentOrg.set(lastOrg || this.data.organizations[0]);
+
+    const theme = get(currentOrg)?.theme;
+
+    if (theme) {
+      setTheme(theme);
+    }
   }
 
   routeUserToNextPage({ isOrgSite }: AppSetupParams) {
+    console.log('routeUserToNextPage', window.location.pathname);
     if (!this.data?.success) {
+      return;
+    }
+
+    if (isOrgSite && window.location.pathname === '/') {
       return;
     }
 

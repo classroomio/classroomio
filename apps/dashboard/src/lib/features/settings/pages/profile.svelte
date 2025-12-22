@@ -3,13 +3,12 @@
   import type { TLocale } from '@cio/db/types';
   import { profile } from '$lib/utils/store/user';
   import { CircleCheckBig } from '@lucide/svelte';
-  import { profileApi } from '$lib/features/auth/api/profile.svelte';
+  import { profileApi } from '$features/auth/api/profile.svelte';
   import { t } from '$lib/utils/functions/translations';
   import LanguagePicker from '../components/language-picker.svelte';
   import { Input } from '@cio/ui/base/input';
   import { Button } from '@cio/ui/base/button';
-  import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import UnsavedChanges from '$lib/components/UnsavedChanges/index.svelte';
+  import { UploadImage, UnsavedChanges } from '$features/ui';
   import * as Field from '@cio/ui/base/field';
 
   let avatar = $state<string | File | undefined>();
@@ -135,7 +134,7 @@
             </Button>
             <Button
               variant="ghost"
-              class="text-primary-700 text-sm"
+              class="ui:text-primary text-sm"
               disabled={profileApi.isLoading}
               onclick={() => {
                 email = $profile.email || '';

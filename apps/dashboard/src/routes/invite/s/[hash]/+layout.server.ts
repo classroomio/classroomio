@@ -1,4 +1,4 @@
-import { OrgApiServer } from '$lib/features/org/api/org.server';
+import { OrgApiServer } from '$features/org/api/org.server';
 import { redirect } from '@sveltejs/kit';
 
 export const load = async ({ params = { hash: '' } }) => {

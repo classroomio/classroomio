@@ -7,12 +7,12 @@
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import ChartLineIcon from '@lucide/svelte/icons/chart-line';
-  import Progress from '$lib/components/Progress/index.svelte';
-  import { ActivityCard, HeroProfileCard, LoadingPage } from '$lib/components/Analytics';
+  import { Progress } from '@cio/ui/base/progress';
+  import { ActivityCard, HeroProfileCard, LoadingPage } from '$features/ui';
 
   import { t } from '$lib/utils/functions/translations';
   import { currentOrgPath } from '$lib/utils/store/org';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { getAccessToken } from '$lib/utils/functions/supabase';
   import type { UserAnalytics } from '$lib/utils/types/analytics';
 
@@ -203,4 +203,3 @@
 {:else}
   <LoadingPage />
 {/if}
-

@@ -14,10 +14,10 @@
   import { addNewsfeedCommentValidation } from '$lib/utils/functions/validator';
   import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
 
-  import Chip from '$lib/components/Chip/index.svelte';
+  import { Chip } from '@cio/ui/custom/chip';
   import DeleteFeedConfirmation from './DeleteFeedConfirmation.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import { RoleBasedSecurity } from '$lib/features/ui';
+  import { RoleBasedSecurity } from '$features/ui';
 
   interface Props {
     feed: Feed;
@@ -102,7 +102,7 @@
     const usersReacted = feed.reaction[reactionType] || [];
 
     return usersReacted.includes(author.id)
-      ? 'bg-primary-200 border-primary-600 pl-2'
+      ? 'bg-primary-200 ui:border-primary pl-2'
       : 'bg-gray-200 border-gray-600 pl-2';
   };
 

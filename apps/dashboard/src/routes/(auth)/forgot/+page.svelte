@@ -1,10 +1,10 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { ROUTE } from '$lib/utils/constants/routes';
-  import { AuthUI } from '$lib/features/ui';
-  import EmailSentIcon from '$lib/components/Icons/EmailSentIcon.svelte';
-  import { forgotApi } from '$lib/features/auth/api/forgot.svelte';
-  import type { TForgotPasswordForm } from '$lib/features/auth/utils/types';
+  import { AuthUI } from '$features/ui';
+  import { EmailSentIcon } from '$features/ui/icons';
+  import { forgotApi } from '$features/auth/api/forgot.svelte';
+  import type { TForgotPasswordForm } from '$features/auth/utils/types';
   import * as Field from '@cio/ui/base/field';
   import { Input } from '@cio/ui/base/input';
   import { Button } from '@cio/ui/base/button';
@@ -35,9 +35,7 @@
     <div class="ui:flex ui:flex-col ui:gap-6">
       <div>
         <Card.Title class="ui:text-xl">Forgot Password</Card.Title>
-        <Card.Description class="ui:mt-2">
-          We will send you a reset link to your email
-        </Card.Description>
+        <Card.Description class="ui:mt-2">We will send you a reset link to your email</Card.Description>
       </div>
       <Field.Field>
         <Field.Label for="email">Your email</Field.Label>
@@ -61,9 +59,7 @@
         <Button type="submit" disabled={forgotApi.isLoading} loading={forgotApi.isLoading} class="ui:w-full">
           Reset Password
         </Button>
-        <Button type="button" variant="ghost" class="ui:w-full" onclick={() => goto(ROUTE.LOGIN)}>
-          Cancel
-        </Button>
+        <Button type="button" variant="ghost" class="ui:w-full" onclick={() => goto(ROUTE.LOGIN)}>Cancel</Button>
       </div>
     </div>
   {/if}

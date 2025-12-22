@@ -62,7 +62,7 @@
       {#each tabs as tab}
         <button
           class="relative {currentTab === tab.value
-            ? 'text-primary-700'
+            ? 'ui:text-primary'
             : 'dark:bg-gray-500 dark:text-white'} mr-4 w-fit px-2 py-3 text-center font-semibold focus:outline-none dark:bg-transparent"
           onclick={onChange(tab.value)}
         >

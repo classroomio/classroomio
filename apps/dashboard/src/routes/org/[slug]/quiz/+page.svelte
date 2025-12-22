@@ -1,8 +1,6 @@
 <script>
-  import Quizzes from '$lib/components/Org/Quiz/Quizzes.svelte';
-  import NewQuizModal from '$lib/components/Org/Quiz/NewQuizModal.svelte';
-  import DeleteModal from '$lib/components/Org/Quiz/DeleteModal.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Quizzes, NewQuizModal, DeleteModal } from '$features/org';
+  import { Button } from '@cio/ui/base/button';
   import { createQuizModal } from '$lib/utils/store/org';
   import { isMobile } from '$lib/utils/store/useMobile';
   import PlusIcon from '@lucide/svelte/icons/plus';
@@ -17,11 +15,11 @@
     <div class="mb-10 flex items-center justify-between">
       <h1 class="text-2xl md:text-3xl dark:text-white">Interactive Quizzes</h1>
       {#if $isMobile}
-        <PrimaryButton onClick={() => ($createQuizModal.open = true)}>
+        <Button onclick={() => ($createQuizModal.open = true)}>
           <PlusIcon size={16} />
-        </PrimaryButton>
+        </Button>
       {:else}
-        <PrimaryButton label="Create Quiz" onClick={() => ($createQuizModal.open = true)} />
+        <Button onclick={() => ($createQuizModal.open = true)}>Create Quiz</Button>
       {/if}
     </div>
 

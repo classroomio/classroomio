@@ -3,7 +3,7 @@
   import BellIcon from '@lucide/svelte/icons/bell';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 
-  import { IconButton } from '$lib/components/IconButton';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrgPath } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
@@ -26,7 +26,7 @@
     <div class="flex items-center text-white">
       {#if isCoursePage}
         <li class="hidden md:block">
-          <IconButton onClick={() => goto(coursesPath)}>
+          <IconButton onclick={() => goto(coursesPath)}>
             <ArrowLeftIcon size={16} class="custom" />
           </IconButton>
         </li>

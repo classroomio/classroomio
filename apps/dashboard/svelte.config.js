@@ -16,6 +16,7 @@ const config = {
     adapter: useNodeAdapter ? adapterNode() : adapterVercel(),
     alias: {
       $lib: path.resolve('./src/lib'),
+      $features: path.resolve('./src/lib/features'),
       $mail: path.resolve('./src/mail'),
       '$src/tools': path.resolve('./node_modules/@cio/ui/src/tools/index.ts'),
       '$src/base/*': path.resolve('./node_modules/@cio/ui/src/base/*'),

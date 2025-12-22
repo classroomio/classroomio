@@ -1495,7 +1495,7 @@ Replace Supabase calls with API class method:
 **After (API Route):**
 ```typescript
 <script lang="ts">
-  import { orgApi } from '$lib/features/org/api/org.svelte';
+  import { orgApi } from '$features/org/api/org.svelte';
   import { goto } from '$app/navigation';
 
   async function createNewOrg() {
@@ -1941,7 +1941,7 @@ export class OrgApiServer {
 
 ```typescript
 // apps/dashboard/src/routes/invite/t/[hash]/+layout.server.ts
-import { OrgApiServer } from '$lib/features/org/api/org.server';
+import { OrgApiServer } from '$features/org/api/org.server';
 
 export const load = async ({ params }) => {
   // Use static method from .server.ts class
@@ -1995,7 +1995,7 @@ export class OrgPlanApiServer {
 
 ```typescript
 // apps/dashboard/src/routes/api/polar/webhook/+server.ts
-import { OrgPlanApiServer } from '$lib/features/org/api/org-plan.server';
+import { OrgPlanApiServer } from '$features/org/api/org-plan.server';
 
 // Use static method from .server.ts class
 const result = await OrgPlanApiServer.createOrgPlan(planData);
@@ -2420,3 +2420,106 @@ Frontend Response (maps errors to translations if validation failed)
 ```
 
 By following these patterns, our API remains **consistent**, **secure**, **testable**, and **ready for public consumption**.
+
+---
+
+## Refactoring Components to Features/UI
+
+When moving components from `apps/dashboard/src/lib/components/` to `apps/dashboard/src/lib/features/ui/`, follow this workflow:
+
+### Step 1: Determine Component Structure
+
+**Single-file components**: Move directly to `features/ui/` with kebab-case naming:
+- `components/CodeSnippet/index.svelte` → `features/ui/code-snippet.svelte`
+
+**Components with related files** (stores, utils, etc.): Create a folder matching the component name:
+- `components/Confetti/index.svelte` + `store.ts` → `features/ui/confetti/confetti.svelte` + `confetti-store.ts`
+- `components/UploadWidget/index.svelte` + `utils.ts` → `features/ui/upload-widget/upload-widget.svelte` + `utils.ts`
+
+**Naming Convention**:
+- ✅ File name matches folder name: `confetti/confetti.svelte`, `upload-widget/upload-widget.svelte`
+- ❌ Don't use `index.svelte` as the root file - always name it the same as the folder
+
+### Step 2: Move Files
+
+1. Create the new file(s) in `features/ui/` (or subfolder if needed)
+2. Update internal imports (e.g., `./store` → `./confetti-store` within the folder)
+3. Copy component code to new location
+
+### Step 3: Update Exports
+
+Add export to `apps/dashboard/src/lib/features/ui/index.ts`:
+```typescript
+export { default as ComponentName } from './component-name.svelte';
+// or for folder-based components:
+export { default as ComponentName } from './component-name/component-name.svelte';
+```
+
+Keep exports alphabetically sorted.
+
+### Step 4: Update All Imports
+
+Find all usages:
+```bash
+grep -r "components/OldComponent" apps/dashboard/src
+```
+
+Replace imports:
+- **From**: `import Component from '$lib/components/OldComponent/index.svelte';`
+- **To**: `import { Component } from '$features/ui';`
+
+For store/utils imports:
+- **From**: `import { store } from '$lib/components/OldComponent/store';`
+- **To**: `import { store } from '$features/ui/component-name/store';`
+
+### Step 5: Merge Duplicate Imports
+
+After updating imports, check for duplicate imports from the same source and merge them:
+```typescript
+// Before
+import { Confetti } from '$features/ui';
+import { ComingSoon } from '$features/ui';
+
+// After
+import { Confetti, ComingSoon } from '$features/ui';
+```
+
+### Step 6: Clean Up
+
+1. Delete old component files
+2. Remove empty folders: `rmdir apps/dashboard/src/lib/components/OldComponent`
+3. Verify no remaining references: `grep -r "components/OldComponent" apps/dashboard/src`
+4. Run linter to check for errors
+
+### Step 7: Verify
+
+- ✅ No linter errors
+- ✅ No remaining references to old path
+- ✅ All imports use the new path
+- ✅ Component exports correctly from `features/ui/index.ts`
+- ✅ Related files (stores/utils) are properly organized
+
+### Example: Complete Refactoring
+
+**Before**:
+```
+apps/dashboard/src/lib/components/
+  └── Confetti/
+      ├── index.svelte
+      └── store.ts
+```
+
+**After**:
+```
+apps/dashboard/src/lib/features/ui/
+  ├── confetti/
+  │   ├── confetti.svelte
+  │   └── store.ts
+  └── index.ts (exports Confetti)
+```
+
+**Import changes**:
+- Component: `import { Confetti } from '$features/ui';`
+- Store: `import { toggleConfetti } from '$features/ui/confetti/store';`
+
+This refactoring centralizes UI components in a single location, making them easier to discover, maintain, and reuse across the application.

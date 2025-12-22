@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { AuthUI } from '$lib/features/ui';
+  import { AuthUI } from '$features/ui';
   import { LOGIN_FIELDS } from '$lib/utils/constants/authentication';
   import { t } from '$lib/utils/functions/translations';
   import { authValidation } from '$lib/utils/functions/validator';

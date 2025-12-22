@@ -19,9 +19,9 @@
 
   "new_course_modal": {
     "live_class_label": "Live Class",
-    "live_class_subtitle": "This course type is ideal for bootcamps where lessons are time based and you need attendance and grading",
+    "live_class_subtitle": "Ideal for bootcamps where lessons are time based",
     "self_paced_label": "Self Paced",
-    "self_paced_subtitle": "This course type is ideal for courses where students can take lessons on their own pace without a teacher"
+    "self_paced_subtitle": "Best for courses where students can take lessons at their own pace"
   },
 
   "onboarding": {
@@ -479,10 +479,10 @@
     "current_lesson": "Currently Learning",
     "your_progress": "Your Progress",
     "continue": "Continue",
+    "continue_learning": "Continue Learning",
     "no_courses": "No courses in progress yet",
     "start_course": "Once you start a course, your progress will reflect here",
     "lms_dashboard_hero": "Today is another day to bring you closer to your learning goals. Don’t give up, the more you learn the better you get.",
-    "dont": "Don't give up",
     "lessons_completed": "Lessons completed",
     "no_courses_started": "No courses started",
     "revenue": "Revenue",
@@ -536,7 +536,7 @@
       "students": "students",
       "published": "Published",
       "unpublished": "Unpublished",
-      "continue_course": "Continue Course",
+      "continue_course": "Continue",
       "learn_more": "Learn more",
       "list_view": {
         "title": "Title",
@@ -1294,6 +1294,7 @@
   },
 
   "analytics": {
+    "title": "Analytics",
     "courses": "Courses",
     "progress": "Progress",
     "progress_description": "{value, number} of {total, number} complete",

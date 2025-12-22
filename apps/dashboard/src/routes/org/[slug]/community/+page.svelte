@@ -1,6 +1,6 @@
 <script>
-  import { CommunityPage } from '$lib/features/community/pages';
-  import { AskCommunityButton } from '$lib/features/community/components';
+  import { CommunityPage } from '$features/community/pages';
+  import { AskCommunityButton } from '$features/community/components';
   import { t } from '$lib/utils/functions/translations';
   import * as Page from '@cio/ui/base/page';
 </script>

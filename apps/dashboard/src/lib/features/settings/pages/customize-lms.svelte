@@ -3,12 +3,12 @@
 
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import { orgApi } from '$lib/features/org/api/org.svelte';
-  import { handleOpenWidget } from '$lib/components/CourseLandingPage/store';
+  import { orgApi } from '$features/org/api/org.svelte';
+  import { handleOpenWidget } from '$features/ui/course-landing-page/store';
   import { Button } from '@cio/ui/base/button';
   import { Input } from '@cio/ui/base/input';
 
-  import UploadWidget from '$lib/components/UploadWidget/index.svelte';
+  import { UploadWidget } from '$features/ui';
   import * as Field from '@cio/ui/base/field';
 
   let widgetKey = $state('');

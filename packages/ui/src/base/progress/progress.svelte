@@ -14,7 +14,7 @@
 <ProgressPrimitive.Root
   bind:ref
   data-slot="progress"
-  class={cn('ui:bg-primary/20 ui:relative ui:h-2 ui:w-full ui:overflow-hidden ui:rounded-full', className)}
+  class={cn('ui:bg-primary/20 ui:relative ui:h-2 ui:w-full ui:overflow-hidden ui:rounded-md', className)}
   {value}
   {max}
   {...restProps}

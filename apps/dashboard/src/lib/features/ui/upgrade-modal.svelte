@@ -13,16 +13,16 @@
   import { PLANS } from '@cio/utils/plans';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { toggleConfetti } from '$lib/components/Confetti/store';
+  import { snackbar } from '$features/ui/snackbar/store';
+  import { toggleConfetti } from './confetti/store';
   import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
-  import Confetti from '$lib/components/Confetti/index.svelte';
+  import Confetti from './confetti/confetti.svelte';
 
   const planNames = Object.keys(PLANS);
 
   let isLoadingPlan: string | null = $state(null);
   let upgraded = $state(false);
-  let isYearlyPlan = $state(false);
+  let isYearlyPlan = $state(true);
 
   const query = $derived(new URLSearchParams(page.url.search));
   let open = $state(false);
@@ -117,7 +117,7 @@
     </Dialog.Header>
     {#if upgraded}
       <div class="animate-icon flex w-full flex-col items-center justify-center gap-4">
-        <RocketIcon class="rocket-launch my-3 size-6" />
+        <RocketIcon class="rocket-launch my-3 size-6" color="var(--primary)" />
         <p class="text-lg">{$t('pricing.modal.thanks')}</p>
         <p class="ui:mb-4 ui:text-center">
           {$t('pricing.modal.plan')}
@@ -141,26 +141,22 @@
       <div class="flex h-full flex-col items-center justify-center">
         <div class="white 0 relative mb-6 flex items-center rounded-full border p-1">
           <Button
-            variant="ghost"
+            variant={isYearlyPlan ? 'ghost' : 'secondary'}
             size="sm"
-            class="rounded-full! transition-all duration-500 ease-in-out {isYearlyPlan
-              ? 'ui:text-foreground bg-transparent'
-              : 'bg-[#1D4EE2] text-white'}"
+            class="rounded-full! transition-all duration-500 ease-in-out "
             onclick={() => (isYearlyPlan = false)}
           >
             {$t('pricing.modal.monthly')}
           </Button>
           <Button
-            variant="ghost"
+            variant={isYearlyPlan ? 'secondary' : 'ghost'}
             size="sm"
-            class="rounded-full! transition-all duration-500 ease-in-out {isYearlyPlan
-              ? 'bg-[#1D4EE2] text-white'
-              : 'ui:text-foreground bg-transparent'}"
+            class="rounded-full! transition-all duration-500 ease-in-out"
             onclick={() => (isYearlyPlan = true)}
           >
             {$t('pricing.modal.annually')}
           </Button>
-          <Badge variant="default" class="rotate-5 absolute -top-3 right-[-20%]">
+          <Badge variant="default" class="rotate-5 absolute -top-3 right-[-20%] shadow-2xl">
             <SparklesIcon class="text-amber-500! size-2" />
             {$t('pricing.modal.save')}
           </Badge>

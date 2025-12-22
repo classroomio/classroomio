@@ -7,22 +7,21 @@
   import * as Select from '@cio/ui/base/select';
   import GridIcon from '@lucide/svelte/icons/grid-2x2';
   import ListIcon from '@lucide/svelte/icons/list';
-  import { IconButton } from '$lib/components/IconButton';
+  import { IconButton } from '@cio/ui/custom/icon-button';
 
   import {
-    CourseCard,
+    CourseCardList,
     CourseCardLoader,
     CreateCourseButton,
     CourseList,
     CopyCourseModal,
     NewCourseModal
-  } from '$lib/features/course/components';
+  } from '$features/course/components';
 
-  import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
+  import { DeleteModal } from '$features/ui';
   import type { Course } from '$lib/utils/types';
-  import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { deleteCourse } from '$lib/utils/services/courses';
   import {
     deleteCourseModal,
@@ -34,9 +33,10 @@
 
   interface Props {
     courses?: Course[];
-    emptyTitle?: any;
-    emptyDescription?: any;
+    emptyTitle?: string;
+    emptyDescription?: string;
     isExplore?: boolean;
+    isLMS?: boolean;
     searchValue?: string;
     selectedId?: string;
   }
@@ -46,6 +46,7 @@
     emptyTitle = $t('courses.course_card.empty_title'),
     emptyDescription = $t('courses.course_card.empty_description'),
     isExplore = false,
+    isLMS = false,
     searchValue = $bindable(''),
     selectedId = $bindable('0')
   }: Props = $props();
@@ -66,14 +67,6 @@
       localStorage.setItem('courseView', preference);
     }
   };
-
-  function calcProgressRate(progressRate?: number, totalLessons?: number): number {
-    if (!progressRate || !totalLessons) {
-      return 0;
-    }
-
-    return Math.round((progressRate / totalLessons) * 100);
-  }
 
   async function handleDeleteCourse() {
     if (!$deleteCourseModal.id) return;
@@ -118,17 +111,17 @@
       <p>{selectedId ? selectedLabel : filterOptions[0].label}</p>
     </Select.Trigger>
     <Select.Content>
-      {#each filterOptions as option}
+      {#each filterOptions as option (option.label)}
         <Select.Item value={option.value}>{option.label}</Select.Item>
       {/each}
     </Select.Content>
   </Select.Root>
   {#if $courseMetaDeta.view === 'list'}
-    <IconButton onClick={() => setViewPreference('grid')}>
+    <IconButton onclick={() => setViewPreference('grid')}>
       <GridIcon size={16} />
     </IconButton>
   {:else}
-    <IconButton onClick={() => setViewPreference('list')}>
+    <IconButton onclick={() => setViewPreference('list')}>
       <ListIcon size={16} />
     </IconButton>
   {/if}
@@ -143,7 +136,9 @@
     </section>
   {:else if !courses.length}
     <Empty title={emptyTitle} description={emptyDescription} icon={LibraryBigIcon} variant="page">
-      <CreateCourseButton isResponsive />
+      {#if !isLMS}
+        <CreateCourseButton isResponsive />
+      {/if}
     </Empty>
   {:else if $courseMetaDeta.view === 'list'}
     <div class="w-full overflow-hidden rounded-md border">
@@ -160,7 +155,7 @@
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {#each courses as courseData}
+          {#each courses as courseData (courseData.id)}
             <CourseList
               id={courseData.id}
               title={courseData.title}
@@ -175,26 +170,6 @@
       </Table.Root>
     </div>
   {:else}
-    <section class={`relative ${$courseMetaDeta.isLoading || courses ? 'cards-container' : ''} `}>
-      {#each courses as courseData}
-        {#key courseData.id}
-          <CourseCard
-            id={courseData.id}
-            slug={courseData.slug}
-            bannerImage={courseData.logo || '/images/classroomio-course-img-template.jpg'}
-            title={courseData.title}
-            description={courseData.description}
-            isPublished={courseData.is_published}
-            type={courseData.type}
-            currency={courseData.currency}
-            totalLessons={courseData.total_lessons}
-            totalStudents={courseData.total_students}
-            isLMS={$globalStore.isOrgSite}
-            {isExplore}
-            progressRate={calcProgressRate(courseData.progress_rate, courseData.total_lessons)}
-          />
-        {/key}
-      {/each}
-    </section>
+    <CourseCardList {courses} {isExplore} {isLMS} />
   {/if}
 </div>

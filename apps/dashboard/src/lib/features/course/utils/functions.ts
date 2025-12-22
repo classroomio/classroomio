@@ -21,3 +21,11 @@ export function validateForm(fields) {
     fieldErrors
   };
 }
+
+export function calcProgressRate(progressRate?: number, totalLessons?: number): number {
+  if (!progressRate || !totalLessons) {
+    return 0;
+  }
+
+  return Math.round((progressRate / totalLessons) * 100);
+}

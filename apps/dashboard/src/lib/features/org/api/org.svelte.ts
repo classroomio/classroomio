@@ -12,7 +12,7 @@ import type { TCreateOrganization, TGetOrganizations, TUpdateOrganization } from
 import { ZCreateOrganization, ZUpdateOrganization } from '@cio/utils/validation/organization';
 import { currentOrg, orgs } from '$lib/utils/store/org';
 
-import type { AccountOrg } from '$lib/features/app/types';
+import type { AccountOrg } from '$features/app/types';
 import type { GetTeamResponse } from '../utils/types';
 import { ROLE } from '@cio/utils/constants';
 import { ROLE_LABEL } from '$lib/utils/constants/roles';
@@ -21,7 +21,7 @@ import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { resolve } from '$app/paths';
-import { snackbar } from '$lib/components/Snackbar/store';
+import { snackbar } from '$features/ui/snackbar/store';
 import { t } from '$lib/utils/functions/translations';
 import { uploadImage } from '$lib/utils/services/upload';
 
@@ -194,8 +194,14 @@ class OrgApi extends BaseApiWithErrors {
    * Updates an organization
    * @param orgId Organization ID
    * @param fields Organization update data (name, avatar, theme, landingpage)
+   * @param options Options for the update operation
+   * @param options.onSuccess Callback function to be called on success
    */
-  async update(orgId: string, fields: TOrgUpdateForm) {
+  async update(
+    orgId: string,
+    fields: TOrgUpdateForm,
+    options: { onSuccess?: (data: TUpdateOrganization) => void } = {}
+  ) {
     const result = ZUpdateOrganization.safeParse(fields);
 
     if (!result.success) {
@@ -231,6 +237,10 @@ class OrgApi extends BaseApiWithErrors {
       onSuccess: (response) => {
         if (!response.data) {
           return;
+        }
+
+        if (options.onSuccess) {
+          return options.onSuccess(response.data);
         }
 
         orgs.update((_orgs) =>
