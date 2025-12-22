@@ -18,6 +18,12 @@ export const ZNewCommunityQuestion = z.object({
   votes: z.number().optional()
 });
 
+export const ZCreateCommunityQuestion = z.object({
+  body: z.string().min(1),
+  title: z.string().min(1),
+  courseId: z.string().optional()
+});
+
 export const ZGetCommunity = z.object({
   id: z.coerce.number()
 });
@@ -44,7 +50,6 @@ export const ZCommunityComment = z.object({
 });
 
 export const ZUpvotePost = z.object({
-  votes: z.number().optional(),
   isQuestion: z.boolean()
 });
 
@@ -53,6 +58,7 @@ export const ZUpvotePostParam = z.object({
 });
 
 export type TNewCommunityQuestion = z.infer<typeof ZNewCommunityQuestion>;
+export type TCreateCommunityQuestion = z.infer<typeof ZCreateCommunityQuestion>;
 export type TCommunityQuestions = z.infer<typeof ZCommunityQuestions>;
 export type TCommunityQuestion = z.infer<typeof ZCommunityQuestion>;
 

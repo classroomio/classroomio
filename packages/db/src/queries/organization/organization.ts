@@ -244,6 +244,44 @@ export const isUserOrgAdmin = async (orgId: string, profileId: string): Promise<
 };
 
 /**
+ * Checks if a user is a member of an organization (any role)
+ * @param orgId Organization ID
+ * @param profileId Profile ID to check
+ * @returns True if user is a member, false otherwise
+ */
+export const isUserOrgMember = async (orgId: string, profileId: string): Promise<boolean> => {
+  const result = await db
+    .select({ roleId: schema.organizationmember.roleId })
+    .from(schema.organizationmember)
+    .where(and(eq(schema.organizationmember.organizationId, orgId), eq(schema.organizationmember.profileId, profileId)))
+    .limit(1);
+
+  return result.length > 0;
+};
+
+/**
+ * Checks if a user is a team member (ADMIN or TUTOR) of an organization
+ * @param orgId Organization ID
+ * @param profileId Profile ID to check
+ * @returns True if user is ADMIN or TUTOR, false otherwise
+ */
+export const isUserOrgTeamMember = async (orgId: string, profileId: string): Promise<boolean> => {
+  const result = await db
+    .select({ roleId: schema.organizationmember.roleId })
+    .from(schema.organizationmember)
+    .where(
+      and(
+        eq(schema.organizationmember.organizationId, orgId),
+        eq(schema.organizationmember.profileId, profileId),
+        or(eq(schema.organizationmember.roleId, ROLE.ADMIN), eq(schema.organizationmember.roleId, ROLE.TUTOR))
+      )
+    )
+    .limit(1);
+
+  return result.length > 0;
+};
+
+/**
  * Gets organization team members (non-students)
  * @param orgId Organization ID
  * @returns Array of team members with profile information

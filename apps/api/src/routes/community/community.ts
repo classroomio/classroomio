@@ -1,34 +1,38 @@
-import { Hono } from '@api/utils/hono';
-import { zValidator } from '@hono/zod-validator';
-
-import { handleError } from '@api/utils/errors';
-import { authMiddleware } from '@api/middlewares/auth';
-import {
-  fetchCommunityQuestion,
-  fetchCommunityQuestions,
-  createQuestion,
-  deleteComment,
-  deleteCommentsByQuestionId,
-  deleteQuestion,
-  createComment,
-  editQuestion,
-  upvote
-} from '@api/services/community';
 import {
   ZCommunityComment,
   ZCommunityCommentDelete,
   ZCommunityQuestion,
-  ZCommunityQuestions,
   ZCommunityQuestionUpdate,
+  ZCommunityQuestions,
   ZGetCommunity,
   ZGetCommunityCommentQuestionId,
   ZNewCommunityQuestion,
   ZUpvotePost,
   ZUpvotePostParam
 } from '@cio/utils/validation/community';
+import {
+  createComment,
+  createQuestion,
+  deleteComment,
+  deleteCommentsByQuestionId,
+  deleteQuestion,
+  editQuestion,
+  fetchCommunityQuestion,
+  fetchCommunityQuestions,
+  upvote
+} from '@api/services/community';
+
+import { Hono } from '@api/utils/hono';
+import { authMiddleware } from '@api/middlewares/auth';
+import { commentAuthorOrTeamMiddleware } from './middlewares/comment-author-or-team';
+import { handleError } from '@api/utils/errors';
+import { orgMemberMiddleware } from '@api/middlewares/org-member';
+import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
+import { questionAuthorOrTeamMiddleware } from './middlewares/question-author-or-team';
+import { zValidator } from '@hono/zod-validator';
 
 export const communityRouter = new Hono()
-  .get('/', authMiddleware, zValidator('query', ZCommunityQuestions), async (c) => {
+  .get('/', authMiddleware, orgMemberMiddleware, zValidator('query', ZCommunityQuestions), async (c) => {
     try {
       const { orgId } = c.req.valid('query');
 
@@ -39,7 +43,7 @@ export const communityRouter = new Hono()
       return handleError(c, error, 'Failed to load community posts');
     }
   })
-  .get('/:slug', authMiddleware, zValidator('param', ZCommunityQuestion), async (c) => {
+  .get('/:slug', authMiddleware, orgMemberMiddleware, zValidator('param', ZCommunityQuestion), async (c) => {
     try {
       const { slug } = c.req.valid('param');
 
@@ -50,7 +54,7 @@ export const communityRouter = new Hono()
       return handleError(c, error, 'Failed to load community post');
     }
   })
-  .post('/', authMiddleware, zValidator('json', ZNewCommunityQuestion), async (c) => {
+  .post('/', authMiddleware, orgMemberMiddleware, zValidator('json', ZNewCommunityQuestion), async (c) => {
     try {
       const { title, body, courseId, organizationId, authorProfileId, votes, slug } = c.req.valid('json');
 
@@ -72,6 +76,7 @@ export const communityRouter = new Hono()
   .put(
     '/:id',
     authMiddleware,
+    questionAuthorOrTeamMiddleware,
     zValidator('param', ZGetCommunity),
     zValidator('json', ZCommunityQuestionUpdate),
     async (c) => {
@@ -87,7 +92,7 @@ export const communityRouter = new Hono()
       }
     }
   )
-  .delete('/:id', authMiddleware, zValidator('param', ZGetCommunity), async (c) => {
+  .delete('/:id', authMiddleware, questionAuthorOrTeamMiddleware, zValidator('param', ZGetCommunity), async (c) => {
     try {
       const { id } = c.req.valid('param');
 
@@ -102,6 +107,7 @@ export const communityRouter = new Hono()
   .post(
     '/:id/comment',
     authMiddleware,
+    orgMemberMiddleware,
     zValidator('param', ZGetCommunity),
     zValidator('json', ZCommunityComment),
     async (c) => {
@@ -126,16 +132,16 @@ export const communityRouter = new Hono()
   .post(
     '/:id/upvote',
     authMiddleware,
+    orgMemberMiddleware,
     zValidator('param', ZUpvotePostParam),
     zValidator('json', ZUpvotePost),
     async (c) => {
       try {
         const { id } = c.req.valid('param');
-        const { votes, isQuestion } = c.req.valid('json');
+        const { isQuestion } = c.req.valid('json');
 
         const result = await upvote({
           id,
-          votes,
           isQuestion
         });
 
@@ -145,13 +151,25 @@ export const communityRouter = new Hono()
       }
     }
   )
-  .delete('/:id/comment', authMiddleware, zValidator('param', ZCommunityCommentDelete), async (c) => {
-    const { id } = c.req.valid('param');
-    const result = await deleteComment({ id });
-    return c.json({ success: true, data: result }, 200);
-  })
-  .delete('/:questionId/comments', authMiddleware, zValidator('param', ZGetCommunityCommentQuestionId), async (c) => {
-    const { questionId } = c.req.valid('param');
-    const result = await deleteCommentsByQuestionId({ questionId });
-    return c.json({ success: true, data: result }, 200);
-  });
+  .delete(
+    '/:id/comment',
+    authMiddleware,
+    commentAuthorOrTeamMiddleware,
+    zValidator('param', ZCommunityCommentDelete),
+    async (c) => {
+      const { id } = c.req.valid('param');
+      const result = await deleteComment({ id });
+      return c.json({ success: true, data: result }, 200);
+    }
+  )
+  .delete(
+    '/:questionId/comments',
+    authMiddleware,
+    orgTeamMemberMiddleware,
+    zValidator('param', ZGetCommunityCommentQuestionId),
+    async (c) => {
+      const { questionId } = c.req.valid('param');
+      const result = await deleteCommentsByQuestionId({ questionId });
+      return c.json({ success: true, data: result }, 200);
+    }
+  );

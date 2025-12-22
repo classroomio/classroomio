@@ -11,5 +11,5 @@
     <span class="ui:text-foreground ui:text-md">ClassroomIO</span>
   </a>
 
-  <p class="ui:text-muted-foreground ui:text-sm">The Coure Platform That’s Actually <i>Easy To Use</i></p>
+  <p class="ui:text-muted-foreground ui:text-sm">The Course Platform That’s Actually <i>Easy To Use</i></p>
 </div>

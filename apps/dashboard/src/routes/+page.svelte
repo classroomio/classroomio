@@ -13,7 +13,7 @@
 </script>
 
 <svelte:head>
-  <title>ClassroomIO - The Coure Platform That’s Actually Easy To Use</title>
+  <title>ClassroomIO - The Course Platform That’s Actually Easy To Use</title>
 </svelte:head>
 
 {#if !isLoadingApp && appInitApi.error}

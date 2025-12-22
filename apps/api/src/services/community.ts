@@ -1,3 +1,5 @@
+import { AppError, ErrorCodes } from '@api/utils/errors';
+import type { TCommunityAnswer, TCommunityQuestion, TCourse } from '@db/types';
 import {
   createCommunityQuestion,
   deleteCommentById,
@@ -10,8 +12,6 @@ import {
   upvoteAnswer,
   upvoteQuestion
 } from '@cio/db/queries/community';
-import { AppError, ErrorCodes } from '@api/utils/errors';
-import type { TCommunityAnswer, TCommunityQuestion, TCourse } from '@db/types';
 
 import { getCoursesByOrgId } from './organization';
 
@@ -147,14 +147,14 @@ export async function createComment({ body, questionId, authorProfileId, votes }
   }
 }
 
-export async function upvote({ id, votes, isQuestion }: { id: string | number; votes: number; isQuestion: boolean }) {
+export async function upvote({ id, isQuestion }: { id: string | number; isQuestion: boolean }) {
   try {
     let result;
 
     if (isQuestion) {
-      result = await upvoteQuestion({ id: Number(id), votes });
+      result = await upvoteQuestion({ id: Number(id) });
     } else {
-      result = await upvoteAnswer({ id: String(id), votes });
+      result = await upvoteAnswer({ id: String(id) });
     }
 
     return result;
@@ -167,6 +167,8 @@ export async function upvote({ id, votes, isQuestion }: { id: string | number; v
 
 export async function deleteQuestion({ id }: Partial<TCommunityQuestion>) {
   try {
+    // Delete all comments first, then delete the question
+    await deleteCommentByQuestionId(id);
     const result = await deleteQuestionByQuestionId(id);
 
     return result;
