@@ -9,17 +9,21 @@ import {
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { cloneCourse } from '@api/services/course/clone';
+import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { generateCertificate } from '@api/utils/certificate';
 import { generateCoursePdf } from '@api/utils/course';
 import { handleError } from '@api/utils/errors';
 import { katexRouter } from '@api/routes/course/katex';
 import { lessonRouter } from '@api/routes/course/lesson';
+import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { presignRouter } from '@api/routes/course/presign';
 import { zValidator } from '@hono/zod-validator';
 
 export const courseRouter = new Hono()
   .post(
     '/:courseId/download/certificate',
+    authMiddleware,
+    courseMemberMiddleware,
     zValidator('param', ZCourseDownloadParam),
     zValidator('json', ZCertificateDownload),
     async (c) => {
@@ -42,6 +46,8 @@ export const courseRouter = new Hono()
   )
   .post(
     '/:courseId/download/content',
+    authMiddleware,
+    courseMemberMiddleware,
     zValidator('param', ZCourseDownloadParam),
     zValidator('json', ZCourseDownloadContent),
     async (c) => {
@@ -64,6 +70,7 @@ export const courseRouter = new Hono()
   .post(
     '/:courseId/clone',
     authMiddleware,
+    orgMemberMiddleware,
     zValidator('param', ZCourseCloneParam),
     zValidator('json', ZCourseClone),
     async (c) => {
@@ -90,5 +97,5 @@ export const courseRouter = new Hono()
     }
   )
   .route('/katex', katexRouter)
-  .route('/lesson', lessonRouter)
+  .route('/:courseId/lesson', lessonRouter)
   .route('/presign', presignRouter);
