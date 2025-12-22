@@ -1,6 +1,7 @@
 <script>
-  import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
-  import PageHeader from '$lib/PageHeader/PageHeader.svelte';
+  import { PageSignupCTA, PageHeader } from '$lib/components';
+  import { Button } from '@cio/ui/base/button';
+  import { Badge } from '@cio/ui/base/badge';
 
   const benefitDetails = [
     {
@@ -77,20 +78,15 @@
   <PageHeader
     className="flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-6 lg:px-28 md:px-16 px-8"
   >
-    <div class="bg-[#DCE5FF] py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
-      <p class=" text-sm md:text-base text-[#4B5563] text-center font-medium">
-        Solution for Bootcamps
-      </p>
-    </div>
+    <Badge class="py-2! px-4!" variant="outline">Solution for Bootcamps</Badge>
+
     <div
       class="w-full flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-8"
     >
       <div
-        class="w-full max-w-screen-xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
+        class="w-full max-w-7xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
-        <h1
-          class="mx-auto m-0 text-4xl lg:text-7xl md:text-6xl font-bold text-slate-900 lg:text-center"
-        >
+        <h1 class="mx-auto m-0 text-4xl md:text-6xl text-slate-900 lg:text-center">
           The platform for fast
           <span class="text-blue-700 relative"> growing bootcamps</span>
         </h1>
@@ -99,13 +95,9 @@
           everything you need to run a cutting-edge, high-impact bootcamp.
         </p>
       </div>
-      <a
-        href="/signup"
-        target="_blank"
-        class="py-5 px-6 bg-[#1D4ED8] border-transparent outline-transparent rounded-lg text-white text-lg font-semibold"
-      >
+      <Button href="/signup" target="_blank" rel="noopener noreferrer nofollow">
         Get Started for Free 🚀
-      </a>
+      </Button>
     </div>
   </PageHeader>
 
@@ -115,11 +107,10 @@
     <div
       class="w-full gap-y-4 flex flex-col lg:items-center items-start lg:justify-center justify-start"
     >
-      <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
-        <p class=" text-sm md:text-base font-medium">Our benefits</p>
-      </div>
+      <Badge class="py-2! px-4!" variant="outline">Our benefits</Badge>
+
       <div
-        class="lg:w-full max-w-screen-xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
+        class="lg:w-full max-w-7xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
         <h1 class="text-3xl md:text-5xl font-bold">Inspire Student Success</h1>
         <p class="text-[#334155] text-sm md:text-base font-light lg:text-center md:w-[80%]">
@@ -130,7 +121,7 @@
     </div>
 
     <div
-      class="w-full max-w-screen-xl flex lg:flex-row flex-col lg:justify-between justify-start gap-6 lg:items-center items-start"
+      class="w-full max-w-7xl flex lg:flex-row flex-col lg:justify-between justify-start gap-6 lg:items-center items-start"
     >
       {#each benefitDetails as benefits}
         <div class="w-full md:p-6 p-4 border border-[#D9E0F5] rounded-2xl flex flex-col gap-y-6">
@@ -164,11 +155,10 @@
     class="w-full bg-[#F1F6FF] flex flex-col items-center justify-center gap-y-16 lg:py-24 py-16 lg:px-28 md:px-16 px-8"
   >
     <div
-      class="w-full max-w-screen-xl gap-y-4 flex flex-col lg:items-center items-start lg:justify-center justify-start"
+      class="w-full max-w-7xl gap-y-4 flex flex-col lg:items-center items-start lg:justify-center justify-start"
     >
-      <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
-        <p class=" text-sm md:text-base font-medium">Explore our features</p>
-      </div>
+      <Badge class="py-2! px-4!" variant="outline">Explore our features</Badge>
+
       <div
         class="w-full flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
@@ -181,9 +171,7 @@
       </div>
     </div>
 
-    <div
-      class="w-full max-w-screen-xl flex flex-col justify-start items-center lg:gap-y-24 gap-y-16"
-    >
+    <div class="w-full max-w-7xl flex flex-col justify-start items-center lg:gap-y-24 gap-y-16">
       {#each featureDetails as feature, i}
         <div
           class="w-full lg:w-[70%] flex lg:flex-row {i % 2 !== 0
@@ -206,21 +194,17 @@
             </div>
 
             {#if feature.ctaLink}
-              <a
-                class="py-4 px-8 border border-[#1D4ED8] outline-transparent rounded text-[#1D4ED8] text-sm font-semibold"
-                href={feature.ctaLink}
-                target="_blank noopener noreferrer"
-              >
+              <Button variant="outline" href={feature.ctaLink} target="_blank noopener noreferrer">
                 {feature.ctaLabel}
-              </a>
+              </Button>
             {:else}
-              <button
-                class="py-4 px-8 border border-[#1D4ED8] outline-transparent rounded text-[#1D4ED8] text-sm font-semibold"
+              <Button
+                variant="outline"
                 data-cal-config="'layout':'month_view'"
                 data-cal-link="classroomio/demo"
               >
                 Book a Demo
-              </button>
+              </Button>
             {/if}
           </div>
 

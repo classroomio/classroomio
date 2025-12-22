@@ -1,7 +1,5 @@
 <script>
-  import PageHeader from '$lib/PageHeader/PageHeader.svelte';
-  import Timeline from '$lib/Timeline/Timeline.svelte';
-  import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
+  import { PageHeader, Timeline, PageSignupCTA } from '$lib/components';
 
   const newFeatures = [
     {
@@ -67,13 +65,11 @@
 </svelte:head>
 
 <PageHeader className="flex flex-col items-center justify-center text-center">
-  <h1 class="text-start md:text-center text-5xl md:text-7xl font-bold text-slate-900">
-    Product Roadmap
-  </h1>
+  <h1 class="text-start md:text-center text-4xl md:text-6xl text-slate-900">Product Roadmap</h1>
   <p class="text-start md:text-center w-[80%] md:w-[40%] text-slate-700 mt-10">
     This is a live document, and will be updated regularly. To submit an idea, or to view a list of
     feature requests and ideas that we're considering, check out our <a
-      href="https://github.com/rotimi-best/classroomio/discussion"
+      href="https://github.com/classroomio/classroomio/discussion"
       class="underline">GitHub Discussions</a
     >
   </p>
