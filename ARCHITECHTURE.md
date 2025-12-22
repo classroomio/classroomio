@@ -826,6 +826,107 @@ import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
 - Use `apiKeyMiddleware` for API-key-only endpoints
 - Use `authOrApiKeyMiddleware` for endpoints that accept both user sessions and API keys
 
+#### 6. **Role-Based Authorization Middleware**
+
+**Middleware Location Decision:**
+
+Use **generic middleware** (`apps/api/src/middlewares/`) when:
+- ✅ The middleware is reusable across multiple routes/domains
+- ✅ The pattern is generic (e.g., "is user member of org?")
+- ✅ The check doesn't depend on specific resource types
+
+Use **route-specific middleware** (`apps/api/src/routes/{domain}/middlewares/`) when:
+- ✅ The middleware is specific to one route file
+- ✅ The check involves resource-specific data (e.g., "is user author of THIS question?")
+- ✅ The pattern won't be reused elsewhere
+
+**Important:** Never put authorization logic inline in route handlers. Always create middleware functions, even if they're only used once.
+
+**Available Generic Middleware:**
+
+1. **`orgMemberMiddleware`** - User must be a member of the organization (any role)
+   - Location: `apps/api/src/middlewares/org-member.ts`
+   - Use for: Organization-scoped operations
+   - Requires: `cio-org-id` header
+
+2. **`orgTeamMemberMiddleware`** - User must be ADMIN or TUTOR in organization
+   - Location: `apps/api/src/middlewares/org-team-member.ts`
+   - Use for: Admin-only operations across organization
+   - Requires: `cio-org-id` header
+
+3. **`orgAdminMiddleware`** - User must be ADMIN in organization
+   - Location: `apps/api/src/middlewares/org-admin.ts` (already exists)
+   - Use for: Admin-only operations
+   - Requires: `cio-org-id` header
+
+4. **`courseMemberMiddleware`** - User must be a member of the course's group
+   - Location: `apps/api/src/middlewares/course-member.ts`
+   - Use for: Course-scoped operations
+   - Requires: `courseId` in request params or query
+
+**Route-Specific Middleware Pattern:**
+
+For endpoint-specific authorization, create middleware in the route's middleware folder:
+
+```
+apps/api/src/routes/community/
+  ├── community.ts
+  └── middlewares/
+      ├── question-author-or-team.ts
+      ├── comment-author-or-team.ts
+      └── question-course-member.ts
+```
+
+**Example Route-Specific Middleware:**
+
+```typescript
+// apps/api/src/routes/community/middlewares/question-author-or-team.ts
+import { Context, Next } from 'hono';
+import { ErrorCodes } from '@api/utils/errors';
+import { getQuestionAuthorAndCourse } from '@cio/db/queries/community';
+import { isUserCourseTeamMember } from '@cio/db/queries/group';
+
+export const questionAuthorOrTeamMiddleware = async (c: Context, next: Next) => {
+  const user = c.get('user');
+  const questionId = c.req.param('id');
+  
+  const question = await getQuestionAuthorAndCourse(questionId);
+  if (!question) {
+    return c.json({ success: false, error: 'Question not found' }, 404);
+  }
+  
+  const isAuthor = question.authorId === user.id;
+  const isTeamMember = await isUserCourseTeamMember(question.courseId, user.id);
+  
+  if (!isAuthor && !isTeamMember) {
+    return c.json({ success: false, error: 'Unauthorized' }, 403);
+  }
+  
+  await next();
+};
+```
+
+**Using Route-Specific Middleware:**
+
+```typescript
+// apps/api/src/routes/community/community.ts
+import { questionAuthorOrTeamMiddleware } from './middlewares/question-author-or-team';
+
+export const communityRouter = new Hono()
+  .put('/:id', authMiddleware, questionAuthorOrTeamMiddleware, zValidator('param', ZGetCommunity), async (c) => {
+    // Handler logic
+  });
+```
+
+**Best Practices:**
+- Always use `authMiddleware` first
+- Extract IDs from validated params/body
+- Return 404 if resource doesn't exist
+- Return 403 if user lacks permission
+- Use existing `ErrorCodes` enum
+- Keep middleware focused and single-purpose
+- Never inline authorization checks - always create middleware functions
+
 ### Complete Route Example
 
 Routes should be thin - they handle HTTP concerns and delegate to services:
@@ -1699,10 +1800,117 @@ try {
 
 ### Complete Frontend Example
 
-Example with **client-side validation** before API call:
+**✅ CORRECT Pattern - API Class Handles Everything:**
+
+```typescript
+// apps/dashboard/src/lib/features/course/api/course.svelte.ts
+import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import { ZCourseCreate } from '@cio/utils/validation/course';
+import { mapZodErrorsToTranslations } from '$lib/utils/validation';
+import { snackbar } from '$features/ui/snackbar/store';
+import { goto } from '$app/navigation';
+
+class CourseApi extends BaseApiWithErrors {
+  async createCourse(fields: { title: string; slug: string; description?: string }) {
+    // 1. CLIENT-SIDE VALIDATION
+    const result = ZCourseCreate.safeParse(fields);
+    if (!result.success) {
+      this.errors = mapZodErrorsToTranslations(result.error, 'course');
+      return;
+    }
+
+    // 2. API CALL WITH COMPLETE SUCCESS/ERROR HANDLING
+    await this.execute<typeof classroomio.course.create.$post>({
+      requestFn: () => classroomio.course.create.$post({
+        json: result.data
+      }),
+      logContext: 'creating course',
+      onSuccess: (response) => {
+        if (response.data?.course) {
+          // Show success message
+          snackbar.success('Course created successfully');
+          
+          // Navigate to the course
+          goto(`/courses/${response.data.course.slug}`);
+          
+          // Mark as successful
+          this.success = true;
+          this.errors = {};
+        }
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error('Failed to create course');
+          return;
+        }
+        if ('error' in result && 'field' in result && result.field) {
+          // Field-specific error (e.g., duplicate slug)
+          this.errors[result.field] = result.error;
+          snackbar.error(result.error);
+        } else if ('error' in result) {
+          // General error
+          this.errors.general = result.error;
+          snackbar.error(result.error);
+        }
+      }
+    });
+  }
+}
+
+export const courseApi = new CourseApi();
+```
 
 ```typescript
 // apps/dashboard/src/routes/course/+page.svelte
+<script lang="ts">
+  import { courseApi } from '$features/course/api/course.svelte';
+
+  let fields = $state({ title: '', slug: '', description: '' });
+</script>
+
+<form onsubmit={() => courseApi.createCourse(fields)}>
+  <div>
+    <label for="title">Course Title</label>
+    <input
+      id="title"
+      bind:value={fields.title}
+      class:error={courseApi.errors.title}
+    />
+    {#if courseApi.errors.title}
+      <span class="error-message">{courseApi.errors.title}</span>
+    {/if}
+  </div>
+
+  <div>
+    <label for="slug">Course Slug</label>
+    <input
+      id="slug"
+      bind:value={fields.slug}
+      class:error={courseApi.errors.slug}
+    />
+    {#if courseApi.errors.slug}
+      <span class="error-message">{courseApi.errors.slug}</span>
+    {/if}
+  </div>
+
+  <button type="submit" disabled={courseApi.isLoading}>
+    {courseApi.isLoading ? 'Creating...' : 'Create Course'}
+  </button>
+</form>
+```
+
+**Key Differences:**
+- ✅ **API class handles validation** - Component just calls the method
+- ✅ **API class handles loading state** - Component binds to `api.isLoading`
+- ✅ **API class handles errors** - Component binds to `api.errors.fieldName`
+- ✅ **API class handles success** - Navigation and snackbar in `onSuccess`
+- ✅ **Component is thin** - Only renders UI and binds to API state
+- ✅ **No handleSubmit function** - Direct call to API method
+
+**❌ WRONG Pattern - Logic in Component:**
+
+```typescript
+// DON'T DO THIS
 <script lang="ts">
   import { classroomio } from '$lib/utils/services/api';
   import { ZCourseCreate } from '@cio/utils/validation/course';
@@ -1714,30 +1922,27 @@ Example with **client-side validation** before API call:
   let loading = $state(false);
 
   const handleSubmit = async () => {
+    // ❌ Validation in component
     loading = true;
     errors = {};
 
-    // Client-side validation with entity-specific translations
     const result = ZCourseCreate.safeParse(fields);
-
     if (!result.success) {
-      // Map validation errors to translated messages
       errors = mapZodErrorsToTranslations(result.error, 'course');
-      // errors.title = "Course title is required"
-      // errors.slug = "Course slug is required"
       loading = false;
       return;
     }
 
     try {
+      // ❌ Manual API call
       const response = await classroomio.course.create.$post({
-        json: result.data  // Send validated data
+        json: result.data
       });
 
       const data = await response.json();
 
+      // ❌ Manual error handling
       if (!data.success) {
-        // Handle API error (e.g., duplicate slug)
         if (data.field) {
           errors[data.field] = data.error;
         } else {
@@ -1747,7 +1952,7 @@ Example with **client-side validation** before API call:
         return;
       }
 
-      // Success - redirect to course
+      // ❌ Navigation in component
       const { course } = data.data;
       await goto(`/courses/${course.slug}`);
 
@@ -1759,74 +1964,117 @@ Example with **client-side validation** before API call:
     }
   };
 </script>
-
-<form onsubmit={handleSubmit}>
-  <div>
-    <label for="title">Course Title</label>
-    <input
-      id="title"
-      bind:value={fields.title}
-      class:error={errors.title}
-    />
-    {#if errors.title}
-      <span class="error-message">{errors.title}</span>
-    {/if}
-  </div>
-
-  <div>
-    <label for="slug">Course Slug</label>
-    <input
-      id="slug"
-      bind:value={fields.slug}
-      class:error={errors.slug}
-    />
-    {#if errors.slug}
-      <span class="error-message">{errors.slug}</span>
-    {/if}
-  </div>
-
-  <button type="submit" disabled={loading}>
-    {loading ? 'Creating...' : 'Create Course'}
-  </button>
-</form>
 ```
 
 ### API Abstraction Pattern (API Classes)
 
-When creating API abstractions in `apps/dashboard/src/lib/features/{domain}/api/{entity}.svelte.ts`, **always use the `execute` method** from `BaseApi` or `BaseApiWithErrors` classes. This provides automatic loading state management, error handling, and consistent response processing.
+When creating API abstractions in `apps/dashboard/src/lib/features/{domain}/api/{entity}.svelte.ts`, **the API class should be a complete abstraction** that handles everything. Components should have NO business logic related to API calls.
 
 **Important**: 
 - **`.svelte.ts` files** are for **client-side use only** (Svelte components). They use Svelte reactivity (`$state`, `$derived`) and manage component state. **Never** include API key logic in these files.
 - **`.server.ts` files** are for **server-side use only** (`+layout.server.ts`, `+page.server.ts`, `+server.ts`). They contain static methods with API key authentication and are automatically excluded from client bundles by SvelteKit.
 
-#### Using the `execute` Method
+#### Critical Principle: API Classes Handle Everything
 
-**Pattern:**
+**❌ WRONG - Logic in Component:**
 ```typescript
-import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+// Component file - TOO MUCH LOGIC
+async function handleSave() {
+  // ❌ Validation in component
+  errors = customValidation(fields);
+  if (Object.keys(errors).length) return;
 
-class MyApi extends BaseApiWithErrors {
-  async updateItem(id: string, data: Partial<Item>) {
-    await this.execute<typeof classroomio.items[':id']['$put']>({
-      requestFn: () => classroomio.items[':id'].$put({
-        param: { id },
-        json: data
+  // ❌ Business logic in component (slug generation, defaults)
+  const data = await api.create({
+    ...fields,
+    slug: generateSlug(fields.title),
+    votes: 0,
+    authorId: $profile.id
+  });
+
+  // ❌ Manual error/success handling
+  if (api.error) {
+    snackbar.error('Error occurred');
+  } else {
+    snackbar.success('Success!');
+    goto(`/path/${data.slug}`);
+  }
+}
+```
+
+**✅ CORRECT - All Logic in API Class:**
+```typescript
+// Component file - THIN AND CLEAN
+<script lang="ts">
+  import { api } from '$features/domain/api/entity.svelte';
+
+  let fields = $state({ title: '', body: '' });
+
+  // That's it! Just call the API method
+  async function handleSave() {
+    await api.createQuestion(fields);
+  }
+</script>
+
+<form onsubmit={handleSave}>
+  <input bind:value={fields.title} />
+  {#if api.errors.title}
+    <span class="error">{api.errors.title}</span>
+  {/if}
+  
+  <button disabled={api.isLoading}>
+    {api.isLoading ? 'Saving...' : 'Save'}
+  </button>
+</form>
+```
+
+```typescript
+// API class - COMPLETE ABSTRACTION
+import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import { ZQuestionCreate } from '@cio/utils/validation/community';
+import { mapZodErrorsToTranslations } from '$lib/utils/validation';
+import { snackbar } from '$features/ui/snackbar/store';
+import { goto } from '$app/navigation';
+import { profile } from '$lib/utils/store/user';
+import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
+import { get } from 'svelte/store';
+
+class CommunityApi extends BaseApiWithErrors {
+  questionSlug = $state('');
+
+  async createQuestion(fields: { title: string; body: string; courseId?: string }) {
+    // 1. CLIENT-SIDE VALIDATION
+    const result = ZQuestionCreate.safeParse(fields);
+    if (!result.success) {
+      this.errors = mapZodErrorsToTranslations(result.error, 'community');
+      return;
+    }
+
+    // 2. API CALL WITH SUCCESS/ERROR HANDLING
+    await this.execute<typeof classroomio.community.questions.$post>({
+      requestFn: () => classroomio.community.questions.$post({
+        json: result.data
       }),
-      logContext: 'updating item',
+      logContext: 'creating community question',
       onSuccess: (response) => {
-        // Update local stores with response.data
-        itemsStore.update((items) => {
-          const index = items.findIndex((i) => i.id === id);
-          if (index !== -1 && response.data) {
-            items[index] = { ...items[index], ...response.data };
-          }
-          return items;
-        });
+        if (response.data) {
+          // Store the slug for navigation
+          this.questionSlug = response.data.slug;
+          
+          // Show success message
+          snackbar.success('snackbar.community.success.question_submitted');
+          
+          // Navigate to the question
+          goto(`${get(currentOrgPath)}/community/${response.data.slug}`);
+          
+          // Mark as successful
+          this.success = true;
+          this.errors = {};
+        }
       },
       onError: (result) => {
-        // Optional: Custom error handling
         if (typeof result === 'string') {
-          snackbar.error(result);
+          snackbar.error('snackbar.community.error.try_again');
           return;
         }
         if ('error' in result) {
@@ -1837,54 +2085,106 @@ class MyApi extends BaseApiWithErrors {
   }
 }
 
-export const myApi = new MyApi();
+export const communityApi = new CommunityApi();
+```
+
+#### What API Classes Should Handle
+
+**✅ API Class Responsibilities:**
+1. **Client-side validation** using shared Zod schemas
+2. **Loading state** (`this.isLoading` - automatic via `execute`)
+3. **Error state** (`this.errors` for field errors, `this.error` for general errors)
+4. **Success handling** (update stores, show snackbar, navigate)
+5. **Error handling** (show snackbar, map validation errors)
+6. **Business logic** (format data, generate IDs/slugs if needed client-side)
+7. **Navigation** (redirect after success)
+8. **State management** (update local stores with response data)
+
+**❌ Component Responsibilities:**
+1. ~~Validation~~ → API class handles this
+2. ~~Error handling~~ → API class handles this
+3. ~~Success callbacks~~ → API class handles this
+4. ~~Navigation~~ → API class handles this
+5. ~~Business logic~~ → API class or service layer handles this
+
+**✅ Component Responsibilities:**
+1. **Render UI** (forms, inputs, buttons)
+2. **Bind to form fields** (`bind:value={fields.title}`)
+3. **Call API method** (`await api.createQuestion(fields)`)
+4. **Display loading state** (`{api.isLoading ? 'Loading...' : 'Submit'}`)
+5. **Display field errors** (`{#if api.errors.title}<span>{api.errors.title}</span>{/if}`)
+
+#### Using the `execute` Method
+
+**Pattern:**
+```typescript
+import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import { ZItemUpdate } from '@cio/utils/validation/items';
+import { mapZodErrorsToTranslations } from '$lib/utils/validation';
+import { snackbar } from '$features/ui/snackbar/store';
+import { goto } from '$app/navigation';
+
+class ItemApi extends BaseApiWithErrors {
+  async updateItem(id: string, fields: Partial<Item>) {
+    // 1. CLIENT-SIDE VALIDATION
+    const result = ZItemUpdate.safeParse(fields);
+    if (!result.success) {
+      this.errors = mapZodErrorsToTranslations(result.error, 'item');
+      return;
+    }
+
+    // 2. API CALL
+    await this.execute<typeof classroomio.items[':id']['$put']>({
+      requestFn: () => classroomio.items[':id'].$put({
+        param: { id },
+        json: result.data
+      }),
+      logContext: 'updating item',
+      onSuccess: (response) => {
+        // Update local stores
+        itemsStore.update((items) => {
+          const index = items.findIndex((i) => i.id === id);
+          if (index !== -1 && response.data) {
+            items[index] = { ...items[index], ...response.data };
+          }
+          return items;
+        });
+        
+        // Show success message
+        snackbar.success('Item updated successfully');
+        
+        // Navigate if needed
+        goto(`/items/${id}`);
+        
+        // Mark as successful
+        this.success = true;
+        this.errors = {};
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error('Failed to update item');
+          return;
+        }
+        if ('error' in result) {
+          this.handleValidationError(result);
+        }
+      }
+    });
+  }
+}
+
+export const itemApi = new ItemApi();
 ```
 
 **Key Points:**
 - **Always use `this.execute`** - Never call the RPC client directly
+- **Always validate first** - Use Zod's `safeParse()` before API call
 - **Type the execute call** with `typeof classroomio.{route}.{method}` for type safety
 - **Use `requestFn`** - Wrap the RPC call in a function
 - **Use `logContext`** - Provide descriptive context for error logging
-- **Use `onSuccess`** - Update local stores/reactivity with response data
-- **Use `onError`** - Optional custom error handling (validation errors are handled automatically by `BaseApiWithErrors`)
-
-**Examples:**
-
-```typescript
-// Profile API - Simple update
-await this.execute<typeof classroomio.account.user.$put>({
-  requestFn: () => classroomio.account.user.$put({ json: profileUpdates }),
-  logContext: 'updating profile',
-  onSuccess: (response) => {
-    profileStore.update((_profile) => ({
-      ..._profile,
-      ...response.profile
-    }));
-  }
-});
-
-// Onboarding API - With error handling
-await this.execute<typeof classroomio.onboarding.step1.$post>({
-  requestFn: () => classroomio.onboarding.step1.$post({ json: data }),
-  logContext: 'submitting organization setup',
-  onSuccess: (result) => {
-    const { organizations } = result.data;
-    orgs.set(organizations);
-    currentOrg.set(organizations[0]);
-    this.errors = {};
-    this.step = ONBOARDING_STEPS.USER_METADATA;
-  },
-  onError: (result) => {
-    if (typeof result === 'string') {
-      snackbar.error(result);
-      return;
-    }
-    if ('error' in result) {
-      this.handleValidationError(result);
-    }
-  }
-});
-```
+- **Use `onSuccess`** - Handle ALL success logic (stores, snackbar, navigation, state updates)
+- **Use `onError`** - Handle ALL error logic (snackbar, validation errors)
+- **Return early on validation failure** - Don't make API call if validation fails
 
 **Benefits:**
 - ✅ Automatic loading state management (`this.isLoading`)
@@ -1893,6 +2193,9 @@ await this.execute<typeof classroomio.onboarding.step1.$post>({
 - ✅ Type-safe responses
 - ✅ Centralized logging
 - ✅ Easy to test and mock
+- ✅ **Components stay thin and focused on UI**
+- ✅ **All business logic in one place**
+- ✅ **Single source of truth for validation**
 
 ### Server-Side API Calls
 
@@ -2040,35 +2343,65 @@ const result = await OrgPlanApiServer.createOrgPlan(planData);
 
 #### ✅ DO
 
-- **Use type-safe RPC client** for API calls (Hono RPC)
+**API Class Design:**
+- **Handle ALL logic in API classes** - validation, loading, errors, success/failure, navigation
 - **Always use `execute` method** in API abstraction classes (never call RPC client directly)
-- **Use `.server.ts` API classes** in server-side files (`+layout.server.ts`, `+page.server.ts`, `+server.ts`)
-- **Create `.server.ts` files** with static methods for server-side API calls with API key authentication
-- **Use API key** for server-to-server communication (webhooks, external calls)
-- **Validate client-side** before API calls using shared schemas from `@cio/utils/validation`
+- **Always validate first** - Use `ZodSchema.safeParse()` before making API calls
+- **Handle success in `onSuccess`** - Update stores, show snackbar, navigate, reset errors
+- **Handle errors in `onError`** - Show snackbar, map validation errors to `this.errors`
+- **Extend `BaseApiWithErrors`** for forms (provides `this.errors` for field-level validation)
+- **Extend `BaseApi`** for simple API calls (provides `this.error` for general errors)
 - **Use entity-specific translations** when multiple entities share field names
 
   ```typescript
-  mapZodErrorsToTranslations(error, 'course'); // "Course title is required"
+  this.errors = mapZodErrorsToTranslations(error, 'course'); // "Course title is required"
   ```
 
+**Component Design:**
+- **Keep components thin** - Only render UI and call API methods
+- **Bind to API state** - Use `api.isLoading`, `api.errors.fieldName`, `api.success`
+- **Call API methods directly** - No `handleSave()` or `handleSubmit()` functions with logic
+- **Display field errors** - Show `api.errors.fieldName` next to form fields
+- **Display loading states** - Disable buttons with `api.isLoading`
+
+**Server-Side:**
+- **Use `.server.ts` API classes** in server-side files (`+layout.server.ts`, `+page.server.ts`, `+server.ts`)
+- **Create `.server.ts` files** with static methods for server-side API calls with API key authentication
+- **Use API key** for server-to-server communication (webhooks, external calls)
+
+**General:**
+- **Use type-safe RPC client** for API calls (Hono RPC)
+- **Validate client-side** before API calls using shared schemas from `@cio/utils/validation`
 - **Provide generic translations** as fallbacks for shared fields (email, password)
-- **Handle both API errors and network errors** separately
-- **Show specific field errors** when validation or API returns them
-- **Keep UI responsive** during API calls (loading states)
-- **Optimistically update UI** when appropriate
-- **Handle different HTTP status codes** appropriately
 - **Show user-friendly, translated error messages**
 
 #### ❌ DON'T
 
-- **Call RPC client directly** in API classes (always use `execute` method)
-- **Call RPC client directly in server-side files** - use `.server.ts` API classes instead
-- **Use `.svelte.ts` API classes in server-side files** - they're for client-side Svelte components only
-- **Include API key logic in `.svelte.ts` files** - API keys must only be in `.server.ts` files
+**API Class Anti-Patterns:**
+- **DON'T call RPC client directly** in API classes (always use `execute` method)
+- **DON'T return data from API methods** - Handle success in `onSuccess` callback
+- **DON'T let components handle validation** - Validate in API class before API call
+- **DON'T let components handle navigation** - Navigate in `onSuccess` callback
+- **DON'T let components handle snackbar messages** - Show snackbar in `onSuccess`/`onError`
+- **DON'T skip client-side validation** - Always validate before making API call
+- **DON'T make API call if validation fails** - Return early on validation errors
+
+**Component Anti-Patterns:**
+- **DON'T write `handleSave()` functions with business logic** - Call API method directly
+- **DON'T manually check `if (api.error)`** - API class handles errors in `onError`
+- **DON'T manually call `goto()`** - API class handles navigation in `onSuccess`
+- **DON'T manually call `snackbar`** - API class handles snackbar in callbacks
+- **DON'T pass business logic data** (like `authorId`, `votes`, `slug`) - API class or service handles this
+- **DON'T perform validation in components** - API class validates before API call
+
+**Server-Side:**
+- **DON'T call RPC client directly in server-side files** - use `.server.ts` API classes instead
+- **DON'T use `.svelte.ts` API classes in server-side files** - they're for client-side Svelte components only
+- **DON'T include API key logic in `.svelte.ts` files** - API keys must only be in `.server.ts` files
+
+**General:**
 - Skip error handling assuming API calls always succeed
 - Display raw API error messages without formatting
-- Skip client-side validation (validate before API call for instant feedback)
 - Hardcode error messages in schemas (use translation system)
 - Use the same generic message for all entities (use entity-specific when needed)
 - Make multiple simultaneous calls that should be atomic

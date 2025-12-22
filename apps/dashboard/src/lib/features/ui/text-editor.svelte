@@ -27,7 +27,7 @@
   }
 
   let {
-    content,
+    content = $bindable(''),
     showToolBar = true,
     editable = true,
     enablePersistence = false,
@@ -43,7 +43,7 @@
 </script>
 
 <Editor
-  content={content || ''}
+  bind:content
   {showToolBar}
   {editable}
   {enablePersistence}
@@ -56,4 +56,3 @@
   onEditorReady={onReady}
   {onEditorDestroy}
 />
-

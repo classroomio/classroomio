@@ -1538,6 +1538,7 @@
       },
 
       "success": {
+        "question_updated": "Question Updated!",
         "comment_submitted": "Comment Submitted!",
         "success_delete": "Deleted successfully",
         "question_submitted": "Question Submitted!"
