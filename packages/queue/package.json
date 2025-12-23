@@ -1,0 +1,34 @@
+{
+  "name": "@cio/queue",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "taskforce": "tsx src/scripts/taskforce.ts",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@cio/tsconfig": "workspace:*",
+    "@cio/email":"workspace:*",
+    "@cio/utils":"workspace:*",
+    "bullmq": "^5.22.0",
+    "ioredis": "^5.7.0",
+    "zod": "^4.1.8"
+  },
+  "devDependencies": {
+    "taskforce-connector": "*",
+    "@types/node": "^24.8.1",
+    "dotenv": "^17.2.3",
+    "prettier": "^3.2.5",
+    "tsx": "^4.7.1",
+    "typescript": "^5.9.3"
+  }
+}
+
+

@@ -14,6 +14,8 @@ import { authMiddleware } from '@api/middlewares/auth';
 import { generateFileKey } from '@api/utils/upload';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { s3Client } from '@api/utils/s3';
+import { videoQueue } from '@cio/queue';
+import type { ProcessVideoUploadJobData } from '@cio/queue';
 
 // Response schemas for OpenAPI documentation
 const PresignUploadResponse = {
@@ -67,6 +69,7 @@ export const presignRouter = new Hono()
     validator('json', ZCoursePresignUrlUpload),
     async (c) => {
       const body = c.req.valid('json');
+      const user = c.get('user');
 
       const { fileName, fileType } = body;
       const fileKey = generateFileKey(fileName);
@@ -80,6 +83,24 @@ export const presignRouter = new Hono()
       const presignedUrl = await getSignedUrl(s3Client as GetSignedUrlParameters[0], command, {
         expiresIn: CLOUDFLARE.R2.PRESIGN_EXPIRATION_TIME
       });
+
+      // queuing video upload
+
+      const jobData: ProcessVideoUploadJobData = {
+          fileKey,
+          fileName,
+          fileType,
+          userId: user?.id,
+          metadata: {
+            bucket: BUCKET_NAME.VIDEOS,
+            contentType: fileType,
+          },
+      };
+
+      await videoQueue.add('process-upload',jobData,{
+        jobId: `video-${fileKey}`,
+      })
+
 
       return c.json({
         success: true,

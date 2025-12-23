@@ -1,0 +1,19 @@
+{
+  "extends": "@cio/tsconfig/base.json",
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"],
+  "compilerOptions": {
+    "composite": true,
+    "baseUrl": ".",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true,
+    "resolveJsonModule": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ESNext",
+    "paths": {
+      "@queue/*": ["./src/*"]
+    }
+  }
+}

@@ -1,0 +1,16 @@
+// vite.config.js
+import { sveltekit } from "file:///C:/Users/c/Desktop/classroom.io/node_modules/.pnpm/@sveltejs+kit@2.8.0_@sveltejs+vite-plugin-svelte@3.1.2_svelte@4.1.2_vite@5.4.11_@types+node@1_3wprcz2k25vwzdeklwr64gxmwu/node_modules/@sveltejs/kit/src/exports/vite/index.js";
+import { defineConfig } from "file:///C:/Users/c/Desktop/classroom.io/node_modules/.pnpm/vite@5.4.11_@types+node@18.11.10_sass@1.64.2/node_modules/vite/dist/node/index.js";
+var vite_config_default = defineConfig({
+  plugins: [sveltekit()],
+  build: {
+    sourcemap: true
+  },
+  optimizeDeps: {
+    entries: ["src/routes/**/+*.{js,ts,svelte}"]
+  }
+});
+export {
+  vite_config_default as default
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsidml0ZS5jb25maWcuanMiXSwKICAic291cmNlc0NvbnRlbnQiOiBbImNvbnN0IF9fdml0ZV9pbmplY3RlZF9vcmlnaW5hbF9kaXJuYW1lID0gXCJDOlxcXFxVc2Vyc1xcXFxjXFxcXERlc2t0b3BcXFxcY2xhc3Nyb29tLmlvXFxcXGFwcHNcXFxcY2xhc3Nyb29taW8tY29tXCI7Y29uc3QgX192aXRlX2luamVjdGVkX29yaWdpbmFsX2ZpbGVuYW1lID0gXCJDOlxcXFxVc2Vyc1xcXFxjXFxcXERlc2t0b3BcXFxcY2xhc3Nyb29tLmlvXFxcXGFwcHNcXFxcY2xhc3Nyb29taW8tY29tXFxcXHZpdGUuY29uZmlnLmpzXCI7Y29uc3QgX192aXRlX2luamVjdGVkX29yaWdpbmFsX2ltcG9ydF9tZXRhX3VybCA9IFwiZmlsZTovLy9DOi9Vc2Vycy9jL0Rlc2t0b3AvY2xhc3Nyb29tLmlvL2FwcHMvY2xhc3Nyb29taW8tY29tL3ZpdGUuY29uZmlnLmpzXCI7aW1wb3J0IHsgc3ZlbHRla2l0IH0gZnJvbSAnQHN2ZWx0ZWpzL2tpdC92aXRlJztcclxuaW1wb3J0IHsgZGVmaW5lQ29uZmlnIH0gZnJvbSAndml0ZSc7XHJcblxyXG5leHBvcnQgZGVmYXVsdCBkZWZpbmVDb25maWcoe1xyXG4gIHBsdWdpbnM6IFtzdmVsdGVraXQoKV0sXHJcbiAgYnVpbGQ6IHtcclxuICAgIHNvdXJjZW1hcDogdHJ1ZVxyXG4gIH0sXHJcbiAgb3B0aW1pemVEZXBzOiB7XHJcbiAgICBlbnRyaWVzOiBbJ3NyYy9yb3V0ZXMvKiovKyoue2pzLHRzLHN2ZWx0ZX0nXVxyXG4gIH1cclxufSk7XHJcbiJdLAogICJtYXBwaW5ncyI6ICI7QUFBNFYsU0FBUyxpQkFBaUI7QUFDdFgsU0FBUyxvQkFBb0I7QUFFN0IsSUFBTyxzQkFBUSxhQUFhO0FBQUEsRUFDMUIsU0FBUyxDQUFDLFVBQVUsQ0FBQztBQUFBLEVBQ3JCLE9BQU87QUFBQSxJQUNMLFdBQVc7QUFBQSxFQUNiO0FBQUEsRUFDQSxjQUFjO0FBQUEsSUFDWixTQUFTLENBQUMsaUNBQWlDO0FBQUEsRUFDN0M7QUFDRixDQUFDOyIsCiAgIm5hbWVzIjogW10KfQo=

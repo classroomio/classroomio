@@ -41,6 +41,7 @@
     "@aws-sdk/s3-request-presigner": "^3.675.0",
     "@cio/db": "workspace:*",
     "@cio/email": "workspace:*",
+    "@cio/queue": "workspace:*",
     "@cio/utils": "workspace:*",
     "@hono/node-server": "^1.8.2",
     "@hono/standard-validator": "^0.1.5",
