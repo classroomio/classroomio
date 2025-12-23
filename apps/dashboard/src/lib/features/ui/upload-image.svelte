@@ -68,11 +68,11 @@
   };
 </script>
 
-<section class="width-fit flex p-3 {flexDirection} items-center justify-between gap-5">
+<section class="flex w-fit p-3 {flexDirection} items-center justify-between gap-5">
   <ImageCropper.Root bind:src={cropperSrc} {onCropped} {onUnsupportedFile} accept=".jpg, .jpeg, .png, .webp">
     <div
       class="avatar-container {widthHeight ||
-        'setwidthheight'} pointer relative border-2 border-gray-200 dark:border-neutral-600 {shape}"
+        'h-[128px] w-[128px]'} pointer relative border-2 border-gray-200 dark:border-neutral-600 {shape}"
     >
       <ImageCropper.UploadTrigger>
         <ImageCropper.Preview>
@@ -119,18 +119,3 @@
     </ImageCropper.Dialog>
   </ImageCropper.Root>
 </section>
-
-<style>
-  .width-fit {
-    width: fit-content;
-  }
-
-  .avatar-container.setwidthheight {
-    height: 128px;
-    width: 128px;
-  }
-
-  .upload-icon {
-    display: none;
-  }
-</style>
