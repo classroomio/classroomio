@@ -15,8 +15,8 @@
   },
   "dependencies": {
     "@cio/tsconfig": "workspace:*",
-    "@cio/email":"workspace:*",
-    "@cio/utils":"workspace:*",
+    "@cio/email": "workspace:*",
+    "@cio/utils": "workspace:*",
     "bullmq": "^5.22.0",
     "ioredis": "^5.7.0",
     "zod": "^4.1.8"
@@ -30,5 +30,3 @@
     "typescript": "^5.9.3"
   }
 }
-
-

@@ -10,10 +10,7 @@ const envSchema = z.object({
   TASKFORCE_TOKEN: z.string().optional(),
   TASKFORCE_CONNECTION_NAME: z.string().optional(),
   TASKFORCE_TEAM: z.string().optional(),
-  TASKFORCE_QUEUES: z.string().optional(), 
-
+  TASKFORCE_QUEUES: z.string().optional()
 });
 
 export const queueEnv = envSchema.parse(process.env);
-
-
