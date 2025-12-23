@@ -250,7 +250,7 @@
     />
   </RoleBasedSecurity>
   {#if isLoading}
-    <div>
+    <div class="flex w-full flex-col items-center">
       <NewsFeedLoader />
       <NewsFeedLoader />
       <NewsFeedLoader />
@@ -260,8 +260,7 @@
       title={$t('course.navItem.news_feed.body_header')}
       description={$t('course.navItem.news_feed.body_content')}
       icon={BookIcon}
-      class="h-full"
-    ></Empty>
+    />
   {:else}
     {#each $newsFeed as feed}
       {#if feed.isPinned}
@@ -286,4 +285,3 @@
     {/each}
   {/if}
 </RoleBasedSecurity>
-

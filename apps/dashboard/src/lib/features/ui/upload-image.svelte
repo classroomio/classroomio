@@ -1,6 +1,8 @@
 <script lang="ts">
   import { Progress } from '@cio/ui/base/progress';
+  import * as ImageCropper from '@cio/ui/custom/image-cropper';
   import CameraIcon from '@lucide/svelte/icons/camera';
+  import PencilIcon from '@lucide/svelte/icons/pencil';
 
   import { t } from '$lib/utils/functions/translations';
 
@@ -19,7 +21,7 @@
 
   let {
     avatar = $bindable(),
-    src,
+    src = $bindable(),
     widthHeight = '',
     shape = 'rounded-full',
     errorMessage = $bindable(null),
@@ -31,100 +33,99 @@
   }: Props = $props();
 
   const defaultImg = 'https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png';
-  let fileinput: HTMLInputElement | undefined = $state();
-  let imgRef: HTMLImageElement | undefined = $state();
 
-  const onFileSelected = (
-    e: Event & {
-      currentTarget: EventTarget & HTMLInputElement;
-    }
-  ) => {
-    const image = e.currentTarget?.files?.[0];
-    if (!image) return;
+  // Local image source for the cropper (never null)
+  let cropperSrc = $derived(src || '');
 
-    const maxFileSize = maxFileSizeInMb * 1024 * 1024;
-    if (image.size > maxFileSize) {
-      errorMessage = `${$t('settings.profile.profile_picture.validation_error')} ${maxFileSize / (1024 * 1024)} MB`;
+  const onCropped = async (croppedUrl: string) => {
+    // Convert the cropped data URL to a File object
+    const response = await fetch(croppedUrl);
+    const blob = await response.blob();
+    // getCroppedImg outputs PNG format, so use blob.type (which will be 'image/png') and matching filename
+    const file = new File([blob], 'cropped-image.png', { type: blob.type });
+
+    // Update avatar with the cropped file
+    avatar = file;
+
+    // Update the src preview
+    src = croppedUrl;
+    cropperSrc = croppedUrl;
+
+    // trigger onchange to parent
+    change?.();
+
+    // clear error
+    errorMessage = null;
+  };
+
+  const onUnsupportedFile = (file: File) => {
+    const maxFileSizeInBytes = maxFileSizeInMb * 1024 * 1024;
+
+    // Check if error is due to file size
+    if (file.size > maxFileSizeInBytes) {
+      errorMessage = `${$t('settings.profile.profile_picture.validation_error')} File size exceeds ${maxFileSizeInMb}MB limit`;
       return;
     }
 
-    const reader = new FileReader();
-    reader.addEventListener('load', function () {
-      if (!imgRef || !reader.result) return;
-
-      // pass image as avatar to parent component
-      avatar = image;
-
-      // update the image src on the DOM
-      imgRef.setAttribute('src', reader.result.toString());
-
-      // trigger onchange to parent
-      change?.();
-
-      // clear error
-      errorMessage = null;
-    });
-    reader.readAsDataURL(image);
+    // Otherwise, it's an unsupported file type
+    errorMessage = `${$t('settings.profile.profile_picture.validation_error')} Unsupported file type: ${file.type}`;
   };
 </script>
 
-<section class="width-fit flex p-3 {flexDirection} items-center justify-between gap-5">
-  <div
-    class="avatar-container {widthHeight ||
-      'setwidthheight'} pointer relative border-2 border-gray-200 dark:border-neutral-600 {shape}"
-  >
-    <img bind:this={imgRef} class="h-full w-full {shape}" src={src || defaultImg} alt="" />
-  </div>
-
-  <div class="flex flex-col items-center">
-    <button
-      class="width-fit ui:text-primary flex flex-col items-center text-sm {isDisabled || isUploading
-        ? 'cursor-not-allowed opacity-50'
-        : 'cursor-pointer'}"
-      onclick={() => {
-        if (!isDisabled || isUploading) {
-          fileinput?.click();
-        }
-      }}
-      disabled={isDisabled || isUploading}
-    >
-      {#if isUploading}
-        <Progress />
-      {:else}
-        <CameraIcon size={16} />
-      {/if}
-      <span class="ml-2">{$t('settings.profile.profile_picture.upload_image')}</span>
-    </button>
-    <p class="text-center text-xs text-gray-500">
-      {$t('settings.profile.profile_picture.file_size')}
-      {maxFileSizeInMb}MB<br />
-      {$t('settings.profile.profile_picture.accepted')}: jpeg, jpg, png, webp
-    </p>
-    {#if errorMessage}
-      <p class="text-sm text-red-500">{errorMessage}</p>
-    {/if}
-  </div>
-
-  <input
-    style="display:none"
-    type="file"
+<section class="flex w-fit p-3 {flexDirection} items-center justify-between gap-2">
+  <ImageCropper.Root
+    bind:src={cropperSrc}
+    {onCropped}
+    {onUnsupportedFile}
+    maxFileSize={maxFileSizeInMb * 1024 * 1024}
     accept=".jpg, .jpeg, .png, .webp"
-    onchange={(e) => onFileSelected(e)}
-    bind:this={fileinput}
-  />
+    disabled={isDisabled || isUploading}
+  >
+    <ImageCropper.UploadTrigger aria-disabled={isDisabled || isUploading}>
+      <div
+        class="avatar-container {widthHeight ||
+          'h-[128px] w-[128px]'} pointer border-2 border-gray-200 dark:border-neutral-600 {shape}"
+      >
+        <ImageCropper.Preview>
+          {#snippet child({ src: imageSrc })}
+            <div class="group relative h-full w-full">
+              <img class="h-full w-full {shape}" src={imageSrc || defaultImg} alt="" />
+              <div
+                class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100 {shape}"
+              >
+                <PencilIcon class="stroke-white" size={16} />
+              </div>
+            </div>
+          {/snippet}
+        </ImageCropper.Preview>
+      </div>
+
+      <div class="mt-1 flex flex-col items-center">
+        {#if isUploading}
+          <Progress />
+        {:else}
+          <CameraIcon size={16} />
+        {/if}
+        <span class="text-sm">{$t('settings.profile.profile_picture.upload_image')}</span>
+      </div>
+    </ImageCropper.UploadTrigger>
+    <div class="flex flex-col items-center">
+      <p class="text-center text-xs text-gray-500">
+        {$t('settings.profile.profile_picture.file_size')}
+        {maxFileSizeInMb}MB<br />
+        {$t('settings.profile.profile_picture.accepted')}: jpeg, jpg, png, webp
+      </p>
+      {#if errorMessage}
+        <p class="text-sm text-red-500">{errorMessage}</p>
+      {/if}
+    </div>
+
+    <ImageCropper.Dialog>
+      <ImageCropper.Cropper cropShape={shape === 'rounded-full' ? 'round' : 'rect'} />
+      <ImageCropper.Controls>
+        <ImageCropper.Cancel />
+        <ImageCropper.Crop />
+      </ImageCropper.Controls>
+    </ImageCropper.Dialog>
+  </ImageCropper.Root>
 </section>
-
-<style>
-  .width-fit {
-    width: fit-content;
-  }
-
-  .avatar-container.setwidthheight {
-    height: 128px;
-    width: 128px;
-  }
-
-  .upload-icon {
-    display: none;
-  }
-</style>

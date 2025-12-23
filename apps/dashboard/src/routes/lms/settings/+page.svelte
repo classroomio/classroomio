@@ -24,7 +24,7 @@
 
 <Page.Header>
   <Page.HeaderContent>
-    <Page.Title>{$t('settings.heading')}</Page.Title>
+    <Page.Title>{$t('settings.profile.heading')}</Page.Title>
   </Page.HeaderContent>
   <Page.Action>
     <Button variant="secondary" loading={isLoading} onclick={handleUpdate}>

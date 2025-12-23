@@ -178,7 +178,7 @@
 <DeleteLessonConfirmation bind:openDeleteModal {deleteLesson} />
 
 <section
-  class="m-auto w-full p-3 lg:w-11/12 lg:px-4"
+  class="mx-auto w-full p-3 lg:w-11/12 lg:px-4"
   use:dndzone={{
     items: $lessonSections,
     flipDurationMs,
