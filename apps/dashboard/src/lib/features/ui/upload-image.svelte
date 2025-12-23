@@ -41,7 +41,8 @@
     // Convert the cropped data URL to a File object
     const response = await fetch(croppedUrl);
     const blob = await response.blob();
-    const file = new File([blob], 'cropped-image.webp', { type: 'image/webp' });
+    // getCroppedImg outputs PNG format, so use blob.type (which will be 'image/png') and matching filename
+    const file = new File([blob], 'cropped-image.png', { type: blob.type });
 
     // Update avatar with the cropped file
     avatar = file;
