@@ -8,15 +8,14 @@
   import MessageSquareMoreIcon from '@lucide/svelte/icons/message-square-more';
   import MessageCirclePlusIcon from '@lucide/svelte/icons/message-circle-plus';
 
+  import { Vote } from '$features/ui';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
-  import { communityApi } from '../api/community.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
 
-  import { AskCommunityButton } from '../components';
-  import { CommunityListLoader } from '../components';
-  import { Vote } from '$features/ui';
+  import { CommunityListLoader, AskCommunityButton } from '../components';
+  import { communityApi } from '../api/community.svelte';
   import type { CommunityQuestionData } from '../utils/types';
 
   interface Props {
@@ -32,9 +31,7 @@
     if (!orgId || !profileId) return;
 
     untrack(async () => {
-      // Fetch courses - API class handles this
       await communityApi.fetchCoursesForOrg(profileId, orgId);
-      // Call API - API class handles loading, errors, navigation
       await communityApi.fetchCommunityQuestions({ orgId, isLMS });
     });
   }
@@ -46,8 +43,8 @@
   let filteredQuestions = $derived(
     communityApi.questions.filter(
       (question: CommunityQuestionData[number]) =>
-        question.title.toLowerCase().includes(searchValue.toLowerCase()) &&
-        (!selectedId || question.courseId === selectedId)
+        question?.title?.toLowerCase?.()?.includes(searchValue.toLowerCase()) &&
+        (!selectedId || question?.courseId === selectedId)
     )
   );
 </script>
@@ -90,11 +87,11 @@
               {question.title}
             </Item.Title>
             <Item.Description>
-              {question.authorFullname} asked {calDateDiff(question.createdAt)}
+              {question?.authorFullname} asked {calDateDiff(question?.createdAt)}
             </Item.Description>
             <a class="m-0" href="/courses/{question.courseId}" onclick={(e) => e.stopPropagation()}>
               <span class="text-muted-foreground p-0 text-xs">
-                #{question.courseTitle}
+                #{question?.courseTitle}
               </span>
             </a>
           </Item.Content>

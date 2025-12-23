@@ -2,6 +2,7 @@
   import { Progress } from '@cio/ui/base/progress';
   import * as ImageCropper from '@cio/ui/custom/image-cropper';
   import CameraIcon from '@lucide/svelte/icons/camera';
+  import PencilIcon from '@lucide/svelte/icons/pencil';
 
   import { t } from '$lib/utils/functions/translations';
 
@@ -68,38 +69,43 @@
   };
 </script>
 
-<section class="flex w-fit p-3 {flexDirection} items-center justify-between gap-5">
-  <ImageCropper.Root bind:src={cropperSrc} {onCropped} {onUnsupportedFile} accept=".jpg, .jpeg, .png, .webp">
-    <div
-      class="avatar-container {widthHeight ||
-        'h-[128px] w-[128px]'} pointer relative border-2 border-gray-200 dark:border-neutral-600 {shape}"
-    >
-      <ImageCropper.UploadTrigger>
+<section class="flex w-fit p-3 {flexDirection} items-center justify-between gap-2">
+  <ImageCropper.Root
+    bind:src={cropperSrc}
+    {onCropped}
+    {onUnsupportedFile}
+    accept=".jpg, .jpeg, .png, .webp"
+    disabled={isDisabled || isUploading}
+  >
+    <ImageCropper.UploadTrigger aria-disabled={isDisabled || isUploading}>
+      <div
+        class="avatar-container {widthHeight ||
+          'h-[128px] w-[128px]'} pointer border-2 border-gray-200 dark:border-neutral-600 {shape}"
+      >
         <ImageCropper.Preview>
           {#snippet child({ src: imageSrc })}
-            <img class="h-full w-full {shape}" src={imageSrc || defaultImg} alt="" />
+            <div class="group relative h-full w-full">
+              <img class="h-full w-full {shape}" src={imageSrc || defaultImg} alt="" />
+              <div
+                class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100 {shape}"
+              >
+                <PencilIcon class="text-white" size={16} />
+              </div>
+            </div>
           {/snippet}
         </ImageCropper.Preview>
-      </ImageCropper.UploadTrigger>
-    </div>
+      </div>
 
+      <div class="mt-1 flex flex-col items-center">
+        {#if isUploading}
+          <Progress />
+        {:else}
+          <CameraIcon size={16} />
+        {/if}
+        <span class="text-sm">{$t('settings.profile.profile_picture.upload_image')}</span>
+      </div>
+    </ImageCropper.UploadTrigger>
     <div class="flex flex-col items-center">
-      <ImageCropper.UploadTrigger>
-        <button
-          type="button"
-          class="width-fit text-primary-700 flex flex-col items-center text-sm {isDisabled || isUploading
-            ? 'cursor-not-allowed opacity-50'
-            : 'cursor-pointer'}"
-          disabled={isDisabled || isUploading}
-        >
-          {#if isUploading}
-            <Progress />
-          {:else}
-            <CameraIcon size={16} />
-          {/if}
-          <span class="ml-2">{$t('settings.profile.profile_picture.upload_image')}</span>
-        </button>
-      </ImageCropper.UploadTrigger>
       <p class="text-center text-xs text-gray-500">
         {$t('settings.profile.profile_picture.file_size')}
         {maxFileSizeInMb}MB<br />

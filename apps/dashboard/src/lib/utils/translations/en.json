@@ -123,12 +123,13 @@
         "email_change_verification_note": "A verification email has been sent to your current email address. The new email will not be in effect until you accept the verification email.",
         "email_change_verification_sent": "A verification email has been sent to your new email address. Please check your inbox to verify your new email address."
       },
+      "heading": "Profile",
       "update_profile": "Update Profile",
       "logout": "Log out"
     },
     "organization": {
       "organization_profile": {
-        "heading": "Organization Profile",
+        "heading": "Organization",
         "organization_name": "Organization Name",
         "upload_image": "Upload Image",
         "update_organization": "Update Organization",

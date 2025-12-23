@@ -7,11 +7,11 @@
   import { cn } from '../../tools';
 
   const emptyVariants = tv({
-    base: 'ui:w-full',
+    base: 'ui:w-full ui:max-h-90',
     variants: {
       variant: {
         default: '',
-        page: 'ui:h-full ui:border ui:border-dashed ui:max-w-3xl ui:max-h-2/4 ui:mx-auto'
+        page: 'ui:h-full ui:border ui:border-dashed ui:max-w-3xl  ui:mx-auto'
       }
     }
   });
