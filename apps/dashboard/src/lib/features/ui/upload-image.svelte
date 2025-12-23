@@ -35,14 +35,7 @@
   const defaultImg = 'https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png';
 
   // Local image source for the cropper (never null)
-  let cropperSrc = $state(src || '');
-
-  // Keep cropperSrc in sync with src prop
-  $effect(() => {
-    if (src) {
-      cropperSrc = src;
-    }
-  });
+  let cropperSrc = $derived(src || '');
 
   const onCropped = async (croppedUrl: string) => {
     // Convert the cropped data URL to a File object
@@ -65,6 +58,15 @@
   };
 
   const onUnsupportedFile = (file: File) => {
+    const maxFileSizeInBytes = maxFileSizeInMb * 1024 * 1024;
+
+    // Check if error is due to file size
+    if (file.size > maxFileSizeInBytes) {
+      errorMessage = `${$t('settings.profile.profile_picture.validation_error')} File size exceeds ${maxFileSizeInMb}MB limit`;
+      return;
+    }
+
+    // Otherwise, it's an unsupported file type
     errorMessage = `${$t('settings.profile.profile_picture.validation_error')} Unsupported file type: ${file.type}`;
   };
 </script>
@@ -74,6 +76,7 @@
     bind:src={cropperSrc}
     {onCropped}
     {onUnsupportedFile}
+    maxFileSize={maxFileSizeInMb * 1024 * 1024}
     accept=".jpg, .jpeg, .png, .webp"
     disabled={isDisabled || isUploading}
   >
@@ -89,7 +92,7 @@
               <div
                 class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100 {shape}"
               >
-                <PencilIcon class="text-white" size={16} />
+                <PencilIcon class="stroke-white" size={16} />
               </div>
             </div>
           {/snippet}
