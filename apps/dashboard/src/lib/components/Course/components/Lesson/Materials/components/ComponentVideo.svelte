@@ -4,10 +4,23 @@
   import { lesson } from '../../store/lessons';
 
   let errors: Record<string, string> = {};
-  let videoElements: (HTMLVideoElement | null)[] = $derived.by(() => {
-    let elements = videoElements.slice(0, $lesson.materials.videos.length);
-    return [...elements, ...Array($lesson.materials.videos.length - elements.length).fill(null)];
+  let videoElements: (HTMLVideoElement | null)[] = $state([]);
+
+  $effect(() => {
+    const videoCount = $lesson.materials.videos.length;
+    if (videoElements.length !== videoCount) {
+      videoElements = [
+        ...videoElements.slice(0, videoCount),
+        ...Array(Math.max(0, videoCount - videoElements.length)).fill(null)
+      ];
+    }
   });
+
+  // causes cyclic dependency because of videoelemnt still being referenced while being derived
+  // let videoElements: (HTMLVideoElement | null)[] = $derived.by(() => {
+  //   let elements = videoElements.slice(0, $lesson.materials.videos.length);
+  //   return [...elements, ...Array($lesson.materials.videos.length - elements.length).fill(null)];
+  // });
 
   function initPlyr() {
     if (typeof (window as any).Plyr === 'undefined') {
