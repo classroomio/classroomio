@@ -10,7 +10,12 @@ const envSchema = z.object({
   TASKFORCE_TOKEN: z.string().optional(),
   TASKFORCE_CONNECTION_NAME: z.string().optional(),
   TASKFORCE_TEAM: z.string().optional(),
-  TASKFORCE_QUEUES: z.string().optional()
+  TASKFORCE_QUEUES: z.string().optional(),
+
+  CLOUDFLARE_ACCOUNT_ID: z.string().optional(),
+  CLOUDFLARE_ACCESS_KEY: z.string().optional(),
+  CLOUDFLARE_SECRET_ACCESS_KEY: z.string().optional(),
+  CLOUDFLARE_BUCKET_NAME: z.string().optional()
 });
 
 export const queueEnv = envSchema.parse(process.env);

@@ -2,16 +2,18 @@
   import { onMount } from 'svelte';
   import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
   import { lesson } from '../../store/lessons';
+  import HLSVideoPlayer from './HLSVideoPlayer.svelte';
 
   let errors: Record<string, string> = {};
   let videoElements: (HTMLVideoElement | null)[] = $state([]);
 
   $effect(() => {
-    const videoCount = $lesson.materials.videos.length;
-    if (videoElements.length !== videoCount) {
+    // Only count non-HLS videos for the videoElements array
+    const nonHLSVideos = $lesson.materials.videos.filter((v) => !(v.type === 'upload' && v.key));
+    if (videoElements.length !== nonHLSVideos.length) {
       videoElements = [
-        ...videoElements.slice(0, videoCount),
-        ...Array(Math.max(0, videoCount - videoElements.length)).fill(null)
+        ...videoElements.slice(0, nonHLSVideos.length),
+        ...Array(Math.max(0, nonHLSVideos.length - videoElements.length)).fill(null)
       ];
     }
   });
@@ -43,8 +45,12 @@
 {#if $lesson.materials.videos.length}
   <div class="w-full">
     {#each $lesson.materials.videos as video, index}
+      {@const isHLSVideo = video.type === 'upload' && video.key}
+      {@const nonHLSIndex = $lesson.materials.videos
+        .slice(0, index)
+        .filter((v) => !(v.type === 'upload' && v.key)).length}
       <div class="mb-5 w-full overflow-hidden">
-        {#key video.link}
+        {#key video.link || video.key}
           <div class="mb-5">
             {#if video.type === 'youtube'}
               <iframe
@@ -77,9 +83,12 @@
                   title="Muse AI Video Embed"
                 ></iframe>
               </div>
+            {:else if isHLSVideo}
+              <!-- Use HLS player for uploaded videos with key (processed videos) -->
+              <HLSVideoPlayer {video} />
             {:else}
               <video
-                bind:this={videoElements[index]}
+                bind:this={videoElements[nonHLSIndex]}
                 class="plyr-video-trigger iframe h-full w-full"
                 playsinline
                 controls

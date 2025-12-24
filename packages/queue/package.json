@@ -17,6 +17,7 @@
     "@cio/tsconfig": "workspace:*",
     "@cio/email": "workspace:*",
     "@cio/utils": "workspace:*",
+    "@aws-sdk/client-s3": "^3.388.0",
     "bullmq": "^5.22.0",
     "ioredis": "^5.7.0",
     "zod": "^4.1.8"

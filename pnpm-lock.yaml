@@ -610,7 +610,7 @@ importers:
         version: 3.3.1(@sveltejs/kit@2.48.4(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.43.2)(vite@5.4.21(@types/node@24.10.1)(lightningcss@1.30.2)(sass@1.93.3)))(svelte@5.43.2)(vite@5.4.21(@types/node@24.10.1)(lightningcss@1.30.2)(sass@1.93.3)))
       '@sveltejs/adapter-vercel':
         specifier: ^4.0.0
-        version: 4.0.5(@sveltejs/kit@2.48.4(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.43.2)(vite@5.4.21(@types/node@24.10.1)(lightningcss@1.30.2)(sass@1.93.3)))(svelte@5.43.2)(vite@5.4.21(@types/node@24.10.1)(lightningcss@1.30.2)(sass@1.93.3)))
+        version: 4.0.5(@sveltejs/kit@2.48.4(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.43.2)(vite@5.4.21(@types/node@24.10.1)(lightningcss@1.30.2)(sass@1.93.3)))(svelte@5.43.2)(vite@5.4.21(@types/node@24.10.1)(lightningcss@1.30.2)(sass@1.93.3)))(encoding@0.1.13)
       '@sveltejs/kit':
         specifier: ^2.5.27
         version: 2.48.4(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.43.2)(vite@5.4.21(@types/node@24.10.1)(lightningcss@1.30.2)(sass@1.93.3)))(svelte@5.43.2)(vite@5.4.21(@types/node@24.10.1)(lightningcss@1.30.2)(sass@1.93.3))
@@ -849,6 +849,9 @@ importers:
 
   packages/queue:
     dependencies:
+      '@aws-sdk/client-s3':
+        specifier: ^3.388.0
+        version: 3.922.0
       '@cio/email':
         specifier: workspace:*
         version: link:../email
@@ -15449,7 +15452,7 @@ snapshots:
       - encoding
       - supports-color
 
-  '@sveltejs/adapter-vercel@4.0.5(@sveltejs/kit@2.48.4(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.43.2)(vite@5.4.21(@types/node@24.10.1)(lightningcss@1.30.2)(sass@1.93.3)))(svelte@5.43.2)(vite@5.4.21(@types/node@24.10.1)(lightningcss@1.30.2)(sass@1.93.3)))':
+  '@sveltejs/adapter-vercel@4.0.5(@sveltejs/kit@2.48.4(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.43.2)(vite@5.4.21(@types/node@24.10.1)(lightningcss@1.30.2)(sass@1.93.3)))(svelte@5.43.2)(vite@5.4.21(@types/node@24.10.1)(lightningcss@1.30.2)(sass@1.93.3)))(encoding@0.1.13)':
     dependencies:
       '@sveltejs/kit': 2.48.4(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.43.2)(vite@5.4.21(@types/node@24.10.1)(lightningcss@1.30.2)(sass@1.93.3)))(svelte@5.43.2)(vite@5.4.21(@types/node@24.10.1)(lightningcss@1.30.2)(sass@1.93.3))
       '@vercel/nft': 0.26.5(encoding@0.1.13)

@@ -13,7 +13,7 @@ import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { generateFileKey } from '@api/utils/upload';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { s3Client } from '@api/utils/s3';
+import { s3Client, getFromS3 } from '@api/utils/s3';
 import { videoQueue } from '@cio/queue';
 import type { ProcessVideoUploadJobData } from '@cio/queue';
 
@@ -87,20 +87,20 @@ export const presignRouter = new Hono()
       // queuing video upload
 
       const jobData: ProcessVideoUploadJobData = {
-          fileKey,
-          fileName,
-          fileType,
-          userId: user?.id,
-          metadata: {
-            bucket: BUCKET_NAME.VIDEOS,
-            contentType: fileType,
-          },
+        fileKey,
+        fileName,
+        fileType,
+        userId: user?.id,
+        metadata: {
+          bucket: BUCKET_NAME.VIDEOS,
+          contentType: fileType
+        }
       };
 
-      await videoQueue.add('process-upload',jobData,{
+      await videoQueue.add('process-upload', jobData, {
         jobId: `video-${fileKey}`,
-      })
-
+        delay: 30000 // 30 second delay to allow upload to complete
+      });
 
       return c.json({
         success: true,
@@ -270,5 +270,194 @@ export const presignRouter = new Hono()
         urls: signedUrls,
         message: 'Document URLs retrieved successfully'
       });
+    }
+  )
+  .get(
+    '/hls/stream/:lessonId/:videoKey',
+    authMiddleware,
+    describeRoute({
+      description: 'Get HLS manifest for video streaming',
+      responses: {
+        200: {
+          description: 'HLS manifest',
+          content: {
+            'application/vnd.apple.mpegurl': {
+              schema: { type: 'string' }
+            }
+          }
+        },
+        404: {
+          description: 'Manifest not found'
+        },
+        401: {
+          description: 'Unauthorized'
+        }
+      },
+      tags: ['Presign']
+    }),
+    async (c) => {
+      const lessonId = c.req.param('lessonId');
+      const videoKey = decodeURIComponent(c.req.param('videoKey'));
+
+      try {
+        // Get manifest from S3
+        const manifestKey = `${videoKey}/playlist.m3u8`;
+        const manifestResult = await getFromS3({
+          Bucket: BUCKET_NAME.VIDEOS,
+          Key: manifestKey
+        });
+
+        if (!manifestResult.success || !manifestResult.data) {
+          return c.json(
+            {
+              success: false,
+              message: 'HLS manifest not found. Video may still be processing.'
+            },
+            404
+          );
+        }
+
+        // Read manifest content
+        const manifestBody = manifestResult.data.Body;
+        if (!manifestBody) {
+          return c.json(
+            {
+              success: false,
+              message: 'Manifest body is empty'
+            },
+            404
+          );
+        }
+
+        // Convert stream to string
+        const chunks: Uint8Array[] = [];
+        const reader = (manifestBody as any).transformToWebStream().getReader();
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          chunks.push(value);
+        }
+
+        const manifestText = Buffer.concat(chunks.map((chunk) => Buffer.from(chunk))).toString('utf8');
+
+        // Replace segment filenames with our endpoint URLs
+        const segmentBaseUrl = `/course/presign/hls/segment/${lessonId}/${encodeURIComponent(videoKey)}`;
+        const updatedManifest = manifestText
+          .split('\n')
+          .map((line) => {
+            const trimmed = line.trim();
+            // Replace segment filenames (e.g., "segment_000.ts") with our endpoint
+            if (trimmed.endsWith('.ts') && !trimmed.startsWith('http') && !trimmed.startsWith('/')) {
+              return `${segmentBaseUrl}/${trimmed}`;
+            }
+            return line;
+          })
+          .join('\n');
+
+        return c.text(updatedManifest, 200, {
+          'Content-Type': 'application/vnd.apple.mpegurl',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Access-Control-Allow-Origin': '*'
+        });
+      } catch (error) {
+        console.error('Error serving HLS manifest:', error);
+        return c.json(
+          {
+            success: false,
+            message: 'Error serving HLS manifest'
+          },
+          500
+        );
+      }
+    }
+  )
+  .get(
+    '/hls/segment/:lessonId/:videoKey/:segmentId',
+    authMiddleware,
+    describeRoute({
+      description: 'Get HLS segment (served directly)',
+      responses: {
+        200: {
+          description: 'HLS segment',
+          content: {
+            'video/mp2t': {
+              schema: { type: 'string' }
+            }
+          }
+        },
+        404: {
+          description: 'Segment not found'
+        },
+        401: {
+          description: 'Unauthorized'
+        }
+      },
+      tags: ['Presign']
+    }),
+    async (c) => {
+      const lessonId = c.req.param('lessonId');
+      const videoKey = decodeURIComponent(c.req.param('videoKey'));
+      const segmentId = c.req.param('segmentId');
+
+      try {
+        const segmentKey = `${videoKey}/segments/${segmentId}`;
+
+        // Get the segment data from S3 (serve directly like previous branch)
+        const segmentResult = await getFromS3({
+          Bucket: BUCKET_NAME.VIDEOS,
+          Key: segmentKey
+        });
+
+        if (!segmentResult.success || !segmentResult.data) {
+          return c.json(
+            {
+              success: false,
+              message: 'Segment not found'
+            },
+            404
+          );
+        }
+
+        const segmentBody = segmentResult.data.Body;
+        if (!segmentBody) {
+          return c.json(
+            {
+              success: false,
+              message: 'Segment body is empty'
+            },
+            404
+          );
+        }
+
+        // Convert stream to buffer
+        const chunks: Uint8Array[] = [];
+        const reader = (segmentBody as any).transformToWebStream().getReader();
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          chunks.push(value);
+        }
+
+        const buffer = Buffer.concat(chunks.map((chunk) => Buffer.from(chunk)));
+
+        // Return the segment with proper headers (like previous branch)
+        return c.body(buffer, 200, {
+          'Content-Type': 'video/mp2t',
+          'Cache-Control': 'public, max-age=30',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Range'
+        });
+      } catch (error) {
+        console.error('Error serving segment:', error);
+        return c.json(
+          {
+            success: false,
+            message: 'Error serving segment'
+          },
+          500
+        );
+      }
     }
   );
