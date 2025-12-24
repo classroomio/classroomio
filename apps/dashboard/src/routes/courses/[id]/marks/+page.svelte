@@ -168,7 +168,7 @@
 
     <Page.Body>
       {#snippet child()}
-        <MarksPage courseId={data.courseId} />
+        <MarksPage />
       {/snippet}
     </Page.Body>
   </RoleBasedSecurity>

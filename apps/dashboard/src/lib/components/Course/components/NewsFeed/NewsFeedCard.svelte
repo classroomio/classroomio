@@ -11,6 +11,7 @@
   import { calDateDiff } from '$lib/utils/functions/date';
   import type { Author, Feed } from '$lib/utils/types/feed';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
+  import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import { addNewsfeedCommentValidation } from '$lib/utils/functions/validator';
   import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
 
@@ -162,7 +163,7 @@
       {#if !isHtmlValueEmpty(feed.content)}
         <HtmlRender className="text-sm font-medium w-[80%] mb-4">
           <div>
-            {@html feed.content}
+            {@html sanitizeHtml(feed.content)}
           </div>
         </HtmlRender>
       {/if}

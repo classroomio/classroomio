@@ -94,21 +94,6 @@
       "email": "Nieprawidłowy adres e -mail",
       "username": "Nazwa użytkownika nie może być pusta",
       "fullname": "Nazwa powinna mieć minimum 5 znaków"
-    },
-    "generic": {
-      "invalid_type": "Nieprawidłowy typ{oczekiwany, wybierz, niezdefiniowany{} inny{. Oczekiwany {oczekiwany}}}{otrzymany, wybierz, niezdefiniowany{} inny{ (otrzymany {otrzymany})}}",
-      "too_big": "Wartość jest za duża{maksymalna, wybierz, niezdefiniowana{} inna{. Maksymalnie {maksimum}}}",
-      "too_small": "Wartość jest za mała{minimum, wybierz, niezdefiniowane{} inne{. Minimum {minimum}}}",
-      "invalid_format": "Nieprawidłowy format{validacja, wybierz, niezdefiniowany{} other{ for {validation}}}",
-      "not_multiple_of": "Wartość musi być wielokrotnością {multipleOf}",
-      "unrecognized_keys": "Zawiera nierozpoznane klucze{klucze, wybierz, niezdefiniowane{} inne{: {klucze}}}",
-      "invalid_union": "Nieprawidłowa wartość podanych opcji{unionErrors, wybierz, niezdefiniowane{} inne{. Niepowodzenie opcji: {unionErrors}}}",
-      "invalid_key": "Nieprawidłowy klucz{klucz, wybierz, niezdefiniowany{} inny{: {klucz}}}",
-      "invalid_element": "Nieprawidłowy element{index, wybierz, niezdefiniowany{} other{ w indeksie {index}}}",
-      "invalid_value": "Nieprawidłowa wartość{oczekiwana, wybierz, niezdefiniowana{} inna{. Oczekiwany {oczekiwany}}}{otrzymany, wybierz, niezdefiniowany{} inny{ (otrzymany {otrzymany})}}",
-      "custom": "{wiadomość}",
-      "required_field": "To pole jest wymagane",
-      "invalid_field": "Nieprawidłowa wartość"
     }
   },
   "generic": {
@@ -322,7 +307,8 @@
     "team_members": "Członkowie zespołu",
     "back": "Powrót do ustawień",
     "download_lessons": "Upgrade to pobieranie lekcji",
-    "download_course": "Upgrade to Pobierz"
+    "download_course": "Upgrade to Pobierz",
+    "required": "Wymagana aktualizacja"
   },
   "analytics": {
     "courses": "Kursy",
@@ -862,8 +848,7 @@
               "describe": "Opisz ćwiczenie swoim uczniowi",
               "no": "Brak opisu"
             },
-            "address": "Wpisz tutaj swój adres",
-            "add_question": "Dodaj pytanie"
+            "address": "Wpisz tutaj swój adres"
           },
           "new_exercise_modal": {
             "heading": "Nowe ćwiczenie",
@@ -1081,6 +1066,7 @@
       "students": "studenci",
       "published": "Opublikowany",
       "unpublished": "Niepublikowane",
+      "continue_course": "Kontynuuj kurs",
       "learn_more": "Dowiedz się więcej",
       "list_view": {
         "title": "Tytuł",
@@ -1136,6 +1122,7 @@
     "no_courses": "Nie ma jeszcze żadnych kursów",
     "start_course": "Po rozpoczęciu kursu twoje postępy będą się tutaj odzwierciedlać",
     "lms_dashboard_hero": "Dzisiaj jest kolejny dzień, aby zbliżyć cię do celów uczenia się. Nie poddawaj się, im więcej uczysz się, tym lepiej.",
+    "dont": "Nie poddawaj się",
     "lessons_completed": "Ukończone lekcje",
     "no_courses_started": "Żadne kursy nie rozpoczęły się",
     "revenue": "Przychód",
@@ -1596,8 +1583,46 @@
       "message": "Masz niezbawione zmiany. Czy na pewno chcesz odejść?"
     }
   },
-  "new_course_modal": {
-    "live_class_label": "Zajęcia na żywo",
-    "self_paced_label": "Samodzielne tempo"
+  "email_verification": {
+    "security_footer": "Bezpieczeństwo Twojego konta jest naszym najwyższym priorytetem. Wszystkie próby weryfikacji są rejestrowane w celu monitorowania bezpieczeństwa.",
+    "actions": {
+      "request_new": "Poproś o nowy e-mail weryfikacyjny",
+      "contact_support": "Skontaktuj się z pomocą techniczną",
+      "back_to_dashboard": "Powrót do Panelu"
+    },
+    "security_notice": {
+      "title": "Zwiększenie bezpieczeństwa",
+      "message": "Dla większego bezpieczeństwa ulepszyliśmy nasz system weryfikacji e-mailem. Stare linki weryfikacyjne nie są już ważne i chronią Twoje konto."
+    },
+    "errors": {
+      "unknown": {
+        "title": "Weryfikacja nie powiodła się",
+        "message": "Wystąpił nieoczekiwany błąd podczas weryfikacji e-mailowej. Spróbuj ponownie lub skontaktuj się z naszym zespołem wsparcia w celu uzyskania pomocy."
+      },
+      "database": {
+        "title": "Błąd systemu",
+        "message": "Mamy problemy techniczne. Spróbuj ponownie później lub skontaktuj się z naszym zespołem wsparcia, jeśli problem będzie się powtarzał."
+      },
+      "legacy_blocked": {
+        "title": "Nieobsługiwana metoda weryfikacji",
+        "message": "Ta metoda weryfikacji nie jest już obsługiwana ze względów bezpieczeństwa. Poproś o nowy e-mail weryfikacyjny, korzystając z naszego bezpiecznego systemu weryfikacji."
+      },
+      "email_mismatch": {
+        "title": "Adres e-mail zmieniony",
+        "message": "Twój adres e-mail został zmieniony od czasu wygenerowania tego linku weryfikacyjnego. Poproś o nowy link weryfikacyjny dla bieżącego adresu e-mail."
+      },
+      "token_expired": {
+        "title": "Link weryfikacyjny wygasł",
+        "message": "Ten link weryfikacyjny wygasł ze względów bezpieczeństwa. Aby kontynuować, poproś o nowy e-mail weryfikacyjny."
+      },
+      "token_used": {
+        "title": "Link już używany",
+        "message": "Ten link weryfikacyjny został już wykorzystany. Jeśli chcesz ponownie zweryfikować swój adres e-mail, poproś o nowy link weryfikacyjny."
+      },
+      "invalid_token": {
+        "title": "Nieprawidłowy link weryfikacyjny",
+        "message": "Ten link weryfikacyjny jest nieprawidłowy lub źle sformułowany. Sprawdź, czy w skrzynce e-mail znajduje się właściwy link, lub poproś o nowy e-mail weryfikacyjny."
+      }
+    }
   }
 }

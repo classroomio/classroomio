@@ -9,6 +9,7 @@
   import { diffLines } from 'diff';
   import { lesson, lessons } from '$lib/components/Course/components/Lesson/store/lessons';
   import { supabase } from '$lib/utils/functions/supabase';
+  import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import { t } from '$lib/utils/functions/translations';
 
   import { snackbar } from '$features/ui/snackbar/store';
@@ -194,7 +195,7 @@
         {#key lessonId}
           <HtmlRender id="display" className="m-auto">
             <div class="amen">
-              {@html content}
+              {@html sanitizeHtml(content)}
             </div>
           </HtmlRender>
         {/key}

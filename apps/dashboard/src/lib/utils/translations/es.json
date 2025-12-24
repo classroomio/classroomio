@@ -197,7 +197,8 @@
     "back": "Volver a configuración",
     "download_lessons": "Actualice para descargar lecciones",
     "download_course": "Actualizar para descargar el curso",
-    "domain": "Actualice su plan para agregar dominios personalizados"
+    "domain": "Actualice su plan para agregar dominios personalizados",
+    "required": "Actualización requerida"
   },
   "audience": {
     "title": "Audiencia",
@@ -679,8 +680,7 @@
             },
             "no_answer": "No se proporcionó respuesta",
             "check": "Controlar",
-            "address": "Escribe tu dirección aquí",
-            "add_question": "Añadir una pregunta"
+            "address": "Escribe tu dirección aquí"
           },
           "new_exercise_modal": {
             "heading": "Nuevo ejercicio",
@@ -916,6 +916,7 @@
       "students": "estudiantes",
       "published": "Publicado",
       "unpublished": "Inédito",
+      "continue_course": "Continuar curso",
       "list_view": {
         "title": "Título",
         "description": "Descripción",
@@ -975,6 +976,7 @@
     "no_courses": "Aún no hay cursos en curso",
     "start_course": "Una vez que comiences un curso, tu progreso se reflejará aquí.",
     "lms_dashboard_hero": "Hoy es otro día para acercarte a tus objetivos de aprendizaje. No te rindas, cuanto más aprendas, mejor serás.",
+    "dont": "no te rindas",
     "lessons_completed": "Lecciones completadas",
     "no_courses_started": "No se iniciaron cursos",
     "revenue": "Ganancia",
@@ -1553,21 +1555,6 @@
       "email": "Dirección de correo electrónico no válida",
       "username": "El nombre de usuario no puede estar vacío",
       "fullname": "El nombre debe tener un mínimo de 5 caracteres."
-    },
-    "generic": {
-      "invalid_type": "Invalid type{expected, select, undefined{} other{. Esperado {esperado}}}{recibido, seleccionado, indefinido{} otro{ (recibido {recibido})}}",
-      "too_big": "El valor es demasiado grande{máximo, selección, undefinido{} otro{. Máximo {máximo}}}",
-      "too_small": "El valor es demasiado pequeño{mínimo, seleccionado, undefinido{} otro{. Mínimo {mínimo}}}",
-      "invalid_format": "Formato no válido{validación, selección, indefinido{} otro{ para {validación}}}",
-      "not_multiple_of": "El valor debe ser múltiplo de {multipleOf}",
-      "unrecognized_keys": "Contiene claves no reconocidas{keys, select, undefined{} other{: {keys}}}",
-      "invalid_union": "Valor no válido para las opciones proporcionadas{unionErrors, select, undefined{} other{. {unionErrors} opción(es) fallida(s)}}",
-      "invalid_key": "Clave no válida{clave, selección, undefinido{} otro{: {clave}}}",
-      "invalid_element": "Elemento no válido{índice, selección, undefinido{} otro{ en el índice {índice}}}",
-      "invalid_value": "Valor no válido{esperado, seleccionado, indefinido{} otro{. Esperado {esperado}}}{recibido, seleccionado, indefinido{} otro{ (recibido {recibido})}}",
-      "custom": "{mensaje}",
-      "required_field": "Este campo es obligatorio",
-      "invalid_field": "Invalid value"
     }
   },
   "explore": {
@@ -1626,8 +1613,46 @@
       "message": "Tienes cambios no salvos. ¿Estás seguro de que quieres irte?"
     }
   },
-  "new_course_modal": {
-    "live_class_label": "Clase en vivo",
-    "self_paced_label": "a tu propio ritmo"
+  "email_verification": {
+    "security_footer": "La seguridad de su cuenta es nuestra principal prioridad. Todos los intentos de verificación se registran para el control de seguridad.",
+    "actions": {
+      "request_new": "Solicitar nuevo correo electrónico de verificación",
+      "contact_support": "Contactar con soporte",
+      "back_to_dashboard": "Volver al panel"
+    },
+    "security_notice": {
+      "title": "Mejora de la seguridad",
+      "message": "Hemos actualizado nuestro sistema de verificación de correo electrónico para mayor seguridad. Los enlaces de verificación antiguos ya no son válidos para proteger su cuenta."
+    },
+    "errors": {
+      "unknown": {
+        "title": "Verificación fallida",
+        "message": "Se produjo un error inesperado durante la verificación del correo electrónico. Inténtelo de nuevo o comuníquese con nuestro equipo de soporte para obtener ayuda."
+      },
+      "database": {
+        "title": "Error del sistema",
+        "message": "Estamos experimentando dificultades técnicas. Inténtelo de nuevo más tarde o comuníquese con nuestro equipo de soporte si el problema persiste."
+      },
+      "legacy_blocked": {
+        "title": "Método de verificación no admitido",
+        "message": "Este método de verificación ya no es compatible por razones de seguridad. Solicite un nuevo correo electrónico de verificación utilizando nuestro sistema de verificación seguro."
+      },
+      "email_mismatch": {
+        "title": "Dirección de correo electrónico cambiada",
+        "message": "Su dirección de correo electrónico ha cambiado desde que se generó este enlace de verificación. Solicite un nuevo enlace de verificación para su dirección de correo electrónico actual."
+      },
+      "token_expired": {
+        "title": "Enlace de verificación caducado",
+        "message": "Este enlace de verificación ha caducado por motivos de seguridad. Solicite un nuevo correo electrónico de verificación para continuar."
+      },
+      "token_used": {
+        "title": "Enlace ya utilizado",
+        "message": "Este enlace de verificación ya se ha utilizado. Si necesita verificar su correo electrónico nuevamente, solicite un nuevo enlace de verificación."
+      },
+      "invalid_token": {
+        "title": "Enlace de verificación no válido",
+        "message": "Este enlace de verificación no es válido o tiene un formato incorrecto. Revise su correo electrónico para ver el enlace correcto o solicite un nuevo correo electrónico de verificación."
+      }
+    }
   }
 }

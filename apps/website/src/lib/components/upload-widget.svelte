@@ -1,6 +1,7 @@
 <script lang="ts">
   import Copy from '@lucide/svelte/icons/copy';
   import Trash2 from '@lucide/svelte/icons/trash-2';
+  import { ALLOWED_IMAGE_TYPES, validateImageUpload } from '@cio/utils/functions/fileValidation';
 
   export let imageURL = '';
   export let label = '';
@@ -11,10 +12,30 @@
 
   const onFileSelected = () => {
     const file = fileInput?.files?.[0];
-    const sizeInkb = file?.size! / 1024;
-    if (sizeInkb > 500) {
+    if (!file) return;
+
+    // Validate file type first (security check)
+    const validation = validateImageUpload(file);
+    if (!validation.isValid) {
+      alert(validation.error);
+
+      fileInput.value = '';
       return;
     }
+
+    // Validate file type to prevent SVG XSS attacks
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type as (typeof ALLOWED_IMAGE_TYPES)[number])) {
+      alert('Invalid file type. Only JPEG, PNG, GIF, and WebP files are allowed.');
+      fileInput.value = '';
+      return;
+    }
+
+    const sizeInMB = file?.size! / 1024 / 1024;
+    if (sizeInMB > 2) {
+      fileInput.value = '';
+      return;
+    }
+
     if (file) {
       let reader = new FileReader();
       reader.readAsDataURL(file);
@@ -56,6 +77,7 @@
   >
     <input
       type="file"
+      accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp"
       style="display: none;"
       bind:this={fileInput}
       on:change={onFileSelected}
@@ -67,7 +89,9 @@
     {:else}
       <div class="space-y-4">
         <Copy size={24} class="mx-auto" />
-        <p class="my-2 text-center text-sm text-gray-500">Max file size: 10MB, accepted: jpeg, jpg, png, gif</p>
+        <p class="text-center text-sm text-gray-500 my-2">
+          Max file size: 2MB, accepted: JPEG, PNG, GIF, WebP only
+        </p>
       </div>
     {/if}
   </div>

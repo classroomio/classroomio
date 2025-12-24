@@ -1,5 +1,6 @@
 <script lang="ts">
   import { questionnaire } from '../store/exercise';
+  import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import { t } from '$lib/utils/functions/translations';
 
   import { InputField } from '@cio/ui/custom/input-field';
@@ -80,7 +81,9 @@
       </div>
 
       <article class="preview prose prose-sm sm:prose mt-3 p-2">
-        {@html $questionnaire.description || $t('course.navItem.lessons.exercises.all_exercises.description.no')}
+        {@html sanitizeHtml(
+          $questionnaire.description || $t('course.navItem.lessons.exercises.all_exercises.description.no')
+        )}
       </article>
     {/if}
   </QuestionContainer>

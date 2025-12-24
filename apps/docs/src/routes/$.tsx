@@ -1,0 +1,112 @@
+import { useMemo } from 'react';
+import defaultMdxComponents from 'fumadocs-ui/mdx';
+import { DocsLayout } from 'fumadocs-ui/layouts/docs';
+import { createServerFn } from '@tanstack/react-start';
+import type * as PageTree from 'fumadocs-core/page-tree';
+import browserCollections from 'fumadocs-mdx:collections/browser';
+import { createFileRoute, notFound } from '@tanstack/react-router';
+import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/layouts/docs/page';
+
+import { source } from '@/lib/source';
+import { baseOptions } from '@/lib/layout.shared';
+import { HomeLayout } from 'fumadocs-ui/layouts/home';
+
+export const Route = createFileRoute('/$')({
+  component: Page,
+  loader: async ({ params }) => {
+    const slugs = params._splat?.split('/') ?? [];
+    const data = await loader({ data: slugs });
+    await clientLoader.preload(data.path);
+    return data;
+  }
+});
+
+const loader = createServerFn({
+  method: 'GET'
+})
+  .inputValidator((slugs: string[]) => slugs)
+  .handler(async ({ data: slugs }) => {
+    const page = source.getPage(slugs);
+    if (!page) throw notFound();
+
+    return {
+      tree: source.pageTree as object,
+      path: page.path
+    };
+  });
+
+const clientLoader = browserCollections.docs.createClientLoader({
+  component({ toc, frontmatter, default: MDX }) {
+    return (
+      <DocsPage toc={toc}>
+        <DocsTitle>{frontmatter.title}</DocsTitle>
+        <DocsDescription>{frontmatter.description}</DocsDescription>
+        <DocsBody>
+          <MDX
+            components={{
+              ...defaultMdxComponents
+            }}
+          />
+        </DocsBody>
+      </DocsPage>
+    );
+  }
+});
+
+function Page() {
+  const data = Route.useLoaderData();
+  const Content = clientLoader.getComponent(data.path);
+  const tree = useMemo(() => transformPageTree(data.tree as PageTree.Folder), [data.tree]);
+
+  return (
+    <HomeLayout {...baseOptions()}>
+      <DocsLayout
+        sidebar={{
+          collapsible: false
+        }}
+        themeSwitch={{
+          enabled: false
+        }}
+        searchToggle={{
+          enabled: false
+        }}
+        tree={tree}
+      >
+        <Content />
+      </DocsLayout>
+    </HomeLayout>
+  );
+}
+
+function transformPageTree(root: PageTree.Root): PageTree.Root {
+  function mapNode<T extends PageTree.Node>(item: T): T {
+    if (typeof item.icon === 'string') {
+      item = {
+        ...item,
+        icon: (
+          <span
+            dangerouslySetInnerHTML={{
+              __html: item.icon
+            }}
+          />
+        )
+      };
+    }
+
+    if (item.type === 'folder') {
+      return {
+        ...item,
+        index: item.index ? mapNode(item.index) : undefined,
+        children: item.children.map(mapNode)
+      };
+    }
+
+    return item;
+  }
+
+  return {
+    ...root,
+    children: root.children.map(mapNode),
+    fallback: root.fallback ? transformPageTree(root.fallback) : undefined
+  };
+}

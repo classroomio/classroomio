@@ -3,6 +3,8 @@
   import * as ImageCropper from '@cio/ui/custom/image-cropper';
   import CameraIcon from '@lucide/svelte/icons/camera';
   import PencilIcon from '@lucide/svelte/icons/pencil';
+  import { validateImageUpload } from '$lib/utils/functions/fileValidation';
+  import { snackbar } from '$features/ui/snackbar/store';
 
   import { t } from '$lib/utils/functions/translations';
 
@@ -43,6 +45,16 @@
     const blob = await response.blob();
     // getCroppedImg outputs PNG format, so use blob.type (which will be 'image/png') and matching filename
     const file = new File([blob], 'cropped-image.png', { type: blob.type });
+
+    const validation = validateImageUpload(file);
+    if (!validation.isValid) {
+      snackbar.error(validation.error || 'Invalid file type');
+      errorMessage = $t('snackbar.landing_page_settings.error.try_again');
+
+      cropperSrc = '';
+
+      return;
+    }
 
     // Update avatar with the cropped file
     avatar = file;

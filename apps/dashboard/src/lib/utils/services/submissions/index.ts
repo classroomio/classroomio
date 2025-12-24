@@ -1,38 +1,39 @@
-import { supabase } from '$lib/utils/functions/supabase';
+import { supabase, getAccessToken } from '$lib/utils/functions/supabase';
 import type { ExerciseSubmissions } from '$lib/utils/types';
 
 export function fetchSubmissionStatus() {
   return supabase.from('submissionstatus').select(`*`);
 }
 
-export function fetchSubmissions(course_id: string) {
-  return supabase
-    .from('submission')
-    .select(
-      `
-    id,
-    created_at,
-    answers:question_answer(*),
-    exercise:exercise_id(
-      id, title, due_by,
-      lesson:lesson_id(id, title),
-      questions:question(
-        *,
-        options:option(*),
-        question_type:question_type_id(id, label)
-      )
-    ),
-    status_id,
-    feedback,
-    course:course_id(*),
-    groupmember:submitted_by(
-      profile(*)
-    )
-  `
-    )
-    .match({
-      course_id
-    });
+export async function fetchSubmissions(course_id: string) {
+  const accessToken = await getAccessToken();
+
+  const response = await fetch(`/api/courses/submissions?courseId=${course_id}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: accessToken
+    }
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    return {
+      data: null,
+      error: { message: error }
+    };
+  }
+
+  const { success, data, message } = await response.json();
+
+  if (!success) {
+    return {
+      data: null,
+      error: { message }
+    };
+  }
+
+  return { data, error: null };
 }
 
 export async function fetchSubmission({
@@ -44,40 +45,38 @@ export async function fetchSubmission({
   courseId?: string;
   submittedBy?: string;
 }) {
-  const query: {
-    exercise_id: string;
-    course_id?: string;
-    submitted_by?: string;
-  } = {
-    exercise_id: exerciseId
-  };
+  const accessToken = await getAccessToken();
 
-  if (courseId) {
-    query.course_id = courseId;
-  }
-  if (submittedBy) {
-    query.submitted_by = submittedBy;
+  const params = new URLSearchParams({ exerciseId });
+  if (courseId) params.append('courseId', courseId);
+  if (submittedBy) params.append('submittedBy', submittedBy);
+
+  const response = await fetch(`/api/courses/submission?${params.toString()}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: accessToken
+    }
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    return {
+      data: null,
+      error: { message: error }
+    };
   }
 
-  return supabase
-    .from('submission')
-    .select(
-      `
-      id,
-      answers:question_answer(*),
-      status_id,
-      feedback,
-      submitted_by:groupmember!inner(
-        profile!inner(
-          id,
-          fullname,
-          avatar_url
-        )
-      )
-    `
-    )
-    .match(query)
-    .returns<ExerciseSubmissions[]>();
+  const { success, data, message } = await response.json();
+
+  if (!success) {
+    return {
+      data: null,
+      error: { message }
+    };
+  }
+
+  return { data, error: null };
 }
 
 export async function updateSubmission(

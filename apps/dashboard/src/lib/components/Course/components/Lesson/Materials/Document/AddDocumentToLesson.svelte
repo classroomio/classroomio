@@ -101,6 +101,14 @@
 
   async function uploadDocument() {
     if (!selectedFile) return;
+    
+    // Prevent free plan users from bypassing UI restrictions
+    if ($isFreePlan) {
+      $lessonDocUpload.error = $t('upgrade.required');
+      snackbar.error($lessonDocUpload.error);
+      return;
+    }
+    
     $lessonDocUpload.isUploading = true;
 
     try {

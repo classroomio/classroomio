@@ -25,6 +25,7 @@
   import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/notification';
   import { lesson } from '../store/lessons';
   import { COURSE_TYPE } from '$lib/utils/types';
+  import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -297,7 +298,7 @@
       </div>
 
       <article class="preview prose prose-sm sm:prose mt-3 p-2">
-        {@html $questionnaire.description || 'No desription'}
+        {@html sanitizeHtml($questionnaire.description || 'No desription')}
       </article>
 
       <Button onclick={handleStart} type="button" class="float-right my-5">Start</Button>

@@ -24,6 +24,12 @@
   let isRemoving: number | null = $state(null);
 
   async function onSendInvite() {
+    // Prevent free plan users from bypassing UI restrictions
+    if ($isFreePlan) {
+      snackbar.error('upgrade.required');
+      return;
+    }
+
     const { hasError, error: _error, emails } = validateEmailInString(emailsStr);
 
     if (hasError) {
@@ -48,6 +54,12 @@
   }
 
   async function onRemove(id: number) {
+    // Prevent free plan users from bypassing UI restrictions
+    if ($isFreePlan) {
+      snackbar.error('upgrade.required');
+      return;
+    }
+
     isRemoving = id;
     await orgApi.removeTeamMember($currentOrg.id, id);
 

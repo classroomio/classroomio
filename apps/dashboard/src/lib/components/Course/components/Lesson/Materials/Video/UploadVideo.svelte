@@ -36,6 +36,17 @@
   async function onUpload() {
     if (!fileInput) return;
 
+    // Prevent free plan users from bypassing UI restrictions
+    if ($isFreePlan) {
+      formRes = {
+        type: 'AUTHORIZATION_ERROR', 
+        status: 403,
+        message: $t('upgrade.required')
+      };
+      isLoaded = true;
+      return;
+    }
+
     videoUploader.initUpload();
 
     const videoFile = fileInput.files?.[0];

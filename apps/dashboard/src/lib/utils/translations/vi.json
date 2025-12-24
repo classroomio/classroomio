@@ -197,7 +197,8 @@
     "back": "Quay lại Cài đặt",
     "download_lessons": "Nâng cấp để tải bài học",
     "download_course": "Nâng cấp để tải xuống khóa học",
-    "domain": "Nâng cấp gói của bạn để thêm miền tùy chỉnh"
+    "domain": "Nâng cấp gói của bạn để thêm miền tùy chỉnh",
+    "required": "Yêu cầu nâng cấp"
   },
   "audience": {
     "title": "Khán giả",
@@ -679,8 +680,7 @@
             },
             "no_answer": "Không có câu trả lời nào được đưa ra",
             "check": "Kiểm tra",
-            "address": "Viết địa chỉ của bạn ở đây",
-            "add_question": "Thêm câu hỏi"
+            "address": "Viết địa chỉ của bạn ở đây"
           },
           "new_exercise_modal": {
             "heading": "Bài tập mới",
@@ -916,6 +916,7 @@
       "students": "sinh viên",
       "published": "Được phát hành",
       "unpublished": "Chưa xuất bản",
+      "continue_course": "Tiếp tục khóa học",
       "list_view": {
         "title": "Tiêu đề",
         "description": "Sự miêu tả",
@@ -975,6 +976,7 @@
     "no_courses": "Chưa có khóa học nào đang diễn ra",
     "start_course": "Khi bạn bắt đầu một khóa học, sự tiến bộ của bạn sẽ phản ánh ở đây",
     "lms_dashboard_hero": "Hôm nay là một ngày khác để đưa bạn đến gần hơn với mục tiêu học tập của mình. Đừng bỏ cuộc, bạn càng học nhiều thì bạn càng tiến bộ hơn.",
+    "dont": "Đừng bỏ cuộc",
     "lessons_completed": "Bài học đã hoàn thành",
     "no_courses_started": "Không có khóa học nào bắt đầu",
     "revenue": "Doanh thu",
@@ -1553,21 +1555,6 @@
       "email": "địa chỉ email không hợp lệ",
       "username": "Tên ngươi dung không được để trông",
       "fullname": "Tên phải có tối thiểu 5 ký tự"
-    },
-    "generic": {
-      "invalid_type": "Loại không hợp lệ{dự kiến, chọn, không xác định{} khác{. Dự kiến {mong đợi}}}{đã nhận, chọn, không xác định{} khác{ (đã nhận {đã nhận})}}",
-      "too_big": "Giá trị quá lớn{tối đa, chọn, không xác định{} khác{. Tối đa {tối đa}}}",
-      "too_small": "Giá trị quá nhỏ{tối thiểu, chọn, không xác định{} khác{. Tối thiểu {tối thiểu}}}",
-      "invalid_format": "Định dạng không hợp lệ{xác thực, chọn, không xác định{} khác{ cho {xác thực}}}",
-      "not_multiple_of": "Giá trị phải là bội số của {multipleOf}",
-      "unrecognized_keys": "Chứa các khóa không được nhận dạng{keys, select, undefind{} other{: {keys}}}",
-      "invalid_union": "Giá trị không hợp lệ cho các tùy chọn được cung cấp{unionErrors, select, unknown{} other{. {unionErrors} tùy chọn không thành công}}",
-      "invalid_key": "Khóa không hợp lệ{khóa, chọn, không xác định{} khác{: {key}}}",
-      "invalid_element": "Phần tử không hợp lệ{chỉ mục, chọn, không xác định{} khác{ tại chỉ mục {index}}}",
-      "invalid_value": "Giá trị không hợp lệ{dự kiến, chọn, không xác định{} khác{. Dự kiến {mong đợi}}}{đã nhận, chọn, không xác định{} khác{ (đã nhận {đã nhận})}}",
-      "custom": "{tin nhắn}",
-      "required_field": "Trường này là bắt buộc",
-      "invalid_field": "Giá trị không hợp lệ"
     }
   },
   "explore": {
@@ -1626,8 +1613,46 @@
       "message": "Bạn có những thay đổi chưa được lưu. Bạn có chắc bạn muốn rời đi?"
     }
   },
-  "new_course_modal": {
-    "live_class_label": "Lớp học trực tiếp",
-    "self_paced_label": "tự nhịp độ"
+  "email_verification": {
+    "security_footer": "Bảo mật tài khoản của bạn là ưu tiên hàng đầu của chúng tôi. Tất cả các nỗ lực xác minh đều được ghi lại để giám sát bảo mật.",
+    "actions": {
+      "request_new": "Yêu cầu email xác minh mới",
+      "contact_support": "Liên hệ hỗ trợ",
+      "back_to_dashboard": "Quay lại Trang tổng quan"
+    },
+    "security_notice": {
+      "title": "Tăng cường bảo mật",
+      "message": "Chúng tôi đã nâng cấp hệ thống xác minh email của mình để bảo mật tốt hơn. Các liên kết xác minh cũ không còn hiệu lực để bảo vệ tài khoản của bạn."
+    },
+    "errors": {
+      "unknown": {
+        "title": "Xác minh không thành công",
+        "message": "Đã xảy ra lỗi không mong muốn trong quá trình xác minh email. Vui lòng thử lại hoặc liên hệ với nhóm hỗ trợ của chúng tôi để được hỗ trợ."
+      },
+      "database": {
+        "title": "Lỗi hệ thống",
+        "message": "Chúng tôi đang gặp khó khăn về mặt kỹ thuật. Vui lòng thử lại sau hoặc liên hệ với nhóm hỗ trợ của chúng tôi nếu sự cố vẫn tiếp diễn."
+      },
+      "legacy_blocked": {
+        "title": "Phương thức xác minh không được hỗ trợ",
+        "message": "Phương thức xác minh này không còn được hỗ trợ vì lý do bảo mật. Vui lòng yêu cầu email xác minh mới bằng hệ thống xác minh an toàn của chúng tôi."
+      },
+      "email_mismatch": {
+        "title": "Địa chỉ Email đã thay đổi",
+        "message": "Địa chỉ email của bạn đã được thay đổi kể từ khi liên kết xác minh này được tạo. Vui lòng yêu cầu liên kết xác minh mới cho địa chỉ email hiện tại của bạn."
+      },
+      "token_expired": {
+        "title": "Liên kết xác minh đã hết hạn",
+        "message": "Liên kết xác minh này đã hết hạn vì lý do bảo mật. Vui lòng yêu cầu email xác minh mới để tiếp tục."
+      },
+      "token_used": {
+        "title": "Liên kết đã được sử dụng",
+        "message": "Liên kết xác minh này đã được sử dụng. Nếu bạn cần xác minh lại email của mình, vui lòng yêu cầu liên kết xác minh mới."
+      },
+      "invalid_token": {
+        "title": "Liên kết xác minh không hợp lệ",
+        "message": "Liên kết xác minh này không hợp lệ hoặc không đúng định dạng. Vui lòng kiểm tra email của bạn để tìm liên kết chính xác hoặc yêu cầu email xác minh mới."
+      }
+    }
   }
 }

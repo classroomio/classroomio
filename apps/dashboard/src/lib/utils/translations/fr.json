@@ -197,7 +197,8 @@
     "back": "Retour aux paramètres",
     "download_lessons": "Mettre à niveau pour télécharger les leçons",
     "download_course": "Mettre à niveau pour télécharger le cours",
-    "domain": "Mettez à niveau votre forfait pour ajouter des domaines personnalisés"
+    "domain": "Mettez à niveau votre forfait pour ajouter des domaines personnalisés",
+    "required": "Mise à niveau requise"
   },
   "audience": {
     "title": "Public",
@@ -679,8 +680,7 @@
             },
             "no_answer": "Aucune réponse n'a été fournie",
             "check": "Vérifier",
-            "address": "Écrivez votre adresse ici",
-            "add_question": "Ajouter une question"
+            "address": "Écrivez votre adresse ici"
           },
           "new_exercise_modal": {
             "heading": "Nouvel exercice",
@@ -916,6 +916,7 @@
       "students": "étudiants",
       "published": "Publié",
       "unpublished": "Inédit",
+      "continue_course": "Continuer le cours",
       "list_view": {
         "title": "Titre",
         "description": "Description",
@@ -975,6 +976,7 @@
     "no_courses": "Aucun cours en cours pour le moment",
     "start_course": "Une fois que vous aurez commencé un cours, vos progrès seront reflétés ici",
     "lms_dashboard_hero": "Aujourd'hui est un autre jour pour vous rapprocher de vos objectifs d'apprentissage. N'abandonnez pas, plus vous apprenez, mieux vous vous améliorez.",
+    "dont": "N'abandonne pas",
     "lessons_completed": "Leçons terminées",
     "no_courses_started": "Aucun cours n'a commencé",
     "revenue": "Revenu",
@@ -1553,21 +1555,6 @@
       "email": "Adresse e-mail invalide",
       "username": "Le nom d'utilisateur ne peut pas être vide",
       "fullname": "Le nom doit comporter au minimum 5 caractères"
-    },
-    "generic": {
-      "invalid_type": "Type non valide{attendu, sélectionné, non défini{} autre{. Attendu {attendu}}}{reçu, sélectionné, non défini{} autre{ (reçu {reçu})}}",
-      "too_big": "La valeur est trop grande{maximum, select, undefined{} autre{. Maximum {maximum}}}",
-      "too_small": "La valeur est trop petite{minimum, select, undefined{} autre{. Minimum {minimum}}}",
-      "invalid_format": "Format invalide{validation, select, non défini{} autre{ pour {validation}}}",
-      "not_multiple_of": "La valeur doit être un multiple de {multipleOf}",
-      "unrecognized_keys": "Contient des clés non reconnues{keys, select, undefined{} other{: {keys}}}",
-      "invalid_union": "Valeur non valide pour les options fournies {unionErrors, select, undefined{} other{. {unionErrors} option(s) a échoué}}",
-      "invalid_key": "Clé invalide{key, select, undefined{} other{: {key}}}",
-      "invalid_element": "Élément invalide{index, select, undefined{} autre{ à l'index {index}}}",
-      "invalid_value": "Valeur non valide{attendue, sélectionnée, non définie{} autre{. Attendu {attendu}}}{reçu, sélectionné, non défini{} autre{ (reçu {reçu})}}",
-      "custom": "{message}",
-      "required_field": "Ce champ est obligatoire",
-      "invalid_field": "Valeur invalide"
     }
   },
   "explore": {
@@ -1626,8 +1613,46 @@
       "message": "Vous avez des changements non sauvés. Êtes-vous sûr de vouloir partir?"
     }
   },
-  "new_course_modal": {
-    "live_class_label": "Cours en direct",
-    "self_paced_label": "À votre rythme"
+  "email_verification": {
+    "security_footer": "La sécurité de votre compte est notre priorité absolue. Toutes les tentatives de vérification sont enregistrées pour la surveillance de la sécurité.",
+    "actions": {
+      "request_new": "Demander un nouvel e-mail de vérification",
+      "contact_support": "Contacter l'assistance",
+      "back_to_dashboard": "Retour au tableau de bord"
+    },
+    "security_notice": {
+      "title": "Amélioration de la sécurité",
+      "message": "Nous avons mis à niveau notre système de vérification des e-mails pour une meilleure sécurité. Les anciens liens de vérification ne sont plus valides pour protéger votre compte."
+    },
+    "errors": {
+      "unknown": {
+        "title": "Échec de la vérification",
+        "message": "Une erreur inattendue s'est produite lors de la vérification du courrier électronique. Veuillez réessayer ou contacter notre équipe d'assistance pour obtenir de l'aide."
+      },
+      "database": {
+        "title": "Erreur système",
+        "message": "Nous rencontrons des difficultés techniques. Veuillez réessayer plus tard ou contacter notre équipe d'assistance si le problème persiste."
+      },
+      "legacy_blocked": {
+        "title": "Méthode de vérification non prise en charge",
+        "message": "Cette méthode de vérification n'est plus prise en charge pour des raisons de sécurité. Veuillez demander un nouvel e-mail de vérification en utilisant notre système de vérification sécurisé."
+      },
+      "email_mismatch": {
+        "title": "Adresse e-mail modifiée",
+        "message": "Votre adresse e-mail a été modifiée depuis la génération de ce lien de vérification. Veuillez demander un nouveau lien de vérification pour votre adresse e-mail actuelle."
+      },
+      "token_expired": {
+        "title": "Lien de vérification expiré",
+        "message": "Ce lien de vérification a expiré pour des raisons de sécurité. Veuillez demander un nouvel e-mail de vérification pour continuer."
+      },
+      "token_used": {
+        "title": "Lien déjà utilisé",
+        "message": "Ce lien de vérification a déjà été utilisé. Si vous devez vérifier à nouveau votre adresse e-mail, veuillez demander un nouveau lien de vérification."
+      },
+      "invalid_token": {
+        "title": "Lien de vérification invalide",
+        "message": "Ce lien de vérification est invalide ou mal formé. Veuillez vérifier votre courrier électronique pour trouver le lien correct ou demander un nouvel e-mail de vérification."
+      }
+    }
   }
 }

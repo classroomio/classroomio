@@ -1,5 +1,6 @@
 <script lang="ts">
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
+  import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { lesson, lessonByTranslation } from '$lib/components/Course/components/Lesson/store/lessons';
   import { t } from '$lib/utils/functions/translations';
@@ -22,7 +23,7 @@
 {#if !isHtmlValueEmpty(content)}
   <HtmlRender className="m-auto">
     <div>
-      {@html content}
+      {@html sanitizeHtml(content)}
     </div>
   </HtmlRender>
 {:else if hasAtLeastOneTranslation}

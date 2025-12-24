@@ -1,10 +1,4 @@
 <script lang="ts">
-  interface Props {
-    courseId: string;
-  }
-
-  let { courseId }: Props = $props();
-
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { Input } from '@cio/ui/base/input';
