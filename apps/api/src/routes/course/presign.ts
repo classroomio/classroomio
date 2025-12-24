@@ -187,9 +187,35 @@ export const presignRouter = new Hono()
 
       const { keys } = body;
 
+      // #region agent log
+      fetch('http://127.0.0.1:7244/ingest/69565117-5d4c-47f3-9d91-b4c474cac93e', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          location: 'presign.ts:188',
+          message: 'video/download endpoint called',
+          data: { keys, keysCount: keys.length },
+          timestamp: Date.now(),
+          sessionId: 'debug-session',
+          runId: 'run1',
+          hypothesisId: 'A'
+        })
+      }).catch(() => {});
+      // #endregion
+
       const signedUrls: Record<string, string> = {};
 
       const urlPromises = keys.map(async (key) => {
+        // Check if file exists in S3 before generating presigned URL
+        const fileCheck = await getFromS3({
+          Bucket: BUCKET_NAME.VIDEOS,
+          Key: key
+        });
+
+        if (!fileCheck.success) {
+          return { key, presignedUrl: null, error: fileCheck.error };
+        }
+
         const command = new GetObjectCommand({
           Bucket: BUCKET_NAME.VIDEOS,
           Key: key
@@ -204,8 +230,10 @@ export const presignRouter = new Hono()
 
       const results = await Promise.all(urlPromises);
 
-      results.forEach(({ key, presignedUrl }) => {
-        signedUrls[key] = presignedUrl;
+      results.forEach(({ key, presignedUrl, error }) => {
+        if (presignedUrl) {
+          signedUrls[key] = presignedUrl;
+        }
       });
 
       return c.json({

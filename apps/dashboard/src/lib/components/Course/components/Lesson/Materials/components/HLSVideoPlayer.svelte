@@ -4,7 +4,7 @@
   import { lesson } from '../../store/lessons';
 
   interface Props {
-    video: any; // Video object from lesson.materials.videos
+    video: any;
   }
 
   let { video }: Props = $props();
@@ -16,6 +16,7 @@
   let isLoading = $state(true);
   let error: string | null = $state(null);
   let hlsInitialized = $state(false);
+  let hlsAttempted = $state(false);
 
   onMount(async () => {
     // Check if HLS.js is available and supported
@@ -23,58 +24,22 @@
       isHLSSupported = (window as any).Hls.isSupported();
     }
 
-    // Try HLS if supported and manifest exists
+    // Try HLS first if supported and we have the required data
     if (isHLSSupported && video.type === 'upload' && video.key) {
-      const manifestExists = await checkManifestExists();
-      if (manifestExists) {
-        await initHLSPlayer();
-        return;
-      }
+      await initHLSPlayer();
+    } else {
+      // No HLS support or missing data, go straight to fallback
+      await initFallbackPlayer();
     }
-
-    // Fallback to direct URL
-    if (video.link) {
-      await initDirectPlayer(video.link);
-      return;
-    }
-
-    // Generate new presigned URL if needed
-    await initFallbackPlayer();
   });
 
-  async function checkManifestExists(): Promise<boolean> {
-    try {
-      const manifestUrl = `${env.PUBLIC_SERVER_URL}/course/presign/hls/stream/${$lesson.id}/${encodeURIComponent(video.key)}`;
-      const response = await fetch(manifestUrl, {
-        method: 'HEAD',
-        credentials: 'include' // Send cookies for authentication
-      });
-
-      return response.ok;
-    } catch {
-      return false;
-    }
-  }
-
-  async function initDirectPlayer(url: string) {
-    try {
-      isLoading = true;
-      error = null;
-
-      fallbackUrl = url;
-      videoElement.src = url;
-      isLoading = false;
-      hlsInitialized = false;
-    } catch (err) {
-      error = err instanceof Error ? err.message : 'Failed to load video';
-      isLoading = false;
-    }
-  }
-
   async function initHLSPlayer() {
+    if (hlsAttempted) return; // Prevent multiple HLS attempts
+
     try {
       isLoading = true;
       error = null;
+      hlsAttempted = true;
 
       const manifestUrl = `${env.PUBLIC_SERVER_URL}/course/presign/hls/stream/${$lesson.id}/${encodeURIComponent(video.key)}`;
 
@@ -96,66 +61,80 @@
 
       hls.loadSource(manifestUrl);
       hls.attachMedia(videoElement);
-      hls.on(Hls.Events.ERROR, (event: string, data: any) => {
+
+      hls.on(Hls.Events.ERROR, (_event: string, data: any) => {
+        console.error('HLS Error:', data);
+
         if (data.fatal) {
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
-              hls.startLoad();
+              console.log('Fatal network error, attempting fallback...');
+              initFallbackPlayer();
               break;
             case Hls.ErrorTypes.MEDIA_ERROR:
+              console.log('Media error, attempting recovery...');
               hls.recoverMediaError();
               break;
             default:
-              // Fallback to direct URL on fatal error
-              if (video.link) {
-                initDirectPlayer(video.link);
-              } else {
-                initFallbackPlayer();
-              }
+              console.log('Fatal error, switching to fallback...');
+              initFallbackPlayer();
               break;
           }
         }
       });
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        console.log('HLS manifest parsed successfully');
         isLoading = false;
         hlsInitialized = true;
       });
+
+      // Set a timeout in case manifest never loads
+      const timeout = setTimeout(() => {
+        if (!hlsInitialized && !fallbackUrl) {
+          console.log('HLS timeout, switching to fallback...');
+          initFallbackPlayer();
+        }
+      }, 5000); // 5 second timeout
+
+      // Clean up timeout on success
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        clearTimeout(timeout);
+      });
     } catch (err) {
-      console.error('HLS initialization failed:', err);
+      console.error('Failed to initialize HLS:', err);
       error = 'Failed to initialize HLS streaming';
-      // If video.link exists, use it directly (no auth needed)
-      if (video.link) {
-        await initDirectPlayer(video.link);
-      } else {
-        await initFallbackPlayer();
-      }
+      await initFallbackPlayer();
     }
   }
 
   async function initFallbackPlayer() {
+    // Prevent initializing fallback if already initialized
+    if (fallbackUrl) return;
+
     try {
       isLoading = true;
       error = null;
 
-      // If video.link exists, use it directly (no auth needed)
-      if (video.link) {
-        await initDirectPlayer(video.link);
-        return;
+      // Destroy HLS instance if it exists
+      if (hls) {
+        hls.destroy();
+        hls = null;
       }
 
-      // Otherwise, generate a new presigned URL (uses cookies for auth)
       if (!video.key) {
         throw new Error('Video key is missing');
       }
 
-      // Generate direct URL for fallback (uses cookies for authentication)
+      console.log('Initializing fallback player...');
+
+      // Generate fresh presigned URL
       const response = await fetch(`${env.PUBLIC_SERVER_URL}/course/presign/video/download`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        credentials: 'include', // Send cookies for authentication
+        credentials: 'include',
         body: JSON.stringify({
           keys: [video.key]
         })
@@ -163,7 +142,7 @@
 
       if (!response.ok) {
         const errorText = await response.text();
-        let errorMessage = 'Failed to generate fallback URL';
+        let errorMessage = 'Failed to generate video URL';
         try {
           const errorJson = JSON.parse(errorText);
           errorMessage = errorJson.message || errorMessage;
@@ -177,21 +156,23 @@
 
       if (result.success) {
         fallbackUrl = result.urls[video.key];
+        console.log('Fallback URL generated:', fallbackUrl);
         videoElement.src = fallbackUrl;
         isLoading = false;
         hlsInitialized = false;
       } else {
-        throw new Error(result.message || 'Failed to generate fallback URL');
+        throw new Error(result.message || 'Failed to generate video URL');
       }
     } catch (err) {
       error = err instanceof Error ? err.message : 'Failed to load video';
-    } finally {
       isLoading = false;
     }
   }
 
-  function handleVideoError() {
-    if (!hlsInitialized) {
+  function handleVideoError(e: Event) {
+    console.error('Video element error:', e);
+    // Only try fallback if we haven't already set it
+    if (!fallbackUrl) {
       initFallbackPlayer();
     }
   }
@@ -245,13 +226,14 @@
     controls
     playsinline
     preload="metadata"
-    src={fallbackUrl}
     onerror={handleVideoError}
     onloadstart={handleVideoLoadStart}
     oncanplay={handleVideoCanPlay}
     style="aspect-ratio: 16/9;"
   >
-    <source src={fallbackUrl} type="video/mp4" />
+    {#if fallbackUrl}
+      <source src={fallbackUrl} type="video/mp4" />
+    {/if}
     <track kind="captions" />
     Your browser does not support the video tag.
   </video>

@@ -80,26 +80,30 @@ export class GenericUploader {
   }
 
   async uploadFile(params: { url: string; file: File }) {
-    await axios.put(params.url, params.file, {
-      headers: {
-        'Content-Type': params.file.type
-      },
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity,
-      signal: this.abortController?.signal,
-      onUploadProgress: (progressEvent) => {
-        if (get(this.uploadStore).isCancelled) {
-          this.abortController?.abort();
-          return;
-        }
+    try {
+      await axios.put(params.url, params.file, {
+        headers: {
+          'Content-Type': params.file.type
+        },
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+        signal: this.abortController?.signal,
+        onUploadProgress: (progressEvent) => {
+          if (get(this.uploadStore).isCancelled) {
+            this.abortController?.abort();
+            return;
+          }
 
-        const progress = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1));
-        this.uploadStore.update((state) => ({
-          ...state,
-          uploadProgress: progress
-        }));
-      }
-    });
+          const progress = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1));
+          this.uploadStore.update((state) => ({
+            ...state,
+            uploadProgress: progress
+          }));
+        }
+      });
+    } catch (error: any) {
+      throw error;
+    }
   }
 
   initUpload() {
