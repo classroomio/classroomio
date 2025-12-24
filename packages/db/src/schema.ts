@@ -898,8 +898,7 @@ export const courseNewsfeedComment = pgTable(
       columns: [table.courseNewsfeedId],
       foreignColumns: [courseNewsfeed.id],
       name: 'course_newsfeed_comment_course_newsfeed_id_fkey'
-    }),
-    unique('course_newsfeed_comment_id_key').on(table.id)
+    })
   ]
 );
 
@@ -1355,6 +1354,5 @@ export const exerciseTemplate = pgTable(
         }
       ];
     }>()
-  },
-  (table) => [unique('exercise_template_pkey').on(table.id)]
+  }
 );

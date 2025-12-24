@@ -1,6 +1,6 @@
 import { db, questionType } from '@db/drizzle';
 
-export async function seedTypes() {
+export async function seedQuestionTypes() {
   const existingQuestionTypes = await db.select().from(questionType);
   const questionTypeNames = existingQuestionTypes.map((q) => q.typename);
 
