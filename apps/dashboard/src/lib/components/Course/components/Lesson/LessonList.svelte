@@ -6,9 +6,9 @@
   import ListChecksIcon from '@lucide/svelte/icons/list-checks';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
 
-  import TextChip from '$lib/components/Chip/Text.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import { RoleBasedSecurity } from '$lib/features/ui';
+  import { Chip } from '@cio/ui/custom/chip';
+  import { InputField } from '@cio/ui/custom/input-field';
+  import { RoleBasedSecurity } from '$features/ui';
   import * as Empty from '@cio/ui/base/empty';
   import { lessons, handleSaveLesson } from '$lib/components/Course/components/Lesson/store/lessons';
 
@@ -67,7 +67,7 @@
     });
   }
 
-  function getLessonOrder(id: string) {
+  function getLessonOrder(id: string): number | string {
     const index = $lessons.findIndex((lesson) => lesson.id === id);
 
     if (index < 9) {
@@ -79,7 +79,7 @@
 </script>
 
 <section
-  class="m-auto w-full p-3 lg:w-11/12 lg:px-4"
+  class="mx-auto w-full p-3 lg:w-11/12 lg:px-4"
   use:dndzone={{
     items: $lessons,
     flipDurationMs,
@@ -98,19 +98,14 @@
     >
       <!-- Number Chip -->
       <div class="mr-5">
-        <TextChip
-          value={getLessonOrder(lesson.id)}
-          size="sm"
-          shape="rounded-full"
-          className="bg-primary-200 text-primary-600 text-xs"
-        />
+        <Chip value={getLessonOrder(lesson.id)} />
       </div>
 
       <!-- Lesson Content -->
       <div class="w-4/5">
         <!-- Lesson Title -->
         {#if lessonEditing === lesson.id}
-          <TextField bind:value={lesson.title} autoFocus={true} className="max-w-lg" errorMessage={errors?.title} />
+          <InputField bind:value={lesson.title} autoFocus={true} className="max-w-lg" errorMessage={errors?.title} />
         {:else}
           <h3 class="m-0 flex items-center text-lg dark:text-white">
             <a

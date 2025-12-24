@@ -1,4 +1,4 @@
-import { OrgPlanApiServer } from '$lib/features/org/api/org-plan.server';
+import { OrgPlanApiServer } from '$features/org/api/org-plan.server';
 import { PLAN } from '@cio/utils/plans';
 import type { PolarWebhookPayload } from '$lib/utils/types/polar';
 import { Webhooks } from '@polar-sh/sveltekit';

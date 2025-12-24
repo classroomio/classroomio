@@ -3,16 +3,16 @@
   import { createEventDispatcher } from 'svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import PlayIcon from '@lucide/svelte/icons/play';
   import { fetchLesssonLanguageHistory } from '$lib/utils/services/courses';
   import { diffLines } from 'diff';
   import { lesson, lessons } from '$lib/components/Course/components/Lesson/store/lessons';
   import { supabase } from '$lib/utils/functions/supabase';
+  import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import { t } from '$lib/utils/functions/translations';
 
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import type { TLocale } from '@cio/db/types';
 
   interface LessonHistory {
@@ -172,14 +172,15 @@
   <div class="panel bg-white dark:bg-black">
     <div class="w-full p-10 pr-80">
       <div class="flex items-start gap-x-10">
-        <PrimaryButton variant={VARIANTS.OUTLINED} onClick={handleDrawerClose}>
+        <Button variant="outline" onclick={handleDrawerClose}>
           <ArrowLeftIcon size={16} />
-        </PrimaryButton>
+        </Button>
 
         {#if selectedVersionIndex != 0}
           <div class="">
-            <PrimaryButton isLoading={contentRestoreLoading} onClick={restoreSelectedVersion}
-              >{$t('course.navItem.lessons.version_history.restore_version')}</PrimaryButton
+            <Button loading={contentRestoreLoading} onclick={restoreSelectedVersion}>
+              {$t('course.navItem.lessons.version_history.restore_version')}
+            </Button>
             >
           </div>
         {/if}
@@ -194,7 +195,7 @@
         {#key lessonId}
           <HtmlRender id="display" className="m-auto">
             <div class="amen">
-              {@html content}
+              {@html sanitizeHtml(content)}
             </div>
           </HtmlRender>
         {/key}
@@ -230,8 +231,9 @@
         </button>
       {/each}
       <div class="mt-2 flex h-10 items-center justify-start px-10">
-        <PrimaryButton className="h-full" isLoading={isMoreHistoryLoading} onClick={loadMoreHistory}
-          >{$t('course.navItem.lessons.version_history.fetch_more_versions')}</PrimaryButton
+        <Button loading={isMoreHistoryLoading} onclick={loadMoreHistory}>
+          {$t('course.navItem.lessons.version_history.fetch_more_versions')}
+        </Button>
         >
       </div>
     </div>

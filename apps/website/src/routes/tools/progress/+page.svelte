@@ -1,16 +1,19 @@
 <script lang="ts">
-  import { LogoFacebook, LogoLinkedin } from 'carbon-icons-svelte';
   import { onDestroy } from 'svelte';
   import { fly } from 'svelte/transition';
   import { sineInOut } from 'svelte/easing';
-  import Mood from './components/Mood.svelte';
-  import ToolsHeader from '$lib/ToolsHeader/ToolsHeader.svelte';
-  import Avatar from './components/Avatar.svelte';
-  import Background from './components/Background.svelte';
-  import Report from './components/Report.svelte';
-  import FullView from './components/FullView.svelte';
-  import DownloadButton from './components/DownloadButton.svelte';
-  import { htmlBody, type HtmlBody, openModal, isFormComplete } from './components/store';
+  import Facebook from '@lucide/svelte/icons/facebook';
+  import Linkedin from '@lucide/svelte/icons/linkedin';
+
+  import { htmlBody, type HtmlBody, openModal, isFormComplete } from '$lib/features/tools/progress/store';
+
+  import Mood from '$lib/features/tools/progress/mood.svelte';
+  import Avatar from '$lib/features/tools/progress/avatar.svelte';
+  import Report from '$lib/features/tools/progress/report.svelte';
+  import FullView from '$lib/features/tools/progress/full-view.svelte';
+  import Background from '$lib/features/tools/progress/background.svelte';
+  import { ToolsHeader } from '$lib/components';
+  import DownloadButton from '$lib/features/tools/progress/download-button.svelte';
 
   const MAX_CHARS = 160;
   let remainingChars = MAX_CHARS;
@@ -65,22 +68,14 @@
 
 <svelte:head>
   <title>Random Name Picker | ClassroomIO</title>
-  <meta
-    property="og:image"
-    itemprop="image"
-    content="https://brand.cdn.clsrio.com/og/free-tools.png"
-  />
+  <meta property="og:image" itemprop="image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
   <meta property="og:title" content="Random Name Picker | ClassroomIO" />
   <meta
     property="og:description"
     content="Use this online name picker to draw a random name from a list of names for your online or physical classroom."
   />
 
-  <meta
-    property="og:image:secure_url"
-    itemprop="image"
-    content="https://brand.cdn.clsrio.com/og/free-tools.png"
-  />
+  <meta property="og:image:secure_url" itemprop="image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 
   <meta name="twitter:title" content="Random Name Picker | ClassroomIO" />
   <meta
@@ -90,17 +85,12 @@
   <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 </svelte:head>
 
-<section class="mt-[10%] md:mt-16 px-1 md:px-0 w-full md:w-full">
+<section class=" w-full px-1 md:w-full md:px-0">
   <ToolsHeader>
-    <img
-      src="/free-tools/progress-report.svg"
-      class="w-[15%] md:w-[5%] mx-auto border rounded-full"
-      alt=""
-    />
-    <h1 class="text-4xl md:text-6xl font-bold text-[#040F2D] my-3">Progress Report</h1>
-    <p class="text-md text-[#656565] font-light md:font-normal md:w-[45%] mx-auto">
-      Generate cool reports of your learning progress. Share reports with your network for
-      collaborative learning
+    <img src="/free-tools/progress-report.svg" class="mx-auto w-[15%] rounded-full border md:w-[5%]" alt="" />
+    <h1 class="my-3 text-4xl font-bold text-[#040F2D] md:text-6xl">Progress Report</h1>
+    <p class="text-md mx-auto font-light text-[#656565] md:w-[45%] md:font-normal">
+      Generate cool reports of your learning progress. Share reports with your network for collaborative learning
     </p>
   </ToolsHeader>
 
@@ -111,29 +101,25 @@
   <FullView />
 
   <div
-    class="border rounded-md w-full md:w-11/12 lg:w-[80%] my-10 mx-auto shadow-md flex md:flex-row flex-col justify-evenly"
+    class="mx-auto my-10 flex w-full flex-col justify-evenly rounded-md border shadow-md md:w-11/12 md:flex-row lg:w-[80%]"
   >
     <!-- left side -->
     {#if showSetter}
       <div
         transition:fly={{ y: 100, easing: sineInOut }}
-        class="w-full mx-auto md:w-[48%] md:max-w-[500px] p-5 md:border-r"
+        class="mx-auto w-full p-5 md:w-[48%] md:max-w-[500px] md:border-r"
       >
         <!-- preview button -->
-        <div class="flex md:hidden justify-end mb-5">
+        <div class="mb-5 flex justify-end md:hidden">
           <button
             type="button"
             on:click={() => {
               showSetter = false;
               showReport = true;
             }}
-            class="flex justify-between items-center gap-2 px-3 py-1 rounded-full text-white text-xs bg-[#0233BD]"
+            class="flex items-center justify-between gap-2 rounded-full bg-[#0233BD] px-3 py-1 text-xs text-white"
           >
-            <img
-              src="/free-tools/progress-report/preview-icon.svg"
-              alt="preview icon"
-              class="w-4"
-            />
+            <img src="/free-tools/progress-report/preview-icon.svg" alt="preview icon" class="w-4" />
             Preview
           </button>
         </div>
@@ -146,7 +132,7 @@
             bind:value={$htmlBody.name}
             on:input={(event) => handleInputChange(event, 'name')}
             placeholder="Enter your name here"
-            class="w-full border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-xs placeholder:text-sm placeholder:text-[#ADADAD]"
+            class="my-3 w-full rounded-sm border bg-[#F1F2F4] px-3 py-2 text-xs outline-none placeholder:text-sm placeholder:text-[#ADADAD]"
           />
         </div>
 
@@ -156,18 +142,17 @@
           <button
             type="button"
             on:click={() => ($openModal.mood = true)}
-            class="w-full flex justify-between items-center border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-gray-400 text-sm"
+            class="my-3 flex w-full items-center justify-between rounded-sm border bg-[#F1F2F4] px-3 py-2 text-sm text-gray-400 outline-none"
           >
             {#if $htmlBody.mood.text}
               <div
-                class="px-3 py-1 border border-[#EDEDED] text-white bg-blue-500 rounded-2xl font-semibold text-[7px] md:text-xs flex items-center justify-between"
+                class="flex items-center justify-between rounded-2xl border border-[#EDEDED] bg-blue-500 px-3 py-1 text-[7px] font-semibold text-white md:text-xs"
               >
                 {#if $htmlBody.mood.text}
-                  <span class="flex gap-1 items-center">
-                    <p class="font-semibold text-[9px] md:text-xs">is {$htmlBody.mood.text}</p>
+                  <span class="flex items-center gap-1">
+                    <p class="text-[9px] font-semibold md:text-xs">is {$htmlBody.mood.text}</p>
                     <img
-                      src="https://assets.cdn.clsrio.com/progress-report/emojis/{$htmlBody.mood
-                        .iconSrc}.png"
+                      src="https://assets.cdn.clsrio.com/progress-report/emojis/{$htmlBody.mood.iconSrc}.png"
                       alt={$htmlBody.mood.text}
                       class="w-3"
                     />
@@ -176,11 +161,7 @@
               </div>
             {:else}
               What feeling describes you?
-              <img
-                src="/free-tools/progress-report/smiley-face-icon.svg"
-                alt="smiley face"
-                class="w-3"
-              />
+              <img src="/free-tools/progress-report/smiley-face-icon.svg" alt="smiley face" class="w-3" />
             {/if}
           </button>
         </div>
@@ -193,15 +174,15 @@
             maxlength={MAX_CHARS}
             on:input={(event) => handleInputChange(event, 'learning')}
             placeholder="Tell us what you are learning"
-            class="w-full h-[17vh] border my-3 py-2 px-3 outline-none rounded-sm bg-[#F1F2F4] text-sm placeholder:text-sm placeholder:text-[#ADADAD]"
+            class="my-3 h-[17vh] w-full rounded-sm border bg-[#F1F2F4] px-3 py-2 text-sm outline-none placeholder:text-sm placeholder:text-[#ADADAD]"
           ></textarea>
-          <p class="text-xs text-right text-[#656565]">{remainingChars} characters remaining</p>
+          <p class="text-right text-xs text-[#656565]">{remainingChars} characters remaining</p>
         </div>
 
         <!-- range input -->
         <div class="mt-3">
-          <p class="text-sm text-[#656565] pb-4">Estimate your progress</p>
-          <div class="flex justify-between items-center">
+          <p class="pb-4 text-sm text-[#656565]">Estimate your progress</p>
+          <div class="flex items-center justify-between">
             <input
               type="range"
               min="0"
@@ -216,18 +197,16 @@
         </div>
 
         <!-- avatar button -->
-        <div class="flex flex-wrap justify-between items-center mt-3">
+        <div class="mt-3 flex flex-wrap items-center justify-between">
           <div class="w-full md:w-2/4">
-            <p class="text-[12px] md:text-sm text-[#656565]">Choose your avatar</p>
+            <p class="text-[12px] text-[#656565] md:text-sm">Choose your avatar</p>
             <button
               type="button"
               on:click={() => ($openModal.avatar = true)}
-              class="bg-[#F7F7F7] w-full py-1.5 px-5 md:px-0 mt-3 flex md:w-[65%] items-center justify-between md:justify-center gap-2"
+              class="mt-3 flex w-full items-center justify-between gap-2 bg-[#F7F7F7] px-5 py-1.5 md:w-[65%] md:justify-center md:px-0"
             >
               <img
-                src={`https://assets.cdn.clsrio.com/progress-report/avatars/${
-                  $htmlBody.avatar || 'avatar_m'
-                }.svg`}
+                src={`https://assets.cdn.clsrio.com/progress-report/avatars/${$htmlBody.avatar || 'avatar_m'}.svg`}
                 alt=""
                 class="w-[15%] md:w-[30%]"
               />
@@ -241,11 +220,11 @@
 
           <!-- & background -->
           <div class="w-full md:w-2/4">
-            <p class="text-[12px] md:text-sm text-[#656565]">Choose your background</p>
+            <p class="text-[12px] text-[#656565] md:text-sm">Choose your background</p>
             <button
               type="button"
               on:click={() => ($openModal.background = true)}
-              class="bg-[#F7F7F7] w-full py-1.5 px-5 md:px-0 mt-3 flex md:w-[65%] items-center justify-between md:justify-center gap-2"
+              class="mt-3 flex w-full items-center justify-between gap-2 bg-[#F7F7F7] px-5 py-1.5 md:w-[65%] md:justify-center md:px-0"
             >
               <img
                 src={`https://assets.cdn.clsrio.com/progress-report/backgrounds/${
@@ -270,41 +249,35 @@
 
     <div
       transition:fly={{ y: 100, easing: sineInOut }}
-      class="w-full mx-auto md:w-[48%] md:min-w-[400px] md:max-w-[500px] px-5 md:px-1 md:mt-0 mt-5 md:p-5"
+      class="mx-auto mt-5 w-full px-5 md:mt-0 md:w-[48%] md:min-w-[400px] md:max-w-[500px] md:p-5 md:px-1"
     >
       <div class="hidden md:block">
         <Report />
 
         <!-- download & share button -->
-        <div class="mt-9 pt-8 px-2 h-auto border-t">
+        <div class="mt-9 h-auto border-t px-2 pt-8">
           <DownloadButton {isDisabled} {isDownloading} text="Download Image" />
 
           <!-- share button -->
-          <div class="w-full md:w-[70%] mx-auto my-5">
-            <h1 class="text-sm font-semibold text-center">Share on image on social media:</h1>
+          <div class="mx-auto my-5 w-full md:w-[70%]">
+            <h1 class="text-center text-sm font-semibold">Share on image on social media:</h1>
 
-            <div
-              class="flex justify-evenly border rounded-xl gap-5 w-[60%] md:w-[80%] px-5 py-2 mt-2 mx-auto"
-            >
+            <div class="mx-auto mt-2 flex w-[60%] justify-evenly gap-5 rounded-xl border px-5 py-2 md:w-[80%]">
               <button
                 type="button"
                 on:click={shareOnFacebook}
-                class="w-10 hover:scale-[1.2] transition-all duration-300"
+                class="w-10 transition-all duration-300 hover:scale-[1.2]"
               >
-                <LogoFacebook size={32} />
+                <Facebook size={32} />
               </button>
               <button
                 type="button"
                 on:click={shareOnLinkedIn}
-                class="w-10 hover:scale-[1.2] transition-all duration-300"
+                class="w-10 transition-all duration-300 hover:scale-[1.2]"
               >
-                <LogoLinkedin size={32} />
+                <Linkedin size={32} />
               </button>
-              <button
-                type="button"
-                on:click={shareOnTwitter}
-                class="w-5 hover:scale-[1.2] transition-all duration-300"
-              >
+              <button type="button" on:click={shareOnTwitter} class="w-5 transition-all duration-300 hover:scale-[1.2]">
                 <img src="/twitter_logo.png" alt="X.com" />
               </button>
             </div>
@@ -314,14 +287,14 @@
 
       {#if showReport}
         <!-- hide button -->
-        <div class="flex justify-end mb-5">
+        <div class="mb-5 flex justify-end">
           <button
             type="button"
             on:click={() => {
               showReport = false;
               showSetter = true;
             }}
-            class="flex justify-between items-center gap-2 px-3 py-1 rounded-full text-white text-xs bg-[#0233BD]"
+            class="flex items-center justify-between gap-2 rounded-full bg-[#0233BD] px-3 py-1 text-xs text-white"
           >
             <img src="/free-tools/progress-report/hide-icon.svg" alt="preview icon" class="w-4" />
             Close
@@ -330,35 +303,29 @@
         <Report />
 
         <!-- download & share button -->
-        <div class="mt-9 pt-8 px-2 h-auto border-t">
+        <div class="mt-9 h-auto border-t px-2 pt-8">
           <DownloadButton {isDisabled} {isDownloading} />
 
           <!-- share button -->
-          <div class="w-full md:w-[70%] mx-auto my-5">
-            <h1 class="text-sm font-semibold text-center">Share on image on social media:</h1>
+          <div class="mx-auto my-5 w-full md:w-[70%]">
+            <h1 class="text-center text-sm font-semibold">Share on image on social media:</h1>
 
-            <div
-              class="flex justify-evenly border rounded-xl gap-5 w-[60%] md:w-[80%] px-5 py-2 mt-2 mx-auto"
-            >
+            <div class="mx-auto mt-2 flex w-[60%] justify-evenly gap-5 rounded-xl border px-5 py-2 md:w-[80%]">
               <button
                 type="button"
                 on:click={shareOnFacebook}
-                class="w-10 hover:scale-[1.2] transition-all duration-300"
+                class="w-10 transition-all duration-300 hover:scale-[1.2]"
               >
-                <LogoFacebook size={32} />
+                <Facebook size={32} />
               </button>
               <button
                 type="button"
                 on:click={shareOnLinkedIn}
-                class="w-10 hover:scale-[1.2] transition-all duration-300"
+                class="w-10 transition-all duration-300 hover:scale-[1.2]"
               >
-                <LogoLinkedin size={32} />
+                <Linkedin size={32} />
               </button>
-              <button
-                type="button"
-                on:click={shareOnTwitter}
-                class="w-5 hover:scale-[1.2] transition-all duration-300"
-              >
+              <button type="button" on:click={shareOnTwitter} class="w-5 transition-all duration-300 hover:scale-[1.2]">
                 <img src="/twitter_logo.png" alt="X.com" />
               </button>
             </div>

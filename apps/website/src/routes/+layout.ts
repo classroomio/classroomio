@@ -2,11 +2,38 @@ import type { MetaTagsProps } from 'svelte-meta-tags';
 
 export const prerender = true;
 
-export function load({ url }) {
+export async function load({ url }) {
+  const stars = await getStars();
+
   return {
     baseMetaTags: getBaseMetaTags(url),
-    url: url.pathname
+    url: url.pathname,
+    stars
   };
+}
+
+const starsCache = new Map<string, { stars: number; lastUpdated: number }>();
+const CACHE_TIME = 1000 * 60 * 60 * 48; // 48 hours
+const CACHE_KEY = 'github-stars';
+
+async function getStars() {
+  const now = Date.now();
+
+  const cacheData = starsCache.get(CACHE_KEY);
+  if (cacheData && now - cacheData.lastUpdated < CACHE_TIME) {
+    console.log('Returning cached stars');
+    return cacheData.stars;
+  }
+
+  console.log('Fetching stars from GitHub');
+
+  const response = await fetch('https://api.github.com/repos/classroomio/classroomio');
+  const data = await response.json();
+  const stars = data?.stargazers_count || 0;
+
+  starsCache.set(CACHE_KEY, { stars, lastUpdated: now });
+
+  return stars;
 }
 
 function getBaseMetaTags(url: URL) {

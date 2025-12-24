@@ -32,6 +32,14 @@
     "./validation/*": {
       "types": "./src/validation/*/index.ts",
       "default": "./src/validation/*/index.ts"
+    },
+    "./functions": {
+      "types": "./src/functions/index.ts",
+      "default": "./src/functions/index.ts"
+    },
+    "./functions/*": {
+      "types": "./src/functions/*/index.ts",
+      "default": "./src/functions/*/index.ts"
     }
   },
   "scripts": {

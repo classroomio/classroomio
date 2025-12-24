@@ -4,13 +4,13 @@
   import { DomainInput } from '@cio/ui/custom/domain-input';
   import * as Field from '@cio/ui/base/field';
   import { Button } from '@cio/ui/base/button';
-  import UserProfileIcon from '$lib/components/Icons/UserProfileIcon.svelte';
+  import { UserProfileIcon } from '$features/ui/icons';
   import { profile } from '$lib/utils/store/user';
-  import { onboardingApi } from '$lib/features/onboarding/api/onboarding.svelte';
+  import { onboardingApi } from '$features/onboarding/api/onboarding.svelte';
   import { generateSitename } from '$lib/utils/functions/org';
   import { t } from '$lib/utils/functions/translations';
-  import { GOALS, ONBOARDING_STEPS, SOURCES, DROPDOWN_ITEMS } from '$lib/features/onboarding/utils/constants';
-  import type { OnboardingField } from '$lib/features/onboarding/utils/types';
+  import { GOALS, ONBOARDING_STEPS, SOURCES, DROPDOWN_ITEMS } from '$features/onboarding/utils/constants';
+  import type { OnboardingField } from '$features/onboarding/utils/types';
   import { untrack } from 'svelte';
 
   let fields: OnboardingField = $state({

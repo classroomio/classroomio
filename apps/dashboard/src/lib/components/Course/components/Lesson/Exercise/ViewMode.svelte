@@ -8,10 +8,11 @@
   import RadioQuestion from '$lib/components/Question/RadioQuestion/index.svelte';
   import CheckboxQuestion from '$lib/components/Question/CheckboxQuestion/index.svelte';
   import TextareaQuestion from '$lib/components/Question/TextareaQuestion/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import Box from '$lib/components/Box/index.svelte';
-  import { RoleBasedSecurity } from '$lib/features/ui';
-  import Progress from '$lib/components/Progress/index.svelte';
+  import { Button } from '@cio/ui/base/button';
+  import { RoleBasedSecurity } from '$features/ui';
+  import { Empty } from '@cio/ui/custom/empty';
+  import FileQuestionIcon from '@lucide/svelte/icons/file-question';
+  import { Progress } from '@cio/ui/base/progress';
   import { removeDuplicate } from '$lib/utils/functions/removeDuplicate';
   import { QUESTION_TYPE } from '$lib/components/Question/constants';
   import { STATUS } from './constants';
@@ -24,6 +25,7 @@
   import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/notification';
   import { lesson } from '../store/lessons';
   import { COURSE_TYPE } from '$lib/utils/types';
+  import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -64,7 +66,7 @@
     const submissionLink = `${baseUrl}/submissions`;
     const content = `
       <p>Hello ${teacherFullname},</p>
-      <p>A student ${student.profile.fullname} just submitted an exercise <a href=${exerciseLink}>${$questionnaire.title}</a> 
+      <p>A student ${student.profile.fullname} just submitted an exercise <a href=${exerciseLink}>${$questionnaire.title}</a>
         <p>You can get started grading by clicking "Open Submissions"</p>
       <div>
         <a class="button" href=${submissionLink}>Open Submissions</a>
@@ -259,15 +261,18 @@
     <Preview questions={filterOutDeleted($questionnaire.questions)} questionnaireMetaData={$questionnaireMetaData} />
   </RoleBasedSecurity>
 {:else if !$questionnaire.questions.length}
-  <Box>
-    <img src="/images/empty-exercise-icon.svg" alt="Exercise svg" class="my-2.5" />
-    <h2 class="my-1.5 text-xl">No question added for this exercise</h2>
-    <p class="px-44 text-center text-sm">
-      <RoleBasedSecurity allowedRoles={[1, 2]}>
-        Click the <span class="text-primary-700">Edit</span> button to add.
-      </RoleBasedSecurity>
-    </p>
-  </Box>
+  <Empty
+    title="No question added for this exercise"
+    description="Click the Edit button to add."
+    icon={FileQuestionIcon}
+    variant="page"
+  >
+    <RoleBasedSecurity allowedRoles={[1, 2]}>
+      <p class="ui:text-primary text-center text-sm">
+        Click the <span class="font-semibold">Edit</span> button to add.
+      </p>
+    </RoleBasedSecurity>
+  </Empty>
 {:else if $questionnaireMetaData.currentQuestionIndex === 0}
   <RoleBasedSecurity allowedRoles={[3]}>
     <div>
@@ -293,10 +298,10 @@
       </div>
 
       <article class="preview prose prose-sm sm:prose mt-3 p-2">
-        {@html $questionnaire.description || 'No desription'}
+        {@html sanitizeHtml($questionnaire.description || 'No desription')}
       </article>
 
-      <PrimaryButton onClick={handleStart} label="Start" className="my-5 float-right" type="button" />
+      <Button onclick={handleStart} type="button" class="float-right my-5">Start</Button>
     </div>
   </RoleBasedSecurity>
 {:else if $questionnaireMetaData.isFinished}

@@ -1,5 +1,5 @@
 <script>
-  import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
+  import { PageSignupCTA } from '$lib/components';
 </script>
 
 <svelte:head>

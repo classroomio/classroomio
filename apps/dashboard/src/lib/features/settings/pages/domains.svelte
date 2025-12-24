@@ -9,8 +9,8 @@
   import { parse } from 'tldts';
 
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { orgApi } from '$lib/features/org/api/org.svelte';
+  import { snackbar } from '$features/ui/snackbar/store';
+  import { orgApi } from '$features/org/api/org.svelte';
   import { blockedSubdomain } from '$lib/utils/constants/app';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { copyToClipboard } from '$lib/utils/functions/formatYoutubeVideo';
@@ -21,10 +21,7 @@
   import { Button } from '@cio/ui/base/button';
   import { Textarea } from '@cio/ui/base/textarea';
   import { DomainInput } from '@cio/ui/custom/domain-input';
-  import { ComingSoon } from '$lib/features/ui';
-  import { UpgradeBanner } from '$lib/features/ui';
-  import UploadImage from '$lib/components/UploadImage/index.svelte';
-  import VisitOrgSiteButton from '$lib/components/Buttons/VisitOrgSite.svelte';
+  import { ComingSoon, UpgradeBanner, UploadImage, VisitOrgSiteButton } from '$features/ui';
   import * as Field from '@cio/ui/base/field';
 
   let siteName = $derived($currentOrg.siteName);
@@ -80,6 +77,12 @@
 
   async function handleSaveCustomDomain() {
     if (!isDomainValid) return;
+
+    // Prevent free plan users from bypassing UI restrictions
+    if ($isFreePlan) {
+      errors.customDomain = 'Custom domains are only available on paid plans';
+      return;
+    }
 
     const sanitizedDomain = sanitizeDomain(customDomain);
 
@@ -170,7 +173,7 @@
         });
 
         if (orgApi.success) {
-        $currentOrg.isCustomDomainVerified = true;
+          $currentOrg.isCustomDomainVerified = true;
         }
       }
     } catch (error) {

@@ -197,7 +197,8 @@
     "back": "Zurück zu den Einstellungen",
     "download_lessons": "Führen Sie ein Upgrade durch, um Lektionen herunterzuladen",
     "download_course": "Upgrade zum Download-Kurs",
-    "domain": "Aktualisieren Sie Ihren Plan, um benutzerdefinierte Domänen hinzuzufügen"
+    "domain": "Aktualisieren Sie Ihren Plan, um benutzerdefinierte Domänen hinzuzufügen",
+    "required": "Upgrade erforderlich"
   },
   "audience": {
     "title": "Publikum",
@@ -679,8 +680,7 @@
             },
             "no_answer": "Es wurde keine Antwort gegeben",
             "check": "Überprüfen",
-            "address": "Geben Sie hier Ihre Adresse ein",
-            "add_question": "Fügen Sie eine Frage hinzu"
+            "address": "Geben Sie hier Ihre Adresse ein"
           },
           "new_exercise_modal": {
             "heading": "Neue Übung",
@@ -1555,21 +1555,6 @@
       "email": "Ungültige E-Mail-Adresse",
       "username": "Benutzername darf nicht leer sein",
       "fullname": "Der Name sollte mindestens 5 Zeichen lang sein"
-    },
-    "generic": {
-      "invalid_type": "Ungültiger Typ {erwartet, ausgewählt, undefiniert{} andere{. Erwartet {erwartet}}}{received, select, undefiniert{} other{ (received {received})}}",
-      "too_big": "Der Wert ist zu groß{maximum, select, undefiniert{} other{. Maximum {maximum}}}",
-      "too_small": "Der Wert ist zu klein{minimum, select, undefiniert{} other{. Minimum {Minimum}}}",
-      "invalid_format": "Ungültiges Format{validation, select, undefiniert{} other{ für {validation}}}",
-      "not_multiple_of": "Der Wert muss ein Vielfaches von {multipleOf} sein",
-      "unrecognized_keys": "Enthält nicht erkannte Schlüssel{keys, select, undefiniert{} other{: {keys}}}",
-      "invalid_union": "Ungültiger Wert für die bereitgestellten Optionen {unionErrors, select, undefined{} other{. {unionErrors}-Option(en) fehlgeschlagen}}",
-      "invalid_key": "Ungültiger Schlüssel{key, select, undefiniert{} other{: {key}}}",
-      "invalid_element": "Ungültiges Element{index, select, undefiniert{} other{ am Index {index}}}",
-      "invalid_value": "Invalid value{expected, select, undefined{} other{. Erwartet {erwartet}}}{received, select, undefiniert{} other{ (received {received})}}",
-      "custom": "{Nachricht}",
-      "required_field": "Dieses Feld ist erforderlich",
-      "invalid_field": "Ungültiger Wert"
     }
   },
   "explore": {
@@ -1628,10 +1613,46 @@
       "message": "Sie haben nicht gerettete Änderungen. Bist du sicher, dass du gehen willst?"
     }
   },
-  "new_course_modal": {
-    "live_class_label": "Live-Klasse",
-    "live_class_subtitle": "Dieser Kurstyp ist ideal für Bootcamps, bei denen der Unterricht zeitbasiert ist und Anwesenheit und Benotung erforderlich sind",
-    "self_paced_label": "Eigenständig",
-    "self_paced_subtitle": "Dieser Kurstyp ist ideal für Kurse, bei denen die Studierenden den Unterricht in ihrem eigenen Tempo ohne Lehrer absolvieren können"
+  "email_verification": {
+    "security_footer": "Die Sicherheit Ihres Kontos hat für uns oberste Priorität. Alle Verifizierungsversuche werden zur Sicherheitsüberwachung protokolliert.",
+    "actions": {
+      "request_new": "Fordern Sie eine neue Bestätigungs-E-Mail an",
+      "contact_support": "Kontaktieren Sie den Support",
+      "back_to_dashboard": "Zurück zum Dashboard"
+    },
+    "security_notice": {
+      "title": "Sicherheitsverbesserung",
+      "message": "Wir haben unser E-Mail-Verifizierungssystem für mehr Sicherheit aktualisiert. Alte Bestätigungslinks sind zum Schutz Ihres Kontos nicht mehr gültig."
+    },
+    "errors": {
+      "unknown": {
+        "title": "Überprüfung fehlgeschlagen",
+        "message": "Bei der E-Mail-Verifizierung ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es erneut oder wenden Sie sich an unser Support-Team, um Hilfe zu erhalten."
+      },
+      "database": {
+        "title": "Systemfehler",
+        "message": "Wir haben technische Schwierigkeiten. Bitte versuchen Sie es später noch einmal oder kontaktieren Sie unser Support-Team, wenn das Problem weiterhin besteht."
+      },
+      "legacy_blocked": {
+        "title": "Nicht unterstützte Verifizierungsmethode",
+        "message": "Diese Verifizierungsmethode wird aus Sicherheitsgründen nicht mehr unterstützt. Bitte fordern Sie über unser sicheres Verifizierungssystem eine neue Verifizierungs-E-Mail an."
+      },
+      "email_mismatch": {
+        "title": "E-Mail-Adresse geändert",
+        "message": "Ihre E-Mail-Adresse wurde seit der Erstellung dieses Bestätigungslinks geändert. Bitte fordern Sie einen neuen Bestätigungslink für Ihre aktuelle E-Mail-Adresse an."
+      },
+      "token_expired": {
+        "title": "Bestätigungslink abgelaufen",
+        "message": "Dieser Bestätigungslink ist aus Sicherheitsgründen abgelaufen. Bitte fordern Sie eine neue Bestätigungs-E-Mail an, um fortzufahren."
+      },
+      "token_used": {
+        "title": "Link bereits verwendet",
+        "message": "Dieser Bestätigungslink wurde bereits verwendet. Wenn Sie Ihre E-Mail-Adresse erneut bestätigen müssen, fordern Sie bitte einen neuen Bestätigungslink an."
+      },
+      "invalid_token": {
+        "title": "Ungültiger Bestätigungslink",
+        "message": "Dieser Bestätigungslink ist ungültig oder fehlerhaft. Bitte überprüfen Sie Ihre E-Mails auf den richtigen Link oder fordern Sie eine neue Bestätigungs-E-Mail an."
+      }
+    }
   }
 }

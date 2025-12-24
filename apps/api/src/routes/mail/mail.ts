@@ -1,10 +1,11 @@
 import { Hono } from '@api/utils/hono';
 import { ZDeliverEmail } from '@cio/utils/validation/mail';
+import { apiKeyMiddleware } from '@api/middlewares/api-key';
 import { deliverEmail } from '@cio/email';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 
-export const mailRouter = new Hono().post('/', zValidator('json', ZDeliverEmail), async (c) => {
+export const mailRouter = new Hono().post('/', apiKeyMiddleware, zValidator('json', ZDeliverEmail), async (c) => {
   const validatedData = c.req.valid('json');
 
   try {

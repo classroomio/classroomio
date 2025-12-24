@@ -10,6 +10,7 @@ import type {
   ProfileCourseProgress
 } from '$lib/utils/types';
 import type { PostgrestError, PostgrestSingleResponse } from '@supabase/supabase-js';
+import { getAccessToken, supabase } from '$lib/utils/functions/supabase';
 
 import { GenericUploader } from './presign';
 import { QUESTION_TYPE } from '$lib/components/Question/constants';
@@ -18,7 +19,6 @@ import { STATUS } from '$lib/utils/constants/course';
 import { get } from 'svelte/store';
 import { isOrgAdmin } from '$lib/utils/store/org';
 import { isUUID } from '$lib/utils/functions/isUUID';
-import { supabase } from '$lib/utils/functions/supabase';
 import { uploadImage } from '$lib/utils/services/upload';
 
 export async function fetchCourses(profileId, orgId) {
@@ -153,6 +153,33 @@ export async function fetchCourse(courseId?: Course['id'], slug?: Course['slug']
     data,
     error
   };
+}
+
+export async function fetchCourseFromAPI(courseId: Course['id']) {
+  try {
+    const accessToken = await getAccessToken();
+
+    const response = await fetch('/api/courses/data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: accessToken
+      },
+      body: JSON.stringify({ courseId })
+    });
+
+    const result = await response.json();
+
+    if (!result.success) {
+      console.error('fetchCourseFromAPI error:', result.message);
+      return { data: null, error: result.error || result.message };
+    }
+
+    return { data: result.data, error: null };
+  } catch (error) {
+    console.error('fetchCourseFromAPI error:', error);
+    return { data: null, error };
+  }
 }
 
 export async function fetchExploreCourses(profileId, orgId) {
@@ -345,8 +372,29 @@ export function createExercise(exercise: any) {
   return supabase.from('exercise').insert(exercise).select();
 }
 
-export function fetchExercisesByMarks(courseId: Course['id']) {
-  return supabase.rpc('get_exercises').eq('course_id', courseId);
+export async function fetchExercisesByMarks(courseId: Course['id']) {
+  try {
+    const accessToken = await getAccessToken();
+
+    const response = await fetch('/api/courses/exercises', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: accessToken
+      },
+      body: JSON.stringify({ courseId })
+    });
+
+    const result = await response.json();
+
+    if (!result.success) {
+      return { data: null, error: result.message };
+    }
+
+    return { data: result.data, error: null };
+  } catch (error) {
+    return { data: null, error };
+  }
 }
 
 function isNew(item: any) {

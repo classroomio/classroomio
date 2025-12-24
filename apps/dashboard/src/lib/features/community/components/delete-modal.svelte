@@ -1,7 +1,6 @@
 <script lang="ts">
-  import Modal from '$lib/components/Modal/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
+  import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -21,34 +20,37 @@
   }: Props = $props();
 </script>
 
-<Modal
-  onClose={() => (open = false)}
+<Dialog.Root
   bind:open
-  width="w-96"
-  modalHeading="{$t('community.delete.title')} {isQuestion
-    ? $t('community.delete.question')
-    : $t('community.delete.comment')}"
 >
-  <div>
+  <Dialog.Content class="w-96">
+    <Dialog.Header>
+      <Dialog.Title>
+        {$t('community.delete.title')} {isQuestion
+          ? $t('community.delete.question')
+          : $t('community.delete.comment')}
+      </Dialog.Title>
+    </Dialog.Header>
+    <div>
     <p class="mt-0 text-base dark:text-white">
       {$t('community.delete.sure')}
       {isQuestion ? $t('community.delete.question') : $t('community.delete.comment')}?
     </p>
 
     <div class="mt-5 flex items-center justify-between">
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.OUTLINED}
-        label={$t('community.delete.no')}
-        onClick={onCancel}
-      />
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.CONTAINED}
-        label={$t('community.delete.yes')}
-        onClick={onDelete}
-        isLoading={isDeleting}
-      />
+      <Button
+        variant="outline"
+        onclick={onCancel}
+      >
+        {$t('community.delete.no')}
+      </Button>
+      <Button
+        onclick={onDelete}
+        loading={isDeleting}
+      >
+        {$t('community.delete.yes')}
+      </Button>
     </div>
   </div>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>

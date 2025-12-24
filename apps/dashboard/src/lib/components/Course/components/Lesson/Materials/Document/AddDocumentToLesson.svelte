@@ -1,16 +1,14 @@
 <script lang="ts">
   import { lessonDocUpload, resetDocumentUploadStore } from '../../store/lessons';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { Button } from '@cio/ui/base/button';
   import FileTextIcon from '@lucide/svelte/icons/file-text';
   import { DocumentUploader } from '$lib/utils/services/courses/presign';
   import { onDestroy, untrack } from 'svelte';
-  import { UpgradeBanner } from '$lib/features/ui';
+  import { UpgradeBanner, CloseButton } from '$features/ui';
   import { isFreePlan } from '$lib/utils/store/org';
   import { lesson } from '../../store/lessons';
-  import { CloseButton } from '$lib/components/Buttons/Close';
 
   let fileInput: HTMLInputElement | undefined = $state();
   let selectedFile: File | null = $state(null);
@@ -103,6 +101,14 @@
 
   async function uploadDocument() {
     if (!selectedFile) return;
+    
+    // Prevent free plan users from bypassing UI restrictions
+    if ($isFreePlan) {
+      $lessonDocUpload.error = $t('upgrade.required');
+      snackbar.error($lessonDocUpload.error);
+      return;
+    }
+    
     $lessonDocUpload.isUploading = true;
 
     try {
@@ -246,12 +252,9 @@
         class="hidden"
       />
       <div class="flex justify-center">
-        <PrimaryButton
-          label={$t('course.navItem.lessons.materials.tabs.document.choose_file')}
-          variant={VARIANTS.OUTLINED}
-          {isDisabled}
-          onClick={() => fileInput?.click()}
-        />
+        <Button variant="outline" disabled={isDisabled} onclick={() => fileInput?.click()}>
+          {$t('course.navItem.lessons.materials.tabs.document.choose_file')}
+        </Button>
       </div>
     {/if}
   </div>
@@ -277,11 +280,9 @@
         ></div>
       </div>
       <div class="mt-3 flex justify-center">
-        <PrimaryButton
-          label={$t('course.navItem.lessons.materials.tabs.document.cancel_upload')}
-          variant={VARIANTS.OUTLINED}
-          onClick={cancelUpload}
-        />
+        <Button variant="outline" onclick={cancelUpload}>
+          {$t('course.navItem.lessons.materials.tabs.document.cancel_upload')}
+        </Button>
       </div>
     </div>
   {/if}
@@ -289,16 +290,12 @@
   <!-- Upload Button -->
   {#if selectedFile && !$lessonDocUpload.isUploading}
     <div class="mt-6 flex justify-end space-x-3">
-      <PrimaryButton
-        label={$t('course.navItem.lessons.materials.tabs.document.cancel')}
-        variant={VARIANTS.OUTLINED}
-        onClick={removeSelectedFile}
-      />
-      <PrimaryButton
-        label={$t('course.navItem.lessons.materials.tabs.document.upload_document')}
-        onClick={uploadDocument}
-        isLoading={$lessonDocUpload.isUploading}
-      />
+      <Button variant="outline" onclick={removeSelectedFile}>
+        {$t('course.navItem.lessons.materials.tabs.document.cancel')}
+      </Button>
+      <Button onclick={uploadDocument} loading={$lessonDocUpload.isUploading} disabled={$lessonDocUpload.isUploading}>
+        {$t('course.navItem.lessons.materials.tabs.document.upload_document')}
+      </Button>
     </div>
   {/if}
 

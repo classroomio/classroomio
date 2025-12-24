@@ -9,14 +9,14 @@
   import UsersIcon from '@lucide/svelte/icons/users';
   import GlobeIcon from '@lucide/svelte/icons/globe';
   import FileTextIcon from '@lucide/svelte/icons/file-text';
-  import SetupProgress from '$lib/features/setup/components/setup-progress.svelte';
+  import SetupProgress from '$features/setup/components/setup-progress.svelte';
 
   import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
-  import { snackbar } from '$lib/components/Snackbar/store.js';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
-  import { setupProgressApi } from '$lib/features/setup/api/setup-progress.svelte';
+  import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
   import { onMount } from 'svelte';
 
   const setupList = $derived(

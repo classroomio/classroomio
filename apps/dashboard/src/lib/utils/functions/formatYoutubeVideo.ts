@@ -1,5 +1,5 @@
 import { lesson } from '$lib/components/Course/components/Lesson/store/lessons';
-import { snackbar } from '$lib/components/Snackbar/store';
+import { snackbar } from '$features/ui/snackbar/store';
 
 export function formatYoutubeVideo(url: string, errors: Record<string, string>) {
   console.log(`url`, url);

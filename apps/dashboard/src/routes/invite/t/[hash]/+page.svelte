@@ -1,10 +1,11 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { AuthUI } from '$lib/features/ui';
+  import { AuthUI } from '$features/ui';
   import type { Profile } from '$lib/components/Course/components/People/types';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { InputField } from '@cio/ui/custom/input-field';
+  import { Button } from '@cio/ui/base/button';
+  import * as Field from '@cio/ui/base/field';
+  import { Password } from '@cio/ui/custom/password';
   import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
   import { logout } from '$lib/utils/functions/logout';
   import { getSupabase } from '$lib/utils/functions/supabase';
@@ -14,7 +15,7 @@
   import { authValidation, getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { onMount, untrack } from 'svelte';
-  import { snackbar } from '$lib/components/Snackbar/store.js';
+  import { snackbar } from '$features/ui/snackbar/store';
 
   let { data } = $props();
 
@@ -179,54 +180,63 @@
         {$t('login.create_to_join')}
       {/if}
     </p>
-    <TextField
+    <InputField
       label={$t('login.fields.email')}
       value={data.invite.email}
       type="email"
       placeholder="you@domain.com"
       className="mb-6"
-      inputClassName="w-full"
       isDisabled={true}
     />
     {#if $profile?.email !== data.invite.email}
       {#if !data.invite.profile}
-        <TextField
+        <InputField
           label={$t('login.fields.full_name')}
           bind:value={fields.name}
           type="text"
           autoFocus={true}
           placeholder="e.g Joke Silva"
           className="mb-6"
-          inputClassName="w-full"
           isDisabled={isLoading}
           errorMessage={errors.name}
           isRequired
         />
       {/if}
-      <TextField
-        label={$t('login.fields.password')}
-        bind:value={fields.password}
-        type="password"
-        placeholder="************"
-        className="mb-6"
-        inputClassName="w-full"
-        isDisabled={isLoading}
-        errorMessage={errors.password}
-        helperMessage={$t('login.fields.password_helper_message')}
-        isRequired
-      />
+      <Field.Field class="mb-6">
+        <Field.Label for="password">{$t('login.fields.password')}</Field.Label>
+        <Field.Content>
+          <Password
+            id="password"
+            bind:value={fields.password}
+            placeholder="************"
+            disabled={isLoading}
+            aria-invalid={errors.password ? 'true' : undefined}
+            autocomplete={data.invite.profile ? 'current-password' : 'new-password'}
+          />
+          {#if errors.password}
+            <Field.Error>{$t(errors.password)}</Field.Error>
+          {:else}
+            <Field.Description>{$t('login.fields.password_helper_message')}</Field.Description>
+          {/if}
+        </Field.Content>
+      </Field.Field>
       {#if !data.invite.profile}
-        <TextField
-          label={$t('login.fields.confirm_password')}
-          bind:value={fields.confirmPassword}
-          type="password"
-          placeholder="************"
-          className="mb-6"
-          inputClassName="w-full"
-          isDisabled={isLoading}
-          errorMessage={confirmPasswordError}
-          isRequired
-        />
+        <Field.Field class="mb-6">
+          <Field.Label for="confirm-password">{$t('login.fields.confirm_password')}</Field.Label>
+          <Field.Content>
+            <Password
+              id="confirm-password"
+              bind:value={fields.confirmPassword}
+              placeholder="************"
+              disabled={isLoading}
+              aria-invalid={confirmPasswordError ? 'true' : undefined}
+              autocomplete="new-password"
+            />
+            {#if confirmPasswordError}
+              <Field.Error>{$t(confirmPasswordError)}</Field.Error>
+            {/if}
+          </Field.Content>
+        </Field.Field>
       {/if}
     {/if}
     {#if submitError}
@@ -236,13 +246,11 @@
 
   <div class="my-4 flex w-full items-center justify-end">
     {#if shouldLogout}
-      <PrimaryButton
-        label="Logout"
+      <Button
         type="button"
-        className="sm:w-full w-full"
-        isLoading={isLoggingOut}
-        variant={VARIANTS.CONTAINED_DANGER}
-        onClick={async () => {
+        loading={isLoggingOut}
+        variant="destructive"
+        onclick={async () => {
           isLoggingOut = true;
 
           await logout(false);
@@ -250,15 +258,11 @@
           isLoggingOut = false;
           shouldLogout = false;
         }}
-      />
+      >
+        Logout
+      </Button>
     {:else}
-      <PrimaryButton
-        label="Accept Invite"
-        type="submit"
-        className="sm:w-full w-full"
-        isDisabled={disableSubmit}
-        {isLoading}
-      />
+      <Button type="submit" disabled={disableSubmit} loading={isLoading}>Accept Invite</Button>
     {/if}
   </div>
 </AuthUI>

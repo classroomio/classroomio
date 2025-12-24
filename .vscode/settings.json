@@ -19,7 +19,7 @@
   "deno.importMap": "./supabase/functions/import_map.json",
   "editor.formatOnSave": true,
   "[svelte]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "svelte.svelte-vscode"
   },
   "vitest.disableWorkspaceWarning": true,
   "typescript.tsserver.maxTsServerMemory": 4072,

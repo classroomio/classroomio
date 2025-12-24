@@ -1,7 +1,6 @@
 <script lang="ts">
   import { untrack } from 'svelte';
-  import { AuthUI } from '$lib/features/ui';
-  import SenjaEmbed from '$lib/components/Senja/Embed.svelte';
+  import { AuthUI, SenjaEmbed } from '$features/ui';
   import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
   import { t } from '$lib/utils/functions/translations';
   import { authValidation, getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';

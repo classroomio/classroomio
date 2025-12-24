@@ -1,11 +1,10 @@
 <script lang="ts">
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import Modal from '$lib/components/Modal/index.svelte';
+  import { Button } from '@cio/ui/base/button';
+  import * as Dialog from '@cio/ui/base/dialog';
   import { t } from '$lib/utils/functions/translations';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { supabase } from '$lib/utils/functions/supabase';
   import { course } from '../../store';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
 
   interface Props {
     open?: boolean;
@@ -34,14 +33,17 @@
   }
 </script>
 
-<Modal
-  onClose={handleClose}
+<Dialog.Root
   bind:open
-  width="w-[80%] md:w-[65%]"
-  maxWidth="max-w-xl"
-  modalHeading={$t(`course.navItem.lessons.section_prompt.header`)}
+  onOpenChange={(isOpen) => {
+    if (!isOpen) handleClose();
+  }}
 >
-  <div class="flex w-full flex-col items-center">
+  <Dialog.Content class="w-[80%] md:w-[65%] max-w-xl">
+    <Dialog.Header>
+      <Dialog.Title>{$t(`course.navItem.lessons.section_prompt.header`)}</Dialog.Title>
+    </Dialog.Header>
+    <div class="flex w-full flex-col items-center">
     <div class="mb-8">
       <h3 class="text-center text-2xl">
         {$t('course.navItem.lessons.section_prompt.title')}
@@ -52,16 +54,19 @@
     </div>
 
     <div class="flex gap-2">
-      <PrimaryButton
-        variant={VARIANTS.OUTLINED}
-        label={$t('course.navItem.lessons.section_prompt.cancel')}
-        onClick={handleClose}
-      />
-      <PrimaryButton
-        label={$t('course.navItem.lessons.section_prompt.activate')}
-        onClick={activate}
-        isLoading={isActivating}
-      />
+      <Button
+        variant="outline"
+        onclick={handleClose}
+      >
+        {$t('course.navItem.lessons.section_prompt.cancel')}
+      </Button>
+      <Button
+        onclick={activate}
+        loading={isActivating}
+      >
+        {$t('course.navItem.lessons.section_prompt.activate')}
+      </Button>
     </div>
   </div>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>

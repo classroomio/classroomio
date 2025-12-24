@@ -6,8 +6,10 @@
   import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
   import PlusIcon from '@lucide/svelte/icons/plus';
 
+  let { isLMS = false }: { isLMS?: boolean } = $props();
+
   function askCommunity() {
-    goto(`${$currentOrgPath}/community/ask`);
+    goto(`${isLMS ? '/lms/community/ask' : `${$currentOrgPath}/community/ask`}`);
   }
 </script>
 

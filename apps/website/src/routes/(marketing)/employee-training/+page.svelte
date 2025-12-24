@@ -1,6 +1,7 @@
 <script>
-  import PageSignupCTA from '$lib/PageSignupCTA/index.svelte';
-  import PageHeader from '$lib/PageHeader/PageHeader.svelte';
+  import { PageSignupCTA, PageHeader } from '$lib/components';
+  import { Button } from '@cio/ui/base/button';
+  import { Badge } from '@cio/ui/base/badge';
 
   const benefitDetails = [
     {
@@ -57,20 +58,15 @@
   <PageHeader
     className="flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-6 lg:px-28 md:px-16 px-8"
   >
-    <div class="bg-[#DCE5FF] py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
-      <p class=" text-sm md:text-base text-[#4B5563] text-center font-medium">
-        Unlock your team's potential
-      </p>
-    </div>
+    <Badge class="py-2! px-4!" variant="outline">Unlock your team's potential</Badge>
+
     <div
       class="w-full flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-8"
     >
       <div
-        class="w-full max-w-screen-xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
+        class="w-full max-w-7xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
-        <h1
-          class="mx-auto m-0 text-4xl lg:text-7xl md:text-6xl font-bold text-slate-900 lg:text-center"
-        >
+        <h1 class="mx-auto m-0 text-4xl md:text-6xl text-slate-900 lg:text-center">
           Employee training software for
           <br /><span class="text-blue-700 relative">modern teams</span>
         </h1>
@@ -79,23 +75,15 @@
           quickly.
         </p>
       </div>
-      <a
-        href="/signup"
-        target="_blank"
-        class="py-5 px-6 bg-[#1D4ED8] border-transparent outline-transparent rounded-lg text-white text-lg font-semibold"
-      >
-        Get Started for Free 🚀
-      </a>
+      <Button href="/signup" target="_blank">Get Started for Free 🚀</Button>
     </div>
   </PageHeader>
 
   <section
-    class="w-full max-w-screen-xl lg:py-24 py-16 lg:px-28 md:px-16 px-8 flex lg:flex-row flex-col lg:items-center lg:justify-between justify-center gap-x-6 gap-y-8"
+    class="w-full max-w-7xl lg:py-24 py-16 lg:px-28 md:px-16 px-8 flex lg:flex-row flex-col lg:items-center lg:justify-between justify-center gap-x-6 gap-y-8"
   >
     <div class="w-full lg:w-[35%] gap-y-4 flex flex-col items-start justify-start">
-      <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
-        <p class=" text-sm md:text-base font-medium">Amazing benefits</p>
-      </div>
+      <Badge variant="outline">Amazing benefits</Badge>
 
       <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
         <h1 class="font-bold text-4xl">Unlock your team's potential</h1>
@@ -134,13 +122,10 @@
     <div
       class="w-full gap-y-4 flex flex-col lg:items-center items-start lg:justify-center justify-start"
     >
-      <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
-        <p class="text-sm md:text-base text-[#4B5563] text-center font-medium">
-          Explore our features
-        </p>
-      </div>
+      <Badge class="py-2! px-4!" variant="outline">Explore our features</Badge>
+
       <div
-        class="lg:w-full max-w-screen-xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
+        class="lg:w-full max-w-7xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
         <h1 class="text-3xl md:text-5xl font-bold">What makes us the right choice</h1>
         <p class="text-[#334155] text-sm md:text-base font-light lg:text-center md:w-[80%]">
@@ -150,9 +135,7 @@
       </div>
     </div>
 
-    <div
-      class="w-full max-w-screen-xl flex flex-col justify-start items-center lg:gap-y-24 gap-16 p-2"
-    >
+    <div class="w-full max-w-7xl flex flex-col justify-start items-center lg:gap-y-24 gap-16 p-2">
       {#each featureDetails as feature, i}
         <div
           class="w-full lg:w-[70%] flex lg:flex-row {i % 2 !== 0
@@ -173,13 +156,13 @@
                 {feature.description}
               </p>
             </div>
-            <button
-              class="py-4 px-8 border border-[#1D4ED8] outline-transparent rounded text-[#1D4ED8] text-sm font-semibold"
+            <Button
+              variant="outline"
               data-cal-config="'layout':'month_view'"
               data-cal-link="classroomio/demo"
             >
               Book a Demo
-            </button>
+            </Button>
           </div>
 
           <div>
@@ -198,7 +181,7 @@
     class="w-full bg-[#040F2D] flex flex-col items-center justify-start gap-y-16 lg:py-24 py-16 lg:px-28 md:px-16 px-8"
   >
     <div
-      class="w-full max-w-screen-xl flex lg:flex-row-reverse flex-col-reverse lg:justify-between justify-start lg:items-center items-start gap-y-8"
+      class="w-full max-w-7xl flex lg:flex-row-reverse flex-col-reverse lg:justify-between justify-start lg:items-center items-start gap-y-8"
     >
       <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
         <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
@@ -209,13 +192,7 @@
             Companies get the opportunity to request custom features from us.
           </p>
         </div>
-        <a
-          href="/demo"
-          target="_blank"
-          class="py-4 px-8 border border-tranparent outline-transparent bg-white rounded text-[#040F2D] text-sm font-semibold"
-        >
-          Talk to sales
-        </a>
+        <Button href="/demo" target="_blank" variant="outline">Talk to sales</Button>
       </div>
 
       <img

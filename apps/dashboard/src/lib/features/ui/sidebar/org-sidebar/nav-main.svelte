@@ -6,7 +6,7 @@
   import { isActive } from '$lib/utils/functions/app';
   import { page } from '$app/state';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-  import { getOrgNavigationItems } from '$lib/features/ui/navigation/org-navigation';
+  import { getOrgNavigationItems } from '$features/ui/navigation/org-navigation';
 
   const items = $derived(getOrgNavigationItems($currentOrgPath, $currentOrg, $isOrgAdmin, $t, page.url.pathname));
 
@@ -26,12 +26,12 @@
                   {#snippet child({ props })}
                     <a href={item.url} {...props}>
                       {#if item.icon}
-                        <item.icon />
+                        <item.icon class="custom" />
                       {/if}
                       <span>{item.title}</span>
                       {#if item.items}
                         <ChevronRightIcon
-                          class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+                          class="custom ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
                         />
                       {/if}
                     </a>

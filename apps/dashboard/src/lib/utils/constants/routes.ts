@@ -17,7 +17,8 @@ export const ROUTE = {
   FORGOT: '/forgot',
   RESET: '/reset',
   LOGOUT: '/logout',
-  AUTH_FAILED: '/auth-failed'
+  AUTH_FAILED: '/auth-failed',
+  VERIFY_EMAIL_ERROR: '/verify-email-error'
 };
 
 export const PUBLIC_ROUTES = [
@@ -30,6 +31,7 @@ export const PUBLIC_ROUTES = [
   `^${ROUTE.PAGES}/.*`,
   `^${ROUTE.COURSE}/.*`,
   '/404',
+  `^${ROUTE.VERIFY_EMAIL_ERROR}$`,
   ROUTE.AUTH_FAILED
 ];
 
@@ -50,5 +52,6 @@ export const ROUTES_TO_HIDE_NAV = [
   `^${ROUTE.INVITE_STUDENT}/.*`,
   `^${ROUTE.FORGOT}$`,
   `^${ROUTE.RESET}$`,
-  `^${ROUTE.ONBOARDING}$`
+  `^${ROUTE.ONBOARDING}$`,
+  `^${ROUTE.VERIFY_EMAIL_ERROR}$`
 ];

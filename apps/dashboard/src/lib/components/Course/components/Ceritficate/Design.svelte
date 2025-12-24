@@ -7,18 +7,17 @@
 
   import { course } from '$lib/components/Course/store';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { updateCourse } from '$lib/utils/services/courses';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { saveCertificateValidation } from '$lib/utils/functions/validator';
+  import { Button } from '@cio/ui/base/button';
 
   import Plain from './templates/Plain.svelte';
   import Professional from './templates/Professional.svelte';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import { UpgradeBanner } from '$lib/features/ui';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
+  import { UpgradeBanner } from '$features/ui';
   import BlueBadgePattern from './templates/BlueBadgePattern.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import PurpleBadgePattern from './templates/PurpleBadgePattern.svelte';
   import BlueProfessionalBadge from './templates/BlueProfessionalBadge.svelte';
   import PurpleProfessionalBadge from './templates/PurpleProfessionalBadge.svelte';
@@ -46,6 +45,12 @@
     isSaving = true;
 
     try {
+      // Prevent free plan users from bypassing UI restrictions  
+      if ($isFreePlan) {
+        errors.description = 'Certificate customization is only available on paid plans';
+        throw new Error(errors.description);
+      }
+
       const result = saveCertificateValidation({
         description: $course.description || '',
         is_certificate_downloadable: $course.is_certificate_downloadable || false,
@@ -122,18 +127,15 @@
             {$t('course.navItem.certificates.and_upload')}
           </p>
 
-          <PrimaryButton
-            label={$t('course.navItem.certificates.goto_settings')}
-            variant={VARIANTS.OUTLINED}
-            className="rounded-md mt-3"
-            onClick={() => goto(`/org/${$currentOrg.siteName}/settings`)}
-          />
+          <Button variant="outline" class="mt-3" onclick={() => goto(`/org/${$currentOrg.siteName}/settings`)}>
+            {$t('course.navItem.certificates.goto_settings')}
+          </Button>
         </div>
         <span class="my-4">
           <p class="mb-2 mt-4 text-xs font-normal dark:text-gray-100">
             {$t('course.navItem.certificates.description')}
           </p>
-          <TextArea
+          <TextareaField
             rows={6}
             placeholder={$t('course.navItem.certificates.placeholder')}
             bind:value={$course.description}
@@ -173,18 +175,12 @@
     </section>
   </div>
   <div class="h-1/5">
-    <PrimaryButton
-      className="rounded-md flex gap-2 items-center"
-      variant={VARIANTS.CONTAINED_DARK}
-      onClick={saveCertificate}
-      isLoading={isSaving}
-      isDisabled={$isFreePlan}
-    >
+    <Button variant="secondary" onclick={saveCertificate} loading={isSaving} disabled={$isFreePlan}>
       {#if $isFreePlan}
         <ZapIcon size={16} class="filled" />
       {/if}
       {$t('course.navItem.certificates.save')}
-    </PrimaryButton>
+    </Button>
   </div>
 </main>
 

@@ -124,12 +124,13 @@ export async function setCourse(data: Course, setLesson = true) {
   if (!data || !(Object.values(data) && Object.values(data).length)) return;
 
   if (data.group) {
-    const groupData: GroupStore = {
-      id: data.group.id,
+    const copiedGroup = JSON.parse(JSON.stringify(data.group));
+    const groupData = Object.assign(copiedGroup, {
+      id: copiedGroup.id,
       tutors: [],
       students: [],
       people: []
-    };
+    });
 
     if (Array.isArray(data.group.members)) {
       for (const member of data.group.members) {

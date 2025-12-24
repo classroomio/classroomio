@@ -85,7 +85,7 @@
               <div class="flex items-center gap-4">
                 <span class="text-sm">{student.issued}</span>
                 {#if student.peronalized}
-                  <Badge variant="secondary" class="bg-primary-100 text-primary-600">personalized</Badge>
+                  <Badge variant="secondary" class="bg-primary-100 ui:text-primary">personalized</Badge>
                 {/if}
               </div>
             </Table.Cell>

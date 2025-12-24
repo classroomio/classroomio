@@ -1,5 +1,5 @@
 import { env } from '$env/dynamic/private';
-import { getSubdomain } from '$lib/features/app/layout-setup';
+import { getSubdomain } from '$features/app/layout-setup';
 import { redirect } from '@sveltejs/kit';
 
 const APP_SUBDOMAINS = env.PRIVATE_APP_SUBDOMAINS?.split(',') || ['app'];

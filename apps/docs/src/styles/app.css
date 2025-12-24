@@ -1,0 +1,7 @@
+@import 'tailwindcss' source('../');
+@import 'fumadocs-ui/css/black.css';
+@import 'fumadocs-ui/css/preset.css';
+
+body {
+  --color-fd-primary: var(--color-blue-700);
+}

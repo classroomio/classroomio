@@ -1,5 +1,5 @@
 <script>
-  import OrgLandingPage from '$lib/components/Org/LandingPage/index.svelte';
+  import { OrgLandingPage } from '$features/org';
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
 </script>

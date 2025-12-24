@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { AuthUI } from '$lib/features/ui';
+  import { AuthUI } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
   import * as Card from '@cio/ui/base/card';
   import { currentOrg } from '$lib/utils/store/org';

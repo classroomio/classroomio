@@ -1,0 +1,34 @@
+<script>
+  import { Badge } from '@cio/ui/base/badge';
+</script>
+
+<section id="student-dashboard" class="text-center text-white py-[10%] px-3 lg:px-0 bg-black">
+  <Badge class="py-2! px-4! underline text-sm!">yourorg.classroomio.com</Badge>
+  <h1
+    class="mx-auto text-3xl md:text-4xl lg:text-6xl font-normal leading-[1.5] flex flex-col items-center gap-4"
+  >
+    Your Student Dashboard
+  </h1>
+
+  <p
+    class="mx-auto mt-10 lg:mt-6 px-4 lg:p-0 text-base tracking-wide leading-6 text-gray-400 lg:w-2/4"
+  >
+    Once you create an account, you get a dedicated dashboard where your students can access all
+    their courses, assignments, and more.
+  </p>
+
+  <div class="relative my-5 md:my-10">
+    <video
+      class="floating w-[85%] lg:w-[70%] mx-auto rounded-lg shadow-lg"
+      autoplay
+      loop
+      muted
+      defaultMuted
+      playsinline
+      preload="auto"
+    >
+      <source src="https://video.cdn.clsrio.com/student-dashboard.mp4" type="video/mp4" />
+      <track kind="captions" />
+    </video>
+  </div>
+</section>

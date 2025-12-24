@@ -1,44 +1,43 @@
 <script lang="ts">
-  import Modal from '$lib/components/Modal/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
+  import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
-
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
   import { deleteConfirmation } from '../store/exercise';
 
   let { onDelete = () => {}, onCancel = () => {} } = $props();
 </script>
 
-<Modal
-  onClose={() => ($deleteConfirmation.open = false)}
+<Dialog.Root
   bind:open={$deleteConfirmation.open}
-  width="w-96"
-  modalHeading={$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.title')}
 >
-  <div>
+  <Dialog.Content class="w-96">
+    <Dialog.Header>
+      <Dialog.Title>{$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.title')}</Dialog.Title>
+    </Dialog.Header>
+    <div>
     <p class="mt-0 text-base dark:text-white">
       {$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.sure')}
     </p>
 
     <div class="mt-5 flex items-center justify-between">
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.OUTLINED}
-        label={$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.no')}
-        onClick={() => {
+      <Button
+        variant="outline"
+        onclick={() => {
           $deleteConfirmation.open = false;
           onCancel();
         }}
-      />
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.CONTAINED}
-        label={$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.yes')}
-        onClick={() => {
+      >
+        {$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.no')}
+      </Button>
+      <Button
+        onclick={() => {
           onDelete();
           $deleteConfirmation.open = false;
         }}
-      />
+      >
+        {$t('course.navItem.lessons.exercises.all_exercises.delete_confirmation.yes')}
+      </Button>
     </div>
   </div>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>

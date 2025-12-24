@@ -99,21 +99,6 @@
       "email": "Ugyldig e -mail -adresse",
       "username": "Brugernavn kan ikke være tomt",
       "fullname": "Navnet skal være mindst 5 tegn"
-    },
-    "generic": {
-      "invalid_type": "Ugyldig type{forventet, vælg, udefineret{} anden{. Forventet {expected}}}{received, select, undefined{} other{ (received {received})}}",
-      "too_big": "Værdien er for stor{maksimum, vælg, udefineret{} andet{. Maksimum {maksimum}}}",
-      "too_small": "Værdien er for lille{minimum, vælg, udefineret{} andet{. Minimum {minimum}}}",
-      "invalid_format": "Ugyldigt format{validering, vælg, udefineret{} andet{ for {validation}}}",
-      "not_multiple_of": "Værdien skal være et multiplum af {multipleOf}",
-      "unrecognized_keys": "Indeholder ikke-genkendte nøgler{nøgler, vælg, udefineret{} andet{: {nøgler}}}",
-      "invalid_union": "Ugyldig værdi for angivne muligheder{unionErrors, select, undefined{} other{. {unionErrors} valgmulighed(er) mislykkedes}}",
-      "invalid_key": "Ugyldig nøgle{nøgle, vælg, udefineret{} anden{: {nøgle}}}",
-      "invalid_element": "Ugyldigt element{indeks, vælg, udefineret{} andet{ ved indeks {indeks}}}",
-      "invalid_value": "Ugyldig værdi{forventet, vælg, udefineret{} anden{. Forventet {expected}}}{received, select, undefined{} other{ (received {received})}}",
-      "custom": "{besked}",
-      "required_field": "Dette felt er påkrævet",
-      "invalid_field": "Ugyldig værdi"
     }
   },
   "generic": {
@@ -327,7 +312,8 @@
     "team_members": "Teammedlemmer",
     "back": "Tilbage til indstillinger",
     "download_lessons": "Opgrader for at downloade lektioner",
-    "download_course": "Opgrader for at downloade kursus"
+    "download_course": "Opgrader for at downloade kursus",
+    "required": "Opgradering påkrævet"
   },
   "analytics": {
     "courses": "Kurser",
@@ -869,8 +855,7 @@
               "heading": "Beskrivelse",
               "describe": "Beskriv øvelsen til din studerende",
               "no": "Ingen beskrivelse"
-            },
-            "add_question": "Tilføj et spørgsmål"
+            }
           },
           "new_exercise_modal": {
             "heading": "Ny øvelse",
@@ -1597,10 +1582,46 @@
     "seconds": "sekunder",
     "snackbar_error": "Fejl under afsendelse af kode"
   },
-  "new_course_modal": {
-    "live_class_label": "Live klasse",
-    "live_class_subtitle": "Denne kursustype er ideel til bootcamps, hvor undervisningen er tidsbaseret, og du har brug for deltagelse og karaktergivning",
-    "self_paced_label": "Selv tempo",
-    "self_paced_subtitle": "Denne kursustype er ideel til kurser, hvor elever kan tage lektioner i deres eget tempo uden en lærer"
+  "email_verification": {
+    "security_footer": "Din kontosikkerhed er vores topprioritet. Alle verifikationsforsøg logges til sikkerhedsovervågning.",
+    "actions": {
+      "request_new": "Anmod om ny bekræftelses-e-mail",
+      "contact_support": "Kontakt support",
+      "back_to_dashboard": "Tilbage til Dashboard"
+    },
+    "security_notice": {
+      "title": "Sikkerhedsforbedring",
+      "message": "Vi har opgraderet vores e-mailbekræftelsessystem for bedre sikkerhed. Gamle bekræftelseslinks er ikke længere gyldige for at beskytte din konto."
+    },
+    "errors": {
+      "unknown": {
+        "title": "Bekræftelse mislykkedes",
+        "message": "Der opstod en uventet fejl under e-mailbekræftelse. Prøv venligst igen, eller kontakt vores supportteam for at få hjælp."
+      },
+      "database": {
+        "title": "Systemfejl",
+        "message": "Vi oplever tekniske problemer. Prøv venligst igen senere, eller kontakt vores supportteam, hvis problemet fortsætter."
+      },
+      "legacy_blocked": {
+        "title": "Ikke-understøttet bekræftelsesmetode",
+        "message": "Denne bekræftelsesmetode understøttes ikke længere af sikkerhedsmæssige årsager. Anmod om en ny bekræftelses-e-mail ved hjælp af vores sikre bekræftelsessystem."
+      },
+      "email_mismatch": {
+        "title": "E-mail-adresse ændret",
+        "message": "Din e-mailadresse er blevet ændret, siden dette bekræftelseslink blev genereret. Anmod om et nyt bekræftelseslink til din nuværende e-mailadresse."
+      },
+      "token_expired": {
+        "title": "Bekræftelseslink er udløbet",
+        "message": "Dette bekræftelseslink er udløbet af sikkerhedsmæssige årsager. Anmod om en ny bekræftelses-e-mail for at fortsætte."
+      },
+      "token_used": {
+        "title": "Link er allerede brugt",
+        "message": "Dette bekræftelseslink er allerede blevet brugt. Hvis du har brug for at bekræfte din e-mail igen, bedes du anmode om et nyt bekræftelseslink."
+      },
+      "invalid_token": {
+        "title": "Ugyldigt bekræftelseslink",
+        "message": "Dette bekræftelseslink er ugyldigt eller forkert udformet. Tjek venligst din e-mail for det korrekte link, eller anmod om en ny bekræftelses-e-mail."
+      }
+    }
   }
 }

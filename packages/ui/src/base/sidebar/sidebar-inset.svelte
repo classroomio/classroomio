@@ -14,7 +14,7 @@
   bind:this={ref}
   data-slot="sidebar-inset"
   class={cn(
-    'ui:bg-background ui:relative ui:flex ui:w-full ui:flex-1 ui:flex-col',
+    'ui:bg-background ui:relative ui:flex ui:w-full ui:flex-1 ui:flex-col ui:h-full',
     'ui:md:peer-data-[variant=inset]:m-2 ui:md:peer-data-[variant=inset]:ml-0 ui:md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2 ui:md:peer-data-[variant=inset]:rounded-xl ui:md:peer-data-[variant=inset]:shadow-sm',
     className
   )}

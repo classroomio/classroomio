@@ -24,6 +24,10 @@ export class BaseApi {
   isLoading = $state(false);
   error = $state<string | null>(null);
 
+  constructor(loading = false) {
+    this.isLoading = loading;
+    this.error = null;
+  }
   /**
    * Execute an API request with automatic loading and error state management
    * Type is automatically inferred from the RPC call (e.g., classroomio.organization.plan.$post)

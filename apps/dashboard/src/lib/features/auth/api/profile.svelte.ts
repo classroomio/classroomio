@@ -7,7 +7,7 @@ import { authClient } from '$lib/utils/services/auth/client';
 import { handleLocaleChange } from '$lib/utils/functions/translations';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { profile as profileStore } from '$lib/utils/store/user';
-import { snackbar } from '$lib/components/Snackbar/store';
+import { snackbar } from '$features/ui/snackbar/store';
 import { t } from '$lib/utils/functions/translations';
 import { uploadImage } from '$lib/utils/services/upload';
 

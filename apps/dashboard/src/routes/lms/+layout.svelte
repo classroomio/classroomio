@@ -1,5 +1,7 @@
 <script lang="ts">
-  import LMSSideBar from '$lib/components/LMS/SideBar.svelte';
+  import * as Sidebar from '@cio/ui/base/sidebar';
+  import LmsHeader from '$features/ui/navigation/lms-header.svelte';
+  import { LMSSidebar } from '$features/ui/sidebar/lms-sidebar';
 
   interface Props {
     children?: import('svelte').Snippet;
@@ -8,9 +10,14 @@
   let { children }: Props = $props();
 </script>
 
-<div class="org-root flex w-full items-center justify-between">
-  <LMSSideBar />
-  <div class="org-slot w-full bg-white dark:bg-black">
-    {@render children?.()}
-  </div>
-</div>
+<Sidebar.Provider>
+  <LMSSidebar />
+
+  <Sidebar.Inset>
+    <LmsHeader />
+
+    <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4">
+      {@render children?.()}
+    </div>
+  </Sidebar.Inset>
+</Sidebar.Provider>
