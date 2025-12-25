@@ -210,25 +210,55 @@ Uploading... → Processing... → Ready (with quality selector)
 - **Compression**: Optimize original uploads before encoding
 - **Lifecycle Policies**: Archive old videos to cheaper storage tiers
 
-### 7. Implementation Priority
+### 7. Caption/Subtitle Generation
+
+**Priority: HIGH** - Improves accessibility and user experience
+
+#### Why Captions Matter:
+- **Accessibility** - Required for hearing-impaired users
+- **SEO** - Search engines can index video content
+- **Engagement** - Users watch videos longer with captions
+- **Language Learning** - Helps non-native speakers
+- **Mobile Viewing** - Many users watch without sound
+
+#### Implementation:
+See detailed guide: **[CAPTION_GENERATION_GUIDE.md](./CAPTION_GENERATION_GUIDE.md)**
+
+**Quick Summary:**
+- **Recommended**: OpenAI Whisper (self-hosted in Docker)
+- **Integration**: Add to video encoding pipeline
+- **Formats**: Generate both SRT and VTT files
+- **Storage**: Store captions in R2 alongside video files
+- **Cost**: $0 (self-hosted) vs ~$0.90/hour (cloud APIs)
+
+**Architecture:**
+```
+Video Upload → Extract Audio → Whisper Transcription → Generate SRT/VTT → Upload to R2 → Link to Video
+```
+
+### 8. Implementation Priority
 
 #### Phase 1: Foundation (Week 1-2)
 1. ✅ Set up FFmpeg encoding service
-2. ✅ Create processing queue/job system
-3. ✅ Implement basic HLS encoding script
-4. ✅ Update database schema
+2. ✅ Create processing queue/job system (BullMQ)
+3. ✅ Set up Whisper API service (Docker)
+4. ✅ Implement basic HLS encoding script
+5. ✅ Update database schema
 
 #### Phase 2: Integration (Week 3-4)
 1. ✅ Integrate encoding into upload flow
-2. ✅ Update frontend player with HLS.js
-3. ✅ Add processing status UI
-4. ✅ Test with sample videos
+2. ✅ Add caption generation to worker
+3. ✅ Update frontend player with HLS.js + captions
+4. ✅ Add processing status UI
+5. ✅ Test with sample videos
 
 #### Phase 3: Enhancement (Week 5-6)
 1. ✅ Add thumbnail generation
 2. ✅ Implement quality selector UI
-3. ✅ Add video metadata extraction (duration, etc.)
-4. ✅ Performance monitoring and optimization
+3. ✅ Add caption editor UI (for corrections)
+4. ✅ Add video metadata extraction (duration, etc.)
+5. ✅ Multi-language caption support
+6. ✅ Performance monitoring and optimization
 
 #### Phase 4: Polish (Week 7+)
 1. ✅ Error handling and retry logic
