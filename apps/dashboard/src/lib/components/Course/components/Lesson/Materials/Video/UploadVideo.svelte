@@ -7,6 +7,7 @@
   import { isFreePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { VideoUploader } from '$lib/utils/services/courses/presign';
+  import { processVideo, waitForVideoProcessing } from '$lib/utils/services/video';
   import { Button } from '@cio/ui/base/button';
 
   interface Props {
@@ -25,6 +26,8 @@
     message?: string;
   } | null = $state(null);
   let isLoaded = $state(false);
+  let isProcessing = $state(false);
+  let processingProgress = $state(0);
   let fileInput: HTMLInputElement | null = $state(null);
   let submit: HTMLInputElement | null = $state(null);
   let fileName = $state('');
@@ -65,22 +68,72 @@
 
       const { urls: presignedUrls } = await videoUploader.getDownloadPresignedUrl([fileKey]);
 
-      formRes = {
-        url: presignedUrls[fileKey],
-        fileKey: fileKey,
-        status: 200
-      };
+      // Start video processing (HLS encoding + captions)
+      isProcessing = true;
+      processingProgress = 0;
 
-      $lesson.materials.videos = [
-        ...$lesson.materials.videos,
-        {
-          type: 'upload',
-          link: formRes.url!,
-          key: formRes?.fileKey
-        }
-      ];
+      try {
+        const processResult = await processVideo({
+          fileKey,
+          lessonId: lessonId || undefined,
+        });
 
-      isLoaded = false;
+        // Wait for processing to complete
+        const statusResult = await waitForVideoProcessing(
+          processResult.jobId,
+          (progress) => {
+            processingProgress = progress;
+          }
+        );
+
+        // Update video with processed data
+        formRes = {
+          url: presignedUrls[fileKey], // Fallback to original
+          fileKey: fileKey,
+          status: 200,
+        };
+
+        $lesson.materials.videos = [
+          ...$lesson.materials.videos,
+          {
+            type: 'upload',
+            link: statusResult.result?.manifestUrl || presignedUrls[fileKey],
+            key: fileKey,
+            hlsManifestUrl: statusResult.result?.manifestUrl,
+            captions: statusResult.result?.captions
+              ? {
+                  vttUrl: statusResult.result.captions.vttUrl,
+                  srtUrl: statusResult.result.captions.srtUrl,
+                  transcript: statusResult.result.captions.transcript,
+                  language: statusResult.result.captions.language,
+                }
+              : undefined,
+          },
+        ];
+
+        isProcessing = false;
+        isLoaded = false;
+      } catch (processingError: any) {
+        console.error('Video processing error:', processingError);
+        // Still add video even if processing fails (will use original)
+        formRes = {
+          url: presignedUrls[fileKey],
+          fileKey: fileKey,
+          status: 200,
+        };
+
+        $lesson.materials.videos = [
+          ...$lesson.materials.videos,
+          {
+            type: 'upload',
+            link: presignedUrls[fileKey],
+            key: fileKey,
+          },
+        ];
+
+        isProcessing = false;
+        isLoaded = false;
+      }
     } catch (err: any) {
       console.error('Error uploading video', err, '\n\n', err.response);
 
@@ -158,6 +211,12 @@
               {$t('course.navItem.lessons.materials.tabs.video.add_video.cancel_upload')}
             </Button>
           </div>
+        </div>
+      {:else if isProcessing}
+        <div class="flex w-[60%] max-w-[500px] flex-col justify-center gap-5">
+          <p class="mt-5 text-center">Processing video (encoding and generating captions)...</p>
+          <Progress class="w-full" value={processingProgress} max={100} />
+          <p class="text-sm">{processingProgress}% complete</p>
         </div>
       {:else}
         <img src="/upload-video.svg" alt="upload" />

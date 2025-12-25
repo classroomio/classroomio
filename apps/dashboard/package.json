@@ -50,6 +50,7 @@
     "d3-sankey": "^0.12.3",
     "dayjs": "^1.11.10",
     "encoding": "^0.1.13",
+    "hls.js": "^1.6.15",
     "hotkeys-js": "^3.11.2",
     "html-to-image": "^1.11.11",
     "is-valid-domain": "^0.1.6",

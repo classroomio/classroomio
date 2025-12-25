@@ -48,6 +48,7 @@
     "@scalar/hono-api-reference": "^0.9.18",
     "@sentry/profiling-node": "^7.110.1",
     "axios": "^1.4.0",
+    "bullmq": "^5.66.2",
     "dotenv": "^16.3.1",
     "hono": "^4.9.7",
     "hono-openapi": "^1.0.8",

@@ -7,6 +7,43 @@
 version: "3.8"
 
 services:
+  redis:
+    image: redis:7-alpine
+    container_name: classroomio-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  whisper-api:
+    image: onerahmet/openai-whisper-asr-webservice:latest-cpu
+    container_name: classroomio-whisper
+    ports:
+      - "${WHISPER_PORT:-9000}:9000"
+    environment:
+      - ASR_MODEL=base
+      - ASR_ENGINE=openai_whisper
+    volumes:
+      - whisper_models:/root/.cache/whisper
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4G
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   api:
     image: classroomio/api:latest
     ports:
@@ -21,6 +58,7 @@ services:
       - CLOUDFLARE_ACCESS_KEY=${CLOUDFLARE_ACCESS_KEY}
       - CLOUDFLARE_SECRET_ACCESS_KEY=${CLOUDFLARE_SECRET_ACCESS_KEY}
       - CLOUDFLARE_ACCOUNT_ID=${CLOUDFLARE_ACCOUNT_ID}
+      - CLOUDFLARE_VIDEO_BUCKET_DOMAIN=${CLOUDFLARE_VIDEO_BUCKET_DOMAIN}
       # SMTP - Emails
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_USER=${SMTP_USER}
@@ -28,7 +66,14 @@ services:
       - SMTP_PORT=${SMTP_PORT}
       - SMTP_SENDER=${SMTP_SENDER}
       # Redis
-      - REDIS_URL=${REDIS_URL}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      # Whisper API
+      - WHISPER_API_URL=${WHISPER_API_URL:-http://whisper-api:9000}
+    depends_on:
+      redis:
+        condition: service_healthy
+      whisper-api:
+        condition: service_healthy
 
   dashboard:
     image: classroomio/dashboard:latest
@@ -48,3 +93,9 @@ services:
       - PUBLIC_IP_REGISTRY_KEY=${PUBLIC_IP_REGISTRY_KEY}
     depends_on:
       - api
+
+volumes:
+  redis_data:
+    driver: local
+  whisper_models:
+    driver: local

@@ -5,6 +5,24 @@ import { app } from '@api/app';
 import { configureOpenAPI } from '@api/utils/openapi';
 import { serve } from '@hono/node-server';
 import { showRoutes } from 'hono/dev';
+import { videoWorker } from '@api/services/video/worker';
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  console.log('Shutting down video worker...');
+  if (videoWorker) {
+    await videoWorker.close();
+  }
+  process.exit(0);
+});
+
+process.on('SIGINT', async () => {
+  console.log('Shutting down video worker...');
+  if (videoWorker) {
+    await videoWorker.close();
+  }
+  process.exit(0);
+});
 
 // Start server
 function startServer() {
