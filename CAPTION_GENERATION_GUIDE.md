@@ -6,6 +6,8 @@ Comprehensive guide for implementing automatic caption/subtitle generation for y
 
 Generate captions/subtitles automatically during video processing, supporting multiple languages and formats (SRT, VTT, WebVTT).
 
+**Note:** This guide replaces any existing Muse.ai integration with a self-hosted Whisper solution that is more cost-effective and easier to self-host.
+
 ## Recommended Solutions
 
 ### Option 1: OpenAI Whisper (Self-Hosted) ⭐ **RECOMMENDED**

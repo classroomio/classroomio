@@ -225,7 +225,8 @@ Uploading... → Processing... → Ready (with quality selector)
 See detailed guide: **[CAPTION_GENERATION_GUIDE.md](./CAPTION_GENERATION_GUIDE.md)**
 
 **Quick Summary:**
-- **Recommended**: OpenAI Whisper (self-hosted in Docker)
+- **Recommended**: OpenAI Whisper (self-hosted in Docker) ⭐
+- **Replaces**: Muse.ai integration (complex, pricy, harder to self-host)
 - **Integration**: Add to video encoding pipeline
 - **Formats**: Generate both SRT and VTT files
 - **Storage**: Store captions in R2 alongside video files
@@ -235,6 +236,11 @@ See detailed guide: **[CAPTION_GENERATION_GUIDE.md](./CAPTION_GENERATION_GUIDE.m
 ```
 Video Upload → Extract Audio → Whisper Transcription → Generate SRT/VTT → Upload to R2 → Link to Video
 ```
+
+**Migration Note:**
+- Remove Muse.ai iframe embeds from `ComponentVideo.svelte`
+- Replace with native video player + caption tracks
+- Migrate existing Muse.ai videos to self-hosted solution
 
 ### 8. Implementation Priority
 
