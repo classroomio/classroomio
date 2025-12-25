@@ -17,7 +17,7 @@
     </Tooltip.Trigger>
     <Tooltip.Content>
       <span>{tooltip}</span>
-      <span class="ui:text-muted-foreground">{shortCut}</span>
+      <span class="ui:bg-background ui:text-primary ui:rounded ui:font-semibold">{shortCut}</span>
     </Tooltip.Content>
   </Tooltip.Root>
 </Tooltip.Provider>

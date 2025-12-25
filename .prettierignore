@@ -14,3 +14,5 @@ apps/api/static
 
 pnpm-lock.yaml
 *.md
+
+output.css
