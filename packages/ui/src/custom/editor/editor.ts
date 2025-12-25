@@ -12,10 +12,12 @@ import SearchAndReplace from './extensions/FindAndReplace';
 import { TaskItem, TaskList } from '@tiptap/extension-list';
 import { Table, TableCell, TableRow, TableHeader } from './extensions/table';
 import { Placeholder } from '@tiptap/extensions';
-import { Markdown } from 'tiptap-markdown';
-import MathExtension from '@aarkue/tiptap-math-extension';
+import { Markdown } from '@tiptap/markdown';
+import MathMatics from '@tiptap/extension-mathematics';
+
 import AutoJoiner from 'tiptap-extension-auto-joiner';
 import 'katex/dist/katex.min.css';
+import { InlineMathReplacer } from './extensions/InlineMathReplacer';
 
 export default (
   element?: HTMLElement,
@@ -82,22 +84,41 @@ export default (
         nested: true
       }),
       SearchAndReplace,
-      MathExtension.configure({ evaluation: true }),
+      InlineMathReplacer,
+      MathMatics.configure({
+        blockOptions: {
+          onClick: (node, pos) => {
+            const newCalculation = prompt('Enter new calculation:', node.attrs.latex);
+            if (newCalculation) {
+              editor
+                .chain()
+                .setNodeSelection(pos)
+                .updateBlockMath({ latex: newCalculation })
+                .focus()
+                .run();
+            }
+          }
+        },
+        inlineOptions: {
+          onClick: (node, pos) => {
+            const newCalculation = prompt('Enter new calculation:', node.attrs.latex);
+            if (newCalculation) {
+              editor
+                .chain()
+                .setNodeSelection(pos)
+                .updateInlineMath({ latex: newCalculation })
+                .focus()
+                .run();
+            }
+          }
+        }
+      }),
       AutoJoiner,
       Table,
       TableHeader,
       TableRow,
       TableCell,
-      Markdown.configure({
-        html: true,
-        tightLists: true,
-        tightListClass: 'tight',
-        bulletListMarker: '-',
-        linkify: true,
-        breaks: true,
-        transformPastedText: true,
-        transformCopiedText: false
-      }),
+      Markdown,
 
       ...(extensions ?? [])
     ],
