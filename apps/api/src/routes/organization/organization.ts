@@ -175,7 +175,6 @@ export const organizationRouter = new Hono()
   .get(
     '/courses',
     // TODO: Ratelimit this endpoint
-    // TODO: Add cache
     // TODO: Add pagination
     // TODO: Add sorting
     // TODO: Add filtering
