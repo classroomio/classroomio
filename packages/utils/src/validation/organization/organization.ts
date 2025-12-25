@@ -116,3 +116,10 @@ export const ZRemoveTeamMember = z.object({
 });
 
 export type TRemoveTeamMember = z.infer<typeof ZRemoveTeamMember>;
+
+export const ZGetUserAnalytics = z.object({
+  orgId: z.uuid(),
+  userId: z.uuid()
+});
+
+export type TGetUserAnalytics = z.infer<typeof ZGetUserAnalytics>;

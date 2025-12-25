@@ -1,4 +1,5 @@
-import { writable, derived } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
+
 import type { Course } from '$lib/utils/types';
 
 export const courses = writable<Course[]>([]);
@@ -22,7 +23,7 @@ export const courseMetaDeta = writable<{
   isLoading: boolean;
   view: 'grid' | 'list';
 }>({
-  isLoading: true,
+  isLoading: false,
   view: 'grid'
 });
 

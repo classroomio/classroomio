@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
   import { Badge } from '@cio/ui/base/badge';
   import UnfoldVerticalIcon from '@lucide/svelte/icons/unfold-vertical';
@@ -12,45 +11,12 @@
 
   import { t } from '$lib/utils/functions/translations';
   import { currentOrgPath } from '$lib/utils/store/org';
-  import { snackbar } from '$features/ui/snackbar/store';
-  import { getAccessToken } from '$lib/utils/functions/supabase';
   import type { UserAnalytics } from '$lib/utils/types/analytics';
 
   let { data } = $props();
 
-  let userAnalytics: UserAnalytics | undefined = $state();
-
-  let courseFilter = $state('all');
-  function toggleCourseFilter(filter: 'completed' | 'incomplete') {
-    if (courseFilter === filter) {
-      courseFilter = 'all';
-    } else {
-      courseFilter = filter;
-    }
-  }
-
-  async function fetchUserAnalytics() {
-    const accessToken = await getAccessToken();
-    const response = await fetch('/api/analytics/user', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: accessToken
-      },
-      body: JSON.stringify(data)
-    });
-
-    if (!response.ok) {
-      console.error(response);
-      snackbar.error('Failed to fetch analytics data');
-    }
-
-    userAnalytics = (await response.json()) as UserAnalytics;
-  }
-
-  onMount(() => {
-    fetchUserAnalytics();
-  });
+  // Use analytics data from server load function if available
+  const userAnalytics: UserAnalytics | undefined = $derived(data.analytics);
 
   let userMetrics = $derived([
     {

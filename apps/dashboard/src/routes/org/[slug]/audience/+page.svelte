@@ -5,8 +5,8 @@
   import { currentOrgPlan, currentOrgMaxAudience } from '$lib/utils/store/org';
   import { PLAN } from '@cio/utils/plans';
   import * as Page from '@cio/ui/base/page';
-  import { orgApi } from '$features/org/api/org.svelte';
 
+  let { data } = $props();
   let isLoading = $state(false);
 
   function exportAudience() {
@@ -14,6 +14,8 @@
     alert('This feature is coming soon');
     isLoading = false;
   }
+
+  const audienceLength = $derived(data.audience?.length || 0);
 </script>
 
 <svelte:head>
@@ -27,7 +29,7 @@
         {$t('audience.title')}
         {#if $currentOrgPlan?.planName !== PLAN.ENTERPRISE}
           <span class="ml-2 text-sm">
-            ({orgApi.audience.length} / {$currentOrgMaxAudience})
+            ({audienceLength} / {$currentOrgMaxAudience})
           </span>
         {/if}
       </Page.Title>
@@ -40,7 +42,7 @@
   </Page.Header>
   <Page.Body>
     {#snippet child()}
-      <AudiencePage />
+      <AudiencePage audience={data.audience} />
     {/snippet}
   </Page.Body>
 </Page.Root>

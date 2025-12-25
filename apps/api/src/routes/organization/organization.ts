@@ -7,6 +7,7 @@ import {
   ZGetOrganizationAudience,
   ZGetOrganizationTeam,
   ZGetOrganizations,
+  ZGetUserAnalytics,
   ZInviteTeamMembers,
   ZRemoveTeamMember,
   ZUpdateOrgPlan,
@@ -17,11 +18,12 @@ import {
   cancelOrgPlan,
   createOrg,
   createOrgPlan,
-  getCoursesByOrgSiteName,
   getOrgAudience,
   getOrgSetupData,
   getOrgTeam,
+  getOrganizationCourses,
   getOrganizationsWithFilters,
+  getUserAnalytics,
   inviteTeamMembers,
   removeTeamMember,
   updateOrg,
@@ -168,22 +170,55 @@ export const organizationRouter = new Hono()
     }
   )
   /**
+   * GET /organization/:orgId/audience/:userId/analytics
+   * Gets user analytics for a specific user in an organization
+   * Requires authentication and organization membership
+   */
+  .get(
+    '/:orgId/audience/:userId/analytics',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZGetUserAnalytics),
+    async (c) => {
+      try {
+        const { orgId, userId } = c.req.valid('param');
+        const analytics = await getUserAnalytics(userId, orgId);
+
+        return c.json(
+          {
+            success: true,
+            data: analytics
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch user analytics');
+      }
+    }
+  )
+  /**
    * GET /organization/courses
    * Gets courses by organization siteName
    * Query params: siteName (string)
+   * Requires authentication - filters courses based on user permissions:
+   * - Admins see all courses (published and unpublished)
+   * - Students/Teachers only see published courses they have access to
+   * - Public (no auth): only see published courses
    */
   .get(
     '/courses',
+    authMiddleware,
     // TODO: Ratelimit this endpoint
     // TODO: Add cache
     // TODO: Add pagination
     // TODO: Add sorting
-    // TODO: Add filtering
     zValidator('query', ZGetCoursesBySiteName),
     async (c) => {
       try {
         const { siteName } = c.req.valid('query');
-        const courses = await getCoursesByOrgSiteName(siteName);
+        const user = c.get('user');
+
+        const courses = await getOrganizationCourses(siteName, user.id);
 
         return c.json(
           {

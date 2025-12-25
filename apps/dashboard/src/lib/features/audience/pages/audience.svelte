@@ -13,9 +13,19 @@
   import * as Avatar from '@cio/ui/base/avatar';
   import * as Page from '@cio/ui/base/page';
   import { shortenName } from '$lib/utils/functions/string';
+  import type { OrganizationAudience } from '$features/org/utils/types';
 
+  interface Props {
+    audience?: OrganizationAudience;
+  }
+
+  let { audience }: Props = $props();
+
+  // Initialize audience from prop if provided
   $effect(() => {
-    orgApi.getOrgAudience($currentOrg.id);
+    if (audience) {
+      orgApi.audience = audience;
+    }
   });
 
   const headers = [

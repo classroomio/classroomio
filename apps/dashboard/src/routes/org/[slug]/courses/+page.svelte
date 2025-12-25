@@ -1,10 +1,7 @@
 <script lang="ts">
-  import { profile } from '$lib/utils/store/user';
-  import { fetchCourses } from '$lib/utils/services/courses';
   import { CoursesPage } from '$features/course/pages';
   import { CreateCourseButton } from '$features/course/components';
   import { courses, courseMetaDeta } from '$features/course/utils/store';
-  import { currentOrg } from '$lib/utils/store/org';
   import type { Course } from '$lib/utils/types';
   import { browser } from '$app/environment';
   import { t } from '$lib/utils/functions/translations';
@@ -13,31 +10,17 @@
 
   let { data } = $props();
 
-  let { cantFetch } = data;
   let searchValue = $state('');
   let selectedId: string = $state('0');
-  let hasFetched = false;
+
+  // Initialize courses store from server data
+  $effect(() => {
+    if (data.courses) {
+      courses.set(data.courses);
+    }
+  });
 
   const filteredCourses: Course[] = $derived(filterCourses(searchValue, selectedId, $courses));
-
-  async function getCourses(userId: string | undefined, orgId: string) {
-    if (cantFetch && typeof cantFetch === 'boolean' && orgId && !hasFetched) {
-      // only show is loading when fetching for the first time
-      if (!$courses.length) {
-        $courseMetaDeta.isLoading = true;
-      }
-
-      const coursesResult = await fetchCourses(userId, orgId);
-      console.log(`coursesResult`, coursesResult);
-
-      $courseMetaDeta.isLoading = false;
-      if (!coursesResult) return;
-
-      // organizationId = coursesResult.organizationId;
-      courses.set(coursesResult.allCourses);
-      hasFetched = true;
-    }
-  }
 
   function filterCourses(searchValue: string, _selectedId: string, courses: Course[]) {
     if (browser) {
@@ -73,10 +56,6 @@
     if (courseView) {
       $courseMetaDeta.view = courseView;
     }
-  });
-
-  $effect(() => {
-    getCourses($profile.id, $currentOrg.id);
   });
 </script>
 

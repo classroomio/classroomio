@@ -20,24 +20,25 @@
 
   interface Props {
     isLMS?: boolean;
+    questions?: CommunityQuestionData;
   }
 
-  let { isLMS = false }: Props = $props();
+  let { isLMS = false, questions }: Props = $props();
 
   let searchValue = $state('');
   let selectedId = $state('');
 
-  function fetchCommunityQuestions(orgId?: string, profileId?: string) {
-    if (!orgId || !profileId) return;
-
-    untrack(async () => {
-      await communityApi.fetchCoursesForOrg(profileId, orgId);
-      await communityApi.fetchCommunityQuestions({ orgId, isLMS });
-    });
-  }
+  // Initialize questions from prop if provided
+  $effect(() => {
+    if (questions) {
+      communityApi.questions = questions;
+    }
+  });
 
   $effect(() => {
-    fetchCommunityQuestions($currentOrg.id, $profile.id);
+    if (!$profile.id || !$currentOrg.id || communityApi.coursesFetched) return;
+
+    communityApi.fetchCoursesForOrg($profile.id, $currentOrg.id);
   });
 
   let filteredQuestions = $derived(

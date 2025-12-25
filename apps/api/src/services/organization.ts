@@ -6,24 +6,30 @@ import {
   createOrganizationMembers,
   createOrganizationPlan,
   deleteOrganizationMember,
+  getOrgIdBySiteName,
   getOrganizationAudience,
   getOrganizationById,
   getOrganizationBySiteName,
   getOrganizationTeam,
   getOrganizations,
+  isUserOrgAdmin,
   updateOrganization,
   updateOrganizationPlan
 } from '@cio/db/queries/organization';
 import {
+  getAllCoursesBySiteName,
   getCoursesById,
-  getCoursesBySiteName,
+  getCoursesByOrgIdAndProfileId,
   getCoursesBySiteNameForSetup,
   getExercisesBySiteName,
-  getLessonsBySiteName
+  getLessonsBySiteName,
+  getPublishedCoursesBySiteName
 } from '@cio/db/queries/course';
+import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/analytics';
 
 import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { env } from '@api/config/env';
+import { getProfileById } from '@cio/db/queries/auth';
 import { sendEmail } from '@cio/email';
 
 /**
@@ -112,13 +118,41 @@ export async function getOrgAudience(orgId: string) {
 }
 
 /**
- * Gets courses by organization siteName
- * @param siteName - The organization site name
+ * Gets organization courses with permission-based filtering
+ * @param siteName - The organization siteName
+ * @param userId - Optional user ID for permission-based filtering
  * @returns Array of courses
+ * - Admins: see all courses (published and unpublished)
+ * - Students/Teachers: only see published courses they have access to
+ * - Public: only see published courses
  */
-export async function getCoursesByOrgSiteName(siteName: string) {
+export async function getOrganizationCourses(siteName: string, userId?: string) {
   try {
-    const courses = await getCoursesBySiteName(siteName);
+    // If userId is provided, check permissions and filter accordingly
+    if (userId) {
+      // Get organization from siteName to check admin status
+      const orgResult = await getOrgIdBySiteName(siteName);
+      const org = orgResult[0];
+
+      if (!org) {
+        throw new AppError('Organization not found', ErrorCodes.ORG_NOT_FOUND, 404);
+      }
+
+      const isAdmin = await isUserOrgAdmin(org.id, userId);
+
+      if (isAdmin) {
+        // Admins can see all courses (published and unpublished)
+        const courses = await getAllCoursesBySiteName(siteName);
+        return courses;
+      } else {
+        // Non-admins only see published courses they have access to (where they are groupmembers)
+        const courses = await getCoursesByOrgIdAndProfileId(org.id, userId);
+        return courses;
+      }
+    }
+
+    // If no userId provided, return only published courses (for public/unauthenticated access)
+    const courses = await getPublishedCoursesBySiteName(siteName);
     return courses;
   } catch (error) {
     throw new AppError(
@@ -375,6 +409,101 @@ export async function removeTeamMember(orgId: string, memberId: number) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to remove team member',
       ErrorCodes.ORG_TEAM_REMOVE_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Helper function to sum array object values by key
+ */
+function sumArrObject<T>(arr: T[], key: keyof T): number {
+  return arr.reduce((sum, item) => sum + ((item[key] as number) || 0), 0);
+}
+
+/**
+ * Helper function to calculate percentage with rounding
+ */
+function calcPercentageWithRounding(a: number, b: number): number {
+  if (b === 0) {
+    return 0;
+  }
+  const rawPercentage = (a / b) * 100;
+  const fixedString = rawPercentage.toFixed(1);
+  const roundedNumber = parseFloat(fixedString);
+  return isNaN(roundedNumber) ? 0 : roundedNumber;
+}
+
+/**
+ * Gets user analytics for an organization
+ * @param userId - The user ID (profile ID)
+ * @param orgId - The organization ID
+ * @returns User analytics data including courses, progress, and grades
+ */
+export async function getUserAnalytics(userId: string, orgId: string) {
+  try {
+    // Get user profile
+    const profile = await getProfileById(userId);
+    if (!profile) {
+      throw new AppError('User profile not found', ErrorCodes.PROFILE_NOT_FOUND, 404);
+    }
+
+    // Get last login
+    const lastSeen = await getLastLogin(userId);
+
+    // Get courses for this org where user is a member
+    const courses = await getCoursesByOrgIdAndProfileId(orgId, userId);
+
+    // Build analytics data for each course
+    const coursesWithStats = await Promise.all(
+      courses.map(async (course) => {
+        const [userExercisesStats, courseProgress] = await Promise.all([
+          getUserExercisesStats(course.id, userId),
+          getProfileCourseProgress(course.id, userId)
+        ]);
+
+        const totalEarnedPoints = sumArrObject(userExercisesStats, 'score');
+        const totalPoints = sumArrObject(userExercisesStats, 'totalPoints');
+        const averageGrade = calcPercentageWithRounding(totalEarnedPoints, totalPoints);
+        const lessonsCompleted = courseProgress.lessons_completed || 0;
+        const lessonsCount = courseProgress.lessons_count || 0;
+
+        return {
+          ...course,
+          ...courseProgress,
+          progress_percentage: calcPercentageWithRounding(lessonsCompleted, lessonsCount),
+          average_grade: averageGrade
+        };
+      })
+    );
+
+    // Calculate overall stats
+    const totalLessons = coursesWithStats.reduce((acc, course) => acc + (course.lessons_count || 0), 0);
+    const completedLessons = coursesWithStats.reduce((acc, course) => acc + (course.lessons_completed || 0), 0);
+    const overallCourseProgress = calcPercentageWithRounding(completedLessons, totalLessons);
+
+    const allGrades = sumArrObject(coursesWithStats, 'average_grade');
+    const overallAverageGrade = calcPercentageWithRounding(allGrades, coursesWithStats.length);
+
+    return {
+      user: {
+        id: userId,
+        fullName: profile.fullname || '',
+        email: profile.email || '',
+        avatarUrl: profile.avatarUrl || '',
+        lastSeen: lastSeen || undefined
+      },
+      courses: coursesWithStats,
+      overallCourseProgress,
+      overallAverageGrade
+    };
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch user analytics',
+      ErrorCodes.INTERNAL_ERROR,
       500
     );
   }

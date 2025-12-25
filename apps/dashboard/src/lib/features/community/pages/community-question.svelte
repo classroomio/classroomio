@@ -20,13 +20,16 @@
   import { shortenName } from '$lib/utils/functions/string';
   import { TextEditor } from '$features/ui';
   import { CommunityDeleteModal, CommunityCommentItem } from '$features/community/components';
+  import type { CommunityQuestionSuccess } from '../utils/types';
+  import { currentCommunityQuestion } from '../utils/store';
 
   interface Props {
     slug: string;
     isLMS?: boolean;
+    question?: CommunityQuestionSuccess['data'] | null;
   }
 
-  let { slug, isLMS = false }: Props = $props();
+  let { slug, isLMS = false, question }: Props = $props();
 
   let commentEditor: TiptapEditor | undefined = $state();
   let isValidAnswer = false; // V2 allow admin mark an answer as accepted
@@ -41,11 +44,18 @@
     questionId: ''
   });
 
+  // Initialize question from prop if provided
   $effect(() => {
-    if ($profile.id && $currentOrg.id) {
+    if (question) {
+      communityApi.question = question;
+      currentCommunityQuestion.set({ title: question.title });
+    }
+  });
+
+  $effect(() => {
+    if ($profile.id && $currentOrg.id && !communityApi.coursesFetched) {
       communityApi.fetchCoursesForOrg($profile.id, $currentOrg.id);
 
-      communityApi.fetchCommunityQuestion({ slug, isLMS });
     }
   });
 </script>

@@ -1,8 +1,8 @@
 import * as schema from '@db/schema';
 
+import { TCourse, TNewCourse } from '@db/types';
 import { and, eq, sql } from 'drizzle-orm';
 
-import { TCourse, TNewCourse } from '@db/types';
 import { db } from '@db/drizzle';
 
 /**
@@ -10,7 +10,7 @@ import { db } from '@db/drizzle';
  * @param siteName Organization site name
  * @returns Array of courses with lesson counts and organization info
  */
-export const getCoursesBySiteName = async (siteName: string): Promise<TCourse[]> => {
+export const getPublishedCoursesBySiteName = async (siteName: string): Promise<TCourse[]> => {
   try {
     const result = await db
       .select({
@@ -190,3 +190,118 @@ export async function createCourse(newCourse: TNewCourse) {
     throw new Error(`Failed to create course: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
+
+/**
+ * Gets all courses by organization siteName (including unpublished courses)
+ * Used for admin access to see all courses regardless of publication status
+ * @param siteName Organization site name
+ * @returns Array of courses with lesson counts and organization info
+ */
+export const getAllCoursesBySiteName = async (siteName: string): Promise<TCourse[]> => {
+  try {
+    const result = await db
+      .select({
+        course: schema.course,
+        organization: {
+          id: schema.organization.id,
+          name: schema.organization.name,
+          siteName: schema.organization.siteName,
+          avatarUrl: schema.organization.avatarUrl
+        },
+        lessonCount: sql<number>`COUNT(${schema.lesson.id})`.as('lesson_count')
+      })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
+      .leftJoin(schema.lesson, eq(schema.course.id, schema.lesson.courseId))
+      .where(
+        and(
+          eq(schema.organization.siteName, siteName),
+          eq(schema.course.status, 'ACTIVE')
+          // Note: No isPublished filter - returns all active courses
+        )
+      )
+      .groupBy(
+        schema.course.id,
+        schema.organization.id,
+        schema.organization.name,
+        schema.organization.siteName,
+        schema.organization.avatarUrl
+      );
+
+    return result.map((row) => ({
+      ...row.course,
+      lessons: [{ count: Number(row.lessonCount) }],
+      group: {
+        organization: row.organization
+      }
+    }));
+  } catch (error) {
+    throw new Error(
+      `Failed to get all courses by site name "${siteName}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+};
+
+/**
+ * Gets courses by organization orgId where user is a groupmember
+ * @param orgId Organization orgId
+ * @param profileId Profile ID of the user
+ * @returns Array of courses with lesson counts, progress, and membership info
+ */
+export const getCoursesByOrgIdAndProfileId = async (orgId: string, profileId: string): Promise<TCourse[]> => {
+  try {
+    // Get all courses for the org where user is a groupmember
+    const result = await db
+      .select({
+        course: schema.course,
+        organization: {
+          id: schema.organization.id,
+          name: schema.organization.name,
+          siteName: schema.organization.siteName,
+          avatarUrl: schema.organization.avatarUrl
+        },
+        lessonCount: sql<number>`COUNT(DISTINCT ${schema.lesson.id})`.as('lesson_count'),
+        groupmember: {
+          profileId: schema.groupmember.profileId,
+          roleId: schema.groupmember.roleId
+        }
+      })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
+      .innerJoin(schema.groupmember, eq(schema.group.id, schema.groupmember.groupId))
+      .leftJoin(schema.lesson, eq(schema.course.id, schema.lesson.courseId))
+      .where(
+        and(
+          eq(schema.organization.id, orgId),
+          eq(schema.course.status, 'ACTIVE'),
+          eq(schema.course.isPublished, true),
+          eq(schema.groupmember.profileId, profileId)
+        )
+      )
+      .groupBy(
+        schema.course.id,
+        schema.organization.id,
+        schema.organization.name,
+        schema.organization.siteName,
+        schema.organization.avatarUrl,
+        schema.groupmember.profileId,
+        schema.groupmember.roleId
+      );
+
+    return result.map((row) => ({
+      ...row.course,
+      lessons: [{ count: Number(row.lessonCount) }],
+      group: {
+        organization: row.organization
+      },
+      member_profile_id: row.groupmember.profileId,
+      role_id: Number(row.groupmember.roleId)
+    }));
+  } catch (error) {
+    throw new Error(
+      `Failed to get courses by org ID and profile ID: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+};

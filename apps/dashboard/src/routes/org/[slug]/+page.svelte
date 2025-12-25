@@ -11,7 +11,6 @@
   import { calDateDiff } from '$lib/utils/functions/date';
   import { getGreeting } from '$lib/utils/functions/date';
   import { currentOrgPath } from '$lib/utils/store/org';
-  import { dashStatApi } from '$features/org/api';
 
   import { CreateCourseButton } from '$features/course/components';
   import * as Avatar from '@cio/ui/base/avatar';
@@ -25,11 +24,12 @@
 
   const { data } = $props();
 
-  const { enrollments, numberOfCourses, revenue, totalStudents, topCourses } = $derived(dashStatApi.stats);
-
-  $effect(() => {
-    dashStatApi.fetchOrgStats({ siteName: data.orgName });
-  });
+  const stats = $derived(data.stats);
+  const enrollments = $derived(stats?.enrollments || []);
+  const numberOfCourses = $derived(stats?.numberOfCourses || 0);
+  const revenue = $derived(stats?.revenue || 0);
+  const totalStudents = $derived(stats?.totalStudents || 0);
+  const topCourses = $derived(stats?.topCourses || []);
 
   let cards = $derived([
     {
