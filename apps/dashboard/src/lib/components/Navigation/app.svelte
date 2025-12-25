@@ -1,85 +1,39 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
-  import { browser } from '$app/environment';
-  import NotificationIcon from 'carbon-icons-svelte/lib/Notification.svelte';
-  import Moon from 'carbon-icons-svelte/lib/Moon.svelte';
-  import Sun from 'carbon-icons-svelte/lib/Sun.svelte';
-  import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
-  import Close from 'carbon-icons-svelte/lib/Close.svelte';
-  import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
+  import BellIcon from '@lucide/svelte/icons/bell';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 
-  import IconButton from '$lib/components/IconButton/index.svelte';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrgPath } from '$lib/utils/store/org';
-  import { toggleBodyByMode } from '$lib/utils/functions/app';
-  import { sideBar } from '../Org/store';
   import { t } from '$lib/utils/functions/translations';
 
-  export let title = '';
-  export let navClass = '';
-  export let isCoursePage = false;
-
-  const toggleSidebar = () => {
-    $sideBar.hidden = !$sideBar.hidden;
-  };
-
-  function toggleDarkMode() {
-    $globalStore.isDark = !$globalStore.isDark;
-
-    toggleBodyByMode($globalStore.isDark);
-
-    if (browser) {
-      localStorage.setItem('mode', $globalStore.isDark ? 'dark' : '');
-    }
+  interface Props {
+    title?: string;
+    navClass?: string;
+    isCoursePage?: boolean;
   }
 
-  $: coursesPath = $globalStore.isOrgSite
-    ? '/lms/mylearning'
-    : isCoursePage
-      ? `${$currentOrgPath}/courses`
-      : $currentOrgPath;
+  let { title = $bindable(''), navClass = '', isCoursePage = false }: Props = $props();
+
+  let coursesPath = $derived(
+    $globalStore.isOrgSite ? '/lms/mylearning' : isCoursePage ? `${$currentOrgPath}/courses` : $currentOrgPath
+  );
 </script>
 
-<nav
-  class="{navClass} bg-primary-700 flex h-[48px] w-full p-1 transition delay-150 duration-300 ease-in-out md:px-6"
->
-  <ul class="flex w-full items-center">
+<nav class="{navClass} bg-primary-700 flex h-12 w-full p-1 transition delay-150 duration-300 ease-in-out md:px-4">
+  <ul class="flex w-full items-center gap-2">
     <div class="flex items-center text-white">
-      <li class="md:hidden">
-        <IconButton
-          onClick={() => {
-            toggleSidebar();
-          }}
-        >
-          {#if $sideBar.hidden}
-            <Menu size={16} class=" text-white" />
-          {:else}
-            <Close size={16} class=" text-white" />
-          {/if}
-        </IconButton>
-      </li>
-
       {#if isCoursePage}
         <li class="hidden md:block">
-          <IconButton
-            onClick={() => {
-              toggleSidebar();
-            }}
-          >
-            <Menu size={16} class=" text-white" />
-          </IconButton>
-        </li>
-        <li class="hidden md:block">
-          <IconButton onClick={() => goto(coursesPath)}>
-            <ArrowLeft size={16} class="text-white" />
+          <IconButton onclick={() => goto(coursesPath)}>
+            <ArrowLeftIcon size={16} class="custom" />
           </IconButton>
         </li>
       {/if}
       <a
         href={coursesPath}
-        title="{$t('navigation.goto')} {isCoursePage
-          ? $t('navigation.courses')
-          : $t('navigation.classroomio_home')}"
+        title="{$t('navigation.goto')} {isCoursePage ? $t('navigation.courses') : $t('navigation.classroomio_home')}"
         id="logo"
         class="line-clamp-1 text-lg"
       >
@@ -87,22 +41,13 @@
       </a>
     </div>
 
-    <span class="flex-grow" />
+    <span class="grow"></span>
 
     <li>
-      <NotificationIcon size={20} class="mr-2 text-white" />
-    </li>
-    <li>
-      <IconButton size="small" onClick={toggleDarkMode}>
-        {#if $globalStore.isDark}
-          <Sun size={16} class="text-white" />
-        {:else}
-          <Moon size={16} class="text-white" />
-        {/if}
-      </IconButton>
+      <BellIcon class="custom text-white" size={16} />
     </li>
 
-    <li />
+    <li></li>
   </ul>
 </nav>
 

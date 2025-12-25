@@ -1,36 +1,60 @@
 <script lang="ts">
-  import CodeSnippet from '$lib/components/CodeSnippet/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
+  import { preventDefault } from '$lib/utils/functions/svelte';
+
+  import { CodeSnippet } from '$features/ui';
+  import { Button } from '@cio/ui/base/button';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
   import Grade from '$lib/components/Question/Grade.svelte';
   import { t } from '$lib/utils/functions/translations';
   import ReasonBox from '../ReasonBox.svelte';
   import QuestionTitle from '../QuestionTitle.svelte';
 
-  export let title = '';
-  export let index = 1;
-  export let code = '';
-  export let name = '';
-  export let onSubmit = (a: string, b: string) => {};
-  export let onPrevious = () => {};
-  export let defaultValue = '';
-  export let disablePreviousButton = false;
-  export let isLast = false;
-  export let isPreview = false;
-  export let disabled = false;
-  export let grade: number | undefined;
-  export let gradeMax = 0;
-  export let disableGrading = false;
-  export let isGradeWithAI = false;
-  export let reason;
-  export let isLoading = false;
-  export let hideGrading = false;
+  interface Props {
+    title?: string;
+    index?: number | string;
+    code?: string;
+    name?: string;
+    onSubmit?: any;
+    onPrevious?: any;
+    defaultValue?: string;
+    disablePreviousButton?: boolean;
+    isLast?: boolean;
+    isPreview?: boolean;
+    disabled?: boolean;
+    grade?: number;
+    gradeMax?: number;
+    disableGrading?: boolean;
+    isGradeWithAI?: boolean;
+    reason?: string;
+    isLoading?: boolean;
+    hideGrading?: boolean;
+  }
 
-  let gradeWithAI = false;
+  let {
+    title = '',
+    index = 1,
+    code = '',
+    name = '',
+    onSubmit = (_a: string, _b: string) => {},
+    onPrevious = () => {},
+    defaultValue = $bindable(''),
+    disablePreviousButton = false,
+    isLast = false,
+    isPreview = false,
+    disabled = false,
+    grade = $bindable(0),
+    gradeMax = 0,
+    disableGrading = false,
+    isGradeWithAI = $bindable(false),
+    reason = $bindable(''),
+    isLoading = $bindable(false),
+    hideGrading = false
+  }: Props = $props();
 
-  function handleFormSubmit(event) {
+  let gradeWithAI = $derived(isGradeWithAI);
+
+  function handleFormSubmit() {
     if (isPreview) return;
 
     onSubmit(name, defaultValue);
@@ -49,16 +73,12 @@
     gradeWithAI = false;
     grade = 0;
   }
-
-  $: gradeWithAI = isGradeWithAI;
 </script>
 
-<form on:submit|preventDefault={handleFormSubmit}>
-  <div class="flex items-center justify-between mb-2">
+<form onsubmit={preventDefault(handleFormSubmit)}>
+  <div class="mb-2 flex items-center justify-between">
     <HtmlRender className="mt-4 {typeof grade === 'number' && 'w-4/5'}" disableMaxWidth>
-      <svelte:fragment slot="content">
-        <QuestionTitle {index} {title} />
-      </svelte:fragment>
+      <QuestionTitle {index} {title} />
     </HtmlRender>
     {#if !hideGrading}
       <Grade {gradeMax} bind:grade {disableGrading} />
@@ -71,16 +91,14 @@
 
   <div class="ml-4">
     {#if disabled}
-      <div class="bg-gray-200 dark:bg-gray-500 py-3 px-5 rounded-md mb-3">
-        {defaultValue === ''
-          ? $t('course.navItem.lessons.exercises.all_exercises.no_answer')
-          : defaultValue}
+      <div class="mb-3 rounded-md bg-gray-200 px-5 py-3 dark:bg-gray-500">
+        {defaultValue === '' ? $t('course.navItem.lessons.exercises.all_exercises.no_answer') : defaultValue}
       </div>
       {#if gradeWithAI}
         <ReasonBox {reason} {isLoading} {acceptGrade} {rejectGrade} />
       {/if}
     {:else}
-      <TextArea
+      <TextareaField
         bind:value={defaultValue}
         rows={5}
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.write_your_answer_here')}
@@ -89,21 +107,15 @@
   </div>
 
   {#if !isPreview}
-    <div class="mt-3 flex items-center justify-between w-full">
-      <PrimaryButton
-        variant={VARIANTS.OUTLINED}
-        onClick={handlePrevious}
-        label={$t('course.navItem.lessons.exercises.all_exercises.previous')}
-        isDisabled={disablePreviousButton}
-      />
-      <PrimaryButton
-        variant={VARIANTS.OUTLINED}
-        type="submit"
-        label={isLast
+    <div class="mt-3 flex w-full items-center justify-between">
+      <Button variant="outline" onclick={handlePrevious} disabled={disablePreviousButton}>
+        {$t('course.navItem.lessons.exercises.all_exercises.previous')}
+      </Button>
+      <Button variant="outline" type="submit">
+        {isLast
           ? $t('course.navItem.lessons.exercises.all_exercises.finish')
           : $t('course.navItem.lessons.exercises.all_exercises.next')}
-        {name}
-      />
+      </Button>
     </div>
   {/if}
 </form>

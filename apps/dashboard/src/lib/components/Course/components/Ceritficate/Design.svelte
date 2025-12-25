@@ -1,24 +1,26 @@
 <script>
-  import { RadioButtonGroup, RadioButton, Toggle } from 'carbon-components-svelte';
-  import FlashFilled from 'carbon-icons-svelte/lib/FlashFilled.svelte';
   import { goto } from '$app/navigation';
-  import { updateCourse } from '$lib/utils/services/courses';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import Professional from './templates/Professional.svelte';
-  import Plain from './templates/Plain.svelte';
+  import { Label } from '@cio/ui/base/label';
+  import { Switch } from '@cio/ui/base/switch';
+  import ZapIcon from '@lucide/svelte/icons/zap';
+  import * as RadioGroup from '@cio/ui/base/radio-group';
+
   import { course } from '$lib/components/Course/store';
-  import { currentOrg, isFreePlan } from '$lib/utils/store/org';
-  import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
-  import PurpleProfessionalBadge from './templates/PurpleProfessionalBadge.svelte';
-  import BlueProfessionalBadge from './templates/BlueProfessionalBadge.svelte';
-  import PurpleBadgePattern from './templates/PurpleBadgePattern.svelte';
-  import BlueBadgePattern from './templates/BlueBadgePattern.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
+  import { updateCourse } from '$lib/utils/services/courses';
+  import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { saveCertificateValidation } from '$lib/utils/functions/validator';
+  import { Button } from '@cio/ui/base/button';
+
+  import Plain from './templates/Plain.svelte';
+  import Professional from './templates/Professional.svelte';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
+  import { UpgradeBanner } from '$features/ui';
+  import BlueBadgePattern from './templates/BlueBadgePattern.svelte';
+  import PurpleBadgePattern from './templates/PurpleBadgePattern.svelte';
+  import BlueProfessionalBadge from './templates/BlueProfessionalBadge.svelte';
+  import PurpleProfessionalBadge from './templates/PurpleProfessionalBadge.svelte';
 
   const studentNamePlaceholder = 'Name of student';
   const themes = [
@@ -30,17 +32,20 @@
     'blueBadgePattern'
   ];
 
-  let isSaving = false;
-  let errors = {
+  let isSaving = $state(false);
+  let errors = $state({
     description: ''
-  };
-  let helperText = '';
+  });
+
+  const helperText = $derived(
+    `${$course.description?.length || 0}/200 ${$t('course.navItem.certificates.characters')}`
+  );
 
   const saveCertificate = async () => {
     isSaving = true;
 
     try {
-      // Prevent free plan users from bypassing UI restrictions  
+      // Prevent free plan users from bypassing UI restrictions
       if ($isFreePlan) {
         errors.description = 'Certificate customization is only available on paid plans';
         throw new Error(errors.description);
@@ -53,8 +58,7 @@
       });
 
       if (result && Object.keys(result).length > 0) {
-        errors.description =
-          $t(result.description) || $t('course.navItem.certificates.description_error');
+        errors.description = $t(result.description) || $t('course.navItem.certificates.description_error');
         throw new Error(errors.description);
       }
 
@@ -76,15 +80,11 @@
       isSaving = false;
     }
   };
-
-  $: helperText = `${$course.description?.length || 0}/200 ${$t(
-    'course.navItem.certificates.characters'
-  )}`;
 </script>
 
 <svelte:head>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="true" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
   <link
     href="https://fonts.googleapis.com/css2?family=Qwitcher+Grypen&family=Roboto:wght@300;400;700&display=swap"
     rel="stylesheet"
@@ -102,24 +102,20 @@
       <p class="my-4 text-xs font-normal dark:text-gray-100">
         {$t('course.navItem.certificates.theme')}
       </p>
-      <RadioButtonGroup
-        bind:selected={$course.certificate_theme}
-        class="mb-10"
-        disabled={$isFreePlan}
-      >
+
+      <RadioGroup.Root bind:value={$course.certificate_theme} disabled={$isFreePlan} class="mb-10">
         <div class="flex flex-wrap justify-between gap-y-5">
           {#each themes as theme}
-            <div class="mr-3 flex">
-              <RadioButton value={theme} />
-              <img
-                src={`/images/certificate_theme_${theme}.png`}
-                alt="themes"
-                class="h-[82px] w-[110px]"
-              />
+            <div class="mr-3 flex items-start space-x-2">
+              <RadioGroup.Item value={theme} id={theme} />
+              <Label for={theme} class="cursor-pointer">
+                <img src={`/images/certificate_theme_${theme}.png`} alt="themes" class="h-[82px] w-[110px]" />
+              </Label>
             </div>
           {/each}
         </div>
-      </RadioButtonGroup>
+      </RadioGroup.Root>
+
       <div>
         <p class="my-2 text-xs font-normal text-black dark:text-gray-100">
           {$t('course.navItem.certificates.logo')}
@@ -131,18 +127,15 @@
             {$t('course.navItem.certificates.and_upload')}
           </p>
 
-          <PrimaryButton
-            label={$t('course.navItem.certificates.goto_settings')}
-            variant={VARIANTS.OUTLINED}
-            className="rounded-md mt-3"
-            onClick={() => goto(`/org/${$currentOrg.siteName}/settings`)}
-          />
+          <Button variant="outline" class="mt-3" onclick={() => goto(`/org/${$currentOrg.siteName}/settings`)}>
+            {$t('course.navItem.certificates.goto_settings')}
+          </Button>
         </div>
         <span class="my-4">
           <p class="mb-2 mt-4 text-xs font-normal dark:text-gray-100">
             {$t('course.navItem.certificates.description')}
           </p>
-          <TextArea
+          <TextareaField
             rows={6}
             placeholder={$t('course.navItem.certificates.placeholder')}
             bind:value={$course.description}
@@ -151,23 +144,19 @@
             helperMessage={helperText}
           />
         </span>
-        <Toggle
-          labelText={$t('course.navItem.certificates.allow')}
-          bind:toggled={$course.is_certificate_downloadable}
-          class="my-4"
-          size="sm"
-          disabled={$isFreePlan}
-        >
-          <span slot="labelA" style={$globalStore.isDark ? 'color: white' : 'color: #161616'}
-            >{$t('generic.locked')}</span
-          >
-          <span slot="labelB" style="color: green">{$t('generic.unlocked')}</span>
-        </Toggle>
+        <div class="my-4 flex items-center space-x-2">
+          <Switch
+            id="certificate-downloadable"
+            bind:checked={$course.is_certificate_downloadable}
+            disabled={$isFreePlan}
+          />
+          <Label for="certificate-downloadable" class="text-sm font-medium dark:text-gray-100">
+            {$t('course.navItem.certificates.allow')}
+          </Label>
+        </div>
       </div>
     </section>
-    <section
-      class="flex w-full items-center justify-center rounded-md bg-gray-100 lg:w-3/5 dark:bg-neutral-800"
-    >
+    <section class="flex w-full items-center justify-center rounded-md bg-gray-100 lg:w-3/5 dark:bg-neutral-800">
       <div class="certificate-container flex items-center justify-center">
         {#if $course.certificate_theme === 'professional'}
           <Professional studentName={studentNamePlaceholder} />
@@ -186,18 +175,12 @@
     </section>
   </div>
   <div class="h-1/5">
-    <PrimaryButton
-      className="rounded-md flex gap-2 items-center"
-      variant={VARIANTS.CONTAINED_DARK}
-      onClick={saveCertificate}
-      isLoading={isSaving}
-      isDisabled={$isFreePlan}
-    >
+    <Button variant="secondary" onclick={saveCertificate} loading={isSaving} disabled={$isFreePlan}>
       {#if $isFreePlan}
-        <FlashFilled size={16} class="text-blue-700" />
+        <ZapIcon size={16} class="filled" />
       {/if}
       {$t('course.navItem.certificates.save')}
-    </PrimaryButton>
+    </Button>
   </div>
 </main>
 

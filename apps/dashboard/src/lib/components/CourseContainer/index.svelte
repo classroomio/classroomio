@@ -1,67 +1,56 @@
 <script lang="ts">
+  import { get } from 'svelte/store';
   import { goto } from '$app/navigation';
-  import { Moon } from 'svelte-loading-spinners';
-  import { browser } from '$app/environment';
-  import Navigation from '../Course/components/Navigation/index.svelte';
-  import Backdrop from '$lib/components/Backdrop/index.svelte';
-  import { course, group, setCourse, defaultCourse } from '../Course/store';
-  import Confetti from '../Confetti/index.svelte';
-  import { isMobile } from '$lib/utils/store/useMobile';
+  import { Spinner } from '@cio/ui/base/spinner';
+  import { Backdrop, Confetti } from '$features/ui';
+  import { course, group, courseStore } from '../Course/store';
   import { profile } from '$lib/utils/store/user';
-  import { fetchCourseFromAPI } from '$lib/utils/services/courses';
-  import { globalStore } from '$lib/utils/store/app';
-  import { lessons } from '../Course/components/Lesson/store/lessons';
-  import Modal from '$lib/components/Modal/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
   import { t } from '$lib/utils/functions/translations';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import { isOrgAdmin } from '$lib/utils/store/org';
+  import type { GroupPerson } from '$lib/utils/types';
 
-  export let courseId = '';
-  export let path = '';
-  export let isExercisePage = false;
-  export let isFetching = false;
-  export let containerClass = '';
-
-  let prevCourseId = '';
-  let isPermitted = true;
-
-  async function onCourseIdChange(courseId = '') {
-    if (!courseId || prevCourseId === courseId || !browser || $course.id === courseId) return;
-
-    isFetching = true;
-    course.set(defaultCourse);
-    lessons.set([]);
-
-    const { data: _data } = await fetchCourseFromAPI(courseId);
-
-    if (_data) {
-      $course.type = _data.type;
-      setCourse(_data);
-    }
-
-    isFetching = false;
-    prevCourseId = courseId;
+  interface Props {
+    courseId: string;
+    path?: string;
+    isExercisePage?: boolean;
+    isFetching?: boolean;
+    containerClass?: string;
+    onFetchingChange?: (v: boolean) => void;
+    children?: import('svelte').Snippet;
+    renderOnlyChildren?: boolean;
   }
 
-  function filterPollsByStatus(shouldFilter: boolean) {
-    if (!shouldFilter) return;
+  let {
+    courseId,
+    isExercisePage = false,
+    isFetching = $bindable(false),
+    onFetchingChange = (_v: boolean) => {},
+    children,
+    renderOnlyChildren = false
+  }: Props = $props();
 
-    $course.polls = $course.polls.filter((poll) => poll.status === 'published');
-  }
+  const user: GroupPerson | undefined = $derived($group.people.find((person) => person.profile_id === $profile.id));
 
-  $: onCourseIdChange(courseId);
+  const canCheck = $derived($profile.id && $group.id);
 
-  $: {
-    const user = $group.people.find((person) => person.profile_id === $profile.id);
-    if (user) {
-      $globalStore.isStudent = user.role_id === 3;
+  const isPermitted = $derived.by(() => {
+    if (!canCheck) return true;
 
-      filterPollsByStatus($globalStore.isStudent);
-    } else if ($isOrgAdmin === false && $profile.id && $group.people.length) {
-      // Current User doesn't h ave permission to view
-      isPermitted = false;
-    }
-  }
+    if ($isOrgAdmin === null) return true;
+
+    return $isOrgAdmin || user;
+  });
+
+  $effect(() => {
+    const isLoading = get(courseStore.isLoading);
+    onFetchingChange(isLoading);
+  });
+
+  $effect(() => {
+    courseStore.fetch(courseId);
+  });
 </script>
 
 <svelte:head>
@@ -70,50 +59,42 @@
 
 {#if isFetching}
   <Backdrop>
-    <Moon size="60" color="#1d4ed8" unit="px" duration="1s" />
+    <Spinner class="size-14! text-blue-700!" />
   </Backdrop>
 {/if}
 
-<Modal open={!isPermitted} width="w-96" modalHeading={$t('course.not_permitted.header')}>
-  <div>
-    <p class="text-md text-center dark:text-white">
-      {$t('course.not_permitted.body')}
-    </p>
+<Dialog.Root open={!isPermitted}>
+  <Dialog.Content class="w-96">
+    <Dialog.Header>
+      <Dialog.Title>{$t('course.not_permitted.header')}</Dialog.Title>
+    </Dialog.Header>
+    <div>
+      <p class="text-md text-center dark:text-white">
+        {$t('course.not_permitted.body')}
+      </p>
 
-    <div class="mt-5 flex justify-center">
-      <PrimaryButton
-        className="px-6 py-3"
-        label={$t('course.not_permitted.button')}
-        onClick={() => {
-          goto('/org/*');
-        }}
-      />
+      <div class="mt-5 flex justify-center">
+        <Button
+          onclick={() => {
+            goto('/org/*');
+          }}
+        >
+          {$t('course.not_permitted.button')}
+        </Button>
+      </div>
     </div>
-  </div>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>
 
-<div class="root">
-  <Navigation {path} isStudent={$globalStore.isStudent} />
-  <div class="rightBar {containerClass}" class:isMobile={$isMobile}>
-    {#if isExercisePage}
-      <Confetti />
-    {/if}
+{#if renderOnlyChildren}
+  {@render children?.()}
+{:else}
+  {#if isExercisePage}
+    <Confetti />
+  {/if}
 
-    <!-- Show only if permitted -->
-    {#if isPermitted}
-      <slot />
-    {/if}
-  </div>
-</div>
-
-<style>
-  .root {
-    display: flex;
-    width: 100%;
-  }
-
-  .rightBar {
-    flex-grow: 1;
-    width: calc(100% - 360px);
-  }
-</style>
+  <!-- Show only if permitted -->
+  {#if isPermitted}
+    {@render children?.()}
+  {/if}
+{/if}

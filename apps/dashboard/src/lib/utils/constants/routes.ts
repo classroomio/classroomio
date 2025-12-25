@@ -16,6 +16,8 @@ export const ROUTE = {
   ASK: '/ask',
   FORGOT: '/forgot',
   RESET: '/reset',
+  LOGOUT: '/logout',
+  AUTH_FAILED: '/auth-failed',
   VERIFY_EMAIL_ERROR: '/verify-email-error'
 };
 
@@ -28,8 +30,18 @@ export const PUBLIC_ROUTES = [
   ROUTE.RESET,
   `^${ROUTE.PAGES}/.*`,
   `^${ROUTE.COURSE}/.*`,
+  '/404',
   `^${ROUTE.VERIFY_EMAIL_ERROR}$`,
-  '/404'
+  ROUTE.AUTH_FAILED
+];
+
+export const PUBLIC_API_ROUTES = [
+  '/api/completion',
+  'student_prove_payment',
+  'teacher_student_buycourse',
+  '/api/polar',
+  '/api/lmz',
+  '/api/verify'
 ];
 
 export const ROUTES_TO_HIDE_NAV = [

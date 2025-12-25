@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import Folder from '$lib/components/ui/folder/folder.svelte';
   import type { Section } from '$lib/utils/types/course';
 
@@ -10,7 +10,7 @@
 
   let { sections, onFileClick }: Props = $props();
 
-  let [, courseSlug, sectionSlug, lessonSlug] = $derived($page.url.pathname.split('/').slice(1));
+  let [, courseSlug, sectionSlug, lessonSlug] = $derived(page.url.pathname.split('/').slice(1));
 
   let root = $derived(
     sections.map((section) => ({

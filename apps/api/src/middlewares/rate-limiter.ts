@@ -3,11 +3,12 @@ import {
   ERROR_MESSAGES,
   HTTP_STATUS,
   RATE_LIMIT_HEADERS
-} from '$src/constants/rate-limiter';
+} from '@api/constants/rate-limiter';
 
 import type { MiddlewareHandler } from 'hono';
-import { rateLimiter } from '$src/utils/redis/limiter';
+import { rateLimiter } from '@api/utils/redis/limiter';
 import { userKeyGenerator } from '../utils/redis/key-generators';
+import { env } from '@api/config/env';
 
 export interface RateLimiterOptions {
   windowMs?: number;
@@ -29,6 +30,11 @@ export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareH
   const opts = { ...defaultOptions, ...options };
 
   return async (c, next) => {
+    // Skip rate limiting if not in production
+    if (env.NODE_ENV !== 'production') {
+      return await next();
+    }
+
     try {
       // Generate rate limit key
       const key = opts.keyGenerator(c);
@@ -76,4 +82,4 @@ export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareH
 };
 
 // Default rate limiter middleware with standard configuration
-export const rateLimiterMiddleware = createRateLimiter();
+export default createRateLimiter();

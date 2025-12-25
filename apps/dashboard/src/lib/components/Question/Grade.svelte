@@ -1,20 +1,26 @@
 <script lang="ts">
-  import TextField from '$lib/components/Form/TextField.svelte';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '../Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
 
-  export let gradeMax = 0;
-  export let disableGrading = false;
-  export let grade: number | undefined = 0;
-
-  $: if (grade && grade > gradeMax) {
-    snackbar.error('grade cant be more than max value');
-    grade = gradeMax;
+  interface Props {
+    gradeMax?: number;
+    disableGrading?: boolean;
+    grade?: number | undefined;
   }
+
+  let { gradeMax = 0, disableGrading = false, grade = $bindable(0) }: Props = $props();
+
+  $effect(() => {
+    if (grade && grade > gradeMax) {
+      snackbar.error('grade cant be more than max value');
+      grade = gradeMax;
+    }
+  });
 </script>
 
 <div class="flex items-center font-semibold">
-  <TextField
+  <InputField
     placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.points')}
     bind:value={grade}
     max={gradeMax}
@@ -24,7 +30,7 @@
     isDisabled={disableGrading}
   />
 
-  <p class="dark:text-white ml-2 text-base flex items-center font-semibold">
+  <p class="ml-2 flex items-center text-base font-semibold dark:text-white">
     <span class="mr-1">/</span> <span>{gradeMax}</span>
   </p>
 </div>

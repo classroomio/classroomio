@@ -1,11 +1,12 @@
 <script>
-  import { SkeletonPlaceholder, SkeletonText } from 'carbon-components-svelte';
+  import { Skeleton } from '@cio/ui/base/skeleton';
 </script>
 
-<div class="flex flex-col gap-5 border border-gray-300 p-4 rounded-md mb-7 max-w-3xl">
+<div class="mb-7 flex w-full max-w-3xl flex-col gap-3 rounded-md border border-gray-300 p-3">
   <div class="flex items-center gap-2">
-    <SkeletonPlaceholder style="height: 2rem; width: 2rem;" class="rounded-full overflow-hidden" />
-    <SkeletonText width="30%" />
+    <Skeleton class="h-8 w-8 overflow-hidden rounded-full" />
+    <Skeleton class="h-4 w-[30%]" />
   </div>
-  <SkeletonText paragraph lines={3} />
+  <Skeleton class="h-4 w-full" />
+  <Skeleton class="h-4 w-full" />
 </div>

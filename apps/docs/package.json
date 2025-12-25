@@ -1,5 +1,5 @@
 {
-  "name": "@cio/docs-v2",
+  "name": "@cio/docs",
   "type": "module",
   "scripts": {
     "dev": "vite dev",

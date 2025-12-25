@@ -12,17 +12,14 @@ const sendEmail = (sFetch: typeof fetch) => {
     }[]
   ) => {
     try {
-      const response = await classroomio.mail.send.$post(
-        { json: emailDataArray },
-        { fetch: sFetch }
-      );
+      const response = await classroomio.mail.$post({ json: emailDataArray }, { fetch: sFetch });
 
       if (!response.ok) {
         console.log('Failed to send emails');
         return;
       }
 
-      console.log('Emails sent successfully:', response);
+      console.log('Emails sent successfully', response.status);
       return response;
     } catch (error) {
       console.error('Error sending emails:', error);

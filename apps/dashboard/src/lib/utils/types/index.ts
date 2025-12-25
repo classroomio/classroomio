@@ -1,18 +1,7 @@
 export * from './config';
 export * from './dashboard';
 
-export enum LOCALE {
-  EN = 'en',
-  HI = 'hi',
-  FR = 'fr',
-  PL = 'pl',
-  PT = 'pt',
-  DE = 'de',
-  VI = 'vi',
-  RU = 'ru',
-  ES = 'es',
-  DA = 'da'
-}
+import type { TLocale } from '@cio/db/types';
 
 //===============Custom Type===============
 
@@ -44,6 +33,7 @@ export interface CustomQuestionType {
 export interface ExerciseTemplate {
   title: string;
   description: string;
+  questions?: number;
   questionnaire: {
     questions: {
       title: string;
@@ -301,10 +291,10 @@ export type LessonDocument = {
 
 export interface LessonPage {
   id?: string | null;
-  title: '';
+  title: string;
   totalExercises: number;
   totalComments: number;
-  locale: LOCALE;
+  locale: TLocale;
   isSaving: boolean;
   isFetching: boolean;
   materials: {
@@ -313,7 +303,7 @@ export interface LessonPage {
     videos: LessonVideo[];
     documents: LessonDocument[];
   };
-  exercises: [];
+  exercises: Exercise[];
   lesson_completion: LessonCompletion[];
 }
 
@@ -329,6 +319,7 @@ export interface LessonCompletion {
 export interface Lesson {
   note?: any; // type unknown;
   videos?: []; // type unknown;
+  documents?: []; // type unknown;
   slide_url?: any; // type unknown;
   course_id: string /* foreign key to course.id */;
   section_id?: string /* foreign key to course.id */;

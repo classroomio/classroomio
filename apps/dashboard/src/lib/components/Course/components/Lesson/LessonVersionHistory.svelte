@@ -1,47 +1,51 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import { createEventDispatcher } from 'svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import CaretRight from 'carbon-icons-svelte/lib/CaretRight.svelte';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+  import { Button } from '@cio/ui/base/button';
+  import PlayIcon from '@lucide/svelte/icons/play';
   import { fetchLesssonLanguageHistory } from '$lib/utils/services/courses';
   import { diffLines } from 'diff';
   import { lesson, lessons } from '$lib/components/Course/components/Lesson/store/lessons';
   import { supabase } from '$lib/utils/functions/supabase';
-  import { sanitizeHtml } from '$lib/utils/functions/sanitize';
+  import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import { t } from '$lib/utils/functions/translations';
 
-  import { LOCALE } from '$lib/utils/types';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
+  import type { TLocale } from '@cio/db/types';
 
   interface LessonHistory {
     new_content: string;
     old_content: string;
     timestamp: Date;
-    locale: LOCALE;
+    locale: TLocale;
     lesson_id: string;
   }
 
-  export let open = false;
-  let lessonTitle: string = '';
-  let lessonId: string = '';
-  let lessonHistory: LessonHistory[] = [];
+  interface Props {
+    open?: boolean;
+  }
+
+  let { open = false }: Props = $props();
+  let lessonHistory: LessonHistory[] = $state([]);
   let content = '';
   let selectedVersion: LessonHistory = {
     new_content: '',
     old_content: '',
     timestamp: new Date(),
-    locale: LOCALE.EN,
+    locale: 'en',
     lesson_id: ''
   };
-  let selectedVersionIndex = 0;
-  let contentRestoreLoading = false;
-  let versionsToFetch = 9;
-  let isMoreHistoryLoading = false;
+  let selectedVersionIndex = $state(0);
+  let contentRestoreLoading = $state(false);
+  let versionsToFetch = $state(9);
+  let isMoreHistoryLoading = $state(false);
 
   let mounted = false;
+
+  const lessonId = $derived($lesson.id || '');
+  const lessonTitle = $derived($lessons.find((les) => les.id === lessonId)?.title || '');
 
   const dispatch = createEventDispatcher();
 
@@ -76,36 +80,33 @@
 
   function removeDuplicate(history: LessonHistory[]) {
     return history.filter(
-      (obj1, i, arr) =>
-        arr.findIndex((obj2) => getMinutes(obj2.timestamp) === getMinutes(obj1.timestamp)) === i
+      (obj1, i, arr) => arr.findIndex((obj2) => getMinutes(obj2.timestamp) === getMinutes(obj1.timestamp)) === i
     );
   }
 
-  async function fetchLessonHistory(lessonId: string, locale: string, endRange: number) {
-    try {
-      isMoreHistoryLoading = true;
-      const { data, error } = await fetchLesssonLanguageHistory(lessonId, locale, endRange);
+  function fetchLessonHistory(lessonId: string, locale: string, endRange: number) {
+    untrack(async () => {
+      try {
+        isMoreHistoryLoading = true;
+        const { data, error } = await fetchLesssonLanguageHistory(lessonId, locale, endRange);
 
-      if (!data) {
-        throw error;
+        if (!data) {
+          throw error;
+        }
+
+        // Filter out duplicates based on timestamp
+        const existingTimestamps = new Set(lessonHistory.map((item) => new Date(item.timestamp).getMinutes()));
+        const newEntries = data.filter((item) => !existingTimestamps.has(new Date(item.timestamp).getMinutes()));
+        lessonHistory = removeDuplicate([...lessonHistory, ...newEntries]);
+
+        updateContentVersion(lessonHistory[0], 0);
+      } catch (error) {
+        console.error(error);
+        snackbar.error('Failed to fetch history');
+      } finally {
+        isMoreHistoryLoading = false;
       }
-
-      // Filter out duplicates based on timestamp
-      const existingTimestamps = new Set(
-        lessonHistory.map((item) => new Date(item.timestamp).getMinutes())
-      );
-      const newEntries = data.filter(
-        (item) => !existingTimestamps.has(new Date(item.timestamp).getMinutes())
-      );
-      lessonHistory = removeDuplicate([...lessonHistory, ...newEntries]);
-
-      updateContentVersion(lessonHistory[0], 0);
-    } catch (error) {
-      console.error(error);
-      snackbar.error('Failed to fetch history');
-    } finally {
-      isMoreHistoryLoading = false;
-    }
+    });
   }
 
   onMount(() => {
@@ -159,44 +160,43 @@
     versionsToFetch += 10;
   }
 
-  $: lessonTitle = $lessons.find((les) => les.id === $lesson.id)?.title || '';
-  $: lessonId = $lesson.id || '';
-  $: scrollLock(open);
-  $: fetchLessonHistory(lessonId, $lesson.locale, versionsToFetch);
+  $effect(() => {
+    scrollLock(open);
+  });
+  $effect(() => {
+    fetchLessonHistory(lessonId, $lesson.locale, versionsToFetch);
+  });
 </script>
 
 <aside class="drawer bg-gray-100 dark:bg-neutral-800" class:open>
   <div class="panel bg-white dark:bg-black">
     <div class="w-full p-10 pr-80">
       <div class="flex items-start gap-x-10">
-        <PrimaryButton variant={VARIANTS.OUTLINED} onClick={handleDrawerClose}>
-          <ArrowLeft />
-        </PrimaryButton>
+        <Button variant="outline" onclick={handleDrawerClose}>
+          <ArrowLeftIcon size={16} />
+        </Button>
 
         {#if selectedVersionIndex != 0}
           <div class="">
-            <PrimaryButton isLoading={contentRestoreLoading} onClick={restoreSelectedVersion}
-              >{$t('course.navItem.lessons.version_history.restore_version')}</PrimaryButton
+            <Button loading={contentRestoreLoading} onclick={restoreSelectedVersion}>
+              {$t('course.navItem.lessons.version_history.restore_version')}
+            </Button>
             >
           </div>
         {/if}
       </div>
       <div class="flex h-full w-full flex-col items-start">
         <HtmlRender className="m-auto text-center mt-6 flex items-center justify-center">
-          <svelte:fragment slot="content">
-            <h1 class="mt-0 text-2xl capitalize md:text-4xl">
-              {lessonTitle}
-            </h1>
-          </svelte:fragment>
+          <h1 class="mt-0 text-2xl capitalize md:text-4xl">
+            {lessonTitle}
+          </h1>
         </HtmlRender>
 
         {#key lessonId}
           <HtmlRender id="display" className="m-auto">
-            <svelte:fragment slot="content">
-              <div class="amen">
-                {@html sanitizeHtml(content)}
-              </div>
-            </svelte:fragment>
+            <div class="amen">
+              {@html sanitizeHtml(content)}
+            </div>
           </HtmlRender>
         {/key}
       </div>
@@ -213,17 +213,15 @@
     <div>
       {#each lessonHistory as version, index}
         <button
-          on:click={() => updateContentVersion(version, index)}
+          onclick={() => updateContentVersion(version, index)}
           class="flex w-full cursor-pointer items-start p-4 px-10 hover:bg-gray-200 dark:hover:bg-neutral-700 {index ==
           selectedVersionIndex
             ? 'bg-gray-200 dark:bg-neutral-700'
             : ''}"
         >
-          <CaretRight class="mt-1"></CaretRight>
+          <PlayIcon size={16} class="mt-1" />
           <div>
-            <span class="inline-block text-base font-medium"
-              >{formatTimestamp(version.timestamp)}</span
-            >
+            <span class="inline-block text-base font-medium">{formatTimestamp(version.timestamp)}</span>
             {#if index == 0}
               <span class="block text-start text-xs italic"
                 >{$t('course.navItem.lessons.version_history.current_version')}</span
@@ -233,8 +231,9 @@
         </button>
       {/each}
       <div class="mt-2 flex h-10 items-center justify-start px-10">
-        <PrimaryButton className="h-full" isLoading={isMoreHistoryLoading} onClick={loadMoreHistory}
-          >{$t('course.navItem.lessons.version_history.fetch_more_versions')}</PrimaryButton
+        <Button loading={isMoreHistoryLoading} onclick={loadMoreHistory}>
+          {$t('course.navItem.lessons.version_history.fetch_more_versions')}
+        </Button>
         >
       </div>
     </div>

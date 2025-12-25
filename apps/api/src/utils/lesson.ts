@@ -1,4 +1,4 @@
-import type { TLessonDownloadContent } from '$src/types/course/lesson';
+import type { TLessonDownloadContent } from '@cio/utils/validation/course';
 import { marked } from 'marked';
 
 function getHtmlTemplate(body: string): string {
@@ -74,15 +74,7 @@ function getHtmlTemplate(body: string): string {
   `;
 }
 
-function getLessonBody({
-  title,
-  number,
-  orgName,
-  note,
-  slideUrl,
-  video,
-  courseTitle
-}: TLessonDownloadContent): string {
+function getLessonBody({ title, number, orgName, note, slideUrl, video, courseTitle }: TLessonDownloadContent): string {
   const noteHtml = marked.parse(note);
   const showExtraResources = slideUrl || (video && video.length > 0);
   return `
@@ -146,10 +138,7 @@ function getLessonBody({
   `;
 }
 
-async function generateSinglePdfFromHtml(
-  htmlContent: string,
-  courseTitle: string
-): Promise<Buffer> {
+async function generateSinglePdfFromHtml(htmlContent: string, courseTitle: string): Promise<Buffer> {
   throw 'Download disabled';
 }
 

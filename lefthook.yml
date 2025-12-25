@@ -1,0 +1,12 @@
+# Lefthook configuration
+# https://github.com/evilmartians/lefthook
+
+pre-commit:
+  parallel: true
+  commands:
+    prettier:
+      run: pnpm format:check
+      stage_fixed: false
+      fail_text: |
+        ❌ Prettier formatting check failed!
+        Please run 'pnpm format' to fix formatting issues and try again.

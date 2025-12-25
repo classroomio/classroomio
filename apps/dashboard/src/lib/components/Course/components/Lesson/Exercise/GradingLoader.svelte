@@ -1,13 +1,13 @@
 <script>
-  import { SkeletonText } from 'carbon-components-svelte';
+  import { Skeleton } from '@cio/ui/base/skeleton';
 </script>
 
 <div class="space-y-6">
-  <SkeletonText width="100%" heading />
+  <Skeleton class="h-4 w-full" />
   <div class="space-y-3">
-    <SkeletonText width="100%" heading />
-    <SkeletonText width="100%" heading />
-    <SkeletonText width="100%" heading />
-    <SkeletonText width="100%" heading />
+    <Skeleton class="h-4 w-full" />
+    <Skeleton class="h-4 w-full" />
+    <Skeleton class="h-4 w-full" />
+    <Skeleton class="h-4 w-full" />
   </div>
 </div>

@@ -1,0 +1,39 @@
+{
+  "extends": "@cio/tsconfig/base.json",
+  "compilerOptions": {
+    "composite": true,
+    "allowJs": true,
+    "checkJs": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "ES2020" /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019', 'ES2020', 'ES2021', or 'ESNEXT'. */,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "noImplicitAny": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "paths": {
+      "@cio/ui": ["./node_modules/@cio/ui/src"],
+      "@cio/ui/*": ["./node_modules/@cio/ui/src/*"],
+      "$src/*": ["./node_modules/@cio/ui/*"]
+    },
+    "typeRoots": ["../../node_modules/@types", "./node_modules/@types"],
+    "types": ["node"],
+    "jsx": "preserve",
+    "lib": ["ES2020", "DOM"],
+    "plugins": [
+      {
+        "name": "typescript-svelte-plugin",
+        "enabled": true,
+        "assumeIsSvelteProject": true
+      }
+    ]
+  },
+  "include": ["src/**/*", ".storybook/**/*", "vite.config.ts"],
+  "exclude": ["node_modules", "dist"],
+  "references": [{ "path": "../ui" }]
+}

@@ -1,47 +1,42 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
-  import AuthUI from '$lib/components/AuthUI/index.svelte';
+  import { page } from '$app/state';
+  import { AuthUI } from '$features/ui';
   import type { Profile } from '$lib/components/Course/components/People/types';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import { InputField } from '@cio/ui/custom/input-field';
+  import { Button } from '@cio/ui/base/button';
+  import * as Field from '@cio/ui/base/field';
+  import { Password } from '@cio/ui/custom/password';
   import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
   import { logout } from '$lib/utils/functions/logout';
   import { getSupabase } from '$lib/utils/functions/supabase';
   import { setTheme } from '$lib/utils/functions/theme';
   import { t } from '$lib/utils/functions/translations';
   import { profile, user } from '$lib/utils/store/user';
-  import {
-    authValidation,
-    getConfirmPasswordError,
-    getDisableSubmit
-  } from '$lib/utils/functions/validator';
+  import { authValidation, getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';
   import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import type { CurrentOrg } from '$lib/utils/types/org';
-  import { onMount } from 'svelte';
-  import { snackbar } from '$lib/components/Snackbar/store.js';
+  import { onMount, untrack } from 'svelte';
+  import { snackbar } from '$features/ui/snackbar/store';
 
-  export let data;
+  let { data } = $props();
 
   let supabase = getSupabase();
-  let fields = Object.assign({}, SIGNUP_FIELDS);
-  let loading = false;
-  let isLoggingOut = false;
-  let shouldLogout = false;
+  let fields = $state(Object.assign({}, SIGNUP_FIELDS));
+  let loading = $state(false);
+  let isLoggingOut = $state(false);
+  let shouldLogout = $state(false);
 
   let errors: {
     name?: string;
     email?: string;
     password?: string;
-    confirmPassword?: string;
-  } = {};
+  } = $state({});
 
-  let submitError: string;
-  let disableSubmit = false;
-  let formRef: HTMLFormElement;
+  let submitError: string = $state('');
 
-  async function joinOrg(profileId: string, email: string) {
+  const confirmPasswordError = $derived(getConfirmPasswordError(fields));
+  const disableSubmit = $derived(getDisableSubmit(fields));
+
+  async function joinOrg(profileId: string, email: string | null) {
     if (!profileId || !email || !data.invite.currentOrg?.id) return;
 
     // Update member response
@@ -54,8 +49,6 @@
       .match({ email: email, organization_id: data.invite.currentOrg?.id });
 
     console.log('Update member response', updateMemberRes);
-
-    formRef?.reset();
 
     window.location.href = $currentOrgPath;
   }
@@ -150,51 +143,35 @@
     }
   }
 
-  function setCurOrg(cOrg: CurrentOrg) {
-    if (!cOrg) return;
-
-    console.log(cOrg);
-    currentOrg.set(cOrg);
-  }
-
   onMount(async () => {
+    if (!data.invite.currentOrg) return;
+
     setTheme(data.invite.currentOrg?.theme || '');
 
-    setCurOrg(data.invite.currentOrg as CurrentOrg);
+    currentOrg.set(data.invite.currentOrg);
   });
 
-  $: errors.confirmPassword = getConfirmPasswordError(fields);
-  $: disableSubmit = getDisableSubmit(fields);
+  const isLoading = $derived(loading || $user.fetchingUser);
 
-  $: autoLogout($profile?.email);
-  function autoLogout(email?: string) {
+  $effect(() => {
+    const email = $profile?.email;
     if (!email) return;
 
     if (email !== data.invite.email) {
       console.log('logout');
       snackbar.error('You are logged in with a different email');
-      shouldLogout = true;
+      untrack(() => {
+        shouldLogout = true;
+      });
     }
-  }
-
-  $: isLoading = loading || $user.fetchingUser;
-  $: console.log('$profile', $profile);
-  $: console.log('data.invite', data.invite);
+  });
 </script>
 
 <svelte:head>
   <title>Join ClassroomIO</title>
 </svelte:head>
 
-<AuthUI
-  {supabase}
-  redirectPathname={$page.url.pathname}
-  isLogin={false}
-  {handleSubmit}
-  {isLoading}
-  showLogo={true}
-  bind:formRef
->
+<AuthUI redirectPathname={page.url.pathname} isLogin={false} {handleSubmit} {isLoading} showLogo={true}>
   <div class="mt-4 w-full {shouldLogout ? 'hidden' : ''}">
     <p class="mb-6 text-lg font-semibold dark:text-white">
       {#if data.invite.profile}
@@ -203,54 +180,63 @@
         {$t('login.create_to_join')}
       {/if}
     </p>
-    <TextField
+    <InputField
       label={$t('login.fields.email')}
       value={data.invite.email}
       type="email"
       placeholder="you@domain.com"
       className="mb-6"
-      inputClassName="w-full"
       isDisabled={true}
     />
     {#if $profile?.email !== data.invite.email}
       {#if !data.invite.profile}
-        <TextField
+        <InputField
           label={$t('login.fields.full_name')}
           bind:value={fields.name}
           type="text"
           autoFocus={true}
           placeholder="e.g Joke Silva"
           className="mb-6"
-          inputClassName="w-full"
           isDisabled={isLoading}
           errorMessage={errors.name}
           isRequired
         />
       {/if}
-      <TextField
-        label={$t('login.fields.password')}
-        bind:value={fields.password}
-        type="password"
-        placeholder="************"
-        className="mb-6"
-        inputClassName="w-full"
-        isDisabled={isLoading}
-        errorMessage={errors.password}
-        helperMessage={$t('login.fields.password_helper_message')}
-        isRequired
-      />
+      <Field.Field class="mb-6">
+        <Field.Label for="password">{$t('login.fields.password')}</Field.Label>
+        <Field.Content>
+          <Password
+            id="password"
+            bind:value={fields.password}
+            placeholder="************"
+            disabled={isLoading}
+            aria-invalid={errors.password ? 'true' : undefined}
+            autocomplete={data.invite.profile ? 'current-password' : 'new-password'}
+          />
+          {#if errors.password}
+            <Field.Error>{$t(errors.password)}</Field.Error>
+          {:else}
+            <Field.Description>{$t('login.fields.password_helper_message')}</Field.Description>
+          {/if}
+        </Field.Content>
+      </Field.Field>
       {#if !data.invite.profile}
-        <TextField
-          label={$t('login.fields.confirm_password')}
-          bind:value={fields.confirmPassword}
-          type="password"
-          placeholder="************"
-          className="mb-6"
-          inputClassName="w-full"
-          isDisabled={isLoading}
-          errorMessage={errors.confirmPassword}
-          isRequired
-        />
+        <Field.Field class="mb-6">
+          <Field.Label for="confirm-password">{$t('login.fields.confirm_password')}</Field.Label>
+          <Field.Content>
+            <Password
+              id="confirm-password"
+              bind:value={fields.confirmPassword}
+              placeholder="************"
+              disabled={isLoading}
+              aria-invalid={confirmPasswordError ? 'true' : undefined}
+              autocomplete="new-password"
+            />
+            {#if confirmPasswordError}
+              <Field.Error>{$t(confirmPasswordError)}</Field.Error>
+            {/if}
+          </Field.Content>
+        </Field.Field>
       {/if}
     {/if}
     {#if submitError}
@@ -260,13 +246,11 @@
 
   <div class="my-4 flex w-full items-center justify-end">
     {#if shouldLogout}
-      <PrimaryButton
-        label="Logout"
+      <Button
         type="button"
-        className="sm:w-full w-full"
-        isLoading={isLoggingOut}
-        variant={VARIANTS.CONTAINED_DANGER}
-        onClick={async () => {
+        loading={isLoggingOut}
+        variant="destructive"
+        onclick={async () => {
           isLoggingOut = true;
 
           await logout(false);
@@ -274,15 +258,11 @@
           isLoggingOut = false;
           shouldLogout = false;
         }}
-      />
+      >
+        Logout
+      </Button>
     {:else}
-      <PrimaryButton
-        label="Accept Invite"
-        type="submit"
-        className="sm:w-full w-full"
-        isDisabled={disableSubmit}
-        {isLoading}
-      />
+      <Button type="submit" disabled={disableSubmit} loading={isLoading}>Accept Invite</Button>
     {/if}
   </div>
 </AuthUI>

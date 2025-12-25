@@ -21,8 +21,7 @@ export async function POST({ request }) {
     messages: [
       {
         role: 'system',
-        content:
-          'You are a teaching assistant, you only spit out JSON and nothing else, dont give any explanation.'
+        content: 'You are a teaching assistant, you only spit out JSON and nothing else, dont give any explanation.'
       },
       {
         role: 'user',

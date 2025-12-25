@@ -1,41 +1,41 @@
 <script lang="ts">
-  import Avatar from '$lib/components/Avatar/index.svelte';
-  import {
-    lesson,
-    lessonCommentsChannel
-  } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { group } from '$lib/components/Course/store';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import DeleteModal from '$lib/components/Modal/DeleteModal.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { calDateDiff } from '$lib/utils/functions/date';
-  import { getSupabase } from '$lib/utils/functions/supabase';
-  import { t } from '$lib/utils/functions/translations';
-  import { profile } from '$lib/utils/store/user';
-  import type { GroupPerson, LessonComment, LessonCommentInsertPayload } from '$lib/utils/types';
-  import type {
-    PostgrestSingleResponse,
-    RealtimeChannel,
-    RealtimePostgresChangesPayload
-  } from '@supabase/supabase-js';
-  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
   import { onDestroy, onMount } from 'svelte';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+  import type { PostgrestSingleResponse, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+
+  import { group } from '$lib/components/Course/store';
+  import * as Avatar from '@cio/ui/base/avatar';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
+  import { shortenName } from '$lib/utils/functions/string';
+  import { DeleteModal } from '$features/ui';
+  import { Button } from '@cio/ui/base/button';
+  import { lesson, lessonCommentsChannel } from '$lib/components/Course/components/Lesson/store/lessons';
+
+  import { profile } from '$lib/utils/store/user';
+  import { t } from '$lib/utils/functions/translations';
+  import { calDateDiff } from '$lib/utils/functions/date';
+  import { snackbar } from '$features/ui/snackbar/store';
+  import { getSupabase } from '$lib/utils/functions/supabase';
+  import type { GroupPerson, LessonComment, LessonCommentInsertPayload } from '$lib/utils/types';
 
   const supabase = getSupabase();
   const PAGE_SIZE = 20;
 
-  export let lessonId = '';
+  interface Props {
+    lessonId?: string;
+  }
 
-  let comment = '';
-  let comments: LessonComment[] = [];
-  let groupmember: GroupPerson | undefined;
-  let isSaving: boolean = false;
-  let isFetching = false;
-  let openDeleteModal = false;
-  let deleteCommentId: number | null = null;
-  let editCommentId: number | null = null;
+  let { lessonId = '' }: Props = $props();
+
+  let comment = $state('');
+  let comments: LessonComment[] = $state([]);
+  let groupmember: GroupPerson | undefined = $state();
+  let isSaving: boolean = $state(false);
+  let isFetching = $state(false);
+  let openDeleteModal = $state(false);
+  let deleteCommentId: number | null = $state(null);
+  let editCommentId: number | null = $state(null);
 
   interface FetchComments {
     id: number;
@@ -62,7 +62,7 @@
         id: 0,
         comment: comment,
         name: $t('course.navItem.lessons.comments.you'),
-        avatar: $profile.avatar_url,
+        avatar: $profile.avatarUrl || 'AV',
         commentAt: new Date(),
         groupmember_id: groupmember.id
       },
@@ -87,9 +87,7 @@
           return;
         }
 
-        comments = comments.map((comment) =>
-          comment.id === 0 ? { ...comment, id: data.id } : comment
-        );
+        comments = comments.map((comment) => (comment.id === 0 ? { ...comment, id: data.id } : comment));
         isSaving = false;
         comment = '';
       });
@@ -177,11 +175,11 @@
     pagination.count = comments.length;
   }
 
-  let pagination = {
+  let pagination = $state({
     hasMore: true,
     count: 0,
     page: 0
-  };
+  });
 
   async function fetchComments(people: GroupPerson[]) {
     if (!pagination.hasMore) return;
@@ -250,11 +248,7 @@
       lessonCommentsChannel.set(
         supabase
           .channel('any')
-          .on(
-            'postgres_changes',
-            { event: 'INSERT', schema: 'public', table: 'lesson_comment' },
-            handleInsert
-          )
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'lesson_comment' }, handleInsert)
           .subscribe()
       );
     }
@@ -270,21 +264,21 @@
 <div class="mx-auto w-full max-w-[65ch]">
   <!-- <hr class="my-5" /> -->
   <div class="mb-5">
-    <p class="text-xl font-bold capitalize">
+    <p class="text-xl capitalize">
       {$t('course.navItem.lessons.comments.title')} ({pagination.count})
     </p>
   </div>
   <div>
     <div class="flex h-full items-start gap-3">
-      <Avatar
-        src={$profile.avatar_url}
-        name={$profile.fullname}
-        width="w-8"
-        height="h-8"
-        className="mt-2"
-      />
+      <Avatar.Root class="mt-2 h-8 w-8">
+        <Avatar.Image
+          src={$profile.avatarUrl ? $profile.avatarUrl : '/logo-192.png'}
+          alt={$profile.fullname ? $profile.fullname : 'User'}
+        />
+        <Avatar.Fallback>{shortenName($profile.fullname) || 'U'}</Avatar.Fallback>
+      </Avatar.Root>
       <div class="h-full w-full">
-        <TextArea
+        <TextareaField
           label={$t('course.navItem.lessons.comments.text_area_title')}
           placeholder={$t('course.navItem.lessons.comments.placeholder')}
           bind:value={comment}
@@ -293,23 +287,26 @@
     </div>
 
     <div class="mt-2 flex flex-row-reverse">
-      <PrimaryButton
-        label={$t('course.navItem.lessons.comments.comment_btn')}
-        onClick={handleSend}
-        isDisabled={!comment}
-        isLoading={isSaving}
-      />
+      <Button onclick={handleSend} disabled={!comment} loading={isSaving}>
+        {$t('course.navItem.lessons.comments.comment_btn')}
+      </Button>
     </div>
   </div>
 
   <div class="my-10">
     {#each comments as commentItem}
       <div class="mt-2 flex items-start gap-3 pb-2">
-        <Avatar src={commentItem.avatar} name={commentItem.name} width="w-8" height="h-8" />
+        <Avatar.Root class="h-8 w-8">
+          <Avatar.Image
+            src={commentItem.avatar ? commentItem.avatar : '/logo-192.png'}
+            alt={commentItem.name ? commentItem.name : 'User'}
+          />
+          <Avatar.Fallback>{shortenName(commentItem.name) || 'U'}</Avatar.Fallback>
+        </Avatar.Root>
 
         <div class="w-full rounded-md border px-4 pb-4 pt-2 dark:border-neutral-700">
           <div class="flex items-center justify-between gap-2">
-            <p class="text-md font-bold dark:text-white">
+            <p class="text-md dark:text-white">
               {commentItem.name}
               <span
                 class="ml-1 text-xs font-normal text-gray-800 dark:text-white"
@@ -320,40 +317,43 @@
             </p>
 
             {#if groupmember?.id === commentItem.groupmember_id}
-              <OverflowMenu flipped>
-                <OverflowMenuItem text="Edit" on:click={() => (editCommentId = commentItem.id)} />
-                <OverflowMenuItem
-                  danger
-                  text="Delete"
-                  on:click={() => {
-                    deleteCommentId = commentItem.id;
-                    openDeleteModal = true;
-                  }}
-                />
-              </OverflowMenu>
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger
+                  class="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-neutral-700"
+                >
+                  <EllipsisVerticalIcon class="h-5 w-5" />
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content align="end">
+                  <DropdownMenu.Item onclick={() => (editCommentId = commentItem.id)}>Edit</DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    class="text-red-600"
+                    onclick={() => {
+                      deleteCommentId = commentItem.id;
+                      openDeleteModal = true;
+                    }}
+                  >
+                    Delete
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
             {/if}
           </div>
 
           {#if editCommentId === commentItem.id}
-            <TextArea
+            <TextareaField
               placeholder={$t('course.navItem.lessons.comments.placeholder')}
               bind:value={commentItem.comment}
             />
             <div class="mt-2 flex flex-row-reverse items-center gap-2">
-              <PrimaryButton
-                variant={VARIANTS.OUTLINED}
-                label={$t('course.navItem.lessons.comments.cancel_btn')}
-                onClick={() => (editCommentId = null)}
-              />
-              <PrimaryButton
-                label={$t('course.navItem.lessons.comments.comment_btn')}
-                onClick={() => handleUpdate(commentItem)}
-                isDisabled={!commentItem.comment}
-                isLoading={isSaving}
-              />
+              <Button variant="outline" onclick={() => (editCommentId = null)}>
+                {$t('course.navItem.lessons.comments.cancel_btn')}
+              </Button>
+              <Button onclick={() => handleUpdate(commentItem)} disabled={!commentItem.comment} loading={isSaving}>
+                {$t('course.navItem.lessons.comments.comment_btn')}
+              </Button>
             </div>
           {:else}
-            <article class="prose max-w-[300px] sm:prose-sm dark:text-white">
+            <article class="prose sm:prose-sm max-w-[300px] dark:text-white">
               {commentItem.comment}
             </article>
           {/if}
@@ -363,12 +363,9 @@
   </div>
   {#if pagination.hasMore}
     <div class="mt-2 flex items-center justify-center">
-      <PrimaryButton
-        label={$t('course.navItem.lessons.comments.load_more_btn')}
-        variant={VARIANTS.OUTLINED}
-        onClick={() => fetchComments($group.people)}
-        isLoading={isFetching}
-      />
+      <Button variant="outline" onclick={() => fetchComments($group.people)} loading={isFetching}>
+        {$t('course.navItem.lessons.comments.load_more_btn')}
+      </Button>
     </div>
   {/if}
 </div>

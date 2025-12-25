@@ -1,95 +1,84 @@
 <script lang="ts">
+  import { page } from '$app/state';
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
-  import CourseContainer from '$lib/components/CourseContainer/index.svelte';
-  import {
-    checkExercisesComplete,
-    fetchLesson,
-    updateLessonCompletion
-  } from '$lib/utils/services/courses';
-  import { globalStore } from '$lib/utils/store/app';
-  import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
-  import ListChecked from 'carbon-icons-svelte/lib/ListChecked.svelte';
-
   import { browser } from '$app/environment';
-  import { apps } from '$lib/components/Apps/store';
-  import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
-  import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
-  import LessonVersionHistory from '$lib/components/Course/components/Lesson/LessonVersionHistory.svelte';
-  import Materials from '$lib/components/Course/components/Lesson/Materials/index.svelte';
-  import {
-    lesson,
-    lessonByTranslation,
-    lessons,
-    lessonSections
-  } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { getGroupMemberId } from '$lib/components/Course/function';
-  import { course, group } from '$lib/components/Course/store';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import CourseIcon from '$lib/components/Icons/CourseIcon.svelte';
-  import { PageBody, PageNav } from '$lib/components/Page';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import Save from '@lucide/svelte/icons/save';
+  import * as Select from '@cio/ui/base/select';
+  import Pencil from '@lucide/svelte/icons/pencil';
+  import HistoryIcon from '@lucide/svelte/icons/history';
+  import ListChecksIcon from '@lucide/svelte/icons/list-checks';
+  import LibraryBigIcon from '@lucide/svelte/icons/library-big';
+  import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+  import { CircleCheckIcon } from '$features/ui/icons';
+
   import MODES from '$lib/utils/constants/mode';
-  import { LANGUAGES } from '$lib/utils/constants/translation';
-  import { t } from '$lib/utils/functions/translations';
-  import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
+  import { globalStore } from '$lib/utils/store/app';
+  import { t } from '$lib/utils/functions/translations';
+  import { snackbar } from '$features/ui/snackbar/store';
+  import { course, group } from '$lib/components/Course/store';
+  import { LANGUAGES } from '$lib/utils/constants/translation';
+  import { getGroupMemberId } from '$lib/components/Course/function';
+  import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
   import { COURSE_VERSION, type Lesson, type LessonCompletion } from '$lib/utils/types';
-  import { Dropdown } from 'carbon-components-svelte';
-  import { ChevronLeft, ChevronRight, Edit, Save } from 'carbon-icons-svelte';
-  import OverflowMenuVertical from 'carbon-icons-svelte/lib/OverflowMenuVertical.svelte';
-  import ResultOld from 'carbon-icons-svelte/lib/ResultOld.svelte';
-  import { classroomio } from '$lib/utils/services/api';
+  import LessonVersionHistory from '$lib/components/Course/components/Lesson/LessonVersionHistory.svelte';
+  import { checkExercisesComplete, fetchLesson, updateLessonCompletion } from '$lib/utils/services/courses';
+  import { lesson, setLesson, lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
 
-  export let data;
+  import { IconButton } from '@cio/ui/custom/icon-button';
+  import * as Page from '@cio/ui/base/page';
+  import { CourseContainer } from '$lib/components/CourseContainer';
+  import { RoleBasedSecurity } from '$features/ui';
+  import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
+  import Materials from '$lib/components/Course/components/Lesson/Materials/index.svelte';
 
-  let path = '';
-  let mode = MODES.view;
-  let prevMode = '';
-  let isMarkingComplete = false;
-  let isLoading = false;
-  let isSaving = false;
-  let isLessonComplete = false;
-  let isVersionDrawerOpen = false;
+  let { data = $bindable() } = $props();
 
-  function getLessonOrder(id: string) {
-    const index = $lessons.findIndex((lesson) => lesson.id === id);
+  let mode = $state(MODES.view);
+  let prevMode = $state('');
+  let isMarkingComplete = $state(false);
+  let isSaving = $state(false);
+  let isVersionDrawerOpen = $state(false);
+  let hasFetched = $state('');
 
-    if (index < 10) {
-      return '0' + (index + 1);
-    } else {
-      return index + 1;
-    }
-  }
+  const path = $derived(page.url?.pathname?.replace(/\/exercises[\/ 0-9 a-z -]*/, ''));
+  const isLessonComplete = $derived(getIsLessonComplete($lesson.lesson_completion, $profile.id));
 
   async function fetchReqData(lessonId = '', isMaterialsTabActive: boolean) {
-    const timeout = setTimeout(() => {
-      $lesson.isFetching = true;
-    }, 500);
+    if (lessonId === $lesson.id) return;
+
+    if (!lessonId || hasFetched === lessonId) return;
+
+    hasFetched = lessonId;
+
+    $lesson.isFetching = true;
+    console.log('fetching', $lesson.isFetching);
+
     let lessonData;
     if (isMaterialsTabActive) {
       const lesson = await fetchLesson(lessonId);
       lessonData = lesson.data;
-
-      clearTimeout(timeout);
     }
 
     console.log({ lessonData });
 
     const totalExercises = lessonData?.totalExercises?.[0]?.count || 0;
     const totalComments = lessonData?.totalComments?.[0]?.count || 0;
-    setLesson(lessonData, totalExercises, totalComments);
+
+    setLesson({
+      id: lessonId,
+      lessonData,
+      totalExercises,
+      totalComments,
+      locale: $profile.locale || 'en'
+    });
     $lesson.isFetching = false;
   }
 
   async function markLessonComplete(lessonId: string) {
     const groupMemberId = getGroupMemberId($group.people, $profile.id);
-    const { data: areExercisesComplete, error } = await checkExercisesComplete(
-      lessonId,
-      groupMemberId
-    );
+    const { data: areExercisesComplete, error } = await checkExercisesComplete(lessonId, groupMemberId);
 
     if (error) {
       snackbar.error('snackbar.lessons.error.try_later');
@@ -147,113 +136,9 @@
     isMarkingComplete = false;
   }
 
-  const downloadLesson = async () => {
-    const currentLesson = $lessons.find((l) => l.id === $lesson?.id);
-    if (!currentLesson) {
-      return;
-    }
-
-    isLoading = true;
-
-    try {
-      const lessonVideo = $lesson.materials.videos.map((video) => video.link);
-      const lessonNumber = getLessonOrder(currentLesson.id);
-      const slideUrl = $lesson.materials.slide_url || '';
-
-      const response = await classroomio.course.lesson.download.pdf.$post({
-        json: {
-          title: currentLesson.title,
-          number: lessonNumber,
-          orgName: $currentOrg.name,
-          note: $lesson.materials.note,
-          slideUrl: slideUrl,
-          video: lessonVideo,
-          courseTitle: $course.title
-        }
-      });
-      const blob = await response.blob();
-
-      const file = new Blob([blob], { type: 'application/pdf' });
-      const fileURL = URL.createObjectURL(file);
-
-      let a = document.createElement('a');
-      document.body.append(a);
-      a.download = $course.title + ' - ' + 'Lesson ' + lessonNumber;
-      a.href = fileURL;
-      a.click();
-      a.remove();
-
-      snackbar.success('snackbar.lessons.success.complete_download');
-    } catch (error) {
-      console.log('error downloading lesson', error);
-      snackbar.error('snackbar.lessons.error.try_later');
-    }
-
-    isLoading = false;
-  };
-
-  function setLesson(lessonData, totalExercises: number, totalComments: number) {
-    if (!lessonData) return;
-
-    let lesson_completion: LessonCompletion[] = [];
-
-    if (Array.isArray(lessonData.lesson_completion)) {
-      lesson_completion = [...lessonData.lesson_completion];
-    }
-
-    lesson.update((l) => ({
-      ...l,
-      id: data.lessonId,
-      title: lessonData.title,
-      totalExercises,
-      totalComments: totalComments,
-      materials: {
-        videos: lessonData.videos,
-        note: lessonData.note,
-        slide_url: lessonData.slide_url,
-        documents: lessonData.documents || null
-      },
-      lesson_completion,
-      exercises: [],
-      locale: $profile.locale
-    }));
-
-    if (Array.isArray(lessonData.lesson_language)) {
-      lessonByTranslation.update((lessLocales) => {
-        return {
-          ...lessLocales,
-          [data.lessonId]: lessonData.lesson_language.reduce(
-            (acc, cur) => {
-              acc[cur.locale] = cur.content;
-              return acc;
-            },
-            {
-              en: ''
-            }
-          )
-        };
-      });
-    }
-  }
-
-  const toggleApps = () => {
-    $apps.open = !$apps.open;
-  };
-
   function toggleMode() {
     prevMode = mode;
     mode = mode === MODES.edit ? MODES.view : MODES.edit;
-  }
-
-  function handleAppClick(appName: string) {
-    if ($apps.selectedApp === appName) {
-      $apps.selectedApp = undefined;
-      $apps.open = false;
-      return;
-    }
-
-    $apps.selectedApp = appName;
-    $apps.open = true;
   }
 
   const getLessons = () => {
@@ -299,98 +184,87 @@
     isVersionDrawerOpen = false;
     if (data.courseId && browser) {
       mode = MODES.view;
+      hasFetched = '';
       fetchReqData(data.lessonId, data.isMaterialsTabActive);
     }
+
     snackbar.success('snackbar.lessons.success.version_restored');
   };
 
-  $: path = $page.url?.pathname?.replace(/\/exercises[\/ 0-9 a-z -]*/, '');
+  $effect(() => {
+    if (data.courseId && $profile.id) {
+      fetchReqData(data.lessonId, data.isMaterialsTabActive);
+    }
+  });
 
-  $: if (data.courseId && $profile.id && browser) {
-    mode = MODES.view;
-    fetchReqData(data.lessonId, data.isMaterialsTabActive);
-  }
-
-  $: isLessonComplete = getIsLessonComplete($lesson.lesson_completion, $profile.id);
-  $: isPrevDisabled = isNextOrPrevDisabled(data.lessonId, true);
-  $: isNextDisabled = isNextOrPrevDisabled(data.lessonId, false);
+  const isPrevDisabled = $derived(isNextOrPrevDisabled(data.lessonId, true));
+  const isNextDisabled = $derived(isNextOrPrevDisabled(data.lessonId, false));
 </script>
 
 <CourseContainer
   {path}
-  isExercisePage={!data.isMaterialsTabActive && !!data.exerciseId}
-  bind:courseId={data.courseId}
   containerClass="relative"
+  courseId={data.courseId}
+  isExercisePage={!data.isMaterialsTabActive && !!data.exerciseId}
 >
-  <PageNav
-    bind:hideOnMobile={$globalStore.isStudent}
-    navItems={[
-      {
-        label: $t('course.navItem.lessons.lesson_nav.materials'),
-        isActive: data.isMaterialsTabActive,
-        href: path
-      },
-      {
-        label: $t('course.navItem.lessons.lesson_nav.exercises'),
-        badgeValue: data.isMaterialsTabActive ? $lesson.totalExercises : $lesson.exercises.length,
-        isActive: !data.isMaterialsTabActive,
-        href: `${path}/exercises`
-      }
-    ]}
-  >
-    <svelte:fragment slot="widget">
+  <Page.Header>
+    <Page.HeaderContent>
+      <Page.Title>
+        {data.isMaterialsTabActive
+          ? $t('course.navItem.lessons.lesson_nav.materials')
+          : $t('course.navItem.lessons.lesson_nav.exercises')}
+      </Page.Title>
+    </Page.HeaderContent>
+    <Page.Action>
       <div class="flex items-center gap-1">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           {#if data.isMaterialsTabActive}
             <!-- Version control -->
             {#if mode === MODES.edit && window.innerWidth >= 1024}
-              <IconButton onClick={() => (isVersionDrawerOpen = true)}>
-                <ResultOld size={24} />
+              <IconButton onclick={() => (isVersionDrawerOpen = true)}>
+                <HistoryIcon size={20} />
               </IconButton>
             {/if}
 
-            <div class="tab">
-              <IconButton onClick={toggleApps} buttonClassName="">
-                <OverflowMenuVertical size={24} />
-              </IconButton>
-            </div>
-            <div
-              class={`flex-row ${
-                $apps.dropdown && $apps.open
-                  ? 'absolute right-14 top-[85px] z-40 rounded-md bg-gray-100 p-3 lg:relative lg:right-0 lg:top-0 lg:p-0 dark:bg-neutral-800'
-                  : 'hidden'
-              } items-center lg:flex`}
-            >
+            <div class="flex-row items-center lg:flex">
               <IconButton
-                onClick={() => {
-                  $apps.dropdown = false;
+                onclick={() => {
                   toggleMode();
                 }}
                 disabled={isSaving}
               >
                 {#if mode === MODES.edit}
-                  <Save size={24} />
+                  <Save size={20} />
                 {:else}
-                  <Edit size={24} />
+                  <Pencil size={20} />
                 {/if}
               </IconButton>
             </div>
 
-            <Dropdown items={LANGUAGES} bind:selectedId={$lesson.locale} class="h-full" />
+            <Select.Root type="single" bind:value={$lesson.locale}>
+              <Select.Trigger class="h-9 w-[120px]">
+                {LANGUAGES.find((lang) => lang.id === $lesson.locale)?.text || 'Language'}
+              </Select.Trigger>
+              <Select.Content>
+                <Select.Group>
+                  {#each LANGUAGES as lang}
+                    <Select.Item value={lang.id}>
+                      {lang.text}
+                    </Select.Item>
+                  {/each}
+                </Select.Group>
+              </Select.Content>
+            </Select.Root>
           {/if}
         </RoleBasedSecurity>
       </div>
-    </svelte:fragment>
-  </PageNav>
+    </Page.Action>
+  </Page.Header>
 
   {#if !data.isMaterialsTabActive}
     <Exercises lessonId={data.lessonId} exerciseId={data.exerciseId} path={`${path}/exercises`} />
   {:else if !!data.lessonId}
-    <PageBody
-      bind:isPageNavHidden={$globalStore.isStudent}
-      width="lg:w-full xl:w-11/12"
-      className="overflow-x-hidden"
-    >
+    <div class="overflow-x-hidden lg:w-full xl:w-11/12">
       <!-- Shows Lesson Note / Slides / Video -->
       <Materials
         lessonId={data.lessonId}
@@ -400,59 +274,53 @@
         bind:isSaving
         isStudent={$globalStore.isStudent}
       />
-    </PageBody>
+    </div>
   {/if}
 
   <!-- Bottom Lesson Widget -->
   <div class="absolute bottom-5 flex w-full items-center justify-center">
-    <div
-      class="flex w-fit items-center gap-2 rounded-full bg-gray-100 px-5 py-1 shadow-xl dark:bg-neutral-700"
-    >
+    <div class="flex w-fit items-center gap-2 rounded-full bg-gray-100 px-5 py-1 shadow-xl dark:bg-neutral-700">
       <button
         disabled={isPrevDisabled}
         class={`my-2 flex items-center border border-b-0 border-l-0 border-t-0 border-gray-300 px-2 pr-4 ${
           isPrevDisabled && 'cursor-not-allowed opacity-25'
         }`}
-        on:click={() => goToNextOrPrevLesson(data.lessonId, true)}
+        onclick={() => goToNextOrPrevLesson(data.lessonId, true)}
       >
-        <ChevronLeft size={24} />
+        <ChevronLeftIcon size={16} />
 
         <span class="hidden md:block">{$t('course.navItem.lessons.prev')}</span>
       </button>
       {#if data.isMaterialsTabActive}
         <button
           class="my-2 flex items-center border border-b-0 border-l-0 border-t-0 border-gray-300 px-2 pr-4"
-          on:click={() => goto(`${path}/exercises`)}
+          onclick={() => goto(`${path}/exercises`)}
         >
-          <ListChecked size={24} class="carbon-icon" />
+          <ListChecksIcon size={16} />
           <span class="ml-1">{$lesson.totalExercises}</span>
         </button>
       {:else}
         <button
           class="my-2 flex items-center border border-b-0 border-l-0 border-t-0 border-gray-300 px-2 pr-4"
-          on:click={() => goto(path)}
+          onclick={() => goto(path)}
         >
-          <CourseIcon />
+          <LibraryBigIcon size={16} />
         </button>
       {/if}
       <button
         class="my-2 flex items-center border border-b-0 border-l-0 border-t-0 border-gray-300 px-2 pr-4"
-        on:click={() => markLessonComplete(data.lessonId)}
+        onclick={() => markLessonComplete(data.lessonId)}
         disabled={isMarkingComplete}
       >
-        {#if isLessonComplete}
-          <CheckmarkFilledIcon size={24} class="carbon-icon text-primary-600" />
-        {:else}
-          <CheckmarkOutlineIcon size={24} class="carbon-icon" />
-        {/if}
+        <CircleCheckIcon filled={isLessonComplete} />
       </button>
       <button
         disabled={isNextDisabled}
         class={`my-2 flex items-center px-2 ${isNextDisabled && 'cursor-not-allowed opacity-25'}`}
-        on:click={() => goToNextOrPrevLesson(data.lessonId, false)}
+        onclick={() => goToNextOrPrevLesson(data.lessonId, false)}
       >
         <span class="hidden md:block">{$t('course.navItem.lessons.next')}</span>
-        <ChevronRight size={24} />
+        <ChevronRightIcon size={16} />
       </button>
     </div>
   </div>

@@ -1,8 +1,6 @@
 import { getAccessToken } from '$lib/utils/functions/supabase';
 
 export const NOTIFICATION_NAME = {
-  WELCOME_TO_APP: 'WELCOME TO APP',
-  VERIFY_EMAIL: 'VERFIY_EMAIL',
   INVITE_TEACHER: 'INVITE TEACHER',
   WELCOME_TEACHER_TO_COURSE: 'WELCOME TEACHER TO COURSE',
   SEND_TEACHER_STUDENT_BUY_REQUEST: 'SEND TEACHER STUDENT BUY REQUEST',
@@ -15,12 +13,9 @@ export const NOTIFICATION_NAME = {
 };
 
 const NAME_TO_PATH = {
-  [NOTIFICATION_NAME.WELCOME_TO_APP]: '/api/email/welcome',
-  [NOTIFICATION_NAME.VERIFY_EMAIL]: '/api/email/verify_email',
   [NOTIFICATION_NAME.INVITE_TEACHER]: '/api/email/invite',
   [NOTIFICATION_NAME.WELCOME_TEACHER_TO_COURSE]: '/api/email/course/teacher_welcome',
-  [NOTIFICATION_NAME.SEND_TEACHER_STUDENT_BUY_REQUEST]:
-    '/api/email/course/teacher_student_buycourse',
+  [NOTIFICATION_NAME.SEND_TEACHER_STUDENT_BUY_REQUEST]: '/api/email/course/teacher_student_buycourse',
   [NOTIFICATION_NAME.STUDENT_PROOVE_COURSE_PAYMENT]: '/api/email/course/student_prove_payment',
   [NOTIFICATION_NAME.STUDENT_COURSE_WELCOME]: '/api/email/course/student_welcome',
   [NOTIFICATION_NAME.TEACHER_STUDENT_JOINED]: '/api/email/course/teacher_student_joined',

@@ -1,12 +1,13 @@
 <script>
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import Audience from '$lib/components/Org/Audience/index.svelte';
+  import { Button } from '@cio/ui/base/button';
+  import { AudiencePage } from '$features/audience/pages';
   import { t } from '$lib/utils/functions/translations';
-  import { orgAudience, currentOrgPlan, currentOrgMaxAudience } from '$lib/utils/store/org';
-  import { PLAN } from 'shared/src/plans/constants';
-  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
+  import { currentOrgPlan, currentOrgMaxAudience } from '$lib/utils/store/org';
+  import { PLAN } from '@cio/utils/plans';
+  import * as Page from '@cio/ui/base/page';
+  import { orgApi } from '$features/org/api/org.svelte';
 
-  let isLoading = false;
+  let isLoading = $state(false);
 
   function exportAudience() {
     isLoading = true;
@@ -19,28 +20,27 @@
   <title>Audience - ClassroomIO</title>
 </svelte:head>
 
-<section class="w-full max-w-4xl mx-auto">
-  <div class="py-10 px-5">
-    <div class="flex items-center justify-between mb-10">
-      <div class="flex items-end">
-        <h1 class="dark:text-white text-2xl md:text-3xl font-bold m-0">{$t('audience.title')}</h1>
-        {#if $currentOrgPlan?.plan_name !== PLAN.ENTERPRISE}
-          <span class="ml-2">
-            ({$orgAudience.length} / {$currentOrgMaxAudience})
+<Page.Root class="mx-auto w-full max-w-6xl">
+  <Page.Header>
+    <Page.HeaderContent>
+      <Page.Title>
+        {$t('audience.title')}
+        {#if $currentOrgPlan?.planName !== PLAN.ENTERPRISE}
+          <span class="ml-2 text-sm">
+            ({orgApi.audience.length} / {$currentOrgMaxAudience})
           </span>
         {/if}
-      </div>
-      <PrimaryButton
-        label={$t('audience.export')}
-        onClick={exportAudience}
-        isDisabled={isLoading}
-        {isLoading}
-      />
-    </div>
-
-    {#if $orgAudience.length >= $currentOrgMaxAudience}
-      <UpgradeBanner>{$t('audience.upgrade')}</UpgradeBanner>
-    {/if}
-    <Audience />
-  </div>
-</section>
+      </Page.Title>
+    </Page.HeaderContent>
+    <Page.Action>
+      <Button onclick={exportAudience} disabled={isLoading} loading={isLoading}>
+        {$t('audience.export')}
+      </Button>
+    </Page.Action>
+  </Page.Header>
+  <Page.Body>
+    {#snippet child()}
+      <AudiencePage />
+    {/snippet}
+  </Page.Body>
+</Page.Root>

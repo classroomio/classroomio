@@ -1,20 +1,22 @@
 <script lang="ts">
-  import { ActivityCard, HeroProfileCard, LoadingPage } from '$lib/components/Analytics';
-  import Progress from '$lib/components/Progress/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { getAccessToken } from '$lib/utils/functions/supabase';
-  import { t } from '$lib/utils/functions/translations';
-  import type { UserCourseAnalytics } from '$lib/utils/types/analytics';
-  import { Grid, Tag } from 'carbon-components-svelte';
-  import Notebook from 'carbon-icons-svelte/lib/Notebook.svelte';
-  import Report from 'carbon-icons-svelte/lib/Report.svelte';
-  import RowExpand from 'carbon-icons-svelte/lib/RowExpand.svelte';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
+  import { Badge } from '@cio/ui/base/badge';
+  import BookOpenIcon from '@lucide/svelte/icons/book-open';
+  import ChartLineIcon from '@lucide/svelte/icons/chart-line';
+  import UnfoldVerticalIcon from '@lucide/svelte/icons/unfold-vertical';
 
-  export let data;
+  import { t } from '$lib/utils/functions/translations';
+  import { snackbar } from '$features/ui/snackbar/store';
+  import { getAccessToken } from '$lib/utils/functions/supabase';
+  import type { UserCourseAnalytics } from '$lib/utils/types/analytics';
 
-  let userCourseAnalytics: UserCourseAnalytics;
+  import { Progress } from '@cio/ui/base/progress';
+  import { ActivityCard, HeroProfileCard, LoadingPage } from '$features/ui';
+
+  let { data } = $props();
+
+  let userCourseAnalytics: UserCourseAnalytics | undefined = $state();
 
   function getPercentage(a: number, b: number): number {
     if (b === 0) {
@@ -23,7 +25,7 @@
     return Math.round((a / b) * 100);
   }
 
-  let exerciseFilter: 'all' | 'completed' | 'incomplete' = 'all';
+  let exerciseFilter: 'all' | 'completed' | 'incomplete' = $state('all');
   function toggleExerciseFilter(filter: 'completed' | 'incomplete') {
     if (exerciseFilter === filter) {
       exerciseFilter = 'all';
@@ -55,58 +57,60 @@
     fetchUserCourseAnalytics();
   });
 
-  $: learningActivities = [
+  let learningActivities = $derived([
     {
       description: $t('analytics.overall_course_progress_user_description'),
-      icon: Notebook,
-      percentage: userCourseAnalytics?.progressPercentage,
+      icon: BookOpenIcon,
+      percentage: userCourseAnalytics?.progressPercentage ?? 0,
       title: $t('analytics.overall_course_progress')
     },
     {
       description: $t('analytics.assignment_completion_description'),
-      icon: Report,
+      icon: ChartLineIcon,
       percentage: getPercentage(
-        userCourseAnalytics?.userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length,
-        userCourseAnalytics?.userExercisesStats?.length
+        userCourseAnalytics?.userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length || 0,
+        userCourseAnalytics?.userExercisesStats?.length || 0
       ),
       title: $t('analytics.assignment_completion')
     },
     {
       description: $t('analytics.average_grade_description'),
-      icon: RowExpand,
-      percentage: userCourseAnalytics?.averageGrade,
+      icon: UnfoldVerticalIcon,
+      percentage: userCourseAnalytics?.averageGrade ?? 0,
       title: $t('analytics.average_grade')
     }
-  ];
+  ]);
 
-  $: filteredExercises = userCourseAnalytics?.userExercisesStats?.filter((exercise) => {
-    if (exerciseFilter === 'all') {
-      return true;
-    }
-    return exercise.isCompleted === (exerciseFilter === 'completed');
-  });
-  $: completedExercises = userCourseAnalytics?.userExercisesStats?.filter(
-    (exercise) => exercise.isCompleted
-  )?.length;
-  $: incompleteExercises = userCourseAnalytics?.userExercisesStats?.filter(
-    (exercise) => !exercise.isCompleted
-  )?.length;
+  let filteredExercises = $derived(
+    userCourseAnalytics?.userExercisesStats?.filter((exercise) => {
+      if (exerciseFilter === 'all') {
+        return true;
+      }
+      return exercise.isCompleted === (exerciseFilter === 'completed');
+    })
+  );
+  let completedExercises = $derived(
+    userCourseAnalytics?.userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length || 0
+  );
+  let incompleteExercises = $derived(
+    userCourseAnalytics?.userExercisesStats?.filter((exercise) => !exercise.isCompleted)?.length || 0
+  );
 </script>
 
 {#if userCourseAnalytics}
   <section class="px-1">
     <HeroProfileCard user={userCourseAnalytics.user} />
 
-    <Grid class="mt-5 px-0" fullWidth>
+    <div class="mt-5 px-0">
       <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {#each learningActivities as activity}
           <ActivityCard {activity} />
         {/each}
       </div>
-    </Grid>
+    </div>
 
     <div class="mt-5 rounded-md border p-3 md:p-5 dark:border-neutral-600">
-      <h3 class="text-2xl font-bold">
+      <h3 class="text-2xl">
         {$t('analytics.exercises')}
       </h3>
 
@@ -122,30 +126,24 @@
             })}
           </p>
         </div>
-        <Progress
-          value={getPercentage(completedExercises, userCourseAnalytics?.userExercisesStats?.length)}
-        />
+        <Progress value={getPercentage(completedExercises, userCourseAnalytics?.userExercisesStats?.length)} />
         <div class="flex items-center justify-between">
-          <Tag
-            interactive
-            filter={exerciseFilter === 'incomplete'}
-            type={exerciseFilter === 'incomplete' ? 'gray' : 'outline'}
+          <Badge
+            type={exerciseFilter === 'incomplete' ? 'secondary' : 'outline'}
             class="lowercase text-yellow-700 dark:text-yellow-500"
-            on:click={() => toggleExerciseFilter('incomplete')}
+            onclick={() => toggleExerciseFilter('incomplete')}
           >
             {incompleteExercises}
             {$t('analytics.incomplete')}
-          </Tag>
-          <Tag
-            interactive
-            filter={exerciseFilter === 'completed'}
+          </Badge>
+          <Badge
             type={exerciseFilter === 'completed' ? 'gray' : 'outline'}
             class="lowercase text-green-700 dark:text-green-500"
-            on:click={() => toggleExerciseFilter('completed')}
+            onclick={() => toggleExerciseFilter('completed')}
           >
             {completedExercises}
             {$t('analytics.complete')}
-          </Tag>
+          </Badge>
         </div>
       </div>
 
@@ -160,7 +158,7 @@
             transition:fade={{ duration: 300 }}
           >
             <div class="flex w-2/3 items-center gap-4">
-              <svelte:component this={Notebook} size={24} class="text-black" />
+              <BookOpenIcon size={16} />
               <div>
                 <div class="mb-2">
                   <a
@@ -181,23 +179,17 @@
                   Score: {exercise.score}/{exercise.totalPoints}
 
                   {#if exercise.isCompleted}
-                    <Tag type={exercise.status === 3 ? 'high-contrast' : 'outline'} size="sm">
+                    <Badge type={exercise.status === 3 ? 'secondary' : 'outline'}>
                       {exercise.status === 3 ? $t('analytics.graded') : $t('analytics.not_graded')}
-                    </Tag>
+                    </Badge>
                   {/if}
                 </p>
               </div>
             </div>
 
-            <Tag
-              class={`${
-                exercise.isCompleted
-                  ? 'bg-green-200 text-green-700'
-                  : 'bg-yellow-200 text-yellow-700'
-              }`}
-            >
+            <Badge class={`${exercise.isCompleted ? 'bg-green-200 text-green-700' : 'bg-yellow-200 text-yellow-700'}`}>
               {exercise.isCompleted ? $t('analytics.completed') : $t('analytics.incomplete')}
-            </Tag>
+            </Badge>
           </div>
         {/key}
       {/each}

@@ -3,8 +3,9 @@ import { type ApiClientConfig, ApiError, type RequestConfig } from './types';
 import { DEFAULT_CONFIG } from './constants';
 import { delay } from './utils';
 import { env } from '$env/dynamic/public';
-import { getAccessToken } from '$lib/utils/functions/supabase';
 import { hcWithType } from '@cio/api/rpc-types';
+import { get } from 'svelte/store';
+import { currentOrg } from '$lib/utils/store/org';
 
 class ApiClient {
   private config: Required<ApiClientConfig>;
@@ -13,17 +14,8 @@ class ApiClient {
     this.config = { ...DEFAULT_CONFIG, ...config };
   }
 
-  private async makeRequest(
-    input: RequestInfo | URL,
-    requestConfig: RequestConfig = {}
-  ): Promise<Response> {
-    console.log('makeRequest', input, requestConfig);
-    const {
-      timeout = this.config.timeout,
-      retries = this.config.retries,
-      skipAuth = false,
-      ...fetchConfig
-    } = requestConfig;
+  private async makeRequest(input: RequestInfo | URL, requestConfig: RequestConfig = {}): Promise<Response> {
+    const { timeout = this.config.timeout, retries = this.config.retries, ...fetchConfig } = requestConfig;
 
     const url = typeof input === 'string' ? input : input.toString();
     const fullUrl = url.startsWith('http') ? url : `${this.config.baseURL}${url}`;
@@ -36,13 +28,17 @@ class ApiClient {
       headers.set('Accept', 'application/json');
     }
 
+    // Add organization ID header if available
+    const org = get(currentOrg);
+    if (org?.id) {
+      headers.set('cio-org-id', org.id);
+    }
+
     // Handle body serialization and content-type
     let requestBody = fetchConfig.body;
-    if (
-      fetchConfig.body &&
-      typeof fetchConfig.body === 'object' &&
-      !(fetchConfig.body instanceof FormData)
-    ) {
+    const isFormData = fetchConfig.body instanceof FormData;
+
+    if (fetchConfig.body && typeof fetchConfig.body === 'object' && !isFormData) {
       // Auto-stringify objects (except FormData)
       requestBody = JSON.stringify(fetchConfig.body);
       if (!headers.has('Content-Type')) {
@@ -55,26 +51,13 @@ class ApiClient {
       }
     }
 
-    // Add authentication if not skipped
-    if (!skipAuth) {
-      try {
-        const token = await getAccessToken();
-        if (token) {
-          headers.set('Authorization', `Bearer ${token}`);
-        }
-      } catch (error) {
-        console.warn('Failed to get access token:', error);
-        // Continue without auth if token retrieval fails
-      }
-    }
-
     // Create abort controller for timeout
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     const requestInit: RequestInit = {
       ...fetchConfig,
-      headers,
+      headers: isFormData ? undefined : headers,
       body: requestBody,
       signal: controller.signal
     };
@@ -96,31 +79,16 @@ class ApiClient {
 
         if (response.status === 401) {
           await this.config.onAuthError();
-          throw new ApiError(
-            'Authentication failed',
-            response.status,
-            response.statusText,
-            response
-          );
+          throw new ApiError('Authentication failed', response.status, response.statusText, response);
         }
 
         if (response.status >= 400 && response.status < 500) {
           const errorText = await response.text().catch(() => 'Unknown error');
-          throw new ApiError(
-            `Client error: ${errorText}`,
-            response.status,
-            response.statusText,
-            response
-          );
+          throw new ApiError(errorText, response.status, response.statusText, response);
         }
 
         if (response.status >= 500) {
-          const error = new ApiError(
-            `Server error: ${response.statusText}`,
-            response.status,
-            response.statusText,
-            response
-          );
+          const error = new ApiError(response.statusText, response.status, response.statusText, response);
 
           if (attempt === retries) {
             throw error;
@@ -132,12 +100,7 @@ class ApiClient {
         }
 
         // Other status codes
-        throw new ApiError(
-          `Unexpected status: ${response.statusText}`,
-          response.status,
-          response.statusText,
-          response
-        );
+        throw new ApiError(`Unexpected status: ${response.statusText}`, response.status, response.statusText, response);
       } catch (error) {
         clearTimeout(timeoutId);
 
@@ -187,6 +150,9 @@ export const apiClient = new ApiClient();
 export const classroomio = hcWithType(env.PUBLIC_SERVER_URL, {
   fetch: async (input: RequestInfo | URL, requestInit?: RequestInit) => {
     return apiClient.request(input, requestInit);
+  },
+  init: {
+    credentials: 'include' // Required for sending cookies cross-origin
   }
 });
 
@@ -210,3 +176,6 @@ export {
 } from './utils';
 
 export type { InferResponseType, InferRequestType } from '@cio/api/rpc-types';
+
+// Export base API classes
+export { BaseApi, BaseApiWithErrors } from './base.svelte';

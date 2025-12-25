@@ -1,11 +1,12 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { dndzone } from 'svelte-dnd-action';
-  import CheckboxCheckedFilledIcon from 'carbon-icons-svelte/lib/CheckboxCheckedFilled.svelte';
-  import RadioButtonCheckedIcon from 'carbon-icons-svelte/lib/RadioButtonChecked.svelte';
-  import TextAlignJustifyIcon from 'carbon-icons-svelte/lib/TextAlignJustify.svelte';
+  import SquareCheckIcon from '@lucide/svelte/icons/square-check';
+  import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
+  import TablePropertiesIcon from '@lucide/svelte/icons/table-properties';
 
   import { flip } from 'svelte/animate';
-  import Modal from '$lib/components/Modal/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
 
   import { questionnaireOrder, questionnaire } from '../store/exercise';
   import { filterOutDeleted } from './functions';
@@ -19,7 +20,17 @@
     type: number;
   }
 
-  let items: Array<Question> = [];
+  let items: Array<Question> = $state([]);
+
+  function setItemsFromQuestions(questions: typeof $questionnaire.questions) {
+    untrack(() => {
+      items = filterOutDeleted(questions).map((q) => ({
+        id: q.id,
+        name: q.title,
+        type: q.question_type.id
+      }));
+    });
+  }
 
   function handleDndConsider(e) {
     items = e.detail.items;
@@ -44,49 +55,52 @@
     $questionnaireOrder.open = false;
   }
 
-  $: items = filterOutDeleted($questionnaire.questions).map((q) => ({
-    id: q.id,
-    name: q.title,
-    type: q.question_type.id
-  }));
+  $effect(() => {
+    setItemsFromQuestions($questionnaire.questions);
+  });
 </script>
 
-<Modal
-  onClose={handleClose}
+<Dialog.Root
   bind:open={$questionnaireOrder.open}
-  width="w-96"
-  modalHeading={$t('course.navItem.lessons.exercises.all_exercises.order_questions')}
+  onOpenChange={(isOpen) => {
+    if (!isOpen) handleClose();
+  }}
 >
-  <section
-    use:dndzone={{
-      items,
-      flipDurationMs,
-      dropTargetStyle: {
-        border: '2px #1d4ed8 solid',
-        'border-style': 'dashed'
-      }
-    }}
-    on:consider={handleDndConsider}
-    on:finalize={handleDndFinalize}
-    class="w-full"
-  >
-    {#each items as item (item.id)}
-      <div
-        animate:flip={{ duration: flipDurationMs }}
-        class="flex items-center rounded-md p-4 border border-primary-600"
-      >
-        {#if item.type === 1}
-          <RadioButtonCheckedIcon size={16} class="carbon-icon active" />
-        {:else if item.type === 2}
-          <CheckboxCheckedFilledIcon size={16} class="carbon-icon active" />
-        {:else}
-          <TextAlignJustifyIcon size={16} class="carbon-icon active" />
-        {/if}
-        {` ${item.name}`}
-      </div>
-    {/each}
-  </section>
-</Modal>
+  <Dialog.Content class="w-96">
+    <Dialog.Header>
+      <Dialog.Title>{$t('course.navItem.lessons.exercises.all_exercises.order_questions')}</Dialog.Title>
+    </Dialog.Header>
+    <section
+      use:dndzone={{
+        items,
+        flipDurationMs,
+        dropTargetStyle: {
+          border: '2px #1d4ed8 solid',
+          'border-style': 'dashed'
+        }
+      }}
+      onconsider={handleDndConsider}
+      onfinalize={handleDndFinalize}
+      class="w-full"
+    >
+      {#each items as item (item.id)}
+        <div
+          animate:flip={{ duration: flipDurationMs }}
+          class="ui:border-primary flex items-center rounded-md border p-4"
+        >
+          {#if item.type === 1}
+            <SquareCheckIcon size={16} />
+          {:else if item.type === 2}
+            <CircleDotIcon size={16} />
+          {:else}
+            <TablePropertiesIcon size={16} />
+          {/if}
+          {` ${item.name}`}
+        </div>
+      {/each}
+    </section>
+  </Dialog.Content>
+</Dialog.Root>
 
 <style>
   section {

@@ -1,35 +1,39 @@
+import BookOpenIcon from '@lucide/svelte/icons/book-open';
+import type { Component } from 'svelte';
+import FileTextIcon from '@lucide/svelte/icons/file-text';
+import PresentationIcon from '@lucide/svelte/icons/presentation';
 import type { Tabs } from '$lib/utils/types';
-import { Notebook, PresentationFile, Video, Document } from 'carbon-icons-svelte';
+import VideoIcon from '@lucide/svelte/icons/video';
 
 interface MaterialTab {
   label: string;
-  icon: any;
+  icon: Component;
   value: number;
   badgeValue?: number;
 }
 
-export let tabs: MaterialTab[] = [
+export const tabs: MaterialTab[] = [
   {
     label: 'course.navItem.lessons.materials.tabs.note.title',
-    icon: Notebook,
+    icon: BookOpenIcon,
     value: 1,
     badgeValue: 0
   },
   {
     label: 'course.navItem.lessons.materials.tabs.slide.title',
-    icon: PresentationFile,
+    icon: PresentationIcon,
     value: 2,
     badgeValue: 0
   },
   {
     label: 'course.navItem.lessons.materials.tabs.video.title',
-    icon: Video,
+    icon: VideoIcon,
     value: 3,
     badgeValue: 0
   },
   {
     label: 'course.navItem.lessons.materials.tabs.document.title',
-    icon: Document,
+    icon: FileTextIcon,
     value: 4,
     badgeValue: 0
   }
@@ -37,6 +41,7 @@ export let tabs: MaterialTab[] = [
 
 export function orderedTabs(tabs: MaterialTab[], settingTabs?: Tabs[]) {
   if (!Array.isArray(settingTabs)) return tabs;
+
   const reorderedTabs: MaterialTab[] = [];
 
   const tabMap = new Map(tabs.map((tab) => [tab.value, tab]));
@@ -49,5 +54,6 @@ export function orderedTabs(tabs: MaterialTab[], settingTabs?: Tabs[]) {
   });
 
   const filteredReorderedTabs = reorderedTabs.filter((tab) => tab !== undefined);
+
   return filteredReorderedTabs;
 }

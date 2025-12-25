@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1760910273722,
+      "tag": "0000_stale_storm",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1760912065001,
+      "tag": "0001_tranquil_thunderbolts",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1762733677656,
+      "tag": "0002_many_revanche",
+      "breakpoints": true
+    }
+  ]
+}

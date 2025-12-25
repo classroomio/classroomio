@@ -1,16 +1,16 @@
-import { LOCALE } from '../types';
+import type { TLocale } from '@cio/db/types';
 
-export const LANGUAGE = {
-  [LOCALE.DE]: 'German',
-  [LOCALE.EN]: 'English',
-  [LOCALE.ES]: 'Spanish',
-  [LOCALE.FR]: 'French',
-  [LOCALE.HI]: 'Hindi',
-  [LOCALE.PL]: 'Polish',
-  [LOCALE.PT]: 'Portuguese',
-  [LOCALE.RU]: 'Russian',
-  [LOCALE.VI]: 'Vietnamese',
-  [LOCALE.DA]: 'Danish'
+export const LANGUAGE: Record<TLocale, string> = {
+  da: 'Danish',
+  de: 'German',
+  en: 'English',
+  es: 'Spanish',
+  fr: 'French',
+  hi: 'Hindi',
+  pl: 'Polish',
+  pt: 'Portuguese',
+  ru: 'Russian',
+  vi: 'Vietnamese'
 };
 
 export const LANGUAGES = Object.keys(LANGUAGE).map((lang) => ({

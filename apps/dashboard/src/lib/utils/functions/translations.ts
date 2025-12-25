@@ -1,4 +1,4 @@
-import { LOCALE } from '$lib/utils/types';
+import type { TLocale } from '@cio/db/types';
 import i18n from '@sveltekit-i18n/base';
 import parser from '@sveltekit-i18n/parser-icu';
 import { writable } from 'svelte/store';
@@ -59,8 +59,7 @@ export const config = {
   ]
 };
 
-export const { t, loading, locales, locale, initialized, translations, loadTranslations } =
-  new i18n(config);
+export const { t, loading, locales, locale, initialized, translations, loadTranslations } = new i18n(config);
 
 export const selectedLocale = writable<string>('en');
 
@@ -73,7 +72,7 @@ loading.subscribe(async ($loading) => {
   }
 });
 
-export function handleLocaleChange(newLocale: string) {
+export function handleLocaleChange(newLocale: TLocale) {
   if (!newLocale) {
     return;
   }
@@ -83,11 +82,7 @@ export function handleLocaleChange(newLocale: string) {
   selectedLocale.set(newLocale);
 }
 
-export function lessonFallbackNote(
-  note: string,
-  translation: Record<LOCALE, string>,
-  locale: LOCALE
-) {
+export function lessonFallbackNote(note: string, translation: Record<TLocale, string>, locale: TLocale) {
   if (!translation) {
     return note;
   }
@@ -95,7 +90,7 @@ export function lessonFallbackNote(
   const content = translation[locale];
 
   // if locale is english and no translated content for english but note exists
-  if (locale === LOCALE.EN && !content && note?.length) {
+  if (locale === 'en' && !content && note?.length) {
     return note;
   }
 

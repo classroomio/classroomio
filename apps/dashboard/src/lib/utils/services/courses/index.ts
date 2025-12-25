@@ -10,14 +10,16 @@ import type {
   ProfileCourseProgress
 } from '$lib/utils/types';
 import type { PostgrestError, PostgrestSingleResponse } from '@supabase/supabase-js';
+import { getAccessToken, supabase } from '$lib/utils/functions/supabase';
 
 import { GenericUploader } from './presign';
 import { QUESTION_TYPE } from '$lib/components/Question/constants';
+import type { Question } from '$lib/components/Course/types';
 import { STATUS } from '$lib/utils/constants/course';
 import { get } from 'svelte/store';
 import { isOrgAdmin } from '$lib/utils/store/org';
 import { isUUID } from '$lib/utils/functions/isUUID';
-import { supabase, getAccessToken } from '$lib/utils/functions/supabase';
+import { uploadImage } from '$lib/utils/services/upload';
 
 export async function fetchCourses(profileId, orgId) {
   if (!orgId || !profileId) return;
@@ -61,10 +63,7 @@ export async function fetchProfileCourseProgress(
   return { data, error };
 }
 
-export async function checkExercisesComplete(
-  lessonId: Lesson['id'],
-  groupMemberId: Groupmember['id']
-) {
+export async function checkExercisesComplete(lessonId: Lesson['id'], groupMemberId: Groupmember['id']) {
   const { data, error } = await supabase.rpc('check_if_student_completed_exercises', {
     lesson_id_arg: lessonId,
     groupmember_id_arg: groupMemberId
@@ -213,46 +212,10 @@ export async function fetchGroup(groupId: Group['id']) {
   };
 }
 
-export async function uploadAvatar(courseId: string, avatar: string) {
-  const filename = `course/${courseId + Date.now()}.webp`;
-  let logo;
-
-  const { data } = await supabase.storage.from('avatars').upload(filename, avatar, {
-    cacheControl: '3600',
-    upsert: false
-  });
-
-  if (data) {
-    const { data } = supabase.storage.from('avatars').getPublicUrl(filename);
-
-    if (!data.publicUrl) return;
-
-    logo = data.publicUrl;
-  }
-
-  return logo;
-}
-
-export async function updateCourse(
-  courseId: Course['id'],
-  avatar: string | undefined,
-  course: Partial<Course>
-) {
+export async function updateCourse(courseId: Course['id'], avatar: File | undefined, course: Partial<Course>) {
   if (avatar && courseId) {
-    const filename = `course/${courseId + Date.now()}.webp`;
-
-    const { data } = await supabase.storage.from('avatars').upload(filename, avatar, {
-      cacheControl: '3600',
-      upsert: false
-    });
-
-    if (data) {
-      const { data: response } = supabase.storage.from('avatars').getPublicUrl(filename);
-
-      if (!response.publicUrl) return;
-
-      course.logo = response.publicUrl;
-    }
+    const logo = await uploadImage(avatar);
+    course.logo = logo;
   }
 
   await supabase.from('course').update(course).match({ id: courseId });
@@ -264,7 +227,7 @@ export async function deleteCourse(courseId: Course['id']) {
   return await supabase.from('course').update({ status: 'DELETED' }).match({ id: courseId });
 }
 
-export function addGroupMember(member: any) {
+export function addGroupMember(member) {
   return supabase.from('groupmember').insert(member).select();
 }
 
@@ -272,7 +235,7 @@ export function addDefaultNewsFeed(feed) {
   return supabase.from('course_newsfeed').insert(feed);
 }
 
-export function updatedGroupMember(update: any, match: any) {
+export function updatedGroupMember(update, match) {
   return supabase.from('groupmember').update(update).match(match);
 }
 
@@ -311,8 +274,7 @@ export async function fetchLesson(lessonId: Lesson['id']) {
     .single();
 
   if (data) {
-    const videoKeys =
-      data.videos?.filter((video) => video.type === 'upload')?.map((video) => video.key) || [];
+    const videoKeys = data.videos?.filter((video) => video.type === 'upload')?.map((video) => video.key) || [];
 
     const docKeys = data.documents?.map((doc) => doc.key) || [];
 
@@ -351,8 +313,12 @@ export function fetchLesssonLanguageHistory(lessonId: string, locale: string, en
     .order('timestamp', { ascending: false });
 }
 
-export function createLesson(lesson: any) {
-  return supabase.from('lesson').insert(lesson).select();
+export async function createLesson(
+  lesson: Partial<Lesson>
+): Promise<{ data: Lesson[] | null; error: PostgrestError | null }> {
+  const { data, error } = await supabase.from('lesson').insert(lesson).select();
+
+  return { data, error };
 }
 export function createLessonSection(section: any) {
   return supabase.from('lesson_section').insert(section).select();
@@ -462,15 +428,8 @@ export async function createExerciseFromTemplate(
 }
 
 export async function upsertExercise(questionnaire: any, exerciseId: Exercise['id']) {
-  const {
-    questions,
-    title,
-    description,
-    due_by,
-    is_title_dirty,
-    is_description_dirty,
-    is_due_by_dirty
-  } = questionnaire;
+  const { questions, title, description, due_by, is_title_dirty, is_description_dirty, is_due_by_dirty } =
+    questionnaire;
 
   if (is_description_dirty || is_title_dirty || is_due_by_dirty) {
     await supabase
@@ -486,8 +445,7 @@ export async function upsertExercise(questionnaire: any, exerciseId: Exercise['i
   const updatedQuestions = [];
 
   for (const question of questions) {
-    const { title, id, name, question_type, options, deleted_at, order, points, is_dirty } =
-      question;
+    const { title, id, name, question_type, options, deleted_at, order, points, is_dirty } = question;
 
     // "DELETE" /delete/:questionId - Don't delete if answer already given
     if (deleted_at) {
@@ -594,8 +552,8 @@ interface LooseObject {
 }
 
 export async function submitExercise(
-  answers: Array<string>,
-  questions: Array<{ name: string; id: string }>,
+  answers: Record<string, string>,
+  questions: Question[],
   exerciseId: Exercise['id'],
   courseId: Course['id'],
   groupMemberId: Groupmember['id'] | undefined
@@ -604,10 +562,7 @@ export async function submitExercise(
     return;
   }
 
-  const questionsByName = questions.reduce(
-    (acc, q) => ({ ...acc, [q.name]: q.id }),
-    {}
-  ) as LooseObject;
+  const questionsByName = questions.reduce((acc, q) => ({ ...acc, [q.name]: q.id }), {}) as LooseObject;
   const questionAnswers = [];
 
   const { data: submission } = await supabase

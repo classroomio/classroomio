@@ -1,23 +1,22 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import ArrowLeftIcon from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
-  import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import WarningFilledIcon from 'carbon-icons-svelte/lib/WarningFilled.svelte';
   import cloneDeep from 'lodash/cloneDeep';
   import isBoolean from 'lodash/isBoolean';
-  import { onMount } from 'svelte';
+  import { Label } from '@cio/ui/base/label';
+  import * as Select from '@cio/ui/base/select';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
+  import CircleAlertIcon from '@lucide/svelte/icons/circle-alert';
+  import { CircleCheckIcon } from '$features/ui/icons';
 
-  import DeleteModal from '$lib/components/Org/Quiz/DeleteModal.svelte';
-  import Preview from '$lib/components/Org/Quiz/Play/Preview.svelte';
-  import QuizQuestion from '$lib/components/Org/Quiz/QuizQuestion.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { allOptions, allThemes, booleanOptions, themeImages } from '$lib/utils/constants/quiz';
-  import { supabase } from '$lib/utils/functions/supabase';
+  import { Preview, DeleteModal, QuizQuestion } from '$features/org';
+  import { Button } from '@cio/ui/base/button';
+
   import { t } from '$lib/utils/functions/translations';
+  import { supabase } from '$lib/utils/functions/supabase';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { currentOrgPath, deleteModal, quizStore, quizesStore } from '$lib/utils/store/org';
-  import { Select, SelectItem } from 'carbon-components-svelte';
+  import { allOptions, allThemes, booleanOptions, themeImages } from '$lib/utils/constants/quiz';
 
   interface QuizOption {
     id: number;
@@ -32,34 +31,35 @@
     options: QuizOption[];
   }
 
-  export let data;
+  let { data } = $props();
   const { quizId } = data;
 
   // Questionnaire State
-  let currentQuestion: QuizQuestion = $quizStore.questions[0] || {
-    id: 0,
-    label: '',
-    type: 'multichoice',
-    options: []
-  };
+  let currentQuestion: QuizQuestion = $state(
+    $quizStore.questions[0] || {
+      id: 0,
+      label: '',
+      type: 'multichoice',
+      options: []
+    }
+  );
 
   // Behavioural State
-  let openPreview = false;
-  let type = 'multichoice';
+  let openPreview = $state(false);
+  let type = $state('multichoice');
   let errors: Array<{
     isLabelEmpty: boolean;
     hasOneAnswer: boolean;
     id: number;
     options: Array<{ id: number; error: boolean }>;
-  }> = [];
+  }> = $state([]);
   let currentError: {
     isLabelEmpty?: boolean;
     hasOneAnswer?: boolean;
     id?: number;
-    options?: Array<{ id: number; error: boolean }>;
-  } = {};
-  let isFocused = false;
-  let selectEl: Select | null = null;
+    options: Array<{ id: number; error: boolean }>;
+  } = $state({});
+  let isFocused = $state(false);
 
   function activeClass(q, cq) {
     if (q.id === cq.id) {
@@ -200,9 +200,7 @@
 
   function qHasError(qId, _errs) {
     return _errs.some((qe) => {
-      return (
-        (qId ? qe.id === qId : true) && (qe.isLabelEmpty || !qe.hasOneAnswer || !!qe.options.length)
-      );
+      return (qId ? qe.id === qId : true) && (qe.isLabelEmpty || !qe.hasOneAnswer || !!qe.options.length);
     });
   }
 
@@ -239,11 +237,8 @@
   <!-- Questions list -->
   <aside class="root h-full w-1/5 bg-gray-100 p-4 dark:bg-neutral-800">
     <div class="flex h-full flex-col">
-      <a
-        class="text-md flex items-center text-gray-500 dark:text-white"
-        href={`${$currentOrgPath}/quiz`}
-      >
-        <ArrowLeftIcon size={24} class="carbon-icon dark:text-white" /> Back to Quizzes
+      <a class="text-md flex items-center text-gray-500 dark:text-white" href={`${$currentOrgPath}/quiz`}>
+        <ArrowLeftIcon size={16} /> Back to Quizzes
       </a>
 
       <h3 class="my-3">Quiz</h3>
@@ -251,15 +246,15 @@
       <div class="mb-3">
         {#each $quizStore.questions as question, i}
           <button
-            class="mb-3 flex w-full justify-between rounded p-3 text-left font-bold text-gray-500 dark:text-white {activeClass(
+            class="mb-3 flex w-full justify-between rounded p-3 text-left text-gray-500 dark:text-white {activeClass(
               question,
               currentQuestion
             )}"
-            on:click={() => {
+            onclick={() => {
               currentQuestion = question;
               type = question.type;
             }}
-            on:keydown={(e) => {
+            onkeydown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 currentQuestion = question;
                 type = question.type;
@@ -269,14 +264,14 @@
             Question {i + 1}
 
             {#if qHasError(question.id, errors)}
-              <WarningFilledIcon size={20} class="carbon-icon error" />
+              <CircleAlertIcon size={16} class="filled" />
             {/if}
           </button>
         {/each}
       </div>
 
       <div class="flex w-full justify-end">
-        <PrimaryButton label="Add Question" variant={VARIANTS.CONTAINED} onClick={addQuestion} />
+        <Button onclick={addQuestion}>Add Question</Button>
       </div>
     </div>
   </aside>
@@ -288,7 +283,7 @@
         ?.editor}) no-repeat center center fixed; -webkit-background-size: cover;-moz-background-size: cover;-o-background-size: cover;background-size: cover;"
     >
       <div class="content m-auto">
-        <h1 class="my-5 font-bold text-white">{$quizStore.title}</h1>
+        <h1 class="my-5 text-white">{$quizStore.title}</h1>
 
         <QuizQuestion {currentQuestion} {optionHasError} {currentError} />
 
@@ -299,21 +294,16 @@
         {/if}
 
         {#if currentQuestion.type !== 'boolean'}
-          <div class="mb-4 flex w-full justify-center">
+          <div class="mb-4 flex w-full justify-center gap-4">
             {#if currentQuestion.options.length < allOptions.length}
-              <PrimaryButton
-                label={$t('components.quiz.add_more')}
-                variant={VARIANTS.CONTAINED_WHITE}
-                onClick={addOption}
-                className="mr-5"
-              />
+              <Button onclick={addOption}>
+                {$t('components.quiz.add_more')}
+              </Button>
             {/if}
             {#if currentQuestion.options.length > 0}
-              <PrimaryButton
-                label={$t('components.quiz.remove_last')}
-                variant={VARIANTS.CONTAINED_WHITE}
-                onClick={deleteOption}
-              />
+              <Button onclick={deleteOption}>
+                {$t('components.quiz.remove_last')}
+              </Button>
             {/if}
           </div>
         {/if}
@@ -325,70 +315,63 @@
   <aside class="settings h-full w-1/5 bg-gray-100 p-4 dark:bg-neutral-800">
     <div class="py-5">
       <h5>Quiz settings</h5>
-      <PrimaryButton
-        label="Save Changes"
-        variant={VARIANTS.CONTAINED}
-        onClick={saveQuiz}
-        className="my-3"
-      />
-      <PrimaryButton
-        label="Preview Quiz"
-        variant={VARIANTS.OUTLINED}
-        onClick={previewQuiz}
-        className="my-3"
-      />
-      <PrimaryButton
-        label="Delete question"
-        variant={VARIANTS.TEXT}
-        onClick={() => {
+      <Button onclick={saveQuiz} class="my-3">Save Changes</Button>
+      <Button variant="outline" onclick={previewQuiz} class="my-3">Preview Quiz</Button>
+      <Button
+        variant="ghost"
+        onclick={() => {
           if ($quizStore.questions.length === 1) return;
           $deleteModal.open = true;
           $deleteModal.isQuestion = true;
         }}
-        className="my-3"
+        class="my-3"
+      >
+        Delete question
+      </Button>
       />
     </div>
 
     <div class="flex flex-col justify-evenly">
       <div class="my-3">
         <!-- Question type -->
-        <Select
-          labelText="Question type"
-          bind:this={selectEl}
-          bind:selected={type}
-          class="mb-3 flex items-center"
-          on:focus={() => (isFocused = true)}
-          on:blur={() => (isFocused = false)}
-          on:change={() => {
-            if (!isFocused) return;
-            // Blur after change
-            const onBlur = selectEl?.$$?.callbacks?.blur?.[0];
-            const onFocus = selectEl?.$$?.callbacks?.focus?.[0];
-            setTimeout(() => {
-              onBlur();
-              onFocus();
-            }, 1000);
-
-            handleQuestionTypeChange(type);
-          }}
-        >
-          <SelectItem value="multichoice" text="Multi-choice answers" />
-          <SelectItem value="boolean" text="True or False" />
-        </Select>
+        <div class="mb-3">
+          <Label class="mb-2">Question type</Label>
+          <Select.Root
+            type="single"
+            bind:value={type}
+            onValueChange={(value) => {
+              if (value) {
+                handleQuestionTypeChange(value);
+              }
+            }}
+          >
+            <Select.Trigger class="w-full">
+              <p>{type === 'multichoice' ? 'Multi-choice answers' : 'True or False'}</p>
+            </Select.Trigger>
+            <Select.Content>
+              <Select.Item value="multichoice">Multi-choice answers</Select.Item>
+              <Select.Item value="boolean">True or False</Select.Item>
+            </Select.Content>
+          </Select.Root>
+        </div>
 
         <!--  -->
-        <Select
-          labelText="Time limit"
-          bind:selected={$quizStore.timelimit}
-          class="mb-3 flex items-center"
-        >
-          <SelectItem value="10 seconds" text="10s" />
-          <SelectItem value="20 seconds" text="20s" />
-          <SelectItem value="30 seconds" text="30s" />
-          <SelectItem value="1 minute" text="1m" />
-          <SelectItem value="2 minute" text="2m" />
-          <SelectItem value="3 minute" text="3m" />
-        </Select>
+        <div class="mb-3">
+          <Label class="mb-2">Time limit</Label>
+          <Select.Root type="single" bind:value={$quizStore.timelimit}>
+            <Select.Trigger class="w-full">
+              <p>{$quizStore.timelimit || 'Select time limit'}</p>
+            </Select.Trigger>
+            <Select.Content>
+              <Select.Item value="10 seconds">10s</Select.Item>
+              <Select.Item value="20 seconds">20s</Select.Item>
+              <Select.Item value="30 seconds">30s</Select.Item>
+              <Select.Item value="1 minute">1m</Select.Item>
+              <Select.Item value="2 minute">2m</Select.Item>
+              <Select.Item value="3 minute">3m</Select.Item>
+            </Select.Content>
+          </Select.Root>
+        </div>
       </div>
 
       <!-- Theme settings -->
@@ -397,23 +380,19 @@
 
         {#each allThemes as _theme}
           <div
-            class="theme relative mb-5 w-full cursor-pointer rounded-md border {$quizStore.theme ===
-              _theme.id && 'border-primary-700'}"
+            class="theme relative mb-5 w-full cursor-pointer rounded-md border {$quizStore.theme === _theme.id &&
+              'border-primary-700'}"
           >
             {#if $quizStore.theme === _theme.id}
-              <CheckmarkFilledIcon
-                size={24}
-                class="carbon-icon absolute right-4 top-4"
-                style="fill:white;"
-              />
+              <CircleCheckIcon size={16} filled />
             {/if}
             <div
               role="button"
               tabindex="0"
               class="flex h-full w-full flex-col-reverse rounded-md border"
               style="background: url({themeImages[_theme.id]?.card});"
-              on:click={() => ($quizStore.theme = _theme.id)}
-              on:keydown={(e) => {
+              onclick={() => ($quizStore.theme = _theme.id)}
+              onkeydown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   $quizStore.theme = _theme.id;
                 }

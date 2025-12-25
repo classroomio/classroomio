@@ -1,90 +1,92 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { browser } from '$app/environment';
-  import Modal from '$lib/components/Modal/index.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
-  import ComingSoon from '$lib/components/ComingSoon/index.svelte';
-  import { Tag } from 'carbon-components-svelte';
-  import { type GeneratedTemplates, getAllTemplates, TAGS } from '$lib/mocks';
-  import type { ExerciseTemplate } from '$lib/utils/types';
-  import { lesson, lessonByTranslation } from '../store/lessons';
-  import { useCompletion } from 'ai/svelte';
-  import Confetti from '$lib/components/Confetti/index.svelte';
-  import { toggleConfetti } from '$lib/components/Confetti/store';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import { getTextFromHTML } from '$lib/utils/functions/toHtml';
-  import { writable } from 'svelte/store';
-  import { Circle3 } from 'svelte-loading-spinners';
+  import { Badge } from '@cio/ui/base/badge';
+  import { Skeleton } from '@cio/ui/base/skeleton';
+  import * as Dialog from '@cio/ui/base/dialog';
+  import { InputField } from '@cio/ui/custom/input-field';
+  import { Button } from '@cio/ui/base/button';
+
   import { t } from '$lib/utils/functions/translations';
-  import { lessonFallbackNote } from '$lib/utils/functions/translations';
+  import { exerciseTemplateApi } from '$features/exercise-template/api';
+  import { snackbar } from '$features/ui/snackbar/store';
+  import { Confetti, ComingSoon } from '$features/ui';
+  import { CircleCheckIcon } from '$features/ui/icons';
+  import { TAGS } from '$features/exercise-template/utils/constants';
+  import type { ExerciseTemplate } from '$lib/utils/types';
 
-  export let open = false;
-  export let handleAddExercise = () => {};
-  export let handleCancelAddExercise = () => {};
-  export let handleTemplateCreate: (template: ExerciseTemplate) => Promise<void>;
-  export let title = '';
-
-  enum Type {
-    SCRATCH = 0,
-    TEMPLATE = 1,
-    AI = 2
+  interface Props {
+    open: boolean;
+    handleAddExercise: () => void;
+    handleCancelAddExercise: () => void;
+    handleTemplateCreate: (template: ExerciseTemplate) => Promise<void>;
+    title: string;
   }
 
-  let step = 0;
-  let type: Type = Type.SCRATCH;
-  let questionNumber = 5;
-  let optionNumber = 5;
-  let isLoading = writable(false);
-  let isAIStarted = false;
-  let note = '';
-  let allTemplates: GeneratedTemplates;
+  let {
+    open = $bindable(false),
+    handleAddExercise = () => {},
+    handleCancelAddExercise = () => {},
+    handleTemplateCreate,
+    title = $bindable('')
+  }: Props = $props();
+
+  const Type = {
+    SCRATCH: 0,
+    TEMPLATE: 1,
+    AI: 2
+  } as const;
 
   const options = [
     {
       title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.from_scratch'),
-      subtitle: $t(
-        'course.navItem.lessons.exercises.new_exercise_modal.options.from_scratch_subtitle'
-      ),
+      subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.from_scratch_subtitle'),
       type: Type.SCRATCH,
       isDisabled: false
     },
     {
       title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_template'),
-      subtitle: $t(
-        'course.navItem.lessons.exercises.new_exercise_modal.options.use_template_subtitle'
-      ),
+      subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_template_subtitle'),
       type: Type.TEMPLATE,
       isDisabled: false
-    },
-    {
-      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_ai'),
-      subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_ai_subtitle'),
-      type: Type.AI,
-      isDisabled: false
     }
+    // TODO: Come back to fix ai implementation
+    // {
+    //   title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_ai'),
+    //   subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_ai_subtitle'),
+    //   type: Type.AI,
+    //   isDisabled: false
+    // }
   ];
 
   const tags = Object.values(TAGS);
-  let selectedTag = tags[0];
-  let selectedTemplateId = '';
-  let isTemplateFinishedLoading = false;
 
-  const { input, handleSubmit, completion } = useCompletion({
-    api: '/api/completion/exerciseprompt',
-    onFinish: async (prompt: string, completion: string) => {
-      if (!$lesson.id) return;
+  let step = $state(0);
+  let type: number = $state(Type.SCRATCH);
+  // let questionNumber = $state(5);
+  // let optionNumber = $state(5);
+  let isLoading = $state(false);
+  let isAIStarted = $state(false);
 
-      toggleConfetti();
-      const responseData = $completion.replace('```json', '').replace('```', '');
-      const template: ExerciseTemplate = JSON.parse(responseData);
-      await handleTemplateCreate(template);
-      toggleConfetti();
-      $isLoading = false;
-    }
-  });
+  let selectedTag = $state(tags[0]);
+  let selectedTemplateId = $state('');
+  let isTemplateFinishedLoading = $state(false);
+
+  // const {
+  //   input,
+  //   handleSubmit
+  // completion
+  // } = useCompletion({
+  //   api: '/api/completion/exerciseprompt',
+  //   onFinish: async (/**prompt: string, completion: string*/) => {
+  //     if (!$lesson.id) return;
+
+  // toggleConfetti();
+  // const responseData = completion. $completion.replace('```json', '').replace('```', '');
+  // const template: ExerciseTemplate = JSON.parse(responseData);
+  // await handleTemplateCreate(template);
+  // toggleConfetti();
+  //     isLoading = false;
+  //   }
+  // });
 
   function handleNext() {
     step = step + 1;
@@ -94,211 +96,220 @@
     step = step - 1;
   }
 
-  function callAI() {
-    $input = JSON.stringify({
-      questionNumber,
-      optionNumber,
-      lessonNote: note
-    });
+  // function callAI() {
+  //   $input = JSON.stringify({
+  //     questionNumber,
+  //     optionNumber,
+  //     lessonNote: note
+  //   });
 
-    setTimeout(() => {
-      isAIStarted = true;
-      $isLoading = true;
-      handleSubmit({ preventDefault: () => {} });
-    }, 500);
+  //   setTimeout(() => {
+  //     isAIStarted = true;
+  //     isLoading = true;
+  //     handleSubmit({ preventDefault: () => {} });
+  //   }, 500);
+  // }
+
+  async function handleTemplateSelection() {
+    isTemplateFinishedLoading = true;
+    const template = exerciseTemplateApi.templates?.find((t) => t.id === Number(selectedTemplateId));
+
+    if (!template) return;
+
+    let fetchedTemplate: ExerciseTemplate;
+
+    try {
+      await exerciseTemplateApi.fetchTemplateById(template.id);
+      fetchedTemplate = exerciseTemplateApi.template[0];
+      console.log('Fetched template', fetchedTemplate);
+      await handleTemplateCreate(fetchedTemplate);
+    } catch (error) {
+      console.log('Error fetching template', error);
+      snackbar.error($t('course.navItem.lessons.exercises.new_exercise_modal.errors.template_fetch'));
+    } finally {
+      isTemplateFinishedLoading = false;
+    }
   }
 
-  onMount(async () => {
-    allTemplates = await getAllTemplates();
-  });
+  const handleTagSelection = async (tag: string) => {
+    selectedTag = tag;
+    selectedTemplateId = '';
+    await exerciseTemplateApi.fetchTemplatesByTag(selectedTag);
+  };
 
-  $: content = lessonFallbackNote(
-    $lesson.materials.note,
-    $lessonByTranslation[$lesson.id || ''],
-    $lesson.locale
-  );
-  $: note = browser ? getTextFromHTML(content) : '';
+  // const content = $derived(
+  //   lessonFallbackNote(
+  //     $lesson.materials.note,
+  //     $lessonByTranslation[$lesson.id || ''],
+  //     $lesson.locale
+  //   )
+  // );
+  // const note = $derived(browser ? getTextFromHTML(content) : '');
 </script>
 
-<Modal
-  onClose={handleCancelAddExercise}
+<Dialog.Root
   bind:open
-  modalHeading={$t('course.navItem.lessons.exercises.new_exercise_modal.heading')}
-  maxWidth="max-w-4xl"
-  width="w-4/5"
+  onOpenChange={(isOpen) => {
+    if (!isOpen) handleCancelAddExercise();
+  }}
 >
-  {#if !$isLoading && isAIStarted}
-    <Confetti />
-  {/if}
-  {#if step === 0}
-    <div>
-      <h2 class="text-2xl font-medium my-5">
-        {$t('course.navItem.lessons.exercises.new_exercise_modal.how')}?
-      </h2>
-
-      <div class="flex gap-2 justify-between my-8">
-        {#each options as option}
-          <button
-            class="w-[261px] h-[240px] p-5 rounded-md dark:bg-neutral-700 border-2 {option.type ===
-            type
-              ? 'border-primary-400'
-              : `border-gray-200 dark:border-neutral-600 ${
-                  !option.isDisabled && 'hover:scale-95'
-                }`} flex flex-col {option.isDisabled &&
-              'cursor-not-allowed opacity-60'} transition-all ease-in-out"
-            type="button"
-            on:click={!option.isDisabled ? () => (type = option.type) : undefined}
-          >
-            <div class="w-full flex flex-row-reverse h-[70%]">
-              {#if option.type === type}
-                <CheckmarkFilledIcon
-                  size={16}
-                  class="carbon-icon text-primary-600 dark:text-primary-200"
-                />
-              {:else if !option.isDisabled}
-                <CheckmarkOutlineIcon size={16} class="carbon-icon" />
-              {/if}
-            </div>
-
-            <div>
-              <p class="font-bold text-start flex items-center">
-                <span class="mr-2 text-sm">{option.title}</span>
-                {#if option.isDisabled}
-                  <ComingSoon />
-                {/if}
-              </p>
-              <p class="text-xs font-light text-start">{option.subtitle}</p>
-            </div>
-          </button>
-        {/each}
-      </div>
-
-      <div class="mt-8 flex items-center flex-row-reverse">
-        <PrimaryButton
-          className="px-6 py-3"
-          label={$t('course.navItem.lessons.exercises.new_exercise_modal.next')}
-          onClick={handleNext}
-        />
-      </div>
-    </div>
-  {:else if step === 1}
-    {#if type === Type.SCRATCH}
-      <div class="flex items-center justify-center w-96 m-auto min-h-[300px]">
-        <div class="w-full">
-          <h2 class="text-2xl font-medium my-5">
-            {$t('course.navItem.lessons.exercises.new_exercise_modal.title')}
-          </h2>
-          <TextField
-            bind:value={title}
-            autoFocus={true}
-            placeholder={$t(
-              'course.navItem.lessons.exercises.new_exercise_modal.title_placeholder'
-            )}
-            className="my-4"
-          />
-
-          <div class="mt-5 flex items-center justify-between">
-            <PrimaryButton
-              className="px-6 py-3"
-              label={$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
-              variant={VARIANTS.OUTLINED}
-              onClick={handleBack}
-            />
-            <PrimaryButton
-              className="px-6 py-3"
-              label={$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
-              onClick={handleAddExercise}
-            />
-          </div>
-        </div>
-      </div>
-    {:else if type === Type.TEMPLATE}
+  <Dialog.Content class="w-4/5 max-w-2xl">
+    <Dialog.Header>
+      <Dialog.Title>{$t('course.navItem.lessons.exercises.new_exercise_modal.heading')}</Dialog.Title>
+    </Dialog.Header>
+    {#if !isLoading && isAIStarted}
+      <Confetti />
+    {/if}
+    {#if step === 0}
       <div>
-        <h2 class="text-2xl font-medium mb-2 m-0">
-          {$t('course.navItem.lessons.exercises.new_exercise_modal.select_template')}
+        <h2 class="my-5 text-2xl font-medium">
+          {$t('course.navItem.lessons.exercises.new_exercise_modal.how')}?
         </h2>
 
-        <div>
-          <div class="mb-5 flex items-center gap-2">
-            {#each tags as tag}
-              <Tag
-                type={selectedTag === tag ? 'warm-gray' : 'outline'}
-                class={selectedTag === tag ? 'bg-primary-400' : ''}
-                interactive
-                on:click={() => {
-                  selectedTag = tag;
-                  selectedTemplateId = '';
-                }}>{tag}</Tag
-              >
-            {/each}
-          </div>
+        <div class="my-8 flex justify-between gap-2">
+          {#each options as option}
+            <button
+              class="h-60 w-[261px] rounded-md border-2 p-5 dark:bg-neutral-700 {option.type === type
+                ? 'border-primary-400'
+                : `border-gray-200 dark:border-neutral-600 ${
+                    !option.isDisabled && 'hover:scale-95'
+                  }`} flex flex-col {option.isDisabled && 'cursor-not-allowed opacity-60'} transition-all ease-in-out"
+              type="button"
+              onclick={!option.isDisabled ? () => (type = option.type) : undefined}
+            >
+              <div class="flex h-[70%] w-full flex-row-reverse">
+                <CircleCheckIcon size={16} filled={option.type === type} />
+              </div>
 
-          <div class="flex flex-wrap items-start gap-2">
-            {#if allTemplates}
-              {#each allTemplates[selectedTag] as template}
-                <button
-                  class="w-[161px] h-[140px] hover:scale-95 p-5 rounded-md dark:bg-neutral-700 border-2 {template.id ===
-                  selectedTemplateId
-                    ? 'border-primary-400'
-                    : `border-gray-200 dark:border-neutral-600 `} flex flex-col transition-all ease-in-out"
-                  type="button"
-                  on:click={() => (selectedTemplateId = template.id)}
-                >
-                  <div class="flex flex-col justify-evenly h-full">
-                    <p class="font-bold text-sm text-start flex items-center">
-                      {template.title}
-                    </p>
-                    <div class="flex flex-col items-start justify-between gap-1">
-                      <p class="text-xs font-normal">
-                        {template.questions}
-                        {$t('course.navItem.lessons.exercises.new_exercise_modal.questions')}
-                      </p>
-                      <p class="text-xs font-normal text-start">
-                        {template.points}
-                        {$t('course.navItem.lessons.exercises.new_exercise_modal.points')}
-                      </p>
-                    </div>
-                  </div>
-                </button>
-              {/each}
-            {/if}
-          </div>
+              <div>
+                <p class="flex items-center text-start">
+                  <span class="mr-2 text-sm">{option.title}</span>
+                  {#if option.isDisabled}
+                    <ComingSoon />
+                  {/if}
+                </p>
+                <p class="text-start text-xs font-light">{option.subtitle}</p>
+              </div>
+            </button>
+          {/each}
+        </div>
 
-          <div class="mt-5 flex items-center justify-between">
-            <PrimaryButton
-              className="px-6 py-3"
-              label={$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
-              variant={VARIANTS.OUTLINED}
-              onClick={handleBack}
-            />
-            <PrimaryButton
-              isDisabled={!selectedTemplateId || !allTemplates}
-              className="px-6 py-3"
-              label={$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
-              isLoading={isTemplateFinishedLoading}
-              onClick={async () => {
-                isTemplateFinishedLoading = true;
-                const template = allTemplates[selectedTag].find((t) => t.id === selectedTemplateId);
-                if (!template) return;
-
-                console.log('Selected template', template);
-                await handleTemplateCreate(template.data);
-                isTemplateFinishedLoading = true;
-              }}
-            />
-          </div>
+        <div class="mt-8 flex flex-row-reverse items-center">
+          <Button onclick={handleNext}>
+            {$t('course.navItem.lessons.exercises.new_exercise_modal.next')}
+          </Button>
         </div>
       </div>
-    {:else if type === Type.AI}
-      <div>
-        <div class="flex flex-row justify-between max-h-[500px]">
-          <div class="w-[60%] mr-1 border px-3 py-2 rounded-md">
+    {:else if step === 1}
+      {#if type === Type.SCRATCH}
+        <div class="m-auto flex min-h-[300px] w-96 items-center justify-center">
+          <div class="w-full">
+            <h2 class="my-5 text-2xl font-medium">
+              {$t('course.navItem.lessons.exercises.new_exercise_modal.title')}
+            </h2>
+            <InputField
+              bind:value={title}
+              autoFocus={true}
+              placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.title_placeholder')}
+              className="my-4"
+            />
+
+            <div class="mt-5 flex items-center justify-between">
+              <Button variant="outline" onclick={handleBack}>
+                {$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
+              </Button>
+              <Button onclick={handleAddExercise}>
+                {$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
+              </Button>
+            </div>
+          </div>
+        </div>
+      {:else if type === Type.TEMPLATE}
+        <div>
+          <h2 class="m-0 mb-2 text-2xl font-medium">
+            {$t('course.navItem.lessons.exercises.new_exercise_modal.select_template')}
+          </h2>
+
+          <div>
+            <div class="mb-5 flex items-center gap-2">
+              {#each tags as tag}
+                <Badge class={selectedTag === tag ? 'bg-primary-400' : ''} onclick={() => handleTagSelection(tag)}
+                  >{tag}</Badge
+                >
+              {/each}
+            </div>
+
+            {#if exerciseTemplateApi.isLoading}
+              <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
+                {#each Array(16) as _}
+                  <div
+                    class="h-[140px] w-full rounded-md border-2 border-gray-200 p-5 dark:border-neutral-600 dark:bg-neutral-700"
+                  >
+                    <div class="flex h-full flex-col justify-evenly">
+                      <Skeleton class="h-4 w-3/4" />
+                      <div class="flex flex-col items-start justify-between gap-1">
+                        <Skeleton class="h-3 w-20" />
+                        <Skeleton class="h-3 w-16" />
+                      </div>
+                    </div>
+                  </div>
+                {/each}
+              </div>
+            {:else if exerciseTemplateApi.templates.length > 0}
+              <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
+                {#each exerciseTemplateApi.templates as template}
+                  <button
+                    class="h-[140px] w-full rounded-md border-2 p-5 hover:scale-95 dark:bg-neutral-700 {template.id ===
+                    selectedTemplateId
+                      ? 'border-primary-400'
+                      : `border-gray-200 dark:border-neutral-600 `} flex flex-col transition-all ease-in-out"
+                    type="button"
+                    onclick={() => (selectedTemplateId = template.id)}
+                  >
+                    <div class="flex h-full flex-col justify-evenly">
+                      <p class="flex items-center text-start text-sm">
+                        {template.title}
+                      </p>
+                      <div class="flex flex-col items-start justify-between gap-1">
+                        <p class="text-xs font-normal">
+                          {template.questions}
+                          {$t('course.navItem.lessons.exercises.new_exercise_modal.questions')}
+                        </p>
+                        <p class="text-start text-xs font-normal">
+                          {template.points}
+                          {$t('course.navItem.lessons.exercises.new_exercise_modal.points')}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                {/each}
+              </div>
+            {/if}
+
+            <div class="mt-5 flex items-center justify-between">
+              <Button variant="outline" onclick={handleBack}>
+                {$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
+              </Button>
+              <Button
+                disabled={!selectedTemplateId || exerciseTemplateApi.templates.length === 0}
+                loading={isTemplateFinishedLoading}
+                onclick={handleTemplateSelection}
+              >
+                {$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
+              </Button>
+            </div>
+          </div>
+        </div>
+        <!-- {:else if type === Type.AI} -->
+        <!-- <div>
+        <div class="flex max-h-[500px] flex-row justify-between">
+          <div class="mr-1 w-[60%] rounded-md border px-3 py-2">
             {#if note.length}
               <h3>{$t('course.navItem.lessons.exercises.new_exercise_modal.create_exercises')}</h3>
-              <p class="text-sm mb-4">
+              <p class="mb-4 text-sm">
                 {$t('course.navItem.lessons.exercises.new_exercise_modal.choose_questions')}
               </p>
-              <TextField
+              <InputField
                 label={$t('course.navItem.lessons.exercises.new_exercise_modal.how_many_questions')}
                 type="number"
                 bind:value={questionNumber}
@@ -306,7 +317,7 @@
                 className="mb-2"
                 isRequired
               />
-              <TextField
+              <InputField
                 label={$t('course.navItem.lessons.exercises.new_exercise_modal.how_many_options')}
                 type="number"
                 bind:value={optionNumber}
@@ -316,48 +327,49 @@
             {:else}
               <h3>{$t('course.navItem.lessons.exercises.new_exercise_modal.add_note')}</h3>
             {/if}
-            <div class="mt-5 flex items-center flex-row-reverse">
-              <PrimaryButton
-                onClick={callAI}
-                isLoading={$isLoading}
-                isDisabled={$isLoading || !note}
-                variant={VARIANTS.OUTLINED}
+            <div class="mt-5 flex flex-row-reverse items-center">
+              <Button
+                onclick={callAI}
+                loading={isLoading}
+                disabled={isLoading || !note}
+                variant="outline"
               >
                 {$t('course.navItem.lessons.exercises.new_exercise_modal.generate')}
-              </PrimaryButton>
+              </Button>
             </div>
           </div>
           <div
-            class="w-[40%] px-5 py-3 border rounded-md overflow-y-auto flex justify-center items-center"
+            class="flex w-[40%] items-center justify-center overflow-y-auto rounded-md border px-5 py-3"
           >
-            {#if $isLoading}
+            {#if isLoading}
               <Circle3 size="60" unit="px" duration="1s" />
             {:else if isAIStarted}
-              <p class="max-h-[200px] leading-7 text-sm">
+              <p class="max-h-[200px] text-sm leading-7">
                 {$t('course.navItem.lessons.exercises.new_exercise_modal.completion')}
               </p>
             {:else}
-              <p class="max-h-[200px] leading-7 text-sm">
+              <p class="max-h-[200px] text-sm leading-7">
                 {$t('course.navItem.lessons.exercises.new_exercise_modal.click_generate')}
               </p>
             {/if}
           </div>
         </div>
         <div class="mt-5 flex items-center justify-between">
-          <PrimaryButton
-            className="px-6 py-3"
-            label={$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
-            variant={VARIANTS.TEXT}
-            onClick={handleBack}
-          />
-          <PrimaryButton
-            isDisabled={$isLoading || !note}
-            className="px-6 py-3"
-            label={$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
-            onClick={handleAddExercise}
-          />
+          <Button
+            variant="ghost"
+            onclick={handleBack}
+          >
+            {$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
+          </Button>
+          <Button
+            disabled={isLoading || !note}
+            onclick={handleAddExercise}
+          >
+            {$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
+          </Button>
         </div>
-      </div>
+      </div> -->
+      {/if}
     {/if}
-  {/if}
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>

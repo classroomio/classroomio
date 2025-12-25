@@ -1,0 +1,61 @@
+{
+  "name": "@cio/utils",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./constants": {
+      "types": "./src/constants/index.ts",
+      "default": "./src/constants/index.ts"
+    },
+    "./constants/*": {
+      "types": "./src/constants/*/index.ts",
+      "default": "./src/constants/*/index.ts"
+    },
+    "./plans": {
+      "types": "./src/plans/index.ts",
+      "default": "./src/plans/index.ts"
+    },
+    "./senja": {
+      "types": "./src/senja/index.ts",
+      "default": "./src/senja/index.ts"
+    },
+    "./validation": {
+      "types": "./src/validation/index.ts",
+      "default": "./src/validation/index.ts"
+    },
+    "./validation/*": {
+      "types": "./src/validation/*/index.ts",
+      "default": "./src/validation/*/index.ts"
+    },
+    "./functions": {
+      "types": "./src/functions/index.ts",
+      "default": "./src/functions/index.ts"
+    },
+    "./functions/*": {
+      "types": "./src/functions/*/index.ts",
+      "default": "./src/functions/*/index.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "format": "prettier --write ."
+  },
+  "peerDependencies": {
+    "zod": "^4.1.8"
+  },
+  "dependencies": {
+    "@cio/tsconfig": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.1",
+    "typescript": "^5.5.2",
+    "zod": "^4.1.8"
+  }
+}

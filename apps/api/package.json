@@ -4,8 +4,11 @@
   "description": "ClassroomIO Backend for long processes",
   "main": "dist/index.js",
   "type": "module",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc && tsc-alias",
+    "build": "rm -rf dist tsconfig.tsbuildinfo && tsc --build && tsc-alias",
     "dev": "pnpm --filter @cio/api --parallel \"/^dev:.*/\"",
     "dev:server": "tsx watch src/index.ts",
     "dev:tsc": "tsc -p tsconfig.json --watch",
@@ -14,7 +17,7 @@
     "test": "vitest NODE_ENV=test",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint . --ext .ts",
-    "format": "prettier --write \"src/**/*.ts\"",
+    "format": "prettier --write .",
     "upload:openapi": "tsx scripts/upload-openapi-spec.ts"
   },
   "repository": {
@@ -36,13 +39,14 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.388.0",
     "@aws-sdk/s3-request-presigner": "^3.675.0",
+    "@cio/db": "workspace:*",
+    "@cio/email": "workspace:*",
+    "@cio/utils": "workspace:*",
     "@hono/node-server": "^1.8.2",
     "@hono/standard-validator": "^0.1.5",
     "@hono/zod-validator": "^0.7.2",
     "@scalar/hono-api-reference": "^0.9.18",
-    "@sentry/node": "^7.110.1",
     "@sentry/profiling-node": "^7.110.1",
-    "@supabase/supabase-js": "^2.32.0",
     "axios": "^1.4.0",
     "dotenv": "^16.3.1",
     "hono": "^4.9.7",
@@ -52,15 +56,12 @@
     "katex": "^0.16.10",
     "marked": "^7.0.3",
     "nanoid": "^5.1.5",
-    "nodemailer": "^6.9.5",
-    "zeptomail": "^6.0.0",
     "zod": "^4.1.8",
     "zod-openapi": "^5.4.1"
   },
   "devDependencies": {
     "@types/katex": "^0.16.7",
-    "@types/node": "^20.11.19",
-    "@types/nodemailer": "^6.4.17",
+    "@types/node": "^20.19.0",
     "@typescript-eslint/eslint-plugin": "7.0.1",
     "@typescript-eslint/parser": "7.0.1",
     "@vitest/coverage-v8": "^1.2.2",
@@ -72,8 +73,5 @@
     "typescript": "^5.5.2",
     "vitest": "^1.2.2",
     "wrangler": "4.21.x"
-  },
-  "_moduleAliases": {
-    "$src": "src"
   }
 }

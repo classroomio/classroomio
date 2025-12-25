@@ -38,3 +38,14 @@ yarn-error.log*
 vite.config.ts*.mjs
 
 .pnpm-store/*
+
+**/dist/*
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md
+
+tsconfig.tsbuildinfo*
+
+storybook-static
+
+.svelte-kit/

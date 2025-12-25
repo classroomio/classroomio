@@ -1,5 +1,5 @@
 import { QUESTION_TYPE } from '$lib/components/Question/constants';
-import { toggleConfetti } from '$lib/components/Confetti/store';
+import { toggleConfetti } from '$features/ui/confetti/store';
 
 export const isAnswerCorrect = (options, answer) => {
   return options.some((option) => option.is_correct && option.value === answer);
@@ -11,7 +11,7 @@ export const isAnswerCorrect = (options, answer) => {
   Single = only one should be correct
   Multiple = all should be correct
 */
-export function wasCorrectAnswerSelected(currentQuestion, answers, isFinished) {
+export function wasCorrectAnswerSelected(currentQuestion, answers, isFinished?: boolean) {
   if (currentQuestion.question_type.id === QUESTION_TYPE.TEXTAREA) {
     return true;
   }
@@ -29,9 +29,7 @@ export function wasCorrectAnswerSelected(currentQuestion, answers, isFinished) {
       .every((option) => formattedAnswers?.includes(option.value));
   } else if (currentQuestion.question_type.id === QUESTION_TYPE.RADIO) {
     // At least one correct answer should be selected
-    isCorrect = formattedAnswers?.some((answer) =>
-      isAnswerCorrect(currentQuestion.options, answer)
-    );
+    isCorrect = formattedAnswers?.some((answer) => isAnswerCorrect(currentQuestion.options, answer));
   }
 
   if (isCorrect && !isFinished) {
@@ -60,11 +58,11 @@ export function getPropsForQuestion(
   if (!isCorrect && document && document.getElementById('question')) {
     const questionElement = document.getElementById('question');
     // Shake if wrong answer was selected
-    questionElement.classList.toggle('shake');
+    questionElement?.classList.toggle('shake');
 
     setTimeout(() => {
       // Remove so we can trigger animation again
-      questionElement.classList.toggle('shake');
+      questionElement?.classList.toggle('shake');
     }, 200);
   }
 

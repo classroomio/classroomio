@@ -19,11 +19,7 @@ export const POST: RequestHandler = async ({ request }) => {
     const supabase = getServerSupabase();
 
     // Get course group_id for permission check
-    const { data: course } = await supabase
-      .from('course')
-      .select('group_id')
-      .eq('id', courseId)
-      .single();
+    const { data: course } = await supabase.from('course').select('group_id').eq('id', courseId).single();
 
     if (!course) {
       return json({ success: false, message: 'Course not found' }, { status: 404 });

@@ -1,39 +1,52 @@
 <script lang="ts">
-  import Modal from '$lib/components/Modal/index.svelte';
-  import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import { createNewFeed } from '$lib/utils/services/newsfeed';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import type { Feed, Author } from '$lib/utils/types/feed';
-  import {
-    NOTIFICATION_NAME,
-    triggerSendEmail
-  } from '$lib/utils/services/notification/notification';
   import { t } from '$lib/utils/functions/translations';
-  import { createNewsfeedValidation } from '$lib/utils/functions/validator';
+  import { snackbar } from '$features/ui/snackbar/store';
+  import type { Feed, Author } from '$lib/utils/types/feed';
+  import { createNewFeed } from '$lib/utils/services/newsfeed';
   import { getTextFromHTML } from '$lib/utils/functions/toHtml';
+  import { Button } from '@cio/ui/base/button';
+  import { createNewsfeedValidation } from '$lib/utils/functions/validator';
+  import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
+  import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/notification';
 
-  export let author: Author | any = {};
-  export let courseId = '';
-  export let onSave = (feed: Feed) => {};
-  export let onEdit = (id: string, content: string) => {};
-  export let edit = false;
-  export let editFeed: Feed;
+  import * as Dialog from '@cio/ui/base/dialog';
+  import { TextEditor } from '$features/ui';
 
-  let newPost = '';
-  let isLoading = false;
+  interface Props {
+    author?: Author | any;
+    courseId?: string;
+    onSave?: any;
+    onEdit?: any;
+    edit?: boolean;
+    editFeed: Feed | null;
+  }
+
+  let {
+    author = {},
+    courseId = '',
+    onSave = (_feed: Feed) => {},
+    onEdit = (_id: string, _content: string) => {},
+    edit = $bindable(false),
+    editFeed = $bindable()
+  }: Props = $props();
+
+  let isLoading = $state(false);
   let createdFeed;
-  let errors = {};
+  let errors: Record<string, string> = $state({
+    newPost: ''
+  });
+
+  let newPost = $state(edit === true ? editFeed?.content : '');
 
   const onPost = async () => {
-    errors = createNewsfeedValidation(getTextFromHTML(newPost));
+    errors = createNewsfeedValidation(getTextFromHTML(newPost ?? ''));
 
-    if (Object.keys(errors).length) {
+    if (Object.keys(errors).length || !editFeed) {
       return;
     }
+
     isLoading = true;
+
     try {
       if (edit) {
         onEdit(editFeed.id, newPost);
@@ -46,7 +59,7 @@
         const {
           response: { data }
         } = await createNewFeed({
-          content: newPost,
+          content: newPost ?? '',
           author_id: author.id,
           course_id: courseId,
           reaction: {
@@ -97,43 +110,44 @@
     edit = false;
     $isNewFeedModal.open = false;
   };
-  $: newPost = edit === true ? editFeed?.content : '';
 </script>
 
-<Modal
-  onClose={resetEditor}
+<Dialog.Root
   bind:open={$isNewFeedModal.open}
-  width="w-4/5"
-  maxWidth="max-w-lg"
-  modalHeading={edit === true
-    ? $t('course.navItem.news_feed.heading_button.edit_post')
-    : $t('course.navItem.news_feed.heading_button.make_a_post')}
+  onOpenChange={(isOpen) => {
+    if (!isOpen) resetEditor();
+  }}
 >
-  <section class="flex flex-col rounded-xl pb-3 h-full w-2/">
-    <TextEditor
-      value={newPost}
-      onChange={(text) => {
-        newPost = text;
-      }}
-      placeholder={$t('course.navItem.news_feed.heading_button.placeholder')}
-      maxHeight={400}
-    />
-    {#if errors.newPost}
-      <p class="text-sm text-red-500">{errors.newPost}</p>
-    {/if}
-    <div class="flex items-center justify-end py-2">
-      <div class="flex gap-2">
-        <PrimaryButton
-          label={$t('course.navItem.news_feed.heading_button.cancel')}
-          variant={VARIANTS.OUTLINED}
-          onClick={resetEditor}
-        />
-        <PrimaryButton
-          {isLoading}
-          label={$t('course.navItem.news_feed.heading_button.post')}
-          onClick={onPost}
-        />
+  <Dialog.Content class="w-4/5 max-w-lg">
+    <Dialog.Header>
+      <Dialog.Title>
+        {edit === true
+          ? $t('course.navItem.news_feed.heading_button.edit_post')
+          : $t('course.navItem.news_feed.heading_button.make_a_post')}
+      </Dialog.Title>
+    </Dialog.Header>
+    <section class="w-2/ flex h-full flex-col rounded-xl pb-3">
+      <TextEditor
+        content={newPost}
+        onChange={(text) => {
+          newPost = text;
+        }}
+        editorClass="max-h-[400px]"
+        placeholder={$t('course.navItem.news_feed.heading_button.placeholder')}
+      />
+      {#if errors.newPost}
+        <p class="text-sm text-red-500">{errors.newPost}</p>
+      {/if}
+      <div class="flex items-center justify-end py-2">
+        <div class="flex gap-2">
+          <Button variant="outline" onclick={resetEditor}>
+            {$t('course.navItem.news_feed.heading_button.cancel')}
+          </Button>
+          <Button loading={isLoading} onclick={onPost}>
+            {$t('course.navItem.news_feed.heading_button.post')}
+          </Button>
+        </div>
       </div>
-    </div>
-  </section>
-</Modal>
+    </section>
+  </Dialog.Content>
+</Dialog.Root>

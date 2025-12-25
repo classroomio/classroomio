@@ -1,34 +1,31 @@
 <script lang="ts">
-  import {
-    lesson,
-    deleteLessonDocument
-  } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { lesson, deleteLessonDocument } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { CloseButton } from '$features/ui';
   import { lessonDocUpload } from '$lib/components/Course/components/Lesson/store/lessons';
   import MODES from '$lib/utils/constants/mode';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import CloseIcon from 'carbon-icons-svelte/lib/Close.svelte';
-  import ChevronLeftIcon from 'carbon-icons-svelte/lib/ChevronLeft.svelte';
-  import ChevronRightIcon from 'carbon-icons-svelte/lib/ChevronRight.svelte';
-  import ZoomInIcon from 'carbon-icons-svelte/lib/ZoomIn.svelte';
-  import ZoomOutIcon from 'carbon-icons-svelte/lib/ZoomOut.svelte';
+  import { IconButton } from '@cio/ui/custom/icon-button';
+  import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+  import ZoomInIcon from '@lucide/svelte/icons/zoom-in';
+  import ZoomOutIcon from '@lucide/svelte/icons/zoom-out';
   import { onMount } from 'svelte';
   import DocumentList from '../Document/DocumentList.svelte';
   import { t } from '$lib/utils/functions/translations';
   import type { LessonDocument } from '$lib/utils/types';
-  import { snackbar } from '$lib/components/Snackbar/store';
+  import { snackbar } from '$features/ui/snackbar/store';
 
-  export let mode = MODES.view;
+  let { mode = MODES.view } = $props();
 
-  let downloadingDocuments = new Set<string>();
-  let viewingPDF: any = null;
-  let pdfViewerOpen = false;
-  let pdfCanvas: HTMLCanvasElement;
+  let downloadingDocuments = $state(new Set<string>());
+  let viewingPDF: any = $state(null);
+  let pdfViewerOpen = $state(false);
+  let pdfCanvas: HTMLCanvasElement | undefined = $state();
   let pdfDoc: any = null;
-  let pageNum = 1;
-  let pageCount = 0;
-  let scale = 1.0;
-  let isLoading = false;
-  let error: string | null = null;
+  let pageNum = $state(1);
+  let pageCount = $state(0);
+  let scale = $state(1.0);
+  let isLoading = $state(false);
+  let error: string | null = $state(null);
   let pdfjsLib: any = null;
   let renderTimeout: any = null;
   let currentRenderTask: any = null;
@@ -299,7 +296,7 @@
     event.preventDefault();
   }
 
-  $: displayDocuments = $lesson?.materials?.documents || [];
+  let displayDocuments = $derived($lesson?.materials?.documents || []);
 </script>
 
 <DocumentList
@@ -318,9 +315,7 @@
 {#if pdfViewerOpen}
   <div class="fixed inset-0 z-50 flex flex-col bg-white dark:bg-neutral-800">
     <!-- Header -->
-    <div
-      class="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 dark:bg-neutral-800"
-    >
+    <div class="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 dark:bg-neutral-800">
       <div class="flex items-center space-x-4">
         <h2 class="max-w-md truncate text-lg font-semibold text-gray-900 dark:text-gray-300">
           {viewingPDF?.name}
@@ -339,54 +334,32 @@
         <!-- Navigation Controls -->
         {#if !isLoading && !error}
           <div class="flex items-center space-x-1">
-            <IconButton
-              onClick={prevPage}
-              disabled={pageNum <= 1}
-              toolTipProps={{ title: 'Previous page (←)', hotkeys: ['ArrowLeft'] }}
-            >
-              <ChevronLeftIcon size={20} class="carbon-icon" />
+            <IconButton onclick={prevPage} disabled={pageNum <= 1} tooltip="Previous page (←)">
+              <ChevronLeftIcon size={16} />
             </IconButton>
 
-            <IconButton
-              onClick={nextPage}
-              disabled={pageNum >= pageCount}
-              toolTipProps={{ title: 'Next page (→)', hotkeys: ['ArrowRight'] }}
-            >
-              <ChevronRightIcon size={20} class="carbon-icon" />
+            <IconButton onclick={nextPage} disabled={pageNum >= pageCount} tooltip="Next page (→)">
+              <ChevronRightIcon size={16} />
             </IconButton>
           </div>
 
           <!-- Zoom Controls -->
           <div class="flex items-center space-x-1">
-            <IconButton
-              onClick={zoomOut}
-              disabled={scale <= 0.5}
-              toolTipProps={{ title: 'Zoom out (-)', hotkeys: ['-'] }}
-            >
-              <ZoomOutIcon size={20} class="carbon-icon" />
+            <IconButton onclick={zoomOut} disabled={scale <= 0.5} tooltip="Zoom out (-)">
+              <ZoomOutIcon size={16} />
             </IconButton>
 
             <span class="min-w-[3rem] text-center text-sm text-gray-600">
               {Math.round(scale * 100)}%
             </span>
 
-            <IconButton
-              onClick={zoomIn}
-              disabled={scale >= 3.0}
-              toolTipProps={{ title: 'Zoom in (+)', hotkeys: ['+'] }}
-            >
-              <ZoomInIcon size={20} class="carbon-icon" />
+            <IconButton onclick={zoomIn} disabled={scale >= 3.0} tooltip="Zoom in (+)">
+              <ZoomInIcon size={16} />
             </IconButton>
           </div>
         {/if}
 
-        <!-- Close Button -->
-        <IconButton
-          onClick={closePDFViewer}
-          toolTipProps={{ title: 'Close (Esc)', hotkeys: ['Esc'] }}
-        >
-          <CloseIcon size={20} class="carbon-icon" />
-        </IconButton>
+        <CloseButton onClick={closePDFViewer} toolTipProps={{ title: 'Close (Esc)', hotkeys: ['Esc'] }} />
       </div>
     </div>
 
@@ -417,10 +390,7 @@
               </svg>
             </div>
             <p class="mb-2 text-red-600">{$t(error)}</p>
-            <button
-              on:click={() => viewPDF(viewingPDF)}
-              class="text-blue-600 underline hover:text-blue-800"
-            >
+            <button onclick={() => viewPDF(viewingPDF)} class="text-blue-600 underline hover:text-blue-800">
               {$t('course.navItem.lessons.materials.tabs.document.try_again')}
             </button>
           </div>
@@ -429,8 +399,8 @@
         <div class="flex justify-center">
           <canvas
             bind:this={pdfCanvas}
-            on:contextmenu={handleContextMenu}
-            on:dragstart={handleDragStart}
+            oncontextmenu={handleContextMenu}
+            ondragstart={handleDragStart}
             class="shadow-lg"
           ></canvas>
         </div>

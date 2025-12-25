@@ -1,5 +1,5 @@
 <a href="https://classroomio.com/">
-  <img alt="ClassroomIO is a no-code tool that allows you build and scale your online bootcamp with ease." src="https://raw.githubusercontent.com/classroomio/classroomio/main/apps/classroomio-com/static/classroomio-opengraph-image.png" />
+  <img alt="ClassroomIO is a no-code tool that allows you build and scale your online bootcamp with ease." src="https://raw.githubusercontent.com/classroomio/classroomio/main/apps/website/static/classroomio-opengraph-image.png" />
   <h1 align="center">ClassroomIO.com</h1>
   <p align="center">
     The Open Source Learning Management System for Companies
@@ -12,7 +12,7 @@
 
 ## ✨ About ClassroomIO.com
 
-<img alt="ClassroomIO Courses page" src="https://raw.githubusercontent.com/classroomio/classroomio/main/apps/classroomio-com/static/classroomio-courses.png" />
+<img alt="ClassroomIO Courses page" src="https://raw.githubusercontent.com/classroomio/classroomio/main/apps/website/static/classroomio-courses.png" />
 
 Streamline training for everyone with ClassroomIO.com. Our all-in-one platform empowers bootcamps, educators, and businesses to manage training programs easily. With our platform, anyone can run multiple classes and cohorts all from one UI. The application is mobile-first, which means that students can access your lesson materials from any device.
 
@@ -71,20 +71,12 @@ Here is what you need to be able to run ClassroomIO.com
 
 This repo is a mono repo that consists of 3 projects:
 
-1. `classroomio-com`: The landing page of ClassroomIO hosted [here](https://classroomio.com)
+1. `website`: The landing page of ClassroomIO hosted [here](https://classroomio.com)
 2. `api`: The api service that handles PDF, video processing, Emailing and Notifications.
 3. `dashboard`: The web application that runs the learning management system hosted [here](https://app.classroomio.com).
 4. `docs`: Official documentation of ClassroomIO hosted [here](https://classroomio.com/docs)
 
 ## Development
-
-### Gitpod Setup
-
-1. Click the button below to open this project in Gitpod.
-
-2. This will open a fully configured workspace in your browser with all the necessary dependencies already installed.
-
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/classroomio/classroomio)
 
 ### Local Setup
 
@@ -173,14 +165,14 @@ To get the environmental variables for supabase continue to step(5)
 
 4. All projects should start running
 
-   - `classroomio-com`: [http://localhost:5174](http://localhost:5174)
+   - `website`: [http://localhost:5174](http://localhost:5174)
    - `api`: [http://localhost:3002](http://localhost:3002)
    - `dashboard`: [http://localhost:5173](http://localhost:5173)
    - `docs`: [http://localhost:3000](http://localhost:3000)
 
 5. Running a specific project
 
-   - **classroomio-com**: `pnpm dev --filter=@cio/classroomio-com`
+   - **website**: `pnpm dev --filter=@cio/website`
    - **api**: `pnpm dev --filter=@cio/api`
    - **dashboard**: `pnpm dev --filter=@cio/dashboard`
    - **docs**: `pnpm dev --filter=@cio/docs`

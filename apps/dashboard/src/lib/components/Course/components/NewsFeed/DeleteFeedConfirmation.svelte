@@ -1,11 +1,13 @@
 <script lang="ts">
-  import Modal from '$lib/components/Modal/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import * as Dialog from '@cio/ui/base/dialog';
+  import { Button } from '@cio/ui/base/button';
 
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  interface Props {
+    openDeleteModal?: boolean;
+    deleteFeed?: any;
+  }
 
-  export let openDeleteModal = false;
-  export let deleteFeed = () => {};
+  let { openDeleteModal = $bindable(false), deleteFeed = () => {} }: Props = $props();
 
   async function handleDelete() {
     deleteFeed();
@@ -13,28 +15,18 @@
   }
 </script>
 
-<Modal
-  onClose={() => (openDeleteModal = false)}
-  bind:open={openDeleteModal}
-  width="w-96"
-  modalHeading="Delete Feed"
->
-  <div>
-    <h1 class="dark:text-white text-lg">Are you sure you want to delete this feed?</h1>
+<Dialog.Root bind:open={openDeleteModal}>
+  <Dialog.Content class="w-96">
+    <Dialog.Header>
+      <Dialog.Title>Delete Feed</Dialog.Title>
+    </Dialog.Header>
+    <div>
+      <h1 class="text-lg dark:text-white">Are you sure you want to delete this feed?</h1>
 
-    <div class="mt-5 flex items-center justify-between">
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.OUTLINED}
-        label="No"
-        onClick={() => (openDeleteModal = false)}
-      />
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.OUTLINED}
-        label="Yes"
-        onClick={handleDelete}
-      />
+      <div class="mt-5 flex items-center justify-between">
+        <Button variant="outline" onclick={() => (openDeleteModal = false)}>No</Button>
+        <Button variant="outline" onclick={handleDelete}>Yes</Button>
+      </div>
     </div>
-  </div>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>

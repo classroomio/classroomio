@@ -4,20 +4,6 @@
  */
 
 import type { Context } from 'hono';
-import { supabase } from '$src/utils/supabase';
-
-/**
- * Extract user ID from JWT token
- * In a real implementation, you'd decode and verify the JWT
- */
-export const extractUserIdFromToken = async (token: string): Promise<string | null> => {
-  try {
-    const { data } = await supabase.auth.getUser(token);
-    return data.user?.id || null;
-  } catch {
-    return null;
-  }
-};
 
 /**
  * Extract real client IP address considering various proxy headers
@@ -55,18 +41,10 @@ export const extractClientIp = (c: Context): string => {
  * Generate rate limit key for authenticated users
  */
 export const userKeyGenerator = (c: Context): string => {
-  const authHeader = c.req.header('authorization');
+  const user = c.get('user'); // Already extracted by global middleware
 
-  if (authHeader) {
-    const token = authHeader.split(' ')[1];
-    if (token && token !== 'null' && token !== 'undefined') {
-      const userId = extractUserIdFromToken(token);
-      if (userId) {
-        return `user:${userId}`;
-      }
-      // Fallback to token if user ID extraction fails
-      return `token:${token}`;
-    }
+  if (user?.id) {
+    return `user:${user.id}`;
   }
 
   // No valid auth, fall back to IP

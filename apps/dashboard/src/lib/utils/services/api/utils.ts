@@ -3,6 +3,23 @@ import { ApiError } from './types';
 // Utility function for exponential backoff
 export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+export const getErrMsg = (error: unknown, fallback = 'Something went wrong'): string => {
+  if (error instanceof ApiError) {
+    return error.message;
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  if (typeof error === 'string') {
+    return error;
+  }
+  if (error instanceof Object && 'message' in error) {
+    return error.message as string;
+  }
+
+  return fallback;
+};
+
 // Helper function to handle JSON responses
 export const handleJsonResponse = async <T = any>(response: Response): Promise<T> => {
   if (!response.ok) {
@@ -17,12 +34,7 @@ export const handleJsonResponse = async <T = any>(response: Response): Promise<T
   try {
     return await response.json();
   } catch (error) {
-    throw new ApiError(
-      'Failed to parse JSON response',
-      response.status,
-      response.statusText,
-      response
-    );
+    throw new ApiError('Failed to parse JSON response', response.status, response.statusText, response);
   }
 };
 
@@ -69,9 +81,7 @@ export const isTimeoutError = (error: unknown): boolean => {
 export type Result<T, E = ApiError> = { success: true; data: T } | { success: false; error: E };
 
 // Generic safe request wrapper
-export const safeRequest = async <T = any>(
-  requestFn: () => Promise<Response>
-): Promise<Result<T>> => {
+export const safeRequest = async <T = any>(requestFn: () => Promise<Response>): Promise<Result<T>> => {
   try {
     const response = await requestFn();
     const data = await handleJsonResponse<T>(response);
@@ -88,9 +98,7 @@ export const safeRequest = async <T = any>(
 };
 
 // Safe request wrapper for text responses
-export const safeRequestText = async (
-  requestFn: () => Promise<Response>
-): Promise<Result<string>> => {
+export const safeRequestText = async (requestFn: () => Promise<Response>): Promise<Result<string>> => {
   try {
     const response = await requestFn();
     const data = await handleTextResponse(response);
@@ -107,9 +115,7 @@ export const safeRequestText = async (
 };
 
 // Safe request wrapper that returns the raw response
-export const safeRequestRaw = async (
-  requestFn: () => Promise<Response>
-): Promise<Result<Response>> => {
+export const safeRequestRaw = async (requestFn: () => Promise<Response>): Promise<Result<Response>> => {
   try {
     const response = await requestFn();
     return { success: true, data: response };

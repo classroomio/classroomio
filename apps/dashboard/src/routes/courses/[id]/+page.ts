@@ -1,6 +1,4 @@
-import { browser } from '$app/environment';
-
-export const load = async ({ params = { id: '' } }) => {
+export const load = ({ params = { id: '' } }) => {
   return {
     courseId: params.id
   };

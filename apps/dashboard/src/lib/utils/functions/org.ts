@@ -1,8 +1,9 @@
 import { goto } from '$app/navigation';
+import { resolve } from '$app/paths';
 
 export function genQuizPin(): number {
-  var minm = 100000;
-  var maxm = 999999;
+  const minm = 100000;
+  const maxm = 999999;
   return Math.floor(Math.random() * (maxm - minm + 1)) + minm;
 }
 
@@ -20,5 +21,5 @@ export function openUpgradeModal() {
 
   const searchParams = url.searchParams.toString();
 
-  goto(window.location.pathname + `?${searchParams}`);
+  goto(resolve(window.location.pathname + `?${searchParams}`, {}));
 }

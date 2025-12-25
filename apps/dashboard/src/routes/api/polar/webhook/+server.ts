@@ -1,9 +1,8 @@
-import { env } from '$env/dynamic/private';
-import { getServerSupabase } from '$lib/utils/functions/supabase.server';
-import { cancelOrgPlan, createOrgPlan, updateOrgPlan } from '$lib/utils/services/org';
+import { OrgPlanApiServer } from '$features/org/api/org-plan.server';
+import { PLAN } from '@cio/utils/plans';
 import type { PolarWebhookPayload } from '$lib/utils/types/polar';
 import { Webhooks } from '@polar-sh/sveltekit';
-import { PLAN } from 'shared/src/plans/constants';
+import { env } from '$env/dynamic/private';
 
 export const POST = Webhooks({
   webhookSecret: env.POLAR_WEBHOOK_SECRET!,
@@ -11,8 +10,6 @@ export const POST = Webhooks({
 });
 
 async function onPayload(payload: PolarWebhookPayload) {
-  const supabase = getServerSupabase();
-
   const metadata = payload.data.metadata;
   const orgId = metadata.orgId;
   const triggeredBy = metadata.triggeredBy;
@@ -38,45 +35,45 @@ async function onPayload(payload: PolarWebhookPayload) {
       break;
     case 'subscription.created':
       if (isSubscriptionActive) {
-        const { data, error } = await createOrgPlan({
-          supabase,
-          subscriptionId,
-          orgId,
-          triggeredBy: parseInt(triggeredBy),
-          planName: PLAN.EARLY_ADOPTER,
-          data: payload.data
-        });
+        try {
+          const planData = {
+            orgId,
+            triggeredBy: parseInt(triggeredBy),
+            planName: PLAN.EARLY_ADOPTER as 'EARLY_ADOPTER' | 'ENTERPRISE' | 'BASIC',
+            subscriptionId,
+            payload: payload.data as unknown as Record<string, unknown>
+          };
 
-        if (error) {
+          const result = await OrgPlanApiServer.createOrgPlan(planData);
+          console.log('Subscription created', result);
+        } catch (error) {
           console.error('Error creating org plan', error);
         }
-        console.log('Subscription created', data);
       }
       break;
     case 'subscription.updated':
       if (!isSubscriptionActive) {
         // Handle Cancel Subscription
-        const { data, error } = await cancelOrgPlan({
-          subscriptionId,
-          data: payload.data
-        });
-
-        if (error) {
+        try {
+          const result = await OrgPlanApiServer.cancelOrgPlan({
+            subscriptionId,
+            payload: payload.data as unknown as Record<string, unknown>
+          });
+          console.log('Subscription canceled', result);
+        } catch (error) {
           console.error('Error canceling org plan', error);
         }
-        console.log('Subscription canceled', data);
       } else {
         // Handle Update Subscription
-        const { data, error } = await updateOrgPlan({
-          supabase,
-          subscriptionId,
-          data: payload.data
-        });
-
-        if (error) {
+        try {
+          const result = await OrgPlanApiServer.updateOrgPlan({
+            subscriptionId,
+            payload: payload.data as unknown as Record<string, unknown>
+          });
+          console.log('Subscription updated', result);
+        } catch (error) {
           console.error('Error updating org plan', error);
         }
-        console.log('Subscription updated', data);
       }
       break;
     case 'subscription.active':

@@ -1,0 +1,43 @@
+{
+  "name": "@cio/email",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./send": {
+      "types": "./dist/send.d.ts",
+      "default": "./dist/send.js"
+    }
+  },
+  "peerDependencies": {
+    "zod": "^4.1.8"
+  },
+  "dependencies": {
+    "@cio/tsconfig": "workspace:*",
+    "@cio/utils": "workspace:*",
+    "nodemailer": "^6.9.5",
+    "zeptomail": "^6.0.0",
+    "zod": "^4.1.8"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@types/nodemailer": "^6.4.21",
+    "prettier": "^3.2.5",
+    "tsc-alias": "^1.8.16",
+    "tsx": "^4.7.1",
+    "typescript": "^5.5.2"
+  }
+}

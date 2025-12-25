@@ -1,39 +1,59 @@
 <script lang="ts">
-  import { OverflowMenu, OverflowMenuItem } from 'carbon-components-svelte';
-  import Send from 'carbon-icons-svelte/lib/Send.svelte';
-  import Chip from '$lib/components/Chip/index.svelte';
-  import UserMultiple from 'carbon-icons-svelte/lib/UserMultiple.svelte';
+  import { onMount } from 'svelte';
+  import pluralize from 'pluralize';
+  import UsersIcon from '@lucide/svelte/icons/users';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import SendHorizontalIcon from '@lucide/svelte/icons/send-horizontal';
+  import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+
+  import { profile } from '$lib/utils/store/user';
+  import { isOrgAdmin } from '$lib/utils/store/org';
   import { calDateDiff } from '$lib/utils/functions/date';
   import type { Author, Feed } from '$lib/utils/types/feed';
+  import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
+  import { sanitizeHtml } from '@cio/ui/tools/sanitize';
+  import { addNewsfeedCommentValidation } from '$lib/utils/functions/validator';
+  import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
+
+  import { Chip } from '@cio/ui/custom/chip';
   import DeleteFeedConfirmation from './DeleteFeedConfirmation.svelte';
   import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import { isNewFeedModal } from '$lib/components/Course/components/NewsFeed/store';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import { isOrgAdmin } from '$lib/utils/store/org';
-  import { profile } from '$lib/utils/store/user';
-  import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
-  import { sanitizeHtml } from '$lib/utils/functions/sanitize';
-  import pluralize from 'pluralize';
-  import { onMount } from 'svelte';
-  import { addNewsfeedCommentValidation } from '$lib/utils/functions/validator';
+  import { RoleBasedSecurity } from '$features/ui';
 
-  export let feed: Feed;
-  export let editFeed: Feed;
-  export let author: Author;
-  export let edit = false;
-  export let deleteFeed = (arg: string) => {};
-  export let deleteComment = (arg: string) => {};
-  export let addNewComment = (arg1: string, arg2: string, arg3: string) => {};
-  export let addNewReaction = (arg1: string, arg2: string, arg3: string) => {};
-  export let onPin = (feedId: Feed['id'], isPinned: Feed['isPinned']) => {};
-  export let isActive = false;
+  interface Props {
+    feed: Feed;
+    editFeed: Feed | null;
+    author: Author;
+    edit?: boolean;
+    deleteFeed?: any;
+    deleteComment?: any;
+    addNewComment?: any;
+    addNewReaction?: any;
+    onPin?: any;
+    isActive?: boolean;
+  }
 
-  let comment = '';
-  let areCommentsExpanded = false;
-  let isDeleteFeedModal = false;
+  let {
+    feed,
+    editFeed = $bindable(),
+    author,
+    edit = $bindable(false),
+    deleteFeed = (_arg: string) => {},
+    deleteComment = (_arg: string) => {},
+    addNewComment = (_arg1: string, _arg2: string, _arg3: string) => {},
+    addNewReaction = (_arg1: string, _arg2: string, _arg3: string) => {},
+    onPin = (_feedId: Feed['id'], _isPinned: Feed['isPinned']) => {},
+    isActive = false
+  }: Props = $props();
+
+  let comment = $state('');
+  let areCommentsExpanded = $state(false);
+  let isDeleteFeedModal = $state(false);
   let errors: {
     newComment: string;
-  };
+  } = $state({
+    newComment: ''
+  });
 
   let reactions = {
     smile: '😀',
@@ -83,7 +103,7 @@
     const usersReacted = feed.reaction[reactionType] || [];
 
     return usersReacted.includes(author.id)
-      ? 'bg-primary-200 border-primary-600 pl-2'
+      ? 'bg-primary-200 ui:border-primary pl-2'
       : 'bg-gray-200 border-gray-600 pl-2';
   };
 
@@ -122,23 +142,29 @@
           </span>
         </span>
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <OverflowMenu flipped>
-            <OverflowMenuItem
-              text={feed.isPinned ? 'Unpin' : 'Pin'}
-              on:click={() => onPin(feed.id, feed.isPinned)}
-            />
-            <OverflowMenuItem text="Edit" on:click={openEditFeed} />
-            <OverflowMenuItem danger text="Delete" on:click={() => (isDeleteFeedModal = true)} />
-          </OverflowMenu>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger
+              class="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-neutral-700"
+            >
+              <EllipsisVerticalIcon class="h-5 w-5" />
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content align="end">
+              <DropdownMenu.Item onclick={() => onPin(feed.id, feed.isPinned)}>
+                {feed.isPinned ? 'Unpin' : 'Pin'}
+              </DropdownMenu.Item>
+              <DropdownMenu.Item onclick={openEditFeed}>Edit</DropdownMenu.Item>
+              <DropdownMenu.Item class="text-red-600" onclick={() => (isDeleteFeedModal = true)}>
+                Delete
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
         </RoleBasedSecurity>
       </div>
       {#if !isHtmlValueEmpty(feed.content)}
         <HtmlRender className="text-sm font-medium w-[80%] mb-4">
-          <svelte:fragment slot="content">
-            <div>
-              {@html sanitizeHtml(feed.content)}
-            </div>
-          </svelte:fragment>
+          <div>
+            {@html sanitizeHtml(feed.content)}
+          </div>
         </HtmlRender>
       {/if}
     </div>
@@ -148,7 +174,7 @@
         {#each Object.keys(feed.reaction) as reactionType}
           {#if reactions[reactionType]}
             <button
-              on:click={() => handleAddNewReaction(reactionType)}
+              onclick={() => handleAddNewReaction(reactionType)}
               class={`flex items-center transition ${
                 feed.reaction[reactionType].length >= 1 &&
                 `${getClassIfSelectedByAuthor(reactionType)} rounded-full border dark:text-black`
@@ -167,11 +193,8 @@
 
   <section class="border-t border-gray-200 p-3 dark:border-neutral-600">
     {#if feed.comment.length > 0}
-      <button
-        on:click={expandComment}
-        class="-mx-2 flex flex-row items-center gap-1 rounded-md px-2"
-      >
-        <UserMultiple size={16} />
+      <button onclick={expandComment} class="-mx-2 flex flex-row items-center gap-1 rounded-md px-2">
+        <UsersIcon size={16} />
         <p class="py-2 text-sm">
           {pluralize('comment', feed.comment.length, true)}
         </p>
@@ -199,13 +222,18 @@
             </span>
 
             {#if comment.author?.profile?.id === $profile.id || $isOrgAdmin}
-              <OverflowMenu flipped class="hidden group-hover:flex">
-                <OverflowMenuItem
-                  danger
-                  text="Delete"
-                  on:click={() => handleDeleteComment(comment.id)}
-                />
-              </OverflowMenu>
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger
+                  class="hidden h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 group-hover:flex dark:hover:bg-neutral-700"
+                >
+                  <EllipsisVerticalIcon class="h-5 w-5" />
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content align="end">
+                  <DropdownMenu.Item class="text-red-600" onclick={() => handleDeleteComment(comment.id)}>
+                    Delete
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
             {/if}
           </div>
         {/if}
@@ -213,24 +241,20 @@
     </div>
     <div class="flex items-center justify-between gap-2">
       <div class="h-7 w-7">
-        <img
-          src={author.avatar_url}
-          alt="users banner"
-          class="h-full w-full rounded-full object-cover"
-        />
+        <img src={author.avatar_url} alt="users banner" class="h-full w-full rounded-full object-cover" />
       </div>
       <div class="flex-1">
         <input
           type="text"
           bind:value={comment}
-          on:keydown={handleAddNewComment}
+          onkeydown={handleAddNewComment}
           placeholder="Add class comment"
           class="w-full rounded-3xl border border-gray-200 bg-transparent dark:border-neutral-600"
           required
         />
       </div>
-      <button on:click={handleAddNewComment}>
-        <Send size={24} />
+      <button onclick={handleAddNewComment}>
+        <SendHorizontalIcon size={16} />
       </button>
     </div>
     {#if errors?.newComment}

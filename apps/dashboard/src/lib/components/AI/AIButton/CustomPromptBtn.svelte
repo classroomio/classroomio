@@ -1,88 +1,101 @@
 <script lang="ts">
-  import { useCompletion } from 'ai/svelte';
-  import { Popover } from 'carbon-components-svelte';
-  import type { PopoverProps } from 'carbon-components-svelte/types/Popover/Popover.svelte';
-  import MagicWandFilled from 'carbon-icons-svelte/lib/MagicWandFilled.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import { Loading } from 'carbon-components-svelte';
-  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
-  import { t } from '$lib/utils/functions/translations';
+  // import { preventDefault } from '$lib/utils/functions/svelte';
+  // import { writable } from 'svelte/store';
+  // // import { useCompletion } from 'ai/svelte';
+  // import WandSparklesIcon from '@lucide/svelte/icons/wand-sparkles';
+  // import { IconButton } from '$lib/components/IconButton';
+  // import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
+  // import { t } from '$lib/utils/functions/translations';
 
-  export let className = '';
-  export let handleInsert = (v: string) => {};
-  export let defaultPrompt = '';
-  export let alignPopover: PopoverProps['align'] = 'left';
-  export let isHTML = false;
+  // interface Props {
+  //   className?: string;
+  //   handleInsert?: any;
+  //   defaultPrompt?: string;
+  //   alignPopover?: PopoverProps['align'];
+  //   isHTML?: boolean;
+  // }
 
-  let openPopover = false;
-  let plainText = '';
-  let textRef: HTMLParagraphElement;
-  let prompt: string = defaultPrompt;
+  // let {
+  //   className = '',
+  //   handleInsert = (_v: string) => {},
+  //   defaultPrompt = '',
+  //   alignPopover = 'left',
+  //   isHTML = false
+  // }: Props = $props();
 
-  let isSubmitted = false;
+  // let openPopover = $state(false);
+  // let plainText = $state('');
+  // let textRef: HTMLParagraphElement | undefined = $state();
+  // let prompt: string = $state(defaultPrompt);
 
-  const { input, handleSubmit, completion, isLoading } = useCompletion({
-    api: '/api/completion/customprompt'
-  });
+  // let isSubmitted = $state(false);
 
-  function restart() {
-    isSubmitted = false;
-    plainText = '';
-  }
+  // let isLoading = writable(false);
+  // // const { input, handleSubmit, completion, isLoading } = useCompletion({
+  // //   api: '/api/completion/customprompt'
+  // // });
 
-  function onCompletion(completion: string) {
-    plainText = completion;
-    if (textRef) {
-      textRef.scrollTop = textRef.scrollHeight;
-    }
-  }
+  // function restart() {
+  //   isSubmitted = false;
+  //   plainText = '';
+  // }
 
-  function callAI(prompt: string, rephrase: boolean) {
-    isSubmitted = true;
+  // function onCompletion(completion: string) {
+  //   plainText = completion;
+  //   if (textRef) {
+  //     textRef.scrollTop = textRef.scrollHeight;
+  //   }
+  // }
 
-    $input = rephrase ? `${$t('ai.can_you')}: ${plainText}` : prompt;
+  // // function callAI(prompt: string, rephrase: boolean) {
+  // //   isSubmitted = true;
 
-    setTimeout(() => {
-      handleSubmit({ preventDefault: () => {} });
-    }, 500);
-  }
+  // //   $input = rephrase ? `${$t('ai.can_you')}: ${plainText}` : prompt;
 
-  $: onCompletion($completion);
-  $: prompt = defaultPrompt;
+  // //   setTimeout(() => {
+  // //     handleSubmit({ preventDefault: () => {} });
+  // //   }, 500);
+  // // }
+
+  // $effect(() => {
+  //   onCompletion($completion);
+  // });
+
+  // $effect(() => {
+  //   prompt = defaultPrompt;
+  // });
 </script>
 
+<div></div>
+<!-- 
 <div class="{className} relative z-[100]">
   <IconButton
     contained={true}
-    color="text-primary-700 dark:bg-neutral-500 dark:text-white"
+    color="ui:text-primary dark:bg-neutral-500 dark:text-white"
     size="large"
     onClick={() => (openPopover = !openPopover)}
   >
-    <MagicWandFilled size={16} class="carbon-icon" />
+    <MagicWandFilled  />
     <Popover caret align={alignPopover} bind:open={openPopover}>
-      <button
-        class="p-2 w-[300px] h-[220px] text-start"
-        type="button"
-        on:click={(e) => e.stopPropagation()}
-      >
+      <div class="h-[220px] w-[300px] p-2 text-start">
         {#if isSubmitted}
           <div class="h-[200px]">
             <div
               bind:this={textRef}
-              class="h-[82%] bg-white dark:bg-neutral-700 p-2 overflow-y-auto text-sm text-start w-full my-1"
+              class="my-1 h-[82%] w-full overflow-y-auto bg-white p-2 text-start text-sm dark:bg-neutral-700"
             >
               {#if isHTML}
-                <HtmlRender content={plainText} />
+                <HtmlRender>{plainText}</HtmlRender>
               {:else}
                 <p class="font-normal">
                   {plainText}
                 </p>
               {/if}
             </div>
-            <div class="flex gap-5 ml-2">
+            <div class="ml-2 flex gap-5">
               <button
-                class="text-xs px-4 py-2 border-[1px] cursor-pointer rounded-md font-medium"
-                on:click={() => {
+                class="cursor-pointer rounded-md border-[1px] px-4 py-2 text-xs font-medium"
+                onclick={() => {
                   handleInsert(plainText);
                   openPopover = false;
                 }}
@@ -96,9 +109,9 @@
                 {/if}
               </button>
               <button
-                class="text-xs px-4 py-2 border-[1px] cursor-pointer rounded-md font-medium {$isLoading &&
-                  'opacity-25 cursor-not-allowed'}"
-                on:click|preventDefault={() => callAI(prompt, true)}
+                class="cursor-pointer rounded-md border-[1px] px-4 py-2 text-xs font-medium {$isLoading &&
+                  'cursor-not-allowed opacity-25'}"
+                onclick={preventDefault(() => callAI(prompt, true))}
                 type="button"
                 disabled={$isLoading}
               >
@@ -106,8 +119,8 @@
               </button>
               {#if !$isLoading}
                 <button
-                  class="text-xs px-4 py-2 border-[1px] cursor-pointer rounded-md font-medium"
-                  on:click|preventDefault={restart}
+                  class="cursor-pointer rounded-md border-[1px] px-4 py-2 text-xs font-medium"
+                  onclick={preventDefault(restart)}
                   type="button"
                 >
                   {$t('ai.reset')}
@@ -117,22 +130,22 @@
           </div>
         {:else}
           <div class="h-full">
-            <p class="text-sm font-medium mb-2 ml-1">{$t('ai.help_me')}</p>
+            <p class="mb-2 ml-1 text-sm font-medium">{$t('ai.help_me')}</p>
             <textarea
               bind:value={prompt}
-              class="w-full border-0 rounded-lg h-[65%] text-sm m-0 dark:text-black"
+              class="m-0 h-[65%] w-full rounded-lg border-0 text-sm dark:text-black"
               placeholder={$t('ai.placeholder')}
-            />
+            ></textarea>
             <button
-              class="flex text-xs px-4 py-2 m-0 border rounded-md font-medium"
-              on:click|preventDefault={() => callAI(prompt, false)}
+              class="m-0 flex rounded-md border px-4 py-2 text-xs font-medium"
+              onclick={preventDefault(() => callAI(prompt, false))}
               type="button"
             >
               {$t('ai.text')}
             </button>
           </div>
         {/if}
-      </button>
+      </div>
     </Popover>
   </IconButton>
-</div>
+</div> -->

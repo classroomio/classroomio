@@ -1,44 +1,35 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
+  import { Button } from '@cio/ui/base/button';
   import { getSupabase } from '$lib/utils/functions/supabase';
-  import AuthUI from '$lib/components/AuthUI/index.svelte';
+  import { AuthUI } from '$features/ui';
   import { currentOrg } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
   import { addGroupMember } from '$lib/utils/services/courses';
-  import type { CurrentOrg } from '$lib/utils/types/org.js';
-  import { ROLE } from '$lib/utils/constants/roles';
+  import { ROLE } from '@cio/utils/constants';
   import { profile } from '$lib/utils/store/user';
-  import {
-    triggerSendEmail,
-    NOTIFICATION_NAME
-  } from '$lib/utils/services/notification/notification';
-  import { snackbar } from '$lib/components/Snackbar/store.js';
+  import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
 
-  export let data;
+  let { data } = $props();
 
   let supabase = getSupabase();
-  let loading = false;
+  let loading = $state(false);
 
   let disableSubmit = false;
-  let formRef: HTMLFormElement;
 
   async function handleSubmit() {
     loading = true;
 
     if (!$profile.id || !$profile.email) {
       console.log('Profile not found', $profile);
-      return goto(`/signup?redirect=${$page.url?.pathname || ''}`);
+      return goto(`/signup?redirect=${page.url?.pathname || ''}`);
     }
 
-    const { data: courseData, error } = await supabase
-      .from('course')
-      .select('group_id')
-      .eq('id', data.id)
-      .single();
+    const { data: courseData, error } = await supabase.from('course').select('group_id').eq('id', data.id).single();
 
     console.log({ courseData });
     if (!courseData?.group_id) {
@@ -111,50 +102,34 @@
     });
   }
 
-  function setCurOrg(cOrg: CurrentOrg) {
-    if (!cOrg) return;
-    currentOrg.set(cOrg);
-  }
-
   onMount(async () => {
     // check if user has session, if not redirect to sign up with redirect back to this page
     const {
       data: { session }
     } = await supabase.auth.getSession();
     if (!session) {
-      return goto(`/login?redirect=${$page.url?.pathname || ''}`);
+      return goto(`/login?redirect=${page.url?.pathname || ''}`);
     }
 
-    setTheme(data.currentOrg?.theme || '');
-  });
+    if (!data.currentOrg) return;
 
-  $: setCurOrg(data.currentOrg as CurrentOrg);
+    setTheme(data.currentOrg?.theme || '');
+
+    currentOrg.set(data.currentOrg);
+  });
 </script>
 
 <svelte:head>
   <title>Join {data.name} on ClassroomIO</title>
 </svelte:head>
 
-<AuthUI
-  {supabase}
-  isLogin={false}
-  {handleSubmit}
-  isLoading={loading || !$profile.id}
-  showOnlyContent={true}
-  showLogo={true}
-  bind:formRef
->
+<AuthUI isLogin={false} {handleSubmit} isLoading={loading || !$profile.id} showOnlyContent={true} showLogo={true}>
   <div class="mt-0 w-full">
     <h3 class="mb-4 mt-0 text-center text-lg font-medium dark:text-white">{data.name}</h3>
     <p class="text-center text-sm font-light dark:text-white">{data.description}</p>
   </div>
 
   <div class="my-4 flex w-full items-center justify-center">
-    <PrimaryButton
-      label="Join Course"
-      type="submit"
-      isDisabled={disableSubmit || loading}
-      isLoading={loading || !$profile.id}
-    />
+    <Button type="submit" disabled={disableSubmit || loading} loading={loading || !$profile.id}>Join Course</Button>
   </div>
 </AuthUI>

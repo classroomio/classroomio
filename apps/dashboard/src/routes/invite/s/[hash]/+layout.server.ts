@@ -1,10 +1,5 @@
+import { OrgApiServer } from '$features/org/api/org.server';
 import { redirect } from '@sveltejs/kit';
-import { getSupabase, supabase } from '$lib/utils/functions/supabase';
-import { getCurrentOrg } from '$lib/utils/services/org';
-
-if (!supabase) {
-  getSupabase();
-}
 
 export const load = async ({ params = { hash: '' } }) => {
   try {
@@ -16,7 +11,8 @@ export const load = async ({ params = { hash: '' } }) => {
     if (!id || !name || !description || !orgSiteName) {
       throw 'Validation failed';
     }
-    const currentOrg = await getCurrentOrg(orgSiteName, true);
+
+    const currentOrg = await OrgApiServer.getOrgBySiteName(orgSiteName);
 
     return {
       id,
@@ -26,6 +22,6 @@ export const load = async ({ params = { hash: '' } }) => {
     };
   } catch (error) {
     console.error('Error decoding course invite params.hash', error);
-    throw redirect(307, '/404');
+    redirect(307, '/404');
   }
 };

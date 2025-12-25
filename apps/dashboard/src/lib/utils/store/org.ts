@@ -1,52 +1,59 @@
-import type { CurrentOrg, OrgAudience, OrgTeamMember } from '../types/org';
 import { browser, dev } from '$app/environment';
 import { derived, writable } from 'svelte/store';
 
-import { PLAN } from 'shared/src/plans/constants';
+import type { AccountOrg } from '$features/app/types';
+import type { OrgTeamMember } from '../types/org';
+import { PLAN } from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
-import { ROLE } from '$lib/utils/constants/roles';
+import { ROLE } from '@cio/utils/constants';
 import { STEPS } from '../constants/quiz';
 import type { UserLessonDataType } from '$lib/utils/types';
 import type { Writable } from 'svelte/store';
 
-// Trigger build
-export const defaultCurrentOrgState: CurrentOrg = {
-  id: '',
-  name: '',
-  shortName: '',
-  siteName: '',
-  avatar_url: '',
-  memberId: '',
-  role_id: 0,
-  landingpage: {},
+export const orgs = writable<AccountOrg[]>([]);
+
+export const currentOrg: Writable<AccountOrg> = writable({
+  avatarUrl: '',
+  createdAt: '',
+  customCode: '',
+  customDomain: '',
   customization: {
     apps: { poll: true, comments: true },
     course: { grading: true, newsfeed: true },
     dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' }
   },
-  theme: '',
-  organization_plan: [],
-  is_restricted: false
-};
-
-export const orgs = writable<CurrentOrg[]>([]);
-export const currentOrg: Writable<CurrentOrg> = writable(defaultCurrentOrgState);
-export const orgAudience = writable<OrgAudience[]>([]);
+  favicon: '',
+  id: '',
+  isCustomDomainVerified: false,
+  isRestricted: false,
+  landingpage: {},
+  name: '',
+  plans: [],
+  roleId: 0,
+  settings: {},
+  siteName: '',
+  theme: ''
+});
 export const orgTeam = writable<OrgTeamMember[]>([]);
 export const isOrgAdmin = derived(currentOrg, ($currentOrg) => {
-  if ($currentOrg.role_id === 0) return null;
+  if ($currentOrg.roleId === 0) return null;
 
-  return $currentOrg.role_id === ROLE.ADMIN;
+  return $currentOrg.roleId === ROLE.ADMIN;
+});
+export const isOrgStudent = derived(currentOrg, ($currentOrg) => {
+  if ($currentOrg.roleId === 0) return null;
+
+  return $currentOrg.roleId === ROLE.STUDENT;
 });
 
-const getActivePlan = (org: CurrentOrg) => {
-  return org.organization_plan.find((p) => p.is_active);
+const getActivePlan = (org: AccountOrg) => {
+  return org.plans.find((p) => p.isActive);
 };
 
 export const currentOrgPlan = derived(currentOrg, ($currentOrg) => getActivePlan($currentOrg));
 
 export const currentOrgPath = derived(currentOrg, ($currentOrg) =>
-  $currentOrg.siteName ? `/org/${$currentOrg.siteName}` : '/org/*'
+  $currentOrg.siteName ? `/org/${$currentOrg.siteName}` : '#'
 );
 
 export const currentOrgDomain = derived(currentOrg, ($currentOrg) => {
@@ -78,15 +85,15 @@ export const isFreePlan = derived(currentOrg, ($currentOrg) => {
 
   const plan = getActivePlan($currentOrg);
 
-  return !plan || plan.plan_name === PLAN.BASIC;
+  return !plan || plan.planName === PLAN.BASIC;
 });
 
 export const currentOrgMaxAudience = derived(currentOrgPlan, ($plan) =>
   !$plan
     ? 20
-    : $plan.plan_name === PLAN.EARLY_ADOPTER
+    : $plan.planName === PLAN.EARLY_ADOPTER
       ? 10000
-      : $plan.plan_name === PLAN.ENTERPRISE
+      : $plan.planName === PLAN.ENTERPRISE
         ? Number.MAX_SAFE_INTEGER
         : 20
 );

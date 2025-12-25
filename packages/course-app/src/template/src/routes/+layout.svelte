@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { homePage, sharedPage } from '$lib/utils/stores/pages';
   import { courses } from '$lib/utils/stores/course';
   import { getPageSection } from '$lib/utils/helpers/page';
@@ -43,13 +43,13 @@
 {#if $homePage.id}
   <main class="font-{import.meta.env.VITE_TEMPLATE}">
     <Transition>
-      {#if !$page.url.pathname.includes('course/')}
+      {#if !page.url.pathname.includes('course/')}
         <components.navigation />
       {/if}
 
       {@render children?.()}
 
-      {#if !$page.url.pathname.includes('course/')}
+      {#if !page.url.pathname.includes('course/')}
         <components.footer />
       {/if}
     </Transition>

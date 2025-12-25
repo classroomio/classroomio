@@ -1,0 +1,21 @@
+// UI Components - Named exports for easy importing
+export { default as BlogListItem } from './blog-list-item.svelte';
+export { default as CoreFeatureSection } from './core-feature-section.svelte';
+export { default as CoreFeatures } from './core-features.svelte';
+export { default as CustomImg } from './custom-img.svelte';
+export { default as Faq } from './faq.svelte';
+export { default as Footer } from './footer.svelte';
+export { default as Hero } from './hero.svelte';
+export { default as Modal } from './modal.svelte';
+export { default as MoreFeatures } from './more-features.svelte';
+export { default as Navigation } from './navigation.svelte';
+export { default as NotFound } from './not-found.svelte';
+export { default as PageHeader } from './page-header.svelte';
+export { default as PageSignupCTA } from './page-signup-cta.svelte';
+export { default as SenjaEmbed } from './senja-embed.svelte';
+export { default as StudentDashboard } from './student-dashboard.svelte';
+export { default as Success } from './success.svelte';
+export { default as Testimonial } from './testimonial.svelte';
+export { default as Timeline } from './timeline.svelte';
+export { default as ToolsHeader } from './tools-header.svelte';
+export { default as UploadWidget } from './upload-widget.svelte';

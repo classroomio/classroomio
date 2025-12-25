@@ -1,27 +1,14 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import { PageBody } from '$lib/components/Page';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import RoleBasedSecurity from '$lib/components/RoleBasedSecurity/index.svelte';
-  import { snackbar } from '$lib/components/Snackbar/store';
-  import { t } from '$lib/utils/functions/translations';
-  import { upsertExercise } from '$lib/utils/services/courses';
-  import { globalStore } from '$lib/utils/store/app';
-  import {
-    Breadcrumb,
-    BreadcrumbItem,
-    ContentSwitcher,
-    OverflowMenu,
-    OverflowMenuItem,
-    Switch
-  } from 'carbon-components-svelte';
-  import AddAltIcon from 'carbon-icons-svelte/lib/AddAlt.svelte';
-  import ViewIcon from 'carbon-icons-svelte/lib/View.svelte';
-  import ViewFilledIcon from 'carbon-icons-svelte/lib/ViewFilled.svelte';
-  import { onDestroy, onMount } from 'svelte';
+  import { page } from '$app/state';
+  import { Button } from '@cio/ui/base/button';
+  import EyeIcon from '@lucide/svelte/icons/eye';
+  import { onDestroy, onMount, untrack } from 'svelte';
+  import * as Breadcrumb from '@cio/ui/base/breadcrumb';
+  import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import CirclePlusIcon from '@lucide/svelte/icons/circle-plus';
+  import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+
   import {
     handleAddQuestion,
     questionnaire,
@@ -29,20 +16,30 @@
     reset,
     validateQuestionnaire
   } from '../store/exercise';
+  import { globalStore } from '$lib/utils/store/app';
+  import { t } from '$lib/utils/functions/translations';
+  import { snackbar } from '$features/ui/snackbar/store';
+  import { upsertExercise } from '$lib/utils/services/courses';
   import EditMode from './EditMode.svelte';
-  import Analytics from './Submissions/index.svelte';
-  import UpdateDescription from './UpdateDescription.svelte';
   import ViewMode from './ViewMode.svelte';
+  import Analytics from './Submissions/index.svelte';
+  import { IconButton } from '@cio/ui/custom/icon-button';
+  import UpdateDescription from './UpdateDescription.svelte';
+  import { RoleBasedSecurity } from '$features/ui';
 
-  export let exerciseId = '';
-  export let path = '';
-  export let goBack = () => {};
-  export let isFetching = false;
+  interface Props {
+    exerciseId?: string;
+    path?: string;
+    goBack?: any;
+    isFetching?: boolean;
+  }
 
-  let preview: boolean = false;
-  let shouldDeleteExercise = false;
-  let isSaving = false;
-  let selectedIndex = 0;
+  let { exerciseId = $bindable(''), path = '', goBack = () => {}, isFetching = false }: Props = $props();
+
+  let preview: boolean = $state(false);
+  let shouldDeleteExercise = $state(false);
+  let isSaving = $state(false);
+  let selectedTab = $state('questions');
 
   async function handleSave() {
     if ($globalStore.isStudent) return;
@@ -51,9 +48,11 @@
     if (Object.values(errors).length > 0) {
       return;
     }
+
     isSaving = true;
 
     reset();
+
     try {
       const updatedQuestions = await upsertExercise($questionnaire, exerciseId);
 
@@ -79,91 +78,107 @@
     reset();
   });
 
-  $: onSelectedIndexChange(selectedIndex);
-  function onSelectedIndexChange(index: number) {
-    goto($page.url.pathname + '?tabIndex=' + index);
-  }
-
   onMount(() => {
-    const tabIndex = $page.url.searchParams.get('tabIndex');
-    if (tabIndex) {
-      selectedIndex = parseInt(tabIndex);
+    const tabParam = page.url.searchParams.get('tab');
+    if (tabParam) {
+      selectedTab = tabParam;
     }
   });
 
-  $: $questionnaire?.questions?.length < 1 && handleAddQuestion();
+  $effect(() => {
+    untrack(() => {
+      goto(page.url.pathname + '?tab=' + selectedTab);
+    });
+  });
+  // $effect(() => {
+  //   const addNewQ = $questionnaire?.questions?.length < 1;
+  //   console.log('addNewQ', addNewQ);
+
+  //   if (addNewQ) {
+  //     untrack(() => {
+  //       handleAddQuestion();
+  //     });
+  //   }
+  // });
 </script>
 
-<PageBody bind:isPageNavHidden={$globalStore.isStudent} padding="px-4 overflow-x-hidden">
+<div class="overflow-x-hidden px-4">
   <div class="sticky top-0 z-10 mb-3 bg-gray-100 p-2 dark:bg-neutral-800">
-    <Breadcrumb noTrailingSlash>
-      <BreadcrumbItem href={path}>
-        {$t('course.navItem.lessons.exercises.all_exercises.heading')}
-      </BreadcrumbItem>
-      <BreadcrumbItem href={`${path}/${exerciseId}`} isCurrentPage>
-        {$questionnaire.title}
-      </BreadcrumbItem>
-    </Breadcrumb>
+    <Breadcrumb.Root>
+      <Breadcrumb.List>
+        <Breadcrumb.Item>
+          <Breadcrumb.Link href={path}>
+            {$t('course.navItem.lessons.exercises.all_exercises.heading')}
+          </Breadcrumb.Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Separator />
+        <Breadcrumb.Item>
+          <Breadcrumb.Page>
+            {$questionnaire.title}
+          </Breadcrumb.Page>
+        </Breadcrumb.Item>
+      </Breadcrumb.List>
+    </Breadcrumb.Root>
 
     <RoleBasedSecurity allowedRoles={[1, 2]}>
-      <ContentSwitcher bind:selectedIndex class="mb-2">
-        <Switch
-          text="{$t('course.navItem.lessons.exercises.all_exercises.questions')} ({$questionnaire
-            .questions.length})"
-        />
-        <Switch
-          text="{$t(
-            'course.navItem.lessons.exercises.all_exercises.submissions'
-          )} ({$questionnaire.totalSubmissions})"
-        />
-      </ContentSwitcher>
+      <!-- <Tabs.Root bind:value={selectedTab} class="w-full">
+        <Tabs.List class="mb-2">
+          <Tabs.Trigger value="questions">
+            {$t('course.navItem.lessons.exercises.all_exercises.questions')} ({$questionnaire.questions.length})
+          </Tabs.Trigger>
+          <Tabs.Trigger value="submissions">
+            {$t('course.navItem.lessons.exercises.all_exercises.submissions')} ({$questionnaire.totalSubmissions})
+          </Tabs.Trigger>
+        </Tabs.List>
+      </Tabs.Root> -->
 
-      {#if selectedIndex === 0}
+      {#if selectedTab === 'questions'}
         <div class="right-0 flex w-full items-center justify-end">
           <div class="flex items-center">
-            <PrimaryButton
-              className="mr-2"
-              variant={VARIANTS.CONTAINED}
-              label={$t('course.navItem.lessons.exercises.all_exercises.save')}
-              onClick={handleSave}
-              isLoading={isSaving}
-            />
+            <Button class="mr-2" onclick={handleSave} loading={isSaving}>
+              {$t('course.navItem.lessons.exercises.all_exercises.save')}
+            </Button>
             <IconButton
-              onClick={() => (preview = !preview)}
-              contained={preview}
-              toolTipProps={{
-                title: $t('course.navItem.lessons.exercises.all_exercises.preview'),
-                direction: 'bottom',
-                hotkeys: []
-              }}
+              onclick={() => (preview = !preview)}
+              tooltip={$t('course.navItem.lessons.exercises.all_exercises.preview')}
+              tooltipSide="bottom"
             >
-              {#if preview}
-                <ViewFilledIcon size={24} class="carbon-icon dark:text-white" />
-              {:else}
-                <ViewIcon size={24} class="carbon-icon dark:text-white" />
-              {/if}
+              <EyeIcon size={20} class={preview ? 'filled' : ''} />
             </IconButton>
-            <IconButton onClick={() => handleAddQuestion()} size="small">
-              <AddAltIcon size={24} class="carbon-icon dark:text-white" />
+            <IconButton
+              onclick={handleAddQuestion}
+              tooltip={$t('course.navItem.lessons.exercises.all_exercises.add_question')}
+              tooltipSide="bottom"
+            >
+              <CirclePlusIcon size={20} />
             </IconButton>
-            <OverflowMenu flipped>
-              <OverflowMenuItem
-                text={$t('course.navItem.lessons.exercises.all_exercises.reorder')}
-                on:click={() => ($questionnaireOrder.open = true)}
-              />
-              <OverflowMenuItem
-                danger
-                text={$t('course.navItem.lessons.exercises.all_exercises.delete_exercise')}
-                on:click={() => (shouldDeleteExercise = true)}
-              />
-            </OverflowMenu>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger>
+                <Button variant="ghost" size="icon" class="h-8 w-8">
+                  <EllipsisVerticalIcon class="h-5 w-5" />
+                  <span class="sr-only">Open menu</span>
+                </Button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content align="end">
+                <DropdownMenu.Item onclick={() => ($questionnaireOrder.open = true)}>
+                  {$t('course.navItem.lessons.exercises.all_exercises.reorder')}
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator />
+                <DropdownMenu.Item
+                  class="text-red-600 focus:text-red-600 dark:text-red-400"
+                  onclick={() => (shouldDeleteExercise = true)}
+                >
+                  {$t('course.navItem.lessons.exercises.all_exercises.delete_exercise')}
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
           </div>
         </div>
       {/if}
     </RoleBasedSecurity>
   </div>
 
-  {#if selectedIndex === 0}
+  {#if selectedTab === 'questions'}
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       <UpdateDescription {preview} />
     </RoleBasedSecurity>
@@ -172,7 +187,7 @@
     {:else}
       <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} />
     {/if}
-  {:else if selectedIndex === 1}
+  {:else if selectedTab === 'submissions'}
     <Analytics bind:exerciseId />
   {/if}
-</PageBody>
+</div>

@@ -1,8 +1,9 @@
 import { Hono } from 'hono';
 import { Scalar } from '@scalar/hono-api-reference';
-import { env } from '$src/config/env';
+import { env } from '@api/config/env';
+import { AuthSession } from '@api/types/auth';
 
-export function configureOpenAPI(app: Hono) {
+export function configureOpenAPI(app: Hono<AuthSession>) {
   if (env.OPENAPI_URL) {
     app.get('/docs', Scalar({ url: env.OPENAPI_URL, theme: 'none' }));
   }

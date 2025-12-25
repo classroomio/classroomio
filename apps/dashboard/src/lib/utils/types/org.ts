@@ -1,45 +1,77 @@
-export interface OrgCustomization {
-  dashboard: {
-    community: boolean;
-    exercise: boolean;
-    bannerImage: string;
-    bannerText: string;
+export interface OrgLandingPageJson {
+  header: {
+    title: string;
+    titleHighlight: string;
+    subtitle: string;
+    action: {
+      label: string;
+      link: string;
+      redirect: boolean;
+    };
+    banner: {
+      video: string;
+      image: string;
+      type: string;
+      show: boolean;
+    };
+    background: {
+      image: string;
+      show: boolean;
+    };
+    show: boolean;
   };
-  course: {
-    newsfeed: boolean;
-    grading: boolean;
+  aboutUs: {
+    title: string;
+    content: string;
+    imageUrl: string;
+    show: boolean;
   };
-  apps: {
-    poll: boolean;
-    comments: boolean;
+  courses: {
+    title: string;
+    titleHighlight: string;
+    subtitle: string;
+    show: boolean;
   };
-}
-
-export interface CurrentOrg {
-  id: string;
-  name: string;
-  shortName: string;
-  siteName: string;
-  avatar_url: string;
-  memberId: string;
-  role_id: number;
-  landingpage: {
-    [key: string]: unknown;
+  faq: {
+    title: string;
+    questions: Array<{
+      id: number;
+      title: string;
+      content: string;
+    }>;
+    show: boolean;
   };
-  customization: OrgCustomization;
-  theme: string;
-  organization_plan: {
-    provider: 'polar' | 'lmz';
-    subscriptionId: string;
-    customerId: string;
-    plan_name: string;
-    is_active: boolean;
-  }[];
-  is_restricted: boolean;
-  customDomain?: string;
-  isCustomDomainVerified?: boolean;
-  customCode?: string;
-  favicon?: string;
+  contact: {
+    title: string;
+    titleHighlight: string;
+    subtitle: string;
+    address: string;
+    phone: string;
+    email: string;
+    show: boolean;
+  };
+  mailinglist: {
+    title: string;
+    subtitle: string;
+    buttonLabel: string;
+    show: boolean;
+  };
+  customLinks: {
+    show: boolean;
+    links: Array<{
+      id: number;
+      label: string;
+      url: string;
+      openInNewTab: boolean;
+    }>;
+  };
+  footer: {
+    facebook: string;
+    instagram: string;
+    twitter: string;
+    linkedin: string;
+    show: boolean;
+  };
 }
 
 export interface OrgTeamMember {

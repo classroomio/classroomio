@@ -1,17 +1,21 @@
 <script lang="ts">
-  import QuestionContainer from '$lib/components/QuestionContainer/index.svelte';
-  import DateTime from '$lib/components/Form/DateTime.svelte';
-  import TextField from '$lib/components/Form/TextField.svelte';
   import { questionnaire } from '../store/exercise';
-  import TextEditor from '$lib/components/TextEditor/index.svelte';
-  import { sanitizeHtml } from '$lib/utils/functions/sanitize';
+  import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import { t } from '$lib/utils/functions/translations';
 
-  export let preview: boolean;
+  import { InputField } from '@cio/ui/custom/input-field';
+  import { TextEditor } from '$features/ui';
+  import QuestionContainer from '$lib/components/QuestionContainer/index.svelte';
 
-  function getTotalPossibleGrade(questions: { points: string }[]) {
+  interface Props {
+    preview: boolean;
+  }
+
+  let { preview }: Props = $props();
+
+  function getTotalPossibleGrade(questions: { points: number | string }[]) {
     return questions.reduce((acc, question) => {
-      acc += parseFloat(question.points, 10);
+      acc += typeof question.points === 'string' ? parseFloat(question.points) : question.points;
       return acc;
     }, 0);
   }
@@ -20,18 +24,18 @@
 <div class="mb-5 {!preview ? 'px-6' : 'px-2'}">
   <QuestionContainer isTitle={true}>
     {#if !preview}
-      <TextField
+      <InputField
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.description.title')}
         bind:value={$questionnaire.title}
         className="mb-2"
-        onChange={() => ($questionnaire.is_title_dirty = true)}
+        onchange={() => ($questionnaire.is_title_dirty = true)}
       />
-      <DateTime
+      <InputField
         label={$t('course.navItem.lessons.exercises.all_exercises.view_mode.due')}
         className="w-50"
-        value={$questionnaire.due_by}
-        onInput={(e) => {
-          $questionnaire.due_by = e.target.value;
+        type="datetime-local"
+        bind:value={$questionnaire.due_by}
+        onchange={() => {
           $questionnaire.is_due_by_dirty = true;
         }}
       />
@@ -40,14 +44,15 @@
         <p class="mb-1">
           {$t('course.navItem.lessons.exercises.all_exercises.description.heading')}
         </p>
+
         <TextEditor
-          value={$questionnaire.description}
+          content={$questionnaire.description}
           onChange={(html) => {
             $questionnaire.is_description_dirty = true;
             $questionnaire.description = html;
           }}
+          editorClass="max-h-[300px]"
           placeholder={$t('course.navItem.lessons.exercises.all_exercises.description.describe')}
-          maxHeight={300}
         />
       </div>
     {:else if preview}
@@ -77,8 +82,7 @@
 
       <article class="preview prose prose-sm sm:prose mt-3 p-2">
         {@html sanitizeHtml(
-          $questionnaire.description ||
-            $t('course.navItem.lessons.exercises.all_exercises.description.no')
+          $questionnaire.description || $t('course.navItem.lessons.exercises.all_exercises.description.no')
         )}
       </article>
     {/if}

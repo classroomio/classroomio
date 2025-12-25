@@ -1,11 +1,14 @@
 <script lang="ts">
-  import Modal from '$lib/components/Modal/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
+  import * as Dialog from '@cio/ui/base/dialog';
+  import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
 
-  export let openDeleteModal = false;
-  export let deleteLesson = () => {};
+  interface Props {
+    openDeleteModal?: boolean;
+    deleteLesson?: any;
+  }
+
+  let { openDeleteModal = $bindable(false), deleteLesson = () => {} }: Props = $props();
 
   async function handleDelete() {
     deleteLesson();
@@ -13,31 +16,29 @@
   }
 </script>
 
-<Modal
-  onClose={() => (openDeleteModal = false)}
+<Dialog.Root
   bind:open={openDeleteModal}
-  width="w-96"
-  containerClass="px-6 pt-2 pb-6"
-  modalHeading={$t('delete_modal.label')}
+  onOpenChange={(isOpen) => {
+    if (!isOpen) openDeleteModal = false;
+  }}
 >
-  <div>
-    <h1 class="dark:text-white text-lg">
-      {$t('delete_modal.content')}?
-    </h1>
+  <Dialog.Content class="w-96 px-6 pb-6 pt-2">
+    <Dialog.Header>
+      <Dialog.Title>{$t('delete_modal.label')}</Dialog.Title>
+    </Dialog.Header>
+    <div>
+      <h1 class="text-lg dark:text-white">
+        {$t('delete_modal.content')}?
+      </h1>
 
-    <div class="mt-5 flex items-center justify-between">
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.OUTLINED}
-        label={$t('delete_modal.no')}
-        onClick={() => (openDeleteModal = false)}
-      />
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.OUTLINED}
-        label={$t('delete_modal.yes')}
-        onClick={handleDelete}
-      />
+      <div class="mt-5 flex items-center justify-between">
+        <Button variant="outline" onclick={() => (openDeleteModal = false)}>
+          {$t('delete_modal.no')}
+        </Button>
+        <Button variant="outline" onclick={handleDelete}>
+          {$t('delete_modal.yes')}
+        </Button>
+      </div>
     </div>
-  </div>
-</Modal>
+  </Dialog.Content>
+</Dialog.Root>

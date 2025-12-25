@@ -1,18 +1,46 @@
-<script>
-  import Chip from '$lib/components/Chip/Text.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import CheckmarkOutline from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
+<script lang="ts">
+  import { Button } from '@cio/ui/base/button';
+  import * as Item from '@cio/ui/base/item';
+  import * as Page from '@cio/ui/base/page';
+  import BadgeCheckIcon from '@lucide/svelte/icons/badge-check';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+  import BookOpenIcon from '@lucide/svelte/icons/book-open';
+  import UserPlusIcon from '@lucide/svelte/icons/user-plus';
+  import UsersIcon from '@lucide/svelte/icons/users';
+  import GlobeIcon from '@lucide/svelte/icons/globe';
+  import FileTextIcon from '@lucide/svelte/icons/file-text';
+  import SetupProgress from '$features/setup/components/setup-progress.svelte';
 
   import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
-  import { snackbar } from '$lib/components/Snackbar/store.js';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
+  import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
+  import { onMount } from 'svelte';
 
-  export let data;
-  let setupList = data.setup || [];
-  let completed = 0;
+  const setupList = $derived(
+    setupProgressApi.setupList.map((item) => {
+      if (item.id === 'profile') {
+        return {
+          ...item,
+          is_completed: !$profile.avatarUrl?.includes('avatars/avatar.png')
+        };
+      }
+      return item;
+    })
+  );
+
+  const completed = $derived(setupList.filter((list) => list.is_completed).length);
+  const total = $derived(setupList.length);
+
+  // Ensure setup progress is fetched when page loads
+  onMount(() => {
+    if ($currentOrg.siteName && setupProgressApi.progress.setup.length === 0) {
+      // The app-header should have already fetched it, but ensure it's loaded
+      setupProgressApi.fetchSetupProgress($currentOrg.siteName);
+    }
+  });
 
   const StepsEnum = {
     UPDATE_PROFILE: 'profile',
@@ -23,11 +51,11 @@
     PUBLISH_COURSE: 'publish'
   };
 
-  const isCompleted = (id) => {
+  const isCompleted = (id: string) => {
     return setupList?.find((c) => c.id === id)?.is_completed == true;
   };
 
-  const handleClick = (id) => {
+  const handleClick = (id: string) => {
     switch (id) {
       case StepsEnum.CREATE_COURSE:
         goto(`/org/${$currentOrg.siteName}/courses?create=true`);
@@ -35,8 +63,11 @@
 
       case StepsEnum.CREATE_LESSON:
         if (isCompleted('course')) {
-          const courseId = data?.courses[0].id;
-          goto(`/courses/${courseId}/lessons`);
+          const courses = setupProgressApi.progress.courses || [];
+          const courseId = courses[0]?.id;
+          if (courseId) {
+            goto(`/courses/${courseId}/lessons`);
+          }
         } else {
           snackbar.info('setup.info_course');
         }
@@ -44,9 +75,13 @@
 
       case StepsEnum.CREATE_EXERCISE:
         if (isCompleted('lesson')) {
-          const courseId = data?.courses[0].id;
-          const lessonId = data?.lessons[0].id;
-          goto(`/courses/${courseId}/lessons/${lessonId}`);
+          const courses = setupProgressApi.progress.courses || [];
+          const lessons = setupProgressApi.progress.lessons || [];
+          const courseId = courses[0]?.id;
+          const lessonId = lessons[0]?.id;
+          if (courseId && lessonId) {
+            goto(`/courses/${courseId}/lessons/${lessonId}`);
+          }
         } else {
           snackbar.info('setup.info_lesson');
         }
@@ -54,8 +89,11 @@
 
       case StepsEnum.PUBLISH_COURSE:
         if (isCompleted('course')) {
-          const courseId = data?.courses[0].id;
-          goto(`/courses/${courseId}/settings`);
+          const courses = setupProgressApi.progress.courses || [];
+          const courseId = courses[0]?.id;
+          if (courseId) {
+            goto(`/courses/${courseId}/settings`);
+          }
         } else {
           snackbar.info('setup.info_course');
         }
@@ -66,65 +104,98 @@
         break;
 
       case StepsEnum.UPDATE_ORG_PROFILE:
-        goto(`/org/${$currentOrg.siteName}/settings?tab=org`);
+        goto(`/org/${$currentOrg.siteName}/settings/org`);
         break;
     }
   };
-
-  $: setupList = setupList.map((item) => {
-    if (item.id === 'profile') {
-      item.is_completed = !$profile.avatar_url.includes('avatars/avatar.png');
-    }
-    return item;
-  });
-
-  $: completed = setupList.filter((list) => list.is_completed).length;
 </script>
 
-<section class="w-full md:max-w-4xl mx-auto">
-  <div class="py-2 md:py-10 px-2 md:px-5">
-    <div class="flex items-center gap-2">
-      <h1 class="dark:text-white text-2xl md:text-3xl font-bold">{$t('setup.get_started')}</h1>
-      <Chip
-        value={`${completed}/${setupList.length}`}
-        className="text-[10px] font-semibold px-3 !py-1"
-        shape="rounded-full"
-      />
-    </div>
+<svelte:head>
+  <title>Setup - ClassroomIO</title>
+</svelte:head>
 
-    <section class="px-4">
-      {#each setupList as list, i}
-        <div
-          class="flex flex-col lg:flex-row lg:items-center justify-between gap-2 w-full py-8 border-b border-gray-300"
-        >
-          <div class={`space-y-1 flex-1 ${list.is_completed ? 'opacity-50' : ''}  lg:max-w-[50%]`}>
-            <div class="flex items-center gap-3">
-              <Chip
-                value={i + 1}
-                className={`text-[10px] font-semibold !py-1 `}
-                shape="rounded-full"
-              />
-              <p class="font-medium text-lg">{$t(list.title)}</p>
+<Page.Root class="w-full md:max-w-4xl lg:mx-auto">
+  <Page.Header>
+    <Page.HeaderContent>
+      <Page.Title>{$t('setup.get_started')}</Page.Title>
+      <Page.Subtitle>{$t('setup.description')}</Page.Subtitle>
+    </Page.HeaderContent>
+
+    <Page.Action>
+      <SetupProgress setupItems={setupList} />
+    </Page.Action>
+  </Page.Header>
+  <Page.Body>
+    {#snippet child()}
+      <section class="space-y-6 px-4">
+        <Item.Root variant="outline" class="ui:cursor-default">
+          <Item.Content>
+            <Item.Description class="mb-4">
+              {$t('setup.description')}
+            </Item.Description>
+            <div class="flex items-center gap-2">
+              <Item.Description class="text-sm">
+                {completed} of {total}
+                {$t('setup.completed')}
+              </Item.Description>
+              <div class="flex gap-1">
+                {#each Array(total) as _, i}
+                  <div
+                    class="size-2 rounded-full {i < completed ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'}"
+                  ></div>
+                {/each}
+              </div>
             </div>
-            <p class={`text-sm`}>
-              {$t(list.desc)}
-            </p>
-          </div>
-          <div class="w-full lg:w-[30%]">
-            <PrimaryButton
-              variant={list.is_completed ? VARIANTS.CONTAINED_DARK : VARIANTS.OUTLINED}
-              className="!w-full font-normal text-sm flex items-center gap-2"
-              onClick={() => handleClick(list.id)}
-              isDisabled={list.is_completed}
-            >
-              {#if list.is_completed}
-                <CheckmarkOutline />
-              {/if}
-              {$t(list.button_label)}
-            </PrimaryButton>
-          </div>
-        </div>
-      {/each}
-    </section>
-  </div>
-</section>
+          </Item.Content>
+        </Item.Root>
+
+        <!-- Setup Items -->
+        <Item.Group class="space-y-2">
+          {#each setupList as list}
+            <Item.Root variant="muted" class={list.is_completed ? 'opacity-60' : ''}>
+              <Item.Media variant="icon">
+                {#if list.is_completed}
+                  <div class="flex size-5 items-center justify-center rounded">
+                    <BadgeCheckIcon class="size-5 text-white" />
+                  </div>
+                {:else if list.id === StepsEnum.CREATE_COURSE}
+                  <BookOpenIcon class="size-5 text-gray-600" />
+                {:else if list.id === StepsEnum.CREATE_LESSON || list.id === StepsEnum.CREATE_EXERCISE}
+                  <FileTextIcon class="size-5 text-gray-600" />
+                {:else if list.id === StepsEnum.PUBLISH_COURSE}
+                  <GlobeIcon class="size-5 text-gray-600" />
+                {:else if list.id === StepsEnum.UPDATE_PROFILE}
+                  <UserPlusIcon class="size-5 text-gray-600" />
+                {:else if list.id === StepsEnum.UPDATE_ORG_PROFILE}
+                  <UsersIcon class="size-5 text-gray-600" />
+                {:else}
+                  <BookOpenIcon class="size-5 text-gray-600" />
+                {/if}
+              </Item.Media>
+              <Item.Content>
+                <Item.Title class={list.is_completed ? 'text-gray-500 line-through' : 'font-semibold'}>
+                  {$t(list.title)}
+                </Item.Title>
+                <Item.Description class={list.is_completed ? 'text-gray-500 line-through' : ''}>
+                  {$t(list.desc)}
+                </Item.Description>
+              </Item.Content>
+              <Item.Actions>
+                {#if list.is_completed}
+                  <Button variant="secondary" size="sm" disabled class="bg-gray-400 text-white">
+                    {$t('setup.done')}
+                  </Button>
+                {:else}
+                  <Button variant="outline" size="sm" onclick={() => handleClick(list.id)} class="w-full sm:w-auto">
+                    {$t('setup.todo')}
+                    <ChevronRightIcon class="ml-2 size-4" />
+                  </Button>
+                {/if}
+              </Item.Actions>
+            </Item.Root>
+          {/each}
+        </Item.Group>
+      </section>
+    {/snippet}
+  </Page.Body>
+</Page.Root>

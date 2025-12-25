@@ -1,22 +1,16 @@
 <script lang="ts">
-  import CourseLandingPage from '$lib/components/CourseLandingPage/index.svelte';
+  import { CourseLandingPage } from '$features/ui';
   import type { Course } from '$lib/utils/types';
 
   interface Data {
     course: Course;
   }
 
-  export let data: Data;
-
-  let courseData: Course;
-
-  function setCourseData(course: Course | null) {
-    if (!course) return;
-
-    courseData = { ...course };
+  interface Props {
+    data: Data;
   }
 
-  $: setCourseData(data.course);
+  let { data }: Props = $props();
 </script>
 
-<CourseLandingPage {courseData} />
+<CourseLandingPage courseData={data.course} />

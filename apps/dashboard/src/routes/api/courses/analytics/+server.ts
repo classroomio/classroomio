@@ -1,10 +1,11 @@
-import type { RequestHandler } from './$types';
 import type { CourseAnalytics, StudentOverview } from '$lib/utils/types/analytics';
+
+import type { RequestHandler } from './$types';
 import type { UserExercisesStats } from '$lib/utils/types/analytics';
 import { calcPercentageWithRounding } from '$lib/utils/functions/number.js';
+import { checkUserCoursePermissions } from '$lib/utils/functions/permissions';
 import { fetchProfileCourseProgress } from '$lib/utils/services/courses';
 import { getServerSupabase } from '$lib/utils/functions/supabase.server';
-import { checkUserCoursePermissions } from '$lib/utils/functions/permissions';
 import { json } from '@sveltejs/kit';
 
 const CACHE_DURATION = 60 * 5; // 5 minutes
@@ -97,9 +98,7 @@ async function getCourseAnalytics(supabase: any, courseId: string): Promise<Cour
 
   // Count tutors and students
   const members = (courseData.group as any)?.members || [];
-  analytics.totalTutors = members.filter(
-    (member) => member.role_id === 1 || member.role_id === 2
-  ).length;
+  analytics.totalTutors = members.filter((member) => member.role_id === 1 || member.role_id === 2).length;
   analytics.totalStudents = members.filter((member) => member.role_id === 3).length;
 
   // Count lessons and exercises
@@ -109,35 +108,27 @@ async function getCourseAnalytics(supabase: any, courseId: string): Promise<Cour
 
   // Get student analytics
   const studentAnalytics = await Promise.all(
-    members
-      .filter((member) => member.role_id === 3)
-      .map((member) => getStudentOverview(supabase, courseId, member))
+    members.filter((member) => member.role_id === 3).map((member) => getStudentOverview(supabase, courseId, member))
   );
 
-  analytics.students = studentAnalytics.filter(
-    (student): student is StudentOverview => student !== null
-  );
+  analytics.students = studentAnalytics.filter((student): student is StudentOverview => student !== null);
 
   // Calculate aggregated metrics
   if (analytics.students.length > 0) {
     analytics.lessonCompletionRate = Math.round(
-      analytics.students.reduce((sum, student) => sum + student.progressPercentage, 0) /
-        analytics.students.length
+      analytics.students.reduce((sum, student) => sum + student.progressPercentage, 0) / analytics.students.length
     );
 
     analytics.exerciseCompletionRate = Math.round(
       analytics.students.reduce((sum, student) => {
         const completionRate =
-          student.totalExercises > 0
-            ? (student.exercisesSubmitted / student.totalExercises) * 100
-            : 0;
+          student.totalExercises > 0 ? (student.exercisesSubmitted / student.totalExercises) * 100 : 0;
         return sum + completionRate;
       }, 0) / analytics.students.length
     );
 
     analytics.averageGrade = Math.round(
-      analytics.students.reduce((sum, student) => sum + student.averageGrade, 0) /
-        analytics.students.length
+      analytics.students.reduce((sum, student) => sum + student.averageGrade, 0) / analytics.students.length
     );
   }
 
@@ -162,11 +153,7 @@ async function getLastLogin(supabase: any, userId: string): Promise<string | und
   }
 }
 
-async function getStudentOverview(
-  supabase: any,
-  courseId: string,
-  member: any
-): Promise<StudentOverview | null> {
+async function getStudentOverview(supabase: any, courseId: string, member: any): Promise<StudentOverview | null> {
   try {
     // Use the same service function that the working analytics/user API uses
     const { data: courseProgressData, error: progressError } = await fetchProfileCourseProgress(
@@ -189,8 +176,7 @@ async function getStudentOverview(
     const userExercisesStats = await fetchUserExercisesStats(supabase, courseId, member.profile_id);
 
     // Calculate exercise completion using the same logic as people page
-    const completedExercises =
-      userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length || 0;
+    const completedExercises = userExercisesStats?.filter((exercise) => exercise.isCompleted)?.length || 0;
     const totalExercises = userExercisesStats?.length || 0;
 
     // Get last login using the same approach as analytics/user API
@@ -219,10 +205,8 @@ async function getStudentOverview(
     const progressPercentage = calcPercentageWithRounding(lessonsCompleted, totalLessons);
 
     // Calculate average grade using the same logic as the people page
-    const totalEarnedPoints =
-      userExercisesStats?.reduce((sum, exercise) => sum + exercise.score, 0) || 0;
-    const totalPoints =
-      userExercisesStats?.reduce((sum, exercise) => sum + exercise.totalPoints, 0) || 0;
+    const totalEarnedPoints = userExercisesStats?.reduce((sum, exercise) => sum + exercise.score, 0) || 0;
+    const totalPoints = userExercisesStats?.reduce((sum, exercise) => sum + exercise.totalPoints, 0) || 0;
     const averageGrade = calcPercentageWithRounding(totalEarnedPoints, totalPoints);
 
     return {

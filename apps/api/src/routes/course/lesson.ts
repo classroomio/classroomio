@@ -1,13 +1,15 @@
-import { Hono } from 'hono';
-import { TLessonDownloadContent, ZLessonDownloadContent } from '$src/types/course/lesson';
-import { generateLessonPdf } from '$src/utils/lesson';
+import { Hono } from '@api/utils/hono';
+import { ZLessonDownloadContent } from '@cio/utils/validation/course';
+import { courseMemberMiddleware } from '@api/middlewares/course-member';
+import { generateLessonPdf } from '@api/utils/lesson';
 import { zValidator } from '@hono/zod-validator';
 
 export const lessonRouter = new Hono().post(
   '/download/pdf',
+  courseMemberMiddleware,
   zValidator('json', ZLessonDownloadContent),
   async (c) => {
-    const validatedData = (c.req.valid as (key: 'json') => TLessonDownloadContent)('json');
+    const validatedData = c.req.valid('json');
 
     const pdfBuffer = await generateLessonPdf(validatedData);
 

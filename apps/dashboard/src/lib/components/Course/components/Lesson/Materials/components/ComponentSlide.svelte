@@ -1,7 +1,7 @@
 <script lang="ts">
   import { lesson } from '../../store/lessons';
 
-  let url = '';
+  let url = $derived(getUrl($lesson.materials.slide_url));
 
   function canvaHandler(_url): string {
     if (_url.includes('?embed')) return _url;
@@ -19,8 +19,6 @@
 
     return _url;
   }
-
-  $: url = getUrl($lesson.materials.slide_url);
 </script>
 
 {#if url}
@@ -31,8 +29,6 @@
     width="100%"
     height="569"
     class="iframe my-3"
-    allowfullscreen="true"
-    mozallowfullscreen="true"
-    webkitallowfullscreen="true"
-  />
+    allowfullscreen={true}
+  ></iframe>
 {/if}

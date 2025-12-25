@@ -1,4 +1,8 @@
-<script>
+<script lang="ts">
+  import * as Select from '@cio/ui/base/select';
+  import TrashIcon from '@lucide/svelte/icons/trash';
+  import CirclePlusIcon from '@lucide/svelte/icons/circle-plus';
+
   import {
     questionnaire,
     deleteConfirmation,
@@ -10,41 +14,37 @@
     handleAnswerSelect,
     addDynamicValue
   } from '../store/exercise';
-  import { Select, SelectItem } from 'carbon-components-svelte';
-
-  import TrashCanIcon from 'carbon-icons-svelte/lib/TrashCan.svelte';
-  import AddFilledIcon from 'carbon-icons-svelte/lib/AddFilled.svelte';
-  import CheckmarkFilledIcon from 'carbon-icons-svelte/lib/CheckmarkFilled.svelte';
-  import CheckmarkOutlineIcon from 'carbon-icons-svelte/lib/CheckmarkOutline.svelte';
-
-  import TextField from '$lib/components/Form/TextField.svelte';
-  import Modal from '$lib/components/Modal/index.svelte';
-  import TextArea from '$lib/components/Form/TextArea.svelte';
-  import Checkbox from '$lib/components/Form/Checkbox.svelte';
-  import RadioItem from '$lib/components/Form/RadioItem.svelte';
-  import IconButton from '$lib/components/IconButton/index.svelte';
-  import ErrorMessage from '$lib/components/ErrorMessage/index.svelte';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import QuestionContainer from '$lib/components/QuestionContainer/index.svelte';
-  import DeleteConfirmationModal from './DeleteConfirmation.svelte';
-  import OrderModal from './OrderModal.svelte';
-  import { QUESTION_TYPE, QUESTION_TYPES } from '$lib/components/Question/constants';
-  import { filterOutDeleted } from './functions';
+  import { preventDefault } from '$lib/utils/functions/svelte';
   import { deleteExercise } from '$lib/utils/services/courses';
+  import { QUESTION_TYPE, QUESTION_TYPES } from '$lib/components/Question/constants';
+  import { Button } from '@cio/ui/base/button';
+
   import { lesson } from '../store/lessons';
+  import OrderModal from './OrderModal.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import * as Dialog from '@cio/ui/base/dialog';
+  import { IconButton } from '@cio/ui/custom/icon-button';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
+  import { CheckboxField } from '@cio/ui/custom/checkbox-field';
+  import { RadioItem } from '@cio/ui/custom/radio-item';
+  import { InputField } from '@cio/ui/custom/input-field';
+  import DeleteConfirmationModal from './DeleteConfirmation.svelte';
+  import { CircleCheckIcon } from '$features/ui/icons';
+  import QuestionContainer from '$lib/components/QuestionContainer/index.svelte';
 
   const initialQuestionsLength = $questionnaire.questions.length;
 
-  export let shouldDeleteExercise = false;
-  export let exerciseId;
-  export let goBack = () => {};
+  interface Props {
+    shouldDeleteExercise?: boolean;
+    exerciseId: any;
+    goBack?: any;
+  }
 
-  let errors = {};
-  let questionIdToDelete = null;
-  let questions = [];
-  let isDeleting = false;
+  let { shouldDeleteExercise = $bindable(false), exerciseId, goBack = () => {} }: Props = $props();
+
+  let questionIdToDelete = $state(null);
+  let isDeleting = $state(false);
+  let errors = $derived($questionnaireValidation);
 
   function shouldScrollToLast(questionId, questions) {
     const [lastQuestion] = questions.slice(-1);
@@ -70,211 +70,179 @@
   }
 
   async function handleDelete() {
-    console.log('delete');
     isDeleting = true;
-    await deleteExercise(questions, exerciseId);
+
+    const qToDelete = $questionnaire.questions.map((q) => ({ id: `${q.id}` }));
+    await deleteExercise(qToDelete, exerciseId);
 
     lesson.update((_lesson) => ({
       ..._lesson,
       exercises: _lesson.exercises.filter((exercise) => exercise.id !== exerciseId)
     }));
+
     goBack();
   }
-
-  $: errors = $questionnaireValidation;
-  $: questions = filterOutDeleted($questionnaire.questions);
 </script>
 
-<DeleteConfirmationModal
-  onCancel={() => (questionIdToDelete = null)}
-  onDelete={onFinalDeleteClicked}
-/>
+<DeleteConfirmationModal onCancel={() => (questionIdToDelete = null)} onDelete={onFinalDeleteClicked} />
 
 <OrderModal />
 
-<Modal
-  onClose={() => (shouldDeleteExercise = false)}
+<Dialog.Root
   bind:open={shouldDeleteExercise}
-  width="w-2/4"
-  modalHeading={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.delete_modal')}
+  onOpenChange={(isOpen) => {
+    if (!isOpen) shouldDeleteExercise = false;
+  }}
 >
-  <form on:submit|preventDefault>
-    <h1 class="dark:text-white text-xl">
-      {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.sure')}
-    </h1>
+  <Dialog.Content class="w-2/4">
+    <Dialog.Header>
+      <Dialog.Title>{$t('course.navItem.lessons.exercises.all_exercises.edit_mode.delete_modal')}</Dialog.Title>
+    </Dialog.Header>
+    <form onsubmit={preventDefault()}>
+      <h1 class="text-xl dark:text-white">
+        {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.sure')}
+      </h1>
 
-    <div class="mt-5 flex items-center justify-between">
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.OUTLINED}
-        label={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.no')}
-        type="submit"
-        onClick={() => (shouldDeleteExercise = false)}
-      />
-      <PrimaryButton
-        className="px-6 py-3"
-        variant={VARIANTS.CONTAINED}
-        label={isDeleting
-          ? $t('course.navItem.lessons.exercises.all_exercises.edit_mode.deleting')
-          : $t('course.navItem.lessons.exercises.all_exercises.edit_mode.yes')}
-        isDisabled={isDeleting}
-        onClick={handleDelete}
-      />
-    </div>
-  </form>
-</Modal>
+      <div class="mt-5 flex items-center justify-between">
+        <Button variant="outline" type="submit" onclick={() => (shouldDeleteExercise = false)}>
+          {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.no')}
+        </Button>
+        <Button disabled={isDeleting} onclick={handleDelete} loading={isDeleting}>
+          {isDeleting
+            ? $t('course.navItem.lessons.exercises.all_exercises.edit_mode.deleting')
+            : $t('course.navItem.lessons.exercises.all_exercises.edit_mode.yes')}
+        </Button>
+      </div>
+    </form>
+  </Dialog.Content>
+</Dialog.Root>
 
-<div class="w-full mb-20">
+{#snippet optionActions(question, option)}
+  <div data-name="option-action" class="ml-2 flex items-center gap-2">
+    <IconButton onclick={handleRemoveOption(question.id, option.id)}>
+      <TrashIcon size={18} />
+    </IconButton>
+    <IconButton
+      onclick={handleAnswerSelect(question.id, option.id)}
+      class={option.is_correct ? 'text-green-500! fill-green-500!' : ''}
+    >
+      <CircleCheckIcon size={18} filled={option.is_correct} />
+    </IconButton>
+  </div>
+{/snippet}
+
+<div class="mb-20 w-full">
   {#if Object.values(errors).length}
-    <div class="w-full flex justify-center mb-4">
-      <ErrorMessage
-        message={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.error')}
-      />
+    <div class="mb-4 flex w-full justify-center">
+      <p class="text-sm text-red-500">{$t('course.navItem.lessons.exercises.all_exercises.edit_mode.error')}</p>
     </div>
   {/if}
-  <div class="questions pt-6 px-6">
-    {#each questions as question (question.id)}
-      <!-- {#key question.id} -->
-      <QuestionContainer
-        onClose={onInitDeleteClicked(question.id)}
-        scrollToQuestion={shouldScrollToLast(question.id, $questionnaire.questions)}
-        bind:points={question.points}
-        hasError={!!errors[question.id]}
-        onPointsChange={() => {
-          question.is_dirty = true;
-        }}
-      >
-        <div class="flex justify-between items-center">
-          <div class="mr-5 w-3/5">
-            <TextField
-              placeholder={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.question')}
-              bind:value={question.title}
-              isRequired={true}
-              onChange={() => {
+  <div class="questions px-6 pt-6">
+    {#each $questionnaire.questions as question, index}
+      {#if !question.deleted_at}
+        <QuestionContainer
+          key={question.deleted_at}
+          onClose={onInitDeleteClicked(question.id)}
+          scrollToQuestion={shouldScrollToLast(question.id, $questionnaire.questions)}
+          bind:points={question.points}
+          hasError={!!errors[question.id]}
+          onPointsChange={() => {
+            question.is_dirty = true;
+          }}
+        >
+          <div class="flex items-center justify-between">
+            <div class="mr-5 w-3/5">
+              <InputField
+                placeholder={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.question')}
+                bind:value={question.title}
+                isRequired={true}
+                onchange={() => {
+                  question.is_dirty = true;
+                }}
+              />
+            </div>
+
+            <Select.Root
+              type="single"
+              onValueChange={(value) => {
+                if (!value) return;
+                const id = parseInt(value);
+
+                question.question_type = QUESTION_TYPES.find((q) => q.id === id) ?? QUESTION_TYPES[0];
+                question.question_type_id = question.question_type.id;
                 question.is_dirty = true;
               }}
-            />
-          </div>
-
-          <Select
-            size="xl"
-            class="w-[50px]"
-            bind:selected={question.question_type.id}
-            on:change={(e) => {
-              const id = parseInt(e.target?.value);
-              question.question_type = QUESTION_TYPES.find((q) => q.id === id);
-              question.is_dirty = true;
-            }}
-          >
-            {#each QUESTION_TYPES as type}
-              <SelectItem value={type.id} text={$t(type.label)} />
-            {/each}
-          </Select>
-        </div>
-
-        {#if typeof question.code === 'string'}
-          <div class="flex justify-between items-center my-3 w-3/5">
-            <TextArea
-              bind:value={question.code}
-              rows={2}
-              placeholder={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.write')}
-            />
-            <IconButton value="write-code" onClick={() => handleCode(question.id, false)}>
-              <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
-            </IconButton>
-          </div>
-        {/if}
-
-        <div class="flex flex-col mt-2">
-          {#if QUESTION_TYPE.RADIO === question.question_type.id}
-            {#each filterOutDeleted(question.options) as option}
-              <RadioItem
-                isEditable={true}
-                name={question.title || 'radio-name'}
-                bind:label={option.label}
-                onChange={addDynamicValue(question.id, option.id)}
-              >
-                <div slot="iconbutton" class="flex items-center">
-                  <IconButton
-                    value={option.id}
-                    onClick={handleRemoveOption(question.id, option.id)}
-                  >
-                    <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
-                  </IconButton>
-                  <IconButton
-                    value={option.id}
-                    onClick={handleAnswerSelect(question.id, option.id)}
-                    buttonClassName={option.is_correct && 'success'}
-                  >
-                    {#if option.is_correct}
-                      <CheckmarkFilledIcon size={24} class="carbon-icon dark:text-white" />
-                    {:else}
-                      <CheckmarkOutlineIcon size={24} class="carbon-icon dark:text-white" />
-                    {/if}
-                  </IconButton>
-                </div>
-              </RadioItem>
-            {/each}
-          {/if}
-
-          {#if QUESTION_TYPE.CHECKBOX === question.question_type.id}
-            {#each filterOutDeleted(question.options) as option}
-              <Checkbox
-                isEditable={true}
-                name={question || 'checkbox-name'}
-                bind:label={option.label}
-                onChange={addDynamicValue(question.id, option.id)}
-              >
-                <div slot="iconbutton" class="flex items-center">
-                  <IconButton
-                    value={option.id}
-                    onClick={handleRemoveOption(question.id, option.id)}
-                  >
-                    <TrashCanIcon size={24} class="carbon-icon dark:text-white" />
-                  </IconButton>
-                  <IconButton
-                    value={option.id}
-                    onClick={handleAnswerSelect(question.id, option.id)}
-                    buttonClassName={option.is_correct && 'success'}
-                  >
-                    {#if option.is_correct}
-                      <CheckmarkFilledIcon size={24} class="carbon-icon dark:text-white" />
-                    {:else}
-                      <CheckmarkOutlineIcon size={24} class="carbon-icon dark:text-white" />
-                    {/if}
-                  </IconButton>
-                </div>
-              </Checkbox>
-            {/each}
-          {/if}
-
-          {#if QUESTION_TYPE.TEXTAREA === question.question_type.id}
-            <TextArea bind:value={question.value} disabled={true} />
-          {/if}
-
-          {#if getQuestionErrorMsg(errors, question, 'option')}
-            <ErrorMessage message={getQuestionErrorMsg(errors, question, 'option')} />
-          {/if}
-        </div>
-
-        {#if QUESTION_TYPE.TEXTAREA !== question.question_type.id}
-          <div class="flex items-center mt-3">
-            <PrimaryButton
-              disablePadding={true}
-              className="p-2"
-              variant={VARIANTS.OUTLINED}
-              onClick={handleAddOption(question.id)}
             >
-              <AddFilledIcon size={24} class="carbon-icon dark:text-white" />
-              <p class="dark:text-white ml-2">
-                {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.option')}
-              </p>
-            </PrimaryButton>
+              <Select.Trigger class="w-[180px]">
+                {question?.question_type?.label ? $t(question.question_type.label) : 'Select type'}
+              </Select.Trigger>
+              <Select.Content>
+                {#each QUESTION_TYPES as type}
+                  <Select.Item value={type.id.toString()} label={$t(type.label)} />
+                {/each}
+              </Select.Content>
+            </Select.Root>
           </div>
-        {/if}
-      </QuestionContainer>
 
-      <!--  {/key} -->
+          {#if typeof question.code === 'string'}
+            <div class="my-3 flex w-3/5 items-center justify-between">
+              <TextareaField
+                bind:value={question.code}
+                rows={2}
+                placeholder={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.write')}
+              />
+              <IconButton onclick={() => handleCode(question.id, false)}>
+                <TrashIcon size={16} />
+              </IconButton>
+            </div>
+          {/if}
+
+          <div class="mt-2 flex flex-col">
+            {#each $questionnaire.questions[index]?.options || [] as option}
+              {#if !option.deleted_at}
+                {#if QUESTION_TYPE.RADIO === question.question_type.id}
+                  <RadioItem
+                    isEditable={true}
+                    name={question.title || 'radio-name'}
+                    bind:label={option.label}
+                    onchange={addDynamicValue(question.id, option.id)}
+                  >
+                    {@render optionActions(question, option)}
+                  </RadioItem>
+                {:else if QUESTION_TYPE.CHECKBOX === question.question_type.id}
+                  <CheckboxField
+                    isEditable={true}
+                    name={question?.name || 'checkbox-name'}
+                    bind:label={option.label}
+                    onchange={addDynamicValue(question.id, option.id)}
+                  >
+                    {@render optionActions(question, option)}
+                  </CheckboxField>
+                {/if}
+              {/if}
+            {/each}
+
+            {#if QUESTION_TYPE.TEXTAREA === question.question_type.id}
+              <TextareaField bind:value={question.value} disabled={true} />
+            {/if}
+
+            {#if getQuestionErrorMsg(errors, question, 'option')}
+              <p class="text-sm text-red-500">{getQuestionErrorMsg(errors, question, 'option')}</p>
+            {/if}
+          </div>
+
+          {#if QUESTION_TYPE.TEXTAREA !== question.question_type.id}
+            <div class="mt-3 flex items-center">
+              <Button variant="outline" onclick={handleAddOption(question.id)}>
+                <CirclePlusIcon size={16} />
+                <p class="ml-2 dark:text-white">
+                  {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.option')}
+                </p>
+              </Button>
+            </div>
+          {/if}
+        </QuestionContainer>
+      {/if}
     {/each}
   </div>
 </div>
@@ -282,9 +250,5 @@
 <style>
   :global(#dnd-action-dragged-el div) {
     z-index: 100;
-  }
-
-  :global(select) {
-    background-image: none;
   }
 </style>

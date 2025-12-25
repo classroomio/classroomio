@@ -5,3 +5,14 @@ build
 _template
 supabase
 static
+dist
+docker
+
+**/course-app
+apps/docs
+apps/api/static
+
+pnpm-lock.yaml
+*.md
+
+output.css

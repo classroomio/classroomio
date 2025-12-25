@@ -1,29 +1,35 @@
 <script lang="ts">
-  import { env } from '$env/dynamic/public';
-  import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
-  import {
-    lesson,
-    lessonVideoUpload,
-    cancelVideoUpload
-  } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { ProgressBar } from 'carbon-components-svelte';
+  import { Progress } from '@cio/ui/base/progress';
+  import { preventDefault } from '$lib/utils/functions/svelte';
+  import { UpgradeBanner } from '$features/ui';
+  import { lesson, lessonVideoUpload, cancelVideoUpload } from '$lib/components/Course/components/Lesson/store/lessons';
+
   import { isFreePlan } from '$lib/utils/store/org';
-  import { VARIANTS } from '$lib/components/PrimaryButton/constants';
-  import UpgradeBanner from '$lib/components/Upgrade/Banner.svelte';
   import { t } from '$lib/utils/functions/translations';
-
   import { VideoUploader } from '$lib/utils/services/courses/presign';
+  import { Button } from '@cio/ui/base/button';
 
-  export let lessonId = '';
+  interface Props {
+    lessonId?: string;
+  }
 
-  let fileSize;
-  let isDisabled = false;
+  let { lessonId = '' }: Props = $props();
 
-  let formRes;
-  let isLoaded = false;
-  let fileInput;
-  let submit;
-  let fileName = '';
+  let fileSize: number | undefined = $state();
+
+  let formRes: {
+    url?: string;
+    fileKey?: string;
+    status?: number;
+    type?: string;
+    message?: string;
+  } | null = $state(null);
+  let isLoaded = $state(false);
+  let fileInput: HTMLInputElement | null = $state(null);
+  let submit: HTMLInputElement | null = $state(null);
+  let fileName = $state('');
+
+  const isDisabled = $derived($lessonVideoUpload.isUploading || $isFreePlan);
 
   const videoUploader = new VideoUploader();
 
@@ -33,7 +39,7 @@
     // Prevent free plan users from bypassing UI restrictions
     if ($isFreePlan) {
       formRes = {
-        type: 'AUTHORIZATION_ERROR', 
+        type: 'AUTHORIZATION_ERROR',
         status: 403,
         message: $t('upgrade.required')
       };
@@ -43,7 +49,9 @@
 
     videoUploader.initUpload();
 
-    const videoFile = fileInput.files[0];
+    const videoFile = fileInput.files?.[0];
+    if (!videoFile) return;
+
     fileSize = videoFile?.size / (1024 * 1024);
     fileName = videoFile?.name;
 
@@ -67,7 +75,7 @@
         ...$lesson.materials.videos,
         {
           type: 'upload',
-          link: formRes.url,
+          link: formRes.url!,
           key: formRes?.fileKey
         }
       ];
@@ -120,9 +128,7 @@
     $lessonVideoUpload.uploadProgress = 0;
   }
 
-  $: helperText = $lessonVideoUpload.uploadProgress + '%  of ' + Math.round(fileSize) + 'MB';
-
-  $: isDisabled = $lessonVideoUpload.isUploading || !env.PUBLIC_SERVER_URL || $isFreePlan;
+  let helperText = $derived($lessonVideoUpload.uploadProgress + '%  of ' + Math.round(fileSize || 0) + 'MB');
 </script>
 
 <UpgradeBanner className="mb-3" onClick={() => ($lessonVideoUpload.isModalOpen = false)}>
@@ -132,32 +138,25 @@
 {#if !isLoaded}
   <button
     type="button"
-    on:click={() => (fileInput && !$lessonVideoUpload.isUploading ? fileInput.click() : null)}
+    onclick={() => (fileInput && !$lessonVideoUpload.isUploading ? fileInput.click() : null)}
     class="h-full w-full {isDisabled && 'opacity-50 hover:cursor-not-allowed'}"
     disabled={isDisabled}
   >
     <form
       class="border-primary-300 flex h-full w-full flex-col items-center justify-center rounded-xl border border-dashed"
-      on:submit|preventDefault={onUpload}
+      onsubmit={preventDefault(onUpload)}
     >
       {#if $lessonVideoUpload.isUploading}
         <div class="flex w-[60%] max-w-[500px] flex-col justify-center gap-5">
           <p class="mt-5 text-center">
             {$t('course.navItem.lessons.materials.tabs.video.add_video.uploading')}
           </p>
-          <ProgressBar
-            class="w-full"
-            value={$lessonVideoUpload.uploadProgress}
-            max={100}
-            status={$lessonVideoUpload.uploadProgress === 100 ? 'finished' : 'active'}
-          />
+          <Progress class="w-full" value={$lessonVideoUpload.uploadProgress} max={100} />
           <p class="text-sm">{helperText}</p>
           <div class="mt-3">
-            <PrimaryButton
-              label={$t('course.navItem.lessons.materials.tabs.video.add_video.cancel_upload')}
-              variant={VARIANTS.OUTLINED}
-              onClick={cancelUpload}
-            />
+            <Button variant="outline" onclick={cancelUpload}>
+              {$t('course.navItem.lessons.materials.tabs.video.add_video.cancel_upload')}
+            </Button>
           </div>
         </div>
       {:else}
@@ -177,7 +176,7 @@
         type="file"
         accept="video/*"
         name="videoFile"
-        on:change={() => submit.click()}
+        onchange={() => submit?.click()}
         bind:this={fileInput}
       />
       <input type="text" name="lessonId" value={lessonId} style="display: none;" />
@@ -196,10 +195,9 @@
         {$t('course.navItem.lessons.materials.tabs.video.add_video.maximum_size')}
       </p>
     </span>
-    <PrimaryButton
-      label={$t('course.navItem.lessons.materials.tabs.video.add_video.button')}
-      onClick={tryAgain}
-    />
+    <Button onclick={tryAgain}>
+      {$t('course.navItem.lessons.materials.tabs.video.add_video.button')}
+    </Button>
   </div>
 {:else if formRes?.status !== 200}
   <div class="flex h-full w-full flex-col items-center justify-center rounded-xl">
@@ -213,10 +211,9 @@
         {$t('course.navItem.lessons.materials.tabs.video.add_video.format')}
       </p>
     </span>
-    <PrimaryButton
-      label={$t('course.navItem.lessons.materials.tabs.video.add_video.try_again')}
-      onClick={tryAgain}
-    />
+    <Button onclick={tryAgain}>
+      {$t('course.navItem.lessons.materials.tabs.video.add_video.try_again')}
+    </Button>
   </div>
 {:else}
   <div class=" w-full rounded-md border px-8 py-3">
@@ -229,10 +226,9 @@
         </video>
         <p>{fileInput?.files?.[0]?.name || fileName}</p>
       </div>
-      <PrimaryButton
-        label={$t('course.navItem.lessons.materials.button_done')}
-        onClick={() => ($lessonVideoUpload.isModalOpen = false)}
-      />
+      <Button onclick={() => ($lessonVideoUpload.isModalOpen = false)}>
+        {$t('course.navItem.lessons.materials.button_done')}
+      </Button>
     </div>
   </div>
 {/if}
