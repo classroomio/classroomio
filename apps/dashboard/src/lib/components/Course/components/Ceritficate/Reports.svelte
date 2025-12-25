@@ -44,7 +44,7 @@
 <section class="-ml-4 -mr-4 mb-10 flex flex-wrap items-start gap-2">
   {#each CertificateReportData as data (data.id)}
     <div
-      class="mb-5 flex h-[165px] w-[246px] flex-col justify-center rounded border border-gray-200 px-2 dark:border-neutral-600"
+      class="mb-5 flex h-[165px] w-[246px] flex-col justify-center rounded border border-gray-200 px-2"
     >
       <p class="text-xs font-normal">{data.title}</p>
       <bold class="text-2xl font-medium">{data.value}</bold>
@@ -63,7 +63,7 @@
 </section>
 
 <section class="mt-14">
-  <div class="rounded-md border dark:border-neutral-600">
+  <div class="rounded-md border">
     <Table.Root>
       <Table.Header>
         <Table.Row>

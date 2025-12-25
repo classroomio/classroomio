@@ -171,7 +171,7 @@
             <button
               class="h-60 w-[261px] rounded-md border-2 p-5 dark:bg-neutral-700 {option.type === type
                 ? 'border-primary-400'
-                : `border-gray-200 dark:border-neutral-600 ${
+                : `border-gray-200 ${
                     !option.isDisabled && 'hover:scale-95'
                   }`} flex flex-col {option.isDisabled && 'cursor-not-allowed opacity-60'} transition-all ease-in-out"
               type="button"
@@ -243,7 +243,7 @@
               <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
                 {#each Array(16) as _}
                   <div
-                    class="h-[140px] w-full rounded-md border-2 border-gray-200 p-5 dark:border-neutral-600 dark:bg-neutral-700"
+                    class="h-[140px] w-full rounded-md border-2 border-gray-200 p-5 dark:bg-neutral-700"
                   >
                     <div class="flex h-full flex-col justify-evenly">
                       <Skeleton class="h-4 w-3/4" />
@@ -262,7 +262,7 @@
                     class="h-[140px] w-full rounded-md border-2 p-5 hover:scale-95 dark:bg-neutral-700 {template.id ===
                     selectedTemplateId
                       ? 'border-primary-400'
-                      : `border-gray-200 dark:border-neutral-600 `} flex flex-col transition-all ease-in-out"
+                      : `border-gray-200 `} flex flex-col transition-all ease-in-out"
                     type="button"
                     onclick={() => (selectedTemplateId = template.id)}
                   >

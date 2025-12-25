@@ -109,7 +109,7 @@
       </div>
     </div>
 
-    <div class="mt-5 rounded-md border p-3 md:p-5 dark:border-neutral-600">
+    <div class="mt-5 rounded-md border p-3 md:p-5">
       <h3 class="text-2xl">
         {$t('analytics.exercises')}
       </h3>

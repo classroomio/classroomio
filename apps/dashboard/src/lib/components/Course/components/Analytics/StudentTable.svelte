@@ -57,7 +57,7 @@
       <table class="w-full min-w-[800px]">
         <!-- Fixed Header -->
         <thead class="sticky top-0 z-10 bg-white dark:bg-neutral-800">
-          <tr class="border-b border-gray-200 dark:border-neutral-600">
+          <tr class="border-b border-gray-200">
             <th
               class="sticky left-0 top-0 z-20 min-w-[200px] whitespace-nowrap bg-white px-4 py-3 text-left text-sm font-medium text-gray-500 dark:bg-neutral-800 dark:text-gray-300"
             >
@@ -166,7 +166,7 @@
 
   <!-- Pagination Controls -->
   {#if students.length > pageSize}
-    <div class="mt-4 flex items-center justify-between border-t border-gray-200 px-4 py-3 dark:border-neutral-600">
+    <div class="mt-4 flex items-center justify-between border-t border-gray-200 px-4 py-3">
       <div class="text-sm text-gray-700 dark:text-gray-300">
         {$t('analytics.showing_students', {
           start: startItem,

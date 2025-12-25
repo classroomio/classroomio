@@ -96,7 +96,7 @@
     <ImageCropper.UploadTrigger aria-disabled={isDisabled || isUploading}>
       <div
         class="avatar-container {widthHeight ||
-          'h-[128px] w-[128px]'} pointer border-2 border-gray-200 dark:border-neutral-600 {shape}"
+          'h-[128px] w-[128px]'} pointer border-2 border-gray-200 {shape}"
       >
         <ImageCropper.Preview>
           {#snippet child({ src: imageSrc })}

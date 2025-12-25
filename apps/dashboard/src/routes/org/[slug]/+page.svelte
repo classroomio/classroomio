@@ -92,7 +92,7 @@
 
       <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div
-          class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 md:p-5 dark:border-neutral-600 dark:text-white"
+          class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 md:p-5 dark:text-white"
         >
           <h3 class="mb-4 text-lg">
             {$t('dashboard.top_courses')}
@@ -140,7 +140,7 @@
         </div>
 
         <div
-          class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 md:p-5 dark:border-neutral-600 dark:text-white"
+          class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 md:p-5 dark:text-white"
         >
           <h3 class="mb-4 text-lg">
             {$t('dashboard.recent_enrollments')}

@@ -193,7 +193,7 @@
   onfinalize={handleDndFinalizeColumns}
 >
   {#each $lessonSections as section (section.id)}
-    <div class="m-auto mb-3 max-w-xl rounded-md border-2 border-gray-200 dark:border-neutral-600 dark:bg-neutral-800">
+    <div class="m-auto mb-3 max-w-xl rounded-md border-2 border-gray-200 dark:bg-neutral-800">
       <div
         class="mb-2 flex min-h-[50px] items-center justify-between rounded-tl-md rounded-tr-md border-b bg-gray-50 px-3 py-1 dark:bg-neutral-700"
       >

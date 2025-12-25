@@ -98,7 +98,7 @@
 {:else if !isEmpty(displayDocuments)}
   <div class="space-y-4">
     {#each displayDocuments as document}
-      <div class="rounded-md border border-gray-200 p-4 dark:border-neutral-600">
+      <div class="rounded-md border border-gray-200 p-4">
         <div class="flex items-center space-x-3">
           <FileTextIcon size={16} />
           <div class="flex-1">
