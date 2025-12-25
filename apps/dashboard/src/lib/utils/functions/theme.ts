@@ -37,7 +37,7 @@ export function injectCustomTheme(hex: string) {
 
   const styleContent = `
     body[data-theme="${hex}"] {
-      --primary: ${shades[600]};
+      --primary: ${shades[700]};
       --primary-foreground: ${shades[50]};
       --ring: ${shades[400]};
       --chart-1: ${shades[300]};
@@ -45,7 +45,7 @@ export function injectCustomTheme(hex: string) {
       --chart-3: ${shades[600]};
       --chart-4: ${shades[700]};
       --chart-5: ${shades[800]};
-      --sidebar-primary: ${shades[600]};
+      --sidebar-primary: ${shades[700]};
       --sidebar-primary-foreground: ${shades[50]};
       --sidebar-accent: ${shades[50]};
       --sidebar-accent-foreground: ${shades[700]};

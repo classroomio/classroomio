@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import ZapIcon from '@lucide/svelte/icons/zap';
+  import PlusIcon from '@lucide/svelte/icons/plus';
   import debounce from 'lodash/debounce';
   import ColorPicker from 'svelte-awesome-color-picker';
 
@@ -66,12 +67,13 @@
     goto(`${$currentOrgPath}/settings${pathname}`);
   }
   let isCustomTheme = $derived($currentOrg?.theme?.includes('#'));
-
+  let hex = $derived($currentOrg.theme.includes('#') ? $currentOrg.theme : null);
+  
   $effect(() => {
     console.log('$currentOrg?.theme', $currentOrg?.theme);
+    console.log('hex', hex);
     console.log('isCustomTheme', isCustomTheme);
   });
-  let hex = $derived($currentOrg.theme.includes('#') ? $currentOrg.theme : undefined);
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
@@ -106,7 +108,7 @@
     <Field.Field>
       <div class="flex items-center gap-5">
         <button
-          class="rounded-full border-2 {$currentOrg.theme === themes.blue &&
+          class="cursor-pointer rounded-full border-2 {$currentOrg.theme === themes.blue &&
             'border-[#1d4ee2]'} flex h-fit items-center justify-center"
           onclick={handleChangeTheme(themes.blue)}
           aria-label="Default blue theme"
@@ -115,7 +117,7 @@
         </button>
 
         <button
-          class="rounded-full border-2 {$currentOrg.theme === themes.rose &&
+          class="cursor-pointer rounded-full border-2 {$currentOrg.theme === themes.rose &&
             'border-[#be1241]'} flex h-fit items-center justify-center"
           onclick={handleChangeTheme(themes.rose)}
           aria-label="Rose theme"
@@ -124,7 +126,7 @@
         </button>
 
         <button
-          class="rounded-full border-2 {$currentOrg.theme === themes.green &&
+          class="cursor-pointer rounded-full border-2 {$currentOrg.theme === themes.green &&
             'border-[#0c891b]'} flex h-fit items-center justify-center"
           onclick={handleChangeTheme(themes.green)}
           aria-label="Green theme"
@@ -133,7 +135,7 @@
         </button>
 
         <button
-          class="rounded-full border-2 {$currentOrg.theme === themes.orange &&
+          class="cursor-pointer rounded-full border-2 {$currentOrg.theme === themes.orange &&
             'border-[#cc4902]'} flex h-fit items-center justify-center"
           onclick={handleChangeTheme(themes.orange)}
           aria-label="Orange theme"
@@ -142,7 +144,7 @@
         </button>
 
         <button
-          class="rounded-full border-2 {$currentOrg.theme === themes.purple &&
+          class="cursor-pointer rounded-full border-2 {$currentOrg.theme === themes.purple &&
             'border-purple-600'} flex h-fit items-center justify-center"
           onclick={handleChangeTheme(themes.purple)}
           aria-label="Purple theme"
@@ -152,22 +154,15 @@
 
         <div
           style={`border-color: ${isCustomTheme ? $currentOrg.theme : 'dark:border-neutral-700'};`}
-          class="group relative h-auto w-fit rounded-full border-2"
+          class="group relative cursor-pointer h-auto w-fit rounded-full border-2"
         >
           <!-- plus icon positioned over the color picker -->
           <div
             class="pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-200"
           >
-            <svg
-              class="h-6 w-6 text-{isCustomTheme ? 'white' : 'black'} z-10 opacity-100 dark:text-white"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
-            </svg>
+            <PlusIcon
+              class="size-6 z-10 {!!hex ? 'stroke-white' : 'stroke-gray-500'}"
+            />
           </div>
           <ColorPicker
             position="responsive"
@@ -240,5 +235,9 @@
 
   :global(.dark .alpha) {
     background: #333 !important;
+  }
+
+  :global(.color::before) {
+    display: none;
   }
 </style>
