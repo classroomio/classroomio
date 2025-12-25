@@ -26,11 +26,13 @@
 
   let node: any;
 
-  $: nodeStore.set(node);
+  $effect(() => {
+    nodeStore.set(node);
+  });
 
-  $: rootBgImage = `https://assets.cdn.clsrio.com/progress-report/backgrounds/${
+  let rootBgImage = $derived(`https://assets.cdn.clsrio.com/progress-report/backgrounds/${
     $htmlBody.background || 'blue_tetiary_background'
-  }.webp`;
+  }.webp`);
 </script>
 
 <div
@@ -43,7 +45,7 @@
     {#if $openModal.fullscreen}
       <button
         type="button"
-        on:click={() => ($openModal.fullscreen = !$openModal.fullscreen)}
+        onclick={() => ($openModal.fullscreen = !$openModal.fullscreen)}
         class="absolute top-4 right-4 p-1.5 rounded-full hover:scale-90 transition-all duration-300 bg-white"
       >
         <img src="/free-tools/progress-report/close-icon.svg" alt="" class="" />
@@ -51,7 +53,7 @@
     {:else}
       <button
         type="button"
-        on:click={() => ($openModal.fullscreen = !$openModal.fullscreen)}
+        onclick={() => ($openModal.fullscreen = !$openModal.fullscreen)}
         class="absolute top-4 right-4 w-7 hover:scale-90 transition-all duration-300"
       >
         <img src="/free-tools/progress-report/full-screen-icon.svg" alt="" class="" />
@@ -118,7 +120,7 @@
             <div
               class="progress-range rounded-full w-full h-full"
               style="background: {$backgroundColor}; width: {$htmlBody.progress}%"
-            />
+></div>
           </div>
           <p class="text-[12px] font-semibold mt-1">Progress Achieved: {$htmlBody.progress}%</p>
         </div>

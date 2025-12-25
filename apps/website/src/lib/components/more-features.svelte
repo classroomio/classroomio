@@ -4,8 +4,8 @@
   import { folder, globe, team, transcription } from '$lib/emojis';
   import { tools } from '$lib/utils/constants/tools';
 
-  let selected = 0;
-  let interval: NodeJS.Timer;
+  let selected = $state(0);
+  let interval: NodeJS.Timer = $state();
 
   const moreFeatures = [
     {
@@ -22,13 +22,13 @@
         'Extend invitations and manage your teaching institution seamlessly through ClassroomIO.',
       image: '/team-management.png'
     },
-    {
-      icon: transcription,
-      title: 'Auto Video Transcription',
-      description:
-        'AI automatically transcribes videos, making content searchable for seamless student access.',
-      image: '/video-transcription.png'
-    },
+    // {
+    //   icon: transcription,
+    //   title: 'Auto Video Transcription',
+    //   description:
+    //     'AI automatically transcribes videos, making content searchable for seamless student access.',
+    //   image: '/video-transcription.png'
+    // },
     {
       icon: folder,
       title: 'Downloadable Lesson PDF',
@@ -52,7 +52,7 @@
 <section id="morefeatures" class="py-[10%] px-3 lg:px-0 bg-gray-50">
   <div class="mx-0 lg:mx-[12%]">
     <div class="w-full lg:w-4/5 mx-4 lg:mx-0 mb-14">
-      <h2 class="mt-2 text-3xl font-bold font-display tracking-tight lg:text-4xl">
+      <h2 class="mt-2 text-3xl tracking-tight">
         There is More...
       </h2>
       <p class="mt-4 text-lg text-gray-500 w-[94%] lg:w-4/5">
@@ -67,8 +67,8 @@
         {#each moreFeatures as moreFeature, i}
           <button
             class="p-4 rounded-md {i === selected &&
-              'selected'} mb-3 text-start min-w-[75vw] lg:min-w-[unset]"
-            on:mouseenter={() => {
+              'selected'} mb-3 text-start min-w-[75vw] lg:min-w-[unset] cursor-pointer"
+            onclick={() => {
               selected = i;
               clearInterval(interval);
             }}
@@ -82,11 +82,11 @@
                 alt=""
                 class="w-8"
               />
-              <p class="text-lg font-semibold">
+              <p class="text-lg">
                 {moreFeature.title}
               </p>
             </div>
-            <p>{moreFeature.description}</p>
+            <p class="text-sm">{moreFeature.description}</p>
           </button>
         {/each}
       </div>
@@ -99,7 +99,7 @@
             height="100%"
             loading="lazy"
             id="image"
-            in:fly={{ y: 100, duration: 1000 }}
+            in:fly={{ x: 100, duration: 800 }}
             class="w-full flex flex-col items-center"
             src={moreFeatures[selected].image}
             alt={moreFeatures[selected].title}

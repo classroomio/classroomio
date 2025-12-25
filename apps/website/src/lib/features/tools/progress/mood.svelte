@@ -75,7 +75,7 @@
     <div class="flex flex-wrap justify-between gap-y-3 mt-3">
       {#each moods as mood}
         <button
-          on:click={() => {
+          onclick={() => {
             selectMood(mood);
           }}
           class="flex gap-3 items-center shadow-sm rounded-full px-4 py-1 bg-[#F1F6FF] hover:bg-[#0233BD] hover:text-white transition-all duration-700"

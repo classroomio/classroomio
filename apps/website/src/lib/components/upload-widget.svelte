@@ -3,12 +3,21 @@
   import Trash2 from '@lucide/svelte/icons/trash-2';
   import { ALLOWED_IMAGE_TYPES, validateImageUpload } from '@cio/utils/functions/fileValidation';
 
-  export let imageURL = '';
-  export let label = '';
-  export let isRequired = false;
-  export let labelClassName = '';
+  interface Props {
+    imageURL?: string;
+    label?: string;
+    isRequired?: boolean;
+    labelClassName?: string;
+  }
+
+  let {
+    imageURL = $bindable(''),
+    label = '',
+    isRequired = false,
+    labelClassName = ''
+  }: Props = $props();
   let isUploading = false;
-  let fileInput: HTMLInputElement;
+  let fileInput: HTMLInputElement = $state();
 
   const onFileSelected = () => {
     const file = fileInput?.files?.[0];
@@ -52,8 +61,8 @@
   };
 </script>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
 <div>
   {#if label}
     <p class="flex w-full items-center justify-between text-left dark:text-white {labelClassName}">
@@ -65,7 +74,7 @@
       </span>
 
       {#if imageURL}
-        <span title="clear image" on:click={deleteImage}>
+        <span title="clear image" onclick={deleteImage}>
           <Trash2 class="fill-red-500 " />
         </span>
       {/if}
@@ -73,14 +82,14 @@
   {/if}
   <div
     class="flex min-h-[200px] w-full items-center justify-center rounded-md border p-4"
-    on:click={() => fileInput.click()}
+    onclick={() => fileInput.click()}
   >
     <input
       type="file"
       accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp"
       style="display: none;"
       bind:this={fileInput}
-      on:change={onFileSelected}
+      onchange={onFileSelected}
       disabled={isUploading}
       required={isRequired}
     />

@@ -17,7 +17,7 @@ Today we are happy to share that you can now easily self-host classroomio and us
 
 If you are interested in just trying out the product, it is advisable to use the [cloud version](https://app.classroomio.com). You can use almost all the features for free on the cloud version unless you need more students. Right now the main reason you'd have to upgrade is because your students are growing. If you don't want to upgrade and/or face this, then you'd be fine self hosting the whole application.
 
-For self-hosting, we have written up a [guide that uses Railway](https://classroomio.com/docs/quickstart/self-hosting)  to help deploy our stack and you get to manage the servers on Railway as you wish. We hope this is a good step in helping you educate your audience at ease.
+For self-hosting, we have written up a [guide that uses Railway](https://classroomio.com/docs/quickstart/self-hosting) to help deploy our stack and you get to manage the servers on Railway as you wish. We hope this is a good step in helping you educate your audience at ease.
 
 Below is a demo showing you step by step how to self host the project
 

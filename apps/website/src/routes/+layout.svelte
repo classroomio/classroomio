@@ -9,7 +9,7 @@
 
   import '../app.css';
 
-  export let data;
+  let { children, data } = $props();
 
   onMount(() => {
     if (dev) {
@@ -17,7 +17,7 @@
     }
   });
 
-  $: metaTags = extend(true, {}, data.baseMetaTags, page.data.pageMetaTags);
+  let metaTags = $derived(extend(true, {}, data.baseMetaTags, page.data.pageMetaTags));
 </script>
 
 <MetaTags {...metaTags} />
@@ -29,7 +29,7 @@
     {#if page.status === 404}
       <NotFound className="mt-5" />
     {:else}
-      <slot />
+      {@render children?.()}
     {/if}
   </PageTransition>
 

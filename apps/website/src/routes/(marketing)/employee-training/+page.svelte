@@ -86,7 +86,7 @@
       <Badge variant="outline">Amazing benefits</Badge>
 
       <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
-        <h1 class="font-bold text-4xl">Unlock your team's potential</h1>
+        <h1 class="text-3xl">Unlock your team's potential</h1>
         <p class="leading-8 text-lg text-gray-500">
           Modern teams require solutions that are easy to use and allows them move quickly.
         </p>
@@ -106,8 +106,8 @@
           />
 
           <div class="w-full flex flex-col justify-start align-start gap-y-2">
-            <h1 class="text-xl font-medium">{benefits.title}</h1>
-            <p class="leading-8 text-gray-500 font-[#656565] font-light">
+            <h1 class="text-lg">{benefits.title}</h1>
+            <p class="text-base leading-8 text-gray-500 font-[#656565] font-light">
               {benefits.description}
             </p>
           </div>
@@ -127,7 +127,7 @@
       <div
         class="lg:w-full max-w-7xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
-        <h1 class="text-3xl md:text-5xl font-bold">What makes us the right choice</h1>
+        <h1 class="text-3xl">What makes us the right choice</h1>
         <p class="text-[#334155] text-sm md:text-base font-light lg:text-center md:w-[80%]">
           Discover why we’re the perfect partner for your employee training needs. Experience
           innovative solutions designed to reduce stress and enhance productivity.
@@ -151,7 +151,7 @@
               alt="team icon"
             />
             <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
-              <h1 class="font-bold text-4xl">{feature.title}</h1>
+              <h1 class="text-2xl">{feature.title}</h1>
               <p class="leading-8 text-lg text-gray-500">
                 {feature.description}
               </p>
@@ -185,10 +185,10 @@
     >
       <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
         <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
-          <h1 class="font-bold text-4xl text-white">
+          <h1 class="text-2xl text-white">
             Did you know you can request for custom features?
           </h1>
-          <p class="leading-8 text-[#DEDEDE] text-xl font-light">
+          <p class="leading-8 text-[#DEDEDE] text-base">
             Companies get the opportunity to request custom features from us.
           </p>
         </div>

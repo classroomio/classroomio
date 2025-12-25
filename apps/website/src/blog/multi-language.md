@@ -48,6 +48,6 @@ Oh we even hooked up our AI content generator with it as well, you can switch to
 
 ## Next steps
 
-All translations in our app are stored in a JSON file which we generate and keep up to date using Google translate. This means that it might not be 100% accurate and there could be some mistakes when use  our dashboard in other languages. If you do find any issues with our translations, please do open an [issue on Github](https://github.com/classroomio/classroomio/issues/new/choose) with the correct translation and we'd be so happy to fix it.
+All translations in our app are stored in a JSON file which we generate and keep up to date using Google translate. This means that it might not be 100% accurate and there could be some mistakes when use our dashboard in other languages. If you do find any issues with our translations, please do open an [issue on Github](https://github.com/classroomio/classroomio/issues/new/choose) with the correct translation and we'd be so happy to fix it.
 
 If you are a native speaker of any of the 7 languages and want to contribute, please feel free to nitpick into our [translations](https://github.com/classroomio/classroomio/tree/main/apps/dashboard/src/lib/utils/translations) and open a PR with the fixes. Every contribution is valuable and will be gladly welcomed 😊

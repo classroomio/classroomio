@@ -9,7 +9,7 @@
   <PageHeader>
     <!-- added bg-white to keep the background white on devices that are on darkmode -->
     <div class="bg-white text-left md:text-center md:w-2/4 px-7 md:p-0 mx-auto">
-      <h1 class="text-5xl md:text-6xl font-bold">
+      <h1 class="text-3xl md:text-5xl">
         Explore our free <span class="text-blue-700">tools</span>
       </h1>
       <p class="my-4 md:my-8">
@@ -58,7 +58,7 @@
   </PageHeader>
 
   <div class="p-10 px-2 md:px-0 bg-white">
-    <h1 class="text-center font-bold text-3xl">Featured Tools</h1>
+    <h1 class="text-center text-2xl">Featured Tools</h1>
 
     <div class="flex justify-evenly gap-y-8 flex-wrap w-full md:w-[70%] mt-10 mx-auto bg-white">
       {#each freeTools as tool}
@@ -68,7 +68,7 @@
         >
           <img class="w-[30%] rounded-l-md" src={tool.src} alt="" />
           <div class="bg-[#F5F8FE] p-5 rounded-r-md w-[70%]">
-            <h1 class="font-bold text-sm md:text-base">{tool.title}</h1>
+            <h1 class="text-sm md:text-base">{tool.title}</h1>
             <p class="text-xs text-gray-600 mt-1.5">
               {tool.subText}
             </p>

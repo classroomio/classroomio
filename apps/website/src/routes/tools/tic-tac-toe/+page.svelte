@@ -6,10 +6,10 @@
   import { scores, changeToComputer } from '$lib/features/tools/tic-tac-toe/store';
   import { ToolsHeader } from '$lib/components';
 
-  let startGame = false;
-  let message: string | null = null;
-  let winner: Winner | null = null;
-  let game = createGame();
+  let startGame = $state(false);
+  let message: string | null = $state(null);
+  let winner: Winner | null = $state(null);
+  let game = $state(createGame());
 
   interface Winner {
     symbol?: string;
@@ -114,7 +114,7 @@
         class="absolute top-[43%] z-[150] flex w-full flex-col items-center justify-center"
       >
         <div
-          class="flex h-[8vh] w-full items-center justify-center gap-10 bg-white py-1 font-bold text-[#0233BD] md:h-[13vh]"
+          class="flex h-[8vh] w-full items-center justify-center gap-10 bg-white py-1 text-[#0233BD] md:h-[13vh]"
         >
           {#if message != 'Tie game!'}
             <img src="/free-tools/tic-tac/winner-star-icon.svg" alt="Star icon" class="h-full" />
@@ -124,8 +124,8 @@
 
         <button
           type="button"
-          on:click={playAgain}
-          class="mt-10 rounded-md border border-white bg-[#0F62FE] px-16 pb-1.5 pt-1 text-xs font-bold md:text-base"
+          onclick={playAgain}
+          class="mt-10 rounded-md border border-white bg-[#0F62FE] px-16 pb-1.5 pt-1 text-xs md:text-base"
           >Play Again</button
         >
       </div>
@@ -136,7 +136,7 @@
       <div class="flex h-full w-full flex-col items-center justify-between border p-5">
         <header class="flex w-full items-center justify-between">
           <button
-            on:click={changePlayer}
+            onclick={changePlayer}
             class="flex w-[35%] flex-row items-center gap-2 text-[10px] font-medium leading-3 md:w-28 md:text-xs"
           >
             <img src="/free-tools/tic-tac/computer-icon.svg" alt="Computer icon" class="w-4 md:w-6" />
@@ -147,7 +147,7 @@
             {/if}
           </button>
           <button
-            on:click={newGame}
+            onclick={newGame}
             class="flex w-24 flex-col items-center gap-1 rounded-md border bg-white p-2 text-[10px] font-medium leading-3 text-[#0542CC] shadow-md"
           >
             <img src="/free-tools/tic-tac/restart-icon.svg" alt="Restart icon" class="w-3 md:w-4" />
@@ -182,7 +182,7 @@
         <div class="flex flex-col gap-3">
           <button
             type="button"
-            on:click={() => {
+            onclick={() => {
               changePlayer();
               startTicTac();
             }}
@@ -192,7 +192,7 @@
           >
           <button
             type="button"
-            on:click={() => {
+            onclick={() => {
               startTicTac();
             }}
             class="rounded-md border border-white bg-[#0F62FE] px-16 pb-1.5 pt-1 text-sm font-bold"

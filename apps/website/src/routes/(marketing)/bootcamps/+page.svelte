@@ -112,7 +112,7 @@
       <div
         class="lg:w-full max-w-7xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
-        <h1 class="text-3xl md:text-5xl font-bold">Inspire Student Success</h1>
+        <h1 class="text-3xl">Inspire Student Success</h1>
         <p class="text-[#334155] text-sm md:text-base font-light lg:text-center md:w-[80%]">
           Scale your bootcamp with ClassroomIO's comprehensive toolkit. Create engaging content,
           foster community, and drive student achievement.
@@ -132,7 +132,7 @@
           />
 
           <div class="w-full flex flex-col justify-start align-start gap-y-2">
-            <h1 class="text-xl font-medium">{benefits.title}</h1>
+            <h1 class="text-md">{benefits.title}</h1>
 
             {#each benefits.points as point}
               <div class="flex flex-row justify-start items-start gap-x-3">
@@ -162,7 +162,7 @@
       <div
         class="w-full flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
-        <h1 class="text-3xl md:text-5xl font-bold">Why We're the Perfect Fit</h1>
+        <h1 class="text-3xl">Why We're the Perfect Fit</h1>
         <p class="text-[#334155] text-sm md:text-base font-light lg:text-center md:w-[80%]">
           Discover why we’re the ideal partner for your bootcamp training needs. Experience
           innovative solutions designed to elevate student engagement and maximize learning
@@ -187,7 +187,7 @@
               alt="team icon"
             />
             <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
-              <h1 class="font-bold text-4xl">{feature.title}</h1>
+              <h1 class="text-2xl">{feature.title}</h1>
               <p class="leading-8 text-lg text-gray-500">
                 {feature.description}
               </p>

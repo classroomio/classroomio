@@ -5,6 +5,7 @@ This document describes the folder structure for the `apps/website` project, spe
 ## Overview
 
 The codebase follows a clear separation of concerns with three main categories:
+
 - **Components**: Presentational UI components (dummy components)
 - **Features**: Business logic and functional components
 - **Utils**: Utility functions, constants, and shared types
@@ -87,10 +88,12 @@ src/lib/
 ## Naming Conventions
 
 ### Files and Folders
+
 - **Kebab-case**: All file and folder names use kebab-case (e.g., `blog-list-item.svelte`, `feedback-form.svelte`)
 - **Single-file folders**: If a folder contains only one file, it should be flattened to a single file (e.g., `Footer/Footer.svelte` → `components/footer.svelte`)
 
 ### Components
+
 - Component files use `.svelte` extension
 - Component names match their file names in kebab-case
 - Example: `blog-list-item.svelte` exports a component that can be imported as `BlogListItem`
@@ -102,18 +105,21 @@ src/lib/
 **Purpose**: Presentational components with minimal or no business logic. These are "dummy" components that receive props and render UI.
 
 **Characteristics**:
+
 - No API calls or complex state management
 - Primarily focused on rendering and styling
 - May have simple local state for UI interactions (e.g., open/close modals)
 - Reusable across different pages/features
 
 **Examples**:
+
 - `footer.svelte` - Site footer component
 - `navigation.svelte` - Site navigation bar
 - `hero.svelte` - Hero section component
 - `modal.svelte` - Generic modal wrapper
 
 **Import Pattern**:
+
 ```svelte
 // ✅ CORRECT - Use named imports from the index
 import { Footer, Navigation, Hero } from '$lib/components';
@@ -129,17 +135,20 @@ import { Footer, Navigation, Hero } from '$lib/components';
 **Purpose**: Components and modules that contain business logic, API calls, form handling, state management, or domain-specific functionality.
 
 **Characteristics**:
+
 - Contains business logic and data handling
 - May include API calls, form submissions, or data transformations
 - Often includes stores, utilities, or helper functions specific to the feature
 - Organized by feature domain (e.g., `contact/`, `tools/`)
 
 **Examples**:
+
 - `features/contact/feedback-form.svelte` - Form with submission logic
 - `features/tools/progress/store.ts` - State management for progress tool
 - `features/tools/tic-tac-toe/board.ts` - Game logic
 
 **Import Pattern**:
+
 ```svelte
 import FeedbackForm from '$lib/features/contact/feedback-form.svelte';
 import { htmlBody, openModal } from '$lib/features/tools/progress/store';
@@ -150,12 +159,14 @@ import { htmlBody, openModal } from '$lib/features/tools/progress/store';
 **Purpose**: Shared utility functions, constants, types, and helper modules used across the application.
 
 **Characteristics**:
+
 - Pure functions or utility modules
 - No component-specific logic
 - Reusable across different features/components
 - May include TypeScript types and interfaces
 
 **Examples**:
+
 - `utils/format-date.ts` - Date formatting utility
 - `utils/is-form-valid.ts` - Form validation helper
 - `utils/submit-form.ts` - Generic form submission utility
@@ -163,6 +174,7 @@ import { htmlBody, openModal } from '$lib/features/tools/progress/store';
 - `utils/constants/tools.ts` - Application constants
 
 **Import Pattern**:
+
 ```typescript
 import { formatDate } from '$lib/utils/format-date';
 import { isFormValid } from '$lib/utils/is-form-valid';
@@ -219,7 +231,7 @@ src/lib/
 <script>
   // ✅ CORRECT - Named imports from centralized index
   import { Footer, Navigation, Hero, Testimonial } from '$lib/components';
-  
+
   // ❌ INCORRECT - Direct file imports are not allowed
   // import Footer from '$lib/components/footer.svelte';
 </script>
@@ -307,6 +319,7 @@ Routes now import from `$lib/features/tools/*/` instead of `./components/`.
 ## Assets
 
 Static assets like images, SVGs, and other media files remain in their respective locations:
+
 - `emojis/` - Emoji SVG files
 - `public/` - Public static assets (images, fonts, etc.)
 
@@ -323,6 +336,7 @@ export { default as Navigation } from './navigation.svelte';
 ```
 
 This allows for clean, consistent imports:
+
 ```svelte
 import { Footer, Navigation, Hero } from '$lib/components';
 ```
@@ -332,6 +346,7 @@ import { Footer, Navigation, Hero } from '$lib/components';
 ## Summary
 
 This structure provides:
+
 - ✅ Clear separation between UI and business logic
 - ✅ Consistent naming conventions (kebab-case)
 - ✅ Flattened structure (no unnecessary single-file folders)
@@ -341,4 +356,3 @@ This structure provides:
 - ✅ Scalable for future growth
 
 For questions or suggestions about this structure, please refer to the project maintainers.
-

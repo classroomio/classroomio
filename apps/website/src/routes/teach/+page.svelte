@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { slide } from 'svelte/transition';
   import { PageSignupCTA, PageHeader } from '$lib/components';
   import { Button } from '@cio/ui/base/button';
+  import * as Accordion from '@cio/ui/base/accordion';
 
   const whyStart = [
     {
@@ -41,35 +41,31 @@
     }
   ];
 
-  let faqs = [
+  const faqs = [
     {
+      value: 'tutors',
       question: 'What kind of tutors does ClassroomIO look for?',
       answer:
-        'We are looking for all kinds of tutors. The most important thing is that you have some experience teaching and you have proven track record of excellent communication',
-      showAnswer: false
+        'We are looking for all kinds of tutors. The most important thing is that you have some experience teaching and you have proven track record of excellent communication'
     },
     {
+      value: 'equipment',
       question: 'What equipment do I need to teach on ClassroomIO?',
-      answer: 'You just need internet access and a laptop.',
-      showAnswer: false
+      answer: 'You just need internet access and a laptop.'
     },
     {
+      value: 'apply',
       question: 'What happens after I apply?',
       answer:
-        'We will get your application and review it. You should get a response from us within 2-5 working days depending on the volume of applications',
-      showAnswer: false
+        'We will get your application and review it. You should get a response from us within 2-5 working days depending on the volume of applications'
     },
     {
+      value: 'earn',
       question: 'How much can I earn?',
       answer:
-        'That depends on how much your course sells for and how many students buy your course. Your income is limitless, you can keep making money while you sleep.',
-      showAnswer: false
+        'That depends on how much your course sells for and how many students buy your course. Your income is limitless, you can keep making money while you sleep.'
     }
   ];
-
-  function toggleAnswer(index: number) {
-    faqs[index].showAnswer = !faqs[index].showAnswer;
-  }
 </script>
 
 <svelte:head>
@@ -88,7 +84,7 @@
 <section>
   <PageHeader className="flex items-center justify-evenly px-5 flex-wrap text-left">
     <div>
-      <h1 class="text-5xl font-bold">Teach with us</h1>
+      <h1 class="text-3xl lg:text-5xl">Teach with us</h1>
       <p class="my-5 text-center lg:w-[77%] lg:text-left">
         With ClassroomIO, you can make side income while teaching the subject you love
       </p>
@@ -108,7 +104,7 @@
 
   <div class="mx-auto mt-10">
     <div class="border-b border-slate-100 px-[10%] pb-10">
-      <h1 class="flex items-center justify-center gap-3 pb-28 text-center text-4xl font-bold">
+      <h1 class="flex items-center justify-center gap-3 pb-28 text-center text-3xl">
         Why you should teach with us? <img src="/teach/star.svg" alt="" />
       </h1>
 
@@ -119,7 +115,7 @@
           >
             <img src={why.src} alt="" class="h-[80px] w-[80px]" />
             <figcaption>
-              <h1 class="text-base font-bold">{why.header}</h1>
+              <h1 class="text-base">{why.header}</h1>
               <p class="mt-1 text-sm">
                 {why.subText}
               </p>
@@ -130,14 +126,14 @@
     </div>
 
     <div class="mt-10 px-[10%] py-10">
-      <h1 class="mb-28 flex items-center justify-center gap-3 text-center text-4xl font-bold">
+      <h1 class="mb-28 flex items-center justify-center gap-3 text-center text-3xl">
         How to get started <img src="/teach/thumbs-up.svg" alt="" />
       </h1>
 
       <div class="mx-auto mt-5 flex flex-wrap justify-between gap-y-10">
         {#each steps as step, i}
           <div class="px-10 py-5 lg:max-w-[40%]">
-            <h1 class="text-2xl font-bold">
+            <h1 class="text-2xl">
               <span class="mr-3 rounded-md bg-[#F7F7F7] px-2 py-1">{i + 1}</span>
               {step.title}
             </h1>
@@ -159,7 +155,7 @@
     </div>
 
     <div class="my-10 h-[75%] bg-[#F5F8FE] px-2 py-12 lg:h-[80%] lg:px-[12%]">
-      <h1 class="flex items-center justify-center gap-3 text-center text-2xl font-bold">
+      <h1 class="flex items-center justify-center gap-3 text-center text-2xl">
         Word from our fufilled facilitators
       </h1>
 
@@ -180,25 +176,21 @@
     </div>
 
     <div class="mx-auto my-10 mt-10 px-10 lg:max-w-[65%] lg:px-[15%]">
-      <h1 class="text-center text-2xl font-bold">Frequently asked questions</h1>
+      <h1 class="text-center text-xl">Frequently asked questions</h1>
 
       <div class="mt-10">
-        {#each faqs as faq, index}
-          <div class="border-b border-black pb-2 pt-1 lg:px-3">
-            <div>
-              <button
-                type="button"
-                class="my-2 flex w-full justify-between text-left text-sm font-medium md:text-center md:text-lg"
-                on:click={() => toggleAnswer(index)}
-              >
-                {faq.question} <span>{faq.showAnswer ? '-' : '+'}</span>
-              </button>
-            </div>
-            {#if faq.showAnswer}
-              <div transition:slide class="text-base font-light leading-5">{faq.answer}</div>
-            {/if}
-          </div>
-        {/each}
+        <Accordion.Root type="single" class="w-full">
+          {#each faqs as faq}
+            <Accordion.Item value={faq.value}>
+              <Accordion.Trigger class="text-left md:text-center">
+                {faq.question}
+              </Accordion.Trigger>
+              <Accordion.Content>
+                {faq.answer}
+              </Accordion.Content>
+            </Accordion.Item>
+          {/each}
+        </Accordion.Root>
       </div>
     </div>
 

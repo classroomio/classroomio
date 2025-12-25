@@ -3,9 +3,13 @@
   import { nodeStore, htmlBody, openModal } from './store';
   import { Button } from '@cio/ui/base/button';
 
-  export let isDisabled: boolean;
-  export let isDownloading: boolean;
-  export let text: string = 'Generate Progress Report';
+  interface Props {
+    isDisabled: boolean;
+    isDownloading: boolean;
+    text?: string;
+  }
+
+  let { isDisabled, isDownloading = $bindable(), text = 'Generate Progress Report' }: Props = $props();
 
   function convertToPng() {
     isDownloading = true;

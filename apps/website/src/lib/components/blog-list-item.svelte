@@ -2,8 +2,14 @@
   import { Badge } from '@cio/ui/base/badge';
   import { formatDate } from '$lib/utils/format-date';
 
-  export let post;
-  export let isRecommended = false;
+  /**
+   * @typedef {Object} Props
+   * @property {any} post
+   * @property {boolean} [isRecommended]
+   */
+
+  /** @type {Props} */
+  let { post, isRecommended = false } = $props();
 </script>
 
 {#if !isRecommended}

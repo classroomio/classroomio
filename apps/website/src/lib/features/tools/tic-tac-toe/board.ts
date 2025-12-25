@@ -10,7 +10,7 @@ changeToComputer.subscribe((value) => {
   }
 });
 
-export function TicTacToe({ onWin, onTie }: { onWin: (winner: any) => void, onTie: () => void }) {
+export function TicTacToe({ onWin, onTie }: { onWin: (winner: any) => void; onTie: () => void }) {
   const board = [
     ['', '', ''],
     ['', '', ''],
@@ -23,7 +23,7 @@ export function TicTacToe({ onWin, onTie }: { onWin: (winner: any) => void, onTi
   return {
     board,
 
-    click(rowIndex:number, columnIndex:number) {
+    click(rowIndex: number, columnIndex: number) {
       if (!done && !board[rowIndex][columnIndex]) {
         board[rowIndex][columnIndex] = turn;
         turn = turn === 'X' ? 'O' : 'X';
@@ -43,25 +43,24 @@ export function TicTacToe({ onWin, onTie }: { onWin: (winner: any) => void, onTi
           if (activateComp) {
             const aiMove = getBestMove(board);
             if (aiMove) {
-                board[aiMove.row][aiMove.column] = 'O';
-                turn = 'X';
-        
-                const aiWinner = getWinner(board);
-                if (aiWinner) {
-                    onWin(aiWinner);
-                    done = true;
-                } else if (isBoardFull(board)) {
-                    onTie();
-                    scores.update((currentScores) => {
-                        return { ...currentScores, draw: currentScores.draw + 1 };
-                    });
-                    done = true;
-                }
+              board[aiMove.row][aiMove.column] = 'O';
+              turn = 'X';
+
+              const aiWinner = getWinner(board);
+              if (aiWinner) {
+                onWin(aiWinner);
+                done = true;
+              } else if (isBoardFull(board)) {
+                onTie();
+                scores.update((currentScores) => {
+                  return { ...currentScores, draw: currentScores.draw + 1 };
+                });
+                done = true;
+              }
             } else {
-                console.error("AI could not find a valid move.");
+              console.error('AI could not find a valid move.');
             }
-        }
-        
+          }
         }
       }
 

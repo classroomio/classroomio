@@ -8,7 +8,7 @@
   import { PageHeader } from '$lib/components';
   import FeedbackForm from '$lib/features/contact/feedback-form.svelte';
 
-  let currentForm: FORM_TYPE_KEY;
+  let currentForm: FORM_TYPE_KEY = $state();
 
   const formList = [
     {
@@ -72,7 +72,7 @@
     >
       {#each formList as list}
         <button
-          on:click={() => onChange(list.id, list.to)}
+          onclick={() => onChange(list.id, list.to)}
           class="w-full rounded-md border-[1.5px] p-3 text-start {currentForm === list.id
             ? `border-[#0233BD]`
             : `border-gray-200`} flex items-center justify-between"

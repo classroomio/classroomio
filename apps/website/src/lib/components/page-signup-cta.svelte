@@ -17,11 +17,11 @@
 >
   <div>
     <h3
-      class="font-display mt-3 text-xl font-semibold tracking-tight text-white lg:mt-2 lg:text-4xl max-w-2xl"
+      class="font-display mt-3 text-xl tracking-tight text-white lg:mt-2 lg:text-4xl max-w-2xl"
     >
       {header}
     </h3>
-    <p class="mt-6 text-xl text-gray-300 lg:text-lg">
+    <p class="mt-6 text-md text-gray-300">
       {subText}
     </p>
   </div>

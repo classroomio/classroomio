@@ -9,14 +9,4 @@ import team from './team.svg';
 import transcription from './printer.svg';
 import folder from './folder.svg';
 
-export {
-  flexible,
-  robotArm,
-  thumbsUp,
-  leftFist,
-  rightFist,
-  globe,
-  team,
-  transcription,
-  folder,
-};
+export { flexible, robotArm, thumbsUp, leftFist, rightFist, globe, team, transcription, folder };

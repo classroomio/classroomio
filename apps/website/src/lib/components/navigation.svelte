@@ -14,13 +14,28 @@
   import type { HTMLAttributes } from 'svelte/elements';
   import * as NavigationMenu from '@cio/ui/base/navigation-menu';
   import LibraryBigIcon from '@lucide/svelte/icons/library-big';
+  import { cn } from '@cio/ui/tools';
 
 
-  export let stars: number;
+  let { stars }: { stars: number } = $props();
+
+  type ListItemProps = HTMLAttributes<HTMLAnchorElement> & {
+    title: string;
+    href: string;
+    subtitle: string;
+    key: string;
+  };
 
   let showDrawer = false;
   let showSolutions = false;
-  let activeLink = '';
+  let activeLink = $derived(page.url.pathname);
+  let activeHash = $derived(page.url.hash);
+
+  $effect(() => {
+    console.log('activeLink', activeLink);
+    console.log('activeHash', activeHash);
+    console.log('isSolutionsActive', isSolutionsActive);
+  });
 
   function handleShowDrawer() {
     showDrawer = !showDrawer;
@@ -76,16 +91,7 @@
     }
   ];
 
-  type ListItemProps = HTMLAttributes<HTMLAnchorElement> & {
-    title: string;
-    href: string;
-    subtitle: string;
-    key: string;
-  };
-
-  $: activeLink = page.url.pathname;
-  $: activeHash = page.url.hash;
-  $: isSolutionsActive = solutions.some((s) => activeHash.includes(s.key));
+  let isSolutionsActive = $derived(!!solutions.some((s) => activeLink.includes(s.key)));
 </script>
 
 {#snippet list_item({ title, subtitle, href, key, class: className, ...restProps }: ListItemProps)}
@@ -140,11 +146,14 @@
     </a>
 
     <section class="hidden lg:block">
-      <NavigationMenu.Root class="rounded-lg bg-white p-1">
+      <NavigationMenu.Root class="p-1">
         <NavigationMenu.List class="flex w-full items-center justify-center gap-1">
           <NavigationMenu.Item>
             <NavigationMenu.Trigger
-              class="flex cursor-pointer items-center rounded-md px-4 py-2 text-sm font-medium text-gray-800 transition-all duration-200 hover:bg-gray-100 data-[state=open]:bg-gray-100"
+              class={cn(
+                "flex cursor-pointer items-center rounded-md px-4 py-2 text-sm font-medium text-gray-800 transition-all duration-200 hover:bg-gray-100 data-[state=open]:bg-gray-100",
+                isSolutionsActive && 'bg-gray-100!'
+              )}
             >
               <a href="/" class="no-underline"> Solutions </a>
             </NavigationMenu.Trigger>
@@ -164,7 +173,7 @@
 
           <NavigationMenu.Item>
             <NavigationMenu.Trigger
-              class="flex cursor-pointer items-center rounded-md px-4 py-2 text-sm font-medium text-gray-800 transition-all duration-200 hover:bg-gray-100 data-[state=open]:bg-gray-100"
+              class={cn("flex cursor-pointer items-center rounded-md px-4 py-2 text-sm font-medium text-gray-800 transition-all duration-200 hover:bg-gray-100 data-[state=open]:bg-gray-100", activeLink.startsWith('/tools') && 'bg-gray-100!')}
             >
               <a href="/tools" class="no-underline"> Free Tools </a>
             </NavigationMenu.Trigger>
@@ -187,11 +196,10 @@
               {#snippet child()}
                 <a
                   href="/blog"
-                  class="cursor-pointer rounded-md px-4 py-2 text-sm font-medium text-gray-800 no-underline transition-all duration-200 hover:bg-gray-100 {activeLink.startsWith(
-                    '/blog'
-                  )
-                    ? 'bg-gray-100'
-                    : ''}"
+                  class={cn(
+                    'cursor-pointer rounded-md px-4 py-2 text-sm font-medium text-gray-800 no-underline transition-all duration-200 hover:bg-gray-100',
+                    activeLink.startsWith('/blog') && 'bg-gray-100'
+                  )}
                 >
                   Blog
                 </a>
@@ -204,11 +212,10 @@
               {#snippet child()}
                 <a
                   href="/pricing"
-                  class="cursor-pointer rounded-md px-4 py-2 text-sm font-medium text-gray-800 no-underline transition-all duration-200 hover:bg-gray-100 {activeLink.startsWith(
-                    '/pricing'
-                  )
-                    ? 'bg-gray-100'
-                    : ''}"
+                  class={cn(
+                    'cursor-pointer rounded-md px-4 py-2 text-sm font-medium text-gray-800 no-underline transition-all duration-200 hover:bg-gray-100',
+                    activeLink.startsWith('/pricing') && 'bg-gray-100'
+                  )}
                 >
                   Pricing
                 </a>
@@ -250,7 +257,7 @@
       </a>
     </div>
 
-    <button type="button" aria-label="Hamburger Menu" class="block md:block lg:hidden" on:click={handleShowSolutions}>
+    <button type="button" aria-label="Hamburger Menu" class="block md:block lg:hidden" onclick={handleShowSolutions}>
       <Menu size={24} />
     </button>
 
@@ -262,7 +269,7 @@
       >
         <div class="mb-5 flex justify-between py-2">
           <img loading="lazy" width="20" height="20" src="/logo-512.png" alt="classroomio logo" class="w-[15%]" />
-          <button class="mr-5" on:click={handleShowSolutions}>
+          <button class="mr-5" onclick={handleShowSolutions}>
             <X size={24} />
           </button>
         </div>
@@ -270,9 +277,11 @@
           <ul class="flex w-full flex-col items-center justify-between lg:flex-row">
             <li class="w-full cursor-pointer text-sm font-semibold text-gray-800 md:text-lg">
               <button
-                class="flex w-full items-center justify-between rounded-lg px-4 py-3 transition-all duration-200 hover:bg-gray-100"
-                on:click={handleShowDrawer}
-                class:active={isSolutionsActive}
+                class={cn(
+                  "flex w-full items-center justify-between rounded-lg px-4 py-3 transition-all duration-200 hover:bg-gray-100",
+                  isSolutionsActive && 'bg-gray-100'
+                )}
+                onclick={handleShowDrawer}
               >
                 Our Superpowers <ChevronDown />
               </button>
@@ -281,7 +290,7 @@
                   {#each solutions as solution}
                     <a
                       href="/{solution.key}"
-                      on:click={() => {
+                      onclick={() => {
                         handleShowSolutions();
                       }}
                     >
@@ -297,37 +306,43 @@
             </li>
             <a
               class="w-full cursor-pointer rounded-xl px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg"
-              on:click={handleShowSolutions}
+              onclick={handleShowSolutions}
               href="/tools"
             >
               <li>Free Tools</li>
             </a>
             <a
-              class="w-full cursor-pointer rounded-md px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg"
-              on:click={() => {
+              class={cn(
+                "w-full cursor-pointer rounded-md px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg",
+                activeLink.startsWith('/morefeatures') && 'bg-gray-100'
+              )}
+              onclick={() => {
                 handleShowSolutions();
               }}
-              class:active={activeLink.startsWith('/blog')}
               href="/blog"
             >
               <li>Blog</li>
             </a>
             <a
-              class="w-full cursor-pointer rounded-xl px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg"
-              on:click={() => {
+              class={cn(
+                "w-full cursor-pointer rounded-xl px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg",
+                activeLink.startsWith('/pricing') && 'bg-gray-100'
+              )}
+              onclick={() => {
                 handleShowSolutions();
               }}
               href="/pricing"
-              class:active={activeLink.startsWith('/pricing')}
             >
               <li>Pricing</li>
             </a>
             <a
-              class="w-full cursor-pointer rounded-md px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg"
-              on:click={() => {
+              class={cn(
+                "w-full cursor-pointer rounded-md px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg",
+                activeHash.includes('morefeatures') && 'bg-gray-100'
+              )}
+              onclick={() => {
                 handleShowSolutions();
               }}
-              class:active={activeHash.includes('morefeatures')}
               href="/#morefeatures"
             >
               <li>More features</li>

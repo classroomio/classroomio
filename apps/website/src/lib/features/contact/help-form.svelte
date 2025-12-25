@@ -7,14 +7,14 @@
   import { submitForm } from '$lib/utils/submit-form';
   import { Success } from '$lib/components';
 
-  let name = '';
-  let email = '';
-  let title = '';
-  let description = '';
+  let name = $state('');
+  let email = $state('');
+  let title = $state('');
+  let description = $state('');
 
-  let isLoading = false;
-  let errorMessage = '';
-  let sent = false;
+  let isLoading = $state(false);
+  let errorMessage = $state('');
+  let sent = $state(false);
 
   async function handleClick() {
     const data = { name, email, title, description };

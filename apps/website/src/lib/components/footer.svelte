@@ -4,7 +4,7 @@
   import Youtube from '@lucide/svelte/icons/youtube';
 </script>
 
-<div class="border-t-[1px] px-[2%] lg:px-[14%]">
+<div class="border-t px-[2%] lg:px-[14%]">
   <div class="flex flex-col items-center justify-between py-[10%] pl-5 lg:flex-row lg:pl-0">
     <div class="w-full min-w-[200px] lg:w-3/12">
       <img width="32" height="32" loading="lazy" src="/logo-192.png" alt="classroomio logo" class="mb-5" />

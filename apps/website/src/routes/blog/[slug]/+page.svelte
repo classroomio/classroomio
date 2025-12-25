@@ -6,7 +6,7 @@
 
   import { BlogListItem } from '$lib/components';
 
-  export let data;
+  let { data } = $props();
 </script>
 
 <div class=" mt-[10%] md:mt-16">
@@ -28,7 +28,7 @@
 
         <!-- Post -->
         <div class="prose border-b-2 border-gray-200 pb-4 pt-2">
-          <svelte:component this={data.content} />
+          <data.content />
           <!-- Tags -->
           <div class="flex gap-2 py-4">
             {#each data.meta.tags as tag}

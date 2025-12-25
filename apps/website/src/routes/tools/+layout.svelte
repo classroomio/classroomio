@@ -1,5 +1,12 @@
 <script>
   import { PageSignupCTA } from '$lib/components';
+  /**
+   * @typedef {Object} Props
+   * @property {import('svelte').Snippet} [children]
+   */
+
+  /** @type {Props} */
+  let { children } = $props();
 </script>
 
 <svelte:head>
@@ -29,7 +36,7 @@
   <meta name="twitter:image" content="https://brand.cdn.clsrio.com/og/free-tools.png" />
 </svelte:head>
 
-<slot />
+{@render children?.()}
 
 <PageSignupCTA
   header="Scale Your Bootcamp Today with ClassroomIO"

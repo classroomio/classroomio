@@ -4,8 +4,14 @@
   import SearchXIcon from '@lucide/svelte/icons/search-x';
   import { Button } from '@cio/ui/base/button';
 
-  export let isOrg = false;
-  export let className = '';
+  /**
+   * @typedef {Object} Props
+   * @property {boolean} [isOrg]
+   * @property {string} [className]
+   */
+
+  /** @type {Props} */
+  let { isOrg = false, className = '' } = $props();
 
   function handleClick() {
     if (!isOrg) {

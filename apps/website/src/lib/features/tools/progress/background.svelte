@@ -63,7 +63,7 @@
     >
       {#each backgrounds as background}
         <button
-          on:click={() => {
+          onclick={() => {
             selectBackground(background);
           }}
           class="flex w-[30%] items-center shadow-sm hover:scale-110 transition-all duration-300"

@@ -79,7 +79,7 @@
   <img src="/roadmap-two.svg" alt="" class="hidden lg:block absolute top-0 left-0" />
   <div class="flex flex-col items-start space-y-10 px-4">
     <div>
-      <h1 class="text-3xl font-bold">Latest Features</h1>
+      <h1 class="text-3xl">Latest Features</h1>
     </div>
 
     <Timeline items={newFeatures} />
@@ -89,7 +89,7 @@
 <section class="flex flex-col items-center w-full px-4 py-20 border-b-2">
   <div class="flex flex-col items-start space-y-10 px-4">
     <div>
-      <h1 class="text-3xl font-bold">Upcoming Features</h1>
+      <h1 class="text-3xl">Upcoming Features</h1>
     </div>
 
     <Timeline items={upcomingFeatures} />

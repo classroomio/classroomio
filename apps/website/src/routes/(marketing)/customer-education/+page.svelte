@@ -92,11 +92,11 @@
     <div
       class="w-full gap-y-4 flex flex-col lg:items-center items-start lg:justify-center justify-start"
     >
-      <Badge class="py-2! px-4!" variant="outline">Our benefits</Badge>
+      <Badge class="py-1! px-4!" variant="outline">Our benefits</Badge>
       <div
         class="lg:w-full max-w-7xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
-        <h1 class="text-3xl md:text-5xl font-bold">The customer education toolkit</h1>
+        <h1 class="text-3xl">The customer education toolkit</h1>
         <p class="text-[#334155] text-sm md:text-base font-light lg:text-center md:w-[80%]">
           Create beautiful, branded landing pages to showcase your courses and get customers up to
           speed quickly
@@ -116,7 +116,7 @@
           />
 
           <div class="w-full flex flex-col justify-start align-start gap-y-2">
-            <h1 class="text-xl font-medium">{benefits.title}</h1>
+            <p class="text-lg">{benefits.title}</p>
 
             <div class="flex flex-row justify-start items-start gap-x-3">
               <p class="leading-8 text-gray-500 font-[#656565] font-light">
@@ -136,14 +136,14 @@
       class="w-full gap-y-4 flex flex-col lg:items-center items-start lg:justify-center justify-start"
     >
       <div class="w-fit py-2 px-4 rounded-full border-[#C2D2FF] border-2 text-center">
-        <p class=" text-sm md:text-base text-[#4B5563] text-center font-medium">
+        <p class="text-sm  text-[#4B5563] text-center">
           Explore our features
         </p>
       </div>
       <div
         class="lg:w-full max-w-7xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
       >
-        <h1 class="text-3xl md:text-5xl font-bold">Why Choose Us For Education Needs</h1>
+        <h1 class="text-3xl">Why Choose Us For Education Needs</h1>
         <p class="text-[#334155] text-sm md:text-base font-light lg:text-center md:w-[80%]">
           Discover how our innovative solutions can reduce stress, enhance productivity, and achieve
           your training goals.
@@ -154,9 +154,9 @@
     <div class="w-full max-w-7xl flex flex-col justify-start items-center lg:gap-y-24 gap-y-16">
       {#each featureDetails as feature, i}
         <div
-          class="w-full lg:w-[70%] flex lg:flex-row {i % 2 !== 0
+          class="w-full flex lg:flex-row {i % 2 !== 0
             ? 'lg:flex-row-reverse'
-            : ''} flex-col lg:justify-between justify-start lg:items-center items-start gap-10"
+            : ''} flex-col lg:justify-evenly justify-start lg:items-center items-start gap-10"
         >
           <div
             class="w-full max-w-sm lg:w-[40%] lg:gap-y-6 gap-y-3 flex flex-col items-start justify-start"
@@ -166,7 +166,7 @@
               alt="team icon"
             />
             <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
-              <h1 class="font-bold text-4xl">{feature.title}</h1>
+              <h1 class="text-2xl">{feature.title}</h1>
               <p class="leading-8 text-lg text-gray-500">
                 {feature.description}
               </p>

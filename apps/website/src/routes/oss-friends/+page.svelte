@@ -2,7 +2,7 @@
   import { PageHeader } from '$lib/components';
   import { Button } from '@cio/ui/base/button';
 
-  export let data;
+  let { data } = $props();
 </script>
 
 <svelte:head>

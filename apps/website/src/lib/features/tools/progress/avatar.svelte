@@ -6,8 +6,8 @@
     src: string;
   }
 
-  let isAddIcon = false;
-  let hoveredIndex: number | null = null;
+  let isAddIcon = $state(false);
+  let hoveredIndex: number | null = $state(null);
 
   let avatars: Avatar[] = [
     { src: 'avatar_a' },
@@ -48,14 +48,14 @@
     <div class="flex flex-wrap justify-evenly gap-y-3 mt-3">
       {#each avatars as avatar, index}
         <button
-          on:click={() => {
+          onclick={() => {
             selectAvatar(avatar);
           }}
-          on:mouseenter={() => {
+          onmouseenter={() => {
             hoveredIndex = index;
             isAddIcon = true;
           }}
-          on:mouseleave={() => {
+          onmouseleave={() => {
             hoveredIndex = null;
             isAddIcon = false;
           }}

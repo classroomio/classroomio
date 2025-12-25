@@ -16,11 +16,11 @@
   import DownloadButton from '$lib/features/tools/progress/download-button.svelte';
 
   const MAX_CHARS = 160;
-  let remainingChars = MAX_CHARS;
-  let showReport: boolean = false;
-  let showSetter: boolean = true;
+  let remainingChars = $state(MAX_CHARS);
+  let showReport: boolean = $state(false);
+  let showSetter: boolean = $state(true);
   let isDownloading: boolean = false;
-  let isDisabled: boolean;
+  let isDisabled: boolean = $state();
 
   // sets the result of the mini validation for the htmlBody store
   const unsubscribe = isFormComplete.subscribe((value) => {
@@ -88,7 +88,7 @@
 <section class=" w-full px-1 md:w-full md:px-0">
   <ToolsHeader>
     <img src="/free-tools/progress-report.svg" class="mx-auto w-[15%] rounded-full border md:w-[5%]" alt="" />
-    <h1 class="my-3 text-4xl font-bold text-[#040F2D] md:text-6xl">Progress Report</h1>
+    <h1 class="my-3 text-3xl text-[#040F2D] md:text-5xl">Progress Report</h1>
     <p class="text-md mx-auto font-light text-[#656565] md:w-[45%] md:font-normal">
       Generate cool reports of your learning progress. Share reports with your network for collaborative learning
     </p>
@@ -113,7 +113,7 @@
         <div class="mb-5 flex justify-end md:hidden">
           <button
             type="button"
-            on:click={() => {
+            onclick={() => {
               showSetter = false;
               showReport = true;
             }}
@@ -130,7 +130,7 @@
           <input
             type="text"
             bind:value={$htmlBody.name}
-            on:input={(event) => handleInputChange(event, 'name')}
+            oninput={(event) => handleInputChange(event, 'name')}
             placeholder="Enter your name here"
             class="my-3 w-full rounded-sm border bg-[#F1F2F4] px-3 py-2 text-xs outline-none placeholder:text-sm placeholder:text-[#ADADAD]"
           />
@@ -141,7 +141,7 @@
           <p class="text-sm text-[#656565]">Select your mood</p>
           <button
             type="button"
-            on:click={() => ($openModal.mood = true)}
+            onclick={() => ($openModal.mood = true)}
             class="my-3 flex w-full items-center justify-between rounded-sm border bg-[#F1F2F4] px-3 py-2 text-sm text-gray-400 outline-none"
           >
             {#if $htmlBody.mood.text}
@@ -172,7 +172,7 @@
           <textarea
             bind:value={$htmlBody.learning}
             maxlength={MAX_CHARS}
-            on:input={(event) => handleInputChange(event, 'learning')}
+            oninput={(event) => handleInputChange(event, 'learning')}
             placeholder="Tell us what you are learning"
             class="my-3 h-[17vh] w-full rounded-sm border bg-[#F1F2F4] px-3 py-2 text-sm outline-none placeholder:text-sm placeholder:text-[#ADADAD]"
           ></textarea>
@@ -189,7 +189,7 @@
               max="100"
               bind:value={$htmlBody.progress}
               class="range-input"
-              on:input={(event) => handleInputChange(event, 'progress')}
+              oninput={(event) => handleInputChange(event, 'progress')}
               style="background: linear-gradient(to right, #0F62FE {$htmlBody.progress}%, #ccc {$htmlBody.progress}%);"
             />
             <p class="text-sm font-semibold">{$htmlBody.progress}%</p>
@@ -202,7 +202,7 @@
             <p class="text-[12px] text-[#656565] md:text-sm">Choose your avatar</p>
             <button
               type="button"
-              on:click={() => ($openModal.avatar = true)}
+              onclick={() => ($openModal.avatar = true)}
               class="mt-3 flex w-full items-center justify-between gap-2 bg-[#F7F7F7] px-5 py-1.5 md:w-[65%] md:justify-center md:px-0"
             >
               <img
@@ -223,7 +223,7 @@
             <p class="text-[12px] text-[#656565] md:text-sm">Choose your background</p>
             <button
               type="button"
-              on:click={() => ($openModal.background = true)}
+              onclick={() => ($openModal.background = true)}
               class="mt-3 flex w-full items-center justify-between gap-2 bg-[#F7F7F7] px-5 py-1.5 md:w-[65%] md:justify-center md:px-0"
             >
               <img
@@ -265,19 +265,19 @@
             <div class="mx-auto mt-2 flex w-[60%] justify-evenly gap-5 rounded-xl border px-5 py-2 md:w-[80%]">
               <button
                 type="button"
-                on:click={shareOnFacebook}
+                onclick={shareOnFacebook}
                 class="w-10 transition-all duration-300 hover:scale-[1.2]"
               >
                 <Facebook size={32} />
               </button>
               <button
                 type="button"
-                on:click={shareOnLinkedIn}
+                onclick={shareOnLinkedIn}
                 class="w-10 transition-all duration-300 hover:scale-[1.2]"
               >
                 <Linkedin size={32} />
               </button>
-              <button type="button" on:click={shareOnTwitter} class="w-5 transition-all duration-300 hover:scale-[1.2]">
+              <button type="button" onclick={shareOnTwitter} class="w-5 transition-all duration-300 hover:scale-[1.2]">
                 <img src="/twitter_logo.png" alt="X.com" />
               </button>
             </div>
@@ -290,7 +290,7 @@
         <div class="mb-5 flex justify-end">
           <button
             type="button"
-            on:click={() => {
+            onclick={() => {
               showReport = false;
               showSetter = true;
             }}
@@ -313,19 +313,19 @@
             <div class="mx-auto mt-2 flex w-[60%] justify-evenly gap-5 rounded-xl border px-5 py-2 md:w-[80%]">
               <button
                 type="button"
-                on:click={shareOnFacebook}
+                onclick={shareOnFacebook}
                 class="w-10 transition-all duration-300 hover:scale-[1.2]"
               >
                 <Facebook size={32} />
               </button>
               <button
                 type="button"
-                on:click={shareOnLinkedIn}
+                onclick={shareOnLinkedIn}
                 class="w-10 transition-all duration-300 hover:scale-[1.2]"
               >
                 <Linkedin size={32} />
               </button>
-              <button type="button" on:click={shareOnTwitter} class="w-5 transition-all duration-300 hover:scale-[1.2]">
+              <button type="button" onclick={shareOnTwitter} class="w-5 transition-all duration-300 hover:scale-[1.2]">
                 <img src="/twitter_logo.png" alt="X.com" />
               </button>
             </div>

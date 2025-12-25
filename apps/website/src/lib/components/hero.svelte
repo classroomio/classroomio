@@ -11,8 +11,8 @@
     { label: 'Customers', color: '#0233BD' },
     { label: 'Students', color: '#9747FF' }
   ];
-  let animate = false;
-  let titleIndex = 0;
+  let animate = $state(false);
+  let titleIndex = $state(0);
   let timeout: NodeJS.Timeout;
 
   onMount(() => {

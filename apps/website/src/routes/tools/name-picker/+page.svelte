@@ -1,12 +1,14 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { ToolsHeader } from '$lib/components';
 
-  let namesInput = '';
-  let numNames = 0;
-  let wordCount = 0;
-  let selectedNames: string[] = [];
-  let avatarUrls: string[] = [];
-  let avatarUrlsFetched = false;
+  let namesInput = $state('');
+  let numNames = $state(0);
+  let wordCount = $state(0);
+  let selectedNames: string[] = $state([]);
+  let avatarUrls: string[] = $state([]);
+  let avatarUrlsFetched = $state(false);
 
   // function to shuffle an array
   const shuffleArray = (array: string[]) => {
@@ -98,7 +100,9 @@
     }
   }
 
-  $: wordCount = namesInput?.split(',').filter((name) => name.trim())?.length ?? 0;
+  run(() => {
+    wordCount = namesInput?.split(',').filter((name) => name.trim())?.length ?? 0;
+  });
 </script>
 
 <svelte:head>
@@ -123,7 +127,7 @@
 <section class="bg-white px-5 md:px-0">
   <ToolsHeader>
     <img src="/free-tools/name-picker.svg" class="mx-auto w-[15%] rounded-full border md:w-[5%]" alt="" />
-    <h1 class="my-3 text-4xl font-bold text-[#040F2D] md:text-6xl">Random Name Picker</h1>
+    <h1 class="my-3 text-3xl text-[#040F2D] md:text-5xl">Random Name Picker</h1>
     <p class="text-md mx-auto font-light text-[#656565] md:w-[45%] md:font-normal">
       Use this online name picker to draw a random name from a list of names, or to draw several names randomly out of a
       list. You can use it as a name randomizer for a class activities.
@@ -132,24 +136,24 @@
 
   <div class="mx-auto my-10 rounded-md border bg-white py-8 shadow-md md:w-[60%] md:py-[3%]">
     <div class="mx-auto w-[85%] bg-white md:w-[70%]">
-      <h1 class="text-sm font-bold">List of names</h1>
+      <h1 class="text-sm">List of names</h1>
 
       <!-- container -->
       <div
-        class="relative mt-5 h-[12rem] overflow-hidden rounded-sm border-2 bg-[#F1F2F4] pl-3 pt-2 focus-within:border-[#0233BD]"
+        class="relative mt-5 h-48 overflow-hidden rounded-sm border-2 bg-[#F1F2F4] pl-3 pt-2 focus-within:border-[#0233BD]"
       >
         <!-- sidebar -->
         <div class="absolute right-2 top-3 flex flex-col gap-y-3 md:right-7">
           <button
             type="button"
-            on:click={sortRandom}
+            onclick={sortRandom}
             class="flex items-center justify-center rounded-full bg-[#D9E0F5] p-1.5"
           >
             <img src="/sort-icon.svg" class="w-2.5" alt="" />
           </button>
           <button
             type="button"
-            on:click={unsortRandom}
+            onclick={unsortRandom}
             class="flex items-center justify-center rounded-full bg-[#D9E0F5] p-1.5"
           >
             <img src="/unsort-icon.svg" class="w-2.5" alt="" />
@@ -175,7 +179,7 @@
       <p class="border-b py-4 text-xs">Each name must be separated by a comma</p>
 
       <div class="mt-10">
-        <h1 class="text-sm font-bold">Number of Names</h1>
+        <h1 class="text-sm">Number of Names</h1>
         <!-- number input & button -->
         <div class="mt-5 flex w-full flex-wrap justify-between gap-y-3">
           <input
@@ -185,7 +189,7 @@
           />
           <button
             type="button"
-            on:click={selectName}
+            onclick={selectName}
             class="w-[70%] rounded-md bg-[#0F62FE] py-3 text-sm text-white md:w-[35%] md:py-0"
             >Select name(s) at random</button
           >
@@ -196,7 +200,7 @@
       <div class="mb-5 mt-10 flex items-center justify-center gap-3 bg-[#F1F6FF] py-3">
         <img src="/free-tools/name-picker.svg" class="w-[12%] md:w-[9%]" alt="" />
         {#if selectedNames.length > 0}
-          <h1 class="text-xl font-bold text-[#0233BD]">Selected Names</h1>
+          <h1 class="text-xl text-[#0233BD]">Selected Names</h1>
         {/if}
       </div>
 
@@ -226,12 +230,12 @@
           <div class="mt-3 flex flex-wrap items-center justify-between md:justify-center md:gap-3">
             <button
               type="button"
-              on:click={resetEntry}
+              onclick={resetEntry}
               class="w-[45%] rounded-md border py-2 text-xs md:w-[20%] md:text-sm">Reset Entries</button
             >
             <button
               type="button"
-              on:click={selectName}
+              onclick={selectName}
               class="w-[45%] rounded-md bg-[#0F62FE] py-2 text-xs text-white md:w-[27%] md:text-sm"
               >Select other names</button
             >

@@ -1,13 +1,29 @@
 <script>
   import { flexible, leftFist, rightFist, robotArm, thumbsUp } from '$lib/emojis';
 
-  export let id = '';
-  export let rightToLeft = false;
-  export let tagline = '';
-  export let title = '';
-  export let description = '';
-  export let video = '';
-  export let taglineIcon = '';
+  /**
+   * @typedef {Object} Props
+   * @property {string} [id]
+   * @property {boolean} [rightToLeft]
+   * @property {string} [tagline]
+   * @property {string} [title]
+   * @property {string} [description]
+   * @property {string} [video]
+   * @property {string} [taglineIcon]
+   * @property {import('svelte').Snippet} [more]
+   */
+
+  /** @type {Props} */
+  let {
+    id = '',
+    rightToLeft = false,
+    tagline = '',
+    title = '',
+    description = '',
+    video = '',
+    taglineIcon = '',
+    more
+  } = $props();
 </script>
 
 <section {id} class="w-full py-32 border-b border-x-0 border-t-0 border-gray-200">
@@ -32,15 +48,15 @@
         {/if}
         <p class="font-medium text-base">{tagline}</p>
       </div>
-      <h2 class="font-bold text-4xl mb-3 lg:mb-6">{title}</h2>
+      <h2 class="text-3xl mb-3 lg:mb-6">{title}</h2>
       <p class="leading-8 text-lg text-gray-500">
         {description}
       </p>
-      {#if $$slots.more}
+      {#if more}
         <br />
 
         <p class="leading-8 text-lg text-gray-500">
-          <slot name="more" />
+          {@render more?.()}
         </p>
       {/if}
     </div>

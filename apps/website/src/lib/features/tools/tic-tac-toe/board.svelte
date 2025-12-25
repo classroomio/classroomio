@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { sineInOut } from 'svelte/easing';
   import { fly } from 'svelte/transition';
   import WinningLine from './winning-line.svelte';
@@ -9,18 +11,22 @@
     click: (rowIndex: number, columnIndex: number) => Game;
   }
 
-  export let game: Game;
-  export let winner = null;
+  interface Props {
+    game: Game;
+    winner?: any;
+  }
 
-  let customDelay: number;
+  let { game = $bindable(), winner = null }: Props = $props();
 
-  $: {
+  let customDelay: number = $state();
+
+  run(() => {
     if ($changeToComputer.change) {
       customDelay = 400;
     } else {
       customDelay = 0;
     }
-  }
+  });
 </script>
 
 <div class="relative">
@@ -31,7 +37,7 @@
           {#each row as column, columnIndex}
             <td
               class="cursor-pointer text-center h-25 w-[1.5em] border-r-10 border-b-10 border-white last:border-r-0"
-              on:click={() => {
+              onclick={() => {
                 game = game.click(rowIndex, columnIndex);
               }}
             >

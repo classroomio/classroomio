@@ -19,4 +19,3 @@ export { default as Testimonial } from './testimonial.svelte';
 export { default as Timeline } from './timeline.svelte';
 export { default as ToolsHeader } from './tools-header.svelte';
 export { default as UploadWidget } from './upload-widget.svelte';
-
