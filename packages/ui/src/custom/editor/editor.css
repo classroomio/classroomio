@@ -5,11 +5,12 @@
 }
 
 /* For Placeholder */
-.tiptap .is-empty::before {
+
+.tiptap .is-empty:not(blockquote.is-empty)::before {
   pointer-events: none;
   float: left;
   height: 0;
-  color: var(--border-color-hover);
+  color: var(--color-muted-foreground);
   content: attr(data-placeholder);
 }
 
@@ -66,12 +67,12 @@
 }
 
 .tiptap blockquote::before {
-  content: '';
+  content: ' ';
   position: absolute;
   left: 0;
   top: 0;
   bottom: 0;
-  width: 0.25rem;
+  width: 0.4rem;
   background-color: var(--blockquote-border);
   border-radius: 0.5rem;
 }
@@ -208,8 +209,8 @@ input[type='checkbox'] {
   align-items: center;
   cursor: grab;
   opacity: 100;
-  transition-property: opacity;
-  transition-duration: 200ms;
+  transition-property: all;
+  transition-duration: 300ms;
   transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
   color: var(--border-color-hover);
 }
@@ -451,4 +452,42 @@ input[type='checkbox'] {
 
 .tiptap iframe {
   aspect-ratio: 16 / 9;
+}
+
+/* Mathematics extension styles */
+.tiptap .tiptap-mathematics-render {
+	padding: 0 0.25rem;
+	border-radius: 0.25rem;
+}
+
+/* Editable math block */
+.tiptap .tiptap-mathematics-render--editable {
+	cursor: pointer;
+	transition: background 0.2s;
+}
+
+.tiptap .tiptap-mathematics-render--editable:hover {
+	background: var(--code-bg);
+}
+
+/* Inline math */
+.tiptap .tiptap-mathematics-render[data-type='inline-math'] {
+	display: inline-block;
+}
+
+/* Block math */
+.tiptap .tiptap-mathematics-render[data-type='block-math'] {
+	display: block;
+	margin: 1rem 0;
+	padding: 0.5rem;
+	text-align: center;
+	font-size: 1.25rem;
+}
+
+/* Error styles */
+.tiptap .tiptap-mathematics-render.inline-math-error,
+.tiptap .tiptap-mathematics-render.block-math-error {
+	background: var(--code-bg);
+	color: var(--color-destructive);
+	border: 1px solid darkred;
 }
