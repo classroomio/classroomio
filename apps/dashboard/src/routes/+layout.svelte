@@ -71,15 +71,17 @@
   // The goal of this effect is to make sure that we do a redirect to /login if the session data is expired
   // This should be happening on the hooks.server.ts but we've made the home page public so we can show a loading spinner while the app is initializing OR an error message if the backend is down.
   $effect(() => {
-    if ($session.isPending || $session.isRefetching) {
+    if ($session.isPending || $session.isRefetching || !!$session.data) {
       console.log('session is pending or refetching');
       return;
     }
     console.log('path', path);
     console.log('isPublicRoute', isPublicRoute(path));
+    console.log('data', $session.data)
+
 
     // No need to require login for public routes
-    if (isPublicRoute(path)) return;
+    if (isPublicRoute(path) && path !== '/') return;
 
     if (!$session.data && path !== '/login') {
       console.log('session data is not available, go to login');

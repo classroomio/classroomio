@@ -1,16 +1,17 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { Badge } from '@cio/ui/base/badge';
-
+  import { Skeleton } from '@cio/ui/base/skeleton';
   import * as Dialog from '@cio/ui/base/dialog';
-  import { Confetti, ComingSoon } from '$features/ui';
   import { InputField } from '@cio/ui/custom/input-field';
   import { Button } from '@cio/ui/base/button';
-  import { CircleCheckIcon } from '$features/ui/icons';
 
   import { t } from '$lib/utils/functions/translations';
+  import { exerciseTemplateApi } from '$features/exercise-template/api';
+  import { snackbar } from '$features/ui/snackbar/store';
+  import { Confetti, ComingSoon } from '$features/ui';
+  import { CircleCheckIcon } from '$features/ui/icons';
+  import { TAGS } from '$features/exercise-template/utils/constants';
   import type { ExerciseTemplate } from '$lib/utils/types';
-  import { type GeneratedTemplates, getAllTemplates, TAGS } from '$lib/mocks';
 
   interface Props {
     open: boolean;
@@ -64,7 +65,6 @@
   // let optionNumber = $state(5);
   let isLoading = $state(false);
   let isAIStarted = $state(false);
-  let allTemplates: GeneratedTemplates | undefined = $state();
 
   let selectedTag = $state(tags[0]);
   let selectedTemplateId = $state('');
@@ -110,9 +110,32 @@
   //   }, 500);
   // }
 
-  onMount(async () => {
-    allTemplates = await getAllTemplates();
-  });
+  async function handleTemplateSelection() {
+    isTemplateFinishedLoading = true;
+    const template = exerciseTemplateApi.templates?.find((t) => t.id === Number(selectedTemplateId));
+
+    if (!template) return;
+
+    let fetchedTemplate: ExerciseTemplate;
+
+    try {
+      await exerciseTemplateApi.fetchTemplateById(template.id);
+      fetchedTemplate = exerciseTemplateApi.template[0];
+      console.log('Fetched template', fetchedTemplate);
+      await handleTemplateCreate(fetchedTemplate);
+    } catch (error) {
+      console.log('Error fetching template', error);
+      snackbar.error($t('course.navItem.lessons.exercises.new_exercise_modal.errors.template_fetch'));
+    } finally {
+      isTemplateFinishedLoading = false;
+    }
+  }
+
+  const handleTagSelection = async (tag: string) => {
+    selectedTag = tag;
+    selectedTemplateId = '';
+    await exerciseTemplateApi.fetchTemplatesByTag(selectedTag);
+  };
 
   // const content = $derived(
   //   lessonFallbackNote(
@@ -146,7 +169,7 @@
       <div class="my-8 flex justify-between gap-2">
         {#each options as option}
           <button
-            class="h-[240px] w-[261px] rounded-md border-2 p-5 dark:bg-neutral-700 {option.type === type
+            class="h-60 w-[261px] rounded-md border-2 p-5 dark:bg-neutral-700 {option.type === type
               ? 'border-primary-400'
               : `border-gray-200 dark:border-neutral-600 ${
                   !option.isDisabled && 'hover:scale-95'
@@ -210,21 +233,33 @@
         <div>
           <div class="mb-5 flex items-center gap-2">
             {#each tags as tag}
-              <Badge
-                class={selectedTag === tag ? 'bg-primary-400' : ''}
-                onclick={() => {
-                  selectedTag = tag;
-                  selectedTemplateId = '';
-                }}>{tag}</Badge
+              <Badge class={selectedTag === tag ? 'bg-primary-400' : ''} onclick={() => handleTagSelection(tag)}
+                >{tag}</Badge
               >
             {/each}
           </div>
 
-          <div class="flex flex-wrap items-start gap-2">
-            {#if allTemplates}
-              {#each allTemplates[selectedTag] as template}
+          {#if exerciseTemplateApi.isLoading}
+            <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
+              {#each Array(16) as _}
+                <div
+                  class="h-[140px] w-full rounded-md border-2 border-gray-200 p-5 dark:border-neutral-600 dark:bg-neutral-700"
+                >
+                  <div class="flex h-full flex-col justify-evenly">
+                    <Skeleton class="h-4 w-3/4" />
+                    <div class="flex flex-col items-start justify-between gap-1">
+                      <Skeleton class="h-3 w-20" />
+                      <Skeleton class="h-3 w-16" />
+                    </div>
+                  </div>
+                </div>
+              {/each}
+            </div>
+          {:else if exerciseTemplateApi.templates.length > 0}
+            <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
+              {#each exerciseTemplateApi.templates as template}
                 <button
-                  class="h-[140px] w-[161px] rounded-md border-2 p-5 hover:scale-95 dark:bg-neutral-700 {template.id ===
+                  class="h-[140px] w-full rounded-md border-2 p-5 hover:scale-95 dark:bg-neutral-700 {template.id ===
                   selectedTemplateId
                     ? 'border-primary-400'
                     : `border-gray-200 dark:border-neutral-600 `} flex flex-col transition-all ease-in-out"
@@ -248,28 +283,17 @@
                   </div>
                 </button>
               {/each}
-            {/if}
-          </div>
+            </div>
+          {/if}
 
           <div class="mt-5 flex items-center justify-between">
             <Button variant="outline" onclick={handleBack}>
               {$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
             </Button>
             <Button
-              disabled={!selectedTemplateId || !allTemplates}
+              disabled={!selectedTemplateId || exerciseTemplateApi.templates.length === 0}
               loading={isTemplateFinishedLoading}
-              onclick={async () => {
-                isTemplateFinishedLoading = true;
-                const template = allTemplates?.[selectedTag]?.find((t) => t.id === selectedTemplateId);
-
-                if (!template) return;
-
-                console.log('Selected template', template);
-
-                await handleTemplateCreate(template.data);
-
-                isTemplateFinishedLoading = true;
-              }}
+              onclick={handleTemplateSelection}
             >
               {$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
             </Button>

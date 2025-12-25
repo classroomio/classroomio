@@ -898,8 +898,7 @@ export const courseNewsfeedComment = pgTable(
       columns: [table.courseNewsfeedId],
       foreignColumns: [courseNewsfeed.id],
       name: 'course_newsfeed_comment_course_newsfeed_id_fkey'
-    }),
-    unique('course_newsfeed_comment_id_key').on(table.id)
+    })
   ]
 );
 
@@ -1312,3 +1311,45 @@ export const lessonVersions = pgView('lesson_versions', {
 }).as(
   sql`SELECT llh.old_content, llh.new_content, llh."timestamp", ll.locale, ll.lesson_id FROM lesson_language_history llh JOIN lesson_language ll ON ll.id = llh.lesson_language_id`
 );
+
+export const exerciseTemplate = pgTable('exercise_template', {
+  id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
+    name: 'exercise_template_id_seq',
+    startWith: 1,
+    increment: 1,
+    minValue: 1,
+    cache: 1
+  }),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+  title: text(),
+  description: text(),
+  tag: text(),
+  questionnaire: jsonb().default({}).$type<{
+    questions: [
+      {
+        title: string;
+        name: string;
+        points: number;
+        order: number;
+        question_type: {
+          id: number;
+          label: string;
+        };
+        options: [
+          {
+            label: string;
+            is_correct: boolean;
+          },
+          {
+            label: string;
+            is_correct: boolean;
+          },
+          {
+            label: string;
+            is_correct: boolean;
+          }
+        ];
+      }
+    ];
+  }>()
+});

@@ -7,8 +7,8 @@
   import { t } from '$lib/utils/functions/translations';
   import * as Breadcrumb from '@cio/ui/base/breadcrumb';
   import { supabase } from '$lib/utils/functions/supabase';
-  import type { ExerciseTemplate } from '$lib/utils/types';
-  import type { Exercise as ExerciseType } from '$lib/utils/types';
+
+  import type { ExerciseTemplate, Exercise as ExerciseType } from '$lib/utils/types';
   import { formatDate } from '$lib/utils/functions/routes/dashboard';
   import { isQuestionnaireFetching, questionnaire } from '../store/exercise';
   import { createExercise, createExerciseFromTemplate } from '$lib/utils/services/courses';
