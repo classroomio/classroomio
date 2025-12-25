@@ -106,7 +106,11 @@
       {:else}
         {@const commandGroup = commands[cmd]}
         {#each commandGroup as command (command)}
-          <ToolBarIcon {editor} {command} />
+          {#if command.name === 'paragraph'}
+            <span></span>
+          {:else}
+            <ToolBarIcon {editor} {command} />
+          {/if}
         {/each}
       {/if}
     {/each}
