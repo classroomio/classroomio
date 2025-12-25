@@ -49,6 +49,26 @@ Based on the [Screencasting.com article on cheap video hosting](https://screenca
 Upload → R2 (temporary) → Processing Queue → FFmpeg Encoding → HLS Segments → R2 (final) → Cleanup
 ```
 
+#### Queue System: BullMQ with Redis
+
+**Recommended: BullMQ** - You already have Redis set up, making this the perfect choice.
+
+**Why BullMQ?**
+- ✅ **Already have Redis** - No additional infrastructure needed
+- ✅ **Docker-friendly** - Redis is easy to containerize
+- ✅ **Mature & Battle-tested** - Used by many video processing pipelines
+- ✅ **Great tooling** - Bull Board for monitoring (optional UI)
+- ✅ **Job priorities** - Can prioritize urgent videos
+- ✅ **Retry logic** - Built-in retry with exponential backoff
+- ✅ **Progress tracking** - Real-time progress updates
+- ✅ **Concurrency control** - Limit concurrent encoding jobs
+
+**Alternative: pg-boss** (if you want to avoid Redis)
+- Uses your existing PostgreSQL/Supabase database
+- No additional infrastructure
+- Good for simpler use cases
+- Slightly less feature-rich than BullMQ
+
 #### Encoding Specifications (Based on Blog Post):
 - **Resolutions**: 720p (1280x720), 1080p (1920x1080), 2160p (3840x2160)
 - **Bitrates**: 1200k, 2500k, 8000k respectively
@@ -58,10 +78,30 @@ Upload → R2 (temporary) → Processing Queue → FFmpeg Encoding → HLS Segme
 
 #### Implementation Steps:
 
-1. **Create Video Processing Service**
+1. **Install BullMQ**
+   ```bash
+   pnpm add bullmq
+   pnpm add -D @types/bullmq
+   ```
+
+2. **Add Redis to Docker Compose** (if not already running)
+   ```yaml
+   redis:
+     image: redis:7-alpine
+     ports:
+       - "6379:6379"
+     volumes:
+       - redis_data:/data
+     command: redis-server --appendonly yes
+   
+   volumes:
+     redis_data:
+   ```
+
+3. **Create Video Processing Service**
    - Add a new endpoint: `POST /api/media/video/process`
    - Accepts video fileKey after upload
-   - Queues encoding job (use BullMQ, AWS SQS, or similar)
+   - Queues encoding job with BullMQ
 
 2. **FFmpeg Encoding Script**
    - Create encoding script similar to blog post example
@@ -254,38 +294,294 @@ cat > "$OUTPUT_DIR/master.m3u8" << EOF
 EOF
 ```
 
-### API Endpoint Example
+### Implementation Code Examples
+
+#### 1. BullMQ Queue Setup
+
+```typescript
+// apps/api/src/services/video/queue.ts
+import { Queue, Worker, QueueEvents } from 'bullmq';
+import { redis } from '@api/utils/redis/redis';
+
+export interface VideoEncodingJob {
+  fileKey: string;
+  userId: string;
+  lessonId?: string;
+}
+
+export const videoProcessingQueue = new Queue<VideoEncodingJob>('video-encoding', {
+  connection: redis,
+  defaultJobOptions: {
+    attempts: 3,
+    backoff: {
+      type: 'exponential',
+      delay: 5000, // 5s, 10s, 20s
+    },
+    removeOnComplete: {
+      age: 86400, // Keep completed jobs for 24 hours
+      count: 1000, // Keep last 1000 jobs
+    },
+    removeOnFail: {
+      age: 604800, // Keep failed jobs for 7 days
+    },
+  },
+});
+
+// Queue events for monitoring
+export const videoQueueEvents = new QueueEvents('video-encoding', {
+  connection: redis,
+});
+```
+
+#### 2. Worker Setup (runs encoding jobs)
+
+```typescript
+// apps/api/src/services/video/worker.ts
+import { Worker } from 'bullmq';
+import { redis } from '@api/utils/redis/redis';
+import { encodeVideoToHLS } from './encoder';
+import type { VideoEncodingJob } from './queue';
+
+export const videoWorker = new Worker<VideoEncodingJob>(
+  'video-encoding',
+  async (job) => {
+    const { fileKey, userId } = job.data;
+    
+    // Update progress
+    await job.updateProgress(0);
+    
+    // Download video from R2
+    await job.updateProgress(10);
+    const videoBuffer = await downloadVideoFromR2(fileKey);
+    
+    // Encode to HLS
+    await job.updateProgress(20);
+    const hlsFiles = await encodeVideoToHLS(videoBuffer, fileKey);
+    
+    // Upload HLS segments to R2
+    await job.updateProgress(80);
+    const manifestUrl = await uploadHLSToR2(hlsFiles, fileKey);
+    
+    // Cleanup temporary files
+    await job.updateProgress(95);
+    await cleanupTempFiles(hlsFiles);
+    
+    // Update database
+    await job.updateProgress(100);
+    await updateVideoProcessingStatus(fileKey, {
+      status: 'completed',
+      hlsManifestUrl: manifestUrl,
+    });
+    
+    return { manifestUrl, fileKey };
+  },
+  {
+    connection: redis,
+    concurrency: 2, // Process 2 videos concurrently (adjust based on CPU)
+    limiter: {
+      max: 5, // Max 5 jobs
+      duration: 60000, // per minute
+    },
+  }
+);
+
+// Handle worker events
+videoWorker.on('completed', (job) => {
+  console.log(`Video encoding completed: ${job.id}`);
+});
+
+videoWorker.on('failed', (job, err) => {
+  console.error(`Video encoding failed: ${job?.id}`, err);
+});
+```
+
+#### 3. API Endpoints
 
 ```typescript
 // apps/api/src/routes/media/video/process.ts
+import { Hono } from '@api/utils/hono';
+import { authMiddleware } from '@api/middlewares/auth';
+import { videoProcessingQueue } from '@api/services/video/queue';
+
 export const videoProcessRouter = new Hono()
   .post('/process', authMiddleware, async (c) => {
     const { fileKey } = await c.req.json();
+    const user = c.get('user');
     
-    // Queue encoding job
-    const jobId = await videoProcessingQueue.add('encode-video', {
-      fileKey,
-      userId: c.get('user').id
-    });
+    // Add job to queue
+    const job = await videoProcessingQueue.add(
+      'encode-video',
+      {
+        fileKey,
+        userId: user.id,
+      },
+      {
+        priority: 1, // Higher priority = processed first
+        jobId: `video-${fileKey}`, // Prevent duplicates
+      }
+    );
     
     return c.json({
       success: true,
-      jobId,
-      status: 'queued'
+      jobId: job.id,
+      status: 'queued',
+      message: 'Video processing started',
     });
   })
   .get('/status/:jobId', authMiddleware, async (c) => {
     const jobId = c.req.param('jobId');
     const job = await videoProcessingQueue.getJob(jobId);
     
+    if (!job) {
+      return c.json({ success: false, error: 'Job not found' }, 404);
+    }
+    
+    const state = await job.getState();
+    const progress = job.progress || 0;
+    
     return c.json({
       success: true,
-      status: await job.getState(),
-      progress: job.progress,
-      result: job.returnvalue
+      jobId: job.id,
+      status: state,
+      progress: typeof progress === 'number' ? progress : 0,
+      result: job.returnvalue,
+      failedReason: job.failedReason,
     });
   });
 ```
+
+#### 4. Start Worker in Main Process
+
+```typescript
+// apps/api/src/index.ts (or wherever you start your server)
+import { videoWorker } from '@api/services/video/worker';
+
+// Worker will start automatically when imported
+// Make sure to gracefully shutdown:
+process.on('SIGTERM', async () => {
+  await videoWorker.close();
+  process.exit(0);
+});
+```
+
+#### 5. Optional: Bull Board UI (for monitoring)
+
+```typescript
+// apps/api/src/routes/admin/queue.ts
+import { createBullBoard } from '@bull-board/api';
+import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
+import { ExpressAdapter } from '@bull-board/express';
+import { videoProcessingQueue } from '@api/services/video/queue';
+
+const serverAdapter = new ExpressAdapter();
+serverAdapter.setBasePath('/admin/queues');
+
+createBullBoard({
+  queues: [new BullMQAdapter(videoProcessingQueue)],
+  serverAdapter,
+});
+
+// Mount at /admin/queues in your Hono app
+```
+
+**Install Bull Board:**
+```bash
+pnpm add @bull-board/api @bull-board/express @bull-board/hono
+```
+
+#### 6. Docker Compose Update
+
+Add Redis service to your `docker/docker-compose.yaml`:
+
+```yaml
+services:
+  # ... existing services ...
+  
+  redis:
+    image: redis:7-alpine
+    container_name: classroomio-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  redis_data:
+    driver: local
+```
+
+Update your `.env` file:
+```bash
+REDIS_URL=redis://redis:6379  # For Docker
+# OR
+REDIS_URL=redis://localhost:6379  # For local dev
+```
+
+#### 7. FFmpeg in Docker
+
+Add FFmpeg to your API Dockerfile:
+
+```dockerfile
+# In apps/api/Dockerfile or docker/Dockerfile.api
+FROM node:20.19.3-slim AS app
+
+# Install FFmpeg
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
+# ... rest of your Dockerfile
+```
+
+### Alternative: pg-boss (PostgreSQL-based Queue)
+
+If you prefer to avoid Redis dependency, you can use **pg-boss** which uses your existing PostgreSQL/Supabase database:
+
+**Pros:**
+- ✅ No additional infrastructure (uses existing PostgreSQL)
+- ✅ Simpler setup
+- ✅ Good for smaller workloads
+
+**Cons:**
+- ❌ Less feature-rich than BullMQ
+- ❌ Can add load to your database
+- ❌ Not ideal for high-volume video processing
+
+**Setup:**
+```bash
+pnpm add pg-boss
+```
+
+```typescript
+import PgBoss from 'pg-boss';
+
+const boss = new PgBoss({
+  connectionString: process.env.DATABASE_URL, // Your Supabase connection
+});
+
+await boss.start();
+
+// Add job
+const jobId = await boss.send('video-encoding', {
+  fileKey: '...',
+  userId: '...',
+});
+
+// Worker
+await boss.work('video-encoding', async (job) => {
+  // Process video
+  return { success: true };
+});
+```
+
+**Recommendation:** Stick with **BullMQ** since you already have Redis set up. It's more robust for video processing workloads.
 
 ## Expected Benefits
 
