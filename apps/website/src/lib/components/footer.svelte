@@ -26,17 +26,16 @@
         /></a
       > -->
       <div class="mt-5 flex items-center gap-3 lg:mt-10 lg:gap-7">
-        <Button href="https://www.facebook.com/classroomiohq" target="_blank" variant="ghost" aria-label="Facebook Link">
+        <Button
+          href="https://www.facebook.com/classroomiohq"
+          target="_blank"
+          variant="ghost"
+          aria-label="Facebook Link"
+        >
           <Facebook />
         </Button>
         <Button href="https://twitter.com/classroomio" target="_blank" variant="ghost" aria-label="Twitter Link">
-          <img
-            width="20"
-            height="20"
-            loading="lazy"
-            src="/twitter.svg"
-            alt=""
-          />
+          <img width="20" height="20" loading="lazy" src="/twitter.svg" alt="" />
         </Button>
         <Button href="https://www.youtube.com/@ClassroomIO" target="_blank" variant="ghost" aria-label="Youtube Link">
           <Youtube />
@@ -130,9 +129,7 @@
       </div>
     </nav>
   </div>
-  <footer
-    class="border-t py-3 text-center text-xs font-light leading-5 text-gray-500 lg:text-left lg:text-base"
-  >
+  <footer class="border-t py-3 text-center text-xs font-light leading-5 text-gray-500 lg:text-left lg:text-base">
     <p>All rights reserved.</p>
     <p class="flex items-center justify-center">
       ClassroomIO © {new Date().getFullYear()} by

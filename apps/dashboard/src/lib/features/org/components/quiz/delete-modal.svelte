@@ -43,29 +43,29 @@
       </Dialog.Title>
     </Dialog.Header>
     <div class="my-10 flex w-full flex-col items-center">
-    <h1 class="text-center text-lg dark:text-white">
-      {#if $deleteModal.isQuestion}
-        {$t('components.quiz.delete_question')}
-      {:else}
-        {$t('components.quiz.delete_quiz')}
-      {/if}
-      {$t('components.quiz.lose_content')}
-    </h1>
+      <h1 class="text-center text-lg dark:text-white">
+        {#if $deleteModal.isQuestion}
+          {$t('components.quiz.delete_question')}
+        {:else}
+          {$t('components.quiz.delete_quiz')}
+        {/if}
+        {$t('components.quiz.lose_content')}
+      </h1>
 
-    <div class="mt-5">
-      <Button
-        onclick={() => {
-          if ($deleteModal.isQuestion) {
-            onDelete();
-            $deleteModal.open = false;
-          } else {
-            deleteQuiz();
-          }
-        }}
-      >
-        {$t('components.quiz.delete')}
-      </Button>
+      <div class="mt-5">
+        <Button
+          onclick={() => {
+            if ($deleteModal.isQuestion) {
+              onDelete();
+              $deleteModal.open = false;
+            } else {
+              deleteQuiz();
+            }
+          }}
+        >
+          {$t('components.quiz.delete')}
+        </Button>
+      </div>
     </div>
-  </div>
   </Dialog.Content>
 </Dialog.Root>

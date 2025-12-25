@@ -89,12 +89,7 @@
         With ClassroomIO, you can make side income while teaching the subject you love
       </p>
 
-      <Button
-        href="/teach/register"
-        target="_blank"
-      >
-        Register
-      </Button>
+      <Button href="/teach/register" target="_blank">Register</Button>
     </div>
 
     <div class=" ">
@@ -144,20 +139,12 @@
         {/each}
       </div>
       <div class="mt-3 flex justify-center px-[5%]">
-        <Button
-          href="/teach/register"
-          target="_blank"
-          rel="noopener noreferrer nofollow"
-      >
-          Get Started
-        </Button>
+        <Button href="/teach/register" target="_blank" rel="noopener noreferrer nofollow">Get Started</Button>
       </div>
     </div>
 
     <div class="my-10 h-[75%] bg-[#F5F8FE] px-2 py-12 lg:h-[80%] lg:px-[12%]">
-      <h1 class="flex items-center justify-center gap-3 text-center text-2xl">
-        Word from our fufilled facilitators
-      </h1>
+      <h1 class="flex items-center justify-center gap-3 text-center text-2xl">Word from our fufilled facilitators</h1>
 
       <div
         class="relative mx-auto mt-10 w-full rounded-md border bg-white py-6 text-center shadow-sm before:absolute before:left-0 before:top-0 before:h-full before:w-[4.5%] before:rounded-bl-md before:rounded-tl-md before:bg-[#0233BD] md:w-2/4"

@@ -12,7 +12,7 @@
   let { message, title } = $derived.by(() => {
     const fields = {
       title: '',
-      message: '',
+      message: ''
     };
     if (!type) return fields;
 
@@ -42,10 +42,7 @@
   });
 
   function handleSupport() {
-    window.open(
-      'mailto:help@classroomio.com?subject=Email Verification Issue&body=Error Type: ' + type,
-      '_blank'
-    );
+    window.open('mailto:help@classroomio.com?subject=Email Verification Issue&body=Error Type: ' + type, '_blank');
   }
 </script>
 
@@ -55,7 +52,7 @@
 </svelte:head>
 
 <Empty
-  title={title}
+  {title}
   description={message}
   icon={OctagonAlertIcon}
   variant="page"
@@ -63,34 +60,27 @@
   showLogo={true}
   class="h-fit! flex-none! max-h-none!"
 >
-{#if type === 'legacy_method_blocked'}
-<div
-  class="rounded-md border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20"
->
-  <div class="flex items-center">
-    <TriangleAlertIcon class="h-5 w-5 flex-shrink-0 text-yellow-400" />
-    <div class="ml-3">
-      <h3 class="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-        {$t('email_verification.security_notice.title')}
-      </h3>
-      <p class="mt-1 text-xs text-yellow-700 dark:text-yellow-300">
-        {$t('email_verification.security_notice.message')}
-      </p>
+  {#if type === 'legacy_method_blocked'}
+    <div class="rounded-md border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
+      <div class="flex items-center">
+        <TriangleAlertIcon class="h-5 w-5 flex-shrink-0 text-yellow-400" />
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+            {$t('email_verification.security_notice.title')}
+          </h3>
+          <p class="mt-1 text-xs text-yellow-700 dark:text-yellow-300">
+            {$t('email_verification.security_notice.message')}
+          </p>
+        </div>
+      </div>
     </div>
+  {/if}
+  <div class="lex w-full flex-col justify-center gap-4 md:flex-row">
+    <Button onclick={handleSupport} variant="ghost">
+      {$t('email_verification.actions.contact_support')}
+    </Button>
+    <Button onclick={() => goto('/')}>
+      {$t('email_verification.actions.back_to_dashboard')}
+    </Button>
   </div>
-</div>
-{/if}
-<div class="lex w-full flex-col justify-center gap-4 md:flex-row">
-  <Button
-    onclick={handleSupport}
-    variant="ghost"
-  >
-    {$t('email_verification.actions.contact_support')}
-  </Button>
-  <Button
-    onclick={() => goto('/')}
-  >
-    {$t('email_verification.actions.back_to_dashboard')}
-  </Button>
-</div>
 </Empty>

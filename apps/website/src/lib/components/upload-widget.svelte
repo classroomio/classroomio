@@ -10,12 +10,7 @@
     labelClassName?: string;
   }
 
-  let {
-    imageURL = $bindable(''),
-    label = '',
-    isRequired = false,
-    labelClassName = ''
-  }: Props = $props();
+  let { imageURL = $bindable(''), label = '', isRequired = false, labelClassName = '' }: Props = $props();
   let isUploading = false;
   let fileInput: HTMLInputElement = $state();
 
@@ -98,9 +93,7 @@
     {:else}
       <div class="space-y-4">
         <Copy size={24} class="mx-auto" />
-        <p class="text-center text-sm text-gray-500 my-2">
-          Max file size: 2MB, accepted: JPEG, PNG, GIF, WebP only
-        </p>
+        <p class="my-2 text-center text-sm text-gray-500">Max file size: 2MB, accepted: JPEG, PNG, GIF, WebP only</p>
       </div>
     {/if}
   </div>

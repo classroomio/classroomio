@@ -108,78 +108,84 @@
       <Dialog.Title>{$t('course.navItem.landing_page.upload_widget.title')}</Dialog.Title>
     </Dialog.Header>
     <div class="w-full bg-white p-5 dark:bg-inherit">
-    <UnderlineTabs.Root bind:value={currentTab}>
-      <UnderlineTabs.List>
-        {#each tabs as tab}
-          <UnderlineTabs.Trigger value={tab.value}>
-            {tab.label}
-          </UnderlineTabs.Trigger>
-        {/each}
-      </UnderlineTabs.List>
-      <UnderlineTabs.Content value={tabs[1].value}>
-        <!-- Your Upload content here -->
-        <div class="w-full">
-          <input
-            type="file"
-            style="display: none;"
-            bind:this={fileInput}
-            onchange={onFileSelected}
-            disabled={isUploading}
-          />
-          <Button onclick={handleUpload} loading={isUploading}>
-            {label}
-          </Button>
-          <p class="my-2 text-center text-sm text-gray-500">
-            {$t('course.navItem.landing_page.upload_widget.width')}
-          </p>
-          <p class="text-center text-sm text-gray-500">
-            {$t('course.navItem.landing_page.upload_widget.size')}
-          </p>
-        </div>
-      </UnderlineTabs.Content>
-      <UnderlineTabs.Content value={tabs[0].value}>
-        <!-- Your Images content here -->
-        <div class="h-full overflow-y-scroll">
-          <form onsubmit={preventDefault(handleSubmit)} class="mt-1 flex gap-2 pb-3">
-            <input type="text" bind:value={searchQuery} name="" id="" class="ml-2 w-[85%] rounded-lg dark:text-black" />
-            <button type="submit" class="rounded-lg border border-gray-500 bg-white px-3 py-1 text-black"
-              >{$t('course.navItem.landing_page.upload_widget.submit')}</button
-            >
-          </form>
-          {#if unsplashImages && unsplashImages.length > 0}
-            <div class="hide-scrollbar flex max-h-[300px] flex-row flex-wrap items-center gap-2 px-[10px]">
-              {#each unsplashImages as unsplashImages (unsplashImages.id)}
-                <div>
-                  <div class="relative h-[130px] w-[195px] overflow-hidden">
-                    <button onclick={() => handleImageClick(unsplashImages.urls.regular)}>
-                      <img
-                        src={unsplashImages.urls.regular}
-                        alt={unsplashImages.alt_description}
-                        class="h-full w-full cursor-pointer rounded-md object-cover hover:opacity-80"
-                      />
-                    </button>
-                  </div>
-                  {#if unsplashImages.user.name}
-                    <p class="mt-1 text-center text-xs font-light text-gray-500">
-                      By <a
-                        href={`https://unsplash.com/@${unsplashImages.user.username}`}
-                        target="_blank"
-                        class="hover:text-red-700">{unsplashImages.user.name}</a
-                      >
-                    </p>
-                  {/if}
-                </div>
-              {/each}
-            </div>
-          {:else}
-            <p class="pt-7 text-center">
-              {$t('course.navItem.landing_page.upload_widget.no_images')}
+      <UnderlineTabs.Root bind:value={currentTab}>
+        <UnderlineTabs.List>
+          {#each tabs as tab}
+            <UnderlineTabs.Trigger value={tab.value}>
+              {tab.label}
+            </UnderlineTabs.Trigger>
+          {/each}
+        </UnderlineTabs.List>
+        <UnderlineTabs.Content value={tabs[1].value}>
+          <!-- Your Upload content here -->
+          <div class="w-full">
+            <input
+              type="file"
+              style="display: none;"
+              bind:this={fileInput}
+              onchange={onFileSelected}
+              disabled={isUploading}
+            />
+            <Button onclick={handleUpload} loading={isUploading}>
+              {label}
+            </Button>
+            <p class="my-2 text-center text-sm text-gray-500">
+              {$t('course.navItem.landing_page.upload_widget.width')}
             </p>
-          {/if}
-        </div>
-      </UnderlineTabs.Content>
-    </UnderlineTabs.Root>
-  </div>
+            <p class="text-center text-sm text-gray-500">
+              {$t('course.navItem.landing_page.upload_widget.size')}
+            </p>
+          </div>
+        </UnderlineTabs.Content>
+        <UnderlineTabs.Content value={tabs[0].value}>
+          <!-- Your Images content here -->
+          <div class="h-full overflow-y-scroll">
+            <form onsubmit={preventDefault(handleSubmit)} class="mt-1 flex gap-2 pb-3">
+              <input
+                type="text"
+                bind:value={searchQuery}
+                name=""
+                id=""
+                class="ml-2 w-[85%] rounded-lg dark:text-black"
+              />
+              <button type="submit" class="rounded-lg border border-gray-500 bg-white px-3 py-1 text-black"
+                >{$t('course.navItem.landing_page.upload_widget.submit')}</button
+              >
+            </form>
+            {#if unsplashImages && unsplashImages.length > 0}
+              <div class="hide-scrollbar flex max-h-[300px] flex-row flex-wrap items-center gap-2 px-[10px]">
+                {#each unsplashImages as unsplashImages (unsplashImages.id)}
+                  <div>
+                    <div class="relative h-[130px] w-[195px] overflow-hidden">
+                      <button onclick={() => handleImageClick(unsplashImages.urls.regular)}>
+                        <img
+                          src={unsplashImages.urls.regular}
+                          alt={unsplashImages.alt_description}
+                          class="h-full w-full cursor-pointer rounded-md object-cover hover:opacity-80"
+                        />
+                      </button>
+                    </div>
+                    {#if unsplashImages.user.name}
+                      <p class="mt-1 text-center text-xs font-light text-gray-500">
+                        By <a
+                          href={`https://unsplash.com/@${unsplashImages.user.username}`}
+                          target="_blank"
+                          class="hover:text-red-700">{unsplashImages.user.name}</a
+                        >
+                      </p>
+                    {/if}
+                  </div>
+                {/each}
+              </div>
+            {:else}
+              <p class="pt-7 text-center">
+                {$t('course.navItem.landing_page.upload_widget.no_images')}
+              </p>
+            {/if}
+          </div>
+        </UnderlineTabs.Content>
+      </UnderlineTabs.Root>
+    </div>
   </Dialog.Content>
 </Dialog.Root>
 

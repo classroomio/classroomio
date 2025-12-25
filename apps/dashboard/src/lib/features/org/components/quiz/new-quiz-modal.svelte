@@ -114,28 +114,27 @@
   <Dialog.Content class="w-4/5 md:w-2/5">
     <Dialog.Header>
       <Dialog.Title>
-        {$createQuizModal.openEdit ? $t('components.quiz.update') : $t('components.quiz.create')} {$t(
-          'components.quiz.a_quiz'
-        )}
+        {$createQuizModal.openEdit ? $t('components.quiz.update') : $t('components.quiz.create')}
+        {$t('components.quiz.a_quiz')}
       </Dialog.Title>
     </Dialog.Header>
     <form onsubmit={preventDefault(createQuiz)}>
-    <InputField
-      label={$t('components.quiz.quiz_title')}
-      bind:value={$createQuizModal.title}
-      autofocus={true}
-      placeholder={$t('components.quiz.placehoolder')}
-      className="mb-4"
-      isRequired={true}
-      errorMessage={errors.title}
-      autoComplete={false}
-    />
+      <InputField
+        label={$t('components.quiz.quiz_title')}
+        bind:value={$createQuizModal.title}
+        autofocus={true}
+        placeholder={$t('components.quiz.placehoolder')}
+        className="mb-4"
+        isRequired={true}
+        errorMessage={errors.title}
+        autoComplete={false}
+      />
 
-    <div class="mt-5 flex items-center justify-end">
-      <Button type="submit" disabled={isLoading} loading={isLoading}>
-        {$createQuizModal.openEdit ? $t('components.quiz.save') : $t('components.quiz.continue')}
-      </Button>
-    </div>
-  </form>
+      <div class="mt-5 flex items-center justify-end">
+        <Button type="submit" disabled={isLoading} loading={isLoading}>
+          {$createQuizModal.openEdit ? $t('components.quiz.save') : $t('components.quiz.continue')}
+        </Button>
+      </div>
+    </form>
   </Dialog.Content>
 </Dialog.Root>

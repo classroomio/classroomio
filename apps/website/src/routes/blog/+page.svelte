@@ -10,18 +10,18 @@
 
 <section>
   <PageHeader className="flex flex-col items-center justify-center text-center">
-    <h1 class="mx-auto text-4xl md:text-6xl text-slate-900 flex flex-col items-center">
+    <h1 class="mx-auto flex flex-col items-center text-4xl text-slate-900 md:text-6xl">
       <span>What's new on</span>
-      <span class="text-blue-700 relative">ClassroomIO?</span>
+      <span class="relative text-blue-700">ClassroomIO?</span>
     </h1>
-    <p class="w-[90%] md:w-[60%] text-center font-normal text-lg text-slate-700 mt-10 lg:mt-7">
+    <p class="mt-10 w-[90%] text-center text-lg font-normal text-slate-700 md:w-[60%] lg:mt-7">
       Get the latest news from ClassroomIO, including product updates, team announcements and more!
     </p>
   </PageHeader>
-  <div class="w-full flex items-center justify-center">
-    <ul class="flex flex-col items-start justify-start gap-2 w-[90%] md:w-[50%]">
+  <div class="flex w-full items-center justify-center">
+    <ul class="flex w-[90%] flex-col items-start justify-start gap-2 md:w-[50%]">
       {#each data.posts as post}
-        <li class="py-10 w-full border-b border-gray-200">
+        <li class="w-full border-b border-gray-200 py-10">
           <BlogListItem {post} />
         </li>
       {/each}

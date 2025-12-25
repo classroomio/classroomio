@@ -113,9 +113,7 @@
         transition:fly={{ x: -100, delay: 600, easing: sineInOut }}
         class="absolute top-[43%] z-[150] flex w-full flex-col items-center justify-center"
       >
-        <div
-          class="flex h-[8vh] w-full items-center justify-center gap-10 bg-white py-1 text-[#0233BD] md:h-[13vh]"
-        >
+        <div class="flex h-[8vh] w-full items-center justify-center gap-10 bg-white py-1 text-[#0233BD] md:h-[13vh]">
           {#if message != 'Tie game!'}
             <img src="/free-tools/tic-tac/winner-star-icon.svg" alt="Star icon" class="h-full" />
           {/if}

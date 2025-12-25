@@ -41,4 +41,3 @@
     stroke-linejoin="bevel"
   />
 </svg>
-

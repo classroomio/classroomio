@@ -24,4 +24,3 @@
     <CourseCardLoader />
   </div>
 </section>
-

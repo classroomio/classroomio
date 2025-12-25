@@ -15,7 +15,7 @@
 
   // Get breadcrumb title from store for LMS community posts
   const breadcrumbTitle = $derived($currentCommunityQuestion.title);
-  
+
   const breadcrumbs = $derived(
     generateLmsBreadcrumbs(
       page.url.pathname,
@@ -98,4 +98,3 @@
     {/if}
   </Breadcrumb.List>
 </Breadcrumb.Root>
-

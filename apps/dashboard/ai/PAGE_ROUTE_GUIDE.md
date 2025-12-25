@@ -20,11 +20,13 @@ This guide explains how to create pages and routes in the dashboard application,
 The dashboard has two main route contexts:
 
 ### 1. Organization Routes (`/org/[slug]/...`)
+
 - Uses `OrgSidebar` and `AppHeader`
 - Path pattern: `/org/[slug]/[feature]`
 - Example: `/org/acme/courses`, `/org/acme/settings`
 
 ### 2. LMS Routes (`/lms/...`)
+
 - Uses `LMSSidebar` and `LmsHeader`
 - Path pattern: `/lms/[feature]`
 - Example: `/lms/community`, `/lms/settings`
@@ -38,6 +40,7 @@ The dashboard has two main route contexts:
 **Location**: `apps/dashboard/src/routes/[context]/[feature]/+page.svelte`
 
 **Pattern**:
+
 ```svelte
 <script lang="ts">
   import { FeaturePage } from '$features/[feature]/pages';
@@ -72,6 +75,7 @@ The dashboard has two main route contexts:
 **Location**: `apps/dashboard/src/lib/features/[feature]/pages/[feature].svelte`
 
 **Pattern**:
+
 ```svelte
 <script lang="ts">
   import { Search } from '@cio/ui/custom/search';
@@ -230,6 +234,7 @@ Settings pages follow a specific pattern with layouts and subroutes.
 Feature pages contain all business logic and should be placed in `lib/features/[feature]/pages/`.
 
 **Key Principles**:
+
 - ✅ All business logic goes in the feature page
 - ✅ Use `Page.BodyHeader` for filters, search, and view toggles
 - ✅ Use `Empty` component for empty states
@@ -363,6 +368,7 @@ Feature pages contain all business logic and should be placed in `lib/features/[
 ```
 
 **Key Differences**:
+
 - Org routes use `AppHeader` (includes AppSetup)
 - LMS routes use `LmsHeader` (no AppSetup)
 - Org routes use `OrgSidebar`
@@ -426,11 +432,7 @@ Feature pages contain all business logic and should be placed in `lib/features/[
   <Field.Set>
     <Field.Legend>{$t('form.another_section')}</Field.Legend>
     <Field.Field>
-      <UploadImage
-        bind:avatar
-        src={avatarUrl}
-        change={() => (hasUnsavedChanges = true)}
-      />
+      <UploadImage bind:avatar src={avatarUrl} change={() => (hasUnsavedChanges = true)} />
     </Field.Field>
   </Field.Set>
 </Field.Group>
@@ -554,7 +556,7 @@ For dynamic routes (like `community/[slug]`), add breadcrumb data in the route's
 export async function load({ params }) {
   // Fetch question data
   const question = await fetchQuestion(params.slug);
-  
+
   return {
     breadcrumb: question.title // This will appear in breadcrumbs
   };
@@ -568,6 +570,7 @@ export async function load({ params }) {
 ### Example 1: Simple Feature Page
 
 **Route**: `routes/org/[slug]/courses/+page.svelte`
+
 ```svelte
 <script lang="ts">
   import { CoursesPage } from '$features/courses/pages';
@@ -596,6 +599,7 @@ export async function load({ params }) {
 ### Example 2: Settings Page with Save Action
 
 **Route**: `routes/org/[slug]/settings/customize-lms/+page.svelte`
+
 ```svelte
 <script lang="ts">
   import { CustomizeLmsPage } from '$features/settings/pages';
@@ -642,6 +646,7 @@ export async function load({ params }) {
 ### Example 3: Form Page Component
 
 **Feature Page**: `lib/features/settings/pages/profile.svelte`
+
 ```svelte
 <script lang="ts">
   import { profile } from '$lib/utils/store/user';
@@ -655,11 +660,14 @@ export async function load({ params }) {
   let hasUnsavedChanges = $state(false);
 
   export async function handleUpdate() {
-    await profileApi.submit({
-      fullname: $profile.fullname,
-      username: $profile.username,
-      avatar
-    }, $profile);
+    await profileApi.submit(
+      {
+        fullname: $profile.fullname,
+        username: $profile.username,
+        avatar
+      },
+      $profile
+    );
 
     if (profileApi.success) {
       hasUnsavedChanges = false;
@@ -708,12 +716,14 @@ export async function load({ params }) {
 When creating a new page, follow this checklist:
 
 ### Route Setup
+
 - [ ] Create route file at `routes/[context]/[feature]/+page.svelte`
 - [ ] Add `Page.Root`, `Page.Header`, `Page.Body` structure
 - [ ] Add `<svelte:head>` with page title
 - [ ] Import and render feature page component
 
 ### Feature Page
+
 - [ ] Create feature page at `lib/features/[feature]/pages/[feature].svelte`
 - [ ] Export from `lib/features/[feature]/pages/index.ts`
 - [ ] Use `Page.BodyHeader` for filters/search
@@ -721,6 +731,7 @@ When creating a new page, follow this checklist:
 - [ ] Handle loading states
 
 ### Forms (if applicable)
+
 - [ ] Use `Field.Group` pattern (NOT Row/Grid/Column)
 - [ ] Use `Field.Set` for sections
 - [ ] Use `Field.Separator` between sections
@@ -729,6 +740,7 @@ When creating a new page, follow this checklist:
 - [ ] Add `UnsavedChanges` component if needed
 
 ### Navigation (if needed)
+
 - [ ] Add item to `org-navigation.ts` or `lms-navigation.ts`
 - [ ] Set appropriate `matchPattern` for active state
 - [ ] Add icon component
@@ -736,6 +748,7 @@ When creating a new page, follow this checklist:
 - [ ] Configure dynamic segments if needed
 
 ### Settings Pages (if applicable)
+
 - [ ] Create `+layout.svelte` with `Page.Root` wrapper
 - [ ] Create default `+page.svelte` for main settings
 - [ ] Create subroute `+page.svelte` files for each subroute
@@ -755,6 +768,7 @@ When creating a new page, follow this checklist:
 ### Page Actions
 
 Actions in `Page.Action` typically include:
+
 - Save/Update buttons
 - Create/Add buttons
 - Export buttons
@@ -763,6 +777,7 @@ Actions in `Page.Action` typically include:
 ### Loading States
 
 Use skeleton loaders or spinner components:
+
 ```svelte
 {#if isLoading}
   <FeatureLoader />
@@ -776,13 +791,9 @@ Use skeleton loaders or spinner components:
 ### Empty States
 
 Always use the `Empty` component:
+
 ```svelte
-<Empty
-  title={$t('feature.empty_title')}
-  description={$t('feature.empty_description')}
-  icon={SomeIcon}
-  variant="page"
->
+<Empty title={$t('feature.empty_title')} description={$t('feature.empty_description')} icon={SomeIcon} variant="page">
   <ActionButton />
 </Empty>
 ```
@@ -807,6 +818,7 @@ Always use the `Empty` component:
 If you encounter old patterns, migrate them:
 
 ### Old: Row/Grid/Column Pattern
+
 ```svelte
 <!-- OLD - DON'T USE -->
 <Grid>
@@ -822,6 +834,7 @@ If you encounter old patterns, migrate them:
 ```
 
 ### New: Field.Group Pattern
+
 ```svelte
 <!-- NEW - USE THIS -->
 <Field.Group class="max-w-md! w-full px-2">
@@ -843,4 +856,3 @@ If you encounter old patterns, migrate them:
 - See existing pages in `routes/org/[slug]/` and `routes/lms/` for examples
 - See `lib/features/settings/pages/` for form examples
 - See `lib/features/community/pages/` for list page examples
-

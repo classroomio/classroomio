@@ -72,15 +72,15 @@
     </Dialog.Header>
 
     <!-- mapping -->
-    <div class="flex flex-wrap justify-between gap-y-3 mt-3">
+    <div class="mt-3 flex flex-wrap justify-between gap-y-3">
       {#each moods as mood}
         <button
           onclick={() => {
             selectMood(mood);
           }}
-          class="flex gap-3 items-center shadow-sm rounded-full px-4 py-1 bg-[#F1F6FF] hover:bg-[#0233BD] hover:text-white transition-all duration-700"
+          class="flex items-center gap-3 rounded-full bg-[#F1F6FF] px-4 py-1 shadow-sm transition-all duration-700 hover:bg-[#0233BD] hover:text-white"
         >
-          <p class="text-xs md:text-sm font-semibold">{mood.text}</p>
+          <p class="text-xs font-semibold md:text-sm">{mood.text}</p>
           <img
             src="https://assets.cdn.clsrio.com/progress-report/emojis/{mood.iconSrc}.png"
             alt={mood.text}

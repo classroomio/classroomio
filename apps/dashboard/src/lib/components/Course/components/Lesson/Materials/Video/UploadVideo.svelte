@@ -39,7 +39,7 @@
     // Prevent free plan users from bypassing UI restrictions
     if ($isFreePlan) {
       formRes = {
-        type: 'AUTHORIZATION_ERROR', 
+        type: 'AUTHORIZATION_ERROR',
         status: 403,
         message: $t('upgrade.required')
       };

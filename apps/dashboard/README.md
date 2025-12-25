@@ -100,11 +100,9 @@ Here is what you need to be able to run Cal.com.
    You can install nvm from [here](https://github.com/nvm-sh/nvm).
 
 4. Set up your `.env` file
-
    - Duplicate `.env.example` to `.env`
 
 5. Setup Supabase.
-
    - Make sure you've downloaded the [supabase cli](https://github.com/supabase/cli)
    - Install and Start [docker](https://docs.docker.com/engine/install/)
    - Go to the project directory in your terminal and start supabase

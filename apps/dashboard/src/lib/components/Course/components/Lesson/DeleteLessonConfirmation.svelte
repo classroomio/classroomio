@@ -22,29 +22,23 @@
     if (!isOpen) openDeleteModal = false;
   }}
 >
-  <Dialog.Content class="w-96 px-6 pt-2 pb-6">
+  <Dialog.Content class="w-96 px-6 pb-6 pt-2">
     <Dialog.Header>
       <Dialog.Title>{$t('delete_modal.label')}</Dialog.Title>
     </Dialog.Header>
     <div>
-    <h1 class="text-lg dark:text-white">
-      {$t('delete_modal.content')}?
-    </h1>
+      <h1 class="text-lg dark:text-white">
+        {$t('delete_modal.content')}?
+      </h1>
 
-    <div class="mt-5 flex items-center justify-between">
-      <Button
-        variant="outline"
-        onclick={() => (openDeleteModal = false)}
-      >
-        {$t('delete_modal.no')}
-      </Button>
-      <Button
-        variant="outline"
-        onclick={handleDelete}
-      >
-        {$t('delete_modal.yes')}
-      </Button>
+      <div class="mt-5 flex items-center justify-between">
+        <Button variant="outline" onclick={() => (openDeleteModal = false)}>
+          {$t('delete_modal.no')}
+        </Button>
+        <Button variant="outline" onclick={handleDelete}>
+          {$t('delete_modal.yes')}
+        </Button>
+      </div>
     </div>
-  </div>
   </Dialog.Content>
 </Dialog.Root>

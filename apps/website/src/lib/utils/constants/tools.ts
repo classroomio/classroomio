@@ -45,8 +45,7 @@ export const tools: Tool[] = [
   {
     src: '/free-tools/tic-tac.svg',
     title: 'Tic tac toe game',
-    subText:
-      "More than just a game; it's an educational tool that teaches pattern recognition, and decision-making.",
+    subText: "More than just a game; it's an educational tool that teaches pattern recognition, and decision-making.",
     slug: 'tic-tac-toe',
     show: true,
     showFeature: true
@@ -62,8 +61,7 @@ export const tools: Tool[] = [
   {
     src: '/free-tools/jamb.svg',
     title: 'JAMB Practice tool',
-    subText:
-      'Prepare for JAMB with past questions and instant feedback for effective exam readiness',
+    subText: 'Prepare for JAMB with past questions and instant feedback for effective exam readiness',
     slug: 'jamb',
     show: false,
     showFeature: false

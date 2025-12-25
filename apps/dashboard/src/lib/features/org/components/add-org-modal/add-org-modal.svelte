@@ -41,30 +41,29 @@
       <Dialog.Title>{$t('add_org.create_org')}</Dialog.Title>
     </Dialog.Header>
     <form onsubmit={preventDefault(createNewOrg)} class="px-2">
-    <Field.Group>
-      <Field.Field>
-        <Field.Label>{$t('add_org.name')}</Field.Label>
-        <Input bind:value={orgName} placeholder="e.g Pepsi Co" autofocus />
-        {#if orgApi.errors.name || orgApi.errors.orgName}
-          <Field.Error>{orgApi.errors.name || orgApi.errors.orgName}</Field.Error>
-        {/if}
-      </Field.Field>
+      <Field.Group>
+        <Field.Field>
+          <Field.Label>{$t('add_org.name')}</Field.Label>
+          <Input bind:value={orgName} placeholder="e.g Pepsi Co" autofocus />
+          {#if orgApi.errors.name || orgApi.errors.orgName}
+            <Field.Error>{orgApi.errors.name || orgApi.errors.orgName}</Field.Error>
+          {/if}
+        </Field.Field>
 
-      <Field.Field>
-        <Field.Label>{$t('add_org.org_sitename')}</Field.Label>
-        <DomainInput bind:value={siteName} placeholder="myschool" prefix="https://" suffix=".classroomio.com" />
-        {#if orgApi.errors.siteName || orgApi.errors.general}
-          <Field.Error>{orgApi.errors.siteName || orgApi.errors.general}</Field.Error>
-        {/if}
-      </Field.Field>
+        <Field.Field>
+          <Field.Label>{$t('add_org.org_sitename')}</Field.Label>
+          <DomainInput bind:value={siteName} placeholder="myschool" prefix="https://" suffix=".classroomio.com" />
+          {#if orgApi.errors.siteName || orgApi.errors.general}
+            <Field.Error>{orgApi.errors.siteName || orgApi.errors.general}</Field.Error>
+          {/if}
+        </Field.Field>
 
-      <Field.Field orientation="horizontal">
-        <Button type="submit" loading={orgApi.isLoading} class="ml-auto">
-          {$t('add_org.create')}
-        </Button>
-      </Field.Field>
-    </Field.Group>
-  </form>
+        <Field.Field orientation="horizontal">
+          <Button type="submit" loading={orgApi.isLoading} class="ml-auto">
+            {$t('add_org.create')}
+          </Button>
+        </Field.Field>
+      </Field.Group>
+    </form>
   </Dialog.Content>
 </Dialog.Root>
-

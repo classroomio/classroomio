@@ -11,15 +11,13 @@
     {
       icon: globe,
       title: 'Customizable Landing Page',
-      description:
-        'A minimalistic landing page template out of the box to share your courses with the world',
+      description: 'A minimalistic landing page template out of the box to share your courses with the world',
       image: '/landing-page-builder.webp'
     },
     {
       icon: team,
       title: 'Team management',
-      description:
-        'Extend invitations and manage your teaching institution seamlessly through ClassroomIO.',
+      description: 'Extend invitations and manage your teaching institution seamlessly through ClassroomIO.',
       image: '/team-management.png'
     },
     // {
@@ -49,39 +47,28 @@
 </script>
 
 <!-- More Features -->
-<section id="morefeatures" class="py-[10%] px-3 lg:px-0 bg-gray-50">
+<section id="morefeatures" class="bg-gray-50 px-3 py-[10%] lg:px-0">
   <div class="mx-0 lg:mx-[12%]">
-    <div class="w-full lg:w-4/5 mx-4 lg:mx-0 mb-14">
-      <h2 class="mt-2 text-3xl tracking-tight">
-        There is More...
-      </h2>
-      <p class="mt-4 text-lg text-gray-500 w-[94%] lg:w-4/5">
+    <div class="mx-4 mb-14 w-full lg:mx-0 lg:w-4/5">
+      <h2 class="mt-2 text-3xl tracking-tight">There is More...</h2>
+      <p class="mt-4 w-[94%] text-lg text-gray-500 lg:w-4/5">
         ClassroomIO is packed with useful features while we try to make it easy to use.
       </p>
     </div>
 
-    <div class="flex flex-col-reverse lg:flex-row gap-3 md:gap-10" id="image-container">
-      <div
-        class="w-[95%] p-3 mt-5 overflow-auto lg:overflow-hidden lg:mt-0 lg:w-[45%] flex lg:block"
-      >
+    <div class="flex flex-col-reverse gap-3 md:gap-10 lg:flex-row" id="image-container">
+      <div class="mt-5 flex w-[95%] overflow-auto p-3 lg:mt-0 lg:block lg:w-[45%] lg:overflow-hidden">
         {#each moreFeatures as moreFeature, i}
           <button
-            class="p-4 rounded-md {i === selected &&
-              'selected'} mb-3 text-start min-w-[75vw] lg:min-w-[unset] cursor-pointer"
+            class="rounded-md p-4 {i === selected &&
+              'selected'} mb-3 min-w-[75vw] cursor-pointer text-start lg:min-w-[unset]"
             onclick={() => {
               selected = i;
               clearInterval(interval);
             }}
           >
-            <div class="flex gap-1 items-center">
-              <img
-                loading="lazy"
-                width="32"
-                height="32"
-                src={moreFeature.icon}
-                alt=""
-                class="w-8"
-              />
+            <div class="flex items-center gap-1">
+              <img loading="lazy" width="32" height="32" src={moreFeature.icon} alt="" class="w-8" />
               <p class="text-lg">
                 {moreFeature.title}
               </p>
@@ -100,7 +87,7 @@
             loading="lazy"
             id="image"
             in:fly={{ x: 100, duration: 800 }}
-            class="w-full flex flex-col items-center"
+            class="flex w-full flex-col items-center"
             src={moreFeatures[selected].image}
             alt={moreFeatures[selected].title}
           />
@@ -112,11 +99,6 @@
 
 <style>
   #morefeatures .selected {
-    background-image: linear-gradient(
-      45deg,
-      rgb(253, 239, 132),
-      rgb(247, 198, 169),
-      rgb(21, 186, 196)
-    );
+    background-image: linear-gradient(45deg, rgb(253, 239, 132), rgb(247, 198, 169), rgb(21, 186, 196));
   }
 </style>

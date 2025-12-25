@@ -27,4 +27,3 @@
     <p class="text-sm text-red-600">{$t('courses.course_card.error_message')}</p>
   </div>
 {/await}
-

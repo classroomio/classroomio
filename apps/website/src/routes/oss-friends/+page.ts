@@ -15,8 +15,7 @@ export async function load() {
     },
     {
       name: 'Cal.com',
-      description:
-        'Cal.com is a scheduling tool that helps you schedule meetings without the back-and-forth emails.',
+      description: 'Cal.com is a scheduling tool that helps you schedule meetings without the back-and-forth emails.',
       href: 'https://cal.com'
     },
     {
@@ -74,8 +73,7 @@ export async function load() {
     },
     {
       name: 'Papermark',
-      description:
-        'Open-Source Docsend Alternative to securely share documents with real-time analytics.',
+      description: 'Open-Source Docsend Alternative to securely share documents with real-time analytics.',
       href: 'https://papermark.io'
     },
     {

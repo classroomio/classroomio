@@ -18,4 +18,3 @@
     <IntegrationsPage />
   {/snippet}
 </Page.Body>
-

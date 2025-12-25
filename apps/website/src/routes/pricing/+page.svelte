@@ -28,16 +28,12 @@
     </p>
     <div class="relative mt-10 flex items-center rounded-[30px] border-2 p-[2px] lg:scale-100">
       <button
-        style="background-color: {isYearlyPlan ? 'initial' : '#1D4EE2'}; color: {isYearlyPlan
-          ? '#5e636b'
-          : '#fff'}"
+        style="background-color: {isYearlyPlan ? 'initial' : '#1D4EE2'}; color: {isYearlyPlan ? '#5e636b' : '#fff'}"
         class="rounded-[30px] bg-blue-700 px-3 py-1 text-xs text-white lg:px-4 lg:py-2"
         onclick={toggleIsYearlyPlan}>Monthly</button
       >
       <button
-        style="background-color: {isYearlyPlan ? '#1D4EE2' : ''}; color: {isYearlyPlan
-          ? '#fff'
-          : '#5e636b'}"
+        style="background-color: {isYearlyPlan ? '#1D4EE2' : ''}; color: {isYearlyPlan ? '#fff' : '#5e636b'}"
         class="rounded-[30px] px-3 py-1 text-xs text-white lg:px-4 lg:py-2"
         onclick={toggleIsYearlyPlan}>Annually</button
       >
@@ -108,10 +104,7 @@
         </p>
 
         {#key isYearlyPlan}
-          <p
-            class="mt-6 flex items-baseline gap-x-1 text-4xl font-medium text-white lg:text-4xl"
-            in:fade
-          >
+          <p class="mt-6 flex items-baseline gap-x-1 text-4xl font-medium text-white lg:text-4xl" in:fade>
             ${isYearlyPlan ? PLANS.EARLY_ADOPTER.PRICE.YEARLY : PLANS.EARLY_ADOPTER.PRICE.MONTHLY}
           </p>
           <span class="text-base text-white" in:fade>
@@ -144,9 +137,7 @@
         <p class="mt-4 text-sm font-light leading-6 text-gray-500 lg:text-base lg:leading-6">
           {PLANS.ENTERPRISE.DESCRIPTION}
         </p>
-        <p class="mt-6 flex items-baseline gap-x-1 text-xl font-medium lg:mt-6 lg:text-xl">
-          Request Pricing
-        </p>
+        <p class="mt-6 flex items-baseline gap-x-1 text-xl font-medium lg:mt-6 lg:text-xl">Request Pricing</p>
         <button
           class="mt-10 w-full rounded-md bg-slate-900 py-3 text-base font-medium text-white hover:bg-slate-700 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
           data-cal-config={"{'layout':'month_view'}"}

@@ -121,11 +121,8 @@ src/lib/
 **Import Pattern**:
 
 ```svelte
-// ✅ CORRECT - Use named imports from the index
-import { Footer, Navigation, Hero } from '$lib/components';
-
-// ❌ INCORRECT - Direct file imports are not allowed
-// import Footer from '$lib/components/footer.svelte';
+// ✅ CORRECT - Use named imports from the index import {(Footer, Navigation, Hero)} from '$lib/components'; // ❌ INCORRECT
+- Direct file imports are not allowed // import Footer from '$lib/components/footer.svelte';
 ```
 
 **Note**: All components must be imported using named imports from `$lib/components`. Direct file imports are not allowed.
@@ -150,8 +147,7 @@ import { Footer, Navigation, Hero } from '$lib/components';
 **Import Pattern**:
 
 ```svelte
-import FeedbackForm from '$lib/features/contact/feedback-form.svelte';
-import { htmlBody, openModal } from '$lib/features/tools/progress/store';
+import FeedbackForm from '$lib/features/contact/feedback-form.svelte'; import {(htmlBody, openModal)} from '$lib/features/tools/progress/store';
 ```
 
 ### `/utils` - Utilities
@@ -338,7 +334,7 @@ export { default as Navigation } from './navigation.svelte';
 This allows for clean, consistent imports:
 
 ```svelte
-import { Footer, Navigation, Hero } from '$lib/components';
+import {(Footer, Navigation, Hero)} from '$lib/components';
 ```
 
 **Rule**: Direct file imports (e.g., `import Footer from '$lib/components/footer.svelte'`) are **not allowed**. Always use named imports from `$lib/components`.

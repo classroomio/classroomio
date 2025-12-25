@@ -7,4 +7,3 @@ export interface CurrentCommunityQuestion {
 export const currentCommunityQuestion = writable<CurrentCommunityQuestion>({
   title: null
 });
-

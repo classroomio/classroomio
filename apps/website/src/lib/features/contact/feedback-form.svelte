@@ -49,9 +49,9 @@
   {#if sent}
     <Success />
   {:else}
-    <div class="w-full my-10 space-y-5">
+    <div class="my-10 w-full space-y-5">
       <Field.Group>
-        <div class="flex flex-col md:flex-row gap-10">
+        <div class="flex flex-col gap-10 md:flex-row">
           <Field.Field class="w-full">
             <Field.Label for="feedback-name">Your Name</Field.Label>
             <Input id="feedback-name" bind:value={name} required />
@@ -75,13 +75,7 @@
           </Field.Field>
         {/if}
       </Field.Group>
-      <Button
-        onclick={handleClick}
-        disabled={isLoading}
-        loading={isLoading}
-      >
-        Submit Feedback
-      </Button>
+      <Button onclick={handleClick} disabled={isLoading} loading={isLoading}>Submit Feedback</Button>
     </div>
   {/if}
 </div>

@@ -11,13 +11,13 @@ The navigation config types now support additional properties:
 ```typescript
 export interface NavItemConfig {
   // ... existing properties ...
-  
+
   // NEW: Route-specific breadcrumb label override
   breadcrumbLabel?: string;
-  
+
   // NEW: Custom resolver for dynamic breadcrumb titles
   breadcrumbResolver?: (params: Record<string, string>) => string | Promise<string>;
-  
+
   // ENHANCED: Nested routes can now have nested routes (multi-level)
   nestedRoutes?: NestedRouteConfig[];
 }
@@ -25,13 +25,13 @@ export interface NavItemConfig {
 export interface NestedRouteConfig {
   path: string;
   titleKey: string;
-  
+
   // NEW: Custom resolver for this nested route
   titleResolver?: (params: Record<string, string>) => string | Promise<string>;
-  
+
   // NEW: Nested routes can have nested routes
   nestedRoutes?: NestedRouteConfig[];
-  
+
   // NEW: Support dynamic segments within nested routes
   supportsDynamicSegment?: boolean;
 }
@@ -40,6 +40,7 @@ export interface NestedRouteConfig {
 ### Step 2: Update Breadcrumb Generation Calls
 
 #### Before (Org):
+
 ```typescript
 import { generateBreadcrumbs } from './breadcrumb';
 
@@ -53,6 +54,7 @@ const breadcrumbs = generateBreadcrumbs(
 ```
 
 #### After (Org - Store-Based Reactive):
+
 ```svelte
 <script lang="ts">
   import { page } from '$app/state';
@@ -61,24 +63,20 @@ const breadcrumbs = generateBreadcrumbs(
   import { courseStore } from '$features/course/utils/store';
 
   // Reactive config that reads from stores
-  const config = $derived(createOrgBreadcrumbConfigWithStore(
-    $currentOrgPath,
-    () => $courseStore.title // Reads reactively - updates automatically!
-  ));
-  
-  // Breadcrumbs update automatically when store changes!
-  const breadcrumbs = $derived(
-    generateBreadcrumbsSync(
-      page.url.pathname,
-      page.url.search,
-      navItems,
-      config
+  const config = $derived(
+    createOrgBreadcrumbConfigWithStore(
+      $currentOrgPath,
+      () => $courseStore.title // Reads reactively - updates automatically!
     )
   );
+
+  // Breadcrumbs update automatically when store changes!
+  const breadcrumbs = $derived(generateBreadcrumbsSync(page.url.pathname, page.url.search, navItems, config));
 </script>
 ```
 
 #### Before (LMS):
+
 ```typescript
 import { generateLmsBreadcrumbs } from './lms-breadcrumb';
 import { currentCommunityQuestion } from '$features/community/utils/store';
@@ -93,6 +91,7 @@ const breadcrumbs = generateLmsBreadcrumbs(
 ```
 
 #### After (LMS - Reactive Store-Based):
+
 ```svelte
 <script lang="ts">
   import { page } from '$app/state';
@@ -101,19 +100,14 @@ const breadcrumbs = generateLmsBreadcrumbs(
   import { currentCommunityQuestion } from '$features/community/utils/store';
 
   // Config is reactive - updates when store changes
-  const config = $derived(createLmsBreadcrumbConfigWithStore(
-    () => $currentCommunityQuestion.title // Reads reactively from store
-  ));
-  
-  // Breadcrumbs update automatically when store changes!
-  const breadcrumbs = $derived(
-    generateBreadcrumbsSync(
-      page.url.pathname,
-      page.url.search,
-      navItems,
-      config
+  const config = $derived(
+    createLmsBreadcrumbConfigWithStore(
+      () => $currentCommunityQuestion.title // Reads reactively from store
     )
   );
+
+  // Breadcrumbs update automatically when store changes!
+  const breadcrumbs = $derived(generateBreadcrumbsSync(page.url.pathname, page.url.search, navItems, config));
 </script>
 ```
 
@@ -131,6 +125,7 @@ The refactored system supports up to 5 layers of nesting through recursive trave
 #### Example: Courses → Course → Lesson → Assignment → Submission (5 Layers)
 
 **Navigation Config** (in `org-navigation.ts`):
+
 ```typescript
 {
   titleKey: 'org_navigation.courses',
@@ -186,20 +181,20 @@ The refactored system supports up to 5 layers of nesting through recursive trave
 ```
 
 **Breadcrumb Component** (in `app-breadcrumbs.svelte`):
+
 ```svelte
 <script lang="ts">
   import { page } from '$app/state';
   import { generateBreadcrumbsSync } from './breadcrumb-core';
   import { createOrgBreadcrumbConfigWithStore } from './breadcrumb-configs';
   import { assignmentStore, submissionStore, courseStore, lessonStore } from '$features/course/utils/store';
-  
+
   // Create reactive config that reads from stores
-  const config = $derived(createOrgBreadcrumbConfigWithStore(
-    $currentOrgPath,
-    () => {
+  const config = $derived(
+    createOrgBreadcrumbConfigWithStore($currentOrgPath, () => {
       // This function is called reactively - reads from stores
       const pathSegments = page.url.pathname.split('/').filter(Boolean);
-      
+
       // Determine which store to read based on current route
       if (pathSegments.includes('submissions') && pathSegments.length > 5) {
         return $submissionStore.title || 'Submission';
@@ -214,35 +209,28 @@ The refactored system supports up to 5 layers of nesting through recursive trave
         return $courseStore.title || 'Course';
       }
       return null;
-    }
-  ));
-  
-  const breadcrumbs = $derived(
-    generateBreadcrumbsSync(
-      page.url.pathname,
-      page.url.search,
-      navItems,
-      config
-    )
+    })
   );
+
+  const breadcrumbs = $derived(generateBreadcrumbsSync(page.url.pathname, page.url.search, navItems, config));
 </script>
 ```
 
 **Alternative: Per-Route Store Resolvers** (More Granular):
+
 ```svelte
 <script lang="ts">
   import { page } from '$app/state';
   import { generateBreadcrumbsSync } from './breadcrumb-core';
   import { createOrgBreadcrumbConfigWithStore } from './breadcrumb-configs';
   import { assignmentStore, submissionStore, courseStore, lessonStore } from '$features/course/utils/store';
-  
+
   // Create config with store-based resolver
-  const config = $derived(createOrgBreadcrumbConfigWithStore(
-    $currentOrgPath,
-    () => {
+  const config = $derived(
+    createOrgBreadcrumbConfigWithStore($currentOrgPath, () => {
       // Read from stores reactively based on path structure
       const pathSegments = page.url.pathname.split('/').filter(Boolean);
-      
+
       // Match store to segment position
       if (pathSegments.includes('submissions')) {
         return $submissionStore.title || null;
@@ -257,17 +245,10 @@ The refactored system supports up to 5 layers of nesting through recursive trave
         return $courseStore.title || null;
       }
       return null;
-    }
-  ));
-  
-  const breadcrumbs = $derived(
-    generateBreadcrumbsSync(
-      page.url.pathname,
-      page.url.search,
-      navItems,
-      config
-    )
+    })
   );
+
+  const breadcrumbs = $derived(generateBreadcrumbsSync(page.url.pathname, page.url.search, navItems, config));
 </script>
 ```
 
@@ -288,6 +269,7 @@ The refactored system supports up to 5 layers of nesting through recursive trave
 #### Store-Based vs Async Resolvers
 
 **✅ Recommended: Store-Based (Reactive)**
+
 ```typescript
 // In breadcrumb component
 const config = $derived(createOrgBreadcrumbConfigWithStore(
@@ -300,15 +282,17 @@ const breadcrumbs = $derived(generateBreadcrumbsSync(...));
 ```
 
 **⚠️ Alternative: Async Resolvers (API Calls)**
+
 ```typescript
 // In navigation config
 titleResolver: async (params) => {
   const assignment = await fetchAssignment(params.param0);
   return assignment.title;
-}
+};
 ```
 
 **Why Use Stores?**
+
 - ✅ **No API calls** - data already loaded in component
 - ✅ **Automatic updates** - breadcrumb updates when store changes
 - ✅ **Better performance** - no loading states or delays
@@ -322,7 +306,7 @@ The `extractParamsFromPath` function extracts all path segments as `param0`, `pa
 // For URL: /courses/123/lessons/456/assignments/789
 // params = {
 //   param0: '123',  // courseId
-//   param1: '456',  // lessonId  
+//   param1: '456',  // lessonId
 //   param2: '789'   // assignmentId
 // }
 ```
@@ -350,41 +334,43 @@ For routes that need async data fetching:
 ```typescript
 import { generateBreadcrumbs } from './breadcrumb-core'; // Note: async version
 
-const breadcrumbs = await generateBreadcrumbs(
-  page.url.pathname,
-  page.url.search,
-  navItems,
-  config
-);
+const breadcrumbs = await generateBreadcrumbs(page.url.pathname, page.url.search, navItems, config);
 ```
 
 ## Benefits of the Refactored System
 
 ### ✅ 1. No Code Duplication
+
 - Single unified generator for all contexts
 - Context-specific configs handle differences
 
 ### ✅ 2. Multi-Level Nesting Support
+
 - Recursive generation handles any depth
 - Configurable max depth prevents infinite loops
 
 ### ✅ 3. Flexible Path Prefixes
+
 - Function-based prefix extraction
 - Supports dynamic prefixes like `/org/[slug]`
 
 ### ✅ 4. Consistent Dynamic Title Resolution
+
 - Unified interface for all resolvers
 - Supports both sync and async resolution
 
 ### ✅ 5. Route-Specific Customization
+
 - Override labels per route
 - Custom resolvers for complex cases
 
 ### ✅ 6. Optional Caching
+
 - Performance optimization
 - Configurable cache TTL
 
 ### ✅ 7. Type Safety
+
 - Full TypeScript support
 - Compile-time error checking
 
@@ -393,6 +379,7 @@ const breadcrumbs = await generateBreadcrumbs(
 **URL**: `/org/myorg/courses/123/lessons/456/assignments/789/submissions/101`
 
 **Config**:
+
 ```typescript
 {
   path: '/courses',
@@ -492,8 +479,9 @@ The recursive function processes **each path segment** separately, incrementing 
 **Breadcrumb Result**: `Courses / React Fundamentals / Lessons / Components / Assignments / Build Todo App / Submissions / Submission #101`
 
 **Depth Breakdown**:
+
 - `depth=0`: Top-level nav item (`/courses`) → "Courses"
-- `depth=1`: First dynamic segment (`123`) → "React Fundamentals" 
+- `depth=1`: First dynamic segment (`123`) → "React Fundamentals"
 - `depth=2`: Static nested route (`lessons`) → "Lessons"
 - `depth=3`: Second dynamic segment (`456`) → "Components"
 - `depth=4`: Static nested route (`assignments`) → "Assignments"
@@ -560,13 +548,8 @@ beforeEach(() => {
 
 // Test breadcrumb generation
 test('generates breadcrumbs for nested route', () => {
-  const breadcrumbs = generateBreadcrumbsSync(
-    '/org/test/courses/123/lessons/456',
-    '',
-    navItems,
-    config
-  );
-  
+  const breadcrumbs = generateBreadcrumbsSync('/org/test/courses/123/lessons/456', '', navItems, config);
+
   expect(breadcrumbs).toHaveLength(4);
   expect(breadcrumbs[0].label).toBe('Courses');
 });
@@ -604,6 +587,7 @@ This allows gradual migration without breaking existing code.
 ### Why Use Stores Instead of Async Requests?
 
 **✅ Benefits:**
+
 - **No API calls** - Data is already loaded in your component
 - **Automatic updates** - Breadcrumbs update reactively when stores change
 - **Better performance** - No loading states, delays, or network requests
@@ -619,6 +603,7 @@ This allows gradual migration without breaking existing code.
 ### Example: Community Post Title
 
 **Store** (`$features/community/utils/store.ts`):
+
 ```typescript
 export const currentCommunityQuestion = writable<{ title: string | null }>({
   title: null
@@ -626,19 +611,20 @@ export const currentCommunityQuestion = writable<{ title: string | null }>({
 ```
 
 **Page Component** (`+page.svelte`):
+
 ```svelte
 <script lang="ts">
   import { currentCommunityQuestion } from '$features/community/utils/store';
-  
+
   let question = $state();
-  
+
   async function fetchQuestion() {
     const data = await supabase.from('community_question').select('*').single();
     question = data;
     // Update store - breadcrumb will reactively update!
     currentCommunityQuestion.set({ title: data.title });
   }
-  
+
   $effect(() => {
     fetchQuestion();
   });
@@ -646,20 +632,21 @@ export const currentCommunityQuestion = writable<{ title: string | null }>({
 ```
 
 **Breadcrumb Component** (`lms-breadcrumbs.svelte`):
+
 ```svelte
 <script lang="ts">
   import { createLmsBreadcrumbConfigWithStore } from './breadcrumb-configs';
   import { currentCommunityQuestion } from '$features/community/utils/store';
-  
+
   // Reactive config - updates when store changes
-  const config = $derived(createLmsBreadcrumbConfigWithStore(
-    () => $currentCommunityQuestion.title // Reads reactively!
-  ));
-  
-  // Breadcrumbs automatically update when store changes!
-  const breadcrumbs = $derived(
-    generateBreadcrumbsSync(page.url.pathname, page.url.search, navItems, config)
+  const config = $derived(
+    createLmsBreadcrumbConfigWithStore(
+      () => $currentCommunityQuestion.title // Reads reactively!
+    )
   );
+
+  // Breadcrumbs automatically update when store changes!
+  const breadcrumbs = $derived(generateBreadcrumbsSync(page.url.pathname, page.url.search, navItems, config));
 </script>
 ```
 
@@ -669,11 +656,10 @@ For routes with multiple dynamic segments, use path-based logic:
 
 ```svelte
 <script lang="ts">
-  const config = $derived(createOrgBreadcrumbConfigWithStore(
-    $currentOrgPath,
-    () => {
+  const config = $derived(
+    createOrgBreadcrumbConfigWithStore($currentOrgPath, () => {
       const pathSegments = page.url.pathname.split('/').filter(Boolean);
-      
+
       // Determine which store to read based on route
       if (pathSegments.includes('submissions')) {
         return $submissionStore.title;
@@ -688,8 +674,8 @@ For routes with multiple dynamic segments, use path-based logic:
         return $courseStore.title;
       }
       return null;
-    }
-  ));
+    })
+  );
 </script>
 ```
 
@@ -699,4 +685,3 @@ For routes with multiple dynamic segments, use path-based logic:
 2. **Use `$derived`**: Always wrap config and breadcrumbs in `$derived` for reactivity
 3. **Store Updates**: When you update a store, breadcrumbs automatically update - no manual refresh needed!
 4. **No Async Needed**: Store-based resolvers are synchronous - just return the store value
-

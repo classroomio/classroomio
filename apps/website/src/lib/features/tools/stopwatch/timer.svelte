@@ -29,29 +29,26 @@
 
 <div transition:fly={{ y: 100, delay: 0, easing: sineInOut }}>
   <div class="px-6 pt-8 text-center">
-    <button
-      type="button"
-      onclick={resetTimer}
-      class="text-[10px] text-[#656565] font-semibold uppercase underline"
+    <button type="button" onclick={resetTimer} class="text-[10px] font-semibold uppercase text-[#656565] underline"
       >set timer for another activity</button
     >
 
     <button
-      class="border mx-auto mt-7 mb-3 px-2 py-0.5 rounded-full flex items-center gap-1 text-sm text-[#656565] font-semibold border-[#C2D2FF] bg-[#DCE5FF]"
+      class="mx-auto mb-3 mt-7 flex items-center gap-1 rounded-full border border-[#C2D2FF] bg-[#DCE5FF] px-2 py-0.5 text-sm font-semibold text-[#656565]"
     >
       {activityName}:
       <span class="text-[#0233BD]">{formattedTime}</span>
     </button>
 
     <!-- countdown -->
-    <h1 class="text-[#040F2D] mb-14 text-6xl font-bold">{displayTime}</h1>
+    <h1 class="mb-14 text-6xl font-bold text-[#040F2D]">{displayTime}</h1>
   </div>
 
   <div class="flex">
     <button
       type="button"
       onclick={toggleSound}
-      class="bg-[#F7F7F7] w-[34%] flex flex-col gap-1 items-center uppercase text-[10px] py-5 md:py-10 rounded-bl-md hover:bg-[#F1F6FF] transition-all duration-500"
+      class="flex w-[34%] flex-col items-center gap-1 rounded-bl-md bg-[#F7F7F7] py-5 text-[10px] uppercase transition-all duration-500 hover:bg-[#F1F6FF] md:py-10"
     >
       {#if soundOn}
         <img src="/free-tools/stopwatch/speaker-icon.svg" alt="" class="w-7 md:w-12" />
@@ -63,7 +60,7 @@
     <button
       type="button"
       onclick={toggleTimer}
-      class="bg-[#0F62FE] text-white w-[34%] flex flex-col gap-1 items-center uppercase text-[10px] py-5 md:py-10"
+      class="flex w-[34%] flex-col items-center gap-1 bg-[#0F62FE] py-5 text-[10px] uppercase text-white md:py-10"
     >
       {#if isPaused}
         <img src="/free-tools/stopwatch/play-icon.svg" alt="" class="w-7 md:w-12" />
@@ -75,7 +72,7 @@
     <button
       type="button"
       onclick={restartTimer}
-      class="bg-[#F7F7F7] w-[34%] flex flex-col gap-1 items-center uppercase text-[10px] py-5 md:py-10 rounded-br-md hover:bg-[#F1F6FF] transition-all duration-500"
+      class="flex w-[34%] flex-col items-center gap-1 rounded-br-md bg-[#F7F7F7] py-5 text-[10px] uppercase transition-all duration-500 hover:bg-[#F1F6FF] md:py-10"
     >
       <img src="/free-tools/stopwatch/reset-icon.svg" alt="" class="w-7 md:w-12" />
       restart</button

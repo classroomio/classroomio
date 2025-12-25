@@ -8,10 +8,5 @@
 </script>
 
 <figure>
-  <img
-    {src}
-    {alt}
-    loading="lazy"
-    class="max-w-full w-full h-full md:min-h-[400px] object-cover my-2 rounded-lg"
-  />
+  <img {src} {alt} loading="lazy" class="my-2 h-full w-full max-w-full rounded-lg object-cover md:min-h-[400px]" />
 </figure>

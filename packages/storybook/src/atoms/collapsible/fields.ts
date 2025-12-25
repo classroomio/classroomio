@@ -1,6 +1,1 @@
-export const FIELDS = [
-  'open',
-  'onOpenChange',
-  'onOpenChangeComplete',
-  'disabled'
-] as string[];
+export const FIELDS = ['open', 'onOpenChange', 'onOpenChangeComplete', 'disabled'] as string[];

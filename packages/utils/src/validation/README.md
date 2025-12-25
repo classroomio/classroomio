@@ -40,11 +40,10 @@ Schemas are used **without custom error messages** - just validation rules:
 import { ZCourseClone } from '@cio/utils/validation';
 import { zValidator } from '@hono/zod-validator';
 
-export const cloneRouter = new Hono()
-  .post('/', zValidator('json', ZCourseClone), async (c) => {
-    const data = c.req.valid('json'); // Fully typed!
-    // ... handle validated data
-  });
+export const cloneRouter = new Hono().post('/', zValidator('json', ZCourseClone), async (c) => {
+  const data = c.req.valid('json'); // Fully typed!
+  // ... handle validated data
+});
 ```
 
 ### Frontend Usage (Dashboard)
@@ -60,13 +59,13 @@ let errors: Record<string, string> = {};
 
 function handleSubmit() {
   const result = ZEmailData.safeParse(formData);
-  
+
   if (!result.success) {
     // Automatically maps to translations using convention
     errors = mapZodErrorsToTranslations(result.error);
     return;
   }
-  
+
   // Use validated data
   doSomething(result.data);
 }
@@ -83,9 +82,9 @@ Schemas are clean with **no custom error messages**:
 ```typescript
 // ✅ Clean schema (in @cio/utils)
 export const ZEmailData = z.object({
-  to: z.string().email(),        // No message
-  subject: z.string().min(1),    // No message
-  content: z.string().min(10)    // No message
+  to: z.string().email(), // No message
+  subject: z.string().min(1), // No message
+  content: z.string().min(10) // No message
 });
 ```
 
@@ -97,12 +96,12 @@ validations.{fieldName}.{errorCode}
 
 ### Example Translation Keys
 
-| Field | Validation | Error Code | Translation Key |
-|-------|-----------|------------|-----------------|
-| `to` | `.email()` | `invalid_string` | `validations.to.invalid_email` |
-| `subject` | `.min(1)` | `too_small` | `validations.subject.too_small` |
-| `username` | `.min(3)` | `too_small` | `validations.username.too_small` |
-| `username` | `.max(20)` | `too_big` | `validations.username.too_big` |
+| Field      | Validation | Error Code       | Translation Key                  |
+| ---------- | ---------- | ---------------- | -------------------------------- |
+| `to`       | `.email()` | `invalid_string` | `validations.to.invalid_email`   |
+| `subject`  | `.min(1)`  | `too_small`      | `validations.subject.too_small`  |
+| `username` | `.min(3)`  | `too_small`      | `validations.username.too_small` |
+| `username` | `.max(20)` | `too_big`        | `validations.username.too_big`   |
 
 ### Translation File Example
 
@@ -139,14 +138,14 @@ validations.{fieldName}.{errorCode}
 
 ### Common Error Codes
 
-| Zod Error | When It Occurs |
-|-----------|----------------|
-| `too_small` | String too short, number too small, array too few items |
-| `too_big` | String too long, number too large, array too many items |
-| `invalid_email` | Invalid email format (from `.email()`) |
-| `invalid_url` | Invalid URL format (from `.url()`) |
-| `invalid_type` | Wrong type (e.g., undefined when string expected) |
-| `invalid_enum_value` | Value not in allowed options |
+| Zod Error            | When It Occurs                                          |
+| -------------------- | ------------------------------------------------------- |
+| `too_small`          | String too short, number too small, array too few items |
+| `too_big`            | String too long, number too large, array too many items |
+| `invalid_email`      | Invalid email format (from `.email()`)                  |
+| `invalid_url`        | Invalid URL format (from `.url()`)                      |
+| `invalid_type`       | Wrong type (e.g., undefined when string expected)       |
+| `invalid_enum_value` | Value not in allowed options                            |
 
 ## Naming Convention
 
@@ -165,14 +164,14 @@ import * as z from 'zod';
 /**
  * Lesson Create Validation Schema
  * Used for creating new lessons
- * 
+ *
  * Translation keys:
  * - validations.title.too_small
  * - validations.duration.too_small
  */
 export const ZLessonCreate = z.object({
-  title: z.string().min(1),       // Clean - no message
-  duration: z.number().min(1)     // Clean - no message
+  title: z.string().min(1), // Clean - no message
+  duration: z.number().min(1) // Clean - no message
 });
 export type TLessonCreate = z.infer<typeof ZLessonCreate>;
 
@@ -186,7 +185,7 @@ export * from './lesson';
 // packages/utils/src/validation/index.ts
 export * from './course';
 export * from './mail';
-export * from './lesson';  // Add this
+export * from './lesson'; // Add this
 ```
 
 ### 3. Use in API
@@ -196,11 +195,10 @@ export * from './lesson';  // Add this
 import { ZLessonCreate } from '@cio/utils/validation/lesson';
 import { zValidator } from '@hono/zod-validator';
 
-export const lessonRouter = new Hono()
-  .post('/', zValidator('json', ZLessonCreate), async (c) => {
-    const data = c.req.valid('json');
-    // ... create lesson
-  });
+export const lessonRouter = new Hono().post('/', zValidator('json', ZLessonCreate), async (c) => {
+  const data = c.req.valid('json');
+  // ... create lesson
+});
 ```
 
 ### 4. Add Translations in Frontend
@@ -232,13 +230,13 @@ let errors = {};
 
 function handleSubmit() {
   const result = ZLessonCreate.safeParse(formData);
-  
+
   if (!result.success) {
     errors = mapZodErrorsToTranslations(result.error);
     // errors.title = "Title is required" (translated)
     return;
   }
-  
+
   createLesson(result.data);
 }
 ```
@@ -258,8 +256,8 @@ export const ZUserProfile = z.object({
 
 // ❌ Bad - Hardcoded messages
 export const ZUserProfile = z.object({
-  email: z.string().email('Invalid email'),           // Don't do this
-  username: z.string().min(3, 'Too short')            // Don't do this
+  email: z.string().email('Invalid email'), // Don't do this
+  username: z.string().min(3, 'Too short') // Don't do this
 });
 
 // ❌ Bad - Translated messages in schema
@@ -273,7 +271,9 @@ export const ZUserProfile = z.object({
 ### 2. Always Export Types
 
 ```typescript
-export const ZCourseClone = z.object({ /* ... */ });
+export const ZCourseClone = z.object({
+  /* ... */
+});
 export type TCourseClone = z.infer<typeof ZCourseClone>;
 ```
 
@@ -285,7 +285,7 @@ Help frontend developers know which translation keys to add:
 /**
  * User Profile Validation Schema
  * Used for updating user profile information
- * 
+ *
  * Translation keys (convention-based):
  * - validations.email.invalid_email
  * - validations.username.too_small
@@ -328,9 +328,15 @@ Keep related schemas together in the same entity folder:
 
 ```typescript
 // validation/user/user.ts
-export const ZUserCreate = z.object({ /* ... */ });
-export const ZUserUpdate = z.object({ /* ... */ });
-export const ZUserProfile = z.object({ /* ... */ });
+export const ZUserCreate = z.object({
+  /* ... */
+});
+export const ZUserUpdate = z.object({
+  /* ... */
+});
+export const ZUserProfile = z.object({
+  /* ... */
+});
 ```
 
 ### 6. Don't Duplicate Schemas
@@ -341,7 +347,7 @@ export const ZUserProfile = z.object({ /* ... */ });
 // ❌ Bad - Reimplementing in frontend
 // apps/dashboard/src/schemas/user.ts
 export const userSchema = z.object({
-  email: z.string().email(t.get('validations.email.invalid')),
+  email: z.string().email(t.get('validations.email.invalid'))
   // ... duplicating from @cio/utils
 });
 

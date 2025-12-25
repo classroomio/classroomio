@@ -10,4 +10,3 @@
     <Skeleton class="h-40 w-[270px]" />
   </div>
 </div>
-

@@ -13,26 +13,19 @@
 </script>
 
 <div
-  class="floating grad relative mx-auto my-5 flex h-[61vh] w-full flex-col items-center justify-center px-6 py-12 text-center shadow-2xl lg:h-[50vh] lg:w-[70%] lg:rounded-3xl max-w-4xl space-y-8"
+  class="floating grad relative mx-auto my-5 flex h-[61vh] w-full max-w-4xl flex-col items-center justify-center space-y-8 px-6 py-12 text-center shadow-2xl lg:h-[50vh] lg:w-[70%] lg:rounded-3xl"
 >
   <div>
-    <h3
-      class="font-display mt-3 text-xl tracking-tight text-white lg:mt-2 lg:text-4xl max-w-2xl"
-    >
+    <h3 class="font-display mt-3 max-w-2xl text-xl tracking-tight text-white lg:mt-2 lg:text-4xl">
       {header}
     </h3>
-    <p class="mt-6 text-md text-gray-300">
+    <p class="text-md mt-6 text-gray-300">
       {subText}
     </p>
   </div>
 
   {#if demo}
-    <Button
-      variant="ghost"
-      data-cal-config="'layout':'month_view'"
-      data-cal-link="classroomio/demo"
-      class="bg-white!"
-    >
+    <Button variant="ghost" data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo" class="bg-white!">
       {btnLabel}
     </Button>
   {:else}

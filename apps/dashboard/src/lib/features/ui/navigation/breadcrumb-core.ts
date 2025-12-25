@@ -46,12 +46,12 @@ export interface BreadcrumbConfig {
    * Can be a string or a function that extracts the prefix dynamically
    */
   pathPrefix: string | ((pathname: string) => string);
-  
+
   /**
    * Base path for generating hrefs (e.g., '/lms', '/org/myorg')
    */
   basePath: string | ((pathname: string) => string);
-  
+
   /**
    * Resolver for dynamic segment titles
    * Can resolve from page.data, stores, or API calls
@@ -62,12 +62,12 @@ export interface BreadcrumbConfig {
     fullPathname: string,
     context?: unknown
   ) => string | Promise<string> | null | undefined;
-  
+
   /**
    * Optional: Cache breadcrumbs for better performance
    */
   enableCache?: boolean;
-  
+
   /**
    * Optional: Maximum breadcrumb depth (prevents infinite recursion)
    */
@@ -107,7 +107,7 @@ function getCachedOrGenerate(
   }
 
   clearExpiredCache();
-  
+
   const cached = breadcrumbCache.get(cacheKey);
   if (cached) {
     return cached;
@@ -122,31 +122,25 @@ function getCachedOrGenerate(
 /**
  * Extract path prefix from pathname
  */
-function extractPathPrefix(
-  pathname: string,
-  prefixConfig: string | ((pathname: string) => string)
-): string {
+function extractPathPrefix(pathname: string, prefixConfig: string | ((pathname: string) => string)): string {
   if (typeof prefixConfig === 'function') {
     return prefixConfig(pathname);
   }
-  
+
   // Handle dynamic prefixes like '/org/[slug]'
   if (prefixConfig.includes('[')) {
     const pattern = prefixConfig.replace(/\[.*?\]/g, '[^/]+');
     const match = pathname.match(new RegExp(`^${pattern}`));
     return match ? match[0] : '';
   }
-  
+
   return pathname.startsWith(prefixConfig) ? prefixConfig : '';
 }
 
 /**
  * Get base path for href generation
  */
-function getBasePath(
-  pathname: string,
-  basePathConfig: string | ((pathname: string) => string)
-): string {
+function getBasePath(pathname: string, basePathConfig: string | ((pathname: string) => string)): string {
   if (typeof basePathConfig === 'function') {
     return basePathConfig(pathname);
   }
@@ -228,19 +222,16 @@ async function resolveDynamicTitle(
 /**
  * Extract parameters from pathname (e.g., { slug: 'my-post' })
  */
-function extractParamsFromPath(
-  pathname: string,
-  parentPath: string
-): Record<string, string> {
+function extractParamsFromPath(pathname: string, parentPath: string): Record<string, string> {
   const params: Record<string, string> = {};
   const relativePath = pathname.replace(parentPath, '').replace(/^\//, '');
   const segments = relativePath.split('/').filter(Boolean);
-  
+
   // Simple extraction - can be enhanced for more complex patterns
   segments.forEach((segment, index) => {
     params[`param${index}`] = segment;
   });
-  
+
   return params;
 }
 
@@ -272,7 +263,7 @@ async function generateNestedBreadcrumbs(
   // Check for static nested route
   if (navItem.nestedRoutes) {
     const nestedRoute = navItem.nestedRoutes.find((route) => route.path === currentSegment);
-    
+
     if (nestedRoute) {
       breadcrumbs.push({
         label: nestedRoute.titleKey,
@@ -300,16 +291,11 @@ async function generateNestedBreadcrumbs(
   }
 
   // Handle dynamic segment
-  if (navItem.supportsDynamicSegment || 
-      navItem.nestedRoutes?.some((route) => route.supportsDynamicSegment && route.path !== currentSegment)) {
-    const dynamicTitle = await resolveDynamicTitle(
-      currentSegment,
-      currentPath,
-      fullPathname,
-      navItem,
-      config,
-      context
-    );
+  if (
+    navItem.supportsDynamicSegment ||
+    navItem.nestedRoutes?.some((route) => route.supportsDynamicSegment && route.path !== currentSegment)
+  ) {
+    const dynamicTitle = await resolveDynamicTitle(currentSegment, currentPath, fullPathname, navItem, config, context);
 
     if (dynamicTitle) {
       breadcrumbs.push({
@@ -323,7 +309,7 @@ async function generateNestedBreadcrumbs(
         const supportingNestedRoute = navItem.nestedRoutes?.find(
           (route) => route.supportsDynamicSegment && route.nestedRoutes
         );
-        
+
         if (supportingNestedRoute) {
           const nestedBreadcrumbs = await generateNestedBreadcrumbs(
             remainingSegments,
@@ -356,7 +342,7 @@ export async function generateBreadcrumbs(
   context?: unknown
 ): Promise<BreadcrumbItem[]> {
   const cacheKey = `${pathname}${searchParams}`;
-  
+
   return getCachedOrGenerate(
     cacheKey,
     () => generateBreadcrumbsSync(pathname, searchParams, navItems, config, context),
@@ -381,7 +367,7 @@ export function generateBreadcrumbsSync(
   // Extract path prefix and base path
   const pathPrefix = extractPathPrefix(pathname, config.pathPrefix);
   const basePath = getBasePath(pathname, config.basePath);
-  
+
   // Get relative path after removing prefix
   const relativePath = pathname.replace(pathPrefix, '').replace(/^\//, '') || '';
   const pathSegments = relativePath.split('/').filter(Boolean);
@@ -400,10 +386,8 @@ export function generateBreadcrumbsSync(
   }
 
   // Add parent breadcrumb
-  const parentHref = matchedNavItem.useHashUrl 
-    ? `${basePath}${matchedNavItem.path}` 
-    : matchedNavItem.url;
-  
+  const parentHref = matchedNavItem.useHashUrl ? `${basePath}${matchedNavItem.path}` : matchedNavItem.url;
+
   breadcrumbs.push({
     label: matchedNavItem.breadcrumbLabel || matchedNavItem.title,
     href: parentHref
@@ -411,10 +395,8 @@ export function generateBreadcrumbsSync(
 
   // Handle query params (settings tabs, etc.)
   if (matchedNavItem.items && searchParams) {
-    const subItem = matchedNavItem.items.find((sub) => 
-      isActive(pathWithQuery, sub.url, undefined, true)
-    );
-    
+    const subItem = matchedNavItem.items.find((sub) => isActive(pathWithQuery, sub.url, undefined, true));
+
     if (subItem) {
       breadcrumbs.push({
         label: subItem.breadcrumbLabel || subItem.title,
@@ -428,7 +410,7 @@ export function generateBreadcrumbsSync(
   if (pathSegments.length > 1) {
     const remainingSegments = pathSegments.slice(1);
     const parentPath = `${basePath}${matchedNavItem.path}`;
-    
+
     // Note: For async resolvers, you'd need to use generateBreadcrumbs instead
     const nestedBreadcrumbs = generateNestedBreadcrumbsSync(
       remainingSegments,
@@ -440,7 +422,7 @@ export function generateBreadcrumbsSync(
       config,
       context
     );
-    
+
     breadcrumbs.push(...nestedBreadcrumbs);
   }
 
@@ -475,7 +457,7 @@ function generateNestedBreadcrumbsSync(
   // Check for static nested route
   if (navItem.nestedRoutes) {
     const nestedRoute = navItem.nestedRoutes.find((route) => route.path === currentSegment);
-    
+
     if (nestedRoute) {
       breadcrumbs.push({
         label: nestedRoute.titleKey,
@@ -506,14 +488,9 @@ function generateNestedBreadcrumbsSync(
   if (navItem.supportsDynamicSegment) {
     // Try to resolve title synchronously (from context if available)
     let dynamicTitle: string | null = null;
-    
+
     if (config.dynamicTitleResolver) {
-      const result = config.dynamicTitleResolver(
-        currentSegment,
-        currentPath,
-        fullPathname,
-        context
-      );
+      const result = config.dynamicTitleResolver(currentSegment, currentPath, fullPathname, context);
       // Only use if it's not a promise
       if (typeof result === 'string') {
         dynamicTitle = result;
@@ -531,7 +508,7 @@ function generateNestedBreadcrumbsSync(
         const supportingNestedRoute = navItem.nestedRoutes?.find(
           (route) => route.supportsDynamicSegment && route.nestedRoutes
         );
-        
+
         if (supportingNestedRoute?.nestedRoutes) {
           const nestedBreadcrumbs = generateNestedBreadcrumbsSync(
             remainingSegments,
@@ -560,4 +537,3 @@ export function clearBreadcrumbCache() {
   breadcrumbCache.clear();
   cacheTimestamps.clear();
 }
-

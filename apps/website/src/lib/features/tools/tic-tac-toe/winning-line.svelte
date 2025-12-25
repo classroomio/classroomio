@@ -29,13 +29,11 @@
 {#if winner}
   <div
     transition:fade={{ delay: 500, duration: 2 }}
-    class="winning-line absolute bg-[#ffc300] z-[100]"
+    class="winning-line absolute z-[100] bg-[#ffc300]"
     class:horizontal-line={winner.direction === 'horizontal'}
     class:vertical-line={winner.direction === 'vertical'}
-    class:diagonal-line-1={winner.direction === 'diagonal' &&
-      winner.diagonal === 'top-left-to-bottom-right'}
-    class:diagonal-line-2={winner.direction === 'diagonal' &&
-      winner.diagonal === 'top-right-to-bottom-left'}
+    class:diagonal-line-1={winner.direction === 'diagonal' && winner.diagonal === 'top-left-to-bottom-right'}
+    class:diagonal-line-2={winner.direction === 'diagonal' && winner.diagonal === 'top-right-to-bottom-left'}
   ></div>
 {/if}
 

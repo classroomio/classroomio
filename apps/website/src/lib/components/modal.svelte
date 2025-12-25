@@ -13,10 +13,8 @@
 {#if open}
   <div class="relative flex items-center justify-center">
     <!-- black background -->
-    <div class="fixed z-[3000] top-0 left-0 w-full h-full bg-black opacity-[0.7]"></div>
-    <div
-      class="fixed z-[3001] {className} w-full md:w-[30%] md:min-w-[500px] bg-white rounded-md mx-auto py-6 px-7"
-    >
+    <div class="fixed left-0 top-0 z-[3000] h-full w-full bg-black opacity-[0.7]"></div>
+    <div class="fixed z-[3001] {className} mx-auto w-full rounded-md bg-white px-7 py-6 md:w-[30%] md:min-w-[500px]">
       {@render children?.()}
     </div>
   </div>

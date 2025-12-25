@@ -13,7 +13,7 @@
 </script>
 
 {#if !isRecommended}
-  <div class="mb-5 flex md:flex-row flex-col md:items-center gap-2">
+  <div class="mb-5 flex flex-col gap-2 md:flex-row md:items-center">
     <!-- Date -->
     <p class="text-sm text-slate-500">{formatDate(post.date)}</p>
 
@@ -29,24 +29,16 @@
 {/if}
 
 <a href="/blog/{post.slug}" class="group">
-  <img
-    loading="lazy"
-    src={post.imageUrl}
-    alt={post.title}
-    class="w-70 h-48 object-cover rounded-md"
-  />
-  <p
-    class="font-bold text-lg py-2 {isRecommended &&
-      'h-[60px]'} line-clamp-2 group-hover:text-slate-500"
-  >
+  <img loading="lazy" src={post.imageUrl} alt={post.title} class="w-70 h-48 rounded-md object-cover" />
+  <p class="py-2 text-lg font-bold {isRecommended && 'h-[60px]'} line-clamp-2 group-hover:text-slate-500">
     {@html post.title}
   </p>
 
-  <p class="text-slate-500 pt-2 mb-4 line-clamp-3">{post.description}</p>
+  <p class="mb-4 line-clamp-3 pt-2 text-slate-500">{post.description}</p>
 </a>
 
-<div class="flex items-center justify-start gap-4 my-2">
-  <img loading="lazy" src={post.avatar} alt="avatar" class="w-10 h-10 rounded-full" />
+<div class="my-2 flex items-center justify-start gap-4">
+  <img loading="lazy" src={post.avatar} alt="avatar" class="h-10 w-10 rounded-full" />
   <span>
     <p class="font-semibold">{post.author}</p>
     <p class="text-slate-500">{post.role}</p>

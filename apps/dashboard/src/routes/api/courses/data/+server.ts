@@ -40,12 +40,7 @@ async function getCourse(supabase: any, courseId: string) {
   return course;
 }
 
-async function getGroupMembers(
-  supabase: any,
-  groupId: string,
-  isStudent: boolean,
-  userMembership: any
-) {
+async function getGroupMembers(supabase: any, groupId: string, isStudent: boolean, userMembership: any) {
   if (isStudent) {
     return {
       id: groupId,
@@ -53,11 +48,7 @@ async function getGroupMembers(
     };
   }
 
-  const { data: group, error } = await supabase
-    .from('group')
-    .select(GROUP_MEMBERS_SELECT)
-    .eq('id', groupId)
-    .single();
+  const { data: group, error } = await supabase.from('group').select(GROUP_MEMBERS_SELECT).eq('id', groupId).single();
 
   if (error) {
     throw new Error('Error fetching group members');

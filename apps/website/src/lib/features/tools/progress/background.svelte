@@ -58,21 +58,15 @@
     </Dialog.Header>
 
     <!--  -->
-    <div
-      class="flex flex-wrap justify-between gap-y-3 mt-3 overflow-y-auto overflow-x-hidden h-[85%]"
-    >
+    <div class="mt-3 flex h-[85%] flex-wrap justify-between gap-y-3 overflow-y-auto overflow-x-hidden">
       {#each backgrounds as background}
         <button
           onclick={() => {
             selectBackground(background);
           }}
-          class="flex w-[30%] items-center shadow-sm hover:scale-110 transition-all duration-300"
+          class="flex w-[30%] items-center shadow-sm transition-all duration-300 hover:scale-110"
         >
-          <img
-            src="https://assets.cdn.clsrio.com/progress-report/backgrounds/{background.src}.webp"
-            alt=""
-            class=""
-          />
+          <img src="https://assets.cdn.clsrio.com/progress-report/backgrounds/{background.src}.webp" alt="" class="" />
         </button>
       {/each}
     </div>

@@ -56,9 +56,9 @@ GET    /lessons (which course?)
 
 ```typescript
 // ✅ OK - Top-level resources
-GET    /account
-PUT    /account/user
-GET    /account/subscription
+GET / account;
+PUT / account / user;
+GET / account / subscription;
 ```
 
 ---
@@ -67,13 +67,13 @@ GET    /account/subscription
 
 Use HTTP methods correctly for their intended purpose:
 
-| Method | Purpose | Idempotent | Response Body |
-|--------|---------|------------|---------------|
-| `GET` | Retrieve resource(s) | ✅ Yes | Always |
-| `POST` | Create new resource | ❌ No | Created resource |
-| `PUT` | Replace entire resource | ✅ Yes | Updated resource |
-| `PATCH` | Partial update | ✅ Yes | Updated resource |
-| `DELETE` | Remove resource | ✅ Yes | Usually empty (204) |
+| Method   | Purpose                 | Idempotent | Response Body       |
+| -------- | ----------------------- | ---------- | ------------------- |
+| `GET`    | Retrieve resource(s)    | ✅ Yes     | Always              |
+| `POST`   | Create new resource     | ❌ No      | Created resource    |
+| `PUT`    | Replace entire resource | ✅ Yes     | Updated resource    |
+| `PATCH`  | Partial update          | ✅ Yes     | Updated resource    |
+| `DELETE` | Remove resource         | ✅ Yes     | Usually empty (204) |
 
 ```typescript
 // ✅ GOOD - Correct method usage
@@ -112,11 +112,13 @@ POST   /lessons?courseId=123     // Relationship not obvious
 ```
 
 **When to nest:**
+
 - ✅ Child resource only exists within parent context
 - ✅ Child resource ID is unique within parent (e.g., `lessonId` within `courseId`)
 - ✅ Operations typically scoped to parent
 
 **When NOT to nest:**
+
 - ❌ Resource can exist independently
 - ❌ Resource ID is globally unique
 - ❌ Operations span multiple parents
@@ -154,6 +156,7 @@ GET    /get-courses              // Redundant verb
 **Pattern:** `POST /resource/:id/action`
 
 **When to use:**
+
 - ✅ State transitions (publish, unpublish, activate, cancel)
 - ✅ Side effects (clone, duplicate, export)
 - ✅ Complex operations that don't fit CRUD
@@ -181,14 +184,14 @@ GET    /courses/search/javascript
 
 **Common query parameter patterns:**
 
-| Purpose | Parameter | Example |
-|---------|-----------|---------|
-| Filtering | `status`, `type`, `role` | `?status=active&type=course` |
-| Search | `q`, `search` | `?q=javascript` |
-| Pagination | `page`, `limit`, `offset` | `?page=1&limit=20` |
-| Sorting | `sort`, `order` | `?sort=created_at&order=desc` |
-| Date range | `startDate`, `endDate` | `?startDate=2024-01-01` |
-| Boolean flags | `include`, `expand` | `?include=lessons&expand=metadata` |
+| Purpose       | Parameter                 | Example                            |
+| ------------- | ------------------------- | ---------------------------------- |
+| Filtering     | `status`, `type`, `role`  | `?status=active&type=course`       |
+| Search        | `q`, `search`             | `?q=javascript`                    |
+| Pagination    | `page`, `limit`, `offset` | `?page=1&limit=20`                 |
+| Sorting       | `sort`, `order`           | `?sort=created_at&order=desc`      |
+| Date range    | `startDate`, `endDate`    | `?startDate=2024-01-01`            |
+| Boolean flags | `include`, `expand`       | `?include=lessons&expand=metadata` |
 
 ---
 
@@ -303,9 +306,9 @@ import { organizationRouter } from '@api/routes/organization';
 import { accountRouter } from '@api/routes/account';
 
 export const app = new Hono()
-  .route('/course', courseRouter)           // /course/*
+  .route('/course', courseRouter) // /course/*
   .route('/organization', organizationRouter) // /organization/*
-  .route('/account', accountRouter);        // /account/*
+  .route('/account', accountRouter); // /account/*
 ```
 
 ---
@@ -321,37 +324,37 @@ export const courseRouter = new Hono()
   .get('/', authMiddleware, zValidator('query', ZListCourses), async (c) => {
     // GET /course?orgId=123&status=published&page=1&limit=20
   })
-  
+
   // Get single course
   .get('/:courseId', authMiddleware, zValidator('param', ZGetCourse), async (c) => {
     // GET /course/:courseId
   })
-  
+
   // Create course
   .post('/', authMiddleware, zValidator('json', ZCreateCourse), async (c) => {
     // POST /course
   })
-  
+
   // Update course (full)
   .put('/:courseId', authMiddleware, zValidator('json', ZUpdateCourse), async (c) => {
     // PUT /course/:courseId
   })
-  
+
   // Update course (partial)
   .patch('/:courseId', authMiddleware, zValidator('json', ZPatchCourse), async (c) => {
     // PATCH /course/:courseId
   })
-  
+
   // Delete course
   .delete('/:courseId', authMiddleware, zValidator('param', ZDeleteCourse), async (c) => {
     // DELETE /course/:courseId
   })
-  
+
   // Actions
   .post('/:courseId/clone', authMiddleware, zValidator('json', ZCloneCourse), async (c) => {
     // POST /course/:courseId/clone
   })
-  
+
   .post('/:courseId/publish', authMiddleware, zValidator('param', ZPublishCourse), async (c) => {
     // POST /course/:courseId/publish
   });
@@ -366,22 +369,22 @@ export const lessonRouter = new Hono()
   .get('/', authMiddleware, zValidator('query', ZListLessons), async (c) => {
     // GET /course/:courseId/lesson?page=1&limit=20
   })
-  
+
   // Get single lesson
   .get('/:lessonId', authMiddleware, zValidator('param', ZGetLesson), async (c) => {
     // GET /course/:courseId/lesson/:lessonId
   })
-  
+
   // Create lesson
   .post('/', authMiddleware, zValidator('json', ZCreateLesson), async (c) => {
     // POST /course/:courseId/lesson
   })
-  
+
   // Update lesson
   .put('/:lessonId', authMiddleware, zValidator('json', ZUpdateLesson), async (c) => {
     // PUT /course/:courseId/lesson/:lessonId
   })
-  
+
   // Delete lesson
   .delete('/:lessonId', authMiddleware, zValidator('param', ZDeleteLesson), async (c) => {
     // DELETE /course/:courseId/lesson/:lessonId
@@ -391,7 +394,7 @@ export const lessonRouter = new Hono()
 // apps/api/src/routes/course/course.ts
 export const courseRouter = new Hono()
   // ... course routes ...
-  .route('/:courseId/lesson', lessonRouter);  // Nested under course
+  .route('/:courseId/lesson', lessonRouter); // Nested under course
 ```
 
 ### Example 3: Organization with Team
@@ -403,31 +406,31 @@ export const organizationRouter = new Hono()
   .get('/', authMiddleware, zValidator('query', ZListOrgs), async (c) => {
     // GET /organization?siteName=acme
   })
-  
+
   // Get organization
   .get('/:orgId', authMiddleware, zValidator('param', ZGetOrg), async (c) => {
     // GET /organization/:orgId
   })
-  
+
   // Create organization
   .post('/', authMiddleware, zValidator('json', ZCreateOrg), async (c) => {
     // POST /organization
   })
-  
+
   // Update organization
   .put('/:orgId', authMiddleware, zValidator('json', ZUpdateOrg), async (c) => {
     // PUT /organization/:orgId
   })
-  
+
   // Team management (nested)
   .get('/:orgId/team', authMiddleware, zValidator('param', ZGetTeam), async (c) => {
     // GET /organization/:orgId/team
   })
-  
+
   .post('/:orgId/team/invite', authMiddleware, zValidator('json', ZInviteTeam), async (c) => {
     // POST /organization/:orgId/team/invite
   })
-  
+
   .delete('/:orgId/team/:memberId', authMiddleware, zValidator('param', ZRemoveMember), async (c) => {
     // DELETE /organization/:orgId/team/:memberId
   });
@@ -457,16 +460,16 @@ DELETE /courses/:id
 
 ```typescript
 // ❌ BAD
-GET    /course
-POST   /courses
-GET    /organization
-POST   /organizations
+GET / course;
+POST / courses;
+GET / organization;
+POST / organizations;
 
 // ✅ GOOD
-GET    /courses
-POST   /courses
-GET    /organizations
-POST   /organizations
+GET / courses;
+POST / courses;
+GET / organizations;
+POST / organizations;
 ```
 
 ### ❌ Don't: Use query parameters for required identifiers
@@ -540,4 +543,3 @@ When creating a new route, ensure:
 8. **Organized by domain** in code structure
 
 Following these conventions ensures your API is **predictable**, **maintainable**, and **developer-friendly**.
-

@@ -11,6 +11,7 @@ pnpm run upload:openapi
 ```
 
 ### Direct script usage
+
 ```bash
 tsx scripts/upload-openapi-spec.ts
 ```
@@ -49,6 +50,7 @@ This script is integrated with a GitHub Action that automatically generates and 
 ### Automatic Workflow
 
 The GitHub Action runs on:
+
 - **Push to main** - Automatically uploads to R2
 - **Pull Requests** - Generates spec for review (no upload)
 - **Manual dispatch** - Allows manual triggering with custom parameters
@@ -57,7 +59,7 @@ The GitHub Action runs on:
 
 1. **Required secrets:**
    - `CLOUDFLARE_ACCESS_KEY`
-   - `CLOUDFLARE_SECRET_ACCESS_KEY` 
+   - `CLOUDFLARE_SECRET_ACCESS_KEY`
    - `CLOUDFLARE_ACCOUNT_ID`
    - `PUBLIC_SUPABASE_URL`
    - `PUBLIC_SUPABASE_ANON_KEY`

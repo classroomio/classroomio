@@ -1,3 +1,8 @@
+<script lang="ts" module>
+  import { CustomImg as img } from '$lib/components';
+  export { img };
+</script>
+
 <script>
   /**
    * @typedef {Object} Props
@@ -6,11 +11,6 @@
 
   /** @type {Props} */
   let { children } = $props();
-</script>
-
-<script lang="ts" module>
-  import { CustomImg as img } from '$lib/components';
-  export { img };
 </script>
 
 {@render children?.()}

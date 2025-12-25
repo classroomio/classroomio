@@ -8,7 +8,9 @@
     "lint": "turbo run lint",
     "clean": "turbo clean && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
     "clean:pnpm": "pnpm clean && pnpm store prune",
-    "format": "prettier . --write",
+    "format": "turbo run format",
+    "format:check": "prettier --check .",
+    "postinstall": "lefthook install",
     "release": "standard-version",
     "dashboard:dev": "pnpm dev --filter=@cio/dashboard --filter=@cio/ui  --filter=@cio/db --filter=@cio/utils",
     "dashboard:start": "pnpm start --filter @cio/dashboard",
@@ -22,13 +24,14 @@
     "turbo": "^1.10.16"
   },
   "devDependencies": {
+    "@cio/tsconfig": "workspace:*",
+    "@evilmartians/lefthook": "^1.13.6",
     "concurrently": "^8.2.2",
     "eslint": "^9.36.0",
-    "prettier": "^3.1.0",
-    "prettier-plugin-svelte": "^3.4.0",
+    "prettier": "^3.6.2",
+    "prettier-plugin-svelte": "^3.4.1",
     "prettier-plugin-tailwindcss": "^0.5.7",
     "standard-version": "^9.5.0",
-    "@cio/tsconfig": "workspace:*",
     "typescript": "^5.1.6"
   },
   "engines": {

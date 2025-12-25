@@ -45,7 +45,7 @@
     </Dialog.Header>
 
     <!-- map for each avatar -->
-    <div class="flex flex-wrap justify-evenly gap-y-3 mt-3">
+    <div class="mt-3 flex flex-wrap justify-evenly gap-y-3">
       {#each avatars as avatar, index}
         <button
           onclick={() => {
@@ -59,21 +59,17 @@
             hoveredIndex = null;
             isAddIcon = false;
           }}
-          class="relative w-[17%] flex justify-center items-center shadow-sm rounded-full hover:scale-110 transition-all duration-300"
+          class="relative flex w-[17%] items-center justify-center rounded-full shadow-sm transition-all duration-300 hover:scale-110"
         >
           <!-- + icon overlay -->
           {#if isAddIcon && hoveredIndex === index}
             <div
-              class="w-full h-full flex justify-center items-center bg-white border absolute rounded-full opacity-[0.7] blur-md"
+              class="absolute flex h-full w-full items-center justify-center rounded-full border bg-white opacity-[0.7] blur-md"
             ></div>
             <img src="/free-tools/progress-report/hover-plus-icon.svg" alt="" class="absolute" />
           {/if}
           <!-- avatar -->
-          <img
-            src="https://assets.cdn.clsrio.com/progress-report/avatar/{avatar.src}.svg"
-            alt=""
-            class="w-full"
-          />
+          <img src="https://assets.cdn.clsrio.com/progress-report/avatar/{avatar.src}.svg" alt="" class="w-full" />
         </button>
       {/each}
     </div>

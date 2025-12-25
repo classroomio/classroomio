@@ -51,4 +51,3 @@
     fill: none; /* Ensure the checkmark path itself is not filled */
   }
 </style>
-

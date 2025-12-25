@@ -15,4 +15,3 @@
     <line x1="17" y1="7" x2="7" y2="17" /><polyline points="8 7 17 7 17 16" />
   </svg>
 </span>
-

@@ -15,4 +15,3 @@
     stroke-width="5"
   />
 </svg>
-

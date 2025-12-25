@@ -171,16 +171,11 @@
 
 <section class=" w-full bg-white px-1 md:w-full md:px-0">
   <ToolsHeader>
-    <img
-      src="/free-tools/pomodoro.svg"
-      class="mx-auto w-[15%] rounded-full border md:w-[5%]"
-      alt=""
-    />
+    <img src="/free-tools/pomodoro.svg" class="mx-auto w-[15%] rounded-full border md:w-[5%]" alt="" />
     <h1 class="my-3 text-3xl text-[#040F2D] md:text-5xl">Pomodoro Timer</h1>
     <p class="mx-auto mt-10 text-sm font-light text-[#656565] md:w-[45%] md:font-normal">
-      Make your workday more engaging and effective with the Pomodoro timer, break work into
-      25-minute focused intervals called "pomodoros," followed by 5-minute breaks. take a longer
-      break.
+      Make your workday more engaging and effective with the Pomodoro timer, break work into 25-minute focused intervals
+      called "pomodoros," followed by 5-minute breaks. take a longer break.
     </p>
   </ToolsHeader>
 
@@ -280,12 +275,9 @@
                     <button
                       type="button"
                       onclick={() => deleteTodo(i)}
-                      class="rounded-sm bg-[#F7F7F7] px-5 py-2 text-xs font-semibold"
-                      >Discard</button
+                      class="rounded-sm bg-[#F7F7F7] px-5 py-2 text-xs font-semibold">Discard</button
                     >
-                    <button
-                      type="submit"
-                      class="rounded-sm bg-[#0D4CFF] px-5 py-2 text-xs font-semibold text-white"
+                    <button type="submit" class="rounded-sm bg-[#0D4CFF] px-5 py-2 text-xs font-semibold text-white"
                       >Save</button
                     >
                   </div>
@@ -329,9 +321,7 @@
                   </div>
 
                   <div class="mt-10 flex items-center justify-between">
-                    <p
-                      class="rounded-[3px] bg-[#EAEAEA] px-1.5 py-0.5 text-xs font-medium text-[#656565]"
-                    >
+                    <p class="rounded-[3px] bg-[#EAEAEA] px-1.5 py-0.5 text-xs font-medium text-[#656565]">
                       {todo.time}
                     </p>
 

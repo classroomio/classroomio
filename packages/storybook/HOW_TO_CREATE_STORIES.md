@@ -31,6 +31,7 @@ Stories are organized into two main categories:
 3. Optionally create a fields file: `fields.ts` (for controls configuration)
 
 **Example:**
+
 ```
 src/molecules/hover-card/
   ├── hover-card.stories.svelte
@@ -44,16 +45,16 @@ Every story file follows this structure:
 ```svelte
 <script module>
   import { defineMeta } from '@storybook/addon-svelte-csf';
-  
+
   // Component imports
   import * as ComponentName from '@cio/ui/base/component-name';
-  
+
   // Other imports (icons, utilities, etc.)
   import IconName from '@lucide/svelte/icons/icon-name';
-  
+
   // Fields import (if using controls)
   import { FIELDS } from './fields';
-  
+
   // Story definition
   const { Story } = defineMeta({
     title: 'Category/ComponentName',
@@ -66,7 +67,7 @@ Every story file follows this structure:
     },
     tags: ['autodocs']
   });
-  
+
   // State variables (if needed)
   let someState = $state('');
 </script>
@@ -83,25 +84,23 @@ Every story file follows this structure:
 ### Component Imports
 
 - **Namespace imports** for multi-part components:
+
   ```svelte
-  import * as HoverCard from '@cio/ui/base/hover-card';
-  import * as Card from '@cio/ui/base/card';
-  import * as Field from '@cio/ui/base/field';
+  import * as HoverCard from '@cio/ui/base/hover-card'; import * as Card from '@cio/ui/base/card'; import * as Field
+  from '@cio/ui/base/field';
   ```
 
 - **Named imports** for single components:
   ```svelte
-  import { Button } from '@cio/ui/base/button';
-  import { Input } from '@cio/ui/base/input';
-  import { Avatar } from '@cio/ui/base/avatar';
+  import {Button} from '@cio/ui/base/button'; import {Input} from '@cio/ui/base/input'; import {Avatar} from '@cio/ui/base/avatar';
   ```
 
 ### Icon Imports
 
 Use Lucide Svelte icons:
+
 ```svelte
-import CalendarDaysIcon from '@lucide/svelte/icons/calendar-days';
-import UsersIcon from '@lucide/svelte/icons/users';
+import CalendarDaysIcon from '@lucide/svelte/icons/calendar-days'; import UsersIcon from '@lucide/svelte/icons/users';
 import BookOpenIcon from '@lucide/svelte/icons/book-open';
 ```
 
@@ -115,20 +114,20 @@ import BookOpenIcon from '@lucide/svelte/icons/book-open';
 ### Component Reference
 
 - For multi-part components, reference the `Root` component:
+
   ```svelte
-  component: HoverCard.Root
-  component: Card.Root
+  component: HoverCard.Root component: Card.Root
   ```
 
 - For single components, reference directly:
   ```svelte
-  component: Button
-  component: Input
+  component: Button component: Input
   ```
 
 ### Parameters
 
 Standard parameters configuration:
+
 ```svelte
 parameters: {
   layout: 'centered',
@@ -159,6 +158,7 @@ Always include `tags: ['autodocs']` for automatic documentation generation.
 ### Template with Args (for controls)
 
 For atoms that need to pass args to controls:
+
 ```svelte
 <Story name="Default">
   {#snippet template(args)}
@@ -170,6 +170,7 @@ For atoms that need to pass args to controls:
 ### Multiple Stories
 
 Create multiple stories to showcase different use cases:
+
 ```svelte
 <Story name="Default">
   {#snippet template()}
@@ -199,6 +200,7 @@ export const FIELDS = ['class'] as string[];
 ```
 
 Common fields:
+
 - `'class'` - CSS classes
 - `'variant'` - Component variants
 - `'size'` - Component sizes
@@ -210,6 +212,7 @@ Common fields:
 ### Atoms
 
 Basic, indivisible components:
+
 - Button, Input, Badge, Avatar, Label, Checkbox, Switch, etc.
 - Single-purpose components
 - Usually don't compose other components
@@ -217,6 +220,7 @@ Basic, indivisible components:
 ### Molecules
 
 Composite components:
+
 - Card, Field, ButtonGroup, HoverCard, Empty, etc.
 - Made of multiple atoms or other components
 - More complex functionality
@@ -279,6 +283,7 @@ Since ClassroomIO is an LMS platform, all story content should be **LMS-related*
 ### Content Patterns
 
 **Instructor Profiles:**
+
 ```svelte
 <h4 class="text-sm font-semibold">Sarah Johnson</h4>
 <p class="text-sm">Senior Full-Stack Developer & Instructor</p>
@@ -286,6 +291,7 @@ Since ClassroomIO is an LMS platform, all story content should be **LMS-related*
 ```
 
 **Course Information:**
+
 ```svelte
 <h4 class="text-sm font-semibold">Advanced React Patterns</h4>
 <p class="text-muted-foreground text-sm">
@@ -294,6 +300,7 @@ Since ClassroomIO is an LMS platform, all story content should be **LMS-related*
 ```
 
 **Student Information:**
+
 ```svelte
 <h4 class="text-sm font-semibold">Alex Martinez</h4>
 <p class="text-muted-foreground text-xs">5 courses enrolled</p>
@@ -455,4 +462,3 @@ When creating a new story, ensure:
 - [Storybook Svelte CSF Addon](https://storybook.js.org/addons/@storybook/addon-svelte-csf)
 - [Bits UI Documentation](https://bits-ui.com/docs/components)
 - [Lucide Icons](https://lucide.dev/icons/)
-

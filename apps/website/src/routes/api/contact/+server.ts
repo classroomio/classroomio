@@ -1,33 +1,32 @@
 import { PUBLIC_SERVER_URL } from '$env/static/public';
 
-const sendEmail =
-  (sFetch: typeof fetch) => async (subject: string, content: string, replyTo?: string) => {
-    try {
-      const response = await sFetch(`${PUBLIC_SERVER_URL}/sendEmail`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify([
-          {
-            from: `"ClassroomIO Support" <notify@mail.classroomio.com>`,
-            to: 'help@classroomio.com',
-            subject,
-            content,
-            replyTo
-          }
-        ])
-      });
+const sendEmail = (sFetch: typeof fetch) => async (subject: string, content: string, replyTo?: string) => {
+  try {
+    const response = await sFetch(`${PUBLIC_SERVER_URL}/sendEmail`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify([
+        {
+          from: `"ClassroomIO Support" <notify@mail.classroomio.com>`,
+          to: 'help@classroomio.com',
+          subject,
+          content,
+          replyTo
+        }
+      ])
+    });
 
-      const responseData = await response.json();
-      console.log('Emails sent successfully:', responseData);
+    const responseData = await response.json();
+    console.log('Emails sent successfully:', responseData);
 
-      return 'sent';
-    } catch (error) {
-      console.error('Error sending email', error);
-      return 'failed';
-    }
-  };
+    return 'sent';
+  } catch (error) {
+    console.error('Error sending email', error);
+    return 'failed';
+  }
+};
 
 export async function POST({ request, fetch }) {
   try {

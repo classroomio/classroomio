@@ -114,4 +114,3 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
     show: true
   }
 });
-

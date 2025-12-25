@@ -114,9 +114,9 @@
         <span>from one Platform</span>
       </div>
 
-      <p class="mx-auto mt-10 px-4 ui:text-muted-foreground md:text-lg lg:mt-6 lg:w-[42%] lg:p-0">
-        ClassroomIO is an open source learning management system for companies. We give you a suite
-        of tools to help you achieve your training, onboarding and certification goals.
+      <p class="ui:text-muted-foreground mx-auto mt-10 px-4 md:text-lg lg:mt-6 lg:w-[42%] lg:p-0">
+        ClassroomIO is an open source learning management system for companies. We give you a suite of tools to help you
+        achieve your training, onboarding and certification goals.
       </p>
     </div>
 
@@ -169,12 +169,8 @@
     </div>
 
     <div class="my-10 flex flex-col items-center justify-center gap-4 md:flex-row">
-      <Button variant="outline" href="/demo" target="_blank" rel="noopener noreferrer nofollow">
-        Book a demo
-      </Button>
-      <Button href="/signup" target="_blank" rel="noopener noreferrer nofollow">
-        Sign Up for Free
-      </Button>
+      <Button variant="outline" href="/demo" target="_blank" rel="noopener noreferrer nofollow">Book a demo</Button>
+      <Button href="/signup" target="_blank" rel="noopener noreferrer nofollow">Sign Up for Free</Button>
       <!-- <a
       class="font-medium lg:font-semibold text-sm md:text-base w-11/12 md:w-fit border px-6 py-3 lg:px-10 lg:py-5 rounded-md"
       href="/github"
@@ -195,10 +191,7 @@
       />
       
     </div> -->
-    <div
-      style="position: relative; padding-bottom: calc(50% + 42px);"
-      class="mx-auto w-[85%] lg:w-[70%]"
-    >
+    <div style="position: relative; padding-bottom: calc(50% + 42px);" class="mx-auto w-[85%] lg:w-[70%]">
       <iframe
         title="ClassroomIO Live Demo"
         src="https://app.supademo.com/embed/cluw8chyy06nhq2s9m697a680"

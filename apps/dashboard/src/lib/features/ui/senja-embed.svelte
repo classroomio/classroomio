@@ -14,4 +14,3 @@
 </script>
 
 <div class="senja-embed" data-id={id} data-lazyload="false" data-spinner="false"></div>
-

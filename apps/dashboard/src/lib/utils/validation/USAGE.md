@@ -3,6 +3,7 @@
 ## Overview
 
 We use **convention-based translation keys** for Zod validation errors. This approach:
+
 - ✅ No metadata needed - just follow the naming pattern
 - ✅ Clean shared schemas without hardcoded messages
 - ✅ Automatic fallback to generic translations
@@ -18,14 +19,14 @@ validations.{fieldName}.{errorCode}
 
 ### Common Error Codes
 
-| Error Code | When It Occurs | Example Field |
-|------------|----------------|---------------|
-| `too_small` | String too short, number too small, array too few items | username.too_small |
-| `too_big` | String too long, number too large, array too many items | bio.too_big |
-| `invalid_email` | Invalid email format | email.invalid_email |
-| `invalid_url` | Invalid URL format | website.invalid_url |
-| `invalid_type` | Wrong type (e.g., undefined when string expected) | username.invalid_type |
-| `invalid_enum_value` | Value not in allowed options | role.invalid_enum_value |
+| Error Code           | When It Occurs                                          | Example Field           |
+| -------------------- | ------------------------------------------------------- | ----------------------- |
+| `too_small`          | String too short, number too small, array too few items | username.too_small      |
+| `too_big`            | String too long, number too large, array too many items | bio.too_big             |
+| `invalid_email`      | Invalid email format                                    | email.invalid_email     |
+| `invalid_url`        | Invalid URL format                                      | website.invalid_url     |
+| `invalid_type`       | Wrong type (e.g., undefined when string expected)       | username.invalid_type   |
+| `invalid_enum_value` | Value not in allowed options                            | role.invalid_enum_value |
 
 ## Quick Start
 
@@ -40,12 +41,12 @@ let errors: Record<string, string> = {};
 
 function handleSubmit() {
   const result = ZEmailData.safeParse(formData);
-  
+
   if (!result.success) {
     errors = mapZodErrorsToTranslations(result.error);
     return;
   }
-  
+
   // Use validated data
   sendEmail(result.data);
 }
@@ -68,7 +69,7 @@ function handleSubmit() {
       "too_small": "Content must be at least 1 character",
       "too_big": "Content is too long"
     },
-    
+
     "generic": {
       "required": "This field is required",
       "invalid_email": "Invalid email address",
@@ -101,24 +102,24 @@ export const ZUserProfile = z.object({
 <script lang="ts">
   import { ZUserProfile } from '@cio/utils/validation/user';
   import { mapZodErrorsToTranslations } from '$lib/utils/validation';
-  
+
   let formData = {
     email: '',
     username: '',
     bio: '',
     age: 0
   };
-  
+
   let errors: Record<string, string> = {};
-  
+
   function handleSubmit() {
     const result = ZUserProfile.safeParse(formData);
-    
+
     if (!result.success) {
       errors = mapZodErrorsToTranslations(result.error);
       return;
     }
-    
+
     // Success!
     saveProfile(result.data);
   }
@@ -194,7 +195,7 @@ Zod validates in order and returns the **first error** it encounters:
 
 ```typescript
 // Schema
-z.string().min(3).max(20)
+z.string().min(3).max(20);
 
 // Input: ""
 // Error: too_small (stops at first rule)
@@ -226,12 +227,12 @@ import { validateWithTranslation } from '$lib/utils/validation';
 
 function handleSubmit() {
   const result = validateWithTranslation(ZUserProfile, formData);
-  
+
   if ('errors' in result) {
     errors = result.errors;
     return;
   }
-  
+
   // Success - result.data is typed!
   saveProfile(result.data);
 }
@@ -240,6 +241,7 @@ function handleSubmit() {
 ## Adding New Fields
 
 1. **Add to schema** (in packages/utils):
+
 ```typescript
 export const ZUserProfile = z.object({
   // ... existing fields
@@ -248,6 +250,7 @@ export const ZUserProfile = z.object({
 ```
 
 2. **Add translations**:
+
 ```json
 {
   "validations": {

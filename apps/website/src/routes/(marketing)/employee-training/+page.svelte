@@ -31,8 +31,7 @@
       icon: 'team-mgnt.svg',
       img: 'team-mgnt2.svg',
       title: 'Team management',
-      description:
-        'You can invite managers and employees to create and take trainings at scale in your organization.'
+      description: 'You can invite managers and employees to create and take trainings at scale in your organization.'
     },
     {
       icon: 'colour-pallete.svg',
@@ -54,25 +53,20 @@
   <title>Employee Training | ClassroomIO</title>
 </svelte:head>
 
-<section class="flex flex-col justify-center items-center">
+<section class="flex flex-col items-center justify-center">
   <PageHeader
     className="flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-6 lg:px-28 md:px-16 px-8"
   >
     <Badge class="py-2! px-4!" variant="outline">Unlock your team's potential</Badge>
 
-    <div
-      class="w-full flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-8"
-    >
-      <div
-        class="w-full max-w-7xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
-      >
-        <h1 class="mx-auto m-0 text-4xl md:text-6xl text-slate-900 lg:text-center">
+    <div class="flex w-full flex-col items-start justify-start gap-y-8 lg:items-center lg:justify-center">
+      <div class="flex w-full max-w-7xl flex-col items-start justify-start gap-y-4 lg:items-center lg:justify-center">
+        <h1 class="m-0 mx-auto text-4xl text-slate-900 md:text-6xl lg:text-center">
           Employee training software for
-          <br /><span class="text-blue-700 relative">modern teams</span>
+          <br /><span class="relative text-blue-700">modern teams</span>
         </h1>
-        <p class="lg:w-[60%] text-base md:text-lg lg:text-center font-normal text-slate-700">
-          With ClassroomIO, you can keep your teams in sync with company standards as they change
-          quickly.
+        <p class="text-base font-normal text-slate-700 md:text-lg lg:w-[60%] lg:text-center">
+          With ClassroomIO, you can keep your teams in sync with company standards as they change quickly.
         </p>
       </div>
       <Button href="/signup" target="_blank">Get Started for Free 🚀</Button>
@@ -80,34 +74,34 @@
   </PageHeader>
 
   <section
-    class="w-full max-w-7xl lg:py-24 py-16 lg:px-28 md:px-16 px-8 flex lg:flex-row flex-col lg:items-center lg:justify-between justify-center gap-x-6 gap-y-8"
+    class="flex w-full max-w-7xl flex-col justify-center gap-x-6 gap-y-8 px-8 py-16 md:px-16 lg:flex-row lg:items-center lg:justify-between lg:px-28 lg:py-24"
   >
-    <div class="w-full lg:w-[35%] gap-y-4 flex flex-col items-start justify-start">
+    <div class="flex w-full flex-col items-start justify-start gap-y-4 lg:w-[35%]">
       <Badge variant="outline">Amazing benefits</Badge>
 
-      <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
+      <div class="flex flex-col items-start justify-start gap-y-4 md:w-full">
         <h1 class="text-3xl">Unlock your team's potential</h1>
-        <p class="leading-8 text-lg text-gray-500">
+        <p class="text-lg leading-8 text-gray-500">
           Modern teams require solutions that are easy to use and allows them move quickly.
         </p>
       </div>
     </div>
     <div
-      class="lg:w-[60%] lg:min-w-[450px] w-full flex flex-col lg:flex-wrap lg:flex-row justify-start items-center gap-6"
+      class="flex w-full flex-col items-center justify-start gap-6 lg:w-[60%] lg:min-w-[450px] lg:flex-row lg:flex-wrap"
     >
       {#each benefitDetails as benefits}
         <div
-          class="w-full lg:w-[47%] min-w-[220px] md:p-6 p-4 border border-[#D9E0F5] rounded-2xl flex flex-col grow gap-y-6"
+          class="flex w-full min-w-[220px] grow flex-col gap-y-6 rounded-2xl border border-[#D9E0F5] p-4 md:p-6 lg:w-[47%]"
         >
           <img
-            class="w-[48px] h-[48px]"
+            class="h-[48px] w-[48px]"
             src="https://assets.cdn.clsrio.com/www/employee-training/{benefits.icon}"
             alt="light-bulb"
           />
 
-          <div class="w-full flex flex-col justify-start align-start gap-y-2">
+          <div class="align-start flex w-full flex-col justify-start gap-y-2">
             <h1 class="text-lg">{benefits.title}</h1>
-            <p class="text-base leading-8 text-gray-500 font-[#656565] font-light">
+            <p class="font-[#656565] text-base font-light leading-8 text-gray-500">
               {benefits.description}
             </p>
           </div>
@@ -117,50 +111,42 @@
   </section>
 
   <section
-    class="w-full bg-[#F1F6FF] flex flex-col items-center justify-start gap-y-16 lg:py-24 py-16 lg:px-28 md:px-16 px-8"
+    class="flex w-full flex-col items-center justify-start gap-y-16 bg-[#F1F6FF] px-8 py-16 md:px-16 lg:px-28 lg:py-24"
   >
-    <div
-      class="w-full gap-y-4 flex flex-col lg:items-center items-start lg:justify-center justify-start"
-    >
+    <div class="flex w-full flex-col items-start justify-start gap-y-4 lg:items-center lg:justify-center">
       <Badge class="py-2! px-4!" variant="outline">Explore our features</Badge>
 
       <div
-        class="lg:w-full max-w-7xl flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-4"
+        class="flex max-w-7xl flex-col items-start justify-start gap-y-4 lg:w-full lg:items-center lg:justify-center"
       >
         <h1 class="text-3xl">What makes us the right choice</h1>
-        <p class="text-[#334155] text-sm md:text-base font-light lg:text-center md:w-[80%]">
-          Discover why we’re the perfect partner for your employee training needs. Experience
-          innovative solutions designed to reduce stress and enhance productivity.
+        <p class="text-sm font-light text-[#334155] md:w-[80%] md:text-base lg:text-center">
+          Discover why we’re the perfect partner for your employee training needs. Experience innovative solutions
+          designed to reduce stress and enhance productivity.
         </p>
       </div>
     </div>
 
-    <div class="w-full max-w-7xl flex flex-col justify-start items-center lg:gap-y-24 gap-16 p-2">
+    <div class="flex w-full max-w-7xl flex-col items-center justify-start gap-16 p-2 lg:gap-y-24">
       {#each featureDetails as feature, i}
         <div
-          class="w-full lg:w-[70%] flex lg:flex-row {i % 2 !== 0
+          class="flex w-full lg:w-[70%] lg:flex-row {i % 2 !== 0
             ? 'lg:flex-row-reverse'
-            : ''} flex-col justify-between lg:items-center items-start gap-10"
+            : ''} flex-col items-start justify-between gap-10 lg:items-center"
         >
-          <div
-            class="w-fit max-w-sm lg:w-[40%] lg:gap-y-6 gap-y-3 flex flex-col items-start justify-start"
-          >
+          <div class="flex w-fit max-w-sm flex-col items-start justify-start gap-y-3 lg:w-[40%] lg:gap-y-6">
             <img
-              class="w-[48px] h-[48px]"
+              class="h-[48px] w-[48px]"
               src="https://assets.cdn.clsrio.com/www/employee-training/{feature.icon}"
               alt="team icon"
             />
-            <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
+            <div class="flex flex-col items-start justify-start gap-y-4 md:w-full">
               <h1 class="text-2xl">{feature.title}</h1>
-              <p class="leading-8 text-lg text-gray-500">
+              <p class="text-lg leading-8 text-gray-500">
                 {feature.description}
               </p>
             </div>
-            <Button
-              variant="outline"
-              data-cal-config="'layout':'month_view'"
-              data-cal-link="classroomio/demo"
-            >
+            <Button variant="outline" data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">
               Book a Demo
             </Button>
           </div>
@@ -178,17 +164,15 @@
   </section>
 
   <section
-    class="w-full bg-[#040F2D] flex flex-col items-center justify-start gap-y-16 lg:py-24 py-16 lg:px-28 md:px-16 px-8"
+    class="flex w-full flex-col items-center justify-start gap-y-16 bg-[#040F2D] px-8 py-16 md:px-16 lg:px-28 lg:py-24"
   >
     <div
-      class="w-full max-w-7xl flex lg:flex-row-reverse flex-col-reverse lg:justify-between justify-start lg:items-center items-start gap-y-8"
+      class="flex w-full max-w-7xl flex-col-reverse items-start justify-start gap-y-8 lg:flex-row-reverse lg:items-center lg:justify-between"
     >
-      <div class="w-full lg:w-[40%] gap-y-4 flex flex-col items-start justify-start">
-        <div class="md:w-full flex flex-col items-start justify-start gap-y-4">
-          <h1 class="text-2xl text-white">
-            Did you know you can request for custom features?
-          </h1>
-          <p class="leading-8 text-[#DEDEDE] text-base">
+      <div class="flex w-full flex-col items-start justify-start gap-y-4 lg:w-[40%]">
+        <div class="flex flex-col items-start justify-start gap-y-4 md:w-full">
+          <h1 class="text-2xl text-white">Did you know you can request for custom features?</h1>
+          <p class="text-base leading-8 text-[#DEDEDE]">
             Companies get the opportunity to request custom features from us.
           </p>
         </div>

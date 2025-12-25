@@ -22,18 +22,13 @@
   }
 </script>
 
-<div class="{className} min-h-[80vh] w-screen flex items-center justify-center">
-
+<div class="{className} flex min-h-[80vh] w-screen items-center justify-center">
   <Empty
-   title={isOrg ? 'Organization doesn\'t exist!' : 'Page not found'}
-   description="The page you are looking for doesn't exist or has been moved. Please go back to the homepage."
-   icon={SearchXIcon}
-   variant="page"
-   >
-    <Button
-      onclick={handleClick}
-    >
-      Go Home
-    </Button>
+    title={isOrg ? "Organization doesn't exist!" : 'Page not found'}
+    description="The page you are looking for doesn't exist or has been moved. Please go back to the homepage."
+    icon={SearchXIcon}
+    variant="page"
+  >
+    <Button onclick={handleClick}>Go Home</Button>
   </Empty>
 </div>

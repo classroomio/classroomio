@@ -24,11 +24,7 @@ export async function checkUserCoursePermissions(
     .single();
 
   // Check if user is org admin
-  const { data: orgData } = await supabase
-    .from('group')
-    .select('organization_id')
-    .eq('id', courseGroupId)
-    .single();
+  const { data: orgData } = await supabase.from('group').select('organization_id').eq('id', courseGroupId).single();
 
   let isOrgAdmin = false;
   if (orgData?.organization_id) {

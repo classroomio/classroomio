@@ -8,12 +8,7 @@
     tooltipSide?: 'top' | 'bottom' | 'left' | 'right';
   }
 
-  let {
-    tooltip,
-    tooltipSide = 'top',
-    children,
-    ...buttonProps
-  }: Props = $props();
+  let { tooltip, tooltipSide = 'top', children, ...buttonProps }: Props = $props();
 </script>
 
 {#if tooltip}
@@ -34,4 +29,3 @@
     {@render children?.()}
   </Button>
 {/if}
-

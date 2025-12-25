@@ -19,9 +19,7 @@ export async function POST({ request }) {
 
   try {
     // Clean up expired tokens
-    const { data: cleanupResult, error } = await supabase.rpc(
-      'cleanup_expired_verification_tokens'
-    );
+    const { data: cleanupResult, error } = await supabase.rpc('cleanup_expired_verification_tokens');
 
     if (error) {
       console.error('Token cleanup failed:', error);

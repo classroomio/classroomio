@@ -39,34 +39,28 @@
     if (!isOpen) handleClose();
   }}
 >
-  <Dialog.Content class="w-[80%] md:w-[65%] max-w-xl">
+  <Dialog.Content class="w-[80%] max-w-xl md:w-[65%]">
     <Dialog.Header>
       <Dialog.Title>{$t(`course.navItem.lessons.section_prompt.header`)}</Dialog.Title>
     </Dialog.Header>
     <div class="flex w-full flex-col items-center">
-    <div class="mb-8">
-      <h3 class="text-center text-2xl">
-        {$t('course.navItem.lessons.section_prompt.title')}
-      </h3>
-      <p class="max-w-md text-center">
-        {$t('course.navItem.lessons.section_prompt.description')}
-      </p>
-    </div>
+      <div class="mb-8">
+        <h3 class="text-center text-2xl">
+          {$t('course.navItem.lessons.section_prompt.title')}
+        </h3>
+        <p class="max-w-md text-center">
+          {$t('course.navItem.lessons.section_prompt.description')}
+        </p>
+      </div>
 
-    <div class="flex gap-2">
-      <Button
-        variant="outline"
-        onclick={handleClose}
-      >
-        {$t('course.navItem.lessons.section_prompt.cancel')}
-      </Button>
-      <Button
-        onclick={activate}
-        loading={isActivating}
-      >
-        {$t('course.navItem.lessons.section_prompt.activate')}
-      </Button>
+      <div class="flex gap-2">
+        <Button variant="outline" onclick={handleClose}>
+          {$t('course.navItem.lessons.section_prompt.cancel')}
+        </Button>
+        <Button onclick={activate} loading={isActivating}>
+          {$t('course.navItem.lessons.section_prompt.activate')}
+        </Button>
+      </div>
     </div>
-  </div>
   </Dialog.Content>
 </Dialog.Root>

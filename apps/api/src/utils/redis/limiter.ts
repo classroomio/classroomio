@@ -13,19 +13,13 @@ export class RedisRateLimiter {
   private windowMs: number;
   private maxRequests: number;
 
-  constructor(
-    redis: Redis,
-    windowMs: number = DEFAULT_WINDOW_MS,
-    maxRequests: number = DEFAULT_MAX_REQUESTS
-  ) {
+  constructor(redis: Redis, windowMs: number = DEFAULT_WINDOW_MS, maxRequests: number = DEFAULT_MAX_REQUESTS) {
     this.redis = redis;
     this.windowMs = windowMs;
     this.maxRequests = maxRequests;
   }
 
-  async isAllowed(
-    key: string
-  ): Promise<{ allowed: boolean; remaining: number; resetTime: number }> {
+  async isAllowed(key: string): Promise<{ allowed: boolean; remaining: number; resetTime: number }> {
     const now = Date.now();
     const windowStart = now - this.windowMs;
     const keyWithPrefix = `${RATE_LIMIT_KEY_PREFIX}${key}`;

@@ -37,8 +37,8 @@ async function onPayload(payload: PolarWebhookPayload) {
       if (isSubscriptionActive) {
         try {
           const planData = {
-          orgId,
-          triggeredBy: parseInt(triggeredBy),
+            orgId,
+            triggeredBy: parseInt(triggeredBy),
             planName: PLAN.EARLY_ADOPTER as 'EARLY_ADOPTER' | 'ENTERPRISE' | 'BASIC',
             subscriptionId,
             payload: payload.data as unknown as Record<string, unknown>
@@ -56,9 +56,9 @@ async function onPayload(payload: PolarWebhookPayload) {
         // Handle Cancel Subscription
         try {
           const result = await OrgPlanApiServer.cancelOrgPlan({
-          subscriptionId,
+            subscriptionId,
             payload: payload.data as unknown as Record<string, unknown>
-        });
+          });
           console.log('Subscription canceled', result);
         } catch (error) {
           console.error('Error canceling org plan', error);
@@ -67,9 +67,9 @@ async function onPayload(payload: PolarWebhookPayload) {
         // Handle Update Subscription
         try {
           const result = await OrgPlanApiServer.updateOrgPlan({
-          subscriptionId,
+            subscriptionId,
             payload: payload.data as unknown as Record<string, unknown>
-        });
+          });
           console.log('Subscription updated', result);
         } catch (error) {
           console.error('Error updating org plan', error);

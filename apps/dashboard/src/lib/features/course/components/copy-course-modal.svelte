@@ -20,43 +20,41 @@
   });
 </script>
 
-<Dialog.Root
-  bind:open={$copyCourseModal.open}
->
+<Dialog.Root bind:open={$copyCourseModal.open}>
   <Dialog.Content class="w-96">
     <Dialog.Header>
       <Dialog.Title>{$t('courses.copy_course.title')}</Dialog.Title>
     </Dialog.Header>
     <form onsubmit={preventDefault(createCourse)}>
-    <InputField
-      label={$t('courses.copy_course.course_name_label')}
-      bind:value={$copyCourseModal.title}
-      autoFocus={true}
-      placeholder={$t('courses.copy_course.course_name_placeholder')}
-      className="mb-4"
-      isRequired={true}
-      autoComplete={false}
-      errorMessage={courseCloneApi.errors.title}
-    />
+      <InputField
+        label={$t('courses.copy_course.course_name_label')}
+        bind:value={$copyCourseModal.title}
+        autoFocus={true}
+        placeholder={$t('courses.copy_course.course_name_placeholder')}
+        className="mb-4"
+        isRequired={true}
+        autoComplete={false}
+        errorMessage={courseCloneApi.errors.title}
+      />
 
-    <TextareaField
-      label={$t('courses.copy_course.course_description_label')}
-      bind:value={$copyCourseModal.description}
-      placeholder={$t('courses.copy_course.course_description_placeholder')}
-      className="mb-4"
-      rows={4}
-      errorMessage={courseCloneApi.errors.description}
-    />
+      <TextareaField
+        label={$t('courses.copy_course.course_description_label')}
+        bind:value={$copyCourseModal.description}
+        placeholder={$t('courses.copy_course.course_description_placeholder')}
+        className="mb-4"
+        rows={4}
+        errorMessage={courseCloneApi.errors.description}
+      />
 
-    {#if courseCloneApi.errors.general}
-      <div class="mb-4 text-sm text-red-600">{courseCloneApi.errors.general}</div>
-    {/if}
+      {#if courseCloneApi.errors.general}
+        <div class="mb-4 text-sm text-red-600">{courseCloneApi.errors.general}</div>
+      {/if}
 
-    <div class="mt-5 flex flex-row-reverse items-center">
-      <Button type="submit" loading={$copyCourseModal.isSaving}>
-        {$t('courses.copy_course.create_button')}
-      </Button>
-    </div>
-  </form>
+      <div class="mt-5 flex flex-row-reverse items-center">
+        <Button type="submit" loading={$copyCourseModal.isSaving}>
+          {$t('courses.copy_course.create_button')}
+        </Button>
+      </div>
+    </form>
   </Dialog.Content>
 </Dialog.Root>

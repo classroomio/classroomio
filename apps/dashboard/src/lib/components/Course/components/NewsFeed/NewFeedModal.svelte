@@ -127,30 +127,27 @@
       </Dialog.Title>
     </Dialog.Header>
     <section class="w-2/ flex h-full flex-col rounded-xl pb-3">
-    <TextEditor
-      content={newPost}
-      onChange={(text) => {
-        newPost = text;
-      }}
-      editorClass="max-h-[400px]"
-      placeholder={$t('course.navItem.news_feed.heading_button.placeholder')}
-    />
-    {#if errors.newPost}
-      <p class="text-sm text-red-500">{errors.newPost}</p>
-    {/if}
-    <div class="flex items-center justify-end py-2">
-      <div class="flex gap-2">
-        <Button
-          variant="outline"
-          onclick={resetEditor}
-        >
-          {$t('course.navItem.news_feed.heading_button.cancel')}
-        </Button>
-        <Button loading={isLoading} onclick={onPost}>
-          {$t('course.navItem.news_feed.heading_button.post')}
-        </Button>
+      <TextEditor
+        content={newPost}
+        onChange={(text) => {
+          newPost = text;
+        }}
+        editorClass="max-h-[400px]"
+        placeholder={$t('course.navItem.news_feed.heading_button.placeholder')}
+      />
+      {#if errors.newPost}
+        <p class="text-sm text-red-500">{errors.newPost}</p>
+      {/if}
+      <div class="flex items-center justify-end py-2">
+        <div class="flex gap-2">
+          <Button variant="outline" onclick={resetEditor}>
+            {$t('course.navItem.news_feed.heading_button.cancel')}
+          </Button>
+          <Button loading={isLoading} onclick={onPost}>
+            {$t('course.navItem.news_feed.heading_button.post')}
+          </Button>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
   </Dialog.Content>
 </Dialog.Root>

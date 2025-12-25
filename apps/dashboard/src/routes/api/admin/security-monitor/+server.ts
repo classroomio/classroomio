@@ -43,14 +43,11 @@ export async function GET({ url, request }) {
 
     const recent = tokenStats.filter((token) => new Date(token.created_at) > last24Hours);
     const used = tokenStats.filter((token) => token.used_at);
-    const expired = tokenStats.filter(
-      (token) => new Date(token.expires_at) < now && !token.used_at
-    );
+    const expired = tokenStats.filter((token) => new Date(token.expires_at) < now && !token.used_at);
 
     // Count unique IPs for anomaly detection
     const uniqueCreationIPs = new Set(tokenStats.map((t) => t.created_by_ip)).size;
-    const uniqueUsageIPs = new Set(tokenStats.filter((t) => t.used_by_ip).map((t) => t.used_by_ip))
-      .size;
+    const uniqueUsageIPs = new Set(tokenStats.filter((t) => t.used_by_ip).map((t) => t.used_by_ip)).size;
 
     return json({
       success: true,
@@ -61,8 +58,7 @@ export async function GET({ url, request }) {
         expired_unused: expired.length,
         unique_creation_ips: uniqueCreationIPs,
         unique_usage_ips: uniqueUsageIPs,
-        success_rate:
-          tokenStats.length > 0 ? ((used.length / tokenStats.length) * 100).toFixed(1) : 0
+        success_rate: tokenStats.length > 0 ? ((used.length / tokenStats.length) * 100).toFixed(1) : 0
       },
       recent_activity: recent.slice(0, 10).map((token) => ({
         created_at: token.created_at,

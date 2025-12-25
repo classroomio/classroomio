@@ -10,4 +10,3 @@
 <Page.Root class="w-full pb-10 md:max-w-3xl lg:mx-auto">
   {@render children?.()}
 </Page.Root>
-

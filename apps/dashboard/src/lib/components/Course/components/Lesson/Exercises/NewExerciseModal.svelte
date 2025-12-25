@@ -153,7 +153,7 @@
     if (!isOpen) handleCancelAddExercise();
   }}
 >
-  <Dialog.Content class="max-w-2xl w-4/5">
+  <Dialog.Content class="w-4/5 max-w-2xl">
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.lessons.exercises.new_exercise_modal.heading')}</Dialog.Title>
     </Dialog.Header>
@@ -161,147 +161,147 @@
       <Confetti />
     {/if}
     {#if step === 0}
-    <div>
-      <h2 class="my-5 text-2xl font-medium">
-        {$t('course.navItem.lessons.exercises.new_exercise_modal.how')}?
-      </h2>
-
-      <div class="my-8 flex justify-between gap-2">
-        {#each options as option}
-          <button
-            class="h-60 w-[261px] rounded-md border-2 p-5 dark:bg-neutral-700 {option.type === type
-              ? 'border-primary-400'
-              : `border-gray-200 dark:border-neutral-600 ${
-                  !option.isDisabled && 'hover:scale-95'
-                }`} flex flex-col {option.isDisabled && 'cursor-not-allowed opacity-60'} transition-all ease-in-out"
-            type="button"
-            onclick={!option.isDisabled ? () => (type = option.type) : undefined}
-          >
-            <div class="flex h-[70%] w-full flex-row-reverse">
-              <CircleCheckIcon size={16} filled={option.type === type} />
-            </div>
-
-            <div>
-              <p class="flex items-center text-start">
-                <span class="mr-2 text-sm">{option.title}</span>
-                {#if option.isDisabled}
-                  <ComingSoon />
-                {/if}
-              </p>
-              <p class="text-start text-xs font-light">{option.subtitle}</p>
-            </div>
-          </button>
-        {/each}
-      </div>
-
-      <div class="mt-8 flex flex-row-reverse items-center">
-        <Button onclick={handleNext}>
-          {$t('course.navItem.lessons.exercises.new_exercise_modal.next')}
-        </Button>
-      </div>
-    </div>
-  {:else if step === 1}
-    {#if type === Type.SCRATCH}
-      <div class="m-auto flex min-h-[300px] w-96 items-center justify-center">
-        <div class="w-full">
-          <h2 class="my-5 text-2xl font-medium">
-            {$t('course.navItem.lessons.exercises.new_exercise_modal.title')}
-          </h2>
-          <InputField
-            bind:value={title}
-            autoFocus={true}
-            placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.title_placeholder')}
-            className="my-4"
-          />
-
-          <div class="mt-5 flex items-center justify-between">
-            <Button variant="outline" onclick={handleBack}>
-              {$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
-            </Button>
-            <Button onclick={handleAddExercise}>
-              {$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
-            </Button>
-          </div>
-        </div>
-      </div>
-    {:else if type === Type.TEMPLATE}
       <div>
-        <h2 class="m-0 mb-2 text-2xl font-medium">
-          {$t('course.navItem.lessons.exercises.new_exercise_modal.select_template')}
+        <h2 class="my-5 text-2xl font-medium">
+          {$t('course.navItem.lessons.exercises.new_exercise_modal.how')}?
         </h2>
 
-        <div>
-          <div class="mb-5 flex items-center gap-2">
-            {#each tags as tag}
-              <Badge class={selectedTag === tag ? 'bg-primary-400' : ''} onclick={() => handleTagSelection(tag)}
-                >{tag}</Badge
-              >
-            {/each}
-          </div>
-
-          {#if exerciseTemplateApi.isLoading}
-            <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
-              {#each Array(16) as _}
-                <div
-                  class="h-[140px] w-full rounded-md border-2 border-gray-200 p-5 dark:border-neutral-600 dark:bg-neutral-700"
-                >
-                  <div class="flex h-full flex-col justify-evenly">
-                    <Skeleton class="h-4 w-3/4" />
-                    <div class="flex flex-col items-start justify-between gap-1">
-                      <Skeleton class="h-3 w-20" />
-                      <Skeleton class="h-3 w-16" />
-                    </div>
-                  </div>
-                </div>
-              {/each}
-            </div>
-          {:else if exerciseTemplateApi.templates.length > 0}
-            <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
-              {#each exerciseTemplateApi.templates as template}
-                <button
-                  class="h-[140px] w-full rounded-md border-2 p-5 hover:scale-95 dark:bg-neutral-700 {template.id ===
-                  selectedTemplateId
-                    ? 'border-primary-400'
-                    : `border-gray-200 dark:border-neutral-600 `} flex flex-col transition-all ease-in-out"
-                  type="button"
-                  onclick={() => (selectedTemplateId = template.id)}
-                >
-                  <div class="flex h-full flex-col justify-evenly">
-                    <p class="flex items-center text-start text-sm">
-                      {template.title}
-                    </p>
-                    <div class="flex flex-col items-start justify-between gap-1">
-                      <p class="text-xs font-normal">
-                        {template.questions}
-                        {$t('course.navItem.lessons.exercises.new_exercise_modal.questions')}
-                      </p>
-                      <p class="text-start text-xs font-normal">
-                        {template.points}
-                        {$t('course.navItem.lessons.exercises.new_exercise_modal.points')}
-                      </p>
-                    </div>
-                  </div>
-                </button>
-              {/each}
-            </div>
-          {/if}
-
-          <div class="mt-5 flex items-center justify-between">
-            <Button variant="outline" onclick={handleBack}>
-              {$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
-            </Button>
-            <Button
-              disabled={!selectedTemplateId || exerciseTemplateApi.templates.length === 0}
-              loading={isTemplateFinishedLoading}
-              onclick={handleTemplateSelection}
+        <div class="my-8 flex justify-between gap-2">
+          {#each options as option}
+            <button
+              class="h-60 w-[261px] rounded-md border-2 p-5 dark:bg-neutral-700 {option.type === type
+                ? 'border-primary-400'
+                : `border-gray-200 dark:border-neutral-600 ${
+                    !option.isDisabled && 'hover:scale-95'
+                  }`} flex flex-col {option.isDisabled && 'cursor-not-allowed opacity-60'} transition-all ease-in-out"
+              type="button"
+              onclick={!option.isDisabled ? () => (type = option.type) : undefined}
             >
-              {$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
-            </Button>
-          </div>
+              <div class="flex h-[70%] w-full flex-row-reverse">
+                <CircleCheckIcon size={16} filled={option.type === type} />
+              </div>
+
+              <div>
+                <p class="flex items-center text-start">
+                  <span class="mr-2 text-sm">{option.title}</span>
+                  {#if option.isDisabled}
+                    <ComingSoon />
+                  {/if}
+                </p>
+                <p class="text-start text-xs font-light">{option.subtitle}</p>
+              </div>
+            </button>
+          {/each}
+        </div>
+
+        <div class="mt-8 flex flex-row-reverse items-center">
+          <Button onclick={handleNext}>
+            {$t('course.navItem.lessons.exercises.new_exercise_modal.next')}
+          </Button>
         </div>
       </div>
-      <!-- {:else if type === Type.AI} -->
-      <!-- <div>
+    {:else if step === 1}
+      {#if type === Type.SCRATCH}
+        <div class="m-auto flex min-h-[300px] w-96 items-center justify-center">
+          <div class="w-full">
+            <h2 class="my-5 text-2xl font-medium">
+              {$t('course.navItem.lessons.exercises.new_exercise_modal.title')}
+            </h2>
+            <InputField
+              bind:value={title}
+              autoFocus={true}
+              placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.title_placeholder')}
+              className="my-4"
+            />
+
+            <div class="mt-5 flex items-center justify-between">
+              <Button variant="outline" onclick={handleBack}>
+                {$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
+              </Button>
+              <Button onclick={handleAddExercise}>
+                {$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
+              </Button>
+            </div>
+          </div>
+        </div>
+      {:else if type === Type.TEMPLATE}
+        <div>
+          <h2 class="m-0 mb-2 text-2xl font-medium">
+            {$t('course.navItem.lessons.exercises.new_exercise_modal.select_template')}
+          </h2>
+
+          <div>
+            <div class="mb-5 flex items-center gap-2">
+              {#each tags as tag}
+                <Badge class={selectedTag === tag ? 'bg-primary-400' : ''} onclick={() => handleTagSelection(tag)}
+                  >{tag}</Badge
+                >
+              {/each}
+            </div>
+
+            {#if exerciseTemplateApi.isLoading}
+              <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
+                {#each Array(16) as _}
+                  <div
+                    class="h-[140px] w-full rounded-md border-2 border-gray-200 p-5 dark:border-neutral-600 dark:bg-neutral-700"
+                  >
+                    <div class="flex h-full flex-col justify-evenly">
+                      <Skeleton class="h-4 w-3/4" />
+                      <div class="flex flex-col items-start justify-between gap-1">
+                        <Skeleton class="h-3 w-20" />
+                        <Skeleton class="h-3 w-16" />
+                      </div>
+                    </div>
+                  </div>
+                {/each}
+              </div>
+            {:else if exerciseTemplateApi.templates.length > 0}
+              <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
+                {#each exerciseTemplateApi.templates as template}
+                  <button
+                    class="h-[140px] w-full rounded-md border-2 p-5 hover:scale-95 dark:bg-neutral-700 {template.id ===
+                    selectedTemplateId
+                      ? 'border-primary-400'
+                      : `border-gray-200 dark:border-neutral-600 `} flex flex-col transition-all ease-in-out"
+                    type="button"
+                    onclick={() => (selectedTemplateId = template.id)}
+                  >
+                    <div class="flex h-full flex-col justify-evenly">
+                      <p class="flex items-center text-start text-sm">
+                        {template.title}
+                      </p>
+                      <div class="flex flex-col items-start justify-between gap-1">
+                        <p class="text-xs font-normal">
+                          {template.questions}
+                          {$t('course.navItem.lessons.exercises.new_exercise_modal.questions')}
+                        </p>
+                        <p class="text-start text-xs font-normal">
+                          {template.points}
+                          {$t('course.navItem.lessons.exercises.new_exercise_modal.points')}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                {/each}
+              </div>
+            {/if}
+
+            <div class="mt-5 flex items-center justify-between">
+              <Button variant="outline" onclick={handleBack}>
+                {$t('course.navItem.lessons.exercises.new_exercise_modal.back')}
+              </Button>
+              <Button
+                disabled={!selectedTemplateId || exerciseTemplateApi.templates.length === 0}
+                loading={isTemplateFinishedLoading}
+                onclick={handleTemplateSelection}
+              >
+                {$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
+              </Button>
+            </div>
+          </div>
+        </div>
+        <!-- {:else if type === Type.AI} -->
+        <!-- <div>
         <div class="flex max-h-[500px] flex-row justify-between">
           <div class="mr-1 w-[60%] rounded-md border px-3 py-2">
             {#if note.length}
@@ -369,7 +369,7 @@
           </Button>
         </div>
       </div> -->
-    {/if}
+      {/if}
     {/if}
   </Dialog.Content>
 </Dialog.Root>

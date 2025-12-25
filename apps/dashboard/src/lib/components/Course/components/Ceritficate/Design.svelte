@@ -45,7 +45,7 @@
     isSaving = true;
 
     try {
-      // Prevent free plan users from bypassing UI restrictions  
+      // Prevent free plan users from bypassing UI restrictions
       if ($isFreePlan) {
         errors.description = 'Certificate customization is only available on paid plans';
         throw new Error(errors.description);

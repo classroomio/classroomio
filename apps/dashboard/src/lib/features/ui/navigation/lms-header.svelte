@@ -60,4 +60,3 @@
     {/if}
   </div>
 </header>
-

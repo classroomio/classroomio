@@ -26,14 +26,14 @@
   } = $props();
 </script>
 
-<section {id} class="w-full py-32 border-b border-x-0 border-t-0 border-gray-200">
+<section {id} class="w-full border-x-0 border-b border-t-0 border-gray-200 py-32">
   <div
-    class="w-4/5 mx-auto flex flex-col {rightToLeft
+    class="mx-auto flex w-4/5 flex-col {rightToLeft
       ? 'lg:flex-row-reverse'
       : 'lg:flex-row'} items-center justify-between gap-8 lg:gap-28"
   >
-    <div class="w-[80vw] flex flex-col">
-      <div class="my-2 lg:my-4 ml-1 flex gap-2 items-center">
+    <div class="flex w-[80vw] flex-col">
+      <div class="my-2 ml-1 flex items-center gap-2 lg:my-4">
         {#if taglineIcon === 'simplified'}
           <img width="27" height="27" loading="lazy" src={thumbsUp} alt="" class="w-7" />
         {:else if taglineIcon === 'flexible'}
@@ -46,16 +46,16 @@
         {:else if taglineIcon === 'productivity'}
           <img width="27" height="27" loading="lazy" src={robotArm} alt="" class="w-7" />
         {/if}
-        <p class="font-medium text-base">{tagline}</p>
+        <p class="text-base font-medium">{tagline}</p>
       </div>
-      <h2 class="text-3xl mb-3 lg:mb-6">{title}</h2>
-      <p class="leading-8 text-lg text-gray-500">
+      <h2 class="mb-3 text-3xl lg:mb-6">{title}</h2>
+      <p class="text-lg leading-8 text-gray-500">
         {description}
       </p>
       {#if more}
         <br />
 
-        <p class="leading-8 text-lg text-gray-500">
+        <p class="text-lg leading-8 text-gray-500">
           {@render more?.()}
         </p>
       {/if}
@@ -64,7 +64,7 @@
       <video
         width="100%"
         height="100%"
-        class="w-full h-auto lg:max-h-[80%] rounded-md shadow-xl"
+        class="h-auto w-full rounded-md shadow-xl lg:max-h-[80%]"
         autoplay
         loop
         muted

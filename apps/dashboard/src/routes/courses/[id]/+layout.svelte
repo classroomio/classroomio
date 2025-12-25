@@ -15,12 +15,12 @@
 <Sidebar.Provider>
   <CourseSidebar {path} />
 
-  <Sidebar.Inset class="w-[calc(100vw-var(--sidebar-width))] overflow-x-hidden group-data-[collapsible=icon]:w-[calc(100vw-var(--sidebar-width-icon))]">
+  <Sidebar.Inset
+    class="w-[calc(100vw-var(--sidebar-width))] overflow-x-hidden group-data-[collapsible=icon]:w-[calc(100vw-var(--sidebar-width-icon))]"
+  >
     <CourseHeader />
 
-    <Page.Root
-      class="mx-auto flex px-4 lg:max-w-6xl"
-    >
+    <Page.Root class="mx-auto flex px-4 lg:max-w-6xl">
       {@render children?.()}
     </Page.Root>
   </Sidebar.Inset>

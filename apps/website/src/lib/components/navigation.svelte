@@ -16,7 +16,6 @@
   import LibraryBigIcon from '@lucide/svelte/icons/library-big';
   import { cn } from '@cio/ui/tools';
 
-
   let { stars }: { stars: number } = $props();
 
   type ListItemProps = HTMLAttributes<HTMLAnchorElement> & {
@@ -126,7 +125,7 @@
             <p class="text-sm">
               {title}
             </p>
-            <p class="mt-1 text-xs ui:text-muted-foreground">
+            <p class="ui:text-muted-foreground mt-1 text-xs">
               {subtitle}
             </p>
           </div>
@@ -136,8 +135,8 @@
   </li>
 {/snippet}
 
-<section class="z-50 fixed top-0 w-full bg-white border-b">
-  <div class="mx-auto flex w-full items-center justify-between gap-20 py-1 lg:w-[90%] lg:px-0 px-4">
+<section class="fixed top-0 z-50 w-full border-b bg-white">
+  <div class="mx-auto flex w-full items-center justify-between gap-20 px-4 py-1 lg:w-[90%] lg:px-0">
     <a href="/" class="w-[10%]">
       <div class="flex w-full items-center">
         <img loading="lazy" width="28" height="28" src="/logo-512.png" alt="classroomio logo" class="w-6 md:w-7" />
@@ -151,7 +150,7 @@
           <NavigationMenu.Item>
             <NavigationMenu.Trigger
               class={cn(
-                "flex cursor-pointer items-center rounded-md px-4 py-2 text-sm font-medium text-gray-800 transition-all duration-200 hover:bg-gray-100 data-[state=open]:bg-gray-100",
+                'flex cursor-pointer items-center rounded-md px-4 py-2 text-sm font-medium text-gray-800 transition-all duration-200 hover:bg-gray-100 data-[state=open]:bg-gray-100',
                 isSolutionsActive && 'bg-gray-100!'
               )}
             >
@@ -173,7 +172,10 @@
 
           <NavigationMenu.Item>
             <NavigationMenu.Trigger
-              class={cn("flex cursor-pointer items-center rounded-md px-4 py-2 text-sm font-medium text-gray-800 transition-all duration-200 hover:bg-gray-100 data-[state=open]:bg-gray-100", activeLink.startsWith('/tools') && 'bg-gray-100!')}
+              class={cn(
+                'flex cursor-pointer items-center rounded-md px-4 py-2 text-sm font-medium text-gray-800 transition-all duration-200 hover:bg-gray-100 data-[state=open]:bg-gray-100',
+                activeLink.startsWith('/tools') && 'bg-gray-100!'
+              )}
             >
               <a href="/tools" class="no-underline"> Free Tools </a>
             </NavigationMenu.Trigger>
@@ -278,7 +280,7 @@
             <li class="w-full cursor-pointer text-sm font-semibold text-gray-800 md:text-lg">
               <button
                 class={cn(
-                  "flex w-full items-center justify-between rounded-lg px-4 py-3 transition-all duration-200 hover:bg-gray-100",
+                  'flex w-full items-center justify-between rounded-lg px-4 py-3 transition-all duration-200 hover:bg-gray-100',
                   isSolutionsActive && 'bg-gray-100'
                 )}
                 onclick={handleShowDrawer}
@@ -313,7 +315,7 @@
             </a>
             <a
               class={cn(
-                "w-full cursor-pointer rounded-md px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg",
+                'w-full cursor-pointer rounded-md px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg',
                 activeLink.startsWith('/morefeatures') && 'bg-gray-100'
               )}
               onclick={() => {
@@ -325,7 +327,7 @@
             </a>
             <a
               class={cn(
-                "w-full cursor-pointer rounded-xl px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg",
+                'w-full cursor-pointer rounded-xl px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg',
                 activeLink.startsWith('/pricing') && 'bg-gray-100'
               )}
               onclick={() => {
@@ -337,7 +339,7 @@
             </a>
             <a
               class={cn(
-                "w-full cursor-pointer rounded-md px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg",
+                'w-full cursor-pointer rounded-md px-4 py-3 text-sm font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-100 md:text-lg',
                 activeHash.includes('morefeatures') && 'bg-gray-100'
               )}
               onclick={() => {

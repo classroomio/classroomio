@@ -130,12 +130,6 @@
   </div>
 
   <div class="my-4 flex w-full items-center justify-center">
-    <Button
-      type="submit"
-      disabled={disableSubmit || loading}
-      loading={loading || !$profile.id}
-    >
-      Join Course
-    </Button>
+    <Button type="submit" disabled={disableSubmit || loading} loading={loading || !$profile.id}>Join Course</Button>
   </div>
 </AuthUI>

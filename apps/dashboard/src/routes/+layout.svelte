@@ -77,8 +77,7 @@
     }
     console.log('path', path);
     console.log('isPublicRoute', isPublicRoute(path));
-    console.log('data', $session.data)
-
+    console.log('data', $session.data);
 
     // No need to require login for public routes
     if (isPublicRoute(path) && path !== '/') return;

@@ -108,9 +108,7 @@ async function getCourseAnalytics(supabase: any, courseId: string): Promise<Cour
 
   // Get student analytics
   const studentAnalytics = await Promise.all(
-    members
-      .filter((member) => member.role_id === 3)
-      .map((member) => getStudentOverview(supabase, courseId, member))
+    members.filter((member) => member.role_id === 3).map((member) => getStudentOverview(supabase, courseId, member))
   );
 
   analytics.students = studentAnalytics.filter((student): student is StudentOverview => student !== null);
@@ -155,11 +153,7 @@ async function getLastLogin(supabase: any, userId: string): Promise<string | und
   }
 }
 
-async function getStudentOverview(
-  supabase: any,
-  courseId: string,
-  member: any
-): Promise<StudentOverview | null> {
+async function getStudentOverview(supabase: any, courseId: string, member: any): Promise<StudentOverview | null> {
   try {
     // Use the same service function that the working analytics/user API uses
     const { data: courseProgressData, error: progressError } = await fetchProfileCourseProgress(

@@ -65,18 +65,18 @@
 </svelte:head>
 
 <PageHeader className="flex flex-col items-center justify-center text-center">
-  <h1 class="text-start md:text-center text-4xl md:text-6xl text-slate-900">Product Roadmap</h1>
-  <p class="text-start md:text-center w-[80%] md:w-[40%] text-slate-700 mt-10">
-    This is a live document, and will be updated regularly. To submit an idea, or to view a list of
-    feature requests and ideas that we're considering, check out our <a
+  <h1 class="text-start text-4xl text-slate-900 md:text-center md:text-6xl">Product Roadmap</h1>
+  <p class="mt-10 w-[80%] text-start text-slate-700 md:w-[40%] md:text-center">
+    This is a live document, and will be updated regularly. To submit an idea, or to view a list of feature requests and
+    ideas that we're considering, check out our <a
       href="https://github.com/classroomio/classroomio/discussion"
       class="underline">GitHub Discussions</a
     >
   </p>
 </PageHeader>
-<section class="relative flex flex-col items-center w-full px-4 py-20 border-b-2">
-  <img src="/roadmap-one.svg" alt="" class="w-60 lg:w-96 absolute bottom-0 right-0" />
-  <img src="/roadmap-two.svg" alt="" class="hidden lg:block absolute top-0 left-0" />
+<section class="relative flex w-full flex-col items-center border-b-2 px-4 py-20">
+  <img src="/roadmap-one.svg" alt="" class="absolute bottom-0 right-0 w-60 lg:w-96" />
+  <img src="/roadmap-two.svg" alt="" class="absolute left-0 top-0 hidden lg:block" />
   <div class="flex flex-col items-start space-y-10 px-4">
     <div>
       <h1 class="text-3xl">Latest Features</h1>
@@ -86,7 +86,7 @@
   </div>
 </section>
 
-<section class="flex flex-col items-center w-full px-4 py-20 border-b-2">
+<section class="flex w-full flex-col items-center border-b-2 px-4 py-20">
   <div class="flex flex-col items-start space-y-10 px-4">
     <div>
       <h1 class="text-3xl">Upcoming Features</h1>

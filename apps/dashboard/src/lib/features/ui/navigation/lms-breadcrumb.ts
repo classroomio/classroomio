@@ -105,4 +105,3 @@ export function generateLmsBreadcrumbs(
 
   return breadcrumbs;
 }
-

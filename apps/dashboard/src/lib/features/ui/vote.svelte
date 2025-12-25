@@ -16,4 +16,3 @@
   <ArrowUpIcon size={16} />
   <Chip {value} />
 </Button>
-

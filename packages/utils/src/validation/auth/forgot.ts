@@ -1,7 +1,7 @@
 import * as z from 'zod';
 
 export const ForgotPasswordSchema = z.object({
-    email: z.email(),
+  email: z.email()
 });
 
 export type TForgotPassword = z.infer<typeof ForgotPasswordSchema>;

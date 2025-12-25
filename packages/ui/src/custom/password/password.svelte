@@ -50,7 +50,7 @@
     bind:value
     {disabled}
     aria-invalid={ariaInvalid}
-    autocomplete={autocomplete}
+    {autocomplete}
     {...restProps}
   />
   <InputGroup.Addon align="inline-end">
@@ -77,4 +77,3 @@
     </Tooltip.Provider>
   </InputGroup.Addon>
 </InputGroup.Root>
-

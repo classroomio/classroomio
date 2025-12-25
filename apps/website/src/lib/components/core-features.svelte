@@ -3,8 +3,8 @@
   import { PUBLIC_ENABLE_STATS } from '$env/static/public';
 </script>
 
-<section class="w-full py-32 border-b border-x-0 border-t-0 border-gray-200">
-  <div class="justify-center flex text-center flex-wrap gap-x-12 gap-y-16">
+<section class="w-full border-x-0 border-b border-t-0 border-gray-200 py-32">
+  <div class="flex flex-wrap justify-center gap-x-12 gap-y-16 text-center">
     <div class="w-full min-w-0" style="max-width: 1000px; flex: 1 1 550px;">
       <div class="mx-auto flex max-w-lg flex-col items-center gap-2">
         <div class="flex-none">
@@ -19,19 +19,16 @@
             />
           </div>
         </div>
-        <div class="text-base leading-snug text-center">
-          <span class="font-bold opacity-50 text-4xl">“</span>
+        <div class="text-center text-base leading-snug">
+          <span class="text-4xl font-bold opacity-50">“</span>
           <span class="text-gray-800" style="font-size: 17px;"
-            >ClassroomIO really helped me bootstrap my program. The dashboard is extremely
-            intuitive. I could navigate most of it without any help / support. Coming from framer, I
-            can honestly say that I am extremely greatful that I found ClassroomIO.</span
-          > <span class="font-bold opacity-50 inline-block text-4xl">”</span>
+            >ClassroomIO really helped me bootstrap my program. The dashboard is extremely intuitive. I could navigate
+            most of it without any help / support. Coming from framer, I can honestly say that I am extremely greatful
+            that I found ClassroomIO.</span
+          > <span class="inline-block text-4xl font-bold opacity-50">”</span>
         </div>
-        <div class="mx-auto flex items-center gap-2 justify-center">
-          <div
-            class="flex max-w-[200px] flex-none flex-col overflow-hidden text-left"
-            style="color: var(--clr-text);"
-          >
+        <div class="mx-auto flex items-center justify-center gap-2">
+          <div class="flex max-w-[200px] flex-none flex-col overflow-hidden text-left" style="color: var(--clr-text);">
             <div class="text-center text-sm font-medium opacity-90">
               Pranav Singhal <div class="block text-xs font-medium opacity-70 hover:opacity-50">
                 Founder at <a href="https://www.dblocked.io/" target="_blank">DBlockEd</a>
@@ -80,26 +77,18 @@
 <!-- body section 5 -->
 {#if PUBLIC_ENABLE_STATS}
   <div
-    class="flex justify-between flex-row flex-wrap lg:flex-nowrap items-center text-center px-[10%] py-[7%] border-b-[1px] gap-y-20 gap-x-20 mx-0 lg:mx-[12%]"
+    class="mx-0 flex flex-row flex-wrap items-center justify-between gap-x-20 gap-y-20 border-b-[1px] px-[10%] py-[7%] text-center lg:mx-[12%] lg:flex-nowrap"
   >
     <div class="w-full">
-      <h2
-        class="w-full order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl"
-      >
-        1 thousand
-      </h2>
+      <h2 class="order-first w-full text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">1 thousand</h2>
       <p class="text-base leading-7 text-gray-600">Feedback collected</p>
     </div>
     <div class="w-full">
-      <h2 class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
-        5 thousand
-      </h2>
+      <h2 class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">5 thousand</h2>
       <p class="text-base leading-7 text-gray-600">Documents processed</p>
     </div>
     <div class="w-full">
-      <h2 class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
-        1 million
-      </h2>
+      <h2 class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">1 million</h2>
       <p class="text-base leading-7 text-gray-600">Page views recorded</p>
     </div>
   </div>

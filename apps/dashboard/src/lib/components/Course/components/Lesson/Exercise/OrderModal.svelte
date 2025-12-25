@@ -71,34 +71,34 @@
       <Dialog.Title>{$t('course.navItem.lessons.exercises.all_exercises.order_questions')}</Dialog.Title>
     </Dialog.Header>
     <section
-    use:dndzone={{
-      items,
-      flipDurationMs,
-      dropTargetStyle: {
-        border: '2px #1d4ed8 solid',
-        'border-style': 'dashed'
-      }
-    }}
-    onconsider={handleDndConsider}
-    onfinalize={handleDndFinalize}
-    class="w-full"
-  >
-    {#each items as item (item.id)}
-      <div
-        animate:flip={{ duration: flipDurationMs }}
-        class="ui:border-primary flex items-center rounded-md border p-4"
-      >
-        {#if item.type === 1}
-          <SquareCheckIcon size={16} />
-        {:else if item.type === 2}
-          <CircleDotIcon size={16} />
-        {:else}
-          <TablePropertiesIcon size={16} />
-        {/if}
-        {` ${item.name}`}
-      </div>
-    {/each}
-  </section>
+      use:dndzone={{
+        items,
+        flipDurationMs,
+        dropTargetStyle: {
+          border: '2px #1d4ed8 solid',
+          'border-style': 'dashed'
+        }
+      }}
+      onconsider={handleDndConsider}
+      onfinalize={handleDndFinalize}
+      class="w-full"
+    >
+      {#each items as item (item.id)}
+        <div
+          animate:flip={{ duration: flipDurationMs }}
+          class="ui:border-primary flex items-center rounded-md border p-4"
+        >
+          {#if item.type === 1}
+            <SquareCheckIcon size={16} />
+          {:else if item.type === 2}
+            <CircleDotIcon size={16} />
+          {:else}
+            <TablePropertiesIcon size={16} />
+          {/if}
+          {` ${item.name}`}
+        </div>
+      {/each}
+    </section>
   </Dialog.Content>
 </Dialog.Root>
 

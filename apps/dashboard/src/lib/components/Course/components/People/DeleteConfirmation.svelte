@@ -12,32 +12,24 @@
   }
 </script>
 
-<Dialog.Root
-  bind:open={$deleteMemberModal.open}
->
+<Dialog.Root bind:open={$deleteMemberModal.open}>
   <Dialog.Content class="w-96 pt-3">
-    <Dialog.Header class="py-2 px-5">
+    <Dialog.Header class="px-5 py-2">
       <Dialog.Title>{$t('course.navItem.people.delete_confirmation.title')}</Dialog.Title>
     </Dialog.Header>
     <div>
-    <p class="mt-0 text-base dark:text-white">
-      {$t('course.navItem.people.delete_confirmation.sure')} <strong>{email}</strong>?
-    </p>
+      <p class="mt-0 text-base dark:text-white">
+        {$t('course.navItem.people.delete_confirmation.sure')} <strong>{email}</strong>?
+      </p>
 
-    <div class="mt-5 flex items-center justify-between">
-      <Button
-        variant="outline"
-        onclick={() => ($deleteMemberModal.open = false)}
-      >
-        {$t('course.navItem.people.delete_confirmation.no')}
-      </Button>
-      <Button
-        variant="outline"
-        onclick={handleDelete}
-      >
-        {$t('course.navItem.people.delete_confirmation.yes')}
-      </Button>
+      <div class="mt-5 flex items-center justify-between">
+        <Button variant="outline" onclick={() => ($deleteMemberModal.open = false)}>
+          {$t('course.navItem.people.delete_confirmation.no')}
+        </Button>
+        <Button variant="outline" onclick={handleDelete}>
+          {$t('course.navItem.people.delete_confirmation.yes')}
+        </Button>
+      </div>
     </div>
-  </div>
   </Dialog.Content>
 </Dialog.Root>

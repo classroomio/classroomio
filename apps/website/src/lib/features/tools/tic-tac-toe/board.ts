@@ -79,11 +79,7 @@ function getWinner(board: string[][]) {
 
   // check columns
   for (let column = 0; column < 3; column++) {
-    if (
-      board[0][column] === board[1][column] &&
-      board[0][column] === board[2][column] &&
-      board[0][column]
-    ) {
+    if (board[0][column] === board[1][column] && board[0][column] === board[2][column] && board[0][column]) {
       return { symbol: board[0][column], direction: 'vertical', column };
     }
   }

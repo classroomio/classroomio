@@ -36,7 +36,6 @@ export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareH
     }
 
     try {
-      
       // Generate rate limit key
       const key = opts.keyGenerator(c);
 

@@ -23,27 +23,18 @@
       <Dialog.Title>{$t('delete_modal.label')}</Dialog.Title>
     </Dialog.Header>
     <div>
-    <p class="text-center text-xl dark:text-white">
-      {$t('delete_modal.content')}
-    </p>
+      <p class="text-center text-xl dark:text-white">
+        {$t('delete_modal.content')}
+      </p>
 
-    <div class="mt-8 flex items-center justify-between">
-      <Button
-        variant="outline"
-        onclick={() => (open = false)}
-        disabled={isLoading}
-      >
-        {$t('delete_modal.no')}
-      </Button>
-      <Button
-        variant="destructive"
-        onclick={onDelete}
-        loading={isLoading}
-      >
-        {$t('delete_modal.yes')}
-      </Button>
+      <div class="mt-8 flex items-center justify-between">
+        <Button variant="outline" onclick={() => (open = false)} disabled={isLoading}>
+          {$t('delete_modal.no')}
+        </Button>
+        <Button variant="destructive" onclick={onDelete} loading={isLoading}>
+          {$t('delete_modal.yes')}
+        </Button>
+      </div>
     </div>
-  </div>
   </Dialog.Content>
 </Dialog.Root>
-
