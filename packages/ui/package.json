@@ -61,7 +61,7 @@
     "dompurify": "^3.3.0",
     "katex": "^0.16.25",
     "lowlight": "^3.3.0",
-    "svelte-tiptap": "^3.0.0",
+    "svelte-tiptap": "^2.2.0",
     "tippy.js": "^6.3.7",
     "tiptap-extension-auto-joiner": "^0.1.3"
   },
