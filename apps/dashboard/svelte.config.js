@@ -38,21 +38,24 @@ const config = {
           'https://*.i.posthog.com',
           'https://*.senja.io',
           'https://www.youtube.com',
-          'https://youtube.com'
+          'https://youtube.com',
+          'unsafe-hashes'
         ],
         'style-src': [
           'self',
           'unsafe-inline',
           'https://cdn.plyr.io',
           'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
-          'https://assets.cdn.clsrio.com/eqneditor_1.css'
+          'https://assets.cdn.clsrio.com/eqneditor_1.css',
+          'https://fonts.googleapis.com'
         ],
         'style-src-elem': [
           'self',
           'unsafe-inline',
           'https://cdn.plyr.io',
           'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
-          'https://assets.cdn.clsrio.com/eqneditor_1.css'
+          'https://assets.cdn.clsrio.com/eqneditor_1.css',
+          'https://fonts.googleapis.com'
         ],
         'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
         'img-src': ['self', 'data:', 'https:'],
@@ -67,6 +70,7 @@ const config = {
           'https://*.i.posthog.com',
           'https://umami.hz.oncws.com',
           'https://*.r2.cloudflarestorage.com',
+          'http://localhost:3002',
           'http://localhost:54321',
           'ws://localhost:54321',
           'wss://*.classroomio.com',
@@ -89,7 +93,8 @@ const config = {
           'https://*.i.posthog.com',
           'https://*.senja.io',
           'https://www.youtube.com',
-          'https://youtube.com'
+          'https://youtube.com',
+          'unsafe-hashes'
         ],
         'style-src': [
           'self',
@@ -119,6 +124,7 @@ const config = {
           'https://*.i.posthog.com',
           'https://umami.hz.oncws.com',
           'https://*.r2.cloudflarestorage.com',
+          'http://localhost:3002',
           'http://localhost:54321',
           'ws://localhost:54321',
           'wss://*.classroomio.com',
