@@ -116,7 +116,12 @@ const seedFunctions = {
   },
   groups: async () => {
     console.log('📝 Seeding groups...');
-    await seedGroup({ mvcGroupId: MVC_GROUP_ID, reactGroupId: REACT_GROUP_ID, pandasGroupId: PANDAS_GROUP_ID, testOrgId: TEST_ORG_ID });
+    await seedGroup({
+      mvcGroupId: MVC_GROUP_ID,
+      reactGroupId: REACT_GROUP_ID,
+      pandasGroupId: PANDAS_GROUP_ID,
+      testOrgId: TEST_ORG_ID
+    });
   },
   'group-members': async () => {
     console.log('📝 Seeding group members...');
