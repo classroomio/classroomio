@@ -636,6 +636,41 @@ export const lesson = pgTable(
   ]
 );
 
+export const videoProcessing = pgTable(
+  'video_processing',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    fileKey: varchar('file_key').notNull().unique(),
+    lessonId: uuid('lesson_id'),
+    userId: uuid('user_id').notNull(),
+    processingStatus: varchar('processing_status').default('pending').notNull(),
+    hlsManifestUrl: text('hls_manifest_url'),
+    encodingJobId: varchar('encoding_job_id'),
+    availableQualities: jsonb('available_qualities').$type<string[]>(),
+    duration: integer('duration'),
+    captionSrtUrl: text('caption_srt_url'),
+    captionVttUrl: text('caption_vtt_url'),
+    captionTranscript: text('caption_transcript'),
+    captionLanguage: varchar('caption_language'),
+    captionStatus: varchar('caption_status').default('pending'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.lessonId],
+      foreignColumns: [lesson.id],
+      name: 'video_processing_lesson_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    index('idx_video_processing_file_key').on(table.fileKey),
+    index('idx_video_processing_status').on(table.processingStatus),
+    index('idx_video_processing_job_id').on(table.encodingJobId),
+    index('idx_video_processing_lesson_id').on(table.lessonId)
+  ]
+);
+
 export const appsPollSubmission = pgTable(
   'apps_poll_submission',
   {

@@ -37,11 +37,12 @@ All video processing features have been implemented! Here's what was added:
 - ✅ **GET /api/media/video/status/:jobId** - Get processing status
 - ✅ **File**: `apps/api/src/routes/media/video.ts`
 
-#### 6. Database Migration
-- ✅ **Video Processing Fields** - Added processing status, HLS manifest URL, job ID
-- ✅ **Caption Fields** - Added SRT/VTT URLs, transcript, language
+#### 6. Database Schema Update
+- ✅ **Video Processing Table** - Created `video_processing` table to track processing status
+- ✅ **Fields Added** - Processing status, HLS manifest URL, job ID, captions, etc.
 - ✅ **Indexes** - Performance indexes for queries
-- ✅ **File**: `supabase/migrations/20250120000000_video_processing.sql`
+- ✅ **File**: `packages/db/src/schema.ts` - Added `videoProcessing` table definition
+- ✅ **Migration** - Run `pnpm db:generate` in packages/db to generate migration
 
 ### Frontend (Dashboard)
 
@@ -97,11 +98,18 @@ CLOUDFLARE_VIDEO_BUCKET_DOMAIN=https://your-bucket.r2.dev
 docker-compose up -d redis whisper-api
 ```
 
-### 3. Run Migration
+### 3. Generate and Run Migration
 ```bash
-# Apply database migration
-pnpm supabase:push
-# OR manually run the migration file
+cd packages/db
+# Generate migration from schema changes
+pnpm db:generate
+
+# Apply migration (method depends on your setup)
+# Option 1: Using Drizzle Kit
+pnpm db:push
+
+# Option 2: Using your migration runner
+# Check your package.json scripts for the correct command
 ```
 
 ### 4. Rebuild API
@@ -176,7 +184,8 @@ docker-compose up -d
 - `apps/dashboard/src/lib/utils/services/video.ts` - API client
 
 ### Database
-- `supabase/migrations/20250120000000_video_processing.sql` - Schema migration
+- `packages/db/src/schema.ts` - Added `videoProcessing` table definition
+- Run `pnpm db:generate` in `packages/db` to generate migration
 
 ## ✅ Implementation Complete!
 
