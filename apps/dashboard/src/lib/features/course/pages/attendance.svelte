@@ -11,11 +11,11 @@
   import { t } from '$lib/utils/functions/translations';
   import { attendance } from '$lib/utils/store/attendance';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { course, group } from '$lib/components/Course/store';
+  import { course, group } from '$features/course/store';
   import { takeAttendance } from '$lib/utils/services/attendance';
-  import { getLectureNo } from '$lib/components/Course/function.js';
-  import type { GroupPerson, Lesson } from '$lib/utils/types/index';
-  import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { getLectureNo } from '$features/course/utils/functions';
+  import type { GroupPerson, Lesson } from '$lib/utils/types';
+  import { lessons } from '$features/course/components/lesson/store/lessons';
 
   import { Empty } from '@cio/ui/custom/empty';
   import UserXIcon from '@lucide/svelte/icons/user-x';
@@ -148,7 +148,7 @@
     <div class="relative w-full">
       <Input type="text" placeholder={$t('course.navItem.attendance.search_students')} bind:value={searchValue} />
 
-      <Search class="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+      <Search class="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
     </div>
   </div>
 </section>

@@ -36,7 +36,7 @@
   }
 </script>
 
-<Field.Group class="max-w-md! w-full px-2">
+<Field.Group class="w-full max-w-md! px-2">
   <Field.Set>
     <Field.Legend>
       <img src="/telegram-svg.svg" alt="" class="mr-2 w-10" />

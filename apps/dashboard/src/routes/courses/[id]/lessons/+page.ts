@@ -1,5 +1,7 @@
-export const load = ({ params = { id: '' } }) => {
+export const load = async ({ parent }) => {
+  const { course, courseId } = await parent();
   return {
-    courseId: params.id
+    course,
+    courseId
   };
 };

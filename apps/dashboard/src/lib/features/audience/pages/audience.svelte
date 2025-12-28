@@ -9,13 +9,23 @@
   import { t } from '$lib/utils/functions/translations';
   import { Empty } from '@cio/ui/custom/empty';
   import { UpgradeBanner } from '$features/ui';
-  import { currentOrg, currentOrgMaxAudience } from '$lib/utils/store/org';
+  import { currentOrgMaxAudience } from '$lib/utils/store/org';
   import * as Avatar from '@cio/ui/base/avatar';
   import * as Page from '@cio/ui/base/page';
   import { shortenName } from '$lib/utils/functions/string';
+  import type { OrganizationAudience } from '$features/org/utils/types';
 
+  interface Props {
+    audience?: OrganizationAudience;
+  }
+
+  let { audience }: Props = $props();
+
+  // Initialize audience from prop if provided
   $effect(() => {
-    orgApi.getOrgAudience($currentOrg.id);
+    if (audience) {
+      orgApi.audience = audience;
+    }
   });
 
   const headers = [
@@ -79,7 +89,7 @@
               <Table.Row>
                 <Table.Cell>
                   <a
-                    href={`${pageStore.url.href}/${row.id}/${$currentOrg.id}`}
+                    href={`${pageStore.url.href}/${row.id}`}
                     class="ui:text-primary flex items-center gap-2 hover:underline"
                   >
                     <Avatar.Root class="h-5 w-5">

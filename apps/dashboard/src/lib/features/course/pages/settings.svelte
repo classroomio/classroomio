@@ -19,8 +19,8 @@
   import Copy from '@lucide/svelte/icons/copy';
   import type { Course } from '$lib/utils/types';
   import { COURSE_TYPE } from '$lib/utils/types';
-  import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { course } from '$lib/components/Course/store';
+  import { lessons } from '$features/course/components/lesson/store/lessons';
+  import { course } from '$features/course/store';
   import { t } from '$lib/utils/functions/translations';
   import { isObject } from '$lib/utils/functions/isObject';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -203,7 +203,7 @@
 
 <DeleteModal onDelete={handleDeleteCourse} bind:open={openDeleteModal} />
 
-<Field.Group class="max-w-md! w-full px-2">
+<Field.Group class="w-full max-w-md! px-2">
   <Field.Set>
     <Field.Legend>{$t('course.navItem.settings.cover_image')}</Field.Legend>
     <Field.Description>{$t('course.navItem.settings.optional_image')}</Field.Description>

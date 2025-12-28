@@ -35,8 +35,21 @@ export const communityRouter = new Hono()
   .get('/', authMiddleware, orgMemberMiddleware, zValidator('query', ZCommunityQuestions), async (c) => {
     try {
       const { orgId } = c.req.valid('query');
+      const user = c.get('user');
+      const userRole = c.get('userRole');
 
-      const result = await fetchCommunityQuestions(orgId);
+      if (userRole === null) {
+        return c.json(
+          {
+            success: false,
+            error: 'Organization context not available',
+            code: 'ORG_CONTEXT_MISSING'
+          },
+          500
+        );
+      }
+
+      const result = await fetchCommunityQuestions(orgId, user.id, userRole);
 
       return c.json({ success: true, data: result }, 200);
     } catch (error) {

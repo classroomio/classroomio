@@ -12,19 +12,19 @@
   import { Chip } from '@cio/ui/custom/chip';
   import * as Avatar from '@cio/ui/base/avatar';
   import { ComingSoon, RoleBasedSecurity } from '$features/ui';
-  import InvitationModal from '$lib/components/Course/components/People/InvitationModal.svelte';
-  import DeleteConfirmation from '$lib/components/Course/components/People/DeleteConfirmation.svelte';
+  import InvitationModal from '$lib/features/course/components/people/invitation-modal.svelte';
+  import DeleteConfirmation from '$lib/features/course/components/people/delete-confirmation.svelte';
 
   import { profile } from '$lib/utils/store/user';
   import type { GroupPerson } from '$lib/utils/types';
-  import { group } from '$lib/components/Course/store';
+  import { group } from '$features/course/store';
   import { t } from '$lib/utils/functions/translations';
   import { shortenName } from '$lib/utils/functions/string';
   import * as Select from '@cio/ui/base/select';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { ROLE_LABEL, ROLES } from '$lib/utils/constants/roles';
   import { deleteGroupMember } from '$lib/utils/services/courses';
-  import { deleteMemberModal } from '$lib/components/Course/components/People/store';
+  import { deleteMemberModal } from '$features/course/components/people/store';
 
   let member: { id?: string; email?: string; profile?: { email: string } } = $state({});
   let filterBy: string = $state(`${ROLES[0].value}`);
@@ -102,7 +102,7 @@
     <div class="relative max-w-[320px]">
       <Input type="text" placeholder={$t('course.navItem.people.search')} bind:value={searchValue} class="w-full" />
 
-      <SearchIcon class="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+      <SearchIcon class="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
     </div>
     <div class="mb-3">
       <Select.Root type="single" name="roles" bind:value={filterBy}>

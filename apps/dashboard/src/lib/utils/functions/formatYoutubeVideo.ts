@@ -1,4 +1,4 @@
-import { lesson } from '$lib/components/Course/components/Lesson/store/lessons';
+import { lesson } from '$features/course/components/lesson/store/lessons';
 import { snackbar } from '$features/ui/snackbar/store';
 
 export function formatYoutubeVideo(url: string, errors: Record<string, string>) {

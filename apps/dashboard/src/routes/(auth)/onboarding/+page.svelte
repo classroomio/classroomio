@@ -177,7 +177,7 @@
       <!-- Footer -->
       <div class="mt-8 flex w-full items-center justify-between">
         <div class="relative h-2 w-24 bg-gray-300">
-          <span class="progress bg-primary-700 absolute left-0 top-0 h-full" style="width: {progress}%;"></span>
+          <span class="progress bg-primary-700 absolute top-0 left-0 h-full" style="width: {progress}%;"></span>
         </div>
 
         <div class="flex">

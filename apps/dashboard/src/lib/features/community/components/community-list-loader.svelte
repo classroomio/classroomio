@@ -2,7 +2,7 @@
   import { Skeleton } from '@cio/ui/base/skeleton';
 </script>
 
-<div class="relative flex h-[70px] w-full rounded-md border p-2 transition ease-in-out dark:border-neutral-600">
+<div class="relative flex h-[70px] w-full rounded-md border p-2 transition ease-in-out">
   <div class="mr-2 flex w-10 flex-col justify-evenly gap-2 rounded-md px-1">
     <Skeleton class="h-2/6 w-full rounded-sm" />
     <Skeleton class="h-2/6 w-full rounded-sm" />

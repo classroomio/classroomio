@@ -1,6 +1,6 @@
 import { BaseApi, classroomio } from '$lib/utils/services/api';
 import type { TExerciseTemplate } from '@cio/db/types';
-import type { GetTemplateByIdResponse, GetTemplateByTagData, GetTemplateByTagResponse } from '../utils/types';
+import type { GetTemplateByIdRequest, GetTemplateByTagData, GetTemplateByTagRequest } from '../utils/types';
 
 /**
  * API class for exercise templates
@@ -13,7 +13,7 @@ class ExerciseTemplateApi extends BaseApi {
    * Fetches an exercise template metadata
    */
   async fetchTemplateById(id: string) {
-    await this.execute<GetTemplateByIdResponse>({
+    await this.execute<GetTemplateByIdRequest>({
       requestFn: () => classroomio.exercise.template[':id'].$get({ param: { id } }),
       logContext: 'fetching exercise template by id',
       onSuccess: (response) => {
@@ -26,7 +26,7 @@ class ExerciseTemplateApi extends BaseApi {
    * Fetches an exercise template metadata
    */
   async fetchTemplatesByTag(tag: string) {
-    await this.execute<GetTemplateByTagResponse>({
+    await this.execute<GetTemplateByTagRequest>({
       requestFn: () => classroomio.exercise.template.tag[':tag'].$get({ param: { tag } }),
       logContext: 'fetching exercise template by tag',
       onSuccess: (response) => {

@@ -17,7 +17,7 @@
   <a
     href={`https://classroomio.com?utm_source=${$currentOrg.siteName}.classroomio.com`}
     target="_blank"
-    class={cn('group fixed bottom-14 right-9 z-50 hover:no-underline', className)}
+    class={cn('group fixed right-9 bottom-14 z-50 hover:no-underline', className)}
   >
     <span
       class={cn(

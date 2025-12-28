@@ -1,6 +1,6 @@
 <script lang="ts">
   import { profile } from '$lib/utils/store/user';
-  import { group } from '$lib/components/Course/store';
+  import { group } from '$features/course/store';
   import { isOrgAdmin } from '$lib/utils/store/org';
 
   interface Props {

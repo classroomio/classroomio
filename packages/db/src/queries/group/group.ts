@@ -26,17 +26,23 @@ export async function addGroupMember(values: TNewGroupmember) {
  * Checks if a user is a member of a course's group (any role)
  * @param courseId Course ID
  * @param profileId Profile ID to check
- * @returns True if user is a member of the course's group, false otherwise
  */
-export const isUserCourseMember = async (courseId: string, profileId: string): Promise<boolean> => {
+export const isUserCourseMember = async (
+  courseId: string,
+  profileId: string
+): Promise<{ isMember: boolean; organizationId: string | null }> => {
   const result = await db
-    .select({ roleId: schema.groupmember.roleId })
+    .select({ organizationId: schema.group.organizationId, roleId: schema.groupmember.roleId })
     .from(schema.groupmember)
     .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
     .where(and(eq(schema.course.id, courseId), eq(schema.groupmember.profileId, profileId)))
     .limit(1);
 
-  return result.length > 0;
+  return {
+    isMember: result.length > 0,
+    organizationId: result[0].organizationId
+  };
 };
 
 /**

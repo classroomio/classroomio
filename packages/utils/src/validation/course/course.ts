@@ -15,6 +15,11 @@ export const ZCourseCloneParam = z.object({
 });
 export type TCourseCloneParam = z.infer<typeof ZCourseCloneParam>;
 
+export const ZCourseGetParam = z.object({
+  courseId: z.string().min(1)
+});
+export type TCourseGetParam = z.infer<typeof ZCourseGetParam>;
+
 export const ZCourseDownloadParam = z.object({
   courseId: z.string().min(1)
 });

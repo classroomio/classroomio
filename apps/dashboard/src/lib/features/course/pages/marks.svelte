@@ -1,13 +1,13 @@
 <script lang="ts">
   import { Empty } from '@cio/ui/custom/empty';
   import UserXIcon from '@lucide/svelte/icons/user-x';
-  import { course } from '$lib/components/Course/store';
+  import { course } from '$features/course/store';
   import { t } from '$lib/utils/functions/translations';
   import { fetchMarks } from '$lib/utils/services/marks';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { getLectureNo } from '$lib/components/Course/function.js';
+  import { getLectureNo } from '$features/course/utils/functions';
   import { fetchExercisesByMarks } from '$lib/utils/services/courses';
-  import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { lessons } from '$features/course/components/lesson/store/lessons';
   import type { GroupPerson } from '$lib/utils/types';
 
   let borderBottomGrey = 'border-r-0 border-t-0 border-b border-l-0 border-gray-300';
@@ -87,7 +87,7 @@
           <p class="col lesson-number dark:text-white" title={lesson.title}>
             {getLectureNo(index + 1)}
           </p>
-          <div class="flex h-full items-center border-b-0 border-l-0 border-r-0 border-t border-gray-300">
+          <div class="flex h-full items-center border-t border-r-0 border-b-0 border-l-0 border-gray-300">
             {#each Object.keys(lessonMapping[lesson.id]) as exerciseId, index}
               <p
                 class="col text-sm dark:text-white {index && borderleftGrey}"

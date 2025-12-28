@@ -125,7 +125,7 @@
 
 <AuthUI isLogin={false} {handleSubmit} isLoading={loading || !$profile.id} showOnlyContent={true} showLogo={true}>
   <div class="mt-0 w-full">
-    <h3 class="mb-4 mt-0 text-center text-lg font-medium dark:text-white">{data.name}</h3>
+    <h3 class="mt-0 mb-4 text-center text-lg font-medium dark:text-white">{data.name}</h3>
     <p class="text-center text-sm font-light dark:text-white">{data.description}</p>
   </div>
 

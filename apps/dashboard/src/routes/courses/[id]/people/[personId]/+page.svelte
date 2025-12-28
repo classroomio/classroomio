@@ -109,7 +109,7 @@
       </div>
     </div>
 
-    <div class="mt-5 rounded-md border p-3 md:p-5 dark:border-neutral-600">
+    <div class="mt-5 rounded-md border p-3 md:p-5">
       <h3 class="text-2xl">
         {$t('analytics.exercises')}
       </h3>
@@ -130,7 +130,7 @@
         <div class="flex items-center justify-between">
           <Badge
             type={exerciseFilter === 'incomplete' ? 'secondary' : 'outline'}
-            class="lowercase text-yellow-700 dark:text-yellow-500"
+            class="text-yellow-700 lowercase dark:text-yellow-500"
             onclick={() => toggleExerciseFilter('incomplete')}
           >
             {incompleteExercises}
@@ -138,7 +138,7 @@
           </Badge>
           <Badge
             type={exerciseFilter === 'completed' ? 'gray' : 'outline'}
-            class="lowercase text-green-700 dark:text-green-500"
+            class="text-green-700 lowercase dark:text-green-500"
             onclick={() => toggleExerciseFilter('completed')}
           >
             {completedExercises}

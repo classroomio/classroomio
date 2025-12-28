@@ -6,6 +6,7 @@ import { env } from '$env/dynamic/public';
 import { hcWithType } from '@cio/api/rpc-types';
 import { get } from 'svelte/store';
 import { currentOrg } from '$lib/utils/store/org';
+import type { Cookies } from '@sveltejs/kit';
 
 class ApiClient {
   private config: Required<ApiClientConfig>;
@@ -179,3 +180,44 @@ export type { InferResponseType, InferRequestType } from '@cio/api/rpc-types';
 
 // Export base API classes
 export { BaseApi, BaseApiWithErrors } from './base.svelte';
+
+/**
+ * Gets headers with cookies and organization ID for API calls
+ * Use this in load functions (+page.server.ts, +layout.server.ts) to pass user session cookies
+ * and organization ID to API calls. This ensures authentication and organization context work correctly.
+ *
+ * @param cookies Cookies object from SvelteKit load function
+ * @param orgId Organization ID to include in headers
+ * @returns Headers object with cookie string and cio-org-id header
+ *
+ * @example
+ * ```typescript
+ * export const load = async ({ cookies, parent }) => {
+ *   const { org } = await parent();
+ *   const response = await classroomio.organization.$get(
+ *     { query: { siteName } },
+ *     getApiHeaders(cookies, org?.id)
+ *   );
+ * };
+ * ```
+ */
+export function getApiHeaders(
+  cookies: Cookies,
+  orgId?: string
+): { headers: { cookie: string; 'cio-org-id'?: string } } {
+  const cioCookies = cookies
+    .getAll()
+    .filter((c) => c.name.includes('classroomio'))
+    .map((c) => `${c.name}=${c.value}`)
+    .join('; ');
+
+  const headers: { cookie: string; 'cio-org-id'?: string } = {
+    cookie: cioCookies || ''
+  };
+
+  if (orgId) {
+    headers['cio-org-id'] = orgId;
+  }
+
+  return { headers };
+}

@@ -500,7 +500,46 @@ export const course = pgTable(
     isTemplate: boolean('is_template').default(true),
     logo: text().default('').notNull(),
     slug: varchar(),
-    metadata: jsonb().default({ goals: '', description: '', requirements: '' }).notNull(),
+    metadata: jsonb().default({ goals: '', description: '', requirements: '' }).notNull().$type<{
+      requirements?: string;
+      description?: string;
+      goals?: string;
+      videoUrl?: string;
+      showDiscount?: boolean;
+      discount?: number;
+      paymentLink?: string;
+      reward?: {
+        show: boolean;
+        description: string;
+      };
+      instructor?: {
+        name: string;
+        role: string;
+        coursesNo: number;
+        description: string;
+        imgUrl: string;
+      };
+      certificate?: {
+        templateUrl: string;
+      };
+      reviews?: {
+        id: number;
+        hide: boolean;
+        name: string;
+        avatar_url: string;
+        rating: number;
+        created_at: number;
+        description: string;
+      }[];
+      lessonTabsOrder?: {
+        id: number;
+        name: string;
+      }[];
+      grading?: boolean;
+      lessonDownload?: boolean;
+      allowNewStudent: boolean;
+      sectionDisplay?: Record<string, boolean>;
+    }>(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     cost: bigint({ mode: 'number' }).default(sql`'0'`),
     currency: varchar().default('USD').notNull(),

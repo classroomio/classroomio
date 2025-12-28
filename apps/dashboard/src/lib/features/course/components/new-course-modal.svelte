@@ -3,8 +3,7 @@
 
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import { validateForm } from '../utils/functions';
-  import { courses, createCourseModal } from '../utils/store';
+  import { createCourseModal } from '../utils/store';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
   import * as Dialog from '@cio/ui/base/dialog';
@@ -19,6 +18,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
+  import { coursesApi } from '../api';
 
   let isLoading = $state(false);
   let errors = $state({
@@ -58,12 +58,25 @@
     }));
   }
 
+  function validateForm() {
+    if (!$createCourseModal.title) {
+      errors.title = $t('courses.new_course_modal.course_name_required');
+      return false;
+    }
+
+    if (!$createCourseModal.description) {
+      errors.description = $t('courses.new_course_modal.short_description_required');
+      return false;
+    }
+
+    return true;
+  }
+
   async function createCourse() {
     isLoading = true;
-    const { hasError, fieldErrors } = validateForm($createCourseModal);
 
-    errors = fieldErrors;
-    if (hasError) return;
+    const isValid = validateForm();
+    if (!isValid) return;
 
     const { title, description } = $createCourseModal;
     // 1. Create group
@@ -94,7 +107,7 @@
     if (!newCourseData) return;
 
     const newCourse = newCourseData[0];
-    courses.update((_courses) => [..._courses, newCourse]);
+    coursesApi.orgCourses = [...coursesApi.orgCourses, newCourse];
 
     capturePosthogEvent('course_created', {
       course_id: newCourse.id,

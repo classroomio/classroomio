@@ -1,8 +1,8 @@
-export const load = async ({ params }) => {
-  const { id, personId } = params;
-
+export const load = async ({ parent, params }) => {
+  const { course, courseId } = await parent();
   return {
-    userId: personId,
-    courseId: id
+    course,
+    courseId,
+    userId: params.personId
   };
 };

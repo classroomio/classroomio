@@ -48,7 +48,7 @@
       <button
         type="button"
         onclick={() => ($openModal.fullscreen = !$openModal.fullscreen)}
-        class="absolute right-4 top-4 rounded-full bg-white p-1.5 transition-all duration-300 hover:scale-90"
+        class="absolute top-4 right-4 rounded-full bg-white p-1.5 transition-all duration-300 hover:scale-90"
       >
         <img src="/free-tools/progress-report/close-icon.svg" alt="" class="" />
       </button>
@@ -56,7 +56,7 @@
       <button
         type="button"
         onclick={() => ($openModal.fullscreen = !$openModal.fullscreen)}
-        class="absolute right-4 top-4 w-7 transition-all duration-300 hover:scale-90"
+        class="absolute top-4 right-4 w-7 transition-all duration-300 hover:scale-90"
       >
         <img src="/free-tools/progress-report/full-screen-icon.svg" alt="" class="" />
       </button>

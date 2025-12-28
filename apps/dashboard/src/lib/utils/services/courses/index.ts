@@ -1,3 +1,7 @@
+/**
+ * Deprecated: This file should eventually be removed and replaced with the api structure in ARCHITECHTURE.md
+ */
+
 import type {
   Course,
   Exercise,
@@ -13,8 +17,8 @@ import type { PostgrestError, PostgrestSingleResponse } from '@supabase/supabase
 import { getAccessToken, supabase } from '$lib/utils/functions/supabase';
 
 import { GenericUploader } from './presign';
-import { QUESTION_TYPE } from '$lib/components/Question/constants';
-import type { Question } from '$lib/components/Course/types';
+import { QUESTION_TYPE } from '$features/ui/question/constants';
+import type { Question } from '$features/course/types';
 import { STATUS } from '$lib/utils/constants/course';
 import { get } from 'svelte/store';
 import { isOrgAdmin } from '$lib/utils/store/org';
@@ -180,23 +184,6 @@ export async function fetchCourseFromAPI(courseId: Course['id']) {
     console.error('fetchCourseFromAPI error:', error);
     return { data: null, error };
   }
-}
-
-export async function fetchExploreCourses(profileId, orgId) {
-  if (!orgId || !profileId) return;
-
-  const { data: allCourses } = await supabase.rpc('get_explore_courses', {
-    org_id_arg: orgId,
-    profile_id_arg: profileId
-  });
-
-  if (!Array.isArray(allCourses)) {
-    return {
-      allCourses: []
-    };
-  }
-
-  return { allCourses };
 }
 
 export async function fetchGroup(groupId: Group['id']) {
