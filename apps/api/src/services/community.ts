@@ -1,5 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import type { TCommunityAnswer, TCommunityQuestion, TCourse } from '@db/types';
+import type { TCommunityAnswer, TCommunityQuestion } from '@db/types';
 import {
   createCommunityQuestion,
   deleteCommentById,
@@ -10,32 +10,57 @@ import {
   getCommunityQuestions,
   submitComment,
   upvoteAnswer,
-  upvoteQuestion
+  upvoteQuestion,
+  type CommunityQuestionQueryResult
 } from '@cio/db/queries/community';
+import { getEnrolledCourses, getOrgCourses } from '@cio/db/queries/course';
 
-import { getCoursesByOrgId } from './organization';
+import { ROLE } from '@cio/utils/constants';
 
-export async function fetchCommunityQuestions(orgId: string): Promise<Partial<TCommunityQuestion>[]> {
-  let discussions: Partial<TCommunityQuestion>[] = [];
-
-  let courses: TCourse[];
-
-  if (orgId) {
-    courses = await getCoursesByOrgId(orgId);
-  } else {
-    throw new AppError(
-      'Organization not found for the given site name',
-      ErrorCodes.COMMUNITY_QUESTIONS_FETCH_FAILED,
-      404
-    );
-  }
-
+export async function fetchCommunityQuestions(
+  orgId: string,
+  userId: string,
+  userRole: number
+): Promise<CommunityQuestionQueryResult[]> {
   try {
-    const courseIds = courses.map((course) => course.id);
-    discussions = await getCommunityQuestions(courseIds);
+    if (!orgId) {
+      throw new AppError(
+        'Organization not found for the given site name',
+        ErrorCodes.COMMUNITY_QUESTIONS_FETCH_FAILED,
+        404
+      );
+    }
+
+    if (userRole === null) {
+      throw new AppError('User is not a member of this organization', ErrorCodes.UNAUTHORIZED, 403);
+    }
+
+    let discussions: CommunityQuestionQueryResult[];
+
+    switch (userRole) {
+      case ROLE.ADMIN:
+        // Admins can see all questions in the organization - no need to fetch courses
+        discussions = await getCommunityQuestions({ orgId });
+        break;
+      case ROLE.TUTOR:
+        // Tutors can see questions in courses they have access to
+        const tutorCourses = await getOrgCourses({ orgId, profileId: userId });
+        const tutorCourseIds = tutorCourses.map((course) => course.id);
+        discussions = await getCommunityQuestions({ courseIds: tutorCourseIds });
+        break;
+      case ROLE.STUDENT:
+        // Students can see questions in courses they are enrolled in
+        const studentCourses = await getEnrolledCourses({ orgId, profileId: userId });
+        const studentCourseIds = studentCourses.map((course) => course.id);
+        discussions = await getCommunityQuestions({ courseIds: studentCourseIds });
+        break;
+      default:
+        throw new AppError('Invalid role', ErrorCodes.UNAUTHORIZED, 403);
+    }
 
     return discussions;
   } catch (error) {
+    if (error instanceof AppError) throw error;
     console.error('Failed to fetch community questions:', error);
     throw new AppError('Failed to fetch community questions', ErrorCodes.COMMUNITY_QUESTIONS_FETCH_FAILED, 500);
   }

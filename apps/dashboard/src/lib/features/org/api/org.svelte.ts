@@ -1,10 +1,10 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
-  CoursesByOrganizationSiteName,
-  DeleteTeamResponse,
-  GetAudienceResponse,
-  GetCoursesBySiteNameResponse,
-  InviteTeamResponse,
+  DeleteTeamRequest,
+  GetAudienceRequest,
+  GetOrgPublicCoursesRequest,
+  InviteTeamRequest,
+  OrgPublicCourses,
   OrganizationAudience,
   OrganizationTeamMembers
 } from '../utils/types';
@@ -13,10 +13,10 @@ import { ZCreateOrganization, ZUpdateOrganization } from '@cio/utils/validation/
 import { currentOrg, orgs } from '$lib/utils/store/org';
 
 import type { AccountOrg } from '$features/app/types';
-import type { GetTeamResponse } from '../utils/types';
+import type { GetTeamRequest } from '../utils/types';
 import { ROLE } from '@cio/utils/constants';
 import { ROLE_LABEL } from '$lib/utils/constants/roles';
-import type { UpdateOrganizationRequestType } from './types';
+import type { UpdateOrganizationRequest } from '../utils/types';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
@@ -42,19 +42,17 @@ export interface TOrgUpdateForm {
 class OrgApi extends BaseApiWithErrors {
   teamMembers = $state<OrganizationTeamMembers>([]);
   audience = $state<OrganizationAudience>([]);
-  orgSiteCourses = $state<CoursesByOrganizationSiteName>([]);
+  publicCourses: OrgPublicCourses = $state([]);
+
+  isFetchingOrgPublicCourses = $state(false);
 
   /**
    * Gets organization team members (non-students)
-   * @param orgId Organization ID
    * @returns Team members array
    */
-  async getOrgTeam(orgId: string) {
-    return this.execute<GetTeamResponse>({
-      requestFn: () =>
-        classroomio.organization[':orgId'].team.$get({
-          param: { orgId }
-        }),
+  async getOrgTeam() {
+    return this.execute<GetTeamRequest>({
+      requestFn: () => classroomio.organization.team.$get(),
       logContext: 'fetching organization team',
       onSuccess: (response) => {
         // Map API response to include role and isAdmin directly in the API layer
@@ -79,11 +77,8 @@ class OrgApi extends BaseApiWithErrors {
   async getOrgAudience(orgId?: string) {
     if (!orgId) return;
 
-    return this.execute<GetAudienceResponse>({
-      requestFn: () =>
-        classroomio.organization[':orgId'].audience.$get({
-          param: { orgId }
-        }),
+    return this.execute<GetAudienceRequest>({
+      requestFn: () => classroomio.organization.audience.$get(),
       logContext: 'fetching organization audience',
       onSuccess: (response) => {
         this.audience = response.data;
@@ -92,21 +87,25 @@ class OrgApi extends BaseApiWithErrors {
   }
 
   /**
-   * Gets courses by organization siteName
+   * Gets public courses by organization siteName (for landing pages)
    * @param siteName Organization site name
-   * @returns Courses array
+   * @returns Published courses array
    */
-  async getCourseBySiteName(siteName: string) {
-    return this.execute<GetCoursesBySiteNameResponse>({
+  async getPublicCoursesBySiteName(siteName: string) {
+    this.isFetchingOrgPublicCourses = true;
+
+    await this.execute<GetOrgPublicCoursesRequest>({
       requestFn: () =>
-        classroomio.organization.courses.$get({
+        classroomio.organization.courses.public.$get({
           query: { siteName }
         }),
-      logContext: 'fetching courses',
+      logContext: 'fetching public courses',
       onSuccess: (response) => {
-        this.orgSiteCourses = response.data;
+        this.publicCourses = response.data;
       }
     });
+
+    this.isFetchingOrgPublicCourses = false;
   }
 
   /**
@@ -226,11 +225,9 @@ class OrgApi extends BaseApiWithErrors {
       avatarUrl
     };
 
-    await this.execute<UpdateOrganizationRequestType>({
+    await this.execute<UpdateOrganizationRequest>({
       requestFn: () =>
-        classroomio.organization[':orgId'].$put({
-          param: { orgId },
-          // @ts-expect-error - the json type is not inferred correctly
+        classroomio.organization.$put({
           json: updates
         }),
       logContext: 'updating organization',
@@ -279,21 +276,19 @@ class OrgApi extends BaseApiWithErrors {
 
   /**
    * Invites team members to the organization
-   * @param orgId Organization ID
+   *
    * @param emails Array of email addresses
    * @param roleId Role ID (ADMIN or TUTOR)
    */
-  async inviteTeamMembers(orgId: string, emails: string[], roleId: number) {
-    return this.execute<InviteTeamResponse>({
+  async inviteTeamMembers(emails: string[], roleId: number) {
+    return this.execute<InviteTeamRequest>({
       requestFn: () =>
-        classroomio.organization[':orgId']['team']['invite']['$post']({
-          param: { orgId },
-          // @ts-expect-error - the json type is not inferred correctly
+        classroomio.organization.team.invite.$post({
           json: { emails, roleId }
         }),
       logContext: 'inviting team members',
       onSuccess: () => {
-        this.getOrgTeam(orgId);
+        this.getOrgTeam();
       },
       onError: (result) => {
         if (typeof result === 'string') {
@@ -309,18 +304,18 @@ class OrgApi extends BaseApiWithErrors {
 
   /**
    * Removes a team member from the organization
-   * @param orgId Organization ID
+   *
    * @param memberId Member ID to remove
    */
-  async removeTeamMember(orgId: string, memberId: number) {
-    return this.execute<DeleteTeamResponse>({
+  async removeTeamMember(memberId: number) {
+    return this.execute<DeleteTeamRequest>({
       requestFn: () =>
-        classroomio.organization[':orgId'].team[':memberId'].$delete({
-          param: { orgId, memberId: memberId.toString() }
+        classroomio.organization.team[':memberId'].$delete({
+          param: { memberId: memberId.toString() }
         }),
       logContext: 'removing team member',
       onSuccess: () => {
-        this.getOrgTeam(orgId);
+        this.getOrgTeam();
       },
       onError: (result) => {
         if (typeof result === 'string') {

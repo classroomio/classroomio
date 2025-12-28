@@ -10,11 +10,11 @@
     updateQuestionAnswer,
     updateSubmission
   } from '$lib/utils/services/submissions';
-  import { course } from '$lib/components/Course/store';
+  import { course } from '$features/course/store';
   import { t } from '$lib/utils/functions/translations';
   import formatDate from '$lib/utils/functions/formatDate';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { formatAnswers } from '$lib/components/Course/function.js';
+  import { formatAnswers } from '$features/course/utils/functions';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import isSubmissionEarly from '$lib/utils/functions/isSubmissionEarly';
   import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/notification';
@@ -22,7 +22,7 @@
 
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { Chip } from '@cio/ui/custom/chip';
-  import MarkExerciseModal from '$lib/components/Course/components/Lesson/Exercise/MarkExerciseModal.svelte';
+  import MarkExerciseModal from '$features/course/components/lesson/exercise/mark-exercise-modal.svelte';
 
   interface Props {
     courseId: string;

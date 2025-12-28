@@ -1,13 +1,13 @@
 <script lang="ts">
   import { Empty } from '@cio/ui/custom/empty';
   import UserXIcon from '@lucide/svelte/icons/user-x';
-  import { course } from '$lib/components/Course/store';
+  import { course } from '$features/course/store';
   import { t } from '$lib/utils/functions/translations';
   import { fetchMarks } from '$lib/utils/services/marks';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { getLectureNo } from '$lib/components/Course/function.js';
+  import { getLectureNo } from '$features/course/utils/functions';
   import { fetchExercisesByMarks } from '$lib/utils/services/courses';
-  import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { lessons } from '$features/course/components/lesson/store/lessons';
   import type { GroupPerson } from '$lib/utils/types';
 
   let borderBottomGrey = 'border-r-0 border-t-0 border-b border-l-0 border-gray-300';

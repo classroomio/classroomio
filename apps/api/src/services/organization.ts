@@ -12,21 +12,22 @@ import {
   getOrganizationBySiteName,
   getOrganizationTeam,
   getOrganizations,
-  isUserOrgAdmin,
   updateOrganization,
   updateOrganizationPlan
 } from '@cio/db/queries/organization';
 import {
-  getAllCoursesBySiteName,
   getCoursesById,
-  getCoursesByOrgIdAndProfileId,
   getCoursesBySiteNameForSetup,
+  getEnrolledCourses,
   getExercisesBySiteName,
+  getExploreCourses,
   getLessonsBySiteName,
+  getOrgCourses,
   getPublishedCoursesBySiteName
 } from '@cio/db/queries/course';
 import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/analytics';
 
+import { ROLE } from '@cio/utils/constants';
 import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { env } from '@api/config/env';
 import { getProfileById } from '@cio/db/queries/auth';
@@ -118,45 +119,98 @@ export async function getOrgAudience(orgId: string) {
 }
 
 /**
- * Gets organization courses with permission-based filtering
+ * Gets public courses for an organization (landing page)
  * @param siteName - The organization siteName
- * @param userId - Optional user ID for permission-based filtering
- * @returns Array of courses
- * - Admins: see all courses (published and unpublished)
- * - Students/Teachers: only see published courses they have access to
- * - Public: only see published courses
+ * @returns Array of published courses with lesson counts
  */
-export async function getOrganizationCourses(siteName: string, userId?: string) {
+export async function getPublicCourses(siteName: string) {
   try {
-    // If userId is provided, check permissions and filter accordingly
-    if (userId) {
-      // Get organization from siteName to check admin status
-      const orgResult = await getOrgIdBySiteName(siteName);
-      const org = orgResult[0];
+    const orgResult = await getOrgIdBySiteName(siteName);
+    const org = orgResult[0];
 
-      if (!org) {
-        throw new AppError('Organization not found', ErrorCodes.ORG_NOT_FOUND, 404);
-      }
-
-      const isAdmin = await isUserOrgAdmin(org.id, userId);
-
-      if (isAdmin) {
-        // Admins can see all courses (published and unpublished)
-        const courses = await getAllCoursesBySiteName(siteName);
-        return courses;
-      } else {
-        // Non-admins only see published courses they have access to (where they are groupmembers)
-        const courses = await getCoursesByOrgIdAndProfileId(org.id, userId);
-        return courses;
-      }
+    if (!org) {
+      throw new AppError('Organization not found', ErrorCodes.ORG_NOT_FOUND, 404);
     }
 
-    // If no userId provided, return only published courses (for public/unauthenticated access)
-    const courses = await getPublishedCoursesBySiteName(siteName);
-    return courses;
+    return getPublishedCoursesBySiteName(siteName);
   } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch public courses',
+      ErrorCodes.COURSES_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Gets organization courses with role-based data filtering
+ * @param orgId - The organization ID
+ * @param userId - User ID for role-based filtering (required)
+ * @param userRole - User's role in the organization (from context)
+ * @returns Object with role and courses array
+ * - Admins: all courses with totalStudents
+ * - Tutors: assigned courses with totalStudents
+ */
+export async function getOrganizationCourses(orgId: string, userId: string, userRole: number) {
+  try {
+    if (!userRole) {
+      throw new AppError('Invalid permissions', ErrorCodes.UNAUTHORIZED, 403);
+    }
+
+    switch (userRole) {
+      case ROLE.ADMIN:
+        return getOrgCourses({ orgId });
+      case ROLE.TUTOR:
+        return getOrgCourses({ orgId, profileId: userId });
+      default:
+        throw new AppError('Invalid permissions', ErrorCodes.UNAUTHORIZED, 403);
+    }
+  } catch (error) {
+    if (error instanceof AppError) throw error;
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to fetch courses',
+      ErrorCodes.COURSES_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Gets user enrolled courses by organization orgId
+ *
+ * @param orgId - The organization ID
+ * @param userId - User ID for filtering
+ * @returns Array of enrolled courses
+ */
+export async function getUserEnrolledCourses(orgId: string, userId: string) {
+  try {
+    return getEnrolledCourses({ orgId, profileId: userId });
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch enrolled courses',
+      ErrorCodes.COURSES_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Gets recommended courses (published courses user isn't enrolled in) for an organization
+ * Used in LMS explore page
+ *
+ * @param orgId - The organization ID
+ * @param userId - User ID to exclude enrolled courses
+ * @returns Array of recommended courses
+ */
+export async function getRecommendedCourses(orgId: string, userId: string) {
+  try {
+    return getExploreCourses({ orgId, profileId: userId });
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch recommended courses',
       ErrorCodes.COURSES_FETCH_FAILED,
       500
     );
@@ -451,8 +505,8 @@ export async function getUserAnalytics(userId: string, orgId: string) {
     // Get last login
     const lastSeen = await getLastLogin(userId);
 
-    // Get courses for this org where user is a member
-    const courses = await getCoursesByOrgIdAndProfileId(orgId, userId);
+    // Get courses for this org where user is enrolled
+    const courses = await getEnrolledCourses({ orgId, profileId: userId });
 
     // Build analytics data for each course
     const coursesWithStats = await Promise.all(

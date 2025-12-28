@@ -29,7 +29,7 @@
     question?: CommunityQuestionSuccess['data'] | null;
   }
 
-  let { slug, isLMS = false, question }: Props = $props();
+  let { isLMS = false, question }: Props = $props();
 
   let commentEditor: TiptapEditor | undefined = $state();
   let isValidAnswer = false; // V2 allow admin mark an answer as accepted
@@ -53,10 +53,9 @@
   });
 
   $effect(() => {
-    if ($profile.id && $currentOrg.id && !communityApi.coursesFetched) {
-      communityApi.fetchCoursesForOrg($profile.id, $currentOrg.id);
+    if (!$profile.id || !$currentOrg.id) return;
 
-    }
+    communityApi.fetchCoursesForOrg($profile.id, $currentOrg.id);
   });
 </script>
 

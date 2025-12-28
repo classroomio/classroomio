@@ -6,15 +6,15 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import type { CourseAnalytics } from '$lib/utils/types/analytics';
   import { fade } from 'svelte/transition';
-  import StudentTable from '$lib/components/Course/components/Analytics/StudentTable.svelte';
-  import AnalyticsGraph from '$lib/components/Course/components/Analytics/AnalyticsGraph.svelte';
-  import AnalyticsSkeleton from '$lib/components/Course/components/Analytics/AnalyticsSkeleton.svelte';
-  import AnalyticsCard from '$lib/components/Course/components/Analytics/AnalyticsCard.svelte';
-  import StudentsIcon from '$lib/components/Course/components/Analytics/icons/StudentsIcon.svelte';
-  import LessonsIcon from '$lib/components/Course/components/Analytics/icons/LessonsIcon.svelte';
-  import ProgressIcon from '$lib/components/Course/components/Analytics/icons/ProgressIcon.svelte';
-  import ExercisesIcon from '$lib/components/Course/components/Analytics/icons/ExercisesIcon.svelte';
-  import EmptyState from '$lib/components/Course/components/Analytics/EmptyState.svelte';
+  import StudentTable from '$features/course/components/analytics/student-table.svelte';
+  import AnalyticsGraph from '$features/course/components/analytics/analytics-graph.svelte';
+  import AnalyticsSkeleton from '$features/course/components/analytics/analytics-skeleton.svelte';
+  import AnalyticsCard from '$features/course/components/analytics/analytics-card.svelte';
+  import StudentsIcon from '$features/course/components/analytics/icons/students-icon.svelte';
+  import LessonsIcon from '$features/course/components/analytics/icons/lessons-icon.svelte';
+  import ProgressIcon from '$features/course/components/analytics/icons/progress-icon.svelte';
+  import ExercisesIcon from '$features/course/components/analytics/icons/exercises-icon.svelte';
+  import EmptyState from '$features/course/components/analytics/empty-state.svelte';
 
   interface Props {
     courseId: string;

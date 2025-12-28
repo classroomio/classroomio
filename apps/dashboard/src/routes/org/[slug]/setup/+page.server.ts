@@ -1,13 +1,13 @@
 import { classroomio, getApiHeaders } from '$lib/utils/services/api';
 
 export const load = async ({ params, parent, cookies }) => {
-  const { org } = await parent();
+  const { orgId } = await parent();
   const siteName = params.slug || '';
 
   // Fetch setup progress
   const setupResponse = await classroomio.organization.setup.$get(
     { query: { siteName } },
-    getApiHeaders(cookies, org?.id)
+    getApiHeaders(cookies, orgId)
   );
 
   const setupData = await setupResponse.json();

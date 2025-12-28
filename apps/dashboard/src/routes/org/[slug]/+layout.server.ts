@@ -4,24 +4,41 @@ import { getSubdomain } from '$features/app/layout-setup';
 import { redirect } from '@sveltejs/kit';
 
 const APP_SUBDOMAINS = env.PRIVATE_APP_SUBDOMAINS?.split(',') || ['app'];
+const ORG_ID_COOKIE_PREFIX = 'cio_org_id_';
 
-export const load = async ({ params, url, parent }) => {
+export const load = async ({ params, url, cookies }) => {
   const subdomain = getSubdomain(url);
   const isOrgSite = subdomain && !APP_SUBDOMAINS.includes(subdomain);
+
   // If this is LMS but user is on org site, redirect to LMS
   if (isOrgSite) {
     redirect(307, `/lms`);
   }
 
-  // Get org from parent layout if it exists and matches the slug
-  const parentData = await parent();
   const siteName = params.slug;
+  const cookieKey = `${ORG_ID_COOKIE_PREFIX}${siteName}`;
+  const cachedOrgId = cookies.get(cookieKey);
 
-  // Reuse parent org if it matches the slug, otherwise fetch it
-  const org = parentData.org?.siteName === siteName ? parentData.org : await OrgApiServer.getOrgBySiteName(siteName);
+  let orgId: string | undefined = cachedOrgId;
+
+  console.log('org sitename api request', siteName);
+  if (!orgId) {
+    const org = await OrgApiServer.getOrgBySiteName(siteName);
+    console.log('org api request', org);
+    if (org?.id) {
+      orgId = org.id;
+
+      cookies.set(cookieKey, org.id, {
+        path: '/',
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        sameSite: 'lax',
+        httpOnly: false // Allow client-side access if needed
+      });
+    }
+  }
 
   return {
     orgName: siteName,
-    org
+    orgId
   };
 };

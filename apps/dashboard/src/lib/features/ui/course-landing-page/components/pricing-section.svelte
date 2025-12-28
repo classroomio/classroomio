@@ -6,7 +6,7 @@
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
   import { sanitizeHtml } from '@cio/ui/tools/sanitize';
-  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
+  import { HTMLRender } from '$features/ui';
   import PaymentModal from './payment-modal.svelte';
   import type { Course } from '$lib/utils/types';
   import { ROLE } from '@cio/utils/constants';
@@ -185,7 +185,7 @@
     <!-- Gift Container -->
     {#if courseData?.metadata?.reward?.show}
       <div class="flex flex-col items-center border-b border-t border-gray-300 p-10">
-        <HtmlRender>{@html sanitizeHtml(get(courseData, 'metadata.reward.description', ''))}</HtmlRender>
+        <HTMLRender>{@html sanitizeHtml(get(courseData, 'metadata.reward.description', ''))}</HTMLRender>
       </div>
     {/if}
   </aside>

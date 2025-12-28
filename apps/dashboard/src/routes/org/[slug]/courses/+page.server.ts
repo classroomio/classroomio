@@ -1,18 +1,15 @@
 import { classroomio, getApiHeaders } from '$lib/utils/services/api';
 
 export const load = async ({ parent, locals, cookies }) => {
-  const { org } = await parent();
+  const { orgId } = await parent();
 
-  if (!org?.id || !locals.user?.id) {
+  if (!orgId || !locals.user?.id) {
     return {
       courses: []
     };
   }
 
-  const coursesResponse = await classroomio.organization.courses.$get(
-    { query: { siteName: org.siteName } },
-    getApiHeaders(cookies, org.id)
-  );
+  const coursesResponse = await classroomio.organization.courses.$get({}, getApiHeaders(cookies, orgId));
 
   const coursesData = await coursesResponse.json();
   const courses = coursesData.success ? coursesData.data : [];

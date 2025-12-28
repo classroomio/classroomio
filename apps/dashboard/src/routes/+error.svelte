@@ -2,46 +2,32 @@
   import { goto } from '$app/navigation';
   import { browser } from '$app/environment';
   import { page } from '$app/state';
-  import { globalStore } from '$lib/utils/store/app';
-  import { ErrorIcon } from '$features/ui/icons';
+  import { Button } from '@cio/ui/base/button';
+  import { Empty } from '@cio/ui/custom/empty';
+  import HeartCrack from '@lucide/svelte/icons/heart-crack';
 
   if (page.status == 404 && browser) {
     goto('/404');
   }
-  console.error(page.error?.message);
+
+  // TODO: Add error tracking here
+  console.error('error message', page.error?.message);
 </script>
 
 <svelte:head>
   <title>{page.status}</title>
 </svelte:head>
 
-<div
-  class="error-container m-auto flex h-full flex-col-reverse items-center justify-center py-10 md:flex-col-reverse lg:flex-row dark:bg-black"
+<Empty
+  title="Something unexpected occured."
+  description="Don't worry, your learning is safe. It isn't your fault, it is ours. We have gotten the error notification and will push a fix ASAP. In the meantime, take a short break and come back a bit later."
+  icon={HeartCrack}
+  variant="page"
+  layout="full-page"
+  showLogo={true}
 >
-  <div class="p-2 md:w-full lg:w-2/4">
-    <h2 class="w-full text-lg font-medium lg:text-3xl lg:font-normal">Something unexpected occured.</h2>
-    <p class="my-6 w-full text-base font-normal text-gray-600 dark:text-white">
-      Don't worry, your learning is safe. It isn't your fault, it is ours. We have gotten the error notification and
-      will push a fix ASAP. In the meantime, take a short break and come back a bit later.
-    </p>
-    <a
-      class="bg-primary-700 hover:bg-primary-900 mt-3 rounded-xl px-9 py-3 text-white transition-all hover:no-underline"
-      href="/">Go Home</a
-    >
+  <div class="flex gap-2">
+    <Button href="https://classroomio.com/tools" variant="secondary">Try Free tools</Button>
+    <Button href="/">Go Home</Button>
   </div>
-
-  <div class="flex w-72 items-center justify-center lg:w-2/4">
-    <!-- to check if it's in dark mode so as to render the appropriate svg -->
-    {#if $globalStore.isDark}
-      <ErrorIcon size="{16}DarkMode" />
-    {:else}
-      <ErrorIcon size={16} />
-    {/if}
-  </div>
-</div>
-
-<style>
-  .error-container {
-    max-width: 964px;
-  }
-</style>
+</Empty>

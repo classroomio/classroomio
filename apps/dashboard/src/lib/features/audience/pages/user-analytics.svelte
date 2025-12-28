@@ -47,6 +47,8 @@
     userAnalytics?.courses?.filter((course) => course.lessons_count !== course.lessons_completed)?.length
   );
 
+  let courseFilter = $state('all');
+
   let filteredCourses = $derived(
     userAnalytics?.courses?.filter((course) => {
       if (courseFilter === 'all') {
@@ -98,7 +100,7 @@
           <Badge
             type={courseFilter === 'incomplete' ? 'secondary' : 'outline'}
             class="text-yellow-700 dark:text-yellow-500"
-            onclick={() => toggleCourseFilter('incomplete')}
+            onclick={() => courseFilter = 'incomplete'}
           >
             {incompleteCourses}
             {$t('analytics.incomplete')}
@@ -106,7 +108,7 @@
           <Badge
             type={courseFilter === 'completed' ? 'secondary' : 'outline'}
             class="text-green-700 dark:text-green-500"
-            onclick={() => toggleCourseFilter('completed')}
+            onclick={() => courseFilter = 'completed'}
           >
             {completedCourses}
             {$t('analytics.complete')}

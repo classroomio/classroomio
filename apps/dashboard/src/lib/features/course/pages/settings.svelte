@@ -19,8 +19,8 @@
   import Copy from '@lucide/svelte/icons/copy';
   import type { Course } from '$lib/utils/types';
   import { COURSE_TYPE } from '$lib/utils/types';
-  import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { course } from '$lib/components/Course/store';
+  import { lessons } from '$features/course/components/lesson/store/lessons';
+  import { course } from '$features/course/store';
   import { t } from '$lib/utils/functions/translations';
   import { isObject } from '$lib/utils/functions/isObject';
   import { snackbar } from '$features/ui/snackbar/store';

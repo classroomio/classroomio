@@ -1,6 +1,9 @@
-export const load = ({ params = { id: '', personId: '' } }) => {
+// Course data is loaded in +layout.server.ts
+export const load = async ({ parent, params }) => {
+  const { course, courseId } = await parent();
   return {
-    courseId: params.id,
-    personId: params.personId
+    course,
+    courseId,
+    personId: params.personId || ''
   };
 };

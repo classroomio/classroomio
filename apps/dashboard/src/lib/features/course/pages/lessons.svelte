@@ -1,17 +1,15 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import ActivateSectionsModal from '$lib/components/Course/components/Lesson/ActivateSectionsModal.svelte';
+  import ActivateSectionsModal from '$features/course/components/lesson/activate-sections-modal.svelte';
   import { Empty } from '@cio/ui/custom/empty';
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
-  import DeleteLessonConfirmation from '$lib/components/Course/components/Lesson/DeleteLessonConfirmation.svelte';
-  import LessonList from '$lib/components/Course/components/Lesson/LessonList.svelte';
-  import LessonSectionList from '$lib/components/Course/components/Lesson/LessonSectionList.svelte';
-  import NewLessonModal from '$lib/components/Course/components/Lesson/NewLessonModal.svelte';
-  import { handleAddLessonWidget } from '$lib/components/Course/components/Lesson/store';
-  import { handleDelete, lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { course } from '$lib/components/Course/store';
-  import { RoleBasedSecurity } from '$features/ui';
+  import DeleteLessonConfirmation from '$features/course/components/lesson/delete-lesson-confirmation.svelte';
+  import LessonList from '$features/course/components/lesson/lesson-list.svelte';
+  import LessonSectionList from '$features/course/components/lesson/lesson-section-list.svelte';
+  import NewLessonModal from '$features/course/components/lesson/new-lesson-modal.svelte';
+  import { handleDelete, lessons, lessonSections } from '$features/course/components/lesson/store/lessons';
+  import { course } from '$features/course/store';
   import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';
   import type { Lesson } from '$lib/utils/types';

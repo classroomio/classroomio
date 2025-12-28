@@ -7,7 +7,6 @@
   import { t } from '$lib/utils/functions/translations';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import * as Page from '@cio/ui/base/page';
-  import { CourseContainer } from '$lib/components/CourseContainer';
 
   let { data = $bindable(), children } = $props();
 
@@ -28,7 +27,7 @@
   };
 </script>
 
-<CourseContainer courseId={data.courseId}>
+
   <div class="mx-auto w-full max-w-3xl">
     <Page.Header>
       {#if data.personId}
@@ -60,4 +59,4 @@
       {/snippet}
     </Page.Body>
   </div>
-</CourseContainer>
+

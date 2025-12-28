@@ -4,15 +4,12 @@ import {
   ZCreateOrganization,
   ZGetCoursesBySiteName,
   ZGetOrgSetup,
-  ZGetOrganizationAudience,
-  ZGetOrganizationTeam,
   ZGetOrganizations,
   ZGetUserAnalytics,
   ZInviteTeamMembers,
   ZRemoveTeamMember,
   ZUpdateOrgPlan,
-  ZUpdateOrganization,
-  ZUpdateOrganizationParam
+  ZUpdateOrganization
 } from '@cio/utils/validation/organization';
 import {
   cancelOrgPlan,
@@ -23,7 +20,10 @@ import {
   getOrgTeam,
   getOrganizationCourses,
   getOrganizationsWithFilters,
+  getPublicCourses,
+  getRecommendedCourses,
   getUserAnalytics,
+  getUserEnrolledCourses,
   inviteTeamMembers,
   removeTeamMember,
   updateOrg,
@@ -65,13 +65,13 @@ export const organizationRouter = new Hono()
     }
   })
   /**
-   * GET /organization/:orgId/team
+   * GET /organization/team
    * Gets organization team members (non-students)
    * Requires authentication
    */
-  .get('/:orgId/team', authMiddleware, orgMemberMiddleware, zValidator('param', ZGetOrganizationTeam), async (c) => {
+  .get('/team', authMiddleware, orgMemberMiddleware, async (c) => {
     try {
-      const { orgId } = c.req.valid('param');
+      const orgId = c.req.header('cio-org-id');
       const team = await getOrgTeam(orgId);
 
       return c.json(
@@ -86,102 +86,85 @@ export const organizationRouter = new Hono()
     }
   })
   /**
-   * POST /organization/:orgId/team/invite
+   * POST /organization/team/invite
    * Invites team members to an organization
    * Requires authentication and admin role
    */
-  .post(
-    '/:orgId/team/invite',
-    authMiddleware,
-    orgAdminMiddleware,
-    zValidator('param', ZGetOrganizationTeam),
-    zValidator('json', ZInviteTeamMembers),
-    async (c) => {
-      try {
-        const { orgId } = c.req.valid('param');
-        const { emails, roleId } = c.req.valid('json');
+  .post('/team/invite', authMiddleware, orgAdminMiddleware, zValidator('json', ZInviteTeamMembers), async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id');
+      const { emails, roleId } = c.req.valid('json');
 
-        const members = await inviteTeamMembers(orgId, emails, roleId);
+      const members = await inviteTeamMembers(orgId, emails, roleId);
 
-        return c.json(
-          {
-            success: true,
-            data: members
-          },
-          201
-        );
-      } catch (error) {
-        return handleError(c, error, 'Failed to invite team members');
-      }
+      return c.json(
+        {
+          success: true,
+          data: members
+        },
+        201
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to invite team members');
     }
-  )
+  })
   /**
-   * DELETE /organization/:orgId/team/:memberId
+   * DELETE /organization/team/:memberId
    * Removes a team member from an organization
    * Requires authentication and admin role
    */
-  .delete(
-    '/:orgId/team/:memberId',
-    authMiddleware,
-    orgAdminMiddleware,
-    zValidator('param', ZRemoveTeamMember),
-    async (c) => {
-      try {
-        const { orgId, memberId } = c.req.valid('param');
+  .delete('/team/:memberId', authMiddleware, orgAdminMiddleware, zValidator('param', ZRemoveTeamMember), async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id');
+      const { memberId } = c.req.valid('param');
 
-        await removeTeamMember(orgId, memberId);
+      await removeTeamMember(orgId, memberId);
 
-        return c.json(
-          {
-            success: true
-          },
-          200
-        );
-      } catch (error) {
-        return handleError(c, error, 'Failed to remove team member');
-      }
+      return c.json(
+        {
+          success: true
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to remove team member');
     }
-  )
+  })
   /**
-   * GET /organization/:orgId/audience
+   * GET /organization/audience
    * Gets organization audience (students)
    * Requires authentication
    */
-  .get(
-    '/:orgId/audience',
-    authMiddleware,
-    orgMemberMiddleware,
-    zValidator('param', ZGetOrganizationAudience),
-    async (c) => {
-      try {
-        const { orgId } = c.req.valid('param');
-        const audience = await getOrgAudience(orgId);
+  .get('/audience', authMiddleware, orgMemberMiddleware, async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id');
+      const audience = await getOrgAudience(orgId);
 
-        return c.json(
-          {
-            success: true,
-            data: audience
-          },
-          200
-        );
-      } catch (error) {
-        return handleError(c, error, 'Failed to fetch organization audience');
-      }
+      return c.json(
+        {
+          success: true,
+          data: audience
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch organization audience');
     }
-  )
+  })
   /**
-   * GET /organization/:orgId/audience/:userId/analytics
+   * GET /organization/audience/:userId/analytics
    * Gets user analytics for a specific user in an organization
    * Requires authentication and organization membership
    */
   .get(
-    '/:orgId/audience/:userId/analytics',
+    '/audience/:userId/analytics',
     authMiddleware,
     orgMemberMiddleware,
     zValidator('param', ZGetUserAnalytics),
     async (c) => {
       try {
-        const { orgId, userId } = c.req.valid('param');
+        const orgId = c.req.header('cio-org-id');
+        const { userId } = c.req.valid('param');
         const analytics = await getUserAnalytics(userId, orgId);
 
         return c.json(
@@ -197,41 +180,108 @@ export const organizationRouter = new Hono()
     }
   )
   /**
-   * GET /organization/courses
-   * Gets courses by organization siteName
+   * GET /organization/courses/public
+   * Gets published courses for an organization (public landing page)
    * Query params: siteName (string)
-   * Requires authentication - filters courses based on user permissions:
-   * - Admins see all courses (published and unpublished)
-   * - Students/Teachers only see published courses they have access to
-   * - Public (no auth): only see published courses
+   * No authentication required - returns only published courses
    */
-  .get(
-    '/courses',
-    authMiddleware,
-    // TODO: Ratelimit this endpoint
-    // TODO: Add cache
-    // TODO: Add pagination
-    // TODO: Add sorting
-    zValidator('query', ZGetCoursesBySiteName),
-    async (c) => {
-      try {
-        const { siteName } = c.req.valid('query');
-        const user = c.get('user');
+  .get('/courses/public', zValidator('query', ZGetCoursesBySiteName), async (c) => {
+    try {
+      const { siteName } = c.req.valid('query');
+      const courses = await getPublicCourses(siteName);
 
-        const courses = await getOrganizationCourses(siteName, user.id);
+      return c.json(
+        {
+          success: true,
+          data: courses
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch public courses');
+    }
+  })
+  /**
+   * GET /organization/courses/enrolled
+   * Gets enrolled courses for a user in an organization (used in lms)
+   * Requires authentication and organization membership
+   */
+  .get('/courses/enrolled', authMiddleware, orgMemberMiddleware, async (c) => {
+    try {
+      const user = c.get('user');
 
+      const orgId = c.req.header('cio-org-id');
+      const result = await getUserEnrolledCourses(orgId, user.id);
+
+      return c.json(
+        {
+          success: true,
+          data: result
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch courses');
+    }
+  })
+  /**
+   * GET /organization/courses/recommended
+   * Gets recommended courses (published courses user isn't enrolled in) for a user in an organization (used in lms)
+   * Requires authentication and organization membership
+   */
+  .get('/courses/recommended', authMiddleware, orgMemberMiddleware, async (c) => {
+    try {
+      const user = c.get('user');
+
+      const orgId = c.req.header('cio-org-id');
+      const result = await getRecommendedCourses(orgId, user.id);
+
+      return c.json(
+        {
+          success: true,
+          data: result
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch recommended courses');
+    }
+  })
+  /**
+   * GET /organization/courses
+   * Gets courses for an organization with role-based filtering (used in dashboard)
+   * Requires authentication and organization membership
+   */
+  .get('/courses', authMiddleware, orgMemberMiddleware, async (c) => {
+    try {
+      const user = c.get('user');
+      const orgId = c.get('orgId');
+      const userRole = c.get('userRole');
+
+      if (!orgId || userRole === null) {
         return c.json(
           {
-            success: true,
-            data: courses
+            success: false,
+            error: 'Organization context not available',
+            code: 'ORG_CONTEXT_MISSING'
           },
-          200
+          500
         );
-      } catch (error) {
-        return handleError(c, error, 'Failed to fetch courses');
       }
+
+      const result = await getOrganizationCourses(orgId, user.id, userRole);
+
+      return c.json(
+        {
+          success: true,
+          data: result
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch courses');
     }
-  )
+  })
   /**
    * GET /organization/setup
    * Gets setup data for an organization (courses, lessons, exercises, org info)
@@ -340,36 +390,28 @@ export const organizationRouter = new Hono()
     }
   })
   /**
-   * PUT /organization/:orgId
+   * PUT /organization
    * Updates an organization (name, avatarUrl)
    * Requires authentication
    */
-  .put(
-    '/:orgId',
-    authMiddleware,
-    orgAdminMiddleware,
-    zValidator('param', ZUpdateOrganizationParam),
-    zValidator('json', ZUpdateOrganization),
-    async (c) => {
-      try {
-        console.log('updateOrg');
-        console.log(c.req.valid('param'));
-        console.log(c.req.valid('json'));
-        const { orgId } = c.req.valid('param');
+  .put('/', authMiddleware, orgAdminMiddleware, zValidator('json', ZUpdateOrganization), async (c) => {
+    try {
+      console.log('updateOrg');
+      console.log(c.req.valid('json'));
+      const orgId = c.req.header('cio-org-id');
 
-        const data = c.req.valid('json') as Partial<TOrganization>;
+      const data = c.req.valid('json') as Partial<TOrganization>;
 
-        const organization = await updateOrg(orgId, data);
+      const organization = await updateOrg(orgId, data);
 
-        return c.json(
-          {
-            success: true,
-            data: organization
-          },
-          200
-        );
-      } catch (error) {
-        return handleError(c, error, 'Failed to update organization');
-      }
+      return c.json(
+        {
+          success: true,
+          data: organization
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to update organization');
     }
-  );
+  });

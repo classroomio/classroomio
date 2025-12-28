@@ -11,11 +11,11 @@
   import { t } from '$lib/utils/functions/translations';
   import { attendance } from '$lib/utils/store/attendance';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { course, group } from '$lib/components/Course/store';
+  import { course, group } from '$features/course/store';
   import { takeAttendance } from '$lib/utils/services/attendance';
-  import { getLectureNo } from '$lib/components/Course/function.js';
-  import type { GroupPerson, Lesson } from '$lib/utils/types/index';
-  import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { getLectureNo } from '$features/course/utils/functions';
+  import type { GroupPerson, Lesson } from '$lib/utils/types';
+  import { lessons } from '$features/course/components/lesson/store/lessons';
 
   import { Empty } from '@cio/ui/custom/empty';
   import UserXIcon from '@lucide/svelte/icons/user-x';

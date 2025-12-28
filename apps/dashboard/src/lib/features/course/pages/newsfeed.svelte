@@ -1,11 +1,13 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import NewFeedModal from '$lib/components/Course/components/NewsFeed/NewFeedModal.svelte';
-  import NewsFeedCard from '$lib/components/Course/components/NewsFeed/NewsFeedCard.svelte';
-  import NewsFeedLoader from '$lib/components/Course/components/NewsFeed/NewsFeedLoader.svelte';
-  import { newsFeed } from '$lib/components/Course/components/NewsFeed/store';
-  import { group } from '$lib/components/Course/store';
+  import {
+    NewsFeedLoader,
+    NewsFeedCard,
+    NewFeedModal
+  } from '$features/course/components/newsfeed';
+  import { newsFeed } from '$lib/features/course/components/newsfeed/store';
+  import { group } from '$features/course/store';
   import { RoleBasedSecurity } from '$features/ui';
   import { snackbar } from '$features/ui/snackbar/store';
   import { supabase } from '$lib/utils/functions/supabase';

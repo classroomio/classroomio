@@ -1,4 +1,4 @@
-import { lessonDocUpload, lessonVideoUpload } from '$lib/components/Course/components/Lesson/store/lessons';
+import { lessonDocUpload, lessonVideoUpload } from '$features/course/components/lesson/store/lessons';
 
 import axios from 'axios';
 import { classroomio } from '$lib/utils/services/api';

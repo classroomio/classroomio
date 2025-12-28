@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { Component } from 'svelte';
-  import get from 'lodash/get';
   import { resolve } from '$app/paths';
   import { Badge } from '@cio/ui/base/badge';
   import UserIcon from '@lucide/svelte/icons/user';
@@ -14,23 +13,22 @@
   import { Progress } from '@cio/ui/base/progress';
 
   import { Image } from '$features/ui';
-  import { COURSE_TYPE, type Course } from '$lib/utils/types';
+  import { COURSE_TYPE } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { calcCourseDiscount } from '$lib/utils/functions/course';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import { calcProgressRate } from '$features/course/utils/functions';
   import CardDropdown from './card-dropdown.svelte';
+  import type { OrgCourses, UserEnrolledCourses } from '$features/course/types';
 
   export interface Props {
-    course: Course;
+    course: OrgCourses[number] | UserEnrolledCourses[number];
     isOnLandingPage?: boolean;
     isLMS?: boolean;
     isExplore?: boolean;
   }
 
   let { course, isOnLandingPage, isLMS, isExplore }: Props = $props();
-
-  $inspect('isLMS', isLMS);
 
   let {
     bannerImage,
@@ -56,16 +54,16 @@
     title: course.title,
     type: course.type,
     description: course.description,
-    isPublished: course.is_published,
+    isPublished: course.isPublished,
     pricingData: {
       cost: course.cost,
       discount: course.metadata?.discount || 0,
       showDiscount: course.metadata?.showDiscount || false
     },
     currency: course.currency,
-    totalLessons: get(course, 'lessons[0].count', 0),
-    progressRate: calcProgressRate(course.progress_rate, course.total_lessons),
-    totalStudents: course.total_students
+    totalLessons: course.lessonCount,
+    progressRate: calcProgressRate(('progressRate' in course ? course.progressRate : 0), course.lessonCount),
+    totalStudents: ('totalStudents' in course ? course.totalStudents : 0)
   });
 
   let formatter = $derived(getCurrencyFormatter(currency));

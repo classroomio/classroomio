@@ -1,6 +1,5 @@
 <script lang="ts">
   import { SubmissionsPage } from '$features/course/pages';
-  import { CourseContainer } from '$lib/components/CourseContainer';
   import { RoleBasedSecurity } from '$features/ui';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
@@ -12,7 +11,7 @@
   <title>Submissions - ClassroomIO</title>
 </svelte:head>
 
-<CourseContainer courseId={data.courseId}>
+
   <RoleBasedSecurity allowedRoles={[1, 2]}>
     <Page.Header>
       <Page.HeaderContent>
@@ -28,4 +27,4 @@
       {/snippet}
     </Page.Body>
   </RoleBasedSecurity>
-</CourseContainer>
+

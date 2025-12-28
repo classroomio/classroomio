@@ -17,21 +17,20 @@
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { course, group } from '$lib/components/Course/store';
+  import { course, group } from '$features/course/store';
   import { LANGUAGES } from '$lib/utils/constants/translation';
-  import { getGroupMemberId } from '$lib/components/Course/function';
-  import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
+  import { getGroupMemberId } from '$features/course/utils/functions';
+  import { getIsLessonComplete } from '$features/course/components/lesson/functions';
   import { COURSE_VERSION, type Lesson, type LessonCompletion } from '$lib/utils/types';
-  import LessonVersionHistory from '$lib/components/Course/components/Lesson/LessonVersionHistory.svelte';
+  import LessonVersionHistory from '$features/course/components/lesson/lesson-version-history.svelte';
   import { checkExercisesComplete, fetchLesson, updateLessonCompletion } from '$lib/utils/services/courses';
-  import { lesson, setLesson, lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { lesson, setLesson, lessons, lessonSections } from '$features/course/components/lesson/store/lessons';
 
   import { IconButton } from '@cio/ui/custom/icon-button';
   import * as Page from '@cio/ui/base/page';
-  import { CourseContainer } from '$lib/components/CourseContainer';
   import { RoleBasedSecurity } from '$features/ui';
-  import Exercises from '$lib/components/Course/components/Lesson/Exercises/index.svelte';
-  import Materials from '$lib/components/Course/components/Lesson/Materials/index.svelte';
+  import Exercises from '$features/course/components/lesson/exercises/index.svelte';
+  import Materials from '$lib/features/course/components/lesson/materials/index.svelte';
 
   let { data = $bindable() } = $props();
 
@@ -201,12 +200,7 @@
   const isNextDisabled = $derived(isNextOrPrevDisabled(data.lessonId, false));
 </script>
 
-<CourseContainer
-  {path}
-  containerClass="relative"
-  courseId={data.courseId}
-  isExercisePage={!data.isMaterialsTabActive && !!data.exerciseId}
->
+<div>
   <Page.Header>
     <Page.HeaderContent>
       <Page.Title>
@@ -333,7 +327,7 @@
       on:restore={refetchDataAfterVersionRestore}
     />
   {/if}
-</CourseContainer>
+
 
 <style>
   @media screen and (min-width: 1023px) {

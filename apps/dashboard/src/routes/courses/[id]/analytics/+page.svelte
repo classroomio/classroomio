@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { CourseContainer } from '$lib/components/CourseContainer';
   import { AnalyticsPage } from '$features/course/pages';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
@@ -11,7 +10,7 @@
   <title>Analytics - ClassroomIO</title>
 </svelte:head>
 
-<CourseContainer courseId={data.courseId}>
+
   <Page.Header>
     <Page.HeaderContent>
       <Page.Title>
@@ -24,4 +23,4 @@
       <AnalyticsPage courseId={data.courseId} />
     {/snippet}
   </Page.Body>
-</CourseContainer>
+

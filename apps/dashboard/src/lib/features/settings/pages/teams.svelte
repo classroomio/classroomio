@@ -38,7 +38,7 @@
     }
 
     errorMessage = '';
-    await orgApi.inviteTeamMembers($currentOrg.id, emails, parseInt(role));
+    await orgApi.inviteTeamMembers(emails, parseInt(role));
 
     if (orgApi.success) {
       snackbar.success('snackbar.team_members.invite_sent');
@@ -61,7 +61,7 @@
     }
 
     isRemoving = id;
-    await orgApi.removeTeamMember($currentOrg.id, id);
+    await orgApi.removeTeamMember(id);
 
     if (orgApi.success) {
       snackbar.success('snackbar.team_members.remove_success');
@@ -77,7 +77,9 @@
   };
 
   $effect(() => {
-    orgApi.getOrgTeam($currentOrg.id);
+    if (!$currentOrg) return;
+
+    orgApi.getOrgTeam();
   });
 </script>
 

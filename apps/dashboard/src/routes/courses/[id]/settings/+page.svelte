@@ -2,7 +2,6 @@
   import { CourseSettingsPage } from '$features/course/pages';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
-  import { CourseContainer } from '$lib/components/CourseContainer';
   import { Button } from '@cio/ui/base/button';
 
   let { data } = $props();
@@ -24,7 +23,7 @@
   <title>Settings - ClassroomIO</title>
 </svelte:head>
 
-<CourseContainer courseId={data.courseId}>
+
   <div class="mx-auto w-full max-w-3xl">
     <Page.Header>
       <Page.HeaderContent>
@@ -44,4 +43,4 @@
       {/snippet}
     </Page.Body>
   </div>
-</CourseContainer>
+

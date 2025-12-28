@@ -10,24 +10,6 @@ export const ZGetOrganizations = z.object({
 
 export type TGetOrganizations = z.infer<typeof ZGetOrganizations>;
 
-export const ZGetOrganizationTeam = z.object({
-  orgId: z.uuid()
-});
-
-export type TGetOrganizationTeam = z.infer<typeof ZGetOrganizationTeam>;
-
-export const ZUpdateOrganizationParam = z.object({
-  orgId: z.uuid()
-});
-
-export type TUpdateOrganizationParam = z.infer<typeof ZUpdateOrganizationParam>;
-
-export const ZGetOrganizationAudience = z.object({
-  orgId: z.uuid()
-});
-
-export type TGetOrganizationAudience = z.infer<typeof ZGetOrganizationAudience>;
-
 export const ZGetCoursesBySiteName = z.object({
   siteName: z.string().min(1)
 });
@@ -111,14 +93,12 @@ export const ZInviteTeamMembers = z.object({
 export type TInviteTeamMembers = z.infer<typeof ZInviteTeamMembers>;
 
 export const ZRemoveTeamMember = z.object({
-  orgId: z.uuid(),
-  memberId: z.number().int().positive()
+  memberId: z.coerce.number().int().positive()
 });
 
 export type TRemoveTeamMember = z.infer<typeof ZRemoveTeamMember>;
 
 export const ZGetUserAnalytics = z.object({
-  orgId: z.uuid(),
   userId: z.uuid()
 });
 

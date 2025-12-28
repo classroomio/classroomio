@@ -1,17 +1,17 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { Button } from '@cio/ui/base/button';
-  import { courses } from '$features/course/utils/store';
   import { t } from '$lib/utils/functions/translations';
   import { Empty } from '@cio/ui/custom/empty';
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
+  import { coursesApi } from '$features/course/api';
 
   const gotoCourse = (id: string | undefined) => {
     if (!id) return;
     goto(`/courses/${id}/lessons?next=true`);
   };
 
-  let last3Courses = $derived($courses.length > 0 ? $courses.slice(0, 3) : []);
+  let last3Courses = $derived(coursesApi.enrolledCourses.length > 0 ? coursesApi.enrolledCourses.slice(0, 3) : []);
 </script>
 
 <section class="h-full">
@@ -43,7 +43,7 @@
             </span>
             <div class="relative h-1 w-full bg-[#EAEAEA]">
               <div
-                style="width: {Math.round(((course?.progress_rate ?? 0) / (course?.total_lessons ?? 0)) * 100) || 0}%"
+                style="width: {Math.round(((course?.progressRate ?? 0) / (course?.lessonCount ?? 0)) * 100) || 0}%"
                 class="bg-primary-700 absolute left-0 top-0 h-full"
               ></div>
             </div>

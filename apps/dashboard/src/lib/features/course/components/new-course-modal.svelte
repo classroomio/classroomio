@@ -3,7 +3,6 @@
 
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import { validateForm } from '../utils/functions';
   import { courses, createCourseModal } from '../utils/store';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
@@ -58,12 +57,25 @@
     }));
   }
 
+  function validateForm() {
+    if (!$createCourseModal.title) {
+      errors.title = $t('courses.new_course_modal.course_name_required');
+      return false;
+    }
+
+    if (!$createCourseModal.description) {
+      errors.description = $t('courses.new_course_modal.short_description_required');
+      return false;
+    }
+
+    return true;
+  }
+
   async function createCourse() {
     isLoading = true;
-    const { hasError, fieldErrors } = validateForm($createCourseModal);
 
-    errors = fieldErrors;
-    if (hasError) return;
+    const isValid = validateForm();
+    if (!isValid) return;
 
     const { title, description } = $createCourseModal;
     // 1. Create group

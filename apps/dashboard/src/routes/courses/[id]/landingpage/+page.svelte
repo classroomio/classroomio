@@ -1,9 +1,8 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
-  import { course } from '$lib/components/Course/store';
+  import { course } from '$features/course/store';
   import type { Course } from '$lib/utils/types';
-  import { lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { CourseContainer } from '$lib/components/CourseContainer';
+  import { lessons, lessonSections } from '$features/course/components/lesson/store/lessons';
 
   import { CourseLandingPage } from '$features/ui';
   import Editor from '$features/ui/course-landing-page/components/editor/editor.svelte';
@@ -23,7 +22,7 @@
   }
 </script>
 
-<CourseContainer {courseId} renderOnlyChildren={true}>
+
   <div
     class="absolute inset-0 z-50 flex bg-white"
     in:fly={{ y: 500, duration: 500 }}
@@ -34,7 +33,7 @@
       <CourseLandingPage bind:courseData editMode={true} />
     </div>
   </div>
-</CourseContainer>
+
 
 <style>
   .rightBar {

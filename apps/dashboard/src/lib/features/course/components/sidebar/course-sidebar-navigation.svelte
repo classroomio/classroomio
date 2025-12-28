@@ -23,15 +23,15 @@
 
   import { NAV_IDS } from './constants';
   import { profile } from '$lib/utils/store/user';
-  import { course } from '$lib/components/Course/store';
+  import { course } from '$features/course/store';
   import { t } from '$lib/utils/functions/translations';
-  import { handleAddLessonWidget } from '$lib/components/Course/components/Lesson/store';
-  import { getIsLessonComplete } from '$lib/components/Course/components/Lesson/functions';
+  import { handleAddLessonWidget } from '$features/course/components/lesson/store';
+  import { getIsLessonComplete } from '$features/course/components/lesson/functions';
   import { currentOrg, isFreePlan, currentOrgPath } from '$lib/utils/store/org';
   import { globalStore } from '$lib/utils/store/app';
   import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
-  import { lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { getNavItemRoute, getLessonsRoute, getLectureNo } from '$lib/components/Course/function';
+  import { lessons, lessonSections } from '$features/course/components/lesson/store/lessons';
+  import { getNavItemRoute, getLessonsRoute, getLectureNo } from '$features/course/utils/functions';
 
   import { Chip } from '@cio/ui/custom/chip';
   import { CircleCheckIcon } from '$features/ui/icons';

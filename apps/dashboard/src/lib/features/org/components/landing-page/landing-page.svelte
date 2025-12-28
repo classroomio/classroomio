@@ -28,7 +28,6 @@
   import type { AccountOrg } from '$features/app/types';
   import { orgApi } from '$features/org/api/org.svelte';
   import { validateEmail } from '$lib/utils/functions/validateEmail';
-  import { courseMetaDeta, courses } from '$features/course/utils/store';
   import { orgLandingpageValidation } from '$lib/utils/functions/validator';
 
   interface Props {
@@ -93,26 +92,11 @@
     return youtubeRegex.test(link.trim());
   }
 
-  function loadData(siteName) {
-    if (!siteName) return;
-
-    untrack(async () => {
-      try {
-        $courseMetaDeta.isLoading = true;
-        await orgApi.getCourseBySiteName(siteName);
-        if (orgApi.error) {
-          console.error('Error fetching courses', orgApi.error);
-          courses.set([]);
-        } else {
-          courses.set(orgApi.orgSiteCourses);
-        }
-        $courseMetaDeta.isLoading = false;
-      } catch (error) {
-        console.log('error', error);
-        $courseMetaDeta.isLoading = false;
-      }
-    });
-  }
+  $effect(() => {
+    if (!orgSiteName) return;
+    
+    orgApi.getPublicCoursesBySiteName(orgSiteName);
+  });
 
   function initPlyr(_player: any, _video: string | undefined) {
     if (!player) return;
@@ -153,9 +137,6 @@
     return `url('${image || defaultImg}')`;
   }
 
-  $effect(() => {
-    loadData(orgSiteName);
-  });
   $effect(() => {
     initPlyr(player, $landingPageSettings.header?.banner?.video);
   });
@@ -304,14 +285,14 @@
             </p>
           </div>
         </div>
-        {#if $courseMetaDeta.isLoading}
+        {#if orgApi.isFetchingOrgPublicCourses}
           <div class="cards-container mx-2 my-4">
             <CourseCardLoader />
             <CourseCardLoader />
             <CourseCardLoader />
           </div>
-        {:else if $courses.length > 0}
-          <CourseCardList courses={$courses.slice(0, viewAll ? $courses.length : 3)} isOnLandingPage={true} />
+        {:else if orgApi.publicCourses.length > 0}
+          <CourseCardList courses={orgApi.publicCourses.slice(0, viewAll ? orgApi.publicCourses.length : 3)} isOnLandingPage={true} />
         {:else}
           <Empty
             icon={CoursesEmptyIcon}
@@ -321,7 +302,7 @@
           />
         {/if}
 
-        {#if $courses.length > 3}
+        {#if orgApi.publicCourses.length > 3}
           <div class="mt-3 flex w-full justify-center">
             <Button.Root variant="outline" onclick={() => (viewAll = !viewAll)} class="w-fit px-10 py-5">
               {viewAll ? $t('course.navItem.landing_page.view_less') : $t('course.navItem.landing_page.view_all')}

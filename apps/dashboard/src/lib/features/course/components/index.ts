@@ -7,3 +7,4 @@ export { default as CreateCourseButton } from './create-course-button.svelte';
 export { default as CourseList } from './list.svelte';
 export { default as CourseListLoader } from './list-loader.svelte';
 export { default as NewCourseModal } from './new-course-modal.svelte';
+export { default as QuestionContainer } from './question-container.svelte';

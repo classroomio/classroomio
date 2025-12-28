@@ -19,26 +19,26 @@
   } from '$features/course/components';
 
   import { DeleteModal } from '$features/ui';
-  import type { Course } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { deleteCourse } from '$lib/utils/services/courses';
   import {
     deleteCourseModal,
     deleteCourseModalInitialState,
-    courses as coursesStore,
     courseMetaDeta
   } from '../utils/store';
   import { browser } from '$app/environment';
+  import type { OrgCourses, UserEnrolledCourses } from '$features/course/types';
 
   interface Props {
-    courses?: Course[];
+    courses?: OrgCourses | UserEnrolledCourses;
     emptyTitle?: string;
     emptyDescription?: string;
     isExplore?: boolean;
     isLMS?: boolean;
     searchValue?: string;
     selectedId?: string;
+    isLoading?: boolean;
   }
 
   let {
@@ -48,7 +48,8 @@
     isExplore = false,
     isLMS = false,
     searchValue = $bindable(''),
-    selectedId = $bindable('0')
+    selectedId = $bindable('0'),
+    isLoading = false
   }: Props = $props();
 
   const filterOptions = $derived([
@@ -76,8 +77,7 @@
     try {
       await deleteCourse($deleteCourseModal.id);
 
-      // Remove the course from the courses store
-      $coursesStore = $coursesStore.filter((course) => course.id !== $deleteCourseModal.id);
+      // TODO: Remove the course from the courses store
 
       // Show success message
       snackbar.success('snackbar.course_deleted');
@@ -128,8 +128,8 @@
 </Page.BodyHeader>
 
 <div class="mx-auto w-full flex-1">
-  {#if $courseMetaDeta.isLoading}
-    <section class={`${$courseMetaDeta.isLoading || courses ? 'cards-container' : ''} `}>
+  {#if isLoading}
+    <section class={`${isLoading || courses ? 'cards-container' : ''} `}>
       <CourseCardLoader />
       <CourseCardLoader />
       <CourseCardLoader />
@@ -161,9 +161,9 @@
               title={courseData.title}
               type={$t(`course.navItem.settings.${courseData.type.toLowerCase()}`)}
               description={courseData.description}
-              isPublished={courseData.is_published}
-              totalLessons={courseData.total_lessons}
-              totalStudents={courseData.total_students}
+              isPublished={courseData.isPublished}
+              totalLessons={courseData.lessonCount}
+              totalStudents={('totalStudents' in courseData ? courseData.totalStudents : 0)}
             />
           {/each}
         </Table.Body>

@@ -1,15 +1,14 @@
 <script lang="ts">
   import { LessonsPage } from '$features/course/pages';
-  import { CourseContainer } from '$lib/components/CourseContainer';
   import { Button } from '@cio/ui/base/button';
   import { RoleBasedSecurity } from '$features/ui';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';
   import { COURSE_VERSION } from '$lib/utils/types';
-  import { getGreeting } from '$lib/utils/functions/date.js';
-  import { course } from '$lib/components/Course/store';
-  import { handleAddLessonWidget } from '$lib/components/Course/components/Lesson/store';
+  import { getGreeting } from '$lib/utils/functions/date';
+  import { course } from '$features/course/store';
+  import { handleAddLessonWidget } from '$features/course/components/lesson/store';
 
   let { data } = $props();
 
@@ -27,8 +26,7 @@
   <title>Lessons - ClassroomIO</title>
 </svelte:head>
 
-<CourseContainer courseId={data.courseId}>
-  <Page.Header>
+<Page.Header>
     <Page.HeaderContent>
       <Page.Title>
         {$t(getGreeting())}
@@ -59,4 +57,3 @@
       <LessonsPage courseId={data.courseId} />
     {/snippet}
   </Page.Body>
-</CourseContainer>

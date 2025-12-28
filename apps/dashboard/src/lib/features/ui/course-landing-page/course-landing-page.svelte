@@ -7,14 +7,14 @@
   import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import PlayIcon from '@lucide/svelte/icons/play';
 
-  import { getLectureNo } from '$lib/components/Course/function';
+  import { getLectureNo } from '$features/course/utils/functions';
   import { currentOrg } from '$lib/utils/store/org';
   import { NAV_ITEM_KEY, NAV_ITEMS } from './constants';
   import { t } from '$lib/utils/functions/translations';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { handleOpenWidget, reviewsModalStore } from './store';
   import { COURSE_VERSION, type Course } from '$lib/utils/types';
-  import { course, sortLesson } from '$lib/components/Course/store';
+  import { course, sortLesson } from '$features/course/store';
   import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
   import { getExerciseCount, getLessonSections, getTotalLessons, filterNavItems } from './utils';
   import { Button } from '@cio/ui/base/button';
@@ -28,7 +28,7 @@
   import NavSection from './components/nav-section.svelte';
   import { shortenName } from '$lib/utils/functions/string';
   import SectionsDisplay from './components/sections-display.svelte';
-  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
+  import { HTMLRender } from '$features/ui';
   import { observeIntersection } from './components/intersection-observer';
 
   interface Props {
@@ -217,7 +217,7 @@
             </h3>
 
             <ul class="list font-light">
-              <HtmlRender>{@html sanitizeHtml(get(courseData, 'metadata.requirements', ''))}</HtmlRender>
+              <HTMLRender>{@html sanitizeHtml(get(courseData, 'metadata.requirements', ''))}</HTMLRender>
             </ul>
           </NavSection>
         {/if}
@@ -229,9 +229,9 @@
               {$t('course.navItem.landing_page.description')}
             </h3>
 
-            <HtmlRender className="dark:text-white text-sm font-light">
+            <HTMLRender className="dark:text-white text-sm font-light">
               {@html sanitizeHtml(get(courseData, 'metadata.description', ''))}
-            </HtmlRender>
+            </HTMLRender>
           </NavSection>
         {/if}
 
@@ -240,7 +240,7 @@
           <NavSection id="goals">
             <h3 class="mb-3 mt-0 text-2xl">{$t('course.navItem.landing_page.learn')}</h3>
             <ul class="list font-light">
-              <HtmlRender>{@html sanitizeHtml(get(courseData, 'metadata.goals', ''))}</HtmlRender>
+              <HTMLRender>{@html sanitizeHtml(get(courseData, 'metadata.goals', ''))}</HTMLRender>
             </ul>
           </NavSection>
         {/if}

@@ -4,7 +4,7 @@
   // // import { useCompletion } from 'ai/svelte';
   // import WandSparklesIcon from '@lucide/svelte/icons/wand-sparkles';
   // import { IconButton } from '$lib/components/IconButton';
-  // import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
+  // import { HTMLRender } from '$features/ui';
   // import { t } from '$lib/utils/functions/translations';
 
   // interface Props {
@@ -85,7 +85,7 @@
               class="my-1 h-[82%] w-full overflow-y-auto bg-white p-2 text-start text-sm dark:bg-neutral-700"
             >
               {#if isHTML}
-                <HtmlRender>{plainText}</HtmlRender>
+                <HTMLRender>{plainText}</HTMLRender>
               {:else}
                 <p class="font-normal">
                   {plainText}

@@ -1,11 +1,13 @@
-export const load = ({ params }) => {
+export const load = async ({ params, parent }) => {
+  const { course, courseId: layoutCourseId } = await parent();
   const { id: courseId, lessonParams = '' } = params;
   const splitparams = lessonParams.split('/');
 
   const [lessonId, exerciseRouteName, exerciseId] = splitparams;
 
   return {
-    courseId,
+    course,
+    courseId: courseId || layoutCourseId,
     lessonId,
     exerciseRouteName,
     exerciseId,

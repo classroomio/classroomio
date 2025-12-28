@@ -2,25 +2,42 @@ import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
   CommunityQuestionSuccess,
   CommunityQuestionsSuccess,
-  CreateCommentResponse,
-  CreateCommunityQuestionResponse,
-  UpdateQuestionResponse,
-  UpvotePostResponse
+  CreateCommentRequest,
+  CreateCommunityQuestionRequest,
+  UpdateQuestionRequest,
+  UpvotePostRequest
 } from '../utils/types';
 import { ZCommunityComment, ZCommunityQuestionUpdate, ZCreateCommunityQuestion } from '@cio/utils/validation/community';
 import { currentOrgPath, currentOrg as currentOrgStore } from '$lib/utils/store/org';
 
-import type { Course } from '$lib/utils/types';
 import type { TCreateCommunityQuestion } from '@cio/utils/validation/community';
-import { courses as coursesStore } from '$features/course/utils/store';
+import { coursesApi } from '$features/course/api/courses.svelte';
 import { currentCommunityQuestion } from '../utils/store';
-import { fetchCourses } from '$lib/utils/services/courses';
 import generateSlug from '$lib/utils/functions/generateSlug';
 import { get } from 'svelte/store';
+import { globalStore } from '$lib/utils/store/app';
 import { goto } from '$app/navigation';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { profile as profileStore } from '$lib/utils/store/user';
+import { resolve } from '$app/paths';
 import { snackbar } from '$features/ui/snackbar/store';
+
+type EditContent = {
+  title: string;
+  body: string;
+  courseId: string;
+};
+type DeleteCommentState = {
+  shouldDelete: boolean;
+  commentId: string;
+};
+type Answer = {
+  id: number;
+  body: string;
+  votes: number;
+  createdAt: string;
+  authorId: number;
+};
 
 /**
  * API class for Organization Community
@@ -28,35 +45,22 @@ import { snackbar } from '$features/ui/snackbar/store';
 class CommunityApi extends BaseApiWithErrors {
   questions: CommunityQuestionsSuccess['data'] = $state([]);
   question: CommunityQuestionSuccess['data'] | null = $state(null);
-  courses = $state<Course[]>([]);
-  private coursesFetched = $state(false);
+  courses = $state<{ title: string; id: string }[]>([]);
   isEditMode = $state(false);
   isEditing = $state(false);
   isCommenting = $state(false);
-  editContent = $state<{
-    title: string;
-    body: string;
-    courseId: string;
-  }>({
+  editContent = $state<EditContent>({
     title: '',
     body: '',
     courseId: ''
   });
+
   comment = $state('');
-  deleteCommentState = $state<{
-    shouldDelete: boolean;
-    commentId: string;
-  }>({
+  deleteCommentState = $state<DeleteCommentState>({
     shouldDelete: false,
     commentId: ''
   });
-  answer = $state<{
-    id: number;
-    body: string;
-    votes: number;
-    createdAt: string;
-    authorId: number;
-  }>({
+  answer = $state<Answer>({
     body: '',
     votes: 0,
     createdAt: '',
@@ -80,7 +84,7 @@ class CommunityApi extends BaseApiWithErrors {
       onError: (result) => {
         console.error('Error loading community questions:', result);
         const basePath = isLMS ? '/lms' : get(currentOrgPath);
-        goto(basePath);
+        goto(resolve(basePath, {}));
       }
     });
   }
@@ -105,7 +109,7 @@ class CommunityApi extends BaseApiWithErrors {
       onError: (result) => {
         console.error(`[${isLMS ? 'LMS' : 'ORG'}] Error loading community`, result);
         const basePath = isLMS ? '/lms' : get(currentOrgPath);
-        goto(basePath);
+        goto(resolve(basePath, {}));
       }
     });
   }
@@ -132,7 +136,7 @@ class CommunityApi extends BaseApiWithErrors {
       return;
     }
 
-    await this.execute<CreateCommunityQuestionResponse>({
+    await this.execute<CreateCommunityQuestionRequest>({
       requestFn: () =>
         classroomio.community.$post({
           json: {
@@ -155,7 +159,7 @@ class CommunityApi extends BaseApiWithErrors {
 
         // Navigate to the question based on context
         const basePath = isLMS ? '/lms' : get(currentOrgPath);
-        goto(`${basePath}/community/${questionSlug}`);
+        goto(resolve(`${basePath}/community/${questionSlug}`, {}));
 
         // Mark as successful
         this.success = true;
@@ -198,7 +202,7 @@ class CommunityApi extends BaseApiWithErrors {
     }
 
     this.isCommenting = true;
-    await this.execute<CreateCommentResponse>({
+    await this.execute<CreateCommentRequest>({
       requestFn: () =>
         classroomio.community[':id'].comment.$post({
           param: { id: String(questionId) },
@@ -249,7 +253,7 @@ class CommunityApi extends BaseApiWithErrors {
    * @param isQuestion Boolean indicating if it's a question
    */
   async upvotePost({ id, isQuestion }: { id: number | string; isQuestion: boolean }) {
-    await this.execute<UpvotePostResponse>({
+    await this.execute<UpvotePostRequest>({
       requestFn: () =>
         classroomio.community[':id'].upvote.$post({
           param: { id: id.toString() },
@@ -300,7 +304,7 @@ class CommunityApi extends BaseApiWithErrors {
     }
 
     this.isEditing = true;
-    await this.execute<UpdateQuestionResponse>({
+    await this.execute<UpdateQuestionRequest>({
       requestFn: () =>
         classroomio.community[':id'].$put({
           param: { id: String(questionId) },
@@ -382,7 +386,7 @@ class CommunityApi extends BaseApiWithErrors {
 
         // Navigate back to community page based on context
         const basePath = isLMS ? '/lms' : get(currentOrgPath);
-        goto(`${basePath}/community`);
+        goto(resolve(`${basePath}/community`, {}));
 
         // Mark as successful
         this.success = true;
@@ -437,21 +441,28 @@ class CommunityApi extends BaseApiWithErrors {
    * @param orgId Organization ID
    */
   async fetchCoursesForOrg(userId: string | null, orgId: string) {
-    if (this.coursesFetched) return;
+    if (this.courses.length || !userId || !orgId) return;
 
-    // Check store first
-    const courses = get(coursesStore);
-    if (courses.length) {
-      this.courses = [...courses];
-      this.coursesFetched = true;
-      return;
-    }
+    const isLMS = get(globalStore).isOrgSite;
 
-    // Fetch from API
-    const coursesResults = await fetchCourses(userId, orgId);
-    if (coursesResults) {
-      this.courses = coursesResults.allCourses || [];
-      this.coursesFetched = true;
+    if (isLMS) {
+      const response = await coursesApi.getEnrolledCourses();
+
+      if (response?.success && response?.data) {
+        this.courses = response.data.map((course) => ({
+          id: course.id,
+          title: course.title
+        }));
+      }
+    } else {
+      const response = await coursesApi.getOrgCourses();
+
+      if (response?.success && response?.data) {
+        this.courses = response.data.map((course) => ({
+          id: course.id,
+          title: course.title
+        }));
+      }
     }
   }
 }

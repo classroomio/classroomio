@@ -1,6 +1,5 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { CourseContainer } from '$lib/components/CourseContainer';
   import { MarksPage } from '$features/course/pages';
   import * as Page from '@cio/ui/base/page';
   import { RoleBasedSecurity } from '$features/ui';
@@ -14,10 +13,10 @@
   import jsPDF from 'jspdf';
   import Papa from 'papaparse';
   import autoTable from 'jspdf-autotable';
-  import { course } from '$lib/components/Course/store';
-  import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
+  import { course } from '$features/course/store';
+  import { lessons } from '$features/course/components/lesson/store/lessons';
   import type { GroupPerson } from '$lib/utils/types';
-  import { getLectureNo } from '$lib/components/Course/function.js';
+  import { getLectureNo } from '$features/course/utils/functions';
 
   let { data } = $props();
 
@@ -126,7 +125,7 @@
   <title>Marks - ClassroomIO</title>
 </svelte:head>
 
-<CourseContainer courseId={data.courseId}>
+
   <RoleBasedSecurity
     allowedRoles={getPageRoles($currentOrg)}
     onDenied={() => {
@@ -172,4 +171,4 @@
       {/snippet}
     </Page.Body>
   </RoleBasedSecurity>
-</CourseContainer>
+

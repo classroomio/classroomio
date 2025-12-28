@@ -199,6 +199,8 @@ export enum COURSE_VERSION {
   V1 = 'V1', // with only lesson
   V2 = 'V2' // lessons are grouped into sections
 }
+
+// @deprecated We should use the course type from the endpoint instead.
 export interface Course {
   title?: any; // type unknown;
   description: string; // type unknown;
@@ -233,7 +235,6 @@ export interface Course {
   }[];
   lesson_section?: LessonSection[];
   lessons?: Lesson[];
-  polls: { status: string }[];
 }
 
 export interface Groupmember {

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { AuthUI } from '$features/ui';
-  import type { Profile } from '$lib/components/Course/components/People/types';
+  import type { Profile } from '$features/course/components/people/types';
   import { InputField } from '@cio/ui/custom/input-field';
   import { Button } from '@cio/ui/base/button';
   import * as Field from '@cio/ui/base/field';

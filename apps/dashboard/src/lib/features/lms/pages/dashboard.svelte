@@ -1,43 +1,22 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { courseMetaDeta, courses } from '$features/course/utils/store';
   import { Learning } from '$features/lms';
   import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
-  import { fetchCourses } from '$lib/utils/services/courses';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
-  import { untrack } from 'svelte';
+  import { coursesApi } from '$features/course/api';
 
-  let hasFetched = false;
+  let totalCompleted = $derived(coursesApi.enrolledCourses.reduce((acc, cur) => acc + (cur.progressRate || 0), 0));
+  
+  let totalLessons = $derived(coursesApi.enrolledCourses.reduce((acc, cur) => acc + (cur.lessonCount || 0), 0));
 
-  let totalCompleted = $derived($courses.reduce((acc, cur) => acc + (cur.progress_rate || 0), 0));
-  let totalLessons = $derived($courses.reduce((acc, cur) => acc + (cur.total_lessons || 0), 0));
   let progressPercentage = $derived(Math.round((totalCompleted / totalLessons) * 100) || 0);
 
-  function getCourses(userId?: string, orgId?: string) {
-    if (hasFetched || !userId || !orgId) {
-      return;
-    }
-
-    untrack(async () => {
-      if (!$courses.length) {
-        $courseMetaDeta.isLoading = true;
-      }
-
-      const coursesResult = await fetchCourses(userId, orgId);
-      console.log(`coursesResult`, coursesResult);
-
-      $courseMetaDeta.isLoading = false;
-      if (!coursesResult) return;
-
-      courses.set(coursesResult.allCourses);
-      hasFetched = true;
-    });
-  }
-
   $effect(() => {
-    getCourses($profile.id, $currentOrg.id);
+    if (!$profile.id || !$currentOrg.id) return;
+
+    coursesApi.getEnrolledCourses();
   });
 </script>
 
