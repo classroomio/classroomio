@@ -58,7 +58,7 @@
   variant="page"
   layout="full-page"
   showLogo={true}
-  class="h-fit! flex-none! max-h-none!"
+  class="h-fit! max-h-none! flex-none!"
 >
   {#if type === 'legacy_method_blocked'}
     <div class="rounded-md border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">

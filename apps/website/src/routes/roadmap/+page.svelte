@@ -75,8 +75,8 @@
   </p>
 </PageHeader>
 <section class="relative flex w-full flex-col items-center border-b-2 px-4 py-20">
-  <img src="/roadmap-one.svg" alt="" class="absolute bottom-0 right-0 w-60 lg:w-96" />
-  <img src="/roadmap-two.svg" alt="" class="absolute left-0 top-0 hidden lg:block" />
+  <img src="/roadmap-one.svg" alt="" class="absolute right-0 bottom-0 w-60 lg:w-96" />
+  <img src="/roadmap-two.svg" alt="" class="absolute top-0 left-0 hidden lg:block" />
   <div class="flex flex-col items-start space-y-10 px-4">
     <div>
       <h1 class="text-3xl">Latest Features</h1>

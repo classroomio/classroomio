@@ -22,11 +22,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { deleteCourse } from '$lib/utils/services/courses';
-  import {
-    deleteCourseModal,
-    deleteCourseModalInitialState,
-    courseMetaDeta
-  } from '../utils/store';
+  import { deleteCourseModal, deleteCourseModalInitialState, courseMetaDeta } from '../utils/store';
   import { browser } from '$app/environment';
   import type { OrgCourses, UserEnrolledCourses } from '$features/course/types';
 
@@ -163,7 +159,7 @@
               description={courseData.description}
               isPublished={courseData.isPublished}
               totalLessons={courseData.lessonCount}
-              totalStudents={('totalStudents' in courseData ? courseData.totalStudents : 0)}
+              totalStudents={'totalStudents' in courseData ? courseData.totalStudents : 0}
             />
           {/each}
         </Table.Body>

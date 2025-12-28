@@ -171,9 +171,8 @@
             <button
               class="h-60 w-[261px] rounded-md border-2 p-5 dark:bg-neutral-700 {option.type === type
                 ? 'border-primary-400'
-                : `border-gray-200 ${
-                    !option.isDisabled && 'hover:scale-95'
-                  }`} flex flex-col {option.isDisabled && 'cursor-not-allowed opacity-60'} transition-all ease-in-out"
+                : `border-gray-200 ${!option.isDisabled && 'hover:scale-95'}`} flex flex-col {option.isDisabled &&
+                'cursor-not-allowed opacity-60'} transition-all ease-in-out"
               type="button"
               onclick={!option.isDisabled ? () => (type = option.type) : undefined}
             >
@@ -242,9 +241,7 @@
             {#if exerciseTemplateApi.isLoading}
               <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
                 {#each Array(16) as _}
-                  <div
-                    class="h-[140px] w-full rounded-md border-2 border-gray-200 p-5 dark:bg-neutral-700"
-                  >
+                  <div class="h-[140px] w-full rounded-md border-2 border-gray-200 p-5 dark:bg-neutral-700">
                     <div class="flex h-full flex-col justify-evenly">
                       <Skeleton class="h-4 w-3/4" />
                       <div class="flex flex-col items-start justify-between gap-1">

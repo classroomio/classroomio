@@ -18,7 +18,7 @@
 
 <IconButton {tooltip} onclick={handleClick} disabled={isClosing}>
   {#if isClosing}
-    <Spinner class="text-blue-700! size-5" />
+    <Spinner class="size-5 text-blue-700!" />
   {:else}
     <XIcon size={16} class="dark:text-black" />
   {/if}

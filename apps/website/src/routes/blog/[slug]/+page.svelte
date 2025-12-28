@@ -27,7 +27,7 @@
         </div>
 
         <!-- Post -->
-        <div class="prose border-b-2 border-gray-200 pb-4 pt-2">
+        <div class="prose border-b-2 border-gray-200 pt-2 pb-4">
           <data.content />
           <!-- Tags -->
           <div class="flex gap-2 py-4">

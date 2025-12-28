@@ -41,7 +41,7 @@
     } else if (selectedId === '1') {
       return filteredCourses.sort((a, b) => (b.isPublished ? 0 : 1) - (a.isPublished ? 0 : 1));
     } else if (selectedId === '2') {
-      return filteredCourses.sort((a, b) => (b.lessonCount - a.lessonCount));
+      return filteredCourses.sort((a, b) => b.lessonCount - a.lessonCount);
     }
 
     return filteredCourses;

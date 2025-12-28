@@ -32,7 +32,7 @@
         </h2>
       </div>
 
-      <div class="mb-5 mt-8 flex items-center justify-between text-center">
+      <div class="mt-8 mb-5 flex items-center justify-between text-center">
         <div class="">
           <h1 class="m-0 h-2/4 text-[7px]">DATE ISSUED:</h1>
           <p class="border-b border-black text-[7px]">{dateIssued}</p>

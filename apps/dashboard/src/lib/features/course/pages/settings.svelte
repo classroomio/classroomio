@@ -203,7 +203,7 @@
 
 <DeleteModal onDelete={handleDeleteCourse} bind:open={openDeleteModal} />
 
-<Field.Group class="max-w-md! w-full px-2">
+<Field.Group class="w-full max-w-md! px-2">
   <Field.Set>
     <Field.Legend>{$t('course.navItem.settings.cover_image')}</Field.Legend>
     <Field.Description>{$t('course.navItem.settings.optional_image')}</Field.Description>

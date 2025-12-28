@@ -102,7 +102,7 @@
     <div class="relative max-w-[320px]">
       <Input type="text" placeholder={$t('course.navItem.people.search')} bind:value={searchValue} class="w-full" />
 
-      <SearchIcon class="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+      <SearchIcon class="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
     </div>
     <div class="mb-3">
       <Select.Root type="single" name="roles" bind:value={filterBy}>

@@ -205,7 +205,7 @@
   });
 </script>
 
-<Field.Group class="max-w-md! w-full px-2">
+<Field.Group class="w-full max-w-md! px-2">
   <Field.Set>
     <Field.Legend>{$t('components.settings.domains.add')}</Field.Legend>
     <Field.Description class="">{$t('settings.organization.organization_profile.custom_domain.body')}</Field.Description

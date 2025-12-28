@@ -195,7 +195,7 @@
 
     <div class="mt-5 flex flex-wrap">
       {#each $lesson.exercises as exercise}
-        <a class="mb-4 mr-4 w-52 rounded-lg bg-gray-100 px-4 py-7 dark:bg-neutral-800" href="{path}/{exercise.id}">
+        <a class="mr-4 mb-4 w-52 rounded-lg bg-gray-100 px-4 py-7 dark:bg-neutral-800" href="{path}/{exercise.id}">
           <h3 class="text-xl dark:text-white">{exercise.title}</h3>
           <p class="mt-4 text-sm dark:text-white">{formatDate(exercise.created_at)}</p>
         </a>

@@ -7,6 +7,7 @@
   import { page } from '$app/state';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import { getOrgNavigationItems } from '$features/ui/navigation/org-navigation';
+  import { HoverableItem } from '@cio/ui/custom/moving-icons';
 
   const items = $derived(getOrgNavigationItems($currentOrgPath, $currentOrg, $isOrgAdmin, $t, page.url.pathname));
 
@@ -26,9 +27,17 @@
                   {#snippet child({ props })}
                     <a href={item.url} {...props}>
                       {#if item.icon}
-                        <item.icon class="custom" />
+                        <HoverableItem {...props}>
+                          {#snippet children(isHovered)}
+                            {@const Icon = item.icon}
+                            <Icon {isHovered} size={16} class="custom" />
+
+                            <span>{item.title}</span>
+                          {/snippet}
+                        </HoverableItem>
+                      {:else}
+                        <span>{item.title}</span>
                       {/if}
-                      <span>{item.title}</span>
                       {#if item.items}
                         <ChevronRightIcon
                           class="custom ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"

@@ -5,4 +5,3 @@ export { default as RadioQuestion } from './radio-question.svelte';
 export { default as CheckboxQuestion } from './checkbox-question.svelte';
 export { default as TextareaQuestion } from './textarea-question.svelte';
 export * from './constants';
-

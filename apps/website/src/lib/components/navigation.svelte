@@ -245,7 +245,7 @@
             class="h-5 w-5 cursor-pointer transition-transform duration-200 group-hover:scale-110"
           />
           <span
-            class="text-sm font-medium leading-none text-gray-600 transition-colors duration-200 group-hover:text-black"
+            class="text-sm leading-none font-medium text-gray-600 transition-colors duration-200 group-hover:text-black"
           >
             {stars}
           </span>
@@ -267,7 +267,7 @@
       <div
         in:fly={{ x: 20, duration: 700 }}
         out:fly={{ x: 20, duration: 400 }}
-        class="absolute right-0 top-0 h-screen w-[60%] border-2 bg-white px-3 pb-2 pt-3 sm:block md:w-[40%] md:p-7 lg:hidden"
+        class="absolute top-0 right-0 h-screen w-[60%] border-2 bg-white px-3 pt-3 pb-2 sm:block md:w-[40%] md:p-7 lg:hidden"
       >
         <div class="mb-5 flex justify-between py-2">
           <img loading="lazy" width="20" height="20" src="/logo-512.png" alt="classroomio logo" class="w-[15%]" />

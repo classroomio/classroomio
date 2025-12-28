@@ -38,7 +38,7 @@
         onclick={toggleIsYearlyPlan}>Annually</button
       >
       <div
-        class="absolute right-[-40%] top-[-85%] scale-[90%] rounded-full bg-[#006600] px-3.5 py-1.5 text-xs text-white lg:right-[-43%] lg:top-[-75%] lg:scale-100"
+        class="absolute top-[-85%] right-[-40%] scale-[90%] rounded-full bg-[#006600] px-3.5 py-1.5 text-xs text-white lg:top-[-75%] lg:right-[-43%] lg:scale-100"
       >
         Save 2 months
       </div>
@@ -62,11 +62,11 @@
     <div class="isolate mt-10 grid grid-cols-1 gap-10 lg:grid-cols-3">
       <!-- Card 1 -->
       <div class="max-w-xl rounded-3xl p-8 ring-1 ring-gray-200 lg:max-w-sm xl:p-9">
-        <p class="text-lg font-semibold leading-8 text-gray-900 lg:text-xl">
+        <p class="text-lg leading-8 font-semibold text-gray-900 lg:text-xl">
           {PLANS.BASIC.NAME}
         </p>
 
-        <p class="mt-4 text-sm font-light leading-6 text-gray-500 lg:text-base lg:leading-6">
+        <p class="mt-4 text-sm leading-6 font-light text-gray-500 lg:text-base lg:leading-6">
           {PLANS.BASIC.DESCRIPTION}
         </p>
 
@@ -95,11 +95,11 @@
 
       <!-- Card 2 -->
       <div class="cio-bg-blue max-w-xl rounded-3xl p-8 lg:max-w-lg xl:p-9">
-        <p class="text-lg font-semibold leading-8 text-white lg:text-xl">
+        <p class="text-lg leading-8 font-semibold text-white lg:text-xl">
           {PLANS.EARLY_ADOPTER.NAME}
         </p>
 
-        <p class="mt-4 text-sm font-light leading-6 text-white lg:text-base lg:leading-6">
+        <p class="mt-4 text-sm leading-6 font-light text-white lg:text-base lg:leading-6">
           {PLANS.EARLY_ADOPTER.DESCRIPTION}
         </p>
 
@@ -131,10 +131,10 @@
 
       <!-- Card 3 -->
       <div class="max-w-xl rounded-3xl p-8 ring-1 ring-gray-200 lg:max-w-sm xl:p-9">
-        <p class="text-lg font-semibold leading-8 text-gray-900 lg:text-xl">
+        <p class="text-lg leading-8 font-semibold text-gray-900 lg:text-xl">
           {PLANS.ENTERPRISE.NAME}
         </p>
-        <p class="mt-4 text-sm font-light leading-6 text-gray-500 lg:text-base lg:leading-6">
+        <p class="mt-4 text-sm leading-6 font-light text-gray-500 lg:text-base lg:leading-6">
           {PLANS.ENTERPRISE.DESCRIPTION}
         </p>
         <p class="mt-6 flex items-baseline gap-x-1 text-xl font-medium lg:mt-6 lg:text-xl">Request Pricing</p>

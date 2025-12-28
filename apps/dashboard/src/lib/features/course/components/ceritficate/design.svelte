@@ -93,7 +93,7 @@
 
 <UpgradeBanner>{$t('upgrade.certificate')}</UpgradeBanner>
 
-<main class="mt-2 px-2 md:-ml-3 md:-mr-3">
+<main class="mt-2 px-2 md:-mr-3 md:-ml-3">
   <div class="mb-3 flex h-4/5 w-full flex-1 flex-col justify-between gap-3 lg:flex-row">
     <section class="h-full w-full lg:w-2/5">
       <strong class="my-2 text-base font-semibold text-black dark:text-gray-100"
@@ -132,7 +132,7 @@
           </Button>
         </div>
         <span class="my-4">
-          <p class="mb-2 mt-4 text-xs font-normal dark:text-gray-100">
+          <p class="mt-4 mb-2 text-xs font-normal dark:text-gray-100">
             {$t('course.navItem.certificates.description')}
           </p>
           <TextareaField

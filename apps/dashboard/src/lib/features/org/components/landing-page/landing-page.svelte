@@ -94,7 +94,7 @@
 
   $effect(() => {
     if (!orgSiteName) return;
-    
+
     orgApi.getPublicCoursesBySiteName(orgSiteName);
   });
 
@@ -257,7 +257,7 @@
     {#if $landingPageSettings.aboutUs.show}
       <section id="aboutus" class="m-h-[400px] mx-auto my-10 w-full max-w-6xl">
         <div class="mx-4 flex flex-col items-center justify-evenly lg:flex-row">
-          <div class="mb-5 mr-5 max-w-[600px] lg:mb-0 lg:w-2/5">
+          <div class="mr-5 mb-5 max-w-[600px] lg:mb-0 lg:w-2/5">
             <h2 class="text-4xl md:text-5xl lg:text-6xl">{$landingPageSettings.aboutUs.title}</h2>
             <p class="mb-2">
               {$landingPageSettings.aboutUs.content}
@@ -292,7 +292,10 @@
             <CourseCardLoader />
           </div>
         {:else if orgApi.publicCourses.length > 0}
-          <CourseCardList courses={orgApi.publicCourses.slice(0, viewAll ? orgApi.publicCourses.length : 3)} isOnLandingPage={true} />
+          <CourseCardList
+            courses={orgApi.publicCourses.slice(0, viewAll ? orgApi.publicCourses.length : 3)}
+            isOnLandingPage={true}
+          />
         {:else}
           <Empty
             icon={CoursesEmptyIcon}
@@ -352,7 +355,7 @@
             <!-- Contact Details -->
             <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div
-                class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg border py-2 text-center transition-all duration-500"
+                class="mx-2 flex cursor-pointer flex-col items-center justify-center rounded-lg border py-2 text-center break-all transition-all duration-500"
               >
                 <MapPinIcon size={16} class="filled" />
                 <p class="mt-3 max-w-[200px] text-xs md:text-sm">
@@ -360,13 +363,13 @@
                 </p>
               </div>
               <div
-                class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg border py-2 text-center transition-all duration-500"
+                class="mx-2 flex cursor-pointer flex-col items-center justify-center rounded-lg border py-2 text-center break-all transition-all duration-500"
               >
                 <PhoneIcon size={16} />
                 <p class="mt-3 text-xs md:text-sm">{$landingPageSettings.contact.phone}</p>
               </div>
               <div
-                class="mx-2 flex cursor-pointer flex-col items-center justify-center break-all rounded-lg border py-2 text-center transition-all duration-500"
+                class="mx-2 flex cursor-pointer flex-col items-center justify-center rounded-lg border py-2 text-center break-all transition-all duration-500"
               >
                 <MailIcon size={16} />
                 <p class="mt-3 text-xs md:text-sm">{$landingPageSettings.contact.email}</p>
@@ -456,7 +459,7 @@
         <div class="ui:bg-primary gap-4 rounded-lg px-4 py-14 md:px-10 lg:flex-row lg:items-center">
           <div class="mx-auto flex max-w-[700px] flex-col lg:flex-row lg:items-center lg:justify-between">
             <div class="w-3/5">
-              <h1 class="mb-5 mt-0 text-4xl text-white">
+              <h1 class="mt-0 mb-5 text-4xl text-white">
                 {$landingPageSettings.mailinglist.title}
               </h1>
               <p class="text-md text-white">
@@ -491,7 +494,7 @@
     {#if $landingPageSettings.footer.show}
       <footer
         id="footer"
-        class="my-10 flex w-full flex-col items-center justify-center border-b-0 border-l-0 border-r-0 border-t border-gray-300 px-5 py-10 md:py-3"
+        class="my-10 flex w-full flex-col items-center justify-center border-t border-r-0 border-b-0 border-l-0 border-gray-300 px-5 py-10 md:py-3"
       >
         <ul class="flex w-11/12 flex-col items-center sm:flex-row">
           <div class="logo">

@@ -24,7 +24,6 @@ export const load = async ({ params, url, cookies }) => {
   console.log('org sitename api request', siteName);
   if (!orgId) {
     const org = await OrgApiServer.getOrgBySiteName(siteName);
-    console.log('org api request', org);
     if (org?.id) {
       orgId = org.id;
 

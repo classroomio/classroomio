@@ -304,7 +304,7 @@
           <Avatar.Fallback>{shortenName(commentItem.name) || 'U'}</Avatar.Fallback>
         </Avatar.Root>
 
-        <div class="w-full rounded-md border px-4 pb-4 pt-2 dark:border-neutral-700">
+        <div class="w-full rounded-md border px-4 pt-2 pb-4 dark:border-neutral-700">
           <div class="flex items-center justify-between gap-2">
             <p class="text-md dark:text-white">
               {commentItem.name}

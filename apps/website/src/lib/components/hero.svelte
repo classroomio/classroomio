@@ -31,7 +31,7 @@
   });
 </script>
 
-<div class="hero-bg pt-18 relative h-full w-full border-b-2 bg-[#F5F8FE] text-center">
+<div class="hero-bg relative h-full w-full border-b-2 bg-[#F5F8FE] pt-18 text-center">
   <div class="w-full pt-24">
     <div class="mb-10 ml-[5%] flex w-full items-center justify-start lg:ml-0 lg:justify-center">
       <a
@@ -44,7 +44,7 @@
       >
     </div>
 
-    <div class="absolute left-[5%] top-[10%] hidden w-[90%] justify-between lg:flex">
+    <div class="absolute top-[10%] left-[5%] hidden w-[90%] justify-between lg:flex">
       {#if animate}
         <div
           class="relative rotate-12 transition-all hover:scale-110"
@@ -56,7 +56,7 @@
             >Collaboration</a
           >
           <svg
-            class="absolute -bottom-2.5 -right-1"
+            class="absolute -right-1 -bottom-2.5"
             width="11"
             height="11"
             viewBox="0 0 11 11"
@@ -78,7 +78,7 @@
             >Open Source</a
           >
           <svg
-            class="absolute -bottom-2.5 -right-1"
+            class="absolute -right-1 -bottom-2.5"
             width="11"
             height="11"
             viewBox="0 0 11 11"
@@ -96,11 +96,11 @@
         <span>Educate Your</span>
         <div class="mb-2 flex flex-wrap items-center justify-center lg:gap-3">
           <span
-            class="relative mb-0 mt-1 inline-block h-[40px] w-full overflow-hidden md:mt-0 md:h-[50px] lg:-mb-4 lg:h-[75px] lg:w-[48%] lg:text-center"
+            class="relative mt-1 mb-0 inline-block h-[40px] w-full overflow-hidden md:mt-0 md:h-[50px] lg:-mb-4 lg:h-[75px] lg:w-[48%] lg:text-center"
           >
             {#key titleIndex}
               <span
-                class="absolute left-0 right-[unset] w-full lg:left-[unset] lg:right-0"
+                class="absolute right-[unset] left-0 w-full lg:right-0 lg:left-[unset]"
                 style="color: {names[titleIndex].color}"
                 transition:fly={{ y: 100, delay: 0, easing: sineInOut }}
               >
@@ -120,7 +120,7 @@
       </p>
     </div>
 
-    <div class="absolute left-[5%] top-[30%] hidden w-[90%] justify-between lg:flex">
+    <div class="absolute top-[30%] left-[5%] hidden w-[90%] justify-between lg:flex">
       {#if animate}
         <div
           class="relative -rotate-12 transition-all hover:scale-110"
@@ -134,7 +134,7 @@
           </a>
 
           <svg
-            class="absolute -bottom-2.5 -right-1"
+            class="absolute -right-1 -bottom-2.5"
             width="11"
             height="11"
             viewBox="0 0 11 11"
@@ -155,7 +155,7 @@
           >
 
           <svg
-            class="absolute -bottom-2.5 -right-1"
+            class="absolute -right-1 -bottom-2.5"
             width="11"
             height="11"
             viewBox="0 0 11 11"

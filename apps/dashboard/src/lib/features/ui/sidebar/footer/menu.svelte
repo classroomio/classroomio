@@ -30,7 +30,7 @@
     <Avatar.Image src={$profile.avatarUrl} alt={$profile.fullname} />
     <Avatar.Fallback class="rounded-lg">{$profile.fullname.slice(0, 2)}</Avatar.Fallback>
   </Avatar.Root>
-  <div class="grid flex-1 text-left text-sm font-normal leading-tight">
+  <div class="grid flex-1 text-left text-sm leading-tight font-normal">
     <span class="truncate">{$profile.fullname}</span>
     <span class="truncate text-xs">{$profile.email}</span>
   </div>

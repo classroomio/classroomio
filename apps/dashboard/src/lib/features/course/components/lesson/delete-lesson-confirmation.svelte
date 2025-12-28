@@ -22,7 +22,7 @@
     if (!isOpen) openDeleteModal = false;
   }}
 >
-  <Dialog.Content class="w-96 px-6 pb-6 pt-2">
+  <Dialog.Content class="w-96 px-6 pt-2 pb-6">
     <Dialog.Header>
       <Dialog.Title>{$t('delete_modal.label')}</Dialog.Title>
     </Dialog.Header>

@@ -8,7 +8,7 @@
   import { coursesApi } from '$features/course/api';
 
   let totalCompleted = $derived(coursesApi.enrolledCourses.reduce((acc, cur) => acc + (cur.progressRate || 0), 0));
-  
+
   let totalLessons = $derived(coursesApi.enrolledCourses.reduce((acc, cur) => acc + (cur.lessonCount || 0), 0));
 
   let progressPercentage = $derived(Math.round((totalCompleted / totalLessons) * 100) || 0);
@@ -71,7 +71,7 @@
             </p>
           {/if}
         </span>
-        <h1 class="my-0 whitespace-nowrap text-5xl text-[#262626] lg:text-6xl dark:text-white">
+        <h1 class="my-0 text-5xl whitespace-nowrap text-[#262626] lg:text-6xl dark:text-white">
           {progressPercentage} %
         </h1>
       </div>

@@ -4,7 +4,7 @@
   import SearchIcon from '@lucide/svelte/icons/search';
 </script>
 
-<InputGroup.Root class="hidden! md:flex! max-w-56">
+<InputGroup.Root class="hidden! max-w-56 md:flex!">
   <InputGroup.Input placeholder="Search..." />
   <InputGroup.Addon>
     <SearchIcon />

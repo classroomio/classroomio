@@ -60,7 +60,7 @@
   <PageHeader
     className="flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-6 lg:px-28 md:px-16 px-8"
   >
-    <Badge class="py-2! px-4!" variant="outline">Solution for Customer Education</Badge>
+    <Badge class="px-4! py-2!" variant="outline">Solution for Customer Education</Badge>
 
     <div class="flex w-full flex-col items-start justify-start gap-y-8 lg:items-center lg:justify-center">
       <div class="flex w-full max-w-7xl flex-col items-start justify-start gap-y-4 lg:items-center lg:justify-center">
@@ -81,7 +81,7 @@
     class="flex w-full flex-col justify-center gap-y-12 px-8 py-16 md:px-16 lg:items-center lg:justify-between lg:px-28 lg:py-24"
   >
     <div class="flex w-full flex-col items-start justify-start gap-y-4 lg:items-center lg:justify-center">
-      <Badge class="py-1! px-4!" variant="outline">Our benefits</Badge>
+      <Badge class="px-4! py-1!" variant="outline">Our benefits</Badge>
       <div
         class="flex max-w-7xl flex-col items-start justify-start gap-y-4 lg:w-full lg:items-center lg:justify-center"
       >
@@ -107,7 +107,7 @@
             <p class="text-lg">{benefits.title}</p>
 
             <div class="flex flex-row items-start justify-start gap-x-3">
-              <p class="font-[#656565] font-light leading-8 text-gray-500">
+              <p class="font-[#656565] leading-8 font-light text-gray-500">
                 {benefits.description}
               </p>
             </div>

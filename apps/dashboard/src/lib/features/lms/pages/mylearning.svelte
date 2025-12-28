@@ -8,8 +8,12 @@
 
   let searchValue = $state('');
 
-  const coursesInProgress = $derived(coursesApi.enrolledCourses.filter((course) => course.lessonCount !== course.progressRate));
-  const coursesComplete = $derived(coursesApi.enrolledCourses.filter((course) => course.lessonCount === course.progressRate));
+  const coursesInProgress = $derived(
+    coursesApi.enrolledCourses.filter((course) => course.lessonCount !== course.progressRate)
+  );
+  const coursesComplete = $derived(
+    coursesApi.enrolledCourses.filter((course) => course.lessonCount === course.progressRate)
+  );
 
   $effect(() => {
     if (!$profile.id || !$currentOrg.id) return;

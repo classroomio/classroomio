@@ -3,7 +3,7 @@
 
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import { courses, createCourseModal } from '../utils/store';
+  import { createCourseModal } from '../utils/store';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
   import * as Dialog from '@cio/ui/base/dialog';
@@ -18,6 +18,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
+  import { coursesApi } from '../api';
 
   let isLoading = $state(false);
   let errors = $state({
@@ -106,7 +107,7 @@
     if (!newCourseData) return;
 
     const newCourse = newCourseData[0];
-    courses.update((_courses) => [..._courses, newCourse]);
+    coursesApi.orgCourses = [...coursesApi.orgCourses, newCourse];
 
     capturePosthogEvent('course_created', {
       course_id: newCourse.id,

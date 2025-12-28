@@ -44,7 +44,7 @@
             <div class="relative h-1 w-full bg-[#EAEAEA]">
               <div
                 style="width: {Math.round(((course?.progressRate ?? 0) / (course?.lessonCount ?? 0)) * 100) || 0}%"
-                class="bg-primary-700 absolute left-0 top-0 h-full"
+                class="bg-primary-700 absolute top-0 left-0 h-full"
               ></div>
             </div>
           </div>

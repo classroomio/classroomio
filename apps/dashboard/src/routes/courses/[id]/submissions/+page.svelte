@@ -11,20 +11,18 @@
   <title>Submissions - ClassroomIO</title>
 </svelte:head>
 
+<RoleBasedSecurity allowedRoles={[1, 2]}>
+  <Page.Header>
+    <Page.HeaderContent>
+      <Page.Title>
+        {$t('course.navItem.submissions.title')}
+      </Page.Title>
+    </Page.HeaderContent>
+  </Page.Header>
 
-  <RoleBasedSecurity allowedRoles={[1, 2]}>
-    <Page.Header>
-      <Page.HeaderContent>
-        <Page.Title>
-          {$t('course.navItem.submissions.title')}
-        </Page.Title>
-      </Page.HeaderContent>
-    </Page.Header>
-
-    <Page.Body>
-      {#snippet child()}
-        <SubmissionsPage courseId={data.courseId} />
-      {/snippet}
-    </Page.Body>
-  </RoleBasedSecurity>
-
+  <Page.Body>
+    {#snippet child()}
+      <SubmissionsPage courseId={data.courseId} />
+    {/snippet}
+  </Page.Body>
+</RoleBasedSecurity>

@@ -27,36 +27,34 @@
   };
 </script>
 
-
-  <div class="mx-auto w-full max-w-3xl">
-    <Page.Header>
-      {#if data.personId}
+<div class="mx-auto w-full max-w-3xl">
+  <Page.Header>
+    {#if data.personId}
+      <RoleBasedSecurity allowedRoles={[1, 2]}>
+        <IconButton onclick={handleBackNavigation}>
+          <ArrowLeftIcon size={16} />
+        </IconButton>
+      </RoleBasedSecurity>
+    {/if}
+    <Page.HeaderContent>
+      <Page.Title>
+        {$t('course.navItem.people.title')}
+      </Page.Title>
+    </Page.HeaderContent>
+    <Page.Action>
+      {#if !data.personId}
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <IconButton onclick={handleBackNavigation}>
-            <ArrowLeftIcon size={16} />
-          </IconButton>
+          <Button class="mr-2" onclick={handleClick}>
+            {$t('course.navItem.people.add')}
+          </Button>
         </RoleBasedSecurity>
       {/if}
-      <Page.HeaderContent>
-        <Page.Title>
-          {$t('course.navItem.people.title')}
-        </Page.Title>
-      </Page.HeaderContent>
-      <Page.Action>
-        {#if !data.personId}
-          <RoleBasedSecurity allowedRoles={[1, 2]}>
-            <Button class="mr-2" onclick={handleClick}>
-              {$t('course.navItem.people.add')}
-            </Button>
-          </RoleBasedSecurity>
-        {/if}
-      </Page.Action>
-    </Page.Header>
+    </Page.Action>
+  </Page.Header>
 
-    <Page.Body>
-      {#snippet child()}
-        {@render children?.()}
-      {/snippet}
-    </Page.Body>
-  </div>
-
+  <Page.Body>
+    {#snippet child()}
+      {@render children?.()}
+    {/snippet}
+  </Page.Body>
+</div>

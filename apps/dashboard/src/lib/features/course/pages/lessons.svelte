@@ -89,7 +89,7 @@
   />
 {:else if lessonsLength > 0}
   {#if reorder}
-    <p class="text-center text-xs italic text-gray-400 dark:text-white">
+    <p class="text-center text-xs text-gray-400 italic dark:text-white">
       {$t('course.navItem.lessons.drag')}
     </p>
   {/if}

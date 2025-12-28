@@ -91,9 +91,7 @@
       </div>
 
       <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <div
-          class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 md:p-5 dark:text-white"
-        >
+        <div class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 md:p-5 dark:text-white">
           <h3 class="mb-4 text-lg">
             {$t('dashboard.top_courses')}
           </h3>
@@ -139,9 +137,7 @@
           </div>
         </div>
 
-        <div
-          class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 md:p-5 dark:text-white"
-        >
+        <div class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 md:p-5 dark:text-white">
           <h3 class="mb-4 text-lg">
             {$t('dashboard.recent_enrollments')}
           </h3>
@@ -164,7 +160,7 @@
                     </Avatar.Root>
 
                     <div class="min-h-[45px] space-y-1">
-                      <p class="text-sm capitalize leading-none">{enrollment.name}</p>
+                      <p class="text-sm leading-none capitalize">{enrollment.name}</p>
                       <p class="text-muted-foreground text-sm">
                         <span class="italic">
                           {calDateDiff(enrollment.date)}

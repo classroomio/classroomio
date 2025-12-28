@@ -34,4 +34,3 @@
     <span class="mr-1">/</span> <span>{gradeMax}</span>
   </p>
 </div>
-

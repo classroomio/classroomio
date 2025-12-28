@@ -4,8 +4,8 @@
   import * as Accordion from '@cio/ui/base/accordion';
 </script>
 
-<div class="mb-20 mt-10 flex flex-col items-center justify-center gap-6">
-  <header class="text-center space-y-2">
+<div class="mt-10 mb-20 flex flex-col items-center justify-center gap-6">
+  <header class="space-y-2 text-center">
     <h1 class="mt-2 text-xl md:text-4xl">Questions & Answers</h1>
     <p
       class="ui:text-muted-foreground text-sm font-normal tracking-normal md:text-lg lg:px-[20%] lg:text-xl lg:tracking-wide"

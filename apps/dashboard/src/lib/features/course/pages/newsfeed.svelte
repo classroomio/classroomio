@@ -1,11 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import {
-    NewsFeedLoader,
-    NewsFeedCard,
-    NewFeedModal
-  } from '$features/course/components/newsfeed';
+  import { NewsFeedLoader, NewsFeedCard, NewFeedModal } from '$features/course/components/newsfeed';
   import { newsFeed } from '$lib/features/course/components/newsfeed/store';
   import { group } from '$features/course/store';
   import { RoleBasedSecurity } from '$features/ui';

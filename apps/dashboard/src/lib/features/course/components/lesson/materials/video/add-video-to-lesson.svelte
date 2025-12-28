@@ -28,10 +28,8 @@
       <button
         onclick={onChange(item.value)}
         class={`my-1 w-full border px-4 py-3 ${
-          currentTab === item.value
-            ? 'border border-[#0233BD] bg-[#F5F8FE] dark:text-black'
-            : 'border border-gray-200'
-        } flex cursor-pointer flex-row items-center justify-start gap-2 whitespace-nowrap rounded-md`}
+          currentTab === item.value ? 'border border-[#0233BD] bg-[#F5F8FE] dark:text-black' : 'border border-gray-200'
+        } flex cursor-pointer flex-row items-center justify-start gap-2 rounded-md whitespace-nowrap`}
       >
         {#if $isFreePlan && item.value === 3}
           <ZapIcon size={16} class="filled" />

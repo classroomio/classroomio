@@ -204,7 +204,7 @@
   </div>
   <div
     id="scroll-container"
-    class="fixed right-0 top-0 z-10 h-full min-h-screen w-80 space-y-6 overflow-x-auto overflow-y-scroll bg-gray-100 py-10 dark:bg-neutral-800"
+    class="fixed top-0 right-0 z-10 h-full min-h-screen w-80 space-y-6 overflow-x-auto overflow-y-scroll bg-gray-100 py-10 dark:bg-neutral-800"
   >
     <p class="flex items-start justify-start px-10 text-left text-xl font-medium">
       {$t('course.navItem.lessons.version_history.title')}

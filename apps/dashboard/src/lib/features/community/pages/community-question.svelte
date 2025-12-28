@@ -110,7 +110,7 @@
             />
 
             <Select.Root type="single" bind:value={communityApi.editContent.courseId} disabled={communityApi.isEditing}>
-              <Select.Trigger class="w-30! h-full truncate" disabled={communityApi.isEditing}>
+              <Select.Trigger class="h-full w-30! truncate" disabled={communityApi.isEditing}>
                 <span class="truncate">
                   {communityApi.editContent.courseId
                     ? communityApi.courses.find((course) => course.id === communityApi.editContent.courseId)?.title

@@ -33,7 +33,7 @@
         {value}
       </p>
       {#if subtitle}
-        <p class="text-xs capitalize text-gray-500 dark:text-gray-500">
+        <p class="text-xs text-gray-500 capitalize dark:text-gray-500">
           {subtitle}
         </p>
       {/if}

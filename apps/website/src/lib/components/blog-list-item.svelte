@@ -29,12 +29,12 @@
 {/if}
 
 <a href="/blog/{post.slug}" class="group space-y-2">
-  <img loading="lazy" src={post.imageUrl} alt={post.title} class="w-70 h-48 rounded-md object-cover" />
+  <img loading="lazy" src={post.imageUrl} alt={post.title} class="h-48 w-70 rounded-md object-cover" />
   <p class="text-md font-medium {isRecommended && 'h-[60px]'} line-clamp-2 group-hover:underline">
     {@html post.title}
   </p>
 
-  <p class="line-clamp-3 ui:text-muted-foreground">{post.description}</p>
+  <p class="ui:text-muted-foreground line-clamp-3">{post.description}</p>
 </a>
 
 <div class="my-2 flex items-center justify-start gap-4">

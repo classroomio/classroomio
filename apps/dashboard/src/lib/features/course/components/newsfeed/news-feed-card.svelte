@@ -224,7 +224,7 @@
             {#if comment.author?.profile?.id === $profile.id || $isOrgAdmin}
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger
-                  class="hidden h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 group-hover:flex dark:hover:bg-neutral-700"
+                  class="hidden h-8 w-8 items-center justify-center rounded-md group-hover:flex hover:bg-gray-100 dark:hover:bg-neutral-700"
                 >
                   <EllipsisVerticalIcon class="h-5 w-5" />
                 </DropdownMenu.Trigger>

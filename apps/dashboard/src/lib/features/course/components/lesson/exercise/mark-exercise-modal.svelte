@@ -271,10 +271,10 @@
         />
       {/if}
     </div>
-    <div class="sticky top-0 ml-4 mt-2 w-2/5">
+    <div class="sticky top-0 mt-2 ml-4 w-2/5">
       <div class="rounded-md border border-gray-300">
         <div
-          class="flex items-center justify-between gap-1 border-b border-l-0 border-r-0 border-t-0 border-gray-300 p-3"
+          class="flex items-center justify-between gap-1 border-t-0 border-r-0 border-b border-l-0 border-gray-300 p-3"
         >
           <p class="text-base dark:text-white">
             {$t('course.navItem.submissions.grading_modal.details')}

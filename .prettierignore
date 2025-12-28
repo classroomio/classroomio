@@ -15,4 +15,4 @@ apps/api/static
 pnpm-lock.yaml
 *.md
 
-output.css
+packages/ui/src/output.css

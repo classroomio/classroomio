@@ -28,6 +28,7 @@
 
   // Initialize course from server data
   $effect(() => {
+    console.log('data', data);
     if (data.course !== undefined) {
       courseStore.initializeFromServerData(data.course, data.courseId);
     }
@@ -45,9 +46,7 @@
   });
 
   // Determine if this is an exercise page from current page data
-  const isExercisePage = $derived(
-    data.isMaterialsTabActive === false && !!data.exerciseId
-  );
+  const isExercisePage = $derived(data.isMaterialsTabActive === false && !!data.exerciseId);
 </script>
 
 <svelte:head>
@@ -78,7 +77,7 @@
 </Dialog.Root>
 
 <Sidebar.Provider>
-  <CourseSidebar {path} />
+  <CourseSidebar {path} id={data.courseId} />
 
   <Sidebar.Inset
     class="w-[calc(100vw-var(--sidebar-width))] overflow-x-hidden group-data-[collapsible=icon]:w-[calc(100vw-var(--sidebar-width-icon))]"

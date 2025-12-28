@@ -36,7 +36,7 @@
         <tr>
           {#each row as column, columnIndex}
             <td
-              class="h-25 border-r-10 border-b-10 w-[1.5em] cursor-pointer border-white text-center last:border-r-0"
+              class="h-25 w-[1.5em] cursor-pointer border-r-10 border-b-10 border-white text-center last:border-r-0"
               onclick={() => {
                 game = game.click(rowIndex, columnIndex);
               }}

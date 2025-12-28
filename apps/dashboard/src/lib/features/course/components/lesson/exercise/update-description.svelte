@@ -5,7 +5,7 @@
 
   import { InputField } from '@cio/ui/custom/input-field';
   import { TextEditor } from '$features/ui';
-  import { QuestionContainer } from '$features/course/components'/index.svelte';
+  import { QuestionContainer } from '$features/course/components';
 
   interface Props {
     preview: boolean;

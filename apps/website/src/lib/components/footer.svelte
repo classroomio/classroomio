@@ -8,7 +8,7 @@
   <div class="flex flex-col items-center justify-between py-[10%] pl-5 lg:flex-row lg:pl-0">
     <div class="w-full min-w-[200px] lg:w-3/12">
       <img width="32" height="32" loading="lazy" src="/logo-192.png" alt="classroomio logo" class="mb-5" />
-      <p class="mb-5 mr-2 text-sm leading-7 tracking-wide text-gray-600 lg:text-base lg:leading-7">
+      <p class="mr-2 mb-5 text-sm leading-7 tracking-wide text-gray-600 lg:text-base lg:leading-7">
         The Open Source Learning Management System for Companies
         <br />
         ClassroomIO is the easiest way to grow your teaching business.
@@ -47,7 +47,7 @@
       class="mt-16 flex w-full flex-col items-start justify-end gap-12 space-y-6 lg:mt-0 lg:w-3/4 lg:flex-row lg:space-y-0"
     >
       <div class="max-w-[120px]">
-        <p class="mb-3 text-base font-semibold leading-6 text-gray-900 lg:mb-10 lg:text-base">Product</p>
+        <p class="mb-3 text-base leading-6 font-semibold text-gray-900 lg:mb-10 lg:text-base">Product</p>
         <ul class="space-y-2 lg:space-y-4">
           <li class="text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900 lg:text-base">
             <a href="/#coursemanagement"> Course Management </a>
@@ -68,7 +68,7 @@
       </div>
 
       <div class="max-w-[120px]">
-        <p class="mb-3 text-base font-semibold leading-6 text-gray-900 lg:mb-10 lg:text-base">Solutions</p>
+        <p class="mb-3 text-base leading-6 font-semibold text-gray-900 lg:mb-10 lg:text-base">Solutions</p>
         <ul class="space-y-2 lg:space-y-4">
           <li class="text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900 lg:text-base">
             <a href="/employee-training">Employee Training</a>
@@ -83,7 +83,7 @@
       </div>
 
       <div class="max-w-[120px]">
-        <p class="mb-3 text-base font-semibold leading-6 text-gray-900 lg:mb-10 lg:text-base">Resources</p>
+        <p class="mb-3 text-base leading-6 font-semibold text-gray-900 lg:mb-10 lg:text-base">Resources</p>
         <ul class="space-y-2 lg:space-y-4">
           <li class="text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900 lg:text-base">
             <a href="/contact">Contact us</a>
@@ -104,7 +104,7 @@
       </div>
 
       <div class="max-w-[120px]">
-        <p class="mb-3 text-base font-semibold leading-6 text-gray-900 lg:mb-10 lg:text-base">Company</p>
+        <p class="mb-3 text-base leading-6 font-semibold text-gray-900 lg:mb-10 lg:text-base">Company</p>
         <ul class="space-y-2 lg:space-y-4">
           <li class="text-sm leading-6 tracking-wide text-gray-600 hover:text-gray-900 lg:text-base">
             <a href="/roadmap"> Roadmap </a>
@@ -129,7 +129,7 @@
       </div>
     </nav>
   </div>
-  <footer class="border-t py-3 text-center text-xs font-light leading-5 text-gray-500 lg:text-left lg:text-base">
-    <p class="w-fit mx-auto">All rights reserved -  ClassroomIO © {new Date().getFullYear()}</p>
+  <footer class="border-t py-3 text-center text-xs leading-5 font-light text-gray-500 lg:text-left lg:text-base">
+    <p class="mx-auto w-fit">All rights reserved - ClassroomIO © {new Date().getFullYear()}</p>
   </footer>
 </div>

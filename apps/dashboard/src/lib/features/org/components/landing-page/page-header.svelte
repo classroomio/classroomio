@@ -20,7 +20,7 @@
 
       <div class="relative mx-auto max-w-xl">
         <Input type="text" placeholder={$t('course.navItem.landing_page.find_course')} bind:value={searchValue} />
-        <Search class="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+        <Search class="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
       </div>
     </div>
   </div>

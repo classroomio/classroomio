@@ -186,7 +186,7 @@
 {:else if formRes?.type === 'FILE_TOO_LARGE'}
   <div class="flex h-full w-full flex-col items-center justify-center rounded-xl">
     <img src="/video-upload-error.svg" alt="upload error" />
-    <span class="pb-2 pt-3">
+    <span class="pt-3 pb-2">
       <h3 class="text-center text-base font-normal dark:text-white">
         {$t('course.navItem.lessons.materials.tabs.video.add_video.oops')}
       </h3>
@@ -202,7 +202,7 @@
 {:else if formRes?.status !== 200}
   <div class="flex h-full w-full flex-col items-center justify-center rounded-xl">
     <img src="/video-upload-error.svg" alt="upload error" />
-    <span class="pb-2 pt-3">
+    <span class="pt-3 pb-2">
       <h3 class="text-center text-base font-normal dark:text-white">
         {$t('course.navItem.lessons.materials.tabs.video.add_video.oops')}
       </h3>

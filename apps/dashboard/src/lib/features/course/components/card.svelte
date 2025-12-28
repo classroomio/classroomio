@@ -62,8 +62,8 @@
     },
     currency: course.currency,
     totalLessons: course.lessonCount,
-    progressRate: calcProgressRate(('progressRate' in course ? course.progressRate : 0), course.lessonCount),
-    totalStudents: ('totalStudents' in course ? course.totalStudents : 0)
+    progressRate: calcProgressRate('progressRate' in course ? course.progressRate : 0, course.lessonCount),
+    totalStudents: 'totalStudents' in course ? course.totalStudents : 0
   });
 
   let formatter = $derived(getCurrencyFormatter(currency));
@@ -103,7 +103,7 @@
   );
 </script>
 
-<Item.Root variant="outline" class="p-3! group relative max-w-[320px]">
+<Item.Root variant="outline" class="group relative max-w-[320px] p-3!">
   {#snippet child({ props })}
     <a href={resolve(courseUrl, {})} {...props}>
       {#if !isLMS && !isOnLandingPage}
@@ -111,12 +111,12 @@
       {/if}
 
       <Item.Header>
-        <Item.Media variant="image" class="h-50! w-full! relative">
+        <Item.Media variant="image" class="relative h-50! w-full!">
           <Image src={bannerImage} alt="Course banner image" className="w-full h-full rounded-sm object-cover" />
 
           {#if type}
             {@const tag = COURSE_TAG[type]}
-            <Badge class="rounded-md! absolute bottom-2 left-2 z-10 flex items-center capitalize" variant="secondary">
+            <Badge class="absolute bottom-2 left-2 z-10 flex items-center rounded-md! capitalize" variant="secondary">
               <tag.icon class={tag.iconStyle} />
               {tag.label}
             </Badge>
@@ -125,7 +125,7 @@
       </Item.Header>
 
       <Item.Content>
-        <Item.Title class="text-base! line-clamp-1 min-h-[44px]">
+        <Item.Title class="line-clamp-1 min-h-[44px] text-base!">
           {title}
         </Item.Title>
 

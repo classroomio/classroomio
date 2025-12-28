@@ -15,9 +15,10 @@
 
   interface Props {
     path: string;
+    id: string;
   }
 
-  let { path }: Props = $props();
+  let { path, id }: Props = $props();
 
   const sidebar = useSidebar();
 </script>
@@ -31,7 +32,7 @@
     </Sidebar.Header>
 
     <Sidebar.Content>
-      <Navigation {path} isStudent={$globalStore.isStudent} />
+      <Navigation {path} {id} isStudent={$globalStore.isStudent} />
     </Sidebar.Content>
 
     <Sidebar.Rail />

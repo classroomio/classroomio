@@ -29,12 +29,12 @@
 
 <div transition:fly={{ y: 100, delay: 0, easing: sineInOut }}>
   <div class="px-6 pt-8 text-center">
-    <button type="button" onclick={resetTimer} class="text-[10px] font-semibold uppercase text-[#656565] underline"
+    <button type="button" onclick={resetTimer} class="text-[10px] font-semibold text-[#656565] uppercase underline"
       >set timer for another activity</button
     >
 
     <button
-      class="mx-auto mb-3 mt-7 flex items-center gap-1 rounded-full border border-[#C2D2FF] bg-[#DCE5FF] px-2 py-0.5 text-sm font-semibold text-[#656565]"
+      class="mx-auto mt-7 mb-3 flex items-center gap-1 rounded-full border border-[#C2D2FF] bg-[#DCE5FF] px-2 py-0.5 text-sm font-semibold text-[#656565]"
     >
       {activityName}:
       <span class="text-[#0233BD]">{formattedTime}</span>
@@ -60,7 +60,7 @@
     <button
       type="button"
       onclick={toggleTimer}
-      class="flex w-[34%] flex-col items-center gap-1 bg-[#0F62FE] py-5 text-[10px] uppercase text-white md:py-10"
+      class="flex w-[34%] flex-col items-center gap-1 bg-[#0F62FE] py-5 text-[10px] text-white uppercase md:py-10"
     >
       {#if isPaused}
         <img src="/free-tools/stopwatch/play-icon.svg" alt="" class="w-7 md:w-12" />

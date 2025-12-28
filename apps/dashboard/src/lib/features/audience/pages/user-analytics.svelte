@@ -100,7 +100,7 @@
           <Badge
             type={courseFilter === 'incomplete' ? 'secondary' : 'outline'}
             class="text-yellow-700 dark:text-yellow-500"
-            onclick={() => courseFilter = 'incomplete'}
+            onclick={() => (courseFilter = 'incomplete')}
           >
             {incompleteCourses}
             {$t('analytics.incomplete')}
@@ -108,7 +108,7 @@
           <Badge
             type={courseFilter === 'completed' ? 'secondary' : 'outline'}
             class="text-green-700 dark:text-green-500"
-            onclick={() => courseFilter = 'completed'}
+            onclick={() => (courseFilter = 'completed')}
           >
             {completedCourses}
             {$t('analytics.complete')}

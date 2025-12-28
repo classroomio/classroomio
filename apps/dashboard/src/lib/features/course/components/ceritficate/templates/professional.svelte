@@ -15,7 +15,7 @@
 <div class="certificate-bg border-primary-400 flex w-full items-center justify-center border border-dashed">
   <div class="{borderwidth} {bordercolor} w-full">
     <div class="w-full px-5 py-3">
-      <p class="my-2 text-sm font-normal uppercase text-gray-500">
+      <p class="my-2 text-sm font-normal text-gray-500 uppercase">
         Certificate<br /> of completion
       </p>
       <div class="mb-4 border-b border-gray-500">

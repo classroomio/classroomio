@@ -56,7 +56,7 @@
 {#if isLoading}
   <Spinner />
 {:else if $submissions?.length}
-  <div class="mb-5 mt-2 flex w-full gap-1 overflow-auto">
+  <div class="mt-2 mb-5 flex w-full gap-1 overflow-auto">
     {#each $submissions as student, i}
       <button onclick={() => (studentSelected = i)} class="flex w-20 flex-col items-center">
         <div
@@ -70,7 +70,7 @@
             class="m-1 max-h-10 w-10 rounded-full bg-white"
           />
         </div>
-        <p class="line-clamp-2 w-20 whitespace-pre-wrap leading-4">
+        <p class="line-clamp-2 w-20 leading-4 whitespace-pre-wrap">
           {student.submitted_by.profile.fullname}
         </p>
       </button>

@@ -11,4 +11,3 @@
   <p class="text-md font-medium">{index}</p>
   <p class="text-md font-medium">{title}</p>
 </span>
-

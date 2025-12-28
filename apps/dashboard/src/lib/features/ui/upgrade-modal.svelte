@@ -156,8 +156,8 @@
           >
             {$t('pricing.modal.annually')}
           </Button>
-          <Badge variant="default" class="rotate-5 absolute -top-3 right-[-20%] shadow-2xl">
-            <SparklesIcon class="text-amber-500! size-2" />
+          <Badge variant="default" class="absolute -top-3 right-[-20%] rotate-5 shadow-2xl">
+            <SparklesIcon class="size-2 text-amber-500!" />
             {$t('pricing.modal.save')}
           </Badge>
         </div>
@@ -171,7 +171,7 @@
               {#if isPopular}
                 <Badge
                   variant="default"
-                  class="bg-linear-to-r absolute -top-3 left-1/2 -translate-x-1/2 from-pink-500 to-orange-500"
+                  class="absolute -top-3 left-1/2 -translate-x-1/2 bg-linear-to-r from-pink-500 to-orange-500"
                 >
                   Popular
                 </Badge>

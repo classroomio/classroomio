@@ -7,6 +7,7 @@
   import { page } from '$app/state';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import { getLmsNavigationItems } from '$features/ui/navigation/lms-navigation';
+  import { HoverableItem } from '@cio/ui/custom/moving-icons';
 
   const items = $derived(getLmsNavigationItems($currentOrg, $t, page.url.pathname));
 
@@ -28,9 +29,16 @@
                     {#snippet child({ props })}
                       <a href={item.url} {...props}>
                         {#if item.icon}
-                          <item.icon class="custom" />
+                          <HoverableItem {...props}>
+                            {#snippet children(isHovered)}
+                              {@const Icon = item.icon}
+                              <Icon {isHovered} class="custom" />
+                              <span>{item.title}</span>
+                            {/snippet}
+                          </HoverableItem>
+                        {:else}
+                          <span>{item.title}</span>
                         {/if}
-                        <span>{item.title}</span>
                         <ChevronRightIcon
                           class="custom ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
                         />
@@ -64,9 +72,16 @@
             {#snippet child({ props })}
               <a href={item.url} {...props}>
                 {#if item.icon}
-                  <item.icon class="custom" />
+                  <HoverableItem {...props}>
+                    {#snippet children(isHovered)}
+                      {@const Icon = item.icon}
+                      <Icon {isHovered} class="custom" />
+                      <span>{item.title}</span>
+                    {/snippet}
+                  </HoverableItem>
+                {:else}
+                  <span>{item.title}</span>
                 {/if}
-                <span>{item.title}</span>
               </a>
             {/snippet}
           </Sidebar.MenuButton>

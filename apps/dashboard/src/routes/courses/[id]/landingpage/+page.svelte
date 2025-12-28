@@ -22,18 +22,12 @@
   }
 </script>
 
-
-  <div
-    class="absolute inset-0 z-50 flex bg-white"
-    in:fly={{ y: 500, duration: 500 }}
-    out:fly={{ y: 500, duration: 500 }}
-  >
-    <Editor {courseId} bind:course={courseData} {syncCourseStore} />
-    <div class="rightBar">
-      <CourseLandingPage bind:courseData editMode={true} />
-    </div>
+<div class="absolute inset-0 z-50 flex bg-white" in:fly={{ y: 500, duration: 500 }} out:fly={{ y: 500, duration: 500 }}>
+  <Editor {courseId} bind:course={courseData} {syncCourseStore} />
+  <div class="rightBar">
+    <CourseLandingPage bind:courseData editMode={true} />
   </div>
-
+</div>
 
 <style>
   .rightBar {

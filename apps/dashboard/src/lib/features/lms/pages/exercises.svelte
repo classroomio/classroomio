@@ -128,13 +128,13 @@
 <div class="flex w-full items-center overflow-x-auto">
   {#each sections as { title, items, className, id }}
     <div
-      class="mr-3 h-[70vh] min-w-[355px] max-w-[355px] overflow-hidden rounded-md border border-gray-50 bg-gray-100 p-3 dark:border-neutral-700 dark:bg-black"
+      class="mr-3 h-[70vh] max-w-[355px] min-w-[355px] overflow-hidden rounded-md border border-gray-50 bg-gray-100 p-3 dark:border-neutral-700 dark:bg-black"
     >
       <div class="mb-2 flex items-center gap-2">
         <p class="ml-2 dark:text-white">{title}</p>
         <Chip value={items.length} {className} />
       </div>
-      <div class="h-full overflow-y-auto pb-3 pr-2">
+      <div class="h-full overflow-y-auto pr-2 pb-3">
         {#each items as item}
           <div class=" mx-0 my-2 w-full rounded-md bg-white px-3 py-3 dark:bg-neutral-800">
             <a class="ui:text-primary mb-2 flex w-full cursor-pointer items-center" href={item.courseURL}>

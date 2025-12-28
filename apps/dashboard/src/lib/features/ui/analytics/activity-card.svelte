@@ -16,9 +16,7 @@
   let { activity }: Props = $props();
 </script>
 
-<div
-  class="flex flex-col items-center justify-center gap-5 rounded-xl border p-3 md:flex-row md:p-5"
->
+<div class="flex flex-col items-center justify-center gap-5 rounded-xl border p-3 md:flex-row md:p-5">
   <div class="bg-primary-200 w-fit rounded-full p-4 text-black">
     <activity.icon />
   </div>

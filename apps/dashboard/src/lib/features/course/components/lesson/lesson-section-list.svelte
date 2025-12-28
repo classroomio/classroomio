@@ -287,7 +287,7 @@
                     {lesson.title}
                   </a>
 
-                  <div class="mb-3 mt-1 flex items-center lg:mb-0">
+                  <div class="mt-1 mb-3 flex items-center lg:mb-0">
                     <ListChecksIcon size={16} />
                     <p class="ml-2 text-xs text-gray-500 dark:text-white">
                       {lesson?.totalExercises ? lesson?.totalExercises?.map((c) => c.count) : 0}

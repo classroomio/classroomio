@@ -22,12 +22,12 @@
 <div
   bind:this={node}
   id="qr-container"
-  class="h-160 w-160 flex flex-col items-center justify-center rounded-xl bg-blue-900 p-10 pb-20"
+  class="flex h-160 w-160 flex-col items-center justify-center rounded-xl bg-blue-900 p-10 pb-20"
 >
   <div class="rounded-3xl bg-white p-6 pb-3 text-center">
     <div class="my-4 rounded-xl bg-gray-100 p-2 text-xl">Scan QR</div>
     <img src={qrImage} alt="qrcode" />
-    <div class="pb-4 pt-1">
+    <div class="pt-1 pb-4">
       <p class="ui:text-primary mt-2 text-2xl">{course.title}</p>
       <p class="mt-1 text-lg font-semibold text-black">{currentOrg.name}</p>
     </div>

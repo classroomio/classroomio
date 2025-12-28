@@ -18,7 +18,7 @@
     <p class="font-semibold capitalize dark:text-black">{$currentOrg.name}</p>
   </div>
   <div class="w-full px-5 py-3">
-    <p class="my-2 w-full text-center text-sm font-normal uppercase tracking-widest text-gray-500">
+    <p class="my-2 w-full text-center text-sm font-normal tracking-widest text-gray-500 uppercase">
       Certificate of completion
     </p>
     <div class="mb-4 border-b border-gray-500">
@@ -28,7 +28,7 @@
     <div class="mb-2">
       <p class="text-xs font-medium text-black">has successfully completed the course</p>
       <div>
-        <p class="clamp bg-transparent text-center text-base font-semibold uppercase text-pink-700">
+        <p class="clamp bg-transparent text-center text-base font-semibold text-pink-700 uppercase">
           {$course.title}
         </p>
       </div>

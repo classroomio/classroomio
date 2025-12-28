@@ -232,7 +232,7 @@
         <button
           type="button"
           onclick={isPaused ? startCountdown : pauseCountdown}
-          class="rounded-md border bg-white px-14 py-3 text-base uppercase text-[#0542CC] transition-all duration-300 hover:border hover:border-white hover:bg-transparent hover:text-white"
+          class="rounded-md border bg-white px-14 py-3 text-base text-[#0542CC] uppercase transition-all duration-300 hover:border hover:border-white hover:bg-transparent hover:text-white"
         >
           {isPaused ? 'Start' : 'Pause'}
         </button>
@@ -299,7 +299,7 @@
 
                       {#if todo.isVisible}
                         <ul
-                          class="absolute -right-3 top-6 z-40 w-[8rem] rounded-[5px] border bg-white text-xs shadow-md"
+                          class="absolute top-6 -right-3 z-40 w-[8rem] rounded-[5px] border bg-white text-xs shadow-md"
                         >
                           <button
                             type="button"

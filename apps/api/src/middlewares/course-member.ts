@@ -2,6 +2,7 @@ import { Context, Next } from 'hono';
 
 import { ErrorCodes } from '@api/utils/errors';
 import { isUserCourseMember } from '@cio/db/queries/group';
+import { isUserOrgAdmin } from '@cio/db/queries/organization';
 
 /**
  * Middleware to check if the authenticated user is a member of a course's group
@@ -22,10 +23,7 @@ export const courseMemberMiddleware = async (c: Context, next: Next) => {
       );
     }
 
-    // Try to get courseId from params or query
-    // Note: Body parsing should happen after validation middleware
     const courseId = c.req.param('courseId') || c.req.query('courseId');
-
     if (!courseId) {
       return c.json(
         {
@@ -37,19 +35,24 @@ export const courseMemberMiddleware = async (c: Context, next: Next) => {
       );
     }
 
-    const isMember = await isUserCourseMember(courseId, user.id);
-    if (!isMember) {
-      return c.json(
-        {
-          success: false,
-          error: 'You must be a member of this course to perform this action',
-          code: ErrorCodes.ORG_TEAM_NOT_AUTHORIZED
-        },
-        403
-      );
+    const { isMember, organizationId } = await isUserCourseMember(courseId, user.id);
+    if (isMember) {
+      return next();
     }
 
-    await next();
+    const isOrgAdmin = await isUserOrgAdmin(organizationId!, user.id);
+    if (isOrgAdmin) {
+      return next();
+    }
+
+    return c.json(
+      {
+        success: false,
+        error: 'You must be a member of this course to perform this action',
+        code: ErrorCodes.ORG_TEAM_NOT_AUTHORIZED
+      },
+      403
+    );
   } catch (error) {
     console.error('Error in courseMemberMiddleware:', error);
     return c.json(

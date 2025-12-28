@@ -1,11 +1,14 @@
+import {
+  CommunityIcon,
+  CourseIcon,
+  ExerciseIcon,
+  ExploreIcon,
+  HomeIcon,
+  SettingsIcon
+} from '@cio/ui/custom/moving-icons';
+
 import type { AccountOrg } from '$features/app/types';
-import CogIcon from '@lucide/svelte/icons/cog';
 import type { Component } from 'svelte';
-import LayoutDashboardIcon from '@lucide/svelte/icons/layout-dashboard';
-import LibraryBigIcon from '@lucide/svelte/icons/library-big';
-import ListTodoIcon from '@lucide/svelte/icons/list-todo';
-import MapPlusIcon from '@lucide/svelte/icons/map-plus';
-import UsersIcon from '@lucide/svelte/icons/users';
 import { isActive } from '$lib/utils/functions/app';
 
 export interface NavItem {
@@ -44,26 +47,26 @@ const baseNavConfig: NavItemConfig[] = [
   {
     titleKey: 'lms_navigation.home',
     path: '',
-    icon: LayoutDashboardIcon,
+    icon: HomeIcon,
     matchPattern: '^/lms/?$'
   },
   {
     titleKey: 'lms_navigation.my_learning',
     path: '/mylearning',
-    icon: LibraryBigIcon,
+    icon: CourseIcon,
     matchPattern: '^/lms/mylearning(/.*)?$'
   },
   {
     titleKey: 'lms_navigation.exercise',
     path: '/exercises',
-    icon: ListTodoIcon,
+    icon: ExerciseIcon,
     matchPattern: '^/lms/exercises(/.*)?$',
     show: (currentOrg) => currentOrg?.customization?.dashboard?.exercise === true
   },
   {
     titleKey: 'lms_navigation.community',
     path: '/community',
-    icon: UsersIcon,
+    icon: CommunityIcon,
     matchPattern: '^/lms/community(/.*)?$',
     show: (currentOrg) => currentOrg?.customization?.dashboard?.community === true,
     supportsDynamicSegment: true, // Supports /community/[slug]
@@ -77,13 +80,13 @@ const baseNavConfig: NavItemConfig[] = [
   {
     titleKey: 'lms_navigation.explore',
     path: '/explore',
-    icon: MapPlusIcon,
+    icon: ExploreIcon,
     matchPattern: '^/lms/explore(/.*)?$'
   },
   {
     titleKey: 'lms_navigation.settings',
     path: '/settings',
-    icon: CogIcon,
+    icon: SettingsIcon,
     useHashUrl: true,
     matchPattern: '^/lms/settings(/.*)?$',
     items: [

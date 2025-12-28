@@ -30,7 +30,7 @@
   import { InputField } from '@cio/ui/custom/input-field';
   import DeleteConfirmationModal from './delete-confirmation.svelte';
   import { CircleCheckIcon } from '$features/ui/icons';
-  import { QuestionContainer } from '$features/course/components'/index.svelte';
+  import { QuestionContainer } from '$features/course/components';
 
   const initialQuestionsLength = $questionnaire.questions.length;
 
@@ -124,7 +124,7 @@
     </IconButton>
     <IconButton
       onclick={handleAnswerSelect(question.id, option.id)}
-      class={option.is_correct ? 'text-green-500! fill-green-500!' : ''}
+      class={option.is_correct ? 'fill-green-500! text-green-500!' : ''}
     >
       <CircleCheckIcon size={18} filled={option.is_correct} />
     </IconButton>

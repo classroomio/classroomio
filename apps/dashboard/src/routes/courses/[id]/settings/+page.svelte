@@ -23,24 +23,22 @@
   <title>Settings - ClassroomIO</title>
 </svelte:head>
 
-
-  <div class="mx-auto w-full max-w-3xl">
-    <Page.Header>
-      <Page.HeaderContent>
-        <Page.Title>
-          {$t('course.navItem.settings.heading')}
-        </Page.Title>
-      </Page.HeaderContent>
-      <Page.Action>
-        <Button variant="secondary" loading={isSaving} onclick={handleSave}>
-          {$t('course.navItem.settings.save')}
-        </Button>
-      </Page.Action>
-    </Page.Header>
-    <Page.Body>
-      {#snippet child()}
-        <CourseSettingsPage bind:this={settingsComponent} />
-      {/snippet}
-    </Page.Body>
-  </div>
-
+<div class="mx-auto w-full max-w-3xl">
+  <Page.Header>
+    <Page.HeaderContent>
+      <Page.Title>
+        {$t('course.navItem.settings.heading')}
+      </Page.Title>
+    </Page.HeaderContent>
+    <Page.Action>
+      <Button variant="secondary" loading={isSaving} onclick={handleSave}>
+        {$t('course.navItem.settings.save')}
+      </Button>
+    </Page.Action>
+  </Page.Header>
+  <Page.Body>
+    {#snippet child()}
+      <CourseSettingsPage bind:this={settingsComponent} />
+    {/snippet}
+  </Page.Body>
+</div>

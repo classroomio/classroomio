@@ -87,7 +87,7 @@
           <p class="col lesson-number dark:text-white" title={lesson.title}>
             {getLectureNo(index + 1)}
           </p>
-          <div class="flex h-full items-center border-b-0 border-l-0 border-r-0 border-t border-gray-300">
+          <div class="flex h-full items-center border-t border-r-0 border-b-0 border-l-0 border-gray-300">
             {#each Object.keys(lessonMapping[lesson.id]) as exerciseId, index}
               <p
                 class="col text-sm dark:text-white {index && borderleftGrey}"

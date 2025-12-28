@@ -184,7 +184,7 @@
 
     <!-- Gift Container -->
     {#if courseData?.metadata?.reward?.show}
-      <div class="flex flex-col items-center border-b border-t border-gray-300 p-10">
+      <div class="flex flex-col items-center border-t border-b border-gray-300 p-10">
         <HTMLRender>{@html sanitizeHtml(get(courseData, 'metadata.reward.description', ''))}</HTMLRender>
       </div>
     {/if}

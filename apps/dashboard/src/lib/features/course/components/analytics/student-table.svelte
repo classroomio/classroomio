@@ -59,32 +59,32 @@
         <thead class="sticky top-0 z-10 bg-white dark:bg-neutral-800">
           <tr class="border-b border-gray-200">
             <th
-              class="sticky left-0 top-0 z-20 min-w-[200px] whitespace-nowrap bg-white px-4 py-3 text-left text-sm font-medium text-gray-500 dark:bg-neutral-800 dark:text-gray-300"
+              class="sticky top-0 left-0 z-20 min-w-[200px] bg-white px-4 py-3 text-left text-sm font-medium whitespace-nowrap text-gray-500 dark:bg-neutral-800 dark:text-gray-300"
             >
               {$t('analytics.student_name')}
             </th>
             <th
-              class="min-w-[150px] whitespace-nowrap px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-300"
+              class="min-w-[150px] px-4 py-3 text-left text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-300"
             >
               {$t('analytics.lessons_completed')}
             </th>
             <th
-              class="min-w-[140px] whitespace-nowrap px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-300"
+              class="min-w-[140px] px-4 py-3 text-left text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-300"
             >
               {$t('analytics.exercises_submitted')}
             </th>
             <th
-              class="min-w-[120px] whitespace-nowrap px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-300"
+              class="min-w-[120px] px-4 py-3 text-left text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-300"
             >
               {$t('analytics.average_grade')}
             </th>
             <th
-              class="min-w-[120px] whitespace-nowrap px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-300"
+              class="min-w-[120px] px-4 py-3 text-left text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-300"
             >
               {$t('analytics.last_seen')}
             </th>
             <th
-              class="min-w-[120px] whitespace-nowrap px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-300"
+              class="min-w-[120px] px-4 py-3 text-left text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-300"
             >
               {$t('analytics.actions')}
             </th>
@@ -95,7 +95,7 @@
             <tr class="group h-[100px] border-b hover:bg-gray-50 dark:hover:bg-gray-700">
               <!-- Fixed Name Column -->
               <td
-                class="sticky left-0 z-10 min-w-[200px] whitespace-nowrap bg-white px-4 py-3 transition-colors group-hover:bg-gray-50 dark:bg-neutral-800 dark:group-hover:bg-gray-700"
+                class="sticky left-0 z-10 min-w-[200px] bg-white px-4 py-3 whitespace-nowrap transition-colors group-hover:bg-gray-50 dark:bg-neutral-800 dark:group-hover:bg-gray-700"
               >
                 <div class="flex items-center gap-3">
                   <Avatar.Root class="size-8">
@@ -116,7 +116,7 @@
                 </div>
               </td>
               <!-- Scrollable Content -->
-              <td class="min-w-[150px] whitespace-nowrap px-4 py-3">
+              <td class="min-w-[150px] px-4 py-3 whitespace-nowrap">
                 <div class="flex items-center gap-3">
                   <span class="text-sm font-medium text-gray-900 dark:text-white">
                     {student.lessonsCompleted}/{student.totalLessons}
@@ -128,12 +128,12 @@
                   </div>
                 </div>
               </td>
-              <td class="min-w-[140px] whitespace-nowrap px-4 py-3">
+              <td class="min-w-[140px] px-4 py-3 whitespace-nowrap">
                 <span class="text-sm font-medium text-gray-900 dark:text-white">
                   {student.exercisesSubmitted} out of {student.totalExercises}
                 </span>
               </td>
-              <td class="min-w-[120px] whitespace-nowrap px-4 py-3">
+              <td class="min-w-[120px] px-4 py-3 whitespace-nowrap">
                 <Badge
                   class={student.averageGrade >= 80
                     ? 'bg-green-600'
@@ -144,14 +144,14 @@
                   {student.averageGrade}%
                 </Badge>
               </td>
-              <td class="min-w-[120px] whitespace-nowrap px-4 py-3">
+              <td class="min-w-[120px] px-4 py-3 whitespace-nowrap">
                 <span class="text-sm text-gray-500 dark:text-gray-400">
                   {student.lastSeen}
                 </span>
               </td>
-              <td class="min-w-[120px] whitespace-nowrap px-4 py-3">
+              <td class="min-w-[120px] px-4 py-3 whitespace-nowrap">
                 <button
-                  class="whitespace-nowrap rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                  class="rounded bg-blue-600 px-3 py-1.5 text-sm font-medium whitespace-nowrap text-white transition-colors hover:bg-blue-700"
                   onclick={() => GotoFullProfile(student)}
                 >
                   {$t('analytics.view_details')}

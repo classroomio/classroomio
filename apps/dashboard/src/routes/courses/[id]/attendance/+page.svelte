@@ -10,17 +10,15 @@
   <title>Attendance - ClassroomIO</title>
 </svelte:head>
 
-
-  <Page.Header>
-    <Page.HeaderContent>
-      <Page.Title>
-        {$t('course.navItem.attendance.title')}
-      </Page.Title>
-    </Page.HeaderContent>
-  </Page.Header>
-  <Page.Body>
-    {#snippet child()}
-      <AttendancePage courseId={data.courseId} />
-    {/snippet}
-  </Page.Body>
-
+<Page.Header>
+  <Page.HeaderContent>
+    <Page.Title>
+      {$t('course.navItem.attendance.title')}
+    </Page.Title>
+  </Page.HeaderContent>
+</Page.Header>
+<Page.Body>
+  {#snippet child()}
+    <AttendancePage courseId={data.courseId} />
+  {/snippet}
+</Page.Body>

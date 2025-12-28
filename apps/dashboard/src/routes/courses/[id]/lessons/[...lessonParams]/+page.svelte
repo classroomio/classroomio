@@ -200,134 +200,132 @@
   const isNextDisabled = $derived(isNextOrPrevDisabled(data.lessonId, false));
 </script>
 
-<div>
-  <Page.Header>
-    <Page.HeaderContent>
-      <Page.Title>
-        {data.isMaterialsTabActive
-          ? $t('course.navItem.lessons.lesson_nav.materials')
-          : $t('course.navItem.lessons.lesson_nav.exercises')}
-      </Page.Title>
-    </Page.HeaderContent>
-    <Page.Action>
-      <div class="flex items-center gap-1">
-        <RoleBasedSecurity allowedRoles={[1, 2]}>
-          {#if data.isMaterialsTabActive}
-            <!-- Version control -->
-            {#if mode === MODES.edit && window.innerWidth >= 1024}
-              <IconButton onclick={() => (isVersionDrawerOpen = true)}>
-                <HistoryIcon size={20} />
-              </IconButton>
-            {/if}
-
-            <div class="flex-row items-center lg:flex">
-              <IconButton
-                onclick={() => {
-                  toggleMode();
-                }}
-                disabled={isSaving}
-              >
-                {#if mode === MODES.edit}
-                  <Save size={20} />
-                {:else}
-                  <Pencil size={20} />
-                {/if}
-              </IconButton>
-            </div>
-
-            <Select.Root type="single" bind:value={$lesson.locale}>
-              <Select.Trigger class="h-9 w-[120px]">
-                {LANGUAGES.find((lang) => lang.id === $lesson.locale)?.text || 'Language'}
-              </Select.Trigger>
-              <Select.Content>
-                <Select.Group>
-                  {#each LANGUAGES as lang}
-                    <Select.Item value={lang.id}>
-                      {lang.text}
-                    </Select.Item>
-                  {/each}
-                </Select.Group>
-              </Select.Content>
-            </Select.Root>
+<Page.Header>
+  <Page.HeaderContent>
+    <Page.Title>
+      {data.isMaterialsTabActive
+        ? $t('course.navItem.lessons.lesson_nav.materials')
+        : $t('course.navItem.lessons.lesson_nav.exercises')}
+    </Page.Title>
+  </Page.HeaderContent>
+  <Page.Action>
+    <div class="flex items-center gap-1">
+      <RoleBasedSecurity allowedRoles={[1, 2]}>
+        {#if data.isMaterialsTabActive}
+          <!-- Version control -->
+          {#if mode === MODES.edit && window.innerWidth >= 1024}
+            <IconButton onclick={() => (isVersionDrawerOpen = true)}>
+              <HistoryIcon size={20} />
+            </IconButton>
           {/if}
-        </RoleBasedSecurity>
-      </div>
-    </Page.Action>
-  </Page.Header>
 
-  {#if !data.isMaterialsTabActive}
-    <Exercises lessonId={data.lessonId} exerciseId={data.exerciseId} path={`${path}/exercises`} />
-  {:else if !!data.lessonId}
-    <div class="overflow-x-hidden lg:w-full xl:w-11/12">
-      <!-- Shows Lesson Note / Slides / Video -->
-      <Materials
-        lessonId={data.lessonId}
-        {mode}
-        {prevMode}
-        {toggleMode}
-        bind:isSaving
-        isStudent={$globalStore.isStudent}
-      />
+          <div class="flex-row items-center lg:flex">
+            <IconButton
+              onclick={() => {
+                toggleMode();
+              }}
+              disabled={isSaving}
+            >
+              {#if mode === MODES.edit}
+                <Save size={20} />
+              {:else}
+                <Pencil size={20} />
+              {/if}
+            </IconButton>
+          </div>
+
+          <Select.Root type="single" bind:value={$lesson.locale}>
+            <Select.Trigger class="h-9 w-[120px]">
+              {LANGUAGES.find((lang) => lang.id === $lesson.locale)?.text || 'Language'}
+            </Select.Trigger>
+            <Select.Content>
+              <Select.Group>
+                {#each LANGUAGES as lang}
+                  <Select.Item value={lang.id}>
+                    {lang.text}
+                  </Select.Item>
+                {/each}
+              </Select.Group>
+            </Select.Content>
+          </Select.Root>
+        {/if}
+      </RoleBasedSecurity>
     </div>
-  {/if}
+  </Page.Action>
+</Page.Header>
 
-  <!-- Bottom Lesson Widget -->
-  <div class="absolute bottom-5 flex w-full items-center justify-center">
-    <div class="flex w-fit items-center gap-2 rounded-full bg-gray-100 px-5 py-1 shadow-xl dark:bg-neutral-700">
-      <button
-        disabled={isPrevDisabled}
-        class={`my-2 flex items-center border border-b-0 border-l-0 border-t-0 border-gray-300 px-2 pr-4 ${
-          isPrevDisabled && 'cursor-not-allowed opacity-25'
-        }`}
-        onclick={() => goToNextOrPrevLesson(data.lessonId, true)}
-      >
-        <ChevronLeftIcon size={16} />
-
-        <span class="hidden md:block">{$t('course.navItem.lessons.prev')}</span>
-      </button>
-      {#if data.isMaterialsTabActive}
-        <button
-          class="my-2 flex items-center border border-b-0 border-l-0 border-t-0 border-gray-300 px-2 pr-4"
-          onclick={() => goto(`${path}/exercises`)}
-        >
-          <ListChecksIcon size={16} />
-          <span class="ml-1">{$lesson.totalExercises}</span>
-        </button>
-      {:else}
-        <button
-          class="my-2 flex items-center border border-b-0 border-l-0 border-t-0 border-gray-300 px-2 pr-4"
-          onclick={() => goto(path)}
-        >
-          <LibraryBigIcon size={16} />
-        </button>
-      {/if}
-      <button
-        class="my-2 flex items-center border border-b-0 border-l-0 border-t-0 border-gray-300 px-2 pr-4"
-        onclick={() => markLessonComplete(data.lessonId)}
-        disabled={isMarkingComplete}
-      >
-        <CircleCheckIcon filled={isLessonComplete} />
-      </button>
-      <button
-        disabled={isNextDisabled}
-        class={`my-2 flex items-center px-2 ${isNextDisabled && 'cursor-not-allowed opacity-25'}`}
-        onclick={() => goToNextOrPrevLesson(data.lessonId, false)}
-      >
-        <span class="hidden md:block">{$t('course.navItem.lessons.next')}</span>
-        <ChevronRightIcon size={16} />
-      </button>
-    </div>
-  </div>
-
-  <!-- Version Control Preview -->
-  {#if isVersionDrawerOpen && window.innerWidth >= 1024}
-    <LessonVersionHistory
-      open={isVersionDrawerOpen}
-      on:close={() => (isVersionDrawerOpen = false)}
-      on:restore={refetchDataAfterVersionRestore}
+{#if !data.isMaterialsTabActive}
+  <Exercises lessonId={data.lessonId} exerciseId={data.exerciseId} path={`${path}/exercises`} />
+{:else if !!data.lessonId}
+  <div class="overflow-x-hidden lg:w-full xl:w-11/12">
+    <!-- Shows Lesson Note / Slides / Video -->
+    <Materials
+      lessonId={data.lessonId}
+      {mode}
+      {prevMode}
+      {toggleMode}
+      bind:isSaving
+      isStudent={$globalStore.isStudent}
     />
-  {/if}
+  </div>
+{/if}
 
+<!-- Bottom Lesson Widget -->
+<div class="absolute bottom-5 flex w-full items-center justify-center">
+  <div class="flex w-fit items-center gap-2 rounded-full bg-gray-100 px-5 py-1 shadow-xl dark:bg-neutral-700">
+    <button
+      disabled={isPrevDisabled}
+      class={`my-2 flex items-center border border-t-0 border-b-0 border-l-0 border-gray-300 px-2 pr-4 ${
+        isPrevDisabled && 'cursor-not-allowed opacity-25'
+      }`}
+      onclick={() => goToNextOrPrevLesson(data.lessonId, true)}
+    >
+      <ChevronLeftIcon size={16} />
+
+      <span class="hidden md:block">{$t('course.navItem.lessons.prev')}</span>
+    </button>
+    {#if data.isMaterialsTabActive}
+      <button
+        class="my-2 flex items-center border border-t-0 border-b-0 border-l-0 border-gray-300 px-2 pr-4"
+        onclick={() => goto(`${path}/exercises`)}
+      >
+        <ListChecksIcon size={16} />
+        <span class="ml-1">{$lesson.totalExercises}</span>
+      </button>
+    {:else}
+      <button
+        class="my-2 flex items-center border border-t-0 border-b-0 border-l-0 border-gray-300 px-2 pr-4"
+        onclick={() => goto(path)}
+      >
+        <LibraryBigIcon size={16} />
+      </button>
+    {/if}
+    <button
+      class="my-2 flex items-center border border-t-0 border-b-0 border-l-0 border-gray-300 px-2 pr-4"
+      onclick={() => markLessonComplete(data.lessonId)}
+      disabled={isMarkingComplete}
+    >
+      <CircleCheckIcon filled={isLessonComplete} />
+    </button>
+    <button
+      disabled={isNextDisabled}
+      class={`my-2 flex items-center px-2 ${isNextDisabled && 'cursor-not-allowed opacity-25'}`}
+      onclick={() => goToNextOrPrevLesson(data.lessonId, false)}
+    >
+      <span class="hidden md:block">{$t('course.navItem.lessons.next')}</span>
+      <ChevronRightIcon size={16} />
+    </button>
+  </div>
+</div>
+
+<!-- Version Control Preview -->
+{#if isVersionDrawerOpen && window.innerWidth >= 1024}
+  <LessonVersionHistory
+    open={isVersionDrawerOpen}
+    on:close={() => (isVersionDrawerOpen = false)}
+    on:restore={refetchDataAfterVersionRestore}
+  />
+{/if}
 
 <style>
   @media screen and (min-width: 1023px) {

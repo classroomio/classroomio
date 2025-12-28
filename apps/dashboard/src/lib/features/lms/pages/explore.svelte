@@ -33,7 +33,6 @@
     return coursesFiltered;
   });
 
-
   onMount(() => {
     const courseView = localStorage.getItem('courseView') as 'grid' | 'list' | null;
 

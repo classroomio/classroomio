@@ -1,11 +1,9 @@
 import { classroomio } from '$lib/utils/services/api';
 import { getApiHeaders } from '$lib/utils/services/api';
 
-export const load = async ({ params, cookies, parent }) => {
-  const { org } = await parent();
+export const load = async ({ params, cookies }) => {
   const courseId = params.id || '';
-
-  if (!courseId || !org?.id) {
+  if (!courseId) {
     return {
       course: null,
       courseId: ''
@@ -17,7 +15,7 @@ export const load = async ({ params, cookies, parent }) => {
     {
       param: { courseId }
     },
-    getApiHeaders(cookies, org.id)
+    getApiHeaders(cookies, '')
   );
 
   const data = await response.json();

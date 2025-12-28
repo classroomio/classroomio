@@ -64,7 +64,7 @@
   }
 </script>
 
-<div class="flex min-h-screen w-full items-center justify-center p-4 auth-ui-background">
+<div class="auth-ui-background flex min-h-screen w-full items-center justify-center p-4">
   <Card.Root class="ui:w-full max-w-[400px]">
     {#if !showOnlyContent || showLogo}
       <Card.Header class="ui:flex ui:flex-col ui:items-center ui:gap-4">
@@ -125,10 +125,10 @@
 
 <style>
   .auth-ui-background {
-    background: url(https://assets.cdn.clsrio.com/www/anime-classroom.jpg) no-repeat center center fixed; 
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
+    background: url(https://assets.cdn.clsrio.com/www/anime-classroom.jpg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
   }
 </style>

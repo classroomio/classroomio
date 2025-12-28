@@ -68,7 +68,7 @@
   }
   let isCustomTheme = $derived($currentOrg?.theme?.includes('#'));
   let hex = $derived($currentOrg.theme.includes('#') ? $currentOrg.theme : null);
-  
+
   $effect(() => {
     console.log('$currentOrg?.theme', $currentOrg?.theme);
     console.log('hex', hex);
@@ -78,7 +78,7 @@
 
 <UnsavedChanges bind:hasUnsavedChanges />
 
-<Field.Group class="max-w-md! w-full px-2">
+<Field.Group class="w-full max-w-md! px-2">
   <Field.Set>
     <Field.Group>
       <Field.Field>
@@ -154,15 +154,13 @@
 
         <div
           style={`border-color: ${isCustomTheme ? $currentOrg.theme : 'dark:border-neutral-700'};`}
-          class="group relative cursor-pointer h-auto w-fit rounded-full border-2"
+          class="group relative h-auto w-fit cursor-pointer rounded-full border-2"
         >
           <!-- plus icon positioned over the color picker -->
           <div
             class="pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-200"
           >
-            <PlusIcon
-              class="size-6 z-10 {!!hex ? 'stroke-white' : 'stroke-gray-500'}"
-            />
+            <PlusIcon class="z-10 size-6 {!!hex ? 'stroke-white' : 'stroke-gray-500'}" />
           </div>
           <ColorPicker
             position="responsive"

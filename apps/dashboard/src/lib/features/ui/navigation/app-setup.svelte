@@ -49,7 +49,7 @@
           {#each setupList as item}
             <div class="flex items-center gap-2 text-sm">
               {#if item.is_completed}
-                <BadgeCheckIcon class="custom text-green-600! size-4 shrink-0 opacity-50" />
+                <BadgeCheckIcon class="custom size-4 shrink-0 text-green-600! opacity-50" />
                 <span class="text-muted-foreground line-through opacity-50">{$t(item.title)}</span>
               {:else}
                 <CircleIcon class="size-4 shrink-0 text-gray-400" />
