@@ -130,12 +130,6 @@
     </nav>
   </div>
   <footer class="border-t py-3 text-center text-xs font-light leading-5 text-gray-500 lg:text-left lg:text-base">
-    <p>All rights reserved.</p>
-    <p class="flex items-center justify-center">
-      ClassroomIO © {new Date().getFullYear()} by
-      <a href="https://twitter.com/rotimi_best" target="_blank" class="mx-1 text-blue-700 underline">Rotimi Best</a>
-      from
-      <img loading="lazy" alt="Nigerian Flag" src="/ng.png" class="ml-2 h-3 w-3" />
-    </p>
+    <p class="w-fit mx-auto">All rights reserved -  ClassroomIO © {new Date().getFullYear()}</p>
   </footer>
 </div>

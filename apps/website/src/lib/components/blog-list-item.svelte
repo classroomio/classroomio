@@ -28,19 +28,19 @@
   </div>
 {/if}
 
-<a href="/blog/{post.slug}" class="group">
+<a href="/blog/{post.slug}" class="group space-y-2">
   <img loading="lazy" src={post.imageUrl} alt={post.title} class="w-70 h-48 rounded-md object-cover" />
-  <p class="py-2 text-lg font-bold {isRecommended && 'h-[60px]'} line-clamp-2 group-hover:text-slate-500">
+  <p class="text-md font-medium {isRecommended && 'h-[60px]'} line-clamp-2 group-hover:underline">
     {@html post.title}
   </p>
 
-  <p class="mb-4 line-clamp-3 pt-2 text-slate-500">{post.description}</p>
+  <p class="line-clamp-3 ui:text-muted-foreground">{post.description}</p>
 </a>
 
 <div class="my-2 flex items-center justify-start gap-4">
-  <img loading="lazy" src={post.avatar} alt="avatar" class="h-10 w-10 rounded-full" />
+  <img loading="lazy" src={post.avatar} alt="avatar" class="size-10 rounded-full" />
   <span>
-    <p class="font-semibold">{post.author}</p>
-    <p class="text-slate-500">{post.role}</p>
+    <p class="font-medium">{post.author}</p>
+    <p class="ui:text-muted-foreground">{post.role}</p>
   </span>
 </div>
