@@ -29,7 +29,7 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import * as Page from '@cio/ui/base/page';
   import { RoleBasedSecurity } from '$features/ui';
-  import Exercises from '$features/course/components/lesson/exercises/index.svelte';
+  import Exercises from '$features/course/components/lesson/exericses/index.svelte';
   import Materials from '$lib/features/course/components/lesson/materials/index.svelte';
 
   let { data = $bindable() } = $props();

@@ -1,7 +1,7 @@
 <script lang="ts">
-  import XIcon from '@lucide/svelte/icons/x';
   import { Spinner } from '@cio/ui/base/spinner';
   import { IconButton } from '@cio/ui/custom/icon-button';
+  import { CloseIcon } from '@cio/ui/custom/moving-icons';
 
   interface Props {
     onClick?: (value: string) => void;
@@ -20,6 +20,6 @@
   {#if isClosing}
     <Spinner class="size-5 text-blue-700!" />
   {:else}
-    <XIcon size={16} class="dark:text-black" />
+    <CloseIcon size={16} class="[&_svg]:dark:text-white" />
   {/if}
 </IconButton>

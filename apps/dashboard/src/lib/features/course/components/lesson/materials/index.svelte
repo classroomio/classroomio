@@ -35,7 +35,7 @@
   import { Button } from '@cio/ui/base/button';
   import { Chip } from '@cio/ui/custom/chip';
   import Loader from './loader.svelte';
-  import Comments from './components/Comments.svelte';
+  import Comments from './components/comments.svelte';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import { Empty } from '@cio/ui/custom/empty';
   import VideoIcon from '@lucide/svelte/icons/video';
@@ -47,7 +47,7 @@
   import ComponentVideo from './components/component-video.svelte';
   import { TextEditor, HTMLRender } from '$features/ui';
   import ComponentDocument from './components/component-document.svelte';
-  import AddVideoToLesson from '$lib$features/course/components/lesson/materials/video/add-video-to-lesson.svelte';
+  import AddVideoToLesson from './video/add-video-to-lesson.svelte';
   import AddDocumentToLesson from '$features/course/components/lesson/materials/document/add-document-to-lesson.svelte';
   import type { TLocale } from '@cio/db/types';
 

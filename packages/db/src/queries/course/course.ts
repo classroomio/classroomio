@@ -225,7 +225,13 @@ export async function getCourseWithRelations(courseId?: string, slug?: string) {
           .select({
             group: schema.group,
             member: schema.groupmember,
-            profile: schema.profile
+            profile: {
+              id: schema.profile.id,
+              fullname: schema.profile.fullname,
+              username: schema.profile.username,
+              avatarUrl: schema.profile.avatarUrl,
+              email: schema.profile.email
+            }
           })
           .from(schema.group)
           .leftJoin(schema.groupmember, eq(schema.group.id, schema.groupmember.groupId))

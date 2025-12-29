@@ -106,7 +106,8 @@
     if (!orgId) return;
 
     untrack(async () => {
-      await orgApi.getOrgTeam(orgId);
+      await orgApi.getOrgTeam();
+
       if (orgApi.error) {
         console.error('Error fetching teams', orgApi.error);
         return;

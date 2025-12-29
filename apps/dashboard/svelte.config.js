@@ -101,14 +101,16 @@ const config = {
           'unsafe-inline',
           'https://cdn.plyr.io',
           'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
-          'https://assets.cdn.clsrio.com/eqneditor_1.css'
+          'https://assets.cdn.clsrio.com/eqneditor_1.css',
+          'https://fonts.googleapis.com'
         ],
         'style-src-elem': [
           'self',
           'unsafe-inline',
           'https://cdn.plyr.io',
           'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
-          'https://assets.cdn.clsrio.com/eqneditor_1.css'
+          'https://assets.cdn.clsrio.com/eqneditor_1.css',
+          'https://fonts.googleapis.com'
         ],
         'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
         'img-src': ['self', 'data:', 'https:'],

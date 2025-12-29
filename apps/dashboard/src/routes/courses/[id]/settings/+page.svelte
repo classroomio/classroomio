@@ -4,8 +4,6 @@
   import { t } from '$lib/utils/functions/translations';
   import { Button } from '@cio/ui/base/button';
 
-  let { data } = $props();
-
   let settingsComponent: CourseSettingsPage | null = $state(null);
   let isSaving = $state(false);
 

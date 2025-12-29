@@ -127,7 +127,7 @@
           <div class="mb-3 flex items-center lg:mb-0">
             <ListChecksIcon size={16} />
             <p class="ml-2 text-sm text-gray-500 dark:text-white">
-              {lesson?.totalExercises ? lesson?.totalExercises?.map((c) => c.count) : 0}
+              {lesson?.totalExercises ? lesson?.totalExercises?.map?.((c) => c.count) : 0}
               {$t('exercises.heading')}
             </p>
           </div>

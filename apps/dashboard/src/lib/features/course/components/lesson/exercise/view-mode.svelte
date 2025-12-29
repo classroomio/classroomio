@@ -5,9 +5,7 @@
   import { questionnaire } from '../store/exercise';
   import { questionnaireMetaData } from '../store/answers';
   import Preview from './preview.svelte';
-  import { RadioQuestion } from '$features/ui/question';
-  import { CheckboxQuestion } from '$features/ui/question/CheckboxQuestion/index.svelte';
-  import { TextareaQuestion } from '$features/ui/question/TextareaQuestion/index.svelte';
+  import { RadioQuestion, CheckboxQuestion, TextareaQuestion } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
   import { RoleBasedSecurity } from '$features/ui';
   import { Empty } from '@cio/ui/custom/empty';

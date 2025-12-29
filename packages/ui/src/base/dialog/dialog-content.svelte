@@ -1,9 +1,9 @@
 <script lang="ts">
   import { Dialog as DialogPrimitive } from 'bits-ui';
-  import XIcon from '@lucide/svelte/icons/x';
   import type { Snippet } from 'svelte';
   import * as Dialog from './index.js';
   import { cn, type WithoutChildrenOrChild } from '../../tools';
+  import { CloseIcon, HoverableItem } from '../../custom/moving-icons';
 
   let {
     ref = $bindable(null),
@@ -32,12 +32,16 @@
   >
     {@render children?.()}
     {#if showCloseButton}
-      <DialogPrimitive.Close
-        class="ui:ring-offset-background ui:focus:ring-ring ui:rounded-xs ui:focus:outline-hidden ui:absolute ui:top-4 ui:opacity-70 ui:transition-opacity ui:hover:opacity-100 ui:focus:ring-2 ui:focus:ring-offset-2 ui:disabled:pointer-events-none ui:[&_svg:not([class*='size-'])]:size-4 ui:[&_svg]:pointer-events-none ui:[&_svg]:shrink-0 ui:end-4 ui:cursor-pointer"
-      >
-        <XIcon />
-        <span class="ui:sr-only">Close</span>
-      </DialogPrimitive.Close>
+      <HoverableItem>
+        {#snippet children(isHovered)}
+          <DialogPrimitive.Close
+            class="ui:ring-offset-background ui:focus:ring-ring ui:rounded-xs ui:focus:outline-hidden ui:absolute ui:top-4 ui:opacity-70 ui:transition-opacity ui:hover:opacity-100 ui:focus:ring-2 ui:focus:ring-offset-2 ui:disabled:pointer-events-none ui:[&_svg:not([class*='size-'])]:size-4 ui:[&_svg]:pointer-events-none ui:[&_svg]:shrink-0 ui:end-4 ui:cursor-pointer"
+          >
+            <CloseIcon {isHovered} />
+            <span class="ui:sr-only">Close</span>
+          </DialogPrimitive.Close>
+        {/snippet}
+      </HoverableItem>
     {/if}
   </DialogPrimitive.Content>
 </Dialog.Portal>

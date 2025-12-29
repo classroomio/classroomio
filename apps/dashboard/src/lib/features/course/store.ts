@@ -64,6 +64,7 @@ class CourseStore {
    * @param courseId Course ID
    */
   initializeFromServerData(courseData: Course | null, courseId: string) {
+    console.log('initializeFromServerData');
     if (get(this.prevId) === courseId && courseData) {
       return; // Already initialized
     }
@@ -71,9 +72,13 @@ class CourseStore {
     this.prevId.set(courseId);
     this.isLoading.update(() => false);
 
+    console.log('courseData', courseData);
+    console.log('courseId', courseId);
     if (courseData) {
+      console.log('setting course');
       setCourse(courseData);
     } else {
+      console.log('setting default course');
       course.set(defaultCourse);
       lessons.set([]);
     }

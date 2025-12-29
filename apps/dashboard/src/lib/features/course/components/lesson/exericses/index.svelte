@@ -193,6 +193,8 @@
       </slot:fragment>
     {/snippet}
 
+    {@render header()}
+
     <div class="mt-5 flex flex-wrap">
       {#each $lesson.exercises as exercise}
         <a class="mr-4 mb-4 w-52 rounded-lg bg-gray-100 px-4 py-7 dark:bg-neutral-800" href="{path}/{exercise.id}">

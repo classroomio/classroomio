@@ -80,6 +80,10 @@
       isSaving = false;
     }
   };
+
+  $effect(() => {
+    console.log('course', $course);
+  });
 </script>
 
 <svelte:head>
@@ -147,7 +151,8 @@
         <div class="my-4 flex items-center space-x-2">
           <Switch
             id="certificate-downloadable"
-            bind:checked={$course.is_certificate_downloadable}
+            checked={$course.is_certificate_downloadable}
+            onCheckedChange={(checked) => ($course.is_certificate_downloadable = checked)}
             disabled={$isFreePlan}
           />
           <Label for="certificate-downloadable" class="text-sm font-medium dark:text-gray-100">
