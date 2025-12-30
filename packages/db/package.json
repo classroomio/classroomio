@@ -16,21 +16,24 @@
     "pull": "drizzle-kit pull --config drizzle.config.ts",
     "generate-types": "tsx scripts/generate-types.ts && pnpm format",
     "seed": "tsx src/scripts/seed.ts",
-    "format": "prettier . --write"
+    "format": "prettier . --write",
+    "test": "vitest run"
   },
   "dependencies": {
     "@cio/email": "workspace:*",
     "@cio/tsconfig": "workspace:*",
     "@cio/utils": "workspace:*",
+    "@testcontainers/postgresql": "^11.9.0",
     "bcrypt": "6.0.0",
     "better-auth": "^1.4.1",
     "drizzle-kit": "^0.31.5",
     "drizzle-orm": "^0.44.7",
-    "postgres": "^3.4.7"
+    "postgres": "^3.4.7",
+    "vitest": "^4.0.15"
   },
   "devDependencies": {
     "@types/bcrypt": "6.0.0",
-    "@types/node": "^24.8.1",
+    "@types/node": "^24.9.2",
     "dotenv": "^17.2.3",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.20.3",
