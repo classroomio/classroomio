@@ -17,7 +17,8 @@
     "api:dev": "pnpm dev --filter=@cio/api --filter=@cio/email  --filter=@cio/db --filter=@cio/utils",
     "api:start": "pnpm start --filter @cio/api",
     "supabase:push": "pnpx supabase link --project-ref $PROJECT_ID && pnpx supabase db push --include-all",
-    "storybook:dev": "pnpm dev --filter=@cio/storybook --filter=@cio/ui"
+    "storybook:dev": "pnpm dev --filter=@cio/storybook --filter=@cio/ui",
+    "db:test": "turbo test --filter @cio/db"
   },
   "license": "MIT",
   "dependencies": {

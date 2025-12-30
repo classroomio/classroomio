@@ -9,6 +9,7 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 const connectionString = process.env.DATABASE_URL ?? process.env.PRIVATE_DATABASE_URL ?? '';
 
 export const db = drizzle(connectionString);
+export type DBType = typeof db
 
 export * from 'drizzle-orm';
 export * from './schema';

@@ -27,7 +27,7 @@ export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
 
 export const user = pgTable('user', {
   id: uuid()
-    .default(sql`gen_random_uuid()`)
+    .defaultRandom()
     .primaryKey()
     .notNull(),
   name: text('name').notNull(),
@@ -37,7 +37,7 @@ export const user = pgTable('user', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at')
     .defaultNow()
-    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .$onUpdate(() => new Date())
     .notNull(),
   role: text('role'),
   banned: boolean('banned').default(false),
@@ -48,14 +48,14 @@ export const user = pgTable('user', {
 
 export const session = pgTable('session', {
   id: uuid()
-    .default(sql`gen_random_uuid()`)
+    .defaultRandom()
     .primaryKey()
     .notNull(),
   expiresAt: timestamp('expires_at').notNull(),
   token: text('token').notNull().unique(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at')
-    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .$onUpdate(() => new Date())
     .notNull(),
   ipAddress: text('ip_address'),
   userAgent: text('user_agent'),
@@ -67,7 +67,7 @@ export const session = pgTable('session', {
 
 export const account = pgTable('account', {
   id: uuid('id')
-    .default(sql`gen_random_uuid()`)
+    .defaultRandom()
     .primaryKey()
     .notNull(),
   accountId: text('account_id').notNull(),
@@ -84,13 +84,13 @@ export const account = pgTable('account', {
   password: text('password'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at')
-    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .$onUpdate(() => new Date())
     .notNull()
 });
 
 export const verification = pgTable('verification', {
   id: uuid('id')
-    .default(sql`gen_random_uuid()`)
+    .defaultRandom()
     .primaryKey()
     .notNull(),
   identifier: text('identifier').notNull(),
@@ -99,7 +99,7 @@ export const verification = pgTable('verification', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at')
     .defaultNow()
-    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .$onUpdate(() => new Date())
     .notNull()
 });
 
@@ -107,7 +107,7 @@ export const analyticsLoginEvents = pgTable(
   'analytics_login_events',
   {
     id: uuid()
-      .default(sql`gen_random_uuid()`)
+      .defaultRandom()
       .primaryKey()
       .notNull(),
     userId: uuid('user_id').notNull(),
@@ -135,7 +135,6 @@ export const lessonSection = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     title: varchar(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     order: bigint({ mode: 'number' }).default(sql`'0'`),
     courseId: uuid('course_id')
   },
@@ -154,7 +153,7 @@ export const group = pgTable(
   'group',
   {
     id: uuid()
-      .default(sql`gen_random_uuid()`)
+      .defaultRandom()
       .primaryKey()
       .notNull(),
     name: varchar().notNull(),
@@ -175,7 +174,6 @@ export const group = pgTable(
 export const groupAttendance = pgTable(
   'group_attendance',
   {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
       name: 'group_attendance_id_seq',
       startWith: 1,
@@ -205,7 +203,6 @@ export const groupAttendance = pgTable(
 );
 
 export const currency = pgTable('currency', {
-  // You can use { mode: "bigint" } if numbers are exceeding js number limitations
   id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
     name: 'currency_id_seq',
     startWith: 1,
@@ -220,7 +217,6 @@ export const currency = pgTable('currency', {
 export const appsPollOption = pgTable(
   'apps_poll_option',
   {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
       name: 'apps_poll_option_id_seq',
       startWith: 1,
@@ -282,7 +278,6 @@ export const profile = pgTable(
 export const option = pgTable(
   'option',
   {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
       name: 'option_id_seq',
       startWith: 1,
@@ -292,9 +287,8 @@ export const option = pgTable(
     }),
     label: varchar().notNull(),
     isCorrect: boolean('is_correct').default(false).notNull(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     questionId: bigint('question_id', { mode: 'number' }).notNull(),
-    value: uuid().default(sql`gen_random_uuid()`),
+    value: uuid().defaultRandom(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
   },
@@ -310,7 +304,6 @@ export const option = pgTable(
 export const quizPlay = pgTable(
   'quiz_play',
   {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
       name: 'play_quiz_id_seq',
       startWith: 1,
@@ -323,7 +316,6 @@ export const quizPlay = pgTable(
     quizId: uuid('quiz_id'),
     players: json().default([]),
     started: boolean().default(false),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     currentQuestionId: bigint({ mode: 'number' }).default(sql`'0'`),
     showCurrentQuestionAnswer: boolean().default(false),
     isLastQuestion: boolean(),
@@ -344,7 +336,6 @@ export const quizPlay = pgTable(
 export const organizationContacts = pgTable(
   'organization_contacts',
   {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
       name: 'organization_contacts_id_seq',
       startWith: 1,
@@ -371,7 +362,6 @@ export const organizationContacts = pgTable(
 export const lessonComment = pgTable(
   'lesson_comment',
   {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
       name: 'lesson_comment_id_seq',
       startWith: 1,
@@ -403,7 +393,7 @@ export const quiz = pgTable(
   'quiz',
   {
     id: uuid()
-      .default(sql`gen_random_uuid()`)
+      .defaultRandom()
       .primaryKey()
       .notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
@@ -427,14 +417,11 @@ export const submission = pgTable(
   'submission',
   {
     id: uuid()
-      .default(sql`gen_random_uuid()`)
+      .defaultRandom()
       .primaryKey()
       .notNull(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     reviewerId: bigint('reviewer_id', { mode: 'number' }),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     statusId: bigint('status_id', { mode: 'number' }).default(sql`'1'`),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     total: bigint({ mode: 'number' }).default(sql`'0'`),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
@@ -467,22 +454,17 @@ export const submission = pgTable(
   ]
 );
 
-export const submissionstatus = pgTable(
-  'submissionstatus',
-  {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
-      name: 'submission_status_id_seq',
-      startWith: 1,
-      increment: 1,
-      minValue: 1,
-      cache: 1
-    }),
-    label: varchar().notNull(),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
-  },
-  (table) => []
-);
+export const submissionstatus = pgTable('submissionstatus', {
+  id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
+    name: 'submission_status_id_seq',
+    startWith: 1,
+    increment: 1,
+    minValue: 1,
+    cache: 1
+  }),
+  label: varchar().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
+});
 
 export const course = pgTable(
   'course',
@@ -491,7 +473,7 @@ export const course = pgTable(
     description: varchar().notNull(),
     overview: varchar().default('Welcome to this amazing course 🚀 '),
     id: uuid()
-      .default(sql`gen_random_uuid()`)
+      .defaultRandom()
       .primaryKey()
       .notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
@@ -501,7 +483,6 @@ export const course = pgTable(
     logo: text().default('').notNull(),
     slug: varchar(),
     metadata: jsonb().default({ goals: '', description: '', requirements: '' }).notNull(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     cost: bigint({ mode: 'number' }).default(sql`'0'`),
     currency: varchar().default('USD').notNull(),
     bannerImage: text('banner_image'),
@@ -550,7 +531,6 @@ export const appsPoll = pgTable(
 );
 
 export const videoTranscripts = pgTable('video_transcripts', {
-  // You can use { mode: "bigint" } if numbers are exceeding js number limitations
   id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
     name: 'video_transcripts_id_seq',
     startWith: 1,
@@ -568,7 +548,6 @@ export const videoTranscripts = pgTable('video_transcripts', {
 export const organizationEmaillist = pgTable(
   'organization_emaillist',
   {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
       name: 'organization_emaillist_id_seq',
       startWith: 1,
@@ -597,7 +576,7 @@ export const lesson = pgTable(
     slideUrl: varchar('slide_url'),
     courseId: uuid('course_id').notNull(),
     id: uuid()
-      .default(sql`gen_random_uuid()`)
+      .defaultRandom()
       .primaryKey()
       .notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
@@ -608,7 +587,6 @@ export const lesson = pgTable(
     teacherId: uuid('teacher_id'),
     isComplete: boolean('is_complete').default(false),
     callUrl: text('call_url'),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     order: bigint({ mode: 'number' }),
     isUnlocked: boolean('is_unlocked').default(false),
     videos: jsonb().default([]),
@@ -639,7 +617,6 @@ export const lesson = pgTable(
 export const appsPollSubmission = pgTable(
   'apps_poll_submission',
   {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
       name: 'apps_poll_submision_id_seq',
       startWith: 1,
@@ -648,7 +625,6 @@ export const appsPollSubmission = pgTable(
       cache: 1
     }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     pollOptionId: bigint('poll_option_id', { mode: 'number' }),
     selectedById: uuid('selected_by_id'),
     pollId: uuid('poll_id')
@@ -681,7 +657,7 @@ export const exercise = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     id: uuid()
-      .default(sql`gen_random_uuid()`)
+      .defaultRandom()
       .primaryKey()
       .notNull(),
     dueBy: timestamp('due_by', { mode: 'string' })
@@ -699,11 +675,10 @@ export const groupmember = pgTable(
   'groupmember',
   {
     id: uuid()
-      .default(sql`gen_random_uuid()`)
+      .defaultRandom()
       .primaryKey()
       .notNull(),
     groupId: uuid('group_id').notNull(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     roleId: bigint('role_id', { mode: 'number' }).notNull(),
     profileId: uuid('profile_id'),
     email: varchar(),
@@ -735,7 +710,6 @@ export const groupmember = pgTable(
 export const lessonCompletion = pgTable(
   'lesson_completion',
   {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
       name: 'lesson_completion_id_seq',
       startWith: 1,
@@ -768,16 +742,13 @@ export const communityAnswer = pgTable(
   'community_answer',
   {
     id: uuid()
-      .default(sql`gen_random_uuid()`)
+      .defaultRandom()
       .primaryKey()
       .notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     questionId: bigint('question_id', { mode: 'number' }),
     body: varchar(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     authorId: bigint('author_id', { mode: 'number' }),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     votes: bigint({ mode: 'number' }),
     authorProfileId: uuid('author_profile_id')
   },
@@ -803,7 +774,6 @@ export const communityAnswer = pgTable(
 export const communityQuestion = pgTable(
   'community_question',
   {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
       name: 'community_question_id_seq',
       startWith: 1,
@@ -814,9 +784,7 @@ export const communityQuestion = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     title: varchar(),
     body: text(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     authorId: bigint('author_id', { mode: 'number' }),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     votes: bigint({ mode: 'number' }).default(sql`'0'`),
     organizationId: uuid('organization_id'),
     slug: text(),
@@ -878,7 +846,6 @@ export const courseNewsfeedComment = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     authorId: uuid('author_id'),
     content: text(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
       name: 'course_newsfeed_comment_id_seq',
       startWith: 1,
@@ -898,7 +865,8 @@ export const courseNewsfeedComment = pgTable(
       columns: [table.courseNewsfeedId],
       foreignColumns: [courseNewsfeed.id],
       name: 'course_newsfeed_comment_course_newsfeed_id_fkey'
-    })
+    }),
+    unique('course_newsfeed_comment_id_key').on(table.id)
   ]
 );
 
@@ -910,7 +878,6 @@ export const testTenant = pgTable('test_tenant', {
 export const organizationPlan = pgTable(
   'organization_plan',
   {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
       name: 'organization_plan_id_seq',
       startWith: 1,
@@ -925,7 +892,6 @@ export const organizationPlan = pgTable(
     deactivatedAt: timestamp('deactivated_at', { withTimezone: true, mode: 'string' }),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     payload: jsonb(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     triggeredBy: bigint('triggered_by', { mode: 'number' }),
     provider: text().default('lmz'),
     subscriptionId: text('subscription_id')
@@ -949,7 +915,6 @@ export const organizationPlan = pgTable(
 export const lessonLanguage = pgTable(
   'lesson_language',
   {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
       name: 'lesson_language_id_seq',
       startWith: 1,
@@ -997,7 +962,6 @@ export const lessonLanguageHistory = pgTable(
 export const organizationmember = pgTable(
   'organizationmember',
   {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
       name: 'organizationmember_id_seq',
       startWith: 1,
@@ -1006,14 +970,11 @@ export const organizationmember = pgTable(
       cache: 1
     }),
     organizationId: uuid('organization_id').notNull(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     roleId: bigint('role_id', { mode: 'number' }).notNull(),
     profileId: uuid('profile_id'),
     email: text(),
     verified: boolean().default(false),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
-      .default(sql`timezone('utc'::text, now())`)
-      .notNull()
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
   (table) => [
     foreignKey({
@@ -1040,7 +1001,6 @@ export const organizationmember = pgTable(
 export const question = pgTable(
   'question',
   {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
       name: 'question_id_seq',
       startWith: 1,
@@ -1048,15 +1008,13 @@ export const question = pgTable(
       minValue: 1,
       cache: 1
     }),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     questionTypeId: bigint('question_type_id', { mode: 'number' }).notNull(),
     title: varchar().notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     exerciseId: uuid('exercise_id').notNull(),
-    name: uuid().default(sql`gen_random_uuid()`),
+    name: uuid().defaultRandom(),
     points: doublePrecision(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     order: bigint({ mode: 'number' })
   },
   (table) => [
@@ -1076,7 +1034,6 @@ export const question = pgTable(
 export const questionAnswer = pgTable(
   'question_answer',
   {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
       name: 'question_answer_id_seq',
       startWith: 1,
@@ -1085,12 +1042,10 @@ export const questionAnswer = pgTable(
       cache: 1
     }),
     answers: varchar().array(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     questionId: bigint('question_id', { mode: 'number' }).notNull(),
     openAnswer: text('open_answer'),
     groupMemberId: uuid('group_member_id').notNull(),
     submissionId: uuid('submission_id'),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     point: bigint({ mode: 'number' }).default(sql`'0'`)
   },
   (table) => [
@@ -1112,48 +1067,37 @@ export const questionAnswer = pgTable(
   ]
 );
 
-export const questionType = pgTable(
-  'question_type',
-  {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
-      name: 'question_type_id_seq',
-      startWith: 1,
-      increment: 1,
-      minValue: 1,
-      cache: 1
-    }),
-    label: varchar().notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
-    typename: varchar()
-  },
-  (table) => []
-);
+export const questionType = pgTable('question_type', {
+  id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
+    name: 'question_type_id_seq',
+    startWith: 1,
+    increment: 1,
+    minValue: 1,
+    cache: 1
+  }),
+  label: varchar().notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+  typename: varchar()
+});
 
-export const role = pgTable(
-  'role',
-  {
-    type: varchar().notNull(),
-    description: varchar(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
-      name: 'role_id_seq',
-      startWith: 1,
-      increment: 1,
-      minValue: 1,
-      cache: 1
-    }),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow()
-  },
-  (table) => []
-);
+export const role = pgTable('role', {
+  type: varchar().notNull(),
+  description: varchar(),
+  id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
+    name: 'role_id_seq',
+    startWith: 1,
+    increment: 1,
+    minValue: 1,
+    cache: 1
+  }),
+  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow()
+});
 
 export const waitinglist = pgTable(
   'waitinglist',
   {
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
       name: 'waitinglist_id_seq',
       startWith: 1,
@@ -1171,7 +1115,7 @@ export const organization = pgTable(
   'organization',
   {
     id: uuid()
-      .default(sql`gen_random_uuid()`)
+      .defaultRandom()
       .primaryKey()
       .notNull(),
     name: varchar().notNull(),
@@ -1254,9 +1198,7 @@ export const organization = pgTable(
       };
     }>(),
     theme: text(),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
-      .default(sql`timezone('utc'::text, now())`)
-      .notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     customization: json()
       .default({
         apps: { poll: true, comments: true },
@@ -1294,9 +1236,7 @@ export const organization = pgTable(
 
 export const dashOrgStats = pgView('dash_org_stats', {
   orgId: uuid('org_id'),
-  // You can use { mode: "bigint" } if numbers are exceeding js number limitations
   noOfCourses: bigint('no_of_courses', { mode: 'number' }),
-  // You can use { mode: "bigint" } if numbers are exceeding js number limitations
   enrolledStudents: bigint('enrolled_students', { mode: 'number' })
 }).as(
   sql`SELECT gp.organization_id AS org_id, count(DISTINCT course.id) AS no_of_courses, count(DISTINCT gm.profile_id) AS enrolled_students FROM course JOIN "group" gp ON gp.id = course.group_id LEFT JOIN groupmember gm ON gm.group_id = gp.id AND gm.role_id = 3 WHERE course.status = 'ACTIVE'::text GROUP BY gp.organization_id`
