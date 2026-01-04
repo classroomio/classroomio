@@ -8,6 +8,7 @@ import {
   course,
   courseNewsfeed,
   courseNewsfeedComment,
+  coursePayment,
   exercise,
   group,
   groupAttendance,
@@ -24,6 +25,9 @@ import {
   organizationEmaillist,
   organizationPlan,
   organizationmember,
+  paymentAccount,
+  payout,
+  payoutItem,
   profile,
   question,
   questionAnswer,
@@ -420,5 +424,54 @@ export const questionAnswerRelations = relations(questionAnswer, ({ one }) => ({
   submission: one(submission, {
     fields: [questionAnswer.submissionId],
     references: [submission.id]
+  })
+}));
+
+// Payment System Relations
+
+export const paymentAccountRelations = relations(paymentAccount, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [paymentAccount.organizationId],
+    references: [organization.id]
+  }),
+  payouts: many(payout)
+}));
+
+export const coursePaymentRelations = relations(coursePayment, ({ one, many }) => ({
+  course: one(course, {
+    fields: [coursePayment.courseId],
+    references: [course.id]
+  }),
+  profile: one(profile, {
+    fields: [coursePayment.profileId],
+    references: [profile.id]
+  }),
+  organization: one(organization, {
+    fields: [coursePayment.organizationId],
+    references: [organization.id]
+  }),
+  payoutItems: many(payoutItem)
+}));
+
+export const payoutRelations = relations(payout, ({ one, many }) => ({
+  paymentAccount: one(paymentAccount, {
+    fields: [payout.paymentAccountId],
+    references: [paymentAccount.id]
+  }),
+  organization: one(organization, {
+    fields: [payout.organizationId],
+    references: [organization.id]
+  }),
+  payoutItems: many(payoutItem)
+}));
+
+export const payoutItemRelations = relations(payoutItem, ({ one }) => ({
+  payout: one(payout, {
+    fields: [payoutItem.payoutId],
+    references: [payout.id]
+  }),
+  coursePayment: one(coursePayment, {
+    fields: [payoutItem.coursePaymentId],
+    references: [coursePayment.id]
   })
 }));

@@ -19,6 +19,7 @@ import { onboardingRouter } from '@api/routes/onboarding';
 import { organizationRouter } from '@api/routes/organization';
 import { exerciseRouter } from '@api/routes/exercise';
 import { communityRouter } from '@api/routes/community';
+import { paymentsRouter, webhooksRouter } from '@api/routes/payments';
 
 // Create Hono app with chaining for RPC support
 export const app = new Hono()
@@ -81,6 +82,8 @@ export const app = new Hono()
   .route('/dash', dashAnalyticsRouter)
   .route('/exercise', exerciseRouter)
   .route('/community', communityRouter)
+  .route('/payments', paymentsRouter)
+  .route('/payments/webhooks', webhooksRouter)
 
   // Error handling
   .onError((err, c) => {

@@ -25,6 +25,23 @@ export const courseVersion = pgEnum('COURSE_VERSION', ['V1', 'V2']);
 export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
 
+// Payment system enums
+export const paymentProvider = pgEnum('payment_provider', ['stripe', 'paystack']);
+export const paymentStatus = pgEnum('payment_status', [
+  'pending',
+  'succeeded',
+  'failed',
+  'refunded',
+  'cancelled'
+]);
+export const payoutStatus = pgEnum('payout_status', [
+  'pending',
+  'processing',
+  'completed',
+  'failed',
+  'cancelled'
+]);
+
 export const user = pgTable('user', {
   id: uuid()
     .default(sql`gen_random_uuid()`)
@@ -1392,3 +1409,185 @@ export const exerciseTemplate = pgTable('exercise_template', {
     ];
   }>()
 });
+
+// Payment System Tables
+
+/**
+ * Payment Account: Stores creator's connected payment accounts
+ * - Stripe Connect account for USD payments
+ * - Paystack subaccount for NGN payments
+ */
+export const paymentAccount = pgTable(
+  'payment_account',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    provider: paymentProvider().notNull(),
+    providerAccountId: text('provider_account_id').notNull(),
+    accountName: text('account_name'),
+    country: text().default('US').notNull(),
+    currency: text().default('USD').notNull(),
+    isActive: boolean('is_active').default(true).notNull(),
+    isVerified: boolean('is_verified').default(false).notNull(),
+    metadata: jsonb().default({}).$type<{
+      bankName?: string;
+      accountNumber?: string;
+      businessType?: string;
+      chargesEnabled?: boolean;
+      payoutsEnabled?: boolean;
+      detailsSubmitted?: boolean;
+    }>(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'payment_account_organization_id_fkey'
+    }).onDelete('cascade'),
+    unique('payment_account_org_provider_unique').on(table.organizationId, table.provider),
+    index('idx_payment_account_org_id').on(table.organizationId),
+    index('idx_payment_account_provider').on(table.provider)
+  ]
+);
+
+/**
+ * Course Payment: Records of all course purchases
+ */
+export const coursePayment = pgTable(
+  'course_payment',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    courseId: uuid('course_id').notNull(),
+    profileId: uuid('profile_id').notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    amount: bigint({ mode: 'number' }).notNull(),
+    currency: text().notNull(),
+    provider: paymentProvider().notNull(),
+    providerPaymentId: text('provider_payment_id'),
+    providerCheckoutId: text('provider_checkout_id'),
+    status: paymentStatus().default('pending').notNull(),
+    customerEmail: text('customer_email'),
+    customerName: text('customer_name'),
+    platformFee: bigint('platform_fee', { mode: 'number' }).default(sql`'0'`),
+    creatorAmount: bigint('creator_amount', { mode: 'number' }).default(sql`'0'`),
+    refundReason: text('refund_reason'),
+    metadata: jsonb().default({}).$type<{
+      discountCode?: string;
+      discountPercent?: number;
+      originalAmount?: number;
+      checkoutSessionUrl?: string;
+    }>(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'course_payment_course_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'course_payment_profile_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'course_payment_organization_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_course_payment_course_id').on(table.courseId),
+    index('idx_course_payment_profile_id').on(table.profileId),
+    index('idx_course_payment_organization_id').on(table.organizationId),
+    index('idx_course_payment_provider').on(table.provider),
+    index('idx_course_payment_status').on(table.status),
+    index('idx_course_payment_provider_payment_id').on(table.providerPaymentId),
+    index('idx_course_payment_provider_checkout_id').on(table.providerCheckoutId)
+  ]
+);
+
+/**
+ * Payout: Tracks payouts to course creators
+ */
+export const payout = pgTable(
+  'payout',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    paymentAccountId: uuid('payment_account_id').notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    amount: bigint({ mode: 'number' }).notNull(),
+    currency: text().notNull(),
+    provider: paymentProvider().notNull(),
+    providerPayoutId: text('provider_payout_id'),
+    status: payoutStatus().default('pending').notNull(),
+    failureReason: text('failure_reason'),
+    scheduledAt: timestamp('scheduled_at', { withTimezone: true, mode: 'string' }),
+    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
+    metadata: jsonb().default({}).$type<{
+      paymentIds?: string[];
+      totalPayments?: number;
+    }>(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.paymentAccountId],
+      foreignColumns: [paymentAccount.id],
+      name: 'payout_payment_account_id_fkey'
+    }).onDelete('restrict'),
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'payout_organization_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_payout_payment_account_id').on(table.paymentAccountId),
+    index('idx_payout_organization_id').on(table.organizationId),
+    index('idx_payout_status').on(table.status),
+    index('idx_payout_provider').on(table.provider),
+    index('idx_payout_scheduled_at').on(table.scheduledAt)
+  ]
+);
+
+/**
+ * Payout Item: Links individual course payments to payouts
+ */
+export const payoutItem = pgTable(
+  'payout_item',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    payoutId: uuid('payout_id').notNull(),
+    coursePaymentId: uuid('course_payment_id').notNull(),
+    amount: bigint({ mode: 'number' }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.payoutId],
+      foreignColumns: [payout.id],
+      name: 'payout_item_payout_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.coursePaymentId],
+      foreignColumns: [coursePayment.id],
+      name: 'payout_item_course_payment_id_fkey'
+    }).onDelete('restrict'),
+    index('idx_payout_item_payout_id').on(table.payoutId),
+    index('idx_payout_item_course_payment_id').on(table.coursePaymentId),
+    unique('payout_item_course_payment_unique').on(table.coursePaymentId)
+  ]
+);

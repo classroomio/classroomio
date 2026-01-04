@@ -82,8 +82,10 @@
 <PaymentModal
   bind:open={openModal}
   paymentLink={get(courseData, 'metadata.paymentLink', '')}
-  courseName={courseData.title}
+  courseName={courseData.title || ''}
   teacherEmail={getTeacherEmail(courseData.group)}
+  courseId={courseData.id}
+  useIntegratedPayment={!get(courseData, 'metadata.paymentLink', '')}
 />
 
 <!-- Pricing Details -->
