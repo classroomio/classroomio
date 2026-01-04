@@ -61,27 +61,43 @@ A centralized modal manager that:
 
 **Structure**:
 ```typescript
+interface ModalConfig {
+  width?: string;           // e.g., 'w-96', 'w-[800px]', 'max-w-4xl'
+  className?: string;        // Additional CSS classes for Dialog.Content
+  maxWidth?: string;        // Max width override
+  // Future: height, position, etc.
+}
+
 interface ModalState {
   isOpen: boolean;
   component: ComponentType | null;
   props: Record<string, any>;
+  config: ModalConfig;
   id: string | null;
+}
+
+interface QueuedModal {
+  component: ComponentType;
+  props: Record<string, any>;
+  config: ModalConfig;
 }
 
 interface ModalManager {
   state: Writable<ModalState>;
-  open: (component: ComponentType, props?: Record<string, any>) => void;
+  queue: QueuedModal[];
+  open: (component: ComponentType, props?: Record<string, any>, config?: ModalConfig) => void;
   close: () => void;
-  // Optional: for modal queuing
-  queue: (component: ComponentType, props?: Record<string, any>) => void;
+  queue: (component: ComponentType, props?: Record<string, any>, config?: ModalConfig) => void;
 }
 ```
 
 **Features**:
 - Single writable store for modal state
-- `open()` function accepts component and props
-- `close()` function clears current modal
+- `open()` function accepts component, props, and optional config (styling)
+- `close()` function clears current modal and processes queue if items exist
+- `queue()` function adds modal to queue (opens when current closes)
 - Auto-closes previous modal when opening new one (singleton behavior)
+- Queue system processes automatically on close
 
 #### 1.2 Create Modal Container Component
 **Location**: `apps/dashboard/src/lib/features/ui/modal/modal-container.svelte`
@@ -89,22 +105,28 @@ interface ModalManager {
 **Responsibilities**:
 - Single `Dialog.Root` instance bound to store state
 - Dynamically renders the current modal component
-- Handles overlay, backdrop, and transitions
+- Applies styling configuration (width, className, etc.) to Dialog.Content
+- Handles overlay, backdrop
 - Manages portal rendering
 - Handles escape key and backdrop click
 
 **Structure**:
 ```svelte
-<script>
+<script lang="ts">
   import { modalManager } from './store';
-  import { Dialog } from '@cio/ui/base/dialog';
+  import * as Dialog from '@cio/ui/base/dialog';
   
-  // Subscribe to modal state
-  // Render component dynamically using <svelte:component>
+  // Compute Dialog.Content classes from config
+  $: config = $modalManager.state.config;
+  $: dialogContentClass = [
+    config.width,
+    config.maxWidth,
+    config.className
+  ].filter(Boolean).join(' ');
 </script>
 
 <Dialog.Root bind:open={$modalManager.state.isOpen}>
-  <Dialog.Content>
+  <Dialog.Content class={dialogContentClass}>
     {#if $modalManager.state.component}
       <svelte:component 
         this={$modalManager.state.component} 
@@ -116,20 +138,85 @@ interface ModalManager {
 </Dialog.Root>
 ```
 
+**Styling Application**:
+- Config classes are applied directly to `Dialog.Content`
+- Tailwind classes work as expected (e.g., `w-[800px]`, `max-w-4xl`)
+- Custom classes via `className` are appended
+- Classes can be overridden by component-level styling if needed
+
 #### 1.3 Add Modal Container to App Layout
 **Location**: `apps/dashboard/src/routes/+layout.svelte` (or root layout)
 
 **Action**: Add `<ModalContainer />` component at root level so it's always available
 
-### Phase 2: API Design
+### Phase 2: API Design & Styling
 
-#### 2.1 Modal Manager API
+#### 2.1 Styling Configuration System
+**Purpose**: Allow developers to customize modal container appearance (width, classes, etc.) without modifying modal components.
+
+**ModalConfig Interface**:
+```typescript
+interface ModalConfig {
+  width?: string;        // Tailwind width class: 'w-96', 'w-[800px]', 'w-4/5', etc.
+  maxWidth?: string;     // Tailwind max-width class: 'max-w-2xl', 'max-w-4xl', etc.
+  className?: string;    // Additional CSS classes for Dialog.Content
+}
+```
+
+**How It Works**:
+- Config is passed as third parameter to `modalManager.open()` or `modalManager.queue()`
+- Config is stored in modal state
+- Modal container applies config classes to `Dialog.Content`
+- Default: Uses Dialog.Content default styling if no config provided
+
+**Styling Examples**:
+```typescript
+// Default width (uses Dialog.Content default)
+modalManager.open(DeleteModal, { itemId: '123' });
+
+// Custom width
+modalManager.open(CreateCourseModal, { title: 'New' }, { 
+  width: 'w-[800px]' 
+});
+
+// Wide modal with max-width constraint
+modalManager.open(UpgradeModal, {}, {
+  width: 'w-4/5',
+  maxWidth: 'max-w-5xl'
+});
+
+// Full custom styling
+modalManager.open(CustomModal, {}, {
+  width: 'w-[600px]',
+  className: 'p-8 bg-gradient-to-br from-blue-50 to-purple-50'
+});
+```
+
+**Implementation Details**:
+- Modal container reads config from `$modalManager.state.config`
+- Classes are applied to `Dialog.Content` component
+- Supports Tailwind classes and custom CSS
+- Can be combined with component-level styling
+
+#### 2.2 Modal Manager API
 ```typescript
 // Simple usage
 modalManager.open(DeleteModal, { 
   itemId: '123',
   onConfirm: () => { /* ... */ }
 });
+
+// With custom styling
+modalManager.open(CreateCourseModal, {
+  title: 'New Course'
+}, {
+  width: 'w-[800px]',
+  className: 'custom-class',
+  maxWidth: 'max-w-4xl'
+});
+
+// Queue modal (opens after current modal closes)
+modalManager.queue(NextModal, { prop: 'value' }, { width: 'w-96' });
 
 // Close modal
 modalManager.close();
@@ -138,7 +225,7 @@ modalManager.close();
 $modalManager.state.isOpen
 ```
 
-#### 2.2 Modal Component Interface
+#### 2.3 Modal Component Interface
 **Standard Props**:
 - `onClose?: () => void` - Callback when modal should close
 - `onConfirm?: () => void` - Optional confirmation callback
@@ -192,31 +279,35 @@ $modalManager.state.isOpen
 #### 3.2 Migration Priority
 1. **High Priority**: Frequently used modals (delete, create, edit)
 2. **Medium Priority**: Feature-specific modals
-3. **Low Priority**: URL-param controlled modals (can keep existing pattern if preferred)
+3. **URL Modals**: Migrate URL-param controlled modals to use URL integration pattern
 
-#### 3.3 Backward Compatibility
-- Keep old modal stores temporarily during migration
-- Create wrapper functions that use new system but maintain old API
-- Gradually migrate components
+#### 3.3 URL-Based Modals Integration
+- Listen to URL changes (using `$app/state` page store)
+- Programmatically call `modalManager.open()` when URL params detected
+- Example: `?create=true` → `modalManager.open(CreateCourseModal)`
+- Remove URL param when modal closes
+- This replaces the current URL param pattern with singleton system
 
-### Phase 4: Advanced Features (Optional)
+### Phase 4: Modal Queue System
 
-#### 4.1 Modal Queue System
+#### 4.1 Queue Implementation
 - Queue modals when one is already open
 - Auto-open next modal when current closes
-- Useful for sequential workflows
+- Useful for sequential workflows (e.g., create course → add students → configure settings)
 
-#### 4.2 Modal History
-- Track modal open/close history
-- Support "back" navigation through modals
+**Queue API**:
+```typescript
+// If modal is open, queue this one
+modalManager.queue(NextModal, props, config);
 
-#### 4.3 Modal Types/Configurations
-- Predefined modal configurations (size, position, etc.)
-- Modal variants (alert, confirm, form, etc.)
+// Queue opens automatically when current modal closes
+// Or manually process queue if needed
+```
 
-#### 4.4 Transition Animations
-- Smooth transitions between modals
-- Customizable animation presets
+**Queue Behavior**:
+- When `open()` is called while modal is open, current modal closes and new one opens (singleton)
+- When `queue()` is called while modal is open, modal is added to queue
+- When modal closes, if queue has items, next modal opens automatically
 
 ## File Structure
 
@@ -254,14 +345,40 @@ apps/dashboard/src/lib/features/ui/modal/components/
 ## Implementation Considerations
 
 ### URL-Based Modals
-- **Option A**: Keep URL param modals as-is (they're navigation-based)
-- **Option B**: Convert to function calls and handle navigation separately
-- **Recommendation**: Keep URL-based modals for deep-linking, use singleton for programmatic modals
+- **Approach**: Programmatically call `modalManager.open()` based on URL changes
+- Use `$app/state` page store to watch for URL param changes
+- When URL param detected (e.g., `?create=true`), call `modalManager.open()`
+- When modal closes, remove URL param via `goto()` or `invalidateAll()`
+- This integrates URL-based modals into singleton system
+
+**Example Implementation**:
+```svelte
+<script>
+  import { page } from '$app/state';
+  import { goto } from '$app/navigation';
+  import { modalManager } from '$features/ui/modal/store';
+  import CreateCourseModal from './create-course-modal.svelte';
+  
+  $effect(() => {
+    const query = new URLSearchParams($page.url.search);
+    if (query.get('create') === 'true') {
+      modalManager.open(CreateCourseModal, {}, { width: 'w-[600px]' });
+    }
+  });
+  
+  // Listen for modal close and remove URL param
+  $effect(() => {
+    if (!$modalManager.state.isOpen && $page.url.search.includes('create=true')) {
+      goto($page.url.pathname);
+    }
+  });
+</script>
+```
 
 ### Website App
-- Website app uses simpler custom modal component
-- Can create similar singleton system or adapt dashboard approach
-- Consider creating shared modal package if both apps need it
+- **Decision**: Do not touch website app, focus only on `apps/dashboard`
+- Website app can continue using its existing modal pattern
+- No changes needed to website app codebase
 
 ### Testing Strategy
 1. Unit tests for modal manager store
@@ -276,25 +393,26 @@ apps/dashboard/src/lib/features/ui/modal/components/
 
 ## Migration Checklist
 
-- [ ] Create modal manager store
-- [ ] Create modal container component
+- [ ] Create modal manager store with queue support
+- [ ] Create modal container component with styling support
 - [ ] Add container to app layout
+- [ ] Create URL param integration helper
 - [ ] Create example refactored modal
 - [ ] Update documentation
 - [ ] Migrate high-priority modals
 - [ ] Migrate medium-priority modals
-- [ ] Migrate low-priority modals
-- [ ] Remove old modal stores
+- [ ] Migrate URL-based modals
+- [ ] Delete old modal stores (no backward compatibility needed)
 - [ ] Update tests
 - [ ] Performance testing
 
-## Open Questions
+## Decisions Made
 
-1. **Modal Queue**: Should we implement queuing from the start, or add later?
-2. **URL Modals**: How should URL-based modals integrate with singleton system?
-3. **Website App**: Should website app use the same system or have its own?
-4. **Backward Compatibility**: How long should we maintain old modal stores?
-5. **Animation Library**: Should we use a specific animation library for transitions?
+1. **Modal Queue**: ✅ Implement from the start - queue system included in Phase 4
+2. **URL Modals**: ✅ Programmatically call `modalManager.open()` based on URL changes - see URL-Based Modals section
+3. **Website App**: ✅ Do not touch - focus only on `apps/dashboard`
+4. **Backward Compatibility**: ✅ Delete old modal stores immediately after migration - no backward compatibility layer needed
+5. **Animation Library**: ✅ No animations needed - keep it simple
 
 ## Next Steps
 
