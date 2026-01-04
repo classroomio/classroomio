@@ -8,7 +8,7 @@
   import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import { HTMLRender } from '$features/ui';
   import PaymentModal from './payment-modal.svelte';
-  import type { Course } from '$lib/utils/types';
+  import type { Course } from '$features/course/utils/types';
   import { ROLE } from '@cio/utils/constants';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { t } from '$lib/utils/functions/translations';

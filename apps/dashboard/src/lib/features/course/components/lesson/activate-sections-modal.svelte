@@ -3,7 +3,7 @@
   import * as Dialog from '@cio/ui/base/dialog';
   import { t } from '$lib/utils/functions/translations';
   import { supabase } from '$lib/utils/functions/supabase';
-  import { course } from '../../store';
+  import { courseApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
 
   interface Props {
@@ -17,7 +17,7 @@
   const activate = async () => {
     isActivating = true;
     const { error } = await supabase.rpc('convert_course_to_v2', {
-      course_id_arg: $course.id
+      course_id_arg: courseApi.course?.id
     });
 
     if (error) {

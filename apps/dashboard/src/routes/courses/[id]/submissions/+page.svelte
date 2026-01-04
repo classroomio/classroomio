@@ -22,7 +22,11 @@
 
   <Page.Body>
     {#snippet child()}
-      <SubmissionsPage courseId={data.courseId} />
+      <SubmissionsPage
+        courseId={data.courseId}
+        sections={data.sections || []}
+        submissionIdData={data.submissionIdData || {}}
+      />
     {/snippet}
   </Page.Body>
 </RoleBasedSecurity>

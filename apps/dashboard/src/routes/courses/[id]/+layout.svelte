@@ -3,21 +3,22 @@
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { CourseSidebar } from '$features/course/components/sidebar';
   import { CourseHeader } from '$features/course/components';
+  import type { Course } from '$features/course/types';
   import * as Page from '@cio/ui/base/page';
   import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
   import { Confetti } from '$features/ui';
-  import { course, group, courseStore } from '$features/course/store';
+  import { courseApi } from '$features/course/api';
   import { profile } from '$lib/utils/store/user';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import type { GroupPerson } from '$lib/utils/types';
+  import type { GroupMember } from '$features/course/utils/types';
 
   interface Props {
     children?: import('svelte').Snippet;
     path: string;
     data: {
-      course?: any;
+      course?: Course;
       courseId: string;
       exerciseId?: string;
       isMaterialsTabActive?: boolean;
@@ -29,13 +30,15 @@
   // Initialize course from server data
   $effect(() => {
     console.log('data', data);
-    if (data.course !== undefined) {
-      courseStore.initializeFromServerData(data.course, data.courseId);
-    }
+    if (!data.course) return;
+
+    courseApi.setCourse(data.course);
   });
 
-  const user: GroupPerson | undefined = $derived($group.people.find((person) => person.profile_id === $profile.id));
-  const canCheck = $derived($profile.id && $group.id);
+  const user: GroupMember | undefined = $derived(
+    courseApi.group.people.find((person) => person.profileId === $profile.id)
+  );
+  const canCheck = $derived($profile.id && courseApi.group.id);
 
   const isPermitted = $derived.by(() => {
     if (!canCheck) return true;
@@ -50,7 +53,7 @@
 </script>
 
 <svelte:head>
-  <title>{$course.title || 'ClassroomIO Course'}</title>
+  <title>{courseApi.course?.title || 'ClassroomIO Course'}</title>
 </svelte:head>
 
 <Dialog.Root open={!isPermitted}>

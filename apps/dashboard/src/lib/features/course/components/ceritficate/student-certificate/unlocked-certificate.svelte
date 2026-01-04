@@ -2,33 +2,32 @@
   import { onMount } from 'svelte';
   import DownloadIcon from '@lucide/svelte/icons/download';
 
-  import { course } from '$features/course/store';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { Button } from '@cio/ui/base/button';
   import Empty from '@cio/ui/custom/empty/empty.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import { fetchProfileCourseProgress } from '$lib/utils/services/courses';
-  import type { ProfileCourseProgress } from '$lib/utils/types';
+  import { courseApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
   import { classroomio } from '$lib/utils/services/api';
 
   let isLoading = $state(false);
   let isCourseComplete = $state(false);
-  let progress: ProfileCourseProgress | undefined;
+
+  let courseId = $derived(courseApi.course?.id ?? '');
 
   const downLoadCertificate = async () => {
-    if (!isCourseComplete || !$course.id) return;
+    if (!isCourseComplete || !courseId) return;
 
     isLoading = true;
     try {
       const response = await classroomio.course[':courseId']['download']['certificate']['$post']({
-        param: { courseId: $course.id },
+        param: { courseId },
         json: {
-          theme: `${$course.certificate_theme}`,
+          theme: `${courseApi.course?.certificateTheme}`,
           studentName: `${$profile.fullname}`,
-          courseName: `${$course.title}`,
-          courseDescription: `${$course.description}`,
+          courseName: `${courseApi.course?.title}`,
+          courseDescription: `${courseApi.course?.description}`,
           orgLogoUrl: $currentOrg.avatarUrl || `${$currentOrgDomain}/logo-512.png`,
           orgName: `${$currentOrg.name}`
         }
@@ -56,13 +55,12 @@
   const hasUserCompletedCourse = async () => {
     isLoading = true;
 
-    const { data } = await fetchProfileCourseProgress($course.id, $profile.id);
-    progress = data?.[0] || undefined;
+    const response = await courseApi.getProgress(courseId, $profile.id);
 
-    if (progress) {
+    if (courseApi.success && response?.data) {
+      const progress = response.data;
       isCourseComplete =
-        progress.lessons_count === progress.lessons_completed &&
-        progress.exercises_count === progress.exercises_completed;
+        progress.lessonsCount === progress.lessonsCompleted && progress.exercisesCount === progress.exercisesCompleted;
     }
 
     isLoading = false;

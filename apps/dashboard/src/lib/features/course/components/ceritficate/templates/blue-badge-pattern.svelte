@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { course } from '$features/course/store';
+  import { courseApi } from '$features/course/api';
   import { currentOrg } from '$lib/utils/store/org';
 
   interface Props {
@@ -14,10 +14,10 @@
 
 <div class="relative w-full dark:text-black">
   <img src="/images/blue-badge-pattern-background.svg" alt="" class="absolute z-0 h-full w-full object-cover" />
-  <div class="relative z-20 m-2 flex h-full justify-between bg-white md:h-[17rem]">
+  <div class="relative z-20 m-2 flex h-full justify-between bg-white md:h-68">
     <div class="w-[70%] pl-3">
       <header class="absolute flex w-full items-center justify-center gap-1 text-sm">
-        <img src={$currentOrg.avatar_url ? $currentOrg.avatar_url : logo} alt="logo" class="w-5" />
+        <img src={$currentOrg.avatarUrl ? $currentOrg.avatarUrl : logo} alt="logo" class="w-5" />
         <h1 class="text-sm">{$currentOrg.name}</h1>
       </header>
 
@@ -29,7 +29,7 @@
       <div class="mt-3 w-[90%]">
         <h1 class="text-[7px]">has successfully completed training on</h1>
         <h2 class="m-0 text-lg">
-          {$course.title}
+          {courseApi.course?.title}
         </h2>
       </div>
 
@@ -45,12 +45,12 @@
       </div>
 
       <footer class="desc w-[90%] text-[8px]">
-        {$course.description}
+        {courseApi.course?.description}
       </footer>
     </div>
 
     <div class="flex items-center justify-center overflow-hidden">
-      <img src="/images/blue-badge-pattern-badge.svg" alt="A badge" class="w-[8rem] max-w-none md:w-[10rem]" />
+      <img src="/images/blue-badge-pattern-badge.svg" alt="A badge" class="w-32 max-w-none md:w-40" />
     </div>
   </div>
 </div>

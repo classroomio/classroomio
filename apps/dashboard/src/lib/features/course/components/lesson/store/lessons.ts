@@ -1,16 +1,8 @@
-import type { Course, Lesson, LessonComment, LessonCompletion, LessonPage, LessonSection } from '$lib/utils/types';
-import {
-  createLesson,
-  createLessonSection,
-  deleteLesson,
-  deleteLessonSection,
-  updateLesson,
-  updateLessonSection
-} from '$lib/utils/services/courses';
+import type { Lesson, LessonSection, ListLessons } from '$features/course/utils/types';
 
-import type { RealtimeChannel } from '@supabase/supabase-js';
-import type { TLocale } from '@cio/db/types';
-import type { Writable } from 'svelte/store';
+import type { Course } from '$features/course/types';
+import { courseApi } from '$features/course/api';
+import { lessonApi } from '$features/course/api';
 import { lessonValidation } from '$lib/utils/functions/validator';
 import { snackbar } from '$features/ui/snackbar/store';
 import { writable } from 'svelte/store';
@@ -28,186 +20,58 @@ export const lessonDocUpload = writable({
   isCancelled: false,
   isModalOpen: false,
   isUploading: false,
-  uploadedDocument: null,
   uploadProgress: 0
 });
-
-export const lessons: Writable<Lesson[]> = writable([]);
-
-export const lessonSections: Writable<LessonSection[]> = writable([]);
-
-export const lessonCommentsChannel: Writable<RealtimeChannel> = writable();
-
-export const lesson = writable<LessonPage>({
-  id: null,
-  locale: 'en',
-  title: '',
-  totalExercises: 0,
-  totalComments: 0,
-  isSaving: false,
-  isFetching: false,
-  materials: {
-    note: '',
-    slide_url: '',
-    videos: [],
-    documents: []
-  },
-  exercises: [],
-  lesson_completion: []
-});
-
-export const lessonByTranslation = writable<{
-  [key: string]: Record<TLocale, string>;
-}>({});
-
-export const lessonComments = writable<LessonComment[]>([]);
-
-export const isLessonDirty = writable(false);
-
-export function setLesson({
-  id,
-  lessonData,
-  locale,
-  totalExercises,
-  totalComments
-}: {
-  id: string;
-  lessonData: Lesson & { lesson_language: { locale: TLocale; content: string }[] };
-  locale: TLocale;
-  totalExercises: number;
-  totalComments: number;
-}) {
-  if (!lessonData) return;
-
-  let lesson_completion: LessonCompletion[] = [];
-
-  if (Array.isArray(lessonData.lesson_completion)) {
-    lesson_completion = [...lessonData.lesson_completion];
-  }
-
-  lesson.update((l) => ({
-    ...l,
-    id: id,
-    title: lessonData.title,
-    totalExercises,
-    totalComments: totalComments,
-    materials: {
-      videos: lessonData.videos || [],
-      note: lessonData.note,
-      slide_url: lessonData.slide_url,
-      documents: lessonData.documents || []
-    },
-    lesson_completion,
-    exercises: [],
-    locale: locale
-  }));
-
-  if (Array.isArray(lessonData.lesson_language)) {
-    lessonByTranslation.update((lessLocales) => {
-      return {
-        ...lessLocales,
-        [id]: lessonData.lesson_language.reduce(
-          (acc, cur) => {
-            acc[cur.locale] = cur.content;
-            return acc;
-          },
-          {} as Record<TLocale, string>
-        )
-      };
-    });
-  }
-}
-
-export function handleAddLesson() {
-  lessons.update((_lessons) => {
-    const newLesson = {
-      id: '',
-      title: 'Untitled lesson',
-      lesson_at: new Date().toDateString(),
-      is_unlocked: false,
-      course_id: '',
-      created_at: new Date().toDateString(),
-      lesson_completion: []
-    } as Lesson;
-
-    return [..._lessons, newLesson];
-  });
-}
 
 export async function handleDelete(lessonId: Lesson['id'] | undefined) {
   // Need to implement soft delete
   if (!lessonId) {
     return;
   }
-  const { error } = await deleteLesson(lessonId);
+  const courseId = courseApi.course?.id;
+  if (!courseId) return;
 
-  if (error) {
-    snackbar.error(error.message);
-    return console.error('Error deleting course', error);
-  }
+  await lessonApi.delete(courseId, lessonId);
 
-  lessons.update((_lessons) => _lessons.filter((lesson) => lesson.id !== lessonId));
-  lessonSections.update((_sections) =>
-    _sections.map((section) => {
+  if (lessonApi.success) {
+    lessonApi.lessons = lessonApi.lessons.filter((lesson) => lesson.id !== lessonId);
+    lessonApi.sections = lessonApi.sections.map((section) => {
       section.lessons = section.lessons.filter((lesson) => lesson.id !== lessonId);
       return section;
-    })
-  );
+    });
 
-  snackbar.success('snackbar.generic.success_delete');
-
-  console.log(`lessonId`, lessonId);
+    snackbar.success('snackbar.generic.success_delete');
+  }
 }
 
-export async function handleDeleteSection(sectionId: LessonSection['id'] | undefined) {
-  // Need to implement soft delete
-  if (!sectionId) {
-    return;
-  }
-  const { error } = await deleteLessonSection(sectionId);
-
-  if (error) {
-    snackbar.error(error.message);
-    return console.error('Error deleting course', error);
-  }
-
-  lessonSections.update((_sections) => _sections.filter((section) => section.id !== sectionId));
-  lessons.update((_lessons) => _lessons.filter((lesson) => lesson.section_id !== sectionId));
-
-  snackbar.success('snackbar.generic.success_delete');
-
-  console.log(`sectionId`, sectionId);
-}
-
-export async function handleSaveLesson(lesson: Lesson, courseId: Course['id']) {
+export async function handleSaveLesson(lesson: Partial<ListLessons[number]>, courseId: Course['id']) {
   const result = lessonValidation(lesson);
 
   if (Object.keys(result).length) {
-    return result;
+    return { validationRes: result, lesson: null };
   }
 
-  console.log(`handleSaveLesson lesson`, lesson);
-  const newLesson = {
-    title: lesson.title,
-    lesson_at: lesson?.lesson_at,
-    call_url: lesson?.call_url,
-    teacher_id: lesson?.profile ? lesson?.profile.id : undefined,
-    course_id: courseId,
-    is_unlocked: lesson.is_unlocked,
-    section_id: lesson.section_id
+  const lessonData = {
+    title: lesson.title || '',
+    lessonAt: lesson.lessonAt!,
+    callUrl: lesson.callUrl!,
+    teacherId: lesson.teacherId!,
+    isUnlocked: lesson.isUnlocked!,
+    sectionId: lesson.sectionId!
   };
 
-  let newLessonData: Lesson | null | undefined = null;
-
   if (lesson.id) {
-    // No need to get the result of update cause we have all in local state
-    await updateLesson(newLesson, lesson.id);
+    await lessonApi.update(courseId, lesson.id, lessonData);
+    if (lessonApi.success && lessonApi.lesson) {
+      return { lesson: lessonApi.lesson as Lesson };
+    }
   } else {
-    const { data } = await createLesson(newLesson);
-
-    newLessonData = data?.[0];
+    await lessonApi.create(courseId, { ...lessonData, courseId });
+    if (lessonApi.success && lessonApi.lesson) {
+      return { lesson: lessonApi.lesson as Lesson };
+    }
   }
-  return newLessonData;
+  return { validationRes: null, lesson: null };
 }
 export async function handleSaveLessonSection(section: Partial<LessonSection>, courseId: Course['id']) {
   const result = lessonValidation(section);
@@ -215,64 +79,31 @@ export async function handleSaveLessonSection(section: Partial<LessonSection>, c
   if (Object.keys(result).length) {
     return result;
   }
-  console.log(`handleSaveLessonSection lesson`, section);
 
-  const newSection: Partial<LessonSection> = {
-    id: section.id,
-    title: section.title,
-    course_id: courseId
+  const sectionData = {
+    title: section.title!
   };
 
-  let newSectionData: any[] | null = null;
-
-  if (newSection.id) {
-    // No need to get the result of update cause we have all in local state
-    await updateLessonSection(newSection, newSection.id);
+  if (section.id) {
+    await lessonApi.updateSection(courseId, section.id, sectionData);
+    if (lessonApi.success && lessonApi.lesson) {
+      return [lessonApi.lesson];
+    }
   } else {
-    const { data } = await createLessonSection(newSection);
-
-    newSectionData = data;
+    await lessonApi.createSection(courseId, { ...sectionData, courseId });
+    if (lessonApi.success && lessonApi.lesson) {
+      return [lessonApi.lesson];
+    }
   }
 
-  return newSectionData;
+  return null;
 }
-
-export async function handleUpdateLessonMaterials(lesson: any, lessonId: Lesson['id']) {
-  const materials = {
-    ...lesson.materials
-  };
-  delete materials.lesson_completion;
-  delete materials.profile;
-
-  return await updateLesson(materials, lessonId);
-}
-
-export const deleteLessonVideo = (index: any) => {
-  lesson.update((currentLesson) => ({
-    ...currentLesson,
-    materials: {
-      ...currentLesson.materials,
-      videos: currentLesson.materials.videos.filter((video, i) => i !== index)
-    }
-  }));
-};
-
-export const deleteLessonDocument = (index: any) => {
-  lesson.update((currentLesson) => ({
-    ...currentLesson,
-    materials: {
-      ...currentLesson.materials,
-      documents: (currentLesson.materials.documents || []).filter((document, i) => i !== index)
-    }
-  }));
-};
 
 export function resetDocumentUploadStore() {
   lessonDocUpload.set({
     isUploading: false,
     isModalOpen: false,
     uploadProgress: 0,
-    uploadedDocument: null,
     error: null,
     isCancelled: false
   });

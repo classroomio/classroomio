@@ -12,20 +12,13 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { t } from '$lib/utils/functions/translations';
   import { globalStore } from '$lib/utils/store/app';
-  import { course } from '$features/course/store';
+  import { courseApi } from '$features/course/api';
   import { handleAddLessonWidget } from '$features/course/components/lesson/store';
   import { snackbar } from '$features/ui/snackbar/store';
-  import {
-    lessonSections,
-    handleDelete,
-    handleSaveLesson,
-    handleSaveLessonSection,
-    handleDeleteSection
-  } from '$features/course/components/lesson/store/lessons';
-  import { updateLesson, updateLessonSection } from '$lib/utils/services/courses';
-  import type { Lesson } from '$lib/utils/types';
+  import { lessonApi } from '$features/course/api';
   import DeleteLessonConfirmation from '$features/course/components/lesson/delete-lesson-confirmation.svelte';
   import { RoleBasedSecurity } from '$features/ui';
+  import type { ListLessons } from '$features/course/utils/types';
 
   type CrudParam = {
     sectionId?: string;
@@ -48,32 +41,41 @@
     id: '',
     isSection: false
   };
+  const courseId = $derived(courseApi.course?.id || '');
 
   function onEdit(params: CrudParam) {
     lessonEditing = params.sectionId || params.lessonId;
     prevTitle = params.sectionTitle || params.lessonTitle;
   }
 
-  async function onSave(params: CrudParam, lesson?: Lesson) {
+  async function onSave(params: CrudParam, lesson?: ListLessons[number]) {
     if (params.sectionId) {
-      const section = $lessonSections.find((s) => s.id === params.sectionId);
+      const section = lessonApi.sections.find((s) => s.id === params.sectionId);
       if (!section) return;
 
-      const validationRes = await handleSaveLessonSection(section, section.course_id);
+      await lessonApi.updateSection(courseId, section.id, {
+        title: section.title!
+      });
 
-      if (validationRes && Object.keys(validationRes).length) {
+      if (lessonApi.errors && Object.keys(lessonApi.errors).length) {
         errors = {
           // @ts-ignore
-          title: validationRes?.title
+          title: lessonApi.errors.title
         };
       }
     } else if (lesson) {
-      const validationRes = await handleSaveLesson(lesson, lesson.course_id);
+      await lessonApi.update(courseId, lesson.id, {
+        title: lesson.title || '',
+        lessonAt: lesson.lessonAt!,
+        callUrl: lesson.callUrl || '',
+        teacherId: lesson.teacherId!,
+        isUnlocked: lesson.isUnlocked!,
+        sectionId: lesson.sectionId!
+      });
 
-      if (validationRes && Object.keys(validationRes).length) {
+      if (lessonApi.errors && Object.keys(lessonApi.errors).length) {
         errors = {
-          // @ts-ignore
-          title: validationRes?.title
+          title: lessonApi.errors.title
         };
       }
     }
@@ -91,11 +93,18 @@
     openDeleteModal = true;
   }
 
-  function deleteLesson() {
+  async function deleteLesson() {
     if (deletingData.isSection) {
-      handleDeleteSection(deletingData.id);
+      await lessonApi.deleteSection(courseId, deletingData.id);
     } else {
-      handleDelete(deletingData.id);
+      await lessonApi.delete(courseId, deletingData.id);
+      if (lessonApi.success) {
+        lessonApi.lessons = lessonApi.lessons.filter((lesson) => lesson.id !== deletingData.id);
+        lessonApi.sections = lessonApi.sections.map((section) => {
+          section.lessons = section.lessons.filter((lesson) => lesson.id !== deletingData.id);
+          return section;
+        });
+      }
     }
   }
 
@@ -119,49 +128,56 @@
   const flipDurationMs = 200;
 
   function handleDndConsiderColumns(e) {
-    $lessonSections = e.detail.items;
+    lessonApi.sections = e.detail.items;
   }
-  function handleDndFinalizeColumns(e) {
-    const prevSectionsOrder = $lessonSections.reduce((acc, l) => ({ ...acc, [l.id]: l.order }), {});
+  async function handleDndFinalizeColumns(e) {
+    const prevSections = lessonApi.sections.map((s) => ({ id: s.id, order: s.order }));
 
-    $lessonSections = e.detail.items;
+    lessonApi.sections = e.detail.items;
 
-    e.detail.items.forEach((section, index) => {
-      const order = index + 1;
+    const newSections = e.detail.items.map((s) => ({ id: s.id, order: s.order }));
+    const sectionsToReorder = newSections.filter((s) => s.order !== prevSections.find((p) => p.id === s.id)?.order);
 
-      if (order !== prevSectionsOrder[section.id]) {
-        $lessonSections[index].order = order;
-        updateLessonSection({ order }, section.id).then((update) => console.log(`updated section order`, update));
-      }
-    });
+    await lessonApi.reorderSections(courseId, sectionsToReorder);
   }
+
   function handleDndConsiderCards(cid, e) {
-    const colIdx = $lessonSections.findIndex((c) => c.id === cid);
-    $lessonSections[colIdx].lessons = e.detail.items;
-    $lessonSections = [...$lessonSections];
+    const colIdx = lessonApi.sections.findIndex((c) => c.id === cid);
+    lessonApi.sections[colIdx].lessons = e.detail.items;
+    lessonApi.sections = [...lessonApi.sections];
   }
-  function handleDndFinalizeCards(cid, e) {
-    const colIdx = $lessonSections.findIndex((c) => c.id === cid);
+  async function handleDndFinalizeCards(cid, e) {
+    const colIdx = lessonApi.sections.findIndex((c) => c.id === cid);
 
-    const section = $lessonSections[colIdx];
+    const section = lessonApi.sections[colIdx];
     const prevLessonOrder = section.lessons.reduce((acc, l) => ({ ...acc, [l.id]: l.order }), {});
+    const prevSectionIds = section.lessons.reduce((acc, l) => ({ ...acc, [l.id]: l.sectionId }), {});
 
-    $lessonSections[colIdx].lessons = e.detail.items;
-    $lessonSections = [...$lessonSections];
+    lessonApi.sections[colIdx].lessons = e.detail.items;
+    lessonApi.sections = [...lessonApi.sections];
 
-    e.detail.items.forEach((lesson: Lesson, index: number) => {
+    // Collect all lessons that need to be updated
+    const lessonsToReorder: Array<{ id: string; order: number; sectionId?: string }> = [];
+
+    e.detail.items.forEach((lesson: ListLessons[number], index: number) => {
       const order = index + 1;
+      const newSectionId = lessonApi.sections[colIdx].id;
 
-      if (order !== prevLessonOrder[lesson.id] || lesson.section_id !== section.id) {
+      // Check if order or sectionId changed
+      if (order !== prevLessonOrder[lesson.id] || prevSectionIds[lesson.id] !== newSectionId) {
         section.lessons[index].order = order;
-
-        const lessonUpdate = {
+        lessonsToReorder.push({
+          id: lesson.id,
           order,
-          section_id: $lessonSections[colIdx].id
-        };
-        updateLesson(lessonUpdate, lesson.id).then((update) => console.log(`updated lesson order`, update));
+          sectionId: newSectionId
+        });
       }
     });
+
+    // Make a single API call to reorder all lessons
+    if (lessonsToReorder.length > 0) {
+      await lessonApi.reorderLessons(courseId, lessonsToReorder);
+    }
   }
 
   function getLessonOrder(lessons, id) {
@@ -180,7 +196,7 @@
 <section
   class="mx-auto w-full p-3 lg:w-11/12 lg:px-4"
   use:dndzone={{
-    items: $lessonSections,
+    items: lessonApi.sections,
     flipDurationMs,
     type: 'rows',
     dropTargetStyle: {
@@ -192,7 +208,7 @@
   onconsider={handleDndConsiderColumns}
   onfinalize={handleDndFinalizeColumns}
 >
-  {#each $lessonSections as section (section.id)}
+  {#each lessonApi.sections as section (section.id)}
     <div class="m-auto mb-3 max-w-xl rounded-md border-2 border-gray-200 dark:bg-neutral-800">
       <div
         class="mb-2 flex min-h-[50px] items-center justify-between rounded-tl-md rounded-tr-md border-b bg-gray-50 px-3 py-1 dark:bg-neutral-700"
@@ -232,7 +248,7 @@
                 <DropdownMenu.Content align="end">
                   <DropdownMenu.Item
                     disabled={!!lessonEditing}
-                    onclick={() => onEdit({ sectionId: section.id, sectionTitle: section.title })}
+                    onclick={() => onEdit({ sectionId: section.id, sectionTitle: section.title! })}
                   >
                     {$t('course.navItem.lessons.add_lesson.edit')}
                   </DropdownMenu.Item>
@@ -276,10 +292,10 @@
                 <Chip value={getLessonOrder(section.lessons, lesson.id)} />
                 <div>
                   <a
-                    href={$globalStore.isStudent && !lesson.is_unlocked
+                    href={$globalStore.isStudent && !lesson.isUnlocked
                       ? page.url.pathname
-                      : `/courses/${$course.id}/lessons/${lesson.id}`}
-                    class=" text-black dark:text-white {$globalStore.isStudent && !lesson.is_unlocked
+                      : `/courses/${courseApi.course?.id}/lessons/${lesson.id}`}
+                    class=" text-black dark:text-white {$globalStore.isStudent && !lesson.isUnlocked
                       ? 'cursor-not-allowed'
                       : ''}"
                     data-sveltekit-preload-data="off"
@@ -290,7 +306,8 @@
                   <div class="mt-1 mb-3 flex items-center lg:mb-0">
                     <ListChecksIcon size={16} />
                     <p class="ml-2 text-xs text-gray-500 dark:text-white">
-                      {lesson?.totalExercises ? lesson?.totalExercises?.map((c) => c.count) : 0}
+                      <!-- TODO REMOVE THIS -->
+                      0
                       {$t('exercises.heading')}
                     </p>
                   </div>
@@ -324,12 +341,21 @@
                     </DropdownMenu.Trigger>
                     <DropdownMenu.Content align="end">
                       <DropdownMenu.Item
-                        onclick={() => {
-                          lesson.is_unlocked = !lesson.is_unlocked;
-                          handleSaveLesson(lesson, $course.id);
+                        onclick={async () => {
+                          lesson.isUnlocked = !lesson.isUnlocked;
+
+                          const courseId = courseApi.course?.id || '';
+                          await lessonApi.update(courseId, lesson.id, {
+                            title: lesson.title || '',
+                            lessonAt: lesson.lessonAt!,
+                            callUrl: lesson.callUrl!,
+                            teacherId: lesson.teacherId!,
+                            isUnlocked: lesson.isUnlocked!,
+                            sectionId: lesson.sectionId!
+                          });
                         }}
                       >
-                        {lesson.is_unlocked
+                        {lesson.isUnlocked
                           ? $t('course.navItem.lessons.add_lesson.lock')
                           : $t('course.navItem.lessons.add_lesson.unlock')}
                       </DropdownMenu.Item>

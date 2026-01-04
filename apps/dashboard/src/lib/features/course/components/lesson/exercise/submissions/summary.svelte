@@ -8,7 +8,7 @@
   import { submissions } from './store';
   import { questionnaire } from '../../store/exercise';
   import { t } from '$lib/utils/functions/translations';
-  import type { ExerciseSubmissions } from '$lib/utils/types';
+  import type { ExerciseSubmissions } from '$features/course/utils/types';
   import { replaceHTMLTag } from '$lib/utils/functions/course';
 
   interface Props {
@@ -68,58 +68,54 @@
   const getTransformedData = ($submissions: ExerciseSubmissions[]): void => {
     const _transformedQuestions: TransformedQuestion[] = [];
 
-    $questionnaire.questions.forEach(
-      (question: {
-        id: number;
+    $questionnaire.questions.forEach((question) => {
+      const questionId = typeof question.id === 'string' ? parseInt(question.id, 10) : question.id;
+      const questionTypeId = question.question_type_id;
+      const transformedQuestion: {
         title: string;
-        question_type_id: number;
-        options: { value: string; is_correct: boolean; label: string }[];
-      }) => {
-        const transformedQuestion: {
-          title: string;
-          type: number;
-          chartData: TransformedQuestionChartData[];
-        } = {
-          title: question.title,
-          type: question.question_type_id,
-          chartData: []
-        };
+        type: number;
+        chartData: TransformedQuestionChartData[];
+      } = {
+        title: question.title,
+        type: questionTypeId,
+        chartData: []
+      };
 
-        // If textarea don't calculate the value just get the student's answer
-        if (transformedQuestion.type === 3) {
-          $submissions.forEach((submission) => {
-            const chartData: TransformedQuestionChartData = {
-              option: getAnswerToQuestionOfStudent(question.id, true, submission)[0],
-              responses: 0
-            };
+      // If textarea don't calculate the value just get the student's answer
+      if (transformedQuestion.type === 3) {
+        $submissions.forEach((submission) => {
+          const answer = getAnswerToQuestionOfStudent(questionId, true, submission);
+          const chartData: TransformedQuestionChartData = {
+            option: answer[0] || '',
+            responses: 0
+          };
 
-            // Update the transformed question chartData
-            transformedQuestion.chartData.push(chartData);
+          // Update the transformed question chartData
+          transformedQuestion.chartData.push(chartData);
+        });
+      } else {
+        // radio or checkbox
+        question.options.forEach((option) => {
+          const { value, is_correct, label } = option;
+          const chartData: TransformedQuestionChartData = {
+            option: replaceHTMLTag(label || ''),
+            responses: 0,
+            isCorrect: is_correct
+          };
+
+          $submissions.forEach((studentSubmission) => {
+            const studentAnswer = getAnswerToQuestionOfStudent(questionId, false, studentSubmission);
+
+            if (value && studentAnswer.includes(value)) {
+              chartData.responses += 1;
+            }
           });
-        } else {
-          // radio or checkbox
-          question.options.forEach((option) => {
-            const { value, is_correct, label } = option;
-            const chartData: TransformedQuestionChartData = {
-              option: replaceHTMLTag(label),
-              responses: 0,
-              isCorrect: is_correct
-            };
-
-            $submissions.forEach((studentSubmission) => {
-              const studentAnswer = getAnswerToQuestionOfStudent(question.id, false, studentSubmission);
-
-              if (studentAnswer.includes(value)) {
-                chartData.responses += 1;
-              }
-            });
-            transformedQuestion.chartData.push(chartData);
-          });
-        }
-
-        _transformedQuestions.push(transformedQuestion);
+          transformedQuestion.chartData.push(chartData);
+        });
       }
-    );
+
+      _transformedQuestions.push(transformedQuestion);
+    });
 
     untrack(() => {
       transformedQuestions = [..._transformedQuestions];

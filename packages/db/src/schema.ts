@@ -650,9 +650,26 @@ export const lesson = pgTable(
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     order: bigint({ mode: 'number' }),
     isUnlocked: boolean('is_unlocked').default(false),
-    videos: jsonb().default([]),
-    sectionId: uuid('section_id'),
-    documents: jsonb().default([])
+    videos: jsonb().default([]).$type<
+      {
+        type: 'youtube' | 'generic' | 'upload';
+        link: string;
+        key?: string;
+        metadata?: {
+          svid?: string;
+        };
+      }[]
+    >(),
+    documents: jsonb().default([]).$type<
+      {
+        type: string;
+        name: string;
+        link: string;
+        size?: number;
+        key: string;
+      }[]
+    >(),
+    sectionId: uuid('section_id')
   },
   (table) => [
     foreignKey({
@@ -894,7 +911,9 @@ export const courseNewsfeed = pgTable(
     content: text(),
     id: uuid().defaultRandom().primaryKey().notNull(),
     courseId: uuid('course_id'),
-    reaction: jsonb().default({ clap: [], smile: [], thumbsup: [], thumbsdown: [] }),
+    reaction: jsonb()
+      .default({ clap: [], smile: [], thumbsup: [], thumbsdown: [] })
+      .$type<{ clap: string[]; smile: string[]; thumbsup: string[]; thumbsdown: string[] }>(),
     isPinned: boolean('is_pinned').default(false).notNull()
   },
   (table) => [

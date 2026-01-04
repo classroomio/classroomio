@@ -1,10 +1,14 @@
-import { calculateTotalPoints } from '@api/utils/template';
+import { TExerciseTemplate, TNewExerciseTemplate } from '@db/types';
 import { getAllTemplates, getTemplateById, getTemplateByTag } from '@db/queries/template/template';
-import { TNewExerciseTemplate, TExerciseTemplate } from '@db/types';
+
+import { calculateTotalPoints } from '@api/utils/template';
 
 function mapTemplateToMetadata(templates: TNewExerciseTemplate[]) {
   return templates.map((template) => {
     const questionnaire = template.questionnaire;
+    if (!questionnaire) {
+      throw new Error(`Template ${template.id} is missing questionnaire`);
+    }
 
     return {
       id: template.id,

@@ -1,14 +1,13 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
   import { Label } from '@cio/ui/base/label';
   import { Switch } from '@cio/ui/base/switch';
   import ZapIcon from '@lucide/svelte/icons/zap';
   import * as RadioGroup from '@cio/ui/base/radio-group';
 
-  import { course } from '$features/course/store';
+  import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { updateCourse } from '$lib/utils/services/courses';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import { saveCertificateValidation } from '$lib/utils/functions/validator';
   import { Button } from '@cio/ui/base/button';
@@ -32,29 +31,30 @@
     'blueBadgePattern'
   ];
 
-  let isSaving = $state(false);
   let errors = $state({
     description: ''
   });
 
   const helperText = $derived(
-    `${$course.description?.length || 0}/200 ${$t('course.navItem.certificates.characters')}`
+    `${courseApi.course?.description?.length || 0}/200 ${$t('course.navItem.certificates.characters')}`
   );
 
+  let certificateTheme = $derived<string | undefined>(courseApi.course?.certificateTheme ?? undefined);
+
   const saveCertificate = async () => {
-    isSaving = true;
+    if (!courseApi.course) return;
+
+    // Prevent free plan users from bypassing UI restrictions
+    if ($isFreePlan) {
+      errors.description = 'Certificate customization is only available on paid plans';
+      return;
+    }
 
     try {
-      // Prevent free plan users from bypassing UI restrictions
-      if ($isFreePlan) {
-        errors.description = 'Certificate customization is only available on paid plans';
-        throw new Error(errors.description);
-      }
-
       const result = saveCertificateValidation({
-        description: $course.description || '',
-        is_certificate_downloadable: $course.is_certificate_downloadable || false,
-        certificate_theme: $course.certificate_theme || ''
+        description: courseApi.course?.description || '',
+        isCertificateDownloadable: courseApi.course?.isCertificateDownloadable || false,
+        certificateTheme: certificateTheme || ''
       });
 
       if (result && Object.keys(result).length > 0) {
@@ -64,11 +64,12 @@
 
       errors.description = '';
 
-      await updateCourse($course.id, undefined, {
-        description: $course.description || '',
-        is_certificate_downloadable: $course.is_certificate_downloadable || false,
-        certificate_theme: $course.certificate_theme || ''
+      await courseApi.update(courseApi.course.id!, {
+        description: courseApi.course?.description || '',
+        isCertificateDownloadable: courseApi.course?.isCertificateDownloadable || false,
+        certificateTheme: certificateTheme || ''
       });
+
       snackbar.success('snackbar.course_settings.success.saved');
     } catch (error) {
       if (error instanceof Error) {
@@ -76,14 +77,8 @@
       } else {
         errors.description = $t('course.navItem.certificates.unexpected_error');
       }
-    } finally {
-      isSaving = false;
     }
   };
-
-  $effect(() => {
-    console.log('course', $course);
-  });
 </script>
 
 <svelte:head>
@@ -107,7 +102,7 @@
         {$t('course.navItem.certificates.theme')}
       </p>
 
-      <RadioGroup.Root bind:value={$course.certificate_theme} disabled={$isFreePlan} class="mb-10">
+      <RadioGroup.Root bind:value={certificateTheme} disabled={$isFreePlan} class="mb-10">
         <div class="flex flex-wrap justify-between gap-y-5">
           {#each themes as theme}
             <div class="mr-3 flex items-start space-x-2">
@@ -142,7 +137,8 @@
           <TextareaField
             rows={6}
             placeholder={$t('course.navItem.certificates.placeholder')}
-            bind:value={$course.description}
+            value={courseApi.course?.description}
+            onchange={(e) => (courseApi.course!.description = e.currentTarget.value)}
             errorMessage={errors.description}
             disabled={$isFreePlan}
             helperMessage={helperText}
@@ -151,8 +147,8 @@
         <div class="my-4 flex items-center space-x-2">
           <Switch
             id="certificate-downloadable"
-            checked={$course.is_certificate_downloadable}
-            onCheckedChange={(checked) => ($course.is_certificate_downloadable = checked)}
+            checked={!!courseApi.course?.isCertificateDownloadable}
+            onCheckedChange={(checked) => (courseApi.course!.isCertificateDownloadable = checked)}
             disabled={$isFreePlan}
           />
           <Label for="certificate-downloadable" class="text-sm font-medium dark:text-gray-100">
@@ -163,24 +159,24 @@
     </section>
     <section class="flex w-full items-center justify-center rounded-md bg-gray-100 lg:w-3/5 dark:bg-neutral-800">
       <div class="certificate-container flex items-center justify-center">
-        {#if $course.certificate_theme === 'professional'}
+        {#if certificateTheme === 'professional'}
           <Professional studentName={studentNamePlaceholder} />
-        {:else if $course.certificate_theme === 'plain'}
+        {:else if certificateTheme === 'plain'}
           <Plain studentName={studentNamePlaceholder} />
-        {:else if $course.certificate_theme === 'purpleProfessionalBadge'}
+        {:else if certificateTheme === 'purpleProfessionalBadge'}
           <PurpleProfessionalBadge studentName={studentNamePlaceholder} />
-        {:else if $course.certificate_theme === 'blueProfessionalBadge'}
+        {:else if certificateTheme === 'blueProfessionalBadge'}
           <BlueProfessionalBadge studentName={studentNamePlaceholder} />
-        {:else if $course.certificate_theme === 'purpleBadgePattern'}
+        {:else if certificateTheme === 'purpleBadgePattern'}
           <PurpleBadgePattern studentName={studentNamePlaceholder} />
-        {:else if $course.certificate_theme === 'blueBadgePattern'}
+        {:else if certificateTheme === 'blueBadgePattern'}
           <BlueBadgePattern studentName={studentNamePlaceholder} />
         {/if}
       </div>
     </section>
   </div>
   <div class="h-1/5">
-    <Button variant="secondary" onclick={saveCertificate} loading={isSaving} disabled={$isFreePlan}>
+    <Button variant="secondary" onclick={saveCertificate} loading={courseApi.isLoading} disabled={$isFreePlan}>
       {#if $isFreePlan}
         <ZapIcon size={16} class="filled" />
       {/if}

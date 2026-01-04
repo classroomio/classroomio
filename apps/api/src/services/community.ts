@@ -1,5 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import type { TCommunityAnswer, TCommunityQuestion } from '@db/types';
+import type { TCommunityAnswer, TCommunityQuestion, TNewCommunityQuestion } from '@db/types';
 import {
   createCommunityQuestion,
   deleteCommentById,
@@ -68,6 +68,9 @@ export async function fetchCommunityQuestions(
 
 export async function fetchCommunityQuestion({ slug }: Partial<TCommunityQuestion>) {
   try {
+    if (!slug) {
+      throw new AppError('Slug is required', ErrorCodes.COMMUNITY_QUESTION_NOT_FOUND, 400);
+    }
     const result = await getCommunityQuestion(slug);
 
     if (!result) {
@@ -106,6 +109,9 @@ export async function createQuestion({
   slug
 }: Partial<TCommunityQuestion>) {
   try {
+    if (!courseId || !organizationId || !authorProfileId) {
+      throw new AppError('Missing required fields', ErrorCodes.ADD_COMMUNITY_QUESTION_FAILED, 400);
+    }
     const result = await createCommunityQuestion({
       title,
       body,
@@ -140,7 +146,10 @@ export async function createQuestion({
 
 export async function editQuestion({ id, title, body, courseId }: Partial<TCommunityQuestion>) {
   try {
-    const result = await editCommunityQuestion({ id, title, body, courseId: courseId });
+    if (!id || !courseId) {
+      throw new AppError('Question ID and Course ID are required', ErrorCodes.UPDATE_COMMUNITY_QUESTION_FAILED, 400);
+    }
+    const result = await editCommunityQuestion({ id, title, body, courseId });
 
     return result;
   } catch (error) {
@@ -152,7 +161,10 @@ export async function editQuestion({ id, title, body, courseId }: Partial<TCommu
 
 export async function createComment({ body, questionId, authorProfileId, votes }: Partial<TCommunityAnswer>) {
   try {
-    const result = await submitComment({ body, questionId, authorProfileId, votes });
+    if (!body || !questionId || !authorProfileId) {
+      throw new AppError('Missing required fields', ErrorCodes.COMMENT_SUBMISSION_FAILED, 400);
+    }
+    const result = await submitComment({ body, questionId, authorProfileId, votes: votes ?? 0 });
 
     if (!result) {
       throw new AppError('Comment submission failed', ErrorCodes.COMMENT_SUBMISSION_FAILED, 404);
@@ -190,7 +202,7 @@ export async function upvote({ id, isQuestion }: { id: string | number; isQuesti
   }
 }
 
-export async function deleteQuestion({ id }: Partial<TCommunityQuestion>) {
+export async function deleteQuestion({ id }: { id: number }) {
   try {
     // Delete all comments first, then delete the question
     await deleteCommentByQuestionId(id);
@@ -204,7 +216,7 @@ export async function deleteQuestion({ id }: Partial<TCommunityQuestion>) {
   }
 }
 
-export async function deleteComment({ id }: Partial<TCommunityAnswer>) {
+export async function deleteComment({ id }: { id: string }) {
   try {
     const result = await deleteCommentById(id);
 
@@ -216,7 +228,7 @@ export async function deleteComment({ id }: Partial<TCommunityAnswer>) {
   }
 }
 
-export async function deleteCommentsByQuestionId({ questionId }: Partial<TCommunityAnswer>) {
+export async function deleteCommentsByQuestionId({ questionId }: { questionId: number }) {
   try {
     const result = await deleteCommentByQuestionId(questionId);
 

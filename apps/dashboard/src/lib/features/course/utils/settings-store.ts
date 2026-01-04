@@ -1,4 +1,4 @@
-import { COURSE_TYPE } from '$lib/utils/types';
+import type { TCourseType } from '@cio/db/types';
 import { writable } from 'svelte/store';
 
 export const settings = writable({
@@ -6,7 +6,7 @@ export const settings = writable({
   course_title: '',
   course_description: '',
   grading: false,
-  type: COURSE_TYPE.LIVE_CLASS,
+  type: 'LIVE_CLASS' as TCourseType,
   allow_new_students: false,
   tabs: [
     { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },

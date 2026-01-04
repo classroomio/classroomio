@@ -21,7 +21,7 @@
   import { DeleteModal } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { deleteCourse } from '$lib/utils/services/courses';
+  import { courseApi } from '$features/course/api';
   import { deleteCourseModal, deleteCourseModalInitialState, courseMetaDeta } from '../utils/store';
   import { browser } from '$app/environment';
   import type { OrgCourses, UserEnrolledCourses } from '$features/course/types';
@@ -70,23 +70,13 @@
 
     $deleteCourseModal.isDeleting = true;
 
-    try {
-      await deleteCourse($deleteCourseModal.id);
+    await courseApi.delete($deleteCourseModal.id);
 
-      // TODO: Remove the course from the courses store
-
-      // Show success message
-      snackbar.success('snackbar.course_deleted');
-
-      // Close modal and reset state
+    if (courseApi.success) {
       deleteCourseModal.set(deleteCourseModalInitialState);
-    } catch (error) {
-      console.error('Error deleting course:', error);
-      snackbar.error('snackbar.course_settings.error.went_wrong');
-
-      // Stop deleting state on error
-      $deleteCourseModal.isDeleting = false;
     }
+
+    $deleteCourseModal.isDeleting = false;
   }
 </script>
 

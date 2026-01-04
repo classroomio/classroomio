@@ -5,9 +5,9 @@
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import { Button } from '@cio/ui/base/button';
   import PlayIcon from '@lucide/svelte/icons/play';
-  import { fetchLesssonLanguageHistory } from '$lib/utils/services/courses';
+  import { lessonApi } from '$features/course/api';
   import { diffLines } from 'diff';
-  import { lesson, lessons } from '$features/course/components/lesson/store/lessons';
+  import { courseApi } from '$features/course/api';
   import { supabase } from '$lib/utils/functions/supabase';
   import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import { t } from '$lib/utils/functions/translations';
@@ -44,8 +44,8 @@
 
   let mounted = false;
 
-  const lessonId = $derived($lesson.id || '');
-  const lessonTitle = $derived($lessons.find((les) => les.id === lessonId)?.title || '');
+  const lessonId = $derived(lessonApi.lesson?.id || '');
+  const lessonTitle = $derived(lessonApi.lesson?.title || '');
 
   const dispatch = createEventDispatcher();
 
@@ -88,18 +88,27 @@
     untrack(async () => {
       try {
         isMoreHistoryLoading = true;
-        const { data, error } = await fetchLesssonLanguageHistory(lessonId, locale, endRange);
 
-        if (!data) {
-          throw error;
+        if (!courseApi.course?.id) {
+          throw new Error('Course ID not available');
         }
+
+        const response = await lessonApi.getHistory(courseApi.course?.id, lessonId, locale, endRange);
+
+        if (!response || !lessonApi.success || !response.data) {
+          throw new Error('Failed to fetch lesson history');
+        }
+
+        const data = response.data;
 
         // Filter out duplicates based on timestamp
         const existingTimestamps = new Set(lessonHistory.map((item) => new Date(item.timestamp).getMinutes()));
-        const newEntries = data.filter((item) => !existingTimestamps.has(new Date(item.timestamp).getMinutes()));
+        const newEntries = data.filter((item) => !existingTimestamps.has(new Date(item.timestamp!).getMinutes()));
         lessonHistory = removeDuplicate([...lessonHistory, ...newEntries]);
 
-        updateContentVersion(lessonHistory[0], 0);
+        if (lessonHistory.length > 0) {
+          updateContentVersion(lessonHistory[0], 0);
+        }
       } catch (error) {
         console.error(error);
         snackbar.error('Failed to fetch history');
@@ -164,7 +173,7 @@
     scrollLock(open);
   });
   $effect(() => {
-    fetchLessonHistory(lessonId, $lesson.locale, versionsToFetch);
+    fetchLessonHistory(lessonId, lessonApi.currentLocale, versionsToFetch);
   });
 </script>
 

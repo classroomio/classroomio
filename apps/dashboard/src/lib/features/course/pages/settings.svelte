@@ -15,21 +15,22 @@
   import { UpgradeBanner, UnsavedChanges, UploadWidget } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
 
+  import { lessonApi } from '$features/course/api';
   import { settings } from '$features/course/utils/settings-store';
   import Copy from '@lucide/svelte/icons/copy';
-  import type { Course } from '$lib/utils/types';
-  import { COURSE_TYPE } from '$lib/utils/types';
-  import { lessons } from '$features/course/components/lesson/store/lessons';
-  import { course } from '$features/course/store';
+  import type { TCourseType } from '@cio/db/types';
+  import type { Course } from '../utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { isObject } from '$lib/utils/functions/isObject';
   import { snackbar } from '$features/ui/snackbar/store';
   import generateSlug from '$lib/utils/functions/generateSlug';
   import { DeleteModal } from '$features/ui';
-  import { deleteCourse, updateCourse } from '$lib/utils/services/courses';
+  import { courseApi } from '$features/course/api';
+  import { uploadImage } from '$lib/utils/services/upload';
   import { copyToClipboard } from '$lib/utils/functions/formatYoutubeVideo';
   import { handleOpenWidget } from '$features/ui/course-landing-page/store';
   import { currentOrg, currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
+  import { page } from '$app/stores';
 
   let isLoading = $state(false);
   let isDeleting = $state(false);
@@ -49,7 +50,7 @@
   }
 
   function getLessonOrder(id: string) {
-    const index = $lessons.findIndex((lesson) => lesson.id === id);
+    const index = lessonApi.lessons.findIndex((lesson) => lesson.id === id);
     if (index < 9) {
       return '0' + (index + 1);
     } else {
@@ -64,11 +65,11 @@
     isLoading = true;
 
     try {
-      const lessonsList = $lessons.map((lesson) => ({
+      const lessonsList = lessonApi.lessons.map((lesson) => ({
         lessonTitle: lesson.title,
         lessonNumber: getLessonOrder(lesson.id),
         lessonNote: lesson.note,
-        slideUrl: lesson.slide_url || '',
+        slideUrl: lesson.slideUrl || '',
         video: lesson.videos || ''
       }));
 
@@ -79,7 +80,7 @@
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          courseTitle: $course.title,
+          courseTitle: courseApi.course?.title || '',
           orgName: $currentOrg.name,
           orgTheme: $currentOrg.theme || '',
           lessons: lessonsList
@@ -96,7 +97,7 @@
 
       let a = document.createElement('a');
       document.body.append(a);
-      a.download = $course.title + ' - ' + 'Course ';
+      a.download = (courseApi.course?.title || '') + ' - ' + 'Course ';
       a.href = fileURL;
       a.click();
       a.remove();
@@ -115,13 +116,13 @@
   };
 
   async function handleDeleteCourse() {
+    if (!courseApi.course) return;
+
     isDeleting = true;
 
-    try {
-      await deleteCourse($course.id);
+    await courseApi.delete(courseApi.course.id);
+    if (courseApi.success) {
       goto($currentOrgPath + '/courses');
-    } catch (error) {
-      snackbar.error('snackbar.course_settings.error.went_wrong');
     }
 
     isDeleting = false;
@@ -139,38 +140,45 @@
     }
 
     try {
+      let logoUrl = $settings.logo;
+
+      // Upload image if avatar is provided
+      if (avatar) {
+        logoUrl = await uploadImage(new File([avatar], avatar));
+      }
+
+      if (!courseApi.course) return;
+
       const updatedCourse = {
         title: $settings.course_title,
         description: $settings.course_description,
         type: $settings.type,
-        logo: $settings.logo,
-        is_published: $settings.is_published,
+        logo: logoUrl,
+        isPublished: $settings.is_published,
         metadata: {
-          ...(isObject($course.metadata) ? $course.metadata : {}),
+          ...(isObject(courseApi.course.metadata) ? courseApi.course.metadata : {}),
           lessonTabsOrder: $settings.tabs,
           grading: $settings.grading,
           lessonDownload: $settings.lesson_download,
           allowNewStudent: $settings.allow_new_students
         },
-        slug: $course.slug
-      };
-      await updateCourse($course.id, avatar ? new File([avatar], avatar) : undefined, updatedCourse);
-
-      $course = {
-        ...$course,
-        ...updatedCourse
+        slug: courseApi.course.slug!
       };
 
-      snackbar.success('snackbar.course_settings.success.saved');
+      const response = await courseApi.update(courseApi.course.id, updatedCourse);
 
-      hasUnsavedChanges = false;
+      if (courseApi.success && response) {
+        // courseApi.update() already updates courseApi.course internally
+        hasUnsavedChanges = false;
+      }
     } catch (error) {
       snackbar.error();
     }
   }
 
   const generateNewCourseLink = () => {
-    $course.slug = generateSlug($course.title);
+    if (!courseApi.course) return;
+    courseApi.course.slug = generateSlug(courseApi.course.title);
     hasUnsavedChanges = true;
   };
 
@@ -180,23 +188,34 @@
     untrack(() => {
       settings.set({
         course_title: course.title,
-        type: course.type,
+        type: (course.type as TCourseType) || ('SELF_PACED' as TCourseType),
         course_description: course.description,
         logo: course.logo || '',
-        tabs: course.metadata.lessonTabsOrder || $settings.tabs,
-        grading: !!course.metadata.grading,
-        lesson_download: !!course.metadata.lessonDownload,
-        is_published: !!course.is_published,
-        allow_new_students: course.metadata.allowNewStudent
+        tabs: course.metadata?.lessonTabsOrder || $settings.tabs,
+        grading: !!course.metadata?.grading,
+        lesson_download: !!course.metadata?.lessonDownload,
+        is_published: !!course.isPublished,
+        allow_new_students: course.metadata?.allowNewStudent
       });
     });
   }
 
+  // Initialize course from page data
   $effect(() => {
-    setDefault($course);
+    const courseData = $page.data?.course;
+    const courseId = $page.data?.courseId;
+    if (courseData && courseId && !courseApi.course) {
+      courseApi.course = courseData;
+    }
   });
 
-  let courseLink = $derived(`${$currentOrgDomain}/course/${$course.slug}`);
+  $effect(() => {
+    if (courseApi.course) {
+      setDefault(courseApi.course);
+    }
+  });
+
+  let courseLink = $derived(courseApi.course?.slug ? `${$currentOrgDomain}/course/${courseApi.course.slug}` : '');
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
@@ -282,7 +301,7 @@
           </IconButton>
         </div>
         <div class="flex items-center justify-between rounded-md border p-3">
-          {#if $course.slug}
+          {#if courseApi.course?.slug}
             <p class="text-sm">{courseLink}</p>
             <IconButton
               onclick={() => {
@@ -364,17 +383,17 @@
       <RadioGroup.Root
         value={$settings.type}
         onValueChange={(value) => {
-          $settings.type = value as COURSE_TYPE;
+          $settings.type = value as TCourseType;
           if (hasUnsavedChanges) return;
           hasUnsavedChanges = true;
         }}
       >
         <div class="mb-3 flex items-center space-x-2">
-          <RadioGroup.Item value={COURSE_TYPE.LIVE_CLASS} id="live-class" />
+          <RadioGroup.Item value={'LIVE_CLASS' as TCourseType} id="live-class" />
           <Label for="live-class">{$t('course.navItem.settings.live_class')}</Label>
         </div>
         <div class="flex items-center space-x-2">
-          <RadioGroup.Item value={COURSE_TYPE.SELF_PACED} id="self-paced" />
+          <RadioGroup.Item value={'SELF_PACED' as TCourseType} id="self-paced" />
           <Label for="self-paced">{$t('course.navItem.settings.self_paced')}</Label>
         </div>
       </RadioGroup.Root>
@@ -413,7 +432,7 @@
         onCheckedChange={(checked) => {
           hasUnsavedChanges = true;
           $settings.allow_new_students = checked;
-          if (!$course.slug) {
+          if (!courseApi.course?.slug) {
             generateNewCourseLink();
           }
         }}

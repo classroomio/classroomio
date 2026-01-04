@@ -1,12 +1,17 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
-  import { lesson } from '../../store/lessons';
+  import { lessonApi } from '$features/course/api';
 
   let errors: Record<string, string> = {};
-  let videoElements: (HTMLVideoElement | null)[] = $derived.by(() => {
-    let elements = videoElements.slice(0, $lesson.materials.videos.length);
-    return [...elements, ...Array($lesson.materials.videos.length - elements.length).fill(null)];
+  const videos = $derived(lessonApi.lesson?.videos || []);
+  let videoElements: (HTMLVideoElement | null)[] = $state([]);
+
+  $effect(() => {
+    videoElements = [
+      ...videoElements.slice(0, videos.length),
+      ...Array(Math.max(0, videos.length - videoElements.length)).fill(null)
+    ];
   });
 
   function initPlyr() {
@@ -27,9 +32,9 @@
   });
 </script>
 
-{#if $lesson.materials.videos.length}
+{#if videos.length}
   <div class="w-full">
-    {#each $lesson.materials.videos as video, index}
+    {#each videos as video, index}
       <div class="mb-5 w-full overflow-hidden">
         {#key video.link}
           <div class="mb-5">

@@ -19,7 +19,8 @@
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { upsertExercise } from '$lib/utils/services/courses';
+  import { exerciseApi } from '$features/course/api';
+  import { courseApi } from '$features/course/api';
   import EditMode from './edit-mode.svelte';
   import ViewMode from './view-mode.svelte';
   import Analytics from './submissions/index.svelte';
@@ -42,7 +43,7 @@
   let selectedTab = $state('questions');
 
   async function handleSave() {
-    if ($globalStore.isStudent) return;
+    if ($globalStore.isStudent || !courseApi.course?.id) return;
 
     const errors = validateQuestionnaire($questionnaire.questions);
     if (Object.values(errors).length > 0) {
@@ -54,19 +55,47 @@
     reset();
 
     try {
-      const updatedQuestions = await upsertExercise($questionnaire, exerciseId);
+      // Transform questionnaire to API format
+      const questions = $questionnaire.questions
+        .filter((q) => !q.deleted_at)
+        .map((q) => ({
+          id: q.id && !isNaN(Number(q.id)) ? Number(q.id) : undefined,
+          question: q.title,
+          points: q.points || 0,
+          options: (q.options || [])
+            .filter((opt) => !opt.deleted_at)
+            .map((opt) => ({
+              id: opt.id && !isNaN(Number(opt.id)) ? Number(opt.id) : undefined,
+              label: opt.label,
+              isCorrect: opt.is_correct || false
+            }))
+        }));
 
-      questionnaire.update((q) => ({
-        ...q,
-        is_title_dirty: false,
-        is_description_dirty: false,
-        // @ts-ignore
-        questions: updatedQuestions
-      }));
-      snackbar.success('snackbar.exercise.success');
+      await exerciseApi.update(courseApi.course?.id, exerciseId, {
+        title: $questionnaire.title ?? '',
+        description: $questionnaire.description ?? '',
+        dueBy: $questionnaire.due_by ?? '',
+        questions: questions.map((q) => ({
+          ...q,
+          options: q.options.map((opt) => ({
+            ...opt,
+            label: opt.label ?? ''
+          }))
+        }))
+      });
 
-      // Redirect to exercises page
-      goto(path);
+      if (exerciseApi.success && exerciseApi.exercise) {
+        questionnaire.update((q) => ({
+          ...q,
+          is_title_dirty: false,
+          is_description_dirty: false,
+          questions: exerciseApi.exercise?.questions || q.questions
+        }));
+        snackbar.success('snackbar.exercise.success');
+
+        // Redirect to exercises page
+        goto(path);
+      }
     } catch (error) {
       console.error(error);
       snackbar.error();

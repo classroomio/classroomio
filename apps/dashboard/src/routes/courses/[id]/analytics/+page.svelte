@@ -19,6 +19,6 @@
 </Page.Header>
 <Page.Body>
   {#snippet child()}
-    <AnalyticsPage courseId={data.courseId} />
+    <AnalyticsPage courseId={data.courseId} courseAnalytics={data.courseAnalytics} />
   {/snippet}
 </Page.Body>

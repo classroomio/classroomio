@@ -11,26 +11,25 @@
   import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import { CircleCheckIcon } from '$features/ui/icons';
+  import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
 
   import MODES from '$lib/utils/constants/mode';
   import { profile } from '$lib/utils/store/user';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { course, group } from '$features/course/store';
+  import { courseApi } from '$features/course/api';
   import { LANGUAGES } from '$lib/utils/constants/translation';
-  import { getGroupMemberId } from '$features/course/utils/functions';
-  import { getIsLessonComplete } from '$features/course/components/lesson/functions';
-  import { COURSE_VERSION, type Lesson, type LessonCompletion } from '$lib/utils/types';
+  import type { TLocale } from '@cio/db/types';
   import LessonVersionHistory from '$features/course/components/lesson/lesson-version-history.svelte';
-  import { checkExercisesComplete, fetchLesson, updateLessonCompletion } from '$lib/utils/services/courses';
-  import { lesson, setLesson, lessons, lessonSections } from '$features/course/components/lesson/store/lessons';
+  import { lessonApi } from '$features/course/api';
 
   import { IconButton } from '@cio/ui/custom/icon-button';
   import * as Page from '@cio/ui/base/page';
   import { RoleBasedSecurity } from '$features/ui';
   import Exercises from '$features/course/components/lesson/exericses/index.svelte';
   import Materials from '$lib/features/course/components/lesson/materials/index.svelte';
+  import type { ListLessons } from '$features/course/utils/types';
 
   let { data = $bindable() } = $props();
 
@@ -42,96 +41,47 @@
   let hasFetched = $state('');
 
   const path = $derived(page.url?.pathname?.replace(/\/exercises[\/ 0-9 a-z -]*/, ''));
-  const isLessonComplete = $derived(getIsLessonComplete($lesson.lesson_completion, $profile.id));
+  const isLessonComplete = $derived(lessonApi.completion?.isComplete || false);
 
   async function fetchReqData(lessonId = '', isMaterialsTabActive: boolean) {
-    if (lessonId === $lesson.id) return;
+    if (lessonId === lessonApi.lesson?.id) return;
 
     if (!lessonId || hasFetched === lessonId) return;
 
     hasFetched = lessonId;
 
-    $lesson.isFetching = true;
-    console.log('fetching', $lesson.isFetching);
+    lessonApi.isLoading = true;
+    console.log('fetching', lessonApi.isLoading);
 
-    let lessonData;
     if (isMaterialsTabActive) {
-      const lesson = await fetchLesson(lessonId);
-      lessonData = lesson.data;
+      await lessonApi.get(data.courseId, lessonId);
+      if (lessonApi.success && lessonApi.lesson) {
+        if ($profile.locale) {
+          lessonApi.currentLocale = $profile.locale;
+        }
+      }
     }
 
-    console.log({ lessonData });
-
-    const totalExercises = lessonData?.totalExercises?.[0]?.count || 0;
-    const totalComments = lessonData?.totalComments?.[0]?.count || 0;
-
-    setLesson({
-      id: lessonId,
-      lessonData,
-      totalExercises,
-      totalComments,
-      locale: $profile.locale || 'en'
-    });
-    $lesson.isFetching = false;
+    lessonApi.isLoading = false;
   }
 
   async function markLessonComplete(lessonId: string) {
-    const groupMemberId = getGroupMemberId($group.people, $profile.id);
-    const { data: areExercisesComplete, error } = await checkExercisesComplete(lessonId, groupMemberId);
-
-    if (error) {
-      snackbar.error('snackbar.lessons.error.try_later');
-      return;
-    }
-
-    if (!areExercisesComplete) {
-      snackbar.error('snackbar.lessons.error.exercise_not_complete');
-      return;
-    }
-
     isMarkingComplete = true;
 
-    let newCompletion: LessonCompletion = {
-      is_complete: true,
-      profile_id: $profile.id || '',
-      lesson_id: lessonId,
-      created_at: new Date().toDateString(),
-      updated_at: new Date().toDateString()
-    };
-    let updatedCompletion: LessonCompletion;
+    // Get current completion status
+    await lessonApi.getCompletion(data.courseId, lessonId);
+    const currentCompletion = lessonApi.completion;
+    const isComplete = currentCompletion ? !currentCompletion.isComplete : true;
 
-    const completions: LessonCompletion[] = $lesson.lesson_completion.map((completion) => {
-      if (completion.profile_id === $profile.id) {
-        console.log('shouldUpdate');
+    // Update completion
+    await lessonApi.updateCompletion(data.courseId, lessonId, isComplete);
 
-        completion = {
-          ...completion,
-          is_complete: !completion.is_complete
-        };
-
-        updatedCompletion = completion;
-      }
-
-      return completion;
-    });
-
-    // @ts-ignore
-    if (updatedCompletion) {
-      await updateLessonCompletion(updatedCompletion, true);
+    if (lessonApi.success && lessonApi.completion) {
+      snackbar.success('snackbar.lessons.success.complete_marked');
     } else {
-      completions.push(newCompletion);
-      await updateLessonCompletion(newCompletion, false);
+      snackbar.error('snackbar.lessons.error.try_later');
     }
 
-    $lesson.lesson_completion = completions;
-    $lessons = $lessons.map((l) => {
-      if (l.id === $lesson.id) {
-        l.lesson_completion = completions;
-      }
-
-      return l;
-    });
-    snackbar.success('snackbar.lessons.success.complete_marked');
     isMarkingComplete = false;
   }
 
@@ -141,15 +91,15 @@
   }
 
   const getLessons = () => {
-    if ($course.version === COURSE_VERSION.V1) {
-      return $lessons;
+    if (courseApi.course?.version === 'V1') {
+      return lessonApi.lessons;
     } else {
-      const _lessons: Lesson[] = [];
-
-      $lessonSections.forEach((section) => {
-        _lessons.push(...section.lessons);
+      // For V2, filter lessons by section
+      const _lessons: ListLessons = [];
+      lessonApi.sections.forEach((section) => {
+        const sectionLessons = lessonApi.lessons.filter((lesson) => lesson.sectionId === section.id);
+        _lessons.push(...sectionLessons);
       });
-
       return _lessons;
     }
   };
@@ -171,11 +121,11 @@
     const index = _lessons.findIndex((lesson) => lesson.id === lessonId);
     const nextOrPrevLesson = isPrev ? _lessons[index - 1] : _lessons[index + 1];
 
-    const isLocked = $globalStore.isStudent && !nextOrPrevLesson.is_unlocked;
+    const isLocked = $globalStore.isStudent && !nextOrPrevLesson.isUnlocked;
 
     if (isLocked) return;
 
-    const path = `/courses/${$course.id}/lessons/${nextOrPrevLesson.id}`;
+    const path = `/courses/${courseApi.course?.id}/lessons/${nextOrPrevLesson.id}`;
     goto(path);
   };
 
@@ -234,9 +184,19 @@
             </IconButton>
           </div>
 
-          <Select.Root type="single" bind:value={$lesson.locale}>
+          <Select.Root
+            type="single"
+            value={lessonApi.currentLocale}
+            onValueChange={(value) => {
+              if (value) {
+                lessonApi.currentLocale = value as TLocale;
+              }
+            }}
+          >
             <Select.Trigger class="h-9 w-[120px]">
-              {LANGUAGES.find((lang) => lang.id === $lesson.locale)?.text || 'Language'}
+              {LANGUAGES.find(
+                (lang) => lang.id === (Object.keys(lessonApi.translations[data.lessonId || ''] || {})[0] || 'en')
+              )?.text || 'Language'}
             </Select.Trigger>
             <Select.Content>
               <Select.Group>
@@ -252,6 +212,15 @@
       </RoleBasedSecurity>
     </div>
   </Page.Action>
+
+  <UnderlineTabs.Root value="note">
+    <UnderlineTabs.List>
+      <UnderlineTabs.Trigger value="note" onclick={() => goto(path)}>Materials</UnderlineTabs.Trigger>
+      <UnderlineTabs.Trigger value="exercises" onclick={() => goto(`${path}/exercises`)}
+        >Exercises</UnderlineTabs.Trigger
+      >
+    </UnderlineTabs.List>
+  </UnderlineTabs.Root>
 </Page.Header>
 
 {#if !data.isMaterialsTabActive}
@@ -290,7 +259,9 @@
         onclick={() => goto(`${path}/exercises`)}
       >
         <ListChecksIcon size={16} />
-        <span class="ml-1">{$lesson.totalExercises}</span>
+        <span class="ml-1">
+          {(lessonApi.lessons.find((l) => l.id === data.lessonId) as any)?.totalExercises || 0}
+        </span>
       </button>
     {:else}
       <button

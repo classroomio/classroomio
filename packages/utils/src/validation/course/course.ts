@@ -20,6 +20,16 @@ export const ZCourseGetParam = z.object({
 });
 export type TCourseGetParam = z.infer<typeof ZCourseGetParam>;
 
+export const ZCourseGetQuery = z.object({
+  slug: z.string().optional()
+});
+export type TCourseGetQuery = z.infer<typeof ZCourseGetQuery>;
+
+export const ZCourseGetBySlugParam = z.object({
+  slug: z.string().min(1)
+});
+export type TCourseGetBySlugParam = z.infer<typeof ZCourseGetBySlugParam>;
+
 export const ZCourseDownloadParam = z.object({
   courseId: z.string().min(1)
 });
@@ -79,3 +89,108 @@ export const ZCourseDownloadPresignedUrl = z.object({
   keys: z.array(z.string().min(1)).min(1)
 });
 export type TCourseDownloadPresignedUrl = z.infer<typeof ZCourseDownloadPresignedUrl>;
+
+export const ZCourseCreate = z.object({
+  title: z.string().min(1),
+  description: z.string().min(1),
+  type: z.enum(['LIVE_CLASS', 'SELF_PACED']),
+  organizationId: z.string().min(1)
+});
+export type TCourseCreate = z.infer<typeof ZCourseCreate>;
+
+// Course metadata schema matching the database structure
+export const ZCourseMetadata = z.object({
+  requirements: z.string().optional(),
+  description: z.string().optional(),
+  goals: z.string().optional(),
+  videoUrl: z.string().optional(),
+  showDiscount: z.boolean().optional(),
+  discount: z.number().optional(),
+  paymentLink: z.string().optional(),
+  reward: z
+    .object({
+      show: z.boolean(),
+      description: z.string()
+    })
+    .optional(),
+  instructor: z
+    .object({
+      name: z.string(),
+      role: z.string(),
+      coursesNo: z.number(),
+      description: z.string(),
+      imgUrl: z.string()
+    })
+    .optional(),
+  certificate: z
+    .object({
+      templateUrl: z.string()
+    })
+    .optional(),
+  reviews: z
+    .array(
+      z.object({
+        id: z.number(),
+        hide: z.boolean(),
+        name: z.string(),
+        avatar_url: z.string(),
+        rating: z.number(),
+        created_at: z.number(),
+        description: z.string()
+      })
+    )
+    .optional(),
+  lessonTabsOrder: z
+    .array(
+      z.object({
+        id: z.number(),
+        name: z.string()
+      })
+    )
+    .optional(),
+  grading: z.boolean().optional(),
+  lessonDownload: z.boolean().optional(),
+  allowNewStudent: z.boolean(),
+  sectionDisplay: z.record(z.string(), z.boolean()).optional()
+});
+export type TCourseMetadata = z.infer<typeof ZCourseMetadata>;
+
+export const ZCourseUpdate = z.object({
+  title: z.string().min(1).optional(),
+  description: z.string().min(1).optional(),
+  type: z.enum(['LIVE_CLASS', 'SELF_PACED']).optional(),
+  logo: z.string().optional(),
+  slug: z.string().optional(),
+  isPublished: z.boolean().optional(),
+  overview: z.string().optional(),
+  metadata: ZCourseMetadata.optional(),
+  isCertificateDownloadable: z.boolean().optional(),
+  certificateTheme: z.string().optional()
+});
+export type TCourseUpdate = z.infer<typeof ZCourseUpdate>;
+
+export const ZCourseUpdateParam = z.object({
+  courseId: z.string().min(1)
+});
+export type TCourseUpdateParam = z.infer<typeof ZCourseUpdateParam>;
+
+export const ZCourseDeleteParam = z.object({
+  courseId: z.string().min(1)
+});
+export type TCourseDeleteParam = z.infer<typeof ZCourseDeleteParam>;
+
+export const ZCourseProgressParam = z.object({
+  courseId: z.string().min(1)
+});
+export type TCourseProgressParam = z.infer<typeof ZCourseProgressParam>;
+
+export const ZCourseProgressQuery = z.object({
+  profileId: z.string().uuid()
+});
+export type TCourseProgressQuery = z.infer<typeof ZCourseProgressQuery>;
+
+export const ZCourseUserAnalyticsParam = z.object({
+  courseId: z.string().min(1),
+  userId: z.string().uuid()
+});
+export type TCourseUserAnalyticsParam = z.infer<typeof ZCourseUserAnalyticsParam>;

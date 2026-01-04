@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { lesson } from '../../store/lessons';
+  import { lessonApi } from '$features/course/api';
 
-  let url = $derived(getUrl($lesson.materials.slide_url));
+  let url = $derived(getUrl(lessonApi.lesson?.slideUrl || ''));
 
   function canvaHandler(_url): string {
     if (_url.includes('?embed')) return _url;

@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { AccountOrg } from '$features/app/types';
-  import type { Course } from '$lib/utils/types';
+  import { currentOrg } from '$lib/utils/store/org';
   import { isFreePlan } from '$lib/utils/store/org';
+  import { courseApi } from '$features/course/api';
   import { qrInviteNodeStore } from './store';
 
   let node: any = $state();
@@ -12,11 +12,9 @@
 
   interface Props {
     qrImage: string;
-    currentOrg: AccountOrg;
-    course: Course;
   }
 
-  let { qrImage, currentOrg, course }: Props = $props();
+  let { qrImage }: Props = $props();
 </script>
 
 <div
@@ -28,8 +26,8 @@
     <div class="my-4 rounded-xl bg-gray-100 p-2 text-xl">Scan QR</div>
     <img src={qrImage} alt="qrcode" />
     <div class="pt-1 pb-4">
-      <p class="ui:text-primary mt-2 text-2xl">{course.title}</p>
-      <p class="mt-1 text-lg font-semibold text-black">{currentOrg.name}</p>
+      <p class="ui:text-primary mt-2 text-2xl">{courseApi.course?.title}</p>
+      <p class="mt-1 text-lg font-semibold text-black">{$currentOrg.name}</p>
     </div>
   </div>
   {#if $isFreePlan}

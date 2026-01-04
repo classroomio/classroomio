@@ -1,6 +1,7 @@
-import type { Course, Review } from '$lib/utils/types';
 import { NAV_ITEMS, NAV_ITEM_KEY } from './constants';
 
+import type { Course } from '$features/course/utils/types';
+import type { Review } from '$features/course/utils/types';
 import get from 'lodash/get';
 
 export function getExerciseCount(lessons) {

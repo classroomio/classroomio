@@ -8,8 +8,8 @@
 
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { getAccessToken } from '$lib/utils/functions/supabase';
   import type { UserCourseAnalytics } from '$lib/utils/types/analytics';
+  import { peopleApi } from '$features/course/api/people.svelte';
 
   import { Progress } from '@cio/ui/base/progress';
   import { ActivityCard, HeroProfileCard, LoadingPage } from '$features/ui';
@@ -35,20 +35,11 @@
   }
 
   async function fetchUserCourseAnalytics() {
-    const accessToken = await getAccessToken();
-    const response = await fetch('/api/analytics/user', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: accessToken
-      },
-      body: JSON.stringify(data)
-    });
-
-    if (response.ok) {
-      userCourseAnalytics = (await response.json()) as UserCourseAnalytics;
-    } else {
-      console.error(response);
+    try {
+      const analytics = await peopleApi.getUserCourseAnalytics(data.courseId, data.userId);
+      userCourseAnalytics = analytics as UserCourseAnalytics | undefined;
+    } catch (error) {
+      console.error('Failed to fetch user course analytics:', error);
       snackbar.error('Failed to fetch analytics data');
     }
   }

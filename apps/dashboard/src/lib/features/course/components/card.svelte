@@ -13,7 +13,6 @@
   import { Progress } from '@cio/ui/base/progress';
 
   import { Image } from '$features/ui';
-  import { COURSE_TYPE } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { calcCourseDiscount } from '$lib/utils/functions/course';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
@@ -77,13 +76,13 @@
       iconStyle?: string;
     }
   > = {
-    [COURSE_TYPE.LIVE_CLASS]: {
+    ['LIVE_CLASS']: {
       style: '',
       label: $t('course.navItem.settings.live_class'),
       icon: CircleDotIcon,
       iconStyle: 'custom text-red-700'
     },
-    [COURSE_TYPE.SELF_PACED]: {
+    ['SELF_PACED']: {
       style: '',
       label: $t('course.navItem.settings.self_paced'),
       icon: UserIcon,
@@ -147,7 +146,7 @@
                   {:else if pricingData.showDiscount}
                     {formatter.format(cost)}
                     <span class="line-through">
-                      {formatter?.format(pricingData?.cost)}
+                      {formatter?.format(pricingData?.cost ?? 0)}
                     </span>
                   {:else}
                     {formatter.format(cost)}

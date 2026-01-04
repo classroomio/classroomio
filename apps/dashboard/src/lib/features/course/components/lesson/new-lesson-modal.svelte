@@ -3,86 +3,72 @@
 
   import { Button } from '@cio/ui/base/button';
   import { InputField } from '@cio/ui/custom/input-field';
-  import {
-    lessons,
-    lessonSections,
-    handleSaveLesson,
-    handleSaveLessonSection
-  } from '$features/course/components/lesson/store/lessons';
-  import { course } from '$features/course/store';
+  import { courseApi, lessonApi } from '$features/course/api';
   import * as Dialog from '@cio/ui/base/dialog';
   import { goto } from '$app/navigation';
   import { handleAddLessonWidget } from './store';
   import { t } from '$lib/utils/functions/translations';
-  import { COURSE_TYPE } from '$lib/utils/types';
-  import type { Lesson } from '$lib/utils/types';
+  import type { ListLessons } from '$features/course/utils/types';
 
   let errors = $state({
     title: ''
   });
-  let lesson: Lesson = $state({
+  let lesson: Partial<ListLessons[number]> = $state({
     id: '',
-    course_id: $course.id || '',
+    courseId: courseApi.course?.id || '',
     title: '',
-    profile: undefined,
-    call_url: undefined,
-    lesson_at: new Date().toDateString(),
-    is_unlocked: true,
-    lesson_completion: [],
-    created_at: ''
+    teacherId: '',
+    callUrl: undefined,
+    lessonAt: new Date().toDateString(),
+    isUnlocked: true,
+    videos: null,
+    documents: null,
+    createdAt: ''
   });
+  const courseId = $derived(courseApi.course?.id || '');
 
   const handleSave = async () => {
-    if (!lesson.title.trim()) {
+    if (!lesson.title?.trim()) {
       errors.title = 'title cannot be empty';
       return;
     }
 
     if ($handleAddLessonWidget.isSection) {
-      const savedSection = await handleSaveLessonSection(
-        {
-          title: lesson.title,
-          order: $lessonSections.length
-        },
-        $course.id
-      );
+      await lessonApi.createSection(courseId, {
+        title: lesson.title,
+        courseId,
+        order: lessonApi.sections.length
+      });
 
-      if (Array.isArray(savedSection) && savedSection[0]) {
-        const newLessonSection = savedSection[0];
-
-        lessonSections.update((sections) => {
-          return [
-            ...sections,
-            {
-              id: newLessonSection.id,
-              title: lesson.title,
-              order: newLessonSection.order,
-              course_id: newLessonSection.course_id,
-              lessons: [],
-              created_at: ''
-            }
-          ];
-        });
+      if (lessonApi.success && lessonApi.lesson) {
+        // Refresh sections list
+        await lessonApi.list(courseId);
       }
     } else {
-      lesson.section_id = $handleAddLessonWidget.id || undefined;
-      const savedLesson = await handleSaveLesson(lesson, $course.id);
+      lesson.sectionId = $handleAddLessonWidget.id || undefined;
+      const lessonData = {
+        title: lesson.title || '',
+        lessonAt: lesson.lessonAt!,
+        callUrl: lesson.callUrl!,
+        teacherId: lesson.teacherId!,
+        isUnlocked: lesson.isUnlocked!,
+        sectionId: lesson.sectionId!
+      };
 
-      if (Array.isArray(savedLesson) && savedLesson[0]) {
-        const newLesson = savedLesson[0];
+      if (lesson.id) {
+        await lessonApi.update(courseId, lesson.id, lessonData);
+      } else {
+        await lessonApi.create(courseId, { ...lessonData, courseId });
+      }
+
+      if (lessonApi.success && lessonApi.lesson) {
+        const newLesson = lessonApi.lesson;
         lesson.id = newLesson.id;
-        $lessons = [...$lessons, lesson];
 
-        lessonSections.update((sections) =>
-          sections.map((s) => {
-            if (s.id === newLesson.section_id) {
-              s.lessons = [...s.lessons, lesson];
-            }
+        // Refresh lessons list
+        await lessonApi.list(courseId);
 
-            return s;
-          })
-        );
-        goto('/courses/' + $course.id + '/lessons/' + lesson.id);
+        goto('/courses/' + courseApi.course?.id + '/lessons/' + lesson.id);
       }
     }
 
@@ -94,14 +80,14 @@
 
     lesson = {
       id: '',
-      course_id: $course.id || '',
+      courseId: courseApi.course?.id || '',
       title: '',
-      profile: undefined,
-      call_url: undefined,
-      lesson_at: new Date().toDateString(),
-      is_unlocked: true,
-      lesson_completion: [],
-      created_at: ''
+      callUrl: undefined,
+      lessonAt: new Date().toDateString(),
+      isUnlocked: true,
+      videos: [],
+      documents: [],
+      createdAt: ''
     };
   }
 </script>
@@ -137,14 +123,14 @@
           isRequired={true}
           errorMessage={errors.title}
         />
-        {#if $course.type == COURSE_TYPE.LIVE_CLASS}
+        {#if courseApi.course?.type === 'LIVE_CLASS'}
           <!-- <div
           class="flex items-start justify-evenly gap-1 flex-col lg:flex-row lg:items-center mt-2 w-4/5"
         >
           <div class="lg:mb-0">
             <Select
               bind:value={lesson.profile}
-              options={$group.tutors}
+              options={courseApi.group.tutors}
               labelKey="fullname"
               className="sm:my-1 w-[100%]"
             />

@@ -9,21 +9,29 @@
   import { profile } from '$lib/utils/store/user';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { calDateDiff } from '$lib/utils/functions/date';
-  import type { Author, Feed } from '$lib/utils/types/feed';
+  import type { Feed } from '$features/course/utils/types';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import { addNewsfeedCommentValidation } from '$lib/utils/functions/validator';
-  import { isNewFeedModal } from '$lib/features/course/components/newsfeed/store';
+  import { newsfeedApi } from '$features/course/api';
 
   import { Chip } from '@cio/ui/custom/chip';
   import DeleteFeedConfirmation from './delete-feed-confirmation.svelte';
   import { HTMLRender } from '$features/ui';
   import { RoleBasedSecurity } from '$features/ui';
+  import type { NewsfeedCommentsByFeedId } from '$features/course/api';
 
   interface Props {
     feed: Feed;
+    comments?: NewsfeedCommentsByFeedId;
+    courseId?: string;
     editFeed: Feed | null;
-    author: Author;
+    author: {
+      id: string;
+      username: string;
+      fullname: string;
+      avatarUrl: string;
+    };
     edit?: boolean;
     deleteFeed?: any;
     deleteComment?: any;
@@ -35,12 +43,14 @@
 
   let {
     feed,
+    comments,
+    courseId,
     editFeed = $bindable(),
     author,
     edit = $bindable(false),
     deleteFeed = (_arg: string) => {},
-    deleteComment = (_arg: string) => {},
-    addNewComment = (_arg1: string, _arg2: string, _arg3: string) => {},
+    deleteComment = (_arg1: string, _arg2: string) => {},
+    addNewComment = (_arg1: string, _arg2: string) => {},
     addNewReaction = (_arg1: string, _arg2: string, _arg3: string) => {},
     onPin = (_feedId: Feed['id'], _isPinned: Feed['isPinned']) => {},
     isActive = false
@@ -63,7 +73,7 @@
   };
 
   const openEditFeed = () => {
-    $isNewFeedModal.open = true;
+    newsfeedApi.openNewFeedModal();
     edit = true;
 
     if (edit === true) {
@@ -71,7 +81,11 @@
     }
   };
 
-  const expandComment = () => {
+  const expandComment = async () => {
+    if (!areCommentsExpanded && courseId && comments && comments.items.length === 0 && comments.totalCount > 0) {
+      // Load comments when expanding for the first time
+      await newsfeedApi.getComments(courseId, feed.id);
+    }
     areCommentsExpanded = !areCommentsExpanded;
   };
 
@@ -86,7 +100,7 @@
         return;
       }
       event.preventDefault();
-      addNewComment(comment, feed.id, author.id);
+      addNewComment(comment, feed.id);
       comment = '';
     }
   };
@@ -95,14 +109,23 @@
     deleteFeed(feed.id);
   };
 
-  const handleDeleteComment = (id: string) => {
-    deleteComment(id);
+  const handleDeleteComment = (id: string | number) => {
+    if (courseId) {
+      deleteComment(feed.id, String(id));
+    }
+  };
+
+  const handleLoadMoreComments = async () => {
+    if (courseId && comments?.hasMore && !comments.isLoading) {
+      await newsfeedApi.loadMoreComments(courseId, feed.id);
+    }
   };
 
   const getClassIfSelectedByAuthor = (reactionType) => {
-    const usersReacted = feed.reaction[reactionType] || [];
+    const usersReacted = (feed.reaction?.[reactionType] as string[]) || [];
+    const feedAuthorId = (feed as any).authorProfileId || '';
 
-    return usersReacted.includes(author.id)
+    return usersReacted.includes(author.id) || usersReacted.includes(feedAuthorId)
       ? 'bg-primary-200 ui:border-primary pl-2'
       : 'bg-gray-200 border-gray-600 pl-2';
   };
@@ -131,14 +154,14 @@
         <span class="flex items-center gap-3">
           <div class="h-9 w-9">
             <img
-              src={feed.author?.profile?.avatar_url}
+              src={(feed as any).authorAvatarUrl || ''}
               alt="users banner"
               class="h-full w-full rounded-full object-cover"
             />
           </div>
           <span>
-            <p class="text-base font-semibold capitalize">{feed.author?.profile?.fullname}</p>
-            <p class="text-sm font-medium text-gray-600">{calDateDiff(feed.created_at)}</p>
+            <p class="text-base font-semibold capitalize">{(feed as any).authorFullname || ''}</p>
+            <p class="text-sm font-medium text-gray-600">{calDateDiff(feed.createdAt)}</p>
           </span>
         </span>
         <RoleBasedSecurity allowedRoles={[1, 2]}>
@@ -160,10 +183,10 @@
           </DropdownMenu.Root>
         </RoleBasedSecurity>
       </div>
-      {#if !isHtmlValueEmpty(feed.content)}
+      {#if !isHtmlValueEmpty(feed.content || '')}
         <HTMLRender className="text-sm font-medium w-[80%] mb-4">
           <div>
-            {@html sanitizeHtml(feed.content)}
+            {@html sanitizeHtml(feed.content || '')}
           </div>
         </HTMLRender>
       {/if}
@@ -171,18 +194,18 @@
 
     <div class="flex items-center gap-4 px-3">
       <div class="flex items-center gap-4 px-3">
-        {#each Object.keys(feed.reaction) as reactionType}
+        {#each Object.keys(feed.reaction || {}) as reactionType}
           {#if reactions[reactionType]}
             <button
               onclick={() => handleAddNewReaction(reactionType)}
               class={`flex items-center transition ${
-                feed.reaction[reactionType].length >= 1 &&
+                feed.reaction?.[reactionType]?.length >= 1 &&
                 `${getClassIfSelectedByAuthor(reactionType)} rounded-full border dark:text-black`
               }`}
             >
               <div class="text-[15px]">{reactions[reactionType]}</div>
-              {#if feed.reaction[reactionType].length >= 1}
-                <Chip value={feed.reaction[reactionType].length} className="bg-transparent" />
+              {#if feed.reaction?.[reactionType]?.length >= 1}
+                <Chip value={feed.reaction?.[reactionType]?.length} className="bg-transparent" />
               {/if}
             </button>
           {/if}
@@ -192,56 +215,67 @@
   </section>
 
   <section class="border-t border-gray-200 p-3">
-    {#if feed.comment.length > 0}
+    {#if comments && comments.totalCount > 0}
       <button onclick={expandComment} class="-mx-2 flex flex-row items-center gap-1 rounded-md px-2">
         <UsersIcon size={16} />
         <p class="py-2 text-sm">
-          {pluralize('comment', feed.comment.length, true)}
+          {pluralize('comment', comments.totalCount, true)}
         </p>
       </button>
     {/if}
     <div>
-      {#each feed.comment as comment, index}
-        {#if comment.content && (areCommentsExpanded || index === feed.comment.length - 1)}
-          <div class="group flex items-center justify-between py-2">
-            <span class="flex items-center gap-3">
-              <div class="h-9 w-9">
-                <img
-                  src={comment.author?.profile?.avatar_url}
-                  alt="users banner"
-                  class="h-full w-full rounded-full object-cover"
-                />
-              </div>
-              <span>
-                <div class="flex items-center gap-2">
-                  <p class="text-sm font-medium capitalize">{comment.author?.profile?.fullname}</p>
-                  <p class="text-xs font-medium text-gray-600">{calDateDiff(comment.created_at)}</p>
+      {#if comments}
+        {#each comments.items as commentItem, index}
+          {#if commentItem.content && (areCommentsExpanded || index === comments.items.length - 1)}
+            <div class="group flex items-center justify-between py-2">
+              <span class="flex items-center gap-3">
+                <div class="h-9 w-9">
+                  <img
+                    src={(commentItem as any).authorAvatarUrl || ''}
+                    alt="users banner"
+                    class="h-full w-full rounded-full object-cover"
+                  />
                 </div>
-                <p>{comment.content}</p>
+                <span>
+                  <div class="flex items-center gap-2">
+                    <p class="text-sm font-medium capitalize">{(commentItem as any).authorFullname || ''}</p>
+                    <p class="text-xs font-medium text-gray-600">{calDateDiff(commentItem.createdAt)}</p>
+                  </div>
+                  <p>{commentItem.content}</p>
+                </span>
               </span>
-            </span>
 
-            {#if comment.author?.profile?.id === $profile.id || $isOrgAdmin}
-              <DropdownMenu.Root>
-                <DropdownMenu.Trigger
-                  class="hidden h-8 w-8 items-center justify-center rounded-md group-hover:flex hover:bg-gray-100 dark:hover:bg-neutral-700"
-                >
-                  <EllipsisVerticalIcon class="h-5 w-5" />
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content align="end">
-                  <DropdownMenu.Item class="text-red-600" onclick={() => handleDeleteComment(comment.id)}>
-                    Delete
-                  </DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu.Root>
-            {/if}
-          </div>
+              {#if (commentItem as any).authorProfileId === $profile.id || $isOrgAdmin}
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger
+                    class="hidden h-8 w-8 items-center justify-center rounded-md group-hover:flex hover:bg-gray-100 dark:hover:bg-neutral-700"
+                  >
+                    <EllipsisVerticalIcon class="h-5 w-5" />
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content align="end">
+                    <DropdownMenu.Item class="text-red-600" onclick={() => handleDeleteComment(commentItem.id)}>
+                      Delete
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu.Root>
+              {/if}
+            </div>
+          {/if}
+        {/each}
+        {#if comments.hasMore}
+          <button
+            onclick={handleLoadMoreComments}
+            disabled={comments.isLoading}
+            class="text-primary-600 hover:text-primary-700 mt-2 text-sm disabled:opacity-50"
+          >
+            {comments.isLoading ? 'Loading...' : `View ${comments.totalCount - comments.items.length} more comments`}
+          </button>
         {/if}
-      {/each}
+      {/if}
     </div>
     <div class="flex items-center justify-between gap-2">
       <div class="h-7 w-7">
-        <img src={author.avatar_url} alt="users banner" class="h-full w-full rounded-full object-cover" />
+        <img src={author.avatarUrl} alt="users banner" class="h-full w-full rounded-full object-cover" />
       </div>
       <div class="flex-1">
         <input

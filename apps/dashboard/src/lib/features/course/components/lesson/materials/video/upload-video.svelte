@@ -2,7 +2,8 @@
   import { Progress } from '@cio/ui/base/progress';
   import { preventDefault } from '$lib/utils/functions/svelte';
   import { UpgradeBanner } from '$features/ui';
-  import { lesson, lessonVideoUpload, cancelVideoUpload } from '$features/course/components/lesson/store/lessons';
+  import { lessonVideoUpload, cancelVideoUpload } from '$features/course/components/lesson/store/lessons';
+  import { lessonApi } from '$features/course/api';
 
   import { isFreePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
@@ -71,14 +72,17 @@
         status: 200
       };
 
-      $lesson.materials.videos = [
-        ...$lesson.materials.videos,
-        {
-          type: 'upload',
-          link: formRes.url!,
-          key: formRes?.fileKey
-        }
-      ];
+      lessonApi.updateLessonState(
+        'videos',
+        [
+          {
+            type: 'upload',
+            link: formRes.url!,
+            key: formRes?.fileKey
+          }
+        ],
+        { append: true }
+      );
 
       isLoaded = false;
     } catch (err: any) {

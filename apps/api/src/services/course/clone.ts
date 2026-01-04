@@ -1,23 +1,24 @@
-import { ROLE } from '@cio/utils/constants';
+import { TCourse, TLesson, TLessonSection } from '@db/types';
 import {
   addGroupMember,
   createCourse,
-  createGroup,
-  createLessons,
-  createLessonSections,
-  getCourseById,
-  getLessonsByCourseId,
-  getSectionsByCourseId,
-  getLessonLanguagesByLessonIds,
-  createLessonLanguages,
-  getExercisesByLessonIds,
   createExercises,
-  getQuestionsByExerciseIds,
+  createGroup,
+  createLessonLanguages,
+  createLessonSections,
+  createLessons,
+  createOptions,
   createQuestions,
+  getCourseById,
+  getExercisesByLessonIds,
+  getLessonLanguagesByLessonIds,
+  getLessonsByCourseId,
   getOptionsByQuestionIds,
-  createOptions
+  getQuestionsByExerciseIds,
+  getSectionsByCourseId
 } from '@db/queries';
-import { TCourse, TLesson, TLessonSection } from '@db/types';
+
+import { ROLE } from '@cio/utils/constants';
 
 // Constants
 const QUESTION_TYPE_TEXTAREA = 2; // Paragraph question type
@@ -106,11 +107,18 @@ async function cloneExercises(newLessons: TLesson[], oldLessons: TLesson[]): Pro
   // 8. Create question ID map
   const questionIdMap = new Map<number, number>();
   oldQuestions.forEach((oldQuestion, index) => {
-    questionIdMap.set(oldQuestion.id, newQuestions[index].id);
+    const newQuestionId = newQuestions[index]?.id;
+    const oldQuestionId = oldQuestion.id;
+    if (newQuestionId !== undefined && oldQuestionId !== undefined) {
+      questionIdMap.set(oldQuestionId, newQuestionId);
+    }
   });
 
   // 9. Fetch all options for old questions (except for paragraph type questions)
-  const oldQuestionIds = oldQuestions.filter((q) => q.questionTypeId !== QUESTION_TYPE_TEXTAREA).map((q) => q.id);
+  const oldQuestionIds = oldQuestions
+    .filter((q) => q.questionTypeId !== QUESTION_TYPE_TEXTAREA)
+    .map((q) => q.id)
+    .filter((id) => id !== undefined);
 
   if (oldQuestionIds.length === 0) {
     return;
@@ -124,12 +132,20 @@ async function cloneExercises(newLessons: TLesson[], oldLessons: TLesson[]): Pro
 
   // 10. Insert options with new question IDs
   await createOptions(
-    oldOptions.map((option) => ({
-      value: option.value,
-      label: option.label,
-      isCorrect: option.isCorrect,
-      questionId: questionIdMap.get(option.questionId)!
-    }))
+    oldOptions
+      .map((option) => {
+        const newQuestionId = questionIdMap.get(option.questionId);
+        if (newQuestionId === undefined) {
+          return null;
+        }
+        return {
+          value: option.value,
+          label: option.label,
+          isCorrect: option.isCorrect,
+          questionId: newQuestionId
+        };
+      })
+      .filter((opt) => opt !== null)
   );
 }
 

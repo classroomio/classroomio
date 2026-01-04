@@ -8,12 +8,11 @@
   import LessonList from '$features/course/components/lesson/lesson-list.svelte';
   import LessonSectionList from '$features/course/components/lesson/lesson-section-list.svelte';
   import NewLessonModal from '$features/course/components/lesson/new-lesson-modal.svelte';
-  import { handleDelete, lessons, lessonSections } from '$features/course/components/lesson/store/lessons';
-  import { course } from '$features/course/store';
+  import { lessonApi } from '$features/course/api';
+  import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';
-  import type { Lesson } from '$lib/utils/types';
-  import { COURSE_VERSION } from '$lib/utils/types';
+  import type { ListLessons } from '$features/course/utils/types';
 
   interface Props {
     courseId: string;
@@ -23,10 +22,12 @@
 
   const query = new URLSearchParams(page.url.search);
 
-  const lessonsLength = $derived($course.version === COURSE_VERSION.V1 ? $lessons.length : $lessonSections.length);
+  const lessonsLength = $derived(
+    courseApi.course?.version === 'V1' ? lessonApi.lessons.length : lessonApi.sections.length
+  );
 
   let lessonEditing: string | undefined;
-  let lessonToDelete: Lesson | undefined = $state();
+  let lessonToDelete: ListLessons[number] | undefined = $state();
   let openDeleteModal: boolean = $state(false);
   let isFetching: boolean = $state(false);
   let reorder = $state(false);
@@ -37,12 +38,12 @@
   }
 
   const getLessons = () => {
-    if ($course.version === COURSE_VERSION.V1) {
-      return $lessons;
+    if (courseApi.course?.version === 'V1') {
+      return lessonApi.lessons;
     } else {
-      const _lessons: Lesson[] = [];
+      const _lessons: ListLessons[number][] = [];
 
-      $lessonSections.forEach((section) => {
+      lessonApi.sections.forEach((section) => {
         _lessons.push(...section.lessons);
       });
 
@@ -51,9 +52,7 @@
   };
 
   function findFirstIncompleteLesson() {
-    return getLessons().find(
-      (lesson) => !hasUserCompletedLesson(lesson.lesson_completion) && lesson.is_unlocked === true
-    );
+    return getLessons().find((lesson) => !hasUserCompletedLesson(lessonApi.completion) && lesson.isUnlocked === true);
   }
 
   function onNextQuery(lessons) {
@@ -70,7 +69,7 @@
 
   let shouldGoToNextLesson = $derived(query.get('next') === 'true');
   $effect(() => {
-    !isFetching && shouldGoToNextLesson && onNextQuery($lessons);
+    !isFetching && shouldGoToNextLesson && onNextQuery(lessonApi.lessons);
   });
 </script>
 
@@ -78,7 +77,24 @@
 
 <ActivateSectionsModal bind:open={activateSections} />
 
-<DeleteLessonConfirmation bind:openDeleteModal deleteLesson={() => handleDelete(lessonToDelete?.id)} />
+<DeleteLessonConfirmation
+  bind:openDeleteModal
+  deleteLesson={async () => {
+    if (!lessonToDelete?.id) return;
+    const courseId = courseApi.course?.id;
+    if (!courseId) return;
+
+    await lessonApi.delete(courseId, lessonToDelete.id);
+
+    if (lessonApi.success) {
+      lessonApi.lessons = lessonApi.lessons.filter((lesson) => lesson.id !== lessonToDelete?.id);
+      lessonApi.sections = lessonApi.sections.map((section) => {
+        section.lessons = section.lessons.filter((lesson) => lesson.id !== lessonToDelete?.id);
+        return section;
+      });
+    }
+  }}
+/>
 
 {#if shouldGoToNextLesson}
   <Empty
@@ -94,9 +110,9 @@
     </p>
   {/if}
 
-  {#if $course.version === COURSE_VERSION.V1}
+  {#if courseApi.course?.version === 'V1'}
     <LessonList {reorder} {lessonEditing} bind:lessonToDelete bind:openDeleteModal />
-  {:else if $course.version === COURSE_VERSION.V2}
+  {:else if courseApi.course?.version === 'V2'}
     <LessonSectionList {reorder} {lessonEditing} />
   {/if}
 {:else}

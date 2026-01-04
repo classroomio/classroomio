@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
-  import type { CourseAnalytics } from '$lib/utils/types/analytics';
+  import type { CourseAnalytics } from '$features/course/utils/types';
   import { ScaleTypes } from '@carbon/charts-svelte';
   import '@carbon/charts-svelte/styles.css';
 

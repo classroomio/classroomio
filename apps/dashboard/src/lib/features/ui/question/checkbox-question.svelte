@@ -11,8 +11,9 @@
   import { ReasonBox } from '$features/ui/question';
 
   interface Props {
+    key?: string | number;
     title?: string;
-    index?: number | string;
+    index?: string | number;
     code: any;
     name?: string;
     options?: { value: string; label: string }[];

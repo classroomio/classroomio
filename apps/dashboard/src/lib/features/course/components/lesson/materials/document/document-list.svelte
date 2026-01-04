@@ -6,8 +6,9 @@
   import EyeIcon from '@lucide/svelte/icons/eye';
   import isEmpty from 'lodash/isEmpty';
   import { createEventDispatcher } from 'svelte';
-  import type { LessonDocument } from '$lib/utils/types';
+  import type { LessonDocument } from '$features/course/utils/types';
 
+  // TODO: Remove all use of createEventDispatcher
   const dispatch = createEventDispatcher();
 
   interface Props {

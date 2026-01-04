@@ -10,20 +10,19 @@
   import { InputField } from '@cio/ui/custom/input-field';
   import { RoleBasedSecurity } from '$features/ui';
   import * as Empty from '@cio/ui/base/empty';
-  import { lessons, handleSaveLesson } from '$features/course/components/lesson/store/lessons';
+  import { lessonApi } from '$features/course/api';
 
   import { globalStore } from '$lib/utils/store/app';
-  import { course } from '$features/course/store';
+  import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
-  import type { Course, Lesson } from '$lib/utils/types';
-  import { updateLesson } from '$lib/utils/services/courses';
+  import type { ListLessons } from '$features/course/utils/types';
 
   const flipDurationMs = 300;
 
   interface Props {
     reorder?: boolean;
     lessonEditing: string | undefined;
-    lessonToDelete: Lesson | undefined;
+    lessonToDelete: ListLessons[number] | undefined;
     openDeleteModal?: boolean;
   }
 
@@ -36,12 +35,21 @@
 
   let errors: Record<string, string> = $state({});
 
-  async function saveLesson(lesson: Lesson, courseId: Course['id']) {
-    const validationRes = await handleSaveLesson(lesson, courseId);
+  let courseId = $derived(courseApi.course?.id || '');
 
-    if (validationRes && Object.keys(validationRes).length) {
+  async function saveLesson(lesson: ListLessons[number]) {
+    await lessonApi.update(courseId, lesson.id, {
+      title: lesson.title || '',
+      lessonAt: lesson.lessonAt!,
+      callUrl: lesson.callUrl!,
+      teacherId: lesson.teacherId!,
+      isUnlocked: lesson.isUnlocked!,
+      sectionId: lesson.sectionId!
+    });
+
+    if (lessonApi.errors && Object.keys(lessonApi.errors).length) {
       // @ts-ignore
-      errors = validationRes;
+      errors = lessonApi.errors;
     } else {
       errors = {};
       lessonEditing = undefined;
@@ -49,26 +57,26 @@
   }
 
   function handleDndConsider(e: any) {
-    $lessons = e.detail.items;
+    lessonApi.lessons = e.detail.items;
   }
 
-  function handleDndFinalize(e: any) {
-    const prevLessonsByOrder = $lessons.reduce((acc, l) => ({ ...acc, [l.id]: l.order }), {});
-    $lessons = e.detail.items;
+  async function handleDndFinalize(e: any) {
+    const prevLessonsByOrder = lessonApi.lessons.reduce((acc, l) => ({ ...acc, [l.id]: l.order }), {});
+    lessonApi.lessons = e.detail.items;
 
     // Only update the lesson order that changed
-    e.detail.items.forEach((item: { id: string }, index: number) => {
+    for (const [index, item] of e.detail.items.entries()) {
       const order = index + 1;
 
       if (order !== prevLessonsByOrder[item.id]) {
-        $lessons[index].order = order;
-        updateLesson({ order }, item.id).then((update) => console.log(`updated lesson order`, update));
+        lessonApi.lessons[index].order = order;
+        await lessonApi.update(courseId, item.id, { order });
       }
-    });
+    }
   }
 
   function getLessonOrder(id: string): number | string {
-    const index = $lessons.findIndex((lesson) => lesson.id === id);
+    const index = lessonApi.lessons.findIndex((lesson) => lesson.id === id);
 
     if (index < 9) {
       return '0' + (index + 1);
@@ -81,7 +89,7 @@
 <section
   class="mx-auto w-full p-3 lg:w-11/12 lg:px-4"
   use:dndzone={{
-    items: $lessons,
+    items: lessonApi.lessons,
     flipDurationMs,
     dragDisabled: !reorder,
     dropTargetStyle: {
@@ -92,7 +100,7 @@
   onconsider={handleDndConsider}
   onfinalize={handleDndFinalize}
 >
-  {#each $lessons as lesson (lesson.id)}
+  {#each lessonApi.lessons as lesson (lesson.id)}
     <div
       class="relative m-auto mb-4 flex max-w-xl items-center rounded-md border-2 border-gray-200 p-5 dark:bg-neutral-800"
     >
@@ -109,11 +117,11 @@
         {:else}
           <h3 class="m-0 flex items-center text-lg dark:text-white">
             <a
-              href={$globalStore.isStudent && !lesson.is_unlocked
+              href={$globalStore.isStudent && !lesson.isUnlocked
                 ? page.url.pathname
-                : `/courses/${$course.id}/lessons/${lesson.id}`}
+                : `/courses/${courseApi.course?.id}/lessons/${lesson.id}`}
               class="font-medium text-black no-underline hover:underline dark:text-white {$globalStore.isStudent &&
-              !lesson.is_unlocked
+              !lesson.isUnlocked
                 ? 'cursor-not-allowed'
                 : ''}"
             >
@@ -127,7 +135,8 @@
           <div class="mb-3 flex items-center lg:mb-0">
             <ListChecksIcon size={16} />
             <p class="ml-2 text-sm text-gray-500 dark:text-white">
-              {lesson?.totalExercises ? lesson?.totalExercises?.map?.((c) => c.count) : 0}
+              <!-- TODO: REMOVE THIS AFTER MOVING EXERCISES TO SIDEBAR -->
+              0
               {$t('exercises.heading')}
             </p>
           </div>
@@ -146,19 +155,27 @@
             </DropdownMenu.Trigger>
             <DropdownMenu.Content align="end">
               <DropdownMenu.Item
-                onclick={() => {
-                  lesson.is_unlocked = !lesson.is_unlocked;
-                  handleSaveLesson(lesson, $course.id);
+                onclick={async () => {
+                  lesson.isUnlocked = !lesson.isUnlocked;
+
+                  await lessonApi.update(courseId, lesson.id, {
+                    title: lesson.title || '',
+                    lessonAt: lesson.lessonAt!,
+                    callUrl: lesson.callUrl!,
+                    teacherId: lesson.teacherId!,
+                    isUnlocked: lesson.isUnlocked!,
+                    sectionId: lesson.sectionId!
+                  });
                 }}
               >
-                {lesson.is_unlocked
+                {lesson.isUnlocked
                   ? $t('course.navItem.lessons.add_lesson.lock')
                   : $t('course.navItem.lessons.add_lesson.unlock')}
               </DropdownMenu.Item>
               <DropdownMenu.Item
                 onclick={() => {
                   if (lessonEditing === lesson.id) {
-                    saveLesson(lesson, $course.id);
+                    saveLesson(lesson);
                   } else {
                     lessonEditing = lesson.id;
                   }

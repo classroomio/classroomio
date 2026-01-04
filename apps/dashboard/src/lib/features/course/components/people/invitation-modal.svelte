@@ -18,11 +18,10 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import type { OrgTeamMember } from '$lib/utils/types/org';
   import { preventDefault } from '$lib/utils/functions/svelte';
-  import { course, setCourse } from '$features/course/store';
+  import { courseApi } from '$features/course/api';
   import { getStudentInviteLink } from '$lib/utils/functions/course';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
-  import { addGroupMember, fetchGroup } from '$lib/utils/services/courses';
-  import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
+  import { peopleApi } from '$features/course/api';
 
   import ShareQrImage from './share-qr-image.svelte';
   import * as Dialog from '@cio/ui/base/dialog';
@@ -37,6 +36,7 @@
 
   let tutors: Tutor[] = $state([]);
   let selectedIds: string[] = $state([]);
+  let courseId = $derived(courseApi.course?.id ?? '');
 
   const selectedTutors = $derived(tutors.filter((tutor) => selectedIds.includes(tutor.id.toString())));
   let qrImage = $state('');
@@ -44,50 +44,30 @@
 
   const addPeopleParm = $derived(new URLSearchParams(page.url.search).get('add'));
 
-  function onSubmit() {
+  async function onSubmit() {
     if (!selectedTutors.length) {
       goto(page.url.pathname);
       return;
     }
 
-    let membersStack: { profile_id?: string; group_id?: string; role_id: number }[] = [];
-    console.log(`$course`, $course);
+    // Prepare members array with all required data for email sending
+    const members = selectedTutors.map((tutor) => ({
+      profileId: tutor.profileId,
+      roleId: ROLE.TUTOR,
+      email: tutor.email,
+      name: tutor.text
+    }));
 
-    for (const tutor of selectedTutors) {
-      membersStack.push({
-        profile_id: tutor.profileId,
-        group_id: $course.group?.id,
-        role_id: ROLE.TUTOR
-      });
+    await peopleApi.add(courseId, members);
 
-      triggerSendEmail(NOTIFICATION_NAME.WELCOME_TEACHER_TO_COURSE, {
-        to: tutor.email,
-        name: tutor.text,
-        orgName: $currentOrg.name,
-        orgSiteName: $currentOrg.siteName,
-        courseName: $course.title
-      });
-    }
-
-    addGroupMember(membersStack).then(async () => {
-      if (!$course?.group?.id) return;
-
-      const group = await fetchGroup($course?.group?.id);
-
-      setCourse(
-        {
-          ...$course,
-          group: group.data
-        },
-        false
-      );
-
+    if (peopleApi.success) {
+      // Refresh course data to get updated group members
       goto(page.url.pathname);
-    });
+    }
   }
 
   function getTutors(team: OrgTeamMember[]) {
-    const existingTutors = $course.group?.tutors || [];
+    const existingTutors = courseApi?.group?.tutors || [];
     return team
       .filter((teamMember) => teamMember.verified)
       .filter((teamMember) => {
@@ -118,13 +98,15 @@
   }
 
   function copyLink() {
+    if (!courseApi.course) return;
+
     if (!$currentOrgDomain) {
       snackbar.error('snackbar.people.error.missing_data');
       console.error('snackbar.people.error.no');
       return;
     }
 
-    const link = getStudentInviteLink($course, $currentOrg.siteName, $currentOrgDomain);
+    const link = getStudentInviteLink(courseApi.course, $currentOrg.siteName!, $currentOrgDomain);
     copy(link);
   }
 
@@ -143,7 +125,7 @@
       toPng($qrInviteNodeStore)
         .then((dataUrl) => {
           const link = document.createElement('a');
-          link.download = `${$course.slug}-qr-code.png`;
+          link.download = `${courseApi.course?.slug}-qr-code.png`;
           link.href = dataUrl;
           link.click();
         })
@@ -173,7 +155,9 @@
   });
 
   $effect(() => {
-    generateQR(getStudentInviteLink($course, $currentOrg.siteName, $currentOrgDomain));
+    if (!courseApi.course) return;
+
+    generateQR(getStudentInviteLink(courseApi.course, $currentOrg.siteName!, $currentOrgDomain));
   });
 </script>
 
@@ -278,7 +262,7 @@
       </div>
 
       <div class="absolute left-[-1000px] w-160">
-        <ShareQrImage {qrImage} course={$course} currentOrg={$currentOrg} />
+        <ShareQrImage {qrImage} />
       </div>
 
       <div class="mt-5 flex flex-row-reverse items-center">

@@ -1,6 +1,16 @@
 import * as schema from '@db/schema';
 
-import { TCourse, TNewCourse } from '@db/types';
+import {
+  TCourse,
+  TGroup,
+  TGroupAttendance,
+  TGroupmember,
+  TLesson,
+  TLessonSection,
+  TNewCourse,
+  TNewCourseNewsfeed,
+  TProfile
+} from '@db/types';
 import { and, desc, eq, isNull, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
@@ -192,7 +202,28 @@ export async function getCourseById(courseId: string) {
  * @param slug Course slug (optional if courseId provided)
  * @returns Course with all related data or null if not found
  */
-export async function getCourseWithRelations(courseId?: string, slug?: string) {
+export async function getCourseWithRelations(
+  courseId?: string,
+  slug?: string
+): Promise<
+  | (TCourse & {
+      group:
+        | (TGroup & {
+            members: (TGroupmember & {
+              profile: Pick<TProfile, 'id' | 'fullname' | 'username' | 'avatarUrl' | 'email'> | null;
+            })[];
+          })
+        | null;
+      sections: TLessonSection[];
+      lessons: (TLesson & {
+        profile: Pick<TProfile, 'id' | 'fullname' | 'username' | 'avatarUrl' | 'email'> | null;
+        totalExercises: number;
+        totalComments: number;
+      })[];
+      attendance: TGroupAttendance[];
+    })
+  | null
+> {
   try {
     if (!courseId && !slug) {
       throw new Error('Either courseId or slug must be provided');
@@ -297,7 +328,7 @@ export async function getCourseWithRelations(courseId?: string, slug?: string) {
     return {
       ...course,
       group,
-      lesson_section: lessonSections,
+      sections: lessonSections,
       lessons: transformedLessons,
       attendance: transformedAttendance
     };
@@ -311,6 +342,141 @@ export async function createCourse(newCourse: TNewCourse) {
     return await db.insert(schema.course).values(newCourse).returning();
   } catch (error) {
     throw new Error(`Failed to create course: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function createCourseNewsfeed(newsfeed: TNewCourseNewsfeed) {
+  try {
+    return await db.insert(schema.courseNewsfeed).values(newsfeed).returning();
+  } catch (error) {
+    throw new Error(`Failed to create course newsfeed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Updates a course by ID
+ * @param courseId Course ID
+ * @param data Partial course data to update
+ * @returns Updated course
+ */
+export async function updateCourse(courseId: string, data: Partial<TCourse>) {
+  try {
+    const [updated] = await db
+      .update(schema.course)
+      .set({ ...data, updatedAt: new Date().toISOString() })
+      .where(eq(schema.course.id, courseId))
+      .returning();
+    return updated;
+  } catch (error) {
+    throw new Error(`Failed to update course: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Soft deletes a course by setting status to 'DELETED'
+ * @param courseId Course ID
+ * @returns Updated course
+ */
+export async function deleteCourse(courseId: string) {
+  try {
+    const [deleted] = await db
+      .update(schema.course)
+      .set({ status: 'DELETED', updatedAt: new Date().toISOString() })
+      .where(eq(schema.course.id, courseId))
+      .returning();
+    return deleted;
+  } catch (error) {
+    throw new Error(`Failed to delete course: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Gets course progress for a profile
+ * Recreates the logic from get_course_progress RPC function
+ * @param courseId Course ID
+ * @param profileId Profile ID
+ * @returns Course progress with counts of lessons, completed lessons, exercises, and completed exercises
+ */
+export async function getCourseProgress(
+  courseId: string,
+  profileId: string
+): Promise<{
+  lessonsCount: number;
+  lessonsCompleted: number;
+  exercisesCount: number;
+  exercisesCompleted: number;
+}> {
+  try {
+    // Get the groupmember ID for this profile in the course
+    const groupMemberResult = await db
+      .select({ id: schema.groupmember.id })
+      .from(schema.groupmember)
+      .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
+      .where(and(eq(schema.course.id, courseId), eq(schema.groupmember.profileId, profileId)))
+      .limit(1);
+
+    if (groupMemberResult.length === 0) {
+      // User is not a member of this course
+      return {
+        lessonsCount: 0,
+        lessonsCompleted: 0,
+        exercisesCount: 0,
+        exercisesCompleted: 0
+      };
+    }
+
+    const groupMemberId = groupMemberResult[0].id;
+
+    // Get all lessons for the course
+    const lessons = await db
+      .select({ id: schema.lesson.id })
+      .from(schema.lesson)
+      .where(eq(schema.lesson.courseId, courseId));
+
+    const lessonsCount = lessons.length;
+
+    // Get completed lessons (lesson_completion where is_complete = true and profile_id matches)
+    const completedLessons = await db
+      .select({ id: schema.lessonCompletion.id })
+      .from(schema.lessonCompletion)
+      .innerJoin(schema.lesson, eq(schema.lessonCompletion.lessonId, schema.lesson.id))
+      .where(
+        and(
+          eq(schema.lesson.courseId, courseId),
+          eq(schema.lessonCompletion.profileId, profileId),
+          eq(schema.lessonCompletion.isComplete, true)
+        )
+      );
+
+    const lessonsCompleted = completedLessons.length;
+
+    // Get all exercises for lessons in the course
+    const exercises = await db
+      .select({ id: schema.exercise.id })
+      .from(schema.exercise)
+      .innerJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+      .where(eq(schema.lesson.courseId, courseId));
+
+    const exercisesCount = exercises.length;
+
+    // Get completed exercises (submissions where submitted_by = groupmember.id)
+    const completedExercises = await db
+      .select({ id: schema.submission.id })
+      .from(schema.submission)
+      .innerJoin(schema.exercise, eq(schema.submission.exerciseId, schema.exercise.id))
+      .innerJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+      .where(and(eq(schema.lesson.courseId, courseId), eq(schema.submission.submittedBy, groupMemberId)));
+
+    const exercisesCompleted = completedExercises.length;
+
+    return {
+      lessonsCount,
+      lessonsCompleted,
+      exercisesCount,
+      exercisesCompleted
+    };
+  } catch (error) {
+    throw new Error(`Failed to get course progress: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

@@ -1,27 +1,38 @@
 import type { MetaTagsProps } from 'svelte-meta-tags';
-import { fetchCourse } from '$lib/utils/services/courses';
-import { supabase, getSupabase } from '$lib/utils/functions/supabase';
-
-if (!supabase) {
-  getSupabase();
-}
+import { classroomio } from '$lib/utils/services/api';
+import { getApiKeyHeaders } from '$lib/utils/services/api/server';
 
 export const load = async ({ params = { slug: '' } }) => {
-  const { data } = await fetchCourse(undefined, params.slug);
+  let course = null;
+  try {
+    const response = await classroomio.course.slug[':slug'].$get(
+      {
+        param: { slug: params.slug }
+      },
+      getApiKeyHeaders()
+    );
+
+    const result = await response.json();
+    if (result.success && result.data) {
+      course = result.data;
+    }
+  } catch (error) {
+    console.error('Failed to fetch course:', error);
+  }
 
   const pageMetaTags = Object.freeze({
-    title: data?.title,
-    description: data?.description,
+    title: course?.title,
+    description: course?.description,
     openGraph: {
-      title: data?.title,
-      description: data?.description,
+      title: course?.title,
+      description: course?.description,
       images: [
         {
-          url: data?.logo || '',
-          alt: data?.title,
+          url: course?.logo || '',
+          alt: course?.title,
           width: 280,
           height: 200,
-          secureUrl: data?.logo,
+          secureUrl: course?.logo,
           type: 'image/jpeg'
         }
       ]
@@ -30,16 +41,16 @@ export const load = async ({ params = { slug: '' } }) => {
       handle: '@classroomio',
       site: '@classroomio',
       cardType: 'summary_large_image' as const,
-      title: data?.title,
-      description: data?.description,
-      image: data?.logo,
+      title: course?.title,
+      description: course?.description,
+      image: course?.logo,
       imageAlt: 'ClassroomIO OG Image'
     }
   }) satisfies MetaTagsProps;
 
   return {
     slug: params.slug,
-    course: data,
+    course,
     pageMetaTags
   };
 };

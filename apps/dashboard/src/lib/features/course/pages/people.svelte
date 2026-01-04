@@ -16,14 +16,14 @@
   import DeleteConfirmation from '$lib/features/course/components/people/delete-confirmation.svelte';
 
   import { profile } from '$lib/utils/store/user';
-  import type { GroupPerson } from '$lib/utils/types';
-  import { group } from '$features/course/store';
+  import type { GroupMember } from '$features/course/utils/types';
+  import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
   import { shortenName } from '$lib/utils/functions/string';
   import * as Select from '@cio/ui/base/select';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { ROLE_LABEL, ROLES } from '$lib/utils/constants/roles';
-  import { deleteGroupMember } from '$lib/utils/services/courses';
+  import { peopleApi } from '$features/course/api';
   import { deleteMemberModal } from '$features/course/components/people/store';
 
   let member: { id?: string; email?: string; profile?: { email: string } } = $state({});
@@ -31,7 +31,7 @@
   let searchValue = $state('');
   let copiedEmail = $state<string | null>(null);
 
-  const people: Array<GroupPerson> = $derived(sortAndFilterPeople($group.people, filterBy));
+  const people: Array<GroupMember> = $derived(sortAndFilterPeople(courseApi.group.people, filterBy));
 
   function filterPeople(_query, people) {
     const query = _query.toLowerCase();
@@ -42,22 +42,28 @@
   }
 
   async function deletePerson() {
-    if (!member.id) return;
-    $group.people = $group.people.filter((person: { id: string }) => person.id !== member.id);
-    $group.tutors = $group.tutors.filter((person: GroupPerson) => person.memberId !== member.id);
+    if (!member.id || !courseApi.course?.id) return;
 
-    await deleteGroupMember(member.id);
+    await peopleApi.delete(courseApi.course?.id, member.id);
+
+    if (peopleApi.success) {
+      courseApi.group.people = courseApi.group.people.filter((person: { id: string }) => person.id !== member.id);
+      courseApi.group.tutors = courseApi.group.tutors.filter((person: GroupMember) => person.id !== member.id);
+    }
   }
 
-  function sortAndFilterPeople(_people: Array<GroupPerson>, filterBy: string) {
+  function sortAndFilterPeople(_people: Array<GroupMember>, filterBy: string) {
     return (_people || [])
       .filter((person) => {
         if (filterBy === 'all') return true;
 
-        return person.role_id === Number(filterBy);
+        return person.roleId === Number(filterBy);
       })
-      .sort((a: GroupPerson, b: GroupPerson) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-      .sort((a: GroupPerson, b: GroupPerson) => a.role_id - b.role_id);
+      .sort(
+        (a: GroupMember, b: GroupMember) =>
+          new Date(a.createdAt || '').getTime() - new Date(b.createdAt || '').getTime()
+      )
+      .sort((a: GroupMember, b: GroupMember) => Number(a.roleId) - Number(b.roleId));
   }
 
   function getEmail(person) {
@@ -75,7 +81,7 @@
   }
 
   function gotoPerson(person) {
-    goto(`${page.url.href}/${person.profile_id}`);
+    goto(`${page.url.href}/${person.profileId}`);
   }
 
   async function copyToClipboard(text: string) {
@@ -172,7 +178,7 @@
                           {/if}
                         </Button>
                       </RoleBasedSecurity>
-                      {#if person.profile_id == $profile.id}
+                      {#if person.profileId == $profile.id}
                         <ComingSoon label={$t('course.navItem.people.you')} />
                       {/if}
                     </div>
@@ -209,7 +215,7 @@
             <!-- second column -->
             <Table.Cell class="w-1/4">
               <p class=" w-1/4 text-center text-base font-normal dark:text-white">
-                {$t(ROLE_LABEL[person.role_id])}
+                {$t(ROLE_LABEL[Number(person.roleId)])}
               </p>
             </Table.Cell>
 
@@ -217,7 +223,7 @@
             <Table.Cell class="w-1/4">
               <RoleBasedSecurity allowedRoles={[1, 2]}>
                 <div class="hidden space-x-2 sm:flex sm:items-center">
-                  {#if person.profile_id !== $profile.id}
+                  {#if person.profileId !== $profile.id}
                     <IconButton
                       onclick={() => {
                         member = person;

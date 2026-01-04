@@ -1,6 +1,7 @@
 <script lang="ts">
   import { untrack } from 'svelte';
-  import { fetchSubmission } from '$lib/utils/services/submissions';
+  import { submissionApi } from '$features/course/api';
+  import { courseApi } from '$features/course/api';
   import Summary from './summary.svelte';
   import Individual from './individual.svelte';
   import { submissions } from './store';
@@ -28,25 +29,45 @@
 
   const onChange = (tabValue: string) => () => (currentTab = tabValue);
 
-  function fetchSubmissions(id: string | undefined) {
-    untrack(async () => {
-      if (!id) return;
-      isLoading = true;
+  async function fetchSubmissions(id: string | undefined) {
+    if (!id || !courseApi.course?.id) return;
+    isLoading = true;
 
-      const { data } = await fetchSubmission({
-        exerciseId: id
-      });
+    await submissionApi.list(courseApi.course?.id, id);
 
-      if (!data) return;
+    // Transform API data to ExerciseSubmissions format
+    if (submissionApi.data && Array.isArray(submissionApi.data)) {
+      const transformedSubmissions = submissionApi.data.map((submission: any) => ({
+        id: submission.id,
+        status_id: submission.statusId || submission.status_id || 1,
+        submitted_by: {
+          profile: submission.groupmember?.profile || {
+            id: '',
+            fullname: '',
+            avatar_url: ''
+          }
+        },
+        answers: (submission.answers || []).map((answer: any) => ({
+          id: answer.id,
+          question_id: answer.questionId || answer.question_id,
+          open_answer: answer.openAnswer || answer.open_answer || '',
+          answers: answer.answers || [],
+          point: answer.point || 0,
+          submission_id: answer.submissionId || answer.submission_id || submission.id,
+          group_member_id: answer.groupMemberId || answer.group_member_id || ''
+        }))
+      }));
 
-      submissions.set(data);
+      submissions.set(transformedSubmissions);
+    }
 
-      isLoading = false;
-    });
+    isLoading = false;
   }
 
   $effect(() => {
-    fetchSubmissions(exerciseId);
+    untrack(() => {
+      fetchSubmissions(exerciseId);
+    });
   });
 </script>
 

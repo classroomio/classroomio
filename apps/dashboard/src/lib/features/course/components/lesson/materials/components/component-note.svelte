@@ -2,28 +2,26 @@
   import { HTMLRender } from '$features/ui';
   import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
-  import { lesson, lessonByTranslation } from '$features/course/components/lesson/store/lessons';
+  import { lessonApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
-  import { lessonFallbackNote } from '$lib/utils/functions/translations';
 
-  interface Props {
+  let {
+    lessonId
+  }: {
     lessonId: string;
-  }
+  } = $props();
 
-  let { lessonId }: Props = $props();
-
-  let content = $derived(lessonFallbackNote($lesson.materials.note, $lessonByTranslation[lessonId], $lesson.locale));
   let hasAtLeastOneTranslation = $derived(
-    Object.values($lessonByTranslation[lessonId] || {}).some((content) => {
+    Object.values(lessonApi.translations[lessonId] || {}).some((content) => {
       return content && !!content.length;
     })
   );
 </script>
 
-{#if !isHtmlValueEmpty(content)}
+{#if !isHtmlValueEmpty(lessonApi.note)}
   <HTMLRender className="m-auto">
     <div>
-      {@html sanitizeHtml(content)}
+      {@html sanitizeHtml(lessonApi.note)}
     </div>
   </HTMLRender>
 {:else if hasAtLeastOneTranslation}

@@ -6,10 +6,7 @@ export const NOTIFICATION_NAME = {
   SEND_TEACHER_STUDENT_BUY_REQUEST: 'SEND TEACHER STUDENT BUY REQUEST',
   STUDENT_PROOVE_COURSE_PAYMENT: 'STUDENT PROOVE COURSE PAYMENT',
   STUDENT_COURSE_WELCOME: 'STUDENT COURSE WELCOME',
-  TEACHER_STUDENT_JOINED: 'TEACHER STUDENT JOINED',
-  SUBMISSION_UPDATE: 'SUBMISSION UPDATE',
-  EXERCISE_SUBMISSION_UPDATE: 'EXERCISE SUBMISSION UPDATE',
-  NEWSFEED: 'NEWSFEED'
+  TEACHER_STUDENT_JOINED: 'TEACHER STUDENT JOINED'
 };
 
 const NAME_TO_PATH = {
@@ -18,10 +15,7 @@ const NAME_TO_PATH = {
   [NOTIFICATION_NAME.SEND_TEACHER_STUDENT_BUY_REQUEST]: '/api/email/course/teacher_student_buycourse',
   [NOTIFICATION_NAME.STUDENT_PROOVE_COURSE_PAYMENT]: '/api/email/course/student_prove_payment',
   [NOTIFICATION_NAME.STUDENT_COURSE_WELCOME]: '/api/email/course/student_welcome',
-  [NOTIFICATION_NAME.TEACHER_STUDENT_JOINED]: '/api/email/course/teacher_student_joined',
-  [NOTIFICATION_NAME.SUBMISSION_UPDATE]: '/api/email/course/submission_update',
-  [NOTIFICATION_NAME.EXERCISE_SUBMISSION_UPDATE]: '/api/email/course/exercise_submission_update',
-  [NOTIFICATION_NAME.NEWSFEED]: '/api/email/course/newsfeed'
+  [NOTIFICATION_NAME.TEACHER_STUDENT_JOINED]: '/api/email/course/teacher_student_joined'
 };
 
 export const triggerSendEmail = async (name: string, body: { [k: string]: unknown }) => {

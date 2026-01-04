@@ -5,7 +5,7 @@
   import pluralize from 'pluralize';
 
   import { t } from '$lib/utils/functions/translations';
-  import type { Lesson } from '$lib/utils/types';
+  import type { Lesson } from '$features/course/utils/types';
 
   interface Props {
     title: string;

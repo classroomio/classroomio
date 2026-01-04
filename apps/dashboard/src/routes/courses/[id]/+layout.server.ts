@@ -13,7 +13,8 @@ export const load = async ({ params, cookies }) => {
   // Fetch course data server-side
   const response = await classroomio.course[':courseId'].$get(
     {
-      param: { courseId }
+      param: { courseId },
+      query: {}
     },
     getApiHeaders(cookies, '')
   );

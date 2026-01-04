@@ -4,7 +4,7 @@
   import { submissions } from './store';
   import { questionnaire } from '../../store/exercise';
   import { t } from '$lib/utils/functions/translations';
-  import type { ExerciseSubmissions } from '$lib/utils/types';
+  import type { ExerciseSubmissions } from '$features/course/utils/types';
 
   interface Props {
     isLoading?: boolean;
@@ -17,39 +17,44 @@
 
   let studentSelected = $state(0);
 
-  const isSelected = (student: ExerciseSubmissions, option: { question_id: number; value: string[] }) => {
-    if ($submissions) {
-      let submittedAnswer = student?.answers;
-      let filteredAnswer = submittedAnswer.filter(
-        (ans: { question_id: number }) => ans.question_id === option.question_id
-      );
-      if (filteredAnswer.map((ans) => ans.answers.length > 1)) {
-        return filteredAnswer.some((ans) => ans.answers.includes(option.value));
-      } else {
-        return filteredAnswer.map((ans: { answers: any }) => ans.answers) == option.value;
+  const isSelected = (student: ExerciseSubmissions, questionId: number, optionValue: string | null) => {
+    if (!$submissions || !student?.answers) return false;
+    const submittedAnswer = student.answers;
+    const filteredAnswer = submittedAnswer.filter((ans) => ans.question_id === questionId);
+    if (filteredAnswer.length === 0) return false;
+
+    // Check if the option value is in the answers array
+    return filteredAnswer.some((ans) => {
+      if (Array.isArray(ans.answers)) {
+        return ans.answers.includes(optionValue || '');
       }
-    }
+      return ans.answers === optionValue;
+    });
   };
 
   const isCorrect = (
     student: ExerciseSubmissions,
-    option: { is_correct?: any; question_id?: number; value?: string[] }
+    questionId: number,
+    option: { is_correct?: boolean; value?: string | null }
   ) => {
-    if (!isSelected(student, option)) return;
+    if (!isSelected(student, questionId, option.value || null)) return '';
     if (option.is_correct) {
       return 'border-green-700';
     } else {
       return 'border-red-700';
     }
   };
-  const getOpenAnswer = (student: ExerciseSubmissions, q: never) => {
-    let submittedAnswer = student?.answers;
-    let filteredAnswer = submittedAnswer.filter((ans: { question_id: number }) => ans.question_id === q.id);
-    if (filteredAnswer.some((ans: { open_answer: string }) => ans.open_answer == '')) {
+
+  const getOpenAnswer = (student: ExerciseSubmissions, questionId: number) => {
+    if (!student?.answers) return '';
+    const submittedAnswer = student.answers;
+    const filteredAnswer = submittedAnswer.filter((ans) => ans.question_id === questionId);
+    if (filteredAnswer.length === 0)
       return $t('course.navItem.lessons.exercises.all_exercises.analytics.individual.no');
-    } else {
-      return filteredAnswer.map((ans: { open_answer: any }) => ans.open_answer);
+    if (filteredAnswer.some((ans) => ans.open_answer === '')) {
+      return $t('course.navItem.lessons.exercises.all_exercises.analytics.individual.no');
     }
+    return filteredAnswer.map((ans) => ans.open_answer).join(', ') || '';
   };
 </script>
 
@@ -88,10 +93,12 @@
         <div class="pb-4">
           <h3 class="text-lg">{i + 1}. {q.title}</h3>
           {#if q.question_type_id !== 3}
-            {#each q.options as option, i}
+            {#each q.options as option}
+              {@const questionId = typeof q.id === 'string' ? parseInt(q.id, 10) : q.id}
               <div
                 class={`my-2 flex items-center gap-2 rounded-md border-2 border-gray-300 p-2 ${isCorrect(
                   $submissions[studentSelected],
+                  questionId,
                   option
                 )}`}
               >
@@ -100,15 +107,16 @@
                   name=""
                   id=""
                   class="form-radio"
-                  checked={isSelected($submissions[studentSelected], option)}
+                  checked={isSelected($submissions[studentSelected], questionId, option.value)}
                 />
                 <span class="dark:text-white">{option.label}</span>
               </div>
             {/each}
           {:else}
+            {@const questionId = typeof q.id === 'string' ? parseInt(q.id, 10) : q.id}
             <div class="my-1 w-full rounded bg-slate-100 p-2 dark:bg-slate-300">
               <span class="text-base font-medium text-black">
-                {getOpenAnswer($submissions[studentSelected], q)}
+                {getOpenAnswer($submissions[studentSelected], questionId)}
               </span>
             </div>
           {/if}

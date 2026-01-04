@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { lesson, deleteLessonDocument } from '$features/course/components/lesson/store/lessons';
+  import { lessonApi } from '$features/course/api';
   import { CloseButton } from '$features/ui';
   import { lessonDocUpload } from '$features/course/components/lesson/store/lessons';
   import MODES from '$lib/utils/constants/mode';
@@ -11,7 +11,7 @@
   import { onMount } from 'svelte';
   import DocumentList from '../document/document-list.svelte';
   import { t } from '$lib/utils/functions/translations';
-  import type { LessonDocument } from '$lib/utils/types';
+  import type { LessonDocument } from '$features/course/utils/types';
   import { snackbar } from '$features/ui/snackbar/store';
 
   let { mode = MODES.view } = $props();
@@ -53,7 +53,7 @@
   }
 
   function deleteDocument(index: number) {
-    deleteLessonDocument(index);
+    lessonApi.deleteLessonDocument(index);
   }
 
   function formatFileSize(bytes: number): string {
@@ -296,7 +296,7 @@
     event.preventDefault();
   }
 
-  let displayDocuments = $derived($lesson?.materials?.documents || []);
+  let displayDocuments = $derived(lessonApi.lesson?.documents || []);
 </script>
 
 <DocumentList
@@ -349,7 +349,7 @@
               <ZoomOutIcon size={16} />
             </IconButton>
 
-            <span class="min-w-[3rem] text-center text-sm text-gray-600">
+            <span class="min-w-12 text-center text-sm text-gray-600">
               {Math.round(scale * 100)}%
             </span>
 
@@ -359,7 +359,7 @@
           </div>
         {/if}
 
-        <CloseButton onClick={closePDFViewer} toolTipProps={{ title: 'Close (Esc)', hotkeys: ['Esc'] }} />
+        <CloseButton onClick={closePDFViewer} tooltip="Close (Esc)" />
       </div>
     </div>
 

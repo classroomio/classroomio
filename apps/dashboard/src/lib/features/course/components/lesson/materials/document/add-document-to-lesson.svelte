@@ -8,13 +8,16 @@
   import { onDestroy, untrack } from 'svelte';
   import { UpgradeBanner, CloseButton } from '$features/ui';
   import { isFreePlan } from '$lib/utils/store/org';
-  import { lesson } from '../../store/lessons';
+  import { lessonApi } from '$features/course/api';
+  import type { Lesson } from '$features/course/utils/types';
 
   let fileInput: HTMLInputElement | undefined = $state();
   let selectedFile: File | null = $state(null);
   let dragOver = $state(false);
   let errorTimeout: NodeJS.Timeout | null = $state(null);
   let isDisabled = $derived($lessonDocUpload.isUploading || $isFreePlan);
+
+  let uploadedDocument: NonNullable<Lesson['documents']>[number] | null = $state(null);
 
   const ALLOWED_TYPES = [
     'application/pdf',
@@ -105,7 +108,8 @@
     // Prevent free plan users from bypassing UI restrictions
     if ($isFreePlan) {
       $lessonDocUpload.error = $t('upgrade.required');
-      snackbar.error($lessonDocUpload.error);
+
+      snackbar.error($lessonDocUpload.error!);
       return;
     }
 
@@ -129,16 +133,11 @@
         size: selectedFile.size
       };
 
-      lesson.update((state) => ({
-        ...state,
-        materials: {
-          ...(state.materials || {}),
-          documents: [...(state.materials.documents || []), document]
-        }
-      }));
+      lessonApi.updateLessonState('documents', [document], { append: true });
+
+      uploadedDocument = document;
       lessonDocUpload.update((state) => ({
         ...state,
-        uploadedDocument: document,
         uploadProgress: 100
       }));
 
@@ -300,7 +299,7 @@
   {/if}
 
   <!-- Success Message -->
-  {#if $lessonDocUpload.uploadedDocument}
+  {#if uploadedDocument}
     <div class="mt-4 rounded-md border border-green-200 bg-green-50 p-3">
       <p class="text-sm text-green-600">
         {$t('course.navItem.lessons.materials.tabs.document.upload_success')}

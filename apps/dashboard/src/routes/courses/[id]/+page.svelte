@@ -9,7 +9,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { getGreeting } from '$lib/utils/functions/date.js';
   import type { AccountOrg } from '$features/app/types';
-  import { isNewFeedModal } from '$features/course/components/newsfeed/store';
+  import { newsfeedApi } from '$features/course/api';
 
   let { data = $bindable() } = $props();
 
@@ -42,7 +42,7 @@
       </Page.Title>
     </Page.HeaderContent>
     <Page.Action>
-      <Button class="mr-2" onclick={() => ($isNewFeedModal.open = true)}>
+      <Button class="mr-2" onclick={() => newsfeedApi.openNewFeedModal()}>
         {$t('course.navItem.news_feed.heading_button.title')}
       </Button>
     </Page.Action>

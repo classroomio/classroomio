@@ -68,11 +68,15 @@ export const getUserCourseRole = async (courseId: string, profileId: string): Pr
  * @param profileId Profile ID to check
  * @returns True if user is ADMIN or TUTOR in the course's group, false otherwise
  */
-export const isUserCourseTeamMember = async (courseId: string, profileId: string): Promise<boolean> => {
+export const isUserCourseTeamMember = async (
+  courseId: string,
+  profileId: string
+): Promise<{ isTeamMember: boolean; organizationId: string | null }> => {
   const result = await db
-    .select({ roleId: schema.groupmember.roleId })
+    .select({ organizationId: schema.group.organizationId, roleId: schema.groupmember.roleId })
     .from(schema.groupmember)
     .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
     .where(
       and(
         eq(schema.course.id, courseId),
@@ -82,5 +86,28 @@ export const isUserCourseTeamMember = async (courseId: string, profileId: string
     )
     .limit(1);
 
-  return result.length > 0;
+  return {
+    isTeamMember: result.length > 0,
+    organizationId: result[0].organizationId
+  };
+};
+
+/**
+ * Gets the group member ID for a user in a course
+ * @param courseId Course ID
+ * @param profileId Profile ID
+ * @returns Group member ID or null if not found
+ */
+export const getGroupMemberIdByCourseAndProfile = async (
+  courseId: string,
+  profileId: string
+): Promise<string | null> => {
+  const result = await db
+    .select({ id: schema.groupmember.id })
+    .from(schema.groupmember)
+    .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
+    .where(and(eq(schema.course.id, courseId), eq(schema.groupmember.profileId, profileId)))
+    .limit(1);
+
+  return result.length > 0 ? result[0].id : null;
 };

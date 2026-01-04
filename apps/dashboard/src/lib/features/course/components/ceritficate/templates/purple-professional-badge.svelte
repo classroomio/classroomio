@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { course } from '$features/course/store';
+  import { courseApi } from '$features/course/api';
   import { currentOrg } from '$lib/utils/store/org';
 
   interface Props {
@@ -16,7 +16,7 @@
   <div class="flex w-full bg-white pb-5">
     <div class="w-[80%] pl-3">
       <header class="flex items-center justify-start gap-1 text-sm">
-        <img src={$currentOrg.avatar_url ? $currentOrg.avatar_url : logo} alt="logo" class="w-5" />
+        <img src={$currentOrg.avatarUrl ? $currentOrg.avatarUrl : logo} alt="logo" class="w-5" />
         <h1 class="text-sm">{$currentOrg.name}</h1>
       </header>
 
@@ -28,7 +28,7 @@
       <div class="mt-3 w-[90%]">
         <h1 class="text-[7px]">has succesfully completed training on</h1>
         <h2 class="m-0 text-lg">
-          {$course.title}
+          {courseApi.course?.title}
         </h2>
       </div>
 
@@ -44,7 +44,7 @@
       </div>
 
       <footer class="desc w-[90%] text-[8px]">
-        {$course.description}
+        {courseApi.course?.description}
       </footer>
     </div>
 

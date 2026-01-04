@@ -9,7 +9,7 @@
   import * as Empty from '@cio/ui/base/empty';
   import { currentOrg } from '$lib/utils/store/org';
   import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
-  import { course } from '$features/course/store';
+  import { courseApi } from '$features/course/api';
 
   const siteName = $derived($currentOrg.siteName);
 
@@ -31,7 +31,7 @@
     </div>
 
     <p class="max-w-2xs truncate text-sm font-medium">
-      {$course.title}
+      {courseApi.course?.title || ''}
     </p>
 
     <span class="grow"></span>

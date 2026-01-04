@@ -383,7 +383,7 @@ export async function cancelOrgPlan(subscriptionId: string, payload: TOrganizati
  */
 export async function inviteTeamMembers(orgId: string, emails: string[], roleId: number) {
   const organization = await getOrganizationById(orgId);
-  if (!organization) {
+  if (!organization || !organization.siteName) {
     throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
   }
 

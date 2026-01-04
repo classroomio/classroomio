@@ -1,37 +1,24 @@
 <script lang="ts">
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
-  import type { Feed, Author } from '$lib/utils/types/feed';
-  import { createNewFeed } from '$lib/utils/services/newsfeed';
+  import type { Feed } from '$features/course/utils/types';
   import { getTextFromHTML } from '$lib/utils/functions/toHtml';
+  import { newsfeedApi } from '$features/course/api';
   import { Button } from '@cio/ui/base/button';
   import { createNewsfeedValidation } from '$lib/utils/functions/validator';
-  import { isNewFeedModal } from '$features/course/components/newsfeed/store';
-  import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/notification';
 
   import * as Dialog from '@cio/ui/base/dialog';
   import { TextEditor } from '$features/ui';
 
   interface Props {
-    author?: Author | any;
     courseId?: string;
-    onSave?: any;
-    onEdit?: any;
     edit?: boolean;
     editFeed: Feed | null;
   }
 
-  let {
-    author = {},
-    courseId = '',
-    onSave = (_feed: Feed) => {},
-    onEdit = (_id: string, _content: string) => {},
-    edit = $bindable(false),
-    editFeed = $bindable()
-  }: Props = $props();
+  let { courseId = '', edit = $bindable(false), editFeed = $bindable() }: Props = $props();
 
   let isLoading = $state(false);
-  let createdFeed;
   let errors: Record<string, string> = $state({
     newPost: ''
   });
@@ -48,51 +35,29 @@
     isLoading = true;
 
     try {
-      if (edit) {
-        onEdit(editFeed.id, newPost);
-        snackbar.success('snackbar.newsfeed.success.edit');
+      if (edit && editFeed) {
+        await newsfeedApi.update(courseId, editFeed.id, { content: newPost ?? '' });
 
-        edit = false;
-        newPost = '';
-        $isNewFeedModal.open = false;
+        if (newsfeedApi.success) {
+          snackbar.success('snackbar.newsfeed.success.edit');
+
+          edit = false;
+          newPost = '';
+          newsfeedApi.closeNewFeedModal();
+        }
       } else {
-        const {
-          response: { data }
-        } = await createNewFeed({
+        await newsfeedApi.create(courseId, {
+          courseId,
           content: newPost ?? '',
-          author_id: author.id,
-          course_id: courseId,
-          reaction: {
-            smile: [],
-            thumbsup: [],
-            thumbsdown: [],
-            clap: []
-          }
-        });
-
-        if (!data) return;
-
-        createdFeed = data[0];
-
-        if (!createdFeed) return;
-
-        onSave({
-          id: createdFeed.id,
-          content: newPost,
-          author: {
-            profile: { ...author }
-          },
-          created_at: createdFeed.created_at,
-          comment: [],
-          reaction: createdFeed.reaction,
           isPinned: false
         });
 
+        if (!newsfeedApi.success) {
+          return;
+        }
+
         snackbar.success('snackbar.newsfeed.success.add');
-        triggerSendEmail(NOTIFICATION_NAME.NEWSFEED, {
-          authorId: createdFeed.author_id,
-          feedId: createdFeed.id
-        });
+
         resetEditor();
       }
     } catch (error) {
@@ -108,14 +73,17 @@
   const resetEditor = () => {
     newPost = '';
     edit = false;
-    $isNewFeedModal.open = false;
+    newsfeedApi.closeNewFeedModal();
   };
 </script>
 
 <Dialog.Root
-  bind:open={$isNewFeedModal.open}
+  bind:open={newsfeedApi.isNewFeedModalOpen}
   onOpenChange={(isOpen) => {
-    if (!isOpen) resetEditor();
+    if (!isOpen) {
+      newsfeedApi.closeNewFeedModal();
+      resetEditor();
+    }
   }}
 >
   <Dialog.Content class="w-4/5 max-w-lg">
@@ -128,7 +96,7 @@
     </Dialog.Header>
     <section class="w-2/ flex h-full flex-col rounded-xl pb-3">
       <TextEditor
-        content={newPost}
+        content={newPost || ''}
         onChange={(text) => {
           newPost = text;
         }}

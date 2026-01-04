@@ -11,6 +11,7 @@
   import { QuestionTitle } from '$features/ui/question';
 
   interface Props {
+    key?: string | number;
     title?: string;
     index?: number | string;
     code?: string;

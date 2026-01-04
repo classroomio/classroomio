@@ -4,16 +4,16 @@
   import UserIcon from '@lucide/svelte/icons/user';
   import * as Pagination from '@cio/ui/base/pagination';
 
-  import { course } from '../../store';
+  import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
 
   import EmptyState from './empty-state.svelte';
   import * as Avatar from '@cio/ui/base/avatar';
-  import type { StudentOverview } from '$lib/utils/types/analytics';
+  import type { CourseAnalytics } from '$features/course/utils/types';
   import { shortenName } from '$lib/utils/functions/string';
 
   interface Props {
-    students?: StudentOverview[];
+    students?: CourseAnalytics['students'];
   }
 
   let { students = [] }: Props = $props();
@@ -30,10 +30,10 @@
   let startItem = $derived(startIndex + 1);
   let endItem = $derived(Math.min(endIndex, students.length));
 
-  const GotoFullProfile = (student: StudentOverview) => {
+  const GotoFullProfile = (student: CourseAnalytics['students'][number]) => {
     if (!student) return;
 
-    goto(`/courses/${$course.id}/people/${student.id}?back=/courses/${$course.id}/analytics`);
+    goto(`/courses/${courseApi.course?.id}/people/${student.id}?back=/courses/${courseApi.course?.id}/analytics`);
   };
 
   // Reset to first page when students array changes

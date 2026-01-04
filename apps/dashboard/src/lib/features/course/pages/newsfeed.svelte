@@ -2,30 +2,20 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import { NewsFeedLoader, NewsFeedCard, NewFeedModal } from '$features/course/components/newsfeed';
-  import { newsFeed } from '$lib/features/course/components/newsfeed/store';
-  import { group } from '$features/course/store';
+  import { courseApi } from '$features/course/api';
   import { RoleBasedSecurity } from '$features/ui';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { supabase } from '$lib/utils/functions/supabase';
+  import { newsfeedApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
-  import {
-    createComment,
-    deleteNewsFeed,
-    deleteNewsFeedComment,
-    fetchNewsFeedReaction,
-    fetchNewsFeeds,
-    handleEditFeed,
-    toggleFeedIsPinned
-  } from '$lib/utils/services/newsfeed';
-  import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/notification';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
-  import type { Feed } from '$lib/utils/types/feed';
+  import type { Feed } from '$features/course/utils/types';
   import PinIcon from '@lucide/svelte/icons/pin';
   import { onMount } from 'svelte';
   import type { AccountOrg } from '$features/app/types';
   import Empty from '@cio/ui/custom/empty/empty.svelte';
   import { BookIcon } from '@lucide/svelte';
+  import type { TNewsfeedReactionUpdate } from '@cio/utils/validation/newsfeed';
 
   interface Props {
     courseId: string;
@@ -33,55 +23,31 @@
 
   let { courseId }: Props = $props();
 
-  let createdComment;
   let edit = $state(false);
-  let isLoading = $state(false);
   let editFeed: Feed | null = $state(null);
 
   let query = new URLSearchParams(page.url.search);
   let feedId = query.get('feedId') || '';
 
   const author = $derived.by(() => {
-    const groupMember = $group.people.find((person) => person.profile_id === $profile.id);
-
     return {
-      id: groupMember?.id || '',
+      id: courseApi.group.memberId || '',
       username: $profile.username || '',
       fullname: $profile.fullname || '',
-      avatar_url: $profile.avatarUrl || ''
+      avatarUrl: $profile.avatarUrl || ''
     };
   });
 
-  const onEdit = (id: string, content: string) => {
-    handleEditFeed(id, content);
-
-    $newsFeed = $newsFeed.map((feed) => {
-      if (feed.id === id) {
-        return { ...feed, content: content };
-      }
-
-      return feed;
-    });
-  };
-
-  const deleteComment = (id: string) => {
-    deleteNewsFeedComment(id);
-    $newsFeed = $newsFeed.flatMap((feed) => ({
-      ...feed,
-      comment: feed.comment.filter((comment) => comment.id !== id)
-    }));
-
-    return snackbar.success('snackbar.course.success.comment_deleted');
+  const deleteComment = async (feedId: string, commentId: string) => {
+    await newsfeedApi.deleteComment(courseId, feedId, commentId);
   };
 
   const addNewReaction = async (reactionType: string, feedId: string, authorId: string) => {
-    const { data } = await fetchNewsFeedReaction(feedId);
+    const reactedFeed = newsfeedApi.feeds.find((feed) => feed.id === feedId);
+    if (!reactedFeed) return;
 
-    if (!data) return;
-
-    const reactedFeed = data || $newsFeed.find((feed) => feed.id === feedId);
-
-    let reactedAuthorIds: string[] = reactedFeed.reaction[reactionType];
+    const reaction = (reactedFeed as any).reaction || {};
+    let reactedAuthorIds: string[] = reaction[reactionType] || [];
 
     if (reactedAuthorIds.includes(authorId)) {
       reactedAuthorIds = reactedAuthorIds.filter((reactionAuthorId) => reactionAuthorId !== authorId);
@@ -89,130 +55,52 @@
       reactedAuthorIds = [...reactedAuthorIds, authorId];
     }
 
-    reactedFeed.reaction = {
-      ...reactedFeed.reaction,
+    const updatedReaction: TNewsfeedReactionUpdate['reaction'] = {
+      ...reaction,
       [reactionType]: reactedAuthorIds
     };
 
-    const response = await supabase
-      .from('course_newsfeed')
-      .update({
-        reaction: reactedFeed.reaction
-      })
-      .eq('id', feedId);
+    await newsfeedApi.react(courseId, feedId, updatedReaction);
 
-    if (response.error) {
-      return snackbar.error('snackbar.course.error.reaction_error');
+    if (!newsfeedApi.success) {
+      snackbar.error('snackbar.course.error.reaction_error');
     }
-
-    $newsFeed = $newsFeed.map((feed) => {
-      if (feed.id === feedId) {
-        feed.reaction = reactedFeed.reaction;
-      }
-
-      return feed;
-    });
   };
 
-  const addNewComment = async (comment: string, feedId: string, authorId: string) => {
-    const { response } = await createComment({
-      content: comment,
-      author_id: authorId,
-      course_newsfeed_id: feedId
-    });
+  const addNewComment = async (comment: string, feedId: string) => {
+    await newsfeedApi.createComment(courseId, feedId, comment, author);
 
-    if (response.error) {
+    if (!newsfeedApi.success) {
       return snackbar.error('snackbar.course.error.commenting_error');
     }
-
-    if (!response.data) return;
-
-    createdComment = response?.data[0];
-
-    triggerSendEmail(NOTIFICATION_NAME.NEWSFEED, {
-      authorId: author.id,
-      feedId: feedId,
-      comment
-    });
-
-    $newsFeed = $newsFeed.map((feed) => {
-      if (feed.id === feedId) {
-        const newComment = {
-          id: createdComment.id,
-          author: {
-            profile: { ...author }
-          },
-          created_at: createdComment.created_at,
-          content: comment
-        };
-
-        snackbar.success('snackbar.course.success.comment_added');
-
-        return {
-          ...feed,
-          comment: [...feed.comment, { ...newComment }]
-        };
-      }
-
-      return feed;
-    });
   };
 
-  const onPin = async (feedId, isPinned) => {
+  const onPin = async (feedId: string, isPinned: boolean) => {
     const newIsPinned = !isPinned;
-    const { response } = await toggleFeedIsPinned(feedId, newIsPinned);
+    await newsfeedApi.update(courseId, feedId, { isPinned: newIsPinned });
 
-    if (response.error) {
+    if (!newsfeedApi.success) {
       return snackbar.error('snackbar.course.error.toggle_error');
     }
 
-    $newsFeed = $newsFeed.map((feed) => {
-      if (feed.id === feedId) {
-        snackbar.success(
-          `${
-            newIsPinned ? 'snackbar.course.success.pinned' : 'snackbar.course.success.unpinned'
-          } snackbar.course.success.successfully`
-        );
+    snackbar.success(
+      `${
+        newIsPinned ? 'snackbar.course.success.pinned' : 'snackbar.course.success.unpinned'
+      } snackbar.course.success.successfully`
+    );
+  };
 
-        feed.isPinned = newIsPinned;
-        return feed;
-      }
+  const deleteFeed = async (id: string) => {
+    await newsfeedApi.delete(courseId, id);
+  };
 
-      return feed;
+  const sortedFeeds = $derived.by(() => {
+    return [...newsfeedApi.feeds].sort((a, b) => {
+      const aPinned = (a as any).isPinned || (a as any).is_pinned || false;
+      const bPinned = (b as any).isPinned || (b as any).is_pinned || false;
+      return Number(bPinned) - Number(aPinned);
     });
-  };
-
-  const deleteFeed = (id: string) => {
-    deleteNewsFeed(id);
-
-    const deletedFeed = $newsFeed.filter((feed) => feed.id !== id);
-    snackbar.success('snackbar.course.success.feed_delete_success');
-
-    $newsFeed = deletedFeed;
-  };
-
-  const initNewsFeed = async (courseId: string) => {
-    if (!courseId) return;
-    try {
-      isLoading = true;
-      const { data, error } = await fetchNewsFeeds(courseId);
-      if (error) {
-        snackbar.error('snackbar.course.error.news_feed_fail');
-      }
-      if (data) {
-        $newsFeed = data
-          .map((feedItem) => ({
-            ...feedItem,
-            isPinned: feedItem.is_pinned
-          }))
-          .sort((a, b) => Number(b.isPinned) - Number(a.isPinned));
-      }
-    } catch (error) {
-      snackbar.error('snackbar.course.error.feed_fetch_error');
-    } finally {
-      isLoading = false;
-    }
-  };
+  });
 
   function getPageRoles(org: AccountOrg) {
     const roles: number[] = [1, 2];
@@ -225,7 +113,7 @@
   }
 
   onMount(() => {
-    initNewsFeed(courseId);
+    newsfeedApi.list(courseId);
   });
 </script>
 
@@ -236,32 +124,23 @@
   }}
 >
   <RoleBasedSecurity allowedRoles={[1, 2]}>
-    <NewFeedModal
-      {courseId}
-      {author}
-      bind:edit
-      bind:editFeed
-      onSave={(newFeed) => {
-        $newsFeed = [newFeed, ...$newsFeed];
-      }}
-      {onEdit}
-    />
+    <NewFeedModal {courseId} bind:edit bind:editFeed />
   </RoleBasedSecurity>
-  {#if isLoading}
+  {#if newsfeedApi.isLoading}
     <div class="flex w-full flex-col items-center">
       <NewsFeedLoader />
       <NewsFeedLoader />
       <NewsFeedLoader />
     </div>
-  {:else if !$newsFeed.length}
+  {:else if !sortedFeeds.length}
     <Empty
       title={$t('course.navItem.news_feed.body_header')}
       description={$t('course.navItem.news_feed.body_content')}
       icon={BookIcon}
     />
   {:else}
-    {#each $newsFeed as feed}
-      {#if feed.isPinned}
+    {#each sortedFeeds as feed}
+      {#if (feed as any).isPinned || (feed as any).is_pinned}
         <div class="mb-3 flex items-center gap-2">
           <PinIcon size={16} class="filled" />
 
@@ -269,7 +148,9 @@
         </div>
       {/if}
       <NewsFeedCard
-        {feed}
+        feed={feed as any}
+        comments={newsfeedApi.commentsByFeedId[feed.id]}
+        {courseId}
         {deleteFeed}
         {addNewComment}
         {deleteComment}

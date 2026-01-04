@@ -49,7 +49,6 @@ export const organizationRouter = new Hono()
   .get('/', authOrApiKeyMiddleware, zValidator('query', ZGetOrganizations), async (c) => {
     try {
       const filters = c.req.valid('query');
-      console.log('filters', filters);
       const organizations = await getOrganizationsWithFilters(filters);
 
       return c.json(
@@ -71,7 +70,7 @@ export const organizationRouter = new Hono()
    */
   .get('/team', authMiddleware, orgMemberMiddleware, async (c) => {
     try {
-      const orgId = c.req.header('cio-org-id');
+      const orgId = c.req.header('cio-org-id')!;
       const team = await getOrgTeam(orgId);
 
       return c.json(
@@ -92,7 +91,7 @@ export const organizationRouter = new Hono()
    */
   .post('/team/invite', authMiddleware, orgAdminMiddleware, zValidator('json', ZInviteTeamMembers), async (c) => {
     try {
-      const orgId = c.req.header('cio-org-id');
+      const orgId = c.req.header('cio-org-id')!;
       const { emails, roleId } = c.req.valid('json');
 
       const members = await inviteTeamMembers(orgId, emails, roleId);
@@ -115,7 +114,7 @@ export const organizationRouter = new Hono()
    */
   .delete('/team/:memberId', authMiddleware, orgAdminMiddleware, zValidator('param', ZRemoveTeamMember), async (c) => {
     try {
-      const orgId = c.req.header('cio-org-id');
+      const orgId = c.req.header('cio-org-id')!;
       const { memberId } = c.req.valid('param');
 
       await removeTeamMember(orgId, memberId);
@@ -137,7 +136,7 @@ export const organizationRouter = new Hono()
    */
   .get('/audience', authMiddleware, orgMemberMiddleware, async (c) => {
     try {
-      const orgId = c.req.header('cio-org-id');
+      const orgId = c.req.header('cio-org-id')!;
       const audience = await getOrgAudience(orgId);
 
       return c.json(
@@ -163,7 +162,7 @@ export const organizationRouter = new Hono()
     zValidator('param', ZGetUserAnalytics),
     async (c) => {
       try {
-        const orgId = c.req.header('cio-org-id');
+        const orgId = c.req.header('cio-org-id')!;
         const { userId } = c.req.valid('param');
         const analytics = await getUserAnalytics(userId, orgId);
 
@@ -208,9 +207,9 @@ export const organizationRouter = new Hono()
    */
   .get('/courses/enrolled', authMiddleware, orgMemberMiddleware, async (c) => {
     try {
-      const user = c.get('user');
+      const user = c.get('user')!;
 
-      const orgId = c.req.header('cio-org-id');
+      const orgId = c.req.header('cio-org-id')!;
       const result = await getUserEnrolledCourses(orgId, user.id);
 
       return c.json(
@@ -231,9 +230,9 @@ export const organizationRouter = new Hono()
    */
   .get('/courses/recommended', authMiddleware, orgMemberMiddleware, async (c) => {
     try {
-      const user = c.get('user');
+      const user = c.get('user')!;
 
-      const orgId = c.req.header('cio-org-id');
+      const orgId = c.req.header('cio-org-id')!;
       const result = await getRecommendedCourses(orgId, user.id);
 
       return c.json(
@@ -254,7 +253,7 @@ export const organizationRouter = new Hono()
    */
   .get('/courses', authMiddleware, orgMemberMiddleware, async (c) => {
     try {
-      const user = c.get('user');
+      const user = c.get('user')!;
       const orgId = c.get('orgId');
       const userRole = c.get('userRole');
 
@@ -373,7 +372,7 @@ export const organizationRouter = new Hono()
    */
   .post('/', authMiddleware, zValidator('json', ZCreateOrganization), async (c) => {
     try {
-      const user = c.get('user');
+      const user = c.get('user')!;
       const data = c.req.valid('json');
 
       const result = await createOrg(user.id, data);
@@ -398,7 +397,7 @@ export const organizationRouter = new Hono()
     try {
       console.log('updateOrg');
       console.log(c.req.valid('json'));
-      const orgId = c.req.header('cio-org-id');
+      const orgId = c.req.header('cio-org-id')!;
 
       const data = c.req.valid('json') as Partial<TOrganization>;
 

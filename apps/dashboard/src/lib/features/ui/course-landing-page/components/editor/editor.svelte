@@ -30,13 +30,13 @@
   import CertificateForm from './certificate-form.svelte';
   import InstructorForm from './instructor-form.svelte';
   import { Button } from '@cio/ui/base/button';
-  import { updateCourse } from '$lib/utils/services/courses';
+  import { courseApi } from '$features/course/api';
   import generateSlug from '$lib/utils/functions/generateSlug';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { useSidebar } from '@cio/ui/base/sidebar';
 
   // import CustomPromptBtn from '$lib/components/AI/AIButton/CustomPromptBtn.svelte';
-  import type { Course } from '$lib/utils/types';
+  import type { Course } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -150,14 +150,12 @@
     course.slug = course.slug || generateSlug(course.title);
 
     console.log('course', course);
-    await updateCourse(courseId, undefined, {
+    await courseApi.update(courseId, {
       ...course,
-      id: courseId,
-      attendance: undefined,
-      group: undefined,
-      lessons: undefined,
-      lesson_section: undefined,
-      slug: course.slug
+      type: course.type!,
+      slug: course.slug!,
+      isPublished: course.isPublished ?? undefined,
+      overview: course.overview ?? undefined
     });
 
     loading = false;

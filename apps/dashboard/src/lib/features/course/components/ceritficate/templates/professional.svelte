@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { course } from '$features/course/store';
+  import { courseApi } from '$features/course/api';
   import { currentOrg } from '$lib/utils/store/org';
 
   interface Props {
@@ -26,13 +26,13 @@
         <p class="text-xs font-medium text-black">has successfully completed introductory courses in</p>
         <div>
           <p class="clamp text-primary-800 my-2 bg-transparent text-center text-base font-semibold uppercase">
-            {$course.title}
+            {courseApi.course?.title}
           </p>
         </div>
       </div>
-      <p class="desc mb-4 text-justify dark:text-black">{$course.description}</p>
+      <p class="desc mb-4 text-justify dark:text-black">{courseApi.course?.description}</p>
       <div class="my-2 flex items-center gap-1">
-        <img src={$currentOrg.avatar_url ? $currentOrg.avatar_url : logo} alt="logo" class="h-10 w-10 rounded-md" />
+        <img src={$currentOrg.avatarUrl ? $currentOrg.avatarUrl : logo} alt="logo" class="h-10 w-10 rounded-md" />
         <p class="font-semibold capitalize dark:text-black">{$currentOrg.name}</p>
       </div>
     </div>

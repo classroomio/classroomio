@@ -13,8 +13,9 @@
   import { t } from '$lib/utils/functions/translations';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { handleOpenWidget, reviewsModalStore } from './store';
-  import { COURSE_VERSION, type Course } from '$lib/utils/types';
-  import { course, sortLesson } from '$features/course/store';
+  import type { Course } from '$features/course/utils/types';
+  import { courseApi } from '$features/course/api';
+  import { sortLesson } from '$features/course/store';
   import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
   import { getExerciseCount, getLessonSections, getTotalLessons, filterNavItems } from './utils';
   import { Button } from '@cio/ui/base/button';
@@ -137,7 +138,7 @@
           {$t('course.navItem.landing_page.start_course')}
         </Button>
         {#if $handleOpenWidget.open}
-          <UploadWidget bind:imageURL={$course.logo} />
+          <UploadWidget imageURL={courseApi.course?.logo} onchange={(newLogo) => (courseApi.course!.logo = newLogo)} />
         {/if}
       </div>
 
@@ -262,7 +263,7 @@
         {/if}
 
         <!-- Sections - Lessons -->
-        {#if courseData.version === COURSE_VERSION.V1}
+        {#if courseData.version === 'V1'}
           <NavSection id="lessons">
             <div class="mb-3 flex w-full items-center justify-between">
               <h3 class="mt-0 mb-3 text-2xl">
@@ -284,7 +285,7 @@
               {/each}
             </div>
           </NavSection>
-        {:else if courseData.version === COURSE_VERSION.V2}
+        {:else if courseData.version === 'V2'}
           <NavSection id="lessons">
             <!-- header -->
             <div class="flex items-center justify-between">
@@ -468,7 +469,8 @@
   </div>
 </div>
 
-<style lang="scss">
+<!-- TODO: CONVERT TO TAILWIND -->
+<style>
   .banner {
     background-color: #040f2d;
     min-height: 472px;
@@ -482,48 +484,13 @@
     max-width: 559px;
   }
 
-  .backdrop {
-    background-color: rgba(0, 0, 0, 0.5);
-  }
-
   :global(.certificate-img) {
     width: unset !important;
-  }
-
-  .active {
-    position: relative;
-    display: inline-block;
-  }
-
-  .active::after {
-    position: absolute;
-    content: '';
-    width: 100%;
-    height: 3px;
-    background-color: var(--main-primary-color);
-    display: block;
-    bottom: -14px;
-    left: 0px;
-  }
-
-  .price-container {
-    width: 405px;
-    min-width: 330px;
-    height: fit-content;
-    position: sticky;
-    top: 0;
   }
 
   .course-content {
     max-width: 608px;
     min-width: 60%;
-  }
-
-  nav {
-    overflow: auto;
-    margin: 0;
-    overflow-y: hidden;
-    width: 100%;
   }
 
   :global(.list ul li) {
@@ -540,16 +507,6 @@
     overflow: hidden;
     transition: max-height 0.3s ease;
     text-overflow: ellipsis;
-  }
-
-  .read-more-button {
-    cursor: pointer;
-    color: blue;
-    text-decoration: underline;
-  }
-
-  .lesson-section:not(:last-child) {
-    border-bottom: 1px solid #f7f7f7;
   }
 
   @media screen and (max-width: 1023px) {

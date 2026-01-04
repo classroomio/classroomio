@@ -49,7 +49,7 @@ export async function getOrganisationAnalytics(orgId?: string, siteName?: string
       name: e.fullname,
       courseId: e.courseId,
       course: e.courseTitle,
-      date: e.enrolledAt
+      date: e.enrolledAt ?? ''
     }));
 
     return analytics;

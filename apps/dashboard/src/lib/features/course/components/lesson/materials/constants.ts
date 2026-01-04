@@ -2,7 +2,7 @@ import BookOpenIcon from '@lucide/svelte/icons/book-open';
 import type { Component } from 'svelte';
 import FileTextIcon from '@lucide/svelte/icons/file-text';
 import PresentationIcon from '@lucide/svelte/icons/presentation';
-import type { Tabs } from '$lib/utils/types';
+import type { Tabs } from '$features/course/utils/types';
 import VideoIcon from '@lucide/svelte/icons/video';
 
 interface MaterialTab {

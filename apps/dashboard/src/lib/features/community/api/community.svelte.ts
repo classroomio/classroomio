@@ -2,6 +2,7 @@ import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
   CommunityQuestionSuccess,
   CommunityQuestionsSuccess,
+  CreateCommentData,
   CreateCommentRequest,
   CreateCommunityQuestionRequest,
   UpdateQuestionRequest,
@@ -31,13 +32,6 @@ type DeleteCommentState = {
   shouldDelete: boolean;
   commentId: string;
 };
-type Answer = {
-  id: number;
-  body: string;
-  votes: number;
-  createdAt: string;
-  authorId: number;
-};
 
 /**
  * API class for Organization Community
@@ -60,12 +54,16 @@ class CommunityApi extends BaseApiWithErrors {
     shouldDelete: false,
     commentId: ''
   });
-  answer = $state<Answer>({
-    body: '',
-    votes: 0,
-    createdAt: '',
+  answer = $state<CreateCommentData>({
     authorId: 0,
-    id: 0
+    body: '',
+    courseId: '',
+    courseTitle: '',
+    createdAt: '',
+    id: 0,
+    slug: '',
+    title: '',
+    votes: 0
   });
 
   /**
@@ -206,7 +204,6 @@ class CommunityApi extends BaseApiWithErrors {
       requestFn: () =>
         classroomio.community[':id'].comment.$post({
           param: { id: String(questionId) },
-          // @ts-expect-error - the json type is not inferred correctly
           json: {
             body: result.data.body,
             authorProfileId: result.data.authorProfileId,
@@ -257,7 +254,6 @@ class CommunityApi extends BaseApiWithErrors {
       requestFn: () =>
         classroomio.community[':id'].upvote.$post({
           param: { id: id.toString() },
-          // @ts-expect-error - the json type is not inferred correctly
           json: { isQuestion }
         }),
       logContext: 'upvoting post',
@@ -308,7 +304,6 @@ class CommunityApi extends BaseApiWithErrors {
       requestFn: () =>
         classroomio.community[':id'].$put({
           param: { id: String(questionId) },
-          // @ts-expect-error - the json type is not inferred correctly
           json: {
             title: result.data.title,
             body: result.data.body,

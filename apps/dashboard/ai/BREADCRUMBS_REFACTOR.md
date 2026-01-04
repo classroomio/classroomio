@@ -60,13 +60,13 @@ const breadcrumbs = generateBreadcrumbs(
   import { page } from '$app/state';
   import { generateBreadcrumbsSync } from './breadcrumb-core';
   import { createOrgBreadcrumbConfigWithStore } from './breadcrumb-configs';
-  import { courseStore } from '$features/course/utils/store';
+  import { courseApi } from '$features/course/api';
 
   // Reactive config that reads from stores
   const config = $derived(
     createOrgBreadcrumbConfigWithStore(
       $currentOrgPath,
-      () => $courseStore.title // Reads reactively - updates automatically!
+      () => $courseApi.course?.title // Reads reactively - updates automatically!
     )
   );
 
@@ -187,7 +187,8 @@ The refactored system supports up to 5 layers of nesting through recursive trave
   import { page } from '$app/state';
   import { generateBreadcrumbsSync } from './breadcrumb-core';
   import { createOrgBreadcrumbConfigWithStore } from './breadcrumb-configs';
-  import { assignmentStore, submissionStore, courseStore, lessonStore } from '$features/course/utils/store';
+  import { courseApi } from '$features/course/api';
+  import { assignmentStore, submissionStore, lessonStore } from '$features/course/utils/store';
 
   // Create reactive config that reads from stores
   const config = $derived(
@@ -206,7 +207,7 @@ The refactored system supports up to 5 layers of nesting through recursive trave
         return $lessonStore.title || 'Lesson';
       }
       if (pathSegments.includes('courses') && pathSegments.length > 2) {
-        return $courseStore.title || 'Course';
+        return $courseApi.course?.title || 'Course';
       }
       return null;
     })
@@ -223,7 +224,8 @@ The refactored system supports up to 5 layers of nesting through recursive trave
   import { page } from '$app/state';
   import { generateBreadcrumbsSync } from './breadcrumb-core';
   import { createOrgBreadcrumbConfigWithStore } from './breadcrumb-configs';
-  import { assignmentStore, submissionStore, courseStore, lessonStore } from '$features/course/utils/store';
+  import { courseApi } from '$features/course/api';
+  import { assignmentStore, submissionStore, lessonStore } from '$features/course/utils/store';
 
   // Create config with store-based resolver
   const config = $derived(
@@ -242,7 +244,7 @@ The refactored system supports up to 5 layers of nesting through recursive trave
         return $lessonStore.title || null;
       }
       if (pathSegments.includes('courses')) {
-        return $courseStore.title || null;
+        return $courseApi.course?.title || null;
       }
       return null;
     })
@@ -529,7 +531,7 @@ generateNestedBreadcrumbsSync(segments, navItem, currentPath, ..., depth=0)
 3. **Max Depth**: Default is 10 (supports 5 layers easily), but can be customized:
    ```svelte
    <script lang="ts">
-     const baseConfig = createOrgBreadcrumbConfigWithStore($currentOrgPath, () => $courseStore.title);
+     const baseConfig = createOrgBreadcrumbConfigWithStore($currentOrgPath, () => $courseApi.course?.title);
      const config = $derived({ ...baseConfig, maxDepth: 15 });
    </script>
    ```
@@ -563,7 +565,7 @@ The old functions (`generateBreadcrumbs`, `generateLmsBreadcrumbs`) can be kept 
 // breadcrumb.ts (legacy wrapper - using store-based approach)
 import { generateBreadcrumbsSync } from './breadcrumb-core';
 import { createOrgBreadcrumbConfigWithStore } from './breadcrumb-configs';
-import { courseStore } from '$features/course/utils/store';
+import { courseApi } from '$features/course/api';
 
 export function generateBreadcrumbs(
   pathname: string,
@@ -574,7 +576,7 @@ export function generateBreadcrumbs(
 ) {
   const config = createOrgBreadcrumbConfigWithStore(
     currentOrgPath,
-    getStoreValue || (() => $courseStore.title || null)
+    getStoreValue || (() => $courseApi.course?.title || null)
   );
   return generateBreadcrumbsSync(pathname, searchParams, navItems, config);
 }
@@ -656,6 +658,9 @@ For routes with multiple dynamic segments, use path-based logic:
 
 ```svelte
 <script lang="ts">
+  import { courseApi } from '$features/course/api';
+  import { assignmentStore, submissionStore, lessonStore } from '$features/course/utils/store';
+
   const config = $derived(
     createOrgBreadcrumbConfigWithStore($currentOrgPath, () => {
       const pathSegments = page.url.pathname.split('/').filter(Boolean);
@@ -671,7 +676,7 @@ For routes with multiple dynamic segments, use path-based logic:
         return $lessonStore.title;
       }
       if (pathSegments.includes('courses')) {
-        return $courseStore.title;
+        return $courseApi.course?.title;
       }
       return null;
     })

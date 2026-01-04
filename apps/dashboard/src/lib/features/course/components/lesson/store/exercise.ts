@@ -14,11 +14,11 @@ export const questionnaireOrder = writable({ open: false });
 export const questionnaireValidation = writable({});
 
 export const questionnaire: Writable<{
-  title?: string;
-  due_by?: string;
+  title?: string | null;
+  due_by?: string | null;
   is_due_by_dirty?: boolean;
   is_title_dirty?: boolean;
-  description?: string;
+  description?: string | null;
   is_description_dirty?: boolean;
   questions: Question[];
   totalSubmissions: number;

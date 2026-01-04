@@ -16,21 +16,12 @@
   import MODES from '$lib/utils/constants/mode';
   import { currentOrg } from '$lib/utils/store/org';
   import type { Content } from '@cio/ui/custom/editor';
-  import { course } from '$features/course/store';
+  import { courseApi, lessonApi } from '$features/course/api';
   import { supabase } from '$lib/utils/functions/supabase';
   import { snackbar } from '$features/ui/snackbar/store';
-  import type { LessonPage } from '$lib/utils/types';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
-  import {
-    deleteLessonVideo,
-    handleUpdateLessonMaterials,
-    isLessonDirty,
-    lesson,
-    lessonByTranslation,
-    lessonVideoUpload,
-    lessonDocUpload
-  } from '$features/course/components/lesson/store/lessons';
-  import { lessonFallbackNote, t } from '$lib/utils/functions/translations';
+  import { lessonVideoUpload, lessonDocUpload } from '$features/course/components/lesson/store/lessons';
+  import type { Lesson } from '$features/course/utils/types';
   import { formatYoutubeVideo } from '$lib/utils/functions/formatYoutubeVideo';
   import { Button } from '@cio/ui/base/button';
   import { Chip } from '@cio/ui/custom/chip';
@@ -50,6 +41,7 @@
   import AddVideoToLesson from './video/add-video-to-lesson.svelte';
   import AddDocumentToLesson from '$features/course/components/lesson/materials/document/add-document-to-lesson.svelte';
   import type { TLocale } from '@cio/db/types';
+  import { t } from '$lib/utils/functions/translations';
 
   interface Props {
     mode?: any;
@@ -81,19 +73,22 @@
   ('flex items-center gap-2 px-5 py-2 border border-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md w-full mb-2');
 
   let isLoading = writable(false);
-  const lessonTitle = $derived($lesson.title);
+  const lessonTitle = $derived(lessonApi.lesson?.title || '');
   const tabs = $derived.by(() => {
-    const ordered = orderedTabs(CONSTANTS.tabs, $course.metadata?.lessonTabsOrder);
-    const content = $lessonByTranslation[lessonId]?.[$lesson.locale] || '';
+    const ordered = orderedTabs(CONSTANTS.tabs, courseApi.course?.metadata?.lessonTabsOrder);
+    const content = lessonApi.translations[lessonId]?.[lessonApi.currentLocale] || '';
 
-    const { slide_url, videos, note, documents } = $lesson.materials;
+    const slideUrl = lessonApi.lesson?.slideUrl || '';
+    const videos = lessonApi.lesson?.videos || [];
+    const note = lessonApi.lesson?.note || '';
+    const documents = lessonApi.lesson?.documents || [];
 
     return ordered.map((tab) => {
       let badgeValue = 0;
 
       if (tab.value === 1 && (!isHtmlValueEmpty(note) || !isHtmlValueEmpty(content))) {
         badgeValue = 1;
-      } else if (tab.value === 2 && !!slide_url) {
+      } else if (tab.value === 2 && !!slideUrl) {
         badgeValue = 1;
       } else if (tab.value === 3 && !isEmpty(videos)) {
         badgeValue = videos.length;
@@ -112,15 +107,18 @@
 
     if (mode === MODES.view) return;
 
-    $lessonByTranslation[lessonId][$lesson.locale] = `${content}`;
+    if (!lessonApi.translations[lessonId]) {
+      lessonApi.translations[lessonId] = {} as Record<TLocale, string>;
+    }
+    lessonApi.translations[lessonId][lessonApi.currentLocale] = `${content}`;
 
     try {
-      localStorage.setItem(`lesson-${lessonId}-${$lesson.locale}`, `${content}`);
+      localStorage.setItem(`lesson-${lessonId}-${lessonApi.currentLocale}`, `${content}`);
     } catch (error) {
       console.error('Error saving lesson note to localStorage', error);
     }
 
-    $isLessonDirty = true;
+    lessonApi.isDirty = true;
   }
 
   $effect(() => {
@@ -135,7 +133,7 @@
   };
 
   async function saveOrUpdateTranslation(locale, lessonId) {
-    const content = $lessonByTranslation[lessonId][locale];
+    const content = lessonApi.translations[lessonId]?.[locale] || '';
 
     if (typeof localeExists[locale] === 'undefined') {
       const { data } = await supabase
@@ -176,28 +174,30 @@
     }
   }
 
-  async function saveLesson(materials?: LessonPage['materials']) {
-    const _lesson = materials
-      ? {
-          ...$lesson,
-          materials
-        }
-      : $lesson;
+  async function saveLesson() {
+    if (!lessonApi.lesson) return false;
 
     console.log('updating lesson');
-    const [lessonRes] = await Promise.all([
-      handleUpdateLessonMaterials(_lesson, lessonId),
-      saveOrUpdateTranslation($lesson.locale, lessonId)
-    ]);
+    await Promise.all([
+      lessonApi.update(courseApi.course?.id || '', lessonId, {
+        note: lessonApi.lesson.note || undefined,
+        slideUrl: lessonApi.lesson.slideUrl || undefined,
+        videos: lessonApi.lesson.videos || [],
+        documents: lessonApi.lesson.documents || []
+      }),
 
-    return lessonRes;
+      saveOrUpdateTranslation(lessonApi.currentLocale, lessonId)
+    ]);
   }
 
-  function isMaterialsEmpty(materials: LessonPage['materials'], translation: Record<TLocale, string>) {
+  function isMaterialsEmpty(
+    materials: { slide_url?: string; videos?: any[]; note?: string; documents?: any[] },
+    translation: Record<TLocale, string>
+  ) {
     const { slide_url, videos, note, documents } = materials;
 
     return (
-      isHtmlValueEmpty(note) &&
+      isHtmlValueEmpty(note || '') &&
       !slide_url &&
       isEmpty(videos) &&
       isEmpty(documents) &&
@@ -258,7 +258,7 @@
     // }, 500);
   }
 
-  function initPlyr(_player: any, _video: LessonPage['materials']['videos']) {
+  function initPlyr(_player: any, _video: Lesson['videos']) {
     if (!_player) return;
 
     const players = Array.from(document.querySelectorAll('.plyr-video-trigger')).map((p) => {
@@ -271,7 +271,7 @@
   }
 
   function autoSave(
-    updatedMaterials: LessonPage['materials'],
+    _updatedMaterials: Partial<Lesson>,
     _translation: Record<TLocale, string>,
     _isLoading?: boolean,
     _lessonId?: string
@@ -283,12 +283,8 @@
     untrack(() => {
       isSaving = true;
       timeoutId = setTimeout(async () => {
-        const { error } = await saveLesson(updatedMaterials);
+        await saveLesson();
 
-        if (error) {
-          console.error('error saving lesson', error);
-          snackbar.error('snackbar.materials.apology');
-        }
         isSaving = false;
       }, 1000);
     });
@@ -298,7 +294,19 @@
     if ($lessonVideoUpload.isUploading) return;
 
     $lessonVideoUpload.isModalOpen = false;
-    autoSave($lesson.materials, $lessonByTranslation[lessonId], $isLoading, lessonId);
+    if (lessonApi.lesson) {
+      autoSave(
+        {
+          note: lessonApi.lesson.note || '',
+          slideUrl: lessonApi.lesson.slideUrl || '',
+          videos: lessonApi.lesson.videos || [],
+          documents: lessonApi.lesson.documents || []
+        },
+        lessonApi.translations[lessonId] || {},
+        $isLoading,
+        lessonId
+      );
+    }
   };
 
   const onDocumentClose = () => {
@@ -307,7 +315,19 @@
     $lessonDocUpload.isModalOpen = false;
     // Clear any error messages when modal closes
     $lessonDocUpload.error = null;
-    autoSave($lesson.materials, $lessonByTranslation[lessonId], $isLoading, lessonId);
+    if (lessonApi.lesson) {
+      autoSave(
+        {
+          note: lessonApi.lesson.note || '',
+          slideUrl: lessonApi.lesson.slideUrl || '',
+          videos: lessonApi.lesson.videos || [],
+          documents: lessonApi.lesson.documents || []
+        },
+        lessonApi.translations[lessonId] || {},
+        $isLoading,
+        lessonId
+      );
+    }
   };
 
   function getComponentOrder(tabs = CONSTANTS.tabs) {
@@ -330,7 +350,19 @@
 
   $effect(() => {
     console.log('autoSaving...');
-    autoSave($lesson.materials, $lessonByTranslation[lessonId], $isLoading, lessonId);
+    if (lessonApi.lesson) {
+      autoSave(
+        {
+          note: lessonApi.lesson.note || '',
+          slideUrl: lessonApi.lesson.slideUrl || '',
+          videos: lessonApi.lesson.videos || [],
+          documents: lessonApi.lesson.documents || []
+        },
+        lessonApi.translations[lessonId] || {},
+        $isLoading,
+        lessonId
+      );
+    }
   });
 
   $effect(() => {
@@ -344,12 +376,10 @@
 
   let player = $state<HTMLVideoElement | null>(null);
   $effect(() => {
-    initPlyr(player, $lesson.materials.videos);
+    if (lessonApi.lesson?.videos) {
+      initPlyr(player, lessonApi.lesson.videos);
+    }
   });
-
-  let _editorValue = $derived(
-    lessonFallbackNote($lesson.materials.note, $lessonByTranslation[lessonId], $lesson.locale)
-  );
 </script>
 
 <Dialog.Root
@@ -386,7 +416,7 @@
   </h1>
 </HTMLRender>
 
-{#if $lesson.isFetching}
+{#if lessonApi.isLoading}
   <Loader />
 {:else if mode === MODES.edit}
   <UnderlineTabs.Root bind:value={currentTab}>
@@ -443,7 +473,7 @@
 
       <div class="mt-5 h-[60vh]">
         <TextEditor
-          content={_editorValue}
+          content={lessonApi.note}
           onChange={(content) => onEditorChange(content)}
           onReady={() =>
             // editor
@@ -458,10 +488,13 @@
 
     <UnderlineTabs.Content value={String(getValue('course.navItem.lessons.materials.tabs.slide.title') || '')}>
       {#if mode === MODES.edit}
+        {@const slideUrlValue = lessonApi.lesson?.slideUrl || ''}
         <InputField
           label={$t('course.navItem.lessons.materials.tabs.slide.slide_link')}
-          bind:value={$lesson.materials.slide_url}
-          onInputChange={() => ($isLessonDirty = true)}
+          value={slideUrlValue}
+          onInputChange={(e) => {
+            lessonApi.updateLessonState('slideUrl', e.currentTarget.value);
+          }}
           helperMessage={$t('course.navItem.lessons.materials.tabs.slide.helper_message')}
         />
       {/if}
@@ -470,12 +503,12 @@
       <Button onclick={openAddVideoModal} class="mb-2">
         {$t('course.navItem.lessons.materials.tabs.video.button')}
       </Button>
-      {#if $lesson.materials.videos.length}
+      {#if lessonApi.lesson?.videos && lessonApi.lesson.videos.length}
         <div class="flex h-full w-full flex-col items-start">
-          {#each $lesson.materials.videos as video, index}
+          {#each lessonApi.lesson.videos as video, index}
             {#if mode === MODES.edit}
               <div class="ml-auto">
-                <IconButton onclick={() => deleteLessonVideo(index)}>
+                <IconButton onclick={() => lessonApi.deleteLessonVideo(index)}>
                   <TrashIcon size={16} />
                 </IconButton>
               </div>
@@ -539,7 +572,7 @@
       <ComponentDocument {mode} />
     </UnderlineTabs.Content>
   </UnderlineTabs.Root>
-{:else if !isMaterialsEmpty($lesson.materials, $lessonByTranslation[lessonId])}
+{:else if lessonApi.lesson && !isMaterialsEmpty({ note: lessonApi.lesson.note || '', slide_url: lessonApi.lesson.slideUrl || '', videos: lessonApi.lesson.videos || [], documents: lessonApi.lesson.documents || [] }, lessonApi.translations[lessonId] || {})}
   {#key lessonId}
     <div class="mb-20 flex w-full flex-col gap-6" in:fade={{ delay: 500 }} out:fade>
       {#each componentsToRender as Component}

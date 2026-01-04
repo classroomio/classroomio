@@ -1,17 +1,17 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { onMount, untrack } from 'svelte';
+  import { untrack } from 'svelte';
   import { Spinner } from '@cio/ui/base/spinner';
-  import { lesson } from '../store/lessons';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import * as Breadcrumb from '@cio/ui/base/breadcrumb';
-  import { supabase } from '$lib/utils/functions/supabase';
+  import { exerciseApi } from '$features/course/api';
+  import { courseApi } from '$features/course/api';
 
-  import type { ExerciseTemplate, Exercise as ExerciseType } from '$lib/utils/types';
+  import type { Exercise as ExerciseType } from '$features/course/utils/types';
+  import type { TExerciseTemplate } from '@cio/db/types';
   import { formatDate } from '$lib/utils/functions/routes/dashboard';
   import { isQuestionnaireFetching, questionnaire } from '../store/exercise';
-  import { createExercise, createExerciseFromTemplate } from '$lib/utils/services/courses';
 
   import Exercise from '../exercise/index.svelte';
   import { Backdrop, RoleBasedSecurity } from '$features/ui';
@@ -29,21 +29,21 @@
   let { path = $bindable(''), exerciseId = '', lessonId = '' }: Props = $props();
 
   let open = $state(false);
-  let isFetching = $state(false);
   let newExercise = $state({
     id: 1,
     title: '',
     description: ''
   });
 
-  async function handleTemplateCreate(template: ExerciseTemplate): Promise<void> {
-    const newExercise = (await createExerciseFromTemplate(lessonId, template)) as ExerciseType;
-    console.log('newExercise', newExercise);
-    if (newExercise) {
-      lesson.update((_lesson) => ({
-        ..._lesson,
-        exercises: [..._lesson.exercises, newExercise]
-      }));
+  async function handleTemplateCreate(template: TExerciseTemplate): Promise<void> {
+    await exerciseApi.createFromTemplate(courseApi.course?.id!, lessonId, template);
+
+    if (exerciseApi.success && exerciseApi.exercise) {
+      const newExercise = exerciseApi.exercise as ExerciseType;
+      // Add to exercises list if not already present
+      if (!exerciseApi.exercises.find((ex) => ex.id === newExercise.id)) {
+        exerciseApi.exercises = [...exerciseApi.exercises, newExercise];
+      }
 
       handleCancelAddExercise();
       goto(path + '/' + newExercise.id);
@@ -51,21 +51,22 @@
   }
 
   async function handleAddExercise() {
-    const { data, error } = await createExercise({
+    const courseId = courseApi.course?.id!;
+    await exerciseApi.create(courseId, {
       title: newExercise.title,
-      lesson_id: lessonId
+      lessonId: lessonId,
+      courseId: courseId
     });
 
-    if (!data) return;
+    if (exerciseApi.success && exerciseApi.exercise) {
+      const insertedExercise = exerciseApi.exercise;
+      // Add to exercises list if not already present
+      if (!exerciseApi.exercises.find((ex) => ex.id === insertedExercise.id)) {
+        exerciseApi.exercises = [...exerciseApi.exercises, insertedExercise];
+      }
 
-    console.log(`data, error `, data, error);
-    const insertedExercise = data?.[0] as ExerciseType;
-    lesson.update((_lesson) => ({
-      ..._lesson,
-      exercises: [..._lesson.exercises, insertedExercise]
-    }));
-
-    handleCancelAddExercise();
+      handleCancelAddExercise();
+    }
   }
 
   function handleCancelAddExercise() {
@@ -77,69 +78,46 @@
     };
   }
 
-  function getExercises(lId: string | undefined) {
-    if (!lId) return;
-
-    untrack(async () => {
-      isFetching = true;
-
-      const exercisesData = await supabase.from('exercise').select(`id, title, created_at`).match({ lesson_id: lId });
-
-      $lesson.exercises = exercisesData.data as ExerciseType[];
-      isFetching = false;
-    });
-  }
-
   async function getExercise(exerciseId: string | undefined) {
     if (!exerciseId) return;
 
     untrack(async () => {
-      isFetching = true;
-
       isQuestionnaireFetching.update(() => true);
 
-      let { data, error } = await supabase
-        .from('exercise')
-        .select(
-          `
-        id, title, description, due_by,
-        totalSubmissions:submission(count),
-        questions:question(
-          *,
-          options:option(*),
-          question_type:question_type_id(id, label)
-        )
-      `
-        )
-        .eq('id', exerciseId)
-        .single();
+      await exerciseApi.get(courseApi.course?.id!, exerciseId);
 
-      if (error) {
-        return;
-      }
+      if (exerciseApi.success && exerciseApi.exercise) {
+        const data = exerciseApi.exercise;
 
-      if (data && Array.isArray(data.questions)) {
-        // Need to set the question type inorder for the select in the questionnaire builder to match
-        data.questions.forEach((question) => {
-          question.question_type = QUESTION_TYPES.find((type) => type.id === question.question_type.id);
-          return question;
+        // Transform questions to match expected format
+        let questions: any[] = [];
+        if (data.questions && Array.isArray(data.questions)) {
+          questions = data.questions
+            .map((question) => {
+              // Need to set the question type inorder for the select in the questionnaire builder to match
+              const questionType = QUESTION_TYPES.find((type) => type.id === question.question_type?.id);
+              return {
+                ...question,
+                question_type: questionType || question.question_type
+              };
+            })
+            .sort((a, b) => (a.order || 0) - (b.order || 0));
+        }
+
+        questionnaire.set({
+          // id: data.id,
+          title: data.title,
+          description: data.description,
+          due_by: data.dueBy,
+          is_title_dirty: false,
+          is_description_dirty: false,
+          is_due_by_dirty: false,
+          questions: questions,
+          totalSubmissions: 0 // TODO: Get from submission count if needed
         });
-        data.questions = data.questions.sort((a, b) => a.order - b.order);
-      } else if (data) {
-        data.questions = [];
       }
-
-      questionnaire.set({
-        ...(data || {}),
-        is_title_dirty: false,
-        is_description_dirty: false,
-        is_due_by_dirty: false,
-        questions: Array.isArray(data?.questions) ? data?.questions : [],
-        totalSubmissions: data?.totalSubmissions?.[0]?.count || 0
-      });
 
       isQuestionnaireFetching.update(() => false);
-      isFetching = false;
     });
   }
 
@@ -147,8 +125,10 @@
     goto(path);
   }
 
-  onMount(() => {
-    getExercises(lessonId);
+  $effect(() => {
+    if (!courseApi.course?.id || !lessonId) return;
+
+    exerciseApi.list(courseApi.course?.id!, lessonId);
   });
 
   $effect(() => {
@@ -156,14 +136,14 @@
   });
 </script>
 
-{#if isFetching}
+{#if exerciseApi.isLoading}
   <Backdrop>
     <Spinner class="size-14! text-blue-700!" />
   </Backdrop>
 {/if}
 
 {#if exerciseId}
-  <Exercise {exerciseId} {goBack} {path} {isFetching} />
+  <Exercise {exerciseId} {goBack} {path} isFetching={exerciseApi.isLoading} />
 {:else}
   <NewExerciseModal
     bind:open
@@ -196,10 +176,10 @@
     {@render header()}
 
     <div class="mt-5 flex flex-wrap">
-      {#each $lesson.exercises as exercise}
+      {#each exerciseApi.exercises as exercise}
         <a class="mr-4 mb-4 w-52 rounded-lg bg-gray-100 px-4 py-7 dark:bg-neutral-800" href="{path}/{exercise.id}">
           <h3 class="text-xl dark:text-white">{exercise.title}</h3>
-          <p class="mt-4 text-sm dark:text-white">{formatDate(exercise.created_at)}</p>
+          <p class="mt-4 text-sm dark:text-white">{formatDate(exercise.createdAt || undefined)}</p>
         </a>
       {:else}
         <Empty.Root class="mt-3">

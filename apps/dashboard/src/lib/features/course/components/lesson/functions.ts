@@ -1,4 +1,4 @@
-import type { LessonCompletion } from '$lib/utils/types';
+import type { LessonCompletion } from '$features/course/utils/types';
 
 export function getUniqueValue(label: string) {
   return label.toLowerCase().replace(' ', '');

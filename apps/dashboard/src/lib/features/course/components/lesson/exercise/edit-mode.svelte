@@ -15,7 +15,8 @@
     addDynamicValue
   } from '../store/exercise';
   import { preventDefault } from '$lib/utils/functions/svelte';
-  import { deleteExercise } from '$lib/utils/services/courses';
+  import { exerciseApi } from '$features/course/api';
+  import { courseApi } from '$features/course/api';
   import { QUESTION_TYPE, QUESTION_TYPES } from '$features/ui/question/constants';
   import { Button } from '@cio/ui/base/button';
 
@@ -72,15 +73,17 @@
   async function handleDelete() {
     isDeleting = true;
 
-    const qToDelete = $questionnaire.questions.map((q) => ({ id: `${q.id}` }));
-    await deleteExercise(qToDelete, exerciseId);
+    await exerciseApi.delete(courseApi.course?.id!, exerciseId);
 
-    lesson.update((_lesson) => ({
-      ..._lesson,
-      exercises: _lesson.exercises.filter((exercise) => exercise.id !== exerciseId)
-    }));
+    if (exerciseApi.success) {
+      lesson.update((_lesson) => ({
+        ..._lesson,
+        exercises: _lesson.exercises.filter((exercise) => exercise.id !== exerciseId)
+      }));
 
-    goBack();
+      goBack();
+    }
+    isDeleting = false;
   }
 </script>
 

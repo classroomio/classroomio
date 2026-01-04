@@ -5,9 +5,8 @@
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';
-  import { COURSE_VERSION } from '$lib/utils/types';
   import { getGreeting } from '$lib/utils/functions/date';
-  import { course } from '$features/course/store';
+  import { courseApi } from '$features/course/api';
   import { handleAddLessonWidget } from '$features/course/components/lesson/store';
 
   let { data } = $props();
@@ -18,7 +17,7 @@
 
   function addLesson() {
     $handleAddLessonWidget.open = true;
-    $handleAddLessonWidget.isSection = $course.version === COURSE_VERSION.V2;
+    $handleAddLessonWidget.isSection = courseApi.course?.version === 'V2';
   }
 </script>
 
@@ -36,7 +35,7 @@
   <Page.Action>
     <div class="flex w-full justify-end gap-2">
       <RoleBasedSecurity allowedRoles={[1, 2]}>
-        {#if $course.version === COURSE_VERSION.V1}
+        {#if courseApi.course?.version === 'V1'}
           <Button variant="outline" onclick={() => (activateSections = !activateSections)} disabled={!!lessonEditing}>
             {$t(`course.navItem.lessons.section_prompt.cta`)}
           </Button>

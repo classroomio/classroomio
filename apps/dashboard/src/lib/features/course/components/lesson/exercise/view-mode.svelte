@@ -1,7 +1,7 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import { fly } from 'svelte/transition';
-  import { group, course } from '$features/course/store';
+  import { courseApi } from '$features/course/api';
   import { questionnaire } from '../store/exercise';
   import { questionnaireMetaData } from '../store/answers';
   import Preview from './preview.svelte';
@@ -16,13 +16,8 @@
   import { STATUS } from './constants';
   import { getPropsForQuestion, filterOutDeleted, wasCorrectAnswerSelected } from './functions';
   import { formatAnswers, getGroupMemberId } from '$features/course/utils/functions';
-  import { submitExercise } from '$lib/utils/services/courses';
-  import { fetchSubmission } from '$lib/utils/services/submissions';
+  import { exerciseApi, submissionApi } from '$features/course/api';
   import { profile } from '$lib/utils/store/user';
-  import { currentOrg } from '$lib/utils/store/org';
-  import { NOTIFICATION_NAME, triggerSendEmail } from '$lib/utils/services/notification/notification';
-  import { lesson } from '../store/lessons';
-  import { COURSE_TYPE } from '$lib/utils/types';
   import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import { t } from '$lib/utils/functions/translations';
 
@@ -38,48 +33,14 @@
   let hasSubmission = false;
   let isLoadingAutoSavedData = $state(false);
   let alreadyCheckedAutoSavedData = $state(false);
-  let submissionResponse;
 
   function handleStart() {
     $questionnaireMetaData.currentQuestionIndex += 1;
   }
 
-  const getStudent = (people, profileId) => {
-    return people.find((person) => person.profile_id === profileId);
-  };
-
-  const notifyEducator = () => {
-    const student = getStudent($group.students, $profile.id);
-    const teacherFullname = $group.tutors[0]?.fullname;
-    const teacherEmail = $group.tutors[0]?.email;
-    console.log({
-      student,
-      teacherFullname,
-      teacherEmail
-    });
-    if (!student || !teacherFullname || !teacherEmail) return;
-
-    const baseUrl = `${window.location.origin}/courses/${$course.id}`;
-    const exerciseLink = `${baseUrl}/lessons/${$lesson.id}/exercises/${exerciseId}`;
-    const submissionLink = `${baseUrl}/submissions`;
-    const content = `
-      <p>Hello ${teacherFullname},</p>
-      <p>A student ${student.profile.fullname} just submitted an exercise <a href=${exerciseLink}>${$questionnaire.title}</a>
-        <p>You can get started grading by clicking "Open Submissions"</p>
-      <div>
-        <a class="button" href=${submissionLink}>Open Submissions</a>
-      </div>
-      `;
-
-    triggerSendEmail(NOTIFICATION_NAME.EXERCISE_SUBMISSION_UPDATE, {
-      to: teacherEmail,
-      content,
-      orgName: $currentOrg?.name,
-      exerciseTitle: $questionnaire.title
-    });
-  };
-
   async function onSubmit(id, value) {
+    if (!courseApi.course?.id) return;
+
     const { answers } = $questionnaireMetaData;
     const { questions } = $questionnaire;
     const prevAnswer = answers[id] || [];
@@ -111,19 +72,28 @@
           $questionnaireMetaData.grades = {};
 
           $questionnaireMetaData.comment = '';
-          let response = await submitExercise(
-            $questionnaireMetaData.answers,
-            questions,
-            exerciseId,
-            $course.id,
-            getGroupMemberId($group.people, $profile.id)
-          );
 
-          if (response) {
-            submissionResponse = response;
-          }
+          // Transform answers to API format
+          const answers = Object.entries($questionnaireMetaData.answers)
+            .map(([questionName, value]) => {
+              const question = questions.find((q) => q.name === questionName);
+              if (!question) return null;
 
-          notifyEducator();
+              const questionId = Number(question.id);
+              if (isNaN(questionId)) return null;
+
+              if (typeof value === 'string') {
+                return { questionId, answer: value };
+              } else if (Array.isArray(value) && value.length > 0) {
+                // For multiple choice, use the first option ID (assuming value is option IDs)
+                const optionId = Number(value[0]);
+                return isNaN(optionId) ? null : { questionId, optionId };
+              }
+              return null;
+            })
+            .filter((answer) => answer !== null) as Array<{ questionId: number; optionId?: number; answer?: string }>;
+
+          await exerciseApi.submit(courseApi.course?.id!, exerciseId, answers);
         }
       }, 1000);
     }
@@ -165,12 +135,9 @@
 
     hasSubmission = true;
 
-    const args = {
-      exerciseId,
-      courseId,
-      submittedBy: getGroupMemberId(people, profileId)
-    };
-    const { data } = await fetchSubmission(args);
+    const submittedBy = getGroupMemberId(people, profileId);
+    await submissionApi.list(courseId, exerciseId, submittedBy);
+    const data = submissionApi.data;
 
     if (Array.isArray(data) && data.length) {
       submission = data[0];
@@ -246,7 +213,7 @@
   });
 
   $effect(() => {
-    !isFetchingExercise && checkForSubmission($group.people, $profile.id, $course.id);
+    !isFetchingExercise && checkForSubmission(courseApi.group.people, $profile.id, courseApi.course?.id);
   });
 </script>
 
@@ -315,7 +282,7 @@
           >
             {$t('course.navItem.lessons.exercises.all_exercises.view_mode.graded')}
           </span>
-        {:else if $course.type === COURSE_TYPE.SELF_PACED}
+        {:else if courseApi.course?.type === 'SELF_PACED'}
           <span
             class="status-text bg-green-700 px-2 py-1 text-center text-white"
             title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_submitted')}
@@ -331,7 +298,7 @@
           </span>
         {/if}
       </div>
-      {#if STATUS.GRADED === $questionnaireMetaData.status && $course.type !== COURSE_TYPE.SELF_PACED}
+      {#if STATUS.GRADED === $questionnaireMetaData.status && courseApi.course?.type !== 'SELF_PACED'}
         <span
           class="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300 bg-[#F5F8FE] p-6 text-sm font-semibold text-[#2751DA]"
           title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_graded')}
@@ -341,7 +308,7 @@
       {/if}
     </div>
 
-    {#if $questionnaireMetaData.status === STATUS.GRADED && $questionnaireMetaData.comment && $course.type !== COURSE_TYPE.SELF_PACED}
+    {#if $questionnaireMetaData.status === STATUS.GRADED && $questionnaireMetaData.comment && courseApi.course?.type !== 'SELF_PACED'}
       <div class="bg-primary-700 mt-3 flex items-center justify-between rounded-sm p-4 text-white">
         <span> {$questionnaireMetaData.comment}</span>
       </div>

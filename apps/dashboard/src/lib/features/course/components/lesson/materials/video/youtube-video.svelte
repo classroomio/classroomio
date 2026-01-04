@@ -5,9 +5,9 @@
 
   import { t } from '$lib/utils/functions/translations';
   import { IconButton } from '@cio/ui/custom/icon-button';
-  import type { LessonVideoType } from '$lib/utils/types';
+  import type { LessonVideoType } from '$features/course/utils/types';
   import { copyToClipboard, getVideoUrls, removeVideo } from '$lib/utils/functions/formatYoutubeVideo';
-  import { lesson, isLessonDirty } from '$features/course/components/lesson/store/lessons';
+  import { lessonApi } from '$features/course/api';
 
   import { InputField } from '@cio/ui/custom/input-field';
   import { Button } from '@cio/ui/base/button';
@@ -22,16 +22,15 @@
     if (validLinks.length === 0) {
       error = $t('course.navItem.lessons.materials.tabs.video.add_video.invalid_youtube');
     } else {
-      const existingLinks = $lesson?.materials?.videos || [];
+      if (!lessonApi.lesson) return;
 
-      $lesson.materials.videos = [
-        ...existingLinks,
-        ...validLinks.map((link = '') => ({
-          type: 'youtube' as LessonVideoType,
-          link,
-          metadata: {}
-        }))
-      ];
+      const newVideos = validLinks.map((link = '') => ({
+        type: 'youtube' as LessonVideoType,
+        link,
+        metadata: {}
+      }));
+
+      lessonApi.updateLessonState('videos', newVideos, { append: true });
       youtubeLinks = '';
       error = '';
     }
@@ -49,7 +48,7 @@
     label={$t('course.navItem.lessons.materials.tabs.video.add_video.youtube_link')}
     bind:value={youtubeLinks}
     className="flex-1 text-left"
-    onchange={() => ($isLessonDirty = true)}
+    onchange={() => (lessonApi.isDirty = true)}
     placeholder="https://www.youtube.com/watch?v="
     errorMessage={error}
   />
@@ -60,11 +59,11 @@
 <p class="mt-4 pl-2 text-sm">
   {$t('course.navItem.lessons.materials.tabs.video.add_video.videos_added')}:
   <strong>
-    {$lesson?.materials?.videos.filter((v) => v.type === 'youtube' && isValidYouTubeLink(v.link)).length || 0}
+    {lessonApi.lesson?.videos?.filter((v) => v.type === 'youtube' && isValidYouTubeLink(v.link)).length || 0}
   </strong>
 </p>
 <div class="">
-  {#each $lesson?.materials?.videos as video, index}
+  {#each lessonApi.lesson?.videos || [] as video, index}
     {#if video.type === 'youtube'}
       <div class="flex items-center gap-1">
         <Badge class="max-w-md truncate" variant="secondary">

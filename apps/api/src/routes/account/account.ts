@@ -8,7 +8,7 @@ import { zValidator } from '@hono/zod-validator';
 
 export const accountRouter = new Hono()
   .get('/', authMiddleware, async (c) => {
-    const user = c.get('user');
+    const user = c.get('user')!;
 
     try {
       console.time('accountRouter');
@@ -29,7 +29,7 @@ export const accountRouter = new Hono()
     }
   })
   .put('/profile', authMiddleware, zValidator('json', ZUpdateProfile), async (c) => {
-    const user = c.get('user');
+    const user = c.get('user')!;
 
     try {
       const validatedData = c.req.valid('json');

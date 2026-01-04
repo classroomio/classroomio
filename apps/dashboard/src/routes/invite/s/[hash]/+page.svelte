@@ -6,7 +6,7 @@
   import { AuthUI } from '$features/ui';
   import { currentOrg } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
-  import { addGroupMember } from '$lib/utils/services/courses';
+  import { peopleApi } from '$features/course/api';
   import { ROLE } from '@cio/utils/constants';
   import { profile } from '$lib/utils/store/user';
   import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
@@ -29,19 +29,13 @@
       return goto(`/signup?redirect=${page.url?.pathname || ''}`);
     }
 
+    // Get teacher emails before adding member
     const { data: courseData, error } = await supabase.from('course').select('group_id').eq('id', data.id).single();
 
-    console.log({ courseData });
     if (!courseData?.group_id) {
       console.error('error getting group', error);
       return;
     }
-
-    const member = {
-      profile_id: $profile.id,
-      group_id: courseData.group_id,
-      role_id: ROLE.STUDENT
-    };
 
     const teacherMembers = await supabase
       .from('groupmember')
@@ -62,44 +56,46 @@
         return teacher.profile?.email || '';
       }) || [];
 
-    addGroupMember(member).then((addedMember) => {
-      if (addedMember.error) {
-        console.error('Error adding student to group', courseData.group_id, addedMember.error);
-        snackbar.error('snackbar.invite.failed_join');
-
-        // Full page load to lms if error joining, probably user already joined
-        window.location.href = '/lms';
-        return;
-      }
-
-      capturePosthogEvent('student_joined_course', {
-        course_name: data.name,
-        student_id: $profile.id,
-        student_email: $profile.email
-      });
-
-      // Send email welcoming student to the course
-      triggerSendEmail(NOTIFICATION_NAME.STUDENT_COURSE_WELCOME, {
-        to: $profile.email,
-        orgName: data.currentOrg?.name,
-        courseName: data.name
-      });
-
-      // Send notification to all teacher(s) that a student has joined the course.
-      Promise.all(
-        teachers.map((email) =>
-          triggerSendEmail(NOTIFICATION_NAME.TEACHER_STUDENT_JOINED, {
-            to: email,
-            courseName: data.name,
-            studentName: $profile.fullname,
-            studentEmail: $profile.email
-          })
-        )
-      );
-
-      // go to lms
-      return goto('/lms');
+    // Add member using new API
+    await peopleApi.add(data.id, {
+      profileId: $profile.id,
+      roleId: ROLE.STUDENT
     });
+
+    if (!peopleApi.success) {
+      snackbar.error('snackbar.invite.failed_join');
+      // Full page load to lms if error joining, probably user already joined
+      window.location.href = '/lms';
+      return;
+    }
+
+    capturePosthogEvent('student_joined_course', {
+      course_name: data.name,
+      student_id: $profile.id,
+      student_email: $profile.email
+    });
+
+    // Send email welcoming student to the course
+    triggerSendEmail(NOTIFICATION_NAME.STUDENT_COURSE_WELCOME, {
+      to: $profile.email,
+      orgName: data.currentOrg?.name,
+      courseName: data.name
+    });
+
+    // Send notification to all teacher(s) that a student has joined the course.
+    Promise.all(
+      teachers.map((email) =>
+        triggerSendEmail(NOTIFICATION_NAME.TEACHER_STUDENT_JOINED, {
+          to: email,
+          courseName: data.name,
+          studentName: $profile.fullname,
+          studentEmail: $profile.email
+        })
+      )
+    );
+
+    // go to lms
+    goto('/lms');
   }
 
   onMount(async () => {

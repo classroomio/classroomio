@@ -19,6 +19,12 @@ export type RecommendedCoursesResponse = InferResponseType<GetRecommendedCourses
 export type RecommendedCoursesSuccess = Extract<InferResponseType<GetRecommendedCoursesRequest>, { success: true }>;
 export type RecommendedCourses = RecommendedCoursesSuccess['data'];
 
+// Get course types
+export type GetCourseRequest = (typeof classroomio.course)[':courseId']['$get'];
+export type GetCourseResponse = InferResponseType<GetCourseRequest>;
+export type GetCourseSuccess = Extract<GetCourseResponse, { success: true }>;
+export type Course = GetCourseSuccess['data'];
+
 export type Question = {
   id: number | string;
   value: string;

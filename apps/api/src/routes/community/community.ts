@@ -35,7 +35,7 @@ export const communityRouter = new Hono()
   .get('/', authMiddleware, orgMemberMiddleware, zValidator('query', ZCommunityQuestions), async (c) => {
     try {
       const { orgId } = c.req.valid('query');
-      const user = c.get('user');
+      const user = c.get('user')!;
       const userRole = c.get('userRole');
 
       if (userRole === null) {

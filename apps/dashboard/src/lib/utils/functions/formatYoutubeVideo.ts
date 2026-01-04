@@ -1,4 +1,4 @@
-import { lesson } from '$features/course/components/lesson/store/lessons';
+import { lessonApi } from '$features/course/api';
 import { snackbar } from '$features/ui/snackbar/store';
 
 export function formatYoutubeVideo(url: string, errors: Record<string, string>) {
@@ -68,11 +68,5 @@ export async function copyToClipboard(text: string) {
 }
 
 export function removeVideo(index = 0) {
-  lesson.update((currentLesson) => ({
-    ...currentLesson,
-    materials: {
-      ...currentLesson.materials,
-      videos: currentLesson.materials.videos.filter((_v, i) => i !== index)
-    }
-  }));
+  lessonApi.deleteLessonVideo(index);
 }

@@ -4,8 +4,8 @@
   import TrashIcon from '@lucide/svelte/icons/trash';
 
   import { t } from '$lib/utils/functions/translations';
-  import type { LessonVideoType } from '$lib/utils/types';
-  import { isLessonDirty, lesson } from '$features/course/components/lesson/store/lessons';
+  import type { LessonVideoType } from '$features/course/utils/types';
+  import { lessonApi } from '$features/course/api';
   import { copyToClipboard, getVideoUrls, removeVideo } from '$lib/utils/functions/formatYoutubeVideo';
 
   import { IconButton } from '@cio/ui/custom/icon-button';
@@ -22,16 +22,15 @@
     if (validLinks.length === 0) {
       error = $t('course.navItem.lessons.materials.tabs.video.add_video.invalid_link');
     } else {
-      const existingLinks = $lesson?.materials?.videos || [];
+      if (!lessonApi.lesson) return;
 
-      $lesson.materials.videos = [
-        ...existingLinks,
-        ...validLinks.map((link = '') => ({
-          type: 'generic' as LessonVideoType,
-          link,
-          metadata: {}
-        }))
-      ];
+      const newVideos = validLinks.map((link = '') => ({
+        type: 'generic' as LessonVideoType,
+        link,
+        metadata: {}
+      }));
+
+      lessonApi.updateLessonState('videos', newVideos, { append: true });
       genericLinks = '';
       error = '';
     }
@@ -60,7 +59,7 @@
     label={$t('course.navItem.lessons.materials.tabs.video.embed_link')}
     bind:value={genericLinks}
     className="flex-1"
-    onchange={() => ($isLessonDirty = true)}
+    onchange={() => (lessonApi.isDirty = true)}
     placeholder="https://www.videoplayer.com/"
     errorMessage={error}
   />
@@ -71,11 +70,11 @@
 <p class="mt-4 pl-2 text-sm">
   {$t('course.navItem.lessons.materials.tabs.video.add_video.videos_added')}:
   <strong>
-    {$lesson?.materials?.videos.filter((v) => v.type === 'generic').length || 0}
+    {lessonApi.lesson?.videos?.filter((v) => v.type === 'generic').length || 0}
   </strong>
 </p>
 <div class="">
-  {#each $lesson?.materials?.videos as video, index}
+  {#each lessonApi.lesson?.videos || [] as video, index}
     {#if video.type === 'generic'}
       <div class="flex items-center gap-1">
         <Badge class="max-w-md truncate" variant="secondary">

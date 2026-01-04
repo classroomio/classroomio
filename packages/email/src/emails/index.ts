@@ -11,6 +11,9 @@ export * from './welcome';
 export * from './verify-email';
 export * from './on-password-reset';
 export * from './invite-teacher';
+export * from './newsfeed';
+
+import type { newsfeedCommentEmail, newsfeedPostEmail } from './newsfeed';
 
 // Import types for schema mapping (must be after exports to avoid circular dependency)
 import type { forgotPasswordEmail } from './forgot-password';
@@ -31,4 +34,6 @@ export type EmailSchemas = {
   verifyEmail: typeof verifyEmailEmail.template.schema;
   onPasswordReset: typeof onPasswordResetEmail.template.schema;
   inviteTeacher: typeof inviteTeacherEmail.template.schema;
+  newsfeedPost: typeof newsfeedPostEmail.template.schema;
+  newsfeedComment: typeof newsfeedCommentEmail.template.schema;
 };

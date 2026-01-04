@@ -1,9 +1,9 @@
 import { ROUTES } from './constants';
 
 export function getGroupMemberId(people, profileId) {
-  const groupMember = people.find((person) => person.profile_id === profileId);
+  const groupMember = people.find((person) => person.profileId === profileId);
 
-  return groupMember ? groupMember.id : null;
+  return groupMember?.id || null;
 }
 
 export function getNavItemRoute(courseId, routeId?: string) {

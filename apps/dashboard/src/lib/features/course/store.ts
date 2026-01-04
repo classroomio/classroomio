@@ -1,25 +1,37 @@
-import { COURSE_TYPE, COURSE_VERSION } from '$lib/utils/types';
-import type { Course, GroupPerson, Lesson, LessonSection } from '$lib/utils/types';
-import { get, writable, type Writable } from 'svelte/store';
-import { lessonSections, lessons } from './components/lesson/store/lessons';
+import type { TCourseType, TCourseVersion } from '@cio/db/types';
+import type { Course } from '$features/course/types';
+import type { LessonSectionWithLessons } from '$features/course/utils/types';
+import type { GroupMember } from '$features/course/utils/types';
+import { writable, type Writable } from 'svelte/store';
+import { lessonApi } from './api';
 
 import { ROLE } from '@cio/utils/constants';
 
-export const defaultCourse: Course = {
+export const defaultCourse = {
   id: '',
   title: '',
   description: '',
-  type: COURSE_TYPE.LIVE_CLASS,
+  overview: null,
+  type: 'LIVE_CLASS' as TCourseType,
   cost: 0,
-  currency: '',
+  currency: 'USD',
   status: 'ACTIVE',
-  is_certificate_downloadable: false,
-  certificate_theme: 'professional',
-  is_published: false,
-  created_at: new Date().toDateString(),
-  updated_at: new Date().toDateString(),
+  isCertificateDownloadable: false,
+  certificateTheme: 'professional',
+  isPublished: false,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  groupId: null,
+  isTemplate: true,
+  logo: '',
+  slug: null,
+  bannerImage: null,
   attendance: [],
-  version: COURSE_VERSION.V2,
+  version: 'V2' as TCourseVersion,
+  group: null,
+  lesson_section: [],
+  sections: [],
+  lessons: [],
   metadata: {
     requirements: '',
     description: '',
@@ -51,66 +63,25 @@ export const defaultCourse: Course = {
   }
 };
 
+/**
+ * @deprecated Use courseApi.course from '$features/course/api' instead
+ * This store is kept for backward compatibility but should be migrated to use courseApi state
+ */
 export const course: Writable<Course> = writable({ ...defaultCourse });
-
-class CourseStore {
-  prevId = writable('');
-  isLoading = writable(false);
-
-  /**
-   * Initializes course data from server-fetched data
-   * This replaces the client-side fetch method
-   * @param courseData Course data from server
-   * @param courseId Course ID
-   */
-  initializeFromServerData(courseData: Course | null, courseId: string) {
-    console.log('initializeFromServerData');
-    if (get(this.prevId) === courseId && courseData) {
-      return; // Already initialized
-    }
-
-    this.prevId.set(courseId);
-    this.isLoading.update(() => false);
-
-    console.log('courseData', courseData);
-    console.log('courseId', courseId);
-    if (courseData) {
-      console.log('setting course');
-      setCourse(courseData);
-    } else {
-      console.log('setting default course');
-      course.set(defaultCourse);
-      lessons.set([]);
-    }
-  }
-}
-export const courseStore = new CourseStore();
-
-export const mockGroupMember = {
-  id: '434534534535',
-  group_id: '434534534535',
-  role_id: 1,
-  profile_id: 'vcvbcvbcvbb----434534534535',
-  email: null,
-  profile: {
-    id: 'vcvbcvbcvbb----434534534535',
-    fullname: 'Rotimi Best',
-    username: 'robertblake',
-    avatar_url: '',
-    created_at: '2021-08-08T13:42:13+00:00',
-    updated_at: '2021-08-08T13:42:13+00:00'
-  }
-};
 
 type GroupStore = {
   id?: string;
-  tutors: GroupPerson[];
-  students: GroupPerson[];
-  people: GroupPerson[];
-  members?: GroupPerson[];
+  tutors: GroupMember[];
+  students: GroupMember[];
+  people: GroupMember[];
+  members?: GroupMember[];
   memberId?: string;
 };
 
+/**
+ * @deprecated Use courseApi.group from '$features/course/api' instead
+ * This store is kept for backward compatibility but should be migrated to use courseApi state
+ */
 export const group = writable<GroupStore>({
   id: '',
   tutors: [],
@@ -118,6 +89,10 @@ export const group = writable<GroupStore>({
   people: []
 });
 
+/**
+ * @deprecated Use courseApi.setCourse() from '$features/course/api' instead
+ * This function is kept for backward compatibility but should be migrated to use courseApi
+ */
 export async function setCourse(data: Course, setLesson = true) {
   if (!data || !(Object.values(data) && Object.values(data).length)) return;
 
@@ -132,7 +107,7 @@ export async function setCourse(data: Course, setLesson = true) {
 
     if (Array.isArray(data.group.members)) {
       for (const member of data.group.members) {
-        if (member.role_id === ROLE.STUDENT) {
+        if (member.roleId === ROLE.STUDENT) {
           groupData.students.push(member);
         } else if (member.profile) {
           groupData.tutors.push({
@@ -149,24 +124,28 @@ export async function setCourse(data: Course, setLesson = true) {
   }
 
   if (setLesson) {
-    const orderedLessons = sortLesson(data.lessons);
-    lessons.set(orderedLessons);
+    const orderedLessons = sortLesson(data.lessons || []);
+    lessonApi.lessons = orderedLessons;
 
     console.log('orderedLessons', orderedLessons);
 
-    if (data.lesson_section) {
-      const sections = data.lesson_section?.map((section) => {
-        const lessons = (data.lessons || []).filter((lesson) => lesson.section_id === section.id);
-        section.lessons = sortLesson(lessons);
-        return section;
+    const sectionsData = data.sections || [];
+    if (sectionsData.length > 0) {
+      const sections: LessonSectionWithLessons[] = sectionsData.map((section) => {
+        const lessons = (data.lessons || []).filter((lesson) => lesson.sectionId === section.id);
+        return {
+          ...section,
+          lessons: sortLesson(lessons)
+        } as LessonSectionWithLessons;
       });
 
-      lessonSections.set(sortLessonSection(sections));
+      lessonApi.sections = sortLessonSection(sections);
     }
   }
 
-  delete data.lessons;
-  delete data?.lesson_section;
+  // delete data.lessons;
+  // delete courseData.sections;
+  // delete courseData.lesson_section;
 
   if (data.metadata && !Object.values(data.metadata)) {
     data.metadata = {
@@ -200,36 +179,28 @@ export async function setCourse(data: Course, setLesson = true) {
       { id: 4, name: 'course.navItem.lessons.materials.tabs.document.title' }
     ];
 
-    let hasChanges = false;
-    // Add missing tabs to existing lessonTabsOrder
     allTabs.forEach((tab) => {
       if (!existingTabIds.includes(tab.id) && data.metadata.lessonTabsOrder) {
         data.metadata.lessonTabsOrder.push(tab);
-        hasChanges = true;
       }
     });
-
-    if (hasChanges) {
-      // Document tab has been added to lessonTabsOrder
-    }
   }
 
-  if (!data.certificate_theme) {
-    data.certificate_theme = 'professional';
+  if (!data.certificateTheme) {
+    data.certificateTheme = 'professional';
   }
 
-  console.log('lessons', get(lessons));
   course.set(data);
 }
 
-export function sortLesson(lessons: Lesson[] = []) {
+export function sortLesson(lessons: Course['lessons'] = []) {
   return lessons
-    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    .sort((a, b) => new Date(a.createdAt || '').getTime() - new Date(b.createdAt || '').getTime())
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 }
 
-export function sortLessonSection(sections: LessonSection[] = []) {
+export function sortLessonSection(sections: LessonSectionWithLessons[] = []): LessonSectionWithLessons[] {
   return sections
-    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    .sort((a, b) => new Date(a.createdAt || '').getTime() - new Date(b.createdAt || '').getTime())
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 }

@@ -8,7 +8,7 @@
   import { STATUS } from './constants';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
-  import type { SubmissionIdData } from '$lib/utils/types/submission';
+  import type { SubmissionIdData } from '$features/course/utils/types';
 
   import Preview from './preview.svelte';
   import * as Dialog from '@cio/ui/base/dialog';
@@ -64,7 +64,14 @@
   const total = calculateTotal(data.questionAnswerByPoint);
   const maxPoints = $derived(getMaxPoints(data.questions));
   const sortedQuestions = $derived(
-    Array.isArray(data.questions) ? [...data.questions].sort((a, b) => a.order - b.order) : []
+    Array.isArray(data.questions)
+      ? [...data.questions]
+          .sort((a, b) => a.order - b.order)
+          .map((q) => ({
+            ...q,
+            question_type: { id: q.questionTypeId }
+          }))
+      : []
   );
 
   function getMaxPoints(questions) {

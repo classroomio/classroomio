@@ -11,13 +11,13 @@
   import { Confetti, ComingSoon } from '$features/ui';
   import { CircleCheckIcon } from '$features/ui/icons';
   import { TAGS } from '$features/exercise-template/utils/constants';
-  import type { ExerciseTemplate } from '$lib/utils/types';
+  import type { TExerciseTemplate } from '@cio/db/types';
 
   interface Props {
     open: boolean;
     handleAddExercise: () => void;
     handleCancelAddExercise: () => void;
-    handleTemplateCreate: (template: ExerciseTemplate) => Promise<void>;
+    handleTemplateCreate: (template: TExerciseTemplate) => Promise<void>;
     title: string;
   }
 
@@ -67,7 +67,7 @@
   let isAIStarted = $state(false);
 
   let selectedTag = $state(tags[0]);
-  let selectedTemplateId = $state('');
+  let selectedTemplateId = $state();
   let isTemplateFinishedLoading = $state(false);
 
   // const {
@@ -81,7 +81,7 @@
 
   // toggleConfetti();
   // const responseData = completion. $completion.replace('```json', '').replace('```', '');
-  // const template: ExerciseTemplate = JSON.parse(responseData);
+  // const template = JSON.parse(responseData);
   // await handleTemplateCreate(template);
   // toggleConfetti();
   //     isLoading = false;
@@ -116,10 +116,10 @@
 
     if (!template) return;
 
-    let fetchedTemplate: ExerciseTemplate;
+    let fetchedTemplate: TExerciseTemplate;
 
     try {
-      await exerciseTemplateApi.fetchTemplateById(template.id);
+      await exerciseTemplateApi.fetchTemplateById(template.id!.toString());
       fetchedTemplate = exerciseTemplateApi.template[0];
       console.log('Fetched template', fetchedTemplate);
       await handleTemplateCreate(fetchedTemplate);
@@ -136,15 +136,6 @@
     selectedTemplateId = '';
     await exerciseTemplateApi.fetchTemplatesByTag(selectedTag);
   };
-
-  // const content = $derived(
-  //   lessonFallbackNote(
-  //     $lesson.materials.note,
-  //     $lessonByTranslation[$lesson.id || ''],
-  //     $lesson.locale
-  //   )
-  // );
-  // const note = $derived(browser ? getTextFromHTML(content) : '');
 </script>
 
 <Dialog.Root
