@@ -58,7 +58,7 @@
     isLoading = true;
 
     await orgApi.update($currentOrg.id, {
-      siteName
+      siteName: siteName!
     });
 
     if (orgApi.success) {
@@ -110,12 +110,14 @@
     }
 
     try {
-      const response = await sendDomainRequest('add_domain', sanitizedDomain);
-      const data = await response.json();
+      const data = await sendDomainRequest('add_domain', sanitizedDomain);
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to add domain');
+      }
       console.log('added domain to vercel', data);
     } catch (error) {
       console.log('Error: adding domain to vercel', error);
-      snackbar.error(error as string);
+      snackbar.error(error instanceof Error ? error.message : (error as string));
       isCustomDomainLoading = false;
       return;
     }
@@ -141,15 +143,14 @@
     }
 
     try {
-      const response = await sendDomainRequest('remove_domain', $currentOrg.customDomain);
-      const data = await response.json();
+      const data = await sendDomainRequest('remove_domain', $currentOrg.customDomain);
       if (!data.success) {
-        throw new Error(data.message);
+        throw new Error(data.message || 'Failed to remove domain');
       }
       console.log('removed domain from vercel', data);
     } catch (error) {
       console.log('Error: removing domain from vercel', error);
-      snackbar.error(error as string);
+      snackbar.error(error instanceof Error ? error.message : (error as string));
       isCustomDomainLoading = false;
       return;
     }
@@ -163,8 +164,7 @@
     isRefreshing = true;
 
     try {
-      const response = await sendDomainRequest('verify_domain', $currentOrg.customDomain || '');
-      const data = await response.json();
+      const data = await sendDomainRequest('verify_domain', $currentOrg.customDomain || '');
 
       console.log('data', data);
       if (data.verified && !$currentOrg.isCustomDomainVerified) {
@@ -184,7 +184,7 @@
     isRefreshing = false;
   }
 
-  function resetErrors(_siteName: string, _customDomain: string) {
+  function resetErrors(_siteName: string | null, _customDomain: string | null) {
     untrack(() => {
       if (errors.siteName) {
         errors.siteName = '';
@@ -213,7 +213,13 @@
 
     <Field.Field>
       <Field.Label>URL</Field.Label>
-      <DomainInput bind:value={siteName} placeholder="myschool" prefix="https://" suffix=".classroomio.com" />
+      <DomainInput
+        value={siteName ?? ''}
+        onchange={(e) => (siteName = (e.target as HTMLInputElement)?.value ?? '')}
+        placeholder="myschool"
+        prefix="https://"
+        suffix=".classroomio.com"
+      />
       {#if errors.siteName}
         <Field.Error>{errors.siteName}</Field.Error>
       {/if}

@@ -4,6 +4,7 @@ import type {
   Course,
   CourseAnalytics,
   CreateCourseRequest,
+  CreatePaymentRequestRequest,
   DeleteCourseRequest,
   GetCourseAnalyticsRequest,
   GetCourseBySlugRequest,
@@ -423,6 +424,35 @@ export class CourseApi extends BaseApiWithErrors {
 
     // Set the course data
     this.course = data;
+  }
+
+  /**
+   * Creates a payment request
+   * @param courseId Course ID
+   * @param studentEmail Student email address
+   * @param studentFullname Student full name
+   */
+  async createPaymentRequest(courseId: string, studentEmail: string, studentFullname: string) {
+    return this.execute<CreatePaymentRequestRequest>({
+      requestFn: () =>
+        classroomio.course.paymentRequest.$post({
+          json: {
+            courseId,
+            studentEmail,
+            studentFullname
+          }
+        }),
+      logContext: 'creating payment request',
+      onSuccess: () => {
+        this.success = true;
+        this.errors = {};
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error('Failed to send payment request');
+        }
+      }
+    });
   }
 }
 

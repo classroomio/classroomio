@@ -35,14 +35,7 @@ export const PUBLIC_ROUTES = [
   ROUTE.AUTH_FAILED
 ];
 
-export const PUBLIC_API_ROUTES = [
-  '/api/completion',
-  'student_prove_payment',
-  'teacher_student_buycourse',
-  '/api/polar',
-  '/api/lmz',
-  '/api/verify'
-];
+export const PUBLIC_API_ROUTES = ['/api/polar', '/api/lmz', '/api/verify'];
 
 export const ROUTES_TO_HIDE_NAV = [
   `^${ROUTE.LOGIN}$`,

@@ -1,9 +1,10 @@
 import type { MetaTagsProps } from 'svelte-meta-tags';
 import { classroomio } from '$lib/utils/services/api';
 import { getApiKeyHeaders } from '$lib/utils/services/api/server';
+import type { Course } from '$features/course/types';
 
 export const load = async ({ params = { slug: '' } }) => {
-  let course = null;
+  let course: Course | null = null;
   try {
     const response = await classroomio.course.slug[':slug'].$get(
       {
@@ -20,19 +21,27 @@ export const load = async ({ params = { slug: '' } }) => {
     console.error('Failed to fetch course:', error);
   }
 
+  if (!course) {
+    return {
+      slug: params.slug,
+      course: null,
+      pageMetaTags: null
+    };
+  }
+
   const pageMetaTags = Object.freeze({
-    title: course?.title,
-    description: course?.description,
+    title: course.title,
+    description: course.description,
     openGraph: {
-      title: course?.title,
-      description: course?.description,
+      title: course.title,
+      description: course.description,
       images: [
         {
-          url: course?.logo || '',
+          url: course.logo || '',
           alt: course?.title,
           width: 280,
           height: 200,
-          secureUrl: course?.logo,
+          secureUrl: course.logo,
           type: 'image/jpeg'
         }
       ]

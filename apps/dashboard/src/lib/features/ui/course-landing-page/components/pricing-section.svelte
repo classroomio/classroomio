@@ -9,7 +9,6 @@
   import { HTMLRender } from '$features/ui';
   import PaymentModal from './payment-modal.svelte';
   import type { Course } from '$features/course/utils/types';
-  import { ROLE } from '@cio/utils/constants';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { t } from '$lib/utils/functions/translations';
 
@@ -39,7 +38,7 @@
   const isFree = $derived(isCourseFree(calculatedCost));
 
   function handleJoinCourse() {
-    if (editMode) return;
+    if (editMode || !$currentOrg.siteName) return;
 
     capturePosthogEvent('join_course', {
       course_id: courseData.id,
@@ -64,12 +63,6 @@
     formatter = getCurrencyFormatter(currency);
   }
 
-  function getTeacherEmail(group: Course['group']) {
-    const firstTutor = group?.members?.find((m) => m.role_id === ROLE.TUTOR);
-
-    return firstTutor?.profile?.email || '';
-  }
-
   $effect(() => {
     setFormatter(courseData.currency);
   });
@@ -82,8 +75,7 @@
 <PaymentModal
   bind:open={openModal}
   paymentLink={get(courseData, 'metadata.paymentLink', '')}
-  courseName={courseData.title}
-  teacherEmail={getTeacherEmail(courseData.group)}
+  courseId={courseData.id}
 />
 
 <!-- Pricing Details -->

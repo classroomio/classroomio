@@ -103,6 +103,12 @@ export type UpdateLessonCommentResponse = InferResponseType<UpdateLessonCommentR
 export type UpdateLessonCommentSuccess = Extract<UpdateLessonCommentResponse, { success: true }>;
 export type UpdateLessonCommentData = UpdateLessonCommentSuccess['data'];
 
+// Payment request types
+export type CreatePaymentRequestRequest = typeof classroomio.course.paymentRequest.$post;
+export type CreatePaymentRequestResponse = InferResponseType<CreatePaymentRequestRequest>;
+export type CreatePaymentRequestSuccess = Extract<CreatePaymentRequestResponse, { success: true }>;
+export type PaymentRequestData = CreatePaymentRequestSuccess['data'];
+
 // Get lesson completion types
 export type GetLessonCompletionRequest =
   (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['completion']['$get'];

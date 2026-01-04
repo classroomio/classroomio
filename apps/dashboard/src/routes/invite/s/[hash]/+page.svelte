@@ -9,7 +9,6 @@
   import { peopleApi } from '$features/course/api';
   import { ROLE } from '@cio/utils/constants';
   import { profile } from '$lib/utils/store/user';
-  import { triggerSendEmail, NOTIFICATION_NAME } from '$lib/utils/services/notification/notification';
   import { snackbar } from '$features/ui/snackbar/store';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { page } from '$app/state';
@@ -29,38 +28,12 @@
       return goto(`/signup?redirect=${page.url?.pathname || ''}`);
     }
 
-    // Get teacher emails before adding member
-    const { data: courseData, error } = await supabase.from('course').select('group_id').eq('id', data.id).single();
-
-    if (!courseData?.group_id) {
-      console.error('error getting group', error);
-      return;
-    }
-
-    const teacherMembers = await supabase
-      .from('groupmember')
-      .select('id, profile(email)')
-      .eq('group_id', courseData.group_id)
-      .eq('role_id', ROLE.TUTOR)
-      .returns<
-        {
-          id: string;
-          profile: {
-            email: string;
-          };
-        }[]
-      >();
-
-    const teachers: Array<string> =
-      teacherMembers.data?.map((teacher) => {
-        return teacher.profile?.email || '';
-      }) || [];
-
-    // Add member using new API
-    await peopleApi.add(data.id, {
-      profileId: $profile.id,
-      roleId: ROLE.STUDENT
-    });
+    await peopleApi.add(data.id, [
+      {
+        profileId: $profile.id,
+        roleId: ROLE.STUDENT
+      }
+    ]);
 
     if (!peopleApi.success) {
       snackbar.error('snackbar.invite.failed_join');
@@ -74,25 +47,6 @@
       student_id: $profile.id,
       student_email: $profile.email
     });
-
-    // Send email welcoming student to the course
-    triggerSendEmail(NOTIFICATION_NAME.STUDENT_COURSE_WELCOME, {
-      to: $profile.email,
-      orgName: data.currentOrg?.name,
-      courseName: data.name
-    });
-
-    // Send notification to all teacher(s) that a student has joined the course.
-    Promise.all(
-      teachers.map((email) =>
-        triggerSendEmail(NOTIFICATION_NAME.TEACHER_STUDENT_JOINED, {
-          to: email,
-          courseName: data.name,
-          studentName: $profile.fullname,
-          studentEmail: $profile.email
-        })
-      )
-    );
 
     // go to lms
     goto('/lms');

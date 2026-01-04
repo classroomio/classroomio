@@ -1,6 +1,7 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
   DeleteTeamRequest,
+  DomainRequestRequest,
   GetAudienceRequest,
   GetOrgPublicCoursesRequest,
   InviteTeamRequest,
@@ -222,6 +223,7 @@ class OrgApi extends BaseApiWithErrors {
     fields.avatar = undefined;
     const updates: TUpdateOrganization = {
       ...fields,
+      landingpage: fields.landingpage ?? undefined,
       avatarUrl
     };
 
@@ -237,7 +239,16 @@ class OrgApi extends BaseApiWithErrors {
         }
 
         if (options.onSuccess) {
-          return options.onSuccess(response.data);
+          return options.onSuccess({
+            name: response.data.name,
+            avatarUrl: response.data.avatarUrl ?? undefined,
+            theme: response.data.theme ?? undefined,
+            landingpage: response.data.landingpage ?? undefined,
+            siteName: response.data.siteName ?? undefined,
+            customDomain: response.data.customDomain,
+            isCustomDomainVerified: response.data.isCustomDomainVerified ?? undefined,
+            customization: response.data.customization ?? undefined
+          });
         }
 
         orgs.update((_orgs) =>
@@ -316,6 +327,36 @@ class OrgApi extends BaseApiWithErrors {
       logContext: 'removing team member',
       onSuccess: () => {
         this.getOrgTeam();
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error(result);
+        }
+      }
+    });
+  }
+
+  /**
+   * Sends a domain request (verify, add, or remove domain)
+   * @param key Domain operation key: 'verify_domain', 'add_domain', or 'remove_domain'
+   * @param domain Domain name
+   * @returns Domain request response data
+   */
+  async sendDomainRequest(key: 'verify_domain' | 'add_domain' | 'remove_domain', domain: string) {
+    return this.execute<DomainRequestRequest>({
+      requestFn: () =>
+        classroomio.domain.$post({
+          json: {
+            params: {
+              key,
+              domain
+            }
+          }
+        }),
+      logContext: `processing domain request: ${key}`,
+      onSuccess: () => {
+        this.success = true;
+        this.errors = {};
       },
       onError: (result) => {
         if (typeof result === 'string') {

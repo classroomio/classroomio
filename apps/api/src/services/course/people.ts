@@ -8,13 +8,14 @@ import {
   getCourseMembers,
   updateCourseMember
 } from '@cio/db/queries/course/people';
+import { and, eq, or } from 'drizzle-orm';
 
+import { ROLE } from '@cio/utils/constants';
 import type { TAddCourseMembers } from '@cio/utils/validation/course/people';
 import type { TGroupmember } from '@cio/db/types';
 import { db } from '@cio/db/drizzle';
-import { deliverEmail } from '@cio/email';
 import { env } from '@api/config/env';
-import { eq } from 'drizzle-orm';
+import { sendEmail } from '@cio/email';
 
 /**
  * Gets all course members (people) for a course
@@ -51,7 +52,109 @@ export async function addMember(
       throw new AppError('Either profileId or email must be provided', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
-    return addCourseMember(courseId, data);
+    const addedMember = await addCourseMember(courseId, data);
+
+    // Send emails when a student joins
+    if (data.roleId === ROLE.STUDENT) {
+      try {
+        // Get course and organization data
+        const courseOrgData = await db
+          .select({
+            courseTitle: schema.course.title,
+            orgName: schema.organization.name
+          })
+          .from(schema.course)
+          .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+          .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
+          .where(eq(schema.course.id, courseId))
+          .limit(1);
+
+        if (courseOrgData.length > 0) {
+          const courseName = courseOrgData[0].courseTitle || '';
+          const orgName = courseOrgData[0].orgName || 'ClassroomIO';
+
+          // Get student profile data
+          let studentEmail: string | null = null;
+          let studentName: string | null = null;
+
+          if (data.profileId) {
+            const studentProfile = await db
+              .select({
+                email: schema.profile.email,
+                fullname: schema.profile.fullname
+              })
+              .from(schema.profile)
+              .where(eq(schema.profile.id, data.profileId))
+              .limit(1);
+
+            if (studentProfile.length > 0) {
+              studentEmail = studentProfile[0].email;
+              studentName = studentProfile[0].fullname;
+            }
+          } else if (data.email) {
+            studentEmail = data.email;
+            studentName = data.name || null;
+          }
+
+          // Send welcome email to student
+          if (studentEmail) {
+            try {
+              await sendEmail('studentCourseWelcome', {
+                to: studentEmail,
+                fields: {
+                  orgName,
+                  courseName
+                },
+                from: `"${orgName} (via ClassroomIO.com)" <notify@mail.classroomio.com>`
+              });
+            } catch (emailError) {
+              console.error('Failed to send student welcome email:', emailError);
+            }
+          }
+
+          // Get all teachers (ADMIN or TUTOR) in the course
+          const teachersResult = await db
+            .select({
+              email: schema.profile.email
+            })
+            .from(schema.groupmember)
+            .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
+            .innerJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
+            .where(
+              and(
+                eq(schema.course.id, courseId),
+                or(eq(schema.groupmember.roleId, ROLE.ADMIN), eq(schema.groupmember.roleId, ROLE.TUTOR))
+              )
+            );
+
+          // Send notification to all teachers
+          if (teachersResult.length > 0 && studentEmail && studentName) {
+            const teacherEmails = teachersResult.map((t) => t.email).filter((email): email is string => email !== null);
+
+            await Promise.all(
+              teacherEmails.map((teacherEmail) =>
+                sendEmail('teacherStudentJoined', {
+                  to: teacherEmail,
+                  fields: {
+                    courseName,
+                    studentName,
+                    studentEmail
+                  },
+                  from: '"ClassroomIO" <notify@mail.classroomio.com>'
+                }).catch((emailError) => {
+                  console.error(`Failed to send teacher notification email to ${teacherEmail}:`, emailError);
+                })
+              )
+            );
+          }
+        }
+      } catch (emailError) {
+        // Log but don't fail the request if email fails
+        console.error('Failed to send student join emails:', emailError);
+      }
+    }
+
+    return addedMember;
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -115,37 +218,38 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
     const baseUrl = env.NODE_ENV === 'development' ? 'http://localhost:5173' : 'https://app.classroomio.com';
     const inviteLink = `${baseUrl}/org/${orgSiteName}/courses`;
 
-    const emailPromises = addedMembers
-      .filter((member, index) => {
-        // Only send emails to teachers (TUTOR or ADMIN role) who have email
-        const memberData = members[index];
-        const roleId = memberData.roleId;
-        const email = memberData.email;
-        return (roleId === 1 || roleId === 2) && email && memberData.name;
-      })
-      .map((member, index) => {
-        const memberData = members[index];
-        const email = memberData.email;
-        const name = memberData.name;
+    // Send welcome emails to teachers
+    const teacherEmailPromises: Promise<unknown>[] = [];
 
-        return {
-          from: `"${orgName} (via ClassroomIO.com)" <notify@mail.classroomio.com>`,
-          to: email!,
-          subject: `You have been invited to a course in ${orgName}!`,
-          content: `
-            <p>Hey ${name},</p>
-            <p>You have been given access to teach a course by ${orgName}</p>
-            <p>The course is titled: ${courseName}</p>
-            <div>
-              <a class="button" href="${inviteLink}">Open Dashboard</a>
-            </div>
-          `
-        };
-      });
+    addedMembers.forEach((member, index) => {
+      const memberData = members[index];
+      // Only send emails to teachers (TUTOR or ADMIN role) who have email
+      const roleId = memberData.roleId;
+      const email = memberData.email;
+      const name = memberData.name;
 
-    if (emailPromises.length > 0) {
+      if ((roleId === ROLE.ADMIN || roleId === ROLE.TUTOR) && email && name) {
+        teacherEmailPromises.push(
+          sendEmail('teacherCourseWelcome', {
+            to: email,
+            fields: {
+              name,
+              orgName,
+              courseName,
+              inviteLink
+            },
+            from: `"${orgName} (via ClassroomIO.com)" <notify@mail.classroomio.com>`
+          }).catch((emailError) => {
+            console.error(`Failed to send welcome email to ${email}:`, emailError);
+            return [];
+          })
+        );
+      }
+    });
+
+    if (teacherEmailPromises.length > 0) {
       try {
-        await deliverEmail(emailPromises);
+        await Promise.all(teacherEmailPromises);
       } catch (emailError) {
         // Log but don't fail the request if email fails
         console.error('Failed to send welcome emails:', emailError);

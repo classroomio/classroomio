@@ -22,7 +22,11 @@ const envSchema = z.object({
   SMTP_USER: z.string().optional(),
   ZOHO_TOKEN: z.string().optional(),
   TRUSTED_ORIGINS: z.string().optional(),
-  SERVER_KEY: z.string().optional()
+  SERVER_KEY: z.string().optional(),
+  PROJECT_ID_VERCEL: z.string().optional(),
+  TEAM_ID_VERCEL: z.string().optional(),
+  AUTH_BEARER_TOKEN: z.string().optional(),
+  UNSPLASH_API_KEY: z.string().optional()
 });
 
 export const env = envSchema.parse(process.env);

@@ -9,6 +9,7 @@ import { communityRouter } from '@api/routes/community';
 import { cors } from 'hono/cors';
 import { courseRouter } from '@api/routes/course';
 import { dashAnalyticsRouter } from '@api/routes/dash';
+import { domainRouter } from '@api/routes/domain/domain';
 import { exerciseRouter } from '@api/routes/exercise';
 import { logger } from 'hono/logger';
 // ROUTES
@@ -19,6 +20,7 @@ import { organizationRouter } from '@api/routes/organization';
 import { prettyJSON } from 'hono/pretty-json';
 import rateLimiter from '@api/middlewares/rate-limiter';
 import { secureHeaders } from 'hono/secure-headers';
+import { unsplashRouter } from '@api/routes/unsplash/unsplash';
 
 // Create Hono app with chaining for RPC support
 export const app = new Hono()
@@ -75,12 +77,14 @@ export const app = new Hono()
   .route('/onboarding', onboardingRouter)
   .route('/account', accountRouter)
   .route('/course', courseRouter)
+  .route('/domain', domainRouter)
   .route('/mail', mailRouter)
   .route('/media', mediaRouter)
   .route('/organization', organizationRouter)
   .route('/dash', dashAnalyticsRouter)
   .route('/exercise', exerciseRouter)
   .route('/community', communityRouter)
+  .route('/unsplash', unsplashRouter)
 
   // Error handling
   .onError((err, c) => {

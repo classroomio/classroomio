@@ -40,6 +40,7 @@ import { membersRouter } from '@api/routes/course/people';
 import { newsfeedRouter } from '@api/routes/course/newsfeed';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
+import { paymentRequestRouter } from '@api/routes/course/payment-request';
 import { presignRouter } from '@api/routes/course/presign';
 import { submissionRouter } from '@api/routes/course/submission';
 import { zValidator } from '@hono/zod-validator';
@@ -305,6 +306,7 @@ export const courseRouter = new Hono()
     }
   )
   .route('/katex', katexRouter)
+  .route('/payment-request', paymentRequestRouter)
   .route('/:courseId/lesson', lessonRouter)
   .route('/:courseId/exercise', exerciseRouter)
   .route('/:courseId/submission', submissionRouter)

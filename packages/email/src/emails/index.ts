@@ -12,6 +12,11 @@ export * from './verify-email';
 export * from './on-password-reset';
 export * from './invite-teacher';
 export * from './newsfeed';
+export * from './student-course-welcome';
+export * from './teacher-student-joined';
+export * from './teacher-student-buy-request';
+export * from './student-prove-payment';
+export * from './teacher-course-welcome';
 
 import type { newsfeedCommentEmail, newsfeedPostEmail } from './newsfeed';
 
@@ -19,6 +24,11 @@ import type { newsfeedCommentEmail, newsfeedPostEmail } from './newsfeed';
 import type { forgotPasswordEmail } from './forgot-password';
 import type { inviteTeacherEmail } from './invite-teacher';
 import type { onPasswordResetEmail } from './on-password-reset';
+import type { studentCourseWelcomeEmail } from './student-course-welcome';
+import type { studentProvePaymentEmail } from './student-prove-payment';
+import type { teacherCourseWelcomeEmail } from './teacher-course-welcome';
+import type { teacherStudentBuyRequestEmail } from './teacher-student-buy-request';
+import type { teacherStudentJoinedEmail } from './teacher-student-joined';
 import type { verifyEmailEmail } from './verify-email';
 import type { welcomeEmail } from './welcome';
 
@@ -36,4 +46,9 @@ export type EmailSchemas = {
   inviteTeacher: typeof inviteTeacherEmail.template.schema;
   newsfeedPost: typeof newsfeedPostEmail.template.schema;
   newsfeedComment: typeof newsfeedCommentEmail.template.schema;
+  studentCourseWelcome: typeof studentCourseWelcomeEmail.template.schema;
+  teacherStudentJoined: typeof teacherStudentJoinedEmail.template.schema;
+  teacherStudentBuyRequest: typeof teacherStudentBuyRequestEmail.template.schema;
+  studentProvePayment: typeof studentProvePaymentEmail.template.schema;
+  teacherCourseWelcome: typeof teacherCourseWelcomeEmail.template.schema;
 };

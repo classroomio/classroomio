@@ -46,3 +46,8 @@ export type DeleteTeamSuccess = Extract<InferResponseType<DeleteTeamRequest>, { 
 export type UpdateOrganizationRequest = (typeof classroomio.organization)['$put'];
 export type UpdateOrganizationResponse = InferResponseType<UpdateOrganizationRequest>;
 export type UpdateOrganizationSuccess = Extract<UpdateOrganizationResponse, { success: true }>;
+
+// domain request types
+export type DomainRequestRequest = typeof classroomio.domain.$post;
+export type DomainRequestResponse = InferResponseType<DomainRequestRequest>;
+export type DomainRequestSuccess = Extract<DomainRequestResponse, { success: true }>;
