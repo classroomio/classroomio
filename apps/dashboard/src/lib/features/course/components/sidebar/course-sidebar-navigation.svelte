@@ -25,11 +25,9 @@
   } from '@cio/ui/custom/moving-icons';
 
   import { NAV_IDS } from './constants';
-  import { profile } from '$lib/utils/store/user';
   import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
   import { handleAddLessonWidget } from '$features/course/components/lesson/store';
-  import { getIsLessonComplete } from '$features/course/components/lesson/functions';
   import { currentOrg, isFreePlan, currentOrgPath } from '$lib/utils/store/org';
   import { globalStore } from '$lib/utils/store/app';
   import { getNavItemRoute, getLessonsRoute, getLectureNo } from '$features/course/utils/functions';
@@ -290,7 +288,7 @@
                               <span class="flex-1 truncate">{lessonItem.lesson.title}</span>
                               {#if !lessonItem.lesson.isUnlocked}
                                 <LockIcon size={16} class="shrink-0" />
-                              {:else if getIsLessonComplete(lessonItem.lesson.lesson_completion, $profile.id)}
+                              {:else if lessonItem.lesson.isComplete}
                                 <span class="shrink-0">
                                   <CircleCheckIcon size={16} filled />
                                 </span>
@@ -348,7 +346,7 @@
                                           <span class="flex-1 truncate">{lesson.title}</span>
                                           {#if !lesson.isUnlocked}
                                             <LockIcon size={16} class="shrink-0" />
-                                          {:else if getIsLessonComplete(lesson.lesson_completion, $profile.id)}
+                                          {:else if lesson.isComplete}
                                             <span class="shrink-0">
                                               <CircleCheckIcon size={16} filled />
                                             </span>

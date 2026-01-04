@@ -11,7 +11,6 @@
   import { lessonApi } from '$features/course/api';
   import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
-  import { profile } from '$lib/utils/store/user';
   import type { ListLessons } from '$features/course/utils/types';
 
   interface Props {
@@ -33,10 +32,6 @@
   let reorder = $state(false);
   let activateSections = $state(false);
 
-  function hasUserCompletedLesson(completion) {
-    return completion?.find((c) => c.profile_id === $profile.id);
-  }
-
   const getLessons = () => {
     if (courseApi.course?.version === 'V1') {
       return lessonApi.lessons;
@@ -52,7 +47,7 @@
   };
 
   function findFirstIncompleteLesson() {
-    return getLessons().find((lesson) => !hasUserCompletedLesson(lessonApi.completion) && lesson.isUnlocked === true);
+    return getLessons().find((lesson) => !lesson.isComplete && lesson.isUnlocked === true);
   }
 
   function onNextQuery(lessons) {

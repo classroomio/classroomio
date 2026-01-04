@@ -200,11 +200,13 @@ export async function getCourseById(courseId: string) {
  * Gets a course by ID or slug with all related data (group, members, lessons, sections, attendance)
  * @param courseId Course ID (optional if slug provided)
  * @param slug Course slug (optional if courseId provided)
+ * @param profileId Profile ID of the current user (optional, for computing lesson completion)
  * @returns Course with all related data or null if not found
  */
 export async function getCourseWithRelations(
   courseId?: string,
-  slug?: string
+  slug?: string,
+  profileId?: string
 ): Promise<
   | (TCourse & {
       group:
@@ -219,6 +221,7 @@ export async function getCourseWithRelations(
         profile: Pick<TProfile, 'id' | 'fullname' | 'username' | 'avatarUrl' | 'email'> | null;
         totalExercises: number;
         totalComments: number;
+        isComplete: boolean;
       })[];
       attendance: TGroupAttendance[];
     })
@@ -278,20 +281,45 @@ export async function getCourseWithRelations(
       ...groupPromises,
       // Get lesson sections
       db.select().from(schema.lessonSection).where(eq(schema.lessonSection.courseId, finalCourseId)),
-      // Get lessons with teacher profile and completion counts
-      db
-        .select({
-          lesson: schema.lesson,
-          teacher: schema.profile,
-          exerciseCount: sql<number>`COUNT(DISTINCT ${schema.exercise.id})`.as('exercise_count'),
-          commentCount: sql<number>`COUNT(DISTINCT ${schema.lessonComment.id})`.as('comment_count')
-        })
-        .from(schema.lesson)
-        .leftJoin(schema.profile, eq(schema.lesson.teacherId, schema.profile.id))
-        .leftJoin(schema.exercise, eq(schema.lesson.id, schema.exercise.lessonId))
-        .leftJoin(schema.lessonComment, eq(schema.lesson.id, schema.lessonComment.lessonId))
-        .where(eq(schema.lesson.courseId, finalCourseId))
-        .groupBy(schema.lesson.id, schema.profile.id),
+      // Get lessons with teacher profile, completion counts, and completion status
+      profileId
+        ? db
+            .select({
+              lesson: schema.lesson,
+              teacher: schema.profile,
+              exerciseCount: sql<number>`COUNT(DISTINCT ${schema.exercise.id})`.as('exercise_count'),
+              commentCount: sql<number>`COUNT(DISTINCT ${schema.lessonComment.id})`.as('comment_count'),
+              isComplete: sql<boolean>`COALESCE(MAX(${schema.lessonCompletion.isComplete})::boolean, false)`.as(
+                'is_complete'
+              )
+            })
+            .from(schema.lesson)
+            .leftJoin(schema.profile, eq(schema.lesson.teacherId, schema.profile.id))
+            .leftJoin(schema.exercise, eq(schema.lesson.id, schema.exercise.lessonId))
+            .leftJoin(schema.lessonComment, eq(schema.lesson.id, schema.lessonComment.lessonId))
+            .leftJoin(
+              schema.lessonCompletion,
+              and(
+                eq(schema.lessonCompletion.lessonId, schema.lesson.id),
+                eq(schema.lessonCompletion.profileId, profileId)
+              )
+            )
+            .where(eq(schema.lesson.courseId, finalCourseId))
+            .groupBy(schema.lesson.id, schema.profile.id)
+        : db
+            .select({
+              lesson: schema.lesson,
+              teacher: schema.profile,
+              exerciseCount: sql<number>`COUNT(DISTINCT ${schema.exercise.id})`.as('exercise_count'),
+              commentCount: sql<number>`COUNT(DISTINCT ${schema.lessonComment.id})`.as('comment_count'),
+              isComplete: sql<boolean>`false`.as('is_complete')
+            })
+            .from(schema.lesson)
+            .leftJoin(schema.profile, eq(schema.lesson.teacherId, schema.profile.id))
+            .leftJoin(schema.exercise, eq(schema.lesson.id, schema.exercise.lessonId))
+            .leftJoin(schema.lessonComment, eq(schema.lesson.id, schema.lessonComment.lessonId))
+            .where(eq(schema.lesson.courseId, finalCourseId))
+            .groupBy(schema.lesson.id, schema.profile.id),
       // Get attendance (using courseId, not groupId)
       db.select().from(schema.groupAttendance).where(eq(schema.groupAttendance.courseId, finalCourseId))
     ]);
@@ -314,11 +342,12 @@ export async function getCourseWithRelations(
 
     // Transform lessons
     const transformedLessons = lessons.map(
-      (row: { lesson: any; teacher: any; exerciseCount: any; commentCount: any }) => ({
+      (row: { lesson: any; teacher: any; exerciseCount: any; commentCount: any; isComplete?: any }) => ({
         ...row.lesson,
         profile: row.teacher || null,
         totalExercises: Number(row.exerciseCount) || 0,
-        totalComments: Number(row.commentCount) || 0
+        totalComments: Number(row.commentCount) || 0,
+        isComplete: row.isComplete === true || row.isComplete === 'true' || false
       })
     );
 

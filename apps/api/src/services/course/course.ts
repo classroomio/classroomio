@@ -27,15 +27,16 @@ import { getProfileById } from '@cio/db/queries/auth';
  * Gets a course by ID or slug with all related data
  * @param courseId Course ID (optional if slug provided)
  * @param slug Course slug (optional if courseId provided)
+ * @param profileId Profile ID of the current user (optional, for computing lesson completion)
  * @returns Course with all related data
  */
-export async function getCourse(courseId?: string, slug?: string) {
+export async function getCourse(courseId?: string, slug?: string, profileId?: string) {
   try {
     if (!courseId && !slug) {
       throw new AppError('Either courseId or slug must be provided', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
-    const course = await getCourseWithRelations(courseId, slug);
+    const course = await getCourseWithRelations(courseId, slug, profileId);
     if (!course) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
     }
@@ -239,7 +240,7 @@ function formatLastSeen(lastLoginDate: string | null | undefined): string {
  */
 export async function getCourseAnalytics(courseId: string) {
   try {
-    // Get course with members
+    // Get course with members (no profileId needed for analytics)
     const course = await getCourseWithRelations(courseId);
     if (!course) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);

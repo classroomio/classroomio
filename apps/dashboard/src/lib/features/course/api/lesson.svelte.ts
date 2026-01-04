@@ -8,12 +8,10 @@ import type {
   DeleteLessonRequest,
   DeleteLessonSectionRequest,
   GetLessonCommentsRequest,
-  GetLessonCompletionRequest,
   GetLessonHistoryRequest,
   GetLessonRequest,
   Lesson,
   LessonComments,
-  LessonCompletion,
   LessonSectionWithLessons,
   ListLessons,
   ListLessonsRequest,
@@ -70,7 +68,6 @@ export class LessonApi extends BaseApiWithErrors {
     >
   >({});
   translations = $state<Record<string, Record<TLocale, string>>>({});
-  completion = $state<LessonCompletion | null>(null);
   currentLocale = $state<TLocale>('en');
   isSaving = $state(false);
   isDirty = $state(false);
@@ -599,33 +596,6 @@ export class LessonApi extends BaseApiWithErrors {
     });
   }
 
-  // Lesson Completion methods
-
-  /**
-   * Gets lesson completion status
-   */
-  async getCompletion(courseId: string, lessonId: string) {
-    await this.execute<GetLessonCompletionRequest>({
-      requestFn: () =>
-        classroomio.course[':courseId'].lesson[':lessonId'].completion.$get({
-          param: { courseId, lessonId }
-        }),
-      logContext: 'fetching lesson completion',
-      onSuccess: (response) => {
-        if (response.data) {
-          this.completion = response.data;
-          this.success = true;
-          this.errors = {};
-        }
-      },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to fetch lesson completion');
-        }
-      }
-    });
-  }
-
   /**
    * Updates lesson completion
    */
@@ -645,7 +615,20 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'updating lesson completion',
       onSuccess: (response) => {
         if (response.data) {
-          this.completion = response.data;
+          // Update the lesson's isComplete flag in lessons array
+          this.lessons = this.lessons.map((lesson) => (lesson.id === lessonId ? { ...lesson, isComplete } : lesson));
+
+          // Update the lesson's isComplete flag in sections
+          this.sections = this.sections.map((section) => ({
+            ...section,
+            lessons: section.lessons.map((lesson) => (lesson.id === lessonId ? { ...lesson, isComplete } : lesson))
+          }));
+
+          // Update the current lesson if it's the one being updated
+          if (this.lesson?.id === lessonId) {
+            this.lesson = { ...this.lesson, isComplete };
+          }
+
           this.success = true;
           this.errors = {};
         }

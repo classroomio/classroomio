@@ -41,7 +41,10 @@
   let hasFetched = $state('');
 
   const path = $derived(page.url?.pathname?.replace(/\/exercises[\/ 0-9 a-z -]*/, ''));
-  const isLessonComplete = $derived(lessonApi.completion?.isComplete || false);
+  const isLessonComplete = $derived.by(() => {
+    const lesson = lessonApi.lessons.find((l) => l.id === data.lessonId);
+    return lesson?.isComplete ?? false;
+  });
 
   async function fetchReqData(lessonId = '', isMaterialsTabActive: boolean) {
     if (lessonId === lessonApi.lesson?.id) return;
@@ -68,15 +71,16 @@
   async function markLessonComplete(lessonId: string) {
     isMarkingComplete = true;
 
-    // Get current completion status
-    await lessonApi.getCompletion(data.courseId, lessonId);
-    const currentCompletion = lessonApi.completion;
-    const isComplete = currentCompletion ? !currentCompletion.isComplete : true;
+    // Get current completion status from the lesson in state
+    const lesson = lessonApi.lessons.find((l) => l.id === lessonId);
+    const currentIsComplete = lesson?.isComplete ?? false;
+
+    const isComplete = !currentIsComplete;
 
     // Update completion
     await lessonApi.updateCompletion(data.courseId, lessonId, isComplete);
 
-    if (lessonApi.success && lessonApi.completion) {
+    if (lessonApi.success) {
       snackbar.success('snackbar.lessons.success.complete_marked');
     } else {
       snackbar.error('snackbar.lessons.error.try_later');

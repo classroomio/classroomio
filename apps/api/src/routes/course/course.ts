@@ -105,7 +105,8 @@ export const courseRouter = new Hono()
       try {
         const { courseId } = c.req.valid('param');
         const { slug } = c.req.valid('query');
-        const course = await getCourse(slug ? undefined : courseId, slug);
+        const user = c.get('user')!;
+        const course = await getCourse(slug ? undefined : courseId, slug, user.id);
 
         return c.json(
           {
