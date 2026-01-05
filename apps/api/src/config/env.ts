@@ -26,7 +26,14 @@ const envSchema = z.object({
   PROJECT_ID_VERCEL: z.string().optional(),
   TEAM_ID_VERCEL: z.string().optional(),
   AUTH_BEARER_TOKEN: z.string().optional(),
-  UNSPLASH_API_KEY: z.string().optional()
+  UNSPLASH_API_KEY: z.string().optional(),
+  // Payment provider credentials
+  STRIPE_SECRET_KEY: z.string().optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().optional(),
+  PAYSTACK_SECRET_KEY: z.string().optional(),
+  PAYSTACK_WEBHOOK_SECRET: z.string().optional(),
+  // Platform fee percentage (0-100)
+  PLATFORM_FEE_PERCENT: z.string().optional().transform((val) => (val ? parseFloat(val) : 0))
 });
 
 export const env = envSchema.parse(process.env);

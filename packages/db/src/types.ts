@@ -133,6 +133,17 @@ export type TNewOrganization = typeof schema.organization.$inferInsert;
 export type TExerciseTemplate = typeof schema.exerciseTemplate.$inferSelect;
 export type TNewExerciseTemplate = typeof schema.exerciseTemplate.$inferInsert;
 
+// Payment System Types
+export type TPayoutAccount = typeof schema.payoutAccount.$inferSelect;
+export type TNewPayoutAccount = typeof schema.payoutAccount.$inferInsert;
+
+export type TPaymentTransaction = typeof schema.paymentTransaction.$inferSelect;
+export type TNewPaymentTransaction = typeof schema.paymentTransaction.$inferInsert;
+
+export type TPayout = typeof schema.payout.$inferSelect;
+export type TNewPayout = typeof schema.payout.$inferInsert;
+
+// Enum Types
 export type TCourseType = (typeof schema.courseType.enumValues)[number];
 
 export type TCourseVersion = (typeof schema.courseVersion.enumValues)[number];
@@ -140,3 +151,11 @@ export type TCourseVersion = (typeof schema.courseVersion.enumValues)[number];
 export type TLocale = (typeof schema.locale.enumValues)[number];
 
 export type TPlan = (typeof schema.plan.enumValues)[number];
+
+export type TPaymentProvider = (typeof schema.paymentProvider.enumValues)[number];
+
+export type TPaymentStatus = (typeof schema.paymentStatus.enumValues)[number];
+
+export type TPayoutStatus = (typeof schema.payoutStatus.enumValues)[number];
+
+export type TSupportedCurrency = (typeof schema.supportedCurrency.enumValues)[number];

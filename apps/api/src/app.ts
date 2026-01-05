@@ -17,6 +17,7 @@ import { mailRouter } from '@api/routes/mail';
 import { mediaRouter } from '@api/routes/media';
 import { onboardingRouter } from '@api/routes/onboarding';
 import { organizationRouter } from '@api/routes/organization';
+import { paymentRouter } from '@api/routes/payment';
 import { prettyJSON } from 'hono/pretty-json';
 import rateLimiter from '@api/middlewares/rate-limiter';
 import { secureHeaders } from 'hono/secure-headers';
@@ -81,6 +82,7 @@ export const app = new Hono()
   .route('/mail', mailRouter)
   .route('/media', mediaRouter)
   .route('/organization', organizationRouter)
+  .route('/payment', paymentRouter)
   .route('/dash', dashAnalyticsRouter)
   .route('/exercise', exerciseRouter)
   .route('/community', communityRouter)

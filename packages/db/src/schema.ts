@@ -25,6 +25,12 @@ export const courseVersion = pgEnum('COURSE_VERSION', ['V1', 'V2']);
 export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
 
+// Payment-related enums
+export const paymentProvider = pgEnum('PAYMENT_PROVIDER', ['stripe', 'paystack']);
+export const paymentStatus = pgEnum('PAYMENT_STATUS', ['pending', 'processing', 'completed', 'failed', 'refunded']);
+export const payoutStatus = pgEnum('PAYOUT_STATUS', ['pending', 'processing', 'completed', 'failed']);
+export const supportedCurrency = pgEnum('SUPPORTED_CURRENCY', ['USD', 'NGN']);
+
 export const user = pgTable('user', {
   id: uuid()
     .default(sql`gen_random_uuid()`)
@@ -1411,3 +1417,180 @@ export const exerciseTemplate = pgTable('exercise_template', {
     ];
   }>()
 });
+
+// ==================== PAYMENT SYSTEM TABLES ====================
+
+/**
+ * Stores connected payout accounts for organizations/course creators
+ * Each organization can have one payout account per provider (Stripe/Paystack)
+ */
+export const payoutAccount = pgTable(
+  'payout_account',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    provider: paymentProvider().notNull(),
+    // Provider-specific account ID (Stripe Connect account ID or Paystack subaccount code)
+    providerAccountId: text('provider_account_id').notNull(),
+    // Provider-specific details stored as JSON
+    providerData: jsonb('provider_data').default({}).$type<{
+      // Stripe Connect fields
+      stripeAccountId?: string;
+      chargesEnabled?: boolean;
+      payoutsEnabled?: boolean;
+      // Paystack subaccount fields
+      paystackSubaccountCode?: string;
+      businessName?: string;
+      bankName?: string;
+      accountNumber?: string;
+      percentageCharge?: number;
+    }>(),
+    // Currency this account accepts
+    currency: supportedCurrency().notNull(),
+    // Whether this account is active and can receive payouts
+    isActive: boolean('is_active').default(true).notNull(),
+    // Account holder details
+    accountName: text('account_name'),
+    accountEmail: text('account_email'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'payout_account_organization_id_fkey'
+    }).onDelete('cascade'),
+    // Each org can only have one account per provider
+    unique('payout_account_org_provider_unique').on(table.organizationId, table.provider),
+    index('idx_payout_account_org_id').on(table.organizationId)
+  ]
+);
+
+/**
+ * Tracks all payment transactions for course purchases
+ */
+export const paymentTransaction = pgTable(
+  'payment_transaction',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    // Course being purchased
+    courseId: uuid('course_id').notNull(),
+    // Student making the payment
+    studentProfileId: uuid('student_profile_id'),
+    // Student email (for anonymous purchases before account creation)
+    studentEmail: text('student_email').notNull(),
+    studentName: text('student_name'),
+    // Organization receiving the payment
+    organizationId: uuid('organization_id').notNull(),
+    // Payment details
+    provider: paymentProvider().notNull(),
+    providerTransactionId: text('provider_transaction_id'),
+    providerPaymentIntentId: text('provider_payment_intent_id'),
+    // Amount in smallest currency unit (cents for USD, kobo for NGN)
+    amount: bigint({ mode: 'number' }).notNull(),
+    currency: supportedCurrency().notNull(),
+    // Platform fee (if any)
+    platformFee: bigint('platform_fee', { mode: 'number' }).default(sql`'0'`),
+    // Net amount after platform fee
+    netAmount: bigint('net_amount', { mode: 'number' }),
+    status: paymentStatus().default('pending').notNull(),
+    // Webhook/callback data from provider
+    providerData: jsonb('provider_data').default({}).$type<{
+      // Stripe fields
+      stripePaymentIntentId?: string;
+      stripeChargeId?: string;
+      stripeCustomerId?: string;
+      // Paystack fields
+      paystackReference?: string;
+      paystackAuthorizationCode?: string;
+      // Common fields
+      failureReason?: string;
+      refundReason?: string;
+    }>(),
+    // Metadata for additional info
+    metadata: jsonb().default({}).$type<{
+      discountApplied?: number;
+      originalAmount?: number;
+      couponCode?: string;
+    }>(),
+    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'payment_transaction_course_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.studentProfileId],
+      foreignColumns: [profile.id],
+      name: 'payment_transaction_student_profile_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'payment_transaction_organization_id_fkey'
+    }),
+    index('idx_payment_transaction_course_id').on(table.courseId),
+    index('idx_payment_transaction_student_profile_id').on(table.studentProfileId),
+    index('idx_payment_transaction_organization_id').on(table.organizationId),
+    index('idx_payment_transaction_status').on(table.status),
+    index('idx_payment_transaction_provider_id').on(table.providerTransactionId)
+  ]
+);
+
+/**
+ * Tracks payouts made to course creators/organizations
+ */
+export const payout = pgTable(
+  'payout',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    payoutAccountId: uuid('payout_account_id').notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    // Amount being paid out (in smallest currency unit)
+    amount: bigint({ mode: 'number' }).notNull(),
+    currency: supportedCurrency().notNull(),
+    status: payoutStatus().default('pending').notNull(),
+    // Provider-specific payout/transfer ID
+    providerPayoutId: text('provider_payout_id'),
+    // Reference to payment transactions included in this payout
+    paymentTransactionIds: uuid('payment_transaction_ids').array(),
+    // Provider response data
+    providerData: jsonb('provider_data').default({}).$type<{
+      stripeTransferId?: string;
+      paystackTransferCode?: string;
+      failureReason?: string;
+    }>(),
+    processedAt: timestamp('processed_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.payoutAccountId],
+      foreignColumns: [payoutAccount.id],
+      name: 'payout_payout_account_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'payout_organization_id_fkey'
+    }),
+    index('idx_payout_payout_account_id').on(table.payoutAccountId),
+    index('idx_payout_organization_id').on(table.organizationId),
+    index('idx_payout_status').on(table.status)
+  ]
+);
