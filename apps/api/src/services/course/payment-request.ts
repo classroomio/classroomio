@@ -1,10 +1,9 @@
 import * as schema from '@cio/db/schema';
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { and, eq, or } from 'drizzle-orm';
+import { and, eq, or, db } from '@cio/db/drizzle';
 
 import { ROLE } from '@cio/utils/constants';
-import { db } from '@cio/db/drizzle';
 import { sendEmail } from '@cio/email';
 
 export interface PaymentRequestData {

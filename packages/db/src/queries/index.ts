@@ -8,4 +8,5 @@ export * from './exercise';
 export * from './analytics';
 export * from './mark';
 export * from './newsfeed';
+export * from './payment';
 export * from './submission';

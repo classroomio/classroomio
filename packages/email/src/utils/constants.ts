@@ -10,7 +10,9 @@ export const EMAIL_IDS = [
   'teacherStudentJoined',
   'teacherStudentBuyRequest',
   'studentProvePayment',
-  'teacherCourseWelcome'
+  'teacherCourseWelcome',
+  'paymentSuccessStudent',
+  'paymentSuccessTeacher'
 ] as const;
 
 export const EMAIL_FROM = '"Best from ClassroomIO" <notify@mail.classroomio.com>';

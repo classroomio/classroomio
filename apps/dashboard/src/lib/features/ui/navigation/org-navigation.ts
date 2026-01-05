@@ -104,6 +104,10 @@ const baseNavConfig: NavItemConfig[] = [
       {
         titleKey: 'Billing',
         path: '/settings/billing'
+      },
+      {
+        titleKey: 'Payout',
+        path: '/settings/payout'
       }
       // {
       //   titleKey: 'Integrations',
@@ -122,6 +126,10 @@ const baseNavConfig: NavItemConfig[] = [
       {
         path: 'teams',
         titleKey: 'Teams'
+      },
+      {
+        path: 'payout',
+        titleKey: 'Payout'
       }
     ]
   }

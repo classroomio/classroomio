@@ -10,5 +10,6 @@ export * from './media';
 export * from './newsfeed';
 export * from './onboarding';
 export * from './organization';
+export * from './payment';
 export * from './submission';
 export * from './dash';
