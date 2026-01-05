@@ -1,15 +1,17 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import { onMount } from 'svelte';
   import * as Avatar from '@cio/ui/base/avatar';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
-  import { GoogleIconColored } from '$features/ui/icons';
+  import { GoogleIconColored, KeyIcon } from '$features/ui/icons';
   import { authClient } from '$lib/utils/services/auth/client';
   import * as Card from '@cio/ui/base/card';
   import { Button } from '@cio/ui/base/button';
   import { Separator } from '@cio/ui/base/separator';
   import { preventDefault } from '$lib/utils/functions/svelte';
   import { ROUTE } from '$lib/utils/constants/routes';
+  import { env } from '$env/dynamic/public';
 
   interface Props {
     isLogin?: boolean;
@@ -32,6 +34,91 @@
     handleSubmit = () => {},
     children
   }: Props = $props();
+
+  // SSO State
+  interface SsoConfig {
+    enabled: boolean;
+    forceSso: boolean;
+    providerType: string;
+    providerName: string;
+    displayName: string;
+  }
+  
+  let ssoConfig = $state<SsoConfig | null>(null);
+  let ssoLoading = $state(false);
+  let ssoError = $state<string | null>(null);
+
+  // Fetch SSO config when org changes
+  onMount(() => {
+    fetchSsoConfig();
+  });
+
+  // Derived state for hiding email/password form
+  let shouldHideCredentialForm = $derived(ssoConfig?.forceSso && ssoConfig?.enabled);
+  let shouldShowSsoButton = $derived(ssoConfig?.enabled);
+
+  async function fetchSsoConfig() {
+    const orgId = $currentOrg?.id;
+    if (!orgId) return;
+
+    try {
+      const response = await fetch(
+        `${env.PUBLIC_SERVER_URL}/sso/config/public?organizationId=${orgId}`
+      );
+      const result = await response.json();
+
+      if (result.success && result.data) {
+        ssoConfig = result.data;
+      }
+    } catch (err) {
+      console.error('Failed to fetch SSO config:', err);
+      // Silently fail - SSO is optional
+    }
+  }
+
+  async function signInWithSso() {
+    if (isLoading || ssoLoading) return;
+    
+    const orgId = $currentOrg?.id;
+    if (!orgId) {
+      ssoError = 'Organization not found';
+      return;
+    }
+
+    ssoLoading = true;
+    ssoError = null;
+
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const pathname = redirectPathname || params.get('redirect') || '/';
+      const redirectUrl = `${window.location.origin}${pathname}`;
+
+      const response = await fetch(`${env.PUBLIC_SERVER_URL}/sso/initiate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          organizationId: orgId,
+          redirectUrl
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success && result.data?.redirectUrl) {
+        // Redirect to IdP
+        window.location.href = result.data.redirectUrl;
+      } else {
+        ssoError = result.error || 'Failed to initiate SSO';
+        ssoLoading = false;
+      }
+    } catch (err) {
+      console.error('SSO initiation failed:', err);
+      ssoError = 'Failed to initiate SSO. Please try again.';
+      ssoLoading = false;
+    }
+  }
 
   async function signInWithGoogle() {
     if (isLoading) {
@@ -88,23 +175,69 @@
     {/if}
 
     <Card.Content>
-      <form onsubmit={preventDefault(handleSubmit)}>
-        {@render children?.()}
-      </form>
+      {#if shouldHideCredentialForm}
+        <!-- SSO-only mode: Show only SSO button -->
+        <div class="flex flex-col gap-4">
+          <p class="text-muted-foreground text-center text-sm">
+            This organization requires SSO authentication.
+          </p>
+          
+          {#if ssoError}
+            <p class="text-destructive text-center text-sm">{ssoError}</p>
+          {/if}
 
-      {#if !showOnlyContent && !hideGoogleAuth}
-        <div class="mt-6 flex flex-col gap-6">
-          <div class="relative flex items-center justify-center">
-            <Separator />
-            <span class="ui:bg-card ui:text-muted-foreground absolute px-2 text-sm"> Or continue With </span>
-          </div>
-          <Button variant="outline" onclick={signInWithGoogle} disabled={isLoading} class="w-full">
-            <GoogleIconColored />
-            <span>
-              {isLogin ? $t('login.login_with_google') : $t('login.signup_with_google')}
-            </span>
+          <Button 
+            variant="default" 
+            onclick={signInWithSso} 
+            disabled={ssoLoading} 
+            loading={ssoLoading}
+            class="w-full"
+          >
+            <KeyIcon size={18} />
+            <span>{ssoConfig?.displayName || 'Sign in with SSO'}</span>
           </Button>
         </div>
+      {:else}
+        <!-- Normal mode: Show credential form -->
+        <form onsubmit={preventDefault(handleSubmit)}>
+          {@render children?.()}
+        </form>
+
+        {#if !showOnlyContent}
+          <div class="mt-6 flex flex-col gap-6">
+            <div class="relative flex items-center justify-center">
+              <Separator />
+              <span class="ui:bg-card ui:text-muted-foreground absolute px-2 text-sm"> Or continue With </span>
+            </div>
+            
+            <!-- SSO Button -->
+            {#if shouldShowSsoButton}
+              {#if ssoError}
+                <p class="text-destructive text-center text-sm">{ssoError}</p>
+              {/if}
+              <Button 
+                variant="outline" 
+                onclick={signInWithSso} 
+                disabled={isLoading || ssoLoading}
+                loading={ssoLoading}
+                class="w-full"
+              >
+                <KeyIcon size={18} />
+                <span>{ssoConfig?.displayName || 'Sign in with SSO'}</span>
+              </Button>
+            {/if}
+
+            <!-- Google Button -->
+            {#if !hideGoogleAuth}
+              <Button variant="outline" onclick={signInWithGoogle} disabled={isLoading} class="w-full">
+                <GoogleIconColored />
+                <span>
+                  {isLogin ? $t('login.login_with_google') : $t('login.signup_with_google')}
+                </span>
+              </Button>
+            {/if}
+          </div>
+        {/if}
       {/if}
     </Card.Content>
     {#if !showOnlyContent}

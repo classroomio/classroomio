@@ -22,6 +22,13 @@
       "when": 1762733677656,
       "tag": "0002_many_revanche",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1767657600000,
+      "tag": "0003_sso_configuration",
+      "breakpoints": true
     }
   ]
 }

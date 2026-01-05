@@ -1370,6 +1370,119 @@ export const lessonVersions = pgView('lesson_versions', {
   sql`SELECT llh.old_content, llh.new_content, llh."timestamp", ll.locale, ll.lesson_id FROM lesson_language_history llh JOIN lesson_language ll ON ll.id = llh.lesson_language_id`
 );
 
+// SSO Provider Types
+export const ssoProviderType = pgEnum('SSO_PROVIDER_TYPE', ['saml', 'oidc']);
+
+// SSO Configuration for Organizations
+export const organizationSsoConfig = pgTable(
+  'organization_sso_config',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    
+    // Provider configuration
+    providerType: ssoProviderType('provider_type').notNull(),
+    providerName: text('provider_name').notNull(), // 'okta', 'auth0', 'google_workspace', 'azure_ad', 'custom'
+    displayName: text('display_name'), // Custom display name for the SSO button
+    enabled: boolean().default(false).notNull(),
+    
+    // SAML-specific configuration
+    samlConfig: jsonb('saml_config').$type<{
+      idpEntityId?: string;
+      idpSsoUrl?: string;
+      idpCertificate?: string;
+      spEntityId?: string;
+      spAcsUrl?: string;
+      signatureAlgorithm?: 'sha256' | 'sha512';
+      nameIdFormat?: string;
+    }>(),
+    
+    // OIDC-specific configuration
+    oidcConfig: jsonb('oidc_config').$type<{
+      issuerUrl?: string;
+      clientId?: string;
+      clientSecret?: string;
+      authorizationUrl?: string;
+      tokenUrl?: string;
+      userInfoUrl?: string;
+      scopes?: string[];
+    }>(),
+    
+    // Common settings
+    forceSso: boolean('force_sso').default(false).notNull(), // Disable email/password if true
+    autoProvisionUsers: boolean('auto_provision_users').default(true).notNull(),
+    allowedDomains: text('allowed_domains').array(), // e.g., ['company.com', 'subsidiary.com']
+    defaultRoleId: bigint('default_role_id', { mode: 'number' }).references(() => role.id),
+    
+    // Attribute mapping for JIT provisioning
+    attributeMapping: jsonb('attribute_mapping')
+      .default({
+        email: 'email',
+        name: 'name',
+        firstName: 'given_name',
+        lastName: 'family_name'
+      })
+      .$type<{
+        email?: string;
+        name?: string;
+        firstName?: string;
+        lastName?: string;
+        avatar?: string;
+      }>(),
+    
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
+  },
+  (table) => [
+    unique('organization_sso_config_org_id_key').on(table.organizationId),
+    index('idx_organization_sso_config_org_id').on(table.organizationId)
+  ]
+);
+
+// SSO Login Sessions - tracks SSO authentication attempts
+export const ssoSession = pgTable(
+  'sso_session',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    ssoConfigId: uuid('sso_config_id')
+      .notNull()
+      .references(() => organizationSsoConfig.id, { onDelete: 'cascade' }),
+    
+    // State for CSRF protection
+    state: text().notNull().unique(),
+    nonce: text(), // For OIDC
+    codeVerifier: text('code_verifier'), // For PKCE
+    
+    // Redirect info
+    redirectUrl: text('redirect_url'),
+    
+    // Status
+    status: text().default('pending').notNull(), // 'pending', 'completed', 'failed', 'expired'
+    errorMessage: text('error_message'),
+    
+    // User info (populated after successful auth)
+    userId: uuid('user_id').references(() => user.id, { onDelete: 'set null' }),
+    
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }).notNull()
+  },
+  (table) => [
+    index('idx_sso_session_state').on(table.state),
+    index('idx_sso_session_org_id').on(table.organizationId)
+  ]
+);
+
 export const exerciseTemplate = pgTable('exercise_template', {
   id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
     name: 'exercise_template_id_seq',

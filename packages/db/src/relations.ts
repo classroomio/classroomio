@@ -24,6 +24,7 @@ import {
   organizationEmaillist,
   organizationPlan,
   organizationmember,
+  organizationSsoConfig,
   profile,
   question,
   questionAnswer,
@@ -31,6 +32,7 @@ import {
   quiz,
   quizPlay,
   role,
+  ssoSession,
   submission,
   submissionstatus,
   user
@@ -81,14 +83,19 @@ export const groupRelations = relations(group, ({ one, many }) => ({
   groupmembers: many(groupmember)
 }));
 
-export const organizationRelations = relations(organization, ({ many }) => ({
+export const organizationRelations = relations(organization, ({ one, many }) => ({
   groups: many(group),
   organizationContacts: many(organizationContacts),
   quizzes: many(quiz),
   organizationEmaillists: many(organizationEmaillist),
   communityQuestions: many(communityQuestion),
   organizationPlans: many(organizationPlan),
-  organizationmembers: many(organizationmember)
+  organizationmembers: many(organizationmember),
+  ssoConfig: one(organizationSsoConfig, {
+    fields: [organization.id],
+    references: [organizationSsoConfig.organizationId]
+  }),
+  ssoSessions: many(ssoSession)
 }));
 
 export const groupAttendanceRelations = relations(groupAttendance, ({ one }) => ({
@@ -420,5 +427,33 @@ export const questionAnswerRelations = relations(questionAnswer, ({ one }) => ({
   submission: one(submission, {
     fields: [questionAnswer.submissionId],
     references: [submission.id]
+  })
+}));
+
+// SSO Relations
+export const organizationSsoConfigRelations = relations(organizationSsoConfig, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [organizationSsoConfig.organizationId],
+    references: [organization.id]
+  }),
+  defaultRole: one(role, {
+    fields: [organizationSsoConfig.defaultRoleId],
+    references: [role.id]
+  }),
+  ssoSessions: many(ssoSession)
+}));
+
+export const ssoSessionRelations = relations(ssoSession, ({ one }) => ({
+  organization: one(organization, {
+    fields: [ssoSession.organizationId],
+    references: [organization.id]
+  }),
+  ssoConfig: one(organizationSsoConfig, {
+    fields: [ssoSession.ssoConfigId],
+    references: [organizationSsoConfig.id]
+  }),
+  user: one(user, {
+    fields: [ssoSession.userId],
+    references: [user.id]
   })
 }));

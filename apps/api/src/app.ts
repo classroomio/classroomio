@@ -20,6 +20,7 @@ import { organizationRouter } from '@api/routes/organization';
 import { prettyJSON } from 'hono/pretty-json';
 import rateLimiter from '@api/middlewares/rate-limiter';
 import { secureHeaders } from 'hono/secure-headers';
+import { ssoRouter } from '@api/routes/sso';
 import { unsplashRouter } from '@api/routes/unsplash/unsplash';
 
 // Create Hono app with chaining for RPC support
@@ -85,6 +86,7 @@ export const app = new Hono()
   .route('/exercise', exerciseRouter)
   .route('/community', communityRouter)
   .route('/unsplash', unsplashRouter)
+  .route('/sso', ssoRouter)
 
   // Error handling
   .onError((err, c) => {
