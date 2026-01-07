@@ -1,8 +1,8 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
   import * as Dialog from '@cio/ui/base/dialog';
-  import { deleteModal, quizesStore } from '$lib/utils/store/org';
-  import { supabase } from '$lib/utils/functions/supabase';
+  import { deleteModal, currentOrg } from '$lib/utils/store/org';
+  import { quizApi } from '$features/org/api/quiz.svelte';
   import { t } from '$lib/utils/functions/translations';
 
   let { onDelete = () => {} } = $props();
@@ -17,16 +17,14 @@
   }
 
   async function deleteQuiz() {
-    const { data, error } = await supabase.from('quiz').delete().match({ id: $deleteModal.id });
-    console.log('data', data);
-    console.log('error', error);
+    if (!$currentOrg.id || !$deleteModal.id) return;
 
-    if (error) {
-      return;
+    await quizApi.delete($currentOrg.id, $deleteModal.id);
+
+    if (quizApi.success) {
+      // quizApi.quizzes is already updated by the API
+      closeModal();
     }
-
-    $quizesStore = $quizesStore.filter((q) => q.id !== $deleteModal.id);
-    closeModal();
   }
 </script>
 

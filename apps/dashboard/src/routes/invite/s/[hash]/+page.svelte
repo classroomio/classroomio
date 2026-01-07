@@ -2,7 +2,8 @@
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
   import { Button } from '@cio/ui/base/button';
-  import { getSupabase } from '$lib/utils/functions/supabase';
+  // TODO: Refactor invitation system - Supabase removed
+  // import { getSupabase } from '$lib/utils/functions/supabase';
   import { AuthUI } from '$features/ui';
   import { currentOrg } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
@@ -15,7 +16,8 @@
 
   let { data } = $props();
 
-  let supabase = getSupabase();
+  // TODO: Refactor invitation system - Supabase removed
+  // let supabase = getSupabase();
   let loading = $state(false);
 
   let disableSubmit = false;
@@ -53,13 +55,14 @@
   }
 
   onMount(async () => {
+    // TODO: Refactor invitation system - Supabase removed
     // check if user has session, if not redirect to sign up with redirect back to this page
-    const {
-      data: { session }
-    } = await supabase.auth.getSession();
-    if (!session) {
-      return goto(`/login?redirect=${page.url?.pathname || ''}`);
-    }
+    // const {
+    //   data: { session }
+    // } = await supabase.auth.getSession();
+    // if (!session) {
+    //   return goto(`/login?redirect=${page.url?.pathname || ''}`);
+    // }
 
     if (!data.currentOrg) return;
 

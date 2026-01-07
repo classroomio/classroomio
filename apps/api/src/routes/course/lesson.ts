@@ -44,6 +44,7 @@ import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { generateLessonPdf } from '@api/utils/lesson';
 import { getGroupMemberIdByCourseAndProfile } from '@cio/db/queries/group';
 import { handleError } from '@api/utils/errors';
+import { lessonLanguageRouter } from '@api/routes/course/lesson-language';
 import { zValidator } from '@hono/zod-validator';
 
 export const lessonRouter = new Hono()
@@ -351,4 +352,5 @@ export const lessonRouter = new Hono()
         }
       })
     );
-  });
+  })
+  .route('/:lessonId/language', lessonLanguageRouter);

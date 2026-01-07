@@ -8,7 +8,8 @@
   import { Password } from '@cio/ui/custom/password';
   import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
   import { logout } from '$lib/utils/functions/logout';
-  import { getSupabase } from '$lib/utils/functions/supabase';
+  // TODO: Refactor invitation system - Supabase removed
+  // import { getSupabase } from '$lib/utils/functions/supabase';
   import { setTheme } from '$lib/utils/functions/theme';
   import { t } from '$lib/utils/functions/translations';
   import { profile, user } from '$lib/utils/store/user';
@@ -19,7 +20,8 @@
 
   let { data } = $props();
 
-  let supabase = getSupabase();
+  // TODO: Refactor invitation system - Supabase removed
+  // let supabase = getSupabase();
   let fields = $state(Object.assign({}, SIGNUP_FIELDS));
   let loading = $state(false);
   let isLoggingOut = $state(false);
@@ -39,16 +41,17 @@
   async function joinOrg(profileId: string, email: string | null) {
     if (!profileId || !email || !data.invite.currentOrg?.id) return;
 
+    // TODO: Refactor invitation system - Supabase removed
     // Update member response
-    const updateMemberRes = await supabase
-      .from('organizationmember')
-      .update({
-        verified: true,
-        profile_id: profileId
-      })
-      .match({ email: email, organization_id: data.invite.currentOrg?.id });
-
-    console.log('Update member response', updateMemberRes);
+    // const updateMemberRes = await supabase
+    //   .from('organizationmember')
+    //   .update({
+    //     verified: true,
+    //     profile_id: profileId
+    //   })
+    //   .match({ email: email, organization_id: data.invite.currentOrg?.id });
+    //
+    // console.log('Update member response', updateMemberRes);
 
     window.location.href = $currentOrgPath;
   }
@@ -58,14 +61,15 @@
       throw $t('login.validation.unable_to_create_profile');
     }
 
-    const res = await supabase.auth.signInWithPassword({
-      email,
-      password: fields.password
-    });
-
-    if (res.error) {
-      throw res.error;
-    }
+    // TODO: Refactor invitation system - Supabase removed
+    // const res = await supabase.auth.signInWithPassword({
+    //   email,
+    //   password: fields.password
+    // });
+    //
+    // if (res.error) {
+    //   throw res.error;
+    // }
   }
 
   async function handleSubmit() {
@@ -91,38 +95,40 @@
       let profile: Profile | null = data.invite.profile;
 
       if (!data.invite.profile) {
+        // TODO: Refactor invitation system - Supabase removed
         // Signup
-        const { data: signupData, error } = await supabase.auth.signUp({
-          email: data.invite.email,
-          password: fields.password
-        });
-
-        console.log('Signup', signupData);
-        if (error) throw error;
-
-        if (!signupData.user) {
-          throw $t('login.validation.user_cannot_be_created');
-        }
-
-        // Insert profile
-        const userId = signupData.user.id;
-        const profileRes = await supabase
-          .from('profile')
-          .insert({
-            id: userId,
-            username: fields.name.toLowerCase().replace(' ', '-') + new Date().getTime(),
-            fullname: fields.name,
-            email: data.invite.email
-          })
-          .select();
-
-        console.log('Insert profile', profileRes.data);
-
-        if (profileRes.error) {
-          throw profileRes.error;
-        }
-
-        profile = profileRes.data[0] || {};
+        // const { data: signupData, error } = await supabase.auth.signUp({
+        //   email: data.invite.email,
+        //   password: fields.password
+        // });
+        //
+        // console.log('Signup', signupData);
+        // if (error) throw error;
+        //
+        // if (!signupData.user) {
+        //   throw $t('login.validation.user_cannot_be_created');
+        // }
+        //
+        // // Insert profile
+        // const userId = signupData.user.id;
+        // const profileRes = await supabase
+        //   .from('profile')
+        //   .insert({
+        //     id: userId,
+        //     username: fields.name.toLowerCase().replace(' ', '-') + new Date().getTime(),
+        //     fullname: fields.name,
+        //     email: data.invite.email
+        //   })
+        //   .select();
+        //
+        // console.log('Insert profile', profileRes.data);
+        //
+        // if (profileRes.error) {
+        //   throw profileRes.error;
+        // }
+        //
+        // profile = profileRes.data[0] || {};
+        throw new Error('Invitation system is being refactored. Please contact support.');
       }
 
       if (!profile?.id) {

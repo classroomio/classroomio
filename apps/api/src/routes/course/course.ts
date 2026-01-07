@@ -41,6 +41,7 @@ import { newsfeedRouter } from '@api/routes/course/newsfeed';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { paymentRequestRouter } from '@api/routes/course/payment-request';
+import { permissionsRouter } from '@api/routes/course/permissions';
 import { presignRouter } from '@api/routes/course/presign';
 import { submissionRouter } from '@api/routes/course/submission';
 import { zValidator } from '@hono/zod-validator';
@@ -305,6 +306,30 @@ export const courseRouter = new Hono()
       }
     }
   )
+  .post(
+    '/:courseId/convert-v2',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('param', ZCourseCloneParam),
+    async (c) => {
+      try {
+        const { courseId } = c.req.valid('param');
+        const { convertCourseToV2 } = await import('@api/services/course/convert');
+
+        const course = await convertCourseToV2(courseId);
+
+        return c.json(
+          {
+            success: true,
+            data: course
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to convert course to V2');
+      }
+    }
+  )
   .route('/katex', katexRouter)
   .route('/payment-request', paymentRequestRouter)
   .route('/:courseId/lesson', lessonRouter)
@@ -314,4 +339,5 @@ export const courseRouter = new Hono()
   .route('/:courseId/mark', markRouter)
   .route('/:courseId/newsfeed', newsfeedRouter)
   .route('/:courseId/members', membersRouter)
+  .route('/:courseId/permissions', permissionsRouter)
   .route('/presign', presignRouter);

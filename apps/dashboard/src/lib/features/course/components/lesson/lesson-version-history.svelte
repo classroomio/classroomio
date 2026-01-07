@@ -8,7 +8,6 @@
   import { lessonApi } from '$features/course/api';
   import { diffLines } from 'diff';
   import { courseApi } from '$features/course/api';
-  import { supabase } from '$lib/utils/functions/supabase';
   import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import { t } from '$lib/utils/functions/translations';
 
@@ -151,11 +150,14 @@
   async function restoreSelectedVersion() {
     try {
       contentRestoreLoading = true;
-      await supabase
-        .from('lesson_language')
-        .update({ content: selectedVersion.new_content })
-        .eq('lesson_id', selectedVersion.lesson_id)
-        .eq('locale', selectedVersion.locale);
+      if (!courseApi.course?.id || !selectedVersion) return;
+
+      await lessonApi.upsertLanguage(
+        courseApi.course.id,
+        selectedVersion.lesson_id,
+        selectedVersion.locale,
+        selectedVersion.new_content
+      );
     } catch (error) {
       console.error(error);
       snackbar.error('Failed to restore');

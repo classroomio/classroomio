@@ -4,8 +4,7 @@
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { fetchLMSExercises } from '$lib/utils/services/lms/exercises';
-  import type { LMSExercise } from '$lib/utils/services/lms/exercises';
+  import { lmsExercisesApi, type LMSExercise } from '$features/lms/api/exercises.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
 
@@ -105,18 +104,16 @@
 
     hasFetched = true;
 
-    const { exercises, error } = await fetchLMSExercises(profileId, orgId);
-    console.log('exercises', exercises);
-    console.log('error', error);
+    await lmsExercisesApi.fetchLMSExercises(orgId);
 
-    if (error) {
+    if (!lmsExercisesApi.success) {
       snackbar.error('snackbar.exercise.error_fetching');
       return;
     }
 
-    if (!exercises) return;
+    if (!lmsExercisesApi.exercises || lmsExercisesApi.exercises.length === 0) return;
 
-    sections = generateSections(exercises);
+    sections = generateSections(lmsExercisesApi.exercises);
     console.log('sections', sections);
   }
 

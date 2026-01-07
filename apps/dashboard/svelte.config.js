@@ -63,7 +63,6 @@ const config = {
         'frame-src': ['self', 'https://www.youtube.com', 'https://youtube.com'],
         'connect-src': [
           'self',
-          'https://*.supabase.co',
           'https://*.classroomio.com',
           'https://assets.cdn.clsrio.com',
           'https://cdn.plyr.io',
@@ -71,10 +70,7 @@ const config = {
           'https://umami.hz.oncws.com',
           'https://*.r2.cloudflarestorage.com',
           'http://localhost:3002',
-          'http://localhost:54321',
-          'ws://localhost:54321',
           'wss://*.classroomio.com',
-          'wss://*.supabase.co',
           'https://*.senja.io'
         ],
         'worker-src': ['self', 'blob:'],
@@ -118,7 +114,6 @@ const config = {
         'frame-src': ['self', 'https://www.youtube.com', 'https://youtube.com'],
         'connect-src': [
           'self',
-          'https://*.supabase.co',
           'https://pgrest.classroomio.com',
           'https://api.classroomio.com',
           'https://assets.cdn.clsrio.com',
@@ -127,10 +122,7 @@ const config = {
           'https://umami.hz.oncws.com',
           'https://*.r2.cloudflarestorage.com',
           'http://localhost:3002',
-          'http://localhost:54321',
-          'ws://localhost:54321',
           'wss://*.classroomio.com',
-          'wss://*.supabase.co',
           'https://*.senja.io'
         ],
         'worker-src': ['self', 'blob:'],

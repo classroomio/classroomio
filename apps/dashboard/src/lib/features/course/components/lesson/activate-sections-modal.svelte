@@ -2,7 +2,7 @@
   import { Button } from '@cio/ui/base/button';
   import * as Dialog from '@cio/ui/base/dialog';
   import { t } from '$lib/utils/functions/translations';
-  import { supabase } from '$lib/utils/functions/supabase';
+  import { classroomio } from '$lib/utils/services/api';
   import { courseApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
 
@@ -15,17 +15,28 @@
   let isActivating = $state(false);
 
   const activate = async () => {
+    if (!courseApi.course?.id) return;
+
     isActivating = true;
-    const { error } = await supabase.rpc('convert_course_to_v2', {
-      course_id_arg: courseApi.course?.id
-    });
 
-    if (error) {
+    try {
+      const response = await classroomio.course[':courseId']['convert-v2'].$post({
+        param: { courseId: courseApi.course.id }
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        window.location.reload();
+      } else {
+        snackbar.error('snackbar.something');
+      }
+    } catch (error) {
+      console.error('Error converting course to V2:', error);
       snackbar.error('snackbar.something');
-      return;
+    } finally {
+      isActivating = false;
     }
-
-    window.location.reload();
   };
 
   function handleClose() {

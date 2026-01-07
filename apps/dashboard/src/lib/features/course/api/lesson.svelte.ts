@@ -803,6 +803,31 @@ export class LessonApi extends BaseApiWithErrors {
       }
     });
   }
+
+  /**
+   * Creates or updates a lesson language translation (upsert)
+   * @param courseId Course ID
+   * @param lessonId Lesson ID
+   * @param locale Locale
+   * @param content Translation content
+   */
+  async upsertLanguage(courseId: string, lessonId: string, locale: string, content: string) {
+    return this.execute<(typeof classroomio.course)[':courseId']['lesson'][':lessonId']['language']['$post']>({
+      requestFn: () =>
+        classroomio.course[':courseId'].lesson[':lessonId'].language.$post({
+          param: { courseId, lessonId },
+          json: { locale, content }
+        }),
+      logContext: 'upserting lesson language',
+      onSuccess: () => {
+        this.success = true;
+        this.errors = {};
+      },
+      onError: () => {
+        snackbar.error('snackbar.materials.update_translations');
+      }
+    });
+  }
 }
 
 export const lessonApi = new LessonApi();

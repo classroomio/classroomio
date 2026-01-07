@@ -7,6 +7,7 @@ import {
   ZGetOrganizations,
   ZGetUserAnalytics,
   ZInviteTeamMembers,
+  ZLMSExercisesParam,
   ZRemoveTeamMember,
   ZUpdateOrgPlan,
   ZUpdateOrganization
@@ -34,9 +35,11 @@ import { Hono } from '@api/utils/hono';
 import { TOrganization } from '@db/types';
 import { authMiddleware } from '@api/middlewares/auth';
 import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
+import { getLMSExercisesService } from '@api/services/exercise';
 import { handleError } from '@api/utils/errors';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
+import { quizRouter } from '@api/routes/organization/quiz';
 import { zValidator } from '@hono/zod-validator';
 
 export const organizationRouter = new Hono()
@@ -413,4 +416,43 @@ export const organizationRouter = new Hono()
     } catch (error) {
       return handleError(c, error, 'Failed to update organization');
     }
-  });
+  })
+  /**
+   * GET /organization/:orgId/exercises/lms
+   * Gets exercises with submissions for a student in an organization
+   * Returns exercises from unlocked lessons in courses where the student is a member
+   * Requires authentication and organization membership
+   */
+  .get('/:orgId/exercises/lms', authMiddleware, zValidator('param', ZLMSExercisesParam), async (c) => {
+    try {
+      const { orgId } = c.req.valid('param');
+      const user = c.get('user')!;
+
+      // Check org membership manually since middleware expects header
+      const { getUserOrgRole } = await import('@cio/db/queries/organization');
+      const roleId = await getUserOrgRole(orgId, user.id);
+      if (roleId === null) {
+        return c.json(
+          {
+            success: false,
+            error: 'UNAUTHORIZED',
+            code: 'UNAUTHORIZED'
+          },
+          403
+        );
+      }
+
+      const exercises = await getLMSExercisesService(user.id, orgId);
+
+      return c.json(
+        {
+          success: true,
+          data: exercises
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch LMS exercises');
+    }
+  })
+  .route('/:orgId/quiz', quizRouter);

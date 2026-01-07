@@ -1,3 +1,3 @@
 export type ConfigType = {
-  supabaseConfig: { url: string; anonKey: string };
+  // Supabase removed - no longer needed
 };

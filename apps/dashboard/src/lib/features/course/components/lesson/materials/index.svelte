@@ -17,8 +17,6 @@
   import { currentOrg } from '$lib/utils/store/org';
   import type { Content } from '@cio/ui/custom/editor';
   import { courseApi, lessonApi } from '$features/course/api';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { snackbar } from '$features/ui/snackbar/store';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { lessonVideoUpload, lessonDocUpload } from '$features/course/components/lesson/store/lessons';
   import type { Lesson } from '$features/course/utils/types';
@@ -135,41 +133,12 @@
   async function saveOrUpdateTranslation(locale, lessonId) {
     const content = lessonApi.translations[lessonId]?.[locale] || '';
 
-    if (typeof localeExists[locale] === 'undefined') {
-      const { data } = await supabase
-        .from('lesson_language')
-        .select(`id`)
-        .eq('lesson_id', lessonId)
-        .eq('locale', locale)
-        .maybeSingle();
+    if (!courseApi.course?.id) return;
 
-      localeExists[locale] = !!(data && data?.id);
-    }
+    // Use API to upsert lesson language (creates if doesn't exist, updates if exists)
+    await lessonApi.upsertLanguage(courseApi.course.id, lessonId, locale, content);
 
-    if (localeExists[locale]) {
-      const { error: updateError } = await supabase
-        .from('lesson_language')
-        .update({ content })
-        .eq('lesson_id', lessonId)
-        .eq('locale', locale);
-
-      if (updateError) {
-        console.error('Error updating translation:', updateError.message);
-        snackbar.error('snackbar.materials.update_translations');
-      }
-    } else {
-      const { error: insertError } = await supabase.from('lesson_language').insert({
-        locale,
-        lesson_id: lessonId,
-        content
-      });
-
-      if (insertError) {
-        console.error('Error inserting translation:', insertError.message);
-        snackbar.error('snackbar.materials.creating_new');
-        return;
-      }
-
+    if (lessonApi.success) {
       localeExists[locale] = true;
     }
   }

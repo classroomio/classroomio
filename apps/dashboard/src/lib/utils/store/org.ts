@@ -133,8 +133,6 @@ interface QuizStore {
   pin: string;
 }
 
-export const quizesStore = writable<QuizStore[]>([]);
-
 export const quizStore = writable<QuizStore>({
   uuid: '',
   title: '',

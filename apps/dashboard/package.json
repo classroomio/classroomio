@@ -26,7 +26,6 @@
     "@cio/utils": "workspace:*",
     "@lucide/svelte": "^0.545.0",
     "@polar-sh/sveltekit": "^0.2.1",
-    "@supabase/supabase-js": "^2.31.0",
     "@sveltejs/adapter-auto": "^3.0.0",
     "@sveltejs/adapter-node": "^2.0.0",
     "@sveltejs/adapter-vercel": "^4.0.0",
