@@ -2,11 +2,15 @@
  * SAML 2.0 SSO Implementation
  * Supports: Okta, Azure AD, OneLogin, and custom SAML providers
  * 
- * Note: For full SAML support, you may want to use a library like 'saml2-js' or '@node-saml/node-saml'
- * This implementation provides the basic structure and can be extended with those libraries.
+ * Uses @node-saml/node-saml for proper SAML handling including:
+ * - XML signature validation
+ * - Certificate validation
+ * - Assertion validation
+ * - Replay attack prevention
  */
 
 import crypto from 'crypto';
+import { SAML } from '@node-saml/node-saml';
 import type { SamlConfig, SsoConfig, SsoUserInfo, AttributeMapping } from './types';
 import * as queries from './queries';
 
@@ -18,46 +22,30 @@ function generateRandomString(length: number = 32): string {
 }
 
 /**
- * Generate SAML AuthnRequest ID
+ * Create a SAML instance with the given configuration
  */
-function generateRequestId(): string {
-  return `_${crypto.randomUUID()}`;
+function createSamlInstance(samlConfig: SamlConfig, callbackUrl: string): SAML {
+  return new SAML({
+    callbackUrl,
+    entryPoint: samlConfig.idpSsoUrl,
+    issuer: samlConfig.spEntityId || callbackUrl.replace(/\/callback.*$/, ''),
+    idpCert: samlConfig.idpCertificate ? formatCertificate(samlConfig.idpCertificate) : undefined,
+    wantAssertionsSigned: true,
+    wantAuthnResponseSigned: false, // Some IdPs only sign assertions
+    signatureAlgorithm: samlConfig.signatureAlgorithm === 'sha512' ? 'sha512' : 'sha256',
+    identifierFormat: samlConfig.nameIdFormat || 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
+    validateInResponseTo: 'always',
+    requestIdExpirationPeriodMs: 600000, // 10 minutes
+    disableRequestedAuthnContext: true // More compatible with various IdPs
+  });
 }
 
 /**
- * Get current timestamp in SAML format
+ * Format certificate string - add headers if missing
  */
-function getSamlTimestamp(): string {
-  return new Date().toISOString();
-}
-
-/**
- * Build SAML AuthnRequest XML
- */
-function buildAuthnRequest(
-  requestId: string,
-  issuer: string,
-  acsUrl: string,
-  destination: string,
-  nameIdFormat?: string
-): string {
-  const timestamp = getSamlTimestamp();
-  
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<samlp:AuthnRequest
-  xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
-  xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
-  ID="${requestId}"
-  Version="2.0"
-  IssueInstant="${timestamp}"
-  Destination="${destination}"
-  AssertionConsumerServiceURL="${acsUrl}"
-  ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST">
-  <saml:Issuer>${issuer}</saml:Issuer>
-  <samlp:NameIDPolicy
-    Format="${nameIdFormat || 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress'}"
-    AllowCreate="true"/>
-</samlp:AuthnRequest>`;
+function formatCertificate(cert: string): string {
+  const cleanCert = cert.replace(/-----BEGIN CERTIFICATE-----|-----END CERTIFICATE-----|\s/g, '');
+  return `-----BEGIN CERTIFICATE-----\n${cleanCert.match(/.{1,64}/g)?.join('\n')}\n-----END CERTIFICATE-----`;
 }
 
 /**
@@ -78,55 +66,35 @@ export async function initiateSamlAuth(
     throw new Error('IdP SSO URL is required');
   }
 
-  const spEntityId = samlConfig.spEntityId || callbackUrl.replace(/\/callback.*$/, '');
-  const acsUrl = samlConfig.spAcsUrl || callbackUrl;
-
-  // Generate state and request ID
+  // Generate state for CSRF protection and session tracking
   const state = generateRandomString(32);
-  const requestId = generateRequestId();
 
-  // Store session for callback verification
+  // Create SAML instance
+  const saml = createSamlInstance(samlConfig, callbackUrl);
+
+  // Generate the SAML AuthnRequest URL
+  const authResult = await saml.getAuthorizeUrlAsync(state, undefined, {});
+
+  // Store session for callback verification (store the request ID from SAML lib)
   await queries.createSsoSession({
     organizationId: ssoConfig.organizationId,
     ssoConfigId: ssoConfig.id,
     state,
-    nonce: requestId, // Store request ID as nonce for validation
+    nonce: state, // Use state as the request tracking ID
     redirectUrl: redirectAfterAuth,
     expiresInMinutes: 10
   });
 
-  // Build AuthnRequest
-  const authnRequest = buildAuthnRequest(
-    requestId,
-    spEntityId,
-    acsUrl,
-    samlConfig.idpSsoUrl,
-    samlConfig.nameIdFormat
-  );
-
-  // Encode for redirect binding
-  const encodedRequest = Buffer.from(authnRequest).toString('base64');
-  
-  // Build redirect URL
-  const params = new URLSearchParams({
-    SAMLRequest: encodedRequest,
-    RelayState: state
-  });
-
-  const redirectUrl = `${samlConfig.idpSsoUrl}?${params.toString()}`;
-
-  return { redirectUrl, state };
+  return { redirectUrl: authResult, state };
 }
 
 /**
  * Handle SAML callback - parse and validate SAML response
  * 
- * IMPORTANT: This is a simplified implementation. For production use,
- * you should use a proper SAML library like '@node-saml/node-saml' that handles:
+ * Uses @node-saml/node-saml for secure validation including:
  * - XML signature validation
  * - Certificate validation
- * - Assertion decryption
- * - Replay attack prevention
+ * - Assertion validation
  * - Time validation
  */
 export async function handleSamlCallback(
@@ -149,12 +117,22 @@ export async function handleSamlCallback(
   }
 
   try {
-    // Decode SAML response
-    const decodedResponse = Buffer.from(samlResponse, 'base64').toString('utf-8');
-    
-    // Parse user info from SAML response
-    // In production, use a proper SAML library for validation
-    const userInfo = parseSamlResponse(decodedResponse, ssoConfig.attributeMapping);
+    // Create SAML instance for validation
+    // Note: We need a callback URL for the SAML instance, using a placeholder since we're only validating
+    const saml = createSamlInstance(ssoConfig.samlConfig, 'https://placeholder.local/sso/callback');
+
+    // Validate the SAML response - this handles signature validation, time checks, etc.
+    const { profile } = await saml.validatePostResponseAsync({
+      SAMLResponse: samlResponse,
+      RelayState: relayState
+    });
+
+    if (!profile) {
+      throw new Error('No profile returned from SAML response');
+    }
+
+    // Map SAML profile to our user info format
+    const userInfo = mapSamlProfileToUserInfo(profile, ssoConfig.attributeMapping);
 
     // Validate email domain if restrictions are set
     if (ssoConfig.allowedDomains?.length) {
@@ -186,16 +164,12 @@ export async function handleSamlCallback(
 }
 
 /**
- * Parse SAML response and extract user info
- * 
- * IMPORTANT: This is a basic XML parser. For production use,
- * implement proper SAML response validation including signature verification.
+ * Map SAML profile from node-saml to our SsoUserInfo format
  */
-function parseSamlResponse(
-  xmlResponse: string,
+function mapSamlProfileToUserInfo(
+  profile: Record<string, unknown>,
   attributeMapping?: AttributeMapping | null
 ): SsoUserInfo {
-  // Basic XML parsing - in production use a proper XML/SAML parser
   const mapping = attributeMapping || {
     email: 'email',
     name: 'name',
@@ -203,46 +177,34 @@ function parseSamlResponse(
     lastName: 'family_name'
   };
 
-  // Extract NameID (usually email)
-  const nameIdMatch = xmlResponse.match(/<saml:NameID[^>]*>([^<]+)<\/saml:NameID>/);
-  const nameId = nameIdMatch ? nameIdMatch[1] : undefined;
-
-  // Extract attributes
-  const attributes: Record<string, string> = {};
+  // node-saml puts the NameID in nameID field
+  const nameId = profile.nameID as string | undefined;
   
-  // Match attribute statements
-  const attributeRegex = /<saml:Attribute[^>]*Name="([^"]+)"[^>]*>[\s\S]*?<saml:AttributeValue[^>]*>([^<]+)<\/saml:AttributeValue>[\s\S]*?<\/saml:Attribute>/g;
-  let match;
-  
-  while ((match = attributeRegex.exec(xmlResponse)) !== null) {
-    const attrName = match[1];
-    const attrValue = match[2];
-    
-    // Handle common attribute name formats
-    const normalizedName = attrName
-      .replace(/^http:\/\/schemas\.xmlsoap\.org\/ws\/2005\/05\/identity\/claims\//, '')
-      .replace(/^http:\/\/schemas\.microsoft\.com\/identity\/claims\//, '')
-      .replace(/^urn:oid:/, '');
-    
-    attributes[normalizedName] = attrValue;
-  }
-
-  // Map to user info
+  // Get email from mapped attribute or common locations
   const email = 
-    getAttributeValue(attributes, mapping.email) ||
+    getProfileValue(profile, mapping.email) ||
+    (profile.email as string) ||
     nameId ||
-    attributes['emailaddress'] ||
-    attributes['email'];
+    (profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] as string);
 
   if (!email) {
     throw new Error('Email not found in SAML response');
   }
 
-  const firstName = getAttributeValue(attributes, mapping.firstName) || attributes['givenname'];
-  const lastName = getAttributeValue(attributes, mapping.lastName) || attributes['surname'];
+  const firstName = 
+    getProfileValue(profile, mapping.firstName) ||
+    (profile.givenName as string) ||
+    (profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'] as string);
+
+  const lastName = 
+    getProfileValue(profile, mapping.lastName) ||
+    (profile.familyName as string) ||
+    (profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'] as string);
+
   const name = 
-    getAttributeValue(attributes, mapping.name) ||
-    attributes['displayname'] ||
+    getProfileValue(profile, mapping.name) ||
+    (profile.displayName as string) ||
+    (profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] as string) ||
     (firstName && lastName ? `${firstName} ${lastName}` : undefined);
 
   return {
@@ -250,33 +212,19 @@ function parseSamlResponse(
     name,
     firstName,
     lastName,
-    avatar: mapping.avatar ? getAttributeValue(attributes, mapping.avatar) : undefined,
+    avatar: mapping.avatar ? getProfileValue(profile, mapping.avatar) : undefined,
     sub: nameId,
-    rawAttributes: attributes
+    rawAttributes: profile as Record<string, unknown>
   };
 }
 
 /**
- * Get attribute value by name (case-insensitive)
+ * Get value from profile object by key
  */
-function getAttributeValue(
-  attributes: Record<string, string>,
-  key?: string
-): string | undefined {
+function getProfileValue(profile: Record<string, unknown>, key?: string): string | undefined {
   if (!key) return undefined;
-  
-  // Try exact match first
-  if (attributes[key]) return attributes[key];
-  
-  // Try case-insensitive match
-  const lowerKey = key.toLowerCase();
-  for (const [attrKey, attrValue] of Object.entries(attributes)) {
-    if (attrKey.toLowerCase() === lowerKey) {
-      return attrValue;
-    }
-  }
-  
-  return undefined;
+  const value = profile[key];
+  return typeof value === 'string' ? value : undefined;
 }
 
 /**
