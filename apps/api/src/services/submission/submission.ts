@@ -3,7 +3,6 @@ import * as schema from '@cio/db/schema';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { TNewSubmission, TSubmission } from '@cio/db/types';
 import type { TSubmissionAnswerUpdate, TSubmissionUpdate } from '@cio/utils/validation/submission';
-import { and, eq, or } from '@cio/db/drizzle';
 import {
   createSubmission,
   deleteSubmission,
@@ -21,7 +20,9 @@ import { ROLE } from '@cio/utils/constants';
 import { db } from '@cio/db/drizzle';
 import { deliverEmail } from '@cio/email';
 import { env } from '@api/config/env';
+import { eq } from '@cio/db/drizzle';
 import { getCourseById } from '@cio/db/queries/course';
+import { getCourseTeachers } from '@cio/db/queries/course/people';
 
 /**
  * Gets a submission by ID with question answers
@@ -508,19 +509,7 @@ async function sendExerciseSubmissionUpdateEmail(courseId: string, exerciseId: s
   const student = studentResult[0].profile;
 
   // Get tutors (ADMIN or TUTOR role) from the course's group
-  const tutorsResult = await db
-    .select({
-      profile: schema.profile
-    })
-    .from(schema.groupmember)
-    .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
-    .innerJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
-    .where(
-      and(
-        eq(schema.course.id, courseId),
-        or(eq(schema.groupmember.roleId, ROLE.ADMIN), eq(schema.groupmember.roleId, ROLE.TUTOR))
-      )
-    );
+  const tutorsResult = await getCourseTeachers({ courseId });
 
   if (tutorsResult.length === 0) {
     return;
@@ -552,11 +541,11 @@ async function sendExerciseSubmissionUpdateEmail(courseId: string, exerciseId: s
 
   // Send email to all tutors
   const emailPromises = tutorsResult.map((tutor) => {
-    if (!tutor.profile.email) return Promise.resolve();
+    if (!tutor.email) return Promise.resolve();
     return deliverEmail([
       {
         from: `"${orgName} (via ClassroomIO.com)" <notify@mail.classroomio.com>`,
-        to: tutor.profile.email,
+        to: tutor.email,
         subject: `[Submitted]: ${exercise.title}`,
         content
       }

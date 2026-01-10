@@ -58,10 +58,6 @@
   let open = $derived(new URLSearchParams(page.url.search).get('create') === 'true');
 </script>
 
-<svelte:head>
-  <title>Create a new course</title>
-</svelte:head>
-
 {#snippet course_type_selector()}
   <Field.Description>{$t('courses.new_course_modal.type_selector_title')}</Field.Description>
 

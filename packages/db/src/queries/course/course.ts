@@ -77,7 +77,6 @@ export const getPublishedCoursesBySiteName = async (siteName: string): Promise<T
   }
 };
 
-// TODO: Remove this function, use the service that determines the role of the user and returns the courses accordingly. i
 /**
  * Gets courses by organization orgId
  * @param orgId Organization orgId
@@ -251,11 +250,23 @@ export async function getCourseWithRelations(
     const course = courses[0];
     const finalCourseId = course.id;
 
-    // Only fetch group data if groupId exists
-    const groupPromises: Promise<any>[] = [];
-    if (course.groupId) {
-      groupPromises.push(
-        db
+    // Type definitions for query results
+    type GroupQueryRow = {
+      group: TGroup;
+      member: TGroupmember | null;
+      profile: Pick<TProfile, 'id' | 'fullname' | 'username' | 'avatarUrl' | 'email'> | null;
+    };
+    type LessonQueryRow = {
+      lesson: TLesson;
+      teacher: TProfile | null;
+      exerciseCount: number;
+      commentCount: number;
+      isComplete: boolean;
+    };
+
+    // Fetch group data if groupId exists
+    const groupDataPromise: Promise<GroupQueryRow[]> = course.groupId
+      ? db
           .select({
             group: schema.group,
             member: schema.groupmember,
@@ -271,14 +282,11 @@ export async function getCourseWithRelations(
           .leftJoin(schema.groupmember, eq(schema.group.id, schema.groupmember.groupId))
           .leftJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
           .where(eq(schema.group.id, course.groupId))
-      );
-    } else {
-      groupPromises.push(Promise.resolve([]));
-    }
+      : Promise.resolve([]);
 
     // Fetch related data in parallel
     const [groupData, lessonSections, lessons, attendance] = await Promise.all([
-      ...groupPromises,
+      groupDataPromise,
       // Get lesson sections
       db.select().from(schema.lessonSection).where(eq(schema.lessonSection.courseId, finalCourseId)),
       // Get lessons with teacher profile, completion counts, and completion status
@@ -289,7 +297,7 @@ export async function getCourseWithRelations(
               teacher: schema.profile,
               exerciseCount: sql<number>`COUNT(DISTINCT ${schema.exercise.id})`.as('exercise_count'),
               commentCount: sql<number>`COUNT(DISTINCT ${schema.lessonComment.id})`.as('comment_count'),
-              isComplete: sql<boolean>`COALESCE(MAX(${schema.lessonCompletion.isComplete})::boolean, false)`.as(
+              isComplete: sql<boolean>`COALESCE(bool_or(${schema.lessonCompletion.isComplete}), false)`.as(
                 'is_complete'
               )
             })
@@ -326,8 +334,8 @@ export async function getCourseWithRelations(
 
     // Transform group data
     const groupMembers = groupData
-      .filter((row: { member: any }) => row.member)
-      .map((row: { member: any; profile: any }) => ({
+      .filter((row) => row.member)
+      .map((row) => ({
         ...row.member!,
         profile: row.profile || null
       }));
@@ -341,27 +349,23 @@ export async function getCourseWithRelations(
         : null;
 
     // Transform lessons
-    const transformedLessons = lessons.map(
-      (row: { lesson: any; teacher: any; exerciseCount: any; commentCount: any; isComplete?: any }) => ({
-        ...row.lesson,
-        profile: row.teacher || null,
-        totalExercises: Number(row.exerciseCount) || 0,
-        totalComments: Number(row.commentCount) || 0,
-        isComplete: row.isComplete === true || row.isComplete === 'true' || false
-      })
-    );
-
-    // Transform attendance - result is already the groupAttendance records
-    const transformedAttendance = attendance;
+    const transformedLessons = (lessons as LessonQueryRow[]).map((row) => ({
+      ...row.lesson,
+      profile: row.teacher || null,
+      totalExercises: Number(row.exerciseCount) || 0,
+      totalComments: Number(row.commentCount) || 0,
+      isComplete: row.isComplete === true
+    }));
 
     return {
       ...course,
       group,
       sections: lessonSections,
       lessons: transformedLessons,
-      attendance: transformedAttendance
+      attendance: attendance
     };
   } catch (error) {
+    console.error('Error in getCourseWithRelations', error);
     throw new Error(`Failed to get course with relations: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

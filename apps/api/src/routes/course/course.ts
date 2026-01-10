@@ -331,7 +331,7 @@ export const courseRouter = new Hono()
     }
   )
   .route('/katex', katexRouter)
-  .route('/payment-request', paymentRequestRouter)
+  .route('/:courseId/payment-request', paymentRequestRouter)
   .route('/:courseId/lesson', lessonRouter)
   .route('/:courseId/exercise', exerciseRouter)
   .route('/:courseId/submission', submissionRouter)

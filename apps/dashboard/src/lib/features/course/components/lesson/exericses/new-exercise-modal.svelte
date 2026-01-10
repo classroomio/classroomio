@@ -6,19 +6,19 @@
   import { Button } from '@cio/ui/base/button';
 
   import { t } from '$lib/utils/functions/translations';
-  import { exerciseTemplateApi } from '$features/exercise-template/api';
+  import { exerciseTemplateApi } from '$features/course/api/exercise-template.svelte';
   import { snackbar } from '$features/ui/snackbar/store';
   import { Confetti, ComingSoon } from '$features/ui';
   import { CircleCheckIcon } from '$features/ui/icons';
-  import { TAGS } from '$features/exercise-template/utils/constants';
-  import type { TExerciseTemplate } from '@cio/db/types';
+  import { EXERCISE_TEMPLATE_TAGS } from '$features/course/utils/constants';
 
   interface Props {
     open: boolean;
     handleAddExercise: () => void;
     handleCancelAddExercise: () => void;
-    handleTemplateCreate: (template: TExerciseTemplate) => Promise<void>;
+    handleTemplateCreate: (templateId: number) => Promise<void>;
     title: string;
+    courseId: string;
   }
 
   let {
@@ -26,7 +26,8 @@
     handleAddExercise = () => {},
     handleCancelAddExercise = () => {},
     handleTemplateCreate,
-    title = $bindable('')
+    title = $bindable(''),
+    courseId = ''
   }: Props = $props();
 
   const Type = {
@@ -57,7 +58,7 @@
     // }
   ];
 
-  const tags = Object.values(TAGS);
+  const tags = Object.values(EXERCISE_TEMPLATE_TAGS);
 
   let step = $state(0);
   let type: number = $state(Type.SCRATCH);
@@ -114,17 +115,12 @@
     isTemplateFinishedLoading = true;
     const template = exerciseTemplateApi.templates?.find((t) => t.id === Number(selectedTemplateId));
 
-    if (!template) return;
-
-    let fetchedTemplate: TExerciseTemplate;
+    if (!template || !template.id) return;
 
     try {
-      await exerciseTemplateApi.fetchTemplateById(template.id!.toString());
-      fetchedTemplate = exerciseTemplateApi.template[0];
-      console.log('Fetched template', fetchedTemplate);
-      await handleTemplateCreate(fetchedTemplate);
+      await handleTemplateCreate(template.id);
     } catch (error) {
-      console.log('Error fetching template', error);
+      console.log('Error creating exercise from template', error);
       snackbar.error($t('course.navItem.lessons.exercises.new_exercise_modal.errors.template_fetch'));
     } finally {
       isTemplateFinishedLoading = false;
@@ -134,7 +130,7 @@
   const handleTagSelection = async (tag: string) => {
     selectedTag = tag;
     selectedTemplateId = '';
-    await exerciseTemplateApi.fetchTemplatesByTag(selectedTag);
+    await exerciseTemplateApi.fetchTemplatesByTag(courseId, selectedTag);
   };
 </script>
 

@@ -48,15 +48,20 @@
     // Authentication Steps
     if (!data.isOrgSite || !data.org) return;
 
-    $globalStore.orgSiteName = data.orgSiteName;
+    $globalStore.orgSiteName = data.orgSiteName || '';
     $globalStore.isOrgSite = data.isOrgSite;
 
     currentOrg.set(data.org);
 
     // Setup internal analytics
-    initOrgAnalytics(data.orgSiteName);
+    if (data.orgSiteName) {
+      initOrgAnalytics(data.orgSiteName);
+    }
 
-    setTheme(data.org?.theme);
+    const theme = data.org?.theme;
+    if (theme) {
+      setTheme(theme);
+    }
   }
 
   onMount(() => {
@@ -112,25 +117,27 @@
   const metaTags = $derived(merge(data.baseMetaTags, page.data.pageMetaTags));
 </script>
 
-<ModeWatcher />
+<div>
+  <ModeWatcher />
 
-<MetaTags {...metaTags} />
+  <MetaTags {...metaTags} />
 
-<UpgradeModal />
+  <UpgradeModal />
 
-<Snackbar />
+  <Snackbar />
 
-{#if data.org?.isRestricted || $currentOrg.isRestricted}
-  <PageRestricted />
-{:else if data.skipAuth}
-  <PlayQuiz />
-{:else if data.isOrgSite && data.org && path === '/'}
-  <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org} />
-{:else}
-  <PageLoadProgress zIndex={10000} />
+  {#if data.org?.isRestricted || $currentOrg.isRestricted}
+    <PageRestricted />
+  {:else if data.skipAuth}
+    <PlayQuiz />
+  {:else if data.isOrgSite && data.org && path === '/'}
+    <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org} />
+  {:else}
+    <PageLoadProgress zIndex={10000} />
 
-  {@render children?.()}
-{/if}
+    {@render children?.()}
+  {/if}
+</div>
 
 <style>
   :global(:root) {

@@ -97,6 +97,148 @@ export const updateOrganization = async (id: string, data: Partial<TOrganization
 - Add JSDoc comments for exported functions
 - Keep queries pure (no business logic, no HTTP calls, no transactions)
 
+### Writing Clean Queries
+
+When writing database queries, follow these principles to keep code maintainable and DRY:
+
+**1. Extract reusable queries** - If you find the same query pattern in multiple services, move it to the query layer:
+
+```typescript
+// ❌ BAD: Duplicated in multiple services
+// services/payment.ts
+const teachers = await db
+  .select({ email: schema.profile.email })
+  .from(schema.groupmember)
+  .innerJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
+  .where(and(
+    eq(schema.groupmember.groupId, groupId),
+    or(eq(schema.groupmember.roleId, ROLE.ADMIN), eq(schema.groupmember.roleId, ROLE.TUTOR))
+  ));
+
+// services/notification.ts (same query repeated)
+const teachers = await db
+  .select({ email: schema.profile.email })
+  ...
+
+// ✅ GOOD: Single reusable query function
+// packages/db/src/queries/course/people.ts
+export async function getCourseTeachers(options: {
+  courseId?: string;
+  groupId?: string;
+  limit?: number;
+}): Promise<Array<{ profile: TeacherProfile }>> { ... }
+
+// services/payment.ts
+const teachers = await getCourseTeachers({ groupId, limit: 1 });
+
+// services/notification.ts
+const teachers = await getCourseTeachers({ courseId });
+```
+
+**2. Extract common query parts** - Don't repeat select objects, conditions, or joins:
+
+```typescript
+// ❌ BAD: Duplicated select objects
+if (options.courseId) {
+  query = db.select({
+    profile: {
+      id: schema.profile.id,
+      email: schema.profile.email,
+      fullname: schema.profile.fullname,
+    }
+  }).from(...)
+} else {
+  query = db.select({
+    profile: {
+      id: schema.profile.id,
+      email: schema.profile.email,
+      fullname: schema.profile.fullname,
+    }
+  }).from(...)
+}
+
+// ✅ GOOD: Extract common parts
+const profileSelect = {
+  id: schema.profile.id,
+  email: schema.profile.email,
+  fullname: schema.profile.fullname,
+};
+
+const isTeacherRole = or(
+  eq(schema.groupmember.roleId, ROLE.ADMIN),
+  eq(schema.groupmember.roleId, ROLE.TUTOR)
+);
+
+const baseQuery = db
+  .select({ profile: profileSelect })
+  .from(schema.groupmember)
+  .innerJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id));
+
+const query = courseId
+  ? baseQuery.innerJoin(schema.course, ...).where(and(eq(schema.course.id, courseId), isTeacherRole))
+  : baseQuery.where(and(eq(schema.groupmember.groupId, groupId!), isTeacherRole));
+```
+
+**3. Use named types for return values** - Export types for complex return shapes:
+
+```typescript
+// ✅ GOOD: Named type makes it clear and reusable
+type TeacherProfile = {
+  id: string;
+  email: string | null;
+  fullname: string | null;
+  username: string | null;
+  avatarUrl: string | null;
+};
+
+export async function getCourseTeachers(...): Promise<Array<{ profile: TeacherProfile }>> {
+```
+
+**4. Keep queries focused** - One query function should do one thing well:
+
+```typescript
+// ❌ BAD: Query does too much
+export async function getCourseDataWithMembersAndLessonsAndProgress(...) { }
+
+// ✅ GOOD: Separate focused queries
+export async function getCourseMembers(courseId: string) { }
+export async function getCourseLessons(courseId: string) { }
+export async function getCourseProgress(courseId: string, profileId: string) { }
+```
+
+**5. Let errors bubble up** - Query layer should not wrap errors in try/catch (that's for services):
+
+```typescript
+// ❌ BAD: Swallowing errors in query layer
+try {
+  const result = await db.select()...
+  return result;
+} catch (error) {
+  throw new Error(`Failed to get data: ${error.message}`);
+}
+
+// ✅ GOOD: Let errors propagate, handle in service layer
+const result = await db.select()...
+return result;
+```
+
+**6. Use destructuring for cleaner code**:
+
+```typescript
+// ❌ BAD
+export async function getTeachers(options: { courseId?: string; limit?: number }) {
+  if (options.limit) {
+    query = query.limit(options.limit);
+  }
+}
+
+// ✅ GOOD
+export async function getTeachers(options: { courseId?: string; limit?: number }) {
+  const { courseId, limit } = options;
+  const result = await (limit ? query.limit(limit) : query);
+}
+```
+
 ---
 
 ## Layer 2: Services

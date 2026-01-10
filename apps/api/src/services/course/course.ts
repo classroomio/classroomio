@@ -31,6 +31,7 @@ import { getProfileById } from '@cio/db/queries/auth';
  * @returns Course with all related data
  */
 export async function getCourse(courseId?: string, slug?: string, profileId?: string) {
+  console.log('getCourse', courseId, slug, profileId);
   try {
     if (!courseId && !slug) {
       throw new AppError('Either courseId or slug must be provided', ErrorCodes.VALIDATION_ERROR, 400);
@@ -43,6 +44,7 @@ export async function getCourse(courseId?: string, slug?: string, profileId?: st
 
     return course;
   } catch (error) {
+    console.error('Error getting course:', error);
     if (error instanceof AppError) {
       throw error;
     }

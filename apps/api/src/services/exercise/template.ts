@@ -33,16 +33,13 @@ export async function fetchAllTemplatesMetadata() {
   return mapTemplateToMetadata(templates);
 }
 
-export async function fetchTemplateById(id: number): Promise<TExerciseTemplate> {
-  let template: TExerciseTemplate;
+export async function fetchTemplateById(id: number): Promise<TExerciseTemplate | undefined> {
   try {
-    template = await getTemplateById(id);
+    return getTemplateById(id);
   } catch (error) {
     console.error('Failed to fetch template from DB:', error);
     throw error;
   }
-
-  return template;
 }
 
 export async function fetchTemplatesByTag(tag: string) {

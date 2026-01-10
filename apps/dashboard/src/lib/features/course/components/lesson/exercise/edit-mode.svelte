@@ -20,7 +20,6 @@
   import { QUESTION_TYPE, QUESTION_TYPES } from '$features/ui/question/constants';
   import { Button } from '@cio/ui/base/button';
 
-  import { lesson } from '../store/lessons';
   import OrderModal from './order-modal.svelte';
   import { t } from '$lib/utils/functions/translations';
   import * as Dialog from '@cio/ui/base/dialog';
@@ -76,11 +75,6 @@
     await exerciseApi.delete(courseApi.course?.id!, exerciseId);
 
     if (exerciseApi.success) {
-      lesson.update((_lesson) => ({
-        ..._lesson,
-        exercises: _lesson.exercises.filter((exercise) => exercise.id !== exerciseId)
-      }));
-
       goBack();
     }
     isDeleting = false;

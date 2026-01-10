@@ -11,6 +11,11 @@
   let isHovered = $state(false);
 </script>
 
-<div class={className} onmouseenter={() => (isHovered = true)} onmouseleave={() => (isHovered = false)}>
+<div
+  role="presentation"
+  class={className}
+  onmouseenter={() => (isHovered = true)}
+  onmouseleave={() => (isHovered = false)}
+>
   {@render children(isHovered)}
 </div>
