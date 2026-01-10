@@ -254,9 +254,6 @@ importers:
       '@polar-sh/sveltekit':
         specifier: ^0.2.1
         version: 0.2.1(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1)))(zod@4.2.1)
-      '@supabase/supabase-js':
-        specifier: ^2.31.0
-        version: 2.89.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       '@sveltejs/adapter-auto':
         specifier: ^3.0.0
         version: 3.3.1(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1)))
@@ -640,7 +637,7 @@ importers:
         version: 3.3.1(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))
       '@sveltejs/adapter-vercel':
         specifier: ^4.0.0
-        version: 4.0.5(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))(encoding@0.1.13)
+        version: 4.0.5(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))
       '@sveltejs/kit':
         specifier: ^2.5.27
         version: 2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1))
@@ -4858,30 +4855,6 @@ packages:
     peerDependencies:
       storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
 
-  '@supabase/auth-js@2.89.0':
-    resolution: {integrity: sha512-wiWZdz8WMad8LQdJMWYDZ2SJtZP5MwMqzQq3ehtW2ngiI3UTgbKiFrvMUUS3KADiVlk4LiGfODB2mrYx7w2f8w==}
-    engines: {node: '>=20.0.0'}
-
-  '@supabase/functions-js@2.89.0':
-    resolution: {integrity: sha512-XEueaC5gMe5NufNYfBh9kPwJlP5M2f+Ogr8rvhmRDAZNHgY6mI35RCkYDijd92pMcNM7g8pUUJov93UGUnqfyw==}
-    engines: {node: '>=20.0.0'}
-
-  '@supabase/postgrest-js@2.89.0':
-    resolution: {integrity: sha512-/b0fKrxV9i7RNOEXMno/I1862RsYhuUo+Q6m6z3ar1f4ulTMXnDfv0y4YYxK2POcgrOXQOgKYQx1eArybyNvtg==}
-    engines: {node: '>=20.0.0'}
-
-  '@supabase/realtime-js@2.89.0':
-    resolution: {integrity: sha512-aMOvfDb2a52u6PX6jrrjvACHXGV3zsOlWRzZsTIOAJa0hOVvRp01AwC1+nLTGUzxzezejrYeCX+KnnM1xHdl+w==}
-    engines: {node: '>=20.0.0'}
-
-  '@supabase/storage-js@2.89.0':
-    resolution: {integrity: sha512-6zKcXofk/M/4Eato7iqpRh+B+vnxeiTumCIP+Tz26xEqIiywzD9JxHq+udRrDuv6hXE+pmetvJd8n5wcf4MFRQ==}
-    engines: {node: '>=20.0.0'}
-
-  '@supabase/supabase-js@2.89.0':
-    resolution: {integrity: sha512-KlaRwSfFA0fD73PYVMHj5/iXFtQGCcX7PSx0FdQwYEEw9b2wqM7GxadY+5YwcmuEhalmjFB/YvqaoNVF+sWUlg==}
-    engines: {node: '>=20.0.0'}
-
   '@sveltejs/acorn-typescript@1.0.8':
     resolution: {integrity: sha512-esgN+54+q0NjB0Y/4BomT9samII7jGwNy/2a3wNZbT2A2RpmXsXwUt24LvLhx6jUq2gVk4cWEvcRO6MFQbOfNA==}
     peerDependencies:
@@ -5700,9 +5673,6 @@ packages:
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
 
-  '@types/phoenix@1.6.7':
-    resolution: {integrity: sha512-oN9ive//QSBkf19rfDv45M7eZPi0eEXylht2OLEXicu5b4KoQ1OzXIw+xDSGWxSxe1JmepRR/ZH283vsu518/Q==}
-
   '@types/pluralize@0.0.30':
     resolution: {integrity: sha512-kVww6xZrW/db5BR9OqiT71J9huRdQ+z/r+LbDuT7/EK50mCmj5FoaIARnVv0rvjUS/YpDox0cDU9lpQT011VBA==}
 
@@ -5767,9 +5737,6 @@ packages:
 
   '@types/wrap-ansi@3.0.0':
     resolution: {integrity: sha512-ltIpx+kM7g/MLRZfkbL7EsCEjfzCcScLpkg37eXEtx5kmrAKBkTJwd1GIAjDSL8wTpM6Hzn5YO4pSb91BEwu1g==}
-
-  '@types/ws@8.18.1':
-    resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
 
   '@types/yargs-parser@21.0.3':
     resolution: {integrity: sha512-I4q9QU9MQv4oEOz4tAHJtNz1cwuLxn2F3xcc2iV5WdqLPpUnj30aUuxt1mAxYTG+oe8CZMV/+6rU4S4gRDzqtQ==}
@@ -8223,10 +8190,6 @@ packages:
   human-signals@5.0.0:
     resolution: {integrity: sha512-AXcZb6vzzrFAUE61HnN4mpLqd/cSIwNQjtNWR0euPm6y0iqx3G4gOXaIDdtdDwZmhwe82LA6+zinmW4UBWVePQ==}
     engines: {node: '>=16.17.0'}
-
-  iceberg-js@0.8.1:
-    resolution: {integrity: sha512-1dhVQZXhcHje7798IVM+xoo/1ZdVfzOMIc8/rgVSijRK38EDqOJoGula9N/8ZI5RD8QTxNQtK/Gozpr+qUqRRA==}
-    engines: {node: '>=20.0.0'}
 
   iconv-lite@0.4.24:
     resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}
@@ -16190,44 +16153,6 @@ snapshots:
     dependencies:
       storybook: 8.6.15(bufferutil@4.1.0)(prettier@3.7.4)(utf-8-validate@6.0.6)
 
-  '@supabase/auth-js@2.89.0':
-    dependencies:
-      tslib: 2.8.1
-
-  '@supabase/functions-js@2.89.0':
-    dependencies:
-      tslib: 2.8.1
-
-  '@supabase/postgrest-js@2.89.0':
-    dependencies:
-      tslib: 2.8.1
-
-  '@supabase/realtime-js@2.89.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)':
-    dependencies:
-      '@types/phoenix': 1.6.7
-      '@types/ws': 8.18.1
-      tslib: 2.8.1
-      ws: 8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
-  '@supabase/storage-js@2.89.0':
-    dependencies:
-      iceberg-js: 0.8.1
-      tslib: 2.8.1
-
-  '@supabase/supabase-js@2.89.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)':
-    dependencies:
-      '@supabase/auth-js': 2.89.0
-      '@supabase/functions-js': 2.89.0
-      '@supabase/postgrest-js': 2.89.0
-      '@supabase/realtime-js': 2.89.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      '@supabase/storage-js': 2.89.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
   '@sveltejs/acorn-typescript@1.0.8(acorn@8.15.0)':
     dependencies:
       acorn: 8.15.0
@@ -16274,7 +16199,7 @@ snapshots:
       - encoding
       - supports-color
 
-  '@sveltejs/adapter-vercel@4.0.5(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))(encoding@0.1.13)':
+  '@sveltejs/adapter-vercel@4.0.5(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))':
     dependencies:
       '@sveltejs/kit': 2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1))
       '@vercel/nft': 0.26.5(encoding@0.1.13)
@@ -17498,8 +17423,6 @@ snapshots:
 
   '@types/normalize-package-data@2.4.4': {}
 
-  '@types/phoenix@1.6.7': {}
-
   '@types/pluralize@0.0.30': {}
 
   '@types/prop-types@15.7.15': {}
@@ -17567,10 +17490,6 @@ snapshots:
   '@types/uuid@9.0.8': {}
 
   '@types/wrap-ansi@3.0.0': {}
-
-  '@types/ws@8.18.1':
-    dependencies:
-      '@types/node': 24.10.4
 
   '@types/yargs-parser@21.0.3': {}
 
@@ -20457,8 +20376,6 @@ snapshots:
   human-signals@2.1.0: {}
 
   human-signals@5.0.0: {}
-
-  iceberg-js@0.8.1: {}
 
   iconv-lite@0.4.24:
     dependencies:

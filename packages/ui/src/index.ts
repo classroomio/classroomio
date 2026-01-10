@@ -58,3 +58,4 @@ export { IconButton } from './custom/icon-button';
 export { TextareaField } from './custom/textarea-field';
 export { CheckboxField } from './custom/checkbox-field';
 export { RadioItem } from './custom/radio-item';
+export * as Pricing from './custom/pricing';

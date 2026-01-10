@@ -1,16 +1,7 @@
 <script>
-  import Check from '@lucide/svelte/icons/check';
-  import { fade } from 'svelte/transition';
-
+  import { Pricing } from '@cio/ui';
   import { PLANS } from '@cio/utils/plans';
-
   import { PageSignupCTA, PageHeader } from '$lib/components';
-
-  let isYearlyPlan = $state(false);
-
-  function toggleIsYearlyPlan() {
-    isYearlyPlan = !isYearlyPlan;
-  }
 </script>
 
 <svelte:head>
@@ -26,23 +17,6 @@
     <p class="mt-10 w-[90%] text-center text-lg font-normal text-slate-700 md:w-[60%] lg:mt-7">
       You get a customizable LMS, AI integration for productive educators and many more...
     </p>
-    <div class="relative mt-10 flex items-center rounded-[30px] border-2 p-[2px] lg:scale-100">
-      <button
-        style="background-color: {isYearlyPlan ? 'initial' : '#1D4EE2'}; color: {isYearlyPlan ? '#5e636b' : '#fff'}"
-        class="rounded-[30px] bg-blue-700 px-3 py-1 text-xs text-white lg:px-4 lg:py-2"
-        onclick={toggleIsYearlyPlan}>Monthly</button
-      >
-      <button
-        style="background-color: {isYearlyPlan ? '#1D4EE2' : ''}; color: {isYearlyPlan ? '#fff' : '#5e636b'}"
-        class="rounded-[30px] px-3 py-1 text-xs text-white lg:px-4 lg:py-2"
-        onclick={toggleIsYearlyPlan}>Annually</button
-      >
-      <div
-        class="absolute top-[-85%] right-[-40%] scale-[90%] rounded-full bg-[#006600] px-3.5 py-1.5 text-xs text-white lg:top-[-75%] lg:right-[-43%] lg:scale-100"
-      >
-        Save 2 months
-      </div>
-    </div>
 
     <script
       src="https://widget.senja.io/widget/b43ac234-427e-4d6f-8c23-633208154e54/platform.js"
@@ -58,127 +32,17 @@
     ></div>
   </PageHeader>
 
-  <div class="flex flex-col items-center justify-center px-[6%]">
-    <div class="isolate mt-10 grid grid-cols-1 gap-10 lg:grid-cols-3">
-      <!-- Card 1 -->
-      <div class="max-w-xl rounded-3xl p-8 ring-1 ring-gray-200 lg:max-w-sm xl:p-9">
-        <p class="text-lg leading-8 font-semibold text-gray-900 lg:text-xl">
-          {PLANS.BASIC.NAME}
-        </p>
-
-        <p class="mt-4 text-sm leading-6 font-light text-gray-500 lg:text-base lg:leading-6">
-          {PLANS.BASIC.DESCRIPTION}
-        </p>
-
-        <p class="mt-6 flex items-baseline gap-x-1 text-4xl font-medium lg:text-4xl">
-          ${PLANS.BASIC.PRICE.MONTHLY}
-        </p>
-        <span class="text-base">Free forever</span>
-
-        <a
-          class="mt-10 block w-full rounded-md bg-slate-900 py-3 text-center text-base font-medium text-white hover:bg-slate-700 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
-          href={PLANS.BASIC.CTA.LINK}
-          target="_blank"
-        >
-          {PLANS.BASIC.CTA.LABEL}
-        </a>
-
-        <ul class="mt-8 space-y-2 text-sm text-gray-600 lg:space-y-5 xl:mt-10">
-          {#each PLANS.BASIC.FEATURES as feature}
-            <li class="flex items-center">
-              <Check size={24} fill="#1D4EE2" class="mr-2 scale-[70%] lg:mr-3 lg:scale-[100%]" />
-              {feature}
-            </li>
-          {/each}
-        </ul>
-      </div>
-
-      <!-- Card 2 -->
-      <div class="cio-bg-blue max-w-xl rounded-3xl p-8 lg:max-w-lg xl:p-9">
-        <p class="text-lg leading-8 font-semibold text-white lg:text-xl">
-          {PLANS.EARLY_ADOPTER.NAME}
-        </p>
-
-        <p class="mt-4 text-sm leading-6 font-light text-white lg:text-base lg:leading-6">
-          {PLANS.EARLY_ADOPTER.DESCRIPTION}
-        </p>
-
-        {#key isYearlyPlan}
-          <p class="mt-6 flex items-baseline gap-x-1 text-4xl font-medium text-white lg:text-4xl" in:fade>
-            ${isYearlyPlan ? PLANS.EARLY_ADOPTER.PRICE.YEARLY : PLANS.EARLY_ADOPTER.PRICE.MONTHLY}
-          </p>
-          <span class="text-base text-white" in:fade>
-            per {isYearlyPlan ? 'year' : 'month'}
-          </span>
-        {/key}
-
-        <a
-          class="mt-10 block w-full rounded-md bg-white py-3 text-center text-base font-medium text-slate-900 hover:bg-indigo-50 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
-          href={PLANS.EARLY_ADOPTER.CTA.LINK}
-          target="_blank"
-        >
-          {PLANS.EARLY_ADOPTER.CTA.LABEL}
-        </a>
-        <ul class="mt-8 space-y-3 text-sm font-light text-white lg:space-y-5 xl:mt-10">
-          {#each PLANS.EARLY_ADOPTER.FEATURES as features}
-            <li class="flex items-center">
-              <Check size={24} fill="#fff" class="mr-2 scale-[70%] lg:mr-3 lg:scale-[100%]" />
-              {features}
-            </li>
-          {/each}
-        </ul>
-      </div>
-
-      <!-- Card 3 -->
-      <div class="max-w-xl rounded-3xl p-8 ring-1 ring-gray-200 lg:max-w-sm xl:p-9">
-        <p class="text-lg leading-8 font-semibold text-gray-900 lg:text-xl">
-          {PLANS.ENTERPRISE.NAME}
-        </p>
-        <p class="mt-4 text-sm leading-6 font-light text-gray-500 lg:text-base lg:leading-6">
-          {PLANS.ENTERPRISE.DESCRIPTION}
-        </p>
-        <p class="mt-6 flex items-baseline gap-x-1 text-xl font-medium lg:mt-6 lg:text-xl">Request Pricing</p>
-        <button
-          class="mt-10 w-full rounded-md bg-slate-900 py-3 text-base font-medium text-white hover:bg-slate-700 lg:rounded-md lg:py-3 lg:text-lg lg:font-semibold"
-          data-cal-config={"{'layout':'month_view'}"}
-          data-cal-link="classroomio/enterprise"
-        >
-          {PLANS.ENTERPRISE.CTA.LABEL}
-        </button>
-
-        <ul class="mt-8 space-y-2 text-sm text-gray-600 lg:space-y-5 xl:mt-10">
-          {#each PLANS.ENTERPRISE.FEATURES as features}
-            <li class="flex items-center">
-              <Check size={24} fill="#1D4EE2" class="mr-2 scale-[70%] lg:mr-3 lg:scale-[100%]" />
-              {features}
-            </li>
-          {/each}
-        </ul>
-      </div>
-    </div>
-
-    <!-- <div
-    class="flex flex-col lg:flex-row items-start lg:items-center mx-auto lg:mx-10 mt-[5%] border-[1px] rounded-[30px] py-[10%] lg:py-[5%] px-[10px] lg:px-[30px] lg:w-full md:max-w-[550px] lg:max-w-full"
-  >
-    <div class="mr-5 pl-5">
-      <h2
-        class="text-base lg:text-xl font-semibold font-display leading-8 tracking-wide lg:tracking-tight text-blue-700 mb-0 lg:mb-4"
-      >
-        Hobby
-      </h2>
-      <p
-        class="m-0 lg:mt-1 text-base leading-7 lg:leading-6 text-gray-600"
-      >
-        For personal use. Hobby plan is free for up to 5 courses forever, no
-        credit Card required.
-      </p>
-    </div>
-      <button
-        class="font-semibold text-base lg:text-base text-white leading-5 mt-5 lg:m-0 p-4 lg:py-5 ml-5 bg-blue-700 rounded-lg lg:rounded-md w-[70%] lg:w-full"
-      >
-        Create a free account
-      </button>
-  </div> -->
+  <div class="flex flex-col items-center justify-center px-[6%] py-10">
+    <Pricing.Root
+      plans={PLANS}
+      saveLabel="Save 2 months"
+      cardProps={{
+        ENTERPRISE: {
+          'data-cal-config': "{'layout':'month_view'}",
+          'data-cal-link': 'classroomio/enterprise'
+        }
+      }}
+    />
   </div>
 </section>
 
