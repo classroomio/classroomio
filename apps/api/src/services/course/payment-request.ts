@@ -1,10 +1,6 @@
-import * as schema from '@cio/db/schema';
-
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
-import { db } from '@cio/db/drizzle';
-import { eq } from 'drizzle-orm';
-import { getCourseTeachers } from '@cio/db/queries/course/people';
+import { getCourseOrgInfo, getCourseTeachers } from '@cio/db/queries/course';
 import { sendEmail } from '@cio/email';
 
 export interface PaymentRequestData {
@@ -20,17 +16,7 @@ export interface PaymentRequestData {
 export async function createPaymentRequest(data: PaymentRequestData) {
   try {
     // Get course and organization data
-    const [course] = await db
-      .select({
-        courseTitle: schema.course.title,
-        orgName: schema.organization.name,
-        groupId: schema.course.groupId
-      })
-      .from(schema.course)
-      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
-      .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
-      .where(eq(schema.course.id, data.courseId))
-      .limit(1);
+    const course = await getCourseOrgInfo(data.courseId);
 
     if (!course) {
       throw new AppError('Course not found', ErrorCodes.NOT_FOUND, 404);

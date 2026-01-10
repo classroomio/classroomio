@@ -1,21 +1,19 @@
-import * as schema from '@cio/db/schema';
-
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   addCourseMember,
   deleteCourseMember,
   getCourseMember,
   getCourseMembers,
+  getCourseOrgInfo,
   getCourseTeachers,
   updateCourseMember
-} from '@cio/db/queries/course/people';
+} from '@cio/db/queries/course';
+import { getProfileById } from '@cio/db/queries/auth';
 
 import { ROLE } from '@cio/utils/constants';
 import type { TAddCourseMembers } from '@cio/utils/validation/course/people';
 import type { TGroupmember } from '@cio/db/types';
-import { db } from '@cio/db/drizzle';
 import { env } from '@api/config/env';
-import { eq } from 'drizzle-orm';
 import { sendEmail } from '@cio/email';
 
 /**
@@ -59,38 +57,22 @@ export async function addMember(
     if (data.roleId === ROLE.STUDENT) {
       try {
         // Get course and organization data
-        const courseOrgData = await db
-          .select({
-            courseTitle: schema.course.title,
-            orgName: schema.organization.name
-          })
-          .from(schema.course)
-          .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
-          .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
-          .where(eq(schema.course.id, courseId))
-          .limit(1);
+        const courseOrgData = await getCourseOrgInfo(courseId);
 
-        if (courseOrgData.length > 0) {
-          const courseName = courseOrgData[0].courseTitle || '';
-          const orgName = courseOrgData[0].orgName || 'ClassroomIO';
+        if (courseOrgData) {
+          const courseName = courseOrgData.courseTitle || '';
+          const orgName = courseOrgData.orgName || 'ClassroomIO';
 
           // Get student profile data
           let studentEmail: string | null = null;
           let studentName: string | null = null;
 
           if (data.profileId) {
-            const studentProfile = await db
-              .select({
-                email: schema.profile.email,
-                fullname: schema.profile.fullname
-              })
-              .from(schema.profile)
-              .where(eq(schema.profile.id, data.profileId))
-              .limit(1);
+            const studentProfile = await getProfileById(data.profileId);
 
-            if (studentProfile.length > 0) {
-              studentEmail = studentProfile[0].email;
-              studentName = studentProfile[0].fullname;
+            if (studentProfile) {
+              studentEmail = studentProfile.email;
+              studentName = studentProfile.fullname;
             }
           } else if (data.email) {
             studentEmail = data.email;
@@ -180,25 +162,15 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
     }
 
     // Get course title and organization data for emails (simple query, no expensive joins)
-    const courseOrgData = await db
-      .select({
-        courseTitle: schema.course.title,
-        orgName: schema.organization.name,
-        orgSiteName: schema.organization.siteName
-      })
-      .from(schema.course)
-      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
-      .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
-      .where(eq(schema.course.id, courseId))
-      .limit(1);
+    const courseOrgData = await getCourseOrgInfo(courseId);
 
-    if (courseOrgData.length === 0) {
+    if (!courseOrgData) {
       throw new AppError('Course not found', ErrorCodes.NOT_FOUND, 404);
     }
 
-    const courseName = courseOrgData[0].courseTitle || '';
-    const orgName = courseOrgData[0].orgName || 'ClassroomIO';
-    const orgSiteName = courseOrgData[0].orgSiteName || '';
+    const courseName = courseOrgData.courseTitle || '';
+    const orgName = courseOrgData.orgName || 'ClassroomIO';
+    const orgSiteName = courseOrgData.orgSiteName || '';
 
     // Add all members
     const addedMembers = await Promise.all(members.map((member) => addCourseMember(courseId, member)));

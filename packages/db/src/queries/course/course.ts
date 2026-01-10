@@ -16,6 +16,56 @@ import { and, desc, eq, isNull, sql } from 'drizzle-orm';
 import { ROLE } from '@cio/utils/constants';
 import { db } from '@db/drizzle';
 
+export async function getCourseOrgInfo(courseId: string) {
+  const [result] = await db
+    .select({
+      courseTitle: schema.course.title,
+      orgName: schema.organization.name,
+      orgSiteName: schema.organization.siteName,
+      groupId: schema.course.groupId
+    })
+    .from(schema.course)
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
+    .where(eq(schema.course.id, courseId))
+    .limit(1);
+
+  return result || null;
+}
+
+export async function convertCourseToV2(courseId: string) {
+  return await db.transaction(async (tx) => {
+    // 1. Update course version to 'V2'
+    const [updatedCourse] = await tx
+      .update(schema.course)
+      .set({ version: 'V2' })
+      .where(eq(schema.course.id, courseId))
+      .returning();
+
+    if (!updatedCourse) {
+      throw new Error('Failed to update course version');
+    }
+
+    // 2. Create a new lesson_section titled 'First Section [edit me]'
+    const [newSection] = await tx
+      .insert(schema.lessonSection)
+      .values({
+        title: 'First Section [edit me]',
+        courseId: courseId
+      })
+      .returning();
+
+    if (!newSection) {
+      throw new Error('Failed to create lesson section');
+    }
+
+    // 3. Update all lessons in the course to use the new section_id
+    await tx.update(schema.lesson).set({ sectionId: newSection.id }).where(eq(schema.lesson.courseId, courseId));
+
+    return updatedCourse;
+  });
+}
+
 /**
  * Base course type - extends TCourse with lessonCount
  * Used by public endpoint for landing pages
