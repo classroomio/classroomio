@@ -1,6 +1,5 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
-  CreateExerciseFromTemplateData,
   CreateExerciseFromTemplateRequest,
   CreateExerciseRequest,
   DeleteExerciseRequest,
@@ -225,15 +224,15 @@ export class ExerciseApi extends BaseApiWithErrors {
    * Creates an exercise from a template
    * @param courseId Course ID
    * @param lessonId Lesson ID
-   * @param template Exercise template with questionnaire
+   * @param templateId Template ID
    * @returns The created exercise data or null on error
    */
-  async createFromTemplate(courseId: string, lessonId: string, template: CreateExerciseFromTemplateData['template']) {
+  async createFromTemplate(courseId: string, lessonId: string, templateId: number) {
     await this.execute<CreateExerciseFromTemplateRequest>({
       requestFn: () =>
         classroomio.course[':courseId']['exercise']['from-template'].$post({
           param: { courseId },
-          json: { lessonId, template }
+          json: { lessonId, templateId }
         }),
       logContext: 'creating exercise from template',
       onSuccess: (response) => {

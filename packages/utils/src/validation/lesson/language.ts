@@ -2,7 +2,7 @@ import * as z from 'zod';
 
 export const ZLessonLanguageGetParam = z.object({
   courseId: z.uuid(),
-  lessonId: z.string().uuid()
+  lessonId: z.uuid()
 });
 
 export type TLessonLanguageGetParam = z.infer<typeof ZLessonLanguageGetParam>;

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { preventDefault } from '$lib/utils/functions/svelte';
 
   import { goto } from '$app/navigation';
@@ -12,7 +12,7 @@
   import { t } from '$lib/utils/functions/translations';
 
   let open = $state(false);
-  let errors = $state({
+  let errors: Record<string, string> = $state({
     title: ''
   });
   let isLoading = $state(false);
@@ -112,7 +112,6 @@
       <InputField
         label={$t('components.quiz.quiz_title')}
         bind:value={$createQuizModal.title}
-        autofocus={true}
         placeholder={$t('components.quiz.placehoolder')}
         className="mb-4"
         isRequired={true}

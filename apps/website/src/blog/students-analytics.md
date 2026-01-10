@@ -29,8 +29,8 @@ preload="auto"
 autoPictureInPicture
 class="rounded-md"
 src="https://assets.cdn.clsrio.com/blog/organisation-student-analytics.mp4"
-
-> </video>
+>
+</video>
 
 ## Course Student Analytics
 
@@ -52,8 +52,8 @@ autoPictureInPicture
 class="rounded-md"
 src="https://assets.cdn.clsrio.com/blog/course-students-analytics.mp4"
 controls
-
-> </video>
+>
+</video>
 
 ## What's Next?
 

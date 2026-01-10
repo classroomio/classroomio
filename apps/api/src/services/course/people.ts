@@ -6,15 +6,16 @@ import {
   deleteCourseMember,
   getCourseMember,
   getCourseMembers,
+  getCourseTeachers,
   updateCourseMember
 } from '@cio/db/queries/course/people';
-import { and, eq, or } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import type { TAddCourseMembers } from '@cio/utils/validation/course/people';
 import type { TGroupmember } from '@cio/db/types';
 import { db } from '@cio/db/drizzle';
 import { env } from '@api/config/env';
+import { eq } from 'drizzle-orm';
 import { sendEmail } from '@cio/email';
 
 /**
@@ -113,19 +114,7 @@ export async function addMember(
           }
 
           // Get all teachers (ADMIN or TUTOR) in the course
-          const teachersResult = await db
-            .select({
-              email: schema.profile.email
-            })
-            .from(schema.groupmember)
-            .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
-            .innerJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
-            .where(
-              and(
-                eq(schema.course.id, courseId),
-                or(eq(schema.groupmember.roleId, ROLE.ADMIN), eq(schema.groupmember.roleId, ROLE.TUTOR))
-              )
-            );
+          const teachersResult = await getCourseTeachers({ courseId });
 
           // Send notification to all teachers
           if (teachersResult.length > 0 && studentEmail && studentName) {

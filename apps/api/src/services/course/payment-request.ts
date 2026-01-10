@@ -1,10 +1,10 @@
 import * as schema from '@cio/db/schema';
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { and, eq, or } from 'drizzle-orm';
 
-import { ROLE } from '@cio/utils/constants';
 import { db } from '@cio/db/drizzle';
+import { eq } from 'drizzle-orm';
+import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { sendEmail } from '@cio/email';
 
 export interface PaymentRequestData {
@@ -20,7 +20,7 @@ export interface PaymentRequestData {
 export async function createPaymentRequest(data: PaymentRequestData) {
   try {
     // Get course and organization data
-    const courseOrgData = await db
+    const [course] = await db
       .select({
         courseTitle: schema.course.title,
         orgName: schema.organization.name,
@@ -32,34 +32,22 @@ export async function createPaymentRequest(data: PaymentRequestData) {
       .where(eq(schema.course.id, data.courseId))
       .limit(1);
 
-    if (courseOrgData.length === 0) {
+    if (!course) {
       throw new AppError('Course not found', ErrorCodes.NOT_FOUND, 404);
     }
 
-    const courseName = courseOrgData[0].courseTitle || '';
-    const orgName = courseOrgData[0].orgName || 'ClassroomIO';
-    const groupId = courseOrgData[0].groupId;
+    const courseName = course.courseTitle || '';
+    const orgName = course.orgName || 'ClassroomIO';
+    const groupId = course.groupId;
 
     if (!groupId) {
       throw new AppError('Course group not found', ErrorCodes.NOT_FOUND, 404);
     }
 
     // Get first teacher (TUTOR or ADMIN) email
-    const teacherResult = await db
-      .select({
-        email: schema.profile.email
-      })
-      .from(schema.groupmember)
-      .innerJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
-      .where(
-        and(
-          eq(schema.groupmember.groupId, groupId),
-          or(eq(schema.groupmember.roleId, ROLE.ADMIN), eq(schema.groupmember.roleId, ROLE.TUTOR))
-        )
-      )
-      .limit(1);
+    const teacherResult = await getCourseTeachers({ groupId, limit: 1 });
 
-    if (teacherResult.length === 0 || !teacherResult[0].email) {
+    if (teacherResult.length === 0 || !teacherResult[0]?.email) {
       throw new AppError('No teacher found for this course', ErrorCodes.NOT_FOUND, 404);
     }
 

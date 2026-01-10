@@ -435,9 +435,9 @@ export class CourseApi extends BaseApiWithErrors {
   async createPaymentRequest(courseId: string, studentEmail: string, studentFullname: string) {
     return this.execute<CreatePaymentRequestRequest>({
       requestFn: () =>
-        classroomio.course.paymentRequest.$post({
+        classroomio.course[':courseId']['payment-request']['$post']({
+          param: { courseId },
           json: {
-            courseId,
             studentEmail,
             studentFullname
           }

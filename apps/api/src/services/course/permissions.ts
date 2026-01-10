@@ -1,7 +1,7 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { isUserCourseMember, isUserCourseTeamMember } from '@cio/db/queries/group';
 
-import { getCourseWithRelations } from '@cio/db/queries/course';
+import { getCoursesById } from '@cio/db/queries/course';
 import { getUserCourseRole } from '@cio/db/queries/group';
 import { isUserOrgAdmin } from '@cio/db/queries/organization';
 
@@ -22,7 +22,7 @@ export interface CoursePermissions {
 export async function getCoursePermissions(courseId: string, userId: string): Promise<CoursePermissions> {
   try {
     // Verify course exists
-    const course = await getCourseWithRelations(courseId);
+    const course = await getCoursesById(courseId);
     if (!course) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
     }

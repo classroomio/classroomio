@@ -8,8 +8,6 @@
   import { exerciseApi } from '$features/course/api';
   import { courseApi } from '$features/course/api';
 
-  import type { Exercise as ExerciseType } from '$features/course/utils/types';
-  import type { TExerciseTemplate } from '@cio/db/types';
   import { formatDate } from '$lib/utils/functions/routes/dashboard';
   import { isQuestionnaireFetching, questionnaire } from '../store/exercise';
 
@@ -35,11 +33,11 @@
     description: ''
   });
 
-  async function handleTemplateCreate(template: TExerciseTemplate): Promise<void> {
-    await exerciseApi.createFromTemplate(courseApi.course?.id!, lessonId, template);
+  async function handleTemplateCreate(templateId: number): Promise<void> {
+    await exerciseApi.createFromTemplate(courseApi.course?.id!, lessonId, templateId);
 
     if (exerciseApi.success && exerciseApi.exercise) {
-      const newExercise = exerciseApi.exercise as ExerciseType;
+      const newExercise = exerciseApi.exercise;
       // Add to exercises list if not already present
       if (!exerciseApi.exercises.find((ex) => ex.id === newExercise.id)) {
         exerciseApi.exercises = [...exerciseApi.exercises, newExercise];
@@ -151,6 +149,7 @@
     {handleAddExercise}
     {handleTemplateCreate}
     bind:title={newExercise.title}
+    courseId={courseApi.course?.id!}
   />
 
   <div>

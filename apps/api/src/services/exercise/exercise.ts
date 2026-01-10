@@ -1,6 +1,8 @@
+import * as schema from '@cio/db/schema';
+
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import type { TExercise, TNewOption, TNewQuestion } from '@cio/db/types';
-import type { TExerciseCreate, TExerciseFromTemplate, TExerciseUpdate } from '@cio/utils/validation/exercise';
+import type { TExercise, TExerciseTemplate, TNewOption, TNewQuestion, TQuestionType } from '@cio/db/types';
+import type { TExerciseCreate, TExerciseUpdate } from '@cio/utils/validation/exercise';
 import {
   createExercises,
   createOptions,
@@ -8,14 +10,26 @@ import {
   deleteExercise,
   getExerciseById,
   getExercisesByCourseId,
+  getLMSExercises,
   getOptionsByQuestionIds,
   getQuestionsByExerciseIds,
   updateExercise,
   updateOption,
   updateQuestion
 } from '@cio/db/queries/exercise';
+import { db, inArray } from '@cio/db/drizzle';
 
-import { db } from '@cio/db/drizzle';
+type QuestionWithRelations = TNewQuestion & {
+  question_type: {
+    id: number;
+    label: string;
+  } | null;
+  options: TNewOption[];
+};
+
+type ExerciseWithQuestions = TExercise & {
+  questions?: QuestionWithRelations[];
+};
 
 /**
  * Creates a new exercise with optional questions and options
@@ -28,7 +42,7 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
       title: data.title,
       description: data.description ?? null,
       lessonId: data.lessonId || null,
-      dueBy: data.dueBy?.toDateString() || null
+      dueBy: data.dueBy || null
     };
 
     const [exercise] = await createExercises([exerciseData]);
@@ -86,7 +100,7 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
  * @param exerciseId Exercise ID
  * @returns Exercise with questions and options
  */
-export async function getExercise(exerciseId: string): Promise<TExercise & { questions?: any[] }> {
+export async function getExercise(exerciseId: string): Promise<ExerciseWithQuestions> {
   try {
     const exercise = await getExerciseById(exerciseId);
     if (!exercise) {
@@ -98,11 +112,30 @@ export async function getExercise(exerciseId: string): Promise<TExercise & { que
     const questionIds = questions.map((q) => q.id).filter((id) => id !== undefined);
     const options = questionIds.length > 0 ? await getOptionsByQuestionIds(questionIds) : [];
 
-    // Attach options to questions
-    const questionsWithOptions = questions.map((question) => ({
-      ...question,
-      options: options.filter((opt) => opt.questionId === question.id)
-    }));
+    // Fetch all question types
+    const questionTypeIds = [...new Set(questions.map((q) => q.questionTypeId).filter((id) => id !== undefined))];
+    const questionTypes: TQuestionType[] =
+      questionTypeIds.length > 0
+        ? await db.select().from(schema.questionType).where(inArray(schema.questionType.id, questionTypeIds))
+        : [];
+
+    // Create a map for quick lookup
+    const questionTypeMap = new Map(questionTypes.map((qt) => [qt.id, qt]));
+
+    // Attach options and question_type to questions
+    const questionsWithOptions = questions.map((question) => {
+      const questionType = questionTypeMap.get(question.questionTypeId);
+      return {
+        ...question,
+        question_type: questionType
+          ? {
+              id: questionType.id,
+              label: questionType.label
+            }
+          : null,
+        options: options.filter((opt) => opt.questionId === question.id)
+      };
+    });
 
     return {
       ...exercise,
@@ -278,13 +311,13 @@ export async function listExercises(courseId: string, lessonId?: string): Promis
 export async function createExerciseFromTemplate(
   courseId: string,
   lessonId: string,
-  template: TExerciseFromTemplate['template']
+  template: TExerciseTemplate
 ): Promise<TExercise> {
   try {
     // Create the exercise
     const exerciseData: TExerciseCreate = {
       title: template.title!,
-      description: template.description,
+      description: template.description ?? undefined,
       lessonId,
       courseId
     };
@@ -315,18 +348,15 @@ export async function createExerciseFromTemplate(
           // Create options if not TEXTAREA type
           if (question_type.id !== 3 && options && options.length > 0) {
             // Filter out deleted options
-            const validOptions = options.filter((opt: any) => !opt.deleted_at);
 
-            if (validOptions.length > 0) {
-              const optionsData: TNewOption[] = validOptions.map((opt: any) => ({
-                questionId: newQuestion.id,
-                label: opt.label || opt.title || '',
-                isCorrect: opt.is_correct || opt.isCorrect || false,
-                value: opt.value || null
-              }));
+            const optionsData: TNewOption[] = options.map((opt) => ({
+              questionId: newQuestion.id,
+              label: opt.label || '',
+              isCorrect: opt.is_correct || false,
+              value: opt.label || null
+            }));
 
-              await createOptions(optionsData);
-            }
+            await createOptions(optionsData);
           }
         }
       });
@@ -342,6 +372,26 @@ export async function createExerciseFromTemplate(
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to create exercise from template',
       ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
+}
+
+/**
+ * Gets LMS exercises for a student in an organization
+ * Returns exercises from unlocked lessons in courses where the student is a member
+ * @param profileId - The profile ID of the student
+ * @param orgId - The organization ID
+ * @returns Array of exercises with related data
+ */
+export async function getLMSExercisesService(profileId: string, orgId: string) {
+  try {
+    const exercises = await getLMSExercises(profileId, orgId);
+    return exercises;
+  } catch (error) {
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch LMS exercises',
+      ErrorCodes.EXERCISE_FETCH_FAILED,
       500
     );
   }

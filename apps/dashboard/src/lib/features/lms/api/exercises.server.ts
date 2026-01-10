@@ -1,6 +1,6 @@
+import type { LMSExercise } from './exercises.svelte';
 import { classroomio } from '$lib/utils/services/api';
 import { getApiKeyHeaders } from '$lib/utils/services/api/server';
-import type { LMSExercise } from './exercises.svelte';
 
 /**
  * Server-side API methods for LMS exercises
@@ -13,7 +13,7 @@ export class LMSExercisesApiServer {
    * @param profileId - Profile ID of the student
    * @returns Array of exercises with submissions and related data, or null on error
    */
-  static async fetchLMSExercises(orgId: string, profileId: string): Promise<LMSExercise[] | null> {
+  static async fetchLMSExercises(orgId: string): Promise<LMSExercise[] | null> {
     try {
       const response = await classroomio.organization[':orgId'].exercises.lms.$get(
         {

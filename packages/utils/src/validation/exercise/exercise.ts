@@ -5,7 +5,7 @@ export const ZExerciseCreate = z.object({
   description: z.string().optional(),
   lessonId: z.string().optional(),
   courseId: z.string().min(1),
-  dueBy: z.date().optional(),
+  dueBy: z.string().optional(),
   questions: z
     .array(
       z.object({
@@ -79,33 +79,7 @@ export type TExerciseSubmissionCreate = z.infer<typeof ZExerciseSubmissionCreate
 // Exercise Template Schemas
 export const ZExerciseFromTemplate = z.object({
   lessonId: z.string().min(1),
-  template: z.object({
-    id: z.number().min(1),
-    title: z.string().min(1),
-    description: z.string().optional(),
-    tag: z.string().optional(),
-    createdAt: z.date().optional(),
-    questionnaire: z.object({
-      questions: z.array(
-        z.object({
-          title: z.string().min(1),
-          name: z.string().min(1),
-          points: z.number().min(0),
-          order: z.number().min(0),
-          question_type: z.object({
-            id: z.number().min(0),
-            label: z.string().min(1)
-          }),
-          options: z.array(
-            z.object({
-              label: z.string().min(1),
-              is_correct: z.boolean()
-            })
-          )
-        })
-      )
-    })
-  })
+  templateId: z.number().int().min(1)
 });
 
 export type TExerciseFromTemplate = z.infer<typeof ZExerciseFromTemplate>;
