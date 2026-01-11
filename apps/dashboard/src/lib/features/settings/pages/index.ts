@@ -6,3 +6,4 @@ export { default as OrgPage } from './org.svelte';
 export { default as LandingpagePage } from './landingpage.svelte';
 export { default as BillingPage } from './billing.svelte';
 export { default as IntegrationsPage } from './integrations.svelte';
+export { default as SsoPage } from './sso.svelte';

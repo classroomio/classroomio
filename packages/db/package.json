@@ -22,6 +22,7 @@
     "@cio/email": "workspace:*",
     "@cio/tsconfig": "workspace:*",
     "@cio/utils": "workspace:*",
+    "@node-saml/node-saml": "^5.1.0",
     "bcrypt": "6.0.0",
     "better-auth": "^1.4.1",
     "drizzle-kit": "^0.31.5",

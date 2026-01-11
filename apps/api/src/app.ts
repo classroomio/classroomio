@@ -14,6 +14,7 @@ import { organizationRouter } from '@api/routes/organization';
 import { prettyJSON } from 'hono/pretty-json';
 import rateLimiter from '@api/middlewares/rate-limiter';
 import { secureHeaders } from 'hono/secure-headers';
+import { ssoRouter } from '@api/routes/sso';
 import { unsplashRouter } from '@api/routes/unsplash/unsplash';
 import { courseRouter } from '@api/routes/course';
 import { dashAnalyticsRouter } from '@api/routes/dash';
@@ -83,6 +84,7 @@ export const app = new Hono()
   .route('/dash', dashAnalyticsRouter)
   .route('/community', communityRouter)
   .route('/unsplash', unsplashRouter)
+  .route('/sso', ssoRouter)
 
   // Error handling
   .onError((err, c) => {
