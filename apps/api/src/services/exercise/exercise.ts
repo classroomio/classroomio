@@ -1,5 +1,3 @@
-import * as schema from '@cio/db/schema';
-
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { TExercise, TExerciseTemplate, TNewOption, TNewQuestion, TQuestionType } from '@cio/db/types';
 import type { TExerciseCreate, TExerciseUpdate } from '@cio/utils/validation/exercise';
@@ -12,12 +10,14 @@ import {
   getExercisesByCourseId,
   getLMSExercises,
   getOptionsByQuestionIds,
+  getQuestionTypesByIds,
   getQuestionsByExerciseIds,
   updateExercise,
   updateOption,
   updateQuestion
 } from '@cio/db/queries/exercise';
-import { db, inArray } from '@cio/db/drizzle';
+
+import { db } from '@cio/db/drizzle';
 
 type QuestionWithRelations = TNewQuestion & {
   question_type: {
@@ -115,9 +115,7 @@ export async function getExercise(exerciseId: string): Promise<ExerciseWithQuest
     // Fetch all question types
     const questionTypeIds = [...new Set(questions.map((q) => q.questionTypeId).filter((id) => id !== undefined))];
     const questionTypes: TQuestionType[] =
-      questionTypeIds.length > 0
-        ? await db.select().from(schema.questionType).where(inArray(schema.questionType.id, questionTypeIds))
-        : [];
+      questionTypeIds.length > 0 ? await getQuestionTypesByIds(questionTypeIds) : [];
 
     // Create a map for quick lookup
     const questionTypeMap = new Map(questionTypes.map((qt) => [qt.id, qt]));

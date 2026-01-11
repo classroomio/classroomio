@@ -667,3 +667,125 @@ export const getExploreCourses = async ({ orgId, profileId }: GetExploreCoursesO
     throw new Error(`Failed to get explore courses: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 };
+
+/**
+ * Gets course with organization data (title, org name, org siteName, groupId)
+ * @param courseId Course ID
+ * @returns Course and organization data or null if not found
+ */
+export async function getCourseWithOrgData(courseId: string): Promise<{
+  courseTitle: string | null;
+  orgName: string | null;
+  orgSiteName: string | null;
+  groupId: string | null;
+} | null> {
+  try {
+    const result = await db
+      .select({
+        courseTitle: schema.course.title,
+        orgName: schema.organization.name,
+        orgSiteName: schema.organization.siteName,
+        groupId: schema.course.groupId
+      })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
+      .where(eq(schema.course.id, courseId))
+      .limit(1);
+
+    if (result.length === 0) {
+      return null;
+    }
+
+    return result[0];
+  } catch (error) {
+    throw new Error(
+      `Failed to get course with org data "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Gets organization name by course ID
+ * @param courseId Course ID
+ * @returns Organization name or null if not found
+ */
+export async function getOrganizationByCourseId(courseId: string): Promise<{ orgName: string | null } | null> {
+  try {
+    const result = await db
+      .select({
+        orgName: schema.organization.name
+      })
+      .from(schema.organization)
+      .innerJoin(schema.group, eq(schema.group.organizationId, schema.organization.id))
+      .innerJoin(schema.course, eq(schema.course.groupId, schema.group.id))
+      .where(eq(schema.course.id, courseId))
+      .limit(1);
+
+    if (result.length === 0) {
+      return null;
+    }
+
+    return result[0];
+  } catch (error) {
+    throw new Error(
+      `Failed to get organization by course ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Updates course version
+ * @param courseId Course ID
+ * @param version Version to set ('V1' | 'V2')
+ * @param tx Optional transaction context
+ * @returns Updated course or null if not found
+ */
+export async function updateCourseVersion(
+  courseId: string,
+  version: 'V1' | 'V2',
+  tx?: Parameters<Parameters<typeof db.transaction>[0]>[0]
+): Promise<TCourse | null> {
+  try {
+    const dbInstance = tx || db;
+    const [updated] = await dbInstance
+      .update(schema.course)
+      .set({ version })
+      .where(eq(schema.course.id, courseId))
+      .returning();
+
+    return updated || null;
+  } catch (error) {
+    throw new Error(
+      `Failed to update course version "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Updates all lessons in a course to use a specific section
+ * @param courseId Course ID
+ * @param sectionId Section ID
+ * @param tx Optional transaction context
+ * @returns Number of updated lessons
+ */
+export async function updateLessonsSectionId(
+  courseId: string,
+  sectionId: string,
+  tx?: Parameters<Parameters<typeof db.transaction>[0]>[0]
+): Promise<number> {
+  try {
+    const dbInstance = tx || db;
+    const updated = await dbInstance
+      .update(schema.lesson)
+      .set({ sectionId })
+      .where(eq(schema.lesson.courseId, courseId))
+      .returning();
+
+    return updated.length;
+  } catch (error) {
+    throw new Error(
+      `Failed to update lessons section ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}

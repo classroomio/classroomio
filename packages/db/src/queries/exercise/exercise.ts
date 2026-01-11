@@ -1,6 +1,13 @@
 import * as schema from '@db/schema';
 
-import type { TExercise, TExercise as TExerciseType, TNewExercise, TNewOption, TNewQuestion } from '@db/types';
+import type {
+  TExercise,
+  TExercise as TExerciseType,
+  TNewExercise,
+  TNewOption,
+  TNewQuestion,
+  TQuestionType
+} from '@db/types';
 import { and, db, eq, inArray } from '@db/drizzle';
 
 export async function createExercises(values: TNewExercise[]) {
@@ -163,5 +170,20 @@ export async function deleteOption(optionId: number) {
     throw new Error(
       `Failed to delete option "${optionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+}
+
+/**
+ * Gets question types by IDs
+ * @param ids Array of question type IDs
+ * @returns Array of question types
+ */
+export async function getQuestionTypesByIds(ids: number[]): Promise<TQuestionType[]> {
+  if (ids.length === 0) return [];
+
+  try {
+    return db.select().from(schema.questionType).where(inArray(schema.questionType.id, ids));
+  } catch (error) {
+    throw new Error(`Failed to get question types by IDs: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

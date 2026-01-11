@@ -1,11 +1,9 @@
-import * as schema from '@cio/db/schema';
-
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { db, eq } from '@cio/db/drizzle';
+import { getCourseWithRelations, updateCourseVersion, updateLessonsSectionId } from '@cio/db/queries/course';
 
 import type { TCourse } from '@cio/db/types';
 import { createLessonSections } from '@cio/db/queries/lesson/lesson';
-import { getCourseWithRelations } from '@cio/db/queries/course';
+import { db } from '@cio/db/drizzle';
 
 /**
  * Converts a course from V1 to V2 format
@@ -30,11 +28,7 @@ export async function convertCourseToV2(courseId: string): Promise<TCourse> {
 
     return await db.transaction(async (tx) => {
       // 1. Update course version to 'V2'
-      const [updatedCourse] = await tx
-        .update(schema.course)
-        .set({ version: 'V2' })
-        .where(eq(schema.course.id, courseId))
-        .returning();
+      const updatedCourse = await updateCourseVersion(courseId, 'V2', tx);
 
       if (!updatedCourse) {
         throw new AppError('Failed to update course version', ErrorCodes.COURSE_FETCH_FAILED, 500);
@@ -55,7 +49,7 @@ export async function convertCourseToV2(courseId: string): Promise<TCourse> {
       const newSection = sections[0];
 
       // 3. Update all lessons in the course to use the new section_id
-      await tx.update(schema.lesson).set({ sectionId: newSection.id }).where(eq(schema.lesson.courseId, courseId));
+      await updateLessonsSectionId(courseId, newSection.id, tx);
 
       // Return updated course
       const finalCourse = await getCourseWithRelations(courseId);

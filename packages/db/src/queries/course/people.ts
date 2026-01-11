@@ -262,3 +262,41 @@ export async function deleteCourseMember(courseId: string, memberId: string): Pr
     throw new Error(`Failed to delete course member: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
+
+/**
+ * Gets profile data by group member ID
+ * @param groupMemberId Group member ID
+ * @returns Profile data or null if not found
+ */
+export async function getProfileByGroupMemberId(groupMemberId: string): Promise<{
+  id: string;
+  fullname: string | null;
+  username: string | null;
+  avatarUrl: string | null;
+  email: string | null;
+} | null> {
+  try {
+    const result = await db
+      .select({
+        id: schema.profile.id,
+        fullname: schema.profile.fullname,
+        username: schema.profile.username,
+        avatarUrl: schema.profile.avatarUrl,
+        email: schema.profile.email
+      })
+      .from(schema.groupmember)
+      .innerJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
+      .where(eq(schema.groupmember.id, groupMemberId))
+      .limit(1);
+
+    if (result.length === 0) {
+      return null;
+    }
+
+    return result[0];
+  } catch (error) {
+    throw new Error(
+      `Failed to get profile by group member ID "${groupMemberId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}

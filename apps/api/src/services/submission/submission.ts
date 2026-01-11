@@ -1,5 +1,3 @@
-import * as schema from '@cio/db/schema';
-
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { TNewSubmission, TSubmission } from '@cio/db/types';
 import type { TSubmissionAnswerUpdate, TSubmissionUpdate } from '@cio/utils/validation/submission';
@@ -15,14 +13,13 @@ import {
   updateSubmission,
   upsertQuestionAnswer
 } from '@cio/db/queries/submission';
+import { getCourseById, getOrganizationByCourseId } from '@cio/db/queries/course';
+import { getCourseTeachers, getProfileByGroupMemberId } from '@cio/db/queries/course/people';
 
-import { ROLE } from '@cio/utils/constants';
 import { db } from '@cio/db/drizzle';
 import { deliverEmail } from '@cio/email';
 import { env } from '@api/config/env';
-import { eq } from '@cio/db/drizzle';
-import { getCourseById } from '@cio/db/queries/course';
-import { getCourseTeachers } from '@cio/db/queries/course/people';
+import { getExerciseById } from '@cio/db/queries/exercise';
 
 /**
  * Gets a submission by ID with question answers
@@ -421,15 +418,9 @@ async function sendSubmissionUpdateEmail(submissionId: string, newStatusId: numb
   }
 
   // Get organization name
-  const orgResult = await db
-    .select({ orgName: schema.organization.name })
-    .from(schema.organization)
-    .innerJoin(schema.group, eq(schema.group.organizationId, schema.organization.id))
-    .innerJoin(schema.course, eq(schema.course.groupId, schema.group.id))
-    .where(eq(schema.course.id, fullSubmission.courseId || ''))
-    .limit(1);
+  const orgResult = await getOrganizationByCourseId(fullSubmission.courseId || '');
 
-  const orgName = orgResult[0]?.orgName || 'ClassroomIO';
+  const orgName = orgResult?.orgName || 'ClassroomIO';
 
   const statusMap: { [key: number]: string } = {
     1: 'Submitted',
@@ -484,29 +475,18 @@ async function sendExerciseSubmissionUpdateEmail(courseId: string, exerciseId: s
     return;
   }
 
-  const exerciseResult = await db.select().from(schema.exercise).where(eq(schema.exercise.id, exerciseId)).limit(1);
+  const exercise = await getExerciseById(exerciseId);
 
-  if (exerciseResult.length === 0) {
+  if (!exercise) {
     return;
   }
-
-  const exercise = exerciseResult[0];
 
   // Get student info
-  const studentResult = await db
-    .select({
-      profile: schema.profile
-    })
-    .from(schema.groupmember)
-    .innerJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
-    .where(eq(schema.groupmember.id, submittedBy))
-    .limit(1);
+  const student = await getProfileByGroupMemberId(submittedBy);
 
-  if (studentResult.length === 0) {
+  if (!student) {
     return;
   }
-
-  const student = studentResult[0].profile;
 
   // Get tutors (ADMIN or TUTOR role) from the course's group
   const tutorsResult = await getCourseTeachers({ courseId });
@@ -516,15 +496,9 @@ async function sendExerciseSubmissionUpdateEmail(courseId: string, exerciseId: s
   }
 
   // Get organization name
-  const orgResult = await db
-    .select({ orgName: schema.organization.name })
-    .from(schema.organization)
-    .innerJoin(schema.group, eq(schema.group.organizationId, schema.organization.id))
-    .innerJoin(schema.course, eq(schema.course.groupId, schema.group.id))
-    .where(eq(schema.course.id, courseId))
-    .limit(1);
+  const orgResult = await getOrganizationByCourseId(courseId);
 
-  const orgName = orgResult[0]?.orgName || 'ClassroomIO';
+  const orgName = orgResult?.orgName || 'ClassroomIO';
 
   const baseUrl = env.NODE_ENV === 'development' ? 'http://localhost:5173' : 'https://app.classroomio.com';
   const exerciseLink = `${baseUrl}/courses/${courseId}/lessons/${exercise.lessonId}/exercises/${exerciseId}`;
