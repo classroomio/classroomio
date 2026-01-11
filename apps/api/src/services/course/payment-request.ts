@@ -1,9 +1,8 @@
 import * as schema from '@cio/db/schema';
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { db, eq } from '@cio/db/drizzle';
 
-import { db } from '@cio/db/drizzle';
-import { eq } from 'drizzle-orm';
 import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { sendEmail } from '@cio/email';
 

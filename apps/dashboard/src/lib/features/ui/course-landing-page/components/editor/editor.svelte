@@ -155,7 +155,9 @@
       type: course.type!,
       slug: course.slug!,
       isPublished: course.isPublished ?? undefined,
-      overview: course.overview ?? undefined
+      overview: course.overview ?? undefined,
+      isCertificateDownloadable: course.isCertificateDownloadable ?? undefined,
+      certificateTheme: course.certificateTheme ?? undefined
     });
 
     loading = false;
@@ -179,12 +181,10 @@
 </script>
 
 <Sidebar.Header
-  class="flex flex-row! items-center {sidebar.open || !sidebar.isMobile
-    ? 'justify-between'
-    : 'justify-center'} border-b px-2 py-2"
+  class="flex flex-row! items-center {sidebar.open ? 'justify-between' : 'justify-center'} border-b px-2 py-2"
 >
   {#if !selectedSection}
-    {#if sidebar.open && !sidebar.isMobile}
+    {#if sidebar.open}
       <CloseButton onClick={handleClose} />
 
       <div class="flex items-center gap-1" data-open={sidebar.open} data-mobile={sidebar.isMobile}>
@@ -220,7 +220,7 @@
 
 <Sidebar.Content class="flex-1 overflow-y-auto">
   {#if !selectedSection}
-    {#if sidebar.open || !sidebar.isMobile}
+    {#if sidebar.open}
       <Sidebar.Group>
         <Sidebar.GroupLabel class="px-2">
           {$t('course.navItem.landing_page.editor.page_builder')}

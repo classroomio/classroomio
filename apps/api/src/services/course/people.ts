@@ -9,13 +9,12 @@ import {
   getCourseTeachers,
   updateCourseMember
 } from '@cio/db/queries/course/people';
+import { db, eq } from '@cio/db/drizzle';
 
 import { ROLE } from '@cio/utils/constants';
 import type { TAddCourseMembers } from '@cio/utils/validation/course/people';
 import type { TGroupmember } from '@cio/db/types';
-import { db } from '@cio/db/drizzle';
 import { env } from '@api/config/env';
-import { eq } from 'drizzle-orm';
 import { sendEmail } from '@cio/email';
 
 /**

@@ -7,11 +7,12 @@
   import { page } from '$app/state';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import { getOrgNavigationItems } from '$features/ui/navigation/org-navigation';
-  import { HoverableItem } from '@cio/ui/custom/moving-icons';
 
   const items = $derived(getOrgNavigationItems($currentOrgPath, $currentOrg, $isOrgAdmin, $t, page.url.pathname));
 
   const pathWithQuery = $derived(page.url.pathname + page.url.search);
+
+  let isHovered = $state({});
 </script>
 
 <Sidebar.Group>
@@ -25,16 +26,17 @@
               {#snippet child({ props })}
                 <Sidebar.MenuButton {...props} tooltipContent={item.title} isActive={item.isActive}>
                   {#snippet child({ props })}
-                    <a href={item.url} {...props}>
+                    <a
+                      href={item.url}
+                      {...props}
+                      onmouseenter={() => (isHovered[item.title] = true)}
+                      onmouseleave={() => (isHovered[item.title] = false)}
+                    >
                       {#if item.icon}
-                        <HoverableItem {...props}>
-                          {#snippet children(isHovered)}
-                            {@const Icon = item.icon}
-                            <Icon {isHovered} size={16} class="custom" />
+                        {@const Icon = item.icon}
+                        <Icon isHovered={isHovered[item.title]} size={16} class="custom" />
 
-                            <span>{item.title}</span>
-                          {/snippet}
-                        </HoverableItem>
+                        <span>{item.title}</span>
                       {:else}
                         <span>{item.title}</span>
                       {/if}
