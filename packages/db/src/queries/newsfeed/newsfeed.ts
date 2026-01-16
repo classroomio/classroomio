@@ -57,6 +57,7 @@ export async function getNewsfeedByCourseIdPaginated(
     authorFullname: string | null;
     authorUsername: string | null;
     authorAvatarUrl: string | null;
+    commentCount: number;
   })[];
   totalCount: number;
   hasMore: boolean;
@@ -79,11 +80,12 @@ export async function getNewsfeedByCourseIdPaginated(
       .where(eq(schema.courseNewsfeed.courseId, courseId));
     const totalCount = Number(totalCountResult[0]?.count || 0);
 
-    // Fetch feeds with author profile (limit + 1 to check if there are more)
+    // Fetch feeds with author profile and comment count (limit + 1 to check if there are more)
     const feeds = await db
       .select({
         feed: schema.courseNewsfeed,
-        profile: schema.profile
+        profile: schema.profile,
+        commentCount: getCommentCount()
       })
       .from(schema.courseNewsfeed)
       .leftJoin(schema.groupmember, eq(schema.courseNewsfeed.authorId, schema.groupmember.id))
@@ -105,7 +107,8 @@ export async function getNewsfeedByCourseIdPaginated(
         authorProfileId: row.profile?.id || null,
         authorFullname: row.profile?.fullname || null,
         authorUsername: row.profile?.username || null,
-        authorAvatarUrl: row.profile?.avatarUrl || null
+        authorAvatarUrl: row.profile?.avatarUrl || null,
+        commentCount: Number(row.commentCount || 0)
       })),
       totalCount,
       hasMore,
@@ -459,4 +462,15 @@ export async function getNewsfeedForEmail(
       `Failed to get newsfeed data for email "${feedId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
+}
+
+function getCommentCount() {
+  return sql<number>`
+          COALESCE(
+            (SELECT COUNT(*)::int 
+             FROM ${schema.courseNewsfeedComment} 
+             WHERE ${schema.courseNewsfeedComment.courseNewsfeedId} = ${schema.courseNewsfeed.id}),
+            0
+          )
+        `.as('commentCount');
 }

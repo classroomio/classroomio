@@ -13,9 +13,9 @@
 
   let { allowedRoles = [], onDenied = () => {}, onlyStudent = false, children }: Props = $props();
 
-  const userRole: number = $derived.by(() => {
+  const userRole: number | null = $derived.by(() => {
     const user = courseApi.group.people.find((person) => person.profileId === $profile.id);
-    return user ? Number(user.roleId) : 0;
+    return user ? Number(user.roleId) : null;
   });
 
   const show = $derived.by(() => {
@@ -26,12 +26,13 @@
     }
   });
 
-  function isAllowed(userRole) {
+  function isAllowed(userRole: number | null) {
+    if (userRole === null) return false;
     return allowedRoles.includes(userRole);
   }
 
   $effect(() => {
-    if (!$isOrgAdmin && courseApi.group.people.length && !isAllowed(userRole)) {
+    if (!$isOrgAdmin && userRole !== null && !isAllowed(userRole)) {
       onDenied();
     }
   });

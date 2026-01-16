@@ -24,7 +24,6 @@ export const ZNewsfeedGetParam = z.object({
 export type TNewsfeedGetParam = z.infer<typeof ZNewsfeedGetParam>;
 
 export const ZNewsfeedListQuery = z.object({
-  courseId: z.string().min(1),
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(50).optional().default(10)
 });

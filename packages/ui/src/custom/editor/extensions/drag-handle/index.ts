@@ -43,7 +43,7 @@ function absoluteRect(node: Element) {
   const data = node.getBoundingClientRect();
   const modal = node.closest('[role="dialog"]');
 
-  if (modal && window.getComputedStyle(modal).transform !== 'none') {
+  if (modal) {
     const modalRect = modal.getBoundingClientRect();
 
     return {

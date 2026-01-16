@@ -253,11 +253,11 @@
         </p>
         |
         <p class="mx-2 dark:text-white">All required</p>
-        {#if $questionnaire.due_by}
+        {#if $questionnaire.dueBy}
           |
           <p class="mx-2 dark:text-white">
             <strong>Due by:</strong>
-            {new Date($questionnaire.due_by).toLocaleString()}
+            {new Date($questionnaire.dueBy).toLocaleString()}
           </p>
         {/if}
       </div>
@@ -324,11 +324,11 @@
   {#key currentQuestion.id}
     <!-- <div transition:fade id="question"> -->
     <div in:fly={{ x: 500, duration: 1000 }} id="question">
-      {#if QUESTION_TYPE.RADIO === currentQuestion.question_type.id}
+      {#if QUESTION_TYPE.RADIO === currentQuestion.questionType.id}
         <RadioQuestion {...renderProps} key={currentQuestion.id} hideGrading={true} />
-      {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.question_type.id}
+      {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.questionType.id}
         <CheckboxQuestion {...renderProps} key={currentQuestion.id} hideGrading={true} />
-      {:else if QUESTION_TYPE.TEXTAREA === currentQuestion.question_type.id}
+      {:else if QUESTION_TYPE.TEXTAREA === currentQuestion.questionType.id}
         <TextareaQuestion {...renderProps} key={currentQuestion.id} hideGrading={true} />
       {/if}
     </div>

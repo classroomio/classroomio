@@ -27,7 +27,7 @@
       items = filterOutDeleted(questions).map((q) => ({
         id: q.id,
         name: q.title,
-        type: q.question_type.id
+        type: q.questionType.id
       }));
     });
   }
@@ -45,7 +45,7 @@
       const order = index + 1;
       $questionnaire.questions.some((q) => {
         if (q.id === item.id) {
-          q.is_dirty = true;
+          q.isDirty = true;
           q.order = order;
           return true;
         }

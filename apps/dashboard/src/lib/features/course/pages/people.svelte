@@ -1,13 +1,11 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
-  import { Input } from '@cio/ui/base/input';
   import { Button } from '@cio/ui/base/button';
   import * as Table from '@cio/ui/base/table';
   import CopyIcon from '@lucide/svelte/icons/copy';
   import TrashIcon from '@lucide/svelte/icons/trash';
   import CheckIcon from '@lucide/svelte/icons/check';
-  import SearchIcon from '@lucide/svelte/icons/search';
 
   import { Chip } from '@cio/ui/custom/chip';
   import * as Avatar from '@cio/ui/base/avatar';
@@ -16,7 +14,7 @@
   import DeleteConfirmation from '$lib/features/course/components/people/delete-confirmation.svelte';
 
   import { profile } from '$lib/utils/store/user';
-  import type { GroupMember } from '$features/course/utils/types';
+  import type { CourseMembers, CourseMember } from '$features/course/utils/types';
   import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
   import { shortenName } from '$lib/utils/functions/string';
@@ -25,13 +23,14 @@
   import { ROLE_LABEL, ROLES } from '$lib/utils/constants/roles';
   import { peopleApi } from '$features/course/api';
   import { deleteMemberModal } from '$features/course/components/people/store';
+  import { Search } from '@cio/ui/custom/search';
 
   let member: { id?: string; email?: string; profile?: { email: string } } = $state({});
   let filterBy: string = $state(`${ROLES[0].value}`);
   let searchValue = $state('');
   let copiedEmail = $state<string | null>(null);
 
-  const people: Array<GroupMember> = $derived(sortAndFilterPeople(courseApi.group.people, filterBy));
+  const people: CourseMembers = $derived(sortAndFilterPeople(courseApi.group.people, filterBy));
 
   function filterPeople(_query, people) {
     const query = _query.toLowerCase();
@@ -48,11 +47,11 @@
 
     if (peopleApi.success) {
       courseApi.group.people = courseApi.group.people.filter((person: { id: string }) => person.id !== member.id);
-      courseApi.group.tutors = courseApi.group.tutors.filter((person: GroupMember) => person.id !== member.id);
+      courseApi.group.tutors = courseApi.group.tutors.filter((person: CourseMember) => person.id !== member.id);
     }
   }
 
-  function sortAndFilterPeople(_people: Array<GroupMember>, filterBy: string) {
+  function sortAndFilterPeople(_people: CourseMembers, filterBy: string) {
     return (_people || [])
       .filter((person) => {
         if (filterBy === 'all') return true;
@@ -60,10 +59,10 @@
         return person.roleId === Number(filterBy);
       })
       .sort(
-        (a: GroupMember, b: GroupMember) =>
+        (a: CourseMember, b: CourseMember) =>
           new Date(a.createdAt || '').getTime() - new Date(b.createdAt || '').getTime()
       )
-      .sort((a: GroupMember, b: GroupMember) => Number(a.roleId) - Number(b.roleId));
+      .sort((a: CourseMember, b: CourseMember) => Number(a.roleId) - Number(b.roleId));
   }
 
   function getEmail(person) {
@@ -103,32 +102,23 @@
 
 <DeleteConfirmation email={member.email || (member.profile && member.profile.email)} {deletePerson} />
 
-<section class="mx-2 my-5 md:mx-9">
-  <div class="flex-end mb-7 flex flex-col items-start justify-end gap-2 md:flex-row md:items-center">
-    <div class="relative max-w-[320px]">
-      <Input type="text" placeholder={$t('course.navItem.people.search')} bind:value={searchValue} class="w-full" />
-
-      <SearchIcon class="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
-    </div>
-    <div class="mb-3">
-      <Select.Root type="single" name="roles" bind:value={filterBy}>
-        <Select.Trigger class="mt-3 max-w-[80px]">
-          {$t(ROLE_LABEL[Number(filterBy)])}
-        </Select.Trigger>
-        <Select.Content>
-          <Select.Group>
-            {#each selectOptions as option (option.value)}
-              <Select.Item value={option.value} label={option.label} disabled={option.value === filterBy}>
-                {option.label}
-              </Select.Item>
-            {/each}
-          </Select.Group>
-        </Select.Content>
-      </Select.Root>
-    </div>
-    <RoleBasedSecurity allowedRoles={[1, 2]}>
-      <p class="hidden w-20 text-lg lg:block dark:text-white"></p>
-    </RoleBasedSecurity>
+<section class="space-y-2">
+  <div class="flex flex-col items-center justify-end gap-2 md:flex-row">
+    <Search placeholder={$t('course.navItem.people.search')} bind:value={searchValue} />
+    <Select.Root type="single" name="roles" bind:value={filterBy}>
+      <Select.Trigger class="max-w-[80px]">
+        {$t(ROLE_LABEL[Number(filterBy)])}
+      </Select.Trigger>
+      <Select.Content>
+        <Select.Group>
+          {#each selectOptions as option (option.value)}
+            <Select.Item value={option.value} label={option.label} disabled={option.value === filterBy}>
+              {option.label}
+            </Select.Item>
+          {/each}
+        </Select.Group>
+      </Select.Content>
+    </Select.Root>
   </div>
 
   <div class="rounded-md border">

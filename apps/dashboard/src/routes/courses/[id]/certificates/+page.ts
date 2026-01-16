@@ -1,8 +1,5 @@
-// Course data is loaded in +layout.server.ts
-export const load = async ({ parent }) => {
-  const { course, courseId } = await parent();
+export const load = ({ params }) => {
   return {
-    course,
-    courseId
+    courseId: params.id || ''
   };
 };

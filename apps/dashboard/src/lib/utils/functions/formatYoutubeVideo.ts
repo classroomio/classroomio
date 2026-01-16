@@ -2,7 +2,6 @@ import { lessonApi } from '$features/course/api';
 import { snackbar } from '$features/ui/snackbar/store';
 
 export function formatYoutubeVideo(url: string, errors: Record<string, string>) {
-  console.log(`url`, url);
   const prefix = 'https://www.youtube.com/embed';
 
   // https://www.youtube.com/embed/qajK1J1neAM

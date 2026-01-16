@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
   import { Badge } from '@cio/ui/base/badge';
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
@@ -7,16 +6,14 @@
   import UnfoldVerticalIcon from '@lucide/svelte/icons/unfold-vertical';
 
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$features/ui/snackbar/store';
-  import type { UserCourseAnalytics } from '$lib/utils/types/analytics';
-  import { peopleApi } from '$features/course/api/people.svelte';
+  import type { UserCourseAnalytics } from '$features/course/utils/types';
 
   import { Progress } from '@cio/ui/base/progress';
   import { ActivityCard, HeroProfileCard, LoadingPage } from '$features/ui';
 
   let { data } = $props();
 
-  let userCourseAnalytics: UserCourseAnalytics | undefined = $state();
+  let userCourseAnalytics: UserCourseAnalytics | undefined = $state(data.userCourseAnalytics ?? undefined);
 
   function getPercentage(a: number, b: number): number {
     if (b === 0) {
@@ -33,20 +30,6 @@
       exerciseFilter = filter;
     }
   }
-
-  async function fetchUserCourseAnalytics() {
-    try {
-      const analytics = await peopleApi.getUserCourseAnalytics(data.courseId, data.userId);
-      userCourseAnalytics = analytics as UserCourseAnalytics | undefined;
-    } catch (error) {
-      console.error('Failed to fetch user course analytics:', error);
-      snackbar.error('Failed to fetch analytics data');
-    }
-  }
-
-  onMount(() => {
-    fetchUserCourseAnalytics();
-  });
 
   let learningActivities = $derived([
     {
@@ -86,11 +69,17 @@
   let incompleteExercises = $derived(
     userCourseAnalytics?.userExercisesStats?.filter((exercise) => !exercise.isCompleted)?.length || 0
   );
+
+  $effect(() => {
+    console.log('userCourseAnalytics.user', userCourseAnalytics?.user);
+  });
 </script>
 
 {#if userCourseAnalytics}
   <section class="px-1">
-    <HeroProfileCard user={userCourseAnalytics.user} />
+    {#if userCourseAnalytics.user}
+      <HeroProfileCard user={userCourseAnalytics.user} />
+    {/if}
 
     <div class="mt-5 px-0">
       <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -152,19 +141,30 @@
               <BookOpenIcon size={16} />
               <div>
                 <div class="mb-2">
-                  <a
-                    href={`/courses/${data.courseId}/lessons/${exercise.lessonId}/exercises/${exercise.id}?tabIndex=1`}
-                  >
+                  {#if exercise.lessonId}
+                    <a
+                      href={`/courses/${data.courseId}/lessons/${exercise.lessonId}/exercises/${exercise.id}?tabIndex=1`}
+                    >
+                      <p class="text-lg font-semibold text-gray-600">
+                        {exercise.title}
+                      </p>
+                    </a>
+
+                    <a href={`/courses/${data.courseId}/lessons/${exercise.lessonId}`}>
+                      <p class="text-sm text-gray-500">
+                        #{exercise.lessonTitle}
+                      </p>
+                    </a>
+                  {:else}
                     <p class="text-lg font-semibold text-gray-600">
                       {exercise.title}
                     </p>
-                  </a>
-
-                  <a href={`/courses/${data.courseId}/lessons/${exercise.lessonId}`}>
-                    <p class="text-sm text-gray-500">
-                      #{exercise.lessonTitle}
-                    </p>
-                  </a>
+                    {#if exercise.lessonTitle}
+                      <p class="text-sm text-gray-500">
+                        #{exercise.lessonTitle}
+                      </p>
+                    {/if}
+                  {/if}
                 </div>
                 <p class="text-sm text-gray-500">
                   Score: {exercise.score}/{exercise.totalPoints}

@@ -7,6 +7,7 @@
   import * as Breadcrumb from '@cio/ui/base/breadcrumb';
   import { exerciseApi } from '$features/course/api';
   import { courseApi } from '$features/course/api';
+  import debounce from 'lodash/debounce';
 
   import { formatDate } from '$lib/utils/functions/routes/dashboard';
   import { isQuestionnaireFetching, questionnaire } from '../store/exercise';
@@ -76,9 +77,7 @@
     };
   }
 
-  async function getExercise(exerciseId: string | undefined) {
-    if (!exerciseId) return;
-
+  async function getExercise(exerciseId: string) {
     untrack(async () => {
       isQuestionnaireFetching.update(() => true);
 
@@ -92,11 +91,11 @@
         if (data.questions && Array.isArray(data.questions)) {
           questions = data.questions
             .map((question) => {
-              // Need to set the question type inorder for the select in the questionnaire builder to match
-              const questionType = QUESTION_TYPES.find((type) => type.id === question.question_type?.id);
+              // Need to set the question type in order for the select in the questionnaire builder to match
+              const questionType = QUESTION_TYPES.find((type) => type.id === question.questionType?.id);
               return {
                 ...question,
-                question_type: questionType || question.question_type
+                questionType: questionType || question.questionType
               };
             })
             .sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -106,10 +105,10 @@
           // id: data.id,
           title: data.title,
           description: data.description,
-          due_by: data.dueBy,
-          is_title_dirty: false,
-          is_description_dirty: false,
-          is_due_by_dirty: false,
+          dueBy: data.dueBy,
+          isTitleDirty: false,
+          isDescriptionDirty: false,
+          isDueByDirty: false,
           questions: questions,
           totalSubmissions: 0 // TODO: Get from submission count if needed
         });
@@ -118,19 +117,21 @@
       isQuestionnaireFetching.update(() => false);
     });
   }
+  const debouncedGetExercise = debounce(getExercise, 1000);
 
   function goBack() {
     goto(path);
   }
 
   $effect(() => {
-    if (!courseApi.course?.id || !lessonId) return;
+    if (exerciseId || !courseApi.course?.id || !lessonId) return;
 
     exerciseApi.list(courseApi.course?.id!, lessonId);
   });
 
   $effect(() => {
-    getExercise(exerciseId);
+    if (!exerciseId) return;
+    debouncedGetExercise(exerciseId);
   });
 </script>
 

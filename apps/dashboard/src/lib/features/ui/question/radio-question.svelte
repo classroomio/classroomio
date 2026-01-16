@@ -4,11 +4,13 @@
   import { CodeSnippet } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
   import { RadioItem } from '@cio/ui/custom/radio-item';
+  import * as RadioGroup from '@cio/ui/base/radio-group';
   import { HTMLRender } from '$features/ui';
   import { Grade } from '$features/ui/question';
   import { t } from '$lib/utils/functions/translations';
   import { ReasonBox } from '$features/ui/question';
   import { QuestionTitle } from '$features/ui/question';
+  import type { Question } from '$features/course/types';
 
   interface Props {
     key?: string | number;
@@ -16,7 +18,7 @@
     index?: number | string;
     code?: string;
     name?: string;
-    options?: { value: string; label: string; is_correct: boolean }[];
+    options?: Question['options'];
     onSubmit?: any;
     onPrevious?: any;
     defaultValue?: string;
@@ -63,25 +65,19 @@
   }: Props = $props();
 
   let gradeWithAI = $derived(isGradeWithAI);
+  let selectedValue = $derived(defaultValue || '');
 
-  function getRadioVal(form, name): string {
-    let val;
-    const radios = form.elements[name];
-
-    for (let i = 0, len = radios.length; i < len; i++) {
-      if (radios[i].checked) {
-        val = radios[i].value;
-        break;
-      }
+  $effect(() => {
+    if (defaultValue) {
+      selectedValue = defaultValue;
     }
-    return val;
-  }
+  });
 
   function handleFormSubmit(event) {
     if (isPreview) return;
-    const value = getRadioVal(event.target, name);
-    onSubmit(name, [value]);
+    onSubmit(name, [selectedValue]);
     event.target.reset();
+    selectedValue = '';
   }
 
   function handlePrevious(event) {
@@ -91,7 +87,7 @@
 
   function getValidationClassName(option) {
     if (defaultValue.includes(option.value)) {
-      if (option.is_correct) {
+      if (option.isCorrect) {
         return 'border-green-700';
       } else {
         return 'border-red-700';
@@ -125,23 +121,24 @@
   {/if}
 
   <div class={disableOptContainerMargin ? '' : 'ml-4'}>
-    {#each options as option}
-      <button
-        class="my-2 w-full cursor-pointer rounded-md border-2 border-gray-300 text-left hover:bg-gray-200 dark:hover:bg-neutral-800 {getValidationClassName(
-          option
-        )}"
-        type="button"
-      >
-        <RadioItem
-          className="p-2"
-          {name}
-          value={option.value}
-          checked={defaultValue.includes(option.value) && option.is_correct}
-          label={option.label || option.value}
-          {disabled}
-        />
-      </button>
-    {/each}
+    <RadioGroup.Root bind:value={selectedValue} {name}>
+      {#each options as option}
+        <button
+          class="my-2 w-full cursor-pointer rounded-md border-2 border-gray-300 text-left hover:bg-gray-200 dark:hover:bg-neutral-800 {getValidationClassName(
+            option
+          )}"
+          type="button"
+        >
+          <RadioItem
+            className="p-2"
+            value={option.value!}
+            checked={defaultValue.includes(option.value!) && option.isCorrect}
+            label={option.label || option.value}
+            {disabled}
+          />
+        </button>
+      {/each}
+    </RadioGroup.Root>
   </div>
   {#if gradeWithAI}
     <ReasonBox {reason} {isLoading} {acceptGrade} {rejectGrade} />

@@ -29,15 +29,15 @@
 
 <div class="mx-auto w-full max-w-3xl">
   <Page.Header>
-    {#if data.personId}
-      <RoleBasedSecurity allowedRoles={[1, 2]}>
-        <IconButton onclick={handleBackNavigation}>
-          <ArrowLeftIcon size={16} />
-        </IconButton>
-      </RoleBasedSecurity>
-    {/if}
     <Page.HeaderContent>
       <Page.Title>
+        {#if data.personId}
+          <RoleBasedSecurity allowedRoles={[1, 2]}>
+            <IconButton onclick={handleBackNavigation}>
+              <ArrowLeftIcon size={16} />
+            </IconButton>
+          </RoleBasedSecurity>
+        {/if}
         {$t('course.navItem.people.title')}
       </Page.Title>
     </Page.HeaderContent>

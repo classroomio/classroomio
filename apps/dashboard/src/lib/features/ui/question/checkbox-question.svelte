@@ -9,6 +9,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { QuestionTitle } from '$features/ui/question';
   import { ReasonBox } from '$features/ui/question';
+  import type { Question } from '$features/course/types';
 
   interface Props {
     key?: string | number;
@@ -16,7 +17,7 @@
     index?: string | number;
     code: any;
     name?: string;
-    options?: { value: string; label: string }[];
+    options?: Question['options'];
     onSubmit?: any;
     onPrevious?: any;
     defaultValue?: string[];
@@ -89,7 +90,7 @@
 
   function getValidationClassName(option) {
     if (defaultValue.includes(option.value)) {
-      if (option.is_correct) {
+      if (option.isCorrect) {
         return 'border-green-700';
       } else {
         return 'border-red-700';
@@ -133,8 +134,8 @@
         <CheckboxField
           {name}
           className="p-2"
-          value={option.value}
-          checked={defaultValue.includes(option.value)}
+          value={option.value!}
+          checked={defaultValue.includes(option.value!)}
           label={option.label || option.value}
           {disabled}
         />

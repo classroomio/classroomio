@@ -27,6 +27,7 @@
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { CheckboxField } from '@cio/ui/custom/checkbox-field';
   import { RadioItem } from '@cio/ui/custom/radio-item';
+  import * as RadioGroup from '@cio/ui/base/radio-group';
   import { InputField } from '@cio/ui/custom/input-field';
   import DeleteConfirmationModal from './delete-confirmation.svelte';
   import { CircleCheckIcon } from '$features/ui/icons';
@@ -79,6 +80,8 @@
     }
     isDeleting = false;
   }
+
+  $inspect($questionnaire.questions);
 </script>
 
 <DeleteConfirmationModal onCancel={() => (questionIdToDelete = null)} onDelete={onFinalDeleteClicked} />
@@ -121,9 +124,9 @@
     </IconButton>
     <IconButton
       onclick={handleAnswerSelect(question.id, option.id)}
-      class={option.is_correct ? 'fill-green-500! text-green-500!' : ''}
+      class={option.isCorrect ? 'fill-green-500! text-green-500!' : ''}
     >
-      <CircleCheckIcon size={18} filled={option.is_correct} />
+      <CircleCheckIcon size={18} filled={option.isCorrect} />
     </IconButton>
   </div>
 {/snippet}
@@ -136,15 +139,15 @@
   {/if}
   <div class="questions px-6 pt-6">
     {#each $questionnaire.questions as question, index}
-      {#if !question.deleted_at}
+      {#if !question.deletedAt}
         <QuestionContainer
-          key={question.deleted_at}
+          key={question.deletedAt}
           onClose={onInitDeleteClicked(question.id)}
           scrollToQuestion={shouldScrollToLast(question.id, $questionnaire.questions)}
           bind:points={question.points}
           hasError={!!errors[question.id]}
           onPointsChange={() => {
-            question.is_dirty = true;
+            question.isDirty = true;
           }}
         >
           <div class="flex items-center justify-between">
@@ -154,24 +157,28 @@
                 bind:value={question.title}
                 isRequired={true}
                 onchange={() => {
-                  question.is_dirty = true;
+                  question.isDirty = true;
                 }}
               />
             </div>
 
             <Select.Root
               type="single"
+              value={question.questionType.toString()}
               onValueChange={(value) => {
                 if (!value) return;
                 const id = parseInt(value);
+                console.log('id', id);
 
-                question.question_type = QUESTION_TYPES.find((q) => q.id === id) ?? QUESTION_TYPES[0];
-                question.question_type_id = question.question_type.id;
-                question.is_dirty = true;
+                question.questionType = QUESTION_TYPES.find((q) => q.id === id) ?? QUESTION_TYPES[0];
+                question.questionTypeId = question.questionType.id;
+                question.isDirty = true;
+
+                console.log('question', question);
               }}
             >
               <Select.Trigger class="w-[180px]">
-                {question?.question_type?.label ? $t(question.question_type.label) : 'Select type'}
+                {question?.questionType?.label ? $t(question.questionType.label) : 'Select type'}
               </Select.Trigger>
               <Select.Content>
                 {#each QUESTION_TYPES as type}
@@ -195,18 +202,24 @@
           {/if}
 
           <div class="mt-2 flex flex-col">
-            {#each $questionnaire.questions[index]?.options || [] as option}
-              {#if !option.deleted_at}
-                {#if QUESTION_TYPE.RADIO === question.question_type.id}
-                  <RadioItem
-                    isEditable={true}
-                    name={question.title || 'radio-name'}
-                    bind:label={option.label}
-                    onchange={addDynamicValue(question.id, option.id)}
-                  >
-                    {@render optionActions(question, option)}
-                  </RadioItem>
-                {:else if QUESTION_TYPE.CHECKBOX === question.question_type.id}
+            {#if QUESTION_TYPE.RADIO === question.questionType.id}
+              <RadioGroup.Root value="" name={question.title || 'radio-name'}>
+                {#each $questionnaire.questions[index]?.options || [] as option}
+                  {#if !option.deletedAt}
+                    <RadioItem
+                      isEditable={true}
+                      value={option.value || option.id?.toString() || ''}
+                      bind:label={option.label}
+                      onchange={addDynamicValue(question.id, option.id)}
+                    >
+                      {@render optionActions(question, option)}
+                    </RadioItem>
+                  {/if}
+                {/each}
+              </RadioGroup.Root>
+            {:else if QUESTION_TYPE.CHECKBOX === question.questionType.id}
+              {#each $questionnaire.questions[index]?.options || [] as option}
+                {#if !option.deletedAt}
                   <CheckboxField
                     isEditable={true}
                     name={question?.name || 'checkbox-name'}
@@ -216,10 +229,10 @@
                     {@render optionActions(question, option)}
                   </CheckboxField>
                 {/if}
-              {/if}
-            {/each}
+              {/each}
+            {/if}
 
-            {#if QUESTION_TYPE.TEXTAREA === question.question_type.id}
+            {#if QUESTION_TYPE.TEXTAREA === question.questionType.id}
               <TextareaField bind:value={question.value} disabled={true} />
             {/if}
 
@@ -228,7 +241,7 @@
             {/if}
           </div>
 
-          {#if QUESTION_TYPE.TEXTAREA !== question.question_type.id}
+          {#if QUESTION_TYPE.TEXTAREA !== question.questionType.id}
             <div class="mt-3 flex items-center">
               <Button variant="outline" onclick={handleAddOption(question.id)}>
                 <CirclePlusIcon size={16} />

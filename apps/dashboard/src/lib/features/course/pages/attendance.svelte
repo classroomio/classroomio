@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { Input } from '@cio/ui/base/input';
   import * as Table from '@cio/ui/base/table';
-  import Search from '@lucide/svelte/icons/search';
+  import { Search } from '@cio/ui/custom/search';
   import { Checkbox } from '@cio/ui/base/checkbox';
   import * as Pagination from '@cio/ui/base/pagination';
   import { Empty } from '@cio/ui/custom/empty';
@@ -13,7 +12,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { courseApi, lessonApi, attendanceApi } from '$features/course/api';
   import { getLectureNo } from '$features/course/utils/functions';
-  import type { GroupMember, ListLessons } from '$features/course/utils/types';
+  import type { CourseMember, CourseMembers, ListLessons } from '$features/course/utils/types';
 
   interface Props {
     courseId: string;
@@ -21,7 +20,7 @@
 
   let { courseId }: Props = $props();
 
-  const students: GroupMember[] = $derived(
+  const students: CourseMembers = $derived(
     $globalStore.isStudent
       ? courseApi.group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
       : courseApi.group.people.filter((person) => !!person.profile && Number(person.roleId) === ROLE.STUDENT)
@@ -62,7 +61,7 @@
     return attendanceLookup[studentId]?.[lessonId]?.isPresent ?? false;
   }
 
-  async function handleAttendanceChange(e: any, student: GroupMember, lesson: ListLessons[number]) {
+  async function handleAttendanceChange(e: any, student: CourseMember, lesson: ListLessons[number]) {
     if ($globalStore.isStudent) return;
 
     const isPresent = e.target.checked;
@@ -113,13 +112,13 @@
   }
 
   // function for the searchbar
-  function searchStudents(query: string, _students: GroupMember[]) {
+  function searchStudents(query: string, _students: CourseMembers) {
     const lowercaseQuery = query.toLowerCase();
     return _students.filter((student) => student.profile?.fullname?.toLowerCase()?.includes(lowercaseQuery));
   }
 </script>
 
-<section class="mx-2 my-5 flex items-center lg:mx-9">
+<section class="flex items-center">
   <div class="flex w-full flex-col items-start justify-between gap-2 lg:flex-row lg:items-center">
     <div class="flex gap-5">
       <p class="flex items-center gap-2">
@@ -132,15 +131,11 @@
       </p>
     </div>
 
-    <div class="relative w-full">
-      <Input type="text" placeholder={$t('course.navItem.attendance.search_students')} bind:value={searchValue} />
-
-      <Search class="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
-    </div>
+    <Search placeholder={$t('course.navItem.attendance.search_students')} bind:value={searchValue} />
   </div>
 </section>
 
-<section class="mx-2 my-5 lg:mx-9">
+<section class="my-2 space-y-4">
   <div class="rounded-md border">
     <Table.Root>
       <Table.Header>

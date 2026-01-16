@@ -1,9 +1,10 @@
+import type { CourseMembers } from './types';
 import { ROUTES } from './constants';
 
-export function getGroupMemberId(people, profileId) {
+export function getGroupMemberId(people: CourseMembers, profileId: string): string | undefined {
   const groupMember = people.find((person) => person.profileId === profileId);
 
-  return groupMember?.id || null;
+  return groupMember?.id;
 }
 
 export function getNavItemRoute(courseId, routeId?: string) {

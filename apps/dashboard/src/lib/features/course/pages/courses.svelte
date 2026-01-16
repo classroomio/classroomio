@@ -20,7 +20,6 @@
 
   import { DeleteModal } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$features/ui/snackbar/store';
   import { courseApi } from '$features/course/api';
   import { deleteCourseModal, deleteCourseModalInitialState, courseMetaDeta } from '../utils/store';
   import { browser } from '$app/environment';

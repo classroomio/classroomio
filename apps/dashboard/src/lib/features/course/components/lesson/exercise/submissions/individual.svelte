@@ -5,6 +5,7 @@
   import { questionnaire } from '../../store/exercise';
   import { t } from '$lib/utils/functions/translations';
   import type { ExerciseSubmissions } from '$features/course/utils/types';
+  import type { Question } from '$features/course/types';
 
   interface Props {
     isLoading?: boolean;
@@ -32,13 +33,9 @@
     });
   };
 
-  const isCorrect = (
-    student: ExerciseSubmissions,
-    questionId: number,
-    option: { is_correct?: boolean; value?: string | null }
-  ) => {
+  const isCorrect = (student: ExerciseSubmissions, questionId: number, option: Question['options'][number]) => {
     if (!isSelected(student, questionId, option.value || null)) return '';
-    if (option.is_correct) {
+    if (option.isCorrect) {
       return 'border-green-700';
     } else {
       return 'border-red-700';
@@ -92,7 +89,7 @@
       {#each $questionnaire.questions as q, i}
         <div class="pb-4">
           <h3 class="text-lg">{i + 1}. {q.title}</h3>
-          {#if q.question_type_id !== 3}
+          {#if q.questionTypeId !== 3}
             {#each q.options as option}
               {@const questionId = typeof q.id === 'string' ? parseInt(q.id, 10) : q.id}
               <div

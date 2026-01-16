@@ -28,15 +28,16 @@
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.description.title')}
         bind:value={$questionnaire.title}
         className="mb-2"
-        onchange={() => ($questionnaire.is_title_dirty = true)}
+        onchange={() => ($questionnaire.isTitleDirty = true)}
       />
       <InputField
         label={$t('course.navItem.lessons.exercises.all_exercises.view_mode.due')}
         className="w-50"
         type="datetime-local"
-        bind:value={$questionnaire.due_by}
-        onchange={() => {
-          $questionnaire.is_due_by_dirty = true;
+        value={$questionnaire.dueBy ?? ''}
+        onchange={(e) => {
+          $questionnaire.dueBy = e.currentTarget.value;
+          $questionnaire.isDueByDirty = true;
         }}
       />
 
@@ -46,9 +47,9 @@
         </p>
 
         <TextEditor
-          content={$questionnaire.description}
+          content={$questionnaire.description || ''}
           onChange={(html) => {
-            $questionnaire.is_description_dirty = true;
+            $questionnaire.isDescriptionDirty = true;
             $questionnaire.description = html;
           }}
           editorClass="max-h-[300px]"
@@ -71,11 +72,11 @@
         <p class="mx-2 dark:text-white">
           {$t('course.navItem.lessons.exercises.all_exercises.view_mode.all')}
         </p>
-        {#if $questionnaire.due_by}
+        {#if $questionnaire.dueBy}
           |
           <p class="mx-2 dark:text-white">
             <strong>{$t('course.navItem.lessons.exercises.all_exercises.view_mode.due')}:</strong>
-            {new Date($questionnaire.due_by).toLocaleString()}
+            {new Date($questionnaire.dueBy).toLocaleString()}
           </p>
         {/if}
       </div>

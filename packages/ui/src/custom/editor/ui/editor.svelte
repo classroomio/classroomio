@@ -71,10 +71,7 @@
         AudioExtended(AudioExtendedComp),
         IFramePlaceholder(IFramePlaceHolderComp),
         IFrameExtended(IFrameExtendedComp),
-        slashcommand(SlashCommandList),
-        Placeholder.configure({
-          placeholder
-        })
+        slashcommand(SlashCommandList)
       ],
       {
         onUpdate,

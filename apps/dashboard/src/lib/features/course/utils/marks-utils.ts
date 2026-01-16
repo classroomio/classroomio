@@ -1,4 +1,4 @@
-import type { GroupMember } from '$features/course/utils/types';
+import type { CourseMembers } from '$features/course/utils/types';
 import type { ListLessons } from './types';
 import type { Marks } from './types';
 import Papa from 'papaparse';
@@ -37,7 +37,7 @@ export type StudentExerciseData =
 export interface MarksPageData {
   studentMarksByExerciseId: StudentMarksByExercise;
   lessonMapping: LessonExerciseMapping;
-  students: GroupMember[];
+  students: CourseMembers;
 }
 
 /**
@@ -136,7 +136,7 @@ export function processMarksIntoLessonMapping(marks: Marks): LessonExerciseMappi
  * @param courseTitle Course title for filename
  */
 export function generateMarksCSV(
-  students: GroupMember[],
+  students: CourseMembers,
   lessons: ListLessons,
   lessonMapping: LessonExerciseMapping,
   studentMarksByExerciseId: StudentMarksByExercise,
@@ -183,7 +183,7 @@ export function generateMarksCSV(
  * @param courseTitle Course title for filename and header
  */
 export function generateMarksPDF(
-  students: GroupMember[],
+  students: CourseMembers,
   lessons: ListLessons,
   lessonMapping: LessonExerciseMapping,
   studentMarksByExerciseId: StudentMarksByExercise,

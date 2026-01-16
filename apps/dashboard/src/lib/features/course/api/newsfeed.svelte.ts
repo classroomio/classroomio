@@ -22,7 +22,10 @@ import {
   ZNewsfeedUpdate
 } from '@cio/utils/validation/newsfeed';
 
+import { get } from 'svelte/store';
+import { getTextFromHTML } from '$lib/utils/functions/toHtml';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
+import { profile } from '$lib/utils/store/user';
 import { snackbar } from '$features/ui/snackbar/store';
 
 export type NewsfeedCommentsByFeedId = {
@@ -65,7 +68,7 @@ export class NewsfeedApi extends BaseApiWithErrors {
       requestFn: () =>
         classroomio.course[':courseId'].newsfeed.$get({
           param: { courseId },
-          query: { courseId }
+          query: {}
         }),
       logContext: 'listing newsfeed',
       onSuccess: (response) => {
@@ -74,9 +77,6 @@ export class NewsfeedApi extends BaseApiWithErrors {
           for (const feed of this.feeds) {
             this.initComments(feed.id, 0);
           }
-
-          this.success = true;
-          this.errors = {};
         }
       },
       onError: (result) => {
@@ -97,12 +97,6 @@ export class NewsfeedApi extends BaseApiWithErrors {
           param: { courseId, feedId }
         }),
       logContext: 'fetching newsfeed item',
-      onSuccess: (response) => {
-        if (response.data) {
-          this.success = true;
-          this.errors = {};
-        }
-      },
       onError: (result) => {
         if (typeof result === 'string') {
           snackbar.error('Failed to fetch newsfeed item');
@@ -115,7 +109,7 @@ export class NewsfeedApi extends BaseApiWithErrors {
    * Creates a new newsfeed item
    */
   async create(courseId: string, fields: TNewsfeedCreate) {
-    const result = ZNewsfeedCreate.safeParse({ ...fields, courseId });
+    const result = ZNewsfeedCreate.safeParse({ ...fields, content: getTextFromHTML(fields.content), courseId });
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'newsfeed');
       return;
@@ -131,11 +125,19 @@ export class NewsfeedApi extends BaseApiWithErrors {
       onSuccess: (response) => {
         if (response.data) {
           snackbar.success('Post created successfully');
-          // Ensure feeds is an array before spreading
           const feedsArray = Array.isArray(this.feeds) ? this.feeds : [];
-          this.feeds = [...feedsArray, response.data];
-          this.success = true;
-          this.errors = {};
+          const author = get(profile);
+
+          const newFeed = {
+            ...response.data,
+            authorProfileId: author.id,
+            authorFullname: author.fullname,
+            authorUsername: author.username,
+            authorAvatarUrl: author.avatarUrl,
+            commentCount: 0
+          };
+
+          this.feeds = [...feedsArray, newFeed];
         }
       },
       onError: (result) => {
@@ -158,7 +160,11 @@ export class NewsfeedApi extends BaseApiWithErrors {
    * Updates a newsfeed item (content and isPinned only)
    */
   async update(courseId: string, feedId: string, fields: TNewsfeedUpdate) {
-    const result = ZNewsfeedUpdate.safeParse(fields);
+    const result = ZNewsfeedUpdate.safeParse({
+      ...fields,
+      content: getTextFromHTML(fields.content ?? '')
+    });
+
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'newsfeed');
       return;
@@ -174,13 +180,21 @@ export class NewsfeedApi extends BaseApiWithErrors {
       onSuccess: (response) => {
         if (response.data) {
           snackbar.success('Post updated successfully');
-          // Update local state
+          // Update local state, preserving author fields from existing feed
           const index = this.feeds.findIndex((f) => f.id === feedId);
           if (index !== -1) {
-            this.feeds[index] = response.data;
+            const existingFeed = this.feeds[index];
+            // Merge response data with existing feed to preserve author fields
+            this.feeds[index] = {
+              ...existingFeed,
+              ...response.data,
+              // Preserve author fields from existing feed
+              authorProfileId: existingFeed.authorProfileId,
+              authorFullname: existingFeed.authorFullname,
+              authorUsername: existingFeed.authorUsername,
+              authorAvatarUrl: existingFeed.authorAvatarUrl
+            };
           }
-          this.success = true;
-          this.errors = {};
         }
       },
       onError: (result) => {
@@ -218,13 +232,21 @@ export class NewsfeedApi extends BaseApiWithErrors {
       logContext: 'updating newsfeed reaction',
       onSuccess: (response) => {
         if (response.data) {
-          // Update local state
+          // Update local state, preserving author fields from existing feed
           const index = this.feeds.findIndex((f) => f.id === feedId);
           if (index !== -1) {
-            this.feeds[index] = response.data;
+            const existingFeed = this.feeds[index];
+            // Merge response data with existing feed to preserve author fields
+            this.feeds[index] = {
+              ...existingFeed,
+              ...response.data,
+              // Preserve author fields from existing feed
+              authorProfileId: existingFeed.authorProfileId,
+              authorFullname: existingFeed.authorFullname,
+              authorUsername: existingFeed.authorUsername,
+              authorAvatarUrl: existingFeed.authorAvatarUrl
+            };
           }
-          this.success = true;
-          this.errors = {};
         }
       },
       onError: (result) => {
@@ -257,8 +279,6 @@ export class NewsfeedApi extends BaseApiWithErrors {
         if (response.data) {
           snackbar.success('Post deleted successfully');
           this.feeds = this.feeds.filter((feed) => feed.id !== feedId);
-          this.success = true;
-          this.errors = {};
         }
       },
       onError: (result) => {
@@ -313,8 +333,6 @@ export class NewsfeedApi extends BaseApiWithErrors {
             isLoading: false,
             cursor: response.data.nextCursor
           };
-          this.success = true;
-          this.errors = {};
         }
       },
       onError: (result) => {
@@ -353,8 +371,6 @@ export class NewsfeedApi extends BaseApiWithErrors {
             isLoading: false,
             cursor: response.data.nextCursor
           };
-          this.success = true;
-          this.errors = {};
         }
       },
       onError: (result) => {
@@ -376,6 +392,7 @@ export class NewsfeedApi extends BaseApiWithErrors {
     author: { id: string; username: string; fullname: string; avatarUrl: string }
   ) {
     const result = ZNewsfeedCommentCreate.safeParse({ courseNewsfeedId: feedId, content });
+    console.log('result', result);
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'newsfeed');
       return;
@@ -397,14 +414,11 @@ export class NewsfeedApi extends BaseApiWithErrors {
           if (commentState) {
             const newComment = {
               ...response.data,
-              author: {
-                profile: {
-                  id: author.id,
-                  fullname: author.fullname,
-                  username: author.username,
-                  avatarUrl: author.avatarUrl
-                }
-              }
+              // Map author data to the expected flat structure
+              authorProfileId: author.id,
+              authorFullname: author.fullname,
+              authorUsername: author.username,
+              authorAvatarUrl: author.avatarUrl
             };
             this.commentsByFeedId[feedId] = {
               ...commentState,
@@ -412,9 +426,6 @@ export class NewsfeedApi extends BaseApiWithErrors {
               totalCount: commentState.totalCount + 1
             };
           }
-
-          this.success = true;
-          this.errors = {};
         }
       },
       onError: (result) => {
@@ -442,13 +453,6 @@ export class NewsfeedApi extends BaseApiWithErrors {
           json: result.data
         }),
       logContext: 'updating newsfeed comment',
-      onSuccess: (response) => {
-        if (response.data) {
-          snackbar.success('Comment updated successfully');
-          this.success = true;
-          this.errors = {};
-        }
-      },
       onError: (result) => {
         if (typeof result === 'string') {
           snackbar.error('Failed to update comment');
@@ -480,9 +484,6 @@ export class NewsfeedApi extends BaseApiWithErrors {
               totalCount: Math.max(0, commentState.totalCount - 1)
             };
           }
-
-          this.success = true;
-          this.errors = {};
         }
       },
       onError: (result) => {

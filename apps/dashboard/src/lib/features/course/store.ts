@@ -1,7 +1,7 @@
 import type { TCourseType, TCourseVersion } from '@cio/db/types';
 import type { Course } from '$features/course/types';
 import type { LessonSectionWithLessons } from '$features/course/utils/types';
-import type { GroupMember } from '$features/course/utils/types';
+import type { CourseMembers } from '$features/course/utils/types';
 import { writable, type Writable } from 'svelte/store';
 import { lessonApi } from './api';
 
@@ -71,10 +71,10 @@ export const course: Writable<Course> = writable({ ...defaultCourse });
 
 type GroupStore = {
   id?: string;
-  tutors: GroupMember[];
-  students: GroupMember[];
-  people: GroupMember[];
-  members?: GroupMember[];
+  tutors: CourseMembers;
+  students: CourseMembers;
+  people: CourseMembers;
+  members?: CourseMembers;
   memberId?: string;
 };
 

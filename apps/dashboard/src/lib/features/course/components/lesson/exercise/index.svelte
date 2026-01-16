@@ -43,38 +43,42 @@
   let selectedTab = $state('questions');
 
   async function handleSave() {
+    console.log('handleSave', $questionnaire.questions);
     if ($globalStore.isStudent || !courseApi.course?.id) return;
-
+    console.log('validateQuestionnaire');
     const errors = validateQuestionnaire($questionnaire.questions);
+    console.log('errors', errors);
     if (Object.values(errors).length > 0) {
       return;
     }
-
+    console.log('isSaving');
     isSaving = true;
 
     reset();
-
+    console.log('reset');
     try {
       // Transform questionnaire to API format
       const questions = $questionnaire.questions
-        .filter((q) => !q.deleted_at)
+        .filter((q) => !q.deletedAt)
         .map((q) => ({
           id: q.id && !isNaN(Number(q.id)) ? Number(q.id) : undefined,
           question: q.title,
           points: q.points || 0,
           options: (q.options || [])
-            .filter((opt) => !opt.deleted_at)
+            .filter((opt) => !opt.deletedAt)
             .map((opt) => ({
               id: opt.id && !isNaN(Number(opt.id)) ? Number(opt.id) : undefined,
               label: opt.label,
-              isCorrect: opt.is_correct || false
+              isCorrect: opt.isCorrect || false
             }))
         }));
+
+      console.log('Transform questions', questions);
 
       await exerciseApi.update(courseApi.course?.id, exerciseId, {
         title: $questionnaire.title ?? '',
         description: $questionnaire.description ?? '',
-        dueBy: $questionnaire.due_by ?? '',
+        dueBy: $questionnaire.dueBy ?? '',
         questions: questions.map((q) => ({
           ...q,
           options: q.options.map((opt) => ({
@@ -84,11 +88,14 @@
         }))
       });
 
+      console.log('exerciseApi.success', exerciseApi.success);
+      console.log('exerciseApi.exercise', exerciseApi.exercise);
+
       if (exerciseApi.success && exerciseApi.exercise) {
         questionnaire.update((q) => ({
           ...q,
-          is_title_dirty: false,
-          is_description_dirty: false,
+          isTitleDirty: false,
+          isDescriptionDirty: false,
           questions: exerciseApi.exercise?.questions || q.questions
         }));
         snackbar.success('snackbar.exercise.success');
@@ -115,20 +122,30 @@
   });
 
   $effect(() => {
+    const currentTab = page.url.searchParams.get('tab') || '';
+    // Prevent self-navigation loops: only update URL when it actually changes.
+    if (currentTab === selectedTab) return;
+
     untrack(() => {
-      goto(page.url.pathname + '?tab=' + selectedTab);
+      const url = new URL(page.url);
+      url.searchParams.set('tab', selectedTab);
+      goto(url.pathname + url.search, {
+        replaceState: true,
+        keepFocus: true,
+        noScroll: true
+      });
     });
   });
-  // $effect(() => {
-  //   const addNewQ = $questionnaire?.questions?.length < 1;
-  //   console.log('addNewQ', addNewQ);
 
-  //   if (addNewQ) {
-  //     untrack(() => {
-  //       handleAddQuestion();
-  //     });
-  //   }
-  // });
+  $effect(() => {
+    const addNewQ = $questionnaire?.questions?.length < 1;
+
+    if (addNewQ) {
+      untrack(() => {
+        handleAddQuestion();
+      });
+    }
+  });
 </script>
 
 <div class="overflow-x-hidden px-4">

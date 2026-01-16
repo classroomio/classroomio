@@ -39,6 +39,7 @@ const config = {
           'https://*.senja.io',
           'https://www.youtube.com',
           'https://youtube.com',
+          'https://google.com',
           'unsafe-hashes'
         ],
         'style-src': [
@@ -60,7 +61,13 @@ const config = {
         'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
         'img-src': ['self', 'data:', 'https:'],
         'media-src': ['self', 'https:', 'data:'],
-        'frame-src': ['self', 'https://www.youtube.com', 'https://youtube.com'],
+        'frame-src': [
+          'self',
+          'https://www.youtube.com',
+          'https://youtube.com',
+          'https://www.google.com',
+          'https://google.com'
+        ],
         'connect-src': [
           'self',
           'https://*.classroomio.com',
@@ -90,6 +97,7 @@ const config = {
           'https://*.senja.io',
           'https://www.youtube.com',
           'https://youtube.com',
+          'https://google.com',
           'unsafe-hashes'
         ],
         'style-src': [
@@ -111,7 +119,13 @@ const config = {
         'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
         'img-src': ['self', 'data:', 'https:'],
         'media-src': ['self', 'https:', 'data:'],
-        'frame-src': ['self', 'https://www.youtube.com', 'https://youtube.com'],
+        'frame-src': [
+          'self',
+          'https://www.youtube.com',
+          'https://youtube.com',
+          'https://www.google.com',
+          'https://google.com'
+        ],
         'connect-src': [
           'self',
           'https://pgrest.classroomio.com',

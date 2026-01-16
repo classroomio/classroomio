@@ -26,16 +26,21 @@
   let edit = $state(false);
   let editFeed: Feed | null = $state(null);
 
+  // Page-level loading state: only used for the initial list fetch.
+  // Prevents other interactions (react/update/comment/delete) from triggering the full-page skeleton.
+  let isListing = $state(true);
+
+  // Per-feed interaction states
+  let isReactingByFeedId = $state<Record<string, boolean>>({});
+
   let query = new URLSearchParams(page.url.search);
   let feedId = query.get('feedId') || '';
 
-  const author = $derived.by(() => {
-    return {
-      id: courseApi.group.memberId || '',
-      username: $profile.username || '',
-      fullname: $profile.fullname || '',
-      avatarUrl: $profile.avatarUrl || ''
-    };
+  const author = $derived({
+    id: courseApi.group.memberId || '',
+    username: $profile.username || '',
+    fullname: $profile.fullname || '',
+    avatarUrl: $profile.avatarUrl || ''
   });
 
   const deleteComment = async (feedId: string, commentId: string) => {
@@ -43,6 +48,8 @@
   };
 
   const addNewReaction = async (reactionType: string, feedId: string, authorId: string) => {
+    if (isReactingByFeedId[feedId]) return;
+
     const reactedFeed = newsfeedApi.feeds.find((feed) => feed.id === feedId);
     if (!reactedFeed) return;
 
@@ -60,7 +67,13 @@
       [reactionType]: reactedAuthorIds
     };
 
-    await newsfeedApi.react(courseId, feedId, updatedReaction);
+    isReactingByFeedId = { ...isReactingByFeedId, [feedId]: true };
+
+    try {
+      await newsfeedApi.react(courseId, feedId, updatedReaction);
+    } finally {
+      isReactingByFeedId = { ...isReactingByFeedId, [feedId]: false };
+    }
 
     if (!newsfeedApi.success) {
       snackbar.error('snackbar.course.error.reaction_error');
@@ -112,8 +125,12 @@
     return roles;
   }
 
-  onMount(() => {
-    newsfeedApi.list(courseId);
+  onMount(async () => {
+    try {
+      await newsfeedApi.list(courseId);
+    } finally {
+      isListing = false;
+    }
   });
 </script>
 
@@ -126,7 +143,7 @@
   <RoleBasedSecurity allowedRoles={[1, 2]}>
     <NewFeedModal {courseId} bind:edit bind:editFeed />
   </RoleBasedSecurity>
-  {#if newsfeedApi.isLoading}
+  {#if isListing}
     <div class="flex w-full flex-col items-center">
       <NewsFeedLoader />
       <NewsFeedLoader />
@@ -137,6 +154,7 @@
       title={$t('course.navItem.news_feed.body_header')}
       description={$t('course.navItem.news_feed.body_content')}
       icon={BookIcon}
+      variant="page"
     />
   {:else}
     {#each sortedFeeds as feed}
@@ -148,7 +166,7 @@
         </div>
       {/if}
       <NewsFeedCard
-        feed={feed as any}
+        {feed}
         comments={newsfeedApi.commentsByFeedId[feed.id]}
         {courseId}
         {deleteFeed}
@@ -160,6 +178,7 @@
         bind:edit
         bind:editFeed
         isActive={feedId === feed.id}
+        isReacting={Boolean(isReactingByFeedId[feed.id])}
       />
     {/each}
   {/if}

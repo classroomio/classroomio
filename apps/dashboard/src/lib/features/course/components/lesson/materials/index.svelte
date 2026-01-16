@@ -146,7 +146,9 @@
   async function saveLesson() {
     if (!lessonApi.lesson) return false;
 
-    console.log('updating lesson');
+    // Prevent autosave loops: we only set this back to `true` when the user edits again.
+    lessonApi.isDirty = false;
+
     await Promise.all([
       lessonApi.update(courseApi.course?.id || '', lessonId, {
         note: lessonApi.lesson.note || undefined,
@@ -246,6 +248,7 @@
     _lessonId?: string
   ) {
     if (mode === MODES.view) return;
+    if (!lessonApi.isDirty) return;
 
     if (timeoutId) clearTimeout(timeoutId);
 
@@ -317,25 +320,42 @@
     return componentNames;
   }
 
+  // Only autosave after real edits, not on every reactive update.
   $effect(() => {
-    console.log('autoSaving...');
-    if (lessonApi.lesson) {
-      autoSave(
-        {
-          note: lessonApi.lesson.note || '',
-          slideUrl: lessonApi.lesson.slideUrl || '',
-          videos: lessonApi.lesson.videos || [],
-          documents: lessonApi.lesson.documents || []
-        },
-        lessonApi.translations[lessonId] || {},
-        $isLoading,
-        lessonId
-      );
-    }
+    if (mode !== MODES.edit) return;
+    if (!lessonApi.lesson || !lessonId) return;
+    if (!lessonApi.isDirty) return;
+    if ($isLoading) return;
+
+    autoSave(
+      {
+        note: lessonApi.lesson.note || '',
+        slideUrl: lessonApi.lesson.slideUrl || '',
+        videos: lessonApi.lesson.videos || [],
+        documents: lessonApi.lesson.documents || []
+      },
+      lessonApi.translations[lessonId] || {},
+      $isLoading,
+      lessonId
+    );
   });
 
+  // Only save once when leaving edit mode.
+  let didHandleExitEdit = false;
   $effect(() => {
-    console.log('handleSave...');
+    if (!lessonId) return;
+
+    const isExitEdit = prevMode === MODES.edit && mode === MODES.view;
+
+    // reset when not in an "exit edit" state
+    if (!isExitEdit) {
+      didHandleExitEdit = false;
+      return;
+    }
+
+    if (didHandleExitEdit) return;
+    didHandleExitEdit = true;
+
     handleSave(prevMode);
   });
 

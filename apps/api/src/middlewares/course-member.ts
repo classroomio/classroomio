@@ -1,8 +1,7 @@
 import { Context, Next } from 'hono';
 
 import { ErrorCodes } from '@api/utils/errors';
-import { isUserCourseMember } from '@cio/db/queries/group';
-import { isUserOrgAdmin } from '@cio/db/queries/organization';
+import { isUserCourseMemberOrOrgAdmin } from '@cio/db/queries/group';
 
 /**
  * Middleware to check if the authenticated user is a member of a course's group
@@ -35,13 +34,8 @@ export const courseMemberMiddleware = async (c: Context, next: Next) => {
       );
     }
 
-    const { isMember, organizationId } = await isUserCourseMember(courseId, user.id);
-    if (isMember) {
-      return next();
-    }
-
-    const isOrgAdmin = await isUserOrgAdmin(organizationId!, user.id);
-    if (isOrgAdmin) {
+    const isAllowed = await isUserCourseMemberOrOrgAdmin(courseId, user.id);
+    if (isAllowed) {
       return next();
     }
 

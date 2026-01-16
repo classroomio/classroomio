@@ -19,12 +19,31 @@ import {
 
 import { db } from '@cio/db/drizzle';
 
-type QuestionWithRelations = TNewQuestion & {
-  question_type: {
+type QuestionWithRelations = {
+  id: number | string;
+  value: string;
+  name: string;
+  title: string;
+  type: number;
+  points: number;
+  order: number;
+  questionType: {
     id: number;
     label: string;
-  } | null;
-  options: TNewOption[];
+  };
+  questionTypeId: number;
+  code?: string;
+  answers?: Array<unknown>;
+  deletedAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  options: {
+    id: number | string;
+    label: string | null;
+    value: string | null;
+    isCorrect: boolean;
+    deletedAt?: string;
+  }[];
 };
 
 type ExerciseWithQuestions = TExercise & {
@@ -120,19 +139,43 @@ export async function getExercise(exerciseId: string): Promise<ExerciseWithQuest
     // Create a map for quick lookup
     const questionTypeMap = new Map(questionTypes.map((qt) => [qt.id, qt]));
 
-    // Attach options and question_type to questions
+    // Transform questions to match frontend Question type format exactly
     const questionsWithOptions = questions.map((question) => {
       const questionType = questionTypeMap.get(question.questionTypeId);
-      return {
-        ...question,
-        question_type: questionType
+      const questionTypeId = question.questionTypeId;
+      const questionOptions = options
+        .filter((opt) => opt.questionId === question.id)
+        .map((opt) => ({
+          id: opt.id!,
+          label: opt.label,
+          value: opt.value,
+          isCorrect: opt.isCorrect
+        }));
+
+      const result: QuestionWithRelations = {
+        id: question.id!,
+        value: question.title || '', // value field defaults to title
+        name: question.name || '',
+        title: question.title,
+        type: questionTypeId, // type field (same as questionTypeId)
+        points: question.points || 0,
+        order: question.order || 0,
+        questionType: questionType
           ? {
               id: questionType.id,
               label: questionType.label
             }
-          : null,
-        options: options.filter((opt) => opt.questionId === question.id)
+          : {
+              id: questionTypeId,
+              label: ''
+            },
+        questionTypeId: questionTypeId,
+        createdAt: question.createdAt || undefined,
+        updatedAt: question.updatedAt || undefined,
+        options: questionOptions
       };
+
+      return result;
     });
 
     return {

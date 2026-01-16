@@ -86,7 +86,7 @@
     <aside
       class="price-container sticky lg:hidden {editMode
         ? 'lg:bottom-2'
-        : 'lg:top-10'} m-h-fit z-0 bg-gray-50 lg:rounded-lg lg:shadow-2xl dark:bg-neutral-800 {className}"
+        : 'lg:top-10'} m-h-fit z-0 bg-gray-50 dark:bg-neutral-800 {className}"
     >
       <div class="flex items-center justify-center gap-3 px-3 py-3">
         <!-- Pricing -->
@@ -128,9 +128,9 @@
   </div>
 {:else}
   <aside
-    class="price-container lg:sticky {editMode
+    class="price-container border border-gray-200 lg:sticky {editMode
       ? 'lg:top-0'
-      : 'lg:top-10'} m-h-fit lg:rounded-lg lg:shadow-2xl dark:bg-neutral-800 {className}"
+      : 'lg:top-10'} m-h-fit dark:bg-neutral-800 {className}"
   >
     <div class="p-2 lg:p-10">
       <!-- Pricing -->

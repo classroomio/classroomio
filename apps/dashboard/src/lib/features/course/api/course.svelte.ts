@@ -25,16 +25,16 @@ import { profile } from '$lib/utils/store/user';
 import { resolve } from '$app/paths';
 import { snackbar } from '$features/ui/snackbar/store';
 import { ROLE } from '@cio/utils/constants';
-import type { GroupMember } from '../utils/types';
+import type { CourseMembers } from '../utils/types';
 import { lessonApi } from './lesson.svelte';
 import { sortLesson, sortLessonSection } from '../store';
 
 type GroupStore = {
   id?: string;
-  tutors: GroupMember[];
-  students: GroupMember[];
-  people: GroupMember[];
-  members?: GroupMember[];
+  tutors: CourseMembers;
+  students: CourseMembers;
+  people: CourseMembers;
+  members?: CourseMembers;
   memberId?: string;
 };
 
@@ -51,6 +51,11 @@ export class CourseApi extends BaseApiWithErrors {
     people: [],
     memberId: ''
   });
+
+  private loadedCourseId = $state<string | null>(null);
+  private isCourseDirty = $state(false);
+  private inFlightCourseRequest: Promise<Course | null> | null = null;
+  private inFlightCourseId = $state<string | null>(null);
 
   /**
    * Gets a course by ID
@@ -79,6 +84,67 @@ export class CourseApi extends BaseApiWithErrors {
       }
     });
     return this.course;
+  }
+
+  /**
+   * Ensures the course store is populated for a given courseId.
+   * - Fetches from the API the first time per courseId
+   * - Reuses store data on subsequent calls
+   * - Can be forced to refetch by calling `invalidateCourse(courseId)`
+   */
+  async ensureCourse(courseId: string, profileId: string) {
+    if (!courseId || !profileId) return null;
+
+    // Already loaded and not marked stale
+    if (!this.isCourseDirty && this.loadedCourseId === courseId && this.course?.id === courseId) {
+      return this.course;
+    }
+
+    // De-duplicate concurrent requests for the same courseId
+    if (this.inFlightCourseRequest && this.inFlightCourseId === courseId) {
+      return this.inFlightCourseRequest;
+    }
+
+    const request = (async () => {
+      const course = await this.get(courseId);
+      if (course) {
+        this.setCourse(course, profileId);
+        this.loadedCourseId = courseId;
+        this.isCourseDirty = false;
+      }
+      return this.course;
+    })();
+
+    this.inFlightCourseRequest = request;
+    this.inFlightCourseId = courseId;
+    try {
+      return await request;
+    } finally {
+      if (this.inFlightCourseRequest === request) {
+        this.inFlightCourseRequest = null;
+        this.inFlightCourseId = null;
+      }
+    }
+  }
+
+  /**
+   * Marks the currently loaded course as stale.
+   * Next call to `ensureCourse(courseId, profileId)` will refetch.
+   */
+  invalidateCourse(courseId?: string) {
+    if (!courseId) {
+      this.isCourseDirty = true;
+    } else if (this.loadedCourseId === courseId) {
+      this.isCourseDirty = true;
+    }
+  }
+
+  /**
+   * Forces a refetch of the course into the store (used after mutations).
+   */
+  async refreshCourse(courseId: string, profileId: string) {
+    this.invalidateCourse(courseId);
+    return this.ensureCourse(courseId, profileId);
   }
 
   /**
@@ -233,7 +299,17 @@ export class CourseApi extends BaseApiWithErrors {
       }
     });
 
-    return response?.data ?? null;
+    const updated = response?.data ?? null;
+
+    // Some update responses may omit related data (group/lessons/sections), so refresh the store.
+    if (updated) {
+      const profileId = get(profile)?.id;
+      if (profileId) {
+        await this.refreshCourse(courseId, profileId);
+      }
+    }
+
+    return updated;
   }
 
   /**
@@ -321,12 +397,11 @@ export class CourseApi extends BaseApiWithErrors {
   /**
    * Sets course data and processes related data (group, lessons, sections)
    * @param data Course data
+   * @param profileId Profile ID
    * @param setLesson Whether to set lesson data (default: true)
    */
-  setCourse(data: Course, setLesson = true) {
+  setCourse(data: Course, profileId: string, setLesson = true) {
     if (!data || !(Object.values(data) && Object.values(data).length)) return;
-
-    const profileId = get(profile).id;
 
     // Process group data
     if (data.group) {
@@ -359,8 +434,6 @@ export class CourseApi extends BaseApiWithErrors {
     if (setLesson) {
       const orderedLessons = sortLesson(data.lessons || []);
       lessonApi.lessons = orderedLessons;
-
-      console.log('orderedLessons', orderedLessons);
 
       const sectionsData = data.sections || [];
       if (sectionsData.length > 0) {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { untrack } from 'svelte';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
 
@@ -70,8 +70,14 @@
     await lessonApi.loadMoreComments(courseId, lessonId);
   }
 
-  onMount(() => {
-    lessonApi.getComments(courseId, lessonId);
+  // Fetch once per lessonId (even if there are 0 comments).
+  $effect(() => {
+    if (!courseId || !lessonId) return;
+    if (lessonApi.commentsByLessonId[lessonId]) return;
+
+    untrack(() => {
+      lessonApi.getComments(courseId, lessonId);
+    });
   });
 </script>
 

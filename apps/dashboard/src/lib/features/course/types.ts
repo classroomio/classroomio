@@ -1,3 +1,5 @@
+// Question type inferred from API Exercise response
+import type { Exercise } from './utils/types';
 import type { InferResponseType } from '@cio/api/rpc-types';
 import { classroomio } from '$lib/utils/services/api';
 
@@ -25,32 +27,18 @@ export type GetCourseResponse = InferResponseType<GetCourseRequest>;
 export type GetCourseSuccess = Extract<GetCourseResponse, { success: true }>;
 export type Course = GetCourseSuccess['data'];
 
-export type Question = {
-  id: number | string;
-  value: string;
-  name: string;
-  title: string;
-  type: number;
-  points: number;
-  order: number;
-  question_type: {
-    id: number;
-    label: string;
-  };
-  question_type_id: number;
-  code?: string;
-  // TODO: Fix this when we refactor exercises
-  answers?: Array<unknown>;
-  deleted_at?: string;
-  created_at?: string;
-  updated_at?: string;
-  is_dirty?: boolean;
-  options: {
-    id: number | string;
-    label: string | null;
-    value: string | null;
-    is_correct: boolean;
-    deleted_at?: string;
-    is_dirty?: boolean;
-  }[];
+// Base question type from API
+type ApiQuestion = NonNullable<Exercise['questions']>[number];
+type ApiOption = ApiQuestion['options'][number];
+
+// Extended option type with client-side fields
+type QuestionOption = ApiOption & {
+  isDirty?: boolean;
+};
+
+// Extended question type with client-side fields
+export type Question = Omit<ApiQuestion, 'options'> & {
+  isDirty?: boolean;
+  deletedAt?: string;
+  options: QuestionOption[];
 };

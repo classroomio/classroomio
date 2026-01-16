@@ -22,7 +22,6 @@
     points = $bindable(undefined),
     hasError = false,
     onPointsChange = () => {},
-    key,
     children
   }: Props = $props();
 
@@ -36,10 +35,6 @@
         inline: 'nearest'
       });
     }
-  });
-
-  $effect(() => {
-    console.log('container key', key);
   });
 </script>
 

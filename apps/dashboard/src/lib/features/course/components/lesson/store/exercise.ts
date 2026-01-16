@@ -15,20 +15,20 @@ export const questionnaireValidation = writable({});
 
 export const questionnaire: Writable<{
   title?: string | null;
-  due_by?: string | null;
-  is_due_by_dirty?: boolean;
-  is_title_dirty?: boolean;
+  dueBy?: string | null;
+  isDueByDirty?: boolean;
+  isTitleDirty?: boolean;
   description?: string | null;
-  is_description_dirty?: boolean;
+  isDescriptionDirty?: boolean;
   questions: Question[];
   totalSubmissions: number;
 }> = writable({
   title: '',
-  due_by: '',
-  is_due_by_dirty: false,
-  is_title_dirty: false,
+  dueBy: '',
+  isDueByDirty: false,
+  isTitleDirty: false,
   description: '',
-  is_description_dirty: false,
+  isDescriptionDirty: false,
   questions: [],
   totalSubmissions: 0
 });
@@ -46,14 +46,14 @@ export function validateQuestionnaire(questions) {
   const errors = {};
 
   for (const question of questions) {
-    if (question.question_type.id === QUESTION_TYPE.TEXTAREA || question.deleted_at) {
+    if (question.questionType.id === QUESTION_TYPE.TEXTAREA || question.deletedAt) {
       continue;
     }
     const qErrors = errors[question.id] || {};
 
-    if (question.question_type.id !== QUESTION_TYPE.TEXTAREA) {
+    if (question.questionType.id !== QUESTION_TYPE.TEXTAREA) {
       const hasEmptyOptionLabel = question.options
-        .filter((option) => !option.deleted_at)
+        .filter((option) => !option.deletedAt)
         .some((option) => option.label.trim() === '');
 
       if (hasEmptyOptionLabel) {
@@ -62,7 +62,7 @@ export function validateQuestionnaire(questions) {
       }
     }
 
-    const hasAnswer = question.options.filter((o) => !o.deleted_at).some((option) => option.is_correct);
+    const hasAnswer = question.options.filter((o) => !o.deletedAt).some((option) => option.isCorrect);
 
     if (!hasAnswer) {
       qErrors.option = 'Please mark an option as the correct answer';
@@ -89,14 +89,14 @@ export function handleAddQuestion() {
           value: '',
           points: 0,
           order: questions.length,
-          question_type: QUESTION_TYPES[0],
-          question_type_id: QUESTION_TYPES[0].id,
+          questionType: QUESTION_TYPES[0],
+          questionTypeId: QUESTION_TYPES[0].id,
           options: [
             {
               id: '1-form',
               label: '',
               value: null,
-              is_correct: false
+              isCorrect: false
             }
           ]
         }
@@ -121,7 +121,7 @@ export function handleAddOption(questionId) {
                   id: `${new Date().getTime()}-form`,
                   label: '',
                   value: '',
-                  is_correct: false
+                  isCorrect: false
                 }
               ]
             };
@@ -143,9 +143,9 @@ export function handleRemoveOption(questionId, optionId) {
       const optionsIndex = q.questions[questionIndex].options.findIndex((oItem) => oItem.id === optionId);
       if (optionsIndex === -1) return q;
 
-      q.questions[questionIndex].options[optionsIndex].deleted_at = new Date().toString();
-      q.questions[questionIndex].options[optionsIndex].is_dirty = true;
-      q.questions[questionIndex].is_dirty = true; // Mark as dirty if needed
+      q.questions[questionIndex].options[optionsIndex].deletedAt = new Date().toString();
+      q.questions[questionIndex].options[optionsIndex].isDirty = true;
+      q.questions[questionIndex].isDirty = true; // Mark as dirty if needed
 
       return q;
     });
@@ -158,7 +158,7 @@ export function handleRemoveQuestion(questionId) {
       const questionIndex = q.questions.findIndex((qItem) => qItem.id === questionId);
       if (questionIndex === -1) return q;
 
-      q.questions[questionIndex].deleted_at = new Date().toString();
+      q.questions[questionIndex].deletedAt = new Date().toString();
 
       return q;
     });
@@ -190,8 +190,8 @@ export function handleAnswerSelect(questionId, optionId) {
               ...question,
               options: question.options.map((option) => {
                 if (option.id === optionId) {
-                  option.is_correct = !option.is_correct;
-                  option.is_dirty = true;
+                  option.isCorrect = !option.isCorrect;
+                  option.isDirty = true;
                 }
                 return option;
               })
@@ -225,7 +225,7 @@ export function addDynamicValue(questionId, optionId) {
                   }
 
                   option.label = label;
-                  option.is_dirty = true;
+                  option.isDirty = true;
                 }
 
                 return option;

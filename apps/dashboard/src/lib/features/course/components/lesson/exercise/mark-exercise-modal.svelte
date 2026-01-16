@@ -69,7 +69,7 @@
           .sort((a, b) => a.order - b.order)
           .map((q) => ({
             ...q,
-            question_type: { id: q.questionTypeId }
+            questionType: { id: q.questionTypeId }
           }))
       : []
   );

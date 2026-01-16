@@ -5,9 +5,7 @@
   import * as Page from '@cio/ui/base/page';
   import { RoleBasedSecurity } from '$features/ui';
   import { currentOrg } from '$lib/utils/store/org';
-  import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
-  import { getGreeting } from '$lib/utils/functions/date.js';
   import type { AccountOrg } from '$features/app/types';
   import { newsfeedApi } from '$features/course/api';
 
@@ -37,8 +35,7 @@
   <Page.Header>
     <Page.HeaderContent>
       <Page.Title>
-        {$t(getGreeting())}
-        {$profile.fullname}!
+        {$t('course.navItem.news_feed.heading')}
       </Page.Title>
     </Page.HeaderContent>
     <Page.Action>

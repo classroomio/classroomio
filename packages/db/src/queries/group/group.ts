@@ -1,7 +1,7 @@
 import * as schema from '@db/schema';
 
 import { TNewGroup, TNewGroupmember } from '@db/types';
-import { and, eq, or } from 'drizzle-orm';
+import { and, eq, isNotNull, or } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { db } from '@db/drizzle';
@@ -43,6 +43,41 @@ export const isUserCourseMember = async (
     isMember: result.length > 0,
     organizationId: result[0].organizationId
   };
+};
+
+/**
+ * Checks if a user is either:
+ * - a member of the course's group (any role), OR
+ * - an ADMIN of the organization that owns the course's group.
+ *
+ * This is designed for middleware use to avoid doing multiple DB queries.
+ */
+export const isUserCourseMemberOrOrgAdmin = async (courseId: string, profileId: string): Promise<boolean> => {
+  const result = await db
+    .select({
+      groupMemberId: schema.groupmember.id,
+      orgMemberId: schema.organizationmember.id
+    })
+    .from(schema.course)
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .leftJoin(
+      schema.groupmember,
+      and(eq(schema.groupmember.groupId, schema.group.id), eq(schema.groupmember.profileId, profileId))
+    )
+    .leftJoin(
+      schema.organizationmember,
+      and(
+        eq(schema.organizationmember.organizationId, schema.group.organizationId),
+        eq(schema.organizationmember.profileId, profileId),
+        eq(schema.organizationmember.roleId, ROLE.ADMIN)
+      )
+    )
+    .where(
+      and(eq(schema.course.id, courseId), or(isNotNull(schema.groupmember.id), isNotNull(schema.organizationmember.id)))
+    )
+    .limit(1);
+
+  return result.length > 0;
 };
 
 /**

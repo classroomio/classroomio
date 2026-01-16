@@ -34,7 +34,7 @@
     const plugin = DragHandlePlugin({
       pluginKey: pluginKey,
       dragHandleWidth: 20,
-      scrollTreshold: 100,
+      scrollTreshold: 1000,
       dragHandleSelector: '.drag-handle',
       excludedTags: ['pre', 'code', 'table p'],
       customNodes: [],

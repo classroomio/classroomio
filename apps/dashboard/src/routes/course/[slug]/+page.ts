@@ -1,17 +1,13 @@
 import type { MetaTagsProps } from 'svelte-meta-tags';
 import { classroomio } from '$lib/utils/services/api';
-import { getApiKeyHeaders } from '$lib/utils/services/api/server';
 import type { Course } from '$features/course/types';
 
 export const load = async ({ params = { slug: '' } }) => {
   let course: Course | null = null;
   try {
-    const response = await classroomio.course.slug[':slug'].$get(
-      {
-        param: { slug: params.slug }
-      },
-      getApiKeyHeaders()
-    );
+    const response = await classroomio.course.slug[':slug'].$get({
+      param: { slug: params.slug }
+    });
 
     const result = await response.json();
     if (result.success && result.data) {

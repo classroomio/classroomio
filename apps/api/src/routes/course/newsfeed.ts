@@ -35,7 +35,8 @@ export const newsfeedRouter = new Hono()
   // Newsfeed CRUD routes
   .get('/', authMiddleware, courseMemberMiddleware, zValidator('query', ZNewsfeedListQuery), async (c) => {
     try {
-      const { courseId, cursor, limit = 10 } = c.req.valid('query');
+      const courseId = c.req.param('courseId')!;
+      const { cursor, limit = 10 } = c.req.valid('query');
       const result = await listNewsfeedPaginated(courseId, { cursor, limit });
 
       return c.json({ success: true, data: result }, 200);

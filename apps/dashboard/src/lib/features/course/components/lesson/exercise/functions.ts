@@ -1,8 +1,9 @@
 import { QUESTION_TYPE } from '$features/ui/question/constants';
+import type { Question } from '$features/course/types';
 import { toggleConfetti } from '$features/ui/confetti/store';
 
 export const isAnswerCorrect = (options, answer) => {
-  return options.some((option) => option.is_correct && option.value === answer);
+  return options.some((option) => option.isCorrect && option.value === answer);
 };
 
 /*
@@ -11,8 +12,8 @@ export const isAnswerCorrect = (options, answer) => {
   Single = only one should be correct
   Multiple = all should be correct
 */
-export function wasCorrectAnswerSelected(currentQuestion, answers, isFinished?: boolean) {
-  if (currentQuestion.question_type.id === QUESTION_TYPE.TEXTAREA) {
+export function wasCorrectAnswerSelected(currentQuestion: Question, answers, isFinished?: boolean) {
+  if (currentQuestion.questionType.id === QUESTION_TYPE.TEXTAREA) {
     return true;
   }
 
@@ -22,12 +23,12 @@ export function wasCorrectAnswerSelected(currentQuestion, answers, isFinished?: 
 
   let isCorrect = false;
 
-  if (currentQuestion.question_type.id === QUESTION_TYPE.CHECKBOX) {
+  if (currentQuestion.questionType.id === QUESTION_TYPE.CHECKBOX) {
     // Every correct answer should be in the selected answer
     isCorrect = currentQuestion.options
-      .filter((o) => o.is_correct)
+      .filter((o) => o.isCorrect)
       .every((option) => formattedAnswers?.includes(option.value));
-  } else if (currentQuestion.question_type.id === QUESTION_TYPE.RADIO) {
+  } else if (currentQuestion.questionType.id === QUESTION_TYPE.RADIO) {
     // At least one correct answer should be selected
     isCorrect = formattedAnswers?.some((answer) => isAnswerCorrect(currentQuestion.options, answer));
   }
@@ -42,8 +43,8 @@ export function wasCorrectAnswerSelected(currentQuestion, answers, isFinished?: 
 }
 
 export function getPropsForQuestion(
-  questions,
-  question,
+  questions: Question[],
+  question: Question,
   questionnaireMetaData,
   questionIndex,
   onSubmit,
@@ -52,7 +53,7 @@ export function getPropsForQuestion(
 ) {
   const { answers, isFinished } = questionnaireMetaData;
   const isLast = questionIndex === questions.length;
-  const isOpenQuesiton = question.question_type.id === QUESTION_TYPE.TEXTAREA;
+  const isOpenQuesiton = question.questionType.id === QUESTION_TYPE.TEXTAREA;
   const isCorrect = wasCorrectAnswerSelected(question, answers, isFinished);
 
   if (!isCorrect && document && document.getElementById('question')) {
@@ -100,5 +101,5 @@ export function getPropsForQuestion(
 }
 
 export function filterOutDeleted(array) {
-  return array.filter((item) => !item.deleted_at);
+  return array.filter((item) => !item.deletedAt);
 }

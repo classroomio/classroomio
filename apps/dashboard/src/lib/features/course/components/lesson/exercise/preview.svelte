@@ -29,7 +29,7 @@
 </script>
 
 {#each questions as currentQuestion, currentQuestionIndex}
-  {#if QUESTION_TYPE.RADIO === currentQuestion.question_type.id}
+  {#if QUESTION_TYPE.RADIO === currentQuestion.questionType.id}
     <RadioQuestion
       {...getPropsForQuestion(
         questions,
@@ -48,7 +48,7 @@
       {disableGrading}
       disabled={true}
     />
-  {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.question_type.id}
+  {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.questionType.id}
     <CheckboxQuestion
       {...getPropsForQuestion(
         questions,
@@ -67,7 +67,7 @@
       {disableGrading}
       disabled={true}
     />
-  {:else if QUESTION_TYPE.TEXTAREA === currentQuestion.question_type.id}
+  {:else if QUESTION_TYPE.TEXTAREA === currentQuestion.questionType.id}
     <TextareaQuestion
       {...getPropsForQuestion(
         questions,

@@ -21,7 +21,7 @@
 </script>
 
 <header
-  class="border-border ui:bg-background bg-background sticky top-0 z-50 flex h-12 w-full shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8"
+  class="border-border ui:bg-background sticky top-0 z-50 flex h-12 w-full shrink-0 items-center gap-2 border-b backdrop-blur transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8"
 >
   <div class="flex w-full items-center gap-2 px-4">
     <Sidebar.Trigger />

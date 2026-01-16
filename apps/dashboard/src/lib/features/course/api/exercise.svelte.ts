@@ -121,10 +121,11 @@ export class ExerciseApi extends BaseApiWithErrors {
   async update(courseId: string, exerciseId: string, fields: TExerciseUpdate) {
     const result = ZExerciseUpdate.safeParse(fields);
     if (!result.success) {
+      console.log('ZExerciseUpdate error', result.error);
       this.errors = mapZodErrorsToTranslations(result.error, 'exercise');
       return;
     }
-
+    console.log('result.data', result.data);
     await this.execute<UpdateExerciseRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].exercise[':exerciseId'].$put({
@@ -133,6 +134,7 @@ export class ExerciseApi extends BaseApiWithErrors {
         }),
       logContext: 'updating exercise',
       onSuccess: (response) => {
+        console.log('onSuccess', response.data);
         if (response.data) {
           snackbar.success('Exercise updated successfully');
           this.success = true;
@@ -140,6 +142,7 @@ export class ExerciseApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
+        console.log('onError', result);
         if (typeof result === 'string') {
           snackbar.error('Failed to update exercise');
           return;

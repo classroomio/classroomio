@@ -6,12 +6,16 @@
 
 /* For Placeholder */
 
-.tiptap .is-empty:not(blockquote.is-empty)::before {
+.tiptap > p.is-empty:only-child::before {
   pointer-events: none;
   float: left;
   height: 0;
-  color: var(--color-muted-foreground);
+  color: var(--muted-foreground);
   content: attr(data-placeholder);
+}
+
+.tiptap.ProseMirror {
+  outline: none;
 }
 
 /* Heading Styles */

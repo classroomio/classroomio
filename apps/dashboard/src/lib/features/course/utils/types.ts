@@ -1,5 +1,4 @@
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
-import type { TGroupmember, TProfile } from '@cio/db/types';
 
 // List lessons types
 export type ListLessonsRequest = (typeof classroomio.course)[':courseId']['lesson']['$get'];
@@ -262,7 +261,8 @@ export type CourseProgress = GetCourseProgressSuccess['data'];
 export type ListPeopleRequest = (typeof classroomio.course)[':courseId']['members']['$get'];
 export type ListPeopleResponse = InferResponseType<ListPeopleRequest> | null;
 export type ListPeopleSuccess = Extract<InferResponseType<ListPeopleRequest>, { success: true }>;
-export type People = ListPeopleSuccess['data'];
+export type CourseMembers = ListPeopleSuccess['data'];
+export type CourseMember = CourseMembers[number];
 
 export type AddPeopleRequest = (typeof classroomio.course)[':courseId']['members']['$post'];
 export type AddPeopleResponse = InferResponseType<AddPeopleRequest>;
@@ -289,11 +289,6 @@ export type GetCourseAnalyticsRequest = (typeof classroomio.course)[':courseId']
 export type GetCourseAnalyticsResponse = InferResponseType<GetCourseAnalyticsRequest>;
 export type GetCourseAnalyticsSuccess = Extract<GetCourseAnalyticsResponse, { success: true }>;
 export type CourseAnalytics = GetCourseAnalyticsSuccess['data'];
-
-// Group Member type (extends TGroupmember with profile field from API response)
-export type GroupMember = TGroupmember & {
-  profile: Pick<TProfile, 'id' | 'fullname' | 'username' | 'avatarUrl' | 'email'> | null;
-};
 
 // Derived types from Lesson
 export type LessonVideoType = NonNullable<Lesson['videos']>[number]['type'];

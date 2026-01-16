@@ -70,7 +70,7 @@
 
     $questionnaire.questions.forEach((question) => {
       const questionId = typeof question.id === 'string' ? parseInt(question.id, 10) : question.id;
-      const questionTypeId = question.question_type_id;
+      const questionTypeId = question.questionTypeId;
       const transformedQuestion: {
         title: string;
         type: number;
@@ -96,11 +96,11 @@
       } else {
         // radio or checkbox
         question.options.forEach((option) => {
-          const { value, is_correct, label } = option;
+          const { value, isCorrect, label } = option;
           const chartData: TransformedQuestionChartData = {
             option: replaceHTMLTag(label || ''),
             responses: 0,
-            isCorrect: is_correct
+            isCorrect: isCorrect
           };
 
           $submissions.forEach((studentSubmission) => {

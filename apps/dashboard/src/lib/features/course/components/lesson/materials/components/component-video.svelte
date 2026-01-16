@@ -5,14 +5,7 @@
 
   let errors: Record<string, string> = {};
   const videos = $derived(lessonApi.lesson?.videos || []);
-  let videoElements: (HTMLVideoElement | null)[] = $state([]);
-
-  $effect(() => {
-    videoElements = [
-      ...videoElements.slice(0, videos.length),
-      ...Array(Math.max(0, videos.length - videoElements.length)).fill(null)
-    ];
-  });
+  const videoElements: (HTMLVideoElement | null)[] = $derived(Array(Math.max(0, videos.length)).fill(null));
 
   function initPlyr() {
     if (typeof (window as any).Plyr === 'undefined') {

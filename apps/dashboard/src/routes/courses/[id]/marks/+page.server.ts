@@ -7,24 +7,13 @@ import {
   type MarksPageData
 } from '$features/course/utils/marks-utils';
 import { ROLE } from '@cio/utils/constants';
-import type { GroupMember } from '$features/course/utils/types';
+import type { CourseMembers } from '$features/course/utils/types';
 
-export const load = async ({ params, cookies, parent }) => {
+export const load = async ({ params, cookies }) => {
   const courseId = params.id || '';
   if (!courseId) {
     return {
-      course: null,
       courseId: '',
-      marksData: null
-    };
-  }
-
-  // Get course data from parent layout (already loaded)
-  const { course } = await parent();
-  if (!course) {
-    return {
-      course: null,
-      courseId,
       marksData: null
     };
   }
@@ -44,9 +33,16 @@ export const load = async ({ params, cookies, parent }) => {
   const studentMarksByExerciseId = processMarksIntoStudentMarksByExerciseId(marks);
   const lessonMapping = processMarksIntoLessonMapping(marks);
 
-  // Get students from course.group.members (already loaded by parent layout)
-  const students: GroupMember[] =
-    course.group?.members?.filter((member: GroupMember) => Number(member.roleId) === ROLE.STUDENT) || [];
+  // Get students via members endpoint (avoid relying on parent().course)
+  const membersRes = await classroomio.course[':courseId'].members.$get(
+    {
+      param: { courseId }
+    },
+    getApiHeaders(cookies, '')
+  );
+  const membersJson = await membersRes.json();
+  const members: CourseMembers = membersJson.success && membersJson.data ? membersJson.data : [];
+  const students: CourseMembers = members.filter((member) => Number(member.roleId) === ROLE.STUDENT);
 
   // Return processed data structure
   const marksData: MarksPageData = {
@@ -56,7 +52,6 @@ export const load = async ({ params, cookies, parent }) => {
   };
 
   return {
-    course,
     courseId,
     marksData
   };

@@ -2,10 +2,8 @@
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import type { Feed } from '$features/course/utils/types';
-  import { getTextFromHTML } from '$lib/utils/functions/toHtml';
   import { newsfeedApi } from '$features/course/api';
   import { Button } from '@cio/ui/base/button';
-  import { createNewsfeedValidation } from '$lib/utils/functions/validator';
 
   import * as Dialog from '@cio/ui/base/dialog';
   import { TextEditor } from '$features/ui';
@@ -26,12 +24,6 @@
   let newPost = $state(edit === true ? editFeed?.content : '');
 
   const onPost = async () => {
-    errors = createNewsfeedValidation(getTextFromHTML(newPost ?? ''));
-
-    if (Object.keys(errors).length || !editFeed) {
-      return;
-    }
-
     isLoading = true;
 
     try {
@@ -39,8 +31,6 @@
         await newsfeedApi.update(courseId, editFeed.id, { content: newPost ?? '' });
 
         if (newsfeedApi.success) {
-          snackbar.success('snackbar.newsfeed.success.edit');
-
           edit = false;
           newPost = '';
           newsfeedApi.closeNewFeedModal();
@@ -52,13 +42,9 @@
           isPinned: false
         });
 
-        if (!newsfeedApi.success) {
-          return;
+        if (newsfeedApi.success) {
+          resetEditor();
         }
-
-        snackbar.success('snackbar.newsfeed.success.add');
-
-        resetEditor();
       }
     } catch (error) {
       snackbar.error(
@@ -86,7 +72,7 @@
     }
   }}
 >
-  <Dialog.Content class="w-4/5 max-w-lg">
+  <Dialog.Content class="h-fit! w-fit! max-w-none!">
     <Dialog.Header>
       <Dialog.Title>
         {edit === true
@@ -94,9 +80,9 @@
           : $t('course.navItem.news_feed.heading_button.make_a_post')}
       </Dialog.Title>
     </Dialog.Header>
-    <section class="w-2/ flex h-full flex-col rounded-xl pb-3">
+    <section class="max-w-lg">
       <TextEditor
-        content={newPost || ''}
+        content={newPost || editFeed?.content || ''}
         onChange={(text) => {
           newPost = text;
         }}
@@ -106,16 +92,14 @@
       {#if errors.newPost}
         <p class="text-sm text-red-500">{errors.newPost}</p>
       {/if}
-      <div class="flex items-center justify-end py-2">
-        <div class="flex gap-2">
-          <Button variant="outline" onclick={resetEditor}>
-            {$t('course.navItem.news_feed.heading_button.cancel')}
-          </Button>
-          <Button loading={isLoading} onclick={onPost}>
-            {$t('course.navItem.news_feed.heading_button.post')}
-          </Button>
-        </div>
-      </div>
     </section>
+    <Dialog.Footer>
+      <Button variant="outline" onclick={resetEditor}>
+        {$t('course.navItem.news_feed.heading_button.cancel')}
+      </Button>
+      <Button loading={isLoading} onclick={onPost}>
+        {$t('course.navItem.news_feed.heading_button.post')}
+      </Button>
+    </Dialog.Footer>
   </Dialog.Content>
 </Dialog.Root>

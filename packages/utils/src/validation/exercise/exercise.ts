@@ -29,12 +29,13 @@ export const ZExerciseUpdate = z.object({
   title: z.string().min(1).optional(),
   description: z.string().optional(),
   lessonId: z.string().optional(),
-  dueBy: z.iso.datetime().optional(),
+  dueBy: z.string().optional(), // Changed from iso.datetime() to string to match frontend format
   questions: z
     .array(
       z.object({
         id: z.number().int().optional(),
         question: z.string().min(1),
+        questionTypeId: z.number().int().min(1).optional(), // Added to support question type updates
         points: z.number().int().min(0).optional(),
         options: z
           .array(
@@ -44,7 +45,17 @@ export const ZExerciseUpdate = z.object({
               isCorrect: z.boolean()
             })
           )
-          .min(2)
+          .refine(
+            (options) => {
+              // Allow empty arrays (for TEXTAREA questions)
+              // Require at least 2 items for non-empty arrays (RADIO/CHECKBOX questions)
+              return options.length === 0 || options.length >= 2;
+            },
+            {
+              message: 'Options must have at least 2 items for RADIO/CHECKBOX questions'
+            }
+          )
+          .optional() // Optional field - refinement only applies when options is provided
       })
     )
     .optional()

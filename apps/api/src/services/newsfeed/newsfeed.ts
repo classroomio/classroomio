@@ -125,14 +125,10 @@ export async function createNewsfeedService(
  */
 export async function updateNewsfeedService(feedId: string, data: TNewsfeedUpdate): Promise<TCourseNewsfeed> {
   try {
-    const feed = await getNewsfeedById(feedId);
-    if (!feed) {
-      throw new AppError('Newsfeed item not found', ErrorCodes.INTERNAL_ERROR, 404);
-    }
-
     const updated = await updateNewsfeed(feedId, data);
     if (!updated) {
-      throw new AppError('Failed to update newsfeed', ErrorCodes.INTERNAL_ERROR, 500);
+      // If no row was updated, it usually means the feed doesn't exist.
+      throw new AppError('Newsfeed item not found', ErrorCodes.INTERNAL_ERROR, 404);
     }
 
     return updated;
@@ -160,14 +156,10 @@ export async function updateNewsfeedReactionService(
   reaction: TCourseNewsfeed['reaction']
 ): Promise<TCourseNewsfeed> {
   try {
-    const feed = await getNewsfeedById(feedId);
-    if (!feed) {
-      throw new AppError('Newsfeed item not found', ErrorCodes.INTERNAL_ERROR, 404);
-    }
-
     const updated = await updateNewsfeed(feedId, { reaction });
     if (!updated) {
-      throw new AppError('Failed to update newsfeed reaction', ErrorCodes.INTERNAL_ERROR, 500);
+      // If no row was updated, it usually means the feed doesn't exist.
+      throw new AppError('Newsfeed item not found', ErrorCodes.INTERNAL_ERROR, 404);
     }
 
     return updated;
@@ -191,14 +183,10 @@ export async function updateNewsfeedReactionService(
  */
 export async function deleteNewsfeedService(feedId: string): Promise<TCourseNewsfeed> {
   try {
-    const feed = await getNewsfeedById(feedId);
-    if (!feed) {
-      throw new AppError('Newsfeed item not found', ErrorCodes.INTERNAL_ERROR, 404);
-    }
-
     const deleted = await deleteNewsfeed(feedId);
     if (!deleted) {
-      throw new AppError('Failed to delete newsfeed', ErrorCodes.INTERNAL_ERROR, 500);
+      // If no row was deleted, it usually means the feed doesn't exist.
+      throw new AppError('Newsfeed item not found', ErrorCodes.INTERNAL_ERROR, 404);
     }
 
     return deleted;
