@@ -183,7 +183,7 @@ importers:
         specifier: ^3.0.0
         version: 3.3.1(@sveltejs/kit@2.21.5(@sveltejs/vite-plugin-svelte@3.1.2(svelte@4.2.20)(vite@5.4.19(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.89.2)))(svelte@4.2.20)(vite@5.4.19(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.89.2)))
       '@sveltejs/kit':
-        specifier: ^2.0.0
+        specifier: ^2.21.0
         version: 2.21.5(@sveltejs/vite-plugin-svelte@3.1.2(svelte@4.2.20)(vite@5.4.19(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.89.2)))(svelte@4.2.20)(vite@5.4.19(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.89.2))
       '@sveltejs/vite-plugin-svelte':
         specifier: ^3.0.0
@@ -473,7 +473,7 @@ importers:
         specifier: ^7.22.6
         version: 7.27.6
       '@sveltejs/kit':
-        specifier: ^1.29.0
+        specifier: ^1.30.4
         version: 1.30.4(svelte@4.2.20)(vite@4.5.14(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.89.2))
       '@tailwindcss/typography':
         specifier: ^0.5.9
@@ -14369,7 +14369,7 @@ snapshots:
       devalue: 4.3.3
       esm-env: 1.2.2
       kleur: 4.1.5
-      magic-string: 0.30.17
+      magic-string: 0.30.21
       mrmime: 1.0.1
       sade: 1.8.1
       set-cookie-parser: 2.7.1
@@ -14391,14 +14391,14 @@ snapshots:
       devalue: 5.1.1
       esm-env: 1.2.2
       kleur: 4.1.5
-      magic-string: 0.30.17
+      magic-string: 0.30.21
       mrmime: 2.0.1
       sade: 1.8.1
       set-cookie-parser: 2.7.1
       sirv: 3.0.1
       svelte: 4.2.20
       vite: 5.4.19(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.89.2)
-      vitefu: 1.0.6(vite@5.4.19(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.89.2))
+      vitefu: 1.1.1(vite@5.4.19(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.89.2))
 
   '@sveltejs/kit@2.21.5(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.34.1)(vite@5.4.19(@types/node@22.15.31)(lightningcss@1.30.2)(sass@1.89.2)))(svelte@5.34.1)(vite@5.4.19(@types/node@22.15.31)(lightningcss@1.30.2)(sass@1.89.2))':
     dependencies:
@@ -14410,14 +14410,14 @@ snapshots:
       devalue: 5.1.1
       esm-env: 1.2.2
       kleur: 4.1.5
-      magic-string: 0.30.17
+      magic-string: 0.30.21
       mrmime: 2.0.1
       sade: 1.8.1
       set-cookie-parser: 2.7.1
       sirv: 3.0.1
       svelte: 5.34.1
       vite: 5.4.19(@types/node@22.15.31)(lightningcss@1.30.2)(sass@1.89.2)
-      vitefu: 1.0.6(vite@5.4.19(@types/node@22.15.31)(lightningcss@1.30.2)(sass@1.89.2))
+      vitefu: 1.1.1(vite@5.4.19(@types/node@22.15.31)(lightningcss@1.30.2)(sass@1.89.2))
 
   '@sveltejs/kit@2.21.5(@sveltejs/vite-plugin-svelte@5.1.0(svelte@5.34.1)(vite@6.3.5(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)))(svelte@5.34.1)(vite@6.3.5(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))':
     dependencies:
@@ -14429,14 +14429,14 @@ snapshots:
       devalue: 5.1.1
       esm-env: 1.2.2
       kleur: 4.1.5
-      magic-string: 0.30.17
+      magic-string: 0.30.21
       mrmime: 2.0.1
       sade: 1.8.1
       set-cookie-parser: 2.7.1
       sirv: 3.0.1
       svelte: 5.34.1
       vite: 6.3.5(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)
-      vitefu: 1.0.6(vite@6.3.5(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))
+      vitefu: 1.1.1(vite@6.3.5(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))
 
   '@sveltejs/vite-plugin-svelte-inspector@1.0.4(@sveltejs/vite-plugin-svelte@2.5.3(svelte@4.2.20)(vite@4.5.14(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.89.2)))(svelte@4.2.20)(vite@4.5.14(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.89.2))':
     dependencies:
@@ -14480,7 +14480,7 @@ snapshots:
       debug: 4.4.1
       deepmerge: 4.3.1
       kleur: 4.1.5
-      magic-string: 0.30.17
+      magic-string: 0.30.21
       svelte: 4.2.20
       svelte-hmr: 0.15.3(svelte@4.2.20)
       vite: 4.5.14(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.89.2)
@@ -15413,7 +15413,7 @@ snapshots:
 
   '@vitest/snapshot@1.6.1':
     dependencies:
-      magic-string: 0.30.17
+      magic-string: 0.30.21
       pathe: 1.1.2
       pretty-format: 29.7.0
 
@@ -21620,11 +21620,19 @@ snapshots:
     optionalDependencies:
       vite: 5.4.19(@types/node@22.15.31)(lightningcss@1.30.2)(sass@1.89.2)
 
-  vitefu@1.0.6(vite@5.4.19(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.89.2)):
+  vitefu@1.0.6(vite@6.3.5(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)):
+    optionalDependencies:
+      vite: 6.3.5(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)
+
+  vitefu@1.1.1(vite@5.4.19(@types/node@22.15.31)(lightningcss@1.30.2)(sass@1.89.2)):
+    optionalDependencies:
+      vite: 5.4.19(@types/node@22.15.31)(lightningcss@1.30.2)(sass@1.89.2)
+
+  vitefu@1.1.1(vite@5.4.19(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.89.2)):
     optionalDependencies:
       vite: 5.4.19(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.89.2)
 
-  vitefu@1.0.6(vite@6.3.5(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)):
+  vitefu@1.1.1(vite@6.3.5(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)):
     optionalDependencies:
       vite: 6.3.5(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0)
 
