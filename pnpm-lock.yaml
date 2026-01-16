@@ -183,7 +183,7 @@ importers:
         specifier: ^3.0.0
         version: 3.3.1(@sveltejs/kit@2.21.5(@sveltejs/vite-plugin-svelte@3.1.2(svelte@4.2.20)(vite@5.4.19(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.89.2)))(svelte@4.2.20)(vite@5.4.19(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.89.2)))
       '@sveltejs/kit':
-        specifier: ^2.21.0
+        specifier: ^2.0.0
         version: 2.21.5(@sveltejs/vite-plugin-svelte@3.1.2(svelte@4.2.20)(vite@5.4.19(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.89.2)))(svelte@4.2.20)(vite@5.4.19(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.89.2))
       '@sveltejs/vite-plugin-svelte':
         specifier: ^3.0.0
@@ -473,7 +473,7 @@ importers:
         specifier: ^7.22.6
         version: 7.27.6
       '@sveltejs/kit':
-        specifier: ^1.30.4
+        specifier: ^1.29.0
         version: 1.30.4(svelte@4.2.20)(vite@4.5.14(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.89.2))
       '@tailwindcss/typography':
         specifier: ^0.5.9
@@ -13006,7 +13006,7 @@ snapshots:
   '@jridgewell/gen-mapping@0.3.8':
     dependencies:
       '@jridgewell/set-array': 1.2.1
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
       '@jridgewell/trace-mapping': 0.3.25
 
   '@jridgewell/remapping@2.3.5':
@@ -13025,7 +13025,7 @@ snapshots:
   '@jridgewell/trace-mapping@0.3.25':
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
 
   '@jridgewell/trace-mapping@0.3.31':
     dependencies:
@@ -13035,7 +13035,7 @@ snapshots:
   '@jridgewell/trace-mapping@0.3.9':
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
 
   '@lemonsqueezy/lemonsqueezy.js@2.2.0': {}
 
@@ -13675,7 +13675,7 @@ snapshots:
       estree-walker: 2.0.2
       glob: 8.1.0
       is-reference: 1.2.1
-      magic-string: 0.30.17
+      magic-string: 0.30.21
     optionalDependencies:
       rollup: 3.29.5
 
@@ -15384,7 +15384,7 @@ snapshots:
     dependencies:
       '@vitest/spy': 2.1.9
       estree-walker: 3.0.3
-      magic-string: 0.30.17
+      magic-string: 0.30.21
     optionalDependencies:
       vite: 5.4.19(@types/node@22.15.31)(lightningcss@1.30.2)(sass@1.89.2)
 
@@ -15392,7 +15392,7 @@ snapshots:
     dependencies:
       '@vitest/spy': 2.1.9
       estree-walker: 3.0.3
-      magic-string: 0.30.17
+      magic-string: 0.30.21
     optionalDependencies:
       vite: 5.4.19(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.89.2)
 
@@ -15420,7 +15420,7 @@ snapshots:
   '@vitest/snapshot@2.1.9':
     dependencies:
       '@vitest/pretty-format': 2.1.9
-      magic-string: 0.30.17
+      magic-string: 0.30.21
       pathe: 1.1.2
 
   '@vitest/spy@1.6.1':
@@ -16091,7 +16091,7 @@ snapshots:
 
   code-red@1.0.4:
     dependencies:
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
       '@types/estree': 1.0.8
       acorn: 8.15.0
       estree-walker: 3.0.3
@@ -17103,7 +17103,7 @@ snapshots:
 
   esrap@1.4.9:
     dependencies:
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
 
   esrecurse@4.3.0:
     dependencies:
@@ -20502,7 +20502,7 @@ snapshots:
 
   sorcery@0.11.1:
     dependencies:
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
       buffer-crc32: 1.0.0
       minimist: 1.2.8
       sander: 0.5.1
