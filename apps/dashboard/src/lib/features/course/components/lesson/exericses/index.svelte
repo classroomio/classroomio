@@ -10,7 +10,7 @@
   import debounce from 'lodash/debounce';
 
   import { formatDate } from '$lib/utils/functions/routes/dashboard';
-  import { isQuestionnaireFetching, questionnaire } from '../store/exercise';
+  import { isQuestionnaireFetching, questionnaire, questionnaireValidation } from '../store/exercise';
 
   import Exercise from '../exercise/index.svelte';
   import { Backdrop, RoleBasedSecurity } from '$features/ui';
@@ -81,6 +81,8 @@
     untrack(async () => {
       isQuestionnaireFetching.update(() => true);
 
+      questionnaireValidation.set({});
+
       await exerciseApi.get(courseApi.course?.id!, exerciseId);
 
       if (exerciseApi.success && exerciseApi.exercise) {
@@ -112,6 +114,8 @@
           questions: questions,
           totalSubmissions: 0 // TODO: Get from submission count if needed
         });
+
+        questionnaireValidation.set({});
       }
 
       isQuestionnaireFetching.update(() => false);

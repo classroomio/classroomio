@@ -71,6 +71,7 @@ export class CourseApi extends BaseApiWithErrors {
         }),
       logContext: 'fetching course',
       onSuccess: (response) => {
+        console.log('response', response.data);
         if (response.data) {
           this.course = response.data;
           this.success = true;

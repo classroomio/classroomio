@@ -14,8 +14,12 @@
     questionnaire,
     questionnaireOrder,
     reset,
-    validateQuestionnaire
+    mapZodErrorsToQuestionErrors,
+    questionnaireValidation
   } from '../store/exercise';
+  import { ZExerciseUpdate } from '@cio/utils/validation/exercise';
+  import { mapZodErrorsToTranslations } from '$lib/utils/validation';
+  import { transformQuestionsToApiFormat } from './functions';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -43,53 +47,51 @@
   let selectedTab = $state('questions');
 
   async function handleSave() {
-    console.log('handleSave', $questionnaire.questions);
     if ($globalStore.isStudent || !courseApi.course?.id) return;
-    console.log('validateQuestionnaire');
-    const errors = validateQuestionnaire($questionnaire.questions);
-    console.log('errors', errors);
-    if (Object.values(errors).length > 0) {
+
+    // Transform questionnaire to API format for validation
+    // Include all non-deleted options (even empty ones) so Zod can catch validation errors
+    const transformedQuestions = transformQuestionsToApiFormat($questionnaire.questions, {
+      shouldFilterEmptyLabels: false
+    });
+
+    // Validate using Zod schema
+    const zodResult = ZExerciseUpdate.safeParse({
+      questions: transformedQuestions
+    });
+
+    if (!zodResult.success) {
+      const zodErrors = mapZodErrorsToTranslations(zodResult.error);
+      const questionErrors = mapZodErrorsToQuestionErrors(zodErrors, $questionnaire.questions);
+      questionnaireValidation.set(questionErrors);
+      snackbar.error('Please fix all validation errors before saving');
       return;
     }
-    console.log('isSaving');
+
     isSaving = true;
 
     reset();
-    console.log('reset');
     try {
-      // Transform questionnaire to API format
-      const questions = $questionnaire.questions
-        .filter((q) => !q.deletedAt)
-        .map((q) => ({
-          id: q.id && !isNaN(Number(q.id)) ? Number(q.id) : undefined,
-          question: q.title,
-          points: q.points || 0,
-          options: (q.options || [])
-            .filter((opt) => !opt.deletedAt)
-            .map((opt) => ({
-              id: opt.id && !isNaN(Number(opt.id)) ? Number(opt.id) : undefined,
-              label: opt.label,
-              isCorrect: opt.isCorrect || false
-            }))
-        }));
-
-      console.log('Transform questions', questions);
+      // Transform questionnaire to API format (filter empty options for API, include deleted items)
+      const questions = transformQuestionsToApiFormat($questionnaire.questions, {
+        shouldFilterEmptyLabels: true,
+        shouldIncludeDeleted: true
+      });
 
       await exerciseApi.update(courseApi.course?.id, exerciseId, {
         title: $questionnaire.title ?? '',
         description: $questionnaire.description ?? '',
         dueBy: $questionnaire.dueBy ?? '',
-        questions: questions.map((q) => ({
-          ...q,
-          options: q.options.map((opt) => ({
-            ...opt,
-            label: opt.label ?? ''
-          }))
-        }))
+        questions: questions
       });
 
-      console.log('exerciseApi.success', exerciseApi.success);
-      console.log('exerciseApi.exercise', exerciseApi.exercise);
+      // Check if there are validation errors from the API
+      if (Object.keys(exerciseApi.errors || {}).length > 0) {
+        console.log('Validation errors from API:', exerciseApi.errors);
+        snackbar.error('Please fix all validation errors before saving');
+        isSaving = false;
+        return;
+      }
 
       if (exerciseApi.success && exerciseApi.exercise) {
         questionnaire.update((q) => ({
@@ -104,7 +106,6 @@
         goto(path);
       }
     } catch (error) {
-      console.error(error);
       snackbar.error();
     }
     isSaving = false;

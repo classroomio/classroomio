@@ -1,8 +1,4 @@
-export const QUESTION_TYPE = {
-  RADIO: 1,
-  CHECKBOX: 2,
-  TEXTAREA: 3
-};
+import { QUESTION_TYPE } from '@cio/utils/validation/constants';
 
 export const QUESTION_TYPES = [
   {

@@ -17,7 +17,8 @@
   import { preventDefault } from '$lib/utils/functions/svelte';
   import { exerciseApi } from '$features/course/api';
   import { courseApi } from '$features/course/api';
-  import { QUESTION_TYPE, QUESTION_TYPES } from '$features/ui/question/constants';
+  import { QUESTION_TYPE } from '@cio/utils/validation/constants';
+  import { QUESTION_TYPES } from '$features/ui/question/constants';
   import { Button } from '@cio/ui/base/button';
 
   import OrderModal from './order-modal.svelte';
@@ -80,8 +81,6 @@
     }
     isDeleting = false;
   }
-
-  $inspect($questionnaire.questions);
 </script>
 
 <DeleteConfirmationModal onCancel={() => (questionIdToDelete = null)} onDelete={onFinalDeleteClicked} />
@@ -146,6 +145,7 @@
           scrollToQuestion={shouldScrollToLast(question.id, $questionnaire.questions)}
           bind:points={question.points}
           hasError={!!errors[question.id]}
+          errorMsg={getQuestionErrorMsg(errors, question, 'points')}
           onPointsChange={() => {
             question.isDirty = true;
           }}

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { CheckboxQuestion, RadioQuestion, TextareaQuestion } from '$features/ui/question';
-  import { QUESTION_TYPE } from '$features/ui/question/constants';
+  import { QUESTION_TYPE } from '@cio/utils/validation/constants';
   import { getPropsForQuestion } from './functions';
 
   interface Props {

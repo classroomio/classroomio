@@ -12,7 +12,7 @@
   import FileQuestionIcon from '@lucide/svelte/icons/file-question';
   import { Progress } from '@cio/ui/base/progress';
   import { removeDuplicate } from '$lib/utils/functions/removeDuplicate';
-  import { QUESTION_TYPE } from '$features/ui/question/constants';
+  import { QUESTION_TYPE } from '@cio/utils/validation/constants';
   import { STATUS } from './constants';
   import { getPropsForQuestion, filterOutDeleted, wasCorrectAnswerSelected } from './functions';
   import { formatAnswers, getGroupMemberId } from '$features/course/utils/functions';

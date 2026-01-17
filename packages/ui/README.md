@@ -32,11 +32,13 @@ packages/ui/
 All components in the `base` directory are primarily from [shadcn-svelte](https://www.shadcn-svelte.com/). These are the foundational UI components that follow the shadcn design system.
 
 **Guidelines:**
+
 - Any new component from shadcn-svelte should be added to the `base` directory
 - Components are organized in their own folders with an `index.ts` file for exports
 - Each component folder typically contains the main component file(s) and an `index.ts` export file
 
 **Examples:**
+
 - `base/button/` - Button component from shadcn-svelte
 - `base/dialog/` - Dialog component from shadcn-svelte
 - `base/tooltip/` - Tooltip component from shadcn-svelte
@@ -55,6 +57,7 @@ Components in the `custom` directory come from various sources or are built on t
    - Custom implementations that extend base component functionality
 
 **Examples:**
+
 - `custom/underline-tabs/` - From shadcn-svelte-extras
 - `custom/editor/` - Rich text editor based on Edra/Tiptap
 - `custom/image-cropper/` - Custom image cropping component
@@ -65,10 +68,12 @@ Components in the `custom` directory come from various sources or are built on t
 Reusable Svelte hooks are located in the `src/hooks/` directory. These are Svelte 5 runes-based utilities that can be used across components.
 
 **Available Hooks:**
+
 - `is-mobile.svelte.ts` - Media query hook for mobile breakpoints
 - `use-clipboard.svelte.ts` - Clipboard copy functionality with state management
 
 **Usage:**
+
 ```svelte
 <script lang="ts">
   import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
@@ -85,21 +90,21 @@ Utility functions and helpers are located in `src/tools/`. The main utility is t
 The `cn` utility function is used throughout the codebase for merging Tailwind CSS classes. It combines `clsx` and `tailwind-merge` to handle class conflicts intelligently.
 
 **Import:**
+
 ```typescript
 import { cn } from '../../tools';
 ```
 
 **Example usage:**
+
 ```svelte
 <script lang="ts">
   import { cn } from '../../tools';
-  
+
   let { class: className } = $props();
 </script>
 
-<div class={cn('ui:bg-primary ui:text-white', className)}>
-  Content
-</div>
+<div class={cn('ui:bg-primary ui:text-white', className)}>Content</div>
 ```
 
 The `cn` function is exported from `src/tools/index.ts` and is also available as a named export from the main package:
@@ -115,10 +120,9 @@ All Tailwind CSS classes in this package use a custom prefix: **`ui`**
 This ensures that styles don't conflict with other Tailwind configurations in consuming applications.
 
 **Usage:**
+
 ```svelte
-<div class="ui:bg-primary ui:text-primary-foreground ui:rounded-md">
-  Content
-</div>
+<div class="ui:bg-primary ui:text-primary-foreground ui:rounded-md">Content</div>
 ```
 
 **Note:** When adding new components or styles, always use the `ui:` prefix for all Tailwind classes.
@@ -138,6 +142,7 @@ export * as Tooltip from './base/tooltip';
 ```
 
 **Usage:**
+
 ```svelte
 <script lang="ts">
   import { Button, Dialog, Tooltip } from '@cio/ui';
@@ -161,6 +166,7 @@ export { IconButton } from './custom/icon-button';
 ```
 
 **Usage:**
+
 ```svelte
 <script lang="ts">
   import { UnderlineTabs, Chip, IconButton } from '@cio/ui';
@@ -175,12 +181,7 @@ Each component directory contains an `index.ts` file that exports the component 
 // base/button/index.ts
 import Root, { type ButtonProps, buttonVariants } from './button.svelte';
 
-export {
-  Root,
-  Root as Button,
-  type ButtonProps,
-  buttonVariants
-};
+export { Root, Root as Button, type ButtonProps, buttonVariants };
 ```
 
 ## Adding New Components

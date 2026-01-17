@@ -10,6 +10,7 @@
     scrollToQuestion?: boolean;
     points?: any;
     hasError?: boolean;
+    errorMsg?: string | null;
     onPointsChange?: any;
     key?: string;
     children?: import('svelte').Snippet;
@@ -21,6 +22,7 @@
     scrollToQuestion = false,
     points = $bindable(undefined),
     hasError = false,
+    errorMsg = null,
     onPointsChange = () => {},
     children
   }: Props = $props();
@@ -64,6 +66,10 @@
           onchange={onPointsChange}
         />
       </div>
+
+      {#if errorMsg}
+        <p class="text-xs text-red-500">{errorMsg}</p>
+      {/if}
 
       {#if onClose && !isTitle}
         <IconButton onclick={onClose}>

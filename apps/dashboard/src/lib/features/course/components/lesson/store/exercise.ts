@@ -1,4 +1,4 @@
-import { QUESTION_TEMPLATE, QUESTION_TYPE, QUESTION_TYPES } from '$features/ui/question/constants';
+import { QUESTION_TEMPLATE, QUESTION_TYPES } from '$features/ui/question/constants';
 
 import type { Question } from '$features/course/types';
 import type { Writable } from 'svelte/store';
@@ -42,35 +42,37 @@ export function reset() {
   });
 }
 
-export function validateQuestionnaire(questions) {
-  const errors = {};
+/**
+ * Maps Zod validation errors to UI format: { questionId: { option: 'error message' } }
+ * This is used to display errors in the edit-mode component
+ */
+export function mapZodErrorsToQuestionErrors(
+  zodErrors: Record<string, string>,
+  questions: Question[]
+): Record<string, { option?: string; title?: string; points?: string }> {
+  const errors: Record<string, { option?: string; title?: string; points?: string }> = {};
+  for (const [path, message] of Object.entries(zodErrors)) {
+    const pathParts = path.split('.');
+    const questionIndex = pathParts[0] === 'questions' ? parseInt(pathParts[1]) : -1;
 
-  for (const question of questions) {
-    if (question.questionType.id === QUESTION_TYPE.TEXTAREA || question.deletedAt) {
-      continue;
-    }
-    const qErrors = errors[question.id] || {};
+    if (questionIndex >= 0 && questionIndex < questions.length) {
+      const question = questions[questionIndex];
+      if (question && !question.deletedAt) {
+        const qErrors = errors[question.id] || {};
 
-    if (question.questionType.id !== QUESTION_TYPE.TEXTAREA) {
-      const hasEmptyOptionLabel = question.options
-        .filter((option) => !option.deletedAt)
-        .some((option) => option.label.trim() === '');
+        // Check if error is related to options
+        if (path.includes('options')) {
+          qErrors.option = message;
+        } else if (path.includes('question')) {
+          qErrors.title = message;
+        } else if (path.includes('points')) {
+          qErrors.points = message;
+        }
 
-      if (hasEmptyOptionLabel) {
-        qErrors.option = 'Please enter a label for all options';
         errors[question.id] = { ...qErrors };
       }
     }
-
-    const hasAnswer = question.options.filter((o) => !o.deletedAt).some((option) => option.isCorrect);
-
-    if (!hasAnswer) {
-      qErrors.option = 'Please mark an option as the correct answer';
-      errors[question.id] = { ...qErrors };
-    }
   }
-
-  questionnaireValidation.set(errors);
 
   return errors;
 }

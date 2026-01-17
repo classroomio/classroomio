@@ -123,6 +123,7 @@ export class ExerciseApi extends BaseApiWithErrors {
     if (!result.success) {
       console.log('ZExerciseUpdate error', result.error);
       this.errors = mapZodErrorsToTranslations(result.error, 'exercise');
+      this.success = false; // Reset success flag when validation fails
       return;
     }
     console.log('result.data', result.data);

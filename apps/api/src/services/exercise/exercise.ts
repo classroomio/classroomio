@@ -1,50 +1,32 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import type { TExercise, TExerciseTemplate, TNewOption, TNewQuestion, TQuestionType } from '@cio/db/types';
+import type { TExercise, TExerciseTemplate, TNewOption, TNewQuestion } from '@cio/db/types';
 import type { TExerciseCreate, TExerciseUpdate } from '@cio/utils/validation/exercise';
 import {
   createExercises,
   createOptions,
   createQuestions,
   deleteExercise,
+  deleteOptionsByIds,
+  deleteQuestionsByIds,
   getExerciseById,
+  getExerciseWithRelationsOptimized,
   getExercisesByCourseId,
   getLMSExercises,
-  getOptionsByQuestionIds,
-  getQuestionTypesByIds,
-  getQuestionsByExerciseIds,
   updateExercise,
-  updateOption,
-  updateQuestion
+  updateOptions,
+  updateQuestions
 } from '@cio/db/queries/exercise';
 
 import { db } from '@cio/db/drizzle';
-
-type QuestionWithRelations = {
-  id: number | string;
-  value: string;
-  name: string;
-  title: string;
-  type: number;
-  points: number;
-  order: number;
-  questionType: {
-    id: number;
-    label: string;
-  };
-  questionTypeId: number;
-  code?: string;
-  answers?: Array<unknown>;
-  deletedAt?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  options: {
-    id: number | string;
-    label: string | null;
-    value: string | null;
-    isCorrect: boolean;
-    deletedAt?: string;
-  }[];
-};
+import type { DbOrTxClient } from '@cio/db/drizzle';
+import {
+  buildExerciseUpdateFields,
+  computeExerciseDiff,
+  createNewQuestionsWithOptions,
+  fetchQuestionsAndOptions,
+  transformQuestions,
+  type QuestionWithRelations
+} from './utils';
 
 type ExerciseWithQuestions = TExercise & {
   questions?: QuestionWithRelations[];
@@ -119,64 +101,20 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
  * @param exerciseId Exercise ID
  * @returns Exercise with questions and options
  */
-export async function getExercise(exerciseId: string): Promise<ExerciseWithQuestions> {
+export async function getExercise(exerciseId: string, dbClient?: DbOrTxClient): Promise<ExerciseWithQuestions> {
   try {
-    const exercise = await getExerciseById(exerciseId);
-    if (!exercise) {
-      throw new AppError('Exercise not found', ErrorCodes.EXERCISE_NOT_FOUND, 404);
-    }
+    // Optimized: Fetch exercise + questions + questionTypes + options in one JOIN query
+    const { exercise, questions } = await getExerciseWithRelationsOptimized(exerciseId, dbClient);
 
-    // Fetch questions and options
-    const questions = await getQuestionsByExerciseIds([exerciseId]);
-    const questionIds = questions.map((q) => q.id).filter((id) => id !== undefined);
-    const options = questionIds.length > 0 ? await getOptionsByQuestionIds(questionIds) : [];
+    // Build questionTypeMap from questions (already fetched with questionType)
+    const questionTypeMap = new Map(questions.map((q) => [q.questionType.id, q.questionType]));
 
-    // Fetch all question types
-    const questionTypeIds = [...new Set(questions.map((q) => q.questionTypeId).filter((id) => id !== undefined))];
-    const questionTypes: TQuestionType[] =
-      questionTypeIds.length > 0 ? await getQuestionTypesByIds(questionTypeIds) : [];
+    // Extract options from questions and transform
+    const allOptions = questions.flatMap((q) => q.options || []);
 
-    // Create a map for quick lookup
-    const questionTypeMap = new Map(questionTypes.map((qt) => [qt.id, qt]));
-
-    // Transform questions to match frontend Question type format exactly
-    const questionsWithOptions = questions.map((question) => {
-      const questionType = questionTypeMap.get(question.questionTypeId);
-      const questionTypeId = question.questionTypeId;
-      const questionOptions = options
-        .filter((opt) => opt.questionId === question.id)
-        .map((opt) => ({
-          id: opt.id!,
-          label: opt.label,
-          value: opt.value,
-          isCorrect: opt.isCorrect
-        }));
-
-      const result: QuestionWithRelations = {
-        id: question.id!,
-        value: question.title || '', // value field defaults to title
-        name: question.name || '',
-        title: question.title,
-        type: questionTypeId, // type field (same as questionTypeId)
-        points: question.points || 0,
-        order: question.order || 0,
-        questionType: questionType
-          ? {
-              id: questionType.id,
-              label: questionType.label
-            }
-          : {
-              id: questionTypeId,
-              label: ''
-            },
-        questionTypeId: questionTypeId,
-        createdAt: question.createdAt || undefined,
-        updatedAt: question.updatedAt || undefined,
-        options: questionOptions
-      };
-
-      return result;
-    });
+    // Transform questions (strip questionType and options since they're handled in transform)
+    const questionsForTransform = questions.map(({ questionType, options, ...q }) => q);
+    const questionsWithOptions = transformQuestions(questionsForTransform, allOptions, questionTypeMap);
 
     return {
       ...exercise,
@@ -196,90 +134,64 @@ export async function getExercise(exerciseId: string): Promise<ExerciseWithQuest
 }
 
 /**
- * Updates an exercise with questions and options
+ * Updates an exercise with questions and options.
+ * Only updates what has changed by querying the current state first and computing a diff.
  * @param exerciseId Exercise ID
  * @param data Partial exercise update data
  * @returns Updated exercise
  */
 export async function updateExerciseService(exerciseId: string, data: TExerciseUpdate): Promise<TExercise> {
   try {
-    const exercise = await getExerciseById(exerciseId);
-    if (!exercise) {
-      throw new AppError('Exercise not found', ErrorCodes.EXERCISE_NOT_FOUND, 404);
-    }
+    return await db.transaction(async (tx) => {
+      const txClient = tx as unknown as typeof db;
 
-    // Update exercise basic fields
-    const exerciseUpdate: Partial<TExercise> = {};
-    if (data.title !== undefined) exerciseUpdate.title = data.title;
-    if (data.description !== undefined) exerciseUpdate.description = data.description;
-    if (data.lessonId !== undefined) exerciseUpdate.lessonId = data.lessonId || null;
-    if (data.dueBy !== undefined) exerciseUpdate.dueBy = data.dueBy || null;
-
-    if (Object.keys(exerciseUpdate).length > 0) {
-      const updated = await updateExercise(exerciseId, exerciseUpdate);
-      if (!updated) {
-        throw new AppError('Failed to update exercise', ErrorCodes.INTERNAL_ERROR, 500);
-      }
-    }
-
-    // Update questions and options if provided
-    if (data.questions && data.questions.length > 0) {
-      await db.transaction(async (tx) => {
-        for (const q of data.questions!) {
-          if (q.id) {
-            // Update existing question
-            await updateQuestion(q.id, {
-              title: q.question,
-              points: q.points
-            });
-
-            // Update options
-            if (q.options) {
-              for (const opt of q.options) {
-                if (opt.id) {
-                  await updateOption(opt.id, {
-                    label: opt.label,
-                    isCorrect: opt.isCorrect
-                  });
-                } else {
-                  // Create new option
-                  await createOptions([
-                    {
-                      questionId: q.id,
-                      label: opt.label,
-                      isCorrect: opt.isCorrect
-                    }
-                  ]);
-                }
-              }
-            }
-          } else {
-            // Create new question
-            const [newQuestion] = await createQuestions([
-              {
-                exerciseId,
-                title: q.question,
-                questionTypeId: 1, // Default to RADIO (1), can be updated later
-                points: q.points || 0
-              }
-            ]);
-
-            if (newQuestion && q.options) {
-              const optionsData: TNewOption[] = q.options.map((opt) => ({
-                questionId: newQuestion.id,
-                label: opt.label,
-                isCorrect: opt.isCorrect
-              }));
-
-              await createOptions(optionsData);
-            }
-          }
+      // Update exercise basic fields only if they changed
+      const exerciseUpdate = buildExerciseUpdateFields(data);
+      if (Object.keys(exerciseUpdate).length > 0) {
+        const updated = await updateExercise(exerciseId, exerciseUpdate, txClient);
+        if (!updated) {
+          throw new AppError('Failed to update exercise', ErrorCodes.INTERNAL_ERROR, 500);
         }
-      });
-    }
+      }
 
-    // Fetch the updated exercise
-    return await getExercise(exerciseId);
+      // Process questions - only update what changed
+      if (data.questions && data.questions.length > 0) {
+        // Query current state from DB
+        const { questions: currentQuestions, options: currentOptions } = await fetchQuestionsAndOptions(
+          exerciseId,
+          txClient
+        );
+
+        // Build current state with options mapped to their questions
+        const currentQuestionsWithOptions = currentQuestions.map((q) => ({
+          ...q,
+          options: currentOptions.filter((opt) => opt.questionId === q.id)
+        }));
+
+        // Compute diff between current DB state and incoming data
+        const diff = computeExerciseDiff(currentQuestionsWithOptions, data.questions);
+
+        // Apply all changes in parallel (they operate on different records)
+        await Promise.all([
+          // Delete questions marked for deletion (cascade deletes their options)
+          diff.questions.deletedIds.length > 0 && deleteQuestionsByIds(diff.questions.deletedIds, txClient),
+          // Update only questions that have changed fields
+          diff.questions.updates.length > 0 && updateQuestions(diff.questions.updates, txClient),
+          // Delete options marked for deletion
+          diff.options.deletedIds.length > 0 && deleteOptionsByIds(diff.options.deletedIds, txClient),
+          // Update only options that have changed fields
+          diff.options.updates.length > 0 && updateOptions(diff.options.updates, txClient),
+          // Create new options for existing questions
+          diff.options.creates.length > 0 && createOptions(diff.options.creates, txClient),
+          // Create new questions with their options
+          diff.questions.newQuestions.length > 0 &&
+            createNewQuestionsWithOptions(exerciseId, diff.questions.newQuestions, txClient)
+        ]);
+      }
+
+      // Return the updated exercise
+      return await getExercise(exerciseId, txClient);
+    });
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
