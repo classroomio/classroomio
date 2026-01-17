@@ -3,7 +3,7 @@
   import type { Snippet } from 'svelte';
   import * as Dialog from './index.js';
   import { cn, type WithoutChildrenOrChild } from '../../tools';
-  import { CloseIcon, HoverableItem } from '../../custom/moving-icons';
+  import CrossIcon from '@lucide/svelte/icons/x';
 
   let {
     ref = $bindable(null),
@@ -32,16 +32,12 @@
   >
     {@render children?.()}
     {#if showCloseButton}
-      <HoverableItem>
-        {#snippet children(isHovered)}
-          <DialogPrimitive.Close
-            class="ui:ring-offset-background ui:focus:ring-ring ui:rounded-xs ui:focus:outline-hidden ui:absolute ui:top-4 ui:opacity-70 ui:transition-opacity ui:hover:opacity-100 ui:focus:ring-2 ui:focus:ring-offset-2 ui:disabled:pointer-events-none ui:[&_svg:not([class*='size-'])]:size-4 ui:[&_svg]:pointer-events-none ui:[&_svg]:shrink-0 ui:end-4 ui:cursor-pointer"
-          >
-            <CloseIcon {isHovered} />
-            <span class="ui:sr-only">Close</span>
-          </DialogPrimitive.Close>
-        {/snippet}
-      </HoverableItem>
+      <DialogPrimitive.Close
+        class="ui:ring-offset-background ui:focus:ring-ring ui:rounded-xs ui:focus:outline-hidden ui:absolute ui:top-4 ui:opacity-70 ui:transition-opacity ui:hover:opacity-100 ui:focus:ring-2 ui:focus:ring-offset-2 ui:disabled:pointer-events-none ui:[&_svg:not([class*='size-'])]:size-4 ui:[&_svg]:pointer-events-none ui:[&_svg]:shrink-0 ui:end-4 ui:cursor-pointer"
+      >
+        <CrossIcon class="custom" />
+        <span class="ui:sr-only">Close</span>
+      </DialogPrimitive.Close>
     {/if}
   </DialogPrimitive.Content>
 </Dialog.Portal>

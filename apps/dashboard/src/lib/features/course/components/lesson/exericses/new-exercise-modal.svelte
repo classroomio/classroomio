@@ -140,7 +140,7 @@
     if (!isOpen) handleCancelAddExercise();
   }}
 >
-  <Dialog.Content class="w-4/5 max-w-2xl">
+  <Dialog.Content class="w-fit! max-w-none!">
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.lessons.exercises.new_exercise_modal.heading')}</Dialog.Title>
     </Dialog.Header>
@@ -149,7 +149,7 @@
     {/if}
     {#if step === 0}
       <div>
-        <h2 class="my-5 text-2xl font-medium">
+        <h2 class="my-5 text-xl font-medium">
           {$t('course.navItem.lessons.exercises.new_exercise_modal.how')}?
         </h2>
 
