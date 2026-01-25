@@ -15,7 +15,6 @@
   import { UpgradeBanner, UnsavedChanges, UploadWidget } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
 
-  import { lessonApi } from '$features/course/api';
   import { settings } from '$features/course/utils/settings-store';
   import Copy from '@lucide/svelte/icons/copy';
   import type { TCourseType } from '@cio/db/types';
@@ -29,7 +28,7 @@
   import { uploadImage } from '$lib/utils/services/upload';
   import { copyToClipboard } from '$lib/utils/functions/formatYoutubeVideo';
   import { handleOpenWidget } from '$features/ui/course-landing-page/store';
-  import { currentOrg, currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
+  import { currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { page } from '$app/stores';
 
   let isLoading = $state(false);
@@ -49,65 +48,8 @@
     $handleOpenWidget.open = !$handleOpenWidget.open;
   }
 
-  function getLessonOrder(id: string) {
-    const index = lessonApi.lessons.findIndex((lesson) => lesson.id === id);
-    if (index < 9) {
-      return '0' + (index + 1);
-    } else {
-      return index + 1;
-    }
-  }
-
   const downloadCourse = async () => {
     alert('Coming soon');
-    return;
-
-    isLoading = true;
-
-    try {
-      const lessonsList = lessonApi.lessons.map((lesson) => ({
-        lessonTitle: lesson.title,
-        lessonNumber: getLessonOrder(lesson.id),
-        lessonNote: lesson.note,
-        slideUrl: lesson.slideUrl || '',
-        video: lesson.videos || ''
-      }));
-
-      const response = await fetch('/downloadCourse', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          courseTitle: courseApi.course?.title || '',
-          orgName: $currentOrg.name,
-          orgTheme: $currentOrg.theme || '',
-          lessons: lessonsList
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
-      const data = await response.blob();
-      const file = new Blob([data], { type: 'application/pdf' });
-      const fileURL = URL.createObjectURL(file);
-
-      let a = document.createElement('a');
-      document.body.append(a);
-      a.download = (courseApi.course?.title || '') + ' - ' + 'Course ';
-      a.href = fileURL;
-      a.click();
-      a.remove();
-
-      snackbar.success('snackbar.course_settings.success.download');
-    } catch (error) {
-      snackbar.error('snackbar.course_settings.error.not_right');
-    }
-
-    isLoading = false;
   };
 
   const deleteBannerImage = () => {
@@ -129,12 +71,12 @@
   }
 
   export async function handleSave() {
-    if (!$settings.course_title) {
+    if (!$settings.courseTitle) {
       errors.title = $t('snackbar.course_settings.error.title');
       return;
     }
 
-    if (!$settings.course_description) {
+    if (!$settings.courseDescription) {
       errors.description = $t('snackbar.course_settings.error.description');
       return;
     }
@@ -149,19 +91,22 @@
 
       if (!courseApi.course) return;
 
+      const metadataPayload = {
+        ...(isObject(courseApi.course.metadata) ? courseApi.course.metadata : {}),
+        lessonTabsOrder: $settings.tabs,
+        grading: $settings.grading,
+        lessonDownload: $settings.lessonDownload,
+        allowNewStudent: $settings.allowNewStudents ?? false,
+        isContentGroupingEnabled: $settings.isContentGroupingEnabled
+      } as NonNullable<Course['metadata']>;
+
       const updatedCourse = {
-        title: $settings.course_title,
-        description: $settings.course_description,
+        title: $settings.courseTitle,
+        description: $settings.courseDescription,
         type: $settings.type,
         logo: logoUrl,
-        isPublished: $settings.is_published,
-        metadata: {
-          ...(isObject(courseApi.course.metadata) ? courseApi.course.metadata : {}),
-          lessonTabsOrder: $settings.tabs,
-          grading: $settings.grading,
-          lessonDownload: $settings.lesson_download,
-          allowNewStudent: $settings.allow_new_students
-        },
+        isPublished: $settings.isPublished,
+        metadata: metadataPayload,
         slug: courseApi.course.slug!
       };
 
@@ -187,15 +132,16 @@
 
     untrack(() => {
       settings.set({
-        course_title: course.title,
+        courseTitle: course.title,
         type: (course.type as TCourseType) || ('SELF_PACED' as TCourseType),
-        course_description: course.description,
+        courseDescription: course.description,
         logo: course.logo || '',
         tabs: course.metadata?.lessonTabsOrder || $settings.tabs,
         grading: !!course.metadata?.grading,
-        lesson_download: !!course.metadata?.lessonDownload,
-        is_published: !!course.isPublished,
-        allow_new_students: course.metadata?.allowNewStudent
+        lessonDownload: !!course.metadata?.lessonDownload,
+        isPublished: !!course.isPublished,
+        allowNewStudents: !!course.metadata?.allowNewStudent,
+        isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true
       });
     });
   }
@@ -269,7 +215,7 @@
           placeholder="Write the course title here"
           className="w-full"
           isRequired
-          bind:value={$settings.course_title}
+          bind:value={$settings.courseTitle}
           errorMessage={errors?.title}
           onInputChange={() => {
             hasUnsavedChanges = true;
@@ -282,7 +228,7 @@
           placeholder={$t('course.navItem.settings.placeholder')}
           className="w-full"
           isRequired
-          bind:value={$settings.course_description}
+          bind:value={$settings.courseDescription}
           errorMessage={errors?.description}
           onchange={() => {
             hasUnsavedChanges = true;
@@ -335,6 +281,28 @@
   <Field.Separator />
 
   <Field.Set>
+    <Field.Legend>{$t('course.navItem.settings.content_grouping_title')}</Field.Legend>
+    <Field.Description>{$t('course.navItem.settings.content_grouping_description')}</Field.Description>
+    <Field.Field orientation="horizontal">
+      <Switch
+        id="content-grouping"
+        checked={$settings.isContentGroupingEnabled}
+        onCheckedChange={(checked) => {
+          $settings.isContentGroupingEnabled = checked;
+          hasUnsavedChanges = true;
+        }}
+      />
+      <Label for="content-grouping">
+        {$settings.isContentGroupingEnabled
+          ? $t('course.navItem.settings.enabled')
+          : $t('course.navItem.settings.disabled')}
+      </Label>
+    </Field.Field>
+  </Field.Set>
+
+  <Field.Separator />
+
+  <Field.Set>
     <Field.Legend>{$t('course.navItem.settings.lesson_download')}</Field.Legend>
     <Field.Description>{$t('course.navItem.settings.available')}</Field.Description>
     <Field.Field>
@@ -344,14 +312,14 @@
         <div class="flex items-center space-x-2">
           <Switch
             id="lesson-download"
-            checked={$settings.lesson_download}
+            checked={$settings.lessonDownload}
             onCheckedChange={(checked) => {
-              $settings.lesson_download = checked;
+              $settings.lessonDownload = checked;
               hasUnsavedChanges = true;
             }}
           />
-          <Label for="lesson-download" class="text-sm text-gray-500">
-            {$settings.lesson_download ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
+          <Label for="lesson-download">
+            {$settings.lessonDownload ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
           </Label>
         </div>
       {/if}
@@ -408,14 +376,14 @@
     <Field.Field orientation="horizontal">
       <Switch
         id="allow-new-students"
-        checked={$settings.allow_new_students}
+        checked={$settings.allowNewStudents}
         onCheckedChange={(checked) => {
-          $settings.allow_new_students = checked;
+          $settings.allowNewStudents = checked;
           hasUnsavedChanges = true;
         }}
       />
-      <Label for="allow-new-students" class="text-sm text-gray-500">
-        {$settings.allow_new_students ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
+      <Label for="allow-new-student">
+        {$settings.allowNewStudents ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
       </Label>
     </Field.Field>
   </Field.Set>
@@ -428,17 +396,14 @@
     <Field.Field orientation="horizontal">
       <Switch
         id="is-published"
-        checked={$settings.is_published}
+        checked={$settings.isPublished}
         onCheckedChange={(checked) => {
+          $settings.isPublished = checked;
           hasUnsavedChanges = true;
-          $settings.allow_new_students = checked;
-          if (!courseApi.course?.slug) {
-            generateNewCourseLink();
-          }
         }}
       />
-      <Label for="is-published" class="text-sm text-gray-500">
-        {$settings.is_published ? $t('course.navItem.settings.published') : $t('course.navItem.settings.unpublished')}
+      <Label for="publish">
+        {$settings.isPublished ? $t('course.navItem.settings.published') : $t('course.navItem.settings.unpublished')}
       </Label>
     </Field.Field>
   </Field.Set>

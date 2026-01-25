@@ -21,7 +21,7 @@
           {...props}
         >
           <Avatar.Root class="ui:flex ui:size-6 ui:items-center ui:justify-center">
-            <Avatar.Image src={'/logo-192.png'} alt="ClassroomIO logo" />
+            <Avatar.Image src="/logo-192.png" alt="ClassroomIO logo" />
           </Avatar.Root>
 
           <span class="truncate font-normal">ClassroomIO</span>

@@ -1,5 +1,5 @@
 // Question type inferred from API Exercise response
-import type { Exercise } from './utils/types';
+import type { Course as CourseDetails, Exercise } from './utils/types';
 import type { InferResponseType } from '@cio/api/rpc-types';
 import { classroomio } from '$lib/utils/services/api';
 
@@ -25,7 +25,7 @@ export type RecommendedCourses = RecommendedCoursesSuccess['data'];
 export type GetCourseRequest = (typeof classroomio.course)[':courseId']['$get'];
 export type GetCourseResponse = InferResponseType<GetCourseRequest>;
 export type GetCourseSuccess = Extract<GetCourseResponse, { success: true }>;
-export type Course = GetCourseSuccess['data'];
+export type Course = CourseDetails;
 
 // Base question type from API
 type ApiQuestion = NonNullable<Exercise['questions']>[number];

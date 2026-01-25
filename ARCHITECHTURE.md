@@ -45,6 +45,7 @@ This guide outlines standard practices for creating API routes in ClassroomIO. *
 - **Shared Validation**: Zod schemas in `@cio/utils/validation` used by both API and frontend
 - **Routes**: Handle HTTP concerns only (validation, auth, serialization)
 - **Services**: Contain all business logic and orchestrate queries
+- **Services Utils**: Pure helper logic lives in `apps/api/src/services/{domain}/utils.ts`
 - **Queries**: Pure database operations with no business logic
 
 ---

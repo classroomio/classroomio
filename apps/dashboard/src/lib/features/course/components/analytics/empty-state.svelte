@@ -1,10 +1,11 @@
 <script lang="ts">
+  import type { Component } from 'svelte';
   import ChartBarIcon from '@lucide/svelte/icons/chart-bar';
 
   interface Props {
     title?: string;
     description?: string;
-    icon?: any;
+    icon?: Component;
     className?: string;
   }
 

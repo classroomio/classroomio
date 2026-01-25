@@ -10,9 +10,11 @@
   import { ROLE } from '@cio/utils/constants';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
-  import { courseApi, lessonApi, attendanceApi } from '$features/course/api';
+  import { courseApi, attendanceApi } from '$features/course/api';
   import { getLectureNo } from '$features/course/utils/functions';
-  import type { CourseMember, CourseMembers, ListLessons } from '$features/course/utils/types';
+  import type { CourseMember, CourseMembers, CourseContentItem } from '$features/course/utils/types';
+  import { getCourseContent } from '$features/course/utils/content';
+  import { ContentType } from '@cio/utils/constants/content';
 
   interface Props {
     courseId: string;
@@ -32,6 +34,13 @@
   const filteredStudents = $derived(searchStudents(searchValue, students));
   const totalStudents = $derived(filteredStudents.length);
   const paginatedStudents = $derived(filteredStudents.slice((currentPage - 1) * pageSize, currentPage * pageSize));
+
+  const contentData = $derived(getCourseContent(courseApi.course));
+  const lessonItems = $derived(
+    (contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items).filter(
+      (item) => item.type === ContentType.Lesson
+    )
+  );
 
   const attendanceLookup = $derived.by(() => {
     if (!courseApi.course?.attendance) return {};
@@ -61,7 +70,7 @@
     return attendanceLookup[studentId]?.[lessonId]?.isPresent ?? false;
   }
 
-  async function handleAttendanceChange(e: any, student: CourseMember, lesson: ListLessons[number]) {
+  async function handleAttendanceChange(e: any, student: CourseMember, lesson: CourseContentItem) {
     if ($globalStore.isStudent) return;
 
     const isPresent = e.target.checked;
@@ -141,7 +150,7 @@
       <Table.Header>
         <Table.Row>
           <Table.Head class="w-1/4">{$t('course.navItem.attendance.student')}</Table.Head>
-          {#each lessonApi.lessons as _lesson, index}
+          {#each lessonItems as _lesson, index}
             <Table.Head class="text-center"
               >{$t('course.navItem.attendance.lesson')} 0{getLectureNo(index + 1)}</Table.Head
             >
@@ -154,7 +163,7 @@
             <Table.Cell class="font-semibold">
               {student.profile?.fullname}
             </Table.Cell>
-            {#each lessonApi.lessons as lesson}
+            {#each lessonItems as lesson}
               <Table.Cell class="text-center">
                 <div class="flex justify-center">
                   <Checkbox

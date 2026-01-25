@@ -83,6 +83,8 @@ export const ZExerciseCreate = z.object({
   title: z.string().min(1),
   description: z.string().optional(),
   lessonId: z.string().optional(),
+  sectionId: z.string().optional(),
+  order: z.number().int().optional(),
   courseId: z.string().min(1),
   dueBy: z.string().optional(),
   questions: z
@@ -108,6 +110,9 @@ export const ZExerciseUpdate = z.object({
   title: z.string().min(1).optional(),
   description: z.string().optional(),
   lessonId: z.string().optional(),
+  sectionId: z.string().optional(),
+  order: z.number().int().optional(),
+  isUnlocked: z.boolean().optional(),
   dueBy: z.string().optional(), // Changed from iso.datetime() to string to match frontend format
   questions: z.array(ZExerciseUpdateQuestion).optional()
 });
@@ -119,7 +124,8 @@ export const ZExerciseGetParam = z.object({
 export type TExerciseGetParam = z.infer<typeof ZExerciseGetParam>;
 
 export const ZExerciseListQuery = z.object({
-  lessonId: z.string().optional()
+  lessonId: z.string().optional(),
+  sectionId: z.string().optional()
 });
 export type TExerciseListQuery = z.infer<typeof ZExerciseListQuery>;
 
@@ -140,7 +146,9 @@ export type TExerciseSubmissionCreate = z.infer<typeof ZExerciseSubmissionCreate
 
 // Exercise Template Schemas
 export const ZExerciseFromTemplate = z.object({
-  lessonId: z.string().min(1),
+  lessonId: z.string().optional(),
+  sectionId: z.string().optional(),
+  order: z.number().int().optional(),
   templateId: z.number().int().min(1)
 });
 

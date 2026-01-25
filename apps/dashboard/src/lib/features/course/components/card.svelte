@@ -19,9 +19,10 @@
   import { calcProgressRate } from '$features/course/utils/functions';
   import CardDropdown from './card-dropdown.svelte';
   import type { OrgCourses, UserEnrolledCourses } from '$features/course/types';
+  import type { OrgPublicCourses } from '$features/org/utils/types';
 
   export interface Props {
-    course: OrgCourses[number] | UserEnrolledCourses[number];
+    course: OrgCourses[number] | UserEnrolledCourses[number] | OrgPublicCourses[number];
     isOnLandingPage?: boolean;
     isLMS?: boolean;
     isExplore?: boolean;

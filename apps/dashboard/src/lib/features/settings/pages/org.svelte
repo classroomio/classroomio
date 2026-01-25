@@ -160,7 +160,7 @@
           <div
             class="pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-200"
           >
-            <PlusIcon class="z-10 size-6 {!!hex ? 'stroke-white' : 'stroke-gray-500'}" />
+            <PlusIcon class="z-10 size-6 {hex ? 'stroke-white' : 'stroke-gray-500'}" />
           </div>
           <ColorPicker
             position="responsive"

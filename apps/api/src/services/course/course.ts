@@ -15,13 +15,14 @@ import {
   getUserExercisesStats
 } from '@cio/db/queries/analytics/analytics';
 
-import { ROLE } from '@cio/utils/constants';
+import { ContentType, ROLE } from '@cio/utils/constants';
 import type { TCourse } from '@cio/db/types';
 import { db } from '@cio/db/drizzle';
-import { getCourseMembers } from '@cio/db/queries/course/people';
 import { getExercisesByCourseId } from '@cio/db/queries/exercise/exercise';
-import { getLessonsByCourseId } from '@cio/db/queries/lesson/lesson';
 import { getProfileById } from '@cio/db/queries/auth';
+import { buildCourseContent, calcPercentageWithRounding, formatLastSeen, type CourseContent } from './utils';
+
+const DEFAULT_CONTENT_GROUPING = true;
 
 /**
  * Gets a course by ID or slug with all related data
@@ -42,7 +43,15 @@ export async function getCourse(courseId?: string, slug?: string, profileId?: st
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
     }
 
-    return course;
+    const isContentGroupingEnabled = course.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING;
+    const content = buildCourseContent(course.contentItems, isContentGroupingEnabled);
+
+    const { contentItems, ...rest } = course;
+
+    return {
+      ...rest,
+      content
+    };
   } catch (error) {
     console.error('Error getting course:', error);
     if (error instanceof AppError) {
@@ -206,36 +215,6 @@ export async function getCourseProgress(courseId: string, profileId: string) {
 }
 
 /**
- * Calculates percentage with rounding
- */
-function calcPercentageWithRounding(a: number, b: number): number {
-  if (b === 0) return 0;
-  const percentage = (a / b) * 100;
-  const roundedNumber = Math.round(percentage);
-  return isNaN(roundedNumber) ? 0 : roundedNumber;
-}
-
-/**
- * Formats last seen time
- */
-function formatLastSeen(lastLoginDate: string | null | undefined): string {
-  if (!lastLoginDate) return 'Never';
-
-  const lastLogin = new Date(lastLoginDate);
-  const now = new Date();
-  const diffInHours = Math.floor((now.getTime() - lastLogin.getTime()) / (1000 * 60 * 60));
-
-  if (diffInHours < 1) {
-    return 'Just now';
-  } else if (diffInHours < 24) {
-    return `${diffInHours} hours ago`;
-  } else {
-    const diffInDays = Math.floor(diffInHours / 24);
-    return `${diffInDays} days ago`;
-  }
-}
-
-/**
  * Gets course analytics including student progress, completion rates, and grades
  * @param courseId Course ID
  * @returns Course analytics data
@@ -249,15 +228,15 @@ export async function getCourseAnalytics(courseId: string) {
     }
 
     // Get all members
-    const members = await getCourseMembers(courseId);
+    const members = course.group?.members || [];
 
     // Filter students and tutors
     const students = members.filter((member) => member.roleId === ROLE.STUDENT);
     const tutors = members.filter((member) => member.roleId === ROLE.ADMIN || member.roleId === ROLE.TUTOR);
 
     // Get lessons and exercises
-    const lessons = await getLessonsByCourseId(courseId);
-    const exercises = await getExercisesByCourseId(courseId);
+    const lessons = course.contentItems.filter((item) => item.type === ContentType.Lesson);
+    const exercises = course.contentItems.filter((item) => item.type === ContentType.Exercise);
 
     // Get student analytics
     const studentAnalytics = await Promise.all(
@@ -415,10 +394,8 @@ export async function getUserCourseAnalytics(courseId: string, userId: string) {
     if (error instanceof AppError) {
       throw error;
     }
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to get user course analytics',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
+    throw new AppError('Failed to get user exercises stats', ErrorCodes.INTERNAL_ERROR, 500);
   }
 }
+
+export type { CourseContent, CourseContentItem } from './utils';

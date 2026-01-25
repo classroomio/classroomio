@@ -5,13 +5,13 @@
   import pluralize from 'pluralize';
 
   import { t } from '$lib/utils/functions/translations';
-  import type { Lesson } from '$features/course/utils/types';
+  import type { LandingPageLesson } from '../utils';
 
   interface Props {
     title: string;
     lessonCount: number;
     exerciseCount: number;
-    lessons: Lesson[];
+    lessons: LandingPageLesson[];
   }
 
   let { title, lessonCount, exerciseCount, lessons }: Props = $props();

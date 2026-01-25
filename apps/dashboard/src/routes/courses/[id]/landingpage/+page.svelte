@@ -1,6 +1,7 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { courseApi } from '$features/course/api';
   import type { Course } from '$features/course/utils/types';
 
@@ -21,7 +22,7 @@
   }
 
   function handleClose() {
-    goto(`/courses/${courseId}`);
+    goto(resolve(`/courses/${courseId}`, {}));
   }
 </script>
 

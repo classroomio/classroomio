@@ -69,6 +69,7 @@
     "tldts": "^6.1.41",
     "unsplash-js": "^7.0.18",
     "utf-8-validate": "^6.0.5",
+    "vidstack": "^1.12.13",
     "wait-on": "^7.0.1",
     "zod": "^4.1.8"
   },

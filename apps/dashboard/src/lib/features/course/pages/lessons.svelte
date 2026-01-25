@@ -1,53 +1,43 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import ActivateSectionsModal from '$features/course/components/lesson/activate-sections-modal.svelte';
   import { Empty } from '@cio/ui/custom/empty';
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
   import DeleteLessonConfirmation from '$features/course/components/lesson/delete-lesson-confirmation.svelte';
   import LessonList from '$features/course/components/lesson/lesson-list.svelte';
   import LessonSectionList from '$features/course/components/lesson/lesson-section-list.svelte';
-  import NewLessonModal from '$features/course/components/lesson/new-lesson-modal.svelte';
   import { lessonApi } from '$features/course/api';
   import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
-  import type { ListLessons } from '$features/course/utils/types';
+  import type { CourseContentItem } from '$features/course/utils/types';
+  import { getCourseContent } from '$features/course/utils/content';
+  import { ContentType } from '@cio/utils/constants/content';
+  import { profile } from '$lib/utils/store/user';
 
   interface Props {
     courseId: string;
+    reorder?: boolean;
   }
 
-  let { courseId }: Props = $props();
+  let { courseId, reorder = $bindable(false) }: Props = $props();
 
   const query = new URLSearchParams(page.url.search);
 
-  const lessonsLength = $derived(
-    courseApi.course?.version === 'V1' ? lessonApi.lessons.length : lessonApi.sections.length
+  const contentData = $derived(getCourseContent(courseApi.course));
+  const contentLength = $derived(contentData.grouped ? contentData.sections.length : contentData.items.length);
+  const contentItems = $derived(
+    contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items
   );
+  const lessonItems = $derived(contentItems.filter((item) => item.type === ContentType.Lesson));
 
   let lessonEditing: string | undefined;
-  let lessonToDelete: ListLessons[number] | undefined = $state();
+  let lessonToDelete: CourseContentItem | undefined = $state();
   let openDeleteModal: boolean = $state(false);
   let isFetching: boolean = $state(false);
-  let reorder = $state(false);
-  let activateSections = $state(false);
-
-  const getLessons = () => {
-    if (courseApi.course?.version === 'V1') {
-      return lessonApi.lessons;
-    } else {
-      const _lessons: ListLessons[number][] = [];
-
-      lessonApi.sections.forEach((section) => {
-        _lessons.push(...section.lessons);
-      });
-
-      return _lessons;
-    }
-  };
+  const profileId = $derived($profile?.id || '');
 
   function findFirstIncompleteLesson() {
-    return getLessons().find((lesson) => !lesson.isComplete && lesson.isUnlocked === true);
+    return lessonItems.find((lesson) => !lesson.isComplete && lesson.isUnlocked === true);
   }
 
   function onNextQuery(lessons) {
@@ -64,13 +54,9 @@
 
   let shouldGoToNextLesson = $derived(query.get('next') === 'true');
   $effect(() => {
-    !isFetching && shouldGoToNextLesson && onNextQuery(lessonApi.lessons);
+    !isFetching && shouldGoToNextLesson && onNextQuery(lessonItems);
   });
 </script>
-
-<NewLessonModal />
-
-<ActivateSectionsModal bind:open={activateSections} />
 
 <DeleteLessonConfirmation
   bind:openDeleteModal
@@ -81,12 +67,8 @@
 
     await lessonApi.delete(courseId, lessonToDelete.id);
 
-    if (lessonApi.success) {
-      lessonApi.lessons = lessonApi.lessons.filter((lesson) => lesson.id !== lessonToDelete?.id);
-      lessonApi.sections = lessonApi.sections.map((section) => {
-        section.lessons = section.lessons.filter((lesson) => lesson.id !== lessonToDelete?.id);
-        return section;
-      });
+    if (lessonApi.success && profileId) {
+      await courseApi.refreshCourse(courseId, profileId);
     }
   }}
 />
@@ -98,17 +80,17 @@
     icon={BookOpenIcon}
     variant="page"
   />
-{:else if lessonsLength > 0}
+{:else if contentLength > 0}
   {#if reorder}
     <p class="text-center text-xs text-gray-400 italic dark:text-white">
       {$t('course.navItem.lessons.drag')}
     </p>
   {/if}
 
-  {#if courseApi.course?.version === 'V1'}
-    <LessonList {reorder} {lessonEditing} bind:lessonToDelete bind:openDeleteModal />
-  {:else if courseApi.course?.version === 'V2'}
+  {#if contentData.grouped}
     <LessonSectionList {reorder} {lessonEditing} />
+  {:else}
+    <LessonList {reorder} {lessonEditing} bind:lessonToDelete bind:openDeleteModal />
   {/if}
 {:else}
   <Empty

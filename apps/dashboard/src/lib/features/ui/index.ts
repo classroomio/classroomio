@@ -11,6 +11,7 @@ export { default as DeleteModal } from './delete-modal.svelte';
 export { default as HeroProfileCard } from './analytics/hero-profile-card.svelte';
 export { default as HTMLRender } from './html-render.svelte';
 export { default as Image } from './image.svelte';
+export { MediaPlayer } from './media-player';
 export { default as LoadingPage } from './analytics/loading-page.svelte';
 export * from './question';
 export { default as UploadWidget } from './upload-widget/upload-widget.svelte';

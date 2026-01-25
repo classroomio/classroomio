@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import Plus from '@lucide/svelte/icons/plus';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import LockIcon from '@lucide/svelte/icons/lock';
@@ -23,17 +24,16 @@
     PeopleIcon,
     SettingsIcon
   } from '@cio/ui/custom/moving-icons';
+  import { ContentType } from '@cio/utils/constants/content';
+  import { contentCreateStore } from '$features/course/components/content/store';
+  import { CONTENT_DEFINITIONS, getContentRoute, getCourseContent } from '$features/course/utils/content';
 
   import { NAV_IDS } from './constants';
   import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
-  import { handleAddLessonWidget } from '$features/course/components/lesson/store';
   import { currentOrg, isFreePlan, currentOrgPath } from '$lib/utils/store/org';
   import { globalStore } from '$lib/utils/store/app';
-  import { getNavItemRoute, getLessonsRoute, getLectureNo } from '$features/course/utils/functions';
-  import { lessonApi } from '$features/course/api';
-
-  import { Chip } from '@cio/ui/custom/chip';
+  import { getNavItemRoute, getLessonsRoute } from '$features/course/utils/functions';
   import { CircleCheckIcon } from '$features/ui/icons';
 
   interface Props {
@@ -49,6 +49,7 @@
   });
 
   const coursesListPath = $derived($globalStore.isOrgSite ? '/lms/mylearning' : `${$currentOrgPath}/courses`);
+  const contentData = $derived(getCourseContent(courseApi.course));
 
   const navItems = $derived(
     [
@@ -67,27 +68,11 @@
         title: $t('course.navItems.nav_content'),
         url: getLessonsRoute(id),
         isActive:
-          (path || page.url.pathname).includes('/lessons') || (path || page.url.pathname) === getLessonsRoute(id),
+          (path || page.url.pathname).includes('/lessons') ||
+          (path || page.url.pathname).includes('/exercises') ||
+          (path || page.url.pathname) === getLessonsRoute(id),
         isLesson: true,
-        icon: getNavIcon(NAV_IDS.LESSONS),
-        items:
-          courseApi.course?.version === 'V1'
-            ? (lessonApi.lessons || []).map((lesson, index) => ({
-                title: lesson.title,
-                url: getLessonsRoute(id, lesson.id),
-                lesson,
-                index,
-                isV1: true
-              }))
-            : lessonApi.sections.flatMap((section) =>
-                section.lessons.map((lesson) => ({
-                  title: lesson.title,
-                  url: getLessonsRoute(id, lesson.id),
-                  lesson,
-                  sectionTitle: section.title,
-                  isV1: false
-                }))
-              )
+        icon: getNavIcon(NAV_IDS.LESSONS)
       },
       {
         id: NAV_IDS.ANALYTICS,
@@ -180,17 +165,13 @@
     ].filter((item) => !item.show || item.show())
   );
 
-  function addLesson(isSection: boolean, id: string) {
-    goto('/courses/' + id + '/lessons');
-    $handleAddLessonWidget.open = true;
-
-    if (courseApi.course?.version === 'V2') {
-      $handleAddLessonWidget.isSection = isSection ? false : true;
-
-      if (isSection) {
-        $handleAddLessonWidget.id = id;
-      }
-    }
+  function openContentModal(courseId: string, sectionId = '') {
+    goto(resolve(`/courses/${courseId}/lessons`, {}));
+    contentCreateStore.set({
+      open: true,
+      sectionId,
+      initialType: ContentType.Lesson
+    });
   }
 
   function getNavIcon(id: string) {
@@ -225,7 +206,7 @@
 </script>
 
 <Sidebar.Group class="pt-0!">
-  <Button variant="link" class="h-fit! justify-start! px-2! py-2!" href={coursesListPath}>
+  <Button variant="link" class="h-fit! justify-start! px-2! py-2!" href={resolve(coursesListPath, {})}>
     <ArrowLeftIcon class="custom" />
     <span class="text-xs">Courses</span>
   </Button>
@@ -235,10 +216,10 @@
       <Collapsible.Root open={item.isActive} class="group/collapsible">
         {#snippet child({ props })}
           <Sidebar.MenuItem {...props}>
-            {#if item.isLesson && item.items}
+            {#if item.isLesson}
               <Collapsible.Trigger>
                 {#snippet child({ props })}
-                  <a href={item.url}>
+                  <a href={resolve(item.url, {})}>
                     <Sidebar.MenuButton {...props} tooltipContent={item.title}>
                       {#snippet child({ props })}
                         <HoverableItem {...props} class="flex w-full items-center gap-4 py-2 pl-1.5 {props.class}">
@@ -252,7 +233,7 @@
                             <span>{item.title}</span>
 
                             <div class="ml-auto flex items-center gap-1">
-                              <Plus size={20} class="rounded-full p-1" onclick={() => addLesson(false, item.id)} />
+                              <Plus size={20} class="rounded-full p-1" onclick={() => openContentModal(id)} />
 
                               <ChevronRightIcon
                                 size={20}
@@ -268,54 +249,22 @@
               </Collapsible.Trigger>
               <Collapsible.Content>
                 <Sidebar.MenuSub>
-                  {#if courseApi.course?.version === 'V1'}
-                    {#each item.items as lessonItem}
-                      <Sidebar.MenuSubItem>
-                        <Sidebar.MenuSubButton isActive={(path || page.url.pathname).includes(lessonItem.lesson.id)}>
-                          {#snippet child({ props })}
-                            <a
-                              href={isStudent && !lessonItem.lesson.isUnlocked ? page.url.pathname : lessonItem.url}
-                              aria-disabled={!lessonItem.lesson.isUnlocked}
-                              title={lessonItem.lesson.title}
-                              class="flex w-full items-center gap-2 {isStudent && !lessonItem.lesson.isUnlocked
-                                ? 'cursor-not-allowed opacity-50'
-                                : ''}"
-                              {...props}
-                            >
-                              {#if lessonItem.isV1 && 'index' in lessonItem}
-                                <Chip value={getLectureNo(lessonItem.index + 1)} />
-                              {/if}
-                              <span class="flex-1 truncate">{lessonItem.lesson.title}</span>
-                              {#if !lessonItem.lesson.isUnlocked}
-                                <LockIcon size={16} class="shrink-0" />
-                              {:else if lessonItem.lesson.isComplete}
-                                <span class="shrink-0">
-                                  <CircleCheckIcon size={16} filled />
-                                </span>
-                              {/if}
-                            </a>
-                          {/snippet}
-                        </Sidebar.MenuSubButton>
-                      </Sidebar.MenuSubItem>
-                    {/each}
-                  {:else}
-                    {#each lessonApi.sections as section}
+                  {#if contentData.grouped}
+                    {#each contentData.sections as section (section.id)}
                       <Collapsible.Root open={true} class="group/section">
                         {#snippet child({ props })}
                           <Sidebar.MenuSubItem {...props}>
                             <Collapsible.Trigger>
                               {#snippet child({ props })}
                                 <Sidebar.MenuSubButton {...props} class="flex w-full items-center gap-2 font-medium">
-                                  {@const Icon = getNavIcon(NAV_IDS.SECTION)}
-
-                                  <Icon size={14} />
-
+                                  {@const SectionIcon = CONTENT_DEFINITIONS[ContentType.Section].icon}
+                                  <SectionIcon size={14} />
                                   <span class="flex-1 truncate">{section.title}</span>
                                   <div class="ml-auto flex items-center gap-1">
                                     <Plus
                                       size={20}
                                       class="rounded-full p-1 hover:bg-gray-200"
-                                      onclick={() => addLesson(true, section.id)}
+                                      onclick={() => openContentModal(id, section.id)}
                                     />
 
                                     <ChevronRightIcon
@@ -328,25 +277,31 @@
                             </Collapsible.Trigger>
                             <Collapsible.Content>
                               <Sidebar.MenuSub class="ml-2">
-                                {#each section.lessons as lesson}
+                                {#each section.items as contentItem (contentItem.id)}
                                   <Sidebar.MenuSubItem>
-                                    <Sidebar.MenuSubButton isActive={(path || page.url.pathname).includes(lesson.id)}>
+                                    <Sidebar.MenuSubButton
+                                      isActive={(path || page.url.pathname).includes(contentItem.id)}
+                                    >
                                       {#snippet child({ props })}
+                                        {@const ItemIcon = CONTENT_DEFINITIONS[contentItem.type].icon}
+                                        {@const isLocked = isStudent && (contentItem.isUnlocked ?? true) === false}
                                         <a
-                                          href={isStudent && !lesson.isUnlocked
-                                            ? page.url.pathname
-                                            : getLessonsRoute(id, lesson.id)}
-                                          aria-disabled={!lesson.isUnlocked}
-                                          title={lesson.title}
-                                          class="flex w-full items-center gap-2 {isStudent && !lesson.isUnlocked
+                                          href={resolve(
+                                            isLocked ? page.url.pathname : getContentRoute(id, contentItem),
+                                            {}
+                                          )}
+                                          aria-disabled={isLocked}
+                                          title={contentItem.title}
+                                          class="flex w-full items-center gap-2 {isLocked
                                             ? 'cursor-not-allowed opacity-50'
                                             : ''}"
                                           {...props}
                                         >
-                                          <span class="flex-1 truncate">{lesson.title}</span>
-                                          {#if !lesson.isUnlocked}
+                                          <ItemIcon size={14} />
+                                          <span class="flex-1 truncate">{contentItem.title}</span>
+                                          {#if isLocked}
                                             <LockIcon size={16} class="shrink-0" />
-                                          {:else if lesson.isComplete}
+                                          {:else if contentItem.isComplete}
                                             <span class="shrink-0">
                                               <CircleCheckIcon size={16} filled />
                                             </span>
@@ -362,11 +317,39 @@
                         {/snippet}
                       </Collapsible.Root>
                     {/each}
+                  {:else}
+                    {#each contentData.items as contentItem (contentItem.id)}
+                      <Sidebar.MenuSubItem>
+                        <Sidebar.MenuSubButton isActive={(path || page.url.pathname).includes(contentItem.id)}>
+                          {#snippet child({ props })}
+                            {@const ItemIcon = CONTENT_DEFINITIONS[contentItem.type].icon}
+                            {@const isLocked = isStudent && (contentItem.isUnlocked ?? true) === false}
+                            <a
+                              href={resolve(isLocked ? page.url.pathname : getContentRoute(id, contentItem), {})}
+                              aria-disabled={isLocked}
+                              title={contentItem.title}
+                              class="flex w-full items-center gap-2 {isLocked ? 'cursor-not-allowed opacity-50' : ''}"
+                              {...props}
+                            >
+                              <ItemIcon size={14} />
+                              <span class="flex-1 truncate">{contentItem.title}</span>
+                              {#if isLocked}
+                                <LockIcon size={16} class="shrink-0" />
+                              {:else if contentItem.isComplete}
+                                <span class="shrink-0">
+                                  <CircleCheckIcon size={16} filled />
+                                </span>
+                              {/if}
+                            </a>
+                          {/snippet}
+                        </Sidebar.MenuSubButton>
+                      </Sidebar.MenuSubItem>
+                    {/each}
                   {/if}
                 </Sidebar.MenuSub>
               </Collapsible.Content>
             {:else}
-              <a href={item.url}>
+              <a href={resolve(item.url, {})}>
                 <Sidebar.MenuButton
                   tooltipContent={item.title}
                   class="flex w-full cursor-pointer items-center gap-4 px-1.5 py-2 {item.isActive

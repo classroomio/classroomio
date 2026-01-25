@@ -54,7 +54,7 @@
     grade: string;
     lessonNo: string;
     lessonTitle: string;
-    lessonURL: string;
+    lessonURL: string | null;
     submissionStatus: number;
     submissionUpdatedAt: string;
   }
@@ -72,8 +72,8 @@
       };
 
       const courseURL = `/courses/${lesson.course.id}`;
-      const lessonURL = `${courseURL}/lessons/${lesson.id}`;
-      const exerciseURL = `${lessonURL}/exercises/${id}`;
+      const lessonURL = lesson.id ? `${courseURL}/lessons/${lesson.id}` : null;
+      const exerciseURL = `${courseURL}/exercises/${id}`;
 
       const grade = `${submissionItem.total}/${questions.reduce((acc, cur) => (acc += cur.points), 0)}`;
 
@@ -143,11 +143,13 @@
               {/if}
               {item.exerciseTitle}
             </a>
-            <a class="my-2 flex w-fit items-center text-black no-underline hover:underline" href={item.lessonURL}>
-              <p class="text-grey text-sm dark:text-white">
-                {$t('exercises.lesson')} <span class="italic">{item.lessonTitle}</span>
-              </p>
-            </a>
+            {#if item.lessonURL}
+              <a class="my-2 flex w-fit items-center text-black no-underline hover:underline" href={item.lessonURL}>
+                <p class="text-grey text-sm dark:text-white">
+                  {$t('exercises.lesson')} <span class="italic">{item.lessonTitle}</span>
+                </p>
+              </a>
+            {/if}
             <p class="text-xs text-gray-500 dark:text-white">
               {item.submissionUpdatedAt}
             </p>

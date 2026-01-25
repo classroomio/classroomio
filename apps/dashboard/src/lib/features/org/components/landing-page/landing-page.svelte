@@ -29,6 +29,7 @@
   import { orgApi } from '$features/org/api/org.svelte';
   import { validateEmail } from '$lib/utils/functions/validateEmail';
   import { orgLandingpageValidation } from '$lib/utils/functions/validator';
+  import { MediaPlayer, isYoutubeUrl } from '$features/ui/media-player';
 
   interface Props {
     orgSiteName?: string;
@@ -43,7 +44,6 @@
   let successContactSaved = $state(false);
   let viewAll = $state(false);
   let isContactSubmiting = $state(false);
-  let player = $state();
   let contact = $state({
     name: '',
     email: '',
@@ -86,26 +86,11 @@
       message: ''
     };
   }
-  function isYouTubeLink(link: string) {
-    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-
-    return youtubeRegex.test(link.trim());
-  }
-
   $effect(() => {
     if (!orgSiteName) return;
 
     orgApi.getPublicCoursesBySiteName(orgSiteName);
   });
-
-  function initPlyr(_player: any, _video: string | undefined) {
-    if (!player) return;
-
-    // @ts-ignore
-    const plyr = new Plyr('#player', { width: '400px', height: '300px', borderRadius: '10px' });
-    // @ts-ignore
-    window.player = plyr;
-  }
 
   // Use default data in store if user hasn't added their own content to landing page
   function setDefault(landingpage) {
@@ -138,9 +123,6 @@
   }
 
   $effect(() => {
-    initPlyr(player, $landingPageSettings.header?.banner?.video);
-  });
-  $effect(() => {
     setDefault(org?.landingpage);
   });
 </script>
@@ -158,7 +140,7 @@
 {:else}
   <main>
     <Navigation
-      logo={org.avatarUrl}
+      logo={org.avatarUrl || '/logo-192.png'}
       orgName={org.name}
       disableSignup={true}
       isOrgSite={true}
@@ -204,23 +186,21 @@
               </div>
 
               <div class="flex w-5/6 md:w-1/2 md:max-w-[650px]">
-                {#if isYouTubeLink($landingPageSettings.header?.banner?.video) && $landingPageSettings.header.banner.type === 'video'}
-                  <div bind:this={player} id="player" style="width:100%; border-radius:12px">
-                    <iframe
-                      title={$t('course.navItem.landing_page.header_video')}
-                      src={$landingPageSettings.header?.banner?.video}
-                      allowfullscreen
-                      allowtransparency
-                      allow="autoplay"
-                    ></iframe>
+                {#if $landingPageSettings.header?.banner?.video && $landingPageSettings.header.banner.type === 'video'}
+                  <div style="width:100%; border-radius:12px">
+                    <MediaPlayer
+                      source={{
+                        type: isYoutubeUrl($landingPageSettings.header.banner.video) ? 'youtube' : 'generic',
+                        url: $landingPageSettings.header.banner.video
+                      }}
+                      options={{
+                        width: '100%',
+                        height: '400'
+                      }}
+                      class="rounded-xl"
+                    />
                   </div>
                 {:else}
-                  <!-- <video class="w-full rounded-xl" controls loop autoplay>
-                      <source src={$landingPageSettings.header?.banner?.video} type="video/mp4" />
-                      <source src="/path/to/video.webm" type="video/webm" />
-                      Captions are optional
-                      <track kind="captions" />
-                    </video> -->
                   <img class="rounded-md" src={$landingPageSettings.header?.banner?.image} alt="landing page banner" />
                 {/if}
               </div>

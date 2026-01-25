@@ -9,6 +9,8 @@ import {
   deleteOptionsByIds,
   deleteQuestionsByIds,
   getExerciseById,
+  getExerciseCompletionByProfile,
+  getExerciseCompletionsByProfile,
   getExerciseWithRelationsOptimized,
   getExercisesByCourseId,
   getLMSExercises,
@@ -29,7 +31,12 @@ import {
 } from './utils';
 
 type ExerciseWithQuestions = TExercise & {
+  isComplete: boolean;
   questions?: QuestionWithRelations[];
+};
+
+type ExerciseWithCompletion = TExercise & {
+  isComplete: boolean;
 };
 
 /**
@@ -43,6 +50,9 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
       title: data.title,
       description: data.description ?? null,
       lessonId: data.lessonId || null,
+      courseId: data.courseId,
+      sectionId: data.sectionId || null,
+      order: data.order ?? null,
       dueBy: data.dueBy || null
     };
 
@@ -101,10 +111,16 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
  * @param exerciseId Exercise ID
  * @returns Exercise with questions and options
  */
-export async function getExercise(exerciseId: string, dbClient?: DbOrTxClient): Promise<ExerciseWithQuestions> {
+export async function getExercise(
+  exerciseId: string,
+  dbClient?: DbOrTxClient,
+  profileId?: string
+): Promise<ExerciseWithQuestions> {
   try {
     // Optimized: Fetch exercise + questions + questionTypes + options in one JOIN query
     const { exercise, questions } = await getExerciseWithRelationsOptimized(exerciseId, dbClient);
+
+    const isComplete = profileId ? await getExerciseCompletionByProfile(exerciseId, profileId, dbClient) : false;
 
     // Build questionTypeMap from questions (already fetched with questionType)
     const questionTypeMap = new Map(questions.map((q) => [q.questionType.id, q.questionType]));
@@ -118,6 +134,7 @@ export async function getExercise(exerciseId: string, dbClient?: DbOrTxClient): 
 
     return {
       ...exercise,
+      isComplete,
       questions: questionsWithOptions
     };
   } catch (error) {
@@ -143,7 +160,7 @@ export async function getExercise(exerciseId: string, dbClient?: DbOrTxClient): 
 export async function updateExerciseService(exerciseId: string, data: TExerciseUpdate): Promise<TExercise> {
   try {
     return await db.transaction(async (tx) => {
-      const txClient = tx as unknown as typeof db;
+      const txClient = tx as DbOrTxClient;
 
       // Update exercise basic fields only if they changed
       const exerciseUpdate = buildExerciseUpdateFields(data);
@@ -242,9 +259,31 @@ export async function deleteExerciseService(exerciseId: string): Promise<TExerci
  * @param lessonId Optional lesson ID filter
  * @returns Array of exercises
  */
-export async function listExercises(courseId: string, lessonId?: string): Promise<TExercise[]> {
+export async function listExercises(
+  courseId: string,
+  filters: { lessonId?: string; sectionId?: string } = {},
+  profileId?: string
+): Promise<ExerciseWithCompletion[]> {
   try {
-    return await getExercisesByCourseId(courseId, lessonId);
+    const exercises = await getExercisesByCourseId(courseId, filters);
+
+    if (!profileId) {
+      return exercises.map((exercise) => ({
+        ...exercise,
+        isComplete: false
+      }));
+    }
+
+    const completedIds = await getExerciseCompletionsByProfile(
+      exercises.map((exercise) => exercise.id),
+      profileId
+    );
+    const completedSet = new Set(completedIds);
+
+    return exercises.map((exercise) => ({
+      ...exercise,
+      isComplete: completedSet.has(exercise.id)
+    }));
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to list exercises',
@@ -263,7 +302,9 @@ export async function listExercises(courseId: string, lessonId?: string): Promis
  */
 export async function createExerciseFromTemplate(
   courseId: string,
-  lessonId: string,
+  lessonId: string | undefined,
+  sectionId: string | undefined,
+  order: number | undefined,
   template: TExerciseTemplate
 ): Promise<TExercise> {
   try {
@@ -272,6 +313,8 @@ export async function createExerciseFromTemplate(
       title: template.title!,
       description: template.description ?? undefined,
       lessonId,
+      sectionId,
+      order,
       courseId
     };
 

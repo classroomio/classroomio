@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { MarksPage } from '$features/course/pages';
   import * as Page from '@cio/ui/base/page';
   import { RoleBasedSecurity } from '$features/ui';
@@ -10,12 +11,26 @@
   import { Progress } from '@cio/ui/base/progress';
   import DownloadIcon from '@lucide/svelte/icons/download';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
-  import { courseApi, lessonApi } from '$features/course/api';
+  import { courseApi } from '$features/course/api';
   import { generateMarksCSV, generateMarksPDF } from '$features/course/utils/marks-utils';
+  import { getCourseContent } from '$features/course/utils/content';
+  import type { CourseContentItem } from '$features/course/utils/types';
+  import { ContentType } from '@cio/utils/constants/content';
 
   let { data } = $props();
 
   let isDownloading = $state(false);
+
+  const contentData = $derived(getCourseContent(courseApi.course));
+  const contentItems = $derived(
+    contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items
+  );
+  const lessonItems = $derived(
+    contentItems.filter(
+      (item): item is CourseContentItem & { type: ContentType.Lesson } => item.type === ContentType.Lesson
+    )
+  );
+  const lessonSummaries = $derived(lessonItems.map((lesson) => ({ id: lesson.id, title: lesson.title })));
 
   function getPageRoles(org: AccountOrg) {
     const roles = [1, 2];
@@ -31,7 +46,7 @@
     try {
       generateMarksCSV(
         data.marksData.students,
-        lessonApi.lessons,
+        lessonSummaries,
         data.marksData.lessonMapping,
         data.marksData.studentMarksByExerciseId,
         courseApi.course?.title || 'Course'
@@ -47,7 +62,7 @@
     try {
       generateMarksPDF(
         data.marksData.students,
-        lessonApi.lessons,
+        lessonSummaries,
         data.marksData.lessonMapping,
         data.marksData.studentMarksByExerciseId,
         courseApi.course?.title || 'Course'
@@ -67,7 +82,7 @@
 <RoleBasedSecurity
   allowedRoles={getPageRoles($currentOrg)}
   onDenied={() => {
-    goto(`/courses/${data.courseId}/lessons?next=true`);
+    goto(resolve(`/courses/${data.courseId}/lessons?next=true`, {}));
   }}
 >
   <Page.Header>

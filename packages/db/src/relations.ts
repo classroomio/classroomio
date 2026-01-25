@@ -257,6 +257,14 @@ export const exerciseRelations = relations(exercise, ({ one, many }) => ({
     fields: [exercise.lessonId],
     references: [lesson.id]
   }),
+  course: one(course, {
+    fields: [exercise.courseId],
+    references: [course.id]
+  }),
+  section: one(lessonSection, {
+    fields: [exercise.sectionId],
+    references: [lessonSection.id]
+  }),
   questions: many(question)
 }));
 

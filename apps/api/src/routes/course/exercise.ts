@@ -20,8 +20,9 @@ import { fetchAllTemplatesMetadata, fetchTemplateById, fetchTemplatesByTag } fro
 import { Hono } from '@api/utils/hono';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { createSubmissionService } from '@api/services/submission';
-import { getGroupMemberIdByCourseAndProfile } from '@cio/db/queries/group';
-import { handleError } from '@api/utils/errors';
+import { getGroupMemberIdByCourseAndProfile, isUserCourseTeamMember } from '@cio/db/queries/group';
+import { ErrorCodes, handleError } from '@api/utils/errors';
+import { isUserOrgAdmin } from '@cio/db/queries/organization';
 import { zValidator } from '@hono/zod-validator';
 
 export const exerciseRouter = new Hono()
@@ -29,8 +30,9 @@ export const exerciseRouter = new Hono()
   .get('/', courseMemberMiddleware, zValidator('query', ZExerciseListQuery), async (c) => {
     try {
       const courseId = c.req.param('courseId')!;
-      const { lessonId } = c.req.valid('query');
-      const exercises = await listExercises(courseId, lessonId);
+      const user = c.get('user')!;
+      const { lessonId, sectionId } = c.req.valid('query');
+      const exercises = await listExercises(courseId, { lessonId, sectionId }, user.id);
 
       return c.json({ success: true, data: exercises }, 200);
     } catch (error) {
@@ -40,7 +42,8 @@ export const exerciseRouter = new Hono()
   .get('/:exerciseId', courseMemberMiddleware, zValidator('param', ZExerciseGetParam), async (c) => {
     try {
       const { exerciseId } = c.req.valid('param');
-      const exercise = await getExercise(exerciseId);
+      const user = c.get('user')!;
+      const exercise = await getExercise(exerciseId, undefined, user.id);
 
       return c.json({ success: true, data: exercise }, 200);
     } catch (error) {
@@ -66,7 +69,7 @@ export const exerciseRouter = new Hono()
   .post('/from-template', courseMemberMiddleware, zValidator('json', ZExerciseFromTemplate), async (c) => {
     try {
       const courseId = c.req.param('courseId')!;
-      const { lessonId, templateId } = c.req.valid('json');
+      const { lessonId, sectionId, order, templateId } = c.req.valid('json');
 
       // Fetch template from database
       const template = await fetchTemplateById(templateId);
@@ -78,7 +81,7 @@ export const exerciseRouter = new Hono()
         return c.json({ success: false, error: 'Template is missing questionnaire data' }, 400);
       }
 
-      const exercise = await createExerciseFromTemplate(courseId, lessonId, template);
+      const exercise = await createExerciseFromTemplate(courseId, lessonId, sectionId, order, template);
 
       return c.json({ success: true, data: exercise }, 201);
     } catch (error) {
@@ -94,6 +97,29 @@ export const exerciseRouter = new Hono()
       try {
         const { exerciseId } = c.req.valid('param');
         const data = c.req.valid('json');
+        const courseId = c.req.param('courseId')!;
+        const user = c.get('user')!;
+
+        if (data.isUnlocked !== undefined) {
+          const { isTeamMember, organizationId } = await isUserCourseTeamMember(courseId, user.id);
+          let isAuthorized = isTeamMember;
+
+          if (!isAuthorized && organizationId) {
+            const isOrgAdmin = await isUserOrgAdmin(organizationId, user.id);
+            isAuthorized = isOrgAdmin;
+          }
+
+          if (!isAuthorized) {
+            return c.json(
+              {
+                success: false,
+                error: 'Unauthorized',
+                code: ErrorCodes.UNAUTHORIZED
+              },
+              403
+            );
+          }
+        }
 
         const exercise = await updateExerciseService(exerciseId, data);
 

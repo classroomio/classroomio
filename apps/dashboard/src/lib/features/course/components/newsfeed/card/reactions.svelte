@@ -17,11 +17,6 @@
     thumbsdown: '👎',
     clap: '👏'
   };
-
-  const didAuthorReact = (reactionType: string) => {
-    const usersReacted = feed.reaction?.[reactionType] || [];
-    return usersReacted.includes(authorId);
-  };
 </script>
 
 <!-- Reactions -->
@@ -29,7 +24,7 @@
   <div class="flex items-center gap-1">
     {#each Object.keys(feed.reaction || {}) as reactionType}
       {#if reactions[reactionType]}
-        {@const isAuthorReacted = didAuthorReact(reactionType)}
+        {@const isAuthorReacted = (feed.reaction?.[reactionType] || []).includes(authorId)}
         <Button
           variant={isAuthorReacted ? 'light-default' : 'ghost'}
           size="icon-sm"

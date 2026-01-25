@@ -4,12 +4,12 @@
   import { goto } from '$app/navigation';
   import { dndzone } from 'svelte-dnd-action';
 
-  import { submissionApi } from '$features/course/api';
+  import { submissionApi, courseApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
   import type { SubmissionIdData, SubmissionItem, SubmissionSection } from '$features/course/utils/types';
 
   import { Chip } from '@cio/ui/custom/chip';
-  import MarkExerciseModal from '$features/course/components/lesson/exercise/mark-exercise-modal.svelte';
+  import MarkExerciseModal from '$features/course/components/exercise/mark-exercise-modal.svelte';
 
   interface Props {
     courseId: string;
@@ -237,13 +237,13 @@
             </a>
             <a
               class="my-2 flex items-center text-black no-underline hover:underline"
-              href="{page.url?.pathname?.replace('submissions', 'lessons')}/{item.lesson.id}/exercises/{item.exercise
-                .id}"
+              href={`/courses/${courseApi.course?.id}/exercises/${item.exercise.id}`}
             >
-              <p class="text-grey text-sm dark:text-white">
-                #{item.lesson.title}
-              </p>
+              <p class="text-grey text-sm dark:text-white">{item.exercise.title}</p>
             </a>
+            {#if item.lesson}
+              <p class="text-grey text-sm dark:text-white">#{item.lesson.title}</p>
+            {/if}
             <p class="text-xs text-gray-500 dark:text-white">
               {item.submittedAt}
             </p>

@@ -9,12 +9,11 @@ import type {
   DeleteLessonSectionRequest,
   GetLessonCommentsRequest,
   GetLessonHistoryRequest,
+  GetLessonLanguageRequest,
   GetLessonRequest,
   Lesson,
   LessonComments,
   LessonSectionWithLessons,
-  ListLessons,
-  ListLessonsRequest,
   ReorderLessonSectionsRequest,
   ReorderLessonsRequest,
   UpdateLessonCommentRequest,
@@ -53,7 +52,6 @@ import { snackbar } from '$features/ui/snackbar/store';
  */
 export class LessonApi extends BaseApiWithErrors {
   lesson = $state<Lesson | null>(null);
-  lessons = $state<ListLessons>([]);
   sections = $state<LessonSectionWithLessons[]>([]);
   commentsByLessonId = $state<
     Record<
@@ -67,42 +65,21 @@ export class LessonApi extends BaseApiWithErrors {
       }
     >
   >({});
-  translations = $state<Record<string, Record<TLocale, string>>>({});
   currentLocale = $state<TLocale>('en');
   isSaving = $state(false);
+  isFetching = $state(false);
   isDirty = $state(false);
 
-  note = $derived(this.translations[this.lesson?.id || '']?.[this.currentLocale] || this.lesson?.note || '');
-
-  /**
-   * Lists lessons for a course
-   */
-  async list(courseId: string, sectionId?: string) {
-    await this.execute<ListLessonsRequest>({
-      requestFn: () =>
-        classroomio.course[':courseId'].lesson.$get({
-          param: { courseId },
-          query: { courseId, sectionId }
-        }),
-      logContext: 'listing lessons',
-      onSuccess: (response) => {
-        if (response.data) {
-          this.lessons = response.data;
-          this.success = true;
-          this.errors = {};
-        }
-      },
-      onError: (result) => {
-        console.error(result);
-        snackbar.error('Failed to list lessons');
-      }
-    });
-  }
+  translations = $state<Record<string, Record<TLocale, string>>>({});
+  note = $state('');
+  private autoSaveTimeoutId: NodeJS.Timeout | null = null;
 
   /**
    * Gets a lesson by ID
    */
   async get(courseId: string, lessonId: string) {
+    this.isFetching = true;
+
     return this.execute<GetLessonRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].lesson[':lessonId'].$get({
@@ -117,14 +94,16 @@ export class LessonApi extends BaseApiWithErrors {
             this.setTranslations();
           }
 
-          this.success = true;
-          this.errors = {};
+          this.note = this.translations[this.lesson?.id || '']?.[this.currentLocale] || this.lesson?.note || '';
+          this.isFetching = false;
         }
       },
       onError: (result) => {
         if (typeof result === 'string') {
           snackbar.error('Failed to fetch lesson');
         }
+
+        this.isFetching = false;
       }
     });
   }
@@ -179,6 +158,8 @@ export class LessonApi extends BaseApiWithErrors {
       return;
     }
 
+    this.isSaving = true;
+
     await this.execute<UpdateLessonRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].lesson[':lessonId'].$put({
@@ -186,27 +167,13 @@ export class LessonApi extends BaseApiWithErrors {
           json: result.data
         }),
       logContext: 'updating lesson',
-      onSuccess: (response) => {
-        if (response.data) {
-          snackbar.success('Lesson updated successfully');
-          this.success = true;
-          this.errors = {};
-        }
-      },
       onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to update lesson');
-          return;
-        }
-        if ('error' in result && 'field' in result && result.field) {
-          this.errors[result.field] = result.error;
-          snackbar.error(result.error);
-        } else if ('error' in result) {
-          this.errors.general = result.error;
-          snackbar.error(result.error);
-        }
+        console.log('onError', result);
+        snackbar.error('Failed to update lesson');
       }
     });
+
+    this.isSaving = false;
   }
 
   /**
@@ -314,22 +281,7 @@ export class LessonApi extends BaseApiWithErrors {
         classroomio.course[':courseId'].lesson.section[':sectionId'].$delete({
           param: { courseId, sectionId }
         }),
-      logContext: 'deleting lesson section',
-      onSuccess: (response) => {
-        if (response.data) {
-          // Update state: remove section and lessons in that section
-          this.sections = this.sections.filter((section) => section.id !== sectionId);
-          this.lessons = this.lessons.filter((lesson) => lesson.sectionId !== sectionId);
-          snackbar.success('snackbar.generic.success_delete');
-          this.success = true;
-          this.errors = {};
-        }
-      },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to delete lesson section');
-        }
-      }
+      logContext: 'deleting lesson section'
     });
   }
 
@@ -615,22 +567,10 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'updating lesson completion',
       onSuccess: (response) => {
         if (response.data) {
-          // Update the lesson's isComplete flag in lessons array
-          this.lessons = this.lessons.map((lesson) => (lesson.id === lessonId ? { ...lesson, isComplete } : lesson));
-
-          // Update the lesson's isComplete flag in sections
-          this.sections = this.sections.map((section) => ({
-            ...section,
-            lessons: section.lessons.map((lesson) => (lesson.id === lessonId ? { ...lesson, isComplete } : lesson))
-          }));
-
           // Update the current lesson if it's the one being updated
           if (this.lesson?.id === lessonId) {
             this.lesson = { ...this.lesson, isComplete };
           }
-
-          this.success = true;
-          this.errors = {};
         }
       },
       onError: (result) => {
@@ -664,34 +604,14 @@ export class LessonApi extends BaseApiWithErrors {
     };
   }
 
-  /**
-   * Adds a new lesson to the lessons list (optimistic update)
-   * This replaces handleAddLesson from the store
-   */
-  addLessonToList(courseId: string) {
-    // Timestamps will be set by the server when the lesson is created
-    const newLesson = {
-      id: '',
-      title: 'Untitled lesson',
-      lessonAt: '',
-      isUnlocked: false,
-      courseId,
-      createdAt: '',
-      updatedAt: null,
-      note: null,
-      videoUrl: null,
-      slideUrl: null,
-      public: false,
-      isComplete: false,
-      callUrl: null,
-      order: 0,
-      teacherId: null,
-      sectionId: null,
-      videos: [],
-      documents: []
+  updateTranslation(lessonId: string, locale: TLocale, content: string) {
+    this.translations = {
+      ...this.translations,
+      [lessonId]: {
+        ...this.translations[lessonId],
+        [locale]: content
+      }
     };
-
-    this.lessons = [...this.lessons, newLesson];
   }
 
   getCommentFromResponse(response: CreateLessonComment): LessonComments[number] {
@@ -782,25 +702,14 @@ export class LessonApi extends BaseApiWithErrors {
    * @param endRange End range for pagination (0-indexed, inclusive)
    * @returns Lesson history data or null on error
    */
-  async getHistory(courseId: string, lessonId: string, locale: string, endRange: number) {
+  async getHistory(courseId: string, lessonId: string, locale: TLocale, endRange: number) {
     return this.execute<GetLessonHistoryRequest>({
       requestFn: () =>
         classroomio.course[':courseId']['lesson'][':lessonId']['history'].$get({
           param: { courseId, lessonId },
           query: { locale, endRange: endRange.toString() }
         }),
-      logContext: 'fetching lesson history',
-      onSuccess: (response) => {
-        if (response.data) {
-          this.success = true;
-          this.errors = {};
-        }
-      },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to fetch lesson history');
-        }
-      }
+      logContext: 'fetching lesson history'
     });
   }
 
@@ -811,8 +720,8 @@ export class LessonApi extends BaseApiWithErrors {
    * @param locale Locale
    * @param content Translation content
    */
-  async upsertLanguage(courseId: string, lessonId: string, locale: string, content: string) {
-    return this.execute<(typeof classroomio.course)[':courseId']['lesson'][':lessonId']['language']['$post']>({
+  async upsertLanguage(courseId: string, lessonId: string, locale: TLocale, content: string) {
+    return this.execute<GetLessonLanguageRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].lesson[':lessonId'].language.$post({
           param: { courseId, lessonId },
@@ -827,6 +736,50 @@ export class LessonApi extends BaseApiWithErrors {
         snackbar.error('snackbar.materials.update_translations');
       }
     });
+  }
+
+  /**
+   * Saves the current lesson state (materials and translations)
+   * @param courseId Course ID
+   * @param lessonId Lesson ID
+   */
+  async save(courseId: string, lessonId: string) {
+    if (!this.lesson) return false;
+
+    // Prevent autosave loops: we only set this back to `true` when the user edits again.
+    this.isDirty = false;
+
+    await Promise.all([
+      this.update(courseId, lessonId, {
+        note: this.lesson.note || undefined,
+        slideUrl: this.lesson.slideUrl || undefined,
+        videos: this.lesson.videos || [],
+        documents: this.lesson.documents || []
+      }),
+      this.upsertLanguage(
+        courseId,
+        lessonId,
+        this.currentLocale,
+        this.translations[lessonId]?.[this.currentLocale] || ''
+      )
+    ]);
+  }
+
+  /**
+   * Starts autosave with debouncing
+   * @param courseId Course ID
+   * @param lessonId Lesson ID
+   */
+  startAutoSave(courseId: string, lessonId: string) {
+    if (!this.isDirty || this.isSaving) return;
+    if (this.autoSaveTimeoutId) clearTimeout(this.autoSaveTimeoutId);
+
+    this.isSaving = true;
+    this.autoSaveTimeoutId = setTimeout(async () => {
+      await this.save(courseId, lessonId);
+      this.isSaving = false;
+      this.autoSaveTimeoutId = null;
+    }, 1500);
   }
 }
 

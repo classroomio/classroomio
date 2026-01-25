@@ -1,9 +1,11 @@
 <script lang="ts">
+  import type { Component } from 'svelte';
+
   interface Props {
     title: string;
     value: string | number;
     subtitle?: string;
-    icon: any;
+    icon: Component;
     iconColor?: string;
     className?: string;
   }

@@ -1,26 +1,86 @@
+import type { Course, CourseContentItem } from '$features/course/utils/types';
 import { NAV_ITEMS, NAV_ITEM_KEY } from './constants';
 
-import type { Course } from '$features/course/utils/types';
+import { ContentType } from '@cio/utils/constants/content';
 import type { Review } from '$features/course/utils/types';
 import get from 'lodash/get';
 
-export function getExerciseCount(lessons) {
-  return lessons.reduce((total, lesson) => total + (lesson.totalExercises?.[0]?.count || 0), 0);
+export type LandingPageLesson = {
+  id: string;
+  title: string | null;
+  order?: number | null;
+  createdAt?: string | null;
+};
+
+export type LandingPageSection = {
+  id: string;
+  title: string | null;
+  lessons: LandingPageLesson[];
+  exerciseCount: number;
+};
+
+function sortLessons(lessons: LandingPageLesson[]): LandingPageLesson[] {
+  return [...lessons]
+    .sort((a, b) => new Date(a.createdAt || '').getTime() - new Date(b.createdAt || '').getTime())
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 }
 
-export function getLessonSections(data) {
-  const sections =
-    data?.lesson_section?.map((section) => {
+function getLessonsFromItems(items: CourseContentItem[]): LandingPageLesson[] {
+  const lessonItems = items.filter((item) => item.type === ContentType.Lesson);
+  const lessons = lessonItems.map((lesson) => ({
+    id: lesson.id,
+    title: lesson.title,
+    order: lesson.order ?? null,
+    createdAt: lesson.createdAt ?? null
+  }));
+
+  return lessons;
+}
+
+function getExerciseCountFromItems(items: CourseContentItem[]): number {
+  return items.filter((item) => item.type === ContentType.Exercise).length;
+}
+
+export function getCourseLessons(course: Course): LandingPageLesson[] {
+  if (!course?.content) return [];
+
+  if (course.content.grouped) {
+    const groupedLessons = course.content.sections.flatMap((section) => getLessonsFromItems(section.items));
+    return sortLessons(groupedLessons);
+  }
+
+  if (!course.content.items.length) return [];
+  return getLessonsFromItems(course.content.items);
+}
+
+export function getLessonSections(course: Course): LandingPageSection[] {
+  if (!course?.content) return [];
+
+  if (course.content.grouped) {
+    return course.content.sections.map((section) => {
+      const lessons = getLessonsFromItems(section.items);
       return {
-        ...section,
-        lessons: data.lessons.filter((lesson) => lesson.section_id === section.id)
+        id: section.id,
+        title: section.title ?? course.title ?? 'Lessons',
+        lessons,
+        exerciseCount: getExerciseCountFromItems(section.items)
       };
-    }) || [];
+    });
+  }
 
-  return sections || [];
+  if (!course.content.items.length) return [];
+
+  return [
+    {
+      id: 'ungrouped',
+      title: course.title ?? 'Lessons',
+      lessons: getLessonsFromItems(course.content.items),
+      exerciseCount: getExerciseCountFromItems(course.content.items)
+    }
+  ];
 }
 
-export function getTotalLessons(sections) {
+export function getTotalLessons(sections: LandingPageSection[]) {
   return sections.reduce((total, section) => {
     return total + section.lessons.length;
   }, 0);

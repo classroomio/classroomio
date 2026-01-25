@@ -1,20 +1,11 @@
 import * as schema from '@db/schema';
 
-import {
-  TCourse,
-  TGroup,
-  TGroupAttendance,
-  TGroupmember,
-  TLesson,
-  TLessonSection,
-  TNewCourse,
-  TNewCourseNewsfeed,
-  TProfile
-} from '@db/types';
-import { and, desc, eq, isNull, sql } from 'drizzle-orm';
+import { TCourse, TGroup, TGroupAttendance, TGroupmember, TNewCourse, TNewCourseNewsfeed, TProfile } from '@db/types';
+import { and, desc, eq, isNull, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { db } from '@db/drizzle';
+import { getCourseContentItems, type CourseContentItemRow } from './content';
 
 /**
  * Base course type - extends TCourse with lessonCount
@@ -155,8 +146,11 @@ export const getExercisesBySiteName = async (siteName: string) => {
       exercise: schema.exercise
     })
     .from(schema.exercise)
-    .innerJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
-    .innerJoin(schema.course, eq(schema.lesson.courseId, schema.course.id))
+    .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+    .innerJoin(
+      schema.course,
+      or(eq(schema.exercise.courseId, schema.course.id), eq(schema.lesson.courseId, schema.course.id))
+    )
     .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
     .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
     .where(eq(schema.organization.siteName, siteName))
@@ -196,36 +190,29 @@ export async function getCourseById(courseId: string) {
 }
 
 /**
- * Gets a course by ID or slug with all related data (group, members, lessons, sections, attendance)
+ * Gets a course by ID or slug with related data (group, attendance, content items).
  * @param courseId Course ID (optional if slug provided)
  * @param slug Course slug (optional if courseId provided)
- * @param profileId Profile ID of the current user (optional, for computing lesson completion)
- * @returns Course with all related data or null if not found
+ * @param profileId Profile ID of the current user (optional)
+ * @returns Course with related data or null if not found
  */
+export type CourseWithRelations = TCourse & {
+  group:
+    | (TGroup & {
+        members: (TGroupmember & {
+          profile: Pick<TProfile, 'id' | 'fullname' | 'username' | 'avatarUrl' | 'email'> | null;
+        })[];
+      })
+    | null;
+  attendance: TGroupAttendance[];
+  contentItems: CourseContentItemRow[];
+};
+
 export async function getCourseWithRelations(
   courseId?: string,
   slug?: string,
   profileId?: string
-): Promise<
-  | (TCourse & {
-      group:
-        | (TGroup & {
-            members: (TGroupmember & {
-              profile: Pick<TProfile, 'id' | 'fullname' | 'username' | 'avatarUrl' | 'email'> | null;
-            })[];
-          })
-        | null;
-      sections: TLessonSection[];
-      lessons: (TLesson & {
-        profile: Pick<TProfile, 'id' | 'fullname' | 'username' | 'avatarUrl' | 'email'> | null;
-        totalExercises: number;
-        totalComments: number;
-        isComplete: boolean;
-      })[];
-      attendance: TGroupAttendance[];
-    })
-  | null
-> {
+): Promise<CourseWithRelations | null> {
   try {
     if (!courseId && !slug) {
       throw new Error('Either courseId or slug must be provided');
@@ -256,14 +243,6 @@ export async function getCourseWithRelations(
       member: TGroupmember | null;
       profile: Pick<TProfile, 'id' | 'fullname' | 'username' | 'avatarUrl' | 'email'> | null;
     };
-    type LessonQueryRow = {
-      lesson: TLesson;
-      teacher: TProfile | null;
-      exerciseCount: number;
-      commentCount: number;
-      isComplete: boolean;
-    };
-
     // Fetch group data if groupId exists
     const groupDataPromise: Promise<GroupQueryRow[]> = course.groupId
       ? db
@@ -285,49 +264,9 @@ export async function getCourseWithRelations(
       : Promise.resolve([]);
 
     // Fetch related data in parallel
-    const [groupData, lessonSections, lessons, attendance] = await Promise.all([
+    const [groupData, contentItems, attendance] = await Promise.all([
       groupDataPromise,
-      // Get lesson sections
-      db.select().from(schema.lessonSection).where(eq(schema.lessonSection.courseId, finalCourseId)),
-      // Get lessons with teacher profile, completion counts, and completion status
-      profileId
-        ? db
-            .select({
-              lesson: schema.lesson,
-              teacher: schema.profile,
-              exerciseCount: sql<number>`COUNT(DISTINCT ${schema.exercise.id})`.as('exercise_count'),
-              commentCount: sql<number>`COUNT(DISTINCT ${schema.lessonComment.id})`.as('comment_count'),
-              isComplete: sql<boolean>`COALESCE(bool_or(${schema.lessonCompletion.isComplete}), false)`.as(
-                'is_complete'
-              )
-            })
-            .from(schema.lesson)
-            .leftJoin(schema.profile, eq(schema.lesson.teacherId, schema.profile.id))
-            .leftJoin(schema.exercise, eq(schema.lesson.id, schema.exercise.lessonId))
-            .leftJoin(schema.lessonComment, eq(schema.lesson.id, schema.lessonComment.lessonId))
-            .leftJoin(
-              schema.lessonCompletion,
-              and(
-                eq(schema.lessonCompletion.lessonId, schema.lesson.id),
-                eq(schema.lessonCompletion.profileId, profileId)
-              )
-            )
-            .where(eq(schema.lesson.courseId, finalCourseId))
-            .groupBy(schema.lesson.id, schema.profile.id)
-        : db
-            .select({
-              lesson: schema.lesson,
-              teacher: schema.profile,
-              exerciseCount: sql<number>`COUNT(DISTINCT ${schema.exercise.id})`.as('exercise_count'),
-              commentCount: sql<number>`COUNT(DISTINCT ${schema.lessonComment.id})`.as('comment_count'),
-              isComplete: sql<boolean>`false`.as('is_complete')
-            })
-            .from(schema.lesson)
-            .leftJoin(schema.profile, eq(schema.lesson.teacherId, schema.profile.id))
-            .leftJoin(schema.exercise, eq(schema.lesson.id, schema.exercise.lessonId))
-            .leftJoin(schema.lessonComment, eq(schema.lesson.id, schema.lessonComment.lessonId))
-            .where(eq(schema.lesson.courseId, finalCourseId))
-            .groupBy(schema.lesson.id, schema.profile.id),
+      getCourseContentItems(finalCourseId, profileId),
       // Get attendance (using courseId, not groupId)
       db.select().from(schema.groupAttendance).where(eq(schema.groupAttendance.courseId, finalCourseId))
     ]);
@@ -348,21 +287,11 @@ export async function getCourseWithRelations(
           }
         : null;
 
-    // Transform lessons
-    const transformedLessons = (lessons as LessonQueryRow[]).map((row) => ({
-      ...row.lesson,
-      profile: row.teacher || null,
-      totalExercises: Number(row.exerciseCount) || 0,
-      totalComments: Number(row.commentCount) || 0,
-      isComplete: row.isComplete === true
-    }));
-
     return {
       ...course,
       group,
-      sections: lessonSections,
-      lessons: transformedLessons,
-      attendance: attendance
+      attendance,
+      contentItems
     };
   } catch (error) {
     console.error('Error in getCourseWithRelations', error);
@@ -483,12 +412,12 @@ export async function getCourseProgress(
 
     const lessonsCompleted = completedLessons.length;
 
-    // Get all exercises for lessons in the course
+    // Get all exercises for the course (legacy lesson_id support)
     const exercises = await db
       .select({ id: schema.exercise.id })
       .from(schema.exercise)
-      .innerJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
-      .where(eq(schema.lesson.courseId, courseId));
+      .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+      .where(or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)));
 
     const exercisesCount = exercises.length;
 
@@ -497,8 +426,13 @@ export async function getCourseProgress(
       .select({ id: schema.submission.id })
       .from(schema.submission)
       .innerJoin(schema.exercise, eq(schema.submission.exerciseId, schema.exercise.id))
-      .innerJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
-      .where(and(eq(schema.lesson.courseId, courseId), eq(schema.submission.submittedBy, groupMemberId)));
+      .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+      .where(
+        and(
+          or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
+          eq(schema.submission.submittedBy, groupMemberId)
+        )
+      );
 
     const exercisesCompleted = completedExercises.length;
 

@@ -13,11 +13,10 @@
   import { t } from '$lib/utils/functions/translations';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { handleOpenWidget, reviewsModalStore } from './store';
-  import type { Course } from '$features/course/utils/types';
+  import type { Course, CourseMetadata } from '$features/course/utils/types';
   import { courseApi } from '$features/course/api';
-  import { sortLesson } from '$features/course/store';
-  import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
-  import { getExerciseCount, getLessonSections, getTotalLessons, filterNavItems } from './utils';
+  import { MediaPlayer, isYoutubeUrl } from '$features/ui/media-player';
+  import { getCourseLessons, getLessonSections, getTotalLessons, filterNavItems } from './utils';
   import { Button } from '@cio/ui/base/button';
 
   import { Chip } from '@cio/ui/custom/chip';
@@ -42,10 +41,7 @@
   const reviews = $derived(get(courseData, 'metadata.reviews') || []);
   const video = $derived(get(courseData, 'metadata.videoUrl'));
 
-  const lessons = $derived.by(() => {
-    const _lessons = get(courseData, 'lessons', []);
-    return sortLesson([..._lessons]);
-  });
+  const lessons = $derived(getCourseLessons(courseData));
   const totalRatings = $derived(reviews?.reduce((acc = 0, review) => acc + (review?.rating || 0), 0));
   const averageRating = $derived(totalRatings / reviews?.length);
   const expandDescription = $derived(Array(reviews?.length ?? 0).fill(false));
@@ -53,36 +49,26 @@
   const allowNewStudent = $derived(get(courseData, 'metadata.allowNewStudent'));
   const bannerImage = $derived(get(courseData, 'logo'));
   const instructor = $derived(get(courseData, 'metadata.instructor') || {});
-  const certificate: Course['metadata']['certificate'] = $derived(
+  const certificate = $derived(
     get(courseData, 'metadata.certificate', {
       templateUrl: '/images/certificate-template.svg'
-    })
+    }) as CourseMetadata['certificate']
   );
 
   const navItems = $derived(filterNavItems(courseData, reviews));
   const navItemKeys = $derived(navItems.map((item) => item.key));
 
-  let player: any = $state();
   let startCoursePayment = $state(false);
   let isVisible = $state(false);
   let observer: { destroy: () => void };
 
   let activeNav = $state(NAV_ITEMS[0].key);
 
-  const lessonSections = getLessonSections(courseData);
-  const totalLessons = getTotalLessons(lessonSections);
+  const lessonSections = $derived(getLessonSections(courseData));
+  const totalLessons = $derived(getTotalLessons(lessonSections));
 
   function locationHashChanged() {
     activeNav = window.location.hash;
-  }
-
-  function initPlyr(_player: any, _video: string | undefined) {
-    if (!player) return;
-
-    // @ts-ignore
-    const plyr = new Plyr('#player', {});
-    // @ts-ignore
-    window.player = plyr;
   }
 
   function toggleDescription(id: number) {
@@ -100,10 +86,6 @@
 
   onDestroy(() => {
     observer?.destroy();
-  });
-
-  $effect(() => {
-    initPlyr(player, video);
   });
 </script>
 
@@ -142,20 +124,21 @@
         {/if}
       </div>
 
-      <!-- Banner Image getEmbedId(videoUrl) -->
+      <!-- Banner Image -->
       {#if video}
         <div class="banner-image flex w-full md:w-2/3">
-          <div bind:this={player} id="player" data-plyr-provider="youtube" data-plyr-embed-id={getEmbedId(video)}></div>
-        </div>
-        <!-- <div class="container">
-          <div
-            bind:this={player}
-            id="player"
-            class="banner-image w-2/3 h-96 relative"
-            data-plyr-provider="youtube"
-            data-plyr-embed-id="bTqVqk7FSmY"
+          <MediaPlayer
+            source={{
+              type: isYoutubeUrl(video) ? 'youtube' : 'generic',
+              url: video
+            }}
+            options={{
+              width: '100%',
+              height: '400'
+            }}
+            class="w-full"
           />
-        </div> -->
+        </div>
       {:else}
         <div class="banner-image relative overflow-hidden rounded-md md:w-2/3">
           <img
@@ -298,10 +281,10 @@
 
             {#each lessonSections as section (section.id)}
               <SectionsDisplay
-                exerciseCount={getExerciseCount(section.lessons)}
+                exerciseCount={section.exerciseCount}
                 lessonCount={section.lessons?.length}
                 lessons={section.lessons}
-                title={section.title}
+                title={section.title!}
               />
             {/each}
           </NavSection>
@@ -496,10 +479,6 @@
   :global(.list ul li) {
     margin-left: 1rem;
     list-style-type: disc;
-  }
-
-  :global(.plyr) {
-    width: 100% !important;
   }
 
   .read-more-content {

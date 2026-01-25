@@ -1,10 +1,11 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import { resolve } from '$app/paths';
   import { flip } from 'svelte/animate';
   import { dndzone } from 'svelte-dnd-action';
   import PlusIcon from '@lucide/svelte/icons/plus';
-  import ListChecksIcon from '@lucide/svelte/icons/list-checks';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+  import LockIcon from '@lucide/svelte/icons/lock';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import { Button } from '@cio/ui/base/button';
   import { InputField } from '@cio/ui/custom/input-field';
@@ -13,12 +14,18 @@
   import { t } from '$lib/utils/functions/translations';
   import { globalStore } from '$lib/utils/store/app';
   import { courseApi } from '$features/course/api';
-  import { handleAddLessonWidget } from '$features/course/components/lesson/store';
   import { snackbar } from '$features/ui/snackbar/store';
+  import { profile } from '$lib/utils/store/user';
   import { lessonApi } from '$features/course/api';
   import DeleteLessonConfirmation from '$features/course/components/lesson/delete-lesson-confirmation.svelte';
   import { RoleBasedSecurity } from '$features/ui';
-  import type { ListLessons } from '$features/course/utils/types';
+  import type { CourseContent, CourseContentItem } from '$features/course/utils/types';
+  import { ExerciseIcon } from '@cio/ui/custom/moving-icons';
+  import { CircleCheckIcon } from '$features/ui/icons';
+  import { contentCreateStore } from '$features/course/components/content/store';
+  import { getCourseContent } from '$features/course/utils/content';
+  import { ContentType } from '@cio/utils/constants/content';
+  import { exerciseApi } from '$features/course/api';
 
   type CrudParam = {
     sectionId?: string;
@@ -42,15 +49,80 @@
     isSection: false
   };
   const courseId = $derived(courseApi.course?.id || '');
+  const profileId = $derived($profile?.id || '');
+  const contentData = $derived(getCourseContent(courseApi.course));
+
+  type ContentDndItem = CourseContentItem & {
+    id: string;
+    contentId: string;
+    isUnlocked?: boolean | null;
+    isComplete?: boolean | null;
+  };
+
+  type ContentSection = CourseContent['sections'][number];
+
+  type SectionDnd = {
+    id: string;
+    title: string;
+    order?: number | null;
+    items: ContentDndItem[];
+  };
+
+  let sections = $state<SectionDnd[]>([]);
+
+  function buildSectionItems(section: ContentSection): ContentDndItem[] {
+    return section.items.map((item) => ({
+      ...item,
+      id: `${item.type}-${item.id}`,
+      contentId: item.id
+    }));
+  }
+
+  function syncSections() {
+    sections = (contentData.sections || []).map((section) => ({
+      ...section,
+      items: buildSectionItems(section)
+    }));
+  }
+
+  function toCourseContentItems(items: ContentDndItem[]): CourseContentItem[] {
+    return items.map(({ contentId, id: _dndId, ...rest }) => ({
+      ...rest,
+      id: contentId
+    }));
+  }
+
+  function syncCourseContentSections(updatedSections: SectionDnd[]) {
+    if (!courseApi.course?.content) return;
+
+    courseApi.course.content = {
+      ...courseApi.course.content,
+      sections: updatedSections.map((section) => ({
+        ...section,
+        items: toCourseContentItems(section.items),
+        order: section.order ?? null
+      }))
+    };
+  }
+
+  function updateSectionItems(sectionId: string, items: ContentDndItem[]) {
+    sections = sections.map((section) => (section.id === sectionId ? { ...section, items } : section));
+  }
+
+  $effect(() => {
+    if (!reorder || sections.length === 0) {
+      syncSections();
+    }
+  });
 
   function onEdit(params: CrudParam) {
     lessonEditing = params.sectionId || params.lessonId;
     prevTitle = params.sectionTitle || params.lessonTitle;
   }
 
-  async function onSave(params: CrudParam, lesson?: ListLessons[number]) {
+  async function onSave(params: CrudParam, item?: ContentDndItem) {
     if (params.sectionId) {
-      const section = lessonApi.sections.find((s) => s.id === params.sectionId);
+      const section = sections.find((entry) => entry.id === params.sectionId);
       if (!section) return;
 
       await lessonApi.updateSection(courseId, section.id, {
@@ -59,18 +131,15 @@
 
       if (lessonApi.errors && Object.keys(lessonApi.errors).length) {
         errors = {
-          // @ts-ignore
           title: lessonApi.errors.title
         };
       }
-    } else if (lesson) {
-      await lessonApi.update(courseId, lesson.id, {
-        title: lesson.title || '',
-        lessonAt: lesson.lessonAt!,
-        callUrl: lesson.callUrl || '',
-        teacherId: lesson.teacherId!,
-        isUnlocked: lesson.isUnlocked!,
-        sectionId: lesson.sectionId!
+    } else if (item) {
+      await lessonApi.update(courseId, item.contentId, {
+        title: item.title || '',
+        isUnlocked: item.isUnlocked ?? undefined,
+        sectionId: item.sectionId ?? undefined,
+        order: item.order ?? undefined
       });
 
       if (lessonApi.errors && Object.keys(lessonApi.errors).length) {
@@ -82,6 +151,7 @@
 
     if (!errors?.title) {
       resetEdit();
+      syncCourseContentSections(sections);
 
       snackbar.success('snackbar.success_update');
     }
@@ -98,13 +168,10 @@
       await lessonApi.deleteSection(courseId, deletingData.id);
     } else {
       await lessonApi.delete(courseId, deletingData.id);
-      if (lessonApi.success) {
-        lessonApi.lessons = lessonApi.lessons.filter((lesson) => lesson.id !== deletingData.id);
-        lessonApi.sections = lessonApi.sections.map((section) => {
-          section.lessons = section.lessons.filter((lesson) => lesson.id !== deletingData.id);
-          return section;
-        });
-      }
+    }
+
+    if (lessonApi.success && profileId) {
+      await courseApi.refreshCourse(courseId, profileId);
     }
   }
 
@@ -114,12 +181,12 @@
     errors = {};
   }
 
-  function handleAddLesson(id) {
-    handleAddLessonWidget.update(() => ({
+  function openContentModal(sectionId: string) {
+    contentCreateStore.set({
       open: true,
-      isSection: false,
-      id
-    }));
+      sectionId,
+      initialType: ContentType.Lesson
+    });
   }
 
   /**
@@ -128,66 +195,90 @@
   const flipDurationMs = 200;
 
   function handleDndConsiderColumns(e) {
-    lessonApi.sections = e.detail.items;
+    sections = e.detail.items as SectionDnd[];
   }
+
   async function handleDndFinalizeColumns(e) {
-    const prevSections = lessonApi.sections.map((s) => ({ id: s.id, order: s.order }));
+    const updatedSections = (e.detail.items as SectionDnd[]).map((section, index) => ({
+      ...section,
+      order: index + 1
+    }));
 
-    lessonApi.sections = e.detail.items;
+    sections = updatedSections;
 
-    const newSections = e.detail.items.map((s) => ({ id: s.id, order: s.order }));
-    const sectionsToReorder = newSections.filter((s) => s.order !== prevSections.find((p) => p.id === s.id)?.order);
+    const sectionsToReorder = updatedSections
+      .filter((section) => section.id !== 'ungrouped')
+      .map((section) => ({ id: section.id, order: section.order ?? 0 }));
 
-    await lessonApi.reorderSections(courseId, sectionsToReorder);
+    if (sectionsToReorder.length > 0) {
+      await lessonApi.reorderSections(courseId, sectionsToReorder);
+    }
+
+    syncCourseContentSections(updatedSections);
   }
 
-  function handleDndConsiderCards(cid, e) {
-    const colIdx = lessonApi.sections.findIndex((c) => c.id === cid);
-    lessonApi.sections[colIdx].lessons = e.detail.items;
-    lessonApi.sections = [...lessonApi.sections];
+  function handleDndConsiderCards(sectionId: string, e) {
+    updateSectionItems(sectionId, e.detail.items as ContentDndItem[]);
   }
-  async function handleDndFinalizeCards(cid, e) {
-    const colIdx = lessonApi.sections.findIndex((c) => c.id === cid);
 
-    const section = lessonApi.sections[colIdx];
-    const prevLessonOrder = section.lessons.reduce((acc, l) => ({ ...acc, [l.id]: l.order }), {});
-    const prevSectionIds = section.lessons.reduce((acc, l) => ({ ...acc, [l.id]: l.sectionId }), {});
+  async function handleDndFinalizeCards(sectionId: string, e) {
+    const items = e.detail.items as ContentDndItem[];
+    updateSectionItems(sectionId, items);
 
-    lessonApi.sections[colIdx].lessons = e.detail.items;
-    lessonApi.sections = [...lessonApi.sections];
-
-    // Collect all lessons that need to be updated
+    const normalizedSectionId = sectionId === 'ungrouped' ? null : sectionId;
     const lessonsToReorder: Array<{ id: string; order: number; sectionId?: string }> = [];
+    const exerciseUpdates: Array<{ id: string; order: number; sectionId?: string }> = [];
 
-    e.detail.items.forEach((lesson: ListLessons[number], index: number) => {
+    items.forEach((item, index) => {
       const order = index + 1;
-      const newSectionId = lessonApi.sections[colIdx].id;
 
-      // Check if order or sectionId changed
-      if (order !== prevLessonOrder[lesson.id] || prevSectionIds[lesson.id] !== newSectionId) {
-        section.lessons[index].order = order;
-        lessonsToReorder.push({
-          id: lesson.id,
-          order,
-          sectionId: newSectionId
-        });
+      if (item.type === ContentType.Lesson) {
+        if (item.order !== order || item.sectionId !== normalizedSectionId) {
+          item.order = order;
+          item.sectionId = normalizedSectionId;
+          lessonsToReorder.push({ id: item.contentId, order, sectionId: normalizedSectionId ?? undefined });
+        }
+      }
+
+      if (item.type === ContentType.Exercise) {
+        if (item.order !== order || item.sectionId !== normalizedSectionId) {
+          item.order = order;
+          item.sectionId = normalizedSectionId;
+          exerciseUpdates.push({ id: item.contentId, order, sectionId: normalizedSectionId ?? undefined });
+        }
       }
     });
 
-    // Make a single API call to reorder all lessons
     if (lessonsToReorder.length > 0) {
       await lessonApi.reorderLessons(courseId, lessonsToReorder);
     }
+
+    if (exerciseUpdates.length > 0) {
+      await Promise.all(
+        exerciseUpdates.map((update) =>
+          exerciseApi.update(courseId, update.id, {
+            order: update.order,
+            sectionId: update.sectionId
+          })
+        )
+      );
+    }
+
+    syncCourseContentSections(sections);
+
+    if (!reorder) {
+      syncSections();
+    }
   }
 
-  function getLessonOrder(lessons, id) {
-    const index = lessons.findIndex((lesson) => lesson.id === id);
+  function getLessonOrder(items: ContentDndItem[], lessonId: string) {
+    const index = items.findIndex((item) => item.type === ContentType.Lesson && item.contentId === lessonId);
 
     if (index < 9) {
       return '0' + (index + 1);
-    } else {
-      return index + 1;
     }
+
+    return index + 1;
   }
 </script>
 
@@ -196,7 +287,7 @@
 <section
   class="mx-auto w-full p-3 lg:w-11/12 lg:px-4"
   use:dndzone={{
-    items: lessonApi.sections,
+    items: sections,
     flipDurationMs,
     type: 'rows',
     dropTargetStyle: {
@@ -208,130 +299,202 @@
   onconsider={handleDndConsiderColumns}
   onfinalize={handleDndFinalizeColumns}
 >
-  {#each lessonApi.sections as section (section.id)}
-    <div class="m-auto mb-3 max-w-xl rounded-md border-2 border-gray-200 dark:bg-neutral-800">
+  {#each sections as section (section.id)}
+    {@const isUngrouped = section.id === 'ungrouped'}
+    <div
+      class="m-auto mb-3 max-w-xl rounded-md border-2 border-gray-200 transition dark:bg-neutral-800 {reorder
+        ? 'border-primary-300 bg-primary-50/40 cursor-move shadow-sm'
+        : ''}"
+    >
       <div
         class="mb-2 flex min-h-[50px] items-center justify-between rounded-tl-md rounded-tr-md border-b bg-gray-50 px-3 py-1 dark:bg-neutral-700"
       >
-        {#if lessonEditing === section.id}
+        {#if lessonEditing === section.id && !isUngrouped}
           <InputField className="w-4/6" bind:value={section.title} errorMessage={errors?.title} />
         {:else}
           <p class="w-4/6 font-semibold">{section.title}</p>
         {/if}
 
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <div class="flex items-center">
-            {#if lessonEditing === section.id}
-              <Button
-                variant="outline"
-                onclick={() => {
-                  section.title = prevTitle ?? section.title;
-                  resetEdit();
-                }}
-              >
-                {$t('course.navItem.lessons.add_lesson.cancel')}
-              </Button>
-              <Button onclick={() => onSave({ sectionId: section.id })}>
-                {$t('course.navItem.lessons.add_lesson.save')}
-              </Button>
-            {:else}
-              <IconButton onclick={() => handleAddLesson(section.id)} disabled={!!lessonEditing}>
-                <PlusIcon size={16} />
-              </IconButton>
-              <DropdownMenu.Root>
-                <DropdownMenu.Trigger>
-                  <Button variant="ghost" size="icon" class="h-8 w-8">
-                    <EllipsisVerticalIcon class="h-5 w-5" />
-                    <span class="sr-only">Open menu</span>
-                  </Button>
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content align="end">
-                  <DropdownMenu.Item
-                    disabled={!!lessonEditing}
-                    onclick={() => onEdit({ sectionId: section.id, sectionTitle: section.title! })}
-                  >
-                    {$t('course.navItem.lessons.add_lesson.edit')}
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Separator />
-                  <DropdownMenu.Item
-                    class="text-red-600 focus:text-red-600 dark:text-red-400"
-                    onclick={() => onDelete({ sectionId: section.id })}
-                  >
-                    {$t('course.navItem.lessons.add_lesson.delete')}
-                  </DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu.Root>
-            {/if}
-          </div>
+          {#if !isUngrouped}
+            <div class="flex items-center">
+              {#if lessonEditing === section.id}
+                <Button
+                  variant="outline"
+                  onclick={() => {
+                    section.title = prevTitle ?? section.title;
+                    resetEdit();
+                  }}
+                >
+                  {$t('course.navItem.lessons.add_lesson.cancel')}
+                </Button>
+                <Button onclick={() => onSave({ sectionId: section.id })}>
+                  {$t('course.navItem.lessons.add_lesson.save')}
+                </Button>
+              {:else}
+                <IconButton onclick={() => openContentModal(section.id)} disabled={!!lessonEditing}>
+                  <PlusIcon size={16} />
+                </IconButton>
+
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger>
+                    <Button variant="ghost" size="icon" class="h-8 w-8">
+                      <EllipsisVerticalIcon class="h-5 w-5" />
+                      <span class="sr-only">Open menu</span>
+                    </Button>
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content align="end">
+                    <DropdownMenu.Item
+                      disabled={!!lessonEditing}
+                      onclick={() => onEdit({ sectionId: section.id, sectionTitle: section.title! })}
+                    >
+                      {$t('course.navItem.lessons.add_lesson.edit')}
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Separator />
+                    <DropdownMenu.Item
+                      class="text-red-600 focus:text-red-600 dark:text-red-400"
+                      onclick={() => onDelete({ sectionId: section.id })}
+                    >
+                      {$t('course.navItem.lessons.add_lesson.delete')}
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu.Root>
+              {/if}
+            </div>
+          {/if}
         </RoleBasedSecurity>
       </div>
 
       <div
-        class="mx-3 py-1"
+        class="mx-3 py-1 {reorder ? 'cursor-move' : ''}"
         use:dndzone={{
-          items: section.lessons,
+          items: section.items,
           flipDurationMs,
           dropTargetStyle: {
             border: '2px #1d4ed8 solid',
             'border-style': 'dashed'
           },
-          dragDisabled: !reorder
+          dragDisabled: !reorder,
+          type: 'section-content'
         }}
         onconsider={(e) => handleDndConsiderCards(section.id, e)}
         onfinalize={(e) => handleDndFinalizeCards(section.id, e)}
       >
-        {#each section.lessons as lesson (lesson.id)}
+        {#each section.items as item (item.id)}
           <div
-            class="mb-2 flex min-h-[50px] max-w-xl items-center justify-between rounded-md border border-gray-200 px-3 py-1"
+            class="mb-2 flex min-h-[50px] max-w-xl items-center justify-between rounded-md border border-gray-200 px-3 py-1 transition {reorder
+              ? 'border-primary-300 bg-primary-50/40 cursor-move shadow-sm'
+              : ''}"
             animate:flip={{ duration: flipDurationMs }}
           >
-            {#if lessonEditing === lesson.id}
-              <InputField className="w-4/6" bind:value={lesson.title} errorMessage={errors?.title} />
-            {:else}
-              <div class="flex w-4/5 items-center gap-2">
-                <Chip value={getLessonOrder(section.lessons, lesson.id)} />
-                <div>
-                  <a
-                    href={$globalStore.isStudent && !lesson.isUnlocked
-                      ? page.url.pathname
-                      : `/courses/${courseApi.course?.id}/lessons/${lesson.id}`}
-                    class=" text-black dark:text-white {$globalStore.isStudent && !lesson.isUnlocked
-                      ? 'cursor-not-allowed'
-                      : ''}"
-                    data-sveltekit-preload-data="off"
-                  >
-                    {lesson.title}
-                  </a>
-
-                  <div class="mt-1 mb-3 flex items-center lg:mb-0">
-                    <ListChecksIcon size={16} />
-                    <p class="ml-2 text-xs text-gray-500 dark:text-white">
-                      <!-- TODO REMOVE THIS -->
-                      0
-                      {$t('exercises.heading')}
-                    </p>
+            {#if item.type === ContentType.Lesson}
+              {#if lessonEditing === item.contentId}
+                <InputField className="w-4/6" bind:value={item.title} errorMessage={errors?.title} />
+              {:else}
+                <div class="flex w-4/5 items-center gap-2">
+                  <Chip value={getLessonOrder(section.items, item.contentId)} />
+                  <div>
+                    <a
+                      href={resolve(
+                        $globalStore.isStudent && !item.isUnlocked
+                          ? page.url.pathname
+                          : `/courses/${courseApi.course?.id}/lessons/${item.contentId}`,
+                        {}
+                      )}
+                      class=" text-black dark:text-white {$globalStore.isStudent && !item.isUnlocked
+                        ? 'cursor-not-allowed'
+                        : ''}"
+                      data-sveltekit-preload-data="off"
+                    >
+                      {item.title}
+                    </a>
                   </div>
                 </div>
-              </div>
-            {/if}
+              {/if}
 
-            <RoleBasedSecurity allowedRoles={[1, 2]}>
-              <div class="flex items-center gap-1">
-                <!-- IS EDITING -->
-                {#if lessonEditing === lesson.id}
-                  <Button
-                    variant="outline"
-                    onclick={() => {
-                      lesson.title = prevTitle ?? lesson.title;
-                      resetEdit();
-                    }}
+              <RoleBasedSecurity allowedRoles={[1, 2]}>
+                <div class="flex items-center gap-1">
+                  {#if lessonEditing === item.contentId}
+                    <Button
+                      variant="outline"
+                      onclick={() => {
+                        item.title = prevTitle ?? item.title;
+                        resetEdit();
+                      }}
+                    >
+                      {$t('course.navItem.lessons.add_lesson.cancel')}
+                    </Button>
+                    <Button onclick={() => onSave({ lessonId: item.contentId }, item)}>
+                      {$t('course.navItem.lessons.add_lesson.save')}
+                    </Button>
+                  {:else}
+                    <DropdownMenu.Root>
+                      <DropdownMenu.Trigger>
+                        <Button variant="ghost" size="icon" class="h-8 w-8">
+                          <EllipsisVerticalIcon class="h-5 w-5" />
+                          <span class="sr-only">Open menu</span>
+                        </Button>
+                      </DropdownMenu.Trigger>
+                      <DropdownMenu.Content align="end">
+                        <DropdownMenu.Item
+                          onclick={async () => {
+                            item.isUnlocked = !(item.isUnlocked ?? false);
+
+                            const courseId = courseApi.course?.id || '';
+                            await lessonApi.update(courseId, item.contentId, {
+                              title: item.title || '',
+                              isUnlocked: item.isUnlocked ?? undefined,
+                              sectionId: item.sectionId ?? undefined
+                            });
+                            syncCourseContentSections(sections);
+                          }}
+                        >
+                          {item.isUnlocked
+                            ? $t('course.navItem.lessons.add_lesson.lock')
+                            : $t('course.navItem.lessons.add_lesson.unlock')}
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Item
+                          onclick={() => onEdit({ lessonId: item.contentId, lessonTitle: item.title })}
+                        >
+                          {$t('course.navItem.lessons.add_lesson.edit')}
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Separator />
+                        <DropdownMenu.Item
+                          class="text-red-600 focus:text-red-600 dark:text-red-400"
+                          onclick={() => onDelete({ lessonId: item.contentId })}
+                        >
+                          {$t('course.navItem.lessons.add_lesson.delete')}
+                        </DropdownMenu.Item>
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Root>
+                  {/if}
+                </div>
+              </RoleBasedSecurity>
+            {:else if item.type === ContentType.Exercise}
+              {@const isLocked = $globalStore.isStudent && (item.isUnlocked ?? true) === false}
+              <div class="flex w-full items-center justify-between gap-2">
+                <div class="flex w-4/5 items-center gap-2">
+                  <ExerciseIcon size={16} />
+                  <a
+                    href={resolve(
+                      isLocked ? page.url.pathname : `/courses/${courseApi.course?.id}/exercises/${item.contentId}`,
+                      {}
+                    )}
+                    class="flex-1 truncate text-sm text-black dark:text-white {isLocked
+                      ? 'cursor-not-allowed opacity-50'
+                      : ''}"
                   >
-                    {$t('course.navItem.lessons.add_lesson.cancel')}
-                  </Button>
-                  <Button onclick={() => onSave({ lessonId: lesson.id }, lesson)}>
-                    {$t('course.navItem.lessons.add_lesson.save')}
-                  </Button>
-                {:else}
+                    {item.title}
+                  </a>
+                  {#if isLocked}
+                    <LockIcon size={16} class="shrink-0" />
+                  {:else if item.isComplete}
+                    <span class="shrink-0">
+                      <CircleCheckIcon size={16} filled />
+                    </span>
+                  {/if}
+                </div>
+                <RoleBasedSecurity allowedRoles={[1, 2]}>
                   <DropdownMenu.Root>
                     <DropdownMenu.Trigger>
                       <Button variant="ghost" size="icon" class="h-8 w-8">
@@ -342,38 +505,23 @@
                     <DropdownMenu.Content align="end">
                       <DropdownMenu.Item
                         onclick={async () => {
-                          lesson.isUnlocked = !lesson.isUnlocked;
+                          item.isUnlocked = !(item.isUnlocked ?? true);
 
-                          const courseId = courseApi.course?.id || '';
-                          await lessonApi.update(courseId, lesson.id, {
-                            title: lesson.title || '',
-                            lessonAt: lesson.lessonAt!,
-                            callUrl: lesson.callUrl!,
-                            teacherId: lesson.teacherId!,
-                            isUnlocked: lesson.isUnlocked!,
-                            sectionId: lesson.sectionId!
+                          await exerciseApi.update(courseId, item.contentId, {
+                            isUnlocked: item.isUnlocked ?? undefined
                           });
+                          syncCourseContentSections(sections);
                         }}
                       >
-                        {lesson.isUnlocked
+                        {item.isUnlocked
                           ? $t('course.navItem.lessons.add_lesson.lock')
                           : $t('course.navItem.lessons.add_lesson.unlock')}
                       </DropdownMenu.Item>
-                      <DropdownMenu.Item onclick={() => onEdit({ lessonId: lesson.id, lessonTitle: lesson.title })}>
-                        {$t('course.navItem.lessons.add_lesson.edit')}
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Separator />
-                      <DropdownMenu.Item
-                        class="text-red-600 focus:text-red-600 dark:text-red-400"
-                        onclick={() => onDelete({ lessonId: lesson.id })}
-                      >
-                        {$t('course.navItem.lessons.add_lesson.delete')}
-                      </DropdownMenu.Item>
                     </DropdownMenu.Content>
                   </DropdownMenu.Root>
-                {/if}
+                </RoleBasedSecurity>
               </div>
-            </RoleBasedSecurity>
+            {/if}
           </div>
         {:else}
           {$t('course.navItem.lessons.no_lesson')}

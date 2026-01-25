@@ -10,7 +10,6 @@ import type {
   GetCourseBySlugRequest,
   GetCourseProgressRequest,
   GetCourseRequest,
-  LessonSectionWithLessons,
   UpdateCourseData,
   UpdateCourseRequest
 } from '../utils/types';
@@ -26,8 +25,6 @@ import { resolve } from '$app/paths';
 import { snackbar } from '$features/ui/snackbar/store';
 import { ROLE } from '@cio/utils/constants';
 import type { CourseMembers } from '../utils/types';
-import { lessonApi } from './lesson.svelte';
-import { sortLesson, sortLessonSection } from '../store';
 
 type GroupStore = {
   id?: string;
@@ -213,8 +210,8 @@ export class CourseApi extends BaseApiWithErrors {
           // Capture PostHog event
           capturePosthogEvent('course_created', {
             course_id: newCourse.id,
-            course_title: newCourse.title,
-            course_description: newCourse.description,
+            courseTitle: newCourse.title,
+            courseDescription: newCourse.description,
             organization_id: org.id,
             organization_name: org.name,
             user_id: userProfile.id,
@@ -396,12 +393,11 @@ export class CourseApi extends BaseApiWithErrors {
   }
 
   /**
-   * Sets course data and processes related data (group, lessons, sections)
+   * Sets course data and processes related data (group data)
    * @param data Course data
    * @param profileId Profile ID
-   * @param setLesson Whether to set lesson data (default: true)
    */
-  setCourse(data: Course, profileId: string, setLesson = true) {
+  setCourse(data: Course, profileId: string) {
     if (!data || !(Object.values(data) && Object.values(data).length)) return;
 
     // Process group data
@@ -431,25 +427,6 @@ export class CourseApi extends BaseApiWithErrors {
       this.group = groupData;
     }
 
-    // Process lesson data
-    if (setLesson) {
-      const orderedLessons = sortLesson(data.lessons || []);
-      lessonApi.lessons = orderedLessons;
-
-      const sectionsData = data.sections || [];
-      if (sectionsData.length > 0) {
-        const sections: LessonSectionWithLessons[] = sectionsData.map((section) => {
-          const lessons = (data.lessons || []).filter((lesson) => lesson.sectionId === section.id);
-          return {
-            ...section,
-            lessons: sortLesson(lessons)
-          } as LessonSectionWithLessons;
-        });
-
-        lessonApi.sections = sortLessonSection(sections);
-      }
-    }
-
     // Ensure metadata has default values
     if (data.metadata && !Object.values(data.metadata).some((v) => v !== undefined && v !== null && v !== '')) {
       data.metadata = {
@@ -470,13 +447,16 @@ export class CourseApi extends BaseApiWithErrors {
           description: '',
           imgUrl: ''
         },
-        allowNewStudent: false
+        allowNewStudent: false,
+        isContentGroupingEnabled: true
       };
     }
 
     // Ensure lessonTabsOrder includes all tabs (backward compatibility)
-    if (data.metadata && data.metadata.lessonTabsOrder) {
-      const existingTabIds = data.metadata.lessonTabsOrder.map((tab) => tab.id);
+    const metadata = data.metadata ?? undefined;
+    const lessonTabsOrder = metadata?.lessonTabsOrder;
+    if (lessonTabsOrder) {
+      const existingTabIds = lessonTabsOrder.map((tab) => tab.id);
       const allTabs = [
         { id: 1, name: 'course.navItem.lessons.materials.tabs.note.title' },
         { id: 2, name: 'course.navItem.lessons.materials.tabs.slide.title' },
@@ -485,10 +465,22 @@ export class CourseApi extends BaseApiWithErrors {
       ];
 
       allTabs.forEach((tab) => {
-        if (!existingTabIds.includes(tab.id) && data.metadata.lessonTabsOrder) {
-          data.metadata.lessonTabsOrder.push(tab);
+        if (!existingTabIds.includes(tab.id)) {
+          lessonTabsOrder.push(tab);
         }
       });
+    }
+
+    if (data.metadata && data.metadata.isContentGroupingEnabled === undefined) {
+      data.metadata.isContentGroupingEnabled = true;
+    }
+
+    if (!data.content) {
+      data.content = {
+        grouped: false,
+        sections: [],
+        items: []
+      };
     }
 
     // Ensure certificateTheme has default value

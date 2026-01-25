@@ -143,7 +143,7 @@ export const ZCourseMetadata = z.object({
   lessonTabsOrder: z
     .array(
       z.object({
-        id: z.number(),
+        id: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
         name: z.string()
       })
     )

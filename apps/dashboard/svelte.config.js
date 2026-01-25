@@ -65,6 +65,7 @@ const config = {
           'self',
           'https://www.youtube.com',
           'https://youtube.com',
+          'https://www.youtube-nocookie.com',
           'https://www.google.com',
           'https://google.com'
         ],
@@ -78,7 +79,8 @@ const config = {
           'https://*.r2.cloudflarestorage.com',
           'http://localhost:3002',
           'wss://*.classroomio.com',
-          'https://*.senja.io'
+          'https://*.senja.io',
+          'https://*.ytimg.com'
         ],
         'worker-src': ['self', 'blob:'],
         'object-src': ['none'],
@@ -123,6 +125,7 @@ const config = {
           'self',
           'https://www.youtube.com',
           'https://youtube.com',
+          'https://www.youtube-nocookie.com',
           'https://www.google.com',
           'https://google.com'
         ],
@@ -137,7 +140,8 @@ const config = {
           'https://*.r2.cloudflarestorage.com',
           'http://localhost:3002',
           'wss://*.classroomio.com',
-          'https://*.senja.io'
+          'https://*.senja.io',
+          'https://*.ytimg.com'
         ],
         'worker-src': ['self', 'blob:'],
         'object-src': ['none'],

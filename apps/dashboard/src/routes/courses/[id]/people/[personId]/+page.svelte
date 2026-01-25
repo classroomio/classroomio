@@ -141,29 +141,21 @@
               <BookOpenIcon size={16} />
               <div>
                 <div class="mb-2">
+                  <a href={`/courses/${data.courseId}/exercises/${exercise.id}`}>
+                    <p class="text-lg font-semibold text-gray-600">
+                      {exercise.title}
+                    </p>
+                  </a>
                   {#if exercise.lessonId}
-                    <a
-                      href={`/courses/${data.courseId}/lessons/${exercise.lessonId}/exercises/${exercise.id}?tabIndex=1`}
-                    >
-                      <p class="text-lg font-semibold text-gray-600">
-                        {exercise.title}
-                      </p>
-                    </a>
-
                     <a href={`/courses/${data.courseId}/lessons/${exercise.lessonId}`}>
                       <p class="text-sm text-gray-500">
                         #{exercise.lessonTitle}
                       </p>
                     </a>
-                  {:else}
-                    <p class="text-lg font-semibold text-gray-600">
-                      {exercise.title}
+                  {:else if exercise.lessonTitle}
+                    <p class="text-sm text-gray-500">
+                      #{exercise.lessonTitle}
                     </p>
-                    {#if exercise.lessonTitle}
-                      <p class="text-sm text-gray-500">
-                        #{exercise.lessonTitle}
-                      </p>
-                    {/if}
                   {/if}
                 </div>
                 <p class="text-sm text-gray-500">

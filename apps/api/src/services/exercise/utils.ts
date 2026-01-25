@@ -17,6 +17,16 @@ import type { TExerciseUpdate } from '@cio/utils/validation/exercise';
 type CurrentQuestion = TNewQuestion & { options?: TNewOption[] };
 type CurrentOption = TNewOption;
 
+type ExerciseAnswer = {
+  id?: number;
+  answers?: string[] | null;
+  openAnswer?: string | null;
+  point?: number | null;
+  questionId?: number;
+  submissionId?: string | null;
+  groupMemberId?: string | null;
+};
+
 export type QuestionWithRelations = {
   id: number | string;
   value: string;
@@ -31,7 +41,7 @@ export type QuestionWithRelations = {
   };
   questionTypeId: number;
   code?: string;
-  answers?: Array<unknown>;
+  answers?: ExerciseAnswer[];
   deletedAt?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -52,6 +62,9 @@ export function buildExerciseUpdateFields(data: TExerciseUpdate): Partial<TExerc
   if (data.title !== undefined) exerciseUpdate.title = data.title;
   if (data.description !== undefined) exerciseUpdate.description = data.description;
   if (data.lessonId !== undefined) exerciseUpdate.lessonId = data.lessonId || null;
+  if (data.sectionId !== undefined) exerciseUpdate.sectionId = data.sectionId || null;
+  if (data.order !== undefined) exerciseUpdate.order = data.order;
+  if (data.isUnlocked !== undefined) exerciseUpdate.isUnlocked = data.isUnlocked;
   if (data.dueBy !== undefined) exerciseUpdate.dueBy = data.dueBy || null;
   return exerciseUpdate;
 }

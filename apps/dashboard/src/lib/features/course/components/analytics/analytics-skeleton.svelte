@@ -7,7 +7,7 @@
     <!-- Course Overview Cards Skeleton -->
     <div class="mb-12">
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {#each Array(4) as _}
+        {#each Array(4) as _, i (i)}
           <div class="rounded-lg border border-gray-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
             <div class="flex items-center space-x-4">
               <Skeleton class="h-[48px] w-[48px]" />
@@ -41,7 +41,7 @@
       </div>
       <div class="p-6">
         <div class="space-y-4">
-          {#each Array(5) as _}
+          {#each Array(5) as _, i (i)}
             <div class="flex items-center space-x-4">
               <Skeleton class="h-[32px] w-[32px]" />
               <div class="flex-1">

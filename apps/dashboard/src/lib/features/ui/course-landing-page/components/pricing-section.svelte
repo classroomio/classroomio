@@ -33,7 +33,7 @@
 
   const discount = $derived(get(courseData, 'metadata.discount', 0));
   const calculatedCost = $derived(
-    calcCourseDiscount(discount, courseData.cost || 0, !!courseData.metadata.showDiscount)
+    calcCourseDiscount(discount, courseData.cost || 0, !!courseData.metadata?.showDiscount)
   );
   const isFree = $derived(isCourseFree(calculatedCost));
 
@@ -117,7 +117,7 @@
 
         <!-- Call To Action Buttons -->
         <div class="flex h-full w-full flex-col items-center">
-          <Button onclick={handleJoinCourse} disabled={!courseData.metadata.allowNewStudent} class="w-full">
+          <Button onclick={handleJoinCourse} disabled={!courseData.metadata?.allowNewStudent} class="w-full">
             {isFree
               ? $t('course.navItem.landing_page.pricing_section.enroll')
               : $t('course.navItem.landing_page.pricing_section.buy')}
@@ -161,7 +161,7 @@
 
       <!-- Call To Action Buttons -->
       <div class="flex w-full flex-col items-center">
-        <Button class="mb-3 w-full" onclick={handleJoinCourse} disabled={!courseData.metadata.allowNewStudent}>
+        <Button class="mb-3 w-full" onclick={handleJoinCourse} disabled={!courseData.metadata?.allowNewStudent}>
           {isFree
             ? $t('course.navItem.landing_page.pricing_section.enroll')
             : $t('course.navItem.landing_page.pricing_section.buy')}
@@ -177,7 +177,7 @@
     <!-- Gift Container -->
     {#if courseData?.metadata?.reward?.show}
       <div class="flex flex-col items-center border-t border-b border-gray-300 p-10">
-        <HTMLRender>{@html sanitizeHtml(get(courseData, 'metadata.reward.description', ''))}</HTMLRender>
+        <HTMLRender>{@html sanitizeHtml(get(courseData, 'metadata.reward.description', '') as string)}</HTMLRender>
       </div>
     {/if}
   </aside>
@@ -249,9 +249,5 @@
   :global(.list ul li) {
     margin-left: 1rem;
     list-style-type: disc;
-  }
-
-  :global(.plyr) {
-    width: 100% !important;
   }
 </style>

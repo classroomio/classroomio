@@ -11,7 +11,7 @@
 
   let { courseAnalytics = null }: Props = $props();
 
-  let BarChartSimple: any = $state();
+  let BarChartSimple: unknown = $state();
 
   // Transform data for progress distribution chart
   let progressChartData = $derived(

@@ -141,7 +141,7 @@ export async function getSubmissionsForGrading(courseId: string) {
       })
       .from(schema.submission)
       .innerJoin(schema.exercise, eq(schema.submission.exerciseId, schema.exercise.id))
-      .innerJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+      .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
       .leftJoin(schema.groupmember, eq(schema.submission.submittedBy, schema.groupmember.id))
       .leftJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
       .where(eq(schema.submission.courseId, courseId));

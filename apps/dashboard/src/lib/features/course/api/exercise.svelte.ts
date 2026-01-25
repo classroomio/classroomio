@@ -4,9 +4,7 @@ import type {
   CreateExerciseRequest,
   DeleteExerciseRequest,
   Exercise,
-  Exercises,
   GetExerciseRequest,
-  ListExercisesRequest,
   SubmitExerciseRequest,
   UpdateExerciseRequest
 } from '../utils/types';
@@ -21,33 +19,6 @@ import { snackbar } from '$features/ui/snackbar/store';
  */
 export class ExerciseApi extends BaseApiWithErrors {
   exercise = $state<Exercise | null>(null);
-  exercises = $state<Exercises>([]);
-
-  /**
-   * Lists exercises for a course
-   */
-  async list(courseId: string, lessonId?: string) {
-    await this.execute<ListExercisesRequest>({
-      requestFn: () =>
-        classroomio.course[':courseId'].exercise.$get({
-          param: { courseId },
-          query: { lessonId }
-        }),
-      logContext: 'listing exercises',
-      onSuccess: (response) => {
-        if (response.data) {
-          this.exercises = response.data;
-          this.success = true;
-          this.errors = {};
-        }
-      },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to list exercises');
-        }
-      }
-    });
-  }
 
   /**
    * Gets an exercise by ID
@@ -77,7 +48,7 @@ export class ExerciseApi extends BaseApiWithErrors {
   /**
    * Creates a new exercise
    */
-  async create(courseId: string, fields: TExerciseCreate) {
+  async create(courseId: string, fields: Omit<TExerciseCreate, 'courseId'>) {
     const result = ZExerciseCreate.safeParse({ ...fields, courseId });
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'exercise');
@@ -231,12 +202,22 @@ export class ExerciseApi extends BaseApiWithErrors {
    * @param templateId Template ID
    * @returns The created exercise data or null on error
    */
-  async createFromTemplate(courseId: string, lessonId: string, templateId: number) {
+  async createFromTemplate(
+    courseId: string,
+    templateId: number | string,
+    options: { lessonId?: string; sectionId?: string; order?: number } = {}
+  ) {
+    const templateIdValue = Number(templateId);
     await this.execute<CreateExerciseFromTemplateRequest>({
       requestFn: () =>
         classroomio.course[':courseId']['exercise']['from-template'].$post({
           param: { courseId },
-          json: { lessonId, templateId }
+          json: {
+            lessonId: options.lessonId,
+            sectionId: options.sectionId,
+            order: options.order,
+            templateId: templateIdValue
+          }
         }),
       logContext: 'creating exercise from template',
       onSuccess: (response) => {

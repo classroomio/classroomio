@@ -1,5 +1,5 @@
 import * as schema from '@db/schema';
-import { and, eq, inArray, sql } from 'drizzle-orm';
+import { and, eq, inArray, or, sql } from 'drizzle-orm';
 import { db } from '@db/drizzle';
 
 export interface LMSExerciseQueryResult {
@@ -57,40 +57,34 @@ export async function getLMSExercises(profileId: string, orgId: string): Promise
         courseId: schema.course.id,
         courseTitle: schema.course.title,
         groupId: schema.group.id,
-        lessonId: schema.lesson.id,
-        lessonTitle: schema.lesson.title,
-        lessonOrder: schema.lesson.order,
-        lessonIsUnlocked: schema.lesson.isUnlocked,
         groupMemberId: schema.groupmember.id
       })
       .from(schema.course)
       .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
       .innerJoin(schema.groupmember, eq(schema.group.id, schema.groupmember.groupId))
-      .innerJoin(schema.lesson, eq(schema.course.id, schema.lesson.courseId))
-      .where(
-        and(
-          eq(schema.group.organizationId, orgId),
-          eq(schema.groupmember.profileId, profileId),
-          eq(schema.lesson.isUnlocked, true)
-        )
-      );
+      .where(and(eq(schema.group.organizationId, orgId), eq(schema.groupmember.profileId, profileId)));
 
     if (coursesWithMembership.length === 0) {
       return [];
     }
 
-    const lessonIds = [...new Set(coursesWithMembership.map((c) => c.lessonId))];
+    const courseIds = [...new Set(coursesWithMembership.map((c) => c.courseId))];
 
-    // Get exercises for these lessons
     const exercises = await db
       .select({
         id: schema.exercise.id,
         title: schema.exercise.title,
         updatedAt: schema.exercise.updatedAt,
-        lessonId: schema.exercise.lessonId
+        lessonId: schema.exercise.lessonId,
+        lessonTitle: schema.lesson.title,
+        lessonOrder: schema.lesson.order,
+        exerciseCourseId: sql<string>`COALESCE(${schema.exercise.courseId}, ${schema.lesson.courseId})`.as(
+          'exercise_course_id'
+        )
       })
       .from(schema.exercise)
-      .where(inArray(schema.exercise.lessonId, lessonIds));
+      .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+      .where(or(inArray(schema.exercise.courseId, courseIds), inArray(schema.lesson.courseId, courseIds)));
 
     if (exercises.length === 0) {
       return [];
@@ -127,12 +121,11 @@ export async function getLMSExercises(profileId: string, orgId: string): Promise
 
     // Build the result structure matching the original interface
     const result: LMSExerciseQueryResult[] = exercises.map((exercise) => {
-      const lessonData = coursesWithMembership.find((c) => c.lessonId === exercise.lessonId);
+      const courseData = coursesWithMembership.find((c) => c.courseId === exercise.exerciseCourseId);
       const exerciseQuestions = questions.filter((q) => q.exerciseId === exercise.id);
       const exerciseSubmissions = submissions.filter((s) => s.exerciseId === exercise.id);
 
-      // Find the groupmember for this course
-      const groupMemberId = lessonData?.groupMemberId;
+      const groupMemberId = courseData?.groupMemberId;
 
       return {
         id: exercise.id,
@@ -160,12 +153,12 @@ export async function getLMSExercises(profileId: string, orgId: string): Promise
               }))
             : [],
         lesson: {
-          id: lessonData?.lessonId || '',
-          title: lessonData?.lessonTitle || '',
-          order: Number(lessonData?.lessonOrder) || 0,
+          id: exercise.lessonId || '',
+          title: exercise.lessonTitle || '',
+          order: Number(exercise.lessonOrder) || 0,
           course: {
-            id: lessonData?.courseId || '',
-            title: lessonData?.courseTitle || '',
+            id: courseData?.courseId || '',
+            title: courseData?.courseTitle || '',
             group: [
               {
                 organisation: [

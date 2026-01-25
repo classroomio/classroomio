@@ -532,13 +532,14 @@ export const course = pgTable(
         description: string;
       }[];
       lessonTabsOrder?: {
-        id: number;
+        id: 1 | 2 | 3 | 4;
         name: string;
       }[];
       grading?: boolean;
       lessonDownload?: boolean;
       allowNewStudent: boolean;
       sectionDisplay?: Record<string, boolean>;
+      isContentGroupingEnabled?: boolean;
     }>(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     cost: bigint({ mode: 'number' }).default(sql`'0'`),
@@ -734,12 +735,17 @@ export const exercise = pgTable(
     title: varchar().notNull(),
     description: varchar(),
     lessonId: uuid('lesson_id'),
+    courseId: uuid('course_id'),
+    sectionId: uuid('section_id'),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    order: bigint({ mode: 'number' }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     id: uuid()
       .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
+    isUnlocked: boolean('is_unlocked').default(true),
     dueBy: timestamp('due_by', { mode: 'string' })
   },
   (table) => [
@@ -747,7 +753,17 @@ export const exercise = pgTable(
       columns: [table.lessonId],
       foreignColumns: [lesson.id],
       name: 'exercise_lesson_id_fkey'
-    }).onDelete('cascade')
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'exercise_course_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.sectionId],
+      foreignColumns: [lessonSection.id],
+      name: 'exercise_section_id_fkey'
+    })
   ]
 );
 

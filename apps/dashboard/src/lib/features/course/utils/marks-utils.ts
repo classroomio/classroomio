@@ -1,6 +1,10 @@
 import type { CourseMembers } from '$features/course/utils/types';
-import type { ListLessons } from './types';
 import type { Marks } from './types';
+
+export type LessonSummary = {
+  id: string;
+  title: string;
+};
 import Papa from 'papaparse';
 import autoTable from 'jspdf-autotable';
 import { getLectureNo } from './functions';
@@ -137,7 +141,7 @@ export function processMarksIntoLessonMapping(marks: Marks): LessonExerciseMappi
  */
 export function generateMarksCSV(
   students: CourseMembers,
-  lessons: ListLessons,
+  lessons: LessonSummary[],
   lessonMapping: LessonExerciseMapping,
   studentMarksByExerciseId: StudentMarksByExercise,
   courseTitle: string
@@ -184,7 +188,7 @@ export function generateMarksCSV(
  */
 export function generateMarksPDF(
   students: CourseMembers,
-  lessons: ListLessons,
+  lessons: LessonSummary[],
   lessonMapping: LessonExerciseMapping,
   studentMarksByExerciseId: StudentMarksByExercise,
   courseTitle: string

@@ -64,7 +64,7 @@
       {/if}
     </header>
     <article class="prose prose-sm sm:prose p-2">
-      {@html comment.body}
+      {comment.body}
     </article>
   </div>
 </div>

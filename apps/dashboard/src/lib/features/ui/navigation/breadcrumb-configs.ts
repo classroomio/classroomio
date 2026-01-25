@@ -4,8 +4,6 @@
  */
 
 import type { BreadcrumbConfig } from './breadcrumb-core';
-import type { NavItem as LmsNavItem } from './lms-navigation';
-import type { NavItem } from './org-navigation';
 
 /**
  * Configuration for Org breadcrumbs

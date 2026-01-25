@@ -12,6 +12,7 @@
     "dev": "tsc --watch",
     "db": "drizzle-kit",
     "db:setup": "tsx src/scripts/db-setup.ts",
+    "db:exercise-backfill": "tsx src/scripts/backfill-exercise-course.ts",
     "move-users": "tsx src/scripts/supabase-to-betterauth.ts",
     "pull": "drizzle-kit pull --config drizzle.config.ts",
     "generate-types": "tsx scripts/generate-types.ts && pnpm format",

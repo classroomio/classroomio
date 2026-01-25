@@ -3,9 +3,11 @@
   import UserXIcon from '@lucide/svelte/icons/user-x';
   import { t } from '$lib/utils/functions/translations';
   import { getLectureNo } from '$features/course/utils/functions';
-  import { lessonApi } from '$features/course/api';
+  import { courseApi } from '$features/course/api';
   import { calculateStudentTotal } from '$features/course/utils/marks-utils';
   import type { MarksPageData } from '$features/course/utils/marks-utils';
+  import { getCourseContent } from '$features/course/utils/content';
+  import { ContentType } from '@cio/utils/constants/content';
 
   interface Props {
     marksData: MarksPageData | null;
@@ -20,6 +22,12 @@
   const students = $derived(marksData?.students || []);
   const lessonMapping = $derived(marksData?.lessonMapping || {});
   const studentMarksByExerciseId = $derived(marksData?.studentMarksByExerciseId || {});
+  const contentData = $derived(getCourseContent(courseApi.course));
+  const lessonItems = $derived(
+    (contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items).filter(
+      (item) => item.type === ContentType.Lesson
+    )
+  );
 </script>
 
 {#if students.length > 0}
@@ -28,7 +36,7 @@
       <div class="box flex items-center p-3">
         <p class="w-40 dark:text-white">{$t('course.navItem.marks.student')}</p>
       </div>
-      {#each lessonApi.lessons as lesson, index}
+      {#each lessonItems as lesson, index}
         {#if lessonMapping[lesson.id]}
           <div class="box flex flex-col items-center {borderleftGrey}">
             <p class="col lesson-number dark:text-white" title={lesson.title}>
@@ -66,7 +74,7 @@
             </p>
           </div>
         </div>
-        {#each lessonApi.lessons as lesson}
+        {#each lessonItems as lesson}
           {#if lessonMapping[lesson.id]}
             <div class="flex items-center">
               {#each Object.keys(lessonMapping[lesson.id]) as exerciseId}

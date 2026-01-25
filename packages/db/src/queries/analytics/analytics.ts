@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, desc, eq, inArray, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, or, sql } from 'drizzle-orm';
 
 import { db } from '@db/drizzle';
 
@@ -35,30 +35,16 @@ export async function getLastLogin(userId: string): Promise<string | null> {
  */
 export async function getUserExercisesStats(courseId: string, userId: string) {
   try {
-    // Get all lessons for the course
-    const lessons = await db
-      .select({
-        id: schema.lesson.id,
-        title: schema.lesson.title
-      })
-      .from(schema.lesson)
-      .where(eq(schema.lesson.courseId, courseId));
-
-    if (lessons.length === 0) {
-      return [];
-    }
-
-    const lessonIds = lessons.map((l) => l.id);
-
-    // Get exercises for these lessons
     const exercises = await db
       .select({
         id: schema.exercise.id,
         title: schema.exercise.title,
-        lessonId: schema.exercise.lessonId
+        lessonId: schema.exercise.lessonId,
+        lessonTitle: schema.lesson.title
       })
       .from(schema.exercise)
-      .where(inArray(schema.exercise.lessonId, lessonIds));
+      .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+      .where(or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)));
 
     if (exercises.length === 0) {
       return [];
@@ -119,12 +105,10 @@ export async function getUserExercisesStats(courseId: string, userId: string) {
       const totalPoints = exerciseQuestions.reduce((sum, q) => sum + (q.points || 0), 0);
 
       const userSubmission = submissions.find((s) => s.exerciseId === exercise.id);
-      const lesson = lessons.find((l) => l.id === exercise.lessonId);
-
       return {
         id: exercise.id,
         lessonId: exercise.lessonId,
-        lessonTitle: lesson?.title || '',
+        lessonTitle: exercise.lessonTitle || '',
         title: exercise.title,
         status: userSubmission?.statusId,
         score: userSubmission?.total || 0,
@@ -298,8 +282,8 @@ export async function getProfileCourseProgress(courseId: string, profileId: stri
         count: sql<number>`COUNT(*)`.as('count')
       })
       .from(schema.exercise)
-      .innerJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
-      .where(eq(schema.lesson.courseId, courseId));
+      .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+      .where(or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)));
 
     const exercisesCount = Number(exercisesResult[0]?.count || 0);
 
@@ -310,8 +294,13 @@ export async function getProfileCourseProgress(courseId: string, profileId: stri
       })
       .from(schema.submission)
       .innerJoin(schema.exercise, eq(schema.submission.exerciseId, schema.exercise.id))
-      .innerJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
-      .where(and(eq(schema.lesson.courseId, courseId), eq(schema.submission.submittedBy, groupMember[0].id)));
+      .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+      .where(
+        and(
+          or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
+          eq(schema.submission.submittedBy, groupMember[0].id)
+        )
+      );
 
     const exercisesCompleted = Number(exercisesCompletedResult[0]?.count || 0);
 

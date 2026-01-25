@@ -70,7 +70,7 @@ export type LessonSection = CreateLessonSectionData;
 
 // Lesson Section with lessons (used when sections are populated with their lessons)
 export interface LessonSectionWithLessons extends LessonSection {
-  lessons: Course['lessons'];
+  lessons: ListLessons;
 }
 
 // Get lesson comments types
@@ -129,16 +129,31 @@ export type GetLessonHistoryResponse = InferResponseType<GetLessonHistoryRequest
 export type GetLessonHistorySuccess = Extract<InferResponseType<GetLessonHistoryRequest>, { success: true }>;
 export type LessonHistory = GetLessonHistorySuccess['data'];
 
-// Exercise types
-export type ListExercisesRequest = (typeof classroomio.course)[':courseId']['exercise']['$get'];
-export type ListExercisesResponse = InferResponseType<ListExercisesRequest> | null;
-export type ListExercisesSuccess = Extract<InferResponseType<ListExercisesRequest>, { success: true }>;
-export type Exercises = ListExercisesSuccess['data'];
+// Lesson language types
+export type GetLessonLanguageRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['language']['$get'];
+export type GetLessonLanguageResponse = InferResponseType<GetLessonLanguageRequest> | null;
+export type GetLessonLanguageSuccess = Extract<InferResponseType<GetLessonLanguageRequest>, { success: true }>;
+export type LessonLanguage = GetLessonLanguageSuccess['data'];
 
+// Exercise types
 export type GetExerciseRequest = (typeof classroomio.course)[':courseId']['exercise'][':exerciseId']['$get'];
 export type GetExerciseResponse = InferResponseType<GetExerciseRequest> | null;
 export type GetExerciseSuccess = Extract<InferResponseType<GetExerciseRequest>, { success: true }>;
-export type Exercise = GetExerciseSuccess['data'];
+
+type ApiExercise = GetExerciseSuccess['data'];
+export type Exercise = Omit<ApiExercise, 'courseId' | 'sectionId' | 'order'>;
+
+// export type UpdateExercisePayload = Omit<ApiExercise, 'courseId' | 'sectionId' | 'order' | 'questions'> & {
+//   courseId?: string | null;
+//   sectionId?: string | null;
+//   order?: number | null;
+//   title?: string;
+//   description?: string;
+//   lessonId?: string;
+//   dueBy?: string;
+//   questions?: Exercise['questions'];
+// };
 
 export type CreateExerciseRequest = (typeof classroomio.course)[':courseId']['exercise']['$post'];
 export type CreateExerciseFromTemplateRequest =
@@ -151,7 +166,6 @@ export type UpdateExerciseRequest = (typeof classroomio.course)[':courseId']['ex
 export type DeleteExerciseRequest = (typeof classroomio.course)[':courseId']['exercise'][':exerciseId']['$delete'];
 export type SubmitExerciseRequest =
   (typeof classroomio.course)[':courseId']['exercise'][':exerciseId']['submission']['$post'];
-// Note: check-completion route does not exist in the API
 
 // Newsfeed types
 export type ListNewsfeedRequest = (typeof classroomio.course)[':courseId']['newsfeed']['$get'];
@@ -243,7 +257,22 @@ export type CloneCourseRequest = (typeof classroomio.course)[':courseId']['clone
 // Course response types
 export type GetCourseResponse = InferResponseType<GetCourseRequest> | null;
 export type GetCourseSuccess = Extract<InferResponseType<GetCourseRequest>, { success: true }>;
-export type Course = GetCourseSuccess['data'];
+
+type ApiCourse = GetCourseSuccess['data'];
+
+export type CourseMetadata = (NonNullable<ApiCourse['metadata']> extends object
+  ? NonNullable<ApiCourse['metadata']>
+  : Record<string, unknown>) & {
+  isContentGroupingEnabled?: boolean;
+};
+export type CourseContent = NonNullable<ApiCourse['content']>;
+export type CourseContentSection = CourseContent['sections'][number];
+export type CourseContentItem = CourseContent['items'][number];
+
+export type Course = Omit<ApiCourse, 'metadata' | 'lessons' | 'sections' | 'exercises'> & {
+  metadata?: CourseMetadata | null;
+  content: CourseContent;
+};
 
 export type UpdateCourseResponse = InferResponseType<UpdateCourseRequest>;
 export type UpdateCourseSuccess = Extract<UpdateCourseResponse, { success: true }>;

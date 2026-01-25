@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, db, eq, sql } from '@db/drizzle';
+import { and, db, eq, or, sql } from '@db/drizzle';
 
 /**
  * Mark record with fields in camelCase matching database schema convention
@@ -10,8 +10,8 @@ export interface Mark {
   exerciseId: string;
   exerciseTitle: string;
   exercisePoints: number;
-  lessonId: string;
-  lessonTitle: string;
+  lessonId: string | null;
+  lessonTitle: string | null;
   statusId: number | null;
   totalPointsGotten: number | null;
   groupmemberId: string | null;
@@ -30,7 +30,7 @@ export async function getMarksByCourseId(courseId: string): Promise<Mark[]> {
   try {
     const result = await db
       .select({
-        courseId: schema.lesson.courseId,
+        courseId: schema.course.id,
         exerciseId: schema.exercise.id,
         exerciseTitle: schema.exercise.title,
         exercisePoints: sql<number>`COALESCE(SUM(${schema.question.points})::int, 0)`.as('exercisePoints'),
@@ -44,16 +44,20 @@ export async function getMarksByCourseId(courseId: string): Promise<Mark[]> {
         avatarUrl: schema.profile.avatarUrl
       })
       .from(schema.exercise)
-      .innerJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+      .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+      .innerJoin(
+        schema.course,
+        or(eq(schema.exercise.courseId, schema.course.id), eq(schema.lesson.courseId, schema.course.id))
+      )
       .leftJoin(schema.submission, eq(schema.exercise.id, schema.submission.exerciseId))
       .leftJoin(schema.groupmember, eq(schema.groupmember.id, schema.submission.submittedBy))
       .innerJoin(schema.question, eq(schema.question.exerciseId, schema.exercise.id))
       .leftJoin(schema.profile, eq(schema.profile.id, schema.groupmember.profileId))
-      .where(eq(schema.lesson.courseId, courseId))
+      .where(eq(schema.course.id, courseId))
       .groupBy(
         schema.exercise.id,
         schema.lesson.id,
-        schema.lesson.courseId,
+        schema.course.id,
         schema.lesson.title,
         schema.exercise.title,
         schema.submission.statusId,

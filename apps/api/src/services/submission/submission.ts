@@ -108,7 +108,7 @@ export async function listSubmissionsForGrading(courseId: string) {
       lesson: {
         id: string;
         title: string;
-      };
+      } | null;
     };
 
     const sections: Array<{ id: number; title: string; value: number; items: SubmissionItem[] }> = [
@@ -162,10 +162,12 @@ export async function listSubmissionsForGrading(courseId: string) {
         },
         answers: submission.answers || [],
         student: submission.groupmember?.profile || null,
-        lesson: {
-          id: submission.lesson.id,
-          title: submission.lesson.title
-        }
+        lesson: submission.lesson
+          ? {
+              id: submission.lesson.id,
+              title: submission.lesson.title
+            }
+          : null
       };
 
       // Add to appropriate section
@@ -430,7 +432,7 @@ async function sendSubmissionUpdateEmail(submissionId: string, newStatusId: numb
 
   const statusText = statusMap[newStatusId] || 'Updated';
   const baseUrl = env.NODE_ENV === 'development' ? 'http://localhost:5173' : 'https://app.classroomio.com';
-  const exerciseLink = `${baseUrl}/courses/${fullSubmission.courseId}/lessons/${fullSubmission.lesson.id}/exercises/${fullSubmission.exercise.id}`;
+  const exerciseLink = `${baseUrl}/courses/${fullSubmission.courseId}/exercises/${fullSubmission.exercise.id}`;
 
   // Calculate total and max points
   const answers = fullSubmission.answers || [];
@@ -451,9 +453,15 @@ async function sendSubmissionUpdateEmail(submissionId: string, newStatusId: numb
     content += `<a class="button" href="${exerciseLink}">Open Exercise</a>`;
   }
 
-  content += `
-    <p>This exercise is for <strong>${fullSubmission.lesson.title}</strong> in a course you are taking titled <strong>${course.title}</strong></p>
-  `;
+  if (fullSubmission.lesson?.title) {
+    content += `
+      <p>This exercise is for <strong>${fullSubmission.lesson.title}</strong> in a course you are taking titled <strong>${course.title}</strong></p>
+    `;
+  } else {
+    content += `
+      <p>This exercise is in a course you are taking titled <strong>${course.title}</strong></p>
+    `;
+  }
 
   await deliverEmail([
     {
@@ -501,7 +509,7 @@ async function sendExerciseSubmissionUpdateEmail(courseId: string, exerciseId: s
   const orgName = orgResult?.orgName || 'ClassroomIO';
 
   const baseUrl = env.NODE_ENV === 'development' ? 'http://localhost:5173' : 'https://app.classroomio.com';
-  const exerciseLink = `${baseUrl}/courses/${courseId}/lessons/${exercise.lessonId}/exercises/${exerciseId}`;
+  const exerciseLink = `${baseUrl}/courses/${courseId}/exercises/${exerciseId}`;
   const submissionLink = `${baseUrl}/courses/${courseId}/submissions`;
 
   const content = `

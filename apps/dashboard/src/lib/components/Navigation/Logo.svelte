@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -11,7 +12,7 @@
 
 <div class="logo">
   <a
-    href="/"
+    href={resolve('/')}
     title={`${$t('navigation.goto')} ${orgName || 'ClassroomIO'} ${$t('navigation.home')}`}
     class="flex items-center gap-2"
     id="logo"

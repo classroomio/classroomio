@@ -1,5 +1,7 @@
 import { course, db } from '@db/drizzle';
 
+import type { TNewCourse } from '@db/types';
+
 interface SeedCourse {
   mvcGroupId: string;
   reactGroupId: string;
@@ -14,7 +16,7 @@ export async function seedCourses({ mvcGroupId, reactGroupId, pandasGroupId }: S
   const reactCourseId = '16e3bc8d-5d1b-4708-988e-93abae288ccf';
   const pandasCourseId = 'f0a85d18-aff4-412f-b8e6-3b34ef098dce';
 
-  const coursesToInsert = [
+  const coursesToInsert: TNewCourse[] = [
     {
       id: mvcCourseId,
       title: 'Getting started with MVC',
@@ -32,12 +34,7 @@ export async function seedCourses({ mvcGroupId, reactGroupId, pandasGroupId }: S
         description: '',
         requirements: '',
         lessonDownload: false,
-        allowNewStudent: true,
-        lessonTabsOrder: [
-          { id: 1, name: 'Note' },
-          { id: 2, name: 'Slide' },
-          { id: 3, name: 'Video' }
-        ]
+        allowNewStudent: true
       },
       cost: 0,
       currency: 'NGN',
@@ -61,12 +58,7 @@ export async function seedCourses({ mvcGroupId, reactGroupId, pandasGroupId }: S
         description: '',
         requirements: '',
         lessonDownload: false,
-        allowNewStudent: true,
-        lessonTabsOrder: [
-          { id: 1, name: 'Note' },
-          { id: 2, name: 'Slide' },
-          { id: 3, name: 'Video' }
-        ]
+        allowNewStudent: true
       },
       cost: 0,
       currency: 'NGN',
@@ -90,12 +82,7 @@ export async function seedCourses({ mvcGroupId, reactGroupId, pandasGroupId }: S
         description: '',
         requirements: '',
         lessonDownload: true,
-        allowNewStudent: true,
-        lessonTabsOrder: [
-          { id: 1, name: 'Note' },
-          { id: 2, name: 'Slide' },
-          { id: 3, name: 'Video' }
-        ]
+        allowNewStudent: true
       },
       cost: 0,
       currency: 'NGN',

@@ -12,8 +12,7 @@ import {
   ZCourseProgressParam,
   ZCourseProgressQuery,
   ZCourseUpdate,
-  ZCourseUpdateParam,
-  ZCourseUserAnalyticsParam
+  ZCourseUpdateParam
 } from '@cio/utils/validation/course';
 import {
   createCourse,
@@ -99,7 +98,6 @@ export const courseRouter = new Hono()
    */
   .get(
     '/:courseId',
-    authMiddleware,
     courseMemberMiddleware,
     zValidator('param', ZCourseGetParam),
     zValidator('query', ZCourseGetQuery),

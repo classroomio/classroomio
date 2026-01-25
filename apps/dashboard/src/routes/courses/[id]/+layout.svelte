@@ -11,6 +11,7 @@
   import { Button } from '@cio/ui/base/button';
   import { Confetti } from '$features/ui';
   import { courseApi } from '$features/course/api';
+  import ContentCreateModal from '$features/course/components/content/content-create-modal.svelte';
   import { profile } from '$lib/utils/store/user';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
@@ -23,7 +24,6 @@
       course?: Course;
       courseId: string;
       exerciseId?: string;
-      isMaterialsTabActive?: boolean;
     };
   }
 
@@ -59,8 +59,7 @@
     return $isOrgAdmin || user;
   });
 
-  // Determine if this is an exercise page from current page data
-  const isExercisePage = $derived(data.isMaterialsTabActive === false && !!data.exerciseId);
+  const isExercisePage = $derived(!!data.exerciseId);
 </script>
 
 <svelte:head>
@@ -99,6 +98,7 @@
     class="w-[calc(100vw-var(--sidebar-width))] group-data-[collapsible=icon]:w-[calc(100vw-var(--sidebar-width-icon))]"
   >
     <CourseHeader />
+    <ContentCreateModal />
 
     {#if !isCourseReady}
       <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center">

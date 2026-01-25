@@ -689,6 +689,9 @@
           "delete": "Delete",
           "cancel": "Cancel"
         },
+        "add_content": "Add content",
+        "add_content_description": "Select the type of content you want to add.",
+        "add_content_details": "Fill in the details for this content.",
         "join_lesson": "Join lesson",
         "no_link": "No link",
         "no_tutor": "No tutor added",
@@ -1268,6 +1271,8 @@
         "enabled": "Enabled",
         "order": "Order Lessons Tab",
         "drag": "Drag and drop the labels to re-order your material tabs",
+        "content_grouping_title": "Content grouping",
+        "content_grouping_description": "Group lessons and exercises by section in the content list.",
         "lesson_download": "Lessons DownLoad",
         "available": "Make the Lesson available for Download in pdf for registered students",
         "course_download": "Course Downlaod",

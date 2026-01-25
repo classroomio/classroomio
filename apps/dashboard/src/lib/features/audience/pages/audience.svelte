@@ -1,6 +1,7 @@
 <script lang="ts">
   import * as Table from '@cio/ui/base/table';
   import { page as pageStore } from '$app/state';
+  import { resolve } from '$app/paths';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { Search } from '@cio/ui/custom/search';
   import * as Pagination from '@cio/ui/base/pagination';
@@ -70,7 +71,7 @@
     <!-- Table -->
     {#if orgApi.isLoading}
       <div class="space-y-2">
-        {#each Array(pageSize) as _}
+        {#each Array(pageSize) as _, i (i)}
           <Skeleton class="h-12 w-full" />
         {/each}
       </div>
@@ -79,17 +80,17 @@
         <Table.Root>
           <Table.Header>
             <Table.Row>
-              {#each headers as header}
+              {#each headers as header (header)}
                 <Table.Head>{header.value}</Table.Head>
               {/each}
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {#each paginatedRows as row}
+            {#each paginatedRows as row (row.id)}
               <Table.Row>
                 <Table.Cell>
                   <a
-                    href={`${pageStore.url.href}/${row.id}`}
+                    href={resolve(`${pageStore.url.href}/${row.id}`)}
                     class="ui:text-primary flex items-center gap-2 hover:underline"
                   >
                     <Avatar.Root class="h-5 w-5">

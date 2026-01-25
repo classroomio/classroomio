@@ -24,7 +24,7 @@ export const lessonLanguageRouter = new Hono()
    * Gets all language translations for a lesson
    * Requires authentication and course membership
    */
-  .get('/language', authMiddleware, courseMemberMiddleware, zValidator('param', ZLessonLanguageGetParam), async (c) => {
+  .get('/', authMiddleware, courseMemberMiddleware, zValidator('param', ZLessonLanguageGetParam), async (c) => {
     try {
       const { lessonId } = c.req.valid('param');
       const languages = await listLessonLanguages(lessonId);
@@ -46,7 +46,7 @@ export const lessonLanguageRouter = new Hono()
    * Requires authentication and course membership
    */
   .get(
-    '/language/:locale',
+    '/:locale',
     authMiddleware,
     courseMemberMiddleware,
     zValidator('param', ZLessonLanguageGetByLocaleParam),
@@ -83,7 +83,7 @@ export const lessonLanguageRouter = new Hono()
    * Requires authentication and course membership
    */
   .post(
-    '/language',
+    '/',
     authMiddleware,
     courseMemberMiddleware,
     zValidator('param', ZLessonLanguageGetParam),
@@ -113,7 +113,7 @@ export const lessonLanguageRouter = new Hono()
    * Requires authentication and course membership
    */
   .put(
-    '/language/:locale',
+    '/:locale',
     authMiddleware,
     courseMemberMiddleware,
     zValidator('param', ZLessonLanguageGetByLocaleParam),

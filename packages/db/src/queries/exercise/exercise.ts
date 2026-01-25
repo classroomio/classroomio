@@ -8,7 +8,7 @@ import type {
   TNewQuestion,
   TQuestionType
 } from '@db/types';
-import { and, db, eq, inArray } from '@db/drizzle';
+import { and, db, eq, inArray, or } from '@db/drizzle';
 
 import type { DbOrTxClient } from '@db/drizzle';
 
@@ -31,6 +31,54 @@ export async function getExerciseById(exerciseId: string, dbClient: DbOrTxClient
   }
 }
 
+/**
+ * Checks if a profile has completed an exercise (submission exists)
+ */
+export async function getExerciseCompletionByProfile(
+  exerciseId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<boolean> {
+  try {
+    const result = await dbClient
+      .select({ exerciseId: schema.submission.exerciseId })
+      .from(schema.submission)
+      .innerJoin(schema.groupmember, eq(schema.submission.submittedBy, schema.groupmember.id))
+      .where(and(eq(schema.submission.exerciseId, exerciseId), eq(schema.groupmember.profileId, profileId)))
+      .limit(1);
+
+    return result.length > 0;
+  } catch (error) {
+    throw new Error(
+      `Failed to get exercise completion for profile "${profileId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Gets completed exercise IDs for a profile (submission exists)
+ */
+export async function getExerciseCompletionsByProfile(
+  exerciseIds: string[],
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<string[]> {
+  if (exerciseIds.length === 0) return [];
+  try {
+    const result = await dbClient
+      .select({ exerciseId: schema.submission.exerciseId })
+      .from(schema.submission)
+      .innerJoin(schema.groupmember, eq(schema.submission.submittedBy, schema.groupmember.id))
+      .where(and(inArray(schema.submission.exerciseId, exerciseIds), eq(schema.groupmember.profileId, profileId)));
+
+    return result.map((row) => row.exerciseId);
+  } catch (error) {
+    throw new Error(
+      `Failed to get exercise completions for profile "${profileId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export async function getExercisesByLessonIds(lessonIds: string[], dbClient: DbOrTxClient = db): Promise<TExercise[]> {
   if (lessonIds.length === 0) return [];
   try {
@@ -44,24 +92,36 @@ export async function getExercisesByLessonIds(lessonIds: string[], dbClient: DbO
 
 export async function getExercisesByCourseId(
   courseId: string,
-  lessonId?: string,
+  filters: { lessonId?: string; sectionId?: string } = {},
   dbClient: DbOrTxClient = db
 ): Promise<TExercise[]> {
   try {
+    const { lessonId, sectionId } = filters;
+    const conditions = [or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId))];
+
     if (lessonId) {
-      const results = await dbClient
-        .select({ exercise: schema.exercise })
-        .from(schema.exercise)
-        .innerJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
-        .where(and(eq(schema.lesson.courseId, courseId), eq(schema.exercise.lessonId, lessonId)));
-      return results.map((r) => r.exercise);
+      conditions.push(eq(schema.exercise.lessonId, lessonId));
     }
+
+    if (sectionId) {
+      conditions.push(or(eq(schema.exercise.sectionId, sectionId), eq(schema.lesson.sectionId, sectionId)));
+    }
+
     const results = await dbClient
-      .select({ exercise: schema.exercise })
+      .select({
+        exercise: schema.exercise,
+        lessonSectionId: schema.lesson.sectionId,
+        lessonCourseId: schema.lesson.courseId
+      })
       .from(schema.exercise)
-      .innerJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
-      .where(eq(schema.lesson.courseId, courseId));
-    return results.map((r) => r.exercise);
+      .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+      .where(and(...conditions));
+
+    return results.map((row) => ({
+      ...row.exercise,
+      courseId: row.exercise.courseId ?? row.lessonCourseId ?? row.exercise.courseId,
+      sectionId: row.exercise.sectionId ?? row.lessonSectionId ?? row.exercise.sectionId
+    }));
   } catch (error) {
     throw new Error(
       `Failed to get exercises by course ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
