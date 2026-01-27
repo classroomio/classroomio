@@ -348,7 +348,9 @@
       "learn": "Learn more",
       "month": "month",
       "monthly": "Monthly",
-      "annually": "Annually"
+      "annually": "Annually",
+      "popular": "Popular",
+      "per_org": "Per Organization"
     }
   },
 
