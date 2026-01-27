@@ -1,17 +1,11 @@
 <script lang="ts">
-  import Check from '@lucide/svelte/icons/check';
-  import { fade } from 'svelte/transition';
-
   import { PLANS } from '@cio/utils/plans';
   import { PricingCard } from '@cio/ui/custom/pricing-card';
+  import { PricingToggle } from '@cio/ui/custom/pricing-toggle';
 
   import { PageSignupCTA, PageHeader } from '$lib/components';
 
   let isYearlyPlan = $state(false);
-
-  function toggleIsYearlyPlan() {
-    isYearlyPlan = !isYearlyPlan;
-  }
 
   const planNames = Object.keys(PLANS) as Array<keyof typeof PLANS>;
 </script>
@@ -29,22 +23,14 @@
     <p class="mt-10 w-[90%] text-center text-lg font-normal text-slate-700 md:w-[60%] lg:mt-7">
       You get a customizable LMS, AI integration for productive educators and many more...
     </p>
-    <div class="relative mt-10 flex items-center rounded-[30px] border-2 p-[2px] lg:scale-100">
-      <button
-        style="background-color: {isYearlyPlan ? 'initial' : '#1D4EE2'}; color: {isYearlyPlan ? '#5e636b' : '#fff'}"
-        class="rounded-[30px] bg-blue-700 px-3 py-1 text-xs text-white lg:px-4 lg:py-2"
-        onclick={toggleIsYearlyPlan}>Monthly</button
-      >
-      <button
-        style="background-color: {isYearlyPlan ? '#1D4EE2' : ''}; color: {isYearlyPlan ? '#fff' : '#5e636b'}"
-        class="rounded-[30px] px-3 py-1 text-xs text-white lg:px-4 lg:py-2"
-        onclick={toggleIsYearlyPlan}>Annually</button
-      >
-      <div
-        class="absolute top-[-85%] right-[-40%] scale-[90%] rounded-full bg-[#006600] px-3.5 py-1.5 text-xs text-white lg:top-[-75%] lg:right-[-43%] lg:scale-100"
-      >
-        Save 2 months
-      </div>
+    <div class="z-100 mt-8">
+      <PricingToggle
+        bind:isYearly={isYearlyPlan}
+        monthlyLabel="Monthly"
+        yearlyLabel="Annually"
+        saveLabel="Save 2 months"
+      />
+      <p class="mt-2 text-xs text-slate-400">Debug: {isYearlyPlan ? 'Yearly' : 'Monthly'}</p>
     </div>
 
     <script

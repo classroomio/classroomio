@@ -6,9 +6,8 @@
   import RocketIcon from '@lucide/svelte/icons/rocket';
   import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
-  import { Badge } from '@cio/ui/base/badge';
-  import { HoverableItem, PremiumIcon } from '@cio/ui/custom/moving-icons';
   import { PricingCard } from '@cio/ui/custom/pricing-card';
+  import { PricingToggle } from '@cio/ui/custom/pricing-toggle';
 
   import { PLANS } from '@cio/utils/plans';
   import { profile } from '$lib/utils/store/user';
@@ -139,33 +138,15 @@
       </div>
     {:else}
       <div class="flex h-full flex-col items-center justify-center">
-        <div class="white 0 relative mb-6 flex items-center rounded-full border p-1">
-          <Button
-            variant={isYearlyPlan ? 'ghost' : 'secondary'}
-            size="sm"
-            class="rounded-full! transition-all duration-500 ease-in-out "
-            onclick={() => (isYearlyPlan = false)}
-          >
-            {$t('pricing.modal.monthly')}
-          </Button>
-          <Button
-            variant={isYearlyPlan ? 'secondary' : 'ghost'}
-            size="sm"
-            class="rounded-full! transition-all duration-500 ease-in-out"
-            onclick={() => (isYearlyPlan = true)}
-          >
-            {$t('pricing.modal.annually')}
-          </Button>
-          <HoverableItem>
-            {#snippet children(isHovered)}
-              <Badge variant="default" class="absolute -top-3 right-[-20%] rotate-5 shadow-2xl">
-                <PremiumIcon size={8} {isHovered} class="text-amber-500!" />
-                {$t('pricing.modal.save')}
-              </Badge>
-            {/snippet}
-          </HoverableItem>
+        <div class="ui:mb-6">
+          <PricingToggle
+            bind:isYearly={isYearlyPlan}
+            monthlyLabel={$t('pricing.modal.monthly')}
+            yearlyLabel={$t('pricing.modal.annually')}
+            saveLabel={$t('pricing.modal.save')}
+          />
         </div>
-        <div class="grid w-full grid-cols-1 gap-6 overflow-y-auto p-2 md:grid-cols-3 md:overflow-y-visible">
+        <div class="mt-6 grid w-full grid-cols-1 gap-6 overflow-y-auto p-2 md:grid-cols-3 md:overflow-y-visible">
           {#each planNames as planName}
             {@const plan = PLANS[planName]}
             {@const isPopular = planName === 'EARLY_ADOPTER'}

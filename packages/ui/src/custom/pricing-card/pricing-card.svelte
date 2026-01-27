@@ -42,7 +42,7 @@
   let {
     plan,
     isPopular = false,
-    isYearlyPlan = true,
+    isYearlyPlan = false,
     isLoadingPlan = null,
     planName,
     handleClick = () => {},
