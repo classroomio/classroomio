@@ -46,9 +46,13 @@ const config = {
           'https://assets.cdn.clsrio.com/eqneditor_1.css'
         ],
         'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
-        'img-src': ['self', 'data:', 'https:'],
-        'media-src': ['self', 'https:', 'data:'],
-        'frame-src': ['self', 'https://www.youtube.com', 'https://youtube.com'],
+        'frame-src': [
+          'self',
+          'https://www.youtube.com',
+          'https://youtube.com',
+          'https://docs.google.com',
+          'https://drive.google.com'
+        ],
         'connect-src': [
           'self',
           'https://*.supabase.co',
@@ -73,33 +77,15 @@ const config = {
       },
       reportOnly: {
         'default-src': ['self'],
-        'script-src': [
-          'self',
-          'https://assets.cdn.clsrio.com',
-          'https://cdnjs.cloudflare.com',
-          'https://*.i.posthog.com',
-          'https://*.senja.io',
-          'https://www.youtube.com',
-          'https://youtube.com'
-        ],
-        'style-src': [
-          'self',
-          'unsafe-inline',
-          'https://cdn.plyr.io',
-          'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
-          'https://assets.cdn.clsrio.com/eqneditor_1.css'
-        ],
-        'style-src-elem': [
-          'self',
-          'unsafe-inline',
-          'https://cdn.plyr.io',
-          'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
-          'https://assets.cdn.clsrio.com/eqneditor_1.css'
-        ],
-        'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
         'img-src': ['self', 'data:', 'https:'],
         'media-src': ['self', 'https:', 'data:'],
-        'frame-src': ['self', 'https://www.youtube.com', 'https://youtube.com'],
+        'frame-src': [
+          'self',
+          'https://www.youtube.com',
+          'https://youtube.com',
+          'https://docs.google.com',
+          'https://drive.google.com'
+        ],
         'connect-src': [
           'self',
           'https://*.supabase.co',
@@ -118,10 +104,7 @@ const config = {
         ],
         'worker-src': ['self', 'blob:'],
         'object-src': ['none'],
-        'base-uri': ['self'],
-        'form-action': ['self'],
-        'frame-ancestors': ['none'],
-        'report-uri': ['/csp-report']
+        'base-uri': ['self']
       }
     }
   }
