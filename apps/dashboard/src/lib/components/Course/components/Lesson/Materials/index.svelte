@@ -55,7 +55,7 @@
   export let isStudent = false;
   export let toggleMode = () => {};
 
-  let localeExists: Record<string, boolean> = {};
+  let localeExists: Record<string, Record<string, boolean>> = {};
   let lessonTitle = '';
   let prevContent = '';
   let timeoutId: NodeJS.Timeout;
@@ -83,8 +83,9 @@
 
   async function saveOrUpdateTranslation(locale, lessonId) {
     const content = $lessonByTranslation[lessonId][locale];
+    const lessonLocaleExists = localeExists[lessonId] ?? {};
 
-    if (typeof localeExists[locale] === 'undefined') {
+    if (typeof lessonLocaleExists[locale] === 'undefined') {
       const { data } = await supabase
         .from('lesson_language')
         .select(`id`)
@@ -92,10 +93,10 @@
         .eq('locale', locale)
         .maybeSingle();
 
-      localeExists[locale] = !!(data && data?.id);
+      lessonLocaleExists[locale] = !!(data && data?.id);
     }
 
-    if (localeExists[locale]) {
+    if (lessonLocaleExists[locale]) {
       const { error: updateError } = await supabase
         .from('lesson_language')
         .update({ content })
@@ -119,8 +120,10 @@
         return;
       }
 
-      localeExists[locale] = true;
+      lessonLocaleExists[locale] = true;
     }
+
+    localeExists[lessonId] = lessonLocaleExists;
   }
 
   async function saveLesson(materials?: LessonPage['materials']) {
@@ -131,7 +134,6 @@
         }
       : $lesson;
 
-    console.log('updating lesson');
     const [lessonRes] = await Promise.all([
       handleUpdateLessonMaterials(_lesson, lessonId),
       saveOrUpdateTranslation($lesson.locale, lessonId)
