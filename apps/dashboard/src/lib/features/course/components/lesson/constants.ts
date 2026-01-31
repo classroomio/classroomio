@@ -53,7 +53,5 @@ export function orderedTabs(tabs: MaterialTab[], settingTabs?: Tabs[]) {
     }
   });
 
-  const filteredReorderedTabs = reorderedTabs.filter((tab) => tab !== undefined);
-
-  return filteredReorderedTabs;
+  return reorderedTabs.filter((tab) => tab !== undefined);
 }

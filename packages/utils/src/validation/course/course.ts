@@ -90,6 +90,37 @@ export const ZCourseDownloadPresignedUrl = z.object({
 });
 export type TCourseDownloadPresignedUrl = z.infer<typeof ZCourseDownloadPresignedUrl>;
 
+export const ZCourseContentUpdateItem = z.object({
+  id: z.string().min(1),
+  type: z.enum(['LESSON', 'EXERCISE']),
+  isUnlocked: z.boolean().optional(),
+  order: z.number().int().min(0).optional(),
+  sectionId: z.string().nullable().optional()
+});
+export type TCourseContentUpdateItem = z.infer<typeof ZCourseContentUpdateItem>;
+
+export const ZCourseContentUpdate = z.object({
+  items: z.array(ZCourseContentUpdateItem).min(1)
+});
+export type TCourseContentUpdate = z.infer<typeof ZCourseContentUpdate>;
+
+export const ZCourseContentDeleteItem = z.object({
+  id: z.string().min(1),
+  type: z.enum(['LESSON', 'EXERCISE'])
+});
+export type TCourseContentDeleteItem = z.infer<typeof ZCourseContentDeleteItem>;
+
+export const ZCourseContentDelete = z
+  .object({
+    sectionId: z.string().min(1).optional(),
+    items: z.array(ZCourseContentDeleteItem).min(1).optional()
+  })
+  .refine((data) => Boolean(data.sectionId) !== Boolean(data.items), {
+    message: 'Provide either sectionId or items',
+    path: ['sectionId']
+  });
+export type TCourseContentDelete = z.infer<typeof ZCourseContentDelete>;
+
 export const ZCourseCreate = z.object({
   title: z.string().min(1),
   description: z.string().min(1),

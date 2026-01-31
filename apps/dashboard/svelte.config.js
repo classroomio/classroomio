@@ -80,7 +80,8 @@ const config = {
           'http://localhost:3002',
           'wss://*.classroomio.com',
           'https://*.senja.io',
-          'https://*.ytimg.com'
+          'https://*.ytimg.com',
+          'https://noembed.com'
         ],
         'worker-src': ['self', 'blob:'],
         'object-src': ['none'],
@@ -141,7 +142,8 @@ const config = {
           'http://localhost:3002',
           'wss://*.classroomio.com',
           'https://*.senja.io',
-          'https://*.ytimg.com'
+          'https://*.ytimg.com',
+          'https://noembed.com'
         ],
         'worker-src': ['self', 'blob:'],
         'object-src': ['none'],

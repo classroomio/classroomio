@@ -236,17 +236,20 @@
         />
       </Field.Field>
       <Field.Field>
-        <Field.Label>{$t('course.navItem.settings.link')}</Field.Label>
-        <div class="mb-2 flex items-center gap-2">
-          <IconButton onclick={generateNewCourseLink}>
-            <RotateCcwIcon size={16} />
-          </IconButton>
-          <span class="grow"></span>
-          <IconButton onclick={() => goto(courseLink)}>
-            <ArrowUpRightIcon size={16} />
-          </IconButton>
-        </div>
-        <div class="flex items-center justify-between rounded-md border p-3">
+        <Field.Label class="justify-between"
+          >{$t('course.navItem.settings.link')}
+
+          <div class="flex items-center gap-1">
+            <IconButton onclick={generateNewCourseLink}>
+              <RotateCcwIcon size={16} />
+            </IconButton>
+            <IconButton onclick={() => goto(courseLink)}>
+              <ArrowUpRightIcon size={16} />
+            </IconButton>
+          </div>
+        </Field.Label>
+
+        <div class="flex items-center justify-between rounded-md border p-1">
           {#if courseApi.course?.slug}
             <p class="text-sm">{courseLink}</p>
             <IconButton

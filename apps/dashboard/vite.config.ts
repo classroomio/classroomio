@@ -2,7 +2,6 @@ import { defineConfig, loadEnv } from 'vite';
 
 import fs from 'fs';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { vite as vidstack } from 'vidstack/plugins';
 
 export default ({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
@@ -15,9 +14,7 @@ export default ({ mode }) => {
         }
       }
     },
-    // @ts-expect-error - Type mismatch due to multiple Vite versions in monorepo
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    plugins: [vidstack({ include: /media-player\// }), sveltekit()],
+    plugins: [sveltekit()],
     server: getServer(process.env),
     build: {
       sourcemap: false

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { lessonApi } from '$features/course/api';
   import { CloseButton } from '$features/ui';
-  import { lessonDocUpload } from '$features/course/components/lesson/store/lessons';
+  import { lessonDocUpload } from '$features/course/components/lesson/store';
   import MODES from '$lib/utils/constants/mode';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';

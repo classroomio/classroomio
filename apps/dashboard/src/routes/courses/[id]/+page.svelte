@@ -22,10 +22,6 @@
   }
 </script>
 
-<svelte:head>
-  <title>News Feed - ClassroomIO</title>
-</svelte:head>
-
 <RoleBasedSecurity
   allowedRoles={getPageRoles($currentOrg)}
   onDenied={() => {

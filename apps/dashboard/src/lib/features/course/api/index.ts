@@ -2,6 +2,7 @@ export * from './attendance.svelte';
 export * from './course-clone.svelte';
 export * from './course.svelte';
 export * from './courses.svelte';
+export * from './content.svelte';
 export * from './exercise.svelte';
 export * from './lesson.svelte';
 export * from './mark.svelte';

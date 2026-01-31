@@ -157,7 +157,7 @@
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       {#if selectedTab === 'questions'}
         <div class="right-0 flex w-full items-center justify-end">
-          <div class="flex items-center">
+          <div class="flex items-center gap-2">
             <Button class="mr-2" onclick={handleSave} loading={isSaving}>
               {$t('course.navItem.lessons.exercises.all_exercises.save')}
             </Button>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { lessonDocUpload, resetDocumentUploadStore } from '../../store/lessons';
+  import { lessonDocUpload, resetDocumentUploadStore } from '../store';
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { Button } from '@cio/ui/base/button';

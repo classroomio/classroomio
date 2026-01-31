@@ -41,8 +41,7 @@
     editorClass = '',
     placeholder,
     onContentChange,
-    onEditorReady,
-    onEditorDestroy
+    onEditorReady
   }: Props = $props();
 
   let editor = $state<Editor>();
@@ -86,17 +85,21 @@
     }
   });
 
+  let isEditorReady = $state(false);
   // Handle editor ready
   $effect(() => {
-    if (editor) {
+    if (editor && !isEditorReady) {
+      isEditorReady = true;
       onEditorReady?.(editor);
     }
   });
 
   function onUpdate(props: { editor: Editor; transaction: Transaction }) {
     if (props?.editor && !props.editor.isDestroyed) {
+      console.log('on update');
       const newContent = props.editor.getHTML();
       content = newContent;
+      console.log('on update content', newContent);
       onContentChange?.(newContent);
     }
   }

@@ -16,7 +16,7 @@
   import LessonVersionHistory from '$features/course/components/lesson/lesson-version-history.svelte';
   import { courseApi, lessonApi } from '$features/course/api';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
-  import { lessonVideoUpload, lessonDocUpload } from '$features/course/components/lesson/store/lessons';
+  import { lessonVideoUpload, lessonDocUpload } from '$features/course/components/lesson/store';
   import { t } from '$lib/utils/functions/translations';
 
   import { IconButton } from '@cio/ui/custom/icon-button';
@@ -30,7 +30,6 @@
   import {
     BottomNavigation,
     LanguageSelector,
-    Loader,
     Comments,
     Note,
     Slide,
@@ -55,51 +54,34 @@
   let prevMode = $state('');
   let isSaving = $state(false);
   let isVersionDrawerOpen = $state(false);
-  let hasFetched = $state('');
 
   const lessonTitle = $derived(lessonApi.lesson?.title || 'Lesson');
-
-  async function fetchReqData(lessonId = '') {
-    console.log('fetchReqData', lessonId, lessonApi.lesson, hasFetched);
-    if (!lessonId || hasFetched === lessonId) return;
-
-    hasFetched = lessonId;
-
-    lessonApi.isLoading = true;
-
-    await lessonApi.get(courseId, lessonId);
-
-    if (lessonApi.success && lessonApi.lesson) {
-      if ($profile.locale) {
-        lessonApi.currentLocale = $profile.locale;
-      }
-    }
-
-    lessonApi.isLoading = false;
-  }
 
   function toggleMode() {
     prevMode = mode;
     mode = mode === MODES.edit ? MODES.view : MODES.edit;
   }
 
-  const refetchDataAfterVersionRestore = () => {
+  const refetchDataAfterVersionRestore = async () => {
     isVersionDrawerOpen = false;
     if (courseId && browser) {
       mode = MODES.view;
-      hasFetched = '';
-      fetchReqData(lessonId);
+
+      // Refetch lesson data after version restore
+      lessonApi.isLoading = true;
+      await lessonApi.get(courseId, lessonId);
+
+      if (lessonApi.success && lessonApi.lesson) {
+        if ($profile.locale) {
+          lessonApi.currentLocale = $profile.locale;
+        }
+      }
+
+      lessonApi.isLoading = false;
     }
 
     snackbar.success('snackbar.lessons.success.version_restored');
   };
-
-  $effect(() => {
-    if (courseId && $profile.id) {
-      console.log('fetching data');
-      fetchReqData(lessonId);
-    }
-  });
 
   const tabs = $derived.by(() => {
     const ordered = orderedTabs(materialTabs, courseApi.course?.metadata?.lessonTabsOrder);
@@ -107,11 +89,10 @@
 
     const slideUrl = lessonApi.lesson?.slideUrl || '';
     const videos = lessonApi.lesson?.videos || [];
-    const note = lessonApi.lesson?.note || '';
     const documents = lessonApi.lesson?.documents || [];
 
     return ordered.map((tab) => {
-      if (tab.value === 1 && (!isHtmlValueEmpty(note) || !isHtmlValueEmpty(content))) {
+      if (tab.value === 1 && !isHtmlValueEmpty(content)) {
         tab.badgeValue = 1;
       } else if (tab.value === 2 && !!slideUrl) {
         tab.badgeValue = 1;
@@ -123,6 +104,12 @@
 
       return tab;
     });
+  });
+
+  let currentTabValue = $state('');
+  $effect(() => {
+    if (!tabs.length || currentTabValue) return;
+    currentTabValue = String(tabs[0].value);
   });
 
   const viewModeComponents = $derived(getViewModeComponents(tabs));
@@ -157,7 +144,6 @@
 
     await Promise.all([
       lessonApi.update(courseApi.course?.id || '', lessonId, {
-        note: lessonApi.lesson.note || undefined,
         slideUrl: lessonApi.lesson.slideUrl || undefined,
         videos: lessonApi.lesson.videos || [],
         documents: lessonApi.lesson.documents || []
@@ -187,7 +173,7 @@
         await saveLesson();
 
         isSaving = false;
-      }, 1000);
+      }, 4000);
     });
   }
 
@@ -227,6 +213,28 @@
   });
 </script>
 
+<AddVideoModal
+  {lessonId}
+  onClose={() => {
+    if ($lessonVideoUpload.isUploading) return;
+
+    $lessonVideoUpload.isModalOpen = false;
+
+    triggerAutoSave();
+  }}
+/>
+
+<AddDocumentModal
+  onClose={() => {
+    if ($lessonDocUpload.isUploading) return;
+
+    $lessonDocUpload.isModalOpen = false;
+    $lessonDocUpload.error = null;
+
+    triggerAutoSave();
+  }}
+/>
+
 <Page.Header>
   <Page.HeaderContent>
     <Page.Title>{lessonTitle}</Page.Title>
@@ -250,7 +258,7 @@
           </IconButton>
         </div>
 
-        <LanguageSelector {lessonId} />
+        <LanguageSelector />
       </RoleBasedSecurity>
     </div>
   </Page.Action>
@@ -259,32 +267,8 @@
 <Page.Body>
   {#snippet child()}
     <div class="overflow-x-hidden lg:w-full xl:w-11/12">
-      <AddVideoModal
-        {lessonId}
-        onClose={() => {
-          if ($lessonVideoUpload.isUploading) return;
-
-          $lessonVideoUpload.isModalOpen = false;
-
-          triggerAutoSave();
-        }}
-      />
-
-      <AddDocumentModal
-        onClose={() => {
-          if ($lessonDocUpload.isUploading) return;
-
-          $lessonDocUpload.isModalOpen = false;
-          $lessonDocUpload.error = null;
-
-          triggerAutoSave();
-        }}
-      />
-
-      {#if lessonApi.isLoading}
-        <Loader />
-      {:else if mode === MODES.edit}
-        <UnderlineTabs.Root>
+      {#if mode === MODES.edit}
+        <UnderlineTabs.Root value={currentTabValue}>
           <!-- Tabs List -->
           <UnderlineTabs.List>
             {#each tabs as tab}

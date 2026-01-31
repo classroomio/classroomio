@@ -8,7 +8,6 @@ import { addMembers, deleteMember, listCourseMembers, updateMember } from '@api/
 
 import { Hono } from '@api/utils/hono';
 import { ZCourseUserAnalyticsParam } from '@cio/utils/validation/course';
-import { authMiddleware } from '@api/middlewares/auth';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
 import { getUserCourseAnalytics } from '@api/services/course/course';
 import { handleError } from '@api/utils/errors';
@@ -20,7 +19,7 @@ export const membersRouter = new Hono()
    * Gets all course members for a course
    * Requires authentication and course team membership (admin/tutor role)
    */
-  .get('/', authMiddleware, courseTeamMemberMiddleware, zValidator('param', ZCourseMembersParam), async (c) => {
+  .get('/', courseTeamMemberMiddleware, zValidator('param', ZCourseMembersParam), async (c) => {
     try {
       const { courseId } = c.req.valid('param');
       const members = await listCourseMembers(courseId);
@@ -44,7 +43,6 @@ export const membersRouter = new Hono()
    */
   .post(
     '/',
-    authMiddleware,
     courseTeamMemberMiddleware,
     zValidator('param', ZCourseMembersParam),
     zValidator('json', ZAddCourseMembers),
@@ -74,7 +72,6 @@ export const membersRouter = new Hono()
    */
   .put(
     '/:memberId',
-    authMiddleware,
     courseTeamMemberMiddleware,
     zValidator('param', ZCourseMembersMemberParam),
     zValidator('json', ZUpdateCourseMember),
@@ -102,52 +99,40 @@ export const membersRouter = new Hono()
    * Deletes a course member
    * Requires authentication and course team membership (admin/tutor role)
    */
-  .delete(
-    '/:memberId',
-    authMiddleware,
-    courseTeamMemberMiddleware,
-    zValidator('param', ZCourseMembersMemberParam),
-    async (c) => {
-      try {
-        const { courseId, memberId } = c.req.valid('param');
-        const member = await deleteMember(courseId, memberId);
+  .delete('/:memberId', courseTeamMemberMiddleware, zValidator('param', ZCourseMembersMemberParam), async (c) => {
+    try {
+      const { courseId, memberId } = c.req.valid('param');
+      const member = await deleteMember(courseId, memberId);
 
-        return c.json(
-          {
-            success: true,
-            data: member
-          },
-          200
-        );
-      } catch (error) {
-        return handleError(c, error, 'Failed to delete course member');
-      }
+      return c.json(
+        {
+          success: true,
+          data: member
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to delete course member');
     }
-  )
+  })
   /**
    * GET /course/:courseId/members/:userId/analytics
    * Gets user course analytics for a specific course
    * Requires authentication and course membership
    */
-  .get(
-    '/:userId/analytics',
-    authMiddleware,
-    courseTeamMemberMiddleware,
-    zValidator('param', ZCourseUserAnalyticsParam),
-    async (c) => {
-      try {
-        const { courseId, userId } = c.req.valid('param');
-        const analytics = await getUserCourseAnalytics(courseId, userId);
+  .get('/:userId/analytics', courseTeamMemberMiddleware, zValidator('param', ZCourseUserAnalyticsParam), async (c) => {
+    try {
+      const { courseId, userId } = c.req.valid('param');
+      const analytics = await getUserCourseAnalytics(courseId, userId);
 
-        return c.json(
-          {
-            success: true,
-            data: analytics
-          },
-          200
-        );
-      } catch (error) {
-        return handleError(c, error, 'Failed to fetch user course analytics');
-      }
+      return c.json(
+        {
+          success: true,
+          data: analytics
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch user course analytics');
     }
-  );
+  });

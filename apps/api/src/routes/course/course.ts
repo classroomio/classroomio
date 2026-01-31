@@ -28,6 +28,7 @@ import { attendanceRouter } from '@api/routes/course/attendance';
 import { authMiddleware } from '@api/middlewares/auth';
 import { cloneCourse } from '@api/services/course/clone';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
+import { contentRouter } from '@api/routes/course/content';
 import { exerciseRouter } from '@api/routes/course/exercise';
 import { generateCertificate } from '@api/utils/certificate';
 import { generateCoursePdf } from '@api/utils/course';
@@ -40,7 +41,6 @@ import { newsfeedRouter } from '@api/routes/course/newsfeed';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { paymentRequestRouter } from '@api/routes/course/payment-request';
-import { permissionsRouter } from '@api/routes/course/permissions';
 import { presignRouter } from '@api/routes/course/presign';
 import { submissionRouter } from '@api/routes/course/submission';
 import { zValidator } from '@hono/zod-validator';
@@ -330,6 +330,7 @@ export const courseRouter = new Hono()
   )
   .route('/katex', katexRouter)
   .route('/:courseId/payment-request', paymentRequestRouter)
+  .route('/:courseId/content', contentRouter)
   .route('/:courseId/lesson', lessonRouter)
   .route('/:courseId/exercise', exerciseRouter)
   .route('/:courseId/submission', submissionRouter)
@@ -337,5 +338,4 @@ export const courseRouter = new Hono()
   .route('/:courseId/mark', markRouter)
   .route('/:courseId/newsfeed', newsfeedRouter)
   .route('/:courseId/members', membersRouter)
-  .route('/:courseId/permissions', permissionsRouter)
   .route('/presign', presignRouter);

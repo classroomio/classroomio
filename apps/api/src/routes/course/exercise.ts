@@ -1,3 +1,4 @@
+import { ErrorCodes, handleError } from '@api/utils/errors';
 import {
   ZExerciseCreate,
   ZExerciseFromTemplate,
@@ -16,13 +17,11 @@ import {
   updateExerciseService
 } from '@api/services/exercise/exercise';
 import { fetchAllTemplatesMetadata, fetchTemplateById, fetchTemplatesByTag } from '@api/services/exercise/template';
+import { getGroupMemberIdByCourseAndProfile, isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 
 import { Hono } from '@api/utils/hono';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { createSubmissionService } from '@api/services/submission';
-import { getGroupMemberIdByCourseAndProfile, isUserCourseTeamMember } from '@cio/db/queries/group';
-import { ErrorCodes, handleError } from '@api/utils/errors';
-import { isUserOrgAdmin } from '@cio/db/queries/organization';
 import { zValidator } from '@hono/zod-validator';
 
 export const exerciseRouter = new Hono()
@@ -101,13 +100,7 @@ export const exerciseRouter = new Hono()
         const user = c.get('user')!;
 
         if (data.isUnlocked !== undefined) {
-          const { isTeamMember, organizationId } = await isUserCourseTeamMember(courseId, user.id);
-          let isAuthorized = isTeamMember;
-
-          if (!isAuthorized && organizationId) {
-            const isOrgAdmin = await isUserOrgAdmin(organizationId, user.id);
-            isAuthorized = isOrgAdmin;
-          }
+          const isAuthorized = await isCourseTeamMemberOrOrgAdmin(courseId, user.id);
 
           if (!isAuthorized) {
             return c.json(

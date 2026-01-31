@@ -398,7 +398,7 @@ export const questionAuthorOrTeamMiddleware = async (c: Context, next: Next) => 
   if (!question) return c.json({ success: false, error: 'Not found' }, 404);
   
   const isAuthor = question.authorId === user.id;
-  const isTeamMember = await isUserCourseTeamMember(question.courseId, user.id);
+  const isTeamMember = await isCourseTeamMemberOrOrgAdmin(question.courseId, user.id);
   if (!isAuthor && !isTeamMember) return c.json({ success: false, error: 'Unauthorized' }, 403);
   
   await next();

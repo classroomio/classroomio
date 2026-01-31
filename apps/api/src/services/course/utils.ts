@@ -32,11 +32,14 @@ const CONTENT_TYPE_PRIORITY: Record<ContentType, number> = {
 };
 
 function sortContentItems(items: CourseContentItem[]): CourseContentItem[] {
+  console.log('items', items);
   return [...items].sort((a, b) => {
     const orderDiff = (a.order ?? 0) - (b.order ?? 0);
+    console.log('orderDiff', orderDiff);
     if (orderDiff !== 0) return orderDiff;
 
     const typeDiff = CONTENT_TYPE_PRIORITY[a.type] - CONTENT_TYPE_PRIORITY[b.type];
+    console.log('typeDiff', typeDiff);
     if (typeDiff !== 0) return typeDiff;
 
     return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();

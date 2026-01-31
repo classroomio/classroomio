@@ -251,6 +251,8 @@ export type GetCourseRequest = (typeof classroomio.course)[':courseId']['$get'];
 export type GetCourseBySlugRequest = (typeof classroomio.course)['slug'][':slug']['$get'];
 export type UpdateCourseRequest = (typeof classroomio.course)[':courseId']['$put'];
 export type DeleteCourseRequest = (typeof classroomio.course)[':courseId']['$delete'];
+export type UpdateCourseContentRequest = (typeof classroomio.course)[':courseId']['content']['$put'];
+export type DeleteCourseContentRequest = (typeof classroomio.course)[':courseId']['content']['$delete'];
 export type GetCourseProgressRequest = (typeof classroomio.course)[':courseId']['progress']['$get'];
 export type CloneCourseRequest = (typeof classroomio.course)[':courseId']['clone']['$post'];
 
@@ -278,9 +280,15 @@ export type UpdateCourseResponse = InferResponseType<UpdateCourseRequest>;
 export type UpdateCourseSuccess = Extract<UpdateCourseResponse, { success: true }>;
 export type UpdateCourseData = UpdateCourseSuccess['data'];
 
+export type UpdateCourseContentResponse = InferResponseType<UpdateCourseContentRequest>;
+export type UpdateCourseContentSuccess = Extract<UpdateCourseContentResponse, { success: true }>;
+
 export type DeleteCourseResponse = InferResponseType<DeleteCourseRequest>;
 export type DeleteCourseSuccess = Extract<DeleteCourseResponse, { success: true }>;
 export type DeleteCourseData = DeleteCourseSuccess['data'];
+
+export type DeleteCourseContentResponse = InferResponseType<DeleteCourseContentRequest>;
+export type DeleteCourseContentSuccess = Extract<DeleteCourseContentResponse, { success: true }>;
 
 export type GetCourseProgressResponse = InferResponseType<GetCourseProgressRequest> | null;
 export type GetCourseProgressSuccess = Extract<InferResponseType<GetCourseProgressRequest>, { success: true }>;

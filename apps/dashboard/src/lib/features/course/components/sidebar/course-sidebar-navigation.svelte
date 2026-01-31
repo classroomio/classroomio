@@ -220,7 +220,11 @@
               <Collapsible.Trigger>
                 {#snippet child({ props })}
                   <a href={resolve(item.url, {})}>
-                    <Sidebar.MenuButton {...props} tooltipContent={item.title}>
+                    <Sidebar.MenuButton
+                      {...props}
+                      tooltipContent={item.title}
+                      class={item.isActive ? 'ui:bg-accent ui:text-accent-foreground' : ''}
+                    >
                       {#snippet child({ props })}
                         <HoverableItem {...props} class="flex w-full items-center gap-4 py-2 pl-1.5 {props.class}">
                           {#snippet children(isHovered)}

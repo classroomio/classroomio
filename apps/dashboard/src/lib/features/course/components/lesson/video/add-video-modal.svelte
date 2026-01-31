@@ -28,7 +28,7 @@
     if (!isOpen) onClose();
   }}
 >
-  <Dialog.Content class="h-[80%] w-[90%] max-w-4/5 md:h-[566px]">
+  <Dialog.Content class="h-[80%] w-[90%] max-w-none! md:h-[566px]">
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.lessons.materials.tabs.video.add_video.title')}</Dialog.Title>
     </Dialog.Header>

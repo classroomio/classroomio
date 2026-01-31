@@ -15,7 +15,7 @@
 </script>
 
 <svelte:head>
-  <title>{page.status}</title>
+  <title>Something unexpected occured</title>
 </svelte:head>
 
 <Empty

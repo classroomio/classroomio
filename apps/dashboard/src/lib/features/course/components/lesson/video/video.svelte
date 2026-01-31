@@ -4,7 +4,7 @@
   import { Button } from '@cio/ui/base/button';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import TrashIcon from '@lucide/svelte/icons/trash';
-  import { lessonVideoUpload } from '$features/course/components/lesson/store/lessons';
+  import { lessonVideoUpload } from '$features/course/components/lesson/store';
   import { t } from '$lib/utils/functions/translations';
   import MODES from '$lib/utils/constants/mode';
 

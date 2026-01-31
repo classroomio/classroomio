@@ -6,3 +6,5 @@ export const contentCreateStore = writable({
   sectionId: '',
   initialType: ContentType.Section
 });
+
+export const contentEditingStore = writable<string | undefined>(undefined);

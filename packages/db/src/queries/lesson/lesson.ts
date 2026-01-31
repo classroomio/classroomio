@@ -13,6 +13,7 @@ import type {
   TNewLessonSection
 } from '@db/types';
 import { and, db, desc, eq, inArray, lt, sql } from '@db/drizzle';
+import type { DbOrTxClient } from '@db/drizzle';
 
 // Lesson Section Queries
 export async function getSectionsByCourseId(courseId: string) {
@@ -63,9 +64,12 @@ export async function updateLessonSection(sectionId: string, data: Partial<TLess
   }
 }
 
-export async function deleteLessonSection(sectionId: string) {
+export async function deleteLessonSection(sectionId: string, dbClient: DbOrTxClient = db) {
   try {
-    const [deleted] = await db.delete(schema.lessonSection).where(eq(schema.lessonSection.id, sectionId)).returning();
+    const [deleted] = await dbClient
+      .delete(schema.lessonSection)
+      .where(eq(schema.lessonSection.id, sectionId))
+      .returning();
     return deleted || null;
   } catch (error) {
     throw new Error(
@@ -119,9 +123,9 @@ export async function createLessons(values: TNewLesson[]) {
   }
 }
 
-export async function updateLesson(lessonId: string, data: Partial<TLesson>) {
+export async function updateLesson(lessonId: string, data: Partial<TLesson>, dbClient: DbOrTxClient = db) {
   try {
-    const [updated] = await db
+    const [updated] = await dbClient
       .update(schema.lesson)
       .set({ ...data, updatedAt: new Date().toISOString() })
       .where(eq(schema.lesson.id, lessonId))
@@ -134,9 +138,9 @@ export async function updateLesson(lessonId: string, data: Partial<TLesson>) {
   }
 }
 
-export async function deleteLesson(lessonId: string) {
+export async function deleteLesson(lessonId: string, dbClient: DbOrTxClient = db) {
   try {
-    const [deleted] = await db.delete(schema.lesson).where(eq(schema.lesson.id, lessonId)).returning();
+    const [deleted] = await dbClient.delete(schema.lesson).where(eq(schema.lesson.id, lessonId)).returning();
     return deleted || null;
   } catch (error) {
     throw new Error(

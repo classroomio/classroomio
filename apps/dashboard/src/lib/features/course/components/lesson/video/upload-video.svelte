@@ -2,7 +2,7 @@
   import { Progress } from '@cio/ui/base/progress';
   import { preventDefault } from '$lib/utils/functions/svelte';
   import { UpgradeBanner } from '$features/ui';
-  import { lessonVideoUpload, cancelVideoUpload } from '$features/course/components/lesson/store/lessons';
+  import { lessonVideoUpload, cancelVideoUpload } from '$features/course/components/lesson/store';
   import { lessonApi } from '$features/course/api';
 
   import { isFreePlan } from '$lib/utils/store/org';

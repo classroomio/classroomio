@@ -3,16 +3,12 @@
   import { page } from '$app/state';
   import { Empty } from '@cio/ui/custom/empty';
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
-  import DeleteLessonConfirmation from '$features/course/components/lesson/delete-lesson-confirmation.svelte';
-  import LessonList from '$features/course/components/lesson/lesson-list.svelte';
-  import LessonSectionList from '$features/course/components/lesson/lesson-section-list.svelte';
-  import { lessonApi } from '$features/course/api';
+  import ContentList from '$features/course/components/lesson/content-list.svelte';
+  import ContentSectionList from '$features/course/components/lesson/content-section-list.svelte';
   import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
-  import type { CourseContentItem } from '$features/course/utils/types';
   import { getCourseContent } from '$features/course/utils/content';
   import { ContentType } from '@cio/utils/constants/content';
-  import { profile } from '$lib/utils/store/user';
 
   interface Props {
     courseId: string;
@@ -30,11 +26,7 @@
   );
   const lessonItems = $derived(contentItems.filter((item) => item.type === ContentType.Lesson));
 
-  let lessonEditing: string | undefined;
-  let lessonToDelete: CourseContentItem | undefined = $state();
-  let openDeleteModal: boolean = $state(false);
   let isFetching: boolean = $state(false);
-  const profileId = $derived($profile?.id || '');
 
   function findFirstIncompleteLesson() {
     return lessonItems.find((lesson) => !lesson.isComplete && lesson.isUnlocked === true);
@@ -58,21 +50,6 @@
   });
 </script>
 
-<DeleteLessonConfirmation
-  bind:openDeleteModal
-  deleteLesson={async () => {
-    if (!lessonToDelete?.id) return;
-    const courseId = courseApi.course?.id;
-    if (!courseId) return;
-
-    await lessonApi.delete(courseId, lessonToDelete.id);
-
-    if (lessonApi.success && profileId) {
-      await courseApi.refreshCourse(courseId, profileId);
-    }
-  }}
-/>
-
 {#if shouldGoToNextLesson}
   <Empty
     title={$t('course.navItem.lessons.no_lesson')}
@@ -88,9 +65,9 @@
   {/if}
 
   {#if contentData.grouped}
-    <LessonSectionList {reorder} {lessonEditing} />
+    <ContentSectionList {reorder} />
   {:else}
-    <LessonList {reorder} {lessonEditing} bind:lessonToDelete bind:openDeleteModal />
+    <ContentList {reorder} />
   {/if}
 {:else}
   <Empty

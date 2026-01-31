@@ -67,7 +67,6 @@ export class LessonApi extends BaseApiWithErrors {
   >({});
   currentLocale = $state<TLocale>('en');
   isSaving = $state(false);
-  isFetching = $state(false);
   isDirty = $state(false);
 
   translations = $state<Record<string, Record<TLocale, string>>>({});
@@ -78,8 +77,6 @@ export class LessonApi extends BaseApiWithErrors {
    * Gets a lesson by ID
    */
   async get(courseId: string, lessonId: string) {
-    this.isFetching = true;
-
     return this.execute<GetLessonRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].lesson[':lessonId'].$get({
@@ -93,17 +90,7 @@ export class LessonApi extends BaseApiWithErrors {
           if (this.lesson.lessonLanguages) {
             this.setTranslations();
           }
-
-          this.note = this.translations[this.lesson?.id || '']?.[this.currentLocale] || this.lesson?.note || '';
-          this.isFetching = false;
         }
-      },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to fetch lesson');
-        }
-
-        this.isFetching = false;
       }
     });
   }
@@ -751,7 +738,6 @@ export class LessonApi extends BaseApiWithErrors {
 
     await Promise.all([
       this.update(courseId, lessonId, {
-        note: this.lesson.note || undefined,
         slideUrl: this.lesson.slideUrl || undefined,
         videos: this.lesson.videos || [],
         documents: this.lesson.documents || []

@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { VideoSource, MediaPlayerOptions } from './types';
-  import VidstackPlayer from './players/vidstack-player.svelte';
+  import PlyrPlayer from './players/plyr-player.svelte';
   import MusePlayer from './players/muse-player.svelte';
 
   interface Props {
@@ -11,7 +11,7 @@
 
   let { source, options = {}, class: className = '' }: Props = $props();
 
-  // Muse.ai requires iframe, everything else uses Vidstack
+  // Muse.ai requires iframe, everything else uses Plyr
   const isMuse = $derived.by(() => {
     return source.type === 'muse' && source.metadata?.svid;
   });
@@ -21,6 +21,6 @@
   {#if isMuse}
     <MusePlayer svid={source.metadata?.svid} {options} />
   {:else}
-    <VidstackPlayer src={source.url} {options} />
+    <PlyrPlayer src={source.url} {options} />
   {/if}
 </div>

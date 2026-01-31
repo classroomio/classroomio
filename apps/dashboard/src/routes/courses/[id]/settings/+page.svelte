@@ -17,10 +17,6 @@
   }
 </script>
 
-<svelte:head>
-  <title>Settings - ClassroomIO</title>
-</svelte:head>
-
 <div class="mx-auto w-full max-w-3xl">
   <Page.Header>
     <Page.HeaderContent>
