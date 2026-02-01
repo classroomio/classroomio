@@ -18,39 +18,30 @@
     onToggle
   }: Props = $props();
 
-  // function handleToggle(value: boolean) {
-  //   isYearly = value;
-  //   onToggle?.(value);
-  // }
   function handleToggle(value: boolean) {
-    console.log('Toggle clicked, setting to:', value);
     isYearly = value;
-    console.log('isYearly is now:', isYearly);
     onToggle?.(value);
   }
 </script>
 
+{#snippet period_button(isActive: boolean, isMonth: boolean)}
+  <button
+    type="button"
+    class="ui:cursor-pointer ui:rounded-full ui:px-3 ui:py-1 ui:text-sm ui:font-medium ui:transition-all ui:duration-500 ui:ease-in-out {isActive
+      ? 'ui:bg-gray-200 ui:text-secondary-foreground'
+      : 'ui:text-muted-foreground ui:hover:text-accent-foreground'}"
+    onclick={() => handleToggle(isMonth ? false : true)}
+  >
+    {isMonth ? monthlyLabel : yearlyLabel}
+  </button>
+{/snippet}
+
 <div
   class="ui:relative ui:z-10 ui:flex ui:items-center ui:rounded-full ui:border ui:p-1 ui:bg-white ui:dark:bg-slate-950 ui:dark:border-slate-800"
 >
-  <button
-    type="button"
-    class="ui:rounded-full ui:px-4 ui:py-2 ui:text-sm ui:font-medium ui:transition-all ui:duration-500 ui:ease-in-out {!isYearly
-      ? 'ui:bg-secondary ui:text-secondary-foreground'
-      : 'ui:text-muted-foreground ui:hover:bg-accent ui:hover:text-accent-foreground'}"
-    onclick={() => handleToggle(false)}
-  >
-    {monthlyLabel}
-  </button>
-  <button
-    type="button"
-    class="ui:rounded-full ui:px-4 ui:py-2 ui:text-sm ui:font-medium ui:transition-all ui:duration-500 ui:ease-in-out {isYearly
-      ? 'ui:bg-secondary ui:text-secondary-foreground'
-      : 'ui:text-muted-foreground ui:hover:bg-accent ui:hover:text-accent-foreground'}"
-    onclick={() => handleToggle(true)}
-  >
-    {yearlyLabel}
-  </button>
+  {@render period_button(!isYearly, true)}
+
+  {@render period_button(isYearly, false)}
 
   {#if saveLabel}
     <HoverableItem>

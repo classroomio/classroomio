@@ -54,7 +54,7 @@
       {plan.NAME}
     </h3>
     <div class="ui:mb-1 ui:flex ui:items-baseline ui:gap-1">
-      <span class="ui:text-3xl ui:font-bold ui:text-foreground">
+      <span class="ui:text-xl ui:font-medium ui:text-foreground">
         {plan.PRICE.CURRENCY}{isYearlyPlan ? plan.PRICE.YEARLY : plan.PRICE.MONTHLY}
       </span>
     </div>
@@ -67,7 +67,7 @@
       {#snippet children(isHovered: boolean)}
         <Button
           variant={isPopular ? 'default' : 'outline'}
-          class="ui:w-full ui:py-6 ui:text-base ui:font-semibold ui:transition-all"
+          class="ui:w-full ui:py-4 ui:text-base ui:transition-all"
           disabled={isDisabled || isLoading}
           loading={isLoading}
           onclick={() => {
