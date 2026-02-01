@@ -36,6 +36,7 @@ const config = {
           'unsafe-inline',
           'https://cdn.plyr.io',
           'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
+          'https://assets.cdn.clsrio.com/carbon-all.css',
           'https://assets.cdn.clsrio.com/eqneditor_1.css'
         ],
         'style-src-elem': [
@@ -43,6 +44,7 @@ const config = {
           'unsafe-inline',
           'https://cdn.plyr.io',
           'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
+					'https://assets.cdn.clsrio.com/carbon-all.css',
           'https://assets.cdn.clsrio.com/eqneditor_1.css'
         ],
         'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
