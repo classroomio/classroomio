@@ -23,7 +23,7 @@
     <p class="mt-10 w-[90%] text-center text-lg font-normal text-slate-700 md:w-[60%] lg:mt-7">
       You get a customizable LMS, AI integration for productive educators and many more...
     </p>
-    <div class="z-100 mt-8">
+    <div class="mt-8">
       <PricingToggle
         bind:isYearly={isYearlyPlan}
         monthlyLabel="Monthly"
