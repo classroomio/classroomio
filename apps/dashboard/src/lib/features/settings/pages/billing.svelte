@@ -46,7 +46,7 @@
   }
 </script>
 
-<div class="max-w-lg! flex w-full flex-col gap-4 px-2">
+<div class="flex w-full max-w-lg! flex-col gap-4 px-2">
   <p class="text-md font-medium">{$t('settings.billing.manage')}</p>
 
   {#if $isFreePlan}

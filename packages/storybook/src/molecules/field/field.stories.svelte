@@ -25,7 +25,6 @@
   });
 
   let courseType = $state();
-  let courseVersion = $state();
   let assignmentType = $state();
   let notificationPreference = $state('email');
   let deliveryMethod = $state('live-class');
@@ -34,12 +33,6 @@
     { value: 'live-class', label: 'Live Class' },
     { value: 'self-paced', label: 'Self-Paced' },
     { value: 'hybrid', label: 'Hybrid' }
-  ];
-
-  const courseVersions = [
-    { value: 'v1', label: 'Version 1' },
-    { value: 'v2', label: 'Version 2' },
-    { value: 'v3', label: 'Version 3' }
   ];
 
   const assignmentTypes = [
@@ -84,19 +77,6 @@
                   <Select.Content>
                     {#each courseTypes as type (type.value)}
                       <Select.Item value={type.value}>{type.label}</Select.Item>
-                    {/each}
-                  </Select.Content>
-                </Select.Root>
-              </Field.Field>
-              <Field.Field>
-                <Field.Label for="course-version">Version</Field.Label>
-                <Select.Root type="single" bind:value={courseVersion}>
-                  <Select.Trigger id="course-version">
-                    <span>{courseVersion || 'Select version'}</span>
-                  </Select.Trigger>
-                  <Select.Content>
-                    {#each courseVersions as version (version.value)}
-                      <Select.Item value={version.value}>{version.label}</Select.Item>
                     {/each}
                   </Select.Content>
                 </Select.Root>

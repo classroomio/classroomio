@@ -9,7 +9,7 @@
   import * as Empty from '@cio/ui/base/empty';
   import { currentOrg } from '$lib/utils/store/org';
   import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
-  import { course } from '$lib/components/Course/store';
+  import { courseApi } from '$features/course/api';
 
   const siteName = $derived($currentOrg.siteName);
 
@@ -21,7 +21,7 @@
 </script>
 
 <header
-  class="group-has-data-[collapsible=icon]/sidebar-wrapper:h-8 border-border ui:bg-background bg-background sticky top-0 z-50 flex h-12 w-full shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear"
+  class="border-border ui:bg-background sticky top-0 z-50 flex h-12 w-full shrink-0 items-center gap-2 border-b backdrop-blur transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-8"
 >
   <div class="flex w-full items-center gap-2 px-4">
     <Sidebar.Trigger />
@@ -31,7 +31,7 @@
     </div>
 
     <p class="max-w-2xs truncate text-sm font-medium">
-      {$course.title}
+      {courseApi.course?.title || ''}
     </p>
 
     <span class="grow"></span>

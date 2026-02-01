@@ -8,7 +8,7 @@
   import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
   import { Badge } from '@cio/ui/base/badge';
-  import SparklesIcon from '@lucide/svelte/icons/sparkles';
+  import { PremiumIcon, HoverableItem } from '@cio/ui/custom/moving-icons';
 
   import { PLANS } from '@cio/utils/plans';
   import { profile } from '$lib/utils/store/user';
@@ -156,10 +156,14 @@
           >
             {$t('pricing.modal.annually')}
           </Button>
-          <Badge variant="default" class="rotate-5 absolute -top-3 right-[-20%] shadow-2xl">
-            <SparklesIcon class="text-amber-500! size-2" />
-            {$t('pricing.modal.save')}
-          </Badge>
+          <HoverableItem>
+            {#snippet children(isHovered)}
+              <Badge variant="default" class="absolute -top-3 right-[-20%] rotate-5 shadow-2xl">
+                <PremiumIcon size={8} {isHovered} class="text-amber-500!" />
+                {$t('pricing.modal.save')}
+              </Badge>
+            {/snippet}
+          </HoverableItem>
         </div>
         <div class="grid w-full grid-cols-1 gap-6 overflow-y-auto p-2 md:grid-cols-3 md:overflow-y-visible">
           {#each planNames as planName}
@@ -171,7 +175,7 @@
               {#if isPopular}
                 <Badge
                   variant="default"
-                  class="bg-linear-to-r absolute -top-3 left-1/2 -translate-x-1/2 from-pink-500 to-orange-500"
+                  class="absolute -top-3 left-1/2 -translate-x-1/2 bg-linear-to-r from-pink-500 to-orange-500"
                 >
                   Popular
                 </Badge>
@@ -189,18 +193,25 @@
                 <p class="text-sm text-gray-500">Per Organization</p>
               </div>
 
-              <Button
-                variant={isPopular ? 'default' : 'outline'}
-                class="mb-6 w-full"
-                disabled={plan?.CTA?.IS_DISABLED || isLoadingPlan === planName}
-                loading={isLoadingPlan === planName}
-                onclick={() => {
-                  if (isLoadingPlan === planName) return;
-                  handleClick(plan, planName);
-                }}
-              >
-                {plan?.CTA?.DASHBOARD_LABEL}
-              </Button>
+              <HoverableItem>
+                {#snippet children(isHovered)}
+                  <Button
+                    variant={isPopular ? 'default' : 'outline'}
+                    class="mb-6 w-full"
+                    disabled={plan?.CTA?.IS_DISABLED || isLoadingPlan === planName}
+                    loading={isLoadingPlan === planName}
+                    onclick={() => {
+                      if (isLoadingPlan === planName) return;
+                      handleClick(plan, planName);
+                    }}
+                  >
+                    {#if isPopular}
+                      <PremiumIcon size={16} {isHovered} />
+                    {/if}
+                    {plan?.CTA?.DASHBOARD_LABEL}
+                  </Button>
+                {/snippet}
+              </HoverableItem>
 
               <ul class="space-y-3">
                 {#each plan?.FEATURES as feature}

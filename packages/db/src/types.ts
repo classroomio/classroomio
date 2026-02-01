@@ -19,8 +19,8 @@ export type TNewVerification = typeof schema.verification.$inferInsert;
 export type TAnalyticsLoginEvents = typeof schema.analyticsLoginEvents.$inferSelect;
 export type TNewAnalyticsLoginEvents = typeof schema.analyticsLoginEvents.$inferInsert;
 
-export type TLessonSection = typeof schema.lessonSection.$inferSelect;
-export type TNewLessonSection = typeof schema.lessonSection.$inferInsert;
+export type TCourseSection = typeof schema.courseSection.$inferSelect;
+export type TNewCourseSection = typeof schema.courseSection.$inferInsert;
 
 export type TGroup = typeof schema.group.$inferSelect;
 export type TNewGroup = typeof schema.group.$inferInsert;
@@ -134,8 +134,6 @@ export type TExerciseTemplate = typeof schema.exerciseTemplate.$inferSelect;
 export type TNewExerciseTemplate = typeof schema.exerciseTemplate.$inferInsert;
 
 export type TCourseType = (typeof schema.courseType.enumValues)[number];
-
-export type TCourseVersion = (typeof schema.courseVersion.enumValues)[number];
 
 export type TLocale = (typeof schema.locale.enumValues)[number];
 

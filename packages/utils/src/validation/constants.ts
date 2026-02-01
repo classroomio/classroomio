@@ -14,3 +14,13 @@ export const ALLOWED_DOCUMENT_TYPES = [
 ] as const;
 
 export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'] as const;
+
+/**
+ * Question Type Constants
+ * These match the question_type table in the database
+ */
+export const QUESTION_TYPE = {
+  RADIO: 1,
+  CHECKBOX: 2,
+  TEXTAREA: 3
+} as const;

@@ -81,18 +81,3 @@ export function handleLocaleChange(newLocale: TLocale) {
 
   selectedLocale.set(newLocale);
 }
-
-export function lessonFallbackNote(note: string, translation: Record<TLocale, string>, locale: TLocale) {
-  if (!translation) {
-    return note;
-  }
-
-  const content = translation[locale];
-
-  // if locale is english and no translated content for english but note exists
-  if (locale === 'en' && !content && note?.length) {
-    return note;
-  }
-
-  return content;
-}

@@ -22,7 +22,7 @@
 
 <script lang="ts">
   import { Dialog as SheetPrimitive } from 'bits-ui';
-  import XIcon from '@lucide/svelte/icons/x';
+  import { CloseIcon, HoverableItem } from '../../custom/moving-icons';
   import type { Snippet } from 'svelte';
   import SheetOverlay from './sheet-overlay.svelte';
   import { cn, type WithoutChildrenOrChild } from '../../../src/tools';
@@ -50,11 +50,15 @@
     {...restProps}
   >
     {@render children?.()}
-    <SheetPrimitive.Close
-      class="ui:ring-offset-background ui:focus-visible:ring-ring ui:rounded-xs ui:focus-visible:outline-hidden ui:absolute ui:right-4 ui:top-4 ui:opacity-70 ui:transition-opacity ui:hover:opacity-100 ui:focus-visible:ring-2 ui:focus-visible:ring-offset-2 ui:disabled:pointer-events-none"
-    >
-      <XIcon class="ui:size-4" />
-      <span class="sr-only">Close</span>
-    </SheetPrimitive.Close>
+    <HoverableItem>
+      {#snippet children(isHovered)}
+        <SheetPrimitive.Close
+          class="ui:ring-offset-background ui:focus-visible:ring-ring ui:rounded-xs ui:focus-visible:outline-hidden ui:absolute ui:right-4 ui:top-4 ui:opacity-70 ui:transition-opacity ui:hover:opacity-100 ui:focus-visible:ring-2 ui:focus-visible:ring-offset-2 ui:disabled:pointer-events-none"
+        >
+          <CloseIcon {isHovered} />
+          <span class="sr-only">Close</span>
+        </SheetPrimitive.Close>
+      {/snippet}
+    </HoverableItem>
   </SheetPrimitive.Content>
 </SheetPrimitive.Portal>

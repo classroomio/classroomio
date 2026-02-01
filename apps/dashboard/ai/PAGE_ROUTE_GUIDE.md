@@ -408,7 +408,7 @@ Feature pages contain all business logic and should be placed in `lib/features/[
 
 <UnsavedChanges bind:hasUnsavedChanges />
 
-<Field.Group class="max-w-md! w-full px-2">
+<Field.Group class="w-full max-w-md! px-2">
   <Field.Set>
     <Field.Legend>{$t('form.section_title')}</Field.Legend>
     <Field.Group>
@@ -678,7 +678,7 @@ export async function load({ params }) {
 
 <UnsavedChanges bind:hasUnsavedChanges />
 
-<Field.Group class="max-w-md! w-full px-2">
+<Field.Group class="w-full max-w-md! px-2">
   <Field.Set>
     <Field.Legend>{$t('settings.profile.profile_picture.heading')}</Field.Legend>
     <Field.Field>
@@ -837,7 +837,7 @@ If you encounter old patterns, migrate them:
 
 ```svelte
 <!-- NEW - USE THIS -->
-<Field.Group class="max-w-md! w-full px-2">
+<Field.Group class="w-full max-w-md! px-2">
   <Field.Set>
     <Field.Legend>Title</Field.Legend>
     <Field.Field>

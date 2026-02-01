@@ -13,9 +13,9 @@
   import { Button } from '@cio/ui/base/button';
 
   import { t } from '$lib/utils/functions/translations';
-  import { supabase } from '$lib/utils/functions/supabase';
+  import { quizApi } from '$features/org/api/quiz.svelte';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { currentOrgPath, deleteModal, quizStore, quizesStore } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgPath, deleteModal, quizStore } from '$lib/utils/store/org';
   import { allOptions, allThemes, booleanOptions, themeImages } from '$lib/utils/constants/quiz';
 
   interface QuizOption {
@@ -180,21 +180,17 @@
       return;
     }
 
-    const { data, error } = await supabase
-      .from('quiz')
-      .update({
-        ...$quizStore,
-        updated_at: new Date()
-      })
-      .match({ id: quizId });
+    if (!$currentOrg.id || !quizId) return;
 
-    console.log('data', data);
-    console.log('error', error);
-    if (error) {
-      snackbar.error('snackbar.course_settings.error.not_right');
-      return;
-    } else {
+    await quizApi.update($currentOrg.id, quizId, {
+      ...$quizStore
+    });
+
+    if (quizApi.success) {
       snackbar.success('snackbar.course_settings.success.saved');
+      // quizApi.quizzes is already updated by the API
+    } else {
+      snackbar.error('snackbar.course_settings.error.not_right');
     }
   }
 
@@ -212,14 +208,31 @@
     return false;
   }
 
-  onMount(() => {
-    const quiz = $quizesStore.find((q) => q.id === quizId);
+  onMount(async () => {
+    // First try to find quiz in the list
+    let quiz = quizApi.quizzes.find((q) => q.id === quizId);
+
+    // If not in list, fetch it
+    if (!quiz && $currentOrg.id) {
+      await quizApi.get($currentOrg.id, quizId);
+      quiz = quizApi.quiz || undefined;
+    }
+
     if (!quiz) {
       goto(`${$currentOrgPath}/quiz`);
       return;
     }
-    quizStore.set(quiz);
-    currentQuestion = quiz.questions[0];
+
+    // Map API Quiz to QuizStore format for quizStore
+    quizStore.set({
+      uuid: quiz.id,
+      title: quiz.title,
+      questions: quiz.questions || [],
+      timelimit: quiz.timelimit || '10s',
+      theme: quiz.theme || 'standard',
+      pin: ''
+    });
+    currentQuestion = (quiz.questions || [])[0];
   });
 </script>
 

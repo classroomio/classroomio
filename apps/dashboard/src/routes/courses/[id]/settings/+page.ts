@@ -1,5 +1,5 @@
-export const load = ({ params = { id: '' } }) => {
+export const load = ({ params }) => {
   return {
-    courseId: params.id
+    courseId: params.id || ''
   };
 };

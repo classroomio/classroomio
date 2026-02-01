@@ -17,7 +17,14 @@
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
-  import { onMount } from 'svelte';
+
+  let { data } = $props();
+
+  $effect(() => {
+    if (data.setupProgress && data.orgSiteName) {
+      setupProgressApi.initializeFromServerData(data.setupProgress, data.orgSiteName);
+    }
+  });
 
   const setupList = $derived(
     setupProgressApi.setupList.map((item) => {
@@ -31,16 +38,12 @@
     })
   );
 
+  $effect(() => {
+    console.log('setup list', setupList);
+  });
+
   const completed = $derived(setupList.filter((list) => list.is_completed).length);
   const total = $derived(setupList.length);
-
-  // Ensure setup progress is fetched when page loads
-  onMount(() => {
-    if ($currentOrg.siteName && setupProgressApi.progress.setup.length === 0) {
-      // The app-header should have already fetched it, but ensure it's loaded
-      setupProgressApi.fetchSetupProgress($currentOrg.siteName);
-    }
-  });
 
   const StepsEnum = {
     UPDATE_PROFILE: 'profile',

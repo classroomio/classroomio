@@ -147,9 +147,9 @@
       <h1 class="flex items-center justify-center gap-3 text-center text-2xl">Word from our fufilled facilitators</h1>
 
       <div
-        class="relative mx-auto mt-10 w-full rounded-md border bg-white py-6 text-center shadow-sm before:absolute before:left-0 before:top-0 before:h-full before:w-[4.5%] before:rounded-bl-md before:rounded-tl-md before:bg-[#0233BD] md:w-2/4"
+        class="relative mx-auto mt-10 w-full rounded-md border bg-white py-6 text-center shadow-sm before:absolute before:top-0 before:left-0 before:h-full before:w-[4.5%] before:rounded-tl-md before:rounded-bl-md before:bg-[#0233BD] md:w-2/4"
       >
-        <h1 class="mx-auto w-[77%] text-base font-medium leading-5">
+        <h1 class="mx-auto w-[77%] text-base leading-5 font-medium">
           With ClassroomIO, I am training over 100 students. I am making more money than expected with little effort and
           my students are happy. Love the product
         </h1>

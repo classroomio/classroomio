@@ -11,6 +11,8 @@
   const items = $derived(getOrgNavigationItems($currentOrgPath, $currentOrg, $isOrgAdmin, $t, page.url.pathname));
 
   const pathWithQuery = $derived(page.url.pathname + page.url.search);
+
+  let isHovered = $state({});
 </script>
 
 <Sidebar.Group>
@@ -24,11 +26,20 @@
               {#snippet child({ props })}
                 <Sidebar.MenuButton {...props} tooltipContent={item.title} isActive={item.isActive}>
                   {#snippet child({ props })}
-                    <a href={item.url} {...props}>
+                    <a
+                      href={item.url}
+                      {...props}
+                      onmouseenter={() => (isHovered[item.title] = true)}
+                      onmouseleave={() => (isHovered[item.title] = false)}
+                    >
                       {#if item.icon}
-                        <item.icon class="custom" />
+                        {@const Icon = item.icon}
+                        <Icon isHovered={isHovered[item.title]} size={16} class="custom" />
+
+                        <span>{item.title}</span>
+                      {:else}
+                        <span>{item.title}</span>
                       {/if}
-                      <span>{item.title}</span>
                       {#if item.items}
                         <ChevronRightIcon
                           class="custom ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"

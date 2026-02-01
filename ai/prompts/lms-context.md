@@ -7,6 +7,8 @@ I am building a LMS for teachers and students to collaborate on a course. Studen
 
 The tech stack is
 - Sveltekit - dashboard (teacher view) and lms (student view)
-- Supabase - Auth, DB requests, Storage
+- Drizzle ORM - Database requests (Postgres)
+- Better Auth - Authentication
+- Cloudflare R2 - Storage
 - Hono - API for long running processes like video uploads
 ```

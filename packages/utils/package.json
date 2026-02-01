@@ -29,6 +29,10 @@
       "types": "./src/validation/index.ts",
       "default": "./src/validation/index.ts"
     },
+    "./validation/constants": {
+      "types": "./src/validation/constants.ts",
+      "default": "./src/validation/constants.ts"
+    },
     "./validation/*": {
       "types": "./src/validation/*/index.ts",
       "default": "./src/validation/*/index.ts"

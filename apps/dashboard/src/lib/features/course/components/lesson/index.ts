@@ -1,0 +1,10 @@
+export { default as BottomNavigation } from './buttom-navigation.svelte';
+export { default as LanguageSelector } from './language-selector.svelte';
+export { default as Loader } from './loader.svelte';
+export { default as Comments } from './comments.svelte';
+export { default as Note } from './note/note.svelte';
+export { default as Slide } from './slide/slide.svelte';
+export { default as Video } from './video/video.svelte';
+export { default as Document } from './document/document.svelte';
+export { default as AddVideoModal } from './video/add-video-modal.svelte';
+export { default as AddDocumentModal } from './document/add-document-modal.svelte';

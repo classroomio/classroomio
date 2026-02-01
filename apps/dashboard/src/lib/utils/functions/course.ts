@@ -1,4 +1,4 @@
-import type { Course } from '../types';
+import type { Course } from '$features/course/utils/types';
 
 export const isCourseFree = (cost: number) => !(Number(cost) > 0);
 

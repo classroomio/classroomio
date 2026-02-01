@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import type { TCustomLinks } from './types';
   import { Button } from '@cio/ui/base/button';
 
@@ -20,7 +21,7 @@
     {#each customLinks.links as link (link.url)}
       <li>
         <a
-          href={link.url}
+          href={resolve(link.url)}
           target={link.openInNewTab ? '_blank' : '_self'}
           rel={link.openInNewTab ? 'noopener noreferrer' : ''}
         >

@@ -15,4 +15,11 @@ apps/api/static
 pnpm-lock.yaml
 *.md
 
-output.css
+packages/ui/src/output.css
+
+*.sql
+*.env*
+
+# No parser for these
+.prettierignore
+**/Dockerfile

@@ -819,7 +819,7 @@
           "start_reorder": "Réorganiser",
           "end_reorder": "Terminer la réapprovisionnement",
           "modal_heading_section": "Ajouter une nouvelle section",
-          "lesson_section_title": "Titre de la section",
+          "course_section_title": "Titre de la section",
           "cancel": "Annuler"
         },
         "disabled": "La fonctionnalité est désactivée",

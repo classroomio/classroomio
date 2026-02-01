@@ -21,7 +21,6 @@ import {
 import { sql } from 'drizzle-orm';
 
 export const courseType = pgEnum('COURSE_TYPE', ['SELF_PACED', 'LIVE_CLASS']);
-export const courseVersion = pgEnum('COURSE_VERSION', ['V1', 'V2']);
 export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
 
@@ -128,8 +127,8 @@ export const analyticsLoginEvents = pgTable(
   ]
 );
 
-export const lessonSection = pgTable(
-  'lesson_section',
+export const courseSection = pgTable(
+  'course_section',
   {
     id: uuid().defaultRandom().primaryKey().notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -143,7 +142,7 @@ export const lessonSection = pgTable(
     foreignKey({
       columns: [table.courseId],
       foreignColumns: [course.id],
-      name: 'public_lesson_section_course_id_fkey'
+      name: 'public_course_section_course_id_fkey'
     })
       .onUpdate('cascade')
       .onDelete('cascade')
@@ -500,7 +499,47 @@ export const course = pgTable(
     isTemplate: boolean('is_template').default(true),
     logo: text().default('').notNull(),
     slug: varchar(),
-    metadata: jsonb().default({ goals: '', description: '', requirements: '' }).notNull(),
+    metadata: jsonb().default({ goals: '', description: '', requirements: '' }).notNull().$type<{
+      requirements?: string;
+      description?: string;
+      goals?: string;
+      videoUrl?: string;
+      showDiscount?: boolean;
+      discount?: number;
+      paymentLink?: string;
+      reward?: {
+        show: boolean;
+        description: string;
+      };
+      instructor?: {
+        name: string;
+        role: string;
+        coursesNo: number;
+        description: string;
+        imgUrl: string;
+      };
+      certificate?: {
+        templateUrl: string;
+      };
+      reviews?: {
+        id: number;
+        hide: boolean;
+        name: string;
+        avatar_url: string;
+        rating: number;
+        created_at: number;
+        description: string;
+      }[];
+      lessonTabsOrder?: {
+        id: 1 | 2 | 3 | 4;
+        name: string;
+      }[];
+      grading?: boolean;
+      lessonDownload?: boolean;
+      allowNewStudent: boolean;
+      sectionDisplay?: Record<string, boolean>;
+      isContentGroupingEnabled?: boolean;
+    }>(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     cost: bigint({ mode: 'number' }).default(sql`'0'`),
     currency: varchar().default('USD').notNull(),
@@ -509,8 +548,7 @@ export const course = pgTable(
     isCertificateDownloadable: boolean('is_certificate_downloadable').default(false),
     certificateTheme: text('certificate_theme'),
     status: text().default('ACTIVE').notNull(),
-    type: courseType().default('LIVE_CLASS'),
-    version: courseVersion().default('V1').notNull()
+    type: courseType().default('LIVE_CLASS')
   },
   (table) => [
     foreignKey({
@@ -611,9 +649,26 @@ export const lesson = pgTable(
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     order: bigint({ mode: 'number' }),
     isUnlocked: boolean('is_unlocked').default(false),
-    videos: jsonb().default([]),
-    sectionId: uuid('section_id'),
-    documents: jsonb().default([])
+    videos: jsonb().default([]).$type<
+      {
+        type: 'youtube' | 'generic' | 'upload';
+        link: string;
+        key?: string;
+        metadata?: {
+          svid?: string;
+        };
+      }[]
+    >(),
+    documents: jsonb().default([]).$type<
+      {
+        type: string;
+        name: string;
+        link: string;
+        size?: number;
+        key: string;
+      }[]
+    >(),
+    sectionId: uuid('section_id')
   },
   (table) => [
     foreignKey({
@@ -628,8 +683,8 @@ export const lesson = pgTable(
     }),
     foreignKey({
       columns: [table.sectionId],
-      foreignColumns: [lessonSection.id],
-      name: 'public_lesson_section_id_fkey'
+      foreignColumns: [courseSection.id],
+      name: 'public_course_section_id_fkey'
     })
       .onUpdate('cascade')
       .onDelete('cascade')
@@ -678,12 +733,17 @@ export const exercise = pgTable(
     title: varchar().notNull(),
     description: varchar(),
     lessonId: uuid('lesson_id'),
+    courseId: uuid('course_id'),
+    sectionId: uuid('section_id'),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    order: bigint({ mode: 'number' }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     id: uuid()
       .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
+    isUnlocked: boolean('is_unlocked').default(true),
     dueBy: timestamp('due_by', { mode: 'string' })
   },
   (table) => [
@@ -691,7 +751,17 @@ export const exercise = pgTable(
       columns: [table.lessonId],
       foreignColumns: [lesson.id],
       name: 'exercise_lesson_id_fkey'
-    }).onDelete('cascade')
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'exercise_course_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.sectionId],
+      foreignColumns: [courseSection.id],
+      name: 'exercise_section_id_fkey'
+    })
   ]
 );
 
@@ -855,7 +925,9 @@ export const courseNewsfeed = pgTable(
     content: text(),
     id: uuid().defaultRandom().primaryKey().notNull(),
     courseId: uuid('course_id'),
-    reaction: jsonb().default({ clap: [], smile: [], thumbsup: [], thumbsdown: [] }),
+    reaction: jsonb()
+      .default({ clap: [], smile: [], thumbsup: [], thumbsdown: [] })
+      .$type<{ clap: string[]; smile: string[]; thumbsup: string[]; thumbsdown: string[] }>(),
     isPinned: boolean('is_pinned').default(false).notNull()
   },
   (table) => [

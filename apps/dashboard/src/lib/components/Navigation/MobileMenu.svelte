@@ -30,11 +30,11 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 {#if mobileMenuOpen}
-  <div class="mobile-menu-overlay fixed inset-0 z-50 bg-black bg-opacity-50 lg:hidden" onclick={closeMobileMenu}>
+  <div class="mobile-menu-overlay bg-opacity-50 fixed inset-0 z-50 bg-black lg:hidden" onclick={closeMobileMenu}>
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
-      class="mobile-menu-sidebar absolute right-0 top-0 h-full w-64 transform bg-white shadow-lg transition-transform duration-300 ease-in-out"
+      class="mobile-menu-sidebar absolute top-0 right-0 h-full w-64 transform bg-white shadow-lg transition-transform duration-300 ease-in-out"
       onclick={stopPropagation()}
     >
       <div class="flex items-center justify-between border-b border-gray-200 p-4">

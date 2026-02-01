@@ -29,6 +29,7 @@ const config = {
       '@cio/db/types': path.resolve('./node_modules/@cio/db/src/types.ts')
     },
     csp: {
+      mode: 'auto',
       directives: {
         'default-src': ['self'],
         'script-src': [
@@ -39,7 +40,9 @@ const config = {
           'https://*.senja.io',
           'https://www.youtube.com',
           'https://youtube.com',
-          'unsafe-hashes'
+          'https://google.com',
+          'unsafe-hashes',
+          'unsafe-eval'
         ],
         'style-src': [
           'self',
@@ -58,12 +61,19 @@ const config = {
           'https://fonts.googleapis.com'
         ],
         'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
-        'img-src': ['self', 'data:', 'https:'],
+        'img-src': ['self', 'data:', 'https:', 'blob:'],
         'media-src': ['self', 'https:', 'data:'],
-        'frame-src': ['self', 'https://www.youtube.com', 'https://youtube.com'],
+        'frame-src': [
+          'self',
+          'https://www.youtube.com',
+          'https://youtube.com',
+          'https://www.youtube-nocookie.com',
+          'https://www.google.com',
+          'https://google.com'
+        ],
         'connect-src': [
           'self',
-          'https://*.supabase.co',
+          'blob:',
           'https://*.classroomio.com',
           'https://assets.cdn.clsrio.com',
           'https://cdn.plyr.io',
@@ -71,11 +81,10 @@ const config = {
           'https://umami.hz.oncws.com',
           'https://*.r2.cloudflarestorage.com',
           'http://localhost:3002',
-          'http://localhost:54321',
-          'ws://localhost:54321',
           'wss://*.classroomio.com',
-          'wss://*.supabase.co',
-          'https://*.senja.io'
+          'https://*.senja.io',
+          'https://*.ytimg.com',
+          'https://noembed.com'
         ],
         'worker-src': ['self', 'blob:'],
         'object-src': ['none'],
@@ -94,29 +103,40 @@ const config = {
           'https://*.senja.io',
           'https://www.youtube.com',
           'https://youtube.com',
-          'unsafe-hashes'
+          'https://google.com',
+          'unsafe-hashes',
+          'unsafe-eval'
         ],
         'style-src': [
           'self',
           'unsafe-inline',
           'https://cdn.plyr.io',
           'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
-          'https://assets.cdn.clsrio.com/eqneditor_1.css'
+          'https://assets.cdn.clsrio.com/eqneditor_1.css',
+          'https://fonts.googleapis.com'
         ],
         'style-src-elem': [
           'self',
           'unsafe-inline',
           'https://cdn.plyr.io',
           'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
-          'https://assets.cdn.clsrio.com/eqneditor_1.css'
+          'https://assets.cdn.clsrio.com/eqneditor_1.css',
+          'https://fonts.googleapis.com'
         ],
         'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
-        'img-src': ['self', 'data:', 'https:'],
+        'img-src': ['self', 'data:', 'https:', 'blob:'],
         'media-src': ['self', 'https:', 'data:'],
-        'frame-src': ['self', 'https://www.youtube.com', 'https://youtube.com'],
+        'frame-src': [
+          'self',
+          'https://www.youtube.com',
+          'https://youtube.com',
+          'https://www.youtube-nocookie.com',
+          'https://www.google.com',
+          'https://google.com'
+        ],
         'connect-src': [
           'self',
-          'https://*.supabase.co',
+          'blob:',
           'https://pgrest.classroomio.com',
           'https://api.classroomio.com',
           'https://assets.cdn.clsrio.com',
@@ -125,11 +145,10 @@ const config = {
           'https://umami.hz.oncws.com',
           'https://*.r2.cloudflarestorage.com',
           'http://localhost:3002',
-          'http://localhost:54321',
-          'ws://localhost:54321',
           'wss://*.classroomio.com',
-          'wss://*.supabase.co',
-          'https://*.senja.io'
+          'https://*.senja.io',
+          'https://*.ytimg.com',
+          'https://noembed.com'
         ],
         'worker-src': ['self', 'blob:'],
         'object-src': ['none'],

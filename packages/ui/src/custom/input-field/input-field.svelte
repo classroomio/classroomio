@@ -1,7 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import * as Field from '../../base/field';
-  import { Input } from '../../base/input';
+  import { Input, type InputProps } from '../../base/input';
+
+  type InputOnChangeEvent = Parameters<NonNullable<InputProps['onchange']>>[0];
 
   interface Props {
     label?: string;
@@ -20,8 +22,8 @@
     errorMessage?: string;
     helperMessage?: string;
     autoComplete?: boolean;
-    onchange?: (e: Event) => void;
-    onInputChange?: (e: Event) => void;
+    onchange?: (e: InputOnChangeEvent) => void;
+    onInputChange?: (e: InputOnChangeEvent) => void;
   }
 
   let {
@@ -54,12 +56,12 @@
   });
 
   // Handle input change event
-  function handleInputChange(e: Event) {
+  function handleInputChange(e: InputOnChangeEvent) {
     onInputChange(e);
   }
 
   // Handle blur event
-  function handleBlur(e: Event) {
+  function handleBlur(e: InputOnChangeEvent) {
     onchange(e);
   }
 </script>
