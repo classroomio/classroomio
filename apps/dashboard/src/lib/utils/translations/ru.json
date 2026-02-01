@@ -819,7 +819,7 @@
           "start_reorder": "Изменение порядка",
           "end_reorder": "Завершить изменение порядка",
           "modal_heading_section": "Добавить новый раздел",
-          "lesson_section_title": "Название раздела",
+          "course_section_title": "Название раздела",
           "cancel": "Отмена"
         },
         "disabled": "Функция отключена",

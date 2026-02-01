@@ -16,10 +16,10 @@
   import { courseApi } from '$features/course/api';
 
   interface Props {
-    lessonId?: string;
+    lessonId: string;
   }
 
-  let { lessonId = '' }: Props = $props();
+  let { lessonId }: Props = $props();
 
   let comment = $state('');
   let openDeleteModal = $state(false);
@@ -39,7 +39,7 @@
       return [];
     }
 
-    return commentData.items.map((apiComment: any) => {
+    return commentData.items.map((apiComment) => {
       const isCurrentUser = apiComment.groupmember?.id === groupmemberId;
       return {
         id: apiComment.id,
@@ -91,15 +91,14 @@
 />
 
 <div class="mx-auto w-full max-w-[65ch]">
-  <!-- <hr class="my-5" /> -->
   <div class="mb-5">
-    <p class="text-xl capitalize">
+    <p class="text-lg capitalize">
       {$t('course.navItem.lessons.comments.title')} ({paginationCount})
     </p>
   </div>
   <div>
     <div class="flex h-full items-start gap-3">
-      <Avatar.Root class="mt-2 h-8 w-8">
+      <Avatar.Root class="mt-2 size-6!">
         <Avatar.Image
           src={$profile.avatarUrl ? $profile.avatarUrl : '/logo-192.png'}
           alt={$profile.fullname ? $profile.fullname : 'User'}
@@ -116,16 +115,16 @@
     </div>
 
     <div class="mt-2 flex flex-row-reverse">
-      <Button onclick={handleSend} disabled={!comment} loading={lessonApi.isSaving}>
+      <Button onclick={handleSend} disabled={!comment || !courseId || !lessonId} loading={lessonApi.isCommenting}>
         {$t('course.navItem.lessons.comments.comment_btn')}
       </Button>
     </div>
   </div>
 
-  <div class="my-10">
+  <div class="my-5">
     {#each comments as commentItem (commentItem.id)}
       <div class="mt-2 flex items-start gap-3 pb-2">
-        <Avatar.Root class="h-8 w-8">
+        <Avatar.Root class="mt-2 size-6!">
           <Avatar.Image
             src={commentItem.avatar ? commentItem.avatar : '/logo-192.png'}
             alt={commentItem.name ? commentItem.name : 'User'}
@@ -133,9 +132,9 @@
           <Avatar.Fallback>{shortenName(commentItem.name) || 'U'}</Avatar.Fallback>
         </Avatar.Root>
 
-        <div class="w-full rounded-md border px-4 pt-2 pb-4 dark:border-neutral-700">
+        <div class="w-full rounded-md border px-3 py-2 dark:border-neutral-700">
           <div class="flex items-center justify-between gap-2">
-            <p class="text-md dark:text-white">
+            <p class="text-sm dark:text-white">
               {commentItem.name}
               <span
                 class="ml-1 text-xs font-normal text-gray-800 dark:text-white"
@@ -150,7 +149,7 @@
                 <DropdownMenu.Trigger
                   class="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-neutral-700"
                 >
-                  <EllipsisVerticalIcon class="h-5 w-5" />
+                  <EllipsisVerticalIcon class="size-4" />
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content align="end">
                   <DropdownMenu.Item onclick={() => (editCommentId = commentItem.id)}>Edit</DropdownMenu.Item>
@@ -174,21 +173,24 @@
               bind:value={commentItem.comment}
             />
             <div class="mt-2 flex flex-row-reverse items-center gap-2">
-              <Button variant="outline" onclick={() => (editCommentId = null)}>
+              <Button variant="outline" onclick={() => (editCommentId = null)} disabled={lessonApi.isUpdatingComment}>
                 {$t('course.navItem.lessons.comments.cancel_btn')}
               </Button>
               <Button
-                onclick={() => {
-                  lessonApi.updateComment(courseId, lessonId, String(editCommentId), commentItem.comment);
+                onclick={async () => {
+                  await lessonApi.updateComment(courseId, lessonId, String(editCommentId), commentItem.comment!);
+                  if (lessonApi.success) {
+                    editCommentId = null;
+                  }
                 }}
                 disabled={!commentItem.comment}
-                loading={lessonApi.isSaving}
+                loading={lessonApi.isUpdatingComment}
               >
                 {$t('course.navItem.lessons.comments.comment_btn')}
               </Button>
             </div>
           {:else}
-            <article class="prose sm:prose-sm max-w-[300px] dark:text-white">
+            <article class="prose sm:prose-sm max-w-[300px] text-sm dark:text-white">
               {commentItem.comment}
             </article>
           {/if}

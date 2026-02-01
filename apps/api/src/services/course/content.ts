@@ -2,7 +2,8 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { ContentType } from '@cio/utils/constants';
 import { db } from '@cio/db/drizzle';
 import { getCourseContentItems, type CourseContentItemRow } from '@cio/db/queries/course/content';
-import { deleteLesson, deleteLessonSection, getLessonSectionById, updateLesson } from '@cio/db/queries/lesson';
+import { deleteLesson, updateLesson } from '@cio/db/queries/lesson';
+import { deleteCourseSection, getCourseSectionById } from '@cio/db/queries/course';
 import { deleteExercise, updateExercise } from '@cio/db/queries/exercise/exercise';
 import type { TCourseContentDelete, TCourseContentUpdate } from '@cio/utils/validation/course';
 
@@ -103,9 +104,9 @@ export async function deleteCourseContent(courseId: string, payload: TCourseCont
   try {
     if (payload.sectionId) {
       const sectionId = payload.sectionId;
-      const section = await getLessonSectionById(sectionId);
+      const section = await getCourseSectionById(sectionId);
       if (!section || section.courseId !== courseId) {
-        throw new AppError('Lesson section not found', ErrorCodes.LESSON_SECTION_NOT_FOUND, 404);
+        throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
       }
 
       const contentItems = await getCourseContentItems(courseId);
@@ -130,9 +131,9 @@ export async function deleteCourseContent(courseId: string, payload: TCourseCont
           }
         }
 
-        const deletedSection = await deleteLessonSection(sectionId, tx);
+        const deletedSection = await deleteCourseSection(sectionId, tx);
         if (!deletedSection) {
-          throw new AppError('Lesson section not found', ErrorCodes.LESSON_SECTION_NOT_FOUND, 404);
+          throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
         }
       });
 

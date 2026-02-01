@@ -91,7 +91,7 @@
   </Dialog.Root>
 {/if}
 
-<Sidebar.Provider>
+<Sidebar.Provider data-sveltekit-preload-data="off">
   <CourseSidebar {path} id={data.courseId} />
 
   <Sidebar.Inset

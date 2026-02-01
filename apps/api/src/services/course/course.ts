@@ -3,10 +3,12 @@ import { addGroupMember, createGroup } from '@cio/db/queries/group';
 import {
   createCourseNewsfeed,
   createCourse as createCourseQuery,
+  createCourseSections,
   deleteCourse as deleteCourseQuery,
   getCourseProgress as getCourseProgressQuery,
   getCourseWithRelations,
-  updateCourse as updateCourseQuery
+  updateCourse as updateCourseQuery,
+  updateLessonsSectionId
 } from '@cio/db/queries/course';
 import {
   getLastLogin,
@@ -18,11 +20,12 @@ import {
 import { ContentType, ROLE } from '@cio/utils/constants';
 import type { TCourse } from '@cio/db/types';
 import { db } from '@cio/db/drizzle';
-import { getExercisesByCourseId } from '@cio/db/queries/exercise/exercise';
+import { getExercisesByCourseId, updateExercisesSectionId } from '@cio/db/queries/exercise/exercise';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildCourseContent, calcPercentageWithRounding, formatLastSeen, type CourseContent } from './utils';
 
 const DEFAULT_CONTENT_GROUPING = true;
+const DEFAULT_SECTION_TITLE = 'First Section [edit me]';
 
 /**
  * Gets a course by ID or slug with all related data
@@ -32,7 +35,6 @@ const DEFAULT_CONTENT_GROUPING = true;
  * @returns Course with all related data
  */
 export async function getCourse(courseId?: string, slug?: string, profileId?: string) {
-  console.log('getCourse', courseId, slug, profileId);
   try {
     if (!courseId && !slug) {
       throw new AppError('Either courseId or slug must be provided', ErrorCodes.VALIDATION_ERROR, 400);
@@ -94,7 +96,6 @@ export async function createCourse(
         title: data.title,
         description: data.description,
         type: data.type,
-        version: 'V2',
         groupId: newGroup.id
       });
 
@@ -155,6 +156,42 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
     if (!updated) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
     }
+
+    const isContentGroupingEnabled = (updated.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING) === true;
+
+    if (isContentGroupingEnabled) {
+      const courseWithRelations = await getCourseWithRelations(courseId);
+      if (courseWithRelations) {
+        const contentItems = courseWithRelations.contentItems;
+        const hasSections = contentItems.some((item) => item.type === ContentType.Section);
+        const hasUngroupedItems = contentItems.some(
+          (item) => (item.type === ContentType.Lesson || item.type === ContentType.Exercise) && item.sectionId === null
+        );
+
+        if (!hasSections && hasUngroupedItems) {
+          await db.transaction(async (tx) => {
+            const [section] = await createCourseSections(
+              [
+                {
+                  title: DEFAULT_SECTION_TITLE,
+                  order: 1,
+                  courseId
+                }
+              ],
+              tx
+            );
+
+            if (!section) {
+              throw new AppError('Failed to create course section', ErrorCodes.COURSE_SECTION_NOT_FOUND, 500);
+            }
+
+            await updateLessonsSectionId(courseId, section.id, tx);
+            await updateExercisesSectionId(courseId, section.id, tx);
+          });
+        }
+      }
+    }
+
     return updated;
   } catch (error) {
     if (error instanceof AppError) {

@@ -1,43 +1,43 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
+  CourseSectionWithLessons,
+  CreateCourseSectionRequest,
   CreateLessonComment,
   CreateLessonCommentRequest,
   CreateLessonRequest,
-  CreateLessonSectionRequest,
+  DeleteCourseSectionRequest,
   DeleteLessonCommentRequest,
   DeleteLessonRequest,
-  DeleteLessonSectionRequest,
   GetLessonCommentsRequest,
   GetLessonHistoryRequest,
   GetLessonLanguageRequest,
   GetLessonRequest,
   Lesson,
   LessonComments,
-  LessonSectionWithLessons,
-  ReorderLessonSectionsRequest,
+  ReorderCourseSectionsRequest,
   ReorderLessonsRequest,
+  UpdateCourseSectionRequest,
   UpdateLessonCommentRequest,
   UpdateLessonCompletionRequest,
-  UpdateLessonRequest,
-  UpdateLessonSectionRequest
+  UpdateLessonRequest
 } from '../utils/types';
 import type {
-  TLessonCreate,
-  TLessonReorder,
-  TLessonSectionCreate,
-  TLessonSectionReorder,
-  TLessonSectionUpdate,
-  TLessonUpdate
-} from '@cio/utils/validation/lesson';
+  TCourseSectionCreate,
+  TCourseSectionReorder,
+  TCourseSectionUpdate
+} from '@cio/utils/validation/course/section';
+import type { TLessonCreate, TLessonReorder, TLessonUpdate } from '@cio/utils/validation/lesson';
+import {
+  ZCourseSectionCreate,
+  ZCourseSectionReorder,
+  ZCourseSectionUpdate
+} from '@cio/utils/validation/course/section';
 import {
   ZLessonCommentCreate,
   ZLessonCommentUpdate,
   ZLessonCompletionUpdate,
   ZLessonCreate,
   ZLessonReorder,
-  ZLessonSectionCreate,
-  ZLessonSectionReorder,
-  ZLessonSectionUpdate,
   ZLessonUpdate
 } from '@cio/utils/validation/lesson';
 
@@ -52,7 +52,7 @@ import { snackbar } from '$features/ui/snackbar/store';
  */
 export class LessonApi extends BaseApiWithErrors {
   lesson = $state<Lesson | null>(null);
-  sections = $state<LessonSectionWithLessons[]>([]);
+  sections = $state<CourseSectionWithLessons[]>([]);
   commentsByLessonId = $state<
     Record<
       string,
@@ -68,6 +68,8 @@ export class LessonApi extends BaseApiWithErrors {
   currentLocale = $state<TLocale>('en');
   isSaving = $state(false);
   isDirty = $state(false);
+  isCommenting = $state(false);
+  isUpdatingComment = $state(false);
 
   translations = $state<Record<string, Record<TLocale, string>>>({});
   note = $state('');
@@ -188,35 +190,35 @@ export class LessonApi extends BaseApiWithErrors {
     });
   }
 
-  // Lesson Section methods
+  // Course Section methods
 
   /**
-   * Creates a lesson section
+   * Creates a course section
    */
-  async createSection(courseId: string, fields: TLessonSectionCreate) {
-    const result = ZLessonSectionCreate.safeParse({ ...fields, courseId });
+  async createSection(courseId: string, fields: TCourseSectionCreate) {
+    const result = ZCourseSectionCreate.safeParse({ ...fields, courseId });
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
       return;
     }
 
-    await this.execute<CreateLessonSectionRequest>({
+    await this.execute<CreateCourseSectionRequest>({
       requestFn: () =>
-        classroomio.course[':courseId'].lesson.section.$post({
+        classroomio.course[':courseId'].section.$post({
           param: { courseId },
           json: result.data
         }),
-      logContext: 'creating lesson section',
+      logContext: 'creating course section',
       onSuccess: (response) => {
         if (response.data) {
-          snackbar.success('Lesson section created successfully');
+          snackbar.success('Course section created successfully');
           this.success = true;
           this.errors = {};
         }
       },
       onError: (result) => {
         if (typeof result === 'string') {
-          snackbar.error('Failed to create lesson section');
+          snackbar.error('Failed to create course section');
           return;
         }
         if ('error' in result && 'field' in result && result.field) {
@@ -228,77 +230,77 @@ export class LessonApi extends BaseApiWithErrors {
   }
 
   /**
-   * Updates a lesson section
+   * Updates a course section
    */
-  async updateSection(courseId: string, sectionId: string, fields: TLessonSectionUpdate) {
-    const result = ZLessonSectionUpdate.safeParse(fields);
+  async updateSection(courseId: string, sectionId: string, fields: TCourseSectionUpdate) {
+    const result = ZCourseSectionUpdate.safeParse(fields);
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
       return;
     }
 
-    await this.execute<UpdateLessonSectionRequest>({
+    await this.execute<UpdateCourseSectionRequest>({
       requestFn: () =>
-        classroomio.course[':courseId'].lesson.section[':sectionId'].$put({
+        classroomio.course[':courseId'].section[':sectionId'].$put({
           param: { courseId, sectionId },
           json: result.data
         }),
-      logContext: 'updating lesson section',
+      logContext: 'updating course section',
       onSuccess: (response) => {
         if (response.data) {
-          snackbar.success('Lesson section updated successfully');
+          snackbar.success('Course section updated successfully');
           this.success = true;
           this.errors = {};
         }
       },
       onError: (result) => {
         if (typeof result === 'string') {
-          snackbar.error('Failed to update lesson section');
+          snackbar.error('Failed to update course section');
         }
       }
     });
   }
 
   /**
-   * Deletes a lesson section
+   * Deletes a course section
    */
   async deleteSection(courseId: string, sectionId: string) {
-    await this.execute<DeleteLessonSectionRequest>({
+    await this.execute<DeleteCourseSectionRequest>({
       requestFn: () =>
-        classroomio.course[':courseId'].lesson.section[':sectionId'].$delete({
+        classroomio.course[':courseId'].section[':sectionId'].$delete({
           param: { courseId, sectionId }
         }),
-      logContext: 'deleting lesson section'
+      logContext: 'deleting course section'
     });
   }
 
   /**
-   * Reorders lesson sections
+   * Reorders course sections
    */
-  async reorderSections(courseId: string, sections: TLessonSectionReorder['sections']) {
-    const result = ZLessonSectionReorder.safeParse({ sections });
+  async reorderSections(courseId: string, sections: TCourseSectionReorder['sections']) {
+    const result = ZCourseSectionReorder.safeParse({ sections });
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
       return;
     }
 
-    await this.execute<ReorderLessonSectionsRequest>({
+    await this.execute<ReorderCourseSectionsRequest>({
       requestFn: () =>
-        classroomio.course[':courseId'].lesson.section.reorder.$post({
+        classroomio.course[':courseId'].section.reorder.$post({
           param: { courseId },
           json: result.data
         }),
-      logContext: 'reordering lesson sections',
+      logContext: 'reordering course sections',
       onSuccess: (response) => {
         if (response.data) {
-          snackbar.success('Lesson sections reordered successfully');
+          snackbar.success('Course sections reordered successfully');
           this.success = true;
           this.errors = {};
         }
       },
       onError: (result) => {
         if (typeof result === 'string') {
-          snackbar.error('Failed to reorder lesson sections');
+          snackbar.error('Failed to reorder course sections');
         }
       }
     });
@@ -435,34 +437,44 @@ export class LessonApi extends BaseApiWithErrors {
    * Creates a lesson comment
    */
   async createComment(courseId: string, lessonId: string, comment: string) {
-    const result = ZLessonCommentCreate.safeParse({ comment });
+    if (!courseId || !lessonId) {
+      snackbar.error('Failed to add comment');
+      return;
+    }
+
+    const result = ZLessonCommentCreate.safeParse({ lessonId, comment });
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
       return;
     }
 
-    await this.execute<CreateLessonCommentRequest>({
-      requestFn: () =>
-        classroomio.course[':courseId'].lesson[':lessonId'].comment.$post({
-          param: { courseId, lessonId },
-          json: result.data
-        }),
-      logContext: 'creating lesson comment',
-      onSuccess: (response) => {
-        if (response.data && this.commentsByLessonId[lessonId]) {
-          this.commentsByLessonId[lessonId].items = [
-            this.getCommentFromResponse(response.data),
-            ...this.commentsByLessonId[lessonId].items
-          ];
-          this.commentsByLessonId[lessonId].totalCount++;
+    this.isCommenting = true;
+    try {
+      await this.execute<CreateLessonCommentRequest>({
+        requestFn: () =>
+          classroomio.course[':courseId'].lesson[':lessonId'].comment.$post({
+            param: { courseId, lessonId },
+            json: result.data
+          }),
+        logContext: 'creating lesson comment',
+        onSuccess: (response) => {
+          if (response.data && this.commentsByLessonId[lessonId]) {
+            this.commentsByLessonId[lessonId].items = [
+              this.getCommentFromResponse(response.data),
+              ...this.commentsByLessonId[lessonId].items
+            ];
+            this.commentsByLessonId[lessonId].totalCount++;
+          }
+        },
+        onError: (result) => {
+          if (typeof result === 'string') {
+            snackbar.error('Failed to add comment');
+          }
         }
-      },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to add comment');
-        }
-      }
-    });
+      });
+    } finally {
+      this.isCommenting = false;
+    }
   }
 
   /**
@@ -475,32 +487,39 @@ export class LessonApi extends BaseApiWithErrors {
       return;
     }
 
-    await this.execute<UpdateLessonCommentRequest>({
-      requestFn: () =>
-        classroomio.course[':courseId'].lesson.comment[':commentId'].$put({
-          param: { courseId, commentId },
-          json: result.data
-        }),
-      logContext: 'updating lesson comment',
-      onSuccess: (response) => {
-        if (response.data) {
-          // Update local state
-          if (this.commentsByLessonId[lessonId]) {
-            this.commentsByLessonId[lessonId].items = this.commentsByLessonId[lessonId].items.map((c) =>
-              c.id === Number(commentId) ? this.getCommentFromResponse(response.data) : c
-            );
+    this.success = false;
+    this.isUpdatingComment = true;
+
+    try {
+      await this.execute<UpdateLessonCommentRequest>({
+        requestFn: () =>
+          classroomio.course[':courseId'].lesson.comment[':commentId'].$put({
+            param: { courseId, commentId },
+            json: result.data
+          }),
+        logContext: 'updating lesson comment',
+        onSuccess: (response) => {
+          if (response.data) {
+            // Update local state
+            if (this.commentsByLessonId[lessonId]) {
+              this.commentsByLessonId[lessonId].items = this.commentsByLessonId[lessonId].items.map((c) =>
+                c.id === Number(commentId) ? this.getCommentFromResponse(response.data) : c
+              );
+            }
+            snackbar.success('Comment updated successfully');
+            this.success = true;
+            this.errors = {};
           }
-          snackbar.success('Comment updated successfully');
-          this.success = true;
-          this.errors = {};
+        },
+        onError: (result) => {
+          if (typeof result === 'string') {
+            snackbar.error('Failed to update comment');
+          }
         }
-      },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to update comment');
-        }
-      }
-    });
+      });
+    } finally {
+      this.isUpdatingComment = false;
+    }
   }
 
   /**

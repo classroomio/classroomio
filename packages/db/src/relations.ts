@@ -17,7 +17,7 @@ import {
   lessonCompletion,
   lessonLanguage,
   lessonLanguageHistory,
-  lessonSection,
+  courseSection,
   option,
   organization,
   organizationContacts,
@@ -50,16 +50,16 @@ export const usersInAuthRelations = relations(user, ({ many }) => ({
   profiles: many(profile)
 }));
 
-export const lessonSectionRelations = relations(lessonSection, ({ one, many }) => ({
+export const courseSectionRelations = relations(courseSection, ({ one, many }) => ({
   course: one(course, {
-    fields: [lessonSection.courseId],
+    fields: [courseSection.courseId],
     references: [course.id]
   }),
   lessons: many(lesson)
 }));
 
 export const courseRelations = relations(course, ({ one, many }) => ({
-  lessonSections: many(lessonSection),
+  courseSections: many(courseSection),
   groupAttendances: many(groupAttendance),
   submissions: many(submission),
   group: one(group, {
@@ -222,9 +222,9 @@ export const lessonRelations = relations(lesson, ({ one, many }) => ({
     fields: [lesson.teacherId],
     references: [profile.id]
   }),
-  lessonSection: one(lessonSection, {
+  courseSection: one(courseSection, {
     fields: [lesson.sectionId],
-    references: [lessonSection.id]
+    references: [courseSection.id]
   }),
   exercises: many(exercise),
   lessonCompletions: many(lessonCompletion),
@@ -261,9 +261,9 @@ export const exerciseRelations = relations(exercise, ({ one, many }) => ({
     fields: [exercise.courseId],
     references: [course.id]
   }),
-  section: one(lessonSection, {
+  section: one(courseSection, {
     fields: [exercise.sectionId],
-    references: [lessonSection.id]
+    references: [courseSection.id]
   }),
   questions: many(question)
 }));

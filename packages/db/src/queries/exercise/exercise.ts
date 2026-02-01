@@ -110,7 +110,7 @@ export async function getExercisesByCourseId(
     const results = await dbClient
       .select({
         exercise: schema.exercise,
-        lessonSectionId: schema.lesson.sectionId,
+        sectionId: schema.lesson.sectionId,
         lessonCourseId: schema.lesson.courseId
       })
       .from(schema.exercise)
@@ -120,7 +120,7 @@ export async function getExercisesByCourseId(
     return results.map((row) => ({
       ...row.exercise,
       courseId: row.exercise.courseId ?? row.lessonCourseId ?? row.exercise.courseId,
-      sectionId: row.exercise.sectionId ?? row.lessonSectionId ?? row.exercise.sectionId
+      sectionId: row.exercise.sectionId ?? row.sectionId
     }));
   } catch (error) {
     throw new Error(
@@ -140,6 +140,26 @@ export async function updateExercise(exerciseId: string, data: Partial<TExercise
   } catch (error) {
     throw new Error(
       `Failed to update exercise "${exerciseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function updateExercisesSectionId(
+  courseId: string,
+  sectionId: string,
+  dbClient: DbOrTxClient = db
+): Promise<number> {
+  try {
+    const updated = await dbClient
+      .update(schema.exercise)
+      .set({ sectionId })
+      .where(eq(schema.exercise.courseId, courseId))
+      .returning();
+
+    return updated.length;
+  } catch (error) {
+    throw new Error(
+      `Failed to update exercises section ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

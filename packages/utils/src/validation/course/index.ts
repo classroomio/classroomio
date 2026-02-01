@@ -6,4 +6,5 @@
  */
 
 export * from './course';
+export * from './section';
 export { ZCourseGetParam, type TCourseGetParam } from './course';

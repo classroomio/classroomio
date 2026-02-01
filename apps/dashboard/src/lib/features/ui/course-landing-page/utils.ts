@@ -53,7 +53,7 @@ export function getCourseLessons(course: Course): LandingPageLesson[] {
   return getLessonsFromItems(course.content.items);
 }
 
-export function getLessonSections(course: Course): LandingPageSection[] {
+export function getCourseSections(course: Course): LandingPageSection[] {
   if (!course?.content) return [];
 
   if (course.content.grouped) {

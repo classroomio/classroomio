@@ -21,7 +21,6 @@ import {
 import { sql } from 'drizzle-orm';
 
 export const courseType = pgEnum('COURSE_TYPE', ['SELF_PACED', 'LIVE_CLASS']);
-export const courseVersion = pgEnum('COURSE_VERSION', ['V1', 'V2']);
 export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
 
@@ -128,8 +127,8 @@ export const analyticsLoginEvents = pgTable(
   ]
 );
 
-export const lessonSection = pgTable(
-  'lesson_section',
+export const courseSection = pgTable(
+  'course_section',
   {
     id: uuid().defaultRandom().primaryKey().notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -143,7 +142,7 @@ export const lessonSection = pgTable(
     foreignKey({
       columns: [table.courseId],
       foreignColumns: [course.id],
-      name: 'public_lesson_section_course_id_fkey'
+      name: 'public_course_section_course_id_fkey'
     })
       .onUpdate('cascade')
       .onDelete('cascade')
@@ -549,8 +548,7 @@ export const course = pgTable(
     isCertificateDownloadable: boolean('is_certificate_downloadable').default(false),
     certificateTheme: text('certificate_theme'),
     status: text().default('ACTIVE').notNull(),
-    type: courseType().default('LIVE_CLASS'),
-    version: courseVersion().default('V1').notNull()
+    type: courseType().default('LIVE_CLASS')
   },
   (table) => [
     foreignKey({
@@ -685,8 +683,8 @@ export const lesson = pgTable(
     }),
     foreignKey({
       columns: [table.sectionId],
-      foreignColumns: [lessonSection.id],
-      name: 'public_lesson_section_id_fkey'
+      foreignColumns: [courseSection.id],
+      name: 'public_course_section_id_fkey'
     })
       .onUpdate('cascade')
       .onDelete('cascade')
@@ -761,7 +759,7 @@ export const exercise = pgTable(
     }),
     foreignKey({
       columns: [table.sectionId],
-      foreignColumns: [lessonSection.id],
+      foreignColumns: [courseSection.id],
       name: 'exercise_section_id_fkey'
     })
   ]

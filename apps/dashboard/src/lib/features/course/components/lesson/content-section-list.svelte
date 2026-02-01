@@ -275,7 +275,7 @@
     const items = e.detail.items as ContentDndItem[];
     updateSectionItems(sectionId, items);
 
-    const normalizedSectionId = sectionId === 'ungrouped' ? null : sectionId;
+    const normalizedSectionId = sectionId && sectionId !== 'ungrouped' ? sectionId : null;
     const contentUpdates: Array<{
       id: string;
       type: ContentType.Lesson | ContentType.Exercise;
@@ -335,10 +335,10 @@
     {@const isUngrouped = section.id === 'ungrouped'}
     {@const hasSectionItems = section.items.length > 0}
     {@const sectionHasUnlocked = section.items.some((item) => item.isUnlocked ?? false)}
-    {@const lockLabel = hasSectionItems
+    {@const sectionLockLabel = hasSectionItems
       ? sectionHasUnlocked
-        ? $t('course.navItem.lessons.add_lesson.lock')
-        : $t('course.navItem.lessons.add_lesson.unlock')
+        ? `${$t('course.navItem.lessons.add_lesson.lock')} ${$t('course.navItem.lessons.all')}`
+        : `${$t('course.navItem.lessons.add_lesson.unlock')} ${$t('course.navItem.lessons.all')}`
       : undefined}
     <div
       class="m-auto mb-3 max-w-xl rounded-md border-2 border-gray-200 transition dark:bg-neutral-800 {reorder
@@ -351,7 +351,7 @@
         showActions={!isUngrouped}
         disabled={!!$contentEditingStore}
         {errors}
-        {lockLabel}
+        lockLabel={sectionLockLabel}
         onEdit={() => onEdit({ sectionId: section.id, sectionTitle: section.title! })}
         onSave={() => onSave({ sectionId: section.id })}
         onCancel={() => {
@@ -382,9 +382,10 @@
           {@const isEditingItem = $contentEditingStore === item.contentId}
           {@const lessonLocked = $globalStore.isStudent && !item.isUnlocked}
           {@const exerciseLocked = $globalStore.isStudent && (item.isUnlocked ?? true) === false}
-          {@const lockLabel = item.isUnlocked
+          {@const itemLockLabel = item.isUnlocked
             ? $t('course.navItem.lessons.add_lesson.lock')
             : $t('course.navItem.lessons.add_lesson.unlock')}
+
           <div
             class="mb-2 flex min-h-[50px] max-w-xl items-center justify-between rounded-md border border-gray-200 px-3 py-1 transition {reorder
               ? 'border-primary-300 bg-primary-50/40 cursor-move shadow-sm'
@@ -432,7 +433,7 @@
             <ContentActions
               isEditing={isEditingItem}
               disabled={Boolean($contentEditingStore && !isEditingItem)}
-              {lockLabel}
+              lockLabel={itemLockLabel}
               onEdit={() => onEdit({ lessonId: item.contentId, lessonTitle: item.title })}
               onSave={() => onSave({ lessonId: item.contentId }, item)}
               onCancel={() => {

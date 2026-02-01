@@ -55,7 +55,7 @@ export async function getCourseContentItems(courseId: string, profileId?: string
         NULL::uuid AS "sectionId",
         NULL::boolean AS "isUnlocked",
         NULL::boolean AS "isComplete"
-      FROM lesson_section
+      FROM course_section
       WHERE course_id = ${courseId}
 
       UNION ALL

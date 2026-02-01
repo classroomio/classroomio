@@ -29,6 +29,7 @@ const config = {
       '@cio/db/types': path.resolve('./node_modules/@cio/db/src/types.ts')
     },
     csp: {
+      mode: 'auto',
       directives: {
         'default-src': ['self'],
         'script-src': [
@@ -40,7 +41,8 @@ const config = {
           'https://www.youtube.com',
           'https://youtube.com',
           'https://google.com',
-          'unsafe-hashes'
+          'unsafe-hashes',
+          'unsafe-eval'
         ],
         'style-src': [
           'self',
@@ -59,7 +61,7 @@ const config = {
           'https://fonts.googleapis.com'
         ],
         'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
-        'img-src': ['self', 'data:', 'https:'],
+        'img-src': ['self', 'data:', 'https:', 'blob:'],
         'media-src': ['self', 'https:', 'data:'],
         'frame-src': [
           'self',
@@ -71,6 +73,7 @@ const config = {
         ],
         'connect-src': [
           'self',
+          'blob:',
           'https://*.classroomio.com',
           'https://assets.cdn.clsrio.com',
           'https://cdn.plyr.io',
@@ -101,7 +104,8 @@ const config = {
           'https://www.youtube.com',
           'https://youtube.com',
           'https://google.com',
-          'unsafe-hashes'
+          'unsafe-hashes',
+          'unsafe-eval'
         ],
         'style-src': [
           'self',
@@ -120,7 +124,7 @@ const config = {
           'https://fonts.googleapis.com'
         ],
         'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
-        'img-src': ['self', 'data:', 'https:'],
+        'img-src': ['self', 'data:', 'https:', 'blob:'],
         'media-src': ['self', 'https:', 'data:'],
         'frame-src': [
           'self',
@@ -132,6 +136,7 @@ const config = {
         ],
         'connect-src': [
           'self',
+          'blob:',
           'https://pgrest.classroomio.com',
           'https://api.classroomio.com',
           'https://assets.cdn.clsrio.com',

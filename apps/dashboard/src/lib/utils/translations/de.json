@@ -819,7 +819,7 @@
           "start_reorder": "Neu anordnen",
           "end_reorder": "Nachbestellung beenden",
           "modal_heading_section": "Neuen Abschnitt hinzufügen",
-          "lesson_section_title": "Abschnittstitel",
+          "course_section_title": "Abschnittstitel",
           "cancel": "Stornieren"
         },
         "disabled": "Funktion ist deaktiviert",

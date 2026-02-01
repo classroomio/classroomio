@@ -99,6 +99,10 @@
     contentItems = e.detail.items;
   }
 
+  function normalizeSectionId(value?: string | null) {
+    return value ? value : null;
+  }
+
   async function handleDndFinalize(e: DndEvent) {
     const items = e.detail.items;
     contentItems = items;
@@ -123,7 +127,7 @@
           id: item.contentId,
           type: item.type,
           order,
-          sectionId: item.sectionId ?? null
+          sectionId: normalizeSectionId(item.sectionId)
         });
       }
     });

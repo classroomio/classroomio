@@ -32,10 +32,12 @@ function normalizeErrors(errors: CourseApiErrorMap): Record<string, string> {
 }
 
 function buildContentPayload(item: ContentActionItem, overrides: Record<string, unknown> = {}) {
+  const normalizedSectionId = item.sectionId === '' ? null : item.sectionId;
+
   return {
     title: item.title || '',
     isUnlocked: item.isUnlocked ?? undefined,
-    sectionId: item.sectionId ?? undefined,
+    sectionId: normalizedSectionId ?? undefined,
     order: item.order ?? undefined,
     ...overrides
   };

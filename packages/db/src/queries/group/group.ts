@@ -53,8 +53,6 @@ export const isUserCourseMember = async (
  * This is designed for middleware use to avoid doing multiple DB queries.
  */
 export const isUserCourseMemberOrOrgAdmin = async (courseId: string, profileId: string): Promise<boolean> => {
-  console.log('courseId', courseId);
-  console.log('profileId', profileId);
   const result = await db
     .select({
       groupMemberId: schema.groupmember.id,
@@ -79,7 +77,6 @@ export const isUserCourseMemberOrOrgAdmin = async (courseId: string, profileId: 
     )
     .limit(1);
 
-  console.log('result', result);
   return result.length > 0;
 };
 

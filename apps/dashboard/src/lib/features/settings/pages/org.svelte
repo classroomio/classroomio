@@ -67,7 +67,7 @@
     goto(`${$currentOrgPath}/settings${pathname}`);
   }
   let isCustomTheme = $derived($currentOrg?.theme?.includes('#'));
-  let hex = $derived($currentOrg.theme.includes('#') ? $currentOrg.theme : null);
+  let hex = $derived($currentOrg.theme?.includes('#') ? $currentOrg.theme : undefined);
 
   $effect(() => {
     console.log('$currentOrg?.theme', $currentOrg?.theme);

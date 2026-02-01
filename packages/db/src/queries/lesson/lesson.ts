@@ -5,78 +5,14 @@ import type {
   TLessonComment,
   TLessonCompletion,
   TLessonLanguage,
-  TLessonSection,
   TNewLesson,
   TNewLessonComment,
   TNewLessonCompletion,
-  TNewLessonLanguage,
-  TNewLessonSection
+  TNewLessonLanguage
 } from '@db/types';
 import { and, db, desc, eq, inArray, lt, sql } from '@db/drizzle';
+
 import type { DbOrTxClient } from '@db/drizzle';
-
-// Lesson Section Queries
-export async function getSectionsByCourseId(courseId: string) {
-  try {
-    return db.select().from(schema.lessonSection).where(eq(schema.lessonSection.courseId, courseId));
-  } catch (error) {
-    throw new Error(
-      `Failed to get sections by course ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
-  }
-}
-
-export async function getLessonSectionById(sectionId: string): Promise<TLessonSection | null> {
-  try {
-    const [section] = await db
-      .select()
-      .from(schema.lessonSection)
-      .where(eq(schema.lessonSection.id, sectionId))
-      .limit(1);
-    return section || null;
-  } catch (error) {
-    throw new Error(
-      `Failed to get lesson section by ID "${sectionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
-  }
-}
-
-export async function createLessonSections(values: TNewLessonSection[]) {
-  try {
-    return db.insert(schema.lessonSection).values(values).returning();
-  } catch (error) {
-    throw new Error(`Failed to create lesson sections: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
-}
-
-export async function updateLessonSection(sectionId: string, data: Partial<TLessonSection>) {
-  try {
-    const [updated] = await db
-      .update(schema.lessonSection)
-      .set({ ...data, updatedAt: new Date().toISOString() })
-      .where(eq(schema.lessonSection.id, sectionId))
-      .returning();
-    return updated || null;
-  } catch (error) {
-    throw new Error(
-      `Failed to update lesson section "${sectionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
-  }
-}
-
-export async function deleteLessonSection(sectionId: string, dbClient: DbOrTxClient = db) {
-  try {
-    const [deleted] = await dbClient
-      .delete(schema.lessonSection)
-      .where(eq(schema.lessonSection.id, sectionId))
-      .returning();
-    return deleted || null;
-  } catch (error) {
-    throw new Error(
-      `Failed to delete lesson section "${sectionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
-  }
-}
 
 // Lesson Queries
 export async function getLessonsByCourseId(courseId: string) {
@@ -277,6 +213,7 @@ export async function createLessonComment(data: TNewLessonComment): Promise<TLes
     }
     return comment;
   } catch (error) {
+    console.log('createLessonComment', error);
     throw new Error(`Failed to create lesson comment: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

@@ -1,10 +1,20 @@
 import * as schema from '@db/schema';
 
-import { TCourse, TGroup, TGroupAttendance, TGroupmember, TNewCourse, TNewCourseNewsfeed, TProfile } from '@db/types';
+import {
+  TCourse,
+  TCourseSection,
+  TGroup,
+  TGroupAttendance,
+  TGroupmember,
+  TNewCourse,
+  TNewCourseNewsfeed,
+  TNewCourseSection,
+  TProfile
+} from '@db/types';
 import { and, desc, eq, isNull, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 import { getCourseContentItems, type CourseContentItemRow } from './content';
 
 /**
@@ -669,34 +679,6 @@ export async function getOrganizationByCourseId(courseId: string): Promise<{ org
 }
 
 /**
- * Updates course version
- * @param courseId Course ID
- * @param version Version to set ('V1' | 'V2')
- * @param tx Optional transaction context
- * @returns Updated course or null if not found
- */
-export async function updateCourseVersion(
-  courseId: string,
-  version: 'V1' | 'V2',
-  tx?: Parameters<Parameters<typeof db.transaction>[0]>[0]
-): Promise<TCourse | null> {
-  try {
-    const dbInstance = tx || db;
-    const [updated] = await dbInstance
-      .update(schema.course)
-      .set({ version })
-      .where(eq(schema.course.id, courseId))
-      .returning();
-
-    return updated || null;
-  } catch (error) {
-    throw new Error(
-      `Failed to update course version "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
-  }
-}
-
-/**
  * Updates all lessons in a course to use a specific section
  * @param courseId Course ID
  * @param sectionId Section ID
@@ -720,6 +702,68 @@ export async function updateLessonsSectionId(
   } catch (error) {
     throw new Error(
       `Failed to update lessons section ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function getCourseSectionsByCourseId(courseId: string) {
+  try {
+    return db.select().from(schema.courseSection).where(eq(schema.courseSection.courseId, courseId));
+  } catch (error) {
+    throw new Error(
+      `Failed to get sections by course ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function getCourseSectionById(sectionId: string): Promise<TCourseSection | null> {
+  try {
+    const [section] = await db
+      .select()
+      .from(schema.courseSection)
+      .where(eq(schema.courseSection.id, sectionId))
+      .limit(1);
+    return section || null;
+  } catch (error) {
+    throw new Error(
+      `Failed to get course section by ID "${sectionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function createCourseSections(values: TNewCourseSection[], dbClient: DbOrTxClient = db) {
+  try {
+    return dbClient.insert(schema.courseSection).values(values).returning();
+  } catch (error) {
+    throw new Error(`Failed to create course sections: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function updateCourseSection(sectionId: string, data: Partial<TCourseSection>) {
+  try {
+    const [updated] = await db
+      .update(schema.courseSection)
+      .set({ ...data, updatedAt: new Date().toISOString() })
+      .where(eq(schema.courseSection.id, sectionId))
+      .returning();
+    return updated || null;
+  } catch (error) {
+    throw new Error(
+      `Failed to update course section "${sectionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function deleteCourseSection(sectionId: string, dbClient: DbOrTxClient = db) {
+  try {
+    const [deleted] = await dbClient
+      .delete(schema.courseSection)
+      .where(eq(schema.courseSection.id, sectionId))
+      .returning();
+    return deleted || null;
+  } catch (error) {
+    throw new Error(
+      `Failed to delete course section "${sectionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

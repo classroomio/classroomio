@@ -679,7 +679,7 @@
           "modal_heading": "Add New Lesson",
           "modal_heading_section": "Add New Section",
           "lesson_title": "Lesson Title",
-          "lesson_section_title": "Section Title",
+          "course_section_title": "Section Title",
           "click_to": "Click to",
           "lock": "Lock",
           "unlock": "Unlock",

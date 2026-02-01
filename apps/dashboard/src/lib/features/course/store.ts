@@ -1,6 +1,6 @@
-import type { TCourseType, TCourseVersion } from '@cio/db/types';
+import type { TCourseType } from '@cio/db/types';
 import type { Course } from '$features/course/types';
-import type { CourseMembers, LessonSectionWithLessons, ListLessons } from '$features/course/utils/types';
+import type { CourseMembers, CourseSectionWithLessons, ListLessons } from '$features/course/utils/types';
 import { writable, type Writable } from 'svelte/store';
 
 export const defaultCourse = {
@@ -23,9 +23,8 @@ export const defaultCourse = {
   slug: null,
   bannerImage: null,
   attendance: [],
-  version: 'V2' as TCourseVersion,
   group: null,
-  lesson_section: [],
+  course_section: [],
   sections: [],
   lessons: [],
   exercises: [],
@@ -98,7 +97,7 @@ export function sortLesson(lessons: ListLessons = []) {
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 }
 
-export function sortLessonSection(sections: LessonSectionWithLessons[] = []): LessonSectionWithLessons[] {
+export function sortCourseSection(sections: CourseSectionWithLessons[] = []): CourseSectionWithLessons[] {
   return [...sections]
     .sort((a, b) => new Date(a.createdAt || '').getTime() - new Date(b.createdAt || '').getTime())
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));

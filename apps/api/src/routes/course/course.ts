@@ -36,6 +36,7 @@ import { handleError } from '@api/utils/errors';
 import { katexRouter } from '@api/routes/course/katex';
 import { lessonRouter } from '@api/routes/course/lesson';
 import { markRouter } from '@api/routes/course/mark';
+import { sectionRouter } from '@api/routes/course/section';
 import { membersRouter } from '@api/routes/course/people';
 import { newsfeedRouter } from '@api/routes/course/newsfeed';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
@@ -304,33 +305,10 @@ export const courseRouter = new Hono()
       }
     }
   )
-  .post(
-    '/:courseId/convert-v2',
-    authMiddleware,
-    orgMemberMiddleware,
-    zValidator('param', ZCourseCloneParam),
-    async (c) => {
-      try {
-        const { courseId } = c.req.valid('param');
-        const { convertCourseToV2 } = await import('@api/services/course/convert');
-
-        const course = await convertCourseToV2(courseId);
-
-        return c.json(
-          {
-            success: true,
-            data: course
-          },
-          200
-        );
-      } catch (error) {
-        return handleError(c, error, 'Failed to convert course to V2');
-      }
-    }
-  )
   .route('/katex', katexRouter)
   .route('/:courseId/payment-request', paymentRequestRouter)
   .route('/:courseId/content', contentRouter)
+  .route('/:courseId/section', sectionRouter)
   .route('/:courseId/lesson', lessonRouter)
   .route('/:courseId/exercise', exerciseRouter)
   .route('/:courseId/submission', submissionRouter)

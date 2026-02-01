@@ -80,7 +80,7 @@ export const ErrorCodes = {
   // Lesson errors
   LESSON_NOT_FOUND: 'LESSON_NOT_FOUND',
   LESSON_FETCH_FAILED: 'LESSON_FETCH_FAILED',
-  LESSON_SECTION_NOT_FOUND: 'LESSON_SECTION_NOT_FOUND',
+  COURSE_SECTION_NOT_FOUND: 'COURSE_SECTION_NOT_FOUND',
 
   // Exercise errors
   EXERCISE_NOT_FOUND: 'EXERCISE_NOT_FOUND',
@@ -137,17 +137,21 @@ export const handleError = (
   c: Context,
   error: unknown,
   fallbackMessage: string = 'An unexpected error occurred',
-  fallbackCode: string = ErrorCodes.INTERNAL_ERROR
+  fallbackCode?: string
 ) => {
   console.error('Error in route:', error);
 
   if (error instanceof AppError) {
+    const isServerError = error.statusCode >= 500;
+    const responseCode = isServerError ? (fallbackCode ?? error.code) : error.code;
+    const responseMessage = isServerError ? fallbackMessage : error.message;
+
     return c.json<ErrorResponse>(
       {
         success: false,
-        error: error.message,
-        code: error.code,
-        field: error.field
+        error: responseMessage,
+        code: responseCode,
+        field: isServerError ? undefined : error.field
       },
       error.statusCode
     );
@@ -157,7 +161,7 @@ export const handleError = (
     {
       success: false,
       error: fallbackMessage,
-      code: fallbackCode
+      code: fallbackCode ?? ErrorCodes.INTERNAL_ERROR
     },
     500
   );

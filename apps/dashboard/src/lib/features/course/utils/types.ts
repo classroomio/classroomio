@@ -30,32 +30,29 @@ export type DeleteLessonResponse = InferResponseType<DeleteLessonRequest>;
 export type DeleteLessonSuccess = Extract<DeleteLessonResponse, { success: true }>;
 export type DeleteLessonData = DeleteLessonSuccess['data'];
 
-// Create lesson section types
-export type CreateLessonSectionRequest = (typeof classroomio.course)[':courseId']['lesson']['section']['$post'];
-export type CreateLessonSectionResponse = InferResponseType<CreateLessonSectionRequest>;
-export type CreateLessonSectionSuccess = Extract<CreateLessonSectionResponse, { success: true }>;
-export type CreateLessonSectionData = CreateLessonSectionSuccess['data'];
+// Create course section types
+export type CreateCourseSectionRequest = (typeof classroomio.course)[':courseId']['section']['$post'];
+export type CreateCourseSectionResponse = InferResponseType<CreateCourseSectionRequest>;
+export type CreateCourseSectionSuccess = Extract<CreateCourseSectionResponse, { success: true }>;
+export type CreateCourseSectionData = CreateCourseSectionSuccess['data'];
 
-// Update lesson section types
-export type UpdateLessonSectionRequest =
-  (typeof classroomio.course)[':courseId']['lesson']['section'][':sectionId']['$put'];
-export type UpdateLessonSectionResponse = InferResponseType<UpdateLessonSectionRequest>;
-export type UpdateLessonSectionSuccess = Extract<UpdateLessonSectionResponse, { success: true }>;
-export type UpdateLessonSectionData = UpdateLessonSectionSuccess['data'];
+// Update course section types
+export type UpdateCourseSectionRequest = (typeof classroomio.course)[':courseId']['section'][':sectionId']['$put'];
+export type UpdateCourseSectionResponse = InferResponseType<UpdateCourseSectionRequest>;
+export type UpdateCourseSectionSuccess = Extract<UpdateCourseSectionResponse, { success: true }>;
+export type UpdateCourseSectionData = UpdateCourseSectionSuccess['data'];
 
-// Delete lesson section types
-export type DeleteLessonSectionRequest =
-  (typeof classroomio.course)[':courseId']['lesson']['section'][':sectionId']['$delete'];
-export type DeleteLessonSectionResponse = InferResponseType<DeleteLessonSectionRequest>;
-export type DeleteLessonSectionSuccess = Extract<DeleteLessonSectionResponse, { success: true }>;
-export type DeleteLessonSectionData = DeleteLessonSectionSuccess['data'];
+// Delete course section types
+export type DeleteCourseSectionRequest = (typeof classroomio.course)[':courseId']['section'][':sectionId']['$delete'];
+export type DeleteCourseSectionResponse = InferResponseType<DeleteCourseSectionRequest>;
+export type DeleteCourseSectionSuccess = Extract<DeleteCourseSectionResponse, { success: true }>;
+export type DeleteCourseSectionData = DeleteCourseSectionSuccess['data'];
 
-// Reorder lesson sections types
-export type ReorderLessonSectionsRequest =
-  (typeof classroomio.course)[':courseId']['lesson']['section']['reorder']['$post'];
-export type ReorderLessonSectionsResponse = InferResponseType<ReorderLessonSectionsRequest>;
-export type ReorderLessonSectionsSuccess = Extract<ReorderLessonSectionsResponse, { success: true }>;
-export type ReorderLessonSectionsData = ReorderLessonSectionsSuccess['data'];
+// Reorder course sections types
+export type ReorderCourseSectionsRequest = (typeof classroomio.course)[':courseId']['section']['reorder']['$post'];
+export type ReorderCourseSectionsResponse = InferResponseType<ReorderCourseSectionsRequest>;
+export type ReorderCourseSectionsSuccess = Extract<ReorderCourseSectionsResponse, { success: true }>;
+export type ReorderCourseSectionsData = ReorderCourseSectionsSuccess['data'];
 
 // Reorder lessons types
 export type ReorderLessonsRequest = (typeof classroomio.course)[':courseId']['lesson']['reorder']['$post'];
@@ -63,13 +60,13 @@ export type ReorderLessonsResponse = InferResponseType<ReorderLessonsRequest>;
 export type ReorderLessonsSuccess = Extract<ReorderLessonsResponse, { success: true }>;
 export type ReorderLessonsData = ReorderLessonsSuccess['data'];
 
-// Lesson Section type (derived from Course API response which includes lesson_section array)
-// Since sections are returned as part of Course, we can use CreateLessonSectionData or UpdateLessonSectionData
+// Course Section type (derived from Course API response which includes course_section array)
+// Since sections are returned as part of Course, we can use CreateCourseSectionData or UpdateCourseSectionData
 // But for consistency, we'll use the create response as the base type
-export type LessonSection = CreateLessonSectionData;
+export type CourseSection = CreateCourseSectionData;
 
-// Lesson Section with lessons (used when sections are populated with their lessons)
-export interface LessonSectionWithLessons extends LessonSection {
+// Course Section with lessons (used when sections are populated with their lessons)
+export interface CourseSectionWithLessons extends CourseSection {
   lessons: ListLessons;
 }
 

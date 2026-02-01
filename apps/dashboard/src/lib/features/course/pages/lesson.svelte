@@ -311,13 +311,13 @@
         </UnderlineTabs.Root>
       {:else if lessonApi.lesson && !isMaterialsEmpty}
         {#key lessonId}
-          <div class="mb-20 flex w-full flex-col gap-6" in:fade={{ delay: 500 }} out:fade>
+          <div class="mb-20 flex w-full flex-col gap-2" in:fade={{ delay: 500 }} out:fade>
             {#each viewModeComponents as Component}
               <Component {mode} {lessonId} />
             {/each}
 
             {#if $currentOrg.customization?.apps?.comments}
-              <hr class="my-5" />
+              <hr class="my-2" />
 
               <Comments {lessonId} />
             {/if}
