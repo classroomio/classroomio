@@ -9,6 +9,7 @@
   import { ContentType } from '@cio/utils/constants/content';
   import { courseApi } from '$features/course/api';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import ExerciseCreateStepper from './exercise-create-stepper.svelte';
   import SectionCreateStepper from './section-create-stepper.svelte';
   import LessonCreateStepper from './lesson-create-stepper.svelte';
@@ -154,105 +155,109 @@
 </script>
 
 <Dialog.Root bind:open={$contentCreateStore.open} onOpenChange={(isOpen) => !isOpen && closeModal()}>
-  <Dialog.Content class="max-w-2xl!">
+  <Dialog.Content class="flex max-h-[680px] max-w-2xl! flex-col overflow-hidden">
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.lessons.add_content')}</Dialog.Title>
     </Dialog.Header>
 
-    {#if step === 0}
-      <!-- Select a content type - Section | Lesson | Exercise -->
-      <div class="flex flex-col gap-3">
-        <Field.Description>{$t('course.navItem.lessons.add_content_description')}</Field.Description>
-        <RadioOptionCardGroup options={contentOptionsForGroup} bind:value={selectedType} class="md:grid-cols-3" />
-        <Dialog.Footer>
-          <Button onclick={goToDetails}>{$t('course.navItem.lessons.add_content_continue')}</Button>
-        </Dialog.Footer>
-      </div>
-    {:else}
-      <!-- Create content - Section | Lesson | Exercise -->
-      <div>
-        {#if requiresSection}
-          <div class="mb-4">
-            <Label class="text-md mb-1 font-bold">{$t('course.navItem.lessons.add_content_section_label')}</Label>
-            {#if sectionFromContext}
-              <p class="text-muted-foreground text-sm">
-                {$t('course.navItem.lessons.add_content_adding_to')}
-                <strong>
-                  {sections.find((s) => s.id === sectionId)?.title ??
-                    $t('course.navItem.lessons.add_content_section_fallback')}
-                </strong>
-              </p>
-            {:else if hasSections}
-              <Select.Root
-                type="single"
-                value={sectionId}
-                onValueChange={(value) => {
-                  if (value) sectionId = value;
-                }}
-              >
-                <Select.Trigger class="h-10 w-full">
-                  {sections.find((s) => s.id === sectionId)?.title ||
-                    $t('course.navItem.lessons.add_content_select_section')}
-                </Select.Trigger>
-                <Select.Content>
-                  <Select.Group>
-                    {#each sections as section}
-                      <Select.Item value={section.id}>{section.title}</Select.Item>
-                    {/each}
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
-            {:else}
-              <p class="text-xs text-gray-500">{$t('course.navItem.lessons.add_content_create_section_first')}</p>
-            {/if}
-          </div>
-        {/if}
+    <div class="min-h-0 flex-1 overflow-y-auto pr-1">
+      {#if step === 0}
+        <!-- Select a content type - Section | Lesson | Exercise -->
+        <div class="flex flex-col gap-3">
+          <Field.Description>{$t('course.navItem.lessons.add_content_description')}</Field.Description>
+          <RadioOptionCardGroup options={contentOptionsForGroup} bind:value={selectedType} class="md:grid-cols-3" />
+          <Dialog.Footer>
+            <Button onclick={goToDetails}>{$t('course.navItem.lessons.add_content_continue')}</Button>
+          </Dialog.Footer>
+        </div>
+      {:else}
+        <!-- Create content - Section | Lesson | Exercise -->
+        <div>
+          {#if requiresSection}
+            <div class="mb-4">
+              <Label class="text-md mb-1 font-bold">{$t('course.navItem.lessons.add_content_section_label')}</Label>
+              {#if sectionFromContext}
+                <p class="text-muted-foreground text-sm">
+                  {$t('course.navItem.lessons.add_content_adding_to')}
+                  <strong>
+                    {sections.find((s) => s.id === sectionId)?.title ??
+                      $t('course.navItem.lessons.add_content_section_fallback')}
+                  </strong>
+                </p>
+              {:else if hasSections}
+                <Select.Root
+                  type="single"
+                  value={sectionId}
+                  onValueChange={(value) => {
+                    if (value) sectionId = value;
+                  }}
+                >
+                  <Select.Trigger class="h-10 w-full">
+                    {sections.find((s) => s.id === sectionId)?.title ||
+                      $t('course.navItem.lessons.add_content_select_section')}
+                  </Select.Trigger>
+                  <Select.Content>
+                    <Select.Group>
+                      {#each sections as section (section.id)}
+                        <Select.Item value={section.id}>{section.title}</Select.Item>
+                      {/each}
+                    </Select.Group>
+                  </Select.Content>
+                </Select.Root>
+              {:else}
+                <p class="text-xs text-gray-500">{$t('course.navItem.lessons.add_content_create_section_first')}</p>
+              {/if}
+            </div>
+          {/if}
 
-        {#if selectedType === ContentType.Section}
-          <SectionCreateStepper
-            bind:this={sectionStepper}
-            bind:stepperState={sectionStepperState}
-            courseId={courseApi.course?.id || ''}
-            order={getNextSectionOrder()}
-            canCreate={true}
-            sections={sections.map((s) => ({ id: s.id, order: s.order ?? undefined }))}
-            onCreated={() => closeModal()}
-          />
-        {:else if selectedType === ContentType.Lesson}
-          <LessonCreateStepper
-            bind:this={lessonStepper}
-            bind:stepperState={lessonStepperState}
-            courseId={courseApi.course?.id || ''}
-            sectionId={requiresSection ? sectionId : undefined}
-            order={getNextContentOrder(requiresSection ? sectionId : undefined)}
-            canCreate={canCreateLessonOrExercise}
-            onCreated={(lessonId) => {
-              closeModal();
-              goto(`/courses/${courseApi.course?.id}/lessons/${lessonId}`);
-            }}
-          />
-        {:else if selectedType === ContentType.Exercise}
-          <ExerciseCreateStepper
-            bind:this={exerciseStepper}
-            bind:stepperState={exerciseStepperState}
-            courseId={courseApi.course?.id || ''}
-            sectionId={requiresSection ? sectionId : undefined}
-            order={getNextContentOrder(requiresSection ? sectionId : undefined)}
-            canCreate={canCreateLessonOrExercise}
-            onCreated={(exerciseId) => {
-              closeModal();
-              goto(`/courses/${courseApi.course?.id}/exercises/${exerciseId}`);
-            }}
-          />
-        {/if}
+          {#if selectedType === ContentType.Section}
+            <SectionCreateStepper
+              bind:this={sectionStepper}
+              bind:stepperState={sectionStepperState}
+              courseId={courseApi.course?.id || ''}
+              order={getNextSectionOrder()}
+              canCreate={true}
+              sections={sections.map((s) => ({ id: s.id, order: s.order ?? undefined }))}
+              onCreated={() => closeModal()}
+            />
+          {:else if selectedType === ContentType.Lesson}
+            <LessonCreateStepper
+              bind:this={lessonStepper}
+              bind:stepperState={lessonStepperState}
+              courseId={courseApi.course?.id || ''}
+              sectionId={requiresSection ? sectionId : undefined}
+              order={getNextContentOrder(requiresSection ? sectionId : undefined)}
+              canCreate={canCreateLessonOrExercise}
+              onCreated={(lessonId) => {
+                closeModal();
+                goto(resolve(`/courses/${courseApi.course?.id}/lessons/${lessonId}`, {}));
+              }}
+            />
+          {:else if selectedType === ContentType.Exercise}
+            <ExerciseCreateStepper
+              bind:this={exerciseStepper}
+              bind:stepperState={exerciseStepperState}
+              courseId={courseApi.course?.id || ''}
+              sectionId={requiresSection ? sectionId : undefined}
+              order={getNextContentOrder(requiresSection ? sectionId : undefined)}
+              canCreate={canCreateLessonOrExercise}
+              onCreated={(exerciseId) => {
+                closeModal();
+                goto(resolve(`/courses/${courseApi.course?.id}/exercises/${exerciseId}`, {}));
+              }}
+            />
+          {/if}
 
-        <Dialog.Footer class="mt-6 flex items-center justify-between">
-          <Button variant="outline" onclick={handleUnifiedBack}>{$t('course.navItem.lessons.add_content_back')}</Button>
-          <Button onclick={handleUnifiedNext} loading={stepperState.isSubmitting} disabled={!stepperState.canProceed}>
-            {stepperState.primaryActionLabel}
-          </Button>
-        </Dialog.Footer>
-      </div>
-    {/if}
+          <Dialog.Footer class="mt-6 flex items-center justify-between">
+            <Button variant="outline" onclick={handleUnifiedBack}
+              >{$t('course.navItem.lessons.add_content_back')}</Button
+            >
+            <Button onclick={handleUnifiedNext} loading={stepperState.isSubmitting} disabled={!stepperState.canProceed}>
+              {stepperState.primaryActionLabel}
+            </Button>
+          </Dialog.Footer>
+        </div>
+      {/if}
+    </div>
   </Dialog.Content>
 </Dialog.Root>

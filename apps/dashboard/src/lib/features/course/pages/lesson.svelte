@@ -1,5 +1,7 @@
 <script lang="ts">
   import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { untrack } from 'svelte';
   import isEmpty from 'lodash/isEmpty';
   import { writable } from 'svelte/store';
@@ -19,6 +21,7 @@
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { lessonVideoUpload, lessonDocUpload } from '$features/course/components/lesson/store';
   import { t } from '$lib/utils/functions/translations';
+  import { ContentType } from '@cio/utils/constants/content';
 
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { Button } from '@cio/ui/base/button';
@@ -31,6 +34,7 @@
   import {
     LessonNavigationActions,
     LanguageSelector,
+    LessonPageEditHeader,
     Comments,
     Note,
     Slide,
@@ -54,9 +58,11 @@
   let mode = $state(MODES.view);
   let prevMode = $state('');
   let isSaving = $state(false);
+  let isDeletingLesson = $state(false);
   let isVersionDrawerOpen = $state(false);
 
   const lessonTitle = $derived(lessonApi.lesson?.title || 'Lesson');
+  const isLessonUnlocked = $derived(lessonApi.lesson?.isUnlocked ?? false);
 
   function toggleMode() {
     prevMode = mode;
@@ -138,21 +144,71 @@
     await lessonApi.upsertLanguage(courseApi.course.id, lessonId, locale, content);
   }
 
+  function hasLessonNoteContent(targetLessonId: string) {
+    const rawNote = lessonApi.lesson?.note;
+    const hasLegacyNote = typeof rawNote === 'string' && rawNote.trim().length > 0;
+    if (hasLegacyNote) return true;
+
+    const translations = Object.values(lessonApi.translations[targetLessonId] || {});
+    return translations.some((content) => typeof content === 'string' && !isHtmlValueEmpty(content));
+  }
+
+  function patchLessonListItemLocally() {
+    if (!lessonApi.lesson) return;
+
+    courseApi.updateContentItem(lessonApi.lesson.id, ContentType.Lesson, {
+      title: lessonApi.lesson.title ?? '',
+      isUnlocked: lessonApi.lesson.isUnlocked ?? null,
+      hasNoteContent: hasLessonNoteContent(lessonApi.lesson.id),
+      hasSlideContent: Boolean(lessonApi.lesson.slideUrl?.trim()),
+      videosCount: Array.isArray(lessonApi.lesson.videos) ? lessonApi.lesson.videos.length : 0,
+      documentsCount: Array.isArray(lessonApi.lesson.documents) ? lessonApi.lesson.documents.length : 0
+    });
+  }
+
   async function saveLesson() {
     if (!lessonApi.lesson) return false;
 
     // Prevent autosave loops: we only set this back to `true` when the user edits again.
     lessonApi.isDirty = false;
 
-    await Promise.all([
+    const [isLessonUpdated] = await Promise.all([
       lessonApi.update(courseApi.course?.id || '', lessonId, {
+        title: lessonApi.lesson.title || undefined,
+        isUnlocked: lessonApi.lesson.isUnlocked ?? undefined,
         slideUrl: lessonApi.lesson.slideUrl || undefined,
         videos: lessonApi.lesson.videos || [],
         documents: lessonApi.lesson.documents || []
       }),
-
       saveOrUpdateTranslation(lessonApi.currentLocale, lessonId)
     ]);
+
+    if (isLessonUpdated) {
+      patchLessonListItemLocally();
+    }
+  }
+
+  function handleLessonTitleChange(value: string) {
+    lessonApi.updateLessonState('title', value);
+  }
+
+  function handleToggleLessonLock() {
+    const currentValue = lessonApi.lesson?.isUnlocked ?? false;
+    lessonApi.updateLessonState('isUnlocked', !currentValue);
+  }
+
+  async function handleDeleteLesson() {
+    if (!courseId || !lessonId || isDeletingLesson) return;
+
+    isDeletingLesson = true;
+    await lessonApi.delete(courseId, lessonId);
+
+    if (lessonApi.success) {
+      mode = MODES.view;
+      await goto(resolve(`/courses/${courseId}/lessons`, {}));
+    }
+
+    isDeletingLesson = false;
   }
 
   function handleSave(prevMode: string) {
@@ -239,7 +295,15 @@
 
 <Page.Header>
   <Page.HeaderContent>
-    <Page.Title>{lessonTitle}</Page.Title>
+    <LessonPageEditHeader
+      {mode}
+      title={lessonTitle}
+      isUnlocked={isLessonUnlocked}
+      {isDeletingLesson}
+      onTitleChange={handleLessonTitleChange}
+      onToggleLock={handleToggleLessonLock}
+      onDeleteLesson={handleDeleteLesson}
+    />
   </Page.HeaderContent>
   <Page.Action>
     <div class="flex items-center gap-2">

@@ -9,6 +9,7 @@
   import CirclePlusIcon from '@lucide/svelte/icons/circle-plus';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import * as Page from '@cio/ui/base/page';
+  import { ContentType } from '@cio/utils/constants/content';
 
   import {
     handleAddQuestion,
@@ -35,17 +36,26 @@
 
   interface Props {
     exerciseId?: string;
-    path?: string;
     goBack?: any;
     isFetching?: boolean;
   }
 
-  let { exerciseId = $bindable(''), path = '', goBack = () => {}, isFetching = false }: Props = $props();
+  let { exerciseId = $bindable(''), goBack = () => {}, isFetching = false }: Props = $props();
 
   let preview: boolean = $state(false);
   let shouldDeleteExercise = $state(false);
   let isSaving = $state(false);
   let selectedTab = $state('questions');
+
+  function patchExerciseListItemLocally() {
+    const nonDeletedQuestionsCount = ($questionnaire.questions || []).filter((question) => !question.deletedAt).length;
+
+    courseApi.updateContentItem(exerciseId, ContentType.Exercise, {
+      title: $questionnaire.title ?? '',
+      dueBy: $questionnaire.dueBy || null,
+      questionCount: nonDeletedQuestionsCount
+    });
+  }
 
   async function handleSave() {
     if ($globalStore.isStudent || !courseApi.course?.id) return;
@@ -94,17 +104,15 @@
         return;
       }
 
-      if (exerciseApi.success && exerciseApi.exercise) {
+      if (exerciseApi.success) {
         questionnaire.update((q) => ({
           ...q,
           isTitleDirty: false,
           isDescriptionDirty: false,
           questions: exerciseApi.exercise?.questions || q.questions
         }));
+        patchExerciseListItemLocally();
         snackbar.success('snackbar.exercise.success');
-
-        // Redirect to exercises page
-        goto(path);
       }
     } catch (error) {
       snackbar.error();

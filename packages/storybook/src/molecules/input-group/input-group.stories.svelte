@@ -8,7 +8,6 @@
   import UserIcon from '@lucide/svelte/icons/user';
   import MessageSquareIcon from '@lucide/svelte/icons/message-square';
   import GlobeIcon from '@lucide/svelte/icons/globe';
-  import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
   import EyeIcon from '@lucide/svelte/icons/eye';
   import EyeOffIcon from '@lucide/svelte/icons/eye-off';
   import KeyIcon from '@lucide/svelte/icons/key';

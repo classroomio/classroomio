@@ -6,7 +6,7 @@
   import FileTextIcon from '@lucide/svelte/icons/file-text';
   import HelpCircleIcon from '@lucide/svelte/icons/help-circle';
   import LockIcon from '@lucide/svelte/icons/lock';
-  import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
+  import { Spinner } from '@cio/ui/base/spinner';
   import UnlockIcon from '@lucide/svelte/icons/lock-open';
   import VideoIcon from '@lucide/svelte/icons/video';
   import { HoverableItem, AttachmentIcon } from '@cio/ui/custom/moving-icons';
@@ -417,7 +417,7 @@
             title={lockLabel}
           >
             {#if isLockPending}
-              <LoaderCircleIcon class="h-5 w-5 animate-spin" />
+              <Spinner class="h-5 w-5" />
             {:else if item.isUnlocked}
               <UnlockIcon class="h-5 w-5" />
             {:else}

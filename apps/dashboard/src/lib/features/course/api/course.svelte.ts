@@ -24,6 +24,7 @@ import { profile } from '$lib/utils/store/user';
 import { resolve } from '$app/paths';
 import { snackbar } from '$features/ui/snackbar/store';
 import { ROLE } from '@cio/utils/constants';
+import { ContentType } from '@cio/utils/constants/content';
 import type { CourseMembers } from '../utils/types';
 
 type GroupStore = {
@@ -34,6 +35,8 @@ type GroupStore = {
   members?: CourseMembers;
   memberId?: string;
 };
+
+type CourseContentItem = NonNullable<Course['content']>['items'][number];
 
 /**
  * API class for course creation operations
@@ -53,6 +56,80 @@ export class CourseApi extends BaseApiWithErrors {
   private isCourseDirty = $state(false);
   private inFlightCourseRequest: Promise<Course | null> | null = null;
   private inFlightCourseId = $state<string | null>(null);
+
+  /**
+   * Updates a single lesson/exercise item in the local course content store.
+   * This avoids list staleness when navigating back from item detail pages.
+   */
+  updateContentItem(
+    itemId: string,
+    itemType: ContentType.Lesson | ContentType.Exercise,
+    patch: Partial<CourseContentItem>
+  ) {
+    if (!this.course?.content) return false;
+
+    const content = this.course.content;
+
+    if (content.grouped) {
+      let hasUpdatedItem = false;
+
+      const sections = content.sections.map((section) => {
+        let sectionHasUpdatedItem = false;
+        const items = section.items.map((item) => {
+          if (item.id !== itemId || item.type !== itemType) return item;
+          sectionHasUpdatedItem = true;
+          return {
+            ...item,
+            ...patch
+          };
+        });
+
+        if (!sectionHasUpdatedItem) {
+          return section;
+        }
+
+        hasUpdatedItem = true;
+        return {
+          ...section,
+          items
+        };
+      });
+
+      if (!hasUpdatedItem) return false;
+
+      this.course = {
+        ...this.course,
+        content: {
+          ...content,
+          sections
+        }
+      };
+
+      return true;
+    }
+
+    let hasUpdatedItem = false;
+    const items = content.items.map((item) => {
+      if (item.id !== itemId || item.type !== itemType) return item;
+      hasUpdatedItem = true;
+      return {
+        ...item,
+        ...patch
+      };
+    });
+
+    if (!hasUpdatedItem) return false;
+
+    this.course = {
+      ...this.course,
+      content: {
+        ...content,
+        items
+      }
+    };
+
+    return true;
+  }
 
   /**
    * Gets a course by ID

@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { Empty } from '@cio/ui/custom/empty';
-  import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
+  import { Spinner } from '@cio/ui/base/spinner';
   import { CourseSidebar } from '$features/course/components/sidebar';
   import { CourseHeader } from '$features/course/components';
   import type { Course } from '$features/course/types';
@@ -105,8 +105,8 @@
         <Empty
           title="Loading course…"
           description="Please wait while we load your course data."
-          icon={LoaderCircleIcon}
-          iconClass="animate-spin"
+          icon={Spinner}
+          iconClass="h-8 w-8"
           variant="page"
         />
       </div>

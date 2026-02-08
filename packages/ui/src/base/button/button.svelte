@@ -66,7 +66,7 @@
 
 <script lang="ts">
   import { cn } from '../../tools';
-  import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
+  import { Spinner } from '../spinner';
 
   let {
     ref = $bindable(null),
@@ -117,8 +117,8 @@
 >
   {#if type !== undefined && loading}
     <div class="ui:absolute ui:flex ui:size-full ui:place-items-center ui:justify-center ui:bg-inherit">
-      <div class="ui:flex ui:animate-spin ui:place-items-center ui:justify-center">
-        <LoaderCircleIcon class="custom ui:size-4" />
+      <div class="ui:flex ui:place-items-center ui:justify-center">
+        <Spinner class="custom ui:size-4" />
       </div>
     </div>
     <span class="ui:sr-only">Loading</span>

@@ -48,6 +48,10 @@ export const questionnaire: Writable<{
   totalSubmissions: 0
 });
 
+export function clearQuestionnaireValidation() {
+  questionnaireValidation.set({});
+}
+
 export function reset() {
   questionnaireMetaData.update((metaData) => {
     metaData.answers = {};
@@ -55,6 +59,8 @@ export function reset() {
     metaData.isFinished = false;
     return metaData;
   });
+
+  clearQuestionnaireValidation();
 }
 
 /**

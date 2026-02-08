@@ -418,7 +418,13 @@
     <Field.Legend>{$t('course.navItem.settings.delete')}</Field.Legend>
     <Field.Description>{$t('course.navItem.settings.delete_text')}</Field.Description>
     <Field.Field>
-      <Button variant="destructive" onclick={() => (openDeleteModal = true)} loading={isDeleting} disabled={isDeleting}>
+      <Button
+        variant="destructive"
+        onclick={() => (openDeleteModal = true)}
+        loading={isDeleting}
+        disabled={isDeleting}
+        class="w-fit!"
+      >
         {$t('course.navItem.settings.delete')}
       </Button>
     </Field.Field>

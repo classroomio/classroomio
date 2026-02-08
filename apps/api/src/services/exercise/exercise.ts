@@ -345,11 +345,11 @@ export async function createExerciseFromTemplate(
           if (question_type.id !== 3 && options && options.length > 0) {
             // Filter out deleted options
 
+            // value column is UUID (default gen_random_uuid()); label is the display text only
             const optionsData: TNewOption[] = options.map((opt) => ({
               questionId: newQuestion.id,
               label: opt.label || '',
-              isCorrect: opt.is_correct || false,
-              value: opt.label || null
+              isCorrect: opt.is_correct || false
             }));
 
             await createOptions(optionsData);

@@ -145,16 +145,16 @@ export class LessonApi extends BaseApiWithErrors {
   /**
    * Updates a lesson
    */
-  async update(courseId: string, lessonId: string, fields: TLessonUpdate) {
+  async update(courseId: string, lessonId: string, fields: TLessonUpdate): Promise<boolean> {
     const result = ZLessonUpdate.safeParse(fields);
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
-      return;
+      return false;
     }
 
     this.isSaving = true;
 
-    await this.execute<UpdateLessonRequest>({
+    const response = await this.execute<UpdateLessonRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].lesson[':lessonId'].$put({
           param: { courseId, lessonId },
@@ -168,6 +168,7 @@ export class LessonApi extends BaseApiWithErrors {
     });
 
     this.isSaving = false;
+    return Boolean(response);
   }
 
   /**

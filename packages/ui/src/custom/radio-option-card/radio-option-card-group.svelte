@@ -21,7 +21,7 @@
     titleSuffix?: TitleSuffixSnippet;
   }
 
-  let { options, value = $bindable(''), class: className, titleSuffix }: Props = $props();
+  let { options, value = $bindable(''), class: className, titleSuffix: parentTitleSuffix }: Props = $props();
 </script>
 
 <RadioGroup.Root bind:value class={cn('ui:grid ui:gap-3 ui:md:grid-cols-2', className)}>
@@ -33,9 +33,9 @@
       value={option.value}
       disabled={option.disabled}
     >
-      {#if titleSuffix}
-        {@render titleSuffix(option)}
-      {/if}
+      {#snippet titleSuffix()}
+        {@render parentTitleSuffix?.(option)}
+      {/snippet}
     </RadioOptionCard>
   {/each}
 </RadioGroup.Root>
