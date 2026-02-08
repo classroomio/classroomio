@@ -8,6 +8,6 @@
 </script>
 
 <span class="flex gap-2">
-  <p class="text-md font-medium">{index}</p>
-  <p class="text-md font-medium">{title}</p>
+  <p class="text-md">{index}</p>
+  <p class="text-md">{title}</p>
 </span>

@@ -4,19 +4,20 @@
   import { RoleBasedSecurity } from '$features/ui';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
-  import { contentCreateStore, contentEditingStore } from '$features/course/components/content/store';
-  import { ContentType } from '@cio/utils/constants/content';
+  import { contentCreateStoreUtils, contentEditingStore } from '$features/course/components/content/store';
+  import { courseApi } from '$features/course/api';
 
   let { data } = $props();
 
   let reorder = $state(false);
 
   function addContent() {
-    contentCreateStore.set({
-      open: true,
-      sectionId: '',
-      initialType: ContentType.Lesson
-    });
+    const contentGroupingEnabled = courseApi.course?.metadata?.isContentGroupingEnabled ?? true;
+    if (contentGroupingEnabled) {
+      contentCreateStoreUtils.openSection();
+    } else {
+      contentCreateStoreUtils.openDefault();
+    }
   }
 </script>
 

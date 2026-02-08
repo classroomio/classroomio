@@ -299,7 +299,7 @@
       </div>
       {#if STATUS.GRADED === $questionnaireMetaData.status && courseApi.course?.type !== 'SELF_PACED'}
         <span
-          class="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300 bg-[#F5F8FE] p-6 text-sm font-semibold text-[#2751DA]"
+          class="border-border flex h-10 w-10 items-center justify-center rounded-full border bg-[#F5F8FE] p-6 text-sm font-semibold text-[#2751DA]"
           title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_graded')}
         >
           {$questionnaireMetaData.finalTotalGrade}/{$questionnaireMetaData.totalPossibleGrade}

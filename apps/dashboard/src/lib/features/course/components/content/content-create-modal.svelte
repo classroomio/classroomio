@@ -2,56 +2,82 @@
   import * as Dialog from '@cio/ui/base/dialog';
   import * as Select from '@cio/ui/base/select';
   import { Button } from '@cio/ui/base/button';
-  import { InputField } from '@cio/ui/custom/input-field';
   import { Label } from '@cio/ui/base/label';
   import * as Field from '@cio/ui/base/field';
-  import * as RadioGroup from '@cio/ui/base/radio-group';
-  import { contentCreateStore } from './store';
+  import { RadioOptionCardGroup } from '@cio/ui/custom/radio-option-card';
+  import { contentCreateStore, contentCreateStoreUtils } from './store';
   import { ContentType } from '@cio/utils/constants/content';
-  import { courseApi, lessonApi } from '$features/course/api';
+  import { courseApi } from '$features/course/api';
   import { goto } from '$app/navigation';
   import ExerciseCreateStepper from './exercise-create-stepper.svelte';
+  import SectionCreateStepper from './section-create-stepper.svelte';
+  import LessonCreateStepper from './lesson-create-stepper.svelte';
+  import type { StepperRef, StepperState } from './types';
+  import { DEFAULT_STEPPER_STATE, CONTENT_OPTIONS } from './constants';
   import { t } from '$lib/utils/functions/translations';
-  import { profile } from '$lib/utils/store/user';
   import { untrack } from 'svelte';
-
-  const contentOptions = [
-    {
-      id: 'section',
-      type: ContentType.Section,
-      title: 'Section',
-      description: 'Group lessons and exercises together.'
-    },
-    {
-      id: 'lesson',
-      type: ContentType.Lesson,
-      title: 'Lesson',
-      description: 'Teach with notes, slides, and videos.'
-    },
-    {
-      id: 'exercise',
-      type: ContentType.Exercise,
-      title: 'Exercise',
-      description: 'Assess students with quizzes and tasks.'
-    }
-  ];
 
   let step = $state(0);
   let selectedType = $state<ContentType>(ContentType.Lesson);
-  let title = $state('');
-  let isSaving = $state(false);
   let sectionId = $state('');
 
-  const profileId = $derived($profile?.id || '');
+  // ============================================
+  // STEPPER COMPONENT REFERENCES
+  // ============================================
+  let sectionStepper: StepperRef | undefined = $state();
+  let lessonStepper: StepperRef | undefined = $state();
+  let exerciseStepper: StepperRef | undefined = $state();
+
+  // ============================================
+  // UNIFIED STEPPER STATE
+  // ============================================
+  const activeStepper = $derived(
+    selectedType === ContentType.Section
+      ? sectionStepper
+      : selectedType === ContentType.Lesson
+        ? lessonStepper
+        : selectedType === ContentType.Exercise
+          ? exerciseStepper
+          : undefined
+  );
+
+  let sectionStepperState = $state<StepperState>({ ...DEFAULT_STEPPER_STATE });
+  let lessonStepperState = $state<StepperState>({ ...DEFAULT_STEPPER_STATE });
+  let exerciseStepperState = $state<StepperState>({ ...DEFAULT_STEPPER_STATE });
+
+  const stepperState = $derived(
+    selectedType === ContentType.Section
+      ? sectionStepperState
+      : selectedType === ContentType.Lesson
+        ? lessonStepperState
+        : selectedType === ContentType.Exercise
+          ? exerciseStepperState
+          : DEFAULT_STEPPER_STATE
+  );
+
   const contentGroupingEnabled = $derived(courseApi.course?.metadata?.isContentGroupingEnabled ?? true);
   const sections = $derived(
     (courseApi.course?.content?.sections || []).filter((section) => section.id !== 'ungrouped')
   );
   const visibleContentOptions = $derived(
-    contentGroupingEnabled ? contentOptions : contentOptions.filter((option) => option.type !== ContentType.Section)
+    $contentCreateStore.sectionId
+      ? CONTENT_OPTIONS.filter((option) => option.type !== ContentType.Section)
+      : contentGroupingEnabled
+        ? CONTENT_OPTIONS
+        : CONTENT_OPTIONS.filter((option) => option.type !== ContentType.Section)
+  );
+  const contentOptionsForGroup = $derived(
+    visibleContentOptions.map((o) => ({
+      id: o.id,
+      title: $t(o.titleKey),
+      description: $t(o.descriptionKey),
+      value: o.type
+    }))
   );
   const requiresSection = $derived(contentGroupingEnabled && selectedType !== ContentType.Section);
   const hasSections = $derived(sections.length > 0);
+  /** True when modal was opened from a section (e.g. plus icon in sidebar), so we use store sectionId */
+  const sectionFromContext = $derived(!!$contentCreateStore.sectionId);
   const canCreateLessonOrExercise = $derived(!requiresSection || (requiresSection && !!sectionId));
 
   function getNextSectionOrder() {
@@ -79,27 +105,28 @@
     return maxOrder + 1;
   }
 
-  async function refreshCourseContent() {
-    const courseId = courseApi.course?.id;
-    if (!courseId || !profileId) return;
-
-    await courseApi.refreshCourse(courseId, profileId);
-  }
-
   $effect(() => {
     if ($contentCreateStore.open) {
       untrack(() => {
-        step = 0;
+        step = $contentCreateStore.skipTypeSelection ? 1 : 0;
         const initialType = $contentCreateStore.initialType ?? ContentType.Lesson;
         selectedType = contentGroupingEnabled || initialType !== ContentType.Section ? initialType : ContentType.Lesson;
-        sectionId = contentGroupingEnabled ? $contentCreateStore.sectionId || sections[0]?.id || '' : '';
-        title = '';
+        sectionId = contentGroupingEnabled
+          ? $contentCreateStore.sectionId || sections[0]?.id || ''
+          : $contentCreateStore.sectionId || '';
+
+        sectionStepper?.actions.reset();
+        lessonStepper?.actions.reset();
+        exerciseStepper?.actions.reset();
+        sectionStepperState = { ...DEFAULT_STEPPER_STATE };
+        lessonStepperState = { ...DEFAULT_STEPPER_STATE };
+        exerciseStepperState = { ...DEFAULT_STEPPER_STATE };
       });
     }
   });
 
   function closeModal() {
-    contentCreateStore.update((state) => ({ ...state, open: false, sectionId: '', initialType: ContentType.Lesson }));
+    contentCreateStoreUtils.close();
   }
 
   function goToDetails() {
@@ -110,44 +137,19 @@
     step = 0;
   }
 
-  async function handleCreateSection() {
-    if (!courseApi.course?.id || !title.trim()) return;
-    isSaving = true;
-    await lessonApi.createSection(courseApi.course.id, {
-      title,
-      courseId: courseApi.course.id,
-      order: getNextSectionOrder()
-    });
-
-    if (lessonApi.success) {
-      await refreshCourseContent();
-      closeModal();
+  // ============================================
+  // UNIFIED NAVIGATION HANDLERS
+  // ============================================
+  function handleUnifiedBack() {
+    if (stepperState.currentStep > 0) {
+      activeStepper?.actions.back();
+    } else {
+      goBack();
     }
-    isSaving = false;
   }
 
-  async function handleCreateLesson() {
-    if (!courseApi.course?.id || !title.trim()) return;
-    if (requiresSection && !sectionId) return;
-
-    isSaving = true;
-    const order = getNextContentOrder(requiresSection ? sectionId : undefined);
-
-    await lessonApi.create(courseApi.course.id, {
-      title,
-      courseId: courseApi.course.id,
-      lessonAt: new Date().toDateString(),
-      isUnlocked: true,
-      order,
-      sectionId: requiresSection ? sectionId : undefined
-    });
-
-    if (lessonApi.success && lessonApi.lesson) {
-      await refreshCourseContent();
-      closeModal();
-      goto(`/courses/${courseApi.course.id}/lessons/${lessonApi.lesson.id}`);
-    }
-    isSaving = false;
+  async function handleUnifiedNext() {
+    await activeStepper?.actions.next();
   }
 </script>
 
@@ -158,36 +160,29 @@
     </Dialog.Header>
 
     {#if step === 0}
-      <div>
+      <!-- Select a content type - Section | Lesson | Exercise -->
+      <div class="flex flex-col gap-3">
         <Field.Description>{$t('course.navItem.lessons.add_content_description')}</Field.Description>
-        <RadioGroup.Root bind:value={selectedType} class="mt-5 grid gap-3 md:grid-cols-3">
-          {#each visibleContentOptions as option (option.id)}
-            <Field.Label for={option.id}>
-              <Field.Field orientation="horizontal">
-                <Field.Content>
-                  <Field.Title>{option.title}</Field.Title>
-                  <Field.Description>{option.description}</Field.Description>
-                </Field.Content>
-                <RadioGroup.Item value={option.type} id={option.id} aria-label={option.title} />
-              </Field.Field>
-            </Field.Label>
-          {/each}
-        </RadioGroup.Root>
+        <RadioOptionCardGroup options={contentOptionsForGroup} bind:value={selectedType} class="md:grid-cols-3" />
         <Dialog.Footer>
-          <Button onclick={goToDetails}>Continue</Button>
+          <Button onclick={goToDetails}>{$t('course.navItem.lessons.add_content_continue')}</Button>
         </Dialog.Footer>
       </div>
     {:else}
+      <!-- Create content - Section | Lesson | Exercise -->
       <div>
-        <div class="mb-4">
-          <p class="text-sm font-semibold">{contentOptions.find((o) => o.type === selectedType)?.title}</p>
-          <p class="text-xs text-gray-500">{$t('course.navItem.lessons.add_content_details')}</p>
-        </div>
-
         {#if requiresSection}
           <div class="mb-4">
-            <Label class="mb-1 block text-xs font-medium">Section</Label>
-            {#if hasSections}
+            <Label class="text-md mb-1 font-bold">{$t('course.navItem.lessons.add_content_section_label')}</Label>
+            {#if sectionFromContext}
+              <p class="text-muted-foreground text-sm">
+                {$t('course.navItem.lessons.add_content_adding_to')}
+                <strong>
+                  {sections.find((s) => s.id === sectionId)?.title ??
+                    $t('course.navItem.lessons.add_content_section_fallback')}
+                </strong>
+              </p>
+            {:else if hasSections}
               <Select.Root
                 type="single"
                 value={sectionId}
@@ -195,9 +190,10 @@
                   if (value) sectionId = value;
                 }}
               >
-                <Select.Trigger class="h-10 w-full"
-                  >{sections.find((s) => s.id === sectionId)?.title || 'Select section'}</Select.Trigger
-                >
+                <Select.Trigger class="h-10 w-full">
+                  {sections.find((s) => s.id === sectionId)?.title ||
+                    $t('course.navItem.lessons.add_content_select_section')}
+                </Select.Trigger>
                 <Select.Content>
                   <Select.Group>
                     {#each sections as section}
@@ -207,45 +203,55 @@
                 </Select.Content>
               </Select.Root>
             {:else}
-              <p class="text-xs text-gray-500">Create a section first to add lessons or exercises.</p>
+              <p class="text-xs text-gray-500">{$t('course.navItem.lessons.add_content_create_section_first')}</p>
             {/if}
           </div>
         {/if}
 
         {#if selectedType === ContentType.Section}
-          <InputField label="Section title" bind:value={title} autoFocus={true} className="w-full" isRequired={true} />
-          <Dialog.Footer class="mt-6 flex items-center justify-between">
-            <Button variant="outline" onclick={goBack}>Back</Button>
-            <Button onclick={handleCreateSection} loading={isSaving} disabled={!title.trim()}>Create section</Button>
-          </Dialog.Footer>
+          <SectionCreateStepper
+            bind:this={sectionStepper}
+            bind:stepperState={sectionStepperState}
+            courseId={courseApi.course?.id || ''}
+            order={getNextSectionOrder()}
+            canCreate={true}
+            sections={sections.map((s) => ({ id: s.id, order: s.order ?? undefined }))}
+            onCreated={() => closeModal()}
+          />
         {:else if selectedType === ContentType.Lesson}
-          <InputField label="Lesson title" bind:value={title} autoFocus={true} className="w-full" isRequired={true} />
-          <Dialog.Footer class="mt-6 flex items-center justify-between">
-            <Button variant="outline" onclick={goBack}>Back</Button>
-            <Button
-              onclick={handleCreateLesson}
-              loading={isSaving}
-              disabled={!title.trim() || !canCreateLessonOrExercise}
-            >
-              Create lesson
-            </Button>
-          </Dialog.Footer>
-        {:else if selectedType === ContentType.Exercise}
-          <ExerciseCreateStepper
+          <LessonCreateStepper
+            bind:this={lessonStepper}
+            bind:stepperState={lessonStepperState}
             courseId={courseApi.course?.id || ''}
             sectionId={requiresSection ? sectionId : undefined}
             order={getNextContentOrder(requiresSection ? sectionId : undefined)}
             canCreate={canCreateLessonOrExercise}
-            onCancel={closeModal}
+            onCreated={(lessonId) => {
+              closeModal();
+              goto(`/courses/${courseApi.course?.id}/lessons/${lessonId}`);
+            }}
+          />
+        {:else if selectedType === ContentType.Exercise}
+          <ExerciseCreateStepper
+            bind:this={exerciseStepper}
+            bind:stepperState={exerciseStepperState}
+            courseId={courseApi.course?.id || ''}
+            sectionId={requiresSection ? sectionId : undefined}
+            order={getNextContentOrder(requiresSection ? sectionId : undefined)}
+            canCreate={canCreateLessonOrExercise}
             onCreated={(exerciseId) => {
               closeModal();
               goto(`/courses/${courseApi.course?.id}/exercises/${exerciseId}`);
             }}
           />
-          <Dialog.Footer class="mt-6 flex items-center justify-between">
-            <Button variant="outline" onclick={goBack}>Back</Button>
-          </Dialog.Footer>
         {/if}
+
+        <Dialog.Footer class="mt-6 flex items-center justify-between">
+          <Button variant="outline" onclick={handleUnifiedBack}>{$t('course.navItem.lessons.add_content_back')}</Button>
+          <Button onclick={handleUnifiedNext} loading={stepperState.isSubmitting} disabled={!stepperState.canProceed}>
+            {stepperState.primaryActionLabel}
+          </Button>
+        </Dialog.Footer>
       </div>
     {/if}
   </Dialog.Content>

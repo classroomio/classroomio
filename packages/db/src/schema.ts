@@ -167,7 +167,8 @@ export const group = pgTable(
       columns: [table.organizationId],
       foreignColumns: [organization.id],
       name: 'group_organization_id_fkey'
-    })
+    }),
+    index('idx_group_organization_id').on(table.organizationId)
   ]
 );
 
@@ -556,7 +557,8 @@ export const course = pgTable(
       foreignColumns: [group.id],
       name: 'course_group_id_fkey'
     }),
-    unique('course_slug_key').on(table.slug)
+    unique('course_slug_key').on(table.slug),
+    index('idx_course_group_id').on(table.groupId)
   ]
 );
 

@@ -19,18 +19,17 @@
   });
 </script>
 
-<div class="flex items-center font-semibold">
+<div class="flex items-center">
   <InputField
     placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.points')}
     bind:value={grade}
     max={gradeMax}
     type="number"
-    className="w-12"
-    inputClassName="h-10"
+    inputClassName="!w-14"
     isDisabled={disableGrading}
   />
 
-  <p class="ml-2 flex items-center text-base font-semibold dark:text-white">
+  <p class="ml-2 flex items-center text-base dark:text-white">
     <span class="mr-1">/</span> <span>{gradeMax}</span>
   </p>
 </div>

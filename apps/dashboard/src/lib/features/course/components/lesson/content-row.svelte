@@ -3,8 +3,10 @@
   import { InputField } from '@cio/ui/custom/input-field';
   import { LessonIcon, ExerciseIcon } from '@cio/ui/custom/moving-icons';
   import { CircleCheckIcon } from '$features/ui/icons';
+  import type { Snippet } from 'svelte';
   import { ContentType } from '@cio/utils/constants/content';
   import type { CourseContentItem } from '$features/course/utils/types';
+  import { cn } from '@cio/ui/tools';
 
   interface Props {
     item: CourseContentItem;
@@ -18,11 +20,14 @@
     showIcon?: boolean;
     iconSize?: number;
     containerClass?: string;
+    rowClass?: string;
     linkClass?: string;
     inputClass?: string;
     titleClass?: string;
     autoFocus?: boolean;
     preloadOff?: boolean;
+    inline?: Snippet;
+    meta?: Snippet;
   }
 
   let {
@@ -35,40 +40,55 @@
     isComplete = null,
     showStatus = false,
     showIcon = true,
-    iconSize = 16,
+    iconSize = 14,
     containerClass = '',
+    rowClass = '',
     linkClass = '',
     inputClass = '',
     titleClass = '',
     autoFocus = false,
-    preloadOff = false
+    preloadOff = false,
+    inline,
+    meta
   }: Props = $props();
 </script>
 
 {#if isEditing}
-  <InputField className={inputClass} bind:value={title} errorMessage={errors?.title} {autoFocus} />
+  <InputField className={cn('w-4/6', inputClass)} bind:value={title} errorMessage={errors?.title} {autoFocus} />
 {:else}
-  <div class={containerClass}>
-    {#if showIcon}
-      {#if item.type === ContentType.Lesson}
-        <LessonIcon size={iconSize} />
-      {:else}
-        <ExerciseIcon size={iconSize} />
+  <div class={cn('w-4/5', containerClass)}>
+    <div class={cn('flex items-center gap-2', rowClass)}>
+      {#if showIcon}
+        {#if item.type === ContentType.Lesson}
+          <LessonIcon size={iconSize} />
+        {:else}
+          <ExerciseIcon size={iconSize} />
+        {/if}
       {/if}
-    {/if}
 
-    <a {href} class={linkClass} data-sveltekit-preload-data={preloadOff ? 'off' : undefined}>
-      <span class={titleClass}>{title}</span>
-    </a>
+      <a
+        {href}
+        class={cn(
+          'flex-1 truncate text-sm text-black underline dark:text-white',
+          isLocked ? 'cursor-not-allowed opacity-50' : linkClass
+        )}
+        data-sveltekit-preload-data={preloadOff ? 'off' : undefined}
+      >
+        <span class={titleClass}>{title}</span>
+      </a>
 
-    {#if showStatus}
-      {#if isLocked}
-        <LockIcon size={iconSize} class="shrink-0" />
-      {:else if isComplete}
-        <span class="shrink-0">
-          <CircleCheckIcon size={iconSize} filled />
-        </span>
+      {#if showStatus}
+        {#if isLocked}
+          <LockIcon size={iconSize} class="shrink-0" />
+        {:else if isComplete}
+          <span class="shrink-0">
+            <CircleCheckIcon size={iconSize} filled />
+          </span>
+        {/if}
       {/if}
-    {/if}
+
+      {@render inline?.()}
+    </div>
+    {@render meta?.()}
   </div>
 {/if}

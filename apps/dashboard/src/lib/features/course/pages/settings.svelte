@@ -49,7 +49,7 @@
   }
 
   const downloadCourse = async () => {
-    alert('Coming soon');
+    alert($t('course.navItem.settings.coming_soon'));
   };
 
   const deleteBannerImage = () => {
@@ -212,7 +212,7 @@
       <Field.Field>
         <InputField
           label={$t('course.navItem.settings.course_title')}
-          placeholder="Write the course title here"
+          placeholder={$t('course.navItem.settings.course_title_placeholder')}
           className="w-full"
           isRequired
           bind:value={$settings.courseTitle}
@@ -260,7 +260,7 @@
               <Copy size={16} />
             </IconButton>
           {:else}
-            <p class="text-sm">Setup landing page to get course link</p>
+            <p class="text-sm">{$t('course.navItem.settings.setup_landing_for_link')}</p>
           {/if}
         </div>
       </Field.Field>
@@ -291,6 +291,7 @@
         id="content-grouping"
         checked={$settings.isContentGroupingEnabled}
         onCheckedChange={(checked) => {
+          console.log('checked', checked);
           $settings.isContentGroupingEnabled = checked;
           hasUnsavedChanges = true;
         }}

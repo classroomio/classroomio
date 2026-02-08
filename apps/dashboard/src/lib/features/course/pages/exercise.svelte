@@ -3,6 +3,7 @@
   import { page } from '$app/state';
   import { Button } from '@cio/ui/base/button';
   import EyeIcon from '@lucide/svelte/icons/eye';
+  import PencilIcon from '@lucide/svelte/icons/pencil';
   import { onDestroy, onMount, untrack } from 'svelte';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import CirclePlusIcon from '@lucide/svelte/icons/circle-plus';
@@ -163,10 +164,16 @@
             </Button>
             <IconButton
               onclick={() => (preview = !preview)}
-              tooltip={$t('course.navItem.lessons.exercises.all_exercises.preview')}
+              tooltip={preview
+                ? $t('course.navItem.lessons.exercises.all_exercises.view_mode.edit')
+                : $t('course.navItem.lessons.exercises.all_exercises.preview')}
               tooltipSide="bottom"
             >
-              <EyeIcon size={20} class={preview ? 'filled' : ''} />
+              {#if preview}
+                <PencilIcon size={20} />
+              {:else}
+                <EyeIcon size={20} />
+              {/if}
             </IconButton>
             <IconButton
               onclick={handleAddQuestion}

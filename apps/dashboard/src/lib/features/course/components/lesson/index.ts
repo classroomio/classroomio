@@ -1,4 +1,4 @@
-export { default as BottomNavigation } from './buttom-navigation.svelte';
+export { default as LessonNavigationActions } from './lesson-navigation-actions.svelte';
 export { default as LanguageSelector } from './language-selector.svelte';
 export { default as Loader } from './loader.svelte';
 export { default as Comments } from './comments.svelte';

@@ -2,51 +2,61 @@
   import { Badge } from '@cio/ui/base/badge';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { InputField } from '@cio/ui/custom/input-field';
-  import { Button } from '@cio/ui/base/button';
+  import { Label } from '@cio/ui/base/label';
+  import * as RadioGroup from '@cio/ui/base/radio-group';
+  import { RadioOptionCard } from '@cio/ui/custom/radio-option-card';
   import { t } from '$lib/utils/functions/translations';
   import { exerciseTemplateApi } from '$features/course/api/exercise-template.svelte';
   import { snackbar } from '$features/ui/snackbar/store';
   import { Confetti, ComingSoon } from '$features/ui';
-  import { CircleCheckIcon } from '$features/ui/icons';
   import { EXERCISE_TEMPLATE_TAGS } from '$features/course/utils/constants';
   import { exerciseApi } from '$features/course/api';
+  import type { StepperState, StepperActions, BaseStepperProps } from './types';
+  import { EXERCISE_STEPPER_DEFAULT_STATE, EXERCISE_CREATE_TYPE } from './constants';
 
-  interface Props {
-    courseId: string;
-    sectionId?: string;
-    order?: number;
-    onCreated: (exerciseId: string) => void;
-    onCancel: () => void;
-    canCreate: boolean;
+  interface Props extends BaseStepperProps {
+    stepperState: StepperState;
   }
 
-  let { courseId, sectionId, order, onCreated, onCancel, canCreate }: Props = $props();
-
-  const Type = {
-    SCRATCH: 0,
-    TEMPLATE: 1,
-    AI: 2
-  } as const;
+  let {
+    courseId,
+    sectionId,
+    order,
+    onCreated,
+    canCreate,
+    stepperState = $bindable(EXERCISE_STEPPER_DEFAULT_STATE)
+  }: Props = $props();
 
   const options = [
     {
+      id: 'exercise-from-scratch',
       title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.from_scratch'),
-      subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.from_scratch_subtitle'),
-      type: Type.SCRATCH,
+      description: $t('course.navItem.lessons.exercises.new_exercise_modal.options.from_scratch_subtitle'),
+      type: EXERCISE_CREATE_TYPE.SCRATCH,
       isDisabled: false
     },
     {
+      id: 'exercise-use-template',
       title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_template'),
-      subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_template_subtitle'),
-      type: Type.TEMPLATE,
+      description: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_template_subtitle'),
+      type: EXERCISE_CREATE_TYPE.TEMPLATE,
       isDisabled: false
+    },
+    {
+      id: 'exercise-ai',
+      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_ai'),
+      description: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_ai_subtitle'),
+      type: EXERCISE_CREATE_TYPE.AI,
+      isDisabled: true
     }
   ];
 
   const tags = Object.values(EXERCISE_TEMPLATE_TAGS);
 
   let step = $state(0);
-  let type: number = $state(Type.SCRATCH);
+  /** String for RadioGroup.Root (component expects string); numeric type derived for logic */
+  let typeValue = $state(String(EXERCISE_CREATE_TYPE.SCRATCH));
+  const type = $derived(Number(typeValue));
   let isLoading = $state(false);
   let isAIStarted = $state(false);
   let title = $state('');
@@ -104,6 +114,78 @@
       onCreated(exerciseApi.exercise.id);
     }
   }
+
+  // ============================================
+  // COMPUTED VALUES FOR PARENT
+  // ============================================
+
+  const canProceedStep0 = $derived(canCreate);
+  const canProceedStep1 = $derived(
+    type === EXERCISE_CREATE_TYPE.SCRATCH ? title.trim().length > 0 && canCreate : !!selectedTemplateId && canCreate
+  );
+  const canProceed = $derived(step === 0 ? canProceedStep0 : canProceedStep1);
+
+  const primaryActionLabel = $derived(
+    step === 0
+      ? $t('course.navItem.lessons.exercises.new_exercise_modal.next')
+      : $t('course.navItem.lessons.exercises.new_exercise_modal.finish')
+  );
+
+  // ============================================
+  // SYNC STATE TO BINDABLE (parent has bind:stepperState)
+  // Only assign when values change to avoid infinite re-renders.
+  // ============================================
+  const isSubmitting = $derived(isLoading || isTemplateFinishedLoading);
+  $effect(() => {
+    const next = {
+      currentStep: step,
+      totalSteps: 2,
+      canProceed,
+      isSubmitting,
+      primaryActionLabel
+    };
+    if (
+      stepperState.currentStep !== next.currentStep ||
+      stepperState.canProceed !== next.canProceed ||
+      stepperState.isSubmitting !== next.isSubmitting ||
+      stepperState.primaryActionLabel !== next.primaryActionLabel
+    ) {
+      stepperState = next;
+    }
+  });
+
+  // ============================================
+  // EXPORTED ACTIONS
+  // ============================================
+  export const actions: StepperActions = {
+    async next() {
+      if (step === 0) {
+        handleNext();
+      } else {
+        if (type === EXERCISE_CREATE_TYPE.SCRATCH) {
+          await handleAddExercise();
+        } else if (type === EXERCISE_CREATE_TYPE.TEMPLATE) {
+          await handleTemplateSelection();
+        }
+      }
+    },
+
+    back() {
+      handleBack();
+    },
+
+    reset() {
+      step = 0;
+      typeValue = String(EXERCISE_CREATE_TYPE.SCRATCH);
+      title = '';
+      selectedTag = tags[0];
+      selectedTemplateId = undefined;
+      isLoading = false;
+      isAIStarted = false;
+      isTemplateFinishedLoading = false;
+      stepperState = { ...EXERCISE_STEPPER_DEFAULT_STATE };
+    }
+  };
 </script>
 
 {#if !isLoading && isAIStarted}
@@ -111,68 +193,48 @@
 {/if}
 {#if step === 0}
   <div>
-    <h2 class="my-5 text-xl font-medium">{$t('course.navItem.lessons.exercises.new_exercise_modal.how')}?</h2>
+    <Label class="text-md! mb-3">{$t('course.navItem.lessons.exercises.new_exercise_modal.how')}?</Label>
 
-    <div class="my-8 flex flex-wrap justify-between gap-2">
-      {#each options as option}
-        <button
-          class="h-52 w-full max-w-[260px] rounded-md border-2 p-5 dark:bg-neutral-700 {option.type === type
-            ? 'border-primary-400'
-            : `border-gray-200 ${!option.isDisabled && 'hover:scale-95'}`} flex flex-col {option.isDisabled &&
-            'cursor-not-allowed opacity-60'} transition-all ease-in-out"
-          type="button"
-          onclick={!option.isDisabled ? () => (type = option.type) : undefined}
+    <RadioGroup.Root
+      value={typeValue}
+      onValueChange={(v) => (typeValue = v ?? String(EXERCISE_CREATE_TYPE.SCRATCH))}
+      class="grid gap-3 md:grid-cols-2"
+    >
+      {#each options as option (option.id)}
+        <RadioOptionCard
+          id={option.id}
+          title={option.title}
+          description={option.description}
+          value={String(option.type)}
+          disabled={option.isDisabled}
         >
-          <div class="flex h-[70%] w-full flex-row-reverse">
-            <CircleCheckIcon size={16} filled={option.type === type} />
-          </div>
-
-          <div>
-            <p class="flex items-center text-start">
-              <span class="mr-2 text-sm">{option.title}</span>
-              {#if option.isDisabled}
-                <ComingSoon />
-              {/if}
-            </p>
-            <p class="text-start text-xs font-light">{option.subtitle}</p>
-          </div>
-        </button>
+          {#snippet titleSuffix()}
+            {#if option.isDisabled}
+              <ComingSoon />
+            {/if}
+          {/snippet}
+        </RadioOptionCard>
       {/each}
-    </div>
-
-    <div class="mt-8 flex flex-row-reverse items-center">
-      <Button onclick={handleNext} disabled={!canCreate}
-        >{$t('course.navItem.lessons.exercises.new_exercise_modal.next')}</Button
-      >
-    </div>
+    </RadioGroup.Root>
   </div>
 {:else if step === 1}
-  {#if type === Type.SCRATCH}
+  {#if type === EXERCISE_CREATE_TYPE.SCRATCH}
     <div class="m-auto flex min-h-[300px] w-96 items-center justify-center">
       <div class="w-full">
-        <h2 class="my-5 text-2xl font-medium">{$t('course.navItem.lessons.exercises.new_exercise_modal.title')}</h2>
         <InputField
+          label={$t('course.navItem.lessons.exercises.new_exercise_modal.title')}
           bind:value={title}
           autoFocus={true}
           placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.title_placeholder')}
-          className="my-4"
+          className="my-4 w-2/4!"
         />
-
-        <div class="mt-5 flex items-center justify-between">
-          <Button variant="outline" onclick={handleBack}
-            >{$t('course.navItem.lessons.exercises.new_exercise_modal.back')}</Button
-          >
-          <Button onclick={handleAddExercise} disabled={!title.trim() || !canCreate}>
-            {$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
-          </Button>
-        </div>
       </div>
     </div>
-  {:else if type === Type.TEMPLATE}
+  {:else if type === EXERCISE_CREATE_TYPE.TEMPLATE}
     <div>
-      <h2 class="m-0 mb-2 text-2xl font-medium">
+      <Label class="text-md mb-1 font-bold">
         {$t('course.navItem.lessons.exercises.new_exercise_modal.select_template')}
-      </h2>
+      </Label>
 
       <div>
         <div class="mb-5 flex items-center gap-2">
@@ -213,26 +275,11 @@
             {/each}
           </div>
         {:else}
-          <p class="text-sm text-gray-500">No templates available for this tag.</p>
+          <p class="text-sm text-gray-500">
+            {$t('course.navItem.lessons.exercises.new_exercise_modal.no_templates_for_tag')}
+          </p>
         {/if}
-
-        <div class="mt-5 flex items-center justify-between">
-          <Button variant="outline" onclick={handleBack}
-            >{$t('course.navItem.lessons.exercises.new_exercise_modal.back')}</Button
-          >
-          <Button
-            onclick={handleTemplateSelection}
-            loading={isTemplateFinishedLoading}
-            disabled={!selectedTemplateId || !canCreate}
-          >
-            {$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
-          </Button>
-        </div>
       </div>
     </div>
   {/if}
 {/if}
-
-<div class="mt-4 flex justify-end">
-  <Button variant="ghost" onclick={onCancel}>Cancel</Button>
-</div>

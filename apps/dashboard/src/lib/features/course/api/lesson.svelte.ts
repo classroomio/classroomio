@@ -116,14 +116,19 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'creating lesson',
       onSuccess: (response) => {
         if (response.data) {
-          snackbar.success('Lesson created successfully');
+          const createdLesson = response.data as Lesson;
+          this.lesson = {
+            ...createdLesson,
+            lessonLanguages: createdLesson.lessonLanguages ?? []
+          };
+          snackbar.success('snackbar.lessons.lesson_created');
           this.success = true;
           this.errors = {};
         }
       },
       onError: (result) => {
         if (typeof result === 'string') {
-          snackbar.error('Failed to create lesson');
+          snackbar.error('snackbar.lessons.lesson_create_failed');
           return;
         }
         if ('error' in result && 'field' in result && result.field) {
@@ -158,7 +163,7 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'updating lesson',
       onError: (result) => {
         console.log('onError', result);
-        snackbar.error('Failed to update lesson');
+        snackbar.error('snackbar.lessons.lesson_update_failed');
       }
     });
 
@@ -177,14 +182,14 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'deleting lesson',
       onSuccess: (response) => {
         if (response.data) {
-          snackbar.success('Lesson deleted successfully');
+          snackbar.success('snackbar.lessons.lesson_deleted');
           this.success = true;
           this.errors = {};
         }
       },
       onError: (result) => {
         if (typeof result === 'string') {
-          snackbar.error('Failed to delete lesson');
+          snackbar.error('snackbar.lessons.lesson_delete_failed');
         }
       }
     });
@@ -211,14 +216,14 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'creating course section',
       onSuccess: (response) => {
         if (response.data) {
-          snackbar.success('Course section created successfully');
+          snackbar.success('snackbar.lessons.section_created');
           this.success = true;
           this.errors = {};
         }
       },
       onError: (result) => {
         if (typeof result === 'string') {
-          snackbar.error('Failed to create course section');
+          snackbar.error('snackbar.lessons.section_create_failed');
           return;
         }
         if ('error' in result && 'field' in result && result.field) {
@@ -248,14 +253,14 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'updating course section',
       onSuccess: (response) => {
         if (response.data) {
-          snackbar.success('Course section updated successfully');
+          snackbar.success('snackbar.lessons.section_updated');
           this.success = true;
           this.errors = {};
         }
       },
       onError: (result) => {
         if (typeof result === 'string') {
-          snackbar.error('Failed to update course section');
+          snackbar.error('snackbar.lessons.section_update_failed');
         }
       }
     });
@@ -293,14 +298,14 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'reordering course sections',
       onSuccess: (response) => {
         if (response.data) {
-          snackbar.success('Course sections reordered successfully');
+          snackbar.success('snackbar.lessons.sections_reordered');
           this.success = true;
           this.errors = {};
         }
       },
       onError: (result) => {
         if (typeof result === 'string') {
-          snackbar.error('Failed to reorder course sections');
+          snackbar.error('snackbar.lessons.sections_reorder_failed');
         }
       }
     });
@@ -325,14 +330,14 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'reordering lessons',
       onSuccess: (response) => {
         if (response.data) {
-          snackbar.success('Lessons reordered successfully');
+          snackbar.success('snackbar.lessons.lessons_reordered');
           this.success = true;
           this.errors = {};
         }
       },
       onError: (result) => {
         if (typeof result === 'string') {
-          snackbar.error('Failed to reorder lessons');
+          snackbar.error('snackbar.lessons.lessons_reorder_failed');
         }
       }
     });
@@ -387,7 +392,7 @@ export class LessonApi extends BaseApiWithErrors {
       onError: (result) => {
         this.commentsByLessonId[lessonId].isLoading = false;
         if (typeof result === 'string') {
-          snackbar.error('Failed to fetch lesson comments');
+          snackbar.error('snackbar.lessons.comment_fetch_failed');
         }
       }
     });
@@ -427,7 +432,7 @@ export class LessonApi extends BaseApiWithErrors {
       onError: (result) => {
         commentState.isLoading = false;
         if (typeof result === 'string') {
-          snackbar.error('Failed to load more comments');
+          snackbar.error('snackbar.lessons.load_more_comments_failed');
         }
       }
     });
@@ -438,7 +443,7 @@ export class LessonApi extends BaseApiWithErrors {
    */
   async createComment(courseId: string, lessonId: string, comment: string) {
     if (!courseId || !lessonId) {
-      snackbar.error('Failed to add comment');
+      snackbar.error('snackbar.lessons.comment_add_failed');
       return;
     }
 
@@ -468,7 +473,7 @@ export class LessonApi extends BaseApiWithErrors {
         },
         onError: (result) => {
           if (typeof result === 'string') {
-            snackbar.error('Failed to add comment');
+            snackbar.error('snackbar.lessons.comment_add_failed');
           }
         }
       });
@@ -506,14 +511,14 @@ export class LessonApi extends BaseApiWithErrors {
                 c.id === Number(commentId) ? this.getCommentFromResponse(response.data) : c
               );
             }
-            snackbar.success('Comment updated successfully');
+            snackbar.success('snackbar.lessons.comment_updated');
             this.success = true;
             this.errors = {};
           }
         },
         onError: (result) => {
           if (typeof result === 'string') {
-            snackbar.error('Failed to update comment');
+            snackbar.error('snackbar.lessons.comment_update_failed');
           }
         }
       });
@@ -541,14 +546,14 @@ export class LessonApi extends BaseApiWithErrors {
             );
             this.commentsByLessonId[lessonId].totalCount--;
           }
-          snackbar.success('Comment deleted successfully');
+          snackbar.success('snackbar.lessons.comment_deleted');
           this.success = true;
           this.errors = {};
         }
       },
       onError: (result) => {
         if (typeof result === 'string') {
-          snackbar.error('Failed to delete comment');
+          snackbar.error('snackbar.lessons.comment_delete_failed');
         }
       }
     });
@@ -581,7 +586,7 @@ export class LessonApi extends BaseApiWithErrors {
       },
       onError: (result) => {
         if (typeof result === 'string') {
-          snackbar.error('Failed to update lesson completion');
+          snackbar.error('snackbar.lessons.completion_update_failed');
         }
       }
     });

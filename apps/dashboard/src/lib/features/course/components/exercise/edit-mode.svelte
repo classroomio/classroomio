@@ -168,13 +168,10 @@
               onValueChange={(value) => {
                 if (!value) return;
                 const id = parseInt(value);
-                console.log('id', id);
 
                 question.questionType = QUESTION_TYPES.find((q) => q.id === id) ?? QUESTION_TYPES[0];
                 question.questionTypeId = question.questionType.id;
                 question.isDirty = true;
-
-                console.log('question', question);
               }}
             >
               <Select.Trigger class="w-[180px]">
@@ -218,18 +215,20 @@
                 {/each}
               </RadioGroup.Root>
             {:else if QUESTION_TYPE.CHECKBOX === question.questionType.id}
-              {#each $questionnaire.questions[index]?.options || [] as option}
-                {#if !option.deletedAt}
-                  <CheckboxField
-                    isEditable={true}
-                    name={question?.name || 'checkbox-name'}
-                    bind:label={option.label}
-                    onchange={addDynamicValue(question.id, option.id)}
-                  >
-                    {@render optionActions(question, option)}
-                  </CheckboxField>
-                {/if}
-              {/each}
+              <div class="flex flex-col gap-3">
+                {#each $questionnaire.questions[index]?.options || [] as option}
+                  {#if !option.deletedAt}
+                    <CheckboxField
+                      isEditable={true}
+                      name={question?.name || 'checkbox-name'}
+                      bind:label={option.label}
+                      onchange={addDynamicValue(question.id, option.id)}
+                    >
+                      {@render optionActions(question, option)}
+                    </CheckboxField>
+                  {/if}
+                {/each}
+              </div>
             {/if}
 
             {#if QUESTION_TYPE.TEXTAREA === question.questionType.id}
@@ -245,9 +244,7 @@
             <div class="mt-3 flex items-center">
               <Button variant="outline" onclick={handleAddOption(question.id)}>
                 <CirclePlusIcon size={16} />
-                <p class="ml-2 dark:text-white">
-                  {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.option')}
-                </p>
+                {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.option')}
               </Button>
             </div>
           {/if}

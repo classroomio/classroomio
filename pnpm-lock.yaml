@@ -286,7 +286,7 @@ importers:
         version: 1.13.2
       better-auth:
         specifier: ^1.3.34
-        version: 1.4.9(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1)))(@tanstack/react-start@1.143.4(crossws@0.4.1(srvx@0.9.8))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1)))(drizzle-kit@0.31.8)(drizzle-orm@0.44.7(kysely@0.28.9)(postgres@3.4.7))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(solid-js@1.9.10)(svelte@5.46.0)(vitest@2.1.9(@types/node@20.19.27)(jsdom@25.0.1(bufferutil@4.1.0)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(sass@1.97.1))(vue@3.5.26(typescript@5.9.3))
+        version: 1.4.9(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1)))(@tanstack/react-start@1.143.4(crossws@0.4.1(srvx@0.9.8))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1)))(drizzle-kit@0.31.8)(drizzle-orm@0.44.7(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7))(pg@8.18.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(solid-js@1.9.10)(svelte@5.46.0)(vitest@2.1.9(@types/node@20.19.27)(jsdom@25.0.1(bufferutil@4.1.0)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(sass@1.97.1))(vue@3.5.26(typescript@5.9.3))
       bits-ui:
         specifier: ^2.14.4
         version: 2.14.4(@internationalized/date@3.10.1)(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)
@@ -582,7 +582,7 @@ importers:
         version: 5.1.2(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2))
       nitro:
         specifier: 3.0.1-alpha.1
-        version: 3.0.1-alpha.1(chokidar@4.0.3)(drizzle-orm@0.44.7(kysely@0.28.9)(postgres@3.4.7))(ioredis@5.8.2)(lru-cache@11.2.4)(rollup@4.54.0)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2))
+        version: 3.0.1-alpha.1(chokidar@4.0.3)(drizzle-orm@0.44.7(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7))(ioredis@5.8.2)(lru-cache@11.2.4)(rollup@4.54.0)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2))
       tailwindcss:
         specifier: ^4.1.16
         version: 4.1.18
@@ -640,7 +640,7 @@ importers:
         version: 3.3.1(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))
       '@sveltejs/adapter-vercel':
         specifier: ^4.0.0
-        version: 4.0.5(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))
+        version: 4.0.5(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))(encoding@0.1.13)
       '@sveltejs/kit':
         specifier: ^2.5.27
         version: 2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1))
@@ -810,13 +810,13 @@ importers:
         version: 6.0.0
       better-auth:
         specifier: ^1.4.1
-        version: 1.4.9(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.46.0)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2)))(svelte@5.46.0)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2)))(@tanstack/react-start@1.143.4(crossws@0.4.1(srvx@0.9.8))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2)))(drizzle-kit@0.31.8)(drizzle-orm@0.44.7(kysely@0.28.9)(postgres@3.4.7))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(solid-js@1.9.10)(svelte@5.46.0)(vitest@2.1.9(@types/node@24.10.4)(jsdom@25.0.1(bufferutil@4.1.0)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(sass@1.97.1))(vue@3.5.26(typescript@5.9.3))
+        version: 1.4.9(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.46.0)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2)))(svelte@5.46.0)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2)))(@tanstack/react-start@1.143.4(crossws@0.4.1(srvx@0.9.8))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2)))(drizzle-kit@0.31.8)(drizzle-orm@0.44.7(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7))(pg@8.18.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(solid-js@1.9.10)(svelte@5.46.0)(vitest@2.1.9(@types/node@24.10.4)(jsdom@25.0.1(bufferutil@4.1.0)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(sass@1.97.1))(vue@3.5.26(typescript@5.9.3))
       drizzle-kit:
-        specifier: ^0.31.5
+        specifier: ^0.31.8
         version: 0.31.8
       drizzle-orm:
         specifier: ^0.44.7
-        version: 0.44.7(kysely@0.28.9)(postgres@3.4.7)
+        version: 0.44.7(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7)
       postgres:
         specifier: ^3.4.7
         version: 3.4.7
@@ -827,9 +827,15 @@ importers:
       '@types/node':
         specifier: ^24.8.1
         version: 24.10.4
+      '@types/pg':
+        specifier: ^8.16.0
+        version: 8.16.0
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3
+      pg:
+        specifier: ^8.18.0
+        version: 8.18.0
       tsc-alias:
         specifier: ^1.8.16
         version: 1.8.16
@@ -5676,6 +5682,9 @@ packages:
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
 
+  '@types/pg@8.16.0':
+    resolution: {integrity: sha512-RmhMd/wD+CF8Dfo+cVIy3RR5cl8CyfXQ0tGgW6XBL8L4LM/UTEbNXYRbLwU6w+CgrKBNbrQWt4FUtTfaU5jSYQ==}
+
   '@types/pluralize@0.0.30':
     resolution: {integrity: sha512-kVww6xZrW/db5BR9OqiT71J9huRdQ+z/r+LbDuT7/EK50mCmj5FoaIARnVv0rvjUS/YpDox0cDU9lpQT011VBA==}
 
@@ -9664,6 +9673,40 @@ packages:
   performance-now@2.1.0:
     resolution: {integrity: sha512-7EAHlyLHI56VEIdK57uwHdHKIaAGbnXPiw0yWbarQZOKaKpvUIgW0jWRVLiatnM+XXlSwsanIBH/hzGMJulMow==}
 
+  pg-cloudflare@1.3.0:
+    resolution: {integrity: sha512-6lswVVSztmHiRtD6I8hw4qP/nDm1EJbKMRhf3HCYaqud7frGysPv7FYJ5noZQdhQtN2xJnimfMtvQq21pdbzyQ==}
+
+  pg-connection-string@2.11.0:
+    resolution: {integrity: sha512-kecgoJwhOpxYU21rZjULrmrBJ698U2RxXofKVzOn5UDj61BPj/qMb7diYUR1nLScCDbrztQFl1TaQZT0t1EtzQ==}
+
+  pg-int8@1.0.1:
+    resolution: {integrity: sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==}
+    engines: {node: '>=4.0.0'}
+
+  pg-pool@3.11.0:
+    resolution: {integrity: sha512-MJYfvHwtGp870aeusDh+hg9apvOe2zmpZJpyt+BMtzUWlVqbhFmMK6bOBXLBUPd7iRtIF9fZplDc7KrPN3PN7w==}
+    peerDependencies:
+      pg: '>=8.0'
+
+  pg-protocol@1.11.0:
+    resolution: {integrity: sha512-pfsxk2M9M3BuGgDOfuy37VNRRX3jmKgMjcvAcWqNDpZSf4cUmv8HSOl5ViRQFsfARFn0KuUQTgLxVMbNq5NW3g==}
+
+  pg-types@2.2.0:
+    resolution: {integrity: sha512-qTAAlrEsl8s4OiEQY69wDvcMIdQN6wdz5ojQiOy6YRMuynxenON0O5oCpJI6lshc6scgAY8qvJ2On/p+CXY0GA==}
+    engines: {node: '>=4'}
+
+  pg@8.18.0:
+    resolution: {integrity: sha512-xqrUDL1b9MbkydY/s+VZ6v+xiMUmOUk7SS9d/1kpyQxoJ6U9AO1oIJyUWVZojbfe5Cc/oluutcgFG4L9RDP1iQ==}
+    engines: {node: '>= 16.0.0'}
+    peerDependencies:
+      pg-native: '>=3.0.1'
+    peerDependenciesMeta:
+      pg-native:
+        optional: true
+
+  pgpass@1.0.5:
+    resolution: {integrity: sha512-FdW9r/jQZhSeohs1Z3sI1yxFQNFvMcnmfuj4WBMUTxOrAyLMaTcE1aAMBiTlbMNaXvBCQuVi0R7hd8udDSP7ug==}
+
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
@@ -9802,6 +9845,22 @@ packages:
   postcss@8.5.6:
     resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
     engines: {node: ^10 || ^12 || >=14}
+
+  postgres-array@2.0.0:
+    resolution: {integrity: sha512-VpZrUqU5A69eQyW2c5CA1jtLecCsN2U/bD6VilrFDWq5+5UIEVO7nazS3TEcHf1zuPYO/sqGvUvW62g86RXZuA==}
+    engines: {node: '>=4'}
+
+  postgres-bytea@1.0.1:
+    resolution: {integrity: sha512-5+5HqXnsZPE65IJZSMkZtURARZelel2oXUEO8rH83VS/hxH5vv1uHquPg5wZs8yMAfdv971IU+kcPUczi7NVBQ==}
+    engines: {node: '>=0.10.0'}
+
+  postgres-date@1.0.7:
+    resolution: {integrity: sha512-suDmjLVQg78nMK2UZ454hAG+OAW+HQPZ6n++TNDUX+L0+uUlLywnoxJKDou51Zm+zTCjrCl0Nq6J9C5hP9vK/Q==}
+    engines: {node: '>=0.10.0'}
+
+  postgres-interval@1.2.0:
+    resolution: {integrity: sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==}
+    engines: {node: '>=0.10.0'}
 
   postgres@3.4.7:
     resolution: {integrity: sha512-Jtc2612XINuBjIl/QTWsV5UvE8UHuNblcO3vVADSrKsrc6RqGX6lOW1cEo3CM2v0XG4Nat8nI+YM7/f26VxXLw==}
@@ -10639,6 +10698,10 @@ packages:
 
   split2@3.2.2:
     resolution: {integrity: sha512-9NThjpgZnifTkJpzTZ7Eue85S49QwpNhZTq6GRJwObb6jnLFNGB7Qm73V5HewTROPyxD0C29xqmaI68bQtV+hg==}
+
+  split2@4.2.0:
+    resolution: {integrity: sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg==}
+    engines: {node: '>= 10.x'}
 
   split@1.0.1:
     resolution: {integrity: sha512-mTyOoPbrivtXnwnIxZRFYRrPNtEFKlpB2fvjSnCQUiAA6qAZzqwna5envK4uk6OIeP17CsdF3rSBGYVBsU0Tkg==}
@@ -16218,7 +16281,7 @@ snapshots:
       - encoding
       - supports-color
 
-  '@sveltejs/adapter-vercel@4.0.5(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))':
+  '@sveltejs/adapter-vercel@4.0.5(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))(encoding@0.1.13)':
     dependencies:
       '@sveltejs/kit': 2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.30.2)(sass@1.97.1))
       '@vercel/nft': 0.26.5(encoding@0.1.13)
@@ -17442,6 +17505,12 @@ snapshots:
 
   '@types/normalize-package-data@2.4.4': {}
 
+  '@types/pg@8.16.0':
+    dependencies:
+      '@types/node': 24.10.4
+      pg-protocol: 1.11.0
+      pg-types: 2.2.0
+
   '@types/pluralize@0.0.30': {}
 
   '@types/prop-types@15.7.15': {}
@@ -18205,7 +18274,7 @@ snapshots:
       node-addon-api: 8.5.0
       node-gyp-build: 4.8.4
 
-  better-auth@1.4.9(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1)))(@tanstack/react-start@1.143.4(crossws@0.4.1(srvx@0.9.8))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1)))(drizzle-kit@0.31.8)(drizzle-orm@0.44.7(kysely@0.28.9)(postgres@3.4.7))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(solid-js@1.9.10)(svelte@5.46.0)(vitest@2.1.9(@types/node@20.19.27)(jsdom@25.0.1(bufferutil@4.1.0)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(sass@1.97.1))(vue@3.5.26(typescript@5.9.3)):
+  better-auth@1.4.9(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1)))(@tanstack/react-start@1.143.4(crossws@0.4.1(srvx@0.9.8))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1)))(drizzle-kit@0.31.8)(drizzle-orm@0.44.7(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7))(pg@8.18.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(solid-js@1.9.10)(svelte@5.46.0)(vitest@2.1.9(@types/node@20.19.27)(jsdom@25.0.1(bufferutil@4.1.0)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(sass@1.97.1))(vue@3.5.26(typescript@5.9.3)):
     dependencies:
       '@better-auth/core': 1.4.9(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.7(zod@4.2.1))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0)
       '@better-auth/telemetry': 1.4.9(@better-auth/core@1.4.9(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.7(zod@4.2.1))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0))
@@ -18223,7 +18292,8 @@ snapshots:
       '@sveltejs/kit': 2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1))
       '@tanstack/react-start': 1.143.4(crossws@0.4.1(srvx@0.9.8))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.30.2)(sass@1.97.1))
       drizzle-kit: 0.31.8
-      drizzle-orm: 0.44.7(kysely@0.28.9)(postgres@3.4.7)
+      drizzle-orm: 0.44.7(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7)
+      pg: 8.18.0
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
       solid-js: 1.9.10
@@ -18231,7 +18301,7 @@ snapshots:
       vitest: 2.1.9(@types/node@20.19.27)(jsdom@25.0.1(bufferutil@4.1.0)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(sass@1.97.1)
       vue: 3.5.26(typescript@5.9.3)
 
-  better-auth@1.4.9(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.46.0)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2)))(svelte@5.46.0)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2)))(@tanstack/react-start@1.143.4(crossws@0.4.1(srvx@0.9.8))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2)))(drizzle-kit@0.31.8)(drizzle-orm@0.44.7(kysely@0.28.9)(postgres@3.4.7))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(solid-js@1.9.10)(svelte@5.46.0)(vitest@2.1.9(@types/node@24.10.4)(jsdom@25.0.1(bufferutil@4.1.0)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(sass@1.97.1))(vue@3.5.26(typescript@5.9.3)):
+  better-auth@1.4.9(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.46.0)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2)))(svelte@5.46.0)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2)))(@tanstack/react-start@1.143.4(crossws@0.4.1(srvx@0.9.8))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2)))(drizzle-kit@0.31.8)(drizzle-orm@0.44.7(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7))(pg@8.18.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(solid-js@1.9.10)(svelte@5.46.0)(vitest@2.1.9(@types/node@24.10.4)(jsdom@25.0.1(bufferutil@4.1.0)(utf-8-validate@6.0.6))(lightningcss@1.30.2)(sass@1.97.1))(vue@3.5.26(typescript@5.9.3)):
     dependencies:
       '@better-auth/core': 1.4.9(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.7(zod@4.2.1))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0)
       '@better-auth/telemetry': 1.4.9(@better-auth/core@1.4.9(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.7(zod@4.2.1))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0))
@@ -18249,7 +18319,8 @@ snapshots:
       '@sveltejs/kit': 2.49.2(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.46.0)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2)))(svelte@5.46.0)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2))
       '@tanstack/react-start': 1.143.4(crossws@0.4.1(srvx@0.9.8))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2))
       drizzle-kit: 0.31.8
-      drizzle-orm: 0.44.7(kysely@0.28.9)(postgres@3.4.7)
+      drizzle-orm: 0.44.7(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7)
+      pg: 8.18.0
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
       solid-js: 1.9.10
@@ -19061,9 +19132,9 @@ snapshots:
 
   dayjs@1.11.19: {}
 
-  db0@0.3.4(drizzle-orm@0.44.7(kysely@0.28.9)(postgres@3.4.7)):
+  db0@0.3.4(drizzle-orm@0.44.7(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7)):
     optionalDependencies:
-      drizzle-orm: 0.44.7(kysely@0.28.9)(postgres@3.4.7)
+      drizzle-orm: 0.44.7(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7)
 
   debug@2.6.9:
     dependencies:
@@ -19263,9 +19334,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.44.7(kysely@0.28.9)(postgres@3.4.7):
+  drizzle-orm@0.44.7(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7):
     optionalDependencies:
+      '@types/pg': 8.16.0
       kysely: 0.28.9
+      pg: 8.18.0
       postgres: 3.4.7
 
   dunder-proto@1.0.1:
@@ -22015,11 +22088,11 @@ snapshots:
 
   nf3@0.1.12: {}
 
-  nitro@3.0.1-alpha.1(chokidar@4.0.3)(drizzle-orm@0.44.7(kysely@0.28.9)(postgres@3.4.7))(ioredis@5.8.2)(lru-cache@11.2.4)(rollup@4.54.0)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2)):
+  nitro@3.0.1-alpha.1(chokidar@4.0.3)(drizzle-orm@0.44.7(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7))(ioredis@5.8.2)(lru-cache@11.2.4)(rollup@4.54.0)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2)):
     dependencies:
       consola: 3.4.2
       crossws: 0.4.1(srvx@0.9.8)
-      db0: 0.3.4(drizzle-orm@0.44.7(kysely@0.28.9)(postgres@3.4.7))
+      db0: 0.3.4(drizzle-orm@0.44.7(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7))
       h3: 2.0.1-rc.5(crossws@0.4.1(srvx@0.9.8))
       jiti: 2.6.1
       nf3: 0.1.12
@@ -22030,7 +22103,7 @@ snapshots:
       srvx: 0.9.8
       undici: 7.16.0
       unenv: 2.0.0-rc.24
-      unstorage: 2.0.0-alpha.4(chokidar@4.0.3)(db0@0.3.4(drizzle-orm@0.44.7(kysely@0.28.9)(postgres@3.4.7)))(ioredis@5.8.2)(lru-cache@11.2.4)(ofetch@2.0.0-alpha.3)
+      unstorage: 2.0.0-alpha.4(chokidar@4.0.3)(db0@0.3.4(drizzle-orm@0.44.7(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7)))(ioredis@5.8.2)(lru-cache@11.2.4)(ofetch@2.0.0-alpha.3)
     optionalDependencies:
       rollup: 4.54.0
       vite: 7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.97.1)(tsx@4.21.0)(yaml@2.8.2)
@@ -22370,6 +22443,41 @@ snapshots:
   performance-now@2.1.0:
     optional: true
 
+  pg-cloudflare@1.3.0:
+    optional: true
+
+  pg-connection-string@2.11.0: {}
+
+  pg-int8@1.0.1: {}
+
+  pg-pool@3.11.0(pg@8.18.0):
+    dependencies:
+      pg: 8.18.0
+
+  pg-protocol@1.11.0: {}
+
+  pg-types@2.2.0:
+    dependencies:
+      pg-int8: 1.0.1
+      postgres-array: 2.0.0
+      postgres-bytea: 1.0.1
+      postgres-date: 1.0.7
+      postgres-interval: 1.2.0
+
+  pg@8.18.0:
+    dependencies:
+      pg-connection-string: 2.11.0
+      pg-pool: 3.11.0(pg@8.18.0)
+      pg-protocol: 1.11.0
+      pg-types: 2.2.0
+      pgpass: 1.0.5
+    optionalDependencies:
+      pg-cloudflare: 1.3.0
+
+  pgpass@1.0.5:
+    dependencies:
+      split2: 4.2.0
+
   picocolors@1.1.1: {}
 
   picomatch@2.3.1: {}
@@ -22508,6 +22616,16 @@ snapshots:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
+
+  postgres-array@2.0.0: {}
+
+  postgres-bytea@1.0.1: {}
+
+  postgres-date@1.0.7: {}
+
+  postgres-interval@1.2.0:
+    dependencies:
+      xtend: 4.0.2
 
   postgres@3.4.7: {}
 
@@ -23408,6 +23526,8 @@ snapshots:
     dependencies:
       readable-stream: 3.6.2
 
+  split2@4.2.0: {}
+
   split@1.0.1:
     dependencies:
       through: 2.3.8
@@ -24299,10 +24419,10 @@ snapshots:
 
   unsplash-js@7.0.20: {}
 
-  unstorage@2.0.0-alpha.4(chokidar@4.0.3)(db0@0.3.4(drizzle-orm@0.44.7(kysely@0.28.9)(postgres@3.4.7)))(ioredis@5.8.2)(lru-cache@11.2.4)(ofetch@2.0.0-alpha.3):
+  unstorage@2.0.0-alpha.4(chokidar@4.0.3)(db0@0.3.4(drizzle-orm@0.44.7(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7)))(ioredis@5.8.2)(lru-cache@11.2.4)(ofetch@2.0.0-alpha.3):
     optionalDependencies:
       chokidar: 4.0.3
-      db0: 0.3.4(drizzle-orm@0.44.7(kysely@0.28.9)(postgres@3.4.7))
+      db0: 0.3.4(drizzle-orm@0.44.7(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7))
       ioredis: 5.8.2
       lru-cache: 11.2.4
       ofetch: 2.0.0-alpha.3

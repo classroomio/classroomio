@@ -566,10 +566,22 @@ class OrgApi extends BaseApiWithErrors {
 export const orgApi = new OrgApi();
 ```
 
+### Translations (UI copy)
+
+**Do not write plain English (or any user-facing text) directly in components.** All copy must live in the translation files and be referenced by key.
+
+- **Location**: `apps/dashboard/src/lib/utils/translations/en.json` (and other locale files in the same folder).
+- **Usage**: Import `t` from `$lib/utils/functions/translations`. In markup use the reactive store `$t('key.path')`; in script use `t('key.path')`.
+- **Keys**: Use dot-notation namespaces (e.g. `course.navItem.lessons.add_content`, `course.navItem.settings.course_title`). Add new keys under the appropriate section in `en.json`.
+
+**❌ Wrong:** Hardcoded strings in components (e.g. `Add content`, `Save`, `Cancel`).  
+**✅ Correct:** `$t('course.navItem.lessons.add_content')`, with the string defined in `en.json` under the corresponding key.
+
 ### Component Usage
 
 ```svelte
 <script lang="ts">
+  import { t } from '$lib/utils/functions/translations';
   import { orgApi } from '$features/org/api/org.svelte';
   let fields = $state({ name: '', siteName: '' });
 </script>
@@ -577,7 +589,9 @@ export const orgApi = new OrgApi();
 <form onsubmit={() => orgApi.create(fields)}>
   <input bind:value={fields.name} class:error={orgApi.errors.name} />
   {#if orgApi.errors.name}<span>{orgApi.errors.name}</span>{/if}
-  <button disabled={orgApi.isLoading}>{orgApi.isLoading ? 'Creating...' : 'Create'}</button>
+  <button disabled={orgApi.isLoading}>
+    {orgApi.isLoading ? $t('org.creating') : $t('org.create')}
+  </button>
 </form>
 ```
 
@@ -731,6 +745,7 @@ class AccountApi extends BaseApiWithErrors {
 - Keep components thin - only render UI and call API methods
 - Use `.server.ts` for server-side API calls with API keys
 - Use non-null assertion (`!`) for `user` when `authMiddleware` is present: `const user = c.get('user')!;`
+- Put all user-facing copy in `apps/dashboard/src/lib/utils/translations/en.json` and reference by key; use `$t('key.path')` in markup and `t('key.path')` in script (import from `$lib/utils/functions/translations`)
 
 ### ❌ DON'T
 - Put business logic in routes or queries
@@ -741,6 +756,7 @@ class AccountApi extends BaseApiWithErrors {
 - Include API key logic in `.svelte.ts` files
 - Call RPC client directly in server files (use `.server.ts` classes)
 - Add unnecessary null checks for `user` when `authMiddleware` is present (use `!` instead)
+- Write plain English or hardcoded user-facing text in components; use translation keys only
 
 ---
 

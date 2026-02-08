@@ -2,9 +2,19 @@
   import { page } from '$app/state';
   import { resolve } from '$app/paths';
   import { dndzone } from 'svelte-dnd-action';
+  import CalendarClockIcon from '@lucide/svelte/icons/calendar-clock';
+  import FileTextIcon from '@lucide/svelte/icons/file-text';
+  import HelpCircleIcon from '@lucide/svelte/icons/help-circle';
+  import LockIcon from '@lucide/svelte/icons/lock';
+  import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
+  import UnlockIcon from '@lucide/svelte/icons/lock-open';
+  import VideoIcon from '@lucide/svelte/icons/video';
+  import { HoverableItem, AttachmentIcon } from '@cio/ui/custom/moving-icons';
+  import { Button } from '@cio/ui/base/button';
   import { Chip } from '@cio/ui/custom/chip';
   import { lessonApi, exerciseApi, courseApi, contentApi } from '$features/course/api';
   import { globalStore } from '$lib/utils/store/app';
+  import formatDate from '$lib/utils/functions/formatDate';
   import { t } from '$lib/utils/functions/translations';
   import type { CourseContentItem } from '$features/course/utils/types';
   import { getCourseContent } from '$features/course/utils/content';
@@ -28,10 +38,16 @@
   let errors: Record<string, string> = $state({});
   let lessonToDelete: CourseContentItem | undefined = $state();
   let openDeleteModal = $state(false);
+  let lockPendingItemKeys = $state<Record<string, boolean>>({});
 
   let courseId = $derived(courseApi.course?.id || '');
   const profileId = $derived($profile?.id || '');
   const contentData = $derived(getCourseContent(courseApi.course));
+  const isStudentView = $derived($globalStore.isStudent === true);
+  const isLiveCourse = $derived(courseApi.course?.type === 'LIVE_CLASS');
+  const isSelfPacedCourse = $derived(courseApi.course?.type === 'SELF_PACED');
+  const metaChipClass =
+    'inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-1 text-[10px] text-gray-700 dark:bg-neutral-700 dark:text-gray-200';
 
   type ContentDndItem = CourseContentItem & {
     id: string;
@@ -67,7 +83,56 @@
     };
   }
 
+  function normalizeSectionId(value?: string | null) {
+    return value ? value : null;
+  }
+
+  async function applyPendingReorder() {
+    if (!contentItems.length) return;
+
+    const contentUpdates: Array<{
+      id: string;
+      type: ContentType.Lesson | ContentType.Exercise;
+      order: number;
+      sectionId?: string | null;
+    }> = [];
+
+    const updatedItems = contentItems.map((item, index) => {
+      const order = index + 1;
+
+      if (item.type === ContentType.Lesson || item.type === ContentType.Exercise) {
+        if (item.order !== order) {
+          contentUpdates.push({
+            id: item.contentId,
+            type: item.type,
+            order,
+            sectionId: normalizeSectionId(item.sectionId)
+          });
+        }
+      }
+
+      return {
+        ...item,
+        order
+      };
+    });
+
+    contentItems = updatedItems;
+    syncCourseContentItems(updatedItems);
+
+    if (contentUpdates.length > 0) {
+      await contentApi.updateContent(courseId, contentUpdates);
+    }
+  }
+
+  let previousReorder = $state(false);
+
   $effect(() => {
+    if (previousReorder && !reorder) {
+      void applyPendingReorder();
+    }
+    previousReorder = reorder;
+
     if (!reorder || contentItems.length === 0) {
       contentItems = buildContentItems();
     }
@@ -97,45 +162,12 @@
 
   function handleDndConsider(e: DndEvent) {
     contentItems = e.detail.items;
+    syncCourseContentItems(contentItems);
   }
 
-  function normalizeSectionId(value?: string | null) {
-    return value ? value : null;
-  }
-
-  async function handleDndFinalize(e: DndEvent) {
+  function handleDndFinalize(e: DndEvent) {
     const items = e.detail.items;
     contentItems = items;
-
-    const contentUpdates: Array<{
-      id: string;
-      type: ContentType.Lesson | ContentType.Exercise;
-      order: number;
-      sectionId?: string | null;
-    }> = [];
-
-    items.forEach((item, index) => {
-      const order = index + 1;
-
-      if (item.type !== ContentType.Lesson && item.type !== ContentType.Exercise) {
-        return;
-      }
-
-      if (item.order !== order) {
-        item.order = order;
-        contentUpdates.push({
-          id: item.contentId,
-          type: item.type,
-          order,
-          sectionId: normalizeSectionId(item.sectionId)
-        });
-      }
-    });
-
-    if (contentUpdates.length > 0) {
-      await contentApi.updateContent(courseId, contentUpdates);
-    }
-
     syncCourseContentItems(items);
 
     if (!reorder) {
@@ -151,6 +183,54 @@
     }
 
     return index + 1;
+  }
+
+  function getItemPath(item: ContentDndItem) {
+    if (item.type === ContentType.Lesson) {
+      return `/courses/${courseApi.course?.id}/lessons/${item.contentId}`;
+    }
+
+    return `/courses/${courseApi.course?.id}/exercises/${item.contentId}`;
+  }
+
+  function formatMetaDate(value?: string | null): string {
+    if (!value) return '';
+    return formatDate(value);
+  }
+
+  function isLockedForStudent(item: ContentDndItem, isStudent: boolean) {
+    return isStudent && (item.isUnlocked ?? true) === false;
+  }
+
+  function getItemLockKey(item: ContentDndItem) {
+    return `${item.type}-${item.contentId}`;
+  }
+
+  async function handleToggleItemLock(item: ContentDndItem) {
+    const lockKey = getItemLockKey(item);
+    if (lockPendingItemKeys[lockKey]) return;
+
+    lockPendingItemKeys = {
+      ...lockPendingItemKeys,
+      [lockKey]: true
+    };
+
+    try {
+      const lockErrors = await toggleLock({
+        item,
+        courseId,
+        lessonApi,
+        exerciseApi
+      });
+      errors = lockErrors;
+      if (Object.keys(lockErrors).length === 0) {
+        syncCourseContentItems(contentItems);
+      }
+    } finally {
+      const nextPending = { ...lockPendingItemKeys };
+      delete nextPending[lockKey];
+      lockPendingItemKeys = nextPending;
+    }
   }
 </script>
 
@@ -182,7 +262,7 @@
 />
 
 <section
-  class="mx-auto w-full p-3 lg:w-11/12 lg:px-4"
+  class="mx-auto w-full p-3 lg:w-11/12 lg:px-4 {reorder ? 'cursor-grab active:cursor-grabbing' : ''}"
   use:dndzone={{
     items: contentItems,
     flipDurationMs,
@@ -197,17 +277,21 @@
 >
   {#each contentItems as item (item.id)}
     {@const isEditingItem = $contentEditingStore === item.contentId}
-    {@const lessonLocked = $globalStore.isStudent && !item.isUnlocked}
-    {@const exerciseLocked = $globalStore.isStudent && (item.isUnlocked ?? true) === false}
+    {@const itemLocked = isLockedForStudent(item, isStudentView)}
     {@const lockLabel = item.isUnlocked
       ? $t('course.navItem.lessons.add_lesson.lock')
       : $t('course.navItem.lessons.add_lesson.unlock')}
+    {@const canRenderJoinButton =
+      item.type === ContentType.Lesson && isLiveCourse && Boolean(item.callUrl) && !itemLocked}
+    {@const canRenderContinueButton = isStudentView && !itemLocked}
+    {@const isLockPending = Boolean(lockPendingItemKeys[getItemLockKey(item)])}
+    {@const actionDisabled = Boolean($contentEditingStore && !isEditingItem)}
     <div
-      class="relative m-auto mb-4 flex max-w-xl items-center rounded-md border-2 border-gray-200 p-5 transition dark:bg-neutral-800 {reorder
-        ? 'border-primary-300 bg-primary-50/40 cursor-move shadow-sm'
+      class="relative m-auto mb-4 flex max-w-xl items-start rounded-md border border-gray-200 px-3 py-2 transition dark:bg-neutral-800 {reorder
+        ? 'border-primary-300 bg-primary-50/40 cursor-grab shadow-sm active:cursor-grabbing'
         : ''}"
     >
-      <div class="mr-5">
+      <div class="mt-0.5 mr-5">
         <Chip value={getContentOrder(item.contentId, item.type)} />
       </div>
 
@@ -215,74 +299,173 @@
         <ContentRow
           {item}
           bind:title={item.title}
-          href={resolve(
-            lessonLocked ? page.url.pathname : `/courses/${courseApi.course?.id}/lessons/${item.contentId}`,
-            {}
-          )}
+          isLocked={itemLocked}
+          href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
           isEditing={isEditingItem}
           {errors}
-          containerClass="flex w-4/5 items-center"
-          linkClass={`font-medium text-black no-underline hover:underline dark:text-white text-lg ${
-            lessonLocked ? 'cursor-not-allowed' : ''
-          }`}
-          inputClass="max-w-lg"
           autoFocus={isEditingItem}
-          showIcon={false}
-        />
+        >
+          {#snippet meta()}
+            {@const hasVideos = (item.videosCount ?? 0) > 0}
+            {@const hasDocuments = (item.documentsCount ?? 0) > 0}
+            {@const hasNote = item.hasNoteContent === true}
+            {@const hasSlide = item.hasSlideContent === true}
+            {@const hasAnyMaterials = hasVideos || hasDocuments || hasNote || hasSlide}
+            <div class="mt-2 flex flex-wrap items-center gap-1.5">
+              {#if hasVideos}
+                <span class={metaChipClass}>
+                  <VideoIcon size={12} />
+                  {item.videosCount}
+                </span>
+              {/if}
+
+              {#if hasDocuments}
+                <span class={metaChipClass}>
+                  <FileTextIcon size={12} />
+                  {item.documentsCount}
+                </span>
+              {/if}
+
+              {#if hasNote}
+                <span class={metaChipClass}>
+                  <FileTextIcon size={12} />
+                  {$t('course.navItem.lessons.materials.tabs.note.title')}
+                </span>
+              {/if}
+
+              {#if hasSlide}
+                <span class={metaChipClass}>
+                  <FileTextIcon size={12} />
+                  {$t('course.navItem.lessons.materials.tabs.slide.title')}
+                </span>
+              {/if}
+
+              {#if !hasAnyMaterials}
+                <HoverableItem>
+                  {#snippet children(isHovered)}
+                    <span class={metaChipClass}>
+                      <AttachmentIcon size={11} {isHovered} />
+                      {$t('course.navItem.lessons.materials.no_content')}
+                    </span>
+                  {/snippet}
+                </HoverableItem>
+              {/if}
+
+              {#if isLiveCourse && item.lessonAt}
+                <span class={metaChipClass}>
+                  <CalendarClockIcon size={12} />
+                  {formatMetaDate(item.lessonAt)}
+                </span>
+              {/if}
+
+              {#if isStudentView}
+                <span class={metaChipClass}>
+                  {item.isComplete ? $t('course.navItem.lessons.complete') : $t('course.navItem.lessons.incomplete')}
+                </span>
+              {/if}
+            </div>
+          {/snippet}
+        </ContentRow>
       {:else if item.type === ContentType.Exercise}
         <ContentRow
           {item}
           bind:title={item.title}
-          href={resolve(
-            exerciseLocked ? page.url.pathname : `/courses/${courseApi.course?.id}/exercises/${item.contentId}`,
-            {}
-          )}
+          isLocked={itemLocked}
+          href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
           isEditing={isEditingItem}
           {errors}
-          containerClass="flex w-4/5 items-center gap-2"
-          linkClass={`font-medium text-black no-underline hover:underline dark:text-white text-lg ${
-            exerciseLocked ? 'cursor-not-allowed opacity-50' : ''
-          }`}
-          inputClass="max-w-lg"
           autoFocus={isEditingItem}
-          showStatus
-          isLocked={exerciseLocked}
-          isComplete={item.isComplete}
-          iconSize={18}
-        />
+        >
+          {#snippet meta()}
+            <div class="mt-2 flex flex-wrap items-center gap-1.5">
+              {#if !isStudentView && item.questionCount !== null}
+                <span class={metaChipClass}>
+                  <HelpCircleIcon size={12} />
+                  {item.questionCount}
+                  {$t('course.navItem.lessons.exercises.all_exercises.questions')}
+                </span>
+              {/if}
+
+              {#if isSelfPacedCourse && item.dueBy}
+                <span class={metaChipClass}>
+                  <CalendarClockIcon size={12} />
+                  {$t('course.navItem.lessons.exercises.all_exercises.view_mode.due')}: {formatMetaDate(item.dueBy)}
+                </span>
+              {/if}
+            </div>
+          {/snippet}
+        </ContentRow>
       {/if}
 
-      <div class="flex flex-row">
-        <ContentActions
-          isEditing={isEditingItem}
-          disabled={Boolean($contentEditingStore && !isEditingItem)}
-          {lockLabel}
-          onEdit={() => {
-            contentEditingStore.set(item.contentId);
-            prevTitle = item.title;
-          }}
-          onSave={() => saveLesson(item)}
-          onCancel={() => {
-            item.title = prevTitle ?? item.title;
-            resetEdit();
-          }}
-          onDelete={() => {
-            lessonToDelete = item;
-            openDeleteModal = true;
-          }}
-          onToggleLock={async () => {
-            const lockErrors = await toggleLock({
-              item,
-              courseId,
-              lessonApi,
-              exerciseApi
-            });
-            errors = lockErrors;
-            if (Object.keys(lockErrors).length === 0) {
-              syncCourseContentItems(contentItems);
-            }
-          }}
-        />
+      <div class="ml-3 flex min-w-fit items-start gap-2">
+        {#if isStudentView}
+          <span class="mt-1 inline-flex items-center text-gray-500 dark:text-gray-300">
+            {#if itemLocked}
+              <LockIcon size={16} />
+            {:else}
+              <UnlockIcon size={16} />
+            {/if}
+          </span>
+        {:else}
+          <Button
+            size="icon-sm"
+            variant="outline"
+            class="h-8 w-8 text-gray-600"
+            onclick={() => handleToggleItemLock(item)}
+            disabled={actionDisabled || isEditingItem || isLockPending}
+            aria-label={lockLabel}
+            title={lockLabel}
+          >
+            {#if isLockPending}
+              <LoaderCircleIcon class="h-5 w-5 animate-spin" />
+            {:else if item.isUnlocked}
+              <UnlockIcon class="h-5 w-5" />
+            {:else}
+              <LockIcon class="h-5 w-5" />
+            {/if}
+          </Button>
+        {/if}
+
+        {#if !isStudentView && canRenderJoinButton}
+          <a href={item.callUrl!} target="_blank" rel="noreferrer" class="mt-0.5">
+            <Button size="sm" variant="outline">{$t('schedule.join')}</Button>
+          </a>
+        {/if}
+
+        {#if isStudentView && canRenderContinueButton && !isEditingItem}
+          {#if canRenderJoinButton}
+            <a href={item.callUrl!} target="_blank" rel="noreferrer">
+              <Button size="sm">{$t('schedule.join')}</Button>
+            </a>
+          {:else}
+            <a href={resolve(getItemPath(item), {})}>
+              <Button size="sm" variant="outline">{$t('dashboard.continue')}</Button>
+            </a>
+          {/if}
+        {/if}
+
+        {#if !isStudentView}
+          <ContentActions
+            isEditing={isEditingItem}
+            disabled={actionDisabled}
+            {lockLabel}
+            showLock={false}
+            onEdit={() => {
+              contentEditingStore.set(item.contentId);
+              prevTitle = item.title;
+            }}
+            onSave={() => saveLesson(item)}
+            onCancel={() => {
+              item.title = prevTitle ?? item.title;
+              resetEdit();
+            }}
+            onDelete={() => {
+              lessonToDelete = item;
+              openDeleteModal = true;
+            }}
+            onToggleLock={() => handleToggleItemLock(item)}
+          />
+        {/if}
       </div>
     </div>
   {:else}

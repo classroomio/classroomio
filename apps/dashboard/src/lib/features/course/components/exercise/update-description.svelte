@@ -52,7 +52,7 @@
             $questionnaire.isDescriptionDirty = true;
             $questionnaire.description = html;
           }}
-          editorClass="max-h-[300px]"
+          editorClass="max-h-[100px]"
           placeholder={$t('course.navItem.lessons.exercises.all_exercises.description.describe')}
         />
       </div>

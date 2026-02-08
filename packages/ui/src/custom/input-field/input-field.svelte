@@ -13,6 +13,7 @@
     onKeyDown?: (e: KeyboardEvent) => void;
     className?: string;
     labelClassName?: string;
+    inputClassName?: string;
     type?: string;
     autoFocus?: boolean;
     isRequired?: boolean;
@@ -34,6 +35,7 @@
     onKeyDown = (_e) => {},
     className = '',
     labelClassName = '',
+    inputClassName = '',
     type = $bindable('text'),
     autoFocus = false,
     isRequired = false,
@@ -77,6 +79,7 @@
   {/if}
 
   <Input
+    class={inputClassName}
     bind:ref={inputRef}
     id={name || 'input-field'}
     {type}

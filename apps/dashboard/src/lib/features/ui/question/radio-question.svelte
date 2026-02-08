@@ -124,7 +124,7 @@
     <RadioGroup.Root bind:value={selectedValue} {name}>
       {#each options as option}
         <button
-          class="my-2 w-full cursor-pointer rounded-md border-2 border-gray-300 text-left hover:bg-gray-200 dark:hover:bg-neutral-800 {getValidationClassName(
+          class="border-border w-full cursor-pointer rounded-md border text-left hover:bg-gray-50 {getValidationClassName(
             option
           )}"
           type="button"
@@ -140,6 +140,7 @@
       {/each}
     </RadioGroup.Root>
   </div>
+
   {#if gradeWithAI}
     <ReasonBox {reason} {isLoading} {acceptGrade} {rejectGrade} />
   {/if}

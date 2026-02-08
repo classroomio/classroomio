@@ -9,7 +9,7 @@
   import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
   import * as Field from '@cio/ui/base/field';
-  import * as RadioGroup from '@cio/ui/base/radio-group';
+  import { RadioOptionCardGroup } from '@cio/ui/custom/radio-option-card';
   import { t } from '$lib/utils/functions/translations';
   import type { TCourseType } from '@cio/db/types';
   import { courseApi } from '../api';
@@ -32,6 +32,13 @@
       isDisabled: false
     }
   ];
+  const courseTypeOptionsForGroup = options.map((o) => ({
+    id: o.id,
+    title: o.title,
+    description: o.subtitle,
+    value: o.type
+  }));
+
   let type = $state(options[0].type);
 
   function onClose(redirectTo) {
@@ -61,20 +68,7 @@
 {#snippet course_type_selector()}
   <Field.Description>{$t('courses.new_course_modal.type_selector_title')}</Field.Description>
 
-  <RadioGroup.Root bind:value={type} class="grid-cols-2">
-    {#each options as option (option.id)}
-      <Field.Label for={option.id}>
-        <Field.Field orientation="horizontal">
-          <Field.Content>
-            <Field.Title>{option.title}</Field.Title>
-            <Field.Description>{option.subtitle}</Field.Description>
-          </Field.Content>
-
-          <RadioGroup.Item value={option.type} id={option.id} aria-label={option.title} />
-        </Field.Field>
-      </Field.Label>
-    {/each}
-  </RadioGroup.Root>
+  <RadioOptionCardGroup options={courseTypeOptionsForGroup} bind:value={type} class="grid-cols-2" />
 {/snippet}
 
 <Dialog.Root

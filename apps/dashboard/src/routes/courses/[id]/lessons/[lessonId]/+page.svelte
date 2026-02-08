@@ -38,4 +38,6 @@
   });
 </script>
 
-<LessonPage courseId={data.courseId} lessonId={data.lessonId} />
+{#key data.lessonId}
+  <LessonPage courseId={data.courseId} lessonId={data.lessonId} />
+{/key}

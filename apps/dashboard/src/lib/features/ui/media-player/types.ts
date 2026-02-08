@@ -12,6 +12,7 @@ export interface MediaPlayerOptions {
   autoplay?: boolean;
   controls?: boolean;
   maxHeight?: number | string;
+  minHeight?: number | string;
   width?: number | string;
   height?: number | string;
   class?: string;

@@ -11,6 +11,7 @@
 
   import MODES from '$lib/utils/constants/mode';
   import { profile } from '$lib/utils/store/user';
+  import { globalStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbar } from '$features/ui/snackbar/store';
   import LessonVersionHistory from '$features/course/components/lesson/lesson-version-history.svelte';
@@ -28,7 +29,7 @@
   import { RoleBasedSecurity } from '$features/ui';
 
   import {
-    BottomNavigation,
+    LessonNavigationActions,
     LanguageSelector,
     Comments,
     Note,
@@ -83,7 +84,8 @@
     snackbar.success('snackbar.lessons.success.version_restored');
   };
 
-  const tabs = $derived.by(() => {
+  let tabs = $derived.by(() => {
+    if (lessonApi.lesson?.id !== lessonId) return [];
     const ordered = orderedTabs(materialTabs, courseApi.course?.metadata?.lessonTabsOrder);
     const content = lessonApi.translations[lessonId]?.[lessonApi.currentLocale] || '';
 
@@ -92,14 +94,14 @@
     const documents = lessonApi.lesson?.documents || [];
 
     return ordered.map((tab) => {
-      if (tab.value === 1 && !isHtmlValueEmpty(content)) {
-        tab.badgeValue = 1;
-      } else if (tab.value === 2 && !!slideUrl) {
-        tab.badgeValue = 1;
-      } else if (tab.value === 3 && !isEmpty(videos)) {
-        tab.badgeValue = videos.length;
-      } else if (tab.value === 4 && !isEmpty(documents)) {
-        tab.badgeValue = documents.length;
+      if (tab.value === 1) {
+        tab.badgeValue = isHtmlValueEmpty(content) ? 0 : 1;
+      } else if (tab.value === 2) {
+        tab.badgeValue = !!slideUrl ? 1 : 0;
+      } else if (tab.value === 3) {
+        tab.badgeValue = !isEmpty(videos) ? videos.length : 0;
+      } else if (tab.value === 4) {
+        tab.badgeValue = !isEmpty(documents) ? documents.length : 0;
       }
 
       return tab;
@@ -173,7 +175,7 @@
         await saveLesson();
 
         isSaving = false;
-      }, 4000);
+      }, 2000);
     });
   }
 
@@ -240,7 +242,11 @@
     <Page.Title>{lessonTitle}</Page.Title>
   </Page.HeaderContent>
   <Page.Action>
-    <div class="flex items-center gap-1">
+    <div class="flex items-center gap-2">
+      {#if mode === MODES.view && $globalStore.isStudent}
+        <LessonNavigationActions {lessonId} {courseId} />
+      {/if}
+
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         {#if mode === MODES.edit && window.innerWidth >= 1024}
           <IconButton onclick={() => (isVersionDrawerOpen = true)}>
@@ -344,8 +350,6 @@
     </div>
   {/snippet}
 </Page.Body>
-
-<BottomNavigation {lessonId} {courseId} />
 
 {#if isVersionDrawerOpen && window.innerWidth >= 1024}
   <LessonVersionHistory

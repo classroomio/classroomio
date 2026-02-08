@@ -182,7 +182,8 @@ export const ZCourseMetadata = z.object({
   grading: z.boolean().optional(),
   lessonDownload: z.boolean().optional(),
   allowNewStudent: z.boolean(),
-  sectionDisplay: z.record(z.string(), z.boolean()).optional()
+  sectionDisplay: z.record(z.string(), z.boolean()).optional(),
+  isContentGroupingEnabled: z.boolean().optional()
 });
 export type TCourseMetadata = z.infer<typeof ZCourseMetadata>;
 

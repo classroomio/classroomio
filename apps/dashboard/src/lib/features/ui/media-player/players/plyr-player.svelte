@@ -17,7 +17,7 @@
   let playerInstance: Plyr | null = null;
 
   const playsinline = $derived(options.playsinline !== false);
-  const maxHeight = $derived(options.maxHeight || '569px');
+  const maxHeight = $derived(options.maxHeight || '400px');
   const showControls = $derived(options.controls !== false);
   const autoplay = $derived(options.autoplay === true);
 
@@ -36,14 +36,16 @@
       // For YouTube, use Plyr's YouTube embed support
       playerInstance = new Plyr(containerElement, {
         controls: plyrControls,
-        autoplay: autoplay
+        autoplay: autoplay,
+        ratio: '16:9' // Or '16:9', '1:1', etc.
       });
     } else if (videoElement) {
       // For regular HTML5 video
       // playsinline is set as an HTML attribute on the video element, not a Plyr option
       playerInstance = new Plyr(videoElement, {
         controls: plyrControls,
-        autoplay: autoplay
+        autoplay: autoplay,
+        ratio: '16:9' // Or '16:9', '1:1', etc.
       });
     }
   });
@@ -74,7 +76,7 @@
   });
 </script>
 
-<div class="relative" style="max-height: {maxHeight};">
+<div class="relative" style="max-height: {maxHeight}; min-height: {options.minHeight}; height: {options.height};">
   {#if isYouTube && youtubeVideoId}
     <!-- YouTube embed using Plyr's progressive enhancement -->
     <div

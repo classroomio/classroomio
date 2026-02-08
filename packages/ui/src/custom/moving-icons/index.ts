@@ -1,5 +1,6 @@
 export { default as AnalyticsIcon } from './analytics.svelte';
 export { default as AttendanceIcon } from './attendance.svelte';
+export { default as AttachmentIcon } from './attachment.svelte';
 export { default as CertificateIcon } from './certificate.svelte';
 export { default as CloseIcon } from './close.svelte';
 export { default as CommunityIcon } from './community.svelte';

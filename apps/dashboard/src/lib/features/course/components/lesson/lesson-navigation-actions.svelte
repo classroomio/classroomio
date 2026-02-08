@@ -1,15 +1,16 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
+  import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+  import { CircleCheckIcon } from '$features/ui/icons';
+  import { Button } from '@cio/ui/base/button';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { courseApi, lessonApi } from '$features/course/api';
   import { getCourseContent } from '$features/course/utils/content';
   import { ContentType } from '@cio/utils/constants/content';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { CircleCheckIcon } from '$features/ui/icons';
-  import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
-  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 
   interface Props {
     lessonId: string;
@@ -26,18 +27,18 @@
   );
   const lessonItems = $derived(contentItems.filter((item) => item.type === ContentType.Lesson));
 
-  const isNextOrPrevDisabled = (lessonId: string, isPrev: boolean) => {
-    const index = lessonItems.findIndex((lesson) => lesson.id === lessonId);
+  const isNextOrPrevDisabled = (currentLessonId: string, isPrev: boolean) => {
+    const index = lessonItems.findIndex((lesson) => lesson.id === currentLessonId);
 
     return isPrev ? !lessonItems[index - 1] : !lessonItems[index + 1];
   };
 
-  const goToNextOrPrevLesson = (lessonId: string, isPrev: boolean) => {
-    const isDisabled = isNextOrPrevDisabled(lessonId, isPrev);
+  const goToNextOrPrevLesson = (currentLessonId: string, isPrev: boolean) => {
+    const isDisabled = isNextOrPrevDisabled(currentLessonId, isPrev);
 
     if (isDisabled) return;
 
-    const index = lessonItems.findIndex((lesson) => lesson.id === lessonId);
+    const index = lessonItems.findIndex((lesson) => lesson.id === currentLessonId);
     const nextOrPrevLesson = isPrev ? lessonItems[index - 1] : lessonItems[index + 1];
 
     const isLocked = $globalStore.isStudent && !nextOrPrevLesson.isUnlocked;
@@ -51,22 +52,22 @@
   const isPrevDisabled = $derived(isNextOrPrevDisabled(lessonId, true));
   const isNextDisabled = $derived(isNextOrPrevDisabled(lessonId, false));
   const isLessonComplete = $derived.by(() => {
-    const lesson = lessonItems.find((l) => l.id === lessonId);
+    const lesson = lessonItems.find((lesson) => lesson.id === lessonId);
     return lesson?.isComplete ?? false;
   });
 
-  async function markLessonComplete(lessonId: string) {
+  async function markLessonComplete(currentLessonId: string) {
     isMarkingComplete = true;
 
-    const lesson = lessonItems.find((l) => l.id === lessonId);
+    const lesson = lessonItems.find((entry) => entry.id === currentLessonId);
     const currentIsComplete = lesson?.isComplete ?? lessonApi.lesson?.isComplete ?? false;
 
     const isComplete = !currentIsComplete;
 
-    await lessonApi.updateCompletion(courseId, lessonId, isComplete);
+    await lessonApi.updateCompletion(courseId, currentLessonId, isComplete);
 
     if (lessonApi.success) {
-      updateCourseContentCompletion(lessonId, isComplete);
+      updateCourseContentCompletion(currentLessonId, isComplete);
       snackbar.success('snackbar.lessons.success.complete_marked');
     } else {
       snackbar.error('snackbar.lessons.error.try_later');
@@ -75,7 +76,7 @@
     isMarkingComplete = false;
   }
 
-  function updateCourseContentCompletion(lessonId: string, isComplete: boolean) {
+  function updateCourseContentCompletion(currentLessonId: string, isComplete: boolean) {
     if (!courseApi.course?.content) return;
 
     if (courseApi.course.content.grouped) {
@@ -86,7 +87,7 @@
           sections: courseApi.course.content.sections.map((section) => ({
             ...section,
             items: section.items.map((item) =>
-              item.type === ContentType.Lesson && item.id === lessonId ? { ...item, isComplete } : item
+              item.type === ContentType.Lesson && item.id === currentLessonId ? { ...item, isComplete } : item
             )
           }))
         }
@@ -99,39 +100,46 @@
       content: {
         ...courseApi.course.content,
         items: courseApi.course.content.items.map((item) =>
-          item.type === ContentType.Lesson && item.id === lessonId ? { ...item, isComplete } : item
+          item.type === ContentType.Lesson && item.id === currentLessonId ? { ...item, isComplete } : item
         )
       }
     };
   }
 </script>
 
-<div class="absolute bottom-5 flex w-full items-center justify-center">
-  <div class="flex w-fit items-center gap-2 rounded-full bg-gray-100 px-5 py-1 shadow-xl dark:bg-neutral-700">
-    <button
-      disabled={isPrevDisabled}
-      class={`my-2 flex items-center border border-t-0 border-b-0 border-l-0 border-gray-300 px-2 pr-4 ${
-        isPrevDisabled && 'cursor-not-allowed opacity-25'
-      }`}
+<div class="flex items-center gap-2">
+  <Button
+    size="sm"
+    variant="secondary"
+    onclick={() => markLessonComplete(lessonId)}
+    loading={isMarkingComplete}
+    disabled={isMarkingComplete}
+  >
+    <CircleCheckIcon size={14} filled={isLessonComplete} />
+    <span class="text-xs">{$t('course.navItem.lessons.mark_as')} {$t('course.navItem.lessons.complete')}</span>
+  </Button>
+
+  <div class="flex items-center gap-1">
+    <Button
+      size="icon-sm"
+      variant="outline"
       onclick={() => goToNextOrPrevLesson(lessonId, true)}
+      disabled={isPrevDisabled}
+      aria-label={$t('course.navItem.lessons.prev')}
+      title={$t('course.navItem.lessons.prev')}
     >
-      <ChevronLeftIcon size={16} />
-      <span class="hidden md:block">{$t('course.navItem.lessons.prev')}</span>
-    </button>
-    <button
-      class="my-2 flex items-center border border-t-0 border-b-0 border-l-0 border-gray-300 px-2 pr-4"
-      onclick={() => markLessonComplete(lessonId)}
-      disabled={isMarkingComplete}
-    >
-      <CircleCheckIcon filled={isLessonComplete} />
-    </button>
-    <button
-      disabled={isNextDisabled}
-      class={`my-2 flex items-center px-2 ${isNextDisabled && 'cursor-not-allowed opacity-25'}`}
+      <ChevronLeftIcon size={14} />
+    </Button>
+
+    <Button
+      size="icon-sm"
+      variant="outline"
       onclick={() => goToNextOrPrevLesson(lessonId, false)}
+      disabled={isNextDisabled}
+      aria-label={$t('course.navItem.lessons.next')}
+      title={$t('course.navItem.lessons.next')}
     >
-      <span class="hidden md:block">{$t('course.navItem.lessons.next')}</span>
-      <ChevronRightIcon size={16} />
-    </button>
+      <ChevronRightIcon size={14} />
+    </Button>
   </div>
 </div>
