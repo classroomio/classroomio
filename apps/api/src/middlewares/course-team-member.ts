@@ -36,11 +36,7 @@ export const courseTeamMemberMiddleware = async (c: Context, next: Next) => {
     }
 
     // Check if user is a team member (ADMIN or TUTOR) or org admin
-    console.time('isCourseTeamMemberOrOrgAdmin');
-    console.log('courseId', courseId);
-    console.log('user.id', user.id);
     const isAllowed = await isCourseTeamMemberOrOrgAdmin(courseId, user.id);
-    console.timeEnd('isCourseTeamMemberOrOrgAdmin');
     if (isAllowed) {
       return next();
     }
