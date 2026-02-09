@@ -23,6 +23,24 @@ import { sql } from 'drizzle-orm';
 export const courseType = pgEnum('COURSE_TYPE', ['SELF_PACED', 'LIVE_CLASS']);
 export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
+export const courseInviteEventType = pgEnum('COURSE_INVITE_EVENT_TYPE', [
+  'CREATED',
+  'REVOKED',
+  'PREVIEWED',
+  'ACCEPTED',
+  'EMAIL_SENT',
+  'EMAIL_FAILED',
+  'ABUSE_BLOCKED'
+]);
+export const organizationInviteEventType = pgEnum('ORGANIZATION_INVITE_EVENT_TYPE', [
+  'CREATED',
+  'REVOKED',
+  'PREVIEWED',
+  'ACCEPTED',
+  'EMAIL_SENT',
+  'EMAIL_FAILED',
+  'ABUSE_BLOCKED'
+]);
 
 export const user = pgTable('user', {
   id: uuid()
@@ -801,6 +819,213 @@ export const groupmember = pgTable(
     unique('unique_entries').on(table.groupId, table.profileId, table.email),
     unique('unique_group_email').on(table.groupId, table.email),
     unique('unique_group_profile').on(table.groupId, table.profileId)
+  ]
+);
+
+export const courseInvite = pgTable(
+  'course_invite',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    courseId: uuid('course_id').notNull(),
+    // Reserved for future invite-role expansion (defaults to student invites)
+    roleId: bigint('role_id', { mode: 'number' })
+      .default(sql`'3'`)
+      .notNull(),
+    tokenHash: text('token_hash').notNull(),
+    createdByProfileId: uuid('created_by_profile_id').notNull(),
+    revokedByProfileId: uuid('revoked_by_profile_id'),
+    revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }).notNull(),
+    maxUses: integer('max_uses').default(1).notNull(),
+    usedCount: integer('used_count').default(0).notNull(),
+    isRevoked: boolean('is_revoked').default(false).notNull(),
+    allowedEmails: text('allowed_emails').array(),
+    allowedDomains: text('allowed_domains').array(),
+    metadata: jsonb().default({}).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    lastUsedAt: timestamp('last_used_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'course_invite_course_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.createdByProfileId],
+      foreignColumns: [profile.id],
+      name: 'course_invite_created_by_profile_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.revokedByProfileId],
+      foreignColumns: [profile.id],
+      name: 'course_invite_revoked_by_profile_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.roleId],
+      foreignColumns: [role.id],
+      name: 'course_invite_role_id_fkey'
+    }),
+    unique('course_invite_token_hash_key').on(table.tokenHash),
+    index('idx_course_invite_course_id').on(table.courseId),
+    index('idx_course_invite_expires_at').on(table.expiresAt),
+    index('idx_course_invite_created_by').on(table.createdByProfileId),
+    index('idx_course_invite_revoked_by').on(table.revokedByProfileId)
+  ]
+);
+
+export const courseInviteAudit = pgTable(
+  'course_invite_audit',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    inviteId: uuid('invite_id').notNull(),
+    courseId: uuid('course_id').notNull(),
+    eventType: courseInviteEventType('event_type').notNull(),
+    actorProfileId: uuid('actor_profile_id'),
+    targetEmail: varchar('target_email'),
+    ipAddress: text('ip_address'),
+    userAgent: text('user_agent'),
+    metadata: jsonb().default({}).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.inviteId],
+      foreignColumns: [courseInvite.id],
+      name: 'course_invite_audit_invite_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'course_invite_audit_course_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.actorProfileId],
+      foreignColumns: [profile.id],
+      name: 'course_invite_audit_actor_profile_id_fkey'
+    }),
+    index('idx_course_invite_audit_invite_id').on(table.inviteId),
+    index('idx_course_invite_audit_course_id').on(table.courseId),
+    index('idx_course_invite_audit_event_type').on(table.eventType),
+    index('idx_course_invite_audit_created_at').on(table.createdAt)
+  ]
+);
+
+export const organizationInvite = pgTable(
+  'organization_invite',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    // Role assigned when invite is accepted (e.g ADMIN, TUTOR)
+    roleId: bigint('role_id', { mode: 'number' }).notNull(),
+    email: text().notNull(),
+    tokenHash: text('token_hash').notNull(),
+    createdByProfileId: uuid('created_by_profile_id').notNull(),
+    acceptedByProfileId: uuid('accepted_by_profile_id'),
+    acceptedAt: timestamp('accepted_at', { withTimezone: true, mode: 'string' }),
+    revokedByProfileId: uuid('revoked_by_profile_id'),
+    revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }).notNull(),
+    isRevoked: boolean('is_revoked').default(false).notNull(),
+    metadata: jsonb().default({}).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'organization_invite_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.roleId],
+      foreignColumns: [role.id],
+      name: 'organization_invite_role_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.createdByProfileId],
+      foreignColumns: [profile.id],
+      name: 'organization_invite_created_by_profile_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.acceptedByProfileId],
+      foreignColumns: [profile.id],
+      name: 'organization_invite_accepted_by_profile_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.revokedByProfileId],
+      foreignColumns: [profile.id],
+      name: 'organization_invite_revoked_by_profile_id_fkey'
+    }),
+    unique('organization_invite_token_hash_key').on(table.tokenHash),
+    index('idx_organization_invite_organization_id').on(table.organizationId),
+    index('idx_organization_invite_email_org').on(table.email, table.organizationId),
+    index('idx_organization_invite_expires_at').on(table.expiresAt),
+    index('idx_organization_invite_created_by').on(table.createdByProfileId),
+    index('idx_organization_invite_accepted_by').on(table.acceptedByProfileId),
+    index('idx_organization_invite_revoked_by').on(table.revokedByProfileId)
+  ]
+);
+
+export const organizationInviteAudit = pgTable(
+  'organization_invite_audit',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    inviteId: uuid('invite_id').notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    eventType: organizationInviteEventType('event_type').notNull(),
+    actorProfileId: uuid('actor_profile_id'),
+    targetEmail: varchar('target_email'),
+    ipAddress: text('ip_address'),
+    userAgent: text('user_agent'),
+    metadata: jsonb().default({}).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.inviteId],
+      foreignColumns: [organizationInvite.id],
+      name: 'organization_invite_audit_invite_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'organization_invite_audit_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.actorProfileId],
+      foreignColumns: [profile.id],
+      name: 'organization_invite_audit_actor_profile_id_fkey'
+    }),
+    index('idx_organization_invite_audit_invite_id').on(table.inviteId),
+    index('idx_organization_invite_audit_org_id').on(table.organizationId),
+    index('idx_organization_invite_audit_event_type').on(table.eventType),
+    index('idx_organization_invite_audit_created_at').on(table.createdAt)
   ]
 );
 

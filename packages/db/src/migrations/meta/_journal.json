@@ -36,6 +36,13 @@
       "when": 1769982690239,
       "tag": "0004_medical_true_believers",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1770622627497,
+      "tag": "0005_outgoing_doomsday",
+      "breakpoints": true
     }
   ]
 }

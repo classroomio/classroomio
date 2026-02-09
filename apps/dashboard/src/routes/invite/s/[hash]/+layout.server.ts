@@ -1,23 +1,30 @@
 import { OrgApiServer } from '$features/org/api/org.server';
+import { classroomio } from '$lib/utils/services/api';
+import { getApiKeyHeaders } from '$lib/utils/services/api/server';
 import { redirect } from '@sveltejs/kit';
 
 export const load = async ({ params = { hash: '' } }) => {
   try {
-    const courseHashData = atob(decodeURIComponent(params.hash));
-    console.log('courseHashData', courseHashData);
+    const token = decodeURIComponent(params.hash);
+    const response = await classroomio.invite.student[':token'].preview.$get(
+      {
+        param: { token }
+      },
+      getApiKeyHeaders()
+    );
+    const result = await response.json();
 
-    const { id, name, description, orgSiteName } = JSON.parse(courseHashData);
-
-    if (!id || !name || !description || !orgSiteName) {
-      throw 'Validation failed';
+    if (!result.success || !result.data) {
+      throw new Error('Invalid invite payload');
     }
 
-    const currentOrg = await OrgApiServer.getOrgBySiteName(orgSiteName);
+    const currentOrg = result.data.organization.siteName
+      ? await OrgApiServer.getOrgBySiteName(result.data.organization.siteName)
+      : null;
 
     return {
-      id,
-      name,
-      description,
+      token,
+      invite: result.data,
       currentOrg
     };
   } catch (error) {

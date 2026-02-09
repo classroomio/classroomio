@@ -2,8 +2,8 @@
   import get from 'lodash/get';
   import { Button } from '@cio/ui/base/button';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
-  import { isCourseFree, getStudentInviteLink, calcCourseDiscount } from '$lib/utils/functions/course';
-  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
+  import { isCourseFree, calcCourseDiscount } from '$lib/utils/functions/course';
+  import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
   import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import { HTMLRender } from '$features/ui';
@@ -11,6 +11,8 @@
   import type { Course } from '$features/course/utils/types';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { t } from '$lib/utils/functions/translations';
+  import { classroomio } from '$lib/utils/services/api';
+  import { snackbar } from '$features/ui/snackbar/store';
 
   interface Props {
     className?: string;
@@ -37,7 +39,7 @@
   );
   const isFree = $derived(isCourseFree(calculatedCost));
 
-  function handleJoinCourse() {
+  async function handleJoinCourse() {
     if (editMode || !$currentOrg.siteName) return;
 
     capturePosthogEvent('join_course', {
@@ -48,9 +50,24 @@
     });
 
     if (isFree) {
-      const link = getStudentInviteLink(courseData, $currentOrg.siteName, $currentOrgDomain);
+      try {
+        const response = await classroomio.invite.student['public-link'].$post({
+          json: {
+            courseId: courseData.id
+          }
+        });
+        const result = await response.json();
 
-      goto(link);
+        if (!result.success || !result.data?.inviteLink) {
+          snackbar.error('snackbar.invite.failed_join');
+          return;
+        }
+
+        goto(result.data.inviteLink);
+      } catch (error) {
+        console.error('Failed to create public invite link', error);
+        snackbar.error('snackbar.invite.failed_join');
+      }
     } else {
       openModal = true;
     }

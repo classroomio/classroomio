@@ -20,6 +20,7 @@ import { dashAnalyticsRouter } from '@api/routes/dash';
 import { domainRouter } from '@api/routes/domain/domain';
 import { communityRouter } from '@api/routes/community';
 import { accountRouter } from '@api/routes/account';
+import { inviteRouter } from '@api/routes/invite';
 
 // Create Hono app with chaining for RPC support
 export const app = new Hono()
@@ -82,6 +83,7 @@ export const app = new Hono()
   .route('/organization', organizationRouter)
   .route('/dash', dashAnalyticsRouter)
   .route('/community', communityRouter)
+  .route('/invite', inviteRouter)
   .route('/unsplash', unsplashRouter)
 
   // Error handling

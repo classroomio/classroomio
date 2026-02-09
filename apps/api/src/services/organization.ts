@@ -2,16 +2,14 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { TNewOrganizationPlan, TOrganization, TOrganizationPlan, TPlan } from '@db/types';
 import {
   cancelOrganizationPlan,
-  checkEmailsExistInOrg,
-  createOrganizationMembers,
   createOrganizationPlan,
   deleteOrganizationMember,
   getOrgIdBySiteName,
   getOrganizationAudience,
-  getOrganizationById,
   getOrganizationBySiteName,
   getOrganizationTeam,
   getOrganizations,
+  revokeActiveOrganizationInvitesByEmails,
   updateOrganization,
   updateOrganizationPlan
 } from '@cio/db/queries/organization';
@@ -29,9 +27,8 @@ import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@
 
 import { ROLE } from '@cio/utils/constants';
 import { createOrganizationWithOwner } from '@api/services/onboarding';
-import { env } from '@api/config/env';
 import { getProfileById } from '@cio/db/queries/auth';
-import { sendEmail } from '@cio/email';
+import { inviteTeamMembers as inviteTeamMembersSecure } from './organization/invite';
 
 /**
  * Creates a new organization with the current user as owner
@@ -381,65 +378,12 @@ export async function cancelOrgPlan(subscriptionId: string, payload: TOrganizati
  * @param roleId - Role ID to assign (ADMIN or TUTOR)
  * @returns Array of created members
  */
-export async function inviteTeamMembers(orgId: string, emails: string[], roleId: number) {
-  const organization = await getOrganizationById(orgId);
-  if (!organization || !organization.siteName) {
-    throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
+export async function inviteTeamMembers(orgId: string, emails: string[], roleId: number, invitedByProfileId?: string) {
+  if (!invitedByProfileId) {
+    throw new AppError('Inviter profile ID is required', ErrorCodes.VALIDATION_ERROR, 400, 'invitedByProfileId');
   }
 
-  const normalizedEmails = [...new Set(emails.map((email) => email.toLowerCase().trim()))];
-
-  const existingEmails = await checkEmailsExistInOrg(orgId, normalizedEmails);
-  const emailsToInvite = normalizedEmails.filter((email) => !existingEmails.includes(email));
-
-  if (emailsToInvite.length === 0) {
-    return [];
-  }
-
-  try {
-    const members = await createOrganizationMembers(
-      emailsToInvite.map((email) => ({
-        organizationId: orgId,
-        email,
-        roleId,
-        verified: false
-      }))
-    );
-
-    const baseUrl = env.NODE_ENV === 'development' ? 'http://localhost:5173' : 'https://app.classroomio.com';
-
-    for (const email of emailsToInvite) {
-      try {
-        const inviteData = JSON.stringify({
-          email,
-          orgId: organization.id,
-          orgSiteName: organization.siteName
-        });
-        const inviteLink = `${baseUrl}/invite/t/${encodeURIComponent(btoa(inviteData))}`;
-
-        await sendEmail('inviteTeacher', {
-          to: email,
-          fields: {
-            email,
-            orgName: organization.name,
-            orgSiteName: organization.siteName,
-            inviteLink
-          }
-        });
-      } catch (emailError) {
-        console.error(`Failed to send invite email to ${email}:`, emailError);
-      }
-    }
-
-    return members;
-  } catch (error) {
-    console.error('Error inviting team members:', error);
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to invite team members',
-      ErrorCodes.ORG_TEAM_INVITE_FAILED,
-      500
-    );
-  }
+  return inviteTeamMembersSecure(orgId, emails, roleId, invitedByProfileId);
 }
 
 /**
@@ -448,11 +392,15 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
  * @param memberId - The member ID to remove
  * @returns Deleted member
  */
-export async function removeTeamMember(orgId: string, memberId: number) {
+export async function removeTeamMember(orgId: string, memberId: number, removedByProfileId?: string) {
   try {
     const deleted = await deleteOrganizationMember(orgId, memberId);
     if (!deleted) {
       throw new AppError('Team member not found', ErrorCodes.ORG_TEAM_REMOVE_FAILED, 404);
+    }
+
+    if (deleted.email && removedByProfileId) {
+      await revokeActiveOrganizationInvitesByEmails(orgId, [deleted.email.toLowerCase()], removedByProfileId);
     }
 
     return deleted;

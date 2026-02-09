@@ -38,6 +38,7 @@ import { lessonRouter } from '@api/routes/course/lesson';
 import { markRouter } from '@api/routes/course/mark';
 import { sectionRouter } from '@api/routes/course/section';
 import { membersRouter } from '@api/routes/course/people';
+import { invitesRouter } from '@api/routes/course/invite';
 import { newsfeedRouter } from '@api/routes/course/newsfeed';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
@@ -316,4 +317,5 @@ export const courseRouter = new Hono()
   .route('/:courseId/mark', markRouter)
   .route('/:courseId/newsfeed', newsfeedRouter)
   .route('/:courseId/members', membersRouter)
+  .route('/:courseId/invites', invitesRouter)
   .route('/presign', presignRouter);

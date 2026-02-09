@@ -25,11 +25,11 @@ import {
   getRecommendedCourses,
   getUserAnalytics,
   getUserEnrolledCourses,
-  inviteTeamMembers,
   removeTeamMember,
   updateOrg,
   updateOrgPlan
 } from '@api/services/organization';
+import { inviteTeamMembers } from '@api/services/organization/invite';
 
 import { Hono } from '@api/utils/hono';
 import { TOrganization } from '@db/types';
@@ -95,9 +95,10 @@ export const organizationRouter = new Hono()
   .post('/team/invite', authMiddleware, orgAdminMiddleware, zValidator('json', ZInviteTeamMembers), async (c) => {
     try {
       const orgId = c.req.header('cio-org-id')!;
+      const user = c.get('user')!;
       const { emails, roleId } = c.req.valid('json');
 
-      const members = await inviteTeamMembers(orgId, emails, roleId);
+      const members = await inviteTeamMembers(orgId, emails, roleId, user.id);
 
       return c.json(
         {
@@ -118,9 +119,10 @@ export const organizationRouter = new Hono()
   .delete('/team/:memberId', authMiddleware, orgAdminMiddleware, zValidator('param', ZRemoveTeamMember), async (c) => {
     try {
       const orgId = c.req.header('cio-org-id')!;
+      const user = c.get('user')!;
       const { memberId } = c.req.valid('param');
 
-      await removeTeamMember(orgId, memberId);
+      await removeTeamMember(orgId, memberId, user.id);
 
       return c.json(
         {

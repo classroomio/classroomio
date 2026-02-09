@@ -7,7 +7,7 @@ supabase
 static
 dist
 docker
-storybook-static
+**/storybook-static
 
 **/course-app
 apps/docs

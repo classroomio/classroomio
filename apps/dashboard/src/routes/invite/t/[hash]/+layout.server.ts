@@ -1,31 +1,34 @@
 import { OrgApiServer } from '$features/org/api/org.server';
-import { getProfile } from '$lib/utils/functions/user';
+import { classroomio } from '$lib/utils/services/api';
+import { getApiKeyHeaders } from '$lib/utils/services/api/server';
 import { redirect } from '@sveltejs/kit';
 
-// we need to know if the email exists or not.
-// with this we can only ask the user to accept
 export const load = async ({ params = { hash: '' } }) => {
   try {
-    const hashData = atob(decodeURIComponent(params.hash));
-    console.log('hashData', hashData);
+    const token = decodeURIComponent(params.hash);
+    const response = await classroomio.invite.organization[':token'].preview.$get(
+      {
+        param: { token }
+      },
+      getApiKeyHeaders()
+    );
+    const result = await response.json();
 
-    const { orgId, email, orgSiteName } = JSON.parse(hashData);
+    if (!result.success || !result.data) {
+      throw new Error('Invalid organization invite payload');
+    }
 
-    const currentOrg = await OrgApiServer.getOrgBySiteName(orgSiteName);
-
-    const profile = await getProfile(email);
-    console.log('profile data', profile);
+    const currentOrg = result.data.organization.siteName
+      ? await OrgApiServer.getOrgBySiteName(result.data.organization.siteName)
+      : null;
 
     return {
-      invite: {
-        orgId,
-        email,
-        currentOrg,
-        profile
-      }
+      token,
+      invite: result.data,
+      currentOrg
     };
   } catch (error) {
-    console.error('Error decoding invite params.hash', error);
+    console.error('Error decoding organization invite params.hash', error);
     redirect(307, '/404');
   }
 };

@@ -303,6 +303,30 @@ export type AddPeopleResponse = InferResponseType<AddPeopleRequest>;
 export type AddPeopleSuccess = Extract<AddPeopleResponse, { success: true }>;
 export type AddPeopleData = AddPeopleSuccess['data'];
 
+export type CreateStudentInviteRequest = (typeof classroomio.course)[':courseId']['invites']['$post'];
+export type CreateStudentInviteResponse = InferResponseType<CreateStudentInviteRequest>;
+export type CreateStudentInviteSuccess = Extract<CreateStudentInviteResponse, { success: true }>;
+export type CreateStudentInviteData = CreateStudentInviteSuccess['data'];
+
+export type ListStudentInvitesRequest = (typeof classroomio.course)[':courseId']['invites']['$get'];
+export type ListStudentInvitesResponse = InferResponseType<ListStudentInvitesRequest>;
+export type ListStudentInvitesSuccess = Extract<ListStudentInvitesResponse, { success: true }>;
+export type ListStudentInvitesData = ListStudentInvitesSuccess['data'];
+export type StudentInviteListItem = ListStudentInvitesData[number];
+
+export type RevokeStudentInviteRequest =
+  (typeof classroomio.course)[':courseId']['invites'][':inviteId']['revoke']['$post'];
+export type RevokeStudentInviteResponse = InferResponseType<RevokeStudentInviteRequest>;
+export type RevokeStudentInviteSuccess = Extract<RevokeStudentInviteResponse, { success: true }>;
+export type RevokeStudentInviteData = RevokeStudentInviteSuccess['data'];
+
+export type GetStudentInviteAuditRequest =
+  (typeof classroomio.course)[':courseId']['invites'][':inviteId']['audit']['$get'];
+export type GetStudentInviteAuditResponse = InferResponseType<GetStudentInviteAuditRequest>;
+export type GetStudentInviteAuditSuccess = Extract<GetStudentInviteAuditResponse, { success: true }>;
+export type StudentInviteAuditData = GetStudentInviteAuditSuccess['data'];
+export type StudentInviteAuditItem = StudentInviteAuditData[number];
+
 export type UpdatePeopleRequest = (typeof classroomio.course)[':courseId']['members'][':memberId']['$put'];
 export type UpdatePeopleResponse = InferResponseType<UpdatePeopleRequest>;
 export type UpdatePeopleSuccess = Extract<UpdatePeopleResponse, { success: true }>;
