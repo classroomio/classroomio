@@ -1,26 +1,28 @@
+import * as schema from '@cio/db/schema';
+
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { and, eq } from 'drizzle-orm';
 import {
   countInviteDistinctPreviewIps,
   createCourseInvite,
   createCourseInviteAudit,
-  getCourseInviteByTokenHash,
   getCourseInviteById,
+  getCourseInviteByTokenHash,
   listCourseInviteAudit,
   listCourseInviteAuditStats,
   listCourseInvites,
   revokeCourseInvite
 } from '@cio/db/queries/course/invite';
 import { getCourseById, getCourseWithOrgData, getCourseWithRelations } from '@cio/db/queries/course';
-import { getCourseTeachers } from '@cio/db/queries/course/people';
-import { getProfileById } from '@cio/db/queries/auth';
-import type { TCreateCourseInvite } from '@cio/utils/validation/course/invite';
+
 import { ROLE } from '@cio/utils/constants';
+import type { TCreateCourseInvite } from '@cio/utils/validation/course/invite';
+import crypto from 'node:crypto';
 import { db } from '@cio/db/drizzle';
 import { env } from '@api/config/env';
+import { getCourseTeachers } from '@cio/db/queries/course/people';
+import { getProfileById } from '@cio/db/queries/auth';
 import { sendEmail } from '@cio/email';
-import * as schema from '@cio/db/schema';
-import crypto from 'node:crypto';
 
 type InviteStatus = 'ACTIVE' | 'EXPIRED' | 'USED_UP' | 'REVOKED';
 type InvitePreset = 'ONE_TIME_24H' | 'MULTI_USE_7D' | 'MULTI_USE_30D' | 'CUSTOM';
@@ -35,7 +37,6 @@ const DOMAIN_REGEX = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ANOMALY_WINDOW_MINUTES = 60;
 const MAX_PREVIEW_IP_DIVERSITY = 25;
-const PUBLIC_LANDING_INVITE_EXPIRY_MS = 24 * 60 * 60 * 1000;
 
 interface TInviteRequestContext {
   ipAddress?: string | null;
@@ -149,12 +150,21 @@ function getInviteStatus(invite: {
   return 'ACTIVE';
 }
 
-function getAppBaseUrl(): string {
-  return env.NODE_ENV === 'development' ? 'http://localhost:5173' : 'https://app.classroomio.com';
+function getAppBaseUrl(orgSiteName?: string): string {
+  if (env.NODE_ENV === 'development') {
+    return 'http://localhost:5173';
+  }
+  const subdomain = orgSiteName && orgSiteName !== 'app' ? orgSiteName : 'app';
+  return `https://${subdomain}.classroomio.com`;
 }
 
-function buildInviteLink(token: string): string {
-  return `${getAppBaseUrl()}/invite/s/${encodeURIComponent(token)}`;
+/**
+ * Builds the course enroll URL for invite links (emails, etc.).
+ * Uses org subdomain in production.
+ */
+export function buildEnrollLink(courseSlug: string, token: string, orgSiteName?: string): string {
+  const base = getAppBaseUrl(orgSiteName);
+  return `${base}/course/${encodeURIComponent(courseSlug)}/enroll?invite_token=${encodeURIComponent(token)}`;
 }
 
 function getEmailDomain(email: string): string {
@@ -266,7 +276,9 @@ async function createSingleInvite(
   allowedEmails: string[] | null,
   allowedDomains: string[] | null,
   metadata: Record<string, unknown> | undefined,
-  targetEmail: string | null = null
+  targetEmail: string | null,
+  courseSlug: string,
+  orgSiteName: string | null
 ) {
   const token = generateToken();
   const tokenHash = hashToken(token);
@@ -296,7 +308,7 @@ async function createSingleInvite(
 
   return {
     ...created,
-    inviteLink: buildInviteLink(token)
+    inviteLink: buildEnrollLink(courseSlug, token, orgSiteName ?? undefined)
   };
 }
 
@@ -359,6 +371,8 @@ async function createEmailInviteAndSend(input: {
   policy: { expiresAt: string; maxUses: number };
   orgName: string;
   courseName: string;
+  courseSlug: string;
+  orgSiteName: string | null;
   metadata?: Record<string, unknown>;
   shouldSend: boolean;
 }) {
@@ -375,7 +389,9 @@ async function createEmailInviteAndSend(input: {
       ...(input.metadata || {}),
       source: 'DIRECT_EMAIL_INVITE'
     },
-    input.recipientEmail
+    input.recipientEmail,
+    input.courseSlug,
+    input.orgSiteName
   );
 
   if (!input.shouldSend) {
@@ -473,6 +489,12 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
     );
   }
 
+  const courseSlug = course[0].slug;
+  const orgSiteName = courseOrgData.orgSiteName ?? null;
+  if (!courseSlug) {
+    throw new AppError('Course must have a slug to create invite links', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
   if (recipients.valid.length === 0) {
     const createdInvite = await createSingleInvite(
       courseId,
@@ -480,7 +502,10 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
       policy,
       allowedEmails,
       allowedDomains,
-      data.metadata
+      data.metadata,
+      null,
+      courseSlug,
+      orgSiteName
     );
 
     return {
@@ -509,6 +534,8 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
         policy,
         orgName,
         courseName,
+        courseSlug,
+        orgSiteName,
         metadata: data.metadata,
         shouldSend: data.sendEmail
       })
@@ -538,44 +565,102 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
 }
 
 /**
- * Creates a secure one-time public invite link for free course enrollment flows.
- * This replaces legacy payload-based `/invite/s/:hash` links.
+ * Unified enrollment: with inviteToken validates and consumes invite; without token enrolls in free course only.
  */
-export async function createPublicStudentInvite(courseId: string) {
-  const course = await getCourseWithRelations(courseId);
-  if (!course) {
+export async function enrollInCourse(
+  courseId: string,
+  user: TAuthUser,
+  body: { inviteToken?: string },
+  context: TInviteRequestContext = {}
+) {
+  if (!user.id || !user.email) {
+    throw new AppError('Authenticated user email is required', ErrorCodes.UNAUTHORIZED, 401);
+  }
+
+  if (body.inviteToken) {
+    return acceptStudentInvite(body.inviteToken, user, context);
+  }
+
+  const courseWithRelations = await getCourseWithRelations(courseId);
+  if (!courseWithRelations) {
     throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
   }
 
-  if (course.status !== 'ACTIVE' || !course.isPublished) {
+  const { groupId, cost: courseCost, status, isPublished, title } = courseWithRelations;
+  const cost = Number(courseCost ?? 0);
+  if (cost > 0) {
+    throw new AppError('Paid courses require an invite or payment', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
+  if (!groupId) {
+    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+  }
+
+  const org = courseWithRelations.org;
+  if (!org) {
+    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+  }
+
+  if (status !== 'ACTIVE' || !isPublished) {
     throw new AppError('This course is not available for enrollment', ErrorCodes.VALIDATION_ERROR, 400);
   }
 
-  const courseMetadata = course.metadata as { allowNewStudent?: boolean } | null;
+  const courseMetadata = (courseWithRelations.metadata as { allowNewStudent?: boolean } | null) ?? null;
   if (courseMetadata?.allowNewStudent === false) {
     throw new AppError('This course is not accepting new students', ErrorCodes.VALIDATION_ERROR, 400);
   }
 
-  const invitedByProfileId = course.group?.members.find(
-    (member) => !!member.profileId && (member.roleId === ROLE.ADMIN || member.roleId === ROLE.TUTOR)
-  )?.profileId;
+  const normalizedEmail = user.email.toLowerCase().trim();
 
-  if (!invitedByProfileId) {
-    throw new AppError('Unable to issue invite link for this course', ErrorCodes.VALIDATION_ERROR, 400);
+  const [existingMember] = await db
+    .select({ id: schema.groupmember.id })
+    .from(schema.groupmember)
+    .where(and(eq(schema.groupmember.groupId, groupId), eq(schema.groupmember.profileId, user.id)))
+    .limit(1);
+
+  if (existingMember) {
+    return {
+      success: true,
+      alreadyJoined: true,
+      redirectTo: '/lms'
+    };
   }
 
-  const policy = {
-    expiresAt: new Date(Date.now() + PUBLIC_LANDING_INVITE_EXPIRY_MS).toISOString(),
-    maxUses: 1
-  };
+  const [orgMember] = await db
+    .select({ id: schema.organizationmember.id })
+    .from(schema.organizationmember)
+    .where(and(eq(schema.organizationmember.organizationId, org.id), eq(schema.organizationmember.profileId, user.id)))
+    .limit(1);
 
-  const createdInvite = await createSingleInvite(course.id, invitedByProfileId, policy, null, null, {
-    source: 'PUBLIC_COURSE_LANDING_PAGE'
+  if (!orgMember) {
+    await db.insert(schema.organizationmember).values({
+      organizationId: org.id,
+      roleId: ROLE.STUDENT,
+      profileId: user.id,
+      email: normalizedEmail,
+      verified: true
+    });
+  }
+
+  await db.insert(schema.groupmember).values({
+    groupId,
+    roleId: ROLE.STUDENT,
+    profileId: user.id,
+    email: normalizedEmail
+  });
+
+  await sendStudentJoinEmails({
+    courseId,
+    courseName: title,
+    orgName: org.name,
+    studentId: user.id,
+    studentEmail: normalizedEmail
   });
 
   return {
-    inviteLink: createdInvite.inviteLink,
-    expiresAt: createdInvite.expiresAt
+    success: true,
+    alreadyJoined: false,
+    redirectTo: '/lms'
   };
 }
 
@@ -738,14 +823,19 @@ export async function previewStudentInvite(token: string, context: TInviteReques
       status,
       requiresEmailMatch: !!(data.invite.allowedEmails?.length || data.invite.allowedDomains?.length)
     },
-    organization: data.organization,
+    organization: {
+      ...data.organization,
+      theme: data.organization.theme ?? undefined
+    },
     course: {
       id: data.course.id,
       title: data.course.title,
       description: data.course.description,
       allowNewStudent: courseMetadata?.allowNewStudent ?? true,
       isPublished: data.course.isPublished,
-      status: data.course.status
+      status: data.course.status,
+      slug: data.course.slug ?? undefined,
+      cost: data.course.cost
     }
   };
 }

@@ -6,6 +6,8 @@ import {
   ZCourseDeleteParam,
   ZCourseDownloadContent,
   ZCourseDownloadParam,
+  ZCourseEnrollBody,
+  ZCourseEnrollParam,
   ZCourseGetBySlugParam,
   ZCourseGetParam,
   ZCourseGetQuery,
@@ -22,6 +24,9 @@ import {
   getCourseProgress,
   updateCourse
 } from '@api/services/course/course';
+import { enrollInCourse } from '@api/services/course/invite';
+import { createRateLimiter } from '@api/middlewares/rate-limiter';
+import { extractClientIp } from '@api/utils/redis/key-generators';
 
 import { Hono } from '@api/utils/hono';
 import { attendanceRouter } from '@api/routes/course/attendance';
@@ -46,6 +51,17 @@ import { paymentRequestRouter } from '@api/routes/course/payment-request';
 import { presignRouter } from '@api/routes/course/presign';
 import { submissionRouter } from '@api/routes/course/submission';
 import { zValidator } from '@hono/zod-validator';
+
+const enrollRateLimit = createRateLimiter({
+  windowMs: 60 * 60 * 1000,
+  maxRequests: 20,
+  message: 'Too many enrollment attempts. Please try again later.',
+  keyGenerator: (c) => {
+    const user = c.get('user');
+    const actor = user?.id ? `user:${user.id}` : `ip:${extractClientIp(c)}`;
+    return `enroll:${actor}:${c.req.param('courseId')}`;
+  }
+});
 
 export const courseRouter = new Hono()
   /**
@@ -92,6 +108,48 @@ export const courseRouter = new Hono()
       return handleError(c, error, 'Failed to create course');
     }
   })
+  /**
+   * POST /course/:courseId/enroll
+   * Unified enrollment: free courses enroll directly; paid/invited require inviteToken.
+   */
+  .post(
+    '/:courseId/enroll',
+    authMiddleware,
+    enrollRateLimit,
+    zValidator('param', ZCourseEnrollParam),
+    zValidator('json', ZCourseEnrollBody),
+    async (c) => {
+      try {
+        const { courseId } = c.req.valid('param');
+        const body = c.req.valid('json');
+        const user = c.get('user')!;
+
+        const result = await enrollInCourse(
+          courseId,
+          {
+            id: user.id,
+            email: user.email,
+            emailVerified: user.emailVerified
+          },
+          body,
+          {
+            ipAddress: extractClientIp(c),
+            userAgent: c.req.header('user-agent') || null
+          }
+        );
+
+        return c.json(
+          {
+            success: true,
+            data: result
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to enroll');
+      }
+    }
+  )
   /**
    * GET /course/:courseId
    * Gets a course by ID or slug with all related data (group, members, lessons, sections, attendance)

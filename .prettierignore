@@ -23,4 +23,5 @@ packages/ui/src/output.css
 
 # No parser for these
 .prettierignore
+.dockerignore
 **/Dockerfile

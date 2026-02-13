@@ -23,7 +23,6 @@
 
   import TutorSelectSection from './tutor-select-section.svelte';
   import InviteSettingsSection from './invite-settings-section.svelte';
-  import QuickLinkSection from './quick-link-section.svelte';
   import BulkEmailSection from './bulk-email-section.svelte';
   import InviteListSection from './invite-list-section.svelte';
   import type { InviteListItem } from './types';
@@ -40,7 +39,7 @@
   let existingInvites = $state<InviteListItem[]>([]);
   let isLoadingInvites = $state(false);
   let activeTab = $state<'tutors' | 'students'>('tutors');
-  let activeStudentTab = $state<'quick-link' | 'email' | 'history'>('quick-link');
+  let activeStudentTab = $state<'email' | 'history'>('email');
 
   async function loadInvites() {
     if (!courseId) return;
@@ -107,7 +106,7 @@
     if (!isOpen || !courseId) return;
     untrack(() => {
       activeTab = 'tutors';
-      activeStudentTab = 'quick-link';
+      activeStudentTab = 'email';
       inviteSettingsStore.set({ ...DEFAULT_INVITE_SETTINGS_STATE });
       studentInviteLinkStore.set({ ...DEFAULT_STUDENT_INVITE_LINK_STATE });
       void loadInvites();
@@ -154,9 +153,6 @@
 
           <UnderlineTabs.Root bind:value={activeStudentTab}>
             <UnderlineTabs.List class="flex flex-wrap">
-              <UnderlineTabs.Trigger value="quick-link">
-                {$t(`${INVITE_MODAL}.quick_invite_link`)}
-              </UnderlineTabs.Trigger>
               <UnderlineTabs.Trigger value="email">
                 {$t(`${INVITE_MODAL}.direct_email_bulk`)}
               </UnderlineTabs.Trigger>
@@ -164,12 +160,6 @@
                 {$t(`${INVITE_MODAL}.existing_invites`)}
               </UnderlineTabs.Trigger>
             </UnderlineTabs.List>
-
-            <UnderlineTabs.Content value="quick-link">
-              <div class="mt-6">
-                <QuickLinkSection {courseId} {isOpen} onInviteCreated={loadInvites} />
-              </div>
-            </UnderlineTabs.Content>
 
             <UnderlineTabs.Content value="email">
               <div class="mt-6">

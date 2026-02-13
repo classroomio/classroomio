@@ -1,5 +1,5 @@
-import { ZCourseInviteTokenParam, ZCreatePublicCourseInviteLink } from '@cio/utils/validation/course/invite';
-import { acceptStudentInvite, createPublicStudentInvite, previewStudentInvite } from '@api/services/course/invite';
+import { ZCourseInviteTokenParam } from '@cio/utils/validation/course/invite';
+import { previewStudentInvite } from '@api/services/course/invite';
 import { ZOrganizationInviteTokenParam } from '@cio/utils/validation/organization/invite';
 import { acceptOrganizationInvite, previewOrganizationInvite } from '@api/services/organization/invite';
 
@@ -16,24 +16,6 @@ const previewInviteRateLimit = createRateLimiter({
   maxRequests: 30,
   message: 'Too many invite preview requests. Please try again later.',
   keyGenerator: (c) => `invite_preview:${extractClientIp(c)}:${c.req.param('token')}`
-});
-
-const createPublicInviteRateLimit = createRateLimiter({
-  windowMs: 60 * 1000,
-  maxRequests: 20,
-  message: 'Too many enrollment requests. Please try again later.',
-  keyGenerator: (c) => `invite_public_link:${extractClientIp(c)}:${c.req.valid('json').courseId}`
-});
-
-const acceptInviteRateLimit = createRateLimiter({
-  windowMs: 60 * 60 * 1000,
-  maxRequests: 20,
-  message: 'Too many invite join attempts. Please try again later.',
-  keyGenerator: (c) => {
-    const user = c.get('user');
-    const actor = user?.id ? `user:${user.id}` : `ip:${extractClientIp(c)}`;
-    return `invite_accept:${actor}:${c.req.param('token')}`;
-  }
 });
 
 const previewOrganizationInviteRateLimit = createRateLimiter({
@@ -56,36 +38,11 @@ const acceptOrganizationInviteRateLimit = createRateLimiter({
 
 export const inviteRouter = new Hono()
   /**
-   * POST /invite/student/public-link
-   * Creates a one-time secure invite link for free-course enrollment from public landing pages.
-   */
-  .post(
-    '/student/public-link',
-    zValidator('json', ZCreatePublicCourseInviteLink),
-    createPublicInviteRateLimit,
-    async (c) => {
-      try {
-        const { courseId } = c.req.valid('json');
-        const link = await createPublicStudentInvite(courseId);
-
-        return c.json(
-          {
-            success: true,
-            data: link
-          },
-          201
-        );
-      } catch (error) {
-        return handleError(c, error, 'Failed to create secure enrollment link');
-      }
-    }
-  )
-  /**
-   * GET /invite/student/:token/preview
-   * Server-only preview for secure invite links (API key)
+   * GET /invite/student/:token
+   * Server-only preview for secure invite links (API key). Returns course, org, invite for enroll page.
    */
   .get(
-    '/student/:token/preview',
+    '/student/:token',
     apiKeyMiddleware,
     previewInviteRateLimit,
     zValidator('param', ZCourseInviteTokenParam),
@@ -106,44 +63,6 @@ export const inviteRouter = new Hono()
         );
       } catch (error) {
         return handleError(c, error, 'Failed to load invite');
-      }
-    }
-  )
-  /**
-   * POST /invite/student/:token/accept
-   * Authenticated invite acceptance for secure links
-   */
-  .post(
-    '/student/:token/accept',
-    authMiddleware,
-    acceptInviteRateLimit,
-    zValidator('param', ZCourseInviteTokenParam),
-    async (c) => {
-      try {
-        const { token } = c.req.valid('param');
-        const user = c.get('user')!;
-        const result = await acceptStudentInvite(
-          token,
-          {
-            id: user.id,
-            email: user.email,
-            emailVerified: user.emailVerified
-          },
-          {
-            ipAddress: extractClientIp(c),
-            userAgent: c.req.header('user-agent') || null
-          }
-        );
-
-        return c.json(
-          {
-            success: true,
-            data: result
-          },
-          200
-        );
-      } catch (error) {
-        return handleError(c, error, 'Failed to accept invite');
       }
     }
   )

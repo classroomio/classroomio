@@ -216,6 +216,13 @@ export type CourseWithRelations = TCourse & {
     | null;
   attendance: TGroupAttendance[];
   contentItems: CourseContentItemRow[];
+  /** Set when course has groupId (from join on group -> organization) */
+  org?: {
+    id: string;
+    name: string;
+    siteName: string | null;
+    theme: string | null;
+  } | null;
 };
 
 export async function getCourseWithRelations(
@@ -247,13 +254,19 @@ export async function getCourseWithRelations(
     const course = courses[0];
     const finalCourseId = course.id;
 
-    // Type definitions for query results
+    // Type definitions for query results (group query joins organization for org context)
     type GroupQueryRow = {
       group: TGroup;
       member: TGroupmember | null;
       profile: Pick<TProfile, 'id' | 'fullname' | 'username' | 'avatarUrl' | 'email'> | null;
+      organization: {
+        id: string;
+        name: string;
+        siteName: string | null;
+        theme: string | null;
+      } | null;
     };
-    // Fetch group data if groupId exists
+    // Fetch group data (and org via join) if groupId exists
     const groupDataPromise: Promise<GroupQueryRow[]> = course.groupId
       ? db
           .select({
@@ -265,9 +278,16 @@ export async function getCourseWithRelations(
               username: schema.profile.username,
               avatarUrl: schema.profile.avatarUrl,
               email: schema.profile.email
+            },
+            organization: {
+              id: schema.organization.id,
+              name: schema.organization.name,
+              siteName: schema.organization.siteName,
+              theme: schema.organization.theme
             }
           })
           .from(schema.group)
+          .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
           .leftJoin(schema.groupmember, eq(schema.group.id, schema.groupmember.groupId))
           .leftJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
           .where(eq(schema.group.id, course.groupId))
@@ -297,11 +317,22 @@ export async function getCourseWithRelations(
           }
         : null;
 
+    const org =
+      groupData.length > 0 && groupData[0].organization
+        ? {
+            id: groupData[0].organization.id,
+            name: groupData[0].organization.name,
+            siteName: groupData[0].organization.siteName ?? null,
+            theme: groupData[0].organization.theme ?? null
+          }
+        : null;
+
     return {
       ...course,
       group,
       attendance,
-      contentItems
+      contentItems,
+      ...(org !== null && { org })
     };
   } catch (error) {
     console.error('Error in getCourseWithRelations', error);

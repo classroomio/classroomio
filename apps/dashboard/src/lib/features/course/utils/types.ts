@@ -252,6 +252,7 @@ export type UpdateCourseContentRequest = (typeof classroomio.course)[':courseId'
 export type DeleteCourseContentRequest = (typeof classroomio.course)[':courseId']['content']['$delete'];
 export type GetCourseProgressRequest = (typeof classroomio.course)[':courseId']['progress']['$get'];
 export type CloneCourseRequest = (typeof classroomio.course)[':courseId']['clone']['$post'];
+export type EnrollCourseRequest = (typeof classroomio.course)[':courseId']['enroll']['$post'];
 
 // Course response types
 export type GetCourseResponse = InferResponseType<GetCourseRequest> | null;

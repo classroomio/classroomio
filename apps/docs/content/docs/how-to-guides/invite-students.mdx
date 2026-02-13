@@ -1,11 +1,77 @@
 ---
 title: How to Invite Students
-description: Learn how to invite students to your courses.
+description: Learn how to invite students to your courses using email invitations and how enrollment works for free and paid courses.
 ---
 
-import { Callout } from 'fumadocs-ui/components/callout';
+import { Step, Steps } from 'fumadocs-ui/components/steps';
 
+Course invitations in ClassroomIO let you add students to a course by sending them a secure enrollment link by email. Each invite is unique and can have its own expiry and usage limits.
 
-<Callout type="warn" title="Work in Progress">
-  This page is a work in progress. Help us expand it by contributing!
-</Callout>
+## How course invitations work
+
+- **Email-based invites:** You enter one or more email addresses (or paste a list). ClassroomIO creates a unique invite per recipient and can send the enrollment link by email.
+- **Enrollment link:** Each invite link points to an **enrollment page** for that course (e.g. `https://yoursite.classroomio.com/course/your-course-slug/enroll?invite_token=...`). When a student opens the link, they see the course details and a **Join course** button.
+- **One link per invite:** Invite links are tied to the course and (for paid or restricted courses) to the invite’s rules (expiry, max uses, allowed emails). Students sign in or sign up when they click **Join course**, then they’re enrolled and redirected to the learning dashboard.
+
+## Free vs paid courses
+
+- **Free courses:** Students can enroll without an invite. From the course landing page they click **Enroll** and are taken to the same enrollment page (`/course/:slug/enroll`) with no token; they sign in or sign up and are enrolled immediately.
+- **Paid or invite-only courses:** Students need either to pay (if you’ve set up payment) or to use a valid invite link. If they open the enrollment page without a valid invite or payment, they’ll see a message that they need to pay or be invited.
+
+## Sending email invites
+
+<Steps>
+<Step>
+### Open the course and go to People
+
+From the dashboard, open the **Courses** page and select the course. In the course sidebar, click **People**.
+</Step>
+
+<Step>
+### Open the invite modal
+
+Click **Add people** (or the equivalent action that opens the invite flow). In the modal, switch to the **Invite Students** tab, then choose the **Direct email** (or **Email**) option.
+</Step>
+
+<Step>
+### Configure invite settings
+
+Set how the invite should behave:
+
+- **Expiry:** How long the link is valid (e.g. 24 hours, 7 days, 30 days, or custom).
+- **Max uses:** How many times the link can be used (e.g. one-time or multiple uses).
+
+These apply to each generated invite when you send emails.
+</Step>
+
+<Step>
+### Add recipients and send
+
+Enter one or more email addresses, or paste a list (comma-, space-, or newline-separated). Optionally enable **Send invite emails** so ClassroomIO emails the enrollment link to each recipient. Click the button to create the invites (and send the emails, if enabled).
+
+Each recipient gets a unique link to the course enrollment page with their invite token.
+</Step>
+</Steps>
+
+## What students see
+
+1. **Email:** If you sent invite emails, the student receives an email containing the course name, your organization name, and a link to the enrollment page.
+2. **Enrollment page:** Opening the link takes them to `/course/[course-slug]/enroll?invite_token=...`. They see the course title and description and a **Join course** button.
+3. **Sign in or sign up:** If they’re not signed in, clicking **Join course** sends them to sign in or create an account. After that, they’re returned to the enrollment page (the redirect is preserved).
+4. **Enrolled:** Once they’re signed in and click **Join course**, they’re enrolled in the course and redirected to the learning dashboard (e.g. **LMS** or **Home**).
+
+## Managing invites
+
+From the same **People** > **Invite** flow, use the **Existing invites** (or **History**) tab to:
+
+- See invites you’ve created, their expiry and usage.
+- **Revoke** an invite so its link can no longer be used.
+
+Revoking does not remove students who have already joined; it only invalidates the invite link for future use.
+
+## Tips
+
+- **Free courses:** You don’t need to create invites for free courses; students can enroll directly from the course landing page.
+- **Paid courses:** Use email invites (or payment) so only the right people can enroll.
+- **Expiry and uses:** Use short expiry and one-time use for sensitive or limited spots; use longer expiry and multiple uses for open cohorts or self-paced courses.
+- **Redirect after login:** If a student follows an invite link while logged out, they’re sent to sign in or sign up and then back to the same enrollment page so they can complete joining.

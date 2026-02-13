@@ -20,7 +20,7 @@ import {
 import { ContentType, ROLE } from '@cio/utils/constants';
 import type { TCourse } from '@cio/db/types';
 import { db } from '@cio/db/drizzle';
-import { getExercisesByCourseId, updateExercisesSectionId } from '@cio/db/queries/exercise/exercise';
+import { updateExercisesSectionId } from '@cio/db/queries/exercise/exercise';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildCourseContent, calcPercentageWithRounding, formatLastSeen, type CourseContent } from './utils';
 
@@ -48,12 +48,26 @@ export async function getCourse(courseId?: string, slug?: string, profileId?: st
     const isContentGroupingEnabled = course.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING;
     const content = buildCourseContent(course.contentItems, isContentGroupingEnabled);
 
-    const { contentItems, ...rest } = course;
+    const { contentItems, org: courseOrg, ...rest } = course;
 
-    return {
+    const base = {
       ...rest,
       content
     };
+
+    if (courseOrg) {
+      return {
+        ...base,
+        org: {
+          id: courseOrg.id,
+          name: courseOrg.name,
+          siteName: courseOrg.siteName ?? '',
+          theme: courseOrg.theme ?? undefined
+        }
+      };
+    }
+
+    return base;
   } catch (error) {
     console.error('Error getting course:', error);
     if (error instanceof AppError) {

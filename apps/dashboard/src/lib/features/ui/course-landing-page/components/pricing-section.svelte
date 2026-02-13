@@ -50,24 +50,7 @@
     });
 
     if (isFree) {
-      try {
-        const response = await classroomio.invite.student['public-link'].$post({
-          json: {
-            courseId: courseData.id
-          }
-        });
-        const result = await response.json();
-
-        if (!result.success || !result.data?.inviteLink) {
-          snackbar.error('snackbar.invite.failed_join');
-          return;
-        }
-
-        goto(result.data.inviteLink);
-      } catch (error) {
-        console.error('Failed to create public invite link', error);
-        snackbar.error('snackbar.invite.failed_join');
-      }
+      goto(`/course/${courseData.slug}/enroll`);
     } else {
       openModal = true;
     }

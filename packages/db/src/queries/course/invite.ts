@@ -260,11 +260,14 @@ export type TCourseInviteTokenData = {
     isPublished: boolean;
     metadata: Record<string, unknown> | null;
     groupId: string;
+    slug: string | null;
+    cost: number;
   };
   organization: {
     id: string;
     name: string;
     siteName: string;
+    theme: string | null;
   };
 };
 
@@ -280,12 +283,15 @@ export async function getCourseInviteByTokenHash(tokenHash: string): Promise<TCo
           status: schema.course.status,
           isPublished: schema.course.isPublished,
           metadata: schema.course.metadata,
-          groupId: schema.group.id
+          groupId: schema.group.id,
+          slug: schema.course.slug,
+          cost: schema.course.cost
         },
         organization: {
           id: schema.organization.id,
           name: schema.organization.name,
-          siteName: schema.organization.siteName
+          siteName: schema.organization.siteName,
+          theme: schema.organization.theme
         }
       })
       .from(schema.courseInvite)
@@ -303,11 +309,13 @@ export async function getCourseInviteByTokenHash(tokenHash: string): Promise<TCo
       ...result,
       course: {
         ...result.course,
-        isPublished: !!result.course.isPublished
+        isPublished: !!result.course.isPublished,
+        cost: Number(result.course.cost ?? 0)
       },
       organization: {
         ...result.organization,
-        siteName: result.organization.siteName ?? ''
+        siteName: result.organization.siteName ?? '',
+        theme: result.organization.theme ?? null
       }
     };
   } catch (error) {

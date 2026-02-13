@@ -1290,6 +1290,11 @@
           "buy": "Buy Now",
           "bird": "Early bird offer. Buy ASAP"
         },
+        "enroll_page": {
+          "requires_payment_or_invite": "You need to pay for this course or be invited to get access.",
+          "back_to_course": "Back to course",
+          "join_course": "Join Course"
+        },
 
         "course_content": "Course content",
         "modules": "modules",

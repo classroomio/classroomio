@@ -106,6 +106,13 @@ class AppInitApi extends BaseApi {
       return;
     }
 
+    const redirect = page.url.searchParams.get('redirect');
+    if (redirect) {
+      // goto redirect won't accept dynamic url so we need to use window.location.href
+      window.location.href = redirect;
+      return;
+    }
+
     if (isOrgSite && window.location.pathname === '/') {
       return;
     }
@@ -114,13 +121,6 @@ class AppInitApi extends BaseApi {
     const shouldRedirectToOnboarding = !isOrgSite && !userHasOrganizations;
     if (shouldRedirectToOnboarding) {
       return goto(resolve(`/onboarding`, {}));
-    }
-
-    const redirect = page.url.searchParams.get('redirect');
-    if (redirect) {
-      // goto redirect won't accept dynamic url so we need to use window.location.href
-      window.location.href = redirect;
-      return;
     }
 
     if (!shouldRedirectOnAuth(page.url.pathname)) return;

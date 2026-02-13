@@ -30,6 +30,16 @@ export const ZCourseGetBySlugParam = z.object({
 });
 export type TCourseGetBySlugParam = z.infer<typeof ZCourseGetBySlugParam>;
 
+export const ZCourseEnrollParam = z.object({
+  courseId: z.string().min(1)
+});
+export type TCourseEnrollParam = z.infer<typeof ZCourseEnrollParam>;
+
+export const ZCourseEnrollBody = z.object({
+  inviteToken: z.string().min(1).optional()
+});
+export type TCourseEnrollBody = z.infer<typeof ZCourseEnrollBody>;
+
 export const ZCourseDownloadParam = z.object({
   courseId: z.string().min(1)
 });

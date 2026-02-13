@@ -6,6 +6,7 @@ import type {
   CreateCourseRequest,
   CreatePaymentRequestRequest,
   DeleteCourseRequest,
+  EnrollCourseRequest,
   GetCourseAnalyticsRequest,
   GetCourseBySlugRequest,
   GetCourseProgressRequest,
@@ -279,6 +280,34 @@ export class CourseApi extends BaseApiWithErrors {
   async refreshCourse(courseId: string, profileId: string) {
     this.invalidateCourse(courseId);
     return this.ensureCourse(courseId, profileId);
+  }
+
+  /**
+   * Enrolls the current user in a course (free: direct enroll; paid: requires inviteToken).
+   * @param courseId Course ID
+   * @param body Optional invite token for paid/invited courses
+   * @returns Success data with redirectTo, or undefined on error
+   */
+  async enroll(courseId: string, body: { inviteToken?: string } = {}) {
+    return this.execute<EnrollCourseRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].enroll.$post({
+          param: { courseId },
+          json: body
+        }),
+      logContext: 'enrolling in course',
+      onSuccess: () => {
+        this.success = true;
+        this.errors = {};
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error('snackbar.invite.failed_join');
+        } else if (typeof result === 'object' && result !== null && 'error' in result) {
+          snackbar.error((result as { error: string }).error);
+        }
+      }
+    });
   }
 
   /**
