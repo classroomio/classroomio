@@ -93,12 +93,10 @@ const seedFunctions = {
   },
   users: async () => {
     console.log('📝 Seeding users...');
-    // @ts-expect-error missing properties
     await seedUsers({ usersData });
   },
   profiles: async () => {
     console.log('📝 Seeding profiles...');
-    // @ts-expect-error missing properties
     await seedProfile({ usersData });
   },
   accounts: async () => {

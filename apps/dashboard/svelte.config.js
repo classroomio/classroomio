@@ -6,6 +6,7 @@ import path from 'path';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 const useNodeAdapter = process.env.PUBLIC_IS_SELFHOSTED === 'true';
+const API_ORIGIN = process.env.PUBLIC_SERVER_URL || process.env.SERVER_URL || 'http://localhost:3081';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -81,6 +82,7 @@ const config = {
           'https://umami.hz.oncws.com',
           'https://*.r2.cloudflarestorage.com',
           'http://localhost:3002',
+          API_ORIGIN,
           'wss://*.classroomio.com',
           'https://*.senja.io',
           'https://*.ytimg.com',
@@ -145,6 +147,7 @@ const config = {
           'https://umami.hz.oncws.com',
           'https://*.r2.cloudflarestorage.com',
           'http://localhost:3002',
+          API_ORIGIN,
           'wss://*.classroomio.com',
           'https://*.senja.io',
           'https://*.ytimg.com',

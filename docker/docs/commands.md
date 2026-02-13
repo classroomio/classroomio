@@ -1,90 +1,106 @@
 # Quick Docker Commands Reference
 
-## Login to Docker Hub
+## Compose Stack
+
 ```bash
-docker login
+# Full stack (recommended; generates/syncs secure auth tokens in root .env)
+./run-docker-full-stack.sh
+
+# Full stack (postgres, redis, db-init, api, dashboard)
+docker compose -p classroomio -f docker/docker-compose.yaml up --build -d
+
+# API-only smoke test path (plus required dependencies)
+docker compose -p classroomio -f docker/docker-compose.yaml up --build -d postgres redis db-init api
+
+# Service status
+docker compose -p classroomio -f docker/docker-compose.yaml ps
+
+# Logs
+docker compose -p classroomio -f docker/docker-compose.yaml logs -f api
+docker compose -p classroomio -f docker/docker-compose.yaml logs -f dashboard
+
+# Stop services
+docker compose -p classroomio -f docker/docker-compose.yaml down
+
+# Stop + remove volumes (deletes local postgres/redis data)
+docker compose -p classroomio -f docker/docker-compose.yaml down -v
+```
+
+## Health Checks
+
+```bash
+# API should return welcome JSON
+curl -sS http://localhost:3081/
+
+# Dashboard should return 200
+curl -I http://localhost:3082/
 ```
 
 ## Build Images Locally
 
-### API
 ```bash
-docker build -f ./docker/Dockerfile.api -t classroomio/api:latest .
-```
-
-### Dashboard
-```bash
-docker build -f ./docker/Dockerfile.dashboard -t classroomio/dashboard:latest .
+docker build -f docker/Dockerfile.api -t classroomio/api:latest .
+docker build -f docker/Dockerfile.dashboard -t classroomio/dashboard:latest .
 ```
 
 ## Push to Docker Hub
 
-### API
 ```bash
 docker push classroomio/api:latest
-```
-
-### Dashboard
-```bash
 docker push classroomio/dashboard:latest
 ```
 
-## All in One Script
+## All-in-One Publish Script
+
 ```bash
-# Make script executable (first time only)
-chmod +x docker-push.sh
+# Default username=classroomio version=latest
+./docker/docker-push.sh
 
-# Run the script
-./docker-push.sh
+# Custom username
+DOCKERHUB_USERNAME=your-username ./docker/docker-push.sh
 
-# With custom username
-DOCKERHUB_USERNAME=your-username ./docker-push.sh
-
-# With version tag
-VERSION=v1.0.0 ./docker-push.sh
+# Versioned tag
+VERSION=v1.0.0 ./docker/docker-push.sh
 ```
 
 ## Pull Published Images
+
 ```bash
 docker pull classroomio/api:latest
 docker pull classroomio/dashboard:latest
 ```
 
-## Run Published Images
+## Run Published Images (Manual)
+
+Use compose for local development. If you run manually, include required runtime env:
+
 ```bash
 # API
-docker run -d -p 3081:3081 \
-  -e PUBLIC_SUPABASE_ANON_KEY=your_key \
-  -e PUBLIC_SUPABASE_URL=your_url \
+docker run -d --name cio-api -p 3081:3081 \
+  -e DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/classroomio \
+  -e PRIVATE_DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/classroomio \
+  -e REDIS_URL=redis://host.docker.internal:6379 \
+  -e BETTER_AUTH_SECRET=<strong-random-secret> \
+  -e AUTH_BEARER_TOKEN=<shared-api-token> \
   classroomio/api:latest
 
 # Dashboard
-docker run -d -p 3082:3082 \
-  -e PUBLIC_SUPABASE_ANON_KEY=your_key \
-  -e PUBLIC_SUPABASE_URL=your_url \
+docker run -d --name cio-dashboard -p 3082:3082 \
+  -e PUBLIC_SERVER_URL=http://localhost:3081 \
+  -e PRIVATE_SERVER_KEY=<same-shared-api-token> \
+  -e PUBLIC_IS_SELFHOSTED=true \
   classroomio/dashboard:latest
 ```
 
 ## Useful Commands
 
-### Check local images
 ```bash
+# List local images
 docker images | grep classroomio
-```
 
-### Remove local images
-```bash
-docker rmi classroomio/api:latest
-docker rmi classroomio/dashboard:latest
-```
+# Remove local images
+docker rmi classroomio/api:latest classroomio/dashboard:latest
 
-### View image details
-```bash
+# Inspect image
 docker inspect classroomio/api:latest
 ```
-
-### Check image size
-```bash
-docker images classroomio/api:latest --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}"
-```
-

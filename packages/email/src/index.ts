@@ -19,7 +19,7 @@
  */
 
 // Pre-import all emails to register them in the registry
-import './emails';
+import './emails/index';
 
 // Export unified API
 export { sendEmail, defineEmail } from './send';

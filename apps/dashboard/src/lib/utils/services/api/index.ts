@@ -2,11 +2,19 @@ import { type ApiClientConfig, ApiError, type RequestConfig } from './types';
 
 import { DEFAULT_CONFIG } from './constants';
 import { delay } from './utils';
-import { env } from '$env/dynamic/public';
 import { hcWithType } from '@cio/api/rpc-types';
 import { get } from 'svelte/store';
 import { currentOrg } from '$lib/utils/store/org';
 import type { Cookies } from '@sveltejs/kit';
+import { env } from '$env/dynamic/public';
+
+export const getServerUrl = () => {
+  if (typeof window === 'undefined') {
+    return process.env.PRIVATE_SERVER_URL || env.PUBLIC_SERVER_URL || '';
+  }
+
+  return env.PUBLIC_SERVER_URL || '';
+};
 
 class ApiClient {
   private config: Required<ApiClientConfig>;
@@ -145,10 +153,10 @@ class ApiClient {
 }
 
 // Create default instance
-export const apiClient = new ApiClient();
+export const apiClient = new ApiClient({ baseURL: getServerUrl() });
 
 // RPC client using the new fetch wrapper
-export const classroomio = hcWithType(env.PUBLIC_SERVER_URL, {
+export const classroomio = hcWithType(getServerUrl(), {
   fetch: async (input: RequestInfo | URL, requestInit?: RequestInit) => {
     return apiClient.request(input, requestInit);
   },

@@ -81,11 +81,7 @@
       <div class="mb-10 flex flex-wrap items-start">
         <div class="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {#each cards as card}
-            {#if !revenue && !numberOfCourses && !totalStudents}
-              <Skeleton style="width: 100%; height: 10rem;" class="rounded-md" />
-            {:else}
-              <ActivityCard activity={card} />
-            {/if}
+            <ActivityCard activity={card} />
           {/each}
         </div>
       </div>

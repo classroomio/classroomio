@@ -106,22 +106,53 @@ Instead of building locally, use the published images:
 
 ```yaml
 services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-classroomio}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+
+  redis:
+    image: redis:7-alpine
+
+  db-init:
+    image: classroomio/api:latest
+    depends_on:
+      - postgres
+    command: ["sh", "-c", "pnpm --filter @cio/db db:setup"]
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
+      PRIVATE_DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
+
   api:
     image: classroomio/api:latest
-    # Remove the 'build' section
     ports:
       - "3081:3081"
+    depends_on:
+      - postgres
+      - redis
+      - db-init
     environment:
-      # ... your environment variables
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
+      PRIVATE_DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
+      REDIS_URL: redis://redis:6379
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      AUTH_BEARER_TOKEN: ${AUTH_BEARER_TOKEN}
 
   dashboard:
     image: classroomio/dashboard:latest
-    # Remove the 'build' section
     ports:
       - "3082:3082"
+    depends_on:
+      - api
     environment:
-      # ... your environment variables
+      PUBLIC_SERVER_URL: ${PUBLIC_SERVER_URL:-http://localhost:3081}
+      PRIVATE_SERVER_KEY: ${PRIVATE_SERVER_KEY}
+      PUBLIC_IS_SELFHOSTED: ${PUBLIC_IS_SELFHOSTED:-true}
 ```
+
+For the full, current compose configuration (including health checks and optional env keys), use `docker/docker-compose.yaml` from this repository as the source of truth.
 
 ## Versioning Strategy
 
@@ -212,4 +243,3 @@ For issues with publishing, please check:
 - [Docker Hub Documentation](https://docs.docker.com/docker-hub/)
 - [GitHub Actions for Docker](https://docs.github.com/en/actions/publishing-packages/publishing-docker-images)
 - [Docker Build Documentation](https://docs.docker.com/engine/reference/commandline/build/)
-

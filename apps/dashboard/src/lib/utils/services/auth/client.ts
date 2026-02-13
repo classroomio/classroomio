@@ -1,8 +1,8 @@
 import { createAuthClient } from 'better-auth/svelte';
-import { env } from '$env/dynamic/public';
+import { getServerUrl } from '../api';
 
 export const authClient = createAuthClient({
-  baseURL: env.PUBLIC_SERVER_URL,
+  baseURL: getServerUrl(),
   fetchOptions: {
     credentials: 'include' // Include cookies in requests
   }
