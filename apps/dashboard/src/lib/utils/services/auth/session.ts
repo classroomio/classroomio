@@ -1,5 +1,5 @@
 import type { Cookies } from '@sveltejs/kit';
-import { authClient } from './client';
+// import { authClient } from './client';
 import { classroomio } from '$lib/utils/services/api';
 
 export const getSessionData = async (cookies: Cookies): Promise<App.Locals | null> => {
@@ -12,7 +12,7 @@ export const getSessionData = async (cookies: Cookies): Promise<App.Locals | nul
 
     if (!cioCookies) return null;
 
-    const locals = await getThroughAuthClient(cioCookies);
+    const locals = await getThroughTrpc(cioCookies);
 
     if (!locals) return null;
 
@@ -37,14 +37,14 @@ export async function getThroughTrpc(allCookies: string) {
   return data;
 }
 
-async function getThroughAuthClient(allCookies: string) {
-  const session = await authClient.getSession({
-    fetchOptions: {
-      headers: {
-        cookie: allCookies
-      }
-    }
-  });
+// export async function getThroughAuthClient(allCookies: string) {
+//   const session = await authClient.getSession({
+//     fetchOptions: {
+//       headers: {
+//         cookie: allCookies
+//       }
+//     }
+//   });
 
-  return session.data as App.Locals | null;
-}
+//   return session.data as App.Locals | null;
+// }
