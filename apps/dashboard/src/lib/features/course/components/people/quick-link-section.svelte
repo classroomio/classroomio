@@ -23,9 +23,13 @@
   let { courseId, isOpen = false, onInviteCreated }: Props = $props();
 
   $effect(() => {
-    if (!isOpen || !courseId) return;
+    if (!isOpen) return;
+
+    const { link, qrImage } = $studentInviteLinkStore;
+    if (!link || qrImage) return;
+
     untrack(() => {
-      createQuickInviteLink().then(() => {});
+      void generateQR(link);
     });
   });
 
@@ -87,6 +91,8 @@
   }
 
   function handleQRDownload() {
+    if (!linkState.qrImage) return;
+
     const node = $qrInviteNodeStore;
     if (!node) {
       console.error('Node is not defined');
@@ -135,13 +141,25 @@
   >
     <div class="flex flex-col items-center justify-between gap-3 md:items-start">
       <span class="text-sm font-medium">{$t(`${INVITE_MODAL}.share_via_qr`)}</span>
-      <Button type="button" variant="secondary" loading={linkState.isLoadingQRDownload} onclick={handleQRDownload}>
+      <Button
+        type="button"
+        variant="secondary"
+        loading={linkState.isLoadingQRDownload}
+        onclick={handleQRDownload}
+        disabled={!linkState.qrImage}
+      >
         {$t(`${INVITE_MODAL}.download_qr`)}
       </Button>
     </div>
 
     <div class="w-full border-4 border-[#f7f7f7] p-1 md:w-28">
-      <img src={linkState.qrImage} alt="link qrcode" class="h-full w-full" />
+      {#if linkState.qrImage}
+        <img src={linkState.qrImage} alt="link qrcode" class="h-full w-full" />
+      {:else}
+        <div class="ui:text-muted-foreground flex h-24 w-full items-center justify-center text-xs">
+          {$t(`${INVITE_MODAL}.qr_placeholder`)}
+        </div>
+      {/if}
     </div>
   </div>
 </div>

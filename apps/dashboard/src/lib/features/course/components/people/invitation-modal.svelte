@@ -2,6 +2,7 @@
   import { untrack } from 'svelte';
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import * as Dialog from '@cio/ui/base/dialog';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import { Button } from '@cio/ui/base/button';
@@ -12,7 +13,12 @@
   import { peopleApi } from '$features/course/api';
   import { orgApi } from '$features/org/api/org.svelte';
   import type { OrgTeamMember } from '$lib/utils/types/org';
-  import { inviteSettingsStore, studentInviteLinkStore } from './store';
+  import {
+    DEFAULT_INVITE_SETTINGS_STATE,
+    DEFAULT_STUDENT_INVITE_LINK_STATE,
+    inviteSettingsStore,
+    studentInviteLinkStore
+  } from './store';
   import type { Tutor } from './types';
 
   import TutorSelectSection from './tutor-select-section.svelte';
@@ -74,7 +80,7 @@
 
   async function onSubmit() {
     if (!selectedTutors.length) {
-      goto(page.url.pathname);
+      goto(resolve(page.url.pathname, {}));
       return;
     }
     const members = selectedTutors.map((tutor) => ({
@@ -85,12 +91,12 @@
     }));
     await peopleApi.add(courseId, members);
     if (peopleApi.success) {
-      goto(page.url.pathname);
+      goto(resolve(page.url.pathname, {}));
     }
   }
 
   function closeModal() {
-    goto(page.url.pathname);
+    goto(resolve(page.url.pathname, {}));
   }
 
   $effect(() => {
@@ -102,18 +108,9 @@
     untrack(() => {
       activeTab = 'tutors';
       activeStudentTab = 'quick-link';
-      inviteSettingsStore.set({
-        preset: 'MULTI_USE_30D',
-        customExpiresAt: '',
-        customMaxUses: 1
-      });
-      studentInviteLinkStore.set({
-        link: '',
-        qrImage: '',
-        isCreating: false,
-        isLoadingQRDownload: false
-      });
-      loadInvites();
+      inviteSettingsStore.set({ ...DEFAULT_INVITE_SETTINGS_STATE });
+      studentInviteLinkStore.set({ ...DEFAULT_STUDENT_INVITE_LINK_STATE });
+      void loadInvites();
     });
   });
 </script>
@@ -124,7 +121,7 @@
     if (!open) closeModal();
   }}
 >
-  <Dialog.Content class="h-[88vh] w-[96vw] max-w-7xl overflow-auto">
+  <Dialog.Content class="max-h-[80vh] w-[96vw] max-w-6xl overflow-y-auto">
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.people.invite_modal.title')}</Dialog.Title>
     </Dialog.Header>

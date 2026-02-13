@@ -13,11 +13,13 @@ export interface InviteSettingsState {
   customMaxUses: number;
 }
 
-export const inviteSettingsStore = writable<InviteSettingsState>({
+export const DEFAULT_INVITE_SETTINGS_STATE: InviteSettingsState = {
   preset: 'MULTI_USE_30D',
   customExpiresAt: '',
   customMaxUses: 1
-});
+};
+
+export const inviteSettingsStore = writable<InviteSettingsState>({ ...DEFAULT_INVITE_SETTINGS_STATE });
 
 export interface StudentInviteLinkState {
   link: string;
@@ -26,9 +28,11 @@ export interface StudentInviteLinkState {
   isLoadingQRDownload: boolean;
 }
 
-export const studentInviteLinkStore = writable<StudentInviteLinkState>({
+export const DEFAULT_STUDENT_INVITE_LINK_STATE: StudentInviteLinkState = {
   link: '',
   qrImage: '',
   isCreating: false,
   isLoadingQRDownload: false
-});
+};
+
+export const studentInviteLinkStore = writable<StudentInviteLinkState>({ ...DEFAULT_STUDENT_INVITE_LINK_STATE });

@@ -18,6 +18,7 @@
   import { exerciseApi } from '$features/course/api';
   import { courseApi } from '$features/course/api';
   import { QUESTION_TYPE } from '@cio/utils/validation/constants';
+  import { ContentType } from '@cio/utils/constants/content';
   import { QUESTION_TYPES } from '$features/ui/question/constants';
   import { Button } from '@cio/ui/base/button';
 
@@ -77,6 +78,7 @@
     await exerciseApi.delete(courseApi.course?.id!, exerciseId);
 
     if (exerciseApi.success) {
+      courseApi.removeContentItem(exerciseId, ContentType.Exercise);
       goBack();
     }
     isDeleting = false;

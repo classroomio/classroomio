@@ -132,6 +132,65 @@ export class CourseApi extends BaseApiWithErrors {
   }
 
   /**
+   * Removes a single lesson/exercise item from the local course content store.
+   * This keeps sidebar lists in sync after delete actions.
+   */
+  removeContentItem(itemId: string, itemType: ContentType.Lesson | ContentType.Exercise) {
+    if (!this.course?.content) return false;
+
+    const content = this.course.content;
+
+    if (content.grouped) {
+      let hasRemovedItem = false;
+
+      const sections = content.sections.map((section) => {
+        const items = section.items.filter((item) => {
+          const shouldRemove = item.id === itemId && item.type === itemType;
+          if (shouldRemove) {
+            hasRemovedItem = true;
+          }
+          return !shouldRemove;
+        });
+
+        if (items.length === section.items.length) {
+          return section;
+        }
+
+        return {
+          ...section,
+          items
+        };
+      });
+
+      if (!hasRemovedItem) return false;
+
+      this.course = {
+        ...this.course,
+        content: {
+          ...content,
+          sections
+        }
+      };
+
+      return true;
+    }
+
+    const items = content.items.filter((item) => !(item.id === itemId && item.type === itemType));
+
+    if (items.length === content.items.length) return false;
+
+    this.course = {
+      ...this.course,
+      content: {
+        ...content,
+        items
+      }
+    };
+
+    return true;
+  }
+
+  /**
    * Gets a course by ID
    * @param courseId Course ID
    * @returns The course data or null on error

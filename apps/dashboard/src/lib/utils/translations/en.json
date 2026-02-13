@@ -629,6 +629,13 @@
       "nav_landing_page": "Landing Page",
       "nav_settings": "Settings"
     },
+    "sidebar": {
+      "back_to_course": "Back to course",
+      "content_count": {
+        "lessons": "{count} lessons",
+        "exercises": "{count} exercises"
+      }
+    },
 
     "navItem": {
       "news_feed": {
@@ -1097,6 +1104,7 @@
           "quick_invite_link_description": "Create a secure link and share by copy or QR.",
           "regenerate_link": "Regenerate Link",
           "share_via_qr": "Share via QR",
+          "qr_placeholder": "Generate link to show QR",
           "direct_email_bulk": "Direct Email / Bulk Invite",
           "direct_email_description": "Paste email addresses separated by comma, space, or new line. A unique secure invite is created per email.",
           "recipient_emails": "Recipient Emails",
