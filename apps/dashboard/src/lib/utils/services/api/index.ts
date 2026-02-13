@@ -8,11 +8,13 @@ import { currentOrg } from '$lib/utils/store/org';
 import type { Cookies } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
 
-export const getServerUrl = () => {
+export const getRequestBaseUrl = () => {
   if (typeof window === 'undefined') {
+    console.log('PRIVATE SERVER URL');
     return process.env.PRIVATE_SERVER_URL || env.PUBLIC_SERVER_URL || '';
   }
 
+  console.log('PUBLIC SERVER URL');
   return env.PUBLIC_SERVER_URL || '';
 };
 
@@ -23,10 +25,10 @@ class ApiClient {
     this.config = { ...DEFAULT_CONFIG, ...config };
   }
 
-  private async makeRequest(input: RequestInfo | URL, requestConfig: RequestConfig = {}): Promise<Response> {
+  private async makeRequest(_input: RequestInfo | URL, requestConfig: RequestConfig = {}): Promise<Response> {
     const { timeout = this.config.timeout, retries = this.config.retries, ...fetchConfig } = requestConfig;
 
-    const url = typeof input === 'string' ? input : input.toString();
+    const url = getRequestBaseUrl();
     const fullUrl = url.startsWith('http') ? url : `${this.config.baseURL}${url}`;
 
     // Prepare headers
@@ -153,10 +155,10 @@ class ApiClient {
 }
 
 // Create default instance
-export const apiClient = new ApiClient({ baseURL: getServerUrl() });
+export const apiClient = new ApiClient();
 
 // RPC client using the new fetch wrapper
-export const classroomio = hcWithType(getServerUrl(), {
+export const classroomio = hcWithType(getRequestBaseUrl(), {
   fetch: async (input: RequestInfo | URL, requestInit?: RequestInit) => {
     return apiClient.request(input, requestInit);
   },
