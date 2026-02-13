@@ -61,6 +61,9 @@
             ctaLabel={plan.CTA.LABEL}
             isDisabled={false}
             perOrgLabel={isYearlyPlan ? 'per year' : 'per month'}
+            handleClick={() => {
+              window.location.href = plan.CTA.LINK;
+            }}
           />
         {/each}
       </div>

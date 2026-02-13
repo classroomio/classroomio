@@ -11,7 +11,7 @@
     isYearlyPlan?: boolean;
     isLoadingPlan?: string | null;
     planName: string;
-    handleClick?: (plan: PlanData, planName: string) => void;
+    handleClick?: ((plan: PlanData, planName: string) => void) | (() => void);
     popularLabel?: string;
     perOrgLabel?: string;
     ctaLabel?: string;
