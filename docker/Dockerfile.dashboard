@@ -4,13 +4,21 @@ WORKDIR /app
 
 ENV CI=true
 
+ARG PUBLIC_IS_SELFHOSTED=true
+ARG PUBLIC_SERVER_URL
+
 RUN corepack enable && corepack prepare pnpm@10.19.0 --activate
 
 COPY . .
 
 RUN pnpm install --frozen-lockfile --ignore-scripts --shamefully-hoist --filter @cio/dashboard...
 RUN find . -name 'tsconfig.tsbuildinfo' -delete
-RUN NODE_OPTIONS="--max-old-space-size=3072" PUBLIC_IS_SELFHOSTED=true pnpm -r --filter @cio/dashboard... build
+RUN echo "Dashboard build PUBLIC_IS_SELFHOSTED=${PUBLIC_IS_SELFHOSTED}" && \
+    echo "Dashboard build PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL}" && \
+    NODE_OPTIONS="--max-old-space-size=3072" \
+    PUBLIC_IS_SELFHOSTED="${PUBLIC_IS_SELFHOSTED}" \
+    PUBLIC_SERVER_URL="${PUBLIC_SERVER_URL}" \
+    pnpm -r --filter @cio/dashboard... build
 
 EXPOSE 3082
 

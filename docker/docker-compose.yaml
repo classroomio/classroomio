@@ -9,7 +9,11 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-classroomio}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-classroomio}",
+        ]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -88,6 +92,9 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile.dashboard
+      args:
+        PUBLIC_IS_SELFHOSTED: ${PUBLIC_IS_SELFHOSTED:-true}
+        PUBLIC_SERVER_URL: ${PUBLIC_SERVER_URL:-http://localhost:3081}
     container_name: cio-dashboard
     ports:
       - "3082:3082"

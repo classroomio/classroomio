@@ -6,7 +6,7 @@ import path from 'path';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 const useNodeAdapter = process.env.PUBLIC_IS_SELFHOSTED === 'true';
-const API_ORIGIN = process.env.PUBLIC_SERVER_URL || process.env.SERVER_URL || 'http://localhost:3081';
+const API_ORIGIN = process.env.PUBLIC_SERVER_URL;
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
