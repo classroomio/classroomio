@@ -12,6 +12,8 @@ This directory contains Docker files for local self-hosting and image publishing
 - `api`: backend service on `http://localhost:3081`
 - `dashboard`: frontend service on `http://localhost:3082`
 
+For published-image deployments, use `docker/docker-compose.prod.yaml` (same services, but `api`, `dashboard`, and `db-init` run from published images instead of local builds).
+
 Notes:
 
 - Postgres and Redis are internal-only in compose (not exposed on host ports by default).
@@ -48,6 +50,28 @@ docker compose -p classroomio -f docker/docker-compose.yaml up --build -d postgr
 docker compose -p classroomio -f docker/docker-compose.yaml ps
 docker compose -p classroomio -f docker/docker-compose.yaml logs --tail=100 api
 curl -sS http://localhost:3081/
+```
+
+## Production (Published Images)
+
+Create a production env file from the template:
+
+```bash
+cp docker/.env.prod.example docker/.env.prod
+```
+
+Set pinned image tags in `docker/.env.prod`:
+
+```bash
+CIO_API_IMAGE=classroomio/api:v0.1.0
+CIO_DASHBOARD_IMAGE=classroomio/dashboard:v0.1.0
+```
+
+Then deploy:
+
+```bash
+docker compose -p classroomio --env-file docker/.env.prod -f docker/docker-compose.prod.yaml pull
+docker compose -p classroomio --env-file docker/.env.prod -f docker/docker-compose.prod.yaml up -d
 ```
 
 ## Environment Variables
@@ -133,4 +157,4 @@ lsof -nP -iTCP:3082 -sTCP:LISTEN
 ## Related Docs
 
 - `docker/docs/commands.md` for quick command snippets
-- `docker/docs/README.md` for Docker Hub publishing
+- `docker/docs/PUBLISHING_IMAGES.md` for Docker Hub publishing

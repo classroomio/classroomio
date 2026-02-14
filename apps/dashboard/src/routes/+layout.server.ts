@@ -36,7 +36,6 @@ export const load = async ({ url, cookies, request, locals }): Promise<LoadOutpu
   };
 
   console.log('PUBLIC_IS_SELFHOSTED', PUBLIC_IS_SELFHOSTED);
-  console.log('response', response);
 
   // If it isn't a registered dashboard domain and also not a valid sub domain.
   // if (!APP_SUBDOMAINS.includes(orgSiteInfo.subdomain) && !dev && !orgSiteInfo.isOrgSite) {

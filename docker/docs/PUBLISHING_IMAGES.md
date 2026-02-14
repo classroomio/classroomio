@@ -100,59 +100,33 @@ docker pull classroomio/api:latest
 docker pull classroomio/dashboard:latest
 ```
 
-### Update docker-compose.yml
+### Deploy with Compose
 
-Instead of building locally, use the published images:
+Use the production compose file (`docker/docker-compose.prod.yaml`) with pinned image tags.
 
-```yaml
-services:
-  postgres:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-classroomio}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+1. Copy the production env template:
 
-  redis:
-    image: redis:7-alpine
-
-  db-init:
-    image: classroomio/api:latest
-    depends_on:
-      - postgres
-    command: ["sh", "-c", "pnpm --filter @cio/db db:setup"]
-    environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
-      PRIVATE_DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
-
-  api:
-    image: classroomio/api:latest
-    ports:
-      - "3081:3081"
-    depends_on:
-      - postgres
-      - redis
-      - db-init
-    environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
-      PRIVATE_DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
-      REDIS_URL: redis://redis:6379
-      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
-      AUTH_BEARER_TOKEN: ${AUTH_BEARER_TOKEN}
-
-  dashboard:
-    image: classroomio/dashboard:latest
-    ports:
-      - "3082:3082"
-    depends_on:
-      - api
-    environment:
-      PUBLIC_SERVER_URL: ${PUBLIC_SERVER_URL:-http://localhost:3081}
-      PRIVATE_SERVER_KEY: ${PRIVATE_SERVER_KEY}
-      PUBLIC_IS_SELFHOSTED: ${PUBLIC_IS_SELFHOSTED:-true}
+```bash
+cp docker/.env.prod.example docker/.env.prod
 ```
 
-For the full, current compose configuration (including health checks and optional env keys), use `docker/docker-compose.yaml` from this repository as the source of truth.
+2. Set pinned images in `docker/.env.prod`:
+
+```bash
+CIO_API_IMAGE=classroomio/api:v0.1.0
+CIO_DASHBOARD_IMAGE=classroomio/dashboard:v0.1.0
+```
+
+3. Deploy:
+
+```bash
+docker compose -p classroomio --env-file docker/.env.prod -f docker/docker-compose.prod.yaml pull
+docker compose -p classroomio --env-file docker/.env.prod -f docker/docker-compose.prod.yaml up -d
+```
+
+The `db-init` service also uses `CIO_API_IMAGE` so schema setup always matches the API build you deploy.
+
+For local source builds, keep using `docker/docker-compose.yaml`.
 
 ## Versioning Strategy
 

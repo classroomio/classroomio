@@ -167,7 +167,10 @@ To run the Dockerized stack (including API + dashboard):
 
 The script auto-generates secure local values for `AUTH_BEARER_TOKEN` and `PRIVATE_SERVER_KEY` in root `.env` when they are missing/insecure, and keeps both values aligned.
 
+For production deployments from published images, use `docker/docker-compose.prod.yaml` with `docker/.env.prod.example` as your template.
+
 For Docker details and troubleshooting, see:
 
 - `docker/docs/USAGE.md`
 - `docker/docs/commands.md`
+- `docker/docs/PUBLISHING_IMAGES.md`

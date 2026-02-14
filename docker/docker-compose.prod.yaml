@@ -33,9 +33,8 @@ services:
       start_period: 5s
 
   db-init:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile.api
+    image: ${CIO_API_IMAGE:-classroomio/api:latest}
+    pull_policy: always
     container_name: cio-db-init
     depends_on:
       postgres:
@@ -50,9 +49,8 @@ services:
     restart: "no"
 
   api:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile.api
+    image: ${CIO_API_IMAGE:-classroomio/api:latest}
+    pull_policy: always
     container_name: cio-api
     ports:
       - "3081:3081"
@@ -66,13 +64,14 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3081
-      SERVER_URL: ${SERVER_URL:-http://localhost:3081}
-      TRUSTED_ORIGINS: ${TRUSTED_ORIGINS:-http://localhost:3082,http://localhost:5173}
+      SERVER_URL: ${SERVER_URL:?SERVER_URL is required}
+      TRUSTED_ORIGINS: ${TRUSTED_ORIGINS:?TRUSTED_ORIGINS is required}
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
       PRIVATE_DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
       REDIS_URL: redis://redis:6379
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-docker-local-client-id}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-docker-local-client-secret}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      ZOHO_TOKEN: ${ZOHO_TOKEN:-}
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
@@ -83,18 +82,14 @@ services:
       CLOUDFLARE_SECRET_ACCESS_KEY: ${CLOUDFLARE_SECRET_ACCESS_KEY:-}
       CLOUDFLARE_ACCOUNT_ID: ${CLOUDFLARE_ACCOUNT_ID:-}
       CLOUDFLARE_RENDERING_API_KEY: ${CLOUDFLARE_RENDERING_API_KEY:-}
-      AUTH_BEARER_TOKEN: ${AUTH_BEARER_TOKEN:-local-dev-api-key}
+      AUTH_BEARER_TOKEN: ${AUTH_BEARER_TOKEN:?AUTH_BEARER_TOKEN is required}
       UNSPLASH_API_KEY: ${UNSPLASH_API_KEY:-}
-      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-local-dev-only-secret-change-this}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET is required}
     restart: unless-stopped
 
   dashboard:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile.dashboard
-      args:
-        PUBLIC_IS_SELFHOSTED: ${PUBLIC_IS_SELFHOSTED:-true}
-        PUBLIC_SERVER_URL: ${PUBLIC_SERVER_URL:-http://localhost:3081}
+    image: ${CIO_DASHBOARD_IMAGE:-classroomio/dashboard:latest}
+    pull_policy: always
     container_name: cio-dashboard
     ports:
       - "3082:3082"
@@ -104,11 +99,11 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3082
-      ORIGIN: ${DASHBOARD_ORIGIN:-http://localhost:3082}
+      ORIGIN: ${DASHBOARD_ORIGIN:?DASHBOARD_ORIGIN is required}
       PUBLIC_IS_SELFHOSTED: ${PUBLIC_IS_SELFHOSTED:-true}
-      PUBLIC_SERVER_URL: ${PUBLIC_SERVER_URL:-http://localhost:3081}
+      PUBLIC_SERVER_URL: ${PUBLIC_SERVER_URL:?PUBLIC_SERVER_URL is required}
       PRIVATE_SERVER_URL: ${PRIVATE_SERVER_URL:-http://api:3081}
-      PRIVATE_SERVER_KEY: ${PRIVATE_SERVER_KEY:-local-dev-api-key}
+      PRIVATE_SERVER_KEY: ${PRIVATE_SERVER_KEY:?PRIVATE_SERVER_KEY is required}
       PRIVATE_APP_HOST: ${PRIVATE_APP_HOST:-localhost}
       PRIVATE_APP_SUBDOMAINS: ${PRIVATE_APP_SUBDOMAINS:-app}
       AUTH_BEARER_TOKEN: ${AUTH_BEARER_TOKEN:-}

@@ -10,12 +10,10 @@ import { env } from '$env/dynamic/public';
 
 export const getRequestBaseUrl = () => {
   if (typeof window === 'undefined') {
-    console.log('PRIVATE SERVER URL');
-    return process.env.PRIVATE_SERVER_URL || env.PUBLIC_SERVER_URL || '';
+    return process.env.PRIVATE_SERVER_URL || env.PUBLIC_SERVER_URL;
   }
 
-  console.log('PUBLIC SERVER URL');
-  return env.PUBLIC_SERVER_URL || '';
+  return env.PUBLIC_SERVER_URL;
 };
 
 class ApiClient {

@@ -26,6 +26,23 @@ docker compose -p classroomio -f docker/docker-compose.yaml down
 docker compose -p classroomio -f docker/docker-compose.yaml down -v
 ```
 
+## Compose Stack (Published Images / Production)
+
+```bash
+# 1) Copy and edit production env values (including pinned image tags)
+cp docker/.env.prod.example docker/.env.prod
+
+# 2) Pull pinned images
+docker compose -p classroomio --env-file docker/.env.prod -f docker/docker-compose.prod.yaml pull
+
+# 3) Start stack from published images
+docker compose -p classroomio --env-file docker/.env.prod -f docker/docker-compose.prod.yaml up -d
+
+# 4) Inspect status and logs
+docker compose -p classroomio --env-file docker/.env.prod -f docker/docker-compose.prod.yaml ps
+docker compose -p classroomio --env-file docker/.env.prod -f docker/docker-compose.prod.yaml logs -f api dashboard
+```
+
 ## Health Checks
 
 ```bash

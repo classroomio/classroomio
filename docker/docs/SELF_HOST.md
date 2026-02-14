@@ -1,4 +1,4 @@
-# ClassroomIO Docker First-Time Setup (Temporary)
+# ClassroomIO Docker Selfhosting Setup
 
 This guide is for someone setting up ClassroomIO with Docker for the first time.
 
@@ -39,8 +39,8 @@ PRIVATE_SERVER_KEY=
 # API and dashboard URLs
 SERVER_URL=http://localhost:3081
 PUBLIC_SERVER_URL=http://localhost:3081
+
 # Dashboard server-side calls (inside Docker network)
-PRIVATE_SERVER_URL=http://api:3081
 TRUSTED_ORIGINS=http://localhost:3082,http://localhost:5173
 PUBLIC_IS_SELFHOSTED=true
 
