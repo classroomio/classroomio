@@ -3,8 +3,8 @@ import { courseSection, db } from '@db/drizzle';
 import type { TNewCourseSection } from '@db/types';
 
 export const MVC_SECTION_ID = 'b2c8e7a0-1f3d-4e5a-9b6c-0d1e2f3a4b5c';
-export const REACT_SECTION_ID = 'c3d9f8b1-2g4e-5f6b-0c7d-1e2f3a4b5c6d';
-export const PANDAS_SECTION_ID = 'd4e0a9c2-3h5f-6g7c-1d8e-2f3a4b5c6d7e';
+export const REACT_SECTION_ID = 'c3d9f8b1-2a4e-5f6b-0c7d-1e2f3a4b5c6d';
+export const PANDAS_SECTION_ID = 'd4e0a9c2-3b5f-6a7c-1d8e-2f3a4b5c6d7e';
 
 interface SeedCourseSections {
   mvcCourseId: string;
