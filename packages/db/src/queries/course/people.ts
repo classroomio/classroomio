@@ -47,6 +47,7 @@ export async function getCourseMembers(courseId: string): Promise<
       profile: row.profile || null
     }));
   } catch (error) {
+    console.error('getCourseMembers error:', error);
     throw new Error(`Failed to get course members: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -99,6 +100,7 @@ export async function getCourseMember(
       profile: result[0].profile || null
     };
   } catch (error) {
+    console.error('getCourseMember error:', error);
     throw new Error(`Failed to get course member: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -118,6 +120,7 @@ export async function getCourseGroupId(courseId: string): Promise<string | null>
 
     return result.length > 0 ? result[0].groupId : null;
   } catch (error) {
+    console.error('getCourseGroupId error:', error);
     throw new Error(`Failed to get course group ID: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -206,6 +209,7 @@ export async function addCourseMember(
 
     return newMember;
   } catch (error) {
+    console.error('addCourseMember error:', error);
     throw new Error(`Failed to add course member: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -237,6 +241,7 @@ export async function updateCourseMember(
 
     return updated || null;
   } catch (error) {
+    console.error('updateCourseMember error:', error);
     throw new Error(`Failed to update course member: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -259,6 +264,7 @@ export async function deleteCourseMember(courseId: string, memberId: string): Pr
 
     return deleted || null;
   } catch (error) {
+    console.error('deleteCourseMember error:', error);
     throw new Error(`Failed to delete course member: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -295,6 +301,7 @@ export async function getProfileByGroupMemberId(groupMemberId: string): Promise<
 
     return result[0];
   } catch (error) {
+    console.error('getProfileByGroupMemberId error:', error);
     throw new Error(
       `Failed to get profile by group member ID "${groupMemberId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );

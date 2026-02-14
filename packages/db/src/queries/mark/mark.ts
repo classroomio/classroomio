@@ -84,6 +84,7 @@ export async function getMarksByCourseId(courseId: string): Promise<Mark[]> {
       avatarUrl: row.avatarUrl ?? null
     }));
   } catch (error) {
+    console.error('getMarksByCourseId error:', error);
     throw new Error(
       `Failed to get marks for course ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );

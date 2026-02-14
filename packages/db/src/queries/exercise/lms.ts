@@ -187,6 +187,7 @@ export async function getLMSExercises(profileId: string, orgId: string): Promise
 
     return result;
   } catch (error) {
+    console.error('getLmsExercises error:', error);
     throw new Error(`Failed to get LMS exercises: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

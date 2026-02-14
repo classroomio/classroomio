@@ -14,6 +14,7 @@ export async function createCourseInvite(values: TNewCourseInvite): Promise<TCou
 
     return created;
   } catch (error) {
+    console.error('createCourseInvite error:', error);
     throw new Error(`Failed to create course invite: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -28,6 +29,7 @@ export async function createCourseInviteAudit(values: TNewCourseInviteAudit): Pr
 
     return created;
   } catch (error) {
+    console.error('createCourseInviteAudit error:', error);
     throw new Error(
       `Failed to create course invite audit event: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -44,6 +46,7 @@ export async function getCourseInviteById(courseId: string, inviteId: string): P
 
     return invite || null;
   } catch (error) {
+    console.error('getCourseInviteById error:', error);
     throw new Error(`Failed to get course invite: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -138,6 +141,7 @@ export async function listCourseInvites(courseId: string): Promise<TCourseInvite
       };
     });
   } catch (error) {
+    console.error('listCourseInvites error:', error);
     throw new Error(`Failed to list course invites: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -182,6 +186,7 @@ export async function listCourseInviteAudit(
         : null
     }));
   } catch (error) {
+    console.error('listCourseInviteAudit error:', error);
     throw new Error(`Failed to list invite audit events: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -201,6 +206,7 @@ export async function listCourseInviteAuditStats(courseId: string): Promise<TCou
 
     return rows;
   } catch (error) {
+    console.error('listCourseInviteAuditStats error:', error);
     throw new Error(`Failed to list invite audit stats: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -223,6 +229,7 @@ export async function countInviteDistinctPreviewIps(inviteId: string, sinceIsoDa
 
     return row?.count ?? 0;
   } catch (error) {
+    console.error('countInviteDistinctPreviewIps error:', error);
     throw new Error(`Failed to count invite IP diversity: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -246,6 +253,7 @@ export async function revokeCourseInvite(
 
     return updated || null;
   } catch (error) {
+    console.error('revokeCourseInvite error:', error);
     throw new Error(`Failed to revoke course invite: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -319,6 +327,7 @@ export async function getCourseInviteByTokenHash(tokenHash: string): Promise<TCo
       }
     };
   } catch (error) {
+    console.error('getCourseInviteByTokenHash error:', error);
     throw new Error(
       `Failed to get course invite by token: ${error instanceof Error ? error.message : 'Unknown error'}`
     );

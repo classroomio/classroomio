@@ -10,6 +10,7 @@ export async function createGroup(values: TNewGroup) {
   try {
     return db.insert(schema.group).values(values).returning();
   } catch (error) {
+    console.error('createGroup error:', error);
     throw new Error(`Failed to create group: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -18,6 +19,7 @@ export async function addGroupMember(values: TNewGroupmember) {
   try {
     return db.insert(schema.groupmember).values(values).returning();
   } catch (error) {
+    console.error('addGroupMember error:', error);
     throw new Error(`Failed to add group member: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

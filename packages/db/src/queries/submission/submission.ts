@@ -17,6 +17,7 @@ export async function getSubmissionById(submissionId: string): Promise<TSubmissi
       .limit(1);
     return submission || null;
   } catch (error) {
+    console.error('getSubmissionById error:', error);
     throw new Error(
       `Failed to get submission by ID "${submissionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -51,6 +52,7 @@ export async function getSubmissionsByCourseId(
       .from(schema.submission)
       .where(and(...conditions));
   } catch (error) {
+    console.error('getSubmissionsByCourseId error:', error);
     throw new Error(
       `Failed to get submissions by course ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -117,6 +119,7 @@ export async function getSubmissionsByCourseIdWithDetails(courseId: string, exer
 
     return result;
   } catch (error) {
+    console.error('getSubmissionsByCourseIdWithDetails error:', error);
     throw new Error(
       `Failed to get submissions by course ID with details "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -198,6 +201,7 @@ export async function getSubmissionsForGrading(courseId: string) {
 
     return result;
   } catch (error) {
+    console.error('getSubmissionsForGrading error:', error);
     throw new Error(
       `Failed to get submissions for grading "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -217,6 +221,7 @@ export async function createSubmission(data: TNewSubmission): Promise<TSubmissio
     }
     return submission;
   } catch (error) {
+    console.error('createSubmission error:', error);
     throw new Error(`Failed to create submission: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -236,6 +241,7 @@ export async function updateSubmission(submissionId: string, data: Partial<TSubm
       .returning();
     return updated || null;
   } catch (error) {
+    console.error('updateSubmission error:', error);
     throw new Error(
       `Failed to update submission "${submissionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -252,6 +258,7 @@ export async function deleteSubmission(submissionId: string): Promise<TSubmissio
     const [deleted] = await db.delete(schema.submission).where(eq(schema.submission.id, submissionId)).returning();
     return deleted || null;
   } catch (error) {
+    console.error('deleteSubmission error:', error);
     throw new Error(
       `Failed to delete submission "${submissionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -267,6 +274,7 @@ export async function getQuestionAnswersBySubmissionId(submissionId: string): Pr
   try {
     return db.select().from(schema.questionAnswer).where(eq(schema.questionAnswer.submissionId, submissionId));
   } catch (error) {
+    console.error('getQuestionAnswersBySubmissionId error:', error);
     throw new Error(
       `Failed to get question answers for submission "${submissionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -288,6 +296,7 @@ export async function upsertQuestionAnswer(data: TNewQuestionAnswer): Promise<TQ
     }
     return answer;
   } catch (error) {
+    console.error('upsertQuestionAnswer error:', error);
     throw new Error(`Failed to upsert question answer: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -314,6 +323,7 @@ export async function updateQuestionAnswer(
       .returning();
     return updated || null;
   } catch (error) {
+    console.error('updateQuestionAnswer error:', error);
     throw new Error(`Failed to update question answer: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

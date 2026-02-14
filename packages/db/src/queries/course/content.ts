@@ -158,6 +158,7 @@ export async function getCourseContentItems(courseId: string, profileId?: string
       questionCount: row.questionCount === null ? null : Number(row.questionCount)
     }));
   } catch (error) {
+    console.error('getCourseContentItems error:', error);
     throw new Error(
       `Failed to get course content items for course "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );

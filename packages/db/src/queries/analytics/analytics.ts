@@ -22,7 +22,7 @@ export async function getLastLogin(userId: string): Promise<string | null> {
 
     return loginEvent?.loggedInAt;
   } catch (error) {
-    console.error('Error fetching last login:', error);
+    console.error('getLastLoginAt error:', error);
     return null;
   }
 }
@@ -119,7 +119,7 @@ export async function getUserExercisesStats(courseId: string, userId: string) {
 
     return exerciseStats;
   } catch (error) {
-    console.error('Error fetching user exercises stats:', error);
+    console.error('getUserExerciseStats error:', error);
     return [];
   }
 }
@@ -191,7 +191,7 @@ export async function getLessonsWithCompletion(courseId: string, userId: string)
       exerciseNo: exerciseCounts.get(lesson.id) || 0
     }));
   } catch (error) {
-    console.error('Error fetching lessons with completion:', error);
+    console.error('getLessonsWithCompletion error:', error);
     return [];
   }
 }
@@ -311,7 +311,7 @@ export async function getProfileCourseProgress(courseId: string, profileId: stri
       exercises_completed: exercisesCompleted
     };
   } catch (error) {
-    console.error('Error fetching profile course progress:', error);
+    console.error('getProfileCourseProgress error:', error);
     return {
       lessons_count: 0,
       lessons_completed: 0,

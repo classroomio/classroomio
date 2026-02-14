@@ -19,6 +19,7 @@ export async function getAttendanceByCourseId(courseId: string, lessonId?: strin
     }
     return db.select().from(schema.groupAttendance).where(eq(schema.groupAttendance.courseId, courseId));
   } catch (error) {
+    console.error('getAttendanceByCourseId error:', error);
     throw new Error(
       `Failed to get attendance by course ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -51,6 +52,7 @@ export async function getAttendanceByStudentAndLesson(
       .limit(1);
     return attendance || null;
   } catch (error) {
+    console.error('getAttendanceByStudentAndLesson error:', error);
     throw new Error(`Failed to get attendance: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -88,6 +90,7 @@ export async function upsertAttendance(data: TNewGroupAttendance): Promise<TGrou
       return created;
     }
   } catch (error) {
+    console.error('upsertAttendance error:', error);
     throw new Error(`Failed to upsert attendance: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

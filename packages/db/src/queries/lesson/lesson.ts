@@ -19,6 +19,7 @@ export async function getLessonsByCourseId(courseId: string) {
   try {
     return db.select().from(schema.lesson).where(eq(schema.lesson.courseId, courseId));
   } catch (error) {
+    console.error('getLessonsByCourseId error:', error);
     throw new Error(
       `Failed to get lessons by course ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -45,6 +46,7 @@ export async function getLessonById(lessonId: string): Promise<LessonById | null
       lessonLanguages
     };
   } catch (error) {
+    console.error('getLessonById error:', error);
     throw new Error(
       `Failed to get lesson by ID "${lessonId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -55,6 +57,7 @@ export async function createLessons(values: TNewLesson[]) {
   try {
     return db.insert(schema.lesson).values(values).returning();
   } catch (error) {
+    console.error('createLessons error:', error);
     throw new Error(`Failed to create lessons: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -68,6 +71,7 @@ export async function updateLesson(lessonId: string, data: Partial<TLesson>, dbC
       .returning();
     return updated || null;
   } catch (error) {
+    console.error('updateLesson error:', error);
     throw new Error(
       `Failed to update lesson "${lessonId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -79,6 +83,7 @@ export async function deleteLesson(lessonId: string, dbClient: DbOrTxClient = db
     const [deleted] = await dbClient.delete(schema.lesson).where(eq(schema.lesson.id, lessonId)).returning();
     return deleted || null;
   } catch (error) {
+    console.error('deleteLesson error:', error);
     throw new Error(
       `Failed to delete lesson "${lessonId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -115,6 +120,7 @@ export async function getLessonCommentsByLessonId(lessonId: string) {
         : null
     }));
   } catch (error) {
+    console.error('getLessonCommentsByLessonId error:', error);
     throw new Error(
       `Failed to get lesson comments for lesson "${lessonId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -199,6 +205,7 @@ export async function getLessonCommentsByLessonIdPaginated(
       nextCursor
     };
   } catch (error) {
+    console.error('getLessonCommentsByLessonIdPaginated error:', error);
     throw new Error(
       `Failed to get paginated lesson comments for lesson "${lessonId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -213,7 +220,7 @@ export async function createLessonComment(data: TNewLessonComment): Promise<TLes
     }
     return comment;
   } catch (error) {
-    console.log('createLessonComment', error);
+    console.error('createLessonComment error:', error);
     throw new Error(`Failed to create lesson comment: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -227,6 +234,7 @@ export async function updateLessonComment(commentId: number, comment: string): P
       .returning();
     return updated || null;
   } catch (error) {
+    console.error('updateLessonComment error:', error);
     throw new Error(
       `Failed to update lesson comment "${commentId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -238,6 +246,7 @@ export async function deleteLessonComment(commentId: number) {
     const [deleted] = await db.delete(schema.lessonComment).where(eq(schema.lessonComment.id, commentId)).returning();
     return deleted || null;
   } catch (error) {
+    console.error('deleteLessonComment error:', error);
     throw new Error(
       `Failed to delete lesson comment "${commentId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -254,6 +263,7 @@ export async function getLessonCompletion(lessonId: string, profileId: string): 
       .limit(1);
     return completion || null;
   } catch (error) {
+    console.error('getLessonCompletion error:', error);
     throw new Error(`Failed to get lesson completion: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -276,6 +286,7 @@ export async function upsertLessonCompletion(data: TNewLessonCompletion): Promis
     }
     return completion;
   } catch (error) {
+    console.error('upsertLessonCompletion error:', error);
     throw new Error(`Failed to upsert lesson completion: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -286,6 +297,7 @@ export async function getLessonLanguagesByLessonIds(lessonIds: string[]) {
   try {
     return db.select().from(schema.lessonLanguage).where(inArray(schema.lessonLanguage.lessonId, lessonIds));
   } catch (error) {
+    console.error('getLessonLanguagesByLessonIds error:', error);
     throw new Error(
       `Failed to get lesson languages by lesson IDs: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -297,6 +309,7 @@ export async function createLessonLanguages(values: TNewLessonLanguage[]) {
   try {
     return db.insert(schema.lessonLanguage).values(values).returning();
   } catch (error) {
+    console.error('createLessonLanguages error:', error);
     throw new Error(`Failed to create lesson languages: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -331,6 +344,7 @@ export async function getLessonVersionHistory(
 
     return result;
   } catch (error) {
+    console.error('getLessonVersionHistory error:', error);
     throw new Error(
       `Failed to get lesson version history: ${error instanceof Error ? error.message : 'Unknown error'}`
     );

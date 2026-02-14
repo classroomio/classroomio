@@ -19,6 +19,7 @@ export async function createOrganizationInvite(values: TNewOrganizationInvite): 
 
     return created;
   } catch (error) {
+    console.error('createOrganizationInvite error:', error);
     throw new Error(
       `Failed to create organization invite: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -37,6 +38,7 @@ export async function createOrganizationInviteAudit(
 
     return created;
   } catch (error) {
+    console.error('createOrganizationInviteAudit error:', error);
     throw new Error(
       `Failed to create organization invite audit event: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -73,6 +75,7 @@ export async function revokeActiveOrganizationInvitesByEmails(
 
     return updated;
   } catch (error) {
+    console.error('revokeExistingOrganizationInvites error:', error);
     throw new Error(
       `Failed to revoke existing organization invites: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -118,6 +121,7 @@ export async function getOrganizationInviteByTokenHash(
       }
     };
   } catch (error) {
+    console.error('getOrganizationInviteByTokenHash error:', error);
     throw new Error(
       `Failed to get organization invite by token: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -141,6 +145,7 @@ export async function markOrganizationInviteAccepted(
 
     return updated || null;
   } catch (error) {
+    console.error('markOrganizationInviteAccepted error:', error);
     throw new Error(
       `Failed to mark organization invite accepted: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
