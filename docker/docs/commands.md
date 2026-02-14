@@ -98,13 +98,14 @@ docker run -d --name cio-api -p 3081:3081 \
   -e PRIVATE_DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/classroomio \
   -e REDIS_URL=redis://host.docker.internal:6379 \
   -e BETTER_AUTH_SECRET=<strong-random-secret> \
-  -e AUTH_BEARER_TOKEN=<shared-api-token> \
+  -e PRIVATE_SERVER_KEY=<dashboard-server-api-key> \
+  -e AUTH_BEARER_TOKEN=<optional-other-bearer-token> \
   classroomio/api:latest
 
 # Dashboard
 docker run -d --name cio-dashboard -p 3082:3082 \
   -e PUBLIC_SERVER_URL=http://localhost:3081 \
-  -e PRIVATE_SERVER_KEY=<same-shared-api-token> \
+  -e PRIVATE_SERVER_KEY=<dashboard-server-api-key> \
   -e PUBLIC_IS_SELFHOSTED=true \
   classroomio/dashboard:latest
 ```

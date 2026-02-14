@@ -118,7 +118,9 @@ PRIVATE_APP_SUBDOMAINS=""
 ```
 
 <Callout title="Important">
-  Use the same value for `AUTH_BEARER_TOKEN` (API) and `PRIVATE_SERVER_KEY` (dashboard) so server-side dashboard API calls can authenticate.
+  Set `PRIVATE_SERVER_KEY` in both API and dashboard environments for server-to-server API
+  key authentication. `AUTH_BEARER_TOKEN` is a separate token and is not used by
+  `apiKeyMiddleware`.
 </Callout>
 
 <Callout title="Important">
@@ -202,6 +204,6 @@ TRUSTED_ORIGINS=
 
 <Callout title="Important">
   `run-docker-full-stack.sh` auto-generates secure values for `AUTH_BEARER_TOKEN` and
-  `PRIVATE_SERVER_KEY` when missing/insecure, and keeps both values synchronized so dashboard
-  server-side calls can authenticate with the API.
+  `PRIVATE_SERVER_KEY` when missing/insecure. API key middleware for dashboard server-side
+  calls validates `PRIVATE_SERVER_KEY`.
 </Callout>

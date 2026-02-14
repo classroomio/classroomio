@@ -33,7 +33,6 @@ BETTER_AUTH_SECRET=replace-with-a-long-random-secret
 
 # Dashboard server-to-server auth
 # Leave blank to auto-generate on first ./run-docker-full-stack.sh
-# Script keeps this value aligned with AUTH_BEARER_TOKEN.
 PRIVATE_SERVER_KEY=
 
 # API and dashboard URLs
@@ -64,7 +63,9 @@ EOF
 
 Important:
 
-- `./run-docker-full-stack.sh` auto-generates secure values for `AUTH_BEARER_TOKEN` and `PRIVATE_SERVER_KEY` when missing/insecure, and keeps both values the same.
+- `./run-docker-full-stack.sh` auto-generates secure values for `AUTH_BEARER_TOKEN` and `PRIVATE_SERVER_KEY` when missing/insecure.
+- API key middleware for dashboard/server-to-server calls validates `PRIVATE_SERVER_KEY`.
+- `AUTH_BEARER_TOKEN` is separate and is not used by `apiKeyMiddleware`.
 - Dashboard API URL behavior is split by environment: browser requests use `PUBLIC_SERVER_URL`, and server-side dashboard requests use `PRIVATE_SERVER_URL` (fallback: `PUBLIC_SERVER_URL`).
 - In hosted deployments, `PUBLIC_SERVER_URL` must be your public API domain (not `localhost`), while Docker internal SSR calls should use `PRIVATE_SERVER_URL=http://api:3081`.
 - For email sending, configure either `ZOHO_TOKEN` or a full SMTP config (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_SENDER`).
