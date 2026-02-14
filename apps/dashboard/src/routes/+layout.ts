@@ -5,7 +5,7 @@ const SUPPORTED_LANGUAGES = config?.loaders?.map((loader) => loader.locale) || [
 export const load = async ({ url, data }) => {
   const { pathname } = url;
 
-  const serverLang = data.serverLang.split('-')[0];
+  const serverLang = data.serverLang?.split?.('-')?.[0] || 'en';
 
   const userLocale = data.locals?.profile?.locale || getInitialLocale(serverLang);
 
