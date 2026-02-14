@@ -222,6 +222,15 @@ Use `.server.ts` files for server-side code to isolate API keys.
 
 ## Common Patterns
 
+### Query error logging (`packages/db/src/queries`)
+In every `catch` block, log the original error with the function name so logs are traceable:
+```typescript
+} catch (error) {
+  console.error('functionName error:', error);
+  throw new Error(`Failed to ...`);
+}
+```
+
 ### Transactions
 ```typescript
 const result = await db.transaction(async (tx) => {

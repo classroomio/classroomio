@@ -41,6 +41,7 @@ SERVER_URL=http://localhost:3081
 PUBLIC_SERVER_URL=http://localhost:3081
 
 # Dashboard server-side calls (inside Docker network)
+PRIVATE_SERVER_URL=http://api:3081
 TRUSTED_ORIGINS=http://localhost:3082,http://localhost:5173
 PUBLIC_IS_SELFHOSTED=true
 
@@ -64,6 +65,8 @@ EOF
 Important:
 
 - `./run-docker-full-stack.sh` auto-generates secure values for `AUTH_BEARER_TOKEN` and `PRIVATE_SERVER_KEY` when missing/insecure, and keeps both values the same.
+- Dashboard API URL behavior is split by environment: browser requests use `PUBLIC_SERVER_URL`, and server-side dashboard requests use `PRIVATE_SERVER_URL` (fallback: `PUBLIC_SERVER_URL`).
+- In hosted deployments, `PUBLIC_SERVER_URL` must be your public API domain (not `localhost`), while Docker internal SSR calls should use `PRIVATE_SERVER_URL=http://api:3081`.
 - For email sending, configure either `ZOHO_TOKEN` or a full SMTP config (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_SENDER`).
 - If neither Zoho token nor SMTP is configured, emails will not send.
 - Keep real secrets out of version control.

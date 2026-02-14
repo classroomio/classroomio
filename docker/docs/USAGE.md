@@ -118,6 +118,8 @@ Important:
 
 - `./run-docker-full-stack.sh` auto-generates secure `AUTH_BEARER_TOKEN`/`PRIVATE_SERVER_KEY` values when missing or insecure placeholders are used.
 - The script keeps `PRIVATE_SERVER_KEY` and `AUTH_BEARER_TOKEN` aligned for dashboard server-side API calls.
+- Dashboard URL selection is environment-aware: browser calls use `PUBLIC_SERVER_URL`, while SSR/server-side calls use `PRIVATE_SERVER_URL` (fallback: `PUBLIC_SERVER_URL`).
+- In Docker, set `PRIVATE_SERVER_URL=http://api:3081` for internal service-to-service traffic, and keep `PUBLIC_SERVER_URL` as your public API URL (do not use `localhost` in hosted deployments).
 
 ## Common Commands
 

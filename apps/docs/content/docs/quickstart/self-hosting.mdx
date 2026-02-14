@@ -109,6 +109,7 @@ PRIVATE_SERVER_KEY=""
 PUBLIC_IS_SELFHOSTED="true"
 
 # Optional
+PRIVATE_SERVER_URL=""
 OPENAI_API_KEY=""
 PUBLIC_IP_REGISTRY_KEY=""
 UNSPLASH_API_KEY=""
@@ -118,6 +119,13 @@ PRIVATE_APP_SUBDOMAINS=""
 
 <Callout title="Important">
   Use the same value for `AUTH_BEARER_TOKEN` (API) and `PRIVATE_SERVER_KEY` (dashboard) so server-side dashboard API calls can authenticate.
+</Callout>
+
+<Callout title="Important">
+  Dashboard URL routing is environment-aware:
+  browser requests use `PUBLIC_SERVER_URL`, while server-side dashboard requests use
+  `PRIVATE_SERVER_URL` (fallback: `PUBLIC_SERVER_URL`). In hosted deployments, set
+  `PUBLIC_SERVER_URL` to your public API domain (not `localhost`).
 </Callout>
 
 <Callout title="Learn More">
@@ -188,6 +196,7 @@ PRIVATE_SERVER_KEY=
 
 SERVER_URL=
 PUBLIC_SERVER_URL=
+PRIVATE_SERVER_URL=
 TRUSTED_ORIGINS=
 ```
 

@@ -8,7 +8,7 @@ import type {
   TNewQuestion,
   TQuestionType
 } from '@db/types';
-import { and, db, eq, inArray, or, sql } from '@db/drizzle';
+import { and, asc, db, eq, inArray, or, sql } from '@db/drizzle';
 
 import type { DbOrTxClient } from '@db/drizzle';
 
@@ -250,7 +250,11 @@ export async function createOptions(values: TNewOption[], dbClient: DbOrTxClient
 export async function getOptionsByQuestionIds(questionIds: number[], dbClient: DbOrTxClient = db) {
   if (questionIds.length === 0) return [];
   try {
-    return dbClient.select().from(schema.option).where(inArray(schema.option.questionId, questionIds));
+    return dbClient
+      .select()
+      .from(schema.option)
+      .where(inArray(schema.option.questionId, questionIds))
+      .orderBy(asc(schema.option.questionId), asc(schema.option.id));
   } catch (error) {
     console.error('getOptionsByQuestionIds error:', error);
     throw new Error(
@@ -451,6 +455,11 @@ export async function getExerciseWithRelationsOptimized(
           }
         }
       }
+    }
+
+    // Sort options by id so order matches insertion order (order sent from client)
+    for (const question of questionsMap.values()) {
+      question.options.sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
     }
 
     return {

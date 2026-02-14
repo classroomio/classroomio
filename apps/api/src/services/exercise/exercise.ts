@@ -3,6 +3,7 @@ import type { TExercise, TExerciseTemplate, TNewOption, TNewQuestion } from '@ci
 import type { TExerciseCreate, TExerciseUpdate } from '@cio/utils/validation/exercise';
 import {
   createExercises,
+  syncOptionIdSequence,
   createOptions,
   createQuestions,
   deleteExercise,
@@ -187,6 +188,11 @@ export async function updateExerciseService(exerciseId: string, data: TExerciseU
 
         // Compute diff between current DB state and incoming data
         const diff = computeExerciseDiff(currentQuestionsWithOptions, data.questions);
+
+        // Sync option id sequence so next inserts get ids > max(id) (avoids option_pkey duplicate)
+        if (diff.options.creates.length > 0 || diff.questions.newQuestions.length > 0) {
+          await syncOptionIdSequence(txClient);
+        }
 
         // Apply all changes in parallel (they operate on different records)
         await Promise.all([

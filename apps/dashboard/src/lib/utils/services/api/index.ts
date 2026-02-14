@@ -10,6 +10,8 @@ import { env } from '$env/dynamic/public';
 
 export const getRequestBaseUrl = () => {
   if (typeof window === 'undefined') {
+    // When on the server, we want to hit the private url which is the docker container of `api` or the private network url of `api`.
+    // if that isn't set then it will fallback to the public url of the `api`
     return process.env.PRIVATE_SERVER_URL || env.PUBLIC_SERVER_URL;
   }
 
@@ -23,11 +25,17 @@ class ApiClient {
     this.config = { ...DEFAULT_CONFIG, ...config };
   }
 
-  private async makeRequest(_input: RequestInfo | URL, requestConfig: RequestConfig = {}): Promise<Response> {
+  private async makeRequest(input: RequestInfo | URL, requestConfig: RequestConfig = {}): Promise<Response> {
     const { timeout = this.config.timeout, retries = this.config.retries, ...fetchConfig } = requestConfig;
 
-    const url = getRequestBaseUrl();
-    const fullUrl = url.startsWith('http') ? url : `${this.config.baseURL}${url}`;
+    const inputUrl = typeof input === 'string' ? input : input.toString();
+    const inputUrlObject = new URL(inputUrl, 'http://_');
+
+    // We are dynamically always getting the base URL to make sure we are getting the right url for the right environment.
+    // For example, when you use classroomio.account.$get(), on the server in a docker container, we want it to hit the api container directly instead of hitting the public url which is extra bandwidth.
+    // However when on the client, we want it to hit the public url which still points to the api container but this time with some bandwidth.
+    const base = (getRequestBaseUrl() ?? this.config.baseURL)?.replace(/\/$/, '') ?? '';
+    const fullUrl = `${base}${inputUrlObject.pathname}${inputUrlObject.search}`;
 
     // Prepare headers
     const headers = new Headers(fetchConfig.headers);

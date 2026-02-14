@@ -169,6 +169,12 @@ The script auto-generates secure local values for `AUTH_BEARER_TOKEN` and `PRIVA
 
 For production deployments from published images, use `docker/docker-compose.prod.yaml` with `docker/.env.prod.example` as your template.
 
+URL routing for dashboard API calls:
+
+- Browser requests use `PUBLIC_SERVER_URL` (must be your public API domain in hosted environments, not `localhost`).
+- Server-side dashboard requests (SSR/load functions) use `PRIVATE_SERVER_URL` when set, and fallback to `PUBLIC_SERVER_URL`.
+- In Docker Compose, use `PRIVATE_SERVER_URL=http://api:3081` so dashboard SSR calls stay on the internal Docker network.
+
 For Docker details and troubleshooting, see:
 
 - `docker/docs/USAGE.md`

@@ -126,6 +126,12 @@ docker compose -p classroomio --env-file docker/.env.prod -f docker/docker-compo
 
 The `db-init` service also uses `CIO_API_IMAGE` so schema setup always matches the API build you deploy.
 
+Important URL behavior for dashboard API calls:
+
+- Browser requests use `PUBLIC_SERVER_URL` (set this to your public API domain, not `localhost`).
+- Server-side dashboard requests use `PRIVATE_SERVER_URL` when set, with fallback to `PUBLIC_SERVER_URL`.
+- In Docker network deployments, set `PRIVATE_SERVER_URL=http://api:3081`.
+
 For local source builds, keep using `docker/docker-compose.yaml`.
 
 ## Versioning Strategy
