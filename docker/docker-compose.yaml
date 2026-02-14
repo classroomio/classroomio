@@ -84,6 +84,7 @@ services:
       CLOUDFLARE_ACCOUNT_ID: ${CLOUDFLARE_ACCOUNT_ID:-}
       CLOUDFLARE_RENDERING_API_KEY: ${CLOUDFLARE_RENDERING_API_KEY:-}
       AUTH_BEARER_TOKEN: ${AUTH_BEARER_TOKEN:-local-dev-api-key}
+      PRIVATE_SERVER_KEY: ${PRIVATE_SERVER_KEY:-local-dev-api-key}
       UNSPLASH_API_KEY: ${UNSPLASH_API_KEY:-}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-local-dev-only-secret-change-this}
     restart: unless-stopped
