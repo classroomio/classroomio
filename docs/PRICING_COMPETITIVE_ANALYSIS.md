@@ -24,17 +24,33 @@ This document analyzes Teachable and Thinkific pricing structures and feature se
 
 ---
 
-### Thinkific Pricing (2024–2025)
+### Thinkific Pricing (from pricing page)
 
-| Plan | Monthly | Yearly | Key Limits |
+| Plan | Monthly | Annual | Key Limits |
 |------|---------|--------|------------|
-| **Free** | $0 | — | 1 course, unlimited students, payment links only |
-| **Basic** | $49 | $468 (save $120) | 3 courses, remove Thinkific branding |
-| **Start** | $99 | $948 (save $240) | Unlimited courses, coupons, bundles |
-| **Grow** | $199 | $1,908 (save $480) | Memberships, advanced pricing, certificates, live lessons |
-| **Expand** | $499 | $4,788 (save $1,200) | Admin API, custom code, priority support |
+| **Basic** | $36 | Save 25% | 10K students, 1 community, email/chat support |
+| **Start** | $74 | Save 25% | 10K students, 1 community, paid memberships |
+| **Grow** | $149 | Save 25% | 10K students, 3 communities, phone support, product bundles, payment plans |
+| **Plus** | Custom | — | Unlimited students, unlimited communities, dedicated CS team |
 
-**Thinkific's model:** Pure subscription. No platform transaction fees. Native payments on paid tiers.
+**Key feature gates (from Thinkific matrix):**
+- **Basic:** Unlimited courses, site builder, landing pages, email automation, coupons. No: remove branding, product bundles, quizzes/certificates/assignments, payment plans.
+- **Start:** Adds paid memberships, share revenue (1 partner), course admins (2).
+- **Grow:** Remove branding, 3 communities, product bundles, payment plans, abandoned cart, group orders, advanced reporting, 5 course admins, 3 partners.
+- **Plus:** SCORM, SSO, unlimited everything.
+
+**Add-on:** Branded Mobile App — $199/mo extra.
+
+**Thinkific's model:** Pure subscription. No platform transaction fees. Native payments (TCommerce).
+
+**Thinkific feature gates (from matrix):**
+- Scheduled content, certificates, assignments, quizzes: Start+
+- Remove Thinkific branding: Grow+
+- Product bundles, payment plans, group orders: Grow+
+- Communities: 1 (Basic/Start), 3 (Grow), unlimited (Plus)
+- Learning Paths: Start+
+- SCORM, SSO: Plus only
+- Share revenue with partners: 1 (Start), 3 (Grow), unlimited (Plus)
 
 ---
 
@@ -46,7 +62,7 @@ This document analyzes Teachable and Thinkific pricing structures and feature se
 | **Early Adopter** | $35 | $350 (save 2 months) | 10K students, custom branding, video, certificates |
 | **Enterprise** | Contact | Contact | Unlimited students, custom domain, 24/7 support |
 
-**Current strengths:** Lower price point ($35 vs $49–119), generous student limits (10K), open source/self-host option.
+**Current strengths:** Lower price point ($35 vs Thinkific $36–149), same 10K student cap as Thinkific Basic/Start/Grow, open source/self-host option.
 
 ---
 
@@ -58,7 +74,7 @@ This document analyzes Teachable and Thinkific pricing structures and feature se
 |---------|-----------|-----------|-------------|-----|
 | **Memberships / recurring billing** | ✅ Pro+ | ✅ Grow+ | ❌ | Defer until payment processing (future) |
 | **Course bundles** | ✅ | ✅ Start+ | ❌ | Common for upsells |
-| **Coupons & promotions** | ✅ | ✅ Start+ | ✅ Discount % only | Need code-based coupons |
+| **Coupons & promotions** | ✅ | ✅ All paid | ✅ Discount % only | Need code-based coupons |
 | **Drip content / scheduled release** | ✅ | ✅ | ❌ | Essential for cohort-style and evergreen courses |
 | **Affiliate program** | ✅ | ✅ | ❌ | Major revenue driver for many creators |
 
@@ -73,6 +89,8 @@ This document analyzes Teachable and Thinkific pricing structures and feature se
 | **Analytics & reporting** | ✅ Pro+ | ✅ | Partial (student analytics) | Expand: revenue, completion, engagement |
 | **Course templates / cloning** | ✅ | ✅ | Roadmap | Accelerate |
 | **Forms (pre-enrollment)** | ✅ | ✅ | Roadmap | Align with roadmap |
+| **Communities** | ✅ | ✅ (1–3+ per plan) | ✅ Forum/Q&A | Thinkific gates by tier |
+| **Product bundles** | ✅ | ✅ Grow+ | ❌ | Course bundles needed |
 
 ### Strengths ClassroomIO Can Emphasize
 
@@ -100,7 +118,7 @@ Retain 3 tiers but refine naming and feature clarity:
 | **Enterprise** | Custom | Large orgs, custom domain, SLA |
 
 **Changes:**
-- Raise Growth to **$39** to align with Teachable Basic while staying below Thinkific Basic ($49).
+- Raise Growth to **$39** to align with Teachable Basic; still below Thinkific Start ($74).
 - Emphasize "unlimited collaborators" and "10K students" as key differentiators.
 - Add 1–2 high-value features to Growth before raising price (e.g., drip content or native payments).
 
@@ -246,4 +264,4 @@ See [FEATURE_SPECIFICATIONS.md](./FEATURE_SPECIFICATIONS.md) for full specs. Pri
 
 ---
 
-*Document generated for the pricing-feature-competitive-strategy initiative. Last updated: February 2025.*
+*Document updated with Thinkific pricing page data (Feb 2025). Teachable verified separately.*
