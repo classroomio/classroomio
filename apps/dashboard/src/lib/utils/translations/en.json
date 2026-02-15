@@ -94,6 +94,12 @@
     "deeply_appreciate": "we deeply appreciate it and are at your service."
   },
 
+  "app": {
+    "search": {
+      "placeholder": "Search"
+    }
+  },
+
   "login": {
     "welcome": "Welcome back",
     "email": "Your email",
@@ -319,12 +325,120 @@
     }
   },
 
+  "media_manager": {
+    "page_title": "Media Manager - ClassroomIO",
+    "heading": "Media Manager",
+    "empty": "No assets found",
+    "common": {
+      "not_available": "N/A"
+    },
+    "storage": {
+      "total_bytes": "Total Storage",
+      "internal_bytes": "Internal Storage",
+      "external_assets": "External Assets",
+      "bytes_by_kind": "Storage by Asset Type"
+    },
+    "filters": {
+      "search_placeholder": "Search assets",
+      "apply": "Apply",
+      "kind_options": {
+        "all": "All types",
+        "video": "Video",
+        "document": "Document",
+        "image": "Image",
+        "audio": "Audio",
+        "other": "Other"
+      },
+      "status_options": {
+        "all": "All statuses",
+        "active": "Active",
+        "archived": "Archived"
+      }
+    },
+    "kind": {
+      "video": "Video",
+      "document": "Document",
+      "image": "Image",
+      "audio": "Audio",
+      "other": "Other"
+    },
+    "provider": {
+      "upload": "Upload",
+      "youtube": "YouTube",
+      "generic": "Generic",
+      "external_url": "External URL"
+    },
+    "status": {
+      "active": "Active",
+      "archived": "Archived"
+    },
+    "table": {
+      "title": "Title",
+      "kind": "Type",
+      "provider": "Provider",
+      "status": "Status",
+      "size": "Size",
+      "updated_at": "Updated",
+      "actions": "Actions"
+    },
+    "actions": {
+      "edit": "Edit",
+      "where_used": "Where used",
+      "download": "Download"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page"
+    },
+    "edit": {
+      "title": "Edit Asset",
+      "description": "Update media metadata for this asset.",
+      "cancel": "Cancel",
+      "save": "Save Changes"
+    },
+    "form": {
+      "file_name": "File Name",
+      "description": "Description",
+      "description_placeholder": "Add an optional description",
+      "thumbnail_url": "Thumbnail URL",
+      "thumbnail_url_placeholder": "https://example.com/thumbnail.jpg",
+      "thumbnail_upload": "Upload Thumbnail",
+      "thumbnail_drop_label": "Drop image here or click to upload",
+      "thumbnail_drop_size": "Up to 5 MB",
+      "thumbnail_preview": "Thumbnail Preview",
+      "thumbnail_alt": "Asset thumbnail",
+      "status": "Status"
+    },
+    "usage": {
+      "title": "Where Used",
+      "description": "Current usage references for",
+      "loading": "Loading usage details...",
+      "empty": "This asset is not attached anywhere yet.",
+      "total": "Total usages:",
+      "target": {
+        "lesson": "Lesson",
+        "exercise": "Exercise",
+        "question": "Question",
+        "unknown": "Unknown"
+      },
+      "table": {
+        "target_type": "Target Type",
+        "target_id": "Target ID",
+        "slot": "Slot",
+        "position": "Position",
+        "added": "Added"
+      }
+    }
+  },
+
   "org_navigation": {
     "platform": "Platform",
     "dashboard": "Dashboard",
     "courses": "Courses",
     "community": "Community",
     "audience": "Audience",
+    "media": "Media",
     "setup": "Setup",
     "help": "Help",
     "settings": "Settings",
@@ -636,6 +750,10 @@
         "exercises": "{count} exercises"
       }
     },
+    "search": {
+      "placeholder": "Search lessons or exercises",
+      "empty": "No results found"
+    },
 
     "navItem": {
       "news_feed": {
@@ -765,6 +883,7 @@
               "title": "Video",
               "embed_link": "Embed Link",
               "upload": "Upload",
+              "library": "Library",
               "button": "Add/Edit Video(s)",
               "remove_video": "Remove video",
               "add_video": {
@@ -787,6 +906,11 @@
                 "uploading": "Uploading...",
                 "invalid_youtube": "Invalid YouTube link(s)",
                 "invalid_link": "Invalid link(s)",
+                "search_library": "Search library",
+                "search_library_action": "Search",
+                "loading_library": "Loading media library...",
+                "no_library_videos": "No videos available in your media library",
+                "add_from_library": "Add from library",
                 "cancel_upload": "Cancel Upload",
                 "upload_cancelled": "Upload cancelled by user",
                 "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",
@@ -1540,6 +1664,22 @@
     "something": "Something went wrong - Please try later",
     "update": "Update",
     "update_failed": "Update failed",
+    "media_manager": {
+      "list_failed": "Failed to load media assets",
+      "storage_failed": "Failed to load storage summary",
+      "create_failed": "Failed to create media asset",
+      "attach_failed": "Failed to attach media asset",
+      "detach_failed": "Failed to detach media asset",
+      "resolve_video_failed": "Failed to resolve media playback URL",
+      "update_failed": "Failed to update media asset",
+      "update_success": "Media asset updated",
+      "usage_failed": "Failed to load asset usage",
+      "download_failed": "Failed to get asset download URL",
+      "thumbnail_uploaded": "Thumbnail uploaded",
+      "thumbnail_upload_failed": "Failed to upload thumbnail",
+      "thumbnail_too_large": "Thumbnail image is too large",
+      "thumbnail_invalid": "Invalid thumbnail file"
+    },
 
     "poll": {
       "error": {
