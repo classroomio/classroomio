@@ -7,15 +7,20 @@ import nodemailer from 'nodemailer';
 let transporter: Transporter | undefined;
 
 const setupTransporter = async () => {
-  if (!env.SMTP_HOST || !env.SMTP_PORT || !env.SMTP_USER || !env.SMTP_PASSWORD) {
+  if (!env.SMTP_HOST || !env.SMTP_USER || !env.SMTP_PASSWORD) {
     console.error('SMTP configuration missing');
+    return undefined;
   }
 
   try {
+    const smtpPort = parseInt(env.SMTP_PORT || '465', 10);
+    const useImplicitTls = smtpPort === 465;
+
     transporter = nodemailer.createTransport({
       host: env.SMTP_HOST,
-      port: parseInt(env.SMTP_PORT || '465', 10),
-      secure: true,
+      port: smtpPort,
+      secure: useImplicitTls,
+      requireTLS: !useImplicitTls,
       auth: {
         user: env.SMTP_USER,
         pass: env.SMTP_PASSWORD
@@ -27,13 +32,16 @@ const setupTransporter = async () => {
     return transporter;
   } catch (error) {
     console.error('Transporter error:', error);
+    return undefined;
   }
 };
 
-setupTransporter();
-
 export async function sendWithNodemailer(emailData: TEmailData): Promise<EmailResponse> {
   const { from, to, subject, content, replyTo } = emailData;
+
+  if (!transporter) {
+    transporter = await setupTransporter();
+  }
 
   if (!transporter) {
     return {
