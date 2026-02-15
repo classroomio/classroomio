@@ -17,6 +17,7 @@ interface LoadOutput {
   org: AccountOrg | null;
   baseMetaTags: MetaTagsProps;
   serverLang: string;
+  localeCookie: string;
   locals: App.Locals;
 }
 
@@ -32,6 +33,7 @@ export const load = async ({ url, cookies, request, locals }): Promise<LoadOutpu
     org: orgSiteInfo.org,
     baseMetaTags: getBaseMetaTags(url),
     serverLang: request.headers?.get('accept-language') || '',
+    localeCookie: cookies.get('classroomio_locale') || '',
     locals
   };
 
