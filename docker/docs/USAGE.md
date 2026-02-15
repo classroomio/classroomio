@@ -26,12 +26,15 @@ Run from the repository root:
 
 ```bash
 ./run-docker-full-stack.sh
+
+# Skip image rebuild and only start containers
+./run-docker-full-stack.sh --no-build
 ```
 
 Verify:
 
 ```bash
-docker compose -p classroomio -f docker/docker-compose.yaml ps
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml ps
 curl -sS http://localhost:3081/
 curl -I http://localhost:3082/
 ```
@@ -46,9 +49,9 @@ Expected:
 If you only want to validate API startup (recommended first check):
 
 ```bash
-docker compose -p classroomio -f docker/docker-compose.yaml up --build -d postgres redis db-init api
-docker compose -p classroomio -f docker/docker-compose.yaml ps
-docker compose -p classroomio -f docker/docker-compose.yaml logs --tail=100 api
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml up --build -d postgres redis db-init api
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml ps
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml logs --tail=100 api
 curl -sS http://localhost:3081/
 ```
 
@@ -117,6 +120,7 @@ UNSPLASH_API_KEY=
 Important:
 
 - `./run-docker-full-stack.sh` auto-generates secure `AUTH_BEARER_TOKEN`/`PRIVATE_SERVER_KEY` values when missing or insecure placeholders are used.
+- `./run-docker-full-stack.sh` always uses root `.env` (`docker compose --env-file .env ...`) so compose build/runtime variables come from repository-root `.env`.
 - API key middleware for dashboard/server-to-server calls validates `PRIVATE_SERVER_KEY`.
 - `AUTH_BEARER_TOKEN` is a separate token and is not used by `apiKeyMiddleware`.
 - Dashboard URL selection is environment-aware: browser calls use `PUBLIC_SERVER_URL`, while SSR/server-side calls use `PRIVATE_SERVER_URL` (fallback: `PUBLIC_SERVER_URL`).
@@ -126,16 +130,16 @@ Important:
 
 ```bash
 # Start / rebuild
-docker compose -p classroomio -f docker/docker-compose.yaml up --build -d
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml up --build -d
 
 # Stream logs
-docker compose -p classroomio -f docker/docker-compose.yaml logs -f api dashboard
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml logs -f api dashboard
 
 # Stop
-docker compose -p classroomio -f docker/docker-compose.yaml down
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml down
 
 # Stop and remove volumes (deletes local DB/cache data)
-docker compose -p classroomio -f docker/docker-compose.yaml down -v
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml down -v
 ```
 
 ## Troubleshooting
@@ -143,7 +147,7 @@ docker compose -p classroomio -f docker/docker-compose.yaml down -v
 ### API or dashboard fails to start
 
 ```bash
-docker compose -p classroomio -f docker/docker-compose.yaml logs --tail=200 api dashboard db-init postgres redis
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml logs --tail=200 api dashboard db-init postgres redis
 ```
 
 ### SMTP errors in API logs

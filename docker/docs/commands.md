@@ -6,24 +6,27 @@
 # Full stack (recommended; generates/syncs secure auth tokens in root .env)
 ./run-docker-full-stack.sh
 
+# Full stack without rebuilding images
+./run-docker-full-stack.sh --no-build
+
 # Full stack (postgres, redis, db-init, api, dashboard)
-docker compose -p classroomio -f docker/docker-compose.yaml up --build -d
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml up --build -d
 
 # API-only smoke test path (plus required dependencies)
-docker compose -p classroomio -f docker/docker-compose.yaml up --build -d postgres redis db-init api
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml up --build -d postgres redis db-init api
 
 # Service status
-docker compose -p classroomio -f docker/docker-compose.yaml ps
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml ps
 
 # Logs
-docker compose -p classroomio -f docker/docker-compose.yaml logs -f api
-docker compose -p classroomio -f docker/docker-compose.yaml logs -f dashboard
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml logs -f api
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml logs -f dashboard
 
 # Stop services
-docker compose -p classroomio -f docker/docker-compose.yaml down
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml down
 
 # Stop + remove volumes (deletes local postgres/redis data)
-docker compose -p classroomio -f docker/docker-compose.yaml down -v
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml down -v
 ```
 
 ## Compose Stack (Published Images / Production)

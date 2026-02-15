@@ -165,7 +165,13 @@ To run the Dockerized stack (including API + dashboard):
 ./run-docker-full-stack.sh
 ```
 
-The script auto-generates secure local values for `PRIVATE_SERVER_KEY` (and `AUTH_BEARER_TOKEN`) in root `.env` when they are missing/insecure. API key middleware validation for dashboard server-side calls uses `PRIVATE_SERVER_KEY`.
+Start without rebuilding images:
+
+```bash
+./run-docker-full-stack.sh --no-build
+```
+
+The script always reads root `.env` via `docker compose --env-file .env`, and it auto-generates secure local values for `PRIVATE_SERVER_KEY` (and `AUTH_BEARER_TOKEN`) when they are missing/insecure. API key middleware validation for dashboard server-side calls uses `PRIVATE_SERVER_KEY`.
 
 For production deployments from published images, use `docker/docker-compose.prod.yaml` with `docker/.env.prod.example` as your template.
 

@@ -63,6 +63,7 @@ EOF
 Important:
 
 - `./run-docker-full-stack.sh` auto-generates secure values for `AUTH_BEARER_TOKEN` and `PRIVATE_SERVER_KEY` when missing/insecure.
+- `./run-docker-full-stack.sh` always uses root `.env` (`docker compose --env-file .env ...`) for compose build/runtime variables.
 - API key middleware for dashboard/server-to-server calls validates `PRIVATE_SERVER_KEY`.
 - `AUTH_BEARER_TOKEN` is separate and is not used by `apiKeyMiddleware`.
 - Dashboard API URL behavior is split by environment: browser requests use `PUBLIC_SERVER_URL`, and server-side dashboard requests use `PRIVATE_SERVER_URL` (fallback: `PUBLIC_SERVER_URL`).
@@ -77,6 +78,9 @@ From repo root:
 
 ```bash
 ./run-docker-full-stack.sh
+
+# Skip image rebuild and only start containers
+./run-docker-full-stack.sh --no-build
 ```
 
 This script:
@@ -88,7 +92,7 @@ This script:
 ## 5. Verify Manually (Optional)
 
 ```bash
-docker compose -p classroomio -f docker/docker-compose.yaml ps
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml ps
 curl -sS http://localhost:3081/
 curl -I http://localhost:3082/
 ```
@@ -103,13 +107,13 @@ curl -I http://localhost:3082/
 To run DB setup and seed demo data in one command:
 
 ```bash
-docker compose -p classroomio -f docker/docker-compose.yaml run --rm db-init sh -c "pnpm --filter @cio/db db:setup -- --seed"
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml run --rm db-init sh -c "pnpm --filter @cio/db db:setup -- --seed"
 ```
 
 Seed only (skip DB setup):
 
 ```bash
-docker compose -p classroomio -f docker/docker-compose.yaml run --rm db-init sh -c "pnpm --filter @cio/db seed"
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml run --rm db-init sh -c "pnpm --filter @cio/db seed"
 ```
 
 Use seed-only only after setup has already run at least once (`db:setup`, which now creates roles and syncs schema).
@@ -123,14 +127,14 @@ Because this Docker setup builds images from source (no live bind-mount hot relo
 Rebuild and restart only one service:
 
 ```bash
-docker compose -p classroomio -f docker/docker-compose.yaml up -d --build api
-docker compose -p classroomio -f docker/docker-compose.yaml up -d --build dashboard
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml up -d --build api
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml up -d --build dashboard
 ```
 
 If you changed shared code used by both (`packages/*`), rebuild both:
 
 ```bash
-docker compose -p classroomio -f docker/docker-compose.yaml up -d --build api dashboard
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml up -d --build api dashboard
 ```
 
 Rebuild full stack:
@@ -142,13 +146,13 @@ Rebuild full stack:
 If you only changed environment variables (no code change), restart without rebuild:
 
 ```bash
-docker compose -p classroomio -f docker/docker-compose.yaml restart api dashboard
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml restart api dashboard
 ```
 
 ## 9. Stop
 
 ```bash
-docker compose -p classroomio -f docker/docker-compose.yaml down
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml down
 ```
 
 ## 10. If Docker Fails with "No space left on device"
