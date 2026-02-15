@@ -6,6 +6,35 @@ ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 COMPOSE_FILE="${ROOT_DIR}/docker/docker-compose.yaml"
 PROJECT_NAME="classroomio"
 ENV_FILE="${ROOT_DIR}/.env"
+BUILD_IMAGES=true
+
+print_usage() {
+  cat <<'USAGE'
+Usage: ./run-docker-full-stack.sh [--no-build]
+
+Options:
+  --no-build  Start containers without rebuilding images.
+  -h, --help  Show this help message.
+USAGE
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --no-build)
+      BUILD_IMAGES=false
+      shift
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1"
+      print_usage
+      exit 1
+      ;;
+  esac
+done
 
 get_env_value() {
   local key="$1"
@@ -130,7 +159,11 @@ fi
 ensure_secure_auth_tokens
 
 echo "Starting ClassroomIO Docker full stack..."
-docker compose --env-file "${ENV_FILE}" -p "${PROJECT_NAME}" -f "${COMPOSE_FILE}" up --build -d
+if [[ "${BUILD_IMAGES}" == "true" ]]; then
+  docker compose --env-file "${ENV_FILE}" -p "${PROJECT_NAME}" -f "${COMPOSE_FILE}" up --build -d
+else
+  docker compose --env-file "${ENV_FILE}" -p "${PROJECT_NAME}" -f "${COMPOSE_FILE}" up -d
+fi
 
 echo
 echo "Current service status:"
