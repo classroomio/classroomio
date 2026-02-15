@@ -19,8 +19,8 @@ export type TNewVerification = typeof schema.verification.$inferInsert;
 export type TAnalyticsLoginEvents = typeof schema.analyticsLoginEvents.$inferSelect;
 export type TNewAnalyticsLoginEvents = typeof schema.analyticsLoginEvents.$inferInsert;
 
-export type TLessonSection = typeof schema.lessonSection.$inferSelect;
-export type TNewLessonSection = typeof schema.lessonSection.$inferInsert;
+export type TCourseSection = typeof schema.courseSection.$inferSelect;
+export type TNewCourseSection = typeof schema.courseSection.$inferInsert;
 
 export type TGroup = typeof schema.group.$inferSelect;
 export type TNewGroup = typeof schema.group.$inferInsert;
@@ -82,6 +82,18 @@ export type TNewExercise = typeof schema.exercise.$inferInsert;
 export type TGroupmember = typeof schema.groupmember.$inferSelect;
 export type TNewGroupmember = typeof schema.groupmember.$inferInsert;
 
+export type TCourseInvite = typeof schema.courseInvite.$inferSelect;
+export type TNewCourseInvite = typeof schema.courseInvite.$inferInsert;
+
+export type TCourseInviteAudit = typeof schema.courseInviteAudit.$inferSelect;
+export type TNewCourseInviteAudit = typeof schema.courseInviteAudit.$inferInsert;
+
+export type TOrganizationInvite = typeof schema.organizationInvite.$inferSelect;
+export type TNewOrganizationInvite = typeof schema.organizationInvite.$inferInsert;
+
+export type TOrganizationInviteAudit = typeof schema.organizationInviteAudit.$inferSelect;
+export type TNewOrganizationInviteAudit = typeof schema.organizationInviteAudit.$inferInsert;
+
 export type TLessonCompletion = typeof schema.lessonCompletion.$inferSelect;
 export type TNewLessonCompletion = typeof schema.lessonCompletion.$inferInsert;
 
@@ -135,8 +147,10 @@ export type TNewExerciseTemplate = typeof schema.exerciseTemplate.$inferInsert;
 
 export type TCourseType = (typeof schema.courseType.enumValues)[number];
 
-export type TCourseVersion = (typeof schema.courseVersion.enumValues)[number];
-
 export type TLocale = (typeof schema.locale.enumValues)[number];
 
 export type TPlan = (typeof schema.plan.enumValues)[number];
+
+export type TCourseInviteEventType = (typeof schema.courseInviteEventType.enumValues)[number];
+
+export type TOrganizationInviteEventType = (typeof schema.organizationInviteEventType.enumValues)[number];

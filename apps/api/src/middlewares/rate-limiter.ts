@@ -6,9 +6,10 @@ import {
 } from '@api/constants/rate-limiter';
 
 import type { MiddlewareHandler } from 'hono';
-import { rateLimiter } from '@api/utils/redis/limiter';
+import { RedisRateLimiter } from '@api/utils/redis/limiter';
 import { userKeyGenerator } from '../utils/redis/key-generators';
 import { env } from '@api/config/env';
+import { redis } from '@api/utils/redis/redis';
 
 export interface RateLimiterOptions {
   windowMs?: number;
@@ -28,6 +29,7 @@ const defaultOptions: Required<RateLimiterOptions> = {
 
 export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareHandler => {
   const opts = { ...defaultOptions, ...options };
+  const limiter = new RedisRateLimiter(redis, opts.windowMs, opts.maxRequests);
 
   return async (c, next) => {
     // Skip rate limiting if not in production
@@ -40,7 +42,7 @@ export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareH
       const key = opts.keyGenerator(c);
 
       // Check rate limit
-      const result = await rateLimiter.isAllowed(key);
+      const result = await limiter.isAllowed(key);
 
       // Set rate limit headers
       if (opts.standardHeaders) {

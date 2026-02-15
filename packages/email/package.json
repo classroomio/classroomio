@@ -8,7 +8,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "dev": "tsc --watch",
     "format": "prettier --write \"src/**/*.ts\""
   },

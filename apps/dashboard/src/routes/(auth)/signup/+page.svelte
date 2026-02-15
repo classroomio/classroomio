@@ -4,6 +4,7 @@
   import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
   import { t } from '$lib/utils/functions/translations';
   import { authValidation, getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';
+  import { page } from '$app/state';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';
   import { authClient } from '$lib/utils/services/auth/client';
@@ -22,6 +23,7 @@
   let submitError: string = $state('');
 
   const disableSubmit = $derived(getDisableSubmit(fields));
+  const redirectUrl = $derived(page.url.searchParams.get('redirect'));
 
   async function handleSubmit() {
     const validationRes = authValidation(fields);
@@ -59,7 +61,8 @@
               });
             }
 
-            window.location.href = '/';
+            const redirect = redirectUrl || '/';
+            window.location.href = redirect.startsWith('/') ? redirect : `/?redirect=${encodeURIComponent(redirect)}`;
           }
         }
       );

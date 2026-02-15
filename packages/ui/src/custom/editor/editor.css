@@ -6,12 +6,16 @@
 
 /* For Placeholder */
 
-.tiptap .is-empty:not(blockquote.is-empty)::before {
+.tiptap > p.is-empty:only-child::before {
   pointer-events: none;
   float: left;
   height: 0;
-  color: var(--color-muted-foreground);
+  color: var(--muted-foreground);
   content: attr(data-placeholder);
+}
+
+.tiptap.ProseMirror {
+  outline: none;
 }
 
 /* Heading Styles */
@@ -456,38 +460,38 @@ input[type='checkbox'] {
 
 /* Mathematics extension styles */
 .tiptap .tiptap-mathematics-render {
-	padding: 0 0.25rem;
-	border-radius: 0.25rem;
+  padding: 0 0.25rem;
+  border-radius: 0.25rem;
 }
 
 /* Editable math block */
 .tiptap .tiptap-mathematics-render--editable {
-	cursor: pointer;
-	transition: background 0.2s;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
 .tiptap .tiptap-mathematics-render--editable:hover {
-	background: var(--code-bg);
+  background: var(--code-bg);
 }
 
 /* Inline math */
 .tiptap .tiptap-mathematics-render[data-type='inline-math'] {
-	display: inline-block;
+  display: inline-block;
 }
 
 /* Block math */
 .tiptap .tiptap-mathematics-render[data-type='block-math'] {
-	display: block;
-	margin: 1rem 0;
-	padding: 0.5rem;
-	text-align: center;
-	font-size: 1.25rem;
+  display: block;
+  margin: 1rem 0;
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 1.25rem;
 }
 
 /* Error styles */
 .tiptap .tiptap-mathematics-render.inline-math-error,
 .tiptap .tiptap-mathematics-render.block-math-error {
-	background: var(--code-bg);
-	color: var(--color-destructive);
-	border: 1px solid darkred;
+  background: var(--code-bg);
+  color: var(--color-destructive);
+  border: 1px solid darkred;
 }

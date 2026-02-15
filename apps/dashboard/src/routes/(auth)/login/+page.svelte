@@ -5,6 +5,7 @@
   import { authValidation } from '$lib/utils/functions/validator';
   import { currentOrg } from '$lib/utils/store/org';
   import { authClient } from '$lib/utils/services/auth/client';
+  import { page } from '$app/state';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';
   import * as Field from '@cio/ui/base/field';
@@ -16,6 +17,8 @@
   let submitError: string | undefined = $state();
   let loading = $state(false);
   let errors = $state(Object.assign({}, LOGIN_FIELDS));
+
+  const redirectUrl = $derived(page.url.searchParams.get('redirect'));
 
   async function handleSubmit() {
     const validationRes = authValidation(fields);
@@ -46,7 +49,8 @@
               });
             }
 
-            window.location.href = '/';
+            const redirect = redirectUrl || '/';
+            window.location.href = redirect.startsWith('/') ? redirect : `/?redirect=${encodeURIComponent(redirect)}`;
           }
         }
       );

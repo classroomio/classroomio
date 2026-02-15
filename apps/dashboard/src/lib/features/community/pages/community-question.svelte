@@ -20,13 +20,16 @@
   import { shortenName } from '$lib/utils/functions/string';
   import { TextEditor } from '$features/ui';
   import { CommunityDeleteModal, CommunityCommentItem } from '$features/community/components';
+  import type { CommunityQuestionSuccess } from '../utils/types';
+  import { currentCommunityQuestion } from '../utils/store';
 
   interface Props {
     slug: string;
     isLMS?: boolean;
+    question?: CommunityQuestionSuccess['data'] | null;
   }
 
-  let { slug, isLMS = false }: Props = $props();
+  let { isLMS = false, question }: Props = $props();
 
   let commentEditor: TiptapEditor | undefined = $state();
   let isValidAnswer = false; // V2 allow admin mark an answer as accepted
@@ -41,12 +44,18 @@
     questionId: ''
   });
 
+  // Initialize question from prop if provided
   $effect(() => {
-    if ($profile.id && $currentOrg.id) {
-      communityApi.fetchCoursesForOrg($profile.id, $currentOrg.id);
-
-      communityApi.fetchCommunityQuestion({ slug, isLMS });
+    if (question) {
+      communityApi.question = question;
+      currentCommunityQuestion.set({ title: question.title });
     }
+  });
+
+  $effect(() => {
+    if (!$profile.id || !$currentOrg.id) return;
+
+    communityApi.fetchCoursesForOrg($profile.id, $currentOrg.id);
   });
 </script>
 
@@ -88,7 +97,7 @@
     <Skeleton class="h-80 w-full" />
   </div>
 {:else}
-  <Page.Root class="mx-auto max-w-3xl md:mx-10 lg:mb-20">
+  <Page.Root class="mx-auto w-[90%] md:mx-10 md:max-w-3xl lg:mb-20">
     <Page.Header>
       <Page.HeaderContent>
         {#if communityApi.isEditMode}
@@ -101,7 +110,7 @@
             />
 
             <Select.Root type="single" bind:value={communityApi.editContent.courseId} disabled={communityApi.isEditing}>
-              <Select.Trigger class="w-30! h-full truncate" disabled={communityApi.isEditing}>
+              <Select.Trigger class="h-full w-30! truncate" disabled={communityApi.isEditing}>
                 <span class="truncate">
                   {communityApi.editContent.courseId
                     ? communityApi.courses.find((course) => course.id === communityApi.editContent.courseId)?.title

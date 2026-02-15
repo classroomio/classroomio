@@ -8,6 +8,7 @@ set -e  # Exit on error
 # Configuration
 DOCKERHUB_USERNAME="${DOCKERHUB_USERNAME:-classroomio}"  # Change this to your Docker Hub username
 VERSION="${VERSION:-latest}"  # Can be overridden with VERSION env var
+PUBLIC_IS_SELFHOSTED="${PUBLIC_IS_SELFHOSTED:-true}"
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -37,8 +38,10 @@ echo ""
 
 # Build and push Dashboard
 echo -e "${GREEN}Building Dashboard image...${NC}"
+echo "Dashboard build arg PUBLIC_IS_SELFHOSTED=${PUBLIC_IS_SELFHOSTED}"
 docker build \
     -f docker/Dockerfile.dashboard \
+    --build-arg PUBLIC_IS_SELFHOSTED=${PUBLIC_IS_SELFHOSTED} \
     -t ${DOCKERHUB_USERNAME}/dashboard:${VERSION} \
     -t ${DOCKERHUB_USERNAME}/dashboard:latest \
     .

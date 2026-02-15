@@ -11,7 +11,6 @@
   import { calDateDiff } from '$lib/utils/functions/date';
   import { getGreeting } from '$lib/utils/functions/date';
   import { currentOrgPath } from '$lib/utils/store/org';
-  import { dashStatApi } from '$features/org/api';
 
   import { CreateCourseButton } from '$features/course/components';
   import * as Avatar from '@cio/ui/base/avatar';
@@ -25,11 +24,12 @@
 
   const { data } = $props();
 
-  const { enrollments, numberOfCourses, revenue, totalStudents, topCourses } = $derived(dashStatApi.stats);
-
-  $effect(() => {
-    dashStatApi.fetchOrgStats({ siteName: data.orgName });
-  });
+  const stats = $derived(data.stats);
+  const enrollments = $derived(stats?.enrollments || []);
+  const numberOfCourses = $derived(stats?.numberOfCourses || 0);
+  const revenue = $derived(stats?.revenue || 0);
+  const totalStudents = $derived(stats?.totalStudents || 0);
+  const topCourses = $derived(stats?.topCourses || []);
 
   let cards = $derived([
     {
@@ -81,19 +81,13 @@
       <div class="mb-10 flex flex-wrap items-start">
         <div class="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {#each cards as card}
-            {#if !revenue && !numberOfCourses && !totalStudents}
-              <Skeleton style="width: 100%; height: 10rem;" class="rounded-md" />
-            {:else}
-              <ActivityCard activity={card} />
-            {/if}
+            <ActivityCard activity={card} />
           {/each}
         </div>
       </div>
 
       <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <div
-          class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 md:p-5 dark:border-neutral-600 dark:text-white"
-        >
+        <div class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 md:p-5 dark:text-white">
           <h3 class="mb-4 text-lg">
             {$t('dashboard.top_courses')}
           </h3>
@@ -139,9 +133,7 @@
           </div>
         </div>
 
-        <div
-          class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 md:p-5 dark:border-neutral-600 dark:text-white"
-        >
+        <div class="flex min-h-[45vh] w-full flex-col rounded-md border p-3 md:p-5 dark:text-white">
           <h3 class="mb-4 text-lg">
             {$t('dashboard.recent_enrollments')}
           </h3>
@@ -164,7 +156,7 @@
                     </Avatar.Root>
 
                     <div class="min-h-[45px] space-y-1">
-                      <p class="text-sm capitalize leading-none">{enrollment.name}</p>
+                      <p class="text-sm leading-none capitalize">{enrollment.name}</p>
                       <p class="text-muted-foreground text-sm">
                         <span class="italic">
                           {calDateDiff(enrollment.date)}

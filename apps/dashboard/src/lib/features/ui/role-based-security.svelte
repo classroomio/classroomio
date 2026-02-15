@@ -1,6 +1,6 @@
 <script lang="ts">
   import { profile } from '$lib/utils/store/user';
-  import { group } from '$lib/components/Course/store';
+  import { courseApi } from '$features/course/api';
   import { isOrgAdmin } from '$lib/utils/store/org';
 
   interface Props {
@@ -13,9 +13,9 @@
 
   let { allowedRoles = [], onDenied = () => {}, onlyStudent = false, children }: Props = $props();
 
-  const userRole: number = $derived.by(() => {
-    const user = $group.people.find((person) => person.profile_id === $profile.id);
-    return user ? user.role_id : 0;
+  const userRole: number | null = $derived.by(() => {
+    const user = courseApi.group.people.find((person) => person.profileId === $profile.id);
+    return user ? Number(user.roleId) : null;
   });
 
   const show = $derived.by(() => {
@@ -26,12 +26,13 @@
     }
   });
 
-  function isAllowed(userRole) {
+  function isAllowed(userRole: number | null) {
+    if (userRole === null) return false;
     return allowedRoles.includes(userRole);
   }
 
   $effect(() => {
-    if (!$isOrgAdmin && $group.people.length && !isAllowed(userRole)) {
+    if (!$isOrgAdmin && userRole !== null && !isAllowed(userRole)) {
       onDenied();
     }
   });

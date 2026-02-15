@@ -1,19 +1,28 @@
 import { TCommunityAnswer, TCommunityQuestion, TNewCommunityQuestion } from '@db/types';
-import {
-  communityAnswer,
-  communityQuestion,
-  course,
-  db,
-  desc,
-  eq,
-  inArray,
-  organization,
-  profile,
-  sql
-} from '@db/drizzle';
+import { communityAnswer, communityQuestion, course, db, desc, eq, inArray, profile, sql } from '@db/drizzle';
 
-export async function getCommunityQuestions(courseIdsFilter: string[]) {
+export type CommunityQuestionQueryResult = {
+  organizationId: TCommunityQuestion['organizationId'];
+  courseId: TCommunityQuestion['courseId'];
+  title: TCommunityQuestion['title'];
+  votes: TCommunityQuestion['votes'];
+  createdAt: TCommunityQuestion['createdAt'];
+  slug: TCommunityQuestion['slug'];
+  comments: number;
+  authorFullname: string | null;
+  courseTitle: string | null;
+};
+
+export async function getCommunityQuestions(
+  options: { courseIds: string[] } | { orgId: string }
+): Promise<CommunityQuestionQueryResult[]> {
   const commentsCount = sql<number>`COUNT(${communityAnswer.id})`;
+
+  // Build where condition based on options
+  const whereCondition =
+    'courseIds' in options
+      ? inArray(communityQuestion.courseId, options.courseIds)
+      : eq(communityQuestion.organizationId, options.orgId);
 
   return db
     .select({
@@ -31,7 +40,7 @@ export async function getCommunityQuestions(courseIdsFilter: string[]) {
     .innerJoin(course, eq(communityQuestion.courseId, course.id))
     .leftJoin(communityAnswer, eq(communityAnswer.questionId, communityQuestion.id))
     .leftJoin(profile, eq(profile.id, communityQuestion.authorProfileId))
-    .where(inArray(communityQuestion.courseId, courseIdsFilter))
+    .where(whereCondition)
     .groupBy(
       communityQuestion.organizationId,
       communityQuestion.courseId,

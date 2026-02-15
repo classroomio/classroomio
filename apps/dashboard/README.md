@@ -43,7 +43,7 @@ Please reach out to me on [twitter](https://x.com/rotimi_best) if you have any f
 ## Built With
 
 - [Svelekit](https://kit.svelte.dev/?ref=classroomio.com)
-- [Supabase](https://supabase.com/?ref=classroomio.com)
+- [Better Auth](https://www.better-auth.com/?ref=classroomio.com)
 - [TailwindCSS](https://tailwindcss.com/?ref=classroomio.com)
 
 ## Get a Demo
@@ -65,8 +65,7 @@ To get a local copy up and running, please follow these simple steps.
 Here is what you need to be able to run Cal.com.
 
 - [Node.js](https://nodejs.org/) (Version: >=22.x)
-- [Supabase CLI](https://github.com/supabase/cli)
-- [Docker](https://docs.docker.com/engine/install/)
+- [Docker](https://docs.docker.com/engine/install/) (for local database if needed)
 - [NPM](https://www.npmjs.com/)
 
 ## Development
@@ -102,46 +101,13 @@ Here is what you need to be able to run Cal.com.
 4. Set up your `.env` file
    - Duplicate `.env.example` to `.env`
 
-5. Setup Supabase.
-   - Make sure you've downloaded the [supabase cli](https://github.com/supabase/cli)
-   - Install and Start [docker](https://docs.docker.com/engine/install/)
-   - Go to the project directory in your terminal and start supabase
-
-     ```bash
-       supabase start
-     ```
-
-   - You should get a result like this
-
-     ```bash
-       supabase local development setup is running.
-
-         API URL: http://127.0.0.1:54321
-     GraphQL URL: http://127.0.0.1:54321/graphql/v1
-           DB URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
-       Studio URL: http://127.0.0.1:54323
-     Inbucket URL: http://127.0.0.1:54324
-       JWT secret: super-secret-jwt-token-with-at-least-32-characters-long
-         anon key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
-     service_role key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
-     ```
-
-   - Supabase environment variables should be taken from the result of `supabase start`
-
-     ```env
-       PUBLIC_SUPABASE_URL=<API URL>
-       PUBLIC_SUPABASE_ANON_KEY=<anon key>
-     ```
-
-   - To view the Supabase studio, open the Studio URL from the result of supabase start
-
-6. Install the required dependencies
+5. Install the required dependencies
 
    ```bash
    npm i
    ```
 
-7. Run (in development mode)
+6. Run (in development mode)
 
    ```bash
    npm run dev

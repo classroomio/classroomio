@@ -2,48 +2,52 @@
   "name": "@cio/utils",
   "version": "1.0.0",
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./constants": {
-      "types": "./src/constants/index.ts",
-      "default": "./src/constants/index.ts"
+      "types": "./dist/constants/index.d.ts",
+      "default": "./dist/constants/index.js"
     },
     "./constants/*": {
-      "types": "./src/constants/*/index.ts",
-      "default": "./src/constants/*/index.ts"
+      "types": "./dist/constants/*.d.ts",
+      "default": "./dist/constants/*.js"
     },
     "./plans": {
-      "types": "./src/plans/index.ts",
-      "default": "./src/plans/index.ts"
+      "types": "./dist/plans/index.d.ts",
+      "default": "./dist/plans/index.js"
     },
     "./senja": {
-      "types": "./src/senja/index.ts",
-      "default": "./src/senja/index.ts"
+      "types": "./dist/senja/index.d.ts",
+      "default": "./dist/senja/index.js"
     },
     "./validation": {
-      "types": "./src/validation/index.ts",
-      "default": "./src/validation/index.ts"
+      "types": "./dist/validation/index.d.ts",
+      "default": "./dist/validation/index.js"
+    },
+    "./validation/constants": {
+      "types": "./dist/validation/constants.d.ts",
+      "default": "./dist/validation/constants.js"
     },
     "./validation/*": {
-      "types": "./src/validation/*/index.ts",
-      "default": "./src/validation/*/index.ts"
+      "types": "./dist/validation/*/index.d.ts",
+      "default": "./dist/validation/*/index.js"
     },
     "./functions": {
-      "types": "./src/functions/index.ts",
-      "default": "./src/functions/index.ts"
+      "types": "./dist/functions/index.d.ts",
+      "default": "./dist/functions/index.js"
     },
     "./functions/*": {
-      "types": "./src/functions/*/index.ts",
-      "default": "./src/functions/*/index.ts"
+      "types": "./dist/functions/*.d.ts",
+      "default": "./dist/functions/*.js"
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "dev": "tsc --watch",
     "format": "prettier --write ."
   },

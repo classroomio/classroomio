@@ -7,7 +7,6 @@
   import { t } from '$lib/utils/functions/translations';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import * as Page from '@cio/ui/base/page';
-  import { CourseContainer } from '$lib/components/CourseContainer';
 
   let { data = $bindable(), children } = $props();
 
@@ -28,36 +27,34 @@
   };
 </script>
 
-<CourseContainer courseId={data.courseId}>
-  <div class="mx-auto w-full max-w-3xl">
-    <Page.Header>
-      {#if data.personId}
-        <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <IconButton onclick={handleBackNavigation}>
-            <ArrowLeftIcon size={16} />
-          </IconButton>
-        </RoleBasedSecurity>
-      {/if}
-      <Page.HeaderContent>
-        <Page.Title>
-          {$t('course.navItem.people.title')}
-        </Page.Title>
-      </Page.HeaderContent>
-      <Page.Action>
-        {#if !data.personId}
+<div class="mx-auto w-[90%] md:max-w-3xl">
+  <Page.Header>
+    <Page.HeaderContent>
+      <Page.Title>
+        {#if data.personId}
           <RoleBasedSecurity allowedRoles={[1, 2]}>
-            <Button class="mr-2" onclick={handleClick}>
-              {$t('course.navItem.people.add')}
-            </Button>
+            <IconButton onclick={handleBackNavigation}>
+              <ArrowLeftIcon size={16} />
+            </IconButton>
           </RoleBasedSecurity>
         {/if}
-      </Page.Action>
-    </Page.Header>
+        {$t('course.navItem.people.title')}
+      </Page.Title>
+    </Page.HeaderContent>
+    <Page.Action>
+      {#if !data.personId}
+        <RoleBasedSecurity allowedRoles={[1, 2]}>
+          <Button class="mr-2" onclick={handleClick}>
+            {$t('course.navItem.people.add')}
+          </Button>
+        </RoleBasedSecurity>
+      {/if}
+    </Page.Action>
+  </Page.Header>
 
-    <Page.Body>
-      {#snippet child()}
-        {@render children?.()}
-      {/snippet}
-    </Page.Body>
-  </div>
-</CourseContainer>
+  <Page.Body>
+    {#snippet child()}
+      {@render children?.()}
+    {/snippet}
+  </Page.Body>
+</div>

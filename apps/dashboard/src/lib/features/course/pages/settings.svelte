@@ -17,19 +17,19 @@
 
   import { settings } from '$features/course/utils/settings-store';
   import Copy from '@lucide/svelte/icons/copy';
-  import type { Course } from '$lib/utils/types';
-  import { COURSE_TYPE } from '$lib/utils/types';
-  import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { course } from '$lib/components/Course/store';
+  import type { TCourseType } from '@cio/db/types';
+  import type { Course } from '../utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { isObject } from '$lib/utils/functions/isObject';
   import { snackbar } from '$features/ui/snackbar/store';
   import generateSlug from '$lib/utils/functions/generateSlug';
   import { DeleteModal } from '$features/ui';
-  import { deleteCourse, updateCourse } from '$lib/utils/services/courses';
+  import { courseApi } from '$features/course/api';
+  import { uploadImage } from '$lib/utils/services/upload';
   import { copyToClipboard } from '$lib/utils/functions/formatYoutubeVideo';
   import { handleOpenWidget } from '$features/ui/course-landing-page/store';
-  import { currentOrg, currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
+  import { currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
+  import { page } from '$app/stores';
 
   let isLoading = $state(false);
   let isDeleting = $state(false);
@@ -48,65 +48,8 @@
     $handleOpenWidget.open = !$handleOpenWidget.open;
   }
 
-  function getLessonOrder(id: string) {
-    const index = $lessons.findIndex((lesson) => lesson.id === id);
-    if (index < 9) {
-      return '0' + (index + 1);
-    } else {
-      return index + 1;
-    }
-  }
-
   const downloadCourse = async () => {
-    alert('Coming soon');
-    return;
-
-    isLoading = true;
-
-    try {
-      const lessonsList = $lessons.map((lesson) => ({
-        lessonTitle: lesson.title,
-        lessonNumber: getLessonOrder(lesson.id),
-        lessonNote: lesson.note,
-        slideUrl: lesson.slide_url || '',
-        video: lesson.videos || ''
-      }));
-
-      const response = await fetch('/downloadCourse', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          courseTitle: $course.title,
-          orgName: $currentOrg.name,
-          orgTheme: $currentOrg.theme || '',
-          lessons: lessonsList
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
-      const data = await response.blob();
-      const file = new Blob([data], { type: 'application/pdf' });
-      const fileURL = URL.createObjectURL(file);
-
-      let a = document.createElement('a');
-      document.body.append(a);
-      a.download = $course.title + ' - ' + 'Course ';
-      a.href = fileURL;
-      a.click();
-      a.remove();
-
-      snackbar.success('snackbar.course_settings.success.download');
-    } catch (error) {
-      snackbar.error('snackbar.course_settings.error.not_right');
-    }
-
-    isLoading = false;
+    alert($t('course.navItem.settings.coming_soon'));
   };
 
   const deleteBannerImage = () => {
@@ -115,62 +58,72 @@
   };
 
   async function handleDeleteCourse() {
+    if (!courseApi.course) return;
+
     isDeleting = true;
 
-    try {
-      await deleteCourse($course.id);
+    await courseApi.delete(courseApi.course.id);
+    if (courseApi.success) {
       goto($currentOrgPath + '/courses');
-    } catch (error) {
-      snackbar.error('snackbar.course_settings.error.went_wrong');
     }
 
     isDeleting = false;
   }
 
   export async function handleSave() {
-    if (!$settings.course_title) {
+    if (!$settings.courseTitle) {
       errors.title = $t('snackbar.course_settings.error.title');
       return;
     }
 
-    if (!$settings.course_description) {
+    if (!$settings.courseDescription) {
       errors.description = $t('snackbar.course_settings.error.description');
       return;
     }
 
     try {
+      let logoUrl = $settings.logo;
+
+      // Upload image if avatar is provided
+      if (avatar) {
+        logoUrl = await uploadImage(new File([avatar], avatar));
+      }
+
+      if (!courseApi.course) return;
+
+      const metadataPayload = {
+        ...(isObject(courseApi.course.metadata) ? courseApi.course.metadata : {}),
+        lessonTabsOrder: $settings.tabs,
+        grading: $settings.grading,
+        lessonDownload: $settings.lessonDownload,
+        allowNewStudent: $settings.allowNewStudents ?? false,
+        isContentGroupingEnabled: $settings.isContentGroupingEnabled
+      } as NonNullable<Course['metadata']>;
+
       const updatedCourse = {
-        title: $settings.course_title,
-        description: $settings.course_description,
+        title: $settings.courseTitle,
+        description: $settings.courseDescription,
         type: $settings.type,
-        logo: $settings.logo,
-        is_published: $settings.is_published,
-        metadata: {
-          ...(isObject($course.metadata) ? $course.metadata : {}),
-          lessonTabsOrder: $settings.tabs,
-          grading: $settings.grading,
-          lessonDownload: $settings.lesson_download,
-          allowNewStudent: $settings.allow_new_students
-        },
-        slug: $course.slug
-      };
-      await updateCourse($course.id, avatar ? new File([avatar], avatar) : undefined, updatedCourse);
-
-      $course = {
-        ...$course,
-        ...updatedCourse
+        logo: logoUrl,
+        isPublished: $settings.isPublished,
+        metadata: metadataPayload,
+        slug: courseApi.course.slug!
       };
 
-      snackbar.success('snackbar.course_settings.success.saved');
+      const response = await courseApi.update(courseApi.course.id, updatedCourse);
 
-      hasUnsavedChanges = false;
+      if (courseApi.success && response) {
+        // courseApi.update() already updates courseApi.course internally
+        hasUnsavedChanges = false;
+      }
     } catch (error) {
       snackbar.error();
     }
   }
 
   const generateNewCourseLink = () => {
-    $course.slug = generateSlug($course.title);
+    if (!courseApi.course) return;
+    courseApi.course.slug = generateSlug(courseApi.course.title);
     hasUnsavedChanges = true;
   };
 
@@ -179,31 +132,43 @@
 
     untrack(() => {
       settings.set({
-        course_title: course.title,
-        type: course.type,
-        course_description: course.description,
+        courseTitle: course.title,
+        type: (course.type as TCourseType) || ('SELF_PACED' as TCourseType),
+        courseDescription: course.description,
         logo: course.logo || '',
-        tabs: course.metadata.lessonTabsOrder || $settings.tabs,
-        grading: !!course.metadata.grading,
-        lesson_download: !!course.metadata.lessonDownload,
-        is_published: !!course.is_published,
-        allow_new_students: course.metadata.allowNewStudent
+        tabs: course.metadata?.lessonTabsOrder || $settings.tabs,
+        grading: !!course.metadata?.grading,
+        lessonDownload: !!course.metadata?.lessonDownload,
+        isPublished: !!course.isPublished,
+        allowNewStudents: !!course.metadata?.allowNewStudent,
+        isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true
       });
     });
   }
 
+  // Initialize course from page data
   $effect(() => {
-    setDefault($course);
+    const courseData = $page.data?.course;
+    const courseId = $page.data?.courseId;
+    if (courseData && courseId && !courseApi.course) {
+      courseApi.course = courseData;
+    }
   });
 
-  let courseLink = $derived(`${$currentOrgDomain}/course/${$course.slug}`);
+  $effect(() => {
+    if (courseApi.course) {
+      setDefault(courseApi.course);
+    }
+  });
+
+  let courseLink = $derived(courseApi.course?.slug ? `${$currentOrgDomain}/course/${courseApi.course.slug}` : '');
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
 
 <DeleteModal onDelete={handleDeleteCourse} bind:open={openDeleteModal} />
 
-<Field.Group class="max-w-md! w-full px-2">
+<Field.Group class="w-full max-w-md! px-2">
   <Field.Set>
     <Field.Legend>{$t('course.navItem.settings.cover_image')}</Field.Legend>
     <Field.Description>{$t('course.navItem.settings.optional_image')}</Field.Description>
@@ -247,10 +212,10 @@
       <Field.Field>
         <InputField
           label={$t('course.navItem.settings.course_title')}
-          placeholder="Write the course title here"
+          placeholder={$t('course.navItem.settings.course_title_placeholder')}
           className="w-full"
           isRequired
-          bind:value={$settings.course_title}
+          bind:value={$settings.courseTitle}
           errorMessage={errors?.title}
           onInputChange={() => {
             hasUnsavedChanges = true;
@@ -263,7 +228,7 @@
           placeholder={$t('course.navItem.settings.placeholder')}
           className="w-full"
           isRequired
-          bind:value={$settings.course_description}
+          bind:value={$settings.courseDescription}
           errorMessage={errors?.description}
           onchange={() => {
             hasUnsavedChanges = true;
@@ -271,18 +236,21 @@
         />
       </Field.Field>
       <Field.Field>
-        <Field.Label>{$t('course.navItem.settings.link')}</Field.Label>
-        <div class="mb-2 flex items-center gap-2">
-          <IconButton onclick={generateNewCourseLink}>
-            <RotateCcwIcon size={16} />
-          </IconButton>
-          <span class="grow"></span>
-          <IconButton onclick={() => goto(courseLink)}>
-            <ArrowUpRightIcon size={16} />
-          </IconButton>
-        </div>
-        <div class="flex items-center justify-between rounded-md border p-3">
-          {#if $course.slug}
+        <Field.Label class="justify-between"
+          >{$t('course.navItem.settings.link')}
+
+          <div class="flex items-center gap-1">
+            <IconButton onclick={generateNewCourseLink}>
+              <RotateCcwIcon size={16} />
+            </IconButton>
+            <IconButton onclick={() => goto(courseLink)}>
+              <ArrowUpRightIcon size={16} />
+            </IconButton>
+          </div>
+        </Field.Label>
+
+        <div class="flex items-center justify-between rounded-md border p-1">
+          {#if courseApi.course?.slug}
             <p class="text-sm">{courseLink}</p>
             <IconButton
               onclick={() => {
@@ -292,7 +260,7 @@
               <Copy size={16} />
             </IconButton>
           {:else}
-            <p class="text-sm">Setup landing page to get course link</p>
+            <p class="text-sm">{$t('course.navItem.settings.setup_landing_for_link')}</p>
           {/if}
         </div>
       </Field.Field>
@@ -316,6 +284,29 @@
   <Field.Separator />
 
   <Field.Set>
+    <Field.Legend>{$t('course.navItem.settings.content_grouping_title')}</Field.Legend>
+    <Field.Description>{$t('course.navItem.settings.content_grouping_description')}</Field.Description>
+    <Field.Field orientation="horizontal">
+      <Switch
+        id="content-grouping"
+        checked={$settings.isContentGroupingEnabled}
+        onCheckedChange={(checked) => {
+          console.log('checked', checked);
+          $settings.isContentGroupingEnabled = checked;
+          hasUnsavedChanges = true;
+        }}
+      />
+      <Label for="content-grouping">
+        {$settings.isContentGroupingEnabled
+          ? $t('course.navItem.settings.enabled')
+          : $t('course.navItem.settings.disabled')}
+      </Label>
+    </Field.Field>
+  </Field.Set>
+
+  <Field.Separator />
+
+  <Field.Set>
     <Field.Legend>{$t('course.navItem.settings.lesson_download')}</Field.Legend>
     <Field.Description>{$t('course.navItem.settings.available')}</Field.Description>
     <Field.Field>
@@ -325,14 +316,14 @@
         <div class="flex items-center space-x-2">
           <Switch
             id="lesson-download"
-            checked={$settings.lesson_download}
+            checked={$settings.lessonDownload}
             onCheckedChange={(checked) => {
-              $settings.lesson_download = checked;
+              $settings.lessonDownload = checked;
               hasUnsavedChanges = true;
             }}
           />
-          <Label for="lesson-download" class="text-sm text-gray-500">
-            {$settings.lesson_download ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
+          <Label for="lesson-download">
+            {$settings.lessonDownload ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
           </Label>
         </div>
       {/if}
@@ -364,17 +355,17 @@
       <RadioGroup.Root
         value={$settings.type}
         onValueChange={(value) => {
-          $settings.type = value as COURSE_TYPE;
+          $settings.type = value as TCourseType;
           if (hasUnsavedChanges) return;
           hasUnsavedChanges = true;
         }}
       >
         <div class="mb-3 flex items-center space-x-2">
-          <RadioGroup.Item value={COURSE_TYPE.LIVE_CLASS} id="live-class" />
+          <RadioGroup.Item value={'LIVE_CLASS' as TCourseType} id="live-class" />
           <Label for="live-class">{$t('course.navItem.settings.live_class')}</Label>
         </div>
         <div class="flex items-center space-x-2">
-          <RadioGroup.Item value={COURSE_TYPE.SELF_PACED} id="self-paced" />
+          <RadioGroup.Item value={'SELF_PACED' as TCourseType} id="self-paced" />
           <Label for="self-paced">{$t('course.navItem.settings.self_paced')}</Label>
         </div>
       </RadioGroup.Root>
@@ -389,14 +380,14 @@
     <Field.Field orientation="horizontal">
       <Switch
         id="allow-new-students"
-        checked={$settings.allow_new_students}
+        checked={$settings.allowNewStudents}
         onCheckedChange={(checked) => {
-          $settings.allow_new_students = checked;
+          $settings.allowNewStudents = checked;
           hasUnsavedChanges = true;
         }}
       />
-      <Label for="allow-new-students" class="text-sm text-gray-500">
-        {$settings.allow_new_students ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
+      <Label for="allow-new-student">
+        {$settings.allowNewStudents ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
       </Label>
     </Field.Field>
   </Field.Set>
@@ -409,17 +400,14 @@
     <Field.Field orientation="horizontal">
       <Switch
         id="is-published"
-        checked={$settings.is_published}
+        checked={$settings.isPublished}
         onCheckedChange={(checked) => {
+          $settings.isPublished = checked;
           hasUnsavedChanges = true;
-          $settings.allow_new_students = checked;
-          if (!$course.slug) {
-            generateNewCourseLink();
-          }
         }}
       />
-      <Label for="is-published" class="text-sm text-gray-500">
-        {$settings.is_published ? $t('course.navItem.settings.published') : $t('course.navItem.settings.unpublished')}
+      <Label for="publish">
+        {$settings.isPublished ? $t('course.navItem.settings.published') : $t('course.navItem.settings.unpublished')}
       </Label>
     </Field.Field>
   </Field.Set>
@@ -430,7 +418,13 @@
     <Field.Legend>{$t('course.navItem.settings.delete')}</Field.Legend>
     <Field.Description>{$t('course.navItem.settings.delete_text')}</Field.Description>
     <Field.Field>
-      <Button variant="destructive" onclick={() => (openDeleteModal = true)} loading={isDeleting} disabled={isDeleting}>
+      <Button
+        variant="destructive"
+        onclick={() => (openDeleteModal = true)}
+        loading={isDeleting}
+        disabled={isDeleting}
+        class="w-fit!"
+      >
         {$t('course.navItem.settings.delete')}
       </Button>
     </Field.Field>

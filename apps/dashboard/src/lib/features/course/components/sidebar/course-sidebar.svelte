@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/state';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { profile } from '$lib/utils/store/user';
   import { orgs } from '$lib/utils/store/org';
@@ -15,11 +16,13 @@
 
   interface Props {
     path: string;
+    id: string;
   }
 
-  let { path }: Props = $props();
+  let { path, id }: Props = $props();
 
   const sidebar = useSidebar();
+  const currentPath = $derived(path || page.url.pathname);
 </script>
 
 {#if !isOrgLoaded}
@@ -31,7 +34,7 @@
     </Sidebar.Header>
 
     <Sidebar.Content>
-      <Navigation {path} isStudent={$globalStore.isStudent} />
+      <Navigation path={currentPath} {id} isStudent={$globalStore.isStudent} />
     </Sidebar.Content>
 
     <Sidebar.Rail />

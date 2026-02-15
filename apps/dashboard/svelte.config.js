@@ -6,6 +6,7 @@ import path from 'path';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 const useNodeAdapter = process.env.PUBLIC_IS_SELFHOSTED === 'true';
+const API_ORIGIN = process.env.PUBLIC_SERVER_URL;
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -29,17 +30,20 @@ const config = {
       '@cio/db/types': path.resolve('./node_modules/@cio/db/src/types.ts')
     },
     csp: {
+      mode: 'auto',
       directives: {
         'default-src': ['self'],
         'script-src': [
           'self',
           'https://assets.cdn.clsrio.com',
           'https://cdnjs.cloudflare.com',
-          'https://*.i.posthog.com',
+          'https://*.posthog.com',
           'https://*.senja.io',
           'https://www.youtube.com',
           'https://youtube.com',
-          'unsafe-hashes'
+          'https://google.com',
+          'unsafe-hashes',
+          'unsafe-eval'
         ],
         'style-src': [
           'self',
@@ -58,24 +62,31 @@ const config = {
           'https://fonts.googleapis.com'
         ],
         'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
-        'img-src': ['self', 'data:', 'https:'],
-        'media-src': ['self', 'https:', 'data:'],
-        'frame-src': ['self', 'https://www.youtube.com', 'https://youtube.com'],
+        'img-src': ['self', 'data:', 'https:', 'blob:'],
+        'media-src': ['self', 'https:', 'data:', 'blob:'],
+        'frame-src': [
+          'self',
+          'https://www.youtube.com',
+          'https://youtube.com',
+          'https://www.youtube-nocookie.com',
+          'https://www.google.com',
+          'https://google.com'
+        ],
         'connect-src': [
           'self',
-          'https://*.supabase.co',
+          'blob:',
           'https://*.classroomio.com',
           'https://assets.cdn.clsrio.com',
           'https://cdn.plyr.io',
-          'https://*.i.posthog.com',
+          'https://*.posthog.com',
           'https://umami.hz.oncws.com',
           'https://*.r2.cloudflarestorage.com',
           'http://localhost:3002',
-          'http://localhost:54321',
-          'ws://localhost:54321',
+          API_ORIGIN,
           'wss://*.classroomio.com',
-          'wss://*.supabase.co',
-          'https://*.senja.io'
+          'https://*.senja.io',
+          'https://*.ytimg.com',
+          'https://noembed.com'
         ],
         'worker-src': ['self', 'blob:'],
         'object-src': ['none'],
@@ -90,46 +101,57 @@ const config = {
           'self',
           'https://assets.cdn.clsrio.com',
           'https://cdnjs.cloudflare.com',
-          'https://*.i.posthog.com',
+          'https://*.posthog.com',
           'https://*.senja.io',
           'https://www.youtube.com',
           'https://youtube.com',
-          'unsafe-hashes'
+          'https://google.com',
+          'unsafe-hashes',
+          'unsafe-eval'
         ],
         'style-src': [
           'self',
           'unsafe-inline',
           'https://cdn.plyr.io',
           'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
-          'https://assets.cdn.clsrio.com/eqneditor_1.css'
+          'https://assets.cdn.clsrio.com/eqneditor_1.css',
+          'https://fonts.googleapis.com'
         ],
         'style-src-elem': [
           'self',
           'unsafe-inline',
           'https://cdn.plyr.io',
           'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
-          'https://assets.cdn.clsrio.com/eqneditor_1.css'
+          'https://assets.cdn.clsrio.com/eqneditor_1.css',
+          'https://fonts.googleapis.com'
         ],
         'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
-        'img-src': ['self', 'data:', 'https:'],
-        'media-src': ['self', 'https:', 'data:'],
-        'frame-src': ['self', 'https://www.youtube.com', 'https://youtube.com'],
+        'img-src': ['self', 'data:', 'https:', 'blob:'],
+        'media-src': ['self', 'https:', 'data:', 'blob:'],
+        'frame-src': [
+          'self',
+          'https://www.youtube.com',
+          'https://youtube.com',
+          'https://www.youtube-nocookie.com',
+          'https://www.google.com',
+          'https://google.com'
+        ],
         'connect-src': [
           'self',
-          'https://*.supabase.co',
+          'blob:',
           'https://pgrest.classroomio.com',
           'https://api.classroomio.com',
           'https://assets.cdn.clsrio.com',
           'https://cdn.plyr.io',
-          'https://*.i.posthog.com',
+          'https://*.posthog.com',
           'https://umami.hz.oncws.com',
           'https://*.r2.cloudflarestorage.com',
           'http://localhost:3002',
-          'http://localhost:54321',
-          'ws://localhost:54321',
+          API_ORIGIN,
           'wss://*.classroomio.com',
-          'wss://*.supabase.co',
-          'https://*.senja.io'
+          'https://*.senja.io',
+          'https://*.ytimg.com',
+          'https://noembed.com'
         ],
         'worker-src': ['self', 'blob:'],
         'object-src': ['none'],

@@ -819,7 +819,7 @@
           "start_reorder": "Reordenar",
           "end_reorder": "Finalizar novo pedido",
           "modal_heading_section": "Adicionar nova seção",
-          "lesson_section_title": "Título da seção",
+          "course_section_title": "Título da seção",
           "cancel": "Cancelar"
         },
         "disabled": "O recurso está desativado",

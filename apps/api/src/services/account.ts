@@ -1,5 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { getProfileById, updateProfile } from '@cio/db/queries/auth';
+import { getProfileByEmail, getProfileById, updateProfile } from '@cio/db/queries/auth';
 
 import type { TProfile } from '@cio/db/types';
 import { getOrganizationByProfileId } from '@cio/db/queries/organization';
@@ -53,6 +53,24 @@ export async function updateUser(
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to update profile',
       ErrorCodes.PROFILE_UPDATE_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Gets profile by email
+ * @param email - The email address
+ * @returns Profile or null if not found
+ */
+export async function getProfileByEmailService(email: string): Promise<TProfile | null> {
+  try {
+    const profile = await getProfileByEmail(email);
+    return profile;
+  } catch (error) {
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch profile by email',
+      ErrorCodes.PROFILE_NOT_FOUND,
       500
     );
   }

@@ -1,61 +1,29 @@
-# ----------- Build Stage -----------
-FROM node:20.19.3-alpine AS builder
-
-WORKDIR /cio
-# Install pnpm globally so it's available in the final container
-RUN npm install -g pnpm
-
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
-
-# Copy everything (filtered by .dockerignore)
-COPY package.json ./
-COPY pnpm-lock.yaml ./
-COPY pnpm-workspace.yaml ./
-COPY turbo.json ./
-COPY packages/tsconfig ./packages/tsconfig
-COPY packages/utils ./packages/utils
-
-# Copy the api package.json
-COPY apps/dashboard ./apps/dashboard
-COPY apps/api ./apps/api
-
-# Install all dependencies (monorepo context)
-RUN pnpm install
-
-RUN ls -la
-
-# Build the dashboard app
-RUN NODE_OPTIONS="--max-old-space-size=3072" PUBLIC_IS_SELFHOSTED=true pnpm build --filter @cio/dashboard
-
-# ----------- Production Stage -----------
-FROM node:20.19.3-alpine AS runner
+FROM node:20.19.3-slim
 
 WORKDIR /app
 
-# Install pnpm and turbo before switching to non-root user
-RUN corepack enable && corepack prepare pnpm@latest --activate
-RUN npm install -g turbo@1.10.16
+ENV CI=true
 
-# Don't run production as root
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 cio-user
-USER cio-user
+ARG PUBLIC_IS_SELFHOSTED=true
+ARG PUBLIC_SERVER_URL
 
-# Copy the entire dashboard app (including build output)
-COPY --from=builder --chown=cio-user:nodejs ./cio/apps/dashboard ./apps/dashboard
-COPY --from=builder --chown=cio-user:nodejs ./cio/node_modules ./node_modules
-COPY --from=builder --chown=cio-user:nodejs ./cio/package.json ./package.json
-COPY --from=builder --chown=cio-user:nodejs ./cio/turbo.json ./turbo.json
-COPY --from=builder --chown=cio-user:nodejs ./cio/pnpm-workspace.yaml ./pnpm-workspace.yaml
+RUN corepack enable && corepack prepare pnpm@10.19.0 --activate
 
-# Expose the port (default for SvelteKit Node adapter)
+COPY . .
+
+RUN pnpm install --frozen-lockfile --ignore-scripts --shamefully-hoist --filter @cio/dashboard...
+RUN find . -name 'tsconfig.tsbuildinfo' -delete
+RUN echo "Dashboard build PUBLIC_IS_SELFHOSTED=${PUBLIC_IS_SELFHOSTED}" && \
+    echo "Dashboard build PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL}" && \
+    NODE_OPTIONS="--max-old-space-size=3072" \
+    PUBLIC_IS_SELFHOSTED="${PUBLIC_IS_SELFHOSTED}" \
+    PUBLIC_SERVER_URL="${PUBLIC_SERVER_URL}" \
+    pnpm -r --filter @cio/dashboard... build
+
 EXPOSE 3082
 
-# Set environment variables for production
-ENV PORT=3082 \
-    NODE_ENV=production \
+ENV NODE_ENV=production \
+    PORT=3082 \
     PUBLIC_IS_SELFHOSTED=true
 
-# Start the app
-CMD ["pnpm", "dashboard:start"]
+CMD ["pnpm", "--filter", "@cio/dashboard", "start"]

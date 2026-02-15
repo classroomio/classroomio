@@ -6,7 +6,6 @@ pre-commit:
   commands:
     prettier:
       run: pnpm format:check
-      stage_fixed: false
       fail_text: |
         ❌ Prettier formatting check failed!
         Please run 'pnpm format' to fix formatting issues and try again.

@@ -244,19 +244,19 @@ export const isUserOrgAdmin = async (orgId: string, profileId: string): Promise<
 };
 
 /**
- * Checks if a user is a member of an organization (any role)
+ * Gets a user's role in an organization
  * @param orgId Organization ID
  * @param profileId Profile ID to check
- * @returns True if user is a member, false otherwise
+ * @returns Role ID if user is a member, null otherwise
  */
-export const isUserOrgMember = async (orgId: string, profileId: string): Promise<boolean> => {
+export const getUserOrgRole = async (orgId: string, profileId: string): Promise<number | null> => {
   const result = await db
     .select({ roleId: schema.organizationmember.roleId })
     .from(schema.organizationmember)
     .where(and(eq(schema.organizationmember.organizationId, orgId), eq(schema.organizationmember.profileId, profileId)))
     .limit(1);
 
-  return result.length > 0;
+  return result.length > 0 ? Number(result[0].roleId) : null;
 };
 
 /**

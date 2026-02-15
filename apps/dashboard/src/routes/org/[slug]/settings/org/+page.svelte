@@ -21,7 +21,7 @@
   <title>Organization Settings - ClassroomIO</title>
 </svelte:head>
 
-<Page.Header>
+<Page.Header isSticky>
   <Page.HeaderContent>
     <Page.Title>{$t('settings.organization.organization_profile.heading')}</Page.Title>
   </Page.HeaderContent>
