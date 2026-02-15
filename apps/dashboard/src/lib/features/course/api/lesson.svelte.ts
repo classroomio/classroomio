@@ -14,6 +14,7 @@ import type {
   GetLessonRequest,
   Lesson,
   LessonComments,
+  PromoteUngroupedSectionRequest,
   ReorderCourseSectionsRequest,
   ReorderLessonsRequest,
   UpdateCourseSectionRequest,
@@ -23,12 +24,14 @@ import type {
 } from '../utils/types';
 import type {
   TCourseSectionCreate,
+  TCourseSectionPromoteUngrouped,
   TCourseSectionReorder,
   TCourseSectionUpdate
 } from '@cio/utils/validation/course/section';
 import type { TLessonCreate, TLessonReorder, TLessonUpdate } from '@cio/utils/validation/lesson';
 import {
   ZCourseSectionCreate,
+  ZCourseSectionPromoteUngrouped,
   ZCourseSectionReorder,
   ZCourseSectionUpdate
 } from '@cio/utils/validation/course/section';
@@ -229,6 +232,46 @@ export class LessonApi extends BaseApiWithErrors {
         }
         if ('error' in result && 'field' in result && result.field) {
           this.errors[result.field] = result.error;
+          snackbar.error(result.error);
+        }
+      }
+    });
+  }
+
+  /**
+   * Creates a real section from synthetic ungrouped content and moves all ungrouped items.
+   */
+  async promoteUngroupedSection(courseId: string, fields: TCourseSectionPromoteUngrouped) {
+    const result = ZCourseSectionPromoteUngrouped.safeParse(fields);
+    if (!result.success) {
+      this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
+      return;
+    }
+
+    await this.execute<PromoteUngroupedSectionRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].section['promote-ungrouped'].$post({
+          param: { courseId },
+          json: result.data
+        }),
+      logContext: 'promoting ungrouped section',
+      onSuccess: () => {
+        snackbar.success('snackbar.lessons.section_updated');
+        this.success = true;
+        this.errors = {};
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error('snackbar.lessons.section_update_failed');
+          return;
+        }
+        if ('error' in result && 'field' in result && result.field) {
+          this.errors[result.field] = result.error;
+          snackbar.error(result.error);
+          return;
+        }
+        if ('error' in result) {
+          this.errors.general = result.error;
           snackbar.error(result.error);
         }
       }

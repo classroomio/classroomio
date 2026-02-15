@@ -63,7 +63,7 @@ const config = {
         ],
         'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
         'img-src': ['self', 'data:', 'https:', 'blob:'],
-        'media-src': ['self', 'https:', 'data:'],
+        'media-src': ['self', 'https:', 'data:', 'blob:'],
         'frame-src': [
           'self',
           'https://www.youtube.com',
@@ -127,7 +127,7 @@ const config = {
         ],
         'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
         'img-src': ['self', 'data:', 'https:', 'blob:'],
-        'media-src': ['self', 'https:', 'data:'],
+        'media-src': ['self', 'https:', 'data:', 'blob:'],
         'frame-src': [
           'self',
           'https://www.youtube.com',

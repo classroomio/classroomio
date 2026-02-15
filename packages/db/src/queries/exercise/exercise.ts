@@ -8,7 +8,7 @@ import type {
   TNewQuestion,
   TQuestionType
 } from '@db/types';
-import { and, asc, db, eq, inArray, or, sql } from '@db/drizzle';
+import { and, asc, db, eq, inArray, isNull, or, sql } from '@db/drizzle';
 
 import type { DbOrTxClient } from '@db/drizzle';
 
@@ -168,6 +168,29 @@ export async function updateExercisesSectionId(
     console.error('updateExercisesSectionId error:', error);
     throw new Error(
       `Failed to update exercises section ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function updateUngroupedExercisesSectionId(
+  courseId: string,
+  sectionId: string,
+  dbClient: DbOrTxClient = db
+): Promise<number> {
+  try {
+    const updated = await dbClient
+      .update(schema.exercise)
+      .set({ sectionId })
+      .where(and(eq(schema.exercise.courseId, courseId), isNull(schema.exercise.sectionId)))
+      .returning();
+
+    return updated.length;
+  } catch (error) {
+    console.error('updateUngroupedExercisesSectionId error:', error);
+    throw new Error(
+      `Failed to update ungrouped exercises section ID "${courseId}": ${
+        error instanceof Error ? error.message : 'Unknown error'
+      }`
     );
   }
 }

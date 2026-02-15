@@ -27,7 +27,7 @@
   };
 </script>
 
-<div class="mx-auto w-full max-w-3xl">
+<div class="mx-auto w-[90%] md:max-w-3xl">
   <Page.Header>
     <Page.HeaderContent>
       <Page.Title>

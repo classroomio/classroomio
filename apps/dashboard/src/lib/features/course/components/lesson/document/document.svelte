@@ -1,6 +1,6 @@
 <script lang="ts">
   import { lessonApi } from '$features/course/api';
-  import { CloseButton } from '$features/ui';
+  import { CloseButton, DeleteModal } from '$features/ui';
   import { lessonDocUpload } from '$features/course/components/lesson/store';
   import MODES from '$lib/utils/constants/mode';
   import { IconButton } from '@cio/ui/custom/icon-button';
@@ -21,6 +21,8 @@
   let { mode = MODES.view }: Props = $props();
 
   let downloadingDocuments = $state(new Set<string>());
+  let openDeleteDocumentModal = $state(false);
+  let documentIndexToDelete = $state<number | null>(null);
   let viewingPDF: any = $state(null);
   let pdfViewerOpen = $state(false);
   let pdfCanvas: HTMLCanvasElement | undefined = $state();
@@ -58,6 +60,19 @@
 
   function deleteDocument(index: number) {
     lessonApi.deleteLessonDocument(index);
+  }
+
+  function requestRemoveDocument(index: number) {
+    documentIndexToDelete = index;
+    openDeleteDocumentModal = true;
+  }
+
+  function confirmRemoveDocument() {
+    if (documentIndexToDelete !== null) {
+      deleteDocument(documentIndexToDelete);
+      documentIndexToDelete = null;
+    }
+    openDeleteDocumentModal = false;
   }
 
   function formatFileSize(bytes: number): string {
@@ -237,8 +252,8 @@
     debouncedRender();
   }
 
-  function handleViewPDF(event: CustomEvent<LessonDocument>) {
-    viewPDF(event.detail);
+  function handleViewPDF(doc: LessonDocument) {
+    viewPDF(doc);
   }
 
   function closePDFViewer() {
@@ -304,16 +319,17 @@
 </script>
 
 <DocumentList
-  {isLoading}
   {mode}
   {displayDocuments}
   {downloadingDocuments}
   {formatFileSize}
   {openDocumentUploadModal}
-  {deleteDocument}
+  {requestRemoveDocument}
+  onViewPDF={handleViewPDF}
   {downloadDocument}
-  on:viewPDF={handleViewPDF}
 />
+
+<DeleteModal bind:open={openDeleteDocumentModal} onDelete={confirmRemoveDocument} />
 
 <!-- PDF Viewer Modal -->
 {#if pdfViewerOpen}

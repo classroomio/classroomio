@@ -8,10 +8,11 @@
 
   interface Props {
     src: string;
+    poster?: string;
     options?: MediaPlayerOptions;
   }
 
-  let { src, options = {} }: Props = $props();
+  let { src, poster, options = {} }: Props = $props();
   let videoElement: HTMLVideoElement | null = null;
   let containerElement: HTMLDivElement | null = null;
   let playerInstance: Plyr | null = null;
@@ -88,7 +89,8 @@
   {:else}
     <!-- HTML5 video -->
     <!-- svelte-ignore a11y_media_has_caption -->
-    <video bind:this={videoElement} {src} {playsinline} crossorigin="anonymous" class="plyr-player"></video>
+    <!-- crossorigin omitted so cross-origin poster (e.g. R2 r2.dev) displays without CORS; r2.dev may not send CORS headers even when bucket CORS is set -->
+    <video bind:this={videoElement} {src} {poster} {playsinline} class="plyr-player"></video>
   {/if}
 
   <!-- ClassroomIO Logo Overlay -->

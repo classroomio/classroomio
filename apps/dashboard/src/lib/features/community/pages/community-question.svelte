@@ -97,7 +97,7 @@
     <Skeleton class="h-80 w-full" />
   </div>
 {:else}
-  <Page.Root class="mx-auto max-w-3xl md:mx-10 lg:mb-20">
+  <Page.Root class="mx-auto w-[90%] md:mx-10 md:max-w-3xl lg:mb-20">
     <Page.Header>
       <Page.HeaderContent>
         {#if communityApi.isEditMode}

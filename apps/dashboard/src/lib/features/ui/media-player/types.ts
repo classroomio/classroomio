@@ -5,6 +5,7 @@ export interface VideoSource {
   url: string;
   metadata?: {
     svid?: string; // muse.ai video ID
+    thumbnailUrl?: string; // upload thumbnail / poster
   };
 }
 

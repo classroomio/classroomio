@@ -6,7 +6,7 @@
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { Button } from '@cio/ui/base/button';
-  import { contentCreateStoreUtils } from '$features/course/components/content/store';
+  import { contentCreateStoreUtils, contentEditingStore } from '$features/course/components/content/store';
   import { courseApi } from '$features/course/api';
   import { getLessonsRoute } from '$features/course/utils/functions';
   import { t } from '$lib/utils/functions/translations';
@@ -25,6 +25,9 @@
 
   function openContentModal(courseId: string, sectionId = '') {
     goto(resolve(`/courses/${courseId}/lessons`, {}));
+    contentEditingStore.set(undefined);
+    contentCreateStoreUtils.close();
+
     const contentGroupingEnabled = courseApi.course?.metadata?.isContentGroupingEnabled ?? true;
 
     if (sectionId) {
@@ -34,6 +37,12 @@
     } else {
       contentCreateStoreUtils.openDefault();
     }
+  }
+
+  function openSectionEditor(courseId: string, sectionId: string) {
+    goto(resolve(`/courses/${courseId}/lessons`, {}));
+    contentCreateStoreUtils.close();
+    contentEditingStore.set(sectionId);
   }
 </script>
 
@@ -77,6 +86,7 @@
     {isStudent}
     className="mt-1"
     onOpenContentModal={(sectionId) => openContentModal(id, sectionId)}
+    onEditSection={(sectionId) => openSectionEditor(id, sectionId)}
   />
 </Sidebar.Group>
 

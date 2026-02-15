@@ -674,8 +674,14 @@ export const lesson = pgTable(
         type: 'youtube' | 'generic' | 'upload';
         link: string;
         key?: string;
+        /** Display name; stored on add/upload. Fallback: derive from key or type. */
+        fileName?: string;
         metadata?: {
           svid?: string;
+          title?: string;
+          duration?: number;
+          aspectRatio?: string;
+          createdAt?: string;
         };
       }[]
     >(),

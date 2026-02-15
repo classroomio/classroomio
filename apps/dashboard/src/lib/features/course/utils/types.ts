@@ -54,6 +54,13 @@ export type ReorderCourseSectionsResponse = InferResponseType<ReorderCourseSecti
 export type ReorderCourseSectionsSuccess = Extract<ReorderCourseSectionsResponse, { success: true }>;
 export type ReorderCourseSectionsData = ReorderCourseSectionsSuccess['data'];
 
+// Promote ungrouped section types
+export type PromoteUngroupedSectionRequest =
+  (typeof classroomio.course)[':courseId']['section']['promote-ungrouped']['$post'];
+export type PromoteUngroupedSectionResponse = InferResponseType<PromoteUngroupedSectionRequest>;
+export type PromoteUngroupedSectionSuccess = Extract<PromoteUngroupedSectionResponse, { success: true }>;
+export type PromoteUngroupedSectionData = PromoteUngroupedSectionSuccess['data'];
+
 // Reorder lessons types
 export type ReorderLessonsRequest = (typeof classroomio.course)[':courseId']['lesson']['reorder']['$post'];
 export type ReorderLessonsResponse = InferResponseType<ReorderLessonsRequest>;

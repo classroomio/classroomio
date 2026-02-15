@@ -5,12 +5,14 @@ import { handleError } from '@api/utils/errors';
 import {
   createCourseSection,
   deleteCourseSectionService,
+  promoteUngroupedSection,
   reorderCourseSections,
   updateCourseSectionService
 } from '@api/services/course/section';
 import {
   ZCourseSectionCreate,
   ZCourseSectionGetParam,
+  ZCourseSectionPromoteUngrouped,
   ZCourseSectionReorder,
   ZCourseSectionUpdate
 } from '@cio/utils/validation/course/section';
@@ -29,6 +31,24 @@ export const sectionRouter = new Hono()
       return handleError(c, error, 'Failed to create course section');
     }
   })
+  .post(
+    '/promote-ungrouped',
+    authMiddleware,
+    courseMemberMiddleware,
+    zValidator('json', ZCourseSectionPromoteUngrouped),
+    async (c) => {
+      try {
+        const courseId = c.req.param('courseId')!;
+        const data = c.req.valid('json');
+
+        const result = await promoteUngroupedSection(courseId, data);
+
+        return c.json({ success: true, data: result }, 201);
+      } catch (error) {
+        return handleError(c, error, 'Failed to promote ungrouped section');
+      }
+    }
+  )
   .put(
     '/:sectionId',
     authMiddleware,

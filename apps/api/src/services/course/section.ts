@@ -4,14 +4,18 @@ import {
   deleteCourseSection,
   getCourseSectionById,
   getCourseSectionsByCourseId,
-  updateCourseSection
+  updateCourseSection,
+  updateUngroupedLessonsSectionId
 } from '@cio/db/queries/course';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type {
   TCourseSectionCreate,
+  TCourseSectionPromoteUngrouped,
   TCourseSectionReorder,
   TCourseSectionUpdate
 } from '@cio/utils/validation/course/section';
+import { updateUngroupedExercisesSectionId } from '@cio/db/queries/exercise/exercise';
+import { db } from '@cio/db/drizzle';
 
 /**
  * Creates a new course section
@@ -39,6 +43,62 @@ export async function createCourseSection(courseId: string, data: TCourseSection
 
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to create course section',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
+}
+
+/**
+ * Promotes synthetic "Ungrouped" content into a real persisted section.
+ * Creates a section and reassigns all ungrouped lessons/exercises to it transactionally.
+ */
+export async function promoteUngroupedSection(
+  courseId: string,
+  data: TCourseSectionPromoteUngrouped
+): Promise<{ section: TCourseSection; movedLessons: number; movedExercises: number }> {
+  try {
+    const existingSections = await getCourseSectionsByCourseId(courseId);
+    const nextOrder = Math.max(...existingSections.map((section) => section.order ?? 0), 0) + 1;
+
+    return db.transaction(async (tx) => {
+      const [section] = await createCourseSections(
+        [
+          {
+            title: data.title,
+            courseId,
+            order: nextOrder
+          }
+        ],
+        tx
+      );
+
+      if (!section) {
+        throw new AppError('Failed to create course section', ErrorCodes.INTERNAL_ERROR, 500);
+      }
+
+      const [movedLessons, movedExercises] = await Promise.all([
+        updateUngroupedLessonsSectionId(courseId, section.id, tx),
+        updateUngroupedExercisesSectionId(courseId, section.id, tx)
+      ]);
+
+      if (movedLessons + movedExercises === 0) {
+        throw new AppError('No ungrouped content found', ErrorCodes.VALIDATION_ERROR, 400);
+      }
+
+      return {
+        section,
+        movedLessons,
+        movedExercises
+      };
+    });
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to promote ungrouped content',
       ErrorCodes.INTERNAL_ERROR,
       500
     );

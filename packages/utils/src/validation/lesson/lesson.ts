@@ -33,11 +33,7 @@ export const ZLessonUpdate = z.object({
         type: z.enum(['youtube', 'generic', 'upload']),
         link: z.string(),
         key: z.string().optional(),
-        metadata: z
-          .object({
-            svid: z.string().optional()
-          })
-          .optional()
+        metadata: z.record(z.string(), z.unknown()).optional()
       })
     )
     .optional(),

@@ -18,8 +18,6 @@
     console.log('data', data);
     if (!data.lesson) return;
     const lesson = data.lesson;
-    console.log('lesson', lesson);
-    console.log('lessonApi.lesson', lessonApi.lesson);
 
     if (lessonApi.lesson?.id === lesson.id) return;
 

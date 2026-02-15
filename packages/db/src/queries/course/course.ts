@@ -751,6 +751,30 @@ export async function updateLessonsSectionId(
   }
 }
 
+export async function updateUngroupedLessonsSectionId(
+  courseId: string,
+  sectionId: string,
+  tx?: Parameters<Parameters<typeof db.transaction>[0]>[0]
+): Promise<number> {
+  try {
+    const dbInstance = tx || db;
+    const updated = await dbInstance
+      .update(schema.lesson)
+      .set({ sectionId })
+      .where(and(eq(schema.lesson.courseId, courseId), isNull(schema.lesson.sectionId)))
+      .returning();
+
+    return updated.length;
+  } catch (error) {
+    console.error('updateUngroupedLessonsSectionId error:', error);
+    throw new Error(
+      `Failed to update ungrouped lessons section ID "${courseId}": ${
+        error instanceof Error ? error.message : 'Unknown error'
+      }`
+    );
+  }
+}
+
 export async function getCourseSectionsByCourseId(courseId: string) {
   try {
     return db.select().from(schema.courseSection).where(eq(schema.courseSection.courseId, courseId));

@@ -95,6 +95,7 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
     // Fetch the complete exercise with questions and options
     return await getExercise(exercise.id);
   } catch (error) {
+    console.error('createExercise error:', error);
     if (error instanceof AppError) {
       throw error;
     }

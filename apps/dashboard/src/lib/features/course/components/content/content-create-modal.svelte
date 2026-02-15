@@ -155,7 +155,7 @@
 </script>
 
 <Dialog.Root bind:open={$contentCreateStore.open} onOpenChange={(isOpen) => !isOpen && closeModal()}>
-  <Dialog.Content class="flex max-h-[680px] max-w-2xl! flex-col overflow-hidden">
+  <Dialog.Content class="flex max-h-[680px] w-fit! max-w-2xl! min-w-[400px] flex-col overflow-hidden">
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.lessons.add_content')}</Dialog.Title>
     </Dialog.Header>
@@ -172,7 +172,7 @@
         </div>
       {:else}
         <!-- Create content - Section | Lesson | Exercise -->
-        <div>
+        <div class="px-1">
           {#if requiresSection}
             <div class="mb-4">
               <Label class="text-md mb-1 font-bold">{$t('course.navItem.lessons.add_content_section_label')}</Label>

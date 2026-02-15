@@ -4,29 +4,28 @@
   import { resolve } from '$app/paths';
   import Plus from '@lucide/svelte/icons/plus';
   import * as Sidebar from '@cio/ui/base/sidebar';
-  import * as Collapsible from '@cio/ui/base/collapsible';
-  import * as Tooltip from '@cio/ui/base/tooltip';
   import { Button } from '@cio/ui/base/button';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 
   import TableOfContentsIcon from '@lucide/svelte/icons/table-of-contents';
   import {
-    HoverableItem,
-    NewsFeedIcon,
-    LessonIcon,
     AnalyticsIcon,
     AttendanceIcon,
-    SubmissionIcon,
-    MarksIcon,
     CertificateIcon,
+    ContentIcon,
+    HoverableItem,
     LandingPageIcon,
+    MarksIcon,
+    NewsFeedIcon,
     PeopleIcon,
     SettingsIcon,
-    ExerciseIcon
+    SubmissionIcon
   } from '@cio/ui/custom/moving-icons';
   import { ContentType } from '@cio/utils/constants/content';
-  import { contentCreateStoreUtils } from '$features/course/components/content/store';
+  import { contentCreateStoreUtils, contentEditingStore } from '$features/course/components/content/store';
   import { getCourseContent } from '$features/course/utils/content';
+  import CourseContentTree from './course-content-tree.svelte';
+  import ContentCountBadges from '../content-count-badges.svelte';
 
   import { NAV_IDS } from './constants';
   import { courseApi } from '$features/course/api';
@@ -35,6 +34,8 @@
   import { globalStore } from '$lib/utils/store/app';
   import { getNavItemRoute, getLessonsRoute } from '$features/course/utils/functions';
   import { useSidebar } from '@cio/ui/base/sidebar';
+  import { IconButton } from '@cio/ui/custom/icon-button';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 
   interface Props {
     path: string;
@@ -178,6 +179,9 @@
 
   function openContentModal(courseId: string, sectionId = '') {
     goto(resolve(`/courses/${courseId}/lessons`, {}));
+    contentEditingStore.set(undefined);
+    contentCreateStoreUtils.close();
+
     const contentGroupingEnabled = courseApi.course?.metadata?.isContentGroupingEnabled ?? true;
 
     if (sectionId) {
@@ -189,6 +193,12 @@
     }
   }
 
+  function openSectionEditor(courseId: string, sectionId: string) {
+    goto(resolve(`/courses/${courseId}/lessons`, {}));
+    contentCreateStoreUtils.close();
+    contentEditingStore.set(sectionId);
+  }
+
   function getNavIcon(id: string) {
     if (!id) return null;
 
@@ -197,7 +207,7 @@
     } else if (id === NAV_IDS.NEWS_FEED) {
       return NewsFeedIcon;
     } else if (id === NAV_IDS.LESSONS) {
-      return LessonIcon;
+      return ContentIcon;
     } else if (id === NAV_IDS.ATTENDANCE) {
       return AttendanceIcon;
     } else if (id === NAV_IDS.SUBMISSIONS) {
@@ -228,93 +238,81 @@
 
   <Sidebar.Menu>
     {#each navItems as item (item.id)}
-      <Collapsible.Root open={item.isActive} class="group/collapsible">
-        {#snippet child({ props })}
-          <Sidebar.MenuItem {...props}>
-            {#if item.isLesson}
-              <Sidebar.MenuButton tooltipContent={item.title} isActive={item.isActive}>
-                {#snippet child({ props })}
-                  <HoverableItem class="">
-                    {#snippet children(isHovered)}
+      {#if item.isLesson}
+        <Sidebar.MenuItem>
+          <Sidebar.MenuButton tooltipContent={item.title} isActive={item.isActive}>
+            {#snippet child({ props })}
+              <HoverableItem class="">
+                {#snippet children(isHovered)}
+                  <a href={resolve(item.url, {})} {...props}>
+                    {#if item.icon}
                       {@const Icon = item.icon}
-                      <a href={resolve(item.url, {})} {...props}>
-                        {#if Icon === TableOfContentsIcon}
-                          <Icon size={16} />
-                        {:else}
-                          <Icon {isHovered} size={16} />
-                        {/if}
-                        <span>{item.title}</span>
+                      <Icon size={16} {isHovered} />
+                    {/if}
 
-                        <div class="ml-auto flex items-center gap-1">
-                          {#if showContentCount}
-                            <Tooltip.Provider>
-                              <Tooltip.Root>
-                                <Tooltip.Trigger>
-                                  <span
-                                    class="inline-flex items-center gap-1 rounded border px-1 py-0.5 text-[10px] leading-none"
-                                  >
-                                    <LessonIcon size={12} />
-                                    <span>{contentCount.lessons}</span>
-                                  </span>
-                                </Tooltip.Trigger>
-                                <Tooltip.Content side="top" sideOffset={4}>
-                                  {$t('course.sidebar.content_count.lessons', { count: contentCount.lessons })}
-                                </Tooltip.Content>
-                              </Tooltip.Root>
+                    <span>{item.title}</span>
 
-                              <Tooltip.Root>
-                                <Tooltip.Trigger>
-                                  <span
-                                    class="inline-flex items-center gap-1 rounded border px-1 py-0.5 text-[10px] leading-none"
-                                  >
-                                    <ExerciseIcon size={12} />
-                                    <span>{contentCount.exercises}</span>
-                                  </span>
-                                </Tooltip.Trigger>
-                                <Tooltip.Content side="top" sideOffset={4}>
-                                  {$t('course.sidebar.content_count.exercises', { count: contentCount.exercises })}
-                                </Tooltip.Content>
-                              </Tooltip.Root>
-                            </Tooltip.Provider>
-                          {/if}
+                    <div class="ml-auto flex items-center gap-1">
+                      <IconButton
+                        variant="ghost-outline"
+                        size="icon-xs"
+                        class="transition-opacity duration-150 {isHovered ? 'opacity-100' : 'opacity-0'}"
+                        onclick={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          openContentModal(id);
+                        }}
+                      >
+                        <Plus size={8} />
+                      </IconButton>
+                      {#if showContentCount}
+                        <ContentCountBadges lessons={contentCount.lessons} exercises={contentCount.exercises} />
+                      {/if}
 
-                          <Plus
-                            size={20}
-                            class="rounded-full p-1"
-                            onclick={(event) => {
-                              event.preventDefault();
-                              event.stopPropagation();
-                              openContentModal(id);
-                            }}
-                          />
-                        </div>
-                      </a>
-                    {/snippet}
-                  </HoverableItem>
+                      <IconButton variant="ghost" size="icon-xs">
+                        <ChevronRightIcon
+                          class="transition-transform duration-200 {item.isActive ? 'rotate-90' : ''}"
+                        />
+                      </IconButton>
+                    </div>
+                  </a>
                 {/snippet}
-              </Sidebar.MenuButton>
-            {:else}
-              <Sidebar.MenuButton {...props} tooltipContent={item.title} isActive={item.isActive}>
-                {#snippet child({ props })}
-                  <HoverableItem>
-                    {#snippet children(isHovered)}
-                      {@const Icon = item.icon}
-                      <a href={resolve(item.url, {})} {...props}>
-                        {#if Icon === TableOfContentsIcon}
-                          <Icon size={16} />
-                        {:else}
-                          <Icon {isHovered} size={16} />
-                        {/if}
-                        <span>{item.title}</span>
-                      </a>
-                    {/snippet}
-                  </HoverableItem>
+              </HoverableItem>
+            {/snippet}
+          </Sidebar.MenuButton>
+
+          {#if item.isActive}
+            <CourseContentTree
+              {path}
+              {id}
+              {isStudent}
+              className="mt-1 ml-2"
+              onOpenContentModal={(sectionId) => openContentModal(id, sectionId)}
+              onEditSection={(sectionId) => openSectionEditor(id, sectionId)}
+            />
+          {/if}
+        </Sidebar.MenuItem>
+      {:else}
+        <Sidebar.MenuItem>
+          <Sidebar.MenuButton tooltipContent={item.title} isActive={item.isActive}>
+            {#snippet child({ props })}
+              <HoverableItem>
+                {#snippet children(isHovered)}
+                  {@const Icon = item.icon}
+                  <a href={resolve(item.url, {})} {...props}>
+                    {#if Icon === TableOfContentsIcon}
+                      <Icon size={16} />
+                    {:else}
+                      <Icon {isHovered} size={16} />
+                    {/if}
+                    <span>{item.title}</span>
+                  </a>
                 {/snippet}
-              </Sidebar.MenuButton>
-            {/if}
-          </Sidebar.MenuItem>
-        {/snippet}
-      </Collapsible.Root>
+              </HoverableItem>
+            {/snippet}
+          </Sidebar.MenuButton>
+        </Sidebar.MenuItem>
+      {/if}
     {/each}
   </Sidebar.Menu>
 </Sidebar.Group>

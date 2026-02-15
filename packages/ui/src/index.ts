@@ -51,6 +51,7 @@ export { BarChart, LineChart, AreaChart, PieChart, scaleBand } from './base/char
 export * from './tools';
 
 export * as UnderlineTabs from './custom/underline-tabs';
+export * as FileDropZone from './custom/file-drop-zone';
 export * from './custom/editor/ui';
 export * as ImageCropper from './custom/image-cropper';
 export { Chip } from './custom/chip';

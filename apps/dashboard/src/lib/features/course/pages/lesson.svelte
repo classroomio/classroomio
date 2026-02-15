@@ -1,5 +1,6 @@
 <script lang="ts">
   import { browser } from '$app/environment';
+  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { untrack } from 'svelte';
@@ -55,8 +56,9 @@
 
   let { courseId, lessonId }: Props = $props();
 
-  let mode = $state(MODES.view);
-  let prevMode = $state('');
+  const mode = $derived($page.url.searchParams.get('mode') === 'edit' ? MODES.edit : MODES.view);
+
+  let prevModeParam = $state<string | null>(null);
   let isSaving = $state(false);
   let isDeletingLesson = $state(false);
   let isVersionDrawerOpen = $state(false);
@@ -64,15 +66,25 @@
   const lessonTitle = $derived(lessonApi.lesson?.title || 'Lesson');
   const isLessonUnlocked = $derived(lessonApi.lesson?.isUnlocked ?? false);
 
+  function setModeQueryParam(value: (typeof MODES)[keyof typeof MODES]) {
+    const params = new URLSearchParams($page.url.searchParams);
+    params.set('mode', value);
+    goto(`${$page.url.pathname}?${params.toString()}`, { replaceState: false });
+  }
+  function setTabQueryParam(value: string) {
+    const params = new URLSearchParams($page.url.searchParams);
+    params.set('tab', value);
+    goto(`${$page.url.pathname}?${params.toString()}`, { replaceState: false });
+  }
+
   function toggleMode() {
-    prevMode = mode;
-    mode = mode === MODES.edit ? MODES.view : MODES.edit;
+    setModeQueryParam(mode === MODES.edit ? MODES.view : MODES.edit);
   }
 
   const refetchDataAfterVersionRestore = async () => {
     isVersionDrawerOpen = false;
     if (courseId && browser) {
-      mode = MODES.view;
+      setModeQueryParam('view');
 
       // Refetch lesson data after version restore
       lessonApi.isLoading = true;
@@ -117,7 +129,8 @@
   let currentTabValue = $state('');
   $effect(() => {
     if (!tabs.length || currentTabValue) return;
-    currentTabValue = String(tabs[0].value);
+    const urlTab = $page.url.searchParams.get('tab');
+    currentTabValue = urlTab ?? String(tabs[0].value);
   });
 
   const viewModeComponents = $derived(getViewModeComponents(tabs));
@@ -204,7 +217,6 @@
     await lessonApi.delete(courseId, lessonId);
 
     if (lessonApi.success) {
-      mode = MODES.view;
       await goto(resolve(`/courses/${courseId}/lessons`, {}));
     }
 
@@ -251,14 +263,17 @@
     autoSave();
   });
 
-  // Only save once when leaving edit mode.
+  // Only save once when leaving edit mode (e.g. Save button or browser back).
   let didHandleExitEdit = false;
   $effect(() => {
     if (!lessonId) return;
 
-    const isExitEdit = prevMode === MODES.edit && mode === MODES.view;
+    const currentParam = $page.url.searchParams.get('mode');
+    const prev = prevModeParam;
+    prevModeParam = currentParam;
 
-    // reset when not in an "exit edit" state
+    const isExitEdit = prev === 'edit' && currentParam !== 'edit';
+
     if (!isExitEdit) {
       didHandleExitEdit = false;
       return;
@@ -267,7 +282,7 @@
     if (didHandleExitEdit) return;
     didHandleExitEdit = true;
 
-    handleSave(prevMode);
+    handleSave(MODES.edit);
   });
 </script>
 
@@ -338,7 +353,12 @@
   {#snippet child()}
     <div class="overflow-x-hidden lg:w-full xl:w-11/12">
       {#if mode === MODES.edit}
-        <UnderlineTabs.Root value={currentTabValue}>
+        <UnderlineTabs.Root
+          bind:value={currentTabValue}
+          onValueChange={(e) => {
+            setTabQueryParam(e);
+          }}
+        >
           <!-- Tabs List -->
           <UnderlineTabs.List>
             {#each tabs as tab}

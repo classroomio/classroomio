@@ -15,6 +15,8 @@
           'ui:bg-background ui:[a&]:hover:bg-accent ui:[a&]:hover:text-accent-foreground ui:dark:border-input ui:dark:bg-input/30 ui:dark:hover:bg-input/50 ui:border ui:shadow-2xs',
         secondary: 'ui:bg-secondary ui:text-secondary-foreground ui:[a&]:hover:bg-secondary/80 ui:shadow-2xs',
         ghost: 'ui:[a&]:hover:bg-accent ui:[a&]:hover:text-accent-foreground ui:dark:[a&]:hover:bg-accent/50',
+        'ghost-outline':
+          'ui:bg-background ui:[a&]:hover:bg-accent ui:[a&]:hover:text-accent-foreground ui:dark:hover:border-input ui:dark:bg-input/30 ui:dark:hover:bg-input/50 ui:hover:border ui:hover:shadow-2xs',
         link: 'ui:text-primary ui:underline-offset-4 ui:[a&]:hover:underline'
       },
       size: {
@@ -22,6 +24,8 @@
         sm: 'ui:h-8 ui:gap-1.5 ui:rounded-md ui:px-3 ui:has-[>svg]:px-2.5',
         lg: 'ui:h-10 ui:rounded-md ui:px-6 ui:has-[>svg]:px-4',
         icon: 'ui:size-9',
+        'icon-2xs': 'ui:size-4',
+        'icon-xs': `ui:size-6`,
         'icon-sm': 'ui:size-8',
         'icon-lg': 'ui:size-10'
       }

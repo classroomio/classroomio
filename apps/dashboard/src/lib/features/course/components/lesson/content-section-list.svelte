@@ -194,6 +194,18 @@
     }
   });
 
+  $effect(() => {
+    const activeEditId = $contentEditingStore;
+    if (!activeEditId) return;
+
+    const hasMatchingSection = sections.some((section) => section.id === activeEditId);
+    const hasMatchingItem = sections.some((section) => section.items.some((item) => item.contentId === activeEditId));
+
+    if (!hasMatchingSection && !hasMatchingItem) {
+      contentEditingStore.set(undefined);
+    }
+  });
+
   function onEdit(params: CrudParam) {
     contentEditingStore.set(params.sectionId || params.lessonId);
     prevTitle = params.sectionTitle || params.lessonTitle;
@@ -201,14 +213,22 @@
 
   async function onSave(params: CrudParam, item?: ContentDndItem) {
     let nextErrors: Record<string, string> = {};
+    let shouldRefreshSections = false;
 
     if (params.sectionId) {
       const section = sections.find((entry) => entry.id === params.sectionId);
       if (!section) return;
 
-      await lessonApi.updateSection(courseId, section.id, {
-        title: section.title!
-      });
+      if (section.id === 'ungrouped') {
+        await lessonApi.promoteUngroupedSection(courseId, {
+          title: section.title!
+        });
+        shouldRefreshSections = true;
+      } else {
+        await lessonApi.updateSection(courseId, section.id, {
+          title: section.title!
+        });
+      }
 
       nextErrors = resolveErrors(lessonApi.errors);
     } else if (item) {
@@ -224,7 +244,15 @@
 
     if (Object.keys(nextErrors).length === 0) {
       resetEdit();
-      syncCourseContentSections(sections);
+
+      if (shouldRefreshSections) {
+        if (profileId) {
+          await courseApi.refreshCourse(courseId, profileId);
+        }
+        syncSections();
+      } else {
+        syncCourseContentSections(sections);
+      }
 
       // Refresh course data to get updated information (especially for exercises)
       if (item?.type === ContentType.Exercise && exerciseApi.success && profileId) {
@@ -324,6 +352,10 @@
     }
 
     return `/courses/${courseApi.course?.id}/exercises/${item.contentId}`;
+  }
+
+  function openExternalUrl(url: string) {
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 
   function formatMetaDate(value?: string | null): string {
@@ -435,10 +467,13 @@
       <SectionHeader
         {section}
         isEditing={$contentEditingStore === section.id}
-        showActions={!isUngrouped}
-        disabled={!!$contentEditingStore}
+        isSaving={lessonApi.isLoading && $contentEditingStore === section.id}
+        showActions={true}
+        showAddContent={!isUngrouped}
+        showDelete={!isUngrouped}
+        disabled={Boolean($contentEditingStore && $contentEditingStore !== section.id)}
         {errors}
-        lockLabel={sectionLockLabel}
+        lockLabel={isUngrouped ? undefined : sectionLockLabel}
         onEdit={() => onEdit({ sectionId: section.id, sectionTitle: section.title! })}
         onSave={() => onSave({ sectionId: section.id })}
         onCancel={() => {
@@ -446,8 +481,12 @@
           resetEdit();
         }}
         onAddContent={() => openContentModal(section.id)}
-        onToggleLock={hasSectionItems ? () => toggleSectionLock(section.id) : undefined}
-        onDelete={() => onDelete({ sectionId: section.id })}
+        onToggleLock={!isUngrouped && hasSectionItems ? () => toggleSectionLock(section.id) : undefined}
+        onDelete={() => {
+          if (!isUngrouped) {
+            onDelete({ sectionId: section.id });
+          }
+        }}
       />
 
       <div
@@ -617,16 +656,14 @@
               {/if}
 
               {#if !isStudentView && canRenderJoinButton}
-                <a href={item.callUrl!} target="_blank" rel="noreferrer" class="mt-0.5">
-                  <Button size="sm" variant="outline">{$t('schedule.join')}</Button>
-                </a>
+                <Button size="sm" variant="outline" class="mt-0.5" onclick={() => openExternalUrl(item.callUrl!)}>
+                  {$t('schedule.join')}
+                </Button>
               {/if}
 
               {#if isStudentView && canRenderContinueButton && !isEditingItem}
                 {#if canRenderJoinButton}
-                  <a href={item.callUrl!} target="_blank" rel="noreferrer">
-                    <Button size="sm">{$t('schedule.join')}</Button>
-                  </a>
+                  <Button size="sm" onclick={() => openExternalUrl(item.callUrl!)}>{$t('schedule.join')}</Button>
                 {:else}
                   <a href={resolve(getItemPath(item), {})}>
                     <Button size="sm" variant="outline">{$t('dashboard.continue')}</Button>

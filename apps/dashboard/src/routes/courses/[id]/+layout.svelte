@@ -115,7 +115,7 @@
         <Confetti />
       {/if}
 
-      <Page.Root class="mx-auto flex max-w-3xl px-4">
+      <Page.Root class="mx-auto flex w-[90%] px-4 md:max-w-2xl lg:max-w-3xl">
         {@render children?.()}
       </Page.Root>
     {/if}

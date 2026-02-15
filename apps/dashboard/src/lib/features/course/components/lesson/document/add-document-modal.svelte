@@ -11,6 +11,8 @@
   import { lessonApi } from '$features/course/api';
   import type { Lesson } from '$features/course/utils/types';
   import * as Dialog from '@cio/ui/base/dialog';
+  import * as FileDropZone from '@cio/ui/custom/file-drop-zone';
+  import type { FileRejectedReason } from '@cio/ui/custom/file-drop-zone';
 
   interface Props {
     onClose?: () => void;
@@ -18,9 +20,7 @@
 
   let { onClose = () => {} }: Props = $props();
 
-  let fileInput: HTMLInputElement | undefined = $state();
   let selectedFile: File | null = $state(null);
-  let dragOver = $state(false);
   let errorTimeout: NodeJS.Timeout | null = $state(null);
   let isDisabled = $derived($lessonDocUpload.isUploading || $isFreePlan);
 
@@ -65,14 +65,6 @@
     return null;
   }
 
-  function handleFileSelect(event: Event) {
-    const target = event.target as HTMLInputElement;
-    const file = target.files?.[0];
-    if (file) {
-      selectFile(file);
-    }
-  }
-
   function selectFile(file: File) {
     const error = validateFile(file);
     if (error) {
@@ -84,29 +76,23 @@
     $lessonDocUpload.error = null;
   }
 
-  function handleDrop(event: DragEvent) {
-    if (isDisabled) return;
+  async function handleFilesUpload(files: File[]) {
+    const file = files[0];
+    if (file) selectFile(file);
+  }
 
-    event.preventDefault();
-    dragOver = false;
-
-    const files = event.dataTransfer?.files;
-    if (files && files.length > 0) {
-      selectFile(files[0]);
+  function handleFileRejected(opts: { reason: FileRejectedReason; file: File }) {
+    if (opts.reason === 'Maximum file size exceeded') {
+      snackbar.error(
+        $t('course.navItem.lessons.materials.tabs.document.file_size_error', {
+          size: formatFileSize(MAX_DOCUMENT_SIZE)
+        })
+      );
+    } else if (opts.reason === 'File type not allowed') {
+      snackbar.error($t('course.navItem.lessons.materials.tabs.document.file_type_error'));
+    } else {
+      snackbar.error($t('course.navItem.lessons.materials.tabs.document.upload_error'));
     }
-  }
-
-  function handleDragOver(event: DragEvent) {
-    if (isDisabled) return;
-
-    event.preventDefault();
-    dragOver = true;
-  }
-
-  function handleDragLeave() {
-    if (isDisabled) return;
-
-    dragOver = false;
   }
 
   async function uploadDocument() {
@@ -154,7 +140,6 @@
       setTimeout(() => {
         resetDocumentUploadStore();
         selectedFile = null;
-        if (fileInput) fileInput.value = '';
       }, 1500);
     } catch (error) {
       console.error('Upload error:', error);
@@ -173,15 +158,12 @@
 
   function removeSelectedFile() {
     selectedFile = null;
-    if (fileInput) fileInput.value = '';
     $lessonDocUpload.error = null;
   }
 
   function cancelUpload() {
     documentUploader.cancelUpload();
-
     selectedFile = null;
-    if (fileInput) fileInput.value = '';
   }
 
   function autoClearError(error: string | null) {
@@ -215,7 +197,7 @@
     if (!isOpen) onClose();
   }}
 >
-  <Dialog.Content class="h-[80%] w-[90%] max-w-4/5 md:h-[566px]">
+  <Dialog.Content class="w-[90%] max-w-4/5">
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.lessons.materials.tabs.document.upload_title')}</Dialog.Title>
     </Dialog.Header>
@@ -224,56 +206,36 @@
     </UpgradeBanner>
 
     <div class="p-6">
-      <div class="mb-6">
-        <h3 class="mb-2 text-lg font-semibold">
-          {$t('course.navItem.lessons.materials.tabs.document.upload_title')}
-        </h3>
-        <p class="mb-4 text-sm text-gray-600">
-          {$t('course.navItem.lessons.materials.tabs.document.upload_description')}
-        </p>
-      </div>
-
       <!-- File Upload Area -->
-      <!-- svelte-ignore a11y_no_static_element_interactions -->
-      <div
-        class="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center transition-colors {isDisabled &&
-          'opacity-50 hover:cursor-not-allowed'} {dragOver ? 'border-blue-500 bg-blue-50' : 'hover:border-gray-400'}"
-        ondrop={handleDrop}
-        ondragover={handleDragOver}
-        ondragleave={handleDragLeave}
-      >
-        {#if selectedFile}
-          <div class="mb-4 flex items-center justify-center space-x-3">
-            <FileTextIcon size={16} />
-            <div class="text-left">
-              <p class="font-medium text-gray-900">{selectedFile.name}</p>
-              <p class="text-sm text-gray-500">{formatFileSize(selectedFile.size)}</p>
-            </div>
-            <CloseButton onClick={removeSelectedFile} />
+      {#if selectedFile}
+        <div class="border-border mb-4 flex items-center justify-center space-x-3 rounded-lg border p-4">
+          <FileTextIcon class="ui:text-muted-foreground size-5 shrink-0" />
+          <div class="min-w-0 flex-1 text-left">
+            <p class="ui:text-foreground truncate font-medium">{selectedFile.name}</p>
+            <p class="ui:text-muted-foreground text-sm">{formatFileSize(selectedFile.size)}</p>
           </div>
-        {:else}
-          <FileTextIcon size={16} />
-          <p class="mb-2 text-gray-600">
-            {$t('course.navItem.lessons.materials.tabs.document.drag_drop')}
-          </p>
-          <p class="mb-4 text-sm text-gray-500">
-            {$t('course.navItem.lessons.materials.tabs.document.or')}
-          </p>
-          <input
-            bind:this={fileInput}
-            disabled={isDisabled}
-            type="file"
-            accept=".pdf,.docx,.doc"
-            onchange={handleFileSelect}
-            class="hidden"
-          />
-          <div class="flex justify-center">
-            <Button variant="outline" disabled={isDisabled} onclick={() => fileInput?.click()}>
-              {$t('course.navItem.lessons.materials.tabs.document.choose_file')}
-            </Button>
-          </div>
-        {/if}
-      </div>
+          <CloseButton onClick={removeSelectedFile} />
+        </div>
+      {:else}
+        <div class={isDisabled ? 'ui:opacity-50 ui:pointer-events-none' : ''}>
+          <FileDropZone.Root
+            accept=".pdf,.docx,.doc,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword"
+            maxFiles={1}
+            fileCount={0}
+            maxFileSize={MAX_DOCUMENT_SIZE}
+            onUpload={handleFilesUpload}
+            onFileRejected={handleFileRejected}
+          >
+            <FileDropZone.Trigger
+              label={$t('course.navItem.lessons.materials.tabs.document.drag_drop')}
+              formatMaxFiles={(_count) => $t('course.navItem.lessons.materials.tabs.document.upload_description')}
+              formatMaxFilesAndSize={(size) => `(up to ${size})`}
+              formatMaxSize={(size) =>
+                $t('course.navItem.lessons.materials.tabs.document.upload_description') + ` (${size})`}
+            />
+          </FileDropZone.Root>
+        </div>
+      {/if}
 
       <!-- Error Message -->
       {#if $lessonDocUpload.error}

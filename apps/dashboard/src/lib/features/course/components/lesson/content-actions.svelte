@@ -8,8 +8,10 @@
   interface Props {
     isEditing?: boolean;
     disabled?: boolean;
+    isSaving?: boolean;
     lockLabel?: string;
     showLock?: boolean;
+    showDelete?: boolean;
     onEdit: () => void;
     onSave: () => void;
     onCancel: () => void;
@@ -20,8 +22,10 @@
   let {
     isEditing = false,
     disabled = false,
+    isSaving = false,
     lockLabel = '',
     showLock = true,
+    showDelete = true,
     onEdit,
     onSave,
     onCancel,
@@ -33,10 +37,12 @@
 <RoleBasedSecurity allowedRoles={[1, 2]}>
   <div class="flex items-center gap-1">
     {#if isEditing}
-      <Button variant="outline" onclick={onCancel}>
+      <Button variant="outline" onclick={onCancel} disabled={isSaving}>
         {$t('course.navItem.lessons.add_lesson.cancel')}
       </Button>
-      <Button onclick={onSave}>{$t('course.navItem.lessons.add_lesson.save')}</Button>
+      <Button onclick={onSave} loading={isSaving} disabled={isSaving}>
+        {$t('course.navItem.lessons.add_lesson.save')}
+      </Button>
     {:else}
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
@@ -54,10 +60,12 @@
           <DropdownMenu.Item onclick={onEdit} {disabled}>
             {$t('course.navItem.lessons.add_lesson.edit')}
           </DropdownMenu.Item>
-          <DropdownMenu.Separator />
-          <DropdownMenu.Item class="text-red-600 focus:text-red-600 dark:text-red-400" onclick={onDelete} {disabled}>
-            {$t('course.navItem.lessons.add_lesson.delete')}
-          </DropdownMenu.Item>
+          {#if showDelete}
+            <DropdownMenu.Separator />
+            <DropdownMenu.Item class="text-red-600 focus:text-red-600 dark:text-red-400" onclick={onDelete} {disabled}>
+              {$t('course.navItem.lessons.add_lesson.delete')}
+            </DropdownMenu.Item>
+          {/if}
         </DropdownMenu.Content>
       </DropdownMenu.Root>
     {/if}

@@ -8,9 +8,11 @@
   import * as Collapsible from '@cio/ui/base/collapsible';
   import { ContentType } from '@cio/utils/constants/content';
   import { courseApi } from '$features/course/api';
-  import { CONTENT_DEFINITIONS, getContentRoute, getCourseContent } from '$features/course/utils/content';
+  import { getContentRoute, getCourseContent } from '$features/course/utils/content';
   import { CircleCheckIcon } from '$features/ui/icons';
   import { t } from '$lib/utils/functions/translations';
+  import { IconButton } from '@cio/ui/custom/icon-button';
+  import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
 
   interface Props {
     path: string;
@@ -18,6 +20,7 @@
     isStudent?: boolean;
     className?: string;
     onOpenContentModal?: (sectionId?: string) => void;
+    onEditSection?: (sectionId: string) => void;
   }
 
   let { path, id, isStudent = false, className = '', onOpenContentModal }: Props = $props();
@@ -34,26 +37,31 @@
             <Collapsible.Trigger>
               {#snippet child({ props })}
                 <Sidebar.MenuSubButton {...props} class="flex w-full items-center gap-2 font-medium">
-                  {@const SectionIcon = CONTENT_DEFINITIONS[ContentType.Section].icon}
-                  <SectionIcon size={14} />
+                  <CourseContentIcon type={ContentType.Section} size={12} />
+
                   <span class="flex-1 truncate">{section.title}</span>
+
                   <div class="ml-auto flex items-center gap-1">
                     {#if onOpenContentModal}
-                      <Plus
-                        size={20}
-                        class="rounded-full p-1 hover:bg-gray-200"
+                      <IconButton
+                        variant="ghost-outline"
+                        size="icon-xs"
+                        class="opacity-0 transition-opacity duration-150 group-hover/section:opacity-100"
                         onclick={(event) => {
                           event.preventDefault();
                           event.stopPropagation();
                           onOpenContentModal(section.id);
                         }}
-                      />
+                      >
+                        <Plus />
+                      </IconButton>
                     {/if}
 
-                    <ChevronRightIcon
-                      size={20}
-                      class="rounded-full p-1 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 hover:bg-gray-200"
-                    />
+                    <IconButton variant="ghost" size="icon-xs">
+                      <ChevronRightIcon
+                        class="transition-transform duration-200 group-data-[state=open]/section:rotate-90"
+                      />
+                    </IconButton>
                   </div>
                 </Sidebar.MenuSubButton>
               {/snippet}
@@ -64,7 +72,6 @@
                   <Sidebar.MenuSubItem>
                     <Sidebar.MenuSubButton isActive={(path || page.url.pathname).includes(contentItem.id)}>
                       {#snippet child({ props })}
-                        {@const ItemIcon = CONTENT_DEFINITIONS[contentItem.type].icon}
                         {@const isContentLocked = (contentItem.isUnlocked ?? true) === false}
                         {@const isLockedForStudent = isStudent && isContentLocked}
                         <a
@@ -81,7 +88,7 @@
                           }}
                           {...props}
                         >
-                          <ItemIcon size={14} />
+                          <CourseContentIcon type={contentItem.type} size={14} />
                           <span class="flex-1 truncate">{contentItem.title}</span>
                           <div class="ml-auto flex items-center gap-1">
                             {#if contentItem.isComplete}
@@ -115,7 +122,6 @@
       <Sidebar.MenuSubItem>
         <Sidebar.MenuSubButton isActive={(path || page.url.pathname).includes(contentItem.id)}>
           {#snippet child({ props })}
-            {@const ItemIcon = CONTENT_DEFINITIONS[contentItem.type].icon}
             {@const isContentLocked = (contentItem.isUnlocked ?? true) === false}
             {@const isLockedForStudent = isStudent && isContentLocked}
             <a
@@ -130,7 +136,7 @@
               }}
               {...props}
             >
-              <ItemIcon size={14} />
+              <CourseContentIcon type={contentItem.type} size={14} />
               <span class="flex-1 truncate">{contentItem.title}</span>
               <div class="ml-auto flex items-center gap-1">
                 {#if contentItem.isComplete}

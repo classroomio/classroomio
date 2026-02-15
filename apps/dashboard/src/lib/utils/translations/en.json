@@ -766,6 +766,7 @@
               "embed_link": "Embed Link",
               "upload": "Upload",
               "button": "Add/Edit Video(s)",
+              "remove_video": "Remove video",
               "add_video": {
                 "title": "Add a Video",
                 "add_by": "Add By",
@@ -773,7 +774,7 @@
                 "videos_added": "Videos Added",
                 "add_video": "Add Video",
                 "upload_video": "Upload Video",
-                "select_file": "Select file( Mp4, MOV, AVI) to upload to your lesson.",
+                "select_file": "Select file (Mp4, MOV, AVI) to upload to your lesson.",
                 "size": "(Max 500 MB)",
                 "oops": "Oops `😬, couldn’t upload video",
                 "big_file": "Sorry we video wasn’t uploaded. The file size is too big,",
@@ -787,7 +788,9 @@
                 "invalid_youtube": "Invalid YouTube link(s)",
                 "invalid_link": "Invalid link(s)",
                 "cancel_upload": "Cancel Upload",
-                "upload_cancelled": "Upload cancelled by user"
+                "upload_cancelled": "Upload cancelled by user",
+                "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",
+                "max_files_and_size": "(up to {size} each)"
               }
             },
             "document": {
@@ -820,6 +823,7 @@
               "upload_cancelled": "Upload cancelled by user",
               "downloading": "Downloading...",
               "view_pdf": "View PDF",
+              "remove_document": "Remove document",
               "delete": "Delete",
               "page_of": "Page {page} of {total}",
               "loading_pdf": "Loading PDF...",
@@ -1278,6 +1282,7 @@
           "title": "Banner Widget",
           "width": "Images wider than 1500 pixels work best.",
           "size": "The maximum size per file is 500kb.",
+          "drag_drop": "Drag and drop your image here, or click to select",
           "submit": "Submit",
           "no_images": "No images available."
         },

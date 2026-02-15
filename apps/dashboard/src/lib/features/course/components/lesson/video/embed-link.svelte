@@ -27,7 +27,7 @@
       const newVideos = validLinks.map((link = '') => ({
         type: 'generic' as LessonVideoType,
         link,
-        metadata: {}
+        metadata: { createdAt: new Date().toISOString() } as { svid?: string; createdAt?: string }
       }));
 
       lessonApi.updateLessonState('videos', newVideos, { append: true });

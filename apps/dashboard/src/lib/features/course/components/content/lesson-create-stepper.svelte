@@ -96,13 +96,11 @@
 </script>
 
 <!-- Form content only, NO buttons -->
-<div>
-  <InputField
-    label={$t('course.navItem.lessons.add_lesson.lesson_title')}
-    bind:value={title}
-    autoFocus={true}
-    className="w-2/4!"
-    isRequired={true}
-    placeholder={$t('course.navItem.lessons.add_content_lesson_title_placeholder')}
-  />
-</div>
+<InputField
+  label={$t('course.navItem.lessons.add_lesson.lesson_title')}
+  bind:value={title}
+  autoFocus={true}
+  className="w-full"
+  isRequired={true}
+  placeholder={$t('course.navItem.lessons.add_content_lesson_title_placeholder')}
+/>

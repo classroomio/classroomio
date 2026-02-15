@@ -15,12 +15,14 @@
   const isMuse = $derived.by(() => {
     return source.type === 'muse' && source.metadata?.svid;
   });
+
+  const poster = $derived(source.type === 'upload' ? source.metadata?.thumbnailUrl : undefined);
 </script>
 
 <div class="mb-5 {className}">
   {#if isMuse}
     <MusePlayer svid={source.metadata?.svid} {options} />
   {:else}
-    <PlyrPlayer src={source.url} {options} />
+    <PlyrPlayer src={source.url} {poster} {options} />
   {/if}
 </div>

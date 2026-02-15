@@ -1,10 +1,10 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import LockIcon from '@lucide/svelte/icons/lock';
   import { InputField } from '@cio/ui/custom/input-field';
-  import { LessonIcon, ExerciseIcon } from '@cio/ui/custom/moving-icons';
   import { CircleCheckIcon } from '$features/ui/icons';
   import type { Snippet } from 'svelte';
-  import { ContentType } from '@cio/utils/constants/content';
+  import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
   import type { CourseContentItem } from '$features/course/utils/types';
   import { cn } from '@cio/ui/tools';
 
@@ -59,17 +59,13 @@
   <div class={cn('w-4/5', containerClass)}>
     <div class={cn('flex items-center gap-2', rowClass)}>
       {#if showIcon}
-        {#if item.type === ContentType.Lesson}
-          <LessonIcon size={iconSize} />
-        {:else}
-          <ExerciseIcon size={iconSize} />
-        {/if}
+        <CourseContentIcon type={item.type} size={iconSize} />
       {/if}
 
       <a
-        {href}
+        href={resolve(href, {})}
         class={cn(
-          'flex-1 truncate text-sm text-black underline dark:text-white',
+          'flex-1 truncate text-sm text-black hover:underline dark:text-white',
           isLocked ? 'cursor-not-allowed opacity-50' : linkClass
         )}
         data-sveltekit-preload-data={preloadOff ? 'off' : undefined}

@@ -36,7 +36,6 @@ BETTER_AUTH_SECRET=replace-with-a-long-random-secret
 PRIVATE_SERVER_KEY=
 
 # API and dashboard URLs
-SERVER_URL=http://localhost:3081
 PUBLIC_SERVER_URL=http://localhost:3081
 
 # Dashboard server-side calls (inside Docker network)

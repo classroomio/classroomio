@@ -121,7 +121,7 @@
   label={$t('course.navItem.lessons.add_lesson.course_section_title')}
   bind:value={title}
   autoFocus={true}
-  className="w-2/4!"
+  className="w-full"
   isRequired={true}
   placeholder={$t('course.navItem.lessons.add_content_section_title_placeholder')}
 />

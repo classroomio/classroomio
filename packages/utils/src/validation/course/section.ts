@@ -14,6 +14,11 @@ export const ZCourseSectionUpdate = z.object({
 });
 export type TCourseSectionUpdate = z.infer<typeof ZCourseSectionUpdate>;
 
+export const ZCourseSectionPromoteUngrouped = z.object({
+  title: z.string().min(1)
+});
+export type TCourseSectionPromoteUngrouped = z.infer<typeof ZCourseSectionPromoteUngrouped>;
+
 export const ZCourseSectionGetParam = z.object({
   sectionId: z.string().min(1)
 });
