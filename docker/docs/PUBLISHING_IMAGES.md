@@ -131,6 +131,7 @@ Important URL behavior for dashboard API calls:
 - Browser requests use `PUBLIC_SERVER_URL` (set this to your public API domain, not `localhost`).
 - Server-side dashboard requests use `PRIVATE_SERVER_URL` when set, with fallback to `PUBLIC_SERVER_URL`.
 - In Docker network deployments, set `PRIVATE_SERVER_URL=http://api:3081`.
+- Optional: set `AUTH_COOKIE_DOMAIN` to `.your-domain.com` (shared subdomain cookies) or your exact API host if you need explicit Better Auth cookie domain control.
 
 For local source builds, keep using `docker/docker-compose.yaml`.
 

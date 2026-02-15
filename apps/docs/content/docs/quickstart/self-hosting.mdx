@@ -87,6 +87,7 @@ SMTP_SENDER=""
 SMTP_PASSWORD=""
 
 # Optional
+AUTH_COOKIE_DOMAIN=""
 CLOUDFLARE_BUCKET_ID=""
 CLOUDFLARE_ACCESS_KEY=""
 CLOUDFLARE_ACCOUNT_ID=""
@@ -128,6 +129,12 @@ PRIVATE_APP_SUBDOMAINS=""
   browser requests use `PUBLIC_SERVER_URL`, while server-side dashboard requests use
   `PRIVATE_SERVER_URL` (fallback: `PUBLIC_SERVER_URL`). In hosted deployments, set
   `PUBLIC_SERVER_URL` to your public API domain (not `localhost`).
+</Callout>
+
+<Callout title="Important">
+  `AUTH_COOKIE_DOMAIN` is optional. Leave it empty to use Better Auth defaults, or set it
+  to `.your-domain.com` for cross-subdomain cookies. If you need host-only cookies, set it
+  to your exact API host (for example `api.your-domain.com`).
 </Callout>
 
 <Callout title="Learn More">
@@ -200,6 +207,7 @@ SERVER_URL=
 PUBLIC_SERVER_URL=
 PRIVATE_SERVER_URL=
 TRUSTED_ORIGINS=
+AUTH_COOKIE_DOMAIN=
 ```
 
 <Callout title="Important">

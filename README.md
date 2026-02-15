@@ -180,6 +180,7 @@ URL routing for dashboard API calls:
 - Browser requests use `PUBLIC_SERVER_URL` (must be your public API domain in hosted environments, not `localhost`).
 - Server-side dashboard requests (SSR/load functions) use `PRIVATE_SERVER_URL` when set, and fallback to `PUBLIC_SERVER_URL`.
 - In Docker Compose, use `PRIVATE_SERVER_URL=http://api:3081` so dashboard SSR calls stay on the internal Docker network.
+- Optional: set `AUTH_COOKIE_DOMAIN` for Better Auth cookie domain control (`.your-domain.com` for shared subdomains, or your exact API host).
 
 For Docker details and troubleshooting, see:
 

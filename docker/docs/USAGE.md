@@ -94,6 +94,7 @@ SERVER_URL=https://api.your-domain.com
 PUBLIC_SERVER_URL=https://api.your-domain.com
 PRIVATE_SERVER_URL=http://api:3081
 TRUSTED_ORIGINS=https://app.your-domain.com
+AUTH_COOKIE_DOMAIN=
 ```
 
 Optional integrations (if used):
@@ -125,6 +126,7 @@ Important:
 - `AUTH_BEARER_TOKEN` is a separate token and is not used by `apiKeyMiddleware`.
 - Dashboard URL selection is environment-aware: browser calls use `PUBLIC_SERVER_URL`, while SSR/server-side calls use `PRIVATE_SERVER_URL` (fallback: `PUBLIC_SERVER_URL`).
 - In Docker, set `PRIVATE_SERVER_URL=http://api:3081` for internal service-to-service traffic, and keep `PUBLIC_SERVER_URL` as your public API URL (do not use `localhost` in hosted deployments).
+- `AUTH_COOKIE_DOMAIN` is optional. Set it to `.your-domain.com` for cross-subdomain cookies, or to your exact API host when you need host-scoped cookies. Leave empty to use Better Auth defaults.
 
 ## Common Commands
 

@@ -41,6 +41,7 @@ PUBLIC_SERVER_URL=http://localhost:3081
 # Dashboard server-side calls (inside Docker network)
 PRIVATE_SERVER_URL=http://api:3081
 TRUSTED_ORIGINS=http://localhost:3082,http://localhost:5173
+AUTH_COOKIE_DOMAIN=
 PUBLIC_IS_SELFHOSTED=true
 
 # Dashboard domain config
@@ -68,6 +69,8 @@ Important:
 - `AUTH_BEARER_TOKEN` is separate and is not used by `apiKeyMiddleware`.
 - Dashboard API URL behavior is split by environment: browser requests use `PUBLIC_SERVER_URL`, and server-side dashboard requests use `PRIVATE_SERVER_URL` (fallback: `PUBLIC_SERVER_URL`).
 - In hosted deployments, `PUBLIC_SERVER_URL` must be your public API domain (not `localhost`), while Docker internal SSR calls should use `PRIVATE_SERVER_URL=http://api:3081`.
+- `AUTH_COOKIE_DOMAIN` is optional. Leave it empty for Better Auth defaults, or set it to `.your-domain.com` (shared cookies across subdomains) or your API host domain when you need explicit cookie domain control.
+- Do not use invalid domains (for example `b.com` or `.com` when your backend is `api.b.com`); use `.b.com` or the exact backend host.
 - For email sending, configure either `ZOHO_TOKEN` or a full SMTP config (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_SENDER`).
 - If neither Zoho token nor SMTP is configured, emails will not send.
 - Keep real secrets out of version control.

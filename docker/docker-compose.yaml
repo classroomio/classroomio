@@ -68,6 +68,7 @@ services:
       PORT: 3081
       SERVER_URL: ${SERVER_URL:-http://localhost:3081}
       TRUSTED_ORIGINS: ${TRUSTED_ORIGINS:-http://localhost:3082,http://localhost:5173}
+      AUTH_COOKIE_DOMAIN: ${AUTH_COOKIE_DOMAIN:-}
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
       PRIVATE_DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
       REDIS_URL: redis://redis:6379
