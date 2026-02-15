@@ -90,7 +90,6 @@ BETTER_AUTH_SECRET=replace-with-a-strong-secret
 AUTH_BEARER_TOKEN=
 PRIVATE_SERVER_KEY=
 
-SERVER_URL=https://api.your-domain.com
 PUBLIC_SERVER_URL=https://api.your-domain.com
 PRIVATE_SERVER_URL=http://api:3081
 TRUSTED_ORIGINS=https://app.your-domain.com

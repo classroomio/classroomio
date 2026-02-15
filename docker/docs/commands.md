@@ -100,7 +100,7 @@ docker run -d --name cio-api -p 3081:3081 \
   -e DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/classroomio \
   -e PRIVATE_DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/classroomio \
   -e REDIS_URL=redis://host.docker.internal:6379 \
-  -e SERVER_URL=https://api.your-domain.com \
+  -e PUBLIC_SERVER_URL=https://api.your-domain.com \
   -e TRUSTED_ORIGINS=https://app.your-domain.com \
   -e AUTH_COOKIE_DOMAIN=.your-domain.com \
   -e BETTER_AUTH_SECRET=<strong-random-secret> \

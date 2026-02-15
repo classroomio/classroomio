@@ -64,7 +64,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3081
-      SERVER_URL: ${SERVER_URL:?SERVER_URL is required}
+      PUBLIC_SERVER_URL: ${PUBLIC_SERVER_URL:?PUBLIC_SERVER_URL is required}
       TRUSTED_ORIGINS: ${TRUSTED_ORIGINS:?TRUSTED_ORIGINS is required}
       AUTH_COOKIE_DOMAIN: ${AUTH_COOKIE_DOMAIN:-}
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
