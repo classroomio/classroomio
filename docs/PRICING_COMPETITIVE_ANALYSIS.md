@@ -10,17 +10,27 @@ This document analyzes Teachable and Thinkific pricing structures and feature se
 
 ## 1. Competitor Pricing Comparison
 
-### Teachable Pricing (2024–2025)
+### Teachable Pricing (from pricing page)
 
-| Plan | Monthly | Yearly | Key Limits | Transaction Fee |
-|------|---------|--------|------------|-----------------|
-| **Free** | $0 | — | 1 product, 1 admin, unlimited students | 5% |
-| **Basic** | $39 | $348 (save $120) | 5 products, 5 admins | 5% |
-| **Pro** | $119 | $948 (save $480) | Unlimited products, 20 admins | 0% |
-| **Pro+** | $199 | $1,588 | All Pro + priority support, coaching tools | 0% |
-| **Business** | Custom | Custom | Enterprise features | 0% |
+| Plan | Monthly (annual) | Key Limits | Transaction Fee |
+|------|------------------|------------|-----------------|
+| **Free** | $0 | — | — |
+| **Starter** | $29 | 1 product, 100 students, 1 admin | 7.5% |
+| **Builder** | $69 | 5 products, 1K students, 1 admin | 0% |
+| **Growth** | $139 | 25 products, 5K students, 5 admins | 0% |
+| **Advanced** | $309 | 100 products, 5K students, 5 admins | 0% |
+| **Unlimited** | Contact | Flexible limits, SSO, dedicated CSM | 0% |
 
-**Teachable's model:** Subscription + transaction fees on lower tiers. Higher tiers remove fees and add capabilities.
+**Annual billing:** 22% off (e.g. Starter saves $120, Builder saves $240, Growth saves $600).
+
+**Key feature gates (from Teachable matrix):**
+- **Starter:** Drip content, quizzes, coupons, bundles, community, memberships. 7.5% fee. 100 students.
+- **Builder:** 0% fee, affiliate program, certificates, real-time support. 1K students.
+- **Growth:** White label, custom admin permissions, free subtitles. 5K students, 5 admins.
+- **Advanced:** Unlimited integrations, 100 products, 2TB storage.
+- **Unlimited:** SSO (OIDC/SAML), dedicated success manager, sandbox, priority SLA.
+
+**Teachable's model:** Subscription + 7.5% transaction fee on Starter only. Free trial + 30-day money-back. iOS/Android apps included.
 
 ---
 
@@ -62,7 +72,19 @@ This document analyzes Teachable and Thinkific pricing structures and feature se
 | **Early Adopter** | $35 | $350 (save 2 months) | 10K students, custom branding, video, certificates |
 | **Enterprise** | Contact | Contact | Unlimited students, custom domain, 24/7 support |
 
-**Current strengths:** Lower price point ($35 vs Thinkific $36–149), same 10K student cap as Thinkific Basic/Start/Grow, open source/self-host option.
+**Current strengths:** $35 undercuts Thinkific ($36–149). vs Teachable: Starter is $29 but only 100 students + 7.5% fee; ClassroomIO offers 10K students and no platform fee (external payments). Open source/self-host.
+
+### Side-by-Side: Entry Paid Tier
+
+| | Teachable | Thinkific | ClassroomIO |
+|---|-----------|-----------|-------------|
+| **Entry paid** | $29 (Starter) | $36 (Basic) | $35 (Early Adopter) |
+| **Students** | 100 | 10K | 10K |
+| **Transaction fee** | 7.5% | 0% | N/A (external) |
+| **Products/courses** | 1 | Unlimited | Unlimited |
+| **Custom branding** | Growth $139 | Grow $149 | Included |
+
+ClassroomIO's $35 tier matches Thinkific's student limit (10K) and undercuts their price, while offering far more students than Teachable Starter (100) at a similar price.
 
 ---
 
@@ -118,7 +140,7 @@ Retain 3 tiers but refine naming and feature clarity:
 | **Enterprise** | Custom | Large orgs, custom domain, SLA |
 
 **Changes:**
-- Raise Growth to **$39** to align with Teachable Basic; still below Thinkific Start ($74).
+- Raise Growth to **$39** to sit between Teachable Builder ($69) and Starter ($29); undercuts Thinkific Start ($74).
 - Emphasize "unlimited collaborators" and "10K students" as key differentiators.
 - Add 1–2 high-value features to Growth before raising price (e.g., drip content or native payments).
 
@@ -126,16 +148,15 @@ Retain 3 tiers but refine naming and feature clarity:
 
 | Tier | Monthly | Target |
 |------|---------|--------|
-| **Free** | $0 | 20 students, 1–2 courses, branding |
-| **Starter** | $29–39 | 500–1K students, remove branding |
-| **Growth** | $79–99 | 10K students, memberships, advanced AI |
+| **Free** | $0 | 20 students, branding |
+| **Starter** | $29 | Competes with Teachable Starter; 500 students |
+| **Growth** | $69–74 | 10K students, custom branding, matches Thinkific Start |
 | **Enterprise** | Custom | Unlimited, custom domain, SLA |
 
 **Rationale:**
-- Free tier for acquisition.
-- Starter bridges free and Growth.
-- Growth competes with Thinkific Start/Grow.
-- Enterprise for larger accounts.
+- Free for acquisition.
+- Starter at $29 matches Teachable entry (but ClassroomIO can offer more students).
+- Growth undercuts Thinkific Start ($74) and Teachable Builder ($69) while offering 10K students.
 
 ### Option C: Transaction Fee Model (Teachable-Style)
 
@@ -264,4 +285,4 @@ See [FEATURE_SPECIFICATIONS.md](./FEATURE_SPECIFICATIONS.md) for full specs. Pri
 
 ---
 
-*Document updated with Thinkific pricing page data (Feb 2025). Teachable verified separately.*
+*Document updated with Thinkific and Teachable pricing page data (Feb 2025).*
