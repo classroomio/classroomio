@@ -17,7 +17,7 @@ import {
 } from '@cio/db/queries/newsfeed';
 
 import { env } from '@api/config/env';
-import { sendEmail } from '@cio/email';
+import { buildEmailFromName, sendEmail } from '@cio/email';
 
 /**
  * Lists newsfeed items for a course
@@ -364,7 +364,7 @@ async function sendNewsfeedPostEmail(feedId: string, authorId: string) {
           postLink,
           orgName
         },
-        from: `"${orgName} - ClassroomIO" <notify@mail.classroomio.com>`,
+        from: buildEmailFromName(`${orgName} - ClassroomIO`),
         replyTo: feedData.author?.email || 'noreply@classroomio.com'
       });
     });
@@ -403,7 +403,7 @@ async function sendNewsfeedCommentEmail(feedId: string, commentContent: string) 
         postLink,
         orgName
       },
-      from: `"${orgName} - ClassroomIO" <notify@mail.classroomio.com>`,
+      from: buildEmailFromName(`${orgName} - ClassroomIO`),
       replyTo: 'noreply@classroomio.com'
     });
   } catch (error) {

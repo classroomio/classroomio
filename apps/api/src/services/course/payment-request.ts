@@ -2,7 +2,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 
 import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { getCourseWithOrgData } from '@cio/db/queries/course';
-import { sendEmail } from '@cio/email';
+import { buildEmailFromName, sendEmail } from '@cio/email';
 
 export interface PaymentRequestData {
   courseId: string;
@@ -49,7 +49,7 @@ export async function createPaymentRequest(data: PaymentRequestData) {
           studentEmail: data.studentEmail,
           studentFullname: data.studentFullname
         },
-        from: '"ClassroomIO" <notify@mail.classroomio.com>'
+        from: buildEmailFromName('ClassroomIO')
       });
     } catch (emailError) {
       console.error('Failed to send teacher buy request email:', emailError);
@@ -66,7 +66,7 @@ export async function createPaymentRequest(data: PaymentRequestData) {
           studentFullname: data.studentFullname,
           orgName
         },
-        from: `"${orgName} - ClassroomIO" <notify@mail.classroomio.com>`,
+        from: buildEmailFromName(`${orgName} - ClassroomIO`),
         replyTo: teacherEmail
       });
     } catch (emailError) {

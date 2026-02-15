@@ -22,7 +22,7 @@ import { db } from '@cio/db/drizzle';
 import { env } from '@api/config/env';
 import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { getProfileById } from '@cio/db/queries/auth';
-import { sendEmail } from '@cio/email';
+import { buildEmailFromName, sendEmail } from '@cio/email';
 
 type InviteStatus = 'ACTIVE' | 'EXPIRED' | 'USED_UP' | 'REVOKED';
 type InvitePreset = 'ONE_TIME_24H' | 'MULTI_USE_7D' | 'MULTI_USE_30D' | 'CUSTOM';
@@ -326,7 +326,7 @@ async function sendStudentJoinEmails(input: {
         orgName: input.orgName,
         courseName: input.courseName
       },
-      from: `"${input.orgName} (via ClassroomIO.com)" <notify@mail.classroomio.com>`
+      from: buildEmailFromName(`${input.orgName} (via ClassroomIO.com)`)
     });
   } catch (error) {
     console.error('Failed to send student welcome email:', error);
@@ -353,7 +353,7 @@ async function sendStudentJoinEmails(input: {
               studentName,
               studentEmail: input.studentEmail
             },
-            from: '"ClassroomIO" <notify@mail.classroomio.com>'
+            from: buildEmailFromName('ClassroomIO')
           }).catch((error) => {
             console.error(`Failed to send teacher notification email to ${teacherEmail}:`, error);
           })
@@ -411,7 +411,7 @@ async function createEmailInviteAndSend(input: {
         inviteLink: createdInvite.inviteLink,
         expiresAt: getExpiryLabel(createdInvite.expiresAt)
       },
-      from: `"${input.orgName} (via ClassroomIO.com)" <notify@mail.classroomio.com>`
+      from: buildEmailFromName(`${input.orgName} (via ClassroomIO.com)`)
     });
 
     const allSuccessful = responses.every((response) => response.success);

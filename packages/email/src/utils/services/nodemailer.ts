@@ -2,6 +2,7 @@ import { EmailResponse } from '../types';
 import type { TEmailData } from '@cio/utils/validation/mail';
 import type { Transporter } from 'nodemailer';
 import { env } from '../../config/env';
+import { EMAIL_FROM } from '../constants';
 import nodemailer from 'nodemailer';
 
 let transporter: Transporter | undefined;
@@ -52,7 +53,7 @@ export async function sendWithNodemailer(emailData: TEmailData): Promise<EmailRe
 
   try {
     const result = await transporter.sendMail({
-      from: from || env.SMTP_SENDER,
+      from: from ?? EMAIL_FROM,
       to,
       subject,
       replyTo,
