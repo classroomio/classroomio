@@ -4,7 +4,7 @@
 
 This document analyzes Teachable and Thinkific pricing structures and feature sets to inform ClassroomIO's pricing strategy and roadmap. ClassroomIO is positioned as an open-source LMS for bootcamps, educators, and businesses—a direct alternative to Teachable, Thinkific, and similar platforms.
 
-**Key Recommendation:** ClassroomIO has a strong value proposition (especially at $35/mo) but needs to add several core monetization and course-selling features to compete effectively. Consider a 3-tier structure with clearer differentiation and native payment processing.
+**Key Recommendation:** ClassroomIO has a strong value proposition (especially at $35/mo) but needs to add several core course and engagement features to compete effectively. Consider a 3-tier structure with clearer differentiation. **Payment processing is out of scope**—focus on features that work with existing external payment links. See [FEATURE_SPECIFICATIONS.md](./FEATURE_SPECIFICATIONS.md) for deep technical specs.
 
 ---
 
@@ -56,9 +56,7 @@ This document analyzes Teachable and Thinkific pricing structures and feature se
 
 | Feature | Teachable | Thinkific | ClassroomIO | Gap |
 |---------|-----------|-----------|-------------|-----|
-| **Native payment processing** | ✅ Built-in | ✅ Built-in (paid tiers) | ❌ External links only | **Critical** – creators expect one-click checkout |
-| **Transaction fee transparency** | 5% on lower tiers | 0% | N/A (external) | Consider Stripe/Lemon Squeezy integration with optional fee |
-| **Memberships / recurring billing** | ✅ Pro+ | ✅ Grow+ | ❌ | High demand for subscription courses |
+| **Memberships / recurring billing** | ✅ Pro+ | ✅ Grow+ | ❌ | Defer until payment processing (future) |
 | **Course bundles** | ✅ | ✅ Start+ | ❌ | Common for upsells |
 | **Coupons & promotions** | ✅ | ✅ Start+ | ✅ Discount % only | Need code-based coupons |
 | **Drip content / scheduled release** | ✅ | ✅ | ❌ | Essential for cohort-style and evergreen courses |
@@ -136,46 +134,43 @@ Retain 3 tiers but refine naming and feature clarity:
 
 ### Phase 1: Foundation (0–3 months)
 
-1. **Native payment processing**
-   - Integrate Stripe or Lemon Squeezy as first-class option (not just links).
-   - One-click checkout on course landing pages.
-   - Store transaction data for analytics.
-
-2. **Coupon codes**
-   - Code-based discounts (e.g., `LAUNCH50` = 50% off).
-   - Expiration dates, usage limits.
-
-3. **Drip content / scheduled release**
+1. **Drip content / scheduled release** (see [FEATURE_SPECIFICATIONS.md](./FEATURE_SPECIFICATIONS.md))
    - Unlock lessons by date or by completion of prior lessons.
    - Essential for cohort and evergreen courses.
+   - Works with existing `lesson.isUnlocked`, `groupmember.createdAt`.
+
+2. **Coupon codes**
+   - Code-based discounts (e.g. `LAUNCH50` = 50% off).
+   - Expiration dates, usage limits.
+   - 100% off → auto-enroll; partial → pass code to external payment link.
 
 ### Phase 2: Growth Features (3–6 months)
 
 4. **Course bundles**
-   - Sell multiple courses as a package at a discount.
+   - Sell multiple courses as a package; enroll grants access to all.
 
-5. **Memberships / recurring billing**
-   - Subscription access to courses or content.
-
-6. **Forms** (from roadmap)
+5. **Forms** (from roadmap)
    - Pre-enrollment forms, surveys, application forms.
 
-7. **Course templates / cloning**
+6. **Course templates / cloning**
    - Clone courses; share templates across orgs.
+
+7. **Analytics expansion**
+   - Enrollment/completion over time, lesson-level completion rates, CSV export.
 
 ### Phase 3: Differentiation (6–12 months)
 
 8. **Affiliate program**
-   - Track referrals; pay commissions.
+   - Track referrals; attribution for educator payouts.
 
-9. **Analytics dashboard**
-   - Revenue, completion rates, engagement over time.
+9. **Live lessons / webinars**
+   - Polish `callUrl` + `lessonAt`; optional Zoom/Meet integration.
 
-10. **Live lessons / webinars**
-    - Integrate Zoom/Streamyard or similar.
-
-11. **Messenger delivery** (from roadmap)
+10. **Messenger delivery** (from roadmap)
     - Slack/Discord/Telegram bots for lesson delivery.
+
+11. **Course batches & pathways**
+    - Cohorts within course; pathway = series of courses + certificate.
 
 ---
 
@@ -206,19 +201,20 @@ Retain 3 tiers but refine naming and feature clarity:
 
 - [ ] Decide between **Option A** (simple, $39) or **Option B** (4-tier).
 - [ ] Keep annual discount (≈2 months free) for consistency.
-- [ ] Consider transaction-fee model only after native payments exist.
+- [ ] Payment processing deferred; all features work with external links.
 
 ### Features (Build Order)
 
-1. Native payment processing (Stripe/Lemon Squeezy).
+See [FEATURE_SPECIFICATIONS.md](./FEATURE_SPECIFICATIONS.md) for full specs. Prioritized:
+
+1. Drip content / scheduled release.
 2. Coupon codes.
-3. Drip content / scheduled release.
-4. Course bundles.
-5. Memberships / recurring billing.
-6. Forms (from roadmap).
-7. Course templates / cloning (from roadmap).
-8. Affiliate program.
-9. Analytics dashboard.
+3. Course cloning.
+4. Forms (from roadmap).
+5. Analytics expansion.
+6. Course bundles.
+7. Affiliate program.
+8. Tags, live lessons polish, batches, pathways.
 
 ### Documentation
 
@@ -229,20 +225,6 @@ Retain 3 tiers but refine naming and feature clarity:
 ---
 
 ## 7. Implementation Notes (ClassroomIO Codebase)
-
-### Current Payment Architecture
-
-| Component | Purpose |
-|-----------|---------|
-| **Polar** | SaaS subscription billing (org plans). Used in `upgrade-modal.svelte`, `/api/polar/*`. |
-| **External payment links** | Course sales via `metadata.paymentLink` (Stripe, Lemon Squeezy, etc.). |
-| **Payment request flow** | `createPaymentRequest` → student gets email → pays externally → teacher manually verifies. |
-
-**Files to extend for native payments:**
-- `apps/dashboard/src/lib/features/ui/course-landing-page/components/payment-modal.svelte` – add embedded checkout option.
-- `apps/dashboard/src/lib/features/ui/course-landing-page/components/pricing-section.svelte` – handle checkout vs redirect.
-- `apps/api/src/services/course/payment-request.ts` – extend or add `checkout` service.
-- `packages/db/src/schema.ts` – `course.metadata.paymentLink`; add fields for `stripeProductId`, `lemonSqueezyVariantId`, etc. if needed.
 
 ### Plan Data Location
 
