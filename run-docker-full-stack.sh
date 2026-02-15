@@ -130,11 +130,11 @@ fi
 ensure_secure_auth_tokens
 
 echo "Starting ClassroomIO Docker full stack..."
-docker compose -p "${PROJECT_NAME}" -f "${COMPOSE_FILE}" up --build -d
+docker compose --env-file "${ENV_FILE}" -p "${PROJECT_NAME}" -f "${COMPOSE_FILE}" up --build -d
 
 echo
 echo "Current service status:"
-docker compose -p "${PROJECT_NAME}" -f "${COMPOSE_FILE}" ps
+docker compose --env-file "${ENV_FILE}" -p "${PROJECT_NAME}" -f "${COMPOSE_FILE}" ps
 
 if command -v curl >/dev/null 2>&1; then
   echo
