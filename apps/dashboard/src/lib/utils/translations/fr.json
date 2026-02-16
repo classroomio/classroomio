@@ -1073,7 +1073,9 @@
               "loading_pdf": "Chargement du PDF...",
               "failed_to_load_pdf": "Échec du chargement du document PDF",
               "failed_to_render_pdf": "Échec du rendu de la page PDF",
-              "use_arrow_keys": "Utilisez les touches fléchées pour naviguer, +/- pour zoomer ou cliquez sur les commandes ci-dessus. Le clic droit est désactivé."
+              "use_arrow_keys": "Utilisez les touches fléchées pour naviguer, +/- pour zoomer ou cliquez sur les commandes ci-dessus. Le clic droit est désactivé.",
+              "empty_title": "Aucun document pour l'instant",
+              "empty_description": "Téléchargez des documents à partager avec vos étudiants"
             },
             "video": {
               "title": "Vidéo",
@@ -1111,7 +1113,9 @@
                 "upload_cancelled": "Téléchargement annulé par l'utilisateur",
                 "max_files": "{count, plural, one {Vous pouvez télécharger # fichier} other {Vous pouvez télécharger # fichiers}}",
                 "max_files_and_size": "(jusqu'à {taille} chacun)"
-              }
+              },
+              "empty_title": "Aucune vidéo pour l'instant",
+              "empty_description": "Ajoutez des vidéos de YouTube, téléchargez-les ou de votre bibliothèque multimédia"
             },
             "slide": {
               "title": "Diapositive",
@@ -1600,7 +1604,8 @@
         "image": "Images",
         "audio": "Audio",
         "other": "Autre"
-      }
+      },
+      "refresh": "Rafraîchir"
     },
     "storage": {
       "total_bytes": "Stockage total",
@@ -1610,7 +1615,8 @@
     },
     "common": {
       "not_available": "N/D"
-    }
+    },
+    "empty_description": "L'actif n'existe pas ou n'est pas disponible dans cette organisation."
   },
   "settings": {
     "heading": "Paramètres",

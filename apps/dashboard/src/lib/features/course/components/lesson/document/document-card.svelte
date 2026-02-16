@@ -35,8 +35,8 @@
   );
 </script>
 
-<Item.Root variant="outline" class="group relative max-w-[320px] cursor-default! p-3!">
-  <div class="flex flex-col">
+<Item.Root variant="outline" class="group relative w-fit! min-w-0 cursor-default! p-3!">
+  <div class="flex w-full min-w-0 flex-col">
     {#if isEditMode}
       <DocumentCardDropdown {onRemove} />
     {/if}
@@ -47,13 +47,13 @@
       </Item.Media>
     </Item.Header>
 
-    <Item.Content>
+    <Item.Content class="w-full! min-w-0">
       <Item.Title class="line-clamp-2 min-h-[44px] text-base!" title={doc.name}>
-        {doc.name}
+        <span class="max-w-[200px] truncate break-all">{doc.name}</span>
       </Item.Title>
       <p class="ui:text-muted-foreground mt-1 text-xs">{subtitle}</p>
 
-      <div class="mt-3 flex flex-wrap gap-2">
+      <div class="mt-3 flex w-full min-w-0 gap-2">
         {#if doc.type === 'pdf'}
           <Button variant="outline" size="sm" onclick={() => onViewPDF(doc)} class="gap-1.5">
             <EyeIcon size={14} />
@@ -64,12 +64,18 @@
             href={doc.link}
             target="_blank"
             rel="noopener noreferrer"
-            class="ui:border-input ui:bg-background ui:text-foreground hover:ui:bg-accent hover:ui:text-accent-foreground inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium"
+            class="ui:border-input ui:bg-background ui:text-foreground hover:ui:bg-accent hover:ui:text-accent-foreground ui:shrink inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium"
           >
             {$t('course.navItem.lessons.materials.tabs.document.view_document')}
           </a>
         {/if}
-        <Button variant="outline" size="sm" onclick={() => onDownload(doc)} disabled={isDownloading} class="gap-1.5">
+        <Button
+          variant="outline"
+          size="sm"
+          onclick={() => onDownload(doc)}
+          disabled={isDownloading}
+          class="ui:shrink! gap-1.5"
+        >
           <DownloadIcon size={14} />
           {isDownloading
             ? $t('course.navItem.lessons.materials.tabs.document.downloading')

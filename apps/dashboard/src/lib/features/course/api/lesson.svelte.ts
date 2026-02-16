@@ -46,6 +46,7 @@ import {
 
 import type { TLocale } from '@cio/db/types';
 import { get } from 'svelte/store';
+import { mediaManagerApi } from '$features/media-manager/api';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { profile } from '$lib/utils/store/user';
 import { snackbar } from '$features/ui/snackbar/store';
@@ -692,10 +693,21 @@ export class LessonApi extends BaseApiWithErrors {
   /**
    * Deletes a video from lesson materials
    */
-  deleteLessonVideo(videoIndex: number) {
+  async deleteLessonVideo(videoIndex: number) {
     if (!this.lesson) return;
 
     const videos = Array.isArray(this.lesson.videos) ? [...this.lesson.videos] : [];
+    const removedVideo = videos[videoIndex] as { assetId?: string } | undefined;
+
+    if (removedVideo?.assetId && this.lesson.id) {
+      await mediaManagerApi.detachAsset(removedVideo.assetId, {
+        targetType: 'lesson',
+        targetId: this.lesson.id,
+        slotType: 'lesson_video',
+        position: videoIndex
+      });
+    }
+
     this.lesson = {
       ...this.lesson,
       videos: videos.filter((_v, i) => i !== videoIndex)
@@ -706,10 +718,21 @@ export class LessonApi extends BaseApiWithErrors {
   /**
    * Deletes a document from lesson materials
    */
-  deleteLessonDocument(documentIndex: number) {
+  async deleteLessonDocument(documentIndex: number) {
     if (!this.lesson) return;
 
     const documents = Array.isArray(this.lesson.documents) ? [...this.lesson.documents] : [];
+    const removedDocument = documents[documentIndex] as { assetId?: string } | undefined;
+
+    if (removedDocument?.assetId && this.lesson.id) {
+      await mediaManagerApi.detachAsset(removedDocument.assetId, {
+        targetType: 'lesson',
+        targetId: this.lesson.id,
+        slotType: 'lesson_document',
+        position: documentIndex
+      });
+    }
+
     this.lesson = {
       ...this.lesson,
       documents: documents.filter((_d, i) => i !== documentIndex)

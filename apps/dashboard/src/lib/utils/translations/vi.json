@@ -1073,7 +1073,9 @@
               "loading_pdf": "Đang tải PDF...",
               "failed_to_load_pdf": "Không tải được tài liệu PDF",
               "failed_to_render_pdf": "Không thể hiển thị trang PDF",
-              "use_arrow_keys": "Sử dụng các phím mũi tên để điều hướng, +/- để thu phóng hoặc nhấp vào các điều khiển ở trên. Nhấp chuột phải bị vô hiệu hóa."
+              "use_arrow_keys": "Sử dụng các phím mũi tên để điều hướng, +/- để thu phóng hoặc nhấp vào các điều khiển ở trên. Nhấp chuột phải bị vô hiệu hóa.",
+              "empty_title": "Chưa có tài liệu nào",
+              "empty_description": "Tải lên tài liệu để chia sẻ với sinh viên của bạn"
             },
             "video": {
               "title": "Video",
@@ -1111,7 +1113,9 @@
                 "upload_cancelled": "Tải lên bị người dùng hủy",
                 "max_files": "{đếm, số nhiều, một {Bạn có thể tải lên # tệp} khác {Bạn có thể tải lên # tệp}}",
                 "max_files_and_size": "(tối đa {size} mỗi cái)"
-              }
+              },
+              "empty_title": "Chưa có video nào",
+              "empty_description": "Thêm video từ YouTube, tải lên hoặc thư viện phương tiện của bạn"
             },
             "slide": {
               "title": "Trượt",
@@ -1600,7 +1604,8 @@
         "image": "Hình ảnh",
         "audio": "Âm thanh",
         "other": "Khác"
-      }
+      },
+      "refresh": "Làm cho khỏe lại"
     },
     "storage": {
       "total_bytes": "Tổng dung lượng lưu trữ",
@@ -1610,7 +1615,8 @@
     },
     "common": {
       "not_available": "không áp dụng"
-    }
+    },
+    "empty_description": "Tài sản không tồn tại hoặc không có sẵn trong tổ chức này."
   },
   "settings": {
     "heading": "Cài đặt",

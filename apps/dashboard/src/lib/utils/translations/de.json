@@ -1073,7 +1073,9 @@
               "loading_pdf": "PDF wird geladen...",
               "failed_to_load_pdf": "PDF-Dokument konnte nicht geladen werden",
               "failed_to_render_pdf": "PDF-Seite konnte nicht gerendert werden",
-              "use_arrow_keys": "Verwenden Sie die Pfeiltasten zum Navigieren, +/- zum Zoomen oder klicken Sie auf die Steuerelemente oben. Der Rechtsklick ist deaktiviert."
+              "use_arrow_keys": "Verwenden Sie die Pfeiltasten zum Navigieren, +/- zum Zoomen oder klicken Sie auf die Steuerelemente oben. Der Rechtsklick ist deaktiviert.",
+              "empty_title": "Noch keine Dokumente",
+              "empty_description": "Laden Sie Dokumente hoch, um sie mit Ihren Schülern zu teilen"
             },
             "video": {
               "title": "Video",
@@ -1111,7 +1113,9 @@
                 "upload_cancelled": "Der Upload wurde vom Benutzer abgebrochen",
                 "max_files": "{count, plural, one {Sie können # Datei hochladen} other {Sie können # Dateien hochladen}}",
                 "max_files_and_size": "(jeweils bis zu {size})"
-              }
+              },
+              "empty_title": "Noch keine Videos",
+              "empty_description": "Fügen Sie Videos von YouTube hinzu, laden Sie sie hoch oder laden Sie sie aus Ihrer Medienbibliothek herunter"
             },
             "slide": {
               "title": "Rutsche",
@@ -1600,7 +1604,8 @@
         "image": "Bild",
         "audio": "Audio",
         "other": "Andere"
-      }
+      },
+      "refresh": "Aktualisieren"
     },
     "storage": {
       "total_bytes": "Gesamtspeicher",
@@ -1610,7 +1615,8 @@
     },
     "common": {
       "not_available": "N/A"
-    }
+    },
+    "empty_description": "Das Asset existiert nicht oder ist in dieser Organisation nicht verfügbar."
   },
   "settings": {
     "heading": "Einstellungen",

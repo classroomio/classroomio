@@ -329,6 +329,7 @@
     "page_title": "Media Manager - ClassroomIO",
     "heading": "Media Manager",
     "empty": "No assets found",
+    "empty_description": "The asset does not exist or is not available in this organization.",
     "common": {
       "not_available": "N/A"
     },
@@ -341,6 +342,7 @@
     "filters": {
       "search_placeholder": "Search assets",
       "apply": "Apply",
+      "refresh": "Refresh",
       "kind_options": {
         "all": "All types",
         "video": "Video",
@@ -886,6 +888,8 @@
               "library": "Library",
               "button": "Add/Edit Video(s)",
               "remove_video": "Remove video",
+              "empty_title": "No videos yet",
+              "empty_description": "Add videos from YouTube, upload, or your media library",
               "add_video": {
                 "title": "Add a Video",
                 "add_by": "Add By",
@@ -953,7 +957,9 @@
               "loading_pdf": "Loading PDF...",
               "failed_to_load_pdf": "Failed to load PDF document",
               "failed_to_render_pdf": "Failed to render PDF page",
-              "use_arrow_keys": "Use arrow keys to navigate, +/- to zoom, or click the controls above. Right-click is disabled."
+              "use_arrow_keys": "Use arrow keys to navigate, +/- to zoom, or click the controls above. Right-click is disabled.",
+              "empty_title": "No documents yet",
+              "empty_description": "Upload documents to share with your students"
             }
           },
           "button_done": "Done"

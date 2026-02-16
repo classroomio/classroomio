@@ -1,5 +1,7 @@
 import {
   analyticsLoginEvents,
+  asset,
+  assetUsage,
   appsPoll,
   appsPollOption,
   appsPollSubmission,
@@ -83,6 +85,8 @@ export const groupRelations = relations(group, ({ one, many }) => ({
 
 export const organizationRelations = relations(organization, ({ many }) => ({
   groups: many(group),
+  assets: many(asset),
+  assetUsages: many(assetUsage),
   organizationContacts: many(organizationContacts),
   quizzes: many(quiz),
   organizationEmaillists: many(organizationEmaillist),
@@ -151,6 +155,8 @@ export const profileRelations = relations(profile, ({ one, many }) => ({
     fields: [profile.id],
     references: [user.id]
   }),
+  assets: many(asset),
+  assetUsages: many(assetUsage),
   lessons: many(lesson),
   groupmembers: many(groupmember),
   lessonCompletions: many(lessonCompletion),
@@ -229,6 +235,33 @@ export const lessonRelations = relations(lesson, ({ one, many }) => ({
   exercises: many(exercise),
   lessonCompletions: many(lessonCompletion),
   lessonLanguages: many(lessonLanguage)
+}));
+
+export const assetRelations = relations(asset, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [asset.organizationId],
+    references: [organization.id]
+  }),
+  createdByProfile: one(profile, {
+    fields: [asset.createdByProfileId],
+    references: [profile.id]
+  }),
+  usages: many(assetUsage)
+}));
+
+export const assetUsageRelations = relations(assetUsage, ({ one }) => ({
+  organization: one(organization, {
+    fields: [assetUsage.organizationId],
+    references: [organization.id]
+  }),
+  asset: one(asset, {
+    fields: [assetUsage.assetId],
+    references: [asset.id]
+  }),
+  createdByProfile: one(profile, {
+    fields: [assetUsage.createdByProfileId],
+    references: [profile.id]
+  })
 }));
 
 export const submissionRelations = relations(submission, ({ one, many }) => ({

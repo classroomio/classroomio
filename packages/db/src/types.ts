@@ -73,6 +73,12 @@ export type TNewOrganizationEmaillist = typeof schema.organizationEmaillist.$inf
 export type TLesson = typeof schema.lesson.$inferSelect;
 export type TNewLesson = typeof schema.lesson.$inferInsert;
 
+export type TAsset = typeof schema.asset.$inferSelect;
+export type TNewAsset = typeof schema.asset.$inferInsert;
+
+export type TAssetUsage = typeof schema.assetUsage.$inferSelect;
+export type TNewAssetUsage = typeof schema.assetUsage.$inferInsert;
+
 export type TAppsPollSubmission = typeof schema.appsPollSubmission.$inferSelect;
 export type TNewAppsPollSubmission = typeof schema.appsPollSubmission.$inferInsert;
 

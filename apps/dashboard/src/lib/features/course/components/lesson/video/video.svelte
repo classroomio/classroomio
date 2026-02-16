@@ -3,10 +3,12 @@
   import { MediaPlayer } from '$features/ui';
   import { DeleteModal } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
+  import { Empty } from '@cio/ui/custom/empty';
   import * as Item from '@cio/ui/base/item';
   import { lessonVideoUpload } from '$features/course/components/lesson/store';
   import { t } from '$lib/utils/functions/translations';
   import MODES from '$lib/utils/constants/mode';
+  import VideoIcon from '@lucide/svelte/icons/video';
   import VideoCard from './video-card.svelte';
 
   interface Props {
@@ -62,11 +64,19 @@
     {$t('course.navItem.lessons.materials.tabs.video.button')}
   </Button>
 
-  <Item.Group class="grid! w-full grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-    {#each videos as video, index}
-      <VideoCard {video} {index} isEditMode={true} onRemove={() => requestRemoveVideo(index)} />
-    {/each}
-  </Item.Group>
+  {#if videos.length}
+    <Item.Group class="grid! w-full grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {#each videos as video, index}
+        <VideoCard {video} {index} isEditMode={true} onRemove={() => requestRemoveVideo(index)} />
+      {/each}
+    </Item.Group>
+  {:else}
+    <Empty
+      title={$t('course.navItem.lessons.materials.tabs.video.empty_title')}
+      description={$t('course.navItem.lessons.materials.tabs.video.empty_description')}
+      icon={VideoIcon}
+    />
+  {/if}
 
   <DeleteModal bind:open={openDeleteVideoModal} onDelete={confirmRemoveVideo} />
 {:else}

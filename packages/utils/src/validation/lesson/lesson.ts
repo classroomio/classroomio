@@ -33,6 +33,8 @@ export const ZLessonUpdate = z.object({
         type: z.enum(['youtube', 'generic', 'upload']),
         link: z.string(),
         key: z.string().optional(),
+        assetId: z.string().uuid().optional(),
+        fileName: z.string().optional(),
         metadata: z.record(z.string(), z.unknown()).optional()
       })
     )
@@ -44,7 +46,8 @@ export const ZLessonUpdate = z.object({
         name: z.string(),
         link: z.string(),
         size: z.number().optional(),
-        key: z.string()
+        key: z.string(),
+        assetId: z.string().uuid().optional()
       })
     )
     .optional()

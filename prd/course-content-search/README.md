@@ -35,6 +35,7 @@ Make it easy to find and navigate to course content without scrolling or expandi
 - Search by lesson/exercise title
 - Navigation to lesson/exercise
 - Section label context (if grouped content)
+- Use only `@cio/ui` components for input + dropdown/modal (no native inputs)
 - Keyboard: Arrow up/down to move; Enter to open (optional in v1)
 
 ### Optional (Nice-to-have)

@@ -1073,7 +1073,9 @@
               "loading_pdf": "Carregando PDF...",
               "failed_to_load_pdf": "Falha ao carregar o documento PDF",
               "failed_to_render_pdf": "Falha ao renderizar a página PDF",
-              "use_arrow_keys": "Use as teclas de seta para navegar, +/- para ampliar ou clique nos controles acima. O clique com o botão direito está desativado."
+              "use_arrow_keys": "Use as teclas de seta para navegar, +/- para ampliar ou clique nos controles acima. O clique com o botão direito está desativado.",
+              "empty_title": "Ainda não há documentos",
+              "empty_description": "Faça upload de documentos para compartilhar com seus alunos"
             },
             "video": {
               "title": "Vídeo",
@@ -1111,7 +1113,9 @@
                 "upload_cancelled": "Upload cancelado pelo usuário",
                 "max_files": "{count, plural, one {Você pode fazer upload de # arquivo} other {Você pode fazer upload de # arquivos}}",
                 "max_files_and_size": "(até {tamanho} cada)"
-              }
+              },
+              "empty_title": "Ainda não há vídeos",
+              "empty_description": "Adicione vídeos do YouTube, upload ou sua biblioteca de mídia"
             },
             "slide": {
               "title": "Deslizar",
@@ -1600,7 +1604,8 @@
         "image": "Imagem",
         "audio": "Áudio",
         "other": "Outro"
-      }
+      },
+      "refresh": "Atualizar"
     },
     "storage": {
       "total_bytes": "Armazenamento total",
@@ -1610,7 +1615,8 @@
     },
     "common": {
       "not_available": "N/A"
-    }
+    },
+    "empty_description": "O ativo não existe ou não está disponível nesta organização."
   },
   "settings": {
     "heading": "Configurações",

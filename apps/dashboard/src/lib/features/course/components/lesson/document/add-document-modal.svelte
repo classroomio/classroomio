@@ -9,16 +9,18 @@
   import { UpgradeBanner, CloseButton } from '$features/ui';
   import { isFreePlan } from '$lib/utils/store/org';
   import { lessonApi } from '$features/course/api';
+  import { mediaManagerApi } from '$features/media-manager/api';
   import type { Lesson } from '$features/course/utils/types';
   import * as Dialog from '@cio/ui/base/dialog';
   import * as FileDropZone from '@cio/ui/custom/file-drop-zone';
   import type { FileRejectedReason } from '@cio/ui/custom/file-drop-zone';
 
   interface Props {
+    lessonId?: string;
     onClose?: () => void;
   }
 
-  let { onClose = () => {} }: Props = $props();
+  let { lessonId = '', onClose = () => {} }: Props = $props();
 
   let selectedFile: File | null = $state(null);
   let errorTimeout: NodeJS.Timeout | null = $state(null);
@@ -118,12 +120,46 @@
 
       const { urls: presignedUrls } = await documentUploader.getDownloadPresignedUrl([fileKey]);
 
+      const lessonDocumentPosition = Array.isArray(lessonApi.lesson?.documents) ? lessonApi.lesson.documents.length : 0;
+
+      let assetId: string | undefined;
+      if (lessonId) {
+        const asset = await mediaManagerApi.registerUploadedLessonDocument({
+          lessonId,
+          position: lessonDocumentPosition,
+          fileKey,
+          documentUrl: presignedUrls[fileKey],
+          fileName: selectedFile.name,
+          mimeType: selectedFile.type,
+          byteSize: selectedFile.size
+        });
+        assetId = asset?.id;
+      } else {
+        const asset = await mediaManagerApi.createAsset({
+          kind: 'document',
+          provider: 'upload',
+          storageProvider: 's3',
+          storageKey: fileKey,
+          sourceUrl: presignedUrls[fileKey],
+          mimeType: selectedFile.type,
+          byteSize: selectedFile.size,
+          title: selectedFile.name,
+          isExternal: false,
+          metadata: {
+            fileName: selectedFile.name,
+            createdAt: new Date().toISOString()
+          }
+        });
+        assetId = asset?.id;
+      }
+
       const document = {
         type: getFileType(selectedFile),
         name: selectedFile.name,
         link: presignedUrls[fileKey],
         key: fileKey,
-        size: selectedFile.size
+        size: selectedFile.size,
+        assetId
       };
 
       lessonApi.updateLessonState('documents', [document], { append: true });
@@ -148,7 +184,8 @@
         $lessonDocUpload.error = $t('course.navItem.lessons.materials.tabs.document.upload_cancelled');
         snackbar.info($t('course.navItem.lessons.materials.tabs.document.upload_cancelled'));
       } else {
-        $lessonDocUpload.error = error instanceof Error ? error.message : 'Upload failed';
+        $lessonDocUpload.error =
+          error instanceof Error ? error.message : $t('course.navItem.lessons.materials.tabs.document.upload_error');
         snackbar.error($t('course.navItem.lessons.materials.tabs.document.upload_error'));
       }
     } finally {

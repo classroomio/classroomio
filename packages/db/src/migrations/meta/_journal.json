@@ -43,6 +43,13 @@
       "when": 1770622627497,
       "tag": "0005_outgoing_doomsday",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1771176910627,
+      "tag": "0006_modern_the_initiative",
+      "breakpoints": true
     }
   ]
 }

@@ -2,6 +2,7 @@
   import YoutubeVideo from './youtube-video.svelte';
   import UploadVideo from './upload-video.svelte';
   import EmbedLink from './embed-link.svelte';
+  import LibraryVideo from './library-video.svelte';
   import * as CONSTANTS from './constants';
   import { t } from '$lib/utils/functions/translations';
   import { isFreePlan } from '$lib/utils/store/org';
@@ -45,13 +46,16 @@
         {/each}
       </UnderlineTabs.List>
       <UnderlineTabs.Content value="1" class="mt-3">
-        <YoutubeVideo />
+        <YoutubeVideo {lessonId} />
       </UnderlineTabs.Content>
       <UnderlineTabs.Content value="2" class="mt-3">
-        <EmbedLink />
+        <EmbedLink {lessonId} />
       </UnderlineTabs.Content>
       <UnderlineTabs.Content value="3" class="mt-3">
         <UploadVideo {lessonId} />
+      </UnderlineTabs.Content>
+      <UnderlineTabs.Content value="4" class="mt-3">
+        <LibraryVideo {lessonId} />
       </UnderlineTabs.Content>
     </UnderlineTabs.Root>
   </Dialog.Content>

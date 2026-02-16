@@ -59,7 +59,7 @@
   }
 
   function deleteDocument(index: number) {
-    lessonApi.deleteLessonDocument(index);
+    void lessonApi.deleteLessonDocument(index);
   }
 
   function requestRemoveDocument(index: number) {

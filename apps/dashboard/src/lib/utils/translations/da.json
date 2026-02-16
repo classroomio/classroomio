@@ -1073,7 +1073,9 @@
               "loading_pdf": "Indlæser PDF...",
               "failed_to_load_pdf": "Kunne ikke indlæse PDF-dokument",
               "failed_to_render_pdf": "Kunne ikke gengive PDF-siden",
-              "use_arrow_keys": "Brug piletasterne til at navigere, +/- for at zoome, eller klik på kontrollerne ovenfor. Højreklik er deaktiveret."
+              "use_arrow_keys": "Brug piletasterne til at navigere, +/- for at zoome, eller klik på kontrollerne ovenfor. Højreklik er deaktiveret.",
+              "empty_title": "Ingen dokumenter endnu",
+              "empty_description": "Upload dokumenter for at dele med dine elever"
             },
             "video": {
               "title": "Video",
@@ -1111,7 +1113,9 @@
                 "upload_cancelled": "Upload annulleret af brugeren",
                 "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",
                 "max_files_and_size": "(op til {size} hver)"
-              }
+              },
+              "empty_title": "Ingen videoer endnu",
+              "empty_description": "Tilføj videoer fra YouTube, upload eller dit mediebibliotek"
             },
             "slide": {
               "title": "Slide",
@@ -1600,7 +1604,8 @@
         "image": "Billede",
         "audio": "Lyd",
         "other": "Andet"
-      }
+      },
+      "refresh": "Opfriske"
     },
     "storage": {
       "total_bytes": "Samlet opbevaring",
@@ -1610,7 +1615,8 @@
     },
     "common": {
       "not_available": "N/A"
-    }
+    },
+    "empty_description": "Aktivet findes ikke eller er ikke tilgængeligt i denne organisation."
   },
   "settings": {
     "heading": "Indstillinger",

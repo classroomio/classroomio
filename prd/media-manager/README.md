@@ -1,32 +1,25 @@
 # Media Manager PRD
 
 ## Purpose
-Design and deliver an organization-level **Media Manager** so uploaded videos become reusable, governable assets instead of lesson-local JSON entries.
+Design and deliver an organization-level **Media Manager** so uploaded files become reusable, governable assets instead of content-local JSON blobs.
 
 ## Problem Statement
-Today, video uploads are added directly to `lesson.videos` and managed only inside a single lesson.
+Today, uploads are attached directly inside content payloads (for example `lesson.videos`) and managed only from that local context.
 
 This creates product and technical gaps:
-- No organization-wide media library.
-- No reliable reuse flow across courses/lessons.
-- No global usage map (where each video is used).
-- No global edit propagation (thumbnail/title/metadata updates).
+- No organization-wide asset library.
+- No reliable reuse across courses/lessons/exercises.
+- No global usage map (where each asset is used).
+- No global edit propagation (title/thumbnail/metadata updates).
+- No accurate organization storage accounting.
 - No one-click media export per organization.
 
-## Data Sources Checked
-- `packages/db/src/schema.ts`
-- `packages/db/src/queries/lesson/lesson.ts`
-- `packages/utils/src/validation/lesson/lesson.ts`
-- `apps/api/src/routes/course/lesson.ts`
-- `apps/api/src/services/lesson/lesson.ts`
-- `apps/api/src/routes/course/presign.ts`
-- `apps/api/src/utils/lesson-media.ts`
-- `apps/dashboard/src/lib/features/course/components/lesson/video/upload-video.svelte`
-- `apps/dashboard/src/lib/features/course/api/lesson.svelte.ts`
-- `apps/dashboard/src/lib/features/course/components/lesson/video/video-card-utils.ts`
-- `apps/dashboard/src/lib/features/ui/navigation/org-navigation.ts`
-- `apps/api/src/middlewares/org-member.ts`
-- `apps/api/src/middlewares/org-team-member.ts`
+## Decision Update
+We will use a **separate canonical assets model**:
+- `assets` table for organization-scoped asset identity and storage metadata.
+- `asset_usages` table for where each asset is used.
+
+`lesson.videos` remains temporarily for compatibility during migration.
 
 ## Current-State Audit
 
@@ -34,147 +27,162 @@ Legend: ✅ available now, ⚠️ partial/manual, ❌ missing
 
 | Capability | Availability | Current State | Effort | Should Implement |
 | --- | --- | --- | --- | --- |
-| Upload video to lesson | ✅ | Presigned upload + append into `lesson.videos` JSON | Low | [x] |
-| Reuse uploaded video in another lesson | ⚠️ | Possible only by manually re-adding URL/key | Medium | [x] |
-| Organization media library view | ❌ | No org-level media table or page | High | [x] |
-| Track where media is used | ❌ | No usage relation table | High | [x] |
-| Edit thumbnail/title once and propagate everywhere | ❌ | Metadata stored per lesson JSON item; no canonical media row | High | [x] |
-| Export all organization media | ❌ | No inventory/export endpoint | Medium | [x] |
-| Safe delete with usage checks | ❌ | Only per-lesson item delete by index | Medium | [x] |
+| Upload media to content | ✅ | Added directly inside content JSON | Low | [x] |
+| Reuse existing uploaded media | ⚠️ | Mostly manual copy/re-add flows | Medium | [x] |
+| Org-wide asset library | ❌ | No canonical assets table/page | High | [x] |
+| Cross-target usage visibility | ❌ | No usage graph | High | [x] |
+| Global metadata updates | ❌ | Metadata is duplicated per content item | High | [x] |
+| Accurate org storage usage | ❌ | No canonical `byte_size` aggregation | Medium | [x] |
+| Safe delete/archive with usage guard | ❌ | Local removal only | Medium | [x] |
 
 ## Goals
-1. Create a canonical org-level media asset model for uploaded videos.
-2. Allow attaching existing media assets to any lesson in the same organization.
-3. Provide organization-level media browsing, search, filtering, and usage visibility.
-4. Support global metadata updates (title, description, thumbnail) with consistent rendering in all usages.
-5. Allow organization export of all media metadata and downloadable links.
-6. Preserve existing lesson experience while migrating incrementally.
+1. Create canonical org-level assets in `assets`.
+2. Support asset kinds beyond video (`document`, `image`, extensible).
+3. Allow attaching assets to lessons, exercises, and nested content slots.
+4. Provide organization-level browsing/search/filtering and usage visibility.
+5. Support global metadata updates with consistent rendering across usages.
+6. Enable accurate organization storage metrics from canonical asset rows.
+7. Preserve existing lesson UX while migrating incrementally.
 
 ## Non-Goals (Initial Release)
-- Full digital asset management for audio/images/documents in v1.
-- Complex transcoding pipeline replacement.
-- Public CDN URL permanence changes.
-- Cross-organization media sharing.
-
-## Product Scope
-
-### Personas
-- Org admin: govern all media, export, delete with safeguards.
-- Tutor/team member: upload/reuse media for course authoring.
-- Student: read-only playback behavior unchanged.
-
-### Core User Stories
-1. As a tutor, I can upload a video once and reuse it in multiple lessons.
-2. As an admin, I can open Media Manager and see all videos in the organization.
-3. As an admin, I can see all lessons/courses using a selected video.
-4. As a tutor/admin, I can edit video title/thumbnail and have every usage reflect it.
-5. As an admin, I can export all media metadata and download links.
-6. As an admin, I can archive/delete media only when usage constraints are satisfied.
+- Replacing transcoding pipeline.
+- Cross-organization sharing.
+- Full billing implementation (we will provide usage metrics for billing).
 
 ## Proposed Architecture
 
 ### Data Model (New)
 
-#### `media_asset`
-Canonical video record at organization scope.
+#### `assets`
+Canonical asset record at organization scope.
 
 Suggested fields:
 - `id` (uuid, pk)
 - `organization_id` (uuid, fk -> `organization.id`, indexed)
-- `type` (`upload` now; extensible for `youtube`/`generic` in later phase)
-- `storage_key` (text, unique per org)
-- `source_url` (text, nullable; short-lived presigned URL not persisted as source of truth)
+- `kind` (`video` | `document` | `image` | `audio` | `other`)
+- `provider` (`upload` | `youtube` | `generic` | `external_url`)
+- `storage_provider` (`s3` initially)
+- `storage_key` (text, nullable, indexed)
+- `source_url` (text, nullable)
+- `mime_type` (text, nullable)
+- `byte_size` (bigint/int, nullable for external assets, required for uploaded assets)
+- `checksum` (text, nullable)
 - `title` (text, nullable)
 - `description` (text, nullable)
 - `thumbnail_url` (text, nullable)
 - `duration_seconds` (int, nullable)
 - `aspect_ratio` (text, nullable)
+- `is_external` (boolean, default false)
 - `status` (`active` | `archived`)
 - `created_by_profile_id` (uuid, fk -> `profile.id`)
 - `created_at`, `updated_at`
 
-Indexes:
+Indexes/constraints:
 - `(organization_id, created_at desc)`
-- `(organization_id, status)`
+- `(organization_id, kind, status)`
 - `(organization_id, title)`
+- `(organization_id, byte_size)`
+- unique `(organization_id, provider, storage_key)` where `storage_key` is not null
 
-#### `media_usage`
-Usage graph from media to learning content.
+#### `asset_usages`
+Usage graph from asset to content targets.
 
 Suggested fields:
 - `id` (uuid, pk)
 - `organization_id` (uuid, indexed)
-- `media_asset_id` (uuid, fk -> `media_asset.id`, indexed)
-- `course_id` (uuid, fk -> `course.id`, indexed)
-- `lesson_id` (uuid, fk -> `lesson.id`, indexed)
+- `asset_id` (uuid, fk -> `assets.id`, indexed)
+- `target_type` (`lesson` | `exercise` | `question`)
+- `target_id` (uuid)
+- `slot_type` (`lesson_video` | `lesson_document` | `exercise_attachment` | `question_prompt_media` | `question_explanation_media` ...)
+- `slot_key` (text, nullable; path-like key for nested content, e.g. `questions[2].prompt.media`)
 - `position` (int, nullable)
 - `created_by_profile_id` (uuid)
 - `created_at`
 
-Constraint:
-- Unique `(media_asset_id, lesson_id)` to prevent duplicate attach in one lesson.
+Constraints:
+- unique `(asset_id, target_type, target_id, slot_type, slot_key, position)`
+- indexes `(target_type, target_id)` and `(asset_id)`
+- service-layer scope validation: asset org must equal usage org.
+
+### Storage Accounting
+Storage metrics come from `assets`, not `asset_usages`.
+
+Rules:
+- Organization total: `sum(byte_size)` for `organization_id`.
+- Reuse does not multiply storage.
+- External assets (`is_external=true`) are excluded from internal storage totals.
+
+Recommended outputs:
+- `totalBytes`
+- `bytesByKind`
+- `internalBytes`
+- `externalAssetCount`
 
 ### Backward Compatibility Strategy
 - Keep `lesson.videos` during transition.
-- Add `mediaAssetId?: string` to each `lesson.videos[]` item in validation/schema contract.
-- For upload attachments, write both:
-  - `media_asset` + `media_usage` canonical records.
-  - `lesson.videos[]` representation for old clients and existing rendering.
-- Read path should prefer canonical media metadata when `mediaAssetId` exists.
+- Extend lesson media payload with `assetId?: string`.
+- For new lesson attachments, write-through to both:
+  - canonical `assets` + `asset_usages`
+  - compatibility `lesson.videos`
+- Read path should prefer canonical metadata when `assetId` exists.
 
 ### API Surface (Proposed)
 
-#### Validation (`packages/utils/src/validation/media/`)
-- `ZMediaListQuery`
-- `ZMediaCreateUpload` (metadata only; upload still via presign)
-- `ZMediaAttachToLesson`
-- `ZMediaDetachFromLesson`
-- `ZMediaUpdate`
-- `ZMediaDelete`
-- `ZMediaUsageParams`
-- `ZMediaExportQuery`
+#### Validation (`packages/utils/src/validation/assets/`)
+- `ZAssetListQuery`
+- `ZAssetCreateUpload`
+- `ZAssetAttach`
+- `ZAssetDetach`
+- `ZAssetUpdate`
+- `ZAssetDelete`
+- `ZAssetUsageParams`
+- `ZAssetExportQuery`
+- `ZAssetStorageQuery`
 
-#### DB Queries (`packages/db/src/queries/media/`)
-- `createMediaAsset`
-- `getMediaAssetById`
-- `listMediaAssetsByOrg`
-- `updateMediaAsset`
-- `archiveMediaAsset`
-- `deleteMediaAsset`
-- `createMediaUsage`
-- `deleteMediaUsage`
-- `listMediaUsagesByAsset`
-- `countMediaUsagesByAsset`
-- `listMediaAssetsForExport`
+#### DB Queries (`packages/db/src/queries/assets/`)
+- `createAsset`
+- `getAssetById`
+- `listAssetsByOrg`
+- `updateAsset`
+- `archiveAsset`
+- `deleteAsset`
+- `createAssetUsage`
+- `deleteAssetUsage`
+- `listAssetUsagesByAsset`
+- `countAssetUsagesByAsset`
+- `listAssetsForExport`
+- `getAssetStorageSummaryByOrg`
 
-#### Services (`apps/api/src/services/media-manager/`)
-- `createMediaAssetFromUploadService`
-- `attachMediaToLessonService`
-- `detachMediaFromLessonService`
-- `updateMediaAssetService`
-- `deleteMediaAssetService` (with usage guard)
-- `getMediaUsageGraphService`
-- `exportOrganizationMediaService`
+#### Services (`apps/api/src/services/assets/`)
+- `createAssetFromUploadService`
+- `attachAssetService`
+- `detachAssetService`
+- `updateAssetService`
+- `deleteAssetService`
+- `getAssetUsageGraphService`
+- `exportOrganizationAssetsService`
+- `getOrganizationAssetStorageService`
 
-#### Routes (`apps/api/src/routes/media-manager/`)
-All routes require `authMiddleware` + `orgTeamMemberMiddleware` except export/delete which should use `orgAdminMiddleware`.
+#### Routes (`apps/api/src/routes/assets/`)
+All routes require `authMiddleware` + `orgTeamMemberMiddleware`, except delete/export where admin policy applies.
 
 Proposed endpoints:
-- `GET /organization/media`
-- `POST /organization/media`
-- `GET /organization/media/:mediaId`
-- `PUT /organization/media/:mediaId`
-- `DELETE /organization/media/:mediaId`
-- `GET /organization/media/:mediaId/usage`
-- `POST /organization/media/:mediaId/attach`
-- `POST /organization/media/:mediaId/detach`
-- `GET /organization/media/export`
+- `GET /organization/assets`
+- `POST /organization/assets`
+- `GET /organization/assets/:assetId`
+- `PUT /organization/assets/:assetId`
+- `DELETE /organization/assets/:assetId`
+- `GET /organization/assets/:assetId/usage`
+- `POST /organization/assets/:assetId/attach`
+- `POST /organization/assets/:assetId/detach`
+- `GET /organization/assets/export`
+- `GET /organization/assets/storage`
 
 ## Frontend Plan
 
 ### Routes
-- New org page: `apps/dashboard/src/routes/org/[slug]/media/+page.server.ts`
-- New org page: `apps/dashboard/src/routes/org/[slug]/media/+page.svelte`
+- `apps/dashboard/src/routes/org/[slug]/media/+page.server.ts`
+- `apps/dashboard/src/routes/org/[slug]/media/+page.svelte`
 
 ### Feature Module
 - `apps/dashboard/src/lib/features/media-manager/`
@@ -185,115 +193,108 @@ Proposed endpoints:
   - `components/media-usage-drawer.svelte`
   - `components/edit-media-modal.svelte`
   - `components/attach-media-modal.svelte`
+  - `components/storage-usage-card.svelte`
 
 ### Navigation
-- Add org sidebar item in `apps/dashboard/src/lib/features/ui/navigation/org-navigation.ts`:
+- Add item in `apps/dashboard/src/lib/features/ui/navigation/org-navigation.ts`:
   - title key: `org_navigation.media`
   - path: `/media`
 
-### Lesson Integration
-- Replace lesson upload completion behavior:
-  - create media asset first (org scope)
-  - attach to current lesson
-  - write `mediaAssetId` into lesson videos payload
+### Lesson and Exercise Integration
+- Lesson upload completion:
+  1. upload file to storage via presign
+  2. create/get canonical asset with `kind='video'`
+  3. attach usage with `targetType='lesson'`, `targetId=lessonId`, `slotType='lesson_video'`
+  4. persist compatibility shape with `assetId` in `lesson.videos`
 - Add “Choose from library” tab in lesson add-video modal.
-- Replace delete-by-index UX with detach behavior when media has shared usage.
+- Add exercise-side attach flow using `targetType='exercise'` and slot metadata.
+- Replace delete-by-index with detach behavior when asset has multiple usages.
 
 ## Export Design
-- v1 export format: JSON manifest + signed download URLs.
-- Manifest fields:
-  - media id, title, type, storage key, duration, createdAt, updatedAt
-  - usage count
-  - usage entries: courseId/courseTitle, lessonId/lessonTitle
-- Optional v2: background ZIP packaging job.
+- v1: JSON manifest + signed download URLs.
+- Include:
+  - asset metadata (id, kind, provider, key, mimeType, byteSize, title, timestamps)
+  - usage entries (`targetType`, `targetId`, `slotType`, `slotKey`, `position`)
 
 ## Migration Plan
 
 ### Phase 0: Foundation (No UI changes)
-1. Add new tables and queries.
-2. Add media-manager services/routes.
-3. Add compatibility support for `mediaAssetId` in lesson video schema.
-4. Backfill script:
-- scan `lesson.videos` where `type='upload'` and `key` exists
-- deduplicate by `(organizationId, key)`
-- create `media_asset`
-- create `media_usage`
-- patch lesson JSON item with `mediaAssetId`
+1. Add `assets` and `asset_usages` tables + indexes.
+2. Add assets queries/services/routes.
+3. Add compatibility support for `assetId` in lesson video schema.
+4. Add migration script to backfill existing lesson media payloads (videos + documents, internal + external).
 
-### Phase 1: Org Media Manager UI + Reuse
+### Phase 1: Org Media Manager + Lesson Reuse
 1. Add org `/media` page.
 2. Add list/search/filter/sort.
 3. Add usage drawer.
 4. Add attach-from-library flow in lesson editor.
 
-### Phase 2: Global Editing + Export
-1. Edit metadata + thumbnail modal.
-2. Propagate canonical metadata in lesson cards/player UI.
-3. Add org export endpoint + UI action.
+### Phase 2: Exercise Reuse + Global Editing + Export + Storage
+1. Add exercise usage attachments via `targetType='exercise'`.
+2. Add global metadata editing.
+3. Add export endpoint + UI action.
+4. Add storage summary endpoint + UI card.
 
 ### Phase 3: Hardening
 1. Deletion/archival policies.
 2. Usage-safe deletion confirmations.
-3. Pagination/perf tuning and indexes.
+3. Pagination/performance tuning.
+4. Reconciliation job for JSON/table drift.
+
+## Migration Script Requirement
+A dedicated script is required to migrate existing lesson media payloads into `assets` and `asset_usages`.
+
+Script plan:
+- File: `packages/db/src/scripts/backfill-lesson-assets.ts`
+- Command: `pnpm --filter @cio/db db:assets-backfill`
+- Reference spec: `prd/media-manager/backfill-lesson-videos-to-assets.md`
 
 ## Risks and Mitigations
-- Data drift between `lesson.videos` JSON and canonical tables.
-  - Mitigation: service-layer write-through + reconciliation job.
-- Presigned URL expiry in stored `link` fields.
-  - Mitigation: treat key as source of truth; resolve fresh signed URL at read time.
-- Shared asset mutation surprises course owners.
-  - Mitigation: explicit UX copy: “Changes apply to all usages”.
-- Backfill duplicates/missing keys.
-  - Mitigation: idempotent script + reporting of skipped records.
+- Drift between content JSON and canonical tables.
+  - Mitigation: write-through plus reconciliation report.
+- Expired presigned URLs in existing `link` fields.
+  - Mitigation: key-based URL regeneration; key is source of truth.
+- Shared asset update surprises.
+  - Mitigation: explicit UI copy that updates are global.
+- Migration edge cases (missing keys, duplicate keys).
+  - Mitigation: idempotent script + dry-run + skip report.
+- Missing historical file sizes.
+  - Mitigation: nullable `byte_size` + follow-up hydration job for unknown sizes.
 
 ## Success Metrics
-- `% of uploaded lesson videos with mediaAssetId` >= 95% in 2 weeks.
-- Median time to attach existing media to lesson < 20 seconds.
+- `% of upload videos with assetId >= 95%` within 2 weeks.
+- Median attach-from-library time < 20s.
 - Export success rate > 99%.
-- Reduction in duplicate uploads (same key/file hash) by at least 40%.
+- Duplicate upload reduction >= 40%.
+- `% of internal assets with non-null byte_size >= 98%`.
 
 ## Open Questions
-1. Should YouTube/generic links also become canonical media assets in v1, or only uploaded files?
-2. Should tutors be allowed to delete shared media, or admin-only?
-3. Do we need soft-delete only for first release?
-4. Should export include only active assets or also archived assets?
-5. Do we need per-course opt-out from global metadata sync?
+1. Should we add size hydration for existing external assets where `byte_size` is unknown?
+2. Should delete be admin-only in v1?
+3. Should v1 use soft-delete only (`archived`) before hard-delete?
+4. Should storage totals exclude archived assets?
+5. What is the final controlled vocabulary for `slot_type` values across exercises/questions?
 
 ## Kanban Board (Ideation Phase)
 
 | Ticket | Title | Todo | In Progress | Verification | Done |
 | --- | --- | --- | --- | --- | --- |
-| MM-1 | DB: create `media_asset` and `media_usage` tables | [ ] | [ ] | [ ] | [ ] |
-| MM-2 | Validation schemas for media manager APIs | [ ] | [ ] | [ ] | [ ] |
-| MM-3 | DB queries for CRUD + usage graph | [ ] | [ ] | [ ] | [ ] |
+| MM-1 | DB: create `assets` and `asset_usages` tables | [ ] | [ ] | [ ] | [ ] |
+| MM-2 | Validation schemas for assets APIs | [ ] | [ ] | [ ] | [ ] |
+| MM-3 | DB queries for assets CRUD + usage graph | [ ] | [ ] | [ ] | [ ] |
 | MM-4 | Service layer for attach/detach/update/delete/export | [ ] | [ ] | [ ] | [ ] |
-| MM-5 | API routes under organization scope | [ ] | [ ] | [ ] | [ ] |
-| MM-6 | Backfill script for existing `lesson.videos` upload entries | [ ] | [ ] | [ ] | [ ] |
+| MM-5 | API routes under organization scope (`/organization/assets`) | [ ] | [ ] | [ ] | [ ] |
+| MM-6 | Backfill script: lesson media (videos + documents) -> assets + usages | [ ] | [ ] | [ ] | [ ] |
 | MM-7 | Dashboard feature module (`media-manager`) | [ ] | [ ] | [ ] | [ ] |
 | MM-8 | Org `/media` page with list/search/filter | [ ] | [ ] | [ ] | [ ] |
-| MM-9 | Usage drawer and cross-course usage visibility | [ ] | [ ] | [ ] | [ ] |
+| MM-9 | Usage drawer with target/slot visibility | [ ] | [ ] | [ ] | [ ] |
 | MM-10 | Lesson “Choose from library” attach flow | [ ] | [ ] | [ ] | [ ] |
-| MM-11 | Global media edit modal (title/thumbnail/description) | [ ] | [ ] | [ ] | [ ] |
-| MM-12 | Export all media (manifest + signed URLs) | [ ] | [ ] | [ ] | [ ] |
-| MM-13 | Permission hardening + audit logs | [ ] | [ ] | [ ] | [ ] |
-
-## Ticket Breakdown (Backend/UI Split)
-
-| Parent Ticket | Backend Ticket | UI Ticket |
-| --- | --- | --- |
-| MM-1 | MM-1-BE: schema + migration + indexes | MM-1-UI: none |
-| MM-2 | MM-2-BE: zod schemas in `packages/utils` | MM-2-UI: request type wiring |
-| MM-3 | MM-3-BE: media query module in `packages/db` | MM-3-UI: none |
-| MM-4 | MM-4-BE: media manager services | MM-4-UI: none |
-| MM-5 | MM-5-BE: routes + registration in API app | MM-5-UI: API class methods |
-| MM-6 | MM-6-BE: idempotent backfill job + report | MM-6-UI: migration status view (optional) |
-| MM-7 | MM-7-BE: none | MM-7-UI: feature folder + shared components |
-| MM-8 | MM-8-BE: paginated list endpoint | MM-8-UI: library grid/table + filters |
-| MM-9 | MM-9-BE: usage endpoint | MM-9-UI: usage drawer + deep links |
-| MM-10 | MM-10-BE: attach/detach endpoints | MM-10-UI: add-video modal library tab |
-| MM-11 | MM-11-BE: update endpoint + propagation contract | MM-11-UI: edit modal + optimistic update |
-| MM-12 | MM-12-BE: export endpoint | MM-12-UI: export action + download UX |
-| MM-13 | MM-13-BE: role checks + audit logging | MM-13-UI: permission-aware controls |
+| MM-11 | Exercise slot attach flow | [ ] | [ ] | [ ] | [ ] |
+| MM-12 | Global media edit modal | [ ] | [ ] | [ ] | [ ] |
+| MM-13 | Export all assets (manifest + signed URLs) | [ ] | [ ] | [ ] | [ ] |
+| MM-14 | Storage summary endpoint + UI | [ ] | [ ] | [ ] | [ ] |
+| MM-15 | Permission hardening + audit logs | [ ] | [ ] | [ ] | [ ] |
 
 ## Verification Checklist
 - [ ] `pnpm --filter @cio/db build`
@@ -302,5 +303,6 @@ Proposed endpoints:
 - [ ] `pnpm --filter @cio/dashboard build`
 - [ ] Backfill dry-run on staging snapshot
 - [ ] Manual smoke: upload -> attach elsewhere -> edit metadata -> verify propagation
-- [ ] Manual smoke: usage map accuracy for multi-course usage
+- [ ] Manual smoke: same asset used in multiple slots of one exercise
+- [ ] Manual smoke: storage summary correctness against sample dataset
 - [ ] Manual smoke: export output integrity

@@ -1073,7 +1073,9 @@
               "loading_pdf": "Cargando PDF...",
               "failed_to_load_pdf": "No se pudo cargar el documento PDF",
               "failed_to_render_pdf": "No se pudo renderizar la página PDF",
-              "use_arrow_keys": "Utilice las teclas de flecha para navegar, +/- para hacer zoom o haga clic en los controles de arriba. El clic derecho está deshabilitado."
+              "use_arrow_keys": "Utilice las teclas de flecha para navegar, +/- para hacer zoom o haga clic en los controles de arriba. El clic derecho está deshabilitado.",
+              "empty_title": "Aún no hay documentos",
+              "empty_description": "Cargue documentos para compartir con sus estudiantes"
             },
             "video": {
               "title": "Vídeo",
@@ -1111,7 +1113,9 @@
                 "upload_cancelled": "Subida cancelada por el usuario",
                 "max_files": "{count, plural, one {Puedes subir # archivo} other {Puedes subir # archivos}}",
                 "max_files_and_size": "(hasta {tamaño} cada uno)"
-              }
+              },
+              "empty_title": "Aún no hay vídeos",
+              "empty_description": "Agregue videos de YouTube, cárguelos o de su biblioteca multimedia"
             },
             "slide": {
               "title": "diapositiva",
@@ -1600,7 +1604,8 @@
         "image": "Imagen",
         "audio": "Audio",
         "other": "Otro"
-      }
+      },
+      "refresh": "Refrescar"
     },
     "storage": {
       "total_bytes": "Almacenamiento total",
@@ -1610,7 +1615,8 @@
     },
     "common": {
       "not_available": "N/A"
-    }
+    },
+    "empty_description": "El activo no existe o no está disponible en esta organización."
   },
   "settings": {
     "heading": "Configuración",

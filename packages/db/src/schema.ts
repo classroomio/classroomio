@@ -674,11 +674,14 @@ export const lesson = pgTable(
         type: 'youtube' | 'generic' | 'upload';
         link: string;
         key?: string;
+        assetId?: string;
         /** Display name; stored on add/upload. Fallback: derive from key or type. */
         fileName?: string;
         metadata?: {
           svid?: string;
           title?: string;
+          description?: string;
+          thumbnailUrl?: string;
           duration?: number;
           aspectRatio?: string;
           createdAt?: string;
@@ -692,6 +695,7 @@ export const lesson = pgTable(
         link: string;
         size?: number;
         key: string;
+        assetId?: string;
       }[]
     >(),
     sectionId: uuid('section_id')
@@ -714,6 +718,111 @@ export const lesson = pgTable(
     })
       .onUpdate('cascade')
       .onDelete('cascade')
+  ]
+);
+
+export const asset = pgTable(
+  'assets',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    kind: varchar().default('video').notNull(),
+    provider: varchar().default('upload').notNull(),
+    storageProvider: varchar('storage_provider').default('s3').notNull(),
+    storageKey: text('storage_key'),
+    sourceUrl: text('source_url'),
+    mimeType: text('mime_type'),
+    byteSize: bigint('byte_size', { mode: 'number' }),
+    checksum: text(),
+    title: text(),
+    description: text(),
+    thumbnailUrl: text('thumbnail_url'),
+    durationSeconds: integer('duration_seconds'),
+    aspectRatio: text('aspect_ratio'),
+    isExternal: boolean('is_external').default(false).notNull(),
+    status: varchar().default('active').notNull(),
+    metadata: jsonb().default({}),
+    createdByProfileId: uuid('created_by_profile_id'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'assets_organization_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.createdByProfileId],
+      foreignColumns: [profile.id],
+      name: 'assets_created_by_profile_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    index('idx_assets_organization_id').on(table.organizationId),
+    index('idx_assets_organization_status').on(table.organizationId, table.status),
+    index('idx_assets_organization_kind_status').on(table.organizationId, table.kind, table.status),
+    index('idx_assets_organization_created_at').on(table.organizationId, table.createdAt),
+    index('idx_assets_organization_byte_size').on(table.organizationId, table.byteSize),
+    unique('assets_org_provider_storage_key_unique').on(table.organizationId, table.provider, table.storageKey)
+  ]
+);
+
+export const assetUsage = pgTable(
+  'asset_usages',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    assetId: uuid('asset_id').notNull(),
+    targetType: varchar('target_type').notNull(),
+    targetId: text('target_id').notNull(),
+    slotType: varchar('slot_type').default('lesson_video').notNull(),
+    slotKey: text('slot_key'),
+    position: integer(),
+    createdByProfileId: uuid('created_by_profile_id'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'asset_usages_organization_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.assetId],
+      foreignColumns: [asset.id],
+      name: 'asset_usages_asset_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.createdByProfileId],
+      foreignColumns: [profile.id],
+      name: 'asset_usages_created_by_profile_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    index('idx_asset_usages_org_id').on(table.organizationId),
+    index('idx_asset_usages_asset_id').on(table.assetId),
+    index('idx_asset_usages_target').on(table.targetType, table.targetId),
+    unique('asset_usages_asset_target_slot_unique').on(
+      table.assetId,
+      table.targetType,
+      table.targetId,
+      table.slotType,
+      table.slotKey,
+      table.position
+    )
   ]
 );
 

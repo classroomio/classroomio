@@ -1,4 +1,5 @@
 import {
+  AttachmentIcon,
   CommunityIcon,
   CourseIcon,
   DashboardIcon,
@@ -74,6 +75,12 @@ const baseNavConfig: NavItemConfig[] = [
     path: '/audience',
     icon: PeopleIcon,
     matchPattern: '^/org/[^/]+/audience(/.*)?$' // Matches nested routes
+  },
+  {
+    titleKey: 'org_navigation.media',
+    path: '/media',
+    icon: AttachmentIcon,
+    matchPattern: '^/org/[^/]+/media(/.*)?$'
   },
   {
     titleKey: 'org_navigation.setup',

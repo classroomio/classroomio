@@ -1073,7 +1073,9 @@
               "loading_pdf": "Ładowanie pliku PDF...",
               "failed_to_load_pdf": "Nie udało się załadować dokumentu PDF",
               "failed_to_render_pdf": "Nie udało się wyrenderować strony PDF",
-              "use_arrow_keys": "Użyj klawiszy strzałek do nawigacji, +/-, aby powiększyć, lub kliknij elementy sterujące powyżej. Kliknięcie prawym przyciskiem myszy jest wyłączone."
+              "use_arrow_keys": "Użyj klawiszy strzałek do nawigacji, +/-, aby powiększyć, lub kliknij elementy sterujące powyżej. Kliknięcie prawym przyciskiem myszy jest wyłączone.",
+              "empty_title": "Nie ma jeszcze dokumentów",
+              "empty_description": "Prześlij dokumenty, aby udostępnić je swoim uczniom"
             },
             "video": {
               "title": "Wideo",
@@ -1111,7 +1113,9 @@
                 "upload_cancelled": "Przesyłanie anulowane przez użytkownika",
                 "max_files": "{count, plural, one {Możesz przesłać # plik} other {Możesz przesłać # plików}}",
                 "max_files_and_size": "(do {rozmiar} każdy)"
-              }
+              },
+              "empty_title": "Nie ma jeszcze filmów",
+              "empty_description": "Dodaj filmy z YouTube, prześlij lub ze swojej biblioteki multimediów"
             },
             "slide": {
               "title": "Przesuń",
@@ -1600,7 +1604,8 @@
         "image": "Obraz",
         "audio": "Dźwięk",
         "other": "Inne"
-      }
+      },
+      "refresh": "Odświeżać"
     },
     "storage": {
       "total_bytes": "Całkowita pamięć",
@@ -1610,7 +1615,8 @@
     },
     "common": {
       "not_available": "Nie dotyczy"
-    }
+    },
+    "empty_description": "Zasób nie istnieje lub nie jest dostępny w tej organizacji."
   },
   "settings": {
     "heading": "Ustawienia",

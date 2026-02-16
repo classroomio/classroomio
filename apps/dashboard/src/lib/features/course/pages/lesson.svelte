@@ -298,6 +298,7 @@
 />
 
 <AddDocumentModal
+  {lessonId}
   onClose={() => {
     if ($lessonDocUpload.isUploading) return;
 

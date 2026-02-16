@@ -9,6 +9,7 @@
   import { MediaUploader } from './media-uploader';
   import { Button } from '@cio/ui/base/button';
   import * as FileDropZone from '@cio/ui/custom/file-drop-zone';
+  import { mediaManagerApi } from '$features/media-manager/api';
 
   const ADD_VIDEO = 'course.navItem.lessons.materials.tabs.video.add_video';
 
@@ -76,6 +77,10 @@
 
       const thumbnailUrl = thumbnailResult?.url;
       const durationSeconds = thumbnailResult?.durationSeconds;
+      const normalizedDurationSeconds =
+        durationSeconds != null && Number.isFinite(durationSeconds)
+          ? Math.max(0, Math.round(durationSeconds))
+          : undefined;
 
       const metadata: {
         fileName?: string;
@@ -87,7 +92,40 @@
         createdAt: new Date().toISOString()
       };
       if (thumbnailUrl) metadata.thumbnailUrl = thumbnailUrl;
-      if (durationSeconds != null && Number.isFinite(durationSeconds)) metadata.duration = durationSeconds;
+      if (normalizedDurationSeconds != null) metadata.duration = normalizedDurationSeconds;
+
+      const lessonVideoPosition = Array.isArray(lessonApi.lesson?.videos) ? lessonApi.lesson?.videos.length : 0;
+      let assetId: string | undefined;
+      if (_lessonId) {
+        const asset = await mediaManagerApi.registerUploadedLessonVideo({
+          lessonId: _lessonId,
+          position: lessonVideoPosition,
+          fileKey,
+          videoUrl: formRes.url!,
+          fileName: videoFile.name,
+          mimeType: videoFile.type,
+          byteSize: videoFile.size,
+          thumbnailUrl,
+          durationSeconds: normalizedDurationSeconds
+        });
+        assetId = asset?.id;
+      } else {
+        const asset = await mediaManagerApi.createAsset({
+          kind: 'video',
+          provider: 'upload',
+          storageProvider: 's3',
+          storageKey: fileKey,
+          sourceUrl: formRes.url!,
+          mimeType: videoFile.type,
+          byteSize: videoFile.size,
+          title: videoFile.name,
+          thumbnailUrl,
+          durationSeconds: normalizedDurationSeconds,
+          isExternal: false,
+          metadata
+        });
+        assetId = asset?.id;
+      }
 
       lessonApi.updateLessonState(
         'videos',
@@ -96,9 +134,17 @@
             type: 'upload',
             link: formRes.url!,
             key: formRes?.fileKey,
+            assetId,
             fileName: videoFile.name,
             metadata
-          } as { type: 'upload'; link: string; key?: string; metadata?: Record<string, unknown>; fileName?: string }
+          } as {
+            type: 'upload';
+            link: string;
+            key?: string;
+            assetId?: string;
+            metadata?: Record<string, unknown>;
+            fileName?: string;
+          }
         ],
         { append: true }
       );

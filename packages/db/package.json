@@ -15,6 +15,8 @@
     "db:setup": "tsx src/scripts/db-setup.ts",
     "db:setup:seed": "tsx src/scripts/db-setup.ts --seed",
     "db:exercise-backfill": "tsx src/scripts/backfill-exercise-course.ts",
+    "db:assets-backfill": "tsx src/scripts/backfill-lesson-assets.ts",
+    "db:sync-orphaned-profiles": "tsx src/scripts/sync-orphaned-profiles.ts",
     "move-users": "tsx src/scripts/supabase-to-betterauth.ts",
     "pull": "drizzle-kit pull --config drizzle.config.ts",
     "generate-types": "tsx scripts/generate-types.ts && pnpm format",

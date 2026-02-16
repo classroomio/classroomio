@@ -1,8 +1,10 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
+  import { Empty } from '@cio/ui/custom/empty';
   import { t } from '$lib/utils/functions/translations';
   import MODES from '$lib/utils/constants/mode';
   import isEmpty from 'lodash/isEmpty';
+  import FileTextIcon from '@lucide/svelte/icons/file-text';
   import * as Item from '@cio/ui/base/item';
   import DocumentCard from './document-card.svelte';
   import type { LessonDocument } from '$features/course/utils/types';
@@ -36,36 +38,28 @@
       {$t('course.navItem.lessons.materials.tabs.document.add_document')}
     </Button>
   </div>
+{/if}
 
-  {#if !isEmpty(displayDocuments)}
-    <Item.Group class="grid! w-full grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {#each displayDocuments as document, index}
-        <DocumentCard
-          {document}
-          {index}
-          isEditMode={true}
-          isDownloading={downloadingDocuments.has(document.name)}
-          {formatFileSize}
-          onRemove={() => requestRemoveDocument(index)}
-          {onViewPDF}
-          onDownload={downloadDocument}
-        />
-      {/each}
-    </Item.Group>
-  {/if}
-{:else if !isEmpty(displayDocuments)}
-  <Item.Group class="grid! w-full grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+{#if !isEmpty(displayDocuments)}
+  {@const isEditMode = mode === MODES.edit}
+  <Item.Group class="flex w-full gap-4">
     {#each displayDocuments as document, index}
       <DocumentCard
         {document}
         {index}
-        isEditMode={false}
+        {isEditMode}
         isDownloading={downloadingDocuments.has(document.name)}
         {formatFileSize}
-        onRemove={() => {}}
+        onRemove={() => (isEditMode ? requestRemoveDocument(index) : undefined)}
         {onViewPDF}
         onDownload={downloadDocument}
       />
     {/each}
   </Item.Group>
+{:else}
+  <Empty
+    title={$t('course.navItem.lessons.materials.tabs.document.empty_title')}
+    description={$t('course.navItem.lessons.materials.tabs.document.empty_description')}
+    icon={FileTextIcon}
+  />
 {/if}
