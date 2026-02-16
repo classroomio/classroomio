@@ -56,7 +56,7 @@
       />
     {/each}
   </Item.Group>
-{:else}
+{:else if mode === MODES.edit}
   <Empty
     title={$t('course.navItem.lessons.materials.tabs.document.empty_title')}
     description={$t('course.navItem.lessons.materials.tabs.document.empty_description')}
