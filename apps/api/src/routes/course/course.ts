@@ -16,6 +16,7 @@ import {
   ZCourseUpdate,
   ZCourseUpdateParam
 } from '@cio/utils/validation/course';
+import { ZCourseTagAssignment, ZCourseTagParam } from '@cio/utils/validation/tag';
 import {
   createCourse,
   deleteCourse,
@@ -25,6 +26,7 @@ import {
   updateCourse
 } from '@api/services/course/course';
 import { enrollInCourse } from '@api/services/course/invite';
+import { getCourseTags, replaceCourseTags } from '@api/services/tag';
 import { createRateLimiter } from '@api/middlewares/rate-limiter';
 import { extractClientIp } from '@api/utils/redis/key-generators';
 
@@ -151,6 +153,56 @@ export const courseRouter = new Hono()
     }
   )
   /**
+   * GET /course/:courseId/tags
+   * Gets tags assigned to a course (organization admin only)
+   */
+  .get('/:courseId/tags', authMiddleware, orgAdminMiddleware, zValidator('param', ZCourseTagParam), async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const { courseId } = c.req.valid('param');
+      const tags = await getCourseTags(orgId, courseId);
+
+      return c.json(
+        {
+          success: true,
+          data: tags
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch course tags');
+    }
+  })
+  /**
+   * PUT /course/:courseId/tags
+   * Replaces all tags assigned to a course (organization admin only)
+   */
+  .put(
+    '/:courseId/tags',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('param', ZCourseTagParam),
+    zValidator('json', ZCourseTagAssignment),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const { courseId } = c.req.valid('param');
+        const data = c.req.valid('json');
+        const tags = await replaceCourseTags(orgId, courseId, data);
+
+        return c.json(
+          {
+            success: true,
+            data: tags
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to assign course tags');
+      }
+    }
+  )
+  /**
    * GET /course/:courseId
    * Gets a course by ID or slug with all related data (group, members, lessons, sections, attendance)
    * Query param: slug (optional) - if provided, courseId is ignored and course is fetched by slug
@@ -195,8 +247,37 @@ export const courseRouter = new Hono()
       try {
         const { courseId } = c.req.valid('param');
         const validatedData = c.req.valid('json');
+        const { tagIds, ...courseData } = validatedData;
 
-        const result = await updateCourse(courseId, validatedData);
+        const result = await updateCourse(courseId, courseData);
+
+        if (tagIds !== undefined) {
+          const orgId = c.req.header('cio-org-id');
+          if (!orgId) {
+            return c.json(
+              {
+                success: false,
+                error: 'Organization context not available',
+                code: 'ORG_CONTEXT_MISSING'
+              },
+              500
+            );
+          }
+
+          const user = c.get('user')!;
+          const tags = await replaceCourseTags(orgId, courseId, { tagIds }, { updatedByUserId: user.id });
+
+          return c.json(
+            {
+              success: true,
+              data: {
+                ...result,
+                tags
+              }
+            },
+            200
+          );
+        }
 
         return c.json(
           {

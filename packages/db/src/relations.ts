@@ -33,6 +33,9 @@ import {
   quiz,
   quizPlay,
   role,
+  tag,
+  tagAssignment,
+  tagGroup,
   submission,
   submissionstatus,
   user
@@ -71,7 +74,8 @@ export const courseRelations = relations(course, ({ one, many }) => ({
   appsPolls: many(appsPoll),
   lessons: many(lesson),
   communityQuestions: many(communityQuestion),
-  courseNewsfeeds: many(courseNewsfeed)
+  courseNewsfeeds: many(courseNewsfeed),
+  tagAssignments: many(tagAssignment)
 }));
 
 export const groupRelations = relations(group, ({ one, many }) => ({
@@ -92,7 +96,40 @@ export const organizationRelations = relations(organization, ({ many }) => ({
   organizationEmaillists: many(organizationEmaillist),
   communityQuestions: many(communityQuestion),
   organizationPlans: many(organizationPlan),
-  organizationmembers: many(organizationmember)
+  organizationmembers: many(organizationmember),
+  tagGroups: many(tagGroup),
+  tags: many(tag)
+}));
+
+export const tagGroupRelations = relations(tagGroup, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [tagGroup.organizationId],
+    references: [organization.id]
+  }),
+  tags: many(tag)
+}));
+
+export const tagRelations = relations(tag, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [tag.organizationId],
+    references: [organization.id]
+  }),
+  group: one(tagGroup, {
+    fields: [tag.groupId],
+    references: [tagGroup.id]
+  }),
+  assignments: many(tagAssignment)
+}));
+
+export const tagAssignmentRelations = relations(tagAssignment, ({ one }) => ({
+  tag: one(tag, {
+    fields: [tagAssignment.tagId],
+    references: [tag.id]
+  }),
+  course: one(course, {
+    fields: [tagAssignment.courseId],
+    references: [course.id]
+  })
 }));
 
 export const groupAttendanceRelations = relations(groupAttendance, ({ one }) => ({

@@ -3,6 +3,7 @@ import {
   ZCreateOrgPlan,
   ZCreateOrganization,
   ZGetCoursesBySiteName,
+  ZGetOrganizationCoursesQuery,
   ZGetOrgSetup,
   ZGetOrganizations,
   ZGetUserAnalytics,
@@ -41,6 +42,7 @@ import { handleError } from '@api/utils/errors';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { quizRouter } from '@api/routes/organization/quiz';
+import { tagsRouter } from '@api/routes/organization/tags';
 import { zValidator } from '@hono/zod-validator';
 
 export const organizationRouter = new Hono()
@@ -192,8 +194,12 @@ export const organizationRouter = new Hono()
    */
   .get('/courses/public', zValidator('query', ZGetCoursesBySiteName), async (c) => {
     try {
-      const { siteName } = c.req.valid('query');
-      const courses = await getPublicCourses(siteName);
+      const { siteName, tags } = c.req.valid('query');
+      const tagSlugs = tags
+        ?.split(',')
+        .map((value) => value.trim())
+        .filter(Boolean);
+      const courses = await getPublicCourses(siteName, tagSlugs && tagSlugs.length > 0 ? tagSlugs : undefined);
 
       return c.json(
         {
@@ -257,36 +263,53 @@ export const organizationRouter = new Hono()
    * Gets courses for an organization with role-based filtering (used in dashboard)
    * Requires authentication and organization membership
    */
-  .get('/courses', authMiddleware, orgMemberMiddleware, async (c) => {
-    try {
-      const user = c.get('user')!;
-      const orgId = c.get('orgId');
-      const userRole = c.get('userRole');
+  .get(
+    '/courses',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('query', ZGetOrganizationCoursesQuery),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const orgId = c.get('orgId');
+        const userRole = c.get('userRole');
+        const { tags } = c.req.valid('query');
 
-      if (!orgId || userRole === null) {
+        if (!orgId || userRole === null) {
+          return c.json(
+            {
+              success: false,
+              error: 'Organization context not available',
+              code: 'ORG_CONTEXT_MISSING'
+            },
+            500
+          );
+        }
+
+        const tagSlugs = tags
+          ?.split(',')
+          .map((value) => value.trim())
+          .filter(Boolean);
+
+        const result = await getOrganizationCourses(
+          orgId,
+          user.id,
+          userRole,
+          tagSlugs && tagSlugs.length > 0 ? tagSlugs : undefined
+        );
+
         return c.json(
           {
-            success: false,
-            error: 'Organization context not available',
-            code: 'ORG_CONTEXT_MISSING'
+            success: true,
+            data: result
           },
-          500
+          200
         );
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch courses');
       }
-
-      const result = await getOrganizationCourses(orgId, user.id, userRole);
-
-      return c.json(
-        {
-          success: true,
-          data: result
-        },
-        200
-      );
-    } catch (error) {
-      return handleError(c, error, 'Failed to fetch courses');
     }
-  })
+  )
   /**
    * GET /organization/setup
    * Gets setup data for an organization (courses, lessons, exercises, org info)
@@ -458,5 +481,6 @@ export const organizationRouter = new Hono()
       return handleError(c, error, 'Failed to fetch LMS exercises');
     }
   })
+  .route('/tags', tagsRouter)
   .route('/assets', assetsRouter)
   .route('/:orgId/quiz', quizRouter);

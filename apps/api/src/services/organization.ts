@@ -24,6 +24,7 @@ import {
   getPublishedCoursesBySiteName
 } from '@cio/db/queries/course';
 import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/analytics';
+import { getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
 
 import { ROLE } from '@cio/utils/constants';
 import { createOrganizationWithOwner } from '@api/services/onboarding';
@@ -120,7 +121,7 @@ export async function getOrgAudience(orgId: string) {
  * @param siteName - The organization siteName
  * @returns Array of published courses with lesson counts
  */
-export async function getPublicCourses(siteName: string) {
+export async function getPublicCourses(siteName: string, tagSlugs?: string[]) {
   try {
     const orgResult = await getOrgIdBySiteName(siteName);
     const org = orgResult[0];
@@ -129,7 +130,24 @@ export async function getPublicCourses(siteName: string) {
       throw new AppError('Organization not found', ErrorCodes.ORG_NOT_FOUND, 404);
     }
 
-    return getPublishedCoursesBySiteName(siteName);
+    let filteredCourseIds: string[] | undefined = undefined;
+    if (tagSlugs && tagSlugs.length > 0) {
+      filteredCourseIds = await getCourseIdsByTagSlugs(org.id, tagSlugs);
+      if (filteredCourseIds.length === 0) {
+        return [];
+      }
+    }
+
+    const courses = await getPublishedCoursesBySiteName(siteName, filteredCourseIds);
+    const tagsByCourseId = await getCourseTagsByCourseIdsForOrganization(
+      org.id,
+      courses.map((course) => course.id)
+    );
+
+    return courses.map((course) => ({
+      ...course,
+      tags: tagsByCourseId[course.id] ?? []
+    }));
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -149,17 +167,45 @@ export async function getPublicCourses(siteName: string) {
  * - Admins: all courses with totalStudents
  * - Tutors: assigned courses with totalStudents
  */
-export async function getOrganizationCourses(orgId: string, userId: string, userRole: number) {
+export async function getOrganizationCourses(orgId: string, userId: string, userRole: number, tagSlugs?: string[]) {
   try {
     if (!userRole) {
       throw new AppError('Invalid permissions', ErrorCodes.UNAUTHORIZED, 403);
     }
 
+    let filteredCourseIds: string[] | undefined = undefined;
+    if (tagSlugs && tagSlugs.length > 0) {
+      filteredCourseIds = await getCourseIdsByTagSlugs(orgId, tagSlugs);
+      if (filteredCourseIds.length === 0) {
+        return [];
+      }
+    }
+
     switch (userRole) {
-      case ROLE.ADMIN:
-        return getOrgCourses({ orgId });
-      case ROLE.TUTOR:
-        return getOrgCourses({ orgId, profileId: userId });
+      case ROLE.ADMIN: {
+        const courses = await getOrgCourses({ orgId, courseIds: filteredCourseIds });
+        const tagsByCourseId = await getCourseTagsByCourseIdsForOrganization(
+          orgId,
+          courses.map((course) => course.id)
+        );
+
+        return courses.map((course) => ({
+          ...course,
+          tags: tagsByCourseId[course.id] ?? []
+        }));
+      }
+      case ROLE.TUTOR: {
+        const courses = await getOrgCourses({ orgId, profileId: userId, courseIds: filteredCourseIds });
+        const tagsByCourseId = await getCourseTagsByCourseIdsForOrganization(
+          orgId,
+          courses.map((course) => course.id)
+        );
+
+        return courses.map((course) => ({
+          ...course,
+          tags: tagsByCourseId[course.id] ?? []
+        }));
+      }
       default:
         throw new AppError('Invalid permissions', ErrorCodes.UNAUTHORIZED, 403);
     }

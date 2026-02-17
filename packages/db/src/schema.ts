@@ -1706,6 +1706,103 @@ export const organization = pgTable(
   ]
 );
 
+export const tagGroup = pgTable(
+  'tag_group',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    name: varchar().notNull(),
+    slug: text().notNull(),
+    description: text(),
+    order: integer().default(0).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'tag_group_organization_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_tag_group_organization_id').on(table.organizationId),
+    unique('tag_group_org_slug_key').on(table.organizationId, table.slug)
+  ]
+);
+
+export const tag = pgTable(
+  'tag',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    groupId: uuid('group_id').notNull(),
+    name: varchar().notNull(),
+    slug: text().notNull(),
+    description: text(),
+    color: varchar().notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'tag_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.groupId],
+      foreignColumns: [tagGroup.id],
+      name: 'tag_group_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_tag_organization_id').on(table.organizationId),
+    index('idx_tag_group_id').on(table.groupId),
+    unique('tag_org_slug_key').on(table.organizationId, table.slug)
+  ]
+);
+
+export const tagAssignment = pgTable(
+  'tag_assignment',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    tagId: uuid('tag_id').notNull(),
+    courseId: uuid('course_id').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.tagId],
+      foreignColumns: [tag.id],
+      name: 'tag_assignment_tag_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'tag_assignment_course_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_tag_assignment_tag_id').on(table.tagId),
+    index('idx_tag_assignment_course_id').on(table.courseId),
+    unique('tag_assignment_tag_course_key').on(table.tagId, table.courseId)
+  ]
+);
+
 export const dashOrgStats = pgView('dash_org_stats', {
   orgId: uuid('org_id'),
   // You can use { mode: "bigint" } if numbers are exceeding js number limitations

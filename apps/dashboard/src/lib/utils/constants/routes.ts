@@ -30,6 +30,7 @@ export const PUBLIC_ROUTES = [
   ROUTE.RESET,
   `^${ROUTE.PAGES}/.*`,
   `^${ROUTE.COURSE}/.*`,
+  `^${ROUTE.COURSES}/?$`,
   '/404',
   `^${ROUTE.VERIFY_EMAIL_ERROR}$`,
   ROUTE.AUTH_FAILED

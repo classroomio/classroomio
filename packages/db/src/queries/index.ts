@@ -10,3 +10,4 @@ export * from './analytics';
 export * from './mark';
 export * from './newsfeed';
 export * from './submission';
+export * from './tag';

@@ -15,3 +15,9 @@ export const EXERCISE_TEMPLATE_TAGS = {
   PHP: 'PHP',
   GIT: 'GIT'
 };
+
+export const COURSE_SORT_OPTIONS = [
+  { value: '0', label: 'courses.course_filter.date_created' },
+  { value: '1', label: 'courses.course_filter.published' },
+  { value: '2', label: 'courses.course_filter.lessons' }
+] as const;

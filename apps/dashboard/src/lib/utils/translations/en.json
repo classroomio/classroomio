@@ -434,10 +434,77 @@
     }
   },
 
+  "tags_admin": {
+    "page_title": "Tags - ClassroomIO",
+    "heading": "Tags",
+    "create": "Create",
+    "common": {
+      "not_available": "N/A"
+    },
+    "actions": {
+      "create_tag": "Create Tag",
+      "create_group": "Create Tag Group",
+      "edit_group": "Edit Group",
+      "edit_tag": "Edit Tag",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "table": {
+      "tag": "Tag",
+      "total_courses": "Total Courses",
+      "course": "course",
+      "courses": "courses",
+      "description": "Description",
+      "category": "Category",
+      "action": "Action",
+      "empty_group": "No tags in this group yet"
+    },
+    "empty": {
+      "title": "No tag groups yet",
+      "description": "Create a tag group first, then start adding tags."
+    },
+    "group_modal": {
+      "create_title": "Create Tag Group",
+      "edit_title": "Edit Tag Group",
+      "name": "Group Name",
+      "description": "Description",
+      "description_placeholder": "Optional description"
+    },
+    "tag_modal": {
+      "create_title": "Create Tag",
+      "edit_title": "Edit Tag",
+      "name": "Tag Name",
+      "description": "Description",
+      "description_placeholder": "Optional description",
+      "category": "Category",
+      "color": "Color",
+      "color_help": "Pick one of 10 colors",
+      "select_category": "Select a category",
+      "no_groups": "Create a tag group before creating tags"
+    }
+  },
+
+  "public_courses": {
+    "page_title": "Courses - ClassroomIO",
+    "heading": "Courses",
+    "subtitle": "Browse all published courses",
+    "clear_filters": "Clear Filters",
+    "filters": {
+      "title": "Filter by Tags",
+      "help": "Select one or more tags to filter courses",
+      "empty": "No tags available yet"
+    },
+    "empty": {
+      "title": "No courses found",
+      "description": "Try clearing your filters or check back later."
+    }
+  },
+
   "org_navigation": {
     "platform": "Platform",
     "dashboard": "Dashboard",
     "courses": "Courses",
+    "tags": "Tags",
     "community": "Community",
     "audience": "Audience",
     "media": "Media",
@@ -677,6 +744,15 @@
     "heading": "Courses",
     "heading_button": "Create Course",
     "search_placeholder": "Find Course",
+    "tag_filters": {
+      "filter": "Filter",
+      "active": "Active filters",
+      "clear_all": "Clear all",
+      "popover_title": "Filters",
+      "sort": "Sort",
+      "tags": "Tags",
+      "empty_tags": "No tags available"
+    },
     "course_filter": {
       "date_created": "Date Created",
       "published": "Published",
@@ -701,6 +777,7 @@
       "list_view": {
         "title": "Title",
         "description": "Description",
+        "tags": "Tags",
         "lessons": "Lessons",
         "students": "Students",
         "published": "Published",
@@ -1517,6 +1594,14 @@
         "course_type_desc": "Update the course type for a more personalized experience",
         "live_class": "Live class",
         "self_paced": "Self paced",
+        "tags": {
+          "title": "Tags",
+          "description": "Assign tags so learners can discover this course with filters.",
+          "empty": "No tags selected",
+          "add": "Add tag",
+          "popover_title": "Select tags",
+          "empty_groups": "No tags available yet"
+        },
         "delete": "Delete Course",
         "delete_text": "Delete this course,this action cannot be undone",
         "save": "Save Changes"
@@ -1764,6 +1849,16 @@
       "user_exists": "User Already Exists",
       "invite_fail": "Failed to send invite, please try again",
       "remove_fail": "Failed to remove user, please try again"
+    },
+
+    "tags": {
+      "group_created": "Tag group created",
+      "group_updated": "Tag group updated",
+      "tag_created": "Tag created",
+      "tag_updated": "Tag updated",
+      "course_tags_updated": "Course tags updated",
+      "fetch_failed": "Failed to load tags",
+      "save_failed": "Failed to save tag changes"
     },
 
     "landing_page_settings": {

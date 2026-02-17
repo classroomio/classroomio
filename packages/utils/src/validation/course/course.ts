@@ -207,7 +207,8 @@ export const ZCourseUpdate = z.object({
   overview: z.string().optional(),
   metadata: ZCourseMetadata.optional(),
   isCertificateDownloadable: z.boolean().optional(),
-  certificateTheme: z.string().optional()
+  certificateTheme: z.string().optional(),
+  tagIds: z.array(z.uuid()).max(100).optional()
 });
 export type TCourseUpdate = z.infer<typeof ZCourseUpdate>;
 

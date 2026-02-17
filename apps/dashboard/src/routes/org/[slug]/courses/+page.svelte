@@ -1,7 +1,8 @@
 <script lang="ts">
   import { CoursesPage } from '$features/course/pages';
-  import { CreateCourseButton } from '$features/course/components';
+  import { CreateCourseButton, CourseFilterPopover } from '$features/course/components';
   import { courseMetaDeta } from '$features/course/utils/store';
+  import { COURSE_SORT_OPTIONS } from '$features/course/utils/constants';
   import { browser } from '$app/environment';
   import { t } from '$lib/utils/functions/translations';
   import { onMount } from 'svelte';
@@ -12,6 +13,11 @@
 
   let searchValue = $state('');
   let selectedId: string = $state('0');
+  let selectedTags = $state<string[]>([]);
+  let hasInitializedFilters = $state(false);
+  let isFiltering = $state(false);
+
+  const validSortValues = new Set(COURSE_SORT_OPTIONS.map((option) => option.value));
 
   $effect(() => {
     if (data.courses) {
@@ -19,16 +25,85 @@
     }
   });
 
-  const filteredCourses = $derived.by(() => {
-    if (browser) {
-      if (!selectedId) {
-        selectedId = localStorage.getItem('classroomio_filter_course_key') || '0';
-      } else {
-        localStorage.setItem('classroomio_filter_course_key', selectedId);
-      }
+  $effect(() => {
+    selectedTags = data.activeTags ?? [];
+  });
+
+  function normalizeSortValue(sortValue: string | null): string {
+    if (sortValue && validSortValues.has(sortValue)) {
+      return sortValue;
     }
 
-    const filteredCourses = data.courses.filter((course) => {
+    return '0';
+  }
+
+  function updateFiltersUrl() {
+    if (!browser || !hasInitializedFilters) {
+      return;
+    }
+
+    const nextUrl = new URL(window.location.href);
+
+    if (selectedTags.length > 0) {
+      nextUrl.searchParams.set('tags', selectedTags.join(','));
+    } else {
+      nextUrl.searchParams.delete('tags');
+    }
+
+    if (selectedId !== '0') {
+      nextUrl.searchParams.set('sort', selectedId);
+    } else {
+      nextUrl.searchParams.delete('sort');
+    }
+
+    const nextPath = `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`;
+    window.history.replaceState(window.history.state, '', nextPath);
+  }
+
+  $effect(() => {
+    if (!browser || !hasInitializedFilters) {
+      return;
+    }
+
+    localStorage.setItem('classroomio_filter_course_key', selectedId);
+    updateFiltersUrl();
+  });
+
+  async function applyTagFilters(nextTags: string[]) {
+    selectedTags = nextTags;
+    updateFiltersUrl();
+    isFiltering = true;
+    try {
+      await coursesApi.getOrgCourses(nextTags);
+    } finally {
+      isFiltering = false;
+    }
+  }
+
+  function toggleTag(tagSlug: string, checked: boolean) {
+    const next = new Set(selectedTags);
+
+    if (checked) {
+      next.add(tagSlug);
+    } else {
+      next.delete(tagSlug);
+    }
+
+    void applyTagFilters(Array.from(next));
+  }
+
+  async function clearFilters() {
+    selectedId = '0';
+
+    if (selectedTags.length === 0) {
+      return;
+    }
+
+    await applyTagFilters([]);
+  }
+
+  const filteredCourses = $derived.by(() => {
+    const filteredCourses = (coursesApi.orgCourses ?? []).filter((course) => {
       if (!searchValue || course.title.toLowerCase().includes(searchValue.toLowerCase())) {
         return true;
       }
@@ -53,6 +128,12 @@
     if (courseView) {
       $courseMetaDeta.view = courseView;
     }
+
+    const sortFromUrl = normalizeSortValue(new URLSearchParams(window.location.search).get('sort'));
+    const sortFromStorage = normalizeSortValue(localStorage.getItem('classroomio_filter_course_key'));
+    selectedId = sortFromUrl !== '0' ? sortFromUrl : sortFromStorage;
+    hasInitializedFilters = true;
+    updateFiltersUrl();
   });
 </script>
 
@@ -71,7 +152,18 @@
   </Page.Header>
   <Page.Body>
     {#snippet child()}
-      <CoursesPage courses={filteredCourses} bind:searchValue bind:selectedId />
+      <CoursesPage courses={filteredCourses} bind:searchValue bind:selectedId showSortSelect={false}>
+        {#snippet filterControls()}
+          <CourseFilterPopover
+            bind:selectedId
+            {selectedTags}
+            tagGroups={data.tagGroups}
+            {isFiltering}
+            onToggleTag={toggleTag}
+            onClearFilters={clearFilters}
+          />
+        {/snippet}
+      </CoursesPage>
     {/snippet}
   </Page.Body>
 </Page.Root>

@@ -148,6 +148,15 @@ export type TNewWaitinglist = typeof schema.waitinglist.$inferInsert;
 export type TOrganization = typeof schema.organization.$inferSelect;
 export type TNewOrganization = typeof schema.organization.$inferInsert;
 
+export type TTagGroup = typeof schema.tagGroup.$inferSelect;
+export type TNewTagGroup = typeof schema.tagGroup.$inferInsert;
+
+export type TTag = typeof schema.tag.$inferSelect;
+export type TNewTag = typeof schema.tag.$inferInsert;
+
+export type TTagAssignment = typeof schema.tagAssignment.$inferSelect;
+export type TNewTagAssignment = typeof schema.tagAssignment.$inferInsert;
+
 export type TExerciseTemplate = typeof schema.exerciseTemplate.$inferSelect;
 export type TNewExerciseTemplate = typeof schema.exerciseTemplate.$inferInsert;
 

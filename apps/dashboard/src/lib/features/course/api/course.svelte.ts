@@ -38,6 +38,9 @@ type GroupStore = {
 };
 
 type CourseContentItem = NonNullable<Course['content']>['items'][number];
+interface UpdateCourseOptions {
+  showSuccessToast?: boolean;
+}
 
 /**
  * API class for course creation operations
@@ -418,7 +421,13 @@ export class CourseApi extends BaseApiWithErrors {
    * @param fields Course update fields
    * @returns The updated course data or null on error
    */
-  async update(courseId: string, fields: TCourseUpdate): Promise<UpdateCourseData | null> {
+  async update(
+    courseId: string,
+    fields: TCourseUpdate,
+    options: UpdateCourseOptions = {}
+  ): Promise<UpdateCourseData | null> {
+    const { showSuccessToast = true } = options;
+
     const result = ZCourseUpdate.safeParse(fields);
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'course');
@@ -442,7 +451,9 @@ export class CourseApi extends BaseApiWithErrors {
           } else {
             this.course = response.data as Course;
           }
-          snackbar.success('Course updated successfully');
+          if (showSuccessToast) {
+            snackbar.success('Course updated successfully');
+          }
           this.success = true;
           this.errors = {};
         }

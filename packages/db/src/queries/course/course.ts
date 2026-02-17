@@ -11,7 +11,7 @@ import {
   TNewCourseSection,
   TProfile
 } from '@db/types';
-import { and, desc, eq, isNull, or, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNull, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
@@ -46,8 +46,22 @@ export interface TStudentCourse extends TBaseCourse {
  * @param siteName Organization site name
  * @returns Array of published courses with lesson counts
  */
-export const getPublishedCoursesBySiteName = async (siteName: string): Promise<TBaseCourse[]> => {
+export const getPublishedCoursesBySiteName = async (siteName: string, courseIds?: string[]): Promise<TBaseCourse[]> => {
   try {
+    if (courseIds && courseIds.length === 0) {
+      return [];
+    }
+
+    const conditions = [
+      eq(schema.organization.siteName, siteName),
+      eq(schema.course.status, 'ACTIVE'),
+      eq(schema.course.isPublished, true)
+    ];
+
+    if (courseIds && courseIds.length > 0) {
+      conditions.push(inArray(schema.course.id, courseIds));
+    }
+
     const result = await db
       .select({
         course: schema.course,
@@ -57,13 +71,7 @@ export const getPublishedCoursesBySiteName = async (siteName: string): Promise<T
       .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
       .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
       .leftJoin(schema.lesson, eq(schema.course.id, schema.lesson.courseId))
-      .where(
-        and(
-          eq(schema.organization.siteName, siteName),
-          eq(schema.course.status, 'ACTIVE'),
-          eq(schema.course.isPublished, true)
-        )
-      )
+      .where(and(...conditions))
       .groupBy(schema.course.id)
       .orderBy(desc(schema.course.createdAt));
 
@@ -501,6 +509,8 @@ interface GetOrgCoursesOptions {
   orgId: string;
   /** Profile ID - if provided, filters to courses where user is a member */
   profileId?: string;
+  /** Optional course IDs filter */
+  courseIds?: string[];
 }
 
 /**
@@ -510,8 +520,12 @@ interface GetOrgCoursesOptions {
  * @param options.profileId Optional profile ID to filter by membership
  * @returns Array of courses with admin-level data
  */
-export const getOrgCourses = async ({ orgId, profileId }: GetOrgCoursesOptions): Promise<TAdminCourse[]> => {
+export const getOrgCourses = async ({ orgId, profileId, courseIds }: GetOrgCoursesOptions): Promise<TAdminCourse[]> => {
   try {
+    if (courseIds && courseIds.length === 0) {
+      return [];
+    }
+
     const baseQuery = db
       .select({
         course: schema.course,
@@ -528,6 +542,10 @@ export const getOrgCourses = async ({ orgId, profileId }: GetOrgCoursesOptions):
 
     // Build conditions
     const conditions = [eq(schema.group.organizationId, orgId), eq(schema.course.status, 'ACTIVE')];
+
+    if (courseIds && courseIds.length > 0) {
+      conditions.push(inArray(schema.course.id, courseIds));
+    }
 
     // If profileId provided, join groupmember and filter by membership
     const query = profileId
