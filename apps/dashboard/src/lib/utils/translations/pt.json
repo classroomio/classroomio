@@ -325,6 +325,15 @@
       "thumbnail_upload_failed": "Falha ao enviar miniatura",
       "thumbnail_too_large": "A imagem em miniatura é muito grande",
       "thumbnail_invalid": "Arquivo de miniatura inválido"
+    },
+    "tags": {
+      "group_created": "Grupo de tags criado",
+      "group_updated": "Grupo de tags atualizado",
+      "tag_created": "Etiqueta criada",
+      "tag_updated": "Etiqueta atualizada",
+      "course_tags_updated": "Tags do curso atualizadas",
+      "fetch_failed": "Falha ao carregar tags",
+      "save_failed": "Falha ao salvar alterações de tags"
     }
   },
   "explore": {
@@ -498,7 +507,15 @@
         "self_paced": "Individualizado",
         "delete": "Excluir curso",
         "delete_text": "Exclua este curso, esta ação não pode ser desfeita",
-        "save": "Salvar alterações"
+        "save": "Salvar alterações",
+        "tags": {
+          "title": "Etiquetas",
+          "description": "Atribua tags para que os alunos possam descobrir este curso com filtros.",
+          "empty": "Nenhuma tag selecionada",
+          "add": "Adicionar etiqueta",
+          "popover_title": "Selecione tags",
+          "empty_groups": "Nenhuma tag disponível ainda"
+        }
       },
       "analytics": {
         "title": "Análise"
@@ -1266,7 +1283,8 @@
         "lessons": "Lições",
         "students": "Alunos",
         "published": "Publicado",
-        "type": "Tipo"
+        "type": "Tipo",
+        "tags": "Etiquetas"
       },
       "context_menu": {
         "clone": "Clonar",
@@ -1279,6 +1297,15 @@
       "date_created": "Data de criação",
       "published": "Publicado",
       "lessons": "Lições"
+    },
+    "tag_filters": {
+      "filter": "Filtro",
+      "active": "Filtros ativos",
+      "clear_all": "Limpar tudo",
+      "popover_title": "Filtros",
+      "sort": "Classificar",
+      "tags": "Etiquetas",
+      "empty_tags": "Nenhuma tag disponível"
     }
   },
   "ai": {
@@ -1508,7 +1535,8 @@
     "settings": "Configurações",
     "early_adopter": "Torne-se um dos primeiros a adotar",
     "unlock": "Desbloqueie recursos ilimitados e invista em nosso futuro",
-    "upgrade": "Atualize agora"
+    "upgrade": "Atualize agora",
+    "tags": "Etiquetas"
   },
   "media_manager": {
     "page_title": "Gerenciador de mídia - ClassroomIO",
@@ -1932,5 +1960,69 @@
     "resend_in": "Reenviar verificação em",
     "seconds": "segundos",
     "snackbar_error": "erro ao enviar código"
+  },
+  "public_courses": {
+    "page_title": "Cursos - ClassroomIO",
+    "heading": "Cursos",
+    "subtitle": "Navegue por todos os cursos publicados",
+    "clear_filters": "Limpar filtros",
+    "empty": {
+      "title": "Nenhum curso encontrado",
+      "description": "Tente limpar os filtros ou volte mais tarde."
+    },
+    "filters": {
+      "title": "Filtrar por tags",
+      "help": "Selecione uma ou mais tags para filtrar cursos",
+      "empty": "Nenhuma tag disponível ainda"
+    }
+  },
+  "tags_admin": {
+    "page_title": "Tags - ClassroomIO",
+    "heading": "Etiquetas",
+    "create": "Criar",
+    "tag_modal": {
+      "create_title": "Criar etiqueta",
+      "edit_title": "Editar etiqueta",
+      "name": "Nome da etiqueta",
+      "description": "Descrição",
+      "description_placeholder": "Descrição opcional",
+      "category": "Categoria",
+      "color": "Cor",
+      "color_help": "Escolha uma das 10 cores",
+      "select_category": "Selecione uma categoria",
+      "no_groups": "Crie um grupo de tags antes de criar tags"
+    },
+    "group_modal": {
+      "create_title": "Criar grupo de tags",
+      "edit_title": "Editar grupo de tags",
+      "name": "Nome do grupo",
+      "description": "Descrição",
+      "description_placeholder": "Descrição opcional"
+    },
+    "empty": {
+      "title": "Ainda não há grupos de tags",
+      "description": "Crie primeiro um grupo de tags e depois comece a adicionar tags."
+    },
+    "table": {
+      "tag": "Etiqueta",
+      "total_courses": "Total de Cursos",
+      "course": "curso",
+      "courses": "cursos",
+      "description": "Descrição",
+      "category": "Categoria",
+      "action": "Ação",
+      "empty_group": "Ainda não há tags neste grupo"
+    },
+    "actions": {
+      "create_tag": "Criar etiqueta",
+      "create_group": "Criar grupo de tags",
+      "edit_group": "Editar grupo",
+      "edit_tag": "Editar etiqueta",
+      "save": "Salvar",
+      "cancel": "Cancelar"
+    },
+    "common": {
+      "not_available": "N/A"
+    }
   }
 }

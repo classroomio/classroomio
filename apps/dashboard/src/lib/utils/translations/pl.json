@@ -325,6 +325,15 @@
       "thumbnail_upload_failed": "Nie udało się przesłać miniatury",
       "thumbnail_too_large": "Obraz miniatury jest za duży",
       "thumbnail_invalid": "Nieprawidłowy plik miniatury"
+    },
+    "tags": {
+      "group_created": "Utworzono grupę tagów",
+      "group_updated": "Grupa tagów zaktualizowana",
+      "tag_created": "Znacznik został utworzony",
+      "tag_updated": "Etykieta zaktualizowana",
+      "course_tags_updated": "Zaktualizowano tagi kursów",
+      "fetch_failed": "Nie udało się załadować tagów",
+      "save_failed": "Nie udało się zapisać zmian w tagach"
     }
   },
   "explore": {
@@ -498,7 +507,15 @@
         "self_paced": "Samodzielne tempo",
         "delete": "Usuń kurs",
         "delete_text": "Usuń ten kurs. Tej czynności nie można cofnąć",
-        "save": "Zapisz zmiany"
+        "save": "Zapisz zmiany",
+        "tags": {
+          "title": "Tagi",
+          "description": "Przypisz tagi, aby uczniowie mogli odkryć ten kurs za pomocą filtrów.",
+          "empty": "Nie wybrano tagów",
+          "add": "Dodaj tag",
+          "popover_title": "Wybierz tagi",
+          "empty_groups": "Brak dostępnych tagów"
+        }
       },
       "analytics": {
         "title": "Analityka"
@@ -1266,7 +1283,8 @@
         "lessons": "Lekcje",
         "students": "Studenci",
         "published": "Opublikowano",
-        "type": "Wpisz"
+        "type": "Wpisz",
+        "tags": "Tagi"
       },
       "context_menu": {
         "clone": "Klon",
@@ -1279,6 +1297,15 @@
       "date_created": "Data utworzenia",
       "published": "Opublikowano",
       "lessons": "Lekcje"
+    },
+    "tag_filters": {
+      "filter": "Filtruj",
+      "active": "Aktywne filtry",
+      "clear_all": "Wyczyść wszystko",
+      "popover_title": "Filtry",
+      "sort": "Sortuj",
+      "tags": "Tagi",
+      "empty_tags": "Brak dostępnych tagów"
     }
   },
   "ai": {
@@ -1508,7 +1535,8 @@
     "settings": "Ustawienia",
     "early_adopter": "Zostań wczesnym użytkownikiem",
     "unlock": "Odblokuj nieograniczone funkcje i inwestuj w naszą przyszłość",
-    "upgrade": "Uaktualnij teraz"
+    "upgrade": "Uaktualnij teraz",
+    "tags": "Tagi"
   },
   "media_manager": {
     "page_title": "Menedżer multimediów - ClassroomIO",
@@ -1932,5 +1960,69 @@
     "resend_in": "Wyślij ponownie weryfikację w",
     "seconds": "sekundy",
     "snackbar_error": "błąd podczas wysyłania kodu"
+  },
+  "public_courses": {
+    "page_title": "Kursy — ClassroomIO",
+    "heading": "Kursy",
+    "subtitle": "Przeglądaj wszystkie opublikowane kursy",
+    "clear_filters": "Wyczyść filtry",
+    "empty": {
+      "title": "Nie znaleziono kursów",
+      "description": "Spróbuj wyczyścić filtry lub sprawdź później."
+    },
+    "filters": {
+      "title": "Filtruj według tagów",
+      "help": "Wybierz jeden lub więcej tagów, aby filtrować kursy",
+      "empty": "Brak dostępnych tagów"
+    }
+  },
+  "tags_admin": {
+    "page_title": "Tagi — ClassroomIO",
+    "heading": "Tagi",
+    "create": "Utwórz",
+    "tag_modal": {
+      "create_title": "Utwórz tag",
+      "edit_title": "Edytuj znacznik",
+      "name": "Nazwa znacznika",
+      "description": "Opis",
+      "description_placeholder": "Opcjonalny opis",
+      "category": "Kategoria",
+      "color": "Kolor",
+      "color_help": "Wybierz jeden z 10 kolorów",
+      "select_category": "Wybierz kategorię",
+      "no_groups": "Utwórz grupę tagów przed utworzeniem tagów"
+    },
+    "group_modal": {
+      "create_title": "Utwórz grupę tagów",
+      "edit_title": "Edytuj grupę tagów",
+      "name": "Nazwa grupy",
+      "description": "Opis",
+      "description_placeholder": "Opcjonalny opis"
+    },
+    "empty": {
+      "title": "Nie ma jeszcze grup tagów",
+      "description": "Najpierw utwórz grupę tagów, a następnie rozpocznij dodawanie tagów."
+    },
+    "table": {
+      "tag": "Oznacz",
+      "total_courses": "Łączna liczba kursów",
+      "course": "oczywiście",
+      "courses": "kursy",
+      "description": "Opis",
+      "category": "Kategoria",
+      "action": "Akcja",
+      "empty_group": "Nie ma jeszcze tagów w tej grupie"
+    },
+    "actions": {
+      "create_tag": "Utwórz tag",
+      "create_group": "Utwórz grupę tagów",
+      "edit_group": "Edytuj grupę",
+      "edit_tag": "Edytuj znacznik",
+      "save": "Zapisz",
+      "cancel": "Anuluj"
+    },
+    "common": {
+      "not_available": "Nie dotyczy"
+    }
   }
 }

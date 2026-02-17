@@ -325,6 +325,15 @@
       "thumbnail_upload_failed": "Échec du téléchargement de la miniature",
       "thumbnail_too_large": "L'image miniature est trop grande",
       "thumbnail_invalid": "Fichier miniature invalide"
+    },
+    "tags": {
+      "group_created": "Groupe de balises créé",
+      "group_updated": "Groupe de balises mis à jour",
+      "tag_created": "Balise créée",
+      "tag_updated": "Balise mise à jour",
+      "course_tags_updated": "Balises de cours mises à jour",
+      "fetch_failed": "Échec du chargement des balises",
+      "save_failed": "Échec de l'enregistrement des modifications de balise"
     }
   },
   "explore": {
@@ -498,7 +507,15 @@
         "self_paced": "À votre rythme",
         "delete": "Supprimer un cours",
         "delete_text": "Supprimer ce cours, cette action est irréversible",
-        "save": "Enregistrer les modifications"
+        "save": "Enregistrer les modifications",
+        "tags": {
+          "title": "Balises",
+          "description": "Attribuez des balises pour que les apprenants puissent découvrir ce cours avec des filtres.",
+          "empty": "Aucune balise sélectionnée",
+          "add": "Ajouter une balise",
+          "popover_title": "Sélectionnez les balises",
+          "empty_groups": "Aucun tag disponible pour l'instant"
+        }
       },
       "analytics": {
         "title": "Analyse"
@@ -1266,7 +1283,8 @@
         "lessons": "Leçons",
         "students": "Étudiants",
         "published": "Publié",
-        "type": "Tapez"
+        "type": "Tapez",
+        "tags": "Balises"
       },
       "context_menu": {
         "clone": "Cloner",
@@ -1279,6 +1297,15 @@
       "date_created": "Date de création",
       "published": "Publié",
       "lessons": "Leçons"
+    },
+    "tag_filters": {
+      "filter": "Filtrer",
+      "active": "Filtres actifs",
+      "clear_all": "Tout effacer",
+      "popover_title": "Filtres",
+      "sort": "Trier",
+      "tags": "Balises",
+      "empty_tags": "Aucune balise disponible"
     }
   },
   "ai": {
@@ -1508,7 +1535,8 @@
     "settings": "Paramètres",
     "early_adopter": "Devenez un adopteur précoce",
     "unlock": "Débloquez des fonctionnalités illimitées et investissez dans notre avenir",
-    "upgrade": "Mettre à niveau maintenant"
+    "upgrade": "Mettre à niveau maintenant",
+    "tags": "Balises"
   },
   "media_manager": {
     "page_title": "Gestionnaire de médias - ClassroomIO",
@@ -1932,5 +1960,69 @@
     "resend_in": "Renvoyer la vérification dans",
     "seconds": "secondes",
     "snackbar_error": "erreur lors de l'envoi du code"
+  },
+  "public_courses": {
+    "page_title": "Cours - ClassroomIO",
+    "heading": "Cours",
+    "subtitle": "Parcourez tous les cours publiés",
+    "clear_filters": "Effacer les filtres",
+    "empty": {
+      "title": "Aucun cours trouvé",
+      "description": "Essayez de supprimer vos filtres ou revenez plus tard."
+    },
+    "filters": {
+      "title": "Filtrer par balises",
+      "help": "Sélectionnez une ou plusieurs balises pour filtrer les cours",
+      "empty": "Aucun tag disponible pour l'instant"
+    }
+  },
+  "tags_admin": {
+    "page_title": "Mots clés - Salle de classeIO",
+    "heading": "Balises",
+    "create": "Créer",
+    "tag_modal": {
+      "create_title": "Créer une balise",
+      "edit_title": "Modifier la balise",
+      "name": "Nom de la balise",
+      "description": "Descriptif",
+      "description_placeholder": "Description facultative",
+      "category": "Catégorie",
+      "color": "Couleur",
+      "color_help": "Choisissez une des 10 couleurs",
+      "select_category": "Sélectionnez une catégorie",
+      "no_groups": "Créez un groupe de balises avant de créer des balises"
+    },
+    "group_modal": {
+      "create_title": "Créer un groupe de balises",
+      "edit_title": "Modifier le groupe de balises",
+      "name": "Nom du groupe",
+      "description": "Descriptif",
+      "description_placeholder": "Description facultative"
+    },
+    "empty": {
+      "title": "Aucun groupe de tags pour l'instant",
+      "description": "Créez d’abord un groupe de balises, puis commencez à ajouter des balises."
+    },
+    "table": {
+      "tag": "Étiquette",
+      "total_courses": "Cours totaux",
+      "course": "cours",
+      "courses": "cours",
+      "description": "Descriptif",
+      "category": "Catégorie",
+      "action": "Action",
+      "empty_group": "Aucun tag dans ce groupe pour l'instant"
+    },
+    "actions": {
+      "create_tag": "Créer une balise",
+      "create_group": "Créer un groupe de balises",
+      "edit_group": "Modifier le groupe",
+      "edit_tag": "Modifier la balise",
+      "save": "Enregistrer",
+      "cancel": "Annuler"
+    },
+    "common": {
+      "not_available": "N/D"
+    }
   }
 }

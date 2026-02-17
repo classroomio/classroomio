@@ -325,6 +325,15 @@
       "thumbnail_upload_failed": "Không tải được hình thu nhỏ lên",
       "thumbnail_too_large": "Hình ảnh thu nhỏ quá lớn",
       "thumbnail_invalid": "Tệp hình thu nhỏ không hợp lệ"
+    },
+    "tags": {
+      "group_created": "Đã tạo nhóm thẻ",
+      "group_updated": "Đã cập nhật nhóm thẻ",
+      "tag_created": "Đã tạo thẻ",
+      "tag_updated": "Đã cập nhật thẻ",
+      "course_tags_updated": "Đã cập nhật thẻ khóa học",
+      "fetch_failed": "Không tải được thẻ",
+      "save_failed": "Không lưu được các thay đổi về thẻ"
     }
   },
   "explore": {
@@ -498,7 +507,15 @@
         "self_paced": "Tự nhịp độ",
         "delete": "Xóa khóa học",
         "delete_text": "Xóa khóa học này, hành động này không thể hoàn tác",
-        "save": "Lưu thay đổi"
+        "save": "Lưu thay đổi",
+        "tags": {
+          "title": "Thẻ",
+          "description": "Gán thẻ để người học có thể khám phá khóa học này bằng các bộ lọc.",
+          "empty": "Không có thẻ nào được chọn",
+          "add": "Thêm thẻ",
+          "popover_title": "Chọn thẻ",
+          "empty_groups": "Chưa có thẻ nào"
+        }
       },
       "analytics": {
         "title": "Phân tích"
@@ -1266,7 +1283,8 @@
         "lessons": "Bài học",
         "students": "Sinh viên",
         "published": "Đã xuất bản",
-        "type": "loại"
+        "type": "loại",
+        "tags": "Thẻ"
       },
       "context_menu": {
         "clone": "bản sao",
@@ -1279,6 +1297,15 @@
       "date_created": "Ngày tạo",
       "published": "Đã xuất bản",
       "lessons": "Bài học"
+    },
+    "tag_filters": {
+      "filter": "Lọc",
+      "active": "Bộ lọc hoạt động",
+      "clear_all": "Xóa tất cả",
+      "popover_title": "Bộ lọc",
+      "sort": "Sắp xếp",
+      "tags": "Thẻ",
+      "empty_tags": "Không có thẻ nào"
     }
   },
   "ai": {
@@ -1508,7 +1535,8 @@
     "settings": "Cài đặt",
     "early_adopter": "Trở thành người áp dụng sớm",
     "unlock": "Mở khóa các tính năng không giới hạn và đầu tư vào tương lai của chúng tôi",
-    "upgrade": "Nâng cấp ngay"
+    "upgrade": "Nâng cấp ngay",
+    "tags": "Thẻ"
   },
   "media_manager": {
     "page_title": "Quản lý truyền thông - ClassroomIO",
@@ -1932,5 +1960,69 @@
     "resend_in": "Gửi lại xác minh trong",
     "seconds": "giây",
     "snackbar_error": "lỗi khi gửi mã"
+  },
+  "public_courses": {
+    "page_title": "Khóa học - ClassroomIO",
+    "heading": "Khóa học",
+    "subtitle": "Duyệt tất cả các khóa học được xuất bản",
+    "clear_filters": "Xóa bộ lọc",
+    "empty": {
+      "title": "Không tìm thấy khóa học nào",
+      "description": "Hãy thử xóa bộ lọc của bạn hoặc kiểm tra lại sau."
+    },
+    "filters": {
+      "title": "Lọc theo thẻ",
+      "help": "Chọn một hoặc nhiều thẻ để lọc các khóa học",
+      "empty": "Chưa có thẻ nào"
+    }
+  },
+  "tags_admin": {
+    "page_title": "Thẻ - Lớp họcIO",
+    "heading": "Thẻ",
+    "create": "Tạo",
+    "tag_modal": {
+      "create_title": "Tạo thẻ",
+      "edit_title": "Chỉnh sửa thẻ",
+      "name": "Tên thẻ",
+      "description": "Mô tả",
+      "description_placeholder": "Mô tả tùy chọn",
+      "category": "Danh mục",
+      "color": "Màu sắc",
+      "color_help": "Chọn một trong 10 màu",
+      "select_category": "Chọn một danh mục",
+      "no_groups": "Tạo nhóm thẻ trước khi tạo thẻ"
+    },
+    "group_modal": {
+      "create_title": "Tạo nhóm thẻ",
+      "edit_title": "Chỉnh sửa nhóm thẻ",
+      "name": "Tên nhóm",
+      "description": "Mô tả",
+      "description_placeholder": "Mô tả tùy chọn"
+    },
+    "empty": {
+      "title": "Chưa có nhóm thẻ nào",
+      "description": "Trước tiên hãy tạo nhóm thẻ, sau đó bắt đầu thêm thẻ."
+    },
+    "table": {
+      "tag": "Gắn thẻ",
+      "total_courses": "Tổng số khóa học",
+      "course": "khóa học",
+      "courses": "các khóa học",
+      "description": "Mô tả",
+      "category": "Danh mục",
+      "action": "hành động",
+      "empty_group": "Chưa có thẻ nào trong nhóm này"
+    },
+    "actions": {
+      "create_tag": "Tạo thẻ",
+      "create_group": "Tạo nhóm thẻ",
+      "edit_group": "Chỉnh sửa nhóm",
+      "edit_tag": "Chỉnh sửa thẻ",
+      "save": "Lưu",
+      "cancel": "Hủy bỏ"
+    },
+    "common": {
+      "not_available": "không áp dụng"
+    }
   }
 }

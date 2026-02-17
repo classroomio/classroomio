@@ -325,6 +325,15 @@
       "thumbnail_upload_failed": "Kunne ikke uploade thumbnail",
       "thumbnail_too_large": "Miniaturebilledet er for stort",
       "thumbnail_invalid": "Ugyldig thumbnail-fil"
+    },
+    "tags": {
+      "group_created": "Taggruppe oprettet",
+      "group_updated": "Taggruppe opdateret",
+      "tag_created": "Tag oprettet",
+      "tag_updated": "Tag opdateret",
+      "course_tags_updated": "Kursusmærker opdateret",
+      "fetch_failed": "Tags kunne ikke indlæses",
+      "save_failed": "Tagændringer kunne ikke gemmes"
     }
   },
   "explore": {
@@ -498,7 +507,15 @@
         "self_paced": "Selvgående",
         "delete": "Slet kursus",
         "delete_text": "Slet dette kursus, denne handling kan ikke fortrydes",
-        "save": "Gem ændringer"
+        "save": "Gem ændringer",
+        "tags": {
+          "title": "Tags",
+          "description": "Tildel tags, så eleverne kan opdage dette kursus med filtre.",
+          "empty": "Ingen tags valgt",
+          "add": "Tilføj tag",
+          "popover_title": "Vælg tags",
+          "empty_groups": "Ingen tags tilgængelige endnu"
+        }
       },
       "analytics": {
         "title": "Analytics"
@@ -1266,7 +1283,8 @@
         "lessons": "Lektioner",
         "students": "studerende",
         "published": "Udgivet",
-        "type": "Type"
+        "type": "Type",
+        "tags": "Tags"
       },
       "context_menu": {
         "clone": "Klon",
@@ -1279,6 +1297,15 @@
       "date_created": "Dato oprettet",
       "published": "Udgivet",
       "lessons": "Lektioner"
+    },
+    "tag_filters": {
+      "filter": "Filter",
+      "active": "Aktive filtre",
+      "clear_all": "Ryd alle",
+      "popover_title": "Filtre",
+      "sort": "Sorter",
+      "tags": "Tags",
+      "empty_tags": "Ingen tags tilgængelige"
     }
   },
   "ai": {
@@ -1508,7 +1535,8 @@
     "settings": "Indstillinger",
     "early_adopter": "Bliv en tidlig adopter",
     "unlock": "Lås op for ubegrænsede funktioner og invester i vores fremtid",
-    "upgrade": "Opgrader nu"
+    "upgrade": "Opgrader nu",
+    "tags": "Tags"
   },
   "media_manager": {
     "page_title": "Media Manager - ClassroomIO",
@@ -1932,5 +1960,69 @@
     "resend_in": "Send bekræftelse ind igen",
     "seconds": "sekunder",
     "snackbar_error": "fejl under afsendelse af kode"
+  },
+  "public_courses": {
+    "page_title": "Kurser - ClassroomIO",
+    "heading": "Kurser",
+    "subtitle": "Gennemse alle offentliggjorte kurser",
+    "clear_filters": "Ryd filtre",
+    "empty": {
+      "title": "Ingen kurser fundet",
+      "description": "Prøv at rydde dine filtre, eller tjek igen senere."
+    },
+    "filters": {
+      "title": "Filtrer efter tags",
+      "help": "Vælg et eller flere tags for at filtrere kurser",
+      "empty": "Ingen tags tilgængelige endnu"
+    }
+  },
+  "tags_admin": {
+    "page_title": "Tags - ClassroomIO",
+    "heading": "Tags",
+    "create": "Opret",
+    "tag_modal": {
+      "create_title": "Opret tag",
+      "edit_title": "Rediger tag",
+      "name": "Tag navn",
+      "description": "Beskrivelse",
+      "description_placeholder": "Valgfri beskrivelse",
+      "category": "Kategori",
+      "color": "Farve",
+      "color_help": "Vælg en af 10 farver",
+      "select_category": "Vælg en kategori",
+      "no_groups": "Opret en tag-gruppe, før du opretter tags"
+    },
+    "group_modal": {
+      "create_title": "Opret taggruppe",
+      "edit_title": "Rediger taggruppe",
+      "name": "Gruppenavn",
+      "description": "Beskrivelse",
+      "description_placeholder": "Valgfri beskrivelse"
+    },
+    "empty": {
+      "title": "Ingen taggrupper endnu",
+      "description": "Opret først en taggruppe, og begynd derefter at tilføje tags."
+    },
+    "table": {
+      "tag": "Tag",
+      "total_courses": "Kurser i alt",
+      "course": "kursus",
+      "courses": "kurser",
+      "description": "Beskrivelse",
+      "category": "Kategori",
+      "action": "Handling",
+      "empty_group": "Ingen tags i denne gruppe endnu"
+    },
+    "actions": {
+      "create_tag": "Opret tag",
+      "create_group": "Opret taggruppe",
+      "edit_group": "Rediger gruppe",
+      "edit_tag": "Rediger tag",
+      "save": "Gem",
+      "cancel": "Annuller"
+    },
+    "common": {
+      "not_available": "N/A"
+    }
   }
 }

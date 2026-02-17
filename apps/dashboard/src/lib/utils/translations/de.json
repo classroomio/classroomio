@@ -325,6 +325,15 @@
       "thumbnail_upload_failed": "Miniaturbild konnte nicht hochgeladen werden",
       "thumbnail_too_large": "Das Miniaturbild ist zu groß",
       "thumbnail_invalid": "Ungültige Miniaturbilddatei"
+    },
+    "tags": {
+      "group_created": "Tag-Gruppe erstellt",
+      "group_updated": "Tag-Gruppe aktualisiert",
+      "tag_created": "Tag erstellt",
+      "tag_updated": "Tag aktualisiert",
+      "course_tags_updated": "Kurs-Tags aktualisiert",
+      "fetch_failed": "Tags konnten nicht geladen werden",
+      "save_failed": "Tag-Änderungen konnten nicht gespeichert werden"
     }
   },
   "explore": {
@@ -498,7 +507,15 @@
         "self_paced": "Eigenständig",
         "delete": "Kurs löschen",
         "delete_text": "Löschen Sie diesen Kurs. Diese Aktion kann nicht rückgängig gemacht werden",
-        "save": "Änderungen speichern"
+        "save": "Änderungen speichern",
+        "tags": {
+          "title": "Schlagworte",
+          "description": "Weisen Sie Tags zu, damit Lernende diesen Kurs mithilfe von Filtern entdecken können.",
+          "empty": "Keine Tags ausgewählt",
+          "add": "Tag hinzufügen",
+          "popover_title": "Wählen Sie Tags aus",
+          "empty_groups": "Noch keine Tags verfügbar"
+        }
       },
       "analytics": {
         "title": "Analytik"
@@ -1266,7 +1283,8 @@
         "lessons": "Lektionen",
         "students": "Studenten",
         "published": "Veröffentlicht",
-        "type": "Typ"
+        "type": "Typ",
+        "tags": "Schlagworte"
       },
       "context_menu": {
         "clone": "Klonen",
@@ -1279,6 +1297,15 @@
       "date_created": "Erstellungsdatum",
       "published": "Veröffentlicht",
       "lessons": "Lektionen"
+    },
+    "tag_filters": {
+      "filter": "Filtern",
+      "active": "Aktive Filter",
+      "clear_all": "Alles löschen",
+      "popover_title": "Filter",
+      "sort": "Sortieren",
+      "tags": "Schlagworte",
+      "empty_tags": "Keine Tags verfügbar"
     }
   },
   "ai": {
@@ -1508,7 +1535,8 @@
     "settings": "Einstellungen",
     "early_adopter": "Werden Sie ein Early Adopter",
     "unlock": "Schalten Sie unbegrenzte Funktionen frei und investieren Sie in unsere Zukunft",
-    "upgrade": "Jetzt upgraden"
+    "upgrade": "Jetzt upgraden",
+    "tags": "Schlagworte"
   },
   "media_manager": {
     "page_title": "Medienmanager - ClassroomIO",
@@ -1932,5 +1960,69 @@
     "resend_in": "Bestätigung erneut senden",
     "seconds": "Sekunden",
     "snackbar_error": "Fehler beim Senden des Codes"
+  },
+  "public_courses": {
+    "page_title": "Kurse - ClassroomIO",
+    "heading": "Kurse",
+    "subtitle": "Durchsuchen Sie alle veröffentlichten Kurse",
+    "clear_filters": "Filter löschen",
+    "empty": {
+      "title": "Keine Kurse gefunden",
+      "description": "Versuchen Sie, Ihre Filter zu löschen, oder schauen Sie später noch einmal vorbei."
+    },
+    "filters": {
+      "title": "Nach Tags filtern",
+      "help": "Wählen Sie einen oder mehrere Tags aus, um Kurse zu filtern",
+      "empty": "Noch keine Tags verfügbar"
+    }
+  },
+  "tags_admin": {
+    "page_title": "Schlagworte – KlassenzimmerIO",
+    "heading": "Schlagworte",
+    "create": "Erstellen",
+    "tag_modal": {
+      "create_title": "Tag erstellen",
+      "edit_title": "Tag bearbeiten",
+      "name": "Tag-Name",
+      "description": "Beschreibung",
+      "description_placeholder": "Optionale Beschreibung",
+      "category": "Kategorie",
+      "color": "Farbe",
+      "color_help": "Wählen Sie eine von 10 Farben",
+      "select_category": "Wählen Sie eine Kategorie aus",
+      "no_groups": "Erstellen Sie eine Tag-Gruppe, bevor Sie Tags erstellen"
+    },
+    "group_modal": {
+      "create_title": "Erstellen Sie eine Tag-Gruppe",
+      "edit_title": "Tag-Gruppe bearbeiten",
+      "name": "Gruppenname",
+      "description": "Beschreibung",
+      "description_placeholder": "Optionale Beschreibung"
+    },
+    "empty": {
+      "title": "Noch keine Tag-Gruppen",
+      "description": "Erstellen Sie zunächst eine Tag-Gruppe und beginnen Sie dann mit dem Hinzufügen von Tags."
+    },
+    "table": {
+      "tag": "Etikett",
+      "total_courses": "Gesamtzahl der Kurse",
+      "course": "natürlich",
+      "courses": "Kurse",
+      "description": "Beschreibung",
+      "category": "Kategorie",
+      "action": "Aktion",
+      "empty_group": "Noch keine Tags in dieser Gruppe"
+    },
+    "actions": {
+      "create_tag": "Tag erstellen",
+      "create_group": "Erstellen Sie eine Tag-Gruppe",
+      "edit_group": "Gruppe bearbeiten",
+      "edit_tag": "Tag bearbeiten",
+      "save": "Speichern",
+      "cancel": "Abbrechen"
+    },
+    "common": {
+      "not_available": "N/A"
+    }
   }
 }

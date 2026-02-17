@@ -11,6 +11,10 @@
       desc: 'You can now send a broadcast message to all the students participating in your course right from our dashboard.'
     },
     {
+      title: 'Tags',
+      desc: 'You can now group courses into organization-specific categories and filter course catalogs using tags.'
+    },
+    {
       title: 'Multi language support',
       desc: 'Our dashboard now supports 7 new languages. In addition, we allow you create course content in those any of those languages.'
     },
@@ -36,10 +40,6 @@
     {
       title: 'Course Batches',
       desc: 'A course can be taken in batches, meaning that you can create different cohorts of students within one course. The benefit of this is that you can teach a course multiple times to different groups of students. This is useful mainly for bootcamps and teaching organizations.'
-    },
-    {
-      title: 'Tags',
-      desc: 'With tags you can group your courses into categories. This is useful for organizing your courses and making them easier to find.'
     },
     {
       title: 'API',
