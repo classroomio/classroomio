@@ -12,6 +12,7 @@ import {
 } from '@api/services/course/invite';
 
 import { Hono } from '@api/utils/hono';
+import { authMiddleware } from '@api/middlewares/auth';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
@@ -21,7 +22,7 @@ export const invitesRouter = new Hono()
    * GET /course/:courseId/invites
    * Lists secure invites for a course (team/admin only)
    */
-  .get('/', courseTeamMemberMiddleware, zValidator('param', ZCourseInviteParam), async (c) => {
+  .get('/', authMiddleware, courseTeamMemberMiddleware, zValidator('param', ZCourseInviteParam), async (c) => {
     try {
       const { courseId } = c.req.valid('param');
       const invites = await listStudentInvites(courseId);
@@ -43,6 +44,7 @@ export const invitesRouter = new Hono()
    */
   .post(
     '/',
+    authMiddleware,
     courseTeamMemberMiddleware,
     zValidator('param', ZCourseInviteParam),
     zValidator('json', ZCreateCourseInvite),
@@ -70,40 +72,52 @@ export const invitesRouter = new Hono()
    * POST /course/:courseId/invites/:inviteId/revoke
    * Revokes a secure invite (team/admin only)
    */
-  .post('/:inviteId/revoke', courseTeamMemberMiddleware, zValidator('param', ZCourseInviteRevokeParam), async (c) => {
-    try {
-      const { courseId, inviteId } = c.req.valid('param');
-      const user = c.get('user')!;
-      const revoked = await revokeStudentInvite(courseId, inviteId, user.id);
+  .post(
+    '/:inviteId/revoke',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    zValidator('param', ZCourseInviteRevokeParam),
+    async (c) => {
+      try {
+        const { courseId, inviteId } = c.req.valid('param');
+        const user = c.get('user')!;
+        const revoked = await revokeStudentInvite(courseId, inviteId, user.id);
 
-      return c.json(
-        {
-          success: true,
-          data: revoked
-        },
-        200
-      );
-    } catch (error) {
-      return handleError(c, error, 'Failed to revoke invite');
+        return c.json(
+          {
+            success: true,
+            data: revoked
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to revoke invite');
+      }
     }
-  })
+  )
   /**
    * GET /course/:courseId/invites/:inviteId/audit
    * Lists audit trail for an invite (team/admin only)
    */
-  .get('/:inviteId/audit', courseTeamMemberMiddleware, zValidator('param', ZCourseInviteAuditParam), async (c) => {
-    try {
-      const { courseId, inviteId } = c.req.valid('param');
-      const audit = await getStudentInviteAuditTrail(courseId, inviteId);
+  .get(
+    '/:inviteId/audit',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    zValidator('param', ZCourseInviteAuditParam),
+    async (c) => {
+      try {
+        const { courseId, inviteId } = c.req.valid('param');
+        const audit = await getStudentInviteAuditTrail(courseId, inviteId);
 
-      return c.json(
-        {
-          success: true,
-          data: audit
-        },
-        200
-      );
-    } catch (error) {
-      return handleError(c, error, 'Failed to load invite audit');
+        return c.json(
+          {
+            success: true,
+            data: audit
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to load invite audit');
+      }
     }
-  });
+  );

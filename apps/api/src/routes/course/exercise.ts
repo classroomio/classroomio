@@ -20,13 +20,14 @@ import { fetchAllTemplatesMetadata, fetchTemplateById, fetchTemplatesByTag } fro
 import { getGroupMemberIdByCourseAndProfile, isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 
 import { Hono } from '@api/utils/hono';
+import { authMiddleware } from '@api/middlewares/auth';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { createSubmissionService } from '@api/services/submission';
 import { zValidator } from '@hono/zod-validator';
 
 export const exerciseRouter = new Hono()
   // Exercise CRUD routes
-  .get('/', courseMemberMiddleware, zValidator('query', ZExerciseListQuery), async (c) => {
+  .get('/', authMiddleware, courseMemberMiddleware, zValidator('query', ZExerciseListQuery), async (c) => {
     try {
       const courseId = c.req.param('courseId')!;
       const user = c.get('user')!;
@@ -38,7 +39,7 @@ export const exerciseRouter = new Hono()
       return handleError(c, error, 'Failed to list exercises');
     }
   })
-  .get('/:exerciseId', courseMemberMiddleware, zValidator('param', ZExerciseGetParam), async (c) => {
+  .get('/:exerciseId', authMiddleware, courseMemberMiddleware, zValidator('param', ZExerciseGetParam), async (c) => {
     try {
       const { exerciseId } = c.req.valid('param');
       const user = c.get('user')!;
@@ -49,7 +50,7 @@ export const exerciseRouter = new Hono()
       return handleError(c, error, 'Failed to fetch exercise');
     }
   })
-  .post('/', courseMemberMiddleware, zValidator('json', ZExerciseCreate), async (c) => {
+  .post('/', authMiddleware, courseMemberMiddleware, zValidator('json', ZExerciseCreate), async (c) => {
     try {
       const data = c.req.valid('json');
 
@@ -65,30 +66,37 @@ export const exerciseRouter = new Hono()
    * Creates an exercise from a template
    * Requires authentication and course membership (admin/tutor role)
    */
-  .post('/from-template', courseMemberMiddleware, zValidator('json', ZExerciseFromTemplate), async (c) => {
-    try {
-      const courseId = c.req.param('courseId')!;
-      const { lessonId, sectionId, order, templateId } = c.req.valid('json');
+  .post(
+    '/from-template',
+    authMiddleware,
+    courseMemberMiddleware,
+    zValidator('json', ZExerciseFromTemplate),
+    async (c) => {
+      try {
+        const courseId = c.req.param('courseId')!;
+        const { lessonId, sectionId, order, templateId } = c.req.valid('json');
 
-      // Fetch template from database
-      const template = await fetchTemplateById(templateId);
-      if (!template) {
-        return c.json({ success: false, error: 'Template not found' }, 404);
+        // Fetch template from database
+        const template = await fetchTemplateById(templateId);
+        if (!template) {
+          return c.json({ success: false, error: 'Template not found' }, 404);
+        }
+
+        if (!template.questionnaire) {
+          return c.json({ success: false, error: 'Template is missing questionnaire data' }, 400);
+        }
+
+        const exercise = await createExerciseFromTemplate(courseId, lessonId, sectionId, order, template);
+
+        return c.json({ success: true, data: exercise }, 201);
+      } catch (error) {
+        return handleError(c, error, 'Failed to create exercise from template');
       }
-
-      if (!template.questionnaire) {
-        return c.json({ success: false, error: 'Template is missing questionnaire data' }, 400);
-      }
-
-      const exercise = await createExerciseFromTemplate(courseId, lessonId, sectionId, order, template);
-
-      return c.json({ success: true, data: exercise }, 201);
-    } catch (error) {
-      return handleError(c, error, 'Failed to create exercise from template');
     }
-  })
+  )
   .put(
     '/:exerciseId',
+    authMiddleware,
     courseMemberMiddleware,
     zValidator('param', ZExerciseGetParam),
     zValidator('json', ZExerciseUpdate),
@@ -122,7 +130,7 @@ export const exerciseRouter = new Hono()
       }
     }
   )
-  .delete('/:exerciseId', courseMemberMiddleware, zValidator('param', ZExerciseGetParam), async (c) => {
+  .delete('/:exerciseId', authMiddleware, courseMemberMiddleware, zValidator('param', ZExerciseGetParam), async (c) => {
     try {
       const { exerciseId } = c.req.valid('param');
       const exercise = await deleteExerciseService(exerciseId);
@@ -135,6 +143,7 @@ export const exerciseRouter = new Hono()
   // Exercise Submission routes
   .post(
     '/:exerciseId/submission',
+    authMiddleware,
     courseMemberMiddleware,
     zValidator('param', ZExerciseGetParam),
     zValidator('json', ZExerciseSubmissionCreate),
@@ -159,7 +168,7 @@ export const exerciseRouter = new Hono()
     }
   )
   // Template routes
-  .get('/template', courseMemberMiddleware, async (c) => {
+  .get('/template', authMiddleware, courseMemberMiddleware, async (c) => {
     try {
       const result = await fetchAllTemplatesMetadata();
 
@@ -168,7 +177,7 @@ export const exerciseRouter = new Hono()
       return handleError(c, error, 'Failed to load template metadata');
     }
   })
-  .get('/template/:id', courseMemberMiddleware, zValidator('param', ZTemplateById), async (c) => {
+  .get('/template/:id', authMiddleware, courseMemberMiddleware, zValidator('param', ZTemplateById), async (c) => {
     try {
       const { id } = c.req.valid('param');
 
@@ -178,7 +187,7 @@ export const exerciseRouter = new Hono()
       return handleError(c, error, 'Failed to load template');
     }
   })
-  .get('/template/tag/:tag', courseMemberMiddleware, zValidator('param', ZTemplateByTag), async (c) => {
+  .get('/template/tag/:tag', authMiddleware, courseMemberMiddleware, zValidator('param', ZTemplateByTag), async (c) => {
     try {
       const { tag } = c.req.valid('param');
 

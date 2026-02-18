@@ -8,7 +8,7 @@ import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 
 export const contentRouter = new Hono()
-  .put('/', courseTeamMemberMiddleware, zValidator('json', ZCourseContentUpdate), async (c) => {
+  .put('/', authMiddleware, courseTeamMemberMiddleware, zValidator('json', ZCourseContentUpdate), async (c) => {
     try {
       const courseId = c.req.param('courseId')!;
       const { items } = c.req.valid('json');
