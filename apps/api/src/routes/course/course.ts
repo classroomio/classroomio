@@ -35,6 +35,7 @@ import { attendanceRouter } from '@api/routes/course/attendance';
 import { authMiddleware } from '@api/middlewares/auth';
 import { cloneCourse } from '@api/services/course/clone';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
+import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
 import { contentRouter } from '@api/routes/course/content';
 import { exerciseRouter } from '@api/routes/course/exercise';
 import { generateCertificate } from '@api/utils/certificate';
@@ -240,7 +241,7 @@ export const courseRouter = new Hono()
   .put(
     '/:courseId',
     authMiddleware,
-    courseMemberMiddleware,
+    courseTeamMemberMiddleware,
     zValidator('param', ZCourseUpdateParam),
     zValidator('json', ZCourseUpdate),
     async (c) => {
@@ -296,22 +297,28 @@ export const courseRouter = new Hono()
    * Soft deletes a course by setting status to 'DELETED'
    * Requires authentication and course membership (admin/tutor role)
    */
-  .delete('/:courseId', authMiddleware, courseMemberMiddleware, zValidator('param', ZCourseDeleteParam), async (c) => {
-    try {
-      const { courseId } = c.req.valid('param');
-      const result = await deleteCourse(courseId);
+  .delete(
+    '/:courseId',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    zValidator('param', ZCourseDeleteParam),
+    async (c) => {
+      try {
+        const { courseId } = c.req.valid('param');
+        const result = await deleteCourse(courseId);
 
-      return c.json(
-        {
-          success: true,
-          data: result
-        },
-        200
-      );
-    } catch (error) {
-      return handleError(c, error, 'Failed to delete course');
+        return c.json(
+          {
+            success: true,
+            data: result
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to delete course');
+      }
     }
-  })
+  )
   /**
    * GET /course/:courseId/progress
    * Gets course progress for a profile
@@ -350,7 +357,7 @@ export const courseRouter = new Hono()
   .get(
     '/:courseId/analytics',
     authMiddleware,
-    courseMemberMiddleware,
+    courseTeamMemberMiddleware,
     zValidator('param', ZCourseProgressParam),
     async (c) => {
       try {
