@@ -62,7 +62,7 @@
             isDisabled={false}
             perOrgLabel={isYearlyPlan ? 'per year' : 'per month'}
             handleClick={() => {
-              window.location.href = plan.CTA.LINK;
+              window.open(plan.CTA.LINK, '_blank');
             }}
           />
         {/each}
