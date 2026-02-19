@@ -4,6 +4,7 @@
   import { Button } from '../../base/button';
   import { HoverableItem, PremiumIcon } from '../moving-icons';
   import type { PlanData } from './types';
+  import { cn } from '../../tools';
 
   interface Props {
     plan: PlanData;
@@ -16,9 +17,11 @@
     perOrgLabel?: string;
     ctaLabel?: string;
     isDisabled?: boolean;
+    className?: string;
   }
 
   let {
+    className,
     plan,
     isPopular = false,
     isYearlyPlan = false,
@@ -35,9 +38,11 @@
 </script>
 
 <div
-  class="ui:relative ui:flex ui:max-w-sm ui:flex-col ui:rounded-xl ui:p-8 ui:shadow-sm ui:transition-all ui:hover:shadow-md {isPopular
-    ? 'animate-gradient-border'
-    : 'ui:border'}"
+  class={cn(
+    'ui:relative ui:flex ui:max-w-sm ui:flex-col ui:rounded-xl ui:p-8 ui:shadow-sm ui:transition-all ui:hover:shadow-md',
+    isPopular ? 'animate-gradient-border' : 'ui:border',
+    className
+  )}
 >
   {#if isPopular}
     <Badge
@@ -49,7 +54,7 @@
   {/if}
 
   <!-- Plan Header -->
-  <div class="ui:mb-8">
+  <div class="ui:mb-4">
     <h3 class="ui:mb-2 ui:text-xl ui:font-bold ui:tracking-tight ui:text-foreground">
       {plan.NAME}
     </h3>
@@ -62,7 +67,7 @@
   </div>
 
   <!-- CTA Button -->
-  <div class="ui:mb-8">
+  <div class="ui:mb-4">
     <HoverableItem>
       {#snippet children(isHovered: boolean)}
         <Button
@@ -87,7 +92,7 @@
   <!-- Features List -->
   <div class="ui:flex-1">
     <p class="ui:mb-4 ui:text-sm ui:font-semibold ui:text-foreground">What's included:</p>
-    <ul class="ui:space-y-4">
+    <ul class="ui:space-y-2">
       {#each plan.FEATURES as feature}
         <li class="ui:flex ui:items-start ui:gap-3">
           <div class="ui:mt-1 ui:flex ui:size-5 ui:shrink-0 ui:items-center ui:justify-center ui:rounded-full">

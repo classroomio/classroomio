@@ -46,9 +46,9 @@
     ></div>
   </PageHeader>
 
-  <div class="w-full px-[6%] py-16">
+  <div class="w-full px-2 py-16">
     <div class="mx-auto max-w-7xl">
-      <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <div class="flex w-full flex-wrap justify-evenly gap-2">
         {#each planNames as planName}
           {@const plan = PLANS[planName]}
           {@const isPopular = planName === 'EARLY_ADOPTER'}
@@ -58,6 +58,7 @@
             {planName}
             {isPopular}
             {isYearlyPlan}
+            className="mx-auto lg:mx-0 w-full max-w-xs! lg:max-w-sm!"
             ctaLabel={plan.CTA.LABEL}
             isDisabled={false}
             perOrgLabel={isYearlyPlan ? 'per year' : 'per month'}
