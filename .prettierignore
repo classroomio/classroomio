@@ -14,7 +14,8 @@ apps/docs
 apps/api/static
 
 pnpm-lock.yaml
-*.md
+**/*.md
+
 
 packages/ui/src/output.css
 

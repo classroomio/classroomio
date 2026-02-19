@@ -9,7 +9,7 @@
     "clean": "turbo clean && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
     "clean:pnpm": "pnpm clean && pnpm store prune",
     "format": "turbo run format",
-    "format:check": "prettier --check --ignore-unknown $(git diff --name-only --diff-filter=d HEAD~1)",
+    "format:check": "git diff --name-only -z --diff-filter=d HEAD~1 | xargs -0 prettier --check --ignore-unknown",
     "postinstall": "lefthook install",
     "release": "standard-version",
     "db:reset": "pnpm --filter @cio/db db:reset",
