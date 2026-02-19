@@ -9,7 +9,7 @@ import { zValidator } from '@hono/zod-validator';
 export const dashAnalyticsRouter = new Hono().get(
   '/stats',
   authMiddleware,
-  // orgMemberMiddleware,
+  orgMemberMiddleware,
   zValidator('query', ZDashStats),
   async (c) => {
     try {
