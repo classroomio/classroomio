@@ -47,6 +47,18 @@ todos:
   - id: build-verify
     content: Build API package, verify no lint errors, run tests
     status: pending
+  - id: openapi-contracts
+    content: Ensure all new public API routes are included in OpenAPI generation (route metadata + schemas)
+    status: pending
+  - id: openapi-publish
+    content: Regenerate and upload latest OpenAPI spec via `upload-openapi-spec.ts`
+    status: pending
+  - id: docs-openapi-integration
+    content: Integrate OpenAPI docs page in `apps/docs` using Fumadocs OpenAPI integration
+    status: pending
+  - id: docs-openapi-nav
+    content: Add `API` docs navigation entry/page in `apps/docs/content/docs/meta.json`
+    status: pending
 isProject: false
 ---
 
@@ -214,6 +226,10 @@ New test files under `apps/api/src/__tests__/`:
 
 Tests will use Hono's `app.request()` test helper (no HTTP server needed). Mock the DB layer with `vi.mock()`.
 
+Additionally, include OpenAPI contract coverage:
+- verify all `/v1/*` and `/api-key/*` public-facing endpoints are represented in generated spec.
+- ensure schema components are generated for request/response payloads.
+
 ## 8. Dashboard UI: Automation Page
 
 ### Sidebar Navigation
@@ -296,5 +312,54 @@ Add keys to [apps/dashboard/src/lib/utils/translations/en.json](apps/dashboard/s
 - All public API routes live under `/v1/`. When v2 is needed, a new `apps/api/src/routes/v2/` directory is created with its own router, registered as `.route('/v2', v2Router)`.
 - The v1 router remains untouched, ensuring backward compatibility.
 - The API key middleware is version-agnostic and shared across all versions.
+
+## 10. OpenAPI Spec Requirements
+
+### Route Annotation Requirements
+All new public API routes in this PRD must be OpenAPI-documented:
+- add route metadata using existing Hono OpenAPI patterns (`describeRoute`, validators/schemas).
+- ensure request params/query/body and success/error response shapes are declared.
+- avoid undocumented routes under `/v1/*` and `/api-key/*`.
+
+### Spec Generation and Publishing
+Use existing script in `apps/api/scripts/upload-openapi-spec.ts`:
+- generate spec from app routes.
+- save local output to `apps/api/dist/openapi/openapi.json`.
+- upload dated + latest specs to R2 (`openapi/openapi-YYYY-MM-DD.json`, `openapi/openapi-latest.json`).
+
+Required update flow after public API changes:
+1. implement/adjust routes and schemas.
+2. run `pnpm --filter @cio/api upload:openapi`.
+3. verify `openapi-latest.json` contains new endpoints.
+
+### CI/Verification Gate
+Add a verification step in this initiative to prevent stale API docs:
+- PR checklist requires successful OpenAPI generation for API changes.
+- include generated-spec validation in API CI for public API route changes.
+
+## 11. Docs Integration (Fumadocs OpenAPI)
+
+Integrate API docs in `apps/docs` following Fumadocs OpenAPI integration guidance:
+- reference: `https://www.fumadocs.dev/docs/integrations/openapi`
+- wire docs app to render OpenAPI spec from latest published source.
+
+Target implementation tasks:
+1. Add required Fumadocs OpenAPI integration package(s) to `apps/docs/package.json`.
+2. Add a docs route/page named `API` at `/api` in `apps/docs/src/routes` (or equivalent docs content route).
+3. Configure the page to load `openapi-latest.json` URL (env-driven preferred, with production fallback).
+4. Add an `API` entry to docs navigation in `apps/docs/content/docs/meta.json`.
+5. Validate local docs build still passes with the OpenAPI page.
+
+Suggested file touchpoints:
+- `apps/docs/package.json`
+- `apps/docs/src/routes/*` (new `/api` route) or `apps/docs/content/docs/api.mdx`
+- `apps/docs/content/docs/meta.json`
+- optional docs config/util files for OpenAPI URL env handling
+
+## 12. Build and Verification Commands
+1. `pnpm --filter @cio/api build`
+2. `pnpm --filter @cio/api upload:openapi`
+3. `pnpm --filter @cio/docs build`
+4. Manual check: docs navigation shows `API`, open `/api`, and verify new endpoints appear.
 
 Note: Follow AGENTS.md for code practices.
