@@ -1667,7 +1667,7 @@ export const organization = pgTable(
         show: boolean;
       };
     }>(),
-    theme: text(),
+    theme: text().default('blue'),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
       .default(sql`timezone('utc'::text, now())`)
       .notNull(),

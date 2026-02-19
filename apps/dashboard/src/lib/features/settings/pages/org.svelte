@@ -68,12 +68,6 @@
   }
   let isCustomTheme = $derived($currentOrg?.theme?.includes('#'));
   let hex = $derived($currentOrg.theme?.includes('#') ? $currentOrg.theme : undefined);
-
-  $effect(() => {
-    console.log('$currentOrg?.theme', $currentOrg?.theme);
-    console.log('hex', hex);
-    console.log('isCustomTheme', isCustomTheme);
-  });
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
