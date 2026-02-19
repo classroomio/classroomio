@@ -3,12 +3,11 @@
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { Progress } from '@cio/ui/base/progress';
-  import CheckIcon from '@lucide/svelte/icons/check';
   import RocketIcon from '@lucide/svelte/icons/rocket';
   import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
-  import { Badge } from '@cio/ui/base/badge';
-  import { PremiumIcon, HoverableItem } from '@cio/ui/custom/moving-icons';
+  import { PricingCard } from '@cio/ui/custom/pricing-card';
+  import { PricingToggle } from '@cio/ui/custom/pricing-toggle';
 
   import { PLANS } from '@cio/utils/plans';
   import { profile } from '$lib/utils/store/user';
@@ -22,7 +21,7 @@
 
   let isLoadingPlan: string | null = $state(null);
   let upgraded = $state(false);
-  let isYearlyPlan = $state(true);
+  let isYearlyPlan = $state(false);
 
   const query = $derived(new URLSearchParams(page.url.search));
   let open = $state(false);
@@ -139,91 +138,28 @@
       </div>
     {:else}
       <div class="flex h-full flex-col items-center justify-center">
-        <div class="white 0 relative mb-6 flex items-center rounded-full border p-1">
-          <Button
-            variant={isYearlyPlan ? 'ghost' : 'secondary'}
-            size="sm"
-            class="rounded-full! transition-all duration-500 ease-in-out "
-            onclick={() => (isYearlyPlan = false)}
-          >
-            {$t('pricing.modal.monthly')}
-          </Button>
-          <Button
-            variant={isYearlyPlan ? 'secondary' : 'ghost'}
-            size="sm"
-            class="rounded-full! transition-all duration-500 ease-in-out"
-            onclick={() => (isYearlyPlan = true)}
-          >
-            {$t('pricing.modal.annually')}
-          </Button>
-          <HoverableItem>
-            {#snippet children(isHovered)}
-              <Badge variant="default" class="absolute -top-3 right-[-20%] rotate-5 shadow-2xl">
-                <PremiumIcon size={8} {isHovered} class="text-amber-500!" />
-                {$t('pricing.modal.save')}
-              </Badge>
-            {/snippet}
-          </HoverableItem>
+        <div class="ui:mb-6">
+          <PricingToggle
+            bind:isYearly={isYearlyPlan}
+            monthlyLabel={$t('pricing.modal.monthly')}
+            yearlyLabel={$t('pricing.modal.annually')}
+            saveLabel={$t('pricing.modal.save')}
+          />
         </div>
-        <div class="grid w-full grid-cols-1 gap-6 overflow-y-auto p-2 md:grid-cols-3 md:overflow-y-visible">
+        <div class="mt-6 grid w-full grid-cols-1 gap-6 overflow-y-auto p-2 md:grid-cols-3 md:overflow-y-visible">
           {#each planNames as planName}
             {@const plan = PLANS[planName]}
             {@const isPopular = planName === 'EARLY_ADOPTER'}
-            <div
-              class="relative flex max-w-sm flex-col rounded-lg p-6 {isPopular ? 'animate-gradient-border' : 'border '}"
-            >
-              {#if isPopular}
-                <Badge
-                  variant="default"
-                  class="absolute -top-3 left-1/2 -translate-x-1/2 bg-linear-to-r from-pink-500 to-orange-500"
-                >
-                  Popular
-                </Badge>
-              {/if}
-              <div class="mb-4">
-                <h3 class="mb-2 text-lg font-semibold">
-                  {plan?.NAME}
-                </h3>
-                <div class="mb-1 flex items-baseline gap-1">
-                  <span class="text-xl">
-                    {plan?.PRICE?.CURRENCY}
-                    {isYearlyPlan ? plan?.PRICE?.YEARLY : plan?.PRICE?.MONTHLY}
-                  </span>
-                </div>
-                <p class="text-sm text-gray-500">Per Organization</p>
-              </div>
-
-              <HoverableItem>
-                {#snippet children(isHovered)}
-                  <Button
-                    variant={isPopular ? 'default' : 'outline'}
-                    class="mb-6 w-full"
-                    disabled={plan?.CTA?.IS_DISABLED || isLoadingPlan === planName}
-                    loading={isLoadingPlan === planName}
-                    onclick={() => {
-                      if (isLoadingPlan === planName) return;
-                      handleClick(plan, planName);
-                    }}
-                  >
-                    {#if isPopular}
-                      <PremiumIcon size={16} {isHovered} />
-                    {/if}
-                    {plan?.CTA?.DASHBOARD_LABEL}
-                  </Button>
-                {/snippet}
-              </HoverableItem>
-
-              <ul class="space-y-3">
-                {#each plan?.FEATURES as feature}
-                  <li class="flex items-start gap-2">
-                    <CheckIcon class="mt-0.5 size-4 shrink-0" />
-                    <span class="text-sm leading-relaxed">
-                      {feature}
-                    </span>
-                  </li>
-                {/each}
-              </ul>
-            </div>
+            <PricingCard
+              {plan}
+              {planName}
+              {isPopular}
+              {isYearlyPlan}
+              {isLoadingPlan}
+              {handleClick}
+              popularLabel={$t('pricing.modal.popular')}
+              perOrgLabel={$t('pricing.modal.per_org')}
+            />
           {/each}
         </div>
       </div>
