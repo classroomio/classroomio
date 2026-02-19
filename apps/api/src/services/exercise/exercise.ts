@@ -191,7 +191,11 @@ export async function updateExerciseService(exerciseId: string, data: TExerciseU
         const diff = computeExerciseDiff(currentQuestionsWithOptions, data.questions);
 
         // Sync option id sequence so next inserts get ids > max(id) (avoids option_pkey duplicate)
-        if (diff.options.creates.length > 0 || diff.questions.newQuestions.length > 0) {
+        if (
+          diff.options.creates.length > 0 ||
+          diff.questions.newQuestions.length > 0 ||
+          diff.questions.updates.length > 0
+        ) {
           await syncOptionIdSequence(txClient);
         }
 
