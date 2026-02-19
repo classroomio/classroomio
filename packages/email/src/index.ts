@@ -19,7 +19,7 @@
  */
 
 // Pre-import all emails to register them in the registry
-import './emails';
+import './emails/index';
 
 // Export unified API
 export { sendEmail, defineEmail } from './send';
@@ -30,6 +30,7 @@ export type { EmailId, EmailSchemaFor } from './utils/types';
 
 // Re-export low-level utilities
 export { deliverEmail } from './send';
+export { buildEmailFromName } from './utils/functions/email-helpers';
 export { getDefaultTemplate } from './templates/default';
 
 // Export email registry for introspection (optional)

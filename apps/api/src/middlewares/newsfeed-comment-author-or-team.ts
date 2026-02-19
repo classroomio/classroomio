@@ -1,10 +1,8 @@
 import { Context, Next } from 'hono';
+import { getGroupMemberIdByCourseAndProfile, isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 
 import { ErrorCodes } from '@api/utils/errors';
-import { getGroupMemberIdByCourseAndProfile } from '@cio/db/queries/group';
 import { getNewsfeedCommentAuthorAndCourse } from '@cio/db/queries/newsfeed';
-import { isUserCourseTeamMember } from '@cio/db/queries/group';
-import { isUserOrgAdmin } from '@cio/db/queries/organization';
 
 /**
  * Middleware to check if user is comment author OR tutor/admin in course
@@ -58,20 +56,11 @@ export const newsfeedCommentAuthorOrTeamMiddleware = async (c: Context, next: Ne
       return;
     }
 
-    // Check if user is a team member (ADMIN or TUTOR) in the course
-    const { isTeamMember, organizationId } = await isUserCourseTeamMember(commentInfo.courseId, user.id);
-    if (isTeamMember) {
+    // Check if user is a team member (ADMIN or TUTOR) or org admin
+    const isAllowed = await isCourseTeamMemberOrOrgAdmin(commentInfo.courseId, user.id);
+    if (isAllowed) {
       await next();
       return;
-    }
-
-    // Check if user is org admin
-    if (organizationId) {
-      const isOrgAdmin = await isUserOrgAdmin(organizationId, user.id);
-      if (isOrgAdmin) {
-        await next();
-        return;
-      }
     }
 
     return c.json(

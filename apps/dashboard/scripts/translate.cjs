@@ -14,6 +14,10 @@ const englishTranslations = require('../src/lib/utils/translations/en.json');
 dotenv.config();
 
 const SCRIPT_WAIT_TIME = 2000;
+const requestedLanguages = process.argv
+  .slice(2)
+  .map((language) => language.toLowerCase())
+  .filter((language) => language && language !== '--');
 
 // Define file paths for each language
 const languageFiles = {
@@ -27,6 +31,10 @@ const languageFiles = {
   vi: path.resolve(__dirname, '../src/lib/utils/translations/vi.json'),
   da: path.resolve(__dirname, '../src/lib/utils/translations/da.json')
 };
+
+const selectedLanguageFiles = requestedLanguages.length
+  ? Object.fromEntries(Object.entries(languageFiles).filter(([language]) => requestedLanguages.includes(language)))
+  : languageFiles;
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -127,7 +135,12 @@ const flattenJSON = (obj, prefix = '') => {
 
 // Loop through each language and translate the English text with a delay
 const translate = async () => {
-  for (const [language, filePath] of Object.entries(languageFiles)) {
+  if (!Object.keys(selectedLanguageFiles).length) {
+    console.error(`No matching languages for: ${requestedLanguages.join(', ')}`);
+    process.exit(1);
+  }
+
+  for (const [language, filePath] of Object.entries(selectedLanguageFiles)) {
     console.log(`============FROM: EN================`);
     console.log(`============TO: ${language.toUpperCase()}================`);
 

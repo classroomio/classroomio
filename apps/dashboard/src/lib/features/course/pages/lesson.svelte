@@ -1,5 +1,8 @@
 <script lang="ts">
   import { browser } from '$app/environment';
+  import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { untrack } from 'svelte';
   import isEmpty from 'lodash/isEmpty';
   import { writable } from 'svelte/store';
@@ -11,13 +14,15 @@
 
   import MODES from '$lib/utils/constants/mode';
   import { profile } from '$lib/utils/store/user';
+  import { globalStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbar } from '$features/ui/snackbar/store';
   import LessonVersionHistory from '$features/course/components/lesson/lesson-version-history.svelte';
   import { courseApi, lessonApi } from '$features/course/api';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
-  import { lessonVideoUpload, lessonDocUpload } from '$features/course/components/lesson/store/lessons';
+  import { lessonVideoUpload, lessonDocUpload } from '$features/course/components/lesson/store';
   import { t } from '$lib/utils/functions/translations';
+  import { ContentType } from '@cio/utils/constants/content';
 
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { Button } from '@cio/ui/base/button';
@@ -28,9 +33,9 @@
   import { RoleBasedSecurity } from '$features/ui';
 
   import {
-    BottomNavigation,
+    LessonNavigationActions,
     LanguageSelector,
-    Loader,
+    LessonPageEditHeader,
     Comments,
     Note,
     Slide,
@@ -51,78 +56,81 @@
 
   let { courseId, lessonId }: Props = $props();
 
-  let mode = $state(MODES.view);
-  let prevMode = $state('');
+  const mode = $derived($page.url.searchParams.get('mode') === 'edit' ? MODES.edit : MODES.view);
+
+  let prevModeParam = $state<string | null>(null);
   let isSaving = $state(false);
+  let isDeletingLesson = $state(false);
   let isVersionDrawerOpen = $state(false);
-  let hasFetched = $state('');
 
   const lessonTitle = $derived(lessonApi.lesson?.title || 'Lesson');
+  const isLessonUnlocked = $derived(lessonApi.lesson?.isUnlocked ?? false);
 
-  async function fetchReqData(lessonId = '') {
-    console.log('fetchReqData', lessonId, lessonApi.lesson, hasFetched);
-    if (!lessonId || hasFetched === lessonId) return;
-
-    hasFetched = lessonId;
-
-    lessonApi.isLoading = true;
-
-    await lessonApi.get(courseId, lessonId);
-
-    if (lessonApi.success && lessonApi.lesson) {
-      if ($profile.locale) {
-        lessonApi.currentLocale = $profile.locale;
-      }
-    }
-
-    lessonApi.isLoading = false;
+  function setModeQueryParam(value: (typeof MODES)[keyof typeof MODES]) {
+    const params = new URLSearchParams($page.url.searchParams);
+    params.set('mode', value);
+    goto(`${$page.url.pathname}?${params.toString()}`, { replaceState: false });
+  }
+  function setTabQueryParam(value: string) {
+    const params = new URLSearchParams($page.url.searchParams);
+    params.set('tab', value);
+    goto(`${$page.url.pathname}?${params.toString()}`, { replaceState: false });
   }
 
   function toggleMode() {
-    prevMode = mode;
-    mode = mode === MODES.edit ? MODES.view : MODES.edit;
+    setModeQueryParam(mode === MODES.edit ? MODES.view : MODES.edit);
   }
 
-  const refetchDataAfterVersionRestore = () => {
+  const refetchDataAfterVersionRestore = async () => {
     isVersionDrawerOpen = false;
     if (courseId && browser) {
-      mode = MODES.view;
-      hasFetched = '';
-      fetchReqData(lessonId);
+      setModeQueryParam('view');
+
+      // Refetch lesson data after version restore
+      lessonApi.isLoading = true;
+      await lessonApi.get(courseId, lessonId);
+
+      if (lessonApi.success && lessonApi.lesson) {
+        if ($profile.locale) {
+          lessonApi.currentLocale = $profile.locale;
+        }
+      }
+
+      lessonApi.isLoading = false;
     }
 
     snackbar.success('snackbar.lessons.success.version_restored');
   };
 
-  $effect(() => {
-    if (courseId && $profile.id) {
-      console.log('fetching data');
-      fetchReqData(lessonId);
-    }
-  });
-
-  const tabs = $derived.by(() => {
+  let tabs = $derived.by(() => {
+    if (lessonApi.lesson?.id !== lessonId) return [];
     const ordered = orderedTabs(materialTabs, courseApi.course?.metadata?.lessonTabsOrder);
     const content = lessonApi.translations[lessonId]?.[lessonApi.currentLocale] || '';
 
     const slideUrl = lessonApi.lesson?.slideUrl || '';
     const videos = lessonApi.lesson?.videos || [];
-    const note = lessonApi.lesson?.note || '';
     const documents = lessonApi.lesson?.documents || [];
 
     return ordered.map((tab) => {
-      if (tab.value === 1 && (!isHtmlValueEmpty(note) || !isHtmlValueEmpty(content))) {
-        tab.badgeValue = 1;
-      } else if (tab.value === 2 && !!slideUrl) {
-        tab.badgeValue = 1;
-      } else if (tab.value === 3 && !isEmpty(videos)) {
-        tab.badgeValue = videos.length;
-      } else if (tab.value === 4 && !isEmpty(documents)) {
-        tab.badgeValue = documents.length;
+      if (tab.value === 1) {
+        tab.badgeValue = isHtmlValueEmpty(content) ? 0 : 1;
+      } else if (tab.value === 2) {
+        tab.badgeValue = !!slideUrl ? 1 : 0;
+      } else if (tab.value === 3) {
+        tab.badgeValue = !isEmpty(videos) ? videos.length : 0;
+      } else if (tab.value === 4) {
+        tab.badgeValue = !isEmpty(documents) ? documents.length : 0;
       }
 
       return tab;
     });
+  });
+
+  let currentTabValue = $state('');
+  $effect(() => {
+    if (!tabs.length || currentTabValue) return;
+    const urlTab = $page.url.searchParams.get('tab');
+    currentTabValue = urlTab ?? String(tabs[0].value);
   });
 
   const viewModeComponents = $derived(getViewModeComponents(tabs));
@@ -149,22 +157,70 @@
     await lessonApi.upsertLanguage(courseApi.course.id, lessonId, locale, content);
   }
 
+  function hasLessonNoteContent(targetLessonId: string) {
+    const rawNote = lessonApi.lesson?.note;
+    const hasLegacyNote = typeof rawNote === 'string' && rawNote.trim().length > 0;
+    if (hasLegacyNote) return true;
+
+    const translations = Object.values(lessonApi.translations[targetLessonId] || {});
+    return translations.some((content) => typeof content === 'string' && !isHtmlValueEmpty(content));
+  }
+
+  function patchLessonListItemLocally() {
+    if (!lessonApi.lesson) return;
+
+    courseApi.updateContentItem(lessonApi.lesson.id, ContentType.Lesson, {
+      title: lessonApi.lesson.title ?? '',
+      isUnlocked: lessonApi.lesson.isUnlocked ?? null,
+      hasNoteContent: hasLessonNoteContent(lessonApi.lesson.id),
+      hasSlideContent: Boolean(lessonApi.lesson.slideUrl?.trim()),
+      videosCount: Array.isArray(lessonApi.lesson.videos) ? lessonApi.lesson.videos.length : 0,
+      documentsCount: Array.isArray(lessonApi.lesson.documents) ? lessonApi.lesson.documents.length : 0
+    });
+  }
+
   async function saveLesson() {
     if (!lessonApi.lesson) return false;
 
     // Prevent autosave loops: we only set this back to `true` when the user edits again.
     lessonApi.isDirty = false;
 
-    await Promise.all([
+    const [isLessonUpdated] = await Promise.all([
       lessonApi.update(courseApi.course?.id || '', lessonId, {
-        note: lessonApi.lesson.note || undefined,
+        title: lessonApi.lesson.title || undefined,
+        isUnlocked: lessonApi.lesson.isUnlocked ?? undefined,
         slideUrl: lessonApi.lesson.slideUrl || undefined,
         videos: lessonApi.lesson.videos || [],
         documents: lessonApi.lesson.documents || []
       }),
-
       saveOrUpdateTranslation(lessonApi.currentLocale, lessonId)
     ]);
+
+    if (isLessonUpdated) {
+      patchLessonListItemLocally();
+    }
+  }
+
+  function handleLessonTitleChange(value: string) {
+    lessonApi.updateLessonState('title', value);
+  }
+
+  function handleToggleLessonLock() {
+    const currentValue = lessonApi.lesson?.isUnlocked ?? false;
+    lessonApi.updateLessonState('isUnlocked', !currentValue);
+  }
+
+  async function handleDeleteLesson() {
+    if (!courseId || !lessonId || isDeletingLesson) return;
+
+    isDeletingLesson = true;
+    await lessonApi.delete(courseId, lessonId);
+
+    if (lessonApi.success) {
+      await goto(resolve(`/courses/${courseId}/lessons`, {}));
+    }
+
+    isDeletingLesson = false;
   }
 
   function handleSave(prevMode: string) {
@@ -187,7 +243,7 @@
         await saveLesson();
 
         isSaving = false;
-      }, 1000);
+      }, 2000);
     });
   }
 
@@ -207,14 +263,17 @@
     autoSave();
   });
 
-  // Only save once when leaving edit mode.
+  // Only save once when leaving edit mode (e.g. Save button or browser back).
   let didHandleExitEdit = false;
   $effect(() => {
     if (!lessonId) return;
 
-    const isExitEdit = prevMode === MODES.edit && mode === MODES.view;
+    const currentParam = $page.url.searchParams.get('mode');
+    const prev = prevModeParam;
+    prevModeParam = currentParam;
 
-    // reset when not in an "exit edit" state
+    const isExitEdit = prev === 'edit' && currentParam !== 'edit';
+
     if (!isExitEdit) {
       didHandleExitEdit = false;
       return;
@@ -223,16 +282,51 @@
     if (didHandleExitEdit) return;
     didHandleExitEdit = true;
 
-    handleSave(prevMode);
+    handleSave(MODES.edit);
   });
 </script>
 
+<AddVideoModal
+  {lessonId}
+  onClose={() => {
+    if ($lessonVideoUpload.isUploading) return;
+
+    $lessonVideoUpload.isModalOpen = false;
+
+    triggerAutoSave();
+  }}
+/>
+
+<AddDocumentModal
+  {lessonId}
+  onClose={() => {
+    if ($lessonDocUpload.isUploading) return;
+
+    $lessonDocUpload.isModalOpen = false;
+    $lessonDocUpload.error = null;
+
+    triggerAutoSave();
+  }}
+/>
+
 <Page.Header>
   <Page.HeaderContent>
-    <Page.Title>{lessonTitle}</Page.Title>
+    <LessonPageEditHeader
+      {mode}
+      title={lessonTitle}
+      isUnlocked={isLessonUnlocked}
+      {isDeletingLesson}
+      onTitleChange={handleLessonTitleChange}
+      onToggleLock={handleToggleLessonLock}
+      onDeleteLesson={handleDeleteLesson}
+    />
   </Page.HeaderContent>
   <Page.Action>
-    <div class="flex items-center gap-1">
+    <div class="flex items-center gap-2">
+      {#if mode === MODES.view && $globalStore.isStudent}
+        <LessonNavigationActions {lessonId} {courseId} />
+      {/if}
+
       <RoleBasedSecurity allowedRoles={[1, 2]}>
         {#if mode === MODES.edit && window.innerWidth >= 1024}
           <IconButton onclick={() => (isVersionDrawerOpen = true)}>
@@ -250,7 +344,7 @@
           </IconButton>
         </div>
 
-        <LanguageSelector {lessonId} />
+        <LanguageSelector />
       </RoleBasedSecurity>
     </div>
   </Page.Action>
@@ -259,32 +353,13 @@
 <Page.Body>
   {#snippet child()}
     <div class="overflow-x-hidden lg:w-full xl:w-11/12">
-      <AddVideoModal
-        {lessonId}
-        onClose={() => {
-          if ($lessonVideoUpload.isUploading) return;
-
-          $lessonVideoUpload.isModalOpen = false;
-
-          triggerAutoSave();
-        }}
-      />
-
-      <AddDocumentModal
-        onClose={() => {
-          if ($lessonDocUpload.isUploading) return;
-
-          $lessonDocUpload.isModalOpen = false;
-          $lessonDocUpload.error = null;
-
-          triggerAutoSave();
-        }}
-      />
-
-      {#if lessonApi.isLoading}
-        <Loader />
-      {:else if mode === MODES.edit}
-        <UnderlineTabs.Root>
+      {#if mode === MODES.edit}
+        <UnderlineTabs.Root
+          bind:value={currentTabValue}
+          onValueChange={(e) => {
+            setTabQueryParam(e);
+          }}
+        >
           <!-- Tabs List -->
           <UnderlineTabs.List>
             {#each tabs as tab}
@@ -327,13 +402,13 @@
         </UnderlineTabs.Root>
       {:else if lessonApi.lesson && !isMaterialsEmpty}
         {#key lessonId}
-          <div class="mb-20 flex w-full flex-col gap-6" in:fade={{ delay: 500 }} out:fade>
+          <div class="mb-20 flex w-full flex-col gap-2" in:fade={{ delay: 500 }} out:fade>
             {#each viewModeComponents as Component}
               <Component {mode} {lessonId} />
             {/each}
 
             {#if $currentOrg.customization?.apps?.comments}
-              <hr class="my-5" />
+              <hr class="my-2" />
 
               <Comments {lessonId} />
             {/if}
@@ -360,8 +435,6 @@
     </div>
   {/snippet}
 </Page.Body>
-
-<BottomNavigation {lessonId} {courseId} />
 
 {#if isVersionDrawerOpen && window.innerWidth >= 1024}
   <LessonVersionHistory

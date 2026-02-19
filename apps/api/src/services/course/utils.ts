@@ -10,6 +10,14 @@ export type CourseContentItem = {
   sectionId: string | null;
   isUnlocked: boolean | null;
   isComplete: boolean | null;
+  lessonAt: string | null;
+  callUrl: string | null;
+  hasNoteContent: boolean | null;
+  hasSlideContent: boolean | null;
+  videosCount: number | null;
+  documentsCount: number | null;
+  questionCount: number | null;
+  dueBy: string | null;
 };
 
 export type CourseContentSection = {
@@ -61,7 +69,15 @@ function mapCourseContentItems(rows: CourseContentItemRow[]): CourseContentItem[
     createdAt: row.createdAt ?? null,
     sectionId: row.sectionId ?? null,
     isUnlocked: row.isUnlocked ?? null,
-    isComplete: row.isComplete ?? null
+    isComplete: row.isComplete ?? null,
+    lessonAt: row.lessonAt ?? null,
+    callUrl: row.callUrl ?? null,
+    hasNoteContent: row.hasNoteContent ?? null,
+    hasSlideContent: row.hasSlideContent ?? null,
+    videosCount: row.videosCount ?? null,
+    documentsCount: row.documentsCount ?? null,
+    questionCount: row.questionCount ?? null,
+    dueBy: row.dueBy ?? null
   }));
 }
 

@@ -36,6 +36,7 @@ export const unsplashRouter = new Hono()
         photos: data.results
       });
     } catch (error) {
+      console.error('Error fetching photos from Unsplash', error);
       return handleError(c, error, 'Error fetching photos from Unsplash');
     }
   });

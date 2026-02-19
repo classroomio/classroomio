@@ -11,10 +11,17 @@ export const ZGetOrganizations = z.object({
 export type TGetOrganizations = z.infer<typeof ZGetOrganizations>;
 
 export const ZGetCoursesBySiteName = z.object({
-  siteName: z.string().min(1)
+  siteName: z.string().min(1),
+  tags: z.string().optional()
 });
 
 export type TGetCoursesBySiteName = z.infer<typeof ZGetCoursesBySiteName>;
+
+export const ZGetOrganizationCoursesQuery = z.object({
+  tags: z.string().optional()
+});
+
+export type TGetOrganizationCoursesQuery = z.infer<typeof ZGetOrganizationCoursesQuery>;
 
 export const ZGetOrgSetup = z.object({
   siteName: z.string().min(1)

@@ -1,13 +1,16 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import { goto } from '$app/navigation';
+  import { Badge } from '@cio/ui/base/badge';
   import { Label } from '@cio/ui/base/label';
   import { Switch } from '@cio/ui/base/switch';
   import * as RadioGroup from '@cio/ui/base/radio-group';
   import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
+  import XIcon from '@lucide/svelte/icons/x';
 
   import ReorderMaterialTabs from '$features/course/components/reorder-material-tabs.svelte';
+  import { CourseTagPicker } from '$features/course/components';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
@@ -25,6 +28,7 @@
   import generateSlug from '$lib/utils/functions/generateSlug';
   import { DeleteModal } from '$features/ui';
   import { courseApi } from '$features/course/api';
+  import { tagApi } from '$features/tag/api';
   import { uploadImage } from '$lib/utils/services/upload';
   import { copyToClipboard } from '$lib/utils/functions/formatYoutubeVideo';
   import { handleOpenWidget } from '$features/ui/course-landing-page/store';
@@ -43,13 +47,60 @@
   let avatar: string | undefined;
   let hasUnsavedChanges = $state(false);
   let openDeleteModal = $state(false);
+  let selectedTagIds = $state<string[]>([]);
+  let initialTagIds = $state<string[]>([]);
+  let loadedCourseTagsForId = $state<string | null>(null);
+  let isTagPopoverOpen = $state(false);
+
+  function normalizeTagIds(tagIds: string[]) {
+    return Array.from(new Set(tagIds));
+  }
+
+  function areSameTagIds(a: string[], b: string[]) {
+    if (a.length !== b.length) {
+      return false;
+    }
+
+    const left = [...a].sort();
+    const right = [...b].sort();
+
+    return left.every((value, index) => value === right[index]);
+  }
+
+  async function loadCourseTags(courseId: string) {
+    loadedCourseTagsForId = courseId;
+
+    await Promise.all([tagApi.getTagGroups(), tagApi.getCourseTags(courseId)]);
+
+    const assignedTagIds = normalizeTagIds(tagApi.courseTags.map((tag) => tag.id));
+    selectedTagIds = assignedTagIds;
+    initialTagIds = assignedTagIds;
+  }
+
+  function toggleTagSelection(tagId: string) {
+    const selected = new Set(selectedTagIds);
+
+    if (selected.has(tagId)) {
+      selected.delete(tagId);
+    } else {
+      selected.add(tagId);
+    }
+
+    selectedTagIds = Array.from(selected);
+    hasUnsavedChanges = true;
+  }
+
+  function removeSelectedTag(tagId: string) {
+    selectedTagIds = selectedTagIds.filter((id) => id !== tagId);
+    hasUnsavedChanges = true;
+  }
 
   function widgetControl() {
     $handleOpenWidget.open = !$handleOpenWidget.open;
   }
 
   const downloadCourse = async () => {
-    alert('Coming soon');
+    alert($t('course.navItem.settings.coming_soon'));
   };
 
   const deleteBannerImage = () => {
@@ -110,9 +161,25 @@
         slug: courseApi.course.slug!
       };
 
-      const response = await courseApi.update(courseApi.course.id, updatedCourse);
+      const normalizedSelectedTagIds = normalizeTagIds(selectedTagIds);
+      const hasTagChanges = !areSameTagIds(normalizedSelectedTagIds, initialTagIds);
+
+      const updatePayload = {
+        ...updatedCourse,
+        ...(hasTagChanges ? { tagIds: normalizedSelectedTagIds } : {})
+      };
+
+      const response = await courseApi.update(courseApi.course.id, updatePayload, {
+        showSuccessToast: !hasTagChanges
+      });
 
       if (courseApi.success && response) {
+        if (hasTagChanges) {
+          initialTagIds = normalizedSelectedTagIds;
+          selectedTagIds = normalizedSelectedTagIds;
+          snackbar.success('snackbar.course_settings.success.update_successful');
+        }
+
         // courseApi.update() already updates courseApi.course internally
         hasUnsavedChanges = false;
       }
@@ -159,6 +226,48 @@
     if (courseApi.course) {
       setDefault(courseApi.course);
     }
+  });
+
+  $effect(() => {
+    const courseId = courseApi.course?.id;
+
+    if (!courseId || loadedCourseTagsForId === courseId) {
+      return;
+    }
+
+    loadCourseTags(courseId);
+  });
+
+  const selectedTagChips = $derived.by(() => {
+    const allTags = tagApi.tagGroups.flatMap((group) =>
+      group.tags.map((tag) => ({
+        ...tag,
+        category: group.name
+      }))
+    );
+
+    const tagById = new Map(allTags.map((tag) => [tag.id, tag]));
+
+    const selected: (typeof allTags)[number][] = [];
+
+    for (const tagId of selectedTagIds) {
+      const existing = tagById.get(tagId);
+      if (existing) {
+        selected.push(existing);
+        continue;
+      }
+
+      const assigned = tagApi.courseTags.find((tag) => tag.id === tagId);
+      if (assigned) {
+        selected.push({
+          ...assigned,
+          category: '',
+          courseCount: 1
+        });
+      }
+    }
+
+    return selected;
   });
 
   let courseLink = $derived(courseApi.course?.slug ? `${$currentOrgDomain}/course/${courseApi.course.slug}` : '');
@@ -212,7 +321,7 @@
       <Field.Field>
         <InputField
           label={$t('course.navItem.settings.course_title')}
-          placeholder="Write the course title here"
+          placeholder={$t('course.navItem.settings.course_title_placeholder')}
           className="w-full"
           isRequired
           bind:value={$settings.courseTitle}
@@ -236,17 +345,20 @@
         />
       </Field.Field>
       <Field.Field>
-        <Field.Label>{$t('course.navItem.settings.link')}</Field.Label>
-        <div class="mb-2 flex items-center gap-2">
-          <IconButton onclick={generateNewCourseLink}>
-            <RotateCcwIcon size={16} />
-          </IconButton>
-          <span class="grow"></span>
-          <IconButton onclick={() => goto(courseLink)}>
-            <ArrowUpRightIcon size={16} />
-          </IconButton>
-        </div>
-        <div class="flex items-center justify-between rounded-md border p-3">
+        <Field.Label class="justify-between"
+          >{$t('course.navItem.settings.link')}
+
+          <div class="flex items-center gap-1">
+            <IconButton onclick={generateNewCourseLink}>
+              <RotateCcwIcon size={16} />
+            </IconButton>
+            <IconButton onclick={() => goto(courseLink)}>
+              <ArrowUpRightIcon size={16} />
+            </IconButton>
+          </div>
+        </Field.Label>
+
+        <div class="flex items-center justify-between rounded-md border p-1">
           {#if courseApi.course?.slug}
             <p class="text-sm">{courseLink}</p>
             <IconButton
@@ -257,11 +369,54 @@
               <Copy size={16} />
             </IconButton>
           {:else}
-            <p class="text-sm">Setup landing page to get course link</p>
+            <p class="text-sm">{$t('course.navItem.settings.setup_landing_for_link')}</p>
           {/if}
         </div>
       </Field.Field>
     </Field.Group>
+  </Field.Set>
+
+  <Field.Separator />
+
+  <Field.Set>
+    <Field.Legend>{$t('course.navItem.settings.tags.title')}</Field.Legend>
+    <Field.Description>{$t('course.navItem.settings.tags.description')}</Field.Description>
+    <Field.Field>
+      <div class="space-y-3">
+        <div class="flex flex-wrap items-center gap-2">
+          {#if !selectedTagChips.length}
+            <p class="ui:text-muted-foreground text-sm">{$t('course.navItem.settings.tags.empty')}</p>
+          {:else}
+            {#each selectedTagChips as tag (tag.id)}
+              <Badge variant="outline" class="flex items-center gap-2">
+                <span
+                  class="inline-block h-2.5 w-2.5 rounded-full border"
+                  style={`background-color: ${tag.color}`}
+                  aria-hidden="true"
+                ></span>
+                <span>{tag.name}</span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  class="h-5 w-5"
+                  onclick={() => removeSelectedTag(tag.id)}
+                >
+                  <XIcon />
+                </Button>
+              </Badge>
+            {/each}
+          {/if}
+
+          <CourseTagPicker
+            tagGroups={tagApi.tagGroups}
+            {selectedTagIds}
+            bind:open={isTagPopoverOpen}
+            onTagToggle={toggleTagSelection}
+          />
+        </div>
+      </div>
+    </Field.Field>
   </Field.Set>
 
   <Field.Separator />
@@ -288,6 +443,7 @@
         id="content-grouping"
         checked={$settings.isContentGroupingEnabled}
         onCheckedChange={(checked) => {
+          console.log('checked', checked);
           $settings.isContentGroupingEnabled = checked;
           hasUnsavedChanges = true;
         }}
@@ -414,7 +570,13 @@
     <Field.Legend>{$t('course.navItem.settings.delete')}</Field.Legend>
     <Field.Description>{$t('course.navItem.settings.delete_text')}</Field.Description>
     <Field.Field>
-      <Button variant="destructive" onclick={() => (openDeleteModal = true)} loading={isDeleting} disabled={isDeleting}>
+      <Button
+        variant="destructive"
+        onclick={() => (openDeleteModal = true)}
+        loading={isDeleting}
+        disabled={isDeleting}
+        class="w-fit!"
+      >
         {$t('course.navItem.settings.delete')}
       </Button>
     </Field.Field>

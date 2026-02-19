@@ -1,8 +1,7 @@
 import { Context, Next } from 'hono';
-import { isUserCourseMember, isUserCourseTeamMember } from '@cio/db/queries/group';
 
 import { ErrorCodes } from '@api/utils/errors';
-import { isUserOrgAdmin } from '@cio/db/queries/organization';
+import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 
 /**
  * Middleware to check if the authenticated user is a team member (ADMIN or TUTOR) of a course
@@ -36,17 +35,10 @@ export const courseTeamMemberMiddleware = async (c: Context, next: Next) => {
       );
     }
 
-    // Check if user is a team member (ADMIN or TUTOR) in the course
-    const { isTeamMember, organizationId } = await isUserCourseTeamMember(courseId, user.id);
-    if (isTeamMember) {
+    // Check if user is a team member (ADMIN or TUTOR) or org admin
+    const isAllowed = await isCourseTeamMemberOrOrgAdmin(courseId, user.id);
+    if (isAllowed) {
       return next();
-    }
-
-    if (organizationId) {
-      const isOrgAdmin = await isUserOrgAdmin(organizationId, user.id);
-      if (isOrgAdmin) {
-        return next();
-      }
     }
 
     return c.json(

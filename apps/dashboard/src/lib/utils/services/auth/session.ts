@@ -37,7 +37,7 @@ export async function getThroughTrpc(allCookies: string) {
   return data;
 }
 
-async function getThroughAuthClient(allCookies: string) {
+export async function getThroughAuthClient(allCookies: string) {
   const session = await authClient.getSession({
     fetchOptions: {
       headers: {

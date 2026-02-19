@@ -1,6 +1,7 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { fade } from 'svelte/transition';
   import MailIcon from '@lucide/svelte/icons/mail';
   import PhoneIcon from '@lucide/svelte/icons/phone';
@@ -42,7 +43,6 @@
   let isAdding = $state(false);
   let success = $state(false);
   let successContactSaved = $state(false);
-  let viewAll = $state(false);
   let isContactSubmiting = $state(false);
   let contact = $state({
     name: '',
@@ -263,6 +263,11 @@
             <p class="text-md text-center">
               {$landingPageSettings.courses.subtitle}
             </p>
+            <div class="mt-5 flex justify-center">
+              <Button.Root variant="link" class="w-fit px-8 py-4" onclick={() => goto(resolve('/courses', {}))}>
+                {$t('course.navItem.landing_page.view_all')}
+              </Button.Root>
+            </div>
           </div>
         </div>
         {#if orgApi.isFetchingOrgPublicCourses}
@@ -272,10 +277,7 @@
             <CourseCardLoader />
           </div>
         {:else if orgApi.publicCourses.length > 0}
-          <CourseCardList
-            courses={orgApi.publicCourses.slice(0, viewAll ? orgApi.publicCourses.length : 3)}
-            isOnLandingPage={true}
-          />
+          <CourseCardList courses={orgApi.publicCourses.slice(0, 3)} isOnLandingPage={true} />
         {:else}
           <Empty
             icon={CoursesEmptyIcon}
@@ -283,14 +285,6 @@
             description={$t('course.navItem.landing_page.coming_your_way')}
             variant="page"
           />
-        {/if}
-
-        {#if orgApi.publicCourses.length > 3}
-          <div class="mt-3 flex w-full justify-center">
-            <Button.Root variant="outline" onclick={() => (viewAll = !viewAll)} class="w-fit px-10 py-5">
-              {viewAll ? $t('course.navItem.landing_page.view_less') : $t('course.navItem.landing_page.view_all')}
-            </Button.Root>
-          </div>
         {/if}
       </section>
     {/if}

@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { Empty } from '@cio/ui/custom/empty';
-  import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
+  import { Spinner } from '@cio/ui/base/spinner';
   import { CourseSidebar } from '$features/course/components/sidebar';
   import { CourseHeader } from '$features/course/components';
   import type { Course } from '$features/course/types';
@@ -91,7 +91,7 @@
   </Dialog.Root>
 {/if}
 
-<Sidebar.Provider>
+<Sidebar.Provider data-sveltekit-preload-data="off">
   <CourseSidebar {path} id={data.courseId} />
 
   <Sidebar.Inset
@@ -105,8 +105,8 @@
         <Empty
           title="Loading course…"
           description="Please wait while we load your course data."
-          icon={LoaderCircleIcon}
-          iconClass="animate-spin"
+          icon={Spinner}
+          iconClass="h-8 w-8"
           variant="page"
         />
       </div>
@@ -115,7 +115,7 @@
         <Confetti />
       {/if}
 
-      <Page.Root class="mx-auto flex max-w-3xl px-4">
+      <Page.Root class="mx-auto flex w-[90%] px-4 md:max-w-2xl lg:max-w-3xl">
         {@render children?.()}
       </Page.Root>
     {/if}

@@ -14,8 +14,7 @@
     "moduleResolution": "bundler",
     "noImplicitAny": false,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "types": ["vidstack/svelte"]
+    "noUnusedParameters": true
   },
   "include": ["src/**/*", ".svelte-kit/ambient.d.ts"],
   "exclude": ["node_modules", "build", "**/*.spec.ts", "**/*.test.ts"]

@@ -33,11 +33,11 @@
     if (!isOpen && !isLoading) closeModal();
   }}
 >
-  <Dialog.Content class="w-9/12 w-[800px]">
+  <Dialog.Content class="w-[700px]! max-w-none!">
     <Dialog.Header>
       <Dialog.Title>Welcome</Dialog.Title>
     </Dialog.Header>
-    <p class="text-sm text-black md:text-base lg:text-lg dark:text-white">
+    <p class="text-md text-black dark:text-white">
       {$t('welcome_modal.we_at')}
       <a href="https://app.classroomio.com/" class="ui:text-primary no-underline hover:no-underline">ClassroomIO</a>
       {$t('welcome_modal.small_team')}

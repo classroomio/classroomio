@@ -94,6 +94,12 @@
     "deeply_appreciate": "we deeply appreciate it and are at your service."
   },
 
+  "app": {
+    "search": {
+      "placeholder": "Search"
+    }
+  },
+
   "login": {
     "welcome": "Welcome back",
     "email": "Your email",
@@ -319,12 +325,189 @@
     }
   },
 
+  "media_manager": {
+    "page_title": "Media Manager - ClassroomIO",
+    "heading": "Media Manager",
+    "empty": "No assets found",
+    "empty_description": "The asset does not exist or is not available in this organization.",
+    "common": {
+      "not_available": "N/A"
+    },
+    "storage": {
+      "total_bytes": "Total Storage",
+      "internal_bytes": "Internal Storage",
+      "external_assets": "External Assets",
+      "bytes_by_kind": "Storage by Asset Type"
+    },
+    "filters": {
+      "search_placeholder": "Search assets",
+      "apply": "Apply",
+      "refresh": "Refresh",
+      "kind_options": {
+        "all": "All types",
+        "video": "Video",
+        "document": "Document",
+        "image": "Image",
+        "audio": "Audio",
+        "other": "Other"
+      },
+      "status_options": {
+        "all": "All statuses",
+        "active": "Active",
+        "archived": "Archived"
+      }
+    },
+    "kind": {
+      "video": "Video",
+      "document": "Document",
+      "image": "Image",
+      "audio": "Audio",
+      "other": "Other"
+    },
+    "provider": {
+      "upload": "Upload",
+      "youtube": "YouTube",
+      "generic": "Generic",
+      "external_url": "External URL"
+    },
+    "status": {
+      "active": "Active",
+      "archived": "Archived"
+    },
+    "table": {
+      "title": "Title",
+      "kind": "Type",
+      "provider": "Provider",
+      "status": "Status",
+      "size": "Size",
+      "updated_at": "Updated",
+      "actions": "Actions"
+    },
+    "actions": {
+      "edit": "Edit",
+      "where_used": "Where used",
+      "download": "Download"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page"
+    },
+    "edit": {
+      "title": "Edit Asset",
+      "description": "Update media metadata for this asset.",
+      "cancel": "Cancel",
+      "save": "Save Changes"
+    },
+    "form": {
+      "file_name": "File Name",
+      "description": "Description",
+      "description_placeholder": "Add an optional description",
+      "thumbnail_url": "Thumbnail URL",
+      "thumbnail_url_placeholder": "https://example.com/thumbnail.jpg",
+      "thumbnail_upload": "Upload Thumbnail",
+      "thumbnail_drop_label": "Drop image here or click to upload",
+      "thumbnail_drop_size": "Up to 5 MB",
+      "thumbnail_preview": "Thumbnail Preview",
+      "thumbnail_alt": "Asset thumbnail",
+      "status": "Status"
+    },
+    "usage": {
+      "title": "Where Used",
+      "description": "Current usage references for",
+      "loading": "Loading usage details...",
+      "empty": "This asset is not attached anywhere yet.",
+      "total": "Total usages:",
+      "target": {
+        "lesson": "Lesson",
+        "exercise": "Exercise",
+        "question": "Question",
+        "unknown": "Unknown"
+      },
+      "table": {
+        "target_type": "Target Type",
+        "target_id": "Target ID",
+        "slot": "Slot",
+        "position": "Position",
+        "added": "Added"
+      }
+    }
+  },
+
+  "tags_admin": {
+    "page_title": "Tags - ClassroomIO",
+    "heading": "Tags",
+    "create": "Create",
+    "common": {
+      "not_available": "N/A"
+    },
+    "actions": {
+      "create_tag": "Create Tag",
+      "create_group": "Create Tag Group",
+      "edit_group": "Edit Group",
+      "edit_tag": "Edit Tag",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "table": {
+      "tag": "Tag",
+      "total_courses": "Total Courses",
+      "course": "course",
+      "courses": "courses",
+      "description": "Description",
+      "category": "Category",
+      "action": "Action",
+      "empty_group": "No tags in this group yet"
+    },
+    "empty": {
+      "title": "No tag groups yet",
+      "description": "Create a tag group first, then start adding tags."
+    },
+    "group_modal": {
+      "create_title": "Create Tag Group",
+      "edit_title": "Edit Tag Group",
+      "name": "Group Name",
+      "description": "Description",
+      "description_placeholder": "Optional description"
+    },
+    "tag_modal": {
+      "create_title": "Create Tag",
+      "edit_title": "Edit Tag",
+      "name": "Tag Name",
+      "description": "Description",
+      "description_placeholder": "Optional description",
+      "category": "Category",
+      "color": "Color",
+      "color_help": "Pick one of 10 colors",
+      "select_category": "Select a category",
+      "no_groups": "Create a tag group before creating tags"
+    }
+  },
+
+  "public_courses": {
+    "page_title": "Courses - ClassroomIO",
+    "heading": "Courses",
+    "subtitle": "Browse all published courses",
+    "clear_filters": "Clear Filters",
+    "filters": {
+      "title": "Filter by Tags",
+      "help": "Select one or more tags to filter courses",
+      "empty": "No tags available yet"
+    },
+    "empty": {
+      "title": "No courses found",
+      "description": "Try clearing your filters or check back later."
+    }
+  },
+
   "org_navigation": {
     "platform": "Platform",
     "dashboard": "Dashboard",
     "courses": "Courses",
+    "tags": "Tags",
     "community": "Community",
     "audience": "Audience",
+    "media": "Media",
     "setup": "Setup",
     "help": "Help",
     "settings": "Settings",
@@ -563,6 +746,15 @@
     "heading": "Courses",
     "heading_button": "Create Course",
     "search_placeholder": "Find Course",
+    "tag_filters": {
+      "filter": "Filter",
+      "active": "Active filters",
+      "clear_all": "Clear all",
+      "popover_title": "Filters",
+      "sort": "Sort",
+      "tags": "Tags",
+      "empty_tags": "No tags available"
+    },
     "course_filter": {
       "date_created": "Date Created",
       "published": "Published",
@@ -587,6 +779,7 @@
       "list_view": {
         "title": "Title",
         "description": "Description",
+        "tags": "Tags",
         "lessons": "Lessons",
         "students": "Students",
         "published": "Published",
@@ -630,6 +823,17 @@
       "nav_certificates": "Certificates",
       "nav_landing_page": "Landing Page",
       "nav_settings": "Settings"
+    },
+    "sidebar": {
+      "back_to_course": "Back to course",
+      "content_count": {
+        "lessons": "{count} lessons",
+        "exercises": "{count} exercises"
+      }
+    },
+    "search": {
+      "placeholder": "Search lessons or exercises",
+      "empty": "No results found"
     },
 
     "navItem": {
@@ -681,10 +885,11 @@
           "modal_heading": "Add New Lesson",
           "modal_heading_section": "Add New Section",
           "lesson_title": "Lesson Title",
-          "lesson_section_title": "Section Title",
+          "course_section_title": "Section Title",
           "click_to": "Click to",
           "lock": "Lock",
           "unlock": "Unlock",
+          "all": "All",
           "fullname": "fullname",
           "save": "Save",
           "edit": "Edit",
@@ -694,6 +899,26 @@
         "add_content": "Add content",
         "add_content_description": "Select the type of content you want to add.",
         "add_content_details": "Fill in the details for this content.",
+        "add_content_adding_to": "Adding to",
+        "add_content_section_fallback": "section",
+        "add_content_continue": "Continue",
+        "add_content_section_label": "Section",
+        "add_content_select_section": "Select section",
+        "add_content_create_section_first": "Create a section first to add lessons or exercises.",
+        "add_content_back": "Back",
+        "add_content_create": "Create",
+        "add_content_create_section": "Create section",
+        "add_content_create_lesson": "Create lesson",
+        "add_content_options": {
+          "section_title": "Section",
+          "section_description": "Group lessons and exercises together.",
+          "lesson_title": "Lesson",
+          "lesson_description": "Teach with notes, slides, and videos.",
+          "exercise_title": "Exercise",
+          "exercise_description": "Assess students with quizzes and tasks."
+        },
+        "add_content_section_title_placeholder": "e.g., Module 1: Introduction",
+        "add_content_lesson_title_placeholder": "e.g., Getting Started with Variables",
         "join_lesson": "Join lesson",
         "no_link": "No link",
         "no_tutor": "No tutor added",
@@ -717,6 +942,7 @@
           "body_heading": "No note, video or slide added for this lesson yet",
           "body_content": "Share your knowledge with your students by creating engaging content. Start by clicking on",
           "get_started": "Get Started",
+          "no_content": "No Content",
           "no_translation": "No translation for the selected language",
           "button": "button",
           "tabs": {
@@ -738,7 +964,11 @@
               "title": "Video",
               "embed_link": "Embed Link",
               "upload": "Upload",
+              "library": "Library",
               "button": "Add/Edit Video(s)",
+              "remove_video": "Remove video",
+              "empty_title": "No videos yet",
+              "empty_description": "Add videos from YouTube, upload, or your media library",
               "add_video": {
                 "title": "Add a Video",
                 "add_by": "Add By",
@@ -746,7 +976,7 @@
                 "videos_added": "Videos Added",
                 "add_video": "Add Video",
                 "upload_video": "Upload Video",
-                "select_file": "Select file( Mp4, MOV, AVI) to upload to your lesson.",
+                "select_file": "Select file (Mp4, MOV, AVI) to upload to your lesson.",
                 "size": "(Max 500 MB)",
                 "oops": "Oops `😬, couldn’t upload video",
                 "big_file": "Sorry we video wasn’t uploaded. The file size is too big,",
@@ -759,8 +989,15 @@
                 "uploading": "Uploading...",
                 "invalid_youtube": "Invalid YouTube link(s)",
                 "invalid_link": "Invalid link(s)",
+                "search_library": "Search library",
+                "search_library_action": "Search",
+                "loading_library": "Loading media library...",
+                "no_library_videos": "No videos available in your media library",
+                "add_from_library": "Add from library",
                 "cancel_upload": "Cancel Upload",
-                "upload_cancelled": "Upload cancelled by user"
+                "upload_cancelled": "Upload cancelled by user",
+                "max_files": "{count, plural, one {You can upload # file} other {You can upload # files}}",
+                "max_files_and_size": "(up to {size} each)"
               }
             },
             "document": {
@@ -793,12 +1030,15 @@
               "upload_cancelled": "Upload cancelled by user",
               "downloading": "Downloading...",
               "view_pdf": "View PDF",
+              "remove_document": "Remove document",
               "delete": "Delete",
               "page_of": "Page {page} of {total}",
               "loading_pdf": "Loading PDF...",
               "failed_to_load_pdf": "Failed to load PDF document",
               "failed_to_render_pdf": "Failed to render PDF page",
-              "use_arrow_keys": "Use arrow keys to navigate, +/- to zoom, or click the controls above. Right-click is disabled."
+              "use_arrow_keys": "Use arrow keys to navigate, +/- to zoom, or click the controls above. Right-click is disabled.",
+              "empty_title": "No documents yet",
+              "empty_description": "Upload documents to share with your students"
             }
           },
           "button_done": "Done"
@@ -839,6 +1079,7 @@
             "generate": "Generate",
             "completion": "AI Generation Complete",
             "click_generate": "Click 'Generate' for some magic",
+            "no_templates_for_tag": "No templates available for this tag.",
             "errors": {
               "template_fetch": "Error fetching templates. Please try again."
             }
@@ -1059,7 +1300,63 @@
           "qr_downloading_snackbar": "QR code generated successfully, please wait while it downloads",
           "copy_link": "Copy link",
           "success": "Copied Successfully",
-          "finish": "Finish"
+          "finish": "Finish",
+          "loading": "Loading...",
+          "student_invite_settings": "Student Invite Settings",
+          "student_invite_settings_description": "Choose how long the invite works and how many students can use it.",
+          "preset": "Preset",
+          "expires_at": "Expires At",
+          "max_uses": "Max Uses",
+          "presets": {
+            "one_time_24h": "One-time (24h)",
+            "multi_use_7d": "Multi-use (7 days)",
+            "multi_use_30d": "Multi-use (30 days)",
+            "custom": "Custom"
+          },
+          "quick_invite_link": "Quick Invite Link",
+          "quick_invite_link_description": "Create a secure link and share by copy or QR.",
+          "regenerate_link": "Regenerate Link",
+          "share_via_qr": "Share via QR",
+          "qr_placeholder": "Generate link to show QR",
+          "direct_email_bulk": "Direct Email / Bulk Invite",
+          "direct_email_description": "Paste email addresses separated by comma, space, or new line. A unique secure invite is created per email.",
+          "recipient_emails": "Recipient Emails",
+          "recipient_emails_placeholder": "student1@example.com, student2@example.com",
+          "send_invite_emails": "Send invite emails immediately",
+          "create_email_invites": "Create Email Invites",
+          "existing_invites": "Existing Invites",
+          "refresh": "Refresh",
+          "loading_invites": "Loading invites...",
+          "no_invites_yet": "No invites created yet.",
+          "created": "Created",
+          "expires": "Expires",
+          "uses": "Uses",
+          "remaining": "remaining",
+          "opened": "Opened",
+          "joined": "Joined",
+          "email_sent": "Email sent",
+          "email_failed": "Email failed",
+          "copy_metadata": "Copy Metadata",
+          "revoke": "Revoke",
+          "view_audit": "View Audit",
+          "hide_audit": "Hide Audit",
+          "no_audit_events": "No audit events.",
+          "audit_at": "At",
+          "audit_email": "Email",
+          "audit_actor": "Actor",
+          "audit_ip": "IP",
+          "scan_qr": "Scan QR",
+          "classroomio_brand": "ClassroomIO.com",
+          "snackbar_invite_link_copied": "Invite link copied",
+          "snackbar_invite_link_regenerated": "A new invite link has been generated",
+          "snackbar_failed_generate_link": "Failed to generate invite link",
+          "snackbar_add_one_recipient": "Add at least one recipient email",
+          "snackbar_failed_create_email_invites": "Failed to create email invites",
+          "snackbar_invite_revoked": "Invite revoked",
+          "snackbar_failed_revoke_invite": "Failed to revoke invite",
+          "snackbar_failed_load_audit": "Failed to load invite audit",
+          "snackbar_metadata_copied": "Invite metadata copied",
+          "snackbar_email_invites_success": "Created {count} invite(s). Sent {sent}, failed {failed}. Skipped {duplicates} duplicate(s)."
         },
         "delete_confirmation": {
           "title": "Delete",
@@ -1194,6 +1491,7 @@
           "title": "Banner Widget",
           "width": "Images wider than 1500 pixels work best.",
           "size": "The maximum size per file is 500kb.",
+          "drag_drop": "Drag and drop your image here, or click to select",
           "submit": "Submit",
           "no_images": "No images available."
         },
@@ -1205,6 +1503,11 @@
           "enroll": "Enroll Now",
           "buy": "Buy Now",
           "bird": "Early bird offer. Buy ASAP"
+        },
+        "enroll_page": {
+          "requires_payment_or_invite": "You need to pay for this course or be invited to get access.",
+          "back_to_course": "Back to course",
+          "join_course": "Join Course"
         },
 
         "course_content": "Course content",
@@ -1266,6 +1569,9 @@
         "course_title": "Course title",
         "course_description": "Course Description",
         "placeholder": "Write your course description here",
+        "course_title_placeholder": "Write the course title here",
+        "setup_landing_for_link": "Setup landing page to get course link",
+        "coming_soon": "Coming soon",
         "link": "Course Link",
         "grading": "Grading",
         "reports": "Make grading reports available for lessons",
@@ -1290,6 +1596,14 @@
         "course_type_desc": "Update the course type for a more personalized experience",
         "live_class": "Live class",
         "self_paced": "Self paced",
+        "tags": {
+          "title": "Tags",
+          "description": "Assign tags so learners can discover this course with filters.",
+          "empty": "No tags selected",
+          "add": "Add tag",
+          "popover_title": "Select tags",
+          "empty_groups": "No tags available yet"
+        },
         "delete": "Delete Course",
         "delete_text": "Delete this course,this action cannot be undone",
         "save": "Save Changes"
@@ -1443,6 +1757,22 @@
     "something": "Something went wrong - Please try later",
     "update": "Update",
     "update_failed": "Update failed",
+    "media_manager": {
+      "list_failed": "Failed to load media assets",
+      "storage_failed": "Failed to load storage summary",
+      "create_failed": "Failed to create media asset",
+      "attach_failed": "Failed to attach media asset",
+      "detach_failed": "Failed to detach media asset",
+      "resolve_video_failed": "Failed to resolve media playback URL",
+      "update_failed": "Failed to update media asset",
+      "update_success": "Media asset updated",
+      "usage_failed": "Failed to load asset usage",
+      "download_failed": "Failed to get asset download URL",
+      "thumbnail_uploaded": "Thumbnail uploaded",
+      "thumbnail_upload_failed": "Failed to upload thumbnail",
+      "thumbnail_too_large": "Thumbnail image is too large",
+      "thumbnail_invalid": "Invalid thumbnail file"
+    },
 
     "poll": {
       "error": {
@@ -1523,6 +1853,16 @@
       "remove_fail": "Failed to remove user, please try again"
     },
 
+    "tags": {
+      "group_created": "Tag group created",
+      "group_updated": "Tag group updated",
+      "tag_created": "Tag created",
+      "tag_updated": "Tag updated",
+      "course_tags_updated": "Course tags updated",
+      "fetch_failed": "Failed to load tags",
+      "save_failed": "Failed to save tag changes"
+    },
+
     "landing_page_settings": {
       "error": {
         "file_size": "File Size must not be greater than 500kb",
@@ -1560,6 +1900,27 @@
     },
 
     "lessons": {
+      "lesson_created": "Lesson created successfully",
+      "lesson_create_failed": "Failed to create lesson",
+      "lesson_deleted": "Lesson deleted successfully",
+      "lesson_delete_failed": "Failed to delete lesson",
+      "lesson_update_failed": "Failed to update lesson",
+      "section_created": "Course section created successfully",
+      "section_create_failed": "Failed to create course section",
+      "section_updated": "Course section updated successfully",
+      "section_update_failed": "Failed to update course section",
+      "sections_reordered": "Course sections reordered successfully",
+      "sections_reorder_failed": "Failed to reorder course sections",
+      "lessons_reordered": "Lessons reordered successfully",
+      "lessons_reorder_failed": "Failed to reorder lessons",
+      "comment_fetch_failed": "Failed to fetch lesson comments",
+      "load_more_comments_failed": "Failed to load more comments",
+      "comment_add_failed": "Failed to add comment",
+      "comment_updated": "Comment updated successfully",
+      "comment_update_failed": "Failed to update comment",
+      "comment_deleted": "Comment deleted successfully",
+      "comment_delete_failed": "Failed to delete comment",
+      "completion_update_failed": "Failed to update lesson completion",
       "success": {
         "complete_marked": "Marked as complete",
         "complete_download": "Download Complete",

@@ -1,11 +1,11 @@
-import { TCourse, TLesson, TLessonSection } from '@db/types';
+import { TCourse, TCourseSection, TLesson } from '@db/types';
 import {
   addGroupMember,
   createCourse,
   createExercises,
   createGroup,
   createLessonLanguages,
-  createLessonSections,
+  createCourseSections,
   createLessons,
   createOptions,
   createQuestions,
@@ -15,7 +15,7 @@ import {
   getLessonsByCourseId,
   getOptionsByQuestionIds,
   getQuestionsByExerciseIds,
-  getSectionsByCourseId
+  getCourseSectionsByCourseId
 } from '@db/queries';
 
 import { ROLE } from '@cio/utils/constants';
@@ -185,8 +185,7 @@ export async function cloneCourse(
     isCertificateDownloadable: course.isCertificateDownloadable,
     certificateTheme: course.certificateTheme,
     status: course.status,
-    type: course.type,
-    version: course.version
+    type: course.type
   });
 
   // 4. add group member
@@ -198,23 +197,23 @@ export async function cloneCourse(
   });
 
   // 5. clone sections
-  const oldSections = await getSectionsByCourseId(courseId);
+  const oldSections = await getCourseSectionsByCourseId(courseId);
 
   // Only create sections if there are any
-  let newSections: TLessonSection[] = [];
+  let newSections: TCourseSection[] = [];
   let sectionMap = new Map<string, string>();
 
   if (oldSections.length > 0) {
-    newSections = await createLessonSections(
-      oldSections.map((sec) => ({
-        title: sec.title,
-        order: sec.order,
+    newSections = await createCourseSections(
+      oldSections.map((section) => ({
+        title: section.title,
+        order: section.order,
         courseId: newCourse.id
       }))
     );
 
     // create map
-    sectionMap = new Map(oldSections.map((old, i) => [old.id, newSections[i].id]));
+    sectionMap = new Map(oldSections.map((section, index) => [section.id, newSections[index].id]));
   }
 
   // 6. clone lessons

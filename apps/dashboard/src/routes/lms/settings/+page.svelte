@@ -22,7 +22,7 @@
   <title>Settings - ClassroomIO</title>
 </svelte:head>
 
-<Page.Header>
+<Page.Header isSticky>
   <Page.HeaderContent>
     <Page.Title>{$t('settings.profile.heading')}</Page.Title>
   </Page.HeaderContent>

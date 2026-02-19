@@ -17,7 +17,7 @@ import { getCourseById, getOrganizationByCourseId } from '@cio/db/queries/course
 import { getCourseTeachers, getProfileByGroupMemberId } from '@cio/db/queries/course/people';
 
 import { db } from '@cio/db/drizzle';
-import { deliverEmail } from '@cio/email';
+import { buildEmailFromName, deliverEmail } from '@cio/email';
 import { env } from '@api/config/env';
 import { getExerciseById } from '@cio/db/queries/exercise';
 
@@ -465,7 +465,7 @@ async function sendSubmissionUpdateEmail(submissionId: string, newStatusId: numb
 
   await deliverEmail([
     {
-      from: `"${orgName} (via ClassroomIO.com)" <notify@mail.classroomio.com>`,
+      from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
       to: fullSubmission.groupmember.profile.email,
       subject: 'Submission Update',
       content
@@ -526,7 +526,7 @@ async function sendExerciseSubmissionUpdateEmail(courseId: string, exerciseId: s
     if (!tutor.email) return Promise.resolve();
     return deliverEmail([
       {
-        from: `"${orgName} (via ClassroomIO.com)" <notify@mail.classroomio.com>`,
+        from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
         to: tutor.email,
         subject: `[Submitted]: ${exercise.title}`,
         content

@@ -92,7 +92,7 @@
 
   <div class="ml-4">
     {#if disabled}
-      <div class="mb-3 rounded-md bg-gray-200 px-5 py-3 dark:bg-gray-500">
+      <div class="ui:bg-secondary mb-3 rounded-md px-5 py-3">
         {defaultValue === '' ? $t('course.navItem.lessons.exercises.all_exercises.no_answer') : defaultValue}
       </div>
       {#if gradeWithAI}

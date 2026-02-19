@@ -1,6 +1,7 @@
 export * from './organization';
 export * from './auth';
 export * from './attendance';
+export * from './assets';
 export * from './course';
 export * from './group';
 export * from './lesson';
@@ -9,3 +10,4 @@ export * from './analytics';
 export * from './mark';
 export * from './newsfeed';
 export * from './submission';
+export * from './tag';

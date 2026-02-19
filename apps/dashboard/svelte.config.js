@@ -6,6 +6,7 @@ import path from 'path';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 const useNodeAdapter = process.env.PUBLIC_IS_SELFHOSTED === 'true';
+const API_ORIGIN = process.env.PUBLIC_SERVER_URL;
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -29,18 +30,20 @@ const config = {
       '@cio/db/types': path.resolve('./node_modules/@cio/db/src/types.ts')
     },
     csp: {
+      mode: 'auto',
       directives: {
         'default-src': ['self'],
         'script-src': [
           'self',
           'https://assets.cdn.clsrio.com',
           'https://cdnjs.cloudflare.com',
-          'https://*.i.posthog.com',
+          'https://*.posthog.com',
           'https://*.senja.io',
           'https://www.youtube.com',
           'https://youtube.com',
           'https://google.com',
-          'unsafe-hashes'
+          'unsafe-hashes',
+          'unsafe-eval'
         ],
         'style-src': [
           'self',
@@ -59,8 +62,8 @@ const config = {
           'https://fonts.googleapis.com'
         ],
         'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
-        'img-src': ['self', 'data:', 'https:'],
-        'media-src': ['self', 'https:', 'data:'],
+        'img-src': ['self', 'data:', 'https:', 'blob:'],
+        'media-src': ['self', 'https:', 'data:', 'blob:'],
         'frame-src': [
           'self',
           'https://www.youtube.com',
@@ -71,16 +74,19 @@ const config = {
         ],
         'connect-src': [
           'self',
+          'blob:',
           'https://*.classroomio.com',
           'https://assets.cdn.clsrio.com',
           'https://cdn.plyr.io',
-          'https://*.i.posthog.com',
+          'https://*.posthog.com',
           'https://umami.hz.oncws.com',
           'https://*.r2.cloudflarestorage.com',
           'http://localhost:3002',
+          API_ORIGIN,
           'wss://*.classroomio.com',
           'https://*.senja.io',
-          'https://*.ytimg.com'
+          'https://*.ytimg.com',
+          'https://noembed.com'
         ],
         'worker-src': ['self', 'blob:'],
         'object-src': ['none'],
@@ -95,12 +101,13 @@ const config = {
           'self',
           'https://assets.cdn.clsrio.com',
           'https://cdnjs.cloudflare.com',
-          'https://*.i.posthog.com',
+          'https://*.posthog.com',
           'https://*.senja.io',
           'https://www.youtube.com',
           'https://youtube.com',
           'https://google.com',
-          'unsafe-hashes'
+          'unsafe-hashes',
+          'unsafe-eval'
         ],
         'style-src': [
           'self',
@@ -119,8 +126,8 @@ const config = {
           'https://fonts.googleapis.com'
         ],
         'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
-        'img-src': ['self', 'data:', 'https:'],
-        'media-src': ['self', 'https:', 'data:'],
+        'img-src': ['self', 'data:', 'https:', 'blob:'],
+        'media-src': ['self', 'https:', 'data:', 'blob:'],
         'frame-src': [
           'self',
           'https://www.youtube.com',
@@ -131,17 +138,20 @@ const config = {
         ],
         'connect-src': [
           'self',
+          'blob:',
           'https://pgrest.classroomio.com',
           'https://api.classroomio.com',
           'https://assets.cdn.clsrio.com',
           'https://cdn.plyr.io',
-          'https://*.i.posthog.com',
+          'https://*.posthog.com',
           'https://umami.hz.oncws.com',
           'https://*.r2.cloudflarestorage.com',
           'http://localhost:3002',
+          API_ORIGIN,
           'wss://*.classroomio.com',
           'https://*.senja.io',
-          'https://*.ytimg.com'
+          'https://*.ytimg.com',
+          'https://noembed.com'
         ],
         'worker-src': ['self', 'blob:'],
         'object-src': ['none'],

@@ -1,48 +1,52 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
+  CourseSectionWithLessons,
+  CreateCourseSectionRequest,
   CreateLessonComment,
   CreateLessonCommentRequest,
   CreateLessonRequest,
-  CreateLessonSectionRequest,
+  DeleteCourseSectionRequest,
   DeleteLessonCommentRequest,
   DeleteLessonRequest,
-  DeleteLessonSectionRequest,
   GetLessonCommentsRequest,
   GetLessonHistoryRequest,
   GetLessonLanguageRequest,
   GetLessonRequest,
   Lesson,
   LessonComments,
-  LessonSectionWithLessons,
-  ReorderLessonSectionsRequest,
+  PromoteUngroupedSectionRequest,
+  ReorderCourseSectionsRequest,
   ReorderLessonsRequest,
+  UpdateCourseSectionRequest,
   UpdateLessonCommentRequest,
   UpdateLessonCompletionRequest,
-  UpdateLessonRequest,
-  UpdateLessonSectionRequest
+  UpdateLessonRequest
 } from '../utils/types';
 import type {
-  TLessonCreate,
-  TLessonReorder,
-  TLessonSectionCreate,
-  TLessonSectionReorder,
-  TLessonSectionUpdate,
-  TLessonUpdate
-} from '@cio/utils/validation/lesson';
+  TCourseSectionCreate,
+  TCourseSectionPromoteUngrouped,
+  TCourseSectionReorder,
+  TCourseSectionUpdate
+} from '@cio/utils/validation/course/section';
+import type { TLessonCreate, TLessonReorder, TLessonUpdate } from '@cio/utils/validation/lesson';
+import {
+  ZCourseSectionCreate,
+  ZCourseSectionPromoteUngrouped,
+  ZCourseSectionReorder,
+  ZCourseSectionUpdate
+} from '@cio/utils/validation/course/section';
 import {
   ZLessonCommentCreate,
   ZLessonCommentUpdate,
   ZLessonCompletionUpdate,
   ZLessonCreate,
   ZLessonReorder,
-  ZLessonSectionCreate,
-  ZLessonSectionReorder,
-  ZLessonSectionUpdate,
   ZLessonUpdate
 } from '@cio/utils/validation/lesson';
 
 import type { TLocale } from '@cio/db/types';
 import { get } from 'svelte/store';
+import { mediaManagerApi } from '$features/media-manager/api';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { profile } from '$lib/utils/store/user';
 import { snackbar } from '$features/ui/snackbar/store';
@@ -52,7 +56,7 @@ import { snackbar } from '$features/ui/snackbar/store';
  */
 export class LessonApi extends BaseApiWithErrors {
   lesson = $state<Lesson | null>(null);
-  sections = $state<LessonSectionWithLessons[]>([]);
+  sections = $state<CourseSectionWithLessons[]>([]);
   commentsByLessonId = $state<
     Record<
       string,
@@ -67,8 +71,9 @@ export class LessonApi extends BaseApiWithErrors {
   >({});
   currentLocale = $state<TLocale>('en');
   isSaving = $state(false);
-  isFetching = $state(false);
   isDirty = $state(false);
+  isCommenting = $state(false);
+  isUpdatingComment = $state(false);
 
   translations = $state<Record<string, Record<TLocale, string>>>({});
   note = $state('');
@@ -78,8 +83,6 @@ export class LessonApi extends BaseApiWithErrors {
    * Gets a lesson by ID
    */
   async get(courseId: string, lessonId: string) {
-    this.isFetching = true;
-
     return this.execute<GetLessonRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].lesson[':lessonId'].$get({
@@ -93,17 +96,7 @@ export class LessonApi extends BaseApiWithErrors {
           if (this.lesson.lessonLanguages) {
             this.setTranslations();
           }
-
-          this.note = this.translations[this.lesson?.id || '']?.[this.currentLocale] || this.lesson?.note || '';
-          this.isFetching = false;
         }
-      },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to fetch lesson');
-        }
-
-        this.isFetching = false;
       }
     });
   }
@@ -127,14 +120,19 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'creating lesson',
       onSuccess: (response) => {
         if (response.data) {
-          snackbar.success('Lesson created successfully');
+          const createdLesson = response.data as Lesson;
+          this.lesson = {
+            ...createdLesson,
+            lessonLanguages: createdLesson.lessonLanguages ?? []
+          };
+          snackbar.success('snackbar.lessons.lesson_created');
           this.success = true;
           this.errors = {};
         }
       },
       onError: (result) => {
         if (typeof result === 'string') {
-          snackbar.error('Failed to create lesson');
+          snackbar.error('snackbar.lessons.lesson_create_failed');
           return;
         }
         if ('error' in result && 'field' in result && result.field) {
@@ -151,16 +149,16 @@ export class LessonApi extends BaseApiWithErrors {
   /**
    * Updates a lesson
    */
-  async update(courseId: string, lessonId: string, fields: TLessonUpdate) {
+  async update(courseId: string, lessonId: string, fields: TLessonUpdate): Promise<boolean> {
     const result = ZLessonUpdate.safeParse(fields);
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
-      return;
+      return false;
     }
 
     this.isSaving = true;
 
-    await this.execute<UpdateLessonRequest>({
+    const response = await this.execute<UpdateLessonRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].lesson[':lessonId'].$put({
           param: { courseId, lessonId },
@@ -169,11 +167,12 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'updating lesson',
       onError: (result) => {
         console.log('onError', result);
-        snackbar.error('Failed to update lesson');
+        snackbar.error('snackbar.lessons.lesson_update_failed');
       }
     });
 
     this.isSaving = false;
+    return Boolean(response);
   }
 
   /**
@@ -188,48 +187,48 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'deleting lesson',
       onSuccess: (response) => {
         if (response.data) {
-          snackbar.success('Lesson deleted successfully');
+          snackbar.success('snackbar.lessons.lesson_deleted');
           this.success = true;
           this.errors = {};
         }
       },
       onError: (result) => {
         if (typeof result === 'string') {
-          snackbar.error('Failed to delete lesson');
+          snackbar.error('snackbar.lessons.lesson_delete_failed');
         }
       }
     });
   }
 
-  // Lesson Section methods
+  // Course Section methods
 
   /**
-   * Creates a lesson section
+   * Creates a course section
    */
-  async createSection(courseId: string, fields: TLessonSectionCreate) {
-    const result = ZLessonSectionCreate.safeParse({ ...fields, courseId });
+  async createSection(courseId: string, fields: TCourseSectionCreate) {
+    const result = ZCourseSectionCreate.safeParse({ ...fields, courseId });
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
       return;
     }
 
-    await this.execute<CreateLessonSectionRequest>({
+    await this.execute<CreateCourseSectionRequest>({
       requestFn: () =>
-        classroomio.course[':courseId'].lesson.section.$post({
+        classroomio.course[':courseId'].section.$post({
           param: { courseId },
           json: result.data
         }),
-      logContext: 'creating lesson section',
+      logContext: 'creating course section',
       onSuccess: (response) => {
         if (response.data) {
-          snackbar.success('Lesson section created successfully');
+          snackbar.success('snackbar.lessons.section_created');
           this.success = true;
           this.errors = {};
         }
       },
       onError: (result) => {
         if (typeof result === 'string') {
-          snackbar.error('Failed to create lesson section');
+          snackbar.error('snackbar.lessons.section_create_failed');
           return;
         }
         if ('error' in result && 'field' in result && result.field) {
@@ -241,77 +240,117 @@ export class LessonApi extends BaseApiWithErrors {
   }
 
   /**
-   * Updates a lesson section
+   * Creates a real section from synthetic ungrouped content and moves all ungrouped items.
    */
-  async updateSection(courseId: string, sectionId: string, fields: TLessonSectionUpdate) {
-    const result = ZLessonSectionUpdate.safeParse(fields);
+  async promoteUngroupedSection(courseId: string, fields: TCourseSectionPromoteUngrouped) {
+    const result = ZCourseSectionPromoteUngrouped.safeParse(fields);
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
       return;
     }
 
-    await this.execute<UpdateLessonSectionRequest>({
+    await this.execute<PromoteUngroupedSectionRequest>({
       requestFn: () =>
-        classroomio.course[':courseId'].lesson.section[':sectionId'].$put({
-          param: { courseId, sectionId },
+        classroomio.course[':courseId'].section['promote-ungrouped'].$post({
+          param: { courseId },
           json: result.data
         }),
-      logContext: 'updating lesson section',
-      onSuccess: (response) => {
-        if (response.data) {
-          snackbar.success('Lesson section updated successfully');
-          this.success = true;
-          this.errors = {};
-        }
+      logContext: 'promoting ungrouped section',
+      onSuccess: () => {
+        snackbar.success('snackbar.lessons.section_updated');
+        this.success = true;
+        this.errors = {};
       },
       onError: (result) => {
         if (typeof result === 'string') {
-          snackbar.error('Failed to update lesson section');
+          snackbar.error('snackbar.lessons.section_update_failed');
+          return;
+        }
+        if ('error' in result && 'field' in result && result.field) {
+          this.errors[result.field] = result.error;
+          snackbar.error(result.error);
+          return;
+        }
+        if ('error' in result) {
+          this.errors.general = result.error;
+          snackbar.error(result.error);
         }
       }
     });
   }
 
   /**
-   * Deletes a lesson section
+   * Updates a course section
    */
-  async deleteSection(courseId: string, sectionId: string) {
-    await this.execute<DeleteLessonSectionRequest>({
-      requestFn: () =>
-        classroomio.course[':courseId'].lesson.section[':sectionId'].$delete({
-          param: { courseId, sectionId }
-        }),
-      logContext: 'deleting lesson section'
-    });
-  }
-
-  /**
-   * Reorders lesson sections
-   */
-  async reorderSections(courseId: string, sections: TLessonSectionReorder['sections']) {
-    const result = ZLessonSectionReorder.safeParse({ sections });
+  async updateSection(courseId: string, sectionId: string, fields: TCourseSectionUpdate) {
+    const result = ZCourseSectionUpdate.safeParse(fields);
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
       return;
     }
 
-    await this.execute<ReorderLessonSectionsRequest>({
+    await this.execute<UpdateCourseSectionRequest>({
       requestFn: () =>
-        classroomio.course[':courseId'].lesson.section.reorder.$post({
-          param: { courseId },
+        classroomio.course[':courseId'].section[':sectionId'].$put({
+          param: { courseId, sectionId },
           json: result.data
         }),
-      logContext: 'reordering lesson sections',
+      logContext: 'updating course section',
       onSuccess: (response) => {
         if (response.data) {
-          snackbar.success('Lesson sections reordered successfully');
+          snackbar.success('snackbar.lessons.section_updated');
           this.success = true;
           this.errors = {};
         }
       },
       onError: (result) => {
         if (typeof result === 'string') {
-          snackbar.error('Failed to reorder lesson sections');
+          snackbar.error('snackbar.lessons.section_update_failed');
+        }
+      }
+    });
+  }
+
+  /**
+   * Deletes a course section
+   */
+  async deleteSection(courseId: string, sectionId: string) {
+    await this.execute<DeleteCourseSectionRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].section[':sectionId'].$delete({
+          param: { courseId, sectionId }
+        }),
+      logContext: 'deleting course section'
+    });
+  }
+
+  /**
+   * Reorders course sections
+   */
+  async reorderSections(courseId: string, sections: TCourseSectionReorder['sections']) {
+    const result = ZCourseSectionReorder.safeParse({ sections });
+    if (!result.success) {
+      this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
+      return;
+    }
+
+    await this.execute<ReorderCourseSectionsRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].section.reorder.$post({
+          param: { courseId },
+          json: result.data
+        }),
+      logContext: 'reordering course sections',
+      onSuccess: (response) => {
+        if (response.data) {
+          snackbar.success('snackbar.lessons.sections_reordered');
+          this.success = true;
+          this.errors = {};
+        }
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error('snackbar.lessons.sections_reorder_failed');
         }
       }
     });
@@ -336,14 +375,14 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'reordering lessons',
       onSuccess: (response) => {
         if (response.data) {
-          snackbar.success('Lessons reordered successfully');
+          snackbar.success('snackbar.lessons.lessons_reordered');
           this.success = true;
           this.errors = {};
         }
       },
       onError: (result) => {
         if (typeof result === 'string') {
-          snackbar.error('Failed to reorder lessons');
+          snackbar.error('snackbar.lessons.lessons_reorder_failed');
         }
       }
     });
@@ -398,7 +437,7 @@ export class LessonApi extends BaseApiWithErrors {
       onError: (result) => {
         this.commentsByLessonId[lessonId].isLoading = false;
         if (typeof result === 'string') {
-          snackbar.error('Failed to fetch lesson comments');
+          snackbar.error('snackbar.lessons.comment_fetch_failed');
         }
       }
     });
@@ -438,7 +477,7 @@ export class LessonApi extends BaseApiWithErrors {
       onError: (result) => {
         commentState.isLoading = false;
         if (typeof result === 'string') {
-          snackbar.error('Failed to load more comments');
+          snackbar.error('snackbar.lessons.load_more_comments_failed');
         }
       }
     });
@@ -448,34 +487,44 @@ export class LessonApi extends BaseApiWithErrors {
    * Creates a lesson comment
    */
   async createComment(courseId: string, lessonId: string, comment: string) {
-    const result = ZLessonCommentCreate.safeParse({ comment });
+    if (!courseId || !lessonId) {
+      snackbar.error('snackbar.lessons.comment_add_failed');
+      return;
+    }
+
+    const result = ZLessonCommentCreate.safeParse({ lessonId, comment });
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
       return;
     }
 
-    await this.execute<CreateLessonCommentRequest>({
-      requestFn: () =>
-        classroomio.course[':courseId'].lesson[':lessonId'].comment.$post({
-          param: { courseId, lessonId },
-          json: result.data
-        }),
-      logContext: 'creating lesson comment',
-      onSuccess: (response) => {
-        if (response.data && this.commentsByLessonId[lessonId]) {
-          this.commentsByLessonId[lessonId].items = [
-            this.getCommentFromResponse(response.data),
-            ...this.commentsByLessonId[lessonId].items
-          ];
-          this.commentsByLessonId[lessonId].totalCount++;
+    this.isCommenting = true;
+    try {
+      await this.execute<CreateLessonCommentRequest>({
+        requestFn: () =>
+          classroomio.course[':courseId'].lesson[':lessonId'].comment.$post({
+            param: { courseId, lessonId },
+            json: result.data
+          }),
+        logContext: 'creating lesson comment',
+        onSuccess: (response) => {
+          if (response.data && this.commentsByLessonId[lessonId]) {
+            this.commentsByLessonId[lessonId].items = [
+              this.getCommentFromResponse(response.data),
+              ...this.commentsByLessonId[lessonId].items
+            ];
+            this.commentsByLessonId[lessonId].totalCount++;
+          }
+        },
+        onError: (result) => {
+          if (typeof result === 'string') {
+            snackbar.error('snackbar.lessons.comment_add_failed');
+          }
         }
-      },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to add comment');
-        }
-      }
-    });
+      });
+    } finally {
+      this.isCommenting = false;
+    }
   }
 
   /**
@@ -488,32 +537,39 @@ export class LessonApi extends BaseApiWithErrors {
       return;
     }
 
-    await this.execute<UpdateLessonCommentRequest>({
-      requestFn: () =>
-        classroomio.course[':courseId'].lesson.comment[':commentId'].$put({
-          param: { courseId, commentId },
-          json: result.data
-        }),
-      logContext: 'updating lesson comment',
-      onSuccess: (response) => {
-        if (response.data) {
-          // Update local state
-          if (this.commentsByLessonId[lessonId]) {
-            this.commentsByLessonId[lessonId].items = this.commentsByLessonId[lessonId].items.map((c) =>
-              c.id === Number(commentId) ? this.getCommentFromResponse(response.data) : c
-            );
+    this.success = false;
+    this.isUpdatingComment = true;
+
+    try {
+      await this.execute<UpdateLessonCommentRequest>({
+        requestFn: () =>
+          classroomio.course[':courseId'].lesson.comment[':commentId'].$put({
+            param: { courseId, commentId },
+            json: result.data
+          }),
+        logContext: 'updating lesson comment',
+        onSuccess: (response) => {
+          if (response.data) {
+            // Update local state
+            if (this.commentsByLessonId[lessonId]) {
+              this.commentsByLessonId[lessonId].items = this.commentsByLessonId[lessonId].items.map((c) =>
+                c.id === Number(commentId) ? this.getCommentFromResponse(response.data) : c
+              );
+            }
+            snackbar.success('snackbar.lessons.comment_updated');
+            this.success = true;
+            this.errors = {};
           }
-          snackbar.success('Comment updated successfully');
-          this.success = true;
-          this.errors = {};
+        },
+        onError: (result) => {
+          if (typeof result === 'string') {
+            snackbar.error('snackbar.lessons.comment_update_failed');
+          }
         }
-      },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to update comment');
-        }
-      }
-    });
+      });
+    } finally {
+      this.isUpdatingComment = false;
+    }
   }
 
   /**
@@ -535,14 +591,14 @@ export class LessonApi extends BaseApiWithErrors {
             );
             this.commentsByLessonId[lessonId].totalCount--;
           }
-          snackbar.success('Comment deleted successfully');
+          snackbar.success('snackbar.lessons.comment_deleted');
           this.success = true;
           this.errors = {};
         }
       },
       onError: (result) => {
         if (typeof result === 'string') {
-          snackbar.error('Failed to delete comment');
+          snackbar.error('snackbar.lessons.comment_delete_failed');
         }
       }
     });
@@ -575,7 +631,7 @@ export class LessonApi extends BaseApiWithErrors {
       },
       onError: (result) => {
         if (typeof result === 'string') {
-          snackbar.error('Failed to update lesson completion');
+          snackbar.error('snackbar.lessons.completion_update_failed');
         }
       }
     });
@@ -637,10 +693,21 @@ export class LessonApi extends BaseApiWithErrors {
   /**
    * Deletes a video from lesson materials
    */
-  deleteLessonVideo(videoIndex: number) {
+  async deleteLessonVideo(videoIndex: number) {
     if (!this.lesson) return;
 
     const videos = Array.isArray(this.lesson.videos) ? [...this.lesson.videos] : [];
+    const removedVideo = videos[videoIndex] as { assetId?: string } | undefined;
+
+    if (removedVideo?.assetId && this.lesson.id) {
+      await mediaManagerApi.detachAsset(removedVideo.assetId, {
+        targetType: 'lesson',
+        targetId: this.lesson.id,
+        slotType: 'lesson_video',
+        position: videoIndex
+      });
+    }
+
     this.lesson = {
       ...this.lesson,
       videos: videos.filter((_v, i) => i !== videoIndex)
@@ -651,10 +718,21 @@ export class LessonApi extends BaseApiWithErrors {
   /**
    * Deletes a document from lesson materials
    */
-  deleteLessonDocument(documentIndex: number) {
+  async deleteLessonDocument(documentIndex: number) {
     if (!this.lesson) return;
 
     const documents = Array.isArray(this.lesson.documents) ? [...this.lesson.documents] : [];
+    const removedDocument = documents[documentIndex] as { assetId?: string } | undefined;
+
+    if (removedDocument?.assetId && this.lesson.id) {
+      await mediaManagerApi.detachAsset(removedDocument.assetId, {
+        targetType: 'lesson',
+        targetId: this.lesson.id,
+        slotType: 'lesson_document',
+        position: documentIndex
+      });
+    }
+
     this.lesson = {
       ...this.lesson,
       documents: documents.filter((_d, i) => i !== documentIndex)
@@ -751,7 +829,6 @@ export class LessonApi extends BaseApiWithErrors {
 
     await Promise.all([
       this.update(courseId, lessonId, {
-        note: this.lesson.note || undefined,
         slideUrl: this.lesson.slideUrl || undefined,
         videos: this.lesson.videos || [],
         documents: this.lesson.documents || []

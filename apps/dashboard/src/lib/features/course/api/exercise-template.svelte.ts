@@ -12,6 +12,11 @@ import type {
 class ExerciseTemplateApi extends BaseApi {
   templates = $state<GetTemplateByTagData>([]);
   template = $state<GetTemplateByIdData>();
+  templatesByTag = $state<Record<string, GetTemplateByTagData>>({});
+
+  private getTagCacheKey(courseId: string, tag: string) {
+    return `${courseId}:${tag}`;
+  }
 
   /**
    * Fetches an exercise template metadata
@@ -33,6 +38,15 @@ class ExerciseTemplateApi extends BaseApi {
    * Fetches an exercise template metadata
    */
   async fetchTemplatesByTag(courseId: string, tag: string) {
+    const cacheKey = this.getTagCacheKey(courseId, tag);
+    const cachedTemplates = this.templatesByTag[cacheKey];
+
+    if (cachedTemplates) {
+      this.templates = cachedTemplates;
+      this.success = true;
+      return;
+    }
+
     await this.execute<GetTemplateByTagRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].exercise.template.tag[':tag'].$get({
@@ -41,8 +55,18 @@ class ExerciseTemplateApi extends BaseApi {
       logContext: 'fetching exercise template by tag',
       onSuccess: (response) => {
         this.templates = response.data;
+        this.templatesByTag = {
+          ...this.templatesByTag,
+          [cacheKey]: response.data
+        };
       }
     });
+  }
+
+  reset() {
+    this.templates = [];
+    this.template = undefined;
+    this.templatesByTag = {};
   }
 }
 

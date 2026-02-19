@@ -1,31 +1,19 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import type { TLesson, TLessonSection, TNewLessonComment, TNewLessonCompletion } from '@cio/db/types';
-import type {
-  TLessonCreate,
-  TLessonReorder,
-  TLessonSectionCreate,
-  TLessonSectionReorder,
-  TLessonSectionUpdate,
-  TLessonUpdate
-} from '@cio/utils/validation/lesson';
+import type { TLesson, TNewLessonComment, TNewLessonCompletion } from '@cio/db/types';
+import type { TLessonCreate, TLessonReorder, TLessonUpdate } from '@cio/utils/validation/lesson';
 import {
   createLessonComment,
-  createLessonSections,
   createLessons,
   deleteLesson,
   deleteLessonComment,
-  deleteLessonSection,
   getLessonById,
   getLessonCommentsByLessonId,
   getLessonCommentsByLessonIdPaginated,
   getLessonCompletion,
-  getLessonSectionById,
   getLessonVersionHistory,
   getLessonsByCourseId,
-  getSectionsByCourseId,
   updateLesson,
   updateLessonComment,
-  updateLessonSection,
   upsertLessonCompletion,
   type LessonById
 } from '@cio/db/queries/lesson';
@@ -166,181 +154,12 @@ export async function listLessons(courseId: string, sectionId?: string): Promise
   }
 }
 
-// Lesson Section Services
-
-/**
- * Creates a new lesson section
- * @param courseId Course ID
- * @param data Section creation data
- * @returns Created section
- */
-export async function createLessonSection(courseId: string, data: TLessonSectionCreate): Promise<TLessonSection> {
-  try {
-    const sectionData = {
-      ...data,
-      courseId
-    };
-
-    const [section] = await createLessonSections([sectionData]);
-    if (!section) {
-      throw new AppError('Failed to create lesson section', ErrorCodes.INTERNAL_ERROR, 500);
-    }
-
-    return section;
-  } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
-
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to create lesson section',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
-  }
-}
-
-/**
- * Gets a lesson section by ID
- * @param sectionId Section ID
- * @returns Section or throws error if not found
- */
-export async function getLessonSection(sectionId: string): Promise<TLessonSection> {
-  try {
-    const section = await getLessonSectionById(sectionId);
-    if (!section) {
-      throw new AppError('Lesson section not found', ErrorCodes.LESSON_SECTION_NOT_FOUND, 404);
-    }
-
-    return section;
-  } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
-
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to fetch lesson section',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
-  }
-}
-
-/**
- * Updates a lesson section
- * @param sectionId Section ID
- * @param data Partial section update data
- * @returns Updated section
- */
-export async function updateLessonSectionService(
-  sectionId: string,
-  data: TLessonSectionUpdate
-): Promise<TLessonSection> {
-  try {
-    const section = await getLessonSectionById(sectionId);
-    if (!section) {
-      throw new AppError('Lesson section not found', ErrorCodes.LESSON_SECTION_NOT_FOUND, 404);
-    }
-
-    const updated = await updateLessonSection(sectionId, data);
-    if (!updated) {
-      throw new AppError('Failed to update lesson section', ErrorCodes.INTERNAL_ERROR, 500);
-    }
-
-    return updated;
-  } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
-
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to update lesson section',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
-  }
-}
-
-/**
- * Deletes a lesson section
- * @param sectionId Section ID
- * @returns Deleted section
- */
-export async function deleteLessonSectionService(sectionId: string): Promise<TLessonSection> {
-  try {
-    const section = await getLessonSectionById(sectionId);
-    if (!section) {
-      throw new AppError('Lesson section not found', ErrorCodes.LESSON_SECTION_NOT_FOUND, 404);
-    }
-
-    const deleted = await deleteLessonSection(sectionId);
-    if (!deleted) {
-      throw new AppError('Failed to delete lesson section', ErrorCodes.INTERNAL_ERROR, 500);
-    }
-
-    return deleted;
-  } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
-
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to delete lesson section',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
-  }
-}
-
-/**
- * Lists lesson sections for a course
- * @param courseId Course ID
- * @returns Array of sections
- */
-export async function listLessonSections(courseId: string): Promise<TLessonSection[]> {
-  try {
-    return await getSectionsByCourseId(courseId);
-  } catch (error) {
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to list lesson sections',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
-  }
-}
-
-/**
- * Reorders lesson sections
- * @param courseId Course ID
- * @param sections Array of section IDs and orders
- * @returns Updated sections
- */
-export async function reorderLessonSections(
-  courseId: string,
-  sections: TLessonSectionReorder['sections']
-): Promise<TLessonSection[]> {
-  try {
-    // Update each section's order
-    const updatePromises = sections.map(({ id, order }) => updateLessonSection(id, { order }));
-
-    const updated = await Promise.all(updatePromises);
-    return updated.filter((s): s is TLessonSection => s !== null);
-  } catch (error) {
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to reorder lesson sections',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
-  }
-}
-
 /**
  * Reorders lessons
- * @param courseId Course ID
  * @param lessons Array of lesson IDs, orders, and optional sectionIds
  * @returns Updated lessons
  */
-export async function reorderLessons(courseId: string, lessons: TLessonReorder['lessons']): Promise<TLesson[]> {
+export async function reorderLessons(lessons: TLessonReorder['lessons']): Promise<TLesson[]> {
   try {
     // Update each lesson's order and optionally sectionId
     const updatePromises = lessons.map(({ id, order, sectionId }) =>
@@ -416,6 +235,7 @@ export async function createLessonCommentService(lessonId: string, groupMemberId
 
     return await createLessonComment(commentData);
   } catch (error) {
+    console.log('error', error);
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to create lesson comment',
       ErrorCodes.INTERNAL_ERROR,

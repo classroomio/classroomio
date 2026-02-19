@@ -8,15 +8,22 @@
   import type { LessonVideoType } from '$features/course/utils/types';
   import { copyToClipboard, getVideoUrls, removeVideo } from '$lib/utils/functions/formatYoutubeVideo';
   import { lessonApi } from '$features/course/api';
+  import { mediaManagerApi } from '$features/media-manager/api';
 
   import { InputField } from '@cio/ui/custom/input-field';
   import { Button } from '@cio/ui/base/button';
 
+  interface Props {
+    lessonId?: string;
+  }
+
+  let { lessonId = '' }: Props = $props();
+
   let youtubeLinks = $state('');
   let error = $state('');
 
-  function addVideo() {
-    const links = getVideoUrls(youtubeLinks);
+  async function addVideo() {
+    const links = getVideoUrls(youtubeLinks).map(normalizeYouTubeLink);
     const validLinks = links.filter(isValidYouTubeLink);
 
     if (validLinks.length === 0) {
@@ -24,11 +31,51 @@
     } else {
       if (!lessonApi.lesson) return;
 
-      const newVideos = validLinks.map((link = '') => ({
-        type: 'youtube' as LessonVideoType,
-        link,
-        metadata: {}
-      }));
+      const existingCount = Array.isArray(lessonApi.lesson.videos) ? lessonApi.lesson.videos.length : 0;
+      const newVideos = await Promise.all(
+        validLinks.map(async (link = '', index) => {
+          const createdAt = new Date().toISOString();
+          const metadata = await mediaManagerApi.getYouTubeMetadata(link);
+          const sourceUrl = metadata?.sourceUrl ?? link;
+          const title = metadata?.title ?? $t('media_manager.provider.youtube');
+          const videoMetadata = {
+            createdAt,
+            videoId: metadata?.videoId,
+            title,
+            thumbnailUrl: metadata?.thumbnailUrl ?? undefined,
+            duration: metadata?.durationSeconds ?? undefined
+          };
+
+          const asset = await mediaManagerApi.createAsset({
+            kind: 'video',
+            provider: 'youtube',
+            storageProvider: 'external',
+            sourceUrl,
+            isExternal: true,
+            title,
+            thumbnailUrl: metadata?.thumbnailUrl ?? undefined,
+            durationSeconds: metadata?.durationSeconds ?? undefined,
+            metadata: videoMetadata
+          });
+
+          if (asset && lessonId) {
+            await mediaManagerApi.attachAsset(asset.id, {
+              targetType: 'lesson',
+              targetId: lessonId,
+              slotType: 'lesson_video',
+              position: existingCount + index
+            });
+          }
+
+          return {
+            type: 'youtube' as LessonVideoType,
+            link: sourceUrl,
+            assetId: asset?.id,
+            fileName: title,
+            metadata: videoMetadata
+          };
+        })
+      );
 
       lessonApi.updateLessonState('videos', newVideos, { append: true });
       youtubeLinks = '';
@@ -40,6 +87,19 @@
     const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
 
     return youtubeRegex.test(link.trim());
+  }
+
+  function normalizeYouTubeLink(link = '') {
+    const trimmed = link.trim();
+    if (!trimmed) {
+      return trimmed;
+    }
+
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return trimmed;
+    }
+
+    return `https://${trimmed}`;
   }
 </script>
 

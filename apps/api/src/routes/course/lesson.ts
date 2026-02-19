@@ -3,7 +3,6 @@ import {
   ZLessonCommentGetParam,
   ZLessonCommentUpdate,
   ZLessonCommentsQuery,
-  ZLessonCompletionCreate,
   ZLessonCompletionUpdate,
   ZLessonCreate,
   ZLessonGetParam,
@@ -11,28 +10,20 @@ import {
   ZLessonHistoryQuery,
   ZLessonListQuery,
   ZLessonReorder,
-  ZLessonSectionCreate,
-  ZLessonSectionGetParam,
-  ZLessonSectionReorder,
-  ZLessonSectionUpdate,
   ZLessonUpdate
 } from '@cio/utils/validation/lesson';
 import {
   createLesson,
   createLessonCommentService,
-  createLessonSection,
   deleteLessonCommentService,
-  deleteLessonSectionService,
   deleteLessonService,
   getLesson,
   getLessonCommentsPaginated,
   getLessonCompletionService,
   getLessonHistoryService,
   listLessons,
-  reorderLessonSections,
   reorderLessons,
   updateLessonCommentService,
-  updateLessonSectionService,
   updateLessonService,
   upsertLessonCompletionService
 } from '@api/services/lesson';
@@ -61,10 +52,9 @@ export const lessonRouter = new Hono()
   })
   .post('/reorder', authMiddleware, courseMemberMiddleware, zValidator('json', ZLessonReorder), async (c) => {
     try {
-      const courseId = c.req.param('courseId')!;
       const { lessons } = c.req.valid('json');
 
-      const updated = await reorderLessons(courseId, lessons);
+      const updated = await reorderLessons(lessons);
 
       return c.json({ success: true, data: updated }, 200);
     } catch (error) {
@@ -122,72 +112,6 @@ export const lessonRouter = new Hono()
       return handleError(c, error, 'Failed to delete lesson');
     }
   })
-  // Lesson Section routes
-  .post('/section', authMiddleware, courseMemberMiddleware, zValidator('json', ZLessonSectionCreate), async (c) => {
-    try {
-      const courseId = c.req.param('courseId')!;
-      const data = c.req.valid('json');
-
-      const section = await createLessonSection(courseId, { ...data, courseId });
-
-      return c.json({ success: true, data: section }, 201);
-    } catch (error) {
-      return handleError(c, error, 'Failed to create lesson section');
-    }
-  })
-  .put(
-    '/section/:sectionId',
-    authMiddleware,
-    courseMemberMiddleware,
-    zValidator('param', ZLessonSectionGetParam),
-    zValidator('json', ZLessonSectionUpdate),
-    async (c) => {
-      try {
-        const { sectionId } = c.req.valid('param');
-        const data = c.req.valid('json');
-
-        const section = await updateLessonSectionService(sectionId, data);
-
-        return c.json({ success: true, data: section }, 200);
-      } catch (error) {
-        return handleError(c, error, 'Failed to update lesson section');
-      }
-    }
-  )
-  .delete(
-    '/section/:sectionId',
-    authMiddleware,
-    courseMemberMiddleware,
-    zValidator('param', ZLessonSectionGetParam),
-    async (c) => {
-      try {
-        const { sectionId } = c.req.valid('param');
-        const section = await deleteLessonSectionService(sectionId);
-
-        return c.json({ success: true, data: section }, 200);
-      } catch (error) {
-        return handleError(c, error, 'Failed to delete lesson section');
-      }
-    }
-  )
-  .post(
-    '/section/reorder',
-    authMiddleware,
-    courseMemberMiddleware,
-    zValidator('json', ZLessonSectionReorder),
-    async (c) => {
-      try {
-        const courseId = c.req.param('courseId')!;
-        const { sections } = c.req.valid('json');
-
-        const updated = await reorderLessonSections(courseId, sections);
-
-        return c.json({ success: true, data: updated }, 200);
-      } catch (error) {
-        return handleError(c, error, 'Failed to reorder lesson sections');
-      }
-    }
-  )
   // Lesson Comment routes
   .get(
     '/:lessonId/comment',

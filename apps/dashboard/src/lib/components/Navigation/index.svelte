@@ -67,7 +67,7 @@
 
     {#if $user.isLoggedIn}
       {#if isOrgSite}
-        <li><a class="block" href={resolve('/lms')}> {$t('navigation.goto_lms')} </a></li>
+        <li><a class="block" href={resolve('/lms', {})}> {$t('navigation.goto_lms')} </a></li>
       {/if}
     {:else if isOrgSite && !page.url.pathname?.includes('/404')}
       <!-- Hide login/signup buttons on mobile when custom links exist -->

@@ -19,8 +19,8 @@ export type TNewVerification = typeof schema.verification.$inferInsert;
 export type TAnalyticsLoginEvents = typeof schema.analyticsLoginEvents.$inferSelect;
 export type TNewAnalyticsLoginEvents = typeof schema.analyticsLoginEvents.$inferInsert;
 
-export type TLessonSection = typeof schema.lessonSection.$inferSelect;
-export type TNewLessonSection = typeof schema.lessonSection.$inferInsert;
+export type TCourseSection = typeof schema.courseSection.$inferSelect;
+export type TNewCourseSection = typeof schema.courseSection.$inferInsert;
 
 export type TGroup = typeof schema.group.$inferSelect;
 export type TNewGroup = typeof schema.group.$inferInsert;
@@ -73,6 +73,12 @@ export type TNewOrganizationEmaillist = typeof schema.organizationEmaillist.$inf
 export type TLesson = typeof schema.lesson.$inferSelect;
 export type TNewLesson = typeof schema.lesson.$inferInsert;
 
+export type TAsset = typeof schema.asset.$inferSelect;
+export type TNewAsset = typeof schema.asset.$inferInsert;
+
+export type TAssetUsage = typeof schema.assetUsage.$inferSelect;
+export type TNewAssetUsage = typeof schema.assetUsage.$inferInsert;
+
 export type TAppsPollSubmission = typeof schema.appsPollSubmission.$inferSelect;
 export type TNewAppsPollSubmission = typeof schema.appsPollSubmission.$inferInsert;
 
@@ -81,6 +87,18 @@ export type TNewExercise = typeof schema.exercise.$inferInsert;
 
 export type TGroupmember = typeof schema.groupmember.$inferSelect;
 export type TNewGroupmember = typeof schema.groupmember.$inferInsert;
+
+export type TCourseInvite = typeof schema.courseInvite.$inferSelect;
+export type TNewCourseInvite = typeof schema.courseInvite.$inferInsert;
+
+export type TCourseInviteAudit = typeof schema.courseInviteAudit.$inferSelect;
+export type TNewCourseInviteAudit = typeof schema.courseInviteAudit.$inferInsert;
+
+export type TOrganizationInvite = typeof schema.organizationInvite.$inferSelect;
+export type TNewOrganizationInvite = typeof schema.organizationInvite.$inferInsert;
+
+export type TOrganizationInviteAudit = typeof schema.organizationInviteAudit.$inferSelect;
+export type TNewOrganizationInviteAudit = typeof schema.organizationInviteAudit.$inferInsert;
 
 export type TLessonCompletion = typeof schema.lessonCompletion.$inferSelect;
 export type TNewLessonCompletion = typeof schema.lessonCompletion.$inferInsert;
@@ -130,13 +148,24 @@ export type TNewWaitinglist = typeof schema.waitinglist.$inferInsert;
 export type TOrganization = typeof schema.organization.$inferSelect;
 export type TNewOrganization = typeof schema.organization.$inferInsert;
 
+export type TTagGroup = typeof schema.tagGroup.$inferSelect;
+export type TNewTagGroup = typeof schema.tagGroup.$inferInsert;
+
+export type TTag = typeof schema.tag.$inferSelect;
+export type TNewTag = typeof schema.tag.$inferInsert;
+
+export type TTagAssignment = typeof schema.tagAssignment.$inferSelect;
+export type TNewTagAssignment = typeof schema.tagAssignment.$inferInsert;
+
 export type TExerciseTemplate = typeof schema.exerciseTemplate.$inferSelect;
 export type TNewExerciseTemplate = typeof schema.exerciseTemplate.$inferInsert;
 
 export type TCourseType = (typeof schema.courseType.enumValues)[number];
 
-export type TCourseVersion = (typeof schema.courseVersion.enumValues)[number];
-
 export type TLocale = (typeof schema.locale.enumValues)[number];
 
 export type TPlan = (typeof schema.plan.enumValues)[number];
+
+export type TCourseInviteEventType = (typeof schema.courseInviteEventType.enumValues)[number];
+
+export type TOrganizationInviteEventType = (typeof schema.organizationInviteEventType.enumValues)[number];

@@ -7,7 +7,7 @@
   import MODES from '$lib/utils/constants/mode';
   import type { Content } from '@cio/ui/custom/editor';
   import type { TLocale } from '@cio/db/types';
-  import { AIButton } from '../components';
+  import AIButton from '$features/course/components/lesson/ai-button.svelte';
   import type { Writable } from 'svelte/store';
 
   interface Props {
@@ -41,6 +41,15 @@
 
     lessonApi.isDirty = true;
   }
+
+  const content = $derived(lessonApi.translations[lessonId]?.[lessonApi.currentLocale] || '');
+
+  $effect(() => {
+    console.log('content', content);
+  });
+  $effect(() => {
+    console.log('lessonApi.currentLocale', lessonApi.currentLocale);
+  });
 </script>
 
 {#if mode === MODES.edit}
@@ -52,27 +61,20 @@
 
   <div class="mt-5 h-[60vh]">
     <TextEditor
-      content={lessonApi.note}
+      {content}
       onChange={(content) => onEditorChange(content)}
-      onReady={() => {
-        // editor
-      }}
       placeholder={$t('course.navItem.lessons.materials.tabs.note.placeholder')}
     />
   </div>
 {:else}
   <!-- View Mode -->
-  {#if !isHtmlValueEmpty(lessonApi.note)}
-    <HTMLRender className="m-auto">
-      <div>
-        {@html sanitizeHtml(lessonApi.note)}
-      </div>
+  {#if !isHtmlValueEmpty(content)}
+    <HTMLRender>
+      {@html sanitizeHtml(content)}
     </HTMLRender>
   {:else if hasAtLeastOneTranslation}
-    <div class="flex flex-col items-center justify-center text-center">
-      <h3 class="py-2 text-lg font-normal italic dark:text-white">
-        {$t('course.navItem.lessons.materials.no_translation')}
-      </h3>
-    </div>
+    <p class="text-md py-2 font-normal italic dark:text-white">
+      {$t('course.navItem.lessons.materials.no_translation')}
+    </p>
   {/if}
 {/if}

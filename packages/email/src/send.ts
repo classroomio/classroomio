@@ -122,7 +122,12 @@ export const deliverEmail = async (args: TDeliverEmail): Promise<EmailResponse[]
   const results = await Promise.all(
     emailItems.map(async (emailItem) => {
       try {
-        const res = env.ZOHO_TOKEN ? await sendWithZoho(emailItem) : await sendWithNodemailer(emailItem);
+        const emailPayload = {
+          ...emailItem,
+          from: emailItem.from ?? EMAIL_FROM
+        };
+
+        const res = env.ZOHO_TOKEN ? await sendWithZoho(emailPayload) : await sendWithNodemailer(emailPayload);
 
         console.log('Email status', res);
         return res;

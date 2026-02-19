@@ -7,6 +7,7 @@ supabase
 static
 dist
 docker
+**/storybook-static
 
 **/course-app
 apps/docs
@@ -16,3 +17,11 @@ pnpm-lock.yaml
 *.md
 
 packages/ui/src/output.css
+
+*.sql
+*.env*
+
+# No parser for these
+.prettierignore
+.dockerignore
+**/Dockerfile

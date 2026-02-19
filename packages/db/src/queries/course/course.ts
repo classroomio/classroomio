@@ -1,10 +1,20 @@
 import * as schema from '@db/schema';
 
-import { TCourse, TGroup, TGroupAttendance, TGroupmember, TNewCourse, TNewCourseNewsfeed, TProfile } from '@db/types';
-import { and, desc, eq, isNull, or, sql } from 'drizzle-orm';
+import {
+  TCourse,
+  TCourseSection,
+  TGroup,
+  TGroupAttendance,
+  TGroupmember,
+  TNewCourse,
+  TNewCourseNewsfeed,
+  TNewCourseSection,
+  TProfile
+} from '@db/types';
+import { and, desc, eq, inArray, isNull, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 import { getCourseContentItems, type CourseContentItemRow } from './content';
 
 /**
@@ -36,8 +46,22 @@ export interface TStudentCourse extends TBaseCourse {
  * @param siteName Organization site name
  * @returns Array of published courses with lesson counts
  */
-export const getPublishedCoursesBySiteName = async (siteName: string): Promise<TBaseCourse[]> => {
+export const getPublishedCoursesBySiteName = async (siteName: string, courseIds?: string[]): Promise<TBaseCourse[]> => {
   try {
+    if (courseIds && courseIds.length === 0) {
+      return [];
+    }
+
+    const conditions = [
+      eq(schema.organization.siteName, siteName),
+      eq(schema.course.status, 'ACTIVE'),
+      eq(schema.course.isPublished, true)
+    ];
+
+    if (courseIds && courseIds.length > 0) {
+      conditions.push(inArray(schema.course.id, courseIds));
+    }
+
     const result = await db
       .select({
         course: schema.course,
@@ -47,13 +71,7 @@ export const getPublishedCoursesBySiteName = async (siteName: string): Promise<T
       .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
       .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
       .leftJoin(schema.lesson, eq(schema.course.id, schema.lesson.courseId))
-      .where(
-        and(
-          eq(schema.organization.siteName, siteName),
-          eq(schema.course.status, 'ACTIVE'),
-          eq(schema.course.isPublished, true)
-        )
-      )
+      .where(and(...conditions))
       .groupBy(schema.course.id)
       .orderBy(desc(schema.course.createdAt));
 
@@ -62,6 +80,7 @@ export const getPublishedCoursesBySiteName = async (siteName: string): Promise<T
       lessonCount: Number(row.lessonCount)
     }));
   } catch (error) {
+    console.error('getCoursesBySiteName error:', error);
     throw new Error(
       `Failed to get courses by site name "${siteName}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -109,6 +128,7 @@ export const getCoursesById = async (orgId: string): Promise<TCourse[]> => {
       }
     }));
   } catch (error) {
+    console.error('getCoursesById error:', error);
     throw new Error(
       `Failed to get courses by org ID "${orgId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -183,6 +203,7 @@ export async function getCourseById(courseId: string) {
   try {
     return await db.select().from(schema.course).where(eq(schema.course.id, courseId)).limit(1);
   } catch (error) {
+    console.error('getCourseById error:', error);
     throw new Error(
       `Failed to get course by ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -206,6 +227,13 @@ export type CourseWithRelations = TCourse & {
     | null;
   attendance: TGroupAttendance[];
   contentItems: CourseContentItemRow[];
+  /** Set when course has groupId (from join on group -> organization) */
+  org?: {
+    id: string;
+    name: string;
+    siteName: string | null;
+    theme: string | null;
+  } | null;
 };
 
 export async function getCourseWithRelations(
@@ -237,13 +265,19 @@ export async function getCourseWithRelations(
     const course = courses[0];
     const finalCourseId = course.id;
 
-    // Type definitions for query results
+    // Type definitions for query results (group query joins organization for org context)
     type GroupQueryRow = {
       group: TGroup;
       member: TGroupmember | null;
       profile: Pick<TProfile, 'id' | 'fullname' | 'username' | 'avatarUrl' | 'email'> | null;
+      organization: {
+        id: string;
+        name: string;
+        siteName: string | null;
+        theme: string | null;
+      } | null;
     };
-    // Fetch group data if groupId exists
+    // Fetch group data (and org via join) if groupId exists
     const groupDataPromise: Promise<GroupQueryRow[]> = course.groupId
       ? db
           .select({
@@ -255,9 +289,16 @@ export async function getCourseWithRelations(
               username: schema.profile.username,
               avatarUrl: schema.profile.avatarUrl,
               email: schema.profile.email
+            },
+            organization: {
+              id: schema.organization.id,
+              name: schema.organization.name,
+              siteName: schema.organization.siteName,
+              theme: schema.organization.theme
             }
           })
           .from(schema.group)
+          .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
           .leftJoin(schema.groupmember, eq(schema.group.id, schema.groupmember.groupId))
           .leftJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
           .where(eq(schema.group.id, course.groupId))
@@ -287,14 +328,25 @@ export async function getCourseWithRelations(
           }
         : null;
 
+    const org =
+      groupData.length > 0 && groupData[0].organization
+        ? {
+            id: groupData[0].organization.id,
+            name: groupData[0].organization.name,
+            siteName: groupData[0].organization.siteName ?? null,
+            theme: groupData[0].organization.theme ?? null
+          }
+        : null;
+
     return {
       ...course,
       group,
       attendance,
-      contentItems
+      contentItems,
+      ...(org !== null && { org })
     };
   } catch (error) {
-    console.error('Error in getCourseWithRelations', error);
+    console.error('getCourseWithRelations error:', error);
     throw new Error(`Failed to get course with relations: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -303,6 +355,7 @@ export async function createCourse(newCourse: TNewCourse) {
   try {
     return await db.insert(schema.course).values(newCourse).returning();
   } catch (error) {
+    console.error('createCourse error:', error);
     throw new Error(`Failed to create course: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -311,6 +364,7 @@ export async function createCourseNewsfeed(newsfeed: TNewCourseNewsfeed) {
   try {
     return await db.insert(schema.courseNewsfeed).values(newsfeed).returning();
   } catch (error) {
+    console.error('createCourseNewsfeed error:', error);
     throw new Error(`Failed to create course newsfeed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -330,6 +384,7 @@ export async function updateCourse(courseId: string, data: Partial<TCourse>) {
       .returning();
     return updated;
   } catch (error) {
+    console.error('updateCourse error:', error);
     throw new Error(`Failed to update course: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -348,6 +403,7 @@ export async function deleteCourse(courseId: string) {
       .returning();
     return deleted;
   } catch (error) {
+    console.error('deleteCourse error:', error);
     throw new Error(`Failed to delete course: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -443,6 +499,7 @@ export async function getCourseProgress(
       exercisesCompleted
     };
   } catch (error) {
+    console.error('getCourseProgress error:', error);
     throw new Error(`Failed to get course progress: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -452,6 +509,8 @@ interface GetOrgCoursesOptions {
   orgId: string;
   /** Profile ID - if provided, filters to courses where user is a member */
   profileId?: string;
+  /** Optional course IDs filter */
+  courseIds?: string[];
 }
 
 /**
@@ -461,8 +520,12 @@ interface GetOrgCoursesOptions {
  * @param options.profileId Optional profile ID to filter by membership
  * @returns Array of courses with admin-level data
  */
-export const getOrgCourses = async ({ orgId, profileId }: GetOrgCoursesOptions): Promise<TAdminCourse[]> => {
+export const getOrgCourses = async ({ orgId, profileId, courseIds }: GetOrgCoursesOptions): Promise<TAdminCourse[]> => {
   try {
+    if (courseIds && courseIds.length === 0) {
+      return [];
+    }
+
     const baseQuery = db
       .select({
         course: schema.course,
@@ -480,6 +543,10 @@ export const getOrgCourses = async ({ orgId, profileId }: GetOrgCoursesOptions):
     // Build conditions
     const conditions = [eq(schema.group.organizationId, orgId), eq(schema.course.status, 'ACTIVE')];
 
+    if (courseIds && courseIds.length > 0) {
+      conditions.push(inArray(schema.course.id, courseIds));
+    }
+
     // If profileId provided, join groupmember and filter by membership
     const query = profileId
       ? baseQuery
@@ -495,6 +562,7 @@ export const getOrgCourses = async ({ orgId, profileId }: GetOrgCoursesOptions):
       totalStudents: Number(row.studentCount)
     }));
   } catch (error) {
+    console.error('getOrgCourses error:', error);
     throw new Error(`Failed to get org courses: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 };
@@ -552,6 +620,7 @@ export const getEnrolledCourses = async ({
       progressRate: Number(row.progressRate)
     }));
   } catch (error) {
+    console.error('getEnrolledCourses error:', error);
     throw new Error(`Failed to get enrolled courses: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 };
@@ -598,6 +667,7 @@ export const getExploreCourses = async ({ orgId, profileId }: GetExploreCoursesO
       lessonCount: Number(row.lessonCount)
     }));
   } catch (error) {
+    console.error('getExploreCourses error:', error);
     throw new Error(`Failed to get explore courses: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 };
@@ -633,6 +703,7 @@ export async function getCourseWithOrgData(courseId: string): Promise<{
 
     return result[0];
   } catch (error) {
+    console.error('getCourseWithOrgData error:', error);
     throw new Error(
       `Failed to get course with org data "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -662,36 +733,9 @@ export async function getOrganizationByCourseId(courseId: string): Promise<{ org
 
     return result[0];
   } catch (error) {
+    console.error('getOrganizationByCourseId error:', error);
     throw new Error(
       `Failed to get organization by course ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
-  }
-}
-
-/**
- * Updates course version
- * @param courseId Course ID
- * @param version Version to set ('V1' | 'V2')
- * @param tx Optional transaction context
- * @returns Updated course or null if not found
- */
-export async function updateCourseVersion(
-  courseId: string,
-  version: 'V1' | 'V2',
-  tx?: Parameters<Parameters<typeof db.transaction>[0]>[0]
-): Promise<TCourse | null> {
-  try {
-    const dbInstance = tx || db;
-    const [updated] = await dbInstance
-      .update(schema.course)
-      .set({ version })
-      .where(eq(schema.course.id, courseId))
-      .returning();
-
-    return updated || null;
-  } catch (error) {
-    throw new Error(
-      `Failed to update course version "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -718,8 +762,100 @@ export async function updateLessonsSectionId(
 
     return updated.length;
   } catch (error) {
+    console.error('updateLessonsSectionId error:', error);
     throw new Error(
       `Failed to update lessons section ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function updateUngroupedLessonsSectionId(
+  courseId: string,
+  sectionId: string,
+  tx?: Parameters<Parameters<typeof db.transaction>[0]>[0]
+): Promise<number> {
+  try {
+    const dbInstance = tx || db;
+    const updated = await dbInstance
+      .update(schema.lesson)
+      .set({ sectionId })
+      .where(and(eq(schema.lesson.courseId, courseId), isNull(schema.lesson.sectionId)))
+      .returning();
+
+    return updated.length;
+  } catch (error) {
+    console.error('updateUngroupedLessonsSectionId error:', error);
+    throw new Error(
+      `Failed to update ungrouped lessons section ID "${courseId}": ${
+        error instanceof Error ? error.message : 'Unknown error'
+      }`
+    );
+  }
+}
+
+export async function getCourseSectionsByCourseId(courseId: string) {
+  try {
+    return db.select().from(schema.courseSection).where(eq(schema.courseSection.courseId, courseId));
+  } catch (error) {
+    console.error('getCourseSectionsByCourseId error:', error);
+    throw new Error(
+      `Failed to get sections by course ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function getCourseSectionById(sectionId: string): Promise<TCourseSection | null> {
+  try {
+    const [section] = await db
+      .select()
+      .from(schema.courseSection)
+      .where(eq(schema.courseSection.id, sectionId))
+      .limit(1);
+    return section || null;
+  } catch (error) {
+    console.error('getCourseSectionById error:', error);
+    throw new Error(
+      `Failed to get course section by ID "${sectionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function createCourseSections(values: TNewCourseSection[], dbClient: DbOrTxClient = db) {
+  try {
+    return dbClient.insert(schema.courseSection).values(values).returning();
+  } catch (error) {
+    console.error('createCourseSections error:', error);
+    throw new Error(`Failed to create course sections: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function updateCourseSection(sectionId: string, data: Partial<TCourseSection>) {
+  try {
+    const [updated] = await db
+      .update(schema.courseSection)
+      .set({ ...data, updatedAt: new Date().toISOString() })
+      .where(eq(schema.courseSection.id, sectionId))
+      .returning();
+    return updated || null;
+  } catch (error) {
+    console.error('updateCourseSection error:', error);
+    throw new Error(
+      `Failed to update course section "${sectionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function deleteCourseSection(sectionId: string, dbClient: DbOrTxClient = db) {
+  try {
+    const [deleted] = await dbClient
+      .delete(schema.courseSection)
+      .where(eq(schema.courseSection.id, sectionId))
+      .returning();
+    return deleted || null;
+  } catch (error) {
+    console.error('deleteCourseSection error:', error);
+    throw new Error(
+      `Failed to delete course section "${sectionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

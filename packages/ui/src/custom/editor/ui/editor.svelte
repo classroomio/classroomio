@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onDestroy, onMount } from 'svelte';
+  import { onDestroy, onMount, untrack } from 'svelte';
   import type { EdraEditorProps } from '../types';
   import initEditor from '../editor';
   import { focusEditor } from '../utils';
@@ -75,10 +75,11 @@
       ],
       {
         onUpdate,
-        onTransaction(props) {
-          editor = undefined;
-          editor = props.editor;
-        },
+        // onTransaction(props) {
+        //   console.log('on transaction', props);
+        //   editor = undefined;
+        //   editor = props.editor;
+        // },
         editable,
         autofocus
       },

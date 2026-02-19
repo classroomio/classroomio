@@ -1,4 +1,4 @@
-import type { Lesson, LessonSection, ListLessons } from '$features/course/utils/types';
+import type { CourseSection, Lesson, ListLessons } from '$features/course/utils/types';
 import { get, writable } from 'svelte/store';
 
 import type { Course } from '$features/course/types';
@@ -73,7 +73,7 @@ export async function handleSaveLesson(lesson: Partial<ListLessons[number]>, cou
   }
   return { validationRes: null, lesson: null };
 }
-export async function handleSaveLessonSection(section: Partial<LessonSection>, courseId: Course['id']) {
+export async function handleSaveCourseSection(section: Partial<CourseSection>, courseId: Course['id']) {
   const result = lessonValidation(section);
 
   if (Object.keys(result).length) {

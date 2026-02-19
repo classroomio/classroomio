@@ -1,36 +1,5 @@
 import * as z from 'zod';
 
-// Lesson Section Schemas
-export const ZLessonSectionCreate = z.object({
-  title: z.string().min(1),
-  courseId: z.string().min(1),
-  order: z.number().int().min(0).optional()
-});
-export type TLessonSectionCreate = z.infer<typeof ZLessonSectionCreate>;
-
-export const ZLessonSectionUpdate = z.object({
-  title: z.string().min(1).optional(),
-  order: z.number().int().min(0).optional()
-});
-export type TLessonSectionUpdate = z.infer<typeof ZLessonSectionUpdate>;
-
-export const ZLessonSectionGetParam = z.object({
-  sectionId: z.string().min(1)
-});
-export type TLessonSectionGetParam = z.infer<typeof ZLessonSectionGetParam>;
-
-export const ZLessonSectionReorder = z.object({
-  sections: z
-    .array(
-      z.object({
-        id: z.string().min(1),
-        order: z.number().int().min(0)
-      })
-    )
-    .min(1)
-});
-export type TLessonSectionReorder = z.infer<typeof ZLessonSectionReorder>;
-
 // Lesson Schemas
 export const ZLessonCreate = z.object({
   title: z.string().min(1),
@@ -64,11 +33,9 @@ export const ZLessonUpdate = z.object({
         type: z.enum(['youtube', 'generic', 'upload']),
         link: z.string(),
         key: z.string().optional(),
-        metadata: z
-          .object({
-            svid: z.string().optional()
-          })
-          .optional()
+        assetId: z.string().uuid().optional(),
+        fileName: z.string().optional(),
+        metadata: z.record(z.string(), z.unknown()).optional()
       })
     )
     .optional(),
@@ -79,7 +46,8 @@ export const ZLessonUpdate = z.object({
         name: z.string(),
         link: z.string(),
         size: z.number().optional(),
-        key: z.string()
+        key: z.string(),
+        assetId: z.string().uuid().optional()
       })
     )
     .optional()

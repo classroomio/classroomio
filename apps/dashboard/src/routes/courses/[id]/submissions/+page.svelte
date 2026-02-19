@@ -7,10 +7,6 @@
   let { data } = $props();
 </script>
 
-<svelte:head>
-  <title>Submissions - ClassroomIO</title>
-</svelte:head>
-
 <RoleBasedSecurity allowedRoles={[1, 2]}>
   <Page.Header>
     <Page.HeaderContent>

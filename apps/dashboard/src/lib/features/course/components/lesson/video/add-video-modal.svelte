@@ -2,13 +2,14 @@
   import YoutubeVideo from './youtube-video.svelte';
   import UploadVideo from './upload-video.svelte';
   import EmbedLink from './embed-link.svelte';
+  import LibraryVideo from './library-video.svelte';
   import * as CONSTANTS from './constants';
   import { t } from '$lib/utils/functions/translations';
   import { isFreePlan } from '$lib/utils/store/org';
   import ZapIcon from '@lucide/svelte/icons/zap';
   import * as Dialog from '@cio/ui/base/dialog';
+  import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import { lessonVideoUpload } from '$features/course/components/lesson/store';
-
   interface Props {
     lessonId?: string;
     onClose?: () => void;
@@ -17,9 +18,7 @@
   let { lessonId = '', onClose = () => {} }: Props = $props();
 
   const tabs = CONSTANTS.videoTabs;
-  let currentTab = $state(tabs[0].value);
-
-  const onChange = (tab) => () => (currentTab = tab);
+  let currentTab = $state(String(tabs[0].value));
 </script>
 
 <Dialog.Root
@@ -28,43 +27,36 @@
     if (!isOpen) onClose();
   }}
 >
-  <Dialog.Content class="h-[80%] w-[90%] max-w-4/5 md:h-[566px]">
+  <Dialog.Content class="flex max-h-[680px] max-w-2xl! flex-col overflow-hidden">
     <Dialog.Header>
       <Dialog.Title>{$t('course.navItem.lessons.materials.tabs.video.add_video.title')}</Dialog.Title>
     </Dialog.Header>
 
-    <section class="flex h-full w-full flex-col items-start gap-3 md:flex-row">
-      <div class="flex flex-row items-center gap-2 md:flex-col">
-        <p class="mb-3 w-full text-start text-sm font-normal text-[#4F4B4B] dark:text-[#b0a9a9]">
-          {$t('course.navItem.lessons.materials.tabs.video.add_video.add_by')}
-        </p>
+    <UnderlineTabs.Root bind:value={currentTab} class="">
+      <UnderlineTabs.List>
         {#each tabs as item (item.value)}
-          <button
-            onclick={onChange(item.value)}
-            class={`my-1 w-full border px-4 py-3 ${
-              currentTab === item.value
-                ? 'border border-[#0233BD] bg-[#F5F8FE] dark:text-black'
-                : 'border border-gray-200'
-            } flex cursor-pointer flex-row items-center justify-start gap-2 rounded-md whitespace-nowrap`}
-          >
+          <UnderlineTabs.Trigger value={String(item.value)} class="ui:flex ui:items-center ui:gap-2">
             {#if $isFreePlan && item.value === 3}
               <ZapIcon size={16} class="filled" />
             {:else}
-              <item.icon color={`${currentTab === item.value ? 'dark:invert-0' : 'dark:invert'}`} />
+              <item.icon />
             {/if}
-            <p>{$t(item.title)}</p>
-          </button>
+            <span>{$t(item.title)}</span>
+          </UnderlineTabs.Trigger>
         {/each}
-      </div>
-      <main class="h-full w-full">
-        {#if currentTab === 1}
-          <YoutubeVideo />
-        {:else if currentTab === 2}
-          <EmbedLink />
-        {:else}
-          <UploadVideo {lessonId} />
-        {/if}
-      </main>
-    </section>
+      </UnderlineTabs.List>
+      <UnderlineTabs.Content value="1" class="mt-3">
+        <YoutubeVideo {lessonId} />
+      </UnderlineTabs.Content>
+      <UnderlineTabs.Content value="2" class="mt-3">
+        <EmbedLink {lessonId} />
+      </UnderlineTabs.Content>
+      <UnderlineTabs.Content value="3" class="mt-3">
+        <UploadVideo {lessonId} />
+      </UnderlineTabs.Content>
+      <UnderlineTabs.Content value="4" class="mt-3">
+        <LibraryVideo {lessonId} />
+      </UnderlineTabs.Content>
+    </UnderlineTabs.Root>
   </Dialog.Content>
 </Dialog.Root>

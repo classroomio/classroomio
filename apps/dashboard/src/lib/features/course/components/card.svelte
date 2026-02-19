@@ -67,6 +67,14 @@
   });
 
   let formatter = $derived(getCurrencyFormatter(currency));
+  const courseTags = $derived(
+    ('tags' in course && Array.isArray(course.tags) ? course.tags : []) as Array<{
+      id: string;
+      name: string;
+      slug: string;
+      color?: string | null;
+    }>
+  );
 
   const COURSE_TAG: Record<
     string,
@@ -130,6 +138,20 @@
         </Item.Title>
 
         <Item.Description class="min-h-[63px]">{description}</Item.Description>
+        <div class="ui:text-muted-foreground flex min-h-[12px] flex-wrap items-center gap-1">
+          {#if !isLMS && courseTags.length > 0}
+            {#each courseTags as tag (tag.id)}
+              <Item.SubDescription class="border-border inline-flex items-center gap-1.5 rounded-full border px-2">
+                <span
+                  class="ui:bg-primary/60 inline-block h-1.5 w-1.5 rounded-full"
+                  style={tag.color ? `background-color: ${tag.color}` : undefined}
+                  aria-hidden="true"
+                ></span>
+                <span>{tag.name}</span>
+              </Item.SubDescription>
+            {/each}
+          {/if}
+        </div>
 
         <Separator class="my-3" />
 

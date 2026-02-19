@@ -80,7 +80,7 @@
   id={feed.id}
   class="flex flex-col justify-between gap-2 {isActive
     ? 'border-primary-700 border-2'
-    : 'border border-gray-200'} mb-7 max-w-3xl rounded-md"
+    : 'border border-gray-200'} mb-7 w-[90%] rounded-md md:max-w-3xl"
 >
   <Header {feed} {onPin} onEdit={openEditFeed} onRequestDelete={() => (isDeleteFeedModal = true)} />
 

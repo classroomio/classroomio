@@ -20,9 +20,20 @@ export class CoursesApi extends BaseApiWithErrors {
    * Fetches org courses for the current organization
    * Org ID is automatically added from currentOrg store
    */
-  async getOrgCourses() {
+  async getOrgCourses(tagSlugs: string[] = []) {
+    const normalizedTagSlugs = Array.from(new Set(tagSlugs.map((tag) => tag.trim()).filter(Boolean)));
+
     return this.execute<GetOrgCoursesRequest>({
-      requestFn: () => classroomio.organization.courses.$get({}),
+      requestFn: () =>
+        classroomio.organization.courses.$get(
+          normalizedTagSlugs.length > 0
+            ? {
+                query: {
+                  tags: normalizedTagSlugs.join(',')
+                }
+              }
+            : {}
+        ),
       logContext: 'fetching org courses',
       onSuccess: (response) => {
         if (response.data) {

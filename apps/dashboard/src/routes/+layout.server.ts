@@ -1,14 +1,14 @@
 import type { AccountOrg } from '$features/app/types';
 import type { MetaTagsProps } from 'svelte-meta-tags';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
-import { dev } from '$app/environment';
-import { env } from '$env/dynamic/private';
 import { getOrgSiteInfo } from '$features/app/layout-setup';
-import { redirect } from '@sveltejs/kit';
+// import { env } from '$env/dynamic/private';
+// import { dev } from '$app/environment';
+// import { redirect } from '@sveltejs/kit';
 
 export const ssr = PUBLIC_IS_SELFHOSTED === 'true' ? false : true;
 
-const APP_SUBDOMAINS = env.PRIVATE_APP_SUBDOMAINS?.split(',') || [];
+// const APP_SUBDOMAINS = env.PRIVATE_APP_SUBDOMAINS?.split(',') || [];
 
 interface LoadOutput {
   orgSiteName: string;
@@ -17,6 +17,7 @@ interface LoadOutput {
   org: AccountOrg | null;
   baseMetaTags: MetaTagsProps;
   serverLang: string;
+  localeCookie: string;
   locals: App.Locals;
 }
 
@@ -32,15 +33,16 @@ export const load = async ({ url, cookies, request, locals }): Promise<LoadOutpu
     org: orgSiteInfo.org,
     baseMetaTags: getBaseMetaTags(url),
     serverLang: request.headers?.get('accept-language') || '',
+    localeCookie: cookies.get('classroomio_locale') || '',
     locals
   };
 
   console.log('PUBLIC_IS_SELFHOSTED', PUBLIC_IS_SELFHOSTED);
 
   // If it isn't a registered dashboard domain and also not a valid sub domain.
-  if (!APP_SUBDOMAINS.includes(orgSiteInfo.subdomain) && !dev && !orgSiteInfo.isOrgSite) {
-    redirect(307, 'https://app.classroomio.com');
-  }
+  // if (!APP_SUBDOMAINS.includes(orgSiteInfo.subdomain) && !dev && !orgSiteInfo.isOrgSite) {
+  //   redirect(307, 'https://app.classroomio.com');
+  // }
 
   return response;
 };

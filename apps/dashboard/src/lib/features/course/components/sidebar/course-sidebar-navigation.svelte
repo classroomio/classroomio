@@ -4,29 +4,28 @@
   import { resolve } from '$app/paths';
   import Plus from '@lucide/svelte/icons/plus';
   import * as Sidebar from '@cio/ui/base/sidebar';
-  import LockIcon from '@lucide/svelte/icons/lock';
-  import * as Collapsible from '@cio/ui/base/collapsible';
-  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import { Button } from '@cio/ui/base/button';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 
   import TableOfContentsIcon from '@lucide/svelte/icons/table-of-contents';
   import {
-    HoverableItem,
-    NewsFeedIcon,
-    LessonIcon,
     AnalyticsIcon,
     AttendanceIcon,
-    SubmissionIcon,
-    MarksIcon,
     CertificateIcon,
+    ContentIcon,
+    HoverableItem,
     LandingPageIcon,
+    MarksIcon,
+    NewsFeedIcon,
     PeopleIcon,
-    SettingsIcon
+    SettingsIcon,
+    SubmissionIcon
   } from '@cio/ui/custom/moving-icons';
   import { ContentType } from '@cio/utils/constants/content';
-  import { contentCreateStore } from '$features/course/components/content/store';
-  import { CONTENT_DEFINITIONS, getContentRoute, getCourseContent } from '$features/course/utils/content';
+  import { contentCreateStoreUtils, contentEditingStore } from '$features/course/components/content/store';
+  import { getCourseContent } from '$features/course/utils/content';
+  import CourseContentTree from './course-content-tree.svelte';
+  import ContentCountBadges from '../content-count-badges.svelte';
 
   import { NAV_IDS } from './constants';
   import { courseApi } from '$features/course/api';
@@ -34,7 +33,9 @@
   import { currentOrg, isFreePlan, currentOrgPath } from '$lib/utils/store/org';
   import { globalStore } from '$lib/utils/store/app';
   import { getNavItemRoute, getLessonsRoute } from '$features/course/utils/functions';
-  import { CircleCheckIcon } from '$features/ui/icons';
+  import { useSidebar } from '@cio/ui/base/sidebar';
+  import { IconButton } from '@cio/ui/custom/icon-button';
+  import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
 
   interface Props {
     path: string;
@@ -44,12 +45,23 @@
 
   let { path, id, isStudent = false }: Props = $props();
 
-  $effect(() => {
-    console.log('course id', id);
-  });
-
   const coursesListPath = $derived($globalStore.isOrgSite ? '/lms/mylearning' : `${$currentOrgPath}/courses`);
   const contentData = $derived(getCourseContent(courseApi.course));
+  const sidebar = useSidebar();
+  const contentCount = $derived.by(() => {
+    const contentItems = contentData.grouped
+      ? contentData.sections.flatMap((section) => section.items)
+      : contentData.items;
+    const lessons = contentItems.filter((item) => item.type === ContentType.Lesson).length;
+    const exercises = contentItems.filter((item) => item.type === ContentType.Exercise).length;
+
+    return {
+      lessons,
+      exercises,
+      total: lessons + exercises
+    };
+  });
+  const showContentCount = $derived(sidebar.open && !sidebar.isMobile && contentCount.total > 0);
 
   const navItems = $derived(
     [
@@ -167,11 +179,24 @@
 
   function openContentModal(courseId: string, sectionId = '') {
     goto(resolve(`/courses/${courseId}/lessons`, {}));
-    contentCreateStore.set({
-      open: true,
-      sectionId,
-      initialType: ContentType.Lesson
-    });
+    contentEditingStore.set(undefined);
+    contentCreateStoreUtils.close();
+
+    const contentGroupingEnabled = courseApi.course?.metadata?.isContentGroupingEnabled ?? true;
+
+    if (sectionId) {
+      contentCreateStoreUtils.openContentUnit(sectionId);
+    } else if (contentGroupingEnabled) {
+      contentCreateStoreUtils.openSection();
+    } else {
+      contentCreateStoreUtils.openDefault();
+    }
+  }
+
+  function openSectionEditor(courseId: string, sectionId: string) {
+    goto(resolve(`/courses/${courseId}/lessons`, {}));
+    contentCreateStoreUtils.close();
+    contentEditingStore.set(sectionId);
   }
 
   function getNavIcon(id: string) {
@@ -182,7 +207,7 @@
     } else if (id === NAV_IDS.NEWS_FEED) {
       return NewsFeedIcon;
     } else if (id === NAV_IDS.LESSONS) {
-      return LessonIcon;
+      return ContentIcon;
     } else if (id === NAV_IDS.ATTENDANCE) {
       return AttendanceIcon;
     } else if (id === NAV_IDS.SUBMISSIONS) {
@@ -208,173 +233,86 @@
 <Sidebar.Group class="pt-0!">
   <Button variant="link" class="h-fit! justify-start! px-2! py-2!" href={resolve(coursesListPath, {})}>
     <ArrowLeftIcon class="custom" />
-    <span class="text-xs">Courses</span>
+    <span class="text-xs">{$t('org_navigation.courses')}</span>
   </Button>
 
   <Sidebar.Menu>
     {#each navItems as item (item.id)}
-      <Collapsible.Root open={item.isActive} class="group/collapsible">
-        {#snippet child({ props })}
-          <Sidebar.MenuItem {...props}>
-            {#if item.isLesson}
-              <Collapsible.Trigger>
-                {#snippet child({ props })}
-                  <a href={resolve(item.url, {})}>
-                    <Sidebar.MenuButton {...props} tooltipContent={item.title}>
-                      {#snippet child({ props })}
-                        <HoverableItem {...props} class="flex w-full items-center gap-4 py-2 pl-1.5 {props.class}">
-                          {#snippet children(isHovered)}
-                            {@const Icon = item.icon}
-                            {#if Icon === TableOfContentsIcon}
-                              <Icon size={16} />
-                            {:else}
-                              <Icon {isHovered} size={16} />
-                            {/if}
-                            <span>{item.title}</span>
+      {#if item.isLesson}
+        <Sidebar.MenuItem>
+          <Sidebar.MenuButton tooltipContent={item.title} isActive={item.isActive}>
+            {#snippet child({ props })}
+              <HoverableItem class="">
+                {#snippet children(isHovered)}
+                  <a href={resolve(item.url, {})} {...props}>
+                    {#if item.icon}
+                      {@const Icon = item.icon}
+                      <Icon size={16} {isHovered} />
+                    {/if}
 
-                            <div class="ml-auto flex items-center gap-1">
-                              <Plus size={20} class="rounded-full p-1" onclick={() => openContentModal(id)} />
+                    <span>{item.title}</span>
 
-                              <ChevronRightIcon
-                                size={20}
-                                class="rounded-full p-1 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
-                              />
-                            </div>
-                          {/snippet}
-                        </HoverableItem>
-                      {/snippet}
-                    </Sidebar.MenuButton>
+                    <div class="ml-auto flex items-center gap-1">
+                      <IconButton
+                        variant="ghost-outline"
+                        size="icon-xs"
+                        class="transition-opacity duration-150 {isHovered ? 'opacity-100' : 'opacity-0'}"
+                        onclick={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          openContentModal(id);
+                        }}
+                      >
+                        <Plus size={8} />
+                      </IconButton>
+                      {#if showContentCount}
+                        <ContentCountBadges lessons={contentCount.lessons} exercises={contentCount.exercises} />
+                      {/if}
+
+                      <IconButton variant="ghost" size="icon-xs">
+                        <ChevronRightIcon
+                          class="transition-transform duration-200 {item.isActive ? 'rotate-90' : ''}"
+                        />
+                      </IconButton>
+                    </div>
                   </a>
                 {/snippet}
-              </Collapsible.Trigger>
-              <Collapsible.Content>
-                <Sidebar.MenuSub>
-                  {#if contentData.grouped}
-                    {#each contentData.sections as section (section.id)}
-                      <Collapsible.Root open={true} class="group/section">
-                        {#snippet child({ props })}
-                          <Sidebar.MenuSubItem {...props}>
-                            <Collapsible.Trigger>
-                              {#snippet child({ props })}
-                                <Sidebar.MenuSubButton {...props} class="flex w-full items-center gap-2 font-medium">
-                                  {@const SectionIcon = CONTENT_DEFINITIONS[ContentType.Section].icon}
-                                  <SectionIcon size={14} />
-                                  <span class="flex-1 truncate">{section.title}</span>
-                                  <div class="ml-auto flex items-center gap-1">
-                                    <Plus
-                                      size={20}
-                                      class="rounded-full p-1 hover:bg-gray-200"
-                                      onclick={() => openContentModal(id, section.id)}
-                                    />
+              </HoverableItem>
+            {/snippet}
+          </Sidebar.MenuButton>
 
-                                    <ChevronRightIcon
-                                      size={20}
-                                      class="rounded-full p-1 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 hover:bg-gray-200"
-                                    />
-                                  </div>
-                                </Sidebar.MenuSubButton>
-                              {/snippet}
-                            </Collapsible.Trigger>
-                            <Collapsible.Content>
-                              <Sidebar.MenuSub class="ml-2">
-                                {#each section.items as contentItem (contentItem.id)}
-                                  <Sidebar.MenuSubItem>
-                                    <Sidebar.MenuSubButton
-                                      isActive={(path || page.url.pathname).includes(contentItem.id)}
-                                    >
-                                      {#snippet child({ props })}
-                                        {@const ItemIcon = CONTENT_DEFINITIONS[contentItem.type].icon}
-                                        {@const isLocked = isStudent && (contentItem.isUnlocked ?? true) === false}
-                                        <a
-                                          href={resolve(
-                                            isLocked ? page.url.pathname : getContentRoute(id, contentItem),
-                                            {}
-                                          )}
-                                          aria-disabled={isLocked}
-                                          title={contentItem.title}
-                                          class="flex w-full items-center gap-2 {isLocked
-                                            ? 'cursor-not-allowed opacity-50'
-                                            : ''}"
-                                          {...props}
-                                        >
-                                          <ItemIcon size={14} />
-                                          <span class="flex-1 truncate">{contentItem.title}</span>
-                                          {#if isLocked}
-                                            <LockIcon size={16} class="shrink-0" />
-                                          {:else if contentItem.isComplete}
-                                            <span class="shrink-0">
-                                              <CircleCheckIcon size={16} filled />
-                                            </span>
-                                          {/if}
-                                        </a>
-                                      {/snippet}
-                                    </Sidebar.MenuSubButton>
-                                  </Sidebar.MenuSubItem>
-                                {/each}
-                              </Sidebar.MenuSub>
-                            </Collapsible.Content>
-                          </Sidebar.MenuSubItem>
-                        {/snippet}
-                      </Collapsible.Root>
-                    {/each}
-                  {:else}
-                    {#each contentData.items as contentItem (contentItem.id)}
-                      <Sidebar.MenuSubItem>
-                        <Sidebar.MenuSubButton isActive={(path || page.url.pathname).includes(contentItem.id)}>
-                          {#snippet child({ props })}
-                            {@const ItemIcon = CONTENT_DEFINITIONS[contentItem.type].icon}
-                            {@const isLocked = isStudent && (contentItem.isUnlocked ?? true) === false}
-                            <a
-                              href={resolve(isLocked ? page.url.pathname : getContentRoute(id, contentItem), {})}
-                              aria-disabled={isLocked}
-                              title={contentItem.title}
-                              class="flex w-full items-center gap-2 {isLocked ? 'cursor-not-allowed opacity-50' : ''}"
-                              {...props}
-                            >
-                              <ItemIcon size={14} />
-                              <span class="flex-1 truncate">{contentItem.title}</span>
-                              {#if isLocked}
-                                <LockIcon size={16} class="shrink-0" />
-                              {:else if contentItem.isComplete}
-                                <span class="shrink-0">
-                                  <CircleCheckIcon size={16} filled />
-                                </span>
-                              {/if}
-                            </a>
-                          {/snippet}
-                        </Sidebar.MenuSubButton>
-                      </Sidebar.MenuSubItem>
-                    {/each}
-                  {/if}
-                </Sidebar.MenuSub>
-              </Collapsible.Content>
-            {:else}
-              <a href={resolve(item.url, {})}>
-                <Sidebar.MenuButton
-                  tooltipContent={item.title}
-                  class="flex w-full cursor-pointer items-center gap-4 px-1.5 py-2 {item.isActive
-                    ? 'ui:bg-accent ui:text-accent-foreground'
-                    : ''}"
-                >
-                  {#snippet child({ props })}
-                    <HoverableItem {...props}>
-                      {#snippet children(isHovered)}
-                        {@const Icon = item.icon}
-                        {#if Icon === TableOfContentsIcon}
-                          <Icon size={16} />
-                        {:else}
-                          <Icon {isHovered} size={16} />
-                        {/if}
-                        <span>{item.title}</span>
-                      {/snippet}
-                    </HoverableItem>
-                  {/snippet}
-                </Sidebar.MenuButton>
-              </a>
-            {/if}
-          </Sidebar.MenuItem>
-        {/snippet}
-      </Collapsible.Root>
+          {#if item.isActive}
+            <CourseContentTree
+              {path}
+              {id}
+              {isStudent}
+              className="mt-1 ml-2"
+              onOpenContentModal={(sectionId) => openContentModal(id, sectionId)}
+              onEditSection={(sectionId) => openSectionEditor(id, sectionId)}
+            />
+          {/if}
+        </Sidebar.MenuItem>
+      {:else}
+        <Sidebar.MenuItem>
+          <Sidebar.MenuButton tooltipContent={item.title} isActive={item.isActive}>
+            {#snippet child({ props })}
+              <HoverableItem>
+                {#snippet children(isHovered)}
+                  {@const Icon = item.icon}
+                  <a href={resolve(item.url, {})} {...props}>
+                    {#if Icon === TableOfContentsIcon}
+                      <Icon size={16} />
+                    {:else}
+                      <Icon {isHovered} size={16} />
+                    {/if}
+                    <span>{item.title}</span>
+                  </a>
+                {/snippet}
+              </HoverableItem>
+            {/snippet}
+          </Sidebar.MenuButton>
+        </Sidebar.MenuItem>
+      {/if}
     {/each}
   </Sidebar.Menu>
 </Sidebar.Group>

@@ -25,7 +25,9 @@
     });
 
     if (selectedId === '0') {
-      return coursesFiltered.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      return coursesFiltered.sort(
+        (a, b) => new Date(a.createdAt ?? '').getTime() - new Date(b.createdAt ?? '').getTime()
+      );
     } else if (selectedId === '1') {
       return coursesFiltered.sort((a, b) => (b.lessonCount ?? 0) - (a.lessonCount ?? 0));
     }

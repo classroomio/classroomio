@@ -14,6 +14,10 @@
   function handleLinkClick() {
     if (onMobileClick) onMobileClick();
   }
+
+  $effect(() => {
+    console.log('customLinks', customLinks);
+  });
 </script>
 
 {#if customLinks}
@@ -21,7 +25,7 @@
     {#each customLinks.links as link (link.url)}
       <li>
         <a
-          href={resolve(link.url)}
+          href={link.url}
           target={link.openInNewTab ? '_blank' : '_self'}
           rel={link.openInNewTab ? 'noopener noreferrer' : ''}
         >

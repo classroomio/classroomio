@@ -3,4 +3,96 @@ title: Cloudflare Setup
 description: Guide to setting up Cloudflare for ClassroomIO.
 ---
 
-In this guide, you will learn how to get your Cloudflare environment variables. We use Cloudflare R2 for video uploads and the aim of this guide is to help you get the right variables to properly set up our api.
+In this guide, you will learn how to get your Cloudflare environment variables and configure R2 buckets. We use Cloudflare R2 for video uploads, document uploads, and media (images and video thumbnails). The aim of this guide is to help you get the right variables and CORS settings to properly set up our API.
+
+## R2 buckets overview
+
+The API uses three R2 buckets:
+
+| Bucket       | Purpose                                                                 | Access pattern                                              |
+| ------------ | ----------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **videos**   | Lesson video uploads and playback                                      | Presigned **PUT** (upload from dashboard), presigned **GET** (playback) |
+| **documents**| Lesson document uploads and downloads                                  | Presigned **PUT** (upload), presigned **GET** (download)    |
+| **media**    | Images and video thumbnails (uploaded via API, served via public URL)  | **GET** / **HEAD** from dashboard (e.g. thumbnail images)     |
+
+Create these buckets in the [Cloudflare Dashboard](https://dash.cloudflare.com/) under **R2** if they do not exist.
+
+## Environment variables
+
+Configure the following for the API (e.g. in `.env` or your deployment):
+
+- **R2 API (videos and documents):**  
+  `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_ACCESS_KEY`, `CLOUDFLARE_SECRET_ACCESS_KEY`, `CLOUDFLARE_BUCKET_DOMAIN` (or the API uses the account ID for the R2 endpoint).
+
+- **Media bucket (images and thumbnails):**  
+  `CLOUDFLARE_IMAGE_BUCKET_DOMAIN` — public URL for the **media** bucket (e.g. custom domain or R2 public bucket URL). Required for image uploads and video thumbnail display.
+
+## R2 CORS configuration
+
+When the dashboard loads videos or images from R2, the browser may send requests to a different origin. CORS must be configured on each bucket so the browser allows those requests. Allow **GET** and **HEAD** (and **PUT** where the client uploads) so that fetches and preflight/cache checks succeed.
+
+### Videos bucket
+
+Used for: uploading videos (presigned PUT) and playing them back (presigned GET).
+
+1. In [Cloudflare Dashboard](https://dash.cloudflare.com/) go to **R2** → select the **videos** bucket.
+2. Open **Settings** → **CORS policy**.
+3. Add a policy that allows your app origins and **GET**, **HEAD**, and **PUT** (PUT is required for presigned uploads from the browser):
+
+```json
+[
+  {
+    "AllowedOrigins": ["http://localhost:5173", "https://your-app-domain.com"],
+    "AllowedMethods": ["GET", "HEAD", "PUT"],
+    "AllowedHeaders": ["*"],
+    "MaxAgeSeconds": 3600
+  }
+]
+```
+
+4. Add every origin that will upload or play videos (e.g. dev: `http://localhost:5173`, production: `https://app.classroomio.com`). Do not use `*` for `AllowedOrigins` if you use credentials.
+
+After saving, video upload and playback from the dashboard should work without “blocked by CORS policy” errors.
+
+### Documents bucket
+
+If the dashboard uploads or downloads documents directly to/from R2 via presigned URLs, configure CORS similarly to the videos bucket:
+
+- **AllowedMethods:** include **GET**, **HEAD**, and **PUT** if the client uploads via presigned URL.
+
+```json
+[
+  {
+    "AllowedOrigins": ["http://localhost:5173", "https://your-app-domain.com"],
+    "AllowedMethods": ["GET", "HEAD", "PUT"],
+    "AllowedHeaders": ["*"],
+    "MaxAgeSeconds": 3600
+  }
+]
+```
+
+### Media bucket
+
+Used for: serving images and video thumbnails (the dashboard loads these via the public URL from `CLOUDFLARE_IMAGE_BUCKET_DOMAIN`). If that URL is on a different origin than the dashboard, the bucket needs CORS for **GET** and **HEAD**.
+
+1. In **R2** → select the **media** bucket.
+2. Open **Settings** → **CORS policy**.
+3. Add a policy that allows your app origins to load images:
+
+```json
+[
+  {
+    "AllowedOrigins": ["http://localhost:5173", "https://your-app-domain.com"],
+    "AllowedMethods": ["GET", "HEAD"],
+    "AllowedHeaders": ["*"],
+    "MaxAgeSeconds": 3600
+  }
+]
+```
+
+(Image uploads go through the API server, not directly from the browser to R2, so the media bucket does not need PUT in CORS for normal dashboard use.)
+
+**Troubleshooting:** If you see "Access to image at '...r2.dev/...' has been blocked by CORS policy" when loading video thumbnails or lesson images:
+
+1. Ensure the **media** bucket has the CORS policy above and your origin (e.g. `http://localhost:5173`) is in `AllowedOrigins`.
+2. The Cloudflare-managed **r2.dev** public URL sometimes does not apply bucket CORS headers. If CORS errors persist after configuring CORS, use a **custom domain** for the media bucket (recommended for production) so CORS and caching work reliably. The dashboard avoids requiring CORS for poster/thumbnail display where possible.

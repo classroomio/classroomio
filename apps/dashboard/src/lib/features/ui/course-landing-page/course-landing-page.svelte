@@ -16,7 +16,7 @@
   import type { Course, CourseMetadata } from '$features/course/utils/types';
   import { courseApi } from '$features/course/api';
   import { MediaPlayer, isYoutubeUrl } from '$features/ui/media-player';
-  import { getCourseLessons, getLessonSections, getTotalLessons, filterNavItems } from './utils';
+  import { filterNavItems, getCourseLessons, getCourseSections, getTotalLessons } from './utils';
   import { Button } from '@cio/ui/base/button';
 
   import { Chip } from '@cio/ui/custom/chip';
@@ -64,8 +64,8 @@
 
   let activeNav = $state(NAV_ITEMS[0].key);
 
-  const lessonSections = $derived(getLessonSections(courseData));
-  const totalLessons = $derived(getTotalLessons(lessonSections));
+  const courseSections = $derived(getCourseSections(courseData));
+  const totalLessons = $derived(getTotalLessons(courseSections));
 
   function locationHashChanged() {
     activeNav = window.location.hash;
@@ -246,7 +246,7 @@
         {/if}
 
         <!-- Sections - Lessons -->
-        {#if courseData.version === 'V1'}
+        {#if !courseData.metadata?.isContentGroupingEnabled}
           <NavSection id="lessons">
             <div class="mb-3 flex w-full items-center justify-between">
               <h3 class="mt-0 mb-3 text-2xl">
@@ -268,18 +268,18 @@
               {/each}
             </div>
           </NavSection>
-        {:else if courseData.version === 'V2'}
+        {:else if courseData.metadata?.isContentGroupingEnabled}
           <NavSection id="lessons">
             <!-- header -->
             <div class="flex items-center justify-between">
               <h1>{$t('course.navItem.landing_page.course_content')}</h1>
               <span class="text-xs font-normal">
-                {pluralize($t('course.navItem.landing_page.modules'), lessonSections.length, true)},
+                {pluralize($t('course.navItem.landing_page.modules'), courseSections.length, true)},
                 {pluralize($t('course.navItem.landing_page.lessons'), totalLessons, true)}
               </span>
             </div>
 
-            {#each lessonSections as section (section.id)}
+            {#each courseSections as section (section.id)}
               <SectionsDisplay
                 exerciseCount={section.exerciseCount}
                 lessonCount={section.lessons?.length}

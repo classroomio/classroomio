@@ -6,6 +6,8 @@ import {
   ZCourseDeleteParam,
   ZCourseDownloadContent,
   ZCourseDownloadParam,
+  ZCourseEnrollBody,
+  ZCourseEnrollParam,
   ZCourseGetBySlugParam,
   ZCourseGetParam,
   ZCourseGetQuery,
@@ -14,6 +16,7 @@ import {
   ZCourseUpdate,
   ZCourseUpdateParam
 } from '@cio/utils/validation/course';
+import { ZCourseTagAssignment, ZCourseTagParam } from '@cio/utils/validation/tag';
 import {
   createCourse,
   deleteCourse,
@@ -22,12 +25,18 @@ import {
   getCourseProgress,
   updateCourse
 } from '@api/services/course/course';
+import { enrollInCourse } from '@api/services/course/invite';
+import { getCourseTags, replaceCourseTags } from '@api/services/tag';
+import { createRateLimiter } from '@api/middlewares/rate-limiter';
+import { extractClientIp } from '@api/utils/redis/key-generators';
 
 import { Hono } from '@api/utils/hono';
 import { attendanceRouter } from '@api/routes/course/attendance';
 import { authMiddleware } from '@api/middlewares/auth';
 import { cloneCourse } from '@api/services/course/clone';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
+import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
+import { contentRouter } from '@api/routes/course/content';
 import { exerciseRouter } from '@api/routes/course/exercise';
 import { generateCertificate } from '@api/utils/certificate';
 import { generateCoursePdf } from '@api/utils/course';
@@ -35,15 +44,27 @@ import { handleError } from '@api/utils/errors';
 import { katexRouter } from '@api/routes/course/katex';
 import { lessonRouter } from '@api/routes/course/lesson';
 import { markRouter } from '@api/routes/course/mark';
+import { sectionRouter } from '@api/routes/course/section';
 import { membersRouter } from '@api/routes/course/people';
+import { invitesRouter } from '@api/routes/course/invite';
 import { newsfeedRouter } from '@api/routes/course/newsfeed';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { paymentRequestRouter } from '@api/routes/course/payment-request';
-import { permissionsRouter } from '@api/routes/course/permissions';
 import { presignRouter } from '@api/routes/course/presign';
 import { submissionRouter } from '@api/routes/course/submission';
 import { zValidator } from '@hono/zod-validator';
+
+const enrollRateLimit = createRateLimiter({
+  windowMs: 60 * 60 * 1000,
+  maxRequests: 20,
+  message: 'Too many enrollment attempts. Please try again later.',
+  keyGenerator: (c) => {
+    const user = c.get('user');
+    const actor = user?.id ? `user:${user.id}` : `ip:${extractClientIp(c)}`;
+    return `enroll:${actor}:${c.req.param('courseId')}`;
+  }
+});
 
 export const courseRouter = new Hono()
   /**
@@ -91,6 +112,98 @@ export const courseRouter = new Hono()
     }
   })
   /**
+   * POST /course/:courseId/enroll
+   * Unified enrollment: free courses enroll directly; paid/invited require inviteToken.
+   */
+  .post(
+    '/:courseId/enroll',
+    authMiddleware,
+    enrollRateLimit,
+    zValidator('param', ZCourseEnrollParam),
+    zValidator('json', ZCourseEnrollBody),
+    async (c) => {
+      try {
+        const { courseId } = c.req.valid('param');
+        const body = c.req.valid('json');
+        const user = c.get('user')!;
+
+        const result = await enrollInCourse(
+          courseId,
+          {
+            id: user.id,
+            email: user.email,
+            emailVerified: user.emailVerified
+          },
+          body,
+          {
+            ipAddress: extractClientIp(c),
+            userAgent: c.req.header('user-agent') || null
+          }
+        );
+
+        return c.json(
+          {
+            success: true,
+            data: result
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to enroll');
+      }
+    }
+  )
+  /**
+   * GET /course/:courseId/tags
+   * Gets tags assigned to a course (organization admin only)
+   */
+  .get('/:courseId/tags', authMiddleware, orgAdminMiddleware, zValidator('param', ZCourseTagParam), async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const { courseId } = c.req.valid('param');
+      const tags = await getCourseTags(orgId, courseId);
+
+      return c.json(
+        {
+          success: true,
+          data: tags
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch course tags');
+    }
+  })
+  /**
+   * PUT /course/:courseId/tags
+   * Replaces all tags assigned to a course (organization admin only)
+   */
+  .put(
+    '/:courseId/tags',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('param', ZCourseTagParam),
+    zValidator('json', ZCourseTagAssignment),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const { courseId } = c.req.valid('param');
+        const data = c.req.valid('json');
+        const tags = await replaceCourseTags(orgId, courseId, data);
+
+        return c.json(
+          {
+            success: true,
+            data: tags
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to assign course tags');
+      }
+    }
+  )
+  /**
    * GET /course/:courseId
    * Gets a course by ID or slug with all related data (group, members, lessons, sections, attendance)
    * Query param: slug (optional) - if provided, courseId is ignored and course is fetched by slug
@@ -128,15 +241,44 @@ export const courseRouter = new Hono()
   .put(
     '/:courseId',
     authMiddleware,
-    courseMemberMiddleware,
+    courseTeamMemberMiddleware,
     zValidator('param', ZCourseUpdateParam),
     zValidator('json', ZCourseUpdate),
     async (c) => {
       try {
         const { courseId } = c.req.valid('param');
         const validatedData = c.req.valid('json');
+        const { tagIds, ...courseData } = validatedData;
 
-        const result = await updateCourse(courseId, validatedData);
+        const result = await updateCourse(courseId, courseData);
+
+        if (tagIds !== undefined) {
+          const orgId = c.req.header('cio-org-id');
+          if (!orgId) {
+            return c.json(
+              {
+                success: false,
+                error: 'Organization context not available',
+                code: 'ORG_CONTEXT_MISSING'
+              },
+              500
+            );
+          }
+
+          const user = c.get('user')!;
+          const tags = await replaceCourseTags(orgId, courseId, { tagIds }, { updatedByUserId: user.id });
+
+          return c.json(
+            {
+              success: true,
+              data: {
+                ...result,
+                tags
+              }
+            },
+            200
+          );
+        }
 
         return c.json(
           {
@@ -155,22 +297,28 @@ export const courseRouter = new Hono()
    * Soft deletes a course by setting status to 'DELETED'
    * Requires authentication and course membership (admin/tutor role)
    */
-  .delete('/:courseId', authMiddleware, courseMemberMiddleware, zValidator('param', ZCourseDeleteParam), async (c) => {
-    try {
-      const { courseId } = c.req.valid('param');
-      const result = await deleteCourse(courseId);
+  .delete(
+    '/:courseId',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    zValidator('param', ZCourseDeleteParam),
+    async (c) => {
+      try {
+        const { courseId } = c.req.valid('param');
+        const result = await deleteCourse(courseId);
 
-      return c.json(
-        {
-          success: true,
-          data: result
-        },
-        200
-      );
-    } catch (error) {
-      return handleError(c, error, 'Failed to delete course');
+        return c.json(
+          {
+            success: true,
+            data: result
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to delete course');
+      }
     }
-  })
+  )
   /**
    * GET /course/:courseId/progress
    * Gets course progress for a profile
@@ -209,7 +357,7 @@ export const courseRouter = new Hono()
   .get(
     '/:courseId/analytics',
     authMiddleware,
-    courseMemberMiddleware,
+    courseTeamMemberMiddleware,
     zValidator('param', ZCourseProgressParam),
     async (c) => {
       try {
@@ -304,32 +452,10 @@ export const courseRouter = new Hono()
       }
     }
   )
-  .post(
-    '/:courseId/convert-v2',
-    authMiddleware,
-    orgMemberMiddleware,
-    zValidator('param', ZCourseCloneParam),
-    async (c) => {
-      try {
-        const { courseId } = c.req.valid('param');
-        const { convertCourseToV2 } = await import('@api/services/course/convert');
-
-        const course = await convertCourseToV2(courseId);
-
-        return c.json(
-          {
-            success: true,
-            data: course
-          },
-          200
-        );
-      } catch (error) {
-        return handleError(c, error, 'Failed to convert course to V2');
-      }
-    }
-  )
   .route('/katex', katexRouter)
   .route('/:courseId/payment-request', paymentRequestRouter)
+  .route('/:courseId/content', contentRouter)
+  .route('/:courseId/section', sectionRouter)
   .route('/:courseId/lesson', lessonRouter)
   .route('/:courseId/exercise', exerciseRouter)
   .route('/:courseId/submission', submissionRouter)
@@ -337,5 +463,5 @@ export const courseRouter = new Hono()
   .route('/:courseId/mark', markRouter)
   .route('/:courseId/newsfeed', newsfeedRouter)
   .route('/:courseId/members', membersRouter)
-  .route('/:courseId/permissions', permissionsRouter)
+  .route('/:courseId/invites', invitesRouter)
   .route('/presign', presignRouter);

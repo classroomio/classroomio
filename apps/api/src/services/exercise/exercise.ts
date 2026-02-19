@@ -3,6 +3,7 @@ import type { TExercise, TExerciseTemplate, TNewOption, TNewQuestion } from '@ci
 import type { TExerciseCreate, TExerciseUpdate } from '@cio/utils/validation/exercise';
 import {
   createExercises,
+  syncOptionIdSequence,
   createOptions,
   createQuestions,
   deleteExercise,
@@ -94,6 +95,7 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
     // Fetch the complete exercise with questions and options
     return await getExercise(exercise.id);
   } catch (error) {
+    console.error('createExercise error:', error);
     if (error instanceof AppError) {
       throw error;
     }
@@ -187,6 +189,11 @@ export async function updateExerciseService(exerciseId: string, data: TExerciseU
 
         // Compute diff between current DB state and incoming data
         const diff = computeExerciseDiff(currentQuestionsWithOptions, data.questions);
+
+        // Sync option id sequence so next inserts get ids > max(id) (avoids option_pkey duplicate)
+        if (diff.options.creates.length > 0 || diff.questions.newQuestions.length > 0) {
+          await syncOptionIdSequence(txClient);
+        }
 
         // Apply all changes in parallel (they operate on different records)
         await Promise.all([
@@ -345,11 +352,11 @@ export async function createExerciseFromTemplate(
           if (question_type.id !== 3 && options && options.length > 0) {
             // Filter out deleted options
 
+            // value column is UUID (default gen_random_uuid()); label is the display text only
             const optionsData: TNewOption[] = options.map((opt) => ({
               questionId: newQuestion.id,
               label: opt.label || '',
-              isCorrect: opt.is_correct || false,
-              value: opt.label || null
+              isCorrect: opt.is_correct || false
             }));
 
             await createOptions(optionsData);

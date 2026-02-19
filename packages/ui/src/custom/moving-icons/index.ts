@@ -1,8 +1,10 @@
 export { default as AnalyticsIcon } from './analytics.svelte';
 export { default as AttendanceIcon } from './attendance.svelte';
+export { default as AttachmentIcon } from './attachment.svelte';
 export { default as CertificateIcon } from './certificate.svelte';
 export { default as CloseIcon } from './close.svelte';
 export { default as CommunityIcon } from './community.svelte';
+export { default as ContentIcon } from './content.svelte';
 export { default as CourseIcon } from './course.svelte';
 export { default as DashboardIcon } from './dashboard.svelte';
 export { default as ExerciseIcon } from './exercise.svelte';
@@ -24,3 +26,4 @@ export { default as ReviewIcon } from './review.svelte';
 export { default as SettingsIcon } from './settings.svelte';
 export { default as SetupIcon } from './setup.svelte';
 export { default as SubmissionIcon } from './submission.svelte';
+export { default as UploadIcon } from './upload.svelte';

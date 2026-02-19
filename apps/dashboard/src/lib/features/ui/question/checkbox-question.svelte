@@ -123,10 +123,10 @@
     <CodeSnippet {code} />
   {/if}
 
-  <div class="ml-4">
+  <div class="ml-4 flex flex-col gap-3">
     {#each options as option}
       <button
-        class="my-2 w-full cursor-pointer rounded-md border-2 border-gray-300 text-left hover:bg-gray-200 dark:hover:bg-neutral-800 {getValidationClassName(
+        class="border-border w-full cursor-pointer rounded-md border text-left hover:bg-gray-50 {getValidationClassName(
           option
         )}"
         type="button"

@@ -1,8 +1,12 @@
 import type {
   AddPeopleRequest,
+  CreateStudentInviteRequest,
   DeletePeopleRequest,
+  GetStudentInviteAuditRequest,
   GetUserCourseAnalyticsRequest,
+  ListStudentInvitesRequest,
   ListPeopleRequest,
+  RevokeStudentInviteRequest,
   UpdatePeopleRequest
 } from '../utils/types';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
@@ -68,6 +72,130 @@ export class PeopleApi extends BaseApiWithErrors {
         }
       }
     });
+  }
+
+  /**
+   * Creates a secure student invite link for a course
+   * @param courseId Course ID
+   * @param payload Invite settings
+   * @returns Invite data including inviteLink
+   */
+  async createStudentInvite(
+    courseId: string,
+    payload: {
+      preset?: 'ONE_TIME_24H' | 'MULTI_USE_7D' | 'MULTI_USE_30D' | 'CUSTOM';
+      expiresAt?: string;
+      maxUses?: number;
+      allowedEmails?: string[];
+      allowedDomains?: string[];
+      recipientEmails?: string[];
+      recipientCsv?: string;
+      sendEmail?: boolean;
+      metadata?: Record<string, unknown>;
+    }
+  ) {
+    const result = await this.execute<CreateStudentInviteRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId']['invites'].$post({
+          param: { courseId },
+          json: payload
+        }),
+      logContext: 'creating student invite',
+      onSuccess: () => {
+        this.success = true;
+        this.errors = {};
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error('Failed to create student invite');
+          return;
+        }
+        if ('error' in result && 'field' in result && result.field) {
+          this.errors[result.field] = result.error;
+        } else if ('error' in result) {
+          this.errors.general = result.error;
+        }
+      }
+    });
+
+    return result?.data;
+  }
+
+  /**
+   * Lists secure student invites for a course
+   * @param courseId Course ID
+   */
+  async listStudentInvites(courseId: string) {
+    const result = await this.execute<ListStudentInvitesRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId']['invites'].$get({
+          param: { courseId }
+        }),
+      logContext: 'listing student invites',
+      onSuccess: () => {
+        this.success = true;
+        this.errors = {};
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error('Failed to list invites');
+        }
+      }
+    });
+
+    return result?.data;
+  }
+
+  /**
+   * Revokes a secure student invite
+   * @param courseId Course ID
+   * @param inviteId Invite ID
+   */
+  async revokeStudentInvite(courseId: string, inviteId: string) {
+    const result = await this.execute<RevokeStudentInviteRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId']['invites'][':inviteId']['revoke'].$post({
+          param: { courseId, inviteId }
+        }),
+      logContext: 'revoking student invite',
+      onSuccess: () => {
+        this.success = true;
+        this.errors = {};
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error('Failed to revoke invite');
+        }
+      }
+    });
+
+    return result?.data;
+  }
+
+  /**
+   * Loads invite audit events for one invite
+   * @param courseId Course ID
+   * @param inviteId Invite ID
+   */
+  async getStudentInviteAudit(courseId: string, inviteId: string) {
+    const result = await this.execute<GetStudentInviteAuditRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId']['invites'][':inviteId']['audit'].$get({
+          param: { courseId, inviteId }
+        }),
+      logContext: 'loading invite audit',
+      onSuccess: () => {
+        this.success = true;
+        this.errors = {};
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error('Failed to load invite audit');
+        }
+      }
+    });
+
+    return result?.data;
   }
 
   /**

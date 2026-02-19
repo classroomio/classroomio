@@ -62,6 +62,27 @@ export const ErrorCodes = {
   ORG_TEAM_REMOVE_FAILED: 'ORG_TEAM_REMOVE_FAILED',
   ORG_TEAM_EMAIL_EXISTS: 'ORG_TEAM_EMAIL_EXISTS',
   ORG_TEAM_NOT_AUTHORIZED: 'ORG_TEAM_NOT_AUTHORIZED',
+  TAG_GROUP_NOT_FOUND: 'TAG_GROUP_NOT_FOUND',
+  TAG_NOT_FOUND: 'TAG_NOT_FOUND',
+  TAG_FETCH_FAILED: 'TAG_FETCH_FAILED',
+  TAG_CREATE_FAILED: 'TAG_CREATE_FAILED',
+  TAG_UPDATE_FAILED: 'TAG_UPDATE_FAILED',
+  TAG_ASSIGNMENT_FAILED: 'TAG_ASSIGNMENT_FAILED',
+
+  // Asset errors
+  ASSET_NOT_FOUND: 'ASSET_NOT_FOUND',
+  ASSET_IN_USE: 'ASSET_IN_USE',
+  ASSET_USAGE_NOT_FOUND: 'ASSET_USAGE_NOT_FOUND',
+  ASSET_CREATE_FAILED: 'ASSET_CREATE_FAILED',
+  ASSET_FETCH_FAILED: 'ASSET_FETCH_FAILED',
+  ASSET_LIST_FAILED: 'ASSET_LIST_FAILED',
+  ASSET_UPDATE_FAILED: 'ASSET_UPDATE_FAILED',
+  ASSET_DELETE_FAILED: 'ASSET_DELETE_FAILED',
+  ASSET_ATTACH_FAILED: 'ASSET_ATTACH_FAILED',
+  ASSET_DETACH_FAILED: 'ASSET_DETACH_FAILED',
+  ASSET_USAGE_FETCH_FAILED: 'ASSET_USAGE_FETCH_FAILED',
+  ASSET_EXPORT_FAILED: 'ASSET_EXPORT_FAILED',
+  ASSET_STORAGE_FETCH_FAILED: 'ASSET_STORAGE_FETCH_FAILED',
 
   // Profile errors
   PROFILE_UPDATE_FAILED: 'PROFILE_UPDATE_FAILED',
@@ -80,7 +101,7 @@ export const ErrorCodes = {
   // Lesson errors
   LESSON_NOT_FOUND: 'LESSON_NOT_FOUND',
   LESSON_FETCH_FAILED: 'LESSON_FETCH_FAILED',
-  LESSON_SECTION_NOT_FOUND: 'LESSON_SECTION_NOT_FOUND',
+  COURSE_SECTION_NOT_FOUND: 'COURSE_SECTION_NOT_FOUND',
 
   // Exercise errors
   EXERCISE_NOT_FOUND: 'EXERCISE_NOT_FOUND',
@@ -137,17 +158,21 @@ export const handleError = (
   c: Context,
   error: unknown,
   fallbackMessage: string = 'An unexpected error occurred',
-  fallbackCode: string = ErrorCodes.INTERNAL_ERROR
+  fallbackCode?: string
 ) => {
   console.error('Error in route:', error);
 
   if (error instanceof AppError) {
+    const isServerError = error.statusCode >= 500;
+    const responseCode = isServerError ? (fallbackCode ?? error.code) : error.code;
+    const responseMessage = isServerError ? fallbackMessage : error.message;
+
     return c.json<ErrorResponse>(
       {
         success: false,
-        error: error.message,
-        code: error.code,
-        field: error.field
+        error: responseMessage,
+        code: responseCode,
+        field: isServerError ? undefined : error.field
       },
       error.statusCode
     );
@@ -157,7 +182,7 @@ export const handleError = (
     {
       success: false,
       error: fallbackMessage,
-      code: fallbackCode
+      code: fallbackCode ?? ErrorCodes.INTERNAL_ERROR
     },
     500
   );

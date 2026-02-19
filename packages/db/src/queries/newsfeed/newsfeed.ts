@@ -36,6 +36,7 @@ export async function getNewsfeedByCourseId(courseId: string): Promise<
       authorAvatarUrl: row.profile?.avatarUrl || null
     }));
   } catch (error) {
+    console.error('getNewsfeedByCourseId error:', error);
     throw new Error(
       `Failed to get newsfeed by course ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -115,6 +116,7 @@ export async function getNewsfeedByCourseIdPaginated(
       nextCursor
     };
   } catch (error) {
+    console.error('getNewsfeedByCourseIdPaginated error:', error);
     throw new Error(
       `Failed to get paginated newsfeed by course ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -131,6 +133,7 @@ export async function getNewsfeedById(feedId: string): Promise<TCourseNewsfeed |
     const [feed] = await db.select().from(schema.courseNewsfeed).where(eq(schema.courseNewsfeed.id, feedId)).limit(1);
     return feed || null;
   } catch (error) {
+    console.error('getNewsfeedById error:', error);
     throw new Error(
       `Failed to get newsfeed by ID "${feedId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -150,6 +153,7 @@ export async function createNewsfeed(data: TNewCourseNewsfeed): Promise<TCourseN
     }
     return feed;
   } catch (error) {
+    console.error('createNewsfeed error:', error);
     throw new Error(`Failed to create newsfeed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -169,6 +173,7 @@ export async function updateNewsfeed(feedId: string, data: Partial<TCourseNewsfe
       .returning();
     return updated || null;
   } catch (error) {
+    console.error('updateNewsfeed error:', error);
     throw new Error(
       `Failed to update newsfeed "${feedId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -185,6 +190,7 @@ export async function deleteNewsfeed(feedId: string): Promise<TCourseNewsfeed | 
     const [deleted] = await db.delete(schema.courseNewsfeed).where(eq(schema.courseNewsfeed.id, feedId)).returning();
     return deleted || null;
   } catch (error) {
+    console.error('deleteNewsfeed error:', error);
     throw new Error(
       `Failed to delete newsfeed "${feedId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -204,6 +210,7 @@ export async function getNewsfeedCommentsByFeedId(feedId: string): Promise<TCour
       .where(eq(schema.courseNewsfeedComment.courseNewsfeedId, feedId))
       .orderBy(schema.courseNewsfeedComment.createdAt);
   } catch (error) {
+    console.error('getNewsfeedCommentsByFeedId error:', error);
     throw new Error(
       `Failed to get newsfeed comments for feed "${feedId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -271,6 +278,7 @@ export async function getNewsfeedCommentsByFeedIdPaginated(
       nextCursor
     };
   } catch (error) {
+    console.error('getNewsfeedCommentsByFeedIdPaginated error:', error);
     throw new Error(
       `Failed to get paginated newsfeed comments for feed "${feedId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -290,6 +298,7 @@ export async function createNewsfeedComment(data: TNewCourseNewsfeedComment): Pr
     }
     return comment;
   } catch (error) {
+    console.error('createNewsfeedComment error:', error);
     throw new Error(`Failed to create newsfeed comment: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -311,6 +320,7 @@ export async function updateNewsfeedComment(
       .returning();
     return updated || null;
   } catch (error) {
+    console.error('updateNewsfeedComment error:', error);
     throw new Error(
       `Failed to update newsfeed comment "${commentId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -325,6 +335,7 @@ export async function deleteNewsfeedComment(commentId: number): Promise<TCourseN
       .returning();
     return deleted || null;
   } catch (error) {
+    console.error('deleteNewsfeedComment error:', error);
     throw new Error(
       `Failed to delete newsfeed comment "${commentId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -360,6 +371,7 @@ export async function getNewsfeedCommentAuthorAndCourse(commentId: number): Prom
       courseId: result[0].courseId
     };
   } catch (error) {
+    console.error('getNewsfeedCommentAuthorAndCourse error:', error);
     throw new Error(
       `Failed to get newsfeed comment author for comment "${commentId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
@@ -458,6 +470,7 @@ export async function getNewsfeedForEmail(
         }))
     };
   } catch (error) {
+    console.error('getNewsfeedForEmail error:', error);
     throw new Error(
       `Failed to get newsfeed data for email "${feedId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );

@@ -1,34 +1,21 @@
-FROM node:20.19.3-slim AS app
+FROM node:20.19.3-slim
 
-RUN mkdir /app
 WORKDIR /app
 
-# Install pnpm, turbo and healthcheck tools
-RUN corepack enable && corepack prepare pnpm@latest --activate
-RUN npm install -g turbo@1.10.16
+# Keep install non-interactive and deterministic in CI/container contexts.
+ENV CI=true
 
-COPY package.json ./
-COPY pnpm-lock.yaml ./
-COPY pnpm-workspace.yaml ./
-COPY turbo.json ./
-COPY packages/tsconfig ./packages/tsconfig
-COPY packages/utils ./packages/utils
+RUN corepack enable && corepack prepare pnpm@10.19.0 --activate
 
-# Copy the api package.json
-COPY apps/api/package.json ./apps/api/package.json
-
-RUN pnpm install
-
-# Copy app source
 COPY . .
 
-RUN pnpm build --filter @cio/api
+RUN pnpm install --frozen-lockfile --ignore-scripts --shamefully-hoist --filter @cio/api...
+RUN find . -name 'tsconfig.tsbuildinfo' -delete
+RUN pnpm -r --filter @cio/api... build
 
 EXPOSE 3081
 
-ENV PORT=3081 \
-    NODE_ENV=production
+ENV NODE_ENV=production \
+    PORT=3081
 
-RUN ls -la
-
-CMD ["pnpm", "api:start"]
+CMD ["pnpm", "--filter", "@cio/api", "start"]

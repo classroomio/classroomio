@@ -2,58 +2,88 @@
   import { Badge } from '@cio/ui/base/badge';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { InputField } from '@cio/ui/custom/input-field';
-  import { Button } from '@cio/ui/base/button';
+  import { Label } from '@cio/ui/base/label';
+  import { RadioOptionCardGroup } from '@cio/ui/custom/radio-option-card';
   import { t } from '$lib/utils/functions/translations';
   import { exerciseTemplateApi } from '$features/course/api/exercise-template.svelte';
   import { snackbar } from '$features/ui/snackbar/store';
   import { Confetti, ComingSoon } from '$features/ui';
-  import { CircleCheckIcon } from '$features/ui/icons';
   import { EXERCISE_TEMPLATE_TAGS } from '$features/course/utils/constants';
-  import { exerciseApi } from '$features/course/api';
+  import { courseApi, exerciseApi } from '$features/course/api';
+  import { profile } from '$lib/utils/store/user';
+  import type { StepperState, StepperActions, BaseStepperProps } from './types';
+  import { EXERCISE_STEPPER_DEFAULT_STATE, EXERCISE_CREATE_TYPE } from './constants';
 
-  interface Props {
-    courseId: string;
-    sectionId?: string;
-    order?: number;
-    onCreated: (exerciseId: string) => void;
-    onCancel: () => void;
-    canCreate: boolean;
+  interface Props extends BaseStepperProps {
+    stepperState: StepperState;
   }
 
-  let { courseId, sectionId, order, onCreated, onCancel, canCreate }: Props = $props();
-
-  const Type = {
-    SCRATCH: 0,
-    TEMPLATE: 1,
-    AI: 2
-  } as const;
+  let {
+    courseId,
+    sectionId,
+    order,
+    onCreated,
+    canCreate,
+    stepperState = $bindable(EXERCISE_STEPPER_DEFAULT_STATE)
+  }: Props = $props();
 
   const options = [
     {
+      id: 'exercise-from-scratch',
       title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.from_scratch'),
-      subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.from_scratch_subtitle'),
-      type: Type.SCRATCH,
+      description: $t('course.navItem.lessons.exercises.new_exercise_modal.options.from_scratch_subtitle'),
+      type: EXERCISE_CREATE_TYPE.SCRATCH,
       isDisabled: false
     },
     {
+      id: 'exercise-use-template',
       title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_template'),
-      subtitle: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_template_subtitle'),
-      type: Type.TEMPLATE,
+      description: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_template_subtitle'),
+      type: EXERCISE_CREATE_TYPE.TEMPLATE,
       isDisabled: false
+    },
+    {
+      id: 'exercise-ai',
+      title: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_ai'),
+      description: $t('course.navItem.lessons.exercises.new_exercise_modal.options.use_ai_subtitle'),
+      type: EXERCISE_CREATE_TYPE.AI,
+      isDisabled: true
     }
   ];
+
+  const radioOptions = $derived(
+    options.map((o) => ({
+      id: o.id,
+      title: o.title,
+      description: o.description,
+      value: String(o.type),
+      disabled: o.isDisabled
+    }))
+  );
 
   const tags = Object.values(EXERCISE_TEMPLATE_TAGS);
 
   let step = $state(0);
-  let type: number = $state(Type.SCRATCH);
+  /** String for RadioGroup.Root (component expects string); numeric type derived for logic */
+  let typeValue = $state(String(EXERCISE_CREATE_TYPE.SCRATCH));
+  const type = $derived(Number(typeValue));
   let isLoading = $state(false);
   let isAIStarted = $state(false);
   let title = $state('');
 
   let selectedTag = $state(tags[0]);
-  let selectedTemplateId = $state();
+  let selectedTemplateId = $state('');
   let isTemplateFinishedLoading = $state(false);
+
+  const templateRadioOptions = $derived(
+    (exerciseTemplateApi.templates ?? []).map((t) => ({
+      id: String(t.id),
+      title: t.title ?? '',
+      description: t.description ?? '',
+      value: String(t.id),
+      disabled: false
+    }))
+  );
 
   function handleNext() {
     step = step + 1;
@@ -76,6 +106,10 @@
     try {
       await exerciseApi.createFromTemplate(courseId, String(template.id), { sectionId, order });
       if (exerciseApi.success && exerciseApi.exercise) {
+        const profileId = $profile?.id;
+        if (profileId) {
+          await courseApi.refreshCourse(courseId, profileId);
+        }
         onCreated(exerciseApi.exercise.id);
       }
     } catch (error) {
@@ -86,24 +120,113 @@
     }
   }
 
-  const handleTagSelection = async (tag: string) => {
+  const handleTagSelection = async (tag = selectedTag) => {
     selectedTag = tag;
     selectedTemplateId = '';
     await exerciseTemplateApi.fetchTemplatesByTag(courseId, selectedTag);
   };
 
   async function handleAddExercise() {
-    if (!title.trim() || !canCreate) return;
-    await exerciseApi.create(courseId, {
-      title: title.trim(),
-      sectionId,
-      order
-    });
+    if (!title.trim() || !canCreate || isLoading) return;
 
-    if (exerciseApi.success && exerciseApi.exercise) {
-      onCreated(exerciseApi.exercise.id);
+    isLoading = true;
+    try {
+      await exerciseApi.create(courseId, {
+        title: title.trim(),
+        sectionId,
+        order
+      });
+
+      if (exerciseApi.success && exerciseApi.exercise) {
+        const profileId = $profile?.id;
+        if (profileId) {
+          await courseApi.refreshCourse(courseId, profileId);
+        }
+        onCreated(exerciseApi.exercise.id);
+      }
+    } finally {
+      isLoading = false;
     }
   }
+
+  // ============================================
+  // COMPUTED VALUES FOR PARENT
+  // ============================================
+
+  const canProceedStep0 = $derived(canCreate);
+  const canProceedStep1 = $derived(
+    type === EXERCISE_CREATE_TYPE.SCRATCH ? title.trim().length > 0 && canCreate : !!selectedTemplateId && canCreate
+  );
+  const canProceed = $derived(step === 0 ? canProceedStep0 : canProceedStep1);
+
+  const primaryActionLabel = $derived(
+    step === 0
+      ? $t('course.navItem.lessons.exercises.new_exercise_modal.next')
+      : $t('course.navItem.lessons.exercises.new_exercise_modal.finish')
+  );
+
+  // ============================================
+  // SYNC STATE TO BINDABLE (parent has bind:stepperState)
+  // Only assign when values change to avoid infinite re-renders.
+  // ============================================
+  const isSubmitting = $derived(isLoading || isTemplateFinishedLoading);
+  $effect(() => {
+    const next = {
+      currentStep: step,
+      totalSteps: 2,
+      canProceed,
+      isSubmitting,
+      primaryActionLabel
+    };
+    if (
+      stepperState.currentStep !== next.currentStep ||
+      stepperState.canProceed !== next.canProceed ||
+      stepperState.isSubmitting !== next.isSubmitting ||
+      stepperState.primaryActionLabel !== next.primaryActionLabel
+    ) {
+      stepperState = next;
+    }
+  });
+
+  // ============================================
+  // EXPORTED ACTIONS
+  // ============================================
+  export const actions: StepperActions = {
+    async next() {
+      if (isLoading || isTemplateFinishedLoading) return;
+
+      if (step === 0) {
+        if (type === EXERCISE_CREATE_TYPE.TEMPLATE) {
+          handleTagSelection();
+        }
+
+        handleNext();
+      } else {
+        if (type === EXERCISE_CREATE_TYPE.SCRATCH) {
+          await handleAddExercise();
+        } else if (type === EXERCISE_CREATE_TYPE.TEMPLATE) {
+          await handleTemplateSelection();
+        }
+      }
+    },
+
+    back() {
+      handleBack();
+    },
+
+    reset() {
+      step = 0;
+      typeValue = String(EXERCISE_CREATE_TYPE.SCRATCH);
+      title = '';
+      selectedTag = tags[0];
+      selectedTemplateId = '';
+      isLoading = false;
+      isAIStarted = false;
+      isTemplateFinishedLoading = false;
+      stepperState = { ...EXERCISE_STEPPER_DEFAULT_STATE };
+      exerciseTemplateApi.reset();
+    }
+  };
 </script>
 
 {#if !isLoading && isAIStarted}
@@ -111,128 +234,74 @@
 {/if}
 {#if step === 0}
   <div>
-    <h2 class="my-5 text-xl font-medium">{$t('course.navItem.lessons.exercises.new_exercise_modal.how')}?</h2>
+    <Label class="text-md! mb-3">{$t('course.navItem.lessons.exercises.new_exercise_modal.how')}?</Label>
 
-    <div class="my-8 flex flex-wrap justify-between gap-2">
-      {#each options as option}
-        <button
-          class="h-52 w-full max-w-[260px] rounded-md border-2 p-5 dark:bg-neutral-700 {option.type === type
-            ? 'border-primary-400'
-            : `border-gray-200 ${!option.isDisabled && 'hover:scale-95'}`} flex flex-col {option.isDisabled &&
-            'cursor-not-allowed opacity-60'} transition-all ease-in-out"
-          type="button"
-          onclick={!option.isDisabled ? () => (type = option.type) : undefined}
-        >
-          <div class="flex h-[70%] w-full flex-row-reverse">
-            <CircleCheckIcon size={16} filled={option.type === type} />
-          </div>
-
-          <div>
-            <p class="flex items-center text-start">
-              <span class="mr-2 text-sm">{option.title}</span>
-              {#if option.isDisabled}
-                <ComingSoon />
-              {/if}
-            </p>
-            <p class="text-start text-xs font-light">{option.subtitle}</p>
-          </div>
-        </button>
-      {/each}
-    </div>
-
-    <div class="mt-8 flex flex-row-reverse items-center">
-      <Button onclick={handleNext} disabled={!canCreate}
-        >{$t('course.navItem.lessons.exercises.new_exercise_modal.next')}</Button
-      >
-    </div>
+    <RadioOptionCardGroup bind:value={typeValue} options={radioOptions}>
+      {#snippet titleSuffix(option)}
+        {#if option.disabled}
+          <ComingSoon />
+        {/if}
+      {/snippet}
+    </RadioOptionCardGroup>
   </div>
 {:else if step === 1}
-  {#if type === Type.SCRATCH}
-    <div class="m-auto flex min-h-[300px] w-96 items-center justify-center">
-      <div class="w-full">
-        <h2 class="my-5 text-2xl font-medium">{$t('course.navItem.lessons.exercises.new_exercise_modal.title')}</h2>
-        <InputField
-          bind:value={title}
-          autoFocus={true}
-          placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.title_placeholder')}
-          className="my-4"
-        />
-
-        <div class="mt-5 flex items-center justify-between">
-          <Button variant="outline" onclick={handleBack}
-            >{$t('course.navItem.lessons.exercises.new_exercise_modal.back')}</Button
-          >
-          <Button onclick={handleAddExercise} disabled={!title.trim() || !canCreate}>
-            {$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
-          </Button>
-        </div>
-      </div>
+  {#if type === EXERCISE_CREATE_TYPE.SCRATCH}
+    <div class="w-full">
+      <InputField
+        label={$t('course.navItem.lessons.exercises.new_exercise_modal.title')}
+        bind:value={title}
+        autoFocus={true}
+        placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.title_placeholder')}
+        className="my-4 w-2/4!"
+      />
     </div>
-  {:else if type === Type.TEMPLATE}
+  {:else if type === EXERCISE_CREATE_TYPE.TEMPLATE}
     <div>
-      <h2 class="m-0 mb-2 text-2xl font-medium">
+      <Label class="text-md mb-1 font-bold">
         {$t('course.navItem.lessons.exercises.new_exercise_modal.select_template')}
-      </h2>
+      </Label>
 
       <div>
         <div class="mb-5 flex items-center gap-2">
-          {#each tags as tag}
-            <Badge class={selectedTag === tag ? 'bg-primary-400' : ''} onclick={() => handleTagSelection(tag)}
-              >{tag}</Badge
+          {#each tags as tag (tag)}
+            <Badge
+              variant={selectedTag === tag ? 'default' : 'secondary'}
+              class="cursor-pointer"
+              onclick={() => handleTagSelection(tag)}
             >
+              {tag}
+            </Badge>
           {/each}
         </div>
 
-        {#if exerciseTemplateApi.isLoading}
-          <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
-            {#each Array(16) as _}
-              <div class="h-[140px] w-full rounded-md border-2 border-gray-200 p-5 dark:bg-neutral-700">
-                <div class="flex h-full flex-col justify-evenly">
-                  <Skeleton class="h-4 w-3/4" />
-                  <div class="flex flex-col items-start justify-between gap-1">
-                    <Skeleton class="h-3 w-20" />
-                    <Skeleton class="h-3 w-16" />
+        <div class="max-h-[320px] overflow-y-auto pr-1">
+          {#if exerciseTemplateApi.isLoading}
+            <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
+              {#each Array(16) as _, index (index)}
+                <div class="border-border h-[140px] w-full rounded-md border p-5 dark:bg-neutral-700">
+                  <div class="flex h-full flex-col justify-evenly">
+                    <Skeleton class="h-4 w-3/4" />
+                    <div class="flex flex-col items-start justify-between gap-1">
+                      <Skeleton class="h-3 w-20" />
+                      <Skeleton class="h-3 w-16" />
+                    </div>
                   </div>
                 </div>
-              </div>
-            {/each}
-          </div>
-        {:else if exerciseTemplateApi.templates?.length}
-          <div class="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
-            {#each exerciseTemplateApi.templates as template}
-              <button
-                type="button"
-                class={`h-[140px] w-full rounded-md border-2 p-5 text-left transition ${
-                  selectedTemplateId === template.id ? 'border-primary-400' : 'border-gray-200 hover:border-gray-300'
-                }`}
-                onclick={() => (selectedTemplateId = template.id)}
-              >
-                <p class="text-sm font-semibold">{template.title}</p>
-                <p class="mt-2 text-xs text-gray-500">{template.description}</p>
-              </button>
-            {/each}
-          </div>
-        {:else}
-          <p class="text-sm text-gray-500">No templates available for this tag.</p>
-        {/if}
-
-        <div class="mt-5 flex items-center justify-between">
-          <Button variant="outline" onclick={handleBack}
-            >{$t('course.navItem.lessons.exercises.new_exercise_modal.back')}</Button
-          >
-          <Button
-            onclick={handleTemplateSelection}
-            loading={isTemplateFinishedLoading}
-            disabled={!selectedTemplateId || !canCreate}
-          >
-            {$t('course.navItem.lessons.exercises.new_exercise_modal.finish')}
-          </Button>
+              {/each}
+            </div>
+          {:else if exerciseTemplateApi.templates?.length}
+            <RadioOptionCardGroup
+              bind:value={selectedTemplateId}
+              options={templateRadioOptions}
+              class="grid-cols-2! lg:grid-cols-3! xl:grid-cols-4!"
+            />
+          {:else}
+            <p class="text-sm text-gray-500">
+              {$t('course.navItem.lessons.exercises.new_exercise_modal.no_templates_for_tag')}
+            </p>
+          {/if}
         </div>
       </div>
     </div>
   {/if}
 {/if}
-
-<div class="mt-4 flex justify-end">
-  <Button variant="ghost" onclick={onCancel}>Cancel</Button>
-</div>

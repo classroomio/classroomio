@@ -24,6 +24,7 @@
   import { deleteCourseModal, deleteCourseModalInitialState, courseMetaDeta } from '../utils/store';
   import { browser } from '$app/environment';
   import type { OrgCourses, UserEnrolledCourses } from '$features/course/types';
+  import type { Snippet } from 'svelte';
 
   interface Props {
     courses?: OrgCourses | UserEnrolledCourses;
@@ -34,6 +35,8 @@
     searchValue?: string;
     selectedId?: string;
     isLoading?: boolean;
+    showSortSelect?: boolean;
+    filterControls?: Snippet;
   }
 
   let {
@@ -44,7 +47,9 @@
     isLMS = false,
     searchValue = $bindable(''),
     selectedId = $bindable('0'),
-    isLoading = false
+    isLoading = false,
+    showSortSelect = true,
+    filterControls
   }: Props = $props();
 
   const filterOptions = $derived([
@@ -91,16 +96,19 @@
 
 <Page.BodyHeader align="right">
   <Search placeholder={$t('courses.search_placeholder')} bind:value={searchValue} />
-  <Select.Root type="single" bind:value={selectedId}>
-    <Select.Trigger class="min-w-[150px]">
-      <p>{selectedId ? selectedLabel : filterOptions[0].label}</p>
-    </Select.Trigger>
-    <Select.Content>
-      {#each filterOptions as option (option.label)}
-        <Select.Item value={option.value}>{option.label}</Select.Item>
-      {/each}
-    </Select.Content>
-  </Select.Root>
+  {#if showSortSelect}
+    <Select.Root type="single" bind:value={selectedId}>
+      <Select.Trigger class="min-w-[150px]">
+        <p>{selectedId ? selectedLabel : filterOptions[0].label}</p>
+      </Select.Trigger>
+      <Select.Content>
+        {#each filterOptions as option (option.label)}
+          <Select.Item value={option.value}>{option.label}</Select.Item>
+        {/each}
+      </Select.Content>
+    </Select.Root>
+  {/if}
+  {@render filterControls?.()}
   {#if $courseMetaDeta.view === 'list'}
     <IconButton onclick={() => setViewPreference('grid')}>
       <GridIcon size={16} />
@@ -131,12 +139,13 @@
         <Table.Header>
           <Table.Row>
             <Table.Head class="w-[20%]">{$t('courses.course_card.list_view.title')}</Table.Head>
-            <Table.Head class="w-[30%]">{$t('courses.course_card.list_view.description')}</Table.Head>
+            <Table.Head class="w-[24%]">{$t('courses.course_card.list_view.description')}</Table.Head>
             <Table.Head class="w-[10%]">{$t('courses.course_card.list_view.type')}</Table.Head>
-            <Table.Head class="w-[10%]">{$t('courses.course_card.list_view.lessons')}</Table.Head>
-            <Table.Head class="w-[10%]">{$t('courses.course_card.list_view.students')}</Table.Head>
-            <Table.Head class="w-[12%]">{$t('courses.course_card.list_view.published')}</Table.Head>
-            <Table.Head class="w-[8%]"></Table.Head>
+            <Table.Head class="w-[14%]">{$t('courses.course_card.list_view.tags')}</Table.Head>
+            <Table.Head class="w-[8%]">{$t('courses.course_card.list_view.lessons')}</Table.Head>
+            <Table.Head class="w-[8%]">{$t('courses.course_card.list_view.students')}</Table.Head>
+            <Table.Head class="w-[10%]">{$t('courses.course_card.list_view.published')}</Table.Head>
+            <Table.Head class="w-[6%]"></Table.Head>
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -149,6 +158,12 @@
               isPublished={courseData.isPublished}
               totalLessons={courseData.lessonCount}
               totalStudents={'totalStudents' in courseData ? courseData.totalStudents : 0}
+              tags={('tags' in courseData && Array.isArray(courseData.tags) ? courseData.tags : []) as Array<{
+                id: string;
+                name: string;
+                slug: string;
+                color?: string | null;
+              }>}
             />
           {/each}
         </Table.Body>

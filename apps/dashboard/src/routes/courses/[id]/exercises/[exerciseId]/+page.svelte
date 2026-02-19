@@ -3,7 +3,7 @@
   import { resolve } from '$app/paths';
   import { QUESTION_TYPES } from '$features/ui/question/constants';
   import { ExercisePage } from '$features/course/pages';
-  import { questionnaire } from '$lib/features/course/components/exercise/store.js';
+  import { questionnaire, clearQuestionnaireValidation } from '$lib/features/course/components/exercise/store.js';
   import { globalStore } from '$lib/utils/store/app';
   import type { Question } from '$features/course/types';
 
@@ -13,6 +13,8 @@
 
   $effect(() => {
     if (!data.exercise) return;
+
+    clearQuestionnaireValidation();
 
     const exercise = data.exercise;
 

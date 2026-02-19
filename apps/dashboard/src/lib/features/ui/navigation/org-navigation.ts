@@ -1,4 +1,5 @@
 import {
+  AttachmentIcon,
   CommunityIcon,
   CourseIcon,
   DashboardIcon,
@@ -6,6 +7,7 @@ import {
   SettingsIcon,
   SetupIcon
 } from '@cio/ui/custom/moving-icons';
+import TagIcon from '@lucide/svelte/icons/tag';
 
 import type { AccountOrg } from '$features/app/types';
 import type { Component } from 'svelte';
@@ -57,6 +59,13 @@ const baseNavConfig: NavItemConfig[] = [
     matchPattern: '^/org/[^/]+/courses(/.*)?$' // Matches nested routes
   },
   {
+    titleKey: 'org_navigation.tags',
+    path: '/tags',
+    icon: TagIcon,
+    requiresAdmin: true,
+    matchPattern: '^/org/[^/]+/tags(/.*)?$'
+  },
+  {
     titleKey: 'org_navigation.community',
     path: '/community',
     icon: CommunityIcon,
@@ -74,6 +83,12 @@ const baseNavConfig: NavItemConfig[] = [
     path: '/audience',
     icon: PeopleIcon,
     matchPattern: '^/org/[^/]+/audience(/.*)?$' // Matches nested routes
+  },
+  {
+    titleKey: 'org_navigation.media',
+    path: '/media',
+    icon: AttachmentIcon,
+    matchPattern: '^/org/[^/]+/media(/.*)?$'
   },
   {
     titleKey: 'org_navigation.setup',

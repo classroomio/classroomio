@@ -14,7 +14,6 @@
   import { courseApi } from '$features/course/api';
   import { generateMarksCSV, generateMarksPDF } from '$features/course/utils/marks-utils';
   import { getCourseContent } from '$features/course/utils/content';
-  import type { CourseContentItem } from '$features/course/utils/types';
   import { ContentType } from '@cio/utils/constants/content';
 
   let { data } = $props();
@@ -25,11 +24,7 @@
   const contentItems = $derived(
     contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items
   );
-  const lessonItems = $derived(
-    contentItems.filter(
-      (item): item is CourseContentItem & { type: ContentType.Lesson } => item.type === ContentType.Lesson
-    )
-  );
+  const lessonItems = $derived(contentItems.filter((item) => item.type === ContentType.Lesson));
   const lessonSummaries = $derived(lessonItems.map((lesson) => ({ id: lesson.id, title: lesson.title })));
 
   function getPageRoles(org: AccountOrg) {
@@ -74,10 +69,6 @@
     }
   };
 </script>
-
-<svelte:head>
-  <title>Marks - ClassroomIO</title>
-</svelte:head>
 
 <RoleBasedSecurity
   allowedRoles={getPageRoles($currentOrg)}

@@ -2,7 +2,7 @@ import { Context, Next } from 'hono';
 
 import { ErrorCodes } from '@api/utils/errors';
 import { getCommentAuthorAndCourse } from '@cio/db/queries/community';
-import { isUserCourseTeamMember } from '@cio/db/queries/group';
+import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 
 /**
  * Middleware to check if user is comment author OR tutor/admin in course
@@ -53,7 +53,7 @@ export const commentAuthorOrTeamMiddleware = async (c: Context, next: Next) => {
       return;
     }
 
-    const isTeamMember = await isUserCourseTeamMember(comment.courseId, user.id);
+    const isTeamMember = await isCourseTeamMemberOrOrgAdmin(comment.courseId, user.id);
 
     if (!isTeamMember) {
       return c.json(

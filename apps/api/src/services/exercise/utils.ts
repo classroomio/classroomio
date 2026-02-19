@@ -253,7 +253,8 @@ export function computeExerciseDiff(
           optionCreates.push({
             questionId: incoming.id,
             label: incomingOpt.label,
-            isCorrect: incomingOpt.isCorrect
+            isCorrect: incomingOpt.isCorrect,
+            value: crypto.randomUUID()
           });
         }
       } else {
@@ -261,7 +262,8 @@ export function computeExerciseDiff(
         optionCreates.push({
           questionId: incoming.id,
           label: incomingOpt.label,
-          isCorrect: incomingOpt.isCorrect
+          isCorrect: incomingOpt.isCorrect,
+          value: crypto.randomUUID()
         });
       }
     }

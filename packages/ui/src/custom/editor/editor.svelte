@@ -41,8 +41,7 @@
     editorClass = '',
     placeholder,
     onContentChange,
-    onEditorReady,
-    onEditorDestroy
+    onEditorReady
   }: Props = $props();
 
   let editor = $state<Editor>();
@@ -86,9 +85,11 @@
     }
   });
 
+  let isEditorReady = $state(false);
   // Handle editor ready
   $effect(() => {
-    if (editor) {
+    if (editor && !isEditorReady) {
+      isEditorReady = true;
       onEditorReady?.(editor);
     }
   });

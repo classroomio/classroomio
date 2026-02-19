@@ -14,7 +14,7 @@ import type { TGroupmember } from '@cio/db/types';
 import { env } from '@api/config/env';
 import { getCourseWithOrgData } from '@cio/db/queries/course';
 import { getProfileById } from '@cio/db/queries/auth';
-import { sendEmail } from '@cio/email';
+import { buildEmailFromName, sendEmail } from '@cio/email';
 
 /**
  * Gets all course members (people) for a course
@@ -88,7 +88,7 @@ export async function addMember(
                   orgName,
                   courseName
                 },
-                from: `"${orgName} (via ClassroomIO.com)" <notify@mail.classroomio.com>`
+                from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`)
               });
             } catch (emailError) {
               console.error('Failed to send student welcome email:', emailError);
@@ -111,7 +111,7 @@ export async function addMember(
                     studentName,
                     studentEmail
                   },
-                  from: '"ClassroomIO" <notify@mail.classroomio.com>'
+                  from: buildEmailFromName('ClassroomIO')
                 }).catch((emailError) => {
                   console.error(`Failed to send teacher notification email to ${teacherEmail}:`, emailError);
                 })
@@ -199,7 +199,7 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
               courseName,
               inviteLink
             },
-            from: `"${orgName} (via ClassroomIO.com)" <notify@mail.classroomio.com>`
+            from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`)
           }).catch((emailError) => {
             console.error(`Failed to send welcome email to ${email}:`, emailError);
             return [];

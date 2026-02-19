@@ -6,6 +6,7 @@ import type {
   CreateCourseRequest,
   CreatePaymentRequestRequest,
   DeleteCourseRequest,
+  EnrollCourseRequest,
   GetCourseAnalyticsRequest,
   GetCourseBySlugRequest,
   GetCourseProgressRequest,
@@ -24,6 +25,7 @@ import { profile } from '$lib/utils/store/user';
 import { resolve } from '$app/paths';
 import { snackbar } from '$features/ui/snackbar/store';
 import { ROLE } from '@cio/utils/constants';
+import { ContentType } from '@cio/utils/constants/content';
 import type { CourseMembers } from '../utils/types';
 
 type GroupStore = {
@@ -34,6 +36,11 @@ type GroupStore = {
   members?: CourseMembers;
   memberId?: string;
 };
+
+type CourseContentItem = NonNullable<Course['content']>['items'][number];
+interface UpdateCourseOptions {
+  showSuccessToast?: boolean;
+}
 
 /**
  * API class for course creation operations
@@ -53,6 +60,139 @@ export class CourseApi extends BaseApiWithErrors {
   private isCourseDirty = $state(false);
   private inFlightCourseRequest: Promise<Course | null> | null = null;
   private inFlightCourseId = $state<string | null>(null);
+
+  /**
+   * Updates a single lesson/exercise item in the local course content store.
+   * This avoids list staleness when navigating back from item detail pages.
+   */
+  updateContentItem(
+    itemId: string,
+    itemType: ContentType.Lesson | ContentType.Exercise,
+    patch: Partial<CourseContentItem>
+  ) {
+    if (!this.course?.content) return false;
+
+    const content = this.course.content;
+
+    if (content.grouped) {
+      let hasUpdatedItem = false;
+
+      const sections = content.sections.map((section) => {
+        let sectionHasUpdatedItem = false;
+        const items = section.items.map((item) => {
+          if (item.id !== itemId || item.type !== itemType) return item;
+          sectionHasUpdatedItem = true;
+          return {
+            ...item,
+            ...patch
+          };
+        });
+
+        if (!sectionHasUpdatedItem) {
+          return section;
+        }
+
+        hasUpdatedItem = true;
+        return {
+          ...section,
+          items
+        };
+      });
+
+      if (!hasUpdatedItem) return false;
+
+      this.course = {
+        ...this.course,
+        content: {
+          ...content,
+          sections
+        }
+      };
+
+      return true;
+    }
+
+    let hasUpdatedItem = false;
+    const items = content.items.map((item) => {
+      if (item.id !== itemId || item.type !== itemType) return item;
+      hasUpdatedItem = true;
+      return {
+        ...item,
+        ...patch
+      };
+    });
+
+    if (!hasUpdatedItem) return false;
+
+    this.course = {
+      ...this.course,
+      content: {
+        ...content,
+        items
+      }
+    };
+
+    return true;
+  }
+
+  /**
+   * Removes a single lesson/exercise item from the local course content store.
+   * This keeps sidebar lists in sync after delete actions.
+   */
+  removeContentItem(itemId: string, itemType: ContentType.Lesson | ContentType.Exercise) {
+    if (!this.course?.content) return false;
+
+    const content = this.course.content;
+
+    if (content.grouped) {
+      let hasRemovedItem = false;
+
+      const sections = content.sections.map((section) => {
+        const items = section.items.filter((item) => {
+          const shouldRemove = item.id === itemId && item.type === itemType;
+          if (shouldRemove) {
+            hasRemovedItem = true;
+          }
+          return !shouldRemove;
+        });
+
+        if (items.length === section.items.length) {
+          return section;
+        }
+
+        return {
+          ...section,
+          items
+        };
+      });
+
+      if (!hasRemovedItem) return false;
+
+      this.course = {
+        ...this.course,
+        content: {
+          ...content,
+          sections
+        }
+      };
+
+      return true;
+    }
+
+    const items = content.items.filter((item) => !(item.id === itemId && item.type === itemType));
+
+    if (items.length === content.items.length) return false;
+
+    this.course = {
+      ...this.course,
+      content: {
+        ...content,
+        items
+      }
+    };
+
+    return true;
+  }
 
   /**
    * Gets a course by ID
@@ -143,6 +283,34 @@ export class CourseApi extends BaseApiWithErrors {
   async refreshCourse(courseId: string, profileId: string) {
     this.invalidateCourse(courseId);
     return this.ensureCourse(courseId, profileId);
+  }
+
+  /**
+   * Enrolls the current user in a course (free: direct enroll; paid: requires inviteToken).
+   * @param courseId Course ID
+   * @param body Optional invite token for paid/invited courses
+   * @returns Success data with redirectTo, or undefined on error
+   */
+  async enroll(courseId: string, body: { inviteToken?: string } = {}) {
+    return this.execute<EnrollCourseRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].enroll.$post({
+          param: { courseId },
+          json: body
+        }),
+      logContext: 'enrolling in course',
+      onSuccess: () => {
+        this.success = true;
+        this.errors = {};
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error('snackbar.invite.failed_join');
+        } else if (typeof result === 'object' && result !== null && 'error' in result) {
+          snackbar.error((result as { error: string }).error);
+        }
+      }
+    });
   }
 
   /**
@@ -253,7 +421,13 @@ export class CourseApi extends BaseApiWithErrors {
    * @param fields Course update fields
    * @returns The updated course data or null on error
    */
-  async update(courseId: string, fields: TCourseUpdate): Promise<UpdateCourseData | null> {
+  async update(
+    courseId: string,
+    fields: TCourseUpdate,
+    options: UpdateCourseOptions = {}
+  ): Promise<UpdateCourseData | null> {
+    const { showSuccessToast = true } = options;
+
     const result = ZCourseUpdate.safeParse(fields);
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'course');
@@ -277,7 +451,9 @@ export class CourseApi extends BaseApiWithErrors {
           } else {
             this.course = response.data as Course;
           }
-          snackbar.success('Course updated successfully');
+          if (showSuccessToast) {
+            snackbar.success('Course updated successfully');
+          }
           this.success = true;
           this.errors = {};
         }

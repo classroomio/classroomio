@@ -6,16 +6,23 @@
   import { t } from '$lib/utils/functions/translations';
   import type { LessonVideoType } from '$features/course/utils/types';
   import { lessonApi } from '$features/course/api';
+  import { mediaManagerApi } from '$features/media-manager/api';
   import { copyToClipboard, getVideoUrls, removeVideo } from '$lib/utils/functions/formatYoutubeVideo';
 
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { InputField } from '@cio/ui/custom/input-field';
   import { Button } from '@cio/ui/base/button';
 
+  interface Props {
+    lessonId?: string;
+  }
+
+  let { lessonId = '' }: Props = $props();
+
   let genericLinks = $state('');
   let error = $state('');
 
-  function addVideo() {
+  async function addVideo() {
     const links = getVideoUrls(genericLinks);
     const validLinks = links.filter(isValidLink);
 
@@ -24,11 +31,37 @@
     } else {
       if (!lessonApi.lesson) return;
 
-      const newVideos = validLinks.map((link = '') => ({
-        type: 'generic' as LessonVideoType,
-        link,
-        metadata: {}
-      }));
+      const existingCount = Array.isArray(lessonApi.lesson.videos) ? lessonApi.lesson.videos.length : 0;
+      const newVideos = await Promise.all(
+        validLinks.map(async (link = '', index) => {
+          const createdAt = new Date().toISOString();
+          const asset = await mediaManagerApi.createAsset({
+            kind: 'video',
+            provider: 'generic',
+            storageProvider: 'external',
+            sourceUrl: link,
+            isExternal: true,
+            title: link,
+            metadata: { createdAt }
+          });
+
+          if (asset && lessonId) {
+            await mediaManagerApi.attachAsset(asset.id, {
+              targetType: 'lesson',
+              targetId: lessonId,
+              slotType: 'lesson_video',
+              position: existingCount + index
+            });
+          }
+
+          return {
+            type: 'generic' as LessonVideoType,
+            link,
+            assetId: asset?.id,
+            metadata: { createdAt } as { svid?: string; createdAt?: string }
+          };
+        })
+      );
 
       lessonApi.updateLessonState('videos', newVideos, { append: true });
       genericLinks = '';

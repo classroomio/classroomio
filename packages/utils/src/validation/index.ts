@@ -2,6 +2,7 @@ export * from './constants';
 
 export * from './account';
 export * from './attendance';
+export * from './assets';
 export * from './course';
 export * from './exercise';
 export * from './lesson';
@@ -12,3 +13,4 @@ export * from './onboarding';
 export * from './organization';
 export * from './submission';
 export * from './dash';
+export * from './tag';

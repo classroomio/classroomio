@@ -2,18 +2,11 @@
   import * as Select from '@cio/ui/base/select';
   import { LANGUAGES } from '$lib/utils/constants/translation';
   import { lessonApi } from '$features/course/api';
-
-  interface Props {
-    lessonId: string;
-  }
-
-  let { lessonId }: Props = $props();
 </script>
 
 <Select.Root type="single" bind:value={lessonApi.currentLocale}>
   <Select.Trigger class="h-9 w-[120px]">
-    {LANGUAGES.find((lang) => lang.id === (Object.keys(lessonApi.translations[lessonId || ''] || {})[0] || 'en'))
-      ?.text || 'Language'}
+    {LANGUAGES.find((lang) => lang.id === lessonApi.currentLocale)?.text || 'Language'}
   </Select.Trigger>
   <Select.Content>
     <Select.Group>

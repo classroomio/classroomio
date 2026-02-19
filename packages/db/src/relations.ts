@@ -1,5 +1,7 @@
 import {
   analyticsLoginEvents,
+  asset,
+  assetUsage,
   appsPoll,
   appsPollOption,
   appsPollSubmission,
@@ -17,7 +19,7 @@ import {
   lessonCompletion,
   lessonLanguage,
   lessonLanguageHistory,
-  lessonSection,
+  courseSection,
   option,
   organization,
   organizationContacts,
@@ -31,6 +33,9 @@ import {
   quiz,
   quizPlay,
   role,
+  tag,
+  tagAssignment,
+  tagGroup,
   submission,
   submissionstatus,
   user
@@ -50,16 +55,16 @@ export const usersInAuthRelations = relations(user, ({ many }) => ({
   profiles: many(profile)
 }));
 
-export const lessonSectionRelations = relations(lessonSection, ({ one, many }) => ({
+export const courseSectionRelations = relations(courseSection, ({ one, many }) => ({
   course: one(course, {
-    fields: [lessonSection.courseId],
+    fields: [courseSection.courseId],
     references: [course.id]
   }),
   lessons: many(lesson)
 }));
 
 export const courseRelations = relations(course, ({ one, many }) => ({
-  lessonSections: many(lessonSection),
+  courseSections: many(courseSection),
   groupAttendances: many(groupAttendance),
   submissions: many(submission),
   group: one(group, {
@@ -69,7 +74,8 @@ export const courseRelations = relations(course, ({ one, many }) => ({
   appsPolls: many(appsPoll),
   lessons: many(lesson),
   communityQuestions: many(communityQuestion),
-  courseNewsfeeds: many(courseNewsfeed)
+  courseNewsfeeds: many(courseNewsfeed),
+  tagAssignments: many(tagAssignment)
 }));
 
 export const groupRelations = relations(group, ({ one, many }) => ({
@@ -83,12 +89,47 @@ export const groupRelations = relations(group, ({ one, many }) => ({
 
 export const organizationRelations = relations(organization, ({ many }) => ({
   groups: many(group),
+  assets: many(asset),
+  assetUsages: many(assetUsage),
   organizationContacts: many(organizationContacts),
   quizzes: many(quiz),
   organizationEmaillists: many(organizationEmaillist),
   communityQuestions: many(communityQuestion),
   organizationPlans: many(organizationPlan),
-  organizationmembers: many(organizationmember)
+  organizationmembers: many(organizationmember),
+  tagGroups: many(tagGroup),
+  tags: many(tag)
+}));
+
+export const tagGroupRelations = relations(tagGroup, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [tagGroup.organizationId],
+    references: [organization.id]
+  }),
+  tags: many(tag)
+}));
+
+export const tagRelations = relations(tag, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [tag.organizationId],
+    references: [organization.id]
+  }),
+  group: one(tagGroup, {
+    fields: [tag.groupId],
+    references: [tagGroup.id]
+  }),
+  assignments: many(tagAssignment)
+}));
+
+export const tagAssignmentRelations = relations(tagAssignment, ({ one }) => ({
+  tag: one(tag, {
+    fields: [tagAssignment.tagId],
+    references: [tag.id]
+  }),
+  course: one(course, {
+    fields: [tagAssignment.courseId],
+    references: [course.id]
+  })
 }));
 
 export const groupAttendanceRelations = relations(groupAttendance, ({ one }) => ({
@@ -151,6 +192,8 @@ export const profileRelations = relations(profile, ({ one, many }) => ({
     fields: [profile.id],
     references: [user.id]
   }),
+  assets: many(asset),
+  assetUsages: many(assetUsage),
   lessons: many(lesson),
   groupmembers: many(groupmember),
   lessonCompletions: many(lessonCompletion),
@@ -222,13 +265,40 @@ export const lessonRelations = relations(lesson, ({ one, many }) => ({
     fields: [lesson.teacherId],
     references: [profile.id]
   }),
-  lessonSection: one(lessonSection, {
+  courseSection: one(courseSection, {
     fields: [lesson.sectionId],
-    references: [lessonSection.id]
+    references: [courseSection.id]
   }),
   exercises: many(exercise),
   lessonCompletions: many(lessonCompletion),
   lessonLanguages: many(lessonLanguage)
+}));
+
+export const assetRelations = relations(asset, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [asset.organizationId],
+    references: [organization.id]
+  }),
+  createdByProfile: one(profile, {
+    fields: [asset.createdByProfileId],
+    references: [profile.id]
+  }),
+  usages: many(assetUsage)
+}));
+
+export const assetUsageRelations = relations(assetUsage, ({ one }) => ({
+  organization: one(organization, {
+    fields: [assetUsage.organizationId],
+    references: [organization.id]
+  }),
+  asset: one(asset, {
+    fields: [assetUsage.assetId],
+    references: [asset.id]
+  }),
+  createdByProfile: one(profile, {
+    fields: [assetUsage.createdByProfileId],
+    references: [profile.id]
+  })
 }));
 
 export const submissionRelations = relations(submission, ({ one, many }) => ({
@@ -261,9 +331,9 @@ export const exerciseRelations = relations(exercise, ({ one, many }) => ({
     fields: [exercise.courseId],
     references: [course.id]
   }),
-  section: one(lessonSection, {
+  section: one(courseSection, {
     fields: [exercise.sectionId],
-    references: [lessonSection.id]
+    references: [courseSection.id]
   }),
   questions: many(question)
 }));

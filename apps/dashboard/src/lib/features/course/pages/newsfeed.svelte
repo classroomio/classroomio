@@ -53,8 +53,8 @@
     const reactedFeed = newsfeedApi.feeds.find((feed) => feed.id === feedId);
     if (!reactedFeed) return;
 
-    const reaction = (reactedFeed as any).reaction || {};
-    let reactedAuthorIds: string[] = reaction[reactionType] || [];
+    const reaction = reactedFeed.reaction;
+    let reactedAuthorIds: string[] = reaction?.[reactionType] || [];
 
     if (reactedAuthorIds.includes(authorId)) {
       reactedAuthorIds = reactedAuthorIds.filter((reactionAuthorId) => reactionAuthorId !== authorId);
@@ -63,7 +63,10 @@
     }
 
     const updatedReaction: TNewsfeedReactionUpdate['reaction'] = {
-      ...reaction,
+      clap: reaction?.clap || [],
+      smile: reaction?.smile || [],
+      thumbsup: reaction?.thumbsup || [],
+      thumbsdown: reaction?.thumbsdown || [],
       [reactionType]: reactedAuthorIds
     };
 
@@ -158,8 +161,8 @@
     />
   {:else}
     {#each sortedFeeds as feed}
-      {#if (feed as any).isPinned || (feed as any).is_pinned}
-        <div class="mb-3 flex items-center gap-2">
+      {#if feed.isPinned}
+        <div class="flex items-center gap-2">
           <PinIcon size={16} class="filled" />
 
           <p class="text-sm">{$t('course.navItem.news_feed.pinned')}</p>

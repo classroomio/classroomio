@@ -6,10 +6,6 @@
   let { data } = $props();
 </script>
 
-<svelte:head>
-  <title>Analytics - ClassroomIO</title>
-</svelte:head>
-
 <Page.Header>
   <Page.HeaderContent>
     <Page.Title>

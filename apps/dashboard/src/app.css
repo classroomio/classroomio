@@ -77,6 +77,20 @@ html .dark {
   color: #fff !important;
 } */
 
+body {
+  --plyr-color-main: var(--primary);
+  --plyr-focus-visible-color: var(--ring);
+  --plyr-video-control-background-hover: var(--primary);
+  --plyr-audio-control-background-hover: var(--primary);
+  --plyr-control-toggle-checked-background: var(--primary);
+  --plyr-range-fill-background: var(--primary);
+  --plyr-menu-background: var(--popover);
+  --plyr-menu-color: var(--popover-foreground);
+  --plyr-menu-border-color: var(--border);
+  --plyr-tooltip-background: var(--popover);
+  --plyr-tooltip-color: var(--popover-foreground);
+}
+
 iframe.iframe {
   width: 100%;
   max-width: 800px;

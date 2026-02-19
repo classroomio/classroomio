@@ -80,12 +80,11 @@
       console.log('session is pending or refetching');
       return;
     }
-    console.log('path', path);
-    console.log('isPublicRoute', isPublicRoute(path));
-    console.log('data', $session.data);
 
     // No need to require login for public routes
-    if (isPublicRoute(path) && path !== '/') return;
+    if (isPublicRoute(path) && (path !== '/' || data.isOrgSite)) {
+      return;
+    }
 
     if (!$session.data && path !== '/login') {
       console.log('session data is not available, go to login');
