@@ -99,8 +99,8 @@ class AccountApi extends BaseApiWithErrors {
 
 ## Frontend Conventions
 
-### Request Types
-Define request types in a separate `types.ts` file for reusability and cleaner code:
+### Request Types and Where Types Live
+Define all request and response-related types in the feature’s `utils/types.ts` file. **Do not define types or interfaces in `.svelte.ts` files** (e.g. `api/*.svelte.ts` or `store/*.svelte.ts`). Infer types from the API: request type from the RPC call, then success/data from the response type.
 
 ```typescript
 // apps/dashboard/src/lib/features/org/utils/types.ts
@@ -120,11 +120,15 @@ export type OrganizationTeamMembers = GetTeamSuccess['data'];
 
 **Never import types from `@cio/db/queries` into dashboard code.**
 
+**Never define types in `.svelte.ts` files.** Put them in `{domain}/utils/types.ts` and infer from API return types.
+
 Pattern:
 1. Define request type: `typeof classroomio.{route}.$method`
 2. Infer response type: `InferResponseType<RequestType>`
 3. Extract success response: `Extract<ResponseType, { success: true }>`
 4. Extract data type: `SuccessType['data']`
+
+For response shapes that need a small normalization (e.g. API returns `JSONValue`, app needs `Record<string, number>`), derive a normalized type in `types.ts` from the success `data` type (e.g. `Omit<Data, 'roleMapping'> & { roleMapping: Record<string, number> }`).
 
 ### API Class Pattern
 API classes handle all logic; components should be thin.
@@ -205,6 +209,7 @@ Use `.server.ts` files for server-side code to isolate API keys.
 - Skip client-side validation
 - Let components handle validation, navigation, or snackbar
 - Include API key logic in `.svelte.ts` files
+- **Define types or interfaces in `.svelte.ts` files** — use `{domain}/utils/types.ts` and infer from API types
 - Call RPC client directly in server files (use `.server.ts` classes)
 - Add unnecessary null checks for `user` when `authMiddleware` is present
 - Write plain English strings in components

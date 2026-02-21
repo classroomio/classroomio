@@ -16,6 +16,8 @@
 8. Public embed fetches server-computed payload from widget public endpoint.
 9. Both paths must use the same shared payload schema.
 10. Draft editing is manual-save only (no autosave in v1).
+11. Shadow DOM is the default isolation strategy; fallback to scoped classes only if critical issues arise.
+12. CSS sanitizer uses `css-tree` with 5KB limit and whitelist validation.
 
 ## Delivery Phases
 1. Phase A: Data model + validation + DB query layer.
@@ -40,9 +42,9 @@
 | CW-B6 | API Compute Service | Add canonical payload builder for public embed | `apps/api/src/services/widget-payload.ts`, `apps/api/src/routes/widgets/widgets.ts` | CW-B1 | Public payload route uses one compute function for courses + design config |
 | CW-C1 | Widgets Package | Create `@cio/widgets` package (plain Svelte runtime) | `packages/widgets/*` | CW-A3 | Package builds to ESM/browser bundle without SvelteKit |
 | CW-C2 | Layouts | Implement 5 layout renderers | `packages/widgets/src/layouts/*` | CW-C1 | All required layouts render from same config contract |
-| CW-C3 | Design Tokens | Add config-to-style mapper + isolation | `packages/widgets/src/styles/*` | CW-C1 | Host CSS does not break widget visuals in smoke tests |
+| CW-C3 | Design Tokens | Add config-to-style mapper + Shadow DOM isolation | `packages/widgets/src/styles/*` | CW-C1 | Host CSS does not break widget visuals; Shadow DOM encapsulation verified in tests |
 | CW-C4 | Loader Contract | Add loader bootstrap interface | `packages/widgets/src/loader/*` | CW-C1 | Loader can mount widget by payload id/key |
-| CW-C5 | Size Budget | Add bundle size checks | `packages/widgets/package.json` scripts | CW-C1 | CI fails when runtime exceeds target budgets |
+| CW-C5 | Size Budget | Add bundle size CI checks (loader ≤3KB, runtime ≤35KB gzip) | `packages/widgets/package.json` scripts + CI workflow | CW-C1 | CI fails when runtime exceeds target budgets; budget file in `bundle-size.json` |
 | CW-C6 | Renderer Contract | Add strict typed payload contract shared by dashboard and API | `packages/widgets/src/types/payload.ts` | CW-C1,CW-B6 | Renderer accepts canonical payload schema only |
 | CW-D1 | Dashboard Types | Add request/response types for widget API | `apps/dashboard/src/lib/features/widget/utils/types.ts` | CW-B4 | Types follow `typeof classroomio...` pattern |
 | CW-D2 | Dashboard API | Add widget API class | `apps/dashboard/src/lib/features/widget/api/widget.svelte.ts` | CW-D1 | All widget requests use `this.execute<RequestType>()` |
@@ -50,14 +52,15 @@
 | CW-D4 | Editor Page | Add `/org/[slug]/widgets/[widgetId]` editor route/page | `apps/dashboard/src/routes/org/[slug]/widgets/[widgetId]/+page.svelte`, `+page.server.ts` | CW-D3,CW-D2 | Left panel tabs + live preview + save/publish works |
 | CW-D5 | Sidebar Nav | Add widgets entry to org sidebar | `apps/dashboard/src/lib/features/ui/navigation/org-navigation.ts` | CW-D3 | Sidebar highlights widgets route correctly |
 | CW-D6 | Translations | Add all widget UI copy keys | `apps/dashboard/src/lib/utils/translations/en.json` | CW-D4 | No hardcoded user-facing strings |
-| CW-D7 | Plan Gating UI | Add paid/free UI gate for colors/custom CSS/branding toggle | widget feature pages + store | CW-D4 | Free users see upgrade prompts and restricted controls |
+| CW-D12 | Accessibility | Add ARIA labels, keyboard navigation, focus indicators | widget layouts + preview | CW-C2 | Widget passes axe-core automated checks |
+| CW-D7 | Plan Gating UI | Add paid/free UI gate: 1 theme for free, all themes + custom colors for paid | widget feature pages + store | CW-D4 | Free users see 1 theme option with upgrade prompt; paid users see all themes + custom colors |
 | CW-D8 | Live Preview Pipeline | Build local state -> iframe preview pipeline | `apps/dashboard/src/routes/org/[slug]/widgets/[widgetId]/+page.server.ts`, editor feature files, preview iframe files | CW-C6 | Editing left-panel settings re-renders iframe preview without API roundtrip |
 | CW-D9 | Manual Save UX | Add explicit save/discard workflow and dirty-state handling | editor feature files + stores | CW-D8 | No autosave; unsaved changes are preserved locally until user saves/discards |
-| CW-D10 | Iframe Protocol | Implement and document iframe message protocol with origin/schema validation | preview parent + iframe runtime files, protocol doc | CW-D8 | `READY/RENDER/ERROR` flow works reliably with strict origin checks |
+| CW-D10 | Iframe Protocol | Implement iframe message protocol with origin/schema validation per spec in README | preview parent + iframe runtime files | CW-D8 | `READY/RENDER/ERROR/RESIZE` flow works with 3 retry attempts and strict origin checks |
 | CW-D11 | Freshness Controls | Add data freshness states + manual refresh button in editor | editor route/feature files | CW-D8 | Editor shows `Last synced`, supports manual refresh, and handles stale warnings |
 | CW-E1 | Publish Pipeline | Build widget artifact + upload to Cloudflare | `scripts/widgets/*` or api worker hook | CW-C4,CW-B2 | Publish produces versioned URLs + manifest persisted |
 | CW-E2 | Cloudflare Delivery | Configure edge/static delivery and cache policy | deployment config/docs | CW-E1 | Loader/assets served with immutable cache headers |
-| CW-E3 | Hardening | Add CSS sanitizer, key generation, rate limiting | API service/routes | CW-B3 | Public endpoints pass security checks |
+| CW-E3 | Hardening | Add CSS sanitizer (css-tree), key generation (base58), rate limiting | API service/routes | CW-B3 | Public endpoints pass security checks; CSS validator tests pass |
 | CW-E4 | Tests | Unit/integration tests for config + publish + payload | API/db/package tests | CW-B4,CW-C2 | Core flows covered and passing in CI |
 | CW-E5 | Rollout | Add feature flag + staged rollout checklist | env/config docs | CW-D4 | Safe enable/disable by environment |
 
@@ -102,18 +105,23 @@
 1. Migration runs cleanly.
 2. Org isolation enforced at query/service level.
 3. Validation schemas compile in `@cio/utils`.
+4. CSS sanitizer config defined and testable.
 
 ### Phase B
 1. Admin can CRUD and publish widget via API.
 2. Public payload endpoint returns only published widget versions.
 3. Unauthorized org access returns proper 403/404 behavior.
 4. Public payload endpoint uses canonical compute service for courses + design config.
+5. CSS sanitization rejects malicious input in tests.
+6. Rate limiting enforced on public endpoints.
 
 ### Phase C
 1. `@cio/widgets` package builds independently.
 2. Runtime meets bundle budget and renders all required layouts.
-3. Host-site CSS does not break widget UI in smoke tests.
+3. Host-site CSS does not break widget UI in smoke tests (Shadow DOM verified).
 4. Renderer consumes only canonical computed payload type.
+5. Accessibility: keyboard navigation and ARIA labels implemented.
+6. Bundle size CI check fails builds exceeding budget.
 
 ### Phase D
 1. Admin can create/edit/publish from `/org/[slug]/widgets`.
@@ -121,15 +129,18 @@
 3. Editor left panel has `Select Courses`, `Widgets`, `Design`.
 4. Live preview updates as settings change using local state passed to iframe.
 5. Embed snippet is copyable from dashboard.
-6. Plan gates visibly enforce free vs paid restrictions.
+6. Plan gates visibly enforce free vs paid restrictions (disabled with tooltips).
 7. Editing is manual-save only; no background persistence happens.
-8. Iframe protocol is stable (`READY/RENDER/ERROR`) with strict origin validation.
+8. Iframe protocol is stable (`READY/RENDER/ERROR/RESIZE`) with strict origin validation and retry logic.
 9. Data freshness UI supports manual refresh and stale-state warnings.
+10. Accessibility: widgets pass axe-core automated checks.
 
 ### Phase E
-1. Publish creates versioned immutable artifact URLs.
-2. Rollback switches manifest to previous version without data loss.
+1. Publish creates versioned immutable artifact URLs in Cloudflare R2.
+2. Rollback switches manifest pointer to previous version without data loss.
 3. Monitoring/logs show publish failures and public payload errors.
+4. Artifact cleanup policy (10 versions kept) verified.
+5. Cache headers correctly configured for all asset types.
 
 ## Verification Commands
 1. `pnpm --filter @cio/utils build`
@@ -140,9 +151,22 @@
 6. Run widget API and package tests (unit/integration).
 
 ## Suggested First Sprint Slice
-1. CW-A1 to CW-A4
-2. CW-B1 to CW-B6
-3. CW-C1 + CW-C6 (renderer + payload contract scaffold)
+1. CW-A1 to CW-A4 (DB + validation foundation)
+2. CW-B1 to CW-B6 (API services + routes + payload compute)
+3. CW-C1 + CW-C6 (widgets package scaffold + payload contract)
 4. CW-D3 + CW-D8 + CW-D9 (widgets list + preview pipeline + manual save skeleton)
 
 This slice creates the core contracts and route surface so editor/publish can iterate quickly afterward.
+
+### Definition of Ready per Ticket
+Each ticket must include:
+- Data flow diagram (if applicable)
+- Interface/type definitions
+- Error scenarios and handling
+- Test plan (unit + integration)
+
+### Definition of Done per Phase
+- All builds pass (`pnpm --filter @cio/* build`)
+- Bundle size check passes (Phase C+)
+- Security review passed (Phase B+)
+- Accessibility smoke test passed (Phase D+)

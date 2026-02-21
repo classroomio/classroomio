@@ -139,3 +139,22 @@ Recommended v1 support:
 
 ## Open Questions
 - Should Hotspot/Image Labeling remain in P2 or move to a later phase?
+
+## Implementation Framework for Question Types
+
+- **Single question-type package**: centralize metadata, enum IDs, shared validation helpers, seeds, and front-end render configs into a dedicated package (e.g. `packages/question-types`). Every service, route, dashboard feature, and seed script imports the canonical question-type registry so new formats stay in sync everywhere and versioning/rollout phases are easy to read.
+- **Guided onboarding checklist**: each new type runs through the same pipeline—add Zod schema in `packages/utils`, add seed + query helpers, wire service grading/validation logic, expose via API route and register it in `apps/api`, then define dashboard request/response types and API class helpers before implementing UI renderers/translation keys. A shared README/checklist in the question-type package prompts engineers to validate both client and server, add translations, and run the API build before marking the type ready.
+- **Release automation**: attach metadata to each type indicating its rollout bucket (P0/P1/P2), required tests (validation, grading), plan-aware configs (file limits/allowed upload types), and documentation updates. Require backend seeding, frontend integration, and automated tests before a type moves out of draft, so the phase definition in this PRD becomes the gating criteria for rollout.
+
+## Question Mode Structure
+
+- Maintain an `ExerciseMode` enum (`view | edit | take`) declared in one shared module and pass it through a Svelte store/context so that every question renderer, toolbar, and UX shell can react to the current experience.
+- Split the UI per mode: grow `apps/dashboard/src/lib/features/course/components/exercise` into `view-mode/`, `edit-mode/`, and `take-mode/` subdirectories, each owning its own store, renderer components, autosave hooks, and submission logic while reusing shared question shells from the centralized registry.
+- Document file layout expectations in the package README so when engineers add a new mode they create `index.svelte`, `store.ts`, and `components/question-shell.svelte` plus any supporting API or autosave helpers; `mode` gets wired to toolbar controls (e.g., preview toggle, grade overrides) and ensures constraints (timers, plan-based upload limits) only run in the correct context.
+
+## Question Type Structure Reference
+
+- **Metadata/registry**: define IDs, labels, auto-grade flags, partial-credit support, and target UI component references in the shared package so the dashboard can look up renderer props (e.g., `ExerciseTrueFalse`) without duplicating constants.
+- **Validation schemas**: keep Zod schemas per type under `packages/utils/src/validation/exercise/` and reuse them in API routes, dashboard editors, and autosave validation logic to keep client/server checks aligned.
+- **Service/grade helpers**: have the API grading service switch on `question.type` to call `gradeTrueFalse`, `gradeNumeric`, etc., or fall back to manual grading, so each type owns its scoring rules and partial-credit behavior.
+- **UI renderers**: map each type to a renderer + validator in `apps/dashboard/src/lib/features/exercise/api/question-renderers.ts`, passing `mode` to inform view/edit/take behaviors and prevent duplicated logic across experiences.
