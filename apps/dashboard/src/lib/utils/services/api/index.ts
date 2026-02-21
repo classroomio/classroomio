@@ -2,10 +2,21 @@ import { type ApiClientConfig, ApiError, type RequestConfig } from './types';
 
 import { DEFAULT_CONFIG } from './constants';
 import { delay } from './utils';
-import { env } from '$env/dynamic/public';
 import { hcWithType } from '@cio/api/rpc-types';
 import { get } from 'svelte/store';
 import { currentOrg } from '$lib/utils/store/org';
+import type { Cookies } from '@sveltejs/kit';
+import { env } from '$env/dynamic/public';
+
+export const getRequestBaseUrl = () => {
+  if (typeof window === 'undefined') {
+    // When on the server, we want to hit the private url which is the docker container of `api` or the private network url of `api`.
+    // if that isn't set then it will fallback to the public url of the `api`
+    return process.env.PRIVATE_SERVER_URL || env.PUBLIC_SERVER_URL;
+  }
+
+  return env.PUBLIC_SERVER_URL;
+};
 
 class ApiClient {
   private config: Required<ApiClientConfig>;
@@ -17,8 +28,14 @@ class ApiClient {
   private async makeRequest(input: RequestInfo | URL, requestConfig: RequestConfig = {}): Promise<Response> {
     const { timeout = this.config.timeout, retries = this.config.retries, ...fetchConfig } = requestConfig;
 
-    const url = typeof input === 'string' ? input : input.toString();
-    const fullUrl = url.startsWith('http') ? url : `${this.config.baseURL}${url}`;
+    const inputUrl = typeof input === 'string' ? input : input.toString();
+    const inputUrlObject = new URL(inputUrl, 'http://_');
+
+    // We are dynamically always getting the base URL to make sure we are getting the right url for the right environment.
+    // For example, when you use classroomio.account.$get(), on the server in a docker container, we want it to hit the api container directly instead of hitting the public url which is extra bandwidth.
+    // However when on the client, we want it to hit the public url which still points to the api container but this time with some bandwidth.
+    const base = (getRequestBaseUrl() ?? this.config.baseURL)?.replace(/\/$/, '') ?? '';
+    const fullUrl = `${base}${inputUrlObject.pathname}${inputUrlObject.search}`;
 
     // Prepare headers
     const headers = new Headers(fetchConfig.headers);
@@ -147,7 +164,7 @@ class ApiClient {
 export const apiClient = new ApiClient();
 
 // RPC client using the new fetch wrapper
-export const classroomio = hcWithType(env.PUBLIC_SERVER_URL, {
+export const classroomio = hcWithType(getRequestBaseUrl(), {
   fetch: async (input: RequestInfo | URL, requestInit?: RequestInit) => {
     return apiClient.request(input, requestInit);
   },
@@ -179,3 +196,44 @@ export type { InferResponseType, InferRequestType } from '@cio/api/rpc-types';
 
 // Export base API classes
 export { BaseApi, BaseApiWithErrors } from './base.svelte';
+
+/**
+ * Gets headers with cookies and organization ID for API calls
+ * Use this in load functions (+page.server.ts, +layout.server.ts) to pass user session cookies
+ * and organization ID to API calls. This ensures authentication and organization context work correctly.
+ *
+ * @param cookies Cookies object from SvelteKit load function
+ * @param orgId Organization ID to include in headers
+ * @returns Headers object with cookie string and cio-org-id header
+ *
+ * @example
+ * ```typescript
+ * export const load = async ({ cookies, parent }) => {
+ *   const { org } = await parent();
+ *   const response = await classroomio.organization.$get(
+ *     { query: { siteName } },
+ *     getApiHeaders(cookies, org?.id)
+ *   );
+ * };
+ * ```
+ */
+export function getApiHeaders(
+  cookies: Cookies,
+  orgId?: string
+): { headers: { cookie: string; 'cio-org-id'?: string } } {
+  const cioCookies = cookies
+    .getAll()
+    .filter((c) => c.name.includes('classroomio'))
+    .map((c) => `${c.name}=${c.value}`)
+    .join('; ');
+
+  const headers: { cookie: string; 'cio-org-id'?: string } = {
+    cookie: cioCookies || ''
+  };
+
+  if (orgId) {
+    headers['cio-org-id'] = orgId;
+  }
+
+  return { headers };
+}

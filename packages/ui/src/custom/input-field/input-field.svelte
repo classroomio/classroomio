@@ -1,7 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import * as Field from '../../base/field';
-  import { Input } from '../../base/input';
+  import { Input, type InputProps } from '../../base/input';
+
+  type InputOnChangeEvent = Parameters<NonNullable<InputProps['onchange']>>[0];
 
   interface Props {
     label?: string;
@@ -11,6 +13,7 @@
     onKeyDown?: (e: KeyboardEvent) => void;
     className?: string;
     labelClassName?: string;
+    inputClassName?: string;
     type?: string;
     autoFocus?: boolean;
     isRequired?: boolean;
@@ -20,8 +23,8 @@
     errorMessage?: string;
     helperMessage?: string;
     autoComplete?: boolean;
-    onchange?: (e: Event) => void;
-    onInputChange?: (e: Event) => void;
+    onchange?: (e: InputOnChangeEvent) => void;
+    onInputChange?: (e: InputOnChangeEvent) => void;
   }
 
   let {
@@ -32,6 +35,7 @@
     onKeyDown = (_e) => {},
     className = '',
     labelClassName = '',
+    inputClassName = '',
     type = $bindable('text'),
     autoFocus = false,
     isRequired = false,
@@ -54,12 +58,12 @@
   });
 
   // Handle input change event
-  function handleInputChange(e: Event) {
+  function handleInputChange(e: InputOnChangeEvent) {
     onInputChange(e);
   }
 
   // Handle blur event
-  function handleBlur(e: Event) {
+  function handleBlur(e: InputOnChangeEvent) {
     onchange(e);
   }
 </script>
@@ -69,12 +73,13 @@
     <Field.Label for={name || 'input-field'} class={labelClassName}>
       {label}
       {#if isRequired}
-        <span class="text-red-700">*</span>
+        <span class="ui:text-red-700">*</span>
       {/if}
     </Field.Label>
   {/if}
 
   <Input
+    class={inputClassName}
     bind:ref={inputRef}
     id={name || 'input-field'}
     {type}

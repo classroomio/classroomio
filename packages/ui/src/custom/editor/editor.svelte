@@ -41,8 +41,7 @@
     editorClass = '',
     placeholder,
     onContentChange,
-    onEditorReady,
-    onEditorDestroy
+    onEditorReady
   }: Props = $props();
 
   let editor = $state<Editor>();
@@ -86,9 +85,11 @@
     }
   });
 
+  let isEditorReady = $state(false);
   // Handle editor ready
   $effect(() => {
-    if (editor) {
+    if (editor && !isEditorReady) {
+      isEditorReady = true;
       onEditorReady?.(editor);
     }
   });
@@ -105,7 +106,7 @@
 {#if browser}
   <div
     class={cn(
-      'ui:bg-background ui:z-50 ui:flex ui:size-full ui:w-full ui:flex-col ui:rounded-md ui:border ui:border-dashed',
+      'ui:relative ui:bg-background ui:z-50 ui:flex ui:size-full ui:w-full ui:flex-col ui:rounded-md ui:border ui:border-dashed',
       className
     )}
   >
@@ -123,7 +124,7 @@
       <EdraDragHandleExtended {editor} />
     {/if}
     <EdraEditor
-      class={cn('ui:h-128 ui:overflow-auto ui:p-4', editorClass)}
+      class={cn('ui:relative ui:h-128 ui:overflow-auto ui:p-4', editorClass)}
       bind:editor
       {editable}
       {content}

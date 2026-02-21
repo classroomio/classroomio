@@ -23,7 +23,7 @@
   }: Props & Omit<ComponentProps<typeof InputGroup.Root>, 'class' | 'children'> = $props();
 </script>
 
-<InputGroup.Root class={cn('w-full', className)} data-slot="domain-input">
+<InputGroup.Root class={cn('ui:w-full', className)} data-slot="domain-input">
   <InputGroup.Addon>
     <InputGroup.Text>{prefix}</InputGroup.Text>
   </InputGroup.Addon>

@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Component } from 'svelte';
+  import { cn } from '@cio/ui/tools';
 
   interface Activity {
     icon: Component;
@@ -7,17 +8,22 @@
     percentage: number | string;
     description: string;
     hidePercentage?: boolean;
+    className?: string;
   }
 
   interface Props {
     activity: Activity;
+    className?: string;
   }
 
-  let { activity }: Props = $props();
+  let { activity, className = '' }: Props = $props();
 </script>
 
 <div
-  class="flex flex-col items-center justify-center gap-5 rounded-xl border p-3 md:flex-row md:p-5 dark:border-neutral-600"
+  class={cn(
+    'flex w-full flex-col items-center justify-evenly gap-2 rounded-xl border p-3 md:flex-row md:p-5',
+    className
+  )}
 >
   <div class="bg-primary-200 w-fit rounded-full p-4 text-black">
     <activity.icon />
@@ -33,8 +39,10 @@
         %
       {/if}
     </p>
-    <p class="text-center text-xs text-gray-500 md:text-left md:text-sm dark:text-gray-300">
-      {activity.description}
-    </p>
+    {#if activity.description}
+      <p class="text-center text-xs text-gray-500 md:text-left md:text-sm dark:text-gray-300">
+        {activity.description}
+      </p>
+    {/if}
   </div>
 </div>

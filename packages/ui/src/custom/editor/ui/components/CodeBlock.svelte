@@ -12,14 +12,17 @@
 
   let isCopying = $state(false);
 
-  const languages: string[] = extension.options.lowlight.listLanguages().sort();
+  const languages = $derived.by(() => extension.options.lowlight.listLanguages().sort());
 
-  let defaultLanguage = $state(node.attrs.language);
+  let defaultLanguage = $derived<string>(node.attrs.language);
 
   function copyCode() {
     if (!preRef) return;
+
     isCopying = true;
+
     navigator.clipboard.writeText(preRef.innerText);
+
     setTimeout(() => {
       isCopying = false;
     }, 1000);

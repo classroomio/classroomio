@@ -48,15 +48,20 @@
     // Authentication Steps
     if (!data.isOrgSite || !data.org) return;
 
-    $globalStore.orgSiteName = data.orgSiteName;
+    $globalStore.orgSiteName = data.orgSiteName || '';
     $globalStore.isOrgSite = data.isOrgSite;
 
     currentOrg.set(data.org);
 
     // Setup internal analytics
-    initOrgAnalytics(data.orgSiteName);
+    if (data.orgSiteName) {
+      initOrgAnalytics(data.orgSiteName);
+    }
 
-    setTheme(data.org?.theme);
+    const theme = data.org?.theme;
+    if (theme) {
+      setTheme(theme);
+    }
   }
 
   onMount(() => {
@@ -75,12 +80,11 @@
       console.log('session is pending or refetching');
       return;
     }
-    console.log('path', path);
-    console.log('isPublicRoute', isPublicRoute(path));
-    console.log('data', $session.data);
 
     // No need to require login for public routes
-    if (isPublicRoute(path) && path !== '/') return;
+    if (isPublicRoute(path) && (path !== '/' || data.isOrgSite)) {
+      return;
+    }
 
     if (!$session.data && path !== '/login') {
       console.log('session data is not available, go to login');
@@ -112,25 +116,27 @@
   const metaTags = $derived(merge(data.baseMetaTags, page.data.pageMetaTags));
 </script>
 
-<ModeWatcher />
+<div>
+  <ModeWatcher />
 
-<MetaTags {...metaTags} />
+  <MetaTags {...metaTags} />
 
-<UpgradeModal />
+  <UpgradeModal />
 
-<Snackbar />
+  <Snackbar />
 
-{#if data.org?.isRestricted || $currentOrg.isRestricted}
-  <PageRestricted />
-{:else if data.skipAuth}
-  <PlayQuiz />
-{:else if data.isOrgSite && data.org && path === '/'}
-  <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org} />
-{:else}
-  <PageLoadProgress zIndex={10000} />
+  {#if data.org?.isRestricted || $currentOrg.isRestricted}
+    <PageRestricted />
+  {:else if data.skipAuth}
+    <PlayQuiz />
+  {:else if data.isOrgSite && data.org && path === '/'}
+    <OrgLandingPage orgSiteName={data.orgSiteName} org={data.org} />
+  {:else}
+    <PageLoadProgress zIndex={10000} />
 
-  {@render children?.()}
-{/if}
+    {@render children?.()}
+  {/if}
+</div>
 
 <style>
   :global(:root) {
@@ -148,15 +154,6 @@
 
   :global(.border-bottom-c) {
     border-bottom: 1px solid var(--border-color);
-  }
-
-  :global(.plyr__controls) {
-    background:
-      url(/logo-192.png) 99% 70% no-repeat,
-      linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5)) !important;
-    background-size:
-      50px auto,
-      auto !important;
   }
 
   :global(.cards-container) {

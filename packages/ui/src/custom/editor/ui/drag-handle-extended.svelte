@@ -34,7 +34,7 @@
     const plugin = DragHandlePlugin({
       pluginKey: pluginKey,
       dragHandleWidth: 20,
-      scrollTreshold: 100,
+      scrollTreshold: 1000,
       dragHandleSelector: '.drag-handle',
       excludedTags: ['pre', 'code', 'table p'],
       customNodes: [],
@@ -82,8 +82,7 @@
     if (currentNodePos === -1) return;
     const currentNodeSize = currentNode?.nodeSize || 0;
     const insertPos = currentNodePos + currentNodeSize;
-    const currentNodeIsEmptyParagraph =
-      currentNode?.type.name === 'paragraph' && currentNode?.content?.size === 0;
+    const currentNodeIsEmptyParagraph = currentNode?.type.name === 'paragraph' && currentNode?.content?.size === 0;
     const focusPos = currentNodeIsEmptyParagraph ? currentNodePos + 2 : insertPos + 2;
     editor
       .chain()
@@ -92,10 +91,7 @@
           if (currentNodeIsEmptyParagraph) {
             tr.insertText('/', currentNodePos, currentNodePos + 1);
           } else {
-            tr.insert(
-              insertPos,
-              state.schema.nodes.paragraph.create(null, [state.schema.text('/')])
-            );
+            tr.insert(insertPos, state.schema.nodes.paragraph.create(null, [state.schema.text('/')]));
           }
 
           return dispatch(tr);

@@ -13,7 +13,7 @@
 
   let { data, children } = $props();
 
-  function redirect(siteName: string) {
+  function redirect(siteName: string | null) {
     if (!siteName) return;
 
     const newUrl = page.url.pathname.replace('*', siteName);

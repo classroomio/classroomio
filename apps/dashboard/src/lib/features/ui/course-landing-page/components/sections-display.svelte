@@ -5,13 +5,13 @@
   import pluralize from 'pluralize';
 
   import { t } from '$lib/utils/functions/translations';
-  import type { Lesson } from '$lib/utils/types';
+  import type { LandingPageLesson } from '../utils';
 
   interface Props {
     title: string;
     lessonCount: number;
     exerciseCount: number;
-    lessons: Lesson[];
+    lessons: LandingPageLesson[];
   }
 
   let { title, lessonCount, exerciseCount, lessons }: Props = $props();
@@ -22,7 +22,7 @@
 <div class="my-3 w-full rounded-md">
   <!-- lesson header -->
   <button
-    class="flex w-full items-center justify-between bg-[#F7F7F7] py-3 pl-3 pr-4 text-sm font-medium dark:bg-neutral-700"
+    class="flex w-full items-center justify-between bg-[#F7F7F7] py-3 pr-4 pl-3 text-sm font-medium dark:bg-neutral-700"
     onclick={() => (expand = !expand)}
   >
     <span class="flex items-center gap-2">

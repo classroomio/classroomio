@@ -8,7 +8,6 @@
   import UserIcon from '@lucide/svelte/icons/user';
   import MessageSquareIcon from '@lucide/svelte/icons/message-square';
   import GlobeIcon from '@lucide/svelte/icons/globe';
-  import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
   import EyeIcon from '@lucide/svelte/icons/eye';
   import EyeOffIcon from '@lucide/svelte/icons/eye-off';
   import KeyIcon from '@lucide/svelte/icons/key';
@@ -395,11 +394,11 @@
 
 <Story name="Custom Input">
   {#snippet template()}
-    <div class="w-lg grid gap-6">
+    <div class="grid w-lg gap-6">
       <InputGroup.Root>
         <textarea
           data-slot="input-group-control"
-          class="field-sizing-content flex min-h-16 w-full resize-none rounded-md bg-transparent px-3 py-2.5 text-base outline-none transition-[color,box-shadow] md:text-sm"
+          class="flex field-sizing-content min-h-16 w-full resize-none rounded-md bg-transparent px-3 py-2.5 text-base transition-[color,box-shadow] outline-none md:text-sm"
           placeholder="Autoresize textarea..."
         ></textarea>
         <InputGroup.Addon align="block-end">

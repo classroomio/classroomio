@@ -26,7 +26,7 @@
   } = $props();
 </script>
 
-<section {id} class="w-full border-x-0 border-b border-t-0 border-gray-200 py-32">
+<section {id} class="w-full border-x-0 border-t-0 border-b border-gray-200 py-32">
   <div
     class="mx-auto flex w-4/5 flex-col {rightToLeft
       ? 'lg:flex-row-reverse'

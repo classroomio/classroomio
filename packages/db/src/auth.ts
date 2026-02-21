@@ -41,7 +41,8 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
   advanced: {
     cookiePrefix: 'classroomio',
     crossSubDomainCookies: {
-      enabled: true
+      enabled: true,
+      ...(CONSTANTS.AUTH_COOKIE_DOMAIN ? { domain: CONSTANTS.AUTH_COOKIE_DOMAIN } : {})
     },
     database: {
       generateId: false

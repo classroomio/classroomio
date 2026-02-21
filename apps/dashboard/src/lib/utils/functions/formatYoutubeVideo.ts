@@ -1,8 +1,7 @@
-import { lesson } from '$lib/components/Course/components/Lesson/store/lessons';
+import { lessonApi } from '$features/course/api';
 import { snackbar } from '$features/ui/snackbar/store';
 
 export function formatYoutubeVideo(url: string, errors: Record<string, string>) {
-  console.log(`url`, url);
   const prefix = 'https://www.youtube.com/embed';
 
   // https://www.youtube.com/embed/qajK1J1neAM
@@ -68,11 +67,5 @@ export async function copyToClipboard(text: string) {
 }
 
 export function removeVideo(index = 0) {
-  lesson.update((currentLesson) => ({
-    ...currentLesson,
-    materials: {
-      ...currentLesson.materials,
-      videos: currentLesson.materials.videos.filter((_v, i) => i !== index)
-    }
-  }));
+  lessonApi.deleteLessonVideo(index);
 }

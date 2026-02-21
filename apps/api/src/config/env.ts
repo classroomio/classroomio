@@ -10,11 +10,8 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   OPENAPI_URL: z.string().optional(),
   PORT: z.string().optional(),
-  PRIVATE_SUPABASE_SERVICE_ROLE: z.string(),
-  PUBLIC_SUPABASE_ANON_KEY: z.string(),
-  PUBLIC_SUPABASE_URL: z.string(),
   REDIS_URL: z.string().optional(),
-  SERVER_URL: z.string().optional(),
+  PUBLIC_SERVER_URL: z.string().optional(),
   SMTP_HOST: z.string().optional(),
   SMTP_PASSWORD: z.string().optional(),
   SMTP_PORT: z.string().optional(),
@@ -22,7 +19,11 @@ const envSchema = z.object({
   SMTP_USER: z.string().optional(),
   ZOHO_TOKEN: z.string().optional(),
   TRUSTED_ORIGINS: z.string().optional(),
-  SERVER_KEY: z.string().optional()
+  PRIVATE_SERVER_KEY: z.string().optional(),
+  PROJECT_ID_VERCEL: z.string().optional(),
+  TEAM_ID_VERCEL: z.string().optional(),
+  AUTH_BEARER_TOKEN: z.string().optional(),
+  UNSPLASH_API_KEY: z.string().optional()
 });
 
 export const env = envSchema.parse(process.env);

@@ -9,7 +9,6 @@ export const ROUTE = {
   LOGIN: '/login',
   SIGN_UP: '/signup',
   INVITE_TEACHER: '/invite/t',
-  INVITE_STUDENT: '/invite/s',
   PROFILE: '/profile',
   PEOPLE: '/people',
   DISCUSSIONS: '/discussions',
@@ -24,32 +23,27 @@ export const ROUTE = {
 export const PUBLIC_ROUTES = [
   `^${ROUTE.HOME}$`,
   ROUTE.LOGIN,
+  ROUTE.LOGOUT,
   ROUTE.SIGN_UP,
   `^${ROUTE.INVITE_TEACHER}/.*`,
   ROUTE.FORGOT,
   ROUTE.RESET,
   `^${ROUTE.PAGES}/.*`,
   `^${ROUTE.COURSE}/.*`,
+  `^${ROUTE.COURSES}/?$`,
   '/404',
   `^${ROUTE.VERIFY_EMAIL_ERROR}$`,
   ROUTE.AUTH_FAILED
 ];
 
-export const PUBLIC_API_ROUTES = [
-  '/api/completion',
-  'student_prove_payment',
-  'teacher_student_buycourse',
-  '/api/polar',
-  '/api/lmz',
-  '/api/verify'
-];
+export const PUBLIC_API_ROUTES = ['/api/polar', '/api/lmz', '/api/verify'];
 
 export const ROUTES_TO_HIDE_NAV = [
   `^${ROUTE.LOGIN}$`,
   `^${ROUTE.SIGN_UP}$`,
   ROUTE.LMS_HOME,
   `^${ROUTE.INVITE_TEACHER}/.*`,
-  `^${ROUTE.INVITE_STUDENT}/.*`,
+  `^/course/.*/enroll$`,
   `^${ROUTE.FORGOT}$`,
   `^${ROUTE.RESET}$`,
   `^${ROUTE.ONBOARDING}$`,

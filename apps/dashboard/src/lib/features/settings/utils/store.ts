@@ -89,7 +89,7 @@ export const landingPageSettings: Writable<OrgLandingPageJson> = writable({
       {
         id: 2,
         label: 'Courses',
-        url: '#courses',
+        url: '/courses',
         openInNewTab: false
       },
       {

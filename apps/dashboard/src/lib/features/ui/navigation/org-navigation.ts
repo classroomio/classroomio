@@ -1,11 +1,16 @@
+import {
+  AttachmentIcon,
+  CommunityIcon,
+  CourseIcon,
+  DashboardIcon,
+  PeopleIcon,
+  SettingsIcon,
+  SetupIcon
+} from '@cio/ui/custom/moving-icons';
+import TagIcon from '@lucide/svelte/icons/tag';
+
 import type { AccountOrg } from '$features/app/types';
-import CogIcon from '@lucide/svelte/icons/cog';
 import type { Component } from 'svelte';
-import LayoutDashboardIcon from '@lucide/svelte/icons/layout-dashboard';
-import LibraryBigIcon from '@lucide/svelte/icons/library-big';
-import MessageSquareMoreIcon from '@lucide/svelte/icons/message-square-more';
-import Settings2Icon from '@lucide/svelte/icons/settings-2';
-import UsersIcon from '@lucide/svelte/icons/users';
 import { isActive } from '$lib/utils/functions/app';
 
 export interface NavItem {
@@ -44,19 +49,26 @@ const baseNavConfig: NavItemConfig[] = [
   {
     titleKey: 'org_navigation.dashboard',
     path: '',
-    icon: LayoutDashboardIcon,
+    icon: DashboardIcon,
     matchPattern: '^/org/[^/]+/?$' // Exact match only
   },
   {
     titleKey: 'org_navigation.courses',
     path: '/courses',
-    icon: LibraryBigIcon,
+    icon: CourseIcon,
     matchPattern: '^/org/[^/]+/courses(/.*)?$' // Matches nested routes
+  },
+  {
+    titleKey: 'org_navigation.tags',
+    path: '/tags',
+    icon: TagIcon,
+    requiresAdmin: true,
+    matchPattern: '^/org/[^/]+/tags(/.*)?$'
   },
   {
     titleKey: 'org_navigation.community',
     path: '/community',
-    icon: MessageSquareMoreIcon,
+    icon: CommunityIcon,
     supportsDynamicSegment: true, // Supports /community/[slug]
     matchPattern: '^/org/[^/]+/community(/.*)?$', // Matches nested routes
     nestedRoutes: [
@@ -69,20 +81,26 @@ const baseNavConfig: NavItemConfig[] = [
   {
     titleKey: 'org_navigation.audience',
     path: '/audience',
-    icon: UsersIcon,
+    icon: PeopleIcon,
     matchPattern: '^/org/[^/]+/audience(/.*)?$' // Matches nested routes
+  },
+  {
+    titleKey: 'org_navigation.media',
+    path: '/media',
+    icon: AttachmentIcon,
+    matchPattern: '^/org/[^/]+/media(/.*)?$'
   },
   {
     titleKey: 'org_navigation.setup',
     path: '/setup',
-    icon: Settings2Icon,
+    icon: SetupIcon,
     requiresAdmin: true,
     matchPattern: '^/org/[^/]+/setup(/.*)?$' // Matches nested routes
   },
   {
     titleKey: 'org_navigation.settings',
     path: '/settings',
-    icon: CogIcon,
+    icon: SettingsIcon,
     useHashUrl: true, // Use '#' for collapsible parent
     matchPattern: '^/org/[^/]+/settings(/.*)?$', // Matches nested routes
     items: [

@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { Component } from 'svelte';
-  import get from 'lodash/get';
   import { resolve } from '$app/paths';
   import { Badge } from '@cio/ui/base/badge';
   import UserIcon from '@lucide/svelte/icons/user';
@@ -14,23 +13,22 @@
   import { Progress } from '@cio/ui/base/progress';
 
   import { Image } from '$features/ui';
-  import { COURSE_TYPE, type Course } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { calcCourseDiscount } from '$lib/utils/functions/course';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import { calcProgressRate } from '$features/course/utils/functions';
   import CardDropdown from './card-dropdown.svelte';
+  import type { OrgCourses, UserEnrolledCourses } from '$features/course/types';
+  import type { OrgPublicCourses } from '$features/org/utils/types';
 
   export interface Props {
-    course: Course;
+    course: OrgCourses[number] | UserEnrolledCourses[number] | OrgPublicCourses[number];
     isOnLandingPage?: boolean;
     isLMS?: boolean;
     isExplore?: boolean;
   }
 
   let { course, isOnLandingPage, isLMS, isExplore }: Props = $props();
-
-  $inspect('isLMS', isLMS);
 
   let {
     bannerImage,
@@ -56,19 +54,27 @@
     title: course.title,
     type: course.type,
     description: course.description,
-    isPublished: course.is_published,
+    isPublished: course.isPublished,
     pricingData: {
       cost: course.cost,
       discount: course.metadata?.discount || 0,
       showDiscount: course.metadata?.showDiscount || false
     },
     currency: course.currency,
-    totalLessons: get(course, 'lessons[0].count', 0),
-    progressRate: calcProgressRate(course.progress_rate, course.total_lessons),
-    totalStudents: course.total_students
+    totalLessons: course.lessonCount,
+    progressRate: calcProgressRate('progressRate' in course ? course.progressRate : 0, course.lessonCount),
+    totalStudents: 'totalStudents' in course ? course.totalStudents : 0
   });
 
   let formatter = $derived(getCurrencyFormatter(currency));
+  const courseTags = $derived(
+    ('tags' in course && Array.isArray(course.tags) ? course.tags : []) as Array<{
+      id: string;
+      name: string;
+      slug: string;
+      color?: string | null;
+    }>
+  );
 
   const COURSE_TAG: Record<
     string,
@@ -79,13 +85,13 @@
       iconStyle?: string;
     }
   > = {
-    [COURSE_TYPE.LIVE_CLASS]: {
+    ['LIVE_CLASS']: {
       style: '',
       label: $t('course.navItem.settings.live_class'),
       icon: CircleDotIcon,
       iconStyle: 'custom text-red-700'
     },
-    [COURSE_TYPE.SELF_PACED]: {
+    ['SELF_PACED']: {
       style: '',
       label: $t('course.navItem.settings.self_paced'),
       icon: UserIcon,
@@ -105,7 +111,7 @@
   );
 </script>
 
-<Item.Root variant="outline" class="p-3! group relative max-w-[320px]">
+<Item.Root variant="outline" class="group relative max-w-[320px] p-3!">
   {#snippet child({ props })}
     <a href={resolve(courseUrl, {})} {...props}>
       {#if !isLMS && !isOnLandingPage}
@@ -113,12 +119,12 @@
       {/if}
 
       <Item.Header>
-        <Item.Media variant="image" class="h-50! w-full! relative">
+        <Item.Media variant="image" class="relative h-50! w-full!">
           <Image src={bannerImage} alt="Course banner image" className="w-full h-full rounded-sm object-cover" />
 
           {#if type}
             {@const tag = COURSE_TAG[type]}
-            <Badge class="rounded-md! absolute bottom-2 left-2 z-10 flex items-center capitalize" variant="secondary">
+            <Badge class="absolute bottom-2 left-2 z-10 flex items-center rounded-md! capitalize" variant="secondary">
               <tag.icon class={tag.iconStyle} />
               {tag.label}
             </Badge>
@@ -127,11 +133,25 @@
       </Item.Header>
 
       <Item.Content>
-        <Item.Title class="text-base! line-clamp-1 min-h-[44px]">
+        <Item.Title class="line-clamp-1 min-h-[44px] text-base!">
           {title}
         </Item.Title>
 
         <Item.Description class="min-h-[63px]">{description}</Item.Description>
+        <div class="ui:text-muted-foreground flex min-h-[12px] flex-wrap items-center gap-1">
+          {#if !isLMS && courseTags.length > 0}
+            {#each courseTags as tag (tag.id)}
+              <Item.SubDescription class="border-border inline-flex items-center gap-1.5 rounded-full border px-2">
+                <span
+                  class="ui:bg-primary/60 inline-block h-1.5 w-1.5 rounded-full"
+                  style={tag.color ? `background-color: ${tag.color}` : undefined}
+                  aria-hidden="true"
+                ></span>
+                <span>{tag.name}</span>
+              </Item.SubDescription>
+            {/each}
+          {/if}
+        </div>
 
         <Separator class="my-3" />
 
@@ -149,7 +169,7 @@
                   {:else if pricingData.showDiscount}
                     {formatter.format(cost)}
                     <span class="line-through">
-                      {formatter?.format(pricingData?.cost)}
+                      {formatter?.format(pricingData?.cost ?? 0)}
                     </span>
                   {:else}
                     {formatter.format(cost)}

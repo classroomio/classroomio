@@ -2,29 +2,34 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { TNewOrganizationPlan, TOrganization, TOrganizationPlan, TPlan } from '@db/types';
 import {
   cancelOrganizationPlan,
-  checkEmailsExistInOrg,
-  createOrganizationMembers,
   createOrganizationPlan,
   deleteOrganizationMember,
+  getOrgIdBySiteName,
   getOrganizationAudience,
-  getOrganizationById,
   getOrganizationBySiteName,
   getOrganizationTeam,
   getOrganizations,
+  revokeActiveOrganizationInvitesByEmails,
   updateOrganization,
   updateOrganizationPlan
 } from '@cio/db/queries/organization';
 import {
   getCoursesById,
-  getCoursesBySiteName,
   getCoursesBySiteNameForSetup,
+  getEnrolledCourses,
   getExercisesBySiteName,
-  getLessonsBySiteName
+  getExploreCourses,
+  getLessonsBySiteName,
+  getOrgCourses,
+  getPublishedCoursesBySiteName
 } from '@cio/db/queries/course';
+import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/analytics';
+import { getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
 
+import { ROLE } from '@cio/utils/constants';
 import { createOrganizationWithOwner } from '@api/services/onboarding';
-import { env } from '@api/config/env';
-import { sendEmail } from '@cio/email';
+import { getProfileById } from '@cio/db/queries/auth';
+import { inviteTeamMembers as inviteTeamMembersSecure } from './organization/invite';
 
 /**
  * Creates a new organization with the current user as owner
@@ -112,17 +117,143 @@ export async function getOrgAudience(orgId: string) {
 }
 
 /**
- * Gets courses by organization siteName
- * @param siteName - The organization site name
- * @returns Array of courses
+ * Gets public courses for an organization (landing page)
+ * @param siteName - The organization siteName
+ * @returns Array of published courses with lesson counts
  */
-export async function getCoursesByOrgSiteName(siteName: string) {
+export async function getPublicCourses(siteName: string, tagSlugs?: string[]) {
   try {
-    const courses = await getCoursesBySiteName(siteName);
-    return courses;
+    const orgResult = await getOrgIdBySiteName(siteName);
+    const org = orgResult[0];
+
+    if (!org) {
+      throw new AppError('Organization not found', ErrorCodes.ORG_NOT_FOUND, 404);
+    }
+
+    let filteredCourseIds: string[] | undefined = undefined;
+    if (tagSlugs && tagSlugs.length > 0) {
+      filteredCourseIds = await getCourseIdsByTagSlugs(org.id, tagSlugs);
+      if (filteredCourseIds.length === 0) {
+        return [];
+      }
+    }
+
+    const courses = await getPublishedCoursesBySiteName(siteName, filteredCourseIds);
+    const tagsByCourseId = await getCourseTagsByCourseIdsForOrganization(
+      org.id,
+      courses.map((course) => course.id)
+    );
+
+    return courses.map((course) => ({
+      ...course,
+      tags: tagsByCourseId[course.id] ?? []
+    }));
   } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch public courses',
+      ErrorCodes.COURSES_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Gets organization courses with role-based data filtering
+ * @param orgId - The organization ID
+ * @param userId - User ID for role-based filtering (required)
+ * @param userRole - User's role in the organization (from context)
+ * @returns Object with role and courses array
+ * - Admins: all courses with totalStudents
+ * - Tutors: assigned courses with totalStudents
+ */
+export async function getOrganizationCourses(orgId: string, userId: string, userRole: number, tagSlugs?: string[]) {
+  try {
+    if (!userRole) {
+      throw new AppError('Invalid permissions', ErrorCodes.UNAUTHORIZED, 403);
+    }
+
+    let filteredCourseIds: string[] | undefined = undefined;
+    if (tagSlugs && tagSlugs.length > 0) {
+      filteredCourseIds = await getCourseIdsByTagSlugs(orgId, tagSlugs);
+      if (filteredCourseIds.length === 0) {
+        return [];
+      }
+    }
+
+    switch (userRole) {
+      case ROLE.ADMIN: {
+        const courses = await getOrgCourses({ orgId, courseIds: filteredCourseIds });
+        const tagsByCourseId = await getCourseTagsByCourseIdsForOrganization(
+          orgId,
+          courses.map((course) => course.id)
+        );
+
+        return courses.map((course) => ({
+          ...course,
+          tags: tagsByCourseId[course.id] ?? []
+        }));
+      }
+      case ROLE.TUTOR: {
+        const courses = await getOrgCourses({ orgId, profileId: userId, courseIds: filteredCourseIds });
+        const tagsByCourseId = await getCourseTagsByCourseIdsForOrganization(
+          orgId,
+          courses.map((course) => course.id)
+        );
+
+        return courses.map((course) => ({
+          ...course,
+          tags: tagsByCourseId[course.id] ?? []
+        }));
+      }
+      default:
+        throw new AppError('Invalid permissions', ErrorCodes.UNAUTHORIZED, 403);
+    }
+  } catch (error) {
+    if (error instanceof AppError) throw error;
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to fetch courses',
+      ErrorCodes.COURSES_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Gets user enrolled courses by organization orgId
+ *
+ * @param orgId - The organization ID
+ * @param userId - User ID for filtering
+ * @returns Array of enrolled courses
+ */
+export async function getUserEnrolledCourses(orgId: string, userId: string) {
+  try {
+    return getEnrolledCourses({ orgId, profileId: userId });
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch enrolled courses',
+      ErrorCodes.COURSES_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Gets recommended courses (published courses user isn't enrolled in) for an organization
+ * Used in LMS explore page
+ *
+ * @param orgId - The organization ID
+ * @param userId - User ID to exclude enrolled courses
+ * @returns Array of recommended courses
+ */
+export async function getRecommendedCourses(orgId: string, userId: string) {
+  try {
+    return getExploreCourses({ orgId, profileId: userId });
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch recommended courses',
       ErrorCodes.COURSES_FETCH_FAILED,
       500
     );
@@ -293,65 +424,12 @@ export async function cancelOrgPlan(subscriptionId: string, payload: TOrganizati
  * @param roleId - Role ID to assign (ADMIN or TUTOR)
  * @returns Array of created members
  */
-export async function inviteTeamMembers(orgId: string, emails: string[], roleId: number) {
-  const organization = await getOrganizationById(orgId);
-  if (!organization) {
-    throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
+export async function inviteTeamMembers(orgId: string, emails: string[], roleId: number, invitedByProfileId?: string) {
+  if (!invitedByProfileId) {
+    throw new AppError('Inviter profile ID is required', ErrorCodes.VALIDATION_ERROR, 400, 'invitedByProfileId');
   }
 
-  const normalizedEmails = [...new Set(emails.map((email) => email.toLowerCase().trim()))];
-
-  const existingEmails = await checkEmailsExistInOrg(orgId, normalizedEmails);
-  const emailsToInvite = normalizedEmails.filter((email) => !existingEmails.includes(email));
-
-  if (emailsToInvite.length === 0) {
-    return [];
-  }
-
-  try {
-    const members = await createOrganizationMembers(
-      emailsToInvite.map((email) => ({
-        organizationId: orgId,
-        email,
-        roleId,
-        verified: false
-      }))
-    );
-
-    const baseUrl = env.NODE_ENV === 'development' ? 'http://localhost:5173' : 'https://app.classroomio.com';
-
-    for (const email of emailsToInvite) {
-      try {
-        const inviteData = JSON.stringify({
-          email,
-          orgId: organization.id,
-          orgSiteName: organization.siteName
-        });
-        const inviteLink = `${baseUrl}/invite/t/${encodeURIComponent(btoa(inviteData))}`;
-
-        await sendEmail('inviteTeacher', {
-          to: email,
-          fields: {
-            email,
-            orgName: organization.name,
-            orgSiteName: organization.siteName,
-            inviteLink
-          }
-        });
-      } catch (emailError) {
-        console.error(`Failed to send invite email to ${email}:`, emailError);
-      }
-    }
-
-    return members;
-  } catch (error) {
-    console.error('Error inviting team members:', error);
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to invite team members',
-      ErrorCodes.ORG_TEAM_INVITE_FAILED,
-      500
-    );
-  }
+  return inviteTeamMembersSecure(orgId, emails, roleId, invitedByProfileId);
 }
 
 /**
@@ -360,11 +438,15 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
  * @param memberId - The member ID to remove
  * @returns Deleted member
  */
-export async function removeTeamMember(orgId: string, memberId: number) {
+export async function removeTeamMember(orgId: string, memberId: number, removedByProfileId?: string) {
   try {
     const deleted = await deleteOrganizationMember(orgId, memberId);
     if (!deleted) {
       throw new AppError('Team member not found', ErrorCodes.ORG_TEAM_REMOVE_FAILED, 404);
+    }
+
+    if (deleted.email && removedByProfileId) {
+      await revokeActiveOrganizationInvitesByEmails(orgId, [deleted.email.toLowerCase()], removedByProfileId);
     }
 
     return deleted;
@@ -375,6 +457,101 @@ export async function removeTeamMember(orgId: string, memberId: number) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to remove team member',
       ErrorCodes.ORG_TEAM_REMOVE_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Helper function to sum array object values by key
+ */
+function sumArrObject<T>(arr: T[], key: keyof T): number {
+  return arr.reduce((sum, item) => sum + ((item[key] as number) || 0), 0);
+}
+
+/**
+ * Helper function to calculate percentage with rounding
+ */
+function calcPercentageWithRounding(a: number, b: number): number {
+  if (b === 0) {
+    return 0;
+  }
+  const rawPercentage = (a / b) * 100;
+  const fixedString = rawPercentage.toFixed(1);
+  const roundedNumber = parseFloat(fixedString);
+  return isNaN(roundedNumber) ? 0 : roundedNumber;
+}
+
+/**
+ * Gets user analytics for an organization
+ * @param userId - The user ID (profile ID)
+ * @param orgId - The organization ID
+ * @returns User analytics data including courses, progress, and grades
+ */
+export async function getUserAnalytics(userId: string, orgId: string) {
+  try {
+    // Get user profile
+    const profile = await getProfileById(userId);
+    if (!profile) {
+      throw new AppError('User profile not found', ErrorCodes.PROFILE_NOT_FOUND, 404);
+    }
+
+    // Get last login
+    const lastSeen = await getLastLogin(userId);
+
+    // Get courses for this org where user is enrolled
+    const courses = await getEnrolledCourses({ orgId, profileId: userId });
+
+    // Build analytics data for each course
+    const coursesWithStats = await Promise.all(
+      courses.map(async (course) => {
+        const [userExercisesStats, courseProgress] = await Promise.all([
+          getUserExercisesStats(course.id, userId),
+          getProfileCourseProgress(course.id, userId)
+        ]);
+
+        const totalEarnedPoints = sumArrObject(userExercisesStats, 'score');
+        const totalPoints = sumArrObject(userExercisesStats, 'totalPoints');
+        const averageGrade = calcPercentageWithRounding(totalEarnedPoints, totalPoints);
+        const lessonsCompleted = courseProgress.lessons_completed || 0;
+        const lessonsCount = courseProgress.lessons_count || 0;
+
+        return {
+          ...course,
+          ...courseProgress,
+          progress_percentage: calcPercentageWithRounding(lessonsCompleted, lessonsCount),
+          average_grade: averageGrade
+        };
+      })
+    );
+
+    // Calculate overall stats
+    const totalLessons = coursesWithStats.reduce((acc, course) => acc + (course.lessons_count || 0), 0);
+    const completedLessons = coursesWithStats.reduce((acc, course) => acc + (course.lessons_completed || 0), 0);
+    const overallCourseProgress = calcPercentageWithRounding(completedLessons, totalLessons);
+
+    const allGrades = sumArrObject(coursesWithStats, 'average_grade');
+    const overallAverageGrade = calcPercentageWithRounding(allGrades, coursesWithStats.length);
+
+    return {
+      user: {
+        id: userId,
+        fullName: profile.fullname || '',
+        email: profile.email || '',
+        avatarUrl: profile.avatarUrl || '',
+        lastSeen: lastSeen || undefined
+      },
+      courses: coursesWithStats,
+      overallCourseProgress,
+      overallAverageGrade
+    };
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch user analytics',
+      ErrorCodes.INTERNAL_ERROR,
       500
     );
   }

@@ -2,16 +2,17 @@
   import get from 'lodash/get';
   import { Button } from '@cio/ui/base/button';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
-  import { isCourseFree, getStudentInviteLink, calcCourseDiscount } from '$lib/utils/functions/course';
-  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
+  import { isCourseFree, calcCourseDiscount } from '$lib/utils/functions/course';
+  import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
   import { sanitizeHtml } from '@cio/ui/tools/sanitize';
-  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
+  import { HTMLRender } from '$features/ui';
   import PaymentModal from './payment-modal.svelte';
-  import type { Course } from '$lib/utils/types';
-  import { ROLE } from '@cio/utils/constants';
+  import type { Course } from '$features/course/utils/types';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { t } from '$lib/utils/functions/translations';
+  import { classroomio } from '$lib/utils/services/api';
+  import { snackbar } from '$features/ui/snackbar/store';
 
   interface Props {
     className?: string;
@@ -34,12 +35,12 @@
 
   const discount = $derived(get(courseData, 'metadata.discount', 0));
   const calculatedCost = $derived(
-    calcCourseDiscount(discount, courseData.cost || 0, !!courseData.metadata.showDiscount)
+    calcCourseDiscount(discount, courseData.cost || 0, !!courseData.metadata?.showDiscount)
   );
   const isFree = $derived(isCourseFree(calculatedCost));
 
-  function handleJoinCourse() {
-    if (editMode) return;
+  async function handleJoinCourse() {
+    if (editMode || !$currentOrg.siteName) return;
 
     capturePosthogEvent('join_course', {
       course_id: courseData.id,
@@ -49,9 +50,7 @@
     });
 
     if (isFree) {
-      const link = getStudentInviteLink(courseData, $currentOrg.siteName, $currentOrgDomain);
-
-      goto(link);
+      goto(`/course/${courseData.slug}/enroll`);
     } else {
       openModal = true;
     }
@@ -62,12 +61,6 @@
   function setFormatter(currency: string | undefined) {
     if (!currency) return;
     formatter = getCurrencyFormatter(currency);
-  }
-
-  function getTeacherEmail(group: Course['group']) {
-    const firstTutor = group?.members?.find((m) => m.role_id === ROLE.TUTOR);
-
-    return firstTutor?.profile?.email || '';
   }
 
   $effect(() => {
@@ -82,8 +75,7 @@
 <PaymentModal
   bind:open={openModal}
   paymentLink={get(courseData, 'metadata.paymentLink', '')}
-  courseName={courseData.title}
-  teacherEmail={getTeacherEmail(courseData.group)}
+  courseId={courseData.id}
 />
 
 <!-- Pricing Details -->
@@ -94,7 +86,7 @@
     <aside
       class="price-container sticky lg:hidden {editMode
         ? 'lg:bottom-2'
-        : 'lg:top-10'} m-h-fit z-0 bg-gray-50 lg:rounded-lg lg:shadow-2xl dark:bg-neutral-800 {className}"
+        : 'lg:top-10'} m-h-fit z-0 bg-gray-50 dark:bg-neutral-800 {className}"
     >
       <div class="flex items-center justify-center gap-3 px-3 py-3">
         <!-- Pricing -->
@@ -125,7 +117,7 @@
 
         <!-- Call To Action Buttons -->
         <div class="flex h-full w-full flex-col items-center">
-          <Button onclick={handleJoinCourse} disabled={!courseData.metadata.allowNewStudent} class="w-full">
+          <Button onclick={handleJoinCourse} disabled={!courseData.metadata?.allowNewStudent} class="w-full">
             {isFree
               ? $t('course.navItem.landing_page.pricing_section.enroll')
               : $t('course.navItem.landing_page.pricing_section.buy')}
@@ -136,9 +128,9 @@
   </div>
 {:else}
   <aside
-    class="price-container lg:sticky {editMode
+    class="price-container border border-gray-200 lg:sticky {editMode
       ? 'lg:top-0'
-      : 'lg:top-10'} m-h-fit lg:rounded-lg lg:shadow-2xl dark:bg-neutral-800 {className}"
+      : 'lg:top-10'} m-h-fit dark:bg-neutral-800 {className}"
   >
     <div class="p-2 lg:p-10">
       <!-- Pricing -->
@@ -169,7 +161,7 @@
 
       <!-- Call To Action Buttons -->
       <div class="flex w-full flex-col items-center">
-        <Button class="mb-3 w-full" onclick={handleJoinCourse} disabled={!courseData.metadata.allowNewStudent}>
+        <Button class="mb-3 w-full" onclick={handleJoinCourse} disabled={!courseData.metadata?.allowNewStudent}>
           {isFree
             ? $t('course.navItem.landing_page.pricing_section.enroll')
             : $t('course.navItem.landing_page.pricing_section.buy')}
@@ -184,8 +176,8 @@
 
     <!-- Gift Container -->
     {#if courseData?.metadata?.reward?.show}
-      <div class="flex flex-col items-center border-b border-t border-gray-300 p-10">
-        <HtmlRender>{@html sanitizeHtml(get(courseData, 'metadata.reward.description', ''))}</HtmlRender>
+      <div class="flex flex-col items-center border-t border-b border-gray-300 p-10">
+        <HTMLRender>{@html sanitizeHtml(get(courseData, 'metadata.reward.description', '') as string)}</HTMLRender>
       </div>
     {/if}
   </aside>
@@ -257,9 +249,5 @@
   :global(.list ul li) {
     margin-left: 1rem;
     list-style-type: disc;
-  }
-
-  :global(.plyr) {
-    width: 100% !important;
   }
 </style>

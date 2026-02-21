@@ -4,7 +4,7 @@
 
   type InputType = Exclude<HTMLInputTypeAttribute, 'file'>;
 
-  type Props = WithElementRef<
+  export type InputProps = WithElementRef<
     Omit<HTMLInputAttributes, 'type'> & ({ type: 'file'; files?: FileList } | { type?: InputType; files?: undefined })
   >;
 
@@ -16,7 +16,7 @@
     class: className,
     'data-slot': dataSlot = 'input',
     ...restProps
-  }: Props = $props();
+  }: InputProps = $props();
 </script>
 
 {#if type === 'file'}

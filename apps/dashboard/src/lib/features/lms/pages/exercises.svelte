@@ -4,8 +4,7 @@
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { fetchLMSExercises } from '$lib/utils/services/lms/exercises';
-  import type { LMSExercise } from '$lib/utils/services/lms/exercises';
+  import { lmsExercisesApi, type LMSExercise } from '$features/lms/api/exercises.svelte';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { t } from '$lib/utils/functions/translations';
 
@@ -55,7 +54,7 @@
     grade: string;
     lessonNo: string;
     lessonTitle: string;
-    lessonURL: string;
+    lessonURL: string | null;
     submissionStatus: number;
     submissionUpdatedAt: string;
   }
@@ -73,8 +72,8 @@
       };
 
       const courseURL = `/courses/${lesson.course.id}`;
-      const lessonURL = `${courseURL}/lessons/${lesson.id}`;
-      const exerciseURL = `${lessonURL}/exercises/${id}`;
+      const lessonURL = lesson.id ? `${courseURL}/lessons/${lesson.id}` : null;
+      const exerciseURL = `${courseURL}/exercises/${id}`;
 
       const grade = `${submissionItem.total}/${questions.reduce((acc, cur) => (acc += cur.points), 0)}`;
 
@@ -105,18 +104,16 @@
 
     hasFetched = true;
 
-    const { exercises, error } = await fetchLMSExercises(profileId, orgId);
-    console.log('exercises', exercises);
-    console.log('error', error);
+    await lmsExercisesApi.fetchLMSExercises(orgId);
 
-    if (error) {
+    if (!lmsExercisesApi.success) {
       snackbar.error('snackbar.exercise.error_fetching');
       return;
     }
 
-    if (!exercises) return;
+    if (!lmsExercisesApi.exercises || lmsExercisesApi.exercises.length === 0) return;
 
-    sections = generateSections(exercises);
+    sections = generateSections(lmsExercisesApi.exercises);
     console.log('sections', sections);
   }
 
@@ -128,13 +125,13 @@
 <div class="flex w-full items-center overflow-x-auto">
   {#each sections as { title, items, className, id }}
     <div
-      class="mr-3 h-[70vh] min-w-[355px] max-w-[355px] overflow-hidden rounded-md border border-gray-50 bg-gray-100 p-3 dark:border-neutral-700 dark:bg-black"
+      class="mr-3 h-[70vh] max-w-[355px] min-w-[355px] overflow-hidden rounded-md border border-gray-50 bg-gray-100 p-3 dark:border-neutral-700 dark:bg-black"
     >
       <div class="mb-2 flex items-center gap-2">
         <p class="ml-2 dark:text-white">{title}</p>
         <Chip value={items.length} {className} />
       </div>
-      <div class="h-full overflow-y-auto pb-3 pr-2">
+      <div class="h-full overflow-y-auto pr-2 pb-3">
         {#each items as item}
           <div class=" mx-0 my-2 w-full rounded-md bg-white px-3 py-3 dark:bg-neutral-800">
             <a class="ui:text-primary mb-2 flex w-full cursor-pointer items-center" href={item.courseURL}>
@@ -146,11 +143,13 @@
               {/if}
               {item.exerciseTitle}
             </a>
-            <a class="my-2 flex w-fit items-center text-black no-underline hover:underline" href={item.lessonURL}>
-              <p class="text-grey text-sm dark:text-white">
-                {$t('exercises.lesson')} <span class="italic">{item.lessonTitle}</span>
-              </p>
-            </a>
+            {#if item.lessonURL}
+              <a class="my-2 flex w-fit items-center text-black no-underline hover:underline" href={item.lessonURL}>
+                <p class="text-grey text-sm dark:text-white">
+                  {$t('exercises.lesson')} <span class="italic">{item.lessonTitle}</span>
+                </p>
+              </a>
+            {/if}
             <p class="text-xs text-gray-500 dark:text-white">
               {item.submissionUpdatedAt}
             </p>

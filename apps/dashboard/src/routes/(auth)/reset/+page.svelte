@@ -19,7 +19,7 @@
     token: ''
   });
 
-  const isSubmitDisabled = $derived!!(
+  const isSubmitDisabled = $derived!(
     fields.password && fields.confirmPassword && fields.password !== fields.confirmPassword
   );
   const token = $derived(new URLSearchParams(page.url.search).get('token'));

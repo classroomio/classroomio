@@ -9,6 +9,6 @@
   let { className = '', children } = $props();
 </script>
 
-<header class="hero-bg w-full border-b border-slate-100 pb-16 pt-32 lg:min-h-[20rem] {className}">
+<header class="hero-bg w-full border-b border-slate-100 pt-32 pb-16 lg:min-h-[20rem] {className}">
   {@render children?.()}
 </header>

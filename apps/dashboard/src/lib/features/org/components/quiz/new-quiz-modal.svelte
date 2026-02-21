@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { preventDefault } from '$lib/utils/functions/svelte';
 
   import { goto } from '$app/navigation';
@@ -6,13 +6,13 @@
   import * as Dialog from '@cio/ui/base/dialog';
   import { InputField } from '@cio/ui/custom/input-field';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { supabase } from '$lib/utils/functions/supabase';
-  import { currentOrg, createQuizModal, currentOrgPath, quizesStore } from '$lib/utils/store/org';
+  import { quizApi } from '$features/org/api/quiz.svelte';
+  import { currentOrg, createQuizModal, currentOrgPath } from '$lib/utils/store/org';
   import { createQuizValidation } from '$lib/utils/functions/validator';
   import { t } from '$lib/utils/functions/translations';
 
   let open = $state(false);
-  let errors = $state({
+  let errors: Record<string, string> = $state({
     title: ''
   });
   let isLoading = $state(false);
@@ -37,61 +37,51 @@
     }
 
     isLoading = true;
-    if ($createQuizModal.openEdit) {
-      const { error } = await supabase
-        .from('quiz')
-        .update({ title: $createQuizModal.title, updated_at: new Date() })
-        .match({ id: $createQuizModal.id });
+    if ($createQuizModal.openEdit && $createQuizModal.id) {
+      await quizApi.update($currentOrg.id, $createQuizModal.id, {
+        title: $createQuizModal.title
+      });
 
       isLoading = false;
 
-      if (error) {
-        return errorNotification();
-      } else {
-        $quizesStore = $quizesStore.map((s) => {
-          if (s.id === $createQuizModal.id) {
-            s.title = $createQuizModal.title;
-          }
-          return s;
-        });
+      if (quizApi.success) {
+        // quizApi.quizzes is already updated by the API
         handleClose();
+      } else {
+        return errorNotification();
       }
     } else {
-      const { data, error } = await supabase
-        .from('quiz')
-        .insert({
-          title: $createQuizModal.title,
-          organization_id: $currentOrg.id,
-          questions: [
-            {
-              id: 1,
-              label: '',
-              type: 'multichoice',
-              options: [
-                {
-                  id: 'circle',
-                  label: '',
-                  isCorrect: false
-                },
-                {
-                  id: 'triangle',
-                  label: '',
-                  isCorrect: false
-                }
-              ]
-            }
-          ]
-        })
-        .select();
+      const newQuiz = await quizApi.create($currentOrg.id, {
+        title: $createQuizModal.title,
+        questions: [
+          {
+            id: 1,
+            label: '',
+            type: 'multichoice',
+            options: [
+              {
+                id: 'circle',
+                label: '',
+                isCorrect: false
+              },
+              {
+                id: 'triangle',
+                label: '',
+                isCorrect: false
+              }
+            ]
+          }
+        ]
+      });
+
       isLoading = false;
 
-      if (error) {
-        return errorNotification();
-      } else {
-        $quizesStore = [...$quizesStore, data[0]];
-
+      if (quizApi.success && newQuiz) {
+        // quizApi.quizzes is already updated by the API
         handleClose();
-        goto(`${$currentOrgPath}/quiz/${data[0].id}`);
+        goto(`${$currentOrgPath}/quiz/${newQuiz.id}`);
+      } else {
+        return errorNotification();
       }
     }
   }
@@ -122,7 +112,6 @@
       <InputField
         label={$t('components.quiz.quiz_title')}
         bind:value={$createQuizModal.title}
-        autofocus={true}
         placeholder={$t('components.quiz.placehoolder')}
         className="mb-4"
         isRequired={true}

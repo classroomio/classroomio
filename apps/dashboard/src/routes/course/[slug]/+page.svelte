@@ -1,6 +1,6 @@
 <script lang="ts">
   import { CourseLandingPage } from '$features/ui';
-  import type { Course } from '$lib/utils/types';
+  import type { Course } from '$features/course/utils/types';
 
   interface Data {
     course: Course;

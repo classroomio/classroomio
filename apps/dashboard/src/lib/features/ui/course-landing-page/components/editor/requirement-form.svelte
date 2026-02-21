@@ -3,7 +3,7 @@
   import { Label } from '@cio/ui/base/label';
   import { Switch } from '@cio/ui/base/switch';
 
-  import type { Course } from '$lib/utils/types';
+  import type { Course } from '$features/course/utils/types';
   import { NAV_ITEM_KEY } from '../../constants';
   import { t } from '$lib/utils/functions/translations';
 

@@ -1,19 +1,19 @@
-import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import {
   ZCourseDocumentPresignUrlUpload,
   ZCourseDownloadPresignedUrl,
   ZCoursePresignUrlUpload
 } from '@cio/utils/validation/course';
 import { describeRoute, validator } from 'hono-openapi';
+import {
+  generateDocumentDownloadPresignedUrls,
+  generateDocumentUploadPresignedUrl,
+  generateVideoDownloadPresignedUrls,
+  generateVideoUploadPresignedUrl
+} from '@api/utils/s3';
 
-import { BUCKET_NAME } from '@api/constants/upload';
-import { CLOUDFLARE } from '@api/constants';
-import type { GetSignedUrlParameters } from '@api/utils/s3';
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { generateFileKey } from '@api/utils/upload';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { s3Client } from '@api/utils/s3';
 
 // Response schemas for OpenAPI documentation
 const PresignUploadResponse = {
@@ -71,15 +71,7 @@ export const presignRouter = new Hono()
       const { fileName, fileType } = body;
       const fileKey = generateFileKey(fileName);
 
-      const command = new PutObjectCommand({
-        Bucket: BUCKET_NAME.VIDEOS,
-        Key: fileKey,
-        ContentType: fileType
-      }) as GetSignedUrlParameters[1];
-
-      const presignedUrl = await getSignedUrl(s3Client as GetSignedUrlParameters[0], command, {
-        expiresIn: CLOUDFLARE.R2.PRESIGN_EXPIRATION_TIME
-      });
+      const presignedUrl = await generateVideoUploadPresignedUrl(fileKey, fileType);
 
       return c.json({
         success: true,
@@ -119,15 +111,7 @@ export const presignRouter = new Hono()
       const { fileName, fileType } = body;
       const fileKey = generateFileKey(fileName);
 
-      const command = new PutObjectCommand({
-        Bucket: BUCKET_NAME.DOCUMENTS,
-        Key: fileKey,
-        ContentType: fileType
-      }) as GetSignedUrlParameters[1];
-
-      const presignedUrl = await getSignedUrl(s3Client as GetSignedUrlParameters[0], command, {
-        expiresIn: CLOUDFLARE.R2.PRESIGN_EXPIRATION_TIME
-      });
+      const presignedUrl = await generateDocumentUploadPresignedUrl(fileKey, fileType);
 
       return c.json({
         success: true,
@@ -166,26 +150,7 @@ export const presignRouter = new Hono()
 
       const { keys } = body;
 
-      const signedUrls: Record<string, string> = {};
-
-      const urlPromises = keys.map(async (key) => {
-        const command = new GetObjectCommand({
-          Bucket: BUCKET_NAME.VIDEOS,
-          Key: key
-        }) as GetSignedUrlParameters[1];
-
-        const presignedUrl = await getSignedUrl(s3Client as GetSignedUrlParameters[0], command, {
-          expiresIn: CLOUDFLARE.R2.DOWNLOAD_EXPIRATION_TIME
-        });
-
-        return { key, presignedUrl };
-      });
-
-      const results = await Promise.all(urlPromises);
-
-      results.forEach(({ key, presignedUrl }) => {
-        signedUrls[key] = presignedUrl;
-      });
+      const signedUrls = await generateVideoDownloadPresignedUrls(keys);
 
       return c.json({
         success: true,
@@ -223,26 +188,7 @@ export const presignRouter = new Hono()
 
       const { keys } = body;
 
-      const signedUrls: Record<string, string> = {};
-
-      const urlPromises = keys.map(async (key) => {
-        const command = new GetObjectCommand({
-          Bucket: BUCKET_NAME.DOCUMENTS,
-          Key: key
-        }) as GetSignedUrlParameters[1];
-
-        const presignedUrl = await getSignedUrl(s3Client as GetSignedUrlParameters[0], command, {
-          expiresIn: CLOUDFLARE.R2.DOWNLOAD_EXPIRATION_TIME
-        });
-
-        return { key, presignedUrl };
-      });
-
-      const results = await Promise.all(urlPromises);
-
-      results.forEach(({ key, presignedUrl }) => {
-        signedUrls[key] = presignedUrl;
-      });
+      const signedUrls = await generateDocumentDownloadPresignedUrls(keys);
 
       return c.json({
         success: true,

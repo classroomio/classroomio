@@ -1,12 +1,13 @@
 import 'dotenv/config';
 
 import { seedAccount } from '@db/utils/seed/account';
+import { MVC_SECTION_ID, PANDAS_SECTION_ID, REACT_SECTION_ID, seedCourseSections } from '@db/utils/seed/courseSection';
 import { seedCourses } from '@db/utils/seed/course';
 import { seedExercise } from '@db/utils/seed/exercise';
 import { seedExerciseTemplates } from '@db/utils/seed/exerciseTemplate';
 import { seedGroup } from '@db/utils/seed/group';
 import { seedGroupmembers } from '@db/utils/seed/groupmember';
-import { seedLessons } from '@db/utils/seed/lesson';
+import { type LessonTemplate, seedLessons } from '@db/utils/seed/lesson';
 import { seedOrganization } from '@db/utils/seed/organization';
 import { seedOrganizationMember } from '@db/utils/seed/organizationmember';
 import { seedProfile } from '@db/utils/seed/profile';
@@ -64,6 +65,7 @@ Flags:
   --groups                    Seed groups
   --group-members             Seed group members
   --courses                  Seed courses
+  --sections                 Seed course sections
   --lessons                  Seed lessons
   --exercises                Seed exercises
   --questions                Seed questions
@@ -93,12 +95,10 @@ const seedFunctions = {
   },
   users: async () => {
     console.log('📝 Seeding users...');
-    // @ts-expect-error missing properties
     await seedUsers({ usersData });
   },
   profiles: async () => {
     console.log('📝 Seeding profiles...');
-    // @ts-expect-error missing properties
     await seedProfile({ usersData });
   },
   accounts: async () => {
@@ -137,18 +137,34 @@ const seedFunctions = {
     console.log('📝 Seeding courses...');
     await seedCourses({ mvcGroupId: MVC_GROUP_ID, reactGroupId: REACT_GROUP_ID, pandasGroupId: PANDAS_GROUP_ID });
   },
-  lessons: async () => {
-    console.log('📝 Seeding lessons...');
-    await seedLessons({
+  sections: async () => {
+    console.log('📝 Seeding course sections...');
+    await seedCourseSections({
       mvcCourseId: MVC_COURSE_ID,
-      adminUserId: ADMIN_USER_ID,
       reactCourseId: REACT_COURSE_ID,
       pandasCourseId: PANDAS_COURSE_ID
     });
   },
+  lessons: async () => {
+    console.log('📝 Seeding lessons...');
+    const lessonParams: LessonTemplate = {
+      mvcCourseId: MVC_COURSE_ID,
+      adminUserId: ADMIN_USER_ID,
+      reactCourseId: REACT_COURSE_ID,
+      pandasCourseId: PANDAS_COURSE_ID,
+      mvcSectionId: MVC_SECTION_ID,
+      reactSectionId: REACT_SECTION_ID,
+      pandasSectionId: PANDAS_SECTION_ID
+    };
+    await seedLessons(lessonParams);
+  },
   exercises: async () => {
     console.log('📝 Seeding exercises...');
-    await seedExercise();
+    await seedExercise({
+      mvcSectionId: MVC_SECTION_ID,
+      reactSectionId: REACT_SECTION_ID,
+      pandasSectionId: PANDAS_SECTION_ID
+    });
   },
   questions: async () => {
     console.log('📝 Seeding questions...');
@@ -192,6 +208,7 @@ async function seed() {
       await seedFunctions.groups();
       await seedFunctions['group-members']();
       await seedFunctions.courses();
+      await seedFunctions.sections();
       await seedFunctions.lessons();
       await seedFunctions.exercises();
       await seedFunctions.questions();
@@ -211,6 +228,7 @@ async function seed() {
         'groups',
         'group-members',
         'courses',
+        'sections',
         'lessons',
         'exercises',
         'questions',

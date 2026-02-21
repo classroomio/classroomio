@@ -4,7 +4,7 @@
 </script>
 
 <section id="testimonial" class="flex flex-col items-center space-y-2 px-3 py-[5%] lg:px-0">
-  <h1 class="mx-auto my-0 flex flex-col items-center gap-4 text-3xl font-normal leading-normal md:text-4xl lg:text-5xl">
+  <h1 class="mx-auto my-0 flex flex-col items-center gap-4 text-3xl leading-normal font-normal md:text-4xl lg:text-5xl">
     Hear from Happy ClassroomIO Users
   </h1>
 

@@ -1,9 +1,9 @@
 <script lang="ts">
   import { Dialog as DialogPrimitive } from 'bits-ui';
-  import XIcon from '@lucide/svelte/icons/x';
   import type { Snippet } from 'svelte';
   import * as Dialog from './index.js';
   import { cn, type WithoutChildrenOrChild } from '../../tools';
+  import CrossIcon from '@lucide/svelte/icons/x';
 
   let {
     ref = $bindable(null),
@@ -35,7 +35,7 @@
       <DialogPrimitive.Close
         class="ui:ring-offset-background ui:focus:ring-ring ui:rounded-xs ui:focus:outline-hidden ui:absolute ui:top-4 ui:opacity-70 ui:transition-opacity ui:hover:opacity-100 ui:focus:ring-2 ui:focus:ring-offset-2 ui:disabled:pointer-events-none ui:[&_svg:not([class*='size-'])]:size-4 ui:[&_svg]:pointer-events-none ui:[&_svg]:shrink-0 ui:end-4 ui:cursor-pointer"
       >
-        <XIcon />
+        <CrossIcon class="custom" />
         <span class="ui:sr-only">Close</span>
       </DialogPrimitive.Close>
     {/if}

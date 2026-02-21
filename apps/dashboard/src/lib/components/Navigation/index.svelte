@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import { resolve } from '$app/paths';
   import { user } from '$lib/utils/store/user';
   import { isCoursePage } from '$lib/utils/functions/app';
   import { t } from '$lib/utils/functions/translations';
@@ -40,7 +41,7 @@
 </script>
 
 <nav
-  class="{navClass} {backgroundColor} sticky top-0 z-50 flex w-full border-b border-l-0 border-r-0 border-t-0 border-gray-300 px-2 py-1"
+  class="{navClass} {backgroundColor} sticky top-0 z-50 flex w-full border-t-0 border-r-0 border-b border-l-0 border-gray-300 px-2 py-1"
 >
   <ul class="flex w-full items-center">
     <Logo {logo} {orgName} />
@@ -66,7 +67,7 @@
 
     {#if $user.isLoggedIn}
       {#if isOrgSite}
-        <li><a class="block" href="/lms"> {$t('navigation.goto_lms')} </a></li>
+        <li><a class="block" href={resolve('/lms', {})}> {$t('navigation.goto_lms')} </a></li>
       {/if}
     {:else if isOrgSite && !page.url.pathname?.includes('/404')}
       <!-- Hide login/signup buttons on mobile when custom links exist -->

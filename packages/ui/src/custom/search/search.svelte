@@ -18,7 +18,7 @@
   }: Props & Omit<ComponentProps<typeof InputGroup.Root>, 'class' | 'children'> = $props();
 
   const mergedProps = $derived({
-    class: cn('w-fit max-w-[200px]', className),
+    class: cn('ui:w-fit ui:max-w-[200px]', className),
     'data-slot': 'search',
     ...restProps
   });

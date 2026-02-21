@@ -1,64 +1,35 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import ChartBarIcon from '@lucide/svelte/icons/chart-bar';
   import { t } from '$lib/utils/functions/translations';
-  import { getAccessToken } from '$lib/utils/functions/supabase';
-  import { snackbar } from '$features/ui/snackbar/store';
-  import type { CourseAnalytics } from '$lib/utils/types/analytics';
+  import type { CourseAnalytics } from '$features/course/utils/types';
   import { fade } from 'svelte/transition';
-  import StudentTable from '$lib/components/Course/components/Analytics/StudentTable.svelte';
-  import AnalyticsGraph from '$lib/components/Course/components/Analytics/AnalyticsGraph.svelte';
-  import AnalyticsSkeleton from '$lib/components/Course/components/Analytics/AnalyticsSkeleton.svelte';
-  import AnalyticsCard from '$lib/components/Course/components/Analytics/AnalyticsCard.svelte';
-  import StudentsIcon from '$lib/components/Course/components/Analytics/icons/StudentsIcon.svelte';
-  import LessonsIcon from '$lib/components/Course/components/Analytics/icons/LessonsIcon.svelte';
-  import ProgressIcon from '$lib/components/Course/components/Analytics/icons/ProgressIcon.svelte';
-  import ExercisesIcon from '$lib/components/Course/components/Analytics/icons/ExercisesIcon.svelte';
-  import EmptyState from '$lib/components/Course/components/Analytics/EmptyState.svelte';
+  import StudentTable from '$features/course/components/analytics/student-table.svelte';
+  import AnalyticsGraph from '$features/course/components/analytics/analytics-graph.svelte';
+  import AnalyticsSkeleton from '$features/course/components/analytics/analytics-skeleton.svelte';
+  import AnalyticsCard from '$features/course/components/analytics/analytics-card.svelte';
+  import StudentsIcon from '$features/course/components/analytics/icons/students-icon.svelte';
+  import LessonsIcon from '$features/course/components/analytics/icons/lessons-icon.svelte';
+  import ProgressIcon from '$features/course/components/analytics/icons/progress-icon.svelte';
+  import ExercisesIcon from '$features/course/components/analytics/icons/exercises-icon.svelte';
+  import EmptyState from '$features/course/components/analytics/empty-state.svelte';
+  import { courseApi } from '../api/course.svelte';
 
   interface Props {
     courseId: string;
+    courseAnalytics: CourseAnalytics | null;
   }
 
-  let { courseId }: Props = $props();
+  let { courseAnalytics }: Props = $props();
 
-  let courseAnalytics: CourseAnalytics | null = $state(null);
-  let isLoading = $state(true);
-
-  async function fetchCourseAnalytics() {
-    try {
-      isLoading = true;
-
-      const accessToken = await getAccessToken();
-      const response = await fetch(`/api/courses/analytics?courseId=${courseId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: accessToken
-        }
-      });
-
-      if (response.ok) {
-        const { data } = await response.json();
-
-        courseAnalytics = data as CourseAnalytics;
-      } else {
-        console.error('Failed to fetch course analytics:', response);
-        snackbar.error('Failed to load analytics data');
-        courseAnalytics = null;
-      }
-    } catch (error) {
-      console.error('Failed to fetch course analytics:', error);
-      snackbar.error('Failed to load analytics data');
-      courseAnalytics = null;
-    } finally {
-      isLoading = false;
+  // Set the store in the API layer (similar to marks)
+  $effect(() => {
+    if (courseAnalytics) {
+      courseApi.courseAnalytics = courseAnalytics;
     }
-  }
-
-  onMount(() => {
-    fetchCourseAnalytics();
   });
+
+  // Use the server data
+  const isLoading = $derived(false);
 </script>
 
 {#if isLoading}

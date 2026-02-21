@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import type { TCustomLinks } from './types';
   import { Button } from '@cio/ui/base/button';
 
@@ -13,6 +14,10 @@
   function handleLinkClick() {
     if (onMobileClick) onMobileClick();
   }
+
+  $effect(() => {
+    console.log('customLinks', customLinks);
+  });
 </script>
 
 {#if customLinks}

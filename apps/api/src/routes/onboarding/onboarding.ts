@@ -9,7 +9,7 @@ import { zValidator } from '@hono/zod-validator';
 export const onboardingRouter = new Hono()
   .post('/create-org', authMiddleware, zValidator('json', ZOnboardingCreateOrg), async (c) => {
     try {
-      const user = c.get('user');
+      const user = c.get('user')!;
       const { fullname, orgName, siteName } = c.req.valid('json');
 
       const result = await createOrganizationWithOwner(user.id, { fullname, orgName, siteName });
@@ -21,7 +21,7 @@ export const onboardingRouter = new Hono()
   })
   .post('/update-metadata', authMiddleware, zValidator('json', ZOnboardingUpdateMetadata), async (c) => {
     try {
-      const user = c.get('user');
+      const user = c.get('user')!;
       const { goal, source, fullname } = c.req.valid('json');
 
       const result = await updateUserOnboarding(user.id, { goal, source, fullname });
@@ -33,7 +33,7 @@ export const onboardingRouter = new Hono()
   })
   .post('/complete', authMiddleware, async (c) => {
     try {
-      const user = c.get('user');
+      const user = c.get('user')!;
 
       await completeOnboarding(user);
 

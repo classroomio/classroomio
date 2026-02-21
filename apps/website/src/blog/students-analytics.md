@@ -27,9 +27,10 @@ muted
 autoplay
 preload="auto"
 autoPictureInPicture
-class="rounded-md" src="https://assets.cdn.clsrio.com/blog/organisation-student-analytics.mp4" controls
-
-> </video>
+class="rounded-md"
+src="https://assets.cdn.clsrio.com/blog/organisation-student-analytics.mp4"
+>
+</video>
 
 ## Course Student Analytics
 
@@ -42,15 +43,17 @@ Further more, when you go into any course and go to the people tab, you can view
 
 <br />
 
-<video loop
+<video
+loop
 muted
 autoplay
 preload="auto"
 autoPictureInPicture
 class="rounded-md"
-src="https://assets.cdn.clsrio.com/blog/course-students-analytics.mp4" controls
-
-> </video>
+src="https://assets.cdn.clsrio.com/blog/course-students-analytics.mp4"
+controls
+>
+</video>
 
 ## What's Next?
 

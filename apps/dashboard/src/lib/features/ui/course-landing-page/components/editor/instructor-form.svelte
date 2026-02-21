@@ -4,7 +4,7 @@
   import { InputField } from '@cio/ui/custom/input-field';
   import UploadImage from '$features/ui/upload-image.svelte';
   import { uploadImage } from '$lib/utils/services/upload';
-  import type { Course } from '$lib/utils/types';
+  import type { Course } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {

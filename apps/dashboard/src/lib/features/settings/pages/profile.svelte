@@ -63,7 +63,7 @@
 
 <UnsavedChanges bind:hasUnsavedChanges />
 
-<Field.Group class="max-w-md! w-full px-2">
+<Field.Group class="w-full max-w-md! px-2">
   <Field.Set>
     <Field.Legend>{$t('settings.profile.profile_picture.heading')}</Field.Legend>
     <Field.Field>

@@ -16,6 +16,12 @@
     isPublished?: boolean;
     totalLessons?: number;
     totalStudents?: number;
+    tags?: Array<{
+      id: string;
+      name: string;
+      slug: string;
+      color?: string | null;
+    }>;
   }
 
   let {
@@ -25,7 +31,8 @@
     description = '',
     isPublished = false,
     totalLessons = 0,
-    totalStudents = 0
+    totalStudents = 0,
+    tags = []
   }: Props = $props();
 
   function handleCloneCourse(e) {
@@ -60,6 +67,24 @@
   </Table.Cell>
   {#if !isMobileStore.current}
     <Table.Cell class="truncate">{type}</Table.Cell>
+    <Table.Cell>
+      {#if tags.length === 0}
+        <span class="ui:text-muted-foreground text-2xs">-</span>
+      {:else}
+        <div class="ui:text-muted-foreground text-2xs flex max-w-[220px] flex-wrap items-center gap-2">
+          {#each tags as tag (tag.id)}
+            <span class="inline-flex items-center gap-1.5">
+              <span
+                class="ui:bg-primary/60 inline-block h-1.5 w-1.5 rounded-full"
+                style={tag.color ? `background-color: ${tag.color}` : undefined}
+                aria-hidden="true"
+              ></span>
+              <span>{tag.name}</span>
+            </span>
+          {/each}
+        </div>
+      {/if}
+    </Table.Cell>
     <Table.Cell>{totalLessons}</Table.Cell>
     <Table.Cell>{totalStudents}</Table.Cell>
     <Table.Cell>

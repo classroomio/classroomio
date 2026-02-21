@@ -90,12 +90,7 @@ export default (
           onClick: (node, pos) => {
             const newCalculation = prompt('Enter new calculation:', node.attrs.latex);
             if (newCalculation) {
-              editor
-                .chain()
-                .setNodeSelection(pos)
-                .updateBlockMath({ latex: newCalculation })
-                .focus()
-                .run();
+              editor.chain().setNodeSelection(pos).updateBlockMath({ latex: newCalculation }).focus().run();
             }
           }
         },
@@ -103,12 +98,7 @@ export default (
           onClick: (node, pos) => {
             const newCalculation = prompt('Enter new calculation:', node.attrs.latex);
             if (newCalculation) {
-              editor
-                .chain()
-                .setNodeSelection(pos)
-                .updateInlineMath({ latex: newCalculation })
-                .focus()
-                .run();
+              editor.chain().setNodeSelection(pos).updateInlineMath({ latex: newCalculation }).focus().run();
             }
           }
         }

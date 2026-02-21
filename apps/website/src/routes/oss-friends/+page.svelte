@@ -11,7 +11,7 @@
 
 <section>
   <PageHeader className="flex flex-col items-center justify-center text-center">
-    <h1 class="mx-auto items-center text-3xl font-normal leading-[1.5] text-slate-900 md:text-4xl lg:text-6xl">
+    <h1 class="mx-auto items-center text-3xl leading-[1.5] font-normal text-slate-900 md:text-4xl lg:text-6xl">
       Our <span class="text-blue-700">Open-source</span> Friends
     </h1>
     <p class="mt-10 w-[90%] text-center text-lg font-normal text-slate-700 md:w-[60%] lg:mt-7">
@@ -24,7 +24,7 @@
     {#each data.friends as friend}
       <li class="flex flex-col justify-between overflow-hidden rounded-md border border-gray-200 py-6">
         <div>
-          <div class="px-6 pb-1 text-xl font-medium leading-6 text-gray-900">
+          <div class="px-6 pb-1 text-xl leading-6 font-medium text-gray-900">
             {friend.name}
           </div>
           <p class="mt-2 px-6 text-sm text-gray-600">

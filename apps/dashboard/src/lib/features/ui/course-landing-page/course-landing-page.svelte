@@ -7,16 +7,16 @@
   import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import PlayIcon from '@lucide/svelte/icons/play';
 
-  import { getLectureNo } from '$lib/components/Course/function';
+  import { getLectureNo } from '$features/course/utils/functions';
   import { currentOrg } from '$lib/utils/store/org';
   import { NAV_ITEM_KEY, NAV_ITEMS } from './constants';
   import { t } from '$lib/utils/functions/translations';
   import { calDateDiff } from '$lib/utils/functions/date';
   import { handleOpenWidget, reviewsModalStore } from './store';
-  import { COURSE_VERSION, type Course } from '$lib/utils/types';
-  import { course, sortLesson } from '$lib/components/Course/store';
-  import { getEmbedId } from '$lib/utils/functions/formatYoutubeVideo';
-  import { getExerciseCount, getLessonSections, getTotalLessons, filterNavItems } from './utils';
+  import type { Course, CourseMetadata } from '$features/course/utils/types';
+  import { courseApi } from '$features/course/api';
+  import { MediaPlayer, isYoutubeUrl } from '$features/ui/media-player';
+  import { filterNavItems, getCourseLessons, getCourseSections, getTotalLessons } from './utils';
   import { Button } from '@cio/ui/base/button';
 
   import { Chip } from '@cio/ui/custom/chip';
@@ -28,7 +28,7 @@
   import NavSection from './components/nav-section.svelte';
   import { shortenName } from '$lib/utils/functions/string';
   import SectionsDisplay from './components/sections-display.svelte';
-  import HtmlRender from '$lib/components/HTMLRender/HTMLRender.svelte';
+  import { HTMLRender } from '$features/ui';
   import { observeIntersection } from './components/intersection-observer';
 
   interface Props {
@@ -41,10 +41,7 @@
   const reviews = $derived(get(courseData, 'metadata.reviews') || []);
   const video = $derived(get(courseData, 'metadata.videoUrl'));
 
-  const lessons = $derived.by(() => {
-    const _lessons = get(courseData, 'lessons', []);
-    return sortLesson([..._lessons]);
-  });
+  const lessons = $derived(getCourseLessons(courseData));
   const totalRatings = $derived(reviews?.reduce((acc = 0, review) => acc + (review?.rating || 0), 0));
   const averageRating = $derived(totalRatings / reviews?.length);
   const expandDescription = $derived(Array(reviews?.length ?? 0).fill(false));
@@ -52,36 +49,26 @@
   const allowNewStudent = $derived(get(courseData, 'metadata.allowNewStudent'));
   const bannerImage = $derived(get(courseData, 'logo'));
   const instructor = $derived(get(courseData, 'metadata.instructor') || {});
-  const certificate: Course['metadata']['certificate'] = $derived(
+  const certificate = $derived(
     get(courseData, 'metadata.certificate', {
       templateUrl: '/images/certificate-template.svg'
-    })
+    }) as CourseMetadata['certificate']
   );
 
   const navItems = $derived(filterNavItems(courseData, reviews));
   const navItemKeys = $derived(navItems.map((item) => item.key));
 
-  let player: any = $state();
   let startCoursePayment = $state(false);
   let isVisible = $state(false);
   let observer: { destroy: () => void };
 
   let activeNav = $state(NAV_ITEMS[0].key);
 
-  const lessonSections = getLessonSections(courseData);
-  const totalLessons = getTotalLessons(lessonSections);
+  const courseSections = $derived(getCourseSections(courseData));
+  const totalLessons = $derived(getTotalLessons(courseSections));
 
   function locationHashChanged() {
     activeNav = window.location.hash;
-  }
-
-  function initPlyr(_player: any, _video: string | undefined) {
-    if (!player) return;
-
-    // @ts-ignore
-    const plyr = new Plyr('#player', {});
-    // @ts-ignore
-    window.player = plyr;
   }
 
   function toggleDescription(id: number) {
@@ -99,10 +86,6 @@
 
   onDestroy(() => {
     observer?.destroy();
-  });
-
-  $effect(() => {
-    initPlyr(player, video);
   });
 </script>
 
@@ -137,24 +120,25 @@
           {$t('course.navItem.landing_page.start_course')}
         </Button>
         {#if $handleOpenWidget.open}
-          <UploadWidget bind:imageURL={$course.logo} />
+          <UploadWidget imageURL={courseApi.course?.logo} onchange={(newLogo) => (courseApi.course!.logo = newLogo)} />
         {/if}
       </div>
 
-      <!-- Banner Image getEmbedId(videoUrl) -->
+      <!-- Banner Image -->
       {#if video}
         <div class="banner-image flex w-full md:w-2/3">
-          <div bind:this={player} id="player" data-plyr-provider="youtube" data-plyr-embed-id={getEmbedId(video)}></div>
-        </div>
-        <!-- <div class="container">
-          <div
-            bind:this={player}
-            id="player"
-            class="banner-image w-2/3 h-96 relative"
-            data-plyr-provider="youtube"
-            data-plyr-embed-id="bTqVqk7FSmY"
+          <MediaPlayer
+            source={{
+              type: isYoutubeUrl(video) ? 'youtube' : 'generic',
+              url: video
+            }}
+            options={{
+              width: '100%',
+              height: '400'
+            }}
+            class="w-full"
           />
-        </div> -->
+        </div>
       {:else}
         <div class="banner-image relative overflow-hidden rounded-md md:w-2/3">
           <img
@@ -212,12 +196,12 @@
 
         {#if navItemKeys.includes(NAV_ITEM_KEY.REQUIREMENT)}
           <NavSection id="requirement">
-            <h3 class="mb-3 mt-0 text-2xl">
+            <h3 class="mt-0 mb-3 text-2xl">
               {$t('course.navItem.landing_page.requirement')}
             </h3>
 
             <ul class="list font-light">
-              <HtmlRender>{@html sanitizeHtml(get(courseData, 'metadata.requirements', ''))}</HtmlRender>
+              <HTMLRender>{@html sanitizeHtml(get(courseData, 'metadata.requirements', ''))}</HTMLRender>
             </ul>
           </NavSection>
         {/if}
@@ -225,22 +209,22 @@
         <!-- Sections - Course Description -->
         {#if navItemKeys.includes(NAV_ITEM_KEY.DESCRIPTION)}
           <NavSection id="description">
-            <h3 class="mb-3 mt-0 text-2xl">
+            <h3 class="mt-0 mb-3 text-2xl">
               {$t('course.navItem.landing_page.description')}
             </h3>
 
-            <HtmlRender className="dark:text-white text-sm font-light">
+            <HTMLRender className="dark:text-white text-sm font-light">
               {@html sanitizeHtml(get(courseData, 'metadata.description', ''))}
-            </HtmlRender>
+            </HTMLRender>
           </NavSection>
         {/if}
 
         <!-- Sections - Goal -->
         {#if navItemKeys.includes(NAV_ITEM_KEY.GOALS)}
           <NavSection id="goals">
-            <h3 class="mb-3 mt-0 text-2xl">{$t('course.navItem.landing_page.learn')}</h3>
+            <h3 class="mt-0 mb-3 text-2xl">{$t('course.navItem.landing_page.learn')}</h3>
             <ul class="list font-light">
-              <HtmlRender>{@html sanitizeHtml(get(courseData, 'metadata.goals', ''))}</HtmlRender>
+              <HTMLRender>{@html sanitizeHtml(get(courseData, 'metadata.goals', ''))}</HTMLRender>
             </ul>
           </NavSection>
         {/if}
@@ -262,10 +246,10 @@
         {/if}
 
         <!-- Sections - Lessons -->
-        {#if courseData.version === COURSE_VERSION.V1}
+        {#if !courseData.metadata?.isContentGroupingEnabled}
           <NavSection id="lessons">
             <div class="mb-3 flex w-full items-center justify-between">
-              <h3 class="mb-3 mt-0 text-2xl">
+              <h3 class="mt-0 mb-3 text-2xl">
                 {$t('course.navItem.landing_page.content')}
               </h3>
               <p class="text-sm font-light dark:text-white">
@@ -284,23 +268,23 @@
               {/each}
             </div>
           </NavSection>
-        {:else if courseData.version === COURSE_VERSION.V2}
+        {:else if courseData.metadata?.isContentGroupingEnabled}
           <NavSection id="lessons">
             <!-- header -->
             <div class="flex items-center justify-between">
               <h1>{$t('course.navItem.landing_page.course_content')}</h1>
               <span class="text-xs font-normal">
-                {pluralize($t('course.navItem.landing_page.modules'), lessonSections.length, true)},
+                {pluralize($t('course.navItem.landing_page.modules'), courseSections.length, true)},
                 {pluralize($t('course.navItem.landing_page.lessons'), totalLessons, true)}
               </span>
             </div>
 
-            {#each lessonSections as section (section.id)}
+            {#each courseSections as section (section.id)}
               <SectionsDisplay
-                exerciseCount={getExerciseCount(section.lessons)}
+                exerciseCount={section.exerciseCount}
                 lessonCount={section.lessons?.length}
                 lessons={section.lessons}
-                title={section.title}
+                title={section.title!}
               />
             {/each}
           </NavSection>
@@ -309,7 +293,7 @@
         <!-- Sections - Reviews -->
         {#if navItemKeys.includes(NAV_ITEM_KEY.REVIEWS)}
           <NavSection id="reviews">
-            <h2 class="my-16 mb-6 ml-0 mr-0 font-semibold">
+            <h2 class="my-16 mr-0 mb-6 ml-0 font-semibold">
               {$t('course.navItem.landing_page.reviews')}
             </h2>
             <div class="flex flex-wrap">
@@ -334,7 +318,7 @@
                       <!-- ratings -->
                       <div class="flex flex-row items-center">
                         {#if review.rating}
-                          <img src="/images/rating-{review.rating}.svg" class="mr-4 mt-1 w-24" alt="" />
+                          <img src="/images/rating-{review.rating}.svg" class="mt-1 mr-4 w-24" alt="" />
                         {/if}
                       </div>
                       <div class="read-more-content mb-2" style="max-height: {expandDescription[id] ? 'none' : '50px'}">
@@ -427,7 +411,7 @@
 
         <!-- Sections - Instructor -->
         <NavSection id="instructor">
-          <h3 class="mb-3 mt-0 text-2xl">
+          <h3 class="mt-0 mb-3 text-2xl">
             {$t('course.navItem.landing_page.instructor')}
           </h3>
           <div class="mb-4 flex items-center">
@@ -468,7 +452,8 @@
   </div>
 </div>
 
-<style lang="scss">
+<!-- TODO: CONVERT TO TAILWIND -->
+<style>
   .banner {
     background-color: #040f2d;
     min-height: 472px;
@@ -482,36 +467,8 @@
     max-width: 559px;
   }
 
-  .backdrop {
-    background-color: rgba(0, 0, 0, 0.5);
-  }
-
   :global(.certificate-img) {
     width: unset !important;
-  }
-
-  .active {
-    position: relative;
-    display: inline-block;
-  }
-
-  .active::after {
-    position: absolute;
-    content: '';
-    width: 100%;
-    height: 3px;
-    background-color: var(--main-primary-color);
-    display: block;
-    bottom: -14px;
-    left: 0px;
-  }
-
-  .price-container {
-    width: 405px;
-    min-width: 330px;
-    height: fit-content;
-    position: sticky;
-    top: 0;
   }
 
   .course-content {
@@ -519,20 +476,9 @@
     min-width: 60%;
   }
 
-  nav {
-    overflow: auto;
-    margin: 0;
-    overflow-y: hidden;
-    width: 100%;
-  }
-
   :global(.list ul li) {
     margin-left: 1rem;
     list-style-type: disc;
-  }
-
-  :global(.plyr) {
-    width: 100% !important;
   }
 
   .read-more-content {
@@ -540,16 +486,6 @@
     overflow: hidden;
     transition: max-height 0.3s ease;
     text-overflow: ellipsis;
-  }
-
-  .read-more-button {
-    cursor: pointer;
-    color: blue;
-    text-decoration: underline;
-  }
-
-  .lesson-section:not(:last-child) {
-    border-bottom: 1px solid #f7f7f7;
   }
 
   @media screen and (max-width: 1023px) {

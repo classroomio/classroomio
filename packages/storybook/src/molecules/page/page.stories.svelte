@@ -43,7 +43,7 @@
 
 <Story name="Default">
   {#snippet template()}
-    <Page.Root class="w-4xl h-4xl">
+    <Page.Root class="h-4xl w-4xl">
       <Page.Header>
         <Page.HeaderContent>
           <Page.Title>Courses</Page.Title>

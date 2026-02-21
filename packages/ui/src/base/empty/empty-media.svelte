@@ -6,7 +6,7 @@
     variants: {
       variant: {
         default: 'ui:bg-transparent',
-        icon: "ui:bg-muted ui:text-foreground ui:flex ui:size-10 ui:shrink-0 ui:items-center ui:justify-center ui:rounded-lg ui:[&_svg:not([class*='size-'])]:size-6"
+        icon: "ui:bg-muted ui:text-foreground ui:flex ui:size-10 ui:shrink-0 ui:items-center ui:justify-center ui:rounded-lg ui:[&_svg:not([class*='ui:size-'])]:size-6"
       }
     },
     defaultVariants: {

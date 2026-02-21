@@ -1,47 +1,47 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
-  import { course } from '$lib/components/Course/store';
-  import type { Course } from '$lib/utils/types';
-  import { lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { CourseContainer } from '$lib/components/CourseContainer';
+  import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
+  import { courseApi } from '$features/course/api';
+  import type { Course } from '$features/course/utils/types';
 
   import { CourseLandingPage } from '$features/ui';
   import Editor from '$features/ui/course-landing-page/components/editor/editor.svelte';
+  import * as Sidebar from '@cio/ui/base/sidebar';
 
   let { data } = $props();
 
-  const { courseId } = data;
+  const courseId = $derived(data.courseId);
 
-  let courseData: Course = $derived({
-    ...$course,
-    $lessons,
-    $lessonSections
-  });
+  let sidebarOpen = $state(true);
 
   function syncCourseStore(_courseData: Course) {
-    $course = _courseData;
+    if (courseApi.course) {
+      courseApi.course = { ...courseApi.course, ..._courseData };
+    }
+  }
+
+  function handleClose() {
+    goto(resolve(`/courses/${courseId}`, {}));
   }
 </script>
 
-<CourseContainer {courseId} renderOnlyChildren={true}>
+{#if courseApi.course}
   <div
-    class="absolute inset-0 z-50 flex bg-white"
+    class="fixed inset-0 z-50 h-screen w-screen bg-white"
     in:fly={{ y: 500, duration: 500 }}
     out:fly={{ y: 500, duration: 500 }}
   >
-    <Editor {courseId} bind:course={courseData} {syncCourseStore} />
-    <div class="rightBar">
-      <CourseLandingPage bind:courseData editMode={true} />
-    </div>
+    <Sidebar.Provider bind:open={sidebarOpen}>
+      <Sidebar.Root side="left" collapsible="icon" class="h-full {sidebarOpen ? 'w-[280px]!' : 'w-0'}">
+        <Editor {courseId} bind:course={courseApi.course} {syncCourseStore} onClose={handleClose} />
+      </Sidebar.Root>
+      <Sidebar.Inset class="relative h-screen! overflow-y-auto">
+        <div class="absolute top-2 left-2 z-60">
+          <Sidebar.Trigger variant="secondary" />
+        </div>
+        <CourseLandingPage bind:courseData={courseApi.course} editMode={true} />
+      </Sidebar.Inset>
+    </Sidebar.Provider>
   </div>
-</CourseContainer>
-
-<style>
-  .rightBar {
-    flex-grow: 1;
-    width: 100%;
-    height: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-</style>
+{/if}

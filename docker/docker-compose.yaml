@@ -1,50 +1,121 @@
-# ClassroomIO
-# Project: Self-hosted API and Dashboard
-# Description: This docker-compose file sets up the api and dashboard services for self-hosting.
-# Author: rotimi-best
-# Date: 2024-09-18
-
-version: "3.8"
-
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cio-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-classroomio}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-classroomio}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  redis:
+    image: redis:7-alpine
+    container_name: cio-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+  db-init:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api
+    container_name: cio-db-init
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
+      PRIVATE_DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
+    command:
+      - sh
+      - -c
+      - pnpm --filter @cio/db db:setup
+    restart: "no"
+
   api:
-    image: classroomio/api:latest
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api
+    container_name: cio-api
     ports:
       - "3081:3081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
     environment:
-      - NODE_ENV=production
-      # Supabase - Database
-      - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
-      - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
-      # Cloudflare - Video upload
-      - CLOUDFLARE_BUCKET_DOMAIN=${CLOUDFLARE_BUCKET_DOMAIN}
-      - CLOUDFLARE_ACCESS_KEY=${CLOUDFLARE_ACCESS_KEY}
-      - CLOUDFLARE_SECRET_ACCESS_KEY=${CLOUDFLARE_SECRET_ACCESS_KEY}
-      - CLOUDFLARE_ACCOUNT_ID=${CLOUDFLARE_ACCOUNT_ID}
-      # SMTP - Emails
-      - SMTP_HOST=${SMTP_HOST}
-      - SMTP_USER=${SMTP_USER}
-      - SMTP_PASSWORD=${SMTP_PASSWORD}
-      - SMTP_PORT=${SMTP_PORT}
-      - SMTP_SENDER=${SMTP_SENDER}
-      # Redis
-      - REDIS_URL=${REDIS_URL}
+      NODE_ENV: production
+      PORT: 3081
+      PUBLIC_SERVER_URL: ${PUBLIC_SERVER_URL:-http://localhost:3081}
+      TRUSTED_ORIGINS: ${TRUSTED_ORIGINS:-http://localhost:3082,http://localhost:5173}
+      AUTH_COOKIE_DOMAIN: ${AUTH_COOKIE_DOMAIN:-}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
+      PRIVATE_DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
+      REDIS_URL: redis://redis:6379
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-docker-local-client-id}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-docker-local-client-secret}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_PORT: ${SMTP_PORT:-}
+      SMTP_SENDER: ${SMTP_SENDER:-}
+      CLOUDFLARE_BUCKET_DOMAIN: ${CLOUDFLARE_BUCKET_DOMAIN:-}
+      CLOUDFLARE_ACCESS_KEY: ${CLOUDFLARE_ACCESS_KEY:-}
+      CLOUDFLARE_SECRET_ACCESS_KEY: ${CLOUDFLARE_SECRET_ACCESS_KEY:-}
+      CLOUDFLARE_ACCOUNT_ID: ${CLOUDFLARE_ACCOUNT_ID:-}
+      CLOUDFLARE_RENDERING_API_KEY: ${CLOUDFLARE_RENDERING_API_KEY:-}
+      AUTH_BEARER_TOKEN: ${AUTH_BEARER_TOKEN:-local-dev-api-key}
+      PRIVATE_SERVER_KEY: ${PRIVATE_SERVER_KEY:-local-dev-api-key}
+      UNSPLASH_API_KEY: ${UNSPLASH_API_KEY:-}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-local-dev-only-secret-change-this}
+    restart: unless-stopped
 
   dashboard:
-    image: classroomio/dashboard:latest
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dashboard
+      args:
+        PUBLIC_IS_SELFHOSTED: ${PUBLIC_IS_SELFHOSTED:-true}
+        PUBLIC_SERVER_URL: ${PUBLIC_SERVER_URL:-http://localhost:3081}
+    container_name: cio-dashboard
     ports:
       - "3082:3082"
-    environment:
-      - PUBLIC_IS_SELFHOSTED=true
-      # Supabase - Database
-      - PUBLIC_SUPABASE_URL=${PUBLIC_SUPABASE_URL}
-      - PUBLIC_SUPABASE_ANON_KEY=${PUBLIC_SUPABASE_ANON_KEY}
-      - PRIVATE_SUPABASE_SERVICE_ROLE=${PRIVATE_SUPABASE_SERVICE_ROLE}
-      - PRIVATE_APP_HOST=${PRIVATE_APP_HOST} # yourdomain.com
-      - PRIVATE_APP_SUBDOMAINS=${PRIVATE_APP_SUBDOMAINS} # app (if you are using app.yourdomain.com for the dashboard)
-      - UNSPLASH_API_KEY=${UNSPLASH_API_KEY}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL} # this is the url to the api service
-      - PUBLIC_IP_REGISTRY_KEY=${PUBLIC_IP_REGISTRY_KEY}
     depends_on:
-      - api
+      api:
+        condition: service_started
+    environment:
+      NODE_ENV: production
+      PORT: 3082
+      ORIGIN: ${DASHBOARD_ORIGIN:-http://localhost:3082}
+      PUBLIC_IS_SELFHOSTED: ${PUBLIC_IS_SELFHOSTED:-true}
+      PUBLIC_SERVER_URL: ${PUBLIC_SERVER_URL:-http://localhost:3081}
+      PRIVATE_SERVER_URL: ${PRIVATE_SERVER_URL:-http://api:3081}
+      PRIVATE_SERVER_KEY: ${PRIVATE_SERVER_KEY:-local-dev-api-key}
+      PRIVATE_APP_HOST: ${PRIVATE_APP_HOST:-localhost}
+      PRIVATE_APP_SUBDOMAINS: ${PRIVATE_APP_SUBDOMAINS:-app}
+      AUTH_BEARER_TOKEN: ${AUTH_BEARER_TOKEN:-}
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  redis-data:

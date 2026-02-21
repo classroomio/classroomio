@@ -1,11 +1,7 @@
-<!--
-	Installed from @ieedan/shadcn-svelte-extras
--->
-
 <script lang="ts">
   import { Button } from '../button';
-  import { UseClipboard } from '../../hooks/use-clipboard.svelte';
-  import { cn } from '../../tools';
+  import { UseClipboard } from '../../use-clipboard.svelte';
+  import { cn } from '../../utils.js';
   import CheckIcon from '@lucide/svelte/icons/check';
   import CopyIcon from '@lucide/svelte/icons/copy';
   import XIcon from '@lucide/svelte/icons/x';
@@ -44,7 +40,6 @@
   type="button"
   name="copy"
   onclick={async () => {
-    // text prop is reactive, so it will use the latest value when clicked
     const status = await clipboard.copy(text);
 
     onCopy?.(status);
@@ -53,7 +48,7 @@
   {#if clipboard.status === 'success'}
     <div in:scale={{ duration: animationDuration, start: 0.85 }}>
       <CheckIcon tabindex={-1} />
-      <span class="ui:sr-only">Copied</span>
+      <span class="sr-only">Copied</span>
     </div>
   {:else if clipboard.status === 'failure'}
     <div in:scale={{ duration: animationDuration, start: 0.85 }}>
