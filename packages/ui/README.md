@@ -58,6 +58,7 @@ Components in the `custom` directory come from various sources or are built on t
 
 **Examples:**
 
+- `custom/code/` - From shadcn-svelte-extras (syntax-highlighted code block with copy and overflow)
 - `custom/underline-tabs/` - From shadcn-svelte-extras
 - `custom/editor/` - Rich text editor based on Edra/Tiptap
 - `custom/image-cropper/` - Custom image cropping component

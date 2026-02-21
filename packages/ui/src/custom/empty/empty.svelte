@@ -11,7 +11,7 @@
     variants: {
       variant: {
         default: '',
-        page: 'ui:h-full ui:border ui:border-dashed ui:max-w-3xl  ui:mx-auto'
+        page: 'ui:h-full ui:border ui:border-dashed ui:max-w-3xl ui:mx-auto'
       }
     }
   });

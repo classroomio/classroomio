@@ -1,6 +1,7 @@
 import './index.css';
 
 export * as Accordion from './base/accordion';
+export * as Alert from './base/alert';
 export * as Avatar from './base/avatar';
 export * as Badge from './base/badge';
 export * as Breadcrumb from './base/breadcrumb';
@@ -9,6 +10,7 @@ export * as ButtonGroup from './base/button-group';
 export * as Card from './base/card';
 export * as Chart from './base/chart';
 export * as Checkbox from './base/checkbox';
+export * as Code from './custom/code';
 export * as Collapsible from './base/collapsible';
 export * as Command from './base/command';
 export * as CopyButton from './base/copy-button';

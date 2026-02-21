@@ -37,7 +37,7 @@
     <Field.Label class={labelClassName}>
       {label}
       {#if isRequired}
-        <span class="text-red-700">*</span>
+        <span class="ui:text-red-700">*</span>
       {/if}
     </Field.Label>
   {/if}

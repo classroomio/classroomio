@@ -35,14 +35,14 @@
     class:animate={isHovered}
   >
     <path d="M12 7v14" class="center-line" />
-    <path d="M16 12h2" class="text-line text-line-right-bottom" />
-    <path d="M16 8h2" class="text-line text-line-right-top" />
+    <path d="M16 12h2" class="ui:text-line ui:text-line-right-bottom" />
+    <path d="M16 8h2" class="ui:text-line ui:text-line-right-top" />
     <path
       d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"
       class="book-path"
     />
-    <path d="M6 12h2" class="text-line text-line-left-bottom" />
-    <path d="M6 8h2" class="text-line text-line-left-top" />
+    <path d="M6 12h2" class="ui:text-line ui:text-line-left-bottom" />
+    <path d="M6 8h2" class="ui:text-line ui:text-line-left-top" />
   </svg>
 </div>
 

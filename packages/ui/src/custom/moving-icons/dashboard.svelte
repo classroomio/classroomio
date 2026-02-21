@@ -34,10 +34,10 @@
     class="layout-dashboard-icon"
     class:animate={isHovered}
   >
-    <rect width="7" height="9" x="3" y="3" rx="1" class="top-left-panel" />
-    <rect width="7" height="5" x="14" y="3" rx="1" class="top-right-panel" />
-    <rect width="7" height="9" x="14" y="12" rx="1" class="bottom-right-panel" />
-    <rect width="7" height="5" x="3" y="16" rx="1" class="bottom-left-panel" />
+    <rect width="7" height="9" x="3" y="3" rx="1" class="ui:top-left-panel" />
+    <rect width="7" height="5" x="14" y="3" rx="1" class="ui:top-right-panel" />
+    <rect width="7" height="9" x="14" y="12" rx="1" class="ui:bottom-right-panel" />
+    <rect width="7" height="5" x="3" y="16" rx="1" class="ui:bottom-left-panel" />
   </svg>
 </div>
 

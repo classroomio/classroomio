@@ -34,9 +34,9 @@
     class="layout-template-icon"
     class:animate={isHovered}
   >
-    <rect width="18" height="7" x="3" y="3" rx="1" class="top-panel" />
-    <rect width="9" height="7" x="3" y="14" rx="1" class="bottom-left-panel" />
-    <rect width="5" height="7" x="16" y="14" rx="1" class="bottom-right-panel" />
+    <rect width="18" height="7" x="3" y="3" rx="1" class="ui:top-panel" />
+    <rect width="9" height="7" x="3" y="14" rx="1" class="ui:bottom-left-panel" />
+    <rect width="5" height="7" x="16" y="14" rx="1" class="ui:bottom-right-panel" />
   </svg>
 </div>
 

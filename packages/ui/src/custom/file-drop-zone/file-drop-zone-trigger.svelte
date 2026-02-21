@@ -24,7 +24,7 @@
     {@render children()}
   {:else}
     <HoverableItem
-      class="ui:hover:bg-accent/25 ui:flex ui:h-48 ui:flex-col ui:place-items-center ui:justify-center ui:gap-2 ui:rounded-lg ui:border ui:border-dashed ui:p-6 ui:transition-all group-aria-disabled/file-drop-zone-trigger:ui:opacity-50 ui:hover:cursor-pointer group-aria-disabled/file-drop-zone-trigger:ui:hover:cursor-not-allowed"
+      class="ui:hover:bg-accent/25 ui:flex ui:h-48 ui:flex-col ui:place-items-center ui:justify-center ui:gap-2 ui:rounded-lg ui:border ui:border-dashed ui:p-6 ui:transition-all ui:group-aria-disabled/file-drop-zone-trigger:ui:opacity-50 ui:hover:cursor-pointer ui:group-aria-disabled/file-drop-zone-trigger:ui:hover:cursor-not-allowed"
     >
       {#snippet children(isHovered)}
         <div class="ui:flex ui:flex-col ui:place-items-center ui:justify-center ui:gap-2">
