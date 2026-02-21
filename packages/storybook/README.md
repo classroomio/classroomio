@@ -45,7 +45,7 @@ pnpm upload:storybook
 To build and upload the Storybook in one command:
 
 ```bash
-pnpm publish:storybook
+pnpm storybook:publish
 ```
 
 This will build the Storybook and then upload it to R2.
