@@ -64,13 +64,23 @@ const defaultFrameSrcDomains = [
 ];
 const defaultFontSrcDomains = ['https://fonts.gstatic.com', 'https://cdn.plyr.io'];
 
-// When ALLOWED_EXTERNAL_DOMAINS is set, it applies to all directives (for on-prem/instance config).
-// Otherwise use directive-specific vars or defaults.
-const scriptSrcDomains = ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_SCRIPT_SRC ?? defaultScriptSrcDomains;
-const styleSrcDomains = ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_STYLE_SRC ?? defaultStyleSrcDomains;
-const connectSrcDomains = ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_CONNECT_SRC ?? defaultConnectSrcDomains;
-const frameSrcDomains = ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_FRAME_SRC ?? defaultFrameSrcDomains;
-const fontSrcDomains = ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_FONT_SRC ?? defaultFontSrcDomains;
+// Self-hosted: use ONLY env vars, no defaults (strict CISO allowlists, data residency).
+// SaaS: use defaults when env vars are unset (backward compatible).
+const scriptSrcDomains = useNodeAdapter
+  ? (ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_SCRIPT_SRC ?? [])
+  : (ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_SCRIPT_SRC ?? defaultScriptSrcDomains);
+const styleSrcDomains = useNodeAdapter
+  ? (ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_STYLE_SRC ?? [])
+  : (ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_STYLE_SRC ?? defaultStyleSrcDomains);
+const connectSrcDomains = useNodeAdapter
+  ? (ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_CONNECT_SRC ?? [])
+  : (ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_CONNECT_SRC ?? defaultConnectSrcDomains);
+const frameSrcDomains = useNodeAdapter
+  ? (ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_FRAME_SRC ?? [])
+  : (ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_FRAME_SRC ?? defaultFrameSrcDomains);
+const fontSrcDomains = useNodeAdapter
+  ? (ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_FONT_SRC ?? [])
+  : (ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_FONT_SRC ?? defaultFontSrcDomains);
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
