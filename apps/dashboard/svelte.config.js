@@ -124,6 +124,7 @@ const config = {
           'self',
           'blob:',
           'http://localhost:3002',
+          'http://localhost:9000',
           ...(API_ORIGIN ? [API_ORIGIN] : []),
           ...connectSrcDomains
         ],
@@ -147,6 +148,7 @@ const config = {
           'self',
           'blob:',
           'http://localhost:3002',
+          'http://localhost:9000',
           ...(API_ORIGIN ? [API_ORIGIN] : []),
           ...connectSrcDomains
         ],

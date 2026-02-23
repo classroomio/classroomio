@@ -4,29 +4,17 @@ import {
   GetObjectCommand,
   GetObjectCommandInput,
   PutObjectCommand,
-  PutObjectCommandInput,
-  S3Client
+  PutObjectCommandInput
 } from '@aws-sdk/client-s3';
 
-import { BUCKET_NAME } from '@api/constants/upload';
-import { CLOUDFLARE } from '@api/constants';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { getPresignS3Client, getS3Client, getStorageConfig } from '@api/config/storage';
 
 export type GetSignedUrlParameters = Parameters<typeof getSignedUrl>;
 
-export const s3Client = new S3Client({
-  region: 'auto',
-  endpoint: `https://${CLOUDFLARE.CONFIGS.ACCOUNT_ID}.r2.cloudflarestorage.com`,
-  credentials: {
-    accessKeyId: CLOUDFLARE.CONFIGS.ACCESS_KEY,
-    secretAccessKey: CLOUDFLARE.CONFIGS.SECRET_ACCESS_KEY
-  }
-});
-
 export async function uploadToS3(params: PutObjectCommandInput): Promise<{ success: boolean; error?: string }> {
   try {
-    await s3Client.send(new PutObjectCommand(params));
-
+    await getS3Client().send(new PutObjectCommand(params));
     return { success: true };
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
@@ -37,7 +25,7 @@ export async function getFromS3(
   params: GetObjectCommandInput
 ): Promise<{ success: boolean; data?: any; error?: string }> {
   try {
-    const data = await s3Client.send(new GetObjectCommand(params));
+    const data = await getS3Client().send(new GetObjectCommand(params));
     return { success: true, data };
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
@@ -46,7 +34,7 @@ export async function getFromS3(
 
 export async function deleteFromS3(params: DeleteObjectCommandInput): Promise<{ success: boolean; error?: string }> {
   try {
-    await s3Client.send(new DeleteObjectCommand(params));
+    await getS3Client().send(new DeleteObjectCommand(params));
     return { success: true };
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
@@ -64,6 +52,8 @@ export async function generateDownloadPresignedUrls(
   bucketName: string
 ): Promise<Record<string, string>> {
   const signedUrls: Record<string, string> = {};
+  const config = getStorageConfig();
+  const client = getPresignS3Client();
 
   if (keys.length === 0) {
     return signedUrls;
@@ -76,8 +66,8 @@ export async function generateDownloadPresignedUrls(
         Key: key
       }) as GetSignedUrlParameters[1];
 
-      const presignedUrl = await getSignedUrl(s3Client as GetSignedUrlParameters[0], command, {
-        expiresIn: CLOUDFLARE.R2.DOWNLOAD_EXPIRATION_TIME
+      const presignedUrl = await getSignedUrl(client as GetSignedUrlParameters[0], command, {
+        expiresIn: config.presignDownloadExpiresSeconds
       });
 
       return { key, presignedUrl };
@@ -110,14 +100,17 @@ export async function generateUploadPresignedUrl(
   bucketName: string,
   contentType: string
 ): Promise<string> {
+  const config = getStorageConfig();
+  const client = getPresignS3Client();
+
   const command = new PutObjectCommand({
     Bucket: bucketName,
     Key: fileKey,
     ContentType: contentType
   }) as GetSignedUrlParameters[1];
 
-  const presignedUrl = await getSignedUrl(s3Client as GetSignedUrlParameters[0], command, {
-    expiresIn: CLOUDFLARE.R2.PRESIGN_EXPIRATION_TIME
+  const presignedUrl = await getSignedUrl(client as GetSignedUrlParameters[0], command, {
+    expiresIn: config.presignUploadExpiresSeconds
   });
 
   return presignedUrl;
@@ -129,7 +122,8 @@ export async function generateUploadPresignedUrl(
  * @returns Record mapping keys to presigned URLs
  */
 export async function generateVideoDownloadPresignedUrls(keys: string[]): Promise<Record<string, string>> {
-  return generateDownloadPresignedUrls(keys, BUCKET_NAME.VIDEOS);
+  const config = getStorageConfig();
+  return generateDownloadPresignedUrls(keys, config.bucketVideos);
 }
 
 /**
@@ -138,7 +132,8 @@ export async function generateVideoDownloadPresignedUrls(keys: string[]): Promis
  * @returns Record mapping keys to presigned URLs
  */
 export async function generateDocumentDownloadPresignedUrls(keys: string[]): Promise<Record<string, string>> {
-  return generateDownloadPresignedUrls(keys, BUCKET_NAME.DOCUMENTS);
+  const config = getStorageConfig();
+  return generateDownloadPresignedUrls(keys, config.bucketDocuments);
 }
 
 /**
@@ -148,7 +143,8 @@ export async function generateDocumentDownloadPresignedUrls(keys: string[]): Pro
  * @returns Presigned URL for upload
  */
 export async function generateVideoUploadPresignedUrl(fileKey: string, contentType: string): Promise<string> {
-  return generateUploadPresignedUrl(fileKey, BUCKET_NAME.VIDEOS, contentType);
+  const config = getStorageConfig();
+  return generateUploadPresignedUrl(fileKey, config.bucketVideos, contentType);
 }
 
 /**
@@ -158,5 +154,6 @@ export async function generateVideoUploadPresignedUrl(fileKey: string, contentTy
  * @returns Presigned URL for upload
  */
 export async function generateDocumentUploadPresignedUrl(fileKey: string, contentType: string): Promise<string> {
-  return generateUploadPresignedUrl(fileKey, BUCKET_NAME.DOCUMENTS, contentType);
+  const config = getStorageConfig();
+  return generateUploadPresignedUrl(fileKey, config.bucketDocuments, contentType);
 }

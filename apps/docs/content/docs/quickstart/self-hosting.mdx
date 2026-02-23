@@ -53,11 +53,48 @@ PRIVATE_DATABASE_URL=
 REDIS_URL=
 ```
 
-## Cloudflare R2
+## Object Storage (Videos, Documents, Images)
 
-We use Cloudflare R2 for video uploading within the course builder. It is not required though and you can do without it in the app if you don't need video upload.
+ClassroomIO supports two object storage backends for video uploads, document uploads, and media (images/thumbnails):
 
-<Callout title="Work in Progress">This section is a work in progress.</Callout>
+### Option A: Cloudflare R2
+
+We use Cloudflare R2 for video uploading within the course builder. Configure these env vars:
+
+```zsh title="env"
+CLOUDFLARE_ACCOUNT_ID=
+CLOUDFLARE_ACCESS_KEY=
+CLOUDFLARE_SECRET_ACCESS_KEY=
+CLOUDFLARE_BUCKET_DOMAIN=
+CLOUDFLARE_IMAGE_BUCKET_DOMAIN=
+```
+
+See the [Cloudflare Setup](/docs/contributor-guides/cloudflare-setup) guide for R2 bucket and CORS configuration.
+
+### Option B: MinIO (S3-compatible, On-Premise)
+
+For on-premise deployments or data residency requirements, use MinIO or any S3-compatible storage:
+
+```zsh title="env"
+OBJECT_STORAGE_ENDPOINT=http://localhost:9000
+OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000
+OBJECT_STORAGE_ACCESS_KEY_ID=minioadmin
+OBJECT_STORAGE_SECRET_ACCESS_KEY=minioadmin
+OBJECT_STORAGE_FORCE_PATH_STYLE=true
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=http://localhost:9000/media
+```
+
+**Docker with MinIO:** Use the `minio` profile to run MinIO locally:
+
+```zsh title="Terminal"
+docker compose -p classroomio -f docker/docker-compose.yaml --profile minio up -d
+```
+
+This starts MinIO on port 9000 and creates `videos`, `documents`, and `media` buckets. Set the `OBJECT_STORAGE_*` env vars above in your `.env` to use it. When the API runs inside Docker, use `OBJECT_STORAGE_ENDPOINT=http://minio:9000` and `OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000` so the browser can reach MinIO.
+
+<Callout title="Storage Optional">
+  Object storage is not required to run the app. You can skip it if you don't need video/document uploads.
+</Callout>
 
 ## Deploy on Railway
 

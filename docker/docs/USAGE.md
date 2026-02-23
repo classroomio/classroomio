@@ -108,11 +108,21 @@ SMTP_SENDER=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 
+# Object storage - choose Cloudflare R2 or MinIO/S3-compatible
 CLOUDFLARE_BUCKET_DOMAIN=
 CLOUDFLARE_ACCESS_KEY=
 CLOUDFLARE_SECRET_ACCESS_KEY=
 CLOUDFLARE_ACCOUNT_ID=
+CLOUDFLARE_IMAGE_BUCKET_DOMAIN=
 CLOUDFLARE_RENDERING_API_KEY=
+
+# Or MinIO (S3-compatible, for on-premise)
+OBJECT_STORAGE_ENDPOINT=
+OBJECT_STORAGE_PUBLIC_ENDPOINT=
+OBJECT_STORAGE_ACCESS_KEY_ID=
+OBJECT_STORAGE_SECRET_ACCESS_KEY=
+OBJECT_STORAGE_FORCE_PATH_STYLE=true
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=
 
 UNSPLASH_API_KEY=
 ```
@@ -160,6 +170,31 @@ If SMTP is not configured, logs may include `ECONNREFUSED 127.0.0.1:465`. This d
 ```bash
 lsof -nP -iTCP:3081 -sTCP:LISTEN
 lsof -nP -iTCP:3082 -sTCP:LISTEN
+```
+
+## MinIO (S3-compatible storage)
+
+For on-premise deployments, use the `minio` profile to run MinIO alongside the stack:
+
+```bash
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml --profile minio up -d
+```
+
+Set in `.env`:
+
+```bash
+OBJECT_STORAGE_ENDPOINT=http://minio:9000
+OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000
+OBJECT_STORAGE_ACCESS_KEY_ID=minioadmin
+OBJECT_STORAGE_SECRET_ACCESS_KEY=minioadmin
+OBJECT_STORAGE_FORCE_PATH_STYLE=true
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=http://localhost:9000/media
+```
+
+Run `minio-init` after MinIO is up to create buckets:
+
+```bash
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml --profile minio up minio-init
 ```
 
 ## Related Docs
