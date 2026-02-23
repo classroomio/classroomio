@@ -48,6 +48,12 @@ PUBLIC_IS_SELFHOSTED=true
 PRIVATE_APP_HOST=domain.com
 PRIVATE_APP_SUBDOMAINS=app,launchweek
 
+# CSP: External domains (required when PUBLIC_IS_SELFHOSTED=true; no defaults)
+# Passed as build args to the dashboard. Rebuild dashboard after changing: --build dashboard
+# Comma-separated list for Content-Security-Policy. Include your CDN, API, and video domains.
+# Example (adjust to your instance):
+ALLOWED_EXTERNAL_DOMAINS=https://*.classroomio.com,https://api.classroomio.com,https://pgrest.classroomio.com,wss://*.classroomio.com,https://assets.cdn.clsrio.com,https://cdn.plyr.io
+
 # Email delivery (choose one approach)
 # Option A: Zoho/ZeptoMail token
 ZOHO_TOKEN=
@@ -74,6 +80,7 @@ Important:
 - For email sending, configure either `ZOHO_TOKEN` or a full SMTP config (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_SENDER`).
 - If neither Zoho token nor SMTP is configured, emails will not send.
 - Keep real secrets out of version control.
+- When `PUBLIC_IS_SELFHOSTED=true`, the dashboard CSP uses **only** env vars—no defaults. Set `ALLOWED_EXTERNAL_DOMAINS` with all external domains your instance needs (CDNs, video providers, analytics, etc.).
 
 ## 4. Start Full Docker Stack
 
