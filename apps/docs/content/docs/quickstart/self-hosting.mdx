@@ -84,13 +84,29 @@ OBJECT_STORAGE_FORCE_PATH_STYLE=true
 OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=http://localhost:9000/media
 ```
 
-**Docker with MinIO:** Use the `minio` profile to run MinIO locally:
+**Docker with MinIO:** Use the `minio` profile to run MinIO locally. Add to your `.env`:
+
+```zsh title="env"
+# MinIO container credentials (must match OBJECT_STORAGE_* below)
+MINIO_ROOT_USER=minioadmin
+MINIO_ROOT_PASSWORD=minioadmin
+
+# API storage config (use minio:9000 for Docker internal, localhost:9000 for browser)
+OBJECT_STORAGE_ENDPOINT=http://minio:9000
+OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000
+OBJECT_STORAGE_ACCESS_KEY_ID=minioadmin
+OBJECT_STORAGE_SECRET_ACCESS_KEY=minioadmin
+OBJECT_STORAGE_FORCE_PATH_STYLE=true
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=http://localhost:9000/media
+```
+
+Then start the stack with the minio profile:
 
 ```zsh title="Terminal"
 docker compose -p classroomio -f docker/docker-compose.yaml --profile minio up -d
 ```
 
-This starts MinIO on port 9000 and creates `videos`, `documents`, and `media` buckets. Set the `OBJECT_STORAGE_*` env vars above in your `.env` to use it. When the API runs inside Docker, use `OBJECT_STORAGE_ENDPOINT=http://minio:9000` and `OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000` so the browser can reach MinIO.
+This starts MinIO on port 9000 and creates `videos`, `documents`, and `media` buckets.
 
 <Callout title="Storage Optional">
   Object storage is not required to run the app. You can skip it if you don't need video/document uploads.

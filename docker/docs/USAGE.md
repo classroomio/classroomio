@@ -116,7 +116,9 @@ CLOUDFLARE_ACCOUNT_ID=
 CLOUDFLARE_IMAGE_BUCKET_DOMAIN=
 CLOUDFLARE_RENDERING_API_KEY=
 
-# Or MinIO (S3-compatible, for on-premise)
+# Or MinIO (S3-compatible, for on-premise; when using minio docker profile)
+MINIO_ROOT_USER=
+MINIO_ROOT_PASSWORD=
 OBJECT_STORAGE_ENDPOINT=
 OBJECT_STORAGE_PUBLIC_ENDPOINT=
 OBJECT_STORAGE_ACCESS_KEY_ID=
@@ -183,6 +185,10 @@ docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml --pr
 Set in `.env`:
 
 ```bash
+# MinIO container credentials (must match OBJECT_STORAGE_* below)
+MINIO_ROOT_USER=minioadmin
+MINIO_ROOT_PASSWORD=minioadmin
+
 OBJECT_STORAGE_ENDPOINT=http://minio:9000
 OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000
 OBJECT_STORAGE_ACCESS_KEY_ID=minioadmin
@@ -190,6 +196,8 @@ OBJECT_STORAGE_SECRET_ACCESS_KEY=minioadmin
 OBJECT_STORAGE_FORCE_PATH_STYLE=true
 OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=http://localhost:9000/media
 ```
+
+`MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD` configure the MinIO container. Set them to the same values as `OBJECT_STORAGE_ACCESS_KEY_ID` and `OBJECT_STORAGE_SECRET_ACCESS_KEY` when using the built-in MinIO service.
 
 Run `minio-init` after MinIO is up to create buckets:
 
