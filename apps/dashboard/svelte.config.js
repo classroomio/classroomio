@@ -46,6 +46,12 @@ const defaultStyleSrcDomains = [
 ];
 const defaultConnectSrcDomains = [
   'https://*.classroomio.com',
+  'https://classroomio.com',
+  'https://app.classroomio.com',
+  'https://api.classroomio.com',
+  'https://pgrest.classroomio.com',
+  'https://play.classroomio.com',
+  'wss://*.classroomio.com',
   'https://assets.cdn.clsrio.com',
   'https://cdn.plyr.io',
   'https://*.posthog.com',
@@ -119,7 +125,6 @@ const config = {
           'blob:',
           'http://localhost:3002',
           ...(API_ORIGIN ? [API_ORIGIN] : []),
-          'wss://*.classroomio.com',
           ...connectSrcDomains
         ],
         'worker-src': ['self', 'blob:'],
@@ -142,10 +147,7 @@ const config = {
           'self',
           'blob:',
           'http://localhost:3002',
-          'https://pgrest.classroomio.com',
-          'https://api.classroomio.com',
           ...(API_ORIGIN ? [API_ORIGIN] : []),
-          'wss://*.classroomio.com',
           ...connectSrcDomains
         ],
         'worker-src': ['self', 'blob:'],
