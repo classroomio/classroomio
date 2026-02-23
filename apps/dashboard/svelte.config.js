@@ -8,6 +8,70 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 const useNodeAdapter = process.env.PUBLIC_IS_SELFHOSTED === 'true';
 const API_ORIGIN = process.env.PUBLIC_SERVER_URL;
 
+/**
+ * Parse comma-separated domain list from env.
+ * Normalizes to https:// URLs. Returns null when env var is unset (use defaults).
+ */
+function parseDomainsFromEnv(envVar) {
+  const value = process.env[envVar];
+  if (!value || typeof value !== 'string') return null;
+  return value
+    .split(',')
+    .map((d) => d.trim())
+    .filter(Boolean)
+    .map((d) => (d.startsWith('http://') || d.startsWith('https://') ? d : `https://${d}`));
+}
+
+const ALLOWED_EXTERNAL_DOMAINS = parseDomainsFromEnv('ALLOWED_EXTERNAL_DOMAINS');
+const ALLOWED_SCRIPT_SRC = parseDomainsFromEnv('CSP_SCRIPT_SRC_DOMAINS');
+const ALLOWED_STYLE_SRC = parseDomainsFromEnv('CSP_STYLE_SRC_DOMAINS');
+const ALLOWED_CONNECT_SRC = parseDomainsFromEnv('CSP_CONNECT_SRC_DOMAINS');
+const ALLOWED_FRAME_SRC = parseDomainsFromEnv('CSP_FRAME_SRC_DOMAINS');
+const ALLOWED_FONT_SRC = parseDomainsFromEnv('CSP_FONT_SRC_DOMAINS');
+
+const defaultScriptSrcDomains = [
+  'https://assets.cdn.clsrio.com',
+  'https://cdnjs.cloudflare.com',
+  'https://*.posthog.com',
+  'https://*.senja.io',
+  'https://www.youtube.com',
+  'https://youtube.com',
+  'https://google.com'
+];
+const defaultStyleSrcDomains = [
+  'https://cdn.plyr.io',
+  'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
+  'https://assets.cdn.clsrio.com/eqneditor_1.css',
+  'https://fonts.googleapis.com'
+];
+const defaultConnectSrcDomains = [
+  'https://*.classroomio.com',
+  'https://assets.cdn.clsrio.com',
+  'https://cdn.plyr.io',
+  'https://*.posthog.com',
+  'https://umami.hz.oncws.com',
+  'https://*.r2.cloudflarestorage.com',
+  'https://*.senja.io',
+  'https://*.ytimg.com',
+  'https://noembed.com'
+];
+const defaultFrameSrcDomains = [
+  'https://www.youtube.com',
+  'https://youtube.com',
+  'https://www.youtube-nocookie.com',
+  'https://www.google.com',
+  'https://google.com'
+];
+const defaultFontSrcDomains = ['https://fonts.gstatic.com', 'https://cdn.plyr.io'];
+
+// When ALLOWED_EXTERNAL_DOMAINS is set, it applies to all directives (for on-prem/instance config).
+// Otherwise use directive-specific vars or defaults.
+const scriptSrcDomains = ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_SCRIPT_SRC ?? defaultScriptSrcDomains;
+const styleSrcDomains = ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_STYLE_SRC ?? defaultStyleSrcDomains;
+const connectSrcDomains = ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_CONNECT_SRC ?? defaultConnectSrcDomains;
+const frameSrcDomains = ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_FRAME_SRC ?? defaultFrameSrcDomains;
+const fontSrcDomains = ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_FONT_SRC ?? defaultFontSrcDomains;
+
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
   // Consult https://kit.svelte.dev/docs/integrations#preprocessors
@@ -33,60 +97,20 @@ const config = {
       mode: 'auto',
       directives: {
         'default-src': ['self'],
-        'script-src': [
-          'self',
-          'https://assets.cdn.clsrio.com',
-          'https://cdnjs.cloudflare.com',
-          'https://*.posthog.com',
-          'https://*.senja.io',
-          'https://www.youtube.com',
-          'https://youtube.com',
-          'https://google.com',
-          'unsafe-hashes',
-          'unsafe-eval'
-        ],
-        'style-src': [
-          'self',
-          'unsafe-inline',
-          'https://cdn.plyr.io',
-          'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
-          'https://assets.cdn.clsrio.com/eqneditor_1.css',
-          'https://fonts.googleapis.com'
-        ],
-        'style-src-elem': [
-          'self',
-          'unsafe-inline',
-          'https://cdn.plyr.io',
-          'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
-          'https://assets.cdn.clsrio.com/eqneditor_1.css',
-          'https://fonts.googleapis.com'
-        ],
-        'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
+        'script-src': ['self', ...scriptSrcDomains, 'unsafe-hashes', 'unsafe-eval'],
+        'style-src': ['self', 'unsafe-inline', ...styleSrcDomains],
+        'style-src-elem': ['self', 'unsafe-inline', ...styleSrcDomains],
+        'font-src': ['self', ...fontSrcDomains],
         'img-src': ['self', 'data:', 'https:', 'blob:'],
         'media-src': ['self', 'https:', 'data:', 'blob:'],
-        'frame-src': [
-          'self',
-          'https://www.youtube.com',
-          'https://youtube.com',
-          'https://www.youtube-nocookie.com',
-          'https://www.google.com',
-          'https://google.com'
-        ],
+        'frame-src': ['self', ...frameSrcDomains],
         'connect-src': [
           'self',
           'blob:',
-          'https://*.classroomio.com',
-          'https://assets.cdn.clsrio.com',
-          'https://cdn.plyr.io',
-          'https://*.posthog.com',
-          'https://umami.hz.oncws.com',
-          'https://*.r2.cloudflarestorage.com',
           'http://localhost:3002',
-          API_ORIGIN,
+          ...(API_ORIGIN ? [API_ORIGIN] : []),
           'wss://*.classroomio.com',
-          'https://*.senja.io',
-          'https://*.ytimg.com',
-          'https://noembed.com'
+          ...connectSrcDomains
         ],
         'worker-src': ['self', 'blob:'],
         'object-src': ['none'],
@@ -97,61 +121,22 @@ const config = {
       },
       reportOnly: {
         'default-src': ['self'],
-        'script-src': [
-          'self',
-          'https://assets.cdn.clsrio.com',
-          'https://cdnjs.cloudflare.com',
-          'https://*.posthog.com',
-          'https://*.senja.io',
-          'https://www.youtube.com',
-          'https://youtube.com',
-          'https://google.com',
-          'unsafe-hashes',
-          'unsafe-eval'
-        ],
-        'style-src': [
-          'self',
-          'unsafe-inline',
-          'https://cdn.plyr.io',
-          'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
-          'https://assets.cdn.clsrio.com/eqneditor_1.css',
-          'https://fonts.googleapis.com'
-        ],
-        'style-src-elem': [
-          'self',
-          'unsafe-inline',
-          'https://cdn.plyr.io',
-          'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
-          'https://assets.cdn.clsrio.com/eqneditor_1.css',
-          'https://fonts.googleapis.com'
-        ],
-        'font-src': ['self', 'https://fonts.gstatic.com', 'https://cdn.plyr.io'],
+        'script-src': ['self', ...scriptSrcDomains, 'unsafe-hashes', 'unsafe-eval'],
+        'style-src': ['self', 'unsafe-inline', ...styleSrcDomains],
+        'style-src-elem': ['self', 'unsafe-inline', ...styleSrcDomains],
+        'font-src': ['self', ...fontSrcDomains],
         'img-src': ['self', 'data:', 'https:', 'blob:'],
         'media-src': ['self', 'https:', 'data:', 'blob:'],
-        'frame-src': [
-          'self',
-          'https://www.youtube.com',
-          'https://youtube.com',
-          'https://www.youtube-nocookie.com',
-          'https://www.google.com',
-          'https://google.com'
-        ],
+        'frame-src': ['self', ...frameSrcDomains],
         'connect-src': [
           'self',
           'blob:',
+          'http://localhost:3002',
           'https://pgrest.classroomio.com',
           'https://api.classroomio.com',
-          'https://assets.cdn.clsrio.com',
-          'https://cdn.plyr.io',
-          'https://*.posthog.com',
-          'https://umami.hz.oncws.com',
-          'https://*.r2.cloudflarestorage.com',
-          'http://localhost:3002',
-          API_ORIGIN,
+          ...(API_ORIGIN ? [API_ORIGIN] : []),
           'wss://*.classroomio.com',
-          'https://*.senja.io',
-          'https://*.ytimg.com',
-          'https://noembed.com'
+          ...connectSrcDomains
         ],
         'worker-src': ['self', 'blob:'],
         'object-src': ['none'],
