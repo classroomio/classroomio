@@ -2010,20 +2010,6 @@
       "min_char": "Site name must contain 5 or more characters",
       "hyphen_rule": "Site name cannot start or end with a hyphen"
     },
-    "repository_name": {
-      "too_small": "Repository name is required",
-      "too_big": "Repository name must be at most 100 characters",
-      "invalid_format": "Repository name can only contain letters, numbers, hyphens, underscores, and periods",
-      "reserved": "This repository name is reserved"
-    },
-    "repository_owner": {
-      "too_small": "Owner is required",
-      "too_big": "Owner name must be at most 39 characters",
-      "invalid_format": "Owner can only contain letters, numbers, hyphens, and underscores"
-    },
-    "repository_identifier": {
-      "invalid_format": "Invalid repository format. Use owner/repository (e.g. classroomio/classroomio)"
-    },
     "news_feed": {
       "min_char": "Field must contain 5 or more characters"
     },

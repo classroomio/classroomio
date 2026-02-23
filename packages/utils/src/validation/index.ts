@@ -14,4 +14,3 @@ export * from './organization';
 export * from './submission';
 export * from './dash';
 export * from './tag';
-export * from './repository';
