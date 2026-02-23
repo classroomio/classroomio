@@ -91,6 +91,18 @@ services:
 
   dashboard:
     image: ${CIO_DASHBOARD_IMAGE:-classroomio/dashboard:latest}
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dashboard
+      args:
+        PUBLIC_IS_SELFHOSTED: ${PUBLIC_IS_SELFHOSTED:-true}
+        PUBLIC_SERVER_URL: ${PUBLIC_SERVER_URL:-}
+        ALLOWED_EXTERNAL_DOMAINS: ${ALLOWED_EXTERNAL_DOMAINS:-}
+        CSP_SCRIPT_SRC_DOMAINS: ${CSP_SCRIPT_SRC_DOMAINS:-}
+        CSP_STYLE_SRC_DOMAINS: ${CSP_STYLE_SRC_DOMAINS:-}
+        CSP_CONNECT_SRC_DOMAINS: ${CSP_CONNECT_SRC_DOMAINS:-}
+        CSP_FRAME_SRC_DOMAINS: ${CSP_FRAME_SRC_DOMAINS:-}
+        CSP_FONT_SRC_DOMAINS: ${CSP_FONT_SRC_DOMAINS:-}
     pull_policy: always
     container_name: cio-dashboard
     ports:

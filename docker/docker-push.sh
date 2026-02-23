@@ -42,6 +42,13 @@ echo "Dashboard build arg PUBLIC_IS_SELFHOSTED=${PUBLIC_IS_SELFHOSTED}"
 docker build \
     -f docker/Dockerfile.dashboard \
     --build-arg PUBLIC_IS_SELFHOSTED=${PUBLIC_IS_SELFHOSTED} \
+    --build-arg PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL:-} \
+    --build-arg ALLOWED_EXTERNAL_DOMAINS="${ALLOWED_EXTERNAL_DOMAINS:-}" \
+    --build-arg CSP_SCRIPT_SRC_DOMAINS="${CSP_SCRIPT_SRC_DOMAINS:-}" \
+    --build-arg CSP_STYLE_SRC_DOMAINS="${CSP_STYLE_SRC_DOMAINS:-}" \
+    --build-arg CSP_CONNECT_SRC_DOMAINS="${CSP_CONNECT_SRC_DOMAINS:-}" \
+    --build-arg CSP_FRAME_SRC_DOMAINS="${CSP_FRAME_SRC_DOMAINS:-}" \
+    --build-arg CSP_FONT_SRC_DOMAINS="${CSP_FONT_SRC_DOMAINS:-}" \
     -t ${DOCKERHUB_USERNAME}/dashboard:${VERSION} \
     -t ${DOCKERHUB_USERNAME}/dashboard:latest \
     .
