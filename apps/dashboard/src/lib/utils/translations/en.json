@@ -152,7 +152,13 @@
       "landing_page_tab": "Landing Page",
       "billing_tab": "Billing",
       "integrations_tab": "Integrations",
-      "language_tab": "Language"
+      "language_tab": "Language",
+      "auth_tab": "Authentication",
+      "sso_tab": "SSO",
+      "token_auth_tab": "Token Auth",
+      "customize_lms_tab": "Customize LMS",
+      "domains_tab": "Domains",
+      "teams_tab": "Teams"
     },
     "profile": {
       "profile_picture": {
@@ -205,6 +211,124 @@
           "sub_heading": "Set up your team",
           "body": "Add team mates to your organization so you can both collaborate on projects.",
           "button": "Manage Team"
+        }
+      }
+    },
+    "token_auth": {
+      "heading": "Token Auth",
+      "description": "Let users sign in from your app with a JWT—no password needed. Generate a signing secret and use it in your backend to issue short-lived JWTs.",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive",
+      "secret_last4": "Secret (last 4):",
+      "created_at": "Created",
+      "generate": "Generate secret",
+      "rotate": "Rotate secret",
+      "delete": "Remove token auth",
+      "delete_confirm": "Are you sure you want to remove token auth? This action cannot be undone.",
+      "activate": "Enable",
+      "deactivate": "Disable",
+      "secret_shown_once": "Save this secret now. It won't be shown again.",
+      "integration_guide": "Integration guide",
+      "integration_description": "Sign a JWT with the secret and redirect users to the token-exchange URL.",
+      "no_config": "No token auth configured. Generate a signing secret to get started.",
+      "actions_menu": "Token auth actions"
+    },
+    "auth": {
+      "title": "Authentication",
+      "tabs": {
+        "general": "General",
+        "sso": "SSO",
+        "token_auth": "Token Auth"
+      },
+      "login": {
+        "sso_enabled": "{provider} is enabled for your domain",
+        "sso_redirect_error": "SSO sign-in is misconfigured. Please set PUBLIC_SERVER_URL to your API server.",
+        "sso_required": "Please sign in with SSO. Password login is disabled.",
+        "sign_in_with_sso": "Sign in with {provider}",
+        "email_password_disabled": "Email/password login is disabled. Please use SSO.",
+        "email_password_disabled_message": "Email/password login is disabled for this organization.",
+        "google_auth_disabled": "Google authentication is disabled.",
+        "signup_disabled_error": "Signup is disabled for this organization. Please contact your administrator."
+      },
+      "general": {
+        "heading": "Authentication Settings",
+        "description": "Control how users can sign up and log in to your organization.",
+        "disable_signup": {
+          "label": "Disable Signup",
+          "description": "Prevent new users from signing up. Only invited users can join."
+        },
+        "disable_signup_message": {
+          "label": "Signup Disabled Message",
+          "description": "Custom message shown to users when signup is disabled.",
+          "placeholder": "e.g., Signups are disabled, please contact learn@domain.com to get access"
+        },
+        "disable_email_password": {
+          "label": "Disable Email/Password Login",
+          "description": "Require users to sign in with SSO or social providers."
+        },
+        "disable_google_auth": {
+          "label": "Disable Google Auth",
+          "description": "Prevent users from signing in with Google accounts."
+        },
+        "save_button": "Save Changes",
+        "note_title": "Note",
+        "note_description": "These settings only affect this organization. Admins can always sign in using their credentials for break-glass access."
+      },
+      "sso": {
+        "connection": {
+          "heading": "SSO Connection",
+          "description": "Manage your SSO connection status",
+          "active": "Active",
+          "inactive": "Inactive",
+          "activate_button": "Activate Connection",
+          "delete_button": "Delete",
+          "delete_confirm": "Are you sure you want to delete this SSO connection?",
+          "callback_url_label": "Callback URL:",
+          "callback_url_description": "Copy this URL to your IdP's callback/redirect URL configuration."
+        },
+        "policies": {
+          "heading": "Access Policies",
+          "description": "Configure how users access your organization",
+          "force_sso": {
+            "label": "Force SSO",
+            "description": "Require all users to sign in via SSO. Email/password login will be disabled."
+          },
+          "auto_join": {
+            "label": "Auto-join",
+            "description": "Allow users with matching email domains to automatically join your organization."
+          },
+          "break_glass": {
+            "label": "Break-glass Access",
+            "description": "Allow admins to bypass SSO with email/password in case of emergency."
+          }
+        },
+        "setup": {
+          "heading": "Setup SSO",
+          "description": "Configure Single Sign-On for your organization. This feature requires an Enterprise plan.",
+          "provider_label": "Provider",
+          "display_name_label": "Display Name",
+          "display_name_placeholder": "e.g., Acme Corp SSO",
+          "issuer_label": "Issuer URL",
+          "issuer_placeholder": "https://accounts.google.com",
+          "issuer_help": "OIDC issuer (no trailing slash). Examples: Google Workspace — https://accounts.google.com; Okta — https://your-org.okta.com; Azure AD — https://login.microsoftonline.com/your-tenant-id/v2.0",
+          "domain_label": "Email Domain",
+          "domain_placeholder": "yourcompany.com",
+          "client_id_label": "Client ID",
+          "client_id_placeholder": "From your IdP",
+          "client_secret_label": "Client Secret",
+          "client_secret_placeholder": "From your IdP",
+          "create_button": "Create Connection",
+          "providers": {
+            "okta": "Okta",
+            "google_workspace": "Google Workspace",
+            "auth0": "Auth0"
+          }
+        },
+        "messages": {
+          "created": "SSO connection created successfully",
+          "activated": "SSO connection activated",
+          "deleted": "SSO connection deleted"
         }
       }
     },
@@ -850,6 +974,21 @@
         "body_header": "No post yet",
         "body_content": "Make a post to your class. Start by clicking on the Add button.",
         "pinned": "Pinned",
+        "card": {
+          "pin": "Pin",
+          "unpin": "Unpin",
+          "edit": "Edit",
+          "delete": "Delete"
+        },
+        "comments": {
+          "comment": "comment",
+          "showing_of": "Showing {shown} of {total}",
+          "hide": "Hide comments",
+          "placeholder": "Add class comment",
+          "submit_aria": "Submit comment",
+          "delete": "Delete"
+        },
+        "user_avatar_alt": "User avatar",
         "snackbar": {
           "comment_deleted": "Comment Deleted",
           "reaction_error": "An error occurred while reacting to news feed",
@@ -869,6 +1008,8 @@
         "heading_v2": "Content",
         "drag": "drag a card to reorder",
         "no_lesson": "No lessons yet",
+        "content_locked_title": "This content is locked",
+        "content_locked_description": "Your instructor has not unlocked this content yet. Complete previous content or check back later.",
         "share_your_knowledge": "Share your knowledge with the world by creating engaging lessons. Start by clicking on the Add button.",
         "section_prompt": {
           "cta": "Enable Sections",
@@ -1131,6 +1272,7 @@
               "sure": "Are you sure you want to delete this exercise?",
               "no": "No, cancel",
               "yes": "Yes, delete",
+              "select_type": "Select type",
               "deleting": "Deleting...",
               "error": "You have some errors",
               "question": "Question",
@@ -1144,6 +1286,10 @@
             },
             "view_mode": {
               "no_question": "No question added for this exercise",
+              "empty_description": "Click the Edit button to add.",
+              "empty_edit_hint_prefix": "Click the ",
+              "empty_edit_hint_suffix": " button to add.",
+              "answers_required": "Please provide at least one answer before submitting.",
               "edit": "Edit",
               "button": "button to add",
               "questions": "questions",
@@ -1157,7 +1303,8 @@
               "submitted": "Submitted",
               "status_pending": "Status: Pending Review",
               "status_graded": "Status: Review Completed",
-              "status_submitted": "Status: Submitted"
+              "status_submitted": "Status: Submitted",
+              "checking_submission": "Checking your submission..."
             },
             "analytics": {
               "summary": {
@@ -1167,9 +1314,11 @@
               "individual": {
                 "heading": "Individual",
                 "answers": "Individual Answers",
-                "no": "No answer was provided"
+                "no": "No answer was provided",
+                "student_avatar": "Student"
               },
-              "submissions": "Submissions"
+              "submissions": "Submissions",
+              "loading_submissions": "Loading submissions..."
             }
           }
         },
@@ -1241,6 +1390,7 @@
         },
         "grading_modal": {
           "details": "Details",
+          "student_avatar": "Student avatar",
           "early": "Early",
           "late": "Late",
           "total_grade": "Total grade",
@@ -1249,6 +1399,7 @@
           "add_comment": "Add comment",
           "add_comment_placeholder": "Leave a comment",
           "grade_with_ai": "Grade with AI",
+          "ai_icon": "AI",
           "submit_grades": "Submit Grades",
           "accept_grade": "Accept",
           "reject_grade": "Reject",
@@ -1268,6 +1419,7 @@
         "title": "Marks",
         "student": "Student",
         "total": "Total",
+        "avg_grade": "Avg grade",
         "export": {
           "csv": "Export as CSV",
           "pdf": "Export as PDF"
@@ -1700,7 +1852,25 @@
     "no_students_description": "There are no students enrolled in this course yet. Students will appear here once they join the course.",
     "showing_students": "Showing {start} to {end} of {total} students",
     "no_analytics_data": "No Analytics Data",
-    "no_analytics_description": "Unable to load analytics data for this course. Please try again later or contact support if the issue persists."
+    "no_analytics_description": "Unable to load analytics data for this course. Please try again later or contact support if the issue persists.",
+    "student": "Student",
+    "student_progress_distribution": "Student Progress Distribution",
+    "grade_distribution": "Grade Distribution",
+    "progress_80_plus": "80%+ Progress",
+    "progress_60_79": "60-79% Progress",
+    "progress_below_60": "Below 60% Progress",
+    "grade_90_plus": "90%+ Grade",
+    "grade_80_89": "80-89% Grade",
+    "grade_70_79": "70-79% Grade",
+    "grade_below_70": "Below 70% Grade",
+    "number_of_students": "Number of Students",
+    "progress_range": "Progress Range",
+    "grade_range": "Grade Range",
+    "no_progress_data": "No progress data available",
+    "no_grade_data": "No grade data available",
+    "loading_chart": "Loading chart...",
+    "no_data_default": "No data available",
+    "no_data_default_description": "There is no data to display at this time."
   },
 
   "upgrade": {
@@ -1711,7 +1881,8 @@
     "back": "Back to Settings",
     "download_lessons": "Upgrade to download lessons",
     "download_course": "Upgrade to download course",
-    "required": "Upgrade Required"
+    "required": "Upgrade Required",
+    "enterprise_required": "This feature requires an Enterprise plan."
   },
 
   "lms_navigation": {
@@ -1754,6 +1925,14 @@
     "success": "Success",
     "success_update": "Updated successfully",
     "success_delete": "Deleted successfully",
+    "error_update": "Failed to update",
+    "token_auth": {
+      "created": "Signing secret created. Save it now—it won't be shown again.",
+      "rotated": "Signing secret rotated. Save the new secret—it won't be shown again.",
+      "deleted": "Token auth removed.",
+      "activated": "Token auth enabled.",
+      "deactivated": "Token auth disabled."
+    },
     "something": "Something went wrong - Please try later",
     "update": "Update",
     "update_failed": "Update failed",

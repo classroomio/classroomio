@@ -21,6 +21,7 @@
       page.url.pathname,
       page.url.search,
       navItems,
+      $t,
       breadcrumbTitle ? { breadcrumb: breadcrumbTitle } : undefined
     )
   );

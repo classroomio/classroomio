@@ -35,6 +35,10 @@ export interface TOrgUpdateForm {
   customDomain?: string | null;
   isCustomDomainVerified?: boolean;
   customization?: AccountOrg['customization'];
+  disableSignup?: boolean;
+  disableSignupMessage?: string;
+  disableEmailPassword?: boolean;
+  disableGoogleAuth?: boolean;
 }
 
 /**

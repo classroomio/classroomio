@@ -251,7 +251,7 @@
         </div>
       {/if}
 
-      <Page.BodyHeader class="items-center gap-3">
+      <Page.BodyHeader class="flex-col items-start! gap-3 md:items-center lg:flex-row">
         <Tabs.Root bind:value={kind} class="min-w-0 flex-1" onValueChange={handleKindChange}>
           <Tabs.List class="grid h-auto w-full grid-cols-3 md:grid-cols-6">
             {#each kindOptions as option (option)}
@@ -269,7 +269,7 @@
             bind:value={search}
           />
           <Select.Root type="single" bind:value={status}>
-            <Select.Trigger class="min-w-[160px]">
+            <Select.Trigger class="min-w-[80px]">
               <p>{$t(`media_manager.filters.status_options.${status}`)}</p>
             </Select.Trigger>
             <Select.Content>

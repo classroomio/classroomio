@@ -24,33 +24,40 @@
   const contentItems = $derived(
     contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items
   );
-  const lessonItems = $derived(contentItems.filter((item) => item.type === ContentType.Lesson));
+  const navigableContentItems = $derived(
+    contentItems.filter((item) => item.type === ContentType.Lesson || item.type === ContentType.Exercise)
+  );
 
   let isFetching: boolean = $state(false);
+  let hasHandledNext = $state(false);
 
-  function findFirstIncompleteLesson() {
-    return lessonItems.find((lesson) => !lesson.isComplete && lesson.isUnlocked === true);
+  const isCourseLoadedForThisPage = $derived(courseApi.course?.id === courseId);
+  const canResolveNext = $derived(isCourseLoadedForThisPage && navigableContentItems.length > 0 && !hasHandledNext);
+
+  function findFirstIncompleteContent() {
+    return navigableContentItems.find((item) => !item.isComplete && item.isUnlocked === true);
   }
 
-  function onNextQuery(lessons) {
-    if (!isFetching && lessons.length > 0) {
-      const incompleteLesson = findFirstIncompleteLesson();
-
-      if (incompleteLesson) {
-        goto(`/courses/${courseId}/lessons/${incompleteLesson.id}`);
-      } else {
-        goto(`/courses/${courseId}/lessons`);
-      }
-    }
-  }
-
-  let shouldGoToNextLesson = $derived(query.get('next') === 'true');
   $effect(() => {
-    !isFetching && shouldGoToNextLesson && onNextQuery(lessonItems);
+    if (!canResolveNext || isFetching || query.get('next') !== 'true') return;
+
+    hasHandledNext = true;
+    const incompleteContent = findFirstIncompleteContent();
+    if (incompleteContent) {
+      if (incompleteContent.type === ContentType.Lesson) {
+        goto(`/courses/${courseId}/lessons/${incompleteContent.id}`);
+      } else {
+        goto(`/courses/${courseId}/exercises/${incompleteContent.id}`);
+      }
+    } else {
+      goto(`/courses/${courseId}/lessons`);
+    }
   });
+
+  const shouldShowNextPlaceholder = $derived(query.get('next') === 'true');
 </script>
 
-{#if shouldGoToNextLesson}
+{#if shouldShowNextPlaceholder}
   <Empty
     title={$t('course.navItem.lessons.no_lesson')}
     description={$t('course.navItem.lessons.share_your_knowledge')}

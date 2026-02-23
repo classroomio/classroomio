@@ -8,53 +8,63 @@
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import { courseApi, lessonApi } from '$features/course/api';
-  import { getCourseContent } from '$features/course/utils/content';
+  import { getOrderedNavigableContent, getContentRoute } from '$features/course/utils/content';
   import { ContentType } from '@cio/utils/constants/content';
   import { snackbar } from '$features/ui/snackbar/store';
+  import type { CourseContentItem } from '$features/course/utils/types';
 
   interface Props {
-    lessonId: string;
+    lessonId?: string;
     courseId: string;
+    /** When on an exercise page, pass this to show prev/next content in content order (no mark-complete). */
+    exerciseId?: string;
   }
 
-  let { lessonId, courseId }: Props = $props();
+  let { lessonId, courseId, exerciseId }: Props = $props();
 
   let isMarkingComplete = $state(false);
 
-  const contentData = $derived(getCourseContent(courseApi.course));
-  const contentItems = $derived(
-    contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items
-  );
-  const lessonItems = $derived(contentItems.filter((item) => item.type === ContentType.Lesson));
+  const navigableContentItems = $derived(getOrderedNavigableContent(courseApi.course));
 
-  const isNextOrPrevDisabled = (currentLessonId: string, isPrev: boolean) => {
-    const index = lessonItems.findIndex((lesson) => lesson.id === currentLessonId);
+  const lessonItems = $derived(navigableContentItems.filter((item) => item.type === ContentType.Lesson));
 
-    return isPrev ? !lessonItems[index - 1] : !lessonItems[index + 1];
-  };
+  /** Prev/next content items in full content order (immediate neighbors; locked content is hidden in the UI so we don't skip). */
+  const prevNextContent = $derived.by(() => {
+    const currentId = lessonId ?? exerciseId;
+    const currentType = lessonId ? ContentType.Lesson : ContentType.Exercise;
+    if (!currentId) return { prev: null, next: null };
+    const idx = navigableContentItems.findIndex((item) => item.type === currentType && item.id === currentId);
+    if (idx < 0) return { prev: null, next: null };
+    return {
+      prev: navigableContentItems[idx - 1] ?? null,
+      next: navigableContentItems[idx + 1] ?? null
+    };
+  });
 
-  const goToNextOrPrevLesson = (currentLessonId: string, isPrev: boolean) => {
-    const isDisabled = isNextOrPrevDisabled(currentLessonId, isPrev);
-
-    if (isDisabled) return;
-
-    const index = lessonItems.findIndex((lesson) => lesson.id === currentLessonId);
-    const nextOrPrevLesson = isPrev ? lessonItems[index - 1] : lessonItems[index + 1];
-
-    const isLocked = $globalStore.isStudent && !nextOrPrevLesson.isUnlocked;
-
-    if (isLocked) return;
-
-    const path = `/courses/${courseApi.course?.id}/lessons/${nextOrPrevLesson.id}`;
+  function goToContent(target: CourseContentItem | null) {
+    if (!target) return;
+    const courseIdResolved = courseApi.course?.id;
+    if (!courseIdResolved) return;
+    const path = getContentRoute(courseIdResolved, target);
+    if (!path) return;
     goto(resolve(path, {}));
-  };
+  }
 
-  const isPrevDisabled = $derived(isNextOrPrevDisabled(lessonId, true));
-  const isNextDisabled = $derived(isNextOrPrevDisabled(lessonId, false));
+  const isPrevDisabled = $derived(!prevNextContent.prev);
+  const isNextDisabled = $derived(!prevNextContent.next);
   const isLessonComplete = $derived.by(() => {
-    const lesson = lessonItems.find((lesson) => lesson.id === lessonId);
+    if (!lessonId) return false;
+    const lesson = lessonItems.find((l) => l.id === lessonId);
     return lesson?.isComplete ?? false;
   });
+
+  const showMarkComplete = $derived(!!lessonId && !exerciseId);
+
+  const currentLessonItem = $derived(lessonId ? lessonItems.find((l) => l.id === lessonId) : null);
+  const isLessonLocked = $derived(
+    $globalStore.isStudent && currentLessonItem && !(currentLessonItem.isUnlocked ?? false)
+  );
+  const isMarkCompleteDisabled = $derived(isMarkingComplete || isLessonLocked);
 
   async function markLessonComplete(currentLessonId: string) {
     isMarkingComplete = true;
@@ -108,22 +118,24 @@
 </script>
 
 <div class="flex items-center gap-2">
-  <Button
-    size="sm"
-    variant="secondary"
-    onclick={() => markLessonComplete(lessonId)}
-    loading={isMarkingComplete}
-    disabled={isMarkingComplete}
-  >
-    <CircleCheckIcon size={14} filled={isLessonComplete} />
-    <span class="text-xs">{$t('course.navItem.lessons.mark_as')} {$t('course.navItem.lessons.complete')}</span>
-  </Button>
+  {#if showMarkComplete && lessonId}
+    <Button
+      size="sm"
+      variant="secondary"
+      onclick={() => markLessonComplete(lessonId)}
+      loading={isMarkingComplete}
+      disabled={isMarkCompleteDisabled}
+    >
+      <CircleCheckIcon size={14} filled={isLessonComplete} />
+      <span class="text-xs">{$t('course.navItem.lessons.mark_as')} {$t('course.navItem.lessons.complete')}</span>
+    </Button>
+  {/if}
 
   <div class="flex items-center gap-1">
     <Button
       size="icon-sm"
       variant="outline"
-      onclick={() => goToNextOrPrevLesson(lessonId, true)}
+      onclick={() => goToContent(prevNextContent.prev)}
       disabled={isPrevDisabled}
       aria-label={$t('course.navItem.lessons.prev')}
       title={$t('course.navItem.lessons.prev')}
@@ -134,7 +146,7 @@
     <Button
       size="icon-sm"
       variant="outline"
-      onclick={() => goToNextOrPrevLesson(lessonId, false)}
+      onclick={() => goToContent(prevNextContent.next)}
       disabled={isNextDisabled}
       aria-label={$t('course.navItem.lessons.next')}
       title={$t('course.navItem.lessons.next')}

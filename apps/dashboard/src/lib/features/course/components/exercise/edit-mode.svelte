@@ -177,7 +177,9 @@
               }}
             >
               <Select.Trigger class="w-[180px]">
-                {question?.questionType?.label ? $t(question.questionType.label) : 'Select type'}
+                {question?.questionType?.label
+                  ? $t(question.questionType.label)
+                  : $t('course.navItem.lessons.exercises.all_exercises.edit_mode.select_type')}
               </Select.Trigger>
               <Select.Content>
                 {#each QUESTION_TYPES as type}

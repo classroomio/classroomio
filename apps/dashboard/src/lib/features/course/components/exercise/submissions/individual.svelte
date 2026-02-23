@@ -68,7 +68,7 @@
         >
           <img
             src={student.submitted_by.profile.avatar_url ? student.submitted_by.profile.avatar_url : defaultImg}
-            alt="student"
+            alt={$t('course.navItem.lessons.exercises.all_exercises.analytics.individual.student_avatar')}
             class="m-1 max-h-10 w-10 rounded-full bg-white"
           />
         </div>

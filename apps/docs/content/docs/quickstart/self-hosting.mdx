@@ -59,6 +59,25 @@ We use Cloudflare R2 for video uploading within the course builder. It is not re
 
 <Callout title="Work in Progress">This section is a work in progress.</Callout>
 
+## SSO Configuration
+
+<Callout type="warning" title="Enterprise License Required">
+  SSO is an Enterprise feature. For self-hosted instances, you need an **Enterprise license** to use SSO.
+  [Book a call](http://cal.com/classroomio/enterprise) to get your license.
+</Callout>
+
+For Enterprise SSO support, you need to configure the following:
+
+1. **Trusted Origins**: Add your IdP domains to `TRUSTED_ORIGINS`:
+   ```zsh
+   TRUSTED_ORIGINS="https://app.classroomio.com,https://your-org.okta.com,https://accounts.google.com"
+   ```
+
+2. **Callback URLs**: Ensure your `SERVER_URL` and `PUBLIC_SERVER_URL` are correctly set. SSO callbacks will be:
+   - `{SERVER_URL}/api/auth/sso/callback/{providerId}`
+
+3. **License Check**: The system will verify your Enterprise license before allowing SSO configuration. Without a valid license, the SSO settings page will show an upgrade prompt.
+
 ## Deploy on Railway
 
 Now you have everything you need and you are ready to deploy the api and dashboard.
@@ -94,6 +113,10 @@ CLOUDFLARE_ACCOUNT_ID=""
 CLOUDFLARE_BUCKET_DOMAIN=""
 CLOUDFLARE_SECRET_ACCESS_KEY=""
 SENTRY_DNS=""
+
+# SSO (Optional)
+# For enterprise SSO with SAML (future support)
+# SSO_ENCRYPTION_KEY="your-32-character-secret-key"
 ```
 
 <Callout title="Learn More">

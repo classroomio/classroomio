@@ -334,7 +334,7 @@ Feature pages contain all business logic and should be placed in `lib/features/[
   <Sidebar.Inset>
     <AppHeader />
 
-    <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4">
+    <div class="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 px-4">
       {@render children?.()}
     </div>
   </Sidebar.Inset>
@@ -360,7 +360,7 @@ Feature pages contain all business logic and should be placed in `lib/features/[
   <Sidebar.Inset>
     <LmsHeader />
 
-    <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4">
+    <div class="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 px-4">
       {@render children?.()}
     </div>
   </Sidebar.Inset>

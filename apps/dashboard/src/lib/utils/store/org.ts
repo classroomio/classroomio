@@ -21,6 +21,10 @@ export const currentOrg: Writable<AccountOrg> = writable({
     course: { grading: true, newsfeed: true },
     dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' }
   },
+  disableEmailPassword: false,
+  disableGoogleAuth: false,
+  disableSignup: false,
+  disableSignupMessage: '',
   favicon: '',
   id: '',
   isCustomDomainVerified: false,
@@ -85,6 +89,14 @@ export const isFreePlan = derived(currentOrg, ($currentOrg) => {
   const plan = getActivePlan($currentOrg);
 
   return !plan || plan.planName === PLAN.BASIC;
+});
+
+export const isEnterprisePlan = derived(currentOrg, ($currentOrg) => {
+  if (PUBLIC_IS_SELFHOSTED === 'true') return true;
+
+  const plan = getActivePlan($currentOrg);
+
+  return plan?.planName === PLAN.ENTERPRISE;
 });
 
 export const currentOrgMaxAudience = derived(currentOrgPlan, ($plan) =>

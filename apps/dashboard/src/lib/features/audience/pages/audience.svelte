@@ -1,7 +1,6 @@
 <script lang="ts">
   import * as Table from '@cio/ui/base/table';
-  import { page as pageStore } from '$app/state';
-  import { resolve } from '$app/paths';
+  import { page } from '$app/state';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { Search } from '@cio/ui/custom/search';
   import * as Pagination from '@cio/ui/base/pagination';
@@ -90,7 +89,7 @@
               <Table.Row>
                 <Table.Cell>
                   <a
-                    href={resolve(`${pageStore.url.href}/${row.id}`)}
+                    href={`${page.url.href}/${row.id}`}
                     class="ui:text-primary flex items-center gap-2 hover:underline"
                   >
                     <Avatar.Root class="h-5 w-5">

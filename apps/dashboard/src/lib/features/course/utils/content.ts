@@ -43,3 +43,13 @@ export function getContentRoute(courseId: string, item: ContentItem) {
 export function getCourseContent(course: Course | null) {
   return course?.content ?? EMPTY_CONTENT;
 }
+
+const NAVIGABLE_CONTENT_TYPES = [CourseContentType.Lesson, CourseContentType.Exercise] as const;
+
+export function getOrderedNavigableContent(course: Course | null): ContentItem[] {
+  const content = getCourseContent(course);
+  const items = content.grouped ? content.sections.flatMap((s) => s.items) : content.items;
+  return items.filter((item) =>
+    NAVIGABLE_CONTENT_TYPES.includes(item.type as (typeof NAVIGABLE_CONTENT_TYPES)[number])
+  );
+}

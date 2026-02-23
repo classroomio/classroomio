@@ -33,7 +33,7 @@
   import { RoleBasedSecurity } from '$features/ui';
 
   import {
-    LessonNavigationActions,
+    ContentNavigationActions,
     LanguageSelector,
     LessonPageEditHeader,
     Comments,
@@ -65,6 +65,8 @@
 
   const lessonTitle = $derived(lessonApi.lesson?.title || 'Lesson');
   const isLessonUnlocked = $derived(lessonApi.lesson?.isUnlocked ?? false);
+  $inspect(isLessonUnlocked);
+  $inspect($globalStore.isStudent);
 
   function setModeQueryParam(value: (typeof MODES)[keyof typeof MODES]) {
     const params = new URLSearchParams($page.url.searchParams);
@@ -324,7 +326,7 @@
   <Page.Action>
     <div class="flex items-center gap-2">
       {#if mode === MODES.view && $globalStore.isStudent}
-        <LessonNavigationActions {lessonId} {courseId} />
+        <ContentNavigationActions {lessonId} {courseId} />
       {/if}
 
       <RoleBasedSecurity allowedRoles={[1, 2]}>
@@ -353,7 +355,15 @@
 <Page.Body>
   {#snippet child()}
     <div class="overflow-x-hidden lg:w-full xl:w-11/12">
-      {#if mode === MODES.edit}
+      {#if $globalStore.isStudent && lessonApi.lesson && !isLessonUnlocked}
+        <Empty
+          title={$t('course.navItem.lessons.content_locked_title')}
+          description={$t('course.navItem.lessons.content_locked_description')}
+          icon={VideoIcon}
+          variant="page"
+          class="text-center"
+        />
+      {:else if mode === MODES.edit}
         <UnderlineTabs.Root
           bind:value={currentTabValue}
           onValueChange={(e) => {

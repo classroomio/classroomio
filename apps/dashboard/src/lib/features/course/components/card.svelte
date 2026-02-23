@@ -12,6 +12,8 @@
   import * as Item from '@cio/ui/base/item';
   import { Progress } from '@cio/ui/base/progress';
 
+  import pluralize from 'pluralize';
+
   import { Image } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
   import { calcCourseDiscount } from '$lib/utils/functions/course';
@@ -178,7 +180,7 @@
               {:else if isLMS}
                 {#if !isExplore}
                   <div class="flex w-3/4 items-center gap-2">
-                    <Progress value={50} />
+                    <Progress value={progressRate} />
                     <p class="ui:text-muted-foreground text-xs">{progressRate}%</p>
                   </div>
                 {/if}
@@ -203,8 +205,7 @@
           {:else if !isOnLandingPage}
             <div class="flex flex-col justify-between">
               <p class="pl-2 text-xs dark:text-white">
-                {totalStudents}
-                {$t('courses.course_card.students')}
+                {pluralize($t('courses.course_card.students'), totalStudents, true)}
               </p>
             </div>
           {/if}

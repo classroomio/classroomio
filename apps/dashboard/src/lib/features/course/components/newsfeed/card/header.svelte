@@ -5,6 +5,7 @@
   import { calDateDiff } from '$lib/utils/functions/date';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { sanitizeHtml } from '@cio/ui/tools/sanitize';
+  import { t } from '$lib/utils/functions/translations';
 
   import type { Feed } from '$features/course/utils/types';
   import { HTMLRender, RoleBasedSecurity } from '$features/ui';
@@ -23,7 +24,11 @@
   <div class="mb-2 flex justify-between">
     <span class="flex items-center gap-3">
       <div class="h-9 w-9">
-        <img src={feed.authorAvatarUrl || ''} alt="users banner" class="h-full w-full rounded-full object-cover" />
+        <img
+          src={feed.authorAvatarUrl || ''}
+          alt={$t('course.navItem.news_feed.user_avatar_alt')}
+          class="h-full w-full rounded-full object-cover"
+        />
       </div>
       <span>
         <p class="text-base font-semibold capitalize">{feed.authorFullname || ''}</p>
@@ -40,10 +45,12 @@
         </DropdownMenu.Trigger>
         <DropdownMenu.Content align="end">
           <DropdownMenu.Item onclick={() => onPin(feed.id, feed.isPinned)}>
-            {feed.isPinned ? 'Unpin' : 'Pin'}
+            {feed.isPinned ? $t('course.navItem.news_feed.card.unpin') : $t('course.navItem.news_feed.card.pin')}
           </DropdownMenu.Item>
-          <DropdownMenu.Item onclick={onEdit}>Edit</DropdownMenu.Item>
-          <DropdownMenu.Item class="text-red-600" onclick={onRequestDelete}>Delete</DropdownMenu.Item>
+          <DropdownMenu.Item onclick={onEdit}>{$t('course.navItem.news_feed.card.edit')}</DropdownMenu.Item>
+          <DropdownMenu.Item class="text-red-600" onclick={onRequestDelete}
+            >{$t('course.navItem.news_feed.card.delete')}</DropdownMenu.Item
+          >
         </DropdownMenu.Content>
       </DropdownMenu.Root>
     </RoleBasedSecurity>

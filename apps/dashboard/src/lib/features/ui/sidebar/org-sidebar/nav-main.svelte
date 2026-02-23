@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { currentOrgPath, currentOrg, isOrgAdmin } from '$lib/utils/store/org';
+  import { currentOrgPath, currentOrg, isOrgAdmin, isFreePlan } from '$lib/utils/store/org';
   import * as Collapsible from '@cio/ui/base/collapsible';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { t } from '$lib/utils/functions/translations';
-  import { isActive } from '$lib/utils/functions/app';
   import { page } from '$app/state';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+  import RocketIcon from '@lucide/svelte/icons/rocket';
   import { getOrgNavigationItems } from '$features/ui/navigation/org-navigation';
   import { HoverableItem } from '@cio/ui/custom/moving-icons';
 
-  const items = $derived(getOrgNavigationItems($currentOrgPath, $currentOrg, $isOrgAdmin, $t, page.url.pathname));
-
-  const pathWithQuery = $derived(page.url.pathname + page.url.search);
+  const items = $derived(
+    getOrgNavigationItems($currentOrgPath, $currentOrg, $isOrgAdmin, $t, page.url.pathname + page.url.search)
+  );
 </script>
 
 <Sidebar.Group>
@@ -53,10 +53,13 @@
                 <Sidebar.MenuSub>
                   {#each item.items ?? [] as subItem (subItem.title)}
                     <Sidebar.MenuSubItem>
-                      <Sidebar.MenuSubButton isActive={isActive(pathWithQuery, subItem.url, undefined, true)}>
+                      <Sidebar.MenuSubButton isActive={subItem.isActive}>
                         {#snippet child({ props })}
                           <a href={subItem.url} {...props}>
                             <span>{subItem.title}</span>
+                            {#if subItem.isPaid && $isFreePlan}
+                              <RocketIcon class="text-primary size-4" />
+                            {/if}
                           </a>
                         {/snippet}
                       </Sidebar.MenuSubButton>

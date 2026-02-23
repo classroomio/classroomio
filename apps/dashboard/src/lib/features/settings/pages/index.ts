@@ -6,3 +6,7 @@ export { default as OrgPage } from './org.svelte';
 export { default as LandingpagePage } from './landingpage.svelte';
 export { default as BillingPage } from './billing.svelte';
 export { default as IntegrationsPage } from './integrations.svelte';
+export { default as AuthPage } from './auth.svelte';
+// Keep old exports for backward compatibility
+export { default as SsoPage } from './sso.svelte';
+export { default as TokenAuthPage } from './token-auth.svelte';

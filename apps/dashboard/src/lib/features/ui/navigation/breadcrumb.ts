@@ -14,6 +14,7 @@ export function generateBreadcrumbs(
   searchParams: string,
   navItems: NavItem[],
   currentOrgPath: string,
+  t: (key: string) => string,
   pageData?: { breadcrumb?: string } // Optional page data for dynamic titles
 ): BreadcrumbItem[] {
   const breadcrumbs: BreadcrumbItem[] = [];
@@ -57,7 +58,7 @@ export function generateBreadcrumbs(
     const href = matchedNavItem.useHashUrl ? `${currentOrgPath}${matchedNavItem.path}` : matchedNavItem.url;
 
     breadcrumbs.push({
-      label: matchedNavItem.title,
+      label: t(matchedNavItem.title),
       href: href
     });
   }
@@ -67,7 +68,7 @@ export function generateBreadcrumbs(
     const subItem = matchedNavItem.items.find((sub) => isActive(pathWithQuery, sub.url, undefined, true));
     if (subItem) {
       breadcrumbs.push({
-        label: subItem.title,
+        label: t(subItem.title),
         href: subItem.url
       });
       return breadcrumbs;
@@ -83,7 +84,7 @@ export function generateBreadcrumbs(
       const nestedRoute = matchedNavItem.nestedRoutes.find((route) => route.path === secondSegment);
       if (nestedRoute) {
         breadcrumbs.push({
-          label: nestedRoute.titleKey, // Could be translated if needed
+          label: t(nestedRoute.titleKey), // Could be translated if needed
           href: `${currentOrgPath}${matchedNavItem.path}/${nestedRoute.path}`
         });
         return breadcrumbs;
@@ -96,7 +97,7 @@ export function generateBreadcrumbs(
       const isStaticRoute = matchedNavItem.nestedRoutes?.some((route) => route.path === secondSegment);
       if (!isStaticRoute && pageData?.breadcrumb) {
         breadcrumbs.push({
-          label: pageData.breadcrumb,
+          label: t(pageData.breadcrumb),
           href: `${currentOrgPath}${matchedNavItem.path}/${secondSegment}`
         });
       }

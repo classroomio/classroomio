@@ -22,7 +22,7 @@
 
 <div class="flex h-fit w-full flex-col-reverse justify-between rounded-md border px-4 py-2 md:flex-row md:items-center">
   <div class="w-full md:w-[75%] lg:w-[80%]">
-    <p class="mb-5 w-4/6 text-xs font-normal lg:text-xl">
+    <p class="mb-5 w-4/6 font-normal lg:text-xl">
       {$currentOrg.customization.dashboard.bannerText
         ? $currentOrg.customization.dashboard.bannerText
         : $t('dashboard.lms_dashboard_hero')}

@@ -9,7 +9,7 @@
   import { setTheme } from '$lib/utils/functions/theme';
   import { initOrgAnalytics } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, isOrgStudent } from '$lib/utils/store/org';
   import { appInitApi } from '$features/app/init.svelte';
   import merge from 'lodash/merge';
   import { onMount } from 'svelte';
@@ -110,6 +110,15 @@
         isOrgSite: data.isOrgSite,
         orgSiteName: data.orgSiteName
       });
+    }
+  });
+
+  $effect(() => {
+    // Means it hasn't been set yet.
+    if ($isOrgStudent === null) return;
+
+    if ($isOrgStudent !== $globalStore.isStudent) {
+      globalStore.update((s) => ({ ...s, isStudent: !!$isOrgStudent }));
     }
   });
 

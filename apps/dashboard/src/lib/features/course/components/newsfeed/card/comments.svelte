@@ -8,6 +8,7 @@
   import { profile } from '$lib/utils/store/user';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { calDateDiff } from '$lib/utils/functions/date';
+  import { t } from '$lib/utils/functions/translations';
   import { newsfeedApi } from '$features/course/api';
 
   import { Button } from '@cio/ui/base/button';
@@ -132,16 +133,18 @@
       class="justify-start"
     >
       <UsersIcon size={16} />
-      <p class="py-2 text-sm">{pluralize('comment', totalCount, true)}</p>
+      <p class="py-2 text-sm">{pluralize($t('course.navItem.news_feed.comments.comment'), totalCount, true)}</p>
 
       {#if totalCount > shownCount}
-        <span class="ml-auto text-xs text-gray-600">Showing {shownCount} of {totalCount}</span>
+        <span class="ml-auto text-xs text-gray-600"
+          >{$t('course.navItem.news_feed.comments.showing_of', { shown: shownCount, total: totalCount })}</span
+        >
       {/if}
     </Button>
 
     {#if shownCount > 1}
       <Button variant="ghost" size="sm" onclick={minimize}>
-        <span class="ml-auto text-xs text-gray-600">Hide comments</span>
+        <span class="ml-auto text-xs text-gray-600">{$t('course.navItem.news_feed.comments.hide')}</span>
       </Button>
     {/if}
   </div>
@@ -155,7 +158,7 @@
               <div class="h-9 w-9">
                 <img
                   src={commentItem.authorAvatarUrl || ''}
-                  alt="users banner"
+                  alt={$t('course.navItem.news_feed.user_avatar_alt')}
                   class="h-full w-full rounded-full object-cover"
                 />
               </div>
@@ -177,7 +180,7 @@
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content align="end">
                   <DropdownMenu.Item class="text-red-600" onclick={() => onDeleteComment(commentItem.id)}>
-                    Delete
+                    {$t('course.navItem.news_feed.comments.delete')}
                   </DropdownMenu.Item>
                 </DropdownMenu.Content>
               </DropdownMenu.Root>
@@ -191,14 +194,18 @@
   <!-- Input for new comment -->
   <div class="flex items-center justify-between gap-2">
     <div class="h-7 w-7">
-      <img src={author.avatarUrl} alt="users banner" class="h-full w-full rounded-full object-cover" />
+      <img
+        src={author.avatarUrl}
+        alt={$t('course.navItem.news_feed.user_avatar_alt')}
+        class="h-full w-full rounded-full object-cover"
+      />
     </div>
     <div class="flex-1">
       <input
         type="text"
         bind:value={comment}
         onkeydown={handleAddNewComment}
-        placeholder="Add class comment"
+        placeholder={$t('course.navItem.news_feed.comments.placeholder')}
         class="w-full rounded-3xl border border-gray-200 bg-transparent p-1 pl-2 text-sm disabled:opacity-50"
         disabled={isSubmitting}
         required
@@ -210,7 +217,7 @@
       class="rounded-full"
       loading={isSubmitting}
       onclick={handleAddNewComment}
-      aria-label="Submit comment"
+      aria-label={$t('course.navItem.news_feed.comments.submit_aria')}
     >
       <SendHorizontalIcon size={16} />
     </Button>

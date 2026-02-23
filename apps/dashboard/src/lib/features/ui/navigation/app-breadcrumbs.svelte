@@ -19,6 +19,7 @@
       page.url.search,
       navItems,
       $currentOrgPath,
+      $t,
       page.data as { breadcrumb?: string } | undefined
     )
   );

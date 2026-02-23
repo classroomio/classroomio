@@ -63,6 +63,22 @@ export const user = pgTable('user', {
   isAnonymous: boolean('is_anonymous')
 });
 
+export const ssoProvider = pgTable('sso_provider', {
+  id: uuid()
+    .default(sql`gen_random_uuid()`)
+    .primaryKey()
+    .notNull(),
+  issuer: text('issuer').notNull(),
+  oidcConfig: text('oidc_config'),
+  samlConfig: text('saml_config'),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  providerId: text('provider_id').notNull().unique(),
+  organizationId: text('organization_id'),
+  domain: text('domain').notNull()
+});
+
 export const session = pgTable('session', {
   id: uuid()
     .default(sql`gen_random_uuid()`)
@@ -1698,7 +1714,11 @@ export const organization = pgTable(
     customCode: text(),
     customDomain: text(),
     favicon: text(),
-    isCustomDomainVerified: boolean().default(false)
+    isCustomDomainVerified: boolean().default(false),
+    disableSignup: boolean('disable_signup').default(false),
+    disableSignupMessage: text('disable_signup_message'),
+    disableEmailPassword: boolean('disable_email_password').default(false),
+    disableGoogleAuth: boolean('disable_google_auth').default(false)
   },
   (table) => [
     unique('organization_siteName_key').on(table.siteName),
@@ -1864,3 +1884,99 @@ export const exerciseTemplate = pgTable('exercise_template', {
     ];
   }>()
 });
+
+// Organization SSO provider type (our app enum for display/categorization)
+export const organizationSsoProviderType = pgEnum('SSO_PROVIDER', ['OKTA', 'GOOGLE_WORKSPACE', 'AUTH0']);
+
+// Organization Auth Policy - stores SSO policies per org
+export const organizationAuthPolicy = pgTable(
+  'organization_auth_policy',
+  {
+    organizationId: uuid('organization_id')
+      .notNull()
+      .primaryKey()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    forceSso: boolean('force_sso').default(false).notNull(),
+    autoJoinSsoDomains: boolean('auto_join_sso_domains').default(false).notNull(),
+    breakGlassEnabled: boolean('break_glass_enabled').default(true).notNull(),
+    defaultRoleId: bigint('default_role_id', { mode: 'number' })
+      .default(sql`'3'`)
+      .notNull(),
+    roleMapping: jsonb('role_mapping').default({}).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.defaultRoleId],
+      foreignColumns: [role.id],
+      name: 'organization_auth_policy_default_role_id_fkey'
+    }),
+    index('idx_organization_auth_policy_org_id').on(table.organizationId)
+  ]
+);
+
+// Organization SSO Config - metadata for SSO connections (Better Auth stores the actual config)
+export const organizationSsoConfig = pgTable(
+  'organization_sso_config',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .unique()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    betterAuthProviderId: text('better_auth_provider_id').notNull(),
+    provider: organizationSsoProviderType().notNull(),
+    displayName: text('display_name').notNull(),
+    domain: text().notNull(),
+    isActive: boolean('is_active').default(false).notNull(),
+    createdByProfileId: uuid('created_by_profile_id')
+      .notNull()
+      .references(() => profile.id),
+    updatedByProfileId: uuid('updated_by_profile_id').references(() => profile.id),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    index('idx_organization_sso_config_org_id').on(table.organizationId),
+    index('idx_organization_sso_config_domain').on(table.domain),
+    index('idx_organization_sso_config_provider_id').on(table.betterAuthProviderId)
+  ]
+);
+
+export const organizationTokenAuth = pgTable(
+  'organization_token_auth',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .unique()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    signingSecret: text('signing_secret').notNull(),
+    isActive: boolean('is_active').default(false).notNull(),
+    createdByProfileId: uuid('created_by_profile_id')
+      .notNull()
+      .references(() => profile.id),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [index('idx_organization_token_auth_org_id').on(table.organizationId)]
+);

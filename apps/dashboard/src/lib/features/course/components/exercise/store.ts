@@ -21,9 +21,11 @@ const initAnswerState = {
   finalTotalGrade: 0,
   currentQuestionIndex: 0,
   isFinished: false,
-  progressValue: 100,
+  progressValue: 0,
   status: STATUS.PENDING,
-  comment: ''
+  comment: '',
+  /** Set when exercise is finished so route knows not to overwrite questionnaire */
+  exerciseId: null as string | null
 };
 
 export const questionnaireMetaData = writable(initAnswerState);
@@ -53,12 +55,20 @@ export function clearQuestionnaireValidation() {
 }
 
 export function reset() {
-  questionnaireMetaData.update((metaData) => {
-    metaData.answers = {};
-    metaData.currentQuestionIndex = 0;
-    metaData.isFinished = false;
-    return metaData;
-  });
+  questionnaireMetaData.update((metaData) => ({
+    ...metaData,
+    answers: {},
+    scores: {},
+    grades: {},
+    currentQuestionIndex: 0,
+    isFinished: false,
+    exerciseId: null,
+    totalPossibleGrade: 0,
+    finalTotalGrade: 0,
+    status: STATUS.PENDING,
+    comment: '',
+    progressValue: 100
+  }));
 
   clearQuestionnaireValidation();
 }

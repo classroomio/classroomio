@@ -109,14 +109,17 @@
     </Select.Root>
   {/if}
   {@render filterControls?.()}
-  {#if $courseMetaDeta.view === 'list'}
-    <IconButton onclick={() => setViewPreference('grid')}>
-      <GridIcon size={16} />
-    </IconButton>
-  {:else}
-    <IconButton onclick={() => setViewPreference('list')}>
-      <ListIcon size={16} />
-    </IconButton>
+
+  {#if !isLMS}
+    {#if $courseMetaDeta.view === 'list'}
+      <IconButton onclick={() => setViewPreference('grid')}>
+        <GridIcon size={16} />
+      </IconButton>
+    {:else}
+      <IconButton onclick={() => setViewPreference('list')}>
+        <ListIcon size={16} />
+      </IconButton>
+    {/if}
   {/if}
 </Page.BodyHeader>
 
@@ -153,9 +156,9 @@
             <CourseList
               id={courseData.id}
               title={courseData.title}
-              type={$t(`course.navItem.settings.${courseData.type.toLowerCase()}`)}
+              type={$t(`course.navItem.settings.${courseData.type?.toLowerCase()}`)}
               description={courseData.description}
-              isPublished={courseData.isPublished}
+              isPublished={courseData.isPublished ?? false}
               totalLessons={courseData.lessonCount}
               totalStudents={'totalStudents' in courseData ? courseData.totalStudents : 0}
               tags={('tags' in courseData && Array.isArray(courseData.tags) ? courseData.tags : []) as Array<{

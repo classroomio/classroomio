@@ -1,0 +1,193 @@
+---
+title: Enterprise SSO
+description: Configure Single Sign-On (SSO) with OIDC for your organization.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Enterprise SSO
+
+ClassroomIO supports Single Sign-On (SSO) via OpenID Connect (OIDC), allowing your organization members to sign in using your existing identity provider (IdP).
+
+<Callout type="info" title="Enterprise Feature">
+  SSO requires an **Enterprise** plan.
+  
+  **Cloud:** [Contact us](mailto:support@classroomio.com) to upgrade.
+  
+  **Self-hosted:** Requires an Enterprise license. [Book a call](http://cal.com/classroomio/enterprise) to get your license.
+</Callout>
+
+## Supported Providers
+
+We support OIDC-based SSO with the following identity providers:
+
+- **Okta**
+- **Google Workspace**
+- **Auth0**
+
+## How It Works
+
+### Org-Site Login
+When users visit your organization's custom domain (e.g., `yourorg.classroomio.com`), SSO is automatically detected and they can sign in directly with your IdP.
+
+### Shared App Login
+On the main ClassroomIO app (`app.classroomio.com`), users enter their email address first. If their email domain matches your configured SSO domain, they'll be prompted to sign in via SSO.
+
+## Provider Setup Guides
+
+### Google Workspace
+
+1. **Create OAuth App in Google Cloud Console:**
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Navigate to **APIs & Services** → **Credentials**
+   - Click **Create Credentials** → **OAuth client ID**
+   - Configure the OAuth consent screen (choose "External" for testing)
+   - Create OAuth client ID:
+     - Application type: **Web application**
+     - Name: `ClassroomIO SSO`
+     - Authorized redirect URIs: (leave empty for now, you'll add this after Step 2)
+
+2. **In ClassroomIO:**
+   - Go to **Settings** → **SSO**
+   - Select **Google Workspace**
+   - Fill in:
+     - **Issuer URL**: `https://accounts.google.com`
+     - **Email Domain**: Your workspace domain (e.g., `yourcompany.com`)
+     - **Client ID**: From Google Cloud Console
+     - **Client Secret**: From Google Cloud Console
+   - Click **Create Connection**
+
+3. **Complete IdP Configuration:**
+   - Copy the **Callback URL** shown in ClassroomIO
+   - Go back to Google Cloud Console
+   - Edit your OAuth client and add the Callback URL to **Authorized redirect URIs**
+   - Save
+
+4. **Activate** the connection in ClassroomIO
+
+### Okta
+
+1. **Create OIDC App in Okta Admin:**
+   - Go to Okta Admin Dashboard
+   - Navigate to **Applications** → **Create App Integration**
+   - Select **OIDC - OpenID Connect**
+   - Application type: **Web Application**
+   - Sign-in redirect URIs: (leave empty, you'll add after Step 2)
+   - Grant type: **Authorization Code**
+
+2. **In ClassroomIO:**
+   - Go to **Settings** → **SSO**
+   - Select **Okta**
+   - Fill in:
+     - **Issuer URL**: Your Okta domain (e.g., `https://your-org.okta.com`)
+     - **Email Domain**: Your company domain
+     - **Client ID**: From Okta app
+     - **Client Secret**: From Okta app
+   - Click **Create Connection**
+
+3. **Complete IdP Configuration:**
+   - Copy the **Callback URL** from ClassroomIO
+   - In Okta, edit your app and add the Callback URL to **Sign-in redirect URIs**
+   - Ensure these scopes are allowed: `openid`, `email`, `profile`
+
+4. **Activate** the connection in ClassroomIO
+
+### Auth0
+
+1. **Create Application in Auth0:**
+   - Go to Auth0 Dashboard
+   - Navigate to **Applications** → **Create Application**
+   - Name: `ClassroomIO SSO`
+   - Type: **Regular Web Application**
+   - Allowed Callback URLs: (leave empty, add after Step 2)
+
+2. **In ClassroomIO:**
+   - Go to **Settings** → **SSO**
+   - Select **Auth0**
+   - Fill in:
+     - **Issuer URL**: Your Auth0 domain (e.g., `https://your-tenant.auth0.com`)
+     - **Email Domain**: Your company domain
+     - **Client ID**: From Auth0 app
+     - **Client Secret**: From Auth0 app
+   - Click **Create Connection**
+
+3. **Complete IdP Configuration:**
+   - Copy the **Callback URL** from ClassroomIO
+   - In Auth0, add the Callback URL to **Allowed Callback URLs**
+   - Ensure OIDC Conformant is enabled
+
+4. **Activate** the connection in ClassroomIO
+
+## Configuration Summary
+
+Required scopes in all IdPs:
+- `openid`
+- `email`
+- `profile`
+
+## Access Policies
+
+### Force SSO
+When enabled, all users must sign in via SSO. Email/password login is disabled for your organization. This is recommended for security compliance.
+
+### Auto-Join
+When enabled, users who sign in via SSO with a matching email domain are automatically added to your organization. Otherwise, they must be invited first.
+
+### Break-Glass Access
+Allows organization admins to bypass SSO with email/password in case of emergency (e.g., IdP outage). Keep this enabled for safety.
+
+## User Provisioning
+
+### JIT (Just-In-Time) Provisioning
+Users are automatically provisioned when they first sign in via SSO:
+
+1. If the user has a pending invitation, they join with the invited role
+2. If auto-join is enabled, they join with the default role (typically Student)
+3. If neither, they can join later via invitation
+
+### Role Mapping
+Map IdP groups to ClassroomIO roles:
+
+- Admins → `ROLE.ADMIN` (1)
+- Tutors → `ROLE.TUTOR` (2)
+- Students → `ROLE.STUDENT` (3)
+
+Configure this in your SSO policy settings.
+
+## Troubleshooting
+
+### "Failed to register SSO provider"
+- Verify your Issuer URL is correct and accessible
+- Check that your IdP supports OIDC (not just SAML)
+- Ensure the discovery endpoint exists at `{issuer}/.well-known/openid-configuration`
+
+### "Callback URL mismatch"
+- Copy the exact callback URL from the SSO settings page
+- Ensure it matches exactly in your IdP configuration
+
+### Users can't auto-join
+- Verify the email domain matches exactly (e.g., `company.com` not `@company.com`)
+- Check that "Auto-join" is enabled in your SSO policy
+- Ensure the user has a verified email from your domain
+
+## Security Notes
+
+- SSO secrets (client credentials) are encrypted at rest
+- All SSO login attempts are logged for audit purposes
+- Force SSO is enforced server-side, not just UI-level
+- Session management follows your IdP's policies
+
+## SAML Support
+
+SAML 2.0 support is planned for a future release. Currently, only OIDC is supported.
+
+## API Reference
+
+### Endpoints
+
+- `GET /sso/discover?email=user@domain.com` - Check if email uses SSO
+- `GET /sso/org/:orgId` - Get SSO info for an organization
+- `POST /organization/sso` - Create SSO connection (Admin)
+- `PUT /organization/sso/policy` - Update SSO policy (Admin)
+
+See the [API documentation](/docs/api) for full details.
