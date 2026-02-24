@@ -334,6 +334,14 @@
       "course_tags_updated": "Kurs-Tags aktualisiert",
       "fetch_failed": "Tags konnten nicht geladen werden",
       "save_failed": "Tag-Änderungen konnten nicht gespeichert werden"
+    },
+    "error_update": "Aktualisierung fehlgeschlagen",
+    "token_auth": {
+      "created": "Signaturgeheimnis erstellt. Speichern Sie es jetzt – es wird nicht mehr angezeigt.",
+      "rotated": "Signaturgeheimnis gedreht. Speichern Sie das neue Geheimnis – es wird nicht mehr angezeigt.",
+      "deleted": "Token-Authentifizierung entfernt.",
+      "activated": "Token-Authentifizierung aktiviert.",
+      "deactivated": "Token-Authentifizierung deaktiviert."
     }
   },
   "explore": {
@@ -376,7 +384,8 @@
     "back": "Zurück zu den Einstellungen",
     "download_lessons": "Führen Sie ein Upgrade durch, um Lektionen herunterzuladen",
     "download_course": "Upgrade zum Download-Kurs",
-    "required": "Upgrade erforderlich"
+    "required": "Upgrade erforderlich",
+    "enterprise_required": "Für diese Funktion ist ein Enterprise-Plan erforderlich."
   },
   "analytics": {
     "title": "Analytik",
@@ -417,7 +426,25 @@
     "no_students_description": "Für diesen Kurs sind noch keine Studierenden eingeschrieben. Studierende werden hier angezeigt, sobald sie dem Kurs beitreten.",
     "showing_students": "Zeigt {start} bis {end} von {total} Schülern",
     "no_analytics_data": "Keine Analytics-Daten",
-    "no_analytics_description": "Für diesen Kurs können keine Analysedaten geladen werden. Bitte versuchen Sie es später noch einmal oder wenden Sie sich an den Support, wenn das Problem weiterhin besteht."
+    "no_analytics_description": "Für diesen Kurs können keine Analysedaten geladen werden. Bitte versuchen Sie es später noch einmal oder wenden Sie sich an den Support, wenn das Problem weiterhin besteht.",
+    "student": "Student",
+    "student_progress_distribution": "Verteilung des Schülerfortschritts",
+    "grade_distribution": "Notenverteilung",
+    "progress_80_plus": "80 %+ Fortschritt",
+    "progress_60_79": "60-79 % Fortschritt",
+    "progress_below_60": "Unter 60 % Fortschritt",
+    "grade_90_plus": "90 %+ Note",
+    "grade_80_89": "80-89 % Note",
+    "grade_70_79": "70-79 % Note",
+    "grade_below_70": "Unter 70 % Grad",
+    "number_of_students": "Anzahl der Studierenden",
+    "progress_range": "Fortschrittsbereich",
+    "grade_range": "Notenbereich",
+    "no_progress_data": "Keine Fortschrittsdaten verfügbar",
+    "no_grade_data": "Keine Notendaten verfügbar",
+    "loading_chart": "Diagramm wird geladen...",
+    "no_data_default": "Keine Daten verfügbar",
+    "no_data_default_description": "Derzeit sind keine Daten zum Anzeigen vorhanden."
   },
   "audience": {
     "title": "Publikum",
@@ -795,7 +822,8 @@
         "export": {
           "csv": "Als CSV exportieren",
           "pdf": "Als PDF exportieren"
-        }
+        },
+        "avg_grade": "Durchschnittliche Note"
       },
       "submissions": {
         "title": "Eingereichte Übungen",
@@ -820,7 +848,9 @@
           "questions_tried": "Diese Punktzahl wurde aufgrund der Gesamtzahl der Versuche vergeben:",
           "delete_prompt": "Löschen",
           "delete_error": "Die Übermittlung konnte nicht gelöscht werden",
-          "delete_success": "Einreichung erfolgreich gelöscht"
+          "delete_success": "Einreichung erfolgreich gelöscht",
+          "student_avatar": "Studenten-Avatar",
+          "ai_icon": "KI"
         },
         "submission_status": {
           "submitted": "Eingereicht",
@@ -959,12 +989,14 @@
               "individual": {
                 "heading": "Individuell",
                 "answers": "Individuelle Antworten",
-                "no": "Es wurde keine Antwort gegeben"
+                "no": "Es wurde keine Antwort gegeben",
+                "student_avatar": "Student"
               },
               "summary": {
                 "heading": "Zusammenfassung",
                 "question_chart": "Fragendiagramme"
-              }
+              },
+              "loading_submissions": "Einsendungen werden geladen..."
             },
             "view_mode": {
               "no_question": "Für diese Übung wurde keine Frage hinzugefügt",
@@ -981,7 +1013,12 @@
               "submitted": "Eingereicht",
               "status_pending": "Status: Ausstehende Überprüfung",
               "status_graded": "Status: Überprüfung abgeschlossen",
-              "status_submitted": "Status: Eingereicht"
+              "status_submitted": "Status: Eingereicht",
+              "empty_description": "Klicken Sie zum Hinzufügen auf die Schaltfläche Bearbeiten.",
+              "empty_edit_hint_prefix": "Klicken Sie auf ",
+              "empty_edit_hint_suffix": " Schaltfläche zum Hinzufügen.",
+              "answers_required": "Bitte geben Sie vor dem Absenden mindestens eine Antwort an.",
+              "checking_submission": "Ich prüfe Ihre Einreichung..."
             },
             "edit_mode": {
               "delete_modal": "Übung löschen",
@@ -997,7 +1034,8 @@
                 "single": "Einzelne Antwort",
                 "multiple": "Mehrere Antworten",
                 "paragraph": "Absatz"
-              }
+              },
+              "select_type": "Typ auswählen"
             },
             "delete_confirmation": {
               "title": "Frage löschen",
@@ -1187,7 +1225,9 @@
           "description": "Sie können Lektionen jetzt in Abschnitte gruppieren, um Ihre Inhalte zu organisieren und das Lernen für Ihre Schüler reibungsloser zu gestalten.",
           "activate": "Aktivieren",
           "cancel": "Abbrechen"
-        }
+        },
+        "content_locked_title": "Dieser Inhalt ist gesperrt",
+        "content_locked_description": "Ihr Kursleiter hat diesen Inhalt noch nicht freigeschaltet. Vervollständigen Sie den vorherigen Inhalt oder schauen Sie später noch einmal vorbei."
       },
       "news_feed": {
         "heading": "Newsfeed",
@@ -1213,6 +1253,21 @@
           "placeholder": "Teilen Sie ein Update mit Ihren Schülern",
           "cancel": "Abbrechen",
           "post": "Beitrag"
+        },
+        "user_avatar_alt": "Benutzer-Avatar",
+        "comments": {
+          "comment": "Kommentar",
+          "showing_of": "Es werden {shown} von {total} angezeigt",
+          "hide": "Kommentare ausblenden",
+          "placeholder": "Klassenkommentar hinzufügen",
+          "submit_aria": "Kommentar abgeben",
+          "delete": "Löschen"
+        },
+        "card": {
+          "pin": "Pin",
+          "unpin": "Lösen",
+          "edit": "Bearbeiten",
+          "delete": "Löschen"
         }
       }
     },
@@ -1515,7 +1570,9 @@
       "learn": "Erfahren Sie mehr",
       "month": "Monat",
       "monthly": "Monatlich",
-      "annually": "Jährlich"
+      "annually": "Jährlich",
+      "popular": "Beliebt",
+      "per_org": "Pro Organisation"
     },
     "plan_names": {
       "free": "Kostenlos",
@@ -1821,10 +1878,134 @@
       "landing_page_tab": "Landingpage",
       "billing_tab": "Abrechnung",
       "integrations_tab": "Integrationen",
-      "language_tab": "Sprache"
+      "language_tab": "Sprache",
+      "auth_tab": "Authentifizierung",
+      "sso_tab": "SSO",
+      "token_auth_tab": "Token-Auth",
+      "customize_lms_tab": "LMS anpassen",
+      "domains_tab": "Domänen",
+      "teams_tab": "Mannschaften"
     },
     "subheadings": {
       "view_site": "Website ansehen"
+    },
+    "auth": {
+      "title": "Authentifizierung",
+      "sso": {
+        "messages": {
+          "created": "SSO-Verbindung erfolgreich erstellt",
+          "activated": "SSO-Verbindung aktiviert",
+          "deleted": "SSO-Verbindung gelöscht"
+        },
+        "setup": {
+          "heading": "SSO einrichten",
+          "description": "Konfigurieren Sie Single Sign-On für Ihre Organisation. Für diese Funktion ist ein Enterprise-Plan erforderlich.",
+          "provider_label": "Anbieter",
+          "display_name_label": "Anzeigename",
+          "display_name_placeholder": "z. B. Acme Corp SSO",
+          "issuer_label": "Emittenten-URL",
+          "issuer_placeholder": "https://accounts.google.com",
+          "issuer_help": "OIDC-Aussteller (kein abschließender Schrägstrich). Beispiele: Google Workspace – https://accounts.google.com; Okta – https://your-org.okta.com; Azure AD – https://login.microsoftonline.com/your-tenant-id/v2.0",
+          "domain_label": "E-Mail-Domäne",
+          "domain_placeholder": "yourcompany.com",
+          "client_id_label": "Kunden-ID",
+          "client_id_placeholder": "Von Ihrem IdP",
+          "client_secret_label": "Client-Geheimnis",
+          "client_secret_placeholder": "Von Ihrem IdP",
+          "create_button": "Verbindung herstellen",
+          "providers": {
+            "okta": "Okta",
+            "google_workspace": "Google Workspace",
+            "auth0": "Auth0"
+          }
+        },
+        "policies": {
+          "heading": "Zugriffsrichtlinien",
+          "description": "Konfigurieren Sie, wie Benutzer auf Ihre Organisation zugreifen",
+          "break_glass": {
+            "label": "Zugang gegen Glasbruch",
+            "description": "Ermöglichen Sie Administratoren, SSO im Notfall mit E-Mail/Passwort zu umgehen."
+          },
+          "auto_join": {
+            "label": "Automatisch beitreten",
+            "description": "Ermöglichen Sie Benutzern mit übereinstimmenden E-Mail-Domänen den automatischen Beitritt zu Ihrer Organisation."
+          },
+          "force_sso": {
+            "label": "SSO erzwingen",
+            "description": "Fordern Sie alle Benutzer auf, sich über SSO anzumelden. Die E-Mail-/Passwort-Anmeldung wird deaktiviert."
+          }
+        },
+        "connection": {
+          "heading": "SSO-Verbindung",
+          "description": "Verwalten Sie Ihren SSO-Verbindungsstatus",
+          "active": "Aktiv",
+          "inactive": "Inaktiv",
+          "activate_button": "Verbindung aktivieren",
+          "delete_button": "Löschen",
+          "delete_confirm": "Sind Sie sicher, dass Sie diese SSO-Verbindung löschen möchten?",
+          "callback_url_label": "Rückruf-URL:",
+          "callback_url_description": "Kopieren Sie diese URL in die Rückruf-/Umleitungs-URL-Konfiguration Ihres IdP."
+        }
+      },
+      "general": {
+        "heading": "Authentifizierungseinstellungen",
+        "description": "Steuern Sie, wie sich Benutzer bei Ihrer Organisation registrieren und anmelden können.",
+        "save_button": "Änderungen speichern",
+        "note_title": "Hinweis",
+        "note_description": "Diese Einstellungen wirken sich nur auf diese Organisation aus. Administratoren können sich jederzeit mit ihren Anmeldeinformationen für den Break-Glass-Zugriff anmelden.",
+        "disable_google_auth": {
+          "label": "Deaktivieren Sie Google Auth",
+          "description": "Verhindern Sie, dass sich Benutzer mit Google-Konten anmelden."
+        },
+        "disable_email_password": {
+          "label": "Deaktivieren Sie die E-Mail-/Passwort-Anmeldung",
+          "description": "Fordern Sie Benutzer auf, sich mit SSO oder sozialen Anbietern anzumelden."
+        },
+        "disable_signup_message": {
+          "label": "Meldung „Anmeldung deaktiviert“.",
+          "description": "Benutzerdefinierte Nachricht, die Benutzern angezeigt wird, wenn die Anmeldung deaktiviert ist.",
+          "placeholder": "Wenn beispielsweise Anmeldungen deaktiviert sind, wenden Sie sich bitte an learn@domain.com, um Zugriff zu erhalten"
+        },
+        "disable_signup": {
+          "label": "Deaktivieren Sie die Anmeldung",
+          "description": "Verhindern Sie, dass sich neue Benutzer anmelden. Nur eingeladene Benutzer können beitreten."
+        }
+      },
+      "login": {
+        "sso_enabled": "{provider} ist für Ihre Domain aktiviert",
+        "sso_redirect_error": "Die SSO-Anmeldung ist falsch konfiguriert. Bitte legen Sie PUBLIC_SERVER_URL auf Ihren API-Server fest.",
+        "sso_required": "Bitte melden Sie sich mit SSO an. Die Passwortanmeldung ist deaktiviert.",
+        "sign_in_with_sso": "Melden Sie sich mit {provider} an",
+        "email_password_disabled": "Die E-Mail-/Passwort-Anmeldung ist deaktiviert. Bitte verwenden Sie SSO.",
+        "email_password_disabled_message": "Die E-Mail-/Passwort-Anmeldung ist für diese Organisation deaktiviert.",
+        "google_auth_disabled": "Die Google-Authentifizierung ist deaktiviert.",
+        "signup_disabled_error": "Die Anmeldung ist für diese Organisation deaktiviert. Bitte wenden Sie sich an Ihren Administrator."
+      },
+      "tabs": {
+        "general": "Allgemein",
+        "sso": "SSO",
+        "token_auth": "Token-Auth"
+      }
+    },
+    "token_auth": {
+      "heading": "Token-Auth",
+      "description": "Ermöglichen Sie Benutzern die Anmeldung über Ihre App mit einem JWT – kein Passwort erforderlich. Generieren Sie ein Signaturgeheimnis und verwenden Sie es in Ihrem Backend, um kurzlebige JWTs auszustellen.",
+      "status": "Status",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "secret_last4": "Geheimnis (letzte 4):",
+      "created_at": "Erstellt",
+      "generate": "Geheimnis generieren",
+      "rotate": "Geheimnis drehen",
+      "delete": "Token-Authentifizierung entfernen",
+      "delete_confirm": "Sind Sie sicher, dass Sie die Token-Authentifizierung entfernen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "activate": "Aktivieren",
+      "deactivate": "Deaktivieren",
+      "secret_shown_once": "Speichern Sie dieses Geheimnis jetzt. Es wird nicht mehr angezeigt.",
+      "integration_guide": "Integrationsleitfaden",
+      "integration_description": "Signieren Sie ein JWT mit dem Geheimnis und leiten Sie Benutzer zur Token-Austausch-URL weiter.",
+      "no_config": "Keine Token-Authentifizierung konfiguriert. Generieren Sie zunächst ein Signaturgeheimnis.",
+      "actions_menu": "Token-Authentifizierungsaktionen"
     }
   },
   "profileMenu": {

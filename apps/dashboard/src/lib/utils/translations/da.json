@@ -334,6 +334,14 @@
       "course_tags_updated": "Kursusmærker opdateret",
       "fetch_failed": "Tags kunne ikke indlæses",
       "save_failed": "Tagændringer kunne ikke gemmes"
+    },
+    "error_update": "Kunne ikke opdatere",
+    "token_auth": {
+      "created": "Signeringshemmelighed oprettet. Gem det nu – det bliver ikke vist igen.",
+      "rotated": "Signeringshemmelighed roteret. Gem den nye hemmelighed – den bliver ikke vist igen.",
+      "deleted": "Tokengodkendelse fjernet.",
+      "activated": "Tokengodkendelse er aktiveret.",
+      "deactivated": "Tokengodkendelse deaktiveret."
     }
   },
   "explore": {
@@ -376,7 +384,8 @@
     "back": "Tilbage til Indstillinger",
     "download_lessons": "Opgrader for at downloade lektioner",
     "download_course": "Opgrader for at downloade kursus",
-    "required": "Opgradering påkrævet"
+    "required": "Opgradering påkrævet",
+    "enterprise_required": "Denne funktion kræver en Enterprise-plan."
   },
   "analytics": {
     "title": "Analytics",
@@ -417,7 +426,25 @@
     "no_students_description": "Der er endnu ingen studerende tilmeldt dette kursus. Studerende vises her, når de tilmelder sig kurset.",
     "showing_students": "Viser {start} til {end} af {total} elever",
     "no_analytics_data": "Ingen analysedata",
-    "no_analytics_description": "Kan ikke indlæse analysedata for dette kursus. Prøv igen senere, eller kontakt support, hvis problemet fortsætter."
+    "no_analytics_description": "Kan ikke indlæse analysedata for dette kursus. Prøv igen senere, eller kontakt support, hvis problemet fortsætter.",
+    "student": "Student",
+    "student_progress_distribution": "Fordeling af studerendes fremskridt",
+    "grade_distribution": "Karakterfordeling",
+    "progress_80_plus": "80 %+ fremskridt",
+    "progress_60_79": "60-79 % fremgang",
+    "progress_below_60": "Under 60 % fremskridt",
+    "grade_90_plus": "90%+ karakter",
+    "grade_80_89": "80-89 % karakter",
+    "grade_70_79": "70-79 % karakter",
+    "grade_below_70": "Under 70 % karakter",
+    "number_of_students": "Antal studerende",
+    "progress_range": "Fremskridtsområde",
+    "grade_range": "Grade Range",
+    "no_progress_data": "Ingen statusdata tilgængelige",
+    "no_grade_data": "Ingen karakterdata tilgængelige",
+    "loading_chart": "Indlæser diagram...",
+    "no_data_default": "Ingen tilgængelige data",
+    "no_data_default_description": "Der er ingen data at vise på nuværende tidspunkt."
   },
   "audience": {
     "title": "Publikum",
@@ -795,7 +822,8 @@
         "export": {
           "csv": "Eksporter som CSV",
           "pdf": "Eksporter som PDF"
-        }
+        },
+        "avg_grade": "Gns. karakter"
       },
       "submissions": {
         "title": "Indsendte øvelser",
@@ -820,7 +848,9 @@
           "questions_tried": "Tildelt denne score på grund af det samlede antal forsøg:",
           "delete_prompt": "Slet",
           "delete_error": "Indsendelsen kunne ikke slettes",
-          "delete_success": "Indsendelsen blev slettet"
+          "delete_success": "Indsendelsen blev slettet",
+          "student_avatar": "Student avatar",
+          "ai_icon": "AI"
         },
         "submission_status": {
           "submitted": "Indsendt",
@@ -959,12 +989,14 @@
               "individual": {
                 "heading": "Individuel",
                 "answers": "Individuelle svar",
-                "no": "Der blev ikke givet noget svar"
+                "no": "Der blev ikke givet noget svar",
+                "student_avatar": "Student"
               },
               "summary": {
                 "heading": "Resumé",
                 "question_chart": "Spørgsmålsskemaer"
-              }
+              },
+              "loading_submissions": "Indlæser indsendelser..."
             },
             "view_mode": {
               "no_question": "Ingen spørgsmål tilføjet til denne øvelse",
@@ -981,7 +1013,12 @@
               "submitted": "Indsendt",
               "status_pending": "Status: Afventer gennemgang",
               "status_graded": "Status: Gennemgang afsluttet",
-              "status_submitted": "Status: Indsendt"
+              "status_submitted": "Status: Indsendt",
+              "empty_description": "Klik på knappen Rediger for at tilføje.",
+              "empty_edit_hint_prefix": "Klik på ",
+              "empty_edit_hint_suffix": " knappen for at tilføje.",
+              "answers_required": "Angiv venligst mindst ét ​​svar, før du sender.",
+              "checking_submission": "Tjek din indsendelse..."
             },
             "edit_mode": {
               "delete_modal": "Slet øvelse",
@@ -997,7 +1034,8 @@
                 "single": "Enkelt svar",
                 "multiple": "Flere svar",
                 "paragraph": "Afsnit"
-              }
+              },
+              "select_type": "Vælg type"
             },
             "delete_confirmation": {
               "title": "Slet spørgsmål",
@@ -1187,7 +1225,9 @@
           "description": "Du kan nu gruppere lektioner i sektioner for at organisere dit indhold og gøre læringen nemmere for dine elever.",
           "activate": "Aktiver",
           "cancel": "Annuller"
-        }
+        },
+        "content_locked_title": "Dette indhold er låst",
+        "content_locked_description": "Din instruktør har ikke låst dette indhold op endnu. Fuldfør tidligere indhold, eller tjek tilbage senere."
       },
       "news_feed": {
         "heading": "Nyhedsfeed",
@@ -1213,6 +1253,21 @@
           "placeholder": "Del en opdatering med dine elever",
           "cancel": "Annuller",
           "post": "Indlæg"
+        },
+        "user_avatar_alt": "Bruger avatar",
+        "comments": {
+          "comment": "kommentar",
+          "showing_of": "Viser {shown} af {total}",
+          "hide": "Skjul kommentarer",
+          "placeholder": "Tilføj klassekommentar",
+          "submit_aria": "Send kommentar",
+          "delete": "Slet"
+        },
+        "card": {
+          "pin": "Pin",
+          "unpin": "Frigør",
+          "edit": "Rediger",
+          "delete": "Slet"
         }
       }
     },
@@ -1515,7 +1570,9 @@
       "learn": "Få flere oplysninger",
       "month": "måned",
       "monthly": "Månedligt",
-      "annually": "Årligt"
+      "annually": "Årligt",
+      "popular": "Populært",
+      "per_org": "Per organisation"
     },
     "plan_names": {
       "free": "Gratis",
@@ -1821,10 +1878,134 @@
       "landing_page_tab": "Landingsside",
       "billing_tab": "Fakturering",
       "integrations_tab": "Integrationer",
-      "language_tab": "Sprog"
+      "language_tab": "Sprog",
+      "auth_tab": "Autentificering",
+      "sso_tab": "SSO",
+      "token_auth_tab": "Token Auth",
+      "customize_lms_tab": "Tilpas LMS",
+      "domains_tab": "Domæner",
+      "teams_tab": "Hold"
     },
     "subheadings": {
       "view_site": "Se webstedet"
+    },
+    "auth": {
+      "title": "Autentificering",
+      "sso": {
+        "messages": {
+          "created": "SSO-forbindelse blev oprettet",
+          "activated": "SSO-forbindelse aktiveret",
+          "deleted": "SSO-forbindelse slettet"
+        },
+        "setup": {
+          "heading": "Konfigurer SSO",
+          "description": "Konfigurer Single Sign-On for din organisation. Denne funktion kræver en Enterprise-plan.",
+          "provider_label": "Udbyder",
+          "display_name_label": "Vist navn",
+          "display_name_placeholder": "f.eks. Acme Corp SSO",
+          "issuer_label": "Udsteder-URL",
+          "issuer_placeholder": "https://accounts.google.com",
+          "issuer_help": "OIDC-udsteder (ingen efterfølgende skråstreg). Eksempler: Google Workspace — https://accounts.google.com; Okta — https://din-org.okta.com; Azure AD — https://login.microsoftonline.com/your-tenant-id/v2.0",
+          "domain_label": "E-mail domæne",
+          "domain_placeholder": "din virksomhed.com",
+          "client_id_label": "Klient-id",
+          "client_id_placeholder": "Fra din IdP",
+          "client_secret_label": "Klientens hemmelighed",
+          "client_secret_placeholder": "Fra din IdP",
+          "create_button": "Opret forbindelse",
+          "providers": {
+            "okta": "Okta",
+            "google_workspace": "Google Workspace",
+            "auth0": "Auth0"
+          }
+        },
+        "policies": {
+          "heading": "Adgangspolitikker",
+          "description": "Konfigurer, hvordan brugere får adgang til din organisation",
+          "break_glass": {
+            "label": "Knuseglasadgang",
+            "description": "Tillad administratorer at omgå SSO med e-mail/adgangskode i nødstilfælde."
+          },
+          "auto_join": {
+            "label": "Auto-join",
+            "description": "Tillad brugere med matchende e-mail-domæner automatisk at tilslutte sig din organisation."
+          },
+          "force_sso": {
+            "label": "Tving SSO",
+            "description": "Kræv, at alle brugere logger ind via SSO. E-mail/adgangskode login vil blive deaktiveret."
+          }
+        },
+        "connection": {
+          "heading": "SSO-forbindelse",
+          "description": "Administrer din SSO-forbindelsesstatus",
+          "active": "Aktiv",
+          "inactive": "Inaktiv",
+          "activate_button": "Aktiver forbindelse",
+          "delete_button": "Slet",
+          "delete_confirm": "Er du sikker på, at du vil slette denne SSO-forbindelse?",
+          "callback_url_label": "Tilbagekalds-URL:",
+          "callback_url_description": "Kopiér denne URL til din IdP's URL-konfiguration for tilbagekald/omdirigering."
+        }
+      },
+      "general": {
+        "heading": "Godkendelsesindstillinger",
+        "description": "Styr, hvordan brugere kan tilmelde sig og logge på din organisation.",
+        "save_button": "Gem ændringer",
+        "note_title": "Bemærk",
+        "note_description": "Disse indstillinger påvirker kun denne organisation. Administratorer kan altid logge ind med deres legitimationsoplysninger for at få adgang til glasset.",
+        "disable_google_auth": {
+          "label": "Deaktiver Google Auth",
+          "description": "Forhindre brugere i at logge ind med Google-konti."
+        },
+        "disable_email_password": {
+          "label": "Deaktiver e-mail/adgangskodelogin",
+          "description": "Kræv, at brugere logger ind med SSO eller sociale udbydere."
+        },
+        "disable_signup_message": {
+          "label": "Tilmelding deaktiveret Besked",
+          "description": "Brugerdefineret besked vist til brugere, når tilmelding er deaktiveret.",
+          "placeholder": "tilmeldinger er f.eks. deaktiveret, kontakt venligst learn@domain.com for at få adgang"
+        },
+        "disable_signup": {
+          "label": "Deaktiver tilmelding",
+          "description": "Forhindre nye brugere i at tilmelde sig. Kun inviterede brugere kan deltage."
+        }
+      },
+      "login": {
+        "sso_enabled": "{provider} er aktiveret for dit domæne",
+        "sso_redirect_error": "SSO-logon er forkert konfigureret. Indstil PUBLIC_SERVER_URL til din API-server.",
+        "sso_required": "Log venligst ind med SSO. Adgangskodelogin er deaktiveret.",
+        "sign_in_with_sso": "Log ind med {provider}",
+        "email_password_disabled": "E-mail/adgangskode login er deaktiveret. Brug venligst SSO.",
+        "email_password_disabled_message": "E-mail/adgangskodelogin er deaktiveret for denne organisation.",
+        "google_auth_disabled": "Google-godkendelse er deaktiveret.",
+        "signup_disabled_error": "Tilmelding er deaktiveret for denne organisation. Kontakt venligst din administrator."
+      },
+      "tabs": {
+        "general": "Generelt",
+        "sso": "SSO",
+        "token_auth": "Token Auth"
+      }
+    },
+    "token_auth": {
+      "heading": "Token Auth",
+      "description": "Lad brugere logge ind fra din app med en JWT – ingen adgangskode nødvendig. Generer en signeringshemmelighed og brug den i din backend til at udstede kortvarige JWT'er.",
+      "status": "Status",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "secret_last4": "Hemmelighed (sidste 4):",
+      "created_at": "Oprettet",
+      "generate": "Generer hemmelighed",
+      "rotate": "Roter hemmelighed",
+      "delete": "Fjern tokengodkendelse",
+      "delete_confirm": "Er du sikker på, at du vil fjerne tokengodkendelse? Denne handling kan ikke fortrydes.",
+      "activate": "Aktiver",
+      "deactivate": "Deaktiver",
+      "secret_shown_once": "Gem denne hemmelighed nu. Det bliver ikke vist igen.",
+      "integration_guide": "Integrationsvejledning",
+      "integration_description": "Signer en JWT med hemmeligheden og omdiriger brugere til token-udvekslings-URL'en.",
+      "no_config": "Ingen token-godkendelse er konfigureret. Generer en signeringshemmelighed for at komme i gang.",
+      "actions_menu": "Tokengodkendelseshandlinger"
     }
   },
   "profileMenu": {

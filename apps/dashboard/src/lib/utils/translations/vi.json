@@ -334,6 +334,14 @@
       "course_tags_updated": "Đã cập nhật thẻ khóa học",
       "fetch_failed": "Không tải được thẻ",
       "save_failed": "Không lưu được các thay đổi về thẻ"
+    },
+    "error_update": "Không thể cập nhật",
+    "token_auth": {
+      "created": "Bí mật ký được tạo. Hãy lưu ngay bây giờ—nó sẽ không được hiển thị lại.",
+      "rotated": "Bí mật ký kết được luân chuyển. Lưu bí mật mới—nó sẽ không được hiển thị lại.",
+      "deleted": "Đã xóa xác thực mã thông báo.",
+      "activated": "Đã bật xác thực mã thông báo.",
+      "deactivated": "Xác thực mã thông báo bị vô hiệu hóa."
     }
   },
   "explore": {
@@ -376,7 +384,8 @@
     "back": "Quay lại Cài đặt",
     "download_lessons": "Nâng cấp để tải bài học",
     "download_course": "Nâng cấp để tải xuống khóa học",
-    "required": "Yêu cầu nâng cấp"
+    "required": "Yêu cầu nâng cấp",
+    "enterprise_required": "Tính năng này yêu cầu gói Enterprise."
   },
   "analytics": {
     "title": "Phân tích",
@@ -417,7 +426,25 @@
     "no_students_description": "Hiện chưa có học viên nào đăng ký khóa học này. Học sinh sẽ xuất hiện ở đây khi họ tham gia khóa học.",
     "showing_students": "Đang hiển thị {bắt đầu} cho {cuối} trong tổng số {total} sinh viên",
     "no_analytics_data": "Không có dữ liệu phân tích",
-    "no_analytics_description": "Không thể tải dữ liệu phân tích cho khóa học này. Vui lòng thử lại sau hoặc liên hệ với bộ phận hỗ trợ nếu sự cố vẫn tiếp diễn."
+    "no_analytics_description": "Không thể tải dữ liệu phân tích cho khóa học này. Vui lòng thử lại sau hoặc liên hệ với bộ phận hỗ trợ nếu sự cố vẫn tiếp diễn.",
+    "student": "sinh viên",
+    "student_progress_distribution": "Phân phối tiến bộ của học sinh",
+    "grade_distribution": "Phân phối lớp",
+    "progress_80_plus": "Tiến độ trên 80%",
+    "progress_60_79": "Tiến độ 60-79%",
+    "progress_below_60": "Tiến độ dưới 60%",
+    "grade_90_plus": "90% + Lớp",
+    "grade_80_89": "Lớp 80-89%",
+    "grade_70_79": "Lớp 70-79%",
+    "grade_below_70": "Dưới 70% lớp",
+    "number_of_students": "Số lượng sinh viên",
+    "progress_range": "Phạm vi tiến độ",
+    "grade_range": "Phạm vi lớp",
+    "no_progress_data": "Không có dữ liệu tiến độ",
+    "no_grade_data": "Không có dữ liệu điểm",
+    "loading_chart": "Đang tải biểu đồ...",
+    "no_data_default": "Không có sẵn dữ liệu",
+    "no_data_default_description": "Không có dữ liệu để hiển thị tại thời điểm này."
   },
   "audience": {
     "title": "khán giả",
@@ -795,7 +822,8 @@
         "export": {
           "csv": "Xuất dưới dạng CSV",
           "pdf": "Xuất dưới dạng PDF"
-        }
+        },
+        "avg_grade": "Điểm trung bình"
       },
       "submissions": {
         "title": "Bài tập đã gửi",
@@ -820,7 +848,9 @@
           "questions_tried": "Phân bổ số điểm này dựa trên tổng số lần thử:",
           "delete_prompt": "Xóa",
           "delete_error": "Không thể xóa bài nộp",
-          "delete_success": "Đã xóa bài nộp thành công"
+          "delete_success": "Đã xóa bài nộp thành công",
+          "student_avatar": "Hình đại diện sinh viên",
+          "ai_icon": "trí tuệ nhân tạo"
         },
         "submission_status": {
           "submitted": "Đã gửi",
@@ -959,12 +989,14 @@
               "individual": {
                 "heading": "Cá nhân",
                 "answers": "Câu trả lời cá nhân",
-                "no": "Không có câu trả lời nào được đưa ra"
+                "no": "Không có câu trả lời nào được đưa ra",
+                "student_avatar": "sinh viên"
               },
               "summary": {
                 "heading": "Tóm tắt",
                 "question_chart": "Biểu đồ câu hỏi"
-              }
+              },
+              "loading_submissions": "Đang tải nội dung gửi..."
             },
             "view_mode": {
               "no_question": "Không có câu hỏi nào được thêm vào cho bài tập này",
@@ -981,7 +1013,12 @@
               "submitted": "Đã gửi",
               "status_pending": "Trạng thái: Đang chờ xem xét",
               "status_graded": "Trạng thái: Đánh giá đã hoàn thành",
-              "status_submitted": "Trạng thái: Đã gửi"
+              "status_submitted": "Trạng thái: Đã gửi",
+              "empty_description": "Bấm vào nút Chỉnh sửa để thêm.",
+              "empty_edit_hint_prefix": "Bấm vào ",
+              "empty_edit_hint_suffix": " nút để thêm.",
+              "answers_required": "Vui lòng cung cấp ít nhất một câu trả lời trước khi gửi.",
+              "checking_submission": "Đang kiểm tra nội dung gửi của bạn..."
             },
             "edit_mode": {
               "delete_modal": "Xóa bài tập",
@@ -997,7 +1034,8 @@
                 "single": "Câu trả lời duy nhất",
                 "multiple": "Nhiều câu trả lời",
                 "paragraph": "Đoạn"
-              }
+              },
+              "select_type": "Chọn loại"
             },
             "delete_confirmation": {
               "title": "Xóa câu hỏi",
@@ -1187,7 +1225,9 @@
           "description": "Giờ đây, bạn có thể nhóm các bài học thành các phần để sắp xếp nội dung và giúp học sinh học tập suôn sẻ hơn.",
           "activate": "Kích hoạt",
           "cancel": "Hủy bỏ"
-        }
+        },
+        "content_locked_title": "Nội dung này đã bị khóa",
+        "content_locked_description": "Người hướng dẫn của bạn chưa mở khóa nội dung này. Hoàn thành nội dung trước đó hoặc kiểm tra lại sau."
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",
@@ -1213,6 +1253,21 @@
           "placeholder": "Chia sẻ thông tin cập nhật với học sinh của bạn",
           "cancel": "Hủy bỏ",
           "post": "bài viết"
+        },
+        "user_avatar_alt": "Hình đại diện của người dùng",
+        "comments": {
+          "comment": "bình luận",
+          "showing_of": "Đang hiển thị {được hiển thị} trong tổng số {toàn bộ}",
+          "hide": "Ẩn bình luận",
+          "placeholder": "Thêm nhận xét của lớp",
+          "submit_aria": "Gửi bình luận",
+          "delete": "Xóa"
+        },
+        "card": {
+          "pin": "Ghim",
+          "unpin": "Bỏ ghim",
+          "edit": "Chỉnh sửa",
+          "delete": "Xóa"
         }
       }
     },
@@ -1515,7 +1570,9 @@
       "learn": "Tìm hiểu thêm",
       "month": "tháng",
       "monthly": "hàng tháng",
-      "annually": "Hàng năm"
+      "annually": "Hàng năm",
+      "popular": "phổ biến",
+      "per_org": "Mỗi tổ chức"
     },
     "plan_names": {
       "free": "miễn phí",
@@ -1821,10 +1878,134 @@
       "landing_page_tab": "Trang đích",
       "billing_tab": "Thanh toán",
       "integrations_tab": "Tích hợp",
-      "language_tab": "Ngôn ngữ"
+      "language_tab": "Ngôn ngữ",
+      "auth_tab": "Xác thực",
+      "sso_tab": "SSO",
+      "token_auth_tab": "Xác thực mã thông báo",
+      "customize_lms_tab": "Tùy chỉnh LMS",
+      "domains_tab": "Tên miền",
+      "teams_tab": "Đội"
     },
     "subheadings": {
       "view_site": "Xem trang web"
+    },
+    "auth": {
+      "title": "Xác thực",
+      "sso": {
+        "messages": {
+          "created": "Kết nối SSO được tạo thành công",
+          "activated": "Đã kích hoạt kết nối SSO",
+          "deleted": "Đã xóa kết nối SSO"
+        },
+        "setup": {
+          "heading": "Thiết lập SSO",
+          "description": "Định cấu hình Đăng nhập một lần cho tổ chức của bạn. Tính năng này yêu cầu gói Enterprise.",
+          "provider_label": "nhà cung cấp",
+          "display_name_label": "Tên hiển thị",
+          "display_name_placeholder": "ví dụ: Acme Corp SSO",
+          "issuer_label": "URL của nhà phát hành",
+          "issuer_placeholder": "https://accounts.google.com",
+          "issuer_help": "Nhà phát hành OIDC (không có dấu gạch chéo ở cuối). Ví dụ: Google Workspace — https://accounts.google.com; Okta — https://your-org.okta.com; Azure AD — https://login.microsoftonline.com/your-tenant-id/v2.0",
+          "domain_label": "Tên miền email",
+          "domain_placeholder": "yourcompany.com",
+          "client_id_label": "ID khách hàng",
+          "client_id_placeholder": "Từ IdP của bạn",
+          "client_secret_label": "Bí mật khách hàng",
+          "client_secret_placeholder": "Từ IdP của bạn",
+          "create_button": "Tạo kết nối",
+          "providers": {
+            "okta": "Okta",
+            "google_workspace": "Google Workspace",
+            "auth0": "Auth0"
+          }
+        },
+        "policies": {
+          "heading": "Chính sách truy cập",
+          "description": "Định cấu hình cách người dùng truy cập vào tổ chức của bạn",
+          "break_glass": {
+            "label": "Truy cập kính vỡ",
+            "description": "Cho phép quản trị viên bỏ qua SSO bằng email/mật khẩu trong trường hợp khẩn cấp."
+          },
+          "auto_join": {
+            "label": "Tự động tham gia",
+            "description": "Cho phép người dùng có miền email phù hợp tự động tham gia tổ chức của bạn."
+          },
+          "force_sso": {
+            "label": "Buộc SSO",
+            "description": "Yêu cầu tất cả người dùng đăng nhập qua SSO. Đăng nhập email/mật khẩu sẽ bị vô hiệu hóa."
+          }
+        },
+        "connection": {
+          "heading": "Kết nối SSO",
+          "description": "Quản lý trạng thái kết nối SSO của bạn",
+          "active": "Đang hoạt động",
+          "inactive": "Không hoạt động",
+          "activate_button": "Kích hoạt kết nối",
+          "delete_button": "Xóa",
+          "delete_confirm": "Bạn có chắc chắn muốn xóa kết nối SSO này không?",
+          "callback_url_label": "URL gọi lại:",
+          "callback_url_description": "Sao chép URL này vào cấu hình URL gọi lại/chuyển hướng của IdP của bạn."
+        }
+      },
+      "general": {
+        "heading": "Cài đặt xác thực",
+        "description": "Kiểm soát cách người dùng có thể đăng ký và đăng nhập vào tổ chức của bạn.",
+        "save_button": "Lưu thay đổi",
+        "note_title": "Lưu ý",
+        "note_description": "Các cài đặt này chỉ ảnh hưởng đến tổ chức này. Quản trị viên luôn có thể đăng nhập bằng thông tin xác thực của họ để truy cập vào kính vỡ.",
+        "disable_google_auth": {
+          "label": "Vô hiệu hóa Google Auth",
+          "description": "Ngăn chặn người dùng đăng nhập bằng tài khoản Google."
+        },
+        "disable_email_password": {
+          "label": "Vô hiệu hóa đăng nhập email/mật khẩu",
+          "description": "Yêu cầu người dùng đăng nhập bằng SSO hoặc nhà cung cấp mạng xã hội."
+        },
+        "disable_signup_message": {
+          "label": "Tin nhắn đăng ký bị vô hiệu hóa",
+          "description": "Thông báo tùy chỉnh được hiển thị cho người dùng khi đăng ký bị tắt.",
+          "placeholder": "ví dụ: Đăng ký bị vô hiệu hóa, vui lòng liên hệ learn@domain.com để có quyền truy cập"
+        },
+        "disable_signup": {
+          "label": "Tắt đăng ký",
+          "description": "Ngăn chặn người dùng mới đăng ký. Chỉ những người dùng được mời mới có thể tham gia."
+        }
+      },
+      "login": {
+        "sso_enabled": "{provider} đã được bật cho miền của bạn",
+        "sso_redirect_error": "Đăng nhập SSO bị định cấu hình sai. Vui lòng đặt PUBLIC_SERVER_URL cho máy chủ API của bạn.",
+        "sso_required": "Vui lòng đăng nhập bằng SSO. Đăng nhập bằng mật khẩu bị vô hiệu hóa.",
+        "sign_in_with_sso": "Đăng nhập bằng {nhà cung cấp}",
+        "email_password_disabled": "Đăng nhập email/mật khẩu bị vô hiệu hóa. Vui lòng sử dụng SSO.",
+        "email_password_disabled_message": "Đăng nhập email/mật khẩu bị vô hiệu hóa đối với tổ chức này.",
+        "google_auth_disabled": "Xác thực Google bị vô hiệu hóa.",
+        "signup_disabled_error": "Đăng ký bị vô hiệu hóa cho tổ chức này. Vui lòng liên hệ với quản trị viên của bạn."
+      },
+      "tabs": {
+        "general": "chung",
+        "sso": "SSO",
+        "token_auth": "Xác thực mã thông báo"
+      }
+    },
+    "token_auth": {
+      "heading": "Xác thực mã thông báo",
+      "description": "Cho phép người dùng đăng nhập từ ứng dụng của bạn bằng JWT—không cần mật khẩu. Tạo bí mật ký và sử dụng nó trong phần phụ trợ của bạn để phát hành JWT tồn tại trong thời gian ngắn.",
+      "status": "Trạng thái",
+      "active": "Đang hoạt động",
+      "inactive": "Không hoạt động",
+      "secret_last4": "Bí mật (4 cuối):",
+      "created_at": "Đã tạo",
+      "generate": "Tạo bí mật",
+      "rotate": "Xoay bí mật",
+      "delete": "Xóa mã thông báo xác thực",
+      "delete_confirm": "Bạn có chắc chắn muốn xóa mã thông báo xác thực không? Không thể hoàn tác hành động này.",
+      "activate": "Kích hoạt",
+      "deactivate": "Vô hiệu hóa",
+      "secret_shown_once": "Hãy lưu giữ bí mật này ngay bây giờ. Nó sẽ không được hiển thị lại.",
+      "integration_guide": "Hướng dẫn tích hợp",
+      "integration_description": "Ký JWT bằng bí mật và chuyển hướng người dùng đến URL trao đổi mã thông báo.",
+      "no_config": "Không có cấu hình xác thực mã thông báo. Tạo bí mật ký để bắt đầu.",
+      "actions_menu": "Hành động xác thực mã thông báo"
     }
   },
   "profileMenu": {
