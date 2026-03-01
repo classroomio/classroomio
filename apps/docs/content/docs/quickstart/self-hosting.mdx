@@ -298,3 +298,40 @@ AUTH_COOKIE_DOMAIN=
   `PRIVATE_SERVER_KEY` when missing/insecure. API key middleware for dashboard server-side
   calls validates `PRIVATE_SERVER_KEY`.
 </Callout>
+
+### If PostgreSQL or Docker fails with "No space left on device"
+
+The error `could not write lock file "postmaster.pid": No space left on device` means the disk (or Docker storage) is full. Free space, then restart the stack.
+
+**1. Check disk usage**
+
+```zsh title="Terminal"
+df -h
+docker system df
+```
+
+**2. Free Docker space** (safe — removes unused build cache and images)
+
+```zsh title="Terminal"
+docker builder prune -f
+docker image prune -a -f
+docker container prune -f
+```
+
+**3. If still low on space, remove unused volumes** (only if you do not need data in other projects’ volumes)
+
+```zsh title="Terminal"
+docker volume prune -f
+```
+
+<Callout type="warn" title="Volume prune can delete your data">
+  `docker volume prune` removes volumes not used by any container. If you run it after `docker compose ... down`, it can remove Classroom.io’s `postgres-data`, `redis-data`, and `minio-data`, and you will lose database and object storage data. To free space without touching Classroom.io data, use only the prunes in step 2, or remove specific unused volumes by name.
+</Callout>
+
+**4. Restart the stack**
+
+```zsh title="Terminal"
+./run-docker-full-stack.sh
+```
+
+If the host disk is still full after pruning, free space elsewhere (e.g. large files, old logs, other apps) or increase disk capacity. See [docker/docs/SELF_HOST.md](https://github.com/classroomio/classroomio/blob/main/docker/docs/SELF_HOST.md) for the full self-host runbook.

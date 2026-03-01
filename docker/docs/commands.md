@@ -137,6 +137,30 @@ docker run -d --name cio-dashboard -p 3082:3082 \
   classroomio/dashboard:latest
 ```
 
+## Inspect environment variables in a container
+
+```bash
+# List all env vars in a running container (use actual container name)
+docker exec <container_name> env
+
+# Sorted, one per line
+docker exec <container_name> env | sort
+
+# Inspect from host (env as configured at container create time)
+docker inspect <container_name> --format '{{range .Config.Env}}{{println .}}{{end}}'
+
+# Print a single variable
+docker exec <container_name> printenv DATABASE_URL
+```
+
+**Container names** (from `docker compose ... ps`): `cio-postgres`, `cio-redis`, `cio-api`, `cio-dashboard`; with MinIO: `cio-minio`, `cio-minio-init`.
+
+Example:
+
+```bash
+docker exec cio-api env | sort
+```
+
 ## Useful Commands
 
 ```bash

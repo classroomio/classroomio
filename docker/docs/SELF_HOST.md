@@ -182,9 +182,37 @@ docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml rest
 docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml down
 ```
 
-## 10. If Docker Fails with "No space left on device"
+## 10. If PostgreSQL or Docker Fails with "No space left on device"
+
+The error `could not write lock file "postmaster.pid": No space left on device` means the disk (or Docker storage) is full. Fix it by freeing space, then restart Postgres.
+
+**1. Check disk usage**
+
+```bash
+df -h
+docker system df
+```
+
+**2. Free Docker space (safe — removes unused build cache and images)**
 
 ```bash
 docker builder prune -f
-docker image prune -a
+docker image prune -a -f
+docker container prune -f
 ```
+
+**3. If still low on space, remove unused volumes** (only if you do not need data in other projects’ volumes)
+
+```bash
+docker volume prune -f
+```
+
+Warning: `docker volume prune` removes volumes not used by any container. If you run it after `docker compose ... down`, it can remove `postgres-data`, `redis-data`, and `minio-data`, and you will lose database and object storage data. To free space without touching Classroom.io data, avoid `down` and use only the prunes in step 2, or remove specific unused volumes by name.
+
+**4. Restart the stack**
+
+```bash
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml up -d
+```
+
+If the host disk is still full after pruning, free space elsewhere (e.g. large files, old logs, other apps) or increase disk capacity.
