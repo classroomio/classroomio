@@ -216,3 +216,29 @@ docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml up -
 ```
 
 If the host disk is still full after pruning, free space elsewhere (e.g. large files, old logs, other apps) or increase disk capacity.
+
+## 11. "The database system is in recovery mode" (57P03)
+
+This happens when the API (or another service) hits Postgres before it has finished starting or replaying WAL after a crash/restart. Our Postgres healthcheck now requires a successful `SELECT 1` (not just `pg_isready`) so dependent services only start once the DB accepts queries.
+
+If you still see it (e.g. old compose file or a very slow disk):
+
+1. Wait 30–60 seconds and retry the request.
+2. Ensure you’re using the latest `docker/docker-compose.yaml` (healthcheck runs `pg_isready` and `psql ... SELECT 1`).
+3. Restart the stack so Postgres gets a clean start and the API waits for the updated healthcheck: `./run-docker-full-stack.sh`.
+
+## 12. MinIO: "Storage reached its minimum free drive threshold"
+
+MinIO’s data scanner reports this when the disk (or the volume backing `minio-data`) is below MinIO’s minimum free space. Same root cause as [§10](#10-if-postgresql-or-docker-fails-with-no-space-left-on-device): the host or Docker storage is too full.
+
+**What to do:**
+
+1. Free space using the same steps as in **§10** (e.g. `docker system df`, `docker builder prune -f`, `docker image prune -a -f`, `docker container prune -f`). Avoid `docker volume prune` if you need to keep existing data.
+2. After freeing space, restart MinIO (or the full stack) so the scanner sees the new free space:
+   ```bash
+   docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml restart minio
+   ```
+   Or restart everything: `./run-docker-full-stack.sh`.
+3. If the disk is still near full, remove unneeded objects from MinIO buckets (via Console or `mc`) or add/attach more storage.
+
+MinIO does not expose an env var to lower or disable this threshold; freeing space or adding capacity is the intended fix.

@@ -1,6 +1,7 @@
 import type { Cookies } from '@sveltejs/kit';
 import { authServerClient } from './server';
 import { classroomio } from '$lib/utils/services/api';
+import { getRequestBaseUrl } from '$lib/utils/services/api';
 
 export const getSessionData = async (cookies: Cookies): Promise<App.Locals | null> => {
   try {
@@ -38,6 +39,8 @@ export async function getThroughTrpc(allCookies: string) {
 }
 
 export async function getThroughAuthClient(allCookies: string) {
+  const baseURL = getRequestBaseUrl();
+  console.log('baseURL', baseURL);
   const session = await authServerClient.getSession({
     fetchOptions: {
       headers: {

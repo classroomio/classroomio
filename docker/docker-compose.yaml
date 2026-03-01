@@ -9,15 +9,17 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
+      # Require a successful query so we only pass once Postgres is out of recovery
+      # (pg_isready can pass while DB is still in recovery, causing 57P03 on sign-in)
       test:
         [
           "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-classroomio}",
+          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-classroomio} && psql -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-classroomio} -tAc 'SELECT 1'",
         ]
       interval: 5s
       timeout: 5s
-      retries: 10
-      start_period: 5s
+      retries: 15
+      start_period: 10s
 
   redis:
     image: redis:7-alpine

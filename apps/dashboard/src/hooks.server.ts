@@ -5,8 +5,6 @@ import { ROUTE } from '$lib/utils/constants/routes';
 
 export const handle: Handle = async (args) => {
   const { event } = args;
-  console.log('event', event);
-  console.log('env', process.env);
   const sessionData = await getSessionData(event.cookies);
 
   if (sessionData) {
