@@ -1515,7 +1515,9 @@
       "learn": "Dowiedz się więcej",
       "month": "miesiąc",
       "monthly": "Miesięcznie",
-      "annually": "Rocznie"
+      "annually": "Rocznie",
+      "popular": "Popularne",
+      "per_org": "Na organizację"
     },
     "plan_names": {
       "free": "Bezpłatny",

@@ -1515,7 +1515,9 @@
       "learn": "Få flere oplysninger",
       "month": "måned",
       "monthly": "Månedligt",
-      "annually": "Årligt"
+      "annually": "Årligt",
+      "popular": "Populært",
+      "per_org": "Per organisation"
     },
     "plan_names": {
       "free": "Gratis",

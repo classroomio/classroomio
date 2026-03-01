@@ -1515,7 +1515,9 @@
       "learn": "Tìm hiểu thêm",
       "month": "tháng",
       "monthly": "hàng tháng",
-      "annually": "Hàng năm"
+      "annually": "Hàng năm",
+      "popular": "phổ biến",
+      "per_org": "Mỗi tổ chức"
     },
     "plan_names": {
       "free": "miễn phí",

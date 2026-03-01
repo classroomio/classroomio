@@ -2,8 +2,8 @@
   import { Button } from '@cio/ui/base/button';
   import { InputField } from '@cio/ui/custom/input-field';
   import { lessonApi } from '$features/course/api';
-  import { mediaManagerApi } from '$features/media-manager/api';
-  import type { OrganizationAsset } from '$features/media-manager/utils';
+  import { mediaApi } from '$features/media/api';
+  import type { OrganizationAsset } from '$features/media/utils';
   import { onMount } from 'svelte';
   import { t } from '$lib/utils/functions/translations';
 
@@ -17,12 +17,12 @@
   let isLoading = $state(false);
 
   const assets = $derived(
-    mediaManagerApi.assets.filter((asset) => asset.kind === 'video' && (asset.status ?? 'active') !== 'archived')
+    mediaApi.assets.filter((asset) => asset.kind === 'video' && (asset.status ?? 'active') !== 'archived')
   );
 
   async function loadLibrary() {
     isLoading = true;
-    await mediaManagerApi.listAssets({
+    await mediaApi.listAssets({
       kind: 'video',
       limit: 100,
       search: search.trim() || undefined
@@ -34,7 +34,7 @@
     if (!lessonApi.lesson) return;
 
     const position = Array.isArray(lessonApi.lesson.videos) ? lessonApi.lesson.videos.length : 0;
-    const lessonVideo = await mediaManagerApi.buildLessonVideoFromAsset(asset, {
+    const lessonVideo = await mediaApi.buildLessonVideoFromAsset(asset, {
       lessonId: lessonId || undefined,
       position,
       slotType: 'lesson_video'

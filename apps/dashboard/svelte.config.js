@@ -117,8 +117,8 @@ const config = {
         'style-src': ['self', 'unsafe-inline', ...styleSrcDomains],
         'style-src-elem': ['self', 'unsafe-inline', ...styleSrcDomains],
         'font-src': ['self', ...fontSrcDomains],
-        'img-src': ['self', 'data:', 'https:', 'blob:'],
-        'media-src': ['self', 'https:', 'data:', 'blob:'],
+        'img-src': ['self', 'data:', 'https:', 'blob:', 'http://localhost:9000'],
+        'media-src': ['self', 'https:', 'data:', 'blob:', 'http://localhost:9000'],
         'frame-src': ['self', ...frameSrcDomains],
         'connect-src': [
           'self',
@@ -141,8 +141,8 @@ const config = {
         'style-src': ['self', 'unsafe-inline', ...styleSrcDomains],
         'style-src-elem': ['self', 'unsafe-inline', ...styleSrcDomains],
         'font-src': ['self', ...fontSrcDomains],
-        'img-src': ['self', 'data:', 'https:', 'blob:'],
-        'media-src': ['self', 'https:', 'data:', 'blob:'],
+        'img-src': ['self', 'data:', 'https:', 'blob:', 'http://localhost:9000'],
+        'media-src': ['self', 'https:', 'data:', 'blob:', 'http://localhost:9000'],
         'frame-src': ['self', ...frameSrcDomains],
         'connect-src': [
           'self',

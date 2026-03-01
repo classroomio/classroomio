@@ -51,3 +51,6 @@ export type GetYouTubeMetadataRequest = (typeof classroomio.organization)['asset
 export type GetYouTubeMetadataResponse = InferResponseType<GetYouTubeMetadataRequest>;
 export type GetYouTubeMetadataSuccess = Extract<GetYouTubeMetadataResponse, { success: true }>;
 export type YouTubeMetadata = GetYouTubeMetadataSuccess['data'];
+
+export type AssetKindFilter = 'all' | 'video' | 'document' | 'image' | 'audio' | 'other';
+export type AssetStatusFilter = 'all' | 'active' | 'archived';

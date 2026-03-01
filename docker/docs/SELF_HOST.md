@@ -64,6 +64,16 @@ SMTP_PORT=
 SMTP_USER=
 SMTP_PASSWORD=
 SMTP_SENDER=
+
+# Object storage - MinIO (included by default; script auto-sets these if missing)
+MINIO_ROOT_USER=minioadmin
+MINIO_ROOT_PASSWORD=minioadmin
+OBJECT_STORAGE_ENDPOINT=http://minio:9000
+OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000
+OBJECT_STORAGE_ACCESS_KEY_ID=minioadmin
+OBJECT_STORAGE_SECRET_ACCESS_KEY=minioadmin
+OBJECT_STORAGE_FORCE_PATH_STYLE=true
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=http://localhost:9000/media
 EOF
 ```
 
@@ -81,6 +91,7 @@ Important:
 - If neither Zoho token nor SMTP is configured, emails will not send.
 - Keep real secrets out of version control.
 - When `PUBLIC_IS_SELFHOSTED=true`, the dashboard CSP uses **only** env vars—no defaults. Set `ALLOWED_EXTERNAL_DOMAINS` with all external domains your instance needs (CDNs, video providers, analytics, etc.).
+- **Object storage:** MinIO is included by default. The script auto-sets MinIO env vars if missing. Use `--no-minio` to exclude object storage (video/document/media uploads will not work).
 
 ## 4. Start Full Docker Stack
 
@@ -91,13 +102,19 @@ From repo root:
 
 # Skip image rebuild and only start containers
 ./run-docker-full-stack.sh --no-build
+
+# Exclude MinIO (video/document/media uploads will not work)
+./run-docker-full-stack.sh --no-minio
 ```
 
 This script:
 
-- builds and starts `postgres`, `redis`, `db-init`, `api`, and `dashboard`
+- builds and starts `postgres`, `redis`, `db-init`, `api`, `dashboard`, and **MinIO** (object storage)
+- auto-configures MinIO env vars (if missing), runs `minio-init` (creates videos, documents, media buckets)
 - prints compose status
 - checks API (`3081`) and dashboard (`3082`) endpoints
+
+MinIO Web UI: `http://localhost:9001` (default: `minioadmin` / `minioadmin`).
 
 ## 5. Verify Manually (Optional)
 

@@ -6,7 +6,7 @@
   import { t } from '$lib/utils/functions/translations';
   import type { LessonVideoType } from '$features/course/utils/types';
   import { lessonApi } from '$features/course/api';
-  import { mediaManagerApi } from '$features/media-manager/api';
+  import { mediaApi } from '$features/media/api';
   import { copyToClipboard, getVideoUrls, removeVideo } from '$lib/utils/functions/formatYoutubeVideo';
 
   import { IconButton } from '@cio/ui/custom/icon-button';
@@ -35,7 +35,7 @@
       const newVideos = await Promise.all(
         validLinks.map(async (link = '', index) => {
           const createdAt = new Date().toISOString();
-          const asset = await mediaManagerApi.createAsset({
+          const asset = await mediaApi.createAsset({
             kind: 'video',
             provider: 'generic',
             storageProvider: 'external',
@@ -46,7 +46,7 @@
           });
 
           if (asset && lessonId) {
-            await mediaManagerApi.attachAsset(asset.id, {
+            await mediaApi.attachAsset(asset.id, {
               targetType: 'lesson',
               targetId: lessonId,
               slotType: 'lesson_video',

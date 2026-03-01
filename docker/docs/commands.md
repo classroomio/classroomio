@@ -3,14 +3,17 @@
 ## Compose Stack
 
 ```bash
-# Full stack (recommended; generates/syncs secure auth tokens in root .env)
+# Full stack with MinIO (default; generates/syncs secure auth tokens)
 ./run-docker-full-stack.sh
 
 # Full stack without rebuilding images
 ./run-docker-full-stack.sh --no-build
 
-# Full stack (postgres, redis, db-init, api, dashboard)
-docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml up --build -d
+# Exclude MinIO (object storage)
+./run-docker-full-stack.sh --no-minio
+
+# Full stack (postgres, redis, db-init, api, dashboard, minio)
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml --profile minio up --build -d
 
 # API-only smoke test path (plus required dependencies)
 docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml up --build -d postgres redis db-init api
@@ -28,6 +31,24 @@ docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml down
 # Stop + remove volumes (deletes local postgres/redis data)
 docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml down -v
 ```
+
+## MinIO (S3-compatible storage)
+
+MinIO is **included by default** with `./run-docker-full-stack.sh`. To start MinIO manually:
+
+```bash
+docker compose -f docker/docker-compose.yaml --profile minio up -d
+
+# If Web UI doesn't load or container name conflict:
+docker rm -f cio-minio
+docker compose -f docker/docker-compose.yaml --profile minio up -d
+```
+
+**When API runs in Docker:** Use `OBJECT_STORAGE_ENDPOINT=http://minio:9000` (Docker service name). The script auto-sets this when MinIO is included.
+
+**Security:** Change the default `minioadmin` / `minioadmin` credentials in production. Set `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD` in `.env` (and matching `OBJECT_STORAGE_*` vars).
+
+See `docker/docs/USAGE.md` for MinIO env vars and troubleshooting.
 
 ## Compose Stack (Published Images / Production)
 
