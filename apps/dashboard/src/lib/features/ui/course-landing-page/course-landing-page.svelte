@@ -15,20 +15,22 @@
   import { handleOpenWidget, reviewsModalStore } from './store';
   import type { Course, CourseMetadata } from '$features/course/utils/types';
   import { courseApi } from '$features/course/api';
-  import { MediaPlayer, isYoutubeUrl } from '$features/ui/media-player';
+  import { MediaPlayer, isYoutubeUrl } from '@cio/ui/custom/media-player';
   import { filterNavItems, getCourseLessons, getCourseSections, getTotalLessons } from './utils';
   import { Button } from '@cio/ui/base/button';
 
   import { Chip } from '@cio/ui/custom/chip';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import * as Dialog from '@cio/ui/base/dialog';
-  import { Image, PoweredBy, UploadWidget } from '$features/ui';
+  import Image from '$features/ui/image.svelte';
+  import PoweredBy from '$features/ui/upgrade-powered-by.svelte';
+  import UploadWidget from '$features/ui/upload-widget/upload-widget.svelte';
+  import HTMLRender from '$features/ui/html-render.svelte';
   import * as Avatar from '@cio/ui/base/avatar';
   import PricingSection from './components/pricing-section.svelte';
   import NavSection from './components/nav-section.svelte';
   import { shortenName } from '$lib/utils/functions/string';
   import SectionsDisplay from './components/sections-display.svelte';
-  import { HTMLRender } from '$features/ui';
   import { observeIntersection } from './components/intersection-observer';
 
   interface Props {

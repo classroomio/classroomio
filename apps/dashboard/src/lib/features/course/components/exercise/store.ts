@@ -1,4 +1,4 @@
-import { QUESTION_TEMPLATE, QUESTION_TYPES } from '$features/ui/question/constants';
+import { DEFAULT_QUESTION_TYPE, QUESTION_TEMPLATE } from '$features/ui/question/constants';
 
 import type { Question } from '$features/course/types';
 import { STATUS } from './constants';
@@ -122,8 +122,8 @@ export function handleAddQuestion() {
           value: '',
           points: 0,
           order: questions.length,
-          questionType: QUESTION_TYPES[0],
-          questionTypeId: QUESTION_TYPES[0].id,
+          questionType: DEFAULT_QUESTION_TYPE,
+          questionTypeId: DEFAULT_QUESTION_TYPE.id,
           options: [
             {
               id: '1-form',

@@ -37,6 +37,10 @@
   import { getOrderedNavigableContent } from '$features/course/utils/content';
   import { Empty } from '@cio/ui/custom/empty';
   import VideoIcon from '@lucide/svelte/icons/video';
+  import {
+    getQuestionTypeId,
+    getQuestionTypeOptionById
+  } from '$features/course/components/exercise/question-type-utils';
 
   interface Props {
     exerciseId?: string;
@@ -113,7 +117,15 @@
           ...q,
           isTitleDirty: false,
           isDescriptionDirty: false,
-          questions: exerciseApi.exercise?.questions || q.questions
+          questions:
+            exerciseApi.exercise?.questions?.map((question) => {
+              const questionType = getQuestionTypeOptionById(getQuestionTypeId(question));
+              return {
+                ...question,
+                questionTypeId: questionType.id,
+                questionType
+              };
+            }) || q.questions
         }));
         patchExerciseListItemLocally();
         snackbar.success('snackbar.exercise.success');

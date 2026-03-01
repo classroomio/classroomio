@@ -41,4 +41,5 @@ export type Question = Omit<ApiQuestion, 'options'> & {
   isDirty?: boolean;
   deletedAt?: string;
   options: QuestionOption[];
+  settings?: Record<string, unknown>;
 };

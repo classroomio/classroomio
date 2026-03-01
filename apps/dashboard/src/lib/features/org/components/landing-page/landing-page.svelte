@@ -30,7 +30,7 @@
   import { orgApi } from '$features/org/api/org.svelte';
   import { validateEmail } from '$lib/utils/functions/validateEmail';
   import { orgLandingpageValidation } from '$lib/utils/functions/validator';
-  import { MediaPlayer, isYoutubeUrl } from '$features/ui/media-player';
+  import { MediaPlayer, isYoutubeUrl } from '@cio/ui/custom/media-player';
 
   interface Props {
     orgSiteName?: string;

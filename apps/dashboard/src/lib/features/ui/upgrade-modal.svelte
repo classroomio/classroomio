@@ -14,7 +14,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { toggleConfetti } from './confetti/store';
-  import { currentOrg, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
+  import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import Confetti from './confetti/confetti.svelte';
 
   const planNames = Object.keys(PLANS);
@@ -80,8 +80,7 @@
   }
 
   function onClose() {
-    const path = upgraded ? $currentOrgPath : page.url.pathname;
-    goto(path);
+    goto(page.url.pathname);
   }
 
   function handleOpenChange(newOpen: boolean) {

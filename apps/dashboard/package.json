@@ -22,6 +22,7 @@
     "@carbon/charts-svelte": "^1.13.6",
     "@cio/api": "workspace:*",
     "@cio/db": "workspace:*",
+    "@cio/question-types": "workspace:*",
     "@cio/ui": "workspace:*",
     "@cio/utils": "workspace:*",
     "@lucide/svelte": "^0.545.0",

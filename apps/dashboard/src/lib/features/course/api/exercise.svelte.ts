@@ -107,7 +107,6 @@ export class ExerciseApi extends BaseApiWithErrors {
       onSuccess: (response) => {
         if (response.data) {
           this.exercise = response.data;
-          snackbar.success('Exercise updated successfully');
           this.success = true;
           this.errors = {};
         }

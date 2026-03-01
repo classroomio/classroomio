@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "generate-css": "echo 'generating CSS' && pnpx @tailwindcss/cli -i ./src/index.css -o ./src/output.css --minify",
+    "generate-css": "echo 'generating CSS' && tailwindcss -i ./src/index.css -o ./src/output.css --minify",
     "build": "pnpm generate-css",
     "dev": "pnpm generate-css --watch",
     "format": "prettier --write .",
@@ -18,6 +18,7 @@
     "@sveltejs/adapter-auto": "^3.0.0",
     "@sveltejs/kit": "^2.5.27",
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
+    "@tailwindcss/cli": "^4.1.18",
     "@tailwindcss/typography": "^0.5.18",
     "@types/dompurify": "^3.2.0",
     "@zxcvbn-ts/core": "^3.0.4",
@@ -42,6 +43,7 @@
     "vaul-svelte": "1.0.0-next.7"
   },
   "dependencies": {
+    "@cio/question-types": "workspace:*",
     "@floating-ui/dom": "^1.7.4",
     "@tiptap/core": "^3.10.7",
     "@tiptap/extension-bubble-menu": "^3.10.7",
@@ -66,7 +68,9 @@
     "dompurify": "^3.3.0",
     "katex": "^0.16.25",
     "lowlight": "^3.3.0",
+    "plyr": "^3.7.8",
     "simple-icons": "^16.9.0",
+    "svelte-dnd-action": "^0.9.68",
     "svelte-tiptap": "^2.2.0",
     "tippy.js": "^6.3.7",
     "tiptap-extension-auto-joiner": "^0.1.3"

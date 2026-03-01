@@ -4,7 +4,6 @@
   import { resolve } from '$app/paths';
   import { Empty } from '@cio/ui/custom/empty';
   import LockIcon from '@lucide/svelte/icons/lock';
-  import { QUESTION_TYPES } from '$features/ui/question/constants';
   import { ExercisePage } from '$features/course/pages';
   import {
     questionnaire,
@@ -15,6 +14,11 @@
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import type { Question } from '$features/course/types';
+  import {
+    getQuestionTypeId,
+    getQuestionTypeOptionById
+  } from '$features/course/components/exercise/question-type-utils';
+  import { normalizeQuestionOrder } from '$features/course/components/exercise/order-utils';
 
   let { data = $bindable() } = $props();
 
@@ -39,15 +43,15 @@
     // Transform questions and set questionnaire store
     let questions: Question[] = [];
     if (exercise.questions && Array.isArray(exercise.questions)) {
-      questions = exercise.questions
-        .map((question) => {
-          const questionType = QUESTION_TYPES.find((type) => type.id === question.questionType?.id);
-          return {
-            ...question,
-            questionType: questionType || question.questionType
-          };
-        })
-        .sort((a, b) => (a.order || 0) - (b.order || 0));
+      const mapped = exercise.questions.map((question) => {
+        const questionType = getQuestionTypeOptionById(getQuestionTypeId(question));
+        return {
+          ...question,
+          questionTypeId: questionType.id,
+          questionType
+        };
+      });
+      questions = normalizeQuestionOrder(mapped);
     }
 
     questionnaire.set({

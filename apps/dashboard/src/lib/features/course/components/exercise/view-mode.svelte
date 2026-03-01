@@ -5,7 +5,7 @@
   import { courseApi } from '$features/course/api';
   import { questionnaire, questionnaireMetaData } from './store';
   import Preview from './preview.svelte';
-  import { RadioQuestion, CheckboxQuestion, TextareaQuestion } from '$features/ui';
+  import { ExerciseQuestion } from '@cio/ui';
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
   import { Spinner } from '@cio/ui/base/spinner';
@@ -14,9 +14,9 @@
   import FileQuestionIcon from '@lucide/svelte/icons/file-question';
   import { Progress } from '@cio/ui/base/progress';
   import { removeDuplicate } from '$lib/utils/functions/removeDuplicate';
-  import { QUESTION_TYPE } from '@cio/utils/validation/constants';
+  import { getExerciseQuestionContractKey } from '@cio/question-types';
   import { STATUS } from './constants';
-  import { getPropsForQuestion, filterOutDeleted, wasCorrectAnswerSelected } from './functions';
+  import { filterOutDeleted, wasCorrectAnswerSelected } from './functions';
   import { formatAnswers, getGroupMemberId } from '$features/course/utils/functions';
   import { exerciseApi, submissionApi } from '$features/course/api';
   import { profile } from '$lib/utils/store/user';
@@ -24,6 +24,8 @@
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { ContentType } from '@cio/utils/constants/content';
+  import { getQuestionTypeKey, questionTypeSupportsOptions, toExerciseQuestionModel } from './question-type-utils';
+  import { getExerciseQuestionLabels } from './question-labels';
 
   interface Props {
     preview?: boolean;
@@ -40,9 +42,89 @@
   let isLoadingAutoSavedData = $state(false);
   let alreadyCheckedAutoSavedData = $state(false);
   let prevExerciseId = $state('');
+  const questionLabels = $derived(getExerciseQuestionLabels());
 
   function handleStart() {
     questionnaireMetaData.update((m) => ({ ...m, currentQuestionIndex: m.currentQuestionIndex + 1 }));
+  }
+
+  function normalizeAnswerValue(previousValue, nextValue) {
+    if (typeof nextValue === 'string' || typeof nextValue === 'number' || typeof nextValue === 'boolean') {
+      return nextValue;
+    }
+
+    if (Array.isArray(nextValue)) {
+      const previousList = Array.isArray(previousValue) ? previousValue : [];
+      return removeDuplicate([...previousList, ...nextValue]);
+    }
+
+    if (nextValue && typeof nextValue === 'object') {
+      return nextValue;
+    }
+
+    return previousValue;
+  }
+
+  function mapAnswerToApiPayload(question, answerValue) {
+    const questionId = Number(question.id);
+    if (Number.isNaN(questionId)) return null;
+
+    const isOptionBasedQuestion = questionTypeSupportsOptions(getQuestionTypeKey(question));
+
+    if (isOptionBasedQuestion) {
+      const optionValues = Array.isArray(answerValue) ? answerValue : [answerValue];
+      const rawValue = optionValues[0];
+
+      if (rawValue !== undefined && rawValue !== null && rawValue !== '') {
+        let optionId = Number.NaN;
+        const normalizedRawValue = String(rawValue).trim().toLowerCase();
+
+        if (question.options?.length) {
+          const option = question.options.find((item) => {
+            const candidateId = item.id != null ? String(item.id) : '';
+            const candidateValue = item.value != null ? String(item.value) : '';
+            const candidateLabel = item.label != null ? String(item.label) : '';
+
+            return (
+              candidateId === String(rawValue) ||
+              candidateValue === String(rawValue) ||
+              candidateLabel === String(rawValue) ||
+              candidateValue.trim().toLowerCase() === normalizedRawValue ||
+              candidateLabel.trim().toLowerCase() === normalizedRawValue
+            );
+          });
+          optionId = option?.id != null ? Number(option.id) : Number.NaN;
+        }
+
+        if (Number.isNaN(optionId)) {
+          optionId = Number(rawValue);
+        }
+
+        if (!Number.isNaN(optionId)) {
+          return { questionId, optionId };
+        }
+      }
+    }
+
+    if (typeof answerValue === 'string') {
+      return { questionId, answer: answerValue };
+    }
+
+    if (typeof answerValue === 'number' || typeof answerValue === 'boolean') {
+      return { questionId, answer: String(answerValue) };
+    }
+
+    if (Array.isArray(answerValue)) {
+      if (answerValue.length === 0) return null;
+
+      return { questionId, answer: JSON.stringify(answerValue) };
+    }
+
+    if (answerValue && typeof answerValue === 'object') {
+      return { questionId, answer: JSON.stringify(answerValue) };
+    }
+
+    return null;
   }
 
   async function onSubmit(id, value) {
@@ -50,9 +132,8 @@
 
     const { answers } = $questionnaireMetaData;
     const { questions } = $questionnaire;
-    const prevAnswer = answers[id] || [];
-
-    const formattedAnswer = typeof value === 'string' ? value : removeDuplicate([...prevAnswer, ...(value || [])]);
+    const prevAnswer = answers[id];
+    const formattedAnswer = normalizeAnswerValue(prevAnswer, value);
 
     const newAnswers = { ...answers, [id]: formattedAnswer };
     questionnaireMetaData.update((m) => ({ ...m, answers: newAnswers }));
@@ -77,26 +158,12 @@
 
           // Transform answers to API format
           const answersForApi = Object.entries(updated.answers)
-            .map(([questionName, val]) => {
-              const question = questions.find((q) => q.name === questionName);
+            .map(([questionKey, val]) => {
+              const question = questions.find(
+                (item) => getExerciseQuestionContractKey(toExerciseQuestionModel(item)) === questionKey
+              );
               if (!question) return null;
-
-              const questionId = Number(question.id);
-              if (isNaN(questionId)) return null;
-
-              if (typeof val === 'string') {
-                return { questionId, answer: val };
-              }
-              if (Array.isArray(val) && val.length > 0) {
-                const raw = val[0];
-                let optionId = Number(raw);
-                if (isNaN(optionId) && question.options?.length) {
-                  const option = question.options.find((o) => o.value === raw || String(o.id) === String(raw));
-                  optionId = option?.id != null ? Number(option.id) : NaN;
-                }
-                return isNaN(optionId) ? null : { questionId, optionId };
-              }
-              return null;
+              return mapAnswerToApiPayload(question, val);
             })
             .filter((answer) => answer !== null) as Array<{ questionId: number; optionId?: number; answer?: string }>;
 
@@ -210,6 +277,30 @@
     alreadyCheckedAutoSavedData = true;
   }
 
+  function hasAnswerValue(answerValue) {
+    if (answerValue === null || answerValue === undefined) return false;
+    if (typeof answerValue === 'string') return answerValue.trim().length > 0;
+    if (Array.isArray(answerValue)) return answerValue.length > 0;
+    return true;
+  }
+
+  function onSharedAnswerChange(answerValue) {
+    if (!sharedCurrentQuestionKey) return;
+
+    questionnaireMetaData.update((metaData) => ({
+      ...metaData,
+      answers: {
+        ...metaData.answers,
+        [sharedCurrentQuestionKey]: answerValue
+      }
+    }));
+  }
+
+  function onSharedNext() {
+    if (!sharedCurrentQuestionKey) return;
+    onSubmit(sharedCurrentQuestionKey, sharedCurrentAnswer);
+  }
+
   $effect(() => {
     if (!alreadyCheckedAutoSavedData) {
       getAutoSavedData();
@@ -220,17 +311,14 @@
   const currentQuestion = $derived($questionnaire.questions[$questionnaireMetaData.currentQuestionIndex - 1]);
   const isExerciseLoaded = $derived(alreadyCheckedAutoSavedData && $questionnaire.questions.length > 0);
   const isFinished = $derived(isExerciseLoaded && $questionnaireMetaData.currentQuestionIndex > 0 && !currentQuestion);
-  const renderProps = $derived(
-    getPropsForQuestion(
-      $questionnaire.questions,
-      currentQuestion,
-      $questionnaireMetaData,
-      $questionnaireMetaData.currentQuestionIndex,
-      onSubmit,
-      onPrevious,
-      preview
-    )
+  const sharedQuestionModel = $derived(currentQuestion ? toExerciseQuestionModel(currentQuestion) : null);
+  const sharedCurrentQuestionKey = $derived(
+    sharedQuestionModel ? getExerciseQuestionContractKey(sharedQuestionModel) : null
   );
+  const sharedCurrentAnswer = $derived(
+    sharedCurrentQuestionKey ? $questionnaireMetaData.answers[sharedCurrentQuestionKey] : undefined
+  );
+  const canGoNextForSharedQuestion = $derived(hasAnswerValue(sharedCurrentAnswer));
 
   $effect(() => {
     const finished = isFinished;
@@ -388,12 +476,30 @@
   {#key currentQuestion.id}
     <!-- <div transition:fade id="question"> -->
     <div in:fly={{ x: 500, duration: 1000 }} id="question">
-      {#if QUESTION_TYPE.RADIO === currentQuestion.questionType.id}
-        <RadioQuestion {...renderProps} key={currentQuestion.id} hideGrading={true} />
-      {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.questionType.id}
-        <CheckboxQuestion {...renderProps} key={currentQuestion.id} hideGrading={true} />
-      {:else if QUESTION_TYPE.TEXTAREA === currentQuestion.questionType.id}
-        <TextareaQuestion {...renderProps} key={currentQuestion.id} hideGrading={true} />
+      {#if sharedQuestionModel}
+        <ExerciseQuestion.QuestionRenderer
+          contract={{
+            mode: 'take',
+            question: sharedQuestionModel,
+            answer: sharedCurrentAnswer,
+            labels: questionLabels,
+            disabled: isSubmitting
+          }}
+          onAnswerChange={onSharedAnswerChange}
+        />
+
+        <div class="mt-4">
+          <ExerciseQuestion.QuestionNavigation
+            canGoBack={$questionnaireMetaData.currentQuestionIndex > 1}
+            canGoNext={canGoNextForSharedQuestion && !isSubmitting}
+            isLast={$questionnaireMetaData.currentQuestionIndex === $questionnaire.questions.length}
+            previousLabel={t.get('course.navItem.lessons.exercises.all_exercises.previous')}
+            nextLabel={t.get('course.navItem.lessons.exercises.all_exercises.next')}
+            finishLabel={t.get('course.navItem.lessons.exercises.all_exercises.finish')}
+            {onPrevious}
+            onNext={onSharedNext}
+          />
+        </div>
       {/if}
     </div>
   {/key}

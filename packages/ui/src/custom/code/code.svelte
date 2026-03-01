@@ -33,13 +33,12 @@
 <style>
   @reference "../../index.css";
 
-  :global(.dark) {
-    :global(.shiki, .shiki span) {
-      color: var(--shiki-dark) !important;
-      font-style: var(--shiki-dark-font-style) !important;
-      font-weight: var(--shiki-dark-font-weight) !important;
-      text-decoration: var(--shiki-dark-text-decoration) !important;
-    }
+  :global(.dark .shiki),
+  :global(.dark .shiki span) {
+    color: var(--shiki-dark) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
   }
 
   /* Shiki see: https://shiki.matsu.io/guide/dual-themes#class-based-dark-mode */

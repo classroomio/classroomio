@@ -6,13 +6,11 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
   import { sanitizeHtml } from '@cio/ui/tools/sanitize';
-  import { HTMLRender } from '$features/ui';
+  import HTMLRender from '$features/ui/html-render.svelte';
   import PaymentModal from './payment-modal.svelte';
   import type { Course } from '$features/course/utils/types';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { t } from '$lib/utils/functions/translations';
-  import { classroomio } from '$lib/utils/services/api';
-  import { snackbar } from '$features/ui/snackbar/store';
 
   interface Props {
     className?: string;

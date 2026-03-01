@@ -62,7 +62,7 @@ flowchart TB
 - When `invite` present or free (no invite): show course info + Join button
 - On Join:
   1. If not logged in → `goto(/signup?redirect=/course/:slug/enroll)` (preserve redirect, append `?invite_token=` if present)
-  2. If logged in → call `**POST /course/:courseId/enroll**` with body `{ inviteToken?: string }`:
+  2. If logged in → call `**POST /course/:courseId/enroll`** with body `{ inviteToken?: string }`:
     - **Free:** no `inviteToken`, backend enrolls directly
     - **Paid/invited:** pass `inviteToken` from URL; backend validates and consumes invite
   3. Redirect to `result.data.redirectTo || '/lms'`
@@ -132,7 +132,7 @@ If [invite/t](apps/dashboard/src/routes/invite/t/) (teacher invite) exists, keep
 **File:** [apps/dashboard/src/lib/utils/constants/routes.ts](apps/dashboard/src/lib/utils/constants/routes.ts)
 
 - Remove `INVITE_STUDENT: '/invite/s'` from `ROUTE`
-- Remove `^${ROUTE.INVITE_STUDENT}/.*` from `ROUTES_TO_HIDE_NAV`
+- Remove `^${ROUTE.INVITE_STUDENT}/.`* from `ROUTES_TO_HIDE_NAV`
 - Add enroll route to `PUBLIC_ROUTES`: `^/course/.*/enroll` (or equivalent)
 
 ### 5.3 Remove obsolete backend function

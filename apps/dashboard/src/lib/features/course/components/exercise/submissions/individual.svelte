@@ -1,11 +1,15 @@
 <script lang="ts">
   import { Spinner } from '@cio/ui/base/spinner';
+  import { ExerciseQuestion } from '@cio/ui';
 
   import { submissions } from './store';
   import { questionnaire } from '../store';
   import { t } from '$lib/utils/functions/translations';
   import type { ExerciseSubmissions } from '$features/course/utils/types';
   import type { Question } from '$features/course/types';
+  import { QUESTION_TYPE_KEY, type ExerciseAnswerValue } from '@cio/question-types';
+  import { getQuestionTypeKey, toExerciseQuestionModel } from '../question-type-utils';
+  import { getExerciseQuestionLabels } from '../question-labels';
 
   interface Props {
     isLoading?: boolean;
@@ -17,42 +21,59 @@
     'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=60&w=800&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YXZhdGFyc3xlbnwwfHwwfHx8Mg%3D%3D';
 
   let studentSelected = $state(0);
+  const questionLabels = $derived(getExerciseQuestionLabels());
 
-  const isSelected = (student: ExerciseSubmissions, questionId: number, optionValue: string | null) => {
-    if (!$submissions || !student?.answers) return false;
-    const submittedAnswer = student.answers;
-    const filteredAnswer = submittedAnswer.filter((ans) => ans.question_id === questionId);
-    if (filteredAnswer.length === 0) return false;
+  function toNumericQuestionId(question: Question): number | null {
+    const numericId = Number(question.id);
+    return Number.isNaN(numericId) ? null : numericId;
+  }
 
-    // Check if the option value is in the answers array
-    return filteredAnswer.some((ans) => {
-      if (Array.isArray(ans.answers)) {
-        return ans.answers.includes(optionValue || '');
-      }
-      return ans.answers === optionValue;
-    });
-  };
+  function getStudentAnswerForQuestion(student: ExerciseSubmissions, question: Question): ExerciseAnswerValue {
+    if (!student?.answers) return undefined;
 
-  const isCorrect = (student: ExerciseSubmissions, questionId: number, option: Question['options'][number]) => {
-    if (!isSelected(student, questionId, option.value || null)) return '';
-    if (option.isCorrect) {
-      return 'border-green-700';
-    } else {
-      return 'border-red-700';
+    const questionId = toNumericQuestionId(question);
+    if (questionId === null) return undefined;
+
+    const submittedAnswer = student.answers.find((answer) => answer.question_id === questionId);
+    if (!submittedAnswer) return undefined;
+
+    const selectedAnswers = Array.isArray(submittedAnswer.answers)
+      ? submittedAnswer.answers.filter((answer) => answer !== '')
+      : [];
+
+    const questionTypeKey = getQuestionTypeKey(question);
+    if (questionTypeKey === QUESTION_TYPE_KEY.CHECKBOX) return selectedAnswers;
+    if (questionTypeKey === QUESTION_TYPE_KEY.TRUE_FALSE) {
+      const selectedValue = selectedAnswers[0];
+      if (selectedValue === undefined) return undefined;
+
+      const matchedOption = (question.options || []).find((option) => {
+        return (
+          String(option.id ?? '') === String(selectedValue) ||
+          String(option.value ?? '')
+            .trim()
+            .toLowerCase() === String(selectedValue).trim().toLowerCase() ||
+          String(option.label ?? '')
+            .trim()
+            .toLowerCase() === String(selectedValue).trim().toLowerCase()
+        );
+      });
+
+      const resolvedValue = String(matchedOption?.value ?? matchedOption?.label ?? selectedValue)
+        .trim()
+        .toLowerCase();
+      if (resolvedValue === 'true' || resolvedValue === '1' || resolvedValue === 'yes') return true;
+      if (resolvedValue === 'false' || resolvedValue === '0' || resolvedValue === 'no') return false;
+
+      return selectedValue;
     }
-  };
 
-  const getOpenAnswer = (student: ExerciseSubmissions, questionId: number) => {
-    if (!student?.answers) return '';
-    const submittedAnswer = student.answers;
-    const filteredAnswer = submittedAnswer.filter((ans) => ans.question_id === questionId);
-    if (filteredAnswer.length === 0)
-      return $t('course.navItem.lessons.exercises.all_exercises.analytics.individual.no');
-    if (filteredAnswer.some((ans) => ans.open_answer === '')) {
-      return $t('course.navItem.lessons.exercises.all_exercises.analytics.individual.no');
+    if (questionTypeKey === QUESTION_TYPE_KEY.RADIO) {
+      return selectedAnswers[0];
     }
-    return filteredAnswer.map((ans) => ans.open_answer).join(', ') || '';
-  };
+
+    return submittedAnswer.open_answer ?? '';
+  }
 </script>
 
 {#if isLoading}
@@ -88,35 +109,15 @@
     {#if $questionnaire.questions}
       {#each $questionnaire.questions as q, i}
         <div class="pb-4">
-          <h3 class="text-lg">{i + 1}. {q.title}</h3>
-          {#if q.questionTypeId !== 3}
-            {#each q.options as option}
-              {@const questionId = typeof q.id === 'string' ? parseInt(q.id, 10) : q.id}
-              <div
-                class={`my-2 flex items-center gap-2 rounded-md border-2 border-gray-300 p-2 ${isCorrect(
-                  $submissions[studentSelected],
-                  questionId,
-                  option
-                )}`}
-              >
-                <input
-                  type="radio"
-                  name=""
-                  id=""
-                  class="form-radio"
-                  checked={isSelected($submissions[studentSelected], questionId, option.value)}
-                />
-                <span class="dark:text-white">{option.label}</span>
-              </div>
-            {/each}
-          {:else}
-            {@const questionId = typeof q.id === 'string' ? parseInt(q.id, 10) : q.id}
-            <div class="my-1 w-full rounded bg-slate-100 p-2 dark:bg-slate-300">
-              <span class="text-base font-medium text-black">
-                {getOpenAnswer($submissions[studentSelected], questionId)}
-              </span>
-            </div>
-          {/if}
+          <ExerciseQuestion.QuestionRenderer
+            contract={{
+              mode: 'view',
+              question: { ...toExerciseQuestionModel(q), title: `${i + 1}. ${q.title}` },
+              answer: getStudentAnswerForQuestion($submissions[studentSelected], q),
+              labels: questionLabels,
+              disabled: true
+            }}
+          />
         </div>
       {/each}
     {/if}

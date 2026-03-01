@@ -114,6 +114,20 @@
       "email": "Nieprawidłowy adres e-mail",
       "username": "Nazwa użytkownika nie może być pusta",
       "fullname": "Nazwa powinna składać się z minimum 5 znaków"
+    },
+    "exercise": {
+      "options": {
+        "custom": "{wiadomość}"
+      },
+      "points": {
+        "too_small": "Punkty muszą wynosić co najmniej 0"
+      },
+      "label": {
+        "too_small": "Etykieta opcji jest wymagana"
+      },
+      "question": {
+        "too_small": "Tytuł pytania jest wymagany"
+      }
     }
   },
   "generic": {
@@ -856,6 +870,11 @@
           "submitted": "Przesłane",
           "in_progress": "W toku",
           "graded": "Ocenione"
+        },
+        "workflow": {
+          "awaiting_manual_hint": "Wymaga ręcznego sprawdzenia",
+          "failed_hint": "Automatyczne ocenianie nie powiodło się. Przenieś to zgłoszenie z powrotem do sekcji Przesłane, aby spróbować ponownie.",
+          "invalid_transition": "To przeniesienie stanu nie jest dozwolone w procesie oceniania"
         }
       },
       "attendance": {
@@ -1033,9 +1052,19 @@
               "question_types": {
                 "single": "Pojedyncza odpowiedź",
                 "multiple": "Wiele odpowiedzi",
-                "paragraph": "Akapit"
+                "paragraph": "Akapit",
+                "true_false": "Prawda/Fałsz",
+                "short_answer": "Krótka odpowiedź",
+                "numeric": "Odpowiedź numeryczna",
+                "fill_blank": "Wypełnij puste miejsce",
+                "file_upload": "Przesyłanie pliku",
+                "matching": "Dopasowanie",
+                "ordering": "Zamawianie",
+                "hotspot": "Hotspot",
+                "link": "Linki"
               },
-              "select_type": "Wybierz typ"
+              "select_type": "Wybierz typ",
+              "premium_question_type": "Uaktualnij, aby używać tego typu pytań"
             },
             "delete_confirmation": {
               "title": "Usuń pytanie",
@@ -1048,6 +1077,193 @@
               "heading": "Opis",
               "describe": "Opisz ćwiczenie swojemu uczniowi",
               "no": "Brak opisu"
+            },
+            "shared_question": {
+              "textarea": {
+                "take": {
+                  "placeholder": "Napisz swoją odpowiedź"
+                },
+                "edit": {
+                  "placeholder": "Uczniowie będą odpowiadać za pomocą długiego tekstu"
+                }
+              },
+              "hotspot": {
+                "preview": {
+                  "helper": "Podgląd hotspotu jest dostępny na podstawie obrazu aplikacji hosta i ustawień hotspotu."
+                },
+                "take": {
+                  "placeholder": "Podaj współrzędne punktu aktywnego w formacie JSON"
+                },
+                "edit": {
+                  "helper": "Skonfiguruj ustawienia obrazu hotspotu i stref za pomocą elementów sterujących aplikacji hosta."
+                }
+              },
+              "ordering": {
+                "fallback_step_prefix": "Krok",
+                "preview": {
+                  "submitted_label": "Złożone zamówienie",
+                  "expected_label": "Oczekiwane zamówienie",
+                  "matches": "Złożone zamówienie jest zgodne z oczekiwanym zamówieniem.",
+                  "differs": "Złożone zamówienie różni się od oczekiwanego."
+                },
+                "take": {
+                  "helper": "Przeciągnij i upuść, aby ułożyć elementy we właściwej kolejności.",
+                  "empty": "Dla tego pytania nie skonfigurowano jeszcze żadnych elementów zamówienia."
+                },
+                "edit": {
+                  "helper": "Przeciągnij elementy, aby określić właściwą kolejność.",
+                  "add_step": "Dodaj krok",
+                  "empty": "Dodaj kroki, a następnie przeciągnij, aby ustawić oczekiwaną kolejność.",
+                  "step_placeholder": "Krok „{'indeks'}'",
+                  "remove_step_tooltip": "Usuń krok"
+                }
+              },
+              "matching": {
+                "preview": {
+                  "helper": "Podgląd pasujących par jest dostępny w ustawieniach aplikacji hosta."
+                },
+                "take": {
+                  "placeholder": "Podaj pasujące pary w formacie JSON"
+                },
+                "edit": {
+                  "helper": "Skonfiguruj pary w ustawieniach pytań za pomocą elementów sterujących aplikacji hosta."
+                }
+              },
+              "link": {
+                "preview": {
+                  "empty": "Nie przesłano żadnych linków.",
+                  "item_label": "Link „{'indeks'}'"
+                },
+                "take": {
+                  "helper": "Dodaj jeden lub więcej linków. Akceptowane są tylko prawidłowe adresy URL http/https.",
+                  "placeholder": "https://example.com/resource-'{'index'}'",
+                  "remove_tooltip": "Usuń link",
+                  "remove_sr": "Usuń link",
+                  "invalid_url_error": "Proszę wprowadzić prawidłowy adres URL (http/https).",
+                  "add_button": "Dodaj link"
+                },
+                "edit": {
+                  "instructions_placeholder": "Opcjonalne instrukcje dla uczniów",
+                  "helper": "Uczniowie mogą przesłać jeden lub więcej prawidłowych adresów URL (http/https)."
+                }
+              },
+              "file_upload": {
+                "preview": {
+                  "accepted_types_label": "Akceptowane typy",
+                  "max_size_label": "Maksymalny rozmiar (MB)"
+                },
+                "take": {
+                  "selected_file_label": "Wybrany plik",
+                  "upload_button": "Prześlij"
+                },
+                "edit": {
+                  "accepted_types_placeholder": "Akceptowane typy (np. pdf, docx)",
+                  "max_size_placeholder": "Maksymalny rozmiar (MB)"
+                }
+              },
+              "fill_blank": {
+                "preview": {
+                  "accepted_answers_label": "Zaakceptowane odpowiedzi"
+                },
+                "take": {
+                  "placeholder": "Wpisz odpowiedzi oddzielone przecinkami"
+                },
+                "edit": {
+                  "accepted_answers_placeholder": "Zaakceptowane odpowiedzi (oddzielone przecinkami)"
+                }
+              },
+              "numeric": {
+                "preview": {
+                  "correct_value_label": "Prawidłowa wartość",
+                  "tolerance_label": "Tolerancja"
+                },
+                "take": {
+                  "placeholder": "Wprowadź numer"
+                },
+                "edit": {
+                  "correct_value_label": "Prawidłowa wartość",
+                  "correct_value_info": "Oczekiwana odpowiedź liczbowa, którą uczniowie muszą przesłać, aby została oznaczona jako prawidłowa.",
+                  "tolerance_label": "Tolerancja",
+                  "tolerance_info": "Dopuszczalna różnica od prawidłowej wartości (na przykład 0,5 akceptuje +/-0,5).",
+                  "correct_value_placeholder": "Prawidłowa wartość",
+                  "tolerance_placeholder": "Tolerancja"
+                }
+              },
+              "short_answer": {
+                "preview": {
+                  "helper": "Pytanie z odpowiedzią tekstową."
+                },
+                "take": {
+                  "placeholder": "Wpisz swoją odpowiedź"
+                },
+                "edit": {
+                  "instructions_placeholder": "Instrukcje opcjonalne"
+                }
+              },
+              "true_false": {
+                "true_label": "Prawda",
+                "false_label": "Fałsz",
+                "preview": {
+                  "correct_value_label": "Prawidłowa wartość"
+                },
+                "edit": {
+                  "correct_answer_label": "Prawidłowa odpowiedź"
+                }
+              },
+              "checkbox": {
+                "edit": {
+                  "helper": "Zaznacz jedną lub więcej opcji jako poprawną.",
+                  "correct_selected_tooltip": "Wybrano poprawną odpowiedź",
+                  "toggle_correct_tooltip": "Przełącz poprawną odpowiedź",
+                  "toggle_correct_sr": "Przełącz opcję jako poprawną"
+                }
+              },
+              "radio": {
+                "edit": {
+                  "helper": "Wybierz dokładnie jedną poprawną opcję.",
+                  "correct_selected_tooltip": "Wybrano poprawną odpowiedź",
+                  "mark_correct_tooltip": "Oznacz jako poprawną odpowiedź",
+                  "mark_correct_sr": "Oznacz opcję jako poprawną"
+                }
+              },
+              "question": {
+                "edit": {
+                  "title_label": "Tytuł",
+                  "title_placeholder": "Podpowiedź z pytaniem",
+                  "description_label": "Opis (opcjonalnie)",
+                  "description_placeholder": "Dodaj dodatkowy kontekst dla tego pytania",
+                  "add_description": "Dodaj opis",
+                  "remove_description": "Usuń opis",
+                  "media_menu_sr": "Menu dodatków do pytań",
+                  "add_image": "Dodaj obraz",
+                  "add_video": "Dodaj wideo",
+                  "remove_image_tooltip": "Usuń obraz",
+                  "remove_image_sr": "Usuń obraz",
+                  "remove_video_tooltip": "Usuń wideo",
+                  "remove_video_sr": "Usuń wideo",
+                  "image_alt": "Kontekst pytania",
+                  "video_modal_title": "Dodaj wideo z YouTube'a",
+                  "video_link_label": "Link do YouTube'a",
+                  "video_link_placeholder": "https://www.youtube.com/watch?v=",
+                  "video_add_button": "Dodaj wideo",
+                  "video_invalid_link": "Wprowadź prawidłowy link do YouTube.",
+                  "upload_error_only_images": "Obsługiwane są tylko pliki obrazów.",
+                  "upload_error_skipped": "Niektóre pliki zostały pominięte, ponieważ nie są obrazami.",
+                  "upload_error_failed": "Nie udało się przesłać obrazu. Spróbuj ponownie."
+                }
+              },
+              "navigation": {
+                "previous": "Poprzedni",
+                "next": "Następny",
+                "finish": "Zakończ"
+              },
+              "common": {
+                "option_prefix": "Opcja",
+                "remove": "Usuń",
+                "add_option": "Dodaj opcję",
+                "correct_badge": "(Poprawnie)",
+                "not_set": "Nie ustawiono"
+              }
             }
           },
           "new_exercise_modal": {

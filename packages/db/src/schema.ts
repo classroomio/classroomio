@@ -326,6 +326,7 @@ export const option = pgTable(
     }),
     label: varchar().notNull(),
     isCorrect: boolean('is_correct').default(false).notNull(),
+    settings: jsonb().default({}),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     questionId: bigint('question_id', { mode: 'number' }).notNull(),
     value: uuid().default(sql`gen_random_uuid()`),
@@ -468,6 +469,8 @@ export const submission = pgTable(
     reviewerId: bigint('reviewer_id', { mode: 'number' }),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     statusId: bigint('status_id', { mode: 'number' }).default(sql`'1'`),
+    gradingState: varchar('grading_state').default('queued').notNull(),
+    overallStatus: varchar('overall_status').default('manual_required').notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     total: bigint({ mode: 'number' }).default(sql`'0'`),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
@@ -1486,6 +1489,7 @@ export const question = pgTable(
     exerciseId: uuid('exercise_id').notNull(),
     name: uuid().default(sql`gen_random_uuid()`),
     points: doublePrecision(),
+    settings: jsonb().default({}),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     order: bigint({ mode: 'number' })
   },

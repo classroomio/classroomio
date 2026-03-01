@@ -1273,6 +1273,7 @@
               "no": "No, cancel",
               "yes": "Yes, delete",
               "select_type": "Select type",
+              "premium_question_type": "Upgrade to use this question type",
               "deleting": "Deleting...",
               "error": "You have some errors",
               "question": "Question",
@@ -1281,7 +1282,16 @@
               "question_types": {
                 "single": "Single answer",
                 "multiple": "Multiple answers",
-                "paragraph": "Paragraph"
+                "paragraph": "Paragraph",
+                "true_false": "True/False",
+                "short_answer": "Short answer",
+                "numeric": "Numeric answer",
+                "fill_blank": "Fill in the blank",
+                "file_upload": "File upload",
+                "matching": "Matching",
+                "ordering": "Ordering",
+                "hotspot": "Hotspot",
+                "link": "Links"
               }
             },
             "view_mode": {
@@ -1319,6 +1329,193 @@
               },
               "submissions": "Submissions",
               "loading_submissions": "Loading submissions..."
+            },
+            "shared_question": {
+              "common": {
+                "option_prefix": "Option",
+                "remove": "Remove",
+                "add_option": "Add option",
+                "correct_badge": "(Correct)",
+                "not_set": "Not set"
+              },
+              "navigation": {
+                "previous": "Previous",
+                "next": "Next",
+                "finish": "Finish"
+              },
+              "question": {
+                "edit": {
+                  "title_label": "Title",
+                  "title_placeholder": "Question prompt",
+                  "description_label": "Description (optional)",
+                  "description_placeholder": "Add additional context for this question",
+                  "add_description": "Add description",
+                  "remove_description": "Remove description",
+                  "media_menu_sr": "Question extras menu",
+                  "add_image": "Add image",
+                  "add_video": "Add video",
+                  "remove_image_tooltip": "Remove image",
+                  "remove_image_sr": "Remove image",
+                  "remove_video_tooltip": "Remove video",
+                  "remove_video_sr": "Remove video",
+                  "image_alt": "Question context",
+                  "video_modal_title": "Add YouTube video",
+                  "video_link_label": "YouTube link",
+                  "video_link_placeholder": "https://www.youtube.com/watch?v=",
+                  "video_add_button": "Add video",
+                  "video_invalid_link": "Please enter a valid YouTube link.",
+                  "upload_error_only_images": "Only image files are supported.",
+                  "upload_error_skipped": "Some files were skipped because they are not images.",
+                  "upload_error_failed": "Failed to upload image. Try again."
+                }
+              },
+              "radio": {
+                "edit": {
+                  "helper": "Select exactly one correct option.",
+                  "correct_selected_tooltip": "Correct answer selected",
+                  "mark_correct_tooltip": "Mark as correct answer",
+                  "mark_correct_sr": "Mark option as correct"
+                }
+              },
+              "checkbox": {
+                "edit": {
+                  "helper": "Mark one or more options as correct.",
+                  "correct_selected_tooltip": "Correct answer selected",
+                  "toggle_correct_tooltip": "Toggle correct answer",
+                  "toggle_correct_sr": "Toggle option as correct"
+                }
+              },
+              "true_false": {
+                "true_label": "True",
+                "false_label": "False",
+                "edit": {
+                  "correct_answer_label": "Correct answer"
+                },
+                "preview": {
+                  "correct_value_label": "Correct value"
+                }
+              },
+              "short_answer": {
+                "edit": {
+                  "instructions_placeholder": "Optional instructions"
+                },
+                "take": {
+                  "placeholder": "Type your answer"
+                },
+                "preview": {
+                  "helper": "Free-text answer question."
+                }
+              },
+              "numeric": {
+                "edit": {
+                  "correct_value_label": "Correct value",
+                  "correct_value_info": "The expected numeric answer learners must submit to be marked correct.",
+                  "tolerance_label": "Tolerance",
+                  "tolerance_info": "Allowed difference from the correct value (for example, 0.5 accepts +/-0.5).",
+                  "correct_value_placeholder": "Correct value",
+                  "tolerance_placeholder": "Tolerance"
+                },
+                "take": {
+                  "placeholder": "Enter a number"
+                },
+                "preview": {
+                  "correct_value_label": "Correct value",
+                  "tolerance_label": "Tolerance"
+                }
+              },
+              "fill_blank": {
+                "edit": {
+                  "accepted_answers_placeholder": "Accepted answers (comma separated)"
+                },
+                "take": {
+                  "placeholder": "Enter answers separated by commas"
+                },
+                "preview": {
+                  "accepted_answers_label": "Accepted answers"
+                }
+              },
+              "file_upload": {
+                "edit": {
+                  "accepted_types_placeholder": "Accepted types (e.g. pdf,docx)",
+                  "max_size_placeholder": "Max size (MB)"
+                },
+                "take": {
+                  "selected_file_label": "Selected file",
+                  "upload_button": "Upload"
+                },
+                "preview": {
+                  "accepted_types_label": "Accepted types",
+                  "max_size_label": "Max size (MB)"
+                }
+              },
+              "link": {
+                "edit": {
+                  "instructions_placeholder": "Optional instructions for learners",
+                  "helper": "Learners can submit one or more valid URLs (http/https)."
+                },
+                "take": {
+                  "helper": "Add one or more links. Only valid http/https URLs are accepted.",
+                  "placeholder": "https://example.com/resource-'{'index'}'",
+                  "remove_tooltip": "Remove link",
+                  "remove_sr": "Remove link",
+                  "invalid_url_error": "Please enter a valid URL (http/https).",
+                  "add_button": "Add link"
+                },
+                "preview": {
+                  "empty": "No links submitted.",
+                  "item_label": "Link '{'index'}'"
+                }
+              },
+              "matching": {
+                "edit": {
+                  "helper": "Configure pairs in question settings via host app controls."
+                },
+                "take": {
+                  "placeholder": "Provide matching pairs as JSON"
+                },
+                "preview": {
+                  "helper": "Matching pairs preview is provided by host app settings."
+                }
+              },
+              "ordering": {
+                "fallback_step_prefix": "Step",
+                "edit": {
+                  "helper": "Drag items to define the correct order.",
+                  "add_step": "Add step",
+                  "empty": "Add steps, then drag to set the expected order.",
+                  "step_placeholder": "Step '{'index'}'",
+                  "remove_step_tooltip": "Remove step"
+                },
+                "take": {
+                  "helper": "Drag and drop to arrange the items in the correct order.",
+                  "empty": "No ordering items are configured for this question yet."
+                },
+                "preview": {
+                  "submitted_label": "Submitted order",
+                  "expected_label": "Expected order",
+                  "matches": "Submitted order matches expected order.",
+                  "differs": "Submitted order differs from expected order."
+                }
+              },
+              "hotspot": {
+                "edit": {
+                  "helper": "Configure hotspot image and zones in question settings via host app controls."
+                },
+                "take": {
+                  "placeholder": "Provide hotspot coordinates as JSON"
+                },
+                "preview": {
+                  "helper": "Hotspot preview is provided by host app image and hotspot settings."
+                }
+              },
+              "textarea": {
+                "edit": {
+                  "placeholder": "Learners will answer with long-form text"
+                },
+                "take": {
+                  "placeholder": "Write your answer"
+                }
+              }
             }
           }
         },
@@ -1387,6 +1584,11 @@
           "submitted": "Submitted",
           "in_progress": "In Progress",
           "graded": "Graded"
+        },
+        "workflow": {
+          "awaiting_manual_hint": "Needs manual review",
+          "failed_hint": "Auto-grading failed. Move this submission back to Submitted to retry.",
+          "invalid_transition": "This status move is not allowed by the grading workflow"
         },
         "grading_modal": {
           "details": "Details",
@@ -2270,6 +2472,20 @@
     },
     "email": {
       "not_valid": "Not valid email"
+    },
+    "exercise": {
+      "question": {
+        "too_small": "Question title is required"
+      },
+      "label": {
+        "too_small": "Option label is required"
+      },
+      "points": {
+        "too_small": "Points must be at least 0"
+      },
+      "options": {
+        "custom": "{message}"
+      }
     },
     "generic": {
       "invalid_type": "Invalid type{expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",

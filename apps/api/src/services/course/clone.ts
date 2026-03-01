@@ -19,9 +19,7 @@ import {
 } from '@db/queries';
 
 import { ROLE } from '@cio/utils/constants';
-
-// Constants
-const QUESTION_TYPE_TEXTAREA = 2; // Paragraph question type
+import { QUESTION_TYPE_IDS } from '@cio/question-types';
 
 async function cloneLessonLanguages(newLessons: TLesson[], oldLessons: TLesson[]): Promise<void> {
   // Extract old lesson IDs
@@ -100,6 +98,7 @@ async function cloneExercises(newLessons: TLesson[], oldLessons: TLesson[]): Pro
       points: question.points,
       order: question.order,
       questionTypeId: question.questionTypeId,
+      settings: question.settings,
       exerciseId: exerciseIdMap.get(question.exerciseId)!
     }))
   );
@@ -116,7 +115,7 @@ async function cloneExercises(newLessons: TLesson[], oldLessons: TLesson[]): Pro
 
   // 9. Fetch all options for old questions (except for paragraph type questions)
   const oldQuestionIds = oldQuestions
-    .filter((q) => q.questionTypeId !== QUESTION_TYPE_TEXTAREA)
+    .filter((q) => q.questionTypeId !== QUESTION_TYPE_IDS.TEXTAREA)
     .map((q) => q.id)
     .filter((id) => id !== undefined);
 
@@ -142,6 +141,7 @@ async function cloneExercises(newLessons: TLesson[], oldLessons: TLesson[]): Pro
           value: option.value,
           label: option.label,
           isCorrect: option.isCorrect,
+          settings: option.settings,
           questionId: newQuestionId
         };
       })

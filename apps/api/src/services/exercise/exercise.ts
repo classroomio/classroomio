@@ -65,14 +65,16 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
     // Create questions and options if provided
     if (data.questions && data.questions.length > 0) {
       await db.transaction(async (tx) => {
+        const txClient = tx as DbOrTxClient;
         const questionsData: TNewQuestion[] = data.questions!.map((q) => ({
           exerciseId: exercise.id,
           title: q.question,
-          questionTypeId: 1, // Default to RADIO (1), can be updated later
-          points: q.points || 0
+          questionTypeId: q.questionTypeId || 1,
+          points: q.points || 0,
+          settings: q.settings ?? {}
         }));
 
-        const questions = await createQuestions(questionsData);
+        const questions = await createQuestions(questionsData, txClient);
 
         // Create options for each question
         const optionsPromises = data.questions!.map(async (q, index) => {
@@ -82,10 +84,11 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
           const optionsData: TNewOption[] = q.options.map((opt) => ({
             questionId: question.id,
             label: opt.label,
-            isCorrect: opt.isCorrect
+            isCorrect: opt.isCorrect,
+            settings: opt.settings ?? {}
           }));
 
-          return createOptions(optionsData);
+          return createOptions(optionsData, txClient);
         });
 
         await Promise.all(optionsPromises);
@@ -221,15 +224,12 @@ export async function updateExerciseService(exerciseId: string, data: TExerciseU
       return await getExercise(exerciseId, txClient);
     });
   } catch (error) {
+    console.error('updateExerciseService error:', error);
     if (error instanceof AppError) {
       throw error;
     }
 
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to update exercise',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
+    throw new AppError('Failed to update exercise', ErrorCodes.INTERNAL_ERROR, 500);
   }
 }
 
@@ -336,19 +336,25 @@ export async function createExerciseFromTemplate(
 
     if (questions && questions.length > 0) {
       await db.transaction(async (tx) => {
+        const txClient = tx as DbOrTxClient;
         for (const question of questions) {
           const { title, question_type, options, order, points } = question;
+          const questionSettings = (question as { settings?: Record<string, unknown> }).settings ?? {};
 
           // Create question
-          const [newQuestion] = await createQuestions([
-            {
-              exerciseId: exercise.id,
-              title,
-              questionTypeId: question_type.id,
-              points: points || 0,
-              order: order || 0
-            }
-          ]);
+          const [newQuestion] = await createQuestions(
+            [
+              {
+                exerciseId: exercise.id,
+                title,
+                questionTypeId: question_type.id,
+                points: points || 0,
+                order: order || 0,
+                settings: questionSettings
+              }
+            ],
+            txClient
+          );
 
           if (!newQuestion) continue;
 
@@ -360,10 +366,11 @@ export async function createExerciseFromTemplate(
             const optionsData: TNewOption[] = options.map((opt) => ({
               questionId: newQuestion.id,
               label: opt.label || '',
-              isCorrect: opt.is_correct || false
+              isCorrect: opt.is_correct || false,
+              settings: (opt as { settings?: Record<string, unknown> }).settings ?? {}
             }));
 
-            await createOptions(optionsData);
+            await createOptions(optionsData, txClient);
           }
         }
       });

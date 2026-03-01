@@ -1,4 +1,4 @@
-import { getYoutubeVideoId } from '$features/ui/media-player';
+import { getYoutubeVideoId } from '@cio/ui/custom/media-player';
 
 export type LessonVideo = NonNullable<import('$features/course/utils/types').Lesson['videos']>[number];
 
