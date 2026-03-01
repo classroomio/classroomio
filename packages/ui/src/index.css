@@ -1,6 +1,7 @@
 @import 'tailwindcss' prefix(ui);
 @import 'tw-animate-css';
 
+@source './**/*.{html,js,ts,svelte}';
 @source '../node_modules/layerchart/dist';
 
 @custom-variant dark (&:where(.dark, .dark *));

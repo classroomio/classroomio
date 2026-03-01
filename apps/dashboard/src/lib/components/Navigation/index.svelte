@@ -5,7 +5,7 @@
   import { isCoursePage } from '$lib/utils/functions/app';
   import { t } from '$lib/utils/functions/translations';
   import type { TCustomLinks } from './types';
-
+  import { Button } from '@cio/ui/base/button';
   import Logo from './Logo.svelte';
   import CustomLinks from './CustomLinks.svelte';
   import AuthButtons from './AuthButtons.svelte';
@@ -67,7 +67,9 @@
 
     {#if $user.isLoggedIn}
       {#if isOrgSite}
-        <li><a class="block" href={resolve('/lms', {})}> {$t('navigation.goto_lms')} </a></li>
+        <li>
+          <Button variant="secondary" size="sm" href={resolve('/lms', {})}>{$t('navigation.goto_lms')}</Button>
+        </li>
       {/if}
     {:else if isOrgSite && !page.url.pathname?.includes('/404')}
       <!-- Hide login/signup buttons on mobile when custom links exist -->
@@ -96,17 +98,6 @@
     clear: both;
   }
 
-  a {
-    text-decoration: none;
-    color: var(--main-primary-color);
-    padding: 0 1.5em;
-    font-weight: 700;
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    flex-direction: column;
-  }
-
   /* Mobile menu button styles */
   .mobile-menu-btn {
     display: none;
@@ -118,10 +109,6 @@
     }
     ul {
       align-items: center;
-    }
-
-    a {
-      padding: 0 0.5em;
     }
 
     .mobile-menu-btn {

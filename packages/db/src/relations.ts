@@ -1,15 +1,17 @@
 import {
+  account,
   analyticsLoginEvents,
-  asset,
-  assetUsage,
   appsPoll,
   appsPollOption,
   appsPollSubmission,
+  asset,
+  assetUsage,
   communityAnswer,
   communityQuestion,
   course,
   courseNewsfeed,
   courseNewsfeedComment,
+  courseSection,
   exercise,
   group,
   groupAttendance,
@@ -19,7 +21,6 @@ import {
   lessonCompletion,
   lessonLanguage,
   lessonLanguageHistory,
-  courseSection,
   option,
   organization,
   organizationContacts,
@@ -33,15 +34,44 @@ import {
   quiz,
   quizPlay,
   role,
+  session,
+  ssoProvider,
+  submission,
+  submissionstatus,
   tag,
   tagAssignment,
   tagGroup,
-  submission,
-  submissionstatus,
   user
 } from './schema';
 
 import { relations } from 'drizzle-orm/relations';
+
+export const userRelations = relations(user, ({ many }) => ({
+  sessions: many(session),
+  accounts: many(account),
+  ssoProviders: many(ssoProvider)
+}));
+
+export const sessionRelations = relations(session, ({ one }) => ({
+  user: one(user, {
+    fields: [session.userId],
+    references: [user.id]
+  })
+}));
+
+export const accountRelations = relations(account, ({ one }) => ({
+  user: one(user, {
+    fields: [account.userId],
+    references: [user.id]
+  })
+}));
+
+export const ssoProviderRelations = relations(ssoProvider, ({ one }) => ({
+  user: one(user, {
+    fields: [ssoProvider.userId],
+    references: [user.id]
+  })
+}));
 
 export const analyticsLoginEventsRelations = relations(analyticsLoginEvents, ({ one }) => ({
   usersInAuth: one(user, {

@@ -7,6 +7,7 @@
   import { submissionApi, courseApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
   import type { SubmissionIdData, SubmissionItem, SubmissionSection } from '$features/course/utils/types';
+  import { t } from '$lib/utils/functions/translations';
 
   import { Chip } from '@cio/ui/custom/chip';
   import MarkExerciseModal from '$features/course/components/exercise/mark-exercise-modal.svelte';
@@ -25,10 +26,28 @@
   let isGradeWithAI = $state(false);
   let isSaving = $state(false);
 
+  const ALLOWED_BOARD_TRANSITIONS: Record<number, number[]> = {
+    1: [2],
+    2: [1, 3],
+    3: []
+  };
+
   const submissionId = $derived(new URLSearchParams(page.url.search).get('submissionId') ?? '');
   let openExercise = $derived.by(() => {
     return !!submissionId && !!submissionIdData[submissionId];
   });
+
+  function canTransitionBoardStatus(previousStatusId: number, nextStatusId: number): boolean {
+    if (previousStatusId === nextStatusId) return true;
+    return ALLOWED_BOARD_TRANSITIONS[previousStatusId]?.includes(nextStatusId) ?? false;
+  }
+
+  function getWorkflowHintKey(item: SubmissionItem): string {
+    if (item.statusId !== 2) return '';
+    if (item.gradingState === 'awaiting_manual') return 'course.navItem.submissions.workflow.awaiting_manual_hint';
+    if (item.gradingState === 'failed') return 'course.navItem.submissions.workflow.failed_hint';
+    return '';
+  }
 
   async function handleItemFinalize(
     columnIdx: number,
@@ -41,6 +60,11 @@
     // Set column in the UI
     sections[columnIdx].items = newItems.map((item) => {
       if (item.statusId !== id) {
+        if (!canTransitionBoardStatus(item.statusId, id)) {
+          snackbar.error('course.navItem.submissions.workflow.invalid_transition');
+          return item;
+        }
+
         itemToWithNewStatus = item;
         item.statusId = id;
       }
@@ -89,6 +113,11 @@
     nextStatusId: number;
     total: number;
   }) {
+    if (!canTransitionBoardStatus(prevStatusId, nextStatusId)) {
+      snackbar.error('course.navItem.submissions.workflow.invalid_transition');
+      return;
+    }
+
     let itemToWithNewStatus: SubmissionItem | undefined;
 
     // Remove from current column
@@ -243,6 +272,11 @@
             </a>
             {#if item.lesson}
               <p class="text-grey text-sm dark:text-white">#{item.lesson.title}</p>
+            {/if}
+            {#if getWorkflowHintKey(item)}
+              <p class="ui:text-muted-foreground text-xs">
+                {$t(getWorkflowHintKey(item))}
+              </p>
             {/if}
             <p class="text-xs text-gray-500 dark:text-white">
               {item.submittedAt}

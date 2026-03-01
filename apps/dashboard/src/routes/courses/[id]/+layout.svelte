@@ -92,7 +92,7 @@
 {/if}
 
 <Sidebar.Provider data-sveltekit-preload-data="off">
-  <CourseSidebar {path} id={data.courseId} />
+  <CourseSidebar {path} id={data.courseId} {isCourseReady} />
 
   <Sidebar.Inset
     class="w-[calc(100vw-var(--sidebar-width))] group-data-[collapsible=icon]:w-[calc(100vw-var(--sidebar-width-icon))]"

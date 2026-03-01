@@ -19,7 +19,105 @@ import { getCourseTeachers, getProfileByGroupMemberId } from '@cio/db/queries/co
 import { db } from '@cio/db/drizzle';
 import { buildEmailFromName, deliverEmail } from '@cio/email';
 import { env } from '@api/config/env';
-import { getExerciseById } from '@cio/db/queries/exercise';
+import { getExerciseById, getExerciseWithRelationsOptimized } from '@cio/db/queries/exercise';
+import { getQuestionTypeById, getQuestionTypeByTypename, requiresManualGrading } from '@cio/question-types';
+
+type SubmissionGradingState = 'queued' | 'processing' | 'awaiting_manual' | 'completed' | 'failed';
+type SubmissionOverallStatus = 'auto_graded' | 'manual_required' | 'hybrid';
+
+const LEGACY_BOARD_STATUS_LABELS: Record<number, string> = {
+  1: 'Submitted',
+  2: 'In Progress',
+  3: 'Graded'
+};
+
+const LEGACY_STATUS_TO_GRADING_STATE: Record<number, SubmissionGradingState> = {
+  1: 'queued',
+  2: 'processing',
+  3: 'completed'
+};
+
+const GRADING_STATE_TO_LEGACY_STATUS: Record<SubmissionGradingState, number> = {
+  queued: 1,
+  processing: 2,
+  awaiting_manual: 2,
+  failed: 2,
+  completed: 3
+};
+
+const ALLOWED_GRADING_TRANSITIONS: Record<SubmissionGradingState, SubmissionGradingState[]> = {
+  queued: ['processing'],
+  processing: ['completed', 'awaiting_manual', 'failed'],
+  awaiting_manual: ['completed'],
+  failed: ['queued'],
+  completed: []
+};
+
+function projectLegacyStatusId(gradingState: SubmissionGradingState): number {
+  return GRADING_STATE_TO_LEGACY_STATUS[gradingState];
+}
+
+function resolveSubmissionGradingState(submission: Partial<TSubmission>): SubmissionGradingState {
+  const rawState = typeof submission.gradingState === 'string' ? submission.gradingState : '';
+  if (rawState && rawState in GRADING_STATE_TO_LEGACY_STATUS) {
+    return rawState as SubmissionGradingState;
+  }
+
+  const legacyStatusId = Number(submission.statusId ?? 1);
+  return LEGACY_STATUS_TO_GRADING_STATE[legacyStatusId] ?? 'queued';
+}
+
+function resolveOverallStatusFromTypenames(typenames: string[]): SubmissionOverallStatus {
+  const manualFlags = typenames.map((typename) => {
+    const metadata = getQuestionTypeByTypename(typename);
+    if (!metadata) return true;
+    return requiresManualGrading(metadata.key);
+  });
+
+  const hasManual = manualFlags.some(Boolean);
+  const hasAuto = manualFlags.some((value) => !value);
+
+  if (hasManual && hasAuto) return 'hybrid';
+  if (hasManual) return 'manual_required';
+  return 'auto_graded';
+}
+
+function resolveOverallStatusFromQuestionTypeIds(questionTypeIds: number[]): SubmissionOverallStatus {
+  const manualFlags = questionTypeIds.map((questionTypeId) => {
+    const metadata = getQuestionTypeById(questionTypeId);
+    if (!metadata) return true;
+    return requiresManualGrading(metadata.key);
+  });
+
+  const hasManual = manualFlags.some(Boolean);
+  const hasAuto = manualFlags.some((value) => !value);
+
+  if (hasManual && hasAuto) return 'hybrid';
+  if (hasManual) return 'manual_required';
+  return 'auto_graded';
+}
+
+function resolveRequestedGradingState(data: TSubmissionUpdate): SubmissionGradingState | null {
+  if (data.gradingState) {
+    return data.gradingState;
+  }
+
+  if (data.statusId === undefined) {
+    return null;
+  }
+
+  const mapped = LEGACY_STATUS_TO_GRADING_STATE[Number(data.statusId)];
+  if (!mapped) {
+    throw new AppError('Invalid submission status', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
+  return mapped;
+}
+
+function isAllowedGradingTransition(from: SubmissionGradingState, to: SubmissionGradingState): boolean {
+  if (from === to) return true;
+  return ALLOWED_GRADING_TRANSITIONS[from]?.includes(to) ?? false;
+}
 
 /**
  * Gets a submission by ID with question answers
@@ -86,16 +184,11 @@ export async function listSubmissionsForGrading(courseId: string) {
     const rawSubmissions = await getSubmissionsForGrading(courseId);
     const course = await getCourseById(courseId);
 
-    // Status mapping: 1 = submitted, 2 = in_progress, 3 = graded
-    const statusMap: { [key: number]: string } = {
-      1: 'Submitted',
-      2: 'In Progress',
-      3: 'Graded'
-    };
-
     type SubmissionItem = {
       id: string;
       statusId: number;
+      gradingState: SubmissionGradingState;
+      overallStatus: SubmissionOverallStatus;
       isEarly: boolean;
       feedback: string | null;
       submittedAt: string;
@@ -112,16 +205,29 @@ export async function listSubmissionsForGrading(courseId: string) {
     };
 
     const sections: Array<{ id: number; title: string; value: number; items: SubmissionItem[] }> = [
-      { id: 1, title: statusMap[1], value: 0, items: [] },
-      { id: 2, title: statusMap[2], value: 0, items: [] },
-      { id: 3, title: statusMap[3], value: 0, items: [] }
+      { id: 1, title: LEGACY_BOARD_STATUS_LABELS[1], value: 0, items: [] },
+      { id: 2, title: LEGACY_BOARD_STATUS_LABELS[2], value: 0, items: [] },
+      { id: 3, title: LEGACY_BOARD_STATUS_LABELS[3], value: 0, items: [] }
     ];
 
     const submissionIdData: { [key: string]: any } = {};
 
     // Process each submission
     for (const submission of rawSubmissions) {
-      const statusId = Number(submission.statusId);
+      const gradingState = resolveSubmissionGradingState(submission);
+      const statusId = projectLegacyStatusId(gradingState);
+      const storedOverallStatus = typeof submission.overallStatus === 'string' ? submission.overallStatus : '';
+      const fallbackOverallStatus = resolveOverallStatusFromQuestionTypeIds(
+        (submission.exercise.questions || [])
+          .map((question: any) => Number(question.questionTypeId))
+          .filter((questionTypeId: number) => Number.isFinite(questionTypeId))
+      );
+      const overallStatus: SubmissionOverallStatus =
+        storedOverallStatus === 'auto_graded' ||
+        storedOverallStatus === 'manual_required' ||
+        storedOverallStatus === 'hybrid'
+          ? (storedOverallStatus as SubmissionOverallStatus)
+          : fallbackOverallStatus;
       const isEarly = submission.exercise.dueBy
         ? new Date(submission.createdAt!).getTime() <= new Date(submission.exercise.dueBy).getTime()
         : true;
@@ -153,6 +259,8 @@ export async function listSubmissionsForGrading(courseId: string) {
       const submissionItem = {
         id: submission.id,
         statusId,
+        gradingState,
+        overallStatus,
         isEarly,
         feedback: submission.feedback,
         submittedAt,
@@ -181,6 +289,8 @@ export async function listSubmissionsForGrading(courseId: string) {
       submissionIdData[submission.id] = {
         id: submission.id,
         statusId,
+        gradingState,
+        overallStatus,
         feedback: submission.feedback,
         isEarly,
         title: submission.exercise.title,
@@ -236,11 +346,21 @@ export async function createSubmissionService(
   answers: Array<{ questionId: number; optionId?: number; answer?: string }>
 ): Promise<TSubmission> {
   try {
+    const exerciseWithRelations = await getExerciseWithRelationsOptimized(exerciseId);
+    const overallStatus = resolveOverallStatusFromTypenames(
+      exerciseWithRelations.questions
+        .map((question) => question.questionType?.typename ?? '')
+        .filter((typename) => typename.length > 0)
+    );
+    const gradingState: SubmissionGradingState = 'queued';
+
     const submissionData: TNewSubmission = {
       courseId,
       exerciseId,
       submittedBy,
-      statusId: 1, // Default status (e.g., "submitted")
+      statusId: projectLegacyStatusId(gradingState),
+      gradingState,
+      overallStatus,
       total: 0 // Will be calculated during grading
     };
 
@@ -299,17 +419,31 @@ export async function updateSubmissionService(submissionId: string, data: TSubmi
       throw new AppError('Submission not found', ErrorCodes.SUBMISSION_NOT_FOUND, 404);
     }
 
-    const statusChanged = data.statusId !== undefined && data.statusId !== submission.statusId;
+    const currentGradingState = resolveSubmissionGradingState(submission);
+    const requestedGradingState = resolveRequestedGradingState(data);
+    if (requestedGradingState && !isAllowedGradingTransition(currentGradingState, requestedGradingState)) {
+      throw new AppError('Invalid submission workflow transition', ErrorCodes.VALIDATION_ERROR, 400);
+    }
 
-    const updated = await updateSubmission(submissionId, data);
+    const previousLegacyStatusId = projectLegacyStatusId(currentGradingState);
+    const updatePayload: Partial<TSubmission> = { ...data };
+    if (requestedGradingState) {
+      updatePayload.gradingState = requestedGradingState;
+      updatePayload.statusId = projectLegacyStatusId(requestedGradingState);
+    }
+
+    const nextLegacyStatusId = Number(updatePayload.statusId ?? previousLegacyStatusId);
+    const statusChanged = nextLegacyStatusId !== previousLegacyStatusId;
+
+    const updated = await updateSubmission(submissionId, updatePayload);
     if (!updated) {
       throw new AppError('Failed to update submission', ErrorCodes.INTERNAL_ERROR, 500);
     }
 
     // Send email notification if status changed
-    if (statusChanged && data.statusId) {
+    if (statusChanged) {
       try {
-        await sendSubmissionUpdateEmail(submissionId, data.statusId);
+        await sendSubmissionUpdateEmail(submissionId, nextLegacyStatusId);
       } catch (emailError) {
         // Log but don't fail the request if email fails
         console.error('Failed to send submission update email:', emailError);
@@ -424,13 +558,7 @@ async function sendSubmissionUpdateEmail(submissionId: string, newStatusId: numb
 
   const orgName = orgResult?.orgName || 'ClassroomIO';
 
-  const statusMap: { [key: number]: string } = {
-    1: 'Submitted',
-    2: 'In Progress',
-    3: 'Graded'
-  };
-
-  const statusText = statusMap[newStatusId] || 'Updated';
+  const statusText = LEGACY_BOARD_STATUS_LABELS[newStatusId] || 'Updated';
   const baseUrl = env.NODE_ENV === 'development' ? 'http://localhost:5173' : 'https://app.classroomio.com';
   const exerciseLink = `${baseUrl}/courses/${fullSubmission.courseId}/exercises/${fullSubmission.exercise.id}`;
 

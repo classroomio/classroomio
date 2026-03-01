@@ -5,15 +5,16 @@
   interface Props extends Omit<ButtonProps, 'variant' | 'size'> {
     tooltip?: string;
     tooltipSide?: 'top' | 'bottom' | 'left' | 'right';
+    tooltipClass?: string;
   }
 
-  let { tooltip, tooltipSide = 'top', children, ...buttonProps }: Props = $props();
+  let { tooltip, tooltipSide = 'top', tooltipClass = '', children, ...buttonProps }: Props = $props();
 </script>
 
 {#if tooltip}
   <Provider>
     <Tooltip>
-      <Trigger>
+      <Trigger class={tooltipClass}>
         <Button variant="secondary" size="icon" {...buttonProps}>
           {@render children?.()}
         </Button>

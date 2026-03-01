@@ -344,11 +344,11 @@ class CommunityApi extends BaseApiWithErrors {
    * Enters edit mode and initializes edit content with question data
    * @param question Question data to populate edit form
    */
-  enterEditMode(question: { title: string; body: string; courseId?: string }) {
+  enterEditMode(question: { title: string | null; body: string | null; courseId?: string }) {
     this.isEditMode = true;
     this.editContent = {
-      title: question.title,
-      body: question.body,
+      title: question.title || '',
+      body: question.body || '',
       courseId: question.courseId || ''
     };
   }

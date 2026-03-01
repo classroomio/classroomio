@@ -7,10 +7,10 @@ import {
   SettingsIcon,
   SetupIcon
 } from '@cio/ui/custom/moving-icons';
-import TagIcon from '@lucide/svelte/icons/tag';
 
 import type { AccountOrg } from '$features/app/types';
 import type { Component } from 'svelte';
+import TagIcon from '@lucide/svelte/icons/tag';
 import { isActive } from '$lib/utils/functions/app';
 
 export interface NavItem {
@@ -21,6 +21,7 @@ export interface NavItem {
   isActive?: boolean;
   isExpanded?: boolean;
   items?: NavItem[]; // for nested items like settings
+  isPaid?: boolean; // Show upgrade indicator for free plan users
   // Metadata for breadcrumb generation
   useHashUrl?: boolean; // Use '#' as URL (for collapsible items like settings)
   nestedRoutes?: NestedRouteConfig[]; // Static nested routes (like community/ask, settings/customize-lms)
@@ -37,6 +38,7 @@ export interface NavItemConfig {
   nestedRoutes?: NestedRouteConfig[]; // Static nested routes
   supportsDynamicSegment?: boolean; // Supports dynamic segments (like [slug])
   matchPattern?: string | ((orgSlug: string) => string); // Regex pattern for route matching
+  isPaid?: boolean; // Show upgrade indicator for free plan users
 }
 
 export interface NestedRouteConfig {
@@ -105,38 +107,52 @@ const baseNavConfig: NavItemConfig[] = [
     matchPattern: '^/org/[^/]+/settings(/.*)?$', // Matches nested routes
     items: [
       {
-        titleKey: 'Profile',
+        titleKey: 'settings.tabs.profile_tab',
         path: '/settings'
       },
       {
-        titleKey: 'Organization',
+        titleKey: 'settings.tabs.organization_tab',
         path: '/settings/org'
       },
       {
-        titleKey: 'Landing Page',
+        titleKey: 'settings.tabs.landing_page_tab',
         path: '/settings/landingpage'
       },
       {
-        titleKey: 'Billing',
+        titleKey: 'settings.tabs.billing_tab',
         path: '/settings/billing'
+      },
+      {
+        titleKey: 'settings.tabs.auth_tab',
+        matchPattern: '^/org/[^/]+/settings/auth(/.*)?$',
+        path: '/settings/auth',
+        isPaid: true
       }
-      // {
-      //   titleKey: 'Integrations',
-      //   path: '/settings/integrations'
-      // }
     ],
     nestedRoutes: [
       {
         path: 'customize-lms',
-        titleKey: 'Customize LMS'
+        titleKey: 'settings.tabs.customize_lms_tab'
       },
       {
         path: 'domains',
-        titleKey: 'Domains'
+        titleKey: 'settings.tabs.domains_tab'
       },
       {
         path: 'teams',
-        titleKey: 'Teams'
+        titleKey: 'settings.tabs.teams_tab'
+      },
+      {
+        path: 'auth',
+        titleKey: 'settings.tabs.auth_tab'
+      },
+      {
+        path: 'auth/sso',
+        titleKey: 'settings.tabs.sso_tab'
+      },
+      {
+        path: 'auth/token-auth',
+        titleKey: 'settings.tabs.token_auth_tab'
       }
     ]
   }
@@ -165,7 +181,7 @@ export function getOrgNavigationItems(
 
     // Extract match pattern (handle function case)
     const matchPattern =
-      typeof config.matchPattern === 'function' ? config.matchPattern(currentOrg.siteName) : config.matchPattern;
+      typeof config.matchPattern === 'function' ? config.matchPattern(currentOrg.siteName!) : config.matchPattern;
 
     const item: NavItem = {
       title: t(config.titleKey),
@@ -176,16 +192,27 @@ export function getOrgNavigationItems(
       isExpanded: config.items ? isActive(pagePathname, fullPath, matchPattern) : undefined,
       useHashUrl: config.useHashUrl,
       nestedRoutes: config.nestedRoutes,
-      supportsDynamicSegment: config.supportsDynamicSegment
+      supportsDynamicSegment: config.supportsDynamicSegment,
+      isPaid: config.isPaid
     };
 
     // Handle nested items (like settings sub-items)
     if (config.items) {
-      item.items = config.items.map((subConfig) => ({
-        title: subConfig.titleKey,
-        url: `${currentOrgPath}${subConfig.path}`,
-        path: subConfig.path
-      }));
+      item.items = config.items.map((subConfig) => {
+        const matchPattern =
+          typeof subConfig.matchPattern === 'function'
+            ? subConfig.matchPattern(currentOrg.siteName!)
+            : subConfig.matchPattern;
+        const url = `${currentOrgPath}${subConfig.path}`;
+
+        return {
+          title: t(subConfig.titleKey),
+          isActive: isActive(pagePathname, url, matchPattern, true),
+          url: url,
+          path: subConfig.path,
+          isPaid: subConfig.isPaid
+        };
+      });
     }
 
     items.push(item);

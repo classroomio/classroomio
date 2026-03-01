@@ -13,19 +13,12 @@
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import { courseApi } from '$features/course/api';
   import { generateMarksCSV, generateMarksPDF } from '$features/course/utils/marks-utils';
-  import { getCourseContent } from '$features/course/utils/content';
-  import { ContentType } from '@cio/utils/constants/content';
 
   let { data } = $props();
 
   let isDownloading = $state(false);
 
-  const contentData = $derived(getCourseContent(courseApi.course));
-  const contentItems = $derived(
-    contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items
-  );
-  const lessonItems = $derived(contentItems.filter((item) => item.type === ContentType.Lesson));
-  const lessonSummaries = $derived(lessonItems.map((lesson) => ({ id: lesson.id, title: lesson.title })));
+  const exercises = $derived(data.marksData?.exercises ?? []);
 
   function getPageRoles(org: AccountOrg) {
     const roles = [1, 2];
@@ -41,8 +34,7 @@
     try {
       generateMarksCSV(
         data.marksData.students,
-        lessonSummaries,
-        data.marksData.lessonMapping,
+        exercises,
         data.marksData.studentMarksByExerciseId,
         courseApi.course?.title || 'Course'
       );
@@ -57,8 +49,7 @@
     try {
       generateMarksPDF(
         data.marksData.students,
-        lessonSummaries,
-        data.marksData.lessonMapping,
+        exercises,
         data.marksData.studentMarksByExerciseId,
         courseApi.course?.title || 'Course'
       );

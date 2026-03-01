@@ -114,6 +114,20 @@
       "email": "Nieprawidłowy adres e-mail",
       "username": "Nazwa użytkownika nie może być pusta",
       "fullname": "Nazwa powinna składać się z minimum 5 znaków"
+    },
+    "exercise": {
+      "options": {
+        "custom": "{wiadomość}"
+      },
+      "points": {
+        "too_small": "Punkty muszą wynosić co najmniej 0"
+      },
+      "label": {
+        "too_small": "Etykieta opcji jest wymagana"
+      },
+      "question": {
+        "too_small": "Tytuł pytania jest wymagany"
+      }
     }
   },
   "generic": {
@@ -334,6 +348,14 @@
       "course_tags_updated": "Zaktualizowano tagi kursów",
       "fetch_failed": "Nie udało się załadować tagów",
       "save_failed": "Nie udało się zapisać zmian w tagach"
+    },
+    "error_update": "Nie udało się zaktualizować",
+    "token_auth": {
+      "created": "Utworzono sekret podpisywania. Zapisz go teraz — nie będzie wyświetlany ponownie.",
+      "rotated": "Tajemnica podpisu została obrócona. Zapisz nowy sekret — nie będzie on więcej pokazywany.",
+      "deleted": "Autoryzacja tokenem została usunięta.",
+      "activated": "Autoryzacja tokenem włączona.",
+      "deactivated": "Autoryzacja tokenem wyłączona."
     }
   },
   "explore": {
@@ -376,7 +398,8 @@
     "back": "Powrót do Ustawień",
     "download_lessons": "Uaktualnij, aby pobrać lekcje",
     "download_course": "Uaktualnij, aby pobrać kurs",
-    "required": "Wymagana aktualizacja"
+    "required": "Wymagana aktualizacja",
+    "enterprise_required": "Ta funkcja wymaga planu Enterprise."
   },
   "analytics": {
     "title": "Analityka",
@@ -417,7 +440,25 @@
     "no_students_description": "Na ten kurs nie jest jeszcze zapisany żaden student. Uczestnicy pojawią się tutaj po dołączeniu do kursu.",
     "showing_students": "Wyświetlanie od {start} do {end} z {total} uczniów",
     "no_analytics_data": "Brak danych analitycznych",
-    "no_analytics_description": "Nie można załadować danych analitycznych dla tego kursu. Spróbuj ponownie później lub skontaktuj się z pomocą techniczną, jeśli problem będzie się powtarzał."
+    "no_analytics_description": "Nie można załadować danych analitycznych dla tego kursu. Spróbuj ponownie później lub skontaktuj się z pomocą techniczną, jeśli problem będzie się powtarzał.",
+    "student": "Studenta",
+    "student_progress_distribution": "Dystrybucja postępów uczniów",
+    "grade_distribution": "Dystrybucja ocen",
+    "progress_80_plus": "Postęp 80%+",
+    "progress_60_79": "Postęp 60-79%.",
+    "progress_below_60": "Postęp poniżej 60%.",
+    "grade_90_plus": "Ocena 90%+",
+    "grade_80_89": "Stopień 80-89%.",
+    "grade_70_79": "Stopień 70-79%.",
+    "grade_below_70": "Poniżej 70% oceny",
+    "number_of_students": "Liczba studentów",
+    "progress_range": "Zakres postępu",
+    "grade_range": "Zakres ocen",
+    "no_progress_data": "Brak danych o postępie",
+    "no_grade_data": "Brak danych o ocenach",
+    "loading_chart": "Ładowanie wykresu...",
+    "no_data_default": "Brak dostępnych danych",
+    "no_data_default_description": "W tej chwili nie ma żadnych danych do wyświetlenia."
   },
   "audience": {
     "title": "Publiczność",
@@ -795,7 +836,8 @@
         "export": {
           "csv": "Eksportuj jako CSV",
           "pdf": "Eksportuj jako plik PDF"
-        }
+        },
+        "avg_grade": "Średnia ocena"
       },
       "submissions": {
         "title": "Przesłane ćwiczenia",
@@ -820,12 +862,19 @@
           "questions_tried": "Przydzielono ten wynik ze względu na łączną liczbę prób:",
           "delete_prompt": "Usuń",
           "delete_error": "Nie udało się usunąć przesłanego zgłoszenia",
-          "delete_success": "Pomyślnie usunięto zgłoszenie"
+          "delete_success": "Pomyślnie usunięto zgłoszenie",
+          "student_avatar": "Awatar studenta",
+          "ai_icon": "sztuczna inteligencja"
         },
         "submission_status": {
           "submitted": "Przesłane",
           "in_progress": "W toku",
           "graded": "Ocenione"
+        },
+        "workflow": {
+          "awaiting_manual_hint": "Wymaga ręcznego sprawdzenia",
+          "failed_hint": "Automatyczne ocenianie nie powiodło się. Przenieś to zgłoszenie z powrotem do sekcji Przesłane, aby spróbować ponownie.",
+          "invalid_transition": "To przeniesienie stanu nie jest dozwolone w procesie oceniania"
         }
       },
       "attendance": {
@@ -959,12 +1008,14 @@
               "individual": {
                 "heading": "Indywidualny",
                 "answers": "Indywidualne odpowiedzi",
-                "no": "Nie udzielono żadnej odpowiedzi"
+                "no": "Nie udzielono żadnej odpowiedzi",
+                "student_avatar": "Studenta"
               },
               "summary": {
                 "heading": "Podsumowanie",
                 "question_chart": "Wykresy pytań"
-              }
+              },
+              "loading_submissions": "Ładowanie zgłoszeń..."
             },
             "view_mode": {
               "no_question": "Do tego ćwiczenia nie dodano żadnego pytania",
@@ -981,7 +1032,12 @@
               "submitted": "Przesłane",
               "status_pending": "Stan: Oczekuje na sprawdzenie",
               "status_graded": "Stan: Przegląd zakończony",
-              "status_submitted": "Stan: przesłany"
+              "status_submitted": "Stan: przesłany",
+              "empty_description": "Kliknij przycisk Edytuj, aby dodać.",
+              "empty_edit_hint_prefix": "Kliknij ",
+              "empty_edit_hint_suffix": " przycisk, aby dodać.",
+              "answers_required": "Przed przesłaniem proszę podać co najmniej jedną odpowiedź.",
+              "checking_submission": "Sprawdzam Twoje zgłoszenie..."
             },
             "edit_mode": {
               "delete_modal": "Usuń ćwiczenie",
@@ -996,8 +1052,19 @@
               "question_types": {
                 "single": "Pojedyncza odpowiedź",
                 "multiple": "Wiele odpowiedzi",
-                "paragraph": "Akapit"
-              }
+                "paragraph": "Akapit",
+                "true_false": "Prawda/Fałsz",
+                "short_answer": "Krótka odpowiedź",
+                "numeric": "Odpowiedź numeryczna",
+                "fill_blank": "Wypełnij puste miejsce",
+                "file_upload": "Przesyłanie pliku",
+                "matching": "Dopasowanie",
+                "ordering": "Zamawianie",
+                "hotspot": "Hotspot",
+                "link": "Linki"
+              },
+              "select_type": "Wybierz typ",
+              "premium_question_type": "Uaktualnij, aby używać tego typu pytań"
             },
             "delete_confirmation": {
               "title": "Usuń pytanie",
@@ -1010,6 +1077,193 @@
               "heading": "Opis",
               "describe": "Opisz ćwiczenie swojemu uczniowi",
               "no": "Brak opisu"
+            },
+            "shared_question": {
+              "textarea": {
+                "take": {
+                  "placeholder": "Napisz swoją odpowiedź"
+                },
+                "edit": {
+                  "placeholder": "Uczniowie będą odpowiadać za pomocą długiego tekstu"
+                }
+              },
+              "hotspot": {
+                "preview": {
+                  "helper": "Podgląd hotspotu jest dostępny na podstawie obrazu aplikacji hosta i ustawień hotspotu."
+                },
+                "take": {
+                  "placeholder": "Podaj współrzędne punktu aktywnego w formacie JSON"
+                },
+                "edit": {
+                  "helper": "Skonfiguruj ustawienia obrazu hotspotu i stref za pomocą elementów sterujących aplikacji hosta."
+                }
+              },
+              "ordering": {
+                "fallback_step_prefix": "Krok",
+                "preview": {
+                  "submitted_label": "Złożone zamówienie",
+                  "expected_label": "Oczekiwane zamówienie",
+                  "matches": "Złożone zamówienie jest zgodne z oczekiwanym zamówieniem.",
+                  "differs": "Złożone zamówienie różni się od oczekiwanego."
+                },
+                "take": {
+                  "helper": "Przeciągnij i upuść, aby ułożyć elementy we właściwej kolejności.",
+                  "empty": "Dla tego pytania nie skonfigurowano jeszcze żadnych elementów zamówienia."
+                },
+                "edit": {
+                  "helper": "Przeciągnij elementy, aby określić właściwą kolejność.",
+                  "add_step": "Dodaj krok",
+                  "empty": "Dodaj kroki, a następnie przeciągnij, aby ustawić oczekiwaną kolejność.",
+                  "step_placeholder": "Krok „{'indeks'}'",
+                  "remove_step_tooltip": "Usuń krok"
+                }
+              },
+              "matching": {
+                "preview": {
+                  "helper": "Podgląd pasujących par jest dostępny w ustawieniach aplikacji hosta."
+                },
+                "take": {
+                  "placeholder": "Podaj pasujące pary w formacie JSON"
+                },
+                "edit": {
+                  "helper": "Skonfiguruj pary w ustawieniach pytań za pomocą elementów sterujących aplikacji hosta."
+                }
+              },
+              "link": {
+                "preview": {
+                  "empty": "Nie przesłano żadnych linków.",
+                  "item_label": "Link „{'indeks'}'"
+                },
+                "take": {
+                  "helper": "Dodaj jeden lub więcej linków. Akceptowane są tylko prawidłowe adresy URL http/https.",
+                  "placeholder": "https://example.com/resource-'{'index'}'",
+                  "remove_tooltip": "Usuń link",
+                  "remove_sr": "Usuń link",
+                  "invalid_url_error": "Proszę wprowadzić prawidłowy adres URL (http/https).",
+                  "add_button": "Dodaj link"
+                },
+                "edit": {
+                  "instructions_placeholder": "Opcjonalne instrukcje dla uczniów",
+                  "helper": "Uczniowie mogą przesłać jeden lub więcej prawidłowych adresów URL (http/https)."
+                }
+              },
+              "file_upload": {
+                "preview": {
+                  "accepted_types_label": "Akceptowane typy",
+                  "max_size_label": "Maksymalny rozmiar (MB)"
+                },
+                "take": {
+                  "selected_file_label": "Wybrany plik",
+                  "upload_button": "Prześlij"
+                },
+                "edit": {
+                  "accepted_types_placeholder": "Akceptowane typy (np. pdf, docx)",
+                  "max_size_placeholder": "Maksymalny rozmiar (MB)"
+                }
+              },
+              "fill_blank": {
+                "preview": {
+                  "accepted_answers_label": "Zaakceptowane odpowiedzi"
+                },
+                "take": {
+                  "placeholder": "Wpisz odpowiedzi oddzielone przecinkami"
+                },
+                "edit": {
+                  "accepted_answers_placeholder": "Zaakceptowane odpowiedzi (oddzielone przecinkami)"
+                }
+              },
+              "numeric": {
+                "preview": {
+                  "correct_value_label": "Prawidłowa wartość",
+                  "tolerance_label": "Tolerancja"
+                },
+                "take": {
+                  "placeholder": "Wprowadź numer"
+                },
+                "edit": {
+                  "correct_value_label": "Prawidłowa wartość",
+                  "correct_value_info": "Oczekiwana odpowiedź liczbowa, którą uczniowie muszą przesłać, aby została oznaczona jako prawidłowa.",
+                  "tolerance_label": "Tolerancja",
+                  "tolerance_info": "Dopuszczalna różnica od prawidłowej wartości (na przykład 0,5 akceptuje +/-0,5).",
+                  "correct_value_placeholder": "Prawidłowa wartość",
+                  "tolerance_placeholder": "Tolerancja"
+                }
+              },
+              "short_answer": {
+                "preview": {
+                  "helper": "Pytanie z odpowiedzią tekstową."
+                },
+                "take": {
+                  "placeholder": "Wpisz swoją odpowiedź"
+                },
+                "edit": {
+                  "instructions_placeholder": "Instrukcje opcjonalne"
+                }
+              },
+              "true_false": {
+                "true_label": "Prawda",
+                "false_label": "Fałsz",
+                "preview": {
+                  "correct_value_label": "Prawidłowa wartość"
+                },
+                "edit": {
+                  "correct_answer_label": "Prawidłowa odpowiedź"
+                }
+              },
+              "checkbox": {
+                "edit": {
+                  "helper": "Zaznacz jedną lub więcej opcji jako poprawną.",
+                  "correct_selected_tooltip": "Wybrano poprawną odpowiedź",
+                  "toggle_correct_tooltip": "Przełącz poprawną odpowiedź",
+                  "toggle_correct_sr": "Przełącz opcję jako poprawną"
+                }
+              },
+              "radio": {
+                "edit": {
+                  "helper": "Wybierz dokładnie jedną poprawną opcję.",
+                  "correct_selected_tooltip": "Wybrano poprawną odpowiedź",
+                  "mark_correct_tooltip": "Oznacz jako poprawną odpowiedź",
+                  "mark_correct_sr": "Oznacz opcję jako poprawną"
+                }
+              },
+              "question": {
+                "edit": {
+                  "title_label": "Tytuł",
+                  "title_placeholder": "Podpowiedź z pytaniem",
+                  "description_label": "Opis (opcjonalnie)",
+                  "description_placeholder": "Dodaj dodatkowy kontekst dla tego pytania",
+                  "add_description": "Dodaj opis",
+                  "remove_description": "Usuń opis",
+                  "media_menu_sr": "Menu dodatków do pytań",
+                  "add_image": "Dodaj obraz",
+                  "add_video": "Dodaj wideo",
+                  "remove_image_tooltip": "Usuń obraz",
+                  "remove_image_sr": "Usuń obraz",
+                  "remove_video_tooltip": "Usuń wideo",
+                  "remove_video_sr": "Usuń wideo",
+                  "image_alt": "Kontekst pytania",
+                  "video_modal_title": "Dodaj wideo z YouTube'a",
+                  "video_link_label": "Link do YouTube'a",
+                  "video_link_placeholder": "https://www.youtube.com/watch?v=",
+                  "video_add_button": "Dodaj wideo",
+                  "video_invalid_link": "Wprowadź prawidłowy link do YouTube.",
+                  "upload_error_only_images": "Obsługiwane są tylko pliki obrazów.",
+                  "upload_error_skipped": "Niektóre pliki zostały pominięte, ponieważ nie są obrazami.",
+                  "upload_error_failed": "Nie udało się przesłać obrazu. Spróbuj ponownie."
+                }
+              },
+              "navigation": {
+                "previous": "Poprzedni",
+                "next": "Następny",
+                "finish": "Zakończ"
+              },
+              "common": {
+                "option_prefix": "Opcja",
+                "remove": "Usuń",
+                "add_option": "Dodaj opcję",
+                "correct_badge": "(Poprawnie)",
+                "not_set": "Nie ustawiono"
+              }
             }
           },
           "new_exercise_modal": {
@@ -1187,7 +1441,9 @@
           "description": "Możesz teraz grupować lekcje w sekcje, aby uporządkować treści i ułatwić uczniom naukę.",
           "activate": "Aktywuj",
           "cancel": "Anuluj"
-        }
+        },
+        "content_locked_title": "Ta zawartość jest zablokowana",
+        "content_locked_description": "Twój instruktor nie odblokował jeszcze tej zawartości. Uzupełnij poprzednią zawartość lub sprawdź później."
       },
       "news_feed": {
         "heading": "Kanał wiadomości",
@@ -1213,6 +1469,21 @@
           "placeholder": "Udostępnij aktualizację swoim uczniom",
           "cancel": "Anuluj",
           "post": "Opublikuj"
+        },
+        "user_avatar_alt": "Awatar użytkownika",
+        "comments": {
+          "comment": "komentarz",
+          "showing_of": "Wyświetlanie {pokazane} z {total}",
+          "hide": "Ukryj komentarze",
+          "placeholder": "Dodaj komentarz do zajęć",
+          "submit_aria": "Prześlij komentarz",
+          "delete": "Usuń"
+        },
+        "card": {
+          "pin": "Przypnij",
+          "unpin": "Odepnij",
+          "edit": "Edytuj",
+          "delete": "Usuń"
         }
       }
     },
@@ -1823,10 +2094,134 @@
       "landing_page_tab": "Strona docelowa",
       "billing_tab": "Rozliczenia",
       "integrations_tab": "Integracje",
-      "language_tab": "Język"
+      "language_tab": "Język",
+      "auth_tab": "Uwierzytelnianie",
+      "sso_tab": "Jednokrotne logowanie",
+      "token_auth_tab": "Autoryzacja tokenu",
+      "customize_lms_tab": "Dostosuj LMS-a",
+      "domains_tab": "Domeny",
+      "teams_tab": "Zespoły"
     },
     "subheadings": {
       "view_site": "Zobacz witrynę"
+    },
+    "auth": {
+      "title": "Uwierzytelnianie",
+      "sso": {
+        "messages": {
+          "created": "Połączenie SSO zostało utworzone pomyślnie",
+          "activated": "Aktywowano połączenie SSO",
+          "deleted": "Połączenie SSO zostało usunięte"
+        },
+        "setup": {
+          "heading": "Skonfiguruj logowanie jednokrotne",
+          "description": "Skonfiguruj logowanie jednokrotne w swojej organizacji. Ta funkcja wymaga planu Enterprise.",
+          "provider_label": "Dostawca",
+          "display_name_label": "Nazwa wyświetlana",
+          "display_name_placeholder": "np. Acme Corp SSO",
+          "issuer_label": "Adres URL wydawcy",
+          "issuer_placeholder": "https://accounts.google.com",
+          "issuer_help": "Wystawca OIDC (bez końcowego ukośnika). Przykłady: Google Workspace — https://accounts.google.com; Okta — https://your-org.okta.com; Usługa Azure AD — https://login.microsoftonline.com/your-tenant-id/v2.0",
+          "domain_label": "Domena e-mail",
+          "domain_placeholder": "twojafirma.com",
+          "client_id_label": "Identyfikator klienta",
+          "client_id_placeholder": "Od Twojego dostawcy tożsamości",
+          "client_secret_label": "Sekret Klienta",
+          "client_secret_placeholder": "Od Twojego dostawcy tożsamości",
+          "create_button": "Utwórz połączenie",
+          "providers": {
+            "okta": "Okta",
+            "google_workspace": "Google Workspace",
+            "auth0": "Autoryzacja0"
+          }
+        },
+        "policies": {
+          "heading": "Zasady dostępu",
+          "description": "Skonfiguruj sposób, w jaki użytkownicy uzyskują dostęp do Twojej organizacji",
+          "break_glass": {
+            "label": "Dostęp po rozbiciu szyby",
+            "description": "Zezwól administratorom na ominięcie logowania jednokrotnego przy użyciu adresu e-mail/hasła w nagłych przypadkach."
+          },
+          "auto_join": {
+            "label": "Dołącz automatycznie",
+            "description": "Zezwalaj użytkownikom z pasującymi domenami e-mail na automatyczne dołączanie do Twojej organizacji."
+          },
+          "force_sso": {
+            "label": "Wymuś jednokrotne logowanie",
+            "description": "Wymagaj od wszystkich użytkowników logowania się za pomocą logowania jednokrotnego. Logowanie e-mailem/hasłem zostanie wyłączone."
+          }
+        },
+        "connection": {
+          "heading": "Połączenie SSO",
+          "description": "Zarządzaj stanem połączenia SSO",
+          "active": "Aktywny",
+          "inactive": "Nieaktywny",
+          "activate_button": "Aktywuj połączenie",
+          "delete_button": "Usuń",
+          "delete_confirm": "Czy na pewno chcesz usunąć to połączenie SSO?",
+          "callback_url_label": "Adres URL wywołania zwrotnego:",
+          "callback_url_description": "Skopiuj ten adres URL do konfiguracji adresu URL wywołania zwrotnego/przekierowania dostawcy tożsamości."
+        }
+      },
+      "general": {
+        "heading": "Ustawienia uwierzytelniania",
+        "description": "Kontroluj sposób, w jaki użytkownicy mogą rejestrować się i logować do Twojej organizacji.",
+        "save_button": "Zapisz zmiany",
+        "note_title": "Uwaga",
+        "note_description": "Te ustawienia dotyczą tylko tej organizacji. Administratorzy zawsze mogą zalogować się przy użyciu swoich poświadczeń w celu uzyskania dostępu do szkła.",
+        "disable_google_auth": {
+          "label": "Wyłącz autoryzację Google",
+          "description": "Uniemożliwiaj użytkownikom logowanie się na konta Google."
+        },
+        "disable_email_password": {
+          "label": "Wyłącz logowanie e-mailem/hasłem",
+          "description": "Wymagaj od użytkowników logowania się za pomocą logowania jednokrotnego lub dostawców usług społecznościowych."
+        },
+        "disable_signup_message": {
+          "label": "Wiadomość o wyłączeniu rejestracji",
+          "description": "Niestandardowy komunikat wyświetlany użytkownikom, gdy rejestracja jest wyłączona.",
+          "placeholder": "np. rejestracja jest wyłączona. Aby uzyskać dostęp, skontaktuj się z nami pod adresem Learn@domain.com"
+        },
+        "disable_signup": {
+          "label": "Wyłącz rejestrację",
+          "description": "Uniemożliwiaj rejestrację nowym użytkownikom. Tylko zaproszeni użytkownicy mogą dołączyć."
+        }
+      },
+      "login": {
+        "sso_enabled": "Usługa {provider} jest włączona w Twojej domenie",
+        "sso_redirect_error": "Logowanie jednokrotne jest błędnie skonfigurowane. Ustaw PUBLIC_SERVER_URL na swój serwer API.",
+        "sso_required": "Proszę zalogować się za pomocą SSO. Logowanie hasłem jest wyłączone.",
+        "sign_in_with_sso": "Zaloguj się przez {provider}",
+        "email_password_disabled": "Logowanie e-mailem/hasłem jest wyłączone. Skorzystaj z logowania jednokrotnego.",
+        "email_password_disabled_message": "Logowanie za pomocą adresu e-mail/hasła jest wyłączone w tej organizacji.",
+        "google_auth_disabled": "Uwierzytelnianie Google jest wyłączone.",
+        "signup_disabled_error": "Rejestracja w tej organizacji jest wyłączona. Skontaktuj się ze swoim administratorem."
+      },
+      "tabs": {
+        "general": "Generał",
+        "sso": "Jednokrotne logowanie",
+        "token_auth": "Autoryzacja tokenu"
+      }
+    },
+    "token_auth": {
+      "heading": "Autoryzacja tokenu",
+      "description": "Pozwól użytkownikom logować się z aplikacji za pomocą tokenu JWT — hasło nie jest potrzebne. Wygeneruj sekret podpisu i użyj go w swoim zapleczu, aby wydawać krótkotrwałe JWT.",
+      "status": "Stan",
+      "active": "Aktywny",
+      "inactive": "Nieaktywny",
+      "secret_last4": "Sekret (ostatnie 4):",
+      "created_at": "Utworzono",
+      "generate": "Wygeneruj sekret",
+      "rotate": "Obróć sekret",
+      "delete": "Usuń autoryzację tokena",
+      "delete_confirm": "Czy na pewno chcesz usunąć uwierzytelnianie tokenem? Tej akcji nie można cofnąć.",
+      "activate": "Włącz",
+      "deactivate": "Wyłącz",
+      "secret_shown_once": "Zapisz teraz ten sekret. Nie będzie już więcej pokazywany.",
+      "integration_guide": "Przewodnik po integracji",
+      "integration_description": "Podpisz token JWT za pomocą klucza tajnego i przekieruj użytkowników do adresu URL wymiany tokenów.",
+      "no_config": "Nie skonfigurowano uwierzytelniania tokena. Aby rozpocząć, wygeneruj sekret podpisu.",
+      "actions_menu": "Akcje uwierzytelniania tokenu"
     }
   },
   "profileMenu": {

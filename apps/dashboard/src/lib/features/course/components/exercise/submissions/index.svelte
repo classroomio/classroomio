@@ -1,5 +1,6 @@
 <script lang="ts">
   import { untrack } from 'svelte';
+  import { Spinner } from '@cio/ui/base/spinner';
   import { submissionApi } from '$features/course/api';
   import { courseApi } from '$features/course/api';
   import Summary from './summary.svelte';
@@ -30,7 +31,10 @@
   const onChange = (tabValue: string) => () => (currentTab = tabValue);
 
   async function fetchSubmissions(id: string | undefined) {
-    if (!id || !courseApi.course?.id) return;
+    if (!id || !courseApi.course?.id) {
+      isLoading = false;
+      return;
+    }
     isLoading = true;
 
     await submissionApi.list(courseApi.course?.id, id);
@@ -73,11 +77,18 @@
 
 <div class="flex w-full flex-col">
   <div class="mb-2 rounded-md border px-4">
-    <div class="mt-4">
-      <p class="text-lg">
-        {$submissions.length}
-        {$t('course.navItem.lessons.exercises.all_exercises.analytics.submissions')}
-      </p>
+    <div class="mt-4 flex items-center gap-2">
+      {#if isLoading}
+        <Spinner class="size-5" />
+        <p class="ui:text-muted-foreground text-lg">
+          {$t('course.navItem.lessons.exercises.all_exercises.analytics.loading_submissions')}
+        </p>
+      {:else}
+        <p class="text-lg">
+          {$submissions.length}
+          {$t('course.navItem.lessons.exercises.all_exercises.analytics.submissions')}
+        </p>
+      {/if}
     </div>
     <div class="flex items-center justify-center overflow-x-auto">
       {#each tabs as tab}

@@ -1,13 +1,13 @@
 <script lang="ts">
   import { Empty } from '@cio/ui/custom/empty';
   import UserXIcon from '@lucide/svelte/icons/user-x';
+  import * as Avatar from '@cio/ui/base/avatar';
+  import * as Table from '@cio/ui/base/table';
+  import * as Tooltip from '@cio/ui/base/tooltip';
   import { t } from '$lib/utils/functions/translations';
-  import { getLectureNo } from '$features/course/utils/functions';
-  import { courseApi } from '$features/course/api';
-  import { calculateStudentTotal } from '$features/course/utils/marks-utils';
-  import type { MarksPageData } from '$features/course/utils/marks-utils';
-  import { getCourseContent } from '$features/course/utils/content';
-  import { ContentType } from '@cio/utils/constants/content';
+  import { shortenName } from '$lib/utils/functions/string';
+  import { calculateStudentAverage, type MarksPageData, type ExerciseInfo } from '$features/course/utils/marks-utils';
+  import TruncatedWithTooltip from '$features/course/components/truncated-with-tooltip.svelte';
 
   interface Props {
     marksData: MarksPageData | null;
@@ -15,112 +15,101 @@
 
   let { marksData }: Props = $props();
 
-  let borderBottomGrey = 'border-r-0 border-t-0 border-b border-l-0 border-gray-300';
-  let borderleftGrey = 'border-r-0 border-t-0 border-b-0 border-l border-gray-300';
+  const students = $derived(marksData?.students ?? []);
+  const exercises = $derived(marksData?.exercises ?? []);
+  const studentMarksByExerciseId = $derived(marksData?.studentMarksByExerciseId ?? {});
 
-  // Initialize from props (server data)
-  const students = $derived(marksData?.students || []);
-  const lessonMapping = $derived(marksData?.lessonMapping || {});
-  const studentMarksByExerciseId = $derived(marksData?.studentMarksByExerciseId || {});
-  const contentData = $derived(getCourseContent(courseApi.course));
-  const lessonItems = $derived(
-    (contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items).filter(
-      (item) => item.type === ContentType.Lesson
-    )
-  );
+  function gradePercent(pointsStr: string | undefined, exercise: ExerciseInfo): number | null {
+    if (pointsStr == null || exercise.points === 0) return null;
+    const n = parseInt(pointsStr, 10);
+    if (Number.isNaN(n)) return null;
+    return Math.round((n / exercise.points) * 100);
+  }
+
+  /** Text and background classes for grade cells (faint tint + matching text) */
+  function gradeCellClass(percent: number | null): string {
+    if (percent == null) return 'ui:bg-transparent ui:text-muted-foreground';
+    if (percent >= 90) return 'ui:bg-green-50 ui:text-green-700 dark:ui:bg-green-950/30 dark:ui:text-green-400';
+    if (percent >= 80) return 'ui:bg-blue-50 ui:text-blue-700 dark:ui:bg-blue-950/30 dark:ui:text-blue-400';
+    if (percent >= 70) return 'ui:bg-amber-50 ui:text-amber-800 dark:ui:bg-amber-950/30 dark:ui:text-amber-400';
+    return 'ui:bg-red-50 ui:text-red-700 dark:ui:bg-red-950/30 dark:ui:text-red-400';
+  }
 </script>
 
 {#if students.length > 0}
-  <div id="tableContainer" class="table w-full rounded-md border border-gray-300">
-    <div class="flex items-center {borderBottomGrey}">
-      <div class="box flex items-center p-3">
-        <p class="w-40 dark:text-white">{$t('course.navItem.marks.student')}</p>
-      </div>
-      {#each lessonItems as lesson, index}
-        {#if lessonMapping[lesson.id]}
-          <div class="box flex flex-col items-center {borderleftGrey}">
-            <p class="col lesson-number dark:text-white" title={lesson.title}>
-              {getLectureNo(index + 1)}
-            </p>
-            <div class="flex h-full items-center border-t border-r-0 border-b-0 border-l-0 border-gray-300">
-              {#each Object.keys(lessonMapping[lesson.id]) as exerciseId, index}
-                <p
-                  class="col text-sm dark:text-white {index && borderleftGrey}"
-                  title={lessonMapping[lesson.id][exerciseId].title}
+  <div class="rounded-md border border-gray-300 dark:border-neutral-600">
+    <Tooltip.Provider>
+      <Table.Root class="">
+        <Table.Header>
+          <Table.Row class="ui:border-gray-200 dark:ui:border-neutral-700 border-b-2">
+            <Table.Head
+              class="ui:text-foreground sticky left-0 z-100! min-w-[200px] border-r border-gray-200 bg-gray-50 px-3 py-3 text-left text-sm font-semibold dark:border-neutral-700 dark:bg-neutral-800/80"
+            >
+              {$t('course.navItem.marks.student')}
+            </Table.Head>
+            {#each exercises as exercise}
+              <Table.Head
+                class="min-w-[100px] border-r border-gray-200 bg-white px-2 py-3 text-center text-sm font-semibold last:border-r-0 dark:border-neutral-700 dark:bg-neutral-900"
+              >
+                <TruncatedWithTooltip text={exercise.title} maxWidth="100px" />
+              </Table.Head>
+            {/each}
+            <Table.Head
+              class="min-w-[90px] border-gray-200 bg-white px-2 py-3 text-center text-sm font-semibold dark:border-neutral-700 dark:bg-neutral-900"
+            >
+              {$t('course.navItem.marks.avg_grade')}
+            </Table.Head>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {#each students as student}
+            {@const marks = studentMarksByExerciseId[student.id]}
+            {@const avg = calculateStudentAverage(marks, exercises)}
+            <Table.Row class="ui:border-b ui:border-gray-100 dark:ui:border-neutral-800">
+              <Table.Cell
+                class="sticky left-0 min-w-[200px] border-r border-gray-200 bg-gray-50 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-800/80"
+              >
+                <div class="flex items-center gap-2">
+                  <Avatar.Root class="size-6! shrink-0 rounded-full">
+                    <Avatar.Image
+                      src={student.profile?.avatarUrl ?? undefined}
+                      alt={student.profile?.fullname ?? 'Student'}
+                    />
+                    <Avatar.Fallback class="ui:bg-muted ui:text-muted-foreground rounded-full">
+                      {shortenName(student.profile?.fullname) ?? 'S'}
+                    </Avatar.Fallback>
+                  </Avatar.Root>
+                  <div class="min-w-0 flex-1">
+                    <p class="ui:text-foreground truncate text-sm font-medium">
+                      {student.profile?.fullname ?? '-'}
+                    </p>
+                  </div>
+                </div>
+              </Table.Cell>
+              {#each exercises as exercise}
+                {@const pointsStr = marks?.[exercise.id]}
+                {@const pct = gradePercent(pointsStr, exercise)}
+                <Table.Cell
+                  class="min-w-[100px] border-r border-gray-100 px-2 py-2 text-center text-sm dark:border-neutral-800 {gradeCellClass(
+                    pct
+                  )}"
                 >
-                  {lessonMapping[lesson.id][exerciseId].title}
-                  <span>({lessonMapping[lesson.id][exerciseId].points})</span>
-                </p>
+                  <span class="font-medium">
+                    {pct != null ? pct : pointsStr != null ? pointsStr : '-'}
+                  </span>
+                </Table.Cell>
               {/each}
-            </div>
-          </div>
-        {/if}
-      {/each}
-      <div class="box flex items-center {borderleftGrey}">
-        <p class="w-20 text-center dark:text-white">{$t('course.navItem.marks.total')}</p>
-      </div>
-    </div>
-
-    {#each students as student}
-      <div class="relative flex cursor-pointer items-center p-3 {borderBottomGrey}">
-        <div class="flex w-40 items-center">
-          <img alt="Student avatar" src={student.profile?.avatarUrl} class="mr-2 h-8 w-8 rounded-full" />
-          <div class="text-sm">
-            <p class="font-semibold dark:text-white">
-              {student.profile?.fullname}
-            </p>
-            <p class="dark:text-white">
-              {`${student.assignedStudentId ? '#' + student.assignedStudentId : '-'}`}
-            </p>
-          </div>
-        </div>
-        {#each lessonItems as lesson}
-          {#if lessonMapping[lesson.id]}
-            <div class="flex items-center">
-              {#each Object.keys(lessonMapping[lesson.id]) as exerciseId}
-                <p class="col dark:text-white">
-                  {studentMarksByExerciseId[student.id] ? studentMarksByExerciseId[student.id][exerciseId] || '-' : '-'}
-                </p>
-              {/each}
-            </div>
-          {/if}
-        {/each}
-
-        <div class="flex w-20 items-center">
-          <div class="text-sm">
-            <p class="col dark:text-white">
-              {calculateStudentTotal(studentMarksByExerciseId[student.id])}
-            </p>
-          </div>
-        </div>
-      </div>
-    {/each}
+              <Table.Cell class="min-w-[90px] px-2 py-2 text-center text-sm {gradeCellClass(avg ?? null)}">
+                <span class="font-medium">
+                  {avg != null ? avg : '-'}
+                </span>
+              </Table.Cell>
+            </Table.Row>
+          {/each}
+        </Table.Body>
+      </Table.Root>
+    </Tooltip.Provider>
   </div>
 {:else}
   <Empty title={$t('course.navItem.marks.no_student')} icon={UserXIcon} variant="page" />
 {/if}
-
-<style>
-  .col {
-    text-align: center;
-    padding: 5px;
-    width: 100px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-  }
-
-  .br {
-    border-right: 1px solid rgba(209, 213, 219, var(--tw-border-opacity));
-  }
-
-  .box {
-    height: 95px;
-  }
-
-  .lesson-number {
-    height: 30px;
-  }
-</style>

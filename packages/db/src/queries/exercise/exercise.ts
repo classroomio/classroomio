@@ -212,8 +212,13 @@ export async function createQuestions(values: TNewQuestion[], dbClient: DbOrTxCl
   try {
     return dbClient.insert(schema.question).values(values).returning();
   } catch (error) {
-    console.error('createQuestions error:', error);
-    throw new Error(`Failed to create questions: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    const err = error as Error & { code?: string; cause?: unknown };
+    console.error('createQuestions error:', {
+      message: err.message,
+      code: err.code,
+      cause: err.cause
+    });
+    throw new Error('Failed to create questions');
   }
 }
 
@@ -485,9 +490,16 @@ export async function getExerciseWithRelationsOptimized(
       question.options.sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
     }
 
+    const questions = Array.from(questionsMap.values()).sort((a, b) => {
+      const orderA = a.order ?? 0;
+      const orderB = b.order ?? 0;
+      if (orderA !== orderB) return orderA - orderB;
+      return (a.id ?? 0) - (b.id ?? 0);
+    });
+
     return {
       exercise,
-      questions: Array.from(questionsMap.values())
+      questions
     };
   } catch (error) {
     console.error('getExerciseWithRelations error:', error);

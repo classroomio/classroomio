@@ -87,7 +87,11 @@ export const ZUpdateOrganization = z.object({
   siteName: z.string().min(1).optional(),
   customDomain: z.string().nullable().optional(),
   isCustomDomainVerified: z.boolean().optional(),
-  customization: z.record(z.string(), z.unknown()).optional()
+  customization: z.record(z.string(), z.unknown()).optional(),
+  disableSignup: z.boolean().optional(),
+  disableSignupMessage: z.string().optional(),
+  disableEmailPassword: z.boolean().optional(),
+  disableGoogleAuth: z.boolean().optional()
 });
 
 export type TUpdateOrganization = z.infer<typeof ZUpdateOrganization>;

@@ -77,7 +77,7 @@
         </Avatar.Root>
 
         <a href="/">
-          <Card.Title class="ui:text-2xl ui:font-bold">
+          <Card.Title class="ui:text-2xl font-normal!">
             {isLogin ? $t('login.welcome') : $t('login.create_account')}
           </Card.Title>
         </a>

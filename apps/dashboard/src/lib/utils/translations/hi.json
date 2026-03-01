@@ -114,6 +114,20 @@
       "email": "अमान्य ईमेल पता",
       "username": "उपयोक्तानाम खाली नहीं हो सकता",
       "fullname": "नाम कम से कम 5 अक्षर का होना चाहिए"
+    },
+    "exercise": {
+      "options": {
+        "custom": "{संदेश}"
+      },
+      "points": {
+        "too_small": "अंक कम से कम 0 होने चाहिए"
+      },
+      "label": {
+        "too_small": "विकल्प लेबल आवश्यक है"
+      },
+      "question": {
+        "too_small": "प्रश्न का शीर्षक आवश्यक है"
+      }
     }
   },
   "generic": {
@@ -334,6 +348,14 @@
       "course_tags_updated": "पाठ्यक्रम टैग अपडेट किए गए",
       "fetch_failed": "टैग लोड करने में विफल",
       "save_failed": "टैग परिवर्तन सहेजने में विफल"
+    },
+    "error_update": "अद्यतन करने में विफल",
+    "token_auth": {
+      "created": "हस्ताक्षर रहस्य बनाया गया. इसे अभी सहेजें—यह दोबारा नहीं दिखाया जाएगा।",
+      "rotated": "हस्ताक्षर रहस्य घुमाया गया। नया रहस्य सहेजें—यह दोबारा नहीं दिखाया जाएगा।",
+      "deleted": "टोकन प्रमाणीकरण हटा दिया गया.",
+      "activated": "टोकन प्रमाणीकरण सक्षम.",
+      "deactivated": "टोकन प्रमाणीकरण अक्षम किया गया."
     }
   },
   "explore": {
@@ -376,7 +398,8 @@
     "back": "सेटिंग्स पर वापस जाएँ",
     "download_lessons": "पाठ डाउनलोड करने के लिए अपग्रेड करें",
     "download_course": "पाठ्यक्रम डाउनलोड करने के लिए अपग्रेड करें",
-    "required": "अपग्रेड आवश्यक"
+    "required": "अपग्रेड आवश्यक",
+    "enterprise_required": "इस सुविधा के लिए एंटरप्राइज़ योजना की आवश्यकता है."
   },
   "analytics": {
     "title": "विश्लेषिकी",
@@ -417,7 +440,25 @@
     "no_students_description": "इस पाठ्यक्रम में अभी तक कोई भी छात्र नामांकित नहीं है। पाठ्यक्रम में शामिल होने के बाद छात्र यहां उपस्थित होंगे।",
     "showing_students": "{कुल} छात्रों को {प्रारंभ} से {अंत} तक दिखाया जा रहा है",
     "no_analytics_data": "कोई एनालिटिक्स डेटा नहीं",
-    "no_analytics_description": "इस पाठ्यक्रम के लिए विश्लेषणात्मक डेटा लोड करने में असमर्थ. कृपया बाद में पुनः प्रयास करें या यदि समस्या बनी रहती है तो सहायता से संपर्क करें।"
+    "no_analytics_description": "इस पाठ्यक्रम के लिए विश्लेषणात्मक डेटा लोड करने में असमर्थ. कृपया बाद में पुनः प्रयास करें या यदि समस्या बनी रहती है तो सहायता से संपर्क करें।",
+    "student": "छात्र",
+    "student_progress_distribution": "छात्र प्रगति वितरण",
+    "grade_distribution": "ग्रेड वितरण",
+    "progress_80_plus": "80%+ प्रगति",
+    "progress_60_79": "60-79% प्रगति",
+    "progress_below_60": "60% से कम प्रगति",
+    "grade_90_plus": "90%+ ग्रेड",
+    "grade_80_89": "80-89% ग्रेड",
+    "grade_70_79": "70-79% ग्रेड",
+    "grade_below_70": "70% ग्रेड से नीचे",
+    "number_of_students": "छात्रों की संख्या",
+    "progress_range": "प्रगति रेंज",
+    "grade_range": "ग्रेड रेंज",
+    "no_progress_data": "कोई प्रगति डेटा उपलब्ध नहीं है",
+    "no_grade_data": "कोई ग्रेड डेटा उपलब्ध नहीं है",
+    "loading_chart": "चार्ट लोड हो रहा है...",
+    "no_data_default": "कोई डेटा उपलब्ध नहीं है",
+    "no_data_default_description": "इस समय प्रदर्शित करने के लिए कोई डेटा नहीं है."
   },
   "audience": {
     "title": "दर्शक",
@@ -795,7 +836,8 @@
         "export": {
           "csv": "सीएसवी के रूप में निर्यात करें",
           "pdf": "पीडीएफ के रूप में निर्यात करें"
-        }
+        },
+        "avg_grade": "औसत ग्रेड"
       },
       "submissions": {
         "title": "प्रस्तुत अभ्यास",
@@ -820,12 +862,19 @@
           "questions_tried": "कुल प्रयासों के कारण यह स्कोर आवंटित किया गया:",
           "delete_prompt": "हटाएँ",
           "delete_error": "सबमिशन हटाने में विफल",
-          "delete_success": "सबमिशन सफलतापूर्वक हटा दिया गया"
+          "delete_success": "सबमिशन सफलतापूर्वक हटा दिया गया",
+          "student_avatar": "विद्यार्थी अवतार",
+          "ai_icon": "ऐ"
         },
         "submission_status": {
           "submitted": "प्रस्तुत किया गया",
           "in_progress": "प्रगति पर है",
           "graded": "श्रेणीबद्ध"
+        },
+        "workflow": {
+          "awaiting_manual_hint": "मैन्युअल समीक्षा की आवश्यकता है",
+          "failed_hint": "स्वतः-ग्रेडिंग विफल. पुनः प्रयास करने के लिए इस सबमिशन को वापस सबमिट किए गए पर ले जाएं।",
+          "invalid_transition": "ग्रेडिंग वर्कफ़्लो द्वारा इस स्थिति परिवर्तन की अनुमति नहीं है"
         }
       },
       "attendance": {
@@ -959,12 +1008,14 @@
               "individual": {
                 "heading": "व्यक्तिगत",
                 "answers": "व्यक्तिगत उत्तर",
-                "no": "कोई उत्तर नहीं दिया गया"
+                "no": "कोई उत्तर नहीं दिया गया",
+                "student_avatar": "छात्र"
               },
               "summary": {
                 "heading": "सारांश",
                 "question_chart": "प्रश्न चार्ट"
-              }
+              },
+              "loading_submissions": "सबमिशन लोड हो रहा है..."
             },
             "view_mode": {
               "no_question": "इस अभ्यास के लिए कोई प्रश्न नहीं जोड़ा गया",
@@ -981,7 +1032,12 @@
               "submitted": "प्रस्तुत किया गया",
               "status_pending": "स्थिति: समीक्षा लंबित",
               "status_graded": "स्थिति: समीक्षा पूरी हुई",
-              "status_submitted": "स्थिति: सबमिट किया गया"
+              "status_submitted": "स्थिति: सबमिट किया गया",
+              "empty_description": "जोड़ने के लिए संपादन बटन पर क्लिक करें।",
+              "empty_edit_hint_prefix": "क्लिक करें ",
+              "empty_edit_hint_suffix": " जोड़ने के लिए बटन.",
+              "answers_required": "कृपया सबमिट करने से पहले कम से कम एक उत्तर प्रदान करें।",
+              "checking_submission": "आपके सबमिशन की जाँच की जा रही है..."
             },
             "edit_mode": {
               "delete_modal": "व्यायाम हटाएँ",
@@ -996,8 +1052,19 @@
               "question_types": {
                 "single": "एकल उत्तर",
                 "multiple": "एकाधिक उत्तर",
-                "paragraph": "अनुच्छेद"
-              }
+                "paragraph": "अनुच्छेद",
+                "true_false": "सत्य/असत्य",
+                "short_answer": "संक्षिप्त उत्तर",
+                "numeric": "संख्यात्मक उत्तर",
+                "fill_blank": "रिक्त स्थान भरें",
+                "file_upload": "फ़ाइल अपलोड करें",
+                "matching": "मिलान",
+                "ordering": "ऑर्डर देना",
+                "hotspot": "हॉटस्पॉट",
+                "link": "कड़ियाँ"
+              },
+              "select_type": "प्रकार चुनें",
+              "premium_question_type": "इस प्रश्न प्रकार का उपयोग करने के लिए अपग्रेड करें"
             },
             "delete_confirmation": {
               "title": "प्रश्न हटाएँ",
@@ -1010,6 +1077,193 @@
               "heading": "विवरण",
               "describe": "अपने विद्यार्थी को अभ्यास का वर्णन करें",
               "no": "कोई विवरण नहीं"
+            },
+            "shared_question": {
+              "textarea": {
+                "take": {
+                  "placeholder": "अपना उत्तर लिखें"
+                },
+                "edit": {
+                  "placeholder": "शिक्षार्थी लंबे प्रारूप वाले पाठ के साथ उत्तर देंगे"
+                }
+              },
+              "hotspot": {
+                "preview": {
+                  "helper": "हॉटस्पॉट पूर्वावलोकन होस्ट ऐप छवि और हॉटस्पॉट सेटिंग्स द्वारा प्रदान किया जाता है।"
+                },
+                "take": {
+                  "placeholder": "JSON के रूप में हॉटस्पॉट निर्देशांक प्रदान करें"
+                },
+                "edit": {
+                  "helper": "होस्ट ऐप नियंत्रण के माध्यम से प्रश्न सेटिंग में हॉटस्पॉट छवि और ज़ोन कॉन्फ़िगर करें।"
+                }
+              },
+              "ordering": {
+                "fallback_step_prefix": "कदम",
+                "preview": {
+                  "submitted_label": "आदेश प्रस्तुत किया",
+                  "expected_label": "अपेक्षित आदेश",
+                  "matches": "सबमिट किया गया ऑर्डर अपेक्षित ऑर्डर से मेल खाता है।",
+                  "differs": "सबमिट किया गया ऑर्डर अपेक्षित ऑर्डर से भिन्न है."
+                },
+                "take": {
+                  "helper": "वस्तुओं को सही क्रम में व्यवस्थित करने के लिए खींचें और छोड़ें।",
+                  "empty": "इस प्रश्न के लिए अभी तक कोई ऑर्डरिंग आइटम कॉन्फ़िगर नहीं किया गया है।"
+                },
+                "edit": {
+                  "helper": "सही क्रम परिभाषित करने के लिए आइटम खींचें।",
+                  "add_step": "चरण जोड़ें",
+                  "empty": "चरण जोड़ें, फिर अपेक्षित क्रम सेट करने के लिए खींचें।",
+                  "step_placeholder": "चरण '{'सूचकांक'}'",
+                  "remove_step_tooltip": "चरण हटाएँ"
+                }
+              },
+              "matching": {
+                "preview": {
+                  "helper": "मिलान जोड़े का पूर्वावलोकन होस्ट ऐप सेटिंग्स द्वारा प्रदान किया जाता है।"
+                },
+                "take": {
+                  "placeholder": "JSON के रूप में मिलान जोड़े प्रदान करें"
+                },
+                "edit": {
+                  "helper": "होस्ट ऐप नियंत्रण के माध्यम से प्रश्न सेटिंग में जोड़े कॉन्फ़िगर करें।"
+                }
+              },
+              "link": {
+                "preview": {
+                  "empty": "कोई लिंक सबमिट नहीं किया गया.",
+                  "item_label": "लिंक '{'सूचकांक'}'"
+                },
+                "take": {
+                  "helper": "एक या अधिक लिंक जोड़ें. केवल वैध http/https यूआरएल ही स्वीकार किए जाते हैं।",
+                  "placeholder": "https://example.com/resource-'{'index'}'",
+                  "remove_tooltip": "लिंक हटाएँ",
+                  "remove_sr": "लिंक हटाएँ",
+                  "invalid_url_error": "कृपया एक मान्य यूआरएल (http/https) दर्ज करें।",
+                  "add_button": "लिंक जोड़ें"
+                },
+                "edit": {
+                  "instructions_placeholder": "शिक्षार्थियों के लिए वैकल्पिक निर्देश",
+                  "helper": "शिक्षार्थी एक या अधिक वैध यूआरएल (http/https) सबमिट कर सकते हैं।"
+                }
+              },
+              "file_upload": {
+                "preview": {
+                  "accepted_types_label": "स्वीकृत प्रकार",
+                  "max_size_label": "अधिकतम आकार (एमबी)"
+                },
+                "take": {
+                  "selected_file_label": "चयनित फ़ाइल",
+                  "upload_button": "अपलोड करें"
+                },
+                "edit": {
+                  "accepted_types_placeholder": "स्वीकृत प्रकार (उदा. पीडीएफ, डॉक्स)",
+                  "max_size_placeholder": "अधिकतम आकार (एमबी)"
+                }
+              },
+              "fill_blank": {
+                "preview": {
+                  "accepted_answers_label": "स्वीकृत उत्तर"
+                },
+                "take": {
+                  "placeholder": "अल्पविराम से अलग किए गए उत्तर दर्ज करें"
+                },
+                "edit": {
+                  "accepted_answers_placeholder": "स्वीकृत उत्तर (अल्पविराम से अलग)"
+                }
+              },
+              "numeric": {
+                "preview": {
+                  "correct_value_label": "सही मूल्य",
+                  "tolerance_label": "सहनशीलता"
+                },
+                "take": {
+                  "placeholder": "एक नंबर दर्ज करें"
+                },
+                "edit": {
+                  "correct_value_label": "सही मूल्य",
+                  "correct_value_info": "अपेक्षित संख्यात्मक उत्तर शिक्षार्थियों को सही चिह्नित करने के लिए प्रस्तुत करना होगा।",
+                  "tolerance_label": "सहनशीलता",
+                  "tolerance_info": "सही मान से स्वीकार्य अंतर (उदाहरण के लिए, 0.5 +/-0.5 स्वीकार करता है)।",
+                  "correct_value_placeholder": "सही मूल्य",
+                  "tolerance_placeholder": "सहनशीलता"
+                }
+              },
+              "short_answer": {
+                "preview": {
+                  "helper": "निःशुल्क-पाठ उत्तर प्रश्न."
+                },
+                "take": {
+                  "placeholder": "अपना उत्तर टाइप करें"
+                },
+                "edit": {
+                  "instructions_placeholder": "वैकल्पिक निर्देश"
+                }
+              },
+              "true_false": {
+                "true_label": "सच है",
+                "false_label": "मिथ्या",
+                "preview": {
+                  "correct_value_label": "सही मूल्य"
+                },
+                "edit": {
+                  "correct_answer_label": "सही उत्तर"
+                }
+              },
+              "checkbox": {
+                "edit": {
+                  "helper": "एक या अधिक विकल्पों को सही के रूप में चिह्नित करें.",
+                  "correct_selected_tooltip": "सही उत्तर चयनित",
+                  "toggle_correct_tooltip": "सही उत्तर टॉगल करें",
+                  "toggle_correct_sr": "विकल्प को सही के रूप में टॉगल करें"
+                }
+              },
+              "radio": {
+                "edit": {
+                  "helper": "बिल्कुल एक सही विकल्प चुनें.",
+                  "correct_selected_tooltip": "सही उत्तर चयनित",
+                  "mark_correct_tooltip": "सही उत्तर के रूप में चिह्नित करें",
+                  "mark_correct_sr": "विकल्प को सही के रूप में चिह्नित करें"
+                }
+              },
+              "question": {
+                "edit": {
+                  "title_label": "शीर्षक",
+                  "title_placeholder": "प्रश्न शीघ्र",
+                  "description_label": "विवरण (वैकल्पिक)",
+                  "description_placeholder": "इस प्रश्न के लिए अतिरिक्त संदर्भ जोड़ें",
+                  "add_description": "विवरण जोड़ें",
+                  "remove_description": "विवरण हटाएँ",
+                  "media_menu_sr": "प्रश्न अतिरिक्त मेनू",
+                  "add_image": "छवि जोड़ें",
+                  "add_video": "वीडियो जोड़ें",
+                  "remove_image_tooltip": "छवि हटाएँ",
+                  "remove_image_sr": "छवि हटाएँ",
+                  "remove_video_tooltip": "वीडियो हटाएँ",
+                  "remove_video_sr": "वीडियो हटाएँ",
+                  "image_alt": "प्रश्न प्रसंग",
+                  "video_modal_title": "यूट्यूब वीडियो जोड़ें",
+                  "video_link_label": "यूट्यूब लिंक",
+                  "video_link_placeholder": "https://www.youtube.com/watch?v=",
+                  "video_add_button": "वीडियो जोड़ें",
+                  "video_invalid_link": "कृपया एक वैध यूट्यूब लिंक दर्ज करें।",
+                  "upload_error_only_images": "केवल छवि फ़ाइलें समर्थित हैं.",
+                  "upload_error_skipped": "कुछ फ़ाइलें छोड़ दी गईं क्योंकि वे छवियाँ नहीं हैं।",
+                  "upload_error_failed": "छवि अपलोड करने में विफल. पुनः प्रयास करें।"
+                }
+              },
+              "navigation": {
+                "previous": "पिछला",
+                "next": "अगला",
+                "finish": "ख़त्म करो"
+              },
+              "common": {
+                "option_prefix": "विकल्प",
+                "remove": "हटाओ",
+                "add_option": "विकल्प जोड़ें",
+                "correct_badge": "(सही)",
+                "not_set": "सेट नहीं"
+              }
             }
           },
           "new_exercise_modal": {
@@ -1187,7 +1441,9 @@
           "description": "अब आप अपनी सामग्री को व्यवस्थित करने और अपने छात्रों के लिए सीखने को आसान बनाने के लिए पाठों को अनुभागों में समूहित कर सकते हैं।",
           "activate": "सक्रिय करें",
           "cancel": "रद्द करें"
-        }
+        },
+        "content_locked_title": "यह सामग्री लॉक है",
+        "content_locked_description": "आपके प्रशिक्षक ने अभी तक इस सामग्री को अनलॉक नहीं किया है। पिछली सामग्री पूरी करें या बाद में दोबारा जाँचें।"
       },
       "news_feed": {
         "heading": "समाचार फ़ीड",
@@ -1213,6 +1469,21 @@
           "placeholder": "अपने छात्रों के साथ एक अपडेट साझा करें",
           "cancel": "रद्द करें",
           "post": "पोस्ट"
+        },
+        "user_avatar_alt": "उपयोगकर्ता अवतार",
+        "comments": {
+          "comment": "टिप्पणी",
+          "showing_of": "{कुल} में से {दिखाया गया}",
+          "hide": "टिप्पणियाँ छिपाएँ",
+          "placeholder": "कक्षा टिप्पणी जोड़ें",
+          "submit_aria": "टिप्पणी सबमिट करें",
+          "delete": "हटाएँ"
+        },
+        "card": {
+          "pin": "पिन",
+          "unpin": "अनपिन करें",
+          "edit": "संपादित करें",
+          "delete": "हटाएँ"
         }
       }
     },
@@ -1823,10 +2094,134 @@
       "landing_page_tab": "लैंडिंग पृष्ठ",
       "billing_tab": "बिलिंग",
       "integrations_tab": "एकीकरण",
-      "language_tab": "भाषा"
+      "language_tab": "भाषा",
+      "auth_tab": "प्रमाणीकरण",
+      "sso_tab": "एसएसओ",
+      "token_auth_tab": "टोकन प्रामाणिक",
+      "customize_lms_tab": "एलएमएस को अनुकूलित करें",
+      "domains_tab": "डोमेन",
+      "teams_tab": "टीमें"
     },
     "subheadings": {
       "view_site": "साइट देखें"
+    },
+    "auth": {
+      "title": "प्रमाणीकरण",
+      "sso": {
+        "messages": {
+          "created": "SSO कनेक्शन सफलतापूर्वक बनाया गया",
+          "activated": "एसएसओ कनेक्शन सक्रिय किया गया",
+          "deleted": "SSO कनेक्शन हटा दिया गया"
+        },
+        "setup": {
+          "heading": "एसएसओ सेटअप करें",
+          "description": "अपने संगठन के लिए एकल साइन-ऑन कॉन्फ़िगर करें. इस सुविधा के लिए एंटरप्राइज़ योजना की आवश्यकता है.",
+          "provider_label": "प्रदाता",
+          "display_name_label": "प्रदर्शन नाम",
+          "display_name_placeholder": "उदाहरण के लिए, एक्मे कॉर्प एसएसओ",
+          "issuer_label": "जारीकर्ता यूआरएल",
+          "issuer_placeholder": "https://accounts.google.com",
+          "issuer_help": "ओआईडीसी जारीकर्ता (कोई पिछला स्लैश नहीं)। उदाहरण: Google कार्यक्षेत्र — https://accounts.google.com; ओक्टा - https://your-org.okta.com; Azure AD - https://login.microsoftonline.com/your-tenant-id/v2.0",
+          "domain_label": "ईमेल डोमेन",
+          "domain_placeholder": "yourcompany.com",
+          "client_id_label": "ग्राहक आईडी",
+          "client_id_placeholder": "आपके IdP से",
+          "client_secret_label": "ग्राहक रहस्य",
+          "client_secret_placeholder": "आपके IdP से",
+          "create_button": "कनेक्शन बनाएँ",
+          "providers": {
+            "okta": "ओक्टा",
+            "google_workspace": "गूगल कार्यक्षेत्र",
+            "auth0": "प्रामाणिक0"
+          }
+        },
+        "policies": {
+          "heading": "पहुंच नीतियां",
+          "description": "कॉन्फ़िगर करें कि उपयोगकर्ता आपके संगठन तक कैसे पहुंचते हैं",
+          "break_glass": {
+            "label": "कांच तोड़ने की पहुंच",
+            "description": "आपातकालीन स्थिति में व्यवस्थापकों को ईमेल/पासवर्ड के साथ एसएसओ को बायपास करने की अनुमति दें।"
+          },
+          "auto_join": {
+            "label": "स्वतः जुड़ें",
+            "description": "मेल खाने वाले ईमेल डोमेन वाले उपयोगकर्ताओं को स्वचालित रूप से आपके संगठन में शामिल होने की अनुमति दें।"
+          },
+          "force_sso": {
+            "label": "एसएसओ को बाध्य करें",
+            "description": "सभी उपयोगकर्ताओं को SSO के माध्यम से साइन इन करना आवश्यक है। ईमेल/पासवर्ड लॉगिन अक्षम कर दिया जाएगा."
+          }
+        },
+        "connection": {
+          "heading": "एसएसओ कनेक्शन",
+          "description": "अपनी SSO कनेक्शन स्थिति प्रबंधित करें",
+          "active": "सक्रिय",
+          "inactive": "निष्क्रिय",
+          "activate_button": "कनेक्शन सक्रिय करें",
+          "delete_button": "हटाएँ",
+          "delete_confirm": "क्या आप वाकई इस एसएसओ कनेक्शन को हटाना चाहते हैं?",
+          "callback_url_label": "कॉलबैक यूआरएल:",
+          "callback_url_description": "इस यूआरएल को अपने आईडीपी के कॉलबैक/रीडायरेक्ट यूआरएल कॉन्फ़िगरेशन में कॉपी करें।"
+        }
+      },
+      "general": {
+        "heading": "प्रमाणीकरण सेटिंग्स",
+        "description": "नियंत्रित करें कि उपयोगकर्ता आपके संगठन में कैसे साइन अप और लॉग इन कर सकते हैं।",
+        "save_button": "परिवर्तन सहेजें",
+        "note_title": "नोट",
+        "note_description": "ये सेटिंग्स केवल इस संगठन को प्रभावित करती हैं. ब्रेक-ग्लास एक्सेस के लिए एडमिन हमेशा अपने क्रेडेंशियल्स का उपयोग करके साइन इन कर सकते हैं।",
+        "disable_google_auth": {
+          "label": "Google प्रामाणिक अक्षम करें",
+          "description": "उपयोगकर्ताओं को Google खातों से साइन इन करने से रोकें।"
+        },
+        "disable_email_password": {
+          "label": "ईमेल/पासवर्ड लॉगिन अक्षम करें",
+          "description": "उपयोगकर्ताओं को एसएसओ या सामाजिक प्रदाताओं के साथ साइन इन करना आवश्यक है।"
+        },
+        "disable_signup_message": {
+          "label": "साइनअप अक्षम संदेश",
+          "description": "साइनअप अक्षम होने पर उपयोगकर्ताओं को कस्टम संदेश दिखाया जाता है।",
+          "placeholder": "उदाहरण के लिए, साइनअप अक्षम हैं, पहुंच प्राप्त करने के लिए कृपया learn@domain.com से संपर्क करें"
+        },
+        "disable_signup": {
+          "label": "साइनअप अक्षम करें",
+          "description": "नए उपयोगकर्ताओं को साइन अप करने से रोकें. केवल आमंत्रित उपयोगकर्ता ही शामिल हो सकते हैं."
+        }
+      },
+      "login": {
+        "sso_enabled": "आपके डोमेन के लिए {प्रदाता} सक्षम है",
+        "sso_redirect_error": "SSO साइन-इन ग़लत कॉन्फ़िगर किया गया है. कृपया अपने एपीआई सर्वर पर PUBLIC_SERVER_URL सेट करें।",
+        "sso_required": "कृपया एसएसओ के साथ साइन इन करें। पासवर्ड लॉगिन अक्षम है.",
+        "sign_in_with_sso": "{प्रदाता} के साथ साइन इन करें",
+        "email_password_disabled": "ईमेल/पासवर्ड लॉगिन अक्षम है. कृपया एसएसओ का उपयोग करें.",
+        "email_password_disabled_message": "इस संगठन के लिए ईमेल/पासवर्ड लॉगिन अक्षम है।",
+        "google_auth_disabled": "Google प्रमाणीकरण अक्षम है.",
+        "signup_disabled_error": "इस संगठन के लिए साइनअप अक्षम है. कृपया अपने व्यवस्थापक से संपर्क करें."
+      },
+      "tabs": {
+        "general": "सामान्य",
+        "sso": "एसएसओ",
+        "token_auth": "टोकन प्रामाणिक"
+      }
+    },
+    "token_auth": {
+      "heading": "टोकन प्रामाणिक",
+      "description": "उपयोगकर्ताओं को अपने ऐप से JWT के साथ साइन इन करने दें—किसी पासवर्ड की आवश्यकता नहीं है। एक हस्ताक्षरित रहस्य उत्पन्न करें और अल्पकालिक जेडब्ल्यूटी जारी करने के लिए इसे अपने बैकएंड में उपयोग करें।",
+      "status": "स्थिति",
+      "active": "सक्रिय",
+      "inactive": "निष्क्रिय",
+      "secret_last4": "गुप्त (अंतिम 4):",
+      "created_at": "बनाया गया",
+      "generate": "रहस्य उत्पन्न करें",
+      "rotate": "गुप्त घुमाएँ",
+      "delete": "टोकन प्रमाणीकरण हटाएँ",
+      "delete_confirm": "क्या आप वाकई टोकन प्रमाणीकरण हटाना चाहते हैं? इस एक्शन को वापस नहीं किया जा सकता।",
+      "activate": "सक्षम करें",
+      "deactivate": "अक्षम करें",
+      "secret_shown_once": "इस रहस्य को अभी सहेजें. इसे दोबारा नहीं दिखाया जाएगा.",
+      "integration_guide": "एकीकरण मार्गदर्शिका",
+      "integration_description": "गुप्त के साथ एक JWT पर हस्ताक्षर करें और उपयोगकर्ताओं को टोकन-एक्सचेंज URL पर रीडायरेक्ट करें।",
+      "no_config": "कोई टोकन प्रमाणीकरण कॉन्फ़िगर नहीं किया गया. आरंभ करने के लिए एक हस्ताक्षर रहस्य उत्पन्न करें।",
+      "actions_menu": "टोकन प्रमाणीकरण क्रियाएँ"
     }
   },
   "profileMenu": {

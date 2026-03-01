@@ -160,6 +160,15 @@ export type TNewTagAssignment = typeof schema.tagAssignment.$inferInsert;
 export type TExerciseTemplate = typeof schema.exerciseTemplate.$inferSelect;
 export type TNewExerciseTemplate = typeof schema.exerciseTemplate.$inferInsert;
 
+export type TOrganizationAuthPolicy = typeof schema.organizationAuthPolicy.$inferSelect;
+export type TNewOrganizationAuthPolicy = typeof schema.organizationAuthPolicy.$inferInsert;
+
+export type TOrganizationSsoConfig = typeof schema.organizationSsoConfig.$inferSelect;
+export type TNewOrganizationSsoConfig = typeof schema.organizationSsoConfig.$inferInsert;
+
+export type TOrganizationTokenAuth = typeof schema.organizationTokenAuth.$inferSelect;
+export type TNewOrganizationTokenAuth = typeof schema.organizationTokenAuth.$inferInsert;
+
 export type TCourseType = (typeof schema.courseType.enumValues)[number];
 
 export type TLocale = (typeof schema.locale.enumValues)[number];
@@ -169,3 +178,5 @@ export type TPlan = (typeof schema.plan.enumValues)[number];
 export type TCourseInviteEventType = (typeof schema.courseInviteEventType.enumValues)[number];
 
 export type TOrganizationInviteEventType = (typeof schema.organizationInviteEventType.enumValues)[number];
+
+export type TSsoProvider = (typeof schema.organizationSsoProviderType.enumValues)[number];

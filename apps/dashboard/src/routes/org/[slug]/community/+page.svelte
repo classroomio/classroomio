@@ -11,7 +11,7 @@
   <title>Community - ClassroomIO</title>
 </svelte:head>
 
-<Page.Root class="w-full">
+<Page.Root class="mx-auto w-full max-w-3xl">
   <Page.Header>
     <Page.HeaderContent>
       <Page.Title>{$t('community.title')}</Page.Title>

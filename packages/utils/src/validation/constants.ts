@@ -1,3 +1,5 @@
+import { QUESTION_TYPE_IDS } from '@cio/question-types';
+
 /**
  * Validation Constants
  *
@@ -17,10 +19,6 @@ export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'ima
 
 /**
  * Question Type Constants
- * These match the question_type table in the database
+ * These match canonical question type ids.
  */
-export const QUESTION_TYPE = {
-  RADIO: 1,
-  CHECKBOX: 2,
-  TEXTAREA: 3
-} as const;
+export const QUESTION_TYPE = QUESTION_TYPE_IDS;

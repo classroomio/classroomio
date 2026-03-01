@@ -1,39 +1,40 @@
 <script lang="ts">
   import * as Select from '@cio/ui/base/select';
   import TrashIcon from '@lucide/svelte/icons/trash';
-  import CirclePlusIcon from '@lucide/svelte/icons/circle-plus';
 
   import {
     questionnaire,
     deleteConfirmation,
     questionnaireValidation,
-    handleAddOption,
-    handleRemoveOption,
     handleRemoveQuestion,
-    handleCode,
-    handleAnswerSelect,
-    addDynamicValue
+    handleCode
   } from './store';
   import { preventDefault } from '$lib/utils/functions/svelte';
   import { exerciseApi } from '$features/course/api';
   import { courseApi } from '$features/course/api';
-  import { QUESTION_TYPE } from '@cio/utils/validation/constants';
   import { ContentType } from '@cio/utils/constants/content';
-  import { QUESTION_TYPES } from '$features/ui/question/constants';
+  import { PREMIUM_QUESTION_TYPE_KEYS, QUESTION_TYPES } from '$features/ui/question/constants';
   import { Button } from '@cio/ui/base/button';
+  import { ExerciseQuestion } from '@cio/ui';
 
   import OrderModal from './order-modal.svelte';
   import { t } from '$lib/utils/functions/translations';
   import * as Dialog from '@cio/ui/base/dialog';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
-  import { CheckboxField } from '@cio/ui/custom/checkbox-field';
-  import { RadioItem } from '@cio/ui/custom/radio-item';
-  import * as RadioGroup from '@cio/ui/base/radio-group';
-  import { InputField } from '@cio/ui/custom/input-field';
   import DeleteConfirmationModal from './delete-confirmation.svelte';
-  import { CircleCheckIcon } from '$features/ui/icons';
   import { QuestionContainer } from '$features/course/components';
+  import { uploadImage } from '$lib/utils/services/upload';
+  import {
+    getQuestionTypeOptionById,
+    questionTypeSupportsOptions,
+    toExerciseQuestionModel
+  } from './question-type-utils';
+  import { QUESTION_TYPE_KEY } from '@cio/question-types';
+  import { getExerciseQuestionLabels } from './question-labels';
+  import { isFreePlan } from '$lib/utils/store/org';
+  import { openUpgradeModal } from '$lib/utils/functions/org';
+  import { PremiumIcon } from '@cio/ui/custom/moving-icons';
 
   const initialQuestionsLength = $questionnaire.questions.length;
 
@@ -48,6 +49,7 @@
   let questionIdToDelete = $state(null);
   let isDeleting = $state(false);
   let errors = $derived($questionnaireValidation);
+  const questionLabels = $derived(getExerciseQuestionLabels());
 
   function shouldScrollToLast(questionId, questions) {
     const [lastQuestion] = questions.slice(-1);
@@ -70,6 +72,104 @@
 
   function getQuestionErrorMsg(errors, question, errorKey) {
     return errors[question.id] ? errors[question.id][errorKey] : null;
+  }
+
+  function getQuestionTypeLabel(questionType) {
+    if (!questionType) return t.get('course.navItem.lessons.exercises.all_exercises.edit_mode.select_type');
+    if (questionType.labelKey) return t.get(questionType.labelKey);
+    return questionType.label;
+  }
+
+  function makeDefaultOption() {
+    return {
+      id: `${new Date().getTime()}-form`,
+      label: '',
+      value: '',
+      isCorrect: false
+    };
+  }
+
+  function makeTrueFalseOptions(correctValue = true) {
+    const ts = Date.now();
+    return [
+      { id: `${ts}-true-form`, label: 'True', value: 'true', isCorrect: correctValue },
+      { id: `${ts}-false-form`, label: 'False', value: 'false', isCorrect: !correctValue }
+    ];
+  }
+
+  function onQuestionTypeChange(questionId: string | number, value: string) {
+    if (!value) return;
+
+    const nextQuestionType = getQuestionTypeOptionById(Number(value));
+    const nextQuestionTypeKey = nextQuestionType.key;
+
+    questionnaire.update((q) => {
+      const idx = q.questions.findIndex((qu) => String(qu.id) === String(questionId));
+      if (idx === -1) return q;
+
+      const current = q.questions[idx];
+      let nextOptions = current.options ?? [];
+
+      if (nextQuestionTypeKey === QUESTION_TYPE_KEY.TRUE_FALSE) {
+        const correctValue = (current.settings as { correctValue?: boolean })?.correctValue ?? true;
+        nextOptions = makeTrueFalseOptions(correctValue);
+      } else if (questionTypeSupportsOptions(nextQuestionTypeKey)) {
+        const hasActiveOptions = nextOptions.some((option) => !option.deletedAt);
+        if (!hasActiveOptions) {
+          nextOptions = [...nextOptions, makeDefaultOption()];
+        }
+      } else {
+        nextOptions = [];
+      }
+
+      const next = [...q.questions];
+      next[idx] = {
+        ...current,
+        questionType: nextQuestionType,
+        questionTypeId: nextQuestionType.id,
+        options: nextOptions,
+        isDirty: true
+      };
+
+      return { ...q, questions: next };
+    });
+  }
+
+  function onSharedQuestionChange(questionId: string | number, nextQuestion) {
+    questionnaire.update((q) => {
+      const idx = q.questions.findIndex((qu) => String(qu.id) === String(questionId));
+      if (idx === -1) return q;
+
+      const current = q.questions[idx];
+      const mappedOptions = Array.isArray(nextQuestion.options)
+        ? nextQuestion.options.map((option, index) => {
+            const optionId = option.id ?? current.options?.[index]?.id ?? `${new Date().getTime()}-${index}-form`;
+            const optionLabel = option.label ?? '';
+
+            return {
+              id: optionId,
+              label: optionLabel,
+              value: option.value ?? optionLabel,
+              isCorrect: option.isCorrect ?? false,
+              settings:
+                option.settings && typeof option.settings === 'object' && !Array.isArray(option.settings)
+                  ? { ...option.settings }
+                  : undefined
+            };
+          })
+        : (current.options ?? []);
+
+      const next = [...q.questions];
+      next[idx] = {
+        ...current,
+        title: nextQuestion.title,
+        settings: nextQuestion.settings ?? {},
+        options: mappedOptions,
+        isDirty: true
+      };
+
+      return { ...q, questions: next };
+    });
   }
 
   async function handleDelete() {
@@ -118,20 +218,6 @@
   </Dialog.Content>
 </Dialog.Root>
 
-{#snippet optionActions(question, option)}
-  <div data-name="option-action" class="ml-2 flex items-center gap-2">
-    <IconButton onclick={handleRemoveOption(question.id, option.id)}>
-      <TrashIcon size={18} />
-    </IconButton>
-    <IconButton
-      onclick={handleAnswerSelect(question.id, option.id)}
-      class={option.isCorrect ? 'fill-green-500! text-green-500!' : ''}
-    >
-      <CircleCheckIcon size={18} filled={option.isCorrect} />
-    </IconButton>
-  </div>
-{/snippet}
-
 <div class="mb-20 w-full">
   {#if Object.values(errors).length}
     <div class="mb-4 flex w-full justify-center">
@@ -142,7 +228,7 @@
     {#each $questionnaire.questions as question, index}
       {#if !question.deletedAt}
         <QuestionContainer
-          key={question.deletedAt}
+          key={String(question.id ?? `new-${index}`)}
           onClose={onInitDeleteClicked(question.id)}
           scrollToQuestion={shouldScrollToLast(question.id, $questionnaire.questions)}
           bind:points={question.points}
@@ -152,41 +238,6 @@
             question.isDirty = true;
           }}
         >
-          <div class="flex items-center justify-between">
-            <div class="mr-5 w-3/5">
-              <InputField
-                placeholder={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.question')}
-                bind:value={question.title}
-                isRequired={true}
-                onchange={() => {
-                  question.isDirty = true;
-                }}
-              />
-            </div>
-
-            <Select.Root
-              type="single"
-              value={question.questionType.toString()}
-              onValueChange={(value) => {
-                if (!value) return;
-                const id = parseInt(value);
-
-                question.questionType = QUESTION_TYPES.find((q) => q.id === id) ?? QUESTION_TYPES[0];
-                question.questionTypeId = question.questionType.id;
-                question.isDirty = true;
-              }}
-            >
-              <Select.Trigger class="w-[180px]">
-                {question?.questionType?.label ? $t(question.questionType.label) : 'Select type'}
-              </Select.Trigger>
-              <Select.Content>
-                {#each QUESTION_TYPES as type}
-                  <Select.Item value={type.id.toString()} label={$t(type.label)} />
-                {/each}
-              </Select.Content>
-            </Select.Root>
-          </div>
-
           {#if typeof question.code === 'string'}
             <div class="my-3 flex w-3/5 items-center justify-between">
               <TextareaField
@@ -201,55 +252,54 @@
           {/if}
 
           <div class="mt-2 flex flex-col">
-            {#if QUESTION_TYPE.RADIO === question.questionType.id}
-              <RadioGroup.Root value="" name={question.title || 'radio-name'}>
-                {#each $questionnaire.questions[index]?.options || [] as option}
-                  {#if !option.deletedAt}
-                    <RadioItem
-                      isEditable={true}
-                      value={option.value || option.id?.toString() || ''}
-                      bind:label={option.label}
-                      onchange={addDynamicValue(question.id, option.id)}
-                    >
-                      {@render optionActions(question, option)}
-                    </RadioItem>
-                  {/if}
-                {/each}
-              </RadioGroup.Root>
-            {:else if QUESTION_TYPE.CHECKBOX === question.questionType.id}
-              <div class="flex flex-col gap-3">
-                {#each $questionnaire.questions[index]?.options || [] as option}
-                  {#if !option.deletedAt}
-                    <CheckboxField
-                      isEditable={true}
-                      name={question?.name || 'checkbox-name'}
-                      bind:label={option.label}
-                      onchange={addDynamicValue(question.id, option.id)}
-                    >
-                      {@render optionActions(question, option)}
-                    </CheckboxField>
-                  {/if}
-                {/each}
-              </div>
-            {/if}
-
-            {#if QUESTION_TYPE.TEXTAREA === question.questionType.id}
-              <TextareaField bind:value={question.value} disabled={true} />
-            {/if}
+            <ExerciseQuestion.QuestionRenderer
+              showContainer={false}
+              contract={{
+                mode: 'edit',
+                question: toExerciseQuestionModel(question),
+                labels: questionLabels,
+                onImageUpload: uploadImage
+              }}
+              onQuestionChange={(nextQuestion) => onSharedQuestionChange(question.id, nextQuestion)}
+            >
+              {#snippet questionTypeSelect()}
+                <Select.Root
+                  type="single"
+                  value={question.questionTypeId?.toString()}
+                  onValueChange={(value) => onQuestionTypeChange(question.id, value)}
+                >
+                  <Select.Trigger class="w-[180px]">
+                    {getQuestionTypeLabel(question?.questionType)}
+                  </Select.Trigger>
+                  <Select.Content>
+                    {#each QUESTION_TYPES as type}
+                      {#if $isFreePlan && PREMIUM_QUESTION_TYPE_KEYS.has(type.key)}
+                        <button
+                          type="button"
+                          class="ui:flex ui:w-full ui:cursor-pointer ui:select-none ui:items-center ui:gap-2 ui:rounded-sm ui:py-1.5 ui:pl-2 ui:pr-8 ui:text-sm ui:outline-hidden ui:hover:bg-accent ui:hover:text-accent-foreground ui:relative"
+                          onclick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            openUpgradeModal();
+                          }}
+                          title={$t('course.navItem.lessons.exercises.all_exercises.edit_mode.premium_question_type')}
+                        >
+                          <PremiumIcon size={16} class="ui:text-blue-700 ui:dark:text-white ui:shrink-0" />
+                          <span>{getQuestionTypeLabel(type)}</span>
+                        </button>
+                      {:else}
+                        <Select.Item value={type.id.toString()} label={getQuestionTypeLabel(type)} />
+                      {/if}
+                    {/each}
+                  </Select.Content>
+                </Select.Root>
+              {/snippet}
+            </ExerciseQuestion.QuestionRenderer>
 
             {#if getQuestionErrorMsg(errors, question, 'option')}
               <p class="text-sm text-red-500">{getQuestionErrorMsg(errors, question, 'option')}</p>
             {/if}
           </div>
-
-          {#if QUESTION_TYPE.TEXTAREA !== question.questionType.id}
-            <div class="mt-3 flex items-center">
-              <Button variant="outline" onclick={handleAddOption(question.id)}>
-                <CirclePlusIcon size={16} />
-                {$t('course.navItem.lessons.exercises.all_exercises.edit_mode.option')}
-              </Button>
-            </div>
-          {/if}
         </QuestionContainer>
       {/if}
     {/each}

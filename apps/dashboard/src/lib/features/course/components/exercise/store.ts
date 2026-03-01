@@ -1,4 +1,4 @@
-import { QUESTION_TEMPLATE, QUESTION_TYPES } from '$features/ui/question/constants';
+import { DEFAULT_QUESTION_TYPE, QUESTION_TEMPLATE } from '$features/ui/question/constants';
 
 import type { Question } from '$features/course/types';
 import { STATUS } from './constants';
@@ -21,9 +21,11 @@ const initAnswerState = {
   finalTotalGrade: 0,
   currentQuestionIndex: 0,
   isFinished: false,
-  progressValue: 100,
+  progressValue: 0,
   status: STATUS.PENDING,
-  comment: ''
+  comment: '',
+  /** Set when exercise is finished so route knows not to overwrite questionnaire */
+  exerciseId: null as string | null
 };
 
 export const questionnaireMetaData = writable(initAnswerState);
@@ -53,12 +55,20 @@ export function clearQuestionnaireValidation() {
 }
 
 export function reset() {
-  questionnaireMetaData.update((metaData) => {
-    metaData.answers = {};
-    metaData.currentQuestionIndex = 0;
-    metaData.isFinished = false;
-    return metaData;
-  });
+  questionnaireMetaData.update((metaData) => ({
+    ...metaData,
+    answers: {},
+    scores: {},
+    grades: {},
+    currentQuestionIndex: 0,
+    isFinished: false,
+    exerciseId: null,
+    totalPossibleGrade: 0,
+    finalTotalGrade: 0,
+    status: STATUS.PENDING,
+    comment: '',
+    progressValue: 100
+  }));
 
   clearQuestionnaireValidation();
 }
@@ -112,8 +122,8 @@ export function handleAddQuestion() {
           value: '',
           points: 0,
           order: questions.length,
-          questionType: QUESTION_TYPES[0],
-          questionTypeId: QUESTION_TYPES[0].id,
+          questionType: DEFAULT_QUESTION_TYPE,
+          questionTypeId: DEFAULT_QUESTION_TYPE.id,
           options: [
             {
               id: '1-form',

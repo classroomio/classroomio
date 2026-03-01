@@ -63,6 +63,7 @@ class AppInitApi extends BaseApi {
     if (!this.data?.success || !this.session) {
       return;
     }
+    console.log('this.data', this.data);
 
     user.update((_user) => ({
       ..._user,

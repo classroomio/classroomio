@@ -959,10 +959,6 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       throw new AppError('This invite is restricted to specific email domains', ErrorCodes.UNAUTHORIZED, 403);
     }
 
-    if ((allowedEmails.length > 0 || allowedDomains.length > 0) && user.emailVerified === false) {
-      throw new AppError('Please verify your email before accepting this invite', ErrorCodes.UNAUTHORIZED, 403);
-    }
-
     const [orgMember] = await tx
       .select({
         id: schema.organizationmember.id

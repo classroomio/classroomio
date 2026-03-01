@@ -32,7 +32,15 @@
   import Analytics from '$features/course/components/exercise/submissions/index.svelte';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import UpdateDescription from '$features/course/components/exercise/update-description.svelte';
+  import { ContentNavigationActions } from '$features/course/components/lesson';
   import { RoleBasedSecurity } from '$features/ui';
+  import { getOrderedNavigableContent } from '$features/course/utils/content';
+  import { Empty } from '@cio/ui/custom/empty';
+  import VideoIcon from '@lucide/svelte/icons/video';
+  import {
+    getQuestionTypeId,
+    getQuestionTypeOptionById
+  } from '$features/course/components/exercise/question-type-utils';
 
   interface Props {
     exerciseId?: string;
@@ -109,7 +117,15 @@
           ...q,
           isTitleDirty: false,
           isDescriptionDirty: false,
-          questions: exerciseApi.exercise?.questions || q.questions
+          questions:
+            exerciseApi.exercise?.questions?.map((question) => {
+              const questionType = getQuestionTypeOptionById(getQuestionTypeId(question));
+              return {
+                ...question,
+                questionTypeId: questionType.id,
+                questionType
+              };
+            }) || q.questions
         }));
         patchExerciseListItemLocally();
         snackbar.success('snackbar.exercise.success');
@@ -156,6 +172,13 @@
       });
     }
   });
+
+  const exerciseContentItem = $derived(
+    getOrderedNavigableContent(courseApi.course).find(
+      (item) => item.type === ContentType.Exercise && item.id === exerciseId
+    )
+  );
+  const isExerciseUnlocked = $derived(exerciseContentItem?.isUnlocked ?? false);
 </script>
 
 <Page.Header>
@@ -163,64 +186,78 @@
     <Page.Title>{$questionnaire.title || 'Exercise'}</Page.Title>
   </Page.HeaderContent>
   <Page.Action>
-    <RoleBasedSecurity allowedRoles={[1, 2]}>
-      {#if selectedTab === 'questions'}
-        <div class="right-0 flex w-full items-center justify-end">
-          <div class="flex items-center gap-2">
-            <Button class="mr-2" onclick={handleSave} loading={isSaving}>
-              {$t('course.navItem.lessons.exercises.all_exercises.save')}
-            </Button>
-            <IconButton
-              onclick={() => (preview = !preview)}
-              tooltip={preview
-                ? $t('course.navItem.lessons.exercises.all_exercises.view_mode.edit')
-                : $t('course.navItem.lessons.exercises.all_exercises.preview')}
-              tooltipSide="bottom"
-            >
-              {#if preview}
-                <PencilIcon size={20} />
-              {:else}
-                <EyeIcon size={20} />
-              {/if}
-            </IconButton>
-            <IconButton
-              onclick={handleAddQuestion}
-              tooltip={$t('course.navItem.lessons.exercises.all_exercises.add_question')}
-              tooltipSide="bottom"
-            >
-              <CirclePlusIcon size={20} />
-            </IconButton>
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger>
-                <Button variant="ghost" size="icon" class="h-8 w-8">
-                  <EllipsisVerticalIcon class="h-5 w-5" />
-                  <span class="sr-only">Open menu</span>
-                </Button>
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Content align="end">
-                <DropdownMenu.Item onclick={() => ($questionnaireOrder.open = true)}>
-                  {$t('course.navItem.lessons.exercises.all_exercises.reorder')}
-                </DropdownMenu.Item>
-                <DropdownMenu.Separator />
-                <DropdownMenu.Item
-                  class="text-red-600 focus:text-red-600 dark:text-red-400"
-                  onclick={() => (shouldDeleteExercise = true)}
-                >
-                  {$t('course.navItem.lessons.exercises.all_exercises.delete_exercise')}
-                </DropdownMenu.Item>
-              </DropdownMenu.Content>
-            </DropdownMenu.Root>
-          </div>
-        </div>
+    <div class="flex items-center gap-2">
+      {#if $globalStore.isStudent && courseApi.course?.id && exerciseId}
+        <ContentNavigationActions courseId={courseApi.course.id} {exerciseId} />
       {/if}
-    </RoleBasedSecurity>
+
+      <RoleBasedSecurity allowedRoles={[1, 2]}>
+        {#if selectedTab === 'questions'}
+          <div class="right-0 flex w-full items-center justify-end">
+            <div class="flex items-center gap-2">
+              <Button class="mr-2" onclick={handleSave} loading={isSaving}>
+                {$t('course.navItem.lessons.exercises.all_exercises.save')}
+              </Button>
+              <IconButton
+                onclick={() => (preview = !preview)}
+                tooltip={preview
+                  ? $t('course.navItem.lessons.exercises.all_exercises.view_mode.edit')
+                  : $t('course.navItem.lessons.exercises.all_exercises.preview')}
+                tooltipSide="bottom"
+              >
+                {#if preview}
+                  <PencilIcon size={20} />
+                {:else}
+                  <EyeIcon size={20} />
+                {/if}
+              </IconButton>
+              <IconButton
+                onclick={handleAddQuestion}
+                tooltip={$t('course.navItem.lessons.exercises.all_exercises.add_question')}
+                tooltipSide="bottom"
+              >
+                <CirclePlusIcon size={20} />
+              </IconButton>
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger>
+                  <Button variant="ghost" size="icon" class="h-8 w-8">
+                    <EllipsisVerticalIcon class="h-5 w-5" />
+                    <span class="sr-only">Open menu</span>
+                  </Button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content align="end">
+                  <DropdownMenu.Item onclick={() => ($questionnaireOrder.open = true)}>
+                    {$t('course.navItem.lessons.exercises.all_exercises.reorder')}
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Separator />
+                  <DropdownMenu.Item
+                    class="text-red-600 focus:text-red-600 dark:text-red-400"
+                    onclick={() => (shouldDeleteExercise = true)}
+                  >
+                    {$t('course.navItem.lessons.exercises.all_exercises.delete_exercise')}
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
+            </div>
+          </div>
+        {/if}
+      </RoleBasedSecurity>
+    </div>
   </Page.Action>
 </Page.Header>
 
 <Page.Body>
   {#snippet child()}
     <div class="overflow-x-hidden">
-      {#if selectedTab === 'questions'}
+      {#if $globalStore.isStudent && exerciseId && !isExerciseUnlocked}
+        <Empty
+          title={$t('course.navItem.lessons.content_locked_title')}
+          description={$t('course.navItem.lessons.content_locked_description')}
+          icon={VideoIcon}
+          variant="page"
+          class="text-center"
+        />
+      {:else if selectedTab === 'questions'}
         <RoleBasedSecurity allowedRoles={[1, 2]}>
           <UpdateDescription {preview} />
         </RoleBasedSecurity>

@@ -129,7 +129,7 @@
         {:else}
           <div class="flex items-center gap-2">
             <Vote
-              value={communityApi.question.votes}
+              value={communityApi.question.votes ?? 0}
               upVote={() => {
                 if (voted.question || !communityApi.question) return;
                 voted.question = true;
@@ -254,7 +254,8 @@
           <TextEditor
             placeholder="Give an answer"
             class="h-48!"
-            bind:content={communityApi.comment}
+            content={communityApi.comment}
+            onChange={(content) => (communityApi.comment = content)}
             onReady={(editor) => (commentEditor = editor)}
           />
 

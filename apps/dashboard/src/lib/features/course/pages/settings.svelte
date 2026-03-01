@@ -301,7 +301,7 @@
         {/if}
       </Field.Field>
       <Field.Field>
-        <div class="relative z-20 w-fit">
+        <div class="relative w-fit">
           <img
             style="min-width:280px; min-height:200px"
             alt="Course cover"

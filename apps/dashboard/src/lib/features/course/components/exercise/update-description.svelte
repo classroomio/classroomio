@@ -19,44 +19,13 @@
       return acc;
     }, 0);
   }
+
+  $inspect('$questionnaire', $questionnaire);
 </script>
 
 <div class="mb-5 {!preview ? 'px-6' : 'px-2'}">
   <QuestionContainer isTitle={true}>
-    {#if !preview}
-      <InputField
-        placeholder={$t('course.navItem.lessons.exercises.all_exercises.description.title')}
-        bind:value={$questionnaire.title}
-        className="mb-2"
-        onchange={() => ($questionnaire.isTitleDirty = true)}
-      />
-      <InputField
-        label={$t('course.navItem.lessons.exercises.all_exercises.view_mode.due')}
-        className="w-50"
-        type="datetime-local"
-        value={$questionnaire.dueBy ?? ''}
-        onchange={(e) => {
-          $questionnaire.dueBy = e.currentTarget.value;
-          $questionnaire.isDueByDirty = true;
-        }}
-      />
-
-      <div class="mt-3">
-        <p class="mb-1">
-          {$t('course.navItem.lessons.exercises.all_exercises.description.heading')}
-        </p>
-
-        <TextEditor
-          content={$questionnaire.description || ''}
-          onChange={(html) => {
-            $questionnaire.isDescriptionDirty = true;
-            $questionnaire.description = html;
-          }}
-          editorClass="max-h-[100px]"
-          placeholder={$t('course.navItem.lessons.exercises.all_exercises.description.describe')}
-        />
-      </div>
-    {:else if preview}
+    {#if preview}
       <h2 class="my-1">{$questionnaire.title}</h2>
       <div class="flex items-center">
         <p class="mx-2 dark:text-white">
@@ -86,6 +55,41 @@
           $questionnaire.description || $t('course.navItem.lessons.exercises.all_exercises.description.no')
         )}
       </article>
+    {:else}
+      <InputField
+        placeholder={$t('course.navItem.lessons.exercises.all_exercises.description.title')}
+        bind:value={$questionnaire.title}
+        className="mb-2"
+        onchange={() => ($questionnaire.isTitleDirty = true)}
+      />
+      <InputField
+        label={$t('course.navItem.lessons.exercises.all_exercises.view_mode.due')}
+        className="w-50"
+        type="datetime-local"
+        value={$questionnaire.dueBy ?? ''}
+        onchange={(e) => {
+          $questionnaire.dueBy = e.currentTarget.value;
+          $questionnaire.isDueByDirty = true;
+        }}
+      />
+
+      <div class="mt-3">
+        <p class="mb-1">
+          {$t('course.navItem.lessons.exercises.all_exercises.description.heading')}
+        </p>
+
+        {#key $questionnaire.description}
+          <TextEditor
+            content={$questionnaire.description || ''}
+            onChange={(html) => {
+              $questionnaire.isDescriptionDirty = true;
+              $questionnaire.description = html;
+            }}
+            editorClass="max-h-[100px]"
+            placeholder={$t('course.navItem.lessons.exercises.all_exercises.description.describe')}
+          />
+        {/key}
+      </div>
     {/if}
   </QuestionContainer>
 </div>

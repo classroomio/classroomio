@@ -86,7 +86,7 @@
       {#each items as item (item.id)}
         <div
           animate:flip={{ duration: flipDurationMs }}
-          class="ui:border-primary flex items-center rounded-md border p-4"
+          class="ui:border-primary flex items-center gap-2 rounded-md border p-4 [&_svg]:shrink-0"
         >
           {#if item.type === 1}
             <SquareCheckIcon size={16} />

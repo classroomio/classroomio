@@ -1,24 +1,31 @@
 <script lang="ts">
+  import { get } from 'svelte/store';
   import { untrack } from 'svelte';
   import { fly } from 'svelte/transition';
   import { courseApi } from '$features/course/api';
   import { questionnaire, questionnaireMetaData } from './store';
   import Preview from './preview.svelte';
-  import { RadioQuestion, CheckboxQuestion, TextareaQuestion } from '$features/ui';
+  import { ExerciseQuestion } from '@cio/ui';
+  import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
+  import { Spinner } from '@cio/ui/base/spinner';
   import { RoleBasedSecurity } from '$features/ui';
   import { Empty } from '@cio/ui/custom/empty';
   import FileQuestionIcon from '@lucide/svelte/icons/file-question';
   import { Progress } from '@cio/ui/base/progress';
   import { removeDuplicate } from '$lib/utils/functions/removeDuplicate';
-  import { QUESTION_TYPE } from '@cio/utils/validation/constants';
+  import { getExerciseQuestionContractKey } from '@cio/question-types';
   import { STATUS } from './constants';
-  import { getPropsForQuestion, filterOutDeleted, wasCorrectAnswerSelected } from './functions';
+  import { filterOutDeleted, wasCorrectAnswerSelected } from './functions';
   import { formatAnswers, getGroupMemberId } from '$features/course/utils/functions';
   import { exerciseApi, submissionApi } from '$features/course/api';
   import { profile } from '$lib/utils/store/user';
   import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import { t } from '$lib/utils/functions/translations';
+  import { snackbar } from '$features/ui/snackbar/store';
+  import { ContentType } from '@cio/utils/constants/content';
+  import { getQuestionTypeKey, questionTypeSupportsOptions, toExerciseQuestionModel } from './question-type-utils';
+  import { getExerciseQuestionLabels } from './question-labels';
 
   interface Props {
     preview?: boolean;
@@ -29,12 +36,95 @@
   let { preview = false, exerciseId = '', isFetchingExercise = false }: Props = $props();
 
   let submission;
-  let hasSubmission = false;
+  let hasSubmission = $state(false);
+  let isSubmitting = $state(false);
+  let isCheckingSubmission = $state(false);
   let isLoadingAutoSavedData = $state(false);
   let alreadyCheckedAutoSavedData = $state(false);
+  let prevExerciseId = $state('');
+  const questionLabels = $derived(getExerciseQuestionLabels());
 
   function handleStart() {
-    $questionnaireMetaData.currentQuestionIndex += 1;
+    questionnaireMetaData.update((m) => ({ ...m, currentQuestionIndex: m.currentQuestionIndex + 1 }));
+  }
+
+  function normalizeAnswerValue(previousValue, nextValue) {
+    if (typeof nextValue === 'string' || typeof nextValue === 'number' || typeof nextValue === 'boolean') {
+      return nextValue;
+    }
+
+    if (Array.isArray(nextValue)) {
+      const previousList = Array.isArray(previousValue) ? previousValue : [];
+      return removeDuplicate([...previousList, ...nextValue]);
+    }
+
+    if (nextValue && typeof nextValue === 'object') {
+      return nextValue;
+    }
+
+    return previousValue;
+  }
+
+  function mapAnswerToApiPayload(question, answerValue) {
+    const questionId = Number(question.id);
+    if (Number.isNaN(questionId)) return null;
+
+    const isOptionBasedQuestion = questionTypeSupportsOptions(getQuestionTypeKey(question));
+
+    if (isOptionBasedQuestion) {
+      const optionValues = Array.isArray(answerValue) ? answerValue : [answerValue];
+      const rawValue = optionValues[0];
+
+      if (rawValue !== undefined && rawValue !== null && rawValue !== '') {
+        let optionId = Number.NaN;
+        const normalizedRawValue = String(rawValue).trim().toLowerCase();
+
+        if (question.options?.length) {
+          const option = question.options.find((item) => {
+            const candidateId = item.id != null ? String(item.id) : '';
+            const candidateValue = item.value != null ? String(item.value) : '';
+            const candidateLabel = item.label != null ? String(item.label) : '';
+
+            return (
+              candidateId === String(rawValue) ||
+              candidateValue === String(rawValue) ||
+              candidateLabel === String(rawValue) ||
+              candidateValue.trim().toLowerCase() === normalizedRawValue ||
+              candidateLabel.trim().toLowerCase() === normalizedRawValue
+            );
+          });
+          optionId = option?.id != null ? Number(option.id) : Number.NaN;
+        }
+
+        if (Number.isNaN(optionId)) {
+          optionId = Number(rawValue);
+        }
+
+        if (!Number.isNaN(optionId)) {
+          return { questionId, optionId };
+        }
+      }
+    }
+
+    if (typeof answerValue === 'string') {
+      return { questionId, answer: answerValue };
+    }
+
+    if (typeof answerValue === 'number' || typeof answerValue === 'boolean') {
+      return { questionId, answer: String(answerValue) };
+    }
+
+    if (Array.isArray(answerValue)) {
+      if (answerValue.length === 0) return null;
+
+      return { questionId, answer: JSON.stringify(answerValue) };
+    }
+
+    if (answerValue && typeof answerValue === 'object') {
+      return { questionId, answer: JSON.stringify(answerValue) };
+    }
+
+    return null;
   }
 
   async function onSubmit(id, value) {
@@ -42,72 +132,70 @@
 
     const { answers } = $questionnaireMetaData;
     const { questions } = $questionnaire;
-    const prevAnswer = answers[id] || [];
+    const prevAnswer = answers[id];
+    const formattedAnswer = normalizeAnswerValue(prevAnswer, value);
 
-    const formattedAnswer = typeof value === 'string' ? value : removeDuplicate([...prevAnswer, ...(value || [])]);
+    const newAnswers = { ...answers, [id]: formattedAnswer };
+    questionnaireMetaData.update((m) => ({ ...m, answers: newAnswers }));
 
-    $questionnaireMetaData.answers = {
-      ...answers,
-      [id]: formattedAnswer
-    };
-
-    const isCorrect = wasCorrectAnswerSelected(currentQuestion, $questionnaireMetaData.answers);
-    console.log({ isCorrect });
-
-    const isFinished = !questions[$questionnaireMetaData.currentQuestionIndex];
-    console.log(`isFinished`, isFinished);
-    console.log(`$questionnaireMetaData.currentQuestionIndex`, $questionnaireMetaData.currentQuestionIndex);
+    const isCorrect = wasCorrectAnswerSelected(currentQuestion, newAnswers);
+    const currentIndex = $questionnaireMetaData.currentQuestionIndex;
+    const isFinished = !questions[currentIndex];
 
     if (isCorrect) {
       setTimeout(async () => {
-        $questionnaireMetaData.currentQuestionIndex += 1;
-        localStorage.setItem(`autosave-exercise-${exerciseId}`, JSON.stringify($questionnaireMetaData));
+        questionnaireMetaData.update((m) => ({ ...m, currentQuestionIndex: m.currentQuestionIndex + 1 }));
+        const updated = get(questionnaireMetaData);
+        localStorage.setItem(`autosave-exercise-${exerciseId}`, JSON.stringify(updated));
 
-        // If last question send to server
+        // If last question send to server (guard against double submit e.g. double-click)
         if (isFinished) {
-          localStorage.removeItem(`autosave-exercise-${exerciseId}`);
-          $questionnaireMetaData.status = 1;
-          $questionnaireMetaData.totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
-          $questionnaireMetaData.grades = {};
+          if (isSubmitting) return;
+          isSubmitting = true;
 
-          $questionnaireMetaData.comment = '';
+          localStorage.removeItem(`autosave-exercise-${exerciseId}`);
+          const totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
 
           // Transform answers to API format
-          const answers = Object.entries($questionnaireMetaData.answers)
-            .map(([questionName, value]) => {
-              const question = questions.find((q) => q.name === questionName);
+          const answersForApi = Object.entries(updated.answers)
+            .map(([questionKey, val]) => {
+              const question = questions.find(
+                (item) => getExerciseQuestionContractKey(toExerciseQuestionModel(item)) === questionKey
+              );
               if (!question) return null;
-
-              const questionId = Number(question.id);
-              if (isNaN(questionId)) return null;
-
-              if (typeof value === 'string') {
-                return { questionId, answer: value };
-              } else if (Array.isArray(value) && value.length > 0) {
-                // For multiple choice, use the first option ID (assuming value is option IDs)
-                const optionId = Number(value[0]);
-                return isNaN(optionId) ? null : { questionId, optionId };
-              }
-              return null;
+              return mapAnswerToApiPayload(question, val);
             })
             .filter((answer) => answer !== null) as Array<{ questionId: number; optionId?: number; answer?: string }>;
 
-          await exerciseApi.submit(courseApi.course?.id!, exerciseId, answers);
+          if (answersForApi.length === 0) {
+            isSubmitting = false;
+            snackbar.error(t.get('course.navItem.lessons.exercises.all_exercises.view_mode.answers_required'));
+            return;
+          }
+
+          await exerciseApi.submit(courseApi.course?.id!, exerciseId, answersForApi);
+
+          if (exerciseApi.success) {
+            questionnaireMetaData.update((m) => ({
+              ...m,
+              status: 1,
+              totalPossibleGrade,
+              grades: {},
+              comment: '',
+              isFinished: true,
+              exerciseId
+            }));
+            courseApi.updateContentItem(exerciseId, ContentType.Exercise, { isComplete: true });
+          } else {
+            isSubmitting = false;
+          }
         }
       }, 1000);
     }
-
-    // if (moveToNextQuestion) {
-    //   $questionnaireMetaData.currentQuestionIndex += 1;
-    //   localStorage.setItem(
-    //     `autosave-exercise-${exerciseId}`,
-    //     JSON.stringify($questionnaireMetaData)
-    //   );
-    // }
   }
 
   function onPrevious() {
-    $questionnaireMetaData.currentQuestionIndex -= 1;
+    questionnaireMetaData.update((m) => ({ ...m, currentQuestionIndex: m.currentQuestionIndex - 1 }));
   }
 
   function getProgressValue(currentQuestionIndex) {
@@ -130,35 +218,47 @@
       return;
     }
 
-    if (hasSubmission) return;
-
     hasSubmission = true;
+    isCheckingSubmission = true;
 
-    const submittedBy = getGroupMemberId(people, profileId);
-    await submissionApi.list(courseId, exerciseId, submittedBy);
-    const data = submissionApi.data;
+    try {
+      const submittedBy = getGroupMemberId(people, profileId);
+      await submissionApi.list(courseId, exerciseId, submittedBy);
+      const data = submissionApi.data;
 
-    if (Array.isArray(data) && data.length) {
-      submission = data[0];
+      if (Array.isArray(data) && data.length) {
+        submission = data[0];
 
-      $questionnaireMetaData.answers = formatAnswers({
-        questions: $questionnaire.questions,
-        answers: submission.answers
-      });
+        const totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
+        let finalTotalGrade = 0;
+        const grades = submission.answers.reduce(
+          (acc: Record<string, number>, answer: { question_id: number; point: number }) => {
+            acc[answer.question_id] = answer.point;
+            finalTotalGrade += answer.point;
+            return acc;
+          },
+          {}
+        );
 
-      $questionnaireMetaData.totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
-
-      $questionnaireMetaData.currentQuestionIndex = $questionnaire.questions.length;
-      $questionnaireMetaData.isFinished = true;
-      $questionnaireMetaData.status = submission.status_id;
-      $questionnaireMetaData.finalTotalGrade = 0;
-      $questionnaireMetaData.comment = submission.feedback;
-      $questionnaireMetaData.grades = submission.answers.reduce((acc, answer) => {
-        acc[answer.question_id] = answer.point;
-        $questionnaireMetaData.finalTotalGrade += answer.point;
-
-        return acc;
-      }, {});
+        questionnaireMetaData.update((m) => ({
+          ...m,
+          answers: formatAnswers({
+            questions: $questionnaire.questions,
+            answers: submission.answers
+          }),
+          totalPossibleGrade,
+          currentQuestionIndex: $questionnaire.questions.length,
+          isFinished: true,
+          status: submission.status_id,
+          finalTotalGrade,
+          comment: submission.feedback,
+          grades,
+          exerciseId
+        }));
+        courseApi.updateContentItem(exerciseId, ContentType.Exercise, { isComplete: true });
+      }
+    } finally {
+      isCheckingSubmission = false;
     }
   }
 
@@ -170,11 +270,35 @@
     if (stringifiedQuestionnaireMetaData) {
       const autoSavedData = JSON.parse(stringifiedQuestionnaireMetaData);
       if (autoSavedData) {
-        $questionnaireMetaData = autoSavedData;
+        questionnaireMetaData.set(autoSavedData);
       }
     }
     isLoadingAutoSavedData = false;
     alreadyCheckedAutoSavedData = true;
+  }
+
+  function hasAnswerValue(answerValue) {
+    if (answerValue === null || answerValue === undefined) return false;
+    if (typeof answerValue === 'string') return answerValue.trim().length > 0;
+    if (Array.isArray(answerValue)) return answerValue.length > 0;
+    return true;
+  }
+
+  function onSharedAnswerChange(answerValue) {
+    if (!sharedCurrentQuestionKey) return;
+
+    questionnaireMetaData.update((metaData) => ({
+      ...metaData,
+      answers: {
+        ...metaData.answers,
+        [sharedCurrentQuestionKey]: answerValue
+      }
+    }));
+  }
+
+  function onSharedNext() {
+    if (!sharedCurrentQuestionKey) return;
+    onSubmit(sharedCurrentQuestionKey, sharedCurrentAnswer);
   }
 
   $effect(() => {
@@ -187,32 +311,49 @@
   const currentQuestion = $derived($questionnaire.questions[$questionnaireMetaData.currentQuestionIndex - 1]);
   const isExerciseLoaded = $derived(alreadyCheckedAutoSavedData && $questionnaire.questions.length > 0);
   const isFinished = $derived(isExerciseLoaded && $questionnaireMetaData.currentQuestionIndex > 0 && !currentQuestion);
-  const renderProps = $derived(
-    getPropsForQuestion(
-      $questionnaire.questions,
-      currentQuestion,
-      $questionnaireMetaData,
-      $questionnaireMetaData.currentQuestionIndex,
-      onSubmit,
-      onPrevious,
-      preview
-    )
+  const sharedQuestionModel = $derived(currentQuestion ? toExerciseQuestionModel(currentQuestion) : null);
+  const sharedCurrentQuestionKey = $derived(
+    sharedQuestionModel ? getExerciseQuestionContractKey(sharedQuestionModel) : null
   );
+  const sharedCurrentAnswer = $derived(
+    sharedCurrentQuestionKey ? $questionnaireMetaData.answers[sharedCurrentQuestionKey] : undefined
+  );
+  const canGoNextForSharedQuestion = $derived(hasAnswerValue(sharedCurrentAnswer));
 
   $effect(() => {
+    const finished = isFinished;
+
     untrack(() => {
-      $questionnaireMetaData.isFinished = isFinished;
+      $questionnaireMetaData.isFinished = finished;
     });
   });
 
   $effect(() => {
+    const progress = progressValue;
+
     untrack(() => {
-      $questionnaireMetaData.progressValue = progressValue;
+      $questionnaireMetaData.progressValue = progress;
     });
   });
 
   $effect(() => {
-    !isFetchingExercise && checkForSubmission(courseApi.group.people, $profile.id, courseApi.course?.id);
+    if (isFetchingExercise || hasSubmission) return;
+
+    checkForSubmission(courseApi.group.people, $profile.id, courseApi.course?.id);
+  });
+
+  $effect(() => {
+    if (prevExerciseId === exerciseId) return;
+
+    if (!!prevExerciseId) {
+      submission = undefined;
+      hasSubmission = false;
+      isSubmitting = false;
+      isCheckingSubmission = false;
+      alreadyCheckedAutoSavedData = false;
+    }
+
+    prevExerciseId = exerciseId;
   });
 </script>
 
@@ -226,84 +367,96 @@
   </RoleBasedSecurity>
 {:else if !$questionnaire.questions.length}
   <Empty
-    title="No question added for this exercise"
-    description="Click the Edit button to add."
+    title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.no_question')}
     icon={FileQuestionIcon}
     variant="page"
   >
     <RoleBasedSecurity allowedRoles={[1, 2]}>
       <p class="ui:text-primary text-center text-sm">
-        Click the <span class="font-semibold">Edit</span> button to add.
+        {$t('course.navItem.lessons.exercises.all_exercises.view_mode.empty_edit_hint_prefix')}
+
+        <span class="font-semibold">
+          {$t('course.navItem.lessons.exercises.all_exercises.view_mode.edit')}
+        </span>
+
+        {$t('course.navItem.lessons.exercises.all_exercises.view_mode.empty_edit_hint_suffix')}
       </p>
     </RoleBasedSecurity>
   </Empty>
 {:else if $questionnaireMetaData.currentQuestionIndex === 0}
   <RoleBasedSecurity allowedRoles={[3]}>
     <div>
-      <h2 class="my-1">{$questionnaire.title}</h2>
+      {#if isCheckingSubmission}
+        <div class="flex flex-col items-center justify-center gap-4 py-12">
+          <Spinner class="size-10" />
+          <p class="ui:text-muted-foreground text-sm">
+            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.checking_submission')}
+          </p>
+        </div>
+      {:else}
+        <h2 class="my-1">{$questionnaire.title}</h2>
 
-      <div class="flex items-center">
-        <p class="mx-2 dark:text-white">
-          <strong>{$questionnaire.questions.length}</strong> questions
-        </p>
-        |
-        <p class="mx-2 dark:text-white">
-          <strong>{getTotalPossibleGrade($questionnaire.questions)}</strong> points.
-        </p>
-        |
-        <p class="mx-2 dark:text-white">All required</p>
-        {#if $questionnaire.dueBy}
+        <div class="flex items-center">
+          <p class="mx-2 dark:text-white">
+            <strong>{$questionnaire.questions.length}</strong>
+            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.questions')}
+          </p>
           |
           <p class="mx-2 dark:text-white">
-            <strong>Due by:</strong>
-            {new Date($questionnaire.dueBy).toLocaleString()}
+            <strong>{getTotalPossibleGrade($questionnaire.questions)}</strong>
+            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.points')}.
           </p>
-        {/if}
-      </div>
+          |
+          <p class="mx-2 dark:text-white">{$t('course.navItem.lessons.exercises.all_exercises.view_mode.all')}</p>
+          {#if $questionnaire.dueBy}
+            |
+            <p class="mx-2 dark:text-white">
+              <strong>{$t('course.navItem.lessons.exercises.all_exercises.view_mode.due')}:</strong>
+              {new Date($questionnaire.dueBy).toLocaleString()}
+            </p>
+          {/if}
+        </div>
 
-      <article class="preview prose prose-sm sm:prose mt-3 p-2">
-        {@html sanitizeHtml($questionnaire.description || 'No desription')}
-      </article>
+        <article class="preview prose prose-sm sm:prose mt-3 p-2">
+          {@html sanitizeHtml(
+            $questionnaire.description || $t('course.navItem.lessons.exercises.all_exercises.view_mode.no_description')
+          )}
+        </article>
 
-      <Button onclick={handleStart} type="button" class="float-right my-5">Start</Button>
+        <Button onclick={handleStart} type="button" class="float-right my-5">
+          {$t('course.navItem.lessons.exercises.all_exercises.view_mode.start')}
+        </Button>
+      {/if}
     </div>
   </RoleBasedSecurity>
 {:else if $questionnaireMetaData.isFinished}
   {#if !isLoadingAutoSavedData}
     <div class="flex items-center justify-between">
       <div class="flex w-full flex-col items-start lg:flex-row lg:items-center lg:space-x-4">
-        <h2 class="text-xl font-normal">{$questionnaire.title}</h2>
-
         {#if STATUS.GRADED === $questionnaireMetaData.status}
-          <span
-            class="status-text bg-green-700 px-2 py-1 text-center text-white"
-            title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_graded')}
-          >
+          <Badge variant="success" title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_graded')}>
             {$t('course.navItem.lessons.exercises.all_exercises.view_mode.graded')}
-          </span>
+          </Badge>
         {:else if courseApi.course?.type === 'SELF_PACED'}
-          <span
-            class="status-text bg-green-700 px-2 py-1 text-center text-white"
+          <Badge
+            variant="success"
             title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_submitted')}
           >
             {$t('course.navItem.lessons.exercises.all_exercises.view_mode.submitted')}
-          </span>
+          </Badge>
         {:else}
-          <span
-            class="status-text bg-yellow-600 px-2 py-1 text-center text-white"
+          <Badge
+            variant="warning"
             title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_pending')}
           >
             {$t('course.navItem.lessons.exercises.all_exercises.view_mode.pending')}
-          </span>
+          </Badge>
         {/if}
       </div>
       {#if STATUS.GRADED === $questionnaireMetaData.status && courseApi.course?.type !== 'SELF_PACED'}
-        <span
-          class="border-border flex h-10 w-10 items-center justify-center rounded-full border bg-[#F5F8FE] p-6 text-sm font-semibold text-[#2751DA]"
-          title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_graded')}
-        >
+        <Badge variant="outline" title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_graded')}>
           {$questionnaireMetaData.finalTotalGrade}/{$questionnaireMetaData.totalPossibleGrade}
-        </span>
+        </Badge>
       {/if}
     </div>
 
@@ -323,19 +476,31 @@
   {#key currentQuestion.id}
     <!-- <div transition:fade id="question"> -->
     <div in:fly={{ x: 500, duration: 1000 }} id="question">
-      {#if QUESTION_TYPE.RADIO === currentQuestion.questionType.id}
-        <RadioQuestion {...renderProps} key={currentQuestion.id} hideGrading={true} />
-      {:else if QUESTION_TYPE.CHECKBOX === currentQuestion.questionType.id}
-        <CheckboxQuestion {...renderProps} key={currentQuestion.id} hideGrading={true} />
-      {:else if QUESTION_TYPE.TEXTAREA === currentQuestion.questionType.id}
-        <TextareaQuestion {...renderProps} key={currentQuestion.id} hideGrading={true} />
+      {#if sharedQuestionModel}
+        <ExerciseQuestion.QuestionRenderer
+          contract={{
+            mode: 'take',
+            question: sharedQuestionModel,
+            answer: sharedCurrentAnswer,
+            labels: questionLabels,
+            disabled: isSubmitting
+          }}
+          onAnswerChange={onSharedAnswerChange}
+        />
+
+        <div class="mt-4">
+          <ExerciseQuestion.QuestionNavigation
+            canGoBack={$questionnaireMetaData.currentQuestionIndex > 1}
+            canGoNext={canGoNextForSharedQuestion && !isSubmitting}
+            isLast={$questionnaireMetaData.currentQuestionIndex === $questionnaire.questions.length}
+            previousLabel={t.get('course.navItem.lessons.exercises.all_exercises.previous')}
+            nextLabel={t.get('course.navItem.lessons.exercises.all_exercises.next')}
+            finishLabel={t.get('course.navItem.lessons.exercises.all_exercises.finish')}
+            {onPrevious}
+            onNext={onSharedNext}
+          />
+        </div>
       {/if}
     </div>
   {/key}
 {/if}
-
-<style>
-  .status-text {
-    width: fit-content;
-  }
-</style>

@@ -101,7 +101,7 @@
                   <Avatar.Root class="size-8">
                     <Avatar.Image
                       src={student.profile.avatar_url ? student.profile.avatar_url : '/logo-192.png'}
-                      alt={student.profile.fullname ? student.profile.fullname : 'Student'}
+                      alt={student.profile.fullname ? student.profile.fullname : $t('analytics.student')}
                     />
                     <Avatar.Fallback>{shortenName(student.profile.fullname) || 'S'}</Avatar.Fallback>
                   </Avatar.Root>
