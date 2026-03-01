@@ -35,7 +35,9 @@
       playerInstance = new PlyrConstructor(containerElement, {
         controls,
         autoplay,
-        ratio: '16:9'
+        ratio: '16:9',
+        iconUrl: '/plyr.svg',
+        iconPrefix: 'plyr'
       });
       return;
     }
@@ -44,7 +46,9 @@
       playerInstance = new PlyrConstructor(videoElement, {
         controls,
         autoplay,
-        ratio: '16:9'
+        ratio: '16:9',
+        iconUrl: '/plyr.svg',
+        iconPrefix: 'plyr'
       });
     }
   });
