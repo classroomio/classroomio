@@ -46,7 +46,7 @@ import {
 
 import type { TLocale } from '@cio/db/types';
 import { get } from 'svelte/store';
-import { mediaManagerApi } from '$features/media-manager/api';
+import { mediaApi } from '$features/media/api';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { profile } from '$lib/utils/store/user';
 import { snackbar } from '$features/ui/snackbar/store';
@@ -700,7 +700,7 @@ export class LessonApi extends BaseApiWithErrors {
     const removedVideo = videos[videoIndex] as { assetId?: string } | undefined;
 
     if (removedVideo?.assetId && this.lesson.id) {
-      await mediaManagerApi.detachAsset(removedVideo.assetId, {
+      await mediaApi.detachAsset(removedVideo.assetId, {
         targetType: 'lesson',
         targetId: this.lesson.id,
         slotType: 'lesson_video',
@@ -725,7 +725,7 @@ export class LessonApi extends BaseApiWithErrors {
     const removedDocument = documents[documentIndex] as { assetId?: string } | undefined;
 
     if (removedDocument?.assetId && this.lesson.id) {
-      await mediaManagerApi.detachAsset(removedDocument.assetId, {
+      await mediaApi.detachAsset(removedDocument.assetId, {
         targetType: 'lesson',
         targetId: this.lesson.id,
         slotType: 'lesson_document',

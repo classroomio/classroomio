@@ -7,13 +7,15 @@ COMPOSE_FILE="${ROOT_DIR}/docker/docker-compose.yaml"
 PROJECT_NAME="classroomio"
 ENV_FILE="${ROOT_DIR}/.env"
 BUILD_IMAGES=true
+COMPOSE_PROFILES="--profile minio"
 
 print_usage() {
   cat <<'USAGE'
-Usage: ./run-docker-full-stack.sh [--no-build]
+Usage: ./run-docker-full-stack.sh [--no-build] [--no-minio]
 
 Options:
   --no-build  Start containers without rebuilding images.
+  --no-minio  Exclude MinIO (object storage). By default MinIO is included.
   -h, --help  Show this help message.
 USAGE
 }
@@ -22,6 +24,10 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --no-build)
       BUILD_IMAGES=false
+      shift
+      ;;
+    --no-minio)
+      COMPOSE_PROFILES=""
       shift
       ;;
     -h|--help)
@@ -151,6 +157,27 @@ ensure_secure_auth_tokens() {
   fi
 }
 
+ensure_minio_env() {
+  if [[ ! -f "${ENV_FILE}" ]]; then
+    touch "${ENV_FILE}"
+  fi
+
+  local endpoint
+  endpoint="$(get_env_value OBJECT_STORAGE_ENDPOINT)"
+
+  if [[ -z "${endpoint}" || "${endpoint}" =~ ^[[:space:]]*$ ]]; then
+    upsert_env_value MINIO_ROOT_USER "minioadmin"
+    upsert_env_value MINIO_ROOT_PASSWORD "minioadmin"
+    upsert_env_value OBJECT_STORAGE_ENDPOINT "http://minio:9000"
+    upsert_env_value OBJECT_STORAGE_PUBLIC_ENDPOINT "http://localhost:9000"
+    upsert_env_value OBJECT_STORAGE_ACCESS_KEY_ID "minioadmin"
+    upsert_env_value OBJECT_STORAGE_SECRET_ACCESS_KEY "minioadmin"
+    upsert_env_value OBJECT_STORAGE_FORCE_PATH_STYLE "true"
+    upsert_env_value OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL "http://localhost:9000/media"
+    echo "Set MinIO object storage env vars in .env"
+  fi
+}
+
 if ! command -v docker >/dev/null 2>&1; then
   echo "Error: docker is not installed or not on PATH."
   exit 1
@@ -158,11 +185,18 @@ fi
 
 ensure_secure_auth_tokens
 
+if [[ "${COMPOSE_PROFILES}" == *"minio"* ]]; then
+  ensure_minio_env
+fi
+
 echo "Starting ClassroomIO Docker full stack..."
+if [[ "${COMPOSE_PROFILES}" != "" ]]; then
+  echo "Including MinIO (object storage, default)..."
+fi
 if [[ "${BUILD_IMAGES}" == "true" ]]; then
-  docker compose --env-file "${ENV_FILE}" -p "${PROJECT_NAME}" -f "${COMPOSE_FILE}" up --build -d
+  docker compose --env-file "${ENV_FILE}" -p "${PROJECT_NAME}" -f "${COMPOSE_FILE}" ${COMPOSE_PROFILES} up --build -d
 else
-  docker compose --env-file "${ENV_FILE}" -p "${PROJECT_NAME}" -f "${COMPOSE_FILE}" up -d
+  docker compose --env-file "${ENV_FILE}" -p "${PROJECT_NAME}" -f "${COMPOSE_FILE}" ${COMPOSE_PROFILES} up -d
 fi
 
 echo

@@ -37,7 +37,7 @@ import type { DetachAssetRequest } from '../utils/types';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { snackbar } from '$features/ui/snackbar/store';
 
-export class MediaManagerApi extends BaseApiWithErrors {
+export class MediaApi extends BaseApiWithErrors {
   assets = $state<OrganizationAsset[]>([]);
   storageSummary = $state<AssetStorageSummary | null>(null);
   pagination = $state<{
@@ -391,4 +391,4 @@ export class MediaManagerApi extends BaseApiWithErrors {
   }
 }
 
-export const mediaManagerApi = new MediaManagerApi();
+export const mediaApi = new MediaApi();

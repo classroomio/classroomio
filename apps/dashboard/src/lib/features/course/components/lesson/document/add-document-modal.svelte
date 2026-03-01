@@ -9,7 +9,7 @@
   import { UpgradeBanner, CloseButton } from '$features/ui';
   import { isFreePlan } from '$lib/utils/store/org';
   import { lessonApi } from '$features/course/api';
-  import { mediaManagerApi } from '$features/media-manager/api';
+  import { mediaApi } from '$features/media/api';
   import type { Lesson } from '$features/course/utils/types';
   import * as Dialog from '@cio/ui/base/dialog';
   import * as FileDropZone from '@cio/ui/custom/file-drop-zone';
@@ -124,7 +124,7 @@
 
       let assetId: string | undefined;
       if (lessonId) {
-        const asset = await mediaManagerApi.registerUploadedLessonDocument({
+        const asset = await mediaApi.registerUploadedLessonDocument({
           lessonId,
           position: lessonDocumentPosition,
           fileKey,
@@ -135,7 +135,7 @@
         });
         assetId = asset?.id;
       } else {
-        const asset = await mediaManagerApi.createAsset({
+        const asset = await mediaApi.createAsset({
           kind: 'document',
           provider: 'upload',
           storageProvider: 's3',

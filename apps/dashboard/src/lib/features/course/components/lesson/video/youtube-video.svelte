@@ -9,7 +9,7 @@
   import type { LessonVideoType } from '$features/course/utils/types';
   import { copyToClipboard, removeVideo } from '$lib/utils/functions/formatYoutubeVideo';
   import { lessonApi } from '$features/course/api';
-  import { mediaManagerApi } from '$features/media-manager/api';
+  import { mediaApi } from '$features/media/api';
 
   interface Props {
     lessonId?: string;
@@ -24,7 +24,7 @@
     const newVideos = await Promise.all(
       validLinks.map(async (link = '', index) => {
         const createdAt = new Date().toISOString();
-        const metadata = await mediaManagerApi.getYouTubeMetadata(link);
+        const metadata = await mediaApi.getYouTubeMetadata(link);
         const sourceUrl = metadata?.sourceUrl ?? link;
         const title = metadata?.title ?? $t('media_manager.provider.youtube');
         const videoMetadata = {
@@ -35,7 +35,7 @@
           duration: metadata?.durationSeconds ?? undefined
         };
 
-        const asset = await mediaManagerApi.createAsset({
+        const asset = await mediaApi.createAsset({
           kind: 'video',
           provider: 'youtube',
           storageProvider: 'external',
@@ -48,7 +48,7 @@
         });
 
         if (asset && lessonId) {
-          await mediaManagerApi.attachAsset(asset.id, {
+          await mediaApi.attachAsset(asset.id, {
             targetType: 'lesson',
             targetId: lessonId,
             slotType: 'lesson_video',
@@ -81,7 +81,7 @@
 <p class="mt-4 pl-2 text-sm">
   {$t('course.navItem.lessons.materials.tabs.video.add_video.videos_added')}:
   <strong>
-    {lessonApi.lesson?.videos?.filter((v) => v.type === 'youtube' && isValidYouTubeLink(v.link)).length || 0}
+    {lessonApi.lesson?.videos?.filter((v) => v.type === 'youtube' && isValidYoutubeLink(v.link)).length || 0}
   </strong>
 </p>
 <div class="">

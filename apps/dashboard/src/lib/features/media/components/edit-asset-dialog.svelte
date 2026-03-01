@@ -8,7 +8,7 @@
   import { TextareaField } from '@cio/ui/custom/textarea-field';
 
   import type { TAssetUpdate } from '@cio/utils/validation/assets';
-  import type { OrganizationAsset } from '$features/media-manager/utils';
+  import type { OrganizationAsset } from '$features/media/utils';
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { uploadImage } from '$lib/utils/services/upload';

@@ -1,3 +1,4 @@
+import { t } from '$lib/utils/functions/translations';
 import type { OrganizationAsset } from './types';
 
 type LessonVideoType = 'upload' | 'youtube' | 'generic';
@@ -57,4 +58,32 @@ export function mapAssetToLessonVideo(
       createdAt: asset.createdAt ?? undefined
     }
   };
+}
+
+export function getAssetDisplayName(asset: OrganizationAsset): string {
+  return asset.title?.trim() || asset.storageKey || asset.id;
+}
+
+export function getTargetTypeLabel(targetType: string): string {
+  const keyMap: Record<string, string> = {
+    lesson: 'media_manager.usage.target.lesson',
+    exercise: 'media_manager.usage.target.exercise',
+    question: 'media_manager.usage.target.question'
+  };
+  return t.get(keyMap[targetType] ?? 'media_manager.usage.target.unknown');
+}
+
+export function formatUsageDate(value: string | null | undefined): string {
+  if (!value) {
+    return t.get('media_manager.common.not_available');
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return t.get('media_manager.common.not_available');
+  }
+  return new Intl.DateTimeFormat(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  }).format(date);
 }

@@ -1,19 +1,26 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { BUCKET_NAME, MAX_IMAGE_SIZE } from '@api/constants/upload';
+import { MAX_IMAGE_SIZE } from '@api/constants/upload';
 
 import { ALLOWED_IMAGE_TYPES } from '@cio/utils/validation';
-import { env } from '@api/config/env';
+import { getStorageConfig } from '@api/config/storage';
 import { generateFileKey } from '@api/utils/upload';
 import { uploadToS3 } from '@api/utils/s3';
 
 /**
- * Uploads an image file to S3 and returns the public URL
+ * Uploads an image file to object storage and returns the public URL
  * @param file - The image file to upload
  * @returns Object containing the public URL and file key
  */
 export async function uploadImage(file: File) {
-  if (!env.CLOUDFLARE_IMAGE_BUCKET_DOMAIN) {
-    throw new AppError(new Error('Image bucket domain not configured'), ErrorCodes.INTERNAL_ERROR, 500);
+  const config = getStorageConfig();
+  if (!config.mediaPublicBaseUrl) {
+    throw new AppError(
+      new Error(
+        'Media public URL not configured. Set OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL or CLOUDFLARE_IMAGE_BUCKET_DOMAIN.'
+      ),
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
   }
 
   // Validate file type
@@ -41,9 +48,9 @@ export async function uploadImage(file: File) {
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 
-  // Upload to S3
+  // Upload to object storage
   const uploadResult = await uploadToS3({
-    Bucket: BUCKET_NAME.MEDIA,
+    Bucket: config.bucketMedia,
     Key: fileKey,
     Body: buffer,
     ContentType: file.type,
@@ -55,7 +62,8 @@ export async function uploadImage(file: File) {
   }
 
   // Construct public URL
-  const publicUrl = `${env.CLOUDFLARE_IMAGE_BUCKET_DOMAIN}/${fileKey}`;
+  const baseUrl = config.mediaPublicBaseUrl.replace(/\/$/, '');
+  const publicUrl = `${baseUrl}/${fileKey}`;
 
   return {
     url: publicUrl,

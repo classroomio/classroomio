@@ -25,10 +25,14 @@ Notes:
 Run from the repository root:
 
 ```bash
+# Full stack with MinIO (object storage) - default
 ./run-docker-full-stack.sh
 
 # Skip image rebuild and only start containers
 ./run-docker-full-stack.sh --no-build
+
+# Exclude MinIO (video/document/media uploads will not work)
+./run-docker-full-stack.sh --no-minio
 ```
 
 Verify:
@@ -108,13 +112,20 @@ SMTP_SENDER=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 
-CLOUDFLARE_BUCKET_DOMAIN=
-CLOUDFLARE_ACCESS_KEY=
-CLOUDFLARE_SECRET_ACCESS_KEY=
-CLOUDFLARE_ACCOUNT_ID=
-CLOUDFLARE_RENDERING_API_KEY=
-
 UNSPLASH_API_KEY=
+```
+
+Object storage (MinIO included by default; script auto-sets these):
+
+```bash
+MINIO_ROOT_USER=minioadmin
+MINIO_ROOT_PASSWORD=minioadmin
+OBJECT_STORAGE_ENDPOINT=http://minio:9000
+OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000
+OBJECT_STORAGE_ACCESS_KEY_ID=minioadmin
+OBJECT_STORAGE_SECRET_ACCESS_KEY=minioadmin
+OBJECT_STORAGE_FORCE_PATH_STYLE=true
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=http://localhost:9000/media
 ```
 
 Important:
@@ -160,6 +171,71 @@ If SMTP is not configured, logs may include `ECONNREFUSED 127.0.0.1:465`. This d
 ```bash
 lsof -nP -iTCP:3081 -sTCP:LISTEN
 lsof -nP -iTCP:3082 -sTCP:LISTEN
+```
+
+## MinIO (S3-compatible storage)
+
+MinIO is **included by default** when you run `./run-docker-full-stack.sh`. The script auto-configures env vars and starts MinIO + minio-init (creates videos, documents, media buckets).
+
+To start MinIO manually (e.g. if you used `--no-minio` previously):
+
+```bash
+docker compose -f docker/docker-compose.yaml --profile minio up -d
+```
+
+### Access URLs
+
+| Purpose | URL | Notes |
+|---------|-----|-------|
+| API | `http://localhost:9000` | Used by the ClassroomIO API for S3-compatible storage |
+| Web UI | `http://localhost:9001` | Login to browse buckets, manage objects (default: `minioadmin` / `minioadmin`) |
+
+> **Security:** Change the default credentials (`minioadmin` / `minioadmin`) in production. Set `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD` in `.env`, and use the same values for `OBJECT_STORAGE_ACCESS_KEY_ID` and `OBJECT_STORAGE_SECRET_ACCESS_KEY`.
+
+### Environment variables
+
+Set in `.env`:
+
+```bash
+# MinIO container credentials (must match OBJECT_STORAGE_* below)
+MINIO_ROOT_USER=minioadmin
+MINIO_ROOT_PASSWORD=minioadmin
+
+# When API runs in Docker: use minio (Docker service name)
+OBJECT_STORAGE_ENDPOINT=http://minio:9000
+OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000
+OBJECT_STORAGE_ACCESS_KEY_ID=minioadmin
+OBJECT_STORAGE_SECRET_ACCESS_KEY=minioadmin
+OBJECT_STORAGE_FORCE_PATH_STYLE=true
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=http://localhost:9000/media
+```
+
+> **API in Docker:** Use `OBJECT_STORAGE_ENDPOINT=http://minio:9000` so the API container can reach MinIO on the Docker network. Use `OBJECT_STORAGE_ENDPOINT=http://localhost:9000` when the API runs locally (e.g. `pnpm api:dev`).
+
+`MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD` configure the MinIO container. Set them to the same values as `OBJECT_STORAGE_ACCESS_KEY_ID` and `OBJECT_STORAGE_SECRET_ACCESS_KEY` when using the built-in MinIO service.
+
+### MinIO troubleshooting
+
+#### Web UI not loading
+
+MinIO assigns a **random port** for the Web Console by default. If the Web UI at `http://localhost:9001` does not load, your container may have been created before we pinned the console port.
+
+**Fix:** Remove the old container and recreate it:
+
+```bash
+docker rm -f cio-minio
+docker compose -f docker/docker-compose.yaml --profile minio up -d
+```
+
+Our `docker-compose.yaml` uses `--console-address ":9001"` so the Web UI consistently listens on port 9001. Your data is stored in the `minio-data` volume and is preserved across container recreation.
+
+#### Container name conflict
+
+If you see `The container name "/cio-minio" is already in use`, remove the existing container first:
+
+```bash
+docker rm -f cio-minio
+docker compose -f docker/docker-compose.yaml --profile minio up -d
 ```
 
 ## Related Docs

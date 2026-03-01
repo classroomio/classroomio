@@ -104,7 +104,7 @@
 </script>
 
 <Dialog.Root {open}>
-  <Dialog.Content class="w-4/5 max-w-[500px] p-4" showCloseButton={false}>
+  <Dialog.Content class="w-4/5 max-w-[500px] p-4" showCloseButton={false} interactOutsideBehavior="ignore">
     <Dialog.Header>
       <Dialog.Title>{$t('verify_email_modal.heading')}</Dialog.Title>
     </Dialog.Header>

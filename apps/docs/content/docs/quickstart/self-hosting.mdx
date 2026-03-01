@@ -20,7 +20,7 @@ The quickest and easiest way to deploy both the api and dashboard is by using ou
 
 1. SMTP values - For sending emails on the api
 2. PostgreSQL + Redis - For the API and database layer
-3. Cloudflare R2 (optional) - Video uploads on the API
+3. Object storage (MinIO for Docker self-hosting, or Cloudflare R2 for hosted) - Video, document, and image uploads
 
 ## SMTP Setup
 
@@ -53,11 +53,81 @@ PRIVATE_DATABASE_URL=
 REDIS_URL=
 ```
 
-## Cloudflare R2
+## Object Storage (Videos, Documents, Images)
 
-We use Cloudflare R2 for video uploading within the course builder. It is not required though and you can do without it in the app if you don't need video upload.
+ClassroomIO supports two object storage backends for video uploads, document uploads, and media (images/thumbnails):
 
-<Callout title="Work in Progress">This section is a work in progress.</Callout>
+### Option A: MinIO (S3-compatible, default for Docker self-hosting)
+
+For Docker self-hosting, MinIO is included by default. Use MinIO or any S3-compatible storage for on-premise deployments:
+
+```zsh title="env"
+OBJECT_STORAGE_ENDPOINT=http://localhost:9000
+OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000
+OBJECT_STORAGE_ACCESS_KEY_ID=minioadmin
+OBJECT_STORAGE_SECRET_ACCESS_KEY=minioadmin
+OBJECT_STORAGE_FORCE_PATH_STYLE=true
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=http://localhost:9000/media
+```
+
+**Docker:** MinIO is included by default when you run `./run-docker-full-stack.sh`. The script auto-configures these. Add to your `.env`:
+
+```zsh title="env"
+# MinIO container credentials (must match OBJECT_STORAGE_* below)
+MINIO_ROOT_USER=minioadmin
+MINIO_ROOT_PASSWORD=minioadmin
+
+# When API runs in Docker: use minio (Docker service name), not localhost
+OBJECT_STORAGE_ENDPOINT=http://minio:9000
+OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000
+OBJECT_STORAGE_ACCESS_KEY_ID=minioadmin
+OBJECT_STORAGE_SECRET_ACCESS_KEY=minioadmin
+OBJECT_STORAGE_FORCE_PATH_STYLE=true
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=http://localhost:9000/media
+```
+
+<Callout type="warn" title="API in Docker">
+When the API runs inside Docker, set `OBJECT_STORAGE_ENDPOINT=http://minio:9000`. From a container, `localhost` refers to the container itself; use the service name `minio` to reach MinIO on the Docker network. When the API runs locally (e.g. `pnpm api:dev`), use `OBJECT_STORAGE_ENDPOINT=http://localhost:9000`.
+</Callout>
+
+When you run `./run-docker-full-stack.sh`, MinIO starts automatically. To start MinIO manually (e.g. if you used `--no-minio`):
+
+```zsh title="Terminal"
+docker compose -f docker/docker-compose.yaml --profile minio up -d
+```
+
+**Access URLs:**
+
+| Purpose | URL |
+|---------|-----|
+| API | http://localhost:9000 |
+| Web UI | http://localhost:9001 (login: `minioadmin` / `minioadmin`) |
+
+<Callout type="error" title="Change default credentials">
+Do not use `minioadmin` / `minioadmin` in production. Set `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD` in `.env`, and use the same values for `OBJECT_STORAGE_ACCESS_KEY_ID` and `OBJECT_STORAGE_SECRET_ACCESS_KEY`.
+</Callout>
+
+<Callout type="warn" title="MinIO Web UI not loading?">
+MinIO uses a random port for the Web Console by default. If the Web UI at http://localhost:9001 does not load, remove the old container and recreate it: `docker rm -f cio-minio` then run the MinIO start command again. See [docker/docs/USAGE.md](https://github.com/classroomio/classroomio/blob/main/docker/docs/USAGE.md#minio-troubleshooting) for full troubleshooting.
+</Callout>
+
+<Callout title="Storage Optional">
+  With Docker, MinIO is included by default. Use `./run-docker-full-stack.sh --no-minio` to exclude it if you don't need video/document uploads.
+</Callout>
+
+### Option B: Cloudflare R2 (hosted deployments)
+
+For hosted deployments (e.g. Railway), Cloudflare R2 can be used. Configure these env vars:
+
+```zsh title="env"
+CLOUDFLARE_ACCOUNT_ID=
+CLOUDFLARE_ACCESS_KEY=
+CLOUDFLARE_SECRET_ACCESS_KEY=
+CLOUDFLARE_BUCKET_DOMAIN=
+CLOUDFLARE_IMAGE_BUCKET_DOMAIN=
+```
+
+See the [Cloudflare Setup](/docs/contributor-guides/cloudflare-setup) guide for R2 bucket and CORS configuration.
 
 ## SSO Configuration
 
@@ -197,7 +267,7 @@ git clone https://github.com/rotimi-best/classroomio.git
 cd classroomio
 ```
 
-2. Start the full stack:
+2. Start the full stack (includes MinIO for object storage by default):
 
 ```zsh title="Terminal"
 ./run-docker-full-stack.sh
@@ -251,3 +321,40 @@ AUTH_COOKIE_DOMAIN=
   `PRIVATE_SERVER_KEY` when missing/insecure. API key middleware for dashboard server-side
   calls validates `PRIVATE_SERVER_KEY`.
 </Callout>
+
+### If PostgreSQL or Docker fails with "No space left on device"
+
+The error `could not write lock file "postmaster.pid": No space left on device` means the disk (or Docker storage) is full. Free space, then restart the stack.
+
+**1. Check disk usage**
+
+```zsh title="Terminal"
+df -h
+docker system df
+```
+
+**2. Free Docker space** (safe — removes unused build cache and images)
+
+```zsh title="Terminal"
+docker builder prune -f
+docker image prune -a -f
+docker container prune -f
+```
+
+**3. If still low on space, remove unused volumes** (only if you do not need data in other projects’ volumes)
+
+```zsh title="Terminal"
+docker volume prune -f
+```
+
+<Callout type="warn" title="Volume prune can delete your data">
+  `docker volume prune` removes volumes not used by any container. If you run it after `docker compose ... down`, it can remove Classroom.io’s `postgres-data`, `redis-data`, and `minio-data`, and you will lose database and object storage data. To free space without touching Classroom.io data, use only the prunes in step 2, or remove specific unused volumes by name.
+</Callout>
+
+**4. Restart the stack**
+
+```zsh title="Terminal"
+./run-docker-full-stack.sh
+```
+
+If the host disk is still full after pruning, free space elsewhere (e.g. large files, old logs, other apps) or increase disk capacity. See [docker/docs/SELF_HOST.md](https://github.com/classroomio/classroomio/blob/main/docker/docs/SELF_HOST.md) for the full self-host runbook.
