@@ -1,15 +1,21 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { getProfileByEmail, getProfileById, updateProfile } from '@cio/db/queries/auth';
 
+import type { OrganizationWithMemberAndPlans } from '@cio/db/queries/organization/types';
 import type { TProfile } from '@cio/db/types';
 import { getOrganizationByProfileId } from '@cio/db/queries/organization';
+
+export type GetAccountDataResult = {
+  profile: TProfile;
+  organizations: OrganizationWithMemberAndPlans[];
+};
 
 /**
  * Fetches account data including profile and organizations for a user
  * @param userId - The user ID to fetch account data for
  * @returns Account data with profile and organizations
  */
-export async function getAccountData(userId: string) {
+export async function getAccountData(userId: string): Promise<GetAccountDataResult> {
   const [profile, organizations] = await Promise.all([getProfileById(userId), getOrganizationByProfileId(userId)]);
 
   if (!profile) {

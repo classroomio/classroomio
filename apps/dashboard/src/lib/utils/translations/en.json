@@ -242,6 +242,7 @@
         "token_auth": "Token Auth"
       },
       "login": {
+        "or_continue_with": "Or continue with email and password",
         "sso_enabled": "{provider} is enabled for your domain",
         "sso_redirect_error": "SSO sign-in is misconfigured. Please set PUBLIC_SERVER_URL to your API server.",
         "sso_required": "Please sign in with SSO. Password login is disabled.",
@@ -1300,6 +1301,7 @@
               "empty_edit_hint_prefix": "Click the ",
               "empty_edit_hint_suffix": " button to add.",
               "answers_required": "Please provide at least one answer before submitting.",
+              "answer_required": "Please answer this question before proceeding.",
               "edit": "Edit",
               "button": "button to add",
               "questions": "questions",
@@ -1441,7 +1443,8 @@
                 },
                 "take": {
                   "selected_file_label": "Selected file",
-                  "upload_button": "Upload"
+                  "upload_button": "Upload",
+                  "download": "Download"
                 },
                 "preview": {
                   "accepted_types_label": "Accepted types",

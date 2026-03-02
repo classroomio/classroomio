@@ -6,15 +6,17 @@
   let { data } = $props();
 </script>
 
-<Page.Header>
-  <Page.HeaderContent>
-    <Page.Title>
-      {$t('course.navItem.attendance.title')}
-    </Page.Title>
-  </Page.HeaderContent>
-</Page.Header>
-<Page.Body>
-  {#snippet child()}
-    <AttendancePage courseId={data.courseId} />
-  {/snippet}
-</Page.Body>
+<Page.Root class="mx-auto flex w-[calc(100vw-var(--sidebar-width))]!">
+  <Page.Header>
+    <Page.HeaderContent>
+      <Page.Title>
+        {$t('course.navItem.attendance.title')}
+      </Page.Title>
+    </Page.HeaderContent>
+  </Page.Header>
+  <Page.Body>
+    {#snippet child()}
+      <AttendancePage courseId={data.courseId} />
+    {/snippet}
+  </Page.Body>
+</Page.Root>

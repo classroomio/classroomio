@@ -2,6 +2,7 @@
   import { get } from 'svelte/store';
   import { untrack } from 'svelte';
   import { fly } from 'svelte/transition';
+  import { cubicInOut } from 'svelte/easing';
   import { courseApi } from '$features/course/api';
   import { questionnaire, questionnaireMetaData } from './store';
   import Preview from './preview.svelte';
@@ -16,7 +17,7 @@
   import { removeDuplicate } from '$lib/utils/functions/removeDuplicate';
   import { getExerciseQuestionContractKey } from '@cio/question-types';
   import { STATUS } from './constants';
-  import { filterOutDeleted, wasCorrectAnswerSelected } from './functions';
+  import { filterOutDeleted } from './functions';
   import { formatAnswers, getGroupMemberId } from '$features/course/utils/functions';
   import { exerciseApi, submissionApi } from '$features/course/api';
   import { profile } from '$lib/utils/store/user';
@@ -42,6 +43,7 @@
   let isLoadingAutoSavedData = $state(false);
   let alreadyCheckedAutoSavedData = $state(false);
   let prevExerciseId = $state('');
+  let slideDirection = $state<'next' | 'prev'>('next');
   const questionLabels = $derived(getExerciseQuestionLabels());
 
   function handleStart() {
@@ -135,66 +137,74 @@
     const prevAnswer = answers[id];
     const formattedAnswer = normalizeAnswerValue(prevAnswer, value);
 
+    if (!hasAnswerValue(formattedAnswer)) {
+      snackbar.error(t.get('course.navItem.lessons.exercises.all_exercises.view_mode.answer_required'));
+      return;
+    }
+
+    const question = questions.find((q) => getExerciseQuestionContractKey(toExerciseQuestionModel(q)) === id);
+    if (question && !mapAnswerToApiPayload(question, formattedAnswer)) {
+      snackbar.error(t.get('course.navItem.lessons.exercises.all_exercises.view_mode.answer_required'));
+      return;
+    }
+
     const newAnswers = { ...answers, [id]: formattedAnswer };
     questionnaireMetaData.update((m) => ({ ...m, answers: newAnswers }));
 
-    const isCorrect = wasCorrectAnswerSelected(currentQuestion, newAnswers);
     const currentIndex = $questionnaireMetaData.currentQuestionIndex;
-    const isFinished = !questions[currentIndex];
+    const isLastQuestion = currentIndex === questions.length;
 
-    if (isCorrect) {
-      setTimeout(async () => {
-        questionnaireMetaData.update((m) => ({ ...m, currentQuestionIndex: m.currentQuestionIndex + 1 }));
-        const updated = get(questionnaireMetaData);
-        localStorage.setItem(`autosave-exercise-${exerciseId}`, JSON.stringify(updated));
+    if (isLastQuestion) {
+      // Stay on last question, show spinner, submit to server
+      if (isSubmitting) return;
+      isSubmitting = true;
 
-        // If last question send to server (guard against double submit e.g. double-click)
-        if (isFinished) {
-          if (isSubmitting) return;
-          isSubmitting = true;
+      const updated = get(questionnaireMetaData);
+      localStorage.removeItem(`autosave-exercise-${exerciseId}`);
+      const totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
 
-          localStorage.removeItem(`autosave-exercise-${exerciseId}`);
-          const totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
+      const answersForApi = Object.entries(updated.answers)
+        .map(([questionKey, val]) => {
+          const question = questions.find(
+            (item) => getExerciseQuestionContractKey(toExerciseQuestionModel(item)) === questionKey
+          );
+          if (!question) return null;
+          return mapAnswerToApiPayload(question, val);
+        })
+        .filter((answer) => answer !== null) as Array<{ questionId: number; optionId?: number; answer?: string }>;
 
-          // Transform answers to API format
-          const answersForApi = Object.entries(updated.answers)
-            .map(([questionKey, val]) => {
-              const question = questions.find(
-                (item) => getExerciseQuestionContractKey(toExerciseQuestionModel(item)) === questionKey
-              );
-              if (!question) return null;
-              return mapAnswerToApiPayload(question, val);
-            })
-            .filter((answer) => answer !== null) as Array<{ questionId: number; optionId?: number; answer?: string }>;
+      if (answersForApi.length === 0) {
+        isSubmitting = false;
+        snackbar.error(t.get('course.navItem.lessons.exercises.all_exercises.view_mode.answers_required'));
+        return;
+      }
 
-          if (answersForApi.length === 0) {
-            isSubmitting = false;
-            snackbar.error(t.get('course.navItem.lessons.exercises.all_exercises.view_mode.answers_required'));
-            return;
-          }
+      await exerciseApi.submit(courseApi.course?.id!, exerciseId, answersForApi);
 
-          await exerciseApi.submit(courseApi.course?.id!, exerciseId, answersForApi);
-
-          if (exerciseApi.success) {
-            questionnaireMetaData.update((m) => ({
-              ...m,
-              status: 1,
-              totalPossibleGrade,
-              grades: {},
-              comment: '',
-              isFinished: true,
-              exerciseId
-            }));
-            courseApi.updateContentItem(exerciseId, ContentType.Exercise, { isComplete: true });
-          } else {
-            isSubmitting = false;
-          }
-        }
-      }, 1000);
+      if (exerciseApi.success) {
+        questionnaireMetaData.update((m) => ({
+          ...m,
+          status: 1,
+          totalPossibleGrade,
+          grades: {},
+          comment: '',
+          isFinished: true,
+          exerciseId
+        }));
+        courseApi.updateContentItem(exerciseId, ContentType.Exercise, { isComplete: true });
+      }
+      isSubmitting = false;
+    } else {
+      // Advance to next question
+      slideDirection = 'next';
+      questionnaireMetaData.update((m) => ({ ...m, currentQuestionIndex: m.currentQuestionIndex + 1 }));
+      const updated = get(questionnaireMetaData);
+      localStorage.setItem(`autosave-exercise-${exerciseId}`, JSON.stringify(updated));
     }
   }
 
   function onPrevious() {
+    slideDirection = 'prev';
     questionnaireMetaData.update((m) => ({ ...m, currentQuestionIndex: m.currentQuestionIndex - 1 }));
   }
 
@@ -232,8 +242,8 @@
         const totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
         let finalTotalGrade = 0;
         const grades = submission.answers.reduce(
-          (acc: Record<string, number>, answer: { question_id: number; point: number }) => {
-            acc[answer.question_id] = answer.point;
+          (acc: Record<string, number>, answer: { questionId: number; point: number }) => {
+            acc[String(answer.questionId)] = answer.point;
             finalTotalGrade += answer.point;
             return acc;
           },
@@ -249,7 +259,7 @@
           totalPossibleGrade,
           currentQuestionIndex: $questionnaire.questions.length,
           isFinished: true,
-          status: submission.status_id,
+          status: submission.statusId,
           finalTotalGrade,
           comment: submission.feedback,
           grades,
@@ -281,6 +291,9 @@
     if (answerValue === null || answerValue === undefined) return false;
     if (typeof answerValue === 'string') return answerValue.trim().length > 0;
     if (Array.isArray(answerValue)) return answerValue.length > 0;
+    if (typeof answerValue === 'object' && !Array.isArray(answerValue)) {
+      return Object.keys(answerValue).length > 0;
+    }
     return true;
   }
 
@@ -296,9 +309,31 @@
     }));
   }
 
-  function onSharedNext() {
+  function onSharedNext(valueOverride?: unknown) {
     if (!sharedCurrentQuestionKey) return;
-    onSubmit(sharedCurrentQuestionKey, sharedCurrentAnswer);
+    const valueToUse = valueOverride !== undefined ? valueOverride : sharedCurrentAnswer;
+    if (!hasAnswerValue(valueToUse)) {
+      snackbar.error(t.get('course.navItem.lessons.exercises.all_exercises.view_mode.answer_required'));
+      return;
+    }
+    onSubmit(sharedCurrentQuestionKey, valueToUse);
+  }
+
+  function handleEnterKey(e: KeyboardEvent) {
+    if (e.key !== 'Enter' || isSubmitting || !currentQuestion) return;
+    const target = e.target as HTMLElement;
+    if (target?.tagName === 'TEXTAREA') return;
+    e.preventDefault();
+    let valueToUse: unknown = sharedCurrentAnswer;
+    if (target instanceof HTMLInputElement && target.value?.trim()) {
+      valueToUse = target.value.trim();
+      onSharedAnswerChange(valueToUse);
+    }
+    if (!hasAnswerValue(valueToUse)) {
+      snackbar.error(t.get('course.navItem.lessons.exercises.all_exercises.view_mode.answer_required'));
+      return;
+    }
+    onSharedNext(valueToUse);
   }
 
   $effect(() => {
@@ -319,6 +354,9 @@
     sharedCurrentQuestionKey ? $questionnaireMetaData.answers[sharedCurrentQuestionKey] : undefined
   );
   const canGoNextForSharedQuestion = $derived(hasAnswerValue(sharedCurrentAnswer));
+
+  const flyX = $derived(slideDirection === 'next' ? 300 : -300);
+  const flyOutX = $derived(-flyX);
 
   $effect(() => {
     const finished = isFinished;
@@ -358,8 +396,12 @@
 </script>
 
 {#if !preview && $questionnaire.questions.length && !$questionnaireMetaData.isFinished}
-  <Progress value={$questionnaireMetaData.progressValue} />
+  <div class="mb-6">
+    <Progress value={$questionnaireMetaData.progressValue} />
+  </div>
 {/if}
+
+<svelte:window onkeydown={handleEnterKey} />
 
 {#if preview}
   <RoleBasedSecurity allowedRoles={[1, 2]}>
@@ -431,7 +473,7 @@
   </RoleBasedSecurity>
 {:else if $questionnaireMetaData.isFinished}
   {#if !isLoadingAutoSavedData}
-    <div class="flex items-center justify-between">
+    <div class="mb-4 flex items-center justify-between">
       <div class="flex w-full flex-col items-start lg:flex-row lg:items-center lg:space-x-4">
         {#if STATUS.GRADED === $questionnaireMetaData.status}
           <Badge variant="success" title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_graded')}>
@@ -461,7 +503,7 @@
     </div>
 
     {#if $questionnaireMetaData.status === STATUS.GRADED && $questionnaireMetaData.comment && courseApi.course?.type !== 'SELF_PACED'}
-      <div class="bg-primary-700 mt-3 flex items-center justify-between rounded-sm p-4 text-white">
+      <div class="bg-primary-700 my-2 flex items-center justify-between rounded-sm p-4 text-white">
         <span> {$questionnaireMetaData.comment}</span>
       </div>
     {/if}
@@ -473,34 +515,42 @@
     />
   {/if}
 {:else if currentQuestion && currentQuestion?.id}
-  {#key currentQuestion.id}
-    <!-- <div transition:fade id="question"> -->
-    <div in:fly={{ x: 500, duration: 1000 }} id="question">
-      {#if sharedQuestionModel}
-        <ExerciseQuestion.QuestionRenderer
-          contract={{
-            mode: 'take',
-            question: sharedQuestionModel,
-            answer: sharedCurrentAnswer,
-            labels: questionLabels,
-            disabled: isSubmitting
-          }}
-          onAnswerChange={onSharedAnswerChange}
-        />
-
-        <div class="mt-4">
-          <ExerciseQuestion.QuestionNavigation
-            canGoBack={$questionnaireMetaData.currentQuestionIndex > 1}
-            canGoNext={canGoNextForSharedQuestion && !isSubmitting}
-            isLast={$questionnaireMetaData.currentQuestionIndex === $questionnaire.questions.length}
-            previousLabel={t.get('course.navItem.lessons.exercises.all_exercises.previous')}
-            nextLabel={t.get('course.navItem.lessons.exercises.all_exercises.next')}
-            finishLabel={t.get('course.navItem.lessons.exercises.all_exercises.finish')}
-            {onPrevious}
-            onNext={onSharedNext}
-          />
+  <div class="flex flex-col gap-4">
+    <div class="grid overflow-hidden" style="grid-template-areas: 'slot';">
+      {#key currentQuestion.id}
+        <div
+          id="question"
+          class="min-w-0 [grid-area:slot]"
+          in:fly={{ x: flyX, duration: 350, easing: cubicInOut }}
+          out:fly={{ x: flyOutX, duration: 350, easing: cubicInOut }}
+        >
+          {#if sharedQuestionModel}
+            <ExerciseQuestion.QuestionRenderer
+              contract={{
+                mode: 'take',
+                question: sharedQuestionModel,
+                answer: sharedCurrentAnswer,
+                labels: questionLabels,
+                disabled: isSubmitting
+              }}
+              onAnswerChange={onSharedAnswerChange}
+            />
+          {/if}
         </div>
-      {/if}
+      {/key}
     </div>
-  {/key}
+    <div>
+      <ExerciseQuestion.QuestionNavigation
+        canGoBack={$questionnaireMetaData.currentQuestionIndex > 1}
+        canGoNext={canGoNextForSharedQuestion && !isSubmitting}
+        isLast={$questionnaireMetaData.currentQuestionIndex === $questionnaire.questions.length}
+        {isSubmitting}
+        previousLabel={t.get('course.navItem.lessons.exercises.all_exercises.previous')}
+        nextLabel={t.get('course.navItem.lessons.exercises.all_exercises.next')}
+        finishLabel={t.get('course.navItem.lessons.exercises.all_exercises.finish')}
+        {onPrevious}
+        onNext={onSharedNext}
+      />
+    </div>
+  </div>
 {/if}

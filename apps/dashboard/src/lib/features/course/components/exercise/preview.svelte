@@ -64,6 +64,11 @@
   {#each questions as currentQuestion, index}
     {@const questionModel = questionModels[index]}
     <div class="mb-4 space-y-3">
+      <div class="flex items-center justify-between">
+        <p class="text-base font-semibold text-gray-700 dark:text-gray-200">Q{index + 1}</p>
+        <Grade bind:grade={grades[currentQuestion.id]} gradeMax={currentQuestion.points} {disableGrading} />
+      </div>
+
       <ExerciseQuestion.QuestionRenderer
         contract={{
           mode: 'view',
@@ -73,8 +78,6 @@
           disabled: true
         }}
       />
-
-      <Grade bind:grade={grades[currentQuestion.id]} gradeMax={currentQuestion.points} {disableGrading} />
 
       {#if isGradeWithAI}
         <ReasonBox

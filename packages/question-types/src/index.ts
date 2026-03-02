@@ -10,4 +10,5 @@ export * from './exercise-types';
 export * from './render-contract';
 export * from './form-state';
 export * from './answer-serializer';
+export * from './answer-normalizer';
 export * from './renderer-registry';

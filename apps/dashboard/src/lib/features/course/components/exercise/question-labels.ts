@@ -179,6 +179,9 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     'file_upload.take.upload_button': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.file_upload.take.upload_button'
     ),
+    'file_upload.take.download': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.file_upload.take.download'
+    ),
     'file_upload.preview.accepted_types_label': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.file_upload.preview.accepted_types_label'
     ),

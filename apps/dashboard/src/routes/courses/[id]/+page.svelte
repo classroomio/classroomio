@@ -28,22 +28,24 @@
     goto(`/courses/${data.courseId}/lessons?next=true`);
   }}
 >
-  <Page.Header>
-    <Page.HeaderContent>
-      <Page.Title>
-        {$t('course.navItem.news_feed.heading')}
-      </Page.Title>
-    </Page.HeaderContent>
-    <Page.Action>
-      <Button class="mr-2" onclick={() => newsfeedApi.openNewFeedModal()}>
-        {$t('course.navItem.news_feed.heading_button.title')}
-      </Button>
-    </Page.Action>
-  </Page.Header>
+  <Page.Root class="mx-auto flex w-[90%] px-4 md:max-w-2xl lg:max-w-3xl">
+    <Page.Header>
+      <Page.HeaderContent>
+        <Page.Title>
+          {$t('course.navItem.news_feed.heading')}
+        </Page.Title>
+      </Page.HeaderContent>
+      <Page.Action>
+        <Button class="mr-2" onclick={() => newsfeedApi.openNewFeedModal()}>
+          {$t('course.navItem.news_feed.heading_button.title')}
+        </Button>
+      </Page.Action>
+    </Page.Header>
 
-  <Page.Body>
-    {#snippet child()}
-      <NewsFeedPage courseId={data.courseId} />
-    {/snippet}
-  </Page.Body>
+    <Page.Body>
+      {#snippet child()}
+        <NewsFeedPage courseId={data.courseId} />
+      {/snippet}
+    </Page.Body>
+  </Page.Root>
 </RoleBasedSecurity>

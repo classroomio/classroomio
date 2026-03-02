@@ -27,7 +27,7 @@
   };
 </script>
 
-<div class="mx-auto w-[90%] md:max-w-3xl">
+<Page.Root class="mx-auto w-[90%] md:max-w-3xl">
   <Page.Header>
     <Page.HeaderContent>
       <Page.Title>
@@ -57,4 +57,4 @@
       {@render children?.()}
     {/snippet}
   </Page.Body>
-</div>
+</Page.Root>

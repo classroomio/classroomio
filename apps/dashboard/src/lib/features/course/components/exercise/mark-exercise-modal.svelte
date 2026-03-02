@@ -9,6 +9,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import type { SubmissionIdData } from '$features/course/utils/types';
+  import { normalizeAnswersForDisplay } from '@cio/question-types';
 
   import Preview from './preview.svelte';
   import * as Dialog from '@cio/ui/base/dialog';
@@ -73,6 +74,8 @@
           }))
       : []
   );
+
+  const normalizedAnswers = $derived(normalizeAnswersForDisplay(data.answers || {}, data.questions || []));
 
   function getMaxPoints(questions) {
     return (questions || []).reduce((acc, question) => acc + question.points, 0);
@@ -243,12 +246,12 @@
     if (!isOpen) onClose();
   }}
 >
-  <Dialog.Content class="w-4/5 max-w-4xl!">
+  <Dialog.Content class="max-h-[90vh]! w-4/5 max-w-6xl!">
     <Dialog.Header class="py-2">
       <Dialog.Title class="text-base font-semibold">{data.title}</Dialog.Title>
     </Dialog.Header>
-    <div class="flex h-full w-full justify-between gap-4">
-      <div class="mt-2 w-full">
+    <div class="flex max-h-[calc(90vh-5rem)] justify-between gap-4 overflow-y-auto pr-4">
+      <div class="mt-2 min-h-0 min-w-0 flex-1">
         {#if openDeletePrompt}
           <div class="mx-auto w-96 rounded-md border border-gray-300 p-3">
             <h1 class="text-lg dark:text-white">
@@ -268,7 +271,7 @@
           <Preview
             questions={sortedQuestions}
             questionnaireMetaData={{
-              answers: data.answers || {},
+              answers: normalizedAnswers,
               isFinished: true
             }}
             bind:grades={data.questionAnswerByPoint}
@@ -280,7 +283,7 @@
         {/if}
       </div>
 
-      <div class="sticky top-0 mt-2 ml-4 w-2/5">
+      <div class="sticky top-0 mt-2 ml-4 min-h-0 w-2/5 max-w-[350px] shrink-0 self-start">
         <div class="rounded-md border border-gray-300">
           <div
             class="flex items-center justify-between gap-1 border-t-0 border-r-0 border-b border-l-0 border-gray-300 p-3"
@@ -304,7 +307,7 @@
               >
                 <EllipsisVerticalIcon class="h-5 w-5" />
               </DropdownMenu.Trigger>
-              <DropdownMenu.Content align="end">
+              <DropdownMenu.Content align="end" class="ui:z-[250]">
                 <DropdownMenu.Item
                   class="text-red-600"
                   onclick={() => {
@@ -342,7 +345,7 @@
                 <img
                   alt={$t('course.navItem.submissions.grading_modal.student_avatar')}
                   class="flex h-5 w-5 rounded-full"
-                  src={data.student.avatar_url}
+                  src={data.student.avatarUrl}
                 />
                 <p class="ml-2 line-clamp-1 text-sm font-semibold dark:text-white">
                   {data.student.fullname}
@@ -374,7 +377,7 @@
               <Select.Trigger class="w-full">
                 {status.text}
               </Select.Trigger>
-              <Select.Content>
+              <Select.Content class="ui:z-[250]">
                 {#each SELECTABLE_STATUS as statusOption}
                   <Select.Item value={statusOption.id.toString()}>
                     {statusOption.text}
@@ -389,8 +392,6 @@
               {$t('course.navItem.submissions.grading_modal.add_comment')}:
             </p>
             <TextareaField
-              bgColor="bg-gray-100 dark:bg-neutral-700"
-              className="font-semibold"
               placeholder={$t('course.navItem.submissions.grading_modal.add_comment_placeholder')}
               bind:value={data.feedback}
             />

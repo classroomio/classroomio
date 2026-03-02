@@ -66,6 +66,7 @@ export type ExerciseQuestionLabelKey =
   | 'file_upload.edit.max_size_placeholder'
   | 'file_upload.take.selected_file_label'
   | 'file_upload.take.upload_button'
+  | 'file_upload.take.download'
   | 'file_upload.preview.accepted_types_label'
   | 'file_upload.preview.max_size_label'
   | 'link.edit.instructions_placeholder'

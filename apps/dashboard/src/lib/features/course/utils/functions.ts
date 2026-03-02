@@ -1,5 +1,6 @@
 import type { CourseMembers } from './types';
 import { ROUTES } from './constants';
+import { deserializeStoredAnswer } from '@cio/question-types';
 
 export function getGroupMemberId(people: CourseMembers, profileId: string): string | undefined {
   const groupMember = people.find((person) => person.profileId === profileId);
@@ -44,18 +45,22 @@ export function calcProgressRate(progressRate?: number, totalLessons?: number): 
 }
 
 export function formatAnswers(data) {
-  const answers: Record<string, string> = {};
+  const answers: Record<string, string | string[]> = {};
   const questionByIdAndName = {};
+  const questionTypeById = {};
 
   for (const question of data.questions) {
     questionByIdAndName[question.id] = question.name;
+    questionTypeById[question.id] = question.questionTypeId;
   }
 
   for (const answer of data.answers) {
-    const questionName = questionByIdAndName[answer.question_id];
-
-    answers[questionName] =
-      Array.isArray(answer.answers) && answer.answers.length ? answer.answers : answer.open_answer;
+    const questionName = questionByIdAndName[answer.questionId];
+    if (questionName) {
+      const rawValue = Array.isArray(answer.answers) && answer.answers.length ? answer.answers : answer.openAnswer;
+      const questionTypeId = questionTypeById[answer.questionId];
+      answers[questionName] = deserializeStoredAnswer(questionTypeId, rawValue) ?? rawValue;
+    }
   }
 
   return answers;

@@ -67,42 +67,44 @@
     goto(resolve(`/courses/${data.courseId}/lessons?next=true`, {}));
   }}
 >
-  <Page.Header>
-    <Page.HeaderContent>
-      <Page.Title>
-        {$t('course.navItem.marks.title')}
-      </Page.Title>
-    </Page.HeaderContent>
-    <Page.Action>
-      <div class="flex w-full justify-end gap-2">
-        <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger>
-              <Button variant="ghost" size="icon" class="rounded-full">
-                {#if isDownloading}
-                  <Progress />
-                {:else}
-                  <DownloadIcon size={16} />
-                {/if}
-              </Button>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content align="end">
-              <DropdownMenu.Item onclick={downloadCSV}>
-                {$t('course.navItem.marks.export.csv')}
-              </DropdownMenu.Item>
-              <DropdownMenu.Item onclick={downloadPDF}>
-                {$t('course.navItem.marks.export.pdf')}
-              </DropdownMenu.Item>
-            </DropdownMenu.Content>
-          </DropdownMenu.Root>
-        </RoleBasedSecurity>
-      </div>
-    </Page.Action>
-  </Page.Header>
+  <Page.Root class="mx-auto flex w-[90%] px-4 md:max-w-2xl lg:max-w-3xl">
+    <Page.Header>
+      <Page.HeaderContent>
+        <Page.Title>
+          {$t('course.navItem.marks.title')}
+        </Page.Title>
+      </Page.HeaderContent>
+      <Page.Action>
+        <div class="flex w-full justify-end gap-2">
+          <RoleBasedSecurity allowedRoles={[1, 2]}>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger>
+                <Button variant="ghost" size="icon" class="rounded-full">
+                  {#if isDownloading}
+                    <Progress />
+                  {:else}
+                    <DownloadIcon size={16} />
+                  {/if}
+                </Button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content align="end">
+                <DropdownMenu.Item onclick={downloadCSV}>
+                  {$t('course.navItem.marks.export.csv')}
+                </DropdownMenu.Item>
+                <DropdownMenu.Item onclick={downloadPDF}>
+                  {$t('course.navItem.marks.export.pdf')}
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
+          </RoleBasedSecurity>
+        </div>
+      </Page.Action>
+    </Page.Header>
 
-  <Page.Body>
-    {#snippet child()}
-      <MarksPage marksData={data.marksData} />
-    {/snippet}
-  </Page.Body>
+    <Page.Body>
+      {#snippet child()}
+        <MarksPage marksData={data.marksData} />
+      {/snippet}
+    </Page.Body>
+  </Page.Root>
 </RoleBasedSecurity>

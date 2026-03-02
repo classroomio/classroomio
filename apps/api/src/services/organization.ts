@@ -13,6 +13,7 @@ import {
   updateOrganization,
   updateOrganizationPlan
 } from '@cio/db/queries/organization';
+import { getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
 import {
   getCoursesById,
   getCoursesBySiteNameForSetup,
@@ -24,8 +25,8 @@ import {
   getPublishedCoursesBySiteName
 } from '@cio/db/queries/course';
 import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/analytics';
-import { getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
 
+import type { OrganizationWithPlans } from '@cio/db/queries/organization/types';
 import { ROLE } from '@cio/utils/constants';
 import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { getProfileById } from '@cio/db/queries/auth';
@@ -67,7 +68,7 @@ export async function getOrganizationsWithFilters(filters?: {
   siteName?: string;
   customDomain?: string;
   isCustomDomainVerified?: boolean;
-}) {
+}): Promise<OrganizationWithPlans[]> {
   try {
     const organizations = await getOrganizations(filters);
     return organizations;

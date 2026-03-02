@@ -11,6 +11,7 @@
 
   import { Chip } from '@cio/ui/custom/chip';
   import MarkExerciseModal from '$features/course/components/exercise/mark-exercise-modal.svelte';
+  import { onMount } from 'svelte';
 
   interface Props {
     courseId: string;
@@ -21,10 +22,15 @@
   let { courseId, sections: initialSections = [], submissionIdData: initialSubmissionIdData = {} }: Props = $props();
 
   const flipDurationMs = 300;
-  let sections: SubmissionSection[] = $derived(initialSections);
-  let submissionIdData: { [key: string]: SubmissionIdData } = $derived(initialSubmissionIdData);
+  let sections = $state<SubmissionSection[]>([]);
+  let submissionIdData = $state<Record<string, SubmissionIdData>>({});
   let isGradeWithAI = $state(false);
   let isSaving = $state(false);
+
+  onMount(() => {
+    sections = initialSections;
+    submissionIdData = { ...initialSubmissionIdData };
+  });
 
   const ALLOWED_BOARD_TRANSITIONS: Record<number, number[]> = {
     1: [2],
@@ -57,8 +63,8 @@
 
     const { id } = sections[columnIdx];
 
-    // Set column in the UI
-    sections[columnIdx].items = newItems.map((item) => {
+    // Set column in the UI (immutable update for reactivity)
+    const mappedItems = newItems.map((item) => {
       if (item.statusId !== id) {
         if (!canTransitionBoardStatus(item.statusId, id)) {
           snackbar.error('course.navItem.submissions.workflow.invalid_transition');
@@ -66,29 +72,34 @@
         }
 
         itemToWithNewStatus = item;
-        item.statusId = id;
+        return { ...item, statusId: id };
       }
 
       return item;
     });
 
+    sections = sections.map((section, i) => (i === columnIdx ? { ...section, items: mappedItems } : section));
+
     // Update backend
     if (itemToWithNewStatus) {
-      // Update key mapping for each submission also
-      submissionIdData[itemToWithNewStatus.id] = {
-        ...submissionIdData[itemToWithNewStatus.id],
-        statusId: itemToWithNewStatus.statusId
+      const newStatusId = id;
+      submissionIdData = {
+        ...submissionIdData,
+        [itemToWithNewStatus.id]: {
+          ...submissionIdData[itemToWithNewStatus.id],
+          statusId: newStatusId
+        }
       };
 
       await submissionApi.update(courseId, itemToWithNewStatus.id, {
-        statusId: itemToWithNewStatus.statusId
+        statusId: newStatusId
       });
     }
   }
 
   function handleDndConsiderCards(columnIdx: number) {
     return function (e) {
-      sections[columnIdx].items = e.detail.items;
+      sections = sections.map((section, i) => (i === columnIdx ? { ...section, items: e.detail.items } : section));
     };
   }
 
@@ -118,50 +129,47 @@
       return;
     }
 
-    let itemToWithNewStatus: SubmissionItem | undefined;
+    const prevIdx = prevStatusId - 1;
+    const nextIdx = nextStatusId - 1;
+    const prevItems = sections[prevIdx]?.items ?? [];
+    const found = prevItems.find((item) => item.id === submissionId);
+    const itemToWithNewStatus = found ? { ...found, statusId: nextStatusId } : undefined;
 
-    // Remove from current column
-    const { items } = sections[prevStatusId - 1];
-    sections[prevStatusId - 1].items = items?.filter((item) => {
-      if (item.id === submissionId) {
-        itemToWithNewStatus = Object.assign(item);
-        if (itemToWithNewStatus) {
-          itemToWithNewStatus.statusId = nextStatusId;
-        }
-        return false;
+    // Remove from current column and add to new column (immutable update for reactivity)
+    sections = sections.map((section, i) => {
+      if (i === prevIdx) {
+        return { ...section, items: prevItems.filter((item) => item.id !== submissionId) };
       }
-
-      return true;
+      if (i === nextIdx && itemToWithNewStatus) {
+        return { ...section, items: [...section.items, itemToWithNewStatus] };
+      }
+      return section;
     });
-    // Move to right column
-    if (itemToWithNewStatus) {
-      sections[nextStatusId - 1].items = [...sections[nextStatusId - 1].items, itemToWithNewStatus];
-    }
 
-    // If something changed
     if (itemToWithNewStatus) {
-      // Update key mapping for each submission also
-      submissionIdData[itemToWithNewStatus.id] = {
-        ...submissionIdData[itemToWithNewStatus.id],
-        statusId: itemToWithNewStatus.statusId
+      submissionIdData = {
+        ...submissionIdData,
+        [itemToWithNewStatus.id]: {
+          ...submissionIdData[itemToWithNewStatus.id],
+          statusId: nextStatusId
+        }
       };
 
-      // Update backend
       await submissionApi.update(courseId, itemToWithNewStatus.id, {
-        statusId: itemToWithNewStatus.statusId,
+        statusId: nextStatusId,
         total
       });
     }
   }
 
   async function handleDeleteSubmission(id: string, statusId: number) {
-    const { items } = sections[statusId - 1];
+    const sectionIdx = statusId - 1;
+    sections = sections.map((section, i) =>
+      i === sectionIdx ? { ...section, items: section.items.filter((item) => item.id !== id) } : section
+    );
 
-    sections[statusId - 1].items = items?.filter((item) => {
-      return item.id === id ? false : true;
-    });
-
-    delete submissionIdData[id];
+    const { [id]: _, ...rest } = submissionIdData;
+    submissionIdData = rest;
 
     await submissionApi.delete(courseId, id);
 
@@ -256,7 +264,7 @@
               class="mb-2 flex w-full cursor-pointer items-center text-black"
               href={`${page.url.pathname}?submissionId=${item.id}`}
             >
-              <img alt="Student avatar" class="block h-6 w-6 rounded-full" src={item.student.avatar_url} />
+              <img alt="Student avatar" class="block h-6 w-6 rounded-full" src={item.student.avatarUrl} />
               <p class="ml-2 text-sm dark:text-white">
                 {item.student.username}
               </p>

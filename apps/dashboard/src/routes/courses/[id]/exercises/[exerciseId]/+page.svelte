@@ -4,6 +4,7 @@
   import { resolve } from '$app/paths';
   import { Empty } from '@cio/ui/custom/empty';
   import LockIcon from '@lucide/svelte/icons/lock';
+  import * as Page from '@cio/ui/base/page';
   import { ExercisePage } from '$features/course/pages';
   import {
     questionnaire,
@@ -68,14 +69,16 @@
   });
 </script>
 
-{#if isLockedForStudent}
-  <Empty
-    title={$t('course.navItem.lessons.content_locked_title')}
-    description={$t('course.navItem.lessons.content_locked_description')}
-    icon={LockIcon}
-    variant="page"
-    class="text-center"
-  />
-{:else}
-  <ExercisePage exerciseId={data.exerciseId} goBack={() => goto(resolve(path, {}))} isFetching={false} />
-{/if}
+<Page.Root class="mx-auto flex w-[90%] px-4 md:max-w-2xl lg:max-w-3xl">
+  {#if isLockedForStudent}
+    <Empty
+      title={$t('course.navItem.lessons.content_locked_title')}
+      description={$t('course.navItem.lessons.content_locked_description')}
+      icon={LockIcon}
+      variant="page"
+      class="text-center"
+    />
+  {:else}
+    <ExercisePage exerciseId={data.exerciseId} goBack={() => goto(resolve(path, {}))} isFetching={false} />
+  {/if}
+</Page.Root>

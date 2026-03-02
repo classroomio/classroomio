@@ -6,7 +6,6 @@
   import { CourseSidebar } from '$features/course/components/sidebar';
   import { CourseHeader } from '$features/course/components';
   import type { Course } from '$features/course/types';
-  import * as Page from '@cio/ui/base/page';
   import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
   import { Confetti } from '$features/ui';
@@ -115,9 +114,7 @@
         <Confetti />
       {/if}
 
-      <Page.Root class="mx-auto flex w-[90%] px-4 md:max-w-2xl lg:max-w-3xl">
-        {@render children?.()}
-      </Page.Root>
+      {@render children?.()}
     {/if}
   </Sidebar.Inset>
 </Sidebar.Provider>

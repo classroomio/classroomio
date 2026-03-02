@@ -67,6 +67,7 @@ export const QUESTION_LABELS = {
   'file_upload.edit.max_size_placeholder': 'Max size (MB)',
   'file_upload.take.selected_file_label': 'Selected file',
   'file_upload.take.upload_button': 'Upload',
+  'file_upload.take.download': 'Download',
   'file_upload.preview.accepted_types_label': 'Accepted types',
   'file_upload.preview.max_size_label': 'Max size (MB)',
   'link.edit.instructions_placeholder': 'Optional instructions for learners',

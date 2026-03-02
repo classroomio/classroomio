@@ -20,7 +20,12 @@ import { db } from '@cio/db/drizzle';
 import { buildEmailFromName, deliverEmail } from '@cio/email';
 import { env } from '@api/config/env';
 import { getExerciseById, getExerciseWithRelationsOptimized } from '@cio/db/queries/exercise';
-import { getQuestionTypeById, getQuestionTypeByTypename, requiresManualGrading } from '@cio/question-types';
+import {
+  deserializeStoredAnswer,
+  getQuestionTypeById,
+  getQuestionTypeByTypename,
+  requiresManualGrading
+} from '@cio/question-types';
 
 type SubmissionGradingState = 'queued' | 'processing' | 'awaiting_manual' | 'completed' | 'failed';
 type SubmissionOverallStatus = 'auto_graded' | 'manual_required' | 'hybrid';
@@ -239,8 +244,10 @@ export async function listSubmissionsForGrading(courseId: string) {
 
       // Format answers
       const questionByIdAndName: { [id: number]: string } = {};
+      const questionTypeById: { [id: number]: number } = {};
       for (const question of submission.exercise.questions || []) {
         questionByIdAndName[question.id] = question.name ?? '';
+        questionTypeById[question.id] = question.questionTypeId;
       }
 
       const formattedAnswers: { [questionName: string]: string | string[] } = {};
@@ -249,8 +256,10 @@ export async function listSubmissionsForGrading(courseId: string) {
       for (const answer of submission.answers || []) {
         const questionName = questionByIdAndName[answer.questionId];
         if (questionName) {
-          formattedAnswers[questionName] =
+          const rawValue =
             Array.isArray(answer.answers) && answer.answers.length ? answer.answers : answer.openAnswer || '';
+          const questionTypeId = questionTypeById[answer.questionId];
+          formattedAnswers[questionName] = deserializeStoredAnswer(questionTypeId, rawValue) as string | string[];
         }
         questionAnswerByPoint[answer.questionId] = answer.point || 0;
       }
@@ -302,10 +311,13 @@ export async function listSubmissionsForGrading(courseId: string) {
           order: q.order,
           points: q.points,
           questionTypeId: q.questionTypeId,
+          settings: q.settings ?? {},
           options: (q.options || []).map((opt: any) => ({
             id: opt.id,
+            label: opt.label,
             value: opt.value,
-            isCorrect: opt.isCorrect
+            isCorrect: opt.isCorrect,
+            settings: opt.settings ?? {}
           }))
         })),
         answers: formattedAnswers,
