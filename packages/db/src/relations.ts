@@ -1,6 +1,7 @@
 import {
   account,
   analyticsLoginEvents,
+  apiKey,
   appsPoll,
   appsPollOption,
   appsPollSubmission,
@@ -128,7 +129,8 @@ export const organizationRelations = relations(organization, ({ many }) => ({
   organizationPlans: many(organizationPlan),
   organizationmembers: many(organizationmember),
   tagGroups: many(tagGroup),
-  tags: many(tag)
+  tags: many(tag),
+  apiKeys: many(apiKey)
 }));
 
 export const tagGroupRelations = relations(tagGroup, ({ one, many }) => ({
@@ -229,7 +231,8 @@ export const profileRelations = relations(profile, ({ one, many }) => ({
   lessonCompletions: many(lessonCompletion),
   communityAnswers: many(communityAnswer),
   communityQuestions: many(communityQuestion),
-  organizationmembers: many(organizationmember)
+  organizationmembers: many(organizationmember),
+  apiKeys: many(apiKey)
 }));
 
 export const optionRelations = relations(option, ({ one }) => ({
@@ -528,5 +531,16 @@ export const questionAnswerRelations = relations(questionAnswer, ({ one }) => ({
   submission: one(submission, {
     fields: [questionAnswer.submissionId],
     references: [submission.id]
+  })
+}));
+
+export const apiKeyRelations = relations(apiKey, ({ one }) => ({
+  organization: one(organization, {
+    fields: [apiKey.organizationId],
+    references: [organization.id]
+  }),
+  createdByProfile: one(profile, {
+    fields: [apiKey.createdByProfileId],
+    references: [profile.id]
   })
 }));

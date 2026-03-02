@@ -19,6 +19,7 @@ import { onboardingRouter } from '@api/routes/onboarding';
 import { organizationRouter } from '@api/routes/organization';
 import { organizationSsoRouter } from '@api/routes/organization/sso';
 import { organizationTokenAuthRouter } from '@api/routes/organization/token-auth';
+import { publicApiRouter } from '@api/routes/public-api';
 import { ssoDiscoveryRouter } from '@api/routes/sso/discovery';
 import { prettyJSON } from 'hono/pretty-json';
 import rateLimiter from '@api/middlewares/rate-limiter';
@@ -86,6 +87,7 @@ export const app = new Hono()
   .route('/organization', organizationRouter)
   .route('/organization/sso', organizationSsoRouter)
   .route('/organization/token-auth', organizationTokenAuthRouter)
+  .route('/public-api', publicApiRouter)
   .route('/sso', ssoDiscoveryRouter)
   .route('/dash', dashAnalyticsRouter)
   .route('/community', communityRouter)

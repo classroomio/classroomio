@@ -1980,3 +1980,30 @@ export const organizationTokenAuth = pgTable(
   },
   (table) => [index('idx_organization_token_auth_org_id').on(table.organizationId)]
 );
+
+
+export const apiKey = pgTable(
+  'api_key',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    keyHash: text('key_hash').notNull(), // SHA-256 hash of the key
+    keyPrefix: varchar('key_prefix', { length: 12 }).notNull(), // "cio_live_xxxx" for display
+    name: varchar('name', { length: 255 }).notNull().default('Default'),
+    lastUsedAt: timestamp('last_used_at'),
+    expiresAt: timestamp('expires_at'),
+    isRevoked: boolean('is_revoked').notNull().default(false),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    createdByProfileId: uuid('created_by_profile_id')
+      .notNull()
+      .references(() => profile.id)
+  },
+  (table) => [
+    unique('api_key_key_hash_key').on(table.keyHash),
+    index('idx_api_key_organization_id').on(table.organizationId),
+    index('idx_api_key_created_by_profile_id').on(table.createdByProfileId),
+    index('idx_api_key_org_created_at').on(table.organizationId, table.createdAt)
+  ]
+);
