@@ -13,6 +13,9 @@
   // Auth settings state - synced with store
   let disableSignup = $state($currentOrg?.disableSignup ?? false);
   let disableSignupMessage = $state($currentOrg?.disableSignupMessage ?? '');
+  let allowPublicSignups = $state(
+    !($currentOrg?.settings as { signup?: { inviteOnly?: boolean } })?.signup?.inviteOnly ?? true
+  );
   let disableEmailPassword = $state($currentOrg?.disableEmailPassword ?? false);
   let disableGoogleAuth = $state($currentOrg?.disableGoogleAuth ?? false);
   let isSaving = $state(false);
@@ -22,6 +25,8 @@
     if ($currentOrg) {
       disableSignup = $currentOrg.disableSignup ?? false;
       disableSignupMessage = $currentOrg.disableSignupMessage ?? '';
+      allowPublicSignups =
+        !($currentOrg.settings as { signup?: { inviteOnly?: boolean } } | undefined)?.signup?.inviteOnly ?? true;
       disableEmailPassword = $currentOrg.disableEmailPassword ?? false;
       disableGoogleAuth = $currentOrg.disableGoogleAuth ?? false;
     }
@@ -36,6 +41,7 @@
       {
         disableSignup,
         disableSignupMessage,
+        settings: { signup: { inviteOnly: !allowPublicSignups } },
         disableEmailPassword,
         disableGoogleAuth
       },
@@ -48,9 +54,12 @@
     isSaving = false;
   }
 
+  const currentAllowPublicSignups =
+    !($currentOrg?.settings as { signup?: { inviteOnly?: boolean } } | undefined)?.signup?.inviteOnly ?? true;
   const hasChanges = $derived(
     disableSignup !== ($currentOrg?.disableSignup ?? false) ||
       disableSignupMessage !== ($currentOrg?.disableSignupMessage ?? '') ||
+      allowPublicSignups !== currentAllowPublicSignups ||
       disableEmailPassword !== ($currentOrg?.disableEmailPassword ?? false) ||
       disableGoogleAuth !== ($currentOrg?.disableGoogleAuth ?? false)
   );
@@ -74,6 +83,17 @@
           <Field.Label>{$t('settings.auth.general.disable_signup.label')}</Field.Label>
           <Field.Description>
             {$t('settings.auth.general.disable_signup.description')}
+          </Field.Description>
+        </div>
+      </Field.Field>
+
+      <!-- Allow Public Signups (invite-only when off) -->
+      <Field.Field orientation="horizontal">
+        <Switch bind:checked={allowPublicSignups} disabled={!$isEnterprisePlan || isSaving} />
+        <div class="space-y-0.5">
+          <Field.Label>{$t('settings.auth.general.allow_public_signups.label')}</Field.Label>
+          <Field.Description>
+            {$t('settings.auth.general.allow_public_signups.description')}
           </Field.Description>
         </div>
       </Field.Field>

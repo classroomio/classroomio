@@ -437,6 +437,94 @@ export const getOrganizations = async (filters?: {
 };
 
 /**
+ * Gets the first (and typically only) organization - used for self-hosted single-org mode
+ * @returns First organization by createdAt, or null if none exist
+ */
+export const getFirstOrganization = async (): Promise<TOrganization | null> => {
+  const [organization] = await db.select().from(schema.organization).orderBy(schema.organization.createdAt).limit(1);
+
+  return organization || null;
+};
+
+/**
+ * Gets the first organization with plans - for self-hosted single-org mode
+ * @returns First organization with plans (by createdAt), or null if none exist
+ */
+export const getFirstOrganizationWithPlans = async (): Promise<
+  (TOrganization & { plans: Array<OrganizationPlan> }) | null
+> => {
+  const result = await db
+    .select({
+      organization: schema.organization,
+      plan: {
+        planName: schema.organizationPlan.planName,
+        isActive: schema.organizationPlan.isActive,
+        provider: schema.organizationPlan.provider,
+        subscriptionId: schema.organizationPlan.subscriptionId,
+        customerId: sql`organization_plan.payload->>'customerId'`.as('customerId')
+      }
+    })
+    .from(schema.organization)
+    .leftJoin(schema.organizationPlan, eq(schema.organization.id, schema.organizationPlan.orgId))
+    .orderBy(schema.organization.createdAt)
+    .limit(5);
+
+  if (result.length === 0) return null;
+
+  const organizationMap = new Map<
+    string,
+    {
+      organization: typeof schema.organization.$inferSelect;
+      plans: Array<OrganizationPlan>;
+    }
+  >();
+
+  for (const row of result) {
+    const orgId = row.organization.id;
+    if (!organizationMap.has(orgId)) {
+      organizationMap.set(orgId, {
+        organization: row.organization,
+        plans: []
+      });
+    }
+    const orgData = organizationMap.get(orgId)!;
+    if (
+      row.plan &&
+      (row.plan.planName !== null ||
+        row.plan.isActive !== null ||
+        row.plan.provider !== null ||
+        row.plan.subscriptionId !== null)
+    ) {
+      orgData.plans.push({
+        planName: row.plan.planName,
+        isActive: row.plan.isActive,
+        provider: row.plan.provider,
+        subscriptionId: row.plan.subscriptionId,
+        customerId: row.plan.customerId as string | null
+      });
+    }
+  }
+
+  const first = Array.from(organizationMap.values())[0];
+  return first
+    ? ({
+        ...(first.organization as TOrganization),
+        plans: first.plans
+      } as TOrganization & { plans: Array<OrganizationPlan> })
+    : null;
+};
+
+/**
+ * Gets the number of organizations - used for self-hosted to block org creation when org exists
+ * @returns Count of organizations
+ */
+export const getOrganizationCount = async (): Promise<number> => {
+  const [result] = await db.select({ count: sql<number>`count(*)::int`.as('count') }).from(schema.organization);
+
+  return result?.count ?? 0;
+};
+
+/**
  * Creates a new organization plan
  * @param data Organization plan creation data
  * @returns Created organization plan record
@@ -491,13 +579,46 @@ export const cancelOrganizationPlan = async (
 /**
  * Updates an organization
  * @param id Organization ID
- * @param data Partial organization data to update
+ * @param data Partial organization data to update. When `settings` is provided, it is deep-merged with existing settings.
  * @returns Updated organization record
  */
 export const updateOrganization = async (id: string, data: Partial<TOrganization>): Promise<TOrganization> => {
+  let setData = { ...data };
+
+  if (data.settings !== undefined) {
+    const [existing] = await db
+      .select({ settings: schema.organization.settings })
+      .from(schema.organization)
+      .where(eq(schema.organization.id, id))
+      .limit(1);
+
+    const existingSettings = (existing?.settings as Record<string, unknown>) ?? {};
+    const newSettings = data.settings as Record<string, unknown>;
+    const mergedSettings: Record<string, unknown> = { ...existingSettings };
+    for (const key of Object.keys(newSettings ?? {})) {
+      const existingVal = existingSettings[key];
+      const newVal = newSettings[key];
+      if (newVal !== undefined) {
+        if (
+          existingVal &&
+          typeof existingVal === 'object' &&
+          !Array.isArray(existingVal) &&
+          newVal &&
+          typeof newVal === 'object' &&
+          !Array.isArray(newVal)
+        ) {
+          mergedSettings[key] = { ...(existingVal as Record<string, unknown>), ...(newVal as Record<string, unknown>) };
+        } else {
+          mergedSettings[key] = newVal;
+        }
+      }
+    }
+    setData = { ...setData, settings: mergedSettings as TOrganization['settings'] };
+  }
+
   const [organization] = await db
     .update(schema.organization)
-    .set(data)
+    .set(setData)
     .where(eq(schema.organization.id, id))
     .returning();
 

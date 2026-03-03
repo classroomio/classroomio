@@ -5,6 +5,7 @@
   import { Snackbar } from '$features/ui';
   import { UpgradeModal, PageLoadProgress, PageRestricted } from '$features/ui';
   import { user } from '$lib/utils/store/user';
+  import { licenseFeatures } from '$lib/utils/store/license';
   import { setupAnalytics } from '$lib/utils/functions/appSetup';
   import { setTheme } from '$lib/utils/functions/theme';
   import { initOrgAnalytics } from '$lib/utils/services/posthog';
@@ -25,6 +26,10 @@
 
   let path = $derived(page.url.pathname);
 
+  $effect(() => {
+    licenseFeatures.set(data.licenseFeatures ?? []);
+  });
+
   function intialAppSetup() {
     console.log(
       'Welcome to ClassroomIO, we are grateful you chose us.',
@@ -33,7 +38,7 @@
       data
     );
 
-    setupAnalytics();
+    setupAnalytics(data.licenseFeatures ?? []);
 
     if (data.locals.user) {
       user.set({

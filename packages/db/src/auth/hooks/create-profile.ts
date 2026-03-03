@@ -4,6 +4,7 @@ import { and, eq, ne } from 'drizzle-orm';
 
 import { User } from 'better-auth';
 import { db } from '@db/drizzle';
+import { getOrganizationCount } from '@db/queries/organization';
 import { ssoProvisioningHook } from './sso-provisioning';
 
 /**
@@ -19,10 +20,21 @@ export async function hasVerifiedEmailProvider(userId: string): Promise<boolean>
 }
 
 /**
+ * True when this is a first-time signup on a self-hosted instance (no orgs exist yet).
+ * The first signup creates the only org; we auto-verify their email.
+ */
+async function isSelfHostedFirstSignup(): Promise<boolean> {
+  if (process.env.PUBLIC_IS_SELFHOSTED !== 'true') return false;
+  const count = await getOrganizationCount();
+  return count === 0;
+}
+
+/**
  * This hook runs after user creation (email/password or OAuth signup).
  *
  * We use the profile table for everything related to the user because we heavily used supabase and supabase didn't allow you add fields to the auth.users table.
  *
+ * Self-hosted first signup: auto-verify email (no orgs exist yet, this user will create the only org).
  */
 export const createProfileHook = async (user: User) => {
   console.debug('createProfileHook', user);
@@ -33,7 +45,12 @@ export const createProfileHook = async (user: User) => {
     return;
   }
 
-  const isEmailVerified = user.emailVerified || (await hasVerifiedEmailProvider(user.id));
+  let isEmailVerified = user.emailVerified || (await hasVerifiedEmailProvider(user.id));
+
+  if (!isEmailVerified && (await isSelfHostedFirstSignup())) {
+    isEmailVerified = true;
+    await db.update(schema.user).set({ emailVerified: true }).where(eq(schema.user.id, user.id));
+  }
   const verifiedAt = isEmailVerified ? new Date().toISOString() : undefined;
 
   // Extract username from email (part before @)

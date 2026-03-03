@@ -3,12 +3,25 @@
   import { goto } from '$app/navigation';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import { t } from '$lib/utils/functions/translations';
+  import { LICENSE_FEATURE } from '@cio/utils/license';
   import { currentOrgPath } from '$lib/utils/store/org';
+  import { licenseFeatures } from '$lib/utils/store/license';
   import { UpgradeBanner } from '$features/ui';
 
   import AuthGeneral from '../components/auth-general.svelte';
   import AuthSso from '../components/auth-sso.svelte';
   import AuthTokenAuth from '../components/auth-token-auth.svelte';
+
+  const ssoLicensed = $derived($licenseFeatures.includes(LICENSE_FEATURE.SSO));
+  const tokenAuthLicensed = $derived($licenseFeatures.includes(LICENSE_FEATURE.TOKEN_AUTH));
+
+  $effect(() => {
+    if (currentTab === 'sso' && !ssoLicensed) {
+      goto($currentOrgPath + '/settings/auth');
+    } else if (currentTab === 'token-auth' && !tokenAuthLicensed) {
+      goto($currentOrgPath + '/settings/auth');
+    }
+  });
 
   // Determine current tab from URL
   function getTabFromPath(path: string): string {
@@ -47,23 +60,31 @@
     <UnderlineTabs.Trigger value="general">
       {$t('settings.auth.tabs.general')}
     </UnderlineTabs.Trigger>
-    <UnderlineTabs.Trigger value="sso">
-      {$t('settings.auth.tabs.sso')}
-    </UnderlineTabs.Trigger>
-    <UnderlineTabs.Trigger value="token-auth">
-      {$t('settings.auth.tabs.token_auth')}
-    </UnderlineTabs.Trigger>
+    {#if ssoLicensed}
+      <UnderlineTabs.Trigger value="sso">
+        {$t('settings.auth.tabs.sso')}
+      </UnderlineTabs.Trigger>
+    {/if}
+    {#if tokenAuthLicensed}
+      <UnderlineTabs.Trigger value="token-auth">
+        {$t('settings.auth.tabs.token_auth')}
+      </UnderlineTabs.Trigger>
+    {/if}
   </UnderlineTabs.List>
 
   <UnderlineTabs.Content value="general">
     <AuthGeneral />
   </UnderlineTabs.Content>
 
-  <UnderlineTabs.Content value="sso">
-    <AuthSso />
-  </UnderlineTabs.Content>
+  {#if ssoLicensed}
+    <UnderlineTabs.Content value="sso">
+      <AuthSso />
+    </UnderlineTabs.Content>
+  {/if}
 
-  <UnderlineTabs.Content value="token-auth">
-    <AuthTokenAuth />
-  </UnderlineTabs.Content>
+  {#if tokenAuthLicensed}
+    <UnderlineTabs.Content value="token-auth">
+      <AuthTokenAuth />
+    </UnderlineTabs.Content>
+  {/if}
 </UnderlineTabs.Root>

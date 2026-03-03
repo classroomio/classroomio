@@ -5,6 +5,7 @@ import {
   createOrganizationPlan,
   deleteOrganizationMember,
   getOrgIdBySiteName,
+  getFirstOrganizationWithPlans,
   getOrganizationAudience,
   getOrganizationBySiteName,
   getOrganizationTeam,
@@ -78,6 +79,19 @@ export async function getOrganizationsWithFilters(filters?: {
       ErrorCodes.ORGANIZATION_NOT_FOUND,
       500
     );
+  }
+}
+
+/**
+ * Gets the first organization with plans - for self-hosted single-org mode
+ * @returns First organization or null
+ */
+export async function getFirstOrgForSelfHosted(): Promise<OrganizationWithPlans | null> {
+  try {
+    return await getFirstOrganizationWithPlans();
+  } catch (error) {
+    console.error('getFirstOrgForSelfHosted error:', error);
+    return null;
   }
 }
 

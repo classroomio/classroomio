@@ -17,6 +17,7 @@ import { mailRouter } from '@api/routes/mail';
 import { mediaRouter } from '@api/routes/media';
 import { onboardingRouter } from '@api/routes/onboarding';
 import { organizationRouter } from '@api/routes/organization';
+import { licenseRouter } from '@api/routes/license';
 import { organizationSsoRouter } from '@api/routes/organization/sso';
 import { organizationTokenAuthRouter } from '@api/routes/organization/token-auth';
 import { ssoDiscoveryRouter } from '@api/routes/sso/discovery';
@@ -83,6 +84,7 @@ export const app = new Hono()
   .route('/domain', domainRouter)
   .route('/mail', mailRouter)
   .route('/media', mediaRouter)
+  .route('/license', licenseRouter)
   .route('/organization', organizationRouter)
   .route('/organization/sso', organizationSsoRouter)
   .route('/organization/token-auth', organizationTokenAuthRouter)

@@ -255,6 +255,10 @@
       "general": {
         "heading": "Authentication Settings",
         "description": "Control how users can sign up and log in to your organization.",
+        "allow_public_signups": {
+          "label": "Allow public signups",
+          "description": "When disabled, only users with an invite link can sign up. Enable to allow anyone to create an account."
+        },
         "disable_signup": {
           "label": "Disable Signup",
           "description": "Prevent new users from signing up. Only invited users can join."

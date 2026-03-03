@@ -14,6 +14,7 @@ import { resolve } from '$app/paths';
 import { setSentryUser } from '$lib/utils/services/sentry';
 import { setTheme } from '$lib/utils/functions/theme';
 import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
+import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 
 type AppSetupParams = {
   isOrgSite: boolean;
@@ -116,9 +117,13 @@ class AppInitApi extends BaseApi {
     }
 
     const userHasOrganizations = this.data.organizations.length > 0;
-    const shouldRedirectToOnboarding = !isOrgSite && !userHasOrganizations;
+    const shouldRedirectToOnboarding = !isOrgSite && !userHasOrganizations && PUBLIC_IS_SELFHOSTED !== 'true';
     if (shouldRedirectToOnboarding) {
       return goto(resolve(`/onboarding`, {}));
+    }
+    // Self-hosted: when user has no orgs, route to /lms
+    if (PUBLIC_IS_SELFHOSTED === 'true' && !userHasOrganizations) {
+      return goto(resolve(`/lms`, {}));
     }
 
     if (!shouldRedirectOnAuth(page.url.pathname)) return;

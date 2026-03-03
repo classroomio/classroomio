@@ -17,6 +17,7 @@ import {
   cancelOrgPlan,
   createOrg,
   createOrgPlan,
+  getFirstOrgForSelfHosted,
   getOrgAudience,
   getOrgSetupData,
   getOrgTeam,
@@ -46,6 +47,25 @@ import { tagsRouter } from '@api/routes/organization/tags';
 import { zValidator } from '@hono/zod-validator';
 
 export const organizationRouter = new Hono()
+  /**
+   * GET /organization/first
+   * Gets the first organization (for self-hosted single-org mode). Requires API key.
+   */
+  .get('/first', authOrApiKeyMiddleware, async (c) => {
+    try {
+      const org = await getFirstOrgForSelfHosted();
+      return c.json(
+        {
+          success: true,
+          data: org ? [org] : []
+        },
+        200
+      );
+    } catch (error) {
+      console.error('Error fetching first organization:', error);
+      return handleError(c, error, 'Failed to fetch first organization');
+    }
+  })
   /**
    * GET /organization
    * Gets organizations with optional filters
