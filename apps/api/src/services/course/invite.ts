@@ -314,6 +314,7 @@ async function createSingleInvite(
 
 async function sendStudentJoinEmails(input: {
   courseId: string;
+  organizationId?: string;
   courseName: string;
   orgName: string;
   studentId: string;
@@ -326,7 +327,10 @@ async function sendStudentJoinEmails(input: {
         orgName: input.orgName,
         courseName: input.courseName
       },
-      from: buildEmailFromName(`${input.orgName} (via ClassroomIO.com)`)
+      from: buildEmailFromName(`${input.orgName} (via ClassroomIO.com)`),
+      context: {
+        organizationId: input.organizationId
+      }
     });
   } catch (error) {
     console.error('Failed to send student welcome email:', error);
@@ -353,7 +357,10 @@ async function sendStudentJoinEmails(input: {
               studentName,
               studentEmail: input.studentEmail
             },
-            from: buildEmailFromName('ClassroomIO')
+            from: buildEmailFromName('ClassroomIO'),
+            context: {
+              organizationId: input.organizationId
+            }
           }).catch((error) => {
             console.error(`Failed to send teacher notification email to ${teacherEmail}:`, error);
           })
@@ -369,6 +376,7 @@ async function createEmailInviteAndSend(input: {
   createdByProfileId: string;
   recipientEmail: string;
   policy: { expiresAt: string; maxUses: number };
+  organizationId?: string;
   orgName: string;
   courseName: string;
   courseSlug: string;
@@ -411,7 +419,10 @@ async function createEmailInviteAndSend(input: {
         inviteLink: createdInvite.inviteLink,
         expiresAt: getExpiryLabel(createdInvite.expiresAt)
       },
-      from: buildEmailFromName(`${input.orgName} (via ClassroomIO.com)`)
+      from: buildEmailFromName(`${input.orgName} (via ClassroomIO.com)`),
+      context: {
+        organizationId: input.organizationId
+      }
     });
 
     const allSuccessful = responses.every((response) => response.success);
@@ -523,6 +534,7 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
   }
 
   const orgName = courseOrgData.orgName || 'ClassroomIO';
+  const organizationId = courseOrgData.orgId ?? undefined;
   const courseName = courseOrgData.courseTitle || course[0].title || 'Course';
 
   const inviteResults = await Promise.all(
@@ -532,6 +544,7 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
         createdByProfileId,
         recipientEmail,
         policy,
+        organizationId,
         orgName,
         courseName,
         courseSlug,
@@ -651,6 +664,7 @@ export async function enrollInCourse(
 
   await sendStudentJoinEmails({
     courseId,
+    organizationId: org.id,
     courseName: title,
     orgName: org.name,
     studentId: user.id,
@@ -919,6 +933,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       return {
         alreadyJoined: true,
         courseId: course.id,
+        orgId: organization.id,
         courseName: course.title,
         orgName: organization.name
       };
@@ -1016,6 +1031,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
     return {
       alreadyJoined: false,
       courseId: course.id,
+      orgId: organization.id,
       courseName: course.title,
       orgName: organization.name
     };
@@ -1024,6 +1040,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
   if (!result.alreadyJoined) {
     await sendStudentJoinEmails({
       courseId: result.courseId,
+      organizationId: result.orgId,
       courseName: result.courseName,
       orgName: result.orgName,
       studentId: user.id,

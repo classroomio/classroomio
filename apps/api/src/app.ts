@@ -23,7 +23,17 @@ import { ssoDiscoveryRouter } from '@api/routes/sso/discovery';
 import { prettyJSON } from 'hono/pretty-json';
 import rateLimiter from '@api/middlewares/rate-limiter';
 import { secureHeaders } from 'hono/secure-headers';
+import { setEmailTemplateResolver } from '@cio/email';
+import { resolveEmailTemplateForSendService } from '@api/services/email-template';
 import { unsplashRouter } from '@api/routes/unsplash/unsplash';
+
+setEmailTemplateResolver(async ({ emailId, organizationId, locale }) =>
+  resolveEmailTemplateForSendService({
+    emailId,
+    organizationId,
+    locale
+  })
+);
 
 // Create Hono app with chaining for RPC support
 export const app = new Hono()

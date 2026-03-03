@@ -158,7 +158,8 @@
       "token_auth_tab": "Token Auth",
       "customize_lms_tab": "Customize LMS",
       "domains_tab": "Domains",
-      "teams_tab": "Teams"
+      "teams_tab": "Teams",
+      "emails_tab": "Emails"
     },
     "profile": {
       "profile_picture": {
@@ -331,6 +332,44 @@
           "activated": "SSO connection activated",
           "deleted": "SSO connection deleted"
         }
+      }
+    },
+    "email_templates": {
+      "title": "Emails",
+      "description": "Customize outbound email templates for your organization and locale.",
+      "loading": "Loading email templates...",
+      "empty_state": "No email templates are available right now.",
+      "list": {
+        "heading": "Templates",
+        "required_badge": "Required"
+      },
+      "status": {
+        "default": "Using default",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
+      },
+      "actions": {
+        "preview": "Preview",
+        "save": "Save",
+        "reset": "Reset locale override"
+      },
+      "editor": {
+        "empty_state": "Select an email template to start editing.",
+        "description": "Changes apply to the selected locale only.",
+        "fallback_label": "Using fallback locale",
+        "enabled_label": "Send this email",
+        "enabled_description": "Turn off delivery for this template in this locale.",
+        "required_description": "This is a required system email and cannot be disabled.",
+        "logo_label": "Logo URL",
+        "logo_placeholder": "https://cdn.example.com/logo.png",
+        "content_label": "HTML Content",
+        "content_placeholder": "<p>Hello {{name}}</p>",
+        "placeholder_hint": "Use placeholders from the list below."
+      },
+      "preview": {
+        "heading": "Preview",
+        "iframe_title": "Email template preview",
+        "empty_state": "Click Preview to render the current template."
       }
     },
     "landing_page": {
@@ -2140,6 +2179,14 @@
       "deleted": "Token auth removed.",
       "activated": "Token auth enabled.",
       "deactivated": "Token auth disabled."
+    },
+    "email_templates": {
+      "saved": "Email template saved.",
+      "reset": "Email template override reset.",
+      "fetch_failed": "Failed to load email templates.",
+      "save_failed": "Failed to save email template.",
+      "reset_failed": "Failed to reset email template override.",
+      "preview_failed": "Failed to preview email template."
     },
     "something": "Something went wrong - Please try later",
     "update": "Update",

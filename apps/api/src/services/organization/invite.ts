@@ -193,6 +193,9 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
             roleName,
             expiresAt: getExpiryLabel(expiresAt),
             inviteLink
+          },
+          context: {
+            organizationId: orgId
           }
         });
 

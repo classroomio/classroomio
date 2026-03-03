@@ -61,6 +61,7 @@ export async function addMember(
 
         if (courseOrgData) {
           const courseName = courseOrgData.courseTitle || '';
+          const organizationId = courseOrgData.orgId ?? undefined;
           const orgName = courseOrgData.orgName || 'ClassroomIO';
 
           // Get student profile data
@@ -88,7 +89,10 @@ export async function addMember(
                   orgName,
                   courseName
                 },
-                from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`)
+                from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
+                context: {
+                  organizationId
+                }
               });
             } catch (emailError) {
               console.error('Failed to send student welcome email:', emailError);
@@ -111,7 +115,10 @@ export async function addMember(
                     studentName,
                     studentEmail
                   },
-                  from: buildEmailFromName('ClassroomIO')
+                  from: buildEmailFromName('ClassroomIO'),
+                  context: {
+                    organizationId
+                  }
                 }).catch((emailError) => {
                   console.error(`Failed to send teacher notification email to ${teacherEmail}:`, emailError);
                 })
@@ -169,6 +176,7 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
     }
 
     const courseName = courseOrgData.courseTitle || '';
+    const organizationId = courseOrgData.orgId ?? undefined;
     const orgName = courseOrgData.orgName || 'ClassroomIO';
     const orgSiteName = courseOrgData.orgSiteName || '';
 
@@ -199,7 +207,10 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
               courseName,
               inviteLink
             },
-            from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`)
+            from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
+            context: {
+              organizationId
+            }
           }).catch((emailError) => {
             console.error(`Failed to send welcome email to ${email}:`, emailError);
             return [];

@@ -1,8 +1,12 @@
 import { EMAIL_IDS } from './constants';
 import type { EmailSchemas } from '../emails';
 
+export type EmailSkipReason = 'TEMPLATE_DISABLED';
+
 export interface EmailResponse {
   success: boolean;
+  skipped?: boolean;
+  reason?: EmailSkipReason;
   error?: string;
   details?: unknown;
 }

@@ -127,6 +127,10 @@ const baseNavConfig: NavItemConfig[] = [
         matchPattern: '^/org/[^/]+/settings/auth(/.*)?$',
         path: '/settings/auth',
         isPaid: true
+      },
+      {
+        titleKey: 'settings.tabs.emails_tab',
+        path: '/settings/emails'
       }
     ],
     nestedRoutes: [
@@ -153,6 +157,10 @@ const baseNavConfig: NavItemConfig[] = [
       {
         path: 'auth/token-auth',
         titleKey: 'settings.tabs.token_auth_tab'
+      },
+      {
+        path: 'emails',
+        titleKey: 'settings.tabs.emails_tab'
       }
     ]
   }

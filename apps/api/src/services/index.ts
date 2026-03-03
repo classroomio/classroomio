@@ -2,6 +2,7 @@ export * from './account';
 export * from './assets';
 export * from './attendance';
 export * from './exercise';
+export * from './email-template';
 export * from './lesson';
 export * from './mark';
 export * from './media';

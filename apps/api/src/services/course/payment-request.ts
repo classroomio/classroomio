@@ -24,6 +24,7 @@ export async function createPaymentRequest(data: PaymentRequestData) {
     }
 
     const courseName = course.courseTitle || '';
+    const organizationId = course.orgId;
     const orgName = course.orgName || 'ClassroomIO';
     const groupId = course.groupId;
 
@@ -49,7 +50,10 @@ export async function createPaymentRequest(data: PaymentRequestData) {
           studentEmail: data.studentEmail,
           studentFullname: data.studentFullname
         },
-        from: buildEmailFromName('ClassroomIO')
+        from: buildEmailFromName('ClassroomIO'),
+        context: {
+          organizationId: organizationId ?? undefined
+        }
       });
     } catch (emailError) {
       console.error('Failed to send teacher buy request email:', emailError);
@@ -67,7 +71,10 @@ export async function createPaymentRequest(data: PaymentRequestData) {
           orgName
         },
         from: buildEmailFromName(`${orgName} - ClassroomIO`),
-        replyTo: teacherEmail
+        replyTo: teacherEmail,
+        context: {
+          organizationId: organizationId ?? undefined
+        }
       });
     } catch (emailError) {
       console.error('Failed to send student payment proof email:', emailError);

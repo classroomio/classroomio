@@ -13,11 +13,11 @@ import {
   updateSubmission,
   upsertQuestionAnswer
 } from '@cio/db/queries/submission';
-import { getCourseById, getOrganizationByCourseId } from '@cio/db/queries/course';
+import { getCourseById, getCourseWithOrgData } from '@cio/db/queries/course';
 import { getCourseTeachers, getProfileByGroupMemberId } from '@cio/db/queries/course/people';
 
 import { db } from '@cio/db/drizzle';
-import { buildEmailFromName, deliverEmail } from '@cio/email';
+import { sendEmail } from '@cio/email';
 import { env } from '@api/config/env';
 import { getExerciseById, getExerciseWithRelationsOptimized } from '@cio/db/queries/exercise';
 import {
@@ -565,10 +565,8 @@ async function sendSubmissionUpdateEmail(submissionId: string, newStatusId: numb
     return;
   }
 
-  // Get organization name
-  const orgResult = await getOrganizationByCourseId(fullSubmission.courseId || '');
-
-  const orgName = orgResult?.orgName || 'ClassroomIO';
+  const courseOrgData = await getCourseWithOrgData(fullSubmission.courseId || '');
+  const organizationId = courseOrgData?.orgId ?? undefined;
 
   const statusText = LEGACY_BOARD_STATUS_LABELS[newStatusId] || 'Updated';
   const baseUrl = env.NODE_ENV === 'development' ? 'http://localhost:5173' : 'https://app.classroomio.com';
@@ -579,38 +577,23 @@ async function sendSubmissionUpdateEmail(submissionId: string, newStatusId: numb
   const totalMark = answers.reduce((sum: number, a: any) => sum + (a.point || 0), 0);
   const maxMark = (fullSubmission.exercise.questions || []).reduce((sum: number, q: any) => sum + (q.points || 0), 0);
 
-  let content = `
-    <p>Hello ${fullSubmission.groupmember.profile.fullname || 'Student'},</p>
-    <p>The status of your submitted exercise on <strong>${fullSubmission.exercise.title}</strong> has been updated to ${statusText}</p>
-  `;
-
-  if (newStatusId === 3) {
-    content += `
-      <p>Your score was ${totalMark}/${maxMark}</p>
-      <a class="button" href="${exerciseLink}">View your Result</a>
-    `;
-  } else {
-    content += `<a class="button" href="${exerciseLink}">Open Exercise</a>`;
-  }
-
-  if (fullSubmission.lesson?.title) {
-    content += `
-      <p>This exercise is for <strong>${fullSubmission.lesson.title}</strong> in a course you are taking titled <strong>${course.title}</strong></p>
-    `;
-  } else {
-    content += `
-      <p>This exercise is in a course you are taking titled <strong>${course.title}</strong></p>
-    `;
-  }
-
-  await deliverEmail([
-    {
-      from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
-      to: fullSubmission.groupmember.profile.email,
-      subject: 'Submission Update',
-      content
+  await sendEmail('submissionStatusUpdate', {
+    to: fullSubmission.groupmember.profile.email,
+    fields: {
+      studentName: fullSubmission.groupmember.profile.fullname || 'Student',
+      exerciseTitle: fullSubmission.exercise.title,
+      statusText,
+      exerciseLink,
+      courseTitle: course.title,
+      lessonTitle: fullSubmission.lesson?.title || undefined,
+      totalMark: newStatusId === 3 ? totalMark : undefined,
+      maxMark: newStatusId === 3 ? maxMark : undefined
+    },
+    context: {
+      organizationId,
+      locale: fullSubmission.groupmember.profile.locale ?? undefined
     }
-  ]);
+  });
 }
 
 /**
@@ -643,35 +626,28 @@ async function sendExerciseSubmissionUpdateEmail(courseId: string, exerciseId: s
     return;
   }
 
-  // Get organization name
-  const orgResult = await getOrganizationByCourseId(courseId);
-
-  const orgName = orgResult?.orgName || 'ClassroomIO';
+  const courseOrgData = await getCourseWithOrgData(courseId);
+  const organizationId = courseOrgData?.orgId ?? undefined;
+  const courseTitle = course[0]?.title || courseOrgData?.courseTitle || 'Course';
 
   const baseUrl = env.NODE_ENV === 'development' ? 'http://localhost:5173' : 'https://app.classroomio.com';
-  const exerciseLink = `${baseUrl}/courses/${courseId}/exercises/${exerciseId}`;
   const submissionLink = `${baseUrl}/courses/${courseId}/submissions`;
-
-  const content = `
-    <p>Hello,</p>
-    <p>A student ${student.fullname || student.username} just submitted an exercise <a href="${exerciseLink}">${exercise.title}</a></p>
-    <p>You can get started grading by clicking "Open Submissions"</p>
-    <div>
-      <a class="button" href="${submissionLink}">Open Submissions</a>
-    </div>
-  `;
 
   // Send email to all tutors
   const emailPromises = tutorsResult.map((tutor) => {
     if (!tutor.email) return Promise.resolve();
-    return deliverEmail([
-      {
-        from: buildEmailFromName(`${orgName} (via ClassroomIO.com)`),
-        to: tutor.email,
-        subject: `[Submitted]: ${exercise.title}`,
-        content
+    return sendEmail('exerciseSubmissionReceived', {
+      to: tutor.email,
+      fields: {
+        studentName: student.fullname || student.username || 'Student',
+        exerciseTitle: exercise.title || 'Exercise',
+        submissionLink,
+        courseTitle
+      },
+      context: {
+        organizationId
       }
-    ]);
+    });
   });
 
   await Promise.all(emailPromises);

@@ -11,12 +11,13 @@ import { deliverEmail } from '../send';
 export async function sendTemplateEmail<TSchema extends z.ZodType>(
   config: SendTemplateConfig<TSchema>
 ): Promise<EmailResponse[]> {
-  const content = config.template.render(config.fields);
+  const content = config.contentOverride ?? config.template.render(config.fields);
+  const subject = config.subjectOverride ?? config.template.subject;
 
   return deliverEmail([
     {
       to: config.to,
-      subject: config.template.subject,
+      subject,
       content,
       from: config.from ?? config.template.from,
       replyTo: config.replyTo ?? config.template.replyTo

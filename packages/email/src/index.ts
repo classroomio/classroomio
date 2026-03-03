@@ -22,16 +22,27 @@
 import './emails/index';
 
 // Export unified API
-export { sendEmail, defineEmail } from './send';
+export { sendEmail, defineEmail, setEmailTemplateResolver } from './send';
 
 // Export types for advanced usage
-export type { EmailTemplate, EmailDefinition, SendConfig, DefineEmailConfig } from './core/types';
+export type {
+  EmailTemplate,
+  EmailDefinition,
+  SendConfig,
+  DefineEmailConfig,
+  SendContext,
+  EmailTemplateResolver,
+  ResolvedEmailTemplateOverride
+} from './core/types';
 export type { EmailId, EmailSchemaFor } from './utils/types';
+export { getEmailTemplateCatalog } from './core/catalog';
+export type { EmailTemplateCatalogItem } from './core/catalog';
 
 // Re-export low-level utilities
 export { deliverEmail } from './send';
 export { buildEmailFromName } from './utils/functions/email-helpers';
 export { getDefaultTemplate } from './templates/default';
+export { applyDefaultTemplateOverrides } from './utils/functions/template-overrides';
 
 // Export email registry for introspection (optional)
 export { EmailRegistry } from './core/registry';
