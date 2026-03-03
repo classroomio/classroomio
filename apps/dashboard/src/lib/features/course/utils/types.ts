@@ -401,3 +401,19 @@ export type GetTemplateByTagData = GetTemplateByTagSuccess['data'];
 export type GetTemplateByIdRequest = (typeof classroomio.course)[':courseId']['exercise']['template'][':id']['$get'];
 export type GetTemplateByIdSuccess = Extract<InferResponseType<GetTemplateByIdRequest>, { success: true }>;
 export type GetTemplateByIdData = GetTemplateByIdSuccess['data'];
+
+// Presign types
+export type DocumentUploadPresignRequest = (typeof classroomio.course)['presign']['document']['upload']['$post'];
+export type DocumentUploadPresignSuccess = Extract<InferResponseType<DocumentUploadPresignRequest>, { success: true }>;
+
+export type DocumentDownloadPresignRequest = (typeof classroomio.course)['presign']['document']['download']['$post'];
+export type DocumentDownloadPresignSuccess = Extract<
+  InferResponseType<DocumentDownloadPresignRequest>,
+  { success: true }
+>;
+
+export type VideoUploadPresignRequest = (typeof classroomio.course)['presign']['video']['upload']['$post'];
+export type VideoUploadPresignSuccess = Extract<InferResponseType<VideoUploadPresignRequest>, { success: true }>;
+
+export type VideoDownloadPresignRequest = (typeof classroomio.course)['presign']['video']['download']['$post'];
+export type VideoDownloadPresignSuccess = Extract<InferResponseType<VideoDownloadPresignRequest>, { success: true }>;

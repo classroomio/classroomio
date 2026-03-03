@@ -8,4 +8,5 @@ export * from './lesson.svelte';
 export * from './mark.svelte';
 export * from './newsfeed.svelte';
 export * from './people.svelte';
+export * from './presign.svelte';
 export * from './submission.svelte';

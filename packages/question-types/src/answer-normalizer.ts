@@ -29,27 +29,42 @@ export interface QuestionForNormalization {
  * Deserializes a stored openAnswer value for a given question type.
  * FILL_BLANK is stored as JSON.stringify(string[]) because the DB open_answer
  * column is text-only; this restores the array for consumers.
+ * FILE_UPLOAD is stored as JSON.stringify({ fileName, fileKey, mimeType, size });
  * Prefer fixing this at the API layer when building submission responses.
  */
 export function deserializeStoredAnswer(
   questionTypeId: number,
   rawValue: string | string[] | null | undefined
-): string | string[] | null | undefined {
+): ExerciseAnswerValue {
   if (rawValue === null || rawValue === undefined) return rawValue;
 
   const metadata = getQuestionTypeById(questionTypeId);
-  if (metadata?.key !== QUESTION_TYPE_KEY.FILL_BLANK || typeof rawValue !== 'string') {
-    return rawValue;
+  const questionTypeKey = metadata?.key ?? null;
+
+  if (questionTypeKey === QUESTION_TYPE_KEY.FILL_BLANK && typeof rawValue === 'string') {
+    try {
+      const parsed = JSON.parse(rawValue) as unknown;
+      if (!Array.isArray(parsed)) return rawValue;
+      const arr = (parsed as unknown[]).map((x) => String(x).trim()).filter(Boolean);
+      return arr.length === 1 ? arr[0] : arr;
+    } catch {
+      return rawValue;
+    }
   }
 
-  try {
-    const parsed = JSON.parse(rawValue) as unknown;
-    if (!Array.isArray(parsed)) return rawValue;
-    const arr = (parsed as unknown[]).map((x) => String(x).trim()).filter(Boolean);
-    return arr.length === 1 ? arr[0] : arr;
-  } catch {
-    return rawValue;
+  if (questionTypeKey === QUESTION_TYPE_KEY.FILE_UPLOAD && typeof rawValue === 'string') {
+    try {
+      const parsed = JSON.parse(rawValue) as unknown;
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) && 'fileKey' in parsed) {
+        return parsed as Record<string, unknown>;
+      }
+      return rawValue;
+    } catch {
+      return rawValue;
+    }
   }
+
+  return rawValue as ExerciseAnswerValue;
 }
 
 /**
@@ -75,6 +90,17 @@ export function normalizeAnswerForDisplay(
     const label = String(option?.label ?? option?.value ?? '');
     const resolved = labelToBoolean(label);
     if (resolved !== undefined) return resolved;
+  }
+
+  if (questionTypeKey === QUESTION_TYPE_KEY.FILE_UPLOAD && typeof rawAnswer === 'string') {
+    try {
+      const parsed = JSON.parse(rawAnswer) as unknown;
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) && 'fileKey' in parsed) {
+        return parsed as Record<string, unknown>;
+      }
+    } catch {
+      // fall through
+    }
   }
 
   return rawAnswer as ExerciseAnswerValue;

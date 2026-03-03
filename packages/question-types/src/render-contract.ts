@@ -1,5 +1,6 @@
 import type {
   ExerciseAnswerValue,
+  ExerciseQuestionFileUploader,
   ExerciseQuestionImageUploader,
   ExerciseQuestionLabelKey,
   ExerciseQuestionLabels,
@@ -14,6 +15,7 @@ export interface ExerciseQuestionRenderContract {
   disabled?: boolean;
   labels?: ExerciseQuestionLabels;
   onImageUpload?: ExerciseQuestionImageUploader;
+  onFileUpload?: ExerciseQuestionFileUploader;
 }
 
 export interface ExerciseQuestionListRenderContract {
@@ -23,6 +25,7 @@ export interface ExerciseQuestionListRenderContract {
   disabled?: boolean;
   labels?: ExerciseQuestionLabels;
   onImageUpload?: ExerciseQuestionImageUploader;
+  onFileUpload?: ExerciseQuestionFileUploader;
 }
 
 export function getExerciseQuestionLabel(

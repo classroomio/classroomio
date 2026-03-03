@@ -179,6 +179,15 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     'file_upload.take.upload_button': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.file_upload.take.upload_button'
     ),
+    'file_upload.take.upload_progress': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.file_upload.take.upload_progress'
+    ),
+    'file_upload.take.upload_error': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.file_upload.take.upload_error'
+    ),
+    'file_upload.take.view': t.get(
+      'course.navItem.lessons.exercises.all_exercises.shared_question.file_upload.take.view'
+    ),
     'file_upload.take.download': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.file_upload.take.download'
     ),

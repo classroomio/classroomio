@@ -9,8 +9,12 @@ import {
 
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getPresignS3Client, getS3Client, getStorageConfig } from '@api/config/storage';
+import { redis } from '@api/utils/redis/redis';
 
 export type GetSignedUrlParameters = Parameters<typeof getSignedUrl>;
+
+const PRESIGN_CACHE_TTL_SECONDS = 3000; // 50 min; presigned URLs typically valid 1 hour
+const PRESIGN_CACHE_KEY_PREFIX = 'presign:download:';
 
 export async function uploadToS3(params: PutObjectCommandInput): Promise<{ success: boolean; error?: string }> {
   try {
@@ -42,7 +46,8 @@ export async function deleteFromS3(params: DeleteObjectCommandInput): Promise<{ 
 }
 
 /**
- * Generates presigned URLs for download for a list of keys in a specific bucket
+ * Generates presigned URLs for download for a list of keys in a specific bucket.
+ * Uses Redis cache to avoid repeated S3 getSignedUrl calls for the same file.
  * @param keys Array of S3 keys
  * @param bucketName Bucket name (e.g., 'videos', 'documents')
  * @returns Record mapping keys to presigned URLs
@@ -59,7 +64,33 @@ export async function generateDownloadPresignedUrls(
     return signedUrls;
   }
 
-  const urlPromises = keys.map(async (key) => {
+  const cacheKeys = keys.map((key) => `${PRESIGN_CACHE_KEY_PREFIX}${bucketName}:${key}`);
+
+  let cachedValues: (string | null)[] | null = null;
+  try {
+    cachedValues = await redis.mGet(cacheKeys);
+  } catch (error) {
+    console.error('Redis mGet failed for presigned URL cache, falling back to S3:', error);
+  }
+
+  const keysToGenerate: string[] = [];
+  if (cachedValues) {
+    cachedValues.forEach((val, i) => {
+      if (val) {
+        signedUrls[keys[i]] = val;
+      } else {
+        keysToGenerate.push(keys[i]);
+      }
+    });
+  } else {
+    keysToGenerate.push(...keys);
+  }
+
+  if (keysToGenerate.length === 0) {
+    return signedUrls;
+  }
+
+  const urlPromises = keysToGenerate.map(async (key) => {
     try {
       const command = new GetObjectCommand({
         Bucket: bucketName,
@@ -79,11 +110,20 @@ export async function generateDownloadPresignedUrls(
 
   const results = await Promise.all(urlPromises);
 
-  results.forEach((result) => {
-    if (result) {
-      signedUrls[result.key] = result.presignedUrl;
-    }
-  });
+  try {
+    const pipeline = redis.multi();
+    results.forEach((result) => {
+      if (result) {
+        signedUrls[result.key] = result.presignedUrl;
+        const cacheKey = `${PRESIGN_CACHE_KEY_PREFIX}${bucketName}:${result.key}`;
+        pipeline.setEx(cacheKey, PRESIGN_CACHE_TTL_SECONDS, result.presignedUrl);
+      }
+    });
+    await pipeline.exec();
+  } catch (error) {
+    console.error('Redis setEx failed for presigned URL cache:', error);
+    // URLs are already in signedUrls; cache write failure is non-fatal
+  }
 
   return signedUrls;
 }

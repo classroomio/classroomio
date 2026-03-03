@@ -1,3 +1,4 @@
+import { presignApi } from '../api';
 import type { CourseMembers } from './types';
 import { ROUTES } from './constants';
 import { deserializeStoredAnswer } from '@cio/question-types';
@@ -64,4 +65,44 @@ export function formatAnswers(data) {
   }
 
   return answers;
+}
+
+/**
+ * Enriches FILE_UPLOAD answers (objects with fileKey) with presigned download URLs.
+ * Used when displaying submitted/graded exercise answers so users can download files.
+ */
+export async function enrichFileUploadAnswersWithUrls(
+  answers: Record<string, unknown>
+): Promise<Record<string, unknown>> {
+  const fileKeys: string[] = [];
+  const keysByAnswerKey: string[] = [];
+
+  for (const [answerKey, value] of Object.entries(answers)) {
+    if (value && typeof value === 'object' && !Array.isArray(value) && 'fileKey' in value) {
+      const key = (value as { fileKey: string }).fileKey;
+      if (typeof key === 'string' && key.length > 0) {
+        fileKeys.push(key);
+        keysByAnswerKey.push(answerKey);
+      }
+    }
+  }
+
+  if (fileKeys.length === 0) return answers;
+
+  try {
+    const urls = await presignApi.getDocumentDownloadUrls(fileKeys);
+    if (Object.keys(urls).length === 0) return answers;
+
+    const enriched = { ...answers };
+    fileKeys.forEach((fileKey, i) => {
+      const answerKey = keysByAnswerKey[i];
+      const url = urls[fileKey];
+      if (answerKey && url && enriched[answerKey] && typeof enriched[answerKey] === 'object') {
+        enriched[answerKey] = { ...(enriched[answerKey] as object), fileUrl: url };
+      }
+    });
+    return enriched;
+  } catch {
+    return answers;
+  }
 }

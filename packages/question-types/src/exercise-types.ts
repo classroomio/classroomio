@@ -66,7 +66,10 @@ export type ExerciseQuestionLabelKey =
   | 'file_upload.edit.max_size_placeholder'
   | 'file_upload.take.selected_file_label'
   | 'file_upload.take.upload_button'
+  | 'file_upload.take.upload_progress'
+  | 'file_upload.take.upload_error'
   | 'file_upload.take.download'
+  | 'file_upload.take.view'
   | 'file_upload.preview.accepted_types_label'
   | 'file_upload.preview.max_size_label'
   | 'link.edit.instructions_placeholder'
@@ -133,6 +136,10 @@ export type ExerciseAnswerValue =
 
 export type ExerciseQuestionImageUploader = (file: File) => Promise<string>;
 
+export type ExerciseQuestionFileUploader = (
+  file: File
+) => Promise<{ fileKey: string; fileName: string; fileUrl?: string }>;
+
 export interface ExerciseRendererDefinition<TRenderer = unknown> {
   edit: TRenderer;
   take: TRenderer;
@@ -147,4 +154,5 @@ export interface ExerciseQuestionRendererProps {
   onAnswerChange?: (answer: ExerciseAnswerValue) => void;
   onQuestionChange?: (question: ExerciseQuestionModel) => void;
   onImageUpload?: ExerciseQuestionImageUploader;
+  onFileUpload?: ExerciseQuestionFileUploader;
 }

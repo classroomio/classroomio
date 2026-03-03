@@ -34,7 +34,8 @@
         answer: contract.answersByKey?.[questionKey],
         disabled: contract.disabled,
         labels: contract.labels,
-        onImageUpload: contract.onImageUpload
+        onImageUpload: contract.onImageUpload,
+        onFileUpload: contract.onFileUpload
       }}
       onAnswerChange={(answer) => onAnswerChange(question, answer)}
       onQuestionChange={(updatedQuestion) => onQuestionChange(question, updatedQuestion)}

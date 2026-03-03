@@ -1444,6 +1444,9 @@
                 "take": {
                   "selected_file_label": "Selected file",
                   "upload_button": "Upload",
+                  "upload_progress": "Uploading...",
+                  "upload_error": "Upload failed",
+                  "view": "View",
                   "download": "Download"
                 },
                 "preview": {

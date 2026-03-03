@@ -54,7 +54,7 @@
     "hono": "^4.11.3",
     "hono-openapi": "^1.0.8",
     "hono-rate-limiter": "^0.4.2",
-    "ioredis": "^5.7.0",
+    "redis": "^4.7.0",
     "katex": "^0.16.10",
     "marked": "^7.0.3",
     "nanoid": "^5.1.5",

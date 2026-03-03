@@ -10,6 +10,7 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import type { SubmissionIdData } from '$features/course/utils/types';
   import { normalizeAnswersForDisplay } from '@cio/question-types';
+  import { enrichFileUploadAnswersWithUrls } from '$features/course/utils/functions';
 
   import Preview from './preview.svelte';
   import * as Dialog from '@cio/ui/base/dialog';
@@ -75,7 +76,19 @@
       : []
   );
 
-  const normalizedAnswers = $derived(normalizeAnswersForDisplay(data.answers || {}, data.questions || []));
+  let answersToDisplay = $state<Record<string, unknown>>({});
+
+  $effect(() => {
+    if (!data?.answers || !data?.questions) {
+      answersToDisplay = {};
+      return;
+    }
+    const base = normalizeAnswersForDisplay(data.answers || {}, data.questions || []);
+    answersToDisplay = base as Record<string, unknown>;
+    enrichFileUploadAnswersWithUrls(base as Record<string, unknown>).then((enriched) => {
+      answersToDisplay = enriched;
+    });
+  });
 
   function getMaxPoints(questions) {
     return (questions || []).reduce((acc, question) => acc + question.points, 0);
@@ -271,7 +284,7 @@
           <Preview
             questions={sortedQuestions}
             questionnaireMetaData={{
-              answers: normalizedAnswers,
+              answers: answersToDisplay,
               isFinished: true
             }}
             bind:grades={data.questionAnswerByPoint}

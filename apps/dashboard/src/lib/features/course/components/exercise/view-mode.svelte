@@ -18,8 +18,8 @@
   import { getExerciseQuestionContractKey } from '@cio/question-types';
   import { STATUS } from './constants';
   import { filterOutDeleted } from './functions';
-  import { formatAnswers, getGroupMemberId } from '$features/course/utils/functions';
-  import { exerciseApi, submissionApi } from '$features/course/api';
+  import { enrichFileUploadAnswersWithUrls, formatAnswers, getGroupMemberId } from '$features/course/utils/functions';
+  import { exerciseApi, presignApi, submissionApi } from '$features/course/api';
   import { profile } from '$lib/utils/store/user';
   import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import { t } from '$lib/utils/functions/translations';
@@ -27,6 +27,7 @@
   import { ContentType } from '@cio/utils/constants/content';
   import { getQuestionTypeKey, questionTypeSupportsOptions, toExerciseQuestionModel } from './question-type-utils';
   import { getExerciseQuestionLabels } from './question-labels';
+  import axios from 'axios';
 
   interface Props {
     preview?: boolean;
@@ -123,6 +124,11 @@
     }
 
     if (answerValue && typeof answerValue === 'object') {
+      const obj = answerValue as Record<string, unknown>;
+      if ('fileKey' in obj && typeof obj.fileKey === 'string') {
+        const { fileUrl: _fileUrl, ...rest } = obj;
+        return { questionId, answer: JSON.stringify(rest) };
+      }
       return { questionId, answer: JSON.stringify(answerValue) };
     }
 
@@ -250,12 +256,15 @@
           {}
         );
 
+        const baseAnswers = formatAnswers({
+          questions: $questionnaire.questions,
+          answers: submission.answers
+        });
+        const answers = await enrichFileUploadAnswersWithUrls(baseAnswers as Record<string, unknown>);
+
         questionnaireMetaData.update((m) => ({
           ...m,
-          answers: formatAnswers({
-            questions: $questionnaire.questions,
-            answers: submission.answers
-          }),
+          answers,
           totalPossibleGrade,
           currentQuestionIndex: $questionnaire.questions.length,
           isFinished: true,
@@ -285,6 +294,28 @@
     }
     isLoadingAutoSavedData = false;
     alreadyCheckedAutoSavedData = true;
+  }
+
+  async function handleFileUpload(file: File): Promise<{ fileKey: string; fileName: string; fileUrl?: string }> {
+    const uploadResult = await presignApi.getDocumentUploadUrl(
+      file.name,
+      file.type as
+        | 'application/pdf'
+        | 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        | 'application/msword'
+    );
+    if (!uploadResult) {
+      throw new Error('Failed to get upload URL');
+    }
+    await axios.put(uploadResult.url, file, {
+      headers: { 'Content-Type': file.type },
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity
+    });
+    const urls = await presignApi.getDocumentDownloadUrls([uploadResult.fileKey]);
+    const fileUrl = urls[uploadResult.fileKey];
+
+    return { fileKey: uploadResult.fileKey, fileName: file.name, fileUrl };
   }
 
   function hasAnswerValue(answerValue) {
@@ -531,7 +562,8 @@
                 question: sharedQuestionModel,
                 answer: sharedCurrentAnswer,
                 labels: questionLabels,
-                disabled: isSubmitting
+                disabled: isSubmitting,
+                onFileUpload: handleFileUpload
               }}
               onAnswerChange={onSharedAnswerChange}
             />

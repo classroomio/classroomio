@@ -63,6 +63,7 @@ export { TextareaField } from './custom/textarea-field';
 export { CheckboxField } from './custom/checkbox-field';
 export { RadioItem } from './custom/radio-item';
 export { RadioOptionCard, RadioOptionCardGroup, type RadioOptionCardOption } from './custom/radio-option-card';
+export { DocumentCard } from './custom/document-card';
 export * as ExerciseQuestion from './custom/exercise-question';
 export * as MediaPlayer from './custom/media-player';
 export * as YoutubeLinkForm from './custom/youtube-link-form';

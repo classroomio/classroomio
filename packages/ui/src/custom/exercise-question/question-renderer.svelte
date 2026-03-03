@@ -460,6 +460,7 @@
     disabled={contract.disabled}
     labels={contract.labels}
     onImageUpload={contract.onImageUpload}
+    onFileUpload={contract.onFileUpload}
     {onAnswerChange}
     {onQuestionChange}
   />
