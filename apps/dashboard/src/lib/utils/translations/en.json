@@ -158,8 +158,7 @@
       "token_auth_tab": "Token Auth",
       "customize_lms_tab": "Customize LMS",
       "domains_tab": "Domains",
-      "teams_tab": "Teams",
-      "emails_tab": "Emails"
+      "teams_tab": "Teams"
     },
     "profile": {
       "profile_picture": {
@@ -668,6 +667,7 @@
     "platform": "Platform",
     "dashboard": "Dashboard",
     "courses": "Courses",
+    "emails": "Emails",
     "tags": "Tags",
     "community": "Community",
     "audience": "Audience",
