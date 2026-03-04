@@ -35,6 +35,7 @@ import { inviteTeamMembers } from '@api/services/organization/invite';
 import { Hono } from '@api/utils/hono';
 import { TOrganization } from '@db/types';
 import { assetsRouter } from '@api/routes/organization/assets';
+import { organizationEmailTemplateRouter } from '@api/routes/organization/email-template';
 import { authMiddleware } from '@api/middlewares/auth';
 import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
 import { getLMSExercisesService } from '@api/services/exercise';
@@ -482,5 +483,6 @@ export const organizationRouter = new Hono()
     }
   })
   .route('/tags', tagsRouter)
+  .route('/email-templates', organizationEmailTemplateRouter)
   .route('/assets', assetsRouter)
   .route('/:orgId/quiz', quizRouter);

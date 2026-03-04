@@ -81,6 +81,9 @@ importers:
       dotenv:
         specifier: ^16.3.1
         version: 16.6.1
+      drizzle-orm:
+        specifier: ^0.44.7
+        version: 0.44.7(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7)
       hono:
         specifier: ^4.11.3
         version: 4.11.3
@@ -236,6 +239,9 @@ importers:
 
   apps/dashboard:
     dependencies:
+      '@better-auth/sso':
+        specifier: 1.4.18
+        version: 1.4.18(@better-auth/utils@0.3.0)(better-auth@1.4.9(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.31.1)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.31.1)(sass@1.97.1)))(@tanstack/react-start@1.143.4(crossws@0.4.1(srvx@0.9.8))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.31.1)(sass@1.97.1)))(drizzle-kit@0.31.8)(drizzle-orm@0.44.7(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7))(pg@8.18.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(solid-js@1.9.10)(svelte@5.46.0)(vitest@2.1.9(@types/node@20.19.27)(jsdom@26.1.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(lightningcss@1.31.1)(sass@1.97.1))(vue@3.5.26(typescript@5.9.3)))
       '@carbon/charts-svelte':
         specifier: ^1.13.6
         version: 1.22.18(svelte@5.46.0)
@@ -646,7 +652,7 @@ importers:
         version: 3.3.1(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.31.1)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.31.1)(sass@1.97.1)))
       '@sveltejs/adapter-vercel':
         specifier: ^4.0.0
-        version: 4.0.5(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.31.1)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.31.1)(sass@1.97.1)))
+        version: 4.0.5(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.31.1)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.31.1)(sass@1.97.1)))(encoding@0.1.13)
       '@sveltejs/kit':
         specifier: ^2.5.27
         version: 2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.31.1)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.31.1)(sass@1.97.1))
@@ -1188,6 +1194,9 @@ importers:
         specifier: workspace:*
         version: link:../tsconfig
     devDependencies:
+      tsc-alias:
+        specifier: ^1.8.16
+        version: 1.8.16
       tsx:
         specifier: ^4.7.1
         version: 4.21.0
@@ -8419,6 +8428,7 @@ packages:
   git-raw-commits@2.0.11:
     resolution: {integrity: sha512-VnctFhw+xfj8Va1xtfEqCUD2XDrbAPSJx+hSrE5K7fGdjZruW7XV+QOrN7LF/RJyvspRiD2I0asWsxFp0ya26A==}
     engines: {node: '>=10'}
+    deprecated: This package is no longer maintained. For the JavaScript API, please use @conventional-changelog/git-client instead.
     hasBin: true
 
   git-remote-origin-url@2.0.0:
@@ -8428,6 +8438,7 @@ packages:
   git-semver-tags@4.1.1:
     resolution: {integrity: sha512-OWyMt5zBe7xFs8vglMmhM9lRQzCWL3WjHtxNNfJTMngGym7pC1kh8sP6jevfydJ6LP3ZvGxfb6ABYgPUM0mtsA==}
     engines: {node: '>=10'}
+    deprecated: This package is no longer maintained. For the JavaScript API, please use @conventional-changelog/git-client instead.
     hasBin: true
 
   gitconfiglocal@1.0.0:
@@ -14179,6 +14190,16 @@ snapshots:
       samlify: 2.10.2
       zod: 4.3.6
 
+  '@better-auth/sso@1.4.18(@better-auth/utils@0.3.0)(better-auth@1.4.9(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.31.1)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.31.1)(sass@1.97.1)))(@tanstack/react-start@1.143.4(crossws@0.4.1(srvx@0.9.8))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.31.1)(sass@1.97.1)))(drizzle-kit@0.31.8)(drizzle-orm@0.44.7(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7))(pg@8.18.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(solid-js@1.9.10)(svelte@5.46.0)(vitest@2.1.9(@types/node@20.19.27)(jsdom@26.1.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(lightningcss@1.31.1)(sass@1.97.1))(vue@3.5.26(typescript@5.9.3)))':
+    dependencies:
+      '@better-auth/utils': 0.3.0
+      '@better-fetch/fetch': 1.1.21
+      better-auth: 1.4.9(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.31.1)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.31.1)(sass@1.97.1)))(@tanstack/react-start@1.143.4(crossws@0.4.1(srvx@0.9.8))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@5.4.21(@types/node@20.19.27)(lightningcss@1.31.1)(sass@1.97.1)))(drizzle-kit@0.31.8)(drizzle-orm@0.44.7(@types/pg@8.16.0)(kysely@0.28.9)(pg@8.18.0)(postgres@3.4.7))(pg@8.18.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(solid-js@1.9.10)(svelte@5.46.0)(vitest@2.1.9(@types/node@20.19.27)(jsdom@26.1.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(lightningcss@1.31.1)(sass@1.97.1))(vue@3.5.26(typescript@5.9.3))
+      fast-xml-parser: 5.2.5
+      jose: 6.1.3
+      samlify: 2.10.2
+      zod: 4.3.6
+
   '@better-auth/telemetry@1.4.18(@better-auth/core@1.4.18(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.3.6))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0))':
     dependencies:
       '@better-auth/core': 1.4.18(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.3.6))(jose@6.1.3)(kysely@0.28.9)(nanostores@1.1.0)
@@ -17056,7 +17077,7 @@ snapshots:
       - encoding
       - supports-color
 
-  '@sveltejs/adapter-vercel@4.0.5(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.31.1)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.31.1)(sass@1.97.1)))':
+  '@sveltejs/adapter-vercel@4.0.5(@sveltejs/kit@2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.31.1)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.31.1)(sass@1.97.1)))(encoding@0.1.13)':
     dependencies:
       '@sveltejs/kit': 2.49.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.31.1)(sass@1.97.1)))(svelte@5.46.0)(vite@5.4.21(@types/node@24.10.4)(lightningcss@1.31.1)(sass@1.97.1))
       '@vercel/nft': 0.26.5(encoding@0.1.13)

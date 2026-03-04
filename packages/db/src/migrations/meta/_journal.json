@@ -50,6 +50,13 @@
       "when": 1771176910627,
       "tag": "0006_modern_the_initiative",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1772542734788,
+      "tag": "0007_email_template_customization",
+      "breakpoints": true
     }
   ]
 }

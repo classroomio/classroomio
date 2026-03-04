@@ -10,6 +10,7 @@ import {
 
 import type { AccountOrg } from '$features/app/types';
 import type { Component } from 'svelte';
+import MailIcon from '@lucide/svelte/icons/mail';
 import TagIcon from '@lucide/svelte/icons/tag';
 import { isActive } from '$lib/utils/functions/app';
 
@@ -59,6 +60,12 @@ const baseNavConfig: NavItemConfig[] = [
     path: '/courses',
     icon: CourseIcon,
     matchPattern: '^/org/[^/]+/courses(/.*)?$' // Matches nested routes
+  },
+  {
+    titleKey: 'org_navigation.emails',
+    path: '/emails',
+    icon: MailIcon,
+    matchPattern: '^/org/[^/]+/emails(/.*)?$'
   },
   {
     titleKey: 'org_navigation.tags',

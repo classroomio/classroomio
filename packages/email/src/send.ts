@@ -5,11 +5,24 @@ import { env } from './config/env';
 import { sendWithZoho } from './utils/services/zeptomail';
 import { sendWithNodemailer } from './utils/services/nodemailer';
 import type { EmailResponse, EmailId, EmailSchemaFor } from './utils/types';
-import type { DefineEmailConfig, EmailDefinition, EmailTemplate, SendConfig } from './core/types';
+import type {
+  DefineEmailConfig,
+  EmailDefinition,
+  EmailTemplate,
+  EmailTemplateResolver,
+  SendConfig
+} from './core/types';
 import { EmailRegistry } from './core/registry';
 import { ZodError } from 'zod';
 import { sendTemplateEmail } from './core/base';
 import { EMAIL_FROM, EMAIL_REPLY_TO } from './utils/constants';
+import { applyDefaultTemplateOverrides } from './utils/functions/template-overrides';
+
+let emailTemplateResolver: EmailTemplateResolver | null = null;
+
+export function setEmailTemplateResolver(resolver: EmailTemplateResolver | null): void {
+  emailTemplateResolver = resolver;
+}
 
 /**
  * Define an email template with schema validation
@@ -87,6 +100,43 @@ export async function sendEmail<TEmailId extends EmailId>(
   try {
     // Validate fields against template schema
     const validatedFields = template.schema.parse(config.fields);
+    let contentOverride: string | undefined;
+
+    if (emailTemplateResolver && config.context?.organizationId) {
+      try {
+        const resolvedTemplate = await emailTemplateResolver({
+          emailId,
+          organizationId: config.context.organizationId,
+          locale: config.context.locale
+        });
+
+        if (resolvedTemplate && !resolvedTemplate.isEnabled) {
+          return [
+            {
+              success: true,
+              skipped: true,
+              reason: 'TEMPLATE_DISABLED'
+            }
+          ];
+        }
+
+        if (resolvedTemplate && (resolvedTemplate.content !== undefined || resolvedTemplate.logoUrl !== undefined)) {
+          const fieldMap =
+            typeof validatedFields === 'object' && validatedFields !== null
+              ? (validatedFields as Record<string, unknown>)
+              : {};
+
+          contentOverride = applyDefaultTemplateOverrides(template.render(validatedFields), {
+            content: resolvedTemplate.content,
+            logoUrl: resolvedTemplate.logoUrl,
+            fields: fieldMap
+          });
+        }
+      } catch (resolverError) {
+        // Resolver failures should not block business actions; fallback to default template rendering.
+        console.error('Email template resolver failed:', resolverError);
+      }
+    }
 
     // Send using base function
     return sendTemplateEmail({
@@ -94,7 +144,8 @@ export async function sendEmail<TEmailId extends EmailId>(
       template,
       fields: validatedFields,
       from: config.from ?? template.from,
-      replyTo: config.replyTo ?? template.replyTo
+      replyTo: config.replyTo ?? template.replyTo,
+      contentOverride
     });
   } catch (error) {
     if (error instanceof ZodError) {

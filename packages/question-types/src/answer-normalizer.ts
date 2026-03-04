@@ -124,7 +124,8 @@ export function normalizeAnswersForDisplay(
     if (idKey) questionByKey.set(idKey, q);
   }
 
-  for (const [answerKey, rawAnswer] of Object.entries(answers)) {
+  for (const answerKey in answers) {
+    const rawAnswer = answers[answerKey];
     const question = questionByKey.get(answerKey);
     result[answerKey] = question ? normalizeAnswerForDisplay(rawAnswer, question) : (rawAnswer as ExerciseAnswerValue);
   }

@@ -1,3 +1,7 @@
+export const DEFAULT_TEMPLATE_LOGO_URL = 'https://brand.cdn.clsrio.com/cio-bg-transparent.png';
+export const EMAIL_TEMPLATE_CONTENT_START_MARKER = '<!-- CIO_CONTENT_START -->';
+export const EMAIL_TEMPLATE_CONTENT_END_MARKER = '<!-- CIO_CONTENT_END -->';
+
 export const getDefaultTemplate = (content: string): string =>
   `<!DOCTYPE html>
 <html>
@@ -139,7 +143,7 @@ export const getDefaultTemplate = (content: string): string =>
     ">
   <div class="gutter">
     <a href="https://classroomio.com" target="_blank">
-      <img src="https://brand.cdn.clsrio.com/cio-bg-transparent.png" alt="ClassroomIO Logo" /></a>
+      <img data-cio-logo src="${DEFAULT_TEMPLATE_LOGO_URL}" alt="ClassroomIO Logo" /></a>
   </div>
   <div class="wrap" style="
         background-color: #fff;
@@ -147,7 +151,9 @@ export const getDefaultTemplate = (content: string): string =>
         max-width: 525px;
         margin: 0 auto;
       ">
+    ${EMAIL_TEMPLATE_CONTENT_START_MARKER}
     ${content}
+    ${EMAIL_TEMPLATE_CONTENT_END_MARKER}
   </div>
 
   <div class="footer" style="

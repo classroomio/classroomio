@@ -398,6 +398,7 @@ export async function getNewsfeedForEmail(
     email: string | null;
   } | null;
   organization: {
+    id: string;
     name: string | null;
     siteName: string | null;
   } | null;
@@ -459,6 +460,7 @@ export async function getNewsfeedForEmail(
           }
         : null,
       organization: {
+        id: row.organization.id,
         name: row.organization.name,
         siteName: row.organization.siteName
       },

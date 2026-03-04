@@ -365,7 +365,10 @@ async function sendNewsfeedPostEmail(feedId: string, authorId: string) {
           orgName
         },
         from: buildEmailFromName(`${orgName} - ClassroomIO`),
-        replyTo: feedData.author?.email || 'noreply@classroomio.com'
+        replyTo: feedData.author?.email || 'noreply@classroomio.com',
+        context: {
+          organizationId: feedData.organization?.id
+        }
       });
     });
 
@@ -404,7 +407,10 @@ async function sendNewsfeedCommentEmail(feedId: string, commentContent: string) 
         orgName
       },
       from: buildEmailFromName(`${orgName} - ClassroomIO`),
-      replyTo: 'noreply@classroomio.com'
+      replyTo: 'noreply@classroomio.com',
+      context: {
+        organizationId: feedData.organization?.id
+      }
     });
   } catch (error) {
     console.error('Error sending newsfeed comment email:', error);

@@ -1,6 +1,7 @@
 import * as z from 'zod';
 
 import type { EmailId } from '../utils/types';
+import type { TEmailTemplateLocale } from '@cio/utils/constants';
 
 /**
  * Base email template interface
@@ -29,6 +30,7 @@ export interface SendConfig<TSchema extends z.ZodType = z.ZodType> {
   fields: z.infer<TSchema>;
   from?: string;
   replyTo?: string;
+  context?: SendContext;
 }
 
 /**
@@ -36,6 +38,8 @@ export interface SendConfig<TSchema extends z.ZodType = z.ZodType> {
  */
 export interface SendTemplateConfig<TSchema extends z.ZodType = z.ZodType> extends SendConfig<TSchema> {
   template: EmailTemplate<TSchema>;
+  contentOverride?: string;
+  subjectOverride?: string;
 }
 
 /**
@@ -49,3 +53,24 @@ export interface DefineEmailConfig<TSchema extends z.ZodType = z.ZodType> {
   from?: string;
   replyTo?: string;
 }
+
+export interface SendContext {
+  organizationId?: string;
+  locale?: TEmailTemplateLocale;
+}
+
+export interface EmailTemplateResolverInput {
+  emailId: EmailId;
+  organizationId: string;
+  locale?: TEmailTemplateLocale;
+}
+
+export interface ResolvedEmailTemplateOverride {
+  isEnabled: boolean;
+  logoUrl?: string | null;
+  content?: string | null;
+}
+
+export type EmailTemplateResolver = (
+  input: EmailTemplateResolverInput
+) => Promise<ResolvedEmailTemplateOverride | null>;

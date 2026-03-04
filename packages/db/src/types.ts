@@ -70,6 +70,12 @@ export type TNewVideoTranscripts = typeof schema.videoTranscripts.$inferInsert;
 export type TOrganizationEmaillist = typeof schema.organizationEmaillist.$inferSelect;
 export type TNewOrganizationEmaillist = typeof schema.organizationEmaillist.$inferInsert;
 
+export type TOrganizationEmailTemplate = typeof schema.organizationEmailTemplate.$inferSelect;
+export type TNewOrganizationEmailTemplate = typeof schema.organizationEmailTemplate.$inferInsert;
+
+export type TOrganizationEmailTemplateAudit = typeof schema.organizationEmailTemplateAudit.$inferSelect;
+export type TNewOrganizationEmailTemplateAudit = typeof schema.organizationEmailTemplateAudit.$inferInsert;
+
 export type TLesson = typeof schema.lesson.$inferSelect;
 export type TNewLesson = typeof schema.lesson.$inferInsert;
 
@@ -178,5 +184,7 @@ export type TPlan = (typeof schema.plan.enumValues)[number];
 export type TCourseInviteEventType = (typeof schema.courseInviteEventType.enumValues)[number];
 
 export type TOrganizationInviteEventType = (typeof schema.organizationInviteEventType.enumValues)[number];
+
+export type TEmailTemplateAuditAction = (typeof schema.emailTemplateAuditAction.enumValues)[number];
 
 export type TSsoProvider = (typeof schema.organizationSsoProviderType.enumValues)[number];

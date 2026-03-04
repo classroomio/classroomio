@@ -41,6 +41,13 @@ export const organizationInviteEventType = pgEnum('ORGANIZATION_INVITE_EVENT_TYP
   'EMAIL_FAILED',
   'ABUSE_BLOCKED'
 ]);
+export const emailTemplateAuditAction = pgEnum('EMAIL_TEMPLATE_AUDIT_ACTION', [
+  'CREATED',
+  'UPDATED',
+  'DELETED',
+  'ENABLED',
+  'DISABLED'
+]);
 
 export const user = pgTable('user', {
   id: uuid()
@@ -663,6 +670,83 @@ export const organizationEmaillist = pgTable(
       foreignColumns: [organization.id],
       name: 'organization_emaillist_organization_id_fkey'
     })
+  ]
+);
+
+export const organizationEmailTemplate = pgTable(
+  'organization_email_template',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    emailId: text('email_id').notNull(),
+    locale: locale().default('en').notNull(),
+    isEnabled: boolean('is_enabled').default(true).notNull(),
+    logoUrl: text('logo_url'),
+    content: text(),
+    updatedByProfileId: uuid('updated_by_profile_id'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'organization_email_template_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.updatedByProfileId],
+      foreignColumns: [profile.id],
+      name: 'organization_email_template_updated_by_profile_id_fkey'
+    }),
+    unique('organization_email_template_org_email_locale_key').on(table.organizationId, table.emailId, table.locale),
+    index('idx_organization_email_template_org_email').on(table.organizationId, table.emailId),
+    index('idx_organization_email_template_org_locale').on(table.organizationId, table.locale)
+  ]
+);
+
+export const organizationEmailTemplateAudit = pgTable(
+  'organization_email_template_audit',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    emailTemplateId: uuid('email_template_id'),
+    action: emailTemplateAuditAction('action').notNull(),
+    before: jsonb().default({}).notNull(),
+    after: jsonb().default({}).notNull(),
+    actorProfileId: uuid('actor_profile_id'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'organization_email_template_audit_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.emailTemplateId],
+      foreignColumns: [organizationEmailTemplate.id],
+      name: 'organization_email_template_audit_email_template_id_fkey'
+    }).onDelete('set null'),
+    foreignKey({
+      columns: [table.actorProfileId],
+      foreignColumns: [profile.id],
+      name: 'organization_email_template_audit_actor_profile_id_fkey'
+    }),
+    index('idx_organization_email_template_audit_org_id').on(table.organizationId),
+    index('idx_organization_email_template_audit_template_id').on(table.emailTemplateId),
+    index('idx_organization_email_template_audit_created_at').on(table.createdAt)
   ]
 );
 
