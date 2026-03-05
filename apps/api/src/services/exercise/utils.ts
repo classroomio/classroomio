@@ -1,5 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import type { TExercise, TNewOption, TNewQuestion, TQuestionType } from '@cio/db/types';
+import type { TExercise, TNewOption, TNewQuestion, TQuestionAnswer, TQuestionType } from '@cio/db/types';
 import {
   createOptions,
   createQuestions,
@@ -18,15 +18,10 @@ import type { TExerciseUpdate } from '@cio/utils/validation/exercise';
 type CurrentQuestion = TNewQuestion & { options?: TNewOption[] };
 type CurrentOption = TNewOption;
 
-type ExerciseAnswer = {
-  id?: number;
-  answers?: string[] | null;
-  openAnswer?: string | null;
-  point?: number | null;
-  questionId?: number;
-  submissionId?: string | null;
-  groupMemberId?: string | null;
-};
+type ExerciseAnswer = Pick<
+  TQuestionAnswer,
+  'id' | 'answerData' | 'point' | 'questionId' | 'submissionId' | 'groupMemberId'
+> & { id?: number };
 
 export type QuestionWithRelations = {
   id: number | string;

@@ -272,6 +272,14 @@ export function getExerciseQuestionLabels(): ExerciseQuestionLabels {
     ),
     'textarea.take.placeholder': t.get(
       'course.navItem.lessons.exercises.all_exercises.shared_question.textarea.take.placeholder'
+    ),
+    'submission.common.no_answer': t.get('course.navItem.lessons.exercises.all_exercises.analytics.individual.no'),
+    'submission.common.other': t.get('course.navItem.lessons.exercises.all_exercises.analytics.summary.other'),
+    'submission.chart.responses': t.get('course.navItem.lessons.exercises.all_exercises.analytics.summary.responses'),
+    'submission.chart.no_data': t.get('course.navItem.lessons.exercises.all_exercises.analytics.summary.no_responses'),
+    'submission.list.responses': t.get('course.navItem.lessons.exercises.all_exercises.analytics.summary.responses'),
+    'submission.list.no_responses': t.get(
+      'course.navItem.lessons.exercises.all_exercises.analytics.summary.no_responses'
     )
   };
 }

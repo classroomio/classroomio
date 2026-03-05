@@ -41,3 +41,16 @@ export { default as TextareaPreview } from './renderers/textarea/preview.svelte'
 export { default as MatchingPreview } from './renderers/matching/preview.svelte';
 export { default as OrderingPreview } from './renderers/ordering/preview.svelte';
 export { default as HotspotPreview } from './renderers/hotspot/preview.svelte';
+
+export { default as TrueFalseSubmission } from './renderers/true-false/submission.svelte';
+export { default as ShortAnswerSubmission } from './renderers/short-answer/submission.svelte';
+export { default as NumericSubmission } from './renderers/numeric/submission.svelte';
+export { default as FillBlankSubmission } from './renderers/fill-blank/submission.svelte';
+export { default as FileUploadSubmission } from './renderers/file-upload/submission.svelte';
+export { default as RadioSubmission } from './renderers/radio/submission.svelte';
+export { default as CheckboxSubmission } from './renderers/checkbox/submission.svelte';
+export { default as TextareaSubmission } from './renderers/textarea/submission.svelte';
+export { default as MatchingSubmission } from './renderers/matching/submission.svelte';
+export { default as OrderingSubmission } from './renderers/ordering/submission.svelte';
+export { default as HotspotSubmission } from './renderers/hotspot/submission.svelte';
+export { default as LinkSubmission } from './renderers/link/submission.svelte';

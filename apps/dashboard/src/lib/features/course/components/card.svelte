@@ -18,7 +18,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { calcCourseDiscount } from '$lib/utils/functions/course';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
-  import { calcProgressRate } from '$features/course/utils/functions';
+  import { calcCourseProgress, calcProgressRate } from '$features/course/utils/functions';
   import CardDropdown from './card-dropdown.svelte';
   import type { OrgCourses, UserEnrolledCourses } from '$features/course/types';
   import type { OrgPublicCourses } from '$features/org/utils/types';
@@ -64,7 +64,18 @@
     },
     currency: course.currency,
     totalLessons: course.lessonCount,
-    progressRate: calcProgressRate('progressRate' in course ? course.progressRate : 0, course.lessonCount),
+    progressRate: (() => {
+      const c = course as { exerciseCount?: number; exercisesCompleted?: number };
+      if (typeof c.exerciseCount === 'number' && typeof c.exercisesCompleted === 'number') {
+        return calcCourseProgress({
+          lessonsCompleted: 'progressRate' in course ? (course.progressRate ?? 0) : 0,
+          totalLessons: course.lessonCount ?? 0,
+          exercisesCompleted: c.exercisesCompleted,
+          totalExercises: c.exerciseCount
+        });
+      }
+      return calcProgressRate('progressRate' in course ? course.progressRate : 0, course.lessonCount);
+    })(),
     totalStudents: 'totalStudents' in course ? course.totalStudents : 0
   });
 

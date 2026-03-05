@@ -44,31 +44,3 @@ export function formatSubmittedDate(date: string): string {
     timeStyle: 'medium'
   }).format(d);
 }
-
-/**
- * Formats answers into a question name to answer value map
- * @param questions Array of questions with id and name
- * @param answers Array of answers with question_id, answers array, and open_answer
- * @returns Map of question names to answer values (string or string array)
- */
-export function formatAnswersForDisplay(
-  questions: Array<{ id: number; name: string }>,
-  answers: Array<{ question_id: number; answers: string[]; open_answer: string }>
-): { [questionName: string]: string | string[] } {
-  const result: { [questionName: string]: string | string[] } = {};
-  const questionByIdAndName: { [id: number]: string } = {};
-
-  for (const question of questions) {
-    questionByIdAndName[question.id] = question.name;
-  }
-
-  for (const answer of answers) {
-    const questionName = questionByIdAndName[answer.question_id];
-    if (questionName) {
-      result[questionName] =
-        Array.isArray(answer.answers) && answer.answers.length ? answer.answers : answer.open_answer;
-    }
-  }
-
-  return result;
-}

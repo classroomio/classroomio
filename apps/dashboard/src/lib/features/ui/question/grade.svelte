@@ -25,7 +25,7 @@
     bind:value={grade}
     max={gradeMax}
     type="number"
-    inputClassName="!w-14"
+    inputClassName="!w-16"
     isDisabled={disableGrading}
   />
 

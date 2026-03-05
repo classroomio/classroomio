@@ -9,7 +9,7 @@
 
   let {
     question,
-    answer = [],
+    answer,
     disabled = false,
     labels,
     onAnswerChange = () => {}
@@ -39,7 +39,7 @@
   function syncAnswer(nextItems: OrderingRenderItem[]) {
     items = nextItems;
     signature = toSignature(nextItems);
-    onAnswerChange(nextItems.map((item) => item.answerValue));
+    onAnswerChange({ type: 'ORDERING', orderedValues: nextItems.map((item) => item.answerValue) });
   }
 
   function handleDndConsider(event: CustomEvent<{ items: OrderingRenderItem[] }>) {

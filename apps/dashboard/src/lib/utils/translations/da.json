@@ -1013,9 +1013,14 @@
               },
               "summary": {
                 "heading": "Resumé",
-                "question_chart": "Spørgsmålsskemaer"
+                "question_chart": "Spørgsmålsskemaer",
+                "responses": "Svar",
+                "no_responses": "Ingen svar endnu",
+                "other": "Andet"
               },
-              "loading_submissions": "Indlæser indsendelser..."
+              "loading_submissions": "Indlæser indsendelser...",
+              "empty_title": "Ingen indlæg endnu",
+              "empty_description": "Afleveringer vises her, når eleverne har gennemført denne øvelse."
             },
             "view_mode": {
               "no_question": "Ingen spørgsmål tilføjet til denne øvelse",
@@ -1037,7 +1042,9 @@
               "empty_edit_hint_prefix": "Klik på ",
               "empty_edit_hint_suffix": " knappen for at tilføje.",
               "answers_required": "Angiv venligst mindst ét ​​svar, før du sender.",
-              "checking_submission": "Tjek din indsendelse..."
+              "checking_submission": "Tjek din indsendelse...",
+              "answer_required": "Besvar venligst dette spørgsmål, før du fortsætter.",
+              "instructor_feedback": "Instruktør feedback"
             },
             "edit_mode": {
               "delete_modal": "Slet øvelse",
@@ -1154,7 +1161,11 @@
                 },
                 "take": {
                   "selected_file_label": "Valgt fil",
-                  "upload_button": "Upload"
+                  "upload_button": "Upload",
+                  "upload_progress": "Uploader...",
+                  "upload_error": "Upload mislykkedes",
+                  "view": "Visning",
+                  "download": "Download"
                 },
                 "edit": {
                   "accepted_types_placeholder": "Accepterede typer (f.eks. pdf, docx)",
@@ -1619,7 +1630,8 @@
     "recent_enrollments": "Seneste tilmeldinger",
     "publish_first_course": "Udgiv dit første kursus",
     "publish_first_course_description": "For at spore tilmeldinger skal du udgive et kursus og invitere elever",
-    "publish_course": "Udgiv kursus"
+    "publish_course": "Udgiv kursus",
+    "items_completed": "Varer afsluttet"
   },
   "schedule": {
     "title": "Dit skema",
@@ -2195,7 +2207,8 @@
         "email_password_disabled": "E-mail/adgangskode login er deaktiveret. Brug venligst SSO.",
         "email_password_disabled_message": "E-mail/adgangskodelogin er deaktiveret for denne organisation.",
         "google_auth_disabled": "Google-godkendelse er deaktiveret.",
-        "signup_disabled_error": "Tilmelding er deaktiveret for denne organisation. Kontakt venligst din administrator."
+        "signup_disabled_error": "Tilmelding er deaktiveret for denne organisation. Kontakt venligst din administrator.",
+        "or_continue_with": "Eller fortsæt med e-mail og adgangskode"
       },
       "tabs": {
         "general": "Generelt",

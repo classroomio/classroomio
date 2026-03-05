@@ -7,10 +7,8 @@
 
   import { STATUS } from './constants';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$features/ui/snackbar/store';
   import type { SubmissionIdData } from '$features/course/utils/types';
-  import { normalizeAnswersForDisplay } from '@cio/question-types';
-  import { enrichFileUploadAnswersWithUrls } from '$features/course/utils/functions';
+  import type { AnswerData } from '@cio/question-types';
 
   import Preview from './preview.svelte';
   import * as Dialog from '@cio/ui/base/dialog';
@@ -27,7 +25,6 @@
     isGradeWithAI?: boolean;
     data: SubmissionIdData;
     deleteSubmission?: any;
-    updateStatus?: any;
     isSaving?: boolean;
   }
 
@@ -38,7 +35,6 @@
     isGradeWithAI = $bindable(false),
     data = $bindable(),
     deleteSubmission = async (_id: string, _statusId: number) => {},
-    updateStatus = (_arg: { submissionId: string; prevStatusId: number; nextStatusId: number; total: number }) => {},
     isSaving = false
   }: Props = $props();
 
@@ -63,7 +59,6 @@
   let openDeletePrompt = $state(false);
   let isDeleting = $state(false);
 
-  const total = calculateTotal(data.questionAnswerByPoint);
   const maxPoints = $derived(getMaxPoints(data.questions));
   const sortedQuestions = $derived(
     Array.isArray(data.questions)
@@ -76,24 +71,17 @@
       : []
   );
 
-  let answersToDisplay = $state<Record<string, unknown>>({});
+  let answersToDisplay = $state<Record<string, AnswerData>>({});
 
   $effect(() => {
-    if (!data?.answers || !data?.questions) {
-      answersToDisplay = {};
-      return;
-    }
-    const base = normalizeAnswersForDisplay(data.answers || {}, data.questions || []);
-    answersToDisplay = base as Record<string, unknown>;
-    enrichFileUploadAnswersWithUrls(base as Record<string, unknown>).then((enriched) => {
-      answersToDisplay = enriched;
-    });
+    answersToDisplay = data?.answers ? (data.answers as Record<string, AnswerData>) : {};
   });
 
   function getMaxPoints(questions) {
     return (questions || []).reduce((acc, question) => acc + question.points, 0);
   }
 
+  let total = $derived(calculateTotal(data.questionAnswerByPoint));
   function calculateTotal(grades: Record<string, string>): number {
     if (!grades) return 0;
     return Object.values(grades).reduce((acc, grade) => acc + parseInt(grade || '0'), 0);
@@ -101,24 +89,11 @@
 
   function handleStatusChange(value: string) {
     const newSelectedId = parseInt(value);
-    const prevStatusId = data.statusId;
-
-    // Find the new status
     const newStatus = SELECTABLE_STATUS.find((s) => s.id === newSelectedId);
 
     if (newStatus) {
-      // Update state
       status = newStatus;
       data.statusId = newSelectedId;
-
-      updateStatus({
-        submissionId: data.id,
-        prevStatusId: prevStatusId,
-        nextStatusId: newSelectedId,
-        total
-      });
-
-      snackbar.success(`${$t('snackbar.exercise.submission_updated')} '${newStatus.text}'`);
     }
   }
 

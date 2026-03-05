@@ -255,14 +255,7 @@ const state = createExerciseQuestionFormState(initialQuestions);
 
 ## Adding a new question type
 
-1. Add key in `src/question-type-keys.ts`.
-2. Add metadata entry in `src/question-type-registry.ts` with a unique `id`.
-3. Extend answer payload union in `src/question-answer-payload.ts` if needed.
-4. Add serializer behavior in `src/answer-serializer.ts`.
-5. Add any capability/scoring handling needed.
-6. Export through `src/index.ts` (if new modules/types were added).
-7. Implement renderers in UI package (`@cio/ui/custom/exercise-question`) using this package’s contracts.
-8. Update app-level question type labels/translations where needed.
+See **[ADDING_A_QUESTION_TYPE.md](./ADDING_A_QUESTION_TYPE.md)** for a step-by-step guide. At a high level:
 
 ## Build
 

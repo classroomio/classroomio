@@ -1,10 +1,12 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { Button } from '@cio/ui/base/button';
+  import { Progress } from '@cio/ui/base/progress';
   import { t } from '$lib/utils/functions/translations';
   import { Empty } from '@cio/ui/custom/empty';
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
   import { coursesApi } from '$features/course/api';
+  import { calcCourseProgress } from '$features/course/utils/functions';
 
   const gotoCourse = (id: string | undefined) => {
     if (!id) return;
@@ -12,6 +14,19 @@
   };
 
   let last3Courses = $derived(coursesApi.enrolledCourses.length > 0 ? coursesApi.enrolledCourses.slice(0, 3) : []);
+
+  function getCourseProgress(course: (typeof coursesApi.enrolledCourses)[number]): number {
+    const exercisesCompleted =
+      'exercisesCompleted' in course && typeof course.exercisesCompleted === 'number' ? course.exercisesCompleted : 0;
+    const totalExercises =
+      'exerciseCount' in course && typeof course.exerciseCount === 'number' ? course.exerciseCount : 0;
+    return calcCourseProgress({
+      lessonsCompleted: course.progressRate ?? 0,
+      totalLessons: course.lessonCount ?? 0,
+      exercisesCompleted,
+      totalExercises
+    });
+  }
 </script>
 
 <section class="h-full">
@@ -41,12 +56,7 @@
                 {$t('dashboard.continue')}
               </Button>
             </span>
-            <div class="relative h-1 w-full bg-[#EAEAEA]">
-              <div
-                style="width: {Math.round(((course?.progressRate ?? 0) / (course?.lessonCount ?? 0)) * 100) || 0}%"
-                class="bg-primary-700 absolute top-0 left-0 h-full"
-              ></div>
-            </div>
+            <Progress value={getCourseProgress(course)} max={100} class="ui:h-1" />
           </div>
         {/each}
       </div>

@@ -25,41 +25,6 @@ export async function getSubmissionById(submissionId: string): Promise<TSubmissi
 }
 
 /**
- * Gets submissions by course ID
- * @param courseId Course ID
- * @param exerciseId Optional exercise ID filter
- * @param submittedBy Optional group member ID filter
- * @returns Array of submissions
- */
-export async function getSubmissionsByCourseId(
-  courseId: string,
-  exerciseId?: string,
-  submittedBy?: string
-): Promise<TSubmission[]> {
-  try {
-    const conditions = [eq(schema.submission.courseId, courseId)];
-
-    if (exerciseId) {
-      conditions.push(eq(schema.submission.exerciseId, exerciseId));
-    }
-
-    if (submittedBy) {
-      conditions.push(eq(schema.submission.submittedBy, submittedBy));
-    }
-
-    return db
-      .select()
-      .from(schema.submission)
-      .where(and(...conditions));
-  } catch (error) {
-    console.error('getSubmissionsByCourseId error:', error);
-    throw new Error(
-      `Failed to get submissions by course ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
-  }
-}
-
-/**
  * Gets submissions by course ID with full related data (answers, profile, etc.)
  * @param courseId Course ID
  * @param exerciseId Optional exercise ID filter
@@ -325,5 +290,61 @@ export async function updateQuestionAnswer(
   } catch (error) {
     console.error('updateQuestionAnswer error:', error);
     throw new Error(`Failed to update question answer: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export type TGradesUpdateItem = { questionId: number; points: number };
+
+/**
+ * Updates all question answer points and submission total/feedback in a single transaction.
+ * Optionally updates statusId and gradingState when provided.
+ */
+export async function updateSubmissionGrades(
+  submissionId: string,
+  data: {
+    answers: TGradesUpdateItem[];
+    total: number;
+    feedback?: string;
+    statusId?: number;
+    gradingState?: string;
+  }
+): Promise<TSubmission | null> {
+  try {
+    return await db.transaction(async (tx) => {
+      for (const { questionId, points } of data.answers) {
+        await tx
+          .update(schema.questionAnswer)
+          .set({ point: points })
+          .where(
+            and(eq(schema.questionAnswer.submissionId, submissionId), eq(schema.questionAnswer.questionId, questionId))
+          );
+      }
+
+      const submissionData: Partial<TSubmission> = {
+        total: data.total,
+        updatedAt: new Date().toISOString()
+      };
+      if (data.feedback !== undefined) {
+        submissionData.feedback = data.feedback;
+      }
+      if (data.statusId !== undefined) {
+        submissionData.statusId = data.statusId;
+      }
+      if (data.gradingState !== undefined) {
+        submissionData.gradingState = data.gradingState;
+      }
+
+      const [updated] = await tx
+        .update(schema.submission)
+        .set(submissionData)
+        .where(eq(schema.submission.id, submissionId))
+        .returning();
+      return updated || null;
+    });
+  } catch (error) {
+    console.error('updateSubmissionGrades error:', error);
+    throw new Error(
+      `Failed to update submission grades "${submissionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }

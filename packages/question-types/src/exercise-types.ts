@@ -1,8 +1,9 @@
 import type { QuestionTypeKey } from './question-type-keys';
+import type { AnswerData } from './answer-data';
 
 export type ExerciseQuestionTypeKey = QuestionTypeKey;
 
-export type ExerciseRendererMode = 'edit' | 'take' | 'preview' | 'view';
+export type ExerciseRendererMode = 'edit' | 'take' | 'preview' | 'view' | 'submission';
 
 export type ExerciseQuestionLabelKey =
   | 'common.option_prefix'
@@ -101,7 +102,13 @@ export type ExerciseQuestionLabelKey =
   | 'hotspot.take.placeholder'
   | 'hotspot.preview.helper'
   | 'textarea.edit.placeholder'
-  | 'textarea.take.placeholder';
+  | 'textarea.take.placeholder'
+  | 'submission.common.no_answer'
+  | 'submission.common.other'
+  | 'submission.chart.responses'
+  | 'submission.chart.no_data'
+  | 'submission.list.responses'
+  | 'submission.list.no_responses';
 
 export type ExerciseQuestionLabels = Partial<Record<ExerciseQuestionLabelKey, string>>;
 
@@ -124,6 +131,18 @@ export interface ExerciseQuestionModel {
   settings?: Record<string, unknown>;
 }
 
+export interface ExerciseSubmissionAnswer {
+  questionId: number | string;
+  answerData?: AnswerData | null;
+}
+
+export interface ExerciseSubmissionModel {
+  id?: string;
+  studentName?: string;
+  studentAvatarUrl?: string;
+  answers: ExerciseSubmissionAnswer[];
+}
+
 export type ExerciseAnswerValue =
   | string
   | number
@@ -144,14 +163,17 @@ export interface ExerciseRendererDefinition<TRenderer = unknown> {
   edit: TRenderer;
   take: TRenderer;
   preview: TRenderer;
+  submission: TRenderer;
 }
 
 export interface ExerciseQuestionRendererProps {
   question: ExerciseQuestionModel;
-  answer?: ExerciseAnswerValue;
+  answer?: AnswerData | null;
+  submissions?: ExerciseSubmissionModel[];
+  maxSubmissionItems?: number;
   disabled?: boolean;
   labels?: ExerciseQuestionLabels;
-  onAnswerChange?: (answer: ExerciseAnswerValue) => void;
+  onAnswerChange?: (answer: AnswerData) => void;
   onQuestionChange?: (question: ExerciseQuestionModel) => void;
   onImageUpload?: ExerciseQuestionImageUploader;
   onFileUpload?: ExerciseQuestionFileUploader;

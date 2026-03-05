@@ -33,16 +33,16 @@
       mimeType?: string;
       size?: number;
     } | null => {
-      if (!answer || typeof answer !== 'object' || Array.isArray(answer)) return null;
-      const obj = answer as Record<string, unknown>;
-      const name = typeof obj.fileName === 'string' ? obj.fileName.trim() : '';
+      if (answer?.type !== 'FILE_UPLOAD') return null;
+      const name = answer.fileName?.trim() ?? '';
       if (!name) return null;
-      const url = typeof obj.fileUrl === 'string' && obj.fileUrl.trim() ? obj.fileUrl : null;
+      const url =
+        typeof (answer as { fileUrl?: string }).fileUrl === 'string' ? (answer as { fileUrl?: string }).fileUrl : null;
       return {
         fileName: name,
-        fileUrl: url,
-        mimeType: typeof obj.mimeType === 'string' ? obj.mimeType : undefined,
-        size: typeof obj.size === 'number' ? obj.size : undefined
+        fileUrl: url ?? null,
+        mimeType: answer.mimeType,
+        size: answer.size
       };
     }
   );
@@ -95,11 +95,11 @@
     try {
       const result = await onFileUpload(selectedFile);
       onAnswerChange({
-        fileName: result.fileName,
+        type: 'FILE_UPLOAD',
         fileKey: result.fileKey,
+        fileName: result.fileName,
         mimeType: selectedFile.type,
-        size: selectedFile.size,
-        fileUrl: result.fileUrl
+        size: selectedFile.size
       });
     } catch (err) {
       uploadError = err instanceof Error ? err.message : label('file_upload.take.upload_error', 'Upload failed');

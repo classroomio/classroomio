@@ -14,8 +14,8 @@
     getExerciseQuestionLabel(labels, key, fallback);
 
   const numericValue = $derived.by(() => {
-    if (typeof answer === 'number' && Number.isFinite(answer)) return String(answer);
-    if (typeof answer === 'string') return answer;
+    const val = answer?.type === 'NUMERIC' ? answer.value : undefined;
+    if (typeof val === 'number' && Number.isFinite(val)) return String(val);
     return '';
   });
 </script>
@@ -29,7 +29,9 @@
     placeholder={label('numeric.take.placeholder')}
     onchange={(event) => {
       const rawValue = event.currentTarget.value.trim();
-      onAnswerChange(rawValue === '' ? null : Number(rawValue));
+      if (rawValue === '') return;
+      const num = Number(rawValue);
+      onAnswerChange({ type: 'NUMERIC', value: Number.isNaN(num) ? 0 : num });
     }}
   />
 </div>

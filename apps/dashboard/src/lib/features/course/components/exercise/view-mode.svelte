@@ -7,25 +7,25 @@
   import { questionnaire, questionnaireMetaData } from './store';
   import Preview from './preview.svelte';
   import { ExerciseQuestion } from '@cio/ui';
+  import * as Alert from '@cio/ui/base/alert';
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
-  import { Spinner } from '@cio/ui/base/spinner';
   import { RoleBasedSecurity } from '$features/ui';
   import { Empty } from '@cio/ui/custom/empty';
   import FileQuestionIcon from '@lucide/svelte/icons/file-question';
   import { Progress } from '@cio/ui/base/progress';
-  import { removeDuplicate } from '$lib/utils/functions/removeDuplicate';
   import { getExerciseQuestionContractKey } from '@cio/question-types';
   import { STATUS } from './constants';
   import { filterOutDeleted } from './functions';
-  import { enrichFileUploadAnswersWithUrls, formatAnswers, getGroupMemberId } from '$features/course/utils/functions';
-  import { exerciseApi, presignApi, submissionApi } from '$features/course/api';
-  import { profile } from '$lib/utils/store/user';
+  import { formatAnswers } from '$features/course/utils/functions';
+  import { toApiPayload, type AnswerData } from '@cio/question-types';
+  import { exerciseApi, presignApi } from '$features/course/api';
+  import type { SubmissionListItem } from '$features/course/utils/types';
   import { sanitizeHtml } from '@cio/ui/tools/sanitize';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { ContentType } from '@cio/utils/constants/content';
-  import { getQuestionTypeKey, questionTypeSupportsOptions, toExerciseQuestionModel } from './question-type-utils';
+  import { toExerciseQuestionModel } from './question-type-utils';
   import { getExerciseQuestionLabels } from './question-labels';
   import axios from 'axios';
 
@@ -33,14 +33,13 @@
     preview?: boolean;
     exerciseId?: string;
     isFetchingExercise?: boolean;
+    /** Current user's submission from server (no client fetch) */
+    mySubmission?: SubmissionListItem | null;
   }
 
-  let { preview = false, exerciseId = '', isFetchingExercise = false }: Props = $props();
+  let { preview = false, exerciseId = '', isFetchingExercise = false, mySubmission = null }: Props = $props();
 
-  let submission;
-  let hasSubmission = $state(false);
   let isSubmitting = $state(false);
-  let isCheckingSubmission = $state(false);
   let isLoadingAutoSavedData = $state(false);
   let alreadyCheckedAutoSavedData = $state(false);
   let prevExerciseId = $state('');
@@ -51,88 +50,20 @@
     questionnaireMetaData.update((m) => ({ ...m, currentQuestionIndex: m.currentQuestionIndex + 1 }));
   }
 
-  function normalizeAnswerValue(previousValue, nextValue) {
-    if (typeof nextValue === 'string' || typeof nextValue === 'number' || typeof nextValue === 'boolean') {
+  function normalizeAnswerValue(
+    previousValue: AnswerData | undefined,
+    nextValue: AnswerData | undefined
+  ): AnswerData | undefined {
+    if (nextValue && typeof nextValue === 'object' && 'type' in nextValue) {
       return nextValue;
     }
-
-    if (Array.isArray(nextValue)) {
-      const previousList = Array.isArray(previousValue) ? previousValue : [];
-      return removeDuplicate([...previousList, ...nextValue]);
-    }
-
-    if (nextValue && typeof nextValue === 'object') {
-      return nextValue;
-    }
-
     return previousValue;
   }
 
-  function mapAnswerToApiPayload(question, answerValue) {
+  function mapAnswerToApiPayload(question, answerData: AnswerData | null | undefined) {
     const questionId = Number(question.id);
-    if (Number.isNaN(questionId)) return null;
-
-    const isOptionBasedQuestion = questionTypeSupportsOptions(getQuestionTypeKey(question));
-
-    if (isOptionBasedQuestion) {
-      const optionValues = Array.isArray(answerValue) ? answerValue : [answerValue];
-      const rawValue = optionValues[0];
-
-      if (rawValue !== undefined && rawValue !== null && rawValue !== '') {
-        let optionId = Number.NaN;
-        const normalizedRawValue = String(rawValue).trim().toLowerCase();
-
-        if (question.options?.length) {
-          const option = question.options.find((item) => {
-            const candidateId = item.id != null ? String(item.id) : '';
-            const candidateValue = item.value != null ? String(item.value) : '';
-            const candidateLabel = item.label != null ? String(item.label) : '';
-
-            return (
-              candidateId === String(rawValue) ||
-              candidateValue === String(rawValue) ||
-              candidateLabel === String(rawValue) ||
-              candidateValue.trim().toLowerCase() === normalizedRawValue ||
-              candidateLabel.trim().toLowerCase() === normalizedRawValue
-            );
-          });
-          optionId = option?.id != null ? Number(option.id) : Number.NaN;
-        }
-
-        if (Number.isNaN(optionId)) {
-          optionId = Number(rawValue);
-        }
-
-        if (!Number.isNaN(optionId)) {
-          return { questionId, optionId };
-        }
-      }
-    }
-
-    if (typeof answerValue === 'string') {
-      return { questionId, answer: answerValue };
-    }
-
-    if (typeof answerValue === 'number' || typeof answerValue === 'boolean') {
-      return { questionId, answer: String(answerValue) };
-    }
-
-    if (Array.isArray(answerValue)) {
-      if (answerValue.length === 0) return null;
-
-      return { questionId, answer: JSON.stringify(answerValue) };
-    }
-
-    if (answerValue && typeof answerValue === 'object') {
-      const obj = answerValue as Record<string, unknown>;
-      if ('fileKey' in obj && typeof obj.fileKey === 'string') {
-        const { fileUrl: _fileUrl, ...rest } = obj;
-        return { questionId, answer: JSON.stringify(rest) };
-      }
-      return { questionId, answer: JSON.stringify(answerValue) };
-    }
-
-    return null;
+    if (Number.isNaN(questionId) || !answerData) return null;
+    return toApiPayload(answerData, questionId);
   }
 
   async function onSubmit(id, value) {
@@ -149,7 +80,7 @@
     }
 
     const question = questions.find((q) => getExerciseQuestionContractKey(toExerciseQuestionModel(q)) === id);
-    if (question && !mapAnswerToApiPayload(question, formattedAnswer)) {
+    if (question && !mapAnswerToApiPayload(question, formattedAnswer as AnswerData)) {
       snackbar.error(t.get('course.navItem.lessons.exercises.all_exercises.view_mode.answer_required'));
       return;
     }
@@ -229,58 +160,6 @@
     }, 0);
   }
 
-  async function checkForSubmission(people, profileId?: string, courseId?: string) {
-    if (!Array.isArray(people) || !profileId || !courseId || !!submission) {
-      return;
-    }
-
-    hasSubmission = true;
-    isCheckingSubmission = true;
-
-    try {
-      const submittedBy = getGroupMemberId(people, profileId);
-      await submissionApi.list(courseId, exerciseId, submittedBy);
-      const data = submissionApi.data;
-
-      if (Array.isArray(data) && data.length) {
-        submission = data[0];
-
-        const totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
-        let finalTotalGrade = 0;
-        const grades = submission.answers.reduce(
-          (acc: Record<string, number>, answer: { questionId: number; point: number }) => {
-            acc[String(answer.questionId)] = answer.point;
-            finalTotalGrade += answer.point;
-            return acc;
-          },
-          {}
-        );
-
-        const baseAnswers = formatAnswers({
-          questions: $questionnaire.questions,
-          answers: submission.answers
-        });
-        const answers = await enrichFileUploadAnswersWithUrls(baseAnswers as Record<string, unknown>);
-
-        questionnaireMetaData.update((m) => ({
-          ...m,
-          answers,
-          totalPossibleGrade,
-          currentQuestionIndex: $questionnaire.questions.length,
-          isFinished: true,
-          status: submission.statusId,
-          finalTotalGrade,
-          comment: submission.feedback,
-          grades,
-          exerciseId
-        }));
-        courseApi.updateContentItem(exerciseId, ContentType.Exercise, { isComplete: true });
-      }
-    } finally {
-      isCheckingSubmission = false;
-    }
-  }
-
   function getAutoSavedData() {
     isLoadingAutoSavedData = true;
 
@@ -318,14 +197,36 @@
     return { fileKey: uploadResult.fileKey, fileName: file.name, fileUrl };
   }
 
-  function hasAnswerValue(answerValue) {
+  function hasAnswerValue(answerValue: AnswerData | null | undefined): boolean {
     if (answerValue === null || answerValue === undefined) return false;
-    if (typeof answerValue === 'string') return answerValue.trim().length > 0;
-    if (Array.isArray(answerValue)) return answerValue.length > 0;
-    if (typeof answerValue === 'object' && !Array.isArray(answerValue)) {
-      return Object.keys(answerValue).length > 0;
+    if (typeof answerValue === 'object' && 'type' in answerValue) {
+      switch (answerValue.type) {
+        case 'RADIO':
+        case 'TRUE_FALSE':
+        case 'NUMERIC':
+          return true;
+        case 'CHECKBOX':
+          return answerValue.optionIds.length > 0;
+        case 'TEXTAREA':
+        case 'SHORT_ANSWER':
+          return answerValue.text.trim().length > 0;
+        case 'FILL_BLANK':
+          return answerValue.values.length > 0;
+        case 'FILE_UPLOAD':
+          return !!answerValue.fileKey;
+        case 'MATCHING':
+          return answerValue.pairs.length > 0;
+        case 'ORDERING':
+          return answerValue.orderedValues.length > 0;
+        case 'LINK':
+          return answerValue.urls.length > 0;
+        case 'HOTSPOT':
+          return answerValue.coordinates.length > 0;
+        default:
+          return false;
+      }
     }
-    return true;
+    return false;
   }
 
   function onSharedAnswerChange(answerValue) {
@@ -340,28 +241,43 @@
     }));
   }
 
-  function onSharedNext(valueOverride?: unknown) {
+  function onSharedNext(valueOverride?: AnswerData) {
     if (!sharedCurrentQuestionKey) return;
     const valueToUse = valueOverride !== undefined ? valueOverride : sharedCurrentAnswer;
     if (!hasAnswerValue(valueToUse)) {
       snackbar.error(t.get('course.navItem.lessons.exercises.all_exercises.view_mode.answer_required'));
       return;
     }
+
     onSubmit(sharedCurrentQuestionKey, valueToUse);
   }
 
   function handleEnterKey(e: KeyboardEvent) {
     if (e.key !== 'Enter' || isSubmitting || !currentQuestion) return;
+
     const target = e.target as HTMLElement;
     if (target?.tagName === 'TEXTAREA') return;
+
     e.preventDefault();
-    let valueToUse: unknown = sharedCurrentAnswer;
-    if (target instanceof HTMLInputElement && target.value?.trim()) {
-      valueToUse = target.value.trim();
-      onSharedAnswerChange(valueToUse);
+
+    let valueToUse: AnswerData | undefined = sharedCurrentAnswer as AnswerData | undefined;
+
+    if (target instanceof HTMLInputElement && sharedQuestionModel) {
+      const questionTypeKey = sharedQuestionModel.questionType;
+      const trimmed = target.value?.trim() ?? '';
+
+      if (questionTypeKey === 'SHORT_ANSWER' && trimmed) {
+        valueToUse = { type: 'SHORT_ANSWER', text: trimmed };
+        onSharedAnswerChange(valueToUse);
+      } else if (questionTypeKey === 'NUMERIC' && trimmed) {
+        const num = Number(trimmed);
+        valueToUse = !Number.isNaN(num) ? { type: 'NUMERIC', value: num } : undefined;
+
+        if (valueToUse) onSharedAnswerChange(valueToUse);
+      }
     }
     if (!hasAnswerValue(valueToUse)) {
-      snackbar.error(t.get('course.navItem.lessons.exercises.all_exercises.view_mode.answer_required'));
+      snackbar.error($t('course.navItem.lessons.exercises.all_exercises.view_mode.answer_required'));
       return;
     }
     onSharedNext(valueToUse);
@@ -406,22 +322,45 @@
   });
 
   $effect(() => {
-    if (isFetchingExercise || hasSubmission) return;
-
-    checkForSubmission(courseApi.group.people, $profile.id, courseApi.course?.id);
+    if (isFetchingExercise || !mySubmission || $questionnaireMetaData.isFinished) return;
+    applyMySubmission(mySubmission);
   });
+
+  function applyMySubmission(submission: SubmissionListItem) {
+    const totalPossibleGrade = getTotalPossibleGrade($questionnaire.questions);
+    let finalTotalGrade = 0;
+    const grades = (submission.answers ?? []).reduce<Record<string, number>>((acc, answer) => {
+      const point = answer.point ?? 0;
+      acc[String(answer.questionId)] = point;
+      finalTotalGrade += point;
+      return acc;
+    }, {});
+
+    const answers = formatAnswers({
+      questions: $questionnaire.questions,
+      answers: submission.answers ?? []
+    });
+
+    questionnaireMetaData.update((m) => ({
+      ...m,
+      answers,
+      totalPossibleGrade,
+      currentQuestionIndex: $questionnaire.questions.length,
+      isFinished: true,
+      status: submission.statusId ?? STATUS.PENDING,
+      finalTotalGrade,
+      comment: submission.feedback ?? '',
+      grades,
+      exerciseId
+    }));
+  }
 
   $effect(() => {
     if (prevExerciseId === exerciseId) return;
-
     if (!!prevExerciseId) {
-      submission = undefined;
-      hasSubmission = false;
       isSubmitting = false;
-      isCheckingSubmission = false;
       alreadyCheckedAutoSavedData = false;
     }
-
     prevExerciseId = exerciseId;
   });
 </script>
@@ -459,85 +398,81 @@
 {:else if $questionnaireMetaData.currentQuestionIndex === 0}
   <RoleBasedSecurity allowedRoles={[3]}>
     <div>
-      {#if isCheckingSubmission}
-        <div class="flex flex-col items-center justify-center gap-4 py-12">
-          <Spinner class="size-10" />
-          <p class="ui:text-muted-foreground text-sm">
-            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.checking_submission')}
-          </p>
-        </div>
-      {:else}
-        <h2 class="my-1">{$questionnaire.title}</h2>
+      <h2 class="my-1">{$questionnaire.title}</h2>
 
-        <div class="flex items-center">
-          <p class="mx-2 dark:text-white">
-            <strong>{$questionnaire.questions.length}</strong>
-            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.questions')}
-          </p>
+      <div class="flex items-center">
+        <p class="mx-2 dark:text-white">
+          <strong>{$questionnaire.questions.length}</strong>
+          {$t('course.navItem.lessons.exercises.all_exercises.view_mode.questions')}
+        </p>
+        |
+        <p class="mx-2 dark:text-white">
+          <strong>{getTotalPossibleGrade($questionnaire.questions)}</strong>
+          {$t('course.navItem.lessons.exercises.all_exercises.view_mode.points')}.
+        </p>
+        |
+        <p class="mx-2 dark:text-white">{$t('course.navItem.lessons.exercises.all_exercises.view_mode.all')}</p>
+        {#if $questionnaire.dueBy}
           |
           <p class="mx-2 dark:text-white">
-            <strong>{getTotalPossibleGrade($questionnaire.questions)}</strong>
-            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.points')}.
+            <strong>{$t('course.navItem.lessons.exercises.all_exercises.view_mode.due')}:</strong>
+            {new Date($questionnaire.dueBy).toLocaleString()}
           </p>
-          |
-          <p class="mx-2 dark:text-white">{$t('course.navItem.lessons.exercises.all_exercises.view_mode.all')}</p>
-          {#if $questionnaire.dueBy}
-            |
-            <p class="mx-2 dark:text-white">
-              <strong>{$t('course.navItem.lessons.exercises.all_exercises.view_mode.due')}:</strong>
-              {new Date($questionnaire.dueBy).toLocaleString()}
-            </p>
-          {/if}
-        </div>
+        {/if}
+      </div>
 
-        <article class="preview prose prose-sm sm:prose mt-3 p-2">
-          {@html sanitizeHtml(
-            $questionnaire.description || $t('course.navItem.lessons.exercises.all_exercises.view_mode.no_description')
-          )}
-        </article>
+      <article class="preview prose prose-sm sm:prose mt-3 p-2">
+        {@html sanitizeHtml(
+          $questionnaire.description || $t('course.navItem.lessons.exercises.all_exercises.view_mode.no_description')
+        )}
+      </article>
 
-        <Button onclick={handleStart} type="button" class="float-right my-5">
-          {$t('course.navItem.lessons.exercises.all_exercises.view_mode.start')}
-        </Button>
-      {/if}
+      <Button onclick={handleStart} type="button" class="float-right my-5">
+        {$t('course.navItem.lessons.exercises.all_exercises.view_mode.start')}
+      </Button>
     </div>
   </RoleBasedSecurity>
 {:else if $questionnaireMetaData.isFinished}
   {#if !isLoadingAutoSavedData}
-    <div class="mb-4 flex items-center justify-between">
-      <div class="flex w-full flex-col items-start lg:flex-row lg:items-center lg:space-x-4">
-        {#if STATUS.GRADED === $questionnaireMetaData.status}
+    <div class="flex w-full flex-col items-start lg:flex-row lg:items-center lg:space-x-4">
+      {#if STATUS.GRADED === $questionnaireMetaData.status}
+        <div class="mb-8 w-full space-y-2">
           <Badge variant="success" title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_graded')}>
             {$t('course.navItem.lessons.exercises.all_exercises.view_mode.graded')}
           </Badge>
-        {:else if courseApi.course?.type === 'SELF_PACED'}
-          <Badge
-            variant="success"
-            title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_submitted')}
-          >
-            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.submitted')}
-          </Badge>
-        {:else}
-          <Badge
-            variant="warning"
-            title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_pending')}
-          >
-            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.pending')}
-          </Badge>
-        {/if}
-      </div>
-      {#if STATUS.GRADED === $questionnaireMetaData.status && courseApi.course?.type !== 'SELF_PACED'}
-        <Badge variant="outline" title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_graded')}>
-          {$questionnaireMetaData.finalTotalGrade}/{$questionnaireMetaData.totalPossibleGrade}
+
+          <div class="flex w-full flex-col items-start gap-2 md:flex-row md:items-center">
+            {#if $questionnaireMetaData.comment}
+              <Alert.Callout
+                variant="information"
+                title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.instructor_feedback')}
+                description={$questionnaireMetaData.comment}
+                class="h-fit! w-full! flex-1!"
+              />
+            {/if}
+            <div class="flex flex-col justify-between gap-2 rounded-md border p-4">
+              <p>
+                <span class="text-2xl font-bold">{$questionnaireMetaData.finalTotalGrade}/</span>
+
+                <span class="text-xl">{$questionnaireMetaData.totalPossibleGrade}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      {:else if courseApi.course?.type === 'SELF_PACED'}
+        <Badge
+          variant="success"
+          title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_submitted')}
+        >
+          {$t('course.navItem.lessons.exercises.all_exercises.view_mode.submitted')}
+        </Badge>
+      {:else}
+        <Badge variant="warning" title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_pending')}>
+          {$t('course.navItem.lessons.exercises.all_exercises.view_mode.pending')}
         </Badge>
       {/if}
     </div>
 
-    {#if $questionnaireMetaData.status === STATUS.GRADED && $questionnaireMetaData.comment && courseApi.course?.type !== 'SELF_PACED'}
-      <div class="bg-primary-700 my-2 flex items-center justify-between rounded-sm p-4 text-white">
-        <span> {$questionnaireMetaData.comment}</span>
-      </div>
-    {/if}
     <Preview
       questions={$questionnaire.questions.sort((a, b) => a.order - b.order)}
       questionnaireMetaData={$questionnaireMetaData}

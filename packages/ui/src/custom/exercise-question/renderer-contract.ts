@@ -48,75 +48,101 @@ import { default as ShortAnswerPreview } from './renderers/short-answer/preview.
 import { default as TextareaPreview } from './renderers/textarea/preview.svelte';
 import { default as TrueFalsePreview } from './renderers/true-false/preview.svelte';
 
+import { default as CheckboxSubmission } from './renderers/checkbox/submission.svelte';
+import { default as FileUploadSubmission } from './renderers/file-upload/submission.svelte';
+import { default as FillBlankSubmission } from './renderers/fill-blank/submission.svelte';
+import { default as HotspotSubmission } from './renderers/hotspot/submission.svelte';
+import { default as MatchingSubmission } from './renderers/matching/submission.svelte';
+import { default as NumericSubmission } from './renderers/numeric/submission.svelte';
+import { default as OrderingSubmission } from './renderers/ordering/submission.svelte';
+import { default as RadioSubmission } from './renderers/radio/submission.svelte';
+import { default as LinkSubmission } from './renderers/link/submission.svelte';
+import { default as ShortAnswerSubmission } from './renderers/short-answer/submission.svelte';
+import { default as TextareaSubmission } from './renderers/textarea/submission.svelte';
+import { default as TrueFalseSubmission } from './renderers/true-false/submission.svelte';
+
 type SharedRendererComponent = Component<ExerciseQuestionRendererProps>;
 
 export const EXERCISE_QUESTION_RENDERER_CONTRACT: ExerciseRendererRegistry<SharedRendererComponent> = {
   [QUESTION_TYPE_KEY.RADIO]: {
     edit: RadioEdit,
     take: RadioTake,
-    preview: RadioPreview
+    preview: RadioPreview,
+    submission: RadioSubmission
   },
   [QUESTION_TYPE_KEY.CHECKBOX]: {
     edit: CheckboxEdit,
     take: CheckboxTake,
-    preview: CheckboxPreview
+    preview: CheckboxPreview,
+    submission: CheckboxSubmission
   },
   [QUESTION_TYPE_KEY.TEXTAREA]: {
     edit: TextareaEdit,
     take: TextareaTake,
-    preview: TextareaPreview
+    preview: TextareaPreview,
+    submission: TextareaSubmission
   },
   [QUESTION_TYPE_KEY.TRUE_FALSE]: {
     edit: TrueFalseEdit,
     take: TrueFalseTake,
-    preview: TrueFalsePreview
+    preview: TrueFalsePreview,
+    submission: TrueFalseSubmission
   },
   [QUESTION_TYPE_KEY.SHORT_ANSWER]: {
     edit: ShortAnswerEdit,
     take: ShortAnswerTake,
-    preview: ShortAnswerPreview
+    preview: ShortAnswerPreview,
+    submission: ShortAnswerSubmission
   },
   [QUESTION_TYPE_KEY.NUMERIC]: {
     edit: NumericEdit,
     take: NumericTake,
-    preview: NumericPreview
+    preview: NumericPreview,
+    submission: NumericSubmission
   },
   [QUESTION_TYPE_KEY.FILL_BLANK]: {
     edit: FillBlankEdit,
     take: FillBlankTake,
-    preview: FillBlankPreview
+    preview: FillBlankPreview,
+    submission: FillBlankSubmission
   },
   [QUESTION_TYPE_KEY.FILE_UPLOAD]: {
     edit: FileUploadEdit,
     take: FileUploadTake,
-    preview: FileUploadPreview
+    preview: FileUploadPreview,
+    submission: FileUploadSubmission
   },
   [QUESTION_TYPE_KEY.MATCHING]: {
     edit: MatchingEdit,
     take: MatchingTake,
-    preview: MatchingPreview
+    preview: MatchingPreview,
+    submission: MatchingSubmission
   },
   [QUESTION_TYPE_KEY.ORDERING]: {
     edit: OrderingEdit,
     take: OrderingTake,
-    preview: OrderingPreview
+    preview: OrderingPreview,
+    submission: OrderingSubmission
   },
   [QUESTION_TYPE_KEY.HOTSPOT]: {
     edit: HotspotEdit,
     take: HotspotTake,
-    preview: HotspotPreview
+    preview: HotspotPreview,
+    submission: HotspotSubmission
   },
   [QUESTION_TYPE_KEY.LINK]: {
     edit: LinkEdit,
     take: LinkTake,
-    preview: LinkPreview
+    preview: LinkPreview,
+    submission: LinkSubmission
   }
 };
 
 const FALLBACK_RENDERER: ExerciseRendererDefinition<SharedRendererComponent> = {
   edit: ShortAnswerEdit,
   take: ShortAnswerTake,
-  preview: ShortAnswerPreview
+  preview: ShortAnswerPreview,
+  submission: ShortAnswerSubmission
 };
 
 export function getExerciseQuestionRenderer(

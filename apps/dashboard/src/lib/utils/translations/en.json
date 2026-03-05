@@ -838,6 +838,7 @@
     "start_course": "Once you start a course, your progress will reflect here",
     "lms_dashboard_hero": "Today is another day to bring you closer to your learning goals. Don’t give up, the more you learn the better you get.",
     "lessons_completed": "Lessons completed",
+    "items_completed": "Items completed",
     "no_courses_started": "No courses started",
     "revenue": "Revenue",
     "revenue_description": "Approximate revenue made from course sales",
@@ -1316,12 +1317,16 @@
               "status_pending": "Status: Pending Review",
               "status_graded": "Status: Review Completed",
               "status_submitted": "Status: Submitted",
-              "checking_submission": "Checking your submission..."
+              "checking_submission": "Checking your submission...",
+              "instructor_feedback": "Instructor feedback"
             },
             "analytics": {
               "summary": {
                 "heading": "Summary",
-                "question_chart": "Question Charts"
+                "question_chart": "Question Charts",
+                "responses": "Responses",
+                "no_responses": "No responses yet",
+                "other": "Other"
               },
               "individual": {
                 "heading": "Individual",
@@ -1330,7 +1335,9 @@
                 "student_avatar": "Student"
               },
               "submissions": "Submissions",
-              "loading_submissions": "Loading submissions..."
+              "loading_submissions": "Loading submissions...",
+              "empty_title": "No submissions yet",
+              "empty_description": "Submissions will appear here when students complete this exercise."
             },
             "shared_question": {
               "common": {

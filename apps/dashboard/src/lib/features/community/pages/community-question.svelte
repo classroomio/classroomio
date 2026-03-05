@@ -22,6 +22,7 @@
   import { CommunityDeleteModal, CommunityCommentItem } from '$features/community/components';
   import type { CommunityQuestionSuccess } from '../utils/types';
   import { currentCommunityQuestion } from '../utils/store';
+  import { sanitizeHtml } from '@cio/ui/tools/sanitize';
 
   interface Props {
     slug: string;
@@ -213,7 +214,7 @@
             </div>
           {:else}
             <section class="prose prose-sm sm:prose p-2">
-              {@html communityApi.question?.body}
+              {@html sanitizeHtml(communityApi.question?.body ?? '')}
             </section>
           {/if}
         </div>

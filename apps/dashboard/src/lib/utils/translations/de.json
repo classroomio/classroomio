@@ -1013,9 +1013,14 @@
               },
               "summary": {
                 "heading": "Zusammenfassung",
-                "question_chart": "Fragendiagramme"
+                "question_chart": "Fragendiagramme",
+                "responses": "Antworten",
+                "no_responses": "Noch keine Antworten",
+                "other": "Andere"
               },
-              "loading_submissions": "Einsendungen werden geladen..."
+              "loading_submissions": "Einsendungen werden geladen...",
+              "empty_title": "Noch keine Einsendungen",
+              "empty_description": "Die Einreichungen werden hier angezeigt, wenn die Schüler diese Übung abgeschlossen haben."
             },
             "view_mode": {
               "no_question": "Für diese Übung wurde keine Frage hinzugefügt",
@@ -1037,7 +1042,9 @@
               "empty_edit_hint_prefix": "Klicken Sie auf ",
               "empty_edit_hint_suffix": " Schaltfläche zum Hinzufügen.",
               "answers_required": "Bitte geben Sie vor dem Absenden mindestens eine Antwort an.",
-              "checking_submission": "Ich prüfe Ihre Einreichung..."
+              "checking_submission": "Ich prüfe Ihre Einreichung...",
+              "answer_required": "Bitte beantworten Sie diese Frage, bevor Sie fortfahren.",
+              "instructor_feedback": "Feedback des Dozenten"
             },
             "edit_mode": {
               "delete_modal": "Übung löschen",
@@ -1154,7 +1161,11 @@
                 },
                 "take": {
                   "selected_file_label": "Ausgewählte Datei",
-                  "upload_button": "Hochladen"
+                  "upload_button": "Hochladen",
+                  "upload_progress": "Hochladen...",
+                  "upload_error": "Der Upload ist fehlgeschlagen",
+                  "view": "Ansicht",
+                  "download": "Herunterladen"
                 },
                 "edit": {
                   "accepted_types_placeholder": "Akzeptierte Typen (z. B. pdf, docx)",
@@ -1619,7 +1630,8 @@
     "recent_enrollments": "Aktuelle Anmeldungen",
     "publish_first_course": "Veröffentlichen Sie Ihren ersten Kurs",
     "publish_first_course_description": "Um Anmeldungen zu verfolgen, veröffentlichen Sie einen Kurs und laden Sie Studierende ein",
-    "publish_course": "Kurs veröffentlichen"
+    "publish_course": "Kurs veröffentlichen",
+    "items_completed": "Artikel abgeschlossen"
   },
   "schedule": {
     "title": "Ihr Zeitplan",
@@ -2195,7 +2207,8 @@
         "email_password_disabled": "Die E-Mail-/Passwort-Anmeldung ist deaktiviert. Bitte verwenden Sie SSO.",
         "email_password_disabled_message": "Die E-Mail-/Passwort-Anmeldung ist für diese Organisation deaktiviert.",
         "google_auth_disabled": "Die Google-Authentifizierung ist deaktiviert.",
-        "signup_disabled_error": "Die Anmeldung ist für diese Organisation deaktiviert. Bitte wenden Sie sich an Ihren Administrator."
+        "signup_disabled_error": "Die Anmeldung ist für diese Organisation deaktiviert. Bitte wenden Sie sich an Ihren Administrator.",
+        "or_continue_with": "Oder fahren Sie mit E-Mail und Passwort fort"
       },
       "tabs": {
         "general": "Allgemein",

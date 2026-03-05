@@ -34,11 +34,14 @@ export interface TAdminCourse extends TBaseCourse {
 }
 
 /**
- * Student course type - extends TBaseCourse with progressRate
+ * Student course type - extends TBaseCourse with progress fields
  * Used for student dashboard and enrolled courses views
+ * progressRate = lessons completed, exercisesCompleted = exercises submitted
  */
 export interface TStudentCourse extends TBaseCourse {
   progressRate: number;
+  exerciseCount: number;
+  exercisesCompleted: number;
 }
 
 /**
@@ -597,7 +600,22 @@ export const getEnrolledCourses = async ({
           WHERE l.course_id = ${schema.course.id}
           AND lc.is_complete = true
           AND lc.profile_id = ${sql.raw(`'${profileId}'::uuid`)}
-        )`.as('progress_rate')
+        )`.as('progress_rate'),
+        exerciseCount: sql<number>`(
+          SELECT COUNT(*)::bigint
+          FROM ${schema.exercise} as ex
+          LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
+          WHERE ex.course_id = ${schema.course.id}
+          OR el.course_id = ${schema.course.id}
+        )`.as('exercise_count'),
+        exercisesCompleted: sql<number>`(
+          SELECT COUNT(DISTINCT s.exercise_id)::bigint
+          FROM ${schema.submission} as s
+          JOIN ${schema.exercise} as ex ON ex.id = s.exercise_id
+          LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
+          WHERE (ex.course_id = ${schema.course.id} OR el.course_id = ${schema.course.id})
+          AND s.submitted_by = ${schema.groupmember.id}
+        )`.as('exercises_completed')
       })
       .from(schema.course)
       .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
@@ -611,13 +629,15 @@ export const getEnrolledCourses = async ({
           eq(schema.groupmember.profileId, profileId)
         )
       )
-      .groupBy(schema.course.id)
+      .groupBy(schema.course.id, schema.groupmember.id)
       .orderBy(desc(schema.course.createdAt));
 
     return result.map((row) => ({
       ...row.course,
       lessonCount: Number(row.lessonCount),
-      progressRate: Number(row.progressRate)
+      progressRate: Number(row.progressRate),
+      exerciseCount: Number(row.exerciseCount),
+      exercisesCompleted: Number(row.exercisesCompleted)
     }));
   } catch (error) {
     console.error('getEnrolledCourses error:', error);

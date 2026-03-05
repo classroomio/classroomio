@@ -1,6 +1,6 @@
 <script lang="ts">
   import type {
-    ExerciseAnswerValue,
+    AnswerData,
     ExerciseQuestionModel,
     ExerciseQuestionRenderContract,
     ExerciseQuestionRendererProps
@@ -22,7 +22,7 @@
 
   interface Props {
     contract: ExerciseQuestionRenderContract;
-    onAnswerChange?: (answer: ExerciseAnswerValue) => void;
+    onAnswerChange?: (answer: AnswerData) => void;
     onQuestionChange?: (question: ExerciseQuestionRendererProps['question']) => void;
     showContainer?: boolean;
     questionTypeSelect?: Snippet;
@@ -457,6 +457,8 @@
   <Renderer
     question={contract.question}
     answer={contract.answer}
+    submissions={contract.submissions}
+    maxSubmissionItems={contract.maxSubmissionItems}
     disabled={contract.disabled}
     labels={contract.labels}
     onImageUpload={contract.onImageUpload}

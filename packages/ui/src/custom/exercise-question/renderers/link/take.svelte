@@ -6,19 +6,15 @@
   import { Input } from '../../../../base/input';
   import { IconButton } from '../../../icon-button';
 
-  let {
-    question,
-    answer = [],
-    disabled = false,
-    labels,
-    onAnswerChange = () => {}
-  }: ExerciseQuestionRendererProps = $props();
+  let { answer, disabled = false, labels, onAnswerChange = () => {} }: ExerciseQuestionRendererProps = $props();
 
   const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
     getExerciseQuestionLabel(labels, key, fallback);
 
-  let links = $state<string[]>(['']);
-  let answerSignature = $state('[]');
+  let links = $derived.by<string[]>(() => {
+    const nextLinks = toAnswerLinks(answer);
+    return nextLinks.length > 0 ? nextLinks : [''];
+  });
 
   function isValidLink(value: string): boolean {
     try {
@@ -30,21 +26,13 @@
   }
 
   function toAnswerLinks(value: ExerciseQuestionRendererProps['answer']): string[] {
-    if (Array.isArray(value)) {
-      return value.map((entry) => String(entry ?? '').trim()).filter(Boolean);
-    }
-
-    if (typeof value === 'string' && value.trim().length > 0) {
-      return [value.trim()];
-    }
-
+    if (value?.type === 'LINK') return value.urls.map((u) => String(u ?? '').trim()).filter(Boolean);
     return [];
   }
 
   function syncAnswer(nextLinks: string[]) {
     const normalizedLinks = nextLinks.map((entry) => entry.trim()).filter(Boolean);
-    answerSignature = JSON.stringify(normalizedLinks);
-    onAnswerChange(normalizedLinks);
+    onAnswerChange({ type: 'LINK', urls: normalizedLinks });
   }
 
   function addLinkField() {
@@ -81,16 +69,6 @@
       };
     })
   );
-
-  $effect(() => {
-    const nextLinks = toAnswerLinks(answer);
-    const nextSignature = JSON.stringify(nextLinks);
-
-    if (nextSignature === answerSignature) return;
-
-    links = nextLinks.length > 0 ? nextLinks : [''];
-    answerSignature = nextSignature;
-  });
 </script>
 
 <div class="ui:space-y-3">

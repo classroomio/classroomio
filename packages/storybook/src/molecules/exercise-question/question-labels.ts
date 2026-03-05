@@ -102,5 +102,11 @@ export const QUESTION_LABELS = {
   'hotspot.take.placeholder': 'Provide hotspot coordinates as JSON',
   'hotspot.preview.helper': 'Hotspot preview is provided by host app image and hotspot settings.',
   'textarea.edit.placeholder': 'Learners will answer with long-form text',
-  'textarea.take.placeholder': 'Write your answer'
+  'textarea.take.placeholder': 'Write your answer',
+  'submission.common.no_answer': 'No answer',
+  'submission.common.other': 'Other',
+  'submission.chart.responses': 'Responses',
+  'submission.chart.no_data': 'No responses yet',
+  'submission.list.responses': 'Responses',
+  'submission.list.no_responses': 'No responses yet'
 } as const;

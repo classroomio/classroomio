@@ -5,15 +5,23 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import { coursesApi } from '$features/course/api';
+  import { calcCourseProgress } from '$features/course/utils/functions';
 
   let searchValue = $state('');
 
-  const coursesInProgress = $derived(
-    coursesApi.enrolledCourses.filter((course) => course.lessonCount !== course.progressRate)
-  );
-  const coursesComplete = $derived(
-    coursesApi.enrolledCourses.filter((course) => course.lessonCount === course.progressRate)
-  );
+  function isCourseComplete(course: (typeof coursesApi.enrolledCourses)[number]): boolean {
+    const c = course as { exerciseCount?: number; exercisesCompleted?: number };
+    const progress = calcCourseProgress({
+      lessonsCompleted: course.progressRate ?? 0,
+      totalLessons: course.lessonCount ?? 0,
+      exercisesCompleted: typeof c.exercisesCompleted === 'number' ? c.exercisesCompleted : 0,
+      totalExercises: typeof c.exerciseCount === 'number' ? c.exerciseCount : 0
+    });
+    return progress >= 100;
+  }
+
+  const coursesInProgress = $derived(coursesApi.enrolledCourses.filter((course) => !isCourseComplete(course)));
+  const coursesComplete = $derived(coursesApi.enrolledCourses.filter((course) => isCourseComplete(course)));
 
   $effect(() => {
     if (!$profile.id || !$currentOrg.id) return;

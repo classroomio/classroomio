@@ -4,7 +4,7 @@
 
   let {
     question,
-    answer = [],
+    answer,
     disabled = false,
     labels,
     onAnswerChange = () => {}
@@ -14,18 +14,11 @@
     getExerciseQuestionLabel(labels, key, fallback);
 
   const value = $derived.by(() => {
-    if (Array.isArray(answer)) {
-      return answer
-        .map((token) => String(token).trim())
-        .filter(Boolean)
-        .join(', ');
-    }
-
-    if (typeof answer === 'string') {
-      return answer;
-    }
-
-    return '';
+    const values = answer?.type === 'FILL_BLANK' ? answer.values : [];
+    return values
+      .map((token) => String(token).trim())
+      .filter(Boolean)
+      .join(', ');
   });
 </script>
 
@@ -36,11 +29,12 @@
     {disabled}
     placeholder={label('fill_blank.take.placeholder')}
     onchange={(event) =>
-      onAnswerChange(
-        event.currentTarget.value
+      onAnswerChange({
+        type: 'FILL_BLANK',
+        values: event.currentTarget.value
           .split(',')
           .map((token) => token.trim())
           .filter(Boolean)
-      )}
+      })}
   />
 </div>
