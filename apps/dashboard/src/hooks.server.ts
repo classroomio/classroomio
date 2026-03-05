@@ -29,7 +29,10 @@ const handlePagesRoutes: Handle = async ({ event, resolve }) => {
 
   if (!event.locals.user) {
     const shouldAddRedirectParam = !pathname.includes(ROUTE.LOGOUT);
-    const redirectPath = shouldAddRedirectParam ? `${ROUTE.LOGIN}?redirect=${pathname}` : ROUTE.LOGIN;
+    const fullPath = pathname + event.url.search;
+    const redirectPath = shouldAddRedirectParam
+      ? `${ROUTE.LOGIN}?redirect=${encodeURIComponent(fullPath)}`
+      : ROUTE.LOGIN;
 
     return redirect(303, redirectPath);
   }

@@ -18,7 +18,7 @@
       {#snippet child({ props })}
         <a href={orgPath} {...props}>
           {#if $currentOrg.name}
-            <Avatar.Root class="rounded-md! size-6! flex items-center justify-center">
+            <Avatar.Root class="flex size-6! items-center justify-center rounded-md!">
               <Avatar.Image src={$currentOrg.avatarUrl} alt={$currentOrg.name} />
               <Avatar.Fallback class="rounded-md! text-xs">{shortenName($currentOrg.name)}</Avatar.Fallback>
             </Avatar.Root>

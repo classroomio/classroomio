@@ -62,6 +62,8 @@ export const config = {
 export const { t, loading, locales, locale, initialized, translations, loadTranslations } = new i18n(config);
 
 export const selectedLocale = writable<string>('en');
+export const LOCALE_STORAGE_KEY = 'classroomio_locale';
+export const LOCALE_COOKIE_KEY = 'classroomio_locale';
 
 // Translations logs
 loading.subscribe(async ($loading) => {
@@ -80,19 +82,38 @@ export function handleLocaleChange(newLocale: TLocale) {
   locale.set(newLocale);
 
   selectedLocale.set(newLocale);
+
+  persistLocale(newLocale);
 }
 
-export function lessonFallbackNote(note: string, translation: Record<TLocale, string>, locale: TLocale) {
-  if (!translation) {
-    return note;
+export function getPersistedLocale(): string | null {
+  if (typeof window === 'undefined') {
+    return null;
   }
 
-  const content = translation[locale];
-
-  // if locale is english and no translated content for english but note exists
-  if (locale === 'en' && !content && note?.length) {
-    return note;
+  try {
+    const savedLocale = window.localStorage.getItem(LOCALE_STORAGE_KEY);
+    if (savedLocale) {
+      return savedLocale;
+    }
+  } catch (error) {
+    console.warn('Failed to read saved locale from localStorage', error);
   }
 
-  return content;
+  const cookieMatch = document.cookie.match(new RegExp(`(?:^|; )${LOCALE_COOKIE_KEY}=([^;]*)`));
+  return cookieMatch?.[1] ? decodeURIComponent(cookieMatch[1]) : null;
+}
+
+function persistLocale(newLocale: TLocale) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(LOCALE_STORAGE_KEY, newLocale);
+  } catch (error) {
+    console.warn('Failed to save locale to localStorage', error);
+  }
+
+  document.cookie = `${LOCALE_COOKIE_KEY}=${encodeURIComponent(newLocale)}; path=/; max-age=31536000; SameSite=Lax`;
 }

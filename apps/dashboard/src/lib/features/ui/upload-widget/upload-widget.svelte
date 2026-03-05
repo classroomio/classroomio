@@ -10,6 +10,9 @@
 
   import { t } from '$lib/utils/functions/translations';
   import { uploadImage } from '$lib/utils/services/upload';
+  import * as FileDropZone from '@cio/ui/custom/file-drop-zone';
+  import type { FileRejectedReason } from '@cio/ui/custom/file-drop-zone';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { Button } from '@cio/ui/base/button';
 
   interface Props {
@@ -38,9 +41,8 @@
     };
     alt_description: string;
   }[] = $state([]);
-  let fileInput: HTMLInputElement | undefined = $state();
 
-  let label = $state($t('snackbar.landing_page_settings.error.label'));
+  const MAX_IMAGE_SIZE = 500 * FileDropZone.KILOBYTE;
 
   async function handleImageClick(img: string) {
     $handleOpenWidget.open = false;
@@ -49,22 +51,18 @@
     imageURL = img;
   }
 
-  const onFileSelected = () => {
-    const file = fileInput?.files?.[0];
-    const sizeInkb = file?.size! / 1024;
-    if (sizeInkb > 500) {
+  async function handleFilesUpload(files: File[]) {
+    const file = files[0];
+    if (file) await handleUploadImage(file);
+  }
+
+  function handleFileRejected({ reason }: { reason: FileRejectedReason }) {
+    if (reason === 'Maximum file size exceeded') {
       snackbar.error('snackbar.landing_page_settings.error.file_size');
-      label = $t('snackbar.landing_page_settings.error.try_again');
-      return;
+    } else {
+      snackbar.error('snackbar.landing_page_settings.error.file_size');
     }
-    if (file) {
-      let reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        handleUploadImage(file);
-      };
-    }
-  };
+  }
 
   const handleUploadImage = async (image: File) => {
     isUploading = true;
@@ -80,10 +78,6 @@
     snackbar.success(`snackbar.landing_page_settings.success.complete`);
     $handleOpenWidget.open = false;
   };
-
-  function handleUpload() {
-    fileInput?.click();
-  }
 
   async function handleSubmit() {
     try {
@@ -117,40 +111,30 @@
           {/each}
         </UnderlineTabs.List>
         <UnderlineTabs.Content value={tabs[1].value}>
-          <!-- Your Upload content here -->
-          <div class="w-full">
-            <input
-              type="file"
-              style="display: none;"
-              bind:this={fileInput}
-              onchange={onFileSelected}
-              disabled={isUploading}
-            />
-            <Button onclick={handleUpload} loading={isUploading}>
-              {label}
-            </Button>
-            <p class="my-2 text-center text-sm text-gray-500">
-              {$t('course.navItem.landing_page.upload_widget.width')}
-            </p>
-            <p class="text-center text-sm text-gray-500">
-              {$t('course.navItem.landing_page.upload_widget.size')}
-            </p>
+          <div class="w-full {isUploading ? 'ui:opacity-50 ui:pointer-events-none' : ''}">
+            <FileDropZone.Root
+              accept={FileDropZone.ACCEPT_IMAGE}
+              maxFiles={1}
+              fileCount={0}
+              maxFileSize={MAX_IMAGE_SIZE}
+              onUpload={handleFilesUpload}
+              onFileRejected={handleFileRejected}
+            >
+              <FileDropZone.Trigger
+                label={$t('course.navItem.landing_page.upload_widget.drag_drop')}
+                formatMaxSize={(_size) => $t('course.navItem.landing_page.upload_widget.size')}
+              />
+            </FileDropZone.Root>
           </div>
         </UnderlineTabs.Content>
         <UnderlineTabs.Content value={tabs[0].value}>
           <!-- Your Images content here -->
           <div class="h-full overflow-y-scroll">
             <form onsubmit={preventDefault(handleSubmit)} class="mt-1 flex gap-2 pb-3">
-              <input
-                type="text"
-                bind:value={searchQuery}
-                name=""
-                id=""
-                class="ml-2 w-[85%] rounded-lg dark:text-black"
-              />
-              <button type="submit" class="rounded-lg border border-gray-500 bg-white px-3 py-1 text-black"
-                >{$t('course.navItem.landing_page.upload_widget.submit')}</button
-              >
+              <InputField className="ml-2 w-[85%]" bind:value={searchQuery} />
+              <Button type="submit" variant="outline">
+                {$t('course.navItem.landing_page.upload_widget.submit')}
+              </Button>
             </form>
             {#if unsplashImages && unsplashImages.length > 0}
               <div class="hide-scrollbar flex max-h-[300px] flex-row flex-wrap items-center gap-2 px-[10px]">

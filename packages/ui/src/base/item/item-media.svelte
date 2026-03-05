@@ -6,7 +6,7 @@
     variants: {
       variant: {
         default: 'ui:bg-transparent',
-        icon: "ui:bg-muted ui:size-8 ui:rounded-sm ui:border ui:[&_svg:not([class*='size-'])]:size-4",
+        icon: "ui:bg-muted ui:size-8 ui:rounded-sm ui:border ui:[&_svg:not([class*='ui:size-'])]:size-4",
         image: 'ui:size-10 ui:overflow-hidden ui:rounded-sm ui:[&_img]:size-full ui:[&_img]:object-cover'
       }
     },

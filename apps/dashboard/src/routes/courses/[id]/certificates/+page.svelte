@@ -1,17 +1,10 @@
 <script lang="ts">
   import { CertificatesPage } from '$features/course/pages';
-  import { CourseContainer } from '$lib/components/CourseContainer';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
-
-  let { data } = $props();
 </script>
 
-<svelte:head>
-  <title>Certificates - ClassroomIO</title>
-</svelte:head>
-
-<CourseContainer courseId={data.courseId}>
+<Page.Root class="mx-auto flex w-[calc(100vw-var(--sidebar-width))]!">
   <Page.Header>
     <Page.HeaderContent>
       <Page.Title>
@@ -21,7 +14,7 @@
   </Page.Header>
   <Page.Body>
     {#snippet child()}
-      <CertificatesPage courseId={data.courseId} />
+      <CertificatesPage />
     {/snippet}
   </Page.Body>
-</CourseContainer>
+</Page.Root>

@@ -10,6 +10,10 @@ const connectionString = process.env.DATABASE_URL ?? process.env.PRIVATE_DATABAS
 
 export const db = drizzle(connectionString);
 
+export type DbClient = typeof db;
+export type TxClient = Parameters<typeof db.transaction>[0] extends (tx: infer T) => any ? T : never;
+export type DbOrTxClient = DbClient | TxClient;
+
 export * from 'drizzle-orm';
 export * from './schema';
 

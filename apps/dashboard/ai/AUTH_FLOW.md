@@ -30,16 +30,9 @@ Documenting my thoughts on how authentication works in the app.
 
 ---
 
-## Better Auth to Supabase TODO
+## Better Auth Migration Status
 
-### actions to trigger [in code]
-
-- [ ] After sign up
-  - [x] create a profile by new user.
-  - [ ] if sign up was triggered from a subdomain (aka is lms), add profile to org with student role
-  - [ ] send verification email
-
-### migrate from supabase
+### Completed Migration
 
 - [x] after login redirect to next page
 - [x] after signup redirect to next page (onboarding | lms | )
@@ -48,8 +41,16 @@ Documenting my thoughts on how authentication works in the app.
 - [x] complete onboarding flow
 - [x] change email flow.
 - [x] google auth flow (local and on test environment)
+- [x] Supabase removed from dashboard - all authentication now uses better-auth
+
+### Remaining Tasks
+
 - [ ] support google auth for teacher invite
 - [ ] support google auth for student invite
+- [ ] After sign up
+  - [x] create a profile by new user.
+  - [x] if sign up was triggered from a subdomain (aka is lms), add profile to org with student role
+  - [x] send verification email
 
 ### others
 

@@ -23,11 +23,9 @@
       <NavMain />
     </Sidebar.Content>
 
-    {#if $profile.id}
-      <Sidebar.Footer class="gap-4!">
-        <SidebarFooterMenu />
-      </Sidebar.Footer>
-    {/if}
+    <Sidebar.Footer class="gap-4!">
+      <SidebarFooterMenu />
+    </Sidebar.Footer>
 
     <Sidebar.Rail />
   </Sidebar.Root>

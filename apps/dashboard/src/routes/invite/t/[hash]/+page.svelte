@@ -1,268 +1,110 @@
 <script lang="ts">
-  import { page } from '$app/state';
-  import { AuthUI } from '$features/ui';
-  import type { Profile } from '$lib/components/Course/components/People/types';
-  import { InputField } from '@cio/ui/custom/input-field';
+  import { goto } from '$app/navigation';
+  import { onMount } from 'svelte';
   import { Button } from '@cio/ui/base/button';
-  import * as Field from '@cio/ui/base/field';
-  import { Password } from '@cio/ui/custom/password';
-  import { SIGNUP_FIELDS } from '$lib/utils/constants/authentication';
-  import { logout } from '$lib/utils/functions/logout';
-  import { getSupabase } from '$lib/utils/functions/supabase';
+  import { AuthUI } from '$features/ui';
+  import { currentOrg } from '$lib/utils/store/org';
   import { setTheme } from '$lib/utils/functions/theme';
-  import { t } from '$lib/utils/functions/translations';
-  import { profile, user } from '$lib/utils/store/user';
-  import { authValidation, getConfirmPasswordError, getDisableSubmit } from '$lib/utils/functions/validator';
-  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
-  import { onMount, untrack } from 'svelte';
+  import { classroomio } from '$lib/utils/services/api';
+  import { profile } from '$lib/utils/store/user';
   import { snackbar } from '$features/ui/snackbar/store';
+  import { page } from '$app/state';
 
   let { data } = $props();
 
-  let supabase = getSupabase();
-  let fields = $state(Object.assign({}, SIGNUP_FIELDS));
   let loading = $state(false);
-  let isLoggingOut = $state(false);
-  let shouldLogout = $state(false);
 
-  let errors: {
-    name?: string;
-    email?: string;
-    password?: string;
-  } = $state({});
+  const inviteStatus = $derived(data.invite?.invite?.status ?? 'INVALID');
+  const isInviteEmailMismatch = $derived(
+    Boolean(
+      $profile.email &&
+        data.invite?.invite?.email &&
+        $profile.email.toLowerCase() !== data.invite.invite.email.toLowerCase()
+    )
+  );
+  const canJoinOrganization = $derived(inviteStatus === 'ACTIVE' && !isInviteEmailMismatch);
 
-  let submitError: string = $state('');
-
-  const confirmPasswordError = $derived(getConfirmPasswordError(fields));
-  const disableSubmit = $derived(getDisableSubmit(fields));
-
-  async function joinOrg(profileId: string, email: string | null) {
-    if (!profileId || !email || !data.invite.currentOrg?.id) return;
-
-    // Update member response
-    const updateMemberRes = await supabase
-      .from('organizationmember')
-      .update({
-        verified: true,
-        profile_id: profileId
-      })
-      .match({ email: email, organization_id: data.invite.currentOrg?.id });
-
-    console.log('Update member response', updateMemberRes);
-
-    window.location.href = $currentOrgPath;
-  }
-
-  async function signUserIn(profileId: string, email: string) {
-    if (!profileId || !email) {
-      throw $t('login.validation.unable_to_create_profile');
+  function getBlockedInviteMessage(): string {
+    if (isInviteEmailMismatch) {
+      return 'You are logged in with a different email from this invite.';
     }
 
-    const res = await supabase.auth.signInWithPassword({
-      email,
-      password: fields.password
-    });
-
-    if (res.error) {
-      throw res.error;
+    if (inviteStatus === 'EXPIRED') {
+      return 'This invite link has expired.';
     }
+
+    if (inviteStatus === 'REVOKED') {
+      return 'This invite link has been revoked.';
+    }
+
+    if (inviteStatus === 'ACCEPTED') {
+      return 'This invite has already been used.';
+    }
+
+    return 'This invite link is not valid.';
   }
 
   async function handleSubmit() {
-    if ($profile && $profile.id) {
-      loading = true;
-      await joinOrg($profile.id, $profile.email);
+    if (inviteStatus !== 'ACTIVE') {
+      snackbar.error(getBlockedInviteMessage());
       return;
     }
 
-    const validationRes = authValidation({
-      ...fields,
-      email: data.invite.email // validation for this ema
-    });
-    console.log('validationRes', validationRes);
+    if (!$profile.id || !$profile.email) {
+      return goto(`/signup?redirect=${page.url?.pathname || ''}`);
+    }
 
-    if (Object.keys(validationRes).length) {
-      errors = Object.assign(errors, validationRes);
+    if (isInviteEmailMismatch) {
+      snackbar.error(getBlockedInviteMessage());
       return;
     }
+
+    loading = true;
 
     try {
-      loading = true;
-      let profile: Profile | null = data.invite.profile;
+      const response = await classroomio.invite.organization[':token'].accept.$post({
+        param: { token: data.token }
+      });
+      const result = await response.json();
 
-      if (!data.invite.profile) {
-        // Signup
-        const { data: signupData, error } = await supabase.auth.signUp({
-          email: data.invite.email,
-          password: fields.password
-        });
-
-        console.log('Signup', signupData);
-        if (error) throw error;
-
-        if (!signupData.user) {
-          throw $t('login.validation.user_cannot_be_created');
-        }
-
-        // Insert profile
-        const userId = signupData.user.id;
-        const profileRes = await supabase
-          .from('profile')
-          .insert({
-            id: userId,
-            username: fields.name.toLowerCase().replace(' ', '-') + new Date().getTime(),
-            fullname: fields.name,
-            email: data.invite.email
-          })
-          .select();
-
-        console.log('Insert profile', profileRes.data);
-
-        if (profileRes.error) {
-          throw profileRes.error;
-        }
-
-        profile = profileRes.data[0] || {};
+      if (!result.success || !result.data) {
+        snackbar.error(result.error || 'Failed to join organization');
+        return;
       }
 
-      if (!profile?.id) {
-        throw $t('login.validation.unable_to_create_profile');
-      }
-
-      await signUserIn(profile.id, profile.email);
-
-      await joinOrg(profile.id, profile.email);
+      goto(result.data.redirectTo || '/org');
     } catch (error) {
-      if (error instanceof Error) {
-        submitError = error.message;
-      } else {
-        submitError = error?.toString() || '';
-      }
+      console.error('Failed to accept organization invite', error);
+      snackbar.error('Failed to join organization');
     } finally {
       loading = false;
     }
   }
 
   onMount(async () => {
-    if (!data.invite.currentOrg) return;
+    if (!data.currentOrg) return;
 
-    setTheme(data.invite.currentOrg?.theme || '');
-
-    currentOrg.set(data.invite.currentOrg);
-  });
-
-  const isLoading = $derived(loading || $user.fetchingUser);
-
-  $effect(() => {
-    const email = $profile?.email;
-    if (!email) return;
-
-    if (email !== data.invite.email) {
-      console.log('logout');
-      snackbar.error('You are logged in with a different email');
-      untrack(() => {
-        shouldLogout = true;
-      });
-    }
+    setTheme(data.currentOrg?.theme || '');
+    currentOrg.set(data.currentOrg);
   });
 </script>
 
 <svelte:head>
-  <title>Join ClassroomIO</title>
+  <title>Join {data.invite.organization.name} on ClassroomIO</title>
 </svelte:head>
 
-<AuthUI redirectPathname={page.url.pathname} isLogin={false} {handleSubmit} {isLoading} showLogo={true}>
-  <div class="mt-4 w-full {shouldLogout ? 'hidden' : ''}">
-    <p class="mb-6 text-lg font-semibold dark:text-white">
-      {#if data.invite.profile}
-        {$t('login.login_to_join')}
-      {:else}
-        {$t('login.create_to_join')}
-      {/if}
-    </p>
-    <InputField
-      label={$t('login.fields.email')}
-      value={data.invite.email}
-      type="email"
-      placeholder="you@domain.com"
-      className="mb-6"
-      isDisabled={true}
-    />
-    {#if $profile?.email !== data.invite.email}
-      {#if !data.invite.profile}
-        <InputField
-          label={$t('login.fields.full_name')}
-          bind:value={fields.name}
-          type="text"
-          autoFocus={true}
-          placeholder="e.g Joke Silva"
-          className="mb-6"
-          isDisabled={isLoading}
-          errorMessage={errors.name}
-          isRequired
-        />
-      {/if}
-      <Field.Field class="mb-6">
-        <Field.Label for="password">{$t('login.fields.password')}</Field.Label>
-        <Field.Content>
-          <Password
-            id="password"
-            bind:value={fields.password}
-            placeholder="************"
-            disabled={isLoading}
-            aria-invalid={errors.password ? 'true' : undefined}
-            autocomplete={data.invite.profile ? 'current-password' : 'new-password'}
-          />
-          {#if errors.password}
-            <Field.Error>{$t(errors.password)}</Field.Error>
-          {:else}
-            <Field.Description>{$t('login.fields.password_helper_message')}</Field.Description>
-          {/if}
-        </Field.Content>
-      </Field.Field>
-      {#if !data.invite.profile}
-        <Field.Field class="mb-6">
-          <Field.Label for="confirm-password">{$t('login.fields.confirm_password')}</Field.Label>
-          <Field.Content>
-            <Password
-              id="confirm-password"
-              bind:value={fields.confirmPassword}
-              placeholder="************"
-              disabled={isLoading}
-              aria-invalid={confirmPasswordError ? 'true' : undefined}
-              autocomplete="new-password"
-            />
-            {#if confirmPasswordError}
-              <Field.Error>{$t(confirmPasswordError)}</Field.Error>
-            {/if}
-          </Field.Content>
-        </Field.Field>
-      {/if}
-    {/if}
-    {#if submitError}
-      <p class="text-sm text-red-500">{submitError}</p>
+<AuthUI isLogin={false} {handleSubmit} isLoading={loading} showOnlyContent={true} showLogo={true}>
+  <div class="mt-0 w-full">
+    <h3 class="mt-0 mb-4 text-center text-lg font-medium dark:text-white">{data.invite.organization.name}</h3>
+    <p class="text-center text-sm font-light dark:text-white">Role: {data.invite.invite.roleLabel}</p>
+    <p class="mt-1 text-center text-sm font-light dark:text-white">Invited email: {data.invite.invite.email}</p>
+
+    {#if !canJoinOrganization}
+      <p class="mt-3 text-center text-sm text-red-500">{getBlockedInviteMessage()}</p>
     {/if}
   </div>
 
-  <div class="my-4 flex w-full items-center justify-end">
-    {#if shouldLogout}
-      <Button
-        type="button"
-        loading={isLoggingOut}
-        variant="destructive"
-        onclick={async () => {
-          isLoggingOut = true;
-
-          await logout(false);
-
-          isLoggingOut = false;
-          shouldLogout = false;
-        }}
-      >
-        Logout
-      </Button>
-    {:else}
-      <Button type="submit" disabled={disableSubmit} loading={isLoading}>Accept Invite</Button>
-    {/if}
+  <div class="my-4 flex w-full items-center justify-center">
+    <Button type="submit" disabled={!canJoinOrganization || loading} {loading}>Join Organization</Button>
   </div>
 </AuthUI>

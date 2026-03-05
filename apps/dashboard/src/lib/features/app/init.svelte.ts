@@ -95,14 +95,19 @@ class AppInitApi extends BaseApi {
 
     const theme = get(currentOrg)?.theme;
 
-    if (theme) {
-      setTheme(theme);
-    }
+    setTheme(theme || 'blue');
   }
 
   routeUserToNextPage({ isOrgSite }: AppSetupParams) {
     console.log('routeUserToNextPage', window.location.pathname);
     if (!this.data?.success) {
+      return;
+    }
+
+    const redirect = page.url.searchParams.get('redirect');
+    if (redirect) {
+      // goto redirect won't accept dynamic url so we need to use window.location.href
+      window.location.href = redirect;
       return;
     }
 
@@ -114,13 +119,6 @@ class AppInitApi extends BaseApi {
     const shouldRedirectToOnboarding = !isOrgSite && !userHasOrganizations;
     if (shouldRedirectToOnboarding) {
       return goto(resolve(`/onboarding`, {}));
-    }
-
-    const redirect = page.url.searchParams.get('redirect');
-    if (redirect) {
-      // goto redirect won't accept dynamic url so we need to use window.location.href
-      window.location.href = redirect;
-      return;
     }
 
     if (!shouldRedirectOnAuth(page.url.pathname)) return;

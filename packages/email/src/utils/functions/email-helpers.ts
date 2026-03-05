@@ -1,4 +1,5 @@
 import { FromData } from '../types';
+import { EMAIL_FROM } from '../constants';
 
 // format: "ClassroomIO Developers (via ClassroomIO.com)" <notify@mail.classroomio.com>
 export function extractNameAndEmail(str: string): FromData | undefined {
@@ -15,4 +16,17 @@ export function extractNameAndEmail(str: string): FromData | undefined {
     // Return undefined if the format doesn't match
     return { name: str, email: str };
   }
+}
+
+export function buildEmailFromName(name?: string): string {
+  if (!name) {
+    return EMAIL_FROM;
+  }
+
+  const fromData = extractNameAndEmail(EMAIL_FROM);
+  if (!fromData?.email) {
+    return EMAIL_FROM;
+  }
+
+  return `"${name}" <${fromData.email}>`;
 }

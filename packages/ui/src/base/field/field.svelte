@@ -8,7 +8,7 @@
         vertical: 'ui:flex-col ui:*:w-full ui:*.sr-only:w-auto',
         horizontal: [
           'ui:flex-row ui:items-center',
-          '[&>[data-slot=field-label]]:flex-auto',
+          'ui:[&>[data-slot=field-label]]:flex-auto',
           'ui:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px ui:has-[>[data-slot=field-content]]:items-start'
         ],
         responsive: [

@@ -28,14 +28,20 @@
   }: Props = $props();
 </script>
 
-<div class={cn('group inline-flex w-full items-center', disabled ? 'cursor-not-allowed' : 'cursor-pointer', className)}>
+<div
+  class={cn(
+    'group ui:inline-flex ui:w-full ui:items-center',
+    disabled ? 'cursor-not-allowed' : 'cursor-pointer',
+    className
+  )}
+>
   <RadioGroup.Item {value} disabled={disabled || isEditable} />
   {#if isEditable}
-    <div class="w-2/4">
-      <InputField bind:value={label} placeholder="Your option" className="ml-1" type="text" {onchange} />
+    <div class="ui:w-2/4">
+      <InputField bind:value={label} placeholder="Your option" className="ui:ml-1" type="text" {onchange} />
     </div>
   {:else}
-    <span class="ml-2 dark:text-white">{label}</span>
+    <span class="ui:ml-2 ui:dark:text-white">{label}</span>
   {/if}
 
   {@render children?.()}

@@ -249,7 +249,7 @@
 
     <div
       transition:fly={{ y: 100, easing: sineInOut }}
-      class="mx-auto mt-5 w-full px-5 md:mt-0 md:w-[48%] md:min-w-[400px] md:max-w-[500px] md:p-5 md:px-1"
+      class="mx-auto mt-5 w-full px-5 md:mt-0 md:w-[48%] md:max-w-[500px] md:min-w-[400px] md:p-5 md:px-1"
     >
       <div class="hidden md:block">
         <Report />

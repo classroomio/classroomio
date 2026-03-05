@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { CourseContainer } from '$lib/components/CourseContainer';
+  import { resolve } from '$app/paths';
   import { MarksPage } from '$features/course/pages';
   import * as Page from '@cio/ui/base/page';
   import { RoleBasedSecurity } from '$features/ui';
@@ -11,25 +11,14 @@
   import { Progress } from '@cio/ui/base/progress';
   import DownloadIcon from '@lucide/svelte/icons/download';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
-  import jsPDF from 'jspdf';
-  import Papa from 'papaparse';
-  import autoTable from 'jspdf-autotable';
-  import { course } from '$lib/components/Course/store';
-  import { lessons } from '$lib/components/Course/components/Lesson/store/lessons';
-  import type { GroupPerson } from '$lib/utils/types';
-  import { getLectureNo } from '$lib/components/Course/function.js';
+  import { courseApi } from '$features/course/api';
+  import { generateMarksCSV, generateMarksPDF } from '$features/course/utils/marks-utils';
 
   let { data } = $props();
 
   let isDownloading = $state(false);
-  let students: GroupPerson[] = $state([]);
-  let lessonMapping: Record<string, Record<string, { title: string; points: number }>> = $state({});
-  let studentMarksByExerciseId: Record<string, Record<string, string>> = $state({});
 
-  function calculateStudentTotal(studentExerciseData) {
-    if (!studentExerciseData) return 0;
-    return Object.values(studentExerciseData).reduce((total: number, point) => (total += parseInt(point as string)), 0);
-  }
+  const exercises = $derived(data.marksData?.exercises ?? []);
 
   function getPageRoles(org: AccountOrg) {
     const roles = [1, 2];
@@ -40,99 +29,45 @@
   }
 
   const downloadCSV = () => {
-    isDownloading = true;
-    const exportData = students.map((student) => {
-      const rowData = {
-        name: student.profile.fullname,
-        email: student.profile.email,
-        Total: 0
-      };
-      const totalPoints = calculateStudentTotal(studentMarksByExerciseId[student.id]);
-      $lessons.forEach((lesson, lessonIndex) => {
-        const quizzes = lessonMapping[lesson.id] || {};
-        const quizMark = studentMarksByExerciseId[student.id] || {};
-        Object.keys(quizzes).forEach((quizId) => {
-          const quiz = quizzes[quizId];
-          const key = `L${lessonIndex + 1} - ${quiz.title} (${lesson.title})`;
-          rowData[key] = quizMark[quizId] || '-';
-        });
-      });
-      rowData['Total'] = totalPoints;
-      return rowData;
-    });
-    const csv = Papa.unparse(exportData);
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${$course?.title}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    isDownloading = false;
-  };
-
-  function downloadPDF() {
+    if (!data.marksData) return;
     isDownloading = true;
     try {
-      const doc = new jsPDF({ orientation: 'landscape' });
-      const head = [['Student']];
-      $lessons.forEach((lesson, lessonIndex) => {
-        if (lessonMapping[lesson.id]) {
-          Object.values(lessonMapping[lesson.id]).forEach((exercise) => {
-            head[0].push(`${getLectureNo(lessonIndex + 1)} - ${exercise.title} (${lesson.title})`);
-          });
-        }
-      });
-      head[0].push('Total');
-      const body = students.map((student) => {
-        const row: string[] = [];
-        row.push(student?.profile?.fullname ?? '');
-        $lessons.forEach((lesson) => {
-          if (lessonMapping[lesson.id]) {
-            Object.keys(lessonMapping[lesson.id]).forEach((exerciseId) => {
-              const mark: string = studentMarksByExerciseId?.[student.id]?.[exerciseId] || '-';
-              row.push(mark);
-            });
-          }
-        });
-        const total = '' + calculateStudentTotal(studentMarksByExerciseId[student.id]);
-        row.push(total);
-        return row;
-      });
-      autoTable(doc, {
-        head,
-        body,
-        startY: 20,
-        styles: { fontSize: 8 },
-        headStyles: { fillColor: [22, 160, 133] },
-        footStyles: { fillColor: [22, 160, 133] },
-        didDrawPage: function (data) {
-          doc.setFontSize(14);
-          doc.setTextColor(40);
-          doc.text(`${$course?.title} - Marks`, data.settings.margin.left, 10);
-        }
-      });
-      doc.save(`${$course?.title}-marks.pdf`);
+      generateMarksCSV(
+        data.marksData.students,
+        exercises,
+        data.marksData.studentMarksByExerciseId,
+        courseApi.course?.title || 'Course'
+      );
+    } finally {
+      isDownloading = false;
+    }
+  };
+
+  const downloadPDF = () => {
+    if (!data.marksData) return;
+    isDownloading = true;
+    try {
+      generateMarksPDF(
+        data.marksData.students,
+        exercises,
+        data.marksData.studentMarksByExerciseId,
+        courseApi.course?.title || 'Course'
+      );
     } catch (error) {
       console.error('Error generating PDF:', error);
     } finally {
       isDownloading = false;
     }
-  }
+  };
 </script>
 
-<svelte:head>
-  <title>Marks - ClassroomIO</title>
-</svelte:head>
-
-<CourseContainer courseId={data.courseId}>
-  <RoleBasedSecurity
-    allowedRoles={getPageRoles($currentOrg)}
-    onDenied={() => {
-      goto(`/courses/${data.courseId}/lessons?next=true`);
-    }}
-  >
+<RoleBasedSecurity
+  allowedRoles={getPageRoles($currentOrg)}
+  onDenied={() => {
+    goto(resolve(`/courses/${data.courseId}/lessons?next=true`, {}));
+  }}
+>
+  <Page.Root class="mx-auto flex w-[90%] px-4 md:max-w-2xl lg:max-w-3xl">
     <Page.Header>
       <Page.HeaderContent>
         <Page.Title>
@@ -168,8 +103,8 @@
 
     <Page.Body>
       {#snippet child()}
-        <MarksPage />
+        <MarksPage marksData={data.marksData} />
       {/snippet}
     </Page.Body>
-  </RoleBasedSecurity>
-</CourseContainer>
+  </Page.Root>
+</RoleBasedSecurity>

@@ -3,6 +3,7 @@ import * as schema from '@db/schema';
 
 import { admin, anonymous } from 'better-auth/plugins';
 import { sendChangeEmailConfirmation, sendVerificationEmail } from './auth/email-verification';
+import { sso } from '@better-auth/sso';
 
 import { betterAuth } from 'better-auth/minimal';
 import { createProfileHook } from './auth/hooks/create-profile';
@@ -10,6 +11,7 @@ import { db } from '@db/drizzle';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { config as emailAndPassword } from './auth/email-password';
 import { syncUserWithProfile } from './auth/hooks/sync-user';
+import { tokenExchange } from './auth/plugins/token-exchange';
 
 export const auth: ReturnType<typeof betterAuth> = betterAuth({
   baseURL: CONSTANTS.BASE_URL,
@@ -41,7 +43,8 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
   advanced: {
     cookiePrefix: 'classroomio',
     crossSubDomainCookies: {
-      enabled: true
+      enabled: true,
+      ...(CONSTANTS.AUTH_COOKIE_DOMAIN ? { domain: CONSTANTS.AUTH_COOKIE_DOMAIN } : {})
     },
     database: {
       generateId: false
@@ -73,5 +76,13 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
       }
     }
   },
-  plugins: [admin(), anonymous()]
+  plugins: [
+    admin(),
+    anonymous(),
+    sso({
+      // OIDC providers are registered dynamically per organization
+      // via the admin API (auth.api.registerSSOProvider)
+    }),
+    tokenExchange()
+  ]
 });

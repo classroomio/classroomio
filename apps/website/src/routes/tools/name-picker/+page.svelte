@@ -140,10 +140,10 @@
 
       <!-- container -->
       <div
-        class="relative mt-5 h-48 overflow-hidden rounded-sm border-2 bg-[#F1F2F4] pl-3 pt-2 focus-within:border-[#0233BD]"
+        class="relative mt-5 h-48 overflow-hidden rounded-sm border-2 bg-[#F1F2F4] pt-2 pl-3 focus-within:border-[#0233BD]"
       >
         <!-- sidebar -->
-        <div class="absolute right-2 top-3 flex flex-col gap-y-3 md:right-7">
+        <div class="absolute top-3 right-2 flex flex-col gap-y-3 md:right-7">
           <button
             type="button"
             onclick={sortRandom}
@@ -185,7 +185,7 @@
           <input
             type="number"
             bind:value={numNames}
-            class="w-full rounded-sm border-2 bg-[#F1F2F4] px-3 py-2 text-sm outline-none outline focus:border-[#0233BD] md:w-2/4"
+            class="w-full rounded-sm border-2 bg-[#F1F2F4] px-3 py-2 text-sm outline outline-none focus:border-[#0233BD] md:w-2/4"
           />
           <button
             type="button"
@@ -197,7 +197,7 @@
       </div>
 
       <!-- footer logo -->
-      <div class="mb-5 mt-10 flex items-center justify-center gap-3 bg-[#F1F6FF] py-3">
+      <div class="mt-10 mb-5 flex items-center justify-center gap-3 bg-[#F1F6FF] py-3">
         <img src="/free-tools/name-picker.svg" class="w-[12%] md:w-[9%]" alt="" />
         {#if selectedNames.length > 0}
           <h1 class="text-xl text-[#0233BD]">Selected Names</h1>

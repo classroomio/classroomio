@@ -30,7 +30,7 @@
     bind:ref
     data-slot="underline-tabs-trigger"
     class={cn(
-      "dark:data-[state=active]:text-foreground data-[state=active]:text-foreground ui:text-foreground ui:z-10 ui:relative ui:inline-flex ui:h-[calc(100%-3px)] ui:flex-1 ui:items-center ui:justify-center ui:gap-1.5 ui:whitespace-nowrap ui:px-3 ui:py-1 ui:text-sm ui:transition-colors ui:focus:outline-none ui:disabled:pointer-events-none ui:disabled:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+      "dark:data-[state=active]:text-foreground data-[state=active]:text-foreground ui:text-foreground ui:z-10 ui:relative ui:inline-flex ui:h-[calc(100%-3px)] ui:flex-1 ui:items-center ui:justify-center ui:gap-1.5 ui:whitespace-nowrap ui:px-3 ui:py-1 ui:text-sm ui:transition-colors ui:focus:outline-none ui:disabled:pointer-events-none ui:disabled:opacity-50 ui:cursor-pointer [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
       state.rootState.isHovered &&
         state.rootState.hoveredTab === value &&
         'data-[state=inactive]:text-primary-foreground ui:text-primary',
@@ -44,7 +44,7 @@
   {#if state.rootState.hoveredTab === value}
     <div
       class={cn(
-        'ui:bg-primary-foreground ui:z-1 ui:absolute ui:top-0 ui:h-[calc(100%-3px)] ui:w-full ui:rounded-md ui:opacity-0 ui:transition-opacity ui:duration-300 ui:pointer-events-none peer-focus-visible:ui:opacity-100',
+        'ui:bg-primary-foreground ui:z-1 ui:absolute ui:top-0 ui:h-[calc(100%-3px)] ui:w-full ui:rounded-md ui:opacity-0 ui:transition-opacity ui:duration-300 ui:pointer-events-none ui:peer-focus-visible:ui:opacity-100',
         state.rootState.isHovered && 'ui:opacity-100'
       )}
       in:receive={{ key: `${state.rootState.opts.id.current}-tab-hover`, duration: 300 }}

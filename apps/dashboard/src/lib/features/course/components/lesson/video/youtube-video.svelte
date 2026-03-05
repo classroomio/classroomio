@@ -1,0 +1,103 @@
+<script lang="ts">
+  import { Badge } from '@cio/ui/base/badge';
+  import CopyIcon from '@lucide/svelte/icons/copy';
+  import TrashIcon from '@lucide/svelte/icons/trash';
+
+  import { t } from '$lib/utils/functions/translations';
+  import { IconButton } from '@cio/ui/custom/icon-button';
+  import { YoutubeLinkForm, isValidYoutubeLink } from '@cio/ui/custom/youtube-link-form';
+  import type { LessonVideoType } from '$features/course/utils/types';
+  import { copyToClipboard, removeVideo } from '$lib/utils/functions/formatYoutubeVideo';
+  import { lessonApi } from '$features/course/api';
+  import { mediaApi } from '$features/media/api';
+
+  interface Props {
+    lessonId?: string;
+  }
+
+  let { lessonId = '' }: Props = $props();
+
+  async function addVideo(validLinks: string[]) {
+    if (!lessonApi.lesson || validLinks.length === 0) return;
+
+    const existingCount = Array.isArray(lessonApi.lesson.videos) ? lessonApi.lesson.videos.length : 0;
+    const newVideos = await Promise.all(
+      validLinks.map(async (link = '', index) => {
+        const createdAt = new Date().toISOString();
+        const metadata = await mediaApi.getYouTubeMetadata(link);
+        const sourceUrl = metadata?.sourceUrl ?? link;
+        const title = metadata?.title ?? $t('media_manager.provider.youtube');
+        const videoMetadata = {
+          createdAt,
+          videoId: metadata?.videoId,
+          title,
+          thumbnailUrl: metadata?.thumbnailUrl ?? undefined,
+          duration: metadata?.durationSeconds ?? undefined
+        };
+
+        const asset = await mediaApi.createAsset({
+          kind: 'video',
+          provider: 'youtube',
+          storageProvider: 'external',
+          sourceUrl,
+          isExternal: true,
+          title,
+          thumbnailUrl: metadata?.thumbnailUrl ?? undefined,
+          durationSeconds: metadata?.durationSeconds ?? undefined,
+          metadata: videoMetadata
+        });
+
+        if (asset && lessonId) {
+          await mediaApi.attachAsset(asset.id, {
+            targetType: 'lesson',
+            targetId: lessonId,
+            slotType: 'lesson_video',
+            position: existingCount + index
+          });
+        }
+
+        return {
+          type: 'youtube' as LessonVideoType,
+          link: sourceUrl,
+          assetId: asset?.id,
+          fileName: title,
+          metadata: videoMetadata
+        };
+      })
+    );
+
+    lessonApi.updateLessonState('videos', newVideos, { append: true });
+  }
+</script>
+
+<YoutubeLinkForm
+  inputLabel={$t('course.navItem.lessons.materials.tabs.video.add_video.youtube_link')}
+  inputPlaceholder={$t('course.navItem.lessons.materials.tabs.video.add_video.youtube_link')}
+  addButtonLabel={$t('course.navItem.lessons.materials.tabs.video.add_video.add_video')}
+  invalidYoutubeMessage={$t('course.navItem.lessons.materials.tabs.video.add_video.invalid_youtube')}
+  onInputChange={() => (lessonApi.isDirty = true)}
+  onSubmit={addVideo}
+/>
+<p class="mt-4 pl-2 text-sm">
+  {$t('course.navItem.lessons.materials.tabs.video.add_video.videos_added')}:
+  <strong>
+    {lessonApi.lesson?.videos?.filter((v) => v.type === 'youtube' && isValidYoutubeLink(v.link)).length || 0}
+  </strong>
+</p>
+<div class="">
+  {#each lessonApi.lesson?.videos || [] as video, index}
+    {#if video.type === 'youtube'}
+      <div class="flex items-center gap-1">
+        <Badge class="max-w-md truncate" variant="secondary">
+          {video.link}
+        </Badge>
+        <IconButton onclick={() => copyToClipboard(video.link)}>
+          <CopyIcon size={16} />
+        </IconButton>
+        <IconButton onclick={() => removeVideo(index)}>
+          <TrashIcon size={16} />
+        </IconButton>
+      </div>
+    {/if}
+  {/each}
+</div>

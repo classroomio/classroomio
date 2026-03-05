@@ -1,5 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import type { TCommunityAnswer, TCommunityQuestion, TCourse } from '@db/types';
+import type { TCommunityAnswer, TCommunityQuestion, TNewCommunityQuestion } from '@db/types';
 import {
   createCommunityQuestion,
   deleteCommentById,
@@ -10,32 +10,57 @@ import {
   getCommunityQuestions,
   submitComment,
   upvoteAnswer,
-  upvoteQuestion
+  upvoteQuestion,
+  type CommunityQuestionQueryResult
 } from '@cio/db/queries/community';
+import { getEnrolledCourses, getOrgCourses } from '@cio/db/queries/course';
 
-import { getCoursesByOrgId } from './organization';
+import { ROLE } from '@cio/utils/constants';
 
-export async function fetchCommunityQuestions(orgId: string): Promise<Partial<TCommunityQuestion>[]> {
-  let discussions: Partial<TCommunityQuestion>[] = [];
-
-  let courses: TCourse[];
-
-  if (orgId) {
-    courses = await getCoursesByOrgId(orgId);
-  } else {
-    throw new AppError(
-      'Organization not found for the given site name',
-      ErrorCodes.COMMUNITY_QUESTIONS_FETCH_FAILED,
-      404
-    );
-  }
-
+export async function fetchCommunityQuestions(
+  orgId: string,
+  userId: string,
+  userRole: number
+): Promise<CommunityQuestionQueryResult[]> {
   try {
-    const courseIds = courses.map((course) => course.id);
-    discussions = await getCommunityQuestions(courseIds);
+    if (!orgId) {
+      throw new AppError(
+        'Organization not found for the given site name',
+        ErrorCodes.COMMUNITY_QUESTIONS_FETCH_FAILED,
+        404
+      );
+    }
+
+    if (userRole === null) {
+      throw new AppError('User is not a member of this organization', ErrorCodes.UNAUTHORIZED, 403);
+    }
+
+    let discussions: CommunityQuestionQueryResult[];
+
+    switch (userRole) {
+      case ROLE.ADMIN:
+        // Admins can see all questions in the organization - no need to fetch courses
+        discussions = await getCommunityQuestions({ orgId });
+        break;
+      case ROLE.TUTOR:
+        // Tutors can see questions in courses they have access to
+        const tutorCourses = await getOrgCourses({ orgId, profileId: userId });
+        const tutorCourseIds = tutorCourses.map((course) => course.id);
+        discussions = await getCommunityQuestions({ courseIds: tutorCourseIds });
+        break;
+      case ROLE.STUDENT:
+        // Students can see questions in courses they are enrolled in
+        const studentCourses = await getEnrolledCourses({ orgId, profileId: userId });
+        const studentCourseIds = studentCourses.map((course) => course.id);
+        discussions = await getCommunityQuestions({ courseIds: studentCourseIds });
+        break;
+      default:
+        throw new AppError('Invalid role', ErrorCodes.UNAUTHORIZED, 403);
+    }
 
     return discussions;
   } catch (error) {
+    if (error instanceof AppError) throw error;
     console.error('Failed to fetch community questions:', error);
     throw new AppError('Failed to fetch community questions', ErrorCodes.COMMUNITY_QUESTIONS_FETCH_FAILED, 500);
   }
@@ -43,6 +68,9 @@ export async function fetchCommunityQuestions(orgId: string): Promise<Partial<TC
 
 export async function fetchCommunityQuestion({ slug }: Partial<TCommunityQuestion>) {
   try {
+    if (!slug) {
+      throw new AppError('Slug is required', ErrorCodes.COMMUNITY_QUESTION_NOT_FOUND, 400);
+    }
     const result = await getCommunityQuestion(slug);
 
     if (!result) {
@@ -81,6 +109,9 @@ export async function createQuestion({
   slug
 }: Partial<TCommunityQuestion>) {
   try {
+    if (!courseId || !organizationId || !authorProfileId) {
+      throw new AppError('Missing required fields', ErrorCodes.ADD_COMMUNITY_QUESTION_FAILED, 400);
+    }
     const result = await createCommunityQuestion({
       title,
       body,
@@ -115,7 +146,10 @@ export async function createQuestion({
 
 export async function editQuestion({ id, title, body, courseId }: Partial<TCommunityQuestion>) {
   try {
-    const result = await editCommunityQuestion({ id, title, body, courseId: courseId });
+    if (!id || !courseId) {
+      throw new AppError('Question ID and Course ID are required', ErrorCodes.UPDATE_COMMUNITY_QUESTION_FAILED, 400);
+    }
+    const result = await editCommunityQuestion({ id, title, body, courseId });
 
     return result;
   } catch (error) {
@@ -127,7 +161,10 @@ export async function editQuestion({ id, title, body, courseId }: Partial<TCommu
 
 export async function createComment({ body, questionId, authorProfileId, votes }: Partial<TCommunityAnswer>) {
   try {
-    const result = await submitComment({ body, questionId, authorProfileId, votes });
+    if (!body || !questionId || !authorProfileId) {
+      throw new AppError('Missing required fields', ErrorCodes.COMMENT_SUBMISSION_FAILED, 400);
+    }
+    const result = await submitComment({ body, questionId, authorProfileId, votes: votes ?? 0 });
 
     if (!result) {
       throw new AppError('Comment submission failed', ErrorCodes.COMMENT_SUBMISSION_FAILED, 404);
@@ -165,7 +202,7 @@ export async function upvote({ id, isQuestion }: { id: string | number; isQuesti
   }
 }
 
-export async function deleteQuestion({ id }: Partial<TCommunityQuestion>) {
+export async function deleteQuestion({ id }: { id: number }) {
   try {
     // Delete all comments first, then delete the question
     await deleteCommentByQuestionId(id);
@@ -179,7 +216,7 @@ export async function deleteQuestion({ id }: Partial<TCommunityQuestion>) {
   }
 }
 
-export async function deleteComment({ id }: Partial<TCommunityAnswer>) {
+export async function deleteComment({ id }: { id: string }) {
   try {
     const result = await deleteCommentById(id);
 
@@ -191,7 +228,7 @@ export async function deleteComment({ id }: Partial<TCommunityAnswer>) {
   }
 }
 
-export async function deleteCommentsByQuestionId({ questionId }: Partial<TCommunityAnswer>) {
+export async function deleteCommentsByQuestionId({ questionId }: { questionId: number }) {
   try {
     const result = await deleteCommentByQuestionId(questionId);
 

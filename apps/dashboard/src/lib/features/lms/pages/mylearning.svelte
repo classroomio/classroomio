@@ -1,50 +1,41 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import { CoursesPage } from '$features/course/pages';
-  import { fetchCourses } from '$lib/utils/services/courses';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import { courses, courseMetaDeta, coursesComplete, coursesInProgress } from '$features/course/utils/store';
+  import { coursesApi } from '$features/course/api';
+  import { calcCourseProgress } from '$features/course/utils/functions';
 
-  let hasFetched = false;
   let searchValue = $state('');
 
-  function getCourses(userId?: string, orgId?: string) {
-    if (hasFetched || !userId || !orgId) {
-      return;
-    }
-
-    untrack(async () => {
-      hasFetched = true;
-
-      if (!$courses.length) {
-        $courseMetaDeta.isLoading = true;
-      }
-
-      const coursesResult = await fetchCourses(userId, orgId);
-      console.log(`get courses result`, coursesResult);
-
-      $courseMetaDeta.isLoading = false;
-      if (!coursesResult) return;
-
-      courses.set(coursesResult.allCourses);
-      hasFetched = true;
+  function isCourseComplete(course: (typeof coursesApi.enrolledCourses)[number]): boolean {
+    const c = course as { exerciseCount?: number; exercisesCompleted?: number };
+    const progress = calcCourseProgress({
+      lessonsCompleted: course.progressRate ?? 0,
+      totalLessons: course.lessonCount ?? 0,
+      exercisesCompleted: typeof c.exercisesCompleted === 'number' ? c.exercisesCompleted : 0,
+      totalExercises: typeof c.exerciseCount === 'number' ? c.exerciseCount : 0
     });
+    return progress >= 100;
   }
 
+  const coursesInProgress = $derived(coursesApi.enrolledCourses.filter((course) => !isCourseComplete(course)));
+  const coursesComplete = $derived(coursesApi.enrolledCourses.filter((course) => isCourseComplete(course)));
+
   $effect(() => {
-    getCourses($profile.id, $currentOrg.id);
+    if (!$profile.id || !$currentOrg.id) return;
+
+    coursesApi.getEnrolledCourses();
   });
 
   let tabs = $derived([
     {
-      label: `${$t('my_learning.progress')} (${$coursesInProgress.length})`,
+      label: `${$t('my_learning.progress')} (${coursesInProgress.length})`,
       value: '1'
     },
     {
-      label: `${$t('my_learning.complete')} (${$coursesComplete.length})`,
+      label: `${$t('my_learning.complete')} (${coursesComplete.length})`,
       value: '2'
     }
   ]);
@@ -61,20 +52,22 @@
   </UnderlineTabs.List>
   <UnderlineTabs.Content value={tabs[0].value}>
     <CoursesPage
-      courses={$coursesInProgress}
-      emptyTitle={$t('my_learning.not_in_progress')}
-      emptyDescription={$t('my_learning.any_progress')}
       bind:searchValue
+      courses={coursesInProgress}
+      emptyDescription={$t('my_learning.any_progress')}
+      emptyTitle={$t('my_learning.not_in_progress')}
       isLMS={true}
+      isLoading={coursesApi.isLoading}
     />
   </UnderlineTabs.Content>
   <UnderlineTabs.Content value={tabs[1].value}>
     <CoursesPage
-      courses={$coursesComplete}
-      emptyTitle={$t('my_learning.not_completed')}
-      emptyDescription={$t('my_learning.any_course')}
       bind:searchValue
+      courses={coursesComplete}
+      emptyDescription={$t('my_learning.any_course')}
+      emptyTitle={$t('my_learning.not_completed')}
       isLMS={true}
+      isLoading={coursesApi.isLoading}
     />
   </UnderlineTabs.Content>
 </UnderlineTabs.Root>

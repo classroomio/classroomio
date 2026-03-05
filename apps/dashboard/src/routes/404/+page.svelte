@@ -1,20 +1,14 @@
 <script>
   import { page } from '$app/state';
-  import { goto } from '$app/navigation';
   import { Button } from '@cio/ui/base/button';
   import SearchXIcon from '@lucide/svelte/icons/search-x';
   import { Empty } from '@cio/ui/custom/empty';
-  import { resolve } from '$app/paths';
 
   let query = $derived(new URLSearchParams(page.url.search));
   let isOrg = $derived(query.get('type') === 'org');
 
   function handleClick() {
-    if (!isOrg) {
-      return goto(resolve('/', {}));
-    }
-
-    window.location.href = 'https://classroomio.com';
+    window.location.href = isOrg ? 'https://classroomio.com' : '/';
   }
 </script>
 

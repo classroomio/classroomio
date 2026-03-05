@@ -7,10 +7,12 @@
 
     "---Core Features---",
     "course",
+    "tags",
     "audience",
     "community",
     "organization",
     "student-dashboard",
+    "enterprise-sso",
 
     "---Guides---",
     "how-to-guides",

@@ -13,6 +13,7 @@ export function generateLmsBreadcrumbs(
   pathname: string,
   searchParams: string,
   navItems: NavItem[],
+  t: (key: string) => string,
   pageData?: { breadcrumb?: string } // Optional page data for dynamic titles
 ): BreadcrumbItem[] {
   const breadcrumbs: BreadcrumbItem[] = [];
@@ -56,7 +57,7 @@ export function generateLmsBreadcrumbs(
     const href = matchedNavItem.useHashUrl ? `/lms${matchedNavItem.path}` : matchedNavItem.url;
 
     breadcrumbs.push({
-      label: matchedNavItem.title,
+      label: t(matchedNavItem.title),
       href: href
     });
   }
@@ -66,7 +67,7 @@ export function generateLmsBreadcrumbs(
     const subItem = matchedNavItem.items.find((sub) => isActive(pathWithQuery, sub.url, undefined, true));
     if (subItem) {
       breadcrumbs.push({
-        label: subItem.title,
+        label: t(subItem.title),
         href: subItem.url
       });
       return breadcrumbs;
@@ -82,7 +83,7 @@ export function generateLmsBreadcrumbs(
       const nestedRoute = matchedNavItem.nestedRoutes.find((route) => route.path === secondSegment);
       if (nestedRoute) {
         breadcrumbs.push({
-          label: nestedRoute.titleKey, // Could be translated if needed
+          label: t(nestedRoute.titleKey), // Could be translated if needed
           href: `/lms${matchedNavItem.path}/${nestedRoute.path}`
         });
         return breadcrumbs;

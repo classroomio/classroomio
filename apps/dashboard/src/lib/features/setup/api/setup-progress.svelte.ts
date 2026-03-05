@@ -100,6 +100,84 @@ class SetupProgressApi extends BaseApiWithErrors {
   get setupList(): SetupItem[] {
     return this.progress.setup || [];
   }
+
+  /**
+   * Private method to update progress state from data
+   * @param data Setup progress data from server
+   * @param siteName Organization site name
+   */
+  private updateProgress(
+    data: {
+      isCourseCreated?: boolean;
+      isCoursePublished?: boolean;
+      orgHasAvatarUrl?: boolean;
+      courseData?: Array<{ id: string; [key: string]: unknown }>;
+      lessonData?: Array<{ id: string; [key: string]: unknown }>;
+      isLessonCreated?: boolean;
+      isExerciseCreated?: boolean;
+    } | null,
+    siteName: string
+  ) {
+    if (!data) {
+      // Set default empty state if no data
+      const setup = createSetupData();
+      this.progress = {
+        orgSiteName: siteName,
+        setup,
+        courses: [],
+        lessons: []
+      };
+      return;
+    }
+
+    const {
+      isCourseCreated,
+      isCoursePublished,
+      orgHasAvatarUrl,
+      courseData,
+      lessonData,
+      isLessonCreated,
+      isExerciseCreated
+    } = data;
+
+    const setup = createSetupData({
+      orgHasAvatarUrl,
+      isCourseCreated,
+      isLessonCreated,
+      isExerciseCreated,
+      isCoursePublished
+    });
+
+    this.progress = {
+      orgSiteName: siteName,
+      setup,
+      courses: courseData || [],
+      lessons: lessonData || []
+    };
+  }
+
+  /**
+   * Initializes progress from server data
+   * This is used when data is fetched server-side and passed as a prop
+   * @param data Setup progress data from server
+   * @param siteName Organization site name
+   */
+  initializeFromServerData(
+    data: {
+      isCourseCreated?: boolean;
+      isCoursePublished?: boolean;
+      orgHasAvatarUrl?: boolean;
+      courseData?: Array<{ id: string; [key: string]: unknown }>;
+      lessonData?: Array<{ id: string; [key: string]: unknown }>;
+      isLessonCreated?: boolean;
+      isExerciseCreated?: boolean;
+    } | null,
+    siteName: string
+  ) {
+    this.updateProgress(data, siteName);
+    this.isLoading = false;
+  }
+
   /**
    * Fetches setup progress data for an organization
    * @param siteName Organization site name
@@ -112,53 +190,12 @@ class SetupProgressApi extends BaseApiWithErrors {
         }),
       logContext: 'fetching setup progress',
       onSuccess: (response) => {
-        if (!response.data) {
-          // Set default empty state if no data
-          const setup = createSetupData();
-          this.progress = {
-            orgSiteName: siteName,
-            setup,
-            courses: [],
-            lessons: []
-          };
-          return;
-        }
-
-        const {
-          isCourseCreated,
-          isCoursePublished,
-          orgHasAvatarUrl,
-          courseData,
-          lessonData,
-          isLessonCreated,
-          isExerciseCreated
-        } = response.data;
-
-        const setup = createSetupData({
-          orgHasAvatarUrl,
-          isCourseCreated,
-          isLessonCreated,
-          isExerciseCreated,
-          isCoursePublished
-        });
-
-        this.progress = {
-          orgSiteName: siteName,
-          setup,
-          courses: courseData || [],
-          lessons: lessonData || []
-        };
+        this.updateProgress(response.data, siteName);
       },
       onError: (error) => {
         console.error('Error fetching setup progress:', error);
         // Set default empty state on error
-        const setup = createSetupData();
-        this.progress = {
-          orgSiteName: siteName,
-          setup,
-          courses: [],
-          lessons: []
-        };
+        this.updateProgress(null, siteName);
       }
     });
   }

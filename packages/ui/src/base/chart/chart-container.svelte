@@ -2,7 +2,7 @@
   import { cn, type WithElementRef } from '../../tools';
   import type { HTMLAttributes } from 'svelte/elements';
   import ChartStyle from './chart-style.svelte';
-  import { setChartContext, type ChartConfig } from './chart-utils.js';
+  import { setChartContext, type ChartConfig } from './chart-utils';
 
   const uid = $props.id();
 
@@ -44,7 +44,7 @@
 
     // by default, when you hover a point on a stacked series chart, it will drop the opacity
     // of the other series, this overrides that
-    '[&_.lc-area-path]:opacity-100 [&_.lc-highlight-line]:opacity-100 [&_.lc-highlight-point]:opacity-100 [&_.lc-spline-path]:opacity-100 [&_.lc-text-svg]:overflow-visible [&_.lc-text]:text-xs',
+    '[&_.lc-area-path]:opacity-100 [&_.lc-highlight-line]:opacity-100 [&_.lc-highlight-point]:opacity-100 [&_.lc-spline-path]:opacity-100 [&_.lc-text]:text-xs [&_.lc-text-svg]:overflow-visible',
 
     // We don't want the little tick lines between the axis labels and the chart, so we remove
     // the stroke. The alternative is to manually disable `tickMarks` on the x/y axis of every

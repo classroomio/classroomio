@@ -15,7 +15,7 @@
   const mergedProps = $derived({
     ...restProps,
     class: cn(
-      "ui:bg-muted ui:shadow-xs ui:flex ui:items-center ui:gap-2 ui:rounded-md ui:border ui:px-4 ui:text-sm ui:font-medium ui:[&_svg:not([class*='size-'])]:size-4 ui:[&_svg]:pointer-events-none",
+      "ui:bg-muted ui:shadow-xs ui:flex ui:items-center ui:gap-2 ui:rounded-md ui:border ui:px-4 ui:text-sm ui:font-medium ui:[&_svg:not([class*='ui:size-'])]:size-4 ui:[&_svg]:pointer-events-none",
       className
     )
   });

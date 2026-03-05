@@ -3,7 +3,7 @@
   import { PUBLIC_ENABLE_STATS } from '$env/static/public';
 </script>
 
-<section class="w-full border-x-0 border-b border-t-0 border-gray-200 py-32">
+<section class="w-full border-x-0 border-t-0 border-b border-gray-200 py-32">
   <div class="flex flex-wrap justify-center gap-x-12 gap-y-16 text-center">
     <div class="w-full min-w-0" style="max-width: 1000px; flex: 1 1 550px;">
       <div class="mx-auto flex max-w-lg flex-col items-center gap-2">

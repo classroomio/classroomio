@@ -244,19 +244,19 @@ export const isUserOrgAdmin = async (orgId: string, profileId: string): Promise<
 };
 
 /**
- * Checks if a user is a member of an organization (any role)
+ * Gets a user's role in an organization
  * @param orgId Organization ID
  * @param profileId Profile ID to check
- * @returns True if user is a member, false otherwise
+ * @returns Role ID if user is a member, null otherwise
  */
-export const isUserOrgMember = async (orgId: string, profileId: string): Promise<boolean> => {
+export const getUserOrgRole = async (orgId: string, profileId: string): Promise<number | null> => {
   const result = await db
     .select({ roleId: schema.organizationmember.roleId })
     .from(schema.organizationmember)
     .where(and(eq(schema.organizationmember.organizationId, orgId), eq(schema.organizationmember.profileId, profileId)))
     .limit(1);
 
-  return result.length > 0;
+  return result.length > 0 ? Number(result[0].roleId) : null;
 };
 
 /**
@@ -320,7 +320,7 @@ export const getOrganizationTeam = async (orgId: string) => {
 };
 
 /**
- * Gets organization audience (students who are participants in any course)
+ * Gets organization audience (all organization members with student role)
  * @param orgId Organization ID
  * @returns Array of student profiles
  */
@@ -333,10 +333,11 @@ export const getOrganizationAudience = async (orgId: string) => {
       avatarUrl: schema.profile.avatarUrl,
       createdAt: schema.profile.createdAt
     })
-    .from(schema.profile)
-    .innerJoin(schema.groupmember, eq(schema.profile.id, schema.groupmember.profileId))
-    .innerJoin(schema.group, eq(schema.groupmember.groupId, schema.group.id))
-    .where(and(eq(schema.group.organizationId, orgId), eq(schema.groupmember.roleId, ROLE.STUDENT)));
+    .from(schema.organizationmember)
+    .innerJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
+    .where(
+      and(eq(schema.organizationmember.organizationId, orgId), eq(schema.organizationmember.roleId, ROLE.STUDENT))
+    );
 
   return result.map((profile) => ({
     id: profile.id,
@@ -501,4 +502,21 @@ export const updateOrganization = async (id: string, data: Partial<TOrganization
     .returning();
 
   return organization;
+};
+
+/**
+ * Get organization plan status for SSO entitlement check
+ * @param orgId Organization ID
+ * @returns Array of plan records
+ */
+export const getOrganizationPlanStatus = async (orgId: string) => {
+  const result = await db
+    .select({
+      planName: schema.organizationPlan.planName,
+      isActive: schema.organizationPlan.isActive
+    })
+    .from(schema.organizationPlan)
+    .where(eq(schema.organizationPlan.orgId, orgId));
+
+  return result;
 };

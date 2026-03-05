@@ -5,7 +5,7 @@ import { env } from '@api/config/env';
 /**
  * Middleware to authenticate requests using API key
  * Checks for Authorization: Bearer <api-key> header
- * Used for server-to-server communication (webhooks, etc.)
+ * Used for server-to-server communication (webhooks, dashboard SSR, etc.)
  */
 export const apiKeyMiddleware = async (c: Context, next: Next) => {
   try {
@@ -21,10 +21,10 @@ export const apiKeyMiddleware = async (c: Context, next: Next) => {
     }
 
     const apiKey = authHeader.replace('Bearer ', '').trim();
-    const expectedApiKey = env.SERVER_KEY;
+    const expectedApiKey = env.PRIVATE_SERVER_KEY;
 
     if (!expectedApiKey) {
-      console.error('SERVER_KEY not configured in environment');
+      console.error('PRIVATE_SERVER_KEY not configured in environment');
       return c.json(
         {
           success: false,

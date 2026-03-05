@@ -4,7 +4,7 @@
   import { Switch } from '@cio/ui/base/switch';
   import { Label } from '@cio/ui/base/label';
 
-  import type { Course } from '$lib/utils/types';
+  import type { Course } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { isCourseFree } from '$lib/utils/functions/course';
 

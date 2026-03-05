@@ -41,7 +41,9 @@ Please reach out to me on [twitter](https://x.com/rotimi_best) if you have any f
 ## Built With
 
 - [SvelteKit](https://kit.svelte.dev/?ref=classroomio.com)
-- [Supabase](https://supabase.com/?ref=classroomio.com)
+- [Hono](https://hono.dev/)
+- [PostgreSQL](https://www.postgresql.org/)
+- [Better Auth](https://www.better-auth.com/)
 - [TailwindCSS](https://tailwindcss.com/?ref=classroomio.com)
 
 ## Get a Demo
@@ -62,37 +64,38 @@ To get a local copy up and running, please follow these simple steps.
 
 Here is what you need to be able to run ClassroomIO.com
 
-- [Node.js](https://nodejs.org/) (Version: >=22.x)
-- [Supabase CLI](https://github.com/supabase/cli)
+- [Node.js](https://nodejs.org/) (Version: >=20.19.3)
+- [pnpm](https://pnpm.io/installation)
 - [Docker](https://docs.docker.com/engine/install/)
-- [NPM](https://www.npmjs.com/)
 
 ### Project Structure
 
-This repo is a mono repo that consists of 3 projects:
+This repo is a monorepo that consists of these primary apps:
 
 1. `website`: The landing page of ClassroomIO hosted [here](https://classroomio.com)
 2. `api`: The api service that handles PDF, video processing, Emailing and Notifications.
 3. `dashboard`: The web application that runs the learning management system hosted [here](https://app.classroomio.com).
 4. `docs`: Official documentation of ClassroomIO hosted [here](https://classroomio.com/docs)
 
+The repository also contains shared packages under `packages/` (for example `packages/db`, `packages/utils`, and `packages/ui`).
+
 ## Development
 
 ### Local Setup
 
-1. Fork the repo, then clone it using the following command (remember to replace the url with the url from your forked repo)
+1. Fork the repo, then clone it:
 
    ```bash
    git clone https://github.com/classroomio/classroomio.git
    ```
 
-2. Go to project folder
+2. Go to project folder:
 
    ```bash
    cd classroomio
    ```
 
-3. Set up Node if your Node version does not meet the project's requirements, as instructed by the documentation., "nvm" (Node Version Manager) allows using Node at the version required by the project:
+3. Set up Node (using `nvm`):
 
    ```bash
    nvm use
@@ -106,81 +109,81 @@ This repo is a mono repo that consists of 3 projects:
 
    You can install nvm from [here](https://github.com/nvm-sh/nvm).
 
-   You also need to have pnpm installed, you can find the installation guide [here](https://pnpm.io/installation#using-npm)
-
-4. Set up your `.env` file
-
-   - Go to `apps/dashboard` and `apps/api`.
-   - Duplicate the `.env.example` file and rename it to `.env`
-   - Populate your .env files with the neccessary variables
-
-To get the environmental variables for supabase continue to step(5)
-
-1. Install all dependencies
+4. Install dependencies:
 
    ```bash
    pnpm i
    ```
 
-2. Setup Supabase.
+5. Set up your `.env` files:
 
-   - Install and Start [docker](https://docs.docker.com/engine/install/)
-   - Install [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started) on your computer
-   - Go to the project directory in your terminal and start Supabase
+   - Go to `apps/dashboard` and `apps/api`.
+   - Duplicate the `.env.example` file and rename it to `.env`
+   - Populate them with required values (at minimum):
+     - `apps/api/.env`: `DATABASE_URL`, `REDIS_URL`, `AUTH_BEARER_TOKEN`, `BETTER_AUTH_SECRET`
+     - `apps/dashboard/.env`: `PUBLIC_SERVER_URL`, `PRIVATE_SERVER_KEY`, `PUBLIC_IS_SELFHOSTED`
 
-     ```bash
-       supabase start
-     ```
-
-   - You should get a result like this
-
-     ```bash
-       supabase local development setup is running.
-
-         API URL: http://127.0.0.1:54321
-     GraphQL URL: http://127.0.0.1:54321/graphql/v1
-           DB URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
-       Studio URL: http://127.0.0.1:54323
-     Inbucket URL: http://127.0.0.1:54324
-       JWT secret: super-secret-jwt-token-with-at-least-32-characters-long
-         anon key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
-     service_role key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
-     ```
-
-   - Add Supabase environment variables into `app/dashboard` folder, which should be taken from the result of `supabase start`
-
-     ```env
-       PUBLIC_SUPABASE_URL=<API URL>
-       PUBLIC_SUPABASE_ANON_KEY=<anon key>
-       PRIVATE_SUPABASE_SERVICE_ROLE=<service_role key>
-     ```
-
-   - To view the Supabase studio, open the Studio URL from the result of `supabase start`
-
-3. Run all projects (in development mode)
+6. Start local infrastructure for API (Postgres + Redis + db-init):
 
    ```bash
-   pnpm dev
+   docker compose -f docker/docker-compose.yaml up -d postgres redis db-init
    ```
 
-4. All projects should start running
+7. Run the local app services in separate terminals:
 
-   - `website`: [http://localhost:5174](http://localhost:5174)
+   ```bash
+   pnpm api:dev
+   ```
+
+   ```bash
+   pnpm dashboard:dev
+   ```
+
+8. Default local URLs:
+
    - `api`: [http://localhost:3002](http://localhost:3002)
    - `dashboard`: [http://localhost:5173](http://localhost:5173)
-   - `docs`: [http://localhost:3000](http://localhost:3000)
 
-5. Running a specific project
+9. Optional: run other apps:
 
-   - **website**: `pnpm dev --filter=@cio/website`
-   - **api**: `pnpm dev --filter=@cio/api`
-   - **dashboard**: `pnpm dev --filter=@cio/dashboard`
+   - **website**: `pnpm website:dev`
    - **docs**: `pnpm dev --filter=@cio/docs`
 
-6.  Login into `dashboard`
+10. Login into `dashboard`:
 
     - Visit [http://localhost:5173/login](http://localhost:5173/login)
     - Enter email: `admin@test.com`
     - Enter password: `123456`
-     
+
     To learn more about how to login with a dummy account, [go here.](https://classroomio.com/docs/contributor-guides/demo-accounts)
+
+### Docker Compose (Full Stack)
+
+To run the Dockerized stack (including API + dashboard):
+
+```bash
+./run-docker-full-stack.sh
+```
+
+Start without rebuilding images:
+
+```bash
+./run-docker-full-stack.sh --no-build
+```
+
+The script always reads root `.env` via `docker compose --env-file .env`, and it auto-generates secure local values for `PRIVATE_SERVER_KEY` (and `AUTH_BEARER_TOKEN`) when they are missing/insecure. API key middleware validation for dashboard server-side calls uses `PRIVATE_SERVER_KEY`.
+
+For production deployments from published images, use `docker/docker-compose.prod.yaml` with `docker/.env.prod.example` as your template.
+
+URL routing for dashboard API calls:
+
+- Browser requests use `PUBLIC_SERVER_URL` (must be your public API domain in hosted environments, not `localhost`).
+- Server-side dashboard requests (SSR/load functions) use `PRIVATE_SERVER_URL` when set, and fallback to `PUBLIC_SERVER_URL`.
+- In Docker Compose, use `PRIVATE_SERVER_URL=http://api:3081` so dashboard SSR calls stay on the internal Docker network.
+- Optional: set `AUTH_COOKIE_DOMAIN` for Better Auth cookie domain control (`.your-domain.com` for shared subdomains, or your exact API host).
+
+For Docker details and troubleshooting, see:
+
+- `docker/docs/USAGE.md`
+- `docker/docs/commands.md`
+- `docker/docs/PUBLISHING_IMAGES.md`

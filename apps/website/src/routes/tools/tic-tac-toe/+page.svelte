@@ -123,7 +123,7 @@
         <button
           type="button"
           onclick={playAgain}
-          class="mt-10 rounded-md border border-white bg-[#0F62FE] px-16 pb-1.5 pt-1 text-xs md:text-base"
+          class="mt-10 rounded-md border border-white bg-[#0F62FE] px-16 pt-1 pb-1.5 text-xs md:text-base"
           >Play Again</button
         >
       </div>
@@ -135,7 +135,7 @@
         <header class="flex w-full items-center justify-between">
           <button
             onclick={changePlayer}
-            class="flex w-[35%] flex-row items-center gap-2 text-[10px] font-medium leading-3 md:w-28 md:text-xs"
+            class="flex w-[35%] flex-row items-center gap-2 text-[10px] leading-3 font-medium md:w-28 md:text-xs"
           >
             <img src="/free-tools/tic-tac/computer-icon.svg" alt="Computer icon" class="w-4 md:w-6" />
             {#if $changeToComputer.change}
@@ -146,7 +146,7 @@
           </button>
           <button
             onclick={newGame}
-            class="flex w-24 flex-col items-center gap-1 rounded-md border bg-white p-2 text-[10px] font-medium leading-3 text-[#0542CC] shadow-md"
+            class="flex w-24 flex-col items-center gap-1 rounded-md border bg-white p-2 text-[10px] leading-3 font-medium text-[#0542CC] shadow-md"
           >
             <img src="/free-tools/tic-tac/restart-icon.svg" alt="Restart icon" class="w-3 md:w-4" />
             Reset Score</button
@@ -184,7 +184,7 @@
               changePlayer();
               startTicTac();
             }}
-            class="mt-5 rounded-md border border-white bg-[#0F62FE] px-[3.3rem] pb-1.5 pt-1 text-sm font-bold"
+            class="mt-5 rounded-md border border-white bg-[#0F62FE] px-[3.3rem] pt-1 pb-1.5 text-sm font-bold"
           >
             Play with computer</button
           >
@@ -193,7 +193,7 @@
             onclick={() => {
               startTicTac();
             }}
-            class="rounded-md border border-white bg-[#0F62FE] px-16 pb-1.5 pt-1 text-sm font-bold"
+            class="rounded-md border border-white bg-[#0F62FE] px-16 pt-1 pb-1.5 text-sm font-bold"
             >Play two players</button
           >
         </div>

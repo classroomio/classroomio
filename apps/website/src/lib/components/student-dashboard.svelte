@@ -3,8 +3,8 @@
 </script>
 
 <section id="student-dashboard" class="bg-black px-3 py-[10%] text-center text-white lg:px-0">
-  <Badge class="py-2! px-4! text-sm! underline">yourorg.classroomio.com</Badge>
-  <h1 class="mx-auto flex flex-col items-center gap-4 text-3xl font-normal leading-[1.5] md:text-4xl lg:text-6xl">
+  <Badge class="px-4! py-2! text-sm! underline">yourorg.classroomio.com</Badge>
+  <h1 class="mx-auto flex flex-col items-center gap-4 text-3xl leading-[1.5] font-normal md:text-4xl lg:text-6xl">
     Your Student Dashboard
   </h1>
 

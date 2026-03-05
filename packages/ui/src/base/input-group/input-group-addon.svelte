@@ -2,7 +2,7 @@
   import { tv, type VariantProps } from 'tailwind-variants';
 
   export const inputGroupAddonVariants = tv({
-    base: "ui:text-muted-foreground ui:flex ui:h-auto ui:cursor-text ui:select-none ui:items-center ui:justify-center ui:gap-2 ui:py-1.5 ui:text-sm ui:font-medium ui:group-data-[disabled=true]/input-group:opacity-50 ui:[&>kbd]:rounded-[calc(var(--radius)-5px)] ui:[&>svg:not([class*='size-'])]:size-4",
+    base: "ui:text-muted-foreground ui:flex ui:h-auto ui:cursor-text ui:select-none ui:items-center ui:justify-center ui:gap-2 ui:py-1.5 ui:text-sm ui:font-medium ui:group-data-[disabled=true]/input-group:opacity-50 ui:[&>kbd]:rounded-[calc(var(--radius)-5px)] ui:[&>svg:not([class*='ui:size-'])]:size-4",
     variants: {
       align: {
         'inline-start': 'ui:order-first ui:ps-3 ui:has-[>button]:ms-[-0.45rem] ui:has-[>kbd]:ms-[-0.35rem]',

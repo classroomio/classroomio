@@ -1,7 +1,8 @@
 <script lang="ts">
   import Copy from '@lucide/svelte/icons/copy';
   import Trash2 from '@lucide/svelte/icons/trash-2';
-  import { ALLOWED_IMAGE_TYPES, validateImageUpload } from '@cio/utils/functions/fileValidation';
+  import { validateImageUpload } from '@cio/utils/functions/fileValidation';
+  import { ALLOWED_IMAGE_TYPES } from '@cio/utils/validation/constants';
 
   interface Props {
     imageURL?: string;
@@ -12,9 +13,10 @@
 
   let { imageURL = $bindable(''), label = '', isRequired = false, labelClassName = '' }: Props = $props();
   let isUploading = false;
-  let fileInput: HTMLInputElement = $state();
+  let fileInput: HTMLInputElement | undefined = $state();
 
   const onFileSelected = () => {
+    if (!fileInput) return;
     const file = fileInput?.files?.[0];
     if (!file) return;
 
@@ -77,7 +79,7 @@
   {/if}
   <div
     class="flex min-h-[200px] w-full items-center justify-center rounded-md border p-4"
-    onclick={() => fileInput.click()}
+    onclick={() => fileInput?.click()}
   >
     <input
       type="file"

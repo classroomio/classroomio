@@ -1,21 +1,22 @@
-import { getAccessToken } from '$lib/utils/functions/supabase';
+import { classroomio } from '$lib/utils/services/api';
 
 export async function queryUnsplash(searchQuery: string) {
   try {
-    const response = await fetch('/api/unsplash', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: await getAccessToken()
-      },
-      body: JSON.stringify({ searchQuery })
+    const response = await classroomio.unsplash.$post({
+      json: { searchQuery }
     });
-    if (!response.ok) {
-      throw new Error(await response.text());
-    }
+
     const result = await response.json();
-    return result.photos;
+
+    if (result.success && result.photos) {
+      return result.photos;
+    }
+
+    const error = 'error' in result ? result.error : 'Failed to fetch photos from Unsplash';
+
+    throw new Error(error);
   } catch (error) {
     console.error('Error sending fetch request', error);
+    throw error;
   }
 }

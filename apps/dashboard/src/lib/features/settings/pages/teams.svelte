@@ -38,7 +38,7 @@
     }
 
     errorMessage = '';
-    await orgApi.inviteTeamMembers($currentOrg.id, emails, parseInt(role));
+    await orgApi.inviteTeamMembers(emails, parseInt(role));
 
     if (orgApi.success) {
       snackbar.success('snackbar.team_members.invite_sent');
@@ -61,7 +61,7 @@
     }
 
     isRemoving = id;
-    await orgApi.removeTeamMember($currentOrg.id, id);
+    await orgApi.removeTeamMember(id);
 
     if (orgApi.success) {
       snackbar.success('snackbar.team_members.remove_success');
@@ -77,13 +77,15 @@
   };
 
   $effect(() => {
-    orgApi.getOrgTeam($currentOrg.id);
+    if (!$currentOrg) return;
+
+    orgApi.getOrgTeam();
   });
 </script>
 
 <UpgradeBanner>{$t('upgrade.team')}</UpgradeBanner>
 
-<Field.Group class="max-w-md! w-full px-2">
+<Field.Group class="w-full max-w-md! px-2">
   <Field.Set>
     <Field.Legend>{$t('course.navItem.people.teams.add')}</Field.Legend>
     <Field.Description class="mb-5">{$t('course.navItem.people.teams.add_team')}</Field.Description>
@@ -143,7 +145,7 @@
                 </p>
                 <Badge variant="secondary" class="mr-3 text-xs">{$t(teamMember.role)}</Badge>
                 {#if !teamMember.verified}
-                  <Badge variant="outline" class="bg-yellow-200 text-xs text-yellow-700">
+                  <Badge variant="outline" class="bg-yellow-200 text-xs text-yellow-700 dark:bg-yellow-700">
                     {$t('course.navItem.people.teams.invite_sent')}
                   </Badge>
                 {:else if teamMember.profileId === $profile.id}
