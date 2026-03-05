@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@carbon/charts-svelte": "^1.13.6",
+    "@cio/agent": "workspace:*",
     "@cio/api": "workspace:*",
     "@lemonsqueezy/lemonsqueezy.js": "^2.2.0",
     "@polar-sh/sveltekit": "^0.2.1",

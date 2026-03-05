@@ -36,6 +36,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.388.0",
     "@aws-sdk/s3-request-presigner": "^3.675.0",
+    "@cio/agent": "workspace:*",
     "@hono/node-server": "^1.8.2",
     "@hono/standard-validator": "^0.1.5",
     "@hono/zod-validator": "^0.7.2",

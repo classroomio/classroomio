@@ -5,6 +5,9 @@
     "@cio/dashboard#build": {
       "dependsOn": ["@cio/api#build"]
     },
+    "@cio/api#build": {
+      "dependsOn": ["@cio/agent#build", "^build"]
+    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**", ".svelte-kit/**", ".vercel/**", "dist/**"]

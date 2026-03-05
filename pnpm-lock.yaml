@@ -45,6 +45,9 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.675.0
         version: 3.828.0
+      '@cio/agent':
+        specifier: workspace:*
+        version: link:../../packages/agent
       '@hono/node-server':
         specifier: ^1.8.2
         version: 1.14.4(hono@4.9.7)
@@ -312,6 +315,9 @@ importers:
       '@carbon/charts-svelte':
         specifier: ^1.13.6
         version: 1.22.18(svelte@4.2.20)
+      '@cio/agent':
+        specifier: workspace:*
+        version: link:../../packages/agent
       '@cio/api':
         specifier: workspace:*
         version: link:../api
@@ -645,8 +651,33 @@ importers:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.9.3)(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.89.2)(tsx@4.20.3)(yaml@2.8.0))
 
+  packages/agent:
+    dependencies:
+      '@hono/zod-validator':
+        specifier: ^0.7.2
+        version: 0.7.2(hono@4.9.7)(zod@4.2.1)
+      '@supabase/supabase-js':
+        specifier: ^2.32.0
+        version: 2.50.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      hono:
+        specifier: ^4.9.7
+        version: 4.9.7
+      openai:
+        specifier: ^6.25.0
+        version: 6.25.0(ws@8.18.2(bufferutil@4.0.9)(utf-8-validate@6.0.5))(zod@4.2.1)
+      zod:
+        specifier: ^4.1.8
+        version: 4.2.1
+    devDependencies:
+      typescript:
+        specifier: ^5.5.2
+        version: 5.9.3
+
   packages/ai-assistant:
     dependencies:
+      '@cio/agent':
+        specifier: workspace:*
+        version: link:../agent
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -12650,6 +12681,11 @@ snapshots:
       hono: 4.9.7
       zod: 4.1.8
 
+  '@hono/zod-validator@0.7.2(hono@4.9.7)(zod@4.2.1)':
+    dependencies:
+      hono: 4.9.7
+      zod: 4.2.1
+
   '@humanfs/core@0.19.1': {}
 
   '@humanfs/node@0.16.6':
@@ -19556,6 +19592,11 @@ snapshots:
     optionalDependencies:
       ws: 8.18.2(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       zod: 4.1.8
+
+  openai@6.25.0(ws@8.18.2(bufferutil@4.0.9)(utf-8-validate@6.0.5))(zod@4.2.1):
+    optionalDependencies:
+      ws: 8.18.2(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      zod: 4.2.1
 
   openapi-types@12.1.3: {}
 

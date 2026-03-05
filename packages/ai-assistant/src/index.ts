@@ -1,3 +1,7 @@
+/**
+ * @deprecated Use `@cio/agent` directly.
+ * This package is kept as a compatibility shim.
+ */
 export type {
   Message,
   MessageRole,
@@ -10,7 +14,7 @@ export type {
   ChatResponse,
   ChatErrorResponse,
   ChatResult
-} from './types';
+} from '@cio/agent';
 
-export { AgentClient } from './client';
-export type { AgentClientOptions } from './client';
+export { AgentClient } from '@cio/agent';
+export type { AgentClientOptions } from '@cio/agent';

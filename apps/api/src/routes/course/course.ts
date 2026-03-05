@@ -7,8 +7,9 @@ import { katexRouter } from '$src/routes/course/katex';
 import { lessonRouter } from '$src/routes/course/lesson';
 import { presignRouter } from '$src/routes/course/presign';
 import { cloneRouter } from '$src/routes/course/clone';
-import { agentRouter } from '$src/routes/course/agent';
+import { createAgentRouter } from '@cio/agent';
 import { zValidator } from '@hono/zod-validator';
+import { env } from '$src/config/env';
 
 export const courseRouter = new Hono()
   .post('/download/certificate', zValidator('json', ZCertificateDownload), async (c) => {
@@ -51,4 +52,13 @@ export const courseRouter = new Hono()
   .route('/lesson', lessonRouter)
   .route('/presign', presignRouter)
   .route('/clone', cloneRouter)
-  .route('/:courseId/agent', agentRouter);
+  .route(
+    '/:courseId/agent',
+    createAgentRouter({
+      supabaseUrl: env.PUBLIC_SUPABASE_URL,
+      supabaseServiceRoleKey: env.PRIVATE_SUPABASE_SERVICE_ROLE,
+      supabaseAnonKey: env.PUBLIC_SUPABASE_ANON_KEY,
+      openrouterApiKey: env.OPENROUTER_API_KEY,
+      isSelfHosted: env.PUBLIC_IS_SELFHOSTED === 'true'
+    })
+  );

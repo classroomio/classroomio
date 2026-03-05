@@ -1,7 +1,7 @@
 {
   "name": "@cio/ai-assistant",
   "version": "0.0.1",
-  "description": "Shared types and client for the ClassroomIO AI Course Assistant",
+  "description": "Deprecated: use @cio/agent instead",
   "type": "module",
   "main": "./src/index.ts",
   "exports": {
@@ -9,6 +9,7 @@
     "./src/*": "./src/*.ts"
   },
   "dependencies": {
+    "@cio/agent": "workspace:*",
     "tsconfig": "workspace:*"
   }
 }

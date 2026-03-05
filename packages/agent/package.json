@@ -1,0 +1,35 @@
+{
+  "name": "@cio/agent",
+  "version": "0.0.1",
+  "description": "ClassroomIO AI Course Agent — course content authoring assistant",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "prepare": "pnpm build"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./models": {
+      "types": "./dist/models.d.ts",
+      "default": "./dist/models.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "default": "./dist/client.js"
+    }
+  },
+  "dependencies": {
+    "@hono/zod-validator": "^0.7.2",
+    "@supabase/supabase-js": "^2.32.0",
+    "hono": "^4.9.7",
+    "openai": "^6.25.0",
+    "zod": "^4.1.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.2"
+  }
+}

@@ -1,4 +1,10 @@
 import { writable, derived } from 'svelte/store';
+import { SUPPORTED_MODELS, DEFAULT_MODEL } from '@cio/agent/models';
+
+export type { SupportedModel } from '@cio/agent/models';
+export { SUPPORTED_MODELS };
+
+export const DEFAULT_MODEL_ID = DEFAULT_MODEL;
 
 export interface AiMessage {
   id: string;
@@ -9,50 +15,6 @@ export interface AiMessage {
   actions?: Array<{ type: string; description: string; result?: unknown }>;
   isError?: boolean;
 }
-
-export interface SupportedModel {
-  id: string;
-  name: string;
-  description: string;
-  recommended?: boolean;
-}
-
-// Mirrors the list in apps/api/src/constants/models.ts
-export const SUPPORTED_MODELS: SupportedModel[] = [
-  {
-    id: 'google/gemini-3-flash-preview',
-    name: 'Gemini 3 Flash',
-    description: "Google's latest Flash — fast and capable",
-    recommended: true
-  },
-  {
-    id: 'google/gemini-2.5-flash',
-    name: 'Gemini 2.5 Flash',
-    description: 'Balanced speed and quality'
-  },
-  {
-    id: 'openai/gpt-4o',
-    name: 'GPT-4o',
-    description: "OpenAI's flagship — best quality"
-  },
-  {
-    id: 'openai/gpt-4o-mini',
-    name: 'GPT-4o Mini',
-    description: 'Fast and affordable'
-  },
-  {
-    id: 'anthropic/claude-3-5-haiku',
-    name: 'Claude 3.5 Haiku',
-    description: 'Excellent writing, very affordable'
-  },
-  {
-    id: 'meta-llama/llama-3.3-70b-instruct',
-    name: 'Llama 3.3 70B',
-    description: 'Open source, extremely affordable'
-  }
-];
-
-export const DEFAULT_MODEL_ID = SUPPORTED_MODELS[0].id;
 
 export interface AiAssistantState {
   isOpen: boolean;
