@@ -53,6 +53,7 @@
     "marked": "^7.0.3",
     "nanoid": "^5.1.5",
     "nodemailer": "^6.9.5",
+    "openai": "^6.25.0",
     "zeptomail": "^6.0.0",
     "zod": "^4.1.8",
     "zod-openapi": "^5.4.1"

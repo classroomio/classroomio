@@ -96,6 +96,7 @@
     "qrcode": "^1.5.3",
     "sass": "^1.64.2",
     "svelte": "^4.1.2",
+    "svelte-check": "^4.4.4",
     "svelte-dnd-action": "^0.9.24",
     "svelte-jester": "^3.0.0",
     "svelte-loading-spinners": "^0.3.4",

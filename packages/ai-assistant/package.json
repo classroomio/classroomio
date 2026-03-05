@@ -1,0 +1,14 @@
+{
+  "name": "@cio/ai-assistant",
+  "version": "0.0.1",
+  "description": "Shared types and client for the ClassroomIO AI Course Assistant",
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./src/*": "./src/*.ts"
+  },
+  "dependencies": {
+    "tsconfig": "workspace:*"
+  }
+}

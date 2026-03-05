@@ -18,7 +18,9 @@ const envSchema = z.object({
   SMTP_PORT: z.string().optional(),
   SMTP_SENDER: z.string().optional(),
   SMTP_USER: z.string().optional(),
-  ZOHO_TOKEN: z.string().optional()
+  ZOHO_TOKEN: z.string().optional(),
+  OPENAI_API_KEY: z.string().optional(),
+  PUBLIC_IS_SELFHOSTED: z.string().optional()
 });
 
 export const env = envSchema.parse(process.env);

@@ -7,6 +7,7 @@ import { katexRouter } from '$src/routes/course/katex';
 import { lessonRouter } from '$src/routes/course/lesson';
 import { presignRouter } from '$src/routes/course/presign';
 import { cloneRouter } from '$src/routes/course/clone';
+import { agentRouter } from '$src/routes/course/agent';
 import { zValidator } from '@hono/zod-validator';
 
 export const courseRouter = new Hono()
@@ -49,4 +50,5 @@ export const courseRouter = new Hono()
   .route('/katex', katexRouter)
   .route('/lesson', lessonRouter)
   .route('/presign', presignRouter)
-  .route('/clone', cloneRouter);
+  .route('/clone', cloneRouter)
+  .route('/:courseId/agent', agentRouter);

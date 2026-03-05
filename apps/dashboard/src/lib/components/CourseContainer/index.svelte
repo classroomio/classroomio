@@ -15,6 +15,10 @@
   import { t } from '$lib/utils/functions/translations';
   import PrimaryButton from '$lib/components/PrimaryButton/index.svelte';
   import { isOrgAdmin } from '$lib/utils/store/org';
+  import AiAssistant from '$lib/components/AI/AiAssistant/index.svelte';
+  import { aiAssistantStore } from '$lib/components/AI/AiAssistant/store';
+  import { lesson } from '../Course/components/Lesson/store/lessons';
+  import { isAiAssistantAvailable } from '$lib/utils/ai-assistant';
 
   export let courseId = '';
   export let path = '';
@@ -50,6 +54,12 @@
   }
 
   $: onCourseIdChange(courseId);
+
+  // Keep AI assistant context in sync with the currently viewed lesson
+  $: if (courseId && $aiAssistantStore.isOpen) {
+    const lessonId = $lesson?.id ?? null;
+    aiAssistantStore.updateContext(lessonId);
+  }
 
   $: {
     const user = $group.people.find((person) => person.profile_id === $profile.id);
@@ -105,6 +115,13 @@
     {/if}
   </div>
 </div>
+
+{#if !$globalStore.isStudent && isAiAssistantAvailable()}
+  <AiAssistant
+    open={$aiAssistantStore.isOpen}
+    on:close={() => aiAssistantStore.close()}
+  />
+{/if}
 
 <style>
   .root {
