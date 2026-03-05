@@ -1,6 +1,7 @@
 export type {
   Message,
   MessageRole,
+  SupportedModel,
   IntentType,
   AgentAction,
   AgentContext,

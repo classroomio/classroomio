@@ -19,10 +19,6 @@
   import { t } from '$lib/utils/functions/translations';
   import { COURSE_TYPE, COURSE_VERSION, type Lesson } from '$lib/utils/types';
   import { NAV_IDS } from './constants';
-  import MagicWandFilled from 'carbon-icons-svelte/lib/MagicWandFilled.svelte';
-  import { isAiAssistantAvailable } from '$lib/utils/ai-assistant';
-  import { aiAssistantStore } from '$lib/components/AI/AiAssistant/store';
-  import { lesson } from '../Lesson/store/lessons';
 
   export let path: string;
   export let isStudent: boolean = false;
@@ -293,22 +289,6 @@
       bind:this={menuContentRef}
       style={$sideBar.hidden === true ? '' : 'display:block'}
     >
-      {#if !isStudent && isAiAssistantAvailable()}
-        <li class="px-3 pb-2">
-          <button
-            class="flex w-full items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium transition-colors
-              {$aiAssistantStore.isOpen
-              ? 'bg-primary-100 text-primary-700 dark:bg-blue-900/30 dark:text-blue-300'
-              : 'text-gray-700 hover:bg-gray-200 dark:text-neutral-300 dark:hover:bg-neutral-800'}"
-            on:click={() => aiAssistantStore.toggle($course.id ?? '', $lesson?.id ?? null)}
-            title={$t('ai_assistant.open_button')}
-          >
-            <MagicWandFilled size={16} class="carbon-icon flex-shrink-0" />
-            <span>{$t('ai_assistant.open_button')}</span>
-          </button>
-        </li>
-      {/if}
-
       {#each navItems as navItem}
         {#if !navItem.show || (typeof navItem.show === 'function' && navItem.show())}
           <NavExpandable

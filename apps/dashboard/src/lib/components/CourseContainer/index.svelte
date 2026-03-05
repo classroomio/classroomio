@@ -29,6 +29,8 @@
   let prevCourseId = '';
   let isPermitted = true;
 
+  $: showAiPanel = !$globalStore.isStudent && isAiAssistantAvailable() && $aiAssistantStore.isOpen;
+
   async function onCourseIdChange(courseId = '') {
     if (!courseId || prevCourseId === courseId || !browser || $course.id === courseId) return;
 
@@ -49,26 +51,22 @@
 
   function filterPollsByStatus(shouldFilter: boolean) {
     if (!shouldFilter) return;
-
     $course.polls = $course.polls.filter((poll) => poll.status === 'published');
   }
 
   $: onCourseIdChange(courseId);
 
-  // Keep AI assistant context in sync with the currently viewed lesson
+  // Keep context in sync when navigating between lessons
   $: if (courseId && $aiAssistantStore.isOpen) {
-    const lessonId = $lesson?.id ?? null;
-    aiAssistantStore.updateContext(lessonId);
+    aiAssistantStore.updateContext($lesson?.id ?? null);
   }
 
   $: {
     const user = $group.people.find((person) => person.profile_id === $profile.id);
     if (user) {
       $globalStore.isStudent = user.role_id === 3;
-
       filterPollsByStatus($globalStore.isStudent);
     } else if ($isOrgAdmin === false && $profile.id && $group.people.length) {
-      // Current User doesn't h ave permission to view
       isPermitted = false;
     }
   }
@@ -89,48 +87,47 @@
     <p class="text-md text-center dark:text-white">
       {$t('course.not_permitted.body')}
     </p>
-
     <div class="mt-5 flex justify-center">
       <PrimaryButton
         className="px-6 py-3"
         label={$t('course.not_permitted.button')}
-        onClick={() => {
-          goto('/org/*');
-        }}
+        onClick={() => goto('/org/*')}
       />
     </div>
   </div>
 </Modal>
 
-<div class="root">
+<div class="course-layout" class:ai-open={showAiPanel}>
+  <!-- Left sidebar -->
   <Navigation {path} isStudent={$globalStore.isStudent} />
-  <div class="rightBar {containerClass}" class:isMobile={$isMobile}>
+
+  <!-- Main content — grows to fill the available space between both sidebars -->
+  <div class="content-area {containerClass}" class:isMobile={$isMobile}>
     {#if isExercisePage}
       <Confetti />
     {/if}
-
-    <!-- Show only if permitted -->
     {#if isPermitted}
       <slot />
     {/if}
   </div>
+
+  <!-- Right AI sidebar — inline, same level as left sidebar -->
+  {#if showAiPanel}
+    <AiAssistant />
+  {/if}
 </div>
 
-{#if !$globalStore.isStudent && isAiAssistantAvailable()}
-  <AiAssistant
-    open={$aiAssistantStore.isOpen}
-    on:close={() => aiAssistantStore.close()}
-  />
-{/if}
-
 <style>
-  .root {
+  .course-layout {
     display: flex;
     width: 100%;
+    height: calc(100vh - 48px); /* subtract top nav height */
+    overflow: hidden;
   }
 
-  .rightBar {
-    flex-grow: 1;
-    width: calc(100% - 360px);
+  .content-area {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
   }
 </style>

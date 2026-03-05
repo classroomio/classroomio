@@ -1637,6 +1637,8 @@
     "error_generic": "Something went wrong. Please try again.",
     "error_no_server": "Server URL is not configured. Please check your settings.",
     "open_button": "AI Assistant",
-    "not_available": "AI Assistant is not available in self-hosted mode."
+    "not_available": "AI Assistant is not available in self-hosted mode.",
+    "model_picker_label": "Select AI model",
+    "recommended": "Recommended"
   }
 }

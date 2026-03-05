@@ -4,12 +4,22 @@ import { authMiddleware } from '$src/middlewares/auth';
 import { courseTeamMemberMiddleware } from '$src/middlewares/course-team-member';
 import { processAgentChat } from '$src/services/agent';
 import { ZAgentChatPayload } from '$src/types/agent';
+import { SUPPORTED_MODELS } from '$src/constants/models';
 import { env } from '$src/config/env';
 import type { User } from '@supabase/supabase-js';
 
 type Variables = { user: User };
 
 export const agentRouter = new Hono<{ Variables: Variables }>()
+  /** Return the list of supported models — no auth required */
+  .get('/models', (c) => {
+    if (env.PUBLIC_IS_SELFHOSTED === 'true') {
+      return c.json({ success: false, error: 'AI assistant is not available in self-hosted mode' }, 403);
+    }
+    return c.json({ success: true, data: SUPPORTED_MODELS });
+  })
+
+  /** Main chat endpoint */
   .post(
     '/chat',
     authMiddleware,
@@ -18,16 +28,17 @@ export const agentRouter = new Hono<{ Variables: Variables }>()
     async (c) => {
       if (env.PUBLIC_IS_SELFHOSTED === 'true') {
         return c.json(
-          { success: false, error: 'AI assistant is not available for self-hosted instances' },
+          { success: false, error: 'AI assistant is not available in self-hosted mode' },
           403
         );
       }
 
-      if (!env.OPENAI_API_KEY) {
+      if (!env.OPENROUTER_API_KEY) {
         return c.json(
           {
             success: false,
-            error: 'AI assistant is not configured. Please set the OPENAI_API_KEY environment variable.'
+            error:
+              'AI assistant is not configured. Please set the OPENROUTER_API_KEY environment variable.'
           },
           503
         );

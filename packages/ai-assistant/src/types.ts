@@ -1,5 +1,12 @@
 export type MessageRole = 'user' | 'assistant';
 
+export interface SupportedModel {
+  id: string;
+  name: string;
+  description: string;
+  recommended?: boolean;
+}
+
 export interface Message {
   id: string;
   role: MessageRole;

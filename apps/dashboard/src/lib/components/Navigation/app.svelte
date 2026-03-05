@@ -7,6 +7,7 @@
   import Menu from 'carbon-icons-svelte/lib/Menu.svelte';
   import Close from 'carbon-icons-svelte/lib/Close.svelte';
   import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
+  import MagicWandFilled from 'carbon-icons-svelte/lib/MagicWandFilled.svelte';
 
   import IconButton from '$lib/components/IconButton/index.svelte';
   import { globalStore } from '$lib/utils/store/app';
@@ -14,6 +15,10 @@
   import { toggleBodyByMode } from '$lib/utils/functions/app';
   import { sideBar } from '../Org/store';
   import { t } from '$lib/utils/functions/translations';
+  import { isAiAssistantAvailable } from '$lib/utils/ai-assistant';
+  import { aiAssistantStore } from '$lib/components/AI/AiAssistant/store';
+  import { course } from '$lib/components/Course/store';
+  import { lesson } from '$lib/components/Course/components/Lesson/store/lessons';
 
   export let title = '';
   export let navClass = '';
@@ -92,6 +97,19 @@
     <li>
       <NotificationIcon size={20} class="mr-2 text-white" />
     </li>
+    {#if isCoursePage && !$globalStore.isStudent && isAiAssistantAvailable()}
+      <li>
+        <IconButton
+          size="small"
+          onClick={() => aiAssistantStore.toggle($course.id ?? '', $lesson?.id ?? null)}
+        >
+          <MagicWandFilled
+            size={16}
+            class="text-white {$aiAssistantStore.isOpen ? 'opacity-100' : 'opacity-70'}"
+          />
+        </IconButton>
+      </li>
+    {/if}
     <li>
       <IconButton size="small" onClick={toggleDarkMode}>
         {#if $globalStore.isDark}

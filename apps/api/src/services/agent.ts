@@ -2,15 +2,32 @@ import OpenAI from 'openai';
 import { env } from '$src/config/env';
 import { getSupabase } from '$src/utils/supabase';
 import type { TAgentChatPayload, AgentAction, AgentChatResult } from '$src/types/agent';
+import { DEFAULT_MODEL, SUPPORTED_MODEL_IDS } from '$src/constants/models';
 
-let openaiClient: OpenAI | null = null;
+const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1';
 
-function getOpenAI(): OpenAI {
-  if (!openaiClient) {
-    openaiClient = new OpenAI({ apiKey: env.OPENAI_API_KEY });
+let openrouterClient: OpenAI | null = null;
+
+function getClient(): OpenAI {
+  if (!openrouterClient) {
+    openrouterClient = new OpenAI({
+      apiKey: env.OPENROUTER_API_KEY,
+      baseURL: OPENROUTER_BASE_URL,
+      defaultHeaders: {
+        'HTTP-Referer': 'https://classroomio.com',
+        'X-Title': 'ClassroomIO AI Course Assistant'
+      }
+    });
   }
-  return openaiClient;
+  return openrouterClient;
 }
+
+// Question type names match the database typename column
+const QUESTION_TYPE_LABELS: Record<string, string> = {
+  RADIO: 'Single answer (one correct option, radio button)',
+  CHECKBOX: 'Multiple answers (multiple correct options, checkboxes)',
+  TEXTAREA: 'Paragraph (open-ended free-text, no auto-grading)'
+};
 
 const AGENT_TOOLS: OpenAI.Chat.Completions.ChatCompletionFunctionTool[] = [
   {
@@ -37,7 +54,7 @@ const AGENT_TOOLS: OpenAI.Chat.Completions.ChatCompletionFunctionTool[] = [
     function: {
       name: 'generate_questions',
       description:
-        'Generate quiz or exercise questions from the lesson content or a given topic. Use when the user asks to create, generate, or come up with questions.',
+        'Generate quiz or exercise questions. Use when the user asks to create, generate, or come up with questions. Choose the most appropriate type for each question:\n- RADIO: single correct answer (multiple choice)\n- CHECKBOX: multiple correct answers (select all that apply)\n- TEXTAREA: open-ended paragraph answer (for analysis, explanation, opinion)',
       parameters: {
         type: 'object',
         properties: {
@@ -51,16 +68,25 @@ const AGENT_TOOLS: OpenAI.Chat.Completions.ChatCompletionFunctionTool[] = [
                   type: 'string',
                   enum: ['RADIO', 'CHECKBOX', 'TEXTAREA'],
                   description:
-                    'RADIO for single-choice, CHECKBOX for multiple-choice, TEXTAREA for open-ended'
+                    'RADIO = single correct answer; CHECKBOX = multiple correct answers; TEXTAREA = open-ended paragraph'
+                },
+                points: {
+                  type: 'number',
+                  description: 'Point value for this question (default: 1)'
                 },
                 options: {
                   type: 'array',
-                  description: 'Answer options (required for RADIO and CHECKBOX types)',
+                  description:
+                    'Answer options. Required for RADIO and CHECKBOX types. Omit for TEXTAREA.',
                   items: {
                     type: 'object',
                     properties: {
-                      label: { type: 'string' },
-                      is_correct: { type: 'boolean' }
+                      label: { type: 'string', description: 'The option text' },
+                      is_correct: {
+                        type: 'boolean',
+                        description:
+                          'True if this is a correct answer. For RADIO, exactly one option should be correct.'
+                      }
                     },
                     required: ['label', 'is_correct']
                   }
@@ -71,6 +97,50 @@ const AGENT_TOOLS: OpenAI.Chat.Completions.ChatCompletionFunctionTool[] = [
           }
         },
         required: ['questions']
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'update_question',
+      description:
+        'Update an existing question in an exercise. Use when the user asks to change, fix, reword, or modify a specific question. You can update the text, type, points, and/or options.',
+      parameters: {
+        type: 'object',
+        properties: {
+          questionId: {
+            type: 'string',
+            description: 'The UUID of the question to update'
+          },
+          title: {
+            type: 'string',
+            description: 'New question text (omit to keep existing)'
+          },
+          type: {
+            type: 'string',
+            enum: ['RADIO', 'CHECKBOX', 'TEXTAREA'],
+            description: 'New question type (omit to keep existing)'
+          },
+          points: {
+            type: 'number',
+            description: 'New point value (omit to keep existing)'
+          },
+          options: {
+            type: 'array',
+            description:
+              'Replacement options for RADIO or CHECKBOX questions. Providing this replaces ALL existing options.',
+            items: {
+              type: 'object',
+              properties: {
+                label: { type: 'string' },
+                is_correct: { type: 'boolean' }
+              },
+              required: ['label', 'is_correct']
+            }
+          }
+        },
+        required: ['questionId']
       }
     }
   },
@@ -116,20 +186,24 @@ Current course: "${courseTitle}"`;
 
   prompt += `
 
+Question types available:
+${Object.entries(QUESTION_TYPE_LABELS)
+  .map(([k, v]) => `- ${k}: ${v}`)
+  .join('\n')}
+
 You can help with:
 - Answering questions about course design and pedagogy
-- Updating the current lesson's content (update_lesson_text tool)
-- Generating quiz questions from lesson content (generate_questions tool)
-- Drafting new lessons for the course (draft_lesson tool)
+- Updating the current lesson's content (update_lesson_text)
+- Generating quiz questions with appropriate types (generate_questions)
+- Updating existing questions (update_question)
+- Drafting new lessons (draft_lesson)
 
-Guidelines:
-- Be concise and helpful
-- When generating HTML content, use clean semantic markup without CSS styles
-- For questions, choose the appropriate type: RADIO (single answer), CHECKBOX (multiple answers), TEXTAREA (open-ended)
-- Always confirm successful actions clearly`;
+When generating HTML content use clean semantic markup without CSS styles.`;
 
   return prompt;
 }
+
+// ─── Tool executors ────────────────────────────────────────────────────────────
 
 async function executeUpdateLessonText(
   args: { content: string },
@@ -138,7 +212,6 @@ async function executeUpdateLessonText(
 ): Promise<AgentChatResult> {
   const supabase = getSupabase();
 
-  // Verify lesson belongs to course for safety
   const { data: lesson, error: lessonError } = await supabase
     .from('lesson')
     .select('id, title')
@@ -154,7 +227,6 @@ async function executeUpdateLessonText(
     };
   }
 
-  // Try to update via lesson_language table first (supports localization)
   const { data: existingLang } = await supabase
     .from('lesson_language')
     .select('id')
@@ -171,23 +243,20 @@ async function executeUpdateLessonText(
       .eq('id', existingLang.id);
     updateError = error;
   } else {
-    // Check if any lesson_language entry exists for a different locale
     const { data: anyLang } = await supabase
       .from('lesson_language')
-      .select('id, locale')
+      .select('id')
       .eq('lesson_id', lessonId)
       .limit(1)
       .maybeSingle();
 
     if (anyLang) {
-      // Update the existing locale entry
       const { error } = await supabase
         .from('lesson_language')
         .update({ content: args.content })
         .eq('id', anyLang.id);
       updateError = error;
     } else {
-      // Fall back to updating lesson.note directly
       const { error } = await supabase
         .from('lesson')
         .update({ note: args.content })
@@ -205,18 +274,16 @@ async function executeUpdateLessonText(
     };
   }
 
-  const actions: AgentAction[] = [
-    {
-      type: 'update_lesson_text',
-      description: `Updated content for lesson "${lesson.title}"`,
-      result: { lessonId, title: lesson.title }
-    }
-  ];
-
   return {
-    message: `The lesson "${lesson.title}" has been updated successfully. Refresh the page to see your changes.`,
+    message: `The lesson "${lesson.title}" has been updated. Refresh the page to see changes.`,
     intent: 'update_lesson_text',
-    actions
+    actions: [
+      {
+        type: 'update_lesson_text',
+        description: `Updated content for "${lesson.title}"`,
+        result: { lessonId, title: lesson.title }
+      }
+    ]
   };
 }
 
@@ -224,34 +291,143 @@ async function executeGenerateQuestions(args: {
   questions: Array<{
     question: string;
     type: string;
+    points?: number;
     options?: Array<{ label: string; is_correct: boolean }>;
   }>;
 }): Promise<AgentChatResult> {
   const { questions } = args;
 
   const summary = questions
-    .map(
-      (q, i) =>
-        `${i + 1}. **${q.question}** (${q.type})${
-          q.options
-            ? '\n   Options: ' + q.options.map((o) => `${o.label}${o.is_correct ? ' ✓' : ''}`).join(', ')
-            : ''
-        }`
-    )
-    .join('\n');
-
-  const actions: AgentAction[] = [
-    {
-      type: 'generate_questions',
-      description: `Generated ${questions.length} question(s)`,
-      result: questions
-    }
-  ];
+    .map((q, i) => {
+      const typeLabel = { RADIO: 'Single choice', CHECKBOX: 'Multiple choice', TEXTAREA: 'Open-ended' }[q.type] ?? q.type;
+      let line = `${i + 1}. **${q.question}** — ${typeLabel}${q.points ? ` (${q.points} pt${q.points !== 1 ? 's' : ''})` : ''}`;
+      if (q.options?.length) {
+        line +=
+          '\n   ' +
+          q.options.map((o) => `${o.is_correct ? '✓' : '○'} ${o.label}`).join('  ');
+      }
+      return line;
+    })
+    .join('\n\n');
 
   return {
-    message: `I've generated ${questions.length} question(s) for you:\n\n${summary}\n\nYou can copy these into your exercise editor.`,
+    message: `Generated ${questions.length} question${questions.length !== 1 ? 's' : ''}:\n\n${summary}`,
     intent: 'generate_questions',
-    actions
+    actions: [
+      {
+        type: 'generate_questions',
+        description: `Generated ${questions.length} question(s)`,
+        result: questions
+      }
+    ]
+  };
+}
+
+async function executeUpdateQuestion(
+  args: {
+    questionId: string;
+    title?: string;
+    type?: string;
+    points?: number;
+    options?: Array<{ label: string; is_correct: boolean }>;
+  },
+  courseId: string
+): Promise<AgentChatResult> {
+  const supabase = getSupabase();
+
+  // Verify question belongs to a lesson in this course
+  const { data: question, error: qError } = await supabase
+    .from('question')
+    .select('id, title, question_type_id, points, exercise:exercise_id(id, lesson:lesson_id(id, course_id))')
+    .eq('id', args.questionId)
+    .single();
+
+  if (qError || !question) {
+    return {
+      message: 'Could not find the specified question.',
+      intent: 'update_question',
+      actions: []
+    };
+  }
+
+  // Type-safe course_id access
+  const exercise = question.exercise as unknown as { id: string; lesson: { id: string; course_id: string } | null } | null;
+  if (exercise?.lesson?.course_id !== courseId) {
+    return {
+      message: 'This question does not belong to the current course.',
+      intent: 'update_question',
+      actions: []
+    };
+  }
+
+  // Resolve new question_type_id if type changed
+  let newTypeId: number | undefined;
+  if (args.type) {
+    const typeMap: Record<string, number> = { RADIO: 1, CHECKBOX: 2, TEXTAREA: 3 };
+    newTypeId = typeMap[args.type];
+    if (!newTypeId) {
+      return { message: `Unknown question type: ${args.type}`, intent: 'update_question', actions: [] };
+    }
+  }
+
+  // Build the update object
+  const updates: Record<string, unknown> = {};
+  if (args.title !== undefined) updates.title = args.title;
+  if (newTypeId !== undefined) updates.question_type_id = newTypeId;
+  if (args.points !== undefined) updates.points = args.points;
+
+  if (Object.keys(updates).length > 0) {
+    const { error: updateError } = await supabase
+      .from('question')
+      .update(updates)
+      .eq('id', args.questionId);
+
+    if (updateError) {
+      console.error('update_question error:', updateError);
+      return {
+        message: `Failed to update question: ${updateError.message}`,
+        intent: 'update_question',
+        actions: []
+      };
+    }
+  }
+
+  // Replace options if provided (only for RADIO/CHECKBOX)
+  const effectiveTypeId = newTypeId ?? question.question_type_id;
+  if (args.options && effectiveTypeId !== 3 /* TEXTAREA */) {
+    // Delete all existing options
+    await supabase.from('option').delete().eq('question_id', args.questionId);
+
+    // Insert the new options
+    const newOptions = args.options.map((o) => ({
+      question_id: args.questionId,
+      label: o.label,
+      is_correct: o.is_correct
+    }));
+    const { error: optError } = await supabase.from('option').insert(newOptions);
+
+    if (optError) {
+      console.error('update_question options error:', optError);
+      return {
+        message: `Question text updated, but failed to update options: ${optError.message}`,
+        intent: 'update_question',
+        actions: []
+      };
+    }
+  }
+
+  const updatedTitle = args.title ?? (question.title as string);
+
+  return {
+    message: `Question updated: "${updatedTitle}". Refresh the exercise to see changes.`,
+    intent: 'update_question',
+    actions: [
+      {
+        type: 'update_question',
+        description: `Updated question "${updatedTitle}"`,
+        result: { questionId: args.questionId }
+      }
+    ]
   };
 }
 
@@ -261,7 +437,6 @@ async function executeDraftLesson(
 ): Promise<AgentChatResult> {
   const supabase = getSupabase();
 
-  // Get the current max order for lessons in this course
   const { data: existingLessons } = await supabase
     .from('lesson')
     .select('order')
@@ -269,7 +444,8 @@ async function executeDraftLesson(
     .order('order', { ascending: false })
     .limit(1);
 
-  const nextOrder = existingLessons && existingLessons.length > 0 ? (existingLessons[0].order ?? 0) + 1 : 0;
+  const nextOrder =
+    existingLessons && existingLessons.length > 0 ? (existingLessons[0].order ?? 0) + 1 : 0;
 
   const { data: newLesson, error } = await supabase
     .from('lesson')
@@ -286,43 +462,46 @@ async function executeDraftLesson(
   if (error || !newLesson) {
     console.error('draft_lesson error:', error);
     return {
-      message: `Failed to create the draft lesson: ${error?.message ?? 'Unknown error'}`,
+      message: `Failed to create lesson: ${error?.message ?? 'Unknown error'}`,
       intent: 'draft_lesson',
       actions: []
     };
   }
 
-  const actions: AgentAction[] = [
-    {
-      type: 'draft_lesson',
-      description: `Created draft lesson "${newLesson.title}"`,
-      result: { lessonId: newLesson.id, title: newLesson.title }
-    }
-  ];
-
   return {
-    message: `I've created a new draft lesson titled **"${newLesson.title}"**. It is currently locked — you can review and unlock it from the lessons list.`,
+    message: `Created draft lesson **"${newLesson.title}"** (locked). Find it in the lessons list to review and publish.`,
     intent: 'draft_lesson',
-    actions
+    actions: [
+      {
+        type: 'draft_lesson',
+        description: `Created draft lesson "${newLesson.title}"`,
+        result: { lessonId: newLesson.id, title: newLesson.title }
+      }
+    ]
   };
 }
+
+// ─── Main entry point ─────────────────────────────────────────────────────────
 
 export async function processAgentChat(
   courseId: string,
   userId: string,
   payload: TAgentChatPayload
 ): Promise<AgentChatResult> {
-  const openai = getOpenAI();
+  const client = getClient();
   const supabase = getSupabase();
 
-  // Fetch course info for context
+  const model = (() => {
+    if (payload.model && SUPPORTED_MODEL_IDS.has(payload.model)) return payload.model;
+    return DEFAULT_MODEL;
+  })();
+
   const { data: course } = await supabase
     .from('course')
     .select('id, title')
     .eq('id', courseId)
     .single();
 
-  // Fetch lesson content if a lessonId is provided
   let lessonTitle = '';
   let lessonNote = '';
 
@@ -338,7 +517,6 @@ export async function processAgentChat(
       lessonTitle = lesson.title ?? '';
       lessonNote = lesson.note ?? '';
 
-      // Prefer lesson_language content (more up-to-date with localization)
       const { data: langEntry } = await supabase
         .from('lesson_language')
         .select('content')
@@ -354,8 +532,13 @@ export async function processAgentChat(
 
   const systemPrompt = buildSystemPrompt(course?.title ?? '', lessonTitle, lessonNote);
 
-  const availableTools =
-    payload.context?.lessonId ? AGENT_TOOLS : AGENT_TOOLS.filter((t) => t.function.name !== 'update_lesson_text');
+  // Only offer update_lesson_text when a lesson is in context
+  // Only offer update_question when an exercise is in context
+  const availableTools = AGENT_TOOLS.filter((t) => {
+    if (t.function.name === 'update_lesson_text' && !payload.context?.lessonId) return false;
+    if (t.function.name === 'update_question' && !payload.context?.exerciseId) return false;
+    return true;
+  });
 
   const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
     { role: 'system', content: systemPrompt },
@@ -366,8 +549,8 @@ export async function processAgentChat(
     { role: 'user', content: payload.message }
   ];
 
-  const response = await openai.chat.completions.create({
-    model: 'gpt-4o',
+  const response = await client.chat.completions.create({
+    model,
     messages,
     tools: availableTools,
     tool_choice: 'auto',
@@ -377,14 +560,12 @@ export async function processAgentChat(
   const choice = response.choices[0];
 
   if (!choice) {
-    return { message: 'No response from AI. Please try again.' };
+    return { message: 'No response from the model. Please try again.' };
   }
 
-  // Handle tool calls (intent execution)
   if (choice.message.tool_calls && choice.message.tool_calls.length > 0) {
     const rawCall = choice.message.tool_calls[0];
 
-    // Narrow to function tool call (the only type we use)
     if (!('function' in rawCall)) {
       return { message: 'Unsupported tool call type. Please try again.' };
     }
@@ -395,14 +576,14 @@ export async function processAgentChat(
     try {
       args = JSON.parse(toolCall.function.arguments);
     } catch {
-      return { message: 'Failed to parse AI response. Please try again.' };
+      return { message: 'Failed to parse model response. Please try again.' };
     }
 
     switch (toolCall.function.name) {
       case 'update_lesson_text':
         if (!payload.context?.lessonId) {
           return {
-            message: 'No lesson is currently selected. Please navigate to a lesson first.',
+            message: 'No lesson is currently open. Navigate to a lesson first.',
             intent: 'update_lesson_text',
             actions: []
           };
@@ -419,9 +600,22 @@ export async function processAgentChat(
             questions: Array<{
               question: string;
               type: string;
+              points?: number;
               options?: Array<{ label: string; is_correct: boolean }>;
             }>;
           }
+        );
+
+      case 'update_question':
+        return executeUpdateQuestion(
+          args as {
+            questionId: string;
+            title?: string;
+            type?: string;
+            points?: number;
+            options?: Array<{ label: string; is_correct: boolean }>;
+          },
+          courseId
         );
 
       case 'draft_lesson':
@@ -436,8 +630,7 @@ export async function processAgentChat(
     }
   }
 
-  // Plain conversational response
   return {
-    message: choice.message.content ?? 'I was unable to generate a response. Please try again.'
+    message: choice.message.content ?? 'Unable to generate a response. Please try again.'
   };
 }
