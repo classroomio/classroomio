@@ -1,0 +1,288 @@
+# ClassroomIO vs Teachable & Thinkific: Pricing & Feature Competitive Analysis
+
+## Executive Summary
+
+This document analyzes Teachable and Thinkific pricing structures and feature sets to inform ClassroomIO's pricing strategy and roadmap. ClassroomIO is positioned as an open-source LMS for bootcamps, educators, and businesses—a direct alternative to Teachable, Thinkific, and similar platforms.
+
+**Key Recommendation:** ClassroomIO has a strong value proposition (especially at $35/mo) but needs to add several core course and engagement features to compete effectively. Consider a 3-tier structure with clearer differentiation. **Payment processing is out of scope**—focus on features that work with existing external payment links. See [FEATURE_SPECIFICATIONS.md](./FEATURE_SPECIFICATIONS.md) for deep technical specs.
+
+---
+
+## 1. Competitor Pricing Comparison
+
+### Teachable Pricing (from pricing page)
+
+| Plan | Monthly (annual) | Key Limits | Transaction Fee |
+|------|------------------|------------|-----------------|
+| **Free** | $0 | — | — |
+| **Starter** | $29 | 1 product, 100 students, 1 admin | 7.5% |
+| **Builder** | $69 | 5 products, 1K students, 1 admin | 0% |
+| **Growth** | $139 | 25 products, 5K students, 5 admins | 0% |
+| **Advanced** | $309 | 100 products, 5K students, 5 admins | 0% |
+| **Unlimited** | Contact | Flexible limits, SSO, dedicated CSM | 0% |
+
+**Annual billing:** 22% off (e.g. Starter saves $120, Builder saves $240, Growth saves $600).
+
+**Key feature gates (from Teachable matrix):**
+- **Starter:** Drip content, quizzes, coupons, bundles, community, memberships. 7.5% fee. 100 students.
+- **Builder:** 0% fee, affiliate program, certificates, real-time support. 1K students.
+- **Growth:** White label, custom admin permissions, free subtitles. 5K students, 5 admins.
+- **Advanced:** Unlimited integrations, 100 products, 2TB storage.
+- **Unlimited:** SSO (OIDC/SAML), dedicated success manager, sandbox, priority SLA.
+
+**Teachable's model:** Subscription + 7.5% transaction fee on Starter only. Free trial + 30-day money-back. iOS/Android apps included.
+
+---
+
+### Thinkific Pricing (from pricing page)
+
+| Plan | Monthly | Annual | Key Limits |
+|------|---------|--------|------------|
+| **Basic** | $36 | Save 25% | 10K students, 1 community, email/chat support |
+| **Start** | $74 | Save 25% | 10K students, 1 community, paid memberships |
+| **Grow** | $149 | Save 25% | 10K students, 3 communities, phone support, product bundles, payment plans |
+| **Plus** | Custom | — | Unlimited students, unlimited communities, dedicated CS team |
+
+**Key feature gates (from Thinkific matrix):**
+- **Basic:** Unlimited courses, site builder, landing pages, email automation, coupons. No: remove branding, product bundles, quizzes/certificates/assignments, payment plans.
+- **Start:** Adds paid memberships, share revenue (1 partner), course admins (2).
+- **Grow:** Remove branding, 3 communities, product bundles, payment plans, abandoned cart, group orders, advanced reporting, 5 course admins, 3 partners.
+- **Plus:** SCORM, SSO, unlimited everything.
+
+**Add-on:** Branded Mobile App — $199/mo extra.
+
+**Thinkific's model:** Pure subscription. No platform transaction fees. Native payments (TCommerce).
+
+**Thinkific feature gates (from matrix):**
+- Scheduled content, certificates, assignments, quizzes: Start+
+- Remove Thinkific branding: Grow+
+- Product bundles, payment plans, group orders: Grow+
+- Communities: 1 (Basic/Start), 3 (Grow), unlimited (Plus)
+- Learning Paths: Start+
+- SCORM, SSO: Plus only
+- Share revenue with partners: 1 (Start), 3 (Grow), unlimited (Plus)
+
+---
+
+### ClassroomIO Current Pricing
+
+| Plan | Monthly | Yearly | Key Limits |
+|------|---------|--------|------------|
+| **Basic (Free)** | $0 | $0 | 20 students, ClassroomIO branding, AI (no video) |
+| **Early Adopter** | $35 | $350 (save 2 months) | 10K students, custom branding, video, certificates |
+| **Enterprise** | Contact | Contact | Unlimited students, custom domain, 24/7 support |
+
+**Current strengths:** $35 undercuts Thinkific ($36–149). vs Teachable: Starter is $29 but only 100 students + 7.5% fee; ClassroomIO offers 10K students and no platform fee (external payments). Open source/self-host.
+
+### Side-by-Side: Entry Paid Tier
+
+| | Teachable | Thinkific | ClassroomIO |
+|---|-----------|-----------|-------------|
+| **Entry paid** | $29 (Starter) | $36 (Basic) | $35 (Early Adopter) |
+| **Students** | 100 | 10K | 10K |
+| **Transaction fee** | 7.5% | 0% | N/A (external) |
+| **Products/courses** | 1 | Unlimited | Unlimited |
+| **Custom branding** | Growth $139 | Grow $149 | Included |
+
+ClassroomIO's $35 tier matches Thinkific's student limit (10K) and undercuts their price, while offering far more students than Teachable Starter (100) at a similar price.
+
+---
+
+## 2. Feature Gap Analysis
+
+### High Priority (Needed to Compete)
+
+| Feature | Teachable | Thinkific | ClassroomIO | Gap |
+|---------|-----------|-----------|-------------|-----|
+| **Memberships / recurring billing** | ✅ Pro+ | ✅ Grow+ | ❌ | Defer until payment processing (future) |
+| **Course bundles** | ✅ | ✅ Start+ | ❌ | Common for upsells |
+| **Coupons & promotions** | ✅ | ✅ All paid | ✅ Discount % only | Need code-based coupons |
+| **Drip content / scheduled release** | ✅ | ✅ | ❌ | Essential for cohort-style and evergreen courses |
+| **Affiliate program** | ✅ | ✅ | ❌ | Major revenue driver for many creators |
+
+### Medium Priority (Differentiation)
+
+| Feature | Teachable | Thinkific | ClassroomIO | Gap |
+|---------|-----------|-----------|-------------|-----|
+| **Quizzes & assessments** | ✅ | ✅ | ✅ Exercises | Good—ensure parity |
+| **Certificates** | ✅ | ✅ Grow+ | ✅ EA | Good |
+| **Live lessons / webinars** | ✅ Pro+ | ✅ Grow+ | ❌ | Roadmap candidate |
+| **Email marketing** | ✅ Basic+ | ✅ | ❌ | Consider integrations (e.g., Resend, Mailchimp) |
+| **Analytics & reporting** | ✅ Pro+ | ✅ | Partial (student analytics) | Expand: revenue, completion, engagement |
+| **Course templates / cloning** | ✅ | ✅ | Roadmap | Accelerate |
+| **Forms (pre-enrollment)** | ✅ | ✅ | Roadmap | Align with roadmap |
+| **Communities** | ✅ | ✅ (1–3+ per plan) | ✅ Forum/Q&A | Thinkific gates by tier |
+| **Product bundles** | ✅ | ✅ Grow+ | ❌ | Course bundles needed |
+
+### Strengths ClassroomIO Can Emphasize
+
+| Feature | ClassroomIO Advantage |
+|---------|------------------------|
+| **AI course builder** | Differentiator—Teachable/Thinkific have limited AI |
+| **Open source & self-host** | Unique for serious creators who want control |
+| **Price** | $35 vs $49–119 is compelling |
+| **Student limit** | 10K on paid tier vs often limited elsewhere |
+| **Forum / community** | Built-in Q&A; competitors often charge for communities |
+| **Multi-teacher / org structure** | Bootcamp-friendly from day one |
+
+---
+
+## 3. Recommended Pricing Structure
+
+### Option A: Keep Simple, Add Value
+
+Retain 3 tiers but refine naming and feature clarity:
+
+| Tier | Price | Target |
+|------|-------|--------|
+| **Starter** (was Basic) | $0 | Hobby, testing, small classes |
+| **Growth** (was Early Adopter) | $39/mo or $390/yr | Serious creators, bootcamps |
+| **Enterprise** | Custom | Large orgs, custom domain, SLA |
+
+**Changes:**
+- Raise Growth to **$39** to sit between Teachable Builder ($69) and Starter ($29); undercuts Thinkific Start ($74).
+- Emphasize "unlimited collaborators" and "10K students" as key differentiators.
+- Add 1–2 high-value features to Growth before raising price (e.g., drip content or native payments).
+
+### Option B: 4-Tier Structure (Teachable/Thinkific Style)
+
+| Tier | Monthly | Target |
+|------|---------|--------|
+| **Free** | $0 | 20 students, branding |
+| **Starter** | $29 | Competes with Teachable Starter; 500 students |
+| **Growth** | $69–74 | 10K students, custom branding, matches Thinkific Start |
+| **Enterprise** | Custom | Unlimited, custom domain, SLA |
+
+**Rationale:**
+- Free for acquisition.
+- Starter at $29 matches Teachable entry (but ClassroomIO can offer more students).
+- Growth undercuts Thinkific Start ($74) and Teachable Builder ($69) while offering 10K students.
+
+### Option C: Transaction Fee Model (Teachable-Style)
+
+- **Free:** $0, 5% transaction fee on course sales.
+- **Pro:** $39–49/mo, 0% transaction fee.
+- **Enterprise:** Custom.
+
+**Pros:** Lower barrier for new creators; revenue scales with customer success.  
+**Cons:** Requires native payments; more complex billing.
+
+---
+
+## 4. Recommended Feature Roadmap (Prioritized)
+
+### Phase 1: Foundation (0–3 months)
+
+1. **Drip content / scheduled release** (see [FEATURE_SPECIFICATIONS.md](./FEATURE_SPECIFICATIONS.md))
+   - Unlock lessons by date or by completion of prior lessons.
+   - Essential for cohort and evergreen courses.
+   - Works with existing `lesson.isUnlocked`, `groupmember.createdAt`.
+
+2. **Coupon codes**
+   - Code-based discounts (e.g. `LAUNCH50` = 50% off).
+   - Expiration dates, usage limits.
+   - 100% off → auto-enroll; partial → pass code to external payment link.
+
+### Phase 2: Growth Features (3–6 months)
+
+4. **Course bundles**
+   - Sell multiple courses as a package; enroll grants access to all.
+
+5. **Forms** (from roadmap)
+   - Pre-enrollment forms, surveys, application forms.
+
+6. **Course templates / cloning**
+   - Clone courses; share templates across orgs.
+
+7. **Analytics expansion**
+   - Enrollment/completion over time, lesson-level completion rates, CSV export.
+
+### Phase 3: Differentiation (6–12 months)
+
+8. **Affiliate program**
+   - Track referrals; attribution for educator payouts.
+
+9. **Live lessons / webinars**
+   - Polish `callUrl` + `lessonAt`; optional Zoom/Meet integration.
+
+10. **Messenger delivery** (from roadmap)
+    - Slack/Discord/Telegram bots for lesson delivery.
+
+11. **Course batches & pathways**
+    - Cohorts within course; pathway = series of courses + certificate.
+
+---
+
+## 5. Messaging & Positioning
+
+### Current Pain Points vs Competitors
+
+| Pain Point | ClassroomIO Angle |
+|------------|-------------------|
+| High fees (Teachable 5%, Thinkific $49+) | "No transaction fees on paid plan. $35/mo." |
+| Locked-in, closed platform | "Open source. Self-host if you want full control." |
+| Generic AI tools | "AI course builder built for educators." |
+| Community as add-on | "Forum & Q&A included—no extra charge." |
+| Bootcamp/corporate use case | "Built for bootcamps and teams from day one." |
+
+### Suggested Pricing Page Copy
+
+- **Headline:** "Pricing that scales with your students, not your budget."
+- **Free tier:** "Start teaching today. No credit card. 20 students, unlimited courses."
+- **Growth tier:** "For bootcamps and growing programs. 10K students, custom branding, AI, certificates."
+- **Enterprise:** "Custom domain, unlimited students, dedicated support."
+
+---
+
+## 6. Summary: Action Items
+
+### Pricing
+
+- [ ] Decide between **Option A** (simple, $39) or **Option B** (4-tier).
+- [ ] Keep annual discount (≈2 months free) for consistency.
+- [ ] Payment processing deferred; all features work with external links.
+
+### Features (Build Order)
+
+See [FEATURE_SPECIFICATIONS.md](./FEATURE_SPECIFICATIONS.md) for full specs. Prioritized:
+
+1. Drip content / scheduled release.
+2. Coupon codes.
+3. Course cloning.
+4. Forms (from roadmap).
+5. Analytics expansion.
+6. Course bundles.
+7. Affiliate program.
+8. Tags, live lessons polish, batches, pathways.
+
+### Documentation
+
+- Update `packages/utils/src/plans/data.json` when plans change.
+- Add plan comparison table to website pricing page.
+- Create "Why ClassroomIO vs Teachable/Thinkific" comparison page for SEO.
+
+---
+
+## 7. Implementation Notes (ClassroomIO Codebase)
+
+### Plan Data Location
+
+- `packages/utils/src/plans/data.json` – plan display data.
+- `packages/utils/src/plans/constants.ts` – feature flags and plan names.
+- Plan enforcement: `hasFeature()` in `packages/utils/src/plans/utils.ts`.
+
+### Course Pricing & Enrollment
+
+- `apps/dashboard/src/lib/features/ui/course-landing-page/components/editor/pricing-form.svelte` – cost, discount, payment link, gift.
+- `apps/dashboard/src/routes/course/[slug]/enroll/+page.server.ts` – `requiresPaymentOrInvite` logic.
+- Add coupon codes: new `metadata.coupons` or `coupon` table; validate at enrollment.
+
+### Drip Content
+
+- Requires lesson-level unlock rules (date-based or completion-based).
+- Schema: `lesson.unlockRule` or `lesson.unlockAfterLessonId` + `lesson.unlockAfterDate`.
+- Course-app would need to check unlock before rendering lesson.
+
+---
+
+*Document updated with Thinkific and Teachable pricing page data (Feb 2025).*
