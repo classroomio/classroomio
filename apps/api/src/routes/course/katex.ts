@@ -5,9 +5,11 @@ import { z } from 'zod';
 
 export const katexRouter = new Hono().get('/', async (c: Context) => {
   try {
-    const original = c.req.raw.url;
+    const url = new URL(c.req.url);
 
-    const latexString = original.split('?')[1].replaceAll('&plus;', '+').replaceAll('&space;', '');
+    const decoded = decodeURIComponent(url.search.startsWith('?') ? url.search.slice(1) : '');
+
+    const latexString = decoded.replaceAll('&plus;', '+').replaceAll('&space;', ' ');
 
     const html = katex.renderToString(latexString, {
       output: 'mathml',
