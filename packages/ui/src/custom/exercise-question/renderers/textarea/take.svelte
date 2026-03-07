@@ -6,7 +6,7 @@
 
   let {
     question,
-    answer = '',
+    answer,
     disabled = false,
     labels,
     onAnswerChange = () => {}
@@ -15,12 +15,12 @@
   const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
     getExerciseQuestionLabel(labels, key, fallback);
 
-  const content = $derived(String(answer ?? ''));
+  const content = $derived(answer?.type === 'TEXTAREA' ? answer.text : String(answer ?? ''));
 
   function handleEditorReady(editor: Editor) {
     if (!editor?.view?.dom || disabled) return;
     const blurHandler = () => {
-      if (!editor.isDestroyed) onAnswerChange(String(editor.getHTML() ?? ''));
+      if (!editor.isDestroyed) onAnswerChange({ type: 'TEXTAREA', text: String(editor.getHTML() ?? '') });
     };
     editor.view.dom.addEventListener('blur', blurHandler);
     onDestroy(() => {
@@ -36,7 +36,7 @@
     showToolBar={!disabled}
     placeholder={label('textarea.take.placeholder')}
     editorClass="ui:h-40"
-    onContentChange={(nextContent) => onAnswerChange(String(nextContent ?? ''))}
+    onContentChange={(nextContent) => onAnswerChange({ type: 'TEXTAREA', text: String(nextContent ?? '') })}
     onEditorReady={handleEditorReady}
   />
 </div>

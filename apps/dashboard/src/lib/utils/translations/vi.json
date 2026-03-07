@@ -1013,9 +1013,14 @@
               },
               "summary": {
                 "heading": "Tóm tắt",
-                "question_chart": "Biểu đồ câu hỏi"
+                "question_chart": "Biểu đồ câu hỏi",
+                "responses": "Phản hồi",
+                "no_responses": "Chưa có phản hồi nào",
+                "other": "Khác"
               },
-              "loading_submissions": "Đang tải nội dung gửi..."
+              "loading_submissions": "Đang tải nội dung gửi...",
+              "empty_title": "Chưa có bài nộp nào",
+              "empty_description": "Bài nộp sẽ xuất hiện ở đây khi học sinh hoàn thành bài tập này."
             },
             "view_mode": {
               "no_question": "Không có câu hỏi nào được thêm vào cho bài tập này",
@@ -1037,7 +1042,9 @@
               "empty_edit_hint_prefix": "Bấm vào ",
               "empty_edit_hint_suffix": " nút để thêm.",
               "answers_required": "Vui lòng cung cấp ít nhất một câu trả lời trước khi gửi.",
-              "checking_submission": "Đang kiểm tra nội dung gửi của bạn..."
+              "checking_submission": "Đang kiểm tra nội dung gửi của bạn...",
+              "answer_required": "Vui lòng trả lời câu hỏi này trước khi tiếp tục.",
+              "instructor_feedback": "Phản hồi của giảng viên"
             },
             "edit_mode": {
               "delete_modal": "Xóa bài tập",
@@ -1154,7 +1161,11 @@
                 },
                 "take": {
                   "selected_file_label": "Tệp đã chọn",
-                  "upload_button": "Tải lên"
+                  "upload_button": "Tải lên",
+                  "upload_progress": "Đang tải lên...",
+                  "upload_error": "Tải lên không thành công",
+                  "view": "Xem",
+                  "download": "Tải xuống"
                 },
                 "edit": {
                   "accepted_types_placeholder": "Các loại được chấp nhận (ví dụ: pdf, docx)",
@@ -1619,7 +1630,8 @@
     "recent_enrollments": "Đăng ký gần đây",
     "publish_first_course": "Xuất bản khóa học đầu tiên của bạn",
     "publish_first_course_description": "Để theo dõi việc ghi danh, xuất bản một khóa học và mời sinh viên",
-    "publish_course": "Xuất bản khóa học"
+    "publish_course": "Xuất bản khóa học",
+    "items_completed": "Các hạng mục đã hoàn thành"
   },
   "schedule": {
     "title": "Lịch trình của bạn",
@@ -2195,7 +2207,8 @@
         "email_password_disabled": "Đăng nhập email/mật khẩu bị vô hiệu hóa. Vui lòng sử dụng SSO.",
         "email_password_disabled_message": "Đăng nhập email/mật khẩu bị vô hiệu hóa đối với tổ chức này.",
         "google_auth_disabled": "Xác thực Google bị vô hiệu hóa.",
-        "signup_disabled_error": "Đăng ký bị vô hiệu hóa cho tổ chức này. Vui lòng liên hệ với quản trị viên của bạn."
+        "signup_disabled_error": "Đăng ký bị vô hiệu hóa cho tổ chức này. Vui lòng liên hệ với quản trị viên của bạn.",
+        "or_continue_with": "Hoặc tiếp tục với email và mật khẩu"
       },
       "tabs": {
         "general": "chung",

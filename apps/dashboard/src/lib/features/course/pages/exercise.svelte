@@ -1,7 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { Button } from '@cio/ui/base/button';
+  import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import EyeIcon from '@lucide/svelte/icons/eye';
   import PencilIcon from '@lucide/svelte/icons/pencil';
   import { onDestroy, onMount, untrack } from 'svelte';
@@ -29,7 +31,7 @@
   import { courseApi } from '$features/course/api';
   import EditMode from '$features/course/components/exercise/edit-mode.svelte';
   import ViewMode from '$features/course/components/exercise/view-mode.svelte';
-  import Analytics from '$features/course/components/exercise/submissions/index.svelte';
+  import Submissions from '$features/course/components/exercise/submissions/submissions.svelte';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import UpdateDescription from '$features/course/components/exercise/update-description.svelte';
   import { ContentNavigationActions } from '$features/course/components/lesson';
@@ -41,19 +43,39 @@
     getQuestionTypeId,
     getQuestionTypeOptionById
   } from '$features/course/components/exercise/question-type-utils';
+  import type { SubmissionListItem } from '$features/course/utils/types';
+  import { Badge } from '@cio/ui/base/badge';
 
   interface Props {
     exerciseId?: string;
-    goBack?: any;
+    goBack?: () => void;
     isFetching?: boolean;
+    submissions: SubmissionListItem[];
+    mySubmission: SubmissionListItem | null;
   }
 
-  let { exerciseId = $bindable(''), goBack = () => {}, isFetching = false }: Props = $props();
+  let {
+    exerciseId = $bindable(''),
+    goBack = () => {},
+    isFetching = false,
+    submissions,
+    mySubmission
+  }: Props = $props();
+
+  type ExerciseTab = 'questions' | 'submissions';
+
+  function normalizeExerciseTab(tabParam: string | null): ExerciseTab {
+    if (tabParam === 'submissions' || tabParam === 'analytics') {
+      return 'submissions';
+    }
+
+    return 'questions';
+  }
 
   let preview: boolean = $state(false);
   let shouldDeleteExercise = $state(false);
   let isSaving = $state(false);
-  let selectedTab = $state('questions');
+  let selectedTab = $state<ExerciseTab>('questions');
 
   function patchExerciseListItemLocally() {
     const nonDeletedQuestionsCount = ($questionnaire.questions || []).filter((question) => !question.deletedAt).length;
@@ -130,7 +152,7 @@
         patchExerciseListItemLocally();
         snackbar.success('snackbar.exercise.success');
       }
-    } catch (error) {
+    } catch {
       snackbar.error();
     }
     isSaving = false;
@@ -141,21 +163,24 @@
   });
 
   onMount(() => {
-    const tabParam = page.url.searchParams.get('tab');
-    if (tabParam) {
-      selectedTab = tabParam;
-    }
+    selectedTab = normalizeExerciseTab(page.url.searchParams.get('tab'));
   });
 
   $effect(() => {
-    const currentTab = page.url.searchParams.get('tab') || '';
+    const nextTab = normalizeExerciseTab(page.url.searchParams.get('tab'));
+    if (nextTab === untrack(() => selectedTab)) return;
+    selectedTab = nextTab;
+  });
+
+  $effect(() => {
+    const currentTab = page.url.searchParams.get('tab') ?? '';
     // Prevent self-navigation loops: only update URL when it actually changes.
     if (currentTab === selectedTab) return;
 
     untrack(() => {
       const url = new URL(page.url);
       url.searchParams.set('tab', selectedTab);
-      goto(url.pathname + url.search, {
+      goto(resolve(`${url.pathname}${url.search}`, {}), {
         replaceState: true,
         keepFocus: true,
         noScroll: true
@@ -181,7 +206,7 @@
   const isExerciseUnlocked = $derived(exerciseContentItem?.isUnlocked ?? false);
 </script>
 
-<Page.Header>
+<Page.Header isSticky={true} class="min-h-[36px]">
   <Page.HeaderContent>
     <Page.Title>{$questionnaire.title || 'Exercise'}</Page.Title>
   </Page.HeaderContent>
@@ -249,25 +274,42 @@
 <Page.Body>
   {#snippet child()}
     <div class="overflow-x-hidden">
-      {#if $globalStore.isStudent && exerciseId && !isExerciseUnlocked}
-        <Empty
-          title={$t('course.navItem.lessons.content_locked_title')}
-          description={$t('course.navItem.lessons.content_locked_description')}
-          icon={VideoIcon}
-          variant="page"
-          class="text-center"
-        />
-      {:else if selectedTab === 'questions'}
-        <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <UpdateDescription {preview} />
-        </RoleBasedSecurity>
-        {#if !$globalStore.isStudent && !preview}
-          <EditMode bind:shouldDeleteExercise {exerciseId} {goBack} />
+      {#if $globalStore.isStudent}
+        {#if isExerciseUnlocked}
+          <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} {mySubmission} />
         {:else}
-          <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} />
+          <Empty
+            title={$t('course.navItem.lessons.content_locked_title')}
+            description={$t('course.navItem.lessons.content_locked_description')}
+            icon={VideoIcon}
+            variant="page"
+            class="text-center"
+          />
         {/if}
-      {:else if selectedTab === 'submissions'}
-        <Analytics bind:exerciseId />
+      {:else}
+        <UnderlineTabs.Root bind:value={selectedTab} class="mb-4">
+          <UnderlineTabs.List class="grid w-full max-w-xs grid-cols-2">
+            <UnderlineTabs.Trigger value="questions">
+              {$t('course.navItem.lessons.exercises.all_exercises.questions')}
+            </UnderlineTabs.Trigger>
+            <UnderlineTabs.Trigger value="submissions">
+              {$t('course.navItem.lessons.exercises.all_exercises.analytics.submissions')}
+
+              <Badge>{submissions.length}</Badge>
+            </UnderlineTabs.Trigger>
+          </UnderlineTabs.List>
+          <UnderlineTabs.Content value="questions">
+            <UpdateDescription {preview} />
+            {#if !preview}
+              <EditMode bind:shouldDeleteExercise {exerciseId} {goBack} />
+            {:else}
+              <ViewMode {preview} {exerciseId} isFetchingExercise={isFetching} {mySubmission} />
+            {/if}
+          </UnderlineTabs.Content>
+          <UnderlineTabs.Content value="submissions">
+            <Submissions bind:exerciseId {submissions} />
+          </UnderlineTabs.Content>
+        </UnderlineTabs.Root>
       {/if}
     </div>
   {/snippet}

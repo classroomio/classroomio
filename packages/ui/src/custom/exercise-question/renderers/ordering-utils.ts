@@ -1,4 +1,5 @@
-import type { ExerciseAnswerValue, ExerciseQuestionModel, ExerciseQuestionOption } from '@cio/question-types';
+import type { ExerciseQuestionModel, ExerciseQuestionOption } from '@cio/question-types';
+import type { AnswerData } from '@cio/question-types';
 
 export interface OrderingRenderItem {
   id: string;
@@ -65,12 +66,23 @@ export function toOrderingSettings(items: OrderingRenderItem[]): string[] {
   return items.map((item) => item.label);
 }
 
-export function applyOrderingAnswer(items: OrderingRenderItem[], answer: ExerciseAnswerValue): OrderingRenderItem[] {
-  if (!Array.isArray(answer) || answer.length === 0) {
+function getOrderedValues(answer: AnswerData | string[] | null | undefined): string[] {
+  if (answer && typeof answer === 'object' && 'type' in answer && answer.type === 'ORDERING') {
+    return Array.isArray(answer.orderedValues) ? answer.orderedValues : [];
+  }
+  return Array.isArray(answer) ? answer : [];
+}
+
+export function applyOrderingAnswer(
+  items: OrderingRenderItem[],
+  answer: AnswerData | string[] | null | undefined
+): OrderingRenderItem[] {
+  const orderedValues = getOrderedValues(answer);
+  if (orderedValues.length === 0) {
     return items;
   }
 
-  const answerTokens = answer.map((entry) => normalizeToken(entry)).filter(Boolean);
+  const answerTokens = orderedValues.map((entry) => normalizeToken(entry)).filter(Boolean);
   if (answerTokens.length === 0) {
     return items;
   }

@@ -2,9 +2,9 @@
   import type { ExerciseQuestionRendererProps } from '@cio/question-types';
   import { Editor } from '../../../editor';
 
-  let { question, answer = '' }: ExerciseQuestionRendererProps = $props();
+  let { question, answer = null }: ExerciseQuestionRendererProps = $props();
 
-  const content = $derived(String(answer ?? ''));
+  const content = $derived(answer?.type === 'TEXTAREA' ? answer.text : '');
 </script>
 
 <div class="ui:space-y-2">

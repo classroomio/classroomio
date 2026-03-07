@@ -2,6 +2,7 @@ import { getQuestionAnswerKey, getQuestionTypeKey, questionTypeSupportsOptions }
 
 import { QUESTION_TYPE_KEY } from '@cio/question-types';
 import type { Question } from '$features/course/types';
+import type { QuestionnaireMetaData } from './store';
 import type { TExerciseUpdate } from '@cio/utils/validation/exercise';
 import { toggleConfetti } from '$features/ui/confetti/store';
 
@@ -49,8 +50,8 @@ export function wasCorrectAnswerSelected(currentQuestion: Question, answers, isF
 export function getPropsForQuestion(
   questions: Question[],
   question: Question,
-  questionnaireMetaData,
-  questionIndex,
+  questionnaireMetaData: QuestionnaireMetaData,
+  questionIndex: number,
   onSubmit,
   onPrevious,
   preview

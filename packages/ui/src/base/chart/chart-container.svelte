@@ -2,7 +2,7 @@
   import { cn, type WithElementRef } from '../../tools';
   import type { HTMLAttributes } from 'svelte/elements';
   import ChartStyle from './chart-style.svelte';
-  import { setChartContext, type ChartConfig } from './chart-utils.js';
+  import { setChartContext, type ChartConfig } from './chart-utils';
 
   const uid = $props.id();
 

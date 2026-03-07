@@ -7,11 +7,22 @@
   import { profile } from '$lib/utils/store/user';
   import { coursesApi } from '$features/course/api';
 
-  let totalCompleted = $derived(coursesApi.enrolledCourses.reduce((acc, cur) => acc + (cur.progressRate || 0), 0));
+  let totalCompleted = $derived(
+    coursesApi.enrolledCourses.reduce((acc, cur) => {
+      const exercises =
+        'exercisesCompleted' in cur && typeof cur.exercisesCompleted === 'number' ? cur.exercisesCompleted : 0;
+      return acc + (cur.progressRate || 0) + exercises;
+    }, 0)
+  );
 
-  let totalLessons = $derived(coursesApi.enrolledCourses.reduce((acc, cur) => acc + (cur.lessonCount || 0), 0));
+  let totalLessons = $derived(
+    coursesApi.enrolledCourses.reduce((acc, cur) => {
+      const exercises = 'exerciseCount' in cur && typeof cur.exerciseCount === 'number' ? cur.exerciseCount : 0;
+      return acc + (cur.lessonCount || 0) + exercises;
+    }, 0)
+  );
 
-  let progressPercentage = $derived(Math.round((totalCompleted / totalLessons) * 100) || 0);
+  let progressPercentage = $derived(totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0);
 
   $effect(() => {
     if (!$profile.id || !$currentOrg.id) return;
@@ -63,7 +74,7 @@
           {#if totalLessons > 0}
             <p class="text-xs font-normal text-[#656565] dark:text-white">
               {totalCompleted}/{totalLessons}
-              {$t('dashboard.lessons_completed')}
+              {$t('dashboard.items_completed')}
             </p>
           {:else}
             <p class="text-xs font-normal text-[#656565] dark:text-white">

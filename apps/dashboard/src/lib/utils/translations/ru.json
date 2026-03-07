@@ -1013,9 +1013,14 @@
               },
               "summary": {
                 "heading": "Резюме",
-                "question_chart": "Таблицы вопросов"
+                "question_chart": "Таблицы вопросов",
+                "responses": "Ответы",
+                "no_responses": "Пока нет ответов",
+                "other": "Другое"
               },
-              "loading_submissions": "Загрузка материалов..."
+              "loading_submissions": "Загрузка материалов...",
+              "empty_title": "Пока нет заявок",
+              "empty_description": "Представленные материалы появятся здесь, когда учащиеся выполнят это упражнение."
             },
             "view_mode": {
               "no_question": "Для этого упражнения не добавлено ни одного вопроса.",
@@ -1037,7 +1042,9 @@
               "empty_edit_hint_prefix": "Нажмите кнопку ",
               "empty_edit_hint_suffix": " кнопка для добавления.",
               "answers_required": "Перед отправкой дайте хотя бы один ответ.",
-              "checking_submission": "Проверка вашей заявки..."
+              "checking_submission": "Проверка вашей заявки...",
+              "answer_required": "Пожалуйста, ответьте на этот вопрос, прежде чем продолжить.",
+              "instructor_feedback": "Отзывы инструктора"
             },
             "edit_mode": {
               "delete_modal": "Удалить упражнение",
@@ -1154,7 +1161,11 @@
                 },
                 "take": {
                   "selected_file_label": "Выбранный файл",
-                  "upload_button": "Загрузить"
+                  "upload_button": "Загрузить",
+                  "upload_progress": "Загрузка...",
+                  "upload_error": "Загрузка не удалась",
+                  "view": "Посмотреть",
+                  "download": "Скачать"
                 },
                 "edit": {
                   "accepted_types_placeholder": "Принимаемые типы (например, pdf, docx)",
@@ -1619,7 +1630,8 @@
     "recent_enrollments": "Недавние регистрации",
     "publish_first_course": "Опубликуйте свой первый курс",
     "publish_first_course_description": "Чтобы отслеживать зачисления, опубликуйте курс и пригласите студентов.",
-    "publish_course": "Опубликовать курс"
+    "publish_course": "Опубликовать курс",
+    "items_completed": "Объекты завершены"
   },
   "schedule": {
     "title": "Ваше расписание",
@@ -2195,7 +2207,8 @@
         "email_password_disabled": "Вход по электронной почте/паролю отключен. Пожалуйста, используйте единый вход.",
         "email_password_disabled_message": "Для этой организации отключен вход по электронной почте и паролю.",
         "google_auth_disabled": "Аутентификация Google отключена.",
-        "signup_disabled_error": "Регистрация для этой организации отключена. Пожалуйста, свяжитесь с вашим администратором."
+        "signup_disabled_error": "Регистрация для этой организации отключена. Пожалуйста, свяжитесь с вашим администратором.",
+        "or_continue_with": "Или продолжите, используя адрес электронной почты и пароль."
       },
       "tabs": {
         "general": "Общий",

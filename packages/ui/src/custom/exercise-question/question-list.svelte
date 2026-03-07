@@ -1,15 +1,11 @@
 <script lang="ts">
-  import type {
-    ExerciseAnswerValue,
-    ExerciseQuestionListRenderContract,
-    ExerciseQuestionModel
-  } from '@cio/question-types';
+  import type { AnswerData, ExerciseQuestionListRenderContract, ExerciseQuestionModel } from '@cio/question-types';
   import { getExerciseQuestionContractKey } from '@cio/question-types';
   import QuestionRenderer from './question-renderer.svelte';
 
   interface Props {
     contract: ExerciseQuestionListRenderContract;
-    onAnswerChange?: (question: ExerciseQuestionModel, answer: ExerciseAnswerValue) => void;
+    onAnswerChange?: (question: ExerciseQuestionModel, answer: AnswerData) => void;
     onQuestionChange?: (question: ExerciseQuestionModel, updatedQuestion: ExerciseQuestionModel) => void;
     itemClass?: string;
     showContainer?: boolean;
@@ -32,6 +28,8 @@
         mode: contract.mode,
         question,
         answer: contract.answersByKey?.[questionKey],
+        submissions: contract.submissions,
+        maxSubmissionItems: contract.maxSubmissionItems,
         disabled: contract.disabled,
         labels: contract.labels,
         onImageUpload: contract.onImageUpload,

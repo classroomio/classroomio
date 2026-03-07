@@ -11,6 +11,7 @@
 
   import { Chip } from '@cio/ui/custom/chip';
   import MarkExerciseModal from '$features/course/components/exercise/mark-exercise-modal.svelte';
+  import { STATUS } from '$features/course/components/exercise/constants';
   import { onMount } from 'svelte';
 
   interface Props {
@@ -112,56 +113,6 @@
     goto(page.url.pathname);
   }
 
-  // Via dialog
-  async function updateStatus({
-    submissionId,
-    prevStatusId,
-    nextStatusId,
-    total
-  }: {
-    submissionId: string;
-    prevStatusId: number;
-    nextStatusId: number;
-    total: number;
-  }) {
-    if (!canTransitionBoardStatus(prevStatusId, nextStatusId)) {
-      snackbar.error('course.navItem.submissions.workflow.invalid_transition');
-      return;
-    }
-
-    const prevIdx = prevStatusId - 1;
-    const nextIdx = nextStatusId - 1;
-    const prevItems = sections[prevIdx]?.items ?? [];
-    const found = prevItems.find((item) => item.id === submissionId);
-    const itemToWithNewStatus = found ? { ...found, statusId: nextStatusId } : undefined;
-
-    // Remove from current column and add to new column (immutable update for reactivity)
-    sections = sections.map((section, i) => {
-      if (i === prevIdx) {
-        return { ...section, items: prevItems.filter((item) => item.id !== submissionId) };
-      }
-      if (i === nextIdx && itemToWithNewStatus) {
-        return { ...section, items: [...section.items, itemToWithNewStatus] };
-      }
-      return section;
-    });
-
-    if (itemToWithNewStatus) {
-      submissionIdData = {
-        ...submissionIdData,
-        [itemToWithNewStatus.id]: {
-          ...submissionIdData[itemToWithNewStatus.id],
-          statusId: nextStatusId
-        }
-      };
-
-      await submissionApi.update(courseId, itemToWithNewStatus.id, {
-        statusId: nextStatusId,
-        total
-      });
-    }
-  }
-
   async function handleDeleteSubmission(id: string, statusId: number) {
     const sectionIdx = statusId - 1;
     sections = sections.map((section, i) =>
@@ -183,40 +134,66 @@
     handleModalClose();
   }
 
-  async function handleSave(submission: { questionAnswerByPoint: any; questionAnswers: any; feedback: any }) {
+  async function handleSave(submission: {
+    id?: string;
+    questionAnswerByPoint: Record<string, string | number>;
+    feedback?: string;
+  }) {
     isSaving = true;
-    const { questionAnswerByPoint, questionAnswers, feedback } = submission;
+    const { questionAnswerByPoint, feedback } = submission;
+    const subId = submission.id ?? submissionId;
 
-    let totalPoints = 0;
+    const answers = Object.entries(questionAnswerByPoint ?? {}).map(([questionId, point]) => ({
+      questionId: Number(questionId),
+      points: Number(point)
+    }));
+    const total = answers.reduce((sum, { points }) => sum + points, 0);
 
-    for (const questionId in questionAnswerByPoint) {
-      if (Object.prototype.hasOwnProperty.call(questionAnswerByPoint, questionId)) {
-        const questionAnswer = questionAnswers.find(
-          (answer: { questionId: string }) => answer.questionId == questionId
-        );
-        const point = questionAnswerByPoint[questionId];
-
-        totalPoints += parseInt(point, 10);
-
-        await submissionApi.updateAnswer(courseId, submissionId, {
-          questionId: Number(questionId),
-          points: Number(point),
-          answer: questionAnswer?.answer
-        });
-
-        if (!submissionApi.success) {
-          snackbar.error(`snackbar.something`);
-          return;
-        }
-      }
-    }
-
-    await submissionApi.update(courseId, submissionId, {
-      total: totalPoints,
-      feedback: feedback
+    await submissionApi.updateGrades(courseId, subId, {
+      answers,
+      total,
+      feedback,
+      statusId: STATUS.GRADED
     });
 
-    snackbar.success('snackbar.submissions.success.grading');
+    if (!submissionApi.success) {
+      snackbar.error('snackbar.something');
+      isSaving = false;
+      return;
+    }
+
+    // Backend auto-sets status to Graded; move card to Graded column and sync submissionIdData
+    const gradedStatusId = STATUS.GRADED;
+    const prevSection = sections.find((s) => s.items.some((item) => item.id === subId));
+    const prevStatusId = prevSection?.id ?? gradedStatusId;
+
+    if (prevStatusId !== gradedStatusId) {
+      const prevIdx = prevStatusId - 1;
+      const nextIdx = gradedStatusId - 1;
+      const prevItems = sections[prevIdx]?.items ?? [];
+      const found = prevItems.find((item) => item.id === subId);
+      const itemToWithNewStatus = found ? { ...found, statusId: gradedStatusId } : undefined;
+
+      sections = sections.map((section, i) => {
+        if (i === prevIdx) {
+          return { ...section, items: prevItems.filter((item) => item.id !== subId) };
+        }
+        if (i === nextIdx && itemToWithNewStatus) {
+          return { ...section, items: [...section.items, itemToWithNewStatus] };
+        }
+        return section;
+      });
+    }
+
+    submissionIdData = {
+      ...submissionIdData,
+      [subId]: {
+        ...submissionIdData[subId],
+        statusId: gradedStatusId,
+        questionAnswerByPoint: submission.questionAnswerByPoint ?? submissionIdData[subId]?.questionAnswerByPoint,
+        feedback: feedback ?? submissionIdData[subId]?.feedback
+      }
+    };
 
     isSaving = false;
   }
@@ -227,7 +204,6 @@
   onClose={handleModalClose}
   data={submissionIdData[submissionId] || {}}
   {handleSave}
-  {updateStatus}
   deleteSubmission={handleDeleteSubmission}
   bind:isGradeWithAI
   {isSaving}

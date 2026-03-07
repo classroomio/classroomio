@@ -8,7 +8,7 @@
 
   let {
     question,
-    answer = [],
+    answer = null,
     disabled = false,
     labels,
     onAnswerChange = () => {}
@@ -22,15 +22,8 @@
   }
 
   const selectedOptionValues = $derived.by(() => {
-    if (Array.isArray(answer)) {
-      return new Set(answer.map((entry) => String(entry)));
-    }
-
-    if (answer === undefined || answer === null || answer === '') {
-      return new Set<string>();
-    }
-
-    return new Set([String(answer)]);
+    const optionIds = answer?.type === 'CHECKBOX' ? answer.optionIds : [];
+    return new Set(optionIds.map((id) => String(id)));
   });
 
   const optionsHaveImages = $derived(hasOptionImages(question.options));
@@ -48,7 +41,17 @@
       nextSelectedValues.add(nextValue);
     }
 
-    onAnswerChange(Array.from(nextSelectedValues));
+    const options = question.options ?? [];
+    const optionIds = Array.from(nextSelectedValues)
+      .map((val) => {
+        const matched = options.find((opt, i) => getOptionValue(opt, i) === val);
+        const id = matched?.id ?? val;
+        const num = Number(id);
+        return Number.isNaN(num) ? undefined : num;
+      })
+      .filter((id): id is number => id !== undefined);
+
+    onAnswerChange({ type: 'CHECKBOX', optionIds });
   }
 </script>
 

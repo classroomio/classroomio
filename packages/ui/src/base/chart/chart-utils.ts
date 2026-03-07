@@ -3,6 +3,12 @@ import { getContext, setContext, type Component, type ComponentProps, type Snipp
 
 export const THEMES = { light: '', dark: '.dark' } as const;
 
+export type ChartLegendItem = {
+  label: string;
+  color: string;
+  value?: number;
+};
+
 export type ChartConfig = {
   [k in string]: {
     label?: string;

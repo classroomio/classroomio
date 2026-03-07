@@ -12,19 +12,22 @@ type Renderer = string;
 const FALLBACK_RENDERER: ExerciseRendererDefinition<Renderer> = {
   edit: 'fallback-edit',
   take: 'fallback-take',
-  preview: 'fallback-preview'
+  preview: 'fallback-preview',
+  submission: 'fallback-submission'
 };
 
 const REGISTRY: ExerciseRendererRegistry<Renderer> = {
   [QUESTION_TYPE_KEY.RADIO]: {
     edit: 'radio-edit',
     take: 'radio-take',
-    preview: 'radio-preview'
+    preview: 'radio-preview',
+    submission: 'radio-submission'
   },
   [QUESTION_TYPE_KEY.ORDERING]: {
     edit: 'ordering-edit',
     take: 'ordering-take',
-    preview: 'ordering-preview'
+    preview: 'ordering-preview',
+    submission: 'ordering-submission'
   }
 };
 
@@ -43,6 +46,9 @@ describe('renderer registry helpers', () => {
     expect(getRendererForMode(REGISTRY, QUESTION_TYPE_KEY.RADIO, 'edit', FALLBACK_RENDERER)).toBe('radio-edit');
     expect(getRendererForMode(REGISTRY, QUESTION_TYPE_KEY.RADIO, 'take', FALLBACK_RENDERER)).toBe('radio-take');
     expect(getRendererForMode(REGISTRY, QUESTION_TYPE_KEY.RADIO, 'preview', FALLBACK_RENDERER)).toBe('radio-preview');
+    expect(getRendererForMode(REGISTRY, QUESTION_TYPE_KEY.RADIO, 'submission', FALLBACK_RENDERER)).toBe(
+      'radio-submission'
+    );
   });
 
   it("resolves 'view' mode to the 'take' renderer", () => {
@@ -53,6 +59,9 @@ describe('renderer registry helpers', () => {
     expect(getRendererForMode(REGISTRY, QUESTION_TYPE_KEY.LINK, 'edit', FALLBACK_RENDERER)).toBe('fallback-edit');
     expect(getRendererForMode(REGISTRY, QUESTION_TYPE_KEY.LINK, 'take', FALLBACK_RENDERER)).toBe('fallback-take');
     expect(getRendererForMode(REGISTRY, QUESTION_TYPE_KEY.LINK, 'preview', FALLBACK_RENDERER)).toBe('fallback-preview');
+    expect(getRendererForMode(REGISTRY, QUESTION_TYPE_KEY.LINK, 'submission', FALLBACK_RENDERER)).toBe(
+      'fallback-submission'
+    );
     expect(getRendererForMode(REGISTRY, QUESTION_TYPE_KEY.LINK, 'view', FALLBACK_RENDERER)).toBe('fallback-take');
   });
 });

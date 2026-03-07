@@ -29,6 +29,8 @@ export async function updateUser(userId: string, data: Partial<TProfile>) {
 ```
 
 ### Step 3: Route
+Routes must return a single type (or a response shape whose `data` is a single type). If multiple shapes are needed, use separate endpoints or a keyed structure (e.g. `data` indexed by a key) so clients get one type per endpoint or key. Do not return a union of shapes from one route based on query parameters.
+
 ```typescript
 // apps/api/src/routes/account/account.ts
 export const accountRouter = new Hono().put(
@@ -130,6 +132,8 @@ Pattern:
 
 For response shapes that need a small normalization (e.g. API returns `JSONValue`, app needs `Record<string, number>`), derive a normalized type in `types.ts` from the success `data` type (e.g. `Omit<Data, 'roleMapping'> & { roleMapping: Record<string, number> }`).
 
+**Do not export custom types from `apps/api/src/rpc-types.ts`.** Only re-export Hono client types (e.g. `InferRequestType`, `InferResponseType`) and the typed client (`Client`, `hcWithType`). All feature-specific types belong in the dashboard's feature `utils/types.ts`, inferred from the API.
+
 ### API Class Pattern
 API classes handle all logic; components should be thin.
 
@@ -213,16 +217,17 @@ Use `.server.ts` files for server-side code to isolate API keys.
 - Call RPC client directly in server files (use `.server.ts` classes)
 - Add unnecessary null checks for `user` when `authMiddleware` is present
 - Write plain English strings in components
+- **Use inline type imports** (e.g. `import('Package').Type` in type positions) — use top-level `import type` instead
 
 ## Checklist for New Routes
 
 - [ ] **Validation**: Schema in `packages/utils/src/validation/{entity}/`
 - [ ] **Query**: Pure functions in `packages/db/src/queries/{domain}/`
 - [ ] **Service**: Business logic in `apps/api/src/services/`
-- [ ] **Route**: Handler in `apps/api/src/routes/{domain}/`
+- [ ] **Route**: Handler in `apps/api/src/routes/{domain}/` (each route returns a single type)
 - [ ] **Registration**: Export and register in `app.ts`
 - [ ] **Build**: Run `pnpm --filter @cio/api build`
-- [ ] **Frontend Types**: Request types in `apps/dashboard/src/lib/features/{domain}/utils/types.ts`
+- [ ] **Frontend Types**: Request types in `apps/dashboard/src/lib/features/{domain}/utils/types.ts` (infer from API; do not import from `rpc-types`)
 - [ ] **Frontend API**: API class in `apps/dashboard/src/lib/features/{domain}/api/`
 
 ## Common Patterns

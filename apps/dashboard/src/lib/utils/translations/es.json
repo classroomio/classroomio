@@ -1013,9 +1013,14 @@
               },
               "summary": {
                 "heading": "Resumen",
-                "question_chart": "Cuadros de preguntas"
+                "question_chart": "Cuadros de preguntas",
+                "responses": "Respuestas",
+                "no_responses": "Aún no hay respuestas",
+                "other": "Otro"
               },
-              "loading_submissions": "Cargando envíos..."
+              "loading_submissions": "Cargando envíos...",
+              "empty_title": "Aún no hay presentaciones",
+              "empty_description": "Los envíos aparecerán aquí cuando los estudiantes completen este ejercicio."
             },
             "view_mode": {
               "no_question": "No se agregó ninguna pregunta para este ejercicio.",
@@ -1037,7 +1042,9 @@
               "empty_edit_hint_prefix": "Haga clic en ",
               "empty_edit_hint_suffix": " botón para agregar.",
               "answers_required": "Proporcione al menos una respuesta antes de enviar.",
-              "checking_submission": "Comprobando tu envío..."
+              "checking_submission": "Comprobando tu envío...",
+              "answer_required": "Por favor responda esta pregunta antes de continuar.",
+              "instructor_feedback": "Comentarios del instructor"
             },
             "edit_mode": {
               "delete_modal": "Eliminar ejercicio",
@@ -1154,7 +1161,11 @@
                 },
                 "take": {
                   "selected_file_label": "Archivo seleccionado",
-                  "upload_button": "Subir"
+                  "upload_button": "Subir",
+                  "upload_progress": "Subiendo...",
+                  "upload_error": "Error al subir",
+                  "view": "Ver",
+                  "download": "Descargar"
                 },
                 "edit": {
                   "accepted_types_placeholder": "Tipos aceptados (por ejemplo, pdf, docx)",
@@ -1619,7 +1630,8 @@
     "recent_enrollments": "Inscripciones recientes",
     "publish_first_course": "Publica tu primer curso",
     "publish_first_course_description": "Para realizar un seguimiento de las inscripciones, publicar un curso e invitar a estudiantes",
-    "publish_course": "Publicar curso"
+    "publish_course": "Publicar curso",
+    "items_completed": "Artículos completados"
   },
   "schedule": {
     "title": "Tu horario",
@@ -2195,7 +2207,8 @@
         "email_password_disabled": "El inicio de sesión por correo electrónico/contraseña está deshabilitado. Utilice SSO.",
         "email_password_disabled_message": "El inicio de sesión con correo electrónico/contraseña está deshabilitado para esta organización.",
         "google_auth_disabled": "La autenticación de Google está deshabilitada.",
-        "signup_disabled_error": "El registro está deshabilitado para esta organización. Por favor contacte a su administrador."
+        "signup_disabled_error": "El registro está deshabilitado para esta organización. Por favor contacte a su administrador.",
+        "or_continue_with": "O continuar con correo electrónico y contraseña"
       },
       "tabs": {
         "general": "generales",

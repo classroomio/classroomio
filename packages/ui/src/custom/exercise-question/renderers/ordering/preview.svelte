@@ -2,13 +2,13 @@
   import { getExerciseQuestionLabel, type ExerciseQuestionRendererProps } from '@cio/question-types';
   import { applyOrderingAnswer, areSameOrdering, getOrderingItemsFromQuestion } from '../ordering-utils';
 
-  let { question, answer = [], labels }: ExerciseQuestionRendererProps = $props();
+  let { question, answer = null, labels }: ExerciseQuestionRendererProps = $props();
   const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
     getExerciseQuestionLabel(labels, key, fallback);
 
   const expectedOrder = $derived.by(() => getOrderingItemsFromQuestion(question));
   const submittedOrder = $derived.by(() => applyOrderingAnswer(expectedOrder, answer));
-  const hasSubmittedAnswer = $derived(Array.isArray(answer) && answer.length > 0);
+  const hasSubmittedAnswer = $derived(answer?.type === 'ORDERING' ? answer.orderedValues.length > 0 : false);
   const isSubmittedOrderCorrect = $derived(areSameOrdering(expectedOrder, submittedOrder));
 
   function getRowClass(index: number): string {

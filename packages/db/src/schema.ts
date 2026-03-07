@@ -19,6 +19,7 @@ import {
 } from 'drizzle-orm/pg-core';
 
 import { sql } from 'drizzle-orm';
+import type { AnswerData } from '@cio/question-types';
 
 export const courseType = pgEnum('COURSE_TYPE', ['SELF_PACED', 'LIVE_CLASS']);
 export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
@@ -1518,10 +1519,13 @@ export const questionAnswer = pgTable(
       minValue: 1,
       cache: 1
     }),
+    answerData: jsonb('answer_data').$type<AnswerData | null>(),
+    /** @deprecated Use answer_data instead. Kept for backwards compatibility. */
     answers: varchar().array(),
+    /** @deprecated Use answer_data instead. Kept for backwards compatibility. */
+    openAnswer: text('open_answer'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     questionId: bigint('question_id', { mode: 'number' }).notNull(),
-    openAnswer: text('open_answer'),
     groupMemberId: uuid('group_member_id').notNull(),
     submissionId: uuid('submission_id'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations

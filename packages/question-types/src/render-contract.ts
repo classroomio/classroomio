@@ -1,17 +1,20 @@
 import type {
-  ExerciseAnswerValue,
   ExerciseQuestionFileUploader,
   ExerciseQuestionImageUploader,
   ExerciseQuestionLabelKey,
   ExerciseQuestionLabels,
   ExerciseQuestionModel,
+  ExerciseSubmissionModel,
   ExerciseRendererMode
 } from './exercise-types';
+import type { AnswerData } from './answer-data';
 
 export interface ExerciseQuestionRenderContract {
   mode: ExerciseRendererMode;
   question: ExerciseQuestionModel;
-  answer?: ExerciseAnswerValue;
+  answer?: AnswerData | null;
+  submissions?: ExerciseSubmissionModel[];
+  maxSubmissionItems?: number;
   disabled?: boolean;
   labels?: ExerciseQuestionLabels;
   onImageUpload?: ExerciseQuestionImageUploader;
@@ -21,7 +24,9 @@ export interface ExerciseQuestionRenderContract {
 export interface ExerciseQuestionListRenderContract {
   mode: ExerciseRendererMode;
   questions: ExerciseQuestionModel[];
-  answersByKey?: Record<string, ExerciseAnswerValue>;
+  answersByKey?: Record<string, AnswerData>;
+  submissions?: ExerciseSubmissionModel[];
+  maxSubmissionItems?: number;
   disabled?: boolean;
   labels?: ExerciseQuestionLabels;
   onImageUpload?: ExerciseQuestionImageUploader;

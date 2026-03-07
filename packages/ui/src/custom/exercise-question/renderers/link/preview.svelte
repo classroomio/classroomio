@@ -2,7 +2,7 @@
   import { getExerciseQuestionLabel, type ExerciseQuestionRendererProps } from '@cio/question-types';
   import ExternalLinkIcon from '@lucide/svelte/icons/external-link';
 
-  let { question, answer = [], labels }: ExerciseQuestionRendererProps = $props();
+  let { question, answer = null, labels }: ExerciseQuestionRendererProps = $props();
   const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
     getExerciseQuestionLabel(labels, key, fallback);
 
@@ -16,14 +16,7 @@
   }
 
   const links = $derived.by(() => {
-    if (Array.isArray(answer)) {
-      return answer.map((entry) => String(entry).trim()).filter(Boolean);
-    }
-
-    if (typeof answer === 'string' && answer.trim().length > 0) {
-      return [answer.trim()];
-    }
-
+    if (answer?.type === 'LINK') return answer.urls.map((u) => String(u ?? '').trim()).filter(Boolean);
     return [];
   });
 

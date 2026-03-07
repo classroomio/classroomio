@@ -121,7 +121,9 @@
       {/if}
       <EdraBubbleMenu {editor} />
 
-      <EdraDragHandleExtended {editor} />
+      {#if editable}
+        <EdraDragHandleExtended {editor} />
+      {/if}
     {/if}
     <EdraEditor
       class={cn('ui:relative ui:h-128 ui:overflow-auto ui:p-4', editorClass)}

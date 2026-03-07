@@ -14,14 +14,14 @@
     getExerciseQuestionLabel(labels, key, fallback);
 
   const selected = $derived.by(() => {
-    if (typeof answer === 'boolean') return answer ? 'true' : 'false';
-    if (answer === 'true' || answer === 'false') return answer;
+    const val = answer?.type === 'TRUE_FALSE' ? answer.value : undefined;
+    if (typeof val === 'boolean') return val ? 'true' : 'false';
     return '';
   });
 
   function update(value: string) {
     if (value !== 'true' && value !== 'false') return;
-    onAnswerChange(value === 'true');
+    onAnswerChange({ type: 'TRUE_FALSE', value: value === 'true' });
   }
 </script>
 

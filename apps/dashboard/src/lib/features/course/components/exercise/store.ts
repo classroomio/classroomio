@@ -1,4 +1,5 @@
 import { DEFAULT_QUESTION_TYPE, QUESTION_TEMPLATE } from '$features/ui/question/constants';
+import type { AnswerData } from '@cio/question-types';
 
 import type { Question } from '$features/course/types';
 import { STATUS } from './constants';
@@ -13,7 +14,22 @@ export const questionnaireOrder = writable({ open: false });
 // {'question-id': { option: '', title: '', ... }}
 export const questionnaireValidation = writable({});
 
-const initAnswerState = {
+export interface QuestionnaireMetaData {
+  answers: Record<string, AnswerData | undefined>;
+  scores: Record<string, number>;
+  grades: Record<string, number>;
+  totalPossibleGrade: number;
+  finalTotalGrade: number;
+  currentQuestionIndex: number;
+  isFinished: boolean;
+  progressValue: number;
+  status: number;
+  comment: string;
+  /** Set when exercise is finished so route knows not to overwrite questionnaire */
+  exerciseId: string | null;
+}
+
+const initAnswerState: QuestionnaireMetaData = {
   answers: {},
   scores: {},
   grades: {},
@@ -24,11 +40,10 @@ const initAnswerState = {
   progressValue: 0,
   status: STATUS.PENDING,
   comment: '',
-  /** Set when exercise is finished so route knows not to overwrite questionnaire */
-  exerciseId: null as string | null
+  exerciseId: null
 };
 
-export const questionnaireMetaData = writable(initAnswerState);
+export const questionnaireMetaData: Writable<QuestionnaireMetaData> = writable(initAnswerState);
 
 export const questionnaire: Writable<{
   title?: string | null;

@@ -22,7 +22,7 @@ import { getGroupMemberIdByCourseAndProfile, isCourseTeamMemberOrOrgAdmin } from
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
-import { createSubmissionService } from '@api/services/submission';
+import { createSubmissionService, listExerciseSubmissionsOverview } from '@api/services/submission';
 import { zValidator } from '@hono/zod-validator';
 
 export const exerciseRouter = new Hono()
@@ -37,6 +37,18 @@ export const exerciseRouter = new Hono()
       return c.json({ success: true, data: exercises }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to list exercises');
+    }
+  })
+  .get('/:exerciseId/submissions', authMiddleware, courseMemberMiddleware, async (c) => {
+    try {
+      const courseId = c.req.param('courseId')!;
+      const exerciseId = c.req.param('exerciseId')!;
+      const user = c.get('user')!;
+
+      const data = await listExerciseSubmissionsOverview(courseId, exerciseId, user.id);
+      return c.json({ success: true, data }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch exercise submissions overview');
     }
   })
   .get('/:exerciseId', authMiddleware, courseMemberMiddleware, zValidator('param', ZExerciseGetParam), async (c) => {

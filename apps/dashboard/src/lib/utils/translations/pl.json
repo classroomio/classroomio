@@ -1013,9 +1013,14 @@
               },
               "summary": {
                 "heading": "Podsumowanie",
-                "question_chart": "Wykresy pytań"
+                "question_chart": "Wykresy pytań",
+                "responses": "Odpowiedzi",
+                "no_responses": "Brak odpowiedzi",
+                "other": "Inne"
               },
-              "loading_submissions": "Ładowanie zgłoszeń..."
+              "loading_submissions": "Ładowanie zgłoszeń...",
+              "empty_title": "Nie ma jeszcze żadnych zgłoszeń",
+              "empty_description": "Przesłane materiały pojawią się tutaj, gdy uczniowie ukończą to ćwiczenie."
             },
             "view_mode": {
               "no_question": "Do tego ćwiczenia nie dodano żadnego pytania",
@@ -1037,7 +1042,9 @@
               "empty_edit_hint_prefix": "Kliknij ",
               "empty_edit_hint_suffix": " przycisk, aby dodać.",
               "answers_required": "Przed przesłaniem proszę podać co najmniej jedną odpowiedź.",
-              "checking_submission": "Sprawdzam Twoje zgłoszenie..."
+              "checking_submission": "Sprawdzam Twoje zgłoszenie...",
+              "answer_required": "Zanim przejdziesz dalej, odpowiedz na to pytanie.",
+              "instructor_feedback": "Informacje zwrotne od instruktora"
             },
             "edit_mode": {
               "delete_modal": "Usuń ćwiczenie",
@@ -1154,7 +1161,11 @@
                 },
                 "take": {
                   "selected_file_label": "Wybrany plik",
-                  "upload_button": "Prześlij"
+                  "upload_button": "Prześlij",
+                  "upload_progress": "Przesyłanie...",
+                  "upload_error": "Przesyłanie nie powiodło się",
+                  "view": "Zobacz",
+                  "download": "Pobierz"
                 },
                 "edit": {
                   "accepted_types_placeholder": "Akceptowane typy (np. pdf, docx)",
@@ -1619,7 +1630,8 @@
     "recent_enrollments": "Ostatnie zapisy",
     "publish_first_course": "Opublikuj swój pierwszy kurs",
     "publish_first_course_description": "Aby śledzić zapisy, opublikuj kurs i zaproś uczniów",
-    "publish_course": "Publikuj kurs"
+    "publish_course": "Publikuj kurs",
+    "items_completed": "Elementy ukończone"
   },
   "schedule": {
     "title": "Twój harmonogram",
@@ -2195,7 +2207,8 @@
         "email_password_disabled": "Logowanie e-mailem/hasłem jest wyłączone. Skorzystaj z logowania jednokrotnego.",
         "email_password_disabled_message": "Logowanie za pomocą adresu e-mail/hasła jest wyłączone w tej organizacji.",
         "google_auth_disabled": "Uwierzytelnianie Google jest wyłączone.",
-        "signup_disabled_error": "Rejestracja w tej organizacji jest wyłączona. Skontaktuj się ze swoim administratorem."
+        "signup_disabled_error": "Rejestracja w tej organizacji jest wyłączona. Skontaktuj się ze swoim administratorem.",
+        "or_continue_with": "Możesz też kontynuować, podając adres e-mail i hasło"
       },
       "tabs": {
         "general": "Generał",

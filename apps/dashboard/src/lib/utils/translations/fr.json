@@ -1013,9 +1013,14 @@
               },
               "summary": {
                 "heading": "Résumé",
-                "question_chart": "Tableaux de questions"
+                "question_chart": "Tableaux de questions",
+                "responses": "Réponses",
+                "no_responses": "Pas encore de réponses",
+                "other": "Autre"
               },
-              "loading_submissions": "Chargement des soumissions..."
+              "loading_submissions": "Chargement des soumissions...",
+              "empty_title": "Aucune soumission pour l'instant",
+              "empty_description": "Les soumissions apparaîtront ici lorsque les étudiants auront terminé cet exercice."
             },
             "view_mode": {
               "no_question": "Aucune question ajoutée pour cet exercice",
@@ -1037,7 +1042,9 @@
               "empty_edit_hint_prefix": "Cliquez sur le ",
               "empty_edit_hint_suffix": " bouton pour ajouter.",
               "answers_required": "Veuillez fournir au moins une réponse avant de soumettre.",
-              "checking_submission": "Vérification de votre soumission..."
+              "checking_submission": "Vérification de votre soumission...",
+              "answer_required": "Veuillez répondre à cette question avant de continuer.",
+              "instructor_feedback": "Commentaires de l'instructeur"
             },
             "edit_mode": {
               "delete_modal": "Supprimer l'exercice",
@@ -1154,7 +1161,11 @@
                 },
                 "take": {
                   "selected_file_label": "Fichier sélectionné",
-                  "upload_button": "Télécharger"
+                  "upload_button": "Télécharger",
+                  "upload_progress": "Téléchargement...",
+                  "upload_error": "Échec du téléchargement",
+                  "view": "Voir",
+                  "download": "Télécharger"
                 },
                 "edit": {
                   "accepted_types_placeholder": "Types acceptés (par exemple pdf,docx)",
@@ -1619,7 +1630,8 @@
     "recent_enrollments": "Inscriptions récentes",
     "publish_first_course": "Publiez votre premier cours",
     "publish_first_course_description": "Pour suivre les inscriptions, publier un cours et inviter des étudiants",
-    "publish_course": "Publier le cours"
+    "publish_course": "Publier le cours",
+    "items_completed": "Éléments terminés"
   },
   "schedule": {
     "title": "Votre emploi du temps",
@@ -2195,7 +2207,8 @@
         "email_password_disabled": "La connexion par e-mail/mot de passe est désactivée. Veuillez utiliser l'authentification unique.",
         "email_password_disabled_message": "La connexion par e-mail/mot de passe est désactivée pour cette organisation.",
         "google_auth_disabled": "L'authentification Google est désactivée.",
-        "signup_disabled_error": "L'inscription est désactivée pour cette organisation. Veuillez contacter votre administrateur."
+        "signup_disabled_error": "L'inscription est désactivée pour cette organisation. Veuillez contacter votre administrateur.",
+        "or_continue_with": "Ou continuez avec email et mot de passe"
       },
       "tabs": {
         "general": "Général",

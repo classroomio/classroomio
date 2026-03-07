@@ -41,16 +41,27 @@ export const createProfileHook = async (user: User) => {
 
   const existingProfile = await db.select().from(schema.profile).where(eq(schema.profile.id, user.id)).limit(1);
   console.debug('existingProfile', existingProfile);
+
+  let isEmailVerified = user.emailVerified || (await hasVerifiedEmailProvider(user.id));
+
+  // Self-hosted first signup: auto-verify email and update existing profile if needed
+  if (!isEmailVerified && (await isSelfHostedFirstSignup())) {
+    isEmailVerified = true;
+    await db.update(schema.user).set({ emailVerified: true }).where(eq(schema.user.id, user.id));
+    // Also mark the profile as verified if it already exists
+    if (existingProfile.length) {
+      await db
+        .update(schema.profile)
+        .set({ isEmailVerified: true, verifiedAt: new Date().toISOString() })
+        .where(eq(schema.profile.id, user.id));
+      return;
+    }
+  }
+
   if (existingProfile.length) {
     return;
   }
 
-  let isEmailVerified = user.emailVerified || (await hasVerifiedEmailProvider(user.id));
-
-  if (!isEmailVerified && (await isSelfHostedFirstSignup())) {
-    isEmailVerified = true;
-    await db.update(schema.user).set({ emailVerified: true }).where(eq(schema.user.id, user.id));
-  }
   const verifiedAt = isEmailVerified ? new Date().toISOString() : undefined;
 
   // Extract username from email (part before @)

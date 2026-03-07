@@ -22,16 +22,9 @@
   }
 
   const selectedOptionValue = $derived.by(() => {
-    if (Array.isArray(answer)) {
-      const first = answer[0];
-      return first === undefined || first === null ? '' : String(first);
-    }
-
-    if (answer === undefined || answer === null) {
-      return '';
-    }
-
-    return String(answer);
+    const optionId = answer?.type === 'RADIO' ? answer.optionId : null;
+    if (optionId === undefined || optionId === null) return '';
+    return String(optionId);
   });
 
   const optionsHaveImages = $derived(hasOptionImages(question.options));
@@ -43,11 +36,11 @@
     const matchedOption = (question.options ?? []).find((option, index) => getOptionValue(option, index) === nextValue);
 
     if (matchedOption?.id !== undefined && matchedOption.id !== null) {
-      onAnswerChange(matchedOption.id);
+      const optionId = Number(matchedOption.id);
+      onAnswerChange({ type: 'RADIO', optionId: Number.isNaN(optionId) ? Number(nextValue) : optionId });
       return;
     }
-
-    onAnswerChange(nextValue);
+    onAnswerChange({ type: 'RADIO', optionId: Number(nextValue) });
   }
 </script>
 

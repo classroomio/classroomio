@@ -4,7 +4,7 @@
 
   let {
     question,
-    answer = '',
+    answer = null,
     disabled = false,
     labels,
     onAnswerChange = () => {}
@@ -14,10 +14,25 @@
     getExerciseQuestionLabel(labels, key, fallback);
 
   const value = $derived.by(() => {
-    if (typeof answer === 'string') return answer;
-    if (answer && typeof answer === 'object') return JSON.stringify(answer, null, 2);
+    if (answer?.type === 'HOTSPOT') return JSON.stringify(answer.coordinates, null, 2);
     return '';
   });
+
+  function parseCoordinates(raw: string): Array<{ x: number; y: number }> {
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      if (!Array.isArray(parsed)) return [];
+      return parsed.filter(
+        (c): c is { x: number; y: number } =>
+          c &&
+          typeof c === 'object' &&
+          typeof (c as { x?: unknown }).x === 'number' &&
+          typeof (c as { y?: unknown }).y === 'number'
+      );
+    } catch {
+      return [];
+    }
+  }
 </script>
 
 <div class="ui:space-y-2">
@@ -27,6 +42,9 @@
     {value}
     {disabled}
     placeholder={label('hotspot.take.placeholder')}
-    onchange={(event) => onAnswerChange(event.currentTarget.value)}
+    onchange={(event) => {
+      const coordinates = parseCoordinates(event.currentTarget.value);
+      onAnswerChange({ type: 'HOTSPOT', coordinates });
+    }}
   />
 </div>

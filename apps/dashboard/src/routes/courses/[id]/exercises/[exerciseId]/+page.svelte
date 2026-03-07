@@ -79,6 +79,12 @@
       class="text-center"
     />
   {:else}
-    <ExercisePage exerciseId={data.exerciseId} goBack={() => goto(resolve(path, {}))} isFetching={false} />
+    <ExercisePage
+      exerciseId={data.exerciseId}
+      goBack={() => goto(resolve(path, {}))}
+      isFetching={false}
+      submissions={data.submissions ?? []}
+      mySubmission={data.mySubmission ?? null}
+    />
   {/if}
 </Page.Root>

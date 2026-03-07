@@ -1,9 +1,10 @@
-import type { ExerciseAnswerValue, ExerciseQuestionModel } from './exercise-types';
+import type { ExerciseQuestionModel } from './exercise-types';
+import type { AnswerData } from './answer-data';
 
 export interface ExerciseQuestionFormState {
   questions: ExerciseQuestionModel[];
   currentIndex: number;
-  answers: Record<string, ExerciseAnswerValue>;
+  answers: Record<string, AnswerData>;
 }
 
 export function createExerciseQuestionFormState(

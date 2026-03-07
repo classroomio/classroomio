@@ -1,14 +1,16 @@
 <script lang="ts">
-  import { getExerciseQuestionContractKey, type ExerciseAnswerValue } from '@cio/question-types';
+  import { getExerciseQuestionContractKey } from '@cio/question-types';
+  import type { AnswerData } from '@cio/question-types';
   import { Grade, ReasonBox } from '$features/ui/question';
   import { toExerciseQuestionModel } from './question-type-utils';
   import { getExerciseQuestionLabels } from './question-labels';
   import { ExerciseQuestion } from '@cio/ui';
+  import type { QuestionnaireMetaData } from './store';
 
   interface Props {
     questions?: any;
-    questionnaireMetaData?: any;
-    grades?: any;
+    questionnaireMetaData?: Partial<QuestionnaireMetaData>;
+    grades?: Record<string, number>;
     onSubmit?: any;
     onPrevious?: any;
     disableGrading?: boolean;
@@ -50,16 +52,36 @@
         acc[questionKey] = _questionnaireMetaData?.answers?.[questionKey];
         return acc;
       },
-      {} as Record<string, ExerciseAnswerValue>
+      {} as Record<string, AnswerData>
     )
   );
 </script>
 
-{#if disableGrading}
+{#if disableGrading && !Object.keys(grades || {}).length}
   <ExerciseQuestion.QuestionList
     contract={{ mode: 'view', questions: questionModels, answersByKey, labels: questionLabels, disabled: true }}
     itemClass="mb-4"
   />
+{:else if disableGrading && Object.keys(grades || {}).length}
+  {#each questions as currentQuestion, index}
+    {@const questionModel = questionModels[index]}
+    <div class="mb-4 space-y-3">
+      <div class="flex items-center justify-between">
+        <p class="text-base font-semibold text-gray-700 dark:text-gray-200">Q{index + 1}</p>
+        <Grade grade={grades[currentQuestion.id]} gradeMax={currentQuestion.points} disableGrading={true} />
+      </div>
+
+      <ExerciseQuestion.QuestionRenderer
+        contract={{
+          mode: 'view',
+          question: questionModel,
+          answer: getAnswerForQuestion(questionModel, index),
+          labels: questionLabels,
+          disabled: true
+        }}
+      />
+    </div>
+  {/each}
 {:else}
   {#each questions as currentQuestion, index}
     {@const questionModel = questionModels[index]}

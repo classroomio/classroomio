@@ -4,7 +4,7 @@
 
   let {
     question,
-    answer = '',
+    answer,
     disabled = false,
     labels,
     onAnswerChange = () => {}
@@ -17,9 +17,9 @@
 <div class="ui:space-y-2">
   <Input
     class="ui:w-full ui:max-w-[300px]"
-    value={String(answer ?? '')}
+    value={answer?.type === 'SHORT_ANSWER' ? answer.text : String(answer ?? '')}
     {disabled}
     placeholder={label('short_answer.take.placeholder')}
-    onchange={(event) => onAnswerChange(event.currentTarget.value)}
+    onchange={(event) => onAnswerChange({ type: 'SHORT_ANSWER', text: event.currentTarget.value })}
   />
 </div>
