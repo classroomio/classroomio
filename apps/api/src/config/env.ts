@@ -41,12 +41,7 @@ const envSchema = z.object({
   /** When 'true', instance runs in self-hosted mode: single org, auto-enroll as student, no org switching */
   PUBLIC_IS_SELFHOSTED: z.string().optional(),
   /** License key for enterprise features (SSO, token-auth, no-tracking, etc.) */
-  LICENSE_KEY: z.string().optional(),
-  /**
-   * External API URL for license verification. Receives POST with { licenseKey } or Authorization: Bearer.
-   * Expected response: { valid: boolean, features?: string[], expiresAt?: string }
-   */
-  LICENSE_VERIFICATION_URL: z.string().optional()
+  LICENSE_KEY: z.string().optional()
 });
 
 export const env = envSchema.parse(process.env);
