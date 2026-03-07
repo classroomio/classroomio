@@ -3,6 +3,7 @@ import { currentOrg, isOrgStudent, orgs } from '$lib/utils/store/org';
 import { defaultProfileState, defaultUserState, profile, user } from '$lib/utils/store/user';
 
 import type { AccountResponse } from './types';
+import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import type { TUser } from '@cio/db/types';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
@@ -14,7 +15,6 @@ import { resolve } from '$app/paths';
 import { setSentryUser } from '$lib/utils/services/sentry';
 import { setTheme } from '$lib/utils/functions/theme';
 import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
-import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 
 type AppSetupParams = {
   isOrgSite: boolean;
@@ -121,14 +121,14 @@ class AppInitApi extends BaseApi {
     if (shouldRedirectToOnboarding) {
       return goto(resolve(`/onboarding`, {}));
     }
-    // Self-hosted: when user has no orgs, route to /lms
-    if (PUBLIC_IS_SELFHOSTED === 'true' && !userHasOrganizations) {
-      return goto(resolve(`/lms`, {}));
-    }
 
     if (!shouldRedirectOnAuth(page.url.pathname)) return;
-
     const isStudent = get(isOrgStudent);
+
+    // Self-hosted: when user has no orgs, route to /lms
+    if (PUBLIC_IS_SELFHOSTED === 'true') {
+      return isStudent ? this.goToLMS() : this.goToOrg();
+    }
 
     return isOrgSite || isStudent ? this.goToLMS() : this.goToOrg();
   }
