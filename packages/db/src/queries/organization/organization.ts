@@ -467,7 +467,7 @@ export const getFirstOrganizationWithPlans = async (): Promise<
     .from(schema.organization)
     .leftJoin(schema.organizationPlan, eq(schema.organization.id, schema.organizationPlan.orgId))
     .orderBy(schema.organization.createdAt)
-    .limit(5);
+    .limit(1);
 
   if (result.length === 0) return null;
 
