@@ -116,7 +116,3 @@ export function isFeatureLicensedSync(feature: LicenseFeatureId | string): boole
 /**
  * Middleware helper: returns 403 if the feature is not licensed.
  */
-export async function requireLicenseOr403(feature: LicenseFeatureId | string): Promise<boolean> {
-  const licensed = await isFeatureLicensed(feature);
-  return licensed;
-}
