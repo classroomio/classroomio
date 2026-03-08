@@ -20,7 +20,6 @@
   },
   "dependencies": {
     "@better-auth/sso": "1.4.18",
-    "@carbon/charts-svelte": "^1.13.6",
     "@cio/api": "workspace:*",
     "@cio/db": "workspace:*",
     "@cio/question-types": "workspace:*",

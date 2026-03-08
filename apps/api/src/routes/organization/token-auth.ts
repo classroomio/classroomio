@@ -7,8 +7,10 @@ import {
 } from '@api/services/organization/token-auth';
 
 import { Hono } from '@api/utils/hono';
+import { LICENSE_FEATURE } from '@cio/utils/license';
 import { authMiddleware } from '@api/middlewares/auth';
 import { handleError } from '@api/utils/errors';
+import { requireLicense } from '@api/middlewares/license';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
@@ -16,6 +18,7 @@ import { z } from 'zod';
 const ZActivateBody = z.object({ isActive: z.boolean() });
 
 export const organizationTokenAuthRouter = new Hono()
+  .use('*', requireLicense(LICENSE_FEATURE.TOKEN_AUTH))
   /**
    * GET /organization/token-auth
    * Get token auth status (never returns full secret)

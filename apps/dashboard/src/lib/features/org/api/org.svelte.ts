@@ -39,6 +39,7 @@ export interface TOrgUpdateForm {
   disableSignupMessage?: string;
   disableEmailPassword?: boolean;
   disableGoogleAuth?: boolean;
+  settings?: { signup?: { inviteOnly?: boolean } };
 }
 
 /**

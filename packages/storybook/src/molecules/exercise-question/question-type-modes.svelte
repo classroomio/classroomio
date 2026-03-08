@@ -3,7 +3,7 @@
   import { QUESTION_LABELS } from './question-labels';
 
   interface Props {
-    question: Record<string, unknown>;
+    question: Record;
     answer?: unknown;
   }
 
@@ -17,7 +17,7 @@
 
   let { question, answer = null }: Props = $props();
 
-  function cloneQuestion(source: Record<string, unknown>) {
+  function cloneQuestion(source: Record) {
     return JSON.parse(JSON.stringify(source));
   }
 

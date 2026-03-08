@@ -20,36 +20,16 @@ export async function getOrgSiteInfo(url: URL, cookies: Cookies): Promise<OrgSit
     org: null
   };
 
-  // Selfhosted usecase
+  // Self-hosted: single org, single domain
   if (PUBLIC_IS_SELFHOSTED === 'true') {
-    const subdomain = getSubdomain(url);
-    console.log('subdomain', subdomain);
-
-    // Student dashboard
-    if (subdomain) {
-      const APP_SUBDOMAINS = env.PRIVATE_APP_SUBDOMAINS?.split(',') || [];
-      console.log('APP_SUBDOMAINS', APP_SUBDOMAINS);
-
-      if (APP_SUBDOMAINS.includes(subdomain)) {
-        return response;
-      }
-
-      const org = await OrgApiServer.getOrgBySiteName(subdomain);
-      console.log('org', org);
-
-      // Organization by subdomain not found
-      if (!org) {
-        return response;
-      }
-
-      response.org = org as AccountOrg;
+    const firstOrg = await OrgApiServer.getSelfhostedOrg();
+    if (firstOrg) {
+      response.org = firstOrg as AccountOrg;
       response.isOrgSite = true;
-      response.orgSiteName = subdomain;
-      response.subdomain = subdomain;
+      response.orgSiteName = firstOrg.siteName || '';
+      response.subdomain = '';
     }
 
-    console.log('response', response);
-    // Never go beyond this for selfhosted instances
     return response;
   }
 

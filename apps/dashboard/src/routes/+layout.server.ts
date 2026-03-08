@@ -2,13 +2,8 @@ import type { AccountOrg } from '$features/app/types';
 import type { MetaTagsProps } from 'svelte-meta-tags';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { getOrgSiteInfo } from '$features/app/layout-setup';
-// import { env } from '$env/dynamic/private';
-// import { dev } from '$app/environment';
-// import { redirect } from '@sveltejs/kit';
 
 export const ssr = PUBLIC_IS_SELFHOSTED === 'true' ? false : true;
-
-// const APP_SUBDOMAINS = env.PRIVATE_APP_SUBDOMAINS?.split(',') || [];
 
 interface LoadOutput {
   orgSiteName: string;

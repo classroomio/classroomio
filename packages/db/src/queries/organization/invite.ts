@@ -6,7 +6,7 @@ import type {
 } from '@db/types';
 import * as schema from '@db/schema';
 
-import { and, eq, inArray, isNull } from 'drizzle-orm';
+import { and, eq, gt, inArray, isNull, sql } from 'drizzle-orm';
 import { db } from '@db/drizzle';
 
 export async function createOrganizationInvite(values: TNewOrganizationInvite): Promise<TOrganizationInvite> {
@@ -149,5 +149,34 @@ export async function markOrganizationInviteAccepted(
     throw new Error(
       `Failed to mark organization invite accepted: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+}
+
+/**
+ * Checks whether the given email has at least one active (non-revoked,
+ * non-accepted, non-expired) organization invite in the specified org.
+ */
+export async function hasActiveOrganizationInviteForEmail(organizationId: string, email: string): Promise<boolean> {
+  try {
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const [result] = await db
+      .select({ id: schema.organizationInvite.id })
+      .from(schema.organizationInvite)
+      .where(
+        and(
+          eq(schema.organizationInvite.organizationId, organizationId),
+          eq(schema.organizationInvite.email, normalizedEmail),
+          eq(schema.organizationInvite.isRevoked, false),
+          isNull(schema.organizationInvite.acceptedAt),
+          gt(schema.organizationInvite.expiresAt, sql`NOW()`)
+        )
+      )
+      .limit(1);
+
+    return !!result;
+  } catch (error) {
+    console.error('hasActiveOrganizationInviteForEmail error:', error);
+    return false;
   }
 }

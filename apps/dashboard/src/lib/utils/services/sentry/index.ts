@@ -19,7 +19,7 @@ export const initSentry = (): void => {
   // });
 };
 
-export const setSentryUser = (user: Record<string, any>): void => {
+export const setSentryUser = (user: Record<string, unknown>): void => {
   if (dev) return;
 
   // Sentry.setUser(user);

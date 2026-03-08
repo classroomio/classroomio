@@ -1,5 +1,8 @@
 import { classroomio } from '$lib/utils/services/api';
+import { env } from '$env/dynamic/private';
 import { getApiKeyHeaders } from '$lib/utils/services/api/server';
+
+const getApiBaseUrl = () => (env.PRIVATE_SERVER_URL || env.PUBLIC_SERVER_URL || '').replace(/\/$/, '');
 
 /**
  * Server-side API methods for organization operations
@@ -7,6 +10,26 @@ import { getApiKeyHeaders } from '$lib/utils/services/api/server';
  * (+server.ts, +layout.server.ts) to prevent API keys from being exposed to the client.
  */
 export class OrgApiServer {
+  /**
+   * Gets the first organization (for self-hosted single-org mode)
+   * @returns First organization or null
+   */
+  static async getSelfhostedOrg() {
+    try {
+      const base = getApiBaseUrl();
+      const { headers } = getApiKeyHeaders();
+      const response = await fetch(`${base}/organization/first`, {
+        method: 'GET',
+        headers: { ...headers, Accept: 'application/json' }
+      });
+      const data = await response.json();
+      return data.success && data.data && data.data.length > 0 ? data.data[0] : null;
+    } catch (error) {
+      console.error('Error fetching first organization (server):', error);
+      return null;
+    }
+  }
+
   /**
    * Gets organization by siteName (server-side)
    * @param siteName Organization site name

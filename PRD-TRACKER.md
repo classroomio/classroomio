@@ -12,7 +12,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | 4 | 8 | `prd/exercise-question-types` | in-progress (A3, A6, A7, C3, C7, C13, C14 done) |
 | 5 | 3 | `prd/course-cohorts` | todo |
 | 6 | - | `prd/classes` | todo |
-| 7 | 13 | `prd/self-host-single-org.md` | todo |
+| 7 | 13 | `prd/self-host-single-org.md` | done |
 | 8 | 7 | `prd/email-template-customization` | todo |
 | 9 | - | `prd/selective-exercise-assignment` | todo |
 | - | 1 | `prd/ai-course-assistant` | todo |
