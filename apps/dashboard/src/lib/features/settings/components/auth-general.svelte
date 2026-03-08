@@ -33,12 +33,22 @@
     if (!$currentOrg) return;
 
     isSaving = true;
+    // Merge with existing settings to avoid overwriting other keys
+    const existingSettings = ($currentOrg.settings as Record<string, unknown>) || {};
+    const existingSignup = (existingSettings.signup as Record<string, unknown>) || {};
+
     await orgApi.update(
       $currentOrg.id,
       {
         disableSignup,
         disableSignupMessage,
-        settings: { signup: { inviteOnly: !allowPublicSignups } },
+        settings: {
+          ...existingSettings,
+          signup: {
+            ...existingSignup,
+            inviteOnly: !allowPublicSignups
+          }
+        },
         disableEmailPassword,
         disableGoogleAuth
       },

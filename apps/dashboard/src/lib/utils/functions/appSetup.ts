@@ -1,20 +1,39 @@
+import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { dev } from '$app/environment';
 import { initPosthog } from '$lib/utils/services/posthog';
 import { initSentry } from '$lib/utils/services/sentry';
 import { licenseApi } from '$features/license/api/license.svelte';
 
+/** Cloud: always true. Self-hosted: true only when no-tracking is not licensed. */
+export function shouldInitPosthog(): boolean {
+  const isCloud = PUBLIC_IS_SELFHOSTED !== 'true';
+  const noTracking = licenseApi.hasAccess('no-tracking');
+  return isCloud || !noTracking;
+}
+
 export function setupAnalytics() {
-  // Set up sentry
   initSentry();
 
-  // PostHog: skip when no-tracking is licensed (enterprise privacy) or in dev
-  const noTracking = licenseApi.hasAccess('no-tracking');
-  if (!noTracking) {
+  if (shouldInitPosthog()) {
     initPosthog();
   }
 
-  // Disable umami on localhost
   if (dev) {
     localStorage.setItem('umami.disabled', '1');
+  }
+}
+
+/** Cloud: call from layout on mount. Self-hosted: call from setupApp onSuccess after license. */
+export function setupAnalyticsForDeployment(mode: 'cloud' | 'self-hosted') {
+  const isSelfHosted = PUBLIC_IS_SELFHOSTED === 'true';
+
+  if (mode === 'cloud' && !isSelfHosted) {
+    initSentry();
+    setupAnalytics();
+    return;
+  }
+
+  if (mode === 'self-hosted' && isSelfHosted) {
+    setupAnalytics();
   }
 }

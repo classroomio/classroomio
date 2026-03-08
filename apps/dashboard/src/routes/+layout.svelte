@@ -7,6 +7,7 @@
   import { user } from '$lib/utils/store/user';
   import { setTheme } from '$lib/utils/functions/theme';
   import { initOrgAnalytics } from '$lib/utils/services/posthog';
+  import { setupAnalyticsForDeployment } from '$lib/utils/functions/appSetup';
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrg, isOrgStudent } from '$lib/utils/store/org';
   import { appInitApi } from '$features/app/init.svelte';
@@ -31,6 +32,8 @@
       `\nIs student domain: ${data.isOrgSite}`,
       data
     );
+
+    setupAnalyticsForDeployment('cloud');
 
     if (data.locals.user) {
       user.set({
