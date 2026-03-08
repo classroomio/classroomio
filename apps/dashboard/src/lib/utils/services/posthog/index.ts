@@ -1,16 +1,8 @@
-import { get } from 'svelte/store';
 import { dev } from '$app/environment';
+import { licenseApi } from '$features/license/api/license.svelte';
 import posthog from 'posthog-js';
-import { LICENSE_FEATURE } from '@cio/utils/license';
-import { licenseFeatures } from '$lib/utils/store/license';
 
-function hasNoTracking(): boolean {
-  try {
-    return get(licenseFeatures).includes(LICENSE_FEATURE.NO_TRACKING);
-  } catch {
-    return false;
-  }
-}
+const hasNoTracking = () => licenseApi.hasAccess('no-tracking');
 
 export const capturePosthogEvent = (event: string, properties?: Record<string, unknown>): void => {
   if (dev || hasNoTracking()) return;

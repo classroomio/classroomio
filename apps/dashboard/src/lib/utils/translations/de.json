@@ -1739,7 +1739,8 @@
     "redirecting": "Umleiten",
     "loading_state": "Bitte warten Sie, um zur nächsten Seite zu gelangen.",
     "org_loading_state": "Wir bringen Sie zu Ihrer Organisation...",
-    "add_organization": "+ Organisation hinzufügen"
+    "add_organization": "+ Organisation hinzufügen",
+    "goto_dashboard": "Gehen Sie zum Dashboard"
   },
   "add_org": {
     "create_org": "Organisation erstellen",
@@ -2197,6 +2198,10 @@
         "disable_signup": {
           "label": "Deaktivieren Sie die Anmeldung",
           "description": "Verhindern Sie, dass sich neue Benutzer anmelden. Nur eingeladene Benutzer können beitreten."
+        },
+        "allow_public_signups": {
+          "label": "Öffentliche Anmeldungen zulassen",
+          "description": "Wenn die Funktion deaktiviert ist, können sich nur Benutzer mit einem Einladungslink anmelden. Aktivieren Sie diese Option, damit jeder ein Konto erstellen kann."
         }
       },
       "login": {
@@ -2275,6 +2280,11 @@
       "confirm_password": "Passwort bestätigen",
       "password_helper_message": "Das Passwort muss mehr als 8 Zeichen lang sein",
       "create_account": "Konto erstellen"
+    },
+    "signup_disabled": {
+      "title": "Anmeldung deaktiviert",
+      "invite_only_message": "Die Anmeldung ist nur auf Einladung möglich. Bitte verwenden Sie einen Einladungslink, um ein Konto zu erstellen.",
+      "go_to_login": "Gehen Sie zu Anmelden"
     }
   },
   "app": {

@@ -9,11 +9,13 @@ import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { handleLocaleChange } from '$lib/utils/functions/translations';
 import { identifyPosthogUser } from '$lib/utils/services/posthog';
+import { licenseApi } from '$features/license/api/license.svelte';
 import { logout } from '$lib/utils/functions/logout';
 import { page } from '$app/state';
 import { resolve } from '$app/paths';
 import { setSentryUser } from '$lib/utils/services/sentry';
 import { setTheme } from '$lib/utils/functions/theme';
+import { setupAnalytics } from '$lib/utils/functions/appSetup';
 import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
 
 type AppSetupParams = {
@@ -45,6 +47,8 @@ class AppInitApi extends BaseApi {
       logContext: 'fetching account',
       onSuccess: (accountData) => {
         this.data = accountData;
+        licenseApi.setFeatures(accountData.licenseFeatures);
+        setupAnalytics();
         this.setupStores();
         this.setUserAnalytics();
         this.routeUserToNextPage(params);
@@ -116,21 +120,36 @@ class AppInitApi extends BaseApi {
       return;
     }
 
-    const userHasOrganizations = this.data.organizations.length > 0;
-    const shouldRedirectToOnboarding = !isOrgSite && !userHasOrganizations && PUBLIC_IS_SELFHOSTED !== 'true';
-    if (shouldRedirectToOnboarding) {
-      return goto(resolve(`/onboarding`, {}));
-    }
-
-    if (!shouldRedirectOnAuth(page.url.pathname)) return;
     const isStudent = get(isOrgStudent);
 
-    // Self-hosted: when user has no orgs, route to /lms
-    if (PUBLIC_IS_SELFHOSTED === 'true') {
+    const userHasOrganizations = this.data.organizations.length > 0;
+
+    const isCloud = PUBLIC_IS_SELFHOSTED !== 'true';
+
+    // CLOUD: when user has no orgs and isOrgSite is false, route to /onboarding
+    // isOrgSite - means the user is on a multi tenant organization site, we don't want to redirect to /onboarding in this case
+    if (isCloud) {
+      const shouldRedirectToOnboarding = !userHasOrganizations && !isOrgSite;
+
+      if (shouldRedirectToOnboarding) {
+        return goto(resolve(`/onboarding`, {}));
+      }
+
+      if (!shouldRedirectOnAuth(page.url.pathname)) return;
+
+      return isOrgSite || isStudent ? this.goToLMS() : this.goToOrg();
+    } else {
+      // Self-hosted: when user has no orgs, route to /onboarding
+      // This should only happen once cause Self hosted instance is single tenant
+      //
+      if (!userHasOrganizations) {
+        return goto(resolve(`/onboarding`, {}));
+      }
+
+      if (!shouldRedirectOnAuth(page.url.pathname)) return;
+
       return isStudent ? this.goToLMS() : this.goToOrg();
     }
-
-    return isOrgSite || isStudent ? this.goToLMS() : this.goToOrg();
   }
 
   goToLMS() {
@@ -164,6 +183,7 @@ class AppInitApi extends BaseApi {
   reset() {
     super.reset();
     this.data = null;
+    licenseApi.reset();
 
     user.set(defaultUserState);
     profile.set(defaultProfileState);

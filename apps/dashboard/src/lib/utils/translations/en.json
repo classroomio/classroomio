@@ -127,6 +127,11 @@
     "validation": {
       "unable_to_create_profile": "Unable to create profile",
       "user_cannot_be_created": "User cannot be created"
+    },
+    "signup_disabled": {
+      "title": "Signup Disabled",
+      "invite_only_message": "Signup is invite-only. Please use an invite link to create an account.",
+      "go_to_login": "Go to Login"
     }
   },
   "profileMenu": {
@@ -724,6 +729,7 @@
     "discussion": "Discussion",
     "people": "People",
     "goto_lms": "Go to LMS",
+    "goto_dashboard": "Go to Dashboard",
     "goto_home": "Go to ClassroomIO Home",
     "login": "Login",
     "signup": "Sign Up",

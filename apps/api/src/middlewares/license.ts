@@ -1,7 +1,8 @@
 import type { Context, Next } from 'hono';
-import { isFeatureLicensed } from '@api/services/license';
-import { env } from '@api/config/env';
+
 import type { LicenseFeatureId } from '@cio/utils/license';
+import { env } from '@api/config/env';
+import { isFeatureLicensed } from '@api/services/license';
 
 /**
  * Middleware that returns 403 if the given feature is not licensed.
@@ -23,7 +24,7 @@ export function requireLicense(feature: LicenseFeatureId | string) {
         {
           success: false,
           error: 'FEATURE_REQUIRES_LICENSE',
-          message: `This feature requires a valid license. Please add a license key and configure LICENSE_VERIFICATION_URL.`
+          message: `This feature requires a valid license. Please add a license key.`
         },
         403
       );

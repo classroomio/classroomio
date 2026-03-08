@@ -3,19 +3,23 @@
   import { goto } from '$app/navigation';
   import * as UnderlineTabs from '@cio/ui/custom/underline-tabs';
   import { t } from '$lib/utils/functions/translations';
-  import { LICENSE_FEATURE } from '@cio/utils/license';
+  import { licenseApi } from '$features/license/api/license.svelte';
   import { currentOrgPath } from '$lib/utils/store/org';
-  import { licenseFeatures } from '$lib/utils/store/license';
   import { UpgradeBanner } from '$features/ui';
 
   import AuthGeneral from '../components/auth-general.svelte';
   import AuthSso from '../components/auth-sso.svelte';
   import AuthTokenAuth from '../components/auth-token-auth.svelte';
 
-  const ssoLicensed = $derived($licenseFeatures.includes(LICENSE_FEATURE.SSO));
-  const tokenAuthLicensed = $derived($licenseFeatures.includes(LICENSE_FEATURE.TOKEN_AUTH));
+  const ssoLicensed = $derived(licenseApi.hasAccess('sso'));
+  const tokenAuthLicensed = $derived(licenseApi.hasAccess('token-auth'));
+  const licenseResolved = $derived(licenseApi.isResolved);
 
   $effect(() => {
+    if (!licenseResolved) {
+      return;
+    }
+
     if (currentTab === 'sso' && !ssoLicensed) {
       goto($currentOrgPath + '/settings/auth');
     } else if (currentTab === 'token-auth' && !tokenAuthLicensed) {

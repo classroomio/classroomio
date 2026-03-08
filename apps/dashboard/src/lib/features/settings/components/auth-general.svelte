@@ -13,9 +13,7 @@
   // Auth settings state - synced with store
   let disableSignup = $state($currentOrg?.disableSignup ?? false);
   let disableSignupMessage = $state($currentOrg?.disableSignupMessage ?? '');
-  let allowPublicSignups = $state(
-    !($currentOrg?.settings as { signup?: { inviteOnly?: boolean } })?.signup?.inviteOnly ?? true
-  );
+  let allowPublicSignups = $state(!$currentOrg?.settings?.signup?.inviteOnly);
   let disableEmailPassword = $state($currentOrg?.disableEmailPassword ?? false);
   let disableGoogleAuth = $state($currentOrg?.disableGoogleAuth ?? false);
   let isSaving = $state(false);
@@ -25,8 +23,7 @@
     if ($currentOrg) {
       disableSignup = $currentOrg.disableSignup ?? false;
       disableSignupMessage = $currentOrg.disableSignupMessage ?? '';
-      allowPublicSignups =
-        !($currentOrg.settings as { signup?: { inviteOnly?: boolean } } | undefined)?.signup?.inviteOnly ?? true;
+      allowPublicSignups = !$currentOrg.settings?.signup?.inviteOnly;
       disableEmailPassword = $currentOrg.disableEmailPassword ?? false;
       disableGoogleAuth = $currentOrg.disableGoogleAuth ?? false;
     }
@@ -54,9 +51,8 @@
     isSaving = false;
   }
 
-  const currentAllowPublicSignups =
-    !($currentOrg?.settings as { signup?: { inviteOnly?: boolean } } | undefined)?.signup?.inviteOnly ?? true;
-  const hasChanges = $derived(
+  let currentAllowPublicSignups = $derived(!$currentOrg?.settings?.signup?.inviteOnly);
+  let hasChanges = $derived(
     disableSignup !== ($currentOrg?.disableSignup ?? false) ||
       disableSignupMessage !== ($currentOrg?.disableSignupMessage ?? '') ||
       allowPublicSignups !== currentAllowPublicSignups ||

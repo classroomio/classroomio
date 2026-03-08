@@ -142,8 +142,7 @@
     <Navigation
       logo={org.avatarUrl || '/logo-192.png'}
       orgName={org.name}
-      disableSignup={org.disableSignup ||
-        ((org.settings as { signup?: { inviteOnly?: boolean } } | undefined)?.signup?.inviteOnly ?? false)}
+      disableSignup={org.disableSignup || (org.settings?.signup?.inviteOnly ?? false)}
       isOrgSite={true}
       customLinks={$landingPageSettings.customLinks}
     />

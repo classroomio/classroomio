@@ -1,5 +1,6 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { getProfileByEmail, getProfileById, updateProfile } from '@cio/db/queries/auth';
+import { getLicenseStatus } from '@api/services/license';
 
 import type { OrganizationWithMemberAndPlans } from '@cio/db/queries/organization/types';
 import type { TProfile } from '@cio/db/types';
@@ -14,6 +15,7 @@ import { ROLE } from '@cio/utils/constants';
 export type GetAccountDataResult = {
   profile: TProfile;
   organizations: OrganizationWithMemberAndPlans[];
+  licenseFeatures: string[];
 };
 
 /**
@@ -23,7 +25,11 @@ export type GetAccountDataResult = {
  * @returns Account data with profile and organizations
  */
 export async function getAccountData(userId: string): Promise<GetAccountDataResult> {
-  let [profile, organizations] = await Promise.all([getProfileById(userId), getOrganizationByProfileId(userId)]);
+  let [profile, organizations, licenseStatus] = await Promise.all([
+    getProfileById(userId),
+    getOrganizationByProfileId(userId),
+    getLicenseStatus()
+  ]);
 
   if (!profile) {
     throw new AppError(`Account not found for user ID: ${userId}`, ErrorCodes.ACCOUNT_NOT_FOUND, 404);
@@ -45,7 +51,8 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
 
   return {
     profile,
-    organizations
+    organizations,
+    licenseFeatures: licenseStatus.features
   };
 }
 

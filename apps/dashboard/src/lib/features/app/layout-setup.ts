@@ -20,38 +20,16 @@ export async function getOrgSiteInfo(url: URL, cookies: Cookies): Promise<OrgSit
     org: null
   };
 
-  // Self-hosted: single org, single domain - root domain = org site
+  // Self-hosted: single org, single domain
   if (PUBLIC_IS_SELFHOSTED === 'true') {
-    const subdomain = getSubdomain(url);
-
-    if (subdomain) {
-      const APP_SUBDOMAINS = env.PRIVATE_APP_SUBDOMAINS?.split(',') || [];
-
-      if (APP_SUBDOMAINS.includes(subdomain)) {
-        return response;
-      }
-
-      const org = await OrgApiServer.getOrgBySiteName(subdomain);
-
-      if (!org) {
-        return response;
-      }
-
-      response.org = org as AccountOrg;
-      response.isOrgSite = true;
-      response.orgSiteName = subdomain;
-      response.subdomain = subdomain;
-      return response;
-    }
-
-    // Root domain (no subdomain): treat as org site, return single org
-    const firstOrg = await OrgApiServer.getFirstOrg();
+    const firstOrg = await OrgApiServer.getSelfhostedOrg();
     if (firstOrg) {
       response.org = firstOrg as AccountOrg;
       response.isOrgSite = true;
       response.orgSiteName = firstOrg.siteName || '';
       response.subdomain = '';
     }
+
     return response;
   }
 

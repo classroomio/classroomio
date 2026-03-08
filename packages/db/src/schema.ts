@@ -18,8 +18,8 @@ import {
   varchar
 } from 'drizzle-orm/pg-core';
 
-import { sql } from 'drizzle-orm';
 import type { AnswerData } from '@cio/question-types';
+import { sql } from 'drizzle-orm';
 
 export const courseType = pgEnum('COURSE_TYPE', ['SELF_PACED', 'LIVE_CLASS']);
 export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
@@ -1615,7 +1615,11 @@ export const organization = pgTable(
     name: varchar().notNull(),
     siteName: text(),
     avatarUrl: text('avatar_url'),
-    settings: jsonb().default({}),
+    settings: jsonb().default({}).$type<{
+      signup?: {
+        inviteOnly?: boolean;
+      };
+    }>(),
     landingpage: jsonb().default({}).$type<{
       header?: {
         title: string;

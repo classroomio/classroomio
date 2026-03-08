@@ -2,7 +2,6 @@ import type { AccountOrg } from '$features/app/types';
 import type { MetaTagsProps } from 'svelte-meta-tags';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { getOrgSiteInfo } from '$features/app/layout-setup';
-import { getLicenseFeatures } from '$lib/features/license/api/license.server';
 
 export const ssr = PUBLIC_IS_SELFHOSTED === 'true' ? false : true;
 
@@ -14,14 +13,13 @@ interface LoadOutput {
   baseMetaTags: MetaTagsProps;
   serverLang: string;
   localeCookie: string;
-  licenseFeatures: string[];
   locals: App.Locals;
 }
 
 export const load = async ({ url, cookies, request, locals }): Promise<LoadOutput> => {
   const debugPlay = cookies.get('debugPlay');
 
-  const [orgSiteInfo, license] = await Promise.all([getOrgSiteInfo(url, cookies), getLicenseFeatures()]);
+  const orgSiteInfo = await getOrgSiteInfo(url, cookies);
 
   const response: LoadOutput = {
     orgSiteName: orgSiteInfo.orgSiteName,
@@ -31,7 +29,6 @@ export const load = async ({ url, cookies, request, locals }): Promise<LoadOutpu
     baseMetaTags: getBaseMetaTags(url),
     serverLang: request.headers?.get('accept-language') || '',
     localeCookie: cookies.get('classroomio_locale') || '',
-    licenseFeatures: license.features,
     locals
   };
 

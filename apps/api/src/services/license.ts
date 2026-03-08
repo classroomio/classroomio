@@ -28,10 +28,6 @@ async function fetchLicenseFromApi(): Promise<LicenseStatus> {
   const url = 'https://enterprise.classroomio.com';
   const key = env.LICENSE_KEY?.trim();
 
-  if (!url || !key || !url.startsWith('http')) {
-    return { valid: false, features: [] };
-  }
-
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -109,10 +105,8 @@ export function isFeatureLicensedSync(feature: LicenseFeatureId | string): boole
   if (!isSelfHosted()) {
     return true;
   }
+
   if (cachedStatus === null || !cachedStatus.valid) return false;
+
   return cachedStatus.features.includes(feature);
 }
-
-/**
- * Middleware helper: returns 403 if the feature is not licensed.
- */

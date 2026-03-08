@@ -1,5 +1,5 @@
-import { env } from '$env/dynamic/private';
 import { classroomio } from '$lib/utils/services/api';
+import { env } from '$env/dynamic/private';
 import { getApiKeyHeaders } from '$lib/utils/services/api/server';
 
 const getApiBaseUrl = () => (env.PRIVATE_SERVER_URL || env.PUBLIC_SERVER_URL || '').replace(/\/$/, '');
@@ -14,7 +14,7 @@ export class OrgApiServer {
    * Gets the first organization (for self-hosted single-org mode)
    * @returns First organization or null
    */
-  static async getFirstOrg() {
+  static async getSelfhostedOrg() {
     try {
       const base = getApiBaseUrl();
       const { headers } = getApiKeyHeaders();
