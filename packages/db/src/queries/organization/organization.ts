@@ -453,6 +453,16 @@ export const getFirstOrganization = async (): Promise<TOrganization | null> => {
 export const getFirstOrganizationWithPlans = async (): Promise<
   (TOrganization & { plans: Array<OrganizationPlan> }) | null
 > => {
+  // Get the first organization ID (by createdAt) - avoid limit(1) on joined result
+  // which would discard plan rows when an org has multiple plans
+  const [firstOrg] = await db
+    .select({ id: schema.organization.id })
+    .from(schema.organization)
+    .orderBy(schema.organization.createdAt)
+    .limit(1);
+
+  if (!firstOrg) return null;
+
   const result = await db
     .select({
       organization: schema.organization,
@@ -466,10 +476,7 @@ export const getFirstOrganizationWithPlans = async (): Promise<
     })
     .from(schema.organization)
     .leftJoin(schema.organizationPlan, eq(schema.organization.id, schema.organizationPlan.orgId))
-    .orderBy(schema.organization.createdAt)
-    .limit(1);
-
-  if (result.length === 0) return null;
+    .where(eq(schema.organization.id, firstOrg.id));
 
   const organizationMap = new Map<
     string,

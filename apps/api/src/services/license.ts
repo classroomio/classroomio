@@ -25,15 +25,14 @@ function isSelfHosted(): boolean {
  * Expected response: { valid: boolean, features?: string[], expiresAt?: string }
  */
 async function fetchLicenseFromApi(): Promise<LicenseStatus> {
-  const url = 'https://enterprise.classroomio.com';
+  const url = 'https://enterprise-api.classroomio.dev';
   const key = env.LICENSE_KEY?.trim();
 
   try {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${key}`
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({ licenseKey: key })
     });
