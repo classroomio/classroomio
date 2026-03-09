@@ -1,4 +1,5 @@
-import { OrgApiServer } from '$features/org/api/org.server';
+import { orgApi } from '$features/org/api/org.svelte';
+import { getApiKeyHeaders } from '$lib/utils/services/api/server';
 import { env } from '$env/dynamic/private';
 import { getSubdomain } from '$features/app/layout-setup';
 import { redirect } from '@sveltejs/kit';
@@ -22,7 +23,8 @@ export const load = async ({ params, url, cookies }) => {
   let orgId: string | undefined = cachedOrgId;
 
   if (!orgId) {
-    const org = await OrgApiServer.getOrgBySiteName(siteName);
+    const apiKeyHeaders = getApiKeyHeaders();
+    const org = await orgApi.getOrgBySiteName(siteName, false, apiKeyHeaders);
     if (org?.id) {
       orgId = org.id;
 

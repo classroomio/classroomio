@@ -72,6 +72,7 @@
 
     {#if customLinks && showLinks}
       <CustomLinks {customLinks} />
+      <MobileMenu bind:mobileMenuOpen {customLinks} {disableSignup} {redirect} />
     {/if}
 
     {#if $user.isLoggedIn}
@@ -89,10 +90,6 @@
       <AuthButtons {disableSignup} {redirect} />
     {/if}
   </ul>
-
-  {#if showLinks}
-    <MobileMenu bind:mobileMenuOpen {customLinks} {disableSignup} {redirect} />
-  {/if}
 </nav>
 
 <style>

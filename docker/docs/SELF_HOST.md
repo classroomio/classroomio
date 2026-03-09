@@ -35,6 +35,10 @@ BETTER_AUTH_SECRET=replace-with-a-long-random-secret
 # Leave blank to auto-generate on first ./run-docker-full-stack.sh
 PRIVATE_SERVER_KEY=
 
+# Enterprise features (optional: SSO, token-auth, no-tracking)
+# Request a key from ClassroomIO. Leave empty if you do not use Enterprise-only features.
+LICENSE_KEY=
+
 # API and dashboard URLs
 PUBLIC_SERVER_URL=http://localhost:3081
 
@@ -83,6 +87,7 @@ Important:
 - `./run-docker-full-stack.sh` always uses root `.env` (`docker compose --env-file .env ...`) for compose build/runtime variables.
 - API key middleware for dashboard/server-to-server calls validates `PRIVATE_SERVER_KEY`.
 - `AUTH_BEARER_TOKEN` is separate and is not used by `apiKeyMiddleware`.
+- Enterprise-only features (SSO, token-auth, no-tracking) require `LICENSE_KEY`. If you do not need those features, leave `LICENSE_KEY` empty.
 - Dashboard API URL behavior is split by environment: browser requests use `PUBLIC_SERVER_URL`, and server-side dashboard requests use `PRIVATE_SERVER_URL` (fallback: `PUBLIC_SERVER_URL`).
 - In hosted deployments, `PUBLIC_SERVER_URL` must be your public API domain (not `localhost`), while Docker internal SSR calls should use `PRIVATE_SERVER_URL=http://api:3081`.
 - `AUTH_COOKIE_DOMAIN` is optional. Leave it empty for Better Auth defaults, or set it to `.your-domain.com` (shared cookies across subdomains) or your API host domain when you need explicit cookie domain control.

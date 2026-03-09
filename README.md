@@ -122,6 +122,7 @@ The repository also contains shared packages under `packages/` (for example `pac
    - Populate them with required values (at minimum):
      - `apps/api/.env`: `DATABASE_URL`, `REDIS_URL`, `AUTH_BEARER_TOKEN`, `BETTER_AUTH_SECRET`
      - `apps/dashboard/.env`: `PUBLIC_SERVER_URL`, `PRIVATE_SERVER_KEY`, `PUBLIC_IS_SELFHOSTED`
+   - Optional for self-hosted Enterprise-only features (SSO, token-auth, no-tracking): set `LICENSE_KEY` in `apps/api/.env`
 
 6. Start local infrastructure for API (Postgres + Redis + db-init):
 
@@ -175,12 +176,19 @@ The script always reads root `.env` via `docker compose --env-file .env`, and it
 
 For production deployments from published images, use `docker/docker-compose.prod.yaml` with `docker/.env.prod.example` as your template.
 
+Enterprise-only self-hosted features (SSO, token-auth, no-tracking) require a license key from us. Set `LICENSE_KEY` in:
+- `apps/api/.env` for local non-Docker development
+- root `.env` for Docker Compose self-hosting
+- `docker/.env.prod` for published-image deployments
+
+If you do not use Enterprise-only features, you do not need `LICENSE_KEY`.
+
 URL routing for dashboard API calls:
 
 - Browser requests use `PUBLIC_SERVER_URL` (must be your public API domain in hosted environments, not `localhost`).
 - Server-side dashboard requests (SSR/load functions) use `PRIVATE_SERVER_URL` when set, and fallback to `PUBLIC_SERVER_URL`.
 - In Docker Compose, use `PRIVATE_SERVER_URL=http://api:3081` so dashboard SSR calls stay on the internal Docker network.
-- Optional: set `AUTH_COOKIE_DOMAIN` for Better Auth cookie domain control (`.your-domain.com` for shared subdomains, or your exact API host).
+- Set `AUTH_COOKIE_DOMAIN` for Better Auth cookie domain control (`your-domain.com` for shared subdomains, or your exact API host).
 
 For Docker details and troubleshooting, see:
 
