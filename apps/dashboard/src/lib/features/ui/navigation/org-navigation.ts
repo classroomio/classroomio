@@ -11,6 +11,7 @@ import {
 import type { AccountOrg } from '$features/app/types';
 import type { Component } from 'svelte';
 import TagIcon from '@lucide/svelte/icons/tag';
+import ZapIcon from '@lucide/svelte/icons/zap';
 import { isActive } from '$lib/utils/functions/app';
 
 export interface NavItem {
@@ -98,6 +99,13 @@ const baseNavConfig: NavItemConfig[] = [
     icon: SetupIcon,
     requiresAdmin: true,
     matchPattern: '^/org/[^/]+/setup(/.*)?$' // Matches nested routes
+  },
+  {
+    titleKey: 'org_navigation.automation',
+    path: '/automation',
+    icon: ZapIcon,
+    requiresAdmin: true,
+    matchPattern: '^/org/[^/]+/automation(/.*)?$'
   },
   {
     titleKey: 'org_navigation.settings',

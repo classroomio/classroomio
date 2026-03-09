@@ -6,6 +6,13 @@ import { handleError } from '@api/utils/errors';
 import { ZCreateApiKey, ZRevokeApiKeyParam } from '@cio/utils/validation/public-api-key';
 import { createApiKey, listApiKeys, revokeApiKey } from '@api/services/public-api';
 
+const apiKeyRouteMessages = {
+  createFailed: 'public_api.api_key.error.create_failed',
+  listFailed: 'public_api.api_key.error.list_failed',
+  revokeFailed: 'public_api.api_key.error.revoke_failed',
+  revokedSuccess: 'public_api.api_key.success.revoked'
+} as const;
+
 export const apiKeyRouter = new Hono()
   .post('/api-key', authMiddleware, orgAdminMiddleware, zValidator('json', ZCreateApiKey), async (c) => {
     const user = c.get('user')!;
@@ -23,7 +30,7 @@ export const apiKeyRouter = new Hono()
         201
       );
     } catch (error) {
-      return handleError(c, error, 'Failed to create API key');
+      return handleError(c, error, apiKeyRouteMessages.createFailed);
     }
   })
   .get('/api-key', authMiddleware, orgAdminMiddleware, async (c) => {
@@ -40,7 +47,7 @@ export const apiKeyRouter = new Hono()
         200
       );
     } catch (error) {
-      return handleError(c, error, 'Failed to list API keys');
+      return handleError(c, error, apiKeyRouteMessages.listFailed);
     }
   })
   .delete('/api-key/:keyId', authMiddleware, orgAdminMiddleware, zValidator('param', ZRevokeApiKeyParam), async (c) => {
@@ -53,11 +60,11 @@ export const apiKeyRouter = new Hono()
       return c.json(
         {
           success: true,
-          message: 'API key revoked successfully'
+          message: apiKeyRouteMessages.revokedSuccess
         },
         200
       );
     } catch (error) {
-      return handleError(c, error, 'Failed to revoke API key');
+      return handleError(c, error, apiKeyRouteMessages.revokeFailed);
     }
   });

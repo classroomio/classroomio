@@ -197,7 +197,7 @@ describe('API Key Management Routes', () => {
     it('should revoke API key successfully', async () => {
       vi.mocked(publicApiService.revokeApiKey).mockResolvedValue({
         success: true,
-        message: 'API key revoked successfully'
+        message: 'public_api.api_key.success.revoked'
       });
 
       // Use a valid UUID format
@@ -213,7 +213,7 @@ describe('API Key Management Routes', () => {
       expect(response.status).toBe(200);
       const data = await response.json();
       expect(data.success).toBe(true);
-      expect(data.message).toBe('API key revoked successfully');
+      expect(data.message).toBe('public_api.api_key.success.revoked');
       expect(publicApiService.revokeApiKey).toHaveBeenCalledWith(validKeyId, mockOrgId);
     });
 
