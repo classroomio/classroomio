@@ -2,7 +2,7 @@
   import { tv, type VariantProps } from 'tailwind-variants';
 
   export const buttonGroupVariants = tv({
-    base: "ui:flex ui:w-fit ui:items-stretch ui:has-[>[data-slot=button-group]]:gap-2 ui:[&>*]:focus-visible:relative ui:[&>*]:focus-visible:z-10 ui:has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-e-md ui:[&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit ui:[&>input]:flex-1",
+    base: "ui:flex ui:w-fit ui:items-stretch ui:has-[>[data-slot=button-group]]:gap-2 ui:[&>*]:focus-visible:relative ui:[&>*]:focus-visible:z-10 ui:has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-e-md ui:[&>[data-slot=select-trigger]:not([class*='ui:w-'])]:w-fit ui:[&>input]:flex-1",
     variants: {
       orientation: {
         horizontal:

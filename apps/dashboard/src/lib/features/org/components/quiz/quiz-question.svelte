@@ -52,7 +52,7 @@
           isDisabled={currentQuestion.type === 'boolean'}
           errorMessage={optionHasError(option.id, currentError.options) && $t('components.quiz.label')}
         />
-        <div class="absolute right-2 top-2 flex justify-end">
+        <div class="absolute top-2 right-2 flex justify-end">
           <IconButton onclick={() => (option.isCorrect = !option.isCorrect)} class={option.isCorrect ? 'success' : ''}>
             <CircleCheckIcon size={16} filled={option.isCorrect} />
           </IconButton>

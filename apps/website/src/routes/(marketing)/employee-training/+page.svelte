@@ -57,7 +57,7 @@
   <PageHeader
     className="flex flex-col lg:items-center items-start lg:justify-center justify-start gap-y-6 lg:px-28 md:px-16 px-8"
   >
-    <Badge class="py-2! px-4!" variant="outline">Unlock your team's potential</Badge>
+    <Badge class="px-4! py-2!" variant="outline">Unlock your team's potential</Badge>
 
     <div class="flex w-full flex-col items-start justify-start gap-y-8 lg:items-center lg:justify-center">
       <div class="flex w-full max-w-7xl flex-col items-start justify-start gap-y-4 lg:items-center lg:justify-center">
@@ -101,7 +101,7 @@
 
           <div class="align-start flex w-full flex-col justify-start gap-y-2">
             <h1 class="text-lg">{benefits.title}</h1>
-            <p class="font-[#656565] text-base font-light leading-8 text-gray-500">
+            <p class="font-[#656565] text-base leading-8 font-light text-gray-500">
               {benefits.description}
             </p>
           </div>
@@ -114,7 +114,7 @@
     class="flex w-full flex-col items-center justify-start gap-y-16 bg-[#F1F6FF] px-8 py-16 md:px-16 lg:px-28 lg:py-24"
   >
     <div class="flex w-full flex-col items-start justify-start gap-y-4 lg:items-center lg:justify-center">
-      <Badge class="py-2! px-4!" variant="outline">Explore our features</Badge>
+      <Badge class="px-4! py-2!" variant="outline">Explore our features</Badge>
 
       <div
         class="flex max-w-7xl flex-col items-start justify-start gap-y-4 lg:w-full lg:items-center lg:justify-center"

@@ -244,19 +244,19 @@ export const isUserOrgAdmin = async (orgId: string, profileId: string): Promise<
 };
 
 /**
- * Checks if a user is a member of an organization (any role)
+ * Gets a user's role in an organization
  * @param orgId Organization ID
  * @param profileId Profile ID to check
- * @returns True if user is a member, false otherwise
+ * @returns Role ID if user is a member, null otherwise
  */
-export const isUserOrgMember = async (orgId: string, profileId: string): Promise<boolean> => {
+export const getUserOrgRole = async (orgId: string, profileId: string): Promise<number | null> => {
   const result = await db
     .select({ roleId: schema.organizationmember.roleId })
     .from(schema.organizationmember)
     .where(and(eq(schema.organizationmember.organizationId, orgId), eq(schema.organizationmember.profileId, profileId)))
     .limit(1);
 
-  return result.length > 0;
+  return result.length > 0 ? Number(result[0].roleId) : null;
 };
 
 /**
@@ -320,7 +320,7 @@ export const getOrganizationTeam = async (orgId: string) => {
 };
 
 /**
- * Gets organization audience (students who are participants in any course)
+ * Gets organization audience (all organization members with student role)
  * @param orgId Organization ID
  * @returns Array of student profiles
  */
@@ -333,10 +333,11 @@ export const getOrganizationAudience = async (orgId: string) => {
       avatarUrl: schema.profile.avatarUrl,
       createdAt: schema.profile.createdAt
     })
-    .from(schema.profile)
-    .innerJoin(schema.groupmember, eq(schema.profile.id, schema.groupmember.profileId))
-    .innerJoin(schema.group, eq(schema.groupmember.groupId, schema.group.id))
-    .where(and(eq(schema.group.organizationId, orgId), eq(schema.groupmember.roleId, ROLE.STUDENT)));
+    .from(schema.organizationmember)
+    .innerJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
+    .where(
+      and(eq(schema.organizationmember.organizationId, orgId), eq(schema.organizationmember.roleId, ROLE.STUDENT))
+    );
 
   return result.map((profile) => ({
     id: profile.id,
@@ -436,6 +437,101 @@ export const getOrganizations = async (filters?: {
 };
 
 /**
+ * Gets the first (and typically only) organization - used for self-hosted single-org mode
+ * @returns First organization by createdAt, or null if none exist
+ */
+export const getFirstOrganization = async (): Promise<TOrganization | null> => {
+  const [organization] = await db.select().from(schema.organization).orderBy(schema.organization.createdAt).limit(1);
+
+  return organization || null;
+};
+
+/**
+ * Gets the first organization with plans - for self-hosted single-org mode
+ * @returns First organization with plans (by createdAt), or null if none exist
+ */
+export const getFirstOrganizationWithPlans = async (): Promise<
+  (TOrganization & { plans: Array<OrganizationPlan> }) | null
+> => {
+  // Get the first organization ID (by createdAt) - avoid limit(1) on joined result
+  // which would discard plan rows when an org has multiple plans
+  const [firstOrg] = await db
+    .select({ id: schema.organization.id })
+    .from(schema.organization)
+    .orderBy(schema.organization.createdAt)
+    .limit(1);
+
+  if (!firstOrg) return null;
+
+  const result = await db
+    .select({
+      organization: schema.organization,
+      plan: {
+        planName: schema.organizationPlan.planName,
+        isActive: schema.organizationPlan.isActive,
+        provider: schema.organizationPlan.provider,
+        subscriptionId: schema.organizationPlan.subscriptionId,
+        customerId: sql`organization_plan.payload->>'customerId'`.as('customerId')
+      }
+    })
+    .from(schema.organization)
+    .leftJoin(schema.organizationPlan, eq(schema.organization.id, schema.organizationPlan.orgId))
+    .where(eq(schema.organization.id, firstOrg.id));
+
+  const organizationMap = new Map<
+    string,
+    {
+      organization: typeof schema.organization.$inferSelect;
+      plans: Array<OrganizationPlan>;
+    }
+  >();
+
+  for (const row of result) {
+    const orgId = row.organization.id;
+    if (!organizationMap.has(orgId)) {
+      organizationMap.set(orgId, {
+        organization: row.organization,
+        plans: []
+      });
+    }
+    const orgData = organizationMap.get(orgId)!;
+    if (
+      row.plan &&
+      (row.plan.planName !== null ||
+        row.plan.isActive !== null ||
+        row.plan.provider !== null ||
+        row.plan.subscriptionId !== null)
+    ) {
+      orgData.plans.push({
+        planName: row.plan.planName,
+        isActive: row.plan.isActive,
+        provider: row.plan.provider,
+        subscriptionId: row.plan.subscriptionId,
+        customerId: row.plan.customerId as string | null
+      });
+    }
+  }
+
+  const first = Array.from(organizationMap.values())[0];
+  return first
+    ? ({
+        ...(first.organization as TOrganization),
+        plans: first.plans
+      } as TOrganization & { plans: Array<OrganizationPlan> })
+    : null;
+};
+
+/**
+ * Gets the number of organizations - used for self-hosted to block org creation when org exists
+ * @returns Count of organizations
+ */
+export const getOrganizationCount = async (): Promise<number> => {
+  const [result] = await db.select({ count: sql<number>`count(*)::int`.as('count') }).from(schema.organization);
+
+  return result?.count ?? 0;
+};
+
+/**
  * Creates a new organization plan
  * @param data Organization plan creation data
  * @returns Created organization plan record
@@ -490,15 +586,65 @@ export const cancelOrganizationPlan = async (
 /**
  * Updates an organization
  * @param id Organization ID
- * @param data Partial organization data to update
+ * @param data Partial organization data to update. When `settings` is provided, it is deep-merged with existing settings.
  * @returns Updated organization record
  */
 export const updateOrganization = async (id: string, data: Partial<TOrganization>): Promise<TOrganization> => {
+  let setData = { ...data };
+
+  if (data.settings !== undefined) {
+    const [existing] = await db
+      .select({ settings: schema.organization.settings })
+      .from(schema.organization)
+      .where(eq(schema.organization.id, id))
+      .limit(1);
+
+    const existingSettings = (existing?.settings as Record<string, unknown>) ?? {};
+    const newSettings = data.settings as Record<string, unknown>;
+    const mergedSettings: Record<string, unknown> = { ...existingSettings };
+    for (const key of Object.keys(newSettings ?? {})) {
+      const existingVal = existingSettings[key];
+      const newVal = newSettings[key];
+      if (newVal !== undefined) {
+        if (
+          existingVal &&
+          typeof existingVal === 'object' &&
+          !Array.isArray(existingVal) &&
+          newVal &&
+          typeof newVal === 'object' &&
+          !Array.isArray(newVal)
+        ) {
+          mergedSettings[key] = { ...(existingVal as Record<string, unknown>), ...(newVal as Record<string, unknown>) };
+        } else {
+          mergedSettings[key] = newVal;
+        }
+      }
+    }
+    setData = { ...setData, settings: mergedSettings as TOrganization['settings'] };
+  }
+
   const [organization] = await db
     .update(schema.organization)
-    .set(data)
+    .set(setData)
     .where(eq(schema.organization.id, id))
     .returning();
 
   return organization;
+};
+
+/**
+ * Get organization plan status for SSO entitlement check
+ * @param orgId Organization ID
+ * @returns Array of plan records
+ */
+export const getOrganizationPlanStatus = async (orgId: string) => {
+  const result = await db
+    .select({
+      planName: schema.organizationPlan.planName,
+      isActive: schema.organizationPlan.isActive
+    })
+    .from(schema.organizationPlan)
+    .where(eq(schema.organizationPlan.orgId, orgId));
+
+  return result;
 };

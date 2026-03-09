@@ -1,10 +1,13 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import { resolve } from '$app/paths';
+  import { ROLE } from '@cio/utils/constants';
   import { user } from '$lib/utils/store/user';
+  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { isCoursePage } from '$lib/utils/functions/app';
   import { t } from '$lib/utils/functions/translations';
   import type { TCustomLinks } from './types';
-
+  import { Button } from '@cio/ui/base/button';
   import Logo from './Logo.svelte';
   import CustomLinks from './CustomLinks.svelte';
   import AuthButtons from './AuthButtons.svelte';
@@ -30,9 +33,16 @@
 
   let navClass = '';
   let mobileMenuOpen = $state(false);
+  let is404Page = $derived(page.url.pathname?.includes('/404'));
 
   let redirect = $derived(isCoursePage(page.url.pathname) ? `?redirect=${page.url.pathname}` : '');
   let showLinks = $derived(customLinks && customLinks.show && customLinks.links && customLinks.links.length > 0);
+
+  let isAdminOrTeacher = $derived($currentOrg.roleId === ROLE.ADMIN || $currentOrg.roleId === ROLE.TUTOR);
+  let gotoHref = $derived(
+    isAdminOrTeacher && $currentOrgPath !== '#' ? resolve($currentOrgPath, {}) : resolve('/lms', {})
+  );
+  let gotoLabel = $derived(isAdminOrTeacher ? 'navigation.goto_dashboard' : 'navigation.goto_lms');
 
   function toggleMobileMenu() {
     mobileMenuOpen = !mobileMenuOpen;
@@ -40,7 +50,7 @@
 </script>
 
 <nav
-  class="{navClass} {backgroundColor} sticky top-0 z-50 flex w-full border-b border-l-0 border-r-0 border-t-0 border-gray-300 px-2 py-1"
+  class="{navClass} {backgroundColor} sticky top-0 z-50 flex w-full border-t-0 border-r-0 border-b border-l-0 border-gray-300 px-2 py-1"
 >
   <ul class="flex w-full items-center">
     <Logo {logo} {orgName} />
@@ -62,25 +72,24 @@
 
     {#if customLinks && showLinks}
       <CustomLinks {customLinks} />
+      <MobileMenu bind:mobileMenuOpen {customLinks} {disableSignup} {redirect} />
     {/if}
 
     {#if $user.isLoggedIn}
       {#if isOrgSite}
-        <li><a class="block" href="/lms"> {$t('navigation.goto_lms')} </a></li>
+        <li>
+          <Button variant="secondary" size="sm" href={gotoHref}>{$t(gotoLabel)}</Button>
+        </li>
       {/if}
-    {:else if isOrgSite && !page.url.pathname?.includes('/404')}
+    {:else if isOrgSite && !is404Page}
       <!-- Hide login/signup buttons on mobile when custom links exist -->
       <div class="hidden lg:block">
         <AuthButtons {disableSignup} {redirect} />
       </div>
-    {:else if !isOrgSite && !page.url.pathname?.includes('/404')}
+    {:else if !isOrgSite && !is404Page}
       <AuthButtons {disableSignup} {redirect} />
     {/if}
   </ul>
-
-  {#if showLinks}
-    <MobileMenu bind:mobileMenuOpen {customLinks} {disableSignup} {redirect} />
-  {/if}
 </nav>
 
 <style>
@@ -95,17 +104,6 @@
     clear: both;
   }
 
-  a {
-    text-decoration: none;
-    color: var(--main-primary-color);
-    padding: 0 1.5em;
-    font-weight: 700;
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    flex-direction: column;
-  }
-
   /* Mobile menu button styles */
   .mobile-menu-btn {
     display: none;
@@ -117,10 +115,6 @@
     }
     ul {
       align-items: center;
-    }
-
-    a {
-      padding: 0 0.5em;
     }
 
     .mobile-menu-btn {

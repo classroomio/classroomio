@@ -2,7 +2,7 @@
   // import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
 
   interface Props {
-    filled?: Boolean;
+    filled?: boolean;
     size?: number;
   }
   let { filled, size = 16 }: Props = $props();

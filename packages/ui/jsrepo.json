@@ -9,6 +9,7 @@
   "paths": {
     "*": "$src",
     "ui": "$src/base",
+    "code": "src/custom",
     "actions": "$src/actions",
     "hooks": "$src/hooks",
     "utils": "$src/tools"

@@ -13,5 +13,9 @@
     "declarationMap": true
   },
   "include": ["src/**/*.ts", "src/**/*.json"],
-  "exclude": ["node_modules", "dist", "scripts", "tsconfig.tsbuildinfo"]
+  "exclude": ["node_modules", "dist", "scripts", "tsconfig.tsbuildinfo"],
+  "tsc-alias": {
+    "resolveFullPaths": true,
+    "verbose": false
+  }
 }

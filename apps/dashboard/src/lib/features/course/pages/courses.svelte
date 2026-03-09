@@ -19,26 +19,24 @@
   } from '$features/course/components';
 
   import { DeleteModal } from '$features/ui';
-  import type { Course } from '$lib/utils/types';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$features/ui/snackbar/store';
-  import { deleteCourse } from '$lib/utils/services/courses';
-  import {
-    deleteCourseModal,
-    deleteCourseModalInitialState,
-    courses as coursesStore,
-    courseMetaDeta
-  } from '../utils/store';
+  import { courseApi } from '$features/course/api';
+  import { deleteCourseModal, deleteCourseModalInitialState, courseMetaDeta } from '../utils/store';
   import { browser } from '$app/environment';
+  import type { OrgCourses, UserEnrolledCourses } from '$features/course/types';
+  import type { Snippet } from 'svelte';
 
   interface Props {
-    courses?: Course[];
+    courses?: OrgCourses | UserEnrolledCourses;
     emptyTitle?: string;
     emptyDescription?: string;
     isExplore?: boolean;
     isLMS?: boolean;
     searchValue?: string;
     selectedId?: string;
+    isLoading?: boolean;
+    showSortSelect?: boolean;
+    filterControls?: Snippet;
   }
 
   let {
@@ -48,7 +46,10 @@
     isExplore = false,
     isLMS = false,
     searchValue = $bindable(''),
-    selectedId = $bindable('0')
+    selectedId = $bindable('0'),
+    isLoading = false,
+    showSortSelect = true,
+    filterControls
   }: Props = $props();
 
   const filterOptions = $derived([
@@ -73,24 +74,13 @@
 
     $deleteCourseModal.isDeleting = true;
 
-    try {
-      await deleteCourse($deleteCourseModal.id);
+    await courseApi.delete($deleteCourseModal.id);
 
-      // Remove the course from the courses store
-      $coursesStore = $coursesStore.filter((course) => course.id !== $deleteCourseModal.id);
-
-      // Show success message
-      snackbar.success('snackbar.course_deleted');
-
-      // Close modal and reset state
+    if (courseApi.success) {
       deleteCourseModal.set(deleteCourseModalInitialState);
-    } catch (error) {
-      console.error('Error deleting course:', error);
-      snackbar.error('snackbar.course_settings.error.went_wrong');
-
-      // Stop deleting state on error
-      $deleteCourseModal.isDeleting = false;
     }
+
+    $deleteCourseModal.isDeleting = false;
   }
 </script>
 
@@ -106,30 +96,36 @@
 
 <Page.BodyHeader align="right">
   <Search placeholder={$t('courses.search_placeholder')} bind:value={searchValue} />
-  <Select.Root type="single" bind:value={selectedId}>
-    <Select.Trigger class="min-w-[150px]">
-      <p>{selectedId ? selectedLabel : filterOptions[0].label}</p>
-    </Select.Trigger>
-    <Select.Content>
-      {#each filterOptions as option (option.label)}
-        <Select.Item value={option.value}>{option.label}</Select.Item>
-      {/each}
-    </Select.Content>
-  </Select.Root>
-  {#if $courseMetaDeta.view === 'list'}
-    <IconButton onclick={() => setViewPreference('grid')}>
-      <GridIcon size={16} />
-    </IconButton>
-  {:else}
-    <IconButton onclick={() => setViewPreference('list')}>
-      <ListIcon size={16} />
-    </IconButton>
+  {#if showSortSelect}
+    <Select.Root type="single" bind:value={selectedId}>
+      <Select.Trigger class="min-w-[150px]">
+        <p>{selectedId ? selectedLabel : filterOptions[0].label}</p>
+      </Select.Trigger>
+      <Select.Content>
+        {#each filterOptions as option (option.label)}
+          <Select.Item value={option.value}>{option.label}</Select.Item>
+        {/each}
+      </Select.Content>
+    </Select.Root>
+  {/if}
+  {@render filterControls?.()}
+
+  {#if !isLMS}
+    {#if $courseMetaDeta.view === 'list'}
+      <IconButton onclick={() => setViewPreference('grid')}>
+        <GridIcon size={16} />
+      </IconButton>
+    {:else}
+      <IconButton onclick={() => setViewPreference('list')}>
+        <ListIcon size={16} />
+      </IconButton>
+    {/if}
   {/if}
 </Page.BodyHeader>
 
 <div class="mx-auto w-full flex-1">
-  {#if $courseMetaDeta.isLoading}
-    <section class={`${$courseMetaDeta.isLoading || courses ? 'cards-container' : ''} `}>
+  {#if isLoading}
+    <section class={`${isLoading || courses ? 'cards-container' : ''} `}>
       <CourseCardLoader />
       <CourseCardLoader />
       <CourseCardLoader />
@@ -146,12 +142,13 @@
         <Table.Header>
           <Table.Row>
             <Table.Head class="w-[20%]">{$t('courses.course_card.list_view.title')}</Table.Head>
-            <Table.Head class="w-[30%]">{$t('courses.course_card.list_view.description')}</Table.Head>
+            <Table.Head class="w-[24%]">{$t('courses.course_card.list_view.description')}</Table.Head>
             <Table.Head class="w-[10%]">{$t('courses.course_card.list_view.type')}</Table.Head>
-            <Table.Head class="w-[10%]">{$t('courses.course_card.list_view.lessons')}</Table.Head>
-            <Table.Head class="w-[10%]">{$t('courses.course_card.list_view.students')}</Table.Head>
-            <Table.Head class="w-[12%]">{$t('courses.course_card.list_view.published')}</Table.Head>
-            <Table.Head class="w-[8%]"></Table.Head>
+            <Table.Head class="w-[14%]">{$t('courses.course_card.list_view.tags')}</Table.Head>
+            <Table.Head class="w-[8%]">{$t('courses.course_card.list_view.lessons')}</Table.Head>
+            <Table.Head class="w-[8%]">{$t('courses.course_card.list_view.students')}</Table.Head>
+            <Table.Head class="w-[10%]">{$t('courses.course_card.list_view.published')}</Table.Head>
+            <Table.Head class="w-[6%]"></Table.Head>
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -159,11 +156,17 @@
             <CourseList
               id={courseData.id}
               title={courseData.title}
-              type={$t(`course.navItem.settings.${courseData.type.toLowerCase()}`)}
+              type={$t(`course.navItem.settings.${courseData.type?.toLowerCase()}`)}
               description={courseData.description}
-              isPublished={courseData.is_published}
-              totalLessons={courseData.total_lessons}
-              totalStudents={courseData.total_students}
+              isPublished={courseData.isPublished ?? false}
+              totalLessons={courseData.lessonCount}
+              totalStudents={'totalStudents' in courseData ? courseData.totalStudents : 0}
+              tags={('tags' in courseData && Array.isArray(courseData.tags) ? courseData.tags : []) as Array<{
+                id: string;
+                name: string;
+                slug: string;
+                color?: string | null;
+              }>}
             />
           {/each}
         </Table.Body>

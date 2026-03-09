@@ -25,7 +25,7 @@
       'ui:peer-data-[size=lg]/menu-button:top-2.5',
       'ui:group-data-[collapsible=icon]:hidden',
       showOnHover &&
-        'ui:peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 ui:data-[state=open]:opacity-100 ui:md:opacity-0',
+        'ui:peer-data-[active=true]/menu-button:text-sidebar-accent-foreground ui:group-focus-within/menu-item:opacity-100 ui:group-hover/menu-item:opacity-100 ui:data-[state=open]:opacity-100 ui:md:opacity-0',
       className
     ),
     'data-slot': 'sidebar-menu-action',

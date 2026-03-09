@@ -1,20 +1,20 @@
 <script lang="ts">
-  import { Button } from '../../base/button';
+  import { Button, type ButtonProps } from '../../base/button';
   import { Tooltip, Provider, Trigger, Content } from '../../base/tooltip';
-  import type { ComponentProps } from 'svelte';
 
-  interface Props extends Omit<ComponentProps<typeof Button>, 'variant' | 'size'> {
+  interface Props extends Omit<ButtonProps, 'variant' | 'size'> {
     tooltip?: string;
     tooltipSide?: 'top' | 'bottom' | 'left' | 'right';
+    tooltipClass?: string;
   }
 
-  let { tooltip, tooltipSide = 'top', children, ...buttonProps }: Props = $props();
+  let { tooltip, tooltipSide = 'top', tooltipClass = '', children, ...buttonProps }: Props = $props();
 </script>
 
 {#if tooltip}
   <Provider>
     <Tooltip>
-      <Trigger>
+      <Trigger class={tooltipClass}>
         <Button variant="secondary" size="icon" {...buttonProps}>
           {@render children?.()}
         </Button>

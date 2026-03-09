@@ -22,6 +22,48 @@ export async function seedQuestionTypes() {
       typename: 'TEXTAREA',
       createdAt: '2021-08-07 18:49:46.246529+00',
       updatedAt: '2021-08-15 00:57:38.634665+00'
+    },
+    {
+      label: 'True/False',
+      typename: 'TRUE_FALSE',
+      createdAt: '2021-08-07 18:49:46.246529+00',
+      updatedAt: '2021-08-15 00:57:38.634665+00'
+    },
+    {
+      label: 'Short answer',
+      typename: 'SHORT_ANSWER',
+      createdAt: '2021-08-07 18:49:46.246529+00',
+      updatedAt: '2021-08-15 00:57:38.634665+00'
+    },
+    {
+      label: 'Numeric answer',
+      typename: 'NUMERIC',
+      createdAt: '2021-08-07 18:49:46.246529+00',
+      updatedAt: '2021-08-15 00:57:38.634665+00'
+    },
+    {
+      label: 'Fill in the blank',
+      typename: 'FILL_BLANK',
+      createdAt: '2021-08-07 18:49:46.246529+00',
+      updatedAt: '2021-08-15 00:57:38.634665+00'
+    },
+    {
+      label: 'File upload',
+      typename: 'FILE_UPLOAD',
+      createdAt: '2021-08-07 18:49:46.246529+00',
+      updatedAt: '2021-08-15 00:57:38.634665+00'
+    },
+    {
+      label: 'Ordering',
+      typename: 'ORDERING',
+      createdAt: '2021-08-07 18:49:46.246529+00',
+      updatedAt: '2021-08-15 00:57:38.634665+00'
+    },
+    {
+      label: 'Links',
+      typename: 'LINK',
+      createdAt: '2021-08-07 18:49:46.246529+00',
+      updatedAt: '2021-08-15 00:57:38.634665+00'
     }
   ].filter((q) => !questionTypeNames.includes(q.typename));
 

@@ -167,7 +167,7 @@
           }}
         >
           <div
-            class="ui:bg-muted ui:z-20 ui:h-[70px] ui:w-1 ui:rounded-xl ui:border ui:opacity-0 ui:transition-all group-hover:opacity-100"
+            class="ui:bg-muted ui:z-20 ui:h-[70px] ui:w-1 ui:rounded-xl ui:border ui:opacity-0 ui:transition-all ui:group-hover:opacity-100"
           ></div>
         </div>
 
@@ -185,7 +185,7 @@
           }}
         >
           <div
-            class="ui:bg-muted ui:z-20 ui:h-[70px] ui:w-1 ui:rounded-xl ui:border ui:opacity-0 ui:transition-all group-hover:opacity-100"
+            class="ui:bg-muted ui:z-20 ui:h-[70px] ui:w-1 ui:rounded-xl ui:border ui:opacity-0 ui:transition-all ui:group-hover:opacity-100"
           ></div>
         </div>
         <div

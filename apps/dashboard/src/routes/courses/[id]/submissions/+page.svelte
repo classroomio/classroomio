@@ -1,6 +1,5 @@
 <script lang="ts">
   import { SubmissionsPage } from '$features/course/pages';
-  import { CourseContainer } from '$lib/components/CourseContainer';
   import { RoleBasedSecurity } from '$features/ui';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
@@ -8,12 +7,8 @@
   let { data } = $props();
 </script>
 
-<svelte:head>
-  <title>Submissions - ClassroomIO</title>
-</svelte:head>
-
-<CourseContainer courseId={data.courseId}>
-  <RoleBasedSecurity allowedRoles={[1, 2]}>
+<RoleBasedSecurity allowedRoles={[1, 2]}>
+  <Page.Root class="mx-auto flex w-[calc(95vw-var(--sidebar-width))]!">
     <Page.Header>
       <Page.HeaderContent>
         <Page.Title>
@@ -24,8 +19,12 @@
 
     <Page.Body>
       {#snippet child()}
-        <SubmissionsPage courseId={data.courseId} />
+        <SubmissionsPage
+          courseId={data.courseId}
+          sections={data.sections || []}
+          submissionIdData={data.submissionIdData || {}}
+        />
       {/snippet}
     </Page.Body>
-  </RoleBasedSecurity>
-</CourseContainer>
+  </Page.Root>
+</RoleBasedSecurity>

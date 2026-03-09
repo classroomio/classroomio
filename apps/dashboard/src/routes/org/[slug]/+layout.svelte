@@ -5,6 +5,7 @@
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { currentOrg } from '$lib/utils/store/org';
   import { AppHeader } from '$features/ui';
+  import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 
   import { VerifyEmailModal } from '$features/onboarding/components';
 
@@ -13,7 +14,7 @@
 
   let { data, children } = $props();
 
-  function redirect(siteName: string) {
+  function redirect(siteName: string | null) {
     if (!siteName) return;
 
     const newUrl = page.url.pathname.replace('*', siteName);
@@ -25,7 +26,9 @@
   });
 </script>
 
-<AddOrgModal />
+{#if PUBLIC_IS_SELFHOSTED !== 'true'}
+  <AddOrgModal />
+{/if}
 
 <VerifyEmailModal />
 

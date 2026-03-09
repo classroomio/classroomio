@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
   import * as Page from '@cio/ui/base/page';
   import * as Select from '@cio/ui/base/select';
   import { Empty } from '@cio/ui/custom/empty';
@@ -20,24 +19,25 @@
 
   interface Props {
     isLMS?: boolean;
+    questions?: CommunityQuestionData;
   }
 
-  let { isLMS = false }: Props = $props();
+  let { isLMS = false, questions }: Props = $props();
 
   let searchValue = $state('');
   let selectedId = $state('');
 
-  function fetchCommunityQuestions(orgId?: string, profileId?: string) {
-    if (!orgId || !profileId) return;
-
-    untrack(async () => {
-      await communityApi.fetchCoursesForOrg(profileId, orgId);
-      await communityApi.fetchCommunityQuestions({ orgId, isLMS });
-    });
-  }
+  // Initialize questions from prop if provided
+  $effect(() => {
+    if (questions) {
+      communityApi.questions = questions;
+    }
+  });
 
   $effect(() => {
-    fetchCommunityQuestions($currentOrg.id, $profile.id);
+    if (!$profile.id || !$currentOrg.id) return;
+
+    communityApi.fetchCoursesForOrg($profile.id, $currentOrg.id);
   });
 
   let filteredQuestions = $derived(
@@ -87,7 +87,7 @@
               {question.title}
             </Item.Title>
             <Item.Description>
-              {question?.authorFullname} asked {calDateDiff(question?.createdAt)}
+              {question?.authorFullname} asked {calDateDiff(question.createdAt || new Date())}
             </Item.Description>
             <a class="m-0" href="/courses/{question.courseId}" onclick={(e) => e.stopPropagation()}>
               <span class="text-muted-foreground p-0 text-xs">

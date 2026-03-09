@@ -1,12 +1,12 @@
 import { Context, Next } from 'hono';
 
-import { ErrorCodes } from '@api/utils/errors';
-import { isUserOrgMember } from '@cio/db/queries/organization';
+import { getUserOrgRole } from '@cio/db/queries/organization';
 
 /**
  * Middleware to check if the authenticated user is a member of the organization
  * Requires authMiddleware to be applied first
  * Expects orgId in the 'cio-org-id' header
+ * Stores orgRole and orgId in context for use in route handlers
  */
 export const orgMemberMiddleware = async (c: Context, next: Next) => {
   try {
@@ -35,8 +35,8 @@ export const orgMemberMiddleware = async (c: Context, next: Next) => {
       );
     }
 
-    const isMember = await isUserOrgMember(orgId, user.id);
-    if (!isMember) {
+    const roleId = await getUserOrgRole(orgId, user.id);
+    if (roleId === null) {
       return c.json(
         {
           success: false,
@@ -46,6 +46,10 @@ export const orgMemberMiddleware = async (c: Context, next: Next) => {
         403
       );
     }
+
+    // Store orgRole and orgId in context for use in route handlers
+    c.set('userRole', roleId);
+    c.set('orgId', orgId);
 
     await next();
   } catch (error) {

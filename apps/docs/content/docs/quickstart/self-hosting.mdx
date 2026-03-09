@@ -12,19 +12,19 @@ This guide will help you quickly self-host ClassroomIO.
 
 ClassroomIO is made up of the following applications:
 
-- [apps/api](https://github.com/rotimi-best/classroomio/tree/main/apps/api) - an Express server
-- [apps/dashboard](https://github.com/rotimi-best/classroomio/tree/main/apps/dashboard) - the admin dashboard + LMS
-- [supabase](https://github.com/rotimi-best/classroomio/tree/main/supabase) - the database + REST API
+- [apps/api](https://github.com/classroomio/classroomio/tree/main/apps/api) - an Express server
+- [apps/dashboard](https://github.com/classroomio/classroomio/tree/main/apps/dashboard) - the admin dashboard + LMS
+- [packages/db](https://github.com/classroomio/classroomio/tree/main/packages/db) - shared database layer for PostgreSQL
 
 The quickest and easiest way to deploy both the api and dashboard is by using our [Railway Template](https://railway.app/template/dl9RG7?referralCode=8OyIj5). However there are a couple of things that you'd need first before heading over to the template, which are:
 
 1. SMTP values - For sending emails on the api
-2. Supabase - For the database used on the dashboard
-3. Cloudflare R2 (optional) - Video uploads on the api
+2. PostgreSQL + Redis - For the API and database layer
+3. Object storage (MinIO for Docker self-hosting, or Cloudflare R2 for hosted) - Video, document, and image uploads
 
 ## SMTP Setup
 
-Both for the supabase and api setup, you'd need a custom SMTP for email sending. Most importantly you need these values:
+You need a custom SMTP configuration for email sending. Most importantly you need these values:
 
 ```zsh title="env"
 SMTP_HOST=
@@ -38,28 +38,122 @@ Make sure you have them handy because you'd need them while we go through this s
 
 <Callout title="Learn More">
   Learn more about setting up a custom SMTP server
-  [here](https://supabase.com/docs/guides/auth/auth-smtp)
+  [here](https://nodemailer.com/smtp/)
 </Callout>
 
-## Supabase
+## PostgreSQL + Redis
 
-There are 2 options to go about setting up Supabase, you could [self-host supabase](https://supabase.com/docs/guides/self-hosting) on your own servers or you could use their cloud version. We recommend you use the cloud version because it has a very generous free tier and you get to deploy it very quickly.
+ClassroomIO now runs directly on PostgreSQL and Redis (no Supabase dependency in Docker setup).
 
-We have a standalone guide to help you setup your Supabase Cloud and you can find it [here](/docs/contributor-guides/supabase-cloud).
-
-After you go through that guide you will need the following environment variables, please also store them somewhere:
+For deployments, keep these connection variables ready:
 
 ```zsh title="env"
-PUBLIC_SUPABASE_URL=
-PUBLIC_SUPABASE_ANON_KEY=
-PRIVATE_SUPABASE_SERVICE_ROLE=
+DATABASE_URL=
+PRIVATE_DATABASE_URL=
+REDIS_URL=
 ```
 
-## Cloudflare R2
+## Object Storage (Videos, Documents, Images)
 
-We use Cloudflare R2 for video uploading within the course builder. It is not required though and you can do without it in the app if you don't need video upload.
+ClassroomIO supports two object storage backends for video uploads, document uploads, and media (images/thumbnails):
 
-<Callout title="Work in Progress">This section is a work in progress.</Callout>
+### Option A: MinIO (S3-compatible, default for Docker self-hosting)
+
+For Docker self-hosting, MinIO is included by default. Use MinIO or any S3-compatible storage for on-premise deployments:
+
+```zsh title="env"
+OBJECT_STORAGE_ENDPOINT=http://localhost:9000
+OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000
+OBJECT_STORAGE_ACCESS_KEY_ID=minioadmin
+OBJECT_STORAGE_SECRET_ACCESS_KEY=minioadmin
+OBJECT_STORAGE_FORCE_PATH_STYLE=true
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=http://localhost:9000/media
+```
+
+**Docker:** MinIO is included by default when you run `./run-docker-full-stack.sh`. The script auto-configures these. Add to your `.env`:
+
+```zsh title="env"
+# MinIO container credentials (must match OBJECT_STORAGE_* below)
+MINIO_ROOT_USER=minioadmin
+MINIO_ROOT_PASSWORD=minioadmin
+
+# When API runs in Docker: use minio (Docker service name), not localhost
+OBJECT_STORAGE_ENDPOINT=http://minio:9000
+OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000
+OBJECT_STORAGE_ACCESS_KEY_ID=minioadmin
+OBJECT_STORAGE_SECRET_ACCESS_KEY=minioadmin
+OBJECT_STORAGE_FORCE_PATH_STYLE=true
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=http://localhost:9000/media
+```
+
+<Callout type="warn" title="API in Docker">
+When the API runs inside Docker, set `OBJECT_STORAGE_ENDPOINT=http://minio:9000`. From a container, `localhost` refers to the container itself; use the service name `minio` to reach MinIO on the Docker network. When the API runs locally (e.g. `pnpm api:dev`), use `OBJECT_STORAGE_ENDPOINT=http://localhost:9000`.
+</Callout>
+
+When you run `./run-docker-full-stack.sh`, MinIO starts automatically. To start MinIO manually (e.g. if you used `--no-minio`):
+
+```zsh title="Terminal"
+docker compose -f docker/docker-compose.yaml --profile minio up -d
+```
+
+**Access URLs:**
+
+| Purpose | URL |
+|---------|-----|
+| API | http://localhost:9000 |
+| Web UI | http://localhost:9001 (login: `minioadmin` / `minioadmin`) |
+
+<Callout type="error" title="Change default credentials">
+Do not use `minioadmin` / `minioadmin` in production. Set `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD` in `.env`, and use the same values for `OBJECT_STORAGE_ACCESS_KEY_ID` and `OBJECT_STORAGE_SECRET_ACCESS_KEY`.
+</Callout>
+
+<Callout type="warn" title="MinIO Web UI not loading?">
+MinIO uses a random port for the Web Console by default. If the Web UI at http://localhost:9001 does not load, remove the old container and recreate it: `docker rm -f cio-minio` then run the MinIO start command again. See [docker/docs/USAGE.md](https://github.com/classroomio/classroomio/blob/main/docker/docs/USAGE.md#minio-troubleshooting) for full troubleshooting.
+</Callout>
+
+<Callout title="Storage Optional">
+  With Docker, MinIO is included by default. Use `./run-docker-full-stack.sh --no-minio` to exclude it if you don't need video/document uploads.
+</Callout>
+
+### Option B: Cloudflare R2 (hosted deployments)
+
+For hosted deployments (e.g. Railway), Cloudflare R2 can be used. Configure these env vars:
+
+```zsh title="env"
+CLOUDFLARE_ACCOUNT_ID=
+CLOUDFLARE_ACCESS_KEY=
+CLOUDFLARE_SECRET_ACCESS_KEY=
+CLOUDFLARE_BUCKET_DOMAIN=
+CLOUDFLARE_IMAGE_BUCKET_DOMAIN=
+```
+
+See the [Cloudflare Setup](/docs/contributor-guides/cloudflare-setup) guide for R2 bucket and CORS configuration.
+
+## SSO Configuration
+
+<Callout type="warning" title="Enterprise License Required">
+  SSO is an Enterprise-only feature for self-hosted instances.
+  If you do not use Enterprise-only features, you do not need a license key.
+  If you need Enterprise features, request a key from us and set `LICENSE_KEY` in your API environment.
+  [Book a call](http://cal.com/classroomio/enterprise) to get your license.
+</Callout>
+
+For Enterprise SSO support, you need to configure the following:
+
+1. **License Key**: Set `LICENSE_KEY` in your API environment:
+   ```zsh
+   LICENSE_KEY="your-issued-license-key"
+   ```
+
+2. **Trusted Origins**: Add your IdP domains to `TRUSTED_ORIGINS`:
+   ```zsh
+   TRUSTED_ORIGINS="https://app.classroomio.com,https://your-org.okta.com,https://accounts.google.com"
+   ```
+
+3. **Callback URLs**: Ensure your `SERVER_URL` and `PUBLIC_SERVER_URL` are correctly set. SSO callbacks will be:
+   - `{SERVER_URL}/api/auth/sso/callback/{providerId}`
+
+4. **License Check**: The system will verify your Enterprise license before allowing SSO configuration. Without a valid license, the SSO settings page will show an upgrade prompt.
 
 ## Deploy on Railway
 
@@ -75,13 +169,19 @@ Go ahead and click this button to get started.
 
 ```zsh title="env"
 # Required
+DATABASE_URL=""
+PRIVATE_DATABASE_URL=""
+REDIS_URL=""
+SERVER_URL=""
+TRUSTED_ORIGINS=""
+BETTER_AUTH_SECRET=""
+AUTH_BEARER_TOKEN=""
+AUTH_COOKIE_DOMAIN=""
 SMTP_HOST=""
 SMTP_PORT=""
 SMTP_USER=""
 SMTP_SENDER=""
 SMTP_PASSWORD=""
-PUBLIC_SUPABASE_URL=""
-PUBLIC_SUPABASE_ANON_KEY=""
 
 # Optional
 CLOUDFLARE_BUCKET_ID=""
@@ -90,81 +190,189 @@ CLOUDFLARE_ACCOUNT_ID=""
 CLOUDFLARE_BUCKET_DOMAIN=""
 CLOUDFLARE_SECRET_ACCESS_KEY=""
 SENTRY_DNS=""
+
+# Enterprise (Optional)
+# Required only when using Enterprise-only features (SSO, token-auth, no-tracking)
+LICENSE_KEY=""
+
+# SSO (Optional)
+# For enterprise SSO with SAML (future support)
+# SSO_ENCRYPTION_KEY="your-32-character-secret-key"
 ```
 
 <Callout title="Learn More">
   Learn more about the environment variables
-  [here](https://github.com/rotimi-best/classroomio/blob/main/apps/api/.env.example)
+  [here](https://github.com/classroomio/classroomio/blob/main/apps/api/.env.example)
 </Callout>
 
 #### cio-dashboard
 
 ```zsh title="env"
 # Required
-PUBLIC_SUPABASE_URL=""
-PUBLIC_SUPABASE_ANON_KEY=""
-PRIVATE_SUPABASE_SERVICE_ROLE=""
 PUBLIC_SERVER_URL=""
+PRIVATE_SERVER_KEY=""
+PUBLIC_IS_SELFHOSTED="true"
+
+# Required when self-hosting: CSP external domains (no defaults in self-hosted mode)
+# Comma-separated list of domains allowed in Content-Security-Policy.
+# Example: ALLOWED_EXTERNAL_DOMAINS=assets.cdn.clsrio.com,cdnjs.cloudflare.com,cdn.plyr.io,https://*.classroomio.com,https://api.classroomio.com,https://pgrest.classroomio.com,wss://*.classroomio.com
+ALLOWED_EXTERNAL_DOMAINS=""
+
+# Optional - per-directive override (script, style, connect, frame, font)
+# CSP_SCRIPT_SRC_DOMAINS=""
+# CSP_CONNECT_SRC_DOMAINS=""
 
 # Optional
+PRIVATE_SERVER_URL=""
 OPENAI_API_KEY=""
-PUBLIC_IP_REGISTRY_KEY=""
 UNSPLASH_API_KEY=""
 PRIVATE_APP_HOST=""
 PRIVATE_APP_SUBDOMAINS=""
+
+# Optional - meta tags for custom branding (title, description, OG image)
+# PUBLIC_APP_TITLE="My Learning Platform"
+# PUBLIC_APP_DESCRIPTION="A flexible LMS for your organization"
+# PUBLIC_OG_IMAGE_URL="https://app.yourdomain.com/og-image.png"
 ```
+
+<Callout title="Important">
+  Set `PRIVATE_SERVER_KEY` in both API and dashboard environments for server-to-server API key authentication. `AUTH_BEARER_TOKEN` is a separate token and is not used by `apiKeyMiddleware`.
+</Callout>
+
+<Callout type="warn" title="CSP for Self-Hosted">
+  When `PUBLIC_IS_SELFHOSTED="true"`, the dashboard uses **only** environment variables for CSP external domains—no defaults. You must set `ALLOWED_EXTERNAL_DOMAINS` with a comma-separated list of domains your instance needs (CDN, analytics, video providers, etc.). This supports strict security policies, data residency, and CISO allowlists.
+</Callout>
+
+<Callout title="Important">
+  Dashboard URL routing is environment-aware:
+  browser requests use `PUBLIC_SERVER_URL`, while server-side dashboard requests use
+  `PRIVATE_SERVER_URL` (fallback: `PUBLIC_SERVER_URL`). In hosted deployments, set
+  `PUBLIC_SERVER_URL` to your public API domain (not `localhost`).
+</Callout>
+
+<Callout title="Important">
+  Set `AUTH_COOKIE_DOMAIN` to `.your-domain.com` for cross-subdomain cookies. If you need host-only cookies, set it
+  to your exact API host (for example `api.your-domain.com`).
+</Callout>
+
+<Callout title="Meta tags for self-hosted branding">
+  When self-hosting, page title, description, and Open Graph image default to your organization's branding (name, avatar, landing page banner). Set `PUBLIC_APP_TITLE`, `PUBLIC_APP_DESCRIPTION`, and `PUBLIC_OG_IMAGE_URL` to override with custom values. If unset, a bundled fallback image is used so the dashboard never depends on external CDNs.
+</Callout>
 
 <Callout title="Learn More">
   Learn more about the environment variables
-  [here](https://github.com/rotimi-best/classroomio/blob/main/apps/dashboard/.env.example)
+  [here](https://github.com/classroomio/classroomio/blob/main/apps/dashboard/.env.example)
 </Callout>
 
 ## Using Docker
 
-We provide a docker-compose configuration to deploy both the api and dashboard services. Here's how to use it:
+We provide `docker/docker-compose.yaml` for local self-hosting.
+
+The stack includes:
+
+- `postgres` (database)
+- `redis` (cache/rate-limit store)
+- `db-init` (one-off DB setup)
+- `api` (backend on `3081`)
+- `dashboard` (frontend on `3082`)
 
 1. Clone the repository:
 
 ```zsh title="Terminal"
-git clone https://github.com/rotimi-best/classroomio.git
+git clone https://github.com/classroomio/classroomio.git
 cd classroomio
 ```
 
-2. Create a `.env` file with your environment variables (see Environment Variables section above)
-
-3. Start the services:
+2. Start the full stack (includes MinIO for object storage by default):
 
 ```zsh title="Terminal"
-docker compose up --build
+./run-docker-full-stack.sh
+```
+
+3. Verify services:
+
+```zsh title="Terminal"
+docker compose -p classroomio -f docker/docker-compose.yaml ps
+curl -sS http://localhost:3081/
+curl -I http://localhost:3082/
 ```
 
 The services will be available at:
 
 - Dashboard: http://localhost:3082
-- Backend: http://localhost:3081
+- API: http://localhost:3081
 
-### Service Configuration
+### API-Only Smoke Test
 
-The docker-compose file sets up two services:
+If you want to validate API startup first:
 
-#### Backend Service
+```zsh title="Terminal"
+docker compose -p classroomio -f docker/docker-compose.yaml up --build -d postgres redis db-init api
+docker compose -p classroomio -f docker/docker-compose.yaml logs --tail=100 api
+curl -sS http://localhost:3081/
+```
 
-- Runs on port 3081
-- Uses Node.js slim image
-- Mounts the api code directory
-- Requires environment variables for:
-  - Supabase configuration
-  - Cloudflare R2 for video uploads
-  - SMTP for email notifications
+### Environment Variables for Docker
 
-#### Dashboard Service
+Local defaults are provided in compose, but set these for real deployments:
 
-- Runs on port 3082
-- Uses Node.js Alpine image
-- Uses pnpm for package management
-- Requires environment variables for:
-  - Supabase configuration
-  - Application settings
-  - Optional API keys (OpenAI, Unsplash)
+```zsh title="env"
+POSTGRES_DB=classroomio
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
 
-Note: We're currently working on including Supabase in the docker-compose file. If you'd like to help with this, please open a PR on GitHub! 👍
+BETTER_AUTH_SECRET=
+AUTH_BEARER_TOKEN=
+PRIVATE_SERVER_KEY=
+# Required only for Enterprise-only features (SSO, token-auth, no-tracking)
+LICENSE_KEY=
+
+SERVER_URL=
+PUBLIC_SERVER_URL=
+PRIVATE_SERVER_URL=
+TRUSTED_ORIGINS=
+AUTH_COOKIE_DOMAIN=
+```
+
+<Callout title="Important">
+  `run-docker-full-stack.sh` auto-generates secure values for `AUTH_BEARER_TOKEN` and
+  `PRIVATE_SERVER_KEY` when missing/insecure. API key middleware for dashboard server-side
+  calls validates `PRIVATE_SERVER_KEY`. Set `LICENSE_KEY` only if you need Enterprise-only features; otherwise leave it empty.
+</Callout>
+
+### If PostgreSQL or Docker fails with "No space left on device"
+
+The error `could not write lock file "postmaster.pid": No space left on device` means the disk (or Docker storage) is full. Free space, then restart the stack.
+
+**1. Check disk usage**
+
+```zsh title="Terminal"
+df -h
+docker system df
+```
+
+**2. Free Docker space** (safe — removes unused build cache and images)
+
+```zsh title="Terminal"
+docker builder prune -f
+docker image prune -a -f
+docker container prune -f
+```
+
+**3. If still low on space, remove unused volumes** (only if you do not need data in other projects’ volumes)
+
+```zsh title="Terminal"
+docker volume prune -f
+```
+
+<Callout type="warn" title="Volume prune can delete your data">
+  `docker volume prune` removes volumes not used by any container. If you run it after `docker compose ... down`, it can remove Classroom.io’s `postgres-data`, `redis-data`, and `minio-data`, and you will lose database and object storage data. To free space without touching Classroom.io data, use only the prunes in step 2, or remove specific unused volumes by name.
+</Callout>
+
+**4. Restart the stack**
+
+```zsh title="Terminal"
+./run-docker-full-stack.sh
+```
+
+If the host disk is still full after pruning, free space elsewhere (e.g. large files, old logs, other apps) or increase disk capacity. See [docker/docs/SELF_HOST.md](https://github.com/classroomio/classroomio/blob/main/docker/docs/SELF_HOST.md) for the full self-host runbook.

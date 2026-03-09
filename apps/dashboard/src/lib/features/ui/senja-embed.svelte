@@ -1,16 +1,27 @@
 <script lang="ts">
   import { embedSenjaWidget } from '@cio/utils/senja';
-  import { onMount } from 'svelte';
+  import { licenseApi } from '$features/license/api/license.svelte';
 
   interface Props {
-    id?: string;
+    id: string;
   }
 
   let { id = '' }: Props = $props();
 
-  onMount(() => {
+  let isInitialized = $state(false);
+  const noTracking = $derived(licenseApi.hasAccess('no-tracking'));
+
+  $effect(() => {
+    const shouldEmbed = !noTracking && !isInitialized;
+    if (!shouldEmbed) {
+      return;
+    }
+
+    isInitialized = true;
     embedSenjaWidget(id);
   });
 </script>
 
-<div class="senja-embed" data-id={id} data-lazyload="false" data-spinner="false"></div>
+{#if !noTracking}
+  <div class="senja-embed" data-id={id} data-lazyload="false" data-spinner="false"></div>
+{/if}

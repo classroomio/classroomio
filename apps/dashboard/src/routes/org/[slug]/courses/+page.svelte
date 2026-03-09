@@ -1,54 +1,109 @@
 <script lang="ts">
-  import { profile } from '$lib/utils/store/user';
-  import { fetchCourses } from '$lib/utils/services/courses';
   import { CoursesPage } from '$features/course/pages';
-  import { CreateCourseButton } from '$features/course/components';
-  import { courses, courseMetaDeta } from '$features/course/utils/store';
-  import { currentOrg } from '$lib/utils/store/org';
-  import type { Course } from '$lib/utils/types';
+  import { CreateCourseButton, CourseFilterPopover } from '$features/course/components';
+  import { courseMetaDeta } from '$features/course/utils/store';
+  import { COURSE_SORT_OPTIONS } from '$features/course/utils/constants';
   import { browser } from '$app/environment';
   import { t } from '$lib/utils/functions/translations';
   import { onMount } from 'svelte';
   import * as Page from '@cio/ui/base/page';
+  import { coursesApi } from '$features/course/api';
 
   let { data } = $props();
 
-  let { cantFetch } = data;
   let searchValue = $state('');
   let selectedId: string = $state('0');
-  let hasFetched = false;
+  let selectedTags = $state<string[]>([]);
+  let hasInitializedFilters = $state(false);
+  let isFiltering = $state(false);
 
-  const filteredCourses: Course[] = $derived(filterCourses(searchValue, selectedId, $courses));
+  const validSortValues = new Set(COURSE_SORT_OPTIONS.map((option) => option.value));
 
-  async function getCourses(userId: string | undefined, orgId: string) {
-    if (cantFetch && typeof cantFetch === 'boolean' && orgId && !hasFetched) {
-      // only show is loading when fetching for the first time
-      if (!$courses.length) {
-        $courseMetaDeta.isLoading = true;
-      }
+  $effect(() => {
+    if (data.courses) {
+      coursesApi.orgCourses = data.courses;
+    }
+  });
 
-      const coursesResult = await fetchCourses(userId, orgId);
-      console.log(`coursesResult`, coursesResult);
+  $effect(() => {
+    selectedTags = data.activeTags ?? [];
+  });
 
-      $courseMetaDeta.isLoading = false;
-      if (!coursesResult) return;
+  function normalizeSortValue(sortValue: string | null): string {
+    if (sortValue && validSortValues.has(sortValue)) {
+      return sortValue;
+    }
 
-      // organizationId = coursesResult.organizationId;
-      courses.set(coursesResult.allCourses);
-      hasFetched = true;
+    return '0';
+  }
+
+  function updateFiltersUrl() {
+    if (!browser || !hasInitializedFilters) {
+      return;
+    }
+
+    const nextUrl = new URL(window.location.href);
+
+    if (selectedTags.length > 0) {
+      nextUrl.searchParams.set('tags', selectedTags.join(','));
+    } else {
+      nextUrl.searchParams.delete('tags');
+    }
+
+    if (selectedId !== '0') {
+      nextUrl.searchParams.set('sort', selectedId);
+    } else {
+      nextUrl.searchParams.delete('sort');
+    }
+
+    const nextPath = `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`;
+    window.history.replaceState(window.history.state, '', nextPath);
+  }
+
+  $effect(() => {
+    if (!browser || !hasInitializedFilters) {
+      return;
+    }
+
+    localStorage.setItem('classroomio_filter_course_key', selectedId);
+    updateFiltersUrl();
+  });
+
+  async function applyTagFilters(nextTags: string[]) {
+    selectedTags = nextTags;
+    updateFiltersUrl();
+    isFiltering = true;
+    try {
+      await coursesApi.getOrgCourses(nextTags);
+    } finally {
+      isFiltering = false;
     }
   }
 
-  function filterCourses(searchValue: string, _selectedId: string, courses: Course[]) {
-    if (browser) {
-      if (!selectedId) {
-        selectedId = localStorage.getItem('classroomio_filter_course_key') || '0';
-      } else {
-        localStorage.setItem('classroomio_filter_course_key', _selectedId);
-      }
+  function toggleTag(tagSlug: string, checked: boolean) {
+    const next = new Set(selectedTags);
+
+    if (checked) {
+      next.add(tagSlug);
+    } else {
+      next.delete(tagSlug);
     }
 
-    const filteredCourses = courses.filter((course) => {
+    void applyTagFilters(Array.from(next));
+  }
+
+  async function clearFilters() {
+    selectedId = '0';
+
+    if (selectedTags.length === 0) {
+      return;
+    }
+
+    await applyTagFilters([]);
+  }
+
+  const filteredCourses = $derived.by(() => {
+    const filteredCourses = (coursesApi.orgCourses ?? []).filter((course) => {
       if (!searchValue || course.title.toLowerCase().includes(searchValue.toLowerCase())) {
         return true;
       }
@@ -56,16 +111,16 @@
       return false;
     });
 
-    if (_selectedId === '0') {
-      return filteredCourses.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-    } else if (_selectedId === '1') {
-      return filteredCourses.sort((a, b) => (b.is_published ? 0 : 1) - (a.is_published ? 0 : 1));
-    } else if (_selectedId === '2') {
-      return filteredCourses.sort((a, b) => (b.total_lessons ?? 0) - (a.total_lessons ?? 0));
+    if (selectedId === '0') {
+      return filteredCourses.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    } else if (selectedId === '1') {
+      return filteredCourses.sort((a, b) => (b.isPublished ? 0 : 1) - (a.isPublished ? 0 : 1));
+    } else if (selectedId === '2') {
+      return filteredCourses.sort((a, b) => b.lessonCount - a.lessonCount);
     }
 
     return filteredCourses;
-  }
+  });
 
   onMount(() => {
     const courseView = localStorage.getItem('courseView') as 'grid' | 'list' | null;
@@ -73,10 +128,12 @@
     if (courseView) {
       $courseMetaDeta.view = courseView;
     }
-  });
 
-  $effect(() => {
-    getCourses($profile.id, $currentOrg.id);
+    const sortFromUrl = normalizeSortValue(new URLSearchParams(window.location.search).get('sort'));
+    const sortFromStorage = normalizeSortValue(localStorage.getItem('classroomio_filter_course_key'));
+    selectedId = sortFromUrl !== '0' ? sortFromUrl : sortFromStorage;
+    hasInitializedFilters = true;
+    updateFiltersUrl();
   });
 </script>
 
@@ -95,7 +152,18 @@
   </Page.Header>
   <Page.Body>
     {#snippet child()}
-      <CoursesPage courses={filteredCourses} bind:searchValue bind:selectedId />
+      <CoursesPage courses={filteredCourses} bind:searchValue bind:selectedId showSortSelect={false}>
+        {#snippet filterControls()}
+          <CourseFilterPopover
+            bind:selectedId
+            {selectedTags}
+            tagGroups={data.tagGroups}
+            {isFiltering}
+            onToggleTag={toggleTag}
+            onClearFilters={clearFilters}
+          />
+        {/snippet}
+      </CoursesPage>
     {/snippet}
   </Page.Body>
 </Page.Root>

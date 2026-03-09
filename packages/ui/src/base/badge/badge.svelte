@@ -9,6 +9,10 @@
         secondary: 'ui:bg-secondary ui:text-secondary-foreground ui:[a&]:hover:bg-secondary/90 ui:border-transparent',
         destructive:
           'ui:bg-destructive ui:[a&]:hover:bg-destructive/90 ui:focus-visible:ring-destructive/20 ui:dark:focus-visible:ring-destructive/40 ui:dark:bg-destructive/70 ui:border-transparent ui:text-white',
+        warning:
+          'ui:bg-amber-600 ui:text-white ui:[a&]:hover:bg-amber-600/90 ui:border-transparent ui:dark:bg-amber-500 ui:dark:text-amber-950',
+        success:
+          'ui:bg-emerald-600 ui:text-white ui:[a&]:hover:bg-emerald-600/90 ui:border-transparent ui:dark:bg-emerald-500 ui:dark:text-emerald-950',
         outline: 'ui:text-foreground ui:[a&]:hover:bg-accent ui:[a&]:hover:text-accent-foreground'
       }
     },

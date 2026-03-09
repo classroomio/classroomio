@@ -1,24 +1,58 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { getProfileById, updateProfile } from '@cio/db/queries/auth';
+import { getProfileByEmail, getProfileById, updateProfile } from '@cio/db/queries/auth';
+import { getLicenseStatus } from '@api/services/license';
 
+import type { OrganizationWithMemberAndPlans } from '@cio/db/queries/organization/types';
 import type { TProfile } from '@cio/db/types';
-import { getOrganizationByProfileId } from '@cio/db/queries/organization';
+import {
+  createOrganizationMember,
+  getFirstOrganization,
+  getOrganizationByProfileId
+} from '@cio/db/queries/organization';
+import { env } from '@api/config/env';
+import { ROLE } from '@cio/utils/constants';
+
+export type GetAccountDataResult = {
+  profile: TProfile;
+  organizations: OrganizationWithMemberAndPlans[];
+  licenseFeatures: string[];
+};
 
 /**
  * Fetches account data including profile and organizations for a user
+ * In self-hosted mode: auto-adds non-member users as students to the single org
  * @param userId - The user ID to fetch account data for
  * @returns Account data with profile and organizations
  */
-export async function getAccountData(userId: string) {
-  const [profile, organizations] = await Promise.all([getProfileById(userId), getOrganizationByProfileId(userId)]);
+export async function getAccountData(userId: string): Promise<GetAccountDataResult> {
+  let [profile, organizations, licenseStatus] = await Promise.all([
+    getProfileById(userId),
+    getOrganizationByProfileId(userId),
+    getLicenseStatus()
+  ]);
 
   if (!profile) {
     throw new AppError(`Account not found for user ID: ${userId}`, ErrorCodes.ACCOUNT_NOT_FOUND, 404);
   }
 
+  // Self-hosted: auto-add user as student to the single org if they are not a member
+  if (env.PUBLIC_IS_SELFHOSTED === 'true' && organizations.length === 0) {
+    const firstOrg = await getFirstOrganization();
+    if (firstOrg) {
+      await createOrganizationMember({
+        organizationId: firstOrg.id,
+        profileId: userId,
+        roleId: ROLE.STUDENT,
+        verified: true
+      });
+      organizations = await getOrganizationByProfileId(userId);
+    }
+  }
+
   return {
     profile,
-    organizations
+    organizations,
+    licenseFeatures: licenseStatus.features
   };
 }
 
@@ -53,6 +87,24 @@ export async function updateUser(
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to update profile',
       ErrorCodes.PROFILE_UPDATE_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Gets profile by email
+ * @param email - The email address
+ * @returns Profile or null if not found
+ */
+export async function getProfileByEmailService(email: string): Promise<TProfile | null> {
+  try {
+    const profile = await getProfileByEmail(email);
+    return profile;
+  } catch (error) {
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch profile by email',
+      ErrorCodes.PROFILE_NOT_FOUND,
       500
     );
   }

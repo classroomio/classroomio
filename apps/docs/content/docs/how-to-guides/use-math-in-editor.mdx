@@ -1,0 +1,43 @@
+---
+title: Use Math in the Editor
+description: Add and edit LaTeX math blocks and inline expressions inside the ClassroomIO rich text editor.
+---
+
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+
+ClassroomIO’s rich text editor includes built-in math support with KaTeX rendering. You can insert inline expressions, add block equations, and edit them later without extra setup.
+
+<Steps>
+<Step>
+### Insert inline math
+
+- Type `$$your-latex$$` to instantly convert it into inline math.
+- Or open the toolbar and click **Inline Expression** (radical icon). If you have text selected, it becomes the LaTeX body.
+
+</Step>
+
+<Step>
+### Insert block math
+
+- Use the toolbar **Block Expression** (square root icon) or the `/` slash menu and pick **Math → Block Expression**.
+- A block equation appears on its own line; replace the default `a^2 + b^2 = c^2` with your LaTeX.
+
+</Step>
+
+<Step>
+### Edit an existing equation
+
+- Click any math node (inline or block). A prompt appears with the current LaTeX.
+- Update the LaTeX and confirm to re-render the expression.
+
+</Step>
+
+<Step>
+### Quick tips
+
+- Inline math stays within a sentence; block math is best for standalone equations or derivations.
+- Use standard KaTeX/LaTeX syntax (fractions, roots, superscripts/subscripts, Greek symbols, etc.).
+- You can mix math with other formatting, tables, and media in the same document.
+
+</Step>
+</Steps>

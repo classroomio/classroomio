@@ -11,7 +11,7 @@
 
 {#if $isFreePlan}
   <div class="animate-icon">
-    {#if sidebar.open || !sidebar.isMobile}
+    {#if sidebar.open && !sidebar.isMobile}
       <div
         class="animate-gradient-border mx-2 flex flex-col items-center justify-center gap-4 rounded-md px-2 py-6 text-center transition-all ease-in-out"
       >

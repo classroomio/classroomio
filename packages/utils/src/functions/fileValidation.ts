@@ -2,7 +2,7 @@
  * Server-side file type validation utilities for preventing malicious uploads
  * Specifically designed to prevent SVG XSS attacks and other security issues
  */
-export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'] as const;
+import { ALLOWED_IMAGE_TYPES } from '../validation/constants';
 
 export const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp'] as const;
 

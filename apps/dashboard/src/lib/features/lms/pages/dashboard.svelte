@@ -1,49 +1,39 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { courseMetaDeta, courses } from '$features/course/utils/store';
   import { Learning } from '$features/lms';
   import { Button } from '@cio/ui/base/button';
   import { t } from '$lib/utils/functions/translations';
-  import { fetchCourses } from '$lib/utils/services/courses';
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
-  import { untrack } from 'svelte';
+  import { coursesApi } from '$features/course/api';
 
-  let hasFetched = false;
+  let totalCompleted = $derived(
+    coursesApi.enrolledCourses.reduce((acc, cur) => {
+      const exercises =
+        'exercisesCompleted' in cur && typeof cur.exercisesCompleted === 'number' ? cur.exercisesCompleted : 0;
+      return acc + (cur.progressRate || 0) + exercises;
+    }, 0)
+  );
 
-  let totalCompleted = $derived($courses.reduce((acc, cur) => acc + (cur.progress_rate || 0), 0));
-  let totalLessons = $derived($courses.reduce((acc, cur) => acc + (cur.total_lessons || 0), 0));
-  let progressPercentage = $derived(Math.round((totalCompleted / totalLessons) * 100) || 0);
+  let totalLessons = $derived(
+    coursesApi.enrolledCourses.reduce((acc, cur) => {
+      const exercises = 'exerciseCount' in cur && typeof cur.exerciseCount === 'number' ? cur.exerciseCount : 0;
+      return acc + (cur.lessonCount || 0) + exercises;
+    }, 0)
+  );
 
-  function getCourses(userId?: string, orgId?: string) {
-    if (hasFetched || !userId || !orgId) {
-      return;
-    }
-
-    untrack(async () => {
-      if (!$courses.length) {
-        $courseMetaDeta.isLoading = true;
-      }
-
-      const coursesResult = await fetchCourses(userId, orgId);
-      console.log(`coursesResult`, coursesResult);
-
-      $courseMetaDeta.isLoading = false;
-      if (!coursesResult) return;
-
-      courses.set(coursesResult.allCourses);
-      hasFetched = true;
-    });
-  }
+  let progressPercentage = $derived(totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0);
 
   $effect(() => {
-    getCourses($profile.id, $currentOrg.id);
+    if (!$profile.id || !$currentOrg.id) return;
+
+    coursesApi.getEnrolledCourses();
   });
 </script>
 
 <div class="flex h-fit w-full flex-col-reverse justify-between rounded-md border px-4 py-2 md:flex-row md:items-center">
   <div class="w-full md:w-[75%] lg:w-[80%]">
-    <p class="mb-5 w-4/6 text-xs font-normal lg:text-xl">
+    <p class="mb-5 w-4/6 font-normal lg:text-xl">
       {$currentOrg.customization.dashboard.bannerText
         ? $currentOrg.customization.dashboard.bannerText
         : $t('dashboard.lms_dashboard_hero')}
@@ -84,7 +74,7 @@
           {#if totalLessons > 0}
             <p class="text-xs font-normal text-[#656565] dark:text-white">
               {totalCompleted}/{totalLessons}
-              {$t('dashboard.lessons_completed')}
+              {$t('dashboard.items_completed')}
             </p>
           {:else}
             <p class="text-xs font-normal text-[#656565] dark:text-white">
@@ -92,7 +82,7 @@
             </p>
           {/if}
         </span>
-        <h1 class="my-0 whitespace-nowrap text-5xl text-[#262626] lg:text-6xl dark:text-white">
+        <h1 class="my-0 text-5xl whitespace-nowrap text-[#262626] lg:text-6xl dark:text-white">
           {progressPercentage} %
         </h1>
       </div>

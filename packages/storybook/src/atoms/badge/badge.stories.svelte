@@ -30,6 +30,18 @@
   {/snippet}
 </Story>
 
+<Story name="Warning">
+  {#snippet template()}
+    <Badge variant="warning">Warning</Badge>
+  {/snippet}
+</Story>
+
+<Story name="Success">
+  {#snippet template()}
+    <Badge variant="success">Success</Badge>
+  {/snippet}
+</Story>
+
 <Story name="Outline">
   {#snippet template()}
     <Badge variant="outline">Outline</Badge>
@@ -42,6 +54,8 @@
       <Badge>Default</Badge>
       <Badge variant="secondary">Secondary</Badge>
       <Badge variant="destructive">Destructive</Badge>
+      <Badge variant="warning">Warning</Badge>
+      <Badge variant="success">Success</Badge>
       <Badge variant="outline">Outline</Badge>
     </div>
   {/snippet}

@@ -1,7 +1,7 @@
-import { lessonDocUpload, lessonVideoUpload } from '$lib/components/Course/components/Lesson/store/lessons';
+import { presignApi } from '$features/course/api';
+import { lessonDocUpload, lessonVideoUpload } from '$features/course/components/lesson/store';
 
 import axios from 'axios';
-import { classroomio } from '$lib/utils/services/api';
 import { get } from 'svelte/store';
 
 export type UploadType = 'document' | 'video' | 'generic';
@@ -18,21 +18,12 @@ export class GenericUploader {
   }
 
   async getDownloadPresignedUrl(keys: string[], type = this.uploadType) {
-    const endpoint =
-      type === 'document' ? classroomio.course.presign.document.download : classroomio.course.presign.video.download;
+    const urls =
+      type === 'document'
+        ? await presignApi.getDocumentDownloadUrls(keys)
+        : await presignApi.getVideoDownloadUrls(keys);
 
-    const response = await endpoint.$post({
-      json: {
-        keys
-      }
-    });
-
-    const result = await response.json();
-    if (!result.success) {
-      throw new Error(result.message);
-    }
-
-    return result;
+    return { success: true, urls };
   }
 
   async getAllDownloadPresignedUrl(videoKeys: string[], docKeys: string[]) {
@@ -59,24 +50,21 @@ export class GenericUploader {
   }
 
   async getPresignedUrl(file: File) {
-    const endpoint =
+    const result =
       this.uploadType === 'document'
-        ? classroomio.course.presign.document.upload
-        : classroomio.course.presign.video.upload;
+        ? await presignApi.getDocumentUploadUrl(file?.name ?? '', file?.type ?? '')
+        : await presignApi.getVideoUploadUrl(file?.name ?? '', file?.type ?? '');
 
-    const response = await endpoint.$post({
-      json: {
-        fileName: file?.name,
-        fileType: file?.type
-      }
-    });
-
-    const result = await response.json();
-    if (!result.success) {
-      throw new Error(result.message);
+    if (!result) {
+      throw new Error('Failed to get presigned upload URL');
     }
 
-    return result;
+    return {
+      success: true,
+      url: result.url,
+      fileKey: result.fileKey,
+      message: 'Pre-signed URL generated successfully'
+    };
   }
 
   async uploadFile(params: { url: string; file: File }) {

@@ -18,12 +18,30 @@ import {
   varchar
 } from 'drizzle-orm/pg-core';
 
+import type { AnswerData } from '@cio/question-types';
 import { sql } from 'drizzle-orm';
 
 export const courseType = pgEnum('COURSE_TYPE', ['SELF_PACED', 'LIVE_CLASS']);
-export const courseVersion = pgEnum('COURSE_VERSION', ['V1', 'V2']);
 export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
+export const courseInviteEventType = pgEnum('COURSE_INVITE_EVENT_TYPE', [
+  'CREATED',
+  'REVOKED',
+  'PREVIEWED',
+  'ACCEPTED',
+  'EMAIL_SENT',
+  'EMAIL_FAILED',
+  'ABUSE_BLOCKED'
+]);
+export const organizationInviteEventType = pgEnum('ORGANIZATION_INVITE_EVENT_TYPE', [
+  'CREATED',
+  'REVOKED',
+  'PREVIEWED',
+  'ACCEPTED',
+  'EMAIL_SENT',
+  'EMAIL_FAILED',
+  'ABUSE_BLOCKED'
+]);
 
 export const user = pgTable('user', {
   id: uuid()
@@ -44,6 +62,22 @@ export const user = pgTable('user', {
   banReason: text('ban_reason'),
   banExpires: timestamp('ban_expires'),
   isAnonymous: boolean('is_anonymous')
+});
+
+export const ssoProvider = pgTable('sso_provider', {
+  id: uuid()
+    .default(sql`gen_random_uuid()`)
+    .primaryKey()
+    .notNull(),
+  issuer: text('issuer').notNull(),
+  oidcConfig: text('oidc_config'),
+  samlConfig: text('saml_config'),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  providerId: text('provider_id').notNull().unique(),
+  organizationId: text('organization_id'),
+  domain: text('domain').notNull()
 });
 
 export const session = pgTable('session', {
@@ -128,8 +162,8 @@ export const analyticsLoginEvents = pgTable(
   ]
 );
 
-export const lessonSection = pgTable(
-  'lesson_section',
+export const courseSection = pgTable(
+  'course_section',
   {
     id: uuid().defaultRandom().primaryKey().notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -143,7 +177,7 @@ export const lessonSection = pgTable(
     foreignKey({
       columns: [table.courseId],
       foreignColumns: [course.id],
-      name: 'public_lesson_section_course_id_fkey'
+      name: 'public_course_section_course_id_fkey'
     })
       .onUpdate('cascade')
       .onDelete('cascade')
@@ -168,7 +202,8 @@ export const group = pgTable(
       columns: [table.organizationId],
       foreignColumns: [organization.id],
       name: 'group_organization_id_fkey'
-    })
+    }),
+    index('idx_group_organization_id').on(table.organizationId)
   ]
 );
 
@@ -292,6 +327,7 @@ export const option = pgTable(
     }),
     label: varchar().notNull(),
     isCorrect: boolean('is_correct').default(false).notNull(),
+    settings: jsonb().default({}),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     questionId: bigint('question_id', { mode: 'number' }).notNull(),
     value: uuid().default(sql`gen_random_uuid()`),
@@ -434,6 +470,8 @@ export const submission = pgTable(
     reviewerId: bigint('reviewer_id', { mode: 'number' }),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     statusId: bigint('status_id', { mode: 'number' }).default(sql`'1'`),
+    gradingState: varchar('grading_state').default('queued').notNull(),
+    overallStatus: varchar('overall_status').default('manual_required').notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     total: bigint({ mode: 'number' }).default(sql`'0'`),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
@@ -500,7 +538,47 @@ export const course = pgTable(
     isTemplate: boolean('is_template').default(true),
     logo: text().default('').notNull(),
     slug: varchar(),
-    metadata: jsonb().default({ goals: '', description: '', requirements: '' }).notNull(),
+    metadata: jsonb().default({ goals: '', description: '', requirements: '' }).notNull().$type<{
+      requirements?: string;
+      description?: string;
+      goals?: string;
+      videoUrl?: string;
+      showDiscount?: boolean;
+      discount?: number;
+      paymentLink?: string;
+      reward?: {
+        show: boolean;
+        description: string;
+      };
+      instructor?: {
+        name: string;
+        role: string;
+        coursesNo: number;
+        description: string;
+        imgUrl: string;
+      };
+      certificate?: {
+        templateUrl: string;
+      };
+      reviews?: {
+        id: number;
+        hide: boolean;
+        name: string;
+        avatar_url: string;
+        rating: number;
+        created_at: number;
+        description: string;
+      }[];
+      lessonTabsOrder?: {
+        id: 1 | 2 | 3 | 4;
+        name: string;
+      }[];
+      grading?: boolean;
+      lessonDownload?: boolean;
+      allowNewStudent: boolean;
+      sectionDisplay?: Record<string, boolean>;
+      isContentGroupingEnabled?: boolean;
+    }>(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     cost: bigint({ mode: 'number' }).default(sql`'0'`),
     currency: varchar().default('USD').notNull(),
@@ -509,8 +587,7 @@ export const course = pgTable(
     isCertificateDownloadable: boolean('is_certificate_downloadable').default(false),
     certificateTheme: text('certificate_theme'),
     status: text().default('ACTIVE').notNull(),
-    type: courseType().default('LIVE_CLASS'),
-    version: courseVersion().default('V1').notNull()
+    type: courseType().default('LIVE_CLASS')
   },
   (table) => [
     foreignKey({
@@ -518,7 +595,8 @@ export const course = pgTable(
       foreignColumns: [group.id],
       name: 'course_group_id_fkey'
     }),
-    unique('course_slug_key').on(table.slug)
+    unique('course_slug_key').on(table.slug),
+    index('idx_course_group_id').on(table.groupId)
   ]
 );
 
@@ -611,9 +689,36 @@ export const lesson = pgTable(
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     order: bigint({ mode: 'number' }),
     isUnlocked: boolean('is_unlocked').default(false),
-    videos: jsonb().default([]),
-    sectionId: uuid('section_id'),
-    documents: jsonb().default([])
+    videos: jsonb().default([]).$type<
+      {
+        type: 'youtube' | 'generic' | 'upload';
+        link: string;
+        key?: string;
+        assetId?: string;
+        /** Display name; stored on add/upload. Fallback: derive from key or type. */
+        fileName?: string;
+        metadata?: {
+          svid?: string;
+          title?: string;
+          description?: string;
+          thumbnailUrl?: string;
+          duration?: number;
+          aspectRatio?: string;
+          createdAt?: string;
+        };
+      }[]
+    >(),
+    documents: jsonb().default([]).$type<
+      {
+        type: string;
+        name: string;
+        link: string;
+        size?: number;
+        key: string;
+        assetId?: string;
+      }[]
+    >(),
+    sectionId: uuid('section_id')
   },
   (table) => [
     foreignKey({
@@ -628,11 +733,116 @@ export const lesson = pgTable(
     }),
     foreignKey({
       columns: [table.sectionId],
-      foreignColumns: [lessonSection.id],
-      name: 'public_lesson_section_id_fkey'
+      foreignColumns: [courseSection.id],
+      name: 'public_course_section_id_fkey'
     })
       .onUpdate('cascade')
       .onDelete('cascade')
+  ]
+);
+
+export const asset = pgTable(
+  'assets',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    kind: varchar().default('video').notNull(),
+    provider: varchar().default('upload').notNull(),
+    storageProvider: varchar('storage_provider').default('s3').notNull(),
+    storageKey: text('storage_key'),
+    sourceUrl: text('source_url'),
+    mimeType: text('mime_type'),
+    byteSize: bigint('byte_size', { mode: 'number' }),
+    checksum: text(),
+    title: text(),
+    description: text(),
+    thumbnailUrl: text('thumbnail_url'),
+    durationSeconds: integer('duration_seconds'),
+    aspectRatio: text('aspect_ratio'),
+    isExternal: boolean('is_external').default(false).notNull(),
+    status: varchar().default('active').notNull(),
+    metadata: jsonb().default({}),
+    createdByProfileId: uuid('created_by_profile_id'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'assets_organization_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.createdByProfileId],
+      foreignColumns: [profile.id],
+      name: 'assets_created_by_profile_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    index('idx_assets_organization_id').on(table.organizationId),
+    index('idx_assets_organization_status').on(table.organizationId, table.status),
+    index('idx_assets_organization_kind_status').on(table.organizationId, table.kind, table.status),
+    index('idx_assets_organization_created_at').on(table.organizationId, table.createdAt),
+    index('idx_assets_organization_byte_size').on(table.organizationId, table.byteSize),
+    unique('assets_org_provider_storage_key_unique').on(table.organizationId, table.provider, table.storageKey)
+  ]
+);
+
+export const assetUsage = pgTable(
+  'asset_usages',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    assetId: uuid('asset_id').notNull(),
+    targetType: varchar('target_type').notNull(),
+    targetId: text('target_id').notNull(),
+    slotType: varchar('slot_type').default('lesson_video').notNull(),
+    slotKey: text('slot_key'),
+    position: integer(),
+    createdByProfileId: uuid('created_by_profile_id'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'asset_usages_organization_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.assetId],
+      foreignColumns: [asset.id],
+      name: 'asset_usages_asset_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.createdByProfileId],
+      foreignColumns: [profile.id],
+      name: 'asset_usages_created_by_profile_id_fkey'
+    })
+      .onUpdate('cascade')
+      .onDelete('set null'),
+    index('idx_asset_usages_org_id').on(table.organizationId),
+    index('idx_asset_usages_asset_id').on(table.assetId),
+    index('idx_asset_usages_target').on(table.targetType, table.targetId),
+    unique('asset_usages_asset_target_slot_unique').on(
+      table.assetId,
+      table.targetType,
+      table.targetId,
+      table.slotType,
+      table.slotKey,
+      table.position
+    )
   ]
 );
 
@@ -678,12 +888,17 @@ export const exercise = pgTable(
     title: varchar().notNull(),
     description: varchar(),
     lessonId: uuid('lesson_id'),
+    courseId: uuid('course_id'),
+    sectionId: uuid('section_id'),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    order: bigint({ mode: 'number' }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     id: uuid()
       .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
+    isUnlocked: boolean('is_unlocked').default(true),
     dueBy: timestamp('due_by', { mode: 'string' })
   },
   (table) => [
@@ -691,7 +906,17 @@ export const exercise = pgTable(
       columns: [table.lessonId],
       foreignColumns: [lesson.id],
       name: 'exercise_lesson_id_fkey'
-    }).onDelete('cascade')
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'exercise_course_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.sectionId],
+      foreignColumns: [courseSection.id],
+      name: 'exercise_section_id_fkey'
+    })
   ]
 );
 
@@ -729,6 +954,213 @@ export const groupmember = pgTable(
     unique('unique_entries').on(table.groupId, table.profileId, table.email),
     unique('unique_group_email').on(table.groupId, table.email),
     unique('unique_group_profile').on(table.groupId, table.profileId)
+  ]
+);
+
+export const courseInvite = pgTable(
+  'course_invite',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    courseId: uuid('course_id').notNull(),
+    // Reserved for future invite-role expansion (defaults to student invites)
+    roleId: bigint('role_id', { mode: 'number' })
+      .default(sql`'3'`)
+      .notNull(),
+    tokenHash: text('token_hash').notNull(),
+    createdByProfileId: uuid('created_by_profile_id').notNull(),
+    revokedByProfileId: uuid('revoked_by_profile_id'),
+    revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }).notNull(),
+    maxUses: integer('max_uses').default(1).notNull(),
+    usedCount: integer('used_count').default(0).notNull(),
+    isRevoked: boolean('is_revoked').default(false).notNull(),
+    allowedEmails: text('allowed_emails').array(),
+    allowedDomains: text('allowed_domains').array(),
+    metadata: jsonb().default({}).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    lastUsedAt: timestamp('last_used_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'course_invite_course_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.createdByProfileId],
+      foreignColumns: [profile.id],
+      name: 'course_invite_created_by_profile_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.revokedByProfileId],
+      foreignColumns: [profile.id],
+      name: 'course_invite_revoked_by_profile_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.roleId],
+      foreignColumns: [role.id],
+      name: 'course_invite_role_id_fkey'
+    }),
+    unique('course_invite_token_hash_key').on(table.tokenHash),
+    index('idx_course_invite_course_id').on(table.courseId),
+    index('idx_course_invite_expires_at').on(table.expiresAt),
+    index('idx_course_invite_created_by').on(table.createdByProfileId),
+    index('idx_course_invite_revoked_by').on(table.revokedByProfileId)
+  ]
+);
+
+export const courseInviteAudit = pgTable(
+  'course_invite_audit',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    inviteId: uuid('invite_id').notNull(),
+    courseId: uuid('course_id').notNull(),
+    eventType: courseInviteEventType('event_type').notNull(),
+    actorProfileId: uuid('actor_profile_id'),
+    targetEmail: varchar('target_email'),
+    ipAddress: text('ip_address'),
+    userAgent: text('user_agent'),
+    metadata: jsonb().default({}).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.inviteId],
+      foreignColumns: [courseInvite.id],
+      name: 'course_invite_audit_invite_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'course_invite_audit_course_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.actorProfileId],
+      foreignColumns: [profile.id],
+      name: 'course_invite_audit_actor_profile_id_fkey'
+    }),
+    index('idx_course_invite_audit_invite_id').on(table.inviteId),
+    index('idx_course_invite_audit_course_id').on(table.courseId),
+    index('idx_course_invite_audit_event_type').on(table.eventType),
+    index('idx_course_invite_audit_created_at').on(table.createdAt)
+  ]
+);
+
+export const organizationInvite = pgTable(
+  'organization_invite',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    // Role assigned when invite is accepted (e.g ADMIN, TUTOR)
+    roleId: bigint('role_id', { mode: 'number' }).notNull(),
+    email: text().notNull(),
+    tokenHash: text('token_hash').notNull(),
+    createdByProfileId: uuid('created_by_profile_id').notNull(),
+    acceptedByProfileId: uuid('accepted_by_profile_id'),
+    acceptedAt: timestamp('accepted_at', { withTimezone: true, mode: 'string' }),
+    revokedByProfileId: uuid('revoked_by_profile_id'),
+    revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }).notNull(),
+    isRevoked: boolean('is_revoked').default(false).notNull(),
+    metadata: jsonb().default({}).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'organization_invite_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.roleId],
+      foreignColumns: [role.id],
+      name: 'organization_invite_role_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.createdByProfileId],
+      foreignColumns: [profile.id],
+      name: 'organization_invite_created_by_profile_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.acceptedByProfileId],
+      foreignColumns: [profile.id],
+      name: 'organization_invite_accepted_by_profile_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.revokedByProfileId],
+      foreignColumns: [profile.id],
+      name: 'organization_invite_revoked_by_profile_id_fkey'
+    }),
+    unique('organization_invite_token_hash_key').on(table.tokenHash),
+    index('idx_organization_invite_organization_id').on(table.organizationId),
+    index('idx_organization_invite_email_org').on(table.email, table.organizationId),
+    index('idx_organization_invite_expires_at').on(table.expiresAt),
+    index('idx_organization_invite_created_by').on(table.createdByProfileId),
+    index('idx_organization_invite_accepted_by').on(table.acceptedByProfileId),
+    index('idx_organization_invite_revoked_by').on(table.revokedByProfileId)
+  ]
+);
+
+export const organizationInviteAudit = pgTable(
+  'organization_invite_audit',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    inviteId: uuid('invite_id').notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    eventType: organizationInviteEventType('event_type').notNull(),
+    actorProfileId: uuid('actor_profile_id'),
+    targetEmail: varchar('target_email'),
+    ipAddress: text('ip_address'),
+    userAgent: text('user_agent'),
+    metadata: jsonb().default({}).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.inviteId],
+      foreignColumns: [organizationInvite.id],
+      name: 'organization_invite_audit_invite_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'organization_invite_audit_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.actorProfileId],
+      foreignColumns: [profile.id],
+      name: 'organization_invite_audit_actor_profile_id_fkey'
+    }),
+    index('idx_organization_invite_audit_invite_id').on(table.inviteId),
+    index('idx_organization_invite_audit_org_id').on(table.organizationId),
+    index('idx_organization_invite_audit_event_type').on(table.eventType),
+    index('idx_organization_invite_audit_created_at').on(table.createdAt)
   ]
 );
 
@@ -855,7 +1287,9 @@ export const courseNewsfeed = pgTable(
     content: text(),
     id: uuid().defaultRandom().primaryKey().notNull(),
     courseId: uuid('course_id'),
-    reaction: jsonb().default({ clap: [], smile: [], thumbsup: [], thumbsdown: [] }),
+    reaction: jsonb()
+      .default({ clap: [], smile: [], thumbsup: [], thumbsdown: [] })
+      .$type<{ clap: string[]; smile: string[]; thumbsup: string[]; thumbsdown: string[] }>(),
     isPinned: boolean('is_pinned').default(false).notNull()
   },
   (table) => [
@@ -1056,6 +1490,7 @@ export const question = pgTable(
     exerciseId: uuid('exercise_id').notNull(),
     name: uuid().default(sql`gen_random_uuid()`),
     points: doublePrecision(),
+    settings: jsonb().default({}),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     order: bigint({ mode: 'number' })
   },
@@ -1084,10 +1519,13 @@ export const questionAnswer = pgTable(
       minValue: 1,
       cache: 1
     }),
+    answerData: jsonb('answer_data').$type<AnswerData | null>(),
+    /** @deprecated Use answer_data instead. Kept for backwards compatibility. */
     answers: varchar().array(),
+    /** @deprecated Use answer_data instead. Kept for backwards compatibility. */
+    openAnswer: text('open_answer'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     questionId: bigint('question_id', { mode: 'number' }).notNull(),
-    openAnswer: text('open_answer'),
     groupMemberId: uuid('group_member_id').notNull(),
     submissionId: uuid('submission_id'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
@@ -1177,7 +1615,11 @@ export const organization = pgTable(
     name: varchar().notNull(),
     siteName: text(),
     avatarUrl: text('avatar_url'),
-    settings: jsonb().default({}),
+    settings: jsonb().default({}).$type<{
+      signup?: {
+        inviteOnly?: boolean;
+      };
+    }>(),
     landingpage: jsonb().default({}).$type<{
       header?: {
         title: string;
@@ -1253,7 +1695,7 @@ export const organization = pgTable(
         show: boolean;
       };
     }>(),
-    theme: text(),
+    theme: text().default('blue'),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
       .default(sql`timezone('utc'::text, now())`)
       .notNull(),
@@ -1284,11 +1726,112 @@ export const organization = pgTable(
     customCode: text(),
     customDomain: text(),
     favicon: text(),
-    isCustomDomainVerified: boolean().default(false)
+    isCustomDomainVerified: boolean().default(false),
+    disableSignup: boolean('disable_signup').default(false),
+    disableSignupMessage: text('disable_signup_message'),
+    disableEmailPassword: boolean('disable_email_password').default(false),
+    disableGoogleAuth: boolean('disable_google_auth').default(false)
   },
   (table) => [
     unique('organization_siteName_key').on(table.siteName),
     unique('organization_customDomain_key').on(table.customDomain)
+  ]
+);
+
+export const tagGroup = pgTable(
+  'tag_group',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    name: varchar().notNull(),
+    slug: text().notNull(),
+    description: text(),
+    order: integer().default(0).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'tag_group_organization_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_tag_group_organization_id').on(table.organizationId),
+    unique('tag_group_org_slug_key').on(table.organizationId, table.slug)
+  ]
+);
+
+export const tag = pgTable(
+  'tag',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    groupId: uuid('group_id').notNull(),
+    name: varchar().notNull(),
+    slug: text().notNull(),
+    description: text(),
+    color: varchar().notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'tag_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.groupId],
+      foreignColumns: [tagGroup.id],
+      name: 'tag_group_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_tag_organization_id').on(table.organizationId),
+    index('idx_tag_group_id').on(table.groupId),
+    unique('tag_org_slug_key').on(table.organizationId, table.slug)
+  ]
+);
+
+export const tagAssignment = pgTable(
+  'tag_assignment',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    tagId: uuid('tag_id').notNull(),
+    courseId: uuid('course_id').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.tagId],
+      foreignColumns: [tag.id],
+      name: 'tag_assignment_tag_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'tag_assignment_course_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_tag_assignment_tag_id').on(table.tagId),
+    index('idx_tag_assignment_course_id').on(table.courseId),
+    unique('tag_assignment_tag_course_key').on(table.tagId, table.courseId)
   ]
 );
 
@@ -1353,3 +1896,99 @@ export const exerciseTemplate = pgTable('exercise_template', {
     ];
   }>()
 });
+
+// Organization SSO provider type (our app enum for display/categorization)
+export const organizationSsoProviderType = pgEnum('SSO_PROVIDER', ['OKTA', 'GOOGLE_WORKSPACE', 'AUTH0']);
+
+// Organization Auth Policy - stores SSO policies per org
+export const organizationAuthPolicy = pgTable(
+  'organization_auth_policy',
+  {
+    organizationId: uuid('organization_id')
+      .notNull()
+      .primaryKey()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    forceSso: boolean('force_sso').default(false).notNull(),
+    autoJoinSsoDomains: boolean('auto_join_sso_domains').default(false).notNull(),
+    breakGlassEnabled: boolean('break_glass_enabled').default(true).notNull(),
+    defaultRoleId: bigint('default_role_id', { mode: 'number' })
+      .default(sql`'3'`)
+      .notNull(),
+    roleMapping: jsonb('role_mapping').default({}).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.defaultRoleId],
+      foreignColumns: [role.id],
+      name: 'organization_auth_policy_default_role_id_fkey'
+    }),
+    index('idx_organization_auth_policy_org_id').on(table.organizationId)
+  ]
+);
+
+// Organization SSO Config - metadata for SSO connections (Better Auth stores the actual config)
+export const organizationSsoConfig = pgTable(
+  'organization_sso_config',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .unique()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    betterAuthProviderId: text('better_auth_provider_id').notNull(),
+    provider: organizationSsoProviderType().notNull(),
+    displayName: text('display_name').notNull(),
+    domain: text().notNull(),
+    isActive: boolean('is_active').default(false).notNull(),
+    createdByProfileId: uuid('created_by_profile_id')
+      .notNull()
+      .references(() => profile.id),
+    updatedByProfileId: uuid('updated_by_profile_id').references(() => profile.id),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    index('idx_organization_sso_config_org_id').on(table.organizationId),
+    index('idx_organization_sso_config_domain').on(table.domain),
+    index('idx_organization_sso_config_provider_id').on(table.betterAuthProviderId)
+  ]
+);
+
+export const organizationTokenAuth = pgTable(
+  'organization_token_auth',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .unique()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    signingSecret: text('signing_secret').notNull(),
+    isActive: boolean('is_active').default(false).notNull(),
+    createdByProfileId: uuid('created_by_profile_id')
+      .notNull()
+      .references(() => profile.id),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [index('idx_organization_token_auth_org_id').on(table.organizationId)]
+);

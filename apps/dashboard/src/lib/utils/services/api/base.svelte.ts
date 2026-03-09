@@ -23,6 +23,7 @@ interface ExecuteOptions<TrpcType> {
 export class BaseApi {
   isLoading = $state(false);
   error = $state<string | null>(null);
+  success = $state(false);
 
   constructor(loading = false) {
     this.isLoading = loading;
@@ -62,6 +63,7 @@ export class BaseApi {
           await onSuccess(typedResult);
         }
 
+        this.success = true;
         return typedResult;
       }
     } catch (error) {
@@ -117,7 +119,6 @@ export class BaseApi {
  */
 export class BaseApiWithErrors extends BaseApi {
   errors = $state<Record<string, string>>({});
-  success = $state(false);
 
   handleValidationError(result: { success: false; error: string; code: string; field?: string }): Promise<void> | void {
     const zodValidationError = result.error as unknown as ZodValidationError;
