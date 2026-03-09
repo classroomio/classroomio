@@ -118,14 +118,9 @@ class OrgApi extends BaseApiWithErrors {
    * Gets current organization by siteName or custom domain
    * @param siteName Organization site name or custom domain
    * @param isCustomDomain Whether the siteName is a custom domain
-   * @param apiKeyHeaders Optional API key headers for server-side authentication
    * @returns Organization data or null if not found
    */
-  async getOrgBySiteName(
-    siteName: string,
-    isCustomDomain = false,
-    apiKeyHeaders?: { headers: Record<string, string> }
-  ) {
+  async getOrgBySiteName(siteName: string, isCustomDomain = false) {
     const query: TGetOrganizations = { siteName };
     if (isCustomDomain) {
       query.customDomain = siteName;
@@ -134,12 +129,9 @@ class OrgApi extends BaseApiWithErrors {
 
     const result = await this.execute<typeof classroomio.organization.$get>({
       requestFn: () =>
-        classroomio.organization.$get(
-          {
-            query
-          },
-          apiKeyHeaders
-        ),
+        classroomio.organization.$get({
+          query
+        }),
       logContext: 'fetching organization',
       onSuccess: (response) => {
         if (!response.data || !Array.isArray(response.data) || response.data.length === 0) {
@@ -151,51 +143,6 @@ class OrgApi extends BaseApiWithErrors {
     });
 
     return result?.data?.[0] ?? null;
-  }
-
-  /**
-   * Gets the first organization (for self-hosted single-org mode)
-   * Server-side compatible: pass apiKeyHeaders for server-side calls
-   * @param apiKeyHeaders Optional API key headers for server-side authentication
-   * @returns First organization or null
-   */
-  async getFirstOrg(apiKeyHeaders?: { headers: Record<string, string> }) {
-    const result = await this.execute<typeof classroomio.organization.first.$get>({
-      requestFn: () => classroomio.organization.first.$get(undefined, apiKeyHeaders),
-      logContext: 'fetching first organization'
-    });
-
-    return result?.data?.[0] || null;
-  }
-
-  /**
-   * Gets organizations by custom domain
-   * Server-side compatible: pass apiKeyHeaders for server-side calls
-   * @param customDomain Custom domain
-   * @param isCustomDomainVerified Whether the domain is verified
-   * @param apiKeyHeaders Optional API key headers for server-side authentication
-   * @returns Array of organizations
-   */
-  async getOrgsByCustomDomain(
-    customDomain: string,
-    isCustomDomainVerified = true,
-    apiKeyHeaders?: { headers: Record<string, string> }
-  ) {
-    const result = await this.execute<typeof classroomio.organization.$get>({
-      requestFn: () =>
-        classroomio.organization.$get(
-          {
-            query: {
-              customDomain,
-              isCustomDomainVerified
-            }
-          },
-          apiKeyHeaders
-        ),
-      logContext: 'fetching organizations by custom domain'
-    });
-
-    return result?.data || [];
   }
 
   /**

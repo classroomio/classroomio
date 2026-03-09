@@ -7,7 +7,7 @@
   import { user } from '$lib/utils/store/user';
   import { setTheme } from '$lib/utils/functions/theme';
   import { initOrgAnalytics } from '$lib/utils/services/posthog';
-  import { setupAnalyticsForDeployment } from '$lib/utils/functions/appSetup';
+  import { setupCloudAnalytics } from '$lib/utils/functions/appSetup';
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrg, isOrgStudent } from '$lib/utils/store/org';
   import { appInitApi } from '$features/app/init.svelte';
@@ -33,7 +33,7 @@
       data
     );
 
-    setupAnalyticsForDeployment('cloud');
+    setupCloudAnalytics();
 
     if (data.locals.user) {
       user.set({

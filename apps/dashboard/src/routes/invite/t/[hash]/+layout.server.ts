@@ -1,4 +1,4 @@
-import { orgApi } from '$features/org/api/org.svelte';
+import { getOrgBySiteName } from '$features/org/api/org.server';
 import { classroomio } from '$lib/utils/services/api';
 import { getApiKeyHeaders } from '$lib/utils/services/api/server';
 import { redirect } from '@sveltejs/kit';
@@ -20,7 +20,7 @@ export const load = async ({ params = { hash: '' } }) => {
 
     const apiKeyHeaders = getApiKeyHeaders();
     const currentOrg = result.data.organization.siteName
-      ? await orgApi.getOrgBySiteName(result.data.organization.siteName, false, apiKeyHeaders)
+      ? await getOrgBySiteName(result.data.organization.siteName, apiKeyHeaders)
       : null;
 
     return {

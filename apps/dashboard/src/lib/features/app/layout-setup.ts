@@ -1,6 +1,6 @@
 import type { AccountOrg } from '$features/app/types';
 import type { Cookies } from '@sveltejs/kit';
-import { orgApi } from '$features/org/api/org.svelte';
+import { getFirstOrg, getOrgBySiteName, getOrgsByCustomDomain } from '$features/org/api/org.server';
 import { getApiKeyHeaders } from '$lib/utils/services/api/server';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { blockedSubdomain } from '$lib/utils/constants/app';
@@ -24,7 +24,7 @@ export async function getOrgSiteInfo(url: URL, cookies: Cookies): Promise<OrgSit
   // Self-hosted: single org, single domain
   if (PUBLIC_IS_SELFHOSTED === 'true') {
     const apiKeyHeaders = getApiKeyHeaders();
-    const firstOrg = await orgApi.getFirstOrg(apiKeyHeaders);
+    const firstOrg = await getFirstOrg(apiKeyHeaders);
     if (firstOrg) {
       response.org = firstOrg as AccountOrg;
       response.isOrgSite = true;
@@ -52,7 +52,7 @@ export async function getOrgSiteInfo(url: URL, cookies: Cookies): Promise<OrgSit
   // Custom domain
   if (isURLCustomDomain(url)) {
     const apiKeyHeaders = getApiKeyHeaders();
-    const orgs = await orgApi.getOrgsByCustomDomain(url.host, true, apiKeyHeaders);
+    const orgs = await getOrgsByCustomDomain(url.host, true, apiKeyHeaders);
 
     if (!orgs || orgs.length === 0) {
       return response;
@@ -80,7 +80,7 @@ export async function getOrgSiteInfo(url: URL, cookies: Cookies): Promise<OrgSit
 
     if (response.orgSiteName) {
       const apiKeyHeaders = getApiKeyHeaders();
-      const org = await orgApi.getOrgBySiteName(response.orgSiteName, false, apiKeyHeaders);
+      const org = await getOrgBySiteName(response.orgSiteName, apiKeyHeaders);
       response.org = org ?? null;
     }
 

@@ -15,7 +15,7 @@ import { page } from '$app/state';
 import { resolve } from '$app/paths';
 import { setSentryUser } from '$lib/utils/services/sentry';
 import { setTheme } from '$lib/utils/functions/theme';
-import { setupAnalyticsForDeployment } from '$lib/utils/functions/appSetup';
+import { setupAnalyticsBasedOnLicense } from '$lib/utils/functions/appSetup';
 import shouldRedirectOnAuth from '$lib/utils/functions/routes/shouldRedirectOnAuth';
 
 type AppSetupParams = {
@@ -48,7 +48,7 @@ class AppInitApi extends BaseApi {
       onSuccess: (accountData) => {
         this.data = accountData;
         licenseApi.setFeatures(accountData.licenseFeatures);
-        setupAnalyticsForDeployment('self-hosted');
+        setupAnalyticsBasedOnLicense();
         this.setupStores();
         this.setUserAnalytics();
         this.routeUserToNextPage(params);
