@@ -31,7 +31,7 @@
 
     const query = params.toString();
 
-    await goto(resolve('/courses', { query }), {
+    await goto(resolve(`/courses?query=${query}`, {}), {
       keepFocus: true,
       noScroll: true,
       invalidateAll: true

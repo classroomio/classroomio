@@ -44,7 +44,7 @@
   const hideGoogleAuth = $derived(!!($globalStore.isOrgSite && $currentOrg.disableGoogleAuth));
 
   async function initSSOInfo() {
-    if (isSSOInfoLoaded || !$globalStore.isOrgSite || !$currentOrg.id) return;
+    if (isSSOInfoLoaded || !$currentOrg.id) return;
 
     isSSOInfoLoaded = true;
 
