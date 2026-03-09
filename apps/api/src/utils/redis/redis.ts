@@ -1,8 +1,8 @@
-import { createClient } from 'redis';
+import { createClient, type RedisClientType } from 'redis';
 import { env } from '@api/config/env';
 
 // Create Redis client
-const client = createClient({
+const client: RedisClientType = createClient({
   url: env.REDIS_URL
 });
 
@@ -30,7 +30,7 @@ export async function connectRedis(): Promise<void> {
 }
 
 // Export the client (connection will be established before server starts)
-export const redis = client;
+export const redis: RedisClientType = client;
 
 // Export type for use in other files
-export type RedisClient = typeof client;
+export type RedisClient = RedisClientType;
