@@ -1,6 +1,11 @@
-import { getOrganizationById, hasActiveOrganizationInviteForEmail } from '@cio/db/queries/organization';
+import {
+  getFirstOrganization,
+  getOrganizationById,
+  hasActiveOrganizationInviteForEmail
+} from '@cio/db/queries/organization';
 
 import type { MiddlewareHandler } from 'hono';
+import { env } from '@api/config/env';
 
 type OrgSettings = {
   signup?: {
@@ -15,10 +20,28 @@ type OrgSettings = {
  * rejects the request when:
  *   - `disableSignup` is true, or
  *   - `settings.signup.inviteOnly` is true and the email has no active invite.
+ *
+ * When the `cio-org-id` header is absent:
+ *   - Non-self-hosted: pass through (header optional).
+ *   - Self-hosted: require the header unless no orgs exist yet (bootstrap). Otherwise
+ *     auto-enrollment in getAccountData would add unauthorized users as students,
+ *     bypassing invite-only checks.
  */
 export const signupGuard: MiddlewareHandler = async (c, next) => {
   const orgId = c.req.header('cio-org-id');
   if (!orgId) {
+    if (env.PUBLIC_IS_SELFHOSTED === 'true') {
+      const firstOrg = await getFirstOrganization();
+      if (firstOrg) {
+        return c.json(
+          {
+            code: 'ORG_CONTEXT_REQUIRED',
+            message: 'Organization context is required for signup on self-hosted instances'
+          },
+          400
+        );
+      }
+    }
     return next();
   }
 
