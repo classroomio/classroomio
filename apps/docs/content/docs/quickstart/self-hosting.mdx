@@ -12,9 +12,9 @@ This guide will help you quickly self-host ClassroomIO.
 
 ClassroomIO is made up of the following applications:
 
-- [apps/api](https://github.com/rotimi-best/classroomio/tree/main/apps/api) - an Express server
-- [apps/dashboard](https://github.com/rotimi-best/classroomio/tree/main/apps/dashboard) - the admin dashboard + LMS
-- [packages/db](https://github.com/rotimi-best/classroomio/tree/main/packages/db) - shared database layer for PostgreSQL
+- [apps/api](https://github.com/classroomio/classroomio/tree/main/apps/api) - an Express server
+- [apps/dashboard](https://github.com/classroomio/classroomio/tree/main/apps/dashboard) - the admin dashboard + LMS
+- [packages/db](https://github.com/classroomio/classroomio/tree/main/packages/db) - shared database layer for PostgreSQL
 
 The quickest and easiest way to deploy both the api and dashboard is by using our [Railway Template](https://railway.app/template/dl9RG7?referralCode=8OyIj5). However there are a couple of things that you'd need first before heading over to the template, which are:
 
@@ -132,21 +132,28 @@ See the [Cloudflare Setup](/docs/contributor-guides/cloudflare-setup) guide for 
 ## SSO Configuration
 
 <Callout type="warning" title="Enterprise License Required">
-  SSO is an Enterprise feature. For self-hosted instances, you need an **Enterprise license** to use SSO.
+  SSO is an Enterprise-only feature for self-hosted instances.
+  If you do not use Enterprise-only features, you do not need a license key.
+  If you need Enterprise features, request a key from us and set `LICENSE_KEY` in your API environment.
   [Book a call](http://cal.com/classroomio/enterprise) to get your license.
 </Callout>
 
 For Enterprise SSO support, you need to configure the following:
 
-1. **Trusted Origins**: Add your IdP domains to `TRUSTED_ORIGINS`:
+1. **License Key**: Set `LICENSE_KEY` in your API environment:
+   ```zsh
+   LICENSE_KEY="your-issued-license-key"
+   ```
+
+2. **Trusted Origins**: Add your IdP domains to `TRUSTED_ORIGINS`:
    ```zsh
    TRUSTED_ORIGINS="https://app.classroomio.com,https://your-org.okta.com,https://accounts.google.com"
    ```
 
-2. **Callback URLs**: Ensure your `SERVER_URL` and `PUBLIC_SERVER_URL` are correctly set. SSO callbacks will be:
+3. **Callback URLs**: Ensure your `SERVER_URL` and `PUBLIC_SERVER_URL` are correctly set. SSO callbacks will be:
    - `{SERVER_URL}/api/auth/sso/callback/{providerId}`
 
-3. **License Check**: The system will verify your Enterprise license before allowing SSO configuration. Without a valid license, the SSO settings page will show an upgrade prompt.
+4. **License Check**: The system will verify your Enterprise license before allowing SSO configuration. Without a valid license, the SSO settings page will show an upgrade prompt.
 
 ## Deploy on Railway
 
@@ -169,6 +176,7 @@ SERVER_URL=""
 TRUSTED_ORIGINS=""
 BETTER_AUTH_SECRET=""
 AUTH_BEARER_TOKEN=""
+AUTH_COOKIE_DOMAIN=""
 SMTP_HOST=""
 SMTP_PORT=""
 SMTP_USER=""
@@ -176,13 +184,16 @@ SMTP_SENDER=""
 SMTP_PASSWORD=""
 
 # Optional
-AUTH_COOKIE_DOMAIN=""
 CLOUDFLARE_BUCKET_ID=""
 CLOUDFLARE_ACCESS_KEY=""
 CLOUDFLARE_ACCOUNT_ID=""
 CLOUDFLARE_BUCKET_DOMAIN=""
 CLOUDFLARE_SECRET_ACCESS_KEY=""
 SENTRY_DNS=""
+
+# Enterprise (Optional)
+# Required only when using Enterprise-only features (SSO, token-auth, no-tracking)
+LICENSE_KEY=""
 
 # SSO (Optional)
 # For enterprise SSO with SAML (future support)
@@ -191,7 +202,7 @@ SENTRY_DNS=""
 
 <Callout title="Learn More">
   Learn more about the environment variables
-  [here](https://github.com/rotimi-best/classroomio/blob/main/apps/api/.env.example)
+  [here](https://github.com/classroomio/classroomio/blob/main/apps/api/.env.example)
 </Callout>
 
 #### cio-dashboard
@@ -214,16 +225,18 @@ ALLOWED_EXTERNAL_DOMAINS=""
 # Optional
 PRIVATE_SERVER_URL=""
 OPENAI_API_KEY=""
-PUBLIC_IP_REGISTRY_KEY=""
 UNSPLASH_API_KEY=""
 PRIVATE_APP_HOST=""
 PRIVATE_APP_SUBDOMAINS=""
+
+# Optional - meta tags for custom branding (title, description, OG image)
+# PUBLIC_APP_TITLE="My Learning Platform"
+# PUBLIC_APP_DESCRIPTION="A flexible LMS for your organization"
+# PUBLIC_OG_IMAGE_URL="https://app.yourdomain.com/og-image.png"
 ```
 
 <Callout title="Important">
-  Set `PRIVATE_SERVER_KEY` in both API and dashboard environments for server-to-server API
-  key authentication. `AUTH_BEARER_TOKEN` is a separate token and is not used by
-  `apiKeyMiddleware`.
+  Set `PRIVATE_SERVER_KEY` in both API and dashboard environments for server-to-server API key authentication. `AUTH_BEARER_TOKEN` is a separate token and is not used by `apiKeyMiddleware`.
 </Callout>
 
 <Callout type="warn" title="CSP for Self-Hosted">
@@ -238,14 +251,17 @@ PRIVATE_APP_SUBDOMAINS=""
 </Callout>
 
 <Callout title="Important">
-  `AUTH_COOKIE_DOMAIN` is optional. Leave it empty to use Better Auth defaults, or set it
-  to `.your-domain.com` for cross-subdomain cookies. If you need host-only cookies, set it
+  Set `AUTH_COOKIE_DOMAIN` to `.your-domain.com` for cross-subdomain cookies. If you need host-only cookies, set it
   to your exact API host (for example `api.your-domain.com`).
+</Callout>
+
+<Callout title="Meta tags for self-hosted branding">
+  When self-hosting, page title, description, and Open Graph image default to your organization's branding (name, avatar, landing page banner). Set `PUBLIC_APP_TITLE`, `PUBLIC_APP_DESCRIPTION`, and `PUBLIC_OG_IMAGE_URL` to override with custom values. If unset, a bundled fallback image is used so the dashboard never depends on external CDNs.
 </Callout>
 
 <Callout title="Learn More">
   Learn more about the environment variables
-  [here](https://github.com/rotimi-best/classroomio/blob/main/apps/dashboard/.env.example)
+  [here](https://github.com/classroomio/classroomio/blob/main/apps/dashboard/.env.example)
 </Callout>
 
 ## Using Docker
@@ -263,7 +279,7 @@ The stack includes:
 1. Clone the repository:
 
 ```zsh title="Terminal"
-git clone https://github.com/rotimi-best/classroomio.git
+git clone https://github.com/classroomio/classroomio.git
 cd classroomio
 ```
 
@@ -308,6 +324,8 @@ POSTGRES_PASSWORD=postgres
 BETTER_AUTH_SECRET=
 AUTH_BEARER_TOKEN=
 PRIVATE_SERVER_KEY=
+# Required only for Enterprise-only features (SSO, token-auth, no-tracking)
+LICENSE_KEY=
 
 SERVER_URL=
 PUBLIC_SERVER_URL=
@@ -319,7 +337,7 @@ AUTH_COOKIE_DOMAIN=
 <Callout title="Important">
   `run-docker-full-stack.sh` auto-generates secure values for `AUTH_BEARER_TOKEN` and
   `PRIVATE_SERVER_KEY` when missing/insecure. API key middleware for dashboard server-side
-  calls validates `PRIVATE_SERVER_KEY`.
+  calls validates `PRIVATE_SERVER_KEY`. Set `LICENSE_KEY` only if you need Enterprise-only features; otherwise leave it empty.
 </Callout>
 
 ### If PostgreSQL or Docker fails with "No space left on device"

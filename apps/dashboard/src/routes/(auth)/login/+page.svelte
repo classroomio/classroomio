@@ -20,6 +20,7 @@
   let loading = $state(false);
   let errors = $state(Object.assign({}, LOGIN_FIELDS));
   let isSSOInfoLoaded = $state(false);
+  let orgSupportsSso = $state(false);
 
   // SSO state
   let ssoState = $state<{
@@ -43,7 +44,7 @@
   const hideGoogleAuth = $derived(!!($globalStore.isOrgSite && $currentOrg.disableGoogleAuth));
 
   async function initSSOInfo() {
-    if (isSSOInfoLoaded || !$globalStore.isOrgSite || !$currentOrg.id) return;
+    if (isSSOInfoLoaded || !$currentOrg.id) return;
 
     isSSOInfoLoaded = true;
 
@@ -51,6 +52,7 @@
     console.log('ssoInfo', ssoInfo);
 
     if (ssoInfo) {
+      orgSupportsSso = ssoInfo.hasSso;
       ssoState = {
         checking: false,
         required: ssoInfo.ssoRequired,
@@ -69,9 +71,10 @@
   let emailCheckTimeout: ReturnType<typeof setTimeout>;
   function handleEmailChange() {
     errors.email = '';
-    if ($globalStore.isOrgSite) return;
+    if (!orgSupportsSso) return;
 
     clearTimeout(emailCheckTimeout);
+
     emailCheckTimeout = setTimeout(async () => {
       if (!fields.email || !fields.email.includes('@')) {
         ssoState = {

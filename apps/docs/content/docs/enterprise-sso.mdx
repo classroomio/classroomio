@@ -14,7 +14,16 @@ ClassroomIO supports Single Sign-On (SSO) via OpenID Connect (OIDC), allowing yo
   
   **Cloud:** [Contact us](mailto:support@classroomio.com) to upgrade.
   
-  **Self-hosted:** Requires an Enterprise license. [Book a call](http://cal.com/classroomio/enterprise) to get your license.
+  **Self-hosted:** Requires an Enterprise license key. If you are not using Enterprise-only features, you do not need a key.
+  [Book a call](http://cal.com/classroomio/enterprise) to get your license.
+</Callout>
+
+<Callout title="Where to set `LICENSE_KEY` (self-hosted)">
+  Set `LICENSE_KEY` in the API service environment.
+  Local development: `apps/api/.env`.
+  Docker Compose: repository root `.env`.
+  Published-image Docker deploys: `docker/.env.prod`.
+  If you do not use Enterprise-only features, leave `LICENSE_KEY` unset.
 </Callout>
 
 ## Supported Providers

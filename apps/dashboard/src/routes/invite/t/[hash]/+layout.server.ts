@@ -1,4 +1,4 @@
-import { OrgApiServer } from '$features/org/api/org.server';
+import { getOrgBySiteName } from '$features/org/api/org.server';
 import { classroomio } from '$lib/utils/services/api';
 import { getApiKeyHeaders } from '$lib/utils/services/api/server';
 import { redirect } from '@sveltejs/kit';
@@ -18,8 +18,9 @@ export const load = async ({ params = { hash: '' } }) => {
       throw new Error('Invalid organization invite payload');
     }
 
+    const apiKeyHeaders = getApiKeyHeaders();
     const currentOrg = result.data.organization.siteName
-      ? await OrgApiServer.getOrgBySiteName(result.data.organization.siteName)
+      ? await getOrgBySiteName(result.data.organization.siteName, apiKeyHeaders)
       : null;
 
     return {

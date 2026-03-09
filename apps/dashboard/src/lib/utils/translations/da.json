@@ -1739,7 +1739,8 @@
     "redirecting": "Omdirigerer",
     "loading_state": "Tag dig til næste side, vent venligst.",
     "org_loading_state": "Tager dig til din organisation...",
-    "add_organization": "+ Tilføj organisation"
+    "add_organization": "+ Tilføj organisation",
+    "goto_dashboard": "Dashboard"
   },
   "add_org": {
     "create_org": "Opret organisation",
@@ -2197,6 +2198,10 @@
         "disable_signup": {
           "label": "Deaktiver tilmelding",
           "description": "Forhindre nye brugere i at tilmelde sig. Kun inviterede brugere kan deltage."
+        },
+        "allow_public_signups": {
+          "label": "Tillad offentlige tilmeldinger",
+          "description": "Når den er deaktiveret, kan kun brugere med et invitationslink tilmelde sig. Aktiver for at tillade alle at oprette en konto."
         }
       },
       "login": {
@@ -2275,6 +2280,11 @@
       "confirm_password": "Bekræft adgangskode",
       "password_helper_message": "Adgangskoden skal være på mere end 8 tegn",
       "create_account": "Opret konto"
+    },
+    "signup_disabled": {
+      "title": "Tilmelding deaktiveret",
+      "invite_only_message": "Tilmelding er kun for invitationer. Brug venligst et invitationslink til at oprette en konto.",
+      "go_to_login": "Gå til Login"
     }
   },
   "app": {

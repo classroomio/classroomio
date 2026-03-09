@@ -4,10 +4,12 @@ import {
   checkSiteNameExists,
   createOrganization,
   createOrganizationMember,
-  getOrganizationByProfileId
+  getOrganizationByProfileId,
+  getOrganizationCount
 } from '@cio/db/queries';
 import { getProfileById, updateProfile } from '@cio/db/queries/auth';
 
+import { env } from '@api/config/env';
 import { ROLE } from '@cio/utils/constants';
 import { db } from '@cio/db/drizzle';
 import { sendEmail } from '@cio/email';
@@ -20,6 +22,14 @@ export async function createOrganizationWithOwner(
     siteName: string;
   }
 ) {
+  // Self-hosted: block org creation when an org already exists
+  if (env.PUBLIC_IS_SELFHOSTED === 'true') {
+    const count = await getOrganizationCount();
+    if (count > 0) {
+      throw new AppError('Self-hosted instances support only one organization', ErrorCodes.VALIDATION_ERROR, 403);
+    }
+  }
+
   // Business Logic: Check sitename availability
   const exists = await checkSiteNameExists(input.siteName);
   if (exists) {

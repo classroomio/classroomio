@@ -9,6 +9,8 @@
 
   import { getLectureNo } from '$features/course/utils/functions';
   import { currentOrg } from '$lib/utils/store/org';
+  import { globalStore } from '$lib/utils/store/app';
+  import Navigation from '$lib/components/Navigation/index.svelte';
   import { NAV_ITEM_KEY, NAV_ITEMS } from './constants';
   import { t } from '$lib/utils/functions/translations';
   import { calDateDiff } from '$lib/utils/functions/date';
@@ -93,6 +95,16 @@
 
 {#if !editMode}
   <PoweredBy />
+{/if}
+
+{#if !editMode}
+  <Navigation
+    logo={$currentOrg.avatarUrl || '/logo-192.png'}
+    orgName={$currentOrg.name}
+    disableSignup={$currentOrg.disableSignup || ($currentOrg.settings?.signup?.inviteOnly ?? false)}
+    isOrgSite={$globalStore.isOrgSite}
+    customLinks={$currentOrg.landingpage?.customLinks}
+  />
 {/if}
 
 <div class="flex w-full flex-col items-center bg-white dark:bg-black">

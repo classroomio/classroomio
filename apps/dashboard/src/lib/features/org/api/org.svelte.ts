@@ -39,6 +39,7 @@ export interface TOrgUpdateForm {
   disableSignupMessage?: string;
   disableEmailPassword?: boolean;
   disableGoogleAuth?: boolean;
+  settings?: { signup?: { inviteOnly?: boolean } };
 }
 
 /**
@@ -141,7 +142,7 @@ class OrgApi extends BaseApiWithErrors {
       }
     });
 
-    return result;
+    return result?.data?.[0] ?? null;
   }
 
   /**

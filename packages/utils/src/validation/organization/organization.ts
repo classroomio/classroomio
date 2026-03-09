@@ -91,7 +91,17 @@ export const ZUpdateOrganization = z.object({
   disableSignup: z.boolean().optional(),
   disableSignupMessage: z.string().optional(),
   disableEmailPassword: z.boolean().optional(),
-  disableGoogleAuth: z.boolean().optional()
+  disableGoogleAuth: z.boolean().optional(),
+  /** Nested settings (stored in organization.settings JSONB). signup.inviteOnly = true means invite-only signup. */
+  settings: z
+    .object({
+      signup: z
+        .object({
+          inviteOnly: z.boolean().optional()
+        })
+        .optional()
+    })
+    .optional()
 });
 
 export type TUpdateOrganization = z.infer<typeof ZUpdateOrganization>;

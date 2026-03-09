@@ -113,7 +113,8 @@ docker pull classroomio/dashboard:latest
 
 ## Run Published Images (Manual)
 
-Use compose for local development. If you run manually, include required runtime env:
+Use compose for local development. If you run manually, include required runtime env.
+`LICENSE_KEY` is only needed if you use Enterprise-only features.
 
 ```bash
 # API
@@ -127,6 +128,7 @@ docker run -d --name cio-api -p 3081:3081 \
   -e BETTER_AUTH_SECRET=<strong-random-secret> \
   -e PRIVATE_SERVER_KEY=<dashboard-server-api-key> \
   -e AUTH_BEARER_TOKEN=<optional-other-bearer-token> \
+  -e LICENSE_KEY=<your-issued-license-key> \
   classroomio/api:latest
 
 # Dashboard

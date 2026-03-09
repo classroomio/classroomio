@@ -72,6 +72,8 @@ Set pinned image tags in `docker/.env.prod`:
 ```bash
 CIO_API_IMAGE=classroomio/api:v0.1.0
 CIO_DASHBOARD_IMAGE=classroomio/dashboard:v0.1.0
+# Optional: Enterprise-only features (SSO, token-auth, no-tracking)
+# LICENSE_KEY=your-issued-license-key
 ```
 
 Then deploy:
@@ -93,6 +95,8 @@ POSTGRES_PASSWORD=postgres
 BETTER_AUTH_SECRET=replace-with-a-strong-secret
 AUTH_BEARER_TOKEN=
 PRIVATE_SERVER_KEY=
+# Optional: required only for Enterprise-only features (SSO, token-auth, no-tracking)
+LICENSE_KEY=
 
 PUBLIC_SERVER_URL=https://api.your-domain.com
 PRIVATE_SERVER_URL=http://api:3081
@@ -134,9 +138,10 @@ Important:
 - `./run-docker-full-stack.sh` always uses root `.env` (`docker compose --env-file .env ...`) so compose build/runtime variables come from repository-root `.env`.
 - API key middleware for dashboard/server-to-server calls validates `PRIVATE_SERVER_KEY`.
 - `AUTH_BEARER_TOKEN` is a separate token and is not used by `apiKeyMiddleware`.
+- Enterprise-only features (SSO, token-auth, no-tracking) require `LICENSE_KEY`. If you do not use those features, leave it unset.
 - Dashboard URL selection is environment-aware: browser calls use `PUBLIC_SERVER_URL`, while SSR/server-side calls use `PRIVATE_SERVER_URL` (fallback: `PUBLIC_SERVER_URL`).
 - In Docker, set `PRIVATE_SERVER_URL=http://api:3081` for internal service-to-service traffic, and keep `PUBLIC_SERVER_URL` as your public API URL (do not use `localhost` in hosted deployments).
-- `AUTH_COOKIE_DOMAIN` is optional. Set it to `.your-domain.com` for cross-subdomain cookies, or to your exact API host when you need host-scoped cookies. Leave empty to use Better Auth defaults.
+- `AUTH_COOKIE_DOMAIN` is required for setting cookies. Set it to `.your-domain.com` for cross-subdomain cookies, or to your exact API host when you need host-scoped cookies. Leave empty to use Better Auth defaults.
 
 ## Common Commands
 
@@ -153,8 +158,6 @@ docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml down
 # Stop and remove volumes (deletes local DB/cache data)
 docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml down -v
 ```
-
-## Troubleshooting
 
 ### API or dashboard fails to start
 

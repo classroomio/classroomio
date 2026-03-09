@@ -45,6 +45,11 @@ async function runSchemaSync() {
   await runPnpmCommand('Schema sync', ['db', 'push']);
 }
 
+async function runSeedEssential() {
+  console.log('Seeding essential reference data (roles, submissions, question-types)...');
+  await runPnpmCommand('Essential seed', ['seed', '--roles', '--submissions', '--question-types']);
+}
+
 async function runSeed() {
   console.log('Seeding database...');
   await runPnpmCommand('Seed', ['seed']);
@@ -82,6 +87,8 @@ async function dbSetup() {
     if (shouldSyncSchema) {
       await runSchemaSync();
     }
+
+    await runSeedEssential();
 
     if (shouldSeed) {
       await runSeed();

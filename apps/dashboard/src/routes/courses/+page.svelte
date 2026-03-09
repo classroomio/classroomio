@@ -2,12 +2,13 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import { resolve } from '$app/paths';
+  import { SvelteSet, SvelteURLSearchParams } from 'svelte/reactivity';
 
   import Navigation from '$lib/components/Navigation/index.svelte';
   import { t } from '$lib/utils/functions/translations';
 
   import { PoweredBy } from '$features/ui';
-  import { CoursesEmptyIcon } from '$features/ui/icons';
+  import LibraryBigIcon from '@lucide/svelte/icons/library-big';
   import { CourseCardList } from '$features/course/components';
 
   import { Button } from '@cio/ui/base/button';
@@ -17,14 +18,10 @@
 
   let { data } = $props();
 
-  let selectedTags = $state<string[]>([]);
-
-  $effect(() => {
-    selectedTags = data.activeTags ?? [];
-  });
+  let selectedTags = $derived<string[]>(data.activeTags || []);
 
   async function applyTagFilters(nextTags: string[]) {
-    const params = new URLSearchParams(page.url.searchParams);
+    const params = new SvelteURLSearchParams(page.url.searchParams);
 
     if (nextTags.length > 0) {
       params.set('tags', nextTags.join(','));
@@ -34,7 +31,7 @@
 
     const query = params.toString();
 
-    await goto(`${resolve('/courses', {})}${query ? `?${query}` : ''}`, {
+    await goto(resolve(`/courses?query=${query}`, {}), {
       keepFocus: true,
       noScroll: true,
       invalidateAll: true
@@ -42,7 +39,7 @@
   }
 
   function toggleTag(tagSlug: string, checked: boolean) {
-    const next = new Set(selectedTags);
+    const next = new SvelteSet(selectedTags);
     if (checked) {
       next.add(tagSlug);
     } else {
@@ -66,23 +63,23 @@
 
   const displayTagGroups = $derived.by(() => {
     const sourceGroups = data.tagGroups ?? [];
-    const tagsByGroupId = new Map<string, (typeof sourceGroups)[number]['tags']>();
+    const tagsByGroupId: Record<string, (typeof sourceGroups)[number]['tags']> = {};
 
     for (const group of sourceGroups) {
       for (const tag of group.tags ?? []) {
         const groupId = tag.groupId || group.id;
-        const existing = tagsByGroupId.get(groupId) ?? [];
+        const existing = tagsByGroupId[groupId] ?? [];
 
         if (!existing.some((item) => item.id === tag.id)) {
           existing.push(tag);
-          tagsByGroupId.set(groupId, existing);
+          tagsByGroupId[groupId] = existing;
         }
       }
     }
 
     return sourceGroups.map((group) => ({
       ...group,
-      tags: tagsByGroupId.get(group.id) ?? []
+      tags: tagsByGroupId[group.id] ?? []
     }));
   });
 </script>
@@ -165,7 +162,7 @@
       <div class="space-y-4">
         {#if data.courses.length === 0}
           <Empty
-            icon={CoursesEmptyIcon}
+            icon={LibraryBigIcon}
             title={$t('public_courses.empty.title')}
             description={$t('public_courses.empty.description')}
             variant="page"

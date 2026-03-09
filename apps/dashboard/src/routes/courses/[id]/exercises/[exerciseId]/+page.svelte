@@ -11,7 +11,7 @@
     questionnaireMetaData,
     clearQuestionnaireValidation,
     reset
-  } from '$lib/features/course/components/exercise/store.js';
+  } from '$features/course/components/exercise/store';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import type { Question } from '$features/course/types';

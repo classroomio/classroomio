@@ -1,7 +1,9 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { resolve } from '$app/paths';
+  import { ROLE } from '@cio/utils/constants';
   import { user } from '$lib/utils/store/user';
+  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
   import { isCoursePage } from '$lib/utils/functions/app';
   import { t } from '$lib/utils/functions/translations';
   import type { TCustomLinks } from './types';
@@ -31,9 +33,16 @@
 
   let navClass = '';
   let mobileMenuOpen = $state(false);
+  let is404Page = $derived(page.url.pathname?.includes('/404'));
 
   let redirect = $derived(isCoursePage(page.url.pathname) ? `?redirect=${page.url.pathname}` : '');
   let showLinks = $derived(customLinks && customLinks.show && customLinks.links && customLinks.links.length > 0);
+
+  let isAdminOrTeacher = $derived($currentOrg.roleId === ROLE.ADMIN || $currentOrg.roleId === ROLE.TUTOR);
+  let gotoHref = $derived(
+    isAdminOrTeacher && $currentOrgPath !== '#' ? resolve($currentOrgPath, {}) : resolve('/lms', {})
+  );
+  let gotoLabel = $derived(isAdminOrTeacher ? 'navigation.goto_dashboard' : 'navigation.goto_lms');
 
   function toggleMobileMenu() {
     mobileMenuOpen = !mobileMenuOpen;
@@ -63,27 +72,24 @@
 
     {#if customLinks && showLinks}
       <CustomLinks {customLinks} />
+      <MobileMenu bind:mobileMenuOpen {customLinks} {disableSignup} {redirect} />
     {/if}
 
     {#if $user.isLoggedIn}
       {#if isOrgSite}
         <li>
-          <Button variant="secondary" size="sm" href={resolve('/lms', {})}>{$t('navigation.goto_lms')}</Button>
+          <Button variant="secondary" size="sm" href={gotoHref}>{$t(gotoLabel)}</Button>
         </li>
       {/if}
-    {:else if isOrgSite && !page.url.pathname?.includes('/404')}
+    {:else if isOrgSite && !is404Page}
       <!-- Hide login/signup buttons on mobile when custom links exist -->
       <div class="hidden lg:block">
         <AuthButtons {disableSignup} {redirect} />
       </div>
-    {:else if !isOrgSite && !page.url.pathname?.includes('/404')}
+    {:else if !isOrgSite && !is404Page}
       <AuthButtons {disableSignup} {redirect} />
     {/if}
   </ul>
-
-  {#if showLinks}
-    <MobileMenu bind:mobileMenuOpen {customLinks} {disableSignup} {redirect} />
-  {/if}
 </nav>
 
 <style>

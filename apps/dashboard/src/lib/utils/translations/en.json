@@ -127,6 +127,11 @@
     "validation": {
       "unable_to_create_profile": "Unable to create profile",
       "user_cannot_be_created": "User cannot be created"
+    },
+    "signup_disabled": {
+      "title": "Signup Disabled",
+      "invite_only_message": "Signup is invite-only. Please use an invite link to create an account.",
+      "go_to_login": "Go to Login"
     }
   },
   "profileMenu": {
@@ -255,6 +260,10 @@
       "general": {
         "heading": "Authentication Settings",
         "description": "Control how users can sign up and log in to your organization.",
+        "allow_public_signups": {
+          "label": "Allow public signups",
+          "description": "When disabled, only users with an invite link can sign up. Enable to allow anyone to create an account."
+        },
         "disable_signup": {
           "label": "Disable Signup",
           "description": "Prevent new users from signing up. Only invited users can join."
@@ -720,6 +729,7 @@
     "discussion": "Discussion",
     "people": "People",
     "goto_lms": "Go to LMS",
+    "goto_dashboard": "Dashboard",
     "goto_home": "Go to ClassroomIO Home",
     "login": "Login",
     "signup": "Sign Up",

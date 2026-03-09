@@ -1739,7 +1739,8 @@
     "redirecting": "Chuyển hướng",
     "loading_state": "Đang đưa bạn đến trang tiếp theo, vui lòng đợi.",
     "org_loading_state": "Đưa bạn đến tổ chức của bạn...",
-    "add_organization": "+ Thêm tổ chức"
+    "add_organization": "+ Thêm tổ chức",
+    "goto_dashboard": "Trang tổng quan"
   },
   "add_org": {
     "create_org": "Tạo tổ chức",
@@ -2197,6 +2198,10 @@
         "disable_signup": {
           "label": "Tắt đăng ký",
           "description": "Ngăn chặn người dùng mới đăng ký. Chỉ những người dùng được mời mới có thể tham gia."
+        },
+        "allow_public_signups": {
+          "label": "Cho phép đăng ký công khai",
+          "description": "Khi bị tắt, chỉ những người dùng có liên kết mời mới có thể đăng ký. Enable để cho phép mọi người tạo tài khoản."
         }
       },
       "login": {
@@ -2275,6 +2280,11 @@
       "confirm_password": "Xác nhận mật khẩu",
       "password_helper_message": "Mật khẩu phải nhiều hơn 8 ký tự",
       "create_account": "Tạo tài khoản"
+    },
+    "signup_disabled": {
+      "title": "Đăng ký bị vô hiệu hóa",
+      "invite_only_message": "Đăng ký chỉ dành cho người được mời. Vui lòng sử dụng liên kết mời để tạo tài khoản.",
+      "go_to_login": "Đi tới Đăng nhập"
     }
   },
   "app": {

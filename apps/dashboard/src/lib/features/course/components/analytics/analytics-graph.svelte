@@ -1,170 +1,157 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { browser } from '$app/environment';
-  import type { Component } from 'svelte';
+  import * as Chart from '@cio/ui/base/chart';
   import type { CourseAnalytics } from '$features/course/utils/types';
-  import { ScaleTypes } from '@carbon/charts-svelte';
   import { t } from '$lib/utils/functions/translations';
-  import '@carbon/charts-svelte/styles.css';
 
   interface Props {
     courseAnalytics?: CourseAnalytics | null;
   }
 
+  type DistributionChartData = {
+    group: string;
+    value: number;
+    color: string;
+  };
+
   let { courseAnalytics = null }: Props = $props();
 
-  let BarChartSimple: Component | undefined = $state();
+  const chartConfig: Chart.ChartConfig = {};
+
+  let hasStudentData = $derived(Boolean(courseAnalytics?.students?.length));
 
   // Transform data for progress distribution chart
-  let progressChartData = $derived(
+  let progressChartData = $derived<DistributionChartData[]>(
     courseAnalytics?.students
       ? [
           {
             group: $t('analytics.progress_80_plus'),
-            value: courseAnalytics.students.filter((s) => s.progressPercentage >= 80).length
+            value: courseAnalytics.students.filter((s) => s.progressPercentage >= 80).length,
+            color: '#10b981'
           },
           {
             group: $t('analytics.progress_60_79'),
             value: courseAnalytics.students.filter((s) => s.progressPercentage >= 60 && s.progressPercentage < 80)
-              .length
+              .length,
+            color: '#f59e0b'
           },
           {
             group: $t('analytics.progress_below_60'),
-            value: courseAnalytics.students.filter((s) => s.progressPercentage < 60).length
+            value: courseAnalytics.students.filter((s) => s.progressPercentage < 60).length,
+            color: '#ef4444'
           }
         ]
       : []
   );
 
   // Transform data for grade distribution chart
-  let gradeChartData = $derived(
+  let gradeChartData = $derived<DistributionChartData[]>(
     courseAnalytics?.students
       ? [
           {
             group: $t('analytics.grade_90_plus'),
-            value: courseAnalytics.students.filter((s) => s.averageGrade >= 90).length
+            value: courseAnalytics.students.filter((s) => s.averageGrade >= 90).length,
+            color: '#10b981'
           },
           {
             group: $t('analytics.grade_80_89'),
-            value: courseAnalytics.students.filter((s) => s.averageGrade >= 80 && s.averageGrade < 90).length
+            value: courseAnalytics.students.filter((s) => s.averageGrade >= 80 && s.averageGrade < 90).length,
+            color: '#3b82f6'
           },
           {
             group: $t('analytics.grade_70_79'),
-            value: courseAnalytics.students.filter((s) => s.averageGrade >= 70 && s.averageGrade < 80).length
+            value: courseAnalytics.students.filter((s) => s.averageGrade >= 70 && s.averageGrade < 80).length,
+            color: '#f59e0b'
           },
           {
             group: $t('analytics.grade_below_70'),
-            value: courseAnalytics.students.filter((s) => s.averageGrade < 70).length
+            value: courseAnalytics.students.filter((s) => s.averageGrade < 70).length,
+            color: '#ef4444'
           }
         ]
       : []
   );
 
-  onMount(async () => {
-    if (browser) {
-      const charts = await import('@carbon/charts-svelte');
-      BarChartSimple = charts.BarChartSimple as unknown as Component;
+  let progressChartProps = $derived({
+    xAxis: {
+      label: $t('analytics.progress_range')
+    },
+    yAxis: {
+      label: $t('analytics.number_of_students')
     }
   });
 
-  // Chart options for progress distribution
-  let progressChartOptions = $derived({
-    axes: {
-      left: {
-        mapsTo: 'value',
-        title: $t('analytics.number_of_students')
-      },
-      bottom: {
-        mapsTo: 'group',
-        scaleType: ScaleTypes.LABELS,
-        title: $t('analytics.progress_range')
-      }
+  let gradeChartProps = $derived({
+    xAxis: {
+      label: $t('analytics.grade_range')
     },
-    height: '300px',
-    data: {
-      loading: !courseAnalytics
-    },
-    color: {
-      scale: {
-        [$t('analytics.progress_80_plus')]: '#10b981',
-        [$t('analytics.progress_60_79')]: '#f59e0b',
-        [$t('analytics.progress_below_60')]: '#ef4444'
-      }
+    yAxis: {
+      label: $t('analytics.number_of_students')
     }
   });
 
-  // Chart options for grade distribution
-  let gradeChartOptions = $derived({
-    axes: {
-      left: {
-        mapsTo: 'value',
-        title: $t('analytics.number_of_students')
-      },
-      bottom: {
-        mapsTo: 'group',
-        scaleType: ScaleTypes.LABELS,
-        title: $t('analytics.grade_range')
-      }
-    },
-    height: '300px',
-    data: {
-      loading: !courseAnalytics
-    },
-    color: {
-      scale: {
-        [$t('analytics.grade_90_plus')]: '#10b981',
-        [$t('analytics.grade_80_89')]: '#3b82f6',
-        [$t('analytics.grade_70_79')]: '#f59e0b',
-        [$t('analytics.grade_below_70')]: '#ef4444'
-      }
-    }
+  let progressChartColors = $derived({
+    domain: progressChartData.map((item) => item.group),
+    range: progressChartData.map((item) => item.color)
+  });
+
+  let gradeChartColors = $derived({
+    domain: gradeChartData.map((item) => item.group),
+    range: gradeChartData.map((item) => item.color)
   });
 </script>
 
-{#if browser && BarChartSimple}
-  <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-    <!-- Progress Distribution Chart -->
-    <div class="rounded-lg border border-gray-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
-      <h3 class="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
-        {$t('analytics.student_progress_distribution')}
-      </h3>
-      {#if courseAnalytics?.students && courseAnalytics.students.length > 0}
-        <BarChartSimple data={progressChartData} options={progressChartOptions} />
-      {:else}
-        <div class="flex h-[300px] items-center justify-center text-gray-500 dark:text-gray-400">
-          {$t('analytics.no_progress_data')}
-        </div>
-      {/if}
-    </div>
+<div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+  <!-- Progress Distribution Chart -->
+  <div class="rounded-lg border border-gray-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
+    <h3 class="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
+      {$t('analytics.student_progress_distribution')}
+    </h3>
+    {#if !courseAnalytics}
+      <div class="flex h-[300px] items-center justify-center">
+        <div class="animate-pulse text-gray-500 dark:text-gray-400">{$t('analytics.loading_chart')}</div>
+      </div>
+    {:else if hasStudentData}
+      <Chart.ChartContainer class="h-[300px] w-full" config={chartConfig}>
+        <Chart.BarChart
+          data={progressChartData}
+          x="group"
+          y="value"
+          c="group"
+          cDomain={progressChartColors.domain}
+          cRange={progressChartColors.range}
+          props={progressChartProps}
+        />
+      </Chart.ChartContainer>
+    {:else}
+      <div class="flex h-[300px] items-center justify-center text-gray-500 dark:text-gray-400">
+        {$t('analytics.no_progress_data')}
+      </div>
+    {/if}
+  </div>
 
-    <!-- Grade Distribution Chart -->
-    <div class="rounded-lg border border-gray-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
-      <h3 class="mb-6 text-lg font-semibold text-gray-900 dark:text-white">{$t('analytics.grade_distribution')}</h3>
-      {#if courseAnalytics?.students && courseAnalytics.students.length > 0}
-        <BarChartSimple data={gradeChartData} options={gradeChartOptions} />
-      {:else}
-        <div class="flex h-[300px] items-center justify-center text-gray-500 dark:text-gray-400">
-          {$t('analytics.no_grade_data')}
-        </div>
-      {/if}
-    </div>
-  </div>
-{:else}
-  <!-- Loading state -->
-  <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-    <div class="rounded-lg border border-gray-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
-      <h3 class="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
-        {$t('analytics.student_progress_distribution')}
-      </h3>
+  <!-- Grade Distribution Chart -->
+  <div class="rounded-lg border border-gray-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
+    <h3 class="mb-6 text-lg font-semibold text-gray-900 dark:text-white">{$t('analytics.grade_distribution')}</h3>
+    {#if !courseAnalytics}
       <div class="flex h-[300px] items-center justify-center">
         <div class="animate-pulse text-gray-500 dark:text-gray-400">{$t('analytics.loading_chart')}</div>
       </div>
-    </div>
-    <div class="rounded-lg border border-gray-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
-      <h3 class="mb-6 text-lg font-semibold text-gray-900 dark:text-white">{$t('analytics.grade_distribution')}</h3>
-      <div class="flex h-[300px] items-center justify-center">
-        <div class="animate-pulse text-gray-500 dark:text-gray-400">{$t('analytics.loading_chart')}</div>
+    {:else if hasStudentData}
+      <Chart.ChartContainer class="h-[300px] w-full" config={chartConfig}>
+        <Chart.BarChart
+          data={gradeChartData}
+          x="group"
+          y="value"
+          c="group"
+          cDomain={gradeChartColors.domain}
+          cRange={gradeChartColors.range}
+          props={gradeChartProps}
+        />
+      </Chart.ChartContainer>
+    {:else}
+      <div class="flex h-[300px] items-center justify-center text-gray-500 dark:text-gray-400">
+        {$t('analytics.no_grade_data')}
       </div>
-    </div>
+    {/if}
   </div>
-{/if}
+</div>

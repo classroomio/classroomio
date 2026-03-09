@@ -1739,7 +1739,8 @@
     "redirecting": "Redirection",
     "loading_state": "Vous passez à la page suivante, veuillez patienter.",
     "org_loading_state": "Vous emmener dans votre organisation...",
-    "add_organization": "+ Ajouter une organisation"
+    "add_organization": "+ Ajouter une organisation",
+    "goto_dashboard": "Tableau de bord"
   },
   "add_org": {
     "create_org": "Créer une organisation",
@@ -2197,6 +2198,10 @@
         "disable_signup": {
           "label": "Désactiver l'inscription",
           "description": "Empêcher les nouveaux utilisateurs de s'inscrire. Seuls les utilisateurs invités peuvent rejoindre."
+        },
+        "allow_public_signups": {
+          "label": "Autoriser les inscriptions publiques",
+          "description": "Lorsqu'il est désactivé, seuls les utilisateurs disposant d'un lien d'invitation peuvent s'inscrire. Activez pour permettre à quiconque de créer un compte."
         }
       },
       "login": {
@@ -2275,6 +2280,11 @@
       "confirm_password": "Confirmer le mot de passe",
       "password_helper_message": "Le mot de passe doit comporter plus de 8 caractères",
       "create_account": "Créer un compte"
+    },
+    "signup_disabled": {
+      "title": "Inscription désactivée",
+      "invite_only_message": "L'inscription se fait sur invitation uniquement. Veuillez utiliser un lien d'invitation pour créer un compte.",
+      "go_to_login": "Allez dans Connexion"
     }
   },
   "app": {
