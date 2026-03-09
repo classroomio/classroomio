@@ -16,6 +16,39 @@ export function sanitizeHtml(html: string): string {
     return fallbackSanitize(html);
   }
 
+  const mathTags = [
+    'math',
+    'semantics',
+    'mrow',
+    'mi',
+    'mo',
+    'mn',
+    'msup',
+    'msub',
+    'msubsup',
+    'mfrac',
+    'msqrt',
+    'mtext',
+    'mspace',
+    'mstyle',
+    'munder',
+    'mover',
+    'munderover',
+    'mtable',
+    'mtr',
+    'mtd',
+    'mlabeledtr',
+    'menclose',
+    'mfenced',
+    'mphantom',
+    'mpadded',
+    'ms',
+    'merror',
+    'mprescripts',
+    'none',
+    'annotation'
+  ];
+
   let sanitized = DOMPurify.sanitize(html, {
     // Allow safe HTML tags
     ALLOWED_TAGS: [
@@ -41,10 +74,24 @@ export function sanitizeHtml(html: string): string {
       'pre',
       'code',
       'a',
-      'img'
+      'img',
+      ...mathTags
     ],
     // Allow safe attributes
-    ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'style'],
+    ALLOWED_ATTR: [
+      'href',
+      'src',
+      'alt',
+      'title',
+      'class',
+      'style',
+      'encoding',
+      'mathvariant',
+      'display',
+      'xmlns',
+      'aria-hidden',
+      'role'
+    ],
     // Forbid dangerous attributes
     FORBID_ATTR: [
       'onerror',
@@ -72,8 +119,7 @@ export function sanitizeHtml(html: string): string {
       'button',
       'meta',
       'link',
-      'svg',
-      'math'
+      'svg'
     ],
     // Keep content of forbidden tags
     KEEP_CONTENT: true,
@@ -135,8 +181,7 @@ function fallbackSanitize(html: string): string {
     'textarea',
     'select',
     'button',
-    'svg',
-    'math'
+    'svg'
   ];
   dangerousTags.forEach((tag) => {
     const regex = new RegExp(`<${tag}\\b[^>]*>.*?<\\/${tag}>`, 'gi');
