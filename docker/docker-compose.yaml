@@ -9,15 +9,17 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
+      # Require a successful query so we only pass once Postgres is out of recovery
+      # (pg_isready can pass while DB is still in recovery, causing 57P03 on sign-in)
       test:
         [
           "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-classroomio}",
+          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-classroomio} && psql -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-classroomio} -tAc 'SELECT 1'",
         ]
       interval: 5s
       timeout: 5s
-      retries: 10
-      start_period: 5s
+      retries: 15
+      start_period: 10s
 
   redis:
     image: redis:7-alpine
@@ -31,6 +33,44 @@ services:
       timeout: 3s
       retries: 10
       start_period: 5s
+
+  minio:
+    image: minio/minio:latest
+    container_name: cio-minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    volumes:
+      - minio-data:/data
+    profiles:
+      - minio
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: cio-minio-init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      echo 'Waiting for MinIO to be ready...';
+      sleep 5;
+      mc alias set local http://minio:9000 $${MINIO_ROOT_USER:-minioadmin} $${MINIO_ROOT_PASSWORD:-minioadmin};
+      mc mb local/videos --ignore-existing;
+      mc mb local/documents --ignore-existing;
+      mc mb local/media --ignore-existing;
+      mc anonymous set download local/media;
+      echo 'MinIO buckets created';
+      exit 0;
+      "
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    profiles:
+      - minio
 
   db-init:
     build:
@@ -83,9 +123,17 @@ services:
       CLOUDFLARE_ACCESS_KEY: ${CLOUDFLARE_ACCESS_KEY:-}
       CLOUDFLARE_SECRET_ACCESS_KEY: ${CLOUDFLARE_SECRET_ACCESS_KEY:-}
       CLOUDFLARE_ACCOUNT_ID: ${CLOUDFLARE_ACCOUNT_ID:-}
+      CLOUDFLARE_IMAGE_BUCKET_DOMAIN: ${CLOUDFLARE_IMAGE_BUCKET_DOMAIN:-}
       CLOUDFLARE_RENDERING_API_KEY: ${CLOUDFLARE_RENDERING_API_KEY:-}
+      OBJECT_STORAGE_ENDPOINT: ${OBJECT_STORAGE_ENDPOINT:-}
+      OBJECT_STORAGE_PUBLIC_ENDPOINT: ${OBJECT_STORAGE_PUBLIC_ENDPOINT:-}
+      OBJECT_STORAGE_ACCESS_KEY_ID: ${OBJECT_STORAGE_ACCESS_KEY_ID:-}
+      OBJECT_STORAGE_SECRET_ACCESS_KEY: ${OBJECT_STORAGE_SECRET_ACCESS_KEY:-}
+      OBJECT_STORAGE_FORCE_PATH_STYLE: ${OBJECT_STORAGE_FORCE_PATH_STYLE:-true}
+      OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL: ${OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL:-}
       AUTH_BEARER_TOKEN: ${AUTH_BEARER_TOKEN:-local-dev-api-key}
       PRIVATE_SERVER_KEY: ${PRIVATE_SERVER_KEY:-local-dev-api-key}
+      LICENSE_KEY: ${LICENSE_KEY:-}
       UNSPLASH_API_KEY: ${UNSPLASH_API_KEY:-}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-local-dev-only-secret-change-this}
     restart: unless-stopped
@@ -125,3 +173,4 @@ services:
 volumes:
   postgres-data:
   redis-data:
+  minio-data:

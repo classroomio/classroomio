@@ -20,6 +20,7 @@
   let loading = $state(false);
   let errors = $state(Object.assign({}, LOGIN_FIELDS));
   let isSSOInfoLoaded = $state(false);
+  let orgSupportsSso = $state(false);
 
   // SSO state
   let ssoState = $state<{
@@ -43,7 +44,7 @@
   const hideGoogleAuth = $derived(!!($globalStore.isOrgSite && $currentOrg.disableGoogleAuth));
 
   async function initSSOInfo() {
-    if (isSSOInfoLoaded || !$globalStore.isOrgSite || !$currentOrg.id) return;
+    if (isSSOInfoLoaded || !$currentOrg.id) return;
 
     isSSOInfoLoaded = true;
 
@@ -51,6 +52,7 @@
     console.log('ssoInfo', ssoInfo);
 
     if (ssoInfo) {
+      orgSupportsSso = ssoInfo.hasSso;
       ssoState = {
         checking: false,
         required: ssoInfo.ssoRequired,
@@ -69,9 +71,10 @@
   let emailCheckTimeout: ReturnType<typeof setTimeout>;
   function handleEmailChange() {
     errors.email = '';
-    if ($globalStore.isOrgSite) return;
+    if (!orgSupportsSso) return;
 
     clearTimeout(emailCheckTimeout);
+
     emailCheckTimeout = setTimeout(async () => {
       if (!fields.email || !fields.email.includes('@')) {
         ssoState = {
@@ -195,7 +198,7 @@
       </Field.Content>
     </Field.Field>
 
-    <!-- SSO Section -->
+    <!-- SSO Section (when SSO is available) -->
     {#if ssoState.available}
       <div
         class="ui:p-4 ui:bg-blue-50 ui:dark:bg-blue-900/20 ui:rounded-lg ui:border ui:border-blue-200 ui:dark:border-blue-800"
@@ -217,47 +220,61 @@
           {$t('settings.auth.login.sign_in_with_sso', { provider: ssoState.providerName || 'SSO' })}
         </Button>
       </div>
-    {:else}
-      <!-- Password Section (hidden if SSO required or email/password disabled) -->
-      {#if !ssoState.required && !($globalStore.isOrgSite && $currentOrg.disableEmailPassword)}
-        <Field.Field>
-          <div class="ui:flex ui:items-center ui:justify-between">
-            <Field.Label for="password">{$t('login.password')}</Field.Label>
-            <a class="ui:text-sm ui:text-primary ui:hover:underline" href="/forgot">
-              {$t('login.forgot')}
-            </a>
-          </div>
-          <Field.Content>
-            <Password
-              id="password"
-              bind:value={fields.password}
-              placeholder="************"
-              disabled={loading}
-              aria-invalid={errors.password ? 'true' : undefined}
-              autocomplete="current-password"
-            />
-            {#if errors.password}
-              <Field.Error>{$t(errors.password)}</Field.Error>
-            {/if}
-          </Field.Content>
-        </Field.Field>
+    {/if}
 
-        {#if submitError}
-          <p class="ui:text-sm ui:text-destructive">{submitError}</p>
-        {/if}
-
-        <Button type="submit" disabled={loading} {loading} class="ui:w-full">
-          {$t('login.login')}
-        </Button>
-      {:else if $globalStore.isOrgSite && $currentOrg.disableEmailPassword && !ssoState.available}
-        <div
-          class="ui:p-4 ui:bg-amber-50 ui:dark:bg-amber-900/20 ui:rounded-lg ui:border ui:border-amber-200 ui:dark:border-amber-800"
-        >
-          <p class="ui:text-sm ui:text-amber-800 ui:dark:text-amber-200">
-            {$t('settings.auth.login.email_password_disabled_message')}
-          </p>
+    <!-- Divider when both SSO and password login are available -->
+    {#if ssoState.available && !ssoState.required && !($globalStore.isOrgSite && $currentOrg.disableEmailPassword)}
+      <div class="ui:relative ui:my-4">
+        <div class="ui:absolute ui:inset-0 ui:flex ui:items-center" aria-hidden="true">
+          <div class="ui:w-full ui:border-t ui:border-border"></div>
         </div>
+        <div class="ui:relative ui:flex ui:justify-center ui:text-xs">
+          <span class="ui:bg-card ui:px-2 ui:text-muted-foreground">
+            {$t('settings.auth.login.or_continue_with')}
+          </span>
+        </div>
+      </div>
+    {/if}
+
+    <!-- Password Section (when not force SSO and email/password not disabled) -->
+    {#if !ssoState.required && !($globalStore.isOrgSite && $currentOrg.disableEmailPassword)}
+      <Field.Field>
+        <div class="ui:flex ui:items-center ui:justify-between">
+          <Field.Label for="password">{$t('login.password')}</Field.Label>
+          <a class="ui:text-sm ui:text-primary ui:hover:underline" href="/forgot">
+            {$t('login.forgot')}
+          </a>
+        </div>
+        <Field.Content>
+          <Password
+            id="password"
+            bind:value={fields.password}
+            placeholder="************"
+            disabled={loading}
+            aria-invalid={errors.password ? 'true' : undefined}
+            autocomplete="current-password"
+          />
+          {#if errors.password}
+            <Field.Error>{$t(errors.password)}</Field.Error>
+          {/if}
+        </Field.Content>
+      </Field.Field>
+
+      {#if submitError}
+        <p class="ui:text-sm ui:text-destructive">{submitError}</p>
       {/if}
+
+      <Button type="submit" disabled={loading} {loading} class="ui:w-full">
+        {$t('login.login')}
+      </Button>
+    {:else if $globalStore.isOrgSite && $currentOrg.disableEmailPassword && !ssoState.available}
+      <div
+        class="ui:p-4 ui:bg-amber-50 ui:dark:bg-amber-900/20 ui:rounded-lg ui:border ui:border-amber-200 ui:dark:border-amber-800"
+      >
+        <p class="ui:text-sm ui:text-amber-800 ui:dark:text-amber-200">
+          {$t('settings.auth.login.email_password_disabled_message')}
+        </p>
+      </div>
     {/if}
   </div>
 </AuthUI>

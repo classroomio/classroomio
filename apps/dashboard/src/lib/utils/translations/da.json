@@ -114,6 +114,20 @@
       "email": "Ugyldig e-mailadresse",
       "username": "Brugernavnet må ikke være tomt",
       "fullname": "Navnet skal være på mindst 5 tegn"
+    },
+    "exercise": {
+      "options": {
+        "custom": "{besked}"
+      },
+      "points": {
+        "too_small": "Point skal være mindst 0"
+      },
+      "label": {
+        "too_small": "Mulighedsmærkat er påkrævet"
+      },
+      "question": {
+        "too_small": "Spørgsmålets titel er påkrævet"
+      }
     }
   },
   "generic": {
@@ -856,6 +870,11 @@
           "submitted": "Indsendt",
           "in_progress": "Igangværende",
           "graded": "Bedømt"
+        },
+        "workflow": {
+          "awaiting_manual_hint": "Trænger til manuel gennemgang",
+          "failed_hint": "Automatisk bedømmelse mislykkedes. Flyt denne indsendelse tilbage til Indsendt for at prøve igen.",
+          "invalid_transition": "Denne statusflytning er ikke tilladt af bedømmelsesarbejdsgangen"
         }
       },
       "attendance": {
@@ -994,9 +1013,14 @@
               },
               "summary": {
                 "heading": "Resumé",
-                "question_chart": "Spørgsmålsskemaer"
+                "question_chart": "Spørgsmålsskemaer",
+                "responses": "Svar",
+                "no_responses": "Ingen svar endnu",
+                "other": "Andet"
               },
-              "loading_submissions": "Indlæser indsendelser..."
+              "loading_submissions": "Indlæser indsendelser...",
+              "empty_title": "Ingen indlæg endnu",
+              "empty_description": "Afleveringer vises her, når eleverne har gennemført denne øvelse."
             },
             "view_mode": {
               "no_question": "Ingen spørgsmål tilføjet til denne øvelse",
@@ -1018,7 +1042,9 @@
               "empty_edit_hint_prefix": "Klik på ",
               "empty_edit_hint_suffix": " knappen for at tilføje.",
               "answers_required": "Angiv venligst mindst ét ​​svar, før du sender.",
-              "checking_submission": "Tjek din indsendelse..."
+              "checking_submission": "Tjek din indsendelse...",
+              "answer_required": "Besvar venligst dette spørgsmål, før du fortsætter.",
+              "instructor_feedback": "Instruktør feedback"
             },
             "edit_mode": {
               "delete_modal": "Slet øvelse",
@@ -1033,9 +1059,19 @@
               "question_types": {
                 "single": "Enkelt svar",
                 "multiple": "Flere svar",
-                "paragraph": "Afsnit"
+                "paragraph": "Afsnit",
+                "true_false": "Sandt/falsk",
+                "short_answer": "Kort svar",
+                "numeric": "Numerisk svar",
+                "fill_blank": "Udfyld det tomme felt",
+                "file_upload": "Fil upload",
+                "matching": "Matchende",
+                "ordering": "Bestilling",
+                "hotspot": "Hotspot",
+                "link": "Links"
               },
-              "select_type": "Vælg type"
+              "select_type": "Vælg type",
+              "premium_question_type": "Opgrader for at bruge denne spørgsmålstype"
             },
             "delete_confirmation": {
               "title": "Slet spørgsmål",
@@ -1048,6 +1084,197 @@
               "heading": "Beskrivelse",
               "describe": "Beskriv øvelsen for din elev",
               "no": "Ingen beskrivelse"
+            },
+            "shared_question": {
+              "textarea": {
+                "take": {
+                  "placeholder": "Skriv dit svar"
+                },
+                "edit": {
+                  "placeholder": "Eleverne vil svare med lang tekst"
+                }
+              },
+              "hotspot": {
+                "preview": {
+                  "helper": "Hotspot-forhåndsvisning leveres af værtsappbillede og hotspot-indstillinger."
+                },
+                "take": {
+                  "placeholder": "Angiv hotspot-koordinater som JSON"
+                },
+                "edit": {
+                  "helper": "Konfigurer hotspot-billede og zoner i de pågældende indstillinger via værtsapp-kontroller."
+                }
+              },
+              "ordering": {
+                "fallback_step_prefix": "Trin",
+                "preview": {
+                  "submitted_label": "Afgivet ordre",
+                  "expected_label": "Forventet rækkefølge",
+                  "matches": "Indsendt ordre matcher forventet ordre.",
+                  "differs": "Afgivet ordre afviger fra forventet ordre."
+                },
+                "take": {
+                  "helper": "Træk og slip for at arrangere elementerne i den rigtige rækkefølge.",
+                  "empty": "Ingen bestillingsvarer er konfigureret til dette spørgsmål endnu."
+                },
+                "edit": {
+                  "helper": "Træk elementer for at definere den korrekte rækkefølge.",
+                  "add_step": "Tilføj trin",
+                  "empty": "Tilføj trin, og træk derefter for at indstille den forventede rækkefølge.",
+                  "step_placeholder": "Trin '{'indeks'}'",
+                  "remove_step_tooltip": "Fjern trin"
+                }
+              },
+              "matching": {
+                "preview": {
+                  "helper": "Forhåndsvisning af matchende par leveres af værtsappindstillinger."
+                },
+                "take": {
+                  "placeholder": "Angiv matchende par som JSON"
+                },
+                "edit": {
+                  "helper": "Konfigurer par i de pågældende indstillinger via værtsapp-kontroller."
+                }
+              },
+              "link": {
+                "preview": {
+                  "empty": "Ingen links indsendt.",
+                  "item_label": "Link '{'indeks'}'"
+                },
+                "take": {
+                  "helper": "Tilføj et eller flere links. Kun gyldige http/https URL'er accepteres.",
+                  "placeholder": "https://example.com/ressource-'{'indeks'}'",
+                  "remove_tooltip": "Fjern link",
+                  "remove_sr": "Fjern link",
+                  "invalid_url_error": "Indtast venligst en gyldig URL (http/https).",
+                  "add_button": "Tilføj link"
+                },
+                "edit": {
+                  "instructions_placeholder": "Valgfri instruktioner til elever",
+                  "helper": "Elever kan indsende en eller flere gyldige URL'er (http/https)."
+                }
+              },
+              "file_upload": {
+                "preview": {
+                  "accepted_types_label": "Accepterede typer",
+                  "max_size_label": "Maksimal størrelse (MB)"
+                },
+                "take": {
+                  "selected_file_label": "Valgt fil",
+                  "upload_button": "Upload",
+                  "upload_progress": "Uploader...",
+                  "upload_error": "Upload mislykkedes",
+                  "view": "Visning",
+                  "download": "Download"
+                },
+                "edit": {
+                  "accepted_types_placeholder": "Accepterede typer (f.eks. pdf, docx)",
+                  "max_size_placeholder": "Maksimal størrelse (MB)"
+                }
+              },
+              "fill_blank": {
+                "preview": {
+                  "accepted_answers_label": "Accepterede svar"
+                },
+                "take": {
+                  "placeholder": "Indtast svar adskilt af kommaer"
+                },
+                "edit": {
+                  "accepted_answers_placeholder": "Accepterede svar (kommasepareret)"
+                }
+              },
+              "numeric": {
+                "preview": {
+                  "correct_value_label": "Korrekt værdi",
+                  "tolerance_label": "Tolerance"
+                },
+                "take": {
+                  "placeholder": "Indtast et tal"
+                },
+                "edit": {
+                  "correct_value_label": "Korrekt værdi",
+                  "correct_value_info": "De forventede numeriske svar elever skal aflevere for at blive markeret korrekt.",
+                  "tolerance_label": "Tolerance",
+                  "tolerance_info": "Tilladt forskel fra den korrekte værdi (f.eks. accepterer 0,5 +/-0,5).",
+                  "correct_value_placeholder": "Korrekt værdi",
+                  "tolerance_placeholder": "Tolerance"
+                }
+              },
+              "short_answer": {
+                "preview": {
+                  "helper": "Fritekst svar spørgsmål."
+                },
+                "take": {
+                  "placeholder": "Indtast dit svar"
+                },
+                "edit": {
+                  "instructions_placeholder": "Valgfri instruktioner"
+                }
+              },
+              "true_false": {
+                "true_label": "Sandt",
+                "false_label": "Falsk",
+                "preview": {
+                  "correct_value_label": "Korrekt værdi"
+                },
+                "edit": {
+                  "correct_answer_label": "Korrekt svar"
+                }
+              },
+              "checkbox": {
+                "edit": {
+                  "helper": "Marker en eller flere muligheder som korrekte.",
+                  "correct_selected_tooltip": "Det rigtige svar er valgt",
+                  "toggle_correct_tooltip": "Skift korrekt svar",
+                  "toggle_correct_sr": "Skift indstilling som korrekt"
+                }
+              },
+              "radio": {
+                "edit": {
+                  "helper": "Vælg præcis én korrekt mulighed.",
+                  "correct_selected_tooltip": "Det rigtige svar er valgt",
+                  "mark_correct_tooltip": "Marker som korrekt svar",
+                  "mark_correct_sr": "Marker indstillingen som korrekt"
+                }
+              },
+              "question": {
+                "edit": {
+                  "title_label": "Titel",
+                  "title_placeholder": "Spørgsmål",
+                  "description_label": "Beskrivelse (valgfrit)",
+                  "description_placeholder": "Tilføj yderligere kontekst til dette spørgsmål",
+                  "add_description": "Tilføj beskrivelse",
+                  "remove_description": "Fjern beskrivelse",
+                  "media_menu_sr": "Spørgsmål ekstra menu",
+                  "add_image": "Tilføj billede",
+                  "add_video": "Tilføj video",
+                  "remove_image_tooltip": "Fjern billede",
+                  "remove_image_sr": "Fjern billede",
+                  "remove_video_tooltip": "Fjern video",
+                  "remove_video_sr": "Fjern video",
+                  "image_alt": "Spørgsmålskontekst",
+                  "video_modal_title": "Tilføj YouTube-video",
+                  "video_link_label": "YouTube-link",
+                  "video_link_placeholder": "https://www.youtube.com/watch?v=",
+                  "video_add_button": "Tilføj video",
+                  "video_invalid_link": "Indtast venligst et gyldigt YouTube-link.",
+                  "upload_error_only_images": "Kun billedfiler understøttes.",
+                  "upload_error_skipped": "Nogle filer blev sprunget over, fordi de ikke er billeder.",
+                  "upload_error_failed": "Kunne ikke uploade billede. Prøv igen."
+                }
+              },
+              "navigation": {
+                "previous": "Forrige",
+                "next": "Næste",
+                "finish": "Afslut"
+              },
+              "common": {
+                "option_prefix": "Mulighed",
+                "remove": "Fjern",
+                "add_option": "Tilføj mulighed",
+                "correct_badge": "(korrekt)",
+                "not_set": "Ikke indstillet"
+              }
             }
           },
           "new_exercise_modal": {
@@ -1403,7 +1630,8 @@
     "recent_enrollments": "Seneste tilmeldinger",
     "publish_first_course": "Udgiv dit første kursus",
     "publish_first_course_description": "For at spore tilmeldinger skal du udgive et kursus og invitere elever",
-    "publish_course": "Udgiv kursus"
+    "publish_course": "Udgiv kursus",
+    "items_completed": "Varer afsluttet"
   },
   "schedule": {
     "title": "Dit skema",
@@ -1511,7 +1739,8 @@
     "redirecting": "Omdirigerer",
     "loading_state": "Tag dig til næste side, vent venligst.",
     "org_loading_state": "Tager dig til din organisation...",
-    "add_organization": "+ Tilføj organisation"
+    "add_organization": "+ Tilføj organisation",
+    "goto_dashboard": "Dashboard"
   },
   "add_org": {
     "create_org": "Opret organisation",
@@ -1969,6 +2198,10 @@
         "disable_signup": {
           "label": "Deaktiver tilmelding",
           "description": "Forhindre nye brugere i at tilmelde sig. Kun inviterede brugere kan deltage."
+        },
+        "allow_public_signups": {
+          "label": "Tillad offentlige tilmeldinger",
+          "description": "Når den er deaktiveret, kan kun brugere med et invitationslink tilmelde sig. Aktiver for at tillade alle at oprette en konto."
         }
       },
       "login": {
@@ -1979,7 +2212,8 @@
         "email_password_disabled": "E-mail/adgangskode login er deaktiveret. Brug venligst SSO.",
         "email_password_disabled_message": "E-mail/adgangskodelogin er deaktiveret for denne organisation.",
         "google_auth_disabled": "Google-godkendelse er deaktiveret.",
-        "signup_disabled_error": "Tilmelding er deaktiveret for denne organisation. Kontakt venligst din administrator."
+        "signup_disabled_error": "Tilmelding er deaktiveret for denne organisation. Kontakt venligst din administrator.",
+        "or_continue_with": "Eller fortsæt med e-mail og adgangskode"
       },
       "tabs": {
         "general": "Generelt",
@@ -2046,6 +2280,11 @@
       "confirm_password": "Bekræft adgangskode",
       "password_helper_message": "Adgangskoden skal være på mere end 8 tegn",
       "create_account": "Opret konto"
+    },
+    "signup_disabled": {
+      "title": "Tilmelding deaktiveret",
+      "invite_only_message": "Tilmelding er kun for invitationer. Brug venligst et invitationslink til at oprette en konto.",
+      "go_to_login": "Gå til Login"
     }
   },
   "app": {

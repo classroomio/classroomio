@@ -38,6 +38,22 @@ const QUESTION_VALIDATION_RULES: Record<
       return null;
     }
   ],
+  [QUESTION_TYPE.TRUE_FALSE]: [
+    (question) => {
+      const options = question.options || [];
+      if (options.length > 0 && options.length < 2) {
+        return 'True/False questions need both True and False options';
+      }
+      return null;
+    },
+    (question) => {
+      const options = question.options || [];
+      if (options.length > 0 && !options.some((opt) => opt.isCorrect === true)) {
+        return 'Please mark an option as the correct answer';
+      }
+      return null;
+    }
+  ],
   [QUESTION_TYPE.TEXTAREA]: []
 };
 
@@ -47,6 +63,8 @@ const ZExerciseUpdateQuestionBase = z.object({
   question: z.string().min(1),
   questionTypeId: z.number().int().min(1).optional(), // Added to support question type updates
   points: z.number().int().min(0).optional(),
+  order: z.number().int().min(0).optional(),
+  settings: z.record(z.string(), z.unknown()).optional(),
   deletedAt: z.string().optional(), // Marks question as deleted
   options: z
     .array(
@@ -54,6 +72,7 @@ const ZExerciseUpdateQuestionBase = z.object({
         id: z.number().int().optional(),
         label: z.string().min(1),
         isCorrect: z.boolean(),
+        settings: z.record(z.string(), z.unknown()).optional(),
         deletedAt: z.string().optional() // Marks option as deleted
       })
     )
@@ -91,12 +110,15 @@ export const ZExerciseCreate = z.object({
     .array(
       z.object({
         question: z.string().min(1),
+        questionTypeId: z.number().int().min(1).optional(),
         points: z.number().int().min(0).optional(),
+        settings: z.record(z.string(), z.unknown()).optional(),
         options: z
           .array(
             z.object({
               label: z.string().min(1),
-              isCorrect: z.boolean()
+              isCorrect: z.boolean(),
+              settings: z.record(z.string(), z.unknown()).optional()
             })
           )
           .min(2)

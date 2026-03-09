@@ -39,11 +39,10 @@
   onMount(() => {
     // Load PDF.js dynamically
     const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    script.src = '/js/pdf.js/pdf.min.js';
     script.onload = () => {
       pdfjsLib = (window as any).pdfjsLib;
-      pdfjsLib.GlobalWorkerOptions.workerSrc =
-        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      pdfjsLib.GlobalWorkerOptions.workerSrc = '/js/pdf.js/pdf.worker.min.js';
     };
     document.head.appendChild(script);
 
@@ -333,7 +332,7 @@
 
 <!-- PDF Viewer Modal -->
 {#if pdfViewerOpen}
-  <div class="fixed inset-0 z-50 flex flex-col bg-white dark:bg-neutral-800">
+  <div class="fixed inset-0 z-100 flex flex-col bg-white dark:bg-neutral-800">
     <!-- Header -->
     <div class="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 dark:bg-neutral-800">
       <div class="flex items-center space-x-4">

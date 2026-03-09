@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
   import { browser } from '$app/environment';
   import { Spinner } from '@cio/ui/base/spinner';
-  // import * as Chart from '@cio/ui/base/chart';
-  // import { scaleBand } from '@cio/ui/base/chart';
+  import { ExerciseQuestion } from '@cio/ui';
 
   import { submissions } from './store';
   import { questionnaire } from '../store';
   import { t } from '$lib/utils/functions/translations';
-  import type { ExerciseSubmissions } from '$features/course/utils/types';
-  import { replaceHTMLTag } from '$lib/utils/functions/course';
+  import type { Question } from '$features/course/types';
+  import type { ExerciseSubmissions } from './types';
+  import type { AnswerData, ExerciseQuestionLabels, ExerciseSubmissionModel } from '@cio/question-types';
+  import { toExerciseQuestionModel } from '../question-type-utils';
 
   interface Props {
     isLoading?: boolean;
@@ -17,171 +17,68 @@
 
   let { isLoading = $bindable(true) }: Props = $props();
 
-  type TransformedQuestionChartData = {
-    option: string;
-    responses: number;
-    isCorrect?: boolean;
-  };
-
-  interface TransformedQuestion {
-    title: string;
-    type: number;
-    chartData: TransformedQuestionChartData[];
+  function toAnswerData(answerData: unknown): AnswerData | null {
+    if (!answerData || typeof answerData !== 'object' || !('type' in answerData)) return null;
+    return answerData as AnswerData;
   }
 
-  let transformedQuestions: TransformedQuestion[] = $state([]);
-
-  // Create dynamic chart config based on question data
-  function getChartConfig(chartData: TransformedQuestionChartData[]): any {
-    const config: any = {};
-    chartData.forEach((item, index) => {
-      config[`option${index}`] = {
-        label: item.option,
-        color: item.isCorrect ? '#22c55e' : `hsl(${index * 60}, 70%, 50%)`
-      };
-    });
-    return config;
+  function toSubmissionModel(submission: ExerciseSubmissions): ExerciseSubmissionModel {
+    return {
+      id: submission.id,
+      studentName: submission.groupmember?.profile.fullname,
+      studentAvatarUrl: submission.groupmember?.profile.avatarUrl,
+      answers: submission.answers.map((answer) => ({
+        questionId: answer.questionId,
+        answerData: toAnswerData(answer.answerData)
+      }))
+    };
   }
 
-  function getAnswerToQuestionOfStudent(
-    questionId: number,
-    isTextArea: boolean,
-    submission: ExerciseSubmissions
-  ): string[] {
-    let questionSubmission: string[] = [];
-
-    // find the answer by this student to this question (questionId)
-    const studentAnswer = submission.answers.find((a) => a.question_id === questionId);
-
-    if (studentAnswer) {
-      const { answers, open_answer } = studentAnswer;
-      if (isTextArea) {
-        questionSubmission = [open_answer];
-      } else {
-        questionSubmission = answers;
-      }
-    }
-
-    return questionSubmission;
+  function toSubmissionQuestionModel(question: Question, index: number) {
+    return {
+      ...toExerciseQuestionModel(question),
+      title: `${index + 1}. ${question.title || ''}`
+    };
   }
 
-  const getTransformedData = ($submissions: ExerciseSubmissions[]): void => {
-    const _transformedQuestions: TransformedQuestion[] = [];
+  const submissionLabels = $derived.by(
+    (): ExerciseQuestionLabels => ({
+      'submission.common.no_answer': $t('course.navItem.lessons.exercises.all_exercises.analytics.individual.no'),
+      'submission.common.other': $t('course.navItem.lessons.exercises.all_exercises.analytics.summary.other'),
+      'submission.chart.responses': $t('course.navItem.lessons.exercises.all_exercises.analytics.summary.responses'),
+      'submission.chart.no_data': $t('course.navItem.lessons.exercises.all_exercises.analytics.summary.no_responses'),
+      'submission.list.responses': $t('course.navItem.lessons.exercises.all_exercises.analytics.summary.responses'),
+      'submission.list.no_responses': $t(
+        'course.navItem.lessons.exercises.all_exercises.analytics.summary.no_responses'
+      )
+    })
+  );
 
-    $questionnaire.questions.forEach((question) => {
-      const questionId = typeof question.id === 'string' ? parseInt(question.id, 10) : question.id;
-      const questionTypeId = question.questionTypeId;
-      const transformedQuestion: {
-        title: string;
-        type: number;
-        chartData: TransformedQuestionChartData[];
-      } = {
-        title: question.title,
-        type: questionTypeId,
-        chartData: []
-      };
+  const submissionModels = $derived($submissions.map((submission) => toSubmissionModel(submission)));
 
-      // If textarea don't calculate the value just get the student's answer
-      if (transformedQuestion.type === 3) {
-        $submissions.forEach((submission) => {
-          const answer = getAnswerToQuestionOfStudent(questionId, true, submission);
-          const chartData: TransformedQuestionChartData = {
-            option: answer[0] || '',
-            responses: 0
-          };
-
-          // Update the transformed question chartData
-          transformedQuestion.chartData.push(chartData);
-        });
-      } else {
-        // radio or checkbox
-        question.options.forEach((option) => {
-          const { value, isCorrect, label } = option;
-          const chartData: TransformedQuestionChartData = {
-            option: replaceHTMLTag(label || ''),
-            responses: 0,
-            isCorrect: isCorrect
-          };
-
-          $submissions.forEach((studentSubmission) => {
-            const studentAnswer = getAnswerToQuestionOfStudent(questionId, false, studentSubmission);
-
-            if (value && studentAnswer.includes(value)) {
-              chartData.responses += 1;
-            }
-          });
-          transformedQuestion.chartData.push(chartData);
-        });
-      }
-
-      _transformedQuestions.push(transformedQuestion);
-    });
-
-    untrack(() => {
-      transformedQuestions = [..._transformedQuestions];
-    });
-
-    console.log({ transformedQuestions });
-  };
-
-  $effect(() => {
-    if ($submissions?.length) {
-      getTransformedData($submissions);
-    }
-  });
+  const submissionQuestions = $derived(
+    $questionnaire.questions
+      .filter((question) => !question.deletedAt)
+      .map((question, index) => toSubmissionQuestionModel(question, index))
+  );
 </script>
 
 {#if isLoading}
   <Spinner />
 {:else if browser}
-  <div>
+  <div class="flex flex-col gap-6">
     <p class="mb-3 text-2xl">
       {$t('course.navItem.lessons.exercises.all_exercises.analytics.summary.question_chart')}
     </p>
-    {#each transformedQuestions as q}
-      <div class="mb-6">
-        <p class="mb-3 font-medium">{q.title}</p>
-        {#if q.type === 1}
-          <!-- Pie Chart for Radio Questions (single choice) -->
-          {@const chartConfig = getChartConfig(q.chartData)}
-          {console.log('chartConfig', chartConfig)}
-          <!-- <Chart.Container config={chartConfig} class="min-h-[300px] w-full">
-            <Chart.PieChart data={q.chartData} value="responses" name="option" />
-          </Chart.Container> -->
-        {:else if q.type === 2}
-          <!-- Bar Chart for Checkbox Questions (multiple choice) -->
-          {@const chartConfig = getChartConfig(q.chartData)}
-          {console.log('chartConfig', chartConfig)}
-          <!-- <Chart.Container config={chartConfig} class="min-h-[300px] w-full">
-            <Chart.BarChart
-              data={q.chartData}
-              xScale={scaleBand().padding(0.25)}
-              x="option"
-              y="responses"
-              axis="x"
-              tooltip={false}
-              series={q.chartData.map((item, idx) => ({
-                key: 'responses',
-                label: item.option,
-                color: item.isCorrect ? '#22c55e' : `hsl(${idx * 60}, 70%, 50%)`
-              }))}
-            />
-          </Chart.Container> -->
-        {:else}
-          <!-- Text answers -->
-          <div class="max-h-[250px] overflow-auto">
-            <ul>
-              {#each q.chartData as answer (answer)}
-                {#if answer.option}
-                  <div class="my-1 w-full rounded bg-slate-100 p-2 dark:bg-slate-300">
-                    <li class="text-base font-medium text-black">{answer.option}</li>
-                  </div>
-                {/if}
-              {/each}
-            </ul>
-          </div>
-        {/if}
-      </div>
-    {/each}
+
+    <ExerciseQuestion.QuestionList
+      contract={{
+        mode: 'submission',
+        questions: submissionQuestions,
+        submissions: submissionModels,
+        labels: submissionLabels,
+        disabled: true
+      }}
+    />
   </div>
 {/if}

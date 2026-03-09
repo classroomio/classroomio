@@ -29,7 +29,8 @@ export const PUBLIC_ROUTES = [
   ROUTE.FORGOT,
   ROUTE.RESET,
   `^${ROUTE.PAGES}/.*`,
-  `^${ROUTE.COURSE}/.*`,
+  // Course landing page only (excludes COURSE_ENROLL which requires auth)
+  `^${ROUTE.COURSE}/[^/]+/?$`,
   `^${ROUTE.COURSES}/?$`,
   '/404',
   `^${ROUTE.VERIFY_EMAIL_ERROR}$`,

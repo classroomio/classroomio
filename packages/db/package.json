@@ -15,6 +15,7 @@
     "db:setup": "tsx src/scripts/db-setup.ts",
     "db:setup:seed": "tsx src/scripts/db-setup.ts --seed",
     "db:exercise-backfill": "tsx src/scripts/backfill-exercise-course.ts",
+    "migrate:answer-data": "tsx src/scripts/migrate-answer-data.ts",
     "db:assets-backfill": "tsx src/scripts/backfill-lesson-assets.ts",
     "db:sync-orphaned-profiles": "tsx src/scripts/sync-orphaned-profiles.ts",
     "move-users": "tsx src/scripts/supabase-to-betterauth.ts",
@@ -27,6 +28,7 @@
   "dependencies": {
     "@better-auth/sso": "^1.4.18",
     "@cio/email": "workspace:*",
+    "@cio/question-types": "workspace:*",
     "@cio/tsconfig": "workspace:*",
     "@cio/utils": "workspace:*",
     "bcrypt": "6.0.0",

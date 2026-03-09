@@ -55,6 +55,7 @@
     "zod": "^4.1.8"
   },
   "dependencies": {
+    "@cio/question-types": "workspace:*",
     "@cio/tsconfig": "workspace:*"
   },
   "devDependencies": {

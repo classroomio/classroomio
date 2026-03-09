@@ -114,6 +114,20 @@
       "email": "Địa chỉ email không hợp lệ",
       "username": "Tên người dùng không thể trống",
       "fullname": "Tên phải có tối thiểu 5 ký tự"
+    },
+    "exercise": {
+      "options": {
+        "custom": "{tin nhắn}"
+      },
+      "points": {
+        "too_small": "Điểm ít nhất phải bằng 0"
+      },
+      "label": {
+        "too_small": "Nhãn tùy chọn là bắt buộc"
+      },
+      "question": {
+        "too_small": "Tiêu đề câu hỏi là bắt buộc"
+      }
     }
   },
   "generic": {
@@ -856,6 +870,11 @@
           "submitted": "Đã gửi",
           "in_progress": "Đang tiến hành",
           "graded": "Đã chấm điểm"
+        },
+        "workflow": {
+          "awaiting_manual_hint": "Cần xem xét thủ công",
+          "failed_hint": "Tự động chấm điểm không thành công. Chuyển nội dung gửi này trở lại Đã gửi để thử lại.",
+          "invalid_transition": "Việc di chuyển trạng thái này không được phép bởi quy trình chấm điểm"
         }
       },
       "attendance": {
@@ -994,9 +1013,14 @@
               },
               "summary": {
                 "heading": "Tóm tắt",
-                "question_chart": "Biểu đồ câu hỏi"
+                "question_chart": "Biểu đồ câu hỏi",
+                "responses": "Phản hồi",
+                "no_responses": "Chưa có phản hồi nào",
+                "other": "Khác"
               },
-              "loading_submissions": "Đang tải nội dung gửi..."
+              "loading_submissions": "Đang tải nội dung gửi...",
+              "empty_title": "Chưa có bài nộp nào",
+              "empty_description": "Bài nộp sẽ xuất hiện ở đây khi học sinh hoàn thành bài tập này."
             },
             "view_mode": {
               "no_question": "Không có câu hỏi nào được thêm vào cho bài tập này",
@@ -1018,7 +1042,9 @@
               "empty_edit_hint_prefix": "Bấm vào ",
               "empty_edit_hint_suffix": " nút để thêm.",
               "answers_required": "Vui lòng cung cấp ít nhất một câu trả lời trước khi gửi.",
-              "checking_submission": "Đang kiểm tra nội dung gửi của bạn..."
+              "checking_submission": "Đang kiểm tra nội dung gửi của bạn...",
+              "answer_required": "Vui lòng trả lời câu hỏi này trước khi tiếp tục.",
+              "instructor_feedback": "Phản hồi của giảng viên"
             },
             "edit_mode": {
               "delete_modal": "Xóa bài tập",
@@ -1033,9 +1059,19 @@
               "question_types": {
                 "single": "Câu trả lời duy nhất",
                 "multiple": "Nhiều câu trả lời",
-                "paragraph": "Đoạn"
+                "paragraph": "Đoạn",
+                "true_false": "Đúng/Sai",
+                "short_answer": "Câu trả lời ngắn",
+                "numeric": "Câu trả lời bằng số",
+                "fill_blank": "Điền vào chỗ trống",
+                "file_upload": "Tải tập tin lên",
+                "matching": "Kết hợp",
+                "ordering": "Đặt hàng",
+                "hotspot": "Điểm phát sóng",
+                "link": "Liên kết"
               },
-              "select_type": "Chọn loại"
+              "select_type": "Chọn loại",
+              "premium_question_type": "Nâng cấp để sử dụng loại câu hỏi này"
             },
             "delete_confirmation": {
               "title": "Xóa câu hỏi",
@@ -1048,6 +1084,197 @@
               "heading": "Mô tả",
               "describe": "Mô tả bài tập cho học sinh của bạn",
               "no": "Không có mô tả"
+            },
+            "shared_question": {
+              "textarea": {
+                "take": {
+                  "placeholder": "Viết câu trả lời của bạn"
+                },
+                "edit": {
+                  "placeholder": "Người học sẽ trả lời bằng văn bản dài"
+                }
+              },
+              "hotspot": {
+                "preview": {
+                  "helper": "Bản xem trước điểm phát sóng được cung cấp bởi cài đặt hình ảnh và điểm phát sóng của ứng dụng máy chủ."
+                },
+                "take": {
+                  "placeholder": "Cung cấp tọa độ điểm phát sóng dưới dạng JSON"
+                },
+                "edit": {
+                  "helper": "Định cấu hình hình ảnh và vùng điểm phát sóng trong cài đặt câu hỏi thông qua điều khiển ứng dụng máy chủ."
+                }
+              },
+              "ordering": {
+                "fallback_step_prefix": "Bước",
+                "preview": {
+                  "submitted_label": "Đơn đặt hàng đã gửi",
+                  "expected_label": "Đơn hàng dự kiến",
+                  "matches": "Đơn hàng đã gửi khớp với đơn hàng dự kiến.",
+                  "differs": "Đơn hàng đã gửi khác với đơn hàng dự kiến."
+                },
+                "take": {
+                  "helper": "Kéo và thả để sắp xếp các mục theo đúng thứ tự.",
+                  "empty": "Chưa có mục đặt hàng nào được định cấu hình cho câu hỏi này."
+                },
+                "edit": {
+                  "helper": "Kéo các mục để xác định thứ tự chính xác.",
+                  "add_step": "Thêm bước",
+                  "empty": "Thêm các bước, sau đó kéo để đặt thứ tự dự kiến.",
+                  "step_placeholder": "Bước '{'chỉ mục'}'",
+                  "remove_step_tooltip": "Xóa bước"
+                }
+              },
+              "matching": {
+                "preview": {
+                  "helper": "Xem trước các cặp phù hợp được cung cấp bởi cài đặt ứng dụng máy chủ."
+                },
+                "take": {
+                  "placeholder": "Cung cấp các cặp khớp dưới dạng JSON"
+                },
+                "edit": {
+                  "helper": "Định cấu hình các cặp trong cài đặt câu hỏi thông qua điều khiển ứng dụng máy chủ."
+                }
+              },
+              "link": {
+                "preview": {
+                  "empty": "Không có liên kết nào được gửi.",
+                  "item_label": "Liên kết '{'chỉ mục'}'"
+                },
+                "take": {
+                  "helper": "Thêm một hoặc nhiều liên kết. Chỉ các URL http/https hợp lệ mới được chấp nhận.",
+                  "placeholder": "https://example.com/resource-'{'index'}'",
+                  "remove_tooltip": "Xóa liên kết",
+                  "remove_sr": "Xóa liên kết",
+                  "invalid_url_error": "Vui lòng nhập URL hợp lệ (http/https).",
+                  "add_button": "Thêm liên kết"
+                },
+                "edit": {
+                  "instructions_placeholder": "Hướng dẫn tùy chọn cho người học",
+                  "helper": "Người học có thể gửi một hoặc nhiều URL hợp lệ (http/https)."
+                }
+              },
+              "file_upload": {
+                "preview": {
+                  "accepted_types_label": "Các loại được chấp nhận",
+                  "max_size_label": "Kích thước tối đa (MB)"
+                },
+                "take": {
+                  "selected_file_label": "Tệp đã chọn",
+                  "upload_button": "Tải lên",
+                  "upload_progress": "Đang tải lên...",
+                  "upload_error": "Tải lên không thành công",
+                  "view": "Xem",
+                  "download": "Tải xuống"
+                },
+                "edit": {
+                  "accepted_types_placeholder": "Các loại được chấp nhận (ví dụ: pdf, docx)",
+                  "max_size_placeholder": "Kích thước tối đa (MB)"
+                }
+              },
+              "fill_blank": {
+                "preview": {
+                  "accepted_answers_label": "Câu trả lời được chấp nhận"
+                },
+                "take": {
+                  "placeholder": "Nhập các câu trả lời cách nhau bằng dấu phẩy"
+                },
+                "edit": {
+                  "accepted_answers_placeholder": "Câu trả lời được chấp nhận (được phân tách bằng dấu phẩy)"
+                }
+              },
+              "numeric": {
+                "preview": {
+                  "correct_value_label": "Giá trị đúng",
+                  "tolerance_label": "Dung sai"
+                },
+                "take": {
+                  "placeholder": "Nhập một số"
+                },
+                "edit": {
+                  "correct_value_label": "Giá trị đúng",
+                  "correct_value_info": "Câu trả lời bằng số dự kiến người học phải nộp để được đánh dấu là đúng.",
+                  "tolerance_label": "Dung sai",
+                  "tolerance_info": "Chênh lệch được phép so với giá trị chính xác (ví dụ: 0,5 chấp nhận +/- 0,5).",
+                  "correct_value_placeholder": "Giá trị đúng",
+                  "tolerance_placeholder": "Dung sai"
+                }
+              },
+              "short_answer": {
+                "preview": {
+                  "helper": "Câu hỏi trả lời bằng văn bản miễn phí."
+                },
+                "take": {
+                  "placeholder": "Nhập câu trả lời của bạn"
+                },
+                "edit": {
+                  "instructions_placeholder": "Hướng dẫn tùy chọn"
+                }
+              },
+              "true_false": {
+                "true_label": "đúng",
+                "false_label": "sai",
+                "preview": {
+                  "correct_value_label": "Giá trị đúng"
+                },
+                "edit": {
+                  "correct_answer_label": "Câu trả lời đúng"
+                }
+              },
+              "checkbox": {
+                "edit": {
+                  "helper": "Đánh dấu một hoặc nhiều lựa chọn là đúng.",
+                  "correct_selected_tooltip": "Đã chọn câu trả lời đúng",
+                  "toggle_correct_tooltip": "Chuyển đổi câu trả lời đúng",
+                  "toggle_correct_sr": "Chuyển đổi tùy chọn là chính xác"
+                }
+              },
+              "radio": {
+                "edit": {
+                  "helper": "Chọn đúng một phương án đúng.",
+                  "correct_selected_tooltip": "Đã chọn câu trả lời đúng",
+                  "mark_correct_tooltip": "Đánh dấu là câu trả lời đúng",
+                  "mark_correct_sr": "Đánh dấu tùy chọn là chính xác"
+                }
+              },
+              "question": {
+                "edit": {
+                  "title_label": "Tiêu đề",
+                  "title_placeholder": "Lời nhắc câu hỏi",
+                  "description_label": "Mô tả (tùy chọn)",
+                  "description_placeholder": "Thêm ngữ cảnh bổ sung cho câu hỏi này",
+                  "add_description": "Thêm mô tả",
+                  "remove_description": "Xóa mô tả",
+                  "media_menu_sr": "Menu bổ sung câu hỏi",
+                  "add_image": "Thêm hình ảnh",
+                  "add_video": "Thêm video",
+                  "remove_image_tooltip": "Xóa hình ảnh",
+                  "remove_image_sr": "Xóa hình ảnh",
+                  "remove_video_tooltip": "Xóa video",
+                  "remove_video_sr": "Xóa video",
+                  "image_alt": "Bối cảnh câu hỏi",
+                  "video_modal_title": "Thêm video YouTube",
+                  "video_link_label": "liên kết YouTube",
+                  "video_link_placeholder": "https://www.youtube.com/watch?v=",
+                  "video_add_button": "Thêm video",
+                  "video_invalid_link": "Vui lòng nhập liên kết YouTube hợp lệ.",
+                  "upload_error_only_images": "Chỉ hỗ trợ các tập tin hình ảnh.",
+                  "upload_error_skipped": "Một số tệp đã bị bỏ qua vì chúng không phải là hình ảnh.",
+                  "upload_error_failed": "Không thể tải lên hình ảnh. Hãy thử lại."
+                }
+              },
+              "navigation": {
+                "previous": "trước đó",
+                "next": "Tiếp theo",
+                "finish": "Kết thúc"
+              },
+              "common": {
+                "option_prefix": "Tùy chọn",
+                "remove": "Xóa",
+                "add_option": "Thêm tùy chọn",
+                "correct_badge": "(Đúng)",
+                "not_set": "Chưa đặt"
+              }
             }
           },
           "new_exercise_modal": {
@@ -1403,7 +1630,8 @@
     "recent_enrollments": "Đăng ký gần đây",
     "publish_first_course": "Xuất bản khóa học đầu tiên của bạn",
     "publish_first_course_description": "Để theo dõi việc ghi danh, xuất bản một khóa học và mời sinh viên",
-    "publish_course": "Xuất bản khóa học"
+    "publish_course": "Xuất bản khóa học",
+    "items_completed": "Các hạng mục đã hoàn thành"
   },
   "schedule": {
     "title": "Lịch trình của bạn",
@@ -1511,7 +1739,8 @@
     "redirecting": "Chuyển hướng",
     "loading_state": "Đang đưa bạn đến trang tiếp theo, vui lòng đợi.",
     "org_loading_state": "Đưa bạn đến tổ chức của bạn...",
-    "add_organization": "+ Thêm tổ chức"
+    "add_organization": "+ Thêm tổ chức",
+    "goto_dashboard": "Trang tổng quan"
   },
   "add_org": {
     "create_org": "Tạo tổ chức",
@@ -1969,6 +2198,10 @@
         "disable_signup": {
           "label": "Tắt đăng ký",
           "description": "Ngăn chặn người dùng mới đăng ký. Chỉ những người dùng được mời mới có thể tham gia."
+        },
+        "allow_public_signups": {
+          "label": "Cho phép đăng ký công khai",
+          "description": "Khi bị tắt, chỉ những người dùng có liên kết mời mới có thể đăng ký. Enable để cho phép mọi người tạo tài khoản."
         }
       },
       "login": {
@@ -1979,7 +2212,8 @@
         "email_password_disabled": "Đăng nhập email/mật khẩu bị vô hiệu hóa. Vui lòng sử dụng SSO.",
         "email_password_disabled_message": "Đăng nhập email/mật khẩu bị vô hiệu hóa đối với tổ chức này.",
         "google_auth_disabled": "Xác thực Google bị vô hiệu hóa.",
-        "signup_disabled_error": "Đăng ký bị vô hiệu hóa cho tổ chức này. Vui lòng liên hệ với quản trị viên của bạn."
+        "signup_disabled_error": "Đăng ký bị vô hiệu hóa cho tổ chức này. Vui lòng liên hệ với quản trị viên của bạn.",
+        "or_continue_with": "Hoặc tiếp tục với email và mật khẩu"
       },
       "tabs": {
         "general": "chung",
@@ -2046,6 +2280,11 @@
       "confirm_password": "Xác nhận mật khẩu",
       "password_helper_message": "Mật khẩu phải nhiều hơn 8 ký tự",
       "create_account": "Tạo tài khoản"
+    },
+    "signup_disabled": {
+      "title": "Đăng ký bị vô hiệu hóa",
+      "invite_only_message": "Đăng ký chỉ dành cho người được mời. Vui lòng sử dụng liên kết mời để tạo tài khoản.",
+      "go_to_login": "Đi tới Đăng nhập"
     }
   },
   "app": {

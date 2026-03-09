@@ -3,8 +3,8 @@ import {
   ZCreateOrgPlan,
   ZCreateOrganization,
   ZGetCoursesBySiteName,
-  ZGetOrganizationCoursesQuery,
   ZGetOrgSetup,
+  ZGetOrganizationCoursesQuery,
   ZGetOrganizations,
   ZGetUserAnalytics,
   ZInviteTeamMembers,
@@ -17,6 +17,7 @@ import {
   cancelOrgPlan,
   createOrg,
   createOrgPlan,
+  getFirstOrgForSelfHosted,
   getOrgAudience,
   getOrgSetupData,
   getOrgTeam,
@@ -30,7 +31,6 @@ import {
   updateOrg,
   updateOrgPlan
 } from '@api/services/organization';
-import { inviteTeamMembers } from '@api/services/organization/invite';
 
 import { Hono } from '@api/utils/hono';
 import { TOrganization } from '@db/types';
@@ -39,6 +39,7 @@ import { authMiddleware } from '@api/middlewares/auth';
 import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
 import { getLMSExercisesService } from '@api/services/exercise';
 import { handleError } from '@api/utils/errors';
+import { inviteTeamMembers } from '@api/services/organization/invite';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { quizRouter } from '@api/routes/organization/quiz';
@@ -67,6 +68,25 @@ export const organizationRouter = new Hono()
     } catch (error) {
       console.error('Error fetching organizations:', error);
       return handleError(c, error, 'Failed to fetch organizations');
+    }
+  })
+  /**
+   * GET /organization/first
+   * Gets the first organization (for self-hosted single-org mode). Requires API key.
+   */
+  .get('/first', authOrApiKeyMiddleware, async (c) => {
+    try {
+      const org = await getFirstOrgForSelfHosted();
+      return c.json(
+        {
+          success: true,
+          data: org ? [org] : []
+        },
+        200
+      );
+    } catch (error) {
+      console.error('Error fetching first organization:', error);
+      return handleError(c, error, 'Failed to fetch first organization');
     }
   })
   /**

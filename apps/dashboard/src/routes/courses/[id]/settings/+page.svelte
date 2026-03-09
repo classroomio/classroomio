@@ -17,20 +17,22 @@
   }
 </script>
 
-<Page.Header class="sticky top-13 z-10 bg-white">
-  <Page.HeaderContent>
-    <Page.Title>
-      {$t('course.navItem.settings.heading')}
-    </Page.Title>
-  </Page.HeaderContent>
-  <Page.Action>
-    <Button variant="secondary" loading={isSaving} onclick={handleSave}>
-      {$t('course.navItem.settings.save')}
-    </Button>
-  </Page.Action>
-</Page.Header>
-<Page.Body>
-  {#snippet child()}
-    <CourseSettingsPage bind:this={settingsComponent} />
-  {/snippet}
-</Page.Body>
+<Page.Root class="mx-auto flex w-[90%] px-4 md:max-w-2xl lg:max-w-3xl">
+  <Page.Header class="sticky top-13 z-10 bg-white">
+    <Page.HeaderContent>
+      <Page.Title>
+        {$t('course.navItem.settings.heading')}
+      </Page.Title>
+    </Page.HeaderContent>
+    <Page.Action>
+      <Button variant="secondary" loading={isSaving} onclick={handleSave}>
+        {$t('course.navItem.settings.save')}
+      </Button>
+    </Page.Action>
+  </Page.Header>
+  <Page.Body>
+    {#snippet child()}
+      <CourseSettingsPage bind:this={settingsComponent} />
+    {/snippet}
+  </Page.Body>
+</Page.Root>

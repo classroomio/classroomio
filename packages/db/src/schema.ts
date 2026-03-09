@@ -18,6 +18,7 @@ import {
   varchar
 } from 'drizzle-orm/pg-core';
 
+import type { AnswerData } from '@cio/question-types';
 import { sql } from 'drizzle-orm';
 
 export const courseType = pgEnum('COURSE_TYPE', ['SELF_PACED', 'LIVE_CLASS']);
@@ -326,6 +327,7 @@ export const option = pgTable(
     }),
     label: varchar().notNull(),
     isCorrect: boolean('is_correct').default(false).notNull(),
+    settings: jsonb().default({}),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     questionId: bigint('question_id', { mode: 'number' }).notNull(),
     value: uuid().default(sql`gen_random_uuid()`),
@@ -468,6 +470,8 @@ export const submission = pgTable(
     reviewerId: bigint('reviewer_id', { mode: 'number' }),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     statusId: bigint('status_id', { mode: 'number' }).default(sql`'1'`),
+    gradingState: varchar('grading_state').default('queued').notNull(),
+    overallStatus: varchar('overall_status').default('manual_required').notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     total: bigint({ mode: 'number' }).default(sql`'0'`),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
@@ -1486,6 +1490,7 @@ export const question = pgTable(
     exerciseId: uuid('exercise_id').notNull(),
     name: uuid().default(sql`gen_random_uuid()`),
     points: doublePrecision(),
+    settings: jsonb().default({}),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     order: bigint({ mode: 'number' })
   },
@@ -1514,10 +1519,13 @@ export const questionAnswer = pgTable(
       minValue: 1,
       cache: 1
     }),
+    answerData: jsonb('answer_data').$type<AnswerData | null>(),
+    /** @deprecated Use answer_data instead. Kept for backwards compatibility. */
     answers: varchar().array(),
+    /** @deprecated Use answer_data instead. Kept for backwards compatibility. */
+    openAnswer: text('open_answer'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     questionId: bigint('question_id', { mode: 'number' }).notNull(),
-    openAnswer: text('open_answer'),
     groupMemberId: uuid('group_member_id').notNull(),
     submissionId: uuid('submission_id'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
@@ -1607,7 +1615,11 @@ export const organization = pgTable(
     name: varchar().notNull(),
     siteName: text(),
     avatarUrl: text('avatar_url'),
-    settings: jsonb().default({}),
+    settings: jsonb().default({}).$type<{
+      signup?: {
+        inviteOnly?: boolean;
+      };
+    }>(),
     landingpage: jsonb().default({}).$type<{
       header?: {
         title: string;

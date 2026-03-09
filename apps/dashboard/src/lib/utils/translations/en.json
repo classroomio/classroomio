@@ -127,6 +127,11 @@
     "validation": {
       "unable_to_create_profile": "Unable to create profile",
       "user_cannot_be_created": "User cannot be created"
+    },
+    "signup_disabled": {
+      "title": "Signup Disabled",
+      "invite_only_message": "Signup is invite-only. Please use an invite link to create an account.",
+      "go_to_login": "Go to Login"
     }
   },
   "profileMenu": {
@@ -242,6 +247,7 @@
         "token_auth": "Token Auth"
       },
       "login": {
+        "or_continue_with": "Or continue with email and password",
         "sso_enabled": "{provider} is enabled for your domain",
         "sso_redirect_error": "SSO sign-in is misconfigured. Please set PUBLIC_SERVER_URL to your API server.",
         "sso_required": "Please sign in with SSO. Password login is disabled.",
@@ -254,6 +260,10 @@
       "general": {
         "heading": "Authentication Settings",
         "description": "Control how users can sign up and log in to your organization.",
+        "allow_public_signups": {
+          "label": "Allow public signups",
+          "description": "When disabled, only users with an invite link can sign up. Enable to allow anyone to create an account."
+        },
         "disable_signup": {
           "label": "Disable Signup",
           "description": "Prevent new users from signing up. Only invited users can join."
@@ -720,6 +730,7 @@
     "discussion": "Discussion",
     "people": "People",
     "goto_lms": "Go to LMS",
+    "goto_dashboard": "Dashboard",
     "goto_home": "Go to ClassroomIO Home",
     "login": "Login",
     "signup": "Sign Up",
@@ -838,6 +849,7 @@
     "start_course": "Once you start a course, your progress will reflect here",
     "lms_dashboard_hero": "Today is another day to bring you closer to your learning goals. Don’t give up, the more you learn the better you get.",
     "lessons_completed": "Lessons completed",
+    "items_completed": "Items completed",
     "no_courses_started": "No courses started",
     "revenue": "Revenue",
     "revenue_description": "Approximate revenue made from course sales",
@@ -1274,6 +1286,7 @@
               "no": "No, cancel",
               "yes": "Yes, delete",
               "select_type": "Select type",
+              "premium_question_type": "Upgrade to use this question type",
               "deleting": "Deleting...",
               "error": "You have some errors",
               "question": "Question",
@@ -1282,7 +1295,16 @@
               "question_types": {
                 "single": "Single answer",
                 "multiple": "Multiple answers",
-                "paragraph": "Paragraph"
+                "paragraph": "Paragraph",
+                "true_false": "True/False",
+                "short_answer": "Short answer",
+                "numeric": "Numeric answer",
+                "fill_blank": "Fill in the blank",
+                "file_upload": "File upload",
+                "matching": "Matching",
+                "ordering": "Ordering",
+                "hotspot": "Hotspot",
+                "link": "Links"
               }
             },
             "view_mode": {
@@ -1291,6 +1313,7 @@
               "empty_edit_hint_prefix": "Click the ",
               "empty_edit_hint_suffix": " button to add.",
               "answers_required": "Please provide at least one answer before submitting.",
+              "answer_required": "Please answer this question before proceeding.",
               "edit": "Edit",
               "button": "button to add",
               "questions": "questions",
@@ -1305,12 +1328,16 @@
               "status_pending": "Status: Pending Review",
               "status_graded": "Status: Review Completed",
               "status_submitted": "Status: Submitted",
-              "checking_submission": "Checking your submission..."
+              "checking_submission": "Checking your submission...",
+              "instructor_feedback": "Instructor feedback"
             },
             "analytics": {
               "summary": {
                 "heading": "Summary",
-                "question_chart": "Question Charts"
+                "question_chart": "Question Charts",
+                "responses": "Responses",
+                "no_responses": "No responses yet",
+                "other": "Other"
               },
               "individual": {
                 "heading": "Individual",
@@ -1319,7 +1346,200 @@
                 "student_avatar": "Student"
               },
               "submissions": "Submissions",
-              "loading_submissions": "Loading submissions..."
+              "loading_submissions": "Loading submissions...",
+              "empty_title": "No submissions yet",
+              "empty_description": "Submissions will appear here when students complete this exercise."
+            },
+            "shared_question": {
+              "common": {
+                "option_prefix": "Option",
+                "remove": "Remove",
+                "add_option": "Add option",
+                "correct_badge": "(Correct)",
+                "not_set": "Not set"
+              },
+              "navigation": {
+                "previous": "Previous",
+                "next": "Next",
+                "finish": "Finish"
+              },
+              "question": {
+                "edit": {
+                  "title_label": "Title",
+                  "title_placeholder": "Question prompt",
+                  "description_label": "Description (optional)",
+                  "description_placeholder": "Add additional context for this question",
+                  "add_description": "Add description",
+                  "remove_description": "Remove description",
+                  "media_menu_sr": "Question extras menu",
+                  "add_image": "Add image",
+                  "add_video": "Add video",
+                  "remove_image_tooltip": "Remove image",
+                  "remove_image_sr": "Remove image",
+                  "remove_video_tooltip": "Remove video",
+                  "remove_video_sr": "Remove video",
+                  "image_alt": "Question context",
+                  "video_modal_title": "Add YouTube video",
+                  "video_link_label": "YouTube link",
+                  "video_link_placeholder": "https://www.youtube.com/watch?v=",
+                  "video_add_button": "Add video",
+                  "video_invalid_link": "Please enter a valid YouTube link.",
+                  "upload_error_only_images": "Only image files are supported.",
+                  "upload_error_skipped": "Some files were skipped because they are not images.",
+                  "upload_error_failed": "Failed to upload image. Try again."
+                }
+              },
+              "radio": {
+                "edit": {
+                  "helper": "Select exactly one correct option.",
+                  "correct_selected_tooltip": "Correct answer selected",
+                  "mark_correct_tooltip": "Mark as correct answer",
+                  "mark_correct_sr": "Mark option as correct"
+                }
+              },
+              "checkbox": {
+                "edit": {
+                  "helper": "Mark one or more options as correct.",
+                  "correct_selected_tooltip": "Correct answer selected",
+                  "toggle_correct_tooltip": "Toggle correct answer",
+                  "toggle_correct_sr": "Toggle option as correct"
+                }
+              },
+              "true_false": {
+                "true_label": "True",
+                "false_label": "False",
+                "edit": {
+                  "correct_answer_label": "Correct answer"
+                },
+                "preview": {
+                  "correct_value_label": "Correct value"
+                }
+              },
+              "short_answer": {
+                "edit": {
+                  "instructions_placeholder": "Optional instructions"
+                },
+                "take": {
+                  "placeholder": "Type your answer"
+                },
+                "preview": {
+                  "helper": "Free-text answer question."
+                }
+              },
+              "numeric": {
+                "edit": {
+                  "correct_value_label": "Correct value",
+                  "correct_value_info": "The expected numeric answer learners must submit to be marked correct.",
+                  "tolerance_label": "Tolerance",
+                  "tolerance_info": "Allowed difference from the correct value (for example, 0.5 accepts +/-0.5).",
+                  "correct_value_placeholder": "Correct value",
+                  "tolerance_placeholder": "Tolerance"
+                },
+                "take": {
+                  "placeholder": "Enter a number"
+                },
+                "preview": {
+                  "correct_value_label": "Correct value",
+                  "tolerance_label": "Tolerance"
+                }
+              },
+              "fill_blank": {
+                "edit": {
+                  "accepted_answers_placeholder": "Accepted answers (comma separated)"
+                },
+                "take": {
+                  "placeholder": "Enter answers separated by commas"
+                },
+                "preview": {
+                  "accepted_answers_label": "Accepted answers"
+                }
+              },
+              "file_upload": {
+                "edit": {
+                  "accepted_types_placeholder": "Accepted types (e.g. pdf,docx)",
+                  "max_size_placeholder": "Max size (MB)"
+                },
+                "take": {
+                  "selected_file_label": "Selected file",
+                  "upload_button": "Upload",
+                  "upload_progress": "Uploading...",
+                  "upload_error": "Upload failed",
+                  "view": "View",
+                  "download": "Download"
+                },
+                "preview": {
+                  "accepted_types_label": "Accepted types",
+                  "max_size_label": "Max size (MB)"
+                }
+              },
+              "link": {
+                "edit": {
+                  "instructions_placeholder": "Optional instructions for learners",
+                  "helper": "Learners can submit one or more valid URLs (http/https)."
+                },
+                "take": {
+                  "helper": "Add one or more links. Only valid http/https URLs are accepted.",
+                  "placeholder": "https://example.com/resource-'{'index'}'",
+                  "remove_tooltip": "Remove link",
+                  "remove_sr": "Remove link",
+                  "invalid_url_error": "Please enter a valid URL (http/https).",
+                  "add_button": "Add link"
+                },
+                "preview": {
+                  "empty": "No links submitted.",
+                  "item_label": "Link '{'index'}'"
+                }
+              },
+              "matching": {
+                "edit": {
+                  "helper": "Configure pairs in question settings via host app controls."
+                },
+                "take": {
+                  "placeholder": "Provide matching pairs as JSON"
+                },
+                "preview": {
+                  "helper": "Matching pairs preview is provided by host app settings."
+                }
+              },
+              "ordering": {
+                "fallback_step_prefix": "Step",
+                "edit": {
+                  "helper": "Drag items to define the correct order.",
+                  "add_step": "Add step",
+                  "empty": "Add steps, then drag to set the expected order.",
+                  "step_placeholder": "Step '{'index'}'",
+                  "remove_step_tooltip": "Remove step"
+                },
+                "take": {
+                  "helper": "Drag and drop to arrange the items in the correct order.",
+                  "empty": "No ordering items are configured for this question yet."
+                },
+                "preview": {
+                  "submitted_label": "Submitted order",
+                  "expected_label": "Expected order",
+                  "matches": "Submitted order matches expected order.",
+                  "differs": "Submitted order differs from expected order."
+                }
+              },
+              "hotspot": {
+                "edit": {
+                  "helper": "Configure hotspot image and zones in question settings via host app controls."
+                },
+                "take": {
+                  "placeholder": "Provide hotspot coordinates as JSON"
+                },
+                "preview": {
+                  "helper": "Hotspot preview is provided by host app image and hotspot settings."
+                }
+              },
+              "textarea": {
+                "edit": {
+                  "placeholder": "Learners will answer with long-form text"
+                },
+                "take": {
+                  "placeholder": "Write your answer"
+                }
+              }
             }
           }
         },
@@ -1388,6 +1608,11 @@
           "submitted": "Submitted",
           "in_progress": "In Progress",
           "graded": "Graded"
+        },
+        "workflow": {
+          "awaiting_manual_hint": "Needs manual review",
+          "failed_hint": "Auto-grading failed. Move this submission back to Submitted to retry.",
+          "invalid_transition": "This status move is not allowed by the grading workflow"
         },
         "grading_modal": {
           "details": "Details",
@@ -2284,6 +2509,20 @@
     },
     "email": {
       "not_valid": "Not valid email"
+    },
+    "exercise": {
+      "question": {
+        "too_small": "Question title is required"
+      },
+      "label": {
+        "too_small": "Option label is required"
+      },
+      "points": {
+        "too_small": "Points must be at least 0"
+      },
+      "options": {
+        "custom": "{message}"
+      }
     },
     "generic": {
       "invalid_type": "Invalid type{expected, select, undefined{} other{. Expected {expected}}}{received, select, undefined{} other{ (received {received})}}",

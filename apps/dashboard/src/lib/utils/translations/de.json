@@ -114,6 +114,20 @@
       "email": "Ungültige E-Mail-Adresse",
       "username": "Der Benutzername darf nicht leer sein",
       "fullname": "Der Name sollte mindestens 5 Zeichen lang sein"
+    },
+    "exercise": {
+      "options": {
+        "custom": "{Nachricht}"
+      },
+      "points": {
+        "too_small": "Die Punkte müssen mindestens 0 sein"
+      },
+      "label": {
+        "too_small": "Optionsetikett ist erforderlich"
+      },
+      "question": {
+        "too_small": "Der Titel der Frage ist erforderlich"
+      }
     }
   },
   "generic": {
@@ -856,6 +870,11 @@
           "submitted": "Eingereicht",
           "in_progress": "In Bearbeitung",
           "graded": "Benotet"
+        },
+        "workflow": {
+          "awaiting_manual_hint": "Muss manuell überprüft werden",
+          "failed_hint": "Die automatische Bewertung ist fehlgeschlagen. Verschieben Sie diese Übermittlung zurück zu „Gesendet“, um es erneut zu versuchen.",
+          "invalid_transition": "Diese Statusverschiebung ist im Benotungsworkflow nicht zulässig"
         }
       },
       "attendance": {
@@ -994,9 +1013,14 @@
               },
               "summary": {
                 "heading": "Zusammenfassung",
-                "question_chart": "Fragendiagramme"
+                "question_chart": "Fragendiagramme",
+                "responses": "Antworten",
+                "no_responses": "Noch keine Antworten",
+                "other": "Andere"
               },
-              "loading_submissions": "Einsendungen werden geladen..."
+              "loading_submissions": "Einsendungen werden geladen...",
+              "empty_title": "Noch keine Einsendungen",
+              "empty_description": "Die Einreichungen werden hier angezeigt, wenn die Schüler diese Übung abgeschlossen haben."
             },
             "view_mode": {
               "no_question": "Für diese Übung wurde keine Frage hinzugefügt",
@@ -1018,7 +1042,9 @@
               "empty_edit_hint_prefix": "Klicken Sie auf ",
               "empty_edit_hint_suffix": " Schaltfläche zum Hinzufügen.",
               "answers_required": "Bitte geben Sie vor dem Absenden mindestens eine Antwort an.",
-              "checking_submission": "Ich prüfe Ihre Einreichung..."
+              "checking_submission": "Ich prüfe Ihre Einreichung...",
+              "answer_required": "Bitte beantworten Sie diese Frage, bevor Sie fortfahren.",
+              "instructor_feedback": "Feedback des Dozenten"
             },
             "edit_mode": {
               "delete_modal": "Übung löschen",
@@ -1033,9 +1059,19 @@
               "question_types": {
                 "single": "Einzelne Antwort",
                 "multiple": "Mehrere Antworten",
-                "paragraph": "Absatz"
+                "paragraph": "Absatz",
+                "true_false": "Richtig/Falsch",
+                "short_answer": "Kurze Antwort",
+                "numeric": "Numerische Antwort",
+                "fill_blank": "Füllen Sie die Lücke aus",
+                "file_upload": "Datei-Upload",
+                "matching": "Passend",
+                "ordering": "Bestellen",
+                "hotspot": "Hotspot",
+                "link": "Links"
               },
-              "select_type": "Typ auswählen"
+              "select_type": "Typ auswählen",
+              "premium_question_type": "Führen Sie ein Upgrade durch, um diesen Fragetyp zu verwenden"
             },
             "delete_confirmation": {
               "title": "Frage löschen",
@@ -1048,6 +1084,197 @@
               "heading": "Beschreibung",
               "describe": "Beschreiben Sie Ihrem Schüler die Übung",
               "no": "Keine Beschreibung"
+            },
+            "shared_question": {
+              "textarea": {
+                "take": {
+                  "placeholder": "Schreiben Sie Ihre Antwort"
+                },
+                "edit": {
+                  "placeholder": "Die Lernenden antworten mit einem langen Text"
+                }
+              },
+              "hotspot": {
+                "preview": {
+                  "helper": "Die Hotspot-Vorschau wird über das Host-App-Bild und die Hotspot-Einstellungen bereitgestellt."
+                },
+                "take": {
+                  "placeholder": "Stellen Sie Hotspot-Koordinaten als JSON bereit"
+                },
+                "edit": {
+                  "helper": "Konfigurieren Sie Hotspot-Bilder und Zonen in den betreffenden Einstellungen über Host-App-Steuerelemente."
+                }
+              },
+              "ordering": {
+                "fallback_step_prefix": "Schritt",
+                "preview": {
+                  "submitted_label": "Bestellung abgeschickt",
+                  "expected_label": "Erwartete Bestellung",
+                  "matches": "Die übermittelte Bestellung entspricht der erwarteten Bestellung.",
+                  "differs": "Die übermittelte Bestellung weicht von der erwarteten Bestellung ab."
+                },
+                "take": {
+                  "helper": "Ordnen Sie die Elemente per Drag-and-Drop in der richtigen Reihenfolge an.",
+                  "empty": "Für diese Frage sind noch keine Bestellpositionen konfiguriert."
+                },
+                "edit": {
+                  "helper": "Ziehen Sie Elemente, um die richtige Reihenfolge festzulegen.",
+                  "add_step": "Schritt hinzufügen",
+                  "empty": "Fügen Sie Schritte hinzu und ziehen Sie dann, um die erwartete Reihenfolge festzulegen.",
+                  "step_placeholder": "Schritt '{'index'}'",
+                  "remove_step_tooltip": "Schritt entfernen"
+                }
+              },
+              "matching": {
+                "preview": {
+                  "helper": "Die Vorschau passender Paare wird über die Host-App-Einstellungen bereitgestellt."
+                },
+                "take": {
+                  "placeholder": "Stellen Sie passende Paare als JSON bereit"
+                },
+                "edit": {
+                  "helper": "Konfigurieren Sie die Einstellungen für Paare in Frage über die Steuerelemente der Host-App."
+                }
+              },
+              "link": {
+                "preview": {
+                  "empty": "Keine Links eingereicht.",
+                  "item_label": "Link '{'index'}'"
+                },
+                "take": {
+                  "helper": "Fügen Sie einen oder mehrere Links hinzu. Es werden nur gültige http/https-URLs akzeptiert.",
+                  "placeholder": "https://example.com/resource-'{'index'}'",
+                  "remove_tooltip": "Link entfernen",
+                  "remove_sr": "Link entfernen",
+                  "invalid_url_error": "Bitte geben Sie eine gültige URL (http/https) ein.",
+                  "add_button": "Link hinzufügen"
+                },
+                "edit": {
+                  "instructions_placeholder": "Optionale Anweisungen für Lernende",
+                  "helper": "Lernende können eine oder mehrere gültige URLs (http/https) einreichen."
+                }
+              },
+              "file_upload": {
+                "preview": {
+                  "accepted_types_label": "Akzeptierte Typen",
+                  "max_size_label": "Maximale Größe (MB)"
+                },
+                "take": {
+                  "selected_file_label": "Ausgewählte Datei",
+                  "upload_button": "Hochladen",
+                  "upload_progress": "Hochladen...",
+                  "upload_error": "Der Upload ist fehlgeschlagen",
+                  "view": "Ansicht",
+                  "download": "Herunterladen"
+                },
+                "edit": {
+                  "accepted_types_placeholder": "Akzeptierte Typen (z. B. pdf, docx)",
+                  "max_size_placeholder": "Maximale Größe (MB)"
+                }
+              },
+              "fill_blank": {
+                "preview": {
+                  "accepted_answers_label": "Akzeptierte Antworten"
+                },
+                "take": {
+                  "placeholder": "Geben Sie die Antworten durch Kommas getrennt ein"
+                },
+                "edit": {
+                  "accepted_answers_placeholder": "Akzeptierte Antworten (durch Kommas getrennt)"
+                }
+              },
+              "numeric": {
+                "preview": {
+                  "correct_value_label": "Korrekter Wert",
+                  "tolerance_label": "Toleranz"
+                },
+                "take": {
+                  "placeholder": "Geben Sie eine Zahl ein"
+                },
+                "edit": {
+                  "correct_value_label": "Korrekter Wert",
+                  "correct_value_info": "Die erwartete numerische Antwort muss von den Lernenden eingereicht werden, um als richtig bewertet zu werden.",
+                  "tolerance_label": "Toleranz",
+                  "tolerance_info": "Zulässige Abweichung vom korrekten Wert (Beispiel: 0,5 akzeptiert +/-0,5).",
+                  "correct_value_placeholder": "Korrekter Wert",
+                  "tolerance_placeholder": "Toleranz"
+                }
+              },
+              "short_answer": {
+                "preview": {
+                  "helper": "Freitext-Antwortfrage."
+                },
+                "take": {
+                  "placeholder": "Geben Sie Ihre Antwort ein"
+                },
+                "edit": {
+                  "instructions_placeholder": "Optionale Anweisungen"
+                }
+              },
+              "true_false": {
+                "true_label": "Stimmt",
+                "false_label": "Falsch",
+                "preview": {
+                  "correct_value_label": "Korrekter Wert"
+                },
+                "edit": {
+                  "correct_answer_label": "Richtige Antwort"
+                }
+              },
+              "checkbox": {
+                "edit": {
+                  "helper": "Markieren Sie eine oder mehrere Optionen als richtig.",
+                  "correct_selected_tooltip": "Richtige Antwort ausgewählt",
+                  "toggle_correct_tooltip": "Richtige Antwort umschalten",
+                  "toggle_correct_sr": "Option als richtig umschalten"
+                }
+              },
+              "radio": {
+                "edit": {
+                  "helper": "Wählen Sie genau eine richtige Option aus.",
+                  "correct_selected_tooltip": "Richtige Antwort ausgewählt",
+                  "mark_correct_tooltip": "Als richtige Antwort markieren",
+                  "mark_correct_sr": "Option als richtig markieren"
+                }
+              },
+              "question": {
+                "edit": {
+                  "title_label": "Titel",
+                  "title_placeholder": "Frageaufforderung",
+                  "description_label": "Beschreibung (optional)",
+                  "description_placeholder": "Fügen Sie zusätzlichen Kontext für diese Frage hinzu",
+                  "add_description": "Beschreibung hinzufügen",
+                  "remove_description": "Beschreibung entfernen",
+                  "media_menu_sr": "Fragen-Extras-Menü",
+                  "add_image": "Bild hinzufügen",
+                  "add_video": "Video hinzufügen",
+                  "remove_image_tooltip": "Bild entfernen",
+                  "remove_image_sr": "Bild entfernen",
+                  "remove_video_tooltip": "Video entfernen",
+                  "remove_video_sr": "Video entfernen",
+                  "image_alt": "Fragekontext",
+                  "video_modal_title": "YouTube-Video hinzufügen",
+                  "video_link_label": "YouTube-Link",
+                  "video_link_placeholder": "https://www.youtube.com/watch?v=",
+                  "video_add_button": "Video hinzufügen",
+                  "video_invalid_link": "Bitte geben Sie einen gültigen YouTube-Link ein.",
+                  "upload_error_only_images": "Es werden nur Bilddateien unterstützt.",
+                  "upload_error_skipped": "Einige Dateien wurden übersprungen, da es sich nicht um Bilder handelt.",
+                  "upload_error_failed": "Bild konnte nicht hochgeladen werden. Versuchen Sie es erneut."
+                }
+              },
+              "navigation": {
+                "previous": "Zurück",
+                "next": "Als nächstes",
+                "finish": "Fertig"
+              },
+              "common": {
+                "option_prefix": "Option",
+                "remove": "Entfernen",
+                "add_option": "Option hinzufügen",
+                "correct_badge": "(Richtig)",
+                "not_set": "Nicht festgelegt"
+              }
             }
           },
           "new_exercise_modal": {
@@ -1403,7 +1630,8 @@
     "recent_enrollments": "Aktuelle Anmeldungen",
     "publish_first_course": "Veröffentlichen Sie Ihren ersten Kurs",
     "publish_first_course_description": "Um Anmeldungen zu verfolgen, veröffentlichen Sie einen Kurs und laden Sie Studierende ein",
-    "publish_course": "Kurs veröffentlichen"
+    "publish_course": "Kurs veröffentlichen",
+    "items_completed": "Artikel abgeschlossen"
   },
   "schedule": {
     "title": "Ihr Zeitplan",
@@ -1511,7 +1739,8 @@
     "redirecting": "Umleiten",
     "loading_state": "Bitte warten Sie, um zur nächsten Seite zu gelangen.",
     "org_loading_state": "Wir bringen Sie zu Ihrer Organisation...",
-    "add_organization": "+ Organisation hinzufügen"
+    "add_organization": "+ Organisation hinzufügen",
+    "goto_dashboard": "Armaturenbrett"
   },
   "add_org": {
     "create_org": "Organisation erstellen",
@@ -1969,6 +2198,10 @@
         "disable_signup": {
           "label": "Deaktivieren Sie die Anmeldung",
           "description": "Verhindern Sie, dass sich neue Benutzer anmelden. Nur eingeladene Benutzer können beitreten."
+        },
+        "allow_public_signups": {
+          "label": "Öffentliche Anmeldungen zulassen",
+          "description": "Wenn die Funktion deaktiviert ist, können sich nur Benutzer mit einem Einladungslink anmelden. Aktivieren Sie diese Option, damit jeder ein Konto erstellen kann."
         }
       },
       "login": {
@@ -1979,7 +2212,8 @@
         "email_password_disabled": "Die E-Mail-/Passwort-Anmeldung ist deaktiviert. Bitte verwenden Sie SSO.",
         "email_password_disabled_message": "Die E-Mail-/Passwort-Anmeldung ist für diese Organisation deaktiviert.",
         "google_auth_disabled": "Die Google-Authentifizierung ist deaktiviert.",
-        "signup_disabled_error": "Die Anmeldung ist für diese Organisation deaktiviert. Bitte wenden Sie sich an Ihren Administrator."
+        "signup_disabled_error": "Die Anmeldung ist für diese Organisation deaktiviert. Bitte wenden Sie sich an Ihren Administrator.",
+        "or_continue_with": "Oder fahren Sie mit E-Mail und Passwort fort"
       },
       "tabs": {
         "general": "Allgemein",
@@ -2046,6 +2280,11 @@
       "confirm_password": "Passwort bestätigen",
       "password_helper_message": "Das Passwort muss mehr als 8 Zeichen lang sein",
       "create_account": "Konto erstellen"
+    },
+    "signup_disabled": {
+      "title": "Anmeldung deaktiviert",
+      "invite_only_message": "Die Anmeldung ist nur auf Einladung möglich. Bitte verwenden Sie einen Einladungslink, um ein Konto zu erstellen.",
+      "go_to_login": "Gehen Sie zu Anmelden"
     }
   },
   "app": {

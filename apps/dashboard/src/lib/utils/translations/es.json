@@ -114,6 +114,20 @@
       "email": "Dirección de correo electrónico no válida",
       "username": "El nombre de usuario no puede estar vacío",
       "fullname": "El nombre debe tener un mínimo de 5 caracteres."
+    },
+    "exercise": {
+      "options": {
+        "custom": "{mensaje}"
+      },
+      "points": {
+        "too_small": "Los puntos deben ser al menos 0."
+      },
+      "label": {
+        "too_small": "Se requiere etiqueta de opción"
+      },
+      "question": {
+        "too_small": "El título de la pregunta es obligatorio."
+      }
     }
   },
   "generic": {
@@ -856,6 +870,11 @@
           "submitted": "Enviado",
           "in_progress": "En progreso",
           "graded": "Calificado"
+        },
+        "workflow": {
+          "awaiting_manual_hint": "Necesita revisión manual",
+          "failed_hint": "Error en la calificación automática. Mueva este envío nuevamente a Enviado para volver a intentarlo.",
+          "invalid_transition": "Este cambio de estado no está permitido por el flujo de trabajo de calificación"
         }
       },
       "attendance": {
@@ -994,9 +1013,14 @@
               },
               "summary": {
                 "heading": "Resumen",
-                "question_chart": "Cuadros de preguntas"
+                "question_chart": "Cuadros de preguntas",
+                "responses": "Respuestas",
+                "no_responses": "Aún no hay respuestas",
+                "other": "Otro"
               },
-              "loading_submissions": "Cargando envíos..."
+              "loading_submissions": "Cargando envíos...",
+              "empty_title": "Aún no hay presentaciones",
+              "empty_description": "Los envíos aparecerán aquí cuando los estudiantes completen este ejercicio."
             },
             "view_mode": {
               "no_question": "No se agregó ninguna pregunta para este ejercicio.",
@@ -1018,7 +1042,9 @@
               "empty_edit_hint_prefix": "Haga clic en ",
               "empty_edit_hint_suffix": " botón para agregar.",
               "answers_required": "Proporcione al menos una respuesta antes de enviar.",
-              "checking_submission": "Comprobando tu envío..."
+              "checking_submission": "Comprobando tu envío...",
+              "answer_required": "Por favor responda esta pregunta antes de continuar.",
+              "instructor_feedback": "Comentarios del instructor"
             },
             "edit_mode": {
               "delete_modal": "Eliminar ejercicio",
@@ -1033,9 +1059,19 @@
               "question_types": {
                 "single": "respuesta única",
                 "multiple": "Múltiples respuestas",
-                "paragraph": "Párrafo"
+                "paragraph": "Párrafo",
+                "true_false": "Verdadero/Falso",
+                "short_answer": "respuesta corta",
+                "numeric": "respuesta numérica",
+                "fill_blank": "Completa el espacio en blanco",
+                "file_upload": "Carga de archivos",
+                "matching": "Coincidencia",
+                "ordering": "Realizar pedidos",
+                "hotspot": "Punto de acceso",
+                "link": "Enlaces"
               },
-              "select_type": "Seleccionar tipo"
+              "select_type": "Seleccionar tipo",
+              "premium_question_type": "Actualice para usar este tipo de pregunta"
             },
             "delete_confirmation": {
               "title": "Eliminar pregunta",
@@ -1048,6 +1084,197 @@
               "heading": "Descripción",
               "describe": "Describe el ejercicio a tu estudiante.",
               "no": "Sin descripción"
+            },
+            "shared_question": {
+              "textarea": {
+                "take": {
+                  "placeholder": "Escribe tu respuesta"
+                },
+                "edit": {
+                  "placeholder": "Los alumnos responderán con un texto extenso."
+                }
+              },
+              "hotspot": {
+                "preview": {
+                  "helper": "La vista previa del punto de acceso se proporciona mediante la imagen de la aplicación host y la configuración del punto de acceso."
+                },
+                "take": {
+                  "placeholder": "Proporcionar coordenadas del punto de acceso como JSON"
+                },
+                "edit": {
+                  "helper": "Configure la imagen del punto de acceso y las zonas en cuestión a través de los controles de la aplicación host."
+                }
+              },
+              "ordering": {
+                "fallback_step_prefix": "paso",
+                "preview": {
+                  "submitted_label": "Orden enviada",
+                  "expected_label": "Orden esperado",
+                  "matches": "El pedido enviado coincide con el pedido esperado.",
+                  "differs": "El pedido enviado difiere del pedido esperado."
+                },
+                "take": {
+                  "helper": "Arrastre y suelte para organizar los elementos en el orden correcto.",
+                  "empty": "Aún no hay artículos de pedido configurados para esta pregunta."
+                },
+                "edit": {
+                  "helper": "Arrastra los elementos para definir el orden correcto.",
+                  "add_step": "Agregar paso",
+                  "empty": "Agregue pasos y luego arrastre para establecer el orden esperado.",
+                  "step_placeholder": "Paso '{'índice'}'",
+                  "remove_step_tooltip": "Quitar paso"
+                }
+              },
+              "matching": {
+                "preview": {
+                  "helper": "La vista previa de pares coincidentes la proporciona la configuración de la aplicación anfitriona."
+                },
+                "take": {
+                  "placeholder": "Proporcionar pares coincidentes como JSON"
+                },
+                "edit": {
+                  "helper": "Configure los pares en cuestión a través de los controles de la aplicación host."
+                }
+              },
+              "link": {
+                "preview": {
+                  "empty": "No se enviaron enlaces.",
+                  "item_label": "Enlace '{'índice'}'"
+                },
+                "take": {
+                  "helper": "Agregue uno o más enlaces. Sólo se aceptan URL http/https válidas.",
+                  "placeholder": "https://example.com/resource-'{'index'}'",
+                  "remove_tooltip": "Quitar enlace",
+                  "remove_sr": "Quitar enlace",
+                  "invalid_url_error": "Introduzca una URL válida (http/https).",
+                  "add_button": "Agregar enlace"
+                },
+                "edit": {
+                  "instructions_placeholder": "Instrucciones opcionales para los estudiantes.",
+                  "helper": "Los estudiantes pueden enviar una o más URL válidas (http/https)."
+                }
+              },
+              "file_upload": {
+                "preview": {
+                  "accepted_types_label": "Tipos aceptados",
+                  "max_size_label": "Tamaño máximo (MB)"
+                },
+                "take": {
+                  "selected_file_label": "Archivo seleccionado",
+                  "upload_button": "Subir",
+                  "upload_progress": "Subiendo...",
+                  "upload_error": "Error al subir",
+                  "view": "Ver",
+                  "download": "Descargar"
+                },
+                "edit": {
+                  "accepted_types_placeholder": "Tipos aceptados (por ejemplo, pdf, docx)",
+                  "max_size_placeholder": "Tamaño máximo (MB)"
+                }
+              },
+              "fill_blank": {
+                "preview": {
+                  "accepted_answers_label": "Respuestas aceptadas"
+                },
+                "take": {
+                  "placeholder": "Introduzca las respuestas separadas por comas"
+                },
+                "edit": {
+                  "accepted_answers_placeholder": "Respuestas aceptadas (separadas por comas)"
+                }
+              },
+              "numeric": {
+                "preview": {
+                  "correct_value_label": "Valor correcto",
+                  "tolerance_label": "Tolerancia"
+                },
+                "take": {
+                  "placeholder": "Introduce un número"
+                },
+                "edit": {
+                  "correct_value_label": "Valor correcto",
+                  "correct_value_info": "La respuesta numérica esperada que los alumnos deben enviar para que se marque como correcta.",
+                  "tolerance_label": "Tolerancia",
+                  "tolerance_info": "Diferencia permitida con respecto al valor correcto (por ejemplo, 0,5 acepta +/-0,5).",
+                  "correct_value_placeholder": "Valor correcto",
+                  "tolerance_placeholder": "Tolerancia"
+                }
+              },
+              "short_answer": {
+                "preview": {
+                  "helper": "Pregunta de respuesta en texto libre."
+                },
+                "take": {
+                  "placeholder": "Escribe tu respuesta"
+                },
+                "edit": {
+                  "instructions_placeholder": "Instrucciones opcionales"
+                }
+              },
+              "true_false": {
+                "true_label": "Verdadero",
+                "false_label": "Falso",
+                "preview": {
+                  "correct_value_label": "Valor correcto"
+                },
+                "edit": {
+                  "correct_answer_label": "respuesta correcta"
+                }
+              },
+              "checkbox": {
+                "edit": {
+                  "helper": "Marque una o más opciones como correctas.",
+                  "correct_selected_tooltip": "Respuesta correcta seleccionada",
+                  "toggle_correct_tooltip": "Alternar respuesta correcta",
+                  "toggle_correct_sr": "Alternar opción como correcta"
+                }
+              },
+              "radio": {
+                "edit": {
+                  "helper": "Seleccione exactamente una opción correcta.",
+                  "correct_selected_tooltip": "Respuesta correcta seleccionada",
+                  "mark_correct_tooltip": "Marcar como respuesta correcta",
+                  "mark_correct_sr": "Marcar opción como correcta"
+                }
+              },
+              "question": {
+                "edit": {
+                  "title_label": "Título",
+                  "title_placeholder": "Mensaje de pregunta",
+                  "description_label": "Descripción (opcional)",
+                  "description_placeholder": "Agregue contexto adicional para esta pregunta",
+                  "add_description": "Agregar descripción",
+                  "remove_description": "Eliminar descripción",
+                  "media_menu_sr": "Menú de preguntas extras",
+                  "add_image": "Agregar imagen",
+                  "add_video": "Añadir vídeo",
+                  "remove_image_tooltip": "Quitar imagen",
+                  "remove_image_sr": "Quitar imagen",
+                  "remove_video_tooltip": "Eliminar vídeo",
+                  "remove_video_sr": "Eliminar vídeo",
+                  "image_alt": "Contexto de la pregunta",
+                  "video_modal_title": "Agregar vídeo de YouTube",
+                  "video_link_label": "enlace de youtube",
+                  "video_link_placeholder": "https://www.youtube.com/watch?v=",
+                  "video_add_button": "Añadir vídeo",
+                  "video_invalid_link": "Introduzca un enlace de YouTube válido.",
+                  "upload_error_only_images": "Sólo se admiten archivos de imagen.",
+                  "upload_error_skipped": "Se omitieron algunos archivos porque no son imágenes.",
+                  "upload_error_failed": "No se pudo cargar la imagen. Intentar otra vez."
+                }
+              },
+              "navigation": {
+                "previous": "Anterior",
+                "next": "Siguiente",
+                "finish": "terminar"
+              },
+              "common": {
+                "option_prefix": "Opción",
+                "remove": "Quitar",
+                "add_option": "Agregar opción",
+                "correct_badge": "(Correcto)",
+                "not_set": "No establecido"
+              }
             }
           },
           "new_exercise_modal": {
@@ -1403,7 +1630,8 @@
     "recent_enrollments": "Inscripciones recientes",
     "publish_first_course": "Publica tu primer curso",
     "publish_first_course_description": "Para realizar un seguimiento de las inscripciones, publicar un curso e invitar a estudiantes",
-    "publish_course": "Publicar curso"
+    "publish_course": "Publicar curso",
+    "items_completed": "Artículos completados"
   },
   "schedule": {
     "title": "Tu horario",
@@ -1511,7 +1739,8 @@
     "redirecting": "Redireccionando",
     "loading_state": "Lo llevamos a la página siguiente, espere.",
     "org_loading_state": "Llevándote a tu organización...",
-    "add_organization": "+ Agregar organización"
+    "add_organization": "+ Agregar organización",
+    "goto_dashboard": "Panel"
   },
   "add_org": {
     "create_org": "Crear organización",
@@ -1969,6 +2198,10 @@
         "disable_signup": {
           "label": "Deshabilitar registro",
           "description": "Evitar que nuevos usuarios se registren. Sólo los usuarios invitados pueden unirse."
+        },
+        "allow_public_signups": {
+          "label": "Permitir registros públicos",
+          "description": "Cuando está deshabilitado, solo los usuarios con un enlace de invitación pueden registrarse. Habilite esta opción para permitir que cualquiera pueda crear una cuenta."
         }
       },
       "login": {
@@ -1979,7 +2212,8 @@
         "email_password_disabled": "El inicio de sesión por correo electrónico/contraseña está deshabilitado. Utilice SSO.",
         "email_password_disabled_message": "El inicio de sesión con correo electrónico/contraseña está deshabilitado para esta organización.",
         "google_auth_disabled": "La autenticación de Google está deshabilitada.",
-        "signup_disabled_error": "El registro está deshabilitado para esta organización. Por favor contacte a su administrador."
+        "signup_disabled_error": "El registro está deshabilitado para esta organización. Por favor contacte a su administrador.",
+        "or_continue_with": "O continuar con correo electrónico y contraseña"
       },
       "tabs": {
         "general": "generales",
@@ -2046,6 +2280,11 @@
       "confirm_password": "Confirmar contraseña",
       "password_helper_message": "La contraseña debe tener más de 8 caracteres.",
       "create_account": "Crear cuenta"
+    },
+    "signup_disabled": {
+      "title": "Registro deshabilitado",
+      "invite_only_message": "El registro es sólo por invitación. Utilice un enlace de invitación para crear una cuenta.",
+      "go_to_login": "Ir a Iniciar sesión"
     }
   },
   "app": {

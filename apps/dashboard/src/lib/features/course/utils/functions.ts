@@ -1,4 +1,7 @@
-import type { CourseMembers } from './types';
+import type { CourseMembers, SubmissionAnswer } from './types';
+
+import type { AnswerData } from '@cio/question-types';
+import type { Question } from '../types';
 import { ROUTES } from './constants';
 
 export function getGroupMemberId(people: CourseMembers, profileId: string): string | undefined {
@@ -43,19 +46,42 @@ export function calcProgressRate(progressRate?: number, totalLessons?: number): 
   return Math.round((progressRate / totalLessons) * 100);
 }
 
-export function formatAnswers(data) {
-  const answers: Record<string, string> = {};
-  const questionByIdAndName = {};
+/**
+ * Calculates combined course progress from lessons and exercises.
+ * Uses (lessonsCompleted + exercisesCompleted) / (totalLessons + totalExercises) when both exist.
+ * Falls back to lesson-only progress when there are no exercises.
+ */
+export function calcCourseProgress(params: {
+  lessonsCompleted: number;
+  totalLessons: number;
+  exercisesCompleted?: number;
+  totalExercises?: number;
+}): number {
+  const { lessonsCompleted, totalLessons, exercisesCompleted = 0, totalExercises = 0 } = params;
+  const totalItems = totalLessons + totalExercises;
+  if (totalItems === 0) return 0;
+
+  const completedItems = lessonsCompleted + exercisesCompleted;
+
+  return Math.round((completedItems / totalItems) * 100);
+}
+
+export function formatAnswers(data: {
+  questions: Question[];
+  answers: SubmissionAnswer[];
+}): Record<string, AnswerData> {
+  const answers: Record<string, AnswerData> = {};
+  const questionByIdAndName: Record<string, string> = {};
 
   for (const question of data.questions) {
-    questionByIdAndName[question.id] = question.name;
+    questionByIdAndName[String(question.id)] = question.name ?? '';
   }
 
   for (const answer of data.answers) {
-    const questionName = questionByIdAndName[answer.question_id];
-
-    answers[questionName] =
-      Array.isArray(answer.answers) && answer.answers.length ? answer.answers : answer.open_answer;
+    const questionName = questionByIdAndName[String(answer.questionId)];
+    if (questionName && answer.answerData) {
+      answers[questionName] = answer.answerData;
+    }
   }
 
   return answers;

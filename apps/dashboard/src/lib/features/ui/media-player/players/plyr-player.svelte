@@ -38,7 +38,9 @@
       playerInstance = new Plyr(containerElement, {
         controls: plyrControls,
         autoplay: autoplay,
-        ratio: '16:9' // Or '16:9', '1:1', etc.
+        ratio: '16:9',
+        iconUrl: '/plyr.svg',
+        iconPrefix: 'plyr'
       });
     } else if (videoElement) {
       // For regular HTML5 video
@@ -46,7 +48,9 @@
       playerInstance = new Plyr(videoElement, {
         controls: plyrControls,
         autoplay: autoplay,
-        ratio: '16:9' // Or '16:9', '1:1', etc.
+        ratio: '16:9',
+        iconUrl: '/plyr.svg',
+        iconPrefix: 'plyr'
       });
     }
   });

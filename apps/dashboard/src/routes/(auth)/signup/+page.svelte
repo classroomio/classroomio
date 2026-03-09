@@ -15,6 +15,7 @@
   import { Button } from '@cio/ui/base/button';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
 
   let fields = $state(Object.assign({}, SIGNUP_FIELDS));
   let loading = $state(false);
@@ -27,21 +28,30 @@
 
   const disableSubmit = $derived(getDisableSubmit(fields));
   const redirectUrl = $derived(page.url.searchParams.get('redirect'));
+  const inviteToken = $derived(page.url.searchParams.get('invite_token'));
+
+  // Invite context: allow signup when invite_token present or redirect contains invite info
+  const hasInviteContext = $derived(
+    !!inviteToken || (!!redirectUrl && (redirectUrl.includes('/invite/t/') || redirectUrl.includes('invite_token')))
+  );
+
+  const inviteOnly = $derived(!!$currentOrg?.settings?.signup?.inviteOnly);
+  const signupRestricted = $derived(
+    $globalStore.isOrgSite && ($currentOrg.disableSignup || (inviteOnly && !hasInviteContext))
+  );
 
   // Hide Google Auth if disabled for org
-  const hideGoogleAuth = $derived($globalStore.isOrgSite && $currentOrg.disableGoogleAuth);
+  const hideGoogleAuth = $derived(!!($globalStore.isOrgSite && $currentOrg.disableGoogleAuth));
 
   // Check if signup is disabled
   onMount(() => {
     if ($globalStore.isOrgSite && $currentOrg.disableSignup) {
-      // Redirect to login with message
-      goto('/login?error=signup_disabled');
+      goto(resolve('/login?error=signup_disabled', {}));
     }
   });
 
   async function handleSubmit() {
-    // Check if signup is disabled
-    if ($globalStore.isOrgSite && $currentOrg.disableSignup) {
+    if (signupRestricted) {
       submitError = t.get('settings.auth.login.signup_disabled_error');
       return;
     }
@@ -65,6 +75,9 @@
           name: name
         },
         {
+          fetchOptions: {
+            headers: $globalStore.isOrgSite && $currentOrg?.id ? { 'cio-org-id': $currentOrg.id } : {}
+          },
           onSuccess: (ctx) => {
             console.log('Signup successful');
             capturePosthogEvent('user_signed_up', {
@@ -88,8 +101,11 @@
       );
 
       if (error) throw error;
-    } catch (error: any) {
-      submitError = error?.error_description || error?.message;
+    } catch (error) {
+      submitError =
+        (error as { error_description?: string; message?: string })?.error_description ||
+        (error as { message?: string })?.message ||
+        '';
       loading = false;
     }
   }
@@ -111,16 +127,22 @@
 
 <SenjaEmbed id="aa054658-1e15-4d00-8920-91f424326c4e" />
 
-{#if $globalStore.isOrgSite && $currentOrg.disableSignup}
+{#if signupRestricted}
   <div
     class="ui:p-6 ui:bg-amber-50 ui:dark:bg-amber-900/20 ui:rounded-lg ui:border ui:border-amber-200 ui:dark:border-amber-800 ui:text-center"
   >
-    <h2 class="ui:text-lg ui:font-semibold ui:text-amber-800 ui:dark:text-amber-200">Signup Disabled</h2>
+    <h2 class="ui:text-lg ui:font-semibold ui:text-amber-800 ui:dark:text-amber-200">
+      {$t('login.signup_disabled.title')}
+    </h2>
     <p class="ui:mt-2 ui:text-sm ui:text-amber-700 ui:dark:text-amber-300">
       {$currentOrg.disableSignupMessage ||
-        'Signup is disabled for this organization. Please contact your administrator for an invitation.'}
+        (inviteOnly
+          ? $t('login.signup_disabled.invite_only_message')
+          : $t('settings.auth.login.signup_disabled_error'))}
     </p>
-    <Button variant="outline" class="ui:mt-4" onclick={() => goto('/login')}>Go to Login</Button>
+    <Button variant="outline" class="ui:mt-4" onclick={() => goto(resolve('/login', {}))}>
+      {$t('login.signup_disabled.go_to_login')}
+    </Button>
   </div>
 {:else}
   <AuthUI isLogin={false} {handleSubmit} isLoading={loading} {hideGoogleAuth}>

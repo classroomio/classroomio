@@ -10,12 +10,15 @@ import {
 
 import { Hono } from '@api/utils/hono';
 import { auth } from '@cio/db/auth';
+import { LICENSE_FEATURE } from '@cio/utils/license';
 import { authMiddleware } from '@api/middlewares/auth';
 import { handleError } from '@api/utils/errors';
+import { requireLicense } from '@api/middlewares/license';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { zValidator } from '@hono/zod-validator';
 
 export const organizationSsoRouter = new Hono()
+  .use('*', requireLicense(LICENSE_FEATURE.SSO))
   /**
    * GET /organization/sso
    * Get SSO connection and policy for current org

@@ -1,16 +1,35 @@
+import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { dev } from '$app/environment';
 import { initPosthog } from '$lib/utils/services/posthog';
 import { initSentry } from '$lib/utils/services/sentry';
+import { licenseApi } from '$features/license/api/license.svelte';
+
+let isInitialized = false;
 
 export function setupAnalytics() {
-  // Set up sentry
+  if (isInitialized) return;
+  isInitialized = true;
+
   initSentry();
 
-  // Set up posthog
   initPosthog();
 
-  // Disable umami on localhost
   if (dev) {
     localStorage.setItem('umami.disabled', '1');
   }
+}
+
+/** Checks if this is cloud deployment and initializes analytics */
+export function setupCloudAnalytics() {
+  if (PUBLIC_IS_SELFHOSTED !== 'true') {
+    setupAnalytics();
+  }
+}
+
+export function setupAnalyticsBasedOnLicense() {
+  if (licenseApi.hasAccess('no-tracking')) {
+    return;
+  }
+
+  setupAnalytics();
 }

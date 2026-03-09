@@ -13,6 +13,7 @@
   // Auth settings state - synced with store
   let disableSignup = $state($currentOrg?.disableSignup ?? false);
   let disableSignupMessage = $state($currentOrg?.disableSignupMessage ?? '');
+  let allowPublicSignups = $state(!$currentOrg?.settings?.signup?.inviteOnly);
   let disableEmailPassword = $state($currentOrg?.disableEmailPassword ?? false);
   let disableGoogleAuth = $state($currentOrg?.disableGoogleAuth ?? false);
   let isSaving = $state(false);
@@ -22,6 +23,7 @@
     if ($currentOrg) {
       disableSignup = $currentOrg.disableSignup ?? false;
       disableSignupMessage = $currentOrg.disableSignupMessage ?? '';
+      allowPublicSignups = !$currentOrg.settings?.signup?.inviteOnly;
       disableEmailPassword = $currentOrg.disableEmailPassword ?? false;
       disableGoogleAuth = $currentOrg.disableGoogleAuth ?? false;
     }
@@ -31,11 +33,22 @@
     if (!$currentOrg) return;
 
     isSaving = true;
+    // Merge with existing settings to avoid overwriting other keys
+    const existingSettings = ($currentOrg.settings as Record<string, unknown>) || {};
+    const existingSignup = (existingSettings.signup as Record<string, unknown>) || {};
+
     await orgApi.update(
       $currentOrg.id,
       {
         disableSignup,
         disableSignupMessage,
+        settings: {
+          ...existingSettings,
+          signup: {
+            ...existingSignup,
+            inviteOnly: !allowPublicSignups
+          }
+        },
         disableEmailPassword,
         disableGoogleAuth
       },
@@ -48,9 +61,11 @@
     isSaving = false;
   }
 
-  const hasChanges = $derived(
+  let currentAllowPublicSignups = $derived(!$currentOrg?.settings?.signup?.inviteOnly);
+  let hasChanges = $derived(
     disableSignup !== ($currentOrg?.disableSignup ?? false) ||
       disableSignupMessage !== ($currentOrg?.disableSignupMessage ?? '') ||
+      allowPublicSignups !== currentAllowPublicSignups ||
       disableEmailPassword !== ($currentOrg?.disableEmailPassword ?? false) ||
       disableGoogleAuth !== ($currentOrg?.disableGoogleAuth ?? false)
   );
@@ -74,6 +89,17 @@
           <Field.Label>{$t('settings.auth.general.disable_signup.label')}</Field.Label>
           <Field.Description>
             {$t('settings.auth.general.disable_signup.description')}
+          </Field.Description>
+        </div>
+      </Field.Field>
+
+      <!-- Allow Public Signups (invite-only when off) -->
+      <Field.Field orientation="horizontal">
+        <Switch bind:checked={allowPublicSignups} disabled={!$isEnterprisePlan || isSaving} />
+        <div class="space-y-0.5">
+          <Field.Label>{$t('settings.auth.general.allow_public_signups.label')}</Field.Label>
+          <Field.Description>
+            {$t('settings.auth.general.allow_public_signups.description')}
           </Field.Description>
         </div>
       </Field.Field>

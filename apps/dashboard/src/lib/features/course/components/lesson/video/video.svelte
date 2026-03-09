@@ -1,6 +1,6 @@
 <script lang="ts">
   import { lessonApi } from '$features/course/api';
-  import { MediaPlayer } from '$features/ui';
+  import { MediaPlayer } from '@cio/ui/custom/media-player';
   import { DeleteModal } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';

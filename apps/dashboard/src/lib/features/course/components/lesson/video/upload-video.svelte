@@ -9,7 +9,7 @@
   import { MediaUploader } from './media-uploader';
   import { Button } from '@cio/ui/base/button';
   import * as FileDropZone from '@cio/ui/custom/file-drop-zone';
-  import { mediaManagerApi } from '$features/media-manager/api';
+  import { mediaApi } from '$features/media/api';
 
   const ADD_VIDEO = 'course.navItem.lessons.materials.tabs.video.add_video';
 
@@ -97,7 +97,7 @@
       const lessonVideoPosition = Array.isArray(lessonApi.lesson?.videos) ? lessonApi.lesson?.videos.length : 0;
       let assetId: string | undefined;
       if (_lessonId) {
-        const asset = await mediaManagerApi.registerUploadedLessonVideo({
+        const asset = await mediaApi.registerUploadedLessonVideo({
           lessonId: _lessonId,
           position: lessonVideoPosition,
           fileKey,
@@ -110,7 +110,7 @@
         });
         assetId = asset?.id;
       } else {
-        const asset = await mediaManagerApi.createAsset({
+        const asset = await mediaApi.createAsset({
           kind: 'video',
           provider: 'upload',
           storageProvider: 's3',

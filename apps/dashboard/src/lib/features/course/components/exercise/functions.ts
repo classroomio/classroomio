@@ -1,5 +1,8 @@
-import { QUESTION_TYPE } from '@cio/utils/validation/constants';
+import { getQuestionAnswerKey, getQuestionTypeKey, questionTypeSupportsOptions } from './question-type-utils';
+
+import { QUESTION_TYPE_KEY } from '@cio/question-types';
 import type { Question } from '$features/course/types';
+import type { QuestionnaireMetaData } from './store';
 import type { TExerciseUpdate } from '@cio/utils/validation/exercise';
 import { toggleConfetti } from '$features/ui/confetti/store';
 
@@ -14,22 +17,23 @@ export const isAnswerCorrect = (options, answer) => {
   Multiple = all should be correct
 */
 export function wasCorrectAnswerSelected(currentQuestion: Question, answers, isFinished?: boolean) {
-  if (currentQuestion.questionType.id === QUESTION_TYPE.TEXTAREA) {
+  const questionTypeKey = getQuestionTypeKey(currentQuestion);
+  if (!questionTypeSupportsOptions(questionTypeKey)) {
     return true;
   }
 
-  const answer = answers[currentQuestion.name];
+  const answer = answers[getQuestionAnswerKey(currentQuestion)];
 
   const formattedAnswers = typeof answer === 'string' ? [answer] : answer;
 
   let isCorrect = false;
 
-  if (currentQuestion.questionType.id === QUESTION_TYPE.CHECKBOX) {
+  if (questionTypeKey === QUESTION_TYPE_KEY.CHECKBOX) {
     // Every correct answer should be in the selected answer
     isCorrect = currentQuestion.options
       .filter((o) => o.isCorrect)
       .every((option) => formattedAnswers?.includes(option.value));
-  } else if (currentQuestion.questionType.id === QUESTION_TYPE.RADIO) {
+  } else if (questionTypeKey === QUESTION_TYPE_KEY.RADIO) {
     // At least one correct answer should be selected
     isCorrect = formattedAnswers?.some((answer) => isAnswerCorrect(currentQuestion.options, answer));
   }
@@ -46,16 +50,17 @@ export function wasCorrectAnswerSelected(currentQuestion: Question, answers, isF
 export function getPropsForQuestion(
   questions: Question[],
   question: Question,
-  questionnaireMetaData,
-  questionIndex,
+  questionnaireMetaData: QuestionnaireMetaData,
+  questionIndex: number,
   onSubmit,
   onPrevious,
   preview
 ) {
   const { answers, isFinished } = questionnaireMetaData;
   const isLast = questionIndex === questions.length;
-  const isOpenQuesiton = question.questionType.id === QUESTION_TYPE.TEXTAREA;
+  const isOpenQuesiton = !questionTypeSupportsOptions(getQuestionTypeKey(question));
   const isCorrect = wasCorrectAnswerSelected(question, answers, isFinished);
+  const answerKey = getQuestionAnswerKey(question, questionIndex - 1);
 
   if (!isCorrect && document && document.getElementById('question')) {
     const questionElement = document.getElementById('question');
@@ -71,10 +76,10 @@ export function getPropsForQuestion(
   return {
     index: questionIndex + '. ',
     title: question.title,
-    name: `${question.name}`,
+    name: answerKey,
     options: question.options,
     code: question.code,
-    defaultValue: isOpenQuesiton ? answers[question.name] || '' : answers[question.name] || [],
+    defaultValue: isOpenQuesiton ? answers[answerKey] || '' : answers[answerKey] || [],
     onSubmit,
     onPrevious,
     disablePreviousButton: questionIndex === 1,
@@ -118,6 +123,14 @@ export function transformQuestionsToApiFormat(
   options: { shouldFilterEmptyLabels?: boolean; shouldIncludeDeleted?: boolean } = {}
 ): TExerciseUpdate['questions'] {
   const { shouldFilterEmptyLabels = false, shouldIncludeDeleted = false } = options;
+  const getQuestionSettings = (question: Question) => {
+    const rawSettings = (question as Question & { settings?: Record<string, unknown> }).settings;
+    return rawSettings && typeof rawSettings === 'object' ? { ...rawSettings } : undefined;
+  };
+  const getOptionSettings = (option: Question['options'][number]) => {
+    const rawSettings = (option as Question['options'][number] & { settings?: Record<string, unknown> }).settings;
+    return rawSettings && typeof rawSettings === 'object' ? { ...rawSettings } : undefined;
+  };
 
   const normalizeId = (id: unknown) => (id && !isNaN(Number(id)) ? Number(id) : undefined);
   const formatOptions = (opts: Question['options']) => {
@@ -133,18 +146,21 @@ export function transformQuestionsToApiFormat(
         id: normalizeId(opt.id),
         label: shouldFilterEmptyLabels && !opt.deletedAt ? opt.label?.trim() || '' : opt.label || '',
         isCorrect: opt.isCorrect || false,
+        settings: getOptionSettings(opt),
         ...(shouldIncludeDeleted && opt.deletedAt ? { deletedAt: opt.deletedAt } : {})
       }));
   };
 
   const filteredQuestions = shouldIncludeDeleted ? questions : questions.filter((q) => !q.deletedAt);
 
-  return filteredQuestions.map((q) => ({
+  return filteredQuestions.map((q, index) => ({
     id: normalizeId(q.id),
     question: q.title,
     points: q.points || 0,
     questionTypeId: q.questionTypeId,
-    options: q.questionTypeId === QUESTION_TYPE.TEXTAREA ? [] : formatOptions(q.options),
+    order: typeof (q as { order?: number }).order === 'number' ? (q as { order: number }).order : index + 1,
+    settings: getQuestionSettings(q),
+    options: questionTypeSupportsOptions(getQuestionTypeKey(q)) ? formatOptions(q.options) : [],
     ...(shouldIncludeDeleted && q.deletedAt ? { deletedAt: q.deletedAt } : {})
   }));
 }

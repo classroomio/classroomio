@@ -17,6 +17,7 @@ import { mailRouter } from '@api/routes/mail';
 import { mediaRouter } from '@api/routes/media';
 import { onboardingRouter } from '@api/routes/onboarding';
 import { organizationRouter } from '@api/routes/organization';
+import { licenseRouter } from '@api/routes/license';
 import { organizationSsoRouter } from '@api/routes/organization/sso';
 import { organizationTokenAuthRouter } from '@api/routes/organization/token-auth';
 import { publicApiRouter } from '@api/routes/public-api';
@@ -24,6 +25,7 @@ import { ssoDiscoveryRouter } from '@api/routes/sso/discovery';
 import { prettyJSON } from 'hono/pretty-json';
 import rateLimiter from '@api/middlewares/rate-limiter';
 import { secureHeaders } from 'hono/secure-headers';
+import { signupGuard } from '@api/middlewares/signup-guard';
 import { unsplashRouter } from '@api/routes/unsplash/unsplash';
 
 // Create Hono app with chaining for RPC support
@@ -66,6 +68,7 @@ export const app = new Hono()
       message: `"Welcome to Classroomio.com API - docs are at ${API_SERVER_URL}/docs"`
     })
   )
+  .use('/api/auth/sign-up/*', signupGuard)
   .on(['POST', 'GET'], '/api/auth/*', (c) => auth.handler(c.req.raw))
   .get('/session', async (c) => {
     const session = c.get('session');
@@ -84,6 +87,7 @@ export const app = new Hono()
   .route('/domain', domainRouter)
   .route('/mail', mailRouter)
   .route('/media', mediaRouter)
+  .route('/license', licenseRouter)
   .route('/organization', organizationRouter)
   .route('/organization/sso', organizationSsoRouter)
   .route('/organization/token-auth', organizationTokenAuthRouter)

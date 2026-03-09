@@ -6,12 +6,15 @@ Use this file to keep a single prioritized view of all PRDs.
 
 | Rank | List # | PRD | Status |
 | --- | --- | --- | --- |
-| 1 | 14 | `prd/course-templates` | todo |
-| 2 | 5 | `prd/course-import` | todo |
-| 3 | 8 | `prd/exercise-question-types` | todo |
-| 4 | 3 | `prd/course-cohorts` | todo |
-| 5 | 13 | `prd/self-host-single-org.md` | todo |
-| 6 | 7 | `prd/email-template-customization` | todo |
+| 1 | - | `prd/notification-system` | todo |
+| 2 | 14 | `prd/course-templates` | todo |
+| 3 | 5 | `prd/course-import` | todo |
+| 4 | 8 | `prd/exercise-question-types` | in-progress (A3, A6, A7, C3, C7, C13, C14 done) |
+| 5 | 3 | `prd/course-cohorts` | todo |
+| 6 | - | `prd/classes` | todo |
+| 7 | 13 | `prd/self-host-single-org.md` | done |
+| 8 | 7 | `prd/email-template-customization` | todo |
+| 9 | - | `prd/selective-exercise-assignment` | todo |
 | - | 1 | `prd/ai-course-assistant` | todo |
 | - | 2 | `prd/compliance-training-platform` | todo |
 | - | 4 | `prd/course-content-search` | todo |
@@ -20,6 +23,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | 10 | `prd/pricing-improvements` | todo |
 | - | 11 | `prd/public-api` | todo |
 | - | 12 | `prd/public-courses` | todo |
+| - | 15 | `prd/webhooks` | todo |
 
 ## DONE (Completed PRDs)
 
@@ -31,4 +35,3 @@ Use this file to keep a single prioritized view of all PRDs.
 | `prd/media-manager [DONE]` | done |
 | `prd/secure-student-invites [DONE]` | done |
 | `prd/tags-feature [DONE]` | done |
-

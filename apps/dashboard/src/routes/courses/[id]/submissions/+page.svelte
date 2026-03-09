@@ -8,21 +8,23 @@
 </script>
 
 <RoleBasedSecurity allowedRoles={[1, 2]}>
-  <Page.Header>
-    <Page.HeaderContent>
-      <Page.Title>
-        {$t('course.navItem.submissions.title')}
-      </Page.Title>
-    </Page.HeaderContent>
-  </Page.Header>
+  <Page.Root class="mx-auto flex w-[calc(95vw-var(--sidebar-width))]!">
+    <Page.Header>
+      <Page.HeaderContent>
+        <Page.Title>
+          {$t('course.navItem.submissions.title')}
+        </Page.Title>
+      </Page.HeaderContent>
+    </Page.Header>
 
-  <Page.Body>
-    {#snippet child()}
-      <SubmissionsPage
-        courseId={data.courseId}
-        sections={data.sections || []}
-        submissionIdData={data.submissionIdData || {}}
-      />
-    {/snippet}
-  </Page.Body>
+    <Page.Body>
+      {#snippet child()}
+        <SubmissionsPage
+          courseId={data.courseId}
+          sections={data.sections || []}
+          submissionIdData={data.submissionIdData || {}}
+        />
+      {/snippet}
+    </Page.Body>
+  </Page.Root>
 </RoleBasedSecurity>

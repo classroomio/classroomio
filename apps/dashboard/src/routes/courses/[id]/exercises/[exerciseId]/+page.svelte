@@ -4,17 +4,22 @@
   import { resolve } from '$app/paths';
   import { Empty } from '@cio/ui/custom/empty';
   import LockIcon from '@lucide/svelte/icons/lock';
-  import { QUESTION_TYPES } from '$features/ui/question/constants';
+  import * as Page from '@cio/ui/base/page';
   import { ExercisePage } from '$features/course/pages';
   import {
     questionnaire,
     questionnaireMetaData,
     clearQuestionnaireValidation,
     reset
-  } from '$lib/features/course/components/exercise/store.js';
+  } from '$features/course/components/exercise/store';
   import { globalStore } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
   import type { Question } from '$features/course/types';
+  import {
+    getQuestionTypeId,
+    getQuestionTypeOptionById
+  } from '$features/course/components/exercise/question-type-utils';
+  import { normalizeQuestionOrder } from '$features/course/components/exercise/order-utils';
 
   let { data = $bindable() } = $props();
 
@@ -39,15 +44,15 @@
     // Transform questions and set questionnaire store
     let questions: Question[] = [];
     if (exercise.questions && Array.isArray(exercise.questions)) {
-      questions = exercise.questions
-        .map((question) => {
-          const questionType = QUESTION_TYPES.find((type) => type.id === question.questionType?.id);
-          return {
-            ...question,
-            questionType: questionType || question.questionType
-          };
-        })
-        .sort((a, b) => (a.order || 0) - (b.order || 0));
+      const mapped = exercise.questions.map((question) => {
+        const questionType = getQuestionTypeOptionById(getQuestionTypeId(question));
+        return {
+          ...question,
+          questionTypeId: questionType.id,
+          questionType
+        };
+      });
+      questions = normalizeQuestionOrder(mapped);
     }
 
     questionnaire.set({
@@ -64,14 +69,22 @@
   });
 </script>
 
-{#if isLockedForStudent}
-  <Empty
-    title={$t('course.navItem.lessons.content_locked_title')}
-    description={$t('course.navItem.lessons.content_locked_description')}
-    icon={LockIcon}
-    variant="page"
-    class="text-center"
-  />
-{:else}
-  <ExercisePage exerciseId={data.exerciseId} goBack={() => goto(resolve(path, {}))} isFetching={false} />
-{/if}
+<Page.Root class="mx-auto flex w-[90%] px-4 md:max-w-2xl lg:max-w-3xl">
+  {#if isLockedForStudent}
+    <Empty
+      title={$t('course.navItem.lessons.content_locked_title')}
+      description={$t('course.navItem.lessons.content_locked_description')}
+      icon={LockIcon}
+      variant="page"
+      class="text-center"
+    />
+  {:else}
+    <ExercisePage
+      exerciseId={data.exerciseId}
+      goBack={() => goto(resolve(path, {}))}
+      isFetching={false}
+      submissions={data.submissions ?? []}
+      mySubmission={data.mySubmission ?? null}
+    />
+  {/if}
+</Page.Root>

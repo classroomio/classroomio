@@ -222,11 +222,17 @@ export type GetMarksResponse = InferResponseType<GetMarksRequest> | null;
 export type GetMarksSuccess = Extract<InferResponseType<GetMarksRequest>, { success: true }>;
 export type Marks = GetMarksSuccess['data'];
 
-// Submission types
-export type ListSubmissionsRequest = (typeof classroomio.course)[':courseId']['submission']['$get'];
-export type ListSubmissionsResponse = InferResponseType<ListSubmissionsRequest> | null;
-export type ListSubmissionsSuccess = Extract<InferResponseType<ListSubmissionsRequest>, { success: true }>;
-export type Submissions = ListSubmissionsSuccess['data'];
+// Submission types — from exercise submissions (mySubmission/allSubmissions)
+export type ListExerciseSubmissionsRequest =
+  (typeof classroomio.course)[':courseId']['exercise'][':exerciseId']['submissions']['$get'];
+export type ListExerciseSubmissionsSuccess = Extract<
+  InferResponseType<ListExerciseSubmissionsRequest>,
+  { success: true }
+>;
+export type ExerciseSubmissionsData = ListExerciseSubmissionsSuccess['data'];
+
+/** Submission item with answers, groupmember. Used in exercise submissions UI and ViewMode. */
+export type SubmissionListItem = ExerciseSubmissionsData['allSubmissions'][number];
 
 // List submissions for grading types
 export type ListSubmissionsForGradingRequest =
@@ -248,6 +254,8 @@ export type DeleteSubmissionRequest =
   (typeof classroomio.course)[':courseId']['submission'][':submissionId']['$delete'];
 export type UpdateSubmissionAnswerRequest =
   (typeof classroomio.course)[':courseId']['submission'][':submissionId']['answer']['$put'];
+export type UpdateSubmissionGradesRequest =
+  (typeof classroomio.course)[':courseId']['submission'][':submissionId']['grades']['$put'];
 
 // Course types
 export type CreateCourseRequest = typeof classroomio.course.$post;
@@ -364,26 +372,8 @@ export type LessonDocument = NonNullable<Lesson['documents']>[number];
 export type Tabs = NonNullable<NonNullable<Course['metadata']>['lessonTabsOrder']>[number];
 export type Review = NonNullable<NonNullable<Course['metadata']>['reviews']>[number];
 
-export interface ExerciseSubmissions {
-  id: string;
-  status_id: number;
-  submitted_by: {
-    profile: {
-      id: string;
-      fullname: string;
-      avatar_url: string;
-    };
-  };
-  answers: {
-    answers: string[];
-    group_member_id: string;
-    id: number;
-    open_answer: string;
-    point: number;
-    question_id: number;
-    submission_id: string;
-  }[];
-}
+/** Submission answer element (from API). Used when formatting answers by question name. */
+export type SubmissionAnswer = NonNullable<SubmissionListItem['answers']>[number];
 
 // Exercise template types
 export type GetAllTemplatesMetadataRequest = (typeof classroomio.course)[':courseId']['exercise']['template']['$get'];
@@ -401,3 +391,19 @@ export type GetTemplateByTagData = GetTemplateByTagSuccess['data'];
 export type GetTemplateByIdRequest = (typeof classroomio.course)[':courseId']['exercise']['template'][':id']['$get'];
 export type GetTemplateByIdSuccess = Extract<InferResponseType<GetTemplateByIdRequest>, { success: true }>;
 export type GetTemplateByIdData = GetTemplateByIdSuccess['data'];
+
+// Presign types
+export type DocumentUploadPresignRequest = (typeof classroomio.course)['presign']['document']['upload']['$post'];
+export type DocumentUploadPresignSuccess = Extract<InferResponseType<DocumentUploadPresignRequest>, { success: true }>;
+
+export type DocumentDownloadPresignRequest = (typeof classroomio.course)['presign']['document']['download']['$post'];
+export type DocumentDownloadPresignSuccess = Extract<
+  InferResponseType<DocumentDownloadPresignRequest>,
+  { success: true }
+>;
+
+export type VideoUploadPresignRequest = (typeof classroomio.course)['presign']['video']['upload']['$post'];
+export type VideoUploadPresignSuccess = Extract<InferResponseType<VideoUploadPresignRequest>, { success: true }>;
+
+export type VideoDownloadPresignRequest = (typeof classroomio.course)['presign']['video']['download']['$post'];
+export type VideoDownloadPresignSuccess = Extract<InferResponseType<VideoDownloadPresignRequest>, { success: true }>;

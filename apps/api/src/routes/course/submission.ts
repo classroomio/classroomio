@@ -1,37 +1,24 @@
 import {
   ZSubmissionAnswerUpdate,
   ZSubmissionGetParam,
-  ZSubmissionListQuery,
+  ZSubmissionGradesUpdate,
   ZSubmissionUpdate
 } from '@cio/utils/validation/submission';
 import {
   deleteSubmissionService,
-  getSubmission,
-  listSubmissions,
   listSubmissionsForGrading,
   updateSubmissionAnswer,
+  updateSubmissionGradesBatch,
   updateSubmissionService
 } from '@api/services/submission';
 
 import { Hono } from '@api/utils/hono';
-import { authMiddleware } from '@api/middlewares/auth';
-import { courseMemberMiddleware } from '@api/middlewares/course-member';
+import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 
 export const submissionRouter = new Hono()
-  .get('/', courseMemberMiddleware, zValidator('query', ZSubmissionListQuery), async (c) => {
-    try {
-      const courseId = c.req.param('courseId')!;
-      const { exerciseId, submittedBy } = c.req.valid('query');
-      const submissions = await listSubmissions(courseId, exerciseId, submittedBy);
-
-      return c.json({ success: true, data: submissions }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to list submissions');
-    }
-  })
-  .get('/for-grading', courseMemberMiddleware, async (c) => {
+  .get('/for-grading', courseTeamMemberMiddleware, async (c) => {
     try {
       const courseId = c.req.param('courseId')!;
       const data = await listSubmissionsForGrading(courseId);
@@ -43,7 +30,7 @@ export const submissionRouter = new Hono()
   })
   .put(
     '/:submissionId',
-    courseMemberMiddleware,
+    courseTeamMemberMiddleware,
     zValidator('param', ZSubmissionGetParam),
     zValidator('json', ZSubmissionUpdate),
     async (c) => {
@@ -59,7 +46,7 @@ export const submissionRouter = new Hono()
       }
     }
   )
-  .delete('/:submissionId', courseMemberMiddleware, zValidator('param', ZSubmissionGetParam), async (c) => {
+  .delete('/:submissionId', courseTeamMemberMiddleware, zValidator('param', ZSubmissionGetParam), async (c) => {
     try {
       const { submissionId } = c.req.valid('param');
       const submission = await deleteSubmissionService(submissionId);
@@ -71,7 +58,7 @@ export const submissionRouter = new Hono()
   })
   .put(
     '/:submissionId/answer',
-    courseMemberMiddleware,
+    courseTeamMemberMiddleware,
     zValidator('param', ZSubmissionGetParam),
     zValidator('json', ZSubmissionAnswerUpdate),
     async (c) => {
@@ -84,6 +71,24 @@ export const submissionRouter = new Hono()
         return c.json({ success: true, data: answer }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to update submission answer');
+      }
+    }
+  )
+  .put(
+    '/:submissionId/grades',
+    courseTeamMemberMiddleware,
+    zValidator('param', ZSubmissionGetParam),
+    zValidator('json', ZSubmissionGradesUpdate),
+    async (c) => {
+      try {
+        const { submissionId } = c.req.valid('param');
+        const data = c.req.valid('json');
+
+        const submission = await updateSubmissionGradesBatch(submissionId, data);
+
+        return c.json({ success: true, data: submission }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to update submission grades');
       }
     }
   );

@@ -32,10 +32,13 @@ RUN echo "Dashboard build PUBLIC_IS_SELFHOSTED=${PUBLIC_IS_SELFHOSTED}" && \
     CSP_FONT_SRC_DOMAINS="${CSP_FONT_SRC_DOMAINS}" \
     pnpm -r --filter @cio/dashboard... build
 
+RUN test -f apps/dashboard/build/index.js || (echo "ERROR: Dashboard build output not found at apps/dashboard/build/index.js" && exit 1)
+
 EXPOSE 3082
 
 ENV NODE_ENV=production \
     PORT=3082 \
     PUBLIC_IS_SELFHOSTED=true
 
-CMD ["pnpm", "--filter", "@cio/dashboard", "start"]
+WORKDIR /app/apps/dashboard
+CMD ["node", "build/index.js"]

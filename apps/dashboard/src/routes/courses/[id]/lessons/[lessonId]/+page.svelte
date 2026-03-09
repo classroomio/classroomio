@@ -3,6 +3,7 @@
   import { lessonApi } from '$features/course/api';
   import { profile } from '$lib/utils/store/user';
   import type { Lesson } from '$features/course/utils/types';
+  import * as Page from '@cio/ui/base/page';
 
   interface Props {
     data: {
@@ -15,7 +16,6 @@
   let { data }: Props = $props();
 
   $effect(() => {
-    console.log('data', data);
     if (!data.lesson) return;
     const lesson = data.lesson;
 
@@ -36,6 +36,8 @@
   });
 </script>
 
-{#key data.lessonId}
-  <LessonPage courseId={data.courseId} lessonId={data.lessonId} />
-{/key}
+<Page.Root class="mx-auto flex w-[90%] px-4 md:max-w-2xl lg:max-w-3xl">
+  {#key data.lessonId}
+    <LessonPage courseId={data.courseId} lessonId={data.lessonId} />
+  {/key}
+</Page.Root>

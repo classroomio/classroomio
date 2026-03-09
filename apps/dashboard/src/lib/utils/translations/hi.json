@@ -114,6 +114,20 @@
       "email": "अमान्य ईमेल पता",
       "username": "उपयोक्तानाम खाली नहीं हो सकता",
       "fullname": "नाम कम से कम 5 अक्षर का होना चाहिए"
+    },
+    "exercise": {
+      "options": {
+        "custom": "{संदेश}"
+      },
+      "points": {
+        "too_small": "अंक कम से कम 0 होने चाहिए"
+      },
+      "label": {
+        "too_small": "विकल्प लेबल आवश्यक है"
+      },
+      "question": {
+        "too_small": "प्रश्न का शीर्षक आवश्यक है"
+      }
     }
   },
   "generic": {
@@ -856,6 +870,11 @@
           "submitted": "प्रस्तुत किया गया",
           "in_progress": "प्रगति पर है",
           "graded": "श्रेणीबद्ध"
+        },
+        "workflow": {
+          "awaiting_manual_hint": "मैन्युअल समीक्षा की आवश्यकता है",
+          "failed_hint": "स्वतः-ग्रेडिंग विफल. पुनः प्रयास करने के लिए इस सबमिशन को वापस सबमिट किए गए पर ले जाएं।",
+          "invalid_transition": "ग्रेडिंग वर्कफ़्लो द्वारा इस स्थिति परिवर्तन की अनुमति नहीं है"
         }
       },
       "attendance": {
@@ -994,9 +1013,14 @@
               },
               "summary": {
                 "heading": "सारांश",
-                "question_chart": "प्रश्न चार्ट"
+                "question_chart": "प्रश्न चार्ट",
+                "responses": "प्रतिक्रियाएँ",
+                "no_responses": "अभी तक कोई प्रतिक्रिया नहीं",
+                "other": "अन्य"
               },
-              "loading_submissions": "सबमिशन लोड हो रहा है..."
+              "loading_submissions": "सबमिशन लोड हो रहा है...",
+              "empty_title": "अभी तक कोई सबमिशन नहीं",
+              "empty_description": "जब छात्र यह अभ्यास पूरा कर लेंगे तो सबमिशन यहां दिखाई देंगे।"
             },
             "view_mode": {
               "no_question": "इस अभ्यास के लिए कोई प्रश्न नहीं जोड़ा गया",
@@ -1018,7 +1042,9 @@
               "empty_edit_hint_prefix": "क्लिक करें ",
               "empty_edit_hint_suffix": " जोड़ने के लिए बटन.",
               "answers_required": "कृपया सबमिट करने से पहले कम से कम एक उत्तर प्रदान करें।",
-              "checking_submission": "आपके सबमिशन की जाँच की जा रही है..."
+              "checking_submission": "आपके सबमिशन की जाँच की जा रही है...",
+              "answer_required": "कृपया आगे बढ़ने से पहले इस प्रश्न का उत्तर दें।",
+              "instructor_feedback": "प्रशिक्षक प्रतिक्रिया"
             },
             "edit_mode": {
               "delete_modal": "व्यायाम हटाएँ",
@@ -1033,9 +1059,19 @@
               "question_types": {
                 "single": "एकल उत्तर",
                 "multiple": "एकाधिक उत्तर",
-                "paragraph": "अनुच्छेद"
+                "paragraph": "अनुच्छेद",
+                "true_false": "सत्य/असत्य",
+                "short_answer": "संक्षिप्त उत्तर",
+                "numeric": "संख्यात्मक उत्तर",
+                "fill_blank": "रिक्त स्थान भरें",
+                "file_upload": "फ़ाइल अपलोड करें",
+                "matching": "मिलान",
+                "ordering": "ऑर्डर देना",
+                "hotspot": "हॉटस्पॉट",
+                "link": "कड़ियाँ"
               },
-              "select_type": "प्रकार चुनें"
+              "select_type": "प्रकार चुनें",
+              "premium_question_type": "इस प्रश्न प्रकार का उपयोग करने के लिए अपग्रेड करें"
             },
             "delete_confirmation": {
               "title": "प्रश्न हटाएँ",
@@ -1048,6 +1084,197 @@
               "heading": "विवरण",
               "describe": "अपने विद्यार्थी को अभ्यास का वर्णन करें",
               "no": "कोई विवरण नहीं"
+            },
+            "shared_question": {
+              "textarea": {
+                "take": {
+                  "placeholder": "अपना उत्तर लिखें"
+                },
+                "edit": {
+                  "placeholder": "शिक्षार्थी लंबे प्रारूप वाले पाठ के साथ उत्तर देंगे"
+                }
+              },
+              "hotspot": {
+                "preview": {
+                  "helper": "हॉटस्पॉट पूर्वावलोकन होस्ट ऐप छवि और हॉटस्पॉट सेटिंग्स द्वारा प्रदान किया जाता है।"
+                },
+                "take": {
+                  "placeholder": "JSON के रूप में हॉटस्पॉट निर्देशांक प्रदान करें"
+                },
+                "edit": {
+                  "helper": "होस्ट ऐप नियंत्रण के माध्यम से प्रश्न सेटिंग में हॉटस्पॉट छवि और ज़ोन कॉन्फ़िगर करें।"
+                }
+              },
+              "ordering": {
+                "fallback_step_prefix": "कदम",
+                "preview": {
+                  "submitted_label": "आदेश प्रस्तुत किया",
+                  "expected_label": "अपेक्षित आदेश",
+                  "matches": "सबमिट किया गया ऑर्डर अपेक्षित ऑर्डर से मेल खाता है।",
+                  "differs": "सबमिट किया गया ऑर्डर अपेक्षित ऑर्डर से भिन्न है."
+                },
+                "take": {
+                  "helper": "वस्तुओं को सही क्रम में व्यवस्थित करने के लिए खींचें और छोड़ें।",
+                  "empty": "इस प्रश्न के लिए अभी तक कोई ऑर्डरिंग आइटम कॉन्फ़िगर नहीं किया गया है।"
+                },
+                "edit": {
+                  "helper": "सही क्रम परिभाषित करने के लिए आइटम खींचें।",
+                  "add_step": "चरण जोड़ें",
+                  "empty": "चरण जोड़ें, फिर अपेक्षित क्रम सेट करने के लिए खींचें।",
+                  "step_placeholder": "चरण '{'सूचकांक'}'",
+                  "remove_step_tooltip": "चरण हटाएँ"
+                }
+              },
+              "matching": {
+                "preview": {
+                  "helper": "मिलान जोड़े का पूर्वावलोकन होस्ट ऐप सेटिंग्स द्वारा प्रदान किया जाता है।"
+                },
+                "take": {
+                  "placeholder": "JSON के रूप में मिलान जोड़े प्रदान करें"
+                },
+                "edit": {
+                  "helper": "होस्ट ऐप नियंत्रण के माध्यम से प्रश्न सेटिंग में जोड़े कॉन्फ़िगर करें।"
+                }
+              },
+              "link": {
+                "preview": {
+                  "empty": "कोई लिंक सबमिट नहीं किया गया.",
+                  "item_label": "लिंक '{'सूचकांक'}'"
+                },
+                "take": {
+                  "helper": "एक या अधिक लिंक जोड़ें. केवल वैध http/https यूआरएल ही स्वीकार किए जाते हैं।",
+                  "placeholder": "https://example.com/resource-'{'index'}'",
+                  "remove_tooltip": "लिंक हटाएँ",
+                  "remove_sr": "लिंक हटाएँ",
+                  "invalid_url_error": "कृपया एक मान्य यूआरएल (http/https) दर्ज करें।",
+                  "add_button": "लिंक जोड़ें"
+                },
+                "edit": {
+                  "instructions_placeholder": "शिक्षार्थियों के लिए वैकल्पिक निर्देश",
+                  "helper": "शिक्षार्थी एक या अधिक वैध यूआरएल (http/https) सबमिट कर सकते हैं।"
+                }
+              },
+              "file_upload": {
+                "preview": {
+                  "accepted_types_label": "स्वीकृत प्रकार",
+                  "max_size_label": "अधिकतम आकार (एमबी)"
+                },
+                "take": {
+                  "selected_file_label": "चयनित फ़ाइल",
+                  "upload_button": "अपलोड करें",
+                  "upload_progress": "अपलोड हो रहा है...",
+                  "upload_error": "अपलोड विफल रहा",
+                  "view": "देखें",
+                  "download": "डाउनलोड करें"
+                },
+                "edit": {
+                  "accepted_types_placeholder": "स्वीकृत प्रकार (उदा. पीडीएफ, डॉक्स)",
+                  "max_size_placeholder": "अधिकतम आकार (एमबी)"
+                }
+              },
+              "fill_blank": {
+                "preview": {
+                  "accepted_answers_label": "स्वीकृत उत्तर"
+                },
+                "take": {
+                  "placeholder": "अल्पविराम से अलग किए गए उत्तर दर्ज करें"
+                },
+                "edit": {
+                  "accepted_answers_placeholder": "स्वीकृत उत्तर (अल्पविराम से अलग)"
+                }
+              },
+              "numeric": {
+                "preview": {
+                  "correct_value_label": "सही मूल्य",
+                  "tolerance_label": "सहनशीलता"
+                },
+                "take": {
+                  "placeholder": "एक नंबर दर्ज करें"
+                },
+                "edit": {
+                  "correct_value_label": "सही मूल्य",
+                  "correct_value_info": "अपेक्षित संख्यात्मक उत्तर शिक्षार्थियों को सही चिह्नित करने के लिए प्रस्तुत करना होगा।",
+                  "tolerance_label": "सहनशीलता",
+                  "tolerance_info": "सही मान से स्वीकार्य अंतर (उदाहरण के लिए, 0.5 +/-0.5 स्वीकार करता है)।",
+                  "correct_value_placeholder": "सही मूल्य",
+                  "tolerance_placeholder": "सहनशीलता"
+                }
+              },
+              "short_answer": {
+                "preview": {
+                  "helper": "निःशुल्क-पाठ उत्तर प्रश्न."
+                },
+                "take": {
+                  "placeholder": "अपना उत्तर टाइप करें"
+                },
+                "edit": {
+                  "instructions_placeholder": "वैकल्पिक निर्देश"
+                }
+              },
+              "true_false": {
+                "true_label": "सच है",
+                "false_label": "मिथ्या",
+                "preview": {
+                  "correct_value_label": "सही मूल्य"
+                },
+                "edit": {
+                  "correct_answer_label": "सही उत्तर"
+                }
+              },
+              "checkbox": {
+                "edit": {
+                  "helper": "एक या अधिक विकल्पों को सही के रूप में चिह्नित करें.",
+                  "correct_selected_tooltip": "सही उत्तर चयनित",
+                  "toggle_correct_tooltip": "सही उत्तर टॉगल करें",
+                  "toggle_correct_sr": "विकल्प को सही के रूप में टॉगल करें"
+                }
+              },
+              "radio": {
+                "edit": {
+                  "helper": "बिल्कुल एक सही विकल्प चुनें.",
+                  "correct_selected_tooltip": "सही उत्तर चयनित",
+                  "mark_correct_tooltip": "सही उत्तर के रूप में चिह्नित करें",
+                  "mark_correct_sr": "विकल्प को सही के रूप में चिह्नित करें"
+                }
+              },
+              "question": {
+                "edit": {
+                  "title_label": "शीर्षक",
+                  "title_placeholder": "प्रश्न शीघ्र",
+                  "description_label": "विवरण (वैकल्पिक)",
+                  "description_placeholder": "इस प्रश्न के लिए अतिरिक्त संदर्भ जोड़ें",
+                  "add_description": "विवरण जोड़ें",
+                  "remove_description": "विवरण हटाएँ",
+                  "media_menu_sr": "प्रश्न अतिरिक्त मेनू",
+                  "add_image": "छवि जोड़ें",
+                  "add_video": "वीडियो जोड़ें",
+                  "remove_image_tooltip": "छवि हटाएँ",
+                  "remove_image_sr": "छवि हटाएँ",
+                  "remove_video_tooltip": "वीडियो हटाएँ",
+                  "remove_video_sr": "वीडियो हटाएँ",
+                  "image_alt": "प्रश्न प्रसंग",
+                  "video_modal_title": "यूट्यूब वीडियो जोड़ें",
+                  "video_link_label": "यूट्यूब लिंक",
+                  "video_link_placeholder": "https://www.youtube.com/watch?v=",
+                  "video_add_button": "वीडियो जोड़ें",
+                  "video_invalid_link": "कृपया एक वैध यूट्यूब लिंक दर्ज करें।",
+                  "upload_error_only_images": "केवल छवि फ़ाइलें समर्थित हैं.",
+                  "upload_error_skipped": "कुछ फ़ाइलें छोड़ दी गईं क्योंकि वे छवियाँ नहीं हैं।",
+                  "upload_error_failed": "छवि अपलोड करने में विफल. पुनः प्रयास करें।"
+                }
+              },
+              "navigation": {
+                "previous": "पिछला",
+                "next": "अगला",
+                "finish": "ख़त्म करो"
+              },
+              "common": {
+                "option_prefix": "विकल्प",
+                "remove": "हटाओ",
+                "add_option": "विकल्प जोड़ें",
+                "correct_badge": "(सही)",
+                "not_set": "सेट नहीं"
+              }
             }
           },
           "new_exercise_modal": {
@@ -1403,7 +1630,8 @@
     "recent_enrollments": "हाल के नामांकन",
     "publish_first_course": "अपना पहला पाठ्यक्रम प्रकाशित करें",
     "publish_first_course_description": "नामांकन पर नज़र रखने के लिए, एक पाठ्यक्रम प्रकाशित करें और छात्रों को आमंत्रित करें",
-    "publish_course": "पाठ्यक्रम प्रकाशित करें"
+    "publish_course": "पाठ्यक्रम प्रकाशित करें",
+    "items_completed": "आइटम पूरे हो गए"
   },
   "schedule": {
     "title": "आपका शेड्यूल",
@@ -1511,7 +1739,8 @@
     "redirecting": "पुनर्निर्देशन",
     "loading_state": "आपको अगले पृष्ठ पर ले जा रहा हूँ, कृपया प्रतीक्षा करें।",
     "org_loading_state": "आपको आपके संगठन में ले जा रहा हूँ...",
-    "add_organization": "+ संगठन जोड़ें"
+    "add_organization": "+ संगठन जोड़ें",
+    "goto_dashboard": "डैशबोर्ड"
   },
   "add_org": {
     "create_org": "संगठन बनाएं",
@@ -1969,6 +2198,10 @@
         "disable_signup": {
           "label": "साइनअप अक्षम करें",
           "description": "नए उपयोगकर्ताओं को साइन अप करने से रोकें. केवल आमंत्रित उपयोगकर्ता ही शामिल हो सकते हैं."
+        },
+        "allow_public_signups": {
+          "label": "सार्वजनिक साइनअप की अनुमति दें",
+          "description": "अक्षम होने पर, केवल आमंत्रण लिंक वाले उपयोगकर्ता ही साइन अप कर सकते हैं। किसी को भी खाता बनाने की अनुमति देने के लिए सक्षम करें."
         }
       },
       "login": {
@@ -1979,7 +2212,8 @@
         "email_password_disabled": "ईमेल/पासवर्ड लॉगिन अक्षम है. कृपया एसएसओ का उपयोग करें.",
         "email_password_disabled_message": "इस संगठन के लिए ईमेल/पासवर्ड लॉगिन अक्षम है।",
         "google_auth_disabled": "Google प्रमाणीकरण अक्षम है.",
-        "signup_disabled_error": "इस संगठन के लिए साइनअप अक्षम है. कृपया अपने व्यवस्थापक से संपर्क करें."
+        "signup_disabled_error": "इस संगठन के लिए साइनअप अक्षम है. कृपया अपने व्यवस्थापक से संपर्क करें.",
+        "or_continue_with": "या ईमेल और पासवर्ड के साथ जारी रखें"
       },
       "tabs": {
         "general": "सामान्य",
@@ -2046,6 +2280,11 @@
       "confirm_password": "पासवर्ड की पुष्टि करें",
       "password_helper_message": "पासवर्ड 8 अक्षर से अधिक होना चाहिए",
       "create_account": "खाता बनाएँ"
+    },
+    "signup_disabled": {
+      "title": "साइनअप अक्षम",
+      "invite_only_message": "साइनअप केवल आमंत्रण के लिए है। खाता बनाने के लिए कृपया आमंत्रण लिंक का उपयोग करें।",
+      "go_to_login": "लॉगइन पर जाएं"
     }
   },
   "app": {

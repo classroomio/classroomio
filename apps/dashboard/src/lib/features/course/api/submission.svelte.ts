@@ -1,13 +1,16 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
   DeleteSubmissionRequest,
-  ListSubmissionsRequest,
-  Submissions,
   UpdateSubmissionAnswerRequest,
+  UpdateSubmissionGradesRequest,
   UpdateSubmissionRequest
 } from '../utils/types';
-import type { TSubmissionAnswerUpdate, TSubmissionUpdate } from '@cio/utils/validation/submission';
-import { ZSubmissionAnswerUpdate, ZSubmissionUpdate } from '@cio/utils/validation/submission';
+import type {
+  TSubmissionAnswerUpdate,
+  TSubmissionGradesUpdate,
+  TSubmissionUpdate
+} from '@cio/utils/validation/submission';
+import { ZSubmissionAnswerUpdate, ZSubmissionGradesUpdate, ZSubmissionUpdate } from '@cio/utils/validation/submission';
 
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { snackbar } from '$features/ui/snackbar/store';
@@ -16,35 +19,6 @@ import { snackbar } from '$features/ui/snackbar/store';
  * API class for submission operations
  */
 export class SubmissionApi extends BaseApiWithErrors {
-  data = $state<Submissions>([]);
-
-  /**
-   * Lists submissions for a course
-   * Stores data in this.data so child components can access it
-   */
-  async list(courseId: string, exerciseId?: string, submittedBy?: string) {
-    await this.execute<ListSubmissionsRequest>({
-      requestFn: () =>
-        classroomio.course[':courseId'].submission.$get({
-          param: { courseId },
-          query: { exerciseId, submittedBy }
-        }),
-      logContext: 'listing submissions',
-      onSuccess: (response) => {
-        if (response.data) {
-          this.data = response.data;
-          this.success = true;
-          this.errors = {};
-        }
-      },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('Failed to list submissions');
-        }
-      }
-    });
-  }
-
   /**
    * Updates a submission
    */
@@ -111,7 +85,45 @@ export class SubmissionApi extends BaseApiWithErrors {
   }
 
   /**
-   * Updates a question answer in a submission
+   * Updates all grades (answer points + total + feedback) in a single request
+   */
+  async updateGrades(courseId: string, submissionId: string, data: TSubmissionGradesUpdate) {
+    const result = ZSubmissionGradesUpdate.safeParse(data);
+    if (!result.success) {
+      this.errors = mapZodErrorsToTranslations(result.error, 'submission');
+      return;
+    }
+
+    await this.execute<UpdateSubmissionGradesRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].submission[':submissionId'].grades.$put({
+          param: { courseId, submissionId },
+          json: result.data
+        }),
+      logContext: 'updating submission grades',
+      onSuccess: (response) => {
+        if (response.data) {
+          snackbar.success('snackbar.submissions.success.grading');
+          this.success = true;
+          this.errors = {};
+        }
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          snackbar.error('Failed to update grades');
+          return;
+        }
+        if ('error' in result && 'field' in result && result.field) {
+          this.errors[result.field] = result.error;
+          snackbar.error(result.error);
+        }
+      }
+    });
+  }
+
+  /**
+   * Updates a question answer in a submission.
+   * Does not show a snackbar (caller shows one when saving multiple answers).
    */
   async updateAnswer(courseId: string, submissionId: string, data: TSubmissionAnswerUpdate) {
     const result = ZSubmissionAnswerUpdate.safeParse(data);
@@ -129,7 +141,6 @@ export class SubmissionApi extends BaseApiWithErrors {
       logContext: 'updating submission answer',
       onSuccess: (response) => {
         if (response.data) {
-          snackbar.success('Answer updated successfully');
           this.success = true;
           this.errors = {};
         }

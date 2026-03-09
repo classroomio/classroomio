@@ -1,4 +1,5 @@
-import type { TExercise, TNewOption, TNewQuestion, TQuestionType } from '@cio/db/types';
+import { AppError, ErrorCodes } from '@api/utils/errors';
+import type { TExercise, TNewOption, TNewQuestion, TQuestionAnswer, TQuestionType } from '@cio/db/types';
 import {
   createOptions,
   createQuestions,
@@ -17,15 +18,10 @@ import type { TExerciseUpdate } from '@cio/utils/validation/exercise';
 type CurrentQuestion = TNewQuestion & { options?: TNewOption[] };
 type CurrentOption = TNewOption;
 
-type ExerciseAnswer = {
-  id?: number;
-  answers?: string[] | null;
-  openAnswer?: string | null;
-  point?: number | null;
-  questionId?: number;
-  submissionId?: string | null;
-  groupMemberId?: string | null;
-};
+type ExerciseAnswer = Pick<
+  TQuestionAnswer,
+  'id' | 'answerData' | 'point' | 'questionId' | 'submissionId' | 'groupMemberId'
+> & { id?: number };
 
 export type QuestionWithRelations = {
   id: number | string;
@@ -40,6 +36,7 @@ export type QuestionWithRelations = {
     label: string;
   };
   questionTypeId: number;
+  settings?: Record<string, unknown>;
   code?: string;
   answers?: ExerciseAnswer[];
   deletedAt?: string;
@@ -50,9 +47,25 @@ export type QuestionWithRelations = {
     label: string | null;
     value: string | null;
     isCorrect: boolean;
+    settings?: Record<string, unknown>;
     deletedAt?: string;
   }[];
 };
+
+function normalizeSettings(value: unknown): Record<string, unknown> {
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+
+  return {};
+}
+
+function areSettingsEqual(left: unknown, right: unknown): boolean {
+  const leftNormalized = normalizeSettings(left);
+  const rightNormalized = normalizeSettings(right);
+
+  return JSON.stringify(leftNormalized) === JSON.stringify(rightNormalized);
+}
 
 /**
  * Extracts exercise-level fields from the update payload
@@ -88,7 +101,8 @@ export function categorizeQuestions(questions: NonNullable<TExerciseUpdate['ques
         data: {
           title: q.question,
           points: q.points,
-          questionTypeId: q.questionTypeId
+          questionTypeId: q.questionTypeId,
+          settings: normalizeSettings(q.settings)
         }
       });
     } else {
@@ -122,14 +136,16 @@ export function categorizeOptions(
         id: opt.id,
         data: {
           label: opt.label,
-          isCorrect: opt.isCorrect
+          isCorrect: opt.isCorrect,
+          settings: normalizeSettings(opt.settings)
         }
       });
     } else {
       newOptions.push({
         questionId,
         label: opt.label,
-        isCorrect: opt.isCorrect
+        isCorrect: opt.isCorrect,
+        settings: normalizeSettings(opt.settings)
       });
     }
   }
@@ -159,6 +175,14 @@ function diffQuestion(
     changes.questionTypeId = incoming.questionTypeId;
     hasChanges = true;
   }
+  if (incoming.order !== undefined && incoming.order !== (current.order ?? undefined)) {
+    changes.order = incoming.order;
+    hasChanges = true;
+  }
+  if (!areSettingsEqual(current.settings, incoming.settings)) {
+    changes.settings = normalizeSettings(incoming.settings);
+    hasChanges = true;
+  }
 
   return hasChanges ? changes : null;
 }
@@ -179,6 +203,10 @@ function diffOption(
   }
   if (incoming.isCorrect !== current.isCorrect) {
     changes.isCorrect = incoming.isCorrect;
+    hasChanges = true;
+  }
+  if (!areSettingsEqual(current.settings, incoming.settings)) {
+    changes.settings = normalizeSettings(incoming.settings);
     hasChanges = true;
   }
 
@@ -254,6 +282,7 @@ export function computeExerciseDiff(
             questionId: incoming.id,
             label: incomingOpt.label,
             isCorrect: incomingOpt.isCorrect,
+            settings: normalizeSettings(incomingOpt.settings),
             value: crypto.randomUUID()
           });
         }
@@ -263,6 +292,7 @@ export function computeExerciseDiff(
           questionId: incoming.id,
           label: incomingOpt.label,
           isCorrect: incomingOpt.isCorrect,
+          settings: normalizeSettings(incomingOpt.settings),
           value: crypto.randomUUID()
         });
       }
@@ -303,7 +333,9 @@ export async function createNewQuestionsWithOptions(
       exerciseId,
       title: q.question,
       questionTypeId: q.questionTypeId || 1,
-      points: q.points || 0
+      points: q.points || 0,
+      order: typeof q.order === 'number' ? q.order : undefined,
+      settings: normalizeSettings(q.settings)
     })),
     txClient
   );
@@ -318,7 +350,8 @@ export async function createNewQuestionsWithOptions(
           newOptions.push({
             questionId: newQuestion.id,
             label: opt.label,
-            isCorrect: opt.isCorrect
+            isCorrect: opt.isCorrect,
+            settings: normalizeSettings(opt.settings)
           });
         }
       }
@@ -371,7 +404,8 @@ export function transformQuestion(
       id: opt.id!,
       label: opt.label ?? null,
       value: opt.value ?? null,
-      isCorrect: opt.isCorrect ?? false
+      isCorrect: opt.isCorrect ?? false,
+      settings: normalizeSettings(opt.settings)
     }));
 
   return {
@@ -392,6 +426,7 @@ export function transformQuestion(
           label: ''
         },
     questionTypeId: questionTypeId,
+    settings: normalizeSettings(question.settings),
     createdAt: question.createdAt || undefined,
     updatedAt: question.updatedAt || undefined,
     options: questionOptions

@@ -7,9 +7,12 @@
   import { submissionApi, courseApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
   import type { SubmissionIdData, SubmissionItem, SubmissionSection } from '$features/course/utils/types';
+  import { t } from '$lib/utils/functions/translations';
 
   import { Chip } from '@cio/ui/custom/chip';
   import MarkExerciseModal from '$features/course/components/exercise/mark-exercise-modal.svelte';
+  import { STATUS } from '$features/course/components/exercise/constants';
+  import { onMount } from 'svelte';
 
   interface Props {
     courseId: string;
@@ -20,15 +23,38 @@
   let { courseId, sections: initialSections = [], submissionIdData: initialSubmissionIdData = {} }: Props = $props();
 
   const flipDurationMs = 300;
-  let sections: SubmissionSection[] = $derived(initialSections);
-  let submissionIdData: { [key: string]: SubmissionIdData } = $derived(initialSubmissionIdData);
+  let sections = $state<SubmissionSection[]>([]);
+  let submissionIdData = $state<Record<string, SubmissionIdData>>({});
   let isGradeWithAI = $state(false);
   let isSaving = $state(false);
+
+  onMount(() => {
+    sections = initialSections;
+    submissionIdData = { ...initialSubmissionIdData };
+  });
+
+  const ALLOWED_BOARD_TRANSITIONS: Record<number, number[]> = {
+    1: [2],
+    2: [1, 3],
+    3: []
+  };
 
   const submissionId = $derived(new URLSearchParams(page.url.search).get('submissionId') ?? '');
   let openExercise = $derived.by(() => {
     return !!submissionId && !!submissionIdData[submissionId];
   });
+
+  function canTransitionBoardStatus(previousStatusId: number, nextStatusId: number): boolean {
+    if (previousStatusId === nextStatusId) return true;
+    return ALLOWED_BOARD_TRANSITIONS[previousStatusId]?.includes(nextStatusId) ?? false;
+  }
+
+  function getWorkflowHintKey(item: SubmissionItem): string {
+    if (item.statusId !== 2) return '';
+    if (item.gradingState === 'awaiting_manual') return 'course.navItem.submissions.workflow.awaiting_manual_hint';
+    if (item.gradingState === 'failed') return 'course.navItem.submissions.workflow.failed_hint';
+    return '';
+  }
 
   async function handleItemFinalize(
     columnIdx: number,
@@ -38,33 +64,43 @@
 
     const { id } = sections[columnIdx];
 
-    // Set column in the UI
-    sections[columnIdx].items = newItems.map((item) => {
+    // Set column in the UI (immutable update for reactivity)
+    const mappedItems = newItems.map((item) => {
       if (item.statusId !== id) {
+        if (!canTransitionBoardStatus(item.statusId, id)) {
+          snackbar.error('course.navItem.submissions.workflow.invalid_transition');
+          return item;
+        }
+
         itemToWithNewStatus = item;
-        item.statusId = id;
+        return { ...item, statusId: id };
       }
 
       return item;
     });
 
+    sections = sections.map((section, i) => (i === columnIdx ? { ...section, items: mappedItems } : section));
+
     // Update backend
     if (itemToWithNewStatus) {
-      // Update key mapping for each submission also
-      submissionIdData[itemToWithNewStatus.id] = {
-        ...submissionIdData[itemToWithNewStatus.id],
-        statusId: itemToWithNewStatus.statusId
+      const newStatusId = id;
+      submissionIdData = {
+        ...submissionIdData,
+        [itemToWithNewStatus.id]: {
+          ...submissionIdData[itemToWithNewStatus.id],
+          statusId: newStatusId
+        }
       };
 
       await submissionApi.update(courseId, itemToWithNewStatus.id, {
-        statusId: itemToWithNewStatus.statusId
+        statusId: newStatusId
       });
     }
   }
 
   function handleDndConsiderCards(columnIdx: number) {
     return function (e) {
-      sections[columnIdx].items = e.detail.items;
+      sections = sections.map((section, i) => (i === columnIdx ? { ...section, items: e.detail.items } : section));
     };
   }
 
@@ -77,62 +113,14 @@
     goto(page.url.pathname);
   }
 
-  // Via dialog
-  async function updateStatus({
-    submissionId,
-    prevStatusId,
-    nextStatusId,
-    total
-  }: {
-    submissionId: string;
-    prevStatusId: number;
-    nextStatusId: number;
-    total: number;
-  }) {
-    let itemToWithNewStatus: SubmissionItem | undefined;
-
-    // Remove from current column
-    const { items } = sections[prevStatusId - 1];
-    sections[prevStatusId - 1].items = items?.filter((item) => {
-      if (item.id === submissionId) {
-        itemToWithNewStatus = Object.assign(item);
-        if (itemToWithNewStatus) {
-          itemToWithNewStatus.statusId = nextStatusId;
-        }
-        return false;
-      }
-
-      return true;
-    });
-    // Move to right column
-    if (itemToWithNewStatus) {
-      sections[nextStatusId - 1].items = [...sections[nextStatusId - 1].items, itemToWithNewStatus];
-    }
-
-    // If something changed
-    if (itemToWithNewStatus) {
-      // Update key mapping for each submission also
-      submissionIdData[itemToWithNewStatus.id] = {
-        ...submissionIdData[itemToWithNewStatus.id],
-        statusId: itemToWithNewStatus.statusId
-      };
-
-      // Update backend
-      await submissionApi.update(courseId, itemToWithNewStatus.id, {
-        statusId: itemToWithNewStatus.statusId,
-        total
-      });
-    }
-  }
-
   async function handleDeleteSubmission(id: string, statusId: number) {
-    const { items } = sections[statusId - 1];
+    const sectionIdx = statusId - 1;
+    sections = sections.map((section, i) =>
+      i === sectionIdx ? { ...section, items: section.items.filter((item) => item.id !== id) } : section
+    );
 
-    sections[statusId - 1].items = items?.filter((item) => {
-      return item.id === id ? false : true;
-    });
-
-    delete submissionIdData[id];
+    const { [id]: _, ...rest } = submissionIdData;
+    submissionIdData = rest;
 
     await submissionApi.delete(courseId, id);
 
@@ -146,40 +134,66 @@
     handleModalClose();
   }
 
-  async function handleSave(submission: { questionAnswerByPoint: any; questionAnswers: any; feedback: any }) {
+  async function handleSave(submission: {
+    id?: string;
+    questionAnswerByPoint: Record<string, string | number>;
+    feedback?: string;
+  }) {
     isSaving = true;
-    const { questionAnswerByPoint, questionAnswers, feedback } = submission;
+    const { questionAnswerByPoint, feedback } = submission;
+    const subId = submission.id ?? submissionId;
 
-    let totalPoints = 0;
+    const answers = Object.entries(questionAnswerByPoint ?? {}).map(([questionId, point]) => ({
+      questionId: Number(questionId),
+      points: Number(point)
+    }));
+    const total = answers.reduce((sum, { points }) => sum + points, 0);
 
-    for (const questionId in questionAnswerByPoint) {
-      if (Object.prototype.hasOwnProperty.call(questionAnswerByPoint, questionId)) {
-        const questionAnswer = questionAnswers.find(
-          (answer: { questionId: string }) => answer.questionId == questionId
-        );
-        const point = questionAnswerByPoint[questionId];
-
-        totalPoints += parseInt(point, 10);
-
-        await submissionApi.updateAnswer(courseId, submissionId, {
-          questionId: Number(questionId),
-          points: Number(point),
-          answer: questionAnswer?.answer
-        });
-
-        if (!submissionApi.success) {
-          snackbar.error(`snackbar.something`);
-          return;
-        }
-      }
-    }
-
-    await submissionApi.update(courseId, submissionId, {
-      total: totalPoints,
-      feedback: feedback
+    await submissionApi.updateGrades(courseId, subId, {
+      answers,
+      total,
+      feedback,
+      statusId: STATUS.GRADED
     });
 
-    snackbar.success('snackbar.submissions.success.grading');
+    if (!submissionApi.success) {
+      snackbar.error('snackbar.something');
+      isSaving = false;
+      return;
+    }
+
+    // Backend auto-sets status to Graded; move card to Graded column and sync submissionIdData
+    const gradedStatusId = STATUS.GRADED;
+    const prevSection = sections.find((s) => s.items.some((item) => item.id === subId));
+    const prevStatusId = prevSection?.id ?? gradedStatusId;
+
+    if (prevStatusId !== gradedStatusId) {
+      const prevIdx = prevStatusId - 1;
+      const nextIdx = gradedStatusId - 1;
+      const prevItems = sections[prevIdx]?.items ?? [];
+      const found = prevItems.find((item) => item.id === subId);
+      const itemToWithNewStatus = found ? { ...found, statusId: gradedStatusId } : undefined;
+
+      sections = sections.map((section, i) => {
+        if (i === prevIdx) {
+          return { ...section, items: prevItems.filter((item) => item.id !== subId) };
+        }
+        if (i === nextIdx && itemToWithNewStatus) {
+          return { ...section, items: [...section.items, itemToWithNewStatus] };
+        }
+        return section;
+      });
+    }
+
+    submissionIdData = {
+      ...submissionIdData,
+      [subId]: {
+        ...submissionIdData[subId],
+        statusId: gradedStatusId,
+        questionAnswerByPoint: submission.questionAnswerByPoint ?? submissionIdData[subId]?.questionAnswerByPoint,
+        feedback: feedback ?? submissionIdData[subId]?.feedback
+      }
+    };
 
     isSaving = false;
   }
@@ -190,7 +204,6 @@
   onClose={handleModalClose}
   data={submissionIdData[submissionId] || {}}
   {handleSave}
-  {updateStatus}
   deleteSubmission={handleDeleteSubmission}
   bind:isGradeWithAI
   {isSaving}
@@ -227,7 +240,7 @@
               class="mb-2 flex w-full cursor-pointer items-center text-black"
               href={`${page.url.pathname}?submissionId=${item.id}`}
             >
-              <img alt="Student avatar" class="block h-6 w-6 rounded-full" src={item.student.avatar_url} />
+              <img alt="Student avatar" class="block h-6 w-6 rounded-full" src={item.student.avatarUrl} />
               <p class="ml-2 text-sm dark:text-white">
                 {item.student.username}
               </p>
@@ -243,6 +256,11 @@
             </a>
             {#if item.lesson}
               <p class="text-grey text-sm dark:text-white">#{item.lesson.title}</p>
+            {/if}
+            {#if getWorkflowHintKey(item)}
+              <p class="ui:text-muted-foreground text-xs">
+                {$t(getWorkflowHintKey(item))}
+              </p>
             {/if}
             <p class="text-xs text-gray-500 dark:text-white">
               {item.submittedAt}
