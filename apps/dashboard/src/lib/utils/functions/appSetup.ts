@@ -28,7 +28,6 @@ export function setupAnalyticsForDeployment(mode: 'cloud' | 'self-hosted') {
   const isSelfHosted = PUBLIC_IS_SELFHOSTED === 'true';
 
   if (mode === 'cloud' && !isSelfHosted) {
-    initSentry();
     setupAnalytics();
     return;
   }
