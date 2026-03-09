@@ -15,4 +15,6 @@ export const LICENSE_FEATURE = {
 export type LicenseFeatureId = (typeof LICENSE_FEATURE)[keyof typeof LICENSE_FEATURE];
 
 /** All known license feature IDs for validation */
-export const LICENSE_FEATURE_IDS = Object.values(LICENSE_FEATURE) as readonly string[];
+export const LICENSE_FEATURE_IDS = Object.keys(LICENSE_FEATURE).map(
+  (key) => LICENSE_FEATURE[key as keyof typeof LICENSE_FEATURE]
+) as readonly LicenseFeatureId[];
