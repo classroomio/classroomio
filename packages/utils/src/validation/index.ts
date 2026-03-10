@@ -11,6 +11,7 @@ export * from './media';
 export * from './newsfeed';
 export * from './onboarding';
 export * from './organization';
+export * from './public-api-key';
 export * from './submission';
 export * from './dash';
 export * from './tag';

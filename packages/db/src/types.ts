@@ -180,3 +180,6 @@ export type TCourseInviteEventType = (typeof schema.courseInviteEventType.enumVa
 export type TOrganizationInviteEventType = (typeof schema.organizationInviteEventType.enumValues)[number];
 
 export type TSsoProvider = (typeof schema.organizationSsoProviderType.enumValues)[number];
+
+export type TApiKey = typeof schema.apiKey.$inferSelect;
+export type TNewApiKey = typeof schema.apiKey.$inferInsert;

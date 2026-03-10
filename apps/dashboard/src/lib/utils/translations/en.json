@@ -643,6 +643,7 @@
     "audience": "Audience",
     "media": "Media",
     "setup": "Setup",
+    "automation": "Automation",
     "help": "Help",
     "settings": "Settings",
     "early_adopter": "Become an Early Adopter",
@@ -2382,6 +2383,19 @@
     "generic": {
       "success_delete": "Deleted successfully",
       "try_again": "Error - Please try again later"
+    }
+  },
+
+  "public_api": {
+    "api_key": {
+      "error": {
+        "create_failed": "Failed to create API key",
+        "list_failed": "Failed to list API keys",
+        "revoke_failed": "Failed to revoke API key"
+      },
+      "success": {
+        "revoked": "API key revoked successfully"
+      }
     }
   },
 

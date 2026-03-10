@@ -6,5 +6,6 @@ export type AuthSession = {
     session: typeof auth.$Infer.Session.session | null;
     user: typeof auth.$Infer.Session.user | null;
     userRole: number | null;
+    createdByProfileId: string | null;
   };
 };
