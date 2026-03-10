@@ -1,105 +1,80 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import ActivateSectionsModal from '$lib/components/Course/components/Lesson/ActivateSectionsModal.svelte';
   import { Empty } from '@cio/ui/custom/empty';
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
-  import DeleteLessonConfirmation from '$lib/components/Course/components/Lesson/DeleteLessonConfirmation.svelte';
-  import LessonList from '$lib/components/Course/components/Lesson/LessonList.svelte';
-  import LessonSectionList from '$lib/components/Course/components/Lesson/LessonSectionList.svelte';
-  import NewLessonModal from '$lib/components/Course/components/Lesson/NewLessonModal.svelte';
-  import { handleAddLessonWidget } from '$lib/components/Course/components/Lesson/store';
-  import { handleDelete, lessons, lessonSections } from '$lib/components/Course/components/Lesson/store/lessons';
-  import { course } from '$lib/components/Course/store';
-  import { RoleBasedSecurity } from '$features/ui';
+  import ContentList from '$features/course/components/lesson/content-list.svelte';
+  import ContentSectionList from '$features/course/components/lesson/content-section-list.svelte';
+  import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
-  import { profile } from '$lib/utils/store/user';
-  import type { Lesson } from '$lib/utils/types';
-  import { COURSE_VERSION } from '$lib/utils/types';
+  import { getCourseContent } from '$features/course/utils/content';
+  import { ContentType } from '@cio/utils/constants/content';
 
   interface Props {
     courseId: string;
+    reorder?: boolean;
   }
 
-  let { courseId }: Props = $props();
+  let { courseId, reorder = $bindable(false) }: Props = $props();
 
   const query = new URLSearchParams(page.url.search);
 
-  const lessonsLength = $derived($course.version === COURSE_VERSION.V1 ? $lessons.length : $lessonSections.length);
+  const contentData = $derived(getCourseContent(courseApi.course));
+  const contentLength = $derived(contentData.grouped ? contentData.sections.length : contentData.items.length);
+  const contentItems = $derived(
+    contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items
+  );
+  const navigableContentItems = $derived(
+    contentItems.filter((item) => item.type === ContentType.Lesson || item.type === ContentType.Exercise)
+  );
 
-  let lessonEditing: string | undefined;
-  let lessonToDelete: Lesson | undefined = $state();
-  let openDeleteModal: boolean = $state(false);
   let isFetching: boolean = $state(false);
-  let reorder = $state(false);
-  let activateSections = $state(false);
+  let hasHandledNext = $state(false);
 
-  function hasUserCompletedLesson(completion) {
-    return completion?.find((c) => c.profile_id === $profile.id);
+  const isCourseLoadedForThisPage = $derived(courseApi.course?.id === courseId);
+  const canResolveNext = $derived(isCourseLoadedForThisPage && navigableContentItems.length > 0 && !hasHandledNext);
+
+  function findFirstIncompleteContent() {
+    return navigableContentItems.find((item) => !item.isComplete && item.isUnlocked === true);
   }
 
-  const getLessons = () => {
-    if ($course.version === COURSE_VERSION.V1) {
-      return $lessons;
-    } else {
-      const _lessons: Lesson[] = [];
-
-      $lessonSections.forEach((section) => {
-        _lessons.push(...section.lessons);
-      });
-
-      return _lessons;
-    }
-  };
-
-  function findFirstIncompleteLesson() {
-    return getLessons().find(
-      (lesson) => !hasUserCompletedLesson(lesson.lesson_completion) && lesson.is_unlocked === true
-    );
-  }
-
-  function onNextQuery(lessons) {
-    if (!isFetching && lessons.length > 0) {
-      const incompleteLesson = findFirstIncompleteLesson();
-
-      if (incompleteLesson) {
-        goto(`/courses/${courseId}/lessons/${incompleteLesson.id}`);
-      } else {
-        goto(`/courses/${courseId}/lessons`);
-      }
-    }
-  }
-
-  let shouldGoToNextLesson = $derived(query.get('next') === 'true');
   $effect(() => {
-    !isFetching && shouldGoToNextLesson && onNextQuery($lessons);
+    if (!canResolveNext || isFetching || query.get('next') !== 'true') return;
+
+    hasHandledNext = true;
+    const incompleteContent = findFirstIncompleteContent();
+    if (incompleteContent) {
+      if (incompleteContent.type === ContentType.Lesson) {
+        goto(`/courses/${courseId}/lessons/${incompleteContent.id}`);
+      } else {
+        goto(`/courses/${courseId}/exercises/${incompleteContent.id}`);
+      }
+    } else {
+      goto(`/courses/${courseId}/lessons`);
+    }
   });
+
+  const shouldShowNextPlaceholder = $derived(query.get('next') === 'true');
 </script>
 
-<NewLessonModal />
-
-<ActivateSectionsModal bind:open={activateSections} />
-
-<DeleteLessonConfirmation bind:openDeleteModal deleteLesson={() => handleDelete(lessonToDelete?.id)} />
-
-{#if shouldGoToNextLesson}
+{#if shouldShowNextPlaceholder}
   <Empty
     title={$t('course.navItem.lessons.no_lesson')}
     description={$t('course.navItem.lessons.share_your_knowledge')}
     icon={BookOpenIcon}
     variant="page"
   />
-{:else if lessonsLength > 0}
+{:else if contentLength > 0}
   {#if reorder}
-    <p class="text-center text-xs italic text-gray-400 dark:text-white">
+    <p class="text-center text-xs text-gray-400 italic dark:text-white">
       {$t('course.navItem.lessons.drag')}
     </p>
   {/if}
 
-  {#if $course.version === COURSE_VERSION.V1}
-    <LessonList {reorder} {lessonEditing} bind:lessonToDelete bind:openDeleteModal />
-  {:else if $course.version === COURSE_VERSION.V2}
-    <LessonSectionList {reorder} {lessonEditing} />
+  {#if contentData.grouped}
+    <ContentSectionList {reorder} />
+  {:else}
+    <ContentList {reorder} />
   {/if}
 {:else}
   <Empty

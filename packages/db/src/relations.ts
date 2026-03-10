@@ -1,13 +1,17 @@
 import {
+  account,
   analyticsLoginEvents,
   appsPoll,
   appsPollOption,
   appsPollSubmission,
+  asset,
+  assetUsage,
   communityAnswer,
   communityQuestion,
   course,
   courseNewsfeed,
   courseNewsfeedComment,
+  courseSection,
   exercise,
   group,
   groupAttendance,
@@ -17,7 +21,6 @@ import {
   lessonCompletion,
   lessonLanguage,
   lessonLanguageHistory,
-  lessonSection,
   option,
   organization,
   organizationContacts,
@@ -31,12 +34,44 @@ import {
   quiz,
   quizPlay,
   role,
+  session,
+  ssoProvider,
   submission,
   submissionstatus,
+  tag,
+  tagAssignment,
+  tagGroup,
   user
 } from './schema';
 
 import { relations } from 'drizzle-orm/relations';
+
+export const userRelations = relations(user, ({ many }) => ({
+  sessions: many(session),
+  accounts: many(account),
+  ssoProviders: many(ssoProvider)
+}));
+
+export const sessionRelations = relations(session, ({ one }) => ({
+  user: one(user, {
+    fields: [session.userId],
+    references: [user.id]
+  })
+}));
+
+export const accountRelations = relations(account, ({ one }) => ({
+  user: one(user, {
+    fields: [account.userId],
+    references: [user.id]
+  })
+}));
+
+export const ssoProviderRelations = relations(ssoProvider, ({ one }) => ({
+  user: one(user, {
+    fields: [ssoProvider.userId],
+    references: [user.id]
+  })
+}));
 
 export const analyticsLoginEventsRelations = relations(analyticsLoginEvents, ({ one }) => ({
   usersInAuth: one(user, {
@@ -50,16 +85,16 @@ export const usersInAuthRelations = relations(user, ({ many }) => ({
   profiles: many(profile)
 }));
 
-export const lessonSectionRelations = relations(lessonSection, ({ one, many }) => ({
+export const courseSectionRelations = relations(courseSection, ({ one, many }) => ({
   course: one(course, {
-    fields: [lessonSection.courseId],
+    fields: [courseSection.courseId],
     references: [course.id]
   }),
   lessons: many(lesson)
 }));
 
 export const courseRelations = relations(course, ({ one, many }) => ({
-  lessonSections: many(lessonSection),
+  courseSections: many(courseSection),
   groupAttendances: many(groupAttendance),
   submissions: many(submission),
   group: one(group, {
@@ -69,7 +104,8 @@ export const courseRelations = relations(course, ({ one, many }) => ({
   appsPolls: many(appsPoll),
   lessons: many(lesson),
   communityQuestions: many(communityQuestion),
-  courseNewsfeeds: many(courseNewsfeed)
+  courseNewsfeeds: many(courseNewsfeed),
+  tagAssignments: many(tagAssignment)
 }));
 
 export const groupRelations = relations(group, ({ one, many }) => ({
@@ -83,12 +119,47 @@ export const groupRelations = relations(group, ({ one, many }) => ({
 
 export const organizationRelations = relations(organization, ({ many }) => ({
   groups: many(group),
+  assets: many(asset),
+  assetUsages: many(assetUsage),
   organizationContacts: many(organizationContacts),
   quizzes: many(quiz),
   organizationEmaillists: many(organizationEmaillist),
   communityQuestions: many(communityQuestion),
   organizationPlans: many(organizationPlan),
-  organizationmembers: many(organizationmember)
+  organizationmembers: many(organizationmember),
+  tagGroups: many(tagGroup),
+  tags: many(tag)
+}));
+
+export const tagGroupRelations = relations(tagGroup, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [tagGroup.organizationId],
+    references: [organization.id]
+  }),
+  tags: many(tag)
+}));
+
+export const tagRelations = relations(tag, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [tag.organizationId],
+    references: [organization.id]
+  }),
+  group: one(tagGroup, {
+    fields: [tag.groupId],
+    references: [tagGroup.id]
+  }),
+  assignments: many(tagAssignment)
+}));
+
+export const tagAssignmentRelations = relations(tagAssignment, ({ one }) => ({
+  tag: one(tag, {
+    fields: [tagAssignment.tagId],
+    references: [tag.id]
+  }),
+  course: one(course, {
+    fields: [tagAssignment.courseId],
+    references: [course.id]
+  })
 }));
 
 export const groupAttendanceRelations = relations(groupAttendance, ({ one }) => ({
@@ -151,6 +222,8 @@ export const profileRelations = relations(profile, ({ one, many }) => ({
     fields: [profile.id],
     references: [user.id]
   }),
+  assets: many(asset),
+  assetUsages: many(assetUsage),
   lessons: many(lesson),
   groupmembers: many(groupmember),
   lessonCompletions: many(lessonCompletion),
@@ -222,13 +295,40 @@ export const lessonRelations = relations(lesson, ({ one, many }) => ({
     fields: [lesson.teacherId],
     references: [profile.id]
   }),
-  lessonSection: one(lessonSection, {
+  courseSection: one(courseSection, {
     fields: [lesson.sectionId],
-    references: [lessonSection.id]
+    references: [courseSection.id]
   }),
   exercises: many(exercise),
   lessonCompletions: many(lessonCompletion),
   lessonLanguages: many(lessonLanguage)
+}));
+
+export const assetRelations = relations(asset, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [asset.organizationId],
+    references: [organization.id]
+  }),
+  createdByProfile: one(profile, {
+    fields: [asset.createdByProfileId],
+    references: [profile.id]
+  }),
+  usages: many(assetUsage)
+}));
+
+export const assetUsageRelations = relations(assetUsage, ({ one }) => ({
+  organization: one(organization, {
+    fields: [assetUsage.organizationId],
+    references: [organization.id]
+  }),
+  asset: one(asset, {
+    fields: [assetUsage.assetId],
+    references: [asset.id]
+  }),
+  createdByProfile: one(profile, {
+    fields: [assetUsage.createdByProfileId],
+    references: [profile.id]
+  })
 }));
 
 export const submissionRelations = relations(submission, ({ one, many }) => ({
@@ -256,6 +356,14 @@ export const exerciseRelations = relations(exercise, ({ one, many }) => ({
   lesson: one(lesson, {
     fields: [exercise.lessonId],
     references: [lesson.id]
+  }),
+  course: one(course, {
+    fields: [exercise.courseId],
+    references: [course.id]
+  }),
+  section: one(courseSection, {
+    fields: [exercise.sectionId],
+    references: [courseSection.id]
   }),
   questions: many(question)
 }));

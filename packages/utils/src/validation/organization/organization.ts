@@ -10,29 +10,18 @@ export const ZGetOrganizations = z.object({
 
 export type TGetOrganizations = z.infer<typeof ZGetOrganizations>;
 
-export const ZGetOrganizationTeam = z.object({
-  orgId: z.uuid()
-});
-
-export type TGetOrganizationTeam = z.infer<typeof ZGetOrganizationTeam>;
-
-export const ZUpdateOrganizationParam = z.object({
-  orgId: z.uuid()
-});
-
-export type TUpdateOrganizationParam = z.infer<typeof ZUpdateOrganizationParam>;
-
-export const ZGetOrganizationAudience = z.object({
-  orgId: z.uuid()
-});
-
-export type TGetOrganizationAudience = z.infer<typeof ZGetOrganizationAudience>;
-
 export const ZGetCoursesBySiteName = z.object({
-  siteName: z.string().min(1)
+  siteName: z.string().min(1),
+  tags: z.string().optional()
 });
 
 export type TGetCoursesBySiteName = z.infer<typeof ZGetCoursesBySiteName>;
+
+export const ZGetOrganizationCoursesQuery = z.object({
+  tags: z.string().optional()
+});
+
+export type TGetOrganizationCoursesQuery = z.infer<typeof ZGetOrganizationCoursesQuery>;
 
 export const ZGetOrgSetup = z.object({
   siteName: z.string().min(1)
@@ -98,7 +87,21 @@ export const ZUpdateOrganization = z.object({
   siteName: z.string().min(1).optional(),
   customDomain: z.string().nullable().optional(),
   isCustomDomainVerified: z.boolean().optional(),
-  customization: z.record(z.string(), z.unknown()).optional()
+  customization: z.record(z.string(), z.unknown()).optional(),
+  disableSignup: z.boolean().optional(),
+  disableSignupMessage: z.string().optional(),
+  disableEmailPassword: z.boolean().optional(),
+  disableGoogleAuth: z.boolean().optional(),
+  /** Nested settings (stored in organization.settings JSONB). signup.inviteOnly = true means invite-only signup. */
+  settings: z
+    .object({
+      signup: z
+        .object({
+          inviteOnly: z.boolean().optional()
+        })
+        .optional()
+    })
+    .optional()
 });
 
 export type TUpdateOrganization = z.infer<typeof ZUpdateOrganization>;
@@ -111,8 +114,13 @@ export const ZInviteTeamMembers = z.object({
 export type TInviteTeamMembers = z.infer<typeof ZInviteTeamMembers>;
 
 export const ZRemoveTeamMember = z.object({
-  orgId: z.uuid(),
-  memberId: z.number().int().positive()
+  memberId: z.coerce.number().int().positive()
 });
 
 export type TRemoveTeamMember = z.infer<typeof ZRemoveTeamMember>;
+
+export const ZGetUserAnalytics = z.object({
+  userId: z.uuid()
+});
+
+export type TGetUserAnalytics = z.infer<typeof ZGetUserAnalytics>;

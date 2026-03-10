@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import BellIcon from '@lucide/svelte/icons/bell';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 
@@ -26,13 +27,13 @@
     <div class="flex items-center text-white">
       {#if isCoursePage}
         <li class="hidden md:block">
-          <IconButton onclick={() => goto(coursesPath)}>
+          <IconButton onclick={() => goto(resolve(coursesPath))}>
             <ArrowLeftIcon size={16} class="custom" />
           </IconButton>
         </li>
       {/if}
       <a
-        href={coursesPath}
+        href={resolve(coursesPath)}
         title="{$t('navigation.goto')} {isCoursePage ? $t('navigation.courses') : $t('navigation.classroomio_home')}"
         id="logo"
         class="line-clamp-1 text-lg"

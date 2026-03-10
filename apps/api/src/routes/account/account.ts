@@ -3,12 +3,13 @@ import { getAccountData, updateUser } from '@api/services/account';
 import { Hono } from '@api/utils/hono';
 import { ZUpdateProfile } from '@cio/utils/validation/account';
 import { authMiddleware } from '@api/middlewares/auth';
+import { getProfileById } from '@cio/db/queries/auth';
 import { handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 
 export const accountRouter = new Hono()
   .get('/', authMiddleware, async (c) => {
-    const user = c.get('user');
+    const user = c.get('user')!;
 
     try {
       console.time('accountRouter');
@@ -20,7 +21,8 @@ export const accountRouter = new Hono()
           success: true,
           user,
           profile: accountData.profile,
-          organizations: accountData.organizations
+          organizations: accountData.organizations,
+          licenseFeatures: accountData.licenseFeatures
         },
         200
       );
@@ -29,7 +31,7 @@ export const accountRouter = new Hono()
     }
   })
   .put('/profile', authMiddleware, zValidator('json', ZUpdateProfile), async (c) => {
-    const user = c.get('user');
+    const user = c.get('user')!;
 
     try {
       const validatedData = c.req.valid('json');
@@ -45,5 +47,32 @@ export const accountRouter = new Hono()
       );
     } catch (error) {
       return handleError(c, error, 'Failed to update profile');
+    }
+  })
+  .get('/profile', authMiddleware, async (c) => {
+    const user = c.get('user')!;
+
+    try {
+      const profile = await getProfileById(user.id);
+
+      if (!profile) {
+        return c.json(
+          {
+            success: false,
+            error: 'Profile not found'
+          },
+          404
+        );
+      }
+
+      return c.json(
+        {
+          success: true,
+          profile
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch profile');
     }
   });

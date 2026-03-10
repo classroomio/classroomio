@@ -1,3 +1,5 @@
+import { QUESTION_TYPE_IDS } from '@cio/question-types';
+
 /**
  * Validation Constants
  *
@@ -14,3 +16,9 @@ export const ALLOWED_DOCUMENT_TYPES = [
 ] as const;
 
 export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'] as const;
+
+/**
+ * Question Type Constants
+ * These match canonical question type ids.
+ */
+export const QUESTION_TYPE = QUESTION_TYPE_IDS;

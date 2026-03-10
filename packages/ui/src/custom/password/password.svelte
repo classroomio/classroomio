@@ -40,7 +40,7 @@
   const ariaLabel = $derived(showPassword ? hidePasswordAriaLabel : showPasswordAriaLabel);
 </script>
 
-<InputGroup.Root class={cn('w-full', className)} data-slot="password">
+<InputGroup.Root class={cn('ui:w-full', className)} data-slot="password">
   <InputGroup.Addon align="inline-start">
     <LockIcon />
   </InputGroup.Addon>

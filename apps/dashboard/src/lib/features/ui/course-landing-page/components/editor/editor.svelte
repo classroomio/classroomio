@@ -1,13 +1,23 @@
 <script lang="ts">
+  import type { Component } from 'svelte';
   import { untrack } from 'svelte';
-  import { goto } from '$app/navigation';
   import cloneDeep from 'lodash/cloneDeep';
   import set from 'lodash/set';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
-  import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-right';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-  import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
   import { currentOrgDomain } from '$lib/utils/store/org';
+  import {
+    HeaderIcon,
+    GoalIcon,
+    LessonIcon,
+    ExerciseIcon,
+    CertificateIcon,
+    MoneyIcon,
+    ReviewIcon,
+    PersonIcon,
+    HoverableItem,
+    PreviewIcon
+  } from '@cio/ui/custom/moving-icons';
 
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { CloseButton } from '$features/ui';
@@ -20,30 +30,32 @@
   import CertificateForm from './certificate-form.svelte';
   import InstructorForm from './instructor-form.svelte';
   import { Button } from '@cio/ui/base/button';
-  import { updateCourse } from '$lib/utils/services/courses';
+  import { courseApi } from '$features/course/api';
   import generateSlug from '$lib/utils/functions/generateSlug';
+  import * as Sidebar from '@cio/ui/base/sidebar';
+  import { useSidebar } from '@cio/ui/base/sidebar';
 
-  import { isMobile } from '$lib/utils/store/useMobile';
   // import CustomPromptBtn from '$lib/components/AI/AIButton/CustomPromptBtn.svelte';
-  import type { Course } from '$lib/utils/types';
+  import type { Course } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
     course: Course;
     courseId: string;
     syncCourseStore: (course: Course) => void;
+    onClose?: () => void;
   }
 
-  let { course = $bindable(), courseId, syncCourseStore }: Props = $props();
+  let { course = $bindable(), courseId, syncCourseStore, onClose }: Props = $props();
 
-  let borderBottomGrey = 'border-r-0 border-b border-l-0 border-gray-300';
+  const sidebar = useSidebar();
   let loading = $state(false);
-  let show = $state(false);
 
   interface Section {
     key: number;
     path: string;
     title: string;
+    icon: Component;
     enableAIWriter?: boolean;
     initPrompt?: string;
   }
@@ -52,12 +64,14 @@
     {
       key: 1,
       path: '',
-      title: $t('course.navItem.landing_page.editor.title.header')
+      title: $t('course.navItem.landing_page.editor.title.header'),
+      icon: HeaderIcon
     },
     {
       key: 2,
       path: 'metadata.requirements',
       title: $t('course.navItem.landing_page.editor.title.requirement'),
+      icon: ExerciseIcon,
       enableAIWriter: true,
       initPrompt: $t('course.navItem.landing_page.editor.title.requirement')
     },
@@ -65,6 +79,7 @@
       key: 3,
       path: 'metadata.description',
       title: $t('course.navItem.landing_page.editor.title.description'),
+      icon: LessonIcon,
       enableAIWriter: true,
       initPrompt: 'Please write a detailed course description for this course:'
     },
@@ -72,35 +87,41 @@
       key: 4,
       path: 'metadata.goals',
       title: $t('course.navItem.landing_page.editor.title.goals'),
+      icon: GoalIcon,
       enableAIWriter: true,
       initPrompt: 'What should a student expect to learn from this course:'
     },
     {
       key: 5,
       path: '',
-      title: $t('course.navItem.landing_page.editor.title.certificate')
+      title: $t('course.navItem.landing_page.editor.title.certificate'),
+      icon: CertificateIcon
     },
     {
       key: 6,
       path: '',
-      title: $t('course.navItem.landing_page.editor.title.reviews')
+      title: $t('course.navItem.landing_page.editor.title.reviews'),
+      icon: ReviewIcon
     },
     {
       key: 7,
       path: '',
-      title: $t('course.navItem.landing_page.editor.title.instructor')
+      title: $t('course.navItem.landing_page.editor.title.instructor'),
+      icon: PersonIcon
     },
     {
       key: 8,
       path: '',
-      title: $t('course.navItem.landing_page.editor.title.pricing')
+      title: $t('course.navItem.landing_page.editor.title.pricing'),
+      icon: MoneyIcon
     }
   ];
   let selectedSection: Section | null = $state(null);
 
   function handleClose() {
     if (!selectedSection) {
-      goto(`/courses/${courseId}`);
+      onClose?.();
+      return;
     }
 
     selectedSection = null;
@@ -129,15 +150,14 @@
     course.slug = course.slug || generateSlug(course.title);
 
     console.log('course', course);
-    await updateCourse(courseId, undefined, {
+    await courseApi.update(courseId, {
       ...course,
-      id: courseId,
-      attendance: undefined,
-      group: undefined,
-      lessons: undefined,
-      lesson_section: undefined,
-      polls: undefined,
-      slug: course.slug
+      type: course.type!,
+      slug: course.slug!,
+      isPublished: course.isPublished ?? undefined,
+      overview: course.overview ?? undefined,
+      isCertificateDownloadable: course.isCertificateDownloadable ?? undefined,
+      certificateTheme: course.certificateTheme ?? undefined
     });
 
     loading = false;
@@ -160,118 +180,116 @@
   }
 </script>
 
-<aside
-  class={`${
-    show ? 'fixed z-50 -translate-x-full md:absolute' : 'fixed z-50 translate-x-0 md:relative'
-  }left-0 z-50 h-full w-[90vw] min-w-[300px] max-w-[350px] border border-b-0 border-l-0 border-r border-t-0 bg-gray-100 transition dark:bg-neutral-800`}
+<Sidebar.Header
+  class="flex flex-row! items-center {sidebar.open ? 'justify-between' : 'justify-center'} border-b px-2 py-2"
 >
-  <div class="toggler absolute rounded-full shadow-lg">
-    <IconButton
-      onclick={() => (show = !show)}
-      tooltip={$isMobile ? undefined : 'Toggle editor'}
-      tooltipSide={$isMobile ? undefined : 'right'}
-    >
-      {#if show}
-        <ChevronRightIcon size={16} />
-      {:else}
-        <ChevronLeftIcon size={16} />
-      {/if}
-    </IconButton>
-  </div>
-  <div class="flex h-full flex-col">
-    {#if !selectedSection}
-      <div class="flex w-full items-center justify-between px-2">
-        <CloseButton onClick={handleClose} />
-        <div class="flex items-center">
-          <Button type="button" class="mr-1" variant="outline" onclick={handleSave} {loading}>
-            {$t('course.navItem.landing_page.editor.save')}
-          </Button>
-          <IconButton onclick={handlePreview} disabled={loading || !course.slug}>
-            <ArrowUpRightIcon size={16} />
-          </IconButton>
-        </div>
+  {#if !selectedSection}
+    {#if sidebar.open}
+      <CloseButton onClick={handleClose} />
+
+      <div class="flex items-center gap-1" data-open={sidebar.open} data-mobile={sidebar.isMobile}>
+        <Button type="button" variant="outline" onclick={handleSave} {loading}>
+          {$t('course.navItem.landing_page.editor.save')}
+        </Button>
+        <HoverableItem>
+          {#snippet children(isHovered)}
+            <IconButton onclick={handlePreview} disabled={loading || !course.slug}>
+              <PreviewIcon {isHovered} size={16} />
+            </IconButton>
+          {/snippet}
+        </HoverableItem>
       </div>
-      <div class="mb-2 flex w-full items-center justify-between px-2">
-        <h3 class="dark:text-white">{$t('course.navItem.landing_page.editor.page_builder')}</h3>
-      </div>
-      {#each sections as section, index}
-        <button
-          class="flex w-full items-center justify-between border border-l-0 px-2 py-3 {index + 1 < sections.length &&
-            'border-b-0'} border-gray-300"
-          onclick={handleSectionSelect(section.key)}
-        >
-          <p class="mr-2 dark:text-white">
-            {section.title}
-            {$t('course.navItem.landing_page.editor.section')}
-          </p>
-          <ChevronRightIcon size={16} />
-        </button>
-      {/each}
     {:else}
-      <!-- Title -->
-      <div class="flex items-center {borderBottomGrey} w-full">
-        <IconButton onclick={handleClose}>
-          <ArrowLeftIcon size={16} />
-        </IconButton>
-        <div class=" flex items-center">
-          <h3 class="dark:text-white">
-            {selectedSection.title}
-          </h3>
-          <!-- {#if selectedSection.enableAIWriter}
-            <CustomPromptBtn
-              className="w-fit ml-2"
-              alignPopover="bottom-left"
-              defaultPrompt={`${selectedSection.initPrompt} ${course.title}. Please format in html`}
-              isHTML={true}
-              handleInsert={(v) => {
-                if (!selectedSection) return;
-                const _course = cloneDeep(course);
-                set(_course, selectedSection.path, v);
-                course = _course;
-              }}
-            />
-          {/if} -->
-        </div>
-      </div>
-
-      <div class="title-content overflow-y-auto p-2">
-        {#if selectedSection.key === 1}
-          <HeaderForm bind:course />
-        {:else if selectedSection.key === 2}
-          <RequirementForm bind:course {setter} />
-        {:else if selectedSection.key === 3}
-          <DescriptionForm bind:course {setter} />
-        {:else if selectedSection.key === 4}
-          <GoalsForm bind:course {setter} />
-        {:else if selectedSection.key === 5}
-          <CertificateForm bind:course {setter} />
-        {:else if selectedSection.key === 6}
-          <ReviewsForm bind:course {setter} />
-        {:else if selectedSection.key === 7}
-          <InstructorForm bind:course {setter} />
-        {:else if selectedSection.key === 8}
-          <PricingForm bind:course {setter} />
-        {/if}
-      </div>
+      <CloseButton onClick={handleClose} />
     {/if}
-  </div>
-</aside>
+  {:else if sidebar.open || !sidebar.isMobile}
+    <div class="flex items-center gap-2">
+      <IconButton onclick={handleClose}>
+        <ArrowLeftIcon size={16} />
+      </IconButton>
+      <h3 class="text-sm font-semibold">
+        {selectedSection.title}
+      </h3>
+    </div>
+  {:else}
+    <IconButton onclick={handleClose} tooltip={selectedSection.title}>
+      <ArrowLeftIcon size={16} />
+    </IconButton>
+  {/if}
+</Sidebar.Header>
 
-<style>
-  .title-content {
-    height: 90%;
-  }
-  .toggler {
-    right: -15px;
-    z-index: 10;
-    border: 1px solid var(--border-color);
-    top: 50px;
-    height: fit-content;
-    background: var(--border-color);
-  }
-  @media screen and (max-width: 767px) {
-    .toggler {
-      right: -25px;
-    }
-  }
-</style>
+<Sidebar.Content class="flex-1 overflow-y-auto">
+  {#if !selectedSection}
+    {#if sidebar.open}
+      <Sidebar.Group>
+        <Sidebar.GroupLabel class="px-2">
+          {$t('course.navItem.landing_page.editor.page_builder')}
+        </Sidebar.GroupLabel>
+        <Sidebar.GroupContent>
+          <Sidebar.Menu>
+            {#each sections as section}
+              {@const SectionIcon = section.icon}
+              <HoverableItem>
+                {#snippet children(isHovered)}
+                  <Sidebar.MenuItem>
+                    <Sidebar.MenuButton
+                      onclick={handleSectionSelect(section.key)}
+                      tooltipContent={section.title + ' ' + $t('course.navItem.landing_page.editor.section')}
+                    >
+                      <SectionIcon {isHovered} size={16} />
+                      <span>{section.title} {$t('course.navItem.landing_page.editor.section')}</span>
+                      <ChevronRightIcon size={16} />
+                    </Sidebar.MenuButton>
+                  </Sidebar.MenuItem>
+                {/snippet}
+              </HoverableItem>
+            {/each}
+          </Sidebar.Menu>
+        </Sidebar.GroupContent>
+      </Sidebar.Group>
+    {:else}
+      <Sidebar.Menu>
+        {#each sections as section}
+          {@const SectionIcon = section.icon}
+          <HoverableItem>
+            {#snippet children(isHovered)}
+              <Sidebar.MenuItem>
+                <Sidebar.MenuButton
+                  onclick={handleSectionSelect(section.key)}
+                  tooltipContent={section.title + ' ' + $t('course.navItem.landing_page.editor.section')}
+                >
+                  <SectionIcon {isHovered} size={16} />
+                  <span>{section.title} {$t('course.navItem.landing_page.editor.section')}</span>
+                </Sidebar.MenuButton>
+              </Sidebar.MenuItem>
+            {/snippet}
+          </HoverableItem>
+        {/each}
+      </Sidebar.Menu>
+    {/if}
+  {:else if sidebar.open || !sidebar.isMobile}
+    <div class="p-4">
+      {#if selectedSection.key === 1}
+        <HeaderForm bind:course />
+      {:else if selectedSection.key === 2}
+        <RequirementForm bind:course {setter} />
+      {:else if selectedSection.key === 3}
+        <DescriptionForm bind:course {setter} />
+      {:else if selectedSection.key === 4}
+        <GoalsForm bind:course {setter} />
+      {:else if selectedSection.key === 5}
+        <CertificateForm bind:course {setter} />
+      {:else if selectedSection.key === 6}
+        <ReviewsForm bind:course {setter} />
+      {:else if selectedSection.key === 7}
+        <InstructorForm bind:course {setter} />
+      {:else if selectedSection.key === 8}
+        <PricingForm bind:course {setter} />
+      {/if}
+    </div>
+  {:else}
+    <div class="flex items-center justify-center p-4">
+      <p class="text-muted-foreground text-sm">Expand sidebar to edit</p>
+    </div>
+  {/if}
+</Sidebar.Content>

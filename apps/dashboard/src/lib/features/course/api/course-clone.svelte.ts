@@ -1,6 +1,7 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import { copyCourseModal, copyCourseModalInitialState } from '../utils/store';
 
+import type { CloneCourseRequest } from '../utils/types';
 import type { TCourseClone } from '@cio/utils/validation/course';
 import { ZCourseClone } from '@cio/utils/validation/course';
 import { currentOrg } from '$lib/utils/store/org';
@@ -42,11 +43,10 @@ export class CourseCloneApi extends BaseApiWithErrors {
       return null;
     }
 
-    await this.execute<(typeof classroomio.course)[':courseId']['clone']['$post']>({
+    await this.execute<CloneCourseRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].clone.$post({
           param: { courseId },
-          // @ts-expect-error - the json type is not inferred correctly
           json: result.data
         }),
       logContext: 'cloning course',

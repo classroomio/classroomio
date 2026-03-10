@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { CourseContainer } from '$lib/components/CourseContainer';
   import { AttendancePage } from '$features/course/pages';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
@@ -7,11 +6,7 @@
   let { data } = $props();
 </script>
 
-<svelte:head>
-  <title>Attendance - ClassroomIO</title>
-</svelte:head>
-
-<CourseContainer courseId={data.courseId}>
+<Page.Root class="mx-auto flex w-[calc(100vw-var(--sidebar-width))]!">
   <Page.Header>
     <Page.HeaderContent>
       <Page.Title>
@@ -24,4 +19,4 @@
       <AttendancePage courseId={data.courseId} />
     {/snippet}
   </Page.Body>
-</CourseContainer>
+</Page.Root>

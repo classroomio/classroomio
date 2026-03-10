@@ -13,7 +13,7 @@
   let { user }: Props = $props();
 </script>
 
-<div class="rounded-md border p-5 dark:border-neutral-600">
+<div class="rounded-md border p-5">
   <div class="flex w-full flex-col items-center justify-start gap-4 text-start md:flex-row">
     <Avatar.Root class="h-16 w-16">
       <Avatar.Image

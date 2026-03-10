@@ -1,16 +1,40 @@
 import { db, user } from '@db/drizzle';
-import { TUser } from '@db/types';
 
-export async function seedUsers({ usersData }: { usersData: TUser[] }) {
+type TUserSeedData = {
+  id: string;
+  email: string;
+  name?: string | null;
+  emailVerified?: boolean;
+  profile_fullname?: string | null;
+  /** Supabase auth: when set, email is confirmed */
+  email_confirmed_at?: string | null;
+  confirmed_at?: string | null;
+};
+
+const isEmailVerified = (u: TUserSeedData): boolean => u.emailVerified ?? !!(u.email_confirmed_at ?? u.confirmed_at);
+
+const resolveDisplayName = (seedUser: TUserSeedData) => {
+  if (seedUser.name && seedUser.name.trim().length > 0) {
+    return seedUser.name;
+  }
+
+  if (seedUser.profile_fullname && seedUser.profile_fullname.trim().length > 0) {
+    return seedUser.profile_fullname;
+  }
+
+  return seedUser.email.split('@')[0];
+};
+
+export async function seedUsers({ usersData }: { usersData: TUserSeedData[] }) {
   const existingUsers = await db.select().from(user);
   const existingUserIds = existingUsers.map((u) => u.id);
 
   const usersToInsert = usersData
     .map((userData) => ({
       id: userData.id,
-      name: userData.name,
+      name: resolveDisplayName(userData),
       email: userData.email,
-      emailVerified: userData.emailVerified,
+      emailVerified: isEmailVerified(userData),
       image: null,
       role: null,
       banned: false,

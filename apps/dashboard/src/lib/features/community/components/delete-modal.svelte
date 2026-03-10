@@ -4,8 +4,8 @@
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
-    onDelete?: any;
-    onCancel?: any;
+    onDelete?: () => void;
+    onCancel?: () => void;
     open?: boolean;
     isQuestion?: boolean;
     isDeleting?: boolean;

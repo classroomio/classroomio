@@ -21,7 +21,7 @@
   <title>Landing Page Settings - ClassroomIO</title>
 </svelte:head>
 
-<Page.Header>
+<Page.Header isSticky>
   <Page.HeaderContent>
     <Page.Title>{$t('settings.landing_page.heading')}</Page.Title>
   </Page.HeaderContent>

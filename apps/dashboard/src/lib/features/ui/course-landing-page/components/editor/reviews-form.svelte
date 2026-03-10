@@ -9,7 +9,7 @@
   import { processErrors } from '$lib/utils/functions/validator';
   import { shortenName } from '$lib/utils/functions/string';
   import { t } from '$lib/utils/functions/translations';
-  import type { Course } from '$lib/utils/types';
+  import type { Course } from '$features/course/utils/types';
 
   interface Props {
     course: Course;
@@ -113,7 +113,7 @@
         {/if}
         <!-- the body -->
         {#if review.id === reviewToExpand}
-          <ReviewFormEditor bind:reviews bind:review={reviews[index]} {errors} courseId={course.id} {onExpand} />
+          <ReviewFormEditor bind:reviews bind:review={reviews[index]} {errors} {onExpand} />
         {/if}
       </div>
     {/each}

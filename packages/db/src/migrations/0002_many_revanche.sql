@@ -1,4 +1,4 @@
-CREATE TABLE "verification" (
+CREATE TABLE IF NOT EXISTS "verification" (
 	"id" uuid PRIMARY KEY DEFAULT uuid_generate_v4() NOT NULL,
 	"identifier" text NOT NULL,
 	"value" text NOT NULL,

@@ -32,17 +32,17 @@ export function mapZodErrorsToTranslations(error: ZodError, entityName?: string)
     return errors;
   }
 
+  console.log('mapZodErrorsToTranslations error', error, error.issues);
+
   error.issues.forEach((issue: z.core.$ZodIssue) => {
     const fieldPath = issue.path.join('.');
     const fieldName = issue.path[issue.path.length - 1] as string;
 
     if (!fieldName) return;
 
-    // Build translation keys with entity-specific and generic fallbacks
     const translationKeys = buildTranslationKeys(fieldName, issue, entityName);
     const translationParams = buildTranslationParams(issue, fieldName, entityName);
 
-    // Try each translation key in order (entity-specific first, then generic)
     let translatedMessage: string | null = null;
     for (const key of translationKeys) {
       if (key === 'validations.generic.custom') {
@@ -55,9 +55,15 @@ export function mapZodErrorsToTranslations(error: ZodError, entityName?: string)
         break;
       }
 
-      const translation = t.get(key, translationParams);
-      if (translation && translation !== key) {
-        translatedMessage = translation;
+      try {
+        const translation = t.get(key, translationParams);
+        if (translation && translation !== key) {
+          translatedMessage = translation;
+          break;
+        }
+      } catch (_error) {
+        console.log('t.get validation error', _error);
+        translatedMessage = issue.message;
         break;
       }
     }
@@ -67,6 +73,7 @@ export function mapZodErrorsToTranslations(error: ZodError, entityName?: string)
 
   return errors;
 }
+
 function buildTranslationKeys(fieldName: string, issue: z.core.$ZodIssue, entityName?: string): string[] {
   const keys: string[] = [];
 
@@ -92,6 +99,9 @@ function buildTranslationParams(
   entityName?: string
 ): Record<string, unknown> {
   const params: Record<string, unknown> = {};
+  console.log('buildTranslationParams issue', issue);
+  console.log('buildTranslationParams fieldName', fieldName);
+  console.log('buildTranslationParams entityName', entityName);
 
   if (fieldName) params.field = fieldName;
   if (entityName) params.entity = entityName;
@@ -104,7 +114,8 @@ function buildTranslationParams(
     case 'invalid_type':
       if ('expected' in details) params.expected = details.expected;
       if ('received' in details) params.received = details.received;
-      if (!details.received) params.received = 'undefined';
+      if ('format' in details) params.format = details.format;
+      if (!details.received && !params.format) params.received = 'undefined';
       break;
     case 'too_small':
       if ('minimum' in details) params.minimum = details.minimum;

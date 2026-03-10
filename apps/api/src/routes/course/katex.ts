@@ -31,7 +31,7 @@ export const katexRouter = new Hono().get('/', async (c) => {
     return c.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred'
+        error: 'Failed to render LaTeX'
       },
       500
     );

@@ -11,7 +11,7 @@
     variants: {
       variant: {
         default: '',
-        page: 'ui:h-full ui:border ui:border-dashed ui:max-w-3xl  ui:mx-auto'
+        page: 'ui:h-full ui:border ui:border-dashed ui:max-w-3xl ui:mx-auto'
       }
     }
   });
@@ -22,6 +22,7 @@
     title?: string;
     description?: string;
     icon?: Component<any, any, any>;
+    iconClass?: string;
     class?: string;
     children?: Snippet;
     variant?: EmptyVariant;
@@ -33,6 +34,7 @@
     title,
     description,
     icon: IconComponent,
+    iconClass = '',
     class: className = '',
     children,
     variant = 'default',
@@ -55,7 +57,7 @@
       {#if IconComponent}
         <EmptyBase.Media variant="icon">
           {@const Icon = IconComponent}
-          <Icon />
+          <Icon class={iconClass} />
         </EmptyBase.Media>
       {/if}
       {#if title}

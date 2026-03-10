@@ -9,8 +9,8 @@
     "preview": "storybook preview",
     "format": "prettier --write .",
     "build-storybook": "storybook build",
-    "upload:storybook": "tsx scripts/upload-storybook.ts",
-    "publish:storybook": "pnpm build-storybook && pnpm upload:storybook"
+    "storybook:upload": "tsx scripts/upload-storybook.ts",
+    "storybook:publish": "pnpm build-storybook && pnpm storybook:upload"
   },
   "dependencies": {
     "@cio/ui": "workspace:*"

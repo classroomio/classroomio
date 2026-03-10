@@ -58,7 +58,7 @@
     </Dialog.Header>
 
     <!--  -->
-    <div class="mt-3 flex h-[85%] flex-wrap justify-between gap-y-3 overflow-y-auto overflow-x-hidden">
+    <div class="mt-3 flex h-[85%] flex-wrap justify-between gap-y-3 overflow-x-hidden overflow-y-auto">
       {#each backgrounds as background}
         <button
           onclick={() => {

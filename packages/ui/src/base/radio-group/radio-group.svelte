@@ -14,6 +14,6 @@
   bind:ref
   bind:value
   data-slot="radio-group"
-  class={cn('ui:grid ui:gap-3', className)}
+  class={cn('ui:grid ui:gap-2', className)}
   {...restProps}
 />

@@ -1,24 +1,31 @@
 import 'dotenv/config';
-import { cors } from 'hono/cors';
-import { logger } from 'hono/logger';
-import { prettyJSON } from 'hono/pretty-json';
-import { secureHeaders } from 'hono/secure-headers';
 
-import { auth } from '@cio/db/auth';
-import { Hono } from '@api/utils/hono';
-import rateLimiter from '@api/middlewares/rate-limiter';
 import { API_SERVER_URL, TRUSTED_ORIGINS } from '@api/constants';
 
-// --- routes
-import { mailRouter } from '@api/routes/mail';
-import { courseRouter } from '@api/routes/course';
+import { Hono } from '@api/utils/hono';
 import { accountRouter } from '@api/routes/account';
+import { auth } from '@cio/db/auth';
+import { communityRouter } from '@api/routes/community';
+import { cors } from 'hono/cors';
+import { courseRouter } from '@api/routes/course';
 import { dashAnalyticsRouter } from '@api/routes/dash';
+import { domainRouter } from '@api/routes/domain/domain';
+import { inviteRouter } from '@api/routes/invite';
+import { logger } from 'hono/logger';
+// ROUTES
+import { mailRouter } from '@api/routes/mail';
 import { mediaRouter } from '@api/routes/media';
 import { onboardingRouter } from '@api/routes/onboarding';
 import { organizationRouter } from '@api/routes/organization';
-import { exerciseRouter } from '@api/routes/exercise';
-import { communityRouter } from '@api/routes/community';
+import { licenseRouter } from '@api/routes/license';
+import { organizationSsoRouter } from '@api/routes/organization/sso';
+import { organizationTokenAuthRouter } from '@api/routes/organization/token-auth';
+import { ssoDiscoveryRouter } from '@api/routes/sso/discovery';
+import { prettyJSON } from 'hono/pretty-json';
+import rateLimiter from '@api/middlewares/rate-limiter';
+import { secureHeaders } from 'hono/secure-headers';
+import { signupGuard } from '@api/middlewares/signup-guard';
+import { unsplashRouter } from '@api/routes/unsplash/unsplash';
 
 // Create Hono app with chaining for RPC support
 export const app = new Hono()
@@ -60,6 +67,7 @@ export const app = new Hono()
       message: `"Welcome to Classroomio.com API - docs are at ${API_SERVER_URL}/docs"`
     })
   )
+  .use('/api/auth/sign-up/*', signupGuard)
   .on(['POST', 'GET'], '/api/auth/*', (c) => auth.handler(c.req.raw))
   .get('/session', async (c) => {
     const session = c.get('session');
@@ -75,12 +83,18 @@ export const app = new Hono()
   .route('/onboarding', onboardingRouter)
   .route('/account', accountRouter)
   .route('/course', courseRouter)
+  .route('/domain', domainRouter)
   .route('/mail', mailRouter)
   .route('/media', mediaRouter)
+  .route('/license', licenseRouter)
   .route('/organization', organizationRouter)
+  .route('/organization/sso', organizationSsoRouter)
+  .route('/organization/token-auth', organizationTokenAuthRouter)
+  .route('/sso', ssoDiscoveryRouter)
   .route('/dash', dashAnalyticsRouter)
-  .route('/exercise', exerciseRouter)
   .route('/community', communityRouter)
+  .route('/invite', inviteRouter)
+  .route('/unsplash', unsplashRouter)
 
   // Error handling
   .onError((err, c) => {

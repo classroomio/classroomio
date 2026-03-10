@@ -1,12 +1,158 @@
 {
+  "common": {
+    "unsaved_changes": {
+      "message": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
+    }
+  },
+  "validations": {
+    "generic": {
+      "invalid_type": "Loại không hợp lệ{dự kiến, chọn, không xác định{} khác{. Dự kiến {mong đợi}}}{đã nhận, chọn, không xác định{} khác{ (đã nhận {đã nhận})}}",
+      "too_big": "Giá trị quá lớn{tối đa, chọn, không xác định{} khác{. Tối đa {tối đa}}}",
+      "too_small": "Giá trị quá nhỏ{tối thiểu, chọn, không xác định{} khác{. Tối thiểu {tối thiểu}}}",
+      "invalid_format": "Định dạng không hợp lệ{xác thực, chọn, không xác định{} khác{ cho {xác thực}}}",
+      "not_multiple_of": "Giá trị phải là bội số của {multipleOf}",
+      "unrecognized_keys": "Chứa các khóa không được nhận dạng{keys, select, undefind{} other{: {keys}}}",
+      "invalid_union": "Giá trị không hợp lệ cho các tùy chọn được cung cấp{unionErrors, select, unknown{} other{. {unionErrors} tùy chọn không thành công}}",
+      "invalid_key": "Khóa không hợp lệ{khóa, chọn, không xác định{} khác{: {key}}}",
+      "invalid_element": "Phần tử không hợp lệ{chỉ mục, chọn, không xác định{} khác{ tại chỉ mục {index}}}",
+      "invalid_value": "Giá trị không hợp lệ{dự kiến, chọn, không xác định{} khác{. Dự kiến {mong đợi}}}{đã nhận, chọn, không xác định{} khác{ (đã nhận {đã nhận})}}",
+      "custom": "{tin nhắn}",
+      "required_field": "Trường này là bắt buộc",
+      "invalid_field": "Giá trị không hợp lệ"
+    },
+    "email": {
+      "not_valid": "Email không hợp lệ"
+    },
+    "course_payment": {
+      "email": {
+        "invalid_email": "Địa chỉ email không hợp lệ"
+      },
+      "full_name": {
+        "min_char": "Phải dài từ 6 ký tự trở lên"
+      }
+    },
+    "confirm_password": {
+      "not_match": "Không khớp với mật khẩu"
+    },
+    "onboarding": {
+      "step_two": {
+        "source": {
+          "required": "Chọn một tùy chọn"
+        },
+        "goal": {
+          "required": "Chọn một tùy chọn"
+        }
+      },
+      "step_one": {
+        "full_name": {
+          "min_char": "Tên đầy đủ phải chứa 5 ký tự trở lên"
+        }
+      }
+    },
+    "reset": {
+      "password": {
+        "min_char": "Phải dài từ 6 ký tự trở lên"
+      }
+    },
+    "auth": {
+      "password": {
+        "min_char": "Phải dài từ 6 ký tự trở lên"
+      },
+      "email": {
+        "invalid_email": "Địa chỉ email không hợp lệ"
+      }
+    },
+    "forgot": {
+      "invalid_email": "Địa chỉ email không hợp lệ"
+    },
+    "org_landing_page": {
+      "message": {
+        "min_char": "Phải dài từ 10 ký tự trở lên"
+      },
+      "phone": {
+        "min_char": "Phải dài từ 6 ký tự trở lên"
+      },
+      "email": {
+        "invalid_email": "Địa chỉ email không hợp lệ"
+      },
+      "name": {
+        "min_char": "Phải dài từ 6 ký tự trở lên"
+      }
+    },
+    "comment_in_community": {
+      "min_char": "Phải dài từ 6 ký tự trở lên"
+    },
+    "ask_community": {
+      "course_id": {
+        "select_course": "Chọn một khóa học"
+      },
+      "body": {
+        "min_char": "Phải dài từ 10 ký tự trở lên"
+      },
+      "title": {
+        "min_char": "Phải dài từ 6 ký tự trở lên"
+      }
+    },
+    "create_quiz": {
+      "min_char": "Phải dài từ 6 ký tự trở lên"
+    },
+    "lesson_schema": {
+      "empty_title": "Tiêu đề không thể trống"
+    },
+    "news_feed": {
+      "min_char": "Trường phải chứa 5 ký tự trở lên"
+    },
+    "site_name": {
+      "min_char": "Tên trang web phải chứa 5 ký tự trở lên",
+      "hyphen_rule": "Tên trang web không thể bắt đầu hoặc kết thúc bằng dấu gạch nối"
+    },
+    "organization_name": {
+      "min_char": "Tổ chức phải chứa 5 ký tự trở lên",
+      "hyphen_rule": "Tên tổ chức không thể bắt đầu hoặc kết thúc bằng dấu gạch nối"
+    },
+    "user_profile": {
+      "email": "Địa chỉ email không hợp lệ",
+      "username": "Tên người dùng không thể trống",
+      "fullname": "Tên phải có tối thiểu 5 ký tự"
+    },
+    "exercise": {
+      "options": {
+        "custom": "{tin nhắn}"
+      },
+      "points": {
+        "too_small": "Điểm ít nhất phải bằng 0"
+      },
+      "label": {
+        "too_small": "Nhãn tùy chọn là bắt buộc"
+      },
+      "question": {
+        "too_small": "Tiêu đề câu hỏi là bắt buộc"
+      }
+    }
+  },
+  "generic": {
+    "locked": "Đã khóa",
+    "unlocked": "Đã mở khóa",
+    "loading": "Đang tải"
+  },
   "content": {
     "heading": "Quốc tế hóa trong SvelteKit",
     "toggle_label": "Chọn ngôn ngữ ưa thích"
   },
+  "specialization": {
+    "course_tag": "Chuyên môn"
+  },
   "snackbar": {
-    "success": "Thành công",
+    "success": "thành công",
+    "success_update": "Đã cập nhật thành công",
+    "success_delete": "Đã xóa thành công",
     "something": "Đã xảy ra lỗi - Vui lòng thử lại sau",
-    "update": "Cập nhật",
+    "update": "cập nhật",
+    "update_failed": "Cập nhật không thành công",
+    "generic": {
+      "success_delete": "Đã xóa thành công",
+      "try_again": "Lỗi - Vui lòng thử lại sau"
+    },
     "setup": {
       "info_lesson": "Bạn cần tạo một bài học",
       "info_course": "Bạn cần tạo một khóa học"
@@ -20,8 +166,9 @@
     },
     "community": {
       "success": {
+        "question_updated": "Câu hỏi đã được cập nhật!",
         "comment_submitted": "Đã gửi bình luận!",
-        "success_delete": "Đã xoá thành công",
+        "success_delete": "Đã xóa thành công",
         "question_submitted": "Câu hỏi đã được gửi!"
       },
       "error": {
@@ -42,19 +189,40 @@
       "error": "Lỗi khi lấy điểm"
     },
     "lessons": {
+      "lesson_created": "Bài học được tạo thành công",
+      "lesson_create_failed": "Không tạo được bài học",
+      "lesson_deleted": "Bài học đã được xóa thành công",
+      "lesson_delete_failed": "Không thể xóa bài học",
+      "lesson_update_failed": "Không thể cập nhật bài học",
+      "section_created": "Phần khóa học được tạo thành công",
+      "section_create_failed": "Không tạo được phần khóa học",
+      "section_updated": "Phần khóa học được cập nhật thành công",
+      "section_update_failed": "Không thể cập nhật phần khóa học",
+      "sections_reordered": "Các phần khóa học đã được sắp xếp lại thành công",
+      "sections_reorder_failed": "Không thể sắp xếp lại các phần khóa học",
+      "lessons_reordered": "Bài học được sắp xếp lại thành công",
+      "lessons_reorder_failed": "Không thể sắp xếp lại bài học",
+      "comment_fetch_failed": "Không thể lấy nhận xét bài học",
+      "load_more_comments_failed": "Không thể tải thêm bình luận",
+      "comment_add_failed": "Không thể thêm nhận xét",
+      "comment_updated": "Đã cập nhật bình luận thành công",
+      "comment_update_failed": "Không cập nhật được bình luận",
+      "comment_deleted": "Đã xóa bình luận thành công",
+      "comment_delete_failed": "Không thể xóa nhận xét",
+      "completion_update_failed": "Không thể cập nhật việc hoàn thành bài học",
       "error": {
         "try_later": "Đã xảy ra sự cố - Vui lòng thử lại sau",
         "exercise_not_complete": "Hoàn thành tất cả các bài tập để đánh dấu là hoàn thành"
       },
       "success": {
         "complete_marked": "Được đánh dấu là hoàn thành",
-        "complete_download": "Hoan thanh tải",
+        "complete_download": "Tải xuống hoàn tất",
         "version_restored": "Đã khôi phục phiên bản thành công"
       }
     },
     "attendance": {
       "error": {
-        "reload": "Có gì đó không ổn. Vui lòng tải lại và điểm danh lại"
+        "reload": "Có gì đó không ổn.  Vui lòng tải lại và điểm danh lại"
       }
     },
     "course": {
@@ -66,7 +234,7 @@
         "feed_fetch_error": "Đã xảy ra lỗi khi tìm nạp nguồn cấp dữ liệu"
       },
       "success": {
-        "comment_deleted": "Bình luận đã bị xóa",
+        "comment_deleted": "Đã xóa bình luận",
         "comment_added": "Đã thêm nhận xét",
         "pinned": "Đã ghim",
         "unpinned": "Đã bỏ ghim",
@@ -93,7 +261,7 @@
     },
     "lms": {
       "error": {
-        "username_exists": "tên này đã có người dùng",
+        "username_exists": "tên người dùng đã tồn tại",
         "update": "Cập nhật không thành công:",
         "try_again": "Vui lòng thử lại"
       }
@@ -108,8 +276,8 @@
         "failed_deletion": "Xóa không thành công, vui lòng thử lại sau"
       },
       "success": {
-        "download": "Hoan thanh tải",
-        "saved": "đã lưu thành công",
+        "download": "Tải xuống hoàn tất",
+        "saved": "Đã lưu thành công",
         "successful_integration": "Tích hợp thành công",
         "successful_deletion": "Đã xóa tích hợp",
         "update_successful": "Cập nhật thành công"
@@ -117,7 +285,7 @@
     },
     "people": {
       "success": {
-        "copied": "Sao chép vào clipboard"
+        "copied": "Đã sao chép vào bảng nhớ tạm"
       },
       "error": {
         "missing_data": "Thiếu dữ liệu tổ chức, vui lòng tải lại trang",
@@ -156,12 +324,44 @@
         "submitting_poll": "Đã xảy ra lỗi khi gửi cuộc thăm dò ý kiến"
       }
     },
-    "success_update": "Cập nhật thành công",
-    "generic": {
-      "success_delete": "Đã xoá thành công",
-      "try_again": "Lỗi - Vui lòng thử lại sau"
+    "media_manager": {
+      "list_failed": "Không tải được nội dung phương tiện",
+      "storage_failed": "Không tải được bản tóm tắt bộ nhớ",
+      "create_failed": "Không tạo được nội dung truyền thông",
+      "attach_failed": "Không thể đính kèm nội dung phương tiện",
+      "detach_failed": "Không thể tách nội dung phương tiện",
+      "resolve_video_failed": "Không giải quyết được URL phát lại phương tiện",
+      "update_failed": "Không cập nhật được nội dung phương tiện",
+      "update_success": "Đã cập nhật nội dung truyền thông",
+      "usage_failed": "Không tải được mức sử dụng tài sản",
+      "download_failed": "Không tải được URL tải nội dung xuống",
+      "thumbnail_uploaded": "Đã tải lên hình thu nhỏ",
+      "thumbnail_upload_failed": "Không tải được hình thu nhỏ lên",
+      "thumbnail_too_large": "Hình ảnh thu nhỏ quá lớn",
+      "thumbnail_invalid": "Tệp hình thu nhỏ không hợp lệ"
     },
-    "success_delete": "Đã xóa thành công"
+    "tags": {
+      "group_created": "Đã tạo nhóm thẻ",
+      "group_updated": "Đã cập nhật nhóm thẻ",
+      "tag_created": "Đã tạo thẻ",
+      "tag_updated": "Đã cập nhật thẻ",
+      "course_tags_updated": "Đã cập nhật thẻ khóa học",
+      "fetch_failed": "Không tải được thẻ",
+      "save_failed": "Không lưu được các thay đổi về thẻ"
+    },
+    "error_update": "Không thể cập nhật",
+    "token_auth": {
+      "created": "Bí mật ký được tạo. Hãy lưu ngay bây giờ—nó sẽ không được hiển thị lại.",
+      "rotated": "Bí mật ký kết được luân chuyển. Lưu bí mật mới—nó sẽ không được hiển thị lại.",
+      "deleted": "Đã xóa xác thực mã thông báo.",
+      "activated": "Đã bật xác thực mã thông báo.",
+      "deactivated": "Xác thực mã thông báo bị vô hiệu hóa."
+    }
+  },
+  "explore": {
+    "heading": "Khám phá các khóa học của chúng tôi",
+    "empty_heading": "Không có khóa học nào",
+    "empty_description": "Hiện tại chưa có khóa học nào được xuất bản"
   },
   "exercises": {
     "heading": "Bài tập",
@@ -172,8 +372,8 @@
     "lesson": "Bài học"
   },
   "my_learning": {
-    "heading": "Việc học của tôi",
-    "progress": "Trong tiến trình",
+    "heading": "Học tập của tôi",
+    "progress": "Đang tiến hành",
     "complete": "Hoàn thành",
     "search": "Tìm kiếm khóa học",
     "not_in_progress": "Không có khóa học nào đang diễn ra",
@@ -183,43 +383,104 @@
   },
   "lms_navigation": {
     "home": "Trang chủ",
-    "my_learning": "Việc học của tôi",
-    "exercise": "Bài tập",
-    "community": "Cộng đồng",
-    "help": "Giúp đỡ",
-    "settings": "Cài đặt",
-    "explore": "Khám phá"
+    "my_learning": "Học tập của tôi",
+    "exercise": "tập thể dục",
+    "community": "cộng đồng",
+    "explore": "Khám phá",
+    "help": "Trợ giúp",
+    "settings": "Cài đặt"
   },
   "upgrade": {
     "certificate": "Nâng cấp gói của bạn để tạo chứng chỉ",
     "team": "Nâng cấp kế hoạch của bạn để thêm thành viên nhóm",
-    "team_members": "Thành viên của nhóm",
+    "domain": "Nâng cấp gói của bạn để thêm miền tùy chỉnh",
+    "team_members": "Thành viên nhóm",
     "back": "Quay lại Cài đặt",
     "download_lessons": "Nâng cấp để tải bài học",
     "download_course": "Nâng cấp để tải xuống khóa học",
-    "domain": "Nâng cấp gói của bạn để thêm miền tùy chỉnh",
-    "required": "Yêu cầu nâng cấp"
+    "required": "Yêu cầu nâng cấp",
+    "enterprise_required": "Tính năng này yêu cầu gói Enterprise."
+  },
+  "analytics": {
+    "title": "Phân tích",
+    "courses": "Khóa học",
+    "progress": "Tiến độ",
+    "progress_description": "{value, number} của {total, number} đã hoàn thành",
+    "incomplete": "Chưa hoàn thành",
+    "completed": "Đã hoàn thành",
+    "complete": "hoàn thành",
+    "last_seen": "Nhìn thấy lần cuối",
+    "a_while_ago": "cách đây một thời gian",
+    "exercises": "Bài tập",
+    "graded": "Đã chấm điểm",
+    "not_graded": "Không được chấm điểm",
+    "enrolled_courses": "Các khóa học đã đăng ký",
+    "enrolled_courses_description": "Tất cả các khóa học đã đăng ký",
+    "overall_course_progress": "Tiến độ chung của khóa học",
+    "overall_course_progress_description": "Tỷ lệ bài học đã hoàn thành",
+    "total_average_grade": "Tổng điểm trung bình",
+    "total_average_grade_description": "Dựa trên điểm bài tập của tất cả các khóa học",
+    "overall_course_progress_user_description": "Căn cứ vào việc hoàn thành bài học",
+    "assignment_completion": "Hoàn thành bài tập",
+    "assignment_completion_description": "Tỷ lệ bài tập đã hoàn thành",
+    "average_grade_description": "Điểm trung bình của tất cả các bài tập đã hoàn thành",
+    "students": "Sinh viên",
+    "lessons": "Bài học",
+    "tutors": "gia sư",
+    "avg_grade": "Điểm trung bình",
+    "completion_rate": "Tỷ lệ hoàn thành",
+    "student_progress_overview": "Tổng quan về tiến bộ của học sinh",
+    "student_name": "Tên sinh viên",
+    "lessons_completed": "Bài học đã hoàn thành",
+    "exercises_submitted": "Bài tập đã gửi",
+    "average_grade": "Điểm trung bình",
+    "actions": "hành động",
+    "view_details": "Xem chi tiết",
+    "no_students_found": "Không tìm thấy sinh viên nào",
+    "no_students_description": "Hiện chưa có học viên nào đăng ký khóa học này. Học sinh sẽ xuất hiện ở đây khi họ tham gia khóa học.",
+    "showing_students": "Đang hiển thị {bắt đầu} cho {cuối} trong tổng số {total} sinh viên",
+    "no_analytics_data": "Không có dữ liệu phân tích",
+    "no_analytics_description": "Không thể tải dữ liệu phân tích cho khóa học này. Vui lòng thử lại sau hoặc liên hệ với bộ phận hỗ trợ nếu sự cố vẫn tiếp diễn.",
+    "student": "sinh viên",
+    "student_progress_distribution": "Phân phối tiến bộ của học sinh",
+    "grade_distribution": "Phân phối lớp",
+    "progress_80_plus": "Tiến độ trên 80%",
+    "progress_60_79": "Tiến độ 60-79%",
+    "progress_below_60": "Tiến độ dưới 60%",
+    "grade_90_plus": "90% + Lớp",
+    "grade_80_89": "Lớp 80-89%",
+    "grade_70_79": "Lớp 70-79%",
+    "grade_below_70": "Dưới 70% lớp",
+    "number_of_students": "Số lượng sinh viên",
+    "progress_range": "Phạm vi tiến độ",
+    "grade_range": "Phạm vi lớp",
+    "no_progress_data": "Không có dữ liệu tiến độ",
+    "no_grade_data": "Không có dữ liệu điểm",
+    "loading_chart": "Đang tải biểu đồ...",
+    "no_data_default": "Không có sẵn dữ liệu",
+    "no_data_default_description": "Không có dữ liệu để hiển thị tại thời điểm này."
   },
   "audience": {
-    "title": "Khán giả",
+    "title": "khán giả",
     "export": "Xuất khẩu",
     "no_audience": "Không có khán giả để quản lý",
     "manage": "Quản lý tất cả sinh viên của bạn ở đây và duy trì kết nối với họ",
     "name": "Tên",
-    "email": "E-mail",
+    "email": "Email",
     "date_joined": "Ngày tham gia",
     "upgrade": "Nâng cấp kế hoạch của bạn để mời thêm sinh viên"
   },
   "community": {
-    "title": "Cộng đồng",
+    "title": "cộng đồng",
     "ask_button": "Hỏi cộng đồng",
     "find_question": "Tìm câu hỏi",
-    "asked": "yêu cầu",
+    "asked": "hỏi",
     "answers": "câu trả lời",
     "no_question": "Không có câu hỏi nào được hỏi",
     "ask_a_question": "Đặt câu hỏi cho cộng đồng",
+    "all": "Tất cả",
     "delete": {
-      "title": "Xóa bỏ",
+      "title": "Xóa",
       "question": "câu hỏi",
       "comment": "bình luận",
       "sure": "Bạn có chắc chắn muốn xóa cái này không",
@@ -229,38 +490,47 @@
     "ask": {
       "go_back": "Quay lại",
       "ask_the": "Hỏi cộng đồng",
-      "publish": "Công bố",
+      "publish": "Xuất bản",
       "title": "Tiêu đề",
       "select_course": "Chọn khóa học",
       "ask_community": "Hỏi cộng đồng bất kỳ câu hỏi nào bạn có thể có",
       "question": "Câu hỏi",
-      "save": "Cứu",
-      "edit": "Biên tập",
+      "save": "Lưu",
+      "edit": "Chỉnh sửa",
       "cancel": "Hủy bỏ",
-      "give": "Đưa ra một câu trả lời",
+      "give": "Đưa ra câu trả lời",
       "comment": "Bình luận"
-    },
-    "all": "Tất cả"
+    }
   },
   "course": {
+    "not_permitted": {
+      "header": "Không có quyền",
+      "body": "Rất tiếc, bạn không có quyền truy cập vào khóa học này.",
+      "button": "Về nhà"
+    },
     "navItem": {
       "settings": {
         "heading": "Cài đặt",
         "cover_image": "Ảnh bìa",
         "optional_image": "Hình ảnh tùy chọn này sẽ hiển thị trên trang chào mừng của bạn. Nếu bạn bao gồm một cái, nó phải có kích thước tối thiểu là 280 x 200",
         "replace": "Thay thế",
-        "del": "Xóa bỏ",
-        "course_details": "chi tiết khóa học",
+        "del": "Xóa",
+        "course_details": "Chi tiết khóa học",
         "course_title": "Tên khóa học",
         "course_description": "Mô tả khóa học",
         "placeholder": "Viết mô tả khóa học của bạn ở đây",
+        "course_title_placeholder": "Viết tiêu đề khóa học ở đây",
+        "setup_landing_for_link": "Thiết lập landing page để lấy link khóa học",
+        "coming_soon": "Sắp có",
         "link": "Liên kết khóa học",
         "grading": "Chấm điểm",
         "reports": "Cung cấp báo cáo chấm điểm cho bài học",
-        "disabled": "Tàn tật",
+        "disabled": "Đã tắt",
         "enabled": "Đã bật",
         "order": "Đặt hàng tab bài học",
         "drag": "Kéo và thả nhãn để sắp xếp lại các tab tài liệu của bạn",
+        "content_grouping_title": "Nhóm nội dung",
+        "content_grouping_description": "Nhóm các bài học, bài tập theo từng phần trong danh sách nội dung.",
         "lesson_download": "Bài học Tải về",
         "available": "Cung cấp Bài học để tải xuống dưới dạng pdf cho học viên đã đăng ký",
         "course_download": "Tải xuống khóa học",
@@ -270,17 +540,32 @@
         "access": "Cho phép sinh viên mới truy cập khóa học này",
         "publish": "Xuất bản khóa học",
         "determines": "Điều này xác định xem khóa học của bạn có hiển thị trên trang đích hay không",
-        "published": "Được phát hành",
+        "published": "Đã xuất bản",
         "unpublished": "Chưa được xuất bản",
-        "delete": "Xóa khóa học",
-        "delete_text": "Xóa khóa học này, hành động này không thể hoàn tác",
-        "save": "Lưu thay đổi",
         "type": "Loại khóa học",
         "course_type_desc": "Cập nhật loại khóa học để có trải nghiệm cá nhân hóa hơn",
         "live_class": "Lớp học trực tiếp",
-        "self_paced": "Tự nhịp độ"
+        "self_paced": "Tự nhịp độ",
+        "delete": "Xóa khóa học",
+        "delete_text": "Xóa khóa học này, hành động này không thể hoàn tác",
+        "save": "Lưu thay đổi",
+        "tags": {
+          "title": "Thẻ",
+          "description": "Gán thẻ để người học có thể khám phá khóa học này bằng các bộ lọc.",
+          "empty": "Không có thẻ nào được chọn",
+          "add": "Thêm thẻ",
+          "popover_title": "Chọn thẻ",
+          "empty_groups": "Chưa có thẻ nào"
+        }
+      },
+      "analytics": {
+        "title": "Phân tích"
       },
       "landing_page": {
+        "course_content": "Nội dung khóa học",
+        "modules": "mô-đun",
+        "lessons": "bài học",
+        "exercises": "bài tập",
         "start_course": "Bắt đầu khóa học",
         "requirement": "Yêu cầu",
         "description": "Mô tả khóa học",
@@ -290,9 +575,9 @@
         "content": "Nội dung khóa học",
         "slide": "1 slide",
         "note": "ghi chú",
-        "video": "băng hình",
+        "video": "video",
         "reviews": "Đánh giá",
-        "see_all": "Nhìn thấy tất cả",
+        "see_all": "Xem Tất Cả",
         "header_video": "Video tiêu đề",
         "no_course_published": "Không có khóa học nào được xuất bản",
         "coming_your_way": "Chúng tôi có những khóa học tuyệt vời sắp tới dành cho bạn, hãy chú ý theo dõi nhé!!!",
@@ -304,8 +589,8 @@
         "phone": "Điện thoại của bạn",
         "message": "Tin nhắn của bạn",
         "your_message": "Tin nhắn của bạn ở đây",
-        "submit": "Nộp",
-        "successful_sub": "Bạn đã được thêm thành công. Cảm ơn đã đăng kí.",
+        "submit": "Gửi",
+        "successful_sub": "Bạn đã được thêm thành công. Cảm ơn bạn đã đăng ký.",
         "enter": "Nhập email của bạn...",
         "powered_by": "Được cung cấp bởi",
         "landing_page": "Trang đích",
@@ -316,11 +601,16 @@
         "courses": "các khóa học",
         "reviews_modal": {
           "title": "Đánh giá",
-          "rating": "Xếp hạng",
+          "rating": "Đánh giá",
           "ratings": "Xếp hạng"
         },
+        "enroll_page": {
+          "requires_payment_or_invite": "Bạn cần phải trả tiền cho khóa học này hoặc được mời để có quyền truy cập.",
+          "back_to_course": "Quay lại khóa học",
+          "join_course": "Tham gia khóa học"
+        },
         "pricing_section": {
-          "free": "Miễn phí",
+          "free": "miễn phí",
           "not_accepting": "Khóa học này hiện không nhận học viên mới.",
           "discount": "Giảm giá",
           "enroll": "Đăng ký ngay",
@@ -331,37 +621,42 @@
           "title": "Tiện ích biểu ngữ",
           "width": "Hình ảnh rộng hơn 1500 pixel hoạt động tốt nhất.",
           "size": "Kích thước tối đa cho mỗi tập tin là 500kb.",
-          "submit": "Nộp",
+          "drag_drop": "Kéo và thả hình ảnh của bạn vào đây hoặc nhấp để chọn",
+          "submit": "Gửi",
           "no_images": "Không có hình ảnh có sẵn."
         },
         "editor": {
-          "save": "Cứu",
+          "save": "Lưu",
           "page_builder": "Trình tạo trang",
           "section": "phần",
+          "display_section": "Phần hiển thị",
           "pricing_form": {
             "currency": "Tiền tệ",
-            "cost": "Trị giá",
+            "cost": "Chi phí",
             "payment": "Liên kết thanh toán",
             "discount": "Giảm giá",
-            "no": "KHÔNG",
-            "yes": "Đúng",
+            "no": "Không",
+            "yes": "Có",
             "percent": "Phần trăm chiết khấu",
             "gift": "Về quà tặng"
           },
           "instructor_form": {
             "upload": "Logo giảng viên",
-            "name": "Tên giảng viên",
+            "name": "Tên người hướng dẫn",
             "name_placeholder": "Tên công ty của bạn",
             "role": "Vai trò của người hướng dẫn",
             "about": "Giới thiệu về người hướng dẫn",
             "about_placeholder": "Sơ lược về hướng dẫn",
             "total": "Tổng số khóa học"
           },
+          "certificate_form": {
+            "upload_template": "Mẫu chứng chỉ"
+          },
           "reviews_form": {
             "add_reviews": "Thêm đánh giá",
-            "fullname": "Họ và tên",
-            "description": "Sự miêu tả",
-            "rating": "Xếp hạng",
+            "fullname": "Tên đầy đủ",
+            "description": "Mô tả",
+            "rating": "Đánh giá",
             "hide": "Ẩn đánh giá",
             "validations": {
               "description": {
@@ -380,7 +675,7 @@
           },
           "header_form": {
             "title": "Tiêu đề",
-            "description": "Sự miêu tả",
+            "description": "Mô tả",
             "short_video": "Video ngắn",
             "replace_cover": "Thay thế ảnh bìa",
             "replace": "Thay thế",
@@ -389,28 +684,20 @@
           "title": {
             "header": "tiêu đề",
             "requirement": "Yêu cầu",
-            "description": "Sự miêu tả",
+            "description": "Mô tả",
             "goals": "Bàn thắng",
             "reviews": "Đánh giá",
             "instructor": "Người hướng dẫn",
             "pricing": "Định giá",
             "certificate": "Giấy chứng nhận"
-          },
-          "display_section": "Phần hiển thị",
-          "certificate_form": {
-            "upload_template": "Mẫu chứng chỉ"
           }
-        },
-        "course_content": "Nội dung khóa học",
-        "modules": "mô-đun",
-        "lessons": "bài học",
-        "exercises": "bài tập"
+        }
       },
       "certificates": {
         "title": "Chứng chỉ",
         "certificate_settings": "Cài đặt chứng chỉ",
         "theme": "Chọn một chủ đề",
-        "logo": "Biểu tượng thương hiệu",
+        "logo": "Logo thương hiệu",
         "to_update": "Để cập nhật hình ảnh thương hiệu của bạn, hãy truy cập",
         "settings": "Cài đặt > Cài đặt tổ chức",
         "and_upload": "và tải lên logo thương hiệu của bạn",
@@ -421,39 +708,53 @@
         "locked": "Đã khóa",
         "unlocked": "Đã mở khóa",
         "save": "Lưu thay đổi",
+        "unlocked_certificate": "Xin chúc mừng! 🎉 chứng chỉ của bạn đã sẵn sàng",
+        "unlocked_certificate_subtitle": "Bạn đã hoàn thành khóa học này và sự cống hiến của bạn là điều hiển nhiên. Tải xuống chứng chỉ và chia sẻ với mạng của bạn như một bằng chứng về kỹ năng mới có được của bạn",
         "locked_certificate": "Chứng chỉ không có sẵn",
         "instructor_unlock": "Người hướng dẫn của bạn cần mở khóa chứng chỉ của bạn.",
         "contact_instructor": "Nếu bạn cần chứng chỉ của mình, vui lòng liên hệ với người hướng dẫn của bạn.",
         "download_certificate": "Tải xuống chứng chỉ",
-        "unlocked_certificate": "Chúc mừng! 🎉 chứng chỉ của bạn đã sẵn sàng",
-        "unlocked_certificate_subtitle": "Bạn đã hoàn thành khóa học này và sự cống hiến của bạn là điều hiển nhiên. Tải xuống chứng chỉ và chia sẻ với mạng của bạn như một bằng chứng về kỹ năng mới có được của bạn",
-        "complete_to_download_subtitle": "Chứng chỉ của bạn sẽ có sau khi bạn hoàn thành tất cả bài học và bài tập trong khóa học này",
         "complete_to_download_title": "Khóa học chưa hoàn thành 😔",
+        "complete_to_download_subtitle": "Chứng chỉ của bạn sẽ có sau khi bạn hoàn thành tất cả bài học và bài tập trong khóa học này",
         "description_error": "Mô tả không thể vượt quá 200 ký tự",
         "characters": "nhân vật",
         "unexpected_error": "Đã xảy ra lỗi không mong muốn"
       },
       "people": {
-        "title": "Mọi người",
-        "add": "Thêm vào",
-        "search": "Tìm kiếm mọi người",
-        "you": "Bạn",
-        "pending": "Chưa giải quyết",
+        "title": "mọi người",
+        "add": "Thêm",
+        "search": "Tìm kiếm người",
+        "you": "bạn",
+        "pending": "Đang chờ xử lý",
         "name": "Tên",
         "role": "Vai trò",
-        "action": "Hoạt động",
+        "action": "hành động",
         "feedback": "Đã sao chép email vào clipboard",
+        "view": "Xem",
+        "delete_profile": "Xóa hồ sơ",
+        "teams": {
+          "add": "Thêm",
+          "add_team": "Thêm đồng đội hoặc cộng tác viên vào tổ chức của bạn. Bắt đầu làm việc cùng nhau",
+          "invite": "Mời",
+          "placeholder": "email được phân tách bằng dấu phẩy",
+          "role": "Vai trò",
+          "send_invite": "Gửi lời mời",
+          "members": "Thành viên",
+          "invite_sent": "Lời mời đã gửi",
+          "you": "bạn",
+          "remove": "Xóa"
+        },
         "roles": {
           "admin": "Quản trị viên",
-          "tutor": "Gia sư",
-          "student": "Học sinh",
+          "tutor": "gia sư",
+          "student": "sinh viên",
           "filter": "Lọc"
         },
         "delete_confirmation": {
-          "title": "Xóa bỏ",
+          "title": "Xóa",
           "sure": "Bạn có chắc chắn muốn xóa",
-          "no": "KHÔNG",
-          "yes": "Đúng"
+          "no": "Không",
+          "yes": "Có"
         },
         "invite_modal": {
           "title": "Mời mọi người",
@@ -463,106 +764,184 @@
           "go_to": "đi tới cài đặt tổ chức",
           "invite_students": "Mời sinh viên",
           "via_link": "Bạn có thể mời sinh viên thông qua liên kết mời",
-          "copy_link": "Sao chép đường dẫn",
-          "success": "Đã sao chép thành công",
-          "finish": "Hoàn thành",
           "via_qr": "Bạn có thể mời sinh viên qua QR",
           "download_qr": "Tải xuống mã QR",
-          "qr_downloading_snackbar": "Mã QR được tạo thành công, vui lòng đợi trong khi tải xuống"
-        },
-        "teams": {
-          "add": "Thêm vào",
-          "add_team": "Thêm đồng đội hoặc cộng tác viên vào tổ chức của bạn. Bắt đầu làm việc cùng nhau",
-          "invite": "Mời",
-          "placeholder": "email được phân tách bằng dấu phẩy",
-          "role": "Vai trò",
-          "send_invite": "Gửi lời mời",
-          "members": "Các thành viên",
-          "invite_sent": "Lời mời đã gửi",
-          "you": "Bạn",
-          "remove": "Di dời"
-        },
-        "view": "Xem",
-        "delete_profile": "Xóa hồ sơ"
+          "qr_downloading_snackbar": "Mã QR được tạo thành công, vui lòng đợi trong khi tải xuống",
+          "copy_link": "Sao chép liên kết",
+          "success": "Đã sao chép thành công",
+          "finish": "Kết thúc",
+          "loading": "Đang tải...",
+          "student_invite_settings": "Cài đặt mời sinh viên",
+          "student_invite_settings_description": "Chọn thời gian hiệu lực của lời mời và số lượng học viên có thể sử dụng lời mời đó.",
+          "preset": "cài sẵn",
+          "expires_at": "Hết hạn vào lúc",
+          "max_uses": "Sử dụng tối đa",
+          "quick_invite_link": "Liên kết mời nhanh",
+          "quick_invite_link_description": "Tạo liên kết an toàn và chia sẻ bằng bản sao hoặc QR.",
+          "regenerate_link": "Tạo lại liên kết",
+          "share_via_qr": "Chia sẻ qua QR",
+          "qr_placeholder": "Tạo liên kết để hiển thị QR",
+          "direct_email_bulk": "Email trực tiếp / Lời mời hàng loạt",
+          "direct_email_description": "Dán các địa chỉ email được phân tách bằng dấu phẩy, dấu cách hoặc dòng mới. Một lời mời an toàn duy nhất được tạo cho mỗi email.",
+          "recipient_emails": "Email người nhận",
+          "recipient_emails_placeholder": "sinh viên1@example.com, sinh viên2@example.com",
+          "send_invite_emails": "Gửi email mời ngay lập tức",
+          "create_email_invites": "Tạo lời mời qua email",
+          "existing_invites": "Lời mời hiện có",
+          "refresh": "Làm mới",
+          "loading_invites": "Đang tải lời mời...",
+          "no_invites_yet": "Chưa có lời mời nào được tạo.",
+          "created": "Đã tạo",
+          "expires": "Hết hạn",
+          "uses": "Công dụng",
+          "remaining": "còn lại",
+          "opened": "Đã mở",
+          "joined": "Đã tham gia",
+          "email_sent": "Đã gửi email",
+          "email_failed": "Email không thành công",
+          "copy_metadata": "Sao chép siêu dữ liệu",
+          "revoke": "Thu hồi",
+          "view_audit": "Xem kiểm tra",
+          "hide_audit": "Ẩn kiểm tra",
+          "no_audit_events": "Không có sự kiện kiểm toán.",
+          "audit_at": "Tại",
+          "audit_email": "Email",
+          "audit_actor": "diễn viên",
+          "audit_ip": "IP",
+          "scan_qr": "Quét QR",
+          "classroomio_brand": "Lớp họcIO.com",
+          "snackbar_invite_link_copied": "Đã sao chép liên kết mời",
+          "snackbar_invite_link_regenerated": "Một liên kết mời mới đã được tạo",
+          "snackbar_failed_generate_link": "Không tạo được liên kết mời",
+          "snackbar_add_one_recipient": "Thêm ít nhất một email người nhận",
+          "snackbar_failed_create_email_invites": "Không tạo được lời mời qua email",
+          "snackbar_invite_revoked": "Đã thu hồi lời mời",
+          "snackbar_failed_revoke_invite": "Không thể thu hồi lời mời",
+          "snackbar_failed_load_audit": "Không tải được lời mời kiểm tra",
+          "snackbar_metadata_copied": "Đã sao chép siêu dữ liệu lời mời",
+          "snackbar_email_invites_success": "Đã tạo {count} lời mời. Đã gửi {đã gửi}, không thành công {không thành công}. Đã bỏ qua {trùng lặp} bản sao.",
+          "presets": {
+            "one_time_24h": "Một lần (24h)",
+            "multi_use_7d": "Sử dụng nhiều lần (7 ngày)",
+            "multi_use_30d": "Sử dụng nhiều lần (30 ngày)",
+            "custom": "tùy chỉnh"
+          }
+        }
       },
       "marks": {
         "title": "Điểm",
-        "student": "Học sinh",
+        "student": "sinh viên",
         "total": "Tổng cộng",
         "no_student": "Không có sinh viên nào được thêm vào",
         "export": {
           "csv": "Xuất dưới dạng CSV",
           "pdf": "Xuất dưới dạng PDF"
-        }
+        },
+        "avg_grade": "Điểm trung bình"
       },
       "submissions": {
         "title": "Bài tập đã gửi",
-        "submission_status": {
-          "submitted": "Đã gửi",
-          "in_progress": "Trong tiến trình",
-          "graded": "Đã chấm điểm"
-        },
         "grading_modal": {
           "details": "Chi tiết",
           "early": "Sớm",
           "late": "Muộn",
           "total_grade": "Tổng điểm",
-          "student": "Học sinh",
+          "student": "sinh viên",
           "status": "Trạng thái",
-          "add_comment": "Thêm bình luận",
+          "add_comment": "Thêm nhận xét",
+          "add_comment_placeholder": "Để lại một bình luận",
           "grade_with_ai": "Chấm điểm bằng AI",
           "submit_grades": "Gửi điểm",
           "accept_grade": "Chấp nhận",
           "reject_grade": "Từ chối",
-          "add_comment_placeholder": "Để lại một bình luận",
           "allocated": "Phân bổ số điểm này bởi vì",
           "total_try": "trong tổng số lần thử:",
           "options_correct": "các phương án đúng đã được chọn",
           "out_of": "ra khỏi",
           "options_wrong": "và số lựa chọn sai là",
           "questions_tried": "Phân bổ số điểm này dựa trên tổng số lần thử:",
-          "delete_prompt": "Xóa bỏ",
+          "delete_prompt": "Xóa",
           "delete_error": "Không thể xóa bài nộp",
-          "delete_success": "Đã xóa bài nộp thành công"
+          "delete_success": "Đã xóa bài nộp thành công",
+          "student_avatar": "Hình đại diện sinh viên",
+          "ai_icon": "trí tuệ nhân tạo"
+        },
+        "submission_status": {
+          "submitted": "Đã gửi",
+          "in_progress": "Đang tiến hành",
+          "graded": "Đã chấm điểm"
+        },
+        "workflow": {
+          "awaiting_manual_hint": "Cần xem xét thủ công",
+          "failed_hint": "Tự động chấm điểm không thành công. Chuyển nội dung gửi này trở lại Đã gửi để thử lại.",
+          "invalid_transition": "Việc di chuyển trạng thái này không được phép bởi quy trình chấm điểm"
         }
       },
       "attendance": {
-        "title": "Sự tham dự",
-        "present": "Hiện tại",
+        "title": "Tham dự",
+        "present": "hiện tại",
         "absent": "Vắng mặt",
         "search_students": "Tìm kiếm sinh viên",
-        "student": "Học sinh",
+        "student": "sinh viên",
         "lesson": "Bài học",
         "no_student": "Không có sinh viên nào được thêm vào"
       },
       "lessons": {
-        "heading": "Những bài học",
+        "heading": "Bài học",
+        "heading_v2": "Nội dung",
+        "drag": "kéo thẻ để sắp xếp lại",
+        "no_lesson": "Chưa có bài học nào",
+        "share_your_knowledge": "Chia sẻ kiến thức của bạn với thế giới bằng cách tạo ra những bài học hấp dẫn. Bắt đầu bằng cách nhấp vào nút Thêm.",
+        "add_content": "Thêm nội dung",
+        "add_content_description": "Chọn loại nội dung bạn muốn thêm.",
+        "add_content_details": "Điền thông tin chi tiết cho nội dung này.",
+        "add_content_adding_to": "Thêm vào",
+        "add_content_section_fallback": "phần",
+        "add_content_continue": "Tiếp tục",
+        "add_content_section_label": "Phần",
+        "add_content_select_section": "Chọn phần",
+        "add_content_create_section_first": "Trước tiên hãy tạo một phần để thêm bài học hoặc bài tập.",
+        "add_content_back": "Quay lại",
+        "add_content_create": "Tạo",
+        "add_content_create_section": "Tạo phần",
+        "add_content_create_lesson": "Tạo bài học",
+        "add_content_section_title_placeholder": "ví dụ: Mô-đun 1: Giới thiệu",
+        "add_content_lesson_title_placeholder": "ví dụ: Bắt đầu với các biến",
         "join_lesson": "Tham gia bài học",
         "no_link": "Không có liên kết",
         "no_tutor": "Không có gia sư nào được thêm vào",
         "body_header": "Chưa có bài học nào",
-        "body_content": "Chia sẻ kiến ​​thức của bạn với thế giới bằng cách tạo ra những bài học hấp dẫn. Bắt đầu bằng cách nhấp vào nút Thêm.",
-        "download_pdf": "tải PDF",
-        "autosaving": "Tự động tiết kiệm...",
+        "body_content": "Chia sẻ kiến thức của bạn với thế giới bằng cách tạo ra những bài học hấp dẫn. Bắt đầu bằng cách nhấp vào nút Thêm.",
+        "download_pdf": "Tải xuống bản PDF",
+        "autosaving": "Tự động lưu...",
         "done": "Xong",
-        "edit": "Biên tập",
+        "edit": "Chỉnh sửa",
         "mark_as": "Đánh dấu là",
-        "incomplete": "chưa hoàn thiện",
+        "incomplete": "Chưa hoàn thành",
         "complete": "Hoàn thành",
+        "next": "Tiếp theo",
+        "prev": "Trước đó",
+        "disabled": "Tính năng bị vô hiệu hóa",
+        "version_history": {
+          "title": "Lịch sử phiên bản",
+          "fetch_more_versions": "Tìm nạp thêm phiên bản",
+          "current_version": "Phiên bản hiện tại",
+          "restore_version": "Khôi phục phiên bản này"
+        },
         "poll": {
           "voted": "Đã bình chọn",
-          "created_by": "Được tạo bởi",
+          "created_by": "Tạo bởi",
           "status": "Trạng thái",
-          "draft": "Bản nháp",
-          "publish": "Công bố",
+          "draft": "bản nháp",
+          "publish": "Xuất bản",
           "expiration": "Hết hạn",
           "total_voted": "Tổng số phiếu bầu",
           "responses": "Phản hồi",
           "expires": "Hết hạn",
-          "today": "Hôm nay",
-          "back": "Mặt sau",
-          "result": "Kết quả",
-          "delete": "Xóa bỏ",
+          "today": "hôm nay",
+          "back": "Quay lại",
+          "result": "kết quả",
+          "delete": "Xóa",
           "create_poll": "Tạo cuộc thăm dò",
           "question": "Câu hỏi",
           "options": "Tùy chọn",
@@ -579,32 +958,34 @@
         },
         "comments": {
           "title": "Bình luận",
-          "you": "Bạn",
-          "placeholder": "Nói gì đó đi",
+          "you": "bạn",
           "text_area_title": "Để lại một bình luận",
+          "placeholder": "Bạn nghĩ gì về bài học này?",
           "comment_btn": "Bình luận",
-          "load_more_btn": "Tải thêm",
           "cancel_btn": "Hủy bỏ",
+          "load_more_btn": "Tải thêm",
           "comment_error": "Không thể gửi bình luận. Vui lòng thử lại."
         },
         "exercises": {
           "heading": "Tất cả các bài tập",
-          "add_button": "Thêm vào",
+          "add_button": "Thêm",
           "no_exercises": "Không có bài tập nào được thêm vào cho bài học này",
           "no_assigned_exercises": "Gia sư của bạn chưa giao bất kỳ bài tập nào cho bài học này. Trong thời gian chính, bạn có thể",
           "chill": "thư giãn với các chàng trai lớn",
-          "add_exercise": "Chia sẻ kiến ​​thức của bạn với thế giới bằng cách tạo ra các bài tập hấp dẫn. Thêm một bài tập bây giờ.",
+          "add_exercise": "Chia sẻ kiến thức của bạn với thế giới bằng cách tạo ra các bài tập hấp dẫn. Thêm một bài tập bây giờ.",
           "all_exercises": {
             "heading": "Tất cả bài tập",
             "questions": "Câu hỏi",
             "submissions": "bài nộp",
-            "save": "Cứu",
+            "save": "Lưu",
             "preview": "Xem trước",
+            "add_question": "Thêm câu hỏi",
             "reorder": "Sắp xếp lại câu hỏi",
             "delete_exercise": "Xóa bài tập",
             "order_questions": "Đặt câu hỏi",
             "write_your_answer": "Viết câu trả lời của bạn",
             "write_your_answer_here": "Viết câu trả lời của bạn ở đây",
+            "no_answer": "Không có câu trả lời nào được đưa ra",
             "write_your_question_here": "Viết câu hỏi của bạn ở đây",
             "write_your_title": "Viết tiêu đề của bạn ở đây",
             "write_your_subtitle": "Viết phụ đề của bạn ở đây",
@@ -618,40 +999,55 @@
             "twitter": "Viết liên kết Twitter của bạn ở đây",
             "linkedin": "Viết liên kết LinkedIn của bạn ở đây",
             "number": "Viết số điện thoại của bạn vào đây",
-            "previous": "Trước",
-            "finish": "Hoàn thành",
-            "next": "Kế tiếp",
+            "previous": "trước đó",
+            "finish": "Kết thúc",
+            "next": "Tiếp theo",
+            "check": "Kiểm tra",
             "analytics": {
               "submissions": "bài nộp",
               "individual": {
                 "heading": "Cá nhân",
                 "answers": "Câu trả lời cá nhân",
-                "no": "Không có câu trả lời nào được đưa ra"
+                "no": "Không có câu trả lời nào được đưa ra",
+                "student_avatar": "sinh viên"
               },
               "summary": {
-                "heading": "Bản tóm tắt",
-                "question_chart": "Biểu đồ câu hỏi"
-              }
+                "heading": "Tóm tắt",
+                "question_chart": "Biểu đồ câu hỏi",
+                "responses": "Phản hồi",
+                "no_responses": "Chưa có phản hồi nào",
+                "other": "Khác"
+              },
+              "loading_submissions": "Đang tải nội dung gửi...",
+              "empty_title": "Chưa có bài nộp nào",
+              "empty_description": "Bài nộp sẽ xuất hiện ở đây khi học sinh hoàn thành bài tập này."
             },
             "view_mode": {
               "no_question": "Không có câu hỏi nào được thêm vào cho bài tập này",
-              "edit": "Biên tập",
+              "edit": "Chỉnh sửa",
               "button": "nút để thêm",
               "questions": "câu hỏi",
               "points": "điểm",
               "all": "Tất cả được yêu cầu",
-              "due": "Do bởi",
+              "due": "Đến hạn bởi",
               "no_description": "Không có mô tả",
               "start": "Bắt đầu",
               "graded": "Đã chấm điểm",
-              "pending": "Chưa giải quyết",
+              "pending": "Đang chờ xử lý",
               "submitted": "Đã gửi",
               "status_pending": "Trạng thái: Đang chờ xem xét",
               "status_graded": "Trạng thái: Đánh giá đã hoàn thành",
-              "status_submitted": "Trạng thái: Đã gửi"
+              "status_submitted": "Trạng thái: Đã gửi",
+              "empty_description": "Bấm vào nút Chỉnh sửa để thêm.",
+              "empty_edit_hint_prefix": "Bấm vào ",
+              "empty_edit_hint_suffix": " nút để thêm.",
+              "answers_required": "Vui lòng cung cấp ít nhất một câu trả lời trước khi gửi.",
+              "checking_submission": "Đang kiểm tra nội dung gửi của bạn...",
+              "answer_required": "Vui lòng trả lời câu hỏi này trước khi tiếp tục.",
+              "instructor_feedback": "Phản hồi của giảng viên"
             },
             "edit_mode": {
-              "delete_modal": "Xóa phương thức",
+              "delete_modal": "Xóa bài tập",
               "sure": "Bạn có chắc chắn muốn xóa bài tập này không?",
               "no": "Không, hủy",
               "yes": "Có, xóa",
@@ -663,8 +1059,19 @@
               "question_types": {
                 "single": "Câu trả lời duy nhất",
                 "multiple": "Nhiều câu trả lời",
-                "paragraph": "Đoạn văn"
-              }
+                "paragraph": "Đoạn",
+                "true_false": "Đúng/Sai",
+                "short_answer": "Câu trả lời ngắn",
+                "numeric": "Câu trả lời bằng số",
+                "fill_blank": "Điền vào chỗ trống",
+                "file_upload": "Tải tập tin lên",
+                "matching": "Kết hợp",
+                "ordering": "Đặt hàng",
+                "hotspot": "Điểm phát sóng",
+                "link": "Liên kết"
+              },
+              "select_type": "Chọn loại",
+              "premium_question_type": "Nâng cấp để sử dụng loại câu hỏi này"
             },
             "delete_confirmation": {
               "title": "Xóa câu hỏi",
@@ -674,34 +1081,226 @@
             },
             "description": {
               "title": "Tiêu đề",
-              "heading": "Sự miêu tả",
+              "heading": "Mô tả",
               "describe": "Mô tả bài tập cho học sinh của bạn",
               "no": "Không có mô tả"
             },
-            "no_answer": "Không có câu trả lời nào được đưa ra",
-            "check": "Kiểm tra",
-            "address": "Viết địa chỉ của bạn ở đây"
+            "shared_question": {
+              "textarea": {
+                "take": {
+                  "placeholder": "Viết câu trả lời của bạn"
+                },
+                "edit": {
+                  "placeholder": "Người học sẽ trả lời bằng văn bản dài"
+                }
+              },
+              "hotspot": {
+                "preview": {
+                  "helper": "Bản xem trước điểm phát sóng được cung cấp bởi cài đặt hình ảnh và điểm phát sóng của ứng dụng máy chủ."
+                },
+                "take": {
+                  "placeholder": "Cung cấp tọa độ điểm phát sóng dưới dạng JSON"
+                },
+                "edit": {
+                  "helper": "Định cấu hình hình ảnh và vùng điểm phát sóng trong cài đặt câu hỏi thông qua điều khiển ứng dụng máy chủ."
+                }
+              },
+              "ordering": {
+                "fallback_step_prefix": "Bước",
+                "preview": {
+                  "submitted_label": "Đơn đặt hàng đã gửi",
+                  "expected_label": "Đơn hàng dự kiến",
+                  "matches": "Đơn hàng đã gửi khớp với đơn hàng dự kiến.",
+                  "differs": "Đơn hàng đã gửi khác với đơn hàng dự kiến."
+                },
+                "take": {
+                  "helper": "Kéo và thả để sắp xếp các mục theo đúng thứ tự.",
+                  "empty": "Chưa có mục đặt hàng nào được định cấu hình cho câu hỏi này."
+                },
+                "edit": {
+                  "helper": "Kéo các mục để xác định thứ tự chính xác.",
+                  "add_step": "Thêm bước",
+                  "empty": "Thêm các bước, sau đó kéo để đặt thứ tự dự kiến.",
+                  "step_placeholder": "Bước '{'chỉ mục'}'",
+                  "remove_step_tooltip": "Xóa bước"
+                }
+              },
+              "matching": {
+                "preview": {
+                  "helper": "Xem trước các cặp phù hợp được cung cấp bởi cài đặt ứng dụng máy chủ."
+                },
+                "take": {
+                  "placeholder": "Cung cấp các cặp khớp dưới dạng JSON"
+                },
+                "edit": {
+                  "helper": "Định cấu hình các cặp trong cài đặt câu hỏi thông qua điều khiển ứng dụng máy chủ."
+                }
+              },
+              "link": {
+                "preview": {
+                  "empty": "Không có liên kết nào được gửi.",
+                  "item_label": "Liên kết '{'chỉ mục'}'"
+                },
+                "take": {
+                  "helper": "Thêm một hoặc nhiều liên kết. Chỉ các URL http/https hợp lệ mới được chấp nhận.",
+                  "placeholder": "https://example.com/resource-'{'index'}'",
+                  "remove_tooltip": "Xóa liên kết",
+                  "remove_sr": "Xóa liên kết",
+                  "invalid_url_error": "Vui lòng nhập URL hợp lệ (http/https).",
+                  "add_button": "Thêm liên kết"
+                },
+                "edit": {
+                  "instructions_placeholder": "Hướng dẫn tùy chọn cho người học",
+                  "helper": "Người học có thể gửi một hoặc nhiều URL hợp lệ (http/https)."
+                }
+              },
+              "file_upload": {
+                "preview": {
+                  "accepted_types_label": "Các loại được chấp nhận",
+                  "max_size_label": "Kích thước tối đa (MB)"
+                },
+                "take": {
+                  "selected_file_label": "Tệp đã chọn",
+                  "upload_button": "Tải lên",
+                  "upload_progress": "Đang tải lên...",
+                  "upload_error": "Tải lên không thành công",
+                  "view": "Xem",
+                  "download": "Tải xuống"
+                },
+                "edit": {
+                  "accepted_types_placeholder": "Các loại được chấp nhận (ví dụ: pdf, docx)",
+                  "max_size_placeholder": "Kích thước tối đa (MB)"
+                }
+              },
+              "fill_blank": {
+                "preview": {
+                  "accepted_answers_label": "Câu trả lời được chấp nhận"
+                },
+                "take": {
+                  "placeholder": "Nhập các câu trả lời cách nhau bằng dấu phẩy"
+                },
+                "edit": {
+                  "accepted_answers_placeholder": "Câu trả lời được chấp nhận (được phân tách bằng dấu phẩy)"
+                }
+              },
+              "numeric": {
+                "preview": {
+                  "correct_value_label": "Giá trị đúng",
+                  "tolerance_label": "Dung sai"
+                },
+                "take": {
+                  "placeholder": "Nhập một số"
+                },
+                "edit": {
+                  "correct_value_label": "Giá trị đúng",
+                  "correct_value_info": "Câu trả lời bằng số dự kiến người học phải nộp để được đánh dấu là đúng.",
+                  "tolerance_label": "Dung sai",
+                  "tolerance_info": "Chênh lệch được phép so với giá trị chính xác (ví dụ: 0,5 chấp nhận +/- 0,5).",
+                  "correct_value_placeholder": "Giá trị đúng",
+                  "tolerance_placeholder": "Dung sai"
+                }
+              },
+              "short_answer": {
+                "preview": {
+                  "helper": "Câu hỏi trả lời bằng văn bản miễn phí."
+                },
+                "take": {
+                  "placeholder": "Nhập câu trả lời của bạn"
+                },
+                "edit": {
+                  "instructions_placeholder": "Hướng dẫn tùy chọn"
+                }
+              },
+              "true_false": {
+                "true_label": "đúng",
+                "false_label": "sai",
+                "preview": {
+                  "correct_value_label": "Giá trị đúng"
+                },
+                "edit": {
+                  "correct_answer_label": "Câu trả lời đúng"
+                }
+              },
+              "checkbox": {
+                "edit": {
+                  "helper": "Đánh dấu một hoặc nhiều lựa chọn là đúng.",
+                  "correct_selected_tooltip": "Đã chọn câu trả lời đúng",
+                  "toggle_correct_tooltip": "Chuyển đổi câu trả lời đúng",
+                  "toggle_correct_sr": "Chuyển đổi tùy chọn là chính xác"
+                }
+              },
+              "radio": {
+                "edit": {
+                  "helper": "Chọn đúng một phương án đúng.",
+                  "correct_selected_tooltip": "Đã chọn câu trả lời đúng",
+                  "mark_correct_tooltip": "Đánh dấu là câu trả lời đúng",
+                  "mark_correct_sr": "Đánh dấu tùy chọn là chính xác"
+                }
+              },
+              "question": {
+                "edit": {
+                  "title_label": "Tiêu đề",
+                  "title_placeholder": "Lời nhắc câu hỏi",
+                  "description_label": "Mô tả (tùy chọn)",
+                  "description_placeholder": "Thêm ngữ cảnh bổ sung cho câu hỏi này",
+                  "add_description": "Thêm mô tả",
+                  "remove_description": "Xóa mô tả",
+                  "media_menu_sr": "Menu bổ sung câu hỏi",
+                  "add_image": "Thêm hình ảnh",
+                  "add_video": "Thêm video",
+                  "remove_image_tooltip": "Xóa hình ảnh",
+                  "remove_image_sr": "Xóa hình ảnh",
+                  "remove_video_tooltip": "Xóa video",
+                  "remove_video_sr": "Xóa video",
+                  "image_alt": "Bối cảnh câu hỏi",
+                  "video_modal_title": "Thêm video YouTube",
+                  "video_link_label": "liên kết YouTube",
+                  "video_link_placeholder": "https://www.youtube.com/watch?v=",
+                  "video_add_button": "Thêm video",
+                  "video_invalid_link": "Vui lòng nhập liên kết YouTube hợp lệ.",
+                  "upload_error_only_images": "Chỉ hỗ trợ các tập tin hình ảnh.",
+                  "upload_error_skipped": "Một số tệp đã bị bỏ qua vì chúng không phải là hình ảnh.",
+                  "upload_error_failed": "Không thể tải lên hình ảnh. Hãy thử lại."
+                }
+              },
+              "navigation": {
+                "previous": "trước đó",
+                "next": "Tiếp theo",
+                "finish": "Kết thúc"
+              },
+              "common": {
+                "option_prefix": "Tùy chọn",
+                "remove": "Xóa",
+                "add_option": "Thêm tùy chọn",
+                "correct_badge": "(Đúng)",
+                "not_set": "Chưa đặt"
+              }
+            }
           },
           "new_exercise_modal": {
             "heading": "Bài tập mới",
             "how": "Bạn muốn tạo bài tập của mình như thế nào",
-            "coming_soon": "Sắp ra mắt",
-            "next": "Kế tiếp",
+            "coming_soon": "Sắp có",
+            "next": "Tiếp theo",
             "title": "Đặt tiêu đề cho bài tập của bạn",
             "title_placeholder": "Tên bài tập",
-            "finish": "Hoàn thành",
+            "finish": "Kết thúc",
             "select_template": "Chọn một mẫu",
             "questions": "Câu hỏi",
             "points": "Điểm",
-            "back": "Mặt sau",
+            "back": "Quay lại",
             "create_exercises": "Tạo bài tập từ Notes bằng AI",
-            "choose_questions": "Chọn số lượng câu hỏi và tùy chọn bạn muốn và AI sẽ giúp bạn tạo một bài tập từ ghi chú của bạn. Đi nào.",
+            "choose_questions": "Chọn số lượng câu hỏi và tùy chọn bạn muốn và AI sẽ giúp bạn tạo bài tập từ ghi chú của mình. Đi thôi.",
             "how_many_questions": "Bạn muốn tạo bao nhiêu câu hỏi?",
             "how_many_options": "Bạn muốn có bao nhiêu lựa chọn cho mỗi câu hỏi?",
             "add_note": "Vui lòng thêm ghi chú để sử dụng tính năng này",
-            "generate": "Phát ra",
+            "generate": "Tạo",
             "completion": "Thế hệ AI hoàn chỉnh",
             "click_generate": "Nhấp vào 'Tạo' để có một số phép thuật",
+            "no_templates_for_tag": "Không có mẫu nào có sẵn cho thẻ này.",
+            "errors": {
+              "template_fetch": "Lỗi tìm nạp mẫu. Vui lòng thử lại."
+            },
             "options": {
               "from_scratch": "Từ đầu",
               "from_scratch_subtitle": "Tạo bài tập của bạn từ đầu nếu bạn đã chuẩn bị sẵn câu hỏi của mình",
@@ -714,17 +1313,59 @@
         },
         "materials": {
           "body_heading": "Chưa có ghi chú, video hoặc slide nào được thêm vào cho bài học này",
-          "body_content": "Chia sẻ kiến ​​thức của bạn với học sinh bằng cách tạo nội dung hấp dẫn. Bắt đầu bằng cách nhấp vào",
+          "body_content": "Chia sẻ kiến thức của bạn với học sinh bằng cách tạo nội dung hấp dẫn. Bắt đầu bằng cách nhấp vào",
           "get_started": "Bắt đầu",
+          "no_content": "Không có nội dung",
           "no_translation": "Không có bản dịch cho ngôn ngữ đã chọn",
-          "button": "cái nút",
+          "button": "nút",
           "button_done": "Xong",
           "tabs": {
+            "document": {
+              "title": "Tài liệu",
+              "add_document": "Thêm tài liệu",
+              "no_document": "Chưa có tài liệu nào được tải lên",
+              "view_document": "Xem tài liệu",
+              "download": "Tải xuống",
+              "upload_document": "Tải tài liệu lên",
+              "upload_title": "Tải tài liệu lên",
+              "upload_description": "Tải lên tệp PDF, DOCX hoặc DOC. Kích thước tối đa: 5 MB",
+              "drag_drop": "Kéo và thả tài liệu của bạn vào đây",
+              "or": "hoặc",
+              "choose_file": "Chọn tệp",
+              "cancel": "Hủy bỏ",
+              "uploading": "Đang tải lên...",
+              "upload_success": "Tài liệu được tải lên thành công!",
+              "upload_error": "Không thể tải tài liệu lên",
+              "file_type_error": "Loại tệp không được hỗ trợ. Vui lòng tải lên tệp PDF, DOCX hoặc DOC.",
+              "file_size_error": "Kích thước tệp quá lớn. Kích thước tối đa là {size}.",
+              "type": "loại",
+              "size": "Kích thước",
+              "upload_error_title": "Lỗi tải lên",
+              "upload_error_message": "Định dạng tệp không được hỗ trợ hoặc tải lên không thành công",
+              "upload_error_try_again": "Vui lòng thử lại với tệp tài liệu hợp lệ",
+              "try_again": "Thử lại",
+              "upgrade": "Nâng cấp kế hoạch tải tài liệu lên của bạn",
+              "cancel_upload": "Hủy tải lên",
+              "upload_cancelled": "Tải lên bị người dùng hủy",
+              "downloading": "Đang tải xuống...",
+              "view_pdf": "Xem PDF",
+              "remove_document": "Xóa tài liệu",
+              "delete": "Xóa",
+              "page_of": "Trang {trang} trong tổng số {total}",
+              "loading_pdf": "Đang tải PDF...",
+              "failed_to_load_pdf": "Không tải được tài liệu PDF",
+              "failed_to_render_pdf": "Không thể hiển thị trang PDF",
+              "use_arrow_keys": "Sử dụng các phím mũi tên để điều hướng, +/- để thu phóng hoặc nhấp vào các điều khiển ở trên. Nhấp chuột phải bị vô hiệu hóa.",
+              "empty_title": "Chưa có tài liệu nào",
+              "empty_description": "Tải lên tài liệu để chia sẻ với sinh viên của bạn"
+            },
             "video": {
-              "title": "Băng hình",
+              "title": "Video",
               "embed_link": "Nhúng liên kết",
               "upload": "Tải lên",
+              "library": "Thư viện",
               "button": "Thêm/Chỉnh sửa Video",
+              "remove_video": "Xóa video",
               "add_video": {
                 "title": "Thêm một video",
                 "add_by": "Thêm vào",
@@ -732,11 +1373,11 @@
                 "videos_added": "Video đã thêm",
                 "add_video": "Thêm video",
                 "upload_video": "Tải video lên",
-                "select_file": "Chọn tệp (Mp4, MOV, AVI) để tải lên bài học của bạn.",
+                "select_file": "Chọn file (Mp4, MOV, AVI) để tải lên bài học.",
                 "size": "(Tối đa 500 MB)",
                 "oops": "Rất tiếc `😬, không thể tải video lên",
                 "big_file": "Rất tiếc, video của chúng tôi chưa được tải lên. Kích thước tập tin quá lớn,",
-                "maximum_size": "kích thước tối đa là 30 MB. Thử lại!",
+                "maximum_size": "kích thước tối đa là 30 MB. Hãy thử lại!",
                 "button": "Hãy thử một tập tin khác",
                 "try_again": "Vui lòng thử lại",
                 "unsupported_format": "Rất tiếc, video của chúng tôi không được tải lên, định dạng tệp không được hỗ trợ hoặc đã xảy ra lỗi trên máy chủ.",
@@ -745,96 +1386,65 @@
                 "uploading": "Đang tải lên...",
                 "invalid_youtube": "(Các) liên kết YouTube không hợp lệ",
                 "invalid_link": "(Các) liên kết không hợp lệ",
+                "search_library": "Tìm kiếm thư viện",
+                "search_library_action": "Tìm kiếm",
+                "loading_library": "Đang tải thư viện phương tiện...",
+                "no_library_videos": "Không có video nào trong thư viện phương tiện của bạn",
+                "add_from_library": "Thêm từ thư viện",
                 "cancel_upload": "Hủy tải lên",
-                "upload_cancelled": "Tải lên bị hủy bởi người dùng"
-              }
+                "upload_cancelled": "Tải lên bị người dùng hủy",
+                "max_files": "{đếm, số nhiều, một {Bạn có thể tải lên # tệp} khác {Bạn có thể tải lên # tệp}}",
+                "max_files_and_size": "(tối đa {size} mỗi cái)"
+              },
+              "empty_title": "Chưa có video nào",
+              "empty_description": "Thêm video từ YouTube, tải lên hoặc thư viện phương tiện của bạn"
             },
             "slide": {
-              "title": "Cầu trượt",
+              "title": "Trượt",
               "slide_link": "Liên kết trượt",
               "helper_message": "Bạn có thể nhúng Google Trang trình bày hoặc Bản trình bày Canva"
             },
             "note": {
-              "title": "Ghi chú",
+              "title": "Lưu ý",
               "placeholder": "Viết ghi chú bài học của bạn ở đây",
               "ai": {
                 "outline": "Tạo dàn ý bài học",
                 "note": "Tạo ghi chú bài học",
                 "activities": "Tạo hoạt động bài học"
               }
-            },
-            "document": {
-              "title": "Tài liệu",
-              "add_document": "Thêm tài liệu",
-              "no_document": "Chưa có tài liệu nào được tải lên",
-              "view_document": "Xem tài liệu",
-              "download": "Tải xuống",
-              "upload_document": "Tải lên tài liệu",
-              "upload_title": "Tải lên tài liệu",
-              "upload_description": "Tải lên các tệp PDF, DOCX hoặc DOC. Kích thước tối đa: 5MB",
-              "drag_drop": "Kéo và thả tài liệu của bạn tại đây",
-              "or": "hoặc",
-              "choose_file": "Chọn Tệp",
-              "cancel": "Hủy bỏ",
-              "uploading": "Tải lên ...",
-              "upload_success": "Tài liệu được tải lên thành công!",
-              "upload_error": "Không tải lên tài liệu",
-              "file_type_error": "Loại tệp không được hỗ trợ. Vui lòng tải lên các tệp PDF, DOCX hoặc DOC.",
-              "file_size_error": "Kích thước tập tin quá lớn. Kích thước tối đa là {kích thước}.",
-              "type": "Kiểu",
-              "size": "Kích cỡ",
-              "upload_error_title": "Lỗi tải lên",
-              "upload_error_message": "Định dạng tệp không được hỗ trợ hoặc tải lên không thành công",
-              "upload_error_try_again": "Vui lòng thử lại với một tệp tài liệu hợp lệ",
-              "try_again": "Hãy thử lại",
-              "cancel_upload": "Hủy tải lên",
-              "upload_cancelled": "Tải lên bị hủy bởi người dùng",
-              "downloading": "Tải xuống ...",
-              "view_pdf": "Xem PDF",
-              "delete": "Xóa bỏ",
-              "page_of": "Trang {page} của {total}",
-              "loading_pdf": "Tải PDF ...",
-              "failed_to_load_pdf": "Không tải tài liệu PDF",
-              "failed_to_render_pdf": "Không thể hiển thị trang PDF",
-              "use_arrow_keys": "Sử dụng các phím mũi tên để điều hướng, +/- đến phóng to hoặc nhấp vào các điều khiển ở trên. Nhấp chuột phải bị vô hiệu hóa.",
-              "upgrade": "Nâng cấp kế hoạch của bạn để tải lên tài liệu"
             }
           }
         },
         "lesson_nav": {
-          "materials": "Nguyên vật liệu",
+          "materials": "Vật liệu",
           "exercises": "Bài tập"
         },
+        "add_content_options": {
+          "section_title": "Phần",
+          "section_description": "Nhóm các bài học và bài tập lại với nhau.",
+          "lesson_title": "Bài học",
+          "lesson_description": "Dạy bằng ghi chú, slide và video.",
+          "exercise_title": "tập thể dục",
+          "exercise_description": "Đánh giá học sinh bằng các câu hỏi và nhiệm vụ."
+        },
         "add_lesson": {
-          "button_title": "Thêm vào",
-          "modal_heading": "Thêm bài học mới",
-          "lesson_title": "Tiêu đề bài học",
-          "click_to": "Bấm vào để",
-          "fullname": "Họ và tên",
-          "save": "Cứu",
-          "edit": "Biên tập",
-          "delete": "Xóa bỏ",
-          "lock": "Khóa",
-          "unlock": "Mở khóa",
+          "button_title": "Thêm",
           "start_reorder": "Sắp xếp lại",
           "end_reorder": "Kết thúc sắp xếp lại",
+          "modal_heading": "Thêm bài học mới",
           "modal_heading_section": "Thêm phần mới",
-          "lesson_section_title": "Tiêu đề phần",
+          "lesson_title": "Tiêu đề bài học",
+          "course_section_title": "Tiêu đề phần",
+          "click_to": "Bấm vào để",
+          "lock": "Khóa",
+          "unlock": "Mở khóa",
+          "all": "Tất cả",
+          "fullname": "tên đầy đủ",
+          "save": "Lưu",
+          "edit": "Chỉnh sửa",
+          "delete": "Xóa",
           "cancel": "Hủy bỏ"
         },
-        "disabled": "Tính năng bị vô hiệu hóa",
-        "next": "Kế tiếp",
-        "prev": "Trước đó",
-        "version_history": {
-          "title": "Lịch sử phiên bản",
-          "fetch_more_versions": "Tìm nạp thêm phiên bản",
-          "current_version": "Phiên bản hiện tại",
-          "restore_version": "Khôi phục phiên bản này"
-        },
-        "drag": "kéo thẻ để sắp xếp lại",
-        "no_lesson": "Chưa có bài học nào",
-        "share_your_knowledge": "Chia sẻ kiến ​​thức của bạn với thế giới bằng cách tạo ra những bài học hấp dẫn. Bắt đầu bằng cách nhấp vào nút Thêm.",
-        "heading_v2": "Nội dung",
         "section_prompt": {
           "cta": "Bật phần",
           "header": "Bật phần",
@@ -842,7 +1452,9 @@
           "description": "Giờ đây, bạn có thể nhóm các bài học thành các phần để sắp xếp nội dung và giúp học sinh học tập suôn sẻ hơn.",
           "activate": "Kích hoạt",
           "cancel": "Hủy bỏ"
-        }
+        },
+        "content_locked_title": "Nội dung này đã bị khóa",
+        "content_locked_description": "Người hướng dẫn của bạn chưa mở khóa nội dung này. Hoàn thành nội dung trước đó hoặc kiểm tra lại sau."
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",
@@ -850,7 +1462,7 @@
         "body_content": "Tạo một bài đăng cho lớp học của bạn. Bắt đầu bằng cách nhấp vào nút Thêm.",
         "pinned": "Đã ghim",
         "snackbar": {
-          "comment_deleted": "Bình luận đã bị xóa",
+          "comment_deleted": "Đã xóa bình luận",
           "reaction_error": "Đã xảy ra lỗi khi phản hồi với nguồn cấp tin tức",
           "comment_creation_error": "Đã xảy ra lỗi khi tạo bình luận",
           "add_comment_success": "Đã thêm nhận xét",
@@ -862,121 +1474,145 @@
           "fetching_error": "Đã xảy ra lỗi khi tìm nạp nguồn cấp dữ liệu"
         },
         "heading_button": {
-          "title": "Thêm vào",
-          "edit_post": "Chỉnh sửa bài",
+          "title": "Thêm",
+          "edit_post": "Chỉnh sửa bài đăng",
           "make_a_post": "Tạo một bài đăng",
           "placeholder": "Chia sẻ thông tin cập nhật với học sinh của bạn",
           "cancel": "Hủy bỏ",
-          "post": "Bưu kiện"
+          "post": "bài viết"
+        },
+        "user_avatar_alt": "Hình đại diện của người dùng",
+        "comments": {
+          "comment": "bình luận",
+          "showing_of": "Đang hiển thị {được hiển thị} trong tổng số {toàn bộ}",
+          "hide": "Ẩn bình luận",
+          "placeholder": "Thêm nhận xét của lớp",
+          "submit_aria": "Gửi bình luận",
+          "delete": "Xóa"
+        },
+        "card": {
+          "pin": "Ghim",
+          "unpin": "Bỏ ghim",
+          "edit": "Chỉnh sửa",
+          "delete": "Xóa"
         }
-      },
-      "analytics": {
-        "title": "Phân tích"
+      }
+    },
+    "search": {
+      "placeholder": "Tìm kiếm bài học hoặc bài tập",
+      "empty": "Không tìm thấy kết quả nào"
+    },
+    "sidebar": {
+      "back_to_course": "Quay lại khóa học",
+      "content_count": {
+        "lessons": "{đếm} bài học",
+        "exercises": "bài tập {đếm}"
       }
     },
     "navItems": {
       "nav_news_feed": "Nguồn cấp tin tức",
-      "nav_attendance": "Sự tham dự",
+      "nav_content": "Nội dung",
+      "nav_attendance": "Tham dự",
       "nav_submissions": "bài nộp",
       "nav_marks": "Điểm",
-      "nav_people": "Mọi người",
+      "nav_people": "mọi người",
+      "nav_analytics": "Phân tích",
       "nav_certificates": "Chứng chỉ",
       "nav_landing_page": "Trang đích",
-      "nav_settings": "Cài đặt",
-      "nav_content": "Nội dung",
-      "nav_analytics": "Phân tích"
-    },
-    "not_permitted": {
-      "header": "Không cho phép",
-      "body": "Rất tiếc, bạn không có quyền truy cập vào khóa học này.",
-      "button": "Về nhà"
+      "nav_settings": "Cài đặt"
     }
   },
   "courses": {
     "heading": "Khóa học",
     "heading_button": "Tạo khóa học",
     "search_placeholder": "Tìm khóa học",
-    "new_course_modal": {
-      "heading": "Tạo một khóa học",
-      "course_name": "Tên khóa học",
-      "course_name_placeholder": "Tên khóa học của bạn",
-      "short_description": "Mô tả ngắn",
-      "short_description_placeholder": "Một chút mô tả về khóa học này",
-      "button": "Hoàn thành",
-      "type": "Loại khóa học",
-      "type_selector_title": "Bạn đang xem loại khóa học nào?",
-      "back": "Mặt sau",
-      "next": "Kế tiếp"
-    },
-    "course_card": {
-      "empty_title": "Không có khóa học nào được tạo",
-      "empty_description": "Chia sẻ kiến ​​thức của bạn với thế giới bằng cách tạo các khóa học hấp dẫn cho sinh viên của bạn.",
-      "error_message": "Đã xảy ra lỗi.",
-      "lessons_number": "Những bài học",
-      "students": "sinh viên",
-      "published": "Được phát hành",
-      "unpublished": "Chưa xuất bản",
-      "continue_course": "Tiếp tục khóa học",
-      "list_view": {
-        "title": "Tiêu đề",
-        "description": "Sự miêu tả",
-        "lessons": "Những bài học",
-        "students": "Sinh viên",
-        "published": "Được phát hành",
-        "type": "Kiểu"
-      },
-      "context_menu": {
-        "clone": "Dòng vô tính",
-        "share": "Chia sẻ",
-        "invite": "Mời",
-        "delete": "Xóa bỏ"
-      },
-      "get_course": "Nhận khóa học",
-      "learn_more": "Tìm hiểu thêm"
-    },
-    "course_filter": {
-      "date_created": "Ngày tạo",
-      "published": "Được phát hành",
-      "lessons": "Những bài học"
-    },
     "copy_course": {
       "title": "Tạo một khóa học",
       "course_name_label": "Tên khóa học",
       "course_name_placeholder": "Tên khóa học của bạn",
       "course_description_label": "Mô tả khóa học",
       "course_description_placeholder": "Nhập mô tả cho khóa học của bạn",
-      "create_button": "Tạo nên",
+      "create_button": "Tạo",
       "error": {
         "failed_to_clone": "Không thể sao chép khóa học"
       }
+    },
+    "new_course_modal": {
+      "heading": "Tạo một khóa học",
+      "course_name": "Tên khóa học",
+      "type": "Loại khóa học",
+      "course_name_placeholder": "Tên khóa học của bạn",
+      "short_description": "Mô tả ngắn",
+      "short_description_placeholder": "Một chút mô tả về khóa học này",
+      "type_selector_title": "Bạn đang xem loại khóa học nào?",
+      "button": "Kết thúc",
+      "back": "Quay lại",
+      "next": "Tiếp theo"
+    },
+    "course_card": {
+      "empty_title": "Không có khóa học nào được tạo",
+      "empty_description": "Chia sẻ kiến thức của bạn với thế giới bằng cách tạo các khóa học hấp dẫn cho sinh viên của bạn.",
+      "error_message": "Đã xảy ra lỗi.",
+      "lessons_number": "bài học",
+      "students": "sinh viên",
+      "published": "Đã xuất bản",
+      "unpublished": "Chưa được xuất bản",
+      "continue_course": "Tiếp tục",
+      "learn_more": "Tìm hiểu thêm",
+      "list_view": {
+        "title": "Tiêu đề",
+        "description": "Mô tả",
+        "lessons": "Bài học",
+        "students": "Sinh viên",
+        "published": "Đã xuất bản",
+        "type": "loại",
+        "tags": "Thẻ"
+      },
+      "context_menu": {
+        "clone": "bản sao",
+        "share": "Chia sẻ",
+        "invite": "Mời",
+        "delete": "Xóa"
+      }
+    },
+    "course_filter": {
+      "date_created": "Ngày tạo",
+      "published": "Đã xuất bản",
+      "lessons": "Bài học"
+    },
+    "tag_filters": {
+      "filter": "Lọc",
+      "active": "Bộ lọc hoạt động",
+      "clear_all": "Xóa tất cả",
+      "popover_title": "Bộ lọc",
+      "sort": "Sắp xếp",
+      "tags": "Thẻ",
+      "empty_tags": "Không có thẻ nào"
     }
   },
   "ai": {
     "help_me": "Giúp tôi viết",
     "placeholder": "Giúp tôi viết một mô tả ngắn",
     "text": "Bắt đầu gõ...",
-    "reset": "Cài lại",
+    "reset": "Đặt lại",
     "rephrase": "diễn đạt lại",
     "insert": "Chèn",
-    "can_you": "Bạn có thể vui lòng diễn đạt lại điều này",
-    "requirements": "Vui lòng viết một số yêu cầu cần thiết để tham gia khóa học này:",
-    "description": "Vui lòng viết mô tả khóa học chi tiết cho khóa học này:",
-    "expectation": "Học viên nên mong đợi học được gì từ khóa học này:"
+    "can_you": "Bạn có thể vui lòng viết lại điều này"
   },
   "dashboard": {
-    "morning_heading": "Chào buổi sáng",
-    "afternoon_heading": "Chào buổi chiều",
-    "evening_heading": "Buổi tối vui vẻ",
+    "morning_heading": "Chào buổi sáng",
+    "afternoon_heading": "Chào buổi chiều",
+    "evening_heading": "Chào buổi tối",
     "create_course": "Tạo khóa học",
     "view_site": "Xem trang web",
     "visit_site": "Truy cập trang web",
     "current_lesson": "Hiện đang học",
     "your_progress": "Sự tiến bộ của bạn",
     "continue": "Tiếp tục",
+    "continue_learning": "Tiếp tục học",
     "no_courses": "Chưa có khóa học nào đang diễn ra",
     "start_course": "Khi bạn bắt đầu một khóa học, sự tiến bộ của bạn sẽ phản ánh ở đây",
     "lms_dashboard_hero": "Hôm nay là một ngày khác để đưa bạn đến gần hơn với mục tiêu học tập của mình. Đừng bỏ cuộc, bạn càng học nhiều thì bạn càng tiến bộ hơn.",
-    "dont": "Đừng bỏ cuộc",
     "lessons_completed": "Bài học đã hoàn thành",
     "no_courses_started": "Không có khóa học nào bắt đầu",
     "revenue": "Doanh thu",
@@ -987,14 +1623,15 @@
     "total_students_description": "Căn cứ vào số lượng tuyển sinh",
     "top_courses": "Các khóa học hàng đầu",
     "students": "sinh viên",
+    "student": "sinh viên",
     "completion": "hoàn thành",
     "create_first_course": "Tạo khóa học đầu tiên của bạn",
     "create_first_course_description": "Bắt đầu tạo các khóa học để theo dõi tiến độ khóa học",
     "recent_enrollments": "Đăng ký gần đây",
     "publish_first_course": "Xuất bản khóa học đầu tiên của bạn",
-    "publish_first_course_description": "Để theo dõi việc đăng ký, xuất bản một khóa học và mời sinh viên",
+    "publish_first_course_description": "Để theo dõi việc ghi danh, xuất bản một khóa học và mời sinh viên",
     "publish_course": "Xuất bản khóa học",
-    "student": "học sinh"
+    "items_completed": "Các hạng mục đã hoàn thành"
   },
   "schedule": {
     "title": "Lịch trình của bạn",
@@ -1005,30 +1642,9 @@
   },
   "components": {
     "settings": {
-      "domains": {
-        "add": "Thêm vào",
-        "url": "URL",
-        "update": "Cập nhật tên miền",
-        "custom": "Tên miền tùy chọn",
-        "domain": "Thêm tên miền của riêng bạn",
-        "title": "Tên miền tùy chọn",
-        "save": "Cứu",
-        "your_domain": "Tên miền của bạn",
-        "custom_domain_error": "Bạn không thể thêm miền cấp cao nhất làm miền tùy chỉnh. Thay vào đó, hãy sử dụng tên miền phụ như 'courses.[yourwebsite].com' hoặc 'www.[yourwebsite].com'.",
-        "custom_domain_success": "Đã thêm miền tùy chỉnh thành công",
-        "dns_description": "Đặt bản ghi sau trên nhà cung cấp DNS của bạn để tiếp tục:",
-        "dns_type": "Kiểu",
-        "dns_value": "Giá trị",
-        "dns_name": "Tên",
-        "refresh": "Làm cho khỏe lại",
-        "remove": "Di dời",
-        "custom_favicon": "Biểu tượng yêu thích tùy chỉnh",
-        "custom_code": "Mã tùy chỉnh",
-        "custom_domain_not_classroomio": "Tên miền không thể chứa 'classroomio'"
-      },
-      "customize-lms": {
+      "customize_lms": {
         "title": "Tùy chỉnh LMS",
-        "disabled": "tàn tật",
+        "disabled": "Đã tắt",
         "enabled": "Đã bật",
         "save": "Lưu thay đổi",
         "apps": {
@@ -1042,8 +1658,8 @@
           "grading": "Chấm điểm"
         },
         "dashboard": {
-          "title": "bảng điều khiển",
-          "community": "Cộng đồng",
+          "title": "Trang tổng quan",
+          "community": "cộng đồng",
           "exercises": "Bài tập",
           "banner_image": "Hình ảnh biểu ngữ",
           "banner_image_btn": "Cập nhật hình ảnh biểu ngữ",
@@ -1052,31 +1668,26 @@
           "banner_text_placeholder": "Viết văn bản ở đây"
         }
       },
-      "customize_lms": {
-        "title": "Tùy chỉnh LMS",
-        "enabled": "Đã bật",
-        "save": "Lưu thay đổi",
-        "apps": {
-          "title": "Ứng dụng",
-          "poll": "Thăm dò ý kiến",
-          "live_comment": "Bình luận trực tiếp"
-        },
-        "course": {
-          "title": "Khóa học",
-          "newsfeed": "Nguồn cấp tin tức",
-          "grading": "Chấm điểm"
-        },
-        "dashboard": {
-          "title": "bảng điều khiển",
-          "community": "Cộng đồng",
-          "exercises": "Bài tập",
-          "banner_image": "Hình ảnh biểu ngữ",
-          "banner_image_btn": "Cập nhật hình ảnh biểu ngữ",
-          "banner_text": "Văn bản biểu ngữ",
-          "banner_text_label": "Cập nhật văn bản biểu ngữ",
-          "banner_text_placeholder": "Viết văn bản ở đây"
-        },
-        "disabled": "Tàn tật"
+      "domains": {
+        "title": "Miền tùy chỉnh",
+        "add": "Thêm",
+        "url": "URL",
+        "update": "Cập nhật tên miền",
+        "custom": "Miền tùy chỉnh",
+        "domain": "Thêm tên miền của riêng bạn",
+        "save": "Lưu",
+        "your_domain": "Tên miền của bạn",
+        "custom_domain_error": "Bạn không thể thêm miền cấp cao nhất làm miền tùy chỉnh. Thay vào đó, hãy sử dụng tên miền phụ như 'courses.[yourwebsite].com' hoặc 'www.[yourwebsite].com'.",
+        "custom_domain_not_classroomio": "Tên miền không thể chứa 'classroomio'",
+        "custom_domain_success": "Đã thêm miền tùy chỉnh thành công",
+        "dns_description": "Đặt bản ghi sau trên nhà cung cấp DNS của bạn để tiếp tục:",
+        "dns_type": "loại",
+        "dns_value": "Giá trị",
+        "dns_name": "Tên",
+        "refresh": "Làm mới",
+        "remove": "Xóa",
+        "custom_favicon": "Biểu tượng yêu thích tùy chỉnh",
+        "custom_code": "Mã tùy chỉnh"
       }
     },
     "quiz": {
@@ -1090,9 +1701,9 @@
       "delete_question": "Bạn có chắc chắn muốn xóa câu hỏi này?",
       "delete_quiz": "Bạn có chắc chắn muốn xóa bài kiểm tra này không?",
       "lose_content": "Bạn sẽ mất nội dung của mình và không thể hoàn tác hành động này.",
-      "delete": "Xóa bỏ",
-      "update": "Cập nhật",
-      "create": "Tạo nên",
+      "delete": "Xóa",
+      "update": "cập nhật",
+      "create": "Tạo",
       "a_quiz": "một câu đố",
       "quiz_title": "Tiêu đề bài kiểm tra",
       "placeholder": "Tiêu đề bài kiểm tra của bạn",
@@ -1103,7 +1714,7 @@
       "start": "Bắt đầu bài kiểm tra",
       "start_typing": "Bắt đầu nhập câu hỏi của bạn",
       "required_field": "Trường này là bắt buộc",
-      "type_answer": "Viết câu trả lời",
+      "type_answer": "Nhập câu trả lời",
       "label": "Vui lòng nhập nhãn",
       "no_quizz": "Không có bài kiểm tra nào được tạo",
       "interactive": "Tạo các câu đố tương tác với bảng điểm cho học sinh của bạn."
@@ -1114,13 +1725,13 @@
     "preview": "Xem trước"
   },
   "navigation": {
-    "goto": "Đi đến",
+    "goto": "đi đến",
     "courses": "Khóa học",
     "home": "Trang chủ",
     "classroomio_home": "Lớp họcIO Trang chủ",
-    "dashboard": "bảng điều khiển",
-    "discussion": "Cuộc thảo luận",
-    "people": "Mọi người",
+    "dashboard": "Trang tổng quan",
+    "discussion": "Thảo luận",
+    "people": "mọi người",
     "goto_lms": "Đi tới LMS",
     "goto_home": "Đi tới Lớp họcIO Trang chủ",
     "login": "Đăng nhập",
@@ -1128,18 +1739,25 @@
     "redirecting": "Chuyển hướng",
     "loading_state": "Đang đưa bạn đến trang tiếp theo, vui lòng đợi.",
     "org_loading_state": "Đưa bạn đến tổ chức của bạn...",
-    "add_organization": "+ Thêm tổ chức"
+    "add_organization": "+ Thêm tổ chức",
+    "goto_dashboard": "Trang tổng quan"
   },
   "add_org": {
     "create_org": "Tạo tổ chức",
     "name": "Tên tổ chức",
     "org_sitename": "Tên trang web của tổ chức",
-    "create": "Tạo nên",
+    "create": "Tạo",
     "sitename": "Tên trang web đã tồn tại",
     "error_organization": "Đã xảy ra lỗi khi tạo tổ chức này. Vui lòng tải lại và thử lại"
   },
   "setup": {
+    "your_checklist": "Danh sách kiểm tra của bạn",
     "get_started": "Bắt đầu",
+    "description": "Hoàn thành các bước này để thiết lập nền tảng học tập của bạn",
+    "progress": "Tiến độ",
+    "completed": "hoàn thành",
+    "done": "Xong",
+    "todo": "việc cần làm",
     "publish_course": {
       "title": "Xuất bản một khóa học",
       "desc": "Làm cho khóa học của bạn trở nên công khai và có thể mua được",
@@ -1167,39 +1785,152 @@
     },
     "personal_profile": {
       "title": "Tải lên ảnh hồ sơ và cập nhật tên người dùng",
-      "desc": "Cá nhân hóa và mang tính nhân văn giúp cho các tương tác trở nên cá nhân và đáng nhớ hơn",
+      "desc": "Cá nhân hóa và thêm dấu ấn con người, giúp các tương tác trở nên cá nhân và đáng nhớ hơn",
       "button_label": "Cập nhật hồ sơ"
     }
   },
   "pricing": {
     "modal": {
       "heading": "Kế hoạch nâng cấp",
-      "thanks": "cảm ơn sự hỗ trợ của bạn",
+      "thanks": "Cảm ơn sự hỗ trợ của bạn",
       "plan": "Gói của bạn đi kèm với các đặc quyền và lợi ích thú vị, bao gồm quyền truy cập vào tất cả các tính năng trong tương lai mà chúng tôi sẽ phát hành.",
+      "save": "Tiết kiệm 2 tháng",
       "close": "Đóng",
       "learn": "Tìm hiểu thêm",
       "month": "tháng",
       "monthly": "hàng tháng",
       "annually": "Hàng năm",
-      "save": "Tiết kiệm 2 tháng"
+      "popular": "phổ biến",
+      "per_org": "Mỗi tổ chức"
     },
     "plan_names": {
-      "free": "Miễn phí",
+      "free": "miễn phí",
       "early": "Áp dụng sớm",
       "enterprise": "Doanh nghiệp"
     }
   },
   "org_navigation": {
-    "dashboard": "bảng điều khiển",
+    "platform": "Nền tảng",
+    "dashboard": "Trang tổng quan",
     "courses": "Khóa học",
-    "community": "Cộng đồng",
-    "audience": "Khán giả",
-    "setup": "Cài đặt",
-    "help": "Giúp đỡ",
+    "community": "cộng đồng",
+    "audience": "khán giả",
+    "media": "Phương tiện truyền thông",
+    "setup": "thiết lập",
+    "help": "Trợ giúp",
     "settings": "Cài đặt",
     "early_adopter": "Trở thành người áp dụng sớm",
     "unlock": "Mở khóa các tính năng không giới hạn và đầu tư vào tương lai của chúng tôi",
-    "upgrade": "Nâng cấp ngay bây giờ"
+    "upgrade": "Nâng cấp ngay",
+    "tags": "Thẻ"
+  },
+  "media_manager": {
+    "page_title": "Quản lý truyền thông - ClassroomIO",
+    "heading": "Trình quản lý phương tiện",
+    "empty": "Không tìm thấy nội dung nào",
+    "usage": {
+      "title": "Nơi sử dụng",
+      "description": "Tài liệu tham khảo sử dụng hiện tại cho",
+      "loading": "Đang tải chi tiết sử dụng...",
+      "empty": "Nội dung này chưa được đính kèm ở bất cứ đâu.",
+      "total": "Tổng số lần sử dụng:",
+      "table": {
+        "target_type": "Loại mục tiêu",
+        "target_id": "ID mục tiêu",
+        "slot": "Khe cắm",
+        "position": "Vị trí",
+        "added": "Đã thêm"
+      },
+      "target": {
+        "lesson": "Bài học",
+        "exercise": "tập thể dục",
+        "question": "Câu hỏi",
+        "unknown": "Không xác định"
+      }
+    },
+    "form": {
+      "file_name": "Tên tệp",
+      "description": "Mô tả",
+      "description_placeholder": "Thêm mô tả tùy chọn",
+      "thumbnail_url": "URL hình thu nhỏ",
+      "thumbnail_url_placeholder": "https://example.com/thumbnail.jpg",
+      "thumbnail_upload": "Tải lên hình thu nhỏ",
+      "thumbnail_drop_label": "Thả hình ảnh vào đây hoặc bấm vào để tải lên",
+      "thumbnail_drop_size": "Lên tới 5 MB",
+      "thumbnail_preview": "Xem trước hình thu nhỏ",
+      "thumbnail_alt": "Hình thu nhỏ nội dung",
+      "status": "Trạng thái"
+    },
+    "edit": {
+      "title": "Chỉnh sửa nội dung",
+      "description": "Cập nhật siêu dữ liệu phương tiện cho nội dung này.",
+      "cancel": "Hủy bỏ",
+      "save": "Lưu thay đổi"
+    },
+    "pagination": {
+      "previous": "trước đó",
+      "next": "Tiếp theo",
+      "page": "Trang"
+    },
+    "actions": {
+      "edit": "Chỉnh sửa",
+      "where_used": "Nơi sử dụng",
+      "download": "Tải xuống"
+    },
+    "table": {
+      "title": "Tiêu đề",
+      "kind": "loại",
+      "provider": "nhà cung cấp",
+      "status": "Trạng thái",
+      "size": "Kích thước",
+      "updated_at": "Đã cập nhật",
+      "actions": "hành động"
+    },
+    "status": {
+      "active": "Đang hoạt động",
+      "archived": "Đã lưu trữ"
+    },
+    "provider": {
+      "upload": "Tải lên",
+      "youtube": "YouTube",
+      "generic": "Chung",
+      "external_url": "URL bên ngoài"
+    },
+    "kind": {
+      "video": "Video",
+      "document": "tài liệu",
+      "image": "Hình ảnh",
+      "audio": "Âm thanh",
+      "other": "Khác"
+    },
+    "filters": {
+      "search_placeholder": "Tìm kiếm nội dung",
+      "apply": "Áp dụng",
+      "status_options": {
+        "all": "Tất cả trạng thái",
+        "active": "Đang hoạt động",
+        "archived": "Đã lưu trữ"
+      },
+      "kind_options": {
+        "all": "Tất cả các loại",
+        "video": "Video",
+        "document": "tài liệu",
+        "image": "Hình ảnh",
+        "audio": "Âm thanh",
+        "other": "Khác"
+      },
+      "refresh": "Làm cho khỏe lại"
+    },
+    "storage": {
+      "total_bytes": "Tổng dung lượng lưu trữ",
+      "internal_bytes": "Bộ nhớ trong",
+      "external_assets": "Tài sản bên ngoài",
+      "bytes_by_kind": "Lưu trữ theo loại nội dung"
+    },
+    "common": {
+      "not_available": "không áp dụng"
+    },
+    "empty_description": "Tài sản không tồn tại hoặc không có sẵn trong tổ chức này."
   },
   "settings": {
     "heading": "Cài đặt",
@@ -1207,8 +1938,8 @@
       "sub_title": "Chi tiết thanh toán",
       "manage": "Quản lý thanh toán của bạn",
       "active": "Bạn không có bất kỳ thanh toán nào đang hoạt động",
-      "open_billing": "Thanh toán mở",
       "provider": "Chúng tôi sử dụng Polar để giúp quản lý việc thanh toán của bạn",
+      "open_billing": "Thanh toán mở",
       "error": "Đã xảy ra lỗi khi mở thanh toán"
     },
     "integrations": {
@@ -1227,8 +1958,22 @@
       "hide_section": "Ẩn phần",
       "title": "Tiêu đề",
       "title_highlight": "Tiêu đề-Đánh dấu",
-      "subtitle": "Phụ đề",
+      "subtitle": "phụ đề",
       "save_changes": "Lưu thay đổi",
+      "custom_links": {
+        "heading": "Liên kết tùy chỉnh",
+        "hide_links": "Ẩn liên kết",
+        "show_links": "Hiển thị liên kết",
+        "description": "Thêm liên kết điều hướng tùy chỉnh sẽ xuất hiện trong thanh điều hướng tiêu đề.",
+        "label": "Nhãn",
+        "url": "URL",
+        "label_placeholder": "ví dụ: Giới thiệu về chúng tôi",
+        "url_placeholder": "ví dụ: #about-us hoặc https://example.com",
+        "new_tab": "Mở trong tab mới",
+        "save": "Lưu",
+        "cancel": "Hủy bỏ",
+        "add": "Thêm liên kết mới"
+      },
       "footer": {
         "heading": "Chân trang",
         "show_section": "Hiển thị phần",
@@ -1242,29 +1987,29 @@
         "show_section": "Hiển thị phần",
         "hide_section": "Ẩn phần",
         "title": "Tiêu đề",
-        "subtitle": "Phụ đề",
+        "subtitle": "phụ đề",
         "button_label": "Nhãn nút"
       },
       "contact_us": {
-        "heading": "Liên hệ chúng tôi",
+        "heading": "Liên hệ với chúng tôi",
         "show_section": "Hiển thị phần",
         "hide_section": "Ẩn phần",
         "title": "Tiêu đề",
         "title_highlight": "Tiêu đề-Đánh dấu",
-        "subtitle": "Phụ đề",
+        "subtitle": "phụ đề",
         "phone_number": "Số điện thoại",
-        "email": "E-mail",
+        "email": "Email",
         "address": "Địa chỉ"
       },
       "faq": {
-        "heading": "Các câu hỏi thường gặp",
+        "heading": "Câu hỏi thường gặp",
         "show_section": "Hiển thị phần",
         "hide_section": "Ẩn phần",
         "title": "Tiêu đề",
         "question": "Câu hỏi",
         "answer": "Trả lời",
         "button": "Thêm câu hỏi thường gặp mới",
-        "save": "Cứu",
+        "save": "Lưu",
         "cancel": "Hủy bỏ"
       },
       "courses": {
@@ -1273,26 +2018,26 @@
         "hide_section": "Ẩn phần",
         "title": "Tiêu đề",
         "title_highlight": "Tiêu đề-Đánh dấu",
-        "subtitle": "Phụ đề"
+        "subtitle": "phụ đề"
       },
       "about": {
-        "heading": "Về",
+        "heading": "Giới thiệu",
         "title": "Tiêu đề",
         "content": "Nội dung",
         "upload_an_image": "Tải lên một hình ảnh",
-        "select_image": "Chọn ảnh"
+        "select_image": "Chọn hình ảnh"
       },
       "actions": {
         "heading": "hành động",
         "label": "Nhãn",
         "link": "liên kết",
-        "no_redirect": "Không có chuyển hướng",
+        "no_redirect": "Không chuyển hướng",
         "redirect": "Chuyển hướng",
         "show_banner": "Hiển thị biểu ngữ",
         "hide_banner": "Ẩn biểu ngữ",
         "banner_type": {
           "heading": "Loại biểu ngữ",
-          "video": "Băng hình",
+          "video": "Video",
           "image": "Hình ảnh"
         }
       },
@@ -1300,65 +2045,56 @@
         "title": "Hình nền",
         "show_background": "Hiển thị nền",
         "hide_background": "Ẩn nền"
-      },
-      "custom_links": {
-        "heading": "Liên kết tùy chỉnh",
-        "hide_links": "Ẩn liên kết",
-        "show_links": "Hiển thị liên kết",
-        "description": "Thêm các liên kết điều hướng tùy chỉnh sẽ xuất hiện trong thanh điều hướng tiêu đề.",
-        "label": "Nhãn",
-        "url": "URL",
-        "label_placeholder": "ví dụ: về chúng tôi",
-        "url_placeholder": "ví dụ: #abing-us hoặc https://example.com",
-        "new_tab": "Mở trong tab mới",
-        "save": "Cứu",
-        "cancel": "Hủy bỏ",
-        "add": "Thêm liên kết mới"
       }
     },
     "organization": {
       "organization_profile": {
-        "heading": "Hồ sơ tổ chức",
-        "organization_name": "tên tổ chức",
+        "heading": "Tổ chức",
+        "organization_name": "Tên tổ chức",
         "upload_image": "Tải hình ảnh lên",
         "update_organization": "Cập nhật tổ chức",
         "team": {
-          "heading": "Đội",
+          "heading": "đội",
+          "sub_heading": "Thiết lập nhóm của bạn",
           "body": "Thêm đồng đội vào tổ chức của bạn để cả hai có thể cộng tác trong các dự án.",
-          "button": "Quản lý nhóm",
-          "sub_heading": "Thiết lập nhóm của bạn"
+          "button": "Quản lý nhóm"
         },
         "custom_domain": {
-          "heading": "Tên miền tùy chọn",
+          "heading": "Tên miền tùy chỉnh",
           "sub_heading": "Tùy chỉnh tên miền của bạn",
           "body": "Tạo một URL tùy chỉnh để khán giả có thể truy cập tổ chức của bạn một cách dễ dàng",
           "button": "Chỉnh sửa tên miền"
+        },
+        "customize_lms": {
+          "heading": "Tùy chỉnh LMS",
+          "sub_heading": "Cá nhân hóa tổ chức của bạn LMS",
+          "body": "Kiểm soát trải nghiệm học tập của học sinh. Bạn có thể bật hoặc tắt các tab và trang, cập nhật biểu ngữ LMS và nhận xét trong ứng dụng theo yêu cầu của tổ chức bạn",
+          "button": "Tùy chỉnh LMS"
         },
         "theme": {
           "heading": "chủ đề",
           "sub_heading": "Đặt màu thương hiệu của bạn",
           "custom_theme": "Chủ đề tùy chỉnh",
           "add_theme": "Thêm chủ đề"
-        },
-        "customize_lms": {
-          "heading": "Tùy chỉnh LMS",
-          "sub_heading": "Cá nhân hóa tổ chức của bạn LMS",
-          "button": "Tùy chỉnh LMS",
-          "body": "Kiểm soát trải nghiệm học tập của học sinh. Bạn có thể bật hoặc tắt các tab và trang, cập nhật biểu ngữ LMS và nhận xét trong ứng dụng theo yêu cầu của tổ chức"
         }
       }
     },
     "profile": {
+      "heading": "Hồ sơ",
       "update_profile": "Cập nhật hồ sơ",
       "logout": "Đăng xuất",
       "personal_information": {
         "heading": "Thông tin cá nhân",
-        "full_name": "Họ và tên",
-        "username": "tên tài khoản",
-        "email": "E-mail"
+        "full_name": "Tên đầy đủ",
+        "username": "Tên người dùng",
+        "email": "Email",
+        "confirm": "Xác nhận",
+        "cancel": "Hủy bỏ",
+        "email_change_verification_note": "Một email xác minh đã được gửi đến địa chỉ email hiện tại của bạn. Email mới sẽ không có hiệu lực cho đến khi bạn chấp nhận email xác minh.",
+        "email_change_verification_sent": "Một email xác minh đã được gửi đến địa chỉ email mới của bạn. Vui lòng kiểm tra hộp thư đến của bạn để xác minh địa chỉ email mới của bạn."
       },
       "profile_picture": {
-        "heading": "Ảnh đại diện",
+        "heading": "Ảnh hồ sơ",
         "upload_image": "Tải hình ảnh lên",
         "file_size": "Kích thước tệp tối đa:",
         "accepted": "Đã chấp nhận:",
@@ -1371,11 +2107,151 @@
       "landing_page_tab": "Trang đích",
       "billing_tab": "Thanh toán",
       "integrations_tab": "Tích hợp",
-      "language_tab": "Ngôn ngữ"
+      "language_tab": "Ngôn ngữ",
+      "auth_tab": "Xác thực",
+      "sso_tab": "SSO",
+      "token_auth_tab": "Xác thực mã thông báo",
+      "customize_lms_tab": "Tùy chỉnh LMS",
+      "domains_tab": "Tên miền",
+      "teams_tab": "Đội"
     },
     "subheadings": {
       "view_site": "Xem trang web"
+    },
+    "auth": {
+      "title": "Xác thực",
+      "sso": {
+        "messages": {
+          "created": "Kết nối SSO được tạo thành công",
+          "activated": "Đã kích hoạt kết nối SSO",
+          "deleted": "Đã xóa kết nối SSO"
+        },
+        "setup": {
+          "heading": "Thiết lập SSO",
+          "description": "Định cấu hình Đăng nhập một lần cho tổ chức của bạn. Tính năng này yêu cầu gói Enterprise.",
+          "provider_label": "nhà cung cấp",
+          "display_name_label": "Tên hiển thị",
+          "display_name_placeholder": "ví dụ: Acme Corp SSO",
+          "issuer_label": "URL của nhà phát hành",
+          "issuer_placeholder": "https://accounts.google.com",
+          "issuer_help": "Nhà phát hành OIDC (không có dấu gạch chéo ở cuối). Ví dụ: Google Workspace — https://accounts.google.com; Okta — https://your-org.okta.com; Azure AD — https://login.microsoftonline.com/your-tenant-id/v2.0",
+          "domain_label": "Tên miền email",
+          "domain_placeholder": "yourcompany.com",
+          "client_id_label": "ID khách hàng",
+          "client_id_placeholder": "Từ IdP của bạn",
+          "client_secret_label": "Bí mật khách hàng",
+          "client_secret_placeholder": "Từ IdP của bạn",
+          "create_button": "Tạo kết nối",
+          "providers": {
+            "okta": "Okta",
+            "google_workspace": "Google Workspace",
+            "auth0": "Auth0"
+          }
+        },
+        "policies": {
+          "heading": "Chính sách truy cập",
+          "description": "Định cấu hình cách người dùng truy cập vào tổ chức của bạn",
+          "break_glass": {
+            "label": "Truy cập kính vỡ",
+            "description": "Cho phép quản trị viên bỏ qua SSO bằng email/mật khẩu trong trường hợp khẩn cấp."
+          },
+          "auto_join": {
+            "label": "Tự động tham gia",
+            "description": "Cho phép người dùng có miền email phù hợp tự động tham gia tổ chức của bạn."
+          },
+          "force_sso": {
+            "label": "Buộc SSO",
+            "description": "Yêu cầu tất cả người dùng đăng nhập qua SSO. Đăng nhập email/mật khẩu sẽ bị vô hiệu hóa."
+          }
+        },
+        "connection": {
+          "heading": "Kết nối SSO",
+          "description": "Quản lý trạng thái kết nối SSO của bạn",
+          "active": "Đang hoạt động",
+          "inactive": "Không hoạt động",
+          "activate_button": "Kích hoạt kết nối",
+          "delete_button": "Xóa",
+          "delete_confirm": "Bạn có chắc chắn muốn xóa kết nối SSO này không?",
+          "callback_url_label": "URL gọi lại:",
+          "callback_url_description": "Sao chép URL này vào cấu hình URL gọi lại/chuyển hướng của IdP của bạn."
+        }
+      },
+      "general": {
+        "heading": "Cài đặt xác thực",
+        "description": "Kiểm soát cách người dùng có thể đăng ký và đăng nhập vào tổ chức của bạn.",
+        "save_button": "Lưu thay đổi",
+        "note_title": "Lưu ý",
+        "note_description": "Các cài đặt này chỉ ảnh hưởng đến tổ chức này. Quản trị viên luôn có thể đăng nhập bằng thông tin xác thực của họ để truy cập vào kính vỡ.",
+        "disable_google_auth": {
+          "label": "Vô hiệu hóa Google Auth",
+          "description": "Ngăn chặn người dùng đăng nhập bằng tài khoản Google."
+        },
+        "disable_email_password": {
+          "label": "Vô hiệu hóa đăng nhập email/mật khẩu",
+          "description": "Yêu cầu người dùng đăng nhập bằng SSO hoặc nhà cung cấp mạng xã hội."
+        },
+        "disable_signup_message": {
+          "label": "Tin nhắn đăng ký bị vô hiệu hóa",
+          "description": "Thông báo tùy chỉnh được hiển thị cho người dùng khi đăng ký bị tắt.",
+          "placeholder": "ví dụ: Đăng ký bị vô hiệu hóa, vui lòng liên hệ learn@domain.com để có quyền truy cập"
+        },
+        "disable_signup": {
+          "label": "Tắt đăng ký",
+          "description": "Ngăn chặn người dùng mới đăng ký. Chỉ những người dùng được mời mới có thể tham gia."
+        },
+        "allow_public_signups": {
+          "label": "Cho phép đăng ký công khai",
+          "description": "Khi bị tắt, chỉ những người dùng có liên kết mời mới có thể đăng ký. Enable để cho phép mọi người tạo tài khoản."
+        }
+      },
+      "login": {
+        "sso_enabled": "{provider} đã được bật cho miền của bạn",
+        "sso_redirect_error": "Đăng nhập SSO bị định cấu hình sai. Vui lòng đặt PUBLIC_SERVER_URL cho máy chủ API của bạn.",
+        "sso_required": "Vui lòng đăng nhập bằng SSO. Đăng nhập bằng mật khẩu bị vô hiệu hóa.",
+        "sign_in_with_sso": "Đăng nhập bằng {nhà cung cấp}",
+        "email_password_disabled": "Đăng nhập email/mật khẩu bị vô hiệu hóa. Vui lòng sử dụng SSO.",
+        "email_password_disabled_message": "Đăng nhập email/mật khẩu bị vô hiệu hóa đối với tổ chức này.",
+        "google_auth_disabled": "Xác thực Google bị vô hiệu hóa.",
+        "signup_disabled_error": "Đăng ký bị vô hiệu hóa cho tổ chức này. Vui lòng liên hệ với quản trị viên của bạn.",
+        "or_continue_with": "Hoặc tiếp tục với email và mật khẩu"
+      },
+      "tabs": {
+        "general": "chung",
+        "sso": "SSO",
+        "token_auth": "Xác thực mã thông báo"
+      }
+    },
+    "token_auth": {
+      "heading": "Xác thực mã thông báo",
+      "description": "Cho phép người dùng đăng nhập từ ứng dụng của bạn bằng JWT—không cần mật khẩu. Tạo bí mật ký và sử dụng nó trong phần phụ trợ của bạn để phát hành JWT tồn tại trong thời gian ngắn.",
+      "status": "Trạng thái",
+      "active": "Đang hoạt động",
+      "inactive": "Không hoạt động",
+      "secret_last4": "Bí mật (4 cuối):",
+      "created_at": "Đã tạo",
+      "generate": "Tạo bí mật",
+      "rotate": "Xoay bí mật",
+      "delete": "Xóa mã thông báo xác thực",
+      "delete_confirm": "Bạn có chắc chắn muốn xóa mã thông báo xác thực không? Không thể hoàn tác hành động này.",
+      "activate": "Kích hoạt",
+      "deactivate": "Vô hiệu hóa",
+      "secret_shown_once": "Hãy lưu giữ bí mật này ngay bây giờ. Nó sẽ không được hiển thị lại.",
+      "integration_guide": "Hướng dẫn tích hợp",
+      "integration_description": "Ký JWT bằng bí mật và chuyển hướng người dùng đến URL trao đổi mã thông báo.",
+      "no_config": "Không có cấu hình xác thực mã thông báo. Tạo bí mật ký để bắt đầu.",
+      "actions_menu": "Hành động xác thực mã thông báo"
     }
+  },
+  "profileMenu": {
+    "profile": "HỒ SƠ",
+    "current_org": "TỔ CHỨC HIỆN TẠI",
+    "free_tools": "CÔNG CỤ MIỄN PHÍ",
+    "progress": "Báo cáo tiến độ",
+    "timer": "Hẹn giờ hoạt động",
+    "tic_tac": "ngón chân tictac",
+    "see_more": "Xem thêm",
+    "whats_new": "Có gì mới",
+    "launch_week": "Tuần ra mắt"
   },
   "login": {
     "welcome": "Chào mừng trở lại",
@@ -1391,6 +2267,7 @@
     "signup_with_google": "Đăng ký với Google",
     "login_with_google": "Đăng nhập bằng Google",
     "create_to_join": "Tạo một tài khoản miễn phí để tham gia",
+    "create_account": "Tạo tài khoản",
     "login_to_join": "Đăng nhập để tham gia",
     "validation": {
       "unable_to_create_profile": "Không thể tạo hồ sơ",
@@ -1401,217 +2278,56 @@
       "full_name": "Tên đầy đủ",
       "password": "Mật khẩu của bạn",
       "confirm_password": "Xác nhận mật khẩu",
-      "password_helper_message": "Mật khẩu phải nhiều hơn 6 ký tự",
+      "password_helper_message": "Mật khẩu phải nhiều hơn 8 ký tự",
       "create_account": "Tạo tài khoản"
     },
-    "create_account": "Tạo tài khoản"
+    "signup_disabled": {
+      "title": "Đăng ký bị vô hiệu hóa",
+      "invite_only_message": "Đăng ký chỉ dành cho người được mời. Vui lòng sử dụng liên kết mời để tạo tài khoản.",
+      "go_to_login": "Đi tới Đăng nhập"
+    }
+  },
+  "app": {
+    "search": {
+      "placeholder": "Tìm kiếm"
+    }
   },
   "welcome_modal": {
     "we_at": "Chúng tôi ở",
-    "small_team": "là một nhóm nhỏ có sứ mệnh lớn là hỗ trợ các nhà giáo dục bằng công nghệ tuyệt vời để giúp họ đào tạo thế hệ tương lai. Giáo dục là món quà mạnh mẽ nhất mà bạn có thể tặng cho bất kỳ ai và thật ý nghĩa khi cung cấp cho bạn tất cả các công cụ bạn cần để tặng QUÀ TẶNG này cho nhiều người hơn.",
-    "thank_you": "Cảm ơn vì đã chọn chúng tôi",
+    "small_team": "là một nhóm nhỏ có sứ mệnh lớn là trao quyền cho các nhà giáo dục bằng phần mềm tuyệt vời để giúp họ tạo ra tác động đến cuộc sống của mọi người. Giáo dục là món quà mạnh mẽ nhất mà bạn có thể tặng cho bất kỳ ai và thật ý nghĩa khi cung cấp cho bạn tất cả các công cụ bạn cần để tặng QUÀ TẶNG này cho nhiều người hơn.",
+    "thank_you": "Cảm ơn bạn đã chọn chúng tôi",
     "deeply_appreciate": "chúng tôi đánh giá cao điều đó và sẵn sàng phục vụ bạn."
   },
   "onboarding": {
     "sell": "Bán các khóa học trực tuyến",
     "teach": "Dạy học sinh hiện tại của tôi trực tuyến",
     "expanding": "Trên nền tảng khác, mở rộng ở đây",
+    "employees": "Đào tạo nhân viên của tôi",
+    "customers": "Tạo khóa học cho khách hàng của tôi",
     "explore": "Chỉ ở đây để khám phá",
-    "articles": "Bài viết",
-    "search": "Máy tìm kiếm",
-    "social": "Truyền thông xã hội",
-    "friends": "Những người bạn và gia đình",
-    "fullname": "Họ và tên",
+    "articles": "bài viết",
+    "search": "Công cụ tìm kiếm",
+    "social": "Phương tiện truyền thông xã hội",
+    "friends": "Bạn bè và gia đình",
+    "fullname": "Tên đầy đủ",
     "name": "Tên tổ chức",
     "organisation_sitename": "Tên trang web của tổ chức",
     "what_brings": "Điều gì đưa bạn đến",
-    "how": "Bạn đã nghe về chúng tôi như thế nào?",
-    "back": "Mặt sau",
-    "continue": "Tiếp tục",
-    "employees": "Đào tạo nhân viên của tôi",
-    "customers": "Tạo khóa học cho khách hàng của tôi"
+    "how": "Bạn biết đến chúng tôi bằng cách nào?",
+    "back": "Quay lại",
+    "continue": "Tiếp tục"
   },
-  "verify_email_modal": {
-    "heading": "Xác nhận email của bạn",
-    "sent_verification": "Chúng tôi đã gửi email xác minh tới",
-    "to_confirm": "để xác nhận tính hợp lệ của email được cung cấp.",
-    "loading": "Đang tải...",
-    "resend": "Gửi lại mã xác minh",
-    "resend_in": "Gửi lại xác minh trong",
-    "seconds": "giây",
-    "snackbar_error": "lỗi khi gửi mã"
-  },
-  "generic": {
-    "locked": "Đã khóa",
-    "unlocked": "Đã mở khóa",
-    "loading": "Đang tải"
-  },
-  "specialization": {
-    "course_tag": "Chuyên môn"
-  },
-  "profileMenu": {
-    "profile": "HỒ SƠ",
-    "current_org": "TỔ CHỨC HIỆN TẠI",
-    "free_tools": "CÔNG CỤ MIỄN PHÍ",
-    "progress": "Báo cáo tiến trình",
-    "timer": "Hẹn giờ hoạt động",
-    "tic_tac": "TIC Tac Toe",
-    "see_more": "Xem thêm",
-    "whats_new": "Có gì mới",
-    "launch_week": "Tuần ra mắt"
-  },
-  "validations": {
-    "email": {
-      "not_valid": "Email không hợp lệ"
-    },
-    "course_payment": {
-      "email": {
-        "invalid_email": "địa chỉ email không hợp lệ"
-      },
-      "full_name": {
-        "min_char": "Phải dài từ 6 ký tự trở lên"
-      }
-    },
-    "confirm_password": {
-      "not_match": "Không khớp với mật khẩu"
-    },
-    "onboarding": {
-      "step_two": {
-        "source": {
-          "required": "Chọn một tùy chọn"
-        },
-        "goal": {
-          "required": "Chọn một tùy chọn"
-        }
-      },
-      "step_one": {
-        "full_name": {
-          "min_char": "Tên đầy đủ phải chứa 5 ký tự trở lên"
-        }
-      }
-    },
-    "reset": {
-      "password": {
-        "min_char": "Phải dài từ 6 ký tự trở lên"
-      }
-    },
-    "auth": {
-      "password": {
-        "min_char": "Phải dài từ 6 ký tự trở lên"
-      },
-      "email": {
-        "invalid_email": "địa chỉ email không hợp lệ"
-      }
-    },
-    "forgot": {
-      "invalid_email": "địa chỉ email không hợp lệ"
-    },
-    "org_landing_page": {
-      "message": {
-        "min_char": "Phải dài từ 10 ký tự trở lên"
-      },
-      "phone": {
-        "min_char": "Phải dài từ 6 ký tự trở lên"
-      },
-      "email": {
-        "invalid_email": "địa chỉ email không hợp lệ"
-      },
-      "name": {
-        "min_char": "Phải dài từ 6 ký tự trở lên"
-      }
-    },
-    "comment_in_community": {
-      "min_char": "Phải dài từ 6 ký tự trở lên"
-    },
-    "ask_community": {
-      "course_id": {
-        "select_course": "Chọn một khóa học"
-      },
-      "body": {
-        "min_char": "Phải dài từ 10 ký tự trở lên"
-      },
-      "title": {
-        "min_char": "Phải dài từ 6 ký tự trở lên"
-      }
-    },
-    "create_quiz": {
-      "min_char": "Phải dài từ 6 ký tự trở lên"
-    },
-    "lesson_schema": {
-      "empty_title": "Tiêu đề không được để trống"
-    },
-    "news_feed": {
-      "min_char": "Trường phải chứa 5 ký tự trở lên"
-    },
-    "site_name": {
-      "min_char": "Tên trang web phải chứa 5 ký tự trở lên",
-      "hyphen_rule": "Tên trang web không thể bắt đầu hoặc kết thúc bằng dấu gạch nối"
-    },
-    "organization_name": {
-      "min_char": "Tổ chức phải chứa 5 ký tự trở lên",
-      "hyphen_rule": "Tên tổ chức không thể bắt đầu hoặc kết thúc bằng dấu gạch nối"
-    },
-    "user_profile": {
-      "email": "địa chỉ email không hợp lệ",
-      "username": "Tên ngươi dung không được để trông",
-      "fullname": "Tên phải có tối thiểu 5 ký tự"
-    }
-  },
-  "explore": {
-    "empty_heading": "Không có khóa học nào",
-    "empty_description": "Hiện tại chưa có khóa học nào được xuất bản",
-    "heading": "Khám phá các khóa học của chúng tôi"
+  "new_course_modal": {
+    "live_class_label": "Lớp học trực tiếp",
+    "live_class_subtitle": "Lý tưởng cho các chương trình đào tạo nơi các bài học dựa trên thời gian",
+    "self_paced_label": "tự nhịp độ",
+    "self_paced_subtitle": "Tốt nhất cho các khóa học mà sinh viên có thể học theo tốc độ của riêng mình"
   },
   "delete_modal": {
-    "label": "Xóa bỏ",
+    "label": "Xóa",
     "content": "Bạn có chắc không?",
-    "no": "KHÔNG",
-    "yes": "Đúng"
-  },
-  "analytics": {
-    "courses": "Khóa học",
-    "progress": "Tiến triển",
-    "progress_description": "{value, number} của {total, number} đã hoàn thành",
-    "incomplete": "Chưa hoàn thành",
-    "completed": "Hoàn thành",
-    "complete": "hoàn thành",
-    "last_seen": "Nhìn thấy lần cuối",
-    "a_while_ago": "cách đây một thời gian",
-    "exercises": "Bài tập",
-    "graded": "Đã chấm điểm",
-    "not_graded": "Không được chấm điểm",
-    "enrolled_courses": "Các khóa học đã đăng ký",
-    "enrolled_courses_description": "Tất cả các khóa học đã đăng ký",
-    "overall_course_progress": "Tiến độ chung của khóa học",
-    "overall_course_progress_description": "Tỷ lệ bài học đã hoàn thành",
-    "total_average_grade": "Tổng điểm trung bình",
-    "total_average_grade_description": "Dựa trên điểm bài tập của tất cả các khóa học",
-    "overall_course_progress_user_description": "Căn cứ vào việc hoàn thành bài học",
-    "assignment_completion": "Hoàn thành bài tập",
-    "assignment_completion_description": "Tỷ lệ bài tập đã hoàn thành",
-    "average_grade": "Điểm trung bình",
-    "average_grade_description": "Điểm trung bình của tất cả các bài tập đã hoàn thành",
-    "students": "Sinh viên",
-    "lessons": "Bài học",
-    "tutors": "gia sư",
-    "avg_grade": "Lớp AVG",
-    "completion_rate": "Tỷ lệ hoàn thành",
-    "student_progress_overview": "Tổng quan về tiến trình học sinh",
-    "student_name": "Tên sinh viên",
-    "lessons_completed": "Bài học hoàn thành",
-    "exercises_submitted": "Bài tập được gửi",
-    "actions": "Hành động",
-    "view_details": "Xem chi tiết",
-    "no_students_found": "Không có học sinh tìm thấy",
-    "no_students_description": "Không có sinh viên đăng ký vào khóa học này. Học sinh sẽ xuất hiện ở đây khi họ tham gia khóa học.",
-    "showing_students": "Hiển thị {start} đến {end} của {Total} sinh viên",
-    "no_analytics_data": "Không có dữ liệu phân tích",
-    "no_analytics_description": "Không thể tải dữ liệu phân tích cho khóa học này. Vui lòng thử lại sau hoặc liên hệ với hỗ trợ nếu vấn đề vẫn còn."
-  },
-  "common": {
-    "unsaved_changes": {
-      "message": "Bạn có những thay đổi chưa được lưu. Bạn có chắc bạn muốn rời đi?"
-    }
+    "no": "Không",
+    "yes": "Có"
   },
   "email_verification": {
     "security_footer": "Bảo mật tài khoản của bạn là ưu tiên hàng đầu của chúng tôi. Tất cả các nỗ lực xác minh đều được ghi lại để giám sát bảo mật.",
@@ -1653,6 +2369,80 @@
         "title": "Liên kết xác minh không hợp lệ",
         "message": "Liên kết xác minh này không hợp lệ hoặc không đúng định dạng. Vui lòng kiểm tra email của bạn để tìm liên kết chính xác hoặc yêu cầu email xác minh mới."
       }
+    }
+  },
+  "verify_email_modal": {
+    "heading": "Xác minh email của bạn",
+    "sent_verification": "Chúng tôi đã gửi email xác minh tới",
+    "to_confirm": "để xác nhận tính hợp lệ của email được cung cấp.",
+    "loading": "Đang tải...",
+    "resend": "Gửi lại mã xác minh",
+    "resend_in": "Gửi lại xác minh trong",
+    "seconds": "giây",
+    "snackbar_error": "lỗi khi gửi mã"
+  },
+  "public_courses": {
+    "page_title": "Khóa học - ClassroomIO",
+    "heading": "Khóa học",
+    "subtitle": "Duyệt tất cả các khóa học được xuất bản",
+    "clear_filters": "Xóa bộ lọc",
+    "empty": {
+      "title": "Không tìm thấy khóa học nào",
+      "description": "Hãy thử xóa bộ lọc của bạn hoặc kiểm tra lại sau."
+    },
+    "filters": {
+      "title": "Lọc theo thẻ",
+      "help": "Chọn một hoặc nhiều thẻ để lọc các khóa học",
+      "empty": "Chưa có thẻ nào"
+    }
+  },
+  "tags_admin": {
+    "page_title": "Thẻ - Lớp họcIO",
+    "heading": "Thẻ",
+    "create": "Tạo",
+    "tag_modal": {
+      "create_title": "Tạo thẻ",
+      "edit_title": "Chỉnh sửa thẻ",
+      "name": "Tên thẻ",
+      "description": "Mô tả",
+      "description_placeholder": "Mô tả tùy chọn",
+      "category": "Danh mục",
+      "color": "Màu sắc",
+      "color_help": "Chọn một trong 10 màu",
+      "select_category": "Chọn một danh mục",
+      "no_groups": "Tạo nhóm thẻ trước khi tạo thẻ"
+    },
+    "group_modal": {
+      "create_title": "Tạo nhóm thẻ",
+      "edit_title": "Chỉnh sửa nhóm thẻ",
+      "name": "Tên nhóm",
+      "description": "Mô tả",
+      "description_placeholder": "Mô tả tùy chọn"
+    },
+    "empty": {
+      "title": "Chưa có nhóm thẻ nào",
+      "description": "Trước tiên hãy tạo nhóm thẻ, sau đó bắt đầu thêm thẻ."
+    },
+    "table": {
+      "tag": "Gắn thẻ",
+      "total_courses": "Tổng số khóa học",
+      "course": "khóa học",
+      "courses": "các khóa học",
+      "description": "Mô tả",
+      "category": "Danh mục",
+      "action": "hành động",
+      "empty_group": "Chưa có thẻ nào trong nhóm này"
+    },
+    "actions": {
+      "create_tag": "Tạo thẻ",
+      "create_group": "Tạo nhóm thẻ",
+      "edit_group": "Chỉnh sửa nhóm",
+      "edit_tag": "Chỉnh sửa thẻ",
+      "save": "Lưu",
+      "cancel": "Hủy bỏ"
+    },
+    "common": {
+      "not_available": "không áp dụng"
     }
   }
 }

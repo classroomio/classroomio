@@ -7,7 +7,6 @@ import { PLAN } from '@cio/utils/plans';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { ROLE } from '@cio/utils/constants';
 import { STEPS } from '../constants/quiz';
-import type { UserLessonDataType } from '$lib/utils/types';
 import type { Writable } from 'svelte/store';
 
 export const orgs = writable<AccountOrg[]>([]);
@@ -22,6 +21,10 @@ export const currentOrg: Writable<AccountOrg> = writable({
     course: { grading: true, newsfeed: true },
     dashboard: { exercise: true, community: true, bannerText: '', bannerImage: '' }
   },
+  disableEmailPassword: false,
+  disableGoogleAuth: false,
+  disableSignup: false,
+  disableSignupMessage: '',
   favicon: '',
   id: '',
   isCustomDomainVerified: false,
@@ -88,6 +91,14 @@ export const isFreePlan = derived(currentOrg, ($currentOrg) => {
   return !plan || plan.planName === PLAN.BASIC;
 });
 
+export const isEnterprisePlan = derived(currentOrg, ($currentOrg) => {
+  if (PUBLIC_IS_SELFHOSTED === 'true') return true;
+
+  const plan = getActivePlan($currentOrg);
+
+  return plan?.planName === PLAN.ENTERPRISE;
+});
+
 export const currentOrgMaxAudience = derived(currentOrgPlan, ($plan) =>
   !$plan
     ? 20
@@ -134,8 +145,6 @@ interface QuizStore {
   pin: string;
 }
 
-export const quizesStore = writable<QuizStore[]>([]);
-
 export const quizStore = writable<QuizStore>({
   uuid: '',
   title: '',
@@ -148,5 +157,3 @@ export const quizStore = writable<QuizStore>({
 export const playQuizStore = writable({
   step: STEPS.CONNECT_TO_PLAY
 });
-
-export const userUpcomingData = writable<UserLessonDataType[]>([]);

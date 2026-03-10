@@ -5,10 +5,15 @@ import { app } from '@api/app';
 import { configureOpenAPI } from '@api/utils/openapi';
 import { serve } from '@hono/node-server';
 import { showRoutes } from 'hono/dev';
+import { connectRedis } from '@api/utils/redis/redis';
 
 // Start server
-function startServer() {
+async function startServer() {
   console.log('Starting server on port:', API_PORT);
+
+  // Connect to Redis before starting the server
+  await connectRedis();
+  console.log('Redis connected successfully');
 
   serve({ fetch: app.fetch, port: API_PORT });
 
@@ -17,4 +22,7 @@ function startServer() {
 
 configureOpenAPI(app);
 
-startServer();
+startServer().catch((error) => {
+  console.error('Failed to start server:', error);
+  process.exit(1);
+});

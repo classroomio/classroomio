@@ -24,7 +24,7 @@
   const mergedProps = $derived(mergeProps(rest, state.props));
 </script>
 
-<div class="relative">
+<div class="ui:relative">
   <Input
     {...mergedProps}
     bind:value

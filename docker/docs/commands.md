@@ -1,90 +1,177 @@
 # Quick Docker Commands Reference
 
-## Login to Docker Hub
+## Compose Stack
+
 ```bash
-docker login
+# Full stack with MinIO (default; generates/syncs secure auth tokens)
+./run-docker-full-stack.sh
+
+# Full stack without rebuilding images
+./run-docker-full-stack.sh --no-build
+
+# Exclude MinIO (object storage)
+./run-docker-full-stack.sh --no-minio
+
+# Full stack (postgres, redis, db-init, api, dashboard, minio)
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml --profile minio up --build -d
+
+# API-only smoke test path (plus required dependencies)
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml up --build -d postgres redis db-init api
+
+# Service status
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml ps
+
+# Logs
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml logs -f api
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml logs -f dashboard
+
+# Stop services
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml down
+
+# Stop + remove volumes (deletes local postgres/redis data)
+docker compose --env-file .env -p classroomio -f docker/docker-compose.yaml down -v
+```
+
+## MinIO (S3-compatible storage)
+
+MinIO is **included by default** with `./run-docker-full-stack.sh`. To start MinIO manually:
+
+```bash
+docker compose -f docker/docker-compose.yaml --profile minio up -d
+
+# If Web UI doesn't load or container name conflict:
+docker rm -f cio-minio
+docker compose -f docker/docker-compose.yaml --profile minio up -d
+```
+
+**When API runs in Docker:** Use `OBJECT_STORAGE_ENDPOINT=http://minio:9000` (Docker service name). The script auto-sets this when MinIO is included.
+
+**Security:** Change the default `minioadmin` / `minioadmin` credentials in production. Set `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD` in `.env` (and matching `OBJECT_STORAGE_*` vars).
+
+See `docker/docs/USAGE.md` for MinIO env vars and troubleshooting.
+
+## Compose Stack (Published Images / Production)
+
+```bash
+# 1) Copy and edit production env values (including pinned image tags)
+cp docker/.env.prod.example docker/.env.prod
+
+# 2) Pull pinned images
+docker compose -p classroomio --env-file docker/.env.prod -f docker/docker-compose.prod.yaml pull
+
+# 3) Start stack from published images
+docker compose -p classroomio --env-file docker/.env.prod -f docker/docker-compose.prod.yaml up -d
+
+# 4) Inspect status and logs
+docker compose -p classroomio --env-file docker/.env.prod -f docker/docker-compose.prod.yaml ps
+docker compose -p classroomio --env-file docker/.env.prod -f docker/docker-compose.prod.yaml logs -f api dashboard
+```
+
+## Health Checks
+
+```bash
+# API should return welcome JSON
+curl -sS http://localhost:3081/
+
+# Dashboard should return 200
+curl -I http://localhost:3082/
 ```
 
 ## Build Images Locally
 
-### API
 ```bash
-docker build -f ./docker/Dockerfile.api -t classroomio/api:latest .
-```
-
-### Dashboard
-```bash
-docker build -f ./docker/Dockerfile.dashboard -t classroomio/dashboard:latest .
+docker build -f docker/Dockerfile.api -t classroomio/api:latest .
+docker build -f docker/Dockerfile.dashboard -t classroomio/dashboard:latest .
 ```
 
 ## Push to Docker Hub
 
-### API
 ```bash
 docker push classroomio/api:latest
-```
-
-### Dashboard
-```bash
 docker push classroomio/dashboard:latest
 ```
 
-## All in One Script
+## All-in-One Publish Script
+
 ```bash
-# Make script executable (first time only)
-chmod +x docker-push.sh
+# Default username=classroomio version=latest
+./docker/docker-push.sh
 
-# Run the script
-./docker-push.sh
+# Custom username
+DOCKERHUB_USERNAME=your-username ./docker/docker-push.sh
 
-# With custom username
-DOCKERHUB_USERNAME=your-username ./docker-push.sh
-
-# With version tag
-VERSION=v1.0.0 ./docker-push.sh
+# Versioned tag
+VERSION=v1.0.0 ./docker/docker-push.sh
 ```
 
 ## Pull Published Images
+
 ```bash
 docker pull classroomio/api:latest
 docker pull classroomio/dashboard:latest
 ```
 
-## Run Published Images
+## Run Published Images (Manual)
+
+Use compose for local development. If you run manually, include required runtime env.
+`LICENSE_KEY` is only needed if you use Enterprise-only features.
+
 ```bash
 # API
-docker run -d -p 3081:3081 \
-  -e PUBLIC_SUPABASE_ANON_KEY=your_key \
-  -e PUBLIC_SUPABASE_URL=your_url \
+docker run -d --name cio-api -p 3081:3081 \
+  -e DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/classroomio \
+  -e PRIVATE_DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/classroomio \
+  -e REDIS_URL=redis://host.docker.internal:6379 \
+  -e PUBLIC_SERVER_URL=https://api.your-domain.com \
+  -e TRUSTED_ORIGINS=https://app.your-domain.com \
+  -e AUTH_COOKIE_DOMAIN=.your-domain.com \
+  -e BETTER_AUTH_SECRET=<strong-random-secret> \
+  -e PRIVATE_SERVER_KEY=<dashboard-server-api-key> \
+  -e AUTH_BEARER_TOKEN=<optional-other-bearer-token> \
+  -e LICENSE_KEY=<your-issued-license-key> \
   classroomio/api:latest
 
 # Dashboard
-docker run -d -p 3082:3082 \
-  -e PUBLIC_SUPABASE_ANON_KEY=your_key \
-  -e PUBLIC_SUPABASE_URL=your_url \
+docker run -d --name cio-dashboard -p 3082:3082 \
+  -e PUBLIC_SERVER_URL=http://localhost:3081 \
+  -e PRIVATE_SERVER_KEY=<dashboard-server-api-key> \
+  -e PUBLIC_IS_SELFHOSTED=true \
   classroomio/dashboard:latest
+```
+
+## Inspect environment variables in a container
+
+```bash
+# List all env vars in a running container (use actual container name)
+docker exec <container_name> env
+
+# Sorted, one per line
+docker exec <container_name> env | sort
+
+# Inspect from host (env as configured at container create time)
+docker inspect <container_name> --format '{{range .Config.Env}}{{println .}}{{end}}'
+
+# Print a single variable
+docker exec <container_name> printenv DATABASE_URL
+```
+
+**Container names** (from `docker compose ... ps`): `cio-postgres`, `cio-redis`, `cio-api`, `cio-dashboard`; with MinIO: `cio-minio`, `cio-minio-init`.
+
+Example:
+
+```bash
+docker exec cio-api env | sort
 ```
 
 ## Useful Commands
 
-### Check local images
 ```bash
+# List local images
 docker images | grep classroomio
-```
 
-### Remove local images
-```bash
-docker rmi classroomio/api:latest
-docker rmi classroomio/dashboard:latest
-```
+# Remove local images
+docker rmi classroomio/api:latest classroomio/dashboard:latest
 
-### View image details
-```bash
+# Inspect image
 docker inspect classroomio/api:latest
 ```
-
-### Check image size
-```bash
-docker images classroomio/api:latest --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}"
-```
-

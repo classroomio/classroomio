@@ -1,0 +1,6 @@
+services:
+  - domain: cio-fe
+    port: 5173
+  - domain: cio-be
+    port: 3002
+log_mode: minimal

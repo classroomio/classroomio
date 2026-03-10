@@ -1,6 +1,6 @@
-export const load = ({ params = { id: '', personId: '' } }) => {
+export const load = ({ params }) => {
   return {
-    courseId: params.id,
-    personId: params.personId
+    courseId: params.id || '',
+    personId: params.personId || ''
   };
 };

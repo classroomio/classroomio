@@ -20,9 +20,6 @@ function getSiteNameValidation() {
       message: `${t.get('validations.site_name.hyphen_rule')}`
     });
 }
-function getNewsfeedValidation() {
-  return z.string().min(5, { message: `${t.get('validations.news_feed.min_char')}` });
-}
 
 export const saveCertificateValidation = (fields = {}) => {
   const schema = z.object({
@@ -128,24 +125,6 @@ export const orgLandingpageValidation = (fields = {}) => {
     })
   });
   const { error } = schema.safeParse(fields);
-
-  return processErrors(error);
-};
-
-export const createNewsfeedValidation = (newPost) => {
-  const schema = z.object({
-    newPost: getNewsfeedValidation()
-  });
-  const { error } = schema.safeParse({ newPost });
-
-  return processErrors(error);
-};
-
-export const addNewsfeedCommentValidation = (newComment) => {
-  const schema = z.object({
-    newComment: getNewsfeedValidation()
-  });
-  const { error } = schema.safeParse({ newComment });
 
   return processErrors(error);
 };
