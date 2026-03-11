@@ -257,7 +257,8 @@
       "invite_sent": "Invitation sendt!",
       "user_exists": "Brugeren findes allerede",
       "invite_fail": "Kunne ikke sende invitationen. Prøv venligst igen",
-      "remove_fail": "Kunne ikke fjerne bruger. Prøv venligst igen"
+      "remove_fail": "Kunne ikke fjerne bruger. Prøv venligst igen",
+      "remove_success": "Medlem fjernet"
     },
     "lms": {
       "error": {

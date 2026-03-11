@@ -257,7 +257,8 @@
       "invite_sent": "Einladung gesendet!",
       "user_exists": "Benutzer existiert bereits",
       "invite_fail": "Die Einladung konnte nicht gesendet werden. Bitte versuchen Sie es erneut",
-      "remove_fail": "Der Benutzer konnte nicht entfernt werden. Bitte versuchen Sie es erneut"
+      "remove_fail": "Der Benutzer konnte nicht entfernt werden. Bitte versuchen Sie es erneut",
+      "remove_success": "Mitglied erfolgreich entfernt"
     },
     "lms": {
       "error": {

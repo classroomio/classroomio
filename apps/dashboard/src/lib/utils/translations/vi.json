@@ -257,7 +257,8 @@
       "invite_sent": "Đã gửi lời mời!",
       "user_exists": "Người dùng đã tồn tại",
       "invite_fail": "Không gửi được lời mời, vui lòng thử lại",
-      "remove_fail": "Không xóa được người dùng, vui lòng thử lại"
+      "remove_fail": "Không xóa được người dùng, vui lòng thử lại",
+      "remove_success": "Đã xóa thành viên thành công"
     },
     "lms": {
       "error": {

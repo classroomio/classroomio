@@ -257,7 +257,8 @@
       "invite_sent": "Invitation envoyée !",
       "user_exists": "L'utilisateur existe déjà",
       "invite_fail": "Échec de l'envoi de l'invitation, veuillez réessayer",
-      "remove_fail": "Échec de la suppression de l'utilisateur, veuillez réessayer"
+      "remove_fail": "Échec de la suppression de l'utilisateur, veuillez réessayer",
+      "remove_success": "Membre supprimé avec succès"
     },
     "lms": {
       "error": {
