@@ -20,14 +20,7 @@ export default ({ mode }) => {
       sourcemap: false
     },
     ssr: {
-      noExternal: [
-        'svelte-sonner',
-        'layerchart',
-        'svelte-toolbelt',
-        'intl-messageformat',
-        '@formatjs/icu-messageformat-parser',
-        '@sveltekit-i18n/parser-icu'
-      ]
+      noExternal: ['svelte-sonner', 'layerchart', 'svelte-toolbelt']
     },
     optimizeDeps: {
       entries: ['src/routes/**/+*.{js,ts,svelte}'],

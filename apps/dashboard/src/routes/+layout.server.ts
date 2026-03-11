@@ -4,7 +4,7 @@ import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { getBaseMetaTags } from '$lib/utils/functions/metaTags';
 import { getOrgSiteInfo } from '$features/app/layout-setup';
 
-export const ssr = true;
+export const ssr = PUBLIC_IS_SELFHOSTED === 'true' ? false : true;
 
 interface LoadOutput {
   orgSiteName: string;
