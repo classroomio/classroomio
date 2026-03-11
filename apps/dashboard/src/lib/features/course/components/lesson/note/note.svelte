@@ -47,9 +47,6 @@
   $effect(() => {
     console.log('content', content);
   });
-  $effect(() => {
-    console.log('lessonApi.currentLocale', lessonApi.currentLocale);
-  });
 </script>
 
 {#if mode === MODES.edit}

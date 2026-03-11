@@ -160,38 +160,11 @@ The repository also contains shared packages under `packages/` (for example `pac
 
 ### Docker Compose (Full Stack)
 
-To run the Dockerized stack (including API + dashboard):
-
 ```bash
+cp .env.example .env   # copy env template, edit for your domain
 ./run-docker-full-stack.sh
 ```
 
-Start without rebuilding images:
+The script reads root `.env` via `docker compose --env-file .env` and auto-generates secure values for `AUTH_BEARER_TOKEN` and `PRIVATE_SERVER_KEY` when missing.
 
-```bash
-./run-docker-full-stack.sh --no-build
-```
-
-The script always reads root `.env` via `docker compose --env-file .env`, and it auto-generates secure local values for `PRIVATE_SERVER_KEY` (and `AUTH_BEARER_TOKEN`) when they are missing/insecure. API key middleware validation for dashboard server-side calls uses `PRIVATE_SERVER_KEY`.
-
-For production deployments from published images, use `docker/docker-compose.prod.yaml` with `docker/.env.prod.example` as your template.
-
-Enterprise-only self-hosted features (SSO, token-auth, no-tracking) require a license key from us. Set `LICENSE_KEY` in:
-- `apps/api/.env` for local non-Docker development
-- root `.env` for Docker Compose self-hosting
-- `docker/.env.prod` for published-image deployments
-
-If you do not use Enterprise-only features, you do not need `LICENSE_KEY`.
-
-URL routing for dashboard API calls:
-
-- Browser requests use `PUBLIC_SERVER_URL` (must be your public API domain in hosted environments, not `localhost`).
-- Server-side dashboard requests (SSR/load functions) use `PRIVATE_SERVER_URL` when set, and fallback to `PUBLIC_SERVER_URL`.
-- In Docker Compose, use `PRIVATE_SERVER_URL=http://api:3081` so dashboard SSR calls stay on the internal Docker network.
-- Set `AUTH_COOKIE_DOMAIN` for Better Auth cookie domain control (`your-domain.com` for shared subdomains, or your exact API host).
-
-For Docker details and troubleshooting, see:
-
-- `docker/docs/USAGE.md`
-- `docker/docs/commands.md`
-- `docker/docs/PUBLISHING_IMAGES.md`
+See [`.env.example`](.env.example) for the full list of environment variables with required/optional grouping, and [`docker/docs/SELF_HOST.md`](docker/docs/SELF_HOST.md) for the complete Docker self-hosting guide.

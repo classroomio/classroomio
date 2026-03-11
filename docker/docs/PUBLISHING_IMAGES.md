@@ -102,38 +102,7 @@ docker pull classroomio/dashboard:latest
 
 ### Deploy with Compose
 
-Use the production compose file (`docker/docker-compose.prod.yaml`) with pinned image tags.
-
-1. Copy the production env template:
-
-```bash
-cp docker/.env.prod.example docker/.env.prod
-```
-
-2. Set pinned images in `docker/.env.prod`:
-
-```bash
-CIO_API_IMAGE=classroomio/api:v0.1.0
-CIO_DASHBOARD_IMAGE=classroomio/dashboard:v0.1.0
-```
-
-3. Deploy:
-
-```bash
-docker compose -p classroomio --env-file docker/.env.prod -f docker/docker-compose.prod.yaml pull
-docker compose -p classroomio --env-file docker/.env.prod -f docker/docker-compose.prod.yaml up -d
-```
-
-The `db-init` service also uses `CIO_API_IMAGE` so schema setup always matches the API build you deploy.
-
-Important URL behavior for dashboard API calls:
-
-- Browser requests use `PUBLIC_SERVER_URL` (set this to your public API domain, not `localhost`).
-- Server-side dashboard requests use `PRIVATE_SERVER_URL` when set, with fallback to `PUBLIC_SERVER_URL`.
-- In Docker network deployments, set `PRIVATE_SERVER_URL=http://api:3081`.
-- Set `AUTH_COOKIE_DOMAIN` to `your-domain.com` (shared subdomain cookies) or your exact API host if you need explicit Better Auth cookie domain control.
-
-For local source builds, keep using `docker/docker-compose.yaml`.
+For self-hosting with Docker Compose, see [SELF_HOST.md](SELF_HOST.md). The setup uses a single root `.env` file and `docker/docker-compose.yaml`.
 
 ## Versioning Strategy
 
