@@ -26,6 +26,7 @@ All Docker services read from a single root `.env` file. See [`.env.example`](..
 Key points:
 
 - **Required:** `PUBLIC_SERVER_URL`, `TRUSTED_ORIGINS`, `BETTER_AUTH_SECRET`, `PUBLIC_IS_SELFHOSTED=true`, `ALLOWED_EXTERNAL_DOMAINS`, `DASHBOARD_ORIGIN`.
+- **Auth cookies:** When `AUTH_COOKIE_DOMAIN` is absent, the API falls back to `DASHBOARD_ORIGIN` (hostname).
 - **Auto-generated:** `AUTH_BEARER_TOKEN`, `PRIVATE_SERVER_KEY` (by `./run-docker-full-stack.sh`).
 - **Auto-configured:** All `MINIO_*` / `OBJECT_STORAGE_*` vars (by the startup script).
 - **Optional:** Email (SMTP or Zoho), Google OAuth, Unsplash, `LICENSE_KEY` (enterprise).

@@ -114,7 +114,7 @@ Use `./run-docker-full-stack.sh --no-minio` to exclude MinIO if you do not need 
 | Variable | Description |
 |----------|-------------|
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Google OAuth |
-| `AUTH_COOKIE_DOMAIN` | Cross-subdomain cookies (e.g. `.yourdomain.com`) |
+| `AUTH_COOKIE_DOMAIN` | Railway: dashboard domain when API/dashboard use different subdomains. Docker: optional (falls back to `DASHBOARD_ORIGIN`) |
 | `PRIVATE_APP_HOST`, `PRIVATE_APP_SUBDOMAINS` | Multi-subdomain routing |
 | `UNSPLASH_API_KEY` | Unsplash image search |
 | `LICENSE_KEY` | Enterprise features (SSO, token-auth, no-tracking) |
@@ -188,9 +188,11 @@ PUBLIC_SERVER_URL="https://api.yourdomain.com"
 TRUSTED_ORIGINS="https://api.yourdomain.com,https://app.yourdomain.com"
 BETTER_AUTH_SECRET="random-secure-key"
 AUTH_BEARER_TOKEN="some-key"
-AUTH_COOKIE_DOMAIN="yourdomain.com"
 PRIVATE_SERVER_KEY="same-key-for-api-and-dashboard"
 PUBLIC_IS_SELFHOSTED="true"
+
+# Required for auth cookies when API and dashboard use different subdomains — set to your dashboard domain, e.g. app.yourdomain.com
+AUTH_COOKIE_DOMAIN="app.yourdomain.com"
 
 # Email (configure one)
 SMTP_HOST=
@@ -206,6 +208,10 @@ CLOUDFLARE_SECRET_ACCESS_KEY=
 CLOUDFLARE_BUCKET_DOMAIN=
 CLOUDFLARE_IMAGE_BUCKET_DOMAIN=
 ```
+
+<Callout type="warn" title="AUTH_COOKIE_DOMAIN (Railway)">
+  When API and dashboard use different subdomains, set `AUTH_COOKIE_DOMAIN` to your dashboard domain (e.g. `app.yourdomain.com`). Without it, Better Auth cookies will not be set and login will fail. Docker self-hosting falls back to `DASHBOARD_ORIGIN` when this is absent.
+</Callout>
 
 Optional: add `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` for OAuth, `UNSPLASH_API_KEY` for image search, or `LICENSE_KEY` for enterprise features.
 
