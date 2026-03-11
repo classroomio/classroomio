@@ -311,6 +311,10 @@ export const organizationRouter = new Hono()
           .map((value) => value.trim())
           .filter(Boolean);
 
+        console.log('user', user);
+        console.log('userRole', userRole);
+        console.log('orgId', orgId);
+        console.log('tagSlugs', tagSlugs);
         const result = await getOrganizationCourses(
           orgId,
           user.id,
