@@ -1,10 +1,10 @@
 import type { AccountOrg } from '$features/app/types';
 import type { MetaTagsProps } from 'svelte-meta-tags';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
-import { getOrgSiteInfo } from '$features/app/layout-setup';
 import { getBaseMetaTags } from '$lib/utils/functions/metaTags';
+import { getOrgSiteInfo } from '$features/app/layout-setup';
 
-export const ssr = PUBLIC_IS_SELFHOSTED === 'true' ? false : true;
+export const ssr = true;
 
 interface LoadOutput {
   orgSiteName: string;

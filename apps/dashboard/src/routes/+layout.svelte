@@ -65,6 +65,11 @@
   }
 
   onMount(() => {
+    const loadingIndicator = document.getElementById('app-loading-indicator');
+    if (loadingIndicator) {
+      loadingIndicator.style.display = 'none';
+    }
+
     intialAppSetup();
 
     if (data.skipAuth) return;
