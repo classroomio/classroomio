@@ -17,6 +17,7 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
 
+  let { data } = $props();
   let fields = $state(Object.assign({}, SIGNUP_FIELDS));
   let loading = $state(false);
   let errors: {
@@ -30,22 +31,28 @@
   const redirectUrl = $derived(page.url.searchParams.get('redirect'));
   const inviteToken = $derived(page.url.searchParams.get('invite_token'));
 
+  // Use org from store or layout data (layout data ensures org is available on self-hosted before store is set)
+  const org = $derived($currentOrg?.id ? $currentOrg : (data.org ?? $currentOrg));
+
+  $effect(() => {
+    console.log('data', data);
+    console.log('org', org);
+  });
+
   // Invite context: allow signup when invite_token present or redirect contains invite info
   const hasInviteContext = $derived(
     !!inviteToken || (!!redirectUrl && (redirectUrl.includes('/invite/t/') || redirectUrl.includes('invite_token')))
   );
 
-  const inviteOnly = $derived(!!$currentOrg?.settings?.signup?.inviteOnly);
-  const signupRestricted = $derived(
-    $globalStore.isOrgSite && ($currentOrg.disableSignup || (inviteOnly && !hasInviteContext))
-  );
+  const inviteOnly = $derived(!!org?.settings?.signup?.inviteOnly);
+  const signupRestricted = $derived($globalStore.isOrgSite && (org.disableSignup || (inviteOnly && !hasInviteContext)));
 
   // Hide Google Auth if disabled for org
-  const hideGoogleAuth = $derived(!!($globalStore.isOrgSite && $currentOrg.disableGoogleAuth));
+  const hideGoogleAuth = $derived(!!($globalStore.isOrgSite && org.disableGoogleAuth));
 
   // Check if signup is disabled
   onMount(() => {
-    if ($globalStore.isOrgSite && $currentOrg.disableSignup) {
+    if ($globalStore.isOrgSite && org.disableSignup) {
       goto(resolve('/login?error=signup_disabled', {}));
     }
   });
@@ -68,6 +75,9 @@
       loading = true;
       const name = fields.email.split('@')[0];
 
+      // Use org from store or layout data; required for self-hosted when orgs exist
+      const orgId = org?.id;
+
       const { error } = await authClient.signUp.email(
         {
           email: fields.email,
@@ -76,7 +86,7 @@
         },
         {
           fetchOptions: {
-            headers: $globalStore.isOrgSite && $currentOrg?.id ? { 'cio-org-id': $currentOrg.id } : {}
+            headers: { 'cio-org-id': orgId }
           },
           onSuccess: (ctx) => {
             console.log('Signup successful');
@@ -135,7 +145,7 @@
       {$t('login.signup_disabled.title')}
     </h2>
     <p class="ui:mt-2 ui:text-sm ui:text-amber-700 ui:dark:text-amber-300">
-      {$currentOrg.disableSignupMessage ||
+      {org.disableSignupMessage ||
         (inviteOnly
           ? $t('login.signup_disabled.invite_only_message')
           : $t('settings.auth.login.signup_disabled_error'))}
