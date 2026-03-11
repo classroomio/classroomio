@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { onMount } from 'svelte';
   import { Button } from '@cio/ui/base/button';
   import { AuthUI } from '$features/ui';
@@ -9,6 +10,7 @@
   import { profile } from '$lib/utils/store/user';
   import { snackbar } from '$features/ui/snackbar/store';
   import { page } from '$app/state';
+  import { t } from '$lib/utils/functions/translations';
 
   let { data } = $props();
 
@@ -23,6 +25,15 @@
     )
   );
   const canJoinOrganization = $derived(inviteStatus === 'ACTIVE' && !isInviteEmailMismatch);
+
+  function buildInviteAuthParams(pathname: string, email: string): string {
+    const parts: string[] = [];
+    if (pathname) parts.push(`redirect=${encodeURIComponent(pathname)}`);
+    if (email) parts.push(`email=${encodeURIComponent(email)}`);
+    return parts.join('&');
+  }
+
+  const loginParams = $derived(buildInviteAuthParams(page.url?.pathname || '', data.invite?.invite?.email || ''));
 
   function getBlockedInviteMessage(): string {
     if (isInviteEmailMismatch) {
@@ -51,7 +62,8 @@
     }
 
     if (!$profile.id || !$profile.email) {
-      return goto(`/signup?redirect=${page.url?.pathname || ''}`);
+      const qs = buildInviteAuthParams(page.url?.pathname || '', data.invite?.invite?.email || '');
+      return goto(resolve(`/signup?${qs}`, {}));
     }
 
     if (isInviteEmailMismatch) {
@@ -68,11 +80,12 @@
       const result = await response.json();
 
       if (!result.success || !result.data) {
-        snackbar.error(result.error || 'Failed to join organization');
+        const failed = result as { error?: string; message?: string };
+        snackbar.error(failed.error ?? failed.message ?? 'Failed to join organization');
         return;
       }
 
-      goto(result.data.redirectTo || '/org');
+      goto(resolve(result.data.redirectTo || '/org', {}));
     } catch (error) {
       console.error('Failed to accept organization invite', error);
       snackbar.error('Failed to join organization');
@@ -104,7 +117,11 @@
     {/if}
   </div>
 
-  <div class="my-4 flex w-full items-center justify-center">
+  <div class="my-4 flex w-full flex-col items-center justify-center gap-3">
     <Button type="submit" disabled={!canJoinOrganization || loading} {loading}>Join Organization</Button>
+    <p class="ui:text-muted-foreground text-center text-sm">
+      {$t('login.already_have_account')}
+      <a class="ui:text-primary hover:underline" href={resolve(`/login?${loginParams}`, {})}> {$t('login.login')}</a>
+    </p>
   </div>
 </AuthUI>

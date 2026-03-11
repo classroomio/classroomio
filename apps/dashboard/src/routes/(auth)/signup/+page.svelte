@@ -18,7 +18,8 @@
   import { resolve } from '$app/paths';
 
   let { data } = $props();
-  let fields = $state(Object.assign({}, SIGNUP_FIELDS));
+  const emailFromUrl = page.url.searchParams.get('email') ?? '';
+  let fields = $state(Object.assign({}, SIGNUP_FIELDS, emailFromUrl ? { email: emailFromUrl } : {}));
   let loading = $state(false);
   let errors: {
     email?: string;
@@ -33,11 +34,6 @@
 
   // Use org from store or layout data (layout data ensures org is available on self-hosted before store is set)
   const org = $derived($currentOrg?.id ? $currentOrg : (data.org ?? $currentOrg));
-
-  $effect(() => {
-    console.log('data', data);
-    console.log('org', org);
-  });
 
   // Invite context: allow signup when invite_token present or redirect contains invite info
   const hasInviteContext = $derived(
@@ -75,8 +71,9 @@
       loading = true;
       const name = fields.email.split('@')[0];
 
-      // Use org from store or layout data; required for self-hosted when orgs exist
-      const orgId = org?.id;
+      // if in selfhosted instance always pass org id
+      // if in cloud instance, ONLY pass when on subdomain i.e student experience
+      const headers = $globalStore.isOrgSite ? { 'cio-org-id': org.id } : undefined;
 
       const { error } = await authClient.signUp.email(
         {
@@ -85,9 +82,7 @@
           name: name
         },
         {
-          fetchOptions: {
-            headers: { 'cio-org-id': orgId }
-          },
+          headers,
           onSuccess: (ctx) => {
             console.log('Signup successful');
             capturePosthogEvent('user_signed_up', {

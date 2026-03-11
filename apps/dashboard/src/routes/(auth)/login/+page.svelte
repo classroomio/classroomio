@@ -6,6 +6,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { authClient } from '$lib/utils/services/auth/client';
   import { page } from '$app/state';
+  import { resolve } from '$app/paths';
   import { capturePosthogEvent } from '$lib/utils/services/posthog';
   import { globalStore } from '$lib/utils/store/app';
   import * as Field from '@cio/ui/base/field';
@@ -15,7 +16,10 @@
   import { ssoApi } from '$features/org/api/sso.svelte';
   import ShieldIcon from '@lucide/svelte/icons/shield';
 
-  let fields = $state(Object.assign({}, LOGIN_FIELDS));
+  const emailFromUrl = page.url.searchParams.get('email') ?? '';
+
+  let fields = $state(Object.assign({}, LOGIN_FIELDS, emailFromUrl ? { email: emailFromUrl } : {}));
+
   let submitError: string | undefined = $state();
   let loading = $state(false);
   let errors = $state(Object.assign({}, LOGIN_FIELDS));
@@ -165,8 +169,9 @@
       console.log('data', data);
 
       if (error) throw error;
-    } catch (error: any) {
-      submitError = error.error_description || error.message;
+    } catch (error) {
+      const err = error as { error_description?: string; message?: string };
+      submitError = err?.error_description ?? err?.message ?? '';
       loading = false;
     }
   }
@@ -241,7 +246,7 @@
       <Field.Field>
         <div class="ui:flex ui:items-center ui:justify-between">
           <Field.Label for="password">{$t('login.password')}</Field.Label>
-          <a class="ui:text-sm ui:text-primary ui:hover:underline" href="/forgot">
+          <a class="ui:text-sm ui:text-primary ui:hover:underline" href={resolve('/forgot', {})}>
             {$t('login.forgot')}
           </a>
         </div>

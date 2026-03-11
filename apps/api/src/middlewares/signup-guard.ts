@@ -1,10 +1,11 @@
+import type { Context, MiddlewareHandler, Next } from 'hono';
 import {
+  checkEmailExistsInOrg,
   getFirstOrganization,
   getOrganizationById,
   hasActiveOrganizationInviteForEmail
 } from '@cio/db/queries/organization';
 
-import type { MiddlewareHandler } from 'hono';
 import { env } from '@api/config/env';
 
 type OrgSettings = {
@@ -12,6 +13,105 @@ type OrgSettings = {
     inviteOnly?: boolean;
   };
 };
+
+type SignupRequestBody = {
+  email?: string;
+};
+
+const SELF_HOSTED_ORG_CONTEXT_REQUIRED = {
+  code: 'ORG_CONTEXT_REQUIRED',
+  message: 'Organization context is required for signup on self-hosted instances'
+} as const;
+
+const INVALID_REQUEST = {
+  code: 'INVALID_REQUEST',
+  message: 'Could not parse request body'
+} as const;
+
+const EMAIL_REQUIRED = {
+  code: 'INVALID_REQUEST',
+  message: 'Email is required'
+} as const;
+
+const SIGNUP_DISABLED = {
+  code: 'SIGNUP_DISABLED',
+  message: 'Signup is disabled for this organization'
+} as const;
+
+const INVITE_REQUIRED = {
+  code: 'INVITE_REQUIRED',
+  message: 'This organization requires an invitation to sign up'
+} as const;
+
+const isSelfHosted = env.PUBLIC_IS_SELFHOSTED === 'true';
+
+function normalizeEmail(email?: string) {
+  return email?.trim().toLowerCase();
+}
+
+async function getSignupEmail(c: Context) {
+  try {
+    const body = (await c.req.raw.clone().json()) as SignupRequestBody;
+    return {
+      email: normalizeEmail(body?.email),
+      parseFailed: false
+    };
+  } catch {
+    return {
+      email: undefined,
+      parseFailed: true
+    };
+  }
+}
+
+async function getOrganizationSafely(orgId: string) {
+  try {
+    return await getOrganizationById(orgId);
+  } catch {
+    return null;
+  }
+}
+
+async function canProceedWithoutOrgContext(c: Context) {
+  if (!isSelfHosted) {
+    return true;
+  }
+
+  const firstOrg = await getFirstOrganization();
+  if (!firstOrg) {
+    return true;
+  }
+
+  const { email, parseFailed } = await getSignupEmail(c);
+  if (parseFailed || !email) {
+    return false;
+  }
+
+  return checkEmailExistsInOrg(firstOrg.id, email);
+}
+
+function isInviteOnlySignup(settings: OrgSettings | null) {
+  return settings?.signup?.inviteOnly ?? false;
+}
+
+async function handleInviteOnlySignup(c: Context, next: Next, orgId: string) {
+  const { email, parseFailed } = await getSignupEmail(c);
+
+  if (parseFailed) {
+    return c.json(INVALID_REQUEST, 400);
+  }
+
+  if (!email) {
+    return c.json(EMAIL_REQUIRED, 400);
+  }
+
+  const hasInvite = await hasActiveOrganizationInviteForEmail(orgId, email);
+  if (!hasInvite) {
+    return c.json(INVITE_REQUIRED, 403);
+  }
+
+  await next();
+}
 
 /**
  * Enforces organization-level signup restrictions server-side.
@@ -23,66 +123,37 @@ type OrgSettings = {
  *
  * When the `cio-org-id` header is absent:
  *   - Non-self-hosted: pass through (header optional).
- *   - Self-hosted: require the header unless no orgs exist yet (bootstrap). Otherwise
- *     auto-enrollment in getAccountData would add unauthorized users as students,
- *     bypassing invite-only checks.
+ *   - Self-hosted: require the header unless no orgs exist yet (bootstrap), or the
+ *     signup email is already an organization member (e.g. invited, profile_id null).
  */
 export const signupGuard: MiddlewareHandler = async (c, next) => {
   const orgId = c.req.header('cio-org-id');
+
   if (!orgId) {
-    if (env.PUBLIC_IS_SELFHOSTED === 'true') {
-      const firstOrg = await getFirstOrganization();
-      if (firstOrg) {
-        return c.json(
-          {
-            code: 'ORG_CONTEXT_REQUIRED',
-            message: 'Organization context is required for signup on self-hosted instances'
-          },
-          400
-        );
-      }
+    const canContinue = await canProceedWithoutOrgContext(c);
+    if (!canContinue) {
+      return c.json(SELF_HOSTED_ORG_CONTEXT_REQUIRED, 400);
     }
-    return next();
+
+    await next();
+    return;
   }
 
-  let org: Awaited<ReturnType<typeof getOrganizationById>>;
-  try {
-    org = await getOrganizationById(orgId);
-  } catch {
-    return next();
-  }
-
+  const org = await getOrganizationSafely(orgId);
   if (!org) {
-    return next();
+    await next();
+    return;
   }
 
   if (org.disableSignup) {
-    return c.json({ code: 'SIGNUP_DISABLED', message: 'Signup is disabled for this organization' }, 403);
+    return c.json(SIGNUP_DISABLED, 403);
   }
 
   const settings = org.settings as OrgSettings | null;
-  const inviteOnly = settings?.signup?.inviteOnly ?? false;
-
-  if (!inviteOnly) {
-    return next();
+  if (!isInviteOnlySignup(settings)) {
+    await next();
+    return;
   }
 
-  let body: { email?: string } | undefined;
-  try {
-    body = await c.req.raw.clone().json();
-  } catch {
-    return c.json({ code: 'INVALID_REQUEST', message: 'Could not parse request body' }, 400);
-  }
-
-  const email = body?.email?.toLowerCase().trim();
-  if (!email) {
-    return c.json({ code: 'INVALID_REQUEST', message: 'Email is required' }, 400);
-  }
-
-  const hasInvite = await hasActiveOrganizationInviteForEmail(orgId, email);
-  if (!hasInvite) {
-    return c.json({ code: 'INVITE_REQUIRED', message: 'This organization requires an invitation to sign up' }, 403);
-  }
-
-  return next();
+  return handleInviteOnlySignup(c, next, orgId);
 };
