@@ -3,7 +3,8 @@
   "globalEnv": ["PUBLIC_IS_SELFHOSTED"],
   "pipeline": {
     "@cio/dashboard#build": {
-      "dependsOn": ["@cio/api#build", "@cio/ui#build", "@cio/db#build"]
+      "dependsOn": ["@cio/api#build", "@cio/ui#build", "@cio/db#build"],
+      "cache": false
     },
     "build": {
       "dependsOn": ["^build"],
