@@ -1,6 +1,7 @@
-import { getOrgBySiteName } from '$features/org/api/org.server';
-import { getApiKeyHeaders } from '$lib/utils/services/api/server';
+import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { env } from '$env/dynamic/private';
+import { getApiKeyHeaders } from '$lib/utils/services/api/server';
+import { getOrgBySiteName } from '$features/org/api/org.server';
 import { getSubdomain } from '$features/app/layout-setup';
 import { redirect } from '@sveltejs/kit';
 
@@ -12,7 +13,8 @@ export const load = async ({ params, url, cookies }) => {
   const isOrgSite = subdomain && !APP_SUBDOMAINS.includes(subdomain);
 
   // If this is LMS but user is on org site, redirect to LMS
-  if (isOrgSite) {
+  if (isOrgSite && PUBLIC_IS_SELFHOSTED !== 'true') {
+    console.log('isOrgSite redirecting to lms');
     redirect(307, `/lms`);
   }
 
@@ -20,11 +22,15 @@ export const load = async ({ params, url, cookies }) => {
   const cookieKey = `${ORG_ID_COOKIE_PREFIX}${siteName}`;
   const cachedOrgId = cookies.get(cookieKey);
 
+  console.log('cachedOrgId', cachedOrgId);
+  console.log('cookieKey', cookieKey);
+
   let orgId: string | undefined = cachedOrgId;
 
   if (!orgId) {
     const apiKeyHeaders = getApiKeyHeaders();
     const org = await getOrgBySiteName(siteName, apiKeyHeaders);
+    console.log('org', org);
     if (org?.id) {
       orgId = org.id;
 
@@ -36,6 +42,8 @@ export const load = async ({ params, url, cookies }) => {
       });
     }
   }
+
+  console.log('returning orgId', orgId);
 
   return {
     orgName: siteName,

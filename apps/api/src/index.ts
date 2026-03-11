@@ -11,9 +11,8 @@ import { showRoutes } from 'hono/dev';
 async function startServer() {
   console.log('Starting server on port:', API_PORT);
 
-  // Connect to Redis before starting the server
+  // Connect to Redis (non-blocking: API starts even if Redis fails)
   await connectRedis();
-  console.log('Redis connected successfully');
 
   serve({ fetch: app.fetch, port: API_PORT });
 

@@ -23,9 +23,17 @@ client.on('reconnecting', () => {
 let isConnected = false;
 
 export async function connectRedis(): Promise<void> {
-  if (!isConnected) {
+  if (!env.REDIS_URL) {
+    console.warn('REDIS_URL not set, Redis features disabled');
+    return;
+  }
+  if (isConnected) return;
+  try {
     await client.connect();
     isConnected = true;
+  } catch (error) {
+    console.error('Redis connection failed, API will run without Redis:', error);
+    // Don't throw - allow API to start; rate limiting and caching will degrade gracefully
   }
 }
 

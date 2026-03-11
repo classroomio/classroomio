@@ -13,6 +13,9 @@ export const load = async ({ params, parent, cookies }) => {
       stats: null
     };
   }
+  console.log('cache', cache);
+  console.log('orgId', orgId);
+  console.log('siteName', siteName);
 
   if (cache[orgId]) {
     return {
@@ -21,11 +24,15 @@ export const load = async ({ params, parent, cookies }) => {
     };
   }
 
-  // Fetch dashboard stats
-  const statsResponse = await classroomio.dash.stats.$get({ query: { siteName } }, getApiHeaders(cookies, orgId));
-
-  const statsData = await statsResponse.json();
-  cache[orgId] = statsData.success ? statsData.data : null;
+  try {
+    console.log('fetching stats', cookies);
+    const statsResponse = await classroomio.dash.stats.$get({ query: { siteName } }, getApiHeaders(cookies, orgId));
+    const statsData = await statsResponse.json();
+    cache[orgId] = statsData.success ? statsData.data : null;
+  } catch (error) {
+    console.error('Failed to fetch dashboard stats:', error);
+    cache[orgId] = null;
+  }
 
   return {
     orgName: siteName,
