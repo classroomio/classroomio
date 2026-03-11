@@ -11,7 +11,6 @@ import { isUserOrgAdmin } from '@cio/db/queries/organization';
 export const orgAdminMiddleware = async (c: Context, next: Next) => {
   try {
     const user = c.get('user');
-    console.log('orgAdminMiddleware user', user);
     if (!user) {
       return c.json(
         {
@@ -24,7 +23,6 @@ export const orgAdminMiddleware = async (c: Context, next: Next) => {
     }
 
     const orgId = c.req.header('cio-org-id');
-    console.log('orgAdminMiddleware orgId', orgId);
 
     if (!orgId) {
       return c.json(
@@ -38,7 +36,6 @@ export const orgAdminMiddleware = async (c: Context, next: Next) => {
     }
 
     const isAdmin = await isUserOrgAdmin(orgId, user.id);
-    console.log('orgAdminMiddleware isAdmin', isAdmin);
     if (!isAdmin) {
       return c.json(
         {

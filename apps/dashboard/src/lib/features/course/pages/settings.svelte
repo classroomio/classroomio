@@ -158,7 +158,7 @@
         logo: logoUrl,
         isPublished: $settings.isPublished,
         metadata: metadataPayload,
-        slug: courseApi.course.slug!
+        slug: courseApi.course.slug ?? undefined
       };
 
       const normalizedSelectedTagIds = normalizeTagIds(selectedTagIds);

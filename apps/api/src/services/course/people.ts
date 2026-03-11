@@ -11,7 +11,7 @@ import {
 import { ROLE } from '@cio/utils/constants';
 import type { TAddCourseMembers } from '@cio/utils/validation/course/people';
 import type { TGroupmember } from '@cio/db/types';
-import { env } from '@api/config/env';
+import { getDashboardBaseUrl } from '@api/config/dashboard-url';
 import { getCourseWithOrgData } from '@cio/db/queries/course';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, sendEmail } from '@cio/email';
@@ -176,7 +176,7 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
     const addedMembers = await Promise.all(members.map((member) => addCourseMember(courseId, member)));
 
     // Send welcome emails for teachers (TUTOR role = 2, ADMIN role = 1)
-    const baseUrl = env.NODE_ENV === 'development' ? 'http://localhost:5173' : 'https://app.classroomio.com';
+    const baseUrl = getDashboardBaseUrl(orgSiteName);
     const inviteLink = `${baseUrl}/org/${orgSiteName}/courses`;
 
     // Send welcome emails to teachers

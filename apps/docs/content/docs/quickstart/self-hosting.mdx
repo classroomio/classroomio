@@ -72,7 +72,7 @@ Docker self-hosting uses a single root `.env` file. Every `docker compose` comma
 | `PRIVATE_SERVER_KEY` | Dashboard-to-API auth key (same in both) | Auto-generated |
 | `PUBLIC_IS_SELFHOSTED` | Self-hosted mode flag | `true` |
 | `PRIVATE_SERVER_URL` | Internal API URL for SSR (Docker network) | `http://api:3081` |
-| `DASHBOARD_ORIGIN` | Dashboard URL for CSRF protection | `http://localhost:3082` |
+| `DASHBOARD_ORIGIN` | Dashboard origin for invite links, email links, etc. | `http://localhost:3082` |
 | `ALLOWED_EXTERNAL_DOMAINS` | CSP allowed domains (comma-separated) | — |
 
 <Callout type="warn" title="CSP Domains">
@@ -190,6 +190,9 @@ BETTER_AUTH_SECRET="random-secure-key"
 AUTH_BEARER_TOKEN="some-key"
 PRIVATE_SERVER_KEY="same-key-for-api-and-dashboard"
 PUBLIC_IS_SELFHOSTED="true"
+
+# Dashboard URL for invite/email links (e.g. https://app.yourdomain.com)
+DASHBOARD_ORIGIN="https://app.yourdomain.com"
 
 # Required for auth cookies when API and dashboard use different subdomains — set to your root domain, e.g. yourdomain.com
 AUTH_COOKIE_DOMAIN="yourdomain.com"

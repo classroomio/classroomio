@@ -32,7 +32,7 @@ import { getGroupMemberIdByCourseAndProfile, isCourseTeamMemberOrOrgAdmin } from
 
 import { QUESTION_TYPE_ID_TO_KEY } from '@cio/question-types';
 import { db } from '@cio/db/drizzle';
-import { env } from '@api/config/env';
+import { getDashboardBaseUrl } from '@api/config/dashboard-url';
 import { generateDocumentDownloadPresignedUrls } from '@api/utils/s3';
 
 type SubmissionGradingState = 'queued' | 'processing' | 'awaiting_manual' | 'completed' | 'failed';
@@ -775,7 +775,7 @@ async function sendSubmissionUpdateEmail(submissionId: string, newStatusId: numb
   const orgName = orgResult?.orgName || 'ClassroomIO';
 
   const statusText = LEGACY_BOARD_STATUS_LABELS[newStatusId] || 'Updated';
-  const baseUrl = env.NODE_ENV === 'development' ? 'http://localhost:5173' : 'https://app.classroomio.com';
+  const baseUrl = getDashboardBaseUrl();
   const exerciseLink = `${baseUrl}/courses/${fullSubmission.courseId}/exercises/${fullSubmission.exercise.id}`;
 
   // Calculate total and max points
@@ -852,7 +852,7 @@ async function sendExerciseSubmissionUpdateEmail(courseId: string, exerciseId: s
 
   const orgName = orgResult?.orgName || 'ClassroomIO';
 
-  const baseUrl = env.NODE_ENV === 'development' ? 'http://localhost:5173' : 'https://app.classroomio.com';
+  const baseUrl = getDashboardBaseUrl();
   const exerciseLink = `${baseUrl}/courses/${courseId}/exercises/${exerciseId}`;
   const submissionLink = `${baseUrl}/courses/${courseId}/submissions`;
 

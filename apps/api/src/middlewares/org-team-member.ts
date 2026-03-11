@@ -10,8 +10,6 @@ import { isUserOrgTeamMember } from '@cio/db/queries/organization';
  */
 export const orgTeamMemberMiddleware = async (c: Context, next: Next) => {
   try {
-    console.log('orgTeamMemberMiddleware user', c.get('user'));
-
     const user = c.get('user');
     if (!user) {
       return c.json(

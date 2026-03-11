@@ -10,7 +10,7 @@ import {
   revokeActiveOrganizationInvitesByEmails
 } from '@cio/db/queries/organization';
 import { db } from '@cio/db/drizzle';
-import { env } from '@api/config/env';
+import { getDashboardBaseUrl } from '@api/config/dashboard-url';
 import { sendEmail } from '@cio/email';
 import { ROLE } from '@cio/utils/constants';
 import * as schema from '@cio/db/schema';
@@ -42,12 +42,8 @@ function normalizeEmails(emails: string[]): string[] {
   return [...new Set(emails.map((email) => email.toLowerCase().trim()).filter(Boolean))];
 }
 
-function getAppBaseUrl(): string {
-  return env.NODE_ENV === 'development' ? 'http://localhost:5173' : 'https://app.classroomio.com';
-}
-
 function buildInviteLink(token: string): string {
-  return `${getAppBaseUrl()}/invite/t/${encodeURIComponent(token)}`;
+  return `${getDashboardBaseUrl()}/invite/t/${encodeURIComponent(token)}`;
 }
 
 function getRoleLabel(roleId: number): string {

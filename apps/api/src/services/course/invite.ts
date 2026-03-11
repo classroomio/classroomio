@@ -19,7 +19,7 @@ import { ROLE } from '@cio/utils/constants';
 import type { TCreateCourseInvite } from '@cio/utils/validation/course/invite';
 import crypto from 'node:crypto';
 import { db } from '@cio/db/drizzle';
-import { env } from '@api/config/env';
+import { getDashboardBaseUrl } from '@api/config/dashboard-url';
 import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, sendEmail } from '@cio/email';
@@ -150,20 +150,12 @@ function getInviteStatus(invite: {
   return 'ACTIVE';
 }
 
-function getAppBaseUrl(orgSiteName?: string): string {
-  if (env.NODE_ENV === 'development') {
-    return 'http://localhost:5173';
-  }
-  const subdomain = orgSiteName && orgSiteName !== 'app' ? orgSiteName : 'app';
-  return `https://${subdomain}.classroomio.com`;
-}
-
 /**
  * Builds the course enroll URL for invite links (emails, etc.).
- * Uses org subdomain in production.
+ * Uses DASHBOARD_URL when set (self-hosted), otherwise org subdomain in production.
  */
 export function buildEnrollLink(courseSlug: string, token: string, orgSiteName?: string): string {
-  const base = getAppBaseUrl(orgSiteName);
+  const base = getDashboardBaseUrl(orgSiteName);
   return `${base}/course/${encodeURIComponent(courseSlug)}/enroll?invite_token=${encodeURIComponent(token)}`;
 }
 

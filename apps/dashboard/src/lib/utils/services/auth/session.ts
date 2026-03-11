@@ -16,7 +16,6 @@ export const getSessionData = async (cookies: Cookies): Promise<App.Locals | nul
 
     const locals = await getThroughAuthClient(cioCookies);
 
-    console.log('locals', locals);
     if (!locals) return null;
 
     // This will always be true because if we don't have classroomio cookies, we won't be able to this line of code.

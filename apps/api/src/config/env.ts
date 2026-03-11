@@ -41,7 +41,9 @@ const envSchema = z.object({
   /** When 'true', instance runs in self-hosted mode: single org, auto-enroll as student, no org switching */
   PUBLIC_IS_SELFHOSTED: z.string().optional(),
   /** License key for enterprise features (SSO, token-auth, no-tracking, etc.) */
-  LICENSE_KEY: z.string().optional()
+  LICENSE_KEY: z.string().optional(),
+  /** Dashboard origin for invite/email links (e.g. https://app.yourdomain.com). When set, all email links point here instead of app.classroomio.com. Required for self-hosted. */
+  DASHBOARD_ORIGIN: z.string().optional()
 });
 
 export const env = envSchema.parse(process.env);
