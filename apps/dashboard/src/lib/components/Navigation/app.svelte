@@ -18,7 +18,7 @@
   let { title = $bindable(''), navClass = '', isCoursePage = false }: Props = $props();
 
   let coursesPath = $derived(
-    $globalStore.isOrgSite ? '/lms/mylearning' : isCoursePage ? `${$currentOrgPath}/courses` : $currentOrgPath
+    $globalStore.isStudent ? '/lms/mylearning' : isCoursePage ? `${$currentOrgPath}/courses` : $currentOrgPath
   );
 </script>
 
@@ -27,13 +27,13 @@
     <div class="flex items-center text-white">
       {#if isCoursePage}
         <li class="hidden md:block">
-          <IconButton onclick={() => goto(resolve(coursesPath))}>
+          <IconButton onclick={() => goto(resolve(coursesPath, {}))}>
             <ArrowLeftIcon size={16} class="custom" />
           </IconButton>
         </li>
       {/if}
       <a
-        href={resolve(coursesPath)}
+        href={resolve(coursesPath, {})}
         title="{$t('navigation.goto')} {isCoursePage ? $t('navigation.courses') : $t('navigation.classroomio_home')}"
         id="logo"
         class="line-clamp-1 text-lg"

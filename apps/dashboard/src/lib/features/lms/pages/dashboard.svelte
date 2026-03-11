@@ -6,6 +6,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { coursesApi } from '$features/course/api';
+  import { resolve } from '$app/paths';
 
   let totalCompleted = $derived(
     coursesApi.enrolledCourses.reduce((acc, cur) => {
@@ -38,7 +39,7 @@
         ? $currentOrg.customization.dashboard.bannerText
         : $t('dashboard.lms_dashboard_hero')}
     </p>
-    <Button onclick={() => goto('/lms/mylearning')}>
+    <Button onclick={() => goto(resolve('/lms/mylearning', {}))}>
       {$t('dashboard.continue_learning')}
     </Button>
   </div>

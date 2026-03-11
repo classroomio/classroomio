@@ -80,7 +80,7 @@
     {#snippet child()}
       <div class="mb-10 flex flex-wrap items-start">
         <div class="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {#each cards as card}
+          {#each cards as card, i (i)}
             <ActivityCard activity={card} />
           {/each}
         </div>
@@ -94,11 +94,11 @@
 
           <div class="h-full space-y-6">
             {#if !topCourses}
-              {#each Array(5) as _}
+              {#each Array(5) as _, i (i)}
                 <Skeleton class="h-10 w-full rounded-md" />
               {/each}
             {:else}
-              {#each topCourses as course}
+              {#each topCourses as course (course.id)}
                 <div class="flex items-center gap-2">
                   <div class="w-4/6 space-y-1">
                     <a class="hover:underline" href={`/courses/${course.id}`}>
@@ -140,11 +140,11 @@
 
           <div class="h-full space-y-6">
             {#if !enrollments}
-              {#each Array(5) as _}
+              {#each Array(5) as _, i (i)}
                 <Skeleton class="h-10 w-full rounded-md" />
               {/each}
             {:else}
-              {#each enrollments as enrollment}
+              {#each enrollments as enrollment (enrollment.id)}
                 <div class="flex items-center justify-between gap-2">
                   <div class="flex items-center gap-2">
                     <Avatar.Root class="h-6 w-6">

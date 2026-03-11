@@ -45,7 +45,7 @@
 
   let { path, id, isStudent = false }: Props = $props();
 
-  const coursesListPath = $derived($globalStore.isOrgSite ? '/lms/mylearning' : `${$currentOrgPath}/courses`);
+  const coursesListPath = $derived($globalStore.isStudent ? '/lms/mylearning' : `${$currentOrgPath}/courses`);
   const contentData = $derived(getCourseContent(courseApi.course));
   const sidebar = useSidebar();
   const contentCount = $derived.by(() => {

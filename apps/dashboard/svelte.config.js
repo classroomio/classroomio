@@ -34,6 +34,7 @@ const defaultScriptSrcDomains = [
   'https://cdnjs.cloudflare.com',
   'https://*.posthog.com',
   'https://*.senja.io',
+  'https://umami.hz.oncws.com',
   'https://www.youtube.com',
   'https://youtube.com',
   'https://google.com'

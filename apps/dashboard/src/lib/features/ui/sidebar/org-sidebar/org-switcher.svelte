@@ -29,10 +29,10 @@
   function onClick(org: AccountOrg) {
     if (org.id === $currentOrg.id) return;
 
-    localStorage.setItem('classroomio_org_sitename', org.siteName);
+    localStorage.setItem('classroomio_org_sitename', org.siteName!);
     currentOrg.set(org);
 
-    setTheme(org.theme);
+    setTheme(org.theme!);
     window.location.href = $currentOrgPath;
   }
 </script>

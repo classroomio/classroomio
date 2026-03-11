@@ -116,6 +116,7 @@ class AppInitApi extends BaseApi {
       return;
     }
 
+    // This allows you to be on the landing page of an organization site and not be redirected
     if (isOrgSite && window.location.pathname === '/') {
       return;
     }
