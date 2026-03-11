@@ -11,10 +11,12 @@ export const getSessionData = async (cookies: Cookies): Promise<App.Locals | nul
       .map((c) => `${c.name}=${c.value}`)
       .join('; ');
 
+    console.log('cioCookies', cioCookies);
     if (!cioCookies) return null;
 
     const locals = await getThroughAuthClient(cioCookies);
 
+    console.log('locals', locals);
     if (!locals) return null;
 
     locals.fromSessions = !!cookies.get('classroomio.session_data');
