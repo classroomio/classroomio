@@ -19,7 +19,8 @@ export const getSessionData = async (cookies: Cookies): Promise<App.Locals | nul
     console.log('locals', locals);
     if (!locals) return null;
 
-    locals.fromSessions = !!cookies.get('classroomio.session_data');
+    // This will always be true because if we don't have classroomio cookies, we won't be able to this line of code.
+    locals.fromSessions = true;
 
     return locals;
   } catch (error) {

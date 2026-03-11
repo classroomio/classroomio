@@ -1,8 +1,7 @@
 const {
   TRUSTED_ORIGINS: TRUSTED_ORIGINS_STRING,
   PUBLIC_SERVER_URL,
-  AUTH_COOKIE_DOMAIN: AUTH_COOKIE_DOMAIN_STRING,
-  DASHBOARD_ORIGIN: DASHBOARD_ORIGIN_STRING
+  AUTH_COOKIE_DOMAIN: AUTH_COOKIE_DOMAIN_STRING
 } = process.env;
 
 const DEFAULT_TRUSTED_ORIGINS = [
@@ -31,18 +30,4 @@ export const TRUSTED_ORIGINS = TRUSTED_ORIGINS_STRING
 
 export const BASE_URL = PUBLIC_SERVER_URL || 'http://localhost:3002';
 
-function getAuthCookieDomain(): string | undefined {
-  const explicit = AUTH_COOKIE_DOMAIN_STRING?.trim();
-  if (explicit) return explicit;
-
-  if (!DASHBOARD_ORIGIN_STRING?.trim()) return undefined;
-
-  try {
-    const url = new URL(DASHBOARD_ORIGIN_STRING.trim());
-    return url.hostname || undefined;
-  } catch {
-    return undefined;
-  }
-}
-
-export const AUTH_COOKIE_DOMAIN = getAuthCookieDomain();
+export const AUTH_COOKIE_DOMAIN = AUTH_COOKIE_DOMAIN_STRING?.trim() || undefined;
