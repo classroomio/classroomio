@@ -4,6 +4,7 @@ import {
   checkSiteNameExists,
   createOrganization,
   createOrganizationMember,
+  createOrganizationPlan,
   getOrganizationByProfileId,
   getOrganizationCount
 } from '@cio/db/queries';
@@ -11,6 +12,7 @@ import { getProfileById, updateProfile } from '@cio/db/queries/auth';
 
 import { env } from '@api/config/env';
 import { ROLE } from '@cio/utils/constants';
+import { PLAN } from '@cio/utils/plans';
 import { db } from '@cio/db/drizzle';
 import { sendEmail } from '@cio/email';
 
@@ -39,18 +41,40 @@ export async function createOrganizationWithOwner(
 
   // Business Logic: Create org and member in a transaction
   try {
-    const result = await db.transaction(async () => {
-      const organization = await createOrganization({
-        name: input.orgName,
-        siteName: input.siteName
-      });
+    const result = await db.transaction(async (tx) => {
+      const organization = await createOrganization(
+        {
+          name: input.orgName,
+          siteName: input.siteName
+        },
+        tx
+      );
 
-      const member = await createOrganizationMember({
-        organizationId: organization.id,
-        profileId,
-        roleId: ROLE.ADMIN,
-        verified: true
-      });
+      const member = await createOrganizationMember(
+        {
+          organizationId: organization.id,
+          profileId,
+          roleId: ROLE.ADMIN,
+          verified: true
+        },
+        tx
+      );
+
+      // Self-hosted: assign Enterprise plan to the new org
+      if (env.PUBLIC_IS_SELFHOSTED === 'true') {
+        await createOrganizationPlan(
+          {
+            orgId: organization.id,
+            planName: PLAN.ENTERPRISE as 'ENTERPRISE',
+            subscriptionId: `selfhosted-${organization.id}`,
+            triggeredBy: member.id,
+            payload: {},
+            isActive: true,
+            provider: 'selfhosted'
+          },
+          tx
+        );
+      }
 
       return { organization, member };
     });

@@ -11,7 +11,7 @@ import type {
 import { and, eq, inArray, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 
 export function getOrgIdBySiteName(siteName: string) {
   return db.select().from(schema.organization).where(eq(schema.organization.siteName, siteName)).limit(1);
@@ -82,14 +82,14 @@ export const getOrganizationByProfileId = async (profileId: string): Promise<Org
   }));
 };
 
-export const createOrganization = async (data: TNewOrganization) => {
-  const [organization] = await db.insert(schema.organization).values(data).returning();
+export const createOrganization = async (data: TNewOrganization, dbClient: DbOrTxClient = db) => {
+  const [organization] = await dbClient.insert(schema.organization).values(data).returning();
 
   return organization;
 };
 
-export const createOrganizationMember = async (data: TNewOrganizationmember) => {
-  const [member] = await db.insert(schema.organizationmember).values(data).returning();
+export const createOrganizationMember = async (data: TNewOrganizationmember, dbClient: DbOrTxClient = db) => {
+  const [member] = await dbClient.insert(schema.organizationmember).values(data).returning();
 
   return member;
 };
@@ -534,10 +534,14 @@ export const getOrganizationCount = async (): Promise<number> => {
 /**
  * Creates a new organization plan
  * @param data Organization plan creation data
+ * @param dbClient Optional DB or transaction client for use within transactions
  * @returns Created organization plan record
  */
-export const createOrganizationPlan = async (data: TNewOrganizationPlan): Promise<TOrganizationPlan> => {
-  const [plan] = await db.insert(schema.organizationPlan).values(data).returning();
+export const createOrganizationPlan = async (
+  data: TNewOrganizationPlan,
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationPlan> => {
+  const [plan] = await dbClient.insert(schema.organizationPlan).values(data).returning();
   return plan;
 };
 

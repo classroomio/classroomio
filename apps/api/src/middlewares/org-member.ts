@@ -10,6 +10,7 @@ import { getUserOrgRole } from '@cio/db/queries/organization';
  */
 export const orgMemberMiddleware = async (c: Context, next: Next) => {
   try {
+    console.log('user', c.get('user'));
     const user = c.get('user');
     if (!user) {
       return c.json(
