@@ -150,8 +150,8 @@ For Enterprise SSO support, you need to configure the following:
    TRUSTED_ORIGINS="https://app.classroomio.com,https://your-org.okta.com,https://accounts.google.com"
    ```
 
-3. **Callback URLs**: Ensure your `SERVER_URL` and `PUBLIC_SERVER_URL` are correctly set. SSO callbacks will be:
-   - `{SERVER_URL}/api/auth/sso/callback/{providerId}`
+3. **Callback URLs**: Ensure your `PUBLIC_SERVER_URL` is correctly set. SSO callbacks will be:
+   - `{PUBLIC_SERVER_URL}/api/auth/sso/callback/{providerId}`
 
 4. **License Check**: The system will verify your Enterprise license before allowing SSO configuration. Without a valid license, the SSO settings page will show an upgrade prompt.
 
@@ -170,20 +170,31 @@ Go ahead and click this button to get started.
 ```zsh title="env"
 # Required
 DATABASE_URL=""
-PRIVATE_DATABASE_URL=""
 REDIS_URL=""
-SERVER_URL=""
+PUBLIC_SERVER_URL=""
 TRUSTED_ORIGINS=""
 BETTER_AUTH_SECRET=""
 AUTH_BEARER_TOKEN=""
 AUTH_COOKIE_DOMAIN=""
+PRIVATE_SERVER_KEY=""
 SMTP_HOST=""
 SMTP_PORT=""
 SMTP_USER=""
 SMTP_SENDER=""
 SMTP_PASSWORD=""
 
-# Optional
+# Optional - MinIO (S3-compatible, for Docker / on-premise self-hosting)
+# When API runs in Docker: use minio service name. For local API: use http://localhost:9000
+MINIO_ROOT_USER=minioadmin
+MINIO_ROOT_PASSWORD=minioadmin
+OBJECT_STORAGE_ENDPOINT=http://minio:9000
+OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000
+OBJECT_STORAGE_ACCESS_KEY_ID=minioadmin
+OBJECT_STORAGE_SECRET_ACCESS_KEY=minioadmin
+OBJECT_STORAGE_FORCE_PATH_STYLE=true
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=http://localhost:9000/media
+
+# Optional - Cloudflare R2 (for hosted deployments)
 CLOUDFLARE_BUCKET_ID=""
 CLOUDFLARE_ACCESS_KEY=""
 CLOUDFLARE_ACCOUNT_ID=""
@@ -327,11 +338,20 @@ PRIVATE_SERVER_KEY=
 # Required only for Enterprise-only features (SSO, token-auth, no-tracking)
 LICENSE_KEY=
 
-SERVER_URL=
 PUBLIC_SERVER_URL=
 PRIVATE_SERVER_URL=
 TRUSTED_ORIGINS=
 AUTH_COOKIE_DOMAIN=
+
+# MinIO (object storage, when using ./run-docker-full-stack.sh with MinIO)
+MINIO_ROOT_USER=minioadmin
+MINIO_ROOT_PASSWORD=minioadmin
+OBJECT_STORAGE_ENDPOINT=http://minio:9000
+OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000
+OBJECT_STORAGE_ACCESS_KEY_ID=minioadmin
+OBJECT_STORAGE_SECRET_ACCESS_KEY=minioadmin
+OBJECT_STORAGE_FORCE_PATH_STYLE=true
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=http://localhost:9000/media
 ```
 
 <Callout title="Important">

@@ -3,9 +3,9 @@ import 'dotenv/config';
 import { API_PORT } from '@api/constants';
 import { app } from '@api/app';
 import { configureOpenAPI } from '@api/utils/openapi';
+import { connectRedis } from '@api/utils/redis/redis';
 import { serve } from '@hono/node-server';
 import { showRoutes } from 'hono/dev';
-import { connectRedis } from '@api/utils/redis/redis';
 
 // Start server
 async function startServer() {

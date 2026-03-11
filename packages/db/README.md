@@ -34,12 +34,30 @@ Now when I am ready to deploy the feature, I can use [option 2](https://orm.driz
 
 I can make changes directly to the schema file and run `pnpm db push` to push the changes to the source db.
 
-## Change email flow
+## Setting up a new DB on Railway
 
-1. User changes email on dashboard to new email
-2. We send an email verification to the current, permitting the change
-3. Meanwhile the frontend reverts to the previous email.
-4. User clicks approve link in email
-5. User is redirected to settings page with message that another email has been sent to the new email
-6. User goes to new email inbox and clicks approve link in email
-7. User is taken to the settings page with new email address.
+Once you setup a Postgres DB on Railway, you should copyt the `DATABASE_PUBLIC_URL` and paste into your `.env`. In the `.env` we expect `DATABASE_URL`:
+
+    ```.env
+    DATABASE_URL=what-you-copied-from-railway
+    ```
+
+### Commands
+
+#### db:setup
+
+Prepares the database so the application can run. Run this for new databases or after provisioning Postgres.
+
+```
+pnpm db:setup
+```
+
+It performs three steps in order:
+
+1. **Schema sync** – Runs `drizzle-kit push` to apply the TypeScript schema to the database (creates/updates tables, enums, etc.).
+2. **PostgreSQL roles** – Creates the `authenticated` and `anon` roles if missing (used by RLS policies).
+3. **Essential seed data** – Inserts required reference data: roles (ADMIN, TUTOR, STUDENT), submission statuses, and question types.
+
+**Optional:** Add `--seed` (or `-s`) to run the full seed, including demo users, organizations, courses, and other example data.
+
+Requires `DATABASE_URL` or `PRIVATE_DATABASE_URL` in the environment.
