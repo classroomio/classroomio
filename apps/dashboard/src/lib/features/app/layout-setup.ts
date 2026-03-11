@@ -1,10 +1,11 @@
+import { getFirstOrg, getOrgBySiteName, getOrgsByCustomDomain } from '$features/org/api/org.server';
+
 import type { AccountOrg } from '$features/app/types';
 import type { Cookies } from '@sveltejs/kit';
-import { getFirstOrg, getOrgBySiteName, getOrgsByCustomDomain } from '$features/org/api/org.server';
-import { getApiKeyHeaders } from '$lib/utils/services/api/server';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { blockedSubdomain } from '$lib/utils/constants/app';
 import { env } from '$env/dynamic/private';
+import { getApiKeyHeaders } from '$lib/utils/services/api/server';
 
 export interface OrgSiteInfo {
   isOrgSite: boolean;

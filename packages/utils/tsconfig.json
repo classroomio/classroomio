@@ -12,7 +12,7 @@
     "declaration": true,
     "declarationMap": true
   },
-  "include": ["src/**/*.ts", "src/**/*.json"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist", "scripts", "tsconfig.tsbuildinfo"],
   "tsc-alias": {
     "resolveFullPaths": true,
