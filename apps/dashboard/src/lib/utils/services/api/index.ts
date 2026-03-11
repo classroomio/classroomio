@@ -227,9 +227,13 @@ export function getApiHeaders(
     .map((c) => `${c.name}=${c.value}`)
     .join('; ');
 
+  console.log('cioCookies', cioCookies);
   const headers: { cookie: string; 'cio-org-id'?: string } = {
     cookie: cioCookies || ''
   };
+
+  console.log('headers', headers);
+  console.log('orgId', orgId);
 
   if (orgId) {
     headers['cio-org-id'] = orgId;
