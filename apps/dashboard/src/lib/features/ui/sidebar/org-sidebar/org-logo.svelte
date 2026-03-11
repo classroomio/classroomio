@@ -2,11 +2,9 @@
   import * as Avatar from '@cio/ui/base/avatar';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { Skeleton } from '@cio/ui/base/skeleton';
-  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
+  import { currentOrg } from '$lib/utils/store/org';
   import { shortenName } from '$lib/utils/functions/string';
-  import { globalStore } from '$lib/utils/store/app';
-
-  const orgPath = $derived($globalStore.isOrgSite ? '/lms' : $currentOrgPath);
+  import { basePath } from '$lib/utils/store/app';
 </script>
 
 <Sidebar.Menu>
@@ -16,7 +14,7 @@
       class="ui:data-[state=open]:bg-sidebar-accent ui:data-[state=open]:text-sidebar-accent-foreground"
     >
       {#snippet child({ props })}
-        <a href={orgPath} {...props}>
+        <a href={$basePath} {...props}>
           {#if $currentOrg.name}
             <Avatar.Root class="flex size-6! items-center justify-center rounded-md!">
               <Avatar.Image src={$currentOrg.avatarUrl} alt={$currentOrg.name} />

@@ -11,18 +11,18 @@
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import { calDateDiff } from '$lib/utils/functions/date';
-  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { basePath } from '$lib/utils/store/app';
 
   import { CommunityListLoader, AskCommunityButton } from '../components';
   import { communityApi } from '../api/community.svelte';
   import type { CommunityQuestionData } from '../utils/types';
 
   interface Props {
-    isLMS?: boolean;
     questions?: CommunityQuestionData;
   }
 
-  let { isLMS = false, questions }: Props = $props();
+  let { questions }: Props = $props();
 
   let searchValue = $state('');
   let selectedId = $state('');
@@ -80,7 +80,7 @@
   {#each filteredQuestions as question}
     <Item.Root variant="outline">
       {#snippet child({ props })}
-        <a href="{isLMS ? '/lms' : $currentOrgPath}/community/{question.slug}" {...props}>
+        <a href="{$basePath}/community/{question.slug}" {...props}>
           <Vote value={question.votes} />
           <Item.Content class="gap-y-0.5">
             <Item.Title class="mt-0">

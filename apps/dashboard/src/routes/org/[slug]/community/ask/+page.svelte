@@ -16,7 +16,7 @@
   </Page.Header>
   <Page.Body>
     {#snippet child()}
-      <AskCommunityPage isLMS={false} />
+      <AskCommunityPage />
     {/snippet}
   </Page.Body>
 </Page.Root>

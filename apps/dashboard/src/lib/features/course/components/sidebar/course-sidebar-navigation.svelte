@@ -31,7 +31,7 @@
   import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg, isFreePlan, currentOrgPath } from '$lib/utils/store/org';
-  import { globalStore } from '$lib/utils/store/app';
+  import { isStudentExperience } from '$lib/utils/store/app';
   import { getNavItemRoute, getLessonsRoute } from '$features/course/utils/functions';
   import { useSidebar } from '@cio/ui/base/sidebar';
   import { IconButton } from '@cio/ui/custom/icon-button';
@@ -45,7 +45,7 @@
 
   let { path, id, isStudent = false }: Props = $props();
 
-  const coursesListPath = $derived($globalStore.isStudent ? '/lms/mylearning' : `${$currentOrgPath}/courses`);
+  const coursesListPath = $derived($isStudentExperience ? '/lms/mylearning' : `${$currentOrgPath}/courses`);
   const contentData = $derived(getCourseContent(courseApi.course));
   const sidebar = useSidebar();
   const contentCount = $derived.by(() => {

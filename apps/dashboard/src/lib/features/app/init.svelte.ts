@@ -122,35 +122,27 @@ class AppInitApi extends BaseApi {
     }
 
     const isStudent = get(isOrgStudent);
-
     const userHasOrganizations = this.data.organizations.length > 0;
-
     const isCloud = PUBLIC_IS_SELFHOSTED !== 'true';
 
     // CLOUD: when user has no orgs and isOrgSite is false, route to /onboarding
     // isOrgSite - means the user is on a multi tenant organization site, we don't want to redirect to /onboarding in this case
     if (isCloud) {
       const shouldRedirectToOnboarding = !userHasOrganizations && !isOrgSite;
-
       if (shouldRedirectToOnboarding) {
         return goto(resolve(`/onboarding`, {}));
       }
-
-      if (!shouldRedirectOnAuth(page.url.pathname)) return;
-
-      return isOrgSite || isStudent ? this.goToLMS() : this.goToOrg();
     } else {
       // Self-hosted: when user has no orgs, route to /onboarding
-      // This should only happen once cause Self hosted instance is single tenant
-      //
       if (!userHasOrganizations) {
         return goto(resolve(`/onboarding`, {}));
       }
-
-      if (!shouldRedirectOnAuth(page.url.pathname)) return;
-
-      return isStudent ? this.goToLMS() : this.goToOrg();
     }
+
+    if (!shouldRedirectOnAuth(page.url.pathname)) return;
+
+    const shouldGoToLMS = isCloud ? isOrgSite || !!isStudent : !!isStudent;
+    return shouldGoToLMS ? this.goToLMS() : this.goToOrg();
   }
 
   goToLMS() {

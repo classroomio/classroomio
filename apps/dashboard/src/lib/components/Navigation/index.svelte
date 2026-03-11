@@ -1,9 +1,8 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { resolve } from '$app/paths';
-  import { ROLE } from '@cio/utils/constants';
   import { user } from '$lib/utils/store/user';
-  import { currentOrg, currentOrgPath } from '$lib/utils/store/org';
+  import { basePath } from '$lib/utils/store/app';
   import { isCoursePage } from '$lib/utils/functions/app';
   import { t } from '$lib/utils/functions/translations';
   import type { TCustomLinks } from './types';
@@ -38,11 +37,10 @@
   let redirect = $derived(isCoursePage(page.url.pathname) ? `?redirect=${page.url.pathname}` : '');
   let showLinks = $derived(customLinks && customLinks.show && customLinks.links && customLinks.links.length > 0);
 
-  let isAdminOrTeacher = $derived($currentOrg.roleId === ROLE.ADMIN || $currentOrg.roleId === ROLE.TUTOR);
-  let gotoHref = $derived(
-    isAdminOrTeacher && $currentOrgPath !== '#' ? resolve($currentOrgPath, {}) : resolve('/lms', {})
+  let gotoHref = $derived(resolve($basePath !== '#' ? $basePath : '/lms', {}));
+  let gotoLabel = $derived(
+    $basePath === '/lms' || $basePath === '#' ? 'navigation.goto_lms' : 'navigation.goto_dashboard'
   );
-  let gotoLabel = $derived(isAdminOrTeacher ? 'navigation.goto_dashboard' : 'navigation.goto_lms');
 
   function toggleMobileMenu() {
     mobileMenuOpen = !mobileMenuOpen;

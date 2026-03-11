@@ -1,15 +1,14 @@
 <script lang="ts">
   import { t } from '$lib/utils/functions/translations';
   import { goto } from '$app/navigation';
-  import { currentOrgPath } from '$lib/utils/store/org';
+  import { resolve } from '$app/paths';
+  import { basePath } from '$lib/utils/store/app';
   import { Button } from '@cio/ui/base/button';
   import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
   import PlusIcon from '@lucide/svelte/icons/plus';
 
-  let { isLMS = false }: { isLMS?: boolean } = $props();
-
   function askCommunity() {
-    goto(`${isLMS ? '/lms/community/ask' : `${$currentOrgPath}/community/ask`}`);
+    goto(resolve(`${$basePath}/community/ask`, {}));
   }
 </script>
 

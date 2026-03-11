@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { globalStore } from '$lib/utils/store/app';
+  import { basePath, globalStore } from '$lib/utils/store/app';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import RocketIcon from '@lucide/svelte/icons/rocket';
   import BellPlusIcon from '@lucide/svelte/icons/bell-plus';
@@ -10,8 +10,6 @@
   import { useSidebar } from '@cio/ui/base/sidebar';
   import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
   import ThemeToggle from './theme-toggle.svelte';
-
-  import { currentOrgPath } from '$lib/utils/store/org';
 
   import { t } from '$lib/utils/functions/translations';
   import { logout } from '$lib/utils/functions/logout';
@@ -38,10 +36,7 @@
 
 {#snippet usertrigger()}
   <DropdownMenu.Label class="p-0">
-    <a
-      href={`${!$globalStore.isOrgSite ? $currentOrgPath : '/lms'}/settings`}
-      class="flex items-center gap-2 px-1 py-1.5 text-left text-sm"
-    >
+    <a href={`${$basePath}/settings`} class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
       {@render avatarblock()}
     </a>
   </DropdownMenu.Label>

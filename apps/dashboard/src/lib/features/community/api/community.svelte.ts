@@ -9,14 +9,14 @@ import type {
   UpvotePostRequest
 } from '../utils/types';
 import { ZCommunityComment, ZCommunityQuestionUpdate, ZCreateCommunityQuestion } from '@cio/utils/validation/community';
-import { currentOrgPath, currentOrg as currentOrgStore } from '$lib/utils/store/org';
+import { currentOrg as currentOrgStore } from '$lib/utils/store/org';
 
 import type { TCreateCommunityQuestion } from '@cio/utils/validation/community';
 import { coursesApi } from '$features/course/api/courses.svelte';
 import { currentCommunityQuestion } from '../utils/store';
 import generateSlug from '$lib/utils/functions/generateSlug';
 import { get } from 'svelte/store';
-import { globalStore } from '$lib/utils/store/app';
+import { basePath, isStudentExperience } from '$lib/utils/store/app';
 import { goto } from '$app/navigation';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
 import { profile as profileStore } from '$lib/utils/store/user';
@@ -70,9 +70,8 @@ class CommunityApi extends BaseApiWithErrors {
    * Fetches community questions for an organization
    * Handles API call, success/error handling, and navigation
    * @param orgId Organization ID
-   * @param isLMS Whether this is in LMS context (affects navigation path)
    */
-  async fetchCommunityQuestions({ orgId, isLMS = false }: { orgId: string; isLMS?: boolean }) {
+  async fetchCommunityQuestions({ orgId }: { orgId: string }) {
     await this.execute<typeof classroomio.community.$get>({
       requestFn: () => classroomio.community.$get({ query: { orgId } }),
       logContext: 'fetching community questions',
@@ -81,8 +80,7 @@ class CommunityApi extends BaseApiWithErrors {
       },
       onError: (result) => {
         console.error('Error loading community questions:', result);
-        const basePath = isLMS ? '/lms' : get(currentOrgPath);
-        goto(resolve(basePath, {}));
+        goto(resolve(get(basePath), {}));
       }
     });
   }
@@ -91,9 +89,8 @@ class CommunityApi extends BaseApiWithErrors {
    * Fetches a single community question by slug
    * Handles API call, success/error handling, navigation, and store updates
    * @param slug Question slug
-   * @param isLMS Whether this is in LMS context (affects navigation path and store updates)
    */
-  async fetchCommunityQuestion({ slug, isLMS = false }: { slug: string; isLMS?: boolean }) {
+  async fetchCommunityQuestion({ slug }: { slug: string }) {
     await this.execute<(typeof classroomio.community)[':slug']['$get']>({
       requestFn: () => classroomio.community[':slug'].$get({ param: { slug } }),
       logContext: 'fetching community question',
@@ -105,9 +102,9 @@ class CommunityApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
-        console.error(`[${isLMS ? 'LMS' : 'ORG'}] Error loading community`, result);
-        const basePath = isLMS ? '/lms' : get(currentOrgPath);
-        goto(resolve(basePath, {}));
+        const isStudent = get(isStudentExperience);
+        console.error(`[${isStudent ? 'LMS' : 'ORG'}] Error loading community`, result);
+        goto(resolve(get(basePath), {}));
       }
     });
   }
@@ -116,9 +113,8 @@ class CommunityApi extends BaseApiWithErrors {
    * Creates a new community question
    * Handles validation, API call, success/error handling, and navigation
    * @param fields User-provided fields (title, body, courseId)
-   * @param isLMS Whether this is in LMS context (affects navigation path)
    */
-  async createQuestion(fields: TCreateCommunityQuestion, isLMS: boolean = false) {
+  async createQuestion(fields: TCreateCommunityQuestion) {
     const result = ZCreateCommunityQuestion.safeParse(fields);
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'community');
@@ -156,8 +152,8 @@ class CommunityApi extends BaseApiWithErrors {
         snackbar.success('snackbar.community.success.question_submitted');
 
         // Navigate to the question based on context
-        const basePath = isLMS ? '/lms' : get(currentOrgPath);
-        goto(resolve(`${basePath}/community/${questionSlug}`, {}));
+        const path = get(basePath);
+        goto(resolve(`${path}/community/${questionSlug}`, {}));
 
         // Mark as successful
         this.success = true;
@@ -178,10 +174,9 @@ class CommunityApi extends BaseApiWithErrors {
    * Handles validation, API call, and success/error handling
    * Uses this.comment state for the comment body
    * @param questionId Question ID
-   * @param isLMS Whether this is in LMS context (affects store updates)
    * @param onSuccess Optional callback to execute on successful comment creation
    */
-  async createComment(questionId: number, isLMS: boolean = false, onSuccess?: () => void) {
+  async createComment(questionId: number, onSuccess?: () => void) {
     const profile = get(profileStore);
     if (!profile?.id) {
       snackbar.error('snackbar.community.error.missing_context');
@@ -220,7 +215,7 @@ class CommunityApi extends BaseApiWithErrors {
 
           // Refetch the question to get updated comments with proper structure
           if (this.question && this.question.slug) {
-            this.fetchCommunityQuestion({ slug: this.question.slug, isLMS });
+            this.fetchCommunityQuestion({ slug: this.question.slug });
           }
 
           // Call the onSuccess callback if provided
@@ -369,9 +364,8 @@ class CommunityApi extends BaseApiWithErrors {
    * Deletes a question by its ID (including all comments)
    * Handles API call, success/error handling, and navigation
    * @param questionId Question ID
-   * @param isLMS Whether this is in LMS context (affects navigation path)
    */
-  async deleteQuestion(questionId: string, isLMS: boolean = false) {
+  async deleteQuestion(questionId: string) {
     await this.execute<(typeof classroomio.community)[':id']['$delete']>({
       requestFn: () => classroomio.community[':id'].$delete({ param: { id: questionId } }),
       logContext: 'deleting community question',
@@ -380,8 +374,8 @@ class CommunityApi extends BaseApiWithErrors {
         snackbar.success('snackbar.community.success.success_delete');
 
         // Navigate back to community page based on context
-        const basePath = isLMS ? '/lms' : get(currentOrgPath);
-        goto(resolve(`${basePath}/community`, {}));
+        const path = get(basePath);
+        goto(resolve(`${path}/community`, {}));
 
         // Mark as successful
         this.success = true;
@@ -438,9 +432,9 @@ class CommunityApi extends BaseApiWithErrors {
   async fetchCoursesForOrg(userId: string | null, orgId: string) {
     if (this.courses.length || !userId || !orgId) return;
 
-    const isLMS = get(globalStore).isOrgSite;
+    const isStudent = get(isStudentExperience);
 
-    if (isLMS) {
+    if (isStudent) {
       const response = await coursesApi.getEnrolledCourses();
 
       if (response?.success && response?.data) {

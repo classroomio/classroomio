@@ -26,11 +26,10 @@
 
   interface Props {
     slug: string;
-    isLMS?: boolean;
     question?: CommunityQuestionSuccess['data'] | null;
   }
 
-  let { isLMS = false, question }: Props = $props();
+  let { question }: Props = $props();
 
   let commentEditor: TiptapEditor | undefined = $state();
   let isValidAnswer = false; // V2 allow admin mark an answer as accepted
@@ -86,7 +85,7 @@
   }}
   onDelete={() => {
     if (communityApi.question) {
-      communityApi.deleteQuestion(String(communityApi.question.id), isLMS);
+      communityApi.deleteQuestion(String(communityApi.question.id));
     }
   }}
 />
@@ -119,10 +118,8 @@
                 </span>
               </Select.Trigger>
               <Select.Content>
-                {#each communityApi.courses as course}
-                  {#if course.id}
-                    <Select.Item value={course.id}>{course.title}</Select.Item>
-                  {/if}
+                {#each communityApi.courses as course (course.id)}
+                  <Select.Item value={course.id}>{course.title}</Select.Item>
                 {/each}
               </Select.Content>
             </Select.Root>
@@ -224,7 +221,7 @@
         </div>
 
         <div class="space-y-2">
-          {#each communityApi.question?.comments as commentItem}
+          {#each communityApi.question?.comments as commentItem (commentItem.id)}
             <CommunityCommentItem
               comment={commentItem}
               isVoted={!!voted.comment[commentItem.id]}
@@ -266,7 +263,7 @@
                 console.log('comment', communityApi.comment);
                 console.log('question', communityApi.question);
                 if (communityApi.question) {
-                  communityApi.createComment(Number(communityApi.question.id), isLMS, () => {
+                  communityApi.createComment(Number(communityApi.question.id), () => {
                     commentEditor?.commands?.clearContent?.();
                   });
                 }

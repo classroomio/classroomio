@@ -104,10 +104,11 @@ function isURLCustomDomain(url: URL) {
 }
 
 export function getSubdomain(url: URL) {
+  const appHost = env.PRIVATE_APP_HOST;
+  if (!appHost) return null;
+
   const host = url.hostname.replace('www.', '');
   const parts = host.split('.');
-  const appHost = env.PRIVATE_APP_HOST;
-
   const appHostParts = appHost.split('.');
   const isAppHost = parts.slice(-appHostParts.length).join('.') === appHost;
 

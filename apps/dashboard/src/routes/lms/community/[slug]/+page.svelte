@@ -8,4 +8,4 @@
   <title>Question - ClassroomIO</title>
 </svelte:head>
 
-<CommunityQuestionPage slug={data.slug} isLMS={true} />
+<CommunityQuestionPage slug={data.slug} />

@@ -15,12 +15,12 @@
       <Page.Title>{$t('community.title')}</Page.Title>
     </Page.HeaderContent>
     <Page.Action>
-      <AskCommunityButton isLMS={true} />
+      <AskCommunityButton />
     </Page.Action>
   </Page.Header>
   <Page.Body>
     {#snippet child()}
-      <CommunityPage isLMS={true} />
+      <CommunityPage />
     {/snippet}
   </Page.Body>
 </Page.Root>

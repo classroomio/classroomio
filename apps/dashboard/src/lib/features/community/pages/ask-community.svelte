@@ -9,12 +9,6 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { communityApi } from '$features/community/api/community.svelte';
 
-  interface Props {
-    isLMS?: boolean;
-  }
-
-  let { isLMS = false }: Props = $props();
-
   let fields = $state({
     title: '',
     body: '',
@@ -45,10 +39,8 @@
         </p>
       </Select.Trigger>
       <Select.Content>
-        {#each communityApi.courses as course}
-          {#if course.id}
-            <Select.Item value={course.id}>{course.title}</Select.Item>
-          {/if}
+        {#each communityApi.courses as course (course.id)}
+          <Select.Item value={course.id}>{course.title}</Select.Item>
         {/each}
       </Select.Content>
     </Select.Root>
@@ -68,11 +60,7 @@
 </div>
 
 <div class="mt-4 flex justify-end">
-  <Button
-    variant="default"
-    onclick={() => communityApi.createQuestion(fields, isLMS)}
-    disabled={communityApi.isLoading}
-  >
+  <Button variant="default" onclick={() => communityApi.createQuestion(fields)} disabled={communityApi.isLoading}>
     {$t('community.ask.publish')}
   </Button>
 </div>

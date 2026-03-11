@@ -5,7 +5,7 @@
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 
   import { IconButton } from '@cio/ui/custom/icon-button';
-  import { globalStore } from '$lib/utils/store/app';
+  import { isStudentExperience } from '$lib/utils/store/app';
   import { currentOrgPath } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
 
@@ -18,7 +18,7 @@
   let { title = $bindable(''), navClass = '', isCoursePage = false }: Props = $props();
 
   let coursesPath = $derived(
-    $globalStore.isStudent ? '/lms/mylearning' : isCoursePage ? `${$currentOrgPath}/courses` : $currentOrgPath
+    $isStudentExperience ? '/lms/mylearning' : isCoursePage ? `${$currentOrgPath}/courses` : $currentOrgPath
   );
 </script>
 
