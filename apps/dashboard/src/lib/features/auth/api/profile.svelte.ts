@@ -36,16 +36,10 @@ export class ProfileApi extends BaseApiWithErrors {
     return true;
   }
 
-  private async updateUserInfo(
-    fields: TProfileUpdateForm,
-    currentProfile: TProfile,
-    avatarUrl?: string
-  ): Promise<void> {
+  private async updateUserInfo(fields: TProfileUpdateForm, avatarUrl?: string): Promise<void> {
     const userUpdates: { name?: string; image?: string } = {};
 
-    if (fields.fullname !== currentProfile.fullname) {
-      userUpdates.name = fields.fullname;
-    }
+    userUpdates.name = fields.fullname;
     if (avatarUrl) {
       userUpdates.image = avatarUrl;
     }
@@ -58,23 +52,16 @@ export class ProfileApi extends BaseApiWithErrors {
 
   private buildProfileUpdates(
     fields: TProfileUpdateForm,
-    currentProfile: TProfile,
     locale: TLocale | undefined,
     avatarUrl?: string
   ): Partial<TProfile> {
     const profileUpdates: Partial<TProfile> = {};
 
-    if (fields.fullname !== currentProfile.fullname) {
-      profileUpdates.fullname = fields.fullname;
-    }
+    profileUpdates.fullname = fields.fullname;
 
-    if (fields.username !== currentProfile.username) {
-      profileUpdates.username = fields.username;
-    }
+    profileUpdates.username = fields.username;
 
-    if (locale && locale !== currentProfile.locale) {
-      profileUpdates.locale = locale;
-    }
+    profileUpdates.locale = locale;
 
     if (avatarUrl) {
       profileUpdates.avatarUrl = avatarUrl;
@@ -113,7 +100,7 @@ export class ProfileApi extends BaseApiWithErrors {
     }
   }
 
-  async submit(fields: TProfileUpdateForm, currentProfile: TProfile, hasLangChanged: boolean, locale?: TLocale) {
+  async submit(fields: TProfileUpdateForm, hasLangChanged: boolean, locale?: TLocale) {
     if (!this.validateForm(fields)) {
       return;
     }
@@ -130,10 +117,10 @@ export class ProfileApi extends BaseApiWithErrors {
       }
 
       // Update user info via Better Auth (name and image)
-      await this.updateUserInfo(fields, currentProfile, avatarUrl);
+      await this.updateUserInfo(fields, avatarUrl);
 
       // Update profile-specific fields via API route
-      const profileUpdates = this.buildProfileUpdates(fields, currentProfile, locale, avatarUrl);
+      const profileUpdates = this.buildProfileUpdates(fields, locale, avatarUrl);
       await this.updateProfile(profileUpdates);
 
       // Handle locale change if needed

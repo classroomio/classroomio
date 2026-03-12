@@ -27,7 +27,6 @@
         locale,
         avatar
       },
-      $profile,
       hasLangChanged,
       locale
     );
