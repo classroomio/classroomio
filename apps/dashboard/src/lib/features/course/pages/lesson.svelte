@@ -2,6 +2,7 @@
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
+  import { SvelteURLSearchParams } from 'svelte/reactivity';
   import { resolve } from '$app/paths';
   import { untrack } from 'svelte';
   import isEmpty from 'lodash/isEmpty';
@@ -65,18 +66,16 @@
 
   const lessonTitle = $derived(lessonApi.lesson?.title || 'Lesson');
   const isLessonUnlocked = $derived(lessonApi.lesson?.isUnlocked ?? false);
-  $inspect(isLessonUnlocked);
-  $inspect($globalStore.isStudent);
 
   function setModeQueryParam(value: (typeof MODES)[keyof typeof MODES]) {
-    const params = new URLSearchParams($page.url.searchParams);
+    const params = new SvelteURLSearchParams($page.url.searchParams);
     params.set('mode', value);
-    goto(`${$page.url.pathname}?${params.toString()}`, { replaceState: false });
+    goto(resolve(`${$page.url.pathname}?${params.toString()}`, {}), { replaceState: false });
   }
   function setTabQueryParam(value: string) {
-    const params = new URLSearchParams($page.url.searchParams);
+    const params = new SvelteURLSearchParams($page.url.searchParams);
     params.set('tab', value);
-    goto(`${$page.url.pathname}?${params.toString()}`, { replaceState: false });
+    goto(resolve(`${$page.url.pathname}?${params.toString()}`, {}), { replaceState: false });
   }
 
   function toggleMode() {
@@ -117,7 +116,7 @@
       if (tab.value === 1) {
         tab.badgeValue = isHtmlValueEmpty(content) ? 0 : 1;
       } else if (tab.value === 2) {
-        tab.badgeValue = !!slideUrl ? 1 : 0;
+        tab.badgeValue = slideUrl ? 1 : 0;
       } else if (tab.value === 3) {
         tab.badgeValue = !isEmpty(videos) ? videos.length : 0;
       } else if (tab.value === 4) {
@@ -372,7 +371,7 @@
         >
           <!-- Tabs List -->
           <UnderlineTabs.List>
-            {#each tabs as tab}
+            {#each tabs as tab (tab.value)}
               <UnderlineTabs.Trigger value={String(tab.value)}>
                 {#if tab.icon}
                   <tab.icon size={16} />
@@ -413,7 +412,7 @@
       {:else if lessonApi.lesson && !isMaterialsEmpty}
         {#key lessonId}
           <div class="mb-20 flex w-full flex-col gap-2" in:fade={{ delay: 500 }} out:fade>
-            {#each viewModeComponents as Component}
+            {#each viewModeComponents as Component, index (index)}
               <Component {mode} {lessonId} />
             {/each}
 
@@ -437,9 +436,11 @@
           variant="page"
           class="text-center"
         >
-          <Button onclick={toggleMode}>
-            {$t('course.navItem.lessons.materials.get_started')}
-          </Button>
+          {#if !$globalStore.isStudent}
+            <Button onclick={toggleMode}>
+              {$t('course.navItem.lessons.materials.get_started')}
+            </Button>
+          {/if}
         </Empty>
       {/if}
     </div>

@@ -84,7 +84,8 @@
         already_joined: result.data.alreadyJoined
       });
 
-      goto(result.data.redirectTo || '/lms');
+      // need to force page reload to avoid cache issues
+      window.location.href = result.data.redirectTo || '/lms';
     } finally {
       loading = false;
     }

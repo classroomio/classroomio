@@ -253,18 +253,20 @@
                     <span>{item.title}</span>
 
                     <div class="ml-auto flex items-center gap-1">
-                      <IconButton
-                        variant="ghost-outline"
-                        size="icon-xs"
-                        class="transition-opacity duration-150 {isHovered ? 'opacity-100' : 'opacity-0'}"
-                        onclick={(event) => {
-                          event.preventDefault();
-                          event.stopPropagation();
-                          openContentModal(id);
-                        }}
-                      >
-                        <Plus size={8} />
-                      </IconButton>
+                      {#if !isStudent}
+                        <IconButton
+                          variant="ghost-outline"
+                          size="icon-xs"
+                          class="transition-opacity duration-150 {isHovered ? 'opacity-100' : 'opacity-0'}"
+                          onclick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            openContentModal(id);
+                          }}
+                        >
+                          <Plus size={8} />
+                        </IconButton>
+                      {/if}
                       {#if showContentCount}
                         <ContentCountBadges lessons={contentCount.lessons} exercises={contentCount.exercises} />
                       {/if}

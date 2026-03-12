@@ -4,7 +4,7 @@
   import { t } from '$lib/utils/functions/translations';
 </script>
 
-<Page.Root class="mx-auto flex w-[calc(100vw-var(--sidebar-width))]!">
+<Page.Root class="mx-auto flex w-[calc(95vw-var(--sidebar-width))]!">
   <Page.Header>
     <Page.HeaderContent>
       <Page.Title>
