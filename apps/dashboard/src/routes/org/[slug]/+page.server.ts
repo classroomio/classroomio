@@ -25,7 +25,7 @@ export const load = async ({ params, parent, cookies }) => {
   }
 
   try {
-    console.log('fetching stats', cookies);
+    console.log('fetching stats');
     const statsResponse = await classroomio.dash.stats.$get({ query: { siteName } }, getApiHeaders(cookies, orgId));
     const statsData = await statsResponse.json();
     cache[orgId] = statsData.success ? statsData.data : null;
