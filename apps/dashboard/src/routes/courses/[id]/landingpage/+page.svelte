@@ -28,7 +28,7 @@
 
 {#if courseApi.course}
   <div
-    class="fixed inset-0 z-50 h-screen w-screen bg-white"
+    class="fixed inset-0 z-250 h-screen w-screen bg-white"
     in:fly={{ y: 500, duration: 500 }}
     out:fly={{ y: 500, duration: 500 }}
   >
