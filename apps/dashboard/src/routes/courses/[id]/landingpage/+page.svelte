@@ -32,8 +32,8 @@
     in:fly={{ y: 500, duration: 500 }}
     out:fly={{ y: 500, duration: 500 }}
   >
-    <Sidebar.Provider bind:open={sidebarOpen}>
-      <Sidebar.Root side="left" collapsible="icon" class="h-full {sidebarOpen ? 'w-[280px]!' : 'w-0'}">
+    <Sidebar.Provider bind:open={sidebarOpen} style="--sidebar-width: 280px">
+      <Sidebar.Root side="left" collapsible="icon" class="h-full">
         <Editor {courseId} bind:course={courseApi.course} {syncCourseStore} onClose={handleClose} />
       </Sidebar.Root>
       <Sidebar.Inset class="relative h-screen! overflow-y-auto">
