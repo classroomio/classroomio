@@ -270,7 +270,7 @@
     return selected;
   });
 
-  let courseLink = $derived(courseApi.course?.slug ? `${$currentOrgDomain}/course/${courseApi.course.slug}` : '');
+  let courseLink = $derived(courseApi.course?.slug ? `${$currentOrgDomain}/course/${courseApi.course.slug}` : '#');
 </script>
 
 <UnsavedChanges bind:hasUnsavedChanges />
@@ -352,7 +352,7 @@
             <IconButton onclick={generateNewCourseLink}>
               <RotateCcwIcon size={16} />
             </IconButton>
-            <IconButton onclick={() => goto(courseLink)}>
+            <IconButton href={courseLink} target="_blank">
               <ArrowUpRightIcon size={16} />
             </IconButton>
           </div>
