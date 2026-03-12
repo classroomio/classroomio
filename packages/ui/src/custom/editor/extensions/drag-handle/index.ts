@@ -184,10 +184,9 @@ export function DragHandlePlugin(options: GlobalDragHandleOptions & { pluginKey:
 
   function hideHandleOnEditorOut(event: MouseEvent) {
     if (event.target instanceof Element) {
-      // Check if the relatedTarget class is still inside the editor
+      // Keep handle visible while cursor moves into editor descendants or handle children.
       const relatedTarget = event.relatedTarget as HTMLElement;
-      const isInsideEditor =
-        relatedTarget?.classList.contains('tiptap') || relatedTarget?.classList.contains('drag-handle');
+      const isInsideEditor = !!relatedTarget?.closest('.tiptap, .drag-handle');
 
       if (isInsideEditor) return;
     }

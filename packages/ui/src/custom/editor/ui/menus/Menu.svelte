@@ -102,7 +102,7 @@
   pluginKey="link-bubble-menu"
   {shouldShow}
   class={cn(
-    'edra-bubble-menu ui:bg-popover ui:flex ui:h-fit ui:w-fit ui:items-center ui:rounded-lg ui:p-0.5',
+    'edra-bubble-menu ui:bg-popover ui:flex ui:h-fit ui:w-fit ui:items-center ui:rounded-lg ui:p-0.5 ui:shadow-lg',
     className
   )}
 >

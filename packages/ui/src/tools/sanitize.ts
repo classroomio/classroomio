@@ -45,7 +45,7 @@ export function sanitizeHtml(html: string): string {
       'img'
     ],
     // Allow safe attributes
-    ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'style'],
+    ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'style', 'data-type', 'data-latex'],
     // Forbid dangerous attributes
     FORBID_ATTR: [
       'onerror',
