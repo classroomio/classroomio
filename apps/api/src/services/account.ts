@@ -1,16 +1,17 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { getProfileByEmail, getProfileById, updateProfile } from '@cio/db/queries/auth';
-import { getLicenseStatus } from '@api/services/license';
-
-import type { OrganizationWithMemberAndPlans } from '@cio/db/queries/organization/types';
-import type { TProfile } from '@cio/db/types';
 import {
   createOrganizationMember,
   getFirstOrganization,
-  getOrganizationByProfileId
+  getOrganizationByProfileId,
+  hasOrgMemberByProfileIdOrEmail
 } from '@cio/db/queries/organization';
-import { env } from '@api/config/env';
+import { getProfileByEmail, getProfileById, updateProfile } from '@cio/db/queries/auth';
+
+import type { OrganizationWithMemberAndPlans } from '@cio/db/queries/organization/types';
 import { ROLE } from '@cio/utils/constants';
+import type { TProfile } from '@cio/db/types';
+import { env } from '@api/config/env';
+import { getLicenseStatus } from '@api/services/license';
 
 export type GetAccountDataResult = {
   profile: TProfile;
@@ -35,17 +36,23 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
     throw new AppError(`Account not found for user ID: ${userId}`, ErrorCodes.ACCOUNT_NOT_FOUND, 404);
   }
 
-  // Self-hosted: auto-add user as student to the single org if they are not a member
+  // Self-hosted: auto-add user as student to the single org if they are not a member.
+  // Skip if they already have membership (by profileId) or a pending invite (by email).
   if (env.PUBLIC_IS_SELFHOSTED === 'true' && organizations.length === 0) {
     const firstOrg = await getFirstOrganization();
     if (firstOrg) {
-      await createOrganizationMember({
-        organizationId: firstOrg.id,
-        profileId: userId,
-        roleId: ROLE.STUDENT,
-        verified: true
-      });
-      organizations = await getOrganizationByProfileId(userId);
+      const alreadyInOrg = await hasOrgMemberByProfileIdOrEmail(firstOrg.id, userId, profile.email ?? undefined);
+
+      if (!alreadyInOrg) {
+        await createOrganizationMember({
+          organizationId: firstOrg.id,
+          profileId: userId,
+          roleId: ROLE.STUDENT,
+          verified: true
+        });
+
+        organizations = await getOrganizationByProfileId(userId);
+      }
     }
   }
 

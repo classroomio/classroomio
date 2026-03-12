@@ -14,6 +14,7 @@ import {
   text,
   timestamp,
   unique,
+  uniqueIndex,
   uuid,
   varchar
 } from 'drizzle-orm/pg-core';
@@ -1467,7 +1468,10 @@ export const organizationmember = pgTable(
     }),
     index('idx_organizationmember_profile_id').on(table.profileId),
     index('idx_organizationmember_organization_id').on(table.organizationId),
-    index('idx_organizationmember_profile_org').on(table.profileId, table.organizationId)
+    index('idx_organizationmember_profile_org').on(table.profileId, table.organizationId),
+    uniqueIndex('organizationmember_org_profile_unique')
+      .on(table.organizationId, table.profileId)
+      .where(sql`${table.profileId} IS NOT NULL`)
   ]
 );
 

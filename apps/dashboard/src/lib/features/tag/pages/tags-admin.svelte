@@ -380,7 +380,7 @@
               </Button>
             {/snippet}
           </Popover.Trigger>
-          <Popover.Content align="start" class="w-44 p-3">
+          <Popover.Content align="start" class="z-250! w-44 p-3">
             <div class="grid grid-cols-5 gap-2">
               {#each TAG_COLOR_OPTIONS as color (color)}
                 <Button

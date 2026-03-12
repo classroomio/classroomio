@@ -166,6 +166,31 @@ export const checkEmailExistsInOrg = async (orgId: string, email: string): Promi
 };
 
 /**
+ * Checks if an org has a member matching the given profileId or email.
+ * Used to avoid creating duplicate members (e.g. when user has a pending invite).
+ */
+export const hasOrgMemberByProfileIdOrEmail = async (
+  orgId: string,
+  profileId: string,
+  email: string | null | undefined
+): Promise<boolean> => {
+  const conditions = [eq(schema.organizationmember.organizationId, orgId)];
+
+  const profileOrEmailMatch = or(
+    eq(schema.organizationmember.profileId, profileId),
+    ...(email ? [eq(schema.organizationmember.email, email.toLowerCase().trim())] : [])
+  );
+
+  const result = await db
+    .select({ id: schema.organizationmember.id })
+    .from(schema.organizationmember)
+    .where(and(...conditions, profileOrEmailMatch))
+    .limit(1);
+
+  return result.length > 0;
+};
+
+/**
  * Checks which emails already exist as team members in an organization (bulk check)
  * Checks both organizationmember.email and profile.email (via organizationmember.profileId)
  * @param orgId Organization ID
