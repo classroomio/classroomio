@@ -50,9 +50,9 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
           roleId: ROLE.STUDENT,
           verified: true
         });
-
-        organizations = await getOrganizationByProfileId(userId);
       }
+
+      organizations = await getOrganizationByProfileId(userId);
     }
   }
 

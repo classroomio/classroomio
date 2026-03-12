@@ -4,6 +4,7 @@ import { and, eq } from 'drizzle-orm';
 
 import { User } from 'better-auth';
 import { db } from '@db/drizzle';
+import { markUserAndProfileEmailVerified } from '@db/queries/auth';
 
 const DEFAULT_STUDENT_ROLE_ID = 3;
 
@@ -60,6 +61,8 @@ export async function ensureOrgMembership(
           updatedAt: new Date().toISOString()
         })
         .where(eq(schema.organizationInvite.id, invite.id));
+
+      await markUserAndProfileEmailVerified(userId, tx);
     });
 
     console.debug('User joined org via invite:', orgId);

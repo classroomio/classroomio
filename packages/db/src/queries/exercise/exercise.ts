@@ -515,6 +515,12 @@ export async function getExerciseWithRelationsOptimized(
  */
 export async function syncOptionIdSequence(dbClient: DbOrTxClient = db): Promise<void> {
   await dbClient.execute(
-    sql`SELECT setval(pg_get_serial_sequence('option', 'id'), COALESCE((SELECT MAX(id) FROM "option"), 0))`
+    sql`
+      SELECT setval(
+        pg_get_serial_sequence('option', 'id'),
+        COALESCE((SELECT MAX(id) FROM "option"), 1),
+        EXISTS(SELECT 1 FROM "option")
+      )
+    `
   );
 }

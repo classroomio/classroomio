@@ -1,20 +1,23 @@
+import * as schema from '@cio/db/schema';
+
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { and, eq, isNull } from 'drizzle-orm';
 import {
   checkEmailsExistInOrg,
-  createOrganizationMembers,
   createOrganizationInvite,
   createOrganizationInviteAudit,
+  createOrganizationMembers,
   getOrganizationById,
   getOrganizationInviteByTokenHash,
   revokeActiveOrganizationInvitesByEmails
 } from '@cio/db/queries/organization';
+
+import { ROLE } from '@cio/utils/constants';
+import crypto from 'node:crypto';
 import { db } from '@cio/db/drizzle';
 import { getDashboardBaseUrl } from '@api/config/dashboard-url';
+import { markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
 import { sendEmail } from '@cio/email';
-import { ROLE } from '@cio/utils/constants';
-import * as schema from '@cio/db/schema';
-import crypto from 'node:crypto';
 
 type OrganizationInviteStatus = 'ACTIVE' | 'EXPIRED' | 'REVOKED' | 'ACCEPTED';
 
@@ -302,6 +305,8 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
     }
 
     if (status === 'ACCEPTED') {
+      await markUserAndProfileEmailVerified(user.id, tx);
+
       return {
         organization: row.organization,
         roleId: row.invite.roleId,
@@ -365,6 +370,8 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
         });
       }
     }
+
+    await markUserAndProfileEmailVerified(user.id, tx);
 
     const [acceptedInvite] = await tx
       .update(schema.organizationInvite)

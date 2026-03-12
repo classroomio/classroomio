@@ -25,33 +25,33 @@ import {
   getCourseProgress,
   updateCourse
 } from '@api/services/course/course';
-import { enrollInCourse } from '@api/services/course/invite';
 import { getCourseTags, replaceCourseTags } from '@api/services/tag';
-import { createRateLimiter } from '@api/middlewares/rate-limiter';
-import { extractClientIp } from '@api/utils/redis/key-generators';
 
 import { Hono } from '@api/utils/hono';
 import { attendanceRouter } from '@api/routes/course/attendance';
 import { authMiddleware } from '@api/middlewares/auth';
 import { cloneCourse } from '@api/services/course/clone';
+import { contentRouter } from '@api/routes/course/content';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
-import { contentRouter } from '@api/routes/course/content';
+import { createRateLimiter } from '@api/middlewares/rate-limiter';
+import { enrollInCourse } from '@api/services/course/invite';
 import { exerciseRouter } from '@api/routes/course/exercise';
+import { extractClientIp } from '@api/utils/redis/key-generators';
 import { generateCertificate } from '@api/utils/certificate';
 import { generateCoursePdf } from '@api/utils/course';
 import { handleError } from '@api/utils/errors';
+import { invitesRouter } from '@api/routes/course/invite';
 import { katexRouter } from '@api/routes/course/katex';
 import { lessonRouter } from '@api/routes/course/lesson';
 import { markRouter } from '@api/routes/course/mark';
-import { sectionRouter } from '@api/routes/course/section';
 import { membersRouter } from '@api/routes/course/people';
-import { invitesRouter } from '@api/routes/course/invite';
 import { newsfeedRouter } from '@api/routes/course/newsfeed';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { paymentRequestRouter } from '@api/routes/course/payment-request';
 import { presignRouter } from '@api/routes/course/presign';
+import { sectionRouter } from '@api/routes/course/section';
 import { submissionRouter } from '@api/routes/course/submission';
 import { zValidator } from '@hono/zod-validator';
 
@@ -157,7 +157,7 @@ export const courseRouter = new Hono()
    * GET /course/:courseId/tags
    * Gets tags assigned to a course (organization admin only)
    */
-  .get('/:courseId/tags', authMiddleware, orgAdminMiddleware, zValidator('param', ZCourseTagParam), async (c) => {
+  .get('/:courseId/tags', authMiddleware, orgMemberMiddleware, zValidator('param', ZCourseTagParam), async (c) => {
     try {
       const orgId = c.req.header('cio-org-id')!;
       const { courseId } = c.req.valid('param');
