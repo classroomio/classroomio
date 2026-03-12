@@ -7,6 +7,7 @@ import { get } from 'svelte/store';
 import { currentOrg } from '$lib/utils/store/org';
 import type { Cookies } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
+import { getCioCookieString } from '$lib/utils/functions/cookies';
 
 export const getRequestBaseUrl = () => {
   if (typeof window === 'undefined') {
@@ -221,11 +222,7 @@ export function getApiHeaders(
   cookies: Cookies,
   orgId?: string
 ): { headers: { cookie: string; 'cio-org-id'?: string } } {
-  const cioCookies = cookies
-    .getAll()
-    .filter((c) => c.name.includes('classroomio'))
-    .map((c) => `${c.name}=${c.value}`)
-    .join('; ');
+  const cioCookies = getCioCookieString(cookies);
 
   console.log('cioCookies', cioCookies);
   console.log('cookies', cookies.getAll());

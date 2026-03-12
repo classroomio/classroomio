@@ -79,7 +79,7 @@
   const isSessionReady = $derived(!$session.isPending && !$session.isRefetching && $session.data);
 
   // The goal of this effect is to make sure that we do a redirect to /login if the session data is expired
-  // This should be happening on the hooks.server.ts but we've made the home page public so we can show a loading spinner while the app is initializing OR an error message if the backend is down.
+  // This should be happening on the hooks.server.ts (if there is no cookie) but we've made the home page public so we can show a loading spinner while the app is initializing OR an error message if the backend is down.
   $effect(() => {
     if ($session.isPending || $session.isRefetching || !!$session.data) {
       console.log('session is pending or refetching');
@@ -91,7 +91,7 @@
       return;
     }
 
-    if (!$session.data && path !== '/login') {
+    if (!$session.data && !path.startsWith('/login')) {
       console.log('session data is not available, go to login');
       window.location.href = '/login';
     }

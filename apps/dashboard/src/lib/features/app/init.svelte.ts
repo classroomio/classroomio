@@ -111,6 +111,7 @@ class AppInitApi extends BaseApi {
 
     const redirect = page.url.searchParams.get('redirect');
     if (redirect) {
+      console.log('redirecting to', redirect);
       // goto redirect won't accept dynamic url so we need to use window.location.href
       window.location.href = redirect;
       return;
@@ -118,6 +119,7 @@ class AppInitApi extends BaseApi {
 
     // This allows you to be on the landing page of an organization site and not be redirected
     if (isOrgSite && window.location.pathname === '/') {
+      console.log('no redirect is needed');
       return;
     }
 
@@ -130,11 +132,13 @@ class AppInitApi extends BaseApi {
     if (isCloud) {
       const shouldRedirectToOnboarding = !userHasOrganizations && !isOrgSite;
       if (shouldRedirectToOnboarding) {
+        console.log('cloud: redirecting to onboarding');
         return goto(resolve(`/onboarding`, {}));
       }
     } else {
       // Self-hosted: when user has no orgs, route to /onboarding
       if (!userHasOrganizations) {
+        console.log('self-hosted: redirecting to onboarding');
         return goto(resolve(`/onboarding`, {}));
       }
     }
@@ -142,6 +146,7 @@ class AppInitApi extends BaseApi {
     if (!shouldRedirectOnAuth(page.url.pathname)) return;
 
     const shouldGoToLMS = isCloud ? isOrgSite || !!isStudent : !!isStudent;
+    console.log('redirecting to', shouldGoToLMS ? 'lms' : 'org');
     return shouldGoToLMS ? this.goToLMS() : this.goToOrg();
   }
 

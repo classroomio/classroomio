@@ -1,4 +1,5 @@
 import { getSessionData } from '$lib/utils/services/auth/session';
+import { getCioCookieString } from '$lib/utils/functions/cookies';
 import { type Handle, redirect } from '@sveltejs/kit';
 import { isPublicApiRoute, isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
 import { ROUTE } from '$lib/utils/constants/routes';
@@ -22,12 +23,14 @@ export const handle: Handle = async (args) => {
 
 const handlePagesRoutes: Handle = async ({ event, resolve }) => {
   const { pathname } = event.url;
+  const hasCioCookie = Boolean(getCioCookieString(event.cookies));
 
   if (isPublicRoute(pathname)) {
     return resolve(event);
   }
 
-  if (!event.locals.user) {
+  if (!event.locals.user && !hasCioCookie) {
+    console.log('no user and no cio cookie, redirecting to login');
     const shouldAddRedirectParam = !pathname.includes(ROUTE.LOGOUT);
     const fullPath = pathname + event.url.search;
     const redirectPath = shouldAddRedirectParam
