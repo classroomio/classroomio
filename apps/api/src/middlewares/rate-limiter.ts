@@ -13,8 +13,9 @@ import { redis } from '@api/utils/redis/redis';
 
 export interface RateLimiterOptions {
   windowMs?: number;
-  maxRequests?: number;
+  maxRequests?: number | ((c: any) => number);
   keyGenerator?: (c: any) => string;
+  skip?: (c: any) => boolean;
   skipSuccessfulRequests?: boolean;
   skipFailedRequests?: boolean;
   message?: string;
@@ -24,20 +25,23 @@ export interface RateLimiterOptions {
 
 const defaultOptions: Required<RateLimiterOptions> = {
   ...DEFAULT_RATE_LIMITER_OPTIONS,
-  keyGenerator: userKeyGenerator
+  keyGenerator: userKeyGenerator,
+  skip: () => false
 };
 
 export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareHandler => {
   const opts = { ...defaultOptions, ...options };
-  const limiter = new RedisRateLimiter(redis, opts.windowMs, opts.maxRequests);
 
   return async (c, next) => {
     // Skip rate limiting if not in production
-    if (env.NODE_ENV !== 'production') {
+    if (env.NODE_ENV !== 'production' || opts.skip(c)) {
       return await next();
     }
 
     try {
+      const maxRequests = typeof opts.maxRequests === 'function' ? opts.maxRequests(c) : opts.maxRequests;
+      const limiter = new RedisRateLimiter(redis, opts.windowMs, maxRequests);
+
       // Generate rate limit key
       const key = opts.keyGenerator(c);
 
@@ -46,13 +50,13 @@ export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareH
 
       // Set rate limit headers
       if (opts.standardHeaders) {
-        c.header(RATE_LIMIT_HEADERS.LIMIT, opts.maxRequests.toString());
+        c.header(RATE_LIMIT_HEADERS.LIMIT, maxRequests.toString());
         c.header(RATE_LIMIT_HEADERS.REMAINING, result.remaining.toString());
         c.header(RATE_LIMIT_HEADERS.RESET, new Date(result.resetTime).toISOString());
       }
 
       if (opts.legacyHeaders) {
-        c.header(RATE_LIMIT_HEADERS.LIMIT, opts.maxRequests.toString());
+        c.header(RATE_LIMIT_HEADERS.LIMIT, maxRequests.toString());
         c.header(RATE_LIMIT_HEADERS.REMAINING, result.remaining.toString());
         c.header(RATE_LIMIT_HEADERS.RESET, Math.ceil(result.resetTime / 1000).toString());
       }
@@ -84,4 +88,9 @@ export const createRateLimiter = (options: RateLimiterOptions = {}): MiddlewareH
 };
 
 // Default rate limiter middleware with standard configuration
-export default createRateLimiter();
+export default createRateLimiter({
+  maxRequests: (c) =>
+    c.req.path === '/api/auth/get-session'
+      ? DEFAULT_RATE_LIMITER_OPTIONS.maxRequests * 3
+      : DEFAULT_RATE_LIMITER_OPTIONS.maxRequests
+});
