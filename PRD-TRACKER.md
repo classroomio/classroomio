@@ -15,6 +15,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | 7 | 13 | `prd/self-host-single-org.md` | done |
 | 8 | 7 | `prd/email-template-customization` | todo |
 | 9 | - | `prd/selective-exercise-assignment` | todo |
+| - | - | `prd/mcp-course-authoring` | todo |
 | - | 1 | `prd/ai-course-assistant` | todo |
 | - | 2 | `prd/compliance-training-platform` | todo |
 | - | 4 | `prd/course-content-search` | todo |

@@ -11,3 +11,4 @@ export * from './mark';
 export * from './newsfeed';
 export * from './submission';
 export * from './tag';
+export * from './course-import';

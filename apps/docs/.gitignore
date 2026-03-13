@@ -5,6 +5,7 @@ node_modules
 .vercel
 .output
 .nitro
+.wrangler
 /build/
 /api/
 /server/build
@@ -14,6 +15,7 @@ node_modules
 /blob-report/
 /playwright/.cache/
 .tanstack
+.dev.vars
 
 src/routeTree.gen.ts
 .source

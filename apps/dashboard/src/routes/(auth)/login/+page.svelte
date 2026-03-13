@@ -17,6 +17,7 @@
   import ShieldIcon from '@lucide/svelte/icons/shield';
 
   const emailFromUrl = page.url.searchParams.get('email') ?? '';
+  const isEmailPrefilled = !!emailFromUrl;
 
   let fields = $state(Object.assign({}, LOGIN_FIELDS, emailFromUrl ? { email: emailFromUrl } : {}));
 
@@ -192,7 +193,8 @@
           bind:value={fields.email}
           oninput={handleEmailChange}
           placeholder="you@domain.com"
-          disabled={loading}
+          disabled={loading || isEmailPrefilled}
+          readonly={isEmailPrefilled}
           autofocus
           aria-invalid={errors.email ? 'true' : undefined}
           autocomplete="username"

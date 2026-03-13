@@ -45,6 +45,8 @@ export const load = async ({ params, url }) => {
         course,
         currentOrg,
         invite: data.invite,
+        inviteEmail: data.inviteContext?.recipientEmail ?? null,
+        inviteEmailExists: data.inviteContext?.recipientExists ?? false,
         requiresPaymentOrInvite: false,
         token: inviteToken
       };

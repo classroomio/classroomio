@@ -25,6 +25,9 @@ import { sql } from 'drizzle-orm';
 export const courseType = pgEnum('COURSE_TYPE', ['SELF_PACED', 'LIVE_CLASS']);
 export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
+export const courseImportSourceType = pgEnum('COURSE_IMPORT_SOURCE_TYPE', ['prompt', 'pdf']);
+export const courseImportDraftStatus = pgEnum('COURSE_IMPORT_DRAFT_STATUS', ['DRAFT', 'PUBLISHED', 'ARCHIVED']);
+export const organizationApiKeyType = pgEnum('ORGANIZATION_API_KEY_TYPE', ['mcp', 'api', 'zapier']);
 export const courseInviteEventType = pgEnum('COURSE_INVITE_EVENT_TYPE', [
   'CREATED',
   'REVOKED',
@@ -1995,4 +1998,78 @@ export const organizationTokenAuth = pgTable(
       .notNull()
   },
   (table) => [index('idx_organization_token_auth_org_id').on(table.organizationId)]
+);
+
+export const organizationApiKey = pgTable(
+  'organization_api_key',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    createdByProfileId: uuid('created_by_profile_id')
+      .notNull()
+      .references(() => profile.id),
+    type: organizationApiKeyType('type').notNull(),
+    label: varchar('label', { length: 120 }).notNull(),
+    secretPrefix: varchar('secret_prefix', { length: 32 }).notNull(),
+    secretHash: text('secret_hash').notNull(),
+    scopes: jsonb('scopes').default([]).notNull().$type<string[]>(),
+    lastUsedAt: timestamp('last_used_at', { withTimezone: true, mode: 'string' }),
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }),
+    revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    index('idx_organization_api_key_org_id').on(table.organizationId),
+    index('idx_organization_api_key_type').on(table.type),
+    uniqueIndex('organization_api_key_secret_hash_unique').on(table.secretHash)
+  ]
+);
+
+export const courseImportDraft = pgTable(
+  'course_import_draft',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    createdByProfileId: uuid('created_by_profile_id')
+      .notNull()
+      .references(() => profile.id),
+    sourceType: courseImportSourceType('source_type').notNull(),
+    status: courseImportDraftStatus('status').default('DRAFT').notNull(),
+    title: varchar().notNull(),
+    locale: locale().default('en').notNull(),
+    idempotencyKey: varchar('idempotency_key'),
+    summary: jsonb().default({}).notNull().$type<Record<string, unknown>>(),
+    draft: jsonb().notNull().$type<Record<string, unknown>>(),
+    warnings: jsonb().default([]).notNull().$type<Array<Record<string, unknown>>>(),
+    sourceArtifacts: jsonb().default([]).notNull().$type<Array<Record<string, unknown>>>(),
+    publishedCourseId: uuid('published_course_id').references(() => course.id, { onDelete: 'set null' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    index('idx_course_import_draft_org_id').on(table.organizationId),
+    index('idx_course_import_draft_status').on(table.status),
+    uniqueIndex('course_import_draft_org_idempotency_key')
+      .on(table.organizationId, table.idempotencyKey)
+      .where(sql`${table.idempotencyKey} IS NOT NULL`)
+  ]
 );

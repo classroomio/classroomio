@@ -4,6 +4,7 @@ export * from './account';
 export * from './attendance';
 export * from './assets';
 export * from './course';
+export * from './course-import';
 export * from './exercise';
 export * from './lesson';
 export * from './mail';

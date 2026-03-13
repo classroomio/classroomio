@@ -14,7 +14,7 @@ import { currentOrg as currentOrgStore } from '$lib/utils/store/org';
 import type { TCreateCommunityQuestion } from '@cio/utils/validation/community';
 import { coursesApi } from '$features/course/api/courses.svelte';
 import { currentCommunityQuestion } from '../utils/store';
-import generateSlug from '$lib/utils/functions/generateSlug';
+import { generateSlug } from '@cio/utils/functions';
 import { get } from 'svelte/store';
 import { basePath, isStudentExperience } from '$lib/utils/store/app';
 import { goto } from '$app/navigation';
@@ -121,7 +121,7 @@ class CommunityApi extends BaseApiWithErrors {
       return;
     }
 
-    const slug = generateSlug(fields.title);
+    const slug = generateSlug(fields.title, { appendTimestamp: true });
     const currentOrg = get(currentOrgStore);
     const profile = get(profileStore);
 

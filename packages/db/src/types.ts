@@ -169,6 +169,12 @@ export type TNewOrganizationSsoConfig = typeof schema.organizationSsoConfig.$inf
 export type TOrganizationTokenAuth = typeof schema.organizationTokenAuth.$inferSelect;
 export type TNewOrganizationTokenAuth = typeof schema.organizationTokenAuth.$inferInsert;
 
+export type TOrganizationApiKey = typeof schema.organizationApiKey.$inferSelect;
+export type TNewOrganizationApiKey = typeof schema.organizationApiKey.$inferInsert;
+
+export type TCourseImportDraft = typeof schema.courseImportDraft.$inferSelect;
+export type TNewCourseImportDraft = typeof schema.courseImportDraft.$inferInsert;
+
 export type TCourseType = (typeof schema.courseType.enumValues)[number];
 
 export type TLocale = (typeof schema.locale.enumValues)[number];
@@ -180,3 +186,9 @@ export type TCourseInviteEventType = (typeof schema.courseInviteEventType.enumVa
 export type TOrganizationInviteEventType = (typeof schema.organizationInviteEventType.enumValues)[number];
 
 export type TSsoProvider = (typeof schema.organizationSsoProviderType.enumValues)[number];
+
+export type TOrganizationApiKeyType = (typeof schema.organizationApiKeyType.enumValues)[number];
+
+export type TCourseImportSourceType = (typeof schema.courseImportSourceType.enumValues)[number];
+
+export type TCourseImportDraftStatus = (typeof schema.courseImportDraftStatus.enumValues)[number];

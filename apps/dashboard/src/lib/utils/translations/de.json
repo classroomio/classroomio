@@ -2474,32 +2474,17 @@
     "subtitle": "Verbinden Sie jetzt MCP-Clients, wobei Zapier und die öffentliche API auf demselben organisationsweiten Schlüsselsystem folgen.",
     "coming_soon": "Kommt bald",
     "mcp": {
-      "architecture": {
-        "title": "Architektur",
-        "description": "Der MCP-Client und die ClassroomIO-API sind separate Vertrauensgrenzen. Der organisationsweite Automatisierungsschlüssel authentifiziert den Client und die API bleibt die Quelle der Wahrheit für Validierung und Persistenz."
-      },
-      "flows": {
-        "title": "Typische Strömungen",
-        "description": "Der Agent besitzt Argumentation und Struktur. ClassroomIO akzeptiert nur normalisierte Kursnutzlasten, speichert Entwürfe und veröffentlicht auf Anfrage.",
-        "prompt_title": "Aufforderung zum Entwurf",
-        "prompt_description": "Der Benutzer fragt nach einem Kurs, der Agent strukturiert ihn und „create_course_draft“ speichert ihn dann vor jedem Veröffentlichungsschritt in ClassroomIO.",
-        "pdf_title": "PDF zum Entwurf",
-        "pdf_description": "Der Agent liest das PDF extern, strukturiert es in Abschnitte und Lektionen um und sendet dann den normalisierten Entwurf an ClassroomIO.",
-        "review_title": "Rezension zur Veröffentlichung",
-        "review_description": "Der Benutzer bittet um Änderungen, der Agent aktualisiert den Entwurf und die Veröffentlichung erfolgt erst nach ausdrücklicher Genehmigung."
-      },
       "setup": {
         "title": "Client-Setup",
         "description": "Verwenden Sie einen organisationsweiten Schlüssel pro Integration. Wenn ein Schlüssel rotiert oder widerrufen wird, funktioniert der Client nicht mehr, bis das neue Geheimnis konfiguriert ist.",
-        "claude_code_description": "Registriert „@cio/mcp“ bei Claude Code unter Verwendung des generierten organisationsweit gültigen Schlüssels.",
+        "claude_code_description": "Registriert „@classroomio/mcp“ bei Claude Code unter Verwendung des generierten organisationsweit gültigen Schlüssels.",
         "codex_description": "Fügt den ClassroomIO MCP-Server mit demselben organisationsweit gültigen Schlüssel zu Codex hinzu.",
         "cursor_description": "Fügen Sie dies in „~/.cursor/mcp.json“ oder Ihre Workspace-MCP-Konfiguration ein."
       },
       "keys": {
         "title": "MCP-Schlüssel",
-        "description": "Diese Schlüssel authentifizieren die aktuelle Organisation, wenn ein MCP-Client ClassroomIO über „@cio/mcp“ aufruft.",
+        "description": "Diese Schlüssel authentifizieren die aktuelle Organisation, wenn ein MCP-Client ClassroomIO über „@classroomio/mcp“ aufruft.",
         "generate": "MCP-Schlüssel generieren",
-        "scope_badge": "Entwurf erstellen/lesen/aktualisieren/veröffentlichen",
         "secret_once": "Dieses Geheimnis wird einmal gezeigt. Kopieren Sie es jetzt in Ihren MCP-Client."
       }
     },
@@ -2530,10 +2515,6 @@
     "permissions": {
       "disabled_title": "Nur lesender Zugriff",
       "disabled_description": "Nur Organisationsadministratoren können Automatisierungsschlüssel erstellen, rotieren oder widerrufen. Lehrer können die Einrichtungsanweisungen hier einsehen."
-    },
-    "overview": {
-      "title": "Automatisierungszugriff",
-      "description": "Erstellen Sie organisationsweite Automatisierungsschlüssel, verbinden Sie unterstützte Clients und halten Sie den gesamten Maschinenzugriff an diese Organisation gebunden."
     }
   }
 }

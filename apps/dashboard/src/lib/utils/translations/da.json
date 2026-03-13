@@ -2474,32 +2474,17 @@
     "subtitle": "Forbind MCP-klienter nu, med Zapier og den offentlige API, der følger på det samme nøglesystem med organisationsomfang.",
     "coming_soon": "Kommer snart",
     "mcp": {
-      "architecture": {
-        "title": "Arkitektur",
-        "description": "MCP-klienten og ClassroomIO API er separate tillidsgrænser. Den org-omfattede automatiseringsnøgle autentificerer klienten, og API'et forbliver kilden til sandhed for validering og vedholdenhed."
-      },
-      "flows": {
-        "title": "Typiske flows",
-        "description": "Agenten ejer ræsonnement og struktur. ClassroomIO accepterer kun normaliserede kurser, gemmer kladder og udgiver efter anmodning.",
-        "prompt_title": "Spørg om udkast",
-        "prompt_description": "Brugeren beder om et kursus, agenten strukturerer det, og 'create_course_draft' gemmer det i ClassroomIO før ethvert udgivelsestrin.",
-        "pdf_title": "PDF til udkast",
-        "pdf_description": "Agenten læser PDF'en eksternt, omstrukturerer den i sektioner og lektioner og sender derefter den normaliserede kladde til ClassroomIO.",
-        "review_title": "Anmeldelse for at offentliggøre",
-        "review_description": "Brugeren beder om ændringer, agenten opdaterer kladden, og publicering sker kun efter eksplicit godkendelse."
-      },
       "setup": {
         "title": "Klient opsætning",
         "description": "Brug én nøgle med organisationsomfang pr. integration. Hvis en nøgle roteres eller tilbagekaldes, holder klienten op med at arbejde, indtil den nye hemmelighed er konfigureret.",
-        "claude_code_description": "Registrerer `@cio/mcp` med Claude Code ved hjælp af den genererede org-omfangede nøgle.",
+        "claude_code_description": "Registrerer `@classroomio/mcp` med Claude Code ved hjælp af den genererede org-omfangede nøgle.",
         "codex_description": "Tilføjer ClassroomIO MCP-serveren til Codex med den samme org-omfattede nøgle.",
         "cursor_description": "Indsæt dette i `~/.cursor/mcp.json` eller dit arbejdsområde MCP-konfiguration."
       },
       "keys": {
         "title": "MCP nøgler",
-        "description": "Disse nøgler autentificerer den aktuelle organisation, når en MCP-klient ringer til ClassroomIO gennem `@cio/mcp`.",
+        "description": "Disse nøgler autentificerer den aktuelle organisation, når en MCP-klient ringer til ClassroomIO gennem `@classroomio/mcp`.",
         "generate": "Generer MCP-nøgle",
-        "scope_badge": "Udkast opret/læs/opdater/udgiv",
         "secret_once": "Denne hemmelighed vises én gang. Kopier det til din MCP-klient nu."
       }
     },
@@ -2530,10 +2515,6 @@
     "permissions": {
       "disabled_title": "Skrivebeskyttet adgang",
       "disabled_description": "Kun organisationsadministratorer kan oprette, rotere eller tilbagekalde automatiseringsnøgler. Lærere kan gennemgå opsætningsinstruktionerne her."
-    },
-    "overview": {
-      "title": "Automatiseringsadgang",
-      "description": "Opret org-omfattede automatiseringsnøgler, tilslut understøttede klienter, og hold al maskinadgang bundet tilbage til denne organisation."
     }
   }
 }

@@ -2474,32 +2474,17 @@
     "subtitle": "Conecte los clientes de MCP ahora, con Zapier y la API pública siguiendo el mismo sistema de claves con ámbito de organización.",
     "coming_soon": "Próximamente",
     "mcp": {
-      "architecture": {
-        "title": "Arquitectura",
-        "description": "El cliente MCP y la API ClassroomIO son límites de confianza separados. La clave de automatización con ámbito de organización autentica al cliente y la API sigue siendo la fuente de verdad para la validación y la persistencia."
-      },
-      "flows": {
-        "title": "Flujos típicos",
-        "description": "El agente posee razonamiento y estructura. ClassroomIO solo acepta cargas útiles de cursos normalizados, guarda borradores y publica a pedido.",
-        "prompt_title": "Solicitar borrador",
-        "prompt_description": "El usuario solicita un curso, el agente lo estructura y luego `create_course_draft` lo guarda en ClassroomIO antes de cualquier paso de publicación.",
-        "pdf_title": "PDF para borrador",
-        "pdf_description": "El agente lee el PDF externamente, lo reestructura en secciones y lecciones y luego envía el borrador normalizado a ClassroomIO.",
-        "review_title": "Revisar para publicar",
-        "review_description": "El usuario solicita cambios, el agente actualiza el borrador y la publicación solo se realiza después de una aprobación explícita."
-      },
       "setup": {
         "title": "Configuración del cliente",
         "description": "Utilice una clave con ámbito de organización por integración. Si se rota o revoca una clave, el cliente deja de funcionar hasta que se configura el nuevo secreto.",
-        "claude_code_description": "Registra `@cio/mcp` con Claude Code utilizando la clave de alcance organizacional generada.",
+        "claude_code_description": "Registra `@classroomio/mcp` con Claude Code utilizando la clave de alcance organizacional generada.",
         "codex_description": "Agrega el servidor ClassroomIO MCP al Codex con la misma clave de ámbito de organización.",
         "cursor_description": "Pegue esto en `~/.cursor/mcp.json` o en la configuración MCP de su espacio de trabajo."
       },
       "keys": {
         "title": "Claves MCP",
-        "description": "Estas claves autentican la organización actual cuando un cliente MCP llama a ClassroomIO a través de `@cio/mcp`.",
+        "description": "Estas claves autentican la organización actual cuando un cliente MCP llama a ClassroomIO a través de `@classroomio/mcp`.",
         "generate": "Generar clave MCP",
-        "scope_badge": "Borrador de creación/lectura/actualización/publicación",
         "secret_once": "Este secreto se muestra una vez. Cópielo en su cliente MCP ahora."
       }
     },
@@ -2530,10 +2515,6 @@
     "permissions": {
       "disabled_title": "Acceso de solo lectura",
       "disabled_description": "Solo los administradores de la organización pueden crear, rotar o revocar claves de automatización. Los profesores pueden revisar las instrucciones de configuración aquí."
-    },
-    "overview": {
-      "title": "Acceso a la automatización",
-      "description": "Cree claves de automatización específicas de la organización, conecte clientes compatibles y mantenga todo el acceso a las máquinas vinculado a esta organización."
     }
   }
 }

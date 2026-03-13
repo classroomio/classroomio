@@ -1,6 +1,6 @@
 ---
 name: Public API with Keys
-overview: Build a versioned public API (v1) authenticated via organization-scoped API keys, with course CRUD, course export, student/audience CRUD endpoints, plus a dashboard Automation page with API key management UI.
+overview: Build a versioned public API (v1) authenticated via shared organization-scoped automation keys reused by MCP and Public API, with course CRUD, course export, student/audience CRUD endpoints, plus a dashboard Automation page with MCP, Zapier, and API tabs.
 todos:
   - id: db-schema
     content: Add `api_key` table to schema.ts, update relations, generate migration
@@ -12,13 +12,13 @@ todos:
     content: Build apiKeyMiddleware that authenticates via Bearer token and sets orgId in context
     status: pending
   - id: validation-schemas
-    content: Add Zod schemas for API key management and public API input validation
+    content: Add Zod schemas for shared automation key management and public API input validation
     status: pending
   - id: api-key-service
     content: Create api-key service (key generation, hashing, CRUD)
     status: pending
   - id: api-key-routes
-    content: Create session-authenticated API key management routes (POST/GET/DELETE /api-key)
+    content: Create session-authenticated automation key management routes reused by MCP and Public API
     status: pending
   - id: v1-course-service
     content: Create v1 course service (list, get, create, update, delete, export, students)
@@ -39,7 +39,7 @@ todos:
     content: Add Automation nav item to org-navigation.ts
     status: pending
   - id: automation-page
-    content: Create automation page with Tabs (API/Zapier/Webhooks), free plan gate, API key display
+    content: Create automation page with Tabs (MCP/Zapier/API), admin-only controls, and key setup flows
     status: pending
   - id: automation-api-class
     content: Create frontend API class for api-key management

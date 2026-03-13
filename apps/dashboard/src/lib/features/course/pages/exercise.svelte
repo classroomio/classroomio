@@ -206,7 +206,7 @@
   const isExerciseUnlocked = $derived(exerciseContentItem?.isUnlocked ?? false);
 </script>
 
-<Page.Header isSticky={true} class="min-h-[36px]">
+<Page.Header isSticky={true} class="z-250! min-h-[36px]">
   <Page.HeaderContent>
     <Page.Title>{$questionnaire.title || 'Exercise'}</Page.Title>
   </Page.HeaderContent>

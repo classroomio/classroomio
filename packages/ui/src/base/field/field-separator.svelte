@@ -20,7 +20,7 @@
   bind:this={ref}
   data-slot="field-separator"
   data-content={hasContent}
-  class={cn('ui:relative ui:-my-2 ui:h-5 ui:text-sm ui:group-data-[variant=outline]/field-group:-mb-2', className)}
+  class={cn('ui:relative ui:my-2 ui:h-5 ui:text-sm ui:group-data-[variant=outline]/field-group:-mb-2', className)}
   {...restProps}
 >
   <Separator class="ui:absolute ui:inset-0 ui:top-1/2" />

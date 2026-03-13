@@ -26,8 +26,5 @@ export const markUserAndProfileEmailVerified = async (userId: string, dbClient: 
   const verifiedAt = new Date().toISOString();
 
   await dbClient.update(schema.user).set({ emailVerified: true }).where(eq(schema.user.id, userId));
-  await dbClient
-    .update(schema.profile)
-    .set({ isEmailVerified: true, verifiedAt })
-    .where(eq(schema.profile.id, userId));
+  await dbClient.update(schema.profile).set({ isEmailVerified: true, verifiedAt }).where(eq(schema.profile.id, userId));
 };

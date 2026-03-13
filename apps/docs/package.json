@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "start": "node .output/server/index.mjs",
+    "preview": "wrangler dev --port 4174",
+    "start": "wrangler dev --port 3001",
     "types:check": "fumadocs-mdx && tsc --noEmit",
     "postinstall": "fumadocs-mdx"
   },
@@ -32,6 +33,7 @@
     "nitro": "3.0.1-alpha.1",
     "tailwindcss": "^4.1.16",
     "typescript": "^5.9.3",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "wrangler": "^4.21.2"
   }
 }

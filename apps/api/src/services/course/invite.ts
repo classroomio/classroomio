@@ -23,6 +23,8 @@ import { getDashboardBaseUrl } from '@api/config/dashboard-url';
 import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, sendEmail } from '@cio/email';
+import { getProfileByEmail } from '@cio/db/queries/auth';
+import { generateSlug } from '@cio/utils/functions';
 
 type InviteStatus = 'ACTIVE' | 'EXPIRED' | 'USED_UP' | 'REVOKED';
 type InvitePreset = 'ONE_TIME_24H' | 'MULTI_USE_7D' | 'MULTI_USE_30D' | 'CUSTOM';
@@ -37,6 +39,39 @@ const DOMAIN_REGEX = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/i;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ANOMALY_WINDOW_MINUTES = 60;
 const MAX_PREVIEW_IP_DIVERSITY = 25;
+
+async function generateUniqueCourseSlug(baseSlug: string): Promise<string> {
+  let suffix = 0;
+  let candidate = baseSlug;
+
+  while (true) {
+    const existing = await db
+      .select({ id: schema.course.id })
+      .from(schema.course)
+      .where(eq(schema.course.slug, candidate))
+      .limit(1);
+
+    if (existing.length === 0) {
+      return candidate;
+    }
+
+    suffix += 1;
+    candidate = `${baseSlug}-${suffix}`;
+  }
+}
+
+async function ensureCourseSlug(courseId: string, title: string | null | undefined): Promise<string> {
+  const baseSlug = generateSlug(title, { fallback: 'course' });
+  const uniqueSlug = await generateUniqueCourseSlug(baseSlug);
+
+  const [updated] = await db
+    .update(schema.course)
+    .set({ slug: uniqueSlug, updatedAt: new Date().toISOString() })
+    .where(eq(schema.course.id, courseId))
+    .returning({ slug: schema.course.slug });
+
+  return updated?.slug ?? uniqueSlug;
+}
 
 interface TInviteRequestContext {
   ipAddress?: string | null;
@@ -481,11 +516,9 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
     );
   }
 
-  const courseSlug = course[0].slug;
+  const courseTitle = course[0].title;
+  const courseSlug = course[0].slug ?? (await ensureCourseSlug(course[0].id, courseTitle));
   const orgSiteName = courseOrgData.orgSiteName ?? null;
-  if (!courseSlug) {
-    throw new AppError('Course must have a slug to create invite links', ErrorCodes.VALIDATION_ERROR, 400);
-  }
 
   if (recipients.valid.length === 0) {
     const createdInvite = await createSingleInvite(
@@ -803,6 +836,17 @@ export async function previewStudentInvite(token: string, context: TInviteReques
   });
 
   const status = getInviteStatus(data.invite);
+  const recipientEmail = data.invite.allowedEmails?.[0]?.toLowerCase().trim() || null;
+  let recipientExists = false;
+
+  if (recipientEmail) {
+    try {
+      const profile = await getProfileByEmail(recipientEmail);
+      recipientExists = !!profile;
+    } catch (error) {
+      console.error('previewStudentInvite getProfileByEmail error:', error);
+    }
+  }
   const courseMetadata = data.course.metadata as { allowNewStudent?: boolean } | null;
 
   return {
@@ -828,6 +872,10 @@ export async function previewStudentInvite(token: string, context: TInviteReques
       status: data.course.status,
       slug: data.course.slug ?? undefined,
       cost: data.course.cost
+    },
+    inviteContext: {
+      recipientEmail,
+      recipientExists
     }
   };
 }

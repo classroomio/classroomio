@@ -34,9 +34,11 @@ import {
 
 import { Hono } from '@api/utils/hono';
 import { TOrganization } from '@db/types';
+import { automationRouter } from '@api/routes/organization/automation';
 import { assetsRouter } from '@api/routes/organization/assets';
 import { authMiddleware } from '@api/middlewares/auth';
 import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
+import { courseImportRouter } from '@api/routes/organization/course-import';
 import { getLMSExercisesService } from '@api/services/exercise';
 import { handleError } from '@api/utils/errors';
 import { inviteTeamMembers } from '@api/services/organization/invite';
@@ -505,6 +507,8 @@ export const organizationRouter = new Hono()
       return handleError(c, error, 'Failed to fetch LMS exercises');
     }
   })
+  .route('/automation', automationRouter)
+  .route('/course-import', courseImportRouter)
   .route('/tags', tagsRouter)
   .route('/assets', assetsRouter)
   .route('/:orgId/quiz', quizRouter);

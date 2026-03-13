@@ -10,6 +10,7 @@ import {
 
 import type { AccountOrg } from '$features/app/types';
 import type { Component } from 'svelte';
+import BracesIcon from '@lucide/svelte/icons/braces';
 import TagIcon from '@lucide/svelte/icons/tag';
 import { isActive } from '$lib/utils/functions/app';
 
@@ -22,6 +23,7 @@ export interface NavItem {
   isExpanded?: boolean;
   items?: NavItem[]; // for nested items like settings
   isPaid?: boolean; // Show upgrade indicator for free plan users
+  disabled?: boolean;
   // Metadata for breadcrumb generation
   useHashUrl?: boolean; // Use '#' as URL (for collapsible items like settings)
   nestedRoutes?: NestedRouteConfig[]; // Static nested routes (like community/ask, settings/customize-lms)
@@ -33,6 +35,7 @@ export interface NavItemConfig {
   path: string;
   icon?: Component;
   requiresAdmin?: boolean;
+  disableWhenNotAdmin?: boolean;
   items?: NavItemConfig[];
   useHashUrl?: boolean; // Use '#' as URL (for collapsible items like settings)
   nestedRoutes?: NestedRouteConfig[]; // Static nested routes
@@ -98,6 +101,14 @@ const baseNavConfig: NavItemConfig[] = [
     icon: SetupIcon,
     requiresAdmin: true,
     matchPattern: '^/org/[^/]+/setup(/.*)?$' // Matches nested routes
+  },
+  {
+    titleKey: 'org_navigation.automation',
+    path: '/automation',
+    icon: BracesIcon,
+    requiresAdmin: true,
+    disableWhenNotAdmin: true,
+    matchPattern: '^/org/[^/]+/automation(/.*)?$'
   },
   {
     titleKey: 'org_navigation.settings',
@@ -172,7 +183,7 @@ export function getOrgNavigationItems(
 
   for (const config of baseNavConfig) {
     // Skip admin-only items if user is not admin
-    if (config.requiresAdmin && !isOrgAdmin) {
+    if (config.requiresAdmin && !isOrgAdmin && !config.disableWhenNotAdmin) {
       continue;
     }
 
@@ -190,6 +201,7 @@ export function getOrgNavigationItems(
       icon: config.icon,
       isActive: isActive(pagePathname, fullPath, matchPattern),
       isExpanded: config.items ? isActive(pagePathname, fullPath, matchPattern) : undefined,
+      disabled: Boolean(config.disableWhenNotAdmin && !isOrgAdmin),
       useHashUrl: config.useHashUrl,
       nestedRoutes: config.nestedRoutes,
       supportsDynamicSegment: config.supportsDynamicSegment,

@@ -5,3 +5,4 @@ export * from './invite';
 export * from './sso';
 export * from './login-link';
 export * from './token-auth';
+export * from './automation-key';

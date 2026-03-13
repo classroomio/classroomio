@@ -5,7 +5,7 @@ import type { CloneCourseRequest } from '../utils/types';
 import type { TCourseClone } from '@cio/utils/validation/course';
 import { ZCourseClone } from '@cio/utils/validation/course';
 import { currentOrg } from '$lib/utils/store/org';
-import generateSlug from '$lib/utils/functions/generateSlug';
+import { generateSlug } from '@cio/utils/functions';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation';
@@ -26,7 +26,7 @@ export class CourseCloneApi extends BaseApiWithErrors {
    */
   async clone(courseId: string, title: string, description?: string) {
     // Generate unique slug from the title
-    const slug = generateSlug(title);
+    const slug = generateSlug(title, { appendTimestamp: true });
 
     // Prepare data for validation
     const data: TCourseClone = {

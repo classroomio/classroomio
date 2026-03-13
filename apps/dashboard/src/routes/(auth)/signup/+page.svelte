@@ -19,6 +19,7 @@
 
   let { data } = $props();
   const emailFromUrl = page.url.searchParams.get('email') ?? '';
+  const isEmailPrefilled = !!emailFromUrl;
   let fields = $state(Object.assign({}, SIGNUP_FIELDS, emailFromUrl ? { email: emailFromUrl } : {}));
   let loading = $state(false);
   let errors: {
@@ -160,7 +161,8 @@
             type="email"
             bind:value={fields.email}
             placeholder="you@domain.com"
-            disabled={loading}
+            disabled={loading || isEmailPrefilled}
+            readonly={isEmailPrefilled}
             autofocus
             aria-invalid={errors.email ? 'true' : undefined}
             autocomplete="email"

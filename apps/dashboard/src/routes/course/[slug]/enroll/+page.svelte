@@ -64,7 +64,12 @@
     const redirectUrl = `${redirectPath}${redirectSearch}`;
 
     if (!$profile.id || !$profile.email) {
-      goto(resolve(`/signup?redirect=${encodeURIComponent(redirectUrl)}`, {}));
+      const inviteEmail = data.inviteEmail ?? '';
+      const target = data.inviteEmailExists ? '/login' : '/signup';
+      const params = new URLSearchParams({ redirect: redirectUrl });
+      if (inviteEmail) params.set('email', inviteEmail);
+
+      goto(resolve(`${target}?${params.toString()}`, {}));
       loading = false;
       return;
     }

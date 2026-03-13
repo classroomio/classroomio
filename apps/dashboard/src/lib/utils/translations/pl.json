@@ -2474,32 +2474,17 @@
     "subtitle": "Połącz teraz klientów MCP, korzystając z Zapiera i publicznego interfejsu API w tym samym systemie kluczy o zasięgu organizacji.",
     "coming_soon": "Już wkrótce",
     "mcp": {
-      "architecture": {
-        "title": "Architektura",
-        "description": "Klient MCP i interfejs API ClassroomIO stanowią oddzielne granice zaufania. Klucz automatyzacji o zasięgu organizacji uwierzytelnia klienta, a interfejs API pozostaje źródłem prawdy w celu sprawdzenia poprawności i trwałości."
-      },
-      "flows": {
-        "title": "Typowe przepływy",
-        "description": "Agent jest właścicielem rozumowania i struktury. ClassroomIO akceptuje tylko znormalizowane ładunki kursów, zapisuje wersje robocze i publikuje na żądanie.",
-        "prompt_title": "Monituj o wersję roboczą",
-        "prompt_description": "Użytkownik prosi o kurs, agent tworzy go, a następnie „create_course_draft” zapisuje go w ClassroomIO przed jakimkolwiek etapem publikacji.",
-        "pdf_title": "PDF do wersji roboczej",
-        "pdf_description": "Agent czyta plik PDF zewnętrznie, dzieli go na sekcje i lekcje, a następnie wysyła znormalizowaną wersję roboczą do ClassroomIO.",
-        "review_title": "Recenzja do opublikowania",
-        "review_description": "Użytkownik prosi o zmiany, agent aktualizuje wersję roboczą, a publikacja następuje dopiero po wyraźnej zgodzie."
-      },
       "setup": {
         "title": "Konfiguracja klienta",
         "description": "Użyj jednego klucza o zasięgu organizacji na integrację. Jeśli klucz zostanie obrócony lub unieważniony, klient przestaje działać do czasu skonfigurowania nowego klucza tajnego.",
-        "claude_code_description": "Rejestruje `@cio/mcp` w Claude Code przy użyciu wygenerowanego klucza o zasięgu organizacji.",
+        "claude_code_description": "Rejestruje `@classroomio/mcp` w Claude Code przy użyciu wygenerowanego klucza o zasięgu organizacji.",
         "codex_description": "Dodaje serwer ClassroomIO MCP do Codexu z tym samym kluczem o zasięgu organizacji.",
         "cursor_description": "Wklej to do `~/.cursor/mcp.json` lub konfiguracji MCP w obszarze roboczym."
       },
       "keys": {
         "title": "Klucze MCP",
-        "description": "Te klucze uwierzytelniają bieżącą organizację, gdy klient MCP wywołuje ClassroomIO poprzez `@cio/mcp`.",
+        "description": "Te klucze uwierzytelniają bieżącą organizację, gdy klient MCP wywołuje ClassroomIO poprzez `@classroomio/mcp`.",
         "generate": "Wygeneruj klucz MCP",
-        "scope_badge": "Utwórz/odczytaj/aktualizuj/publikuj wersję roboczą",
         "secret_once": "Sekret ten zostaje pokazany raz. Skopiuj go teraz do swojego klienta MCP."
       }
     },
@@ -2530,10 +2515,6 @@
     "permissions": {
       "disabled_title": "Dostęp tylko do odczytu",
       "disabled_description": "Tylko administratorzy organizacji mogą tworzyć, obracać i unieważniać klucze automatyzacji. Nauczyciele mogą zapoznać się z instrukcjami konfiguracji tutaj."
-    },
-    "overview": {
-      "title": "Dostęp do automatyki",
-      "description": "Twórz klucze automatyzacji na poziomie organizacji, łącz obsługiwanych klientów i powiązuj cały dostęp do maszyn z tą organizacją."
     }
   }
 }

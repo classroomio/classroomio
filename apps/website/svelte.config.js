@@ -1,7 +1,6 @@
 import { escapeSvelte, mdsvex } from 'mdsvex';
 
-import adapterNode from '@sveltejs/adapter-node';
-import adapterVercel from '@sveltejs/adapter-vercel';
+import adapter from '@sveltejs/adapter-cloudflare';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import path from 'path';
@@ -10,8 +9,6 @@ import remarkToc from 'remark-toc';
 import remarkUnwrapImages from 'remark-unwrap-images';
 import shiki from 'shiki';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-
-const useNodeAdapter = process.env.VERCEL !== '1' && process.env.VERCEL !== 'true';
 
 /** @type {import('@sveltejs/kit').Config}*/
 
@@ -34,7 +31,7 @@ const mdsvexOptions = {
 
 const config = {
   kit: {
-    adapter: useNodeAdapter ? adapterNode() : adapterVercel(),
+    adapter: adapter(),
     alias: {
       $lib: path.resolve('./src/lib'),
       '$src/tools': path.resolve('./node_modules/@cio/ui/src/tools/index.ts'),

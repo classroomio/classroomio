@@ -2,6 +2,12 @@ name: Publish @classroomio/mcp to NPM
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - feat/release-v2
+    paths:
+      - ".github/workflows/publish-mcp.yml"
+      - "packages/mcp/**"
 
 jobs:
   publish:
@@ -15,7 +21,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.19.3
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: "https://registry.npmjs.org"
 
       - uses: pnpm/action-setup@v4
 
@@ -26,6 +32,7 @@ jobs:
         run: pnpm --filter @classroomio/mcp build
 
       - name: Publish package
+        if: github.event_name == 'workflow_dispatch'
         run: pnpm --filter @classroomio/mcp publish --no-git-checks --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
