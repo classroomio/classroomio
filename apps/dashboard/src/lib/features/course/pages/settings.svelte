@@ -25,7 +25,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { isObject } from '$lib/utils/functions/isObject';
   import { snackbar } from '$features/ui/snackbar/store';
-  import generateSlug from '$lib/utils/functions/generateSlug';
+  import { generateSlug } from '@cio/utils/functions';
   import { DeleteModal } from '$features/ui';
   import { courseApi } from '$features/course/api';
   import { tagApi } from '$features/tag/api';
@@ -190,7 +190,7 @@
 
   const generateNewCourseLink = () => {
     if (!courseApi.course) return;
-    courseApi.course.slug = generateSlug(courseApi.course.title);
+    courseApi.course.slug = generateSlug(courseApi.course.title, { appendTimestamp: true });
     hasUnsavedChanges = true;
   };
 

@@ -13,7 +13,7 @@
 
   let { data } = $props();
 
-  let userCourseAnalytics: UserCourseAnalytics | undefined = $state(data.userCourseAnalytics ?? undefined);
+  let userCourseAnalytics: UserCourseAnalytics | undefined = $derived(data.userCourseAnalytics ?? undefined);
 
   function getPercentage(a: number, b: number): number {
     if (b === 0) {

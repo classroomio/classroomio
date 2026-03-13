@@ -31,7 +31,7 @@
   import InstructorForm from './instructor-form.svelte';
   import { Button } from '@cio/ui/base/button';
   import { courseApi } from '$features/course/api';
-  import generateSlug from '$lib/utils/functions/generateSlug';
+  import { generateSlug } from '@cio/utils/functions';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { useSidebar } from '@cio/ui/base/sidebar';
 
@@ -147,7 +147,7 @@
 
   async function handleSave() {
     loading = true;
-    course.slug = course.slug || generateSlug(course.title);
+    course.slug = course.slug || generateSlug(course.title, { appendTimestamp: true });
 
     console.log('course', course);
     await courseApi.update(courseId, {

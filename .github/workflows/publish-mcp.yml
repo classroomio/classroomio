@@ -3,11 +3,14 @@ name: Publish @classroomio/mcp to NPM
 on:
   workflow_dispatch:
   pull_request:
-    branches:
-      - feat/release-v2
     paths:
-      - ".github/workflows/publish-mcp.yml"
       - "packages/mcp/**"
+
+  push:
+    paths:
+      - "packages/mcp/**"
+    branches:
+      - main
 
 jobs:
   publish:

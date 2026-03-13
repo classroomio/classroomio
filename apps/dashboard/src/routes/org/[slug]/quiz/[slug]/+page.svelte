@@ -32,7 +32,7 @@
   }
 
   let { data } = $props();
-  const { quizId } = data;
+  const quizId = $derived(data.quizId);
 
   // Questionnaire State
   let currentQuestion: QuizQuestion = $state(
