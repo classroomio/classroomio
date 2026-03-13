@@ -76,13 +76,15 @@
           <Avatar.Fallback>{$currentOrg.name ? $currentOrg.name : 'ClassroomIO'}</Avatar.Fallback>
         </Avatar.Root>
 
-        <a href="/">
-          <Card.Title class="ui:text-2xl font-normal!">
-            {isLogin ? $t('login.welcome') : $t('login.create_account')}
-          </Card.Title>
-        </a>
-        {#if isLogin}
-          <Card.Description class="ui:text-center">Sign in to continue</Card.Description>
+        {#if !showOnlyContent}
+          <a href="/">
+            <Card.Title class="ui:text-2xl font-normal!">
+              {isLogin ? $t('login.welcome') : $t('login.create_account')}
+            </Card.Title>
+          </a>
+          {#if isLogin}
+            <Card.Description class="ui:text-center">Sign in to continue</Card.Description>
+          {/if}
         {/if}
       </Card.Header>
     {/if}
