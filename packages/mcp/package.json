@@ -1,0 +1,47 @@
+{
+  "name": "@classroomio/mcp",
+  "version": "0.0.1",
+  "private": false,
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "bin": {
+    "classroomio-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "pnpm -C ../utils build && tsc --noEmit && rm -rf dist tsconfig.tsbuildinfo && node ./scripts/build.mjs",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/classroomio/classroomio.git"
+  },
+  "bugs": {
+    "url": "https://github.com/classroomio/classroomio/issues"
+  },
+  "homepage": "https://github.com/classroomio/classroomio/blob/main/packages/mcp#readme",
+  "author": "ClassroomIO <help@classroomio.com>",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "zod": "^4.1.8"
+  },
+  "devDependencies": {
+    "@cio/tsconfig": "workspace:*",
+    "@cio/utils": "workspace:*",
+    "@types/node": "^24.10.1",
+    "esbuild": "^0.25.11",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.3"
+  }
+}
