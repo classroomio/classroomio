@@ -9,6 +9,7 @@ import { createProfileHook } from './auth/hooks/create-profile';
 import { db } from '@db/drizzle';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { config as emailAndPassword } from './auth/email-password';
+import { loginLink } from './auth/plugins/login-link';
 import { sso } from '@better-auth/sso';
 import { syncUserWithProfile } from './auth/hooks/sync-user';
 import { tokenExchange } from './auth/plugins/token-exchange';
@@ -83,6 +84,7 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
       // OIDC providers are registered dynamically per organization
       // via the admin API (auth.api.registerSSOProvider)
     }),
+    loginLink(),
     tokenExchange()
   ]
 });
