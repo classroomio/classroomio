@@ -9,6 +9,7 @@ import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { handleLocaleChange } from '$lib/utils/functions/translations';
 import { identifyPosthogUser } from '$lib/utils/services/posthog';
+import { isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
 import { licenseApi } from '$features/license/api/license.svelte';
 import { logout } from '$lib/utils/functions/logout';
 import { page } from '$app/state';
@@ -118,7 +119,7 @@ class AppInitApi extends BaseApi {
     }
 
     // This allows you to be on the landing page of an organization site and not be redirected
-    if (isOrgSite && window.location.pathname === '/') {
+    if (isOrgSite && isPublicRoute(window.location.pathname)) {
       console.log('no redirect is needed');
       return;
     }
