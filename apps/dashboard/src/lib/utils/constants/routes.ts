@@ -29,6 +29,7 @@ export const PUBLIC_ROUTES = [
   ROUTE.FORGOT,
   ROUTE.RESET,
   `^${ROUTE.PAGES}/.*`,
+  `^${ROUTE.COURSE}/[^/]+(/enroll)?/?$`,
   `^/course/.*/enroll$`,
   `^${ROUTE.COURSES}/?$`,
   '/404',
