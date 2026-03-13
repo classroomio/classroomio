@@ -357,6 +357,11 @@
       "deleted": "Tokengodkendelse fjernet.",
       "activated": "Tokengodkendelse er aktiveret.",
       "deactivated": "Tokengodkendelse deaktiveret."
+    },
+    "automation": {
+      "created": "Automatiseringsnøgle oprettet. Gem den nu, fordi den fulde hemmelighed kun vises én gang.",
+      "rotated": "Automatiseringsnøglen drejet. Gem den nye hemmelighed nu, fordi den ikke vil blive vist igen.",
+      "revoked": "Automatiseringsnøgle tilbagekaldt."
     }
   },
   "explore": {
@@ -1823,7 +1828,8 @@
     "early_adopter": "Bliv en tidlig adopter",
     "unlock": "Lås op for ubegrænsede funktioner og invester i vores fremtid",
     "upgrade": "Opgrader nu",
-    "tags": "Tags"
+    "tags": "Tags",
+    "automation": "Automatisering"
   },
   "media_manager": {
     "page_title": "Media Manager - ClassroomIO",
@@ -2444,6 +2450,90 @@
     },
     "common": {
       "not_available": "N/A"
+    }
+  },
+  "invite": {
+    "organization": {
+      "page_title": "Tilmeld dig {orgName} på ClassroomIO",
+      "role_label": "Rolle: {role}",
+      "email_label": "Inviteret e-mail: {email}",
+      "join_button": "Deltag i organisationen",
+      "messages": {
+        "email_mismatch": "Du er logget ind med en anden e-mail end denne invitation.",
+        "expired": "Dette invitationslink er udløbet.",
+        "revoked": "Dette invitationslink er blevet tilbagekaldt.",
+        "accepted": "Denne invitation er allerede blevet brugt.",
+        "invalid": "Dette invitationslink er ikke gyldigt.",
+        "joined": "Tilsluttet organisation",
+        "join_failed": "Kunne ikke deltage i organisationen"
+      }
+    }
+  },
+  "automation": {
+    "title": "Automatisering",
+    "subtitle": "Forbind MCP-klienter nu, med Zapier og den offentlige API, der følger på det samme nøglesystem med organisationsomfang.",
+    "coming_soon": "Kommer snart",
+    "mcp": {
+      "architecture": {
+        "title": "Arkitektur",
+        "description": "MCP-klienten og ClassroomIO API er separate tillidsgrænser. Den org-omfattede automatiseringsnøgle autentificerer klienten, og API'et forbliver kilden til sandhed for validering og vedholdenhed."
+      },
+      "flows": {
+        "title": "Typiske flows",
+        "description": "Agenten ejer ræsonnement og struktur. ClassroomIO accepterer kun normaliserede kurser, gemmer kladder og udgiver efter anmodning.",
+        "prompt_title": "Spørg om udkast",
+        "prompt_description": "Brugeren beder om et kursus, agenten strukturerer det, og 'create_course_draft' gemmer det i ClassroomIO før ethvert udgivelsestrin.",
+        "pdf_title": "PDF til udkast",
+        "pdf_description": "Agenten læser PDF'en eksternt, omstrukturerer den i sektioner og lektioner og sender derefter den normaliserede kladde til ClassroomIO.",
+        "review_title": "Anmeldelse for at offentliggøre",
+        "review_description": "Brugeren beder om ændringer, agenten opdaterer kladden, og publicering sker kun efter eksplicit godkendelse."
+      },
+      "setup": {
+        "title": "Klient opsætning",
+        "description": "Brug én nøgle med organisationsomfang pr. integration. Hvis en nøgle roteres eller tilbagekaldes, holder klienten op med at arbejde, indtil den nye hemmelighed er konfigureret.",
+        "claude_code_description": "Registrerer `@cio/mcp` med Claude Code ved hjælp af den genererede org-omfangede nøgle.",
+        "codex_description": "Tilføjer ClassroomIO MCP-serveren til Codex med den samme org-omfattede nøgle.",
+        "cursor_description": "Indsæt dette i `~/.cursor/mcp.json` eller dit arbejdsområde MCP-konfiguration."
+      },
+      "keys": {
+        "title": "MCP nøgler",
+        "description": "Disse nøgler autentificerer den aktuelle organisation, når en MCP-klient ringer til ClassroomIO gennem `@cio/mcp`.",
+        "generate": "Generer MCP-nøgle",
+        "scope_badge": "Udkast opret/læs/opdater/udgiv",
+        "secret_once": "Denne hemmelighed vises én gang. Kopier det til din MCP-klient nu."
+      }
+    },
+    "keys": {
+      "active": "Aktiv",
+      "revoked": "Tilbagekaldt",
+      "rotate": "Roter",
+      "revoke": "Tilbagekald",
+      "empty_title": "Ingen MCP-nøgler endnu",
+      "empty_description": "Opret den første org-omfattede MCP-nøgle til at forbinde Claude Code, Codex eller Cursor.",
+      "created_at_label": "Oprettet:",
+      "last_used_label": "Sidst brugt:",
+      "never_used": "Aldrig",
+      "scopes_label": "Omfang:",
+      "revoke_confirm": "Vil du tilbagekalde denne automatiseringsnøgle?",
+      "rotate_confirm": "Drej denne automatiseringsnøgle?"
+    },
+    "clients": {
+      "claude_code": "Claude kode",
+      "codex": "Codex",
+      "cursor": "Markør"
+    },
+    "tabs": {
+      "mcp": "MCP",
+      "zapier": "Zapier",
+      "api": "API"
+    },
+    "permissions": {
+      "disabled_title": "Skrivebeskyttet adgang",
+      "disabled_description": "Kun organisationsadministratorer kan oprette, rotere eller tilbagekalde automatiseringsnøgler. Lærere kan gennemgå opsætningsinstruktionerne her."
+    },
+    "overview": {
+      "title": "Automatiseringsadgang",
+      "description": "Opret org-omfattede automatiseringsnøgler, tilslut understøttede klienter, og hold al maskinadgang bundet tilbage til denne organisation."
     }
   }
 }

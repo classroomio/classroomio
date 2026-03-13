@@ -37,22 +37,22 @@
 
   function getBlockedInviteMessage(): string {
     if (isInviteEmailMismatch) {
-      return 'You are logged in with a different email from this invite.';
+      return t.get('invite.organization.messages.email_mismatch');
     }
 
     if (inviteStatus === 'EXPIRED') {
-      return 'This invite link has expired.';
+      return t.get('invite.organization.messages.expired');
     }
 
     if (inviteStatus === 'REVOKED') {
-      return 'This invite link has been revoked.';
+      return t.get('invite.organization.messages.revoked');
     }
 
     if (inviteStatus === 'ACCEPTED') {
-      return 'This invite has already been used.';
+      return t.get('invite.organization.messages.accepted');
     }
 
-    return 'This invite link is not valid.';
+    return t.get('invite.organization.messages.invalid');
   }
 
   async function handleSubmit() {
@@ -81,14 +81,16 @@
 
       if (!result.success || !result.data) {
         const failed = result as { error?: string; message?: string };
-        snackbar.error(failed.error ?? failed.message ?? 'Failed to join organization');
+        snackbar.error(failed.error ?? failed.message ?? t.get('invite.organization.messages.join_failed'));
         return;
       }
 
-      goto(resolve(result.data.redirectTo || '/org', {}));
+      snackbar.success('invite.organization.messages.joined');
+
+      window.location.href = result.data.redirectTo || '/org';
     } catch (error) {
       console.error('Failed to accept organization invite', error);
-      snackbar.error('Failed to join organization');
+      snackbar.error('invite.organization.messages.join_failed');
     } finally {
       loading = false;
     }
@@ -103,14 +105,18 @@
 </script>
 
 <svelte:head>
-  <title>Join {data.invite.organization.name} on ClassroomIO</title>
+  <title>{$t('invite.organization.page_title', { orgName: data.invite.organization.name })}</title>
 </svelte:head>
 
 <AuthUI isLogin={false} {handleSubmit} isLoading={loading} showOnlyContent={true} showLogo={true}>
   <div class="mt-0 w-full">
     <h3 class="mt-0 mb-4 text-center text-lg font-medium dark:text-white">{data.invite.organization.name}</h3>
-    <p class="text-center text-sm font-light dark:text-white">Role: {data.invite.invite.roleLabel}</p>
-    <p class="mt-1 text-center text-sm font-light dark:text-white">Invited email: {data.invite.invite.email}</p>
+    <p class="text-center text-sm font-light dark:text-white">
+      {$t('invite.organization.role_label', { role: data.invite.invite.roleLabel })}
+    </p>
+    <p class="mt-1 text-center text-sm font-light dark:text-white">
+      {$t('invite.organization.email_label', { email: data.invite.invite.email })}
+    </p>
 
     {#if !canJoinOrganization}
       <p class="mt-3 text-center text-sm text-red-500">{getBlockedInviteMessage()}</p>
@@ -118,7 +124,9 @@
   </div>
 
   <div class="my-4 flex w-full flex-col items-center justify-center gap-3">
-    <Button type="submit" disabled={!canJoinOrganization || loading} {loading}>Join Organization</Button>
+    <Button type="submit" disabled={!canJoinOrganization || loading} {loading}>
+      {$t('invite.organization.join_button')}
+    </Button>
     <p class="ui:text-muted-foreground text-center text-sm">
       {$t('login.already_have_account')}
       <a class="ui:text-primary hover:underline" href={resolve(`/login?${loginParams}`, {})}> {$t('login.login')}</a>

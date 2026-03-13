@@ -357,6 +357,11 @@
       "deleted": "Autoryzacja tokenem została usunięta.",
       "activated": "Autoryzacja tokenem włączona.",
       "deactivated": "Autoryzacja tokenem wyłączona."
+    },
+    "automation": {
+      "created": "Utworzono klucz automatyzacji. Zapisz go teraz, ponieważ pełny sekret zostanie wyświetlony tylko raz.",
+      "rotated": "Klucz automatyki obrócony. Zapisz teraz nowy sekret, ponieważ nie będzie on wyświetlany ponownie.",
+      "revoked": "Klucz automatyzacji unieważniony."
     }
   },
   "explore": {
@@ -1823,7 +1828,8 @@
     "early_adopter": "Zostań wczesnym użytkownikiem",
     "unlock": "Odblokuj nieograniczone funkcje i inwestuj w naszą przyszłość",
     "upgrade": "Uaktualnij teraz",
-    "tags": "Tagi"
+    "tags": "Tagi",
+    "automation": "Automatyzacja"
   },
   "media_manager": {
     "page_title": "Menedżer multimediów - ClassroomIO",
@@ -2444,6 +2450,90 @@
     },
     "common": {
       "not_available": "Nie dotyczy"
+    }
+  },
+  "invite": {
+    "organization": {
+      "page_title": "Dołącz do organizacji {orgName} w ClassroomIO",
+      "role_label": "Rola: {rola}",
+      "email_label": "Zaproszony e-mail: {email}",
+      "join_button": "Dołącz do organizacji",
+      "messages": {
+        "email_mismatch": "Jesteś zalogowany przy użyciu innego adresu e-mail niż to zaproszenie.",
+        "expired": "Ten link z zaproszeniem wygasł.",
+        "revoked": "Ten link z zaproszeniem został odwołany.",
+        "accepted": "To zaproszenie zostało już wykorzystane.",
+        "invalid": "Ten link z zaproszeniem jest nieprawidłowy.",
+        "joined": "Dołączył do organizacji",
+        "join_failed": "Nie udało się dołączyć do organizacji"
+      }
+    }
+  },
+  "automation": {
+    "title": "Automatyzacja",
+    "subtitle": "Połącz teraz klientów MCP, korzystając z Zapiera i publicznego interfejsu API w tym samym systemie kluczy o zasięgu organizacji.",
+    "coming_soon": "Już wkrótce",
+    "mcp": {
+      "architecture": {
+        "title": "Architektura",
+        "description": "Klient MCP i interfejs API ClassroomIO stanowią oddzielne granice zaufania. Klucz automatyzacji o zasięgu organizacji uwierzytelnia klienta, a interfejs API pozostaje źródłem prawdy w celu sprawdzenia poprawności i trwałości."
+      },
+      "flows": {
+        "title": "Typowe przepływy",
+        "description": "Agent jest właścicielem rozumowania i struktury. ClassroomIO akceptuje tylko znormalizowane ładunki kursów, zapisuje wersje robocze i publikuje na żądanie.",
+        "prompt_title": "Monituj o wersję roboczą",
+        "prompt_description": "Użytkownik prosi o kurs, agent tworzy go, a następnie „create_course_draft” zapisuje go w ClassroomIO przed jakimkolwiek etapem publikacji.",
+        "pdf_title": "PDF do wersji roboczej",
+        "pdf_description": "Agent czyta plik PDF zewnętrznie, dzieli go na sekcje i lekcje, a następnie wysyła znormalizowaną wersję roboczą do ClassroomIO.",
+        "review_title": "Recenzja do opublikowania",
+        "review_description": "Użytkownik prosi o zmiany, agent aktualizuje wersję roboczą, a publikacja następuje dopiero po wyraźnej zgodzie."
+      },
+      "setup": {
+        "title": "Konfiguracja klienta",
+        "description": "Użyj jednego klucza o zasięgu organizacji na integrację. Jeśli klucz zostanie obrócony lub unieważniony, klient przestaje działać do czasu skonfigurowania nowego klucza tajnego.",
+        "claude_code_description": "Rejestruje `@cio/mcp` w Claude Code przy użyciu wygenerowanego klucza o zasięgu organizacji.",
+        "codex_description": "Dodaje serwer ClassroomIO MCP do Codexu z tym samym kluczem o zasięgu organizacji.",
+        "cursor_description": "Wklej to do `~/.cursor/mcp.json` lub konfiguracji MCP w obszarze roboczym."
+      },
+      "keys": {
+        "title": "Klucze MCP",
+        "description": "Te klucze uwierzytelniają bieżącą organizację, gdy klient MCP wywołuje ClassroomIO poprzez `@cio/mcp`.",
+        "generate": "Wygeneruj klucz MCP",
+        "scope_badge": "Utwórz/odczytaj/aktualizuj/publikuj wersję roboczą",
+        "secret_once": "Sekret ten zostaje pokazany raz. Skopiuj go teraz do swojego klienta MCP."
+      }
+    },
+    "keys": {
+      "active": "Aktywny",
+      "revoked": "Unieważnione",
+      "rotate": "Obróć",
+      "revoke": "Odwołaj",
+      "empty_title": "Nie ma jeszcze kluczy MCP",
+      "empty_description": "Utwórz pierwszy klucz MCP o zasięgu organizacji, aby połączyć Claude Code, Codex lub Cursor.",
+      "created_at_label": "Utworzono:",
+      "last_used_label": "Ostatnio używane:",
+      "never_used": "Nigdy",
+      "scopes_label": "Zakresy:",
+      "revoke_confirm": "Unieważnić ten klucz automatyzacji?",
+      "rotate_confirm": "Obrócić ten klucz automatyzacji?"
+    },
+    "clients": {
+      "claude_code": "Claude'a Koda",
+      "codex": "Kodeks",
+      "cursor": "Kursor"
+    },
+    "tabs": {
+      "mcp": "MCP",
+      "zapier": "Zapiera",
+      "api": "API"
+    },
+    "permissions": {
+      "disabled_title": "Dostęp tylko do odczytu",
+      "disabled_description": "Tylko administratorzy organizacji mogą tworzyć, obracać i unieważniać klucze automatyzacji. Nauczyciele mogą zapoznać się z instrukcjami konfiguracji tutaj."
+    },
+    "overview": {
+      "title": "Dostęp do automatyki",
+      "description": "Twórz klucze automatyzacji na poziomie organizacji, łącz obsługiwanych klientów i powiązuj cały dostęp do maszyn z tą organizacją."
     }
   }
 }

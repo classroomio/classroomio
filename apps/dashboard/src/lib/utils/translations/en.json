@@ -643,6 +643,7 @@
     "audience": "Audience",
     "media": "Media",
     "setup": "Setup",
+    "automation": "Automation",
     "help": "Help",
     "settings": "Settings",
     "early_adopter": "Become an Early Adopter",
@@ -2110,6 +2111,74 @@
     "enterprise_required": "This feature requires an Enterprise plan."
   },
 
+  "automation": {
+    "title": "Automation",
+    "subtitle": "Connect MCP clients now, with Zapier and the public API following on the same org-scoped key system.",
+    "coming_soon": "Coming soon",
+    "overview": {
+      "title": "Automation access",
+      "description": "Create org-scoped automation keys, connect supported clients, and keep all machine access tied back to this organization."
+    },
+    "permissions": {
+      "disabled_title": "Read-only access",
+      "disabled_description": "Only organization admins can create, rotate, or revoke automation keys. Teachers can review the setup instructions here."
+    },
+    "tabs": {
+      "mcp": "MCP",
+      "zapier": "Zapier",
+      "api": "API"
+    },
+    "clients": {
+      "claude_code": "Claude Code",
+      "codex": "Codex",
+      "cursor": "Cursor"
+    },
+    "keys": {
+      "active": "Active",
+      "revoked": "Revoked",
+      "rotate": "Rotate",
+      "revoke": "Revoke",
+      "empty_title": "No MCP keys yet",
+      "empty_description": "Create the first org-scoped MCP key to connect Claude Code, Codex, or Cursor.",
+      "created_at_label": "Created:",
+      "last_used_label": "Last used:",
+      "never_used": "Never",
+      "scopes_label": "Scopes:",
+      "revoke_confirm": "Revoke this automation key?",
+      "rotate_confirm": "Rotate this automation key?"
+    },
+    "mcp": {
+      "keys": {
+        "title": "MCP keys",
+        "description": "These keys authenticate the current organization when an MCP client calls ClassroomIO through `@cio/mcp`.",
+        "generate": "Generate MCP key",
+        "scope_badge": "Draft create/read/update/publish",
+        "secret_once": "This secret is shown once. Copy it into your MCP client now."
+      },
+      "setup": {
+        "title": "Client setup",
+        "description": "Use one org-scoped key per integration. If a key is rotated or revoked, the client stops working until the new secret is configured.",
+        "claude_code_description": "Registers `@cio/mcp` with Claude Code using the generated org-scoped key.",
+        "codex_description": "Adds the ClassroomIO MCP server to Codex with the same org-scoped key.",
+        "cursor_description": "Paste this into `~/.cursor/mcp.json` or your workspace MCP config."
+      },
+      "flows": {
+        "title": "Typical flows",
+        "description": "The agent owns reasoning and structure. ClassroomIO only accepts normalized course payloads, saves drafts, and publishes on request.",
+        "prompt_title": "Prompt to draft",
+        "prompt_description": "The user asks for a course, the agent structures it, then `create_course_draft` saves it into ClassroomIO before any publish step.",
+        "pdf_title": "PDF to draft",
+        "pdf_description": "The agent reads the PDF externally, restructures it into sections and lessons, then sends the normalized draft into ClassroomIO.",
+        "review_title": "Review to publish",
+        "review_description": "The user asks for changes, the agent updates the draft, and publish only happens after explicit approval."
+      },
+      "architecture": {
+        "title": "Architecture",
+        "description": "The MCP client and ClassroomIO API are separate trust boundaries. The org-scoped automation key authenticates the client, and the API remains the source of truth for validation and persistence."
+      }
+    }
+  },
+
   "lms_navigation": {
     "home": "Home",
     "my_learning": "My Learning",
@@ -2151,6 +2220,11 @@
     "success_update": "Updated successfully",
     "success_delete": "Deleted successfully",
     "error_update": "Failed to update",
+    "automation": {
+      "created": "Automation key created. Save it now because the full secret is only shown once.",
+      "rotated": "Automation key rotated. Save the new secret now because it will not be shown again.",
+      "revoked": "Automation key revoked."
+    },
     "token_auth": {
       "created": "Signing secret created. Save it now—it won't be shown again.",
       "rotated": "Signing secret rotated. Save the new secret—it won't be shown again.",
@@ -2388,6 +2462,24 @@
 
   "specialization": {
     "course_tag": "Specialization"
+  },
+
+  "invite": {
+    "organization": {
+      "page_title": "Join {orgName} on ClassroomIO",
+      "role_label": "Role: {role}",
+      "email_label": "Invited email: {email}",
+      "join_button": "Join Organization",
+      "messages": {
+        "email_mismatch": "You are logged in with a different email from this invite.",
+        "expired": "This invite link has expired.",
+        "revoked": "This invite link has been revoked.",
+        "accepted": "This invite has already been used.",
+        "invalid": "This invite link is not valid.",
+        "joined": "Joined organization",
+        "join_failed": "Failed to join organization"
+      }
+    }
   },
 
   "content": {

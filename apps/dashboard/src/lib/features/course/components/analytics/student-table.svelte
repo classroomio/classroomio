@@ -1,8 +1,11 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { Badge } from '@cio/ui/base/badge';
+  import { Button } from '@cio/ui/base/button';
   import UserIcon from '@lucide/svelte/icons/user';
   import * as Pagination from '@cio/ui/base/pagination';
+  import * as Table from '@cio/ui/base/table';
 
   import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
@@ -33,7 +36,9 @@
   const GotoFullProfile = (student: CourseAnalytics['students'][number]) => {
     if (!student) return;
 
-    goto(`/courses/${courseApi.course?.id}/people/${student.id}?back=/courses/${courseApi.course?.id}/analytics`);
+    goto(
+      resolve(`/courses/${courseApi.course?.id}/people/${student.id}?back=/courses/${courseApi.course?.id}/analytics`)
+    );
   };
 
   // Reset to first page when students array changes
@@ -52,116 +57,86 @@
   />
 {:else}
   <!-- Responsive Table -->
-  <div class="relative h-[300px] overflow-hidden">
-    <div class="h-full overflow-auto">
-      <table class="w-full min-w-[800px]">
-        <!-- Fixed Header -->
-        <thead class="sticky top-0 z-10 bg-white dark:bg-neutral-800">
-          <tr class="border-b border-gray-200">
-            <th
-              class="sticky top-0 left-0 z-20 min-w-[200px] bg-white px-4 py-3 text-left text-sm font-medium whitespace-nowrap text-gray-500 dark:bg-neutral-800 dark:text-gray-300"
+  <div class="relative h-[300px] overflow-auto rounded-md border">
+    <Table.Root class="min-w-[800px]">
+      <Table.Header class="sticky top-0 z-10 bg-white dark:bg-neutral-800">
+        <Table.Row>
+          <Table.Head class="sticky top-0 left-0 z-20 min-w-[200px] bg-white px-4 py-3 dark:bg-neutral-800">
+            {$t('analytics.student_name')}
+          </Table.Head>
+          <Table.Head class="min-w-[150px] px-4 py-3">{$t('analytics.lessons_completed')}</Table.Head>
+          <Table.Head class="min-w-[140px] px-4 py-3">{$t('analytics.exercises_submitted')}</Table.Head>
+          <Table.Head class="min-w-[120px] px-4 py-3">{$t('analytics.average_grade')}</Table.Head>
+          <Table.Head class="min-w-[120px] px-4 py-3">{$t('analytics.last_seen')}</Table.Head>
+          <Table.Head class="min-w-[120px] px-4 py-3">{$t('analytics.actions')}</Table.Head>
+        </Table.Row>
+      </Table.Header>
+      <Table.Body>
+        {#each paginatedStudents as student (student.id)}
+          <Table.Row class="group h-[100px]">
+            <Table.Cell
+              class="sticky left-0 z-10 min-w-[200px] bg-white px-4 py-3 transition-colors group-hover:bg-gray-50 dark:bg-neutral-800 dark:group-hover:bg-gray-700"
             >
-              {$t('analytics.student_name')}
-            </th>
-            <th
-              class="min-w-[150px] px-4 py-3 text-left text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-300"
-            >
-              {$t('analytics.lessons_completed')}
-            </th>
-            <th
-              class="min-w-[140px] px-4 py-3 text-left text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-300"
-            >
-              {$t('analytics.exercises_submitted')}
-            </th>
-            <th
-              class="min-w-[120px] px-4 py-3 text-left text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-300"
-            >
-              {$t('analytics.average_grade')}
-            </th>
-            <th
-              class="min-w-[120px] px-4 py-3 text-left text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-300"
-            >
-              {$t('analytics.last_seen')}
-            </th>
-            <th
-              class="min-w-[120px] px-4 py-3 text-left text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-300"
-            >
-              {$t('analytics.actions')}
-            </th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
-          {#each paginatedStudents as student}
-            <tr class="group h-[100px] border-b hover:bg-gray-50 dark:hover:bg-gray-700">
-              <!-- Fixed Name Column -->
-              <td
-                class="sticky left-0 z-10 min-w-[200px] bg-white px-4 py-3 whitespace-nowrap transition-colors group-hover:bg-gray-50 dark:bg-neutral-800 dark:group-hover:bg-gray-700"
-              >
-                <div class="flex items-center gap-3">
-                  <Avatar.Root class="size-8">
-                    <Avatar.Image
-                      src={student.profile.avatar_url ? student.profile.avatar_url : '/logo-192.png'}
-                      alt={student.profile.fullname ? student.profile.fullname : $t('analytics.student')}
-                    />
-                    <Avatar.Fallback>{shortenName(student.profile.fullname) || 'S'}</Avatar.Fallback>
-                  </Avatar.Root>
-                  <div class="min-w-0 flex-1">
-                    <p class="truncate font-medium text-gray-900 dark:text-white">
-                      {student.profile.fullname}
-                    </p>
-                    <p class="truncate text-sm text-gray-500 dark:text-gray-400">
-                      {student.profile.email}
-                    </p>
-                  </div>
+              <div class="flex items-center gap-3">
+                <Avatar.Root class="size-8">
+                  <Avatar.Image
+                    src={student.profile.avatar_url ? student.profile.avatar_url : '/logo-192.png'}
+                    alt={student.profile.fullname ? student.profile.fullname : $t('analytics.student')}
+                  />
+                  <Avatar.Fallback>{shortenName(student.profile.fullname) || 'S'}</Avatar.Fallback>
+                </Avatar.Root>
+                <div class="min-w-0 flex-1">
+                  <p class="truncate font-medium text-gray-900 dark:text-white">
+                    {student.profile.fullname}
+                  </p>
+                  <p class="truncate text-sm text-gray-500 dark:text-gray-400">
+                    {student.profile.email}
+                  </p>
                 </div>
-              </td>
-              <!-- Scrollable Content -->
-              <td class="min-w-[150px] px-4 py-3 whitespace-nowrap">
-                <div class="flex items-center gap-3">
-                  <span class="text-sm font-medium text-gray-900 dark:text-white">
-                    {student.lessonsCompleted}/{student.totalLessons}
-                  </span>
-                  <div class="w-20 flex-shrink-0">
-                    <div class="h-2 rounded-full bg-gray-200 dark:bg-neutral-700">
-                      <div class="h-2 rounded-full bg-blue-500" style="width: {student.progressPercentage}%"></div>
-                    </div>
-                  </div>
-                </div>
-              </td>
-              <td class="min-w-[140px] px-4 py-3 whitespace-nowrap">
+              </div>
+            </Table.Cell>
+            <Table.Cell class="min-w-[150px] px-4 py-3">
+              <div class="flex items-center gap-3">
                 <span class="text-sm font-medium text-gray-900 dark:text-white">
-                  {student.exercisesSubmitted} out of {student.totalExercises}
+                  {student.lessonsCompleted}/{student.totalLessons}
                 </span>
-              </td>
-              <td class="min-w-[120px] px-4 py-3 whitespace-nowrap">
-                <Badge
-                  class={student.averageGrade >= 80
-                    ? 'bg-green-600'
-                    : student.averageGrade >= 60
-                      ? 'bg-blue-600'
-                      : 'bg-red-600'}
-                >
-                  {student.averageGrade}%
-                </Badge>
-              </td>
-              <td class="min-w-[120px] px-4 py-3 whitespace-nowrap">
-                <span class="text-sm text-gray-500 dark:text-gray-400">
-                  {student.lastSeen}
-                </span>
-              </td>
-              <td class="min-w-[120px] px-4 py-3 whitespace-nowrap">
-                <button
-                  class="rounded bg-blue-600 px-3 py-1.5 text-sm font-medium whitespace-nowrap text-white transition-colors hover:bg-blue-700"
-                  onclick={() => GotoFullProfile(student)}
-                >
-                  {$t('analytics.view_details')}
-                </button>
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-    </div>
+                <div class="w-20 flex-shrink-0">
+                  <div class="h-2 rounded-full bg-gray-200 dark:bg-neutral-700">
+                    <div class="h-2 rounded-full bg-blue-500" style="width: {student.progressPercentage}%"></div>
+                  </div>
+                </div>
+              </div>
+            </Table.Cell>
+            <Table.Cell class="min-w-[140px] px-4 py-3">
+              <span class="text-sm font-medium text-gray-900 dark:text-white">
+                {student.exercisesSubmitted} out of {student.totalExercises}
+              </span>
+            </Table.Cell>
+            <Table.Cell class="min-w-[120px] px-4 py-3">
+              <Badge
+                class={student.averageGrade >= 80
+                  ? 'bg-green-600'
+                  : student.averageGrade >= 60
+                    ? 'bg-blue-600'
+                    : 'bg-red-600'}
+              >
+                {student.averageGrade}%
+              </Badge>
+            </Table.Cell>
+            <Table.Cell class="min-w-[120px] px-4 py-3">
+              <span class="text-sm text-gray-500 dark:text-gray-400">
+                {student.lastSeen}
+              </span>
+            </Table.Cell>
+            <Table.Cell class="min-w-[120px] px-4 py-3">
+              <Button variant="outline" size="sm" onclick={() => GotoFullProfile(student)}>
+                {$t('analytics.view_details')}
+              </Button>
+            </Table.Cell>
+          </Table.Row>
+        {/each}
+      </Table.Body>
+    </Table.Root>
   </div>
 
   <!-- Pagination Controls -->

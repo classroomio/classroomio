@@ -357,6 +357,11 @@
       "deleted": "Autenticação de token removida.",
       "activated": "Autenticação de token habilitada.",
       "deactivated": "Autenticação de token desativada."
+    },
+    "automation": {
+      "created": "Chave de automação criada. Salve agora porque o segredo completo só é mostrado uma vez.",
+      "rotated": "Chave de automação girada. Salve o novo segredo agora porque ele não será mostrado novamente.",
+      "revoked": "Chave de automação revogada."
     }
   },
   "explore": {
@@ -1823,7 +1828,8 @@
     "early_adopter": "Torne-se um dos primeiros a adotar",
     "unlock": "Desbloqueie recursos ilimitados e invista em nosso futuro",
     "upgrade": "Atualize agora",
-    "tags": "Etiquetas"
+    "tags": "Etiquetas",
+    "automation": "Automação"
   },
   "media_manager": {
     "page_title": "Gerenciador de mídia - ClassroomIO",
@@ -2444,6 +2450,90 @@
     },
     "common": {
       "not_available": "N/A"
+    }
+  },
+  "invite": {
+    "organization": {
+      "page_title": "Junte-se a {orgName} no ClassroomIO",
+      "role_label": "Função: {função}",
+      "email_label": "E-mail convidado: {email}",
+      "join_button": "Junte-se à organização",
+      "messages": {
+        "email_mismatch": "Você está conectado com um e-mail diferente deste convite.",
+        "expired": "Este link de convite expirou.",
+        "revoked": "Este link de convite foi revogado.",
+        "accepted": "Este convite já foi usado.",
+        "invalid": "Este link de convite não é válido.",
+        "joined": "Organização aderida",
+        "join_failed": "Falha ao ingressar na organização"
+      }
+    }
+  },
+  "automation": {
+    "title": "Automação",
+    "subtitle": "Conecte clientes MCP agora, com o Zapier e a API pública seguindo o mesmo sistema de chaves com escopo organizacional.",
+    "coming_soon": "Em breve",
+    "mcp": {
+      "architecture": {
+        "title": "Arquitetura",
+        "description": "O cliente MCP e a API ClassroomIO são limites de confiança separados. A chave de automação no escopo organizacional autentica o cliente, e a API continua sendo a fonte da verdade para validação e persistência."
+      },
+      "flows": {
+        "title": "Fluxos típicos",
+        "description": "O agente possui raciocínio e estrutura. ClassroomIO aceita apenas cargas de curso normalizadas, salva rascunhos e publica mediante solicitação.",
+        "prompt_title": "Solicitar rascunho",
+        "prompt_description": "O usuário solicita um curso, o agente o estrutura e, em seguida, `create_course_draft` o salva no ClassroomIO antes de qualquer etapa de publicação.",
+        "pdf_title": "PDF para rascunho",
+        "pdf_description": "O agente lê o PDF externamente, reestrutura-o em seções e lições e, em seguida, envia o rascunho normalizado para o ClassroomIO.",
+        "review_title": "Revise para publicar",
+        "review_description": "O usuário solicita alterações, o agente atualiza o rascunho e a publicação só acontece após aprovação explícita."
+      },
+      "setup": {
+        "title": "Configuração do cliente",
+        "description": "Use uma chave com escopo organizacional por integração. Se uma chave for rotacionada ou revogada, o cliente para de funcionar até que o novo segredo seja configurado.",
+        "claude_code_description": "Registra `@cio/mcp` com Claude Code usando a chave gerada com escopo organizacional.",
+        "codex_description": "Adiciona o servidor ClassroomIO MCP ao Codex com a mesma chave com escopo organizacional.",
+        "cursor_description": "Cole isso em `~/.cursor/mcp.json` ou na configuração do MCP do seu espaço de trabalho."
+      },
+      "keys": {
+        "title": "Chaves MCP",
+        "description": "Essas chaves autenticam a organização atual quando um cliente MCP chama ClassroomIO por meio de `@cio/mcp`.",
+        "generate": "Gerar chave MCP",
+        "scope_badge": "Rascunho criar/ler/atualizar/publicar",
+        "secret_once": "Este segredo é mostrado uma vez. Copie-o para o seu cliente MCP agora."
+      }
+    },
+    "keys": {
+      "active": "Ativo",
+      "revoked": "Revogado",
+      "rotate": "Girar",
+      "revoke": "Revogar",
+      "empty_title": "Nenhuma chave MCP ainda",
+      "empty_description": "Crie a primeira chave MCP com escopo organizacional para conectar Claude Code, Codex ou Cursor.",
+      "created_at_label": "Criado:",
+      "last_used_label": "Usado pela última vez:",
+      "never_used": "Nunca",
+      "scopes_label": "Escopos:",
+      "revoke_confirm": "Revogar esta chave de automação?",
+      "rotate_confirm": "Girar esta chave de automação?"
+    },
+    "clients": {
+      "claude_code": "Código Claude",
+      "codex": "Códice",
+      "cursor": "Cursor"
+    },
+    "tabs": {
+      "mcp": "PCM",
+      "zapier": "Zapier",
+      "api": "API"
+    },
+    "permissions": {
+      "disabled_title": "Acesso somente leitura",
+      "disabled_description": "Somente administradores da organização podem criar, alternar ou revogar chaves de automação. Os professores podem revisar as instruções de configuração aqui."
+    },
+    "overview": {
+      "title": "Acesso de automação",
+      "description": "Crie chaves de automação no escopo da organização, conecte clientes compatíveis e mantenha todo o acesso às máquinas vinculado a esta organização."
     }
   }
 }

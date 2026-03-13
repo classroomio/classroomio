@@ -15,7 +15,19 @@
 
   let { courseAnalytics = null }: Props = $props();
 
-  const chartConfig: Chart.ChartConfig = {};
+  const progressChartConfig = $derived({
+    students: {
+      label: $t('analytics.number_of_students'),
+      color: 'var(--chart-1)'
+    }
+  } satisfies Chart.ChartConfig);
+
+  const gradeChartConfig = $derived({
+    students: {
+      label: $t('analytics.number_of_students'),
+      color: 'var(--chart-2)'
+    }
+  } satisfies Chart.ChartConfig);
 
   let hasStudentData = $derived(Boolean(courseAnalytics?.students?.length));
 
@@ -89,20 +101,28 @@
     }
   });
 
-  let progressChartColors = $derived({
-    domain: progressChartData.map((item) => item.group),
-    range: progressChartData.map((item) => item.color)
-  });
+  let progressSeries = $derived([
+    {
+      key: 'students',
+      value: 'value',
+      label: progressChartConfig.students.label,
+      color: 'var(--color-students)'
+    }
+  ]);
 
-  let gradeChartColors = $derived({
-    domain: gradeChartData.map((item) => item.group),
-    range: gradeChartData.map((item) => item.color)
-  });
+  let gradeSeries = $derived([
+    {
+      key: 'students',
+      value: 'value',
+      label: gradeChartConfig.students.label,
+      color: 'var(--color-students)'
+    }
+  ]);
 </script>
 
 <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
   <!-- Progress Distribution Chart -->
-  <div class="rounded-lg border border-gray-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
+  <div class="">
     <h3 class="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
       {$t('analytics.student_progress_distribution')}
     </h3>
@@ -111,15 +131,13 @@
         <div class="animate-pulse text-gray-500 dark:text-gray-400">{$t('analytics.loading_chart')}</div>
       </div>
     {:else if hasStudentData}
-      <Chart.ChartContainer class="h-[300px] w-full" config={chartConfig}>
+      <Chart.ChartContainer class="h-[300px] w-full" config={progressChartConfig}>
         <Chart.BarChart
           data={progressChartData}
           x="group"
-          y="value"
-          c="group"
-          cDomain={progressChartColors.domain}
-          cRange={progressChartColors.range}
+          axis="x"
           props={progressChartProps}
+          series={progressSeries}
         />
       </Chart.ChartContainer>
     {:else}
@@ -130,23 +148,15 @@
   </div>
 
   <!-- Grade Distribution Chart -->
-  <div class="rounded-lg border border-gray-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-800">
+  <div class="">
     <h3 class="mb-6 text-lg font-semibold text-gray-900 dark:text-white">{$t('analytics.grade_distribution')}</h3>
     {#if !courseAnalytics}
       <div class="flex h-[300px] items-center justify-center">
         <div class="animate-pulse text-gray-500 dark:text-gray-400">{$t('analytics.loading_chart')}</div>
       </div>
     {:else if hasStudentData}
-      <Chart.ChartContainer class="h-[300px] w-full" config={chartConfig}>
-        <Chart.BarChart
-          data={gradeChartData}
-          x="group"
-          y="value"
-          c="group"
-          cDomain={gradeChartColors.domain}
-          cRange={gradeChartColors.range}
-          props={gradeChartProps}
-        />
+      <Chart.ChartContainer class="h-[300px] w-full" config={gradeChartConfig}>
+        <Chart.BarChart data={gradeChartData} x="group" axis="x" props={gradeChartProps} series={gradeSeries} />
       </Chart.ChartContainer>
     {:else}
       <div class="flex h-[300px] items-center justify-center text-gray-500 dark:text-gray-400">

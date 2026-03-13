@@ -144,7 +144,7 @@
                 <Skeleton class="h-10 w-full rounded-md" />
               {/each}
             {:else}
-              {#each enrollments as enrollment (enrollment.id)}
+              {#each enrollments as enrollment, i (i)}
                 <div class="flex items-center justify-between gap-2">
                   <div class="flex items-center gap-2">
                     <Avatar.Root class="h-6 w-6">

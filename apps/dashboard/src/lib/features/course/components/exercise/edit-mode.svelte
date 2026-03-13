@@ -225,7 +225,7 @@
     </div>
   {/if}
   <div class="questions px-6 pt-6">
-    {#each $questionnaire.questions as question, index}
+    {#each $questionnaire.questions as question, index (question.id)}
       {#if !question.deletedAt}
         <QuestionContainer
           key={String(question.id ?? `new-${index}`)}
@@ -272,7 +272,7 @@
                     {getQuestionTypeLabel(question?.questionType)}
                   </Select.Trigger>
                   <Select.Content>
-                    {#each QUESTION_TYPES as type}
+                    {#each QUESTION_TYPES as type, i (type.key)}
                       {#if $isFreePlan && PREMIUM_QUESTION_TYPE_KEYS.has(type.key)}
                         <button
                           type="button"

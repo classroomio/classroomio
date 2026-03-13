@@ -357,6 +357,11 @@
       "deleted": "Token-Authentifizierung entfernt.",
       "activated": "Token-Authentifizierung aktiviert.",
       "deactivated": "Token-Authentifizierung deaktiviert."
+    },
+    "automation": {
+      "created": "Automatisierungsschlüssel erstellt. Speichern Sie es jetzt, da das vollständige Geheimnis nur einmal angezeigt wird.",
+      "rotated": "Automatisierungsschlüssel gedreht. Speichern Sie das neue Geheimnis jetzt, da es nicht mehr angezeigt wird.",
+      "revoked": "Automatisierungsschlüssel widerrufen."
     }
   },
   "explore": {
@@ -1823,7 +1828,8 @@
     "early_adopter": "Werden Sie ein Early Adopter",
     "unlock": "Schalten Sie unbegrenzte Funktionen frei und investieren Sie in unsere Zukunft",
     "upgrade": "Jetzt upgraden",
-    "tags": "Schlagworte"
+    "tags": "Schlagworte",
+    "automation": "Automatisierung"
   },
   "media_manager": {
     "page_title": "Medienmanager - ClassroomIO",
@@ -2444,6 +2450,90 @@
     },
     "common": {
       "not_available": "N/A"
+    }
+  },
+  "invite": {
+    "organization": {
+      "page_title": "Treten Sie {orgName} auf ClassroomIO bei",
+      "role_label": "Rolle: {role}",
+      "email_label": "Eingeladene E-Mail: {email}",
+      "join_button": "Treten Sie der Organisation bei",
+      "messages": {
+        "email_mismatch": "Sie sind mit einer anderen E-Mail-Adresse als dieser Einladung angemeldet.",
+        "expired": "Dieser Einladungslink ist abgelaufen.",
+        "revoked": "Dieser Einladungslink wurde widerrufen.",
+        "accepted": "Diese Einladung wurde bereits verwendet.",
+        "invalid": "Dieser Einladungslink ist ungültig.",
+        "joined": "Der Organisation beigetreten",
+        "join_failed": "Der Beitritt zur Organisation ist fehlgeschlagen"
+      }
+    }
+  },
+  "automation": {
+    "title": "Automatisierung",
+    "subtitle": "Verbinden Sie jetzt MCP-Clients, wobei Zapier und die öffentliche API auf demselben organisationsweiten Schlüsselsystem folgen.",
+    "coming_soon": "Kommt bald",
+    "mcp": {
+      "architecture": {
+        "title": "Architektur",
+        "description": "Der MCP-Client und die ClassroomIO-API sind separate Vertrauensgrenzen. Der organisationsweite Automatisierungsschlüssel authentifiziert den Client und die API bleibt die Quelle der Wahrheit für Validierung und Persistenz."
+      },
+      "flows": {
+        "title": "Typische Strömungen",
+        "description": "Der Agent besitzt Argumentation und Struktur. ClassroomIO akzeptiert nur normalisierte Kursnutzlasten, speichert Entwürfe und veröffentlicht auf Anfrage.",
+        "prompt_title": "Aufforderung zum Entwurf",
+        "prompt_description": "Der Benutzer fragt nach einem Kurs, der Agent strukturiert ihn und „create_course_draft“ speichert ihn dann vor jedem Veröffentlichungsschritt in ClassroomIO.",
+        "pdf_title": "PDF zum Entwurf",
+        "pdf_description": "Der Agent liest das PDF extern, strukturiert es in Abschnitte und Lektionen um und sendet dann den normalisierten Entwurf an ClassroomIO.",
+        "review_title": "Rezension zur Veröffentlichung",
+        "review_description": "Der Benutzer bittet um Änderungen, der Agent aktualisiert den Entwurf und die Veröffentlichung erfolgt erst nach ausdrücklicher Genehmigung."
+      },
+      "setup": {
+        "title": "Client-Setup",
+        "description": "Verwenden Sie einen organisationsweiten Schlüssel pro Integration. Wenn ein Schlüssel rotiert oder widerrufen wird, funktioniert der Client nicht mehr, bis das neue Geheimnis konfiguriert ist.",
+        "claude_code_description": "Registriert „@cio/mcp“ bei Claude Code unter Verwendung des generierten organisationsweit gültigen Schlüssels.",
+        "codex_description": "Fügt den ClassroomIO MCP-Server mit demselben organisationsweit gültigen Schlüssel zu Codex hinzu.",
+        "cursor_description": "Fügen Sie dies in „~/.cursor/mcp.json“ oder Ihre Workspace-MCP-Konfiguration ein."
+      },
+      "keys": {
+        "title": "MCP-Schlüssel",
+        "description": "Diese Schlüssel authentifizieren die aktuelle Organisation, wenn ein MCP-Client ClassroomIO über „@cio/mcp“ aufruft.",
+        "generate": "MCP-Schlüssel generieren",
+        "scope_badge": "Entwurf erstellen/lesen/aktualisieren/veröffentlichen",
+        "secret_once": "Dieses Geheimnis wird einmal gezeigt. Kopieren Sie es jetzt in Ihren MCP-Client."
+      }
+    },
+    "keys": {
+      "active": "Aktiv",
+      "revoked": "Widerrufen",
+      "rotate": "Drehen",
+      "revoke": "Widerrufen",
+      "empty_title": "Noch keine MCP-Schlüssel",
+      "empty_description": "Erstellen Sie den ersten organisationsweit gültigen MCP-Schlüssel, um Claude Code, Codex oder Cursor zu verbinden.",
+      "created_at_label": "Erstellt:",
+      "last_used_label": "Zuletzt verwendet:",
+      "never_used": "Niemals",
+      "scopes_label": "Geltungsbereiche:",
+      "revoke_confirm": "Diesen Automatisierungsschlüssel widerrufen?",
+      "rotate_confirm": "Diesen Automatisierungsschlüssel drehen?"
+    },
+    "clients": {
+      "claude_code": "Claude Code",
+      "codex": "Kodex",
+      "cursor": "Cursor"
+    },
+    "tabs": {
+      "mcp": "MCP",
+      "zapier": "Zapier",
+      "api": "API"
+    },
+    "permissions": {
+      "disabled_title": "Nur lesender Zugriff",
+      "disabled_description": "Nur Organisationsadministratoren können Automatisierungsschlüssel erstellen, rotieren oder widerrufen. Lehrer können die Einrichtungsanweisungen hier einsehen."
+    },
+    "overview": {
+      "title": "Automatisierungszugriff",
+      "description": "Erstellen Sie organisationsweite Automatisierungsschlüssel, verbinden Sie unterstützte Clients und halten Sie den gesamten Maschinenzugriff an diese Organisation gebunden."
     }
   }
 }

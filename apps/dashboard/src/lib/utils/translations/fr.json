@@ -357,6 +357,11 @@
       "deleted": "Authentification du jeton supprimée.",
       "activated": "Authentification par jeton activée.",
       "deactivated": "Authentification du jeton désactivée."
+    },
+    "automation": {
+      "created": "Clé d'automatisation créée. Enregistrez-le maintenant car le secret complet n'est affiché qu'une seule fois.",
+      "rotated": "Clé d'automatisation tournée. Enregistrez le nouveau secret maintenant car il ne sera plus affiché.",
+      "revoked": "Clé d'automatisation révoquée."
     }
   },
   "explore": {
@@ -1823,7 +1828,8 @@
     "early_adopter": "Devenez un adopteur précoce",
     "unlock": "Débloquez des fonctionnalités illimitées et investissez dans notre avenir",
     "upgrade": "Mettre à niveau maintenant",
-    "tags": "Balises"
+    "tags": "Balises",
+    "automation": "Automation"
   },
   "media_manager": {
     "page_title": "Gestionnaire de médias - ClassroomIO",
@@ -2444,6 +2450,90 @@
     },
     "common": {
       "not_available": "N/D"
+    }
+  },
+  "invite": {
+    "organization": {
+      "page_title": "Rejoignez {orgName} sur ClassroomIO",
+      "role_label": "Rôle : {rôle}",
+      "email_label": "E-mail invité : {email}",
+      "join_button": "Rejoindre l'organisation",
+      "messages": {
+        "email_mismatch": "Vous êtes connecté avec un e-mail différent de celui de cette invitation.",
+        "expired": "Ce lien d'invitation a expiré.",
+        "revoked": "Ce lien d'invitation a été révoqué.",
+        "accepted": "Cette invitation a déjà été utilisée.",
+        "invalid": "Ce lien d'invitation n'est pas valide.",
+        "joined": "Organisation rejointe",
+        "join_failed": "Impossible de rejoindre l'organisation"
+      }
+    }
+  },
+  "automation": {
+    "title": "Automatisation",
+    "subtitle": "Connectez les clients MCP maintenant, avec Zapier et l'API publique qui suivent sur le même système de clés à l'échelle de l'organisation.",
+    "coming_soon": "Bientôt disponible",
+    "mcp": {
+      "architecture": {
+        "title": "Architecture",
+        "description": "Le client MCP et l'API ClassroomIO sont des limites de confiance distinctes. La clé d'automatisation à l'échelle de l'organisation authentifie le client et l'API reste la source de vérité pour la validation et la persistance."
+      },
+      "flows": {
+        "title": "Flux typiques",
+        "description": "L'agent possède le raisonnement et la structure. ClassroomIO n'accepte que les charges utiles de cours normalisées, enregistre les brouillons et publie sur demande.",
+        "prompt_title": "Invite à rédiger",
+        "prompt_description": "L'utilisateur demande un cours, l'agent le structure, puis `create_course_draft` l'enregistre dans ClassroomIO avant toute étape de publication.",
+        "pdf_title": "PDF à rédiger",
+        "pdf_description": "L'agent lit le PDF en externe, le restructure en sections et leçons, puis envoie le brouillon normalisé dans ClassroomIO.",
+        "review_title": "Revue à publier",
+        "review_description": "L'utilisateur demande des modifications, l'agent met à jour le brouillon et la publication n'a lieu qu'après approbation explicite."
+      },
+      "setup": {
+        "title": "Configuration du client",
+        "description": "Utilisez une clé à l’échelle de l’organisation par intégration. Si une clé est alternée ou révoquée, le client cesse de fonctionner jusqu'à ce que le nouveau secret soit configuré.",
+        "claude_code_description": "Enregistre `@cio/mcp` auprès de Claude Code à l'aide de la clé générée à l'échelle de l'organisation.",
+        "codex_description": "Ajoute le serveur ClassroomIO MCP au Codex avec la même clé de portée organisationnelle.",
+        "cursor_description": "Collez-le dans `~/.cursor/mcp.json` ou dans la configuration MCP de votre espace de travail."
+      },
+      "keys": {
+        "title": "Clés MCP",
+        "description": "Ces clés authentifient l'organisation actuelle lorsqu'un client MCP appelle ClassroomIO via `@cio/mcp`.",
+        "generate": "Générer une clé MCP",
+        "scope_badge": "Brouillon créer/lire/mettre à jour/publier",
+        "secret_once": "Ce secret est montré une fois. Copiez-le dans votre client MCP maintenant."
+      }
+    },
+    "keys": {
+      "active": "Actif",
+      "revoked": "Révoqué",
+      "rotate": "Rotation",
+      "revoke": "Révoquer",
+      "empty_title": "Pas encore de clés MCP",
+      "empty_description": "Créez la première clé MCP à l'échelle de l'organisation pour connecter Claude Code, Codex ou Cursor.",
+      "created_at_label": "Créé :",
+      "last_used_label": "Dernière utilisation :",
+      "never_used": "Jamais",
+      "scopes_label": "Portées :",
+      "revoke_confirm": "Révoquer cette clé d'automatisation ?",
+      "rotate_confirm": "Faire pivoter cette clé d'automatisation ?"
+    },
+    "clients": {
+      "claude_code": "Claude Code",
+      "codex": "Codex",
+      "cursor": "Curseur"
+    },
+    "tabs": {
+      "mcp": "PCM",
+      "zapier": "Zapier",
+      "api": "API"
+    },
+    "permissions": {
+      "disabled_title": "Accès en lecture seule",
+      "disabled_description": "Seuls les administrateurs de l'organisation peuvent créer, alterner ou révoquer des clés d'automatisation. Les enseignants peuvent consulter les instructions de configuration ici."
+    },
+    "overview": {
+      "title": "Accès à l'automatisation",
+      "description": "Créez des clés d'automatisation à l'échelle de l'organisation, connectez les clients pris en charge et conservez tous les accès aux machines liés à cette organisation."
     }
   }
 }

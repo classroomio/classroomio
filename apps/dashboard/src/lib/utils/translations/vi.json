@@ -357,6 +357,11 @@
       "deleted": "Đã xóa xác thực mã thông báo.",
       "activated": "Đã bật xác thực mã thông báo.",
       "deactivated": "Xác thực mã thông báo bị vô hiệu hóa."
+    },
+    "automation": {
+      "created": "Đã tạo khóa tự động hóa. Hãy lưu lại ngay vì bí mật đầy đủ chỉ được hiển thị một lần.",
+      "rotated": "Phím tự động đã được xoay. Hãy lưu lại bí mật mới ngay bây giờ vì nó sẽ không được hiển thị lại.",
+      "revoked": "Khóa tự động hóa đã bị thu hồi."
     }
   },
   "explore": {
@@ -1823,7 +1828,8 @@
     "early_adopter": "Trở thành người áp dụng sớm",
     "unlock": "Mở khóa các tính năng không giới hạn và đầu tư vào tương lai của chúng tôi",
     "upgrade": "Nâng cấp ngay",
-    "tags": "Thẻ"
+    "tags": "Thẻ",
+    "automation": "Tự động hóa"
   },
   "media_manager": {
     "page_title": "Quản lý truyền thông - ClassroomIO",
@@ -2444,6 +2450,90 @@
     },
     "common": {
       "not_available": "không áp dụng"
+    }
+  },
+  "invite": {
+    "organization": {
+      "page_title": "Tham gia cùng {orgName} trên ClassroomIO",
+      "role_label": "Vai trò: {vai trò}",
+      "email_label": "Email được mời: {email}",
+      "join_button": "Tham gia tổ chức",
+      "messages": {
+        "email_mismatch": "Bạn đã đăng nhập bằng một email khác với lời mời này.",
+        "expired": "Liên kết mời này đã hết hạn.",
+        "revoked": "Liên kết mời này đã bị thu hồi.",
+        "accepted": "Lời mời này đã được sử dụng.",
+        "invalid": "Liên kết mời này không hợp lệ.",
+        "joined": "Đã tham gia tổ chức",
+        "join_failed": "Không thể tham gia tổ chức"
+      }
+    }
+  },
+  "automation": {
+    "title": "Tự động hóa",
+    "subtitle": "Kết nối các máy khách MCP ngay bây giờ, với Zapier và API công khai trên cùng một hệ thống khóa trong phạm vi tổ chức.",
+    "coming_soon": "Sắp có",
+    "mcp": {
+      "architecture": {
+        "title": "Kiến trúc",
+        "description": "Ứng dụng khách MCP và API ClassroomIO là các ranh giới tin cậy riêng biệt. Khóa tự động hóa trong phạm vi tổ chức sẽ xác thực ứng dụng khách và API vẫn là nguồn thông tin chính xác để xác thực và duy trì."
+      },
+      "flows": {
+        "title": "Dòng chảy điển hình",
+        "description": "Tác nhân sở hữu lý luận và cấu trúc. ClassroomIO chỉ chấp nhận tải trọng khóa học được chuẩn hóa, lưu bản nháp và xuất bản theo yêu cầu.",
+        "prompt_title": "Nhắc soạn thảo",
+        "prompt_description": "Người dùng yêu cầu một khóa học, nhân viên sẽ cấu trúc khóa học đó, sau đó `create_course_draft` lưu nó vào ClassroomIO trước bất kỳ bước xuất bản nào.",
+        "pdf_title": "PDF thành bản nháp",
+        "pdf_description": "Nhân viên đọc bản PDF bên ngoài, cấu trúc lại thành các phần và bài học, sau đó gửi bản nháp đã chuẩn hóa vào ClassroomIO.",
+        "review_title": "Xem xét để xuất bản",
+        "review_description": "Người dùng yêu cầu thay đổi, người đại diện cập nhật bản nháp và việc xuất bản chỉ diễn ra sau khi được phê duyệt rõ ràng."
+      },
+      "setup": {
+        "title": "Thiết lập máy khách",
+        "description": "Sử dụng một khóa trong phạm vi tổ chức cho mỗi lần tích hợp. Nếu một khóa bị xoay hoặc bị thu hồi, máy khách sẽ ngừng hoạt động cho đến khi bí mật mới được định cấu hình.",
+        "claude_code_description": "Đăng ký `@cio/mcp` với Mã Claude bằng cách sử dụng khóa trong phạm vi tổ chức được tạo.",
+        "codex_description": "Thêm máy chủ ClassroomIO MCP vào Codex bằng cùng một khóa trong phạm vi tổ chức.",
+        "cursor_description": "Dán cái này vào `~/.cursor/mcp.json` hoặc cấu hình MCP không gian làm việc của bạn."
+      },
+      "keys": {
+        "title": "Khóa MCP",
+        "description": "Các khóa này xác thực tổ chức hiện tại khi máy khách MCP gọi ClassroomIO thông qua `@cio/mcp`.",
+        "generate": "Tạo khóa MCP",
+        "scope_badge": "Bản nháp tạo/đọc/cập nhật/xuất bản",
+        "secret_once": "Bí mật này được hiển thị một lần. Sao chép nó vào ứng dụng khách MCP của bạn ngay bây giờ."
+      }
+    },
+    "keys": {
+      "active": "Đang hoạt động",
+      "revoked": "Đã thu hồi",
+      "rotate": "Xoay",
+      "revoke": "Thu hồi",
+      "empty_title": "Chưa có khóa MCP",
+      "empty_description": "Tạo khóa MCP trong phạm vi tổ chức đầu tiên để kết nối Mã Claude, Codex hoặc Con trỏ.",
+      "created_at_label": "Đã tạo:",
+      "last_used_label": "Sử dụng lần cuối:",
+      "never_used": "không bao giờ",
+      "scopes_label": "Phạm vi:",
+      "revoke_confirm": "Thu hồi khóa tự động hóa này?",
+      "rotate_confirm": "Xoay phím tự động hóa này?"
+    },
+    "clients": {
+      "claude_code": "Mã Claude",
+      "codex": "Codex",
+      "cursor": "Con trỏ"
+    },
+    "tabs": {
+      "mcp": "MCP",
+      "zapier": "Zapier",
+      "api": "API"
+    },
+    "permissions": {
+      "disabled_title": "Quyền truy cập chỉ đọc",
+      "disabled_description": "Chỉ quản trị viên tổ chức mới có thể tạo, xoay hoặc thu hồi khóa tự động hóa. Thầy cô có thể xem lại hướng dẫn thiết lập tại đây."
+    },
+    "overview": {
+      "title": "Truy cập tự động hóa",
+      "description": "Tạo khóa tự động hóa trong phạm vi tổ chức, kết nối các máy khách được hỗ trợ và giữ tất cả quyền truy cập của máy được gắn chặt với tổ chức này."
     }
   }
 }

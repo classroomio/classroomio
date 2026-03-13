@@ -19,8 +19,6 @@
       return acc;
     }, 0);
   }
-
-  $inspect('$questionnaire', $questionnaire);
 </script>
 
 <div class="mb-5 {!preview ? 'px-6' : 'px-2'}">
@@ -78,17 +76,15 @@
           {$t('course.navItem.lessons.exercises.all_exercises.description.heading')}
         </p>
 
-        {#key $questionnaire.description}
-          <TextEditor
-            content={$questionnaire.description || ''}
-            onChange={(html) => {
-              $questionnaire.isDescriptionDirty = true;
-              $questionnaire.description = html;
-            }}
-            editorClass="max-h-[100px]"
-            placeholder={$t('course.navItem.lessons.exercises.all_exercises.description.describe')}
-          />
-        {/key}
+        <TextEditor
+          content={$questionnaire.description || ''}
+          onChange={(html) => {
+            $questionnaire.isDescriptionDirty = true;
+            $questionnaire.description = html;
+          }}
+          editorClass="max-h-[100px]"
+          placeholder={$t('course.navItem.lessons.exercises.all_exercises.description.describe')}
+        />
       </div>
     {/if}
   </QuestionContainer>
