@@ -6,6 +6,7 @@
     "dev": "vite dev --port 5174",
     "build": "vite build",
     "preview": "vite preview",
+    "start": "node build",
     "check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
     "format": "prettier --write .",
@@ -13,7 +14,7 @@
   },
   "devDependencies": {
     "@cio/tsconfig": "workspace:*",
-    "@sveltejs/adapter-auto": "^3.0.0",
+    "@sveltejs/adapter-node": "^2.0.0",
     "@sveltejs/adapter-vercel": "^4.0.0",
     "@sveltejs/kit": "^2.5.27",
     "@sveltejs/vite-plugin-svelte": "^4.0.0",

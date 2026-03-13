@@ -124,13 +124,34 @@ The repository also contains shared packages under `packages/` (for example `pac
      - `apps/dashboard/.env`: `PUBLIC_SERVER_URL`, `PRIVATE_SERVER_KEY`, `PUBLIC_IS_SELFHOSTED`
    - Optional for self-hosted Enterprise-only features (SSO, token-auth, no-tracking): set `LICENSE_KEY` in `apps/api/.env`
 
-6. Start local infrastructure for API (Postgres + Redis + db-init):
+6. Start local infrastructure for API (Postgres + Redis) and seed the DB:
 
    ```bash
    docker compose -f docker/docker-compose.yaml up -d postgres redis db-init
    ```
 
-7. Run the local app services in separate terminals:
+   - Connect with `DATABASE_URL=postgresql://postgres:postgres@localhost:5432/classroomio`
+   - Connect with `REDIS_URL=redis://localhost:6379`
+   - The `db-init` container runs migrations/seed once Postgres is healthy.
+
+7. (Optional) Start MinIO locally for object storage (media/documents):
+
+   ```bash
+   docker compose -f docker/docker-compose.yaml --profile minio up -d minio minio-init
+   ```
+
+   - Console: http://localhost:9001 (user/pass default `minioadmin` / `minioadmin`)
+   - S3 endpoint: http://localhost:9000
+   - Buckets created by `minio-init`: `videos`, `documents`, `media`
+   - Add to `apps/api/.env` when using MinIO locally:
+     - `OBJECT_STORAGE_ENDPOINT=http://localhost:9000`
+     - `OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000`
+     - `OBJECT_STORAGE_ACCESS_KEY_ID=minioadmin`
+     - `OBJECT_STORAGE_SECRET_ACCESS_KEY=minioadmin`
+     - `OBJECT_STORAGE_FORCE_PATH_STYLE=true`
+     - `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=http://localhost:9000/media`
+
+8. Run the local app services in separate terminals:
 
    ```bash
    pnpm api:dev
@@ -140,17 +161,17 @@ The repository also contains shared packages under `packages/` (for example `pac
    pnpm dashboard:dev
    ```
 
-8. Default local URLs:
+9. Default local URLs:
 
    - `api`: [http://localhost:3002](http://localhost:3002)
    - `dashboard`: [http://localhost:5173](http://localhost:5173)
 
-9. Optional: run other apps:
+10. Optional: run other apps:
 
    - **website**: `pnpm website:dev`
    - **docs**: `pnpm dev --filter=@cio/docs`
 
-10. Login into `dashboard`:
+11. Login into `dashboard`:
 
     - Visit [http://localhost:5173/login](http://localhost:5173/login)
     - Enter email: `admin@test.com`

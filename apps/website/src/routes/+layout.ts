@@ -27,9 +27,15 @@ async function getStars() {
 
   console.log('Fetching stars from GitHub');
 
-  const response = await fetch('https://api.github.com/repos/classroomio/classroomio');
-  const data = await response.json();
-  const stars = data?.stargazers_count || 0;
+  let stars = 0;
+
+  try {
+    const response = await fetch('https://api.github.com/repos/classroomio/classroomio');
+    const data = await response.json();
+    stars = data?.stargazers_count || 0;
+  } catch (error) {
+    console.log('error fetching stars', error);
+  }
 
   starsCache.set(CACHE_KEY, { stars, lastUpdated: now });
 
