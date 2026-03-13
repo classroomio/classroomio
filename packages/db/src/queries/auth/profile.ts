@@ -1,7 +1,7 @@
 import * as schema from '@db/schema';
 
 import type { TProfile } from '@db/types';
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 import { eq } from 'drizzle-orm';
 
 export const getProfileById = async (id: string) => {
@@ -20,4 +20,14 @@ export const updateProfile = async (id: string, data: Partial<Omit<TProfile, 'id
   const [updatedProfile] = await db.update(schema.profile).set(data).where(eq(schema.profile.id, id)).returning();
 
   return updatedProfile;
+};
+
+export const markUserAndProfileEmailVerified = async (userId: string, dbClient: DbOrTxClient = db) => {
+  const verifiedAt = new Date().toISOString();
+
+  await dbClient.update(schema.user).set({ emailVerified: true }).where(eq(schema.user.id, userId));
+  await dbClient
+    .update(schema.profile)
+    .set({ isEmailVerified: true, verifiedAt })
+    .where(eq(schema.profile.id, userId));
 };
