@@ -32,7 +32,7 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       - name: Build publishable MCP package
-        run: pnpm --filter @classroomio/mcp build
+        run: pnpm mcp:build
 
       - name: Publish package
         if: github.event_name == 'workflow_dispatch'
