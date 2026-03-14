@@ -14,7 +14,7 @@
     "classroomio-mcp": "./dist/index.js"
   },
   "scripts": {
-    "build": "pnpm -C ../utils build && tsc --noEmit && rm -rf dist tsconfig.tsbuildinfo && node ./scripts/build.mjs",
+    "build": "tsc --noEmit && rm -rf dist tsconfig.tsbuildinfo && node ./scripts/build.mjs",
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js"
   },

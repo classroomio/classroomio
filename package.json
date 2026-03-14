@@ -16,7 +16,8 @@
     "dashboard:dev": "pnpm dev --filter=@cio/dashboard --filter=@cio/ui --filter=@cio/question-types --filter=@cio/db --filter=@cio/utils",
     "api:dev": "pnpm dev --filter=@cio/api --filter=@cio/email --filter=@cio/db --filter=@cio/utils",
     "website:dev": "pnpm dev --filter=@cio/website",
-    "storybook:dev": "pnpm dev --filter=@cio/storybook --filter=@cio/ui --filter=@cio/question-types"
+    "storybook:dev": "pnpm dev --filter=@cio/storybook --filter=@cio/ui --filter=@cio/question-types",
+    "mcp:build": "pnpm build --filter=@classroomio/mcp"
   },
   "license": "MIT",
   "dependencies": {
