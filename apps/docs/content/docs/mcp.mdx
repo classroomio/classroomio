@@ -1,0 +1,306 @@
+---
+title: MCP
+description: Connect Claude Code, Codex, Cursor, and other MCP clients to ClassroomIO for draft-based course authoring.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+`@classroomio/mcp` is a thin stdio MCP server for ClassroomIO course authoring.
+
+It does not parse PDFs or generate course structures itself. The agent does that work. The MCP
+server exposes tools, validates tool input, and forwards authenticated requests to the
+ClassroomIO API.
+
+## Architecture
+
+```text
+Teacher / Admin
+  |
+  v
+Claude Code / Codex / Cursor / other MCP client
+  |
+  | 1. Reads prompt, PDF, or existing course goal
+  | 2. Produces or edits normalized course JSON
+  v
+@classroomio/mcp (stdio)
+  |
+  | 3. Sends authenticated tool calls
+  |    Authorization: Bearer <cio_mcp_...>
+  v
+ClassroomIO API
+  |
+  | 4. Validates payloads
+  | 5. Resolves the organization from the key
+  | 6. Creates drafts or applies changes to a course
+  v
+ClassroomIO DB
+```
+
+## Core Principles
+
+1. The agent owns reasoning.
+2. The MCP package owns transport and input validation.
+3. ClassroomIO API remains the trust boundary for auth, validation, and persistence.
+4. Draft creation and publish are separate operations.
+5. Updating an existing course is done through a seeded draft, not blind writes to the live
+   course.
+
+## Authentication
+
+Generate an org-scoped MCP key from `Automation -> MCP` in the ClassroomIO dashboard.
+
+The MCP process sends that key as a bearer token on every request.
+
+ClassroomIO API:
+
+1. hashes and verifies the key
+2. resolves the owning organization
+3. checks the key scopes
+4. executes the requested action
+
+The MCP package never decides permissions.
+
+## Required Environment Variables
+
+- `CLASSROOMIO_API_URL`
+- `CLASSROOMIO_API_KEY`
+- `CLASSROOMIO_USER_AGENT` optional
+
+## Run the MCP Server
+
+Published package:
+
+```bash
+CLASSROOMIO_API_URL=https://api.classroomio.com \
+CLASSROOMIO_API_KEY=<cio_mcp_key> \
+npx -y @classroomio/mcp
+```
+
+From the monorepo:
+
+```bash
+pnpm build --filter=@classroomio/mcp
+CLASSROOMIO_API_URL=http://localhost:3081 \
+CLASSROOMIO_API_KEY=<cio_mcp_key> \
+node packages/mcp/dist/index.js
+```
+
+## Client Setup
+
+### Claude Code
+
+```bash
+claude mcp add-json classroomio '{
+  "command": "npx",
+  "args": ["-y", "@classroomio/mcp"],
+  "env": {
+    "CLASSROOMIO_API_URL": "https://api.classroomio.com",
+    "CLASSROOMIO_API_KEY": "<cio_mcp_key>"
+  }
+}'
+```
+
+### Codex
+
+```bash
+codex mcp add classroomio \
+  --env CLASSROOMIO_API_URL=https://api.classroomio.com \
+  --env CLASSROOMIO_API_KEY=<cio_mcp_key> \
+  -- npx -y @classroomio/mcp
+```
+
+### Cursor
+
+```json
+{
+  "mcpServers": {
+    "classroomio": {
+      "command": "npx",
+      "args": ["-y", "@classroomio/mcp"],
+      "env": {
+        "CLASSROOMIO_API_URL": "https://api.classroomio.com",
+        "CLASSROOMIO_API_KEY": "<cio_mcp_key>"
+      }
+    }
+  }
+}
+```
+
+## Tool Surface
+
+Current tools:
+
+- `list_org_courses`
+- `get_course_structure`
+- `update_course_landing_page`
+- `create_course_draft`
+- `create_course_draft_from_course`
+- `get_course_draft`
+- `update_course_draft`
+- `publish_course_draft`
+- `publish_course_draft_to_existing_course`
+- `tag_course_draft`
+- `tag_courses`
+- `list_course_exercises`
+- `get_course_exercise`
+- `create_course_exercise`
+- `create_course_exercise_from_template`
+- `update_course_exercise`
+
+## Draft Model
+
+A draft is a saved, structured course proposal. It is not the live course.
+
+Draft payload shape:
+
+```text
+draft
+  course
+  tags[]
+  sections[]
+  lessons[]
+  lessonLanguages[]
+  warnings[]
+  sourceReferences[] optional
+  exercises[] optional
+```
+
+Drafts support:
+
+- review before publish
+- iterative edits from the agent
+- safer updates to existing courses
+- auditability of AI-generated structure
+
+## Create a New Course
+
+Typical flow:
+
+1. Agent plans the course.
+2. Agent calls `create_course_draft`.
+3. User asks for revisions.
+4. Agent calls `update_course_draft`.
+5. User approves.
+6. Agent calls `publish_course_draft`.
+
+Publish returns:
+
+- `courseId`
+- `courseUrl`
+- `bannerImageUrl` when a banner was explicitly provided or generated
+- `tagNames`
+
+`publish_course_draft` can also:
+
+- use an explicit `bannerImageUrl`
+- generate a random Unsplash-based banner from the course title or a custom query
+
+## Update an Existing Course
+
+When the course already exists, use the live course as the source of truth.
+
+Recommended sequence:
+
+1. `list_org_courses` if the agent needs to resolve the course ID by name
+2. `get_course_structure`
+3. `create_course_draft_from_course`
+4. `update_course_draft`
+5. `publish_course_draft_to_existing_course`
+
+This avoids applying broad, blind changes directly to the live course.
+
+## Update a Course Landing Page
+
+Use `update_course_landing_page` when the user wants AI help with sales-page style content on an
+already-existing course.
+
+This tool can update:
+
+- title
+- short description
+- overview
+- requirements
+- goals
+- pricing fields
+- instructor section
+- reviews
+- the landing-page image
+
+For images, the tool supports either:
+
+- `imageUrl` for an explicit cover image
+- `generateImage` and `imageQuery` for a random Unsplash-derived image
+
+## After Publish
+
+Once a draft has been published, the live course becomes the safer source of truth.
+
+Recommended agent rule:
+
+- if the draft is still `DRAFT`, continue editing that draft
+- if the draft is `PUBLISHED`, do not keep reusing it for major follow-up edits
+- instead, read the live course and create a fresh draft from that course
+
+Why:
+
+- teachers may edit the live course in the UI after publish
+- another agent session may have changed the course
+- reusing an old published draft can overwrite newer live changes
+
+## Exercises on Live Courses
+
+If the user only wants to add or revise exercises on a published course, prefer the direct
+exercise tools instead of creating a whole new draft:
+
+- `list_course_exercises`
+- `get_course_exercise`
+- `create_course_exercise`
+- `create_course_exercise_from_template`
+- `update_course_exercise`
+
+Use a draft only when the agent is restructuring broader course content.
+
+Supported `questionTypeId` values for exercise payloads:
+
+- `1` `RADIO` - Single answer
+- `2` `CHECKBOX` - Multiple answers
+- `3` `TEXTAREA` - Paragraph
+- `4` `TRUE_FALSE` - True/False
+- `5` `SHORT_ANSWER` - Short answer
+- `6` `NUMERIC` - Numeric answer
+- `7` `FILL_BLANK` - Fill in the blank
+- `8` `FILE_UPLOAD` - File upload
+- `9` `MATCHING` - Matching
+- `10` `ORDERING` - Ordering
+- `11` `HOTSPOT` - Hotspot
+- `12` `LINK` - Links
+
+## Tagging
+
+The MCP supports tagging at two levels:
+
+- `tag_course_draft`
+  - set or revise tags before publish
+- `tag_courses`
+  - tag one or more live courses
+
+The live-course tagging tool supports merge-or-replace behavior. Use merge when the user wants to
+add tags without removing existing ones.
+
+## PDF-Based Authoring
+
+If a user wants to turn a PDF into a course:
+
+1. the agent reads and extracts the PDF itself
+2. the agent converts the content into normalized course JSON
+3. the agent calls `create_course_draft`
+4. the user reviews the draft
+5. the agent publishes it
+
+The PDF itself is not uploaded to the MCP server.
+
+<Callout title="Operational Rule">
+  Keep published drafts for history and auditability. Do not treat omission from a draft as an
+  instruction to delete live sections or lessons. Destructive changes should only happen through
+  explicit user intent.
+</Callout>
