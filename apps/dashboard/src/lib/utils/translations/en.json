@@ -2088,6 +2088,19 @@
       "rotate_confirm": "Rotate this automation key?"
     },
     "mcp": {
+      "usage": {
+        "title": "Usage and limits",
+        "description": "MCP is available on every plan, but usage is controlled with monthly automation credits and key limits.",
+        "credits_title": "Credits remaining",
+        "credits_description": "Mutating MCP actions consume credits. Read actions are free.",
+        "keys_title": "Active keys",
+        "keys_description": "Use one MCP key per integration so access can be rotated or revoked cleanly.",
+        "rate_limits_title": "Rate limits",
+        "rate_limits_description": "Read / write / publish requests allowed per minute.",
+        "used_label": "Used:",
+        "per_key_label": "Per key:",
+        "per_org_label": "Per org:"
+      },
       "keys": {
         "title": "MCP keys",
         "description": "These keys authenticate the current organization when an MCP client calls ClassroomIO through `@classroomio/mcp`.",
