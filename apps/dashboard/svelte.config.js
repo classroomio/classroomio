@@ -1,12 +1,14 @@
 import 'dotenv/config';
 
-// import adapterNode from '@sveltejs/adapter-node';
 import adapterAuto from '@sveltejs/adapter-auto';
+import adapterCloudflare from '@sveltejs/adapter-cloudflare';
+import adapterNode from '@sveltejs/adapter-node';
 import path from 'path';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 const useNodeAdapter = process.env.PUBLIC_IS_SELFHOSTED === 'true';
 const API_ORIGIN = process.env.PUBLIC_SERVER_URL;
+const IS_CLOUDFLARE = process.env.CI_ENVIRONMENT === 'cloudflare';
 
 /**
  * Parse comma-separated domain list from env.
@@ -95,7 +97,7 @@ const config = {
   // for more information about preprocessors
   preprocess: [vitePreprocess({})],
   kit: {
-    adapter: adapterAuto(),
+    adapter: IS_CLOUDFLARE ? adapterCloudflare() : useNodeAdapter ? adapterNode() : adapterAuto(),
     alias: {
       $lib: path.resolve('./src/lib'),
       $features: path.resolve('./src/lib/features'),
