@@ -1,5 +1,6 @@
 import * as schema from '@db/schema';
 
+import type { BetterAuthPlugin } from 'better-auth';
 import { createAuthEndpoint } from 'better-auth/api';
 import { setSessionCookie as _setSessionCookie } from 'better-auth/cookies';
 const setSessionCookie = _setSessionCookie as (
@@ -30,7 +31,7 @@ function getLoginLinkSecret(): Uint8Array {
   return new TextEncoder().encode(secret);
 }
 
-export function loginLink() {
+export function loginLink(): BetterAuthPlugin {
   return {
     id: 'login-link',
     endpoints: {

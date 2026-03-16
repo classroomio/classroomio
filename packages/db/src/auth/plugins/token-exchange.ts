@@ -1,5 +1,6 @@
 import * as schema from '@db/schema';
 
+import type { BetterAuthPlugin } from 'better-auth';
 import { createAuthEndpoint } from 'better-auth/api';
 // Session cookie helper: runtime accepts (ctx, { session, user }), typings show 1 arg
 import { setSessionCookie as _setSessionCookie } from 'better-auth/cookies';
@@ -21,7 +22,7 @@ function generateToken(): string {
   return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-export function tokenExchange() {
+export function tokenExchange(): BetterAuthPlugin {
   return {
     id: 'token-exchange',
     endpoints: {
