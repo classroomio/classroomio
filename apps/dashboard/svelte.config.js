@@ -1,7 +1,6 @@
 import 'dotenv/config';
 
 import adapterAuto from '@sveltejs/adapter-auto';
-import adapterCloudflare from '@sveltejs/adapter-cloudflare';
 import adapterNode from '@sveltejs/adapter-node';
 import path from 'path';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
@@ -9,6 +8,8 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 const useNodeAdapter = process.env.PUBLIC_IS_SELFHOSTED === 'true';
 const API_ORIGIN = process.env.PUBLIC_SERVER_URL;
 const IS_CLOUDFLARE = process.env.CI_ENVIRONMENT === 'cloudflare';
+
+const adapterCloudflare = IS_CLOUDFLARE ? (await import('@sveltejs/adapter-cloudflare')).default : null;
 
 /**
  * Parse comma-separated domain list from env.
