@@ -17,7 +17,7 @@ RUN corepack enable && corepack prepare pnpm@10.19.0 --activate
 
 COPY . .
 
-RUN pnpm install --frozen-lockfile --ignore-scripts --shamefully-hoist --filter @cio/dashboard...
+RUN pnpm install --frozen-lockfile --ignore-scripts --filter @cio/dashboard...
 RUN find . -name 'tsconfig.tsbuildinfo' -delete
 RUN echo "Dashboard build PUBLIC_IS_SELFHOSTED=${PUBLIC_IS_SELFHOSTED}" && \
     echo "Dashboard build PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL}" && \
