@@ -25,9 +25,10 @@ import { sql } from 'drizzle-orm';
 export const courseType = pgEnum('COURSE_TYPE', ['SELF_PACED', 'LIVE_CLASS']);
 export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
-export const courseImportSourceType = pgEnum('COURSE_IMPORT_SOURCE_TYPE', ['prompt', 'pdf']);
+export const courseImportSourceType = pgEnum('COURSE_IMPORT_SOURCE_TYPE', ['prompt', 'pdf', 'course']);
 export const courseImportDraftStatus = pgEnum('COURSE_IMPORT_DRAFT_STATUS', ['DRAFT', 'PUBLISHED', 'ARCHIVED']);
 export const organizationApiKeyType = pgEnum('ORGANIZATION_API_KEY_TYPE', ['mcp', 'api', 'zapier']);
+export const automationUsageCategory = pgEnum('AUTOMATION_USAGE_CATEGORY', ['read', 'write', 'publish']);
 export const courseInviteEventType = pgEnum('COURSE_INVITE_EVENT_TYPE', [
   'CREATED',
   'REVOKED',
@@ -2032,6 +2033,35 @@ export const organizationApiKey = pgTable(
     index('idx_organization_api_key_org_id').on(table.organizationId),
     index('idx_organization_api_key_type').on(table.type),
     uniqueIndex('organization_api_key_secret_hash_unique').on(table.secretHash)
+  ]
+);
+
+export const organizationAutomationUsage = pgTable(
+  'organization_automation_usage',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id),
+    organizationApiKeyId: uuid('organization_api_key_id').references(() => organizationApiKey.id, {
+      onDelete: 'set null'
+    }),
+    type: organizationApiKeyType('type').notNull(),
+    action: varchar('action', { length: 120 }).notNull(),
+    category: automationUsageCategory('category').notNull(),
+    creditsConsumed: integer('credits_consumed').default(0).notNull(),
+    metadata: jsonb('metadata').default({}).$type<Record<string, unknown>>().notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    index('idx_org_automation_usage_org_created_at').on(table.organizationId, table.createdAt),
+    index('idx_org_automation_usage_key_created_at').on(table.organizationApiKeyId, table.createdAt),
+    index('idx_org_automation_usage_type_created_at').on(table.type, table.createdAt)
   ]
 );
 

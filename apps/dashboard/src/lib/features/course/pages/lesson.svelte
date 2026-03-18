@@ -18,6 +18,7 @@
   import { globalStore } from '$lib/utils/store/app';
   import { currentOrg } from '$lib/utils/store/org';
   import { snackbar } from '$features/ui/snackbar/store';
+  import { RefreshPageData } from '$features/ui';
   import LessonVersionHistory from '$features/course/components/lesson/lesson-version-history.svelte';
   import { courseApi, lessonApi } from '$features/course/api';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
@@ -260,6 +261,7 @@
     if (!lessonApi.lesson || !lessonId) return;
     if (!lessonApi.isDirty) return;
     if ($isLoading) return;
+    console.log('autoSave');
 
     autoSave();
   });
@@ -268,6 +270,7 @@
   let didHandleExitEdit = false;
   $effect(() => {
     if (!lessonId) return;
+    console.log('didHandleExitEdit');
 
     const currentParam = $page.url.searchParams.get('mode');
     const prev = prevModeParam;
@@ -345,8 +348,10 @@
           </IconButton>
         </div>
 
-        <LanguageSelector />
+        <RefreshPageData onRefresh={() => lessonApi.get(courseId, lessonId)} />
       </RoleBasedSecurity>
+
+      <LanguageSelector />
     </div>
   </Page.Action>
 </Page.Header>

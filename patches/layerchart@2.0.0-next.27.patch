@@ -1,0 +1,23 @@
+diff --git a/dist/components/MonthPath.svelte b/dist/components/MonthPath.svelte
+index 3ca6c1ec5bf10f2ebacceb0743d7844860bac057..5e3d4246a5d66b4643839c749eee00c8319c788c 100644
+--- a/dist/components/MonthPath.svelte
++++ b/dist/components/MonthPath.svelte
+@@ -30,7 +30,7 @@
+ </script>
+ 
+ <script lang="ts">
+-  import { timeWeek, timeMonth, timeYear } from 'd3-time';
++  import { timeWeek, timeYear } from 'd3-time';
+   import { cls } from '@layerstack/tailwind';
+   import { endOfInterval } from '@layerstack/utils';
+   import { layerClass } from '../utils/attributes.js';
+diff --git a/dist/utils/ticks.js b/dist/utils/ticks.js
+index 9f82ad72a077c08b55f32c8fd8fa6c5d5f212d3f..5b56ed837beef7054324711853eee46c5819f9f9 100644
+--- a/dist/utils/ticks.js
++++ b/dist/utils/ticks.js
+@@ -1,4 +1,4 @@
+-import { timeYear, timeMonth, timeDay, timeTicks } from 'd3-time';
++import { timeYear, timeDay, timeTicks } from 'd3-time';
+ import { format, Duration, isLiteralObject, DateToken, } from '@layerstack/utils';
+ import { isScaleBand, isScaleTime } from './scales.svelte.js';
+ export function getDurationFormat(duration, options = {

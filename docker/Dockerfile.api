@@ -13,9 +13,12 @@ RUN pnpm install --frozen-lockfile --ignore-scripts --shamefully-hoist --filter 
 RUN find . -name 'tsconfig.tsbuildinfo' -delete
 RUN pnpm -r --filter @cio/api... build
 
+COPY docker/entrypoint-api.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 EXPOSE 3081
 
 ENV NODE_ENV=production \
     PORT=3081
 
-CMD ["pnpm", "--filter", "@cio/api", "start"]
+ENTRYPOINT ["/app/entrypoint.sh"]

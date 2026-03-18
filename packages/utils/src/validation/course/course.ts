@@ -114,6 +114,69 @@ export const ZCourseContentUpdate = z.object({
 });
 export type TCourseContentUpdate = z.infer<typeof ZCourseContentUpdate>;
 
+export const ZCourseContentReorderSection = z.object({
+  id: z.string().min(1),
+  order: z.number().int().min(0)
+});
+export type TCourseContentReorderSection = z.infer<typeof ZCourseContentReorderSection>;
+
+export const ZCourseContentReorderItem = ZCourseContentUpdateItem.omit({
+  isUnlocked: true
+});
+export type TCourseContentReorderItem = z.infer<typeof ZCourseContentReorderItem>;
+
+export const ZCourseContentReorderBase = z.object({
+  sections: z.array(ZCourseContentReorderSection).min(1).optional(),
+  items: z.array(ZCourseContentReorderItem).min(1).optional()
+});
+export type TCourseContentReorderBase = z.infer<typeof ZCourseContentReorderBase>;
+
+export const ZCourseContentReorder = ZCourseContentReorderBase.superRefine((data, ctx) => {
+  if (!data.sections?.length && !data.items?.length) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['sections'],
+      message: 'Provide sections or items to reorder'
+    });
+  }
+
+  const sectionIds = new Set<string>();
+  data.sections?.forEach((section, index) => {
+    if (sectionIds.has(section.id)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['sections', index, 'id'],
+        message: 'Section IDs must be unique'
+      });
+    }
+
+    sectionIds.add(section.id);
+  });
+
+  const itemKeys = new Set<string>();
+  data.items?.forEach((item, index) => {
+    if (item.order === undefined && item.sectionId === undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['items', index],
+        message: 'Each item must provide order or sectionId'
+      });
+    }
+
+    const itemKey = `${item.type}:${item.id}`;
+    if (itemKeys.has(itemKey)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['items', index, 'id'],
+        message: 'Item IDs must be unique per content type'
+      });
+    }
+
+    itemKeys.add(itemKey);
+  });
+});
+export type TCourseContentReorder = z.infer<typeof ZCourseContentReorder>;
+
 export const ZCourseContentDeleteItem = z.object({
   id: z.string().min(1),
   type: z.enum(['LESSON', 'EXERCISE'])
@@ -139,6 +202,40 @@ export const ZCourseCreate = z.object({
 });
 export type TCourseCreate = z.infer<typeof ZCourseCreate>;
 
+export const ZCourseReward = z.object({
+  show: z.boolean(),
+  description: z.string()
+});
+
+export const ZCourseInstructor = z.object({
+  name: z.string(),
+  role: z.string(),
+  coursesNo: z.number(),
+  description: z.string(),
+  imgUrl: z.string()
+});
+
+export const ZCourseCertificate = z.object({
+  templateUrl: z.string()
+});
+
+export const ZCourseReview = z.object({
+  id: z.number(),
+  hide: z.boolean(),
+  name: z.string(),
+  avatar_url: z.string(),
+  rating: z.number(),
+  created_at: z.number(),
+  description: z.string()
+});
+
+export const ZCourseLessonTabsOrder = z.array(
+  z.object({
+    id: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
+    name: z.string()
+  })
+);
+
 // Course metadata schema matching the database structure
 export const ZCourseMetadata = z.object({
   requirements: z.string().optional(),
@@ -148,47 +245,11 @@ export const ZCourseMetadata = z.object({
   showDiscount: z.boolean().optional(),
   discount: z.number().optional(),
   paymentLink: z.string().optional(),
-  reward: z
-    .object({
-      show: z.boolean(),
-      description: z.string()
-    })
-    .optional(),
-  instructor: z
-    .object({
-      name: z.string(),
-      role: z.string(),
-      coursesNo: z.number(),
-      description: z.string(),
-      imgUrl: z.string()
-    })
-    .optional(),
-  certificate: z
-    .object({
-      templateUrl: z.string()
-    })
-    .optional(),
-  reviews: z
-    .array(
-      z.object({
-        id: z.number(),
-        hide: z.boolean(),
-        name: z.string(),
-        avatar_url: z.string(),
-        rating: z.number(),
-        created_at: z.number(),
-        description: z.string()
-      })
-    )
-    .optional(),
-  lessonTabsOrder: z
-    .array(
-      z.object({
-        id: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
-        name: z.string()
-      })
-    )
-    .optional(),
+  reward: ZCourseReward.optional(),
+  instructor: ZCourseInstructor.optional(),
+  certificate: ZCourseCertificate.optional(),
+  reviews: z.array(ZCourseReview).optional(),
+  lessonTabsOrder: ZCourseLessonTabsOrder.optional(),
   grading: z.boolean().optional(),
   lessonDownload: z.boolean().optional(),
   allowNewStudent: z.boolean(),
@@ -196,6 +257,27 @@ export const ZCourseMetadata = z.object({
   isContentGroupingEnabled: z.boolean().optional()
 });
 export type TCourseMetadata = z.infer<typeof ZCourseMetadata>;
+
+export const ZCourseLandingPageMetadataUpdate = z.object({
+  requirements: z.string().optional(),
+  description: z.string().optional(),
+  goals: z.string().optional(),
+  videoUrl: z.string().optional(),
+  showDiscount: z.boolean().optional(),
+  discount: z.number().optional(),
+  paymentLink: z.string().optional(),
+  reward: ZCourseReward.partial().optional(),
+  instructor: ZCourseInstructor.partial().optional(),
+  certificate: ZCourseCertificate.partial().optional(),
+  reviews: z.array(ZCourseReview).optional(),
+  lessonTabsOrder: ZCourseLessonTabsOrder.optional(),
+  grading: z.boolean().optional(),
+  lessonDownload: z.boolean().optional(),
+  allowNewStudent: z.boolean().optional(),
+  sectionDisplay: z.record(z.string(), z.boolean()).optional(),
+  isContentGroupingEnabled: z.boolean().optional()
+});
+export type TCourseLandingPageMetadataUpdate = z.infer<typeof ZCourseLandingPageMetadataUpdate>;
 
 export const ZCourseUpdate = z.object({
   title: z.string().min(1).optional(),
@@ -206,6 +288,8 @@ export const ZCourseUpdate = z.object({
   isPublished: z.boolean().optional(),
   overview: z.string().optional(),
   metadata: ZCourseMetadata.optional(),
+  cost: z.number().int().min(0).optional(),
+  currency: z.enum(['NGN', 'USD']).optional(),
   isCertificateDownloadable: z.boolean().optional(),
   certificateTheme: z.string().optional(),
   tagIds: z.array(z.uuid()).max(100).optional()
@@ -216,6 +300,19 @@ export const ZCourseUpdateParam = z.object({
   courseId: z.string().min(1)
 });
 export type TCourseUpdateParam = z.infer<typeof ZCourseUpdateParam>;
+
+export const ZCourseLandingPageUpdate = z.object({
+  title: z.string().min(1).optional(),
+  description: z.string().min(1).optional(),
+  overview: z.string().optional(),
+  cost: z.number().int().min(0).optional(),
+  currency: z.enum(['NGN', 'USD']).optional(),
+  imageUrl: z.url().optional(),
+  generateImage: z.boolean().optional(),
+  imageQuery: z.string().min(1).max(120).optional(),
+  metadata: ZCourseLandingPageMetadataUpdate.optional()
+});
+export type TCourseLandingPageUpdate = z.infer<typeof ZCourseLandingPageUpdate>;
 
 export const ZCourseDeleteParam = z.object({
   courseId: z.string().min(1)

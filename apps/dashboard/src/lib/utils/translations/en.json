@@ -93,6 +93,9 @@
       "placeholder": "Search"
     }
   },
+  "common": {
+    "refresh": "Refresh"
+  },
   "login": {
     "welcome": "Welcome back",
     "email": "Your email",
@@ -240,7 +243,7 @@
       },
       "login": {
         "or_continue_with": "Or continue with email and password",
-        "sso_enabled": "{provider} is enabled for your domain",
+        "sso_enabled": "{provider} is enabled for this organization",
         "sso_redirect_error": "SSO sign-in is misconfigured. Please set PUBLIC_SERVER_URL to your API server.",
         "sso_required": "Please sign in with SSO. Password login is disabled.",
         "sign_in_with_sso": "Sign in with {provider}",
@@ -566,6 +569,7 @@
     "actions": {
       "create_tag": "Create Tag",
       "create_group": "Create Tag Group",
+      "actions_menu": "Tag actions",
       "edit_group": "Edit Group",
       "edit_tag": "Edit Tag",
       "save": "Save",
@@ -865,10 +869,19 @@
       "clear_all": "Clear all",
       "popover_title": "Filters",
       "sort": "Sort",
+      "order": "Order",
+      "ascending": "Asc",
+      "descending": "Desc",
       "tags": "Tags",
       "empty_tags": "No tags available"
     },
     "course_filter": {
+      "date_created_newest": "Date Created: Newest first",
+      "date_created_oldest": "Date Created: Oldest first",
+      "published_first": "Published: Published first",
+      "unpublished_first": "Published: Unpublished first",
+      "most_lessons": "Lessons: Most first",
+      "fewest_lessons": "Lessons: Fewest first",
       "date_created": "Date Created",
       "published": "Published",
       "lessons": "Lessons"
@@ -946,6 +959,10 @@
     "search": {
       "placeholder": "Search lessons or exercises",
       "empty": "No results found"
+    },
+    "header": {
+      "preview": "Preview course",
+      "preview_missing_slug": "Generate and save a course slug before previewing."
     },
     "navItem": {
       "news_feed": {
@@ -2083,6 +2100,10 @@
       "created_at_label": "Created:",
       "last_used_label": "Last used:",
       "never_used": "Never",
+      "table_key": "Key",
+      "table_status": "Status",
+      "table_created": "Created",
+      "table_last_used": "Last used",
       "scopes_label": "Scopes:",
       "revoke_confirm": "Revoke this automation key?",
       "rotate_confirm": "Rotate this automation key?"
@@ -2097,9 +2118,7 @@
         "keys_description": "Use one MCP key per integration so access can be rotated or revoked cleanly.",
         "rate_limits_title": "Rate limits",
         "rate_limits_description": "Read / write / publish requests allowed per minute.",
-        "used_label": "Used:",
-        "per_key_label": "Per key:",
-        "per_org_label": "Per org:"
+        "used_label": "Used:"
       },
       "keys": {
         "title": "MCP keys",

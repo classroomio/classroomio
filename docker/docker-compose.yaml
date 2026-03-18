@@ -72,23 +72,6 @@ services:
     profiles:
       - minio
 
-  db-init:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile.api
-    container_name: cio-db-init
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
-      PRIVATE_DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
-    command:
-      - sh
-      - -c
-      - pnpm --filter @cio/db db:setup
-    restart: "no"
-
   api:
     build:
       context: ..
@@ -101,8 +84,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      db-init:
-        condition: service_completed_successfully
     environment:
       NODE_ENV: production
       PORT: 3081
@@ -137,6 +118,7 @@ services:
       LICENSE_KEY: ${LICENSE_KEY:-}
       UNSPLASH_API_KEY: ${UNSPLASH_API_KEY:-}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-local-dev-only-secret-change-this}
+      SKIP_DB_SETUP: ${SKIP_DB_SETUP:-}
     restart: unless-stopped
 
   dashboard:
@@ -145,13 +127,6 @@ services:
       dockerfile: docker/Dockerfile.dashboard
       args:
         PUBLIC_IS_SELFHOSTED: ${PUBLIC_IS_SELFHOSTED:-true}
-        PUBLIC_SERVER_URL: ${PUBLIC_SERVER_URL:-http://localhost:3081}
-        ALLOWED_EXTERNAL_DOMAINS: ${ALLOWED_EXTERNAL_DOMAINS:-}
-        CSP_SCRIPT_SRC_DOMAINS: ${CSP_SCRIPT_SRC_DOMAINS:-}
-        CSP_STYLE_SRC_DOMAINS: ${CSP_STYLE_SRC_DOMAINS:-}
-        CSP_CONNECT_SRC_DOMAINS: ${CSP_CONNECT_SRC_DOMAINS:-}
-        CSP_FRAME_SRC_DOMAINS: ${CSP_FRAME_SRC_DOMAINS:-}
-        CSP_FONT_SRC_DOMAINS: ${CSP_FONT_SRC_DOMAINS:-}
     container_name: cio-dashboard
     ports:
       - "3082:3082"
@@ -169,6 +144,13 @@ services:
       PRIVATE_APP_HOST: ${PRIVATE_APP_HOST:-localhost}
       PRIVATE_APP_SUBDOMAINS: ${PRIVATE_APP_SUBDOMAINS:-app}
       AUTH_BEARER_TOKEN: ${AUTH_BEARER_TOKEN:-}
+      ALLOWED_EXTERNAL_DOMAINS: ${ALLOWED_EXTERNAL_DOMAINS:-}
+      CSP_SCRIPT_SRC_DOMAINS: ${CSP_SCRIPT_SRC_DOMAINS:-}
+      CSP_STYLE_SRC_DOMAINS: ${CSP_STYLE_SRC_DOMAINS:-}
+      CSP_CONNECT_SRC_DOMAINS: ${CSP_CONNECT_SRC_DOMAINS:-}
+      CSP_FRAME_SRC_DOMAINS: ${CSP_FRAME_SRC_DOMAINS:-}
+      CSP_FONT_SRC_DOMAINS: ${CSP_FONT_SRC_DOMAINS:-}
+      CSP_MEDIA_SRC_DOMAINS: ${CSP_MEDIA_SRC_DOMAINS:-}
     restart: unless-stopped
 
 volumes:

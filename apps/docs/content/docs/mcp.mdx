@@ -132,6 +132,7 @@ Current tools:
 
 - `list_org_courses`
 - `get_course_structure`
+- `reorder_course_content`
 - `update_course_landing_page`
 - `create_course_draft`
 - `create_course_draft_from_course`
@@ -172,7 +173,42 @@ Drafts support:
 - safer updates to existing courses
 - auditability of AI-generated structure
 
-## Create a New Course
+Lesson authoring rule:
+
+- `lessonLanguages[].content` should contain only the lesson body HTML
+- do not include the lesson title
+- do not use `h1` or `h2` in lesson content
+- start headings at `h3`
+- ClassroomIO already renders the lesson title in the course UI
+
+## After Publish
+
+Once a draft has been published, the live course becomes the safer source of truth.
+
+Recommended agent rule:
+
+- if the draft is still `DRAFT`, continue editing that draft
+- if the draft is `PUBLISHED`, do not keep reusing it for major follow-up edits
+- instead, read the live course and create a fresh draft from that course
+
+Recommended post-publish sequence:
+
+1. `get_course_structure`
+2. `create_course_draft_from_course`
+3. `update_course_draft`
+4. `publish_course_draft_to_existing_course`
+
+Why:
+
+- teachers may edit the live course in the UI after publish
+- another agent session may have changed the course
+- reusing an old published draft can overwrite newer live changes
+
+For exercises on an already-published course, prefer the direct exercise tools instead of creating a whole new draft when the user only wants to add or revise exercises.
+
+## User Flows
+
+### Flow 1: Create a new course from a prompt
 
 Typical flow:
 
@@ -195,26 +231,20 @@ Publish returns:
 - use an explicit `bannerImageUrl`
 - generate a random Unsplash-based banner from the course title or a custom query
 
-## Update an Existing Course
+### Flow 2: Update a landing page with AI-generated copy and media
 
-When the course already exists, use the live course as the source of truth.
+User says:
 
-Recommended sequence:
+```text
+Rewrite this course landing page to feel more premium, generate a new cover image, and add three believable reviews.
+```
 
-1. `list_org_courses` if the agent needs to resolve the course ID by name
-2. `get_course_structure`
-3. `create_course_draft_from_course`
-4. `update_course_draft`
-5. `publish_course_draft_to_existing_course`
+Expected tool sequence:
 
-This avoids applying broad, blind changes directly to the live course.
+1. Agent calls `list_org_courses` if it needs to resolve the course ID by name first.
+2. Agent calls `update_course_landing_page`.
 
-## Update a Course Landing Page
-
-Use `update_course_landing_page` when the user wants AI help with sales-page style content on an
-already-existing course.
-
-This tool can update:
+What the landing-page tool can update:
 
 - title
 - short description
@@ -224,41 +254,173 @@ This tool can update:
 - pricing fields
 - instructor section
 - reviews
-- the landing-page image
+- landing page image
 
-For images, the tool supports either:
+The tool can either:
 
-- `imageUrl` for an explicit cover image
-- `generateImage` and `imageQuery` for a random Unsplash-derived image
+- use an explicit `imageUrl`
+- or generate a random Unsplash-based image with `generateImage` and `imageQuery`
 
-## After Publish
+### Flow 3: Create a draft from a PDF
 
-Once a draft has been published, the live course becomes the safer source of truth.
+User says:
 
-Recommended agent rule:
+```text
+I have my course in a PDF. Extract it and turn it into a ClassroomIO course draft.
+```
 
-- if the draft is still `DRAFT`, continue editing that draft
-- if the draft is `PUBLISHED`, do not keep reusing it for major follow-up edits
-- instead, read the live course and create a fresh draft from that course
+Expected tool sequence:
 
-Why:
+1. Agent reads the PDF itself.
+2. Agent restructures the content into normalized JSON.
+3. Agent calls `create_course_draft`.
+4. User reviews the draft.
+5. Agent calls `update_course_draft` if needed.
+6. User approves.
+7. Agent calls `publish_course_draft`.
 
-- teachers may edit the live course in the UI after publish
-- another agent session may have changed the course
-- reusing an old published draft can overwrite newer live changes
+Important:
 
-## Exercises on Live Courses
+- the PDF does not need to be uploaded to MCP
+- the MCP package only receives structured JSON
 
-If the user only wants to add or revise exercises on a published course, prefer the direct
-exercise tools instead of creating a whole new draft:
+### Flow 4: Tag a draft before publish
+
+User says:
+
+```text
+Add tags for algebra, beginner, and exponential growth to this draft.
+```
+
+Expected tool sequence:
+
+1. Agent calls `tag_course_draft`.
+2. User reviews the updated draft tags.
+3. Agent later calls `publish_course_draft`.
+
+Result:
+
+- the draft stores tag names
+- publish ensures the tags exist in ClassroomIO
+- publish assigns those tags to the live course
+
+### Flow 5: Update an existing course safely
+
+User says:
+
+```text
+Take my existing Algebra course, reorganize it, and rewrite the lesson content for a beginner audience.
+```
+
+When the course already exists, use the live course as the source of truth.
+
+Expected tool sequence:
+
+1. `list_org_courses` if the agent needs to resolve the course ID by name
+2. Agent calls `get_course_structure` with the existing `courseId`.
+3. Agent optionally calls `create_course_draft_from_course` to persist a seeded draft.
+4. Agent updates the draft with the new structure and content using `update_course_draft`.
+5. User reviews the changes.
+6. Agent calls `publish_course_draft_to_existing_course`.
+
+What this publish does today:
+
+- updates the existing course title, description, type, and metadata
+- can set a generated course cover from Unsplash
+- returns the public `courseUrl`
+- updates existing sections when the draft keeps their IDs
+- updates existing lessons when the draft keeps their IDs
+- creates new sections and lessons for draft items without matching live IDs
+- upserts lesson language content
+- merges draft tags into the existing course
+
+### Flow 6: Reorder live course content
+
+User says:
+
+```text
+Move the quiz before lesson 2 and put the recap lesson into the last section.
+```
+
+Use `reorder_course_content` when the live course only needs structural moves:
+
+- reorder sections
+- reorder lessons or exercises within a section
+- move lessons or exercises between sections
+
+This is the fast path for live structure edits and avoids creating a draft when lesson content is not changing.
+
+Expected tool sequence:
+
+1. Agent calls `reorder_course_content`.
+
+Use this direct path when the live course only needs section ordering or lesson or exercise moves between sections.
+It avoids the full draft round-trip for simple structural changes.
+
+### Flow 7: Add exercises to a live course
+
+User says:
+
+```text
+Add a 5-question multiple-choice exercise to lesson 3.
+```
+
+Expected tool sequence:
+
+1. Agent calls `list_course_exercises` if it needs current context.
+2. Agent calls `create_course_exercise` for a brand new exercise.
+3. Agent calls `update_course_exercise` for later revisions.
+
+Use this direct path when the course is already live and the change is exercise-specific.
+
+What it does not do today:
+
+- automatically delete sections or lessons that are absent from the draft
+- automatically delete lesson locales that are absent from the draft
+
+That behavior is intentional. The current update path is non-destructive by default.
+
+## How Existing-Course Updates Work
+
+When a draft is seeded from a live course:
+
+- section `externalId` values are the real section IDs
+- lesson `externalId` values are the real lesson IDs
+
+As long as the agent preserves those IDs while editing the draft, publish-to-existing-course can map draft items back to the live records and update them safely.
+
+If the agent adds a brand new section or lesson, it should assign a new synthetic `externalId`. ClassroomIO will create that record on publish.
+
+## Input Contract Notes
+
+For large updates, the agent should:
+
+1. call `get_course_structure`
+2. keep existing `externalId` values for records it wants to update
+3. only generate new `externalId` values for new records
+4. avoid deleting records from the draft unless the user explicitly wants omitted content to remain untouched
+
+Publish input also supports:
+
+- `bannerImageUrl`: use this exact course cover
+- `bannerImageQuery`: search Unsplash with this query
+- `generateBannerImage`: fetch a random Unsplash image using the course title or query
+
+Tagging tools use:
+
+- `tagNames`: human-readable tag names, not tag IDs
+- `mode: "merge" | "replace"`
+- `groupName` optional, defaults to `Automation`
+
+The API creates missing tags automatically when needed.
+
+Exercise tools use the live course directly:
 
 - `list_course_exercises`
 - `get_course_exercise`
 - `create_course_exercise`
 - `create_course_exercise_from_template`
 - `update_course_exercise`
-
-Use a draft only when the agent is restructuring broader course content.
 
 Supported `questionTypeId` values for exercise payloads:
 
@@ -275,29 +437,24 @@ Supported `questionTypeId` values for exercise payloads:
 - `11` `HOTSPOT` - Hotspot
 - `12` `LINK` - Links
 
-## Tagging
+## Operational Notes
 
-The MCP supports tagging at two levels:
+- `create_course_draft_from_course` may add warnings if a live course uses legacy lesson notes instead of localized lesson content
+- if a course has ungrouped lessons, the seeded draft may add a synthetic `Ungrouped` section so the structure stays valid
+- published drafts are treated as finalized snapshots
 
-- `tag_course_draft`
-  - set or revise tags before publish
-- `tag_courses`
-  - tag one or more live courses
+## Recommended Agent Behavior
 
-The live-course tagging tool supports merge-or-replace behavior. Use merge when the user wants to
-add tags without removing existing ones.
+For small edits, an agent can still read the course structure and modify only the affected items in the draft.
 
-## PDF-Based Authoring
+For broad revisions, prefer this sequence:
 
-If a user wants to turn a PDF into a course:
+1. `get_course_structure`
+2. `create_course_draft_from_course`
+3. `update_course_draft`
+4. `publish_course_draft_to_existing_course`
 
-1. the agent reads and extracts the PDF itself
-2. the agent converts the content into normalized course JSON
-3. the agent calls `create_course_draft`
-4. the user reviews the draft
-5. the agent publishes it
-
-The PDF itself is not uploaded to the MCP server.
+That keeps major AI-assisted edits reviewable and explicit.
 
 <Callout title="Operational Rule">
   Keep published drafts for history and auditability. Do not treat omission from a draft as an

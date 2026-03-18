@@ -13,6 +13,7 @@
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import { courseApi } from '$features/course/api';
   import { generateMarksCSV, generateMarksPDF } from '$features/course/utils/marks-utils';
+  import { RefreshPageData } from '$features/ui';
 
   let { data } = $props();
 
@@ -97,6 +98,7 @@
               </DropdownMenu.Content>
             </DropdownMenu.Root>
           </RoleBasedSecurity>
+          <RefreshPageData />
         </div>
       </Page.Action>
     </Page.Header>

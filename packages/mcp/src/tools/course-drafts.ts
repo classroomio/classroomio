@@ -20,7 +20,11 @@ import {
   ZCourseImportDraftPublishToCourse,
   ZCourseImportDraftUpdate
 } from '@cio/utils/validation/course-import';
-import { ZCourseLandingPageUpdate } from '@cio/utils/validation/course';
+import {
+  ZCourseContentReorder,
+  ZCourseContentReorderBase,
+  ZCourseLandingPageUpdate
+} from '@cio/utils/validation/course';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat.js';
 
@@ -61,6 +65,10 @@ export const ZUpdateCourseLandingPageToolInput = ZCourseLandingPageUpdate.extend
   courseId: ZCourseImportCourseParam.shape.courseId
 });
 
+export const ZReorderCourseContentToolInput = ZCourseContentReorderBase.extend({
+  courseId: ZCourseImportCourseParam.shape.courseId
+});
+
 export const ZPublishCourseDraftToolInput = ZCourseImportDraftPublish.extend({
   draftId: ZCourseImportDraftGetParam.shape.draftId
 });
@@ -83,6 +91,7 @@ const createCourseExerciseFromTemplateShape =
   ZCreateCourseExerciseFromTemplateToolInput.shape as unknown as ZodRawShapeCompat;
 const updateCourseExerciseShape = ZUpdateCourseExerciseToolInput.shape as unknown as ZodRawShapeCompat;
 const updateCourseLandingPageShape = ZUpdateCourseLandingPageToolInput.shape as unknown as ZodRawShapeCompat;
+const reorderCourseContentShape = ZReorderCourseContentToolInput.shape as unknown as ZodRawShapeCompat;
 const publishCourseDraftShape = ZPublishCourseDraftToolInput.shape as unknown as ZodRawShapeCompat;
 const publishCourseDraftToExistingCourseShape =
   ZPublishCourseDraftToExistingCourseToolInput.shape as unknown as ZodRawShapeCompat;
@@ -91,7 +100,7 @@ const tagCoursesShape = ZAutomationCourseTagAssignment.shape as unknown as ZodRa
 const SUPPORTED_QUESTION_TYPES_GUIDE =
   'Supported questionTypeId values: RADIO=1 (Single answer), CHECKBOX=2 (Multiple answers), TEXTAREA=3 (Paragraph), TRUE_FALSE=4 (True/False), SHORT_ANSWER=5 (Short answer), NUMERIC=6 (Numeric answer), FILL_BLANK=7 (Fill in the blank), FILE_UPLOAD=8 (File upload), MATCHING=9 (Matching), ORDERING=10 (Ordering), HOTSPOT=11 (Hotspot), LINK=12 (Links). Use the numeric ids in exercise payloads.';
 const LESSON_HTML_GUIDE =
-  'For draft lesson HTML, put only the lesson body in lessonLanguages[].content. Do not include the lesson title or a top-level heading that repeats lessons[].title because the ClassroomIO UI already renders the lesson title.';
+  'For draft lesson HTML, put only the lesson body in lessonLanguages[].content. Do not include the lesson title. Do not use h1 or h2 anywhere in lesson HTML. Start headings at h3 because that is the highest heading level allowed in lesson content.';
 
 export function registerCourseDraftTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
@@ -123,6 +132,18 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
     async (args) => {
       const { courseId, ...payload } = ZUpdateCourseLandingPageToolInput.parse(args);
       const result = await apiClient.updateCourseLandingPage(courseId, payload);
+      return jsonContent(result);
+    }
+  );
+
+  server.tool(
+    'reorder_course_content',
+    'Batch reorder live course sections and lesson or exercise content without creating a draft. Use this for section ordering or moving/reordering lessons and exercises between sections. For items, pass type as LESSON or EXERCISE and use sectionId to move between sections or null for ungrouped content.',
+    reorderCourseContentShape,
+    async (args) => {
+      const { courseId, ...rawPayload } = ZReorderCourseContentToolInput.parse(args);
+      const payload = ZCourseContentReorder.parse(rawPayload);
+      const result = await apiClient.reorderCourseContent(courseId, payload);
       return jsonContent(result);
     }
   );

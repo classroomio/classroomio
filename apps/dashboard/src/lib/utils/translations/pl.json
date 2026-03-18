@@ -1,5 +1,6 @@
 {
   "common": {
+    "refresh": "Odśwież",
     "unsaved_changes": {
       "message": "Masz niezapisane zmiany. Czy na pewno chcesz wyjść?"
     }
@@ -1508,6 +1509,10 @@
       "placeholder": "Wyszukaj lekcje lub ćwiczenia",
       "empty": "Nie znaleziono żadnych wyników"
     },
+    "header": {
+      "preview": "Preview course",
+      "preview_missing_slug": "Generate and save a course slug before previewing."
+    },
     "sidebar": {
       "back_to_course": "Powrót na kurs",
       "content_count": {
@@ -1582,6 +1587,12 @@
       }
     },
     "course_filter": {
+      "date_created_newest": "Date Created: Newest first",
+      "date_created_oldest": "Date Created: Oldest first",
+      "published_first": "Published: Published first",
+      "unpublished_first": "Published: Unpublished first",
+      "most_lessons": "Lessons: Most first",
+      "fewest_lessons": "Lessons: Fewest first",
       "date_created": "Data utworzenia",
       "published": "Opublikowano",
       "lessons": "Lekcje"
@@ -1592,6 +1603,9 @@
       "clear_all": "Wyczyść wszystko",
       "popover_title": "Filtry",
       "sort": "Sortuj",
+      "order": "Kolejność",
+      "ascending": "Asc",
+      "descending": "Desc",
       "tags": "Tagi",
       "empty_tags": "Brak dostępnych tagów"
     }
@@ -2212,7 +2226,6 @@
         }
       },
       "login": {
-        "sso_enabled": "Usługa {provider} jest włączona w Twojej domenie",
         "sso_redirect_error": "Logowanie jednokrotne jest błędnie skonfigurowane. Ustaw PUBLIC_SERVER_URL na swój serwer API.",
         "sso_required": "Proszę zalogować się za pomocą SSO. Logowanie hasłem jest wyłączone.",
         "sign_in_with_sso": "Zaloguj się przez {provider}",

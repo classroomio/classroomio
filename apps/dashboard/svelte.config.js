@@ -4,101 +4,19 @@ import adapterAuto from '@sveltejs/adapter-auto';
 import adapterNode from '@sveltejs/adapter-node';
 import path from 'path';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import { getCspDomains } from './src/lib/utils/csp-domains.js';
 
-const useNodeAdapter = process.env.PUBLIC_IS_SELFHOSTED === 'true';
-const API_ORIGIN = process.env.PUBLIC_SERVER_URL;
+const isSelfHosted = process.env.PUBLIC_IS_SELFHOSTED === 'true';
 const IS_CLOUDFLARE = process.env.CI_ENVIRONMENT === 'cloudflare';
 
 const adapterCloudflare = IS_CLOUDFLARE ? (await import('@sveltejs/adapter-cloudflare')).default : null;
-
-/**
- * Parse comma-separated domain list from env.
- * Normalizes to https:// URLs. Returns null when env var is unset (use defaults).
- */
-function parseDomainsFromEnv(envVar) {
-  const value = process.env[envVar];
-  if (!value || typeof value !== 'string') return null;
-  return value
-    .split(',')
-    .map((d) => d.trim())
-    .filter(Boolean)
-    .map((d) => (d.startsWith('http://') || d.startsWith('https://') ? d : `https://${d}`));
-}
-
-const ALLOWED_EXTERNAL_DOMAINS = parseDomainsFromEnv('ALLOWED_EXTERNAL_DOMAINS');
-const ALLOWED_SCRIPT_SRC = parseDomainsFromEnv('CSP_SCRIPT_SRC_DOMAINS');
-const ALLOWED_STYLE_SRC = parseDomainsFromEnv('CSP_STYLE_SRC_DOMAINS');
-const ALLOWED_CONNECT_SRC = parseDomainsFromEnv('CSP_CONNECT_SRC_DOMAINS');
-const ALLOWED_FRAME_SRC = parseDomainsFromEnv('CSP_FRAME_SRC_DOMAINS');
-const ALLOWED_FONT_SRC = parseDomainsFromEnv('CSP_FONT_SRC_DOMAINS');
-
-const defaultScriptSrcDomains = [
-  'https://assets.cdn.clsrio.com',
-  'https://cdnjs.cloudflare.com',
-  'https://*.posthog.com',
-  'https://*.senja.io',
-  'https://umami.hz.oncws.com',
-  'https://www.youtube.com',
-  'https://youtube.com',
-  'https://google.com'
-];
-const defaultStyleSrcDomains = [
-  'https://cdn.plyr.io',
-  'https://unpkg.com/katex@0.12.0/dist/katex.min.css',
-  'https://assets.cdn.clsrio.com/eqneditor_1.css',
-  'https://fonts.googleapis.com'
-];
-const defaultConnectSrcDomains = [
-  'https://*.classroomio.com',
-  'https://classroomio.com',
-  'https://app.classroomio.com',
-  'https://api.classroomio.com',
-  'https://pgrest.classroomio.com',
-  'https://play.classroomio.com',
-  'wss://*.classroomio.com',
-  'https://assets.cdn.clsrio.com',
-  'https://cdn.plyr.io',
-  'https://*.posthog.com',
-  'https://umami.hz.oncws.com',
-  'https://*.r2.cloudflarestorage.com',
-  'https://*.senja.io',
-  'https://*.ytimg.com',
-  'https://noembed.com'
-];
-const defaultFrameSrcDomains = [
-  'https://www.youtube.com',
-  'https://youtube.com',
-  'https://www.youtube-nocookie.com',
-  'https://www.google.com',
-  'https://google.com'
-];
-const defaultFontSrcDomains = ['https://fonts.gstatic.com', 'https://cdn.plyr.io'];
-
-// Self-hosted: use ONLY env vars, no defaults (strict CISO allowlists, data residency).
-// SaaS: use defaults when env vars are unset (backward compatible).
-const scriptSrcDomains = useNodeAdapter
-  ? (ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_SCRIPT_SRC ?? [])
-  : (ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_SCRIPT_SRC ?? defaultScriptSrcDomains);
-const styleSrcDomains = useNodeAdapter
-  ? (ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_STYLE_SRC ?? [])
-  : (ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_STYLE_SRC ?? defaultStyleSrcDomains);
-const connectSrcDomains = useNodeAdapter
-  ? (ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_CONNECT_SRC ?? [])
-  : (ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_CONNECT_SRC ?? defaultConnectSrcDomains);
-const frameSrcDomains = useNodeAdapter
-  ? (ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_FRAME_SRC ?? [])
-  : (ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_FRAME_SRC ?? defaultFrameSrcDomains);
-const fontSrcDomains = useNodeAdapter
-  ? (ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_FONT_SRC ?? [])
-  : (ALLOWED_EXTERNAL_DOMAINS ?? ALLOWED_FONT_SRC ?? defaultFontSrcDomains);
+const csp = getCspDomains(isSelfHosted, process.env.PUBLIC_SERVER_URL);
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-  // Consult https://kit.svelte.dev/docs/integrations#preprocessors
-  // for more information about preprocessors
   preprocess: [vitePreprocess({})],
   kit: {
-    adapter: IS_CLOUDFLARE ? adapterCloudflare() : useNodeAdapter ? adapterNode() : adapterAuto(),
+    adapter: IS_CLOUDFLARE ? adapterCloudflare() : isSelfHosted ? adapterNode() : adapterAuto(),
     alias: {
       $lib: path.resolve('./src/lib'),
       $features: path.resolve('./src/lib/features'),
@@ -117,20 +35,20 @@ const config = {
       mode: 'auto',
       directives: {
         'default-src': ['self'],
-        'script-src': ['self', ...scriptSrcDomains, 'unsafe-hashes', 'unsafe-eval'],
-        'style-src': ['self', 'unsafe-inline', ...styleSrcDomains],
-        'style-src-elem': ['self', 'unsafe-inline', ...styleSrcDomains],
-        'font-src': ['self', ...fontSrcDomains],
-        'img-src': ['self', 'data:', 'https:', 'blob:', 'http://localhost:9000'],
-        'media-src': ['self', 'https:', 'data:', 'blob:', 'http://localhost:9000'],
-        'frame-src': ['self', ...frameSrcDomains],
+        'script-src': ['self', ...csp.scriptSrc, 'unsafe-hashes', 'unsafe-eval'],
+        'style-src': ['self', 'unsafe-inline', ...csp.styleSrc],
+        'style-src-elem': ['self', 'unsafe-inline', ...csp.styleSrc],
+        'font-src': ['self', ...csp.fontSrc],
+        'img-src': ['self', 'data:', ...csp.mediaSrc, 'blob:', 'http://localhost:9000'],
+        'media-src': ['self', ...csp.mediaSrc, 'data:', 'blob:', 'http://localhost:9000'],
+        'frame-src': ['self', ...csp.frameSrc],
         'connect-src': [
           'self',
           'blob:',
           'http://localhost:3002',
           'http://localhost:9000',
-          ...(API_ORIGIN ? [API_ORIGIN] : []),
-          ...connectSrcDomains
+          ...(csp.apiOrigin ? [csp.apiOrigin] : []),
+          ...csp.connectSrc
         ],
         'worker-src': ['self', 'blob:'],
         'object-src': ['none'],
@@ -141,20 +59,20 @@ const config = {
       },
       reportOnly: {
         'default-src': ['self'],
-        'script-src': ['self', ...scriptSrcDomains, 'unsafe-hashes', 'unsafe-eval'],
-        'style-src': ['self', 'unsafe-inline', ...styleSrcDomains],
-        'style-src-elem': ['self', 'unsafe-inline', ...styleSrcDomains],
-        'font-src': ['self', ...fontSrcDomains],
-        'img-src': ['self', 'data:', 'https:', 'blob:', 'http://localhost:9000'],
-        'media-src': ['self', 'https:', 'data:', 'blob:', 'http://localhost:9000'],
-        'frame-src': ['self', ...frameSrcDomains],
+        'script-src': ['self', ...csp.scriptSrc, 'unsafe-hashes', 'unsafe-eval'],
+        'style-src': ['self', 'unsafe-inline', ...csp.styleSrc],
+        'style-src-elem': ['self', 'unsafe-inline', ...csp.styleSrc],
+        'font-src': ['self', ...csp.fontSrc],
+        'img-src': ['self', 'data:', ...csp.mediaSrc, 'blob:', 'http://localhost:9000'],
+        'media-src': ['self', ...csp.mediaSrc, 'data:', 'blob:', 'http://localhost:9000'],
+        'frame-src': ['self', ...csp.frameSrc],
         'connect-src': [
           'self',
           'blob:',
           'http://localhost:3002',
           'http://localhost:9000',
-          ...(API_ORIGIN ? [API_ORIGIN] : []),
-          ...connectSrcDomains
+          ...(csp.apiOrigin ? [csp.apiOrigin] : []),
+          ...csp.connectSrc
         ],
         'worker-src': ['self', 'blob:'],
         'object-src': ['none'],

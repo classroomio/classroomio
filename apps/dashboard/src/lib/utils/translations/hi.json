@@ -1,5 +1,6 @@
 {
   "common": {
+    "refresh": "रीफ़्रेश करें",
     "unsaved_changes": {
       "message": "आपके पास सहेजे नहीं गए परिवर्तन हैं. क्या आपकी वाकई छोड़ने की इच्छा है?"
     }
@@ -1508,6 +1509,10 @@
       "placeholder": "पाठ या अभ्यास खोजें",
       "empty": "कोई परिणाम नहीं मिला"
     },
+    "header": {
+      "preview": "Preview course",
+      "preview_missing_slug": "Generate and save a course slug before previewing."
+    },
     "sidebar": {
       "back_to_course": "पाठ्यक्रम पर वापस जाएँ",
       "content_count": {
@@ -1582,6 +1587,12 @@
       }
     },
     "course_filter": {
+      "date_created_newest": "Date Created: Newest first",
+      "date_created_oldest": "Date Created: Oldest first",
+      "published_first": "Published: Published first",
+      "unpublished_first": "Published: Unpublished first",
+      "most_lessons": "Lessons: Most first",
+      "fewest_lessons": "Lessons: Fewest first",
       "date_created": "दिनांक निर्मित",
       "published": "प्रकाशित",
       "lessons": "सबक"
@@ -1592,6 +1603,9 @@
       "clear_all": "सब साफ़ करें",
       "popover_title": "फिल्टर",
       "sort": "क्रमबद्ध करें",
+      "order": "क्रम",
+      "ascending": "Asc",
+      "descending": "Desc",
       "tags": "टैग",
       "empty_tags": "कोई टैग उपलब्ध नहीं है"
     }
@@ -2212,7 +2226,6 @@
         }
       },
       "login": {
-        "sso_enabled": "आपके डोमेन के लिए {प्रदाता} सक्षम है",
         "sso_redirect_error": "SSO साइन-इन ग़लत कॉन्फ़िगर किया गया है. कृपया अपने एपीआई सर्वर पर PUBLIC_SERVER_URL सेट करें।",
         "sso_required": "कृपया एसएसओ के साथ साइन इन करें। पासवर्ड लॉगिन अक्षम है.",
         "sign_in_with_sso": "{प्रदाता} के साथ साइन इन करें",

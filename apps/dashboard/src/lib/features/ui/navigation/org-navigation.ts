@@ -108,7 +108,36 @@ const baseNavConfig: NavItemConfig[] = [
     icon: BracesIcon,
     requiresAdmin: true,
     disableWhenNotAdmin: true,
-    matchPattern: '^/org/[^/]+/automation(/.*)?$'
+    useHashUrl: true,
+    matchPattern: '^/org/[^/]+/automation(/.*)?$',
+    items: [
+      {
+        titleKey: 'automation.tabs.mcp',
+        path: '/automation/mcp'
+      },
+      {
+        titleKey: 'automation.tabs.zapier',
+        path: '/automation/zapier'
+      },
+      {
+        titleKey: 'automation.tabs.api',
+        path: '/automation/api'
+      }
+    ],
+    nestedRoutes: [
+      {
+        path: 'mcp',
+        titleKey: 'automation.tabs.mcp'
+      },
+      {
+        path: 'zapier',
+        titleKey: 'automation.tabs.zapier'
+      },
+      {
+        path: 'api',
+        titleKey: 'automation.tabs.api'
+      }
+    ]
   },
   {
     titleKey: 'org_navigation.settings',

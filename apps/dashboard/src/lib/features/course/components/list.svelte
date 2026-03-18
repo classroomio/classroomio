@@ -1,12 +1,12 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { Badge } from '@cio/ui/base/badge';
   import * as Table from '@cio/ui/base/table';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
 
   import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
   import { t } from '$lib/utils/functions/translations';
+  import CoursePublishBadge from './course-publish-badge.svelte';
 
   interface Props {
     id?: string;
@@ -88,13 +88,7 @@
     <Table.Cell>{totalLessons}</Table.Cell>
     <Table.Cell>{totalStudents}</Table.Cell>
     <Table.Cell>
-      <Badge variant={isPublished ? 'default' : 'outline'}>
-        {#if isPublished}
-          {$t('courses.course_card.published')}
-        {:else}
-          {$t('courses.course_card.unpublished')}
-        {/if}
-      </Badge>
+      <CoursePublishBadge {isPublished} />
     </Table.Cell>
   {/if}
   <Table.Cell class="text-center">

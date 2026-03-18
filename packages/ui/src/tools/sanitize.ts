@@ -150,6 +150,37 @@ function fallbackSanitize(html: string): string {
   return html;
 }
 
+export type ContentSegment = { type: 'html'; content: string } | { type: 'svg'; content: string };
+
+/**
+ * Splits HTML into safe-HTML segments and raw SVG segments.
+ * HTML segments are sanitized; SVG segments are left raw so the caller
+ * can render them inside a sandboxed iframe (sandbox="") where scripts,
+ * forms, and cookie access are all disabled by the browser.
+ */
+export function splitHtmlAndSvg(html: string): ContentSegment[] {
+  if (typeof html !== 'string' || !html) return [];
+
+  const segments: ContentSegment[] = [];
+  const svgRegex = /<svg\b[^>]*>[\s\S]*?<\/svg>/gi;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = svgRegex.exec(html)) !== null) {
+    if (match.index > lastIndex) {
+      segments.push({ type: 'html', content: sanitizeHtml(html.slice(lastIndex, match.index)) });
+    }
+    segments.push({ type: 'svg', content: match[0] });
+    lastIndex = svgRegex.lastIndex;
+  }
+
+  if (lastIndex < html.length) {
+    segments.push({ type: 'html', content: sanitizeHtml(html.slice(lastIndex)) });
+  }
+
+  return segments;
+}
+
 /**
  * Strips all HTML tags and returns plain text
  * Use this when you only need the text content

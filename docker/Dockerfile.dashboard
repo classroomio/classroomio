@@ -5,13 +5,6 @@ WORKDIR /app
 ENV CI=true
 
 ARG PUBLIC_IS_SELFHOSTED=true
-ARG PUBLIC_SERVER_URL
-ARG ALLOWED_EXTERNAL_DOMAINS
-ARG CSP_SCRIPT_SRC_DOMAINS
-ARG CSP_STYLE_SRC_DOMAINS
-ARG CSP_CONNECT_SRC_DOMAINS
-ARG CSP_FRAME_SRC_DOMAINS
-ARG CSP_FONT_SRC_DOMAINS
 
 RUN corepack enable && corepack prepare pnpm@10.19.0 --activate
 
@@ -19,17 +12,8 @@ COPY . .
 
 RUN pnpm install --frozen-lockfile --ignore-scripts --filter @cio/dashboard...
 RUN find . -name 'tsconfig.tsbuildinfo' -delete
-RUN echo "Dashboard build PUBLIC_IS_SELFHOSTED=${PUBLIC_IS_SELFHOSTED}" && \
-    echo "Dashboard build PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL}" && \
-    NODE_OPTIONS="--max-old-space-size=3072" \
+RUN NODE_OPTIONS="--max-old-space-size=3072" \
     PUBLIC_IS_SELFHOSTED="${PUBLIC_IS_SELFHOSTED}" \
-    PUBLIC_SERVER_URL="${PUBLIC_SERVER_URL}" \
-    ALLOWED_EXTERNAL_DOMAINS="${ALLOWED_EXTERNAL_DOMAINS}" \
-    CSP_SCRIPT_SRC_DOMAINS="${CSP_SCRIPT_SRC_DOMAINS}" \
-    CSP_STYLE_SRC_DOMAINS="${CSP_STYLE_SRC_DOMAINS}" \
-    CSP_CONNECT_SRC_DOMAINS="${CSP_CONNECT_SRC_DOMAINS}" \
-    CSP_FRAME_SRC_DOMAINS="${CSP_FRAME_SRC_DOMAINS}" \
-    CSP_FONT_SRC_DOMAINS="${CSP_FONT_SRC_DOMAINS}" \
     pnpm -r --filter @cio/dashboard... build
 
 RUN test -f apps/dashboard/build/index.js || (echo "ERROR: Dashboard build output not found at apps/dashboard/build/index.js" && exit 1)

@@ -35,7 +35,7 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import UpdateDescription from '$features/course/components/exercise/update-description.svelte';
   import { ContentNavigationActions } from '$features/course/components/lesson';
-  import { RoleBasedSecurity } from '$features/ui';
+  import { RefreshPageData, RoleBasedSecurity } from '$features/ui';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
   import { Empty } from '@cio/ui/custom/empty';
   import VideoIcon from '@lucide/svelte/icons/video';
@@ -266,6 +266,8 @@
             </div>
           </div>
         {/if}
+
+        <RefreshPageData />
       </RoleBasedSecurity>
     </div>
   </Page.Action>

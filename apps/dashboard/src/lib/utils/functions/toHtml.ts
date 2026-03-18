@@ -3,6 +3,8 @@ import { browser } from '$app/environment';
 export const isHtmlValueEmpty = (html: string) => {
   if (!html || typeof html !== 'string') return true;
 
+  if (/<svg\b/i.test(html)) return false;
+
   if (!document || !browser) return false;
 
   return getTextFromHTML(html) === '';

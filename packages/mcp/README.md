@@ -43,6 +43,7 @@ Current tools:
 
 - `list_org_courses`
 - `get_course_structure`
+- `reorder_course_content`
 - `update_course_landing_page`
 - `create_course_draft`
 - `create_course_draft_from_course`
@@ -167,7 +168,9 @@ Drafts support:
 Lesson authoring rule:
 
 - `lessonLanguages[].content` should contain only the lesson body HTML
-- do not include the lesson title or a top-level heading that repeats `lessons[].title`
+- do not include the lesson title
+- do not use `h1` or `h2` in lesson content
+- start headings at `h3`
 - ClassroomIO already renders the lesson title in the course UI
 
 ## After Publish
@@ -323,7 +326,22 @@ What this publish does today:
 - upserts lesson language content
 - merges draft tags into the existing course
 
-### Flow 6: Add exercises to a live course
+### Flow 6: Reorder live course content
+
+User says:
+
+```text
+Move the quiz before lesson 2 and put the recap lesson into the last section.
+```
+
+Expected tool sequence:
+
+1. Agent calls `reorder_course_content`.
+
+Use this direct path when the live course only needs section ordering or lesson or exercise moves between sections.
+It avoids the full draft round-trip for simple structural changes.
+
+### Flow 7: Add exercises to a live course
 
 User says:
 

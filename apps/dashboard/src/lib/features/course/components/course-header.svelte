@@ -3,21 +3,35 @@
   import * as Sidebar from '@cio/ui/base/sidebar';
   import BellIcon from '@lucide/svelte/icons/bell';
   import { Button } from '@cio/ui/base/button';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import * as Popover from '@cio/ui/base/popover';
-  import Search from '$features/ui/search.svelte';
+  import { HoverableItem, PreviewIcon } from '@cio/ui/custom/moving-icons';
   import RefreshCcwIcon from '@lucide/svelte/icons/refresh-ccw';
   import * as Empty from '@cio/ui/base/empty';
-  import { currentOrg } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
+  import { isStudentExperience } from '$lib/utils/store/app';
   import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
   import { courseApi } from '$features/course/api';
+  import { openCoursePreview } from '$features/course/utils/course-preview';
+  import { t } from '$lib/utils/functions/translations';
+  import CoursePublishBadge from './course-publish-badge.svelte';
 
   const siteName = $derived($currentOrg.siteName);
+  const showCoursePublishBadge = $derived(!$isStudentExperience);
 
   $effect(() => {
     if (!siteName) return;
 
     setupProgressApi.fetchSetupProgress(siteName);
   });
+
+  function handlePreview() {
+    openCoursePreview({
+      courseId: courseApi.course?.id ?? '',
+      courseSlug: courseApi.course?.slug,
+      currentOrgDomain: $currentOrgDomain
+    });
+  }
 </script>
 
 <header
@@ -30,13 +44,17 @@
       <Separator orientation="vertical" />
     </div>
 
-    <p class="max-w-2xs truncate text-sm font-medium">
-      {courseApi.course?.title || ''}
-    </p>
+    <div class="flex min-w-0 items-center gap-2">
+      <p class="max-w-2xs truncate text-sm font-medium">
+        {courseApi.course?.title || ''}
+      </p>
+
+      {#if showCoursePublishBadge}
+        <CoursePublishBadge isPublished={courseApi.course?.isPublished} />
+      {/if}
+    </div>
 
     <span class="grow"></span>
-
-    <Search />
 
     <Popover.Root>
       <Popover.Trigger>
@@ -56,11 +74,24 @@
           <Empty.Content>
             <Button variant="outline" size="sm">
               <RefreshCcwIcon />
-              Refresh
+              {$t('common.refresh')}
             </Button>
           </Empty.Content>
         </Empty.Root>
       </Popover.Content>
     </Popover.Root>
+
+    <HoverableItem>
+      {#snippet children(isHovered)}
+        <IconButton
+          onclick={handlePreview}
+          disabled={!courseApi.course?.id}
+          tooltip={$t('course.header.preview')}
+          aria-label={$t('course.header.preview')}
+        >
+          <PreviewIcon {isHovered} size={16} />
+        </IconButton>
+      {/snippet}
+    </HoverableItem>
   </div>
 </header>

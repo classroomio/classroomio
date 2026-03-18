@@ -1,5 +1,6 @@
 import {
   ZCreateOrganizationApiKey,
+  ZOrganizationAutomationUsageQuery,
   ZListOrganizationApiKeysQuery,
   ZOrganizationApiKeyParam
 } from '@cio/utils/validation/organization';
@@ -9,6 +10,7 @@ import {
   revokeOrganizationApiKeyService,
   rotateOrganizationApiKeyService
 } from '@api/services/organization/automation-key';
+import { getOrganizationAutomationUsageSummaryService } from '@api/services/organization/automation-usage';
 
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
@@ -17,6 +19,23 @@ import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { zValidator } from '@hono/zod-validator';
 
 export const automationRouter = new Hono()
+  .get(
+    '/usage',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('query', ZOrganizationAutomationUsageQuery),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const query = c.req.valid('query');
+        const usage = await getOrganizationAutomationUsageSummaryService(orgId, query.type);
+
+        return c.json({ success: true, data: usage }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to load organization automation usage');
+      }
+    }
+  )
   .get('/keys', authMiddleware, orgAdminMiddleware, zValidator('query', ZListOrganizationApiKeysQuery), async (c) => {
     try {
       const orgId = c.req.header('cio-org-id')!;

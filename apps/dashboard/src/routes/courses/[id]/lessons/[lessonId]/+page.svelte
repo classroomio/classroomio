@@ -18,7 +18,6 @@
   $effect(() => {
     if (!data.lesson) return;
     const lesson = data.lesson;
-
     if (lessonApi.lesson?.id === lesson.id) return;
 
     // Set lesson data

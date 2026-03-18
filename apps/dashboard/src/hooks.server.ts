@@ -1,5 +1,6 @@
 import { getSessionData } from '$lib/utils/services/auth/session';
 import { getCioCookieString } from '$lib/utils/functions/cookies';
+import { applyCspExtensions } from '$lib/utils/csp';
 import { type Handle, redirect } from '@sveltejs/kit';
 import { isPublicApiRoute, isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
 import { ROUTE } from '$lib/utils/constants/routes';
@@ -12,13 +13,15 @@ export const handle: Handle = async (args) => {
     event.locals = sessionData;
   }
 
-  // Handle API routes
+  let response: Response;
+
   if (event.url.pathname.includes('/api')) {
-    return handleAPIRoutes(args);
+    response = await handleAPIRoutes(args);
+  } else {
+    response = await handlePagesRoutes(args);
   }
 
-  // Handle other routes (ui pages, etc.)
-  return handlePagesRoutes(args);
+  return applyCspExtensions(response);
 };
 
 const handlePagesRoutes: Handle = async ({ event, resolve }) => {

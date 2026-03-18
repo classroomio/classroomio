@@ -4,7 +4,7 @@
 
   import { calDateDiff } from '$lib/utils/functions/date';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
-  import { sanitizeHtml } from '@cio/ui/tools/sanitize';
+  import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
   import { t } from '$lib/utils/functions/translations';
 
   import type { Feed } from '$features/course/utils/types';
@@ -59,7 +59,7 @@
   {#if !isHtmlValueEmpty(feed.content || '')}
     <HTMLRender className="w-[80%]">
       <div>
-        {@html sanitizeHtml(feed.content || '')}
+        <SafeHtmlContent content={feed.content || ''} />
       </div>
     </HTMLRender>
   {/if}

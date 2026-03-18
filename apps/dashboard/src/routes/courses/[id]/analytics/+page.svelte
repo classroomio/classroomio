@@ -1,5 +1,6 @@
 <script lang="ts">
   import { AnalyticsPage } from '$features/course/pages';
+  import { RefreshPageData } from '$features/ui';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
 
@@ -13,6 +14,9 @@
         {$t('analytics.title')}
       </Page.Title>
     </Page.HeaderContent>
+    <Page.Action>
+      <RefreshPageData />
+    </Page.Action>
   </Page.Header>
   <Page.Body>
     {#snippet child()}

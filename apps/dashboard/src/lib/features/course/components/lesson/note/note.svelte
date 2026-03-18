@@ -1,6 +1,6 @@
 <script lang="ts">
   import { HTMLRender, TextEditor } from '$features/ui';
-  import { sanitizeHtml } from '@cio/ui/tools/sanitize';
+  import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { lessonApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
@@ -43,10 +43,6 @@
   }
 
   const content = $derived(lessonApi.translations[lessonId]?.[lessonApi.currentLocale] || '');
-
-  $effect(() => {
-    console.log('content', content);
-  });
 </script>
 
 {#if mode === MODES.edit}
@@ -67,7 +63,7 @@
   <!-- View Mode -->
   {#if !isHtmlValueEmpty(content)}
     <HTMLRender>
-      {@html sanitizeHtml(content)}
+      <SafeHtmlContent {content} />
     </HTMLRender>
   {:else if hasAtLeastOneTranslation}
     <p class="text-md py-2 font-normal italic dark:text-white">

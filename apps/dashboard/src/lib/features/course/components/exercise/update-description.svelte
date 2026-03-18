@@ -1,6 +1,6 @@
 <script lang="ts">
   import { questionnaire } from './store';
-  import { sanitizeHtml } from '@cio/ui/tools/sanitize';
+  import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
   import { t } from '$lib/utils/functions/translations';
 
   import { InputField } from '@cio/ui/custom/input-field';
@@ -49,9 +49,9 @@
       </div>
 
       <article class="preview prose prose-sm sm:prose mt-3 p-2">
-        {@html sanitizeHtml(
-          $questionnaire.description || $t('course.navItem.lessons.exercises.all_exercises.description.no')
-        )}
+        <SafeHtmlContent
+          content={$questionnaire.description || $t('course.navItem.lessons.exercises.all_exercises.description.no')}
+        />
       </article>
     {:else}
       <InputField

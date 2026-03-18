@@ -17,6 +17,7 @@ export * from './question';
 export { default as UploadWidget } from './upload-widget/upload-widget.svelte';
 export { default as PageLoadProgress } from './page-load-progress.svelte';
 export { default as PoweredBy } from './upgrade-powered-by.svelte';
+export { default as RefreshPageData } from './refresh-page-data.svelte';
 export { default as RoleBasedSecurity } from './role-based-security.svelte';
 export { default as Search } from './search.svelte';
 export { default as SenjaEmbed } from './senja-embed.svelte';

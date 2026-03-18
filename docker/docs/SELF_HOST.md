@@ -25,7 +25,8 @@ All Docker services read from a single root `.env` file. See [`.env.example`](..
 
 Key points:
 
-- **Required:** `PUBLIC_SERVER_URL`, `TRUSTED_ORIGINS`, `BETTER_AUTH_SECRET`, `PUBLIC_IS_SELFHOSTED=true`, `ALLOWED_EXTERNAL_DOMAINS`, `DASHBOARD_ORIGIN`.
+- **Required:** `PUBLIC_SERVER_URL`, `TRUSTED_ORIGINS`, `BETTER_AUTH_SECRET`, `PUBLIC_IS_SELFHOSTED=true`, `DASHBOARD_ORIGIN`.
+- **CSP (runtime):** `ALLOWED_EXTERNAL_DOMAINS` (overrides all) or per-directive: `CSP_SCRIPT_SRC_DOMAINS`, `CSP_STYLE_SRC_DOMAINS`, `CSP_CONNECT_SRC_DOMAINS`, `CSP_FRAME_SRC_DOMAINS`, `CSP_FONT_SRC_DOMAINS`, `CSP_MEDIA_SRC_DOMAINS`. These are read at container startup — no image rebuild needed.
 - **Auth cookies:** Set `AUTH_COOKIE_DOMAIN` to your root domain (e.g. `.yourdomain.com`) when API and dashboard use different subdomains. Without it, auth cookies may not be set and login will fail.
 - **Auto-generated:** `AUTH_BEARER_TOKEN`, `PRIVATE_SERVER_KEY` (by `./run-docker-full-stack.sh`).
 - **Auto-configured:** All `MINIO_*` / `OBJECT_STORAGE_*` vars (by the startup script).

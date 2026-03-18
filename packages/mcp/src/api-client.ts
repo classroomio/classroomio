@@ -6,7 +6,7 @@ import type {
   TCourseImportDraftPublishToCourse,
   TCourseImportDraftUpdate
 } from '@cio/utils/validation/course-import';
-import type { TCourseLandingPageUpdate } from '@cio/utils/validation/course';
+import type { TCourseContentReorder, TCourseLandingPageUpdate, TCourseUpdateParam } from '@cio/utils/validation/course';
 import type {
   TExerciseCreate,
   TExerciseFromTemplate,
@@ -73,6 +73,13 @@ export class ClassroomIoApiClient {
 
   async updateCourseLandingPage(courseId: TCourseImportCourseParam['courseId'], payload: TCourseLandingPageUpdate) {
     return this.request(`/course/${courseId}/landing-page`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async reorderCourseContent(courseId: TCourseUpdateParam['courseId'], payload: TCourseContentReorder) {
+    return this.request(`/course/${courseId}/content/reorder`, {
       method: 'PUT',
       body: payload
     });

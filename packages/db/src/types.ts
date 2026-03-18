@@ -171,6 +171,8 @@ export type TNewOrganizationTokenAuth = typeof schema.organizationTokenAuth.$inf
 
 export type TOrganizationApiKey = typeof schema.organizationApiKey.$inferSelect;
 export type TNewOrganizationApiKey = typeof schema.organizationApiKey.$inferInsert;
+export type TOrganizationAutomationUsage = typeof schema.organizationAutomationUsage.$inferSelect;
+export type TNewOrganizationAutomationUsage = typeof schema.organizationAutomationUsage.$inferInsert;
 
 export type TCourseImportDraft = typeof schema.courseImportDraft.$inferSelect;
 export type TNewCourseImportDraft = typeof schema.courseImportDraft.$inferInsert;
@@ -188,6 +190,7 @@ export type TOrganizationInviteEventType = (typeof schema.organizationInviteEven
 export type TSsoProvider = (typeof schema.organizationSsoProviderType.enumValues)[number];
 
 export type TOrganizationApiKeyType = (typeof schema.organizationApiKeyType.enumValues)[number];
+export type TAutomationUsageCategory = (typeof schema.automationUsageCategory.enumValues)[number];
 
 export type TCourseImportSourceType = (typeof schema.courseImportSourceType.enumValues)[number];
 

@@ -13,6 +13,7 @@ export default {
       'Unlimited Q/A',
       '20 Students',
       'AI Course Builder (no video upload)',
+      'MCP access with 20 automation credits / month',
       'ClassroomIO branding'
     ],
     CTA: {
@@ -37,6 +38,7 @@ export default {
       'Unlimited Collaborators',
       '10K Students',
       'Advanced AI Course Builder (Video upload & Certificate)',
+      'MCP access with 500 automation credits / month',
       'Custom Branding',
       'Slack Invite',
       'Includes all upcoming features'
@@ -60,7 +62,13 @@ export default {
       YEARLY: 'Request Pricing',
       IS_PREMIUM: true
     },
-    FEATURES: ['Everything in Early Adopters plus:', 'Unlimited students', 'Custom Domain', '24/7 Support'],
+    FEATURES: [
+      'Everything in Early Adopters plus:',
+      'Unlimited students',
+      'Custom Domain',
+      'MCP access with 5,000 automation credits / month',
+      '24/7 Support'
+    ],
     CTA: {
       LABEL: 'Contact Us',
       LINK: 'https://cal.com/classroomio/enterprise',

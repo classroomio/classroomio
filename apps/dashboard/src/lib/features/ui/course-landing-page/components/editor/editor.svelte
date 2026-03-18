@@ -32,6 +32,7 @@
   import { Button } from '@cio/ui/base/button';
   import { courseApi } from '$features/course/api';
   import { generateSlug } from '@cio/utils/functions';
+  import { openCoursePreview } from '$features/course/utils/course-preview';
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { useSidebar } from '@cio/ui/base/sidebar';
 
@@ -164,9 +165,12 @@
     syncCourseStore(course);
   }
 
-  async function handlePreview() {
-    const link = `${$currentOrgDomain}/course/${course.slug}`;
-    window.open(link, '_blank');
+  function handlePreview() {
+    openCoursePreview({
+      courseId,
+      courseSlug: course.slug,
+      currentOrgDomain: $currentOrgDomain
+    });
   }
 
   function setter(value: any, setterKey: string) {
@@ -193,7 +197,7 @@
         </Button>
         <HoverableItem>
           {#snippet children(isHovered)}
-            <IconButton onclick={handlePreview} disabled={loading || !course.slug}>
+            <IconButton onclick={handlePreview} disabled={loading} aria-label={$t('course.header.preview')}>
               <PreviewIcon {isHovered} size={16} />
             </IconButton>
           {/snippet}

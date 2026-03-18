@@ -21,7 +21,7 @@
   import { toApiPayload, type AnswerData } from '@cio/question-types';
   import { exerciseApi, presignApi } from '$features/course/api';
   import type { SubmissionListItem } from '$features/course/utils/types';
-  import { sanitizeHtml } from '@cio/ui/tools/sanitize';
+  import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { ContentType } from '@cio/utils/constants/content';
@@ -422,9 +422,10 @@
       </div>
 
       <article class="preview prose prose-sm sm:prose mt-3 p-2">
-        {@html sanitizeHtml(
-          $questionnaire.description || $t('course.navItem.lessons.exercises.all_exercises.view_mode.no_description')
-        )}
+        <SafeHtmlContent
+          content={$questionnaire.description ||
+            $t('course.navItem.lessons.exercises.all_exercises.view_mode.no_description')}
+        />
       </article>
 
       <Button onclick={handleStart} type="button" class="float-right my-5">

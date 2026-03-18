@@ -20,6 +20,7 @@
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import { calcCourseProgress, calcProgressRate } from '$features/course/utils/functions';
   import CardDropdown from './card-dropdown.svelte';
+  import CoursePublishBadge from './course-publish-badge.svelte';
   import type { OrgCourses, UserEnrolledCourses } from '$features/course/types';
   import type { OrgPublicCourses } from '$features/org/utils/types';
 
@@ -196,13 +197,7 @@
                   </div>
                 {/if}
               {:else}
-                <Badge variant={isPublished ? 'default' : 'outline'}>
-                  {#if isPublished}
-                    {$t('courses.course_card.published')}
-                  {:else}
-                    {$t('courses.course_card.unpublished')}
-                  {/if}
-                </Badge>
+                <CoursePublishBadge {isPublished} />
               {/if}
             </div>
           </div>

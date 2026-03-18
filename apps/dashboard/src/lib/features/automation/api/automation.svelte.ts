@@ -1,7 +1,9 @@
 import type {
   AutomationKey,
   AutomationKeyType,
+  AutomationUsage,
   CreateAutomationKeyRequest,
+  GetAutomationUsageRequest,
   ListAutomationKeysRequest,
   RevokeAutomationKeyRequest,
   RotateAutomationKeyRequest
@@ -15,6 +17,7 @@ class AutomationApi extends BaseApiWithErrors {
   generatedSecret = $state<string | null>(null);
   isFetched = $state(false);
   keys = $state<AutomationKey[]>([]);
+  usage = $state<AutomationUsage | null>(null);
 
   async listKeys(type?: AutomationKeyType) {
     return this.execute<ListAutomationKeysRequest>({
@@ -26,6 +29,19 @@ class AutomationApi extends BaseApiWithErrors {
       onSuccess: (response) => {
         this.keys = response.data;
         this.isFetched = true;
+      }
+    });
+  }
+
+  async getUsage(type: AutomationKeyType = 'mcp') {
+    return this.execute<GetAutomationUsageRequest>({
+      requestFn: () =>
+        classroomio.organization.automation.usage.$get({
+          query: { type }
+        }),
+      logContext: 'fetching automation usage',
+      onSuccess: (response) => {
+        this.usage = response.data;
       }
     });
   }
@@ -43,6 +59,9 @@ class AutomationApi extends BaseApiWithErrors {
       onSuccess: (response) => {
         this.generatedSecret = response.data.secret;
         this.keys = [response.data.key, ...this.keys];
+        if (this.usage) {
+          this.usage = { ...this.usage, activeKeys: this.usage.activeKeys + 1 };
+        }
         snackbar.success('snackbar.automation.created');
       }
     });
@@ -54,6 +73,10 @@ class AutomationApi extends BaseApiWithErrors {
       logContext: 'revoking automation key',
       onSuccess: (response) => {
         this.keys = this.keys.map((key) => (key.id === response.data.id ? response.data : key));
+        if (this.usage) {
+          const activeKeys = this.keys.filter((key) => key.type === 'mcp' && !key.revokedAt).length;
+          this.usage = { ...this.usage, activeKeys };
+        }
         snackbar.success('snackbar.automation.revoked');
       }
     });

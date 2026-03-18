@@ -4,7 +4,7 @@
   import { page } from '$app/state';
   import { onMount, onDestroy } from 'svelte';
   import { resolve } from '$app/paths';
-  import { sanitizeHtml } from '@cio/ui/tools/sanitize';
+  import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
   import PlayIcon from '@lucide/svelte/icons/play';
 
   import { getLectureNo } from '$features/course/utils/functions';
@@ -215,7 +215,7 @@
             </h3>
 
             <ul class="list font-light">
-              <HTMLRender>{@html sanitizeHtml(get(courseData, 'metadata.requirements', ''))}</HTMLRender>
+              <HTMLRender><SafeHtmlContent content={get(courseData, 'metadata.requirements', '')} /></HTMLRender>
             </ul>
           </NavSection>
         {/if}
@@ -228,7 +228,7 @@
             </h3>
 
             <HTMLRender className="dark:text-white text-sm font-light">
-              {@html sanitizeHtml(get(courseData, 'metadata.description', ''))}
+              <SafeHtmlContent content={get(courseData, 'metadata.description', '')} />
             </HTMLRender>
           </NavSection>
         {/if}
@@ -238,7 +238,7 @@
           <NavSection id="goals">
             <h3 class="mt-0 mb-3 text-2xl">{$t('course.navItem.landing_page.learn')}</h3>
             <ul class="list font-light">
-              <HTMLRender>{@html sanitizeHtml(get(courseData, 'metadata.goals', ''))}</HTMLRender>
+              <HTMLRender><SafeHtmlContent content={get(courseData, 'metadata.goals', '')} /></HTMLRender>
             </ul>
           </NavSection>
         {/if}

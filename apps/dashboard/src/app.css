@@ -46,22 +46,111 @@ html .dark {
   border: 2px solid var(--scrollbarBG);
 }
 
+.prose {
+  color: var(--foreground);
+}
+
 .prose h1,
 .prose h2,
 .prose h3,
-.prose h4,
-.prose h5,
-.prose h6 {
-  font-size: revert !important;
-  font-weight: revert !important;
-  margin-top: 0px !important;
-  margin-bottom: 16px !important;
-  line-height: 1.25 !important;
+.prose h4 {
+  @apply scroll-m-20 tracking-tight text-balance;
+  color: var(--foreground);
+}
+
+.prose h1 {
+  @apply mt-0 text-4xl font-extrabold;
+}
+
+.prose h2 {
+  @apply mt-10 border-b pb-2 text-3xl font-semibold transition-colors;
+}
+
+.prose h2:first-child {
+  @apply mt-0;
+}
+
+.prose h3 {
+  @apply mt-8 text-2xl font-semibold;
+}
+
+.prose h4 {
+  @apply mt-8 text-xl font-semibold;
+}
+
+.prose p,
+.prose li,
+.prose blockquote {
+  @apply leading-7;
 }
 
 .prose p {
-  margin-top: 0px !important;
-  margin-bottom: 10px !important;
+  @apply my-0;
+}
+
+.prose p:not(:first-child) {
+  @apply mt-6;
+}
+
+.prose a {
+  @apply font-medium underline underline-offset-4;
+  color: var(--primary);
+}
+
+.prose blockquote {
+  @apply mt-6 border-s-2 ps-6 italic;
+  border-inline-start-color: var(--border);
+}
+
+.prose ul,
+.prose ol {
+  @apply my-6 ms-6 p-0;
+}
+
+.prose ul {
+  @apply list-disc;
+}
+
+.prose ol {
+  @apply list-decimal;
+}
+
+.prose li {
+  @apply mt-2;
+}
+
+.prose table {
+  @apply my-6 w-full border-collapse;
+}
+
+.prose thead tr,
+.prose tbody tr {
+  @apply m-0 border-t p-0;
+  border-top-color: var(--border);
+}
+
+.prose tbody tr:nth-child(even) {
+  background: var(--muted);
+}
+
+.prose th,
+.prose td {
+  @apply border px-4 py-2 text-start;
+  border-color: var(--border);
+}
+
+.prose th {
+  @apply font-bold;
+}
+
+.prose th[align='center'],
+.prose td[align='center'] {
+  @apply text-center;
+}
+
+.prose th[align='right'],
+.prose td[align='right'] {
+  @apply text-end;
 }
 
 /* .dark .prose h1,
@@ -104,10 +193,6 @@ iframe.iframe {
   iframe.iframe {
     height: 209px;
   }
-}
-
-.prose a {
-  color: var(--main-primary-color);
 }
 
 :not([data-slot='button']) > svg.lucide-icon:not(.custom) {

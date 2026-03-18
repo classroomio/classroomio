@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import { page } from '$app/state';
   import * as Avatar from '@cio/ui/base/avatar';
   import { t } from '$lib/utils/functions/translations';
@@ -19,7 +20,8 @@
     hideGoogleAuth?: boolean;
     redirectPathname?: string;
     handleSubmit?: () => void;
-    children?: import('svelte').Snippet;
+    children?: Snippet;
+    getPasswordAuthAlternative?: Snippet;
   }
 
   let {
@@ -30,7 +32,8 @@
     hideGoogleAuth = false,
     redirectPathname = '',
     handleSubmit = () => {},
-    children
+    children,
+    getPasswordAuthAlternative
   }: Props = $props();
 
   async function signInWithGoogle() {
@@ -100,12 +103,17 @@
             <Separator />
             <span class="ui:bg-card ui:text-muted-foreground absolute px-2 text-sm"> Or continue With </span>
           </div>
-          <Button variant="outline" onclick={signInWithGoogle} disabled={isLoading} class="w-full">
-            <GoogleIconColored />
-            <span>
-              {isLogin ? $t('login.login_with_google') : $t('login.signup_with_google')}
-            </span>
-          </Button>
+
+          {#if getPasswordAuthAlternative}
+            {@render getPasswordAuthAlternative()}
+          {:else}
+            <Button variant="outline" onclick={signInWithGoogle} disabled={isLoading} class="w-full">
+              <GoogleIconColored />
+              <span>
+                {isLogin ? $t('login.login_with_google') : $t('login.signup_with_google')}
+              </span>
+            </Button>
+          {/if}
         </div>
       {/if}
     </Card.Content>

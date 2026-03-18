@@ -15,13 +15,19 @@ import {
   listOrganizationApiKeys,
   updateOrganizationApiKey
 } from '@cio/db/queries/organization';
+import { assertOrganizationAutomationKeyCreationAllowed } from './automation-usage';
 
 const DEFAULT_SCOPES: Record<TOrganizationApiKeyType, TOrganizationApiKeyScope[]> = {
   mcp: [
     'course_import:draft:create',
     'course_import:draft:read',
     'course_import:draft:update',
-    'course_import:draft:publish'
+    'course_import:draft:publish',
+    'course:read',
+    'course:write',
+    'course:tag:write',
+    'course:exercise:read',
+    'course:exercise:write'
   ],
   api: ['public_api:*'],
   zapier: ['public_api:*']
@@ -86,6 +92,8 @@ export async function createOrganizationApiKeyService(
   createdByProfileId: string,
   payload: TCreateOrganizationApiKey
 ): Promise<{ key: OrganizationApiKeySummary; secret: string }> {
+  await assertOrganizationAutomationKeyCreationAllowed(organizationId, payload.type);
+
   const secret = generateOrganizationApiKeySecret(payload.type);
   const key = await createOrganizationApiKey({
     organizationId,

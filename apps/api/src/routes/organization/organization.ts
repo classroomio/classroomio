@@ -37,15 +37,19 @@ import { TOrganization } from '@db/types';
 import { automationRouter } from '@api/routes/organization/automation';
 import { assetsRouter } from '@api/routes/organization/assets';
 import { authMiddleware } from '@api/middlewares/auth';
+import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { authOrApiKeyMiddleware } from '@api/middlewares/auth-or-api-key';
+import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { courseImportRouter } from '@api/routes/organization/course-import';
 import { getLMSExercisesService } from '@api/services/exercise';
 import { handleError } from '@api/utils/errors';
 import { inviteTeamMembers } from '@api/services/organization/invite';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
+import { orgMemberOrAutomationKeyMiddleware } from '@api/middlewares/org-member-or-automation-key';
 import { quizRouter } from '@api/routes/organization/quiz';
 import { tagsRouter } from '@api/routes/organization/tags';
+import { ROLE } from '@cio/utils/constants';
 import { zValidator } from '@hono/zod-validator';
 
 export const organizationRouter = new Hono()
@@ -287,17 +291,18 @@ export const organizationRouter = new Hono()
    */
   .get(
     '/courses',
-    authMiddleware,
-    orgMemberMiddleware,
+    authOrAutomationKeyMiddleware,
+    orgMemberOrAutomationKeyMiddleware(['course:read']),
     zValidator('query', ZGetOrganizationCoursesQuery),
     async (c) => {
       try {
-        const user = c.get('user')!;
+        const user = c.get('user');
         const orgId = c.get('orgId');
         const userRole = c.get('userRole');
+        const automationKey = c.get('automationKey');
         const { tags } = c.req.valid('query');
 
-        if (!orgId || userRole === null) {
+        if (!orgId) {
           return c.json(
             {
               success: false,
@@ -308,21 +313,24 @@ export const organizationRouter = new Hono()
           );
         }
 
+        if (automationKey?.type === 'mcp') {
+          await assertMcpAutomationUsageAllowed(automationKey, 'list_org_courses');
+        }
+
         const tagSlugs = tags
           ?.split(',')
           .map((value) => value.trim())
           .filter(Boolean);
-
-        console.log('user', user);
-        console.log('userRole', userRole);
-        console.log('orgId', orgId);
-        console.log('tagSlugs', tagSlugs);
         const result = await getOrganizationCourses(
           orgId,
-          user.id,
-          userRole,
+          user?.id ?? automationKey?.createdByProfileId ?? '',
+          userRole ?? ROLE.ADMIN,
           tagSlugs && tagSlugs.length > 0 ? tagSlugs : undefined
         );
+
+        if (automationKey?.type === 'mcp') {
+          await recordMcpAutomationUsage(automationKey, 'list_org_courses', { tags: tagSlugs });
+        }
 
         return c.json(
           {

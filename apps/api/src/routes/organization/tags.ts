@@ -1,4 +1,5 @@
 import {
+  ZAutomationCourseTagAssignment,
   ZTagCreate,
   ZTagGroupCreate,
   ZTagGroupParam,
@@ -7,6 +8,7 @@ import {
   ZTagUpdate
 } from '@cio/utils/validation/tag';
 import {
+  assignTagsToCoursesByName,
   createOrganizationTag,
   createOrganizationTagGroup,
   getPublicOrganizationTagGroups,
@@ -18,8 +20,11 @@ import { ZGetCoursesBySiteName } from '@cio/utils/validation/organization';
 
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
+import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { handleError } from '@api/utils/errors';
 import { orgAdminMiddleware } from '@api/middlewares/org-admin';
+import { orgAdminOrAutomationKeyMiddleware } from '@api/middlewares/org-admin-or-automation-key';
+import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { zValidator } from '@hono/zod-validator';
 
 export const tagsRouter = new Hono()
@@ -72,6 +77,39 @@ export const tagsRouter = new Hono()
       return handleError(c, error, 'Failed to create tag group');
     }
   })
+  .put(
+    '/courses/assign',
+    authOrAutomationKeyMiddleware,
+    orgAdminOrAutomationKeyMiddleware(['course:tag:write']),
+    zValidator('json', ZAutomationCourseTagAssignment),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const automationKey = c.get('automationKey');
+        const data = c.req.valid('json');
+
+        if (automationKey?.type === 'mcp') {
+          await assertMcpAutomationUsageAllowed(automationKey, 'tag_courses');
+        }
+
+        const result = await assignTagsToCoursesByName(orgId, data);
+
+        if (automationKey?.type === 'mcp') {
+          await recordMcpAutomationUsage(automationKey, 'tag_courses', { courseIds: data.courseIds });
+        }
+
+        return c.json(
+          {
+            success: true,
+            data: result
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to assign course tags');
+      }
+    }
+  )
   .put(
     '/groups/:groupId',
     authMiddleware,

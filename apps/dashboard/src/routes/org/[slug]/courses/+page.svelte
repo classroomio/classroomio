@@ -13,11 +13,13 @@
 
   let searchValue = $state('');
   let selectedId: string = $state('0');
+  let selectedOrder = $state<'asc' | 'desc'>('desc');
   let selectedTags = $state<string[]>([]);
   let hasInitializedFilters = $state(false);
   let isFiltering = $state(false);
 
   const validSortValues = new Set(COURSE_SORT_OPTIONS.map((option) => option.value));
+  const validSortOrders = new Set(['asc', 'desc']);
 
   $effect(() => {
     if (data.courses) {
@@ -35,6 +37,27 @@
     }
 
     return '0';
+  }
+
+  function normalizeSortOrder(sortOrder: string | null): 'asc' | 'desc' {
+    if (sortOrder && validSortOrders.has(sortOrder)) {
+      return sortOrder as 'asc' | 'desc';
+    }
+
+    return 'desc';
+  }
+
+  function getLegacySortState(sortValue: string | null) {
+    switch (sortValue) {
+      case '3':
+        return { selectedId: '0', selectedOrder: 'asc' as const };
+      case '4':
+        return { selectedId: '1', selectedOrder: 'asc' as const };
+      case '5':
+        return { selectedId: '2', selectedOrder: 'asc' as const };
+      default:
+        return null;
+    }
   }
 
   function updateFiltersUrl() {
@@ -56,6 +79,12 @@
       nextUrl.searchParams.delete('sort');
     }
 
+    if (selectedOrder !== 'desc') {
+      nextUrl.searchParams.set('order', selectedOrder);
+    } else {
+      nextUrl.searchParams.delete('order');
+    }
+
     const nextPath = `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`;
     window.history.replaceState(window.history.state, '', nextPath);
   }
@@ -65,7 +94,8 @@
       return;
     }
 
-    localStorage.setItem('classroomio_filter_course_key', selectedId);
+    localStorage.setItem('classroomio_filter_course_sort_key', selectedId);
+    localStorage.setItem('classroomio_filter_course_order_key', selectedOrder);
     updateFiltersUrl();
   });
 
@@ -94,6 +124,7 @@
 
   async function clearFilters() {
     selectedId = '0';
+    selectedOrder = 'desc';
 
     if (selectedTags.length === 0) {
       return;
@@ -111,15 +142,27 @@
       return false;
     });
 
+    const sortedCourses = [...filteredCourses];
+
     if (selectedId === '0') {
-      return filteredCourses.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      return sortedCourses.sort((a, b) =>
+        selectedOrder === 'asc'
+          ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
     } else if (selectedId === '1') {
-      return filteredCourses.sort((a, b) => (b.isPublished ? 0 : 1) - (a.isPublished ? 0 : 1));
+      return sortedCourses.sort((a, b) =>
+        selectedOrder === 'asc'
+          ? Number(a.isPublished) - Number(b.isPublished)
+          : Number(b.isPublished) - Number(a.isPublished)
+      );
     } else if (selectedId === '2') {
-      return filteredCourses.sort((a, b) => b.lessonCount - a.lessonCount);
+      return sortedCourses.sort((a, b) =>
+        selectedOrder === 'asc' ? a.lessonCount - b.lessonCount : b.lessonCount - a.lessonCount
+      );
     }
 
-    return filteredCourses;
+    return sortedCourses;
   });
 
   onMount(() => {
@@ -129,9 +172,32 @@
       $courseMetaDeta.view = courseView;
     }
 
-    const sortFromUrl = normalizeSortValue(new URLSearchParams(window.location.search).get('sort'));
-    const sortFromStorage = normalizeSortValue(localStorage.getItem('classroomio_filter_course_key'));
-    selectedId = sortFromUrl !== '0' ? sortFromUrl : sortFromStorage;
+    const searchParams = new URLSearchParams(window.location.search);
+    const legacySortFromUrl = getLegacySortState(searchParams.get('sort'));
+    const legacySortFromStorage = getLegacySortState(localStorage.getItem('classroomio_filter_course_key'));
+    const oldSortFromStorage = normalizeSortValue(localStorage.getItem('classroomio_filter_course_key'));
+    const sortFromUrl = normalizeSortValue(searchParams.get('sort'));
+    const sortFromStorage = normalizeSortValue(localStorage.getItem('classroomio_filter_course_sort_key'));
+    const orderFromUrl = normalizeSortOrder(searchParams.get('order'));
+    const orderFromStorage = normalizeSortOrder(localStorage.getItem('classroomio_filter_course_order_key'));
+
+    if (legacySortFromUrl) {
+      selectedId = legacySortFromUrl.selectedId;
+      selectedOrder = legacySortFromUrl.selectedOrder;
+    } else if (sortFromUrl !== '0' || orderFromUrl !== 'desc') {
+      selectedId = sortFromUrl;
+      selectedOrder = orderFromUrl;
+    } else if (legacySortFromStorage) {
+      selectedId = legacySortFromStorage.selectedId;
+      selectedOrder = legacySortFromStorage.selectedOrder;
+    } else if (sortFromStorage !== '0' || orderFromStorage !== 'desc') {
+      selectedId = sortFromStorage;
+      selectedOrder = orderFromStorage;
+    } else {
+      selectedId = oldSortFromStorage;
+      selectedOrder = 'desc';
+    }
+
     hasInitializedFilters = true;
     updateFiltersUrl();
   });
@@ -156,6 +222,7 @@
         {#snippet filterControls()}
           <CourseFilterPopover
             bind:selectedId
+            bind:selectedOrder
             {selectedTags}
             tagGroups={data.tagGroups}
             {isFiltering}

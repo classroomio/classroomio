@@ -6,7 +6,7 @@
   import { shortenName } from '$lib/utils/functions/string';
   import { Vote } from '$features/ui';
   import { CircleCheckIcon } from '$features/ui/icons';
-  import { sanitizeHtml } from '@cio/ui/tools/sanitize';
+  import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
 
   interface CommentAuthor {
     id: number | string | null;
@@ -65,7 +65,7 @@
       {/if}
     </header>
     <article class="prose prose-sm sm:prose p-2">
-      {@html sanitizeHtml(comment.body ?? '')}
+      <SafeHtmlContent content={comment.body ?? ''} />
     </article>
   </div>
 </div>

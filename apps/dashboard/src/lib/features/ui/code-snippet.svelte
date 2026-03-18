@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { sanitizeHtml } from '@cio/ui/tools/sanitize';
+  import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
+
   interface Props {
     code?: string;
   }
@@ -8,5 +9,5 @@
 </script>
 
 <div class="mb-3 rounded-md bg-gray-200 p-5 dark:bg-gray-500">
-  {@html sanitizeHtml(code)}
+  <SafeHtmlContent content={code} />
 </div>

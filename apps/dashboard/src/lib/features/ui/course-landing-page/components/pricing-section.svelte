@@ -5,7 +5,7 @@
   import { isCourseFree, calcCourseDiscount } from '$lib/utils/functions/course';
   import { currentOrg } from '$lib/utils/store/org';
   import { goto } from '$app/navigation';
-  import { sanitizeHtml } from '@cio/ui/tools/sanitize';
+  import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
   import HTMLRender from '$features/ui/html-render.svelte';
   import PaymentModal from './payment-modal.svelte';
   import type { Course } from '$features/course/utils/types';
@@ -175,7 +175,9 @@
     <!-- Gift Container -->
     {#if courseData?.metadata?.reward?.show}
       <div class="flex flex-col items-center border-t border-b border-gray-300 p-10">
-        <HTMLRender>{@html sanitizeHtml(get(courseData, 'metadata.reward.description', '') as string)}</HTMLRender>
+        <HTMLRender
+          ><SafeHtmlContent content={get(courseData, 'metadata.reward.description', '') as string} /></HTMLRender
+        >
       </div>
     {/if}
   </aside>

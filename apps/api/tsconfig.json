@@ -18,14 +18,14 @@
     "types": ["node"],
     "paths": {
       "@api/*": ["src/*"],
-      "@db/types": ["./node_modules/@cio/db/dist/types.d.ts"],
-      "@db/*": ["./node_modules/@cio/db/dist/*"],
-      "@cio/db/*": ["./node_modules/@cio/db/dist/*"],
-      "@cio/db/types": ["./node_modules/@cio/db/dist/types.d.ts"],
-      "@cio/utils": ["./node_modules/@cio/utils/dist/index.ts"],
-      "@cio/utils/*": ["./node_modules/@cio/utils/dist/*"],
-      "@cio/email/*": ["./node_modules/@cio/email/dist/*"],
-      "@cio/email": ["./node_modules/@cio/email/dist/index.d.ts"]
+      "@db/types": ["../../packages/db/src/types.ts"],
+      "@db/*": ["../../packages/db/src/*"],
+      "@cio/db/*": ["../../packages/db/src/*"],
+      "@cio/db/types": ["../../packages/db/src/types.ts"],
+      "@cio/utils": ["../../packages/utils/src/index.ts"],
+      "@cio/utils/*": ["../../packages/utils/src/*"],
+      "@cio/email/*": ["../../packages/email/src/*"],
+      "@cio/email": ["../../packages/email/src/index.ts"]
     }
   },
   "include": ["src/**/*"],

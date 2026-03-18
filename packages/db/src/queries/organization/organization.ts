@@ -677,3 +677,13 @@ export const getOrganizationPlanStatus = async (orgId: string) => {
 
   return result;
 };
+
+export const getActiveOrganizationPlan = async (orgId: string) => {
+  const [plan] = await db
+    .select()
+    .from(schema.organizationPlan)
+    .where(and(eq(schema.organizationPlan.orgId, orgId), eq(schema.organizationPlan.isActive, true)))
+    .limit(1);
+
+  return plan ?? null;
+};

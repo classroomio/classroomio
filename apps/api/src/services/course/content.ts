@@ -1,13 +1,21 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { ContentType } from '@cio/utils/constants';
-import { db } from '@cio/db/drizzle';
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { sql, inArray } from 'drizzle-orm';
-import { lesson, exercise } from '@cio/db/schema';
+import { courseSection, lesson, exercise } from '@cio/db/schema';
 import { getCourseContentItems, type CourseContentItemRow } from '@cio/db/queries/course/content';
 import { deleteLesson } from '@cio/db/queries/lesson';
-import { deleteCourseSection, getCourseSectionById } from '@cio/db/queries/course';
+import { deleteCourseSection, getCourseSectionById, getCourseSectionsByCourseId } from '@cio/db/queries/course';
 import { deleteExercise } from '@cio/db/queries/exercise/exercise';
-import type { TCourseContentDelete, TCourseContentUpdate } from '@cio/utils/validation/course';
+import type { TCourseContentDelete, TCourseContentReorder, TCourseContentUpdate } from '@cio/utils/validation/course';
+
+type CourseContentReorderResult = {
+  courseId: string;
+  updatedSections: number;
+  updatedItems: number;
+  updatedLessons: number;
+  updatedExercises: number;
+};
 
 function buildUpdatePayload(item: TCourseContentUpdate['items'][number]) {
   const payload: Record<string, unknown> = {};
@@ -64,122 +72,175 @@ async function assertCourseContentItems(courseId: string, items: TCourseContentU
   });
 }
 
+async function assertCourseSections(courseId: string, sections: NonNullable<TCourseContentReorder['sections']>) {
+  const existingSections = await getCourseSectionsByCourseId(courseId);
+  const sectionIds = new Set(existingSections.map((section) => section.id));
+
+  sections.forEach((section) => {
+    if (!sectionIds.has(section.id)) {
+      throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
+    }
+  });
+}
+
+async function applyCourseContentUpdates(tx: DbOrTxClient, items: TCourseContentUpdate['items']) {
+  const updates = items
+    .map((item) => ({
+      item,
+      payload: buildUpdatePayload(item)
+    }))
+    .filter(({ payload }) => Object.keys(payload).length > 0);
+
+  if (updates.length === 0) {
+    return {
+      updatedItems: 0,
+      updatedLessons: 0,
+      updatedExercises: 0
+    };
+  }
+
+  const updatedAt = new Date().toISOString();
+
+  const lessonUpdates = updates.filter(({ item }) => item.type === ContentType.Lesson);
+  const exerciseUpdates = updates.filter(({ item }) => item.type === ContentType.Exercise);
+
+  if (lessonUpdates.length > 0) {
+    const lessonIds = lessonUpdates.map(({ item }) => item.id);
+    const lessonOrderUpdates = lessonUpdates
+      .filter(({ payload }) => payload.order !== undefined)
+      .map(({ item, payload }) => ({ id: item.id, value: payload.order }));
+    const lessonSectionUpdates = lessonUpdates
+      .filter(({ payload }) => payload.sectionId !== undefined)
+      .map(({ item, payload }) => ({ id: item.id, value: payload.sectionId }));
+    const lessonUnlockUpdates = lessonUpdates
+      .filter(({ payload }) => payload.isUnlocked !== undefined)
+      .map(({ item, payload }) => ({ id: item.id, value: payload.isUnlocked }));
+
+    const lessonSet: Record<string, unknown> = {
+      updatedAt
+    };
+
+    if (lessonOrderUpdates.length > 0) {
+      lessonSet.order = sql`case ${lesson.id} ${sql.join(
+        lessonOrderUpdates.map((update) => sql`when ${update.id} then ${update.value}`),
+        sql` `
+      )} else ${lesson.order} end`;
+    }
+
+    if (lessonSectionUpdates.length > 0) {
+      lessonSet.sectionId = sql`case ${lesson.id} ${sql.join(
+        lessonSectionUpdates.map((update) => sql`when ${update.id} then ${update.value}`),
+        sql` `
+      )} else ${lesson.sectionId} end`;
+    }
+
+    if (lessonUnlockUpdates.length > 0) {
+      lessonSet.isUnlocked = sql`case ${lesson.id} ${sql.join(
+        lessonUnlockUpdates.map((update) => sql`when ${update.id} then ${update.value}`),
+        sql` `
+      )} else ${lesson.isUnlocked} end`;
+    }
+
+    const updatedLessons = await tx
+      .update(lesson)
+      .set(lessonSet)
+      .where(inArray(lesson.id, lessonIds))
+      .returning({ id: lesson.id });
+
+    if (updatedLessons.length !== lessonIds.length) {
+      throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
+    }
+  }
+
+  if (exerciseUpdates.length > 0) {
+    const exerciseIds = exerciseUpdates.map(({ item }) => item.id);
+    const exerciseOrderUpdates = exerciseUpdates
+      .filter(({ payload }) => payload.order !== undefined)
+      .map(({ item, payload }) => ({ id: item.id, value: payload.order }));
+    const exerciseSectionUpdates = exerciseUpdates
+      .filter(({ payload }) => payload.sectionId !== undefined)
+      .map(({ item, payload }) => ({ id: item.id, value: payload.sectionId }));
+    const exerciseUnlockUpdates = exerciseUpdates
+      .filter(({ payload }) => payload.isUnlocked !== undefined)
+      .map(({ item, payload }) => ({ id: item.id, value: payload.isUnlocked }));
+
+    const exerciseSet: Record<string, unknown> = {
+      updatedAt
+    };
+
+    if (exerciseOrderUpdates.length > 0) {
+      exerciseSet.order = sql`case ${exercise.id} ${sql.join(
+        exerciseOrderUpdates.map((update) => sql`when ${update.id} then ${update.value}`),
+        sql` `
+      )} else ${exercise.order} end`;
+    }
+
+    if (exerciseSectionUpdates.length > 0) {
+      exerciseSet.sectionId = sql`case ${exercise.id} ${sql.join(
+        exerciseSectionUpdates.map((update) => sql`when ${update.id} then ${update.value}`),
+        sql` `
+      )} else ${exercise.sectionId} end`;
+    }
+
+    if (exerciseUnlockUpdates.length > 0) {
+      exerciseSet.isUnlocked = sql`case ${exercise.id} ${sql.join(
+        exerciseUnlockUpdates.map((update) => sql`when ${update.id} then ${update.value}`),
+        sql` `
+      )} else ${exercise.isUnlocked} end`;
+    }
+
+    const updatedExercises = await tx
+      .update(exercise)
+      .set(exerciseSet)
+      .where(inArray(exercise.id, exerciseIds))
+      .returning({ id: exercise.id });
+
+    if (updatedExercises.length !== exerciseIds.length) {
+      throw new AppError('Exercise not found', ErrorCodes.EXERCISE_NOT_FOUND, 404);
+    }
+  }
+
+  return {
+    updatedItems: updates.length,
+    updatedLessons: lessonUpdates.length,
+    updatedExercises: exerciseUpdates.length
+  };
+}
+
+async function applySectionOrderUpdates(tx: DbOrTxClient, sections: NonNullable<TCourseContentReorder['sections']>) {
+  if (sections.length === 0) {
+    return 0;
+  }
+
+  const sectionIds = sections.map((section) => section.id);
+  const updatedAt = new Date().toISOString();
+  const sectionSet: Record<string, unknown> = {
+    updatedAt,
+    order: sql`case ${courseSection.id} ${sql.join(
+      sections.map((section) => sql`when ${section.id} then ${section.order}`),
+      sql` `
+    )} else ${courseSection.order} end`
+  };
+
+  const updatedSections = await tx
+    .update(courseSection)
+    .set(sectionSet)
+    .where(inArray(courseSection.id, sectionIds))
+    .returning({ id: courseSection.id });
+
+  if (updatedSections.length !== sectionIds.length) {
+    throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
+  }
+
+  return sections.length;
+}
+
 export async function updateCourseContent(courseId: string, items: TCourseContentUpdate['items']) {
   try {
     await assertCourseContentItems(courseId, items);
 
     await db.transaction(async (tx) => {
-      const updates = items
-        .map((item) => ({
-          item,
-          payload: buildUpdatePayload(item)
-        }))
-        .filter(({ payload }) => Object.keys(payload).length > 0);
-
-      if (updates.length === 0) {
-        return;
-      }
-
-      const updatedAt = new Date().toISOString();
-
-      const lessonUpdates = updates.filter(({ item }) => item.type === ContentType.Lesson);
-      const exerciseUpdates = updates.filter(({ item }) => item.type === ContentType.Exercise);
-
-      if (lessonUpdates.length > 0) {
-        const lessonIds = lessonUpdates.map(({ item }) => item.id);
-        const lessonOrderUpdates = lessonUpdates
-          .filter(({ payload }) => payload.order !== undefined)
-          .map(({ item, payload }) => ({ id: item.id, value: payload.order }));
-        const lessonSectionUpdates = lessonUpdates
-          .filter(({ payload }) => payload.sectionId !== undefined)
-          .map(({ item, payload }) => ({ id: item.id, value: payload.sectionId }));
-        const lessonUnlockUpdates = lessonUpdates
-          .filter(({ payload }) => payload.isUnlocked !== undefined)
-          .map(({ item, payload }) => ({ id: item.id, value: payload.isUnlocked }));
-
-        const lessonSet: Record<string, unknown> = {
-          updatedAt
-        };
-
-        if (lessonOrderUpdates.length > 0) {
-          lessonSet.order = sql`case ${lesson.id} ${sql.join(
-            lessonOrderUpdates.map((update) => sql`when ${update.id} then ${update.value}`),
-            sql` `
-          )} else ${lesson.order} end`;
-        }
-
-        if (lessonSectionUpdates.length > 0) {
-          lessonSet.sectionId = sql`case ${lesson.id} ${sql.join(
-            lessonSectionUpdates.map((update) => sql`when ${update.id} then ${update.value}`),
-            sql` `
-          )} else ${lesson.sectionId} end`;
-        }
-
-        if (lessonUnlockUpdates.length > 0) {
-          lessonSet.isUnlocked = sql`case ${lesson.id} ${sql.join(
-            lessonUnlockUpdates.map((update) => sql`when ${update.id} then ${update.value}`),
-            sql` `
-          )} else ${lesson.isUnlocked} end`;
-        }
-
-        const updatedLessons = await tx
-          .update(lesson)
-          .set(lessonSet)
-          .where(inArray(lesson.id, lessonIds))
-          .returning({ id: lesson.id });
-
-        if (updatedLessons.length !== lessonIds.length) {
-          throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
-        }
-      }
-
-      if (exerciseUpdates.length > 0) {
-        const exerciseIds = exerciseUpdates.map(({ item }) => item.id);
-        const exerciseOrderUpdates = exerciseUpdates
-          .filter(({ payload }) => payload.order !== undefined)
-          .map(({ item, payload }) => ({ id: item.id, value: payload.order }));
-        const exerciseSectionUpdates = exerciseUpdates
-          .filter(({ payload }) => payload.sectionId !== undefined)
-          .map(({ item, payload }) => ({ id: item.id, value: payload.sectionId }));
-        const exerciseUnlockUpdates = exerciseUpdates
-          .filter(({ payload }) => payload.isUnlocked !== undefined)
-          .map(({ item, payload }) => ({ id: item.id, value: payload.isUnlocked }));
-
-        const exerciseSet: Record<string, unknown> = {
-          updatedAt
-        };
-
-        if (exerciseOrderUpdates.length > 0) {
-          exerciseSet.order = sql`case ${exercise.id} ${sql.join(
-            exerciseOrderUpdates.map((update) => sql`when ${update.id} then ${update.value}`),
-            sql` `
-          )} else ${exercise.order} end`;
-        }
-
-        if (exerciseSectionUpdates.length > 0) {
-          exerciseSet.sectionId = sql`case ${exercise.id} ${sql.join(
-            exerciseSectionUpdates.map((update) => sql`when ${update.id} then ${update.value}`),
-            sql` `
-          )} else ${exercise.sectionId} end`;
-        }
-
-        if (exerciseUnlockUpdates.length > 0) {
-          exerciseSet.isUnlocked = sql`case ${exercise.id} ${sql.join(
-            exerciseUnlockUpdates.map((update) => sql`when ${update.id} then ${update.value}`),
-            sql` `
-          )} else ${exercise.isUnlocked} end`;
-        }
-
-        const updatedExercises = await tx
-          .update(exercise)
-          .set(exerciseSet)
-          .where(inArray(exercise.id, exerciseIds))
-          .returning({ id: exercise.id });
-
-        if (updatedExercises.length !== exerciseIds.length) {
-          throw new AppError('Exercise not found', ErrorCodes.EXERCISE_NOT_FOUND, 404);
-        }
-      }
+      await applyCourseContentUpdates(tx, items);
     });
   } catch (error) {
     if (error instanceof AppError) {
@@ -188,6 +249,48 @@ export async function updateCourseContent(courseId: string, items: TCourseConten
 
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to update course content',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
+}
+
+export async function reorderCourseContent(
+  courseId: string,
+  payload: TCourseContentReorder
+): Promise<CourseContentReorderResult> {
+  try {
+    if (payload.sections?.length) {
+      await assertCourseSections(courseId, payload.sections);
+    }
+
+    if (payload.items?.length) {
+      await assertCourseContentItems(courseId, payload.items);
+    }
+
+    return await db.transaction(async (tx) => {
+      const updatedSections = payload.sections?.length ? await applySectionOrderUpdates(tx, payload.sections) : 0;
+      const itemResult = payload.items?.length
+        ? await applyCourseContentUpdates(tx, payload.items)
+        : {
+            updatedItems: 0,
+            updatedLessons: 0,
+            updatedExercises: 0
+          };
+
+      return {
+        courseId,
+        updatedSections,
+        ...itemResult
+      };
+    });
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to reorder course content',
       ErrorCodes.INTERNAL_ERROR,
       500
     );

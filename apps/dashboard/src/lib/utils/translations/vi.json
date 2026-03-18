@@ -1,5 +1,6 @@
 {
   "common": {
+    "refresh": "Làm mới",
     "unsaved_changes": {
       "message": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
     }
@@ -1508,6 +1509,10 @@
       "placeholder": "Tìm kiếm bài học hoặc bài tập",
       "empty": "Không tìm thấy kết quả nào"
     },
+    "header": {
+      "preview": "Preview course",
+      "preview_missing_slug": "Generate and save a course slug before previewing."
+    },
     "sidebar": {
       "back_to_course": "Quay lại khóa học",
       "content_count": {
@@ -1582,6 +1587,12 @@
       }
     },
     "course_filter": {
+      "date_created_newest": "Date Created: Newest first",
+      "date_created_oldest": "Date Created: Oldest first",
+      "published_first": "Published: Published first",
+      "unpublished_first": "Published: Unpublished first",
+      "most_lessons": "Lessons: Most first",
+      "fewest_lessons": "Lessons: Fewest first",
       "date_created": "Ngày tạo",
       "published": "Đã xuất bản",
       "lessons": "Bài học"
@@ -1592,6 +1603,9 @@
       "clear_all": "Xóa tất cả",
       "popover_title": "Bộ lọc",
       "sort": "Sắp xếp",
+      "order": "Thứ tự",
+      "ascending": "Asc",
+      "descending": "Desc",
       "tags": "Thẻ",
       "empty_tags": "Không có thẻ nào"
     }
@@ -2212,7 +2226,6 @@
         }
       },
       "login": {
-        "sso_enabled": "{provider} đã được bật cho miền của bạn",
         "sso_redirect_error": "Đăng nhập SSO bị định cấu hình sai. Vui lòng đặt PUBLIC_SERVER_URL cho máy chủ API của bạn.",
         "sso_required": "Vui lòng đăng nhập bằng SSO. Đăng nhập bằng mật khẩu bị vô hiệu hóa.",
         "sign_in_with_sso": "Đăng nhập bằng {nhà cung cấp}",

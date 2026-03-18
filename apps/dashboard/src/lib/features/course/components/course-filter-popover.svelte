@@ -1,6 +1,7 @@
 <script lang="ts">
   import { COURSE_SORT_OPTIONS } from '../utils/constants';
   import * as Popover from '@cio/ui/base/popover';
+  import * as ToggleGroup from '@cio/ui/base/toggle-group';
   import { Button } from '@cio/ui/base/button';
   import { Spinner } from '@cio/ui/base/spinner';
   import { Checkbox } from '@cio/ui/base/checkbox';
@@ -27,6 +28,7 @@
 
   interface Props {
     selectedId?: string;
+    selectedOrder?: 'asc' | 'desc';
     selectedTags?: string[];
     tagGroups?: FilterTagGroup[];
     sortOptions?: readonly SortOption[];
@@ -37,6 +39,7 @@
 
   let {
     selectedId = $bindable('0'),
+    selectedOrder = $bindable('desc' as 'asc' | 'desc'),
     selectedTags = [],
     tagGroups = [],
     sortOptions = COURSE_SORT_OPTIONS,
@@ -47,8 +50,7 @@
 
   let isOpen = $state(false);
 
-  const hasActiveFilters = $derived(selectedId !== '0' || selectedTags.length > 0);
-  const hasActiveTagFilters = $derived(selectedTags.length > 0);
+  const hasActiveFilters = $derived(selectedId !== '0' || selectedOrder !== 'desc' || selectedTags.length > 0);
 
   function isTagSelected(tagSlug: string) {
     return selectedTags.includes(tagSlug);
@@ -66,7 +68,7 @@
             <FilterIcon size={16} />
           {/if}
         </IconButton>
-        {#if hasActiveTagFilters}
+        {#if hasActiveFilters}
           <span
             class="ui:bg-primary absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border border-white"
             aria-hidden="true"
@@ -101,6 +103,26 @@
             </Button>
           {/each}
         </div>
+      </div>
+
+      <div class="space-y-2">
+        <p class="ui:text-muted-foreground text-xs font-semibold uppercase">
+          {$t('courses.tag_filters.order')}
+        </p>
+        <ToggleGroup.Root
+          type="single"
+          variant="outline"
+          size="sm"
+          value={selectedOrder}
+          onValueChange={(value) => {
+            if (value === 'asc' || value === 'desc') {
+              selectedOrder = value;
+            }
+          }}
+        >
+          <ToggleGroup.Item value="asc">{$t('courses.tag_filters.ascending')}</ToggleGroup.Item>
+          <ToggleGroup.Item value="desc">{$t('courses.tag_filters.descending')}</ToggleGroup.Item>
+        </ToggleGroup.Root>
       </div>
 
       <div class="space-y-3">

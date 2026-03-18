@@ -8,6 +8,11 @@ export const ZOrganizationApiKeyScope = z.enum([
   'course_import:draft:read',
   'course_import:draft:update',
   'course_import:draft:publish',
+  'course:read',
+  'course:write',
+  'course:tag:write',
+  'course:exercise:read',
+  'course:exercise:write',
   'public_api:*'
 ]);
 export type TOrganizationApiKeyScope = z.infer<typeof ZOrganizationApiKeyScope>;
@@ -16,6 +21,11 @@ export const ZListOrganizationApiKeysQuery = z.object({
   type: ZOrganizationApiKeyType.optional()
 });
 export type TListOrganizationApiKeysQuery = z.infer<typeof ZListOrganizationApiKeysQuery>;
+
+export const ZOrganizationAutomationUsageQuery = z.object({
+  type: ZOrganizationApiKeyType.default('mcp')
+});
+export type TOrganizationAutomationUsageQuery = z.infer<typeof ZOrganizationAutomationUsageQuery>;
 
 export const ZCreateOrganizationApiKey = z.object({
   type: ZOrganizationApiKeyType,

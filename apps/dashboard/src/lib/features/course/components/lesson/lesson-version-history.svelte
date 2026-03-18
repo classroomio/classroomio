@@ -8,7 +8,7 @@
   import { lessonApi } from '$features/course/api';
   import { diffLines } from 'diff';
   import { courseApi } from '$features/course/api';
-  import { sanitizeHtml } from '@cio/ui/tools/sanitize';
+  import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
   import { t } from '$lib/utils/functions/translations';
 
   import { snackbar } from '$features/ui/snackbar/store';
@@ -83,7 +83,7 @@
     );
   }
 
-  function fetchLessonHistory(lessonId: string, locale: string, endRange: number) {
+  function fetchLessonHistory(lessonId: string, locale: TLocale, endRange: number) {
     untrack(async () => {
       try {
         isMoreHistoryLoading = true;
@@ -100,9 +100,18 @@
 
         const data = response.data;
 
-        // Filter out duplicates based on timestamp
+        const toLessonHistory = (item: (typeof data)[number]): LessonHistory => ({
+          old_content: item.oldContent ?? '',
+          new_content: item.newContent ?? '',
+          timestamp: item.timestamp ? new Date(item.timestamp) : new Date(),
+          locale: (item.locale as TLocale) ?? 'en',
+          lesson_id: item.lessonId ?? ''
+        });
+
         const existingTimestamps = new Set(lessonHistory.map((item) => new Date(item.timestamp).getMinutes()));
-        const newEntries = data.filter((item) => !existingTimestamps.has(new Date(item.timestamp!).getMinutes()));
+        const newEntries = data
+          .filter((item) => !existingTimestamps.has(new Date(item.timestamp ?? 0).getMinutes()))
+          .map(toLessonHistory);
         lessonHistory = removeDuplicate([...lessonHistory, ...newEntries]);
 
         if (lessonHistory.length > 0) {
@@ -206,7 +215,7 @@
         {#key lessonId}
           <HTMLRender id="display" className="m-auto">
             <div class="amen">
-              {@html sanitizeHtml(content)}
+              <SafeHtmlContent {content} />
             </div>
           </HTMLRender>
         {/key}
@@ -222,7 +231,7 @@
     </p>
 
     <div>
-      {#each lessonHistory as version, index}
+      {#each lessonHistory as version, index (index)}
         <button
           onclick={() => updateContentVersion(version, index)}
           class="flex w-full cursor-pointer items-start p-4 px-10 hover:bg-gray-200 dark:hover:bg-neutral-700 {index ==

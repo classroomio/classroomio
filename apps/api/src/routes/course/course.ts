@@ -11,6 +11,7 @@ import {
   ZCourseGetBySlugParam,
   ZCourseGetParam,
   ZCourseGetQuery,
+  ZCourseLandingPageUpdate,
   ZCourseProgressParam,
   ZCourseProgressQuery,
   ZCourseUpdate,
@@ -30,9 +31,11 @@ import { getCourseTags, replaceCourseTags } from '@api/services/tag';
 import { Hono } from '@api/utils/hono';
 import { attendanceRouter } from '@api/routes/course/attendance';
 import { authMiddleware } from '@api/middlewares/auth';
+import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { cloneCourse } from '@api/services/course/clone';
 import { contentRouter } from '@api/routes/course/content';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
+import { courseTeamMemberOrAutomationKeyMiddleware } from '@api/middlewares/course-team-member-or-automation-key';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
 import { createRateLimiter } from '@api/middlewares/rate-limiter';
 import { enrollInCourse } from '@api/services/course/invite';
@@ -51,8 +54,10 @@ import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgMemberMiddleware } from '@api/middlewares/org-member';
 import { paymentRequestRouter } from '@api/routes/course/payment-request';
 import { presignRouter } from '@api/routes/course/presign';
+import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { sectionRouter } from '@api/routes/course/section';
 import { submissionRouter } from '@api/routes/course/submission';
+import { updateCourseLandingPageService } from '@api/services/course/landing-page';
 import { zValidator } from '@hono/zod-validator';
 
 const enrollRateLimit = createRateLimiter({
@@ -230,6 +235,45 @@ export const courseRouter = new Hono()
         );
       } catch (error) {
         return handleError(c, error, 'Failed to fetch course');
+      }
+    }
+  )
+  /**
+   * PUT /course/:courseId/landing-page
+   * Updates landing-page-facing course fields such as copy, media, pricing, and reviews.
+   * Requires authentication and course team membership, or an automation key with course write scope.
+   */
+  .put(
+    '/:courseId/landing-page',
+    authOrAutomationKeyMiddleware,
+    courseTeamMemberOrAutomationKeyMiddleware(['course:write']),
+    zValidator('param', ZCourseUpdateParam),
+    zValidator('json', ZCourseLandingPageUpdate),
+    async (c) => {
+      try {
+        const { courseId } = c.req.valid('param');
+        const payload = c.req.valid('json');
+        const automationKey = c.get('automationKey');
+
+        if (automationKey?.type === 'mcp') {
+          await assertMcpAutomationUsageAllowed(automationKey, 'update_course_landing_page');
+        }
+
+        const result = await updateCourseLandingPageService(courseId, payload);
+
+        if (automationKey?.type === 'mcp') {
+          await recordMcpAutomationUsage(automationKey, 'update_course_landing_page', { courseId });
+        }
+
+        return c.json(
+          {
+            success: true,
+            data: result
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to update course landing page');
       }
     }
   )

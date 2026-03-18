@@ -1,5 +1,6 @@
 <script lang="ts">
   import { CertificatesPage } from '$features/course/pages';
+  import { RefreshPageData } from '$features/ui';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
 </script>
@@ -11,6 +12,9 @@
         {$t('course.navItem.certificates.title')}
       </Page.Title>
     </Page.HeaderContent>
+    <Page.Action>
+      <RefreshPageData />
+    </Page.Action>
   </Page.Header>
   <Page.Body>
     {#snippet child()}

@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, desc, eq, isNull } from 'drizzle-orm';
+import { and, count, desc, eq, isNull } from 'drizzle-orm';
 
 import { db } from '@db/drizzle';
 import type { TNewOrganizationApiKey, TOrganizationApiKey, TOrganizationApiKeyType } from '@db/types';
@@ -39,6 +39,29 @@ export const listOrganizationApiKeys = async (
   } catch (error) {
     console.error('listOrganizationApiKeys error:', error);
     throw new Error('Failed to list organization API keys');
+  }
+};
+
+export const countActiveOrganizationApiKeys = async (
+  organizationId: string,
+  type: TOrganizationApiKeyType
+): Promise<number> => {
+  try {
+    const [row] = await db
+      .select({ total: count() })
+      .from(schema.organizationApiKey)
+      .where(
+        and(
+          eq(schema.organizationApiKey.organizationId, organizationId),
+          eq(schema.organizationApiKey.type, type),
+          isNull(schema.organizationApiKey.revokedAt)
+        )
+      );
+
+    return Number(row?.total ?? 0);
+  } catch (error) {
+    console.error('countActiveOrganizationApiKeys error:', error);
+    throw new Error('Failed to count active organization API keys');
   }
 };
 

@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { ExerciseQuestionRendererProps } from '@cio/question-types';
   import { sanitizeHtml } from '../../../../tools/sanitize';
+  import { SafeHtmlContent } from '../../../safe-html-content';
 
   import { getAnswerForQuestion, getSubmissionLabel } from '../submission-utils';
 
@@ -52,7 +53,7 @@
       {#each responseRows as row, index (`${index}-${row.responses}`)}
         <div class="ui:flex ui:items-start ui:justify-between ui:gap-3 ui:rounded-md ui:border ui:px-3 ui:py-2">
           <div class="ui:min-w-0 ui:flex-1 ui:break-words ui:text-sm">
-            {@html row.html}
+            <SafeHtmlContent content={row.html} />
           </div>
           <span class="ui:text-muted-foreground ui:mt-0.5 ui:shrink-0 ui:text-xs">{row.responses}</span>
         </div>

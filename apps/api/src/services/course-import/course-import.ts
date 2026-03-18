@@ -1,28 +1,67 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { env } from '@api/config/env';
+import { getDashboardBaseUrl } from '@api/config/dashboard-url';
+import { createCourse, updateCourse } from '@api/services/course/course';
+import { createCourseSection, listCourseSections, updateCourseSectionService } from '@api/services/course/section';
+import { createLesson, listLessons, updateLessonService } from '@api/services/lesson';
+import { upsertLessonLanguageService, updateLessonLanguageService } from '@api/services/lesson-language';
 import {
   createCourseImportDraft,
   getCourseImportDraftById,
   getCourseImportDraftByIdempotencyKey,
   updateCourseImportDraft
 } from '@cio/db/queries/course-import';
-import type { TCourseImportDraft, TLocale } from '@db/types';
-import type {
-  TCourseImportDraftCreate,
-  TCourseImportDraftPayload,
-  TCourseImportDraftPublish,
-  TCourseImportDraftUpdate
+import { getCourseById } from '@cio/db/queries/course';
+import { getLessonLanguagesByLessonIds } from '@cio/db/queries/lesson';
+import { getOrganizationById } from '@cio/db/queries/organization';
+import { getCourseTagsForOrganization } from '@cio/db/queries/tag';
+import type { TCourse, TCourseImportDraft, TLessonLanguage, TLocale, TOrganization } from '@db/types';
+import {
+  type TCourseImportDraftCreate,
+  type TCourseImportDraftCreateFromCourse,
+  type TCourseImportDraftPayload,
+  type TCourseImportDraftPublish,
+  type TCourseImportDraftPublishToCourse,
+  type TCourseImportDraftUpdate,
+  ZCourseImportDraftPayload,
+  ZCourseImportWarning
 } from '@cio/utils/validation/course-import';
-import { ZCourseImportDraftPayload } from '@cio/utils/validation/course-import';
-import { createCourse, updateCourse } from '@api/services/course/course';
-import { createCourseSection } from '@api/services/course/section';
-import { createLesson } from '@api/services/lesson';
-import { upsertLessonLanguageService } from '@api/services/lesson-language';
+import { getCourseOrganizationId } from '@cio/db/queries/tag';
+import { assignCourseTagsByName } from '@api/services/tag';
+import { db } from '@cio/db/drizzle';
+import * as schema from '@cio/db/schema';
+import { generateSlug } from '@cio/utils/functions';
+import { eq } from 'drizzle-orm';
 
 type DraftSummary = {
   sectionCount: number;
   lessonCount: number;
   localeCount: number;
   warningCount: number;
+};
+
+type CourseStructureSnapshot = {
+  courseId: string;
+  draft: TCourseImportDraftPayload;
+};
+
+type PublishDraftResult = {
+  courseId: string;
+  courseUrl: string;
+  bannerImageUrl: string | null;
+  tagNames: string[];
+  createdSections: number;
+  createdLessons: number;
+  localeCount: number;
+};
+
+type PublishDraftToExistingCourseResult = PublishDraftResult & {
+  updatedSections: number;
+  updatedLessons: number;
+  createdLessonLanguages: number;
+  updatedLessonLanguages: number;
+  untouchedSections: number;
+  untouchedLessons: number;
 };
 
 function buildDraftSummary(draft: TCourseImportDraftPayload): DraftSummary {
@@ -34,8 +73,312 @@ function buildDraftSummary(draft: TCourseImportDraftPayload): DraftSummary {
   };
 }
 
+async function generateUniqueCourseSlug(baseSlug: string): Promise<string> {
+  let suffix = 0;
+  let candidate = baseSlug;
+
+  while (true) {
+    const existing = await db
+      .select({ id: schema.course.id })
+      .from(schema.course)
+      .where(eq(schema.course.slug, candidate))
+      .limit(1);
+
+    if (existing.length === 0) {
+      return candidate;
+    }
+
+    suffix += 1;
+    candidate = `${baseSlug}-${suffix}`;
+  }
+}
+
+async function ensureCourseSlug(courseId: string, title: string | null | undefined): Promise<string> {
+  const [course] = await getCourseById(courseId);
+  if (course?.slug) {
+    return course.slug;
+  }
+
+  const baseSlug = generateSlug(title, { fallback: 'course' });
+  const uniqueSlug = await generateUniqueCourseSlug(baseSlug);
+  await updateCourse(courseId, { slug: uniqueSlug });
+  return uniqueSlug;
+}
+
+function buildCourseBaseUrl(organization: TOrganization) {
+  if (organization.customDomain && organization.isCustomDomainVerified) {
+    return `https://${organization.customDomain}`;
+  }
+
+  return getDashboardBaseUrl(organization.siteName ?? undefined);
+}
+
+async function resolveCourseUrl(organizationId: string, courseId: string, title: string) {
+  const organization = await getOrganizationById(organizationId);
+  if (!organization) {
+    throw new AppError('Organization not found', ErrorCodes.ORG_NOT_FOUND, 404);
+  }
+
+  const slug = await ensureCourseSlug(courseId, title);
+  return `${buildCourseBaseUrl(organization)}/course/${encodeURIComponent(slug)}`;
+}
+
+async function resolveUnsplashBannerImage(courseTitle: string, query?: string) {
+  if (!env.UNSPLASH_API_KEY) {
+    return null;
+  }
+
+  const searchQuery = (query?.trim() || courseTitle.trim() || 'education').slice(0, 120);
+  const response = await fetch(
+    `https://api.unsplash.com/search/photos?page=1&per_page=15&auto=format&fit=crop&w=2970&q=80&client_id=${env.UNSPLASH_API_KEY}&query=${encodeURIComponent(searchQuery)}`,
+    { method: 'GET' }
+  );
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const data = (await response.json()) as {
+    results?: Array<{
+      urls?: {
+        regular?: string;
+      };
+    }>;
+  };
+
+  const photos = data.results ?? [];
+  if (photos.length === 0) {
+    return null;
+  }
+
+  const photo = photos[Math.floor(Math.random() * photos.length)];
+  return photo?.urls?.regular ?? null;
+}
+
+async function resolvePublishBannerImage(
+  title: string,
+  overrides: Pick<TCourseImportDraftPublish, 'bannerImageQuery' | 'bannerImageUrl' | 'generateBannerImage'>
+) {
+  if (overrides.bannerImageUrl) {
+    return overrides.bannerImageUrl;
+  }
+
+  if (!overrides.generateBannerImage && !overrides.bannerImageQuery) {
+    return null;
+  }
+
+  try {
+    return await resolveUnsplashBannerImage(title, overrides.bannerImageQuery);
+  } catch (error) {
+    console.error('resolvePublishBannerImage error:', error);
+    return null;
+  }
+}
+
+async function maybeApplyCourseBannerImage(courseId: string, imageUrl: string | null) {
+  if (!imageUrl) {
+    return null;
+  }
+
+  await updateCourse(courseId, {
+    logo: imageUrl,
+    bannerImage: imageUrl
+  });
+
+  return imageUrl;
+}
+
+function normalizeDraftTagNames(tagNames: string[]) {
+  return Array.from(new Map(tagNames.map((tag) => [tag.trim().toLowerCase(), tag.trim()])).values()).filter(Boolean);
+}
+
 function parseStoredDraft(record: TCourseImportDraft): TCourseImportDraftPayload {
   return ZCourseImportDraftPayload.parse(record.draft);
+}
+
+async function assertCourseBelongsToOrganization(orgId: string, courseId: string) {
+  const courseOrgId = await getCourseOrganizationId(courseId);
+
+  if (!courseOrgId) {
+    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+  }
+
+  if (courseOrgId !== orgId) {
+    throw new AppError('Invalid permissions', ErrorCodes.UNAUTHORIZED, 403);
+  }
+}
+
+async function getCourseRecord(orgId: string, courseId: string): Promise<TCourse> {
+  await assertCourseBelongsToOrganization(orgId, courseId);
+
+  const [course] = await getCourseById(courseId);
+  if (!course) {
+    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+  }
+
+  return course;
+}
+
+function inferDraftLocale(languages: TLessonLanguage[]): TLocale {
+  const locale = languages[0]?.locale;
+  return (locale ?? 'en') as TLocale;
+}
+
+function getPrimaryLessonContent(
+  lessonExternalId: string,
+  lessonLanguages: TCourseImportDraftPayload['lessonLanguages'],
+  preferredLocale: TLocale
+) {
+  const localized = lessonLanguages.find(
+    (lessonLanguage) =>
+      lessonLanguage.lessonExternalId === lessonExternalId && lessonLanguage.locale === preferredLocale
+  );
+
+  if (localized) {
+    return localized.content;
+  }
+
+  return lessonLanguages.find((lessonLanguage) => lessonLanguage.lessonExternalId === lessonExternalId)?.content;
+}
+
+async function buildCourseStructureSnapshot(orgId: string, courseId: string): Promise<CourseStructureSnapshot> {
+  const course = await getCourseRecord(orgId, courseId);
+  const [sections, lessons, tags] = await Promise.all([
+    listCourseSections(courseId),
+    listLessons(courseId),
+    getCourseTagsForOrganization(orgId, courseId)
+  ]);
+
+  if (lessons.length === 0) {
+    throw new AppError(
+      'Course must contain at least one lesson before it can be imported into a draft',
+      ErrorCodes.VALIDATION_ERROR,
+      400
+    );
+  }
+
+  const lessonIds = lessons.map((lesson) => lesson.id);
+  const lessonLanguages = await getLessonLanguagesByLessonIds(lessonIds);
+  const fallbackLocale = inferDraftLocale(lessonLanguages);
+  const warnings: TCourseImportDraftPayload['warnings'] = [];
+  const normalizedSections = [...sections]
+    .sort((a, b) => Number(a.order ?? 0) - Number(b.order ?? 0))
+    .map((section) => ({
+      externalId: section.id,
+      title: section.title ?? 'Untitled Section',
+      order: Number(section.order ?? 0)
+    }));
+
+  let sectionReferenceMap = new Map(normalizedSections.map((section) => [section.externalId, section.externalId]));
+
+  if (normalizedSections.length === 0 || lessons.some((lesson) => !lesson.sectionId)) {
+    const syntheticSectionId = `synthetic:${courseId}:ungrouped`;
+    normalizedSections.push({
+      externalId: syntheticSectionId,
+      title: 'Ungrouped',
+      order: normalizedSections.length
+    });
+    sectionReferenceMap = new Map(normalizedSections.map((section) => [section.externalId, section.externalId]));
+    warnings.push(
+      ZCourseImportWarning.parse({
+        code: 'UNGROUPED_CONTENT_NORMALIZED',
+        message: 'Some lessons were ungrouped. A synthetic section was added to the draft.',
+        severity: 'warning'
+      })
+    );
+  }
+
+  const normalizedLessons = [...lessons]
+    .sort((a, b) => Number(a.order ?? 0) - Number(b.order ?? 0))
+    .map((lesson) => ({
+      externalId: lesson.id,
+      sectionExternalId:
+        lesson.sectionId && sectionReferenceMap.has(lesson.sectionId)
+          ? lesson.sectionId
+          : normalizedSections[normalizedSections.length - 1]!.externalId,
+      title: lesson.title,
+      order: Number(lesson.order ?? 0),
+      isUnlocked: lesson.isUnlocked ?? undefined,
+      public: lesson.public ?? undefined
+    }));
+
+  const normalizedLessonLanguages: TCourseImportDraftPayload['lessonLanguages'] = [];
+
+  for (const lesson of lessons) {
+    const localized = lessonLanguages.filter((lessonLanguage) => lessonLanguage.lessonId === lesson.id);
+
+    if (localized.length > 0) {
+      const validLocalized = localized
+        .map((lessonLanguage) => ({
+          lessonExternalId: lesson.id,
+          locale: lessonLanguage.locale as TLocale,
+          content: lessonLanguage.content?.trim() ?? ''
+        }))
+        .filter((lessonLanguage) => lessonLanguage.content.length > 0);
+
+      if (validLocalized.length > 0) {
+        normalizedLessonLanguages.push(...validLocalized);
+        continue;
+      }
+
+      warnings.push(
+        ZCourseImportWarning.parse({
+          code: 'EMPTY_LOCALE_CONTENT_SKIPPED',
+          message: `Lesson "${lesson.title}" had empty localized content and required a fallback.`,
+          severity: 'warning'
+        })
+      );
+    }
+
+    if (lesson.note?.trim()) {
+      normalizedLessonLanguages.push({
+        lessonExternalId: lesson.id,
+        locale: fallbackLocale,
+        content: lesson.note
+      });
+      warnings.push(
+        ZCourseImportWarning.parse({
+          code: 'LEGACY_NOTE_FALLBACK',
+          message: `Lesson "${lesson.title}" used legacy note content because no lesson_language rows were found.`,
+          severity: 'info'
+        })
+      );
+    }
+  }
+
+  if (normalizedLessonLanguages.length === 0) {
+    throw new AppError(
+      'Course lessons must contain note or localized content before they can be imported into a draft',
+      ErrorCodes.VALIDATION_ERROR,
+      400
+    );
+  }
+
+  const draft = ZCourseImportDraftPayload.parse({
+    course: {
+      title: course.title,
+      description: course.description,
+      type: course.type,
+      locale: fallbackLocale,
+      metadata: course.metadata
+    },
+    tags: tags.map((tag) => tag.name),
+    sections: normalizedSections,
+    lessons: normalizedLessons,
+    lessonLanguages: normalizedLessonLanguages,
+    sourceReferences: [
+      {
+        type: 'course',
+        label: course.title
+      }
+    ],
+    warnings
+  });
+
+  return {
+    courseId,
+    draft
+  };
 }
 
 export async function createCourseImportDraftService(orgId: string, profileId: string, data: TCourseImportDraftCreate) {
@@ -71,6 +414,48 @@ export async function createCourseImportDraftService(orgId: string, profileId: s
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to create course import draft',
       ErrorCodes.COURSE_IMPORT_CREATE_FAILED,
+      500
+    );
+  }
+}
+
+export async function createCourseImportDraftFromCourseService(
+  orgId: string,
+  profileId: string,
+  data: TCourseImportDraftCreateFromCourse
+) {
+  const snapshot = await buildCourseStructureSnapshot(orgId, data.courseId);
+
+  return createCourseImportDraftService(orgId, profileId, {
+    sourceType: 'course',
+    idempotencyKey: data.idempotencyKey,
+    summary: {
+      sourceCourseId: data.courseId,
+      ...(data.summary ?? {})
+    },
+    sourceArtifacts: [
+      {
+        type: 'course',
+        courseId: data.courseId,
+        label: snapshot.draft.course.title
+      },
+      ...(data.sourceArtifacts ?? [])
+    ],
+    draft: snapshot.draft
+  });
+}
+
+export async function getCourseImportStructureService(orgId: string, courseId: string) {
+  try {
+    return await buildCourseStructureSnapshot(orgId, courseId);
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch course structure',
+      ErrorCodes.COURSE_IMPORT_FETCH_FAILED,
       500
     );
   }
@@ -138,18 +523,52 @@ export async function updateCourseImportDraftService(orgId: string, draftId: str
   }
 }
 
+export async function updateCourseImportDraftTagsService(
+  orgId: string,
+  draftId: string,
+  tagNames: string[],
+  mode: 'merge' | 'replace'
+) {
+  const existing = await getCourseImportDraftService(orgId, draftId);
+
+  if (existing.status === 'PUBLISHED') {
+    throw new AppError('Published drafts cannot be edited', ErrorCodes.FORBIDDEN, 403);
+  }
+
+  const draft = parseStoredDraft(existing);
+  const nextTags =
+    mode === 'replace' ? normalizeDraftTagNames(tagNames) : normalizeDraftTagNames([...draft.tags, ...tagNames]);
+
+  return updateCourseImportDraftService(orgId, draftId, {
+    draft: {
+      ...draft,
+      tags: nextTags
+    }
+  });
+}
+
 export async function publishCourseImportDraftService(
   orgId: string,
   profileId: string,
   draftId: string,
   overrides: TCourseImportDraftPublish
-) {
+): Promise<PublishDraftResult> {
   try {
     const existing = await getCourseImportDraftService(orgId, draftId);
 
     if (existing.status === 'PUBLISHED' && existing.publishedCourseId) {
+      const [publishedCourse] = await getCourseById(existing.publishedCourseId);
+      const courseUrl = await resolveCourseUrl(
+        orgId,
+        existing.publishedCourseId,
+        publishedCourse?.title ?? existing.title
+      );
+      const draft = parseStoredDraft(existing);
       return {
         courseId: existing.publishedCourseId,
+        courseUrl,
+        bannerImageUrl: publishedCourse?.logo ?? null,
+        tagNames: normalizeDraftTagNames(draft.tags),
         createdSections: 0,
         createdLessons: 0,
         localeCount: 0
@@ -182,6 +601,9 @@ export async function publishCourseImportDraftService(
       await updateCourse(courseId, { metadata: courseMetadata });
     }
 
+    const bannerImageUrl = await resolvePublishBannerImage(courseTitle, overrides);
+    await maybeApplyCourseBannerImage(courseId, bannerImageUrl);
+
     const sectionIdMap = new Map<string, string>();
     for (const section of [...draft.sections].sort((a, b) => a.order - b.order)) {
       const createdSection = await createCourseSection(courseId, {
@@ -203,6 +625,7 @@ export async function publishCourseImportDraftService(
       const createdLesson = await createLesson(courseId, {
         courseId,
         title: lesson.title,
+        note: getPrimaryLessonContent(lesson.externalId, draft.lessonLanguages, draft.course.locale as TLocale),
         sectionId,
         order: lesson.order,
         isUnlocked: lesson.isUnlocked,
@@ -224,6 +647,16 @@ export async function publishCourseImportDraftService(
       });
     }
 
+    const appliedTagNames = normalizeDraftTagNames(draft.tags);
+    if (appliedTagNames.length > 0) {
+      await assignCourseTagsByName(orgId, courseId, {
+        tagNames: appliedTagNames,
+        mode: 'replace'
+      });
+    }
+
+    const courseUrl = await resolveCourseUrl(orgId, courseId, courseTitle);
+
     await updateCourseImportDraft(orgId, draftId, {
       status: 'PUBLISHED',
       publishedCourseId: courseId,
@@ -236,6 +669,9 @@ export async function publishCourseImportDraftService(
 
     return {
       courseId,
+      courseUrl,
+      bannerImageUrl,
+      tagNames: appliedTagNames,
       createdSections: sectionIdMap.size,
       createdLessons: lessonIdMap.size,
       localeCount: new Set(draft.lessonLanguages.map((item) => item.locale)).size
@@ -247,6 +683,187 @@ export async function publishCourseImportDraftService(
 
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to publish course import draft',
+      ErrorCodes.COURSE_IMPORT_PUBLISH_FAILED,
+      500
+    );
+  }
+}
+
+export async function publishCourseImportDraftToExistingCourseService(
+  orgId: string,
+  draftId: string,
+  overrides: TCourseImportDraftPublishToCourse
+): Promise<PublishDraftToExistingCourseResult> {
+  try {
+    const existingDraft = await getCourseImportDraftService(orgId, draftId);
+    const draft = parseStoredDraft(existingDraft);
+    const course = await getCourseRecord(orgId, overrides.courseId);
+    const courseTitle = overrides.title ?? draft.course.title;
+    const courseDescription = overrides.description ?? draft.course.description;
+    const courseType = overrides.type ?? draft.course.type;
+    const courseMetadata = overrides.metadata ?? draft.course.metadata;
+    const preferredLocale = draft.course.locale as TLocale;
+    const bannerImageUrl = await resolvePublishBannerImage(courseTitle, overrides);
+
+    await updateCourse(course.id, {
+      title: courseTitle,
+      description: courseDescription,
+      type: courseType,
+      metadata: courseMetadata
+    });
+
+    await maybeApplyCourseBannerImage(course.id, bannerImageUrl);
+
+    const [existingSections, existingLessons] = await Promise.all([
+      listCourseSections(course.id),
+      listLessons(course.id)
+    ]);
+    const existingSectionIds = new Set(existingSections.map((section) => section.id));
+    const existingLessonIds = new Set(existingLessons.map((lesson) => lesson.id));
+    const existingLessonLanguages = await getLessonLanguagesByLessonIds(existingLessons.map((lesson) => lesson.id));
+
+    const sectionIdMap = new Map<string, string>();
+    let createdSections = 0;
+    let updatedSections = 0;
+
+    for (const section of [...draft.sections].sort((a, b) => a.order - b.order)) {
+      if (existingSectionIds.has(section.externalId)) {
+        const updatedSection = await updateCourseSectionService(section.externalId, {
+          title: section.title,
+          order: section.order
+        });
+        sectionIdMap.set(section.externalId, updatedSection.id);
+        updatedSections += 1;
+        continue;
+      }
+
+      const createdSection = await createCourseSection(course.id, {
+        courseId: course.id,
+        title: section.title,
+        order: section.order
+      });
+      sectionIdMap.set(section.externalId, createdSection.id);
+      createdSections += 1;
+    }
+
+    const lessonIdMap = new Map<string, string>();
+    let createdLessons = 0;
+    let updatedLessons = 0;
+
+    for (const lesson of [...draft.lessons].sort((a, b) => a.order - b.order)) {
+      const sectionId = sectionIdMap.get(lesson.sectionExternalId);
+      if (!sectionId) {
+        throw new AppError(`Lesson "${lesson.title}" references an unknown section`, ErrorCodes.VALIDATION_ERROR, 400);
+      }
+
+      const note = getPrimaryLessonContent(lesson.externalId, draft.lessonLanguages, preferredLocale);
+
+      if (existingLessonIds.has(lesson.externalId)) {
+        const updatedLesson = await updateLessonService(lesson.externalId, {
+          title: lesson.title,
+          note,
+          sectionId,
+          order: lesson.order,
+          isUnlocked: lesson.isUnlocked,
+          public: lesson.public
+        });
+        lessonIdMap.set(lesson.externalId, updatedLesson.id);
+        updatedLessons += 1;
+        continue;
+      }
+
+      const createdLesson = await createLesson(course.id, {
+        courseId: course.id,
+        title: lesson.title,
+        note,
+        sectionId,
+        order: lesson.order,
+        isUnlocked: lesson.isUnlocked,
+        public: lesson.public
+      });
+      lessonIdMap.set(lesson.externalId, createdLesson.id);
+      createdLessons += 1;
+    }
+
+    const existingLessonLanguageMap = new Map(
+      existingLessonLanguages.map((lessonLanguage) => [
+        `${lessonLanguage.lessonId}:${lessonLanguage.locale}`,
+        lessonLanguage
+      ])
+    );
+    let createdLessonLanguages = 0;
+    let updatedLessonLanguages = 0;
+
+    for (const lessonLanguage of draft.lessonLanguages) {
+      const lessonId = lessonIdMap.get(lessonLanguage.lessonExternalId);
+      if (!lessonId) {
+        throw new AppError('Referenced lesson was not created', ErrorCodes.VALIDATION_ERROR, 400);
+      }
+
+      const languageKey = `${lessonId}:${lessonLanguage.locale}`;
+      if (existingLessonLanguageMap.has(languageKey)) {
+        await updateLessonLanguageService(lessonId, lessonLanguage.locale as TLocale, {
+          content: lessonLanguage.content
+        });
+        updatedLessonLanguages += 1;
+        continue;
+      }
+
+      await upsertLessonLanguageService(lessonId, {
+        locale: lessonLanguage.locale as TLocale,
+        content: lessonLanguage.content
+      });
+      createdLessonLanguages += 1;
+    }
+
+    const appliedTagNames = normalizeDraftTagNames(draft.tags);
+    if (appliedTagNames.length > 0) {
+      await assignCourseTagsByName(orgId, course.id, {
+        tagNames: appliedTagNames,
+        mode: 'merge'
+      });
+    }
+
+    const referencedSectionIds = new Set([...sectionIdMap.values()].filter((id) => existingSectionIds.has(id)));
+    const referencedLessonIds = new Set([...lessonIdMap.values()].filter((id) => existingLessonIds.has(id)));
+    const courseUrl = await resolveCourseUrl(orgId, course.id, courseTitle);
+
+    await updateCourseImportDraft(orgId, draftId, {
+      status: 'PUBLISHED',
+      publishedCourseId: course.id,
+      summary: {
+        ...(existingDraft.summary ?? {}),
+        ...buildDraftSummary(draft),
+        publishedCourseId: course.id,
+        updatedSections,
+        updatedLessons,
+        createdLessonLanguages,
+        updatedLessonLanguages
+      }
+    });
+
+    return {
+      courseId: course.id,
+      courseUrl,
+      bannerImageUrl,
+      tagNames: appliedTagNames,
+      createdSections,
+      updatedSections,
+      createdLessons,
+      updatedLessons,
+      createdLessonLanguages,
+      updatedLessonLanguages,
+      untouchedSections: existingSections.length - referencedSectionIds.size,
+      untouchedLessons: existingLessons.length - referencedLessonIds.size,
+      localeCount: new Set(draft.lessonLanguages.map((item) => item.locale)).size
+    };
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to publish course import draft to existing course',
       ErrorCodes.COURSE_IMPORT_PUBLISH_FAILED,
       500
     );

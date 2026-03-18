@@ -1,4 +1,6 @@
 import type {
+  TAutomationCourseTagAssignment,
+  TAutomationDraftTagAssignment,
   TCourseTagAssignment,
   TTagCreate,
   TTagGroupCreate,
@@ -8,6 +10,8 @@ import type {
 import {
   createTag,
   createTagGroup,
+  findTagBySlug,
+  findTagGroupBySlug,
   generateUniqueTagGroupSlug,
   generateUniqueTagSlug,
   getCourseOrganizationId,
@@ -21,6 +25,8 @@ import {
   updateTagGroup
 } from '@cio/db/queries/tag';
 import { getOrgIdBySiteName, isUserOrgAdmin } from '@cio/db/queries/organization';
+import { TAG_COLOR_OPTIONS, type TTagColor } from '@cio/utils/validation/tag';
+import { slugifyTagValue } from '@cio/db/queries/tag';
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
@@ -32,6 +38,51 @@ function normalizeOptionalText(value: string | undefined): string | null | undef
   const normalized = value.trim();
 
   return normalized.length > 0 ? normalized : null;
+}
+
+function normalizeAutomationTagNames(tagNames: string[]) {
+  return Array.from(new Map(tagNames.map((name) => [name.trim().toLowerCase(), name.trim()])).values()).filter(Boolean);
+}
+
+function pickTagColor(name: string): TTagColor {
+  const seed = Array.from(name).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return TAG_COLOR_OPTIONS[seed % TAG_COLOR_OPTIONS.length] as TTagColor;
+}
+
+async function ensureAutomationTagGroup(orgId: string, groupName: string) {
+  const slug = slugifyTagValue(groupName);
+  const existing = await findTagGroupBySlug(orgId, slug);
+
+  if (existing) {
+    return existing;
+  }
+
+  return createOrganizationTagGroup(orgId, { name: groupName });
+}
+
+async function ensureAutomationTags(orgId: string, tagNames: string[], groupName: string) {
+  const normalizedTagNames = normalizeAutomationTagNames(tagNames);
+  const group = await ensureAutomationTagGroup(orgId, groupName);
+  const tags = [];
+
+  for (const tagName of normalizedTagNames) {
+    const slug = slugifyTagValue(tagName);
+    const existing = await findTagBySlug(orgId, slug);
+
+    if (existing) {
+      tags.push(existing);
+      continue;
+    }
+
+    const created = await createOrganizationTag(orgId, {
+      groupId: group.id,
+      name: tagName,
+      color: pickTagColor(tagName)
+    });
+    tags.push(created);
+  }
+
+  return tags;
 }
 
 export async function getOrganizationTagGroups(orgId: string) {
@@ -300,4 +351,24 @@ export async function replaceCourseTags(
       500
     );
   }
+}
+
+export async function assignCourseTagsByName(orgId: string, courseId: string, data: TAutomationDraftTagAssignment) {
+  const ensuredTags = await ensureAutomationTags(orgId, data.tagNames, data.groupName?.trim() || 'Automation');
+  const existingTags = data.mode === 'merge' ? await getCourseTags(orgId, courseId) : [];
+  const tagIds = Array.from(new Set([...existingTags.map((tag) => tag.id), ...ensuredTags.map((tag) => tag.id)]));
+
+  return replaceCourseTags(orgId, courseId, { tagIds });
+}
+
+export async function assignTagsToCoursesByName(orgId: string, data: TAutomationCourseTagAssignment) {
+  const normalizedCourseIds = Array.from(new Set(data.courseIds));
+  const results = [];
+
+  for (const courseId of normalizedCourseIds) {
+    const tags = await assignCourseTagsByName(orgId, courseId, data);
+    results.push({ courseId, tags });
+  }
+
+  return results;
 }

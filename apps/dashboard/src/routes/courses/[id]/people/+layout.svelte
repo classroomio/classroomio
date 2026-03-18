@@ -1,12 +1,15 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  import { goto, invalidateAll } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { Button } from '@cio/ui/base/button';
-  import { RoleBasedSecurity } from '$features/ui';
+  import { RefreshPageData, RoleBasedSecurity } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
   import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import * as Page from '@cio/ui/base/page';
+  import { courseApi } from '$features/course/api';
+  import { profile } from '$lib/utils/store/user';
 
   let { data = $bindable(), children } = $props();
 
@@ -14,17 +17,20 @@
   let backUrl = $derived(page.url.searchParams.get('back'));
 
   const handleClick = () => {
-    const url = page.url.href + '?add=true';
-    goto(url);
+    goto(resolve(`${page.url.pathname}?add=true`, {}));
   };
 
   const handleBackNavigation = () => {
     if (backUrl) {
-      goto(backUrl);
+      goto(resolve(backUrl, {}));
     } else {
-      goto(`/courses/${data.courseId}/people`);
+      goto(resolve(`/courses/${data.courseId}/people`, {}));
     }
   };
+
+  async function refreshPeoplePage() {
+    await Promise.all([courseApi.refreshCourse(data.courseId, $profile.id), invalidateAll()]);
+  }
 </script>
 
 <Page.Root class="mx-auto w-[90%] md:max-w-3xl">
@@ -42,13 +48,16 @@
       </Page.Title>
     </Page.HeaderContent>
     <Page.Action>
-      {#if !data.personId}
-        <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <Button class="mr-2" onclick={handleClick}>
-            {$t('course.navItem.people.add')}
-          </Button>
-        </RoleBasedSecurity>
-      {/if}
+      <div class="flex items-center gap-2">
+        {#if !data.personId}
+          <RoleBasedSecurity allowedRoles={[1, 2]}>
+            <Button onclick={handleClick}>
+              {$t('course.navItem.people.add')}
+            </Button>
+          </RoleBasedSecurity>
+        {/if}
+        <RefreshPageData onRefresh={refreshPeoplePage} />
+      </div>
     </Page.Action>
   </Page.Header>
 

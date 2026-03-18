@@ -1,11 +1,12 @@
 <script lang="ts">
   import { LessonsPage } from '$features/course/pages';
   import { Button } from '@cio/ui/base/button';
-  import { RoleBasedSecurity } from '$features/ui';
+  import { RefreshPageData, RoleBasedSecurity } from '$features/ui';
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
   import { contentCreateStoreUtils, contentEditingStore } from '$features/course/components/content/store';
   import { courseApi } from '$features/course/api';
+  import { profile } from '$lib/utils/store/user';
 
   let { data } = $props();
 
@@ -38,6 +39,7 @@
             >{$t('course.navItem.lessons.add_content')}</Button
           >
         </RoleBasedSecurity>
+        <RefreshPageData onRefresh={() => courseApi.refreshCourse(data.courseId, $profile.id)} />
       </div>
     </Page.Action>
   </Page.Header>

@@ -158,7 +158,7 @@ The GitHub Actions workflow builds for both `linux/amd64` and `linux/arm64` plat
 
 ### Build failures
 - Check Dockerfile syntax
-- Ensure all build arguments are provided
+- The only required build argument is `PUBLIC_IS_SELFHOSTED` (defaults to `true`)
 - Check available disk space: `docker system df`
 
 ### Clean up old images

@@ -8,10 +8,12 @@
   import * as Select from '@cio/ui/base/select';
   import * as Table from '@cio/ui/base/table';
   import { Empty } from '@cio/ui/custom/empty';
+  import { IconButton } from '@cio/ui/custom/icon-button';
   import { InputField } from '@cio/ui/custom/input-field';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
 
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+  import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import TagIcon from '@lucide/svelte/icons/tag';
 
   import { tagApi } from '$features/tag/api';
@@ -222,7 +224,7 @@
             </Table.Header>
             <Table.Body>
               {#each tagApi.tagGroups as group (group.id)}
-                <Table.Row class="ui:bg-muted/20">
+                <Table.Row class="group ui:bg-muted/20">
                   <Table.Cell colspan={5}>
                     <div class="flex items-start justify-between gap-4 py-1">
                       <div class="space-y-1">
@@ -231,9 +233,22 @@
                           <p class="ui:text-muted-foreground max-w-[320px] truncate text-xs">{group.description}</p>
                         {/if}
                       </div>
-                      <Button variant="ghost-default" size="sm" onclick={() => openEditTagGroupModal(group)}>
-                        {$t('tags_admin.actions.edit_group')}
-                      </Button>
+                      <DropdownMenu.Root>
+                        <DropdownMenu.Trigger class="flex shrink-0 items-center justify-center">
+                          <IconButton
+                            variant="outline"
+                            class="pointer-events-none opacity-0 transition-opacity group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:opacity-100"
+                            aria-label={$t('tags_admin.actions.actions_menu')}
+                          >
+                            <EllipsisVerticalIcon size={16} />
+                          </IconButton>
+                        </DropdownMenu.Trigger>
+                        <DropdownMenu.Content align="end">
+                          <DropdownMenu.Item onclick={() => openEditTagGroupModal(group)}>
+                            {$t('tags_admin.actions.edit_group')}
+                          </DropdownMenu.Item>
+                        </DropdownMenu.Content>
+                      </DropdownMenu.Root>
                     </div>
                   </Table.Cell>
                 </Table.Row>
@@ -246,7 +261,7 @@
                   </Table.Row>
                 {:else}
                   {#each group.tags as tag (tag.id)}
-                    <Table.Row>
+                    <Table.Row class="group">
                       <Table.Cell>
                         <div class="flex items-center gap-2">
                           <span
@@ -269,9 +284,22 @@
                       </Table.Cell>
                       <Table.Cell>{group.name}</Table.Cell>
                       <Table.Cell class="text-right">
-                        <Button variant="ghost-default" size="sm" onclick={() => openEditTagModal(tag)}>
-                          {$t('tags_admin.actions.edit_tag')}
-                        </Button>
+                        <DropdownMenu.Root>
+                          <DropdownMenu.Trigger class="inline-flex items-center justify-center">
+                            <IconButton
+                              variant="outline"
+                              class="pointer-events-none opacity-0 transition-opacity group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:opacity-100"
+                              aria-label={$t('tags_admin.actions.actions_menu')}
+                            >
+                              <EllipsisVerticalIcon size={16} />
+                            </IconButton>
+                          </DropdownMenu.Trigger>
+                          <DropdownMenu.Content align="end">
+                            <DropdownMenu.Item onclick={() => openEditTagModal(tag)}>
+                              {$t('tags_admin.actions.edit_tag')}
+                            </DropdownMenu.Item>
+                          </DropdownMenu.Content>
+                        </DropdownMenu.Root>
                       </Table.Cell>
                     </Table.Row>
                   {/each}

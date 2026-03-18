@@ -3,9 +3,13 @@
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
   import { Button } from '@cio/ui/base/button';
+  import { courseApi } from '$features/course/api';
+  import { profile } from '$lib/utils/store/user';
+  import { RefreshPageData } from '$features/ui';
 
   let settingsComponent: CourseSettingsPage | null = $state(null);
   let isSaving = $state(false);
+  let { data } = $props();
 
   async function handleSave() {
     isSaving = true;
@@ -25,9 +29,12 @@
       </Page.Title>
     </Page.HeaderContent>
     <Page.Action>
-      <Button variant="secondary" loading={isSaving} onclick={handleSave}>
-        {$t('course.navItem.settings.save')}
-      </Button>
+      <div class="flex items-center gap-2">
+        <Button variant="secondary" loading={isSaving} onclick={handleSave}>
+          {$t('course.navItem.settings.save')}
+        </Button>
+        <RefreshPageData disabled={isSaving} onRefresh={() => courseApi.refreshCourse(data.courseId, $profile.id)} />
+      </div>
     </Page.Action>
   </Page.Header>
   <Page.Body>

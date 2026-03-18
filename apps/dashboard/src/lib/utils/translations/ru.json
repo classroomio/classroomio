@@ -1,5 +1,6 @@
 {
   "common": {
+    "refresh": "Обновить",
     "unsaved_changes": {
       "message": "У вас есть несохраненные изменения. Вы уверены, что хотите уйти?"
     }
@@ -1508,6 +1509,10 @@
       "placeholder": "Поиск уроков или упражнений",
       "empty": "Результаты не найдены"
     },
+    "header": {
+      "preview": "Preview course",
+      "preview_missing_slug": "Generate and save a course slug before previewing."
+    },
     "sidebar": {
       "back_to_course": "Вернуться к курсу",
       "content_count": {
@@ -1582,6 +1587,12 @@
       }
     },
     "course_filter": {
+      "date_created_newest": "Date Created: Newest first",
+      "date_created_oldest": "Date Created: Oldest first",
+      "published_first": "Published: Published first",
+      "unpublished_first": "Published: Unpublished first",
+      "most_lessons": "Lessons: Most first",
+      "fewest_lessons": "Lessons: Fewest first",
       "date_created": "Дата создания",
       "published": "Опубликовано",
       "lessons": "Уроки"
@@ -1592,6 +1603,9 @@
       "clear_all": "Очистить все",
       "popover_title": "Фильтры",
       "sort": "Сортировать",
+      "order": "Порядок",
+      "ascending": "Asc",
+      "descending": "Desc",
       "tags": "Теги",
       "empty_tags": "Нет доступных тегов"
     }
@@ -2212,7 +2226,6 @@
         }
       },
       "login": {
-        "sso_enabled": "{provider} включен для вашего домена",
         "sso_redirect_error": "Вход в систему единого входа настроен неправильно. Установите PUBLIC_SERVER_URL для вашего сервера API.",
         "sso_required": "Пожалуйста, войдите с помощью SSO. Вход по паролю отключен.",
         "sign_in_with_sso": "Войдите через {provider}",
