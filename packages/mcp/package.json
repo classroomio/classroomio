@@ -1,6 +1,6 @@
 {
   "name": "@classroomio/mcp",
-  "version": "0.0.2",
+  "version": "0.0.7",
   "private": false,
   "type": "module",
   "main": "./dist/index.js",
@@ -16,7 +16,8 @@
   "scripts": {
     "build": "tsc --noEmit && rm -rf dist tsconfig.tsbuildinfo && node ./scripts/build.mjs",
     "dev": "tsx src/index.ts",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "format": "prettier --write \"src/**/*.ts\""
   },
   "repository": {
     "type": "git",
