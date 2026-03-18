@@ -7,6 +7,7 @@ await build({
   format: 'esm',
   platform: 'node',
   target: 'node20',
+  minify: true,
   sourcemap: false,
   external: ['@modelcontextprotocol/sdk', 'zod'],
   banner: {
