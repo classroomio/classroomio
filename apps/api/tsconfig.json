@@ -18,22 +18,22 @@
     "types": ["node"],
     "paths": {
       "@api/*": ["src/*"],
-      "@db/types": ["../../packages/db/src/types.ts"],
-      "@db/*": ["../../packages/db/src/*"],
-      "@cio/db/*": ["../../packages/db/src/*"],
-      "@cio/db/types": ["../../packages/db/src/types.ts"],
-      "@cio/utils": ["../../packages/utils/src/index.ts"],
-      "@cio/utils/*": ["../../packages/utils/src/*"],
-      "@cio/email/*": ["../../packages/email/src/*"],
-      "@cio/email": ["../../packages/email/src/index.ts"]
+      "@db/types": ["./node_modules/@cio/db/src/types.ts"],
+      "@db/*": ["./node_modules/@cio/db/src/*"],
+      "@cio/db/*": ["./node_modules/@cio/db/src/*"],
+      "@cio/db/types": ["./node_modules/@cio/db/src/types.ts"],
+      "@cio/utils": ["./node_modules/@cio/utils/src/index.ts"],
+      "@cio/utils/*": ["./node_modules/@cio/utils/src/*"],
+      "@cio/email/*": ["./node_modules/@cio/email/src/*"],
+      "@cio/email": ["./node_modules/@cio/email/src/index.ts"]
     }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "tsconfig.tsbuildinfo"],
   "references": [
-    { "path": "../../packages/db" },
-    { "path": "../../packages/utils" },
-    { "path": "../../packages/email" }
+    { "path": "./node_modules/@cio/db" },
+    { "path": "./node_modules/@cio/utils" },
+    { "path": "./node_modules/@cio/email" }
   ],
   "tsc-alias": {
     "resolveFullPaths": true,
