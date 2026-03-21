@@ -30,6 +30,25 @@ export function getCodexSnippet(secret: string | null) {
   -- npx -y @classroomio/mcp`;
 }
 
+export function getOpenCodeSnippet(secret: string | null) {
+  const apiKey = getAutomationSetupSecret(secret);
+
+  return `{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "classroomio": {
+      "type": "local",
+      "command": ["npx", "-y", "@classroomio/mcp"],
+      "enabled": true,
+      "environment": {
+        "CLASSROOMIO_API_URL": "https://api.classroomio.com",
+        "CLASSROOMIO_API_KEY": "${apiKey}"
+      }
+    }
+  }
+}`;
+}
+
 export function getCursorSnippet(secret: string | null) {
   const apiKey = getAutomationSetupSecret(secret);
 

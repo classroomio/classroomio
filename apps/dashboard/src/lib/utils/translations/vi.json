@@ -794,6 +794,17 @@
           "recipient_emails_placeholder": "sinh viên1@example.com, sinh viên2@example.com",
           "send_invite_emails": "Gửi email mời ngay lập tức",
           "create_email_invites": "Tạo lời mời qua email",
+          "existing_students_title": "Add existing org students",
+          "existing_students_description": "Choose student members already in this organization and grant them direct access to this course.",
+          "existing_students_search": "Search organization students",
+          "loading_existing_students": "Loading organization students...",
+          "no_existing_students": "No organization students are available to add.",
+          "no_matching_existing_students": "No organization students match your search.",
+          "notify_existing_students": "Send course access email",
+          "grant_access": "Grant Access",
+          "invite_new_students_title": "Invite new students",
+          "invite_new_students_description": "Invite new people into your organization and pre-assign them to this course. They will create an account, accept the invite, and get access.",
+          "invite_new_students": "Invite Students",
           "existing_invites": "Lời mời hiện có",
           "refresh": "Làm mới",
           "loading_invites": "Đang tải lời mời...",
@@ -827,6 +838,7 @@
           "snackbar_failed_load_audit": "Không tải được lời mời kiểm tra",
           "snackbar_metadata_copied": "Đã sao chép siêu dữ liệu lời mời",
           "snackbar_email_invites_success": "Đã tạo {count} lời mời. Đã gửi {đã gửi}, không thành công {không thành công}. Đã bỏ qua {trùng lặp} bản sao.",
+          "select_at_least_one_student": "Select at least one existing student",
           "presets": {
             "one_time_24h": "Một lần (24h)",
             "multi_use_7d": "Sử dụng nhiều lần (7 ngày)",
@@ -2492,13 +2504,22 @@
         "description": "Sử dụng một khóa trong phạm vi tổ chức cho mỗi lần tích hợp. Nếu một khóa bị xoay hoặc bị thu hồi, máy khách sẽ ngừng hoạt động cho đến khi bí mật mới được định cấu hình.",
         "claude_code_description": "Đăng ký `@classroomio/mcp` với Mã Claude bằng cách sử dụng khóa trong phạm vi tổ chức được tạo.",
         "codex_description": "Thêm máy chủ ClassroomIO MCP vào Codex bằng cùng một khóa trong phạm vi tổ chức.",
-        "cursor_description": "Dán cái này vào `~/.cursor/mcp.json` hoặc cấu hình MCP không gian làm việc của bạn."
+        "cursor_description": "Dán cái này vào `~/.cursor/mcp.json` hoặc cấu hình MCP không gian làm việc của bạn.",
+        "opencode_description": "Thêm nội dung này vào `opencode.json` ở thư mục gốc dự án hoặc `~/.config/opencode/opencode.json`."
       },
       "keys": {
         "title": "Khóa MCP",
         "description": "Các khóa này xác thực tổ chức hiện tại khi máy khách MCP gọi ClassroomIO thông qua `@classroomio/mcp`.",
         "generate": "Tạo khóa MCP",
-        "secret_once": "Bí mật này được hiển thị một lần. Sao chép nó vào ứng dụng khách MCP của bạn ngay bây giờ."
+        "secret_once": "Bí mật này được hiển thị một lần. Sao chép nó vào ứng dụng khách MCP của bạn ngay bây giờ.",
+        "modal": {
+          "title": "Create MCP key",
+          "description": "Choose a name for this MCP key before it is generated.",
+          "name_label": "Key name",
+          "name_placeholder": "ClassroomIO OpenCode",
+          "cancel": "Cancel",
+          "save": "Create key"
+        }
       }
     },
     "keys": {
@@ -2507,7 +2528,7 @@
       "rotate": "Xoay",
       "revoke": "Thu hồi",
       "empty_title": "Chưa có khóa MCP",
-      "empty_description": "Tạo khóa MCP trong phạm vi tổ chức đầu tiên để kết nối Mã Claude, Codex hoặc Con trỏ.",
+      "empty_description": "Tạo khóa MCP trong phạm vi tổ chức đầu tiên để kết nối Mã Claude, Codex, Con trỏ hoặc OpenCode.",
       "created_at_label": "Đã tạo:",
       "last_used_label": "Sử dụng lần cuối:",
       "never_used": "không bao giờ",
@@ -2518,7 +2539,8 @@
     "clients": {
       "claude_code": "Mã Claude",
       "codex": "Codex",
-      "cursor": "Con trỏ"
+      "cursor": "Con trỏ",
+      "opencode": "OpenCode"
     },
     "tabs": {
       "mcp": "MCP",

@@ -794,6 +794,17 @@
           "recipient_emails_placeholder": "elev1@example.com, elev2@example.com",
           "send_invite_emails": "Send invitationsmails med det samme",
           "create_email_invites": "Opret e-mail-invitationer",
+          "existing_students_title": "Add existing org students",
+          "existing_students_description": "Choose student members already in this organization and grant them direct access to this course.",
+          "existing_students_search": "Search organization students",
+          "loading_existing_students": "Loading organization students...",
+          "no_existing_students": "No organization students are available to add.",
+          "no_matching_existing_students": "No organization students match your search.",
+          "notify_existing_students": "Send course access email",
+          "grant_access": "Grant Access",
+          "invite_new_students_title": "Invite new students",
+          "invite_new_students_description": "Invite new people into your organization and pre-assign them to this course. They will create an account, accept the invite, and get access.",
+          "invite_new_students": "Invite Students",
           "existing_invites": "Eksisterende invitationer",
           "refresh": "Opdater",
           "loading_invites": "Indlæser invitationer...",
@@ -827,6 +838,7 @@
           "snackbar_failed_load_audit": "Invitationsrevision kunne ikke indlæses",
           "snackbar_metadata_copied": "Invitationsmetadata er kopieret",
           "snackbar_email_invites_success": "Oprettet {count} invitation(er). Sendt {sent}, mislykkedes {failed}. Sprang over {duplikater} dubletter.",
+          "select_at_least_one_student": "Select at least one existing student",
           "presets": {
             "one_time_24h": "Engangs (24 timer)",
             "multi_use_7d": "Multi-brug (7 dage)",
@@ -2492,13 +2504,22 @@
         "description": "Brug én nøgle med organisationsomfang pr. integration. Hvis en nøgle roteres eller tilbagekaldes, holder klienten op med at arbejde, indtil den nye hemmelighed er konfigureret.",
         "claude_code_description": "Registrerer `@classroomio/mcp` med Claude Code ved hjælp af den genererede org-omfangede nøgle.",
         "codex_description": "Tilføjer ClassroomIO MCP-serveren til Codex med den samme org-omfattede nøgle.",
-        "cursor_description": "Indsæt dette i `~/.cursor/mcp.json` eller dit arbejdsområde MCP-konfiguration."
+        "cursor_description": "Indsæt dette i `~/.cursor/mcp.json` eller dit arbejdsområde MCP-konfiguration.",
+        "opencode_description": "Tilføj dette til `opencode.json` i projektroden eller `~/.config/opencode/opencode.json`."
       },
       "keys": {
         "title": "MCP nøgler",
         "description": "Disse nøgler autentificerer den aktuelle organisation, når en MCP-klient ringer til ClassroomIO gennem `@classroomio/mcp`.",
         "generate": "Generer MCP-nøgle",
-        "secret_once": "Denne hemmelighed vises én gang. Kopier det til din MCP-klient nu."
+        "secret_once": "Denne hemmelighed vises én gang. Kopier det til din MCP-klient nu.",
+        "modal": {
+          "title": "Create MCP key",
+          "description": "Choose a name for this MCP key before it is generated.",
+          "name_label": "Key name",
+          "name_placeholder": "ClassroomIO OpenCode",
+          "cancel": "Cancel",
+          "save": "Create key"
+        }
       }
     },
     "keys": {
@@ -2507,7 +2528,7 @@
       "rotate": "Roter",
       "revoke": "Tilbagekald",
       "empty_title": "Ingen MCP-nøgler endnu",
-      "empty_description": "Opret den første org-omfattede MCP-nøgle til at forbinde Claude Code, Codex eller Cursor.",
+      "empty_description": "Opret den første org-omfattede MCP-nøgle til at forbinde Claude Code, Codex, Cursor eller OpenCode.",
       "created_at_label": "Oprettet:",
       "last_used_label": "Sidst brugt:",
       "never_used": "Aldrig",
@@ -2518,7 +2539,8 @@
     "clients": {
       "claude_code": "Claude kode",
       "codex": "Codex",
-      "cursor": "Markør"
+      "cursor": "Markør",
+      "opencode": "OpenCode"
     },
     "tabs": {
       "mcp": "MCP",

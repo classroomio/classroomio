@@ -4,17 +4,21 @@
     getClaudeCodeSnippet,
     getCodexSnippet,
     getCursorSnippet,
+    getOpenCodeSnippet,
     getMaskedAutomationSecret
   } from '$features/automation/utils/automation-utils';
   import { isOrgAdmin } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import * as Alert from '@cio/ui/base/alert';
   import { Badge } from '@cio/ui/base/badge';
+  import { Button } from '@cio/ui/base/button';
   import * as Code from '@cio/ui/custom/code';
+  import * as Dialog from '@cio/ui/base/dialog';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import * as Field from '@cio/ui/base/field';
   import * as Table from '@cio/ui/base/table';
   import * as Tabs from '@cio/ui/base/tabs';
+  import { InputField } from '@cio/ui/custom/input-field';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import CoinsIcon from '@lucide/svelte/icons/coins';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
@@ -27,11 +31,29 @@
 
   let activeSetupTab = $state('cursor');
   let generatedSecret = $state<string | null>(null);
+  let isCreateKeyModalOpen = $state(false);
+  let keyLabel = $state('');
+
+  const canCreateKey = $derived(keyLabel.trim().length > 0 && !automationApi.isLoading);
+
+  function resetCreateKeyModal() {
+    keyLabel = '';
+    automationApi.resetErrors();
+  }
+
+  function openCreateKeyModal() {
+    resetCreateKeyModal();
+    isCreateKeyModalOpen = true;
+  }
 
   async function onGenerateKey() {
-    await automationApi.createKey('mcp');
+    const result = await automationApi.createKey('mcp', keyLabel);
+    if (!result) return;
+
     generatedSecret = automationApi.generatedSecret;
     automationApi.clearGeneratedSecret();
+    isCreateKeyModalOpen = false;
+    resetCreateKeyModal();
   }
 
   async function onRevokeKey(keyId: string) {
@@ -108,7 +130,7 @@
       </div>
       {#if $isOrgAdmin}
         <IconButton
-          onclick={onGenerateKey}
+          onclick={openCreateKeyModal}
           disabled={automationApi.isLoading}
           tooltip={$t('automation.mcp.keys.generate')}
         >
@@ -209,6 +231,7 @@
         <Tabs.Trigger value="cursor">{$t('automation.clients.cursor')}</Tabs.Trigger>
         <Tabs.Trigger value="claude-code">{$t('automation.clients.claude_code')}</Tabs.Trigger>
         <Tabs.Trigger value="codex">{$t('automation.clients.codex')}</Tabs.Trigger>
+        <Tabs.Trigger value="opencode">{$t('automation.clients.opencode')}</Tabs.Trigger>
       </Tabs.List>
 
       <Tabs.Content value="claude-code" class="mt-4">
@@ -234,6 +257,49 @@
           </Code.Root>
         </Code.Overflow>
       </Tabs.Content>
+
+      <Tabs.Content value="opencode" class="mt-4">
+        <Code.Overflow>
+          <Code.Root code={getOpenCodeSnippet(generatedSecret)} lang="json">
+            <Code.CopyButton />
+          </Code.Root>
+        </Code.Overflow>
+      </Tabs.Content>
     </Tabs.Root>
   </Field.Set>
 </Field.Group>
+
+<Dialog.Root
+  bind:open={isCreateKeyModalOpen}
+  onOpenChange={(isOpen) => {
+    if (!isOpen) {
+      resetCreateKeyModal();
+    }
+  }}
+>
+  <Dialog.Content class="sm:max-w-md">
+    <Dialog.Header>
+      <Dialog.Title>{$t('automation.mcp.keys.modal.title')}</Dialog.Title>
+      <Dialog.Description>{$t('automation.mcp.keys.modal.description')}</Dialog.Description>
+    </Dialog.Header>
+
+    <div class="py-2">
+      <InputField
+        label={$t('automation.mcp.keys.modal.name_label')}
+        placeholder={$t('automation.mcp.keys.modal.name_placeholder')}
+        bind:value={keyLabel}
+        errorMessage={automationApi.errors.label}
+        autoFocus
+      />
+    </div>
+
+    <Dialog.Footer>
+      <Button variant="outline" onclick={() => (isCreateKeyModalOpen = false)}>
+        {$t('automation.mcp.keys.modal.cancel')}
+      </Button>
+      <Button onclick={onGenerateKey} loading={automationApi.isLoading} disabled={!canCreateKey}>
+        {$t('automation.mcp.keys.modal.save')}
+      </Button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>

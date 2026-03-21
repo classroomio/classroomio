@@ -1,6 +1,7 @@
 import * as z from 'zod';
 
 import { ZCourseMetadata } from '../course/course';
+import { ZExerciseQuestionTypeId } from '../exercise/exercise';
 
 const ZSupportedLocale = z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
 const LESSON_BODY_HTML_DESCRIPTION =
@@ -54,6 +55,35 @@ export const ZCourseImportDraftLessonLanguage = z.object({
 });
 export type TCourseImportDraftLessonLanguage = z.infer<typeof ZCourseImportDraftLessonLanguage>;
 
+export const ZCourseImportDraftExerciseOption = z.object({
+  label: z.string().min(1),
+  isCorrect: z.boolean(),
+  settings: z.record(z.string(), z.unknown()).optional()
+});
+export type TCourseImportDraftExerciseOption = z.infer<typeof ZCourseImportDraftExerciseOption>;
+
+export const ZCourseImportDraftExerciseQuestion = z.object({
+  question: z.string().min(1),
+  questionTypeId: ZExerciseQuestionTypeId.optional(),
+  points: z.number().int().min(0).optional(),
+  order: z.number().int().min(0).optional(),
+  settings: z.record(z.string(), z.unknown()).optional(),
+  options: z.array(ZCourseImportDraftExerciseOption).optional()
+});
+export type TCourseImportDraftExerciseQuestion = z.infer<typeof ZCourseImportDraftExerciseQuestion>;
+
+export const ZCourseImportDraftExercise = z.object({
+  externalId: z.string().min(1),
+  lessonExternalId: z.string().min(1).optional(),
+  sectionExternalId: z.string().min(1).optional(),
+  title: z.string().min(1),
+  description: z.string().optional(),
+  order: z.number().int().min(0).optional(),
+  dueBy: z.string().optional(),
+  questions: z.array(ZCourseImportDraftExerciseQuestion).optional()
+});
+export type TCourseImportDraftExercise = z.infer<typeof ZCourseImportDraftExercise>;
+
 export const ZCourseImportDraftPayload = z
   .object({
     course: ZCourseImportDraftCourse,
@@ -61,7 +91,7 @@ export const ZCourseImportDraftPayload = z
     sections: z.array(ZCourseImportDraftSection).min(1),
     lessons: z.array(ZCourseImportDraftLesson).min(1),
     lessonLanguages: z.array(ZCourseImportDraftLessonLanguage).min(1),
-    exercises: z.array(z.record(z.string(), z.unknown())).optional(),
+    exercises: z.array(ZCourseImportDraftExercise).optional(),
     sourceReferences: z.array(ZCourseImportSourceReference).optional(),
     warnings: z.array(ZCourseImportWarning).default([])
   })
@@ -117,6 +147,34 @@ export const ZCourseImportDraftPayload = z
           code: z.ZodIssueCode.custom,
           path: ['lessonLanguages', index, 'lessonExternalId'],
           message: 'Lesson language must reference an existing lesson'
+        });
+      }
+    });
+
+    const exerciseIds = new Set<string>();
+    value.exercises?.forEach((exercise, index) => {
+      if (exerciseIds.has(exercise.externalId)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['exercises', index, 'externalId'],
+          message: 'Exercise externalId must be unique'
+        });
+      }
+      exerciseIds.add(exercise.externalId);
+
+      if (exercise.lessonExternalId && !lessonIds.has(exercise.lessonExternalId)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['exercises', index, 'lessonExternalId'],
+          message: 'Exercise lessonExternalId must reference an existing lesson'
+        });
+      }
+
+      if (exercise.sectionExternalId && !sectionIds.has(exercise.sectionExternalId)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['exercises', index, 'sectionExternalId'],
+          message: 'Exercise sectionExternalId must reference an existing section'
         });
       }
     });

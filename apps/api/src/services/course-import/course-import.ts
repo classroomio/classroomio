@@ -2,6 +2,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { env } from '@api/config/env';
 import { getDashboardBaseUrl } from '@api/config/dashboard-url';
 import { createCourse, updateCourse } from '@api/services/course/course';
+import { createExercise, getExercise, listExercises, replaceExerciseService } from '@api/services/exercise';
 import { createCourseSection, listCourseSections, updateCourseSectionService } from '@api/services/course/section';
 import { createLesson, listLessons, updateLessonService } from '@api/services/lesson';
 import { upsertLessonLanguageService, updateLessonLanguageService } from '@api/services/lesson-language';
@@ -22,6 +23,7 @@ import {
   type TCourseImportDraftPayload,
   type TCourseImportDraftPublish,
   type TCourseImportDraftPublishToCourse,
+  type TCourseImportDraftExercise,
   type TCourseImportDraftUpdate,
   ZCourseImportDraftPayload,
   ZCourseImportWarning
@@ -36,6 +38,7 @@ import { eq } from 'drizzle-orm';
 type DraftSummary = {
   sectionCount: number;
   lessonCount: number;
+  exerciseCount: number;
   localeCount: number;
   warningCount: number;
 };
@@ -52,22 +55,26 @@ type PublishDraftResult = {
   tagNames: string[];
   createdSections: number;
   createdLessons: number;
+  createdExercises: number;
   localeCount: number;
 };
 
 type PublishDraftToExistingCourseResult = PublishDraftResult & {
   updatedSections: number;
   updatedLessons: number;
+  updatedExercises: number;
   createdLessonLanguages: number;
   updatedLessonLanguages: number;
   untouchedSections: number;
   untouchedLessons: number;
+  untouchedExercises: number;
 };
 
 function buildDraftSummary(draft: TCourseImportDraftPayload): DraftSummary {
   return {
     sectionCount: draft.sections.length,
     lessonCount: draft.lessons.length,
+    exerciseCount: draft.exercises?.length ?? 0,
     localeCount: new Set(draft.lessonLanguages.map((item) => item.locale)).size,
     warningCount: draft.warnings.length
   };
@@ -241,6 +248,80 @@ function getPrimaryLessonContent(
   return lessonLanguages.find((lessonLanguage) => lessonLanguage.lessonExternalId === lessonExternalId)?.content;
 }
 
+function buildExercisePublishPayload(
+  exercise: TCourseImportDraftExercise,
+  lessonIdMap: Map<string, string>,
+  sectionIdMap: Map<string, string>
+) {
+  const lessonId = exercise.lessonExternalId ? lessonIdMap.get(exercise.lessonExternalId) : undefined;
+  if (exercise.lessonExternalId && !lessonId) {
+    throw new AppError(`Exercise "${exercise.title}" references an unknown lesson`, ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
+  const sectionId = exercise.sectionExternalId ? sectionIdMap.get(exercise.sectionExternalId) : undefined;
+  if (exercise.sectionExternalId && !sectionId) {
+    throw new AppError(`Exercise "${exercise.title}" references an unknown section`, ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
+  return {
+    title: exercise.title,
+    description: exercise.description,
+    lessonId: lessonId ?? '',
+    sectionId: sectionId ?? '',
+    order: exercise.order,
+    dueBy: exercise.dueBy,
+    questions: exercise.questions?.map((question) => ({
+      question: question.question,
+      questionTypeId: question.questionTypeId,
+      points: question.points,
+      order: question.order,
+      settings: question.settings,
+      options: question.options?.map((option) => ({
+        label: option.label,
+        isCorrect: option.isCorrect,
+        settings: option.settings
+      }))
+    }))
+  };
+}
+
+async function buildDraftExercisesSnapshot(courseId: string): Promise<TCourseImportDraftPayload['exercises']> {
+  const exercises = await listExercises(courseId);
+  if (exercises.length === 0) {
+    return [];
+  }
+
+  const detailedExercises = await Promise.all(exercises.map((exercise) => getExercise(exercise.id)));
+
+  return detailedExercises.map((exercise) => ({
+    externalId: exercise.id,
+    lessonExternalId: exercise.lessonId ?? undefined,
+    sectionExternalId: exercise.lessonId ? undefined : (exercise.sectionId ?? undefined),
+    title: exercise.title,
+    description: exercise.description ?? undefined,
+    order: exercise.order ?? undefined,
+    dueBy: exercise.dueBy ?? undefined,
+    questions:
+      exercise.questions && exercise.questions.length > 0
+        ? exercise.questions.map((question) => ({
+            question: question.title,
+            questionTypeId: question.questionTypeId,
+            points: question.points,
+            order: question.order,
+            settings: question.settings,
+            options:
+              question.options.length > 0
+                ? question.options.map((option) => ({
+                    label: option.label ?? '',
+                    isCorrect: option.isCorrect,
+                    settings: option.settings
+                  }))
+                : undefined
+          }))
+        : undefined
+  }));
+}
+
 async function buildCourseStructureSnapshot(orgId: string, courseId: string): Promise<CourseStructureSnapshot> {
   const course = await getCourseRecord(orgId, courseId);
   const [sections, lessons, tags] = await Promise.all([
@@ -354,6 +435,8 @@ async function buildCourseStructureSnapshot(orgId: string, courseId: string): Pr
     );
   }
 
+  const normalizedExercises = await buildDraftExercisesSnapshot(courseId);
+
   const draft = ZCourseImportDraftPayload.parse({
     course: {
       title: course.title,
@@ -366,6 +449,7 @@ async function buildCourseStructureSnapshot(orgId: string, courseId: string): Pr
     sections: normalizedSections,
     lessons: normalizedLessons,
     lessonLanguages: normalizedLessonLanguages,
+    exercises: normalizedExercises,
     sourceReferences: [
       {
         type: 'course',
@@ -571,6 +655,7 @@ export async function publishCourseImportDraftService(
         tagNames: normalizeDraftTagNames(draft.tags),
         createdSections: 0,
         createdLessons: 0,
+        createdExercises: 0,
         localeCount: 0
       };
     }
@@ -647,6 +732,15 @@ export async function publishCourseImportDraftService(
       });
     }
 
+    let createdExercises = 0;
+    for (const exercise of draft.exercises ?? []) {
+      await createExercise({
+        courseId,
+        ...buildExercisePublishPayload(exercise, lessonIdMap, sectionIdMap)
+      });
+      createdExercises += 1;
+    }
+
     const appliedTagNames = normalizeDraftTagNames(draft.tags);
     if (appliedTagNames.length > 0) {
       await assignCourseTagsByName(orgId, courseId, {
@@ -674,6 +768,7 @@ export async function publishCourseImportDraftService(
       tagNames: appliedTagNames,
       createdSections: sectionIdMap.size,
       createdLessons: lessonIdMap.size,
+      createdExercises,
       localeCount: new Set(draft.lessonLanguages.map((item) => item.locale)).size
     };
   } catch (error) {
@@ -718,8 +813,10 @@ export async function publishCourseImportDraftToExistingCourseService(
       listCourseSections(course.id),
       listLessons(course.id)
     ]);
+    const existingExercises = await listExercises(course.id);
     const existingSectionIds = new Set(existingSections.map((section) => section.id));
     const existingLessonIds = new Set(existingLessons.map((lesson) => lesson.id));
+    const existingExerciseIds = new Set(existingExercises.map((exercise) => exercise.id));
     const existingLessonLanguages = await getLessonLanguagesByLessonIds(existingLessons.map((lesson) => lesson.id));
 
     const sectionIdMap = new Map<string, string>();
@@ -816,6 +913,25 @@ export async function publishCourseImportDraftToExistingCourseService(
       createdLessonLanguages += 1;
     }
 
+    let createdExercises = 0;
+    let updatedExercises = 0;
+
+    for (const exercise of draft.exercises ?? []) {
+      const payload = buildExercisePublishPayload(exercise, lessonIdMap, sectionIdMap);
+
+      if (existingExerciseIds.has(exercise.externalId)) {
+        await replaceExerciseService(exercise.externalId, payload);
+        updatedExercises += 1;
+        continue;
+      }
+
+      await createExercise({
+        courseId: course.id,
+        ...payload
+      });
+      createdExercises += 1;
+    }
+
     const appliedTagNames = normalizeDraftTagNames(draft.tags);
     if (appliedTagNames.length > 0) {
       await assignCourseTagsByName(orgId, course.id, {
@@ -826,6 +942,9 @@ export async function publishCourseImportDraftToExistingCourseService(
 
     const referencedSectionIds = new Set([...sectionIdMap.values()].filter((id) => existingSectionIds.has(id)));
     const referencedLessonIds = new Set([...lessonIdMap.values()].filter((id) => existingLessonIds.has(id)));
+    const referencedExerciseIds = new Set(
+      (draft.exercises ?? []).map((exercise) => exercise.externalId).filter((id) => existingExerciseIds.has(id))
+    );
     const courseUrl = await resolveCourseUrl(orgId, course.id, courseTitle);
 
     await updateCourseImportDraft(orgId, draftId, {
@@ -851,10 +970,13 @@ export async function publishCourseImportDraftToExistingCourseService(
       updatedSections,
       createdLessons,
       updatedLessons,
+      createdExercises,
+      updatedExercises,
       createdLessonLanguages,
       updatedLessonLanguages,
       untouchedSections: existingSections.length - referencedSectionIds.size,
       untouchedLessons: existingLessons.length - referencedLessonIds.size,
+      untouchedExercises: existingExercises.length - referencedExerciseIds.size,
       localeCount: new Set(draft.lessonLanguages.map((item) => item.locale)).size
     };
   } catch (error) {

@@ -1074,6 +1074,9 @@
         },
         "download_pdf": "Download PDF",
         "autosaving": "Autosaving...",
+        "saving": "Saving…",
+        "saved": "Saved",
+        "draft_recovery": "An unsaved draft was found for this lesson. Would you like to restore it?",
         "done": "Done",
         "edit": "Edit",
         "mark_as": "Mark as",
@@ -1652,7 +1655,7 @@
           "select": "Select tutors in organization...",
           "to_add": "To add tutor to your organization,",
           "go_to": "go to organization settings",
-          "invite_students": "Invite Students",
+          "invite_students": "Add Students",
           "via_link": "You can invite students via an invite link",
           "via_qr": "You can invite students via QR",
           "download_qr": "Download QR code",
@@ -1683,6 +1686,17 @@
           "recipient_emails_placeholder": "student1@example.com, student2@example.com",
           "send_invite_emails": "Send invite emails immediately",
           "create_email_invites": "Create Email Invites",
+          "existing_students_title": "Add existing org students",
+          "existing_students_description": "Choose student members already in this organization and grant them direct access to this course.",
+          "existing_students_search": "Search organization students",
+          "loading_existing_students": "Loading organization students...",
+          "no_existing_students": "No organization students are available to add.",
+          "no_matching_existing_students": "No organization students match your search.",
+          "notify_existing_students": "Send course access email",
+          "grant_access": "Grant Access",
+          "invite_new_students_title": "Invite new students",
+          "invite_new_students_description": "Invite new people into your organization and pre-assign them to this course. They will create an account, accept the invite, and get access.",
+          "invite_new_students": "Invite Students",
           "existing_invites": "Existing Invites",
           "refresh": "Refresh",
           "loading_invites": "Loading invites...",
@@ -1715,7 +1729,8 @@
           "snackbar_failed_revoke_invite": "Failed to revoke invite",
           "snackbar_failed_load_audit": "Failed to load invite audit",
           "snackbar_metadata_copied": "Invite metadata copied",
-          "snackbar_email_invites_success": "Created {count} invite(s). Sent {sent}, failed {failed}. Skipped {duplicates} duplicate(s)."
+          "snackbar_email_invites_success": "Created {count} invite(s). Sent {sent}, failed {failed}. Skipped {duplicates} duplicate(s).",
+          "select_at_least_one_student": "Select at least one existing student"
         },
         "delete_confirmation": {
           "title": "Delete",
@@ -1995,12 +2010,45 @@
   "audience": {
     "title": "Audience",
     "export": "Export",
+    "import_users": "Import Users",
     "no_audience": "No audience to manage",
     "manage": "Manage all your students here and stay connected with them",
     "name": "Name",
     "email": "Email",
     "date_joined": "Date Joined",
-    "upgrade": "Upgrade your plan to invite more students"
+    "upgrade": "Upgrade your plan to invite more students",
+    "select_all": "Select all",
+    "selected_count": "{count} selected",
+    "assign_courses": "Assign to Courses",
+    "import": {
+      "title": "Import Users",
+      "description": "Add students to your organization by entering their email addresses. Optionally assign them to courses and send invitation emails.",
+      "emails_label": "Email Addresses",
+      "emails_placeholder": "Enter emails separated by commas, newlines, or semicolons\ne.g. alice@example.com, bob@example.com",
+      "course_access": "Course Access",
+      "no_courses": "No course assignment",
+      "all_courses": "All courses",
+      "select_courses": "Select specific courses",
+      "select_courses_placeholder": "Choose courses...",
+      "send_email": "Send invitation email to imported users",
+      "submit": "Import Users",
+      "back": "Back to Audience",
+      "snackbar_success": "Imported {imported} users ({skipped} already existed, {emailsSent} emails sent)",
+      "snackbar_no_emails": "Please enter at least one email address",
+      "snackbar_failed": "Failed to import users"
+    },
+    "assign": {
+      "title": "Assign to Courses",
+      "description": "Give the selected users access to courses and optionally notify them by email.",
+      "select_courses": "Select courses",
+      "select_courses_placeholder": "Choose courses...",
+      "send_email": "Send notification email",
+      "submit": "Assign",
+      "cancel": "Cancel",
+      "snackbar_success": "Assigned {assigned} users to courses ({alreadyEnrolled} already enrolled, {emailsSent} emails sent)",
+      "snackbar_no_courses": "Please select at least one course",
+      "snackbar_failed": "Failed to assign courses"
+    }
   },
   "analytics": {
     "title": "Analytics",
@@ -2088,7 +2136,8 @@
     "clients": {
       "claude_code": "Claude Code",
       "codex": "Codex",
-      "cursor": "Cursor"
+      "cursor": "Cursor",
+      "opencode": "OpenCode"
     },
     "keys": {
       "active": "Active",
@@ -2096,7 +2145,7 @@
       "rotate": "Rotate",
       "revoke": "Revoke",
       "empty_title": "No MCP keys yet",
-      "empty_description": "Create the first org-scoped MCP key to connect Claude Code, Codex, or Cursor.",
+      "empty_description": "Create the first org-scoped MCP key to connect Claude Code, Codex, Cursor, or OpenCode.",
       "created_at_label": "Created:",
       "last_used_label": "Last used:",
       "never_used": "Never",
@@ -2124,14 +2173,23 @@
         "title": "MCP keys",
         "description": "These keys authenticate the current organization when an MCP client calls ClassroomIO through `@classroomio/mcp`.",
         "generate": "Generate MCP key",
-        "secret_once": "This secret is shown once. Copy it into your MCP client now."
+        "secret_once": "This secret is shown once. Copy it into your MCP client now.",
+        "modal": {
+          "title": "Create MCP key",
+          "description": "Choose a name for this MCP key before it is generated.",
+          "name_label": "Key name",
+          "name_placeholder": "ClassroomIO OpenCode",
+          "cancel": "Cancel",
+          "save": "Create key"
+        }
       },
       "setup": {
         "title": "Client setup",
         "description": "Use one org-scoped key per integration. If a key is rotated or revoked, the client stops working until the new secret is configured.",
         "claude_code_description": "Registers `@classroomio/mcp` with Claude Code using the generated org-scoped key.",
         "codex_description": "Adds the ClassroomIO MCP server to Codex with the same org-scoped key.",
-        "cursor_description": "Paste this into `~/.cursor/mcp.json` or your workspace MCP config."
+        "cursor_description": "Paste this into `~/.cursor/mcp.json` or your workspace MCP config.",
+        "opencode_description": "Add this to `opencode.json` in your project root or `~/.config/opencode/opencode.json`."
       }
     }
   },

@@ -794,6 +794,17 @@
           "recipient_emails_placeholder": "студент1@example.com, студент2@example.com",
           "send_invite_emails": "Отправляйте приглашения по электронной почте немедленно",
           "create_email_invites": "Создание приглашений по электронной почте",
+          "existing_students_title": "Add existing org students",
+          "existing_students_description": "Choose student members already in this organization and grant them direct access to this course.",
+          "existing_students_search": "Search organization students",
+          "loading_existing_students": "Loading organization students...",
+          "no_existing_students": "No organization students are available to add.",
+          "no_matching_existing_students": "No organization students match your search.",
+          "notify_existing_students": "Send course access email",
+          "grant_access": "Grant Access",
+          "invite_new_students_title": "Invite new students",
+          "invite_new_students_description": "Invite new people into your organization and pre-assign them to this course. They will create an account, accept the invite, and get access.",
+          "invite_new_students": "Invite Students",
           "existing_invites": "Существующие приглашения",
           "refresh": "Обновить",
           "loading_invites": "Загрузка приглашений...",
@@ -827,6 +838,7 @@
           "snackbar_failed_load_audit": "Не удалось загрузить аудит приглашений.",
           "snackbar_metadata_copied": "Метаданные приглашения скопированы.",
           "snackbar_email_invites_success": "Создано приглашений: {count}. Отправлено {отправлено}, ошибка {failed}. Пропущено дубликатов: {duulates}.",
+          "select_at_least_one_student": "Select at least one existing student",
           "presets": {
             "one_time_24h": "Одноразовый (24 часа)",
             "multi_use_7d": "Многоразовое использование (7 дней)",
@@ -2492,13 +2504,22 @@
         "description": "Используйте один ключ на уровне организации для каждой интеграции. Если ключ заменен или отозван, клиент перестает работать до тех пор, пока не будет настроен новый секрет.",
         "claude_code_description": "Регистрирует `@classroomio/mcp` в Claude Code, используя сгенерированный ключ на уровне организации.",
         "codex_description": "Добавляет сервер ClassroomIO MCP в Кодекс с тем же ключом на уровне организации.",
-        "cursor_description": "Вставьте это в `~/.cursor/mcp.json` или в конфигурацию MCP вашей рабочей области."
+        "cursor_description": "Вставьте это в `~/.cursor/mcp.json` или в конфигурацию MCP вашей рабочей области.",
+        "opencode_description": "Добавьте это в `opencode.json` в корне проекта или в `~/.config/opencode/opencode.json`."
       },
       "keys": {
         "title": "Ключи MCP",
         "description": "Эти ключи аутентифицируют текущую организацию, когда клиент MCP вызывает ClassroomIO через @classroomio/mcp.",
         "generate": "Создать ключ MCP",
-        "secret_once": "Этот секрет раскрывается один раз. Скопируйте его в свой клиент MCP сейчас."
+        "secret_once": "Этот секрет раскрывается один раз. Скопируйте его в свой клиент MCP сейчас.",
+        "modal": {
+          "title": "Create MCP key",
+          "description": "Choose a name for this MCP key before it is generated.",
+          "name_label": "Key name",
+          "name_placeholder": "ClassroomIO OpenCode",
+          "cancel": "Cancel",
+          "save": "Create key"
+        }
       }
     },
     "keys": {
@@ -2507,7 +2528,7 @@
       "rotate": "Поворот",
       "revoke": "Отозвать",
       "empty_title": "Ключей MCP пока нет",
-      "empty_description": "Создайте первый ключ MCP на уровне организации для подключения Claude Code, Codex или Cursor.",
+      "empty_description": "Создайте первый ключ MCP на уровне организации для подключения Claude Code, Codex, Cursor или OpenCode.",
       "created_at_label": "Создано:",
       "last_used_label": "Последнее использование:",
       "never_used": "Никогда",
@@ -2518,7 +2539,8 @@
     "clients": {
       "claude_code": "Клод Код",
       "codex": "Кодекс",
-      "cursor": "Курсор"
+      "cursor": "Курсор",
+      "opencode": "OpenCode"
     },
     "tabs": {
       "mcp": "МКП",

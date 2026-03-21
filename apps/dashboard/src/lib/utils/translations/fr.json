@@ -794,6 +794,17 @@
           "recipient_emails_placeholder": "étudiant1@exemple.com, étudiant2@exemple.com",
           "send_invite_emails": "Envoyer immédiatement des e-mails d'invitation",
           "create_email_invites": "Créer des invitations par e-mail",
+          "existing_students_title": "Add existing org students",
+          "existing_students_description": "Choose student members already in this organization and grant them direct access to this course.",
+          "existing_students_search": "Search organization students",
+          "loading_existing_students": "Loading organization students...",
+          "no_existing_students": "No organization students are available to add.",
+          "no_matching_existing_students": "No organization students match your search.",
+          "notify_existing_students": "Send course access email",
+          "grant_access": "Grant Access",
+          "invite_new_students_title": "Invite new students",
+          "invite_new_students_description": "Invite new people into your organization and pre-assign them to this course. They will create an account, accept the invite, and get access.",
+          "invite_new_students": "Invite Students",
           "existing_invites": "Invitations existantes",
           "refresh": "Actualiser",
           "loading_invites": "Chargement des invitations...",
@@ -827,6 +838,7 @@
           "snackbar_failed_load_audit": "Échec du chargement de l'audit d'invitation",
           "snackbar_metadata_copied": "Métadonnées d'invitation copiées",
           "snackbar_email_invites_success": "{count} invitation(s) créée(s). Envoyé {envoyé}, échec {échec}. {duplicates} doublon(s) ignoré(s).",
+          "select_at_least_one_student": "Select at least one existing student",
           "presets": {
             "one_time_24h": "Une fois (24h)",
             "multi_use_7d": "Multi-usage (7 jours)",
@@ -2492,13 +2504,22 @@
         "description": "Utilisez une clé à l’échelle de l’organisation par intégration. Si une clé est alternée ou révoquée, le client cesse de fonctionner jusqu'à ce que le nouveau secret soit configuré.",
         "claude_code_description": "Enregistre `@classroomio/mcp` auprès de Claude Code à l'aide de la clé générée à l'échelle de l'organisation.",
         "codex_description": "Ajoute le serveur ClassroomIO MCP au Codex avec la même clé de portée organisationnelle.",
-        "cursor_description": "Collez-le dans `~/.cursor/mcp.json` ou dans la configuration MCP de votre espace de travail."
+        "cursor_description": "Collez-le dans `~/.cursor/mcp.json` ou dans la configuration MCP de votre espace de travail.",
+        "opencode_description": "Ajoutez ceci à `opencode.json` à la racine du projet ou à `~/.config/opencode/opencode.json`."
       },
       "keys": {
         "title": "Clés MCP",
         "description": "Ces clés authentifient l'organisation actuelle lorsqu'un client MCP appelle ClassroomIO via `@classroomio/mcp`.",
         "generate": "Générer une clé MCP",
-        "secret_once": "Ce secret est montré une fois. Copiez-le dans votre client MCP maintenant."
+        "secret_once": "Ce secret est montré une fois. Copiez-le dans votre client MCP maintenant.",
+        "modal": {
+          "title": "Create MCP key",
+          "description": "Choose a name for this MCP key before it is generated.",
+          "name_label": "Key name",
+          "name_placeholder": "ClassroomIO OpenCode",
+          "cancel": "Cancel",
+          "save": "Create key"
+        }
       }
     },
     "keys": {
@@ -2507,7 +2528,7 @@
       "rotate": "Rotation",
       "revoke": "Révoquer",
       "empty_title": "Pas encore de clés MCP",
-      "empty_description": "Créez la première clé MCP à l'échelle de l'organisation pour connecter Claude Code, Codex ou Cursor.",
+      "empty_description": "Créez la première clé MCP à l'échelle de l'organisation pour connecter Claude Code, Codex, Cursor ou OpenCode.",
       "created_at_label": "Créé :",
       "last_used_label": "Dernière utilisation :",
       "never_used": "Jamais",
@@ -2518,7 +2539,8 @@
     "clients": {
       "claude_code": "Claude Code",
       "codex": "Codex",
-      "cursor": "Curseur"
+      "cursor": "Curseur",
+      "opencode": "OpenCode"
     },
     "tabs": {
       "mcp": "PCM",

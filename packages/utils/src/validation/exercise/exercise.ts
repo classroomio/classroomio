@@ -2,6 +2,24 @@ import * as z from 'zod';
 
 import { QUESTION_TYPE } from '../constants';
 
+const EXERCISE_QUESTION_TYPE_ID_LITERALS = [
+  z.literal(QUESTION_TYPE.RADIO),
+  z.literal(QUESTION_TYPE.CHECKBOX),
+  z.literal(QUESTION_TYPE.TEXTAREA),
+  z.literal(QUESTION_TYPE.TRUE_FALSE),
+  z.literal(QUESTION_TYPE.SHORT_ANSWER),
+  z.literal(QUESTION_TYPE.NUMERIC),
+  z.literal(QUESTION_TYPE.FILL_BLANK),
+  z.literal(QUESTION_TYPE.FILE_UPLOAD),
+  z.literal(QUESTION_TYPE.MATCHING),
+  z.literal(QUESTION_TYPE.ORDERING),
+  z.literal(QUESTION_TYPE.HOTSPOT),
+  z.literal(QUESTION_TYPE.LINK)
+] as const;
+
+export const ZExerciseQuestionTypeId = z.union(EXERCISE_QUESTION_TYPE_ID_LITERALS);
+export type TExerciseQuestionTypeId = z.infer<typeof ZExerciseQuestionTypeId>;
+
 const QUESTION_VALIDATION_RULES: Record<
   number,
   Array<(question: { options?: Array<{ isCorrect: boolean }> }) => string | null>
@@ -61,7 +79,7 @@ const QUESTION_VALIDATION_RULES: Record<
 const ZExerciseUpdateQuestionBase = z.object({
   id: z.number().int().optional(),
   question: z.string().min(1),
-  questionTypeId: z.number().int().min(1).optional(), // Added to support question type updates
+  questionTypeId: ZExerciseQuestionTypeId.optional(),
   points: z.number().int().min(0).optional(),
   order: z.number().int().min(0).optional(),
   settings: z.record(z.string(), z.unknown()).optional(),
@@ -98,6 +116,25 @@ function validateQuestionOptions(question: z.infer<typeof ZExerciseUpdateQuestio
 // Final schema with validation refinement
 const ZExerciseUpdateQuestion = ZExerciseUpdateQuestionBase.superRefine(validateQuestionOptions);
 
+const ZExerciseCreateQuestionBase = z.object({
+  question: z.string().min(1),
+  questionTypeId: ZExerciseQuestionTypeId.optional(),
+  points: z.number().int().min(0).optional(),
+  order: z.number().int().min(0).optional(),
+  settings: z.record(z.string(), z.unknown()).optional(),
+  options: z
+    .array(
+      z.object({
+        label: z.string().min(1),
+        isCorrect: z.boolean(),
+        settings: z.record(z.string(), z.unknown()).optional()
+      })
+    )
+    .optional()
+});
+
+const ZExerciseCreateQuestion = ZExerciseCreateQuestionBase.superRefine(validateQuestionOptions);
+
 export const ZExerciseCreate = z.object({
   title: z.string().min(1),
   description: z.string().optional(),
@@ -106,25 +143,7 @@ export const ZExerciseCreate = z.object({
   order: z.number().int().optional(),
   courseId: z.string().min(1),
   dueBy: z.string().optional(),
-  questions: z
-    .array(
-      z.object({
-        question: z.string().min(1),
-        questionTypeId: z.number().int().min(1).optional(),
-        points: z.number().int().min(0).optional(),
-        settings: z.record(z.string(), z.unknown()).optional(),
-        options: z
-          .array(
-            z.object({
-              label: z.string().min(1),
-              isCorrect: z.boolean(),
-              settings: z.record(z.string(), z.unknown()).optional()
-            })
-          )
-          .min(2)
-      })
-    )
-    .optional()
+  questions: z.array(ZExerciseCreateQuestion).optional()
 });
 export type TExerciseCreate = z.infer<typeof ZExerciseCreate>;
 

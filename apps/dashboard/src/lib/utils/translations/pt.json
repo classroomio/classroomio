@@ -794,6 +794,17 @@
           "recipient_emails_placeholder": "aluno1@exemplo.com, aluno2@exemplo.com",
           "send_invite_emails": "Envie e-mails de convite imediatamente",
           "create_email_invites": "Crie convites por e-mail",
+          "existing_students_title": "Add existing org students",
+          "existing_students_description": "Choose student members already in this organization and grant them direct access to this course.",
+          "existing_students_search": "Search organization students",
+          "loading_existing_students": "Loading organization students...",
+          "no_existing_students": "No organization students are available to add.",
+          "no_matching_existing_students": "No organization students match your search.",
+          "notify_existing_students": "Send course access email",
+          "grant_access": "Grant Access",
+          "invite_new_students_title": "Invite new students",
+          "invite_new_students_description": "Invite new people into your organization and pre-assign them to this course. They will create an account, accept the invite, and get access.",
+          "invite_new_students": "Invite Students",
           "existing_invites": "Convites existentes",
           "refresh": "Atualizar",
           "loading_invites": "Carregando convites...",
@@ -827,6 +838,7 @@
           "snackbar_failed_load_audit": "Falha ao carregar auditoria de convite",
           "snackbar_metadata_copied": "Metadados do convite copiados",
           "snackbar_email_invites_success": "Foram criados {count} convite(s). Enviado {enviado}, falhou {falhou}. {duplicatas} duplicatas ignoradas.",
+          "select_at_least_one_student": "Select at least one existing student",
           "presets": {
             "one_time_24h": "Única (24h)",
             "multi_use_7d": "Multiuso (7 dias)",
@@ -2492,13 +2504,22 @@
         "description": "Use uma chave com escopo organizacional por integração. Se uma chave for rotacionada ou revogada, o cliente para de funcionar até que o novo segredo seja configurado.",
         "claude_code_description": "Registra `@classroomio/mcp` com Claude Code usando a chave gerada com escopo organizacional.",
         "codex_description": "Adiciona o servidor ClassroomIO MCP ao Codex com a mesma chave com escopo organizacional.",
-        "cursor_description": "Cole isso em `~/.cursor/mcp.json` ou na configuração do MCP do seu espaço de trabalho."
+        "cursor_description": "Cole isso em `~/.cursor/mcp.json` ou na configuração do MCP do seu espaço de trabalho.",
+        "opencode_description": "Adicione isso a `opencode.json` na raiz do projeto ou a `~/.config/opencode/opencode.json`."
       },
       "keys": {
         "title": "Chaves MCP",
         "description": "Essas chaves autenticam a organização atual quando um cliente MCP chama ClassroomIO por meio de `@classroomio/mcp`.",
         "generate": "Gerar chave MCP",
-        "secret_once": "Este segredo é mostrado uma vez. Copie-o para o seu cliente MCP agora."
+        "secret_once": "Este segredo é mostrado uma vez. Copie-o para o seu cliente MCP agora.",
+        "modal": {
+          "title": "Create MCP key",
+          "description": "Choose a name for this MCP key before it is generated.",
+          "name_label": "Key name",
+          "name_placeholder": "ClassroomIO OpenCode",
+          "cancel": "Cancel",
+          "save": "Create key"
+        }
       }
     },
     "keys": {
@@ -2507,7 +2528,7 @@
       "rotate": "Girar",
       "revoke": "Revogar",
       "empty_title": "Nenhuma chave MCP ainda",
-      "empty_description": "Crie a primeira chave MCP com escopo organizacional para conectar Claude Code, Codex ou Cursor.",
+      "empty_description": "Crie a primeira chave MCP com escopo organizacional para conectar Claude Code, Codex, Cursor ou OpenCode.",
       "created_at_label": "Criado:",
       "last_used_label": "Usado pela última vez:",
       "never_used": "Nunca",
@@ -2518,7 +2539,8 @@
     "clients": {
       "claude_code": "Código Claude",
       "codex": "Códice",
-      "cursor": "Cursor"
+      "cursor": "Cursor",
+      "opencode": "OpenCode"
     },
     "tabs": {
       "mcp": "PCM",

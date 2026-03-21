@@ -794,6 +794,17 @@
           "recipient_emails_placeholder": "student1@example.com, student2@example.com",
           "send_invite_emails": "तुरंत आमंत्रण ईमेल भेजें",
           "create_email_invites": "ईमेल आमंत्रण बनाएँ",
+          "existing_students_title": "Add existing org students",
+          "existing_students_description": "Choose student members already in this organization and grant them direct access to this course.",
+          "existing_students_search": "Search organization students",
+          "loading_existing_students": "Loading organization students...",
+          "no_existing_students": "No organization students are available to add.",
+          "no_matching_existing_students": "No organization students match your search.",
+          "notify_existing_students": "Send course access email",
+          "grant_access": "Grant Access",
+          "invite_new_students_title": "Invite new students",
+          "invite_new_students_description": "Invite new people into your organization and pre-assign them to this course. They will create an account, accept the invite, and get access.",
+          "invite_new_students": "Invite Students",
           "existing_invites": "मौजूदा आमंत्रण",
           "refresh": "ताज़ा करें",
           "loading_invites": "आमंत्रण लोड हो रहे हैं...",
@@ -827,6 +838,7 @@
           "snackbar_failed_load_audit": "आमंत्रण ऑडिट लोड करने में विफल",
           "snackbar_metadata_copied": "आमंत्रण मेटाडेटा कॉपी किया गया",
           "snackbar_email_invites_success": "{गिनती} आमंत्रण बनाया गया। भेजा गया {भेजा गया}, असफल हुआ {असफल}। {डुप्लिकेट} डुप्लिकेट को छोड़ दिया गया।",
+          "select_at_least_one_student": "Select at least one existing student",
           "presets": {
             "one_time_24h": "एक बार (24 घंटे)",
             "multi_use_7d": "बहु-उपयोग (7 दिन)",
@@ -2492,13 +2504,22 @@
         "description": "प्रति एकीकरण एक ऑर्ग-स्कोप्ड कुंजी का उपयोग करें। यदि कोई कुंजी घुमाई जाती है या निरस्त की जाती है, तो क्लाइंट नया रहस्य कॉन्फ़िगर होने तक काम करना बंद कर देता है।",
         "claude_code_description": "उत्पन्न ऑर्ग-स्कोप्ड कुंजी का उपयोग करके क्लाउड कोड के साथ `@classroomio/mcp` को पंजीकृत करता है।",
         "codex_description": "समान ऑर्ग-स्कोप्ड कुंजी के साथ क्लासरूमआईओ एमसीपी सर्वर को कोडेक्स में जोड़ता है।",
-        "cursor_description": "इसे `~/.cursor/mcp.json` या अपने कार्यक्षेत्र MCP कॉन्फ़िगरेशन में पेस्ट करें।"
+        "cursor_description": "इसे `~/.cursor/mcp.json` या अपने कार्यक्षेत्र MCP कॉन्फ़िगरेशन में पेस्ट करें।",
+        "opencode_description": "इसे अपने प्रोजेक्ट रूट के `opencode.json` या `~/.config/opencode/opencode.json` में जोड़ें।"
       },
       "keys": {
         "title": "एमसीपी कुंजी",
         "description": "जब कोई MCP क्लाइंट `@classroomio/mcp` के माध्यम से ClassroomIO को कॉल करता है तो ये कुंजियाँ वर्तमान संगठन को प्रमाणित करती हैं।",
         "generate": "MCP कुंजी जनरेट करें",
-        "secret_once": "यह रहस्य एक बार दिखाया गया है। अब इसे अपने MCP क्लाइंट में कॉपी करें।"
+        "secret_once": "यह रहस्य एक बार दिखाया गया है। अब इसे अपने MCP क्लाइंट में कॉपी करें।",
+        "modal": {
+          "title": "Create MCP key",
+          "description": "Choose a name for this MCP key before it is generated.",
+          "name_label": "Key name",
+          "name_placeholder": "ClassroomIO OpenCode",
+          "cancel": "Cancel",
+          "save": "Create key"
+        }
       }
     },
     "keys": {
@@ -2507,7 +2528,7 @@
       "rotate": "घुमाएँ",
       "revoke": "निरस्त करें",
       "empty_title": "अभी तक कोई MCP कुंजी नहीं है",
-      "empty_description": "क्लाउड कोड, कोडेक्स, या कर्सर को कनेक्ट करने के लिए पहली ऑर्ग-स्कोप्ड एमसीपी कुंजी बनाएं।",
+      "empty_description": "क्लाउड कोड, कोडेक्स, कर्सर, या OpenCode को कनेक्ट करने के लिए पहली ऑर्ग-स्कोप्ड एमसीपी कुंजी बनाएं।",
       "created_at_label": "बनाया गया:",
       "last_used_label": "अंतिम बार उपयोग किया गया:",
       "never_used": "कभी नहीं",
@@ -2518,7 +2539,8 @@
     "clients": {
       "claude_code": "क्लाउड कोड",
       "codex": "कोडेक्स",
-      "cursor": "कर्सर"
+      "cursor": "कर्सर",
+      "opencode": "OpenCode"
     },
     "tabs": {
       "mcp": "एम.सी.पी",

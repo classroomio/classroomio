@@ -10,7 +10,7 @@ The package does not parse PDFs or generate course structures. The agent does th
 Teacher / Admin
   |
   v
-Claude Code / Codex / Cursor / other MCP client
+Claude Code / Codex / Cursor / OpenCode / other MCP client
   |
   | 1. Reads prompt, PDF, or existing course goal
   | 2. Produces or edits normalized course JSON
@@ -121,6 +121,25 @@ codex mcp add classroomio \
   --env CLASSROOMIO_API_URL=https://api.classroomio.com \
   --env CLASSROOMIO_API_KEY=<cio_mcp_key> \
   -- npx -y @classroomio/mcp
+```
+
+### OpenCode
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "classroomio": {
+      "type": "local",
+      "command": ["npx", "-y", "@classroomio/mcp"],
+      "enabled": true,
+      "environment": {
+        "CLASSROOMIO_API_URL": "https://api.classroomio.com",
+        "CLASSROOMIO_API_KEY": "<cio_mcp_key>"
+      }
+    }
+  }
+}
 ```
 
 ### Cursor

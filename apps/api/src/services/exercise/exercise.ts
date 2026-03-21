@@ -71,6 +71,7 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
           title: q.question,
           questionTypeId: q.questionTypeId || 1,
           points: q.points || 0,
+          order: typeof q.order === 'number' ? q.order : undefined,
           settings: q.settings ?? {}
         }));
 
@@ -81,7 +82,7 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
           const question = questions[index];
           if (!question) return;
 
-          const optionsData: TNewOption[] = q.options.map((opt) => ({
+          const optionsData: TNewOption[] = (q.options ?? []).map((opt) => ({
             questionId: question.id,
             label: opt.label,
             isCorrect: opt.isCorrect,
@@ -230,6 +231,55 @@ export async function updateExerciseService(exerciseId: string, data: TExerciseU
     }
 
     throw new AppError('Failed to update exercise', ErrorCodes.INTERNAL_ERROR, 500);
+  }
+}
+
+/**
+ * Replaces an exercise's questions and options with the provided payload.
+ * Existing questions are deleted and recreated from the replacement payload.
+ */
+export async function replaceExerciseService(exerciseId: string, data: TExerciseUpdate): Promise<TExercise> {
+  try {
+    return await db.transaction(async (tx) => {
+      const txClient = tx as DbOrTxClient;
+
+      const exerciseUpdate = buildExerciseUpdateFields(data);
+      if (Object.keys(exerciseUpdate).length > 0) {
+        const updated = await updateExercise(exerciseId, exerciseUpdate, txClient);
+        if (!updated) {
+          throw new AppError('Failed to update exercise', ErrorCodes.INTERNAL_ERROR, 500);
+        }
+      }
+
+      const { questions: currentQuestions } = await fetchQuestionsAndOptions(exerciseId, txClient);
+      const currentQuestionIds = currentQuestions
+        .map((question) => question.id)
+        .filter((id): id is number => id !== undefined);
+
+      if (currentQuestionIds.length > 0) {
+        await deleteQuestionsByIds(currentQuestionIds, txClient);
+      }
+
+      const replacementQuestions = data.questions ?? [];
+      const hasReplacementOptions = replacementQuestions.some((question) => (question.options?.length ?? 0) > 0);
+
+      if (replacementQuestions.length > 0) {
+        if (hasReplacementOptions) {
+          await syncOptionIdSequence(txClient);
+        }
+
+        await createNewQuestionsWithOptions(exerciseId, replacementQuestions, txClient);
+      }
+
+      return await getExercise(exerciseId, txClient);
+    });
+  } catch (error) {
+    console.error('replaceExerciseService error:', error);
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError('Failed to replace exercise', ErrorCodes.INTERNAL_ERROR, 500);
   }
 }
 

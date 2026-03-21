@@ -794,6 +794,17 @@
           "recipient_emails_placeholder": "student1@example.com, student2@example.com",
           "send_invite_emails": "Natychmiast wysyłaj e-maile z zaproszeniami",
           "create_email_invites": "Utwórz zaproszenia e-mailowe",
+          "existing_students_title": "Add existing org students",
+          "existing_students_description": "Choose student members already in this organization and grant them direct access to this course.",
+          "existing_students_search": "Search organization students",
+          "loading_existing_students": "Loading organization students...",
+          "no_existing_students": "No organization students are available to add.",
+          "no_matching_existing_students": "No organization students match your search.",
+          "notify_existing_students": "Send course access email",
+          "grant_access": "Grant Access",
+          "invite_new_students_title": "Invite new students",
+          "invite_new_students_description": "Invite new people into your organization and pre-assign them to this course. They will create an account, accept the invite, and get access.",
+          "invite_new_students": "Invite Students",
           "existing_invites": "Istniejące zaproszenia",
           "refresh": "Odśwież",
           "loading_invites": "Ładowanie zaproszeń...",
@@ -827,6 +838,7 @@
           "snackbar_failed_load_audit": "Nie udało się wczytać audytu zaproszeń",
           "snackbar_metadata_copied": "Zaproś skopiowane metadane",
           "snackbar_email_invites_success": "Utworzono zaproszenia ({count}). Wysłano {wysłano}, nie udało się {nie udało się}. Pominięte duplikaty: {duplikaty}.",
+          "select_at_least_one_student": "Select at least one existing student",
           "presets": {
             "one_time_24h": "Jednorazowo (24h)",
             "multi_use_7d": "Wielokrotnego użytku (7 dni)",
@@ -2492,13 +2504,22 @@
         "description": "Użyj jednego klucza o zasięgu organizacji na integrację. Jeśli klucz zostanie obrócony lub unieważniony, klient przestaje działać do czasu skonfigurowania nowego klucza tajnego.",
         "claude_code_description": "Rejestruje `@classroomio/mcp` w Claude Code przy użyciu wygenerowanego klucza o zasięgu organizacji.",
         "codex_description": "Dodaje serwer ClassroomIO MCP do Codexu z tym samym kluczem o zasięgu organizacji.",
-        "cursor_description": "Wklej to do `~/.cursor/mcp.json` lub konfiguracji MCP w obszarze roboczym."
+        "cursor_description": "Wklej to do `~/.cursor/mcp.json` lub konfiguracji MCP w obszarze roboczym.",
+        "opencode_description": "Dodaj to do `opencode.json` w katalogu głównym projektu lub do `~/.config/opencode/opencode.json`."
       },
       "keys": {
         "title": "Klucze MCP",
         "description": "Te klucze uwierzytelniają bieżącą organizację, gdy klient MCP wywołuje ClassroomIO poprzez `@classroomio/mcp`.",
         "generate": "Wygeneruj klucz MCP",
-        "secret_once": "Sekret ten zostaje pokazany raz. Skopiuj go teraz do swojego klienta MCP."
+        "secret_once": "Sekret ten zostaje pokazany raz. Skopiuj go teraz do swojego klienta MCP.",
+        "modal": {
+          "title": "Create MCP key",
+          "description": "Choose a name for this MCP key before it is generated.",
+          "name_label": "Key name",
+          "name_placeholder": "ClassroomIO OpenCode",
+          "cancel": "Cancel",
+          "save": "Create key"
+        }
       }
     },
     "keys": {
@@ -2507,7 +2528,7 @@
       "rotate": "Obróć",
       "revoke": "Odwołaj",
       "empty_title": "Nie ma jeszcze kluczy MCP",
-      "empty_description": "Utwórz pierwszy klucz MCP o zasięgu organizacji, aby połączyć Claude Code, Codex lub Cursor.",
+      "empty_description": "Utwórz pierwszy klucz MCP o zasięgu organizacji, aby połączyć Claude Code, Codex, Cursor lub OpenCode.",
       "created_at_label": "Utworzono:",
       "last_used_label": "Ostatnio używane:",
       "never_used": "Nigdy",
@@ -2518,7 +2539,8 @@
     "clients": {
       "claude_code": "Claude'a Koda",
       "codex": "Kodeks",
-      "cursor": "Kursor"
+      "cursor": "Kursor",
+      "opencode": "OpenCode"
     },
     "tabs": {
       "mcp": "MCP",
